@@ -8,7 +8,7 @@ on:
       mode:
         type: choice
         required: true
-        options: [apply, rollback]
+        options: [apply, rollback, promote_latest]
       worker:
         type: choice
         required: true
@@ -21,6 +21,10 @@ on:
         description: Exact currently served Worker version
         type: string
         required: true
+      expected_latest_version:
+        description: Promote-latest only - exact undeployed Engine version
+        type: string
+        required: false
       anchor_run_id:
         description: Rollback only - successful prewrite anchor run ID
         type: string
@@ -173,6 +177,20 @@ jobs:
             "${api}")"
           exit_code=$?
           set -e
+          # Only bounded numeric transport diagnostics. Never print raw
+          # Cloudflare response bodies, authorization headers or secrets.
+          echo "OWNER_D1_PATCH_CURL_EXIT=${exit_code}"
+          if [[ "${code}" =~ ^[0-9]{3}$ ]]; then
+            echo "OWNER_D1_PATCH_HTTP_STATUS=${code}"
+          else
+            echo 'OWNER_D1_PATCH_HTTP_STATUS=UNAVAILABLE'
+          fi
+          error_codes='UNAVAILABLE'
+          if [ -s "${RUNNER_TEMP}/patch-result.json" ]; then
+            error_codes="$(jq -er '[.errors[]?.code | select(type == "number")] | map(tostring) | join(",")' \
+              "${RUNNER_TEMP}/patch-result.json" 2>/dev/null)" || error_codes='UNAVAILABLE'
+          fi
+          echo "OWNER_D1_PATCH_ERROR_CODES=${error_codes:-NONE}"
           if [ "${exit_code}" -ne 0 ] || [ "${code}" != "200" ]; then
             echo 'OWNER_D1_PATCH_OUTCOME=UNVERIFIED_OR_REJECTED;NO_RETRY=YES'
             exit 1
@@ -209,6 +227,15 @@ jobs:
             -o "${RUNNER_TEMP}/version-post.json"
           curl -fsS --max-time 30 "${auth[@]}" "${base}/settings" \
             -o "${RUNNER_TEMP}/settings-post.json"
+          # GET complete immutable code modules from BOTH exact versions.
+          # This is read-only. Never log or upload these base64 source bodies.
+          modules_api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/workers/${OWNER_WORKER}/versions"
+          curl -fsS --max-time 120 --max-filesize 45000000 "${auth[@]}" \
+            "${modules_api}/${OWNER_D1_PRE_VERSION}?include=modules" \
+            -o "${RUNNER_TEMP}/version-modules-pre.json"
+          curl -fsS --max-time 120 --max-filesize 45000000 "${auth[@]}" \
+            "${modules_api}/${fresh}?include=modules" \
+            -o "${RUNNER_TEMP}/version-modules-post.json"
           python3 .github/scripts/b62_owner_d1_release_transaction.py verify \
             --worker "${{ inputs.worker }}" \
             --pre "${RUNNER_TEMP}/version-pre.json" \
@@ -218,7 +245,12 @@ jobs:
             --d1-owner "${RUNNER_TEMP}/d1-owner.json" \
             --d1-chat "${RUNNER_TEMP}/d1-chat.json" \
             --d1-engine "${RUNNER_TEMP}/d1-engine.json" \
-            --anchor "${RUNNER_TEMP}/owner-prewrite-rollback-anchor.json"
+            --anchor "${RUNNER_TEMP}/owner-prewrite-rollback-anchor.json" \
+            --pre-modules "${RUNNER_TEMP}/version-modules-pre.json" \
+            --post-modules "${RUNNER_TEMP}/version-modules-post.json"
+          # Source bytes are not needed after verification and never persisted.
+          rm -f "${RUNNER_TEMP}/version-modules-pre.json" \
+            "${RUNNER_TEMP}/version-modules-post.json"
           if [ "${OWNER_WORKER}" = 'padiem-chat' ]; then
             health="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 \
               https://chat.padiem.net/health)"
@@ -236,6 +268,189 @@ jobs:
           echo 'AUTOMATIC_ROLLBACK_ON_AMBIGUOUS_CONCURRENT_STATE=NO'
           echo 'INSPECT_STATE_THEN_USE_EXPLICIT_ANCHORED_ROLLBACK=YES'
           echo 'ANCHOR_SOURCE_RUN_ID=${{ github.run_id }}'
+
+  promote_latest:
+    if: ${{ inputs.mode == 'promote_latest' && inputs.worker == 'engine' && inputs.confirmation == 'PROMOTE_VERIFIED_ENGINE_LATEST_FOR_OWNER_D1' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact Owner-approved Engine latest promotion intent
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${{ inputs.target_sha }}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${{ inputs.target_sha }}"
+          test "${CLOUDFLARE_ACCOUNT_ID}" = '9be14bb7b8974e65d0afba647ab16932'
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -z "${{ inputs.anchor_run_id }}"
+          python3 .github/scripts/cloudflare_served_version_cli.py validate-version-id \
+            --version-id "${{ inputs.expected_active_version }}"
+          python3 .github/scripts/cloudflare_served_version_cli.py validate-version-id \
+            --version-id "${{ inputs.expected_latest_version }}"
+          test "${{ inputs.expected_active_version }}" != "${{ inputs.expected_latest_version }}"
+          echo 'ENGINE_LATEST_PROMOTION_EXACT_AUTH=PASS'
+
+      - name: GET only served Engine, latest, D1 inventory, peer and exact immutable modules
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          account="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}"
+          api="${account}/workers/scripts/padiem-ai-engine"
+          peer="${account}/workers/scripts/padiem-chat"
+          for entry in owner:padiem-browser-owner-p01 chat:padiem-chat-db engine:padiem-engine; do
+            label="${entry%%:*}"
+            db="${entry#*:}"
+            curl -fsS --max-time 30 "${auth[@]}" --get --data-urlencode "name=${db}" \
+              "${account}/d1/database" -o "${RUNNER_TEMP}/d1-${label}.json"
+          done
+          curl -fsS --max-time 30 "${auth[@]}" "${api}/deployments" -o "${RUNNER_TEMP}/before.json"
+          old="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active \
+            --deployments "${RUNNER_TEMP}/before.json")"
+          test "${old}" = "${{ inputs.expected_active_version }}"
+          curl -fsS --max-time 30 "${auth[@]}" "${api}/versions/${old}" -o "${RUNNER_TEMP}/version-pre.json"
+          curl -fsS --max-time 30 "${auth[@]}" "${api}/settings" -o "${RUNNER_TEMP}/settings-pre.json"
+          curl -fsS --max-time 30 "${auth[@]}" "${api}/versions?page=1&per_page=1" \
+            -o "${RUNNER_TEMP}/latest.json"
+          jq -e --arg target "${{ inputs.expected_latest_version }}" \
+            '.success == true and .result.items[0].id == $target' "${RUNNER_TEMP}/latest.json" >/dev/null
+          curl -fsS --max-time 30 "${auth[@]}" \
+            "${api}/versions/${{ inputs.expected_latest_version }}" -o "${RUNNER_TEMP}/version-latest.json"
+          curl -fsS --max-time 30 "${auth[@]}" "${peer}/deployments" \
+            -o "${RUNNER_TEMP}/peer-deployments.json"
+          peer_id="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active \
+            --deployments "${RUNNER_TEMP}/peer-deployments.json")"
+          curl -fsS --max-time 30 "${auth[@]}" "${peer}/versions/${peer_id}" \
+            -o "${RUNNER_TEMP}/peer-version.json"
+          curl -fsS --max-time 30 "${auth[@]}" "${api}/deployments" -o "${RUNNER_TEMP}/after.json"
+          modules_api="${account}/workers/workers/padiem-ai-engine/versions"
+          curl -fsS --max-time 120 --max-filesize 45000000 "${auth[@]}" \
+            "${modules_api}/${old}?include=modules" -o "${RUNNER_TEMP}/version-modules-pre.json"
+          curl -fsS --max-time 120 --max-filesize 45000000 "${auth[@]}" \
+            "${modules_api}/${{ inputs.expected_latest_version }}?include=modules" \
+            -o "${RUNNER_TEMP}/version-modules-latest.json"
+          echo "ENGINE_RESTORABLE_PRE_VERSION=${old}" >> "${GITHUB_ENV}"
+          echo 'ENGINE_LATEST_GET_ONLY_EVIDENCE=CAPTURED'
+
+      - name: Validate whole code and all authorities then prepare a fresh rollback anchor
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 .github/scripts/b62_owner_d1_release_transaction.py prepare-promotion \
+            --main-sha "${{ inputs.target_sha }}" \
+            --d1-owner "${RUNNER_TEMP}/d1-owner.json" \
+            --d1-chat "${RUNNER_TEMP}/d1-chat.json" \
+            --d1-engine "${RUNNER_TEMP}/d1-engine.json" \
+            --before "${RUNNER_TEMP}/before.json" --after "${RUNNER_TEMP}/after.json" \
+            --version "${RUNNER_TEMP}/version-pre.json" \
+            --settings "${RUNNER_TEMP}/settings-pre.json" \
+            --latest "${RUNNER_TEMP}/latest.json" \
+            --latest-version "${RUNNER_TEMP}/version-latest.json" \
+            --peer-deployments "${RUNNER_TEMP}/peer-deployments.json" \
+            --peer-version "${RUNNER_TEMP}/peer-version.json" \
+            --pre-modules "${RUNNER_TEMP}/version-modules-pre.json" \
+            --latest-modules "${RUNNER_TEMP}/version-modules-latest.json" \
+            --expected-latest-version "${{ inputs.expected_latest_version }}" \
+            --anchor "${RUNNER_TEMP}/owner-prewrite-rollback-anchor.json" \
+            --request "${RUNNER_TEMP}/latest-promotion-request.json"
+
+      - name: Persist original served rollback anchor BEFORE latest promotion
+        uses: actions/upload-artifact@v4
+        with:
+          name: owner-d1-rollback-anchor-${{ github.run_id }}
+          path: ${{ runner.temp }}/owner-prewrite-rollback-anchor.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Reconfirm exact SHA and unchanged original and latest Worker before promotion
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+          curl -fsS --max-time 30 "${auth[@]}" "${api}/deployments" \
+            -o "${RUNNER_TEMP}/promotion-atwrite-deployments.json"
+          now="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active \
+            --deployments "${RUNNER_TEMP}/promotion-atwrite-deployments.json")"
+          test "${now}" = "${ENGINE_RESTORABLE_PRE_VERSION}"
+          curl -fsS --max-time 30 "${auth[@]}" "${api}/versions?page=1&per_page=1" \
+            -o "${RUNNER_TEMP}/promotion-atwrite-latest.json"
+          jq -e --arg id "${{ inputs.expected_latest_version }}" \
+            '.success == true and .result.items[0].id == $id' \
+            "${RUNNER_TEMP}/promotion-atwrite-latest.json" >/dev/null
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${{ inputs.target_sha }}"
+          echo 'ENGINE_LATEST_PROMOTION_ANCHORED_AND_STABLE=PASS'
+
+      - name: Promote exact verified latest Engine version at 100 percent ONE time
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H 'Content-Type: application/json')
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine/deployments"
+          echo 'ENGINE_LATEST_PROMOTION_POST_ATTEMPTED=YES' >> "${GITHUB_ENV}"
+          curl -fsS --max-time 45 "${auth[@]}" -X POST "${api}" \
+            --data-binary "@${RUNNER_TEMP}/latest-promotion-request.json" \
+            -o "${RUNNER_TEMP}/latest-promotion-response.json"
+          jq -e '.success == true' "${RUNNER_TEMP}/latest-promotion-response.json" >/dev/null
+          echo 'ENGINE_LATEST_PROMOTION_POST_ACCEPTED_PENDING_SERVED_PROOF=YES'
+
+      - name: Verify promoted 100 percent served Engine preserves ALL old resources
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+          now=''
+          for n in $(seq 1 15); do
+            curl -fsS --max-time 30 "${auth[@]}" "${api}/deployments" \
+              -o "${RUNNER_TEMP}/promotion-post-deployments.json"
+            now="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active \
+              --deployments "${RUNNER_TEMP}/promotion-post-deployments.json")"
+            if [ "${now}" = "${{ inputs.expected_latest_version }}" ]; then break; fi
+            sleep 3
+          done
+          test "${now}" = "${{ inputs.expected_latest_version }}"
+          curl -fsS --max-time 30 "${auth[@]}" "${api}/versions/${now}" \
+            -o "${RUNNER_TEMP}/promotion-post-version.json"
+          python3 .github/scripts/b62_owner_d1_release_transaction.py verify-promotion \
+            --pre "${RUNNER_TEMP}/version-pre.json" \
+            --target "${RUNNER_TEMP}/version-latest.json" \
+            --post "${RUNNER_TEMP}/promotion-post-version.json" \
+            --deployments "${RUNNER_TEMP}/promotion-post-deployments.json" \
+            --pre-modules "${RUNNER_TEMP}/version-modules-pre.json" \
+            --target-modules "${RUNNER_TEMP}/version-modules-latest.json" \
+            --expected-latest-version "${{ inputs.expected_latest_version }}"
+          status="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 \
+            https://chat.padiem.net/health)"
+          test "${status}" = "200"
+          rm -f "${RUNNER_TEMP}/version-modules-pre.json" \
+            "${RUNNER_TEMP}/version-modules-latest.json"
+          echo 'ENGINE_LATEST_VERIFIED_100PCT_SERVING=YES'
+
+      - name: Stop on ambiguous promotion without retries or automatic rollback
+        if: failure()
+        shell: bash
+        run: |
+          echo "PROMOTION_POST_ATTEMPTED=${ENGINE_LATEST_PROMOTION_POST_ATTEMPTED:-NO}"
+          echo 'PROMOTION_POST_RETRIES=0'
+          echo 'PROMOTION_AUTOMATIC_ROLLBACK=NO'
+          echo 'INSPECT_PRODUCTION_AND_USE_EXPLICIT_ANCHORED_ROLLBACK=YES'
+          echo 'ORIGINAL_ROLLBACK_ANCHOR_SOURCE_RUN=${{ github.run_id }}'
 
   rollback:
     if: ${{ inputs.mode == 'rollback' && inputs.confirmation == 'ROLLBACK_OWNER_P01_D1_TO_ANCHORED_VERSION' }}

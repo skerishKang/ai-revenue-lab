@@ -9,6 +9,10 @@ Mutation is owned ONLY by the separate, manually approved GitHub Actions workflo
 from __future__ import annotations
 
 import argparse
+import base64
+import binascii
+import copy
+import hashlib
 import json
 import os
 import sys
@@ -105,6 +109,8 @@ def prepare(
     latest: object,
     peer_deployments: object,
     peer_version: object,
+    *,
+    promotion_latest_version: str | None = None,
 ) -> tuple[dict, dict]:
     if worker not in WORKERS:
         raise TransactionError("TARGET_NOT_ALLOWLISTED")
@@ -125,9 +131,14 @@ def prepare(
     except (ReleasePreflightError, BindingStateError) as exc:
         raise TransactionError("PREMUTATION_AUTHORITY_INVALID") from exc
 
-    if _latest(latest) != baseline["base_version"]:
-        # Cloudflare PATCH /settings can reject when latest != served (10214).
-        raise TransactionError("LATEST_AND_SERVED_DIFFER")
+    latest_id = _latest(latest)
+    if latest_id != baseline["base_version"]:
+        # Never relax the standard PATCH precondition. Only the distinct
+        # explicitly pinned Engine promotion preparation can pass this point.
+        if worker != "engine" or promotion_latest_version != latest_id:
+            raise TransactionError("LATEST_AND_SERVED_DIFFER")
+    elif promotion_latest_version is not None:
+        raise TransactionError("PROMOTION_ALREADY_SERVED")
     original = _object_result(version)
     writable_annotations = {
         k: v for k, v in original.get("annotations", {}).items() if k in ANNOTATIONS
@@ -151,16 +162,68 @@ def prepare(
         "binding_name_type_digest": baseline["binding_name_type_digest"],
         "annotations_carried": baseline["annotations_carried"],
         "single_served_version": True,
-        "latest_matches_served": True,
+        "latest_matches_served": latest_id == baseline["base_version"],
+        "promotion_target_version_id": promotion_latest_version,
         "first_mutation_not_yet_attempted": True,
         "prepared_for_publication_before_mutation": True,
     }
     return candidate, anchor
 
 
+def _version_module_manifest(payload: object, expected_version: str) -> tuple[tuple, ...]:
+    """Hash *every* module from official GET /workers/workers/.../versions/{id}?include=modules.
+
+    The version-specific response, not mutable script HEAD, is authoritative.
+    Return only (name, MIME type, byte length, SHA-256); never print code.
+    """
+    version = _object_result(payload)
+    if version.get("id") != expected_version:
+        raise TransactionError("CODE_MODULE_VERSION_ID_MISMATCH")
+    modules = version.get("modules")
+    if not isinstance(modules, list) or not modules:
+        raise TransactionError("CODE_MODULES_MISSING")
+    entries = []
+    for module in modules:
+        if not isinstance(module, dict) or set(module) != {
+            "name", "content_type", "content_base64"
+        }:
+            raise TransactionError("CODE_MODULE_SHAPE_INVALID")
+        name, media, encoded = (
+            module["name"], module["content_type"], module["content_base64"]
+        )
+        if not isinstance(name, str) or not name or not isinstance(media, str) or not media:
+            raise TransactionError("CODE_MODULE_SHAPE_INVALID")
+        # Cloudflare may return a zero-byte source module as empty base64.
+        # It is valid content; hash b"" rather than rejecting the module.
+        if not isinstance(encoded, str):
+            raise TransactionError("CODE_MODULE_SHAPE_INVALID")
+        try:
+            raw = base64.b64decode(encoded, validate=True)
+        except (binascii.Error, ValueError) as exc:
+            raise TransactionError("CODE_MODULE_BASE64_INVALID") from exc
+        entries.append((name, media, len(raw), hashlib.sha256(raw).hexdigest()))
+    if len({entry[0] for entry in entries}) != len(entries):
+        raise TransactionError("CODE_MODULE_DUPLICATE_NAME")
+    return tuple(sorted(entries))
+
+
+def assert_exact_worker_code(
+    pre_modules: object, post_modules: object, before_id: str, after_id: str
+) -> int:
+    """Prove every module's source bytes and content-type match across versions."""
+    if before_id == after_id:
+        raise TransactionError("CODE_MODULE_SAME_VERSION_UNEXPECTED")
+    before = _version_module_manifest(pre_modules, before_id)
+    after = _version_module_manifest(post_modules, after_id)
+    if before != after:
+        raise TransactionError("CODE_MODULE_CONTENT_DRIFT")
+    return len(before)
+
+
 def verify(
     pre: object, post: object, deployments: object, post_settings: object,
-    owner_id: str, anchor: dict
+    owner_id: str, anchor: dict,
+    pre_modules: object, post_modules: object,
 ) -> str:
     current = _active(deployments)
     original_id = anchor.get("rollback_version_id")
@@ -170,8 +233,33 @@ def verify(
         raise TransactionError("POST_VERSION_NOT_ACTIVE")
     if _object_result(pre).get("id") != original_id:
         raise TransactionError("ROLLBACK_ANCHOR_VERSION_MISMATCH")
+    module_count = assert_exact_worker_code(
+        pre_modules, post_modules, original_id, current
+    )
+    if module_count < 1:
+        raise TransactionError("CODE_MODULES_MISSING")
+    original_script = _object_result(pre).get("resources", {}).get("script")
+    changed_script = _object_result(post).get("resources", {}).get("script")
+    if not isinstance(original_script, dict) or not isinstance(changed_script, dict):
+        raise TransactionError("CODE_SCRIPT_METADATA_MISSING")
+    if set(original_script) != set(changed_script):
+        raise TransactionError("CODE_SCRIPT_METADATA_KEYS_DRIFT")
+    # Cloudflare may regenerate script etag and last_deployed_from during a
+    # settings-only API version upload. Official module bytes are stronger
+    # evidence than etag metadata; normalize ONLY these two fields, and ONLY
+    # after byte-for-byte equality was proven for every module.
+    metadata_change_allowed = {"etag", "last_deployed_from"}
+    if any(
+        original_script[key] != changed_script[key]
+        for key in original_script if key not in metadata_change_allowed
+    ):
+        raise TransactionError("CODE_SCRIPT_OTHER_METADATA_DRIFT")
+    comparable_post = copy.deepcopy(post)
+    for key in metadata_change_allowed:
+        if key in original_script:
+            comparable_post["result"]["resources"]["script"][key] = original_script[key]
     try:
-        assert_owner_version_integrity(pre, post, owner_id)
+        assert_owner_version_integrity(pre, comparable_post, owner_id)
         if canonical_state(post_settings) != canonical_state(post):
             raise TransactionError("POST_SETTINGS_NOT_SERVED")
     except BindingStateError as exc:
@@ -215,6 +303,60 @@ def verify_rollback_target(anchor: dict, version: object, expected_worker: str) 
     if digest != anchor.get("binding_name_type_digest"):
         raise TransactionError("ROLLBACK_TARGET_BINDINGS_DRIFT")
     return result["id"]
+
+
+def verify_promotion_equivalence(
+    before_version: object, latest_version: object,
+    before_modules: object, latest_modules: object,
+    expected_latest: str,
+) -> int:
+    """Prove the undeployed latest Engine version is code/config equivalent.
+
+    All comparisons refer to immutable version IDs. No live API writes.
+    The only permitted difference is Cloudflare's version-upload provenance.
+    """
+    before = _object_result(before_version)
+    target = _object_result(latest_version)
+    original_id = before.get("id")
+    if not isinstance(original_id, str) or original_id == expected_latest:
+        raise TransactionError("PROMOTION_SOURCE_VERSION_INVALID")
+    if target.get("id") != expected_latest:
+        raise TransactionError("PROMOTION_TARGET_VERSION_MISMATCH")
+    count = assert_exact_worker_code(
+        before_modules, latest_modules, original_id, expected_latest
+    )
+    if canonical_state(before_version) != canonical_state(latest_version):
+        raise TransactionError("PROMOTION_BINDING_AUTHORITY_DRIFT")
+    source_resources = before.get("resources")
+    target_resources = target.get("resources")
+    if not isinstance(source_resources, dict) or not isinstance(target_resources, dict):
+        raise TransactionError("PROMOTION_RESOURCE_INVALID")
+    if set(source_resources) != set(target_resources):
+        raise TransactionError("PROMOTION_RESOURCE_KEYS_DRIFT")
+    for key in source_resources:
+        if key == "script":
+            original_script = source_resources[key]
+            target_script = target_resources[key]
+            if not isinstance(original_script, dict) or not isinstance(target_script, dict):
+                raise TransactionError("PROMOTION_SCRIPT_INVALID")
+            if set(original_script) != set(target_script):
+                raise TransactionError("PROMOTION_SCRIPT_METADATA_KEYS_DRIFT")
+            if any(
+                original_script[k] != target_script[k]
+                for k in original_script if k not in {"etag", "last_deployed_from"}
+            ):
+                raise TransactionError("PROMOTION_SCRIPT_METADATA_DRIFT")
+        elif source_resources[key] != target_resources[key]:
+            raise TransactionError("PROMOTION_RESOURCE_DRIFT")
+    old_ann = before.get("annotations", {})
+    new_ann = target.get("annotations", {})
+    if not isinstance(old_ann, dict) or not isinstance(new_ann, dict):
+        raise TransactionError("PROMOTION_ANNOTATION_INVALID")
+    if {k: v for k, v in old_ann.items() if k in ANNOTATIONS} != {
+        k: v for k, v in new_ann.items() if k in ANNOTATIONS
+    }:
+        raise TransactionError("PROMOTION_ANNOTATION_DRIFT")
+    return count
 
 
 def validate_patch_settings(
@@ -313,7 +455,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--candidate", required=True, type=Path)
     p.add_argument("--anchor", required=True, type=Path)
     v = sub.add_parser("verify")
-    for label in ("pre", "post", "deployments", "settings", "d1-owner", "d1-chat", "d1-engine", "anchor"):
+    for label in ("pre", "post", "deployments", "settings", "d1-owner", "d1-chat", "d1-engine", "anchor", "pre-modules", "post-modules"):
         v.add_argument("--" + label, required=True, type=Path)
     v.add_argument("--worker", choices=tuple(WORKERS), required=True)
     patch_response = sub.add_parser("verify-patch-response")
@@ -322,6 +464,20 @@ def main(argv: list[str] | None = None) -> int:
     patch_response.add_argument("--response", required=True, type=Path)
     for database in ("d1-owner", "d1-chat", "d1-engine"):
         patch_response.add_argument("--" + database, required=True, type=Path)
+    promote = sub.add_parser("prepare-promotion")
+    promote.add_argument("--main-sha", required=True)
+    for label in ("d1-owner", "d1-chat", "d1-engine", "before", "after",
+                  "version", "settings", "latest", "peer-deployments",
+                  "peer-version", "latest-version", "pre-modules", "latest-modules"):
+        promote.add_argument("--" + label, required=True, type=Path)
+    promote.add_argument("--expected-latest-version", required=True)
+    promote.add_argument("--anchor", required=True, type=Path)
+    promote.add_argument("--request", required=True, type=Path)
+    promotion_verify = sub.add_parser("verify-promotion")
+    for label in ("pre", "target", "post", "deployments",
+                  "pre-modules", "target-modules"):
+        promotion_verify.add_argument("--" + label, required=True, type=Path)
+    promotion_verify.add_argument("--expected-latest-version", required=True)
     r = sub.add_parser("verify-rollback-target")
     r.add_argument("--anchor", required=True, type=Path)
     r.add_argument("--version", required=True, type=Path)
@@ -367,7 +523,8 @@ def main(argv: list[str] | None = None) -> int:
             if anchor.get("worker") != WORKERS[args.worker][0]:
                 raise TransactionError("ANCHOR_WORKER_MISMATCH")
             verify(_read(args.pre), _read(args.post), _read(args.deployments),
-                   _read(args.settings), ids[OWNER_NAME], anchor)
+                           _read(args.settings), ids[OWNER_NAME], anchor,
+                           _read(args.pre_modules), _read(args.post_modules))
             print("OWNER_D1_POST_SERVED_RESOURCES=PASS")
         elif args.mode == "verify-patch-response":
             ids = _database_ids({
@@ -380,6 +537,53 @@ def main(argv: list[str] | None = None) -> int:
                 _read(args.candidate), ids[OWNER_NAME]
             )
             print("OWNER_D1_PATCH_RESPONSE_D1_AUTHORITY=PASS")
+        elif args.mode == "prepare-promotion":
+            inventory = {
+                OWNER_NAME: _read(args.d1_owner),
+                "padiem-chat-db": _read(args.d1_chat),
+                "padiem-engine": _read(args.d1_engine),
+            }
+            pre = _read(args.version)
+            latest_version = _read(args.latest_version)
+            latest_list = _read(args.latest)
+            expected = args.expected_latest_version
+            if _latest(latest_list) != expected:
+                raise TransactionError("PROMOTION_LATEST_DRIFT")
+            count = verify_promotion_equivalence(
+                pre, latest_version, _read(args.pre_modules),
+                _read(args.latest_modules), expected
+            )
+            if count < 1 or args.anchor.resolve() == args.request.resolve():
+                raise TransactionError("PROMOTION_OUTPUT_INVALID")
+            if args.anchor.exists() or args.request.exists():
+                raise TransactionError("OUTPUT_EXISTS")
+            _, anchor = prepare(
+                "engine", args.main_sha, inventory,
+                _read(args.before), _read(args.after), pre,
+                _read(args.settings), latest_list,
+                _read(args.peer_deployments), _read(args.peer_version),
+                promotion_latest_version=expected,
+            )
+            # Validate the complete deployment body before creating either
+            # filesystem output, so invalid IDs leave no partial anchor.
+            request_payload = build_rollback_deployment(expected)
+            _write_new(args.anchor, anchor)
+            _write_new(args.request, request_payload)
+            print("OWNER_D1_PREPROMOTION_CODE_AND_BINDING_PARITY=PASS")
+            print("OWNER_D1_PREPROMOTION_ANCHOR_PREPARED=YES")
+        elif args.mode == "verify-promotion":
+            expected = args.expected_latest_version
+            target = _read(args.target)
+            post = _read(args.post)
+            if _active(_read(args.deployments)) != expected:
+                raise TransactionError("PROMOTION_NOT_100_PERCENT_SERVED")
+            if _object_result(post) != _object_result(target):
+                raise TransactionError("PROMOTION_SERVED_IMMUTABLE_VERSION_DRIFT")
+            verify_promotion_equivalence(
+                _read(args.pre), post,
+                _read(args.pre_modules), _read(args.target_modules), expected
+            )
+            print("OWNER_D1_LATEST_VERSION_PROMOTION=VERIFIED")
         elif args.mode == "verify-rollback-target":
             verify_rollback_target(
                 _read(args.anchor), _read(args.version), WORKERS[args.worker][0]

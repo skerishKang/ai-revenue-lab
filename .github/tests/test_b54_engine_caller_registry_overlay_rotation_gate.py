@@ -1278,6 +1278,114 @@ def test_workflow_never_touches_b62_live_config_or_padiem_chat() -> None:
         assert "b62" not in line
 
 
+
+
+# #3748 / #3893: exercise the real served-version CLI using only synthetic
+# fixtures. No Cloudflare, Engine requests, credential rotation, or live PUT.
+
+
+def _assert_3748_overlay_argv_contract(src: str) -> None:
+    good = '--active-version="${active_version}"'
+    old = '--active-version "${active_version}"'
+    assert src.count(good) == 3
+    assert old not in src
+    assert src.count("b54_engine_caller_registry_overlay_rotation.py classify") == 2
+    assert src.count("b54_engine_caller_registry_overlay_rotation.py verify") == 1
+    assert "CLOUDFLARE_MUTATION=0" in src
+    assert "PRODUCTION_MUTATION=0" in src
+
+
+def _run_3748_overlay_cli(command: str, *argv: str, version: str = "-safe-overlay-v1",
+                          include_overlay: bool = True, overlay_type: str = "secret_text"):
+    import subprocess
+
+    rows = [
+        _binding(BASE_NAME, "secret_text", text="SYNTHETIC_BASE_NEVER_LOG"),
+    ]
+    if include_overlay:
+        rows.append(_binding(OVERLAY_NAME, overlay_type, text="SYNTHETIC_OVERLAY_NEVER_LOG"))
+    legacy = ";".join(f"{name}=ABSENT" for name in LEGACY_TRIO_NAMES)
+    detail = _version_detail(rows, version_id=version)
+    with tempfile.TemporaryDirectory(prefix="overlay-argv-3748-") as folder:
+        file = Path(folder) / "synthetic-version.json"
+        file.write_text(json.dumps(detail), encoding="utf-8")
+        args = [sys.executable, str(HELPER), command, "--version-detail", str(file), *argv]
+        if command == "verify":
+            args.extend(["--legacy-pre-state", legacy])
+        else:
+            assert command == "classify"
+        return subprocess.run(args, text=True, capture_output=True, check=False, timeout=20)
+
+
+def test_3748_overlay_argv_three_sites_and_pr_source_isolation() -> None:
+    src = WORKFLOW.read_text(encoding="utf-8")
+    _assert_3748_overlay_argv_contract(src)
+    assert "  pull_request:" in src
+    assert "  workflow_dispatch:" in src
+    assert "python .github/tests/test_b54_engine_caller_registry_overlay_rotation_gate.py" in src
+    assert "Run P01 overlay caller-id parity contract" in src
+    assert "if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight' }}" in src
+    assert "PRODUCTION_MUTATION=0" in src.split("  cloudflare-readonly:", 1)[0]
+
+
+def test_3748_overlay_argv_real_classify_and_verify_accept_leading_hyphen() -> None:
+    assert re.fullmatch(r"[A-Za-z0-9._-]{1,64}", "-safe-overlay-v1")
+    classify = _run_3748_overlay_cli("classify", "--active-version=-safe-overlay-v1")
+    assert classify.returncode == 0, classify.stderr
+    assert "B54_ENGINE_OVERLAY_ROTATION_DISPOSITION=ROTATION_REQUIRED" in classify.stdout
+    verify = _run_3748_overlay_cli("verify", "--active-version=-safe-overlay-v1")
+    assert verify.returncode == 0, verify.stderr
+    assert "B54_ENGINE_OVERLAY_ROTATION_POST_READBACK=PASS" in verify.stdout
+    for result in (classify, verify):
+        assert "SYNTHETIC_BASE_NEVER_LOG" not in result.stdout + result.stderr
+        assert "SYNTHETIC_OVERLAY_NEVER_LOG" not in result.stdout + result.stderr
+
+
+def test_3748_overlay_argv_real_classify_and_verify_refuse_old_split_form() -> None:
+    for cmd in ("classify", "verify"):
+        result = _run_3748_overlay_cli(cmd, "--active-version", "-safe-overlay-v1")
+        assert result.returncode == 2, (cmd, result.stderr)
+        assert "expected one argument" in result.stderr
+
+
+def test_3748_overlay_argv_real_mismatch_and_authority_drift_fail_closed() -> None:
+    for cmd in ("classify", "verify"):
+        mismatch = _run_3748_overlay_cli(cmd, "--active-version=-wrong-version")
+        assert mismatch.returncode == 1, (cmd, mismatch.stderr)
+        assert "does not match active version" in mismatch.stderr
+        absent = _run_3748_overlay_cli(
+            cmd, "--active-version=-safe-overlay-v1", include_overlay=False
+        )
+        assert absent.returncode == 1, (cmd, absent.stdout, absent.stderr)
+        bad_type = _run_3748_overlay_cli(
+            cmd, "--active-version=-safe-overlay-v1", overlay_type="kv_namespace"
+        )
+        assert bad_type.returncode == 1, (cmd, bad_type.stdout, bad_type.stderr)
+        for r in (mismatch, absent, bad_type):
+            assert "SYNTHETIC_OVERLAY_NEVER_LOG" not in r.stdout + r.stderr
+
+
+def test_3748_overlay_argv_each_spaced_token_mutation_red_and_bytes_preserved() -> None:
+    original = WORKFLOW.read_bytes()
+    src = original.decode("utf-8")
+    _assert_3748_overlay_argv_contract(src)
+    good = '--active-version="${active_version}"'
+    old = '--active-version "${active_version}"'
+    pieces = src.split(good)
+    assert len(pieces) == 4
+    red = 0
+    for i in range(3):
+        mutated = good.join(pieces[:i + 1]) + old + good.join(pieces[i + 1:])
+        assert mutated != src
+        try:
+            _assert_3748_overlay_argv_contract(mutated)
+        except AssertionError:
+            red += 1
+        else:
+            raise AssertionError("spaced CLI token mutation not detected")
+    assert red == 3
+    assert WORKFLOW.read_bytes() == original
+
 if __name__ == "__main__":
     test_script_constants_exact()
     test_rotation_dispositions()
@@ -1303,4 +1411,9 @@ if __name__ == "__main__":
     test_workflow_legacy_trio_preservation_wiring()
     test_workflow_bounded_failure_evidence_wiring()
     test_workflow_never_touches_b62_live_config_or_padiem_chat()
+    test_3748_overlay_argv_three_sites_and_pr_source_isolation()
+    test_3748_overlay_argv_real_classify_and_verify_accept_leading_hyphen()
+    test_3748_overlay_argv_real_classify_and_verify_refuse_old_split_form()
+    test_3748_overlay_argv_real_mismatch_and_authority_drift_fail_closed()
+    test_3748_overlay_argv_each_spaced_token_mutation_red_and_bytes_preserved()
     print("B54_ENGINE_CALLER_REGISTRY_OVERLAY_ROTATION_GATE_TESTS=PASS")

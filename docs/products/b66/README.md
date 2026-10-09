@@ -13,6 +13,31 @@ B66 is Padiem's standalone quotation product for businesses that already have qu
 
 The user-facing reusable concept is **내 견적서 / Saved Quote Skill**. Internal template/profile/compiler terminology is not the primary user concept.
 
+## Owner-locked CGI rendering decision — 2026-10-09
+
+**For the current Kim Beom-shin CGI quotation, the existing Sol 6.1 source-derived CGI template is the ONE AND ONLY layout and PDF output implementation.** Do not select, re-create, substitute, or silently fall back to another template for any item count.
+
+- **Use the Sol implementation for all CGI quotations.** The GLM 5.3 package is historical comparison evidence only; it is **NOT a product template**. HTML/browser-print PDF and model-generated HTML/PDF are **NOT replacements or fallbacks** for the Sol CGI final document.
+- **If an item, row, page, field, label or layout element must be added, modified or deleted, extend the SAME Sol implementation**. Reuse its layout, fonts, logo, stamp, margins and field semantics. Do not build a competing "four-plus rows" template or renderer.
+- **Three rows are an existing certification boundary, not a template-selection rule.** Existing Sol scope is verified only for 1–3 line items. Issue [#3839](https://github.com/skerishKang/ai-revenue-lab/issues/3839) must extend this very same Sol template to dynamically repeat rows and paginate. Above the currently supported limit, do **not** substitute a different renderer; implement, test and re-certify the Sol modification before declaring ready.
+- **QuoteCore** remains the single money authority; a customer-selected B14 model may extract free-form inputs only. There are **zero model calls for routine PDF rendering**.
+- A browser HTML preview can remain a UI but is **not an independent PDF authority**. Offline HTML-print test evidence is not evidence of Sol CGI product PDF success. All CGI PDF evaluation (including F6 in [#3867](https://github.com/skerishKang/ai-revenue-lab/pull/3867)) must identify the Sol renderer and actual template version.
+- The user-approved [public CGI source library](../../../reference/b66-public-standard-templates/cgi/v1/README.md) versions the Sol implementation and keeps GLM as comparator only. Git publication alone does not prove Production deployment or certify new row counts.
+
+```text
+CGI_PDF_TEMPLATE=EXISTING_SOL_6_1_ONLY
+ALTERNATE_TEMPLATE_SELECTION=FORBIDDEN
+GLM_CUSTOMER_RENDER=FORBIDDEN
+HTML_PRINT_PDF_FALLBACK=FORBIDDEN
+ITEM_ROWS_GT_3=EXTEND_AND_RECERTIFY_SAME_SOL_TEMPLATE
+TEMPLATE_CHANGES=MODIFY_ADD_DELETE_ON_SOL_ONLY
+QUOTECORE_MONEY_AUTHORITY=YES
+PER_PDF_RENDER_MODEL_CALLS=0
+LIVE_4PLUS_ROW_PROOF=NOT_YET_ESTABLISHED
+```
+
+This is the owner lock for the **current CGI product rendering implementation**. Customer source custody (#3884) and D1 quote history (#3405) are separate concerns, not permission to select a different CGI output template.
+
 ## Canonical product flow
 
 ```text
@@ -106,6 +131,7 @@ hidden fallback, PDF production release or skipped visual/customer E2E gates.
 | Template registration source formats | #3586 | XLSX now; HWPX future; legacy XLS/HWP rejected |
 | Quote shell / single composer UX | #3536 | product UX |
 | **Quotation storage / customer-owned Drive** | [QUOTE_STORAGE_STRATEGY.md](QUOTE_STORAGE_STRATEGY.md), #3405, #3871 | **Existing signed-in D1 history is unchanged; customer Google Drive save/reopen is a new optional feature, not yet implemented.** Pricing/quotas not approved. |
+| **Public standard template + private customer custody** | [TEMPLATE_CUSTODY_POLICY.md](TEMPLATE_CUSTODY_POLICY.md), [CGI public standard v1](../../../reference/b66-public-standard-templates/cgi/v1/README.md), #3883, #3884 | Owner-authorized CGI source / Sol renderer and GLM comparator tracked separately in Git; customer originals remain private in R2 (future full custody/return E2E). No automatic release. |
 | Native XLSX output | #3496 | optional editable output; not PDF critical path |
 | B66 quote-model decision authority | [Single model authority index](../../models/README.md), [Owner approval policy §0A](../../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md), #3760 | **Owner policy corrected and merged (#3796):** user selects one exact registered, allowed, ready B14 model per run; optional visible/replaceable default only if configured; no free/paid filter, backend automatic selection or fallback. Matching B66 UI/API implementation was merged via #3831; no claim of served Production readiness or accepted customer E2E follows from that merge. |
 
@@ -188,6 +214,7 @@ Do not insert Excel, Google Sheets, HanCell or another office engine into every 
 
 ## Canonical documentation
 
+- [TEMPLATE_CUSTODY_POLICY.md](TEMPLATE_CUSTODY_POLICY.md) — shared public standard-template library vs customer-private immutable source/template/quote data, D1 + R2 authority, customer download and encryption design, #3883/#3884.
 - [QUOTE_STORAGE_STRATEGY.md](QUOTE_STORAGE_STRATEGY.md) — Owner-approved B66 storage decision: keep browser cache and current account-bound D1 quote history; add optional customer-owned Google Drive JSON+PDF save/reopen separately (#3871); do not change #3405, QuoteCore, the approved renderer, model selection or present billing rules.
 - [SOURCE_TEMPLATE_FIDELITY.md](SOURCE_TEMPLATE_FIDELITY.md) — source analysis, reproduction, certification, PDF/image fidelity implementation, current CGI architecture and development-model operating guidance.
 - This README — product boundary, current authority map and current status.

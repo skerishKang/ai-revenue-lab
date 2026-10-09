@@ -1,0 +1,1056 @@
+{
+  "schema": "b66.quote_template.v2",
+  "source_provenance": {
+    "source_xlsx": {
+      "path": "source/original-public.xlsx",
+      "sha256": "9fcabb7294b4feba4fa0c769452fd6527ebba1d9f94a8c761d4bc40dd99f12f5"
+    },
+    "reference_pdf": {
+      "path": "source/original.pdf",
+      "sha256": "ab5b92e38f54dcff5d1d4280dabcf8c5461dafd588886bf55592cc8d7da8d4b4"
+    },
+    "compiled_at_commit": "benchmark-local"
+  },
+  "page": {
+    "count": 1,
+    "width_pt": 595.0,
+    "height_pt": 841.0
+  },
+  "resources": {
+    "fonts": {
+      "MalgunGothic": {
+        "file": "fonts/malgun.ttf",
+        "sha256": "0086c19e81d293a542e7d75564c645fb58070cc850aefebf8fa1c397858e510c",
+        "source": "system"
+      },
+      "MalgunGothicBold": {
+        "file": "fonts/malgunbd.ttf",
+        "sha256": "a541834fb9cdde9bd6d2c3ff1565cb0bb5ccf7a15e4e9daf2cb58d9b1cf282aa",
+        "source": "system"
+      },
+      "GulimChe": {
+        "file": "fonts/gulim.ttc",
+        "sha256": "4b9ac63e8920ed1bae29c068025ed30493464c18ee18617887daa18e59189226",
+        "source": "system"
+      },
+      "Gulim": {
+        "file": "fonts/gulim.ttc",
+        "sha256": "4b9ac63e8920ed1bae29c068025ed30493464c18ee18617887daa18e59189226",
+        "source": "system"
+      }
+    },
+    "base_document": {
+      "file": "base_document.pdf",
+      "sha256": "ab5b92e38f54dcff5d1d4280dabcf8c5461dafd588886bf55592cc8d7da8d4b4"
+    }
+  },
+  "mutable_slots": {
+    "camera": {
+      "quote_number": {
+        "cell": "K4",
+        "spans": [
+          {
+            "text": "CGI-2-20220621-07",
+            "bbox": [
+              97.52,
+              140.2,
+              192.07,
+              150.33
+            ],
+            "cover": [
+              96.52,
+              138.7,
+              193.07,
+              151.83
+            ],
+            "origin": [
+              97.52,
+              148.3
+            ],
+            "font": "MalgunGothic",
+            "size": 10.13,
+            "color": 0,
+            "bg_fill": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "decorations": [
+              {
+                "x0": 97.52,
+                "x1": 192.77,
+                "y": 149.76,
+                "width": 0.8360000252723694,
+                "color": [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "recipient": {
+        "cell": "K7",
+        "spans": [
+          {
+            "text": "목포대학교",
+            "bbox": [
+              84.99,
+              203.43,
+              139.3,
+              213.56
+            ],
+            "cover": [
+              83.99,
+              201.93,
+              140.3,
+              215.06
+            ],
+            "origin": [
+              84.99,
+              211.53
+            ],
+            "font": "MalgunGothicBold",
+            "size": 10.13,
+            "color": 0,
+            "bg_fill": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "decorations": []
+          }
+        ]
+      },
+      "project_name": {
+        "cell": "K9",
+        "propagation_cell": "B13",
+        "spans": [
+          {
+            "text": "목포대학교체육관및약대 리모델링 통신공사",
+            "bbox": [
+              84.99,
+              246.2,
+              282.17,
+              255.56
+            ],
+            "cover": [
+              83.99,
+              244.7,
+              283.17,
+              257.06
+            ],
+            "origin": [
+              84.99,
+              253.68
+            ],
+            "font": "MalgunGothicBold",
+            "size": 9.351,
+            "color": 0,
+            "bg_fill": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "decorations": []
+          },
+          {
+            "text": "목포대학교체육관및약대 리모델링 통신공사",
+            "bbox": [
+              55.29,
+              324.05,
+              248.27,
+              333.89
+            ],
+            "cover": [
+              54.29,
+              322.55,
+              249.27,
+              335.39
+            ],
+            "origin": [
+              55.29,
+              331.92
+            ],
+            "font": "MalgunGothicBold",
+            "size": 9.832,
+            "color": 0,
+            "bg_fill": null,
+            "decorations": []
+          }
+        ]
+      },
+      "issue_date": {
+        "cell": "K5",
+        "spans": [
+          {
+            "kind": "Y",
+            "text": "2022",
+            "origin": [
+              97.52,
+              169.38
+            ],
+            "bbox": [
+              97.52,
+              161.28,
+              121.04,
+              171.41
+            ],
+            "cover": [
+              97.02,
+              159.78,
+              121.54,
+              172.91
+            ],
+            "font": "MalgunGothic",
+            "size": 10.13,
+            "color": 0,
+            "bg_fill": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "decorations": []
+          },
+          {
+            "kind": "lit",
+            "text": "년 ",
+            "origin": [
+              120.92,
+              169.38
+            ],
+            "bbox": [
+              120.92,
+              161.28,
+              135.59,
+              171.41
+            ],
+            "cover": [
+              120.42,
+              159.78,
+              136.09,
+              172.91
+            ],
+            "font": "MalgunGothic",
+            "size": 10.13,
+            "color": 0,
+            "bg_fill": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "decorations": []
+          },
+          {
+            "kind": "M",
+            "text": "06",
+            "origin": [
+              135.96,
+              169.38
+            ],
+            "bbox": [
+              135.96,
+              161.28,
+              147.78,
+              171.41
+            ],
+            "cover": [
+              135.46,
+              159.78,
+              148.28,
+              172.91
+            ],
+            "font": "MalgunGothic",
+            "size": 10.13,
+            "color": 0,
+            "bg_fill": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "decorations": []
+          },
+          {
+            "kind": "lit",
+            "text": "월 ",
+            "origin": [
+              147.65,
+              169.38
+            ],
+            "bbox": [
+              147.65,
+              161.28,
+              162.33,
+              171.41
+            ],
+            "cover": [
+              147.15,
+              159.78,
+              162.83,
+              172.91
+            ],
+            "font": "MalgunGothic",
+            "size": 10.13,
+            "color": 0,
+            "bg_fill": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "decorations": []
+          },
+          {
+            "kind": "D",
+            "text": "21",
+            "origin": [
+              162.7,
+              169.38
+            ],
+            "bbox": [
+              162.7,
+              161.28,
+              174.52,
+              171.41
+            ],
+            "cover": [
+              162.2,
+              159.78,
+              175.02,
+              172.91
+            ],
+            "font": "MalgunGothic",
+            "size": 10.13,
+            "color": 0,
+            "bg_fill": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "decorations": []
+          },
+          {
+            "kind": "lit",
+            "text": "일",
+            "origin": [
+              174.39,
+              169.38
+            ],
+            "bbox": [
+              174.39,
+              161.28,
+              185.25,
+              171.41
+            ],
+            "cover": [
+              173.89,
+              159.78,
+              185.75,
+              172.91
+            ],
+            "font": "MalgunGothic",
+            "size": 10.13,
+            "color": 0,
+            "bg_fill": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "decorations": []
+          }
+        ],
+        "group_cover": [
+          96.52,
+          159.78,
+          186.25,
+          172.91
+        ],
+        "group": {
+          "rect": [
+            96.52,
+            159.78,
+            186.25,
+            172.91
+          ],
+          "bg_fill": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "decorations": []
+        }
+      }
+    },
+    "item_rows": {
+      "1": {
+        "y_band": [
+          343.75,
+          357.75
+        ],
+        "anchors": {
+          "name": {
+            "origin": [
+              55.29,
+              353.61
+            ],
+            "cover": [
+              54.29,
+              344.25,
+              95.51,
+              357.08
+            ],
+            "font": "MalgunGothic",
+            "size": 9.832,
+            "color": 0,
+            "bg_fill": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "decorations": []
+          },
+          "qty": {
+            "origin": [
+              336.42,
+              353.61
+            ],
+            "right_x": 341.83,
+            "cover": [
+              335.42,
+              344.25,
+              342.83,
+              357.08
+            ],
+            "font": "MalgunGothic",
+            "size": 9.832,
+            "color": 0,
+            "bg_fill": null,
+            "decorations": []
+          },
+          "unit_price": {
+            "origin": [
+              379.11,
+              353.61
+            ],
+            "right_x": 426.62,
+            "cover": [
+              378.11,
+              344.25,
+              427.62,
+              357.08
+            ],
+            "font": "MalgunGothic",
+            "size": 9.832,
+            "color": 0,
+            "bg_fill": null,
+            "decorations": []
+          },
+          "amount": {
+            "origin": [
+              472.78,
+              353.61
+            ],
+            "right_x": 520.29,
+            "cover": [
+              471.78,
+              344.25,
+              521.29,
+              357.08
+            ],
+            "font": "MalgunGothic",
+            "size": 9.832,
+            "color": 0,
+            "bg_fill": null,
+            "decorations": []
+          }
+        }
+      },
+      "2": {
+        "y_band": [
+          365.45,
+          379.45
+        ],
+        "anchors": {
+          "name": {
+            "origin": [
+              55.29,
+              375.31
+            ],
+            "cover": null,
+            "font": "MalgunGothic",
+            "size": 9.832,
+            "color": 0
+          },
+          "qty": {
+            "origin": [
+              341.83,
+              375.31
+            ],
+            "right_x": 341.83,
+            "cover": null,
+            "font": "MalgunGothic",
+            "size": 9.832,
+            "color": 0
+          },
+          "unit_price": {
+            "origin": [
+              433.8,
+              375.31
+            ],
+            "right_x": 426.62,
+            "cover": null,
+            "font": "MalgunGothic",
+            "size": 9.832,
+            "color": 0
+          },
+          "amount": {
+            "origin": [
+              433.8,
+              375.31
+            ],
+            "right_x": 519.63,
+            "cover": [
+              432.8,
+              365.95,
+              520.63,
+              378.78
+            ],
+            "font": "MalgunGothic",
+            "size": 9.832,
+            "color": 0,
+            "bg_fill": null,
+            "decorations": []
+          }
+        }
+      },
+      "3": {
+        "y_band": [
+          387.26,
+          401.26
+        ],
+        "anchors": {
+          "name": {
+            "origin": [
+              55.29,
+              397.13
+            ],
+            "cover": null,
+            "font": "MalgunGothic",
+            "size": 9.832,
+            "color": 0
+          },
+          "qty": {
+            "origin": [
+              341.83,
+              397.13
+            ],
+            "right_x": 341.83,
+            "cover": null,
+            "font": "MalgunGothic",
+            "size": 9.832,
+            "color": 0
+          },
+          "unit_price": {
+            "origin": [
+              433.8,
+              397.13
+            ],
+            "right_x": 426.62,
+            "cover": null,
+            "font": "MalgunGothic",
+            "size": 9.832,
+            "color": 0
+          },
+          "amount": {
+            "origin": [
+              433.8,
+              397.13
+            ],
+            "right_x": 519.63,
+            "cover": [
+              432.8,
+              387.76,
+              520.63,
+              400.59
+            ],
+            "font": "MalgunGothic",
+            "size": 9.832,
+            "color": 0,
+            "bg_fill": null,
+            "decorations": []
+          }
+        }
+      }
+    },
+    "totals": {
+      "subtotal": {
+        "origin": [
+          433.8,
+          532.7
+        ],
+        "right_x": 520.34,
+        "cover": [
+          432.8,
+          523.33,
+          521.34,
+          536.17
+        ],
+        "font": "MalgunGothicBold",
+        "size": 9.832,
+        "color": 0,
+        "cell": "G22",
+        "bg_fill": null,
+        "decorations": []
+      },
+      "vat": {
+        "origin": [
+          433.8,
+          554.39
+        ],
+        "right_x": 519.98,
+        "cover": [
+          432.8,
+          545.03,
+          520.98,
+          557.86
+        ],
+        "font": "MalgunGothicBold",
+        "size": 9.832,
+        "color": 0,
+        "cell": "G23",
+        "bg_fill": null,
+        "decorations": []
+      },
+      "grand_total": {
+        "origin": [
+          433.8,
+          576.09
+        ],
+        "right_x": 520.34,
+        "cover": [
+          432.8,
+          566.73,
+          521.34,
+          579.56
+        ],
+        "font": "MalgunGothicBold",
+        "size": 9.832,
+        "color": 0,
+        "cell": "G24",
+        "bg_fill": [
+          1.0,
+          1.0,
+          0.6000000238418579
+        ],
+        "decorations": []
+      },
+      "vat_rate_display": {
+        "origin": [
+          224.76,
+          554.39
+        ],
+        "right_x": 243.77,
+        "cover": [
+          223.76,
+          545.03,
+          244.77,
+          557.86
+        ],
+        "font": "MalgunGothic",
+        "size": 9.832,
+        "color": 0,
+        "bg_fill": null,
+        "decorations": []
+      },
+      "written_total": {
+        "origin": [
+          26.03,
+          289.0
+        ],
+        "right_x": 311.59,
+        "cover": [
+          25.03,
+          277.41,
+          312.59,
+          292.16
+        ],
+        "font": "GulimChe",
+        "size": 11.75,
+        "color": 0,
+        "cell": "A11",
+        "bg_fill": [
+          1.0,
+          1.0,
+          0.6000000238418579
+        ],
+        "decorations": []
+      }
+    }
+  },
+  "baseline_values": {
+    "quote_number": "CGI-2-20220621-07",
+    "issue_date_serial": 44733,
+    "recipient": "목포대학교",
+    "project_name": "목포대학교체육관및약대 리모델링 통신공사",
+    "vat_rate": 0.1,
+    "items": [
+      {
+        "name": "통신공사",
+        "qty": 1,
+        "unit_price": 88200000
+      },
+      {
+        "name": null,
+        "qty": null,
+        "unit_price": null
+      },
+      {
+        "name": null,
+        "qty": null,
+        "unit_price": null
+      }
+    ]
+  },
+  "format_rules": {
+    "number_comma": "#,##0",
+    "date_parts": [
+      {
+        "kind": "Y"
+      },
+      {
+        "kind": "lit"
+      },
+      {
+        "kind": "M"
+      },
+      {
+        "kind": "lit"
+      },
+      {
+        "kind": "D"
+      },
+      {
+        "kind": "lit"
+      }
+    ],
+    "written_total_wrapper": " 합계금액 : 일금 {words}원정 ( \\{grand_comma} )",
+    "vat_rate_display": "{rate_percent:g}%",
+    "empty_amount_display": "-"
+  },
+  "regions": {
+    "camera_block": [
+      23.189999999999998,
+      71.59,
+      583.4,
+      261.71000000000004
+    ],
+    "body_table": [
+      22.86,
+      298.4,
+      568.42,
+      405.09
+    ],
+    "written_total_row": [
+      20.0,
+      270.91,
+      595.0,
+      298.66
+    ],
+    "subtotal_row": [
+      430.8,
+      521.33,
+      523.34,
+      538.17
+    ],
+    "vat_row": [
+      221.76,
+      543.03,
+      522.98,
+      559.86
+    ],
+    "grand_total_row": [
+      430.8,
+      564.73,
+      523.34,
+      581.56
+    ]
+  },
+  "calculations": {
+    "item_amount": {
+      "formula": "qty * unit_price",
+      "cells": [
+        "E{row}",
+        "F{row}",
+        "G{row}"
+      ],
+      "item_rows": [
+        14,
+        15,
+        16
+      ]
+    },
+    "subtotal": {
+      "formula": "SUM(amounts)",
+      "cell": "G22",
+      "source_range": "G14:G21"
+    },
+    "vat": {
+      "formula": "subtotal * vat_rate",
+      "cell": "G23",
+      "vat_rate_cell": "C23"
+    },
+    "grand_total": {
+      "formula": "subtotal + vat",
+      "cell": "G24"
+    },
+    "written_total": {
+      "formula": "NUMBERSTRING(grand_total,1)",
+      "cell": "A11",
+      "source_formula": "=\" 합계금액 : 일금 \"&NUMBERSTRING(G24,1)&\"원정 ( \\\"&TEXT(G24,\"#,###\")&\" )\"",
+      "wrapper": " 합계금액 : 일금 {words}원정 ( \\{grand_comma} )"
+    },
+    "project_name_propagation": {
+      "formula": "B13 = K9",
+      "cells": [
+        "K9",
+        "B13"
+      ]
+    }
+  },
+  "fixed_values_audit": {
+    "K6": "김 범 신",
+    "M6": "062-576-8100",
+    "M7": "귀하",
+    "P4": "410 - 86 - 46283",
+    "P6": "(주) 시지아이",
+    "P7": " 전라남도 장성군 남면 나노산단로 102(삼태리)    \n TEL : 062-576-8100  Fax : 062-576-8181\n TEL : 061-801-8100    ",
+    "P9": "    김   범   신  인      ",
+    "O5": "We experess the Creation of God through Industry",
+    "C25": "기업은행   4 0 8 - 0 6 4 5 6 3 - 0 1 - 0 1 6   ㈜시지아이",
+    "A18": "********************          이          하          여          백          ********************",
+    "A26": "⊙ 특기사항",
+    "A27": "1. 상기의 견적 내역은 현장 조건에 따라 변경될 수 있습니다.",
+    "A28": "2. 세부 결제조건: 현금",
+    "A29": "3. 견적유효기간은 1주일 입니다."
+  },
+  "supported_scope": {
+    "max_item_rows": 3,
+    "date_serial_range": [
+      1,
+      2958465
+    ],
+    "amounts": "non-negative integers (negative/non-integer fail-closed)",
+    "text_overflow": "fail-closed rejection when text exceeds its slot room"
+  },
+  "certification": {
+    "compiled_at_source_sha256_xlsx": "9fcabb7294b4feba4fa0c769452fd6527ebba1d9f94a8c761d4bc40dd99f12f5",
+    "compiled_at_source_sha256_pdf": "ab5b92e38f54dcff5d1d4280dabcf8c5461dafd588886bf55592cc8d7da8d4b4",
+    "base_document_sha256": "ab5b92e38f54dcff5d1d4280dabcf8c5461dafd588886bf55592cc8d7da8d4b4",
+    "base_document_note": "byte-identical copy of the reference PDF; fixed document content stays baked in; raster background 미사용",
+    "mutation_mechanism": "isolated Form-XObject overlay (white cover rects + replacement text drawn in a separate overlay document placed via show_pdf_page); the original page content streams are never rewritten",
+    "baseline_mechanism": "byte-identical file copy when no slot changes",
+    "engine_code_literals": "none — all facts bind at compile time",
+    "template_specific_measured_parameters": {
+      "camera_print_scale": null,
+      "note": "not required: mutations overlay original content instead of re-rendering the camera block, so no measured camera scale constant is used anywhere"
+    },
+    "cover_drawing_intersections": {
+      "covers_total": 21,
+      "covers_touching_drawings": 13,
+      "detail": [
+        {
+          "cover": [
+            96.52,
+            138.7,
+            193.07,
+            151.83
+          ],
+          "intersecting_drawings": 6
+        },
+        {
+          "cover": [
+            83.99,
+            201.93,
+            140.3,
+            215.06
+          ],
+          "intersecting_drawings": 5
+        },
+        {
+          "cover": [
+            83.99,
+            244.7,
+            283.17,
+            257.06
+          ],
+          "intersecting_drawings": 5
+        },
+        {
+          "cover": [
+            54.29,
+            322.55,
+            249.27,
+            335.39
+          ],
+          "intersecting_drawings": 1
+        },
+        {
+          "cover": [
+            97.02,
+            159.78,
+            121.54,
+            172.91
+          ],
+          "intersecting_drawings": 5
+        },
+        {
+          "cover": [
+            120.42,
+            159.78,
+            136.09,
+            172.91
+          ],
+          "intersecting_drawings": 5
+        },
+        {
+          "cover": [
+            135.46,
+            159.78,
+            148.28,
+            172.91
+          ],
+          "intersecting_drawings": 5
+        },
+        {
+          "cover": [
+            147.15,
+            159.78,
+            162.83,
+            172.91
+          ],
+          "intersecting_drawings": 5
+        },
+        {
+          "cover": [
+            162.2,
+            159.78,
+            175.02,
+            172.91
+          ],
+          "intersecting_drawings": 5
+        },
+        {
+          "cover": [
+            173.89,
+            159.78,
+            185.75,
+            172.91
+          ],
+          "intersecting_drawings": 5
+        },
+        {
+          "cover": [
+            54.29,
+            344.25,
+            95.51,
+            357.08
+          ],
+          "intersecting_drawings": 1
+        },
+        {
+          "cover": [
+            335.42,
+            344.25,
+            342.83,
+            357.08
+          ],
+          "intersecting_drawings": 0
+        },
+        {
+          "cover": [
+            378.11,
+            344.25,
+            427.62,
+            357.08
+          ],
+          "intersecting_drawings": 0
+        },
+        {
+          "cover": [
+            471.78,
+            344.25,
+            521.29,
+            357.08
+          ],
+          "intersecting_drawings": 0
+        },
+        {
+          "cover": [
+            432.8,
+            365.95,
+            520.63,
+            378.78
+          ],
+          "intersecting_drawings": 0
+        },
+        {
+          "cover": [
+            432.8,
+            387.76,
+            520.63,
+            400.59
+          ],
+          "intersecting_drawings": 0
+        },
+        {
+          "cover": [
+            432.8,
+            523.33,
+            521.34,
+            536.17
+          ],
+          "intersecting_drawings": 0
+        },
+        {
+          "cover": [
+            432.8,
+            545.03,
+            520.98,
+            557.86
+          ],
+          "intersecting_drawings": 0
+        },
+        {
+          "cover": [
+            432.8,
+            566.73,
+            521.34,
+            579.56
+          ],
+          "intersecting_drawings": 1
+        },
+        {
+          "cover": [
+            223.76,
+            545.03,
+            244.77,
+            557.86
+          ],
+          "intersecting_drawings": 0
+        },
+        {
+          "cover": [
+            25.03,
+            277.41,
+            312.59,
+            292.16
+          ],
+          "intersecting_drawings": 1
+        }
+      ]
+    },
+    "deterministic": true,
+    "model_used": false
+  }
+}

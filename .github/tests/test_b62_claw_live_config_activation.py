@@ -1123,7 +1123,7 @@ def test_replacement_served_version_evidence_is_bounded_polling_not_single_read(
     assert "sleep 2" in step
     assert "replacement-served-version-read" in step
     assert "replacement-served-version-final" in step
-    assert '--pre-version "${PREMUTATION_SERVED_VERSION_ID}"' in step
+    assert '--pre-version="${PREMUTATION_SERVED_VERSION_ID}"' in step
     assert ".result.deployments[0].versions[0]" not in step
     assert "replacement-served-version-read" in step
     # the first acceptable divergent read closes YES, and NO needs the 15-observation floor
@@ -1429,6 +1429,98 @@ def test_replacement_plan_and_activate_paths_never_replace_existing_credential()
     assert "B62_CLAW_CONFIG_CREDENTIAL_CREATE_REQUIRED=0" in proc.stdout
 
 
+
+
+# #3748 / #3895: real Python subprocess and exact source contract for the
+# served-version convergence finalizer; synthetic TSV only, no live network.
+
+
+def _assert_3748_b62_pre_version_contract(source: str) -> None:
+    assert source.count('--pre-version="${PREMUTATION_SERVED_VERSION_ID}"') == 1
+    assert '--pre-version "${PREMUTATION_SERVED_VERSION_ID}"' not in source
+    assert "for attempt in $(seq 1 30)" in source
+    assert '[ "${same}" -ge 15 ]' in source
+    assert "WORKER_CODE_DEPLOY_SUBMITTED=0" in source
+    assert "SETTINGS_PATCH=0" in source
+
+
+def test_3748_b62_pre_version_exact_source_and_dispatch_boundary() -> None:
+    source = WORKFLOW.read_text(encoding="utf-8")
+    _assert_3748_b62_pre_version_contract(source)
+    assert "  pull_request:" in source
+    assert "  workflow_dispatch:" in source
+    assert "python .github/tests/test_b62_claw_live_config_activation.py" in source
+    assert "github.event_name == 'workflow_dispatch'" in source
+    assert "PRODUCTION_MUTATION=0" in source
+
+
+def test_3748_b62_pre_version_real_cli_accepts_leading_hyphen_on_yes_and_no() -> None:
+    assert re.fullmatch(r"[A-Za-z0-9._-]{1,64}", "-safe-pre-version")
+    with tempfile.TemporaryDirectory(prefix="b62-3748-") as tmp:
+        folder = Path(tmp)
+        divergent = _observations(folder, "diverge.tsv",
+                                  [("acceptable", "-safe-pre-version"),
+                                   ("acceptable", "new-version")])
+        yes = _run_cli(["replacement-served-version-final",
+                        "--observations-file", str(divergent),
+                        "--pre-version=-safe-pre-version"])
+        assert yes.returncode == 0, yes.stderr
+        assert "SERVED_VERSION_CHANGED_BY_SECRET_PUT=YES" in yes.stdout
+        assert "POSTMUTATION_SERVED_VERSION_ID=new-version" in yes.stdout
+        stable = _observations(folder, "stable.tsv",
+                               [("acceptable", "-safe-pre-version")] * 20)
+        no = _run_cli(["replacement-served-version-final",
+                       "--observations-file", str(stable),
+                       "--pre-version=-safe-pre-version"])
+        assert no.returncode == 0, no.stderr
+        assert "SERVED_VERSION_CHANGED_BY_SECRET_PUT=NO" in no.stdout
+        for item in (yes, no):
+            assert "SECRET_VALUE_OUTPUT=0" in item.stdout
+            assert "SECRET_LENGTH_OUTPUT=0" in item.stdout
+            assert "WORKER_CODE_DEPLOY_SUBMITTED=0" in item.stdout
+
+
+def test_3748_b62_pre_version_real_cli_rejects_separate_hyphen_argv() -> None:
+    with tempfile.TemporaryDirectory(prefix="b62-3748-") as tmp:
+        file = _observations(Path(tmp), "stable.tsv",
+                             [("acceptable", "-safe-pre-version")] * 20)
+        bad = _run_cli(["replacement-served-version-final",
+                        "--observations-file", str(file),
+                        "--pre-version", "-safe-pre-version"])
+        assert bad.returncode == 2, bad.stderr
+        assert "expected one argument" in bad.stderr
+        assert "SERVED_VERSION_CHANGED_BY_SECRET_PUT" not in bad.stdout
+
+
+def test_3748_b62_pre_version_fail_closed_without_accepted_truth() -> None:
+    with tempfile.TemporaryDirectory(prefix="b62-3748-") as tmp:
+        folder = Path(tmp)
+        for rows in ([("rejected", None)] * 5,
+                     [("acceptable", "-safe-pre-version")] * 5):
+            file = _observations(folder, "refusal.tsv", rows)
+            result = _run_cli(["replacement-served-version-final",
+                               "--observations-file", str(file),
+                               "--pre-version=-safe-pre-version"])
+            assert result.returncode == 1, result.stderr
+            assert "B62_P01_SERVED_VERSION_CONVERGENCE=FAIL" in result.stdout
+            assert "SERVED_VERSION_CHANGED_BY_SECRET_PUT" not in result.stdout
+
+
+def test_3748_b62_pre_version_old_form_mutation_red_and_bytes_preserved() -> None:
+    original = WORKFLOW.read_bytes()
+    source = original.decode("utf-8")
+    _assert_3748_b62_pre_version_contract(source)
+    mutant = source.replace('--pre-version="${PREMUTATION_SERVED_VERSION_ID}"',
+                            '--pre-version "${PREMUTATION_SERVED_VERSION_ID}"', 1)
+    assert mutant != source
+    try:
+        _assert_3748_b62_pre_version_contract(mutant)
+    except AssertionError:
+        pass  # RED proved: old split-form is rejected by source contract
+    else:
+        raise AssertionError("spaced form mutation survived")
+    assert WORKFLOW.read_bytes() == original
+
 if __name__ == "__main__":
     test_classify_full_activation_required_and_exact()
     test_classify_quota_drift_and_wrong_type()
@@ -1520,4 +1612,9 @@ if __name__ == "__main__":
     test_cli_replacement_served_version_final_fails_closed_without_acceptable_state()
     test_cli_replacement_served_version_final_never_emits_secret_surfaces()
     test_replacement_job_keeps_settings_plane_name_type_verification()
+    test_3748_b62_pre_version_exact_source_and_dispatch_boundary()
+    test_3748_b62_pre_version_real_cli_accepts_leading_hyphen_on_yes_and_no()
+    test_3748_b62_pre_version_real_cli_rejects_separate_hyphen_argv()
+    test_3748_b62_pre_version_fail_closed_without_accepted_truth()
+    test_3748_b62_pre_version_old_form_mutation_red_and_bytes_preserved()
     print("B62_CLAW_LIVE_CONFIG_ACTIVATION_TESTS=PASS")

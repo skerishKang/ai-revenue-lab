@@ -211,7 +211,7 @@ jobs:
           test -n "${active_engine}"
           engine_version="${RUNNER_TEMP}/a7-engine-version.json"
           curl -fsS "${auth[@]}" "${engine_base}/versions/${active_engine}" -o "${engine_version}"
-          verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify             --version-settings "${engine_version}"             --active-version "${active_engine}"             --inspect-engine-admission-binding)"
+          verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify             --version-settings "${engine_version}"             --active-version="${active_engine}"             --inspect-engine-admission-binding)"
           printf '%s\n' "${verify_out}" | grep -E '^CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING=(ABSENT|PRESENT:service)$'
           engine_state="$(printf '%s\n' "${verify_out}" | sed -n 's/^CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING=//p')"
           test -n "${engine_state}"
@@ -288,7 +288,7 @@ jobs:
           curl -fsS "${auth[@]}" "${engine_base}/versions/${active_engine}" -o "${engine_version}"
           verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify \
             --version-settings "${engine_version}" \
-            --active-version "${active_engine}" \
+            --active-version="${active_engine}" \
             --inspect-engine-admission-binding)"
           printf '%s\\n' "${verify_out}" | grep -q '^CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING=ABSENT$'
           echo "PREMUTATION_ENGINE_ADMISSION_BINDING=ABSENT"

@@ -1,0 +1,26 @@
+name: B66 Public Standard Template Contract
+
+on:
+  pull_request:
+    paths:
+      - 'reference/b66-public-standard-templates/**'
+      - 'docs/products/b66/TEMPLATE_CUSTODY_POLICY.md'
+      - '.github/workflows/b66-public-standard-template-contract.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'reference/b66-public-standard-templates/**'
+      - '.github/workflows/b66-public-standard-template-contract.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  owner-public-standard-template-contract:
+    name: owner-public-standard-template-contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify immutable public template release hashes and no private fonts
+        run: python3 reference/b66-public-standard-templates/cgi/v1/tests/test_public_bundle_contract.py

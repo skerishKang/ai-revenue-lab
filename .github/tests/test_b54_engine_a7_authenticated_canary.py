@@ -113,3 +113,119 @@ def test_live_gate_records_bounded_mutation_surface_and_never_flips_manifest() -
         "install_entitlement_snapshot",
     ):
         assert forbidden not in runs
+
+
+# #3748 / #3876: real guard subprocess tests run in existing PR source-contract.
+# All fixtures are synthetic; there are no credentials or network requests.
+def _assert_a7_argv_contract(source: str) -> None:
+    assert source.count('--active-version="${active}"') == 1
+    assert '--active-version "${active}"' not in source
+    assert "GET-only exact served-version A7 binding preflight" in source
+    assert "--inspect-engine-admission-binding" in source
+    assert "SERVED_VERSION_MISMATCH" in source
+    assert "github.event_name == 'workflow_dispatch'" in source
+    assert "RUN_A7_AUTHENTICATED_USER_CANARY_FROM_EXACT_MAIN" in source
+
+
+def _run_a7_guard(*version_args: str, admission: str = "good"):
+    import json
+    import subprocess
+    import sys
+    import tempfile
+
+    bindings = [
+        {
+            "name": "PADIEM_ENGINE_CALLER_REGISTRY_V1",
+            "type": "secret_text",
+            "text": "SYNTHETIC_A7_SECRET_NEVER_ECHO",
+        },
+    ]
+    if admission != "absent":
+        bindings.append(
+            {
+                "name": "CONTROL_PLANE_ENGINE_ADMISSION",
+                "type": "service",
+                "service": (
+                    "padiem-control-plane-engine-admission"
+                    if admission == "good"
+                    else "synthetic-wrong-service"
+                ),
+            }
+        )
+    fixture = {
+        "success": True,
+        "result": {
+            "id": "-canonical-a7-v1",
+            "resources": {"bindings": bindings},
+        },
+    }
+    script = ROOT / ".github/scripts/b54_engine_served_version_guard.py"
+    with tempfile.TemporaryDirectory(prefix="a7-cli-argv-") as temp:
+        detail = Path(temp) / "synthetic-version-detail.json"
+        detail.write_text(json.dumps(fixture), encoding="utf-8")
+        return subprocess.run(
+            [
+                sys.executable,
+                str(script),
+                "verify",
+                "--version-settings",
+                str(detail),
+                *version_args,
+                "--inspect-engine-admission-binding",
+            ],
+            text=True,
+            capture_output=True,
+            timeout=15,
+            check=False,
+        )
+
+
+def test_a7_version_cli_equals_form_source_contract() -> None:
+    _assert_a7_argv_contract(WORKFLOW.read_text(encoding="utf-8"))
+
+
+def test_a7_version_cli_real_subprocess_accepts_safe_leading_hyphen() -> None:
+    result = _run_a7_guard("--active-version=-canonical-a7-v1")
+    assert result.returncode == 0, result.stderr
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=PASS" in result.stdout
+    assert "CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING=PRESENT:service" in result.stdout
+    assert "ENGINE_ADMISSION_BINDING_TARGET_VALIDATED=YES" in result.stdout
+    assert "SYNTHETIC_A7_SECRET_NEVER_ECHO" not in (result.stdout + result.stderr)
+
+
+def test_a7_version_cli_rejects_ambiguous_spaced_argv() -> None:
+    result = _run_a7_guard("--active-version", "-canonical-a7-v1")
+    assert result.returncode == 2
+    assert "expected one argument" in result.stderr
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=PASS" not in result.stdout
+
+
+def test_a7_version_cli_fails_closed_for_identity_and_service_drift() -> None:
+    mismatch = _run_a7_guard("--active-version=-canonical-a7-other")
+    assert mismatch.returncode == 1
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in mismatch.stderr
+    wrong_target = _run_a7_guard("--active-version=-canonical-a7-v1", admission="wrong")
+    assert wrong_target.returncode == 1
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in wrong_target.stderr
+    absent = _run_a7_guard("--active-version=-canonical-a7-v1", admission="absent")
+    assert absent.returncode == 0
+    assert "CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING=ABSENT" in absent.stdout
+    assert "CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING=PRESENT:service" not in absent.stdout
+    for result in (mismatch, wrong_target, absent):
+        assert "SYNTHETIC_A7_SECRET_NEVER_ECHO" not in (result.stdout + result.stderr)
+
+
+def test_a7_version_cli_old_form_mutation_red_original_byte_identical() -> None:
+    # Negative mutation happens in memory, leaving the actual workflow intact.
+    original = WORKFLOW.read_bytes()
+    source = original.decode("utf-8")
+    _assert_a7_argv_contract(source)
+    mutated = source.replace('--active-version="${active}"', '--active-version "${active}"', 1)
+    assert mutated != source
+    try:
+        _assert_a7_argv_contract(mutated)
+    except AssertionError:
+        pass  # mutation RED
+    else:
+        raise AssertionError("old spaced argv unexpectedly passed source contract")
+    assert WORKFLOW.read_bytes() == original  # byte-identical restoration
