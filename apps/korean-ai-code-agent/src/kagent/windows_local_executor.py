@@ -459,16 +459,32 @@ class WindowsSubprocessLocalAgentRuntime:
                     process.kill()
                     process.wait(timeout=2)
         finally:
-            for drain_thread in started_threads:
-                drain_thread.join(timeout=2)
-            with self._lock:
-                self._active.pop(request.request_id, None)
-                explicitly_cancelled = request.request_id in self._cancelled
-                self._cancelled.discard(request.request_id)
-            # Terminal cleanup: closing the kill-on-close job handle reaps any
-            # surviving descendant process so no hidden grandchild can outlive
-            # the terminal state of the request.
-            job.close()
+            # #3081: terminate the full Job tree and *observe* it empty before
+            # handing control back to callers that may delete the selected cwd.
+            # Kill-on-close alone is asynchronous on Windows; on a drain-thread
+            # startup failure the ordinary process.wait() path never executed.
+            # The canonical Job is still the sole containment authority.
+            try:
+                job.terminate_tree()
+                job.wait_for_empty(timeout_seconds=5.0)
+                try:
+                    process.wait(timeout=2)
+                except (subprocess.TimeoutExpired, OSError):
+                    pass
+                for drain_thread in started_threads:
+                    drain_thread.join(timeout=2)
+            finally:
+                for stream, thread in ((process.stdout, stdout_thread), (process.stderr, stderr_thread)):
+                    if thread not in started_threads and stream is not None:
+                        try:
+                            stream.close()
+                        except OSError:
+                            pass
+                with self._lock:
+                    self._active.pop(request.request_id, None)
+                    explicitly_cancelled = request.request_id in self._cancelled
+                    self._cancelled.discard(request.request_id)
+                job.close()
 
         ended_at = datetime.now(timezone.utc)
         if ended_at < now:
