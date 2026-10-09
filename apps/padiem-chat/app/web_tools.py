@@ -282,13 +282,18 @@ class TinyFishDaumWebProvider:
 
     async def search(self, query: str, limit: int = 5) -> list[Evidence]:
         try:
-            return await self._primary.search(query, limit=limit)
+            evidence = await self._primary.search(query, limit=limit)
+            # Fixed diagnostic only: no search text, URLs, keys or results.
+            print("PADIEM_WEB_SEARCH_ROUTE=TINYFISH", flush=True)
+            return evidence
         except WebToolError as exc:
             # HTTP 402 = allowance/credit failure; HTTP 429 = rate allowance.
             # Other provider errors and genuine zero-results do NOT switch.
             if exc.code not in {"web_quota_exhausted", "web_busy"}:
                 raise
-        return await self._secondary.search(query, limit=limit)
+        evidence = await self._secondary.search(query, limit=limit)
+        print("PADIEM_WEB_SEARCH_ROUTE=DAUM_ON_402_429", flush=True)
+        return evidence
 
     async def fetch(self, url: str) -> Evidence:
         return await self._primary.fetch(url)
