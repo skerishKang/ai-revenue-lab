@@ -4,7 +4,8 @@
    절대 규칙
    - 최소 권한: 기본 범위는 drive.file(앱이 만든 파일/사용자가 선택한 파일) 하나다.
      전체 드라이브 목록 권한(drive.readonly 등)을 요청하지 않는다.
-   - 접근 권한의 근거는 항상 연결된 Google 세션 + Drive 가 돌려준 파일 소유 정보다.
+   - 접근 권한의 근거는 연결된 Google 세션 + Drive 가 돌려준 **소유 정보**다.
+     소유 정보가 없거나 확인되지 않으면 허용하지 않는다(fail-closed).
      파일 안에 적힌 사용자 ID/이메일은 권한 근거로 쓰지 않는다(계약 단계에서 거부).
    - 액세스 토큰은 이 모듈의 메모리 클로저에만 둔다. 어떤 브라우저 저장소나 쿠키에도 기록하지 않는다.
    - 기존 B67/Claw Drive 커넥터를 고객 개인 Drive 권위로 재사용하지 않는다.
@@ -31,7 +32,10 @@
   var SCOPE_DRIVE_FILE = "https://www.googleapis.com/auth/drive.file";
   var DEFAULT_SCOPES = [SCOPE_DRIVE_FILE];
   var LIST_FIELDS = "nextPageToken, files(id,name,mimeType,size,trashed,modifiedTime,owners,capabilities)";
+  var FILE_FIELDS = "id,name,mimeType,size,trashed,modifiedTime,owners,capabilities";
   var MAX_LIST_PAGE_SIZE = 100;
+  var MAX_LIST_PAGES = 10;
+  var MAX_NAME_RECHECKS = 2;
   var EXPIRY_SKEW_MS = 30 * 1000;
 
   function utf8Bytes(text) {
@@ -103,6 +107,29 @@
     return pairs.join("&");
   }
 
+  function escapeDriveQueryValue(value) {
+    return String(value).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+  }
+
+  /* 소유권 판정: 소유 정보가 없거나 확인되지 않으면 허용하지 않는다. */
+  function ownershipOf(file) {
+    if (!file || typeof file !== "object" || typeof file.id !== "string" || !file.id) return "invalid";
+    if (file.trashed === true) return "trashed";
+    if (!Array.isArray(file.owners) || file.owners.length === 0) return "unverified";
+    var mine = file.owners.some(function (owner) { return owner && owner.me === true; });
+    if (!mine) return "foreign";
+    if (file.capabilities && file.capabilities.canDownload === false) return "not_downloadable";
+    return "owned";
+  }
+
+  var OWNERSHIP_CODES = {
+    invalid: "invalid_response",
+    trashed: "drive_file_trashed",
+    unverified: "drive_file_ownership_unverified",
+    foreign: "drive_file_not_owned_by_connected_account",
+    not_downloadable: "drive_file_not_downloadable"
+  };
+
   function create(options) {
     var config = options || {};
     var clientId = typeof config.clientId === "string" ? config.clientId.trim() : "";
@@ -120,14 +147,17 @@
       gapiLoader: config.gapiLoader || null
     };
 
-    /* 토큰은 이 클로저 안에만 존재한다. 어떤 저장소에도 기록하지 않는다. */
+    /* 토큰은 이 클로저 안에만 존재한다. 어떤 저장소에도 기록하지 않는다.
+       epoch 는 계정 전환·로그아웃 시 증가해, 이전 세션의 in-flight 응답이
+       새 owner 의 편집기나 Drive 상태를 갱신하지 못하게 막는다. */
     var session = {
       connected: false,
       accessToken: "",
       scopes: [],
       expiresAt: 0,
       connectedAt: null,
-      lastErrorCode: null
+      lastErrorCode: null,
+      epoch: 0
     };
 
     function googleObject() {
@@ -142,6 +172,10 @@
       return Boolean(clientId);
     }
 
+    function pickerReady() {
+      return Boolean(clientId && appId && developerKey);
+    }
+
     function notConfigured() {
       return { ok: false, code: "drive_not_configured", message: "Google Drive 연결 설정(클라이언트 ID)이 준비되지 않았습니다." };
     }
@@ -153,18 +187,9 @@
         expiresAt: session.expiresAt,
         expired: session.connected === true && session.expiresAt <= deps.now() + EXPIRY_SKEW_MS,
         connectedAt: session.connectedAt,
-        lastErrorCode: session.lastErrorCode
+        lastErrorCode: session.lastErrorCode,
+        epoch: session.epoch
       };
-    }
-
-    function requireToken() {
-      if (!isConfigured()) return { ok: false, code: "drive_not_configured" };
-      if (session.connected !== true || !session.accessToken) return { ok: false, code: "drive_not_connected" };
-      if (session.expiresAt <= deps.now() + EXPIRY_SKEW_MS) {
-        clearSession("drive_token_expired");
-        return { ok: false, code: "drive_token_expired" };
-      }
-      return { ok: true, token: session.accessToken };
     }
 
     function clearSession(reasonCode) {
@@ -174,6 +199,21 @@
       session.expiresAt = 0;
       session.connectedAt = null;
       session.lastErrorCode = typeof reasonCode === "string" ? reasonCode : null;
+      session.epoch += 1;
+    }
+
+    function stale(epoch) {
+      return session.epoch !== epoch;
+    }
+
+    function requireToken() {
+      if (!isConfigured()) return { ok: false, code: "drive_not_configured" };
+      if (session.connected !== true || !session.accessToken) return { ok: false, code: "drive_not_connected" };
+      if (session.expiresAt <= deps.now() + EXPIRY_SKEW_MS) {
+        clearSession("drive_token_expired");
+        return { ok: false, code: "drive_token_expired" };
+      }
+      return { ok: true, token: session.accessToken, epoch: session.epoch };
     }
 
     async function ensureGis() {
@@ -221,6 +261,8 @@
                 }
                 var lifetime = Number(response.expires_in);
                 var expiresAt = deps.now() + (Number.isFinite(lifetime) && lifetime > 0 ? lifetime * 1000 : 3600 * 1000);
+                /* 새 세션은 이전 세션의 in-flight 작업을 무효화한다. */
+                session.epoch += 1;
                 session.connected = true;
                 session.accessToken = String(response.access_token);
                 session.scopes = String(response.scope || scopes.join(" ")).split(/\s+/).filter(Boolean);
@@ -234,9 +276,8 @@
             resolve({ ok: false, code: "gis_unavailable", message: "Google 로그인 스크립트를 불러오지 못했습니다." });
             return;
           }
-          var request = prompt ? { prompt: prompt } : {};
           try {
-            client.requestAccessToken(request);
+            client.requestAccessToken(prompt ? { prompt: prompt } : {});
           } catch (err) {
             if (!settled) {
               settled = true;
@@ -249,15 +290,17 @@
       });
     }
 
-    /* ── 연결 해제: 토큰 폐기 + 메모리 세션 완전 삭제(계정 전환 격리) ── */
-    async function disconnect() {
+    /* ── 연결 해제: 토큰 폐기 + 메모리 세션 완전 삭제(계정 전환 격리) ──
+       B66 로그아웃/계정 전환에서도 같은 경로를 쓴다. */
+    async function disconnect(options) {
+      var opts = options || {};
       var token = session.accessToken;
       var wasConnected = session.connected === true;
-      clearSession(null);
-      if (!token || !deps.fetchImpl) return { ok: true, code: "signed_out", revoked: false };
+      clearSession(typeof opts.reason === "string" ? opts.reason : null);
+      if (!token || !deps.fetchImpl) return { ok: true, code: "signed_out", revoked: false, wasConnected: wasConnected };
       try {
         await deps.fetchImpl(DRIVE_REVOKE_ENDPOINT + "?token=" + encodeURIComponent(token), { method: "POST" });
-        return { ok: true, code: "signed_out", revoked: true };
+        return { ok: true, code: "signed_out", revoked: true, wasConnected: wasConnected };
       } catch (err) {
         /* 폐기 실패해도 로컬 세션은 이미 지워졌다. 다음 호출은 drive_not_connected 다. */
         return { ok: true, code: "signed_out", revoked: false, wasConnected: wasConnected };
@@ -283,74 +326,180 @@
       return { code: fallbackCode, status: response.status, message: message };
     }
 
-    /* ── 목록: 앱이 만들었거나 사용자가 선택한 파일 범위에서만 조회한다 ── */
-    async function listQuoteFiles(options) {
-      var guard = requireToken();
-      if (!guard.ok) return Object.assign({ ok: false, files: [] }, guard);
-      var opts = options || {};
-      var pageSize = Math.min(Math.max(Number(opts.pageSize) || 20, 1), MAX_LIST_PAGE_SIZE);
-      var query = "trashed = false and (mimeType = 'application/json' or mimeType = 'application/pdf')";
-      var url = DRIVE_FILES_ENDPOINT + "?" + encodeQuery({
-        q: query,
-        fields: LIST_FIELDS,
-        pageSize: pageSize,
-        orderBy: "modifiedTime desc"
+    function sessionChanged() {
+      return { ok: false, code: "drive_session_changed", message: "Google 계정 연결이 변경되어 작업을 중단했습니다." };
+    }
+
+    /* ── 단일 파일 소유·권한 검증 ── */
+    async function verifyOwnedFile(fileId, guard) {
+      var id = typeof fileId === "string" ? fileId.trim() : "";
+      if (!id) return { ok: false, code: "invalid_file_id" };
+      var url = DRIVE_FILES_ENDPOINT + "/" + encodeURIComponent(id) + "?" + encodeQuery({
+        fields: FILE_FIELDS,
+        supportsAllDrives: false
       });
       var response;
       try {
         response = await driveFetch(url, { method: "GET" }, guard.token);
       } catch (err) {
-        return { ok: false, code: "network_error", files: [] };
+        return { ok: false, code: "network_error" };
       }
       if (response.status === 401) {
         clearSession("drive_token_expired");
-        return { ok: false, code: "drive_token_expired", files: [] };
+        return { ok: false, code: "drive_token_expired" };
+      }
+      if (response.status === 404 || response.status === 403) {
+        return {
+          ok: false,
+          code: response.status === 404 ? "drive_file_not_found" : "drive_file_access_denied",
+          message: "선택한 파일을 이 Google 계정으로 열 수 없습니다."
+        };
       }
       if (!response.ok) {
-        var failure = await readError(response, "drive_list_failed");
-        return { ok: false, code: failure.code, status: failure.status, message: failure.message, files: [] };
+        var failure = await readError(response, "drive_metadata_failed");
+        return { ok: false, code: failure.code, status: failure.status, message: failure.message };
       }
-      var data = null;
+      var meta = null;
       try {
-        data = await response.json();
+        meta = await response.json();
       } catch (err) {
-        return { ok: false, code: "invalid_response", files: [] };
+        return { ok: false, code: "invalid_response" };
       }
-      var files = Array.isArray(data && data.files) ? data.files : [];
-      /* 다른 계정이 공유하지 않은 파일은 Drive 가 애초에 돌려주지 않는다.
-         그래도 owners.me 로 한 번 더 확인해 소유하지 않은 파일은 걸러낸다. */
-      var visible = files.filter(function (file) {
-        if (!file || typeof file.id !== "string" || !file.id) return false;
-        if (file.trashed === true) return false;
-        if (Array.isArray(file.owners) && file.owners.length) {
-          return file.owners.some(function (owner) { return owner && owner.me === true; });
-        }
-        return true;
-      }).map(function (file) {
+      var ownership = ownershipOf(meta);
+      if (ownership !== "owned") {
         return {
+          ok: false,
+          code: OWNERSHIP_CODES[ownership] || "drive_file_ownership_unverified",
+          ownership: ownership,
+          message: ownership === "unverified"
+            ? "이 파일의 소유 정보를 확인할 수 없어 열지 않았습니다."
+            : "이 Google 계정이 소유한 파일만 사용할 수 있습니다."
+        };
+      }
+      return { ok: true, meta: meta };
+    }
+
+    /* ── 목록: 앱이 만들었거나 사용자가 선택한 파일 범위에서만, 페이지 전체를 조회한다 ── */
+    async function listQuoteFiles(options) {
+      var guard = requireToken();
+      if (!guard.ok) return Object.assign({ ok: false, files: [], truncated: false }, guard);
+      var opts = options || {};
+      var pageSize = Math.min(Math.max(Number(opts.pageSize) || 20, 1), MAX_LIST_PAGE_SIZE);
+      var maxPages = Math.min(Math.max(Number(opts.maxPages) || MAX_LIST_PAGES, 1), MAX_LIST_PAGES);
+      var query = "trashed = false and (mimeType = 'application/json' or mimeType = 'application/pdf')";
+
+      var collected = [];
+      var pageToken = null;
+      var pages = 0;
+
+      while (pages < maxPages) {
+        var url = DRIVE_FILES_ENDPOINT + "?" + encodeQuery({
+          q: query,
+          fields: LIST_FIELDS,
+          pageSize: pageSize,
+          orderBy: "modifiedTime desc",
+          pageToken: pageToken
+        });
+        var response;
+        try {
+          response = await driveFetch(url, { method: "GET" }, guard.token);
+        } catch (err) {
+          return { ok: false, code: "network_error", files: [], truncated: false };
+        }
+        if (stale(guard.epoch)) return Object.assign(sessionChanged(), { files: [], truncated: false });
+        if (response.status === 401) {
+          clearSession("drive_token_expired");
+          return { ok: false, code: "drive_token_expired", files: [], truncated: false };
+        }
+        if (!response.ok) {
+          var failure = await readError(response, "drive_list_failed");
+          return { ok: false, code: failure.code, status: failure.status, message: failure.message, files: [], truncated: false };
+        }
+        var data = null;
+        try {
+          data = await response.json();
+        } catch (err) {
+          return { ok: false, code: "invalid_response", files: [], truncated: false };
+        }
+        pages += 1;
+        var batch = Array.isArray(data && data.files) ? data.files : [];
+        batch.forEach(function (file) { collected.push(file); });
+        pageToken = data && typeof data.nextPageToken === "string" && data.nextPageToken ? data.nextPageToken : null;
+        if (!pageToken) break;
+      }
+      var truncated = Boolean(pageToken);
+
+      var visible = [];
+      var withheld = 0;
+      collected.forEach(function (file) {
+        if (ownershipOf(file) !== "owned") { withheld += 1; return; }
+        visible.push({
           id: file.id,
           name: typeof file.name === "string" ? file.name : "",
           mimeType: typeof file.mimeType === "string" ? file.mimeType : "",
           size: Number(file.size) || 0,
           modifiedTime: typeof file.modifiedTime === "string" ? file.modifiedTime : null
-        };
+        });
       });
-      return { ok: true, files: visible };
+      return { ok: true, files: visible, pages: pages, truncated: truncated, withheld: withheld };
     }
 
-    async function existingNames() {
-      var listed = await listQuoteFiles({ pageSize: MAX_LIST_PAGE_SIZE });
-      if (!listed.ok) return listed;
-      return { ok: true, names: listed.files.map(function (file) { return file.name; }) };
+    /* ── 이름 점검 ──
+       조회 실패는 fail-open 하지 않는다. 이름 충돌 검사가 불가능하면 저장을 거부한다. */
+    async function existingNames(options) {
+      var listed = await listQuoteFiles(options);
+      if (!listed.ok) return { ok: false, code: listed.code, truncated: false, names: [] };
+      return {
+        ok: true,
+        names: listed.files.map(function (file) { return file.name; }),
+        truncated: listed.truncated === true
+      };
     }
 
-    /* ── Picker: 사용자가 직접 파일을 고른다. 없으면 목록 기반 선택으로 대체한다 ── */
+    async function nameTaken(name, guard) {
+      var query = "trashed = false and name = '" + escapeDriveQueryValue(name) + "'";
+      var url = DRIVE_FILES_ENDPOINT + "?" + encodeQuery({
+        q: query,
+        fields: "files(id,name)",
+        pageSize: 5
+      });
+      var response;
+      try {
+        response = await driveFetch(url, { method: "GET" }, guard.token);
+      } catch (err) {
+        return { ok: false, code: "network_error" };
+      }
+      if (stale(guard.epoch)) return sessionChanged();
+      if (response.status === 401) {
+        clearSession("drive_token_expired");
+        return { ok: false, code: "drive_token_expired" };
+      }
+      if (!response.ok) {
+        var failure = await readError(response, "drive_list_failed");
+        return { ok: false, code: failure.code, status: failure.status, message: failure.message };
+      }
+      var data = null;
+      try {
+        data = await response.json();
+      } catch (err) {
+        return { ok: false, code: "invalid_response" };
+      }
+      var files = Array.isArray(data && data.files) ? data.files : [];
+      return { ok: true, taken: files.some(function (file) { return file && file.name === name; }) };
+    }
+
+    /* ── Picker: 사용자가 직접 파일을 고른다 ── */
     function openPicker(options) {
       var opts = options || {};
       var guard = requireToken();
       if (!guard.ok) return Promise.resolve(Object.assign({ ok: false, picked: [] }, guard));
-      if (!appId || !developerKey) {
-        return Promise.resolve({ ok: false, code: "picker_unavailable", picked: [] });
+      if (!pickerReady()) {
+        return Promise.resolve({
+          ok: false,
+          code: "picker_unavailable",
+          picked: [],
+          message: "파일 선택기 설정이 준비되지 않았습니다."
+        });
       }
       var loader = deps.gapiLoader || (typeof deps.loadScript === "function"
         ? function () { return deps.loadScript(GAPI_SRC); }
@@ -411,70 +560,30 @@
       });
     }
 
-    /* ── 파일 읽기: 소유 검증 → 크기 → 계약 검증 → QuoteCore 재계산 ── */
+    /* ── 파일 읽기: 소유 검증 → 크기 → 계약 검증 → QuoteCore 재계산 → 템플릿 권위 ── */
     async function openQuoteFile(fileId, options) {
       var opts = options || {};
       var guard = requireToken();
       if (!guard.ok) return Object.assign({ ok: false }, guard);
-      var id = typeof fileId === "string" ? fileId.trim() : "";
-      if (!id) return { ok: false, code: "invalid_file_id" };
 
-      var metaUrl = DRIVE_FILES_ENDPOINT + "/" + encodeURIComponent(id) + "?" + encodeQuery({
-        fields: "id,name,mimeType,size,trashed,modifiedTime,owners,capabilities",
-        supportsAllDrives: false
-      });
-      var metaResponse;
-      try {
-        metaResponse = await driveFetch(metaUrl, { method: "GET" }, guard.token);
-      } catch (err) {
-        return { ok: false, code: "network_error" };
-      }
-      if (metaResponse.status === 401) {
-        clearSession("drive_token_expired");
-        return { ok: false, code: "drive_token_expired" };
-      }
-      if (metaResponse.status === 404 || metaResponse.status === 403) {
-        /* 다른 Google 계정의 파일이거나 권한이 없다. 내용을 추측하지 않고 거부한다. */
-        return {
-          ok: false,
-          code: metaResponse.status === 404 ? "drive_file_not_found" : "drive_file_access_denied",
-          message: "선택한 파일을 이 Google 계정으로 열 수 없습니다."
-        };
-      }
-      if (!metaResponse.ok) {
-        var metaFailure = await readError(metaResponse, "drive_metadata_failed");
-        return { ok: false, code: metaFailure.code, status: metaFailure.status, message: metaFailure.message };
-      }
-      var meta = null;
-      try {
-        meta = await metaResponse.json();
-      } catch (err) {
-        return { ok: false, code: "invalid_response" };
-      }
-      if (!meta || typeof meta.id !== "string") return { ok: false, code: "invalid_response" };
-      if (meta.trashed === true) return { ok: false, code: "drive_file_trashed" };
+      var verified = await verifyOwnedFile(fileId, guard);
+      if (stale(guard.epoch)) return sessionChanged();
+      if (!verified.ok) return verified;
+      var meta = verified.meta;
 
-      /* 소유 검증: 연결된 계정이 소유하지 않은 파일은 열지 않는다. */
-      if (Array.isArray(meta.owners) && meta.owners.length &&
-          !meta.owners.some(function (owner) { return owner && owner.me === true; })) {
-        return {
-          ok: false,
-          code: "drive_file_not_owned_by_connected_account",
-          message: "이 Google 계정이 소유한 파일만 불러올 수 있습니다."
-        };
-      }
       var size = Number(meta.size);
       if (Number.isFinite(size) && size > Contract.MAX_JSON_BYTES) {
         return { ok: false, code: "json_too_large", message: "견적 JSON 파일이 지원 크기를 초과했습니다." };
       }
 
-      var mediaUrl = DRIVE_FILES_ENDPOINT + "/" + encodeURIComponent(id) + "?alt=media";
+      var mediaUrl = DRIVE_FILES_ENDPOINT + "/" + encodeURIComponent(meta.id) + "?alt=media";
       var mediaResponse;
       try {
         mediaResponse = await driveFetch(mediaUrl, { method: "GET" }, guard.token);
       } catch (err) {
         return { ok: false, code: "network_error" };
       }
+      if (stale(guard.epoch)) return sessionChanged();
       if (mediaResponse.status === 401) {
         clearSession("drive_token_expired");
         return { ok: false, code: "drive_token_expired" };
@@ -489,15 +598,32 @@
       } catch (err) {
         return { ok: false, code: "drive_download_failed" };
       }
+      if (stale(guard.epoch)) return sessionChanged();
 
       var parsed = Contract.readPackage(text, {
         byteLength: Number.isFinite(size) ? size : undefined
       });
       if (!parsed.ok) {
-        return { ok: false, code: parsed.code, message: "선택한 파일을 견적 데이터로 읽을 수 없습니다. (" + parsed.code + ")" };
+        return {
+          ok: false,
+          code: parsed.code,
+          lost: parsed.lost,
+          message: "선택한 파일을 견적 데이터로 읽을 수 없습니다. (" + parsed.code + ")"
+        };
       }
-      var imported = Contract.importPackage(parsed.package, { templates: opts.templates });
-      if (!imported.ok) return { ok: false, code: imported.code };
+      var imported = Contract.importPackage(parsed.package, {
+        templates: opts.templates,
+        requireApprovedTemplate: opts.requireApprovedTemplate
+      });
+      if (!imported.ok) {
+        return {
+          ok: false,
+          code: imported.code,
+          template: imported.template,
+          warnings: imported.warnings,
+          message: imported.message || "이 견적을 편집기로 불러올 수 없습니다. (" + imported.code + ")"
+        };
+      }
 
       return {
         ok: true,
@@ -508,6 +634,7 @@
           modifiedTime: typeof meta.modifiedTime === "string" ? meta.modifiedTime : null
         },
         packageId: parsed.package.packageId,
+        contentFingerprint: parsed.package.contentFingerprint,
         draft: imported.draft,
         totals: imported.totals,
         template: imported.template,
@@ -519,7 +646,7 @@
 
     /* ── 업로드: 항상 새 파일 생성. 기존 파일 id 를 덮어쓰지 않는다 ── */
     async function uploadFile(options) {
-      var guard = requireToken();
+      var guard = options && options.guard ? options.guard : requireToken();
       if (!guard.ok) return Object.assign({ ok: false }, guard);
       var bytes = normalizeBytes(options && options.bytes);
       if (!bytes) return { ok: false, code: "upload_bytes_missing" };
@@ -527,13 +654,11 @@
       var mimeType = typeof options.mimeType === "string" ? options.mimeType : "";
       if (!name || !mimeType) return { ok: false, code: "upload_metadata_missing" };
       if (Array.isArray(options.takenNames) && options.takenNames.indexOf(name) !== -1) {
-        /* 덮어쓰기 방지: 계획한 이름이 이미 있으면 만들지 않는다. */
         return { ok: false, code: "duplicate_name_conflict", message: "같은 이름의 파일이 있어 덮어쓰지 않았습니다." };
       }
 
       var boundary = "b66-drive-boundary-0123456789";
-      var metadata = { name: name, mimeType: mimeType };
-      var body = multipartBody(metadata, bytes, mimeType, boundary);
+      var body = multipartBody({ name: name, mimeType: mimeType }, bytes, mimeType, boundary);
       var response;
       try {
         response = await driveFetch(
@@ -548,6 +673,7 @@
       } catch (err) {
         return { ok: false, code: "network_error", message: "Google Drive 업로드 중 연결이 끊겼습니다." };
       }
+      if (stale(guard.epoch)) return sessionChanged();
       if (response.status === 401) {
         clearSession("drive_token_expired");
         return { ok: false, code: "drive_token_expired" };
@@ -566,11 +692,44 @@
       return { ok: true, id: data.id, name: typeof data.name === "string" ? data.name : name, mimeType: mimeType };
     }
 
-    /* ── 한 쌍 저장: PDF 바이트를 먼저 검증해 불필요한 외톨이 파일을 줄인다 ── */
+    /* ── 저장 준비: 이름 점검을 fail-closed 로 수행하고 이름을 확정한다 ── */
+    async function planNames(guard, draft, baseName) {
+      var listing = await existingNames();
+      if (stale(guard.epoch)) return sessionChanged();
+      if (!listing.ok) {
+        return { ok: false, code: "naming_check_unavailable", message: "기존 파일 이름을 확인하지 못해 저장을 시작하지 않았습니다." };
+      }
+      if (listing.truncated) {
+        return { ok: false, code: "naming_check_incomplete", message: "기존 파일 목록을 모두 확인하지 못해 저장을 시작하지 않았습니다." };
+      }
+      var taken = listing.names.slice();
+      var planned = Contract.planUniqueFileNames({ draft: draft, baseName: baseName, existingNames: taken });
+      if (!planned.ok) return planned;
+
+      /* 업로드 직전에 계획한 이름을 다시 확인한다(그 사이 생성된 파일 대비). */
+      for (var attempt = 0; attempt < MAX_NAME_RECHECKS; attempt += 1) {
+        var jsonCheck = await nameTaken(planned.json, guard);
+        if (!jsonCheck.ok) {
+          return { ok: false, code: "naming_check_unavailable", message: "파일 이름을 확인하지 못해 저장을 시작하지 않았습니다." };
+        }
+        var pdfCheck = await nameTaken(planned.pdf, guard);
+        if (!pdfCheck.ok) {
+          return { ok: false, code: "naming_check_unavailable", message: "파일 이름을 확인하지 못해 저장을 시작하지 않았습니다." };
+        }
+        if (!jsonCheck.taken && !pdfCheck.taken) return planned;
+        taken = taken.concat([planned.json, planned.pdf]);
+        var replanned = Contract.planUniqueFileNames({ draft: draft, baseName: baseName, existingNames: taken });
+        if (!replanned.ok) return replanned;
+        planned = replanned;
+      }
+      return { ok: false, code: "duplicate_name_conflict", message: "같은 이름의 파일이 있어 저장하지 않았습니다." };
+    }
+
+    /* ── 한 쌍 저장 ── */
     async function savePair(options) {
       var opts = options || {};
       var guard = requireToken();
-      if (!guard.ok) return Object.assign({ ok: false, status: "failed", partial: false }, guard);
+      if (!guard.ok) return Object.assign({ ok: false, status: "failed", partial: false, reported: true }, guard);
 
       var built = Contract.buildPackage({
         draft: opts.draft,
@@ -580,7 +739,6 @@
       });
       if (!built.ok) {
         return Contract.buildUploadOutcome({
-          packageId: null,
           json: { ok: false, code: built.code },
           pdf: { ok: false, code: built.code }
         });
@@ -596,39 +754,45 @@
         });
       }
 
-      var names = await existingNames();
-      var taken = names.ok ? names.names : [];
-      var planned = Contract.planUniqueFileNames({
-        draft: built.package.quote,
-        baseName: opts.baseName,
-        existingNames: taken
-      });
+      var planned = await planNames(guard, built.package.quote, opts.baseName);
+      if (stale(guard.epoch)) return Object.assign(sessionChanged(), { status: "failed", partial: false });
       if (!planned.ok) {
         return Contract.buildUploadOutcome({
           packageId: built.package.packageId,
-          json: { ok: false, code: planned.code },
-          pdf: { ok: false, code: planned.code }
+          json: { ok: false, code: planned.code, message: planned.message },
+          pdf: { ok: false, code: planned.code, message: planned.message }
         });
       }
 
-      var jsonText = Contract.serializePackage(built.package);
-      var jsonBytes = utf8Bytes(jsonText);
+      var pair = Contract.buildPairBinding({
+        packageId: built.package.packageId,
+        createdAt: built.package.createdAt,
+        baseName: planned.baseName,
+        renamed: planned.renamed,
+        jsonName: planned.json,
+        pdfName: planned.pdf,
+        draftFingerprint: built.package.contentFingerprint,
+        pdfFingerprint: Contract.pdfFingerprint(opts.pdfBytes)
+      });
 
       var jsonResult = await uploadFile({
+        guard: guard,
         name: planned.json,
         mimeType: Contract.JSON_MIME,
-        bytes: jsonBytes,
-        takenNames: taken
+        bytes: utf8Bytes(Contract.serializePackage(built.package))
       });
+      if (stale(guard.epoch)) return Object.assign(sessionChanged(), { status: "failed", partial: false });
       var pdfResult = await uploadFile({
+        guard: guard,
         name: planned.pdf,
         mimeType: Contract.PDF_MIME,
-        bytes: normalizeBytes(opts.pdfBytes),
-        takenNames: taken.concat(jsonResult.ok ? [planned.json] : [])
+        bytes: normalizeBytes(opts.pdfBytes)
       });
+      if (stale(guard.epoch)) return Object.assign(sessionChanged(), { status: "failed", partial: false });
 
       var outcome = Contract.buildUploadOutcome({
         packageId: built.package.packageId,
+        pair: pair,
         json: jsonResult,
         pdf: pdfResult
       });
@@ -637,62 +801,92 @@
       return outcome;
     }
 
-    /* ── 부분 실패 복구: 없는 쪽만 다시 올린다(같은 packageId 재사용) ── */
+    /* ── 부분 실패 복구: 원래 쌍을 그대로 유지한 채 없는 쪽만 올린다 ──
+       - 이름을 재계획하지 않는다(고정된 원래 이름을 쓴다).
+       - 견적 내용이 바뀌었으면 이어서 저장하지 않고 새 쌍을 요구한다.
+       - 유지된 파일이 아직 존재하고 소유되어 있는지 확인한 뒤에만 완료를 주장한다. */
     async function retryMissing(options) {
       var opts = options || {};
-      var outcome = opts.outcome;
-      if (!outcome || outcome.partial !== true || !outcome.missing) {
-        return { ok: false, code: "nothing_to_retry" };
-      }
-      var built = Contract.buildPackage({
+      var guard = requireToken();
+      if (!guard.ok) return { ok: false, code: guard.code };
+
+      var check = Contract.pairRetryGuard(opts.outcome, {
         draft: opts.draft,
         template: opts.template,
-        savedAt: opts.savedAt,
-        packageId: outcome.packageId || opts.packageId
+        pdfBytes: opts.pdfBytes
       });
-      if (!built.ok) return { ok: false, code: built.code };
+      if (!check.ok) return check;
+      var pair = check.pair;
+      var target = check.target;
 
-      var names = await existingNames();
-      var taken = names.ok ? names.names : [];
-      var planned = Contract.planUniqueFileNames({
-        draft: built.package.quote,
-        baseName: opts.baseName,
-        existingNames: taken
-      });
-      if (!planned.ok) return { ok: false, code: planned.code };
+      var keptId = target === "pdf"
+        ? (opts.outcome.json && opts.outcome.json.id)
+        : (opts.outcome.pdf && opts.outcome.pdf.id);
+      if (!keptId) {
+        return { ok: false, code: "kept_file_unavailable", message: "이미 저장된 파일을 확인할 수 없어 이어서 저장하지 않았습니다." };
+      }
+      var verified = await verifyOwnedFile(keptId, guard);
+      if (stale(guard.epoch)) return sessionChanged();
+      if (!verified.ok) {
+        return {
+          ok: false,
+          code: "kept_file_unavailable",
+          detail: verified.code,
+          message: "이미 저장된 파일이 삭제되었거나 소유 확인에 실패해 이어서 저장하지 않았습니다."
+        };
+      }
 
-      if (outcome.missing === "json") {
-        var jsonResult = await uploadFile({
-          name: planned.json,
+      var plannedName = target === "json" ? pair.jsonName : pair.pdfName;
+      if (!plannedName) return { ok: false, code: "pending_pair_missing" };
+      var takenCheck = await nameTaken(plannedName, guard);
+      if (stale(guard.epoch)) return sessionChanged();
+      if (!takenCheck.ok) {
+        return { ok: false, code: "naming_check_unavailable", message: "파일 이름을 확인하지 못해 이어서 저장하지 않았습니다." };
+      }
+      if (takenCheck.taken) {
+        /* 이름을 재계획하면 원래 쌍과 다른 이름이 되어 잘못 묶일 수 있다. 새 저장을 요구한다. */
+        return {
+          ok: false,
+          code: "duplicate_name_conflict",
+          message: "같은 이름의 파일이 이미 있어 이어서 저장하지 않았습니다. 새 견적서로 저장해 주세요."
+        };
+      }
+
+      var missingResult;
+      if (target === "json") {
+        var built = Contract.buildPackage({
+          draft: opts.draft,
+          template: opts.template,
+          savedAt: pair.createdAt,
+          packageId: pair.packageId
+        });
+        if (!built.ok) return { ok: false, code: built.code };
+        missingResult = await uploadFile({
+          guard: guard,
+          name: plannedName,
           mimeType: Contract.JSON_MIME,
-          bytes: utf8Bytes(Contract.serializePackage(built.package)),
-          takenNames: taken
+          bytes: utf8Bytes(Contract.serializePackage(built.package))
         });
-        return Contract.buildUploadOutcome({
-          packageId: built.package.packageId,
-          json: jsonResult,
-          pdf: { ok: true, id: outcome.pdf && outcome.pdf.id, name: outcome.pdf && outcome.pdf.name }
-        });
-      }
-      var pdfCheck = Contract.validatePdfBytes(opts.pdfBytes);
-      if (!pdfCheck.ok) {
-        return Contract.buildUploadOutcome({
-          packageId: built.package.packageId,
-          json: { ok: true, id: outcome.json && outcome.json.id, name: outcome.json && outcome.json.name },
-          pdf: { ok: false, code: pdfCheck.code }
+      } else {
+        missingResult = await uploadFile({
+          guard: guard,
+          name: plannedName,
+          mimeType: Contract.PDF_MIME,
+          bytes: normalizeBytes(opts.pdfBytes)
         });
       }
-      var pdfResult = await uploadFile({
-        name: planned.pdf,
-        mimeType: Contract.PDF_MIME,
-        bytes: normalizeBytes(opts.pdfBytes),
-        takenNames: taken
+      if (stale(guard.epoch)) return sessionChanged();
+
+      var keptFile = { ok: true, id: keptId, name: target === "pdf" ? pair.jsonName : pair.pdfName };
+      var outcome = Contract.buildUploadOutcome({
+        packageId: pair.packageId,
+        pair: pair,
+        json: target === "json" ? missingResult : keptFile,
+        pdf: target === "pdf" ? missingResult : keptFile
       });
-      return Contract.buildUploadOutcome({
-        packageId: built.package.packageId,
-        json: { ok: true, id: outcome.json && outcome.json.id, name: outcome.json && outcome.json.name },
-        pdf: pdfResult
-      });
+      outcome.baseName = pair.baseName;
+      outcome.renamed = pair.renamed;
+      return outcome;
     }
 
     return Object.freeze({
@@ -701,11 +895,15 @@
       GAPI_SRC: GAPI_SRC,
       DRIVE_FILES_ENDPOINT: DRIVE_FILES_ENDPOINT,
       DRIVE_UPLOAD_ENDPOINT: DRIVE_UPLOAD_ENDPOINT,
+      MAX_LIST_PAGES: MAX_LIST_PAGES,
+      ownershipOf: ownershipOf,
       isConfigured: isConfigured,
+      pickerReady: pickerReady,
       session: publicSession,
       connect: connect,
       disconnect: disconnect,
       listQuoteFiles: listQuoteFiles,
+      verifyOwnedFile: verifyOwnedFile,
       openPicker: openPicker,
       openQuoteFile: openQuoteFile,
       uploadFile: uploadFile,
@@ -719,6 +917,8 @@
     DEFAULT_SCOPES: DEFAULT_SCOPES.slice(),
     DRIVE_FILES_ENDPOINT: DRIVE_FILES_ENDPOINT,
     DRIVE_UPLOAD_ENDPOINT: DRIVE_UPLOAD_ENDPOINT,
+    MAX_LIST_PAGES: MAX_LIST_PAGES,
+    ownershipOf: ownershipOf,
     create: create
   });
 });

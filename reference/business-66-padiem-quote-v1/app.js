@@ -1790,6 +1790,40 @@
     getDraft: () => cloneDraft(draft),
     replaceDraft,
     certifiedPdfBytes: certifiedPdfBytesForStorage,
+    /* #3871: 불러온 견적의 템플릿 권위를 현재 인증된 승인 Skill 목록으로 확인한다.
+       목록에 없는 Skill 을 다른 양식으로 자동 대체하지 않는다. */
+    listApprovedSkills: () => {
+      const out = [];
+      const add = (savedSkillId, skill, profile) => {
+        if (!savedSkillId || !skill || !profile) return;
+        if (out.some((entry) => entry.savedSkillId === savedSkillId)) return;
+        out.push({
+          savedSkillId: savedSkillId,
+          fingerprint: skill.fingerprint || profile.fingerprint || null,
+          approved: skill.approved === true,
+          active: true,
+          label: profile.name || null
+        });
+      };
+      try {
+        if (SavedSkill && Template && skillUiState.serverSkill && skillUiState.serverSavedSkillId) {
+          const skill = SavedSkill.normalizeSkill(skillUiState.serverSkill);
+          add(skillUiState.serverSavedSkillId, skill,
+            skill ? Template.normalizeTemplate(skill.internalTemplate) : null);
+        }
+      } catch (_) { /* 목록을 못 만들면 확인 불가로 남긴다 */ }
+      try {
+        if (SavedSkill && Template && SkillStore && typeof localStorage !== "undefined") {
+          const store = SkillStore.readStore(ownerGatedStorage());
+          const skills = Array.isArray(store && store.skills) ? store.skills : [];
+          skills.forEach((raw) => {
+            const skill = SavedSkill.normalizeSkill(raw);
+            add(skill && skill.id, skill, skill ? Template.normalizeTemplate(skill.internalTemplate) : null);
+          });
+        }
+      } catch (_) { /* 동일 */ }
+      return out;
+    },
     activeTemplateReference: () => {
       const profile = activeSkillProfile() || activeTemplateProfile();
       if (!profile) return null;

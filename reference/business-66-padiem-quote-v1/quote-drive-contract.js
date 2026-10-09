@@ -6,6 +6,8 @@
    - 저장된 합계는 어떤 경우에도 계산 권위가 아니다. 불러오면 항상 QuoteCore 가 다시 계산한다.
    - 파일 안의 사용자 ID/이메일/계정 값은 접근 권한의 근거로 쓰지 않는다(명시 거부).
    - 승인되지 않았거나 비활성인 템플릿/Skill 을 임의의 다른 것으로 대체하지 않는다.
+     템플릿 권위를 확인할 수 없으면 편집기에 적용하지 않는다.
+   - 무손실은 필드 단위로 증명한다. 편집 데이터가 하나라도 달라지면 저장도 불러오기도 거부한다.
    - 모델 호출은 0이다. Google Sheets 변환도 없다.
    DOM 없음. 브라우저/Node 양쪽에서 실행된다. */
 
@@ -46,10 +48,14 @@
 
   var ALLOWED_TOP_LEVEL_KEYS = [
     "kind", "contract", "schemaVersion", "packageId", "createdAt",
-    "quote", "template", "assets", "manifest", "totalsAuthority", "totals", "app"
+    "contentFingerprint", "quote", "template", "assets", "manifest",
+    "totalsAuthority", "totals", "app"
   ];
 
   var UNSAFE_JSON_KEYS = ["__proto__", "constructor", "prototype"];
+
+  var ITEM_FIELDS = ["id", "name", "qty", "unitPrice", "spec", "unit", "note"];
+  var DETAIL_ITEM_FIELDS = ["id", "name", "spec", "unit", "qty", "unitPrice", "note", "section"];
 
   function clone(value) {
     return JSON.parse(JSON.stringify(value));
@@ -78,8 +84,190 @@
     return SUPPORTED_SCHEMA_VERSIONS.indexOf(version) !== -1;
   }
 
-  /* ── 파일명 규칙 ──
-     Drive 파일명에서 쓸 수 없는 문자를 제거하고 길이를 제한한다. */
+  /* ── 결정적 직렬화 · 지문 ──
+     내용 지문은 견적 편집 데이터와 템플릿 참조 전체에 대해 계산한다.
+     부분 실패 재시도가 다른 내용을 같은 쌍으로 묶는 것을 막는 근거다. */
+  function stableStringify(value) {
+    if (value === null || typeof value !== "object") {
+      return JSON.stringify(value === undefined ? null : value);
+    }
+    if (Array.isArray(value)) return "[" + value.map(stableStringify).join(",") + "]";
+    var keys = Object.keys(value).sort();
+    return "{" + keys.map(function (key) {
+      return JSON.stringify(key) + ":" + stableStringify(value[key]);
+    }).join(",") + "}";
+  }
+
+  function fnv1a(text) {
+    var hash = 0x811c9dc5;
+    var source = String(text);
+    for (var index = 0; index < source.length; index += 1) {
+      hash ^= source.charCodeAt(index);
+      hash = Math.imul(hash, 0x01000193) >>> 0;
+    }
+    return ("0000000" + hash.toString(16)).slice(-8);
+  }
+
+  function fingerprintOf(value) {
+    return "fnv1a-" + fnv1a(stableStringify(value));
+  }
+
+  function normalizeBytesLike(bytes) {
+    if (bytes == null) return null;
+    if (bytes instanceof Uint8Array) return bytes;
+    if (typeof ArrayBuffer !== "undefined" && bytes instanceof ArrayBuffer) return new Uint8Array(bytes);
+    if (Array.isArray(bytes)) return new Uint8Array(bytes);
+    return null;
+  }
+
+  function pdfFingerprint(bytes) {
+    var data = normalizeBytesLike(bytes);
+    if (!data || !data.length) return null;
+    var parts = [];
+    for (var index = 0; index < data.length; index += 1) parts.push(data[index]);
+    return "fnv1a-" + fnv1a(parts.join(","));
+  }
+
+  /* ── 편집 데이터 필드 단위 무손실 검증 ──
+     QuoteCore 정규화가 보존해야 하는 편집 필드 전체를 나열하고
+     원본과 정규화 결과를 필드마다 비교한다. 하나라도 다르면 손실로 본다. */
+  function sameField(rawValue, normalizedValue) {
+    var rawEmpty = rawValue === undefined || rawValue === null || rawValue === "";
+    var normEmpty = normalizedValue === undefined || normalizedValue === null || normalizedValue === "";
+    if (rawEmpty || normEmpty) return rawEmpty && normEmpty;
+    if (typeof rawValue === "number" || typeof normalizedValue === "number") {
+      return Number(rawValue) === Number(normalizedValue);
+    }
+    return rawValue === normalizedValue;
+  }
+
+  function draftFieldPairs(rawDraft, normalized) {
+    var raw = isPlainObject(rawDraft) ? rawDraft : {};
+    var pairs = [];
+
+    var rawMeta = isPlainObject(raw.meta) ? raw.meta : {};
+    ["quoteNo", "issueDate", "validDays", "source", "projectName"].forEach(function (key) {
+      pairs.push({ path: "meta." + key, raw: rawMeta[key], normalized: normalized.meta[key] });
+    });
+
+    var rawSender = isPlainObject(raw.sender) ? raw.sender : {};
+    ["company", "rep", "contactPerson", "bizNo", "address", "phone", "email", "presetId"].forEach(function (key) {
+      pairs.push({ path: "sender." + key, raw: rawSender[key], normalized: normalized.sender[key] });
+    });
+
+    var rawRecipient = isPlainObject(raw.recipient) ? raw.recipient : {};
+    ["company", "person", "address", "email"].forEach(function (key) {
+      pairs.push({ path: "recipient." + key, raw: rawRecipient[key], normalized: normalized.recipient[key] });
+    });
+
+    var rawItems = Array.isArray(raw.items) ? raw.items : [];
+    if (rawItems.length !== normalized.items.length) {
+      pairs.push({ path: "items.length", raw: rawItems.length, normalized: normalized.items.length });
+    }
+    normalized.items.forEach(function (item, index) {
+      var rawItem = isPlainObject(rawItems[index]) ? rawItems[index] : {};
+      ITEM_FIELDS.forEach(function (key) {
+        pairs.push({ path: "items[" + index + "]." + key, raw: rawItem[key], normalized: item[key] });
+      });
+    });
+
+    var rawTax = isPlainObject(raw.tax) ? raw.tax : {};
+    pairs.push({ path: "tax.mode", raw: rawTax.mode, normalized: normalized.tax.mode });
+    pairs.push({ path: "tax.rate", raw: rawTax.rate, normalized: normalized.tax.rate });
+    pairs.push({ path: "memo", raw: raw.memo, normalized: normalized.memo });
+
+    var rawGroups = Array.isArray(raw.detailGroups) ? raw.detailGroups : [];
+    var normGroups = Array.isArray(normalized.detailGroups) ? normalized.detailGroups : [];
+    if (rawGroups.length !== normGroups.length) {
+      pairs.push({ path: "detailGroups.length", raw: rawGroups.length, normalized: normGroups.length });
+    }
+    normGroups.forEach(function (group, groupIndex) {
+      var rawGroup = isPlainObject(rawGroups[groupIndex]) ? rawGroups[groupIndex] : {};
+      ["id", "summaryItemId", "title"].forEach(function (key) {
+        pairs.push({
+          path: "detailGroups[" + groupIndex + "]." + key,
+          raw: rawGroup[key],
+          normalized: group[key]
+        });
+      });
+      var rawGroupItems = Array.isArray(rawGroup.items) ? rawGroup.items : [];
+      if (rawGroupItems.length !== group.items.length) {
+        pairs.push({
+          path: "detailGroups[" + groupIndex + "].items.length",
+          raw: rawGroupItems.length,
+          normalized: group.items.length
+        });
+      }
+      group.items.forEach(function (item, itemIndex) {
+        var rawItem = isPlainObject(rawGroupItems[itemIndex]) ? rawGroupItems[itemIndex] : {};
+        DETAIL_ITEM_FIELDS.forEach(function (key) {
+          pairs.push({
+            path: "detailGroups[" + groupIndex + "].items[" + itemIndex + "]." + key,
+            raw: rawItem[key],
+            normalized: item[key]
+          });
+        });
+      });
+    });
+
+    var rawPolicy = isPlainObject(raw.calculationPolicy) ? raw.calculationPolicy : null;
+    var normPolicy = normalized.calculationPolicy || null;
+    if (Boolean(rawPolicy) !== Boolean(normPolicy)) {
+      pairs.push({ path: "calculationPolicy", raw: rawPolicy, normalized: normPolicy });
+    } else if (rawPolicy && normPolicy) {
+      var rawRounding = isPlainObject(rawPolicy.grandRounding) ? rawPolicy.grandRounding : {};
+      var normRounding = isPlainObject(normPolicy.grandRounding) ? normPolicy.grandRounding : {};
+      pairs.push({
+        path: "calculationPolicy.grandRounding.mode",
+        raw: rawRounding.mode,
+        normalized: normRounding.mode
+      });
+      pairs.push({
+        path: "calculationPolicy.grandRounding.unit",
+        raw: rawRounding.unit,
+        normalized: normRounding.unit
+      });
+    }
+
+    return pairs;
+  }
+
+  /* 저장 전과 불러오기 후 모두에서 호출한다. */
+  function assertLosslessDraft(rawDraft) {
+    var normalized = Core.normalizeDraft(rawDraft);
+    if (!normalized) return { lossless: false, lost: ["draft"], draft: null };
+    var lost = [];
+    draftFieldPairs(rawDraft, normalized).forEach(function (pair) {
+      if (!sameField(pair.raw, pair.normalized)) lost.push(pair.path);
+    });
+    return { lossless: lost.length === 0, lost: lost, draft: normalized };
+  }
+
+  /* 편집 데이터 전체를 필드 단위로 재구성했을 때의 정규형(재시도 쌍 고정 근거). */
+  function canonicalQuote(rawDraft) {
+    var normalized = Core.normalizeDraft(rawDraft);
+    if (!normalized) return null;
+    var canonical = {};
+    draftFieldPairs(normalized, normalized).forEach(function (pair) {
+      canonical[pair.path] = pair.normalized === undefined ? null : pair.normalized;
+    });
+    return canonical;
+  }
+
+  /* 템플릿 권위에 해당하는 값만 지문에 넣는다. 표시용 label 은 제외한다. */
+  function templateIdentity(template) {
+    var ref = normalizeTemplateReference(template);
+    if (!ref) return null;
+    return { savedSkillId: ref.savedSkillId, fingerprint: ref.fingerprint || null };
+  }
+
+  function contentFingerprint(draft, template) {
+    var canonical = canonicalQuote(draft);
+    if (!canonical) return null;
+    return fingerprintOf({ quote: canonical, template: templateIdentity(template) });
+  }
+
+  /* ── 파일명 규칙 ── */
   function sanitizeFileNamePart(raw, fallback) {
     var text = String(raw == null ? "" : raw)
       .replace(/[\u0000-\u001f\u007f]/g, " ")
@@ -104,7 +292,17 @@
     return base + extension;
   }
 
-  /* 중복 파일명은 기존 파일을 덮어쓰지 않고 접미사를 붙여 새 파일로 만든다. */
+  function uniqueName(candidate, taken) {
+    if (taken.indexOf(candidate) === -1) return { name: candidate, renamed: false };
+    var extension = candidate.slice(candidate.lastIndexOf("."));
+    var stem = extension ? candidate.slice(0, candidate.lastIndexOf(".")) : candidate;
+    for (var suffix = 2; suffix <= MAX_DUPLICATE_SUFFIX; suffix += 1) {
+      var next = withExtension(stem + "-" + suffix, extension);
+      if (taken.indexOf(next) === -1) return { name: next, renamed: true };
+    }
+    return null;
+  }
+
   function planUniqueFileNames(options) {
     var opts = options || {};
     var stem = typeof opts.baseName === "string" && opts.baseName.trim()
@@ -127,34 +325,20 @@
     };
   }
 
-  function uniqueName(candidate, taken) {
-    if (taken.indexOf(candidate) === -1) return { name: candidate, renamed: false };
-    var extension = candidate.slice(candidate.lastIndexOf("."));
-    var stem = extension ? candidate.slice(0, candidate.lastIndexOf(".")) : candidate;
-    for (var suffix = 2; suffix <= MAX_DUPLICATE_SUFFIX; suffix += 1) {
-      var next = withExtension(stem + "-" + suffix, extension);
-      if (taken.indexOf(next) === -1) return { name: next, renamed: true };
-    }
-    return null;
-  }
-
-  /* ── PDF 바이트 검증 ──
-     인증된 렌더러가 만든 PDF 만 저장 대상으로 받는다. 형식만 확인하고 내용을 해석하지 않는다. */
+  /* ── PDF 바이트 검증 ── */
   function validatePdfBytes(bytes) {
-    if (bytes == null) return { ok: false, code: "pdf_missing" };
-    var length = bytes.byteLength !== undefined ? bytes.byteLength : bytes.length;
-    if (!Number.isFinite(length) || length <= 0) return { ok: false, code: "pdf_missing" };
-    if (length < MIN_PDF_BYTES) return { ok: false, code: "pdf_too_small" };
-    if (length > MAX_PDF_BYTES) return { ok: false, code: "pdf_too_large" };
-    for (var i = 0; i < PDF_MAGIC_BYTES.length; i += 1) {
-      if (bytes[i] !== PDF_MAGIC_BYTES[i]) return { ok: false, code: "pdf_format_invalid" };
+    var data = normalizeBytesLike(bytes);
+    if (!data) return { ok: false, code: "pdf_missing" };
+    if (data.length <= 0) return { ok: false, code: "pdf_missing" };
+    if (data.length < MIN_PDF_BYTES) return { ok: false, code: "pdf_too_small" };
+    if (data.length > MAX_PDF_BYTES) return { ok: false, code: "pdf_too_large" };
+    for (var index = 0; index < PDF_MAGIC_BYTES.length; index += 1) {
+      if (data[index] !== PDF_MAGIC_BYTES[index]) return { ok: false, code: "pdf_format_invalid" };
     }
-    return { ok: true, byteLength: length };
+    return { ok: true, byteLength: data.length };
   }
 
-  /* ── 저장 패키지 생성 ──
-     D1 서버 스냅샷(#3405)이 버리는 detailGroups/calculationPolicy 를 포함해
-     QuoteDraft 전체 편집 데이터를 보존한다. */
+  /* ── 템플릿 참조 ── */
   function normalizeTemplateReference(raw) {
     if (raw === undefined || raw === null) return null;
     if (!isPlainObject(raw)) return null;
@@ -170,23 +354,30 @@
     return ref;
   }
 
+  /* ── 저장 패키지 ── */
+  function createPackageId(opts) {
+    var now = opts && opts.now ? opts.now : null;
+    var stamp = String(now instanceof Date ? now.getTime() : Date.now());
+    var random = "";
+    if (opts && typeof opts.random === "function") {
+      random = String(opts.random());
+    } else if (typeof Math !== "undefined" && typeof Math.random === "function") {
+      random = Math.random().toString(36).slice(2, 10);
+    }
+    return ("pkg-" + stamp + "-" + random).replace(/[^0-9a-zA-Z-]/g, "").slice(0, 64);
+  }
+
   function buildPackage(options) {
     var opts = options || {};
-    var draft = Core.normalizeDraft(opts.draft);
-    if (!draft) return { ok: false, code: "invalid_draft" };
     var guard = assertLosslessDraft(opts.draft);
+    if (!guard.draft) return { ok: false, code: "invalid_draft" };
     if (!guard.lossless) return { ok: false, code: "draft_lossy_round_trip", lost: guard.lost };
+    var draft = guard.draft;
 
     var packageId = boundedText(opts.packageId, 64) || createPackageId(opts);
     var savedAt = boundedText(opts.savedAt, 40) || null;
-    var totalItems = draft.items.length;
-    var baseName = buildBaseName(draft);
-
     var template = normalizeTemplateReference(opts.template);
-    var assets = {
-      json: { role: "quote-json", mimeType: JSON_MIME, packageId: packageId },
-      pdf: { role: "quote-pdf", mimeType: PDF_MIME, packageId: packageId }
-    };
+    var baseName = buildBaseName(draft);
 
     var pkg = {
       kind: PACKAGE_KIND,
@@ -194,15 +385,19 @@
       schemaVersion: CURRENT_SCHEMA_VERSION,
       packageId: packageId,
       createdAt: savedAt,
+      contentFingerprint: contentFingerprint(draft, template),
       quote: draft,
       template: template,
-      assets: assets,
+      assets: {
+        json: { role: "quote-json", mimeType: JSON_MIME, packageId: packageId },
+        pdf: { role: "quote-pdf", mimeType: PDF_MIME, packageId: packageId }
+      },
       manifest: {
         quoteNo: boundedText(draft.meta.quoteNo, 80),
         issueDate: boundedText(draft.meta.issueDate, 40),
         recipientCompany: boundedText(draft.recipient.company, MAX_MANIFEST_TEXT_CHARS),
         recipientPerson: boundedText(draft.recipient.person, MAX_MANIFEST_TEXT_CHARS),
-        itemCount: totalItems,
+        itemCount: draft.items.length,
         detailGroupCount: Array.isArray(draft.detailGroups) ? draft.detailGroups.length : 0,
         baseName: baseName,
         savedAt: savedAt
@@ -214,52 +409,12 @@
     return { ok: true, package: pkg, baseName: baseName };
   }
 
-  function createPackageId(opts) {
-    var now = opts && opts.now ? opts.now : null;
-    var stamp = String(now instanceof Date ? now.getTime() : Date.now());
-    var random = "";
-    if (typeof opts === "object" && opts && typeof opts.random === "function") {
-      random = String(opts.random());
-    } else if (typeof Math !== "undefined" && typeof Math.random === "function") {
-      random = Math.random().toString(36).slice(2, 10);
-    }
-    return ("pkg-" + stamp + "-" + random).replace(/[^0-9a-zA-Z-]/g, "").slice(0, 64);
-  }
-
-  /* 저장 전 무손실 검증: QuoteCore 정규화가 편집 데이터를 버리면 저장하지 않는다. */
-  function assertLosslessDraft(rawDraft) {
-    var normalized = Core.normalizeDraft(rawDraft);
-    if (!normalized) return { lossless: false, lost: ["draft"], draft: null };
-    var source = isPlainObject(rawDraft) ? rawDraft : {};
-    var lost = [];
-    if (Array.isArray(source.detailGroups) && source.detailGroups.length &&
-        !Array.isArray(normalized.detailGroups)) lost.push("detailGroups");
-    if (source.calculationPolicy && !normalized.calculationPolicy) lost.push("calculationPolicy");
-    if (source.meta && source.meta.projectName && !normalized.meta.projectName) {
-      lost.push("meta.projectName");
-    }
-    if (Array.isArray(source.items) && source.items.length !== normalized.items.length) {
-      lost.push("items.length");
-    }
-    if (Array.isArray(source.items) && Array.isArray(normalized.items)) {
-      source.items.forEach(function (item, index) {
-        var target = normalized.items[index];
-        if (!target) return;
-        if (item && item.spec && !target.spec) lost.push("items[].spec");
-        if (item && item.unit && !target.unit) lost.push("items[].unit");
-        if (item && item.note && !target.note) lost.push("items[].note");
-      });
-    }
-    return { lossless: lost.length === 0, lost: lost, draft: normalized };
-  }
-
   function serializePackage(pkg) {
     if (!isPlainObject(pkg)) return null;
     return JSON.stringify(pkg, null, 2);
   }
 
-  /* ── 읽기 검증 ──
-     크기 → JSON 파싱(프로토타입 오염 키 거부) → 스키마 → 신원 주장 거부 → QuoteDraft 정규화 */
+  /* ── 읽기 검증 ── */
   function parseJsonSafely(text) {
     return JSON.parse(text, function (key, value) {
       if (UNSAFE_JSON_KEYS.indexOf(key) !== -1) {
@@ -305,20 +460,32 @@
     }
 
     var keys = Object.keys(raw);
-    for (var i = 0; i < keys.length; i += 1) {
-      var key = keys[i];
+    for (var index = 0; index < keys.length; index += 1) {
+      var key = keys[index];
       if (ALLOWED_TOP_LEVEL_KEYS.indexOf(key) === -1) return { ok: false, code: "unsupported_package_field" };
       if (FORBIDDEN_IDENTITY_KEYS.indexOf(key) !== -1) {
         return { ok: false, code: "identity_authority_field_rejected" };
       }
     }
 
-    var draft = Core.normalizeDraft(raw.quote);
-    if (!draft) return { ok: false, code: "invalid_quote_draft" };
+    /* 편집 데이터 무손실: 정규화가 편집 필드를 바꾸거나 버리면 거부한다. */
+    var guard = assertLosslessDraft(raw.quote);
+    if (!guard.draft) return { ok: false, code: "invalid_quote_draft" };
+    if (!guard.lossless) return { ok: false, code: "quote_lossy_round_trip", lost: guard.lost };
+    var draft = guard.draft;
 
     var template = normalizeTemplateReference(raw.template);
     if (raw.template !== undefined && raw.template !== null && !template) {
       return { ok: false, code: "invalid_template_reference" };
+    }
+
+    /* 내용 지문은 견적 본문과 템플릿 참조에 대한 무결성 근거다. */
+    var expectedFingerprint = contentFingerprint(draft, template);
+    if (typeof raw.contentFingerprint !== "string" || !raw.contentFingerprint) {
+      return { ok: false, code: "content_fingerprint_missing" };
+    }
+    if (raw.contentFingerprint !== expectedFingerprint) {
+      return { ok: false, code: "content_fingerprint_mismatch" };
     }
 
     var packageId = boundedText(raw.packageId, 64);
@@ -330,6 +497,7 @@
       schemaVersion: CURRENT_SCHEMA_VERSION,
       packageId: packageId || null,
       createdAt: boundedText(raw.createdAt, 40),
+      contentFingerprint: expectedFingerprint,
       quote: draft,
       template: template,
       assets: isPlainObject(raw.assets) ? clone(raw.assets) : null,
@@ -351,35 +519,45 @@
   /* ── 템플릿 참조 검증 ──
      지원하지 않거나 비활성인 Skill 을 다른 템플릿으로 대체하지 않는다. */
   function resolveTemplateReference(ref, availableTemplates) {
-    if (!ref) return { status: "none", reason: null, resolved: null };
+    if (!ref) return { status: "none", reason: "template_reference_missing", resolved: null };
     var list = Array.isArray(availableTemplates) ? availableTemplates : [];
     var match = null;
-    for (var i = 0; i < list.length; i += 1) {
-      var candidate = list[i];
+    for (var index = 0; index < list.length; index += 1) {
+      var candidate = list[index];
       if (candidate && candidate.savedSkillId === ref.savedSkillId) { match = candidate; break; }
     }
-    if (!match) {
-      return { status: "unresolved", reason: "saved_skill_unavailable", resolved: null };
-    }
+    if (!match) return { status: "unresolved", reason: "saved_skill_unavailable", resolved: null };
     if (match.approved !== true || match.active === false) {
       return { status: "inactive", reason: "saved_skill_inactive", resolved: match };
     }
-    if (ref.fingerprint && match.fingerprint && ref.fingerprint !== match.fingerprint) {
-      return { status: "mismatch", reason: "template_fingerprint_mismatch", resolved: match };
+    if (!ref.fingerprint || !match.fingerprint || ref.fingerprint !== match.fingerprint) {
+      return {
+        status: "mismatch",
+        reason: ref.fingerprint ? "template_fingerprint_mismatch" : "template_fingerprint_missing",
+        resolved: match
+      };
     }
     return { status: "resolved", reason: null, resolved: match };
   }
 
-  /* ── 불러오기 → QuoteCore 재계산 ── */
+  var TEMPLATE_BLOCK_CODES = {
+    none: "template_authority_unverified",
+    unresolved: "saved_skill_unavailable",
+    inactive: "saved_skill_inactive",
+    mismatch: "template_fingerprint_mismatch"
+  };
+
+  /* ── 불러오기 → QuoteCore 재계산 ──
+     requireApprovedTemplate(기본 true)이면 템플릿 권위가 확인된 경우에만 적용 가능하다. */
   function importPackage(pkg, options) {
     var opts = options || {};
     var normalized;
-    if (isPlainObject(pkg) && pkg.kind === PACKAGE_KIND) {
-      var result = normalizePackage(pkg, {});
-      if (!result.ok) return { ok: false, code: result.code };
-      normalized = result.package;
+    if (isPlainObject(pkg) && pkg.kind === PACKAGE_KIND && pkg.contentFingerprint) {
+      normalized = pkg;
     } else {
-      return { ok: false, code: "invalid_package" };
+      var result = normalizePackage(pkg, {});
+      if (!result.ok) return { ok: false, code: result.code, lost: result.lost };
+      normalized = result.package;
     }
 
     var draft = Core.normalizeDraft(normalized.quote);
@@ -390,9 +568,19 @@
 
     var template = resolveTemplateReference(normalized.template, opts.templates);
     var warnings = [];
-    if (template.status === "unresolved") warnings.push("saved_skill_unavailable");
-    if (template.status === "inactive") warnings.push("saved_skill_inactive");
-    if (template.status === "mismatch") warnings.push("template_fingerprint_mismatch");
+    if (template.status !== "resolved") warnings.push(template.reason || "template_authority_unverified");
+
+    if (opts.requireApprovedTemplate !== false && template.status !== "resolved") {
+      return {
+        ok: false,
+        code: TEMPLATE_BLOCK_CODES[template.status] || "template_authority_unverified",
+        template: template,
+        warnings: warnings,
+        /* 권위를 확인할 수 없으면 편집기에 적용할 draft 를 돌려주지 않는다. */
+        draft: null,
+        message: "이 견적이 사용한 승인된 견적서 양식을 이 계정에서 확인할 수 없습니다. 다른 양식으로 자동 대체하지 않았습니다."
+      };
+    }
 
     return {
       ok: true,
@@ -402,15 +590,30 @@
       warnings: warnings,
       totalsAuthority: "quote-core",
       recalculated: true,
-      /* 인증 PDF 경로는 템플릿이 해결된 경우에만 준비된다. 대체 템플릿을 자동 선택하지 않는다. */
       certifiedPdfReady: template.status === "resolved",
       packageId: normalized.packageId,
+      contentFingerprint: normalized.contentFingerprint,
       schemaVersion: normalized.schemaVersion
     };
   }
 
-  /* ── 업로드 결과 · 부분 실패 ──
-     한쪽만 저장된 상태를 조용히 넘기지 않고 정확한 코드와 복구 방법을 돌려준다. */
+  /* ── 부분 실패: 원래 쌍을 고정한다 ──
+     packageId · 계획된 파일명 · createdAt · 내용 지문 · PDF 지문을 결과에 묶어
+     재시도가 다른 내용이나 다른 이름으로 "완성" 을 만들지 못하게 한다. */
+  function buildPairBinding(options) {
+    var opts = options || {};
+    return {
+      packageId: opts.packageId || null,
+      createdAt: opts.createdAt || null,
+      baseName: opts.baseName || null,
+      renamed: opts.renamed === true,
+      jsonName: opts.jsonName || null,
+      pdfName: opts.pdfName || null,
+      draftFingerprint: opts.draftFingerprint || null,
+      pdfFingerprint: opts.pdfFingerprint || null
+    };
+  }
+
   function buildUploadOutcome(options) {
     var opts = options || {};
     var jsonResult = opts.json || null;
@@ -431,13 +634,13 @@
       code = pdfResult && pdfResult.code ? pdfResult.code : "pdf_upload_failed";
       partial = true;
       missing = "pdf";
-      message = "견적 JSON은 저장했지만 PDF 저장에 실패했습니다. PDF만 다시 저장할 수 있습니다.";
+      message = "견적 JSON은 저장했지만 PDF 저장에 실패했습니다. 같은 견적 내용으로 PDF만 다시 저장할 수 있습니다.";
     } else if (!jsonOk && pdfOk) {
       status = "partial_pdf";
       code = jsonResult && jsonResult.code ? jsonResult.code : "json_upload_failed";
       partial = true;
       missing = "json";
-      message = "PDF는 저장했지만 견적 JSON 저장에 실패했습니다. JSON만 다시 저장할 수 있습니다.";
+      message = "PDF는 저장했지만 견적 JSON 저장에 실패했습니다. 같은 견적 내용으로 JSON만 다시 저장할 수 있습니다.";
     } else {
       status = "failed";
       code = jsonResult && jsonResult.code ? jsonResult.code : "upload_failed";
@@ -456,14 +659,46 @@
       missing: missing,
       /* 부분 실패는 반드시 화면에 보고되어야 한다. 조용한 성공으로 표시하지 않는다. */
       reported: true,
-      retryable: partial === true,
+      retryable: partial === true && Boolean(opts.pair && opts.pair.draftFingerprint),
       recovery: partial ? { action: "retry_missing", target: missing } : null,
       message: message,
       errorText: errorText,
       packageId: opts.packageId || null,
+      pair: opts.pair ? clone(opts.pair) : null,
       json: jsonOk ? { id: jsonResult.id, name: jsonResult.name, mimeType: JSON_MIME } : null,
       pdf: pdfOk ? { id: pdfResult.id, name: pdfResult.name, mimeType: PDF_MIME } : null
     };
+  }
+
+  /* 재시도 전에 원래 쌍이 그대로인지 확인한다. 하나라도 달라지면 새 쌍으로 저장해야 한다. */
+  function pairRetryGuard(outcome, current) {
+    var opts = current || {};
+    if (!outcome || !outcome.pair) return { ok: false, code: "pending_pair_missing" };
+    if (outcome.partial !== true || (outcome.missing !== "json" && outcome.missing !== "pdf")) {
+      return { ok: false, code: "pending_pair_incomplete" };
+    }
+    var pair = outcome.pair;
+    if (!pair.draftFingerprint) return { ok: false, code: "pending_pair_missing" };
+
+    var currentFingerprint = contentFingerprint(opts.draft, opts.template);
+    if (!currentFingerprint || currentFingerprint !== pair.draftFingerprint) {
+      return {
+        ok: false,
+        code: "pending_pair_stale",
+        message: "저장 도중 견적 내용이 바뀌었습니다. 이어서 저장하지 않고 새 견적서로 저장해야 합니다."
+      };
+    }
+    if (outcome.missing === "pdf") {
+      var currentPdf = pdfFingerprint(opts.pdfBytes);
+      if (!currentPdf || currentPdf !== pair.pdfFingerprint) {
+        return {
+          ok: false,
+          code: "pending_pdf_changed",
+          message: "저장하려던 PDF와 지금 만들어진 PDF가 다릅니다. 새 견적서로 저장해 주세요."
+        };
+      }
+    }
+    return { ok: true, pair: clone(pair), target: outcome.missing };
   }
 
   return Object.freeze({
@@ -482,7 +717,17 @@
     PDF_MAGIC: PDF_MAGIC,
     FORBIDDEN_IDENTITY_KEYS: FORBIDDEN_IDENTITY_KEYS.slice(),
     ALLOWED_TOP_LEVEL_KEYS: ALLOWED_TOP_LEVEL_KEYS.slice(),
+    TEMPLATE_BLOCK_CODES: TEMPLATE_BLOCK_CODES,
+    ITEM_FIELDS: ITEM_FIELDS.slice(),
+    DETAIL_ITEM_FIELDS: DETAIL_ITEM_FIELDS.slice(),
     isSupportedSchemaVersion: isSupportedSchemaVersion,
+    stableStringify: stableStringify,
+    fingerprintOf: fingerprintOf,
+    pdfFingerprint: pdfFingerprint,
+    contentFingerprint: contentFingerprint,
+    templateIdentity: templateIdentity,
+    canonicalQuote: canonicalQuote,
+    draftFieldPairs: draftFieldPairs,
     sanitizeFileNamePart: sanitizeFileNamePart,
     buildBaseName: buildBaseName,
     planUniqueFileNames: planUniqueFileNames,
@@ -495,6 +740,8 @@
     normalizePackage: normalizePackage,
     resolveTemplateReference: resolveTemplateReference,
     importPackage: importPackage,
-    buildUploadOutcome: buildUploadOutcome
+    buildPairBinding: buildPairBinding,
+    buildUploadOutcome: buildUploadOutcome,
+    pairRetryGuard: pairRetryGuard
   });
 });
