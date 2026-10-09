@@ -79,6 +79,7 @@ from app.worker_config import (
     apply_live_deadman_switch,
     binding_value,
     response_headers_for_path,
+    resolve_web_secrets_store_keys,
     settings_from_worker_bindings,
     p01_engine_config_from_worker_bindings,
 )
@@ -707,7 +708,13 @@ class Default(WorkerEntrypoint):
 
         if _worker_app is None:
             try:
-                settings = apply_live_deadman_switch(settings_from_worker_bindings(self.env))
+                # Resolve Cloudflare same-account Secrets Store bindings only
+                # for an explicitly selected or live-armed public Search route.
+                # Values stay server-side; no user input can name a binding.
+                web_keys = await resolve_web_secrets_store_keys(self.env)
+                settings = apply_live_deadman_switch(
+                    settings_from_worker_bindings(self.env, resolved_web_keys=web_keys)
+                )
                 db_binding = binding_value(self.env, D1_BINDING_NAME)
                 b14_binding = binding_value(self.env, B14_SERVICE_BINDING_NAME)
                 b66_pdf_binding = binding_value(self.env, B66_PDF_RENDERER_SERVICE_BINDING_NAME)

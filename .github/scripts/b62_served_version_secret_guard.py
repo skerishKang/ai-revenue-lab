@@ -33,6 +33,7 @@ from cloudflare_served_version import (  # noqa: E402
 )
 
 SECRET_TYPE = "secret_text"
+SECRET_BINDING_TYPES = frozenset({"secret_text", "secrets_store_secret"})
 REQUIRED_SECRETS = {
     "PADIEM_CHAT_QUOTA_SALT": SECRET_TYPE,
     "P01_ENGINE_CREDENTIAL": SECRET_TYPE,
@@ -146,7 +147,7 @@ def served_version_bindings(version_detail_payload: object, *, expected_version_
 
 def secret_name_type_set(bindings: list[dict]) -> tuple[tuple[str, str], ...]:
     return tuple(sorted(
-        (raw["name"], raw["type"]) for raw in bindings if raw.get("type") == SECRET_TYPE
+        (raw["name"], raw["type"]) for raw in bindings if raw.get("type") in SECRET_BINDING_TYPES
     ))
 
 

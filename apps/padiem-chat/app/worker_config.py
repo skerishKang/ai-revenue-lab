@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import re
 from collections.abc import Mapping
+import inspect
 from dataclasses import dataclass, field, replace
 from typing import Any
 
-from .config import Settings
+from .config import ConfigError, Settings
 
 WORKER_BINDING_NAMES = frozenset({
     "PADIEM_CHAT_RUNTIME_MODE",
@@ -114,7 +115,59 @@ def binding_value(env: Any, key: str) -> Any:
     return getattr(env, key, None)
 
 
-def settings_from_worker_bindings(env: Any) -> Settings:
+async def resolve_web_secrets_store_keys(env: Any) -> dict[str, str]:
+    """Resolve only the selected public Search keys from trusted Worker bindings.
+
+    Cloudflare Secrets Store bindings are async .get() capabilities; they are
+    NOT plaintext. Never read a key in mock/off mode, expose errors, or
+    substitute a missing TinyFish credential with the Daum credential.
+    Ordinary direct secret_text bindings remain backward compatible.
+    """
+    mode = str(binding_value(env, "PADIEM_CHAT_RUNTIME_MODE") or "mock").strip().lower()
+    armed = str(binding_value(env, "PADIEM_CHAT_LIVE_ENABLED") or "false").strip().lower() == "true"
+    selected = binding_value(env, "PADIEM_CHAT_WEB_PROVIDER")
+    if selected is None:
+        selected = "tinyfish_daum" if mode == "b14" and armed else "off"
+    selected = str(selected).strip().lower()
+    names: tuple[str, ...]
+    if selected == "tinyfish":
+        names = ("TINYFISH_API_KEY",)
+    elif selected == "daum":
+        names = ("PADIEM_CHAT_DAUM_REST_API_KEY",)
+    elif selected == "tinyfish_daum":
+        names = ("TINYFISH_API_KEY", "PADIEM_CHAT_DAUM_REST_API_KEY")
+    else:
+        return {}
+
+    resolved: dict[str, str] = {}
+    for name in names:
+        bound = binding_value(env, name)
+        if bound is None:
+            continue  # Settings.from_values enforces the missing-key gate.
+        if isinstance(bound, str):
+            value = bound
+        else:
+            getter = getattr(bound, "get", None)
+            if not callable(getter):
+                raise ConfigError("selected public web credential binding is invalid")
+            try:
+                pending = getter()
+                if not inspect.isawaitable(pending):
+                    raise TypeError("unexpected synchronous Secrets Store capability")
+                value = await pending
+            except Exception:
+                # Never chain or publish provider/FFI exceptions: they may carry
+                # credential contents, headers, URLs, or account identifiers.
+                raise ConfigError("selected public web credential unavailable") from None
+        if not isinstance(value, str) or not value.strip():
+            raise ConfigError("selected public web credential unavailable")
+        resolved[name] = value
+    return resolved
+
+
+def settings_from_worker_bindings(
+    env: Any, *, resolved_web_keys: Mapping[str, str] | None = None
+) -> Settings:
     runtime_mode = binding_value(env, "PADIEM_CHAT_RUNTIME_MODE") or "mock"
     live_enabled = binding_value(env, "PADIEM_CHAT_LIVE_ENABLED") or "false"
     explicit_web_provider = binding_value(env, "PADIEM_CHAT_WEB_PROVIDER")
@@ -135,8 +188,16 @@ def settings_from_worker_bindings(env: Any) -> Settings:
         live_enabled=live_enabled,
         web_provider=default_web_provider if explicit_web_provider is None else explicit_web_provider,
         firecrawl_api_key=binding_value(env, "FIRECRAWL_API_KEY"),
-        daum_rest_api_key=binding_value(env, "PADIEM_CHAT_DAUM_REST_API_KEY"),
-        tinyfish_api_key=binding_value(env, "TINYFISH_API_KEY"),
+        daum_rest_api_key=(
+            binding_value(env, "PADIEM_CHAT_DAUM_REST_API_KEY")
+            if resolved_web_keys is None
+            else resolved_web_keys.get("PADIEM_CHAT_DAUM_REST_API_KEY")
+        ),
+        tinyfish_api_key=(
+            binding_value(env, "TINYFISH_API_KEY")
+            if resolved_web_keys is None
+            else resolved_web_keys.get("TINYFISH_API_KEY")
+        ),
         web_timeout_seconds=binding_value(env, "PADIEM_CHAT_WEB_TIMEOUT_SECONDS") or "15",
         auth_mode=binding_value(env, "PADIEM_CHAT_AUTH_MODE") or "off",
         public_base_url=binding_value(env, "PADIEM_CHAT_PUBLIC_BASE_URL"),
