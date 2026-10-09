@@ -354,6 +354,7 @@ jobs:
           node tests/account-scope-3480.test.cjs
           node tests/production-draft-safety.test.cjs
           node tests/file-intake.test.cjs
+          node tests/template-source-format-policy.test.cjs
           node tests/static-contract.test.cjs
           node tests/quote-template.test.cjs
           node tests/quote-template-store.test.cjs

@@ -865,7 +865,7 @@ check((cloner.match(/restoreStorage\(storage, snapshot\);/g) || []).length >= 3 
 check(app.includes('$("templateApprove").addEventListener("click"') &&
       app.includes("TemplateCloner.approveCandidate(clonerSession, templateStorage(), {})"),
   "EXPLICIT_TEMPLATE_APPROVAL_REQUIRED=YES: approval is an explicit user action");
-check(app.includes("FileIntake.classifyFile(file)") && app.includes("window.B66QuoteTemplateClonerBridge"),
+check(app.includes("FileIntake.classifyTemplateSourceFile(file)") && app.includes("window.B66QuoteTemplateClonerBridge"),
   "BROWSER_UPLOAD_NETWORK=0 / TEMPLATE_CANDIDATE_MANUAL_INJECTION=PASS: preflight reuse plus injection seam");
 check(!/fetch\(|XMLHttpRequest/.test(candidate + cloner),
   "BROWSER_UPLOAD_NETWORK=0 / MODEL_NETWORK_CALLS=0: no network call in the cloner layer");

@@ -1626,6 +1626,10 @@
     template_limit_reached: "저장할 수 있는 양식 수를 초과했습니다.",
     private_asset_requires_account_skill: "로고·도장은 로그인 계정의 내 견적서에서만 사용할 수 있습니다.",
     slot_rendering_not_supported: "이번 단계에서는 로고·도장 슬롯을 저장할 수 없습니다.",
+    legacy_xls_unsupported: "구형 Excel(.xls) 파일은 양식 등록할 수 없습니다. Excel에서 .xlsx로 저장한 뒤 선택해 주세요.",
+    template_hwpx_not_available: "HWPX 양식 등록은 추후 지원합니다. 현재는 .xlsx 파일만 등록할 수 있습니다.",
+    template_source_format_not_allowed: "재사용 양식 등록은 Excel .xlsx만 지원합니다. PDF 등은 일반 견적 분석에서 사용해 주세요.",
+    template_source_extension_mismatch: "확장자 정보가 일치하지 않습니다. .xlsx 파일을 다시 선택해 주세요.",
     legacy_hwp_unsupported: "구형 HWP 파일은 지원하지 않습니다. HWPX로 변환해 주세요.",
     unsupported_file_type: "지원하지 않는 파일 형식입니다.",
     invalid_file_size: "파일 크기가 허용 범위를 벗어났습니다.",
@@ -1691,7 +1695,7 @@
   function startClonerFromFile(file) {
     if (!TemplateCloner) return false;
     const preflight = FileIntake
-      ? FileIntake.classifyFile(file)
+      ? FileIntake.classifyTemplateSourceFile(file)
       : { ok: false, error: "preflight_failed" };
     const session = clonerSession || TemplateCloner.createSession({});
     const result = TemplateCloner.startFromFile(session, preflight);
