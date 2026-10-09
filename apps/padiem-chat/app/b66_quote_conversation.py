@@ -469,16 +469,12 @@ def normalize_conversation_output(
         if tax_mode not in TAX_MODES:
             raise B66QuoteConversationError("invalid_tax_mode", path="taxMode", observed_type="string")
 
-    missing_raw = raw.get("missing")
-    if (
-        server_derives_missing
-        and isinstance(missing_raw, list)
-        and len(missing_raw) <= 256
-        and all(isinstance(item, str) and len(item) <= 128 for item in missing_raw)
-    ):
-        # Never forward or trust AI-provided missing labels: server recomputes
-        # the actual field set using validated facts and the Saved Skill schema.
-        missing_raw = []
+    # During model-backed extraction the provider's "missing" field has no
+    # authority. Its labels, duplicates or even its container shape must not
+    # reject otherwise valid customer facts. The answer-size guard and all
+    # forbidden-key/fact validators still run before this point.
+    # The interpreter recomputes missing from approved Saved Skill facts.
+    missing_raw = [] if server_derives_missing else raw.get("missing")
     if missing_raw is None:
         missing_raw = []
     if (
@@ -543,6 +539,10 @@ def _conversation_prompt(skill: dict[str, Any]) -> str:
     return (
         "당신은 견적서 생성기가 아니라 견적 입력값 추출기입니다. "
         "사용자의 한 문장에서 실제로 말한 값만 JSON 객체 하나로 추출하십시오. "
+        "고객의 일상적인 띄어쓰기, 조사 오류나 분명한 철자 오타는 문맥상 의미가 하나로 확실한 경우에만 해석하십시오. "
+        "뜻이 여러 개이거나 업체명, 담당자명, 품목명처럼 고객이 확인해야 할 고유 정보가 불명확하면 추측하지 말고 해당 값은 null로 두십시오. "
+        "수량, 단가, 세금 조건은 임의로 만들거나 유추한 숫자로 채우지 마십시오. "
+        "정보가 불분명하면 다른 필드의 확실한 사실은 보존하고 불분명한 필드만 null로 두어 서비스가 고객에게 다시 질문하게 하십시오. "
         "최상위 키는 recipient, quoteNo, issueDate, projectName, items, detailGroups, memo, taxMode, missing 만 허용됩니다. "
         "recipient는 company/person/address/email을 사용하십시오. "
         "items는 name/spec/unit/qty/unitPrice/note 만 사용하십시오. "
@@ -554,7 +554,7 @@ def _conversation_prompt(skill: dict[str, Any]) -> str:
         "상세 items는 name/spec/unit/qty/unitPrice/note/section만 사용하십시오. "
         "금액 합계, 공급가액, 부가세 금액, 총액을 계산하거나 반환하지 마십시오. "
         "sender, template, approval, fingerprint를 변경하거나 반환하지 마십시오. "
-        "없는 값은 null 또는 빈 배열로 두고 필요한 추가 입력 필드 이름만 missing 배열에 넣으십시오. "
+        "알 수 없는 필수 값은 null 또는 빈 배열로 두십시오. missing은 서비스가 검증된 값에서 직접 계산하므로 빈 배열 []을 사용하십시오. "
         "설명/마크다운 없이 JSON만 반환하십시오. "
         "아래 서버 제공 계약 밖 필드는 추출하지 마십시오.\n"
         + json.dumps(contract, ensure_ascii=False, separators=(",", ":"), sort_keys=True)

@@ -257,19 +257,49 @@ def test_model_missing_labels_are_discarded_and_server_derives_true_missing():
     assert provider.calls == 1
 
 
-def test_wrong_model_missing_container_still_fails_closed():
+@pytest.mark.parametrize("advisory_missing", [
+    {"unitPrice": True},
+    "items[0].unitPrice",
+    ["items[0].unitPrice"] * 20,
+    12,
+])
+def test_model_missing_advice_never_blocks_valid_facts(advisory_missing):
+    # Model metadata is entirely untrusted. The approved Saved Skill and
+    # verified item facts are the only authority for missing-field questions.
     provider = _AnswerClient(json.dumps({
         "recipient": {"company": "Synthetic Buyer"},
         "items": [{"name": "Synthetic Pipe", "qty": 100}],
-        "missing": {"unitPrice": True},
+        "missing": advisory_missing,
     }))
     response = _post(
         _client(B66QuoteConversationInterpreter(provider)),
         "Synthetic Buyer quoted Synthetic Pipe x100",
     )
-    assert response.status_code == 422
-    assert response.headers.get("x-b66-rejection-reason") == "invalid_missing_fields"
-    assert "x-b66-result-origin" not in response.headers
+    assert response.status_code == 200
+    assert response.headers.get("x-b66-result-origin") == "registered_model_completion"
+    assert response.json()["candidate"]["missing"] == ["unitPrice"]
+    assert provider.calls == 1
+
+
+def test_unclear_item_name_asks_for_confirmation_without_guessing_price():
+    # Model cannot confidently identify a typo: retain known quantity and
+    # explicitly ask for the item name and absent price in the next UI turn.
+    provider = _AnswerClient(json.dumps({
+        "recipient": {"company": "Synthetic Buyer"},
+        "items": [{"name": None, "qty": 8, "unitPrice": None}],
+        "missing": ["품목명을 확인해 주세요"],
+    }, ensure_ascii=False))
+    response = _post(
+        _client(B66QuoteConversationInterpreter(provider)),
+        "Synthetic Buyer 부픔 8개 견적",
+    )
+    assert response.status_code == 200
+    candidate = response.json()["candidate"]
+    assert candidate["items"][0]["qty"] == 8
+    assert "name" not in candidate["items"][0]
+    assert "unitPrice" not in candidate["items"][0]
+    assert candidate["missing"] == ["name", "unitPrice"]
+    assert response.headers.get("x-b66-result-origin") == "registered_model_completion"
     assert provider.calls == 1
 
 
