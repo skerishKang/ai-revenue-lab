@@ -13,7 +13,9 @@ from datetime import datetime
 import json
 import re
 from types import MappingProxyType
-from typing import Any, Mapping, Protocol
+from typing import Any, AsyncIterator, Mapping, Protocol
+
+from .orchestration_stream import EngineNdjsonContractError, decode_orchestration_ndjson
 
 ENGINE_INTERNAL_ORIGIN = "https://padiem-ai-engine.internal"
 ENGINE_CONTRACT_MAJOR = 1
@@ -21,6 +23,7 @@ ENGINE_CONTRACT_VERSION = "1.0"
 ENGINE_EXECUTE_PATH = "/internal/v1/execute"
 ENGINE_HEALTH_PATH = "/internal/v1/health"
 ENGINE_ORCHESTRATE_PATH = "/internal/v1/orchestrate"
+ENGINE_ORCHESTRATE_STREAM_PATH = "/internal/v1/orchestrate/stream"
 ENGINE_ORCHESTRATE_RESUME_PATH = "/internal/v1/orchestrate/resume"
 ENGINE_ORCHESTRATE_CANCEL_PATH = "/internal/v1/orchestrate/cancel"
 ENGINE_MULTIMODAL_ATTACHMENTS_PATH = "/internal/v1/multimodal/attachments"
@@ -147,6 +150,13 @@ class EngineTransportResponse:
             raise ValueError("body must be bytes")
         if not isinstance(self.headers, Mapping):
             raise ValueError("headers must be a mapping")
+
+
+@dataclass(frozen=True, slots=True)
+class EngineStreamTransportResponse:
+    status: int
+    chunks: AsyncIterator[bytes]
+    headers: Mapping[str, str] = field(default_factory=dict)
 
 
 class EngineTransport(Protocol):
@@ -489,6 +499,46 @@ class PadiemAiEngineClient:
                 "invalid_engine_response", "Engine orchestration response is invalid"
             )
         return dict(orchestration)
+
+    async def stream_orchestration(
+        self, request: Mapping[str, Any]
+    ) -> AsyncIterator[dict[str, Any]]:
+        """Opt-in Engine NDJSON transport; no implicit switch from orchestrate().
+
+        The caller must validate P01 correlation and the terminal result before
+        committing success. Partial event yields have no approval/dispatch power.
+        """
+        payload = _run_payload(self.app_id, request, allowed=_ORCHESTRATION_ALLOWED)
+        stream_request = getattr(self._transport, "stream_request", None)
+        if not callable(stream_request):
+            raise PadiemAiEngineClientError(
+                "engine_stream_unavailable", "Engine streaming transport is not configured"
+            )
+        response = await stream_request(
+            method="POST",
+            url=f"{ENGINE_INTERNAL_ORIGIN}{ENGINE_ORCHESTRATE_STREAM_PATH}",
+            headers=self._headers(),
+            body=json.dumps(payload, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode("utf-8"),
+        )
+        if not isinstance(response, EngineStreamTransportResponse):
+            raise PadiemAiEngineClientError("invalid_engine_stream", "Engine stream response is invalid")
+        # A non-200 response is a JSON error, never stream events. Never retry.
+        if response.status != 200 or response.headers.get("content-type", "").split(";", 1)[0].lower() != "application/x-ndjson":
+            close = getattr(response.chunks, "aclose", None)
+            if callable(close):
+                await close()
+            raise PadiemAiEngineClientError(
+                "engine_stream_unavailable" if response.status == 404 else "engine_http_error",
+                "Padiem AI Engine stream request failed", status=response.status,
+            )
+        try:
+            async for item in decode_orchestration_ndjson(response.chunks):
+                yield item
+        except EngineNdjsonContractError as exc:
+            raise PadiemAiEngineClientError(
+                "invalid_engine_stream", "Engine streaming contract failed",
+                metadata={"reason": exc.code},
+            ) from exc
 
     async def resume_orchestration(self, request: Mapping[str, Any]) -> dict[str, Any]:
         body = await self._post(
