@@ -48,13 +48,13 @@
 | [#3566](https://github.com/skerishKang/ai-revenue-lab/issues/3566) B54/Claw post-A7 502 | **OPEN; 최근 진단 담당 LOCAL3, 마지막 지시 STOP/STANDBY**. B14-상위 제공자 rate-limit 출처 및 안정적 최종 답변 미입증 | 모델 라우팅/Claw 정상답변 문제. B66 Sol PDF 재현 문제와 혼합하지 않음 |
 | [#3382](https://github.com/skerishKang/ai-revenue-lab/issues/3382), [#3523](https://github.com/skerishKang/ai-revenue-lab/issues/3523) Claw Golden Path | **OPEN; CENTRAL 총괄** | Engine/Claw의 실제 로그인→AI 답변 E2E 별도 종료 기준 |
 | [#3385](https://github.com/skerishKang/ai-revenue-lab/issues/3385) TinyFish Search/Fetch | **CLOSED · 신규 B66 업무 아님**. [PR #3950](https://github.com/skerishKang/ai-revenue-lab/pull/3950)·[#3957](https://github.com/skerishKang/ai-revenue-lab/pull/3957)·[#3975](https://github.com/skerishKang/ai-revenue-lab/pull/3975) MERGED. 별도 오래된 [Draft #3386](https://github.com/skerishKang/ai-revenue-lab/pull/3386)의 Core-검색 소스는 병합됐다고 간주하지 않고 폐기/보존 판단 대기 | TinyFish 기본·Daum 제한적 fallback의 **현재 소스 결정**과 실제 운영 설정/실검색 근거는 구분; B66 견적 생성, 고객 Drive·비공개 원본 권한과 혼합 금지 |
-| [#3989](https://github.com/skerishKang/ai-revenue-lab/issues/3989) GitHub Actions fanout | **OPEN · CENTRAL 총괄, LOCAL2는 B66 관련 B62 QA 범위** | 신규 모델 등록 fast-CI / B66 JS 테스트 파일 구조 정리와 별도 과제 | required status와 안전 게이트 보존, 실제 변경 파일별 필요 워크플로 선택 및 비용 비교 |
+| [#3989](https://github.com/skerishKang/ai-revenue-lab/issues/3989) GitHub Actions fanout | **OPEN · LOCAL2 B66 범위 완료 / CENTRAL 전체 총괄** | [PR #4046](https://github.com/skerishKang/ai-revenue-lab/pull/4046) MERGED (`aaf44a785`); B66 전용 변경의 B62 browser QA lane 계획 **15→0**, 정적 감사 3개 workflow→1개/3 job; 56개 B66 JS 검사 보존. Engine/LL [#4051](https://github.com/skerishKang/ai-revenue-lab/pull/4051) 별도 완료 | 실제 after PR의 runner/wall 측정, B62 Chat 전체 CI 약 473초, Required Check/Cloudflare inventory·Core/mixed 검증 **미완료**. [운영 근거](../../operations/CI_3989_B66_B62_QA_SCOPE_2026-10-10.md) |
 
 ## 다음 단계 — 소유자·병렬 진행
 
 1. **LOCAL1 (#3839 Sol):** Draft #4001 오른쪽 외곽선 수정은 보존하고 연속 페이지 내부 열선·최종 합계 격자를 보정, 1–3 인증 해시 불변/4+벡터·래스터 회귀/중앙 직접 시각 검토 → v2 재인증 후보 검토. Draft #4010/인증/Production 수정 금지.
 2. **LOCAL1 (#3977 Core):** **별도 최신 main worktree**에서 구 `9ec0e049` Core 실험은 참고만 하고, 충돌하는 Draft #3988은 현 상태 보존. 내부 optional native parameters → B14 외부 top-level `reasoning_effort`와 provider-default omission을 단일 B14 capability authority로 완성·정확한 HEAD CI. #3839 source/worktree 교차 변경 금지.
-3. **LOCAL2 (#3906 B66 + #3989 CI):** #3998은 이미 병합돼 재작업/강제푸시 금지. #3977 새 Core 인수 이후 B66 UI→adapter→Core→B14 모의 E2E 검증. 별도 #3989는 B66 변경에 따라 과도하게 트리거되는 B62 QA 최적화(56개 JS 테스트/보안 required check 삭제 금지).
+3. **LOCAL2 (#3906 B66):** #3998 소스는 MERGED. #3977 LOCAL1 공유 Core 인수 이후 B66→B62/Core→B14 일반/스트리밍 E2E를 검증한다. **#3989 B66 전용 CI 정밀 범위는 PR #4046 병합으로 완료**했고, 나머지 전역 CI/required-check 작업은 CENTRAL이 별도 추적한다.
 4. **LOCAL3 (#3871):** #4029 포함 Production [#37997944674](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37997944674) 성공 후 실제 브라우저에서 초안 보존 확인창 취소/승인 검증. 다른 브라우저·두 번째 계정·late-callback·휴대전화는 증거 전까지 NOT_TESTED.
 5. **#3884 원본 보관 기존 브랜치 소유 로컬:** Draft #3925와 운영 보안 경계를 독립 유지(새 담당 임의 중복 배정 금지).
 6. **CENTRAL:** #3977 공유 파일 PR 겹침·일반/SSE 테스트·권위·병합 심사, #3989 전역 워크플로 Required Check 총괄, Sol v2 시각·인증 승인 게이트 유지. #3542/#3708 범용 자동 컴파일러는 Owner 재개 요청 전 보류.
