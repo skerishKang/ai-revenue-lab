@@ -54,6 +54,7 @@ def _harness() -> str:
     return r"""
 // Minimal stub environment: exercises the real routing functions, no DOM needed.
 const trace = [];
+const window = {}; // Browser global; optional #3930 event projection is absent here.
 const shell = { dataset: {} };
 const emptyState = { hidden: false };
 const messageList = { hidden: true };
