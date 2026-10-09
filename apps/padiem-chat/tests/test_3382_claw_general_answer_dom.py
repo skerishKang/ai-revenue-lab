@@ -428,6 +428,8 @@ function collectAnswerDom(byId) {
       committed,
       conversationIds,
       errorSurface: byId.runtimeNote ? byId.runtimeNote.textContent : "",
+      shellState: byId.shell.dataset.state,
+      transcriptVisible: byId.messageList.hidden === false,
       sendButtonDisabled: byId.sendButton ? byId.sendButton.disabled : null,
     });
   }
@@ -484,6 +486,9 @@ def test_claw_answer_lands_in_the_answer_dom_and_commits() -> None:
     assert len(general_calls) == 1, result["requests"]
     # #3539 lane purity has to hold on the client too: no silent reroute.
     assert stream_calls == [], stream_calls
+    # #3931: the user and real assistant answer remain in Claw's transcript.
+    assert result["shellState"] == "claw", result
+    assert result["transcriptVisible"] is True, result
 
     dom = result["answerDom"]
     assert dom is not None, "no assistant article was rendered for a 200 SSE answer"
