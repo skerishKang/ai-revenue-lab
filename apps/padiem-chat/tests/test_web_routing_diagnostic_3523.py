@@ -33,7 +33,10 @@ async def test_routing_log_discloses_only_actual_provider_choice(tinyfish_status
     assert len(evidence)==1
     result=capsys.readouterr().out
     expected="TINYFISH" if tinyfish_status == 200 else "DAUM_ON_402_429"
-    assert result.strip() == "PADIEM_WEB_SEARCH_ROUTE=" + expected
+    assert result.strip().splitlines() == (
+        (["TINYFISH_SEARCH_NORMALIZATION=USABLE"] if tinyfish_status == 200 else [])
+        + ["PADIEM_WEB_SEARCH_ROUTE=" + expected]
+    )
     assert sensitive not in result
     assert len(seen)==(1 if tinyfish_status==200 else 2)
     assert evidence[0].provider == ("tinyfish" if tinyfish_status==200 else "daum")
