@@ -269,3 +269,42 @@ def test_owner_addition_cli_is_explicit_and_prints_no_identifiers(tmp_path, caps
     assert "OWNER_P01_D1_EXACTLY_ONE_ADDITION=PASS" in out
     assert "EXISTING_WORKER_BINDINGS_PRESERVED=PASS" in out
     assert _OWNER_ID not in out and _OTHER_ID not in out
+
+
+@pytest.mark.parametrize("worker,types", [
+    ("B54", {"assets": 1, "service": 5, "d1": 1, "r2_bucket": 1,
+             "plain_text": 15, "secret_text": 4}),
+    ("Engine", {"service": 4, "d1": 6, "secret_text": 8}),
+])
+def test_owner_addition_preserves_full_live_size_binding_matrix(worker, types):
+    """Exercise actual observed 27->28 / 18->19 shape without remote secrets."""
+    identifiers = {
+        "assets": lambda n: {"type": "assets", "name": f"ASSETS_{n}"},
+        "service": lambda n: {
+            "type": "service", "name": f"SERVICE_{n}", "service": f"worker-{n}",
+        },
+        "d1": lambda n: {
+            "type": "d1", "name": f"EXISTING_D1_{n}",
+            "id": "6b77ad02-bc27-488f-bb97-6325f6750cba",
+        },
+        "r2_bucket": lambda n: {
+            "type": "r2_bucket", "name": f"R2_{n}", "bucket_name": f"bucket-{n}",
+        },
+        "plain_text": lambda n: {
+            "type": "plain_text", "name": f"VAR_{n}", "text": f"unchanged-{n}",
+        },
+        "secret_text": lambda n: {"type": "secret_text", "name": f"SECRET_{n}"},
+    }
+    before_bindings = [identifiers[t](i) for t, count in types.items() for i in range(count)]
+    before = settings(*before_bindings)
+    after = settings(
+        *before_bindings,
+        {"type": "d1", "name": "BROWSER_CONTROL_OWNER_P01_D1", "id": _OWNER_ID},
+    )
+    expected_before = 27 if worker == "B54" else 18
+    assert len(mod.canonical_state(before)) == expected_before
+    assert len(mod.canonical_state(after)) == expected_before + 1
+    mod.assert_one_owner_d1_added(before, after, _OWNER_ID)
+    corrupted = settings(*[b for b in after["result"]["bindings"] if b["name"] != "SECRET_0"])
+    with pytest.raises(mod.BindingStateError):
+        mod.assert_one_owner_d1_added(before, corrupted, _OWNER_ID)
