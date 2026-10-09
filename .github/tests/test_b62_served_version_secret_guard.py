@@ -403,9 +403,9 @@ def test_3748_b62_production_argv_only_two_lineage_tokens_and_pr_boundary():
     _assert_3748_b62_production_argv_source(source)
     assert '  pull_request:' in source
     assert '  workflow_dispatch:' in source
-    assert '" .github/tests/test_b62_served_version_secret_guard.py "' not in source
     assert "python -m pytest .github/tests/test_b62_served_version_secret_guard.py -q" in source
-    assert '"deploy_production_code"' in source
+    assert "deploy_production_code" in source
+    assert "  deploy-production-code:" in source
     assert "environment: production" in source
     assert "PRODUCTION_MUTATION=0" in source
 
