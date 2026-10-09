@@ -564,8 +564,11 @@ def main(argv: list[str] | None = None) -> int:
                 _read(args.peer_deployments), _read(args.peer_version),
                 promotion_latest_version=expected,
             )
+            # Validate the complete deployment body before creating either
+            # filesystem output, so invalid IDs leave no partial anchor.
+            request_payload = build_rollback_deployment(expected)
             _write_new(args.anchor, anchor)
-            _write_new(args.request, build_rollback_deployment(expected))
+            _write_new(args.request, request_payload)
             print("OWNER_D1_PREPROMOTION_CODE_AND_BINDING_PARITY=PASS")
             print("OWNER_D1_PREPROMOTION_ANCHOR_PREPARED=YES")
         elif args.mode == "verify-promotion":
