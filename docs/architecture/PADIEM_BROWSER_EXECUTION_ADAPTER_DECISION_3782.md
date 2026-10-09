@@ -5,7 +5,10 @@ DOC_ROLE=BROWSER_CONTROL_ENGINEERING_DECISION
 OWNER=PADIEM CENTRAL / Claw browser-control integration
 DECISION_DATE=2026-10-09
 EXECUTION_PRIMARY=RETAIN_EXISTING_ELECTRON_CDP
-EXTERNAL_BROWSER_BACKEND=EVALUATION_ONLY_NOT_SELECTED
+EXTERNAL_BROWSER_BACKEND=PLAYWRIGHT_MCP_SELECTED_OPTIONAL_PILOT_ONLY_NOT_WIRED
+STAGEHAND_V4=DEFER_NO_PRODUCT_INTEGRATION
+BROWSER_USE_OSS=REFERENCE_ONLY_NO_PRODUCT_INTEGRATION
+WINDOWS_COMPARISON=LOCAL_LOOPBACK_3_OF_3_PASS_BOTH_NOT_AI_BENCHMARK
 BROWSER_USE_PRODUCT_RELEASE=OFF
 CANONICAL_LEASE_ADMISSION_WIRED=false
 COMPUTER_USE_OS_GUI=OUT_OF_SCOPE
@@ -79,11 +82,53 @@ A backend implementation must:
 | Slot candidate | Potential use | Current decision | Prerequisite |
 |---|---|---|---|
 | Existing Electron/CDP | Embedded PADIEM Desktop ephemeral view | **RETAIN_CURRENT primary** | Finish #3782 live P01 delivery + Windows E2E |
-| [Microsoft Playwright MCP](https://github.com/microsoft/playwright-mcp) | Optional external Chrome/Edge automation adapter | **CANDIDATE / NOT_SELECTED** | Audit exact tag/SHA, license/transitives, Windows install/browser ownership, P01/egress enforcement, tool allowlist, launch/teardown and rollback |
-| [Browser Use](https://github.com/browser-use/browser-use) | Possible agent/browser backend reference or Python sidecar | **CANDIDATE / NOT_SELECTED** | Audit exact code/license/deps/model calls, Python process, profile/credential/session ownership and no second agent policy |
+| [Microsoft Playwright MCP](https://github.com/microsoft/playwright-mcp) | Optional existing external Chrome/Edge automation only | **SELECTED FOR FUTURE BOUNDED OPTIONAL PILOT; NOT INTEGRATED/ENABLED** | Pin tested npm `@playwright/mcp@0.0.83` (Apache-2.0); require tool allowlist, real P01/egress/ownership conformance, audit dependency/license, teardown and rollback |
+| [Browserbase Stagehand v4](https://github.com/browserbase/stagehand) | AI-driven action/observe/extract framework / local Chrome SDK | **DEFER: NO #3782 PRODUCT INTEGRATION** | Windows deterministic locator smoke passed for npm `@browserbasehq/stagehand@4.2.0` (MIT), but installed Node 22.17.1 is below package requirement `>=22.18.0`; AI model behavior/cost and PADIEM contract unverified |
+| [Browser Use](https://github.com/browser-use/browser-use) | Separate agent/browser backend reference | **REFERENCE_ONLY / NOT SELECTED** | A second autonomous agent/model loop adds unmeasured B14/Engine governance duplication; no provider calls or new Python sidecar for #3782 |
 | [Qwen Code Browser Use](https://qwenlm.github.io/qwen-code-docs/en/users/features/browser-use/) | Chrome extension architecture reference | **REFERENCE_ONLY** | Official docs describe macOS/Linux support; Windows feasibility unverified; do not install as part of #3782 |
 
 An external repository, its UI, a GitHub license badge, or a working demo does **not** mean PADIEM can safely embed its entire runtime. Per #2996, upstream candidates need exact source/version, transitive redistribution license, data egress, model-provider billing, installation, runtime/Windows fit, and rollback review. Playwright MCP explicitly states it is **not a security boundary**; PADIEM retains all approval and safety checks. External implementation and current embedded browser need not both be shipped.
+
+## 2026-10-09 Windows candidate comparison — FINAL technology disposition
+
+This section **finalizes backend selection, NOT product approval** under #2996. Do not turn this evidence into permission for remote Worker/D1 modification, browser access to existing user accounts, generic MCP tool execution or Production activation.
+
+**Measured environment:** Windows PADIEM development machine (OS edition not pinned), Node.js `v22.17.1`, installed Chrome and Edge; packages installed in an **isolated temporary folder outside the repo** via npm (`@playwright/mcp@0.0.83`, Apache-2.0; `@browserbasehq/stagehand@4.2.0`, MIT). Only a locally served, isolated loopback HTML fixture was used; no customer session, provider/model API call, external website action, browser cookie capture or paid inference. Three cold process starts per candidate, using a static 2-row table, preview-form input, click and in-page tab switch.
+
+| Observation | Microsoft Playwright MCP | Stagehand v4 browser SDK |
+|---|---|---|
+| Windows fixture outcomes | **3/3 PASS**: table, type, click, tab | **3/3 PASS**: table, locator fill, click, tab |
+| Elapsed cold-start and three-action sequence | 2,610 ms median; 2,581–2,743 ms | 1,187 ms median; 1,162–1,648 ms |
+| Protocol measured | MCP stdio `browser_navigate` / `browser_snapshot` / `browser_type` / `browser_click` to **isolated Edge** | Direct local Chrome `Stagehand.create` + browser/locator SDK; **no `act/observe/extract` model action** |
+| Node requirement | `>=18`; current Windows host satisfies | `>=22.18.0`; current Windows host `22.17.1` **below supported engine**, despite smoke pass |
+| Exact npm package | `@playwright/mcp@0.0.83` | `@browserbasehq/stagehand@4.2.0` |
+| B14 / real P01 / Broker / external-login compatibility | **NOT TESTED** | **NOT TESTED** |
+
+**Interpretation limits:** These are fundamentally different invocation layers (MCP stdio versus direct SDK), **not equivalent agent benchmarks**. Do not claim Stagehand is categorically 2x faster, cheaper or more reliable; no repeated same-model natural-language `act/observe/extract` workload, prompt-injection/red-team assessment or real PADIEM P01/Broker invocation was run. The package installation/runtime warning is a release integration constraint, not proof Stagehand is broken. These local elapsed times are exploratory, not an SLA or production performance figure.
+
+**Internal baseline checked in parallel:** current Windows PADIEM Desktop TypeScript build succeeded; **44/44 browser trusted-main/action/CDP observation/transport contract tests PASS**. This supports *retention* of the embedded bounded executor; it does **not** prove live owner-approved external-user/browser E2E, which remains #3782 G1–G3.
+
+**Security/capability constraint:** The Playwright MCP server exposes high-capability tools including `browser_evaluate` and `browser_run_code_unsafe`; upstream's origin allow/block lists are **not** a security boundary. If an optional external-browser adapter is later justified, the host MUST **not forward the general MCP catalog to the model**. It must privately map only PADIEM's existing approved bounded action enum to an explicit allowlist (e.g., snapshot/click/type), enforce P01/Broker and exact origin before each invocation, own the process/browser/profile lifecycle, and permit a clean fallback to Electron/CDP. Reusing logged-in external Chrome/Edge sessions is a *separate* access decision: the smoke deliberately did **not** attach to such a session.
+
+### Selection and no-go decision
+
+```text
+FINAL_PRIMARY_EMBEDDED_BROWSER=RETAIN_EXISTING_ELECTRON_CDP
+EXTERNAL_BROWSER_FEATURE_FUTURE_PILOT_BACKEND=MICROSOFT_PLAYWRIGHT_MCP_0_0_83
+STAGEHAND_V4_FOR_3782=DEFER_NOT_INTEGRATE
+BROWSER_USE_AGENT_FOR_3782=REFERENCE_ONLY_NOT_INTEGRATE
+GENERAL_BROWSER_AUTOMATION_ENGINE_BUILD=NO
+NEW_BROWSER_AGENT_OR_MODEL_ROUTER=NO
+G1_TO_G3_EXISTING_APPROVED_SOURCE_WORK=CONTINUE
+OWNER_P01_AND_BROKER_AUTHORITY=RETAIN_PADIEM
+PILOT_OR_RUNTIME_BACKEND_SWAP_AUTHORIZED=NO
+REMOTE_CLOUDFLARE_D1_CREATE_OR_DEPLOY_AUTHORIZED=NO
+PRODUCTION_BROWSER_USE_ENABLED=NO
+```
+
+**Reason:** Existing Electron/CDP already meets the restricted embedded Desktop contract with test coverage; a wholesale external engine replacement would add licensing/packaging and security-risk work without proven incremental product value. For an **unmet requirement to act in the user's existing Chrome/Edge tabs**, prefer a separately approved, narrowly scoped Playwright MCP adapter pilot; it has an observed Windows MCP protocol path and model-agnostic executor. Stagehand's full agent capabilities are unbenchmarked with B14 and would add a second model/tool planning layer; Browser Use similarly is not justified as a second agent under Engine governance. The final decision does not pause approved work or delay G1–G3 solely for another technology scan.
+
+Upstream references: [Microsoft Playwright MCP](https://github.com/microsoft/playwright-mcp), [Playwright connecting to browsers](https://playwright.dev/mcp/configuration/browser-extension), [Stagehand](https://github.com/browserbase/stagehand), and [Browser Use](https://github.com/browser-use/browser-use). Exact npm versions are smoke-pinned, **not** a full transitive license/security admission; before any pilot, #2996 must record pinned source/integrity, dependencies, extension permissions, egress policy and rollback evidence.
 
 ## Next implementation / verification gates (in order)
 
@@ -96,7 +141,8 @@ An external repository, its UI, a GitHub license badge, or a working demo does *
 
 ```text
 G1_G3_IMPLEMENTATION_ALLOWED=SOURCE_ONLY_UNDER_EXISTING_ISSUE_GATES
-G4_EXTERNAL_ADAPTER_APPROVED=NO
+G4_OPTIONAL_EXTERNAL_BROWSER_BACKEND_SELECTED=PLAYWRIGHT_MCP_0_0_83
+G4_EXTERNAL_ADAPTER_PRODUCT_INTEGRATION_AUTHORIZED=NO
 MODEL_CHANGE=NO
 PRODUCTION_DEPLOYMENT=NO
 LIVE_BROWSER_OPERATION=NO
