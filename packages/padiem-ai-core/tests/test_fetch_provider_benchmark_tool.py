@@ -401,3 +401,56 @@ def test_run_case_offline_never_reaches_the_live_transport(monkeypatch):
             benchmark.PROVIDERS["tinyfish"], _case(), transport=transport, offline=True
         )
     assert calls == []
+
+
+def test_tinyfish_http200_structured_url_404_is_not_malformed():
+    """A per-URL page_not_found is not an invalid Fetch API envelope."""
+    case = _case()
+    fixture = _fixture({"request_id": "synthetic", "results": [], "errors": [{"error": "page_not_found", "status": 404}]})
+    with pytest.raises(benchmark.FetchUrlError) as caught:
+        benchmark.run_case(benchmark.PROVIDERS["tinyfish"], case, fixture=fixture)
+    record = benchmark._error_record(benchmark.PROVIDERS["tinyfish"], case, caught.value)
+    assert record["error"] == "FETCH_URL_NOT_FOUND"
+    assert record["http_status"] == 200
+    assert record["resource_status"] == 404
+    assert record["content_chars"] == 0
+    assert "synthetic" not in str(caught.value)
+
+
+@pytest.mark.parametrize("url_status, code", [
+    (403, "FETCH_URL_ERROR"),
+    (402, "FETCH_URL_QUOTA_EXHAUSTED"),
+    (429, "FETCH_URL_RATE_LIMITED"),
+])
+def test_tinyfish_http200_structured_url_failures_are_bounded(url_status, code):
+    case = _case()
+    fixture = _fixture({"results": [], "errors": [{"error": "untrusted-secret-text", "status": url_status}]})
+    with pytest.raises(benchmark.FetchUrlError) as caught:
+        benchmark.run_case(benchmark.PROVIDERS["tinyfish"], case, fixture=fixture)
+    record = benchmark._error_record(benchmark.PROVIDERS["tinyfish"], case, caught.value)
+    assert record["error"] == code
+    assert record["http_status"] == 200
+    assert record["resource_status"] == url_status
+    assert "untrusted-secret-text" not in str(caught.value)
+
+
+def test_tinyfish_empty_results_without_structured_error_is_malformed():
+    with pytest.raises(benchmark.MalformedResponse):
+        benchmark.run_case(benchmark.PROVIDERS["tinyfish"], _case(), fixture=_fixture({"results": [], "errors": []}))
+
+
+def test_tinyfish_http200_url_429_aborts_live_loop_without_second_request(monkeypatch, tmp_path):
+    """No extra provider request after a structured per-URL quota/rate failure."""
+    monkeypatch.setenv("TINYFISH_API_KEY", "synthetic-no-network")
+    calls = []
+    def fake_transport(*args):
+        calls.append(args)
+        return (200, json.dumps({"results": [], "errors": [{"error": "rate_limited", "status": 429}]}).encode(), {})
+    monkeypatch.setattr(benchmark, "_perform_request", fake_transport)
+    output = tmp_path / "fetch-structured-rate-stop.jsonl"
+    rc = benchmark.main(["--provider", "tinyfish", "--allow-network", "--output", str(output)])
+    assert rc == 2
+    assert len(calls) == 1
+    records = [json.loads(x) for x in output.read_text(encoding="utf-8").splitlines()]
+    assert len(records) == 1 and records[0]["error"] == "FETCH_URL_RATE_LIMITED"
+    assert records[0]["http_status"] == 200 and records[0]["resource_status"] == 429
