@@ -178,7 +178,16 @@ jobs:
             exit 1
           fi
           jq -e '.success == true' "${RUNNER_TEMP}/patch-result.json" >/dev/null
-          echo 'OWNER_D1_PATCH_RESPONSE=ACCEPTED_NOT_YET_SERVED_VERIFIED'
+          # HTTP 200 is not proof the Owner D1 binding was applied. Compare
+          # Cloudflare's returned settings against the original served version.
+          python3 .github/scripts/b62_owner_d1_release_transaction.py verify-patch-response \
+            --before "${RUNNER_TEMP}/version-pre.json" \
+            --candidate "${RUNNER_TEMP}/candidate.json" \
+            --response "${RUNNER_TEMP}/patch-result.json" \
+            --d1-owner "${RUNNER_TEMP}/d1-owner.json" \
+            --d1-chat "${RUNNER_TEMP}/d1-chat.json" \
+            --d1-engine "${RUNNER_TEMP}/d1-engine.json"
+          echo 'OWNER_D1_PATCH_RESPONSE=OWNER_BINDING_ADDED_PENDING_SERVED_VERIFICATION'
 
       - name: Verify new 100-percent served version and ALL existing resources
         shell: bash
@@ -200,6 +209,15 @@ jobs:
             -o "${RUNNER_TEMP}/version-post.json"
           curl -fsS --max-time 30 "${auth[@]}" "${base}/settings" \
             -o "${RUNNER_TEMP}/settings-post.json"
+          # GET complete immutable code modules from BOTH exact versions.
+          # This is read-only. Never log or upload these base64 source bodies.
+          modules_api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/workers/${OWNER_WORKER}/versions"
+          curl -fsS --max-time 120 --max-filesize 45000000 "${auth[@]}" \
+            "${modules_api}/${OWNER_D1_PRE_VERSION}?include=modules" \
+            -o "${RUNNER_TEMP}/version-modules-pre.json"
+          curl -fsS --max-time 120 --max-filesize 45000000 "${auth[@]}" \
+            "${modules_api}/${fresh}?include=modules" \
+            -o "${RUNNER_TEMP}/version-modules-post.json"
           python3 .github/scripts/b62_owner_d1_release_transaction.py verify \
             --worker "${{ inputs.worker }}" \
             --pre "${RUNNER_TEMP}/version-pre.json" \
@@ -209,7 +227,12 @@ jobs:
             --d1-owner "${RUNNER_TEMP}/d1-owner.json" \
             --d1-chat "${RUNNER_TEMP}/d1-chat.json" \
             --d1-engine "${RUNNER_TEMP}/d1-engine.json" \
-            --anchor "${RUNNER_TEMP}/owner-prewrite-rollback-anchor.json"
+            --anchor "${RUNNER_TEMP}/owner-prewrite-rollback-anchor.json" \
+            --pre-modules "${RUNNER_TEMP}/version-modules-pre.json" \
+            --post-modules "${RUNNER_TEMP}/version-modules-post.json"
+          # Source bytes are not needed after verification and never persisted.
+          rm -f "${RUNNER_TEMP}/version-modules-pre.json" \
+            "${RUNNER_TEMP}/version-modules-post.json"
           if [ "${OWNER_WORKER}" = 'padiem-chat' ]; then
             health="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 \
               https://chat.padiem.net/health)"

@@ -1,6 +1,7 @@
 """Protected Owner D1 apply/rollback gate: no real Cloudflare mutation in tests."""
 from __future__ import annotations
 
+import base64
 import copy
 import importlib.util
 import json
@@ -19,9 +20,12 @@ if str(SCRIPTS) not in sys.path:
 from b62_owner_d1_release_preflight import OWNER_BINDING
 from b62_owner_d1_release_transaction import (
     TransactionError,
+    assert_exact_worker_code,
     main,
     prepare,
+    validate_patch_settings,
     verify,
+    verify_patch_response,
     verify_rollback_target,
 )
 
@@ -36,6 +40,18 @@ WORKFLOW = ROOT / ".github/workflows/b54-owner-d1-controlled-connection.yml"
 
 def _latest(version: str) -> dict:
     return {"success": True, "result": {"items": [{"id": version}]}}
+
+
+def _module_response(version_id: str, *, body: bytes = b"unchanged python source") -> dict:
+    return {"success": True, "result": {
+        "id": version_id,
+        "modules": [
+            {"name": "main.py", "content_type": "text/x-python",
+             "content_base64": base64.b64encode(body).decode("ascii")},
+            {"name": "entry.mjs", "content_type": "application/javascript+module",
+             "content_base64": base64.b64encode(b"export default {};").decode("ascii")},
+        ],
+    }}
 
 
 def _engine():
@@ -130,12 +146,15 @@ def test_verify_real_served_post_is_only_owner_binding_plus_resource_parity(work
     settings = {"success": True, "result": {
         "bindings": copy.deepcopy(post["result"]["resources"]["bindings"])
     }}
-    assert verify(version, post, fixture._deploy("new-live-version"), settings,
-                  OWNER, anchor) == "new-live-version"
+    assert verify(
+        version, post, fixture._deploy("new-live-version"), settings,
+        OWNER, anchor, _module_response(version["result"]["id"]),
+        _module_response("new-live-version"),
+    ) == "new-live-version"
 
 
 @pytest.mark.parametrize("change", [
-    "unchanged_active", "wrong_version_id", "changed_script", "dropped_secret",
+    "unchanged_active", "wrong_version_id", "changed_handler", "dropped_secret",
     "changed_annotations", "wrong_settings", "wrong_owner_id",
 ])
 def test_post_failures_cannot_report_connected(change):
@@ -156,8 +175,8 @@ def test_post_failures_cannot_report_connected(change):
         served = fixture._deploy("engine-version")
     elif change == "wrong_version_id":
         post["result"]["id"] = "not-the-served-version"
-    elif change == "changed_script":
-        post["result"]["resources"]["script"]["etag"] = "unexpected"
+    elif change == "changed_handler":
+        post["result"]["resources"]["script"]["handlers"] = ["changed"]
     elif change == "dropped_secret":
         post["result"]["resources"]["bindings"].pop(10)
     elif change == "changed_annotations":
@@ -167,7 +186,11 @@ def test_post_failures_cannot_report_connected(change):
     elif change == "wrong_owner_id":
         owner = fixture.ENGINE_DB
     with pytest.raises(TransactionError):
-        verify(pre, post, served, settings, owner, anchor)
+        verify(
+            pre, post, served, settings, owner, anchor,
+            _module_response(pre["result"]["id"]),
+            _module_response("new-live-version"),
+        )
 
 
 @pytest.mark.parametrize("worker", ["engine", "chat"])
@@ -210,6 +233,18 @@ def test_file_outputs_are_creation_only_and_refuse_collisions(tmp_path, capsys):
     assert "FRESH_ROLLBACK_ANCHOR_READY_FOR_UPLOAD=YES" in captured
     assert OWNER not in captured
     assert OWNER in patch.read_text(encoding="utf-8")
+    emitted = json.loads(patch.read_text(encoding="utf-8"))
+    # This EXACT file is used as the multipart form part named 'settings'.
+    # Cloudflare requires its JSON to contain bindings directly, not a nested
+    # {"settings": {...}} wrapper. Reinstating the original bug fails here.
+    assert set(emitted) == {"bindings", "annotations"}
+    assert "settings" not in emitted
+    assert len(emitted["bindings"]) == 19
+    assert emitted["bindings"][-1] == {
+        "type": "d1", "name": OWNER_BINDING, "database_id": OWNER
+    }
+    assert all(x["type"] == "inherit" and x["version_id"] == "engine-version"
+               for x in emitted["bindings"][:-1])
     assert OWNER not in anchor.read_text(encoding="utf-8")
     assert main(args) == 2
     assert "OUTPUT_EXISTS" in capsys.readouterr().err
@@ -297,3 +332,257 @@ def test_rollback_workflow_uses_verified_cloudflare_deployment_schema():
     assert rollback_step.count("-X POST") == 1
     assert rollback_step.index("build-rollback-deployment") < rollback_step.index("OWNER_D1_ROLLBACK_ATTEMPTED=YES")
     assert rollback_step.index("OWNER_D1_ROLLBACK_ATTEMPTED=YES") < rollback_step.index("-X POST")
+
+
+@pytest.mark.parametrize("worker,old_count", [("engine", 18), ("chat", 27)])
+def test_final_multipart_settings_payload_is_direct_object(worker, old_count):
+    args = _engine() if worker == "engine" else _chat()
+    patch, anchor = _prepare(worker)
+    old_version = args[3]
+    assert validate_patch_settings(patch, old_version, OWNER) == OWNER
+    assert set(patch) == {"bindings", "annotations"}
+    assert len(patch["bindings"]) == old_count + 1
+    assert all(item["version_id"] == anchor["rollback_version_id"]
+               for item in patch["bindings"][:-1])
+
+
+@pytest.mark.parametrize("mutation", [
+    "double_wrapper", "missing_owner", "renamed_existing",
+    "inherit_latest", "foreign_database", "extra_setting", "annotations_drift",
+])
+def test_final_multipart_payload_rejects_wrong_or_unexpected_fields(mutation):
+    patch, _ = _prepare("engine")
+    old_version = _engine()[3]
+    bad = copy.deepcopy(patch)
+    if mutation == "double_wrapper":
+        bad = {"settings": bad}
+    elif mutation == "missing_owner":
+        bad["bindings"].pop()
+    elif mutation == "renamed_existing":
+        bad["bindings"][0]["name"] = "RENAMED"
+    elif mutation == "inherit_latest":
+        bad["bindings"][0]["version_id"] = "latest"
+    elif mutation == "foreign_database":
+        bad["bindings"][-1]["database_id"] = "INVALID"
+    elif mutation == "extra_setting":
+        bad["some-unrelated-setting"] = {}
+    else:
+        bad["annotations"]["workers/message"] = "unapproved"
+    with pytest.raises(TransactionError):
+        validate_patch_settings(bad, old_version, OWNER)
+
+
+@pytest.mark.parametrize("worker", ["engine", "chat"])
+def test_http_200_patch_response_requires_added_owner_binding(worker):
+    args = _engine() if worker == "engine" else _chat()
+    before = args[3]
+    patch, _ = _prepare(worker)
+    success = {"success": True, "result": {
+        "bindings": copy.deepcopy(before["result"]["resources"]["bindings"]) + [
+            {"type": "d1", "name": OWNER_BINDING, "database_id": OWNER}
+        ]
+    }}
+    verify_patch_response(before, success, patch, OWNER)
+    # Observed real Cloudflare 2026-10-09 behavior: HTTP 200, success true,
+    # a new served version, but the response had NO Owner D1 binding.
+    no_op = {"success": True, "result": {
+        "bindings": copy.deepcopy(before["result"]["resources"]["bindings"])
+    }}
+    with pytest.raises(TransactionError, match="PATCH_RESPONSE_D1_NOT_APPLIED"):
+        verify_patch_response(before, no_op, patch, OWNER)
+    other_id = copy.deepcopy(success)
+    other_id["result"]["bindings"][-1]["database_id"] = fixture.CHAT_DB
+    with pytest.raises(TransactionError, match="PATCH_RESPONSE_D1_NOT_APPLIED"):
+        verify_patch_response(before, other_id, patch, OWNER)
+    missing_existing = copy.deepcopy(success)
+    missing_existing["result"]["bindings"].pop(0)
+    with pytest.raises(TransactionError, match="PATCH_RESPONSE_D1_NOT_APPLIED"):
+        verify_patch_response(before, missing_existing, patch, OWNER)
+
+
+def test_verify_patch_response_cli_uses_actual_file_and_safe_diagnostics(tmp_path, capsys):
+    args = _engine()
+    patch, _ = _prepare("engine")
+    pre_path = tmp_path / "before.json"
+    proposal_path = tmp_path / "settings.json"
+    response_path = tmp_path / "cloudflare-response.json"
+    pre_path.write_text(json.dumps(args[3]), encoding="utf-8")
+    proposal_path.write_text(json.dumps(patch), encoding="utf-8")
+    no_op = {"success": True, "result": {
+        "bindings": copy.deepcopy(args[3]["result"]["resources"]["bindings"])
+    }}
+    response_path.write_text(json.dumps(no_op), encoding="utf-8")
+    database_paths = []
+    for label, name in (("owner", fixture.mod.OWNER_NAME),
+                        ("chat", "padiem-chat-db"),
+                        ("engine", "padiem-engine")):
+        path = tmp_path / f"database-{label}.json"
+        path.write_text(json.dumps(args[0][name]), encoding="utf-8")
+        database_paths.extend([f"--d1-{label}", str(path)])
+    command = ["verify-patch-response",
+               "--before", str(pre_path),
+               "--candidate", str(proposal_path),
+               "--response", str(response_path), *database_paths]
+    assert main(command) == 2
+    stderr = capsys.readouterr().err
+    assert "PATCH_RESPONSE_D1_NOT_APPLIED" in stderr
+    assert OWNER not in stderr
+    good = copy.deepcopy(no_op)
+    good["result"]["bindings"].append(
+        {"type": "d1", "name": OWNER_BINDING, "database_id": OWNER}
+    )
+    response_path.write_text(json.dumps(good), encoding="utf-8")
+    assert main(command) == 0
+    assert "OWNER_D1_PATCH_RESPONSE_D1_AUTHORITY=PASS" in capsys.readouterr().out
+    # The original 200-success bug also fails at the final form-part file.
+    proposal_path.write_text(json.dumps({"settings": patch}), encoding="utf-8")
+    assert main(command) == 2
+    assert "PATCH_SETTINGS_TOP_LEVEL_INVALID" in capsys.readouterr().err
+
+
+def test_workflow_checks_actual_cloudflare_patch_response_binding():
+    wf = WORKFLOW.read_text(encoding="utf-8")
+    apply = wf.split("      - name: PATCH existing Worker settings ONE time", 1)[1]
+    patch = apply.split("      - name: Verify new 100-percent served version", 1)[0]
+    assert patch.count("-X PATCH") == 1
+    assert '-F "settings=@${RUNNER_TEMP}/candidate.json;type=application/json"' in patch
+    assert "verify-patch-response" in patch
+    assert "--before" in patch and "--candidate" in patch and "--response" in patch
+    assert all(f"--d1-{name}" in patch for name in ("owner", "chat", "engine"))
+    assert patch.index("jq -e '.success == true'") < patch.index("verify-patch-response")
+    assert patch.index("verify-patch-response") < patch.index(
+        "OWNER_D1_PATCH_RESPONSE=OWNER_BINDING_ADDED_PENDING_SERVED_VERIFICATION"
+    )
+
+
+def test_final_json_rejects_substituted_other_canonical_d1_uuid():
+    old_version = _engine()[3]
+    patch, _ = _prepare("engine")
+    patch["bindings"][-1]["database_id"] = fixture.CHAT_DB
+    with pytest.raises(TransactionError, match="PATCH_SETTINGS_OWNER_D1_ID_MISMATCH"):
+        validate_patch_settings(patch, old_version, OWNER)
+
+
+@pytest.mark.parametrize("worker", ["engine", "chat"])
+def test_real_api_changed_etag_and_upload_source_with_identical_bytes_is_accepted(worker):
+    args = _engine() if worker == "engine" else _chat()
+    original = args[3]
+    _, anchor = _prepare(worker)
+    original["result"]["resources"]["script"]["last_deployed_from"] = "wrangler"
+    after = copy.deepcopy(original)
+    after["result"]["id"] = "new-live-version"
+    after["result"]["resources"]["bindings"].append(
+        {"type": "d1", "name": OWNER_BINDING, "database_id": OWNER}
+    )
+    after["result"]["resources"]["script"]["etag"] = "cloudflare-reissued-etag"
+    after["result"]["resources"]["script"]["last_deployed_from"] = "api"
+    settings = {"success": True, "result": {
+        "bindings": copy.deepcopy(after["result"]["resources"]["bindings"])
+    }}
+    old_code = _module_response(original["result"]["id"])
+    new_code = _module_response(after["result"]["id"])
+    assert assert_exact_worker_code(
+        old_code, new_code, original["result"]["id"], after["result"]["id"]
+    ) == 2
+    assert verify(
+        original, after, fixture._deploy("new-live-version"),
+        settings, OWNER, anchor, old_code, new_code
+    ) == "new-live-version"
+
+
+@pytest.mark.parametrize("tamper", [
+    "content", "new_module", "remove_module", "mime", "different_version",
+    "empty_modules", "invalid_base64", "duplicate_name", "extra_field",
+])
+def test_exact_module_guard_rejects_all_code_and_evidence_drift(tamper):
+    old_code = _module_response("original-version")
+    new_code = _module_response("new-version")
+    if tamper == "content":
+        new_code["result"]["modules"][0]["content_base64"] = base64.b64encode(
+            b"malicious-different-code"
+        ).decode("ascii")
+    elif tamper == "new_module":
+        new_code["result"]["modules"].append({
+            "name": "rogue.py", "content_type": "text/x-python",
+            "content_base64": base64.b64encode(b"print(9)").decode("ascii"),
+        })
+    elif tamper == "remove_module":
+        new_code["result"]["modules"].pop()
+    elif tamper == "mime":
+        new_code["result"]["modules"][0]["content_type"] = "text/plain"
+    elif tamper == "different_version":
+        new_code["result"]["id"] = "wrong-version"
+    elif tamper == "empty_modules":
+        new_code["result"]["modules"] = []
+    elif tamper == "invalid_base64":
+        new_code["result"]["modules"][0]["content_base64"] = "invalid%"
+    elif tamper == "duplicate_name":
+        new_code["result"]["modules"][1]["name"] = "main.py"
+    else:
+        new_code["result"]["modules"][0]["source_map"] = "unexpected"
+    with pytest.raises(TransactionError):
+        assert_exact_worker_code(old_code, new_code, "original-version", "new-version")
+
+
+def test_changed_etag_with_changed_module_bytes_never_accepted():
+    args = _engine()
+    original = args[3]
+    _, anchor = _prepare("engine")
+    after = copy.deepcopy(original)
+    after["result"]["id"] = "new-live-version"
+    after["result"]["resources"]["bindings"].append(
+        {"type": "d1", "name": OWNER_BINDING, "database_id": OWNER}
+    )
+    after["result"]["resources"]["script"]["etag"] = "different-hash"
+    after["result"]["resources"]["script"]["last_deployed_from"] = "api"
+    settings = {"success": True, "result": {
+        "bindings": copy.deepcopy(after["result"]["resources"]["bindings"])
+    }}
+    with pytest.raises(TransactionError, match="CODE_MODULE_CONTENT_DRIFT"):
+        verify(original, after, fixture._deploy("new-live-version"), settings,
+               OWNER, anchor, _module_response(original["result"]["id"]),
+               _module_response("new-live-version", body=b"changed code"))
+
+
+def test_matching_modules_never_override_drift_in_other_script_metadata():
+    args = _engine()
+    original = args[3]
+    _, anchor = _prepare("engine")
+    after = copy.deepcopy(original)
+    after["result"]["id"] = "new-live-version"
+    after["result"]["resources"]["bindings"].append(
+        {"type": "d1", "name": OWNER_BINDING, "database_id": OWNER}
+    )
+    after["result"]["resources"]["script"]["etag"] = "different"
+    after["result"]["resources"]["script"]["handlers"] = ["other"]
+    settings = {"success": True, "result": {
+        "bindings": copy.deepcopy(after["result"]["resources"]["bindings"])
+    }}
+    with pytest.raises(TransactionError, match="CODE_SCRIPT_OTHER_METADATA_DRIFT"):
+        verify(original, after, fixture._deploy("new-live-version"), settings,
+               OWNER, anchor, _module_response(original["result"]["id"]),
+               _module_response("new-live-version"))
+
+
+def test_production_workflow_gets_explicit_version_modules_and_never_uses_mutable_content():
+    text = WORKFLOW.read_text(encoding="utf-8")
+    step = text.split("      - name: Verify new 100-percent served version and ALL existing resources", 1)[1]
+    step = step.split("      - name: Fail closed on ambiguous or failed mutation", 1)[0]
+    assert "/workers/workers/${OWNER_WORKER}/versions" in step
+    assert "${OWNER_D1_PRE_VERSION}?include=modules" in step
+    assert "${fresh}?include=modules" in step
+    assert '--pre-modules "${RUNNER_TEMP}/version-modules-pre.json"' in step
+    assert '--post-modules "${RUNNER_TEMP}/version-modules-post.json"' in step
+    assert "rm -f" in step
+    assert "/scripts/${OWNER_WORKER}/content" not in step
+    assert "actions/upload-artifact" not in step
+
+def test_zero_byte_module_is_hashed_and_compared_as_valid_content():
+    before = _module_response("original-version")
+    after = _module_response("new-version")
+    before["result"]["modules"][0]["content_base64"] = ""
+    after["result"]["modules"][0]["content_base64"] = ""
+    assert assert_exact_worker_code(before, after, "original-version", "new-version") == 2
+    after["result"]["modules"][0]["content_base64"] = base64.b64encode(b"now nonempty").decode()
+    with pytest.raises(TransactionError, match="CODE_MODULE_CONTENT_DRIFT"):
+        assert_exact_worker_code(before, after, "original-version", "new-version")

@@ -9,6 +9,10 @@ Mutation is owned ONLY by the separate, manually approved GitHub Actions workflo
 from __future__ import annotations
 
 import argparse
+import base64
+import binascii
+import copy
+import hashlib
 import json
 import os
 import sys
@@ -18,8 +22,10 @@ from uuid import UUID
 
 from b62_binding_state_guard import (
     BindingStateError,
+    assert_one_owner_d1_added,
     assert_owner_version_integrity,
     canonical_state,
+    validate_owner_d1_id,
 )
 from b62_owner_d1_release_preflight import (
     OWNER_BINDING,
@@ -156,9 +162,60 @@ def prepare(
     return candidate, anchor
 
 
+def _version_module_manifest(payload: object, expected_version: str) -> tuple[tuple, ...]:
+    """Hash *every* module from official GET /workers/workers/.../versions/{id}?include=modules.
+
+    The version-specific response, not mutable script HEAD, is authoritative.
+    Return only (name, MIME type, byte length, SHA-256); never print code.
+    """
+    version = _object_result(payload)
+    if version.get("id") != expected_version:
+        raise TransactionError("CODE_MODULE_VERSION_ID_MISMATCH")
+    modules = version.get("modules")
+    if not isinstance(modules, list) or not modules:
+        raise TransactionError("CODE_MODULES_MISSING")
+    entries = []
+    for module in modules:
+        if not isinstance(module, dict) or set(module) != {
+            "name", "content_type", "content_base64"
+        }:
+            raise TransactionError("CODE_MODULE_SHAPE_INVALID")
+        name, media, encoded = (
+            module["name"], module["content_type"], module["content_base64"]
+        )
+        if not isinstance(name, str) or not name or not isinstance(media, str) or not media:
+            raise TransactionError("CODE_MODULE_SHAPE_INVALID")
+        # Cloudflare may return a zero-byte source module as empty base64.
+        # It is valid content; hash b"" rather than rejecting the module.
+        if not isinstance(encoded, str):
+            raise TransactionError("CODE_MODULE_SHAPE_INVALID")
+        try:
+            raw = base64.b64decode(encoded, validate=True)
+        except (binascii.Error, ValueError) as exc:
+            raise TransactionError("CODE_MODULE_BASE64_INVALID") from exc
+        entries.append((name, media, len(raw), hashlib.sha256(raw).hexdigest()))
+    if len({entry[0] for entry in entries}) != len(entries):
+        raise TransactionError("CODE_MODULE_DUPLICATE_NAME")
+    return tuple(sorted(entries))
+
+
+def assert_exact_worker_code(
+    pre_modules: object, post_modules: object, before_id: str, after_id: str
+) -> int:
+    """Prove every module's source bytes and content-type match across versions."""
+    if before_id == after_id:
+        raise TransactionError("CODE_MODULE_SAME_VERSION_UNEXPECTED")
+    before = _version_module_manifest(pre_modules, before_id)
+    after = _version_module_manifest(post_modules, after_id)
+    if before != after:
+        raise TransactionError("CODE_MODULE_CONTENT_DRIFT")
+    return len(before)
+
+
 def verify(
     pre: object, post: object, deployments: object, post_settings: object,
-    owner_id: str, anchor: dict
+    owner_id: str, anchor: dict,
+    pre_modules: object, post_modules: object,
 ) -> str:
     current = _active(deployments)
     original_id = anchor.get("rollback_version_id")
@@ -168,8 +225,33 @@ def verify(
         raise TransactionError("POST_VERSION_NOT_ACTIVE")
     if _object_result(pre).get("id") != original_id:
         raise TransactionError("ROLLBACK_ANCHOR_VERSION_MISMATCH")
+    module_count = assert_exact_worker_code(
+        pre_modules, post_modules, original_id, current
+    )
+    if module_count < 1:
+        raise TransactionError("CODE_MODULES_MISSING")
+    original_script = _object_result(pre).get("resources", {}).get("script")
+    changed_script = _object_result(post).get("resources", {}).get("script")
+    if not isinstance(original_script, dict) or not isinstance(changed_script, dict):
+        raise TransactionError("CODE_SCRIPT_METADATA_MISSING")
+    if set(original_script) != set(changed_script):
+        raise TransactionError("CODE_SCRIPT_METADATA_KEYS_DRIFT")
+    # Cloudflare may regenerate script etag and last_deployed_from during a
+    # settings-only API version upload. Official module bytes are stronger
+    # evidence than etag metadata; normalize ONLY these two fields, and ONLY
+    # after byte-for-byte equality was proven for every module.
+    metadata_change_allowed = {"etag", "last_deployed_from"}
+    if any(
+        original_script[key] != changed_script[key]
+        for key in original_script if key not in metadata_change_allowed
+    ):
+        raise TransactionError("CODE_SCRIPT_OTHER_METADATA_DRIFT")
+    comparable_post = copy.deepcopy(post)
+    for key in metadata_change_allowed:
+        if key in original_script:
+            comparable_post["result"]["resources"]["script"][key] = original_script[key]
     try:
-        assert_owner_version_integrity(pre, post, owner_id)
+        assert_owner_version_integrity(pre, comparable_post, owner_id)
         if canonical_state(post_settings) != canonical_state(post):
             raise TransactionError("POST_SETTINGS_NOT_SERVED")
     except BindingStateError as exc:
@@ -215,6 +297,67 @@ def verify_rollback_target(anchor: dict, version: object, expected_worker: str) 
     return result["id"]
 
 
+def validate_patch_settings(
+    candidate: object, original_version: object, expected_owner_id: str
+) -> str:
+    """Require the EXACT JSON object accepted by Cloudflare multipart 'settings'.
+
+    Cloudflare form field name supplies the only outer 'settings' wrapper.
+    This guard validates the final on-disk file, not just build_candidate().
+    """
+    if not isinstance(candidate, dict) or set(candidate) != {"bindings", "annotations"}:
+        raise TransactionError("PATCH_SETTINGS_TOP_LEVEL_INVALID")
+    current = _object_result(original_version)
+    current_id = current.get("id")
+    resources = current.get("resources")
+    if not is_safe_version_id(current_id) or not isinstance(resources, dict):
+        raise TransactionError("PATCH_SETTINGS_BASE_INVALID")
+    originals = resources.get("bindings")
+    if not isinstance(originals, list) or not originals:
+        raise TransactionError("PATCH_SETTINGS_BASE_BINDINGS_INVALID")
+    entries = candidate["bindings"]
+    if not isinstance(entries, list) or len(entries) != len(originals) + 1:
+        raise TransactionError("PATCH_SETTINGS_BINDING_COUNT_INVALID")
+    expected_inherited = [
+        {"type": "inherit", "name": b["name"], "version_id": current_id}
+        for b in originals
+    ]
+    if entries[:-1] != expected_inherited:
+        raise TransactionError("PATCH_SETTINGS_INHERIT_DRIFT")
+    added = entries[-1]
+    if not isinstance(added, dict) or set(added) != {"type", "name", "database_id"}:
+        raise TransactionError("PATCH_SETTINGS_D1_INVALID")
+    if added["type"] != "d1" or added["name"] != OWNER_BINDING:
+        raise TransactionError("PATCH_SETTINGS_D1_INVALID")
+    try:
+        owner_id = validate_owner_d1_id(added["database_id"])
+    except BindingStateError as exc:
+        raise TransactionError("PATCH_SETTINGS_D1_INVALID") from exc
+    if owner_id != expected_owner_id:
+        raise TransactionError("PATCH_SETTINGS_OWNER_D1_ID_MISMATCH")
+    if not isinstance(candidate["annotations"], dict):
+        raise TransactionError("PATCH_SETTINGS_ANNOTATIONS_INVALID")
+    original_annotations = current.get("annotations") or {}
+    writable = {k: v for k, v in original_annotations.items() if k in ANNOTATIONS}
+    if candidate["annotations"] != writable:
+        raise TransactionError("PATCH_SETTINGS_ANNOTATIONS_DRIFT")
+    return owner_id
+
+
+def verify_patch_response(
+    original_version: object, patch_response: object, candidate: object,
+    expected_owner_id: str,
+) -> None:
+    """HTTP 200/success is insufficient: one Owner D1 MUST appear in PATCH result."""
+    owner_id = validate_patch_settings(
+        candidate, original_version, expected_owner_id
+    )
+    try:
+        assert_one_owner_d1_added(original_version, patch_response, owner_id)
+    except BindingStateError as exc:
+        raise TransactionError("PATCH_RESPONSE_D1_NOT_APPLIED") from exc
+
+
 def build_rollback_deployment(version_id: str) -> dict:
     """Cloudflare POST /deployments body, pinned to one known Worker Version."""
     if not isinstance(version_id, str) or not is_safe_version_id(version_id):
@@ -250,9 +393,15 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--candidate", required=True, type=Path)
     p.add_argument("--anchor", required=True, type=Path)
     v = sub.add_parser("verify")
-    for label in ("pre", "post", "deployments", "settings", "d1-owner", "d1-chat", "d1-engine", "anchor"):
+    for label in ("pre", "post", "deployments", "settings", "d1-owner", "d1-chat", "d1-engine", "anchor", "pre-modules", "post-modules"):
         v.add_argument("--" + label, required=True, type=Path)
     v.add_argument("--worker", choices=tuple(WORKERS), required=True)
+    patch_response = sub.add_parser("verify-patch-response")
+    patch_response.add_argument("--before", required=True, type=Path)
+    patch_response.add_argument("--candidate", required=True, type=Path)
+    patch_response.add_argument("--response", required=True, type=Path)
+    for database in ("d1-owner", "d1-chat", "d1-engine"):
+        patch_response.add_argument("--" + database, required=True, type=Path)
     r = sub.add_parser("verify-rollback-target")
     r.add_argument("--anchor", required=True, type=Path)
     r.add_argument("--version", required=True, type=Path)
@@ -276,7 +425,13 @@ def main(argv: list[str] | None = None) -> int:
                 raise TransactionError("OUTPUT_PATH_ALIAS")
             if args.candidate.exists() or args.anchor.exists():
                 raise TransactionError("OUTPUT_EXISTS")
-            _write_new(args.candidate, {"settings": candidate})
+            ids = _database_ids({
+                OWNER_NAME: _read(args.d1_owner),
+                "padiem-chat-db": _read(args.d1_chat),
+                "padiem-engine": _read(args.d1_engine),
+            })
+            validate_patch_settings(candidate, _read(args.version), ids[OWNER_NAME])
+            _write_new(args.candidate, candidate)
             _write_new(args.anchor, anchor)
             print("OWNER_D1_PREMUTATION_CHECK=PASS")
             print("FRESH_ROLLBACK_ANCHOR_READY_FOR_UPLOAD=YES")
@@ -292,8 +447,20 @@ def main(argv: list[str] | None = None) -> int:
             if anchor.get("worker") != WORKERS[args.worker][0]:
                 raise TransactionError("ANCHOR_WORKER_MISMATCH")
             verify(_read(args.pre), _read(args.post), _read(args.deployments),
-                   _read(args.settings), ids[OWNER_NAME], anchor)
+                           _read(args.settings), ids[OWNER_NAME], anchor,
+                           _read(args.pre_modules), _read(args.post_modules))
             print("OWNER_D1_POST_SERVED_RESOURCES=PASS")
+        elif args.mode == "verify-patch-response":
+            ids = _database_ids({
+                OWNER_NAME: _read(args.d1_owner),
+                "padiem-chat-db": _read(args.d1_chat),
+                "padiem-engine": _read(args.d1_engine),
+            })
+            verify_patch_response(
+                _read(args.before), _read(args.response),
+                _read(args.candidate), ids[OWNER_NAME]
+            )
+            print("OWNER_D1_PATCH_RESPONSE_D1_AUTHORITY=PASS")
         elif args.mode == "verify-rollback-target":
             verify_rollback_target(
                 _read(args.anchor), _read(args.version), WORKERS[args.worker][0]

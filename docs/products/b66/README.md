@@ -105,6 +105,7 @@ hidden fallback, PDF production release or skipped visual/customer E2E gates.
 | Reproduction / certification / compiler generalization | #3595 | source certification/generalization proven (including a second unrelated template); parent issue #3595 remains OPEN for tracking disposition |
 | Template registration source formats | #3586 | XLSX now; HWPX future; legacy XLS/HWP rejected |
 | Quote shell / single composer UX | #3536 | product UX |
+| **Quotation storage / customer-owned Drive** | [QUOTE_STORAGE_STRATEGY.md](QUOTE_STORAGE_STRATEGY.md), #3405, #3871 | **Existing signed-in D1 history is unchanged; customer Google Drive save/reopen is a new optional feature, not yet implemented.** Pricing/quotas not approved. |
 | Native XLSX output | #3496 | optional editable output; not PDF critical path |
 | B66 quote-model decision authority | [Single model authority index](../../models/README.md), [Owner approval policy §0A](../../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md), #3760 | **Owner policy corrected and merged (#3796):** user selects one exact registered, allowed, ready B14 model per run; optional visible/replaceable default only if configured; no free/paid filter, backend automatic selection or fallback. Matching B66 UI/API implementation was merged via #3831; no claim of served Production readiness or accepted customer E2E follows from that merge. |
 
@@ -187,6 +188,7 @@ Do not insert Excel, Google Sheets, HanCell or another office engine into every 
 
 ## Canonical documentation
 
+- [QUOTE_STORAGE_STRATEGY.md](QUOTE_STORAGE_STRATEGY.md) — Owner-approved B66 storage decision: keep browser cache and current account-bound D1 quote history; add optional customer-owned Google Drive JSON+PDF save/reopen separately (#3871); do not change #3405, QuoteCore, the approved renderer, model selection or present billing rules.
 - [SOURCE_TEMPLATE_FIDELITY.md](SOURCE_TEMPLATE_FIDELITY.md) — source analysis, reproduction, certification, PDF/image fidelity implementation, current CGI architecture and development-model operating guidance.
 - This README — product boundary, current authority map and current status.
 - [Model decision and runtime evidence index](../../models/README.md) — unified entrypoint to the Owner policy, actual B14 catalog, product route declarations and deployment evidence. The canonical B66 Owner policy correction was **merged in PR #3796**; the B66 exact-model user-choice UI/API source is now [merged in PR #3831](https://github.com/skerishKang/ai-revenue-lab/pull/3831). That source merge does not prove the currently served deployment, model readiness or customer Freeform result. [#3819](https://github.com/skerishKang/ai-revenue-lab/pull/3819) has now **MERGED** the B14 JSON registry; [#3836](https://github.com/skerishKang/ai-revenue-lab/pull/3836) is earlier integration CI proof only and MUST NOT be merged as a substitute. No model/provider activation or customer E2E is claimed.

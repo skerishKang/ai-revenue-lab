@@ -41,9 +41,38 @@ The job runs through a strict sequence:
 2. Create **in runner memory only** a multipart JSON PATCH candidate whose old entries each have `{"type":"inherit","name":"...","version_id":"<exact-old-version>"}`, followed by one `{"type":"d1","name":"BROWSER_CONTROL_OWNER_P01_D1","database_id":"<actual-owner-DB-UUID>"}`. Preserve writable `workers/message`/`workers/tag` annotations. Do not use `latest`, `old_name`, or raw Worker mock `wrangler.toml`.
 3. Capture a **new** non-secret pre-mutation rollback anchor, distinct from #3856's prior GET-only preflight artifact. It contains original served version ID, source main SHA, Worker and peer identifiers, immutable metadata digests and binding counts; no token, DB UUID, secret name/value or raw settings payload. Upload as `owner-d1-rollback-anchor-<apply-run-id>` with `if-no-files-found:error` **before any mutation**. An upload failure means **no PATCH**.
 4. Re-read active AND latest Worker version and exact main immediately before mutation, aborting if any changed.
-5. Send one official `PATCH /settings` with multipart `settings=@candidate.json;type=application/json`. Mark attempt before the command. A timeout or HTTP failure is `UNKNOWN_OR_REJECTED`, never proof that Production stayed unchanged. **No retries.**
-6. Re-resolve the 100%-served version and GET its immutable detail and settings. Require a distinct new served version with exactly one Owner D1 addition, all old bindings/Secret identities, exact code etag/Assets/compatibility/runtime metadata parity and writable annotation parity. Check existing Chat health when Chat is changed. Do not enable Browser Use in the same dispatch.
-7. Only a complete post-served proof permits `OWNER_D1_ONE_WORKER_CONNECTED=VERIFIED`. A successful PATCH HTTP response alone does not.
+5. Serialize the JSON file **directly** as `{"bindings":[...],"annotations":{...}}`. The multipart field is named `settings`, so the file must **not** contain another top-level `{"settings":...}` wrapper. Validate the on-disk structure before uploading the rollback anchor.
+6. Send one official `PATCH /settings` with multipart `settings=@candidate.json;type=application/json`. Mark attempt before the command. After HTTP 200 and `success:true`, compare **the actual API response's binding list** with the original version: require all old authorities intact and exactly one Owner D1 addition. A 200 response with no Owner D1 is a failed mutation. No retries.
+7. Re-resolve the 100%-served version and GET its immutable detail and settings. Require a distinct new served version with exactly one Owner D1 addition, all old bindings/Secret identities, exact code etag/Assets/compatibility/runtime metadata parity and writable annotation parity. Check existing Chat health when Chat is changed. Do not enable Browser Use in the same dispatch.
+8. Only a complete post-served proof permits `OWNER_D1_ONE_WORKER_CONNECTED=VERIFIED`. A successful PATCH HTTP response alone does not.
+
+## First live trial finding (2026-10-09)
+
+- Initial Engine apply run [#37902435504](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37902435504) returned HTTP 200 but created a 100%-served version with **no Owner D1 binding**. The candidate file had an extra outer `settings` object. This defect was in the CENTRAL-authored release procedure, not caused by the unrelated OAuth read-only source changes.
+- Original Engine version `79311785-1351-49e1-ac89-f069cdcfab0b` was restored and proved 100%-served by the owner-approved rollback run [#37903374269](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37903374269). Original 18 bindings, script metadata and runtime were restored; Chat was unchanged.
+- The API-generated version changed both script `etag` and `last_deployed_from` (Wrangler → API), while handlers and runtime matched. Cloudflare documents etag as hashed script content, so **code equivalence has NOT been proven**. Keep the existing exact script-resource integrity guard until independent per-version content proof or an approved equally strong replacement is available. Do not declare a second live apply ready solely because the payload JSON tests pass.
+- A new live Engine apply requires **separate owner approval**, exact current version checks, a new prewrite rollback anchor and resolution of the code-integrity evidence issue.
+
+## Actual 1,804-module source equivalence, 2026-10-09 (READ ONLY)
+
+The failed first Engine settings PATCH created version `7bb1efa1-1252-4a18-9aba-9dc03a0d909f` from original version `79311785-1351-49e1-ac89-f069cdcfab0b`. Their ordinary Version Detail `resources.script.etag` values differed, as did `last_deployed_from` (`wrangler` → `api`).
+
+Cloudflare's **documented, version-specific** beta GET API `GET /accounts/{account_id}/workers/workers/{worker_id}/versions/{version_id}?include=modules` returns the complete `modules` list and each module's `content_base64`. Authorized read-only requests for BOTH historical versions returned:
+
+- `BEFORE_MODULE_COUNT=1804` and `AFTER_MODULE_COUNT=1804`.
+- Each contained 1 JavaScript module, 1,580 Python modules, 177 octet-stream modules, 46 plain-text modules; 22,500,883 total decoded module bytes each.
+- Sorted manifest of **(module name, content type, decoded byte SHA-256, decoded byte length)** was exactly identical between versions. Manifest SHA-256 for both: `f9543d2c913673a4c00ad6e3031eb24bdb63350f7bdc510faa37cf0601bef774`. No source bytes, credentials, raw database identifiers, or API tokens were printed or persisted.
+- Conclusion: **the entire version-specific code/module content was identical**, despite the changed Worker script `etag` and upload provenance metadata. This was a valid settings-only source-preserving version transition, and the old check produced a false negative about *code* change while still correctly rejecting the missing Owner D1 binding.
+
+### Updated automatic post-release guard
+
+The controlled release job now fetches both the immutable **pre- and post-Worker versions with `?include=modules`** using GET. The verifier binds both module responses to their expected exact original and actually 100%-served new version IDs, requires every module's name/type/decoded byte length/SHA-256 to match, checks for missing/duplicate modules and invalid base64, and fails closed on any module or unrelated Worker resource drift.
+
+When and **only when** all module bytes match, the verifier permits the two Cloudflare-generated `resources.script` metadata fields `etag` and `last_deployed_from` to differ. Every other script field (handlers, named handlers and all future metadata keys), runtime setting, Asset configuration and every old binding must still match exactly. The Owner D1 addition is still required, and the existing strict `assert_owner_version_integrity` function remains unchanged. No mutable `GET /scripts/{name}/content` is substituted for exact-version proof. The code-module response files stay in runner temp and must never be uploaded as artifacts or logged.
+
+This historical read-only comparison proves the previous incident's script equivalence. It **does not** claim an additional Owner D1 connection; any new live release still requires separate owner authorization and a fresh prewrite rollback anchor.
+
+Cloudflare source: https://developers.cloudflare.com/api/typescript/resources/workers/subresources/beta/subresources/workers/subresources/versions/methods/get/
 
 ## Explicit anchored rollback — separate owner decision/dispatch
 
