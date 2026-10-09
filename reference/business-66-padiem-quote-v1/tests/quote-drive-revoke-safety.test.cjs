@@ -17,12 +17,13 @@ const Client = require("../quote-drive-client.js");
 const Ui = require("../quote-drive-ui.js");
 const { createEditorBridge } = require("./quote-editor-stub.cjs");
 
-const CLIENT_ID = "test-client-id.apps.googleusercontent.com";
+const Fixtures = require("./drive-fixtures.cjs");
+const CLIENT_ID = Fixtures.CLIENT_ID;
 const JSON_MIME = Contract.JSON_MIME;
 const PDF_MIME = Contract.PDF_MIME;
-const SKILL_ID = "b66skill_2eb55d822407f626b7a75c8c88d32c40";
-const TEMPLATE = { savedSkillId: SKILL_ID, fingerprint: "fp-cgi-v1" };
-const APPROVED = [{ savedSkillId: SKILL_ID, fingerprint: "fp-cgi-v1", approved: true, active: true, label: "CGI" }];
+const SKILL_ID = Fixtures.SKILL_ID;
+const TEMPLATE = Fixtures.templateReference();
+const APPROVED = Fixtures.approvedTemplates({ label: "CGI" });
 const REVOKE_MARKER = "oauth2.googleapis.com/revoke";
 
 function draftFixture() {
@@ -37,11 +38,7 @@ function draftFixture() {
   });
 }
 
-function pdfBytes() {
-  const bytes = new Uint8Array(512);
-  [37, 80, 68, 70, 45].forEach((byte, index) => { bytes[index] = byte; });
-  return bytes;
-}
+const pdfBytes = Fixtures.pdfBytes;
 
 function stubDocument() {
   const registry = new Map();
