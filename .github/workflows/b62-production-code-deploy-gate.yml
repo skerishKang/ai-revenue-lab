@@ -332,8 +332,8 @@ jobs:
             # New exact-main code deploys may supersede an unactivated upload.
             # Validate both IDs, then lock both again before mutation below.
             python3 .github/scripts/b62_code_deploy_served_preflight.py \
-              --active-version="${active}" \
-              --latest-version="${latest}"
+              --active-version="$active" \
+              --latest-version="$latest"
           else
             # Preserve canonical strict lineage for all normal read-only modes.
             python3 .github/scripts/cloudflare_served_version_lineage.py \
