@@ -388,6 +388,7 @@ jobs:
           node tests/quote-import-atomic.test.cjs
           node tests/quote-drive-import-safety.test.cjs
           node tests/drive-config.test.cjs
+          node tests/b66-drive-config-worker.test.cjs
 
       - name: Run B66 server intake adapter contracts
         shell: bash

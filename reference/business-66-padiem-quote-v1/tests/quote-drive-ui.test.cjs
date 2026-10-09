@@ -197,7 +197,9 @@ function harness(options) {
     },
     mount(extra) {
       return Ui.mount(Object.assign({
-        document: doc, client: client, bridge: bridge, contract: Contract, confirm: () => true
+        document: doc, client: client, bridge: bridge, contract: Contract, confirm: () => true,
+        /* 준비 상태 보고가 클라이언트와 같은 입력을 보도록 설정값을 함께 넘긴다. */
+        clientId: opts.clientId, appId: opts.appId, developerKey: opts.developerKey
       }, extra || {}));
     }
   };
@@ -700,6 +702,53 @@ function harness(options) {
     assert.ok(ui.statusText().indexOf("PDF 다운로드") !== -1, "STATUS_KEEPS_EXISTING_FEATURE_NOTE");
     assert.equal(ui.statusTone(), "info", "STATUS_TONE_INFO");
     assert.equal(ui.saveDisabled(), true, "SAVE_DISABLED_WHEN_NOT_CONFIGURED");
+  }
+
+  /* ── 22. 비어 있지 않은 잘못된 클라이언트 ID 는 연결 UI 를 열지 않는다 ── */
+  {
+    const malformed = harness({ clientId: "not-a-client-id" });
+    const ui = malformed.mount();
+    assert.equal(malformed.client.isConfigured(), false, "MALFORMED_CLIENT_NOT_CONFIGURED");
+    assert.equal(malformed.client.pickerReady(), false, "MALFORMED_CLIENT_PICKER_NOT_READY");
+    assert.equal(ui.saveDisabled(), true, "MALFORMED_CLIENT_SAVE_DISABLED");
+    assert.equal(ui.openDisabled(), true, "MALFORMED_CLIENT_OPEN_DISABLED");
+    assert.ok(ui.statusText().indexOf("형식이 올바르지 않습니다") !== -1, "MALFORMED_CLIENT_FORMAT_WARNING");
+    assert.ok(ui.statusText().indexOf("B66_DRIVE_CLIENT_ID") !== -1, "MALFORMED_CLIENT_NAMES_VALUE");
+    assert.equal(ui.statusTone(), "info", "MALFORMED_CLIENT_TONE_INFO");
+    /* 연결 시도도 시작되지 않는다(팝업·네트워크 없음) */
+    ui.click("connect");
+    await settle();
+    assert.equal(ui.session().connected, false, "MALFORMED_CLIENT_NOT_CONNECTED");
+    assert.equal(malformed.client.session().connectPending, false, "MALFORMED_CLIENT_NO_POPUP");
+  }
+
+  /* ── 23. 형식이 맞는 ID 는 정상적으로 연결 UI 를 연다 ── */
+  {
+    const valid = harness({ clientId: "1234567890-abcdef.apps.googleusercontent.com" });
+    await valid.connect();
+    const ui = valid.mount();
+    assert.equal(valid.client.isConfigured(), true, "VALID_CLIENT_CONFIGURED");
+    assert.equal(ui.session().connected, true, "VALID_CLIENT_CONNECTED");
+    assert.equal(ui.saveDisabled(), false, "VALID_CLIENT_SAVE_ENABLED");
+    assert.equal(ui.openDisabled(), false, "VALID_CLIENT_OPEN_ENABLED");
+    assert.equal(ui.statusText().indexOf("형식이 올바르지 않습니다"), -1, "VALID_CLIENT_NO_FORMAT_WARNING");
+    assert.ok(ui.statusText().indexOf("연결되었습니다") !== -1, "VALID_CLIENT_CONNECTED_STATUS");
+  }
+
+  /* ── 24. UI 와 클라이언트의 클라이언트 ID 판정이 일치한다 ── */
+  {
+    assert.equal(Ui.CLIENT_ID_PATTERN.source, Client.CLIENT_ID_PATTERN.source, "CLIENT_ID_PATTERN_IN_SYNC");
+    [
+      "1234567890-abcdef.apps.googleusercontent.com",
+      "test-client-id.apps.googleusercontent.com"
+    ].forEach((value) => {
+      assert.equal(Ui.describeConfiguration({ clientId: value }).configured, true,
+        "CONSISTENT_VALID: " + value);
+    });
+    ["not-a-client-id", "", "foo.example.com", "a.apps.googleusercontent.com.evil.com"].forEach((value) => {
+      assert.equal(Ui.describeConfiguration({ clientId: value }).configured, false,
+        "CONSISTENT_INVALID: " + value);
+    });
   }
 
   console.log("B66_DRIVE_UI=PASS");

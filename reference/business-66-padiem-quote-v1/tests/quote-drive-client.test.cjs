@@ -205,6 +205,22 @@ function harness(options) {
     assert.equal(h.client.pickerReady(), false, "PICKER_NOT_READY_WITHOUT_CONFIG");
   }
 
+  /* ── 1b. 비어 있지 않은 잘못된 클라이언트 ID 도 설정되지 않은 것으로 본다 ── */
+  {
+    for (const bad of ["not-a-client-id", "foo.example.com", "a.apps.googleusercontent.com.evil.com",
+      "short.apps.googleusercontent.com"]) {
+      const h = harness({ clientId: bad, appId: "1234567890", developerKey: "browser-key" });
+      assert.equal(h.client.isConfigured(), false, "MALFORMED_CLIENT_NOT_CONFIGURED: " + bad);
+      assert.equal(h.client.pickerReady(), false, "MALFORMED_CLIENT_PICKER_NOT_READY: " + bad);
+      const result = await h.client.connect();
+      assert.equal(result.code, "drive_not_configured", "MALFORMED_CLIENT_CONNECT_REFUSED: " + bad);
+      assert.equal(h.state.lastClientId, undefined, "MALFORMED_CLIENT_NO_TOKEN_CLIENT: " + bad);
+    }
+    /* 형식이 맞으면 정상 동작한다 */
+    const valid = harness({ clientId: "1234567890-abcdef.apps.googleusercontent.com" });
+    assert.equal(valid.client.isConfigured(), true, "VALID_CLIENT_CONFIGURED");
+  }
+
   /* ── 2. 연결 성공: 최소 권한 drive.file 만 요청 ── */
   {
     const h = harness();
@@ -788,6 +804,7 @@ function harness(options) {
 
   console.log("B66_DRIVE_CLIENT=PASS");
   console.log("LEAST_SCOPE_REQUESTED=drive.file");
+  console.log("MALFORMED_CLIENT_ID_FAILS_CLOSED=PASS");
   console.log("MANUAL_JSON_PDF_PAIR_SAVE=PASS");
   console.log("DUPLICATE_NAME_NO_OVERWRITE=PASS");
   console.log("NAMING_CHECK_FAILS_CLOSED=PASS");

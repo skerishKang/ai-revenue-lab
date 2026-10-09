@@ -70,7 +70,8 @@
     });
   }
 
-  var CLIENT_ID_PATTERN = /\.apps\.googleusercontent\.com$/;
+  /* B66QuoteDriveClient.CLIENT_ID_PATTERN 과 동일해야 한다(교차 일치 테스트로 고정). */
+  var CLIENT_ID_PATTERN = /^[0-9A-Za-z._-]{6,200}\.apps\.googleusercontent\.com$/;
 
   /* 런타임 설정 준비 상태를 정확히 보고한다.
      운영자가 "무엇이 없는지" 를 화면에서 바로 알 수 있어야 실제 연결 검증을 시작할 수 있다.
@@ -186,6 +187,7 @@
     function renderConnection(options) {
       var silent = Boolean(options && options.silent === true);
       var session = client.session();
+      /* 클라이언트가 형식까지 검증한 값만 연결 가능으로 본다. 빈 문자열이 아님만으로 열지 않는다. */
       var configured = client.isConfigured();
       var connected = session.connected === true;
       connectButton.textContent = connected ? "Google Drive 연결 해제" : "내 Google Drive 연결";
@@ -728,6 +730,7 @@
     DRIVE_SESSION_KEEP_ACTIONS: DRIVE_SESSION_KEEP_ACTIONS.slice(),
     DRIVE_SESSION_DROP_ACTIONS: DRIVE_SESSION_DROP_ACTIONS.slice(),
     configString: configString,
+    CLIENT_ID_PATTERN: CLIENT_ID_PATTERN,
     describeConfiguration: describeConfiguration,
     mount: mount,
     bootstrap: bootstrap,

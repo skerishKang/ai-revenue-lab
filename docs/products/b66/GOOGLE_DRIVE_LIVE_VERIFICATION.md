@@ -67,7 +67,52 @@ TEST_ASSETS=격리된 테스트 Google 계정 1개 + 테스트 견적 1건
   실제 고객 문서·계정을 사용하지 않는다.
 ```
 
-값은 저장소에 커밋하지 않는다. 배포 시점에 `drive-config.js` 의 빈 기본값만 채운다.
+## 2b. 설정 전달 경로 (구현됨 — 운영자가 실행할 절차)
+
+값은 저장소에 커밋하지 않는다. **`quick-quote-kr` Pages 프로젝트 환경변수**로만 주입한다.
+
+```text
+Cloudflare Pages 프로젝트(quick-quote-kr) → Settings → Environment variables (Production)
+  B66_DRIVE_CLIENT_ID              = <승인된 웹 애플리케이션 클라이언트 ID>
+  B66_DRIVE_PICKER_APP_ID          = <프로젝트 번호>        (Picker 사용 시에만)
+  B66_DRIVE_PICKER_DEVELOPER_KEY   = <브라우저 API 키>       (Picker 사용 시에만)
+```
+
+전달 경로: `_worker.js` 의 정확한 경로 핸들러 `GET|HEAD /drive-config.js` 가 위 환경변수에서
+**공개 브라우저 값만** 읽어 `window.B66_DRIVE_*` 로 내보낸다. `index.html` 은 이 경로를 Drive 모듈보다
+먼저 로드한다.
+
+```text
+- 값이 없거나 형식이 틀리면 빈 문자열 → 기능 비활성(연결 버튼 비활성)
+- 형식: 클라이언트 ID 는 <...>.apps.googleusercontent.com, Picker App ID 는 숫자, 키는 영숫자/._-
+- 응답: Content-Type: application/javascript; charset=utf-8, Cache-Control: no-store, nosniff
+- GET/HEAD 만 허용(그 외 405, Allow: GET, HEAD). 오류 응답에도 값을 담지 않는다.
+- 자격증명·토큰·서버 시크릿은 어떤 경우에도 내보내지 않는다.
+```
+
+### 값 노출 없이 주입을 확인하는 방법
+
+```bash
+# 1) 설정이 전달되는지: 값 자체를 출력하지 않고 "비어 있지 않은지"만 확인한다.
+curl -fsS -H 'Cache-Control: no-cache' https://quick-quote-kr.pages.dev/drive-config.js \
+  | grep -E '^window\.B66_DRIVE_[A-Z_]+ = ".*";$' \
+  | sed -E 's/= ".*";/= "<non-empty>";/'      # 빈 문자열이면 아직 미설정
+
+# 2) 헤더 계약 확인
+curl -fsSI https://quick-quote-kr.pages.dev/drive-config.js \
+  | grep -iE '^(content-type|cache-control|x-content-type-options):'
+
+# 3) HEAD 는 본문이 없어야 한다
+curl -fsSI https://quick-quote-kr.pages.dev/drive-config.js | head -1
+
+# 4) 허용되지 않은 메서드는 405 여야 한다
+curl -s -o /dev/null -w '%{http_code}\n' -X POST https://quick-quote-kr.pages.dev/drive-config.js
+```
+
+**값을 화면·로그·이슈에 그대로 출력하지 않는다.** 위 명령은 값의 존재 여부만 본다.
+
+배포는 `b66-neutral-pages-beta.yml` 의 `workflow_dispatch` 게이트로만 수행한다(정확한 main SHA + 확인 문구 입력).
+환경변수를 추가한 뒤에는 **재배포 1회**가 필요하다.
 
 ## 3. 검증 절차
 
