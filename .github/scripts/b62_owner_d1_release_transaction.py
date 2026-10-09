@@ -18,8 +18,10 @@ from uuid import UUID
 
 from b62_binding_state_guard import (
     BindingStateError,
+    assert_one_owner_d1_added,
     assert_owner_version_integrity,
     canonical_state,
+    validate_owner_d1_id,
 )
 from b62_owner_d1_release_preflight import (
     OWNER_BINDING,
@@ -215,6 +217,60 @@ def verify_rollback_target(anchor: dict, version: object, expected_worker: str) 
     return result["id"]
 
 
+def validate_patch_settings(candidate: object, original_version: object) -> str:
+    """Require the EXACT JSON object accepted by Cloudflare multipart 'settings'.
+
+    Cloudflare form field name supplies the only outer 'settings' wrapper.
+    This guard validates the final on-disk file, not just build_candidate().
+    """
+    if not isinstance(candidate, dict) or set(candidate) != {"bindings", "annotations"}:
+        raise TransactionError("PATCH_SETTINGS_TOP_LEVEL_INVALID")
+    current = _object_result(original_version)
+    current_id = current.get("id")
+    resources = current.get("resources")
+    if not is_safe_version_id(current_id) or not isinstance(resources, dict):
+        raise TransactionError("PATCH_SETTINGS_BASE_INVALID")
+    originals = resources.get("bindings")
+    if not isinstance(originals, list) or not originals:
+        raise TransactionError("PATCH_SETTINGS_BASE_BINDINGS_INVALID")
+    entries = candidate["bindings"]
+    if not isinstance(entries, list) or len(entries) != len(originals) + 1:
+        raise TransactionError("PATCH_SETTINGS_BINDING_COUNT_INVALID")
+    expected_inherited = [
+        {"type": "inherit", "name": b["name"], "version_id": current_id}
+        for b in originals
+    ]
+    if entries[:-1] != expected_inherited:
+        raise TransactionError("PATCH_SETTINGS_INHERIT_DRIFT")
+    added = entries[-1]
+    if not isinstance(added, dict) or set(added) != {"type", "name", "database_id"}:
+        raise TransactionError("PATCH_SETTINGS_D1_INVALID")
+    if added["type"] != "d1" or added["name"] != OWNER_BINDING:
+        raise TransactionError("PATCH_SETTINGS_D1_INVALID")
+    try:
+        owner_id = validate_owner_d1_id(added["database_id"])
+    except BindingStateError as exc:
+        raise TransactionError("PATCH_SETTINGS_D1_INVALID") from exc
+    if not isinstance(candidate["annotations"], dict):
+        raise TransactionError("PATCH_SETTINGS_ANNOTATIONS_INVALID")
+    original_annotations = current.get("annotations") or {}
+    writable = {k: v for k, v in original_annotations.items() if k in ANNOTATIONS}
+    if candidate["annotations"] != writable:
+        raise TransactionError("PATCH_SETTINGS_ANNOTATIONS_DRIFT")
+    return owner_id
+
+
+def verify_patch_response(
+    original_version: object, patch_response: object, candidate: object
+) -> None:
+    """HTTP 200/success is insufficient: one Owner D1 MUST appear in PATCH result."""
+    owner_id = validate_patch_settings(candidate, original_version)
+    try:
+        assert_one_owner_d1_added(original_version, patch_response, owner_id)
+    except BindingStateError as exc:
+        raise TransactionError("PATCH_RESPONSE_D1_NOT_APPLIED") from exc
+
+
 def build_rollback_deployment(version_id: str) -> dict:
     """Cloudflare POST /deployments body, pinned to one known Worker Version."""
     if not isinstance(version_id, str) or not is_safe_version_id(version_id):
@@ -253,6 +309,10 @@ def main(argv: list[str] | None = None) -> int:
     for label in ("pre", "post", "deployments", "settings", "d1-owner", "d1-chat", "d1-engine", "anchor"):
         v.add_argument("--" + label, required=True, type=Path)
     v.add_argument("--worker", choices=tuple(WORKERS), required=True)
+    patch_response = sub.add_parser("verify-patch-response")
+    patch_response.add_argument("--before", required=True, type=Path)
+    patch_response.add_argument("--candidate", required=True, type=Path)
+    patch_response.add_argument("--response", required=True, type=Path)
     r = sub.add_parser("verify-rollback-target")
     r.add_argument("--anchor", required=True, type=Path)
     r.add_argument("--version", required=True, type=Path)
@@ -276,7 +336,8 @@ def main(argv: list[str] | None = None) -> int:
                 raise TransactionError("OUTPUT_PATH_ALIAS")
             if args.candidate.exists() or args.anchor.exists():
                 raise TransactionError("OUTPUT_EXISTS")
-            _write_new(args.candidate, {"settings": candidate})
+            validate_patch_settings(candidate, _read(args.version))
+            _write_new(args.candidate, candidate)
             _write_new(args.anchor, anchor)
             print("OWNER_D1_PREMUTATION_CHECK=PASS")
             print("FRESH_ROLLBACK_ANCHOR_READY_FOR_UPLOAD=YES")
@@ -294,6 +355,11 @@ def main(argv: list[str] | None = None) -> int:
             verify(_read(args.pre), _read(args.post), _read(args.deployments),
                    _read(args.settings), ids[OWNER_NAME], anchor)
             print("OWNER_D1_POST_SERVED_RESOURCES=PASS")
+        elif args.mode == "verify-patch-response":
+            verify_patch_response(
+                _read(args.before), _read(args.response), _read(args.candidate)
+            )
+            print("OWNER_D1_PATCH_RESPONSE_D1_AUTHORITY=PASS")
         elif args.mode == "verify-rollback-target":
             verify_rollback_target(
                 _read(args.anchor), _read(args.version), WORKERS[args.worker][0]
