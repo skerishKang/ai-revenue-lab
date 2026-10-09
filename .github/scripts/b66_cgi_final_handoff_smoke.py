@@ -631,6 +631,45 @@ def _login(page, username: str, password: str) -> None:
     print("SMOKE_STAGE=LOGIN_READY")
 
 
+_B66_EXACT_MODEL_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$")
+
+
+def _select_customer_quote_model(page, selected_model_id: str) -> None:
+    """Explicitly select ONE operator-authorized, served B14 model.
+
+    Never invent a default or infer readiness from local/source B14 registry.
+    No network interpret call occurs until the currently served customer
+    dropdown contains this exact selected ID and is enabled.
+    """
+    if (
+        not isinstance(selected_model_id, str)
+        or not _B66_EXACT_MODEL_RE.fullmatch(selected_model_id)
+        or selected_model_id == "b14/auto"
+        or selected_model_id.startswith("padiem-profile/")
+    ):
+        _fail("explicit_quote_model_required")
+    try:
+        selector = page.locator("#padiemQuoteModelSelect")
+        page.wait_for_function(
+            """(expected) => {
+              const select = document.querySelector('#padiemQuoteModelSelect');
+              return !!select && !select.disabled &&
+                Array.from(select.options).some(option => option.value === expected);
+            }""",
+            arg=selected_model_id,
+            timeout=15000,
+        )
+        selector.select_option(value=selected_model_id)
+        if selector.input_value() != selected_model_id:
+            _fail("quote_model_selection_mismatch")
+    except SmokeFailure:
+        raise
+    except Exception as exc:
+        raise SmokeFailure("selected_quote_model_not_ready") from exc
+    print("B66_EXPLICIT_MODEL_SELECTED=PASS")
+    print("B66_MODEL_AUTO_SELECTION=0")
+
+
 def _guided(page, counters: Counters) -> None:
     before = counters.interpret_posts
     print("SMOKE_STAGE=GUIDED_START", flush=True)
@@ -817,7 +856,7 @@ def _partial_followup(page, counters: Counters) -> None:
     print("FOLLOWUP_PRINT_OR_PDF=PASS")
 
 
-def run_live(username: str, password: str) -> int:
+def run_live(username: str, password: str, selected_model_id: str) -> int:
     if not username or not password:
         print("B66_FINAL_HANDOFF_SMOKE=FAIL_CREDENTIAL_UNAVAILABLE")
         return 2
@@ -855,6 +894,7 @@ def run_live(username: str, password: str) -> int:
             print("CGI_LOGIN=PASS")
             print("ASSIGNED_SAVED_SKILL_COUNT=1")
             print("RUNTIME_READINESS=PASS")
+            _select_customer_quote_model(page, selected_model_id)
 
             _guided(page, counters)
             _complete_free_form(page, counters)
@@ -1308,6 +1348,7 @@ def main(argv: list[str] | None = None) -> int:
     return run_live(
         os.getenv("B66_CGI_ALPHA_USERNAME", ""),
         os.getenv("B66_CGI_ALPHA_PASSWORD", ""),
+        os.getenv("B66_CGI_SELECTED_MODEL_ID", ""),
     )
 
 
