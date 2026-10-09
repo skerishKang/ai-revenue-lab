@@ -64,6 +64,8 @@ from .dispatch_quota import _clear_reservation, _refund_active_reservation
 MAX_CLAW_GENERAL_BODY_BYTES = 64 * 1024  # 64 KiB
 MAX_CLAW_GENERAL_MESSAGE_CHARS = 8_000
 MAX_CLAW_GENERAL_MESSAGES = 40
+CLAW_LIVE_REQUEST_HEADER = "X-Padiem-Claw-Live"
+CLAW_LIVE_REQUEST_MARKER = "p01-events-v1"
 _CLAW_GENERAL_ROLES = frozenset({"user", "assistant"})
 
 # NO_EXECUTABLE_ROUTE product HOLD (#3568/#3566): these adapter codes mean the
@@ -310,6 +312,22 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             headers=_NO_STORE_HEADERS,
         )
 
+    # #3930: An explicitly requested live SSE relay requires BOTH the reviewed
+    # server authority and the canonical P01 stream port. No silent fallback to
+    # completed requests, direct B14, or an unapproved UI mode is permitted.
+    live_requested = (
+        request.headers.get(CLAW_LIVE_REQUEST_HEADER, "").strip()
+        == CLAW_LIVE_REQUEST_MARKER
+    )
+    if live_requested:
+        runner = getattr(adapter, "_runner", None)
+        if (
+            getattr(request.app.state, "claw_live_sse_enabled", False) is not True
+            or not callable(getattr(runner, "run_stream", None))
+        ):
+            await _refund_active_reservation()
+            return _error(503, "claw_live_stream_unavailable", "Claw 실시간 실행 상태를 사용할 수 없습니다.")
+
     run = create_claw_run("padiem-chat", user_text)
 
     # #3655: evidence mode is opt-in per request; normal callers see the exact
@@ -317,6 +335,16 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     evidence_requested = (
         request.headers.get(CLAW_EVIDENCE_REQUEST_HEADER, "").strip() == CLAW_EVIDENCE_MARKER
     )
+
+    if live_requested:
+        if evidence_requested:
+            await _refund_active_reservation()
+            return _error(422, "live_evidence_mode_unsupported", "실시간 상태와 감사 증거 요청은 동시에 사용할 수 없습니다.")
+        from .claw_live_events import live_claw_sse
+        live_args = {"product_tier": product_tier, "subject_id": subject_id}
+        if selected_model_id is not None:
+            live_args["selected_model_id"] = selected_model_id
+        return live_claw_sse(adapter, run, live_args)
 
     try:
         dispatch_args = {"product_tier": product_tier, "subject_id": subject_id}
