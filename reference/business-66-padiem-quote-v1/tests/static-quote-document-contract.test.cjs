@@ -1,0 +1,266 @@
+const fs = require("node:fs");
+const path = require("node:path");
+const assert = require("node:assert");
+const vm = require("node:vm");
+
+const read = (name) => fs.readFileSync(path.join(__dirname, "..", name), "utf8");
+const html = read("index.html");
+const embed = read("embed.html");
+const css = read("styles.css");
+const app = read("app.js");
+const core = read("quote-core.js");
+const extraction = read("quote-extraction.js");
+const history = read("quote-history.js");
+const template = read("quote-template.js");
+const templateStore = read("quote-template-store.js");
+const templateRenderer = read("quote-template-renderer.js");
+const templateSelection = read("quote-template-selection.js");
+const templateUi = read("quote-template-ui.js");
+const candidate = read("quote-template-candidate.js");
+const cloner = read("quote-template-cloner.js");
+const skill = read("quote-skill.js");
+const skillStore = read("quote-skill-store.js");
+const skillCandidate = read("quote-skill-candidate.js");
+const skillRegistration = read("quote-skill-registration.js");
+const templateRegistration = read("quote-template-registration.js");
+const registrationSession = read("quote-registration-session.js");
+const skillUi = read("quote-skill-ui.js");
+const intake = read("file-intake.js");
+const easy = read("easy-mode.js");
+const worker = read("_worker.js");
+const account = read("padiem-account.js");
+const accountCss = read("padiem-account.css");
+
+const check = (condition, label) => assert.ok(condition, `contract failed: ${label}`);
+
+// B66 quote money/schema/tax/print/live-limits structural contracts.
+// Executed as a separate process by canonical B66 test discovery.
+/* KOREAN_MONEY_INPUT_CONTRACT — 한국식 콤마 단가 입력 계약
+   (품목 행의 단가/수량 입력은 app.js 템플릿에서 생성되므로 app.js를 검사) */
+check(app.includes('inputmode="numeric"'), "KOREAN_MONEY_INPUT_CONTRACT: price inputmode");
+check(app.includes('inputmode="decimal"'), "KOREAN_MONEY_INPUT_CONTRACT: qty inputmode");
+check(!html.includes('type="number"') && !app.includes('type="number"'), "KOREAN_MONEY_INPUT_CONTRACT: no type=number inputs");
+check(core.includes("function parseMoney(") && core.includes("function formatMoney(") && core.includes("function formatInputNumber("),
+  "KOREAN_MONEY_INPUT_CONTRACT: parse/format separated in quote-core");
+check(app.includes("Core.parseMoney"), "KOREAN_MONEY_INPUT_CONTRACT: app uses Core.parseMoney");
+check(core.includes("function parseKoreanMoney(") &&
+      easy.includes("Core.parseKoreanMoney(text)"),
+  "KOREAN_INPUT_POLISH_CONTRACT: Easy price uses deterministic Korean money parser");
+check(easy.includes("150만원") && easy.includes("복합 단위는 추측하지 않습니다."),
+  "KOREAN_INPUT_POLISH_CONTRACT: Korean shorthand is discoverable and ambiguous forms fail safe");
+
+/* QUOTEDRAFT_SCHEMA_CONTRACT — QuoteDraft 스키마 계약 */
+[
+  "schemaVersion:",
+  "quoteNo:", "issueDate:", "validDays:", "source:",
+  "company:", "rep:", "bizNo:", "address:", "phone:", "email:", "presetId:",
+  "person:",
+  "items:",
+  "tax:",
+  "memo:"
+].forEach((key) => check(core.includes(key), `QUOTEDRAFT_SCHEMA_CONTRACT missing in quote-core.js: ${key}`));
+check(app.includes("Core.createProductionDraft") && app.includes("Core.createDefaultDraft"),
+  "QUOTEDRAFT_SCHEMA_CONTRACT: app keeps the demo fixture only for legacy-state detection while startup/reset use the Production authority");
+check(!app.includes("draft = Core.createDefaultDraft();") && app.includes("draft = Core.createProductionDraft();"),
+  "QUOTEDRAFT_SCHEMA_CONTRACT: app never assigns the demo fixture as a live draft");
+
+/* NEW_QUOTE_SAFETY_CONTRACT — public beta 새 견적은 다음 고객용 빈 상태 */
+check(core.includes("function createBlankQuoteDraft("),
+  "NEW_QUOTE_SAFETY_CONTRACT: domain helper exists");
+check(app.includes("function createBlankNextDraft(") &&
+      app.includes("draft = next;"),
+  "NEW_QUOTE_SAFETY_CONTRACT: direct new quote uses blank-next helper");
+check(core.includes('recipient: { company: "", person: "", address: "", email: "" }') &&
+      core.includes('items: [{ id: "item-1", name: "", qty: 1, unitPrice: 0 }]'),
+  "NEW_QUOTE_SAFETY_CONTRACT: next customer fields are blank");
+check(app.includes("보내는 사람 정보는 유지하고 새 고객 견적을 시작합니다."),
+  "NEW_QUOTE_SAFETY_CONTRACT: user-visible sender preservation");
+check(core.includes("if (current.calculationPolicy) next.calculationPolicy = current.calculationPolicy;"),
+  "NEW_QUOTE_SAFETY_CONTRACT: reviewed family calculation policy survives new quote normalization");
+
+/* UNKNOWN_VAT_REVIEW_CONTRACT — 미확정 세금은 확정 합계처럼 보이지 않음 */
+check(html.includes('id="taxReviewNote"') && html.includes('id="taxRow"'),
+  "UNKNOWN_VAT_REVIEW_CONTRACT: direct review surface exists");
+check(css.includes(".tax-row.tax-review-required"),
+  "UNKNOWN_VAT_REVIEW_CONTRACT: direct review highlight exists");
+check(easy.includes('"품목 합계(세금 확인 전): "') &&
+      easy.includes("최종 합계는 부가세 방식을 선택한 뒤 확정됩니다."),
+  "UNKNOWN_VAT_REVIEW_CONTRACT: unknown VAT summary is explicitly provisional");
+check(easy.includes("requireTaxReview: taxUnknown") &&
+      easy.includes("App.focusTaxReview()"),
+  "UNKNOWN_VAT_REVIEW_CONTRACT: review stays required and is focused when the user opens the result");
+check(app.includes("taxReviewRequired = false;") &&
+      app.includes('$("taxMode").addEventListener("change"'),
+  "UNKNOWN_VAT_REVIEW_CONTRACT: choosing VAT clears review state");
+check(app.includes('TAX_REVIEW_STORAGE_KEY = "quoteBeta.taxReview.v1"') &&
+      app.includes("function normalizeTaxReviewState(") &&
+      app.includes("function loadTaxReviewRequired(activeDraft)") &&
+      app.includes("state.quoteNo === quoteNo"),
+  "VAT_REVIEW_PERSISTENCE_CONTRACT: unresolved review is scoped to the active quote number");
+check(app.includes("persistTaxReviewRequired(taxReviewRequired)") &&
+      app.includes("persistTaxReviewRequired(false)"),
+  "VAT_REVIEW_PERSISTENCE_CONTRACT: unresolved review persists and explicit resolution clears it");
+check(app.includes("raw.schemaVersion !== TAX_REVIEW_SCHEMA_VERSION") &&
+      app.includes("raw.required !== true"),
+  "VAT_REVIEW_PERSISTENCE_CONTRACT: malformed/old review state fails safe");
+check(app.includes("TAX_REVIEW_STORAGE_KEY") &&
+      app.includes("removePrivateItem(TAX_REVIEW_STORAGE_KEY)"),
+  "VAT_REVIEW_PERSISTENCE_CONTRACT: tax review state is independently removable");
+
+/* DRAFT_SAVE_CONTRACT — draft 자동 저장 계약 (#3480: owner 게이트 경유) */
+check(app.includes("writePrivateItem(Core.DRAFT_STORAGE_KEY, JSON.stringify(draft))"),
+  "DRAFT_SAVE_CONTRACT: autosave whole draft");
+check(app.includes("saveDraft();"), "DRAFT_SAVE_CONTRACT: render triggers save");
+
+/* DRAFT_RESTORE_CONTRACT — 복원 + 손상 fallback 계약 */
+check(/Core\.normalizeDraft\(JSON\.parse\(readPrivateItem\(Core\.DRAFT_STORAGE_KEY\)/.test(app),
+  "DRAFT_RESTORE_CONTRACT: restore via normalizeDraft behind the owner gate");
+check(app.includes("catch (err)"), "DRAFT_RESTORE_CONTRACT: corrupted storage fallback");
+check(core.includes("if (raw.schemaVersion !== SCHEMA_VERSION) return null;"),
+  "DRAFT_RESTORE_CONTRACT: schema version guard");
+
+/* VAT_EXCLUSIVE_CONTRACT */
+check(core.includes("vat = Math.round(subtotal * 0.10);"), "VAT_EXCLUSIVE_CONTRACT formula");
+check(core.includes("grand = supply + vat;"), "VAT_EXCLUSIVE_CONTRACT grand");
+
+/* VAT_INCLUSIVE_CONTRACT */
+check(core.includes("supply = Math.round(grand / 1.10);"), "VAT_INCLUSIVE_CONTRACT supply");
+check(core.includes("vat = grand - supply;"), "VAT_INCLUSIVE_CONTRACT vat");
+
+/* VAT_EXEMPT_CONTRACT */
+check(core.includes('EXEMPT: "EXEMPT"'), "VAT_EXEMPT_CONTRACT mode");
+check(core.includes("vat = 0;"), "VAT_EXEMPT_CONTRACT vat");
+
+/* VALID_UNTIL_CONTRACT — 유효일 파생 계약 */
+check(core.includes("function computeValidUntil("), "VALID_UNTIL_CONTRACT: core function");
+check(html.includes('id="pvValidUntil"'), "VALID_UNTIL_CONTRACT: preview element");
+check(app.includes("유효일"), "VALID_UNTIL_CONTRACT: preview label");
+
+/* ADDRESS_FIELDS_CONTRACT — 주소 필드 계약 */
+check(html.includes('id="senderAddress"') && html.includes('id="recipientAddress"'),
+  "ADDRESS_FIELDS_CONTRACT: input fields");
+check(html.includes('id="pvSenderAddress"') && html.includes('id="pvRecipientAddress"'),
+  "ADDRESS_FIELDS_CONTRACT: preview elements");
+
+/* PRINT_LAYOUT_CONTRACT — 빈 페이지 없는 A4 인쇄 계약 */
+check(css.includes("width: var(--quote-page-width, 210mm)") &&
+      css.includes("min-height: var(--quote-page-height, 297mm)") &&
+      css.includes("padding: var(--quote-page-margin, 10mm)"),
+  "SCREEN_PDF_WYSIWYG_GEOMETRY: screen paper uses template page dimensions and margin");
+check(css.includes(".quote-paper { width: auto; min-height: 0; margin: 0; padding: 0; }"),
+  "SCREEN_PDF_WYSIWYG_GEOMETRY: print transfers the same margin to @page");
+check(css.includes("@page { size: A4"), "PRINT_LAYOUT_CONTRACT: A4 page rule");
+check(css.includes("@media print"), "PRINT_LAYOUT_CONTRACT: print media");
+check(css.includes(".topbar, .workspace-modebar, .easy-view, .modebar, .future-note, .panel, .preview-toolbar, .toast { display: none !important; }"),
+  "PRINT_LAYOUT_CONTRACT: all non-print Easy/Direct UI removed from layout");
+check(css.includes(".direct-view[hidden] { display: block !important; }"),
+  "PRINT_LAYOUT_CONTRACT: hidden Direct view is restored for printing from Easy Mode");
+check(css.includes(".grid { display: block; }"), "PRINT_LAYOUT_CONTRACT: paper in normal flow");
+check(css.includes('.quote-paper[data-layout-variant="formal-grid-v1"] .demo-mark { display: block; }'),
+  "PRINT_LAYOUT_CONTRACT: formal printed mark remains visible without exposing the built-in demo mark");
+check(!css.includes("visibility: hidden"), "PRINT_LAYOUT_CONTRACT: visibility hack removed");
+check(core.includes("function printReadiness(") &&
+      app.includes("function printReadinessFailure("),
+  "PRINT_READINESS_CONTRACT: deterministic readiness helper is wired before print");
+check(app.includes("const failure = printReadinessFailure();") &&
+      app.includes("if (failure)") &&
+      app.includes("focusReadinessTarget(failure.code)") &&
+      app.includes("return;"),
+  "PRINT_READINESS_CONTRACT: incomplete quote exits before print and focuses the first missing field");
+check(app.includes('code: "tax_review"') &&
+      app.includes("if (failure.code === \"tax_review\") focusTaxReview();"),
+  "PRINT_READINESS_CONTRACT: unresolved VAT blocks print and focuses VAT control");
+check(app.includes('data-tax-review-placeholder="true"') &&
+      app.includes('placeholder.textContent = "부가세 방식을 선택해 주세요"') &&
+      app.includes('select.value = ""'),
+  "PRINT_READINESS_CONTRACT: unresolved VAT requires an explicit select choice");
+check(html.includes('id="subtotalLabelText"') &&
+      html.includes('id="grandLabelText"') &&
+      html.includes('id="pvSubtotalLabel"') &&
+      html.includes('id="pvGrandLabel"'),
+  "PROVISIONAL_VAT_DISPLAY_CONTRACT: summary and preview have explicit label anchors");
+check(template.includes('subtotalLabel: "품목 합계(세금 확인 전)"') &&
+      template.includes('vatText: "확인 필요"') &&
+      template.includes('grandText: "확정 전"') &&
+      template.includes('supplyLabel: "공급가액"') &&
+      template.includes('grandLabel: "합계"'),
+  "PROVISIONAL_VAT_DISPLAY_CONTRACT: provisional and confirmed labels live in the template profile");
+check(templateRenderer.includes("provisional ? content.totals.provisional.subtotalLabel : supplyLabel") &&
+      templateRenderer.includes("var supplyLabel = content.totals.supplyLabel") &&
+      templateRenderer.includes("provisional ? content.totals.provisional.vatText : Core.formatMoney(totals.vat)") &&
+      templateRenderer.includes("provisional ? content.totals.provisional.grandText : Core.formatMoney(totals.grand)"),
+  "PROVISIONAL_VAT_DISPLAY_CONTRACT: unresolved tax-dependent totals are never presented as confirmed");
+check(template.includes('taxReviewText: "세금  확인 필요"') &&
+      template.includes('grandLabel: "최종 합계"'),
+  "PROVISIONAL_VAT_DISPLAY_CONTRACT: preview tax and total labels expose review state");
+check(templateRenderer.includes("provisional ? content.meta.taxReviewText : content.meta.taxPrefix + Core.TAX_LABELS[mode]") &&
+      templateRenderer.includes("provisional ? content.totals.provisional.grandLabel : content.totals.grandLabel"),
+  "PROVISIONAL_VAT_DISPLAY_CONTRACT: renderer switches labels only while tax stays unresolved");
+
+/* BETA_POLISH_CONTRACT — repeated-use/accessibility/privacy */
+check(css.includes(".workspace-mode {") && css.includes("min-height: 44px;"),
+  "BETA_POLISH_CONTRACT: workspace controls meet 44px target");
+check(css.includes(".mode { min-height: 44px;") &&
+      css.includes(".btn { min-height: 44px;") &&
+      css.includes(".icon-btn { width: 44px; height: 44px;") &&
+      css.includes(".easy-history-actions button {\n  min-height: 44px;"),
+  "BETA_POLISH_CONTRACT: visible action controls use 44px minimum");
+check(html.includes("저장 데이터 초기화") && app.includes("function resetBrowserLocalData("),
+  "BETA_POLISH_CONTRACT: first-party browser reset exists");
+check(html.includes('id="settingsButton"') && html.includes('id="settingsClose"') &&
+      html.includes('class="settings-reset" id="resetLocalData"') &&
+      app.includes('$("settingsButton")') && app.includes('$("settingsClose")') &&
+      css.includes(".settings-panel {"),
+  "BETA_POLISH_CONTRACT: personal settings owns the destructive reset");
+check(app.includes("Core.DRAFT_STORAGE_KEY") &&
+      app.includes("Core.SENDER_STORAGE_KEY") &&
+      app.includes("History.HISTORY_STORAGE_KEY") &&
+      app.includes("History.SEQUENCE_STORAGE_KEY") &&
+      app.includes("TAX_REVIEW_STORAGE_KEY"),
+  "BETA_POLISH_CONTRACT: reset enumerates B66-owned keys including VAT review state");
+check(app.includes("AccountScope.removePrivateKeys(storage, PRIVATE_STORAGE_KEYS)") &&
+      !app.includes("localStorage.clear("),
+  "BETA_POLISH_CONTRACT: reset removes only enumerated B66-owned keys, never the whole origin");
+check(account.includes("settingsButton.hidden = true") &&
+      account.includes("settingsButton.hidden = false"),
+  "BETA_POLISH_CONTRACT: personal settings appears only after sign-in");
+check(easy.includes('addEventListener("b66:auth-changed"') &&
+      account.includes('b66:auth-changed", { detail: { authenticated: true } }') &&
+      easy.includes("로그인하면 견적을 이어서 진행할 수 있습니다.") &&
+      easy.includes("이전에 작성하던 견적이 있습니다"),
+  "EASY_MODE_CONTRACT: resume hint follows sign-in state");
+check(easy.includes('"b66:local-data-reset"') &&
+      easy.includes('fileInput.value = ""'),
+  "BETA_POLISH_CONTRACT: reset clears ephemeral selected-file state");
+
+/* 결정론적 계산 잔여 계약 (원본에서 승계) */
+check(core.includes("Math.round(qty * price)"), "deterministic item amount");
+check(!app.includes("window.print()") && app.includes("bridge.downloadPdf(model, previewModel)") &&
+      html.includes('src="quote-browser-pdf.js"') &&
+      account.includes("browserPdf.makePdf(renderModel, previewModel)"),
+  "certified PDF download replaces the final browser print action");
+check(app.includes("localStorage"), "browser-local persistence");
+
+/* FILE_CHOOSER_LIVE=YES / UPLOAD_AI_LIVE=NO */
+check(html.includes("파일 불러오기") && html.includes('id="easyFileInput"'),
+  "FILE_CHOOSER_LIVE=YES: file selection surface is live");
+check(easy.includes("파일 선택과 안전 검증은 완료됐습니다.") &&
+      easy.includes("업로드·OCR·AI 처리는 시작하지 않았습니다."),
+  "UPLOAD_AI_LIVE=NO: analysis remains explicitly non-live");
+check(!easy.includes("fetch(") && !intake.includes("fetch("),
+  "UPLOAD_AI_LIVE=NO: no browser upload request");
+
+/* CHAT_AI_LIVE=NO */
+check(!easy.includes("문장을 알아듣는 기능은 준비 중이라") &&
+      !easy.includes("아직 자동 해석 모델은 연결 전") &&
+      easy.includes("CGI 기본 견적서로 작성하고 있습니다") &&
+      easy.includes("window.B66QuoteRuntimeBridge"),
+  "CHAT_AI_LIVE=NO: easy mode performs no local interpretation; it routes to the authenticated runtime");
+check(easy.includes('addEventListener("b66:open-easy-chat"') &&
+      app.includes('new CustomEvent("b66:open-easy-chat")') &&
+      html.includes('data-mode="chat"'),
+  "EASY_MODE_CONTRACT: direct-modebar chat button opens the easy workspace");
+
+/* EMAIL_SEND_LIVE=NO */
+check(app.includes("이메일 전송은 다음 단계에서"), "EMAIL_SEND_LIVE=NO: email is future");
+check(html.includes("이메일 보내기 · 다음 단계"), "EMAIL_SEND_LIVE=NO: future label");
