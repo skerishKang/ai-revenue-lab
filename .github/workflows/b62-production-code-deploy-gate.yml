@@ -5,6 +5,8 @@ on:
     paths:
       - ".github/workflows/b62-production-code-deploy-gate.yml"
       - ".github/scripts/b62_cloudflare_production_deploy_config.py"
+      - ".github/scripts/b62_web_secrets_store_contract.py"
+      - ".github/tests/test_b62_atomic_web_secrets_3523.py"
       - ".github/scripts/b62_cloudflare_rollback_deployment_request.py"
       - ".github/tests/test_b62_cloudflare_rollback_deployment_request.py"
       - ".github/scripts/b62_public_origin_504_guard.py"
@@ -53,6 +55,11 @@ on:
         required: false
         default: ""
         type: string
+      attach_existing_web_secrets_store:
+        description: "Atomically attach the two existing Charliekant TinyFish and Daum secret bindings with new main code"
+        required: false
+        type: boolean
+        default: false
       previous_version_id:
         description: "Recorded previous production version id (rollback mode)"
         required: false
@@ -135,6 +142,14 @@ jobs:
           python -m pip install --disable-pip-version-check --quiet pytest
           python -m pytest .github/tests/test_b62_served_version_secret_guard.py -q
           echo "B62_SERVED_VERSION_SECRET_GUARD_TESTS=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Prove Owner-approved atomic web Secrets Store addition contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pytest .github/tests/test_b62_atomic_web_secrets_3523.py -q
+          echo "B62_WEB_SECRETS_STORE_SOURCE_GUARD=PASS"
           echo "PRODUCTION_MUTATION=0"
 
       - name: Validate new-main upload-vs-served release preflight
@@ -411,12 +426,14 @@ jobs:
       READONLY_LATEST_VERSION: ${{ needs.cloudflare-readonly.outputs.latest_version }}
       PUBLIC_BASE_URL_STATE: ${{ needs.cloudflare-readonly.outputs.public_base_url_state }}
       CONFIRMATION: ${{ inputs.confirmation }}
+      ATTACH_WEB_SECRETS_STORE: ${{ inputs.attach_existing_web_secrets_store }}
     steps:
       - name: Require explicit production code deploy authorization
         shell: bash
         run: |
           set -euo pipefail
           test "${CONFIRMATION}" = "DEPLOY_B62_PRODUCTION_CODE_FROM_EXACT_MAIN"
+          test "${ATTACH_WEB_SECRETS_STORE}" = "true" || test "${ATTACH_WEB_SECRETS_STORE}" = "false"
           test -n "${READONLY_ACTIVE_VERSION}"
           if [ "${PUBLIC_BASE_URL_STATE}" != "expected" ]; then
             echo "Refusing deploy: PADIEM_CHAT_PUBLIC_BASE_URL must already be exactly expected (state=${PUBLIC_BASE_URL_STATE}). Live config activation owns any fix; deploy never injects it." >&2
@@ -556,7 +573,12 @@ jobs:
           set -euo pipefail
           generated="apps/padiem-chat/wrangler.production.generated.toml"
           test ! -e "${generated}"
+          extra_args=()
+          if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ]; then
+            extra_args=(--attach-existing-web-secrets-store)
+          fi
           python .github/scripts/b62_cloudflare_production_deploy_config.py \
+            "${extra_args[@]}" \
             --settings "${RUNNER_TEMP}/b62-settings-before.json" \
             --repo-config apps/padiem-chat/wrangler.toml \
             --public-base-url "${B62_PUBLIC_BASE_URL}" \
@@ -663,10 +685,19 @@ jobs:
               json.dump(payload, handle, separators=(",", ":"))
           PY
 
+          verify_args=()
+          if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ]; then
+            verify_args=(--expected-add-web-secrets-store)
+          fi
           python .github/scripts/b62_binding_state_guard.py \
+            "${verify_args[@]}" \
             --before "${normalized_before}" \
             --after "${settings}"
-          echo "BINDINGS_PRESERVED_EXACTLY=PASS"
+          if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ]; then
+            echo "BINDINGS_PRESERVED_AND_APPROVED_ADDED=PASS"
+          else
+            echo "BINDINGS_PRESERVED_EXACTLY=PASS"
+          fi
 
           python - "${settings}" "${IDENTITY_BINDING}" "${IDENTITY_WORKER}" "${B62_PUBLIC_BASE_URL}" <<'PY'
           import json
@@ -707,7 +738,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          verify_args=()
+          if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ]; then
+            verify_args=(--allow-add-existing-web-secrets-store)
+          fi
           python .github/scripts/b62_served_version_secret_guard.py verify \
+            "${verify_args[@]}" \
             --expected "${RUNNER_TEMP}/b62-served-secret-set-before.json" \
             --deployments "${RUNNER_TEMP}/b62-deployments-after.json" \
             --version-detail "${RUNNER_TEMP}/b62-version-after.json"

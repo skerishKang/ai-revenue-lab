@@ -115,3 +115,34 @@ the actually served version and name/type inventory; (6) bounded public
 TinyFish nominal + simulated 402/429 Daum failover. **Do not** claim live
 Search from source, account inventory or settings-plane metadata alone.
 Existing live deadman policy and model selection are unchanged.
+
+## 2026-10-10 controlled atomic Search Secrets Store attachment (#3523)
+
+Owner-approved live release uses the existing Charliekant account and existing
+Secrets Store records only. Cloudflare binding metadata (not API key values):
+
+| B62 Worker alias | Secrets Store record |
+| --- | --- |
+| `TINYFISH_API_KEY` | `PADIEM_TINY_FISH_API_KEY` |
+| `PADIEM_CHAT_DAUM_REST_API_KEY` | `PADIEM_KAKAO_API_KEY` |
+
+Store ID `f0b09ca04a7b43248154c773704a5616`. Confirmed both secrets are
+`active` with `workers` scope in the same account as `padiem-chat`.
+
+DO NOT issue fresh keys, duplicate keys, read key values or first deploy
+the old code with new bindings. Instead use B62 Production Code Deploy Gate
+on an exact newly approved current `main` SHA, with
+`mode=deploy_production_code`, the established exact confirmation string,
+and `attach_existing_web_secrets_store=true`. This is a separately gated
+opt-in; normal production deploy paths remain unchanged.
+
+Guardrails: the pre-deploy Cloudflare served version is recorded as rollback
+anchor. The generator uses trusted actual live settings, preserving all
+existing service, Engine, identity, D1, R2, vars and secret bindings, and
+adds only the two fixed names/store/records above. The served binding-state
+and served-version full-secret-set guards permit only those *exact* additions,
+reject wrong identities, and continue to enforce all existing bindings.
+Post-deploy verify 100% newly served exact-main Worker, both exact bindings,
+health/quotas, nominal public-only TinyFish and 402/429 Daum Search fallback.
+Never expose API values in logs or permit private workspace egress.
+Without all guards PASS do not claim production Search activation.
