@@ -1372,6 +1372,43 @@
     }
   });
 
+  /* ── #3871 외부 저장소(고객 본인 Google Drive) 저장용 PDF 바이트 ──
+     화면 다운로드 흐름과 동일하게 인증된 CGI 브라우저 렌더러만 사용한다.
+     새 렌더러·새 템플릿·모델 호출은 없다. 바이트만 돌려주고 파일로 저장하지 않는다. */
+  async function certifiedPdfBytesForStorage() {
+    const bridge = window.B66QuoteRuntimeBridge;
+    const browserPdf = window.B66BrowserPdf;
+    if (!bridge || typeof bridge.certifiedPreviewBaseUrl !== "function" || !browserPdf ||
+        typeof browserPdf.makePdf !== "function" || !TemplateRenderer) {
+      return { ok: false, code: "pdf_source_unavailable" };
+    }
+    const readinessFailure = printReadinessFailure();
+    if (readinessFailure) {
+      return { ok: false, code: readinessFailure.code === "tax_review" ? "tax_review" : "quote_incomplete" };
+    }
+    const skillId = skillUiState.activeSkillId;
+    if (!skillId || !browserPdf.isCgiSkill(skillId)) return { ok: false, code: "pdf_skill_not_certified" };
+    const profile = activeSkillProfile();
+    if (!profile || !profile.fingerprint) return { ok: false, code: "pdf_skill_mismatch" };
+    const model = TemplateRenderer.buildCertifiedPdfRenderModel(draft, profile, { taxReviewRequired: false });
+    if (!model) return { ok: false, code: "invalid_pdf_model" };
+    try {
+      const previewModel = browserPdf.certifiedPreviewModel(
+        TemplateRenderer.buildRenderModel(draft, profile, {
+          taxReviewRequired: false,
+          slotSources: skillUiState.serverSlotSources,
+          certifiedPreviewBaseUrl: bridge.certifiedPreviewBaseUrl(skillId)
+        }),
+        skillId,
+        profile.fingerprint
+      );
+      const bytes = await browserPdf.makePdf(model, previewModel);
+      return { ok: true, bytes: bytes, fileName: "견적서_" + (draft.meta.quoteNo || "") + ".pdf" };
+    } catch (err) {
+      return { ok: false, code: "browser_pdf_unavailable" };
+    }
+  }
+
   /* ── Excel 내보내기: 현재 확정된 QuoteDraft 를 그대로 포맷 어댑터에 넘긴다 ──
      계산 authority 는 QuoteCore 하나이며, exporter 는 값을 재계산하지 않는다. */
   $("xlsxDownload").addEventListener("click", () => {
@@ -1752,6 +1789,18 @@
   window.B66QuoteAppBridge = Object.freeze({
     getDraft: () => cloneDraft(draft),
     replaceDraft,
+    certifiedPdfBytes: certifiedPdfBytesForStorage,
+    activeTemplateReference: () => {
+      const profile = activeSkillProfile() || activeTemplateProfile();
+      if (!profile) return null;
+      return {
+        savedSkillId: skillUiState.serverSavedSkillId || skillUiState.activeSkillId || null,
+        fingerprint: profile.fingerprint || null,
+        label: profile.name || null,
+        approved: profile.approved === true,
+        rendererContract: "quote-template-renderer.v1"
+      };
+    },
     createFreshDraft,
     createBlankNextDraft,
     copyHistoryAsNew,

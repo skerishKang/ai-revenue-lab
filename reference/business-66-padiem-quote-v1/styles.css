@@ -1721,3 +1721,13 @@ body.b66-three-pane #recentQuoteStarter { display: none !important; }
 .company-profile-status { margin: 10px 0 0; font-size: 13px; }
 .company-profile-status[data-kind="error"] { color: #b42318; }
 .company-profile-status[data-kind="ok"] { color: #067647; }
+
+/* #3871 — 선택 사항인 내 Google Drive 저장·불러오기 UI (연결하지 않아도 기존 기능 유지) */
+.drive-storage { margin-top: 14px; }
+.drive-status { margin: 0 0 8px; font-size: 13px; color: #475467; }
+.drive-status[data-tone="ok"] { color: #067647; }
+.drive-status[data-tone="warn"] { color: #b54708; }
+.drive-status[data-tone="error"] { color: #b42318; }
+.drive-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.drive-actions .btn { min-height: 44px; }
+.drive-file-select { min-height: 44px; max-width: 100%; }

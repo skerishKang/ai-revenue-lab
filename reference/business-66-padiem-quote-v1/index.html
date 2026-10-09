@@ -33,6 +33,9 @@
   <script src="company-profile-settings.js" defer></script>
   <script src="quote-browser-pdf.js" defer></script>
   <script src="padiem-account.js" defer></script>
+  <script src="quote-drive-contract.js" defer></script>
+  <script src="quote-drive-client.js" defer></script>
+  <script src="quote-drive-ui.js" defer></script>
   <script src="shell-layout.js" defer></script>
 </head>
 <body>
@@ -79,6 +82,9 @@
         <div id="companyProfileHost"></div>
       </div>
       <button class="settings-reset" id="resetLocalData" type="button">저장 데이터 초기화</button>
+      <div class="drive-storage" id="driveStoragePanel" aria-label="내 Google Drive 저장">
+        <!-- #3871 Slice D: 내용은 quote-drive-ui.js 가 채운다. 연결하지 않아도 기존 기능은 그대로다. -->
+      </div>
     </section>
 
     <nav class="workspace-modebar" aria-label="견적 작성 모드">
