@@ -317,6 +317,17 @@ class GoogleWorkspaceWorkingCopyTests(unittest.TestCase):
             dict(kind="sheets",range_a1="Sheet1!A1",values=tuple((i,) for i in range(33)))):
             with self.assertRaises(WorkspaceCopyError):NativeEdit(**kwargs)
 
+    def test_invalid_pdf_output_metadata_refused_before_any_copy(self):
+        for filename in ("bad/../output.pdf", "missing_extension", ".env.pdf"):
+            app,p=setup()
+            with self.assertRaises(WorkspaceCopyError):
+                invoke(app,pdf_filename=filename)
+            self.assertFalse(p.calls)
+        app,p=setup()
+        with self.assertRaises(WorkspaceCopyError):
+            invoke(app,output_artifact_id="invalid artifact id")
+        self.assertFalse(p.calls)
+
     def test_native_only_and_wrong_output_are_rejected(self):
         app,p=setup()
         with self.assertRaises(WorkspaceCopyError):invoke(app,source=source(SHEETS_MIME))
