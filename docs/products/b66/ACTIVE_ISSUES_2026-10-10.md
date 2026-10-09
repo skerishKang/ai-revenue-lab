@@ -27,7 +27,7 @@
 | [#3839](https://github.com/skerishKang/ai-revenue-lab/issues/3839) Sol 다중 페이지 | **OPEN · 실제 시각 재현 보정 단계** | **LOCAL1=Sol 6.1 네이티브 다중 페이지 구현·수정·재인증**, **LOCAL2=데이터 경로 소스 계약 작업 완료**. [Draft #3855](https://github.com/skerishKang/ai-revenue-lab/pull/3855)=계획기(미인증). [PR #3965](https://github.com/skerishKang/ai-revenue-lab/pull/3965) **MERGED** (\`f296df9b87aab9e60153358d62fe71e3e43fdfa1\`, CI 22 PASS/1 SKIP) | LOCAL1의 실제 PDF는 1~500행 구조 스트레스 11/11 통과·500행 51페이지 생성. 그러나 CENTRAL 독립 래스터 검사에서 **견적번호/작성일자 겹침, 노란 합계 밴드 표기 누락, 특기사항 글자·번호 손실, 긴 품목명 깨짐**을 확인. 시각 결함 수정·정식 4+행 재인증·고객 Saved Skill PDF E2E 전까지 OPEN. GLM/HTML 대체 금지 |
 | [#3871](https://github.com/skerishKang/ai-revenue-lab/issues/3871) 고객 Google Drive | **OPEN · P2 / Live BLOCKED** | **LOCAL6/COMP2의 기존 #3924·#3960 소스 작업 MERGED/종료**, **후속 OAuth 재사용·연결해제 안전성 소스는 Owner 지시로 LOCAL3 단독 담당** ([지시](https://github.com/skerishKang/ai-revenue-lab/issues/3871#issuecomment-6086152964)). 기존 Padiem Chat Web OAuth Client ID 재사용을 우선 검증; 새 전용 Client 생성은 기본 전제가 아님 | Google 프로젝트 설정·B66 JS origin·Drive 권한 승인 여부 read-only 확인, routine Drive 로그아웃의 프로젝트 전체 OAuth revoke 위험 제거 및 회귀 테스트 → LOCAL3 Draft PR. 별도 Production 배포·실제 JSON+PDF 저장·다른 브라우저 복원·실기기 시험은 미실행 |
 | [#3884](https://github.com/skerishKang/ai-revenue-lab/issues/3884) 고객 비공개 원본 | **OPEN · 중점 선행 의존성** | 기존 **별도 로컬 브랜치** `b66-template-custody-3884` / [Draft #3925](https://github.com/skerishKang/ai-revenue-lab/pull/3925); **로컬 번호는 GitHub 근거로 미확정** | HTTP 원문 크기 상한(파싱 전), OOXML 구조 안전성, R2 orphan 삭제실패 대응, D1 owner 분리 및 원본 SHA-256 복원, 버전/삭제/보유정책, 실제 cross-browser E2E. 현재 PR 미병합 |
-| [#3906](https://github.com/skerishKang/ai-revenue-lab/issues/3906) 모델별 추론 수준 | **OPEN · PROPOSAL / Owner 결정 대기** | B14×B66 UX 정책·견적 추출 실측 근거만; 기능 미구현 | 수동 모델 선택 유지, 제공자별 지원 추론 수준 실측·upstream 전송 확인, B14 레지스트리→API→UI 계약·기본/권장 의미·저장정책 Owner 승인 후 착수 |
+| [#3906](https://github.com/skerishKang/ai-revenue-lab/issues/3906) 모델별 추론 수준 | **OPEN · Owner 개발 승인 / LOCAL1 착수** | **B66_LOCAL1** 담당: 사용자 수동 모델 ID 유지, B66 선택 UI + \`/quote/models\` capability + \`/quote/interpret\` 엄격 검증 구현. [구현 지시](https://github.com/skerishKang/ai-revenue-lab/issues/3906#issuecomment-6086352747) | B14 별도 **[#3977](https://github.com/skerishKang/ai-revenue-lab/issues/3977)** 공식 파라미터 매핑·provider-native 기본 동작 검증을 선행/연동. 지원 미검증 모델은 기본만 표시, unsupported 수준 4xx, 선택 model ID 보존, 실제 provider 요청 parity. #2676 공식 재평가와 기본 권장·저장 정책은 별도 검증·Owner 결정. #3839 Sol 시각 재인증은 LOCAL1 별도 브랜치에서 계속 OPEN, Production 미변경 |
 | [#3916](https://github.com/skerishKang/ai-revenue-lab/issues/3916) 근삿값 확인 | **CLOSED** | 기존 안전성 작업 종료 상태 확인 | 새 실제 회귀 증거 없으면 재오픈하지 않음 |
 
 ### #3839의 테스트 결과는 이렇게 구분
@@ -52,7 +52,7 @@
 2. **LOCAL2 (#3839):** PR #3965 **squash MERGED·해당 소스 계약 작업 종료**. 추후 LOCAL1 실제 PDF 연동 시 새로운 범위가 생기면 CENTRAL에서 별도 배정. 지금 동일한 소스 작업을 반복하지 않는다.
 3. **#3884 기존 브랜치 소유 로컬:** #3925 보안 검토 잔여 조건 확인·수정; 운영 R2/D1 변이 없이 Draft→재검토. **번호 불명확하므로 중복 배정 금지**.
 4. **LOCAL3 (#3871 다음 소스 작업):** 기존 Padiem Chat Web OAuth Client 재사용 여부 확인, Drive 일반 연결해제/계정 전환/늦은 팝업의 Google 전역 revoke 제거·토큰/epoch 격리, 행동 기반 테스트, 런북 갱신 후 소규모 Draft PR. **LOCAL6/COMP2는 #3924·#3960 기존 소스 완료 후 동일 파일 수정 중단·STANDBY**. 실제 Google Console 변경/Pages 배포/실계정 Drive 검증은 별도 권한과 증거가 필요.
-5. **CENTRAL:** 각 PR의 최신 base/head/검증과 소유권 확인, 소스만으로 종료 처리 금지. #3586 실서버 입력 검증은 #3884 선행 기반 준비 후 실행. #3542/3708 일반 컴파일러는 Owner 재개 지시 전 착수 금지; #3906은 승인이 필요한 UX 제안으로 유지.
+5. **CENTRAL:** 각 PR의 최신 base/head/검증과 소유권 확인, 소스만으로 종료 처리 금지. #3586 실서버 입력 검증은 #3884 선행 기반 준비 후 실행. #3542/3708 일반 컴파일러는 Owner 재개 지시 전 착수 금지; #3906은 Owner 개발 승인·LOCAL1 담당으로 전환했으나 실제 추론 전송은 #3977 검증 후 활성화.
 
 ## 종료 규칙 및 원본 보호
 
