@@ -21,7 +21,9 @@ from b62_owner_d1_release_transaction import (
     TransactionError,
     main,
     prepare,
+    validate_patch_settings,
     verify,
+    verify_patch_response,
     verify_rollback_target,
 )
 
@@ -210,6 +212,18 @@ def test_file_outputs_are_creation_only_and_refuse_collisions(tmp_path, capsys):
     assert "FRESH_ROLLBACK_ANCHOR_READY_FOR_UPLOAD=YES" in captured
     assert OWNER not in captured
     assert OWNER in patch.read_text(encoding="utf-8")
+    emitted = json.loads(patch.read_text(encoding="utf-8"))
+    # This EXACT file is used as the multipart form part named 'settings'.
+    # Cloudflare requires its JSON to contain bindings directly, not a nested
+    # {"settings": {...}} wrapper. Reinstating the original bug fails here.
+    assert set(emitted) == {"bindings", "annotations"}
+    assert "settings" not in emitted
+    assert len(emitted["bindings"]) == 19
+    assert emitted["bindings"][-1] == {
+        "type": "d1", "name": OWNER_BINDING, "database_id": OWNER
+    }
+    assert all(x["type"] == "inherit" and x["version_id"] == "engine-version"
+               for x in emitted["bindings"][:-1])
     assert OWNER not in anchor.read_text(encoding="utf-8")
     assert main(args) == 2
     assert "OUTPUT_EXISTS" in capsys.readouterr().err
@@ -297,3 +311,116 @@ def test_rollback_workflow_uses_verified_cloudflare_deployment_schema():
     assert rollback_step.count("-X POST") == 1
     assert rollback_step.index("build-rollback-deployment") < rollback_step.index("OWNER_D1_ROLLBACK_ATTEMPTED=YES")
     assert rollback_step.index("OWNER_D1_ROLLBACK_ATTEMPTED=YES") < rollback_step.index("-X POST")
+
+
+@pytest.mark.parametrize("worker,old_count", [("engine", 18), ("chat", 27)])
+def test_final_multipart_settings_payload_is_direct_object(worker, old_count):
+    args = _engine() if worker == "engine" else _chat()
+    patch, anchor = _prepare(worker)
+    old_version = args[3]
+    assert validate_patch_settings(patch, old_version) == OWNER
+    assert set(patch) == {"bindings", "annotations"}
+    assert len(patch["bindings"]) == old_count + 1
+    assert all(item["version_id"] == anchor["rollback_version_id"]
+               for item in patch["bindings"][:-1])
+
+
+@pytest.mark.parametrize("mutation", [
+    "double_wrapper", "missing_owner", "renamed_existing",
+    "inherit_latest", "foreign_database", "extra_setting", "annotations_drift",
+])
+def test_final_multipart_payload_rejects_wrong_or_unexpected_fields(mutation):
+    patch, _ = _prepare("engine")
+    old_version = _engine()[3]
+    bad = copy.deepcopy(patch)
+    if mutation == "double_wrapper":
+        bad = {"settings": bad}
+    elif mutation == "missing_owner":
+        bad["bindings"].pop()
+    elif mutation == "renamed_existing":
+        bad["bindings"][0]["name"] = "RENAMED"
+    elif mutation == "inherit_latest":
+        bad["bindings"][0]["version_id"] = "latest"
+    elif mutation == "foreign_database":
+        bad["bindings"][-1]["database_id"] = "INVALID"
+    elif mutation == "extra_setting":
+        bad["some-unrelated-setting"] = {}
+    else:
+        bad["annotations"]["workers/message"] = "unapproved"
+    with pytest.raises(TransactionError):
+        validate_patch_settings(bad, old_version)
+
+
+@pytest.mark.parametrize("worker", ["engine", "chat"])
+def test_http_200_patch_response_requires_added_owner_binding(worker):
+    args = _engine() if worker == "engine" else _chat()
+    before = args[3]
+    patch, _ = _prepare(worker)
+    success = {"success": True, "result": {
+        "bindings": copy.deepcopy(before["result"]["resources"]["bindings"]) + [
+            {"type": "d1", "name": OWNER_BINDING, "database_id": OWNER}
+        ]
+    }}
+    verify_patch_response(before, success, patch)
+    # Observed real Cloudflare 2026-10-09 behavior: HTTP 200, success true,
+    # a new served version, but the response had NO Owner D1 binding.
+    no_op = {"success": True, "result": {
+        "bindings": copy.deepcopy(before["result"]["resources"]["bindings"])
+    }}
+    with pytest.raises(TransactionError, match="PATCH_RESPONSE_D1_NOT_APPLIED"):
+        verify_patch_response(before, no_op, patch)
+    other_id = copy.deepcopy(success)
+    other_id["result"]["bindings"][-1]["database_id"] = fixture.CHAT_DB
+    with pytest.raises(TransactionError, match="PATCH_RESPONSE_D1_NOT_APPLIED"):
+        verify_patch_response(before, other_id, patch)
+    missing_existing = copy.deepcopy(success)
+    missing_existing["result"]["bindings"].pop(0)
+    with pytest.raises(TransactionError, match="PATCH_RESPONSE_D1_NOT_APPLIED"):
+        verify_patch_response(before, missing_existing, patch)
+
+
+def test_verify_patch_response_cli_uses_actual_file_and_safe_diagnostics(tmp_path, capsys):
+    args = _engine()
+    patch, _ = _prepare("engine")
+    pre_path = tmp_path / "before.json"
+    proposal_path = tmp_path / "settings.json"
+    response_path = tmp_path / "cloudflare-response.json"
+    pre_path.write_text(json.dumps(args[3]), encoding="utf-8")
+    proposal_path.write_text(json.dumps(patch), encoding="utf-8")
+    no_op = {"success": True, "result": {
+        "bindings": copy.deepcopy(args[3]["result"]["resources"]["bindings"])
+    }}
+    response_path.write_text(json.dumps(no_op), encoding="utf-8")
+    command = ["verify-patch-response",
+               "--before", str(pre_path),
+               "--candidate", str(proposal_path),
+               "--response", str(response_path)]
+    assert main(command) == 2
+    stderr = capsys.readouterr().err
+    assert "PATCH_RESPONSE_D1_NOT_APPLIED" in stderr
+    assert OWNER not in stderr
+    good = copy.deepcopy(no_op)
+    good["result"]["bindings"].append(
+        {"type": "d1", "name": OWNER_BINDING, "database_id": OWNER}
+    )
+    response_path.write_text(json.dumps(good), encoding="utf-8")
+    assert main(command) == 0
+    assert "OWNER_D1_PATCH_RESPONSE_D1_AUTHORITY=PASS" in capsys.readouterr().out
+    # The original 200-success bug also fails at the final form-part file.
+    proposal_path.write_text(json.dumps({"settings": patch}), encoding="utf-8")
+    assert main(command) == 2
+    assert "PATCH_SETTINGS_TOP_LEVEL_INVALID" in capsys.readouterr().err
+
+
+def test_workflow_checks_actual_cloudflare_patch_response_binding():
+    wf = WORKFLOW.read_text(encoding="utf-8")
+    apply = wf.split("      - name: PATCH existing Worker settings ONE time", 1)[1]
+    patch = apply.split("      - name: Verify new 100-percent served version", 1)[0]
+    assert patch.count("-X PATCH") == 1
+    assert '-F "settings=@${RUNNER_TEMP}/candidate.json;type=application/json"' in patch
+    assert "verify-patch-response" in patch
+    assert "--before" in patch and "--candidate" in patch and "--response" in patch
+    assert patch.index("jq -e '.success == true'") < patch.index("verify-patch-response")
+    assert patch.index("verify-patch-response") < patch.index(
+        "OWNER_D1_PATCH_RESPONSE=OWNER_BINDING_ADDED_PENDING_SERVED_VERIFICATION"
+    )
