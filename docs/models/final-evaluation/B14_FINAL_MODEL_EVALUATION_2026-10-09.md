@@ -38,7 +38,7 @@
 | 평가 순서 | exact 모델 ID | 신규 최종 평가 진행 상태 |
 |---:|---|---|
 | 1 | `google/gemini-3.1-flash-lite` | **F1 확인 / F2 무료 한도 확인 / F3 LOCAL_PASS / F4 HTTP200 10/10 / F5 엄격 7/10 / F6 NOT_TESTED** |
-| 2 | `google/gemini-3.5-flash-lite` | **F2 무료 한도 확인 / 그 외 신규 최종 평가 NOT_STARTED** |
+| 2 | `google/gemini-3.5-flash-lite` | **F1 공식 사양 / F2 무료 15 RPM·250K TPM·500 RPD / F4 10/10 HTTP200 / F5 내용 10/10·경로 포함 9/10 / F3·F6 검증 예정** |
 | 3 | `google/gemma-4-26b-a4b-it` | **F2 화면 표시명 기준 무료 한도 기록 / 그 외 신규 최종 평가 NOT_STARTED** |
 | 4 | `google/gemma-4-31b-it` | **F2 화면 표시명 기준 무료 한도 기록 / 그 외 신규 최종 평가 NOT_STARTED** |
 | 5 | `poolside/laguna-s-2.1` (**직접 API**) | `NOT_STARTED` |
@@ -136,7 +136,16 @@ QKR-002의 메타데이터 검증 실패는 다른 모델로 대체됐다는 확
 | F6 고객용 견적 PDF | NOT_TESTED | B66 레이아웃 수정 후 저장 양식으로 최종 PDF E2E |
 | **최종 모델 판정** | **IN_PROGRESS** | 모든 관문 충족 시 Owner 최종 평가 |
 
-## 5. 이후 모델에도 동일하게 기록하는 형식
+
+## 5. Gemini 3.5 Flash Lite — 신규 최종 평가
+
+- 공식 모델 능력: 입력 1,048,576토큰, 최대 출력 65,536토큰, 리즈닝 minimal/low/medium/high, 기본 minimal.
+- AI Studio 무료 티어: RPM 15, 입력 TPM 250,000, RPD 500.
+- 이번 신규 API 10건: 10/10 HTTP200, 견적 내용 10/10, 실행 메타데이터 포함 9/10.
+- 남은 검증: 실제 추론 모드 전달과 완성 견적 PDF E2E.
+- [독립 모델 평가 상세](B14_FINAL_GEMINI_3_5_FLASH_LITE_2026-10-09.md).
+
+## 6. 이후 모델에도 동일하게 기록하는 형식
 
 ```text
 EVALUATION_ROUND = B14_FINAL_MODEL_EVALUATION_2026-10-09
