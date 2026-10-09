@@ -350,6 +350,19 @@ class SolMultipage:
             raise ValueError(f"Certified column grid not recognised: {cols}")
         self.columns = cols
         self.rule_width = 0.72
+        outer = [l for l in self.program.lines
+                 if l["stroke"] == [0.0, 0.0, 0.0]
+                 and abs(l["width"] - self.rule_width) < 0.001
+                 and abs(l["box"][0] - l["box"][2]) < 0.001
+                 and min(abs(l["box"][0] - cols[0]),
+                         abs(l["box"][0] - cols[-1])) < 0.01]
+        if not outer:
+            raise ValueError("Certified lower table frame not recognised")
+        self.frame_left = min(l["box"][0] for l in outer)
+        self.frame_right = max(l["box"][0] for l in outer)
+        self.frame_top = min(l["top"] for l in outer)
+        self.frame_bottom = max(self.height-l["box"][1] for l in outer)
+        self.columns[0], self.columns[-1] = self.frame_left, self.frame_right
         hairs = {l["width"] for l in self.program.lines
                  if abs(l["box"][1] - l["box"][3]) < 0.01 and l["width"] < 0.2}
         self.hair_width = sorted(hairs)[0] if hairs else 0.12
@@ -359,8 +372,7 @@ class SolMultipage:
         # LAST page only. The form footer below it (결제계좌 line, ⊙특기사항 notes, the
         # white cells they sit on, the CGI logo) is certified page furniture and is
         # re-emitted on every page, so rows may never enter either band.
-        total_runs = [i for k in TOTALS_KEYS for i in (self.binds[k].get("runIndices") or [])]
-        self.totals_top = min((self.program.text_runs[i]["top"] for i in total_runs),
+        self.totals_top = min((self.binds[k]["bbox"][1] for k in TOTALS_KEYS),
                               default=LAST_ROWS_CEILING)
         yellow = [r for r in self.program.rects if r["fill"] == [1.0, 1.0, 0.6]]
         self.summary_bottom = max((r["top"] + self.row_pitch for r in yellow),
@@ -428,7 +440,49 @@ class SolMultipage:
 
     def _is_row_boundary_rule(self, line: dict) -> bool:
         return (abs(line["box"][1] - line["box"][3]) < 0.01
-                and self.body_top - 0.01 <= line["top"] <= self.row_band_hi + 0.01)
+                and self.body_top + 0.01 <= line["top"] <= self.row_band_hi + 0.01)
+
+    def _is_outer_frame_rule(self, line: dict) -> bool:
+        box = line["box"]
+        return (line["stroke"] == [0.0, 0.0, 0.0]
+                and abs(line["width"]-self.rule_width) < 0.001
+                and abs(box[0]-box[2]) < 0.001
+                and min(abs(box[0]-self.frame_left), abs(box[0]-self.frame_right)) < 0.001
+                and self.frame_top-0.001 <= line["top"]
+                and self.height-box[1] <= self.frame_bottom+0.001)
+
+    def _is_body_column_rule(self, line: dict) -> bool:
+        box = line["box"]
+        return (line["stroke"] == [0.0, 0.0, 0.0]
+                and abs(line["width"]-self.rule_width) < 0.001
+                and abs(box[0]-box[2]) < 0.001
+                and any(abs(box[0]-x) < 0.01 for x in self.columns[1:-1])
+                and self.height-box[1] > self.body_top+0.001)
+
+    def _column_fragments(self, line: dict, last_bottom: float,
+                          include_summary: bool, include_body_art: bool) -> list[dict]:
+        top, bottom = line["top"], self.height-line["box"][1]
+        intervals = [(top, min(bottom, self.body_top)),
+                     (max(top, last_bottom), bottom)]
+        result = []
+        for lo, hi in intervals:
+            if hi-lo <= 0.001:
+                continue
+            cuts = sorted({lo, hi, *(b for b in (self.totals_top, self.footer_top) if lo < b < hi)})
+            for start, end in zip(cuts, cuts[1:]):
+                if end-start <= 0.001 or not self._include(start, include_summary, include_body_art, False):
+                    continue
+                x = line["box"][0]
+                result.append({**line, "top": start,
+                               "box": [x, self._pdf(end), x, self._pdf(start)]})
+        return result
+
+    @staticmethod
+    def _emit_line(line: dict) -> bytes:
+        x0, y0, x1, y1 = line["box"]
+        return (b"q\n" + _rgba("RG", line["stroke"])
+                + f"{_num(line['width'])} w\n".encode()
+                + f"{_num(x0)} {_num(y0)} m {_num(x1)} {_num(y1)} l S\nQ\n".encode())
 
     def _is_binding_underline(self, line: dict) -> bool:
         """The certified quote-number rule is redrawn at the new value's width.
@@ -581,14 +635,21 @@ class SolMultipage:
                     continue
                 out += self.program.emit_run(prim)
             elif kind == "line":
+                # The original outer frame is structural on EVERY page. Body
+                # filters must never discard its lower-right source segment.
+                if self._is_outer_frame_rule(prim):
+                    out += self._emit_line(prim)
+                    continue
+                if self._is_body_column_rule(prim):
+                    for fragment in self._column_fragments(prim, last_bottom, include_summary, include_body_art):
+                        out += self._emit_line(fragment)
+                    continue
                 if (self._is_binding_underline(prim) or self._is_row_boundary_rule(prim)
                         or self._skip_body_art(prim, last_bottom)):
                     continue
                 if not self._include(prim["top"], include_summary, include_body_art, False):
                     continue
-                x0, y0, x1, y1 = prim["box"]
-                out += b"q\n" + _rgba("RG", prim["stroke"]) + f"{_num(prim['width'])} w\n".encode()
-                out += f"{_num(x0)} {_num(y0)} m {_num(x1)} {_num(y1)} l S\nQ\n".encode()
+                out += self._emit_line(prim)
             elif kind == "rect":
                 # Keyed on the certified colour, not on a y-range: the grey column
                 # header background also sits just above the table.
@@ -612,15 +673,11 @@ class SolMultipage:
     def _grid(self, row_bottoms: list[float]) -> bytes:
         cols, top, bottom = self.columns, self.body_top, row_bottoms[-1]
         out = bytearray()
-        for x in cols:
+        for x in cols[1:-1]:
             out += b"q\n" + _rgba("RG", [0, 0, 0]) + f"{_num(self.rule_width)} w\n".encode()
             out += (f"{_num(x)} {_num(self._pdf(top))} m {_num(x)} "
                     f"{_num(self._pdf(bottom))} l S\nQ\n").encode()
         for b in row_bottoms:
-            for i in range(len(cols) - 1):
-                out += b"q\n" + _rgba("RG", [0, 0, 0]) + f"{_num(self.rule_width)} w\n".encode()
-                out += (f"{_num(cols[i])} {_num(self._pdf(b))} m {_num(cols[i+1])} "
-                        f"{_num(self._pdf(b))} l S\nQ\n").encode()
             out += b"q\n" + _rgba("RG", [0, 0, 0]) + f"{_num(self.hair_width)} w\n".encode()
             out += (f"{_num(cols[0])} {_num(self._pdf(b))} m {_num(cols[-1])} "
                     f"{_num(self._pdf(b))} l S\nQ\n").encode()
