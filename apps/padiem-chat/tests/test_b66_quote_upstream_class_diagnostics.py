@@ -237,6 +237,42 @@ def test_b66_success_response_marks_registered_model_completion_only():
     _assert_no_values_leak(response, "test-fixture/quote-projection")
 
 
+def test_model_missing_labels_are_discarded_and_server_derives_true_missing():
+    # Synthetic reproduction of the class observed in the real Gemini canary:
+    # HTTP 422 invalid_missing_fields while extracting a partial quotation.
+    # Model-produced missing labels are advisory and never the server authority.
+    provider = _AnswerClient(json.dumps({
+        "recipient": {"company": "Synthetic Buyer"},
+        "items": [{"name": "Synthetic Pipe", "qty": 100, "unitPrice": None}],
+        "missing": ["items[0].unitPrice", "recipient.company", "items[0].unitPrice"],
+    }))
+    response = _post(
+        _client(B66QuoteConversationInterpreter(provider)),
+        "Synthetic Buyer quoted Synthetic Pipe x100",
+    )
+    assert response.status_code == 200
+    assert response.headers.get("x-b66-result-origin") == "registered_model_completion"
+    assert response.json()["candidate"]["missing"] == ["unitPrice"]
+    assert "items[0].unitPrice" not in response.text
+    assert provider.calls == 1
+
+
+def test_wrong_model_missing_container_still_fails_closed():
+    provider = _AnswerClient(json.dumps({
+        "recipient": {"company": "Synthetic Buyer"},
+        "items": [{"name": "Synthetic Pipe", "qty": 100}],
+        "missing": {"unitPrice": True},
+    }))
+    response = _post(
+        _client(B66QuoteConversationInterpreter(provider)),
+        "Synthetic Buyer quoted Synthetic Pipe x100",
+    )
+    assert response.status_code == 422
+    assert response.headers.get("x-b66-rejection-reason") == "invalid_missing_fields"
+    assert "x-b66-result-origin" not in response.headers
+    assert provider.calls == 1
+
+
 def test_b66_fallback_response_is_distinct_from_registered_model_completion():
     provider = _RaisingClient(
         ChatRuntimeError(502, "provider_server_error", "synthetic upstream error")

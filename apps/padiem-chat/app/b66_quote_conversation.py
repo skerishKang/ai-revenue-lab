@@ -262,8 +262,16 @@ def _recover_single_json_payload(text: str) -> Any:
     return value
 
 
-def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
-    """Validate untrusted model output into variable-only quote fields."""
+def normalize_conversation_output(
+    raw: Any, *, server_derives_missing: bool = False
+) -> B66QuoteConversationProjection:
+    """Validate model facts; optionally discard untrusted missing-field labels.
+
+    In the live B66 interpreter, _server_missing_fields is authoritative.
+    Preserve structural bounds and all quote fact/forbidden-field checks, but
+    never reject a usable model answer merely because the model listed indexed
+    or otherwise noncanonical missing-field names.
+    """
 
     if isinstance(raw, str):
         if not raw:
@@ -462,6 +470,15 @@ def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
             raise B66QuoteConversationError("invalid_tax_mode", path="taxMode", observed_type="string")
 
     missing_raw = raw.get("missing")
+    if (
+        server_derives_missing
+        and isinstance(missing_raw, list)
+        and len(missing_raw) <= 256
+        and all(isinstance(item, str) and len(item) <= 128 for item in missing_raw)
+    ):
+        # Never forward or trust AI-provided missing labels: server recomputes
+        # the actual field set using validated facts and the Saved Skill schema.
+        missing_raw = []
     if missing_raw is None:
         missing_raw = []
     if (
@@ -638,7 +655,7 @@ class B66QuoteConversationInterpreter:
         answer = result.get("answer")
         if not isinstance(answer, str):
             raise B66QuoteConversationError("invalid_model_output")
-        projection = normalize_conversation_output(answer)
+        projection = normalize_conversation_output(answer, server_derives_missing=True)
         return replace(
             projection,
             missing=_server_missing_fields(projection, skill),
