@@ -46,7 +46,7 @@ from .auth_routes import (
 )
 from .auto_grounding import AutoGroundingService
 from .chat_routes import api_chat, api_chat_stream
-from .claw_general_routes import claw_general_execute
+from .claw_general_routes import claw_general_execute, claw_general_capabilities
 from .claw_routes import (
     claw_approval_decision,
     claw_manual_intake_artifact,
@@ -80,6 +80,12 @@ from .claw_local_access_routes import (
     CLAW_LOCAL_ACCESS_PATH,
     UnconfiguredClawLocalAccessTruthSource,
     claw_local_access,
+)
+from .claw_local_connect_routes import (
+    CLAW_LOCAL_CONNECT_PATH,
+    UnconfiguredClawLocalPairingConnectPort,
+    claw_local_connect,
+    claw_local_connect_status,
 )
 from .claw_task_alert_store import D1ClawTaskAlertStore
 from .claw_automation_store import D1ClawAutomationStore
@@ -194,6 +200,7 @@ def create_app(
     telemetry_emitter=None,
     claw_p01_continuation_client=None,
     claw_local_access_source=None,
+    claw_local_connect_port=None,
     local_task_result_source=None,
     desktop_device_session_authority=None,
     auth_abuse_store: AuthAbuseStore | None = None,
@@ -300,6 +307,7 @@ def create_app(
         # #3539: the generic Claw composer runs through the canonical #3382 P01
         # Engine lane. It is a distinct B54 product boundary from manual-intake
         # and has no direct-B14 (/api/chat/stream) fallback.
+        Route("/api/claw/general/capabilities", claw_general_capabilities, methods=["GET"]),
         Route("/api/claw/general", claw_general_execute, methods=["POST"]),
         Route(
             "/api/claw/manual-intake/quote-compare",
@@ -337,6 +345,11 @@ def create_app(
         # #3094: the one real read-only source behind the "Connect this computer"
         # panel. Owner-scoped; it pairs nothing and approves nothing.
         Route(CLAW_LOCAL_ACCESS_PATH, claw_local_access, methods=["GET"]),
+        # #3650: the local/nonprod initiating leg. Fail-closed unless the run
+        # composition explicitly installs a connect port; the central #3476
+        # same-origin guard covers it like every cookie-authenticated POST.
+        Route(CLAW_LOCAL_CONNECT_PATH, claw_local_connect, methods=["POST"]),
+        Route(CLAW_LOCAL_CONNECT_PATH, claw_local_connect_status, methods=["GET"]),
         Route("/api/claw/runs/{run_id}/local-result", local_runner_result, methods=["POST"]),
         Route("/api/claw/inbox/{kind}", claw_inbox_list, methods=["GET"]),
         Route("/api/claw/inbox/{kind}/{item_id}", claw_inbox_status, methods=["PATCH"]),
@@ -422,6 +435,8 @@ def create_app(
     # composition root from trusted bindings; None means unconfigured and the
     # execute route fails closed before any transport.
     app.state.claw_p01_adapter = claw_p01_adapter
+    # Explicit trusted server opt-in; no browser-provided activation authority.
+    app.state.claw_live_sse_enabled = False
     # #2961 owner approval decision lane: the same composed Engine client, used
     # only to submit a server-derived decision to the canonical resume route.
     # None keeps the decision route fail-closed before any Engine transport.
@@ -434,6 +449,14 @@ def create_app(
         claw_local_access_source
         if claw_local_access_source is not None
         else UnconfiguredClawLocalAccessTruthSource()
+    )
+    # #3650 local/nonprod connect initiating leg. None keeps the route at its
+    # bounded fail-closed refusal: production never composes one, so no
+    # challenge can be minted there and no pairing store appears.
+    app.state.claw_local_connect = (
+        claw_local_connect_port
+        if claw_local_connect_port is not None
+        else UnconfiguredClawLocalPairingConnectPort()
     )
     # #3139 return leg: the server-owned consumer of a Local Runner terminal
     # result. None keeps the route fail-closed until the Worker root composes

@@ -64,6 +64,8 @@ from .dispatch_quota import _clear_reservation, _refund_active_reservation
 MAX_CLAW_GENERAL_BODY_BYTES = 64 * 1024  # 64 KiB
 MAX_CLAW_GENERAL_MESSAGE_CHARS = 8_000
 MAX_CLAW_GENERAL_MESSAGES = 40
+CLAW_LIVE_REQUEST_HEADER = "X-Padiem-Claw-Live"
+CLAW_LIVE_REQUEST_MARKER = "p01-events-v1"
 _CLAW_GENERAL_ROLES = frozenset({"user", "assistant"})
 
 # NO_EXECUTABLE_ROUTE product HOLD (#3568/#3566): these adapter codes mean the
@@ -134,18 +136,33 @@ def _sse_frame(event: str, payload: dict[str, Any]) -> bytes:
     return f"event: {event}\ndata: {data}\n\n".encode("utf-8")
 
 
-def _claw_general_sse(answer: str, evidence_headers: dict[str, str] | None = None) -> Response:
-    """One bounded terminal SSE projection (delta + done).
+def _claw_general_sse(
+    answer: str,
+    evidence_headers: dict[str, str] | None = None,
+    *,
+    history: tuple[dict[str, object], ...] = (),
+) -> Response:
+    """Bounded terminal SSE, optionally preceded by real *post-execution* history.
 
-    Same framing the orchestration bridge already returns to the browser, so the
-    existing SSE reader handles the canonical P01 answer without a second client
-    protocol. The P01 lane resolves one terminal result; no partial upstream is
-    streamed and no answer is fabricated.
+    The current Engine client is synchronous: all P01 events are only available
+    AFTER the run. Never misrepresent this event history as live progress.
+    Legacy clients still see their canonical delta + done frames unchanged.
     """
     headers = {"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"}
     if evidence_headers:
         headers.update(evidence_headers)
-    frames = _sse_frame("delta", {"delta": answer}) + _sse_frame("done", {"done": True})
+    frames = b""
+    if isinstance(history, tuple) and len(history) <= 128:
+        # Fixed public fields only: no free-form message/metadata/tool input.
+        keys = ("event_id", "run_id", "trace_id", "app_id", "kind", "sequence", "timestamp_iso")
+        for event in history:
+            if not isinstance(event, dict) or any(key not in event for key in keys):
+                frames = b""  # fail closed on malformed provider/history data
+                break
+            frames += _sse_frame("p01_event", {
+                **{key: event[key] for key in keys}, "delivery": "post_execution",
+            })
+    frames += _sse_frame("delta", {"delta": answer}) + _sse_frame("done", {"done": True})
     return Response(
         frames,
         status_code=200,
@@ -187,6 +204,27 @@ def _claw_general_user_text(data: dict[str, Any]) -> tuple[str | None, JSONRespo
     if not text:
         return None, _error(400, "invalid_messages", "메시지를 입력해 주세요.")
     return text, None
+
+
+async def claw_general_capabilities(request: Request) -> JSONResponse:
+    """Read-only server capability, not a read acknowledgment or user authority."""
+    from .auth_routes import auth_ready, current_user_id
+
+    adapter = getattr(request.app.state, "claw_p01_adapter", None)
+    runner = getattr(adapter, "_runner", None)
+    enabled = (
+        auth_ready(request)
+        and current_user_id(request) is not None
+        and getattr(request.app.state, "claw_live_sse_enabled", False) is True
+        and callable(getattr(runner, "run_stream", None))
+    )
+    if enabled and getattr(adapter, "subject_identity_lane", False) is True:
+        from .b54_canonical_session import resolve_current_b54_canonical_session
+        enabled = await resolve_current_b54_canonical_session(request) is not None
+    return JSONResponse(
+        {"live_events_available": bool(enabled)},
+        headers=_NO_STORE_HEADERS,
+    )
 
 
 async def claw_general_execute(request: Request) -> JSONResponse | Response:
@@ -295,6 +333,22 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             headers=_NO_STORE_HEADERS,
         )
 
+    # #3930: An explicitly requested live SSE relay requires BOTH the reviewed
+    # server authority and the canonical P01 stream port. No silent fallback to
+    # completed requests, direct B14, or an unapproved UI mode is permitted.
+    live_requested = (
+        request.headers.get(CLAW_LIVE_REQUEST_HEADER, "").strip()
+        == CLAW_LIVE_REQUEST_MARKER
+    )
+    if live_requested:
+        runner = getattr(adapter, "_runner", None)
+        if (
+            getattr(request.app.state, "claw_live_sse_enabled", False) is not True
+            or not callable(getattr(runner, "run_stream", None))
+        ):
+            await _refund_active_reservation()
+            return _error(503, "claw_live_stream_unavailable", "Claw 실시간 실행 상태를 사용할 수 없습니다.")
+
     run = create_claw_run("padiem-chat", user_text)
 
     # #3655: evidence mode is opt-in per request; normal callers see the exact
@@ -302,6 +356,16 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     evidence_requested = (
         request.headers.get(CLAW_EVIDENCE_REQUEST_HEADER, "").strip() == CLAW_EVIDENCE_MARKER
     )
+
+    if live_requested:
+        if evidence_requested:
+            await _refund_active_reservation()
+            return _error(422, "live_evidence_mode_unsupported", "실시간 상태와 감사 증거 요청은 동시에 사용할 수 없습니다.")
+        from .claw_live_events import live_claw_sse
+        live_args = {"product_tier": product_tier, "subject_id": subject_id}
+        if selected_model_id is not None:
+            live_args["selected_model_id"] = selected_model_id
+        return live_claw_sse(adapter, run, live_args)
 
     try:
         dispatch_args = {"product_tier": product_tier, "subject_id": subject_id}
@@ -396,6 +460,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     return _claw_general_sse(
         outcome.answer,
         _claw_evidence_response_headers(run.run_id, outcome) if evidence_requested else None,
+        history=getattr(outcome, "p01_event_history", ()),
     )
 
 

@@ -871,6 +871,11 @@ class Default(WorkerEntrypoint):
                     self.env,
                     request_factory=Request,
                 )
+                _worker_app.state.claw_live_sse_enabled = (
+                    settings.runtime_mode == "b14"
+                    and getattr(self.env, "PADIEM_CLAW_P01_LIVE_SSE_ENABLED", None) == "true"
+                    and getattr(_worker_app.state.claw_p01_adapter, "subject_identity_lane", False) is True
+                )
                 # #3094: compose the concrete canonical local-access source
                 # from a trusted broker-authority binding only. When the
                 # trusted runtime is absent (today's deploy) the composition

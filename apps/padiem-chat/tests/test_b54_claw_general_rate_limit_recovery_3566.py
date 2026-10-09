@@ -104,9 +104,15 @@ async function run() {
     }
     assert(rejected, "bad responses must always reject");
   }
-  assert(posts.length === 5, "one POST per explicit invocation, no retry/fallback");
-  assert(posts.every(p=>p.url==="/api/claw/general" && p.method==="POST"),
-    "must not use direct B14 or B62 Chat");
+  // #3930: a read-only GET capability probe is permitted BEFORE dispatch,
+  // but each invocation still has exactly one P01 POST and zero retries.
+  assert(posts.length === 10, "one capability GET and one POST per invocation");
+  for (let i = 0; i < posts.length; i += 2) {
+    assert(posts[i].url === "/api/claw/general/capabilities" && posts[i].method === "GET",
+      "capability probe must be read-only and before dispatch");
+    assert(posts[i + 1].url === "/api/claw/general" && posts[i + 1].method === "POST",
+      "exactly one P01 POST, never direct B14, B62 Chat, or retry");
+  }
   // The exact localized message is chosen in the actual Claw-only catch.
   assert(app.includes('clawGeneralRequest && error?.clawFailureDetail === "engine_provider_rate_limited"'),
     "P01 detail rendered only for Claw general");
