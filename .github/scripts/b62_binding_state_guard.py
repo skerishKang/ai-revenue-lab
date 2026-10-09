@@ -233,13 +233,23 @@ def main(argv: list[str] | None = None) -> int:
         if args.expected_add_owner_d1:
             if args.owner_d1_database_id is None:
                 raise BindingStateError("additive mode requires explicit Owner D1 ID")
-            if args.require_served_resource_integrity:
+            before_payload = _load(args.before)
+            after_payload = _load(args.after)
+            # Never allow real immutable Worker versions through a binding-only
+            # guard just because the caller forgot a CLI safety flag.
+            version_evidence = any(
+                isinstance(p, dict)
+                and isinstance(p.get("result"), dict)
+                and "resources" in p["result"]
+                for p in (before_payload, after_payload)
+            )
+            if args.require_served_resource_integrity or version_evidence:
                 assert_owner_version_integrity(
-                    _load(args.before), _load(args.after), args.owner_d1_database_id
+                    before_payload, after_payload, args.owner_d1_database_id
                 )
             else:
                 assert_one_owner_d1_added(
-                    _load(args.before), _load(args.after), args.owner_d1_database_id
+                    before_payload, after_payload, args.owner_d1_database_id
                 )
         else:
             if args.require_served_resource_integrity:
@@ -254,7 +264,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.expected_add_owner_d1:
         print("OWNER_P01_D1_EXACTLY_ONE_ADDITION=PASS")
         print("EXISTING_WORKER_BINDINGS_PRESERVED=PASS")
-        if args.require_served_resource_integrity:
+        if args.require_served_resource_integrity or version_evidence:
             print("OWNER_P01_D1_SERVED_RESOURCE_INTEGRITY=PASS")
     else:
         print("B62_BINDING_AUTHORITY_PRESERVED=PASS")
