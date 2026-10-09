@@ -48,13 +48,19 @@ QuoteCore remains the sole calculation authority. The renderer does not become a
 | Template registration source formats | #3586 | XLSX now; HWPX future; legacy XLS/HWP rejected |
 | Quote shell / single composer UX | #3536 | product UX |
 | Native XLSX output | #3496 | optional editable output; not PDF critical path |
-| B66 quote-model decision authority | [Single model authority index](../../models/README.md) and #3554 / #3760 | owner-approved no-price-filter versus legacy free-first source mismatch unresolved; no routing activation here |
+| B66 quote-model decision authority | [Single model authority index](../../models/README.md), [Owner approval policy §0A](../../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md), #3760 | **Owner policy corrected and merged (#3796):** user selects one exact registered, allowed, ready B14 model per run; optional visible/replaceable default only if configured; no free/paid filter, backend automatic selection or fallback. Matching B66 UI/API implementation remains Draft #3831 and is not Production active. |
 
 Historical renderer experiments are evidence, not current authority: #3545, #3574, #3578, #3581 and #3584.
 
 ## Shared platform and release rules
 
 The quotation workflow, QuoteCore calculations and template certification remain B66-specific responsibilities. The common [architecture and ownership index](../../common/README.md) provides shared platform boundaries, and the [development lifecycle index](../../lifecycle/README.md) points to the repository-wide validation, approval and deployment contracts. Neither link changes the current customer readiness or permits a Production release.
+
+## Model decision versus executable runtime
+
+The **current Owner decision** is an authenticated user's one exact, registered, Owner-allowed and runtime-ready B14 model per quote interpretation. An optional default is only a visible editable preselection, never a hidden picker. An absent, invalid, excluded or unavailable `model_id` fails closed; no automatic free-first choice, ranking, retries or fallback. This stable contract is owned by the [canonical Owner policy](../../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md), not this B66 README.
+
+**Status is split:** the policy is merged (#3796), B14 single-JSON registry consolidation is Draft (#3819), B66 manual UI/API choice is Draft (#3831), and their combined #3836 is **test evidence only**. Model registration/configured credential and protected customer Production E2E remain separate acceptance gates. Historical free-first code on main must not be advertised as satisfying today's per-request user choice.
 
 ## Current CGI result
 
@@ -125,6 +131,6 @@ Do not insert Excel, Google Sheets, HanCell or another office engine into every 
 
 - [SOURCE_TEMPLATE_FIDELITY.md](SOURCE_TEMPLATE_FIDELITY.md) — source analysis, reproduction, certification, PDF/image fidelity implementation, current CGI architecture and development-model operating guidance.
 - This README — product boundary, current authority map and current status.
-- [Model decision and runtime evidence index](../../models/README.md) ? unified entrypoint to owner policy, B14 catalog, product route declarations and execution evidence. B66 owner-approved no-price-filter decision and still-merged free-first resolver remain **unreconciled**; see separate docs-only [PR #3796](https://github.com/skerishKang/ai-revenue-lab/pull/3796). Neither this README nor that Draft PR activates a model.
+- [Model decision and runtime evidence index](../../models/README.md) — unified entrypoint to the Owner policy, actual B14 catalog, product route declarations and deployment evidence. The canonical B66 Owner policy correction was **merged in PR #3796**; the historical automatic free-first implementation remains a source-level discrepancy until [Draft PR #3831](https://github.com/skerishKang/ai-revenue-lab/pull/3831) is independently reviewed and merged. [Draft #3819](https://github.com/skerishKang/ai-revenue-lab/pull/3819) is the B14 registry dependency; [#3836](https://github.com/skerishKang/ai-revenue-lab/pull/3836) is integration CI proof only and MUST NOT be merged as a substitute. No model/provider activation or customer E2E is claimed.
 
 Implementation/demo references such as `reference/business-66-padiem-quote-v1/` remain useful source/evidence, but they are not the canonical B66 product-policy authority.
