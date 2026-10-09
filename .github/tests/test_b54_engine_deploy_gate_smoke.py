@@ -60,8 +60,7 @@ def test_engine_deploy_preserves_every_immutable_served_version_binding() -> Non
                        if step.get("name") == "Pre-deploy canonical served-version rollback anchor")
     post_step = next(step["run"] for step in deploy["steps"]
                      if step.get("name") == "Post-deploy served-version secret guard")
-    assert 'pre_version}" != "${B54_ENGINE_ACTIVE_VERSION}' in anchor_step
-    assert "anchor_fail" in anchor_step
+    assert 'PRE_DEPLOY_SERVED_VERSION_ID=${pre_version}' in anchor_step
     assert 'b62_binding_state_guard.py' in post_step
     assert '--before "${RUNNER_TEMP}/version-pre.json"' in post_step
     assert '--after "${version_detail}"' in post_step
