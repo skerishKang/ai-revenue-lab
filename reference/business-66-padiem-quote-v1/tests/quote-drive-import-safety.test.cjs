@@ -15,6 +15,7 @@ const Core = require("../quote-core.js");
 const Contract = require("../quote-drive-contract.js");
 const Client = require("../quote-drive-client.js");
 const Ui = require("../quote-drive-ui.js");
+const { createStubDocument } = require("./drive-dom-fixtures.cjs");
 const { createEditorBridge, clone } = require("./quote-editor-stub.cjs");
 
 const CLIENT_ID = "test-client-id.apps.googleusercontent.com";
@@ -29,28 +30,7 @@ const APPROVED_BOTH = [
 ];
 
 function stubDocument() {
-  const registry = new Map();
-  const docHandlers = {};
-  function makeNode(tag) {
-    return {
-      tagName: tag, id: "", children: [], listeners: {}, className: "", type: "",
-      hidden: false, disabled: false, textContent: "", value: "", dataset: {},
-      appendChild(child) { this.children.push(child); return child; },
-      replaceChildren() { this.children = Array.prototype.slice.call(arguments); },
-      addEventListener(type, handler) { (this.listeners[type] = this.listeners[type] || []).push(handler); },
-      click() { (this.listeners.click || []).slice().forEach((handler) => handler()); }
-    };
-  }
-  const container = makeNode("div");
-  container.id = Ui.DEFAULT_CONTAINER_ID;
-  registry.set(Ui.DEFAULT_CONTAINER_ID, container);
-  return {
-    container: container,
-    createElement: makeNode,
-    getElementById: (id) => registry.get(id) || null,
-    addEventListener(type, handler) { (docHandlers[type] = docHandlers[type] || []).push(handler); },
-    dispatch(type, detail) { (docHandlers[type] || []).slice().forEach((handler) => handler({ detail: detail })); }
-  };
+  return createStubDocument(Ui.DEFAULT_CONTAINER_ID);
 }
 
 /* 작성 중이던 견적(사용자 내용) — 실패 시 이 값이 그대로여야 한다. */
