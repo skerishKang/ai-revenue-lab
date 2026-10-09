@@ -42,7 +42,7 @@
 | 3 | `google/gemma-4-26b-a4b-it` | **공식 사양·Free 30RPM/16K TPM/14.4K RPD, 직접 Minimal 8/10(3.26s)·High 엄격 JSON 0/10(20.62s), B14 504, 로컬 PDF 12품목 2페이지** |
 | 4 | `google/gemma-4-31b-it` | **F1 Dense 30.7B·출력 32,768 / F2 30RPM·16K TPM·14.4K RPD / Minimal 원본 1/10·내용 5/10 / High 원본 0/10·내용 0/10 / B14 504** |
 | 5 | `poolside/laguna-s-2.1` (Poolside 직접 API, Kilo 제외) | **F1 공식 118B/활성8B·1M / F2 계정한도 UNKNOWN / 직접 기본 9/10(10.89s), 추론 끔 8/10(4.63s), 켬 8/10(9.56s) / B14 9/10 HTTP200 / 실제 AI→PDF PASS** |
-| 6 | `sensenova/sensenova-6.8-flash-lite` | `NOT_STARTED` |
+| 6 | \`sensenova/sensenova-6.8-flash-lite\` | **F1 제공자 262,144/65,536 · F2 계정 한도 UNKNOWN · B14 10/10 · 직접 기본 10/10 · 리즈닝 none 10/10 2633ms; low 10/10 6528ms; medium 10/10 6278ms; high 10/10 6503ms · 12품목 로컬 PDF PASS** |
 | 7 | `agnes-ai/agnes-3.0-flash` | `NOT_STARTED` |
 | 8 | `inception/mercury-2.5` | `NOT_STARTED` |
 | 9 | `atria/Atria-Dawn-Preview` | `NOT_STARTED` |
@@ -202,3 +202,14 @@ EVIDENCE = <source SHA, dated real-call markers, tested PDF evidence>
 - 공식 118B 총·8B 활성·1M 컨텍스트. 로컬 OpenCode 설정 262,144 컨텍스트/32,768 출력 제한과 구분. 직접 계정 RPM/TPM/RPD 및 최대 출력은 미확인.
 - 실제 모델 QKR-008 12품목 → B66 QuoteCore → A4 PDF 생성 PASS: 공급 650만원·부가세 65만원·합계 715만원, 2페이지 하단 안내 문구 이월.
 - 상세: [Poolside Laguna S 2.1 독립 최종 평가](B14_FINAL_POOLSIDE_LAGUNA_S_2_1_2026-10-09.md).
+
+
+## 2026-10-09 SenseNova 6.8 Flash Lite 독립 최종 평가
+
+- 제공자 live metadata: 컨텍스트 **262,144**, 최대 출력 **65,536**, 이미지·텍스트 입력, reasoning/json_mode/tools 지원.
+- 신규 B14 직접 SenseNova 모델 명시 선택: **10/10 엄격 PASS, HTTP200 10/10, 평균 7,125ms**.
+- 제공자 직접 API 기본: **10/10 내용 정확, HTTP200 10/10, 평균 5,233ms**.
+- 리즈닝 4수준 × 10개 견적: **none 10/10 2633ms; low 10/10 6528ms; medium 10/10 6278ms; high 10/10 6503ms**. 자세한 사용량·오류는 상세 문서 참조.
+- 실제 모델 12품목 응답→QuoteCore→PDF: **12품목·총 715만원 PASS**, 2페이지 공통 하단 안내 문구 이월.
+- 현재 연결된 SenseNova 계정의 RPM/TPM/RPD 값과 B14 리즈닝 명시적 전달은 별도 확인 대상.
+- 상세: [SenseNova 6.8 Flash Lite 최종 평가](B14_FINAL_SENSENOVA_6_8_FLASH_LITE_2026-10-09.md).
