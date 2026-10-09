@@ -29,7 +29,7 @@ LAST_VERIFIED = 2026-10-09
 |---|---|
 | Padiem Golden Path FINISH-FIRST, LOCAL별 현재 소유권 | [#3523](https://github.com/skerishKang/ai-revenue-lab/issues/3523) |
 | Claw 실제 답변·SSE/DOM 검증 및 남은 모델 응답 오류 | [#3382](https://github.com/skerishKang/ai-revenue-lab/issues/3382), [#3566](https://github.com/skerishKang/ai-revenue-lab/issues/3566) |
-| Owner 모델 승인과 B14 실행 계약 | [모델 단일 인덱스](models/README.md), [Owner 정책](operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md) |
+| Owner 모델 승인과 B14 실행 계약 | [Owner 정책](operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md) — 모델 탐색은 위의 공식 모델 인덱스를 사용 |
 | Calendar 사용자별 READ 격리 설계 | [#2010](https://github.com/skerishKang/ai-revenue-lab/issues/2010) |
 | Calendar READ 운영 활성화 보안 게이트 | [#2952 HARD HOLD](https://github.com/skerishKang/ai-revenue-lab/issues/2952) |
 | Browser Control/Broker/Desktop 실제 제품 연결 상태 | [#3782](https://github.com/skerishKang/ai-revenue-lab/issues/3782), [브라우저 실행 ADR](architecture/PADIEM_BROWSER_EXECUTION_ADAPTER_DECISION_3782.md) |
