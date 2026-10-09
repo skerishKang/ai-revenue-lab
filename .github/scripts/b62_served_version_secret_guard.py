@@ -26,6 +26,7 @@ _SCRIPTS_DIR = Path(__file__).resolve().parent
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
+from b62_web_secrets_store_contract import expected_web_secret_bindings  # noqa: E402
 from cloudflare_served_version import (  # noqa: E402
     ServedVersionReason,
     ServedVersionResolutionError,
@@ -199,9 +200,23 @@ def load_capture(payload: object) -> tuple[tuple[str, str], ...]:
     return tuple(sorted(entries))
 
 
-def verify_secret_set(expected: tuple[tuple[str, str], ...], post_bindings: list[dict]) -> None:
+def verify_secret_set(
+    expected: tuple[tuple[str, str], ...], post_bindings: list[dict], *,
+    allow_web_store_additions: bool = False
+) -> None:
     require_required_secrets(post_bindings, stage="post-deploy")
     post = secret_name_type_set(post_bindings)
+    if allow_web_store_additions:
+        approved = expected_web_secret_bindings()
+        baseline_names = {name for name, _ in expected}
+        actual = {item["name"]: item for item in post_bindings}
+        for name, identity in approved.items():
+            if name in baseline_names and (name, "secrets_store_secret") not in expected:
+                raise ServedVersionGuardError("web Secrets Store original binding type drift")
+            item = actual.get(name)
+            if item is None or any(item.get(k) != val for k, val in identity.items()):
+                raise ServedVersionGuardError("web Secrets Store served identity missing or drift")
+        expected = tuple(sorted((*expected, *((name, "secrets_store_secret") for name in approved if name not in baseline_names))))
     post_types = _type_by_name(post_bindings)
     pre_names = {name for name, _ in expected}
     post_names = {name for name, _ in post}
@@ -257,11 +272,14 @@ def _run_verify(args: argparse.Namespace) -> int:
     detail = _load(args.version_detail)
     version_id = resolve_served_version_id(deployments)
     bindings = served_version_bindings(detail, expected_version_id=version_id)
-    verify_secret_set(expected, bindings)
+    verify_secret_set(expected, bindings, allow_web_store_additions=args.allow_add_existing_web_secrets_store)
     print(f"POSTDEPLOY_SERVED_VERSION_ID={version_id}")
     print(f"POSTDEPLOY_SERVED_SECRET_COUNT={len(secret_name_type_set(bindings))}")
     _emit_required_present(bindings)
-    print("SERVED_VERSION_SECRET_SET_EQUALITY=PASS")
+    if args.allow_add_existing_web_secrets_store:
+        print("SERVED_VERSION_SECRET_SET_APPROVED_ADDITIONS=PASS")
+    else:
+        print("SERVED_VERSION_SECRET_SET_EQUALITY=PASS")
     print("B62_SERVED_VERSION_SECRET_SET=PRESERVED")
     print("SETTINGS_PLANE_ONLY_ACCEPTANCE=NO")
     print("SECRET_VALUES_READ=0")
@@ -278,6 +296,7 @@ def main(argv: list[str] | None = None) -> int:
     capture.add_argument("--output", required=True, type=Path)
     verify = commands.add_parser("verify", help="prove the post-deploy served version kept every secret")
     verify.add_argument("--expected", required=True, type=Path)
+    verify.add_argument("--allow-add-existing-web-secrets-store", action="store_true")
     verify.add_argument("--deployments", required=True, type=Path)
     verify.add_argument("--version-detail", required=True, type=Path)
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
