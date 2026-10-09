@@ -57,15 +57,13 @@
         <label>배정된 내 견적서
           <select id="padiemSavedSkillSelect"></select>
         </label>
-        <label>견적 내용
-          <textarea id="padiemQuoteRequest" rows="3" maxlength="4000" placeholder="예: ABC건설에 배관 20개, 개당 3만원으로 견적서 만들어줘"></textarea>
-        </label>
+        <!-- #3536: the sole free-form input and send action live at easyComposer/easySend.
+             The registered-model picker is moved to the left rail by shell-layout.js. -->
         <label>사용할 AI 모델
           <select id="padiemQuoteModelSelect" aria-label="사용할 AI 모델" required>
             <option value="">모델을 선택하세요</option>
           </select>
         </label>
-        <button id="padiemQuoteGenerate" type="button">견적 만들기</button>
       </div>
       <p class="padiem-quote-status" id="padiemQuoteStatus" role="status" aria-live="polite"></p>
     </section>

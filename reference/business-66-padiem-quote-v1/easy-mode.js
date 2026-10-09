@@ -31,6 +31,8 @@
   let selectedFile = null;
   let lastEasyView = "home";
   let restoringProductHistory = false;
+  let interpretationInFlight = false;
+  let accountScopeRevision = 0;
   const PRODUCT_HISTORY_KEY = "b66View";
 
   const QUARANTINE_ACTIONS = AccountScope
@@ -155,6 +157,8 @@
     $("easyComposerNote").textContent =
       "보내면 CGI 기본 견적서로 바로 만들어 드립니다. 단계별로 답하려면 '질문받으며 만들기'를 선택하세요.";
     inputHandler = (text) => startHomeInterpretation(text);
+    composer.disabled = false;
+    sendButton.disabled = false;
     refreshStarters();
   }
 
@@ -289,6 +293,8 @@
   }
 
   function runPrimaryInterpretation(rawText) {
+    // A second click/Enter must not launch a second B14 interpretation attempt.
+    if (interpretationInFlight) return;
     const text = safeText(rawText, 4000);
     if (!text) return;
     const bridge = window.B66QuoteRuntimeBridge;
@@ -297,10 +303,14 @@
       addMessage("assistant", runtimeNotReadyMessage(readiness));
       return;
     }
+    const requestScopeRevision = accountScopeRevision;
+    interpretationInFlight = true;
     addMessage("user", text);
     addMessage("assistant", "CGI 기본 견적서로 작성하고 있습니다…");
     disableInput("견적을 만드는 동안에는 입력을 잠시 멈춥니다.");
-    Promise.resolve(bridge.interpret(text)).then((result) => {
+    Promise.resolve().then(() => bridge.interpret(text)).then((result) => {
+      // Results from a signed-out/quarantined owner must never update the next account.
+      if (requestScopeRevision !== accountScopeRevision) return;
       if (!result || result.ok !== true || !result.draft) {
         /* 정보가 부족하면 무엇이 없는지 한 가지만 되묻고 같은 견적을 이어간다.
            Guided 로 강제 전환하지 않는다 (#3391). */
@@ -330,8 +340,11 @@
       }
       addResultReview(result.draft, false);
     }).catch(() => {
+      if (requestScopeRevision !== accountScopeRevision) return;
       addMessage("assistant", "해석 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.");
       setInput(submitFreeFormText, "다시 한 문장으로 적어 주세요");
+    }).finally(() => {
+      if (requestScopeRevision === accountScopeRevision) interpretationInFlight = false;
     });
   }
 
@@ -1176,14 +1189,16 @@
       refreshStarters();
       return;
     }
-    /* 계정 경계가 바뀌면 진행 중 private 문맥과 파일 intake 를 버린다 (#3480). */
+    // In-flight interpretation belongs to the old owner and cannot complete into this scope.
+    accountScopeRevision += 1;
+    interpretationInFlight = false;
+    /* 계정 경계가 바뀌면 private 텍스트/답변/진행 중 문맥을 화면에서도
+       모두 지운다 (#3480, #3536). 응답이 늦게 와도 revision guard 가 폐기한다. */
+    guided = null;
     guidedSnapshot = null;
     selectedFile = null;
-    if (lastEasyView === "recent") {
-      setWorkspaceMode("easy", { history: false });
-      showHome({ history: false });
-    }
-    refreshStarters();
+    setWorkspaceMode("easy", { history: false });
+    showHome({ history: false });
   });
 
   document.addEventListener("b66:auth-changed", (event) => {
@@ -1201,6 +1216,11 @@
   document.addEventListener("b66:open-file-intake", () => {
     setWorkspaceMode("easy", { history: false });
     startFileIntake();
+  });
+
+  document.addEventListener("b66:open-recent-quotes", () => {
+    setWorkspaceMode("easy", { history: false });
+    showRecentHistory();
   });
 
   document.addEventListener("b66:open-easy-chat", () => {
