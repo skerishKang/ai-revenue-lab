@@ -1361,10 +1361,16 @@
         return false;
       }
       if (paragraph) {
-        const safeMessage = clawGeneralRequest
-          ? window.PadiemClawRecoveryTruth.copy("unknown", document.documentElement.lang)
-          : error instanceof Error ? error.message : uiT("stream-continue-failed");
-        renderStreamError(article, safeMessage, outboundMessages, skill, contextSnapshot, clawGeneralRequest);
+        if (clawGeneralRequest) {
+          renderStreamError(article,
+            window.PadiemClawRecoveryTruth.copy("unknown", document.documentElement.lang),
+            outboundMessages, skill, contextSnapshot, true);
+        } else {
+          // Preserve the original standalone Chat catch path and its existing
+          // rich-stream/browser contract. Only Claw uses bounded safe copy.
+          renderStreamError(article, error instanceof Error ? error.message : uiT("stream-continue-failed"),
+            outboundMessages, skill, contextSnapshot, false);
+        }
         return false;
       }
       throw error;
