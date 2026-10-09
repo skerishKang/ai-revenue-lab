@@ -81,6 +81,71 @@ class FinalHandoffSmokeContractTests(unittest.TestCase):
                 UnavailablePage(), "google/gemini-3.5-flash-lite"
             )
 
+    def test_hidden_legacy_logout_runs_canonical_auth_cleanup(self):
+        class FakeReply:
+            def __init__(self, status):
+                self.status = status
+                self.request = type("Request", (), {
+                    "method": "POST", "url": "https://quick-quote-kr.pages.dev/api/padiem/auth/logout"
+                })()
+
+        class LogoutControl:
+            def count(self):
+                return 1
+
+        class Event:
+            def __init__(self, status):
+                self.value = FakeReply(status)
+            def __enter__(self):
+                return self
+            def __exit__(self, exc_type, exc_value, tb):
+                return False
+
+        class Page:
+            def __init__(self, status=200):
+                self.status = status
+                self.called = []
+            def locator(self, selector):
+                self.called.append(("locator", selector))
+                self.assert_selector = selector
+                return LogoutControl()
+            def expect_response(self, pred, *, timeout):
+                self.called.append(("expect", timeout))
+                assert pred(FakeReply(200))
+                assert timeout == 15000
+                return Event(self.status)
+            def evaluate(self, script):
+                self.called.append(("evaluate", script))
+                assert "getElementById('padiemLogout').click()" in script
+            def wait_for_function(self, script, *, timeout):
+                self.called.append(("canonical_wait", timeout))
+                assert "readiness" in script
+                assert "state.authenticated === false" in script
+                assert timeout == 15000
+
+        page = Page()
+        with redirect_stdout(io.StringIO()) as output:
+            module._logout_after_verified_pdf_handoff(page)
+        self.assertIn("CANONICAL_LOGOUT_AFTER_PDF=PASS", output.getvalue())
+        self.assertEqual(
+            [step[0] for step in page.called],
+            ["locator", "expect", "evaluate", "canonical_wait"],
+        )
+        with self.assertRaisesRegex(module.SmokeFailure, "logout_http_not_2xx"):
+            module._logout_after_verified_pdf_handoff(Page(status=403))
+        source = SCRIPT.read_text(encoding="utf-8")
+        self.assertIn("_logout_after_verified_pdf_handoff(page)", source)
+        self.assertNotIn('page.locator("#padiemLogout").click()', source)
+
+    def test_canonical_logout_fails_closed_if_control_missing(self):
+        class Missing:
+            def locator(self, *_):
+                return type("Control", (), {"count": lambda _: 0})()
+            def expect_response(self, *_args, **_kwargs):
+                raise AssertionError("must never dispatch logout without a DOM control")
+        with self.assertRaisesRegex(module.SmokeFailure, "logout_control_missing"):
+            module._logout_after_verified_pdf_handoff(Missing())
+
     def test_final_handoff_requires_model_completion_not_fallback(self):
         class Response:
             def __init__(self, origin):
