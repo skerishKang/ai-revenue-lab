@@ -34,7 +34,7 @@ HEALTH_PATH = "/internal/v1/health"
 ORCHESTRATE_PATH = "/internal/v1/orchestrate"
 PINNED_MODEL = TEXT_PRIMARY_MODEL_ID
 REQUEST_TIMEOUT_SECONDS = 90
-_SUBJECT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,255}$")
+# Canonical Control Plane identity_authority_durable.py mints USER subjects as\n# "sub_" + 16 cryptographic bytes (32 lowercase hex chars). Product-local\n# "usr_" IDs and free-form strings must never stand in for CP identity.\n_SUBJECT_RE = re.compile(r"^sub_[0-9a-f]{32}$")
 
 
 def _headers() -> dict[str, str]:
