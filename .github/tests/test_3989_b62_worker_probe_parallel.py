@@ -50,6 +50,33 @@ class WorkerProbeParallelContract(unittest.TestCase):
             workflow.index("Python Worker bundle dry-run"),
         )
 
+    def test_cold_cache_npx_preflight_fails_closed_before_any_real_probe(self):
+        runner = RUNNER.read_text(encoding="utf-8")
+        self.assertIn("npx --yes wrangler@4.130.0 --version", runner)
+        self.assertIn("B62_WORKER_NPX_PREWARM=FAIL", runner)
+        self.assertIn("B62_WORKER_NPX_PREWARM=PASS", runner)
+        self.assertLess(
+            runner.index("npx --yes wrangler@4.130.0 --version"),
+            runner.index("for index in 0 1 2 3; do"),
+        )
+        # A failed first-use package install must NOT start four real Workers.
+        # Provide a failing synthetic npx; never contact npm/Cloudflare.
+        with tempfile.TemporaryDirectory(prefix="b62-npx-prewarm-") as directory:
+            temp = Path(directory)
+            fake = temp / "npx"
+            fake.write_text("#!/bin/sh\nexit 17\n", encoding="utf-8")
+            fake.chmod(0o755)
+            env = os.environ.copy()
+            env["PATH"] = str(temp) + os.pathsep + env.get("PATH", "")
+            result = subprocess.run(
+                ["bash", str(RUNNER)], capture_output=True, text=True,
+                cwd=temp, env=env, timeout=12, check=False,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("B62_WORKER_NPX_PREWARM=FAIL", result.stderr)
+            self.assertNotIn("B62_WORKER_PROBE_0=", result.stdout + result.stderr)
+            self.assertNotIn("B62_WORKER_PROBES=PASS", result.stdout + result.stderr)
+
     def test_runner_waits_for_every_child_and_fails_if_one_fails(self):
         with tempfile.TemporaryDirectory(prefix="b62-worker-parallel-") as directory:
             temp = Path(directory)

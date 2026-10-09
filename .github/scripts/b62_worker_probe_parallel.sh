@@ -26,6 +26,19 @@ for probe in "${probes[@]}"; do
   fi
 done
 
+# npx performs a first-use install of the pinned Wrangler package in the shared
+# npm _npx cache. Four concurrent cold-cache installs can race creating the same
+# node_modules/.bin symlink (npm EEXIST); serialize only the install/warmup.
+# The four real Worker runtime probes still execute concurrently afterward.
+# Offline 4-mock-script canaries must not require network or npm.
+if (( $# == 0 )); then
+  if ! npx --yes wrangler@4.130.0 --version; then
+    echo 'B62_WORKER_NPX_PREWARM=FAIL' >&2
+    exit 1
+  fi
+  echo 'B62_WORKER_NPX_PREWARM=PASS'
+fi
+
 logdir="$(mktemp -d)"
 pids=()
 cleanup() {
