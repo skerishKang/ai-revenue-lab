@@ -10,7 +10,7 @@ EOF
 
 uv run --locked python tests/worker_runtime_probe_origin.py --port 9100 > /tmp/b62-web-origin.log 2>&1 &
 ORIGIN_PID=$!
-npx --yes wrangler@4.130.0 dev --config .runtime-web-transport-probe.toml --port 8788 > /tmp/b62-web-workerd.log 2>&1 &
+npx --yes wrangler@4.130.0 dev --config .runtime-web-transport-probe.toml --port 8788 --inspector-port 9232 > /tmp/b62-web-workerd.log 2>&1 &
 WORKER_PID=$!
 
 cleanup() {
