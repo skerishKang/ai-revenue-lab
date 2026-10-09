@@ -79,6 +79,13 @@ binding = "PADIEM_GEMINI_API_KEY"
 store_id = "f0b09ca04a7b43248154c773704a5616"
 secret_name = "PADIEM_GEMINI_API_KEY"
 
+# #4018 Kira Qwen3.8 Flash Free. Existing Charliekant account-scoped secret;
+# metadata-only. No key value or cross-provider credential reuse.
+[[secrets_store_secrets]]
+binding = "PADIEM_KIRAAI_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_KIRAAI_API_KEY"
+
 # The owner-managed registry must be loaded from /session/metadata/app/pilot.
 [[rules]]
 type = "Text"

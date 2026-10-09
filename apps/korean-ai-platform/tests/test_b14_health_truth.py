@@ -30,6 +30,7 @@ PLATFORM_SECRET_ENV_KEYS = (
     "PADIEM_INCEPTION_MERCURY_API_KEY",
     "PADIEM_ATRIA_API_KEY",
     "PADIEM_EXLAB_API_KEY",
+    "PADIEM_KIRAAI_API_KEY",
 )
 
 
@@ -86,7 +87,7 @@ def test_live_with_platform_secret_is_top_level_healthy(client, monkeypatch):
     data = response.json()
     assert data["status"] == "ok"
     assert data["mode"] == "b14-live"
-    assert data["configured_providers"] == 7
+    assert data["configured_providers"] == 8
     assert data["configured_models"] == len(list_catalog_summaries())
     assert data["registered_routes"] == len(CATALOG_BY_ID)
     assert data["business14"]["provider_mode"] == "live"

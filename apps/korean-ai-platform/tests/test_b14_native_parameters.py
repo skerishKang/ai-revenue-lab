@@ -34,8 +34,9 @@ def request(model, **params):
     "atria/Atria-Dawn-Preview",
     "agnes-ai/agnes-3.0-flash",
     "experiential/qwen3.8-flash-next-uncensored",
+    "kira/qwen3.8-flash-free",
 ])
-def test_all_ten_registered_models_omit_hidden_defaults(model):
+def test_all_eleven_registered_models_omit_hidden_defaults(model):
     b = request(model)
     assert b["temperature"] is None
     assert b["max_tokens"] is None
@@ -70,6 +71,7 @@ def test_native_sensenova_exact_documented_sampling():
     "google/gemma-4-26b-a4b-it",
     "poolside/laguna-s-2.1",
     "experiential/qwen3.8-flash-next-uncensored",
+    "kira/qwen3.8-flash-free",
     "inception/mercury-2.5",
     "unknown/vendor-model",
 ])
