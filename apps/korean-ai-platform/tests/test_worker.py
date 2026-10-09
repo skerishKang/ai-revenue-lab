@@ -199,7 +199,18 @@ def test_gemini_secret_store_binding_is_metadata_only_and_matches_provider():
     import json as _json
     registry = _json.loads((Path(__file__).resolve().parent.parent / "app" / "pilot" / "b14_models.json").read_text(encoding="utf-8"))
     assert registry["providers"]["google"]["credential_binding_name"] == "PADIEM_GEMINI_API_KEY"
-    assert len([m for m in registry["models"] if m["provider_id"] == "google"]) == 4
+    # Preserve the original four owner-approved Google routes, but allow later
+    # exact-ID additions without editing an unrelated Worker binding test.
+    google_models = [m for m in registry["models"] if m["provider_id"] == "google"]
+    google_ids = {m["id"] for m in google_models}
+    assert {
+        "google/gemini-3.1-flash-lite",
+        "google/gemini-3.5-flash-lite",
+        "google/gemma-4-26b-a4b-it",
+        "google/gemma-4-31b-it",
+    } <= google_ids
+    assert len(google_ids) == len(google_models)
+    assert all(m["id"].startswith("google/") for m in google_models)
 
 
 def test_worker_projects_every_enabled_platform_secret_registry_binding():
