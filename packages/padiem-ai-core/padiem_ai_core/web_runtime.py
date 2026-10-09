@@ -540,6 +540,9 @@ def _tinyfish_transport_kind(exc: httpx.HTTPError) -> str:
         (httpx.RemoteProtocolError, "REMOTE_PROTOCOL"),
         (httpx.LocalProtocolError, "LOCAL_PROTOCOL"),
         (httpx.ProxyError, "PROXY"),
+        (httpx.DecodingError, "DECODING"),
+        (httpx.ProtocolError, "PROTOCOL"),
+        (httpx.RequestError, "REQUEST"),
     ):
         if isinstance(exc, error_type):
             return kind
