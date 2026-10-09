@@ -255,6 +255,66 @@ try {
   );
   assert.equal(googleCallback.status, 302);
   assert.equal(googleCallback.headers.get("location"), "/");
+  // #3871 OAuth callback: the query is part of Google's CSRF state proof.
+  // Prior _worker.js dropped it, making the backend see state=null.
+  assert.equal(
+    calls.at(-1).url,
+    "https://chat.padiem.net/auth/google/callback?code=x&state=y"
+  );
+
+  const callbackUrl = "https://quick-quote-kr.pages.dev/api/padiem/auth/google/callback" +
+    "?state=opaque%2Bstate&code=opaque%2Fcode&scope=email%20profile";
+  const observedCallback = [];
+  const callbackEnv = {
+    ASSETS: assets,
+    PADIEM_CHAT_SERVICE: {
+      async fetch(upstreamRequest) {
+        observedCallback.push(upstreamRequest);
+        return new Response(null, {
+          status: 302,
+          headers: {
+            Location: "/",
+            "Set-Cookie": "padiem_oauth_state=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0"
+          }
+        });
+      }
+    }
+  };
+  const oauthCallbackWithCookie = await worker.fetch(
+    new Request(callbackUrl, {
+      headers: {
+        Cookie: "padiem_oauth_state=signed-synthetic-state",
+        Authorization: "Bearer browser-forged"
+      }
+    }), callbackEnv
+  );
+  assert.equal(oauthCallbackWithCookie.status, 302);
+  assert.equal(oauthCallbackWithCookie.headers.get("location"), "/");
+  assert.match(oauthCallbackWithCookie.headers.get("set-cookie") || "", /padiem_oauth_state=;/);
+  assert.match(oauthCallbackWithCookie.headers.get("cache-control") || "", /no-store/);
+  assert.equal(observedCallback.length, 1);
+  assert.equal(observedCallback[0].method, "GET");
+  assert.equal(
+    observedCallback[0].url,
+    "https://chat.padiem.net/auth/google/callback?state=opaque%2Bstate&code=opaque%2Fcode&scope=email%20profile"
+  );
+  assert.equal(observedCallback[0].headers.get("cookie"), "padiem_oauth_state=signed-synthetic-state");
+  assert.equal(observedCallback[0].headers.get("authorization"), null);
+  assert.equal(observedCallback[0].headers.get("x-b66-origin"), "https://quick-quote-kr.pages.dev");
+  // Keep the bridge a strict allowlist: arbitrary query parameters must not
+  // turn unrelated routes into generic pass-through OAuth token relays.
+  const unrelatedStatus = await worker.fetch(
+    new Request("https://quick-quote-kr.pages.dev/api/padiem/auth/status?code=must-not-relay&state=must-not-relay"),
+    callbackEnv
+  );
+  assert.equal(unrelatedStatus.status, 302);
+  assert.equal(observedCallback.length, 2);
+  assert.equal(observedCallback[1].url, "https://chat.padiem.net/api/auth/status");
+  const forbiddenCallback = await worker.fetch(
+    new Request(callbackUrl, { method: "POST" }), callbackEnv
+  );
+  assert.equal(forbiddenCallback.status, 404);
+  assert.equal(observedCallback.length, 2);
 
   let serviceCalls = 0;
   const serviceEnv = {
