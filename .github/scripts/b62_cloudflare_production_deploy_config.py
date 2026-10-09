@@ -15,8 +15,8 @@ import json
 import re
 import sys
 import tomllib
-from uuid import UUID
 from pathlib import Path
+from uuid import UUID
 
 EXPECTED_WORKER = "padiem-chat"
 OWNER_P01_D1_BINDING = "BROWSER_CONTROL_OWNER_P01_D1"
