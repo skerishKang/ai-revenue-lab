@@ -206,6 +206,27 @@ def _claw_general_user_text(data: dict[str, Any]) -> tuple[str | None, JSONRespo
     return text, None
 
 
+async def claw_general_capabilities(request: Request) -> JSONResponse:
+    """Read-only server capability, not a read acknowledgment or user authority."""
+    from .auth_routes import auth_ready, current_user_id
+
+    adapter = getattr(request.app.state, "claw_p01_adapter", None)
+    runner = getattr(adapter, "_runner", None)
+    enabled = (
+        auth_ready(request)
+        and current_user_id(request) is not None
+        and getattr(request.app.state, "claw_live_sse_enabled", False) is True
+        and callable(getattr(runner, "run_stream", None))
+    )
+    if enabled and getattr(adapter, "subject_identity_lane", False) is True:
+        from .b54_canonical_session import resolve_current_b54_canonical_session
+        enabled = await resolve_current_b54_canonical_session(request) is not None
+    return JSONResponse(
+        {"live_events_available": bool(enabled)},
+        headers=_NO_STORE_HEADERS,
+    )
+
+
 async def claw_general_execute(request: Request) -> JSONResponse | Response:
     """Run one generic B54 Claw request through the canonical P01 Engine lane (#3539).
 
