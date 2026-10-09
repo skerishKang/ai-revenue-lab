@@ -659,6 +659,25 @@ const keepFile = (h, id, name, mimeType) => {
       "PASS (see quote-import-atomic.test.cjs, quote-drive-import-safety.test.cjs)");
   }
 
+  /* 시나리오 19 — 런타임 설정 주입 지점(라이브 검증 선행 조건) */
+  {
+    const configSource = readModule("drive-config.js");
+    assert.ok(htmlSource.includes('src="drive-config.js"'), "S19_CONFIG_SCRIPT_LOADED");
+    assert.ok(htmlSource.indexOf('src="drive-config.js"') < htmlSource.indexOf('src="quote-drive-ui.js"'),
+      "S19_CONFIG_BEFORE_UI");
+    assert.equal(configSource.indexOf("apps.googleusercontent.com") !== -1 &&
+      configSource.replace(/\/\*[\s\S]*?\*\//g, "").indexOf("apps.googleusercontent.com") !== -1,
+      false, "S19_NO_VALUE_IN_CODE");
+    assert.ok(uiSource.includes("describeConfiguration"), "S19_READINESS_REPORT_PRESENT");
+    assert.ok(uiSource.includes("필요한 설정이 없습니다"), "S19_READINESS_NAMES_MISSING_ITEMS");
+    /* 설정이 없어도 기존 기능은 그대로다 */
+    assert.ok(htmlSource.includes('id="easyComposer"'), "S19_COMPOSER_UNCHANGED");
+    assert.ok(htmlSource.includes('id="saveHistory"'), "S19_HISTORY_UNCHANGED");
+    mark("S19_DRIVE_CONFIG_INJECTION_POINT", "PASS (see drive-config.test.cjs)");
+    mark("LIVE_VERIFICATION_PREREQUISITES_DOCUMENTED",
+      "PASS (docs/products/b66/GOOGLE_DRIVE_LIVE_VERIFICATION.md)");
+  }
+
   console.log(scenario.join("\n"));
   console.log("SLICE_E_OFFLINE_TESTED=PASS");
   console.log("CROSS_BROWSER_DRIVE_REOPEN=NOT_TESTED");
