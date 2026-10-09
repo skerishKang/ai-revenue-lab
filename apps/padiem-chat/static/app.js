@@ -1296,9 +1296,7 @@
           const details = document.createElement("details");
           details.className = "claw-event-history";
           const summary = document.createElement("summary");
-          summary.textContent = document.documentElement.lang === "en"
-            ? "Execution history (received after completion)"
-            : "실행 기록 (완료 후 수신)";
+          summary.textContent = uiT("claw-event-history-post-execution");
           const stages = document.createElement("ul");
           for (const label of historicalStages) {
             const item = document.createElement("li");
