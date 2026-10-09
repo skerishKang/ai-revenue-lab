@@ -14,8 +14,8 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from uuid import UUID
 from pathlib import Path
+from uuid import UUID
 from typing import Any
 
 SUPPORTED_TYPES = {"assets", "service", "d1", "r2_bucket", "plain_text", "secret_text"}
