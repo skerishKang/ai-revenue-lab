@@ -17,7 +17,12 @@ class RegistryContractTest(TestCase):
         self.assertFalse(data["private_assets_in_git"])
         self.assertFalse(data["auto_activate"])
         self.assertFalse(data["allow_paid_model_fallback"])
-        self.assertEqual(data["max_certified_items"], 3)
+        self.assertEqual(data["reference_certified_items_max"], 3)
+        product = data["product_requirements"]
+        self.assertTrue(product["no_fixed_line_item_product_cap"])
+        self.assertFalse(product["unbounded_rows_implemented"])
+        self.assertFalse(product["multipage_pdf_ready"])
+        self.assertEqual(product["multipage_feature_issue"], 3839)
         by_id = {c["id"]: c for c in data["candidates"]}
         self.assertEqual(set(by_id), {"sol61-certified", "glm53-alternative"})
         self.assertEqual(by_id["sol61-certified"]["built_by_model"], "gpt-6.1-sol")

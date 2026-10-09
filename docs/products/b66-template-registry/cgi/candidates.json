@@ -7,7 +7,6 @@
   "production_deployed": false,
   "private_assets_in_git": false,
   "private_storage": "external restricted vault; not a git path",
-  "max_certified_items": 3,
   "candidates": [
     {
       "id": "sol61-certified",
@@ -42,5 +41,13 @@
     "reject_unsupported_4plus_items"
   ],
   "auto_activate": false,
-  "allow_paid_model_fallback": false
+  "allow_paid_model_fallback": false,
+  "reference_certified_items_max": 3,
+  "product_requirements": {
+    "no_fixed_line_item_product_cap": true,
+    "unbounded_rows_implemented": false,
+    "multipage_pdf_ready": false,
+    "multipage_feature_issue": 3839,
+    "resource_safety": "byte, memory, time controls only; never silently drop or truncate rows"
+  }
 }
