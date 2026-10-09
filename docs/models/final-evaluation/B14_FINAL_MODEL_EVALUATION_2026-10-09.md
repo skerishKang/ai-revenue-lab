@@ -40,7 +40,7 @@
 | 1 | `google/gemini-3.1-flash-lite` | **F1 확인 / F2 무료 한도 확인 / F3 LOCAL_PASS / F4 HTTP200 10/10 / F5 엄격 7/10 / F6 NOT_TESTED** |
 | 2 | google/gemini-3.5-flash-lite | **F1/F2 확인·Google 직접 40회: Minimal 10/10(1.09s), Medium 10/10(2.36s)·기본 Minimal 추천·로컬 PDF PASS(12품목 2페이지)·고객 F6 미완료** |
 | 3 | `google/gemma-4-26b-a4b-it` | **공식 사양·Free 30RPM/16K TPM/14.4K RPD, 직접 Minimal 8/10(3.26s)·High 엄격 JSON 0/10(20.62s), B14 504, 로컬 PDF 12품목 2페이지** |
-| 4 | `google/gemma-4-31b-it` | **F2 화면 표시명 기준 무료 한도 기록 / 그 외 신규 최종 평가 NOT_STARTED** |
+| 4 | `google/gemma-4-31b-it` | **F1 Dense 30.7B·출력 32,768 / F2 30RPM·16K TPM·14.4K RPD / Minimal 원본 1/10·내용 5/10 / High 원본 0/10·내용 0/10 / B14 504** |
 | 5 | `poolside/laguna-s-2.1` (**직접 API**) | `NOT_STARTED` |
 | 6 | `sensenova/sensenova-6.8-flash-lite` | `NOT_STARTED` |
 | 7 | `agnes-ai/agnes-3.0-flash` | `NOT_STARTED` |
@@ -185,3 +185,11 @@ EVIDENCE = <source SHA, dated real-call markers, tested PDF evidence>
 - Minimal QKR-008 AI 응답 → QuoteCore → 로컬 PDF: 12품목, 합계 **715만원** PASS. 하단 안내 문구 때문에 PDF 2페이지.
 - B14 경유 연동 및 고객 저장 템플릿 PDF는 미완료.
 - 모델별 상세: [Gemma 4 26B 신규 최종 평가](B14_FINAL_GEMMA_4_26B_2026-10-09.md).
+
+## 2026-10-09 Gemma 4 31B 신규 독립 최종 평가
+
+- 공식 API 입력 262,144, 출력 32,768, Dense 30.7B, reasoning Minimal/High.
+- 무료 30 RPM/16K TPM/14,400 RPD.
+- 신규 20회 직접 Google 견적 시험: Minimal 원본 1/10, 코드블록 정리 후 내용 5/10; High 원본 0/10, 코드블록 정리 후 내용 0/10.
+- B14 경유 한 건 HTTP504. 고객 PDF E2E 별도 미완료.
+- 상세: [Gemma 4 31B 최종 평가](B14_FINAL_GEMMA_4_31B_2026-10-09.md).
