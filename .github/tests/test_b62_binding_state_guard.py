@@ -155,6 +155,34 @@ def test_version_with_inconsistent_d1_aliases_fails_closed():
         }))
 
 
+def test_name_keyed_immutable_version_matches_array_form():
+    canonical = _engine_bindings()
+    keyed = {entry["name"]: {k: v for k, v in entry.items() if k != "name"}
+             for entry in canonical}
+    mod.assert_preserved(
+        _version(*canonical, version_id="before"),
+        {"success": True, "result": {
+            "id": "after", "resources": {"bindings": keyed},
+        }},
+    )
+
+
+def test_name_keyed_immutable_version_rejects_key_identity_mismatch():
+    with pytest.raises(mod.BindingStateError, match="key/name disagreement"):
+        mod.canonical_state({"success": True, "result": {
+            "id": "version", "resources": {"bindings": {
+                "EXPECTED": {"name": "MISMATCH", "type": "secret_text"},
+            }},
+        }})
+
+
+def test_name_keyed_immutable_version_rejects_non_object_entry():
+    with pytest.raises(mod.BindingStateError, match="malformed keyed"):
+        mod.canonical_state({"success": True, "result": {
+            "id": "version", "resources": {"bindings": {"BROKEN": None}},
+        }})
+
+
 def test_version_without_identity_or_bindings_fails_closed():
     with pytest.raises(mod.BindingStateError):
         mod.canonical_state({"success": True, "result": {"resources": {"bindings": []}}})
