@@ -168,6 +168,7 @@ class TestRealP01StreamBridge(unittest.TestCase):
             return_value=session,
         ):
             with _client(adapter) as client:
+                client.app.state.claw_live_sse_canary_subject_id = SUBJECT
                 client.app.state.claw_live_sse_enabled = not disabled
                 cap = client.get(CAP)
                 response = client.post(GENERAL, json=_payload(), headers=LIVE if live else {})
@@ -223,6 +224,7 @@ class TestRealP01StreamBridge(unittest.TestCase):
         with patch("app.b54_canonical_session.resolve_current_b54_canonical_session",
                    new=AsyncMock(return_value=None)):
             with _client(adapter) as client:
+                client.app.state.claw_live_sse_canary_subject_id = SUBJECT
                 client.app.state.claw_live_sse_enabled = True
                 cap = client.get(CAP)
                 denied = client.post(GENERAL, json=_payload(), headers=LIVE)
@@ -242,6 +244,7 @@ class TestRealP01StreamBridge(unittest.TestCase):
                        new=AsyncMock(return_value=JSONResponse(
                            {"error": {"code": "rate_limited"}}, status_code=429))):
                 with _client(adapter) as client:
+                    client.app.state.claw_live_sse_canary_subject_id = SUBJECT
                     client.app.state.claw_live_sse_enabled = True
                     blocked = client.post(GENERAL, json=_payload(), headers=LIVE)
         self.assertEqual(blocked.status_code, 429)
@@ -255,6 +258,7 @@ class TestRealP01StreamBridge(unittest.TestCase):
         with patch("app.b54_canonical_session.resolve_current_b54_canonical_session",
                    new=AsyncMock(return_value=session)):
             with _client(adapter) as client:
+                client.app.state.claw_live_sse_canary_subject_id = SUBJECT
                 client.app.state.claw_live_sse_enabled = True
                 response = client.get(CAP)
         self.assertTrue(response.json()["live_events_available"])
@@ -331,6 +335,7 @@ class TestRealP01StreamBridge(unittest.TestCase):
         with patch("app.b54_canonical_session.resolve_current_b54_canonical_session",
                    new=AsyncMock(return_value=session)):
             with _client(adapter) as client:
+                client.app.state.claw_live_sse_canary_subject_id = SUBJECT
                 client.app.state.claw_live_sse_enabled = True
                 response = client.post(GENERAL, json=_payload(
                     model_id=selected_id
