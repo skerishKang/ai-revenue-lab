@@ -178,7 +178,13 @@ jobs:
             exit 1
           fi
           jq -e '.success == true' "${RUNNER_TEMP}/patch-result.json" >/dev/null
-          echo 'OWNER_D1_PATCH_RESPONSE=ACCEPTED_NOT_YET_SERVED_VERIFIED'
+          # HTTP 200 is not proof the Owner D1 binding was applied. Compare
+          # Cloudflare's returned settings against the original served version.
+          python3 .github/scripts/b62_owner_d1_release_transaction.py verify-patch-response \
+            --before "${RUNNER_TEMP}/version-pre.json" \
+            --candidate "${RUNNER_TEMP}/candidate.json" \
+            --response "${RUNNER_TEMP}/patch-result.json"
+          echo 'OWNER_D1_PATCH_RESPONSE=OWNER_BINDING_ADDED_PENDING_SERVED_VERIFICATION'
 
       - name: Verify new 100-percent served version and ALL existing resources
         shell: bash
