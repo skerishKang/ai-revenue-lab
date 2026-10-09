@@ -1,0 +1,83 @@
+name: B66 three-model quotation quality comparison
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: "Exact current main SHA for three-model x four-case one-shot"
+        required: true
+        type: string
+      confirmation:
+        description: "Type RUN_B66_THREE_MODEL_FOUR_CASE_EVAL_ONCE"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b66-three-model-quality-eval-production
+  cancel-in-progress: false
+
+jobs:
+  production-one-shot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    environment: production
+    env:
+      TARGET_SHA: ${{ inputs.target_sha }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
+      B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+
+      - name: Exact-main and explicit one-shot authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = 'refs/heads/main'
+          test "${CONFIRMATION}" = 'RUN_B66_THREE_MODEL_FOUR_CASE_EVAL_ONCE'
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          test -n "${B66_CGI_ALPHA_USERNAME}"
+          test -n "${B66_CGI_ALPHA_PASSWORD}"
+          echo 'EXACT_MAIN_PREFLIGHT=PASS'
+          echo 'SYNTHETIC_INPUTS_ONLY=YES'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Read-only synthetic evaluation source contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/b66_cgi_partial_live_canary.py --self-test
+          python .github/scripts/b66_quote_three_model_eval.py --self-test
+          grep -Fq 'MAX_INTERPRET_POSTS = 12' .github/scripts/b66_quote_three_model_eval.py
+          grep -Fq 'RETRY = 0' .github/scripts/b66_quote_three_model_eval.py
+          grep -Fq 'MODEL_FALLBACK = 0' .github/scripts/b66_quote_three_model_eval.py
+          grep -Fq 'PDF_RENDER_REQUESTS=0' .github/scripts/b66_quote_three_model_eval.py
+          grep -Fq 'QUOTE_STORAGE_WRITES=0' .github/scripts/b66_quote_three_model_eval.py
+          echo 'B66_MODEL_COMPARISON_CONTRACT=PASS'
+
+      - name: Reconfirm exact main before model calls
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'PRECALL_EXACT_MAIN=PASS'
+
+      - name: Run twelve bounded authenticated interpretation probes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/b66_quote_three_model_eval.py --authorized-live-run
