@@ -87,6 +87,13 @@ const ctrl=P.create({mount,doc,fetcher,onError:msg=>errors.push(msg),
  assert(!(await show),"race cancelled");
  assert(errors.length===2,"clear avoids spurious errors");
  assert(doc.body.children.length===1,"no new modal after clear");
+ ctrl.set(artifact);
+ assert(await ctrl.show(),"second owned PDF opened");
+ const liveDialog=doc.body.children[doc.body.children.length-1];
+ P.revokeAll();
+ assert(liveDialog.removed && !liveDialog.open,"logout closes the PDF viewer");
+ assert(created.length===revoked.length,"logout revokes every private Blob URL");
+ console.log("PDF_PREVIEW_LOGOUT_REVOKES_BLOB=PASS");
  console.log("PDF_PREVIEW_ACTUAL_BYTES=PASS");
  console.log("REVOKED_AND_MIME_FAIL_CLOSED=PASS");
  console.log("NO_REPLAY_NO_PREMATURE_FETCH=PASS");
@@ -103,7 +110,8 @@ def test_actual_pdf_modal_browser_code_with_node_vm():
     for key in ("PDF_PREVIEW_ACTUAL_BYTES=PASS",
                 "REVOKED_AND_MIME_FAIL_CLOSED=PASS",
                 "NO_REPLAY_NO_PREMATURE_FETCH=PASS",
-                "FOCUS_CLOSE_BLOB_REVOCATION=PASS"):
+                "FOCUS_CLOSE_BLOB_REVOCATION=PASS",
+                "PDF_PREVIEW_LOGOUT_REVOKES_BLOB=PASS"):
         assert key in result.stdout
 
 
@@ -114,6 +122,7 @@ def test_document_download_contract_and_script_order_unchanged():
     assert "clawPdfPreviewController?.clear()" in APP
     assert "downloadClawArtifact(docId, fname)" in APP
     assert "PadiemClawPdfPreview" in SOURCE
+    assert "window.PadiemClawPdfPreview?.revokeAll?.()" in APP
     for disallowed in ("innerHTML", "localStorage", "sessionStorage",
                        "window.open(", "location.href", "POST", "XMLHttpRequest"):
         assert disallowed not in SOURCE

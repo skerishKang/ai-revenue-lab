@@ -6,6 +6,7 @@
   const VALID_ID = /^doc_[A-Za-z0-9]{32}$/;
   const PDF_TYPE = "application/pdf";
   const MAX_PDF = 10 * 1024 * 1024;
+  const controllers = new Set();
 
   function copy(lang, key) {
     const en = String(lang || "").toLowerCase().startsWith("en");
@@ -141,7 +142,12 @@
       mount.appendChild(button);
       return true;
     }
-    return Object.freeze({ set, clear, show });
+    const instance = Object.freeze({ set, clear, show });
+    controllers.add(instance);
+    return instance;
   }
-  window.PadiemClawPdfPreview = Object.freeze({ create, validArtifact, isPdf });
+  function revokeAll() {
+    for (const controller of controllers) controller.clear();
+  }
+  window.PadiemClawPdfPreview = Object.freeze({ create, validArtifact, isPdf, revokeAll });
 })();

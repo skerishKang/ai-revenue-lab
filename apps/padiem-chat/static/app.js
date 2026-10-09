@@ -904,6 +904,8 @@
         if (workspace.dataset.view === "inbox") workspace.dataset.view = "general";
         if (workspace.dataset.view === "automation") workspace.dataset.view = "general";
       }
+      // Auth loss also closes PDF previews and revokes ephemeral private blobs.
+      window.PadiemClawPdfPreview?.revokeAll?.();
       // Auth loss tears down any pending execute recovery: no timer outlives the session.
       clearClawRecovery({ syncControls: true });
       clearClawWait();
