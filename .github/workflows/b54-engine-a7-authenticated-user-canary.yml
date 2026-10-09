@@ -132,7 +132,7 @@ jobs:
           fi
           detail="${RUNNER_TEMP}/a7-auth-canary-version.json"
           curl -fsS "${auth[@]}" "${base}/versions/${active}" -o "${detail}"
-          verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify --version-settings "${detail}" --active-version "${active}" --inspect-engine-admission-binding)"
+          verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify --version-settings "${detail}" --active-version="${active}" --inspect-engine-admission-binding)"
           printf '%s\n' "${verify_out}" | grep -q '^CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING=PRESENT:service$'
           printf '%s\n' "${verify_out}" | grep -q '^ENGINE_ADMISSION_BINDING_TARGET_VALIDATED=YES$'
           echo "A7_CANARY_SERVED_BINDING=PASS"

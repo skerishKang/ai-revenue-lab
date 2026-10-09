@@ -10,6 +10,10 @@ name: B54 Engine Drive S4 Read-only Gate
 # never reaches Google Drive.
 
 on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-engine-drive-s4-readonly-gate.yml"
+      - ".github/tests/test_3748_engine_drive_s4_argv.py"
   workflow_dispatch:
     inputs:
       target_sha:
@@ -26,8 +30,33 @@ permissions:
   contents: read
 
 jobs:
+  source-contract:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate S4 served-version argv and manual execution boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/tests/test_3748_engine_drive_s4_argv.py
+          echo 'S4_ARGV_SOURCE_CONTRACT=PASS'
+          echo 'LIVE_ENGINE_REQUESTS=0'
+          echo 'PRODUCTION_MUTATION=0'
+
   drive-s4-readonly:
-    if: github.event.inputs.confirmation == 'RUN_B54_ENGINE_DRIVE_S4_READONLY_ONCE'
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.confirmation == 'RUN_B54_ENGINE_DRIVE_S4_READONLY_ONCE'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: production
@@ -71,7 +100,7 @@ jobs:
           curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
           python3 .github/scripts/b54_engine_served_version_guard.py verify \
             --version-settings "${version_detail}" \
-            --active-version "${active_version}" \
+            --active-version="${active_version}" \
             --require-drive-runtime-bindings \
             --expect-overlay
           echo "S4_SERVED_VERSION=${active_version}"
