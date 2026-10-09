@@ -229,7 +229,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--candidate", required=True, type=Path)
     p.add_argument("--anchor", required=True, type=Path)
     v = sub.add_parser("verify")
-    for label in ("pre", "post", "deployments", "settings", "d1-owner", "anchor"):
+    for label in ("pre", "post", "deployments", "settings", "d1-owner", "d1-chat", "d1-engine", "anchor"):
         v.add_argument("--" + label, required=True, type=Path)
     v.add_argument("--worker", choices=tuple(WORKERS), required=True)
     r = sub.add_parser("verify-rollback-target")
@@ -261,8 +261,8 @@ def main(argv: list[str] | None = None) -> int:
             inventory = _read(args.d1_owner)
             ids = _database_ids({
                 OWNER_NAME: inventory,
-                "padiem-chat-db": inventory,
-                "padiem-engine": inventory,
+                "padiem-chat-db": _read(args.d1_chat),
+                "padiem-engine": _read(args.d1_engine),
             })
             verify(_read(args.pre), _read(args.post), _read(args.deployments),
                    _read(args.settings), ids[OWNER_NAME], _read(args.anchor))
