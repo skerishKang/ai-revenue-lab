@@ -542,6 +542,7 @@ def _conversation_prompt(skill: dict[str, Any]) -> str:
         "고객의 일상적인 띄어쓰기, 조사 오류나 분명한 철자 오타는 문맥상 의미가 하나로 확실한 경우에만 해석하십시오. "
         "뜻이 여러 개이거나 업체명, 담당자명, 품목명처럼 고객이 확인해야 할 고유 정보가 불명확하면 추측하지 말고 해당 값은 null로 두십시오. "
         "수량, 단가, 세금 조건은 임의로 만들거나 유추한 숫자로 채우지 마십시오. "
+        "약, 대충, 정도, 내외, 범위로 표현한 수량은 확정 숫자가 아니므로 null로 두고 고객에게 정확한 수량을 다시 확인하십시오. "
         "정보가 불분명하면 다른 필드의 확실한 사실은 보존하고 불분명한 필드만 null로 두어 서비스가 고객에게 다시 질문하게 하십시오. "
         "최상위 키는 recipient, quoteNo, issueDate, projectName, items, detailGroups, memo, taxMode, missing 만 허용됩니다. "
         "recipient는 company/person/address/email을 사용하십시오. "
@@ -591,6 +592,104 @@ def _server_missing_fields(
             if any(field not in item for item in required_items):
                 missing.append(field)
     return tuple(missing)
+
+
+# Owner #3916: customer-authored quantity qualifiers outrank a model's numeric
+# projection. This is a finalization guard, not a new extraction authority.
+# Match number+quantity unit only; a price such as "약 2만원" is not quantity.
+_QUANTITY_UNIT_RE = r"(?:미터|박스|세트|묶음|kg|KG|mm|cm|m2|EA|ea|개|대|장|톤|식|본|롤|통|병|쌍|건|벌|포|m|M|㎡)"
+_QUANTITY_NUMBER_RE = r"(?:\d{1,6}(?:,\d{3})*(?:\.\d+)?)"
+_QUANTITY_PHRASE_RE = re.compile(
+    rf"(?P<qualifier>약|대략|대충|한)?\s*"
+    rf"(?P<lower>{_QUANTITY_NUMBER_RE})\s*"
+    rf"(?:(?:~|～|∼|-)\s*(?P<upper>{_QUANTITY_NUMBER_RE})\s*)?"
+    rf"(?P<unit>{_QUANTITY_UNIT_RE})\s*"
+    rf"(?P<suffix>정도|쯤|내외|가량|안팎)?"
+)
+
+
+def _bounded_quantity_number(value: Any) -> float | None:
+    if isinstance(value, bool) or not isinstance(value, (int, float, str)):
+        return None
+    try:
+        number = float(value.replace(",", "") if isinstance(value, str) else value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    return number if math.isfinite(number) else None
+
+
+def _guard_unconfirmed_approximate_quantities(
+    message: str, projection: B66QuoteConversationProjection
+) -> B66QuoteConversationProjection:
+    """Do not let approximate source quantities become finalized QuoteCore facts.
+
+    The browser's existing bounded follow-up sends the original message and
+    customer-only "답변:" lines. A numerical, unqualified quantity in one of
+    those answer lines is the ONLY confirmation allowed here. An unqualified
+    "네" is intentionally insufficient: the customer must restate a quantity.
+    Neither the model's missing metadata nor generated question text can
+    authorize confirmation.
+    """
+    original = message.split("\n추가 질문:", 1)[0]
+    approximate = [
+        hit for hit in _QUANTITY_PHRASE_RE.finditer(original)
+        if hit.group("qualifier") or hit.group("upper") or hit.group("suffix")
+    ]
+    if not approximate:
+        return projection
+
+    estimates: set[float] = set()
+    for hit in approximate:
+        for key in ("lower", "upper"):
+            if hit.group(key):
+                value = _bounded_quantity_number(hit.group(key))
+                if value is not None:
+                    estimates.add(value)
+
+    # Deliberately do not trust numeric text in the initial estimate or in a
+    # model-generated "추가 질문:"; only explicit subsequent user replies.
+    confirmed: set[float] = set()
+    for answer in re.findall(r"(?:^|\n)답변:\s*([^\n]{0,1000})", message):
+        for hit in _QUANTITY_PHRASE_RE.finditer(answer):
+            if hit.group("qualifier") or hit.group("upper") or hit.group("suffix"):
+                continue
+            value = _bounded_quantity_number(hit.group("lower"))
+            if value is not None:
+                confirmed.add(value)
+
+    # Keep an exact unrelated item intact where its quantity differs from the
+    # approximate value. If mapping is uncertain, remove every numeric qty,
+    # rather than finalize an invented value. One item remains fail-closed.
+    all_items = list(projection.items) + [
+        item for group in projection.detail_groups for item in group["items"]
+    ]
+    any_estimate_matched = any(
+        _bounded_quantity_number(item.get("qty")) in estimates
+        for item in all_items if "qty" in item
+    )
+    conservative_all = len(all_items) == 1 or not any_estimate_matched
+    modified = False
+
+    def guard_item(item: dict[str, Any]) -> dict[str, Any]:
+        nonlocal modified
+        value = _bounded_quantity_number(item.get("qty"))
+        if value is None or "qty" not in item:
+            return dict(item)
+        if value in confirmed:
+            return dict(item)
+        if conservative_all or value in estimates:
+            new_item = dict(item)
+            del new_item["qty"]
+            modified = True
+            return new_item
+        return dict(item)
+
+    items = tuple(guard_item(item) for item in projection.items)
+    groups = tuple(
+        {**group, "items": [guard_item(item) for item in group["items"]]}
+        for group in projection.detail_groups
+    )
+    return replace(projection, items=items, detail_groups=groups) if modified else projection
 
 
 class B66QuoteConversationInterpreter:
@@ -645,6 +744,7 @@ class B66QuoteConversationInterpreter:
             if schema.get("taxMode") is not True:
                 raw_fallback.pop("taxMode", None)
             projection = normalize_conversation_output(raw_fallback)
+            projection = _guard_unconfirmed_approximate_quantities(clean, projection)
             return replace(
                 projection,
                 missing=_server_missing_fields(projection, skill),
@@ -656,6 +756,7 @@ class B66QuoteConversationInterpreter:
         if not isinstance(answer, str):
             raise B66QuoteConversationError("invalid_model_output")
         projection = normalize_conversation_output(answer, server_derives_missing=True)
+        projection = _guard_unconfirmed_approximate_quantities(clean, projection)
         return replace(
             projection,
             missing=_server_missing_fields(projection, skill),
