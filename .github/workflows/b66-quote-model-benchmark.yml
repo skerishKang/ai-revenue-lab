@@ -47,7 +47,7 @@ jobs:
           node-version: '22'
       - name: Install offline test runner
         run: python -m pip install --quiet pytest
-      - name: Verify current nine-model allowlist and actual B66 extraction schema
+      - name: Verify current canonical model allowlist and actual B66 extraction schema
         shell: bash
         run: |
           set -euo pipefail
@@ -58,7 +58,7 @@ jobs:
           import json,sys
           with open(sys.argv[1],encoding='utf-8') as f:
               d=json.load(f)
-          assert len(d['models'])==10
+          assert len(d['models'])==11
           assert not any(x.startswith('kilo/') for x in d['models'])
           assert d['post_count']==0
           print('B66_QUOTE_EVAL_SOURCE_GATE=PASS')

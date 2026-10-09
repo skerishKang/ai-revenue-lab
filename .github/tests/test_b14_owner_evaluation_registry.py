@@ -14,7 +14,7 @@ from b14_owner_evaluation_registry import (
     authorize_historical_selector, load_current_models, main,
 )
 
-TEN={
+ELEVEN={
     "agnes-ai/agnes-3.0-flash",
     "atria/Atria-Dawn-Preview",
     "experiential/qwen3.8-flash-next-uncensored",
@@ -23,14 +23,15 @@ TEN={
     "google/gemma-4-26b-a4b-it",
     "google/gemma-4-31b-it",
     "inception/mercury-2.5",
+    "kira/qwen3.8-flash-free",
     "poolside/laguna-s-2.1",
     "sensenova/sensenova-6.8-flash-lite",
 }
 
-def test_current_roster_is_ten_registered_models_only():
+def test_current_roster_is_eleven_registered_models_only():
     got=load_current_models()
-    assert set(got)==TEN
-    assert len(got)==10
+    assert set(got)==ELEVEN
+    assert len(got)==11
     assert not (set(got)&OWNER_RETIRED)
     assert authorize_exact_models(tuple(got))==tuple(got)
     assert got["poolside/laguna-s-2.1"]["provider_id"]=="poolside"
@@ -155,7 +156,7 @@ def test_exact_poolside_provider_route_cannot_drift_to_kilo(tmp_path):
 def test_main_inert_list_and_only_exact_selector(capsys):
     assert main(["--list"])==0
     out=json.loads(capsys.readouterr().out)
-    assert set(out["model_ids"])==TEN
+    assert set(out["model_ids"])==ELEVEN
     assert out["network_calls"]==0
     assert out["automatic_fallbacks"]==0
     assert not out["production_changed"]
