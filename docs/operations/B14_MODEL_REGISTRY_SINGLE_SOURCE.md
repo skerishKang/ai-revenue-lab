@@ -53,18 +53,18 @@ B14 고정 auto 및 구버전 제품 HOLD는 사용자 지정 모델이 아닙�
 
 ## 2026-10-09 exact Owner-registry evaluation contract
 
-- Detailed workflow/rubric: docs/operations/B14_B66_QUOTE_MODEL_EVALUATION_PROTOCOL.md. No live nine-model benchmark is authorized by a source-only preflight.
+- Detailed workflow/rubric: docs/operations/B14_B66_QUOTE_MODEL_EVALUATION_PROTOCOL.md. No live current-catalog bulk benchmark is authorized by a source-only preflight.
 - Canonical registered candidates: only enabled exact IDs from apps/korean-ai-platform/app/pilot/b14_models.json. Historical 2026-10-09 count: nine. Current count is determined only from the canonical JSON (10 as of 2026-10-10). .github/scripts/b14_owner_evaluation_registry.py verifies this before model assessment; provider discovery is NOT registration.
 - Direct Poolside Laguna S 2.1 is poolside/laguna-s-2.1 using https://inference.poolside.ai/v1 and the PADIEM_POOLSIDE_API_KEY binding NAME. All Kilo Laguna aliases remain Owner-excluded.
 - Other excluded identities: B.AI Qwen, Motif 3, GPT-5.6 Luna, NVIDIA Nemotron. Historic five-model comparative fixture aliases are not authorization. The old live workflow is registry-gated, with the deleted models and all-five selector excluded.
-- StepFun #3835 is Draft and does not extend the current-main nine-model roster. Nor does API availability, a synthetic test or an empty credential binding establish live provider readiness.
+- StepFun #3835 is Draft and does not extend the current-main registered roster. Nor does API availability, a synthetic test or an empty credential binding establish live provider readiness.
 - Evaluate B66 repeat use on Korean request-to-QuoteDraft data extraction (recipient, item names, quantities, unit price and omissions), NOT on repeated re-creation of the HTML/PDF. QuoteCore calculates; the certified template renderer deterministically prints. No hidden paid/Auto/fallback inference.
 
 ## 2026-10-09 browser/B62 integration regression contract
 
-- B14 app/pilot/workspace.py Start-screen manual model dropdown and its JavaScript b14CatalogModels use nine CATALOG_BY_ID entries installed from canonical b14_models.json, NOT historical empty CATALOG_MODELS.
+- B14 app/pilot/workspace.py Start-screen manual model dropdown and its JavaScript b14CatalogModels used nine CATALOG_BY_ID entries at the 2026-10-09 test baseline, installed from canonical b14_models.json, NOT historical empty CATALOG_MODELS.
 - The standalone Alpha UI still has a legacy b14/auto option. This task does not authorize that option as a new Plus/Pro/Max group, nor does it implement a B66 manual selector. Group membership remains Owner-only.
 - The Alpha browser smoke test selects approved agnes-ai/agnes-3.0-flash and supplies a dummy credential ONLY to the mock child process; no real API calls.
-- B62 source authority verifies nine registered model IDs and five completely unregistered Owner-deleted IDs; no public/free/auto route is authorized for B66.
+- B62 source authority verified nine registered model IDs at the 2026-10-09 baseline and five completely unregistered Owner-deleted IDs; no public/free/auto route is authorized for B66.
 - B62 retry-budget fixture copies the schema of a surviving Agnes model in an isolated child with mocked provider dispatch and test-only key; the max_retries=0 execution guard still ensures exactly one provider attempt.
 - Verification: focused B62 21 passed, local B14 full 995 passed, desktop Alpha browser 28 passed, mobile Alpha browser 6 passed. Exact-head Linux CI and independent approval remain mandatory prior to Ready/merge.
