@@ -217,7 +217,9 @@ def verify_rollback_target(anchor: dict, version: object, expected_worker: str) 
     return result["id"]
 
 
-def validate_patch_settings(candidate: object, original_version: object) -> str:
+def validate_patch_settings(
+    candidate: object, original_version: object, expected_owner_id: str
+) -> str:
     """Require the EXACT JSON object accepted by Cloudflare multipart 'settings'.
 
     Cloudflare form field name supplies the only outer 'settings' wrapper.
@@ -251,6 +253,8 @@ def validate_patch_settings(candidate: object, original_version: object) -> str:
         owner_id = validate_owner_d1_id(added["database_id"])
     except BindingStateError as exc:
         raise TransactionError("PATCH_SETTINGS_D1_INVALID") from exc
+    if owner_id != expected_owner_id:
+        raise TransactionError("PATCH_SETTINGS_OWNER_D1_ID_MISMATCH")
     if not isinstance(candidate["annotations"], dict):
         raise TransactionError("PATCH_SETTINGS_ANNOTATIONS_INVALID")
     original_annotations = current.get("annotations") or {}
@@ -261,10 +265,13 @@ def validate_patch_settings(candidate: object, original_version: object) -> str:
 
 
 def verify_patch_response(
-    original_version: object, patch_response: object, candidate: object
+    original_version: object, patch_response: object, candidate: object,
+    expected_owner_id: str,
 ) -> None:
     """HTTP 200/success is insufficient: one Owner D1 MUST appear in PATCH result."""
-    owner_id = validate_patch_settings(candidate, original_version)
+    owner_id = validate_patch_settings(
+        candidate, original_version, expected_owner_id
+    )
     try:
         assert_one_owner_d1_added(original_version, patch_response, owner_id)
     except BindingStateError as exc:
@@ -313,6 +320,8 @@ def main(argv: list[str] | None = None) -> int:
     patch_response.add_argument("--before", required=True, type=Path)
     patch_response.add_argument("--candidate", required=True, type=Path)
     patch_response.add_argument("--response", required=True, type=Path)
+    for database in ("d1-owner", "d1-chat", "d1-engine"):
+        patch_response.add_argument("--" + database, required=True, type=Path)
     r = sub.add_parser("verify-rollback-target")
     r.add_argument("--anchor", required=True, type=Path)
     r.add_argument("--version", required=True, type=Path)
@@ -336,7 +345,12 @@ def main(argv: list[str] | None = None) -> int:
                 raise TransactionError("OUTPUT_PATH_ALIAS")
             if args.candidate.exists() or args.anchor.exists():
                 raise TransactionError("OUTPUT_EXISTS")
-            validate_patch_settings(candidate, _read(args.version))
+            ids = _database_ids({
+                OWNER_NAME: _read(args.d1_owner),
+                "padiem-chat-db": _read(args.d1_chat),
+                "padiem-engine": _read(args.d1_engine),
+            })
+            validate_patch_settings(candidate, _read(args.version), ids[OWNER_NAME])
             _write_new(args.candidate, candidate)
             _write_new(args.anchor, anchor)
             print("OWNER_D1_PREMUTATION_CHECK=PASS")
@@ -356,8 +370,14 @@ def main(argv: list[str] | None = None) -> int:
                    _read(args.settings), ids[OWNER_NAME], anchor)
             print("OWNER_D1_POST_SERVED_RESOURCES=PASS")
         elif args.mode == "verify-patch-response":
+            ids = _database_ids({
+                OWNER_NAME: _read(args.d1_owner),
+                "padiem-chat-db": _read(args.d1_chat),
+                "padiem-engine": _read(args.d1_engine),
+            })
             verify_patch_response(
-                _read(args.before), _read(args.response), _read(args.candidate)
+                _read(args.before), _read(args.response),
+                _read(args.candidate), ids[OWNER_NAME]
             )
             print("OWNER_D1_PATCH_RESPONSE_D1_AUTHORITY=PASS")
         elif args.mode == "verify-rollback-target":
