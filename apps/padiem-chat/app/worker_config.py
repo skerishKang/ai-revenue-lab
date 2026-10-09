@@ -89,7 +89,7 @@ CONTENT_SECURITY_POLICY = (
     "default-src 'self'; "
     "base-uri 'none'; "
     "object-src 'none'; "
-    "frame-src 'none'; "
+    "frame-src blob:; "
     "frame-ancestors 'none'; "
     "script-src 'self'; "
     "connect-src 'self'; "
@@ -301,8 +301,8 @@ def response_headers_for_path(
         # sole frame authority from the same deployment-owned value that powers
         # /api/b66/runtime-config; browser/request input cannot widen CSP.
         headers["Content-Security-Policy"] = CONTENT_SECURITY_POLICY.replace(
-            "frame-src 'none';",
-            f"frame-src {b66_quote_base_url};",
+            "frame-src blob:;",
+            f"frame-src blob: {b66_quote_base_url};",
         )
     if path == "/health" or path.startswith("/api/") or path.startswith("/auth/"):
         headers["Cache-Control"] = "no-store"
