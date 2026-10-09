@@ -140,13 +140,16 @@ STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 async def health(request: Request) -> JSONResponse:
     settings: Settings = request.app.state.settings
     usage_gate: UsageGate = request.app.state.usage_gate
-    web_ready = settings.web_provider in {"mock", "firecrawl"}
+    # Config validation already requires keys for live web providers. This is
+    # configuration readiness, not proof of upstream provider availability.
+    web_ready = settings.web_provider in {"mock", "firecrawl", "daum", "tinyfish", "tinyfish_daum"}
+    research_ready = settings.runtime_mode == "b14" and settings.web_provider in {"mock", "firecrawl"}
     abuse_ready = usage_gate.ready
     return JSONResponse({
         "status": "ok", "app": "padiem-chat", "runtime": settings.runtime_mode,
         "b14_configured": bool(settings.b14_base_url),
         "web_tools_ready": web_ready,
-        "deep_research_ready": settings.runtime_mode == "b14" and web_ready,
+        "deep_research_ready": research_ready,
         "image_attachment_ready": True,
         "text_document_attachment_ready": True,
         "auth_configured": settings.auth_mode != "off",
