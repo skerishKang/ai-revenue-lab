@@ -159,7 +159,12 @@ def test_exact_poolside_provider_route_cannot_drift_to_kilo(tmp_path):
 def test_main_inert_list_and_only_exact_selector(capsys):
     assert main(["--list"])==0
     out=json.loads(capsys.readouterr().out)
-    assert set(out["model_ids"])==ELEVEN
+    # The historical owner-approved roster is a required subset, not a frozen total.
+    # New exact-ID registrations must appear in --list without relaxing retirement gates.
+    current=set(load_current_models())
+    assert ELEVEN <= current
+    assert set(out["model_ids"])==current
+    assert not (current & OWNER_RETIRED)
     assert out["network_calls"]==0
     assert out["automatic_fallbacks"]==0
     assert not out["production_changed"]
