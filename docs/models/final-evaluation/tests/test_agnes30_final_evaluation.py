@@ -49,6 +49,11 @@ class Agnes30FinalEvaluationGuard(unittest.TestCase):
             self.assertIn(value, self.report)
         self.assertIn("12.6분 휴지 후 B14 429/로컬 PASS", self.ledger)
 
+    def test_short_conversation_429_is_not_quote_complexity(self):
+        for v in ("짧은 일반 대화 A/B", "1,328ms", "2,922ms", "94토큰", "max_attempts=1", "코드 결함으로 확정하지 않는다"):
+            self.assertIn(v, self.report)
+        self.assertIn("짧은 일반 대화도 B14 429/로컬 PASS", self.ledger)
+
     def test_ledger_single_model_link(self):
         self.assertIn("B14_FINAL_AGNES_3_0_FLASH_2026-10-09.md", self.ledger)
         self.assertIn("| 7 | `agnes-ai/agnes-3.0-flash` |", self.ledger)

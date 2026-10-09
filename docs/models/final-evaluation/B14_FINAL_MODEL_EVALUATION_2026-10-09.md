@@ -43,7 +43,7 @@
 | 4 | `google/gemma-4-31b-it` | **F1 Dense 30.7B·출력 32,768 / F2 30RPM·16K TPM·14.4K RPD / Minimal 원본 1/10·내용 5/10 / High 원본 0/10·내용 0/10 / B14 504** |
 | 5 | `poolside/laguna-s-2.1` (Poolside 직접 API, Kilo 제외) | **F1 공식 118B/활성8B·1M / F2 계정한도 UNKNOWN / 직접 기본 9/10(10.89s), 추론 끔 8/10(4.63s), 켬 8/10(9.56s) / B14 9/10 HTTP200 / 실제 AI→PDF PASS** |
 | 6 | `sensenova/sensenova-6.8-flash-lite` | **F1 제공자 262,144/65,536 · F2 계정 한도 UNKNOWN · B14 10/10 · 직접 기본 10/10 · 리즈닝 none 10/10 2633ms; low 10/10 6528ms; medium 10/10 6278ms; high 10/10 6503ms · 12품목 로컬 PDF PASS** |
-| 7 | `agnes-ai/agnes-3.0-flash` | **IN_PROGRESS / RATE_LIMIT_BLOCKED** — B14 첫 요청 429(0/1 HTTP200), Agnes 직접 10/10 HTTP200·견적 정확도 8/10(3,569ms/477토큰), Thinking Off 5/5(2,563ms/399토큰)·On 5/5(7,053ms/717토큰), 11번째 비교 호출 429 중단, 12품목 QuoteCore PDF PASS(2페이지)·12.6분 휴지 후 B14 429/로컬 PASS 각 1회 재확인, F2 계정 한도 및 고객 저장 PDF E2E UNKNOWN/NOT_TESTED. [상세](B14_FINAL_AGNES_3_0_FLASH_2026-10-09.md) |
+| 7 | `agnes-ai/agnes-3.0-flash` | **IN_PROGRESS / RATE_LIMIT_BLOCKED** — B14 첫 요청 429(0/1 HTTP200), Agnes 직접 10/10 HTTP200·견적 정확도 8/10(3,569ms/477토큰), Thinking Off 5/5(2,563ms/399토큰)·On 5/5(7,053ms/717토큰), 11번째 비교 호출 429 중단, 12품목 QuoteCore PDF PASS(2페이지)·12.6분 휴지 후 B14 429/로컬 PASS 재확인, 짧은 일반 대화도 B14 429/로컬 PASS 각 1회, F2 계정 한도 및 고객 저장 PDF E2E UNKNOWN/NOT_TESTED. [상세](B14_FINAL_AGNES_3_0_FLASH_2026-10-09.md) |
 | 8 | `inception/mercury-2.5` | `NOT_STARTED` |
 | 9 | `atria/Atria-Dawn-Preview` | `NOT_STARTED` |
 
