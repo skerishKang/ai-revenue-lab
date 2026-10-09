@@ -42,6 +42,45 @@ def test_canary_source_uses_canonical_primary_and_protected_subject_only() -> No
     assert not re.search(r"(space-bunny|sensenova|openai|anthropic)", source, re.I)
 
 
+def test_a7_subject_guard_matches_real_control_plane_mint_contract() -> None:
+    """Do not approve a canary that rejects all CP-minted subject IDs."""
+    import ast
+
+    cp_source = (
+        ROOT / "packages" / "padiem-control-plane" / "identity_authority_durable.py"
+    ).read_text(encoding="utf-8")
+    # This exact 16-byte subject mint is the existing canonical CP contract.
+    assert 'self._new_ref("sub_", 16)' in cp_source
+
+    tree = ast.parse(SCRIPT.read_text(encoding="utf-8"))
+    compiled = [
+        node.value.args[0].value
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Assign)
+        and any(isinstance(target, ast.Name) and target.id == "_SUBJECT_RE" for target in node.targets)
+        and isinstance(node.value, ast.Call)
+        and isinstance(node.value.func, ast.Attribute)
+        and node.value.func.attr == "compile"
+        and node.value.args
+        and isinstance(node.value.args[0], ast.Constant)
+        and isinstance(node.value.args[0].value, str)
+    ]
+    assert len(compiled) == 1
+    guard = re.compile(compiled[0])
+    canonical = "sub_" + "0123456789abcdef" * 2
+    assert guard.fullmatch(canonical)
+    for invalid in (
+        "usr_" + "0123456789abcdef" * 2,  # product user, not CP subject
+        "sub_" + "a" * 31,                 # truncated CP ref
+        "sub_" + "g" * 32,                 # not hex
+        "sub_" + "A" * 32,                 # CP mint is lowercase
+        canonical + " ",                  # untrusted suffix
+        canonical + "\\n",               # no newline bypass
+        "someone@example.com",             # provider identity is not subject
+    ):
+        assert not guard.fullmatch(invalid)
+
+
 def test_cp_worker_auto_ensures_entitlement_from_identity_without_engine_install() -> None:
     worker = CP_WORKER.read_text(encoding="utf-8")
     producer = PRODUCER.read_text(encoding="utf-8")
