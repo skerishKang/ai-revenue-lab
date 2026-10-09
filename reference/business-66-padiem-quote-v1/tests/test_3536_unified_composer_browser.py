@@ -119,6 +119,18 @@ async def main():
                 assert await page.evaluate("() => document.getElementById('easyMessageList').children.length === 0")
                 assert await page.evaluate("() => !document.getElementById('easySend').disabled")
 
+                # Account change in the same JS turn must cancel even the queued dispatch.
+                await page.evaluate("""() => {
+                  document.getElementById('freeChatStarter').click();
+                  document.getElementById('easyComposer').value = '보내지 말아야 할 견적';
+                  document.getElementById('easySend').click();
+                  document.dispatchEvent(new CustomEvent(
+                    'b66:account-scope-changed', {detail:{privateStateReadable:false}}));
+                }""")
+                await page.wait_for_timeout(30)
+                assert await page.evaluate("() => window.__interpretCalls === 1")
+                assert await page.evaluate("() => document.getElementById('easyMessageList').children.length === 0")
+
                 # All permitted network here is loopback static GET; no live B14 POST.
                 external = [(method, href) for method, href in requests
                             if not href.startswith("http://127.0.0.1:")]

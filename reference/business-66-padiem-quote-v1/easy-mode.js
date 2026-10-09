@@ -308,7 +308,11 @@
     addMessage("user", text);
     addMessage("assistant", "CGI 기본 견적서로 작성하고 있습니다…");
     disableInput("견적을 만드는 동안에는 입력을 잠시 멈춥니다.");
-    Promise.resolve().then(() => bridge.interpret(text)).then((result) => {
+    Promise.resolve().then(() => {
+      // Closing/switching the owner before the dispatch microtask must cancel the call.
+      if (requestScopeRevision !== accountScopeRevision) return null;
+      return bridge.interpret(text);
+    }).then((result) => {
       // Results from a signed-out/quarantined owner must never update the next account.
       if (requestScopeRevision !== accountScopeRevision) return;
       if (!result || result.ok !== true || !result.draft) {
