@@ -3,7 +3,7 @@
 ```text
 DOC_STATUS = CANONICAL_ENTRYPOINT
 OWNER = repository documentation governance
-LAST_VERIFIED = 2026-10-08
+LAST_VERIFIED = 2026-10-09
 ```
 
 `docs/` is the entrypoint for **current documentation authority**. Dated audits, issue-specific designs, phase documents and Git history remain evidence; file existence alone does not make them current architecture or runtime truth.
@@ -20,6 +20,21 @@ LAST_VERIFIED = 2026-10-08
 | 증거 | [증거 유형 및 검증 자료](evidence/README.md) | 검증 기준과 과거 기록의 출처 구분 |
 
 **원칙:** 변동성 높은 모델 ID·등록 상태·Production SHA는 여러 제품 README에 복사하지 않습니다. 실제 원천이 변경되면 참조 문서가 이를 연결합니다. 기존 [문서 권위 규칙](governance/DOCUMENTATION_AUTHORITY_MODEL.md)은 그대로 유지합니다.
+
+## 현재 개발·운영 상태의 단일 진입점
+
+아래 GitHub 이슈는 **현재 작업/해결 여부를 확인하는 변동 정보**의 권위입니다. 이 인덱스는 날짜별 main SHA, 모델 목록, CI 통과 개수 또는 Production 가용성을 복제하지 않습니다.
+
+| 확인할 문제 | 실시간 실행/보안 권위 |
+|---|---|
+| Padiem Golden Path FINISH-FIRST, LOCAL별 현재 소유권 | [#3523](https://github.com/skerishKang/ai-revenue-lab/issues/3523) |
+| Claw 실제 답변·SSE/DOM 검증 및 남은 모델 응답 오류 | [#3382](https://github.com/skerishKang/ai-revenue-lab/issues/3382), [#3566](https://github.com/skerishKang/ai-revenue-lab/issues/3566) |
+| Owner 모델 승인과 B14 실행 계약 | [모델 단일 인덱스](models/README.md), [Owner 정책](operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md) |
+| Calendar 사용자별 READ 격리 설계 | [#2010](https://github.com/skerishKang/ai-revenue-lab/issues/2010) |
+| Calendar READ 운영 활성화 보안 게이트 | [#2952 HARD HOLD](https://github.com/skerishKang/ai-revenue-lab/issues/2952) |
+| Browser Control/Broker/Desktop 실제 제품 연결 상태 | [#3782](https://github.com/skerishKang/ai-revenue-lab/issues/3782), [브라우저 실행 ADR](architecture/PADIEM_BROWSER_EXECUTION_ADAPTER_DECISION_3782.md) |
+
+증거 등급은 [문서 권위 모델](governance/DOCUMENTATION_AUTHORITY_MODEL.md)과 [개발 운영 정책](operations/AI_DEVELOPMENT_OPERATING_POLICY.md)을 따릅니다. **Merged source != 실제 모델 응답 != 인증된 사용자 E2E != Production 출시**입니다. GitHub의 오래된 이슈 본문/댓글·Draft PR·실험 문서는 현재 활성화 허가가 아닙니다.
 
 ## Start here
 
