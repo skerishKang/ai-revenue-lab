@@ -176,7 +176,8 @@ class CanaryContractTests(unittest.TestCase):
         source = SCRIPT.read_text(encoding="utf8")
         route = (SCRIPT.parents[2] / "apps" / "padiem-chat" / "app" /
                  "b66_quote_routes.py").read_text(encoding="utf8")
-        self.assertIn('summary["X_B66_RESULT_ORIGIN"] == MODEL_COMPLETION_ORIGIN', source)
+        self.assertIn('origin != MODEL_COMPLETION_ORIGIN', source)
+        self.assertIn('origin=summary["X_B66_RESULT_ORIGIN"]', source)
         self.assertIn('"X-B66-Result-Origin"', route)
         self.assertIn('MODEL_COMPLETION_ORIGIN = "registered_model_completion"', source)
         self.assertIn('FALLBACK_ORIGIN = "deterministic_fallback"', source)
