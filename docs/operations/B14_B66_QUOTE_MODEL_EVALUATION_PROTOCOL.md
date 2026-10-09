@@ -4,11 +4,12 @@ Status: SOURCE-ONLY PROCESS CONTRACT. No credentials provisioned here, no model/
 
 ## Purpose: what to benchmark
 
-B66 has two separate tasks. Never use the quality of an AI-generated HTML or PDF as the grade for REPEATED quotation generation.
+This protocol evaluates **one optional operation only: B14 interpretation of new free-form quotation facts**. It does not benchmark source-template engineering, an AI-designed page, or a PDF-producing model. Its stage boundaries are defined once in the
+[B66 canonical stage-ownership table](../products/b66/README.md#stage-ownership--one-canonical-answer-for-sol-b14-and-final-pdf); model identity/permissions remain governed by the [Owner model policy §0A](MODEL_CHANGE_OWNER_APPROVAL_POLICY.md).
 
-**Onboard once:** a document-capable development/analysis model interprets an existing source document and helps build a source-derived reusable quotation Skill. Independently certify structure, font, branding/logo/stamp, source reproduction and mutation. Sol 6.1 previously built a certified CGI source-derived renderer, but that provenance does not automatically make Sol the default repeat-request inference model.
+**Initial source onboarding (not this benchmark):** Sol 6.1 was a development/analysis and source-reproduction implementation tool for the previously certified CGI template. Independently certify the document-derived structure, fonts, branding/logo/stamp, mutations and layout. That engineering provenance does not establish a repeat-request Sol route or make Sol a production PDF generator.
 
-**Repeat many times:** user message -> optional model-based extraction of NEW recipient, quote facts, item names, specifications, quantity, unit price and corrections -> user confirmation if ambiguous -> B66 QuoteDraft -> QuoteCore computes totals, discount/tax and validation -> assigned Saved Quote Skill -> certified deterministic PDF generator. If the user enters all structured fields directly, SKIP model inference. No repeated layout analysis, HTML reconstruction or document certification.
+**Customer repeats (this benchmark covers the interpretation step only):** when the customer uses natural language, one explicitly selected and permitted B14 model may extract new recipient, item name, specification, quantity, unit price and corrections. The user confirms ambiguity. When the customer has entered complete structured facts, **skip inference entirely**. In either case, QuoteDraft -> QuoteCore -> approved Saved Quote Skill -> deterministic renderer -> PDF. **B14 does not draw the PDF, Sol is not invoked per repeat, and neither model calculates totals/tax or recreates layout.** The actual PDF is rendered without model calls using the previously certified template. Never grade an AI-generated HTML/PDF as the quality of this interpretation task.
 
 ## Stage 0. Selection and authority
 

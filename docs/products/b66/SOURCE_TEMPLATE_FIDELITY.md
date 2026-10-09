@@ -25,6 +25,16 @@ Technical capabilities described here (not an upload allowlist):
 
 This is **not** a general software-development model-ranking policy and is not a B14 runtime model-routing policy.
 
+**Role reference (not a second policy):** see the
+[B66 product's canonical stage-ownership table](README.md#stage-ownership--one-canonical-answer-for-sol-b14-and-final-pdf)
+for the precise distinction among initial Sol-assisted source/template **engineering**,
+optional customer-selected B14 **quote-fact interpretation**, QuoteCore
+**calculation**, and deterministic **PDF rendering**. A reference to "model"
+in this fidelity document means a possible engineering aid unless an explicit
+B14 quote-interpretation operation is named. No such aid is required for
+repeat PDF generation. In particular, #3839 multi-page template development
+does **not** turn Sol or B14 into a per-download PDF renderer.
+
 **Technical analysis scope does not grant customer template-registration
 permission.** Under #3586 and the [B66 product entrypoint](README.md), the
 current reusable-template allowlist is **XLSX = ACCEPT**, **HWPX = FUTURE**,

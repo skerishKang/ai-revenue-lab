@@ -7,6 +7,10 @@ on:
       - '.github/fixtures/b66_quote_interpret_v1.json'
       - '.github/scripts/b66_quote_model_benchmark.py'
       - '.github/tests/test_b66_quote_model_benchmark.py'
+      - '.github/tests/test_b66_document_stage_authority.py'
+      - 'docs/products/b66/README.md'
+      - 'docs/products/b66/SOURCE_TEMPLATE_FIDELITY.md'
+      - 'docs/operations/B14_B66_QUOTE_MODEL_EVALUATION_PROTOCOL.md'
       - '.github/workflows/b66-quote-model-benchmark.yml'
       - '.github/scripts/b14_owner_evaluation_registry.py'
       - 'apps/korean-ai-platform/app/pilot/b14_models.json'
@@ -16,6 +20,10 @@ on:
       - '.github/fixtures/b66_quote_interpret_v1.json'
       - '.github/scripts/b66_quote_model_benchmark.py'
       - '.github/tests/test_b66_quote_model_benchmark.py'
+      - '.github/tests/test_b66_document_stage_authority.py'
+      - 'docs/products/b66/README.md'
+      - 'docs/products/b66/SOURCE_TEMPLATE_FIDELITY.md'
+      - 'docs/operations/B14_B66_QUOTE_MODEL_EVALUATION_PROTOCOL.md'
       - '.github/workflows/b66-quote-model-benchmark.yml'
       - '.github/scripts/b14_owner_evaluation_registry.py'
       - 'apps/korean-ai-platform/app/pilot/b14_models.json'
@@ -44,6 +52,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m pytest .github/tests/test_b66_quote_model_benchmark.py -q
+          python -m pytest .github/tests/test_b66_document_stage_authority.py -q
           python .github/scripts/b66_quote_model_benchmark.py --list > "$RUNNER_TEMP/models.json"
           python - "$RUNNER_TEMP/models.json" <<'PY'
           import json,sys
