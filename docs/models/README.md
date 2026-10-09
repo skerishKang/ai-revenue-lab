@@ -14,7 +14,7 @@ SCOPE = NAVIGATION_ONLY
 | 소유자 제외 모델의 실행 경계 | [Owner Model Exclusions](../../apps/korean-ai-platform/app/pilot/owner_model_exclusions.py) |
 | Plus/Pro/Max 제품 라우트와 HOLD 선언 | [Control Plane Product Tier Routes](../../packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py) |
 | B62의 제품 모델 소비 규칙 | [B62 Model Policy](../../apps/padiem-chat/app/model_policy.py) |
-| B66 견적 모델 선택 경계 | [정식 Owner 정책 §0A](../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md), [B66 Registered Model Boundary](../../apps/padiem-chat/app/b66_registered_model_boundary.py), [기존 실행 소스](../../apps/padiem-chat/app/b66_b14_free_first_resolver.py). 직접 선택 UI/API 소스는 [Draft #3831](https://github.com/skerishKang/ai-revenue-lab/pull/3831)이며 main에 아직 병합되지 않았습니다. |
+| B66 견적 모델 선택 경계 | [정식 Owner 정책 §0A](../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md), [B66 Registered Model Boundary](../../apps/padiem-chat/app/b66_registered_model_boundary.py), [기존 실행 소스](../../apps/padiem-chat/app/b66_b14_free_first_resolver.py). 직접 선택 UI/API 소스는 [PR #3831](https://github.com/skerishKang/ai-revenue-lab/pull/3831)로 main에 병합됐습니다. 이는 사용자 선택 필드의 소스 구현이며, 실제 서비스 배포·고객 E2E 성공은 별도 증거가 필요합니다. |
 | Production 실행·키 준비·가용성 | 해당 배포의 **exact SHA, 안전한 진단 결과 및 실제 E2E 증거** |
 
 ## 모델 변경 시 원칙
@@ -25,6 +25,6 @@ SCOPE = NAVIGATION_ONLY
 4. **출시:** 소유자 승인, 소스 병합, 제품 라우트 연결, Production 실행 검증은 각각 다른 상태입니다.
 5. **정합성:** 정책과 실행 소스의 충돌을 표시하고 문서 정정과 실제 라우팅 수정을 분리합니다.
 
-**정리된 정책 / 남은 소스 차이:** 과거 free-first 자동선택 지침은 [#3796 병합](https://github.com/skerishKang/ai-revenue-lab/pull/3796)으로 공식 Owner 정책에서 대체되었습니다. B14 JSON 등록부 [#3819도 main에 병합](https://github.com/skerishKang/ai-revenue-lab/pull/3819)됐지만, B66 사용자 직접 선택 UI/API는 [#3831 Draft](https://github.com/skerishKang/ai-revenue-lab/pull/3831) 병합·독립 검증을 기다립니다. [#3836](https://github.com/skerishKang/ai-revenue-lab/pull/3836)은 **과거 통합 CI 증거 전용**으로, #3819 병합 전 합성 HEAD 기준이므로 현재 main을 검증한 것으로 해석하거나 병합해서는 안 됩니다. Draft CI는 실제 모델의 Production 가용성 또는 고객 E2E를 증명하지 않습니다. [#3835](https://github.com/skerishKang/ai-revenue-lab/pull/3835) StepFun 추가는 별도 Draft로 유지하며 무료 경로의 지속적인 성공 응답이 확인되지 않았습니다.
+**정리된 정책 / 남은 소스 차이:** 과거 free-first 자동선택 지침은 [#3796 병합](https://github.com/skerishKang/ai-revenue-lab/pull/3796)으로 공식 Owner 정책에서 대체되었습니다. B14 JSON 등록부 [#3819](https://github.com/skerishKang/ai-revenue-lab/pull/3819)와 B66 사용자 직접 선택 UI/API [#3831](https://github.com/skerishKang/ai-revenue-lab/pull/3831)이 모두 main에 병합됐습니다. 그러나 현재 실행 가능한 모델·권한·제공자 사용 가능 상태·고객 E2E는 각 배포 및 실제 증거에서 별도로 확인해야 합니다. [#3836](https://github.com/skerishKang/ai-revenue-lab/pull/3836)은 **과거 통합 CI 증거 전용**으로, #3819 병합 전 합성 HEAD 기준이므로 현재 main을 검증한 것으로 해석하거나 병합해서는 안 됩니다. 이전 Draft/CI는 실제 모델의 Production 가용성 또는 고객 E2E를 증명하지 않습니다. [#3835](https://github.com/skerishKang/ai-revenue-lab/pull/3835) StepFun 추가는 별도 Draft로 유지하며 무료 경로의 지속적인 성공 응답이 확인되지 않았습니다.
 
 [공통 안내](../common/README.md) · [사업별 문서](../businesses/README.md) · [개발 단계](../lifecycle/README.md) · [역사 기록](../history/README.md)
