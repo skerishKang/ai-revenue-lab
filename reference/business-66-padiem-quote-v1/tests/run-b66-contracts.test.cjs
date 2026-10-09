@@ -67,7 +67,7 @@ try {
   try {
     assert.throws(() => Runner.runSuite("--tests", {
       sourceDir: root, testsDir: tests, invoke: invokeRealQuietly
-    }), /B66_COMMAND_FAILED: tests[/\\]zz-negative-canary\\.test\\.cjs/);
+    }), /B66_COMMAND_FAILED: tests[/\\]zz-negative-canary\.test\.cjs/);
     console.log("B66_REAL_TEST_FAILURE_PROPAGATES=PASS");
   } finally {
     fs.unlinkSync(failingTest);
@@ -77,7 +77,7 @@ try {
   try {
     assert.throws(() => Runner.runSuite("--syntax", {
       sourceDir: root, testsDir: tests, invoke: invokeRealQuietly
-    }), /B66_COMMAND_FAILED: --check zz-negative-canary\\.js/);
+    }), /B66_COMMAND_FAILED: --check zz-negative-canary\.js/);
     console.log("B66_REAL_SYNTAX_FAILURE_PROPAGATES=PASS");
   } finally {
     fs.unlinkSync(brokenSource);
