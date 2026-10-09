@@ -788,3 +788,20 @@ def test_prepare_promotion_writes_exact_real_uuid_payload_and_fresh_anchor(tmp_p
     post.write_text(json.dumps(original), encoding="utf-8")
     assert main(verify_args) == 2
     assert OWNER not in capsys.readouterr().err
+
+def test_cloudflare_patch_failure_logs_bounded_http_and_numeric_codes_only():
+    text = WORKFLOW.read_text(encoding="utf-8")
+    step = text.split("      - name: PATCH existing Worker settings ONE time", 1)[1]
+    step = step.split("      - name: Verify new 100-percent served version", 1)[0]
+    assert step.count("-X PATCH") == 1
+    assert "OWNER_D1_PATCH_CURL_EXIT=" in step
+    assert "OWNER_D1_PATCH_HTTP_STATUS=" in step
+    assert "OWNER_D1_PATCH_ERROR_CODES=" in step
+    assert '[.errors[]?.code | select(type == "number")]' in step
+    assert step.index("OWNER_D1_PATCH_HTTP_STATUS") < step.index(
+        "OWNER_D1_PATCH_OUTCOME=UNVERIFIED_OR_REJECTED"
+    )
+    assert "cat ${RUNNER_TEMP}/patch-result.json" not in step
+    assert "jq . " not in step
+    assert "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" in step
+    assert "NO_RETRY=YES" in step
