@@ -271,6 +271,44 @@ Canonical details: `TECHNOLOGY_ADOPTION_POLICY.md`.
 
 Technology scans run in parallel with already-approved in-flight implementation. Do not retroactively stop an accepted work order solely because a broader OSS/commercial scan was opened. Apply scan findings to subsequent slices or an explicit component replacement unless CENTRAL records a concrete pause reason.
 
+## 5B. Existing-foundation reassessment before new implementation
+
+Padiem is in a **finish, connect and improve** phase for its established platform foundations. For each newly assigned implementation slice, conduct a **proportionate existing-foundation check first**. This is an execution preflight under this policy, **not** a second technology-adoption authority or a requirement to re-audit an already accepted decision.
+
+Default order:
+
+```text
+FRESH-READ CURRENT AUTHORITY / RUNTIME
+→ IDENTIFY THE ACTUAL GAP OR REPRODUCE THE FAILURE
+→ FIND EXISTING IMPLEMENTATION AND OFFICIAL PLATFORM MECHANISM
+→ REUSE / CONFIGURE / REPAIR / EXTEND THE SMALLEST OWNED SURFACE
+→ RUN FOCUSED CONTRACT AND RELEVANT RUNTIME CHECKS
+→ BUILD NEW MACHINERY ONLY IF A CONCRETE GAP REMAINS
+```
+
+Before proposing a new module, tool, workflow, deployment lane, store, adapter, policy or abstraction:
+
+1. Check the current main/issue/PR and accepted architecture decision, plus the existing owner module, configuration, deployment workflow and reusable guard. Separate **source present**, **runtime wired**, **tested**, and **Production active**; do not infer one from another.
+2. Identify the specific missing user-visible behavior, failed contract or verified defect. For an external service or platform constraint, verify its current official documentation and supported configuration/API/CLI path before inventing a workaround or blaming the provider.
+3. Compare `RETAIN_AS_IS`, `CONFIGURE_OR_CONNECT`, `REPAIR_EXISTING`, `EXTEND_EXISTING`, `ADOPT_OR_ADAPT`, and `BUILD_NEW`. Choose the smallest evidence-backed change. Do not replicate an existing deployment, authorization, model-routing, persistence or validation authority.
+4. Reuse tests, guards, official tooling and rollback procedures where available. A green mock or source test does **not** establish real service integration, live approval, secret/binding preservation, or Production activation.
+5. Scope validation to the changed claim and actual target environment; do not add a Linux/WSL/browser/production matrix merely as ceremony. Preserve required security and release gates, and record a rollback or fail-closed path for changes that can affect live service.
+6. If the preferred solution is `BUILD_NEW`, identify the exact gap existing components cannot meet, why a small repair/extension or upstream capability is insufficient, and the owner of the new component.
+
+A concise work-order or PR note is sufficient; do not create another policy file, issue, checklist bureaucracy or custom framework merely to document this step:
+
+```text
+CURRENT_SOURCE_AND_RUNTIME=
+VERIFIED_GAP_OR_FAILURE=
+OFFICIAL_REFERENCE_IF_RELEVANT=
+EXISTING_REUSE_OR_REPAIR_CANDIDATE=
+DECISION=RETAIN_AS_IS|CONFIGURE_OR_CONNECT|REPAIR_EXISTING|EXTEND_EXISTING|ADOPT_OR_ADAPT|BUILD_NEW
+MINIMAL_CHANGE_AND_PROTECTED_CONTRACT=
+FOCUSED_VERIFICATION_AND_ROLLBACK=
+```
+
+For a trivial correction, fill only the material fields in a sentence or two. If an accepted parent already supplies the evidence, cite it rather than repeating research. This check **does not** retroactively freeze approved in-flight work or expand a fixed MVP handoff gate; it governs the next consequential change and flags only concrete security, data-loss or contract hazards for explicit escalation. Review/update existing canonical documentation only where an actual source-of-truth mismatch is established.
+
 ## 6. Work identity before implementation
 
 Record:

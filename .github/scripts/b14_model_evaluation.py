@@ -4,8 +4,10 @@ This source slice is intentionally inert: importing it and running its CLI
 never constructs a network transport. A caller must inject a transport and
 explicitly opt into a live run in a later, separately authorized benchmark.
 
-The harness evaluates the existing synthetic Korean fixture against the five
-manual-pin candidates named by #2676. It records bounded metadata and hashes,
+The harness contains the HISTORICAL synthetic Korean fixture for five old
+manual-pin candidates named by #2676, including Owner-retired Motif/Luna.
+These cases are NOT current model-selection authority. Only the separately
+registry-gated live runner may make a real provider request. It records bounded metadata and hashes,
 never raw prompts or responses. Objective rubric checks are deterministic;
 subjective Korean-quality rubrics remain MANUAL_REVIEW_REQUIRED.
 """

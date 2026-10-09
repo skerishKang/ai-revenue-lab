@@ -13,7 +13,7 @@ Proves statically that the deploy gate:
   6. requires the A7 unscoped orchestration probe to fail closed before any provider call;
   7. keeps the legacy A9 script covered as a standalone historical/runtime contract,
      but no longer treats an account-level A9 success as a valid post-A7 deploy signal;
-  8. does not alter the existing deploy or rollback jobs.
+  8. preserves the full immutable deployed binding set before declaring deploy PASS.
 """
 
 from __future__ import annotations
@@ -49,6 +49,28 @@ def _workflow() -> dict:
     trigger = data.get("on", data.get(True))
     assert isinstance(trigger, dict)
     return {"triggers": trigger, "jobs": data["jobs"]}
+
+
+def test_engine_deploy_preserves_every_immutable_served_version_binding() -> None:
+    """A code deploy may change code, never silently drop D1/service/secrets."""
+    wf = _workflow()
+    deploy = wf["jobs"]["deploy-production-engine"]
+    steps = [str(step.get("name", "")) for step in deploy["steps"]]
+    anchor_step = next(step["run"] for step in deploy["steps"]
+                       if step.get("name") == "Pre-deploy canonical served-version rollback anchor")
+    post_step = next(step["run"] for step in deploy["steps"]
+                     if step.get("name") == "Post-deploy served-version secret guard")
+    assert 'PRE_DEPLOY_SERVED_VERSION_ID=${pre_version}' in anchor_step
+    assert 'b62_binding_state_guard.py' in post_step
+    assert '--before "${RUNNER_TEMP}/version-pre.json"' in post_step
+    assert '--after "${version_detail}"' in post_step
+    assert post_step.index("b62_binding_state_guard.py") < post_step.index(
+        "B54_ENGINE_PRODUCTION_DEPLOY=PASS"
+    )
+    assert steps.index("Pre-deploy canonical served-version rollback anchor") < steps.index(
+        "Deploy engine to production"
+    )
+    assert steps.index("Post-deploy served-version secret guard") < steps.index("Post-deploy smoke")
 
 
 def test_smoke_job_exists_and_depends_on_deploy() -> None:

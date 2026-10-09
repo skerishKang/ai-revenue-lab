@@ -194,7 +194,7 @@ jobs:
             exit 1
           fi
 
-      - name: Post-deploy verification (version 100% + engine binding + Kilo catalog marker)
+      - name: Post-deploy verification (version 100% + engine binding + exact owner JSON registry)
         working-directory: apps/korean-ai-platform
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -273,24 +273,33 @@ jobs:
           grep -q '"b14_service_bound":true' /tmp/engine-health.json
           echo 'ENGINE_B14_BOUND_SMOKE=PASS'
 
-          # (c) Catalog liveness marker: the deployed B14 catalog must expose a
-          # Kilo Gateway route (the first gated deploy carries #1952). Mechanism:
-          # the already-CI-read workers.dev pilot models endpoint (same target
-          # the b62 preflight uses); no new public surface is introduced.
-          curl -s --max-time 20 \
+          # (c) Require deployed B14 public catalog AND registered route IDs
+          # to equal the owner-authoritative JSON registry from the exact
+          # approved SHA, not an obsolete provider-specific marker.
+          curl -fsS --max-time 20 \
             'https://ai-revenue-korean-ai-platform.charliekant.workers.dev/api/pilot/models' \
             -o /tmp/b14-models.json
           python3 - <<'PY'
           import json
 
+          with open('app/pilot/b14_models.json', encoding='utf-8') as fh:
+              owner_registry = json.load(fh)
           with open('/tmp/b14-models.json', encoding='utf-8') as fh:
               payload = json.load(fh)
-          catalog = payload.get('catalog') or []
-          ids = [str(entry.get('id', '')) for entry in catalog]
-          assert any(mid.startswith('kilo/') for mid in ids), (
-              f'deployed B14 catalog has no Kilo route entry: {ids!r}'
-          )
-          print('B14_KILO_CATALOG_MARKER=PASS')
+
+          expected = [row['id'] for row in owner_registry['models'] if row.get('enabled') is True]
+          assert expected and len(expected) == len(set(expected)), 'owner JSON registry must be nonempty and unique'
+
+          for key in ('catalog', 'registered_routes'):
+              rows = payload.get(key)
+              assert isinstance(rows, list), f'B14 deployed {key} is not a list'
+              deployed = [row.get('id') for row in rows if isinstance(row, dict)]
+              assert len(deployed) == len(rows) == len(set(deployed)), f'B14 deployed {key} has missing or duplicate IDs'
+              assert set(deployed) == set(expected), (
+                  f'B14 deployed {key} differs from the exact owner JSON registry'
+              )
+
+          print('B14_OWNER_JSON_CATALOG_PARITY=PASS')
           PY
 
           echo 'B14_PRODUCTION_DEPLOY_SMOKE=PASS'

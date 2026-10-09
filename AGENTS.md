@@ -20,6 +20,10 @@ For any model/provider question, start at [the shared model documentation index]
 
 Latest owner B14 model-selection reference: `docs/operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md`. An older B14 source/catalog entry proves only that it exists in that source, not that the OWNER approves it. Distinguish selection from registration and Production availability; the ledger is NOT a second approval policy.
 
+## Reassess / repair / reuse before creating
+
+Before each consequential implementation change, first inspect the current source, approved issue/PR, actual runtime or deployment state and existing tests/configuration. Reproduce the gap; for external platforms consult current official documentation. Prefer **retain → configure/connect → repair → extend → adopt/adapt → build new**, reusing existing guards and deployment paths. Do not create a second authority, framework, store, policy or workflow when the existing one can be corrected. Record a brief disposition in the work order/PR; justify `BUILD_NEW` with a concrete unmet need. Small fixes require only proportionate checks; approved in-flight work and fixed MVP handoff gates are not automatically paused or expanded. Canonical rule: `docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md` §5B; technology adoption remains governed by `docs/operations/TECHNOLOGY_ADOPTION_POLICY.md`.
+
 ## Search / adopt before build
 
 For substantial new capabilities, workers and the Web CTO follow the canonical technology-adoption gate before custom implementation:

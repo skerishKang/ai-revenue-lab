@@ -2,7 +2,9 @@
 """Compare B62 Cloudflare Worker binding structure before and after deployment.
 
 Secret values are never read. For each supported binding type, compare only the
-fields that define its deployment authority. The guard fails closed on unknown
+fields that define its deployment authority. Accept either Worker settings or
+immutable served-version payloads; D1 uses `id` in settings and `database_id`
+in version details. The guard fails closed on unknown
 binding types, malformed entries, duplicate names, additions, removals, or
 field drift.
 """
@@ -56,9 +58,19 @@ def canonical_binding(raw: object) -> tuple[object, ...]:
             name,
             _required_text(raw, "service"),
             _optional_text(raw, "environment"),
+            _optional_text(raw, "entrypoint"),
         )
     if kind == "d1":
-        return (kind, name, _required_text(raw, "id"))
+        # GET /settings uses "id"; GET /versions/{version} uses "database_id".
+        # Refuse conflicting aliases instead of silently picking one.
+        settings_id = _optional_text(raw, "id")
+        version_id = _optional_text(raw, "database_id")
+        if settings_id is not None and version_id is not None and settings_id != version_id:
+            raise BindingStateError("conflicting D1 database identities")
+        db_id = settings_id or version_id
+        if db_id is None:
+            raise BindingStateError("D1 database identity missing")
+        return (kind, name, db_id)
     if kind == "r2_bucket":
         return (
             kind,
@@ -81,9 +93,28 @@ def canonical_state(payload: object) -> tuple[tuple[object, ...], ...]:
     result = payload.get("result")
     if not isinstance(result, dict):
         raise BindingStateError("settings payload has no result object")
-    bindings = result.get("bindings")
+    if "bindings" in result:
+        bindings = result["bindings"]  # GET /settings
+    else:
+        # GET /versions/{id}: verify the immutable version identity before use.
+        identity = result.get("id")
+        resources = result.get("resources")
+        if not isinstance(identity, str) or not identity or not isinstance(resources, dict):
+            raise BindingStateError("version payload identity or resources missing")
+        bindings = resources.get("bindings")
+    if isinstance(bindings, dict):
+        # Version resources may be keyed by binding name. Match the canonical
+        # Engine served-version guard: an embedded name must agree with its key.
+        entries = []
+        for key, value in bindings.items():
+            if not isinstance(key, str) or not key or not isinstance(value, dict):
+                raise BindingStateError("malformed keyed version binding")
+            if "name" in value and value["name"] != key:
+                raise BindingStateError("version binding key/name disagreement")
+            entries.append({**value, "name": key})
+        bindings = entries
     if not isinstance(bindings, list):
-        raise BindingStateError("settings payload has no bindings array")
+        raise BindingStateError("Worker payload has no bindings collection")
 
     canonical = [canonical_binding(binding) for binding in bindings]
     names = [entry[1] for entry in canonical]
