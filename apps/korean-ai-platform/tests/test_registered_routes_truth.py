@@ -64,9 +64,9 @@ def test_registered_routes_are_price_and_secret_free(client):
         assert isinstance(entry["owner_excluded"], bool)
 
 
-def test_only_ten_manual_models(client):
+def test_only_eleven_manual_models(client):
     routes=_registered_routes(client)
-    assert len(routes)==10
+    assert len(routes)==11
     assert CATALOG_MODELS==[]
     assert all(r["explicit_only"] for r in routes)
     assert not any(r["auto_eligible"] or r["owner_excluded"] for r in routes)

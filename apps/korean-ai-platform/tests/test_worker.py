@@ -88,8 +88,8 @@ class TestWranglerConfig:
         # metadata-only contract, raising the declared store binding count to 9.
         assert "[[unsafe.bindings]]" not in content
         assert 'type = "secrets_store_secret"' not in content
-        assert content.count("[[secrets_store_secrets]]") == 9
-        assert content.count('store_id = "f0b09ca04a7b43248154c773704a5616"') == 9
+        assert content.count("[[secrets_store_secrets]]") == 10
+        assert content.count('store_id = "f0b09ca04a7b43248154c773704a5616"') == 10
         assert 'binding = "PADIEM_AGNES_API_KEY"' in content
         assert 'secret_name = "PADIEM_AGNES_API_KEY"' in content
         assert 'binding = "PADIEM_POOLSIDE_API_KEY"' in content
@@ -103,6 +103,7 @@ class TestWranglerConfig:
             "PADIEM_ATRIA_API_KEY",
             "PADIEM_EXLAB_API_KEY",
             "PADIEM_GEMINI_API_KEY",
+            "PADIEM_KIRAAI_API_KEY",
         ):
             assert f'binding = "{binding}"' in content
             assert f'secret_name = "{binding}"' in content
