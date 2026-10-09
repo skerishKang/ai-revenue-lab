@@ -39,7 +39,7 @@
 |---:|---|---|
 | 1 | `google/gemini-3.1-flash-lite` | **F1 확인 / F2 무료 한도 확인 / F3 LOCAL_PASS / F4 HTTP200 10/10 / F5 엄격 7/10 / F6 NOT_TESTED** |
 | 2 | google/gemini-3.5-flash-lite | **F1/F2 확인·Google 직접 40회: Minimal 10/10(1.09s), Medium 10/10(2.36s)·기본 Minimal 추천·로컬 PDF PASS(12품목 2페이지)·고객 F6 미완료** |
-| 3 | `google/gemma-4-26b-a4b-it` | **F2 화면 표시명 기준 무료 한도 기록 / 그 외 신규 최종 평가 NOT_STARTED** |
+| 3 | `google/gemma-4-26b-a4b-it` | **공식 사양·Free 30RPM/16K TPM/14.4K RPD, 직접 Minimal 8/10(3.26s)·High 엄격 JSON 0/10(20.62s), B14 504, 로컬 PDF 12품목 2페이지** |
 | 4 | `google/gemma-4-31b-it` | **F2 화면 표시명 기준 무료 한도 기록 / 그 외 신규 최종 평가 NOT_STARTED** |
 | 5 | `poolside/laguna-s-2.1` (**직접 API**) | `NOT_STARTED` |
 | 6 | `sensenova/sensenova-6.8-flash-lite` | `NOT_STARTED` |
@@ -174,3 +174,14 @@ EVIDENCE = <source SHA, dated real-call markers, tested PDF evidence>
 - **견적 추출 기본 리즈닝 추천: Minimal.** B14 게이트웨이에서 명시적 리즈닝 전송은 아직 미시험.
 - Minimal 직접 모델 출력 → B66 QuoteCore → A4 PDF: 12개 품목·총 715만원 PASS, 하단 안내 문구 때문에 2페이지. 고객 최종 PDF E2E는 계속 진행 중.
 - 상세: [Gemini 3.5 실제 리즈닝 40회 및 PDF](B14_FINAL_GEMINI_3_5_REASONING_AND_PDF_2026-10-09.md).
+
+
+## 2026-10-09 Gemma 4 26B A4B 독립 최종 평가
+
+- 공식 모델: 입력 256K, MoE 25.2B/활성 3.8B, 리즈닝 Minimal/High 두 모드. 공식 최대 출력 UNKNOWN.
+- 무료 티어: 30 RPM / 입력 16,000 TPM / 14,400 RPD.
+- B14 경유 QKR-001: **HTTP 504, 33.08초**. Google 직접 native QKR-001: **HTTP 200, 2.77초, 견적 정확**.
+- Google 직접 20회: Minimal **8/10** (평균 3.26초·382토큰), High 엄격 JSON **0/10** (20.62초·1,208토큰). High는 JSON 형식 위반 10건 중 1건 길이 제한.
+- Minimal QKR-008 AI 응답 → QuoteCore → 로컬 PDF: 12품목, 합계 **715만원** PASS. 하단 안내 문구 때문에 PDF 2페이지.
+- B14 경유 연동 및 고객 저장 템플릿 PDF는 미완료.
+- 모델별 상세: [Gemma 4 26B 신규 최종 평가](B14_FINAL_GEMMA_4_26B_2026-10-09.md).
