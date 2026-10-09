@@ -46,7 +46,6 @@ class B62ScopeTests(unittest.TestCase):
             "apps/padiem-chat/app/web_tools.py",
             "apps/padiem-chat/app/b66_quote_routes.py",
             "apps/padiem-chat/tests/test_worker_web_fetch_transport.py",
-            "apps/padiem-chat/wrangler.toml",
         ):
             self.assertEqual(module.impact_scope([file(path)]), module.CHAT_ONLY)
 
@@ -56,6 +55,12 @@ class B62ScopeTests(unittest.TestCase):
             "apps/korean-ai-platform/app/pilot/b14_models.json",
             "packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py",
             "reference/business-66-padiem-quote-v1/index.html",
+            "apps/padiem-chat/wrangler.toml",
+            "apps/padiem-chat/uv.lock",
+            "apps/padiem-chat/pyproject.toml",
+            "apps/padiem-chat/pylock.toml",
+            "apps/padiem-chat/app/model_registry.json",
+            "apps/padiem-chat/scripts/vendor_helper.py",
             ".github/workflows/b62-padiem-chat-ci.yml",
             ".github/scripts/b62_ci_impact_scope_3989.py",
             "docs/operations/CI_3989_ENGINE_LL_ROUTING.md",

@@ -36,7 +36,17 @@ def impact_scope(files: object) -> str:
         paths.append(path)
     if all(p.startswith("apps/padiem-chat/static/") for p in paths):
         return STATIC_ONLY
-    return CHAT_ONLY
+    # A B62-only dependency/Worker configuration change can alter the Core
+    # execution environment without editing Core sources. Never fast-route it.
+    source_roots = ("apps/padiem-chat/app/", "apps/padiem-chat/tests/")
+    if all(
+        p.startswith("apps/padiem-chat/static/")
+        or (p.startswith(source_roots) and p.endswith(".py"))
+        or p == "apps/padiem-chat/worker.py"
+        for p in paths
+    ):
+        return CHAT_ONLY
+    return FULL
 
 
 def changed_files(event: dict, event_name: str, repository: str, token: str):
