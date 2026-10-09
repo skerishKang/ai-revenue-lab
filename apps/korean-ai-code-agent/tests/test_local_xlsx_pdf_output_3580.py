@@ -184,7 +184,9 @@ class RealInteractiveExcelSmokeTests(unittest.TestCase):
         doc = fitz.open(stream=pdf, filetype="pdf")
         try:
             self.assertGreaterEqual(len(doc), 1)
-            self.assertIn("Quote", "".join(page.get_text() for page in doc))
+            extracted = "".join(page.get_text() for page in doc)
+            self.assertIn("Quote", extracted)
+            self.assertIn("15", extracted)
         finally:
             doc.close()
 
