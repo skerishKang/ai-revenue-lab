@@ -430,9 +430,24 @@ async def test_ooxml_with_path_traversal_or_encrypted_entries_is_rejected():
         # a manually built central directory entry carrying flag bit 0x1.
         archive.writestr("xl/workbook.xml", "<workbook/>")
     raw = bytearray(encrypted.getvalue())
-    # Locate the central directory header (PK\x01\x02) for xl/workbook.xml and
-    # set its general-purpose flag bit 0 (offset 8, little-endian) to 0x0001.
-    idx = bytes(raw).find(b"PK\x01\x02\x14\x00")
+    # Locate the central directory header (PK\x01\x02) whose stored name is
+    # xl/workbook.xml (version bytes differ across Python/zipfile writers, so
+    # match the signature + name, not a fixed version field) and set its
+    # general-purpose flag bit 0 (offset 8 from header start, little-endian)
+    # to 0x0001, i.e. "entry is encrypted".
+    marker = b"PK\x01\x02"
+    name = b"xl/workbook.xml"
+    idx = -1
+    pos = 0
+    while True:
+        found = bytes(raw).find(marker, pos)
+        if found == -1:
+            break
+        name_len = int.from_bytes(raw[found + 28 : found + 30], "little")
+        if raw[found + 46 : found + 46 + name_len] == name:
+            idx = found
+            break
+        pos = found + 4
     assert idx != -1
     flags = int.from_bytes(raw[idx + 8 : idx + 10], "little") | 0x1
     raw[idx + 8 : idx + 10] = flags.to_bytes(2, "little")
