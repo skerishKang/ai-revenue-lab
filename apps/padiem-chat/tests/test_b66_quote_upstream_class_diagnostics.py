@@ -217,6 +217,54 @@ def _assert_no_values_leak(response, *forbidden: str) -> None:
             assert needle not in body, f"body leaked a value via {name}"
 
 
+def test_b66_success_response_marks_registered_model_completion_only():
+    provider = _AnswerClient(json.dumps({
+        "recipient": {"company": "Synthetic Buyer"},
+        "items": [{"name": "Synthetic Pipe", "qty": 100, "unitPrice": None}],
+        "missing": [],
+    }))
+    response = _post(
+        _client(B66QuoteConversationInterpreter(provider)),
+        "Synthetic Buyer quoted Synthetic Pipe x100",
+    )
+    assert response.status_code == 200
+    assert response.headers.get("x-b66-result-origin") == "registered_model_completion"
+    assert provider.calls == 1
+    assert response.json()["candidate"]["missing"] == ["unitPrice"]
+    assert "result_origin" not in response.json()["candidate"]
+    assert "model_id" not in response.json()["candidate"]
+    assert response.headers.get("cache-control") == "no-store, max-age=0"
+    _assert_no_values_leak(response, "test-fixture/quote-projection")
+
+
+def test_b66_fallback_response_is_distinct_from_registered_model_completion():
+    provider = _RaisingClient(
+        ChatRuntimeError(502, "provider_server_error", "synthetic upstream error")
+    )
+    response = _post(
+        _client(B66QuoteConversationInterpreter(provider)),
+        "대한건설에 배관 100미터, 부가세 별도",
+    )
+    assert response.status_code == 200
+    assert response.headers.get("x-b66-result-origin") == "deterministic_fallback"
+    assert response.json()["candidate"]["missing"] == ["unitPrice"]
+    assert "result_origin" not in response.json()["candidate"]
+    assert provider.calls == 1
+
+
+def test_failed_quote_has_no_success_result_origin():
+    provider = _RaisingClient(
+        ChatRuntimeError(504, "upstream_timeout", "synthetic upstream timeout")
+    )
+    response = _post(
+        _client(B66QuoteConversationInterpreter(provider)),
+        "대한건설에 배관 100미터, 부가세 별도",
+    )
+    assert response.status_code == 502
+    assert "x-b66-result-origin" not in response.headers
+    assert provider.calls == 1
+
+
 def test_allowlisted_upstream_classes_are_relayed_exactly_once():
     for code in ALLOWLISTED_CLASSES:
         provider = _RaisingClient(ChatRuntimeError(502, code, "bounded upstream diagnostic"))

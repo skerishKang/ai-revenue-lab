@@ -50,8 +50,14 @@ ALLOWED_UPSTREAM_CLASSES = frozenset(
 ALLOWED_PUBLIC_ERRORS = frozenset(
     {"quote_interpretation_failed", "quote_input_unrecognized"}
 )
+# Result origin is attributed only by the deployed B66 interpreter branch;
+# this does NOT independently attest the underlying Google provider POST.
+MODEL_COMPLETION_ORIGIN = "registered_model_completion"
+FALLBACK_ORIGIN = "deterministic_fallback"
+# The B66 server derives canonical missing field names (not indexed UI paths).
+# See b66_quote_conversation._server_missing_fields.
 ALLOWED_MISSING_FIELDS = frozenset(
-    {"recipient.company", "items[0].name", "items[0].qty", "items[0].unitPrice"}
+    {"recipient", "items", "name", "qty", "unitPrice"}
 )
 
 
@@ -193,6 +199,7 @@ def _print_summary(summary: dict[str, Any]) -> None:
         "SAVED_SKILL_COUNT",
         "INTERPRET_HTTP",
         "X_B66_UPSTREAM_CLASS",
+        "X_B66_RESULT_ORIGIN",
         "X_B66_REJECTION_REASON",
         "X_B66_REJECTION_PATH",
         "X_B66_REJECTION_TYPE",
@@ -314,6 +321,11 @@ def run_live(username: str, password: str) -> int:
     summary["X_B66_UPSTREAM_CLASS"] = sanitize_upstream_class(
         _header(interpreted.headers, "X-B66-Upstream-Class")
     )
+    origin = _header(interpreted.headers, "X-B66-Result-Origin")
+    summary["X_B66_RESULT_ORIGIN"] = (
+        origin if origin in (MODEL_COMPLETION_ORIGIN, FALLBACK_ORIGIN)
+        else "ABSENT_OR_UNKNOWN"
+    )
     for header, key in (
         ("X-B66-Rejection-Reason", "X_B66_REJECTION_REASON"),
         ("X-B66-Rejection-Path", "X_B66_REJECTION_PATH"),
@@ -350,8 +362,9 @@ def run_live(username: str, password: str) -> int:
 
     accepted = (
         interpreted.status == 200
+        and summary["X_B66_RESULT_ORIGIN"] == MODEL_COMPLETION_ORIGIN
         and isinstance(candidate, dict)
-        and sanitize_missing(candidate.get("missing")) == ("items[0].unitPrice",)
+        and sanitize_missing(candidate.get("missing")) == ("unitPrice",)
         and summary.get("SAFE_RECIPIENT_MATCH") == "TRUE"
         and summary.get("SAFE_ITEM_MATCH") == "TRUE"
         and summary.get("SAFE_QTY_MATCH") == "TRUE"
@@ -370,7 +383,8 @@ def self_test() -> int:
     assert sanitize_upstream_class("secret-provider-detail") == "ABSENT_OR_UNKNOWN"
     assert sanitize_public_error("quote_interpretation_failed") == "quote_interpretation_failed"
     assert sanitize_public_error("raw-secret") == "ABSENT_OR_UNKNOWN"
-    assert sanitize_missing(["items[0].unitPrice"]) == ("items[0].unitPrice",)
+    assert sanitize_missing(["unitPrice"]) == ("unitPrice",)
+    assert MODEL_COMPLETION_ORIGIN != FALLBACK_ORIGIN
     assert sanitize_missing(["private.foo"]) == ("UNKNOWN_FIELD",)
     assert _bounded_diagnostic("items[0].unitPrice") == "items[0].unitPrice"
     assert _bounded_diagnostic("raw value with spaces") == "PRESENT_REDACTED"
