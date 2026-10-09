@@ -1230,6 +1230,7 @@
     // can change the runtime label; a legacy delta/done stream retains its
     // existing truthful response status.
     const canonicalEventProjection = clawGeneralRequest ? window.PadiemClawRunEventProjection?.create?.() : null;
+    const verifiedClawRecovery = clawGeneralRequest ? window.PadiemClawRecoveryTruth?.create?.() : null;
     const historicalStages = [];
     const response = clawGeneralRequest
       ? await chatTransport.requestClawGeneral(payload, signal)
@@ -1239,6 +1240,25 @@
     let paragraph = null;
     let done = false;
     let terminalError = false;
+    // #3935: terminal P01 events outrank a later transport done/connection
+    // loss. Keep any partial text, show bounded status, never mint an approval
+    // button or silently submit a second request.
+    function showVerifiedClawRecovery(state) {
+      const content = article.querySelector(".assistant-content");
+      const typing = content?.querySelector(".typing");
+      if (typing) typing.remove();
+      const status = document.createElement("p");
+      status.className = "claw-recovery-truth";
+      status.setAttribute("role", "status");
+      status.textContent = window.PadiemClawRecoveryTruth.copy(state, document.documentElement.lang);
+      content?.appendChild(status);
+      const marker = article.querySelector("[data-runtime-label]");
+      if (marker) marker.textContent = status.textContent;
+      PadiemChatLifecycle.set(article, state === "waiting_for_approval"
+        ? MESSAGE_LIFECYCLE.WAITING_APPROVAL
+        : state === "cancelled" ? MESSAGE_LIFECYCLE.CANCELLED : MESSAGE_LIFECYCLE.FAILED);
+      revealErrorState(article);
+    }
     try {
       await chatTransport.readSseEvents(response, async (frame) => {
         if (frame.event === "p01_event") {
@@ -1248,6 +1268,8 @@
           if (envelope.delivery !== "live" && envelope.delivery !== "post_execution") return false;
           const projected = canonicalEventProjection.consume(envelope);
           if (!projected.accepted) return false;
+          // #3935: only an accepted canonical event can affect terminal truth.
+          verifiedClawRecovery?.observe(projected.kind);
           const label = window.PadiemClawRunEventProjection.label(projected.kind, document.documentElement.lang);
           if (envelope.delivery === "post_execution") {
             // The Engine returned a completed run, not an actual live event.
@@ -1267,6 +1289,9 @@
           throw new Error(uiT("stream-format-invalid"));
         }
         if (frame.event === "delta") {
+          // Never append new content after a verified P01 failure, cancellation
+          // or approval pause; a later delta cannot revive a stopped run.
+          if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) return false;
           if (!data || typeof data.delta !== "string") throw new Error(uiT("stream-format-invalid"));
           if (!data.delta) return false;
           if (!paragraph) {
@@ -1281,12 +1306,23 @@
           return false;
         }
         if (frame.event === "error") {
-          const message = data && data.error && typeof data.error.message === "string"
-            ? data.error.message
-            : uiT("stream-continue-failed");
+          if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) {
+            terminalError = true;
+            showVerifiedClawRecovery(verifiedClawRecovery.state());
+            return true;
+          }
+          const message = clawGeneralRequest
+            ? (window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang) || uiT("claw-general-check-runs"))
+            : data && data.error && typeof data.error.message === "string"
+              ? data.error.message : uiT("stream-continue-failed");
           if (!paragraph) throw chatTransport.errorFor(data, message);
           terminalError = true;
           renderStreamError(article, message, outboundMessages, skill, contextSnapshot, clawGeneralRequest, lifecycleForError(chatTransport.errorFor(data, message)));
+          return true;
+        }
+        if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) {
+          terminalError = true;
+          showVerifiedClawRecovery(verifiedClawRecovery.state());
           return true;
         }
         if (!data || data.done !== true || !paragraph || !answer) throw new Error(uiT("stream-complete-invalid"));
@@ -1311,11 +1347,30 @@
       });
       if (done) return true;
       if (terminalError) return false;
+      // No transport done: a *verified* P01 failure/cancellation/approval pause
+      // still has to be represented truthfully, not replaced with "completed".
+      if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) {
+        showVerifiedClawRecovery(verifiedClawRecovery.state());
+        return false;
+      }
       throw new Error(uiT("stream-incomplete"));
     } catch (error) {
       if (error && error.name === "AbortError") throw error;
+      if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) {
+        showVerifiedClawRecovery(verifiedClawRecovery.state());
+        return false;
+      }
       if (paragraph) {
-        renderStreamError(article, error instanceof Error ? error.message : uiT("stream-continue-failed"), outboundMessages, skill, contextSnapshot, clawGeneralRequest);
+        if (clawGeneralRequest) {
+          renderStreamError(article,
+            (window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang) || uiT("claw-general-check-runs")),
+            outboundMessages, skill, contextSnapshot, true);
+        } else {
+          // Preserve the original standalone Chat catch path and its existing
+          // rich-stream/browser contract. Only Claw uses bounded safe copy.
+          renderStreamError(article, error instanceof Error ? error.message : uiT("stream-continue-failed"),
+            outboundMessages, skill, contextSnapshot, false);
+        }
         return false;
       }
       throw error;
@@ -1394,7 +1449,9 @@
         article,
         clawGeneralRequest && error?.clawFailureDetail === "engine_provider_rate_limited"
           ? uiT("claw-general-provider-limit")
-          : (error instanceof Error ? error.message : uiT("try-again")),
+          : clawGeneralRequest
+            ? (window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang) || uiT("claw-general-check-runs"))
+            : (error instanceof Error ? error.message : uiT("try-again")),
         outboundMessages,
         skill,
         attachment,
