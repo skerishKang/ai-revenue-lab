@@ -853,12 +853,20 @@ class Default(WorkerEntrypoint):
                 # never synthesize b14/auto or a hidden retry/fallback.
                 quote_model_resolver = B66ExplicitQuoteModelResolver(service_transport)
                 _worker_app.state.b66_quote_model_resolver = quote_model_resolver
+                b66_quote_executor = B14QuoteExactModelExecutor(
+                    _worker_app.state.b14_client
+                )
+                # #3977: the selectable-level gate is the same measured capability
+                # the dispatch path uses, not a literal. With a Core build that
+                # cannot carry native parameters B66 offers the provider default
+                # only and refuses an explicit level before dispatch.
+                _worker_app.state.b66_reasoning_transport_supported = bool(
+                    b66_quote_executor.supports_native_parameters
+                )
                 _worker_app.state.b66_quote_interpreter = B66QuoteConversationInterpreter(
                     B66RegisteredModelCompletion(
                         resolver=quote_model_resolver,
-                        executor=B14QuoteExactModelExecutor(
-                            _worker_app.state.b14_client
-                        ),
+                        executor=b66_quote_executor,
                         refund_pre_dispatch=_refund_active_reservation,
                     )
                 )
