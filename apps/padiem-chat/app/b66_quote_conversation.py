@@ -657,39 +657,61 @@ def _guard_unconfirmed_approximate_quantities(
             if value is not None:
                 confirmed.add(value)
 
-    # Keep an exact unrelated item intact where its quantity differs from the
-    # approximate value. If mapping is uncertain, remove every numeric qty,
-    # rather than finalize an invented value. One item remains fail-closed.
+    # Prefer the item name immediately preceding each rough quantity within
+    # the same comma-delimited phrase. This preserves independent exact items
+    # even when the customer later confirms a DIFFERENT count. If attribution
+    # is unclear, fail closed instead of trusting any numeric model guess.
     all_items = list(projection.items) + [
         item for group in projection.detail_groups for item in group["items"]
     ]
-    any_estimate_matched = any(
-        _bounded_quantity_number(item.get("qty")) in estimates
-        for item in all_items if "qty" in item
-    )
-    conservative_all = len(all_items) == 1 or not any_estimate_matched
+    blocked: set[int] = set()
+    for hit in approximate:
+        local = original[max(0, hit.start() - 100):hit.start()]
+        local = re.split(r"[,，;\n]", local)[-1]
+        names = [
+            (local.rfind(item["name"]), idx)
+            for idx, item in enumerate(all_items)
+            if isinstance(item.get("name"), str) and item["name"] in local
+        ]
+        if names:
+            blocked.add(max(names)[1])
+            continue
+        span_values = {
+            _bounded_quantity_number(hit.group(key))
+            for key in ("lower", "upper") if hit.group(key)
+        }
+        matching = [
+            idx for idx, item in enumerate(all_items)
+            if _bounded_quantity_number(item.get("qty")) in span_values
+        ]
+        if matching:
+            blocked.update(matching)
+        else:
+            blocked.update(range(len(all_items)))
+
     modified = False
 
-    def guard_item(item: dict[str, Any]) -> dict[str, Any]:
+    def guard_item(item: dict[str, Any], idx: int) -> dict[str, Any]:
         nonlocal modified
-        value = _bounded_quantity_number(item.get("qty"))
-        if value is None or "qty" not in item:
-            return dict(item)
-        if value in confirmed:
-            return dict(item)
-        if conservative_all or value in estimates:
-            new_item = dict(item)
-            del new_item["qty"]
-            modified = True
-            return new_item
-        return dict(item)
+        copy = dict(item)
+        if idx in blocked and "qty" in copy:
+            value = _bounded_quantity_number(copy["qty"])
+            if value not in confirmed:
+                del copy["qty"]
+                modified = True
+        return copy
 
-    items = tuple(guard_item(item) for item in projection.items)
-    groups = tuple(
-        {**group, "items": [guard_item(item) for item in group["items"]]}
-        for group in projection.detail_groups
-    )
-    return replace(projection, items=items, detail_groups=groups) if modified else projection
+    items = tuple(guard_item(item, idx) for idx, item in enumerate(projection.items))
+    offset = len(projection.items)
+    groups = []
+    for group in projection.detail_groups:
+        group_items = [
+            guard_item(item, offset + idx)
+            for idx, item in enumerate(group["items"])
+        ]
+        offset += len(group_items)
+        groups.append({**group, "items": group_items})
+    return replace(projection, items=items, detail_groups=tuple(groups)) if modified else projection
 
 
 class B66QuoteConversationInterpreter:
