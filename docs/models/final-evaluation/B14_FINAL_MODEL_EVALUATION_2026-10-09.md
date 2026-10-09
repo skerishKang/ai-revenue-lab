@@ -38,7 +38,7 @@
 | 평가 순서 | exact 모델 ID | 신규 최종 평가 진행 상태 |
 |---:|---|---|
 | 1 | `google/gemini-3.1-flash-lite` | **F1 확인 / F2 무료 한도 확인 / F3 LOCAL_PASS / F4 HTTP200 10/10 / F5 엄격 7/10 / F6 NOT_TESTED** |
-| 2 | `google/gemini-3.5-flash-lite` | **F1 공식 사양 / F2 무료 15 RPM·250K TPM·500 RPD / F4 10/10 HTTP200 / F5 내용 10/10·경로 포함 9/10 / F3·F6 검증 예정** |
+| 2 | `google/gemini-3.5-flash-lite` | **F1 공식 사양 / F2 무료 15 RPM·250K TPM·500 RPD / F4 10/10 HTTP200 / F5 내용 10/10·경로 포함 9/10 / F3 직접 키 오류로 미완료·F6 로컬 PDF 1품목 PASS/12품목 하단 문구 이월** |
 | 3 | `google/gemma-4-26b-a4b-it` | **F2 화면 표시명 기준 무료 한도 기록 / 그 외 신규 최종 평가 NOT_STARTED** |
 | 4 | `google/gemma-4-31b-it` | **F2 화면 표시명 기준 무료 한도 기록 / 그 외 신규 최종 평가 NOT_STARTED** |
 | 5 | `poolside/laguna-s-2.1` (**직접 API**) | `NOT_STARTED` |
@@ -165,3 +165,10 @@ EVIDENCE = <source SHA, dated real-call markers, tested PDF evidence>
 ```
 
 **갱신 원칙:** 모델 하나가 검증될 때 이 문서의 해당 결과만 갱신한다. 이전 라운드 성능 점수, 다른 경로의 추정값, 나머지 모델의 미검증 항목을 자동으로 채우지 않는다.
+
+## 2026-10-09 Gemini 3.5 리즈닝/PDF 추가 검증 현황
+
+- 리즈닝 minimal/low/medium/high 지원은 공식 문서 확인. 실제 API 직접 시험은 로컬 키 HTTP400 (키가 유효하지 않음) 때문에 미완료; 기본값 호출도 HTTP400이므로 리즈닝 모델 기능 실패는 아님.
+- 실제 Gemini 3.5 모델 추출→B66 Draft→QuoteCore→로컬 A4 PDF 연결: 1개 품목 **1페이지 PASS**, 12개 품목 **2페이지**. 공급 6,500,000원 + VAT 650,000원 = 합계 7,150,000원은 정확하며 하단 문구가 2페이지로 밀림.
+- 추가 12품목 추출 실측에서 프로젝트명 오류가 발생해 최초 10건의 내용 10/10 정확도는 반복 성능의 보증이 아님.
+- 상세 후속 보고: [Gemini 3.5 리즈닝 및 실제 PDF 연결](B14_FINAL_GEMINI_3_5_REASONING_AND_PDF_2026-10-09.md).
