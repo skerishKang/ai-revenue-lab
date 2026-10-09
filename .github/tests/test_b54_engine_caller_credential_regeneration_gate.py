@@ -417,6 +417,118 @@ def test_workflow_hygiene() -> None:
         assert lock in source_job
 
 
+
+
+# #3748 / #3888: canonical served-version argv parity. These tests execute
+# only a local real CLI subprocess with synthetic version-detail data.
+
+
+def _assert_3748_regen_argv_source(source: str) -> None:
+    good = '--active-version="${active_version}"'
+    bad = '--active-version "${active_version}"'
+    assert source.count(good) == 2
+    assert bad not in source
+    assert "GET-only served-version guard (canonical resolver, fail-closed)" in source
+    assert "Confirm a NEW served version (GET-only canonical resolver)" in source
+    assert source.count("--expect-overlay") == 2
+
+
+def _run_3748_regen_guard(*argv: str, detail_id: str = "-canonical-regen-v1",
+                          overlay: str = "correct"):
+    import json
+    import tempfile
+
+    bindings = [
+        {"name": "PADIEM_ENGINE_CALLER_REGISTRY_V1",
+         "type": "secret_text", "text": "SYNTHETIC_BASE_NEVER_PRINT"},
+    ]
+    if overlay != "missing":
+        bindings.append({
+            "name": "PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY",
+            "type": "secret_text" if overlay == "correct" else "kv_namespace",
+            "text": "SYNTHETIC_OVERLAY_NEVER_PRINT",
+        })
+    payload = {
+        "success": True,
+        "result": {"id": detail_id, "resources": {"bindings": bindings}},
+    }
+    with tempfile.TemporaryDirectory(prefix="regen-3748-") as tmp:
+        fixture = Path(tmp) / "synthetic-version.json"
+        fixture.write_text(json.dumps(payload), encoding="utf-8")
+        return subprocess.run([
+            sys.executable, str(ROOT / ".github/scripts/b54_engine_served_version_guard.py"),
+            "verify", "--version-settings", str(fixture), *argv, "--expect-overlay",
+        ], capture_output=True, text=True, check=False, timeout=15)
+
+
+def test_3748_regen_argv_both_sites_equals_form_and_source_only_pr() -> None:
+    src = _text()
+    _assert_3748_regen_argv_source(src)
+    pr_job = _job(src, "source-contract")
+    assert "python .github/tests/test_b54_engine_caller_credential_regeneration_gate.py" in pr_job
+    assert "APPLY_EXECUTED=NO" in pr_job
+    assert "GITHUB_SECRET_MUTATION=0" in pr_job
+    assert "GATE_DISPATCH_ISSUED=0" in pr_job
+    assert "curl " not in pr_job and "gh secret set" not in pr_job
+    for name in ("apply-preflight", "regenerate-and-rotate"):
+        assert "github.event_name == 'workflow_dispatch'" in _job(src, name)
+    assert "push:" not in _trigger_block(src)
+
+
+def test_3748_regen_argv_real_guard_accepts_safe_leading_hyphen() -> None:
+    assert re.fullmatch(r"[A-Za-z0-9._-]{1,64}", "-canonical-regen-v1")
+    result = _run_3748_regen_guard("--active-version=-canonical-regen-v1")
+    assert result.returncode == 0, result.stderr
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=PASS" in result.stdout
+    assert "ENGINE_OVERLAY_SERVED_BINDING=PRESENT:secret_text" in result.stdout
+    assert "SYNTHETIC_BASE_NEVER_PRINT" not in (result.stdout + result.stderr)
+    assert "SYNTHETIC_OVERLAY_NEVER_PRINT" not in (result.stdout + result.stderr)
+
+
+def test_3748_regen_argv_real_guard_rejects_split_cli_tokens() -> None:
+    result = _run_3748_regen_guard("--active-version", "-canonical-regen-v1")
+    assert result.returncode == 2, result.stderr
+    assert "expected one argument" in result.stderr
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=PASS" not in result.stdout
+
+
+def test_3748_regen_argv_real_guard_fails_closed_on_version_identity() -> None:
+    for version in ("-different-safe-id", "-unsafe/id"):
+        result = _run_3748_regen_guard("--active-version=" + version)
+        assert result.returncode == 1, result.stderr
+        assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in result.stderr
+        assert "SYNTHETIC_BASE_NEVER_PRINT" not in (result.stdout + result.stderr)
+
+
+def test_3748_regen_argv_real_guard_fails_closed_on_overlay_drift() -> None:
+    for overlay in ("missing", "wrong_type"):
+        result = _run_3748_regen_guard(
+            "--active-version=-canonical-regen-v1", overlay=overlay
+        )
+        assert result.returncode == 1, result.stderr
+        assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in result.stderr
+        assert "SYNTHETIC_OVERLAY_NEVER_PRINT" not in (result.stdout + result.stderr)
+
+
+def test_3748_regen_argv_mutations_red_and_original_bytes_unchanged() -> None:
+    original = WORKFLOW.read_bytes()
+    source = original.decode("utf-8").replace("\r\n", "\n")
+    _assert_3748_regen_argv_source(source)
+    good = '--active-version="${active_version}"'
+    bad = '--active-version "${active_version}"'
+    pieces = source.split(good)
+    assert len(pieces) == 3
+    for pos in (0, 1):
+        modified = good.join(pieces[:pos + 1]) + bad + good.join(pieces[pos + 1:])
+        assert modified != source
+        try:
+            _assert_3748_regen_argv_source(modified)
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError("old CLI argv mutation evaded source guard")
+    assert WORKFLOW.read_bytes() == original
+
 def main() -> int:
     tests = [value for name, value in sorted(globals().items()) if name.startswith("test_") and callable(value)]
     for test in tests:
