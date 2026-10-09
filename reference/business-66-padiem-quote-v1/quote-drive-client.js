@@ -10,6 +10,11 @@
    - 액세스 토큰은 이 모듈의 메모리 클로저에만 둔다. 어떤 브라우저 저장소나 쿠키에도 기록하지 않는다.
    - 기존 B67/Claw Drive 커넥터를 고객 개인 Drive 권위로 재사용하지 않는다.
    - 모델 호출은 0이다. 통신 대상은 Google OAuth/Drive 엔드포인트뿐이다.
+   - **연결 해제·로그아웃·계정 전환은 Google /revoke 를 절대 호출하지 않는다.**
+     Google 의 토큰 철회는 OAuth 클라이언트가 아니라 **프로젝트 단위**로 이뤄져, 같은 프로젝트를
+     쓰는 다른 파디엠 Google 기능(로그인 등)의 권한까지 함께 무효화할 수 있다.
+     따라서 일반 흐름은 이 모듈 메모리의 토큰·스코프만 지우고 세대(epoch)를 올린다.
+     프로젝트 단위 영구 권한 철회는 이 모듈의 범위가 아니다(별도 명시 동작 + 별도 승인).
 
    네트워크·전역 객체는 주입 가능하다(테스트는 전부 주입된 스텁으로 수행). */
 
@@ -28,7 +33,8 @@
   var GAPI_SRC = "https://apis.google.com/js/api.js";
   var DRIVE_FILES_ENDPOINT = "https://www.googleapis.com/drive/v3/files";
   var DRIVE_UPLOAD_ENDPOINT = "https://www.googleapis.com/upload/drive/v3/files";
-  var DRIVE_REVOKE_ENDPOINT = "https://oauth2.googleapis.com/revoke";
+  /* Google /revoke 엔드포인트는 의도적으로 사용하지 않는다(프로젝트 단위 권한 철회 위험).
+     일반 연결 해제/로그아웃/계정 전환은 메모리 토큰만 지운다. */
   var SCOPE_DRIVE_FILE = "https://www.googleapis.com/auth/drive.file";
   var DEFAULT_SCOPES = [SCOPE_DRIVE_FILE];
   /* 승인된 공개 브라우저 클라이언트 ID 의 형식. 비어 있지 않다는 이유로 연결을 허용하지 않는다. */
@@ -266,18 +272,11 @@
                 if (settled) return;
                 settled = true;
                 connectPending = false;
-                /* 팝업 대기 중 B66 계정 권위가 바뀌었다면 이 토큰은 받지 않는다. */
+                /* 팝업 대기 중 B66 계정 권위가 바뀌었다면 이 토큰은 받지 않는다.
+                   Google /revoke 는 호출하지 않는다: 프로젝트 단위 권한 철회는 같은
+                   프로젝트의 다른 파디엠 Google 기능(로그인 등)까지 무효화할 수 있다.
+                   토큰은 어디에도 저장되지 않으므로 메모리에서 폐기되는 것만으로 충분하다. */
                 if (session.epoch !== startedEpoch) {
-                  var lateToken = response && response.access_token ? String(response.access_token) : "";
-                  if (lateToken && deps.fetchImpl) {
-                    try {
-                      var revoke = deps.fetchImpl(
-                        DRIVE_REVOKE_ENDPOINT + "?token=" + encodeURIComponent(lateToken),
-                        { method: "POST" }
-                      );
-                      if (revoke && typeof revoke.catch === "function") revoke.catch(function () {});
-                    } catch (err) { /* 폐기 실패해도 토큰은 저장되지 않는다 */ }
-                  }
                   resolve({
                     ok: false,
                     code: "drive_auth_superseded",
@@ -332,23 +331,27 @@
       });
     }
 
-    /* ── 연결 해제: 토큰 폐기 + 메모리 세션 완전 삭제(계정 전환 격리) ──
+    /* ── 연결 해제: 메모리 세션만 완전 삭제(계정 전환 격리) ──
        B66 로그아웃/계정 전환에서도 같은 경로를 쓴다.
        연결된 토큰이 없어도 항상 세대(epoch)를 증가시킨다. 그래야 OAuth 팝업이 떠 있는
-       동안 발생한 로그아웃이 뒤늦게 도착한 토큰을 무효화한다. */
-    async function disconnect(options) {
+       동안 발생한 로그아웃이 뒤늦게 도착한 토큰을 무효화한다.
+
+       **Google /revoke 는 호출하지 않는다.**
+       Google 토큰 철회는 프로젝트 단위로 적용되어, 같은 OAuth 프로젝트를 쓰는 다른 파디엠
+       Google 기능(로그인 등)의 부여까지 무효화할 수 있다. 일반 연결 해제는 이 브라우저
+       메모리의 Drive 토큰·스코프만 지우면 충분하다. 프로젝트 전체 권한 철회는 별도 명시 동작이며
+       이 함수의 범위가 아니다(호출하지 않는다). */
+    function disconnect(options) {
       var opts = options || {};
-      var token = session.accessToken;
       var wasConnected = session.connected === true;
       clearSession(typeof opts.reason === "string" ? opts.reason : null);
-      if (!token || !deps.fetchImpl) return { ok: true, code: "signed_out", revoked: false, wasConnected: wasConnected };
-      try {
-        await deps.fetchImpl(DRIVE_REVOKE_ENDPOINT + "?token=" + encodeURIComponent(token), { method: "POST" });
-        return { ok: true, code: "signed_out", revoked: true, wasConnected: wasConnected };
-      } catch (err) {
-        /* 폐기 실패해도 로컬 세션은 이미 지워졌다. 다음 호출은 drive_not_connected 다. */
-        return { ok: true, code: "signed_out", revoked: false, wasConnected: wasConnected };
-      }
+      return Promise.resolve({
+        ok: true,
+        code: "signed_out",
+        revoked: false,
+        googleRevoke: false,
+        wasConnected: wasConnected
+      });
     }
 
     function driveFetch(url, init, token) {

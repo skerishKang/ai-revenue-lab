@@ -240,9 +240,8 @@ function harness(options) {
     assert.equal(ui.saveDisabled(), true, "SAVE_STILL_DISABLED_AFTER_LATE_TOKEN");
     assert.equal(ui.statusTone(), "warn", "SUPERSEDED_STATUS_TONE");
     assert.ok(ui.statusText().indexOf("취소") !== -1, "SUPERSEDED_STATUS_TEXT");
-    const revokes = h.revokeCalls();
-    assert.equal(revokes.length, 1, "LATE_TOKEN_REVOKED_ONCE");
-    assert.ok(revokes[0].indexOf("late-token") !== -1, "REVOKE_TARGETS_LATE_TOKEN");
+    /* 늦은 토큰은 저장하지 않는다. Google /revoke 로 프로젝트 전체 권한을 건드리지 않는다. */
+    assert.equal(h.revokeCalls().length, 0, "LATE_TOKEN_NOT_REVOKED_VIA_GOOGLE");
   }
 
   /* ── 4. 정상 B66 로그인/상태 갱신은 Drive 연결을 유지한다 ── */
@@ -291,7 +290,7 @@ function harness(options) {
     h.doc.dispatch("b66:auth-changed", { authenticated: false });
     await settle();
     assert.equal(ui.session().connected, false, "SIGN_OUT_DISCONNECTS");
-    assert.equal(h.revokeCalls().length, 1, "TOKEN_REVOKED_ON_SIGN_OUT");
+    assert.equal(h.revokeCalls().length, 0, "NO_GOOGLE_REVOKE_ON_SIGN_OUT");
     assert.equal(ui.session().lastErrorCode, "b66_signed_out", "SIGN_OUT_REASON");
     assert.ok(ui.statusText().indexOf("해제") !== -1, "SIGN_OUT_STATUS");
   }
@@ -494,7 +493,7 @@ function harness(options) {
     await settle();
     assert.equal(ui.session().connected, false, "FLOW_4_SWITCHED");
     assert.equal(ui.session().lastErrorCode, "b66_account_changed", "FLOW_4_REASON");
-    assert.equal(h.revokeCalls().length, 2, "FLOW_REVOKED_ONCE_PER_LOSS");
+    assert.equal(h.revokeCalls().length, 0, "FLOW_NEVER_REVOKES_VIA_GOOGLE");
   }
 
   console.log("B66_DRIVE_ACCOUNT_FLOW=PASS");
@@ -502,6 +501,7 @@ function harness(options) {
   console.log("LEAST_SCOPE_FROM_UI=PASS");
   console.log("OAUTH_DENIED_NOT_CONNECTED=PASS");
   console.log("LATE_TOKEN_AFTER_LOGOUT_REJECTED=PASS");
+  console.log("ROUTINE_GOOGLE_REVOKE_CALLS=0");
   console.log("NORMAL_LOGIN_REFRESH_KEEPS_DRIVE=PASS");
   console.log("SIGN_OUT_DISCONNECTS=PASS");
   console.log("ACCOUNT_SWITCH_DISCONNECTS=PASS");

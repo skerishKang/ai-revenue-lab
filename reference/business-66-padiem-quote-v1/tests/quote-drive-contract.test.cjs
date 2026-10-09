@@ -424,7 +424,10 @@ assert.ok(!/(kilo\/|sensenova|space-bunny|nemotron|openai|anthropic|gpt-|claude|
 assert.ok(!/XMLHttpRequest|WebSocket|EventSource/.test(combined), "NO_UNBOUNDED_TRANSPORT");
 assert.ok(!/localStorage|sessionStorage|indexedDB/.test(combined), "TOKEN_NEVER_PERSISTED_SOURCE=YES");
 assert.ok(combined.indexOf("https://www.googleapis.com") !== -1, "GOOGLE_ENDPOINT_DECLARED");
-assert.ok(combined.indexOf("https://oauth2.googleapis.com") !== -1, "GOOGLE_OAUTH_ENDPOINT_DECLARED");
+/* 일반 연결 해제/로그아웃/계정 전환은 Google /revoke 를 호출하지 않는다.
+   Google 토큰 철회는 프로젝트 단위로 적용되어 같은 프로젝트의 다른 파디엠 Google 기능까지
+   무효화할 수 있으므로, 소스에 revoke 엔드포인트를 선언조차 하지 않는다. */
+assert.ok(combined.indexOf("oauth2.googleapis.com/revoke") === -1, "NO_PROJECT_WIDE_REVOKE_ENDPOINT");
 
 console.log("B66_DRIVE_CONTRACT=PASS");
 console.log("EDITABLE_JSON_ROUND_TRIP=PASS");
