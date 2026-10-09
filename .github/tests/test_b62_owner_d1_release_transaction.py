@@ -576,3 +576,15 @@ def test_production_workflow_gets_explicit_version_modules_and_never_uses_mutabl
     assert "rm -f" in step
     assert "/scripts/${OWNER_WORKER}/content" not in step
     assert "actions/upload-artifact" not in step
+
+def test_zero_byte_module_is_hashed_and_compared_as_valid_content():
+    before = _module_response("original-version")
+    after = _module_response("new-version")
+    before["result"]["modules"][0]["content_base64"] = ""
+    after["result"]["modules"][0]["content_base64"] = ""
+    assert assert_exact_worker_code(before, after, "original-version", "new-version") == 2
+    after["result"]["modules"][0]["content_base64"] = base64.b64encode(b"now nonempty").decode()
+    with pytest.raises(TransactionError, match="CODE_MODULE_CONTENT_DRIFT"):
+        assert_exact_worker_code(before, after, "original-version", "new-version")
+
+
