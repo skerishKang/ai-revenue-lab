@@ -6,6 +6,17 @@
 
 **Snapshot reconciliation (2026-10-08):** B14 Google four manual-pin model registrations were merged by PR #3788 at SHA bcb05bb7fea9a31b72d805e7237441e045883b1b. Separate LOCAL product naming/tier drafts are not thereby merged. Source registration is not a Plus product route or proof of Production readiness; recheck exact-main B14 catalog, Control Plane declaration and credential-backed live evidence.
 
+## 0. Owner reconciliation — 2026-10-09 (current over 2026-10-08 snapshot)
+
+- **Model/evaluation single source:** apps/korean-ai-platform/app/pilot/b14_models.json on exact main. As of this decision, it registers **9 enabled models across 6 providers**, with Plus/Pro/Max groups all empty. Neither a Kilo provider listing nor an old issue, fixture or Draft PR creates an approved evaluation candidate.
+- **Poolside direct provider:** poolside/laguna-s-2.1 uses https://inference.poolside.ai/v1, credential binding NAME PADIEM_POOLSIDE_API_KEY. The Owner explicitly reconfirmed DIRECT Poolside for evaluation and rejected using Kilo for this model. This is source registration/evaluation permission, not proof of a real key, live readiness or customer tier assignment.
+- **Retire the Kilo Laguna route:** kilo/poolside-laguna-s-2.1-free and alternate discovered Kilo/poolside/laguna aliases MUST NOT be evaluated. The other four deleted model identities (B.AI Qwen, Motif 3, GPT-5.6 Luna, NVIDIA Nemotron) stay excluded. No silent replacement route or fallback.
+- **PR #3819 is MERGED**, superseding former Draft references. The StepFun #3835 experiment is still a separate Draft: NOT one of the nine current-main models, even if another provider advertises its availability.
+- **Current evaluation protocol:** docs/operations/B14_B66_QUOTE_MODEL_EVALUATION_PROTOCOL.md documents the B66 input-extraction rubric, no per-quote template regeneration, and strict live availability evidence.
+- **Operational evaluation gate:** .github/scripts/b14_owner_evaluation_registry.py selects only canonical enabled model IDs and validates exact provider/upstream identity. The old five-model fixture is historical; old live all-five/Motif/Luna candidates are rejected before provider calls. No live provider access is inferred from a successful synthetic test.
+- **B66 assessment:** initial quote source analysis and certification (Sol 6.1 prior implementation) is separate from evaluating repeat-request extraction of recipient, items, quantities and unit prices. B66 QuoteCore computes all money. A certified template renderer converts the normalized data to PDF without a repeated model call.
+- Owner-only controls for tier membership, Auto routing, cost/price rules, credential provisioning and Production stay unchanged.
+
 ## 1. Customer-visible names (owner decision)
 
 Exact owner wording: 파디엠플러스모델명, meaning 파디엠플러스 plus the INDIVIDUAL MODEL NAME. Historical unmerged LOCAL English naming proposals are not current merged UI behavior or owner-approved Korean naming. Do not invent separator, spacing, Pro/Max branding, tier-wide default or a single primary.
@@ -34,13 +45,13 @@ All 7/7 and 5/5 claims are prior synthetic-fixture measurements, not independent
 
 ## 4. Five OWNER-EXCLUDED models: final exclusion overrides old entries
 
-1. Kilo Poolside Laguna (the Kilo route `kilo/poolside-laguna-s-2.1-free`). The owner statement alone does **not** establish an inclusion or exclusion decision for a separately registered direct Poolside provider route `poolside/laguna-s-2.1`; that route's final customer approval remains UNCONFIRMED.
+1. Kilo Poolside Laguna route: **OWNER EXCLUDED**, including discovery aliases. Separate direct Poolside Laguna registration is **OWNER RECONFIRMED for B14 evaluation** (2026-10-09). Customer Plus/Pro/Max activation remains separate.
 2. B.AI Qwen.
 3. Motif 3.
 4. GPT-5.6 Luna.
 5. NVIDIA Nemotron, including Nemotron 3 Ultra.
 
-These five must not be represented as owner-approved selectable Padiem Plus models. Inspect B14 registry and B66 eligibility before changing runtime; do not delete provider metadata blindly. Specifically, merged main catalog.py still contains a historical NVIDIA Nemotron entry; the unmerged LOCAL Plus selectable set declares direct poolside/laguna-s-2.1 EXECUTABLE but its separate owner authorization has not been recovered. Treat the NVIDIA entry as an exclusion conflict and the separate Poolside draft as an authorization-UNCONFIRMED state, not as owner approval or rejection. Future remediation must verify existing dependencies and prevent excluded routes becoming auto/manual/fallback eligible under customer products, preserving unrelated provider integrations.
+These five retired routes must not enter B14 current registered evaluation, B66, Auto or fallback. Historic catalog.py and old benchmark fixtures are NOT selection authorities; consult section 0 and central JSON. Direct Poolside is currently registered/reconfirmed for evaluation but does NOT imply a paid tier or a live credential. Legacy 2026-10-08 unresolved language is superseded by the 2026-10-09 Owner decision.
 
 ## 5. B14 registration truth table (as of this snapshot)
 
@@ -50,7 +61,7 @@ These five must not be represented as owner-approved selectable Padiem Plus mode
 | Google capability | text and image-input tests | Three with image input tags; Gemma 4 31B text-only | Prior synthetic fixture only; no image generation proof | SOURCE CAPABILITIES DECLARED / LIVE NOT PROVEN |
 | Google provider live | governed B14 execution only | OpenAI-compatible Google origin and Bearer adapter wired | Credential-backed live/Production E2E NOT VERIFIED | NOT PROVEN |
 | Individual customer names | 파디엠플러스 + model name | old generic tier branding | English 'Padiem Plus - ' generator | DISPLAY MISMATCH |
-| Five excluded | no customer approval | historic NVIDIA catalog entry | Kilo Poolside excluded; separate direct Poolside draft authorization unverified | EXCLUSION + UNVERIFIED AUTHORITY |
+| Five excluded | no customer approval | historic NVIDIA catalog entry | Kilo Poolside excluded; direct Poolside registered for evaluation; no tier assignment | OWNER RECONFIRMED / LIVE UNVERIFIED |
 | Claw explicit registered model | permitted | PR #3743 merged | n/a | SOURCE MERGED, LIVE NOT PROVEN |
 | B66 quote selector | Owner rejects free/paid eligibility filter; one attempt and no silent retry/fallback | Legacy free-first source remains merged from PR #3762 | Draft policy PR #3796 is separate; runtime policy/source mismatch and E2E issue #3751 remain unresolved | POLICY/SOURCE MISMATCH OPEN |
 | B14 admin Control Center | later design | #2107 open DESIGN ONLY | n/a | NOT BUILT |
