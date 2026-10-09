@@ -49,6 +49,22 @@
     return null;
   }
 
+  /* #3871: 작성 중 견적을 다른 견적으로 교체하기 전 확인 대화상자.
+     호스트가 confirm 을 명시적으로 주지 않으면 브라우저 기본 confirm 으로 배선한다.
+     배선이 없으면 applyOpen 이 "명시적 확인 없음"으로 간주해 재열기를 조용히
+     취소하므로, 사용자가 승인할 방법 자체가 사라진다(데드엔드). */
+  function resolveDefaultConfirm(doc) {
+    try {
+      var view = (doc && doc.defaultView) || (typeof window !== "undefined" ? window : null);
+      if (view && typeof view.confirm === "function") {
+        return function (message) { return view.confirm(message) === true; };
+      }
+    } catch (err) {
+      /* 확인 창을 쓸 수 없으면 배선하지 않는다(취소로 남긴다). */
+    }
+    return null;
+  }
+
   function element(doc, tag, text) {
     var node = doc.createElement(tag);
     if (typeof text === "string" && text) node.textContent = text;
@@ -116,6 +132,13 @@
     }
     var container = doc.getElementById(opts.containerId || DEFAULT_CONTAINER_ID);
     if (!container) return { ok: false, code: "container_missing" };
+
+    /* #3871: 호스트가 확인 대화상자를 넘기지 않으면 브라우저 기본 confirm 을 쓴다.
+       이 배선이 없으면 작성 중 견적이 있을 때 재열기가 항상 취소된다. */
+    if (typeof opts.confirm !== "function") {
+      var defaultConfirm = resolveDefaultConfirm(doc);
+      if (defaultConfirm) opts = Object.assign({}, opts, { confirm: defaultConfirm });
+    }
 
     var client = opts.client || createClient(opts);
     if (!client) return { ok: false, code: "client_unavailable" };
