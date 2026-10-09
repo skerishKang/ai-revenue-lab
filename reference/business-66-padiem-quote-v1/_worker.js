@@ -228,7 +228,15 @@ async function handlePadiemBridge(request, url, env) {
   }
 
   const target = new URL(upstreamPath, PADIEM_CHAT_ORIGIN);
-  if (upstreamPath === "/api/b66/quote/preview-base") target.search = url.search;
+  // Google redirects to the B66 Pages callback with ?state=...&code=....
+  // Preserve that query exactly or the Chat backend cannot verify the signed
+  // OAuth-state cookie and must reject an otherwise valid login (#3871).
+  // Keep the existing strict route allowlist: other bridge queries are NOT
+  // forwarded, apart from the separately bounded preview/limit routes.
+  if (upstreamPath === "/api/b66/quote/preview-base" ||
+      upstreamPath === "/auth/google/callback") {
+    target.search = url.search;
+  }
   const init = {
     method: request.method,
     headers,
