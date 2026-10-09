@@ -34,7 +34,16 @@ B14 고정 auto 및 구버전 제품 HOLD는 사용자 지정 모델이 아닙�
 ## 2026-10-08 migration follow-up
 - All ten legacy register_*_provider Python functions now fail closed (RuntimeError); adding a provider/model must edit the JSON, not invoke a legacy function.
 - app/pilot/__init__.py no longer registers Poolside on import. KILO_FREE_ROUTES has no executable entries. Historical model ID constants may remain for retirement audits; they do not create routes.
-- PR #3819 remains DRAFT. Focused tests: 121 passed. Full B14 tests: 875 passed, 81 failed, 38 errors (Windows local, UTF-8 mode). Do not Ready/merge or deploy until full regression and cross-product CI gates pass.
+- PR #3819 is MERGED. The earlier Windows 875-pass/81-fail/38-error statement was an intermediate historical snapshot, not current CI truth. Merge does not attest real API access, valid credentials, tier assignments or production activation.
+
+## 2026-10-09 exact Owner-registry evaluation contract
+
+- Detailed workflow/rubric: docs/operations/B14_B66_QUOTE_MODEL_EVALUATION_PROTOCOL.md. No live nine-model benchmark is authorized by a source-only preflight.
+- Canonical registered candidates: only enabled exact IDs from apps/korean-ai-platform/app/pilot/b14_models.json. Current-main count: nine. .github/scripts/b14_owner_evaluation_registry.py verifies this before model assessment; provider discovery is NOT registration.
+- Direct Poolside Laguna S 2.1 is poolside/laguna-s-2.1 using https://inference.poolside.ai/v1 and the PADIEM_POOLSIDE_API_KEY binding NAME. All Kilo Laguna aliases remain Owner-excluded.
+- Other excluded identities: B.AI Qwen, Motif 3, GPT-5.6 Luna, NVIDIA Nemotron. Historic five-model comparative fixture aliases are not authorization. The old live workflow is registry-gated, with the deleted models and all-five selector excluded.
+- StepFun #3835 is Draft and does not extend the current-main nine-model roster. Nor does API availability, a synthetic test or an empty credential binding establish live provider readiness.
+- Evaluate B66 repeat use on Korean request-to-QuoteDraft data extraction (recipient, item names, quantities, unit price and omissions), NOT on repeated re-creation of the HTML/PDF. QuoteCore calculates; the certified template renderer deterministically prints. No hidden paid/Auto/fallback inference.
 
 ## 2026-10-09 browser/B62 integration regression contract
 
