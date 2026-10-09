@@ -120,6 +120,10 @@ def _json_request(
 ) -> SafeHttpResult:
     data = None
     headers = {"Accept": "application/json", "User-Agent": USER_AGENT}
+    # The Pages CGI bridge requires same-origin Origin on mutations carrying
+    # an authenticated session cookie. Missing Origin is a pre-dispatch 403.
+    if method.upper() in {"POST", "PUT", "PATCH", "DELETE"}:
+        headers["Origin"] = BASE_URL
     if payload is not None:
         data = json.dumps(
             payload,
@@ -293,7 +297,9 @@ def run_live(username: str, password: str) -> int:
     summary["SELECTED_MODEL_ID"] = chosen_model_id
 
     summary["INTERPRET_POSTS"] = 1
-    summary["LIVE_PROVIDER_CALLS_EXECUTED"] = 1
+    # An HTTP request can be rejected by Pages/CGI before any provider call.
+    # Do not present an attempted CGI POST as a confirmed provider dispatch.
+    summary["LIVE_PROVIDER_CALLS_EXECUTED"] = "UNVERIFIED"
     interpreted = _json_request(
         opener,
         "/api/padiem/b66/quote/interpret",

@@ -49,6 +49,28 @@ class CanaryContractTests(unittest.TestCase):
         self.assertIn("B66_CGI_CANARY_SELECTED_MODEL_ID: " + chr(36) + "{{ inputs.selected_model_id }}", wf)
 
 
+    def test_cookie_authenticated_post_includes_exact_same_origin(self):
+        # This is an isolated request-construction test: zero network calls.
+        from unittest.mock import patch
+
+        requests = []
+
+        def capture(opener, request):
+            requests.append(request)
+            return module.SafeHttpResult(200, {}, b"{}")
+
+        with patch.object(module, "_request", side_effect=capture):
+            module._json_request(object(), "/api/padiem/b66/quote/models")
+            module._json_request(
+                object(), "/api/padiem/b66/quote/interpret",
+                method="POST", payload={"model_id": "agnes-ai/agnes-3.0-flash"},
+            )
+        self.assertEqual(len(requests), 2)
+        self.assertIsNone(requests[0].get_header("Origin"))
+        self.assertEqual(requests[1].get_header("Origin"), module.BASE_URL)
+        source = SCRIPT.read_text(encoding="utf8")
+        self.assertIn('summary["LIVE_PROVIDER_CALLS_EXECUTED"] = "UNVERIFIED"', source)
+
     def test_upstream_class_is_closed_allowlist(self):
         self.assertEqual(
             module.sanitize_upstream_class("upstream_non_text_content"),
