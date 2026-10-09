@@ -1,3 +1,7 @@
+<!-- CURRENT_IMPLEMENTATION_NOTE_20261010 -->
+> **이 문서의 10개 모델·`temperature=0.2`·`max_tokens<=4096` 등 아래 항목은 과거 평가 당시의 코드·실험 조건 감사**이며 현재 main의 동작 설명이 아닙니다. B14 native 옵션 소스 [PR #3984](https://github.com/skerishKang/ai-revenue-lab/pull/3984)가 이후 MERGED되어 Gateway/Platform의 누락 옵션 처리와 global 4096 처리 기준이 바뀌었습니다. B14 현재 정확한 등록 모델 수/제공자 ID는 **`apps/korean-ai-platform/app/pilot/b14_models.json`**을 직접 읽으세요(신규 등록 때마다 가변). [실행 계약](../../operations/B14_NATIVE_PROVIDER_PARAMETERS_2026-10-10.md); 미완료 B66→Core opt-in은 [#3977](https://github.com/skerishKang/ai-revenue-lab/issues/3977) **LOCAL1**, B66 UI 후속은 [#3906](https://github.com/skerishKang/ai-revenue-lab/issues/3906) **LOCAL2**. 옛 실측 점수/모델 수는 소급 수정하지 않습니다.
+<!-- /CURRENT_IMPLEMENTATION_NOTE_20261010 -->
+
 <!-- OWNER_MODEL_PRIORITY_20261010 -->
 > **평가 순서 Owner 최신 결정(2026-10-10):** [현재 평가 우선순위](B14_OWNER_EVALUATION_PRIORITY_2026-10-10.md)에서 **Atria·Agnes는 가용성 문제가 있어 후순위, 개별 이슈는 보류 종료**했습니다. 아래 모델별 기존 재시험 필요성 분석은 기술적 판단으로만 보존하며, 두 모델을 우선 재호출하거나 정상 모델 개발을 지연시키지 않습니다. 이 결정으로 모델 등록·실행 API·수동선택·공식 파라미터 계약은 달라지지 않습니다.
 <!-- /OWNER_MODEL_PRIORITY_20261010 -->

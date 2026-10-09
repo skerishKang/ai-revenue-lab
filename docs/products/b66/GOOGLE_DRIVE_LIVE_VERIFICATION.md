@@ -4,13 +4,17 @@
 DOC_STATUS=LIVE_VERIFICATION_RUNBOOK
 PRODUCT=B66_STANDALONE_QUOTATIONS
 ISSUE=#3871
-SOURCE_MERGED=YES  (PR #3924 squash merge → main b5a177de3ac1e1d3e241b492cbc43922e9cd24ce)
+SOURCE_MERGED=YES  (#3924/#3960/#3981; fingerprint #4007; confirm #4029 MERGED)
 SOURCE_EVIDENCE=docs/products/b66/GOOGLE_DRIVE_SAVE_OPEN.md
-LIVE_DRIVE_VERIFIED=NOT_TESTED
+LIVE_DRIVE_VERIFIED=PARTIAL_PASS_LOCAL3_REPORTED
+LIVE_POPULATED_DRAFT_CONFIRM_CANCEL=NOT_TESTED
 CROSS_BROWSER_DRIVE_REOPEN=NOT_TESTED
+SECOND_ACCOUNT_ISOLATION=NOT_TESTED
 REAL_PHONE=NOT_TESTED
-PRODUCTION_MUTATION=0
+LAST_CONFIRMED_PAGES_RELEASE=37997944674_SUCCESS_SHA_ee11c1cb
 ```
+
+> **2026-10-10 최신 실행 근거:** LOCAL3 보고에서는 #4007 수정 반영 후 OAuth 로그인·고객 Drive JSON/PDF 쌍 저장·동일 계정의 **빈 편집기에서 재열기**·수정/QuoteCore 재계산·재저장·로그아웃(`/revoke` 요청 0건)이 PASS였다. CENTRAL은 GitHub Production [#37988106633](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37988106633)과 새 확인창 수정 [#4029](https://github.com/skerishKang/ai-revenue-lab/pull/4029)의 후속 Production [#37997944674](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37997944674) SUCCESS를 독립 확인했다. **그러나 #4029 운영 배포 이후의 실제 내용 있는 편집기에서 대화상자 승인/취소 시나리오, 별도 브라우저·계정·실기기 검증은 아직 증빙 없음.** 아래 '현재 차단 사유' 및 JS origin 인벤토리는 **초기 환경 조사 이력**이며 최신 운영 설정 부재로 오해하지 말 것.
 
 이 문서는 **소스 병합 이후의 실제(라이브) 검증** 절차다.
 소스·오프라인 검증은 이미 완료됐고(위 `SOURCE_EVIDENCE`), 여기서는 실제 Google 계정·Drive 로만 증명할 수 있는
