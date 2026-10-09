@@ -81,6 +81,22 @@ class FinalHandoffSmokeContractTests(unittest.TestCase):
                 UnavailablePage(), "google/gemini-3.5-flash-lite"
             )
 
+    def test_final_handoff_requires_model_completion_not_fallback(self):
+        class Response:
+            def __init__(self, origin):
+                self.headers = {} if origin is None else {"x-b66-result-origin": origin}
+        module._require_b14_completion(Response("registered_model_completion"), "complete")
+        for origin in (None, "", "deterministic_fallback", "user_selected"):
+            with self.subTest(origin=origin):
+                with self.assertRaisesRegex(
+                    module.SmokeFailure, "complete_not_registered_model_completion"
+                ):
+                    module._require_b14_completion(Response(origin), "complete")
+        script = SCRIPT.read_text(encoding="utf-8")
+        self.assertIn('_require_b14_completion(response, "complete")', script)
+        self.assertIn('_require_b14_completion(first, "partial")', script)
+        self.assertIn('_require_b14_completion(second, "followup")', script)
+
     def test_final_handoff_entry_never_selects_model_implicitly(self):
         script = SCRIPT.read_text(encoding="utf-8")
         workflow = (
