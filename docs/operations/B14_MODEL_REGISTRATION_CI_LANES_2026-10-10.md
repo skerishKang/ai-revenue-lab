@@ -59,7 +59,7 @@
 
 - **실측 PASS:** 합성 등록 PR #4033의 정확한 HEAD에서 7개 워크플로 PASS, 가장 긴 워크플로 44초. 임시 PR은 병합 없이 종료됨.
 - **오프라인 PASS:** 분류기의 PR/main push 이벤트 모의 시험. 실제 새 모델만 추가한 main push의 B14 Alpha 검증이 완료됐다는 의미는 아님.
-- **후속 결함 재현 및 수정 대상:** [#4042](https://github.com/skerishKang/ai-revenue-lab/issues/4042) — 기존 provider 모델 추가에 무관한 Worker allowlist 및 Wrangler 인증 바인딩 메타데이터가 함께 추가된 경우 빠른 경로로 분류될 수 있음. 실제 코드를 이용한 오프라인 재현은 `model_registration_only=True`였으나 기대값은 `False`다. 정확한 신규 제공업체별 허용 범위, 승인된 Store 메타데이터 검증, 부정 테스트를 보강한 후 전체 CI 통과가 필요하다.
+- **후속 결함 수정 완료:** [#4042](https://github.com/skerishKang/ai-revenue-lab/issues/4042)는 이전 분류기의 무관한 credential metadata 허용 결함을 기록한다. [PR #4045](https://github.com/skerishKang/ai-revenue-lab/pull/4045)로 수정하고 전체 B14·B62 CI 통과 후 main에 병합했다(merge `0cca5ae932819b1b385c3fb22d9c88ba5c202a8c`). 수정 후 신규 모델 추가 합성 PR #4047의 빠른 경로와 안정적 필수 상태도 재검증했다.
 - **범위 구분:** 모델 등록 CI 속도는 모델 품질·유료 API 실호출·키 유효성·Production 배포를 보증하지 않는다. 변경이 병합됐다는 사실과 배포됐다는 사실을 별도로 확인한다.
 - **상위 이슈:** [#3989](https://github.com/skerishKang/ai-revenue-lab/issues/3989)는 저장소 전체 CI 최적화로 계속 OPEN이다.
 
@@ -69,4 +69,11 @@
 - **신규 제공업체 등록:** 신규 provider에 실제 append 모델이 있어야 한다. Worker에 추가한 credential alias는 신규 provider의 alias 집합과 중복 없이 정확히 같아야 한다. 기존 provider가 이미 사용하는 alias를 재사용할 수 없다.
 - **Wrangler 변경:** 신규 provider별 완전한 `[[secrets_store_secrets]]` 블록(바인딩명/스토어 ID/secret_name)을 정확히 하나씩 추가해야 한다. 허용된 기존 스토어 메타데이터 ID를 유지하고, 추가 블록·미승인 스토어·중복/누락 필드를 거부한다.
 - 분류 실패 시 기존 `full` 경로로 전환하며 해당 모델을 자동 활성화하거나 Secret 값을 참조하지 않는다. CI 합격과 실제 자격증명·모델 품질·Production 배포는 서로 별개의 조건이다.
-- 이 규칙은 [#4042](https://github.com/skerishKang/ai-revenue-lab/issues/4042)의 **전체 CI 검증 및 병합을 전제로 하는 코드 규약**이다. 이전 44초 실측은 변경 전 버전의 합성 PR에 대한 측정치로서, 이 보강 이후의 성능을 재측정한 값은 아니다.
+- 이 규칙은 #4045를 통해 **코드·회귀 테스트·문서가 병합된 규약**이다. 이전 #4033의 44초 실측에 더하여, 보강 후 #4047 합성 모델 등록 PR에서도 7개 워크플로가 PASS하고 최장 44초로 재측정했다. 두 검증 PR 모두 운영 main에 병합하지 않았다.
+
+### 보강 후 정확한 CI 증거
+
+- 구현: [PR #4045](https://github.com/skerishKang/ai-revenue-lab/pull/4045), head `70ee582a6bd4220a81e2db4c98fed7d9e15b0733`, main merge `0cca5ae932819b1b385c3fb22d9c88ba5c202a8c`.
+- 분류 규칙 8개 PASS, B14 Alpha full [run 37997903226](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37997903226) PASS(68초), B62 full [run 37997903185](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37997903185) PASS(474초), 운영 정책·브라우저 QA PASS. 병합용 `b62-test`와 `Locked Alpha contract` 모두 SUCCESS.
+- **빠른 경로 재검증:** [Draft PR #4047](https://github.com/skerishKang/ai-revenue-lab/pull/4047), 정확한 head `13590f45a9fdfa6b2032a7a50cb5763580e722ef`. 기존 Google 제공업체에만 비실재 합성 모델 1개를 append. B14 Alpha [37998697690](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37998697690) 29초 PASS, B62 [37998697621](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37998697621) 36초 PASS, Worker JSON 번들 [37998697682](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37998697682) 44초 PASS. 별도 평가/정책/견적/QA 등 포함 **7/7 SUCCESS**, 전체 레인은 의도대로 SKIPPED, 두 병합용 상태 SUCCESS. Draft PR은 **병합 없이 종료**, 임시 원격 브랜치도 삭제.
+- 다시 측정한 **44초**는 여전히 *합성 append-only PR*의 전체 GitHub Actions wall critical path이다. 실제 제공업체 API 검증, 운영 Secret 연동, Production Deploy Gate, 자동 main-push B14 Alpha 검증 완료를 의미하지 않는다.
