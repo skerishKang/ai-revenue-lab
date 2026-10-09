@@ -21,6 +21,66 @@ class CanaryContractTests(unittest.TestCase):
         self.assertEqual(module.RETRY, 0)
         self.assertEqual(module.FALLBACK, 0)
 
+    def test_approximate_case_requires_explicit_allowlisted_selector(self):
+        self.assertEqual(module.selected_case("partial"), "partial")
+        self.assertEqual(module.selected_case("approx_qty"), "approx_qty")
+        for invalid in (None, "", "auto", "all", "approx", 1):
+            with self.subTest(invalid=invalid), self.assertRaises(ValueError):
+                module.selected_case(invalid)
+        script = SCRIPT.read_text(encoding="utf8")
+        self.assertIn('os.getenv(CASE_ENV)', script)
+        self.assertIn('"message": PARTIAL_TEXT if case == "partial" else APPROX_QUANTITY_TEXT', script)
+        wf = (SCRIPT.parents[1] / "workflows" / "b66-cgi-partial-live-canary.yml").read_text(encoding="utf8")
+        self.assertIn("quote_case:", wf)
+        self.assertIn("B66_CGI_CANARY_CASE: " + chr(36) + "{{ inputs.quote_case }}", wf)
+        self.assertIn("- approx_qty", wf)
+
+    def test_exact_vs_approximate_quantity_authority_is_fail_closed(self):
+        origin = module.MODEL_COMPLETION_ORIGIN
+        constant = {
+            "SAFE_RECIPIENT_MATCH": "TRUE",
+            "SAFE_ITEM_MATCH": "TRUE",
+            "UNIT_PRICE_NULL": "TRUE",
+            "SAFE_QTY_MATCH": "TRUE",
+            "APPROX_QTY_NULL": "FALSE",
+        }
+        exact = {"missing": ["unitPrice"]}
+        rough = {"missing": ["qty", "unitPrice"]}
+        self.assertTrue(module._canary_contract_satisfied(
+            "partial", response_status=200, origin=origin,
+            candidate=exact, summary=constant,
+        ))
+        rough_state = {**constant, "SAFE_QTY_MATCH": "FALSE", "APPROX_QTY_NULL": "TRUE"}
+        self.assertTrue(module._canary_contract_satisfied(
+            "approx_qty", response_status=200, origin=origin,
+            candidate=rough, summary=rough_state,
+        ))
+        for changed in (
+            {"missing": ["unitPrice"]},       # rough qty silently committed
+            {"missing": []},                  # wrongly finalized
+            {"missing": ["qty"]},             # model invented price
+        ):
+            self.assertFalse(module._canary_contract_satisfied(
+                "approx_qty", response_status=200, origin=origin,
+                candidate=changed, summary=rough_state,
+            ))
+        self.assertFalse(module._canary_contract_satisfied(
+            "approx_qty", response_status=200, origin=origin,
+            candidate=rough, summary={**rough_state, "APPROX_QTY_NULL": "FALSE"},
+        ))
+        self.assertFalse(module._canary_contract_satisfied(
+            "approx_qty", response_status=200, origin=module.FALLBACK_ORIGIN,
+            candidate=rough, summary=rough_state,
+        ))
+        self.assertFalse(module._canary_contract_satisfied(
+            "approx_qty", response_status=502, origin=origin,
+            candidate=rough, summary=rough_state,
+        ))
+        self.assertFalse(module._canary_contract_satisfied(
+            "unknown", response_status=200, origin=origin,
+            candidate=rough, summary=rough_state,
+        ))
+
     def test_operator_exact_model_selection_is_required(self):
         allowed = [
             {"model_id": "agnes-ai/agnes-3.0-flash", "name": "Agnes"},
@@ -116,7 +176,8 @@ class CanaryContractTests(unittest.TestCase):
         source = SCRIPT.read_text(encoding="utf8")
         route = (SCRIPT.parents[2] / "apps" / "padiem-chat" / "app" /
                  "b66_quote_routes.py").read_text(encoding="utf8")
-        self.assertIn('summary["X_B66_RESULT_ORIGIN"] == MODEL_COMPLETION_ORIGIN', source)
+        self.assertIn('origin != MODEL_COMPLETION_ORIGIN', source)
+        self.assertIn('origin=summary["X_B66_RESULT_ORIGIN"]', source)
         self.assertIn('"X-B66-Result-Origin"', route)
         self.assertIn('MODEL_COMPLETION_ORIGIN = "registered_model_completion"', source)
         self.assertIn('FALLBACK_ORIGIN = "deterministic_fallback"', source)
