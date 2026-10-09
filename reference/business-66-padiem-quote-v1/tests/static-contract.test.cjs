@@ -1299,10 +1299,14 @@ check(!/\|\|\s*true\b/.test(behaviorProbe) && !/\|\|\s*===\s*/.test(behaviorProb
 /* WORK 7: the behavioral probes must actually run in CI, not merely exist */
 const workflowPath = path.join(__dirname, "..", "..", "..", ".github", "workflows", "b66-neutral-pages-beta.yml");
 const workflowText = fs.readFileSync(workflowPath, "utf8");
-check(workflowText.includes("node tests/history-behavior.test.cjs"),
-  "CI_WIRING: b66-neutral-pages-beta.yml executes history-behavior.test.cjs");
-check(workflowText.includes("node tests/history-server-behavior.test.cjs"),
-  "CI_WIRING: b66-neutral-pages-beta.yml executes history-server-behavior.test.cjs");
+const TestRunner = require("./run-b66-contracts.cjs");
+const discovered = TestRunner.discoverTestFiles();
+check(discovered.includes("history-behavior.test.cjs"),
+  "CI_WIRING: canonical runner discovers browser-history behavioral probe");
+check(discovered.includes("history-server-behavior.test.cjs"),
+  "CI_WIRING: canonical runner discovers server-history behavioral probe");
+check(workflowText.includes("node tests/run-b66-contracts.cjs --tests"),
+  "CI_WIRING: b66-neutral-pages-beta.yml executes all auto-discovered B66 tests");
 
 console.log("SERVER_HISTORY_CONTRACT=PASS");
 console.log("SERVER_HISTORY_STRUCTURAL_CONTRACT=PASS");

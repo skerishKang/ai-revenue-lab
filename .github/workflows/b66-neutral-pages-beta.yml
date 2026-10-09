@@ -87,10 +87,14 @@ jobs:
           test -f "${SOURCE_DIR}/quote-embed-browser.js"
           test -f "${SOURCE_DIR}/quote-embed.css"
           test -f "apps/b66-quote-adapter/app/file_intake.py"
-          for js_file in _worker.js app.js quote-account-scope.js file-intake.js easy-mode.js quote-template.js quote-template-store.js quote-template-renderer.js quote-template-selection.js quote-template-ui.js quote-template-candidate.js quote-template-cloner.js quote-skill.js quote-skill-store.js quote-skill-candidate.js quote-skill-registration.js quote-template-registration.js quote-registration-session.js quote-skill-ui.js padiem-account.js shell-layout.js cgi-template-v2.js quote-embed-bridge.js quote-embed-browser.js; do
-            node --check "${SOURCE_DIR}/${js_file}"
-          done
+          node "${SOURCE_DIR}/tests/run-b66-contracts.cjs" --syntax
           echo "B66_SHIP_GUARD=PASS"
+
+      - name: B66 full offline tests before any authorized Production mutation
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        working-directory: ${{ env.SOURCE_DIR }}
+        run: node tests/run-b66-contracts.cjs --tests
 
       - name: Authorize current-main Pages production release
         if: github.event_name == 'workflow_dispatch'
@@ -314,84 +318,8 @@ jobs:
         working-directory: ${{ env.SOURCE_DIR }}
         run: |
           set -euo pipefail
-          node --check _worker.js
-          node --check app.js
-          node --check quote-account-scope.js
-          node --check file-intake.js
-          node --check easy-mode.js
-          node --check quote-template.js
-          node --check quote-template-store.js
-          node --check quote-template-renderer.js
-          node --check quote-browser-pdf.js
-          node --check quote-template-selection.js
-          node --check quote-template-ui.js
-          node --check quote-template-candidate.js
-          node --check quote-template-cloner.js
-          node --check quote-skill.js
-          node --check quote-skill-store.js
-          node --check quote-skill-candidate.js
-          node --check quote-skill-registration.js
-          node --check quote-template-registration.js
-          node --check quote-registration-session.js
-          node --check quote-skill-ui.js
-          node --check padiem-account.js
-          node --check shell-layout.js
-          node --check cgi-template-v2.js
-          node --check quote-embed-bridge.js
-          node --check quote-embed-browser.js
-          node --check drive-config.js
-          node --check quote-import-atomic.js
-          node --check quote-drive-contract.js
-          node --check quote-drive-client.js
-          node --check quote-drive-ui.js
-          node tests/quote-core.test.cjs
-          node tests/quote-extraction.test.cjs
-          node tests/quote-history.test.cjs
-          node tests/history-behavior.test.cjs
-          node tests/quote-history-server.test.cjs
-          node tests/history-server-behavior.test.cjs
-          node tests/quote-history-bridge-origin.test.mjs
-          node tests/account-scope-3480.test.cjs
-          node tests/production-draft-safety.test.cjs
-          node tests/file-intake.test.cjs
-          node tests/template-source-format-policy.test.cjs
-          node tests/static-contract.test.cjs
-          node tests/quote-template.test.cjs
-          node tests/quote-template-store.test.cjs
-          node tests/quote-template-renderer.test.cjs
-          node tests/quote-template-selection.test.cjs
-          node tests/quote-template-ui.test.cjs
-          node tests/quote-template-candidate.test.cjs
-          node tests/quote-template-cloner.test.cjs
-          node tests/quote-skill.test.cjs
-          node tests/quote-skill-store.test.cjs
-          node tests/quote-skill-candidate.test.cjs
-          node tests/quote-skill-registration.test.cjs
-          node tests/quote-template-registration.test.cjs
-          node tests/quote-registration-session.test.cjs
-          node tests/quote-skill-ui.test.cjs
-          node tests/quote-embed-bridge.test.cjs
-          node tests/quote-skill-live-analysis.test.cjs
-          node tests/pages-live-intake.test.mjs
-          node tests/padiem-account-bridge.test.mjs
-          node tests/quote-browser-pdf.test.cjs
-          # #3760: certified PDF regression must enforce explicit B14 model choice.
-          node tests/quote-certified-pdf.test.cjs
-          node tests/missing-field-followup.test.cjs
-          node tests/mvp-runtime.test.cjs
-          node tests/cgi-v2.test.cjs
-          node tests/three-pane-shell-contract.test.cjs
-          node tests/quote-drive-contract.test.cjs
-          node tests/quote-drive-client.test.cjs
-          node tests/quote-drive-ui.test.cjs
-          node tests/quote-drive-integration.test.cjs
-          node tests/quote-drive-account-flow.test.cjs
-          # #3871: routine Drive disconnect/logout/account switch must never call Google /revoke.
-          node tests/quote-drive-revoke-safety.test.cjs
-          node tests/quote-import-atomic.test.cjs
-          node tests/quote-drive-import-safety.test.cjs
-          node tests/drive-config.test.cjs
-          node tests/b66-drive-config-worker.test.cjs
+          # Execute all discovered tests, including company-profile and XLSX contracts.
+          node tests/run-b66-contracts.cjs --tests
 
       - name: Run B66 server intake adapter contracts
         shell: bash
