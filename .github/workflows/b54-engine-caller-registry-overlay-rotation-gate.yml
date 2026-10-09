@@ -214,7 +214,7 @@ jobs:
           classify_status=0
           evidence="$(python3 .github/scripts/b54_engine_caller_registry_overlay_rotation.py classify \
             --version-detail "${version_detail}" \
-            --active-version "${active_version}")" || classify_status=$?
+            --active-version="${active_version}")" || classify_status=$?
           printf '%s\n' "${evidence}"
           disposition="$(printf '%s\n' "${evidence}" | sed -n 's/^B54_ENGINE_OVERLAY_ROTATION_DISPOSITION=//p')"
           legacy_pre_state="$(printf '%s\n' "${evidence}" | sed -n 's/^LEGACY_PRE_STATE=//p')"
@@ -355,7 +355,7 @@ jobs:
           classify_status=0
           evidence="$(python3 .github/scripts/b54_engine_caller_registry_overlay_rotation.py classify \
             --version-detail "${version_detail}" \
-            --active-version "${active_version}")" || classify_status=$?
+            --active-version="${active_version}")" || classify_status=$?
           printf '%s\n' "${evidence}"
           disposition="$(printf '%s\n' "${evidence}" | sed -n 's/^B54_ENGINE_OVERLAY_ROTATION_DISPOSITION=//p')"
           legacy_pre_state="$(printf '%s\n' "${evidence}" | sed -n 's/^LEGACY_PRE_STATE=//p')"
@@ -474,7 +474,7 @@ jobs:
             "${api}/workers/scripts/${ENGINE_WORKER}/versions/${active_version}" -o "${version_detail}"
           python3 .github/scripts/b54_engine_caller_registry_overlay_rotation.py verify \
             --version-detail "${version_detail}" \
-            --active-version "${active_version}" \
+            --active-version="${active_version}" \
             --legacy-pre-state "${PREMUTATION_LEGACY_TRIO_STATE}"
           echo 'LEGACY_TRIO_PRESERVATION_VERIFIED=YES'
           echo 'DEPLOYMENTS_SHAPE_GUARD=PASS'
