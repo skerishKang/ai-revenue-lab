@@ -402,3 +402,27 @@ def test_owner_immutable_version_integrity_cli_requires_opt_in(tmp_path, capsys)
     assert _OWNER_ID not in output
     assert mod.main(base + ["--require-served-resource-integrity"]) == 1
     assert "requires additive mode" in capsys.readouterr().err
+
+
+
+def test_owner_immutable_cli_cannot_bypass_runtime_safety_by_omitting_flag(tmp_path, capsys):
+    before = tmp_path / "before.json"
+    after = tmp_path / "after.json"
+    original = _owner_served_version()
+    changed = _owner_served_version("after", with_owner=True)
+    changed["result"]["resources"]["script"]["etag"] = "SILENT_CODE_CHANGE"
+    before.write_text(json.dumps(original), encoding="utf-8")
+    after.write_text(json.dumps(changed), encoding="utf-8")
+    args = ["--before", str(before), "--after", str(after),
+            "--expected-add-owner-d1", "--owner-d1-database-id", _OWNER_ID]
+    # Immutable served versions demand full integrity even with no extra flag.
+    assert mod.main(args) == 1
+    err = capsys.readouterr().err
+    assert "Worker script, assets, or runtime authority drift" in err
+    assert "SILENT_CODE_CHANGE" not in err
+    assert mod.main(args + ["--require-served-resource-integrity"]) == 1
+    capsys.readouterr()
+    changed["result"]["resources"]["script"]["etag"] = "unchanged-code-etag"
+    after.write_text(json.dumps(changed), encoding="utf-8")
+    assert mod.main(args) == 0
+    assert "OWNER_P01_D1_SERVED_RESOURCE_INTEGRITY=PASS" in capsys.readouterr().out
