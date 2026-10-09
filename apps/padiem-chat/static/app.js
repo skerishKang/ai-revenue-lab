@@ -176,10 +176,12 @@
     if (tasksNav) tasksNav.setAttribute("aria-current", state === "claw" && inboxKind === "tasks" ? "page" : "false");
     if (alertsNav) alertsNav.setAttribute("aria-current", state === "claw" && inboxKind === "alerts" ? "page" : "false");
   }
-  function showConversation() {
+  function showConversation({ preserveClaw = false } = {}) {
     emptyState.hidden = true;
     messageList.hidden = false;
-    shell.dataset.state = "chat";
+    // #3931: Keep an in-flight Claw conversation in the Claw workspace.
+    // Saved Chat conversations and ordinary Chat sends still use Chat.
+    if (!preserveClaw) shell.dataset.state = "chat";
     setNavActive();
   }
   function addUserMessage(text, attachment) {
@@ -1374,7 +1376,7 @@
   // #3539: the generic B54 Claw composer runs on the canonical P01 Engine lane.
   // This predicate documents the product state that selects the lane: the Claw
   // shell with the explicit manual form hidden. It must be read at submit time,
-  // BEFORE showConversation() flips shell.dataset.state to "chat".
+  // BEFORE any conversation presentation transition.
   function clawGeneralRequestActive() {
     return shell.dataset.state === "claw" && !(clawManualForm && !clawManualForm.hidden);
   }
@@ -1385,14 +1387,14 @@
     if (selectedSkill) conversationState.setSkill(selectedSkill);
     const attachmentSnapshot = selectedAttachment;
     const contextSnapshot = { conversationId: conversationState.getConversationId(), project: activeProject };
-    // #3539: snapshot the routing decision BEFORE showConversation() resets the
-    // shell state. The immutable snapshot is threaded through requestAnswer so a
-    // generic Claw submit cannot silently fall back to /api/chat/stream.
+    // #3539: snapshot the canonical lane before changing presentation;
+    // #3931: keep a general Claw request in the same Claw conversation.
+    // Neither UI state nor the selected model ID may authorize fallback.
     const clawGeneralRequest = clawGeneralRequestActive();
     contextSnapshot.selectedModelId =
       clawGeneralRequest && typeof clawModelIdInput !== "undefined" && clawModelIdInput
         ? clawModelIdInput.value.trim() : "";
-    showConversation();
+    showConversation({ preserveClaw: clawGeneralRequest });
     addUserMessage(prompt, attachmentSnapshot);
     input.value = "";
     const outbound = conversationState.outboundWithUser(prompt);
