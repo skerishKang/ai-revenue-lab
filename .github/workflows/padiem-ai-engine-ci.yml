@@ -5,7 +5,11 @@ on:
     paths:
       - 'apps/padiem-ai-engine/**'
       - 'packages/padiem-ai-core/**'
-      - 'apps/living-learning/**'
+      # Living Learning-only source is independently covered by its dedicated
+      # CI below. Engine depends on Core, not Living Learning product code.
+      # Keep Core changes here and retain the full LL regression within
+      # Engine's job whenever Engine/Core itself changes.
+      - '.github/tests/test_3989_engine_living_learning_ci_scope.py'
       - '.github/workflows/padiem-ai-engine-ci.yml'
   workflow_dispatch:
 

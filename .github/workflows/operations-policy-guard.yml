@@ -70,6 +70,11 @@ jobs:
             .github/tests/test_b62_pr_preview_trigger_scope.py \
             .github/tests/test_b62_worker_deploy_trigger_scope.py
 
+      # #3989: prove that product-only LL changes do not fan out to Engine,
+      # while shared Core changes still run both independent product gates.
+      - name: Run Engine/Living Learning CI ownership tests
+        run: python -m pytest -q .github/tests/test_3989_engine_living_learning_ci_scope.py
+
       # #3625: a merge-forward can show CHANGED_FILE_OVERLAP=0 and still break a
       # lane that collects another component's test tree, because a shared
       # conftest/fixture import is not a changed file in that lane. This guard
