@@ -15,8 +15,8 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from uuid import UUID
 from typing import Any
+from uuid import UUID
 
 SUPPORTED_TYPES = {"assets", "service", "d1", "r2_bucket", "plain_text", "secret_text"}
 OWNER_P01_D1_BINDING = "BROWSER_CONTROL_OWNER_P01_D1"
