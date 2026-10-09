@@ -24,8 +24,8 @@
 | [#3586](https://github.com/skerishKang/ai-revenue-lab/issues/3586) 등록 형식 | **OPEN · P0** | [PR #3963](https://github.com/skerishKang/ai-revenue-lab/pull/3963) **MERGED**, 로컬 B66 43/43와 CI 8/8; UI·모듈 XLSX 전용 사전검증 | 인증된 **실서버** XLSX 접수, 실제 형식/본문 검사, 원본 무결성 확인; #3884 서버/스토리지 준비와 연결 |
 | [#3595](https://github.com/skerishKang/ai-revenue-lab/issues/3595) 원본 재현·인증 | **OPEN · P0** | 기존 CGI Sol 1–3행 기준 인증·1행 변이 테스트 근거 보존 | 다른 고객의 **실질적으로 독립된 두 번째 양식** 재현·변이·시각·자산 인증; CGI 4+행은 #3839에서 별도 재인증 |
 | [#3708](https://github.com/skerishKang/ai-revenue-lab/issues/3708) 대형 컴파일러 | **OPEN · P2 · DEFERRED** | 외부 Modal/Oracle/GCP 실행 위치 **미선정** | 실제 두 번째 고객 수요/원본 보관·분석 근거 생길 때 계약, 비용·시간 실측 후 재개; CGI 인도 장애가 아님 |
-| [#3839](https://github.com/skerishKang/ai-revenue-lab/issues/3839) Sol 다중 페이지 | **OPEN · 현재 핵심 구현** | **LOCAL1=Sol 네이티브 구현·인증**; **LOCAL2=입력/보존 테스트**. [Draft #3855](https://github.com/skerishKang/ai-revenue-lab/pull/3855)=페이징 계산만. [Draft #3965](https://github.com/skerishKang/ai-revenue-lab/pull/3965)=다품목 한계/보존 테스트 | 실제 Sol 4/8/10/25/100+행 PDF, 페이지/서체/직인/로고·QuoteCore 합계·이전 데이터 잔존·고객 E2E 확인. GLM 기반 시험 결과는 Sol 인증으로 불인정 |
-| [#3871](https://github.com/skerishKang/ai-revenue-lab/issues/3871) 怨좉컼 Google Drive | **OPEN 쨌 P2 / Live BLOCKED** | **LOCAL6/COMP2**. [PR #3924](https://github.com/skerishKang/ai-revenue-lab/pull/3924) ?뚯뒪 MERGED. [PR #3960](https://github.com/skerishKang/ai-revenue-lab/pull/3960) **CI 9/9 ??2026-10-10 squash MERGED** (\`d5f197eba23486d2cf4ef1b2ed2510487997845e\`), B66 Pages ?고????ㅼ젙 ?꾨떖 諛?malformed ID 李⑤떒 ?뚯뒪 諛섏쁺 | **?ㅼ젣 Google OAuth/Drive ?숈옉? ?꾩쭅 ?꾨떂.** B66 ?꾩슜 Web OAuth ?대씪?댁뼵??JS origin怨?Pages ?섍꼍蹂???ㅼ젙, 蹂꾨룄 ?뱀씤 Production 由대━?? ?뚯뒪??怨꾩젙?쇰줈 ?ㅼ젣 JSON+?몄쬆 PDF ????Β룸떎瑜?釉뚮씪?곗? 遺덈윭?ㅺ린쨌?ㅺ린湲?寃利??꾩슂 |
+| [#3839](https://github.com/skerishKang/ai-revenue-lab/issues/3839) Sol 다중 페이지 | **OPEN · 실제 시각 재현 보정 단계** | **LOCAL1=Sol 6.1 네이티브 다중 페이지 구현·수정·재인증**, **LOCAL2=데이터 경로 소스 계약 작업 완료**. [Draft #3855](https://github.com/skerishKang/ai-revenue-lab/pull/3855)=계획기(미인증). [PR #3965](https://github.com/skerishKang/ai-revenue-lab/pull/3965) **MERGED** (\`f296df9b87aab9e60153358d62fe71e3e43fdfa1\`, CI 22 PASS/1 SKIP) | LOCAL1의 실제 PDF는 1~500행 구조 스트레스 11/11 통과·500행 51페이지 생성. 그러나 CENTRAL 독립 래스터 검사에서 **견적번호/작성일자 겹침, 노란 합계 밴드 표기 누락, 특기사항 글자·번호 손실, 긴 품목명 깨짐**을 확인. 시각 결함 수정·정식 4+행 재인증·고객 Saved Skill PDF E2E 전까지 OPEN. GLM/HTML 대체 금지 |
+| [#3871](https://github.com/skerishKang/ai-revenue-lab/issues/3871) 고객 Google Drive | **OPEN · P2 / Live BLOCKED** | **LOCAL6/COMP2의 기존 #3924·#3960 소스 작업 MERGED/종료**, **후속 OAuth 재사용·연결해제 안전성 소스는 Owner 지시로 LOCAL3 단독 담당** ([지시](https://github.com/skerishKang/ai-revenue-lab/issues/3871#issuecomment-6086152964)). 기존 Padiem Chat Web OAuth Client ID 재사용을 우선 검증; 새 전용 Client 생성은 기본 전제가 아님 | Google 프로젝트 설정·B66 JS origin·Drive 권한 승인 여부 read-only 확인, routine Drive 로그아웃의 프로젝트 전체 OAuth revoke 위험 제거 및 회귀 테스트 → LOCAL3 Draft PR. 별도 Production 배포·실제 JSON+PDF 저장·다른 브라우저 복원·실기기 시험은 미실행 |
 | [#3884](https://github.com/skerishKang/ai-revenue-lab/issues/3884) 고객 비공개 원본 | **OPEN · 중점 선행 의존성** | 기존 **별도 로컬 브랜치** `b66-template-custody-3884` / [Draft #3925](https://github.com/skerishKang/ai-revenue-lab/pull/3925); **로컬 번호는 GitHub 근거로 미확정** | HTTP 원문 크기 상한(파싱 전), OOXML 구조 안전성, R2 orphan 삭제실패 대응, D1 owner 분리 및 원본 SHA-256 복원, 버전/삭제/보유정책, 실제 cross-browser E2E. 현재 PR 미병합 |
 | [#3906](https://github.com/skerishKang/ai-revenue-lab/issues/3906) 모델별 추론 수준 | **OPEN · PROPOSAL / Owner 결정 대기** | B14×B66 UX 정책·견적 추출 실측 근거만; 기능 미구현 | 수동 모델 선택 유지, 제공자별 지원 추론 수준 실측·upstream 전송 확인, B14 레지스트리→API→UI 계약·기본/권장 의미·저장정책 Owner 승인 후 착수 |
 | [#3916](https://github.com/skerishKang/ai-revenue-lab/issues/3916) 근삿값 확인 | **CLOSED** | 기존 안전성 작업 종료 상태 확인 | 새 실제 회귀 증거 없으면 재오픈하지 않음 |
@@ -36,7 +36,7 @@
 - **LOCAL1 별도 공간 감사:** 보고된 `sol61_multipage.py` 및 8행 3페이지 PNG가 **그 작업 공간에서 발견되지 않아** 8행 다중 페이지 16/16 주장 재현 불가. 다른 작업 공간에 파일이 전혀 없었다는 뜻은 아님.
 - **이전 별도 로컬 프로토타입:** PyMuPDF 테스트가 통과해도, **GLM53 기반 PDF/manifest**를 재사용했다면 Owner가 정한 Sol-native 인증을 충족하지 못함.
 - **#3855:** 테스트에 쓰인 예시 지오메트리(예: 180pt 이름 열)를 실제 Sol 인증 치수로 간주하지 않는다.
-- **#3965:** LOCAL2의 변경은 데이터 경로의 *source-only 테스트*다. 최신 브랜치에 CENTRAL 피드백 수정이 들어왔더라도 **새 HEAD CI와 리뷰 후** 병합하고, 이를 실제 Sol PDF 합격으로 표현하지 않는다.
+- **#3965:** LOCAL2의 데이터 경로 **source-only 계약·테스트 PR이 22 PASS/1 SKIP 후 MERGED**(\`f296df9b87aab9e60153358d62fe71e3e43fdfa1\`). D1 개별 스냅샷 101개 보존과 상위 입력 허용 100개의 차이를 검증하되, 이 병합은 **실제 Sol PDF 4+행 고객 인수/E2E를 증명하지 않는다.**
 
 ## 인접 프로젝트 경계 — B14, Claw, Web
 
@@ -48,10 +48,10 @@
 
 ## 다음 단계 — 소유자·병렬 진행
 
-1. **LOCAL1 (#3839):** 인증 Sol 벡터 패키지 기하·출처 확정 → Sol-native 가변 행/다중 페이지 **실제 PDF** → 1–3행 회귀 및 4/8/10/25/100+행 재인증. 이전 GLM/HTML 우회 금지.
-2. **LOCAL2 (#3839):** #3965의 테스트 계약을 기존 소스 권위에만 연결; 업데이트 HEAD CI 후 CENTRAL 검토. 이미 입증한 D1 개별 스냅샷 능력을 전체 Save→Render E2E로 과장하지 않음.
+1. **LOCAL1 (#3839):** 실제 Sol-native 1~500행 다중 페이지 프로토타입을 기존 인증 패키지에서 구현했다. CENTRAL 독립 PDF 래스터 검사에서 발견된 견적번호·날짜/노란 합계 설명/특기사항/장문 품목명 **가시적 서식 손상**을 바로잡고, 원본 인증 1~3행 바이트 동일성 + 신규 이미지 시각 회귀 + 4/8/25/100행 재인증 → Draft PR을 준비한다. GLM/HTML 우회 금지.
+2. **LOCAL2 (#3839):** PR #3965 **squash MERGED·해당 소스 계약 작업 종료**. 추후 LOCAL1 실제 PDF 연동 시 새로운 범위가 생기면 CENTRAL에서 별도 배정. 지금 동일한 소스 작업을 반복하지 않는다.
 3. **#3884 기존 브랜치 소유 로컬:** #3925 보안 검토 잔여 조건 확인·수정; 운영 R2/D1 변이 없이 Draft→재검토. **번호 불명확하므로 중복 배정 금지**.
-4. **LOCAL6/COMP2 (#3871):** ?뚯뒪 PR #3960? 蹂묓빀 ?꾨즺(?ㅼ젣 \`_worker.js\` Pages ?섍꼍蹂??二쇱엯怨??섎せ??Client ID 李⑤떒 ?ы븿). **吏湲덈??곕뒗 ?뚯뒪 以묐났 媛쒕컻???꾨땲??* Owner媛 蹂꾨룄 ?뱀씤?섎뒗 B66 ?꾩슜 Google OAuth/Web origin 援ъ꽦怨?\`quick-quote-kr\` Production 諛고룷, 寃⑸━???ㅼ젣 Google 怨꾩젙????Β룹옱?닿린 E2E瑜?以鍮꾪븳?? 臾댁듅????Live BLOCKED ?좎?.
+4. **LOCAL3 (#3871 다음 소스 작업):** 기존 Padiem Chat Web OAuth Client 재사용 여부 확인, Drive 일반 연결해제/계정 전환/늦은 팝업의 Google 전역 revoke 제거·토큰/epoch 격리, 행동 기반 테스트, 런북 갱신 후 소규모 Draft PR. **LOCAL6/COMP2는 #3924·#3960 기존 소스 완료 후 동일 파일 수정 중단·STANDBY**. 실제 Google Console 변경/Pages 배포/실계정 Drive 검증은 별도 권한과 증거가 필요.
 5. **CENTRAL:** 각 PR의 최신 base/head/검증과 소유권 확인, 소스만으로 종료 처리 금지. #3586 실서버 입력 검증은 #3884 선행 기반 준비 후 실행. #3542/3708 일반 컴파일러는 Owner 재개 지시 전 착수 금지; #3906은 승인이 필요한 UX 제안으로 유지.
 
 ## 종료 규칙 및 원본 보호
