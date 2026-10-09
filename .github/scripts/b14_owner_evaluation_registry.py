@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -22,6 +23,9 @@ OWNER_RETIRED = frozenset({
     "kilo/stepfun/step-3.7-flash",
     "kilo/stepfun-step-3.7-flash",
     "stepfun/step-3.7-flash",
+    "thinkingmachines/inkling-small:free",
+    "kilo/thinkingmachines/inkling-small:free",
+    "kilo/thinkingmachines-inkling-small-free",
 })
 # Historical #2676 benchmark selectors. These must NOT form an independent
 # evaluation allowlist after the 2026-10-08 Owner registry migration.
@@ -44,7 +48,13 @@ def _disallowed_model_id(model_id: str) -> bool:
     if lowered.startswith("kilo/") and "poolside" in lowered and "laguna" in lowered:
         return True
     # Owner removed Step 3.7 Flash from *all* candidate routes. Step 5 stays.
-    return ("stepfun/step-3.7-flash" in lowered or "stepfun-step-3.7-flash" in lowered)
+    if "stepfun/step-3.7-flash" in lowered or "stepfun-step-3.7-flash" in lowered:
+        return True
+    # Owner also retired only Thinking Machines Inkling Small, not all
+    # smaller-capacity models. Treat free-route and Kilo aliases identically.
+    return re.search(
+        r"(?:^|/)thinkingmachines(?:/|-)inkling-small(?=$|[:/\-])", lowered
+    ) is not None
 
 
 def load_current_models(path: Path = CANONICAL_REGISTRY) -> dict[str, dict[str, Any]]:
@@ -65,7 +75,7 @@ def load_current_models(path: Path = CANONICAL_REGISTRY) -> dict[str, dict[str, 
             raise ValueError("registry_model_identity_invalid")
         if model_id in allowed:
             raise ValueError("registry_duplicate_model_id")
-        if _disallowed_model_id(model_id):
+        if _disallowed_model_id(model_id) or _disallowed_model_id(upstream):
             raise ValueError("owner_retired_model_in_registry")
         provider = providers.get(provider_id)
         if not isinstance(provider, dict) or not provider.get("enabled", False):
