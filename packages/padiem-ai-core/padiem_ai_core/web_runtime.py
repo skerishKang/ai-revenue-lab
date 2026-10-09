@@ -661,6 +661,9 @@ class TinyFishWebProvider:
             )
             if evidence is not None:
                 result.append(evidence)
+        # Only fixed, bounded outcome metadata; no query, URL or provider text.
+        marker = "UPSTREAM_EMPTY" if not items else "NO_USABLE_URL" if not result else "USABLE"
+        print("TINYFISH_SEARCH_NORMALIZATION=" + marker, flush=True)
         return result
 
     async def fetch(self, url: str) -> Evidence:
