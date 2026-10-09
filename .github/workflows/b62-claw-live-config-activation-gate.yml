@@ -664,7 +664,7 @@ jobs:
           done
           python .github/scripts/b62_claw_live_config_activation.py replacement-served-version-final \
             --observations-file "${observations}" \
-            --pre-version "${PREMUTATION_SERVED_VERSION_ID}"
+            --pre-version="${PREMUTATION_SERVED_VERSION_ID}"
           echo 'WORKER_CODE_DEPLOY_SUBMITTED=0'
           echo 'SETTINGS_PATCH=0'
           echo 'UNRELATED_SECRET_MUTATION=0'
