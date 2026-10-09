@@ -1,6 +1,6 @@
 # B14 -> B66 current approved-model evaluation protocol (2026-10-09)
 
-Status: SOURCE-ONLY PROCESS CONTRACT. No credentials provisioned here, no model/provider called, and no customer tier, Production, Auto or fallback approved. Source selection: apps/korean-ai-platform/app/pilot/b14_models.json on current main.
+Status: CURRENT B66 EXTRACTION EVALUATION PROCEDURE. Current source registry: apps/korean-ai-platform/app/pilot/b14_models.json. 2026-10-09 live results are recorded in [B14 model selection and evaluation standard](B14_MODEL_SELECTION_AND_EVALUATION_STANDARD_2026-10-09.md). This text is an evaluation protocol, not a release decision.
 
 ## Purpose: what to benchmark
 
@@ -52,8 +52,8 @@ Before customers use any candidate: inspect genuine successful responses, confir
 - Golden synthetic fixture: `.github/fixtures/b66_quote_interpret_v1.json` (10 prompts covering single/multiple item rows up to 12, corrections, missing unit prices, total-vs-unit-price ambiguity, Korean amounts, zero cost, date, and untrusted text).
 - Read-only model/GET preflight and offline scoring implementation: `.github/scripts/b66_quote_model_benchmark.py`. It reads the **current exact nine-model central JSON**, then uses the **real B66 `quote-extraction.js` normalizer** to score recipient company, project, issue date, ordered items, quantities and unit prices. It never sends an inference POST, computes a total, recreates a template or executes paid fallback.
 - Tests: `.github/tests/test_b66_quote_model_benchmark.py`; PR/main automated job `.github/workflows/b66-quote-model-benchmark.yml` is **OFFLINE ONLY**. Imported responses are explicitly labeled `IMPORTED_RESPONSE_NOT_ATTESTED_LIVE` and cannot produce a purported verified live model ranking.
-- Read-only 2026-10-09 Production discovery: exact-main source catalog 9 models but served `GET /api/pilot/models` returned **11** entries, including the five Owner-deleted IDs and retired Space Bunny, while all four current Google registrations were absent. The read-only GET guard correctly returns `BLOCKED_REGISTRY_DRIFT`, exit 4, `live_post_count=0`. Release blocker: [#3842](https://github.com/skerishKang/ai-revenue-lab/issues/3842), including the Worker JSON packaging failure. This source-only benchmark does not remedy that deployment issue and MUST NOT silently score that stale Worker as the nine approved models.
-- No locally provisioned direct provider credential bindings were found for the 6 registered providers on the test PC (presence checks only). **Actual inference quality per model: NOT TESTED**, not failed. After separately approved canonical B14 deployment and credential readiness, use one explicit owner-selected exact model at a time with bounded real inputs, no retry/fallback, and preserve measured availability and error codes independently of quality.
+- Historical blocker resolved: first GET showed 11 served IDs against nine canonical IDs. B14 #3842 packaging/deployment was fixed, and later GET preflight returned 9/9 MATCH. The earlier drift is no longer the current blocker.
+- 2026-10-09 actual live evaluation completed: nine models times three QKR prompts = 27 requests, plus two finalists times seven additional QKR prompts = 14 requests, 41 total. Poolside direct 7/10 correct (HTTP200 9/10); Gemini 3.1 Flash-Lite 7/10 (HTTP200 10/10); Gemini 3.5 Flash-Lite and SenseNova 6.8 2/3 each; Agnes and Mercury 1/3 each; Atria and both Gemma 0/3 due to timeouts. See [#2676](https://github.com/skerishKang/ai-revenue-lab/issues/2676) and the current evaluation standard for exact per-case status. No score implies customer PDF readiness.
 
 Offline commands from the repository root:
 
@@ -67,4 +67,4 @@ Certified source-derived template fidelity belongs to B66 #3180/#3542/#3595 and 
 
 ## Release boundaries
 
-A new live evaluation requires Owner-approved provider credentials, explicit authorized exact-model selection, served-version/preflight gates and bounded synthetic prompts. This document does not authorize running the nine models or any Production POST now. Keep the historic five-candidate benchmark for offline research only, and reject Motif/Luna/all-five in all paths that can send a live request. Preserve the five Owner exclusions when editing models, workflows, B66 or Claw.
+Further live evaluation uses an explicitly selected allowed model ID, current served/source preflight, bounded identical QKR input and direct usage/status evidence. Score field accuracy separately from 429/504 availability. PDF layout and customer E2E remain separately assessed by B66. For actual evaluation findings see [current selection standard](B14_MODEL_SELECTION_AND_EVALUATION_STANDARD_2026-10-09.md).

@@ -1,5 +1,8 @@
 # 모델 관련 공식 진입점
 
+**Current B14 model-selection / evaluation reference (2026-10-09):** [B14 model selection and evaluation standard](../operations/B14_MODEL_SELECTION_AND_EVALUATION_STANDARD_2026-10-09.md). Covers current nine-model benchmark, Step 5 candidate, first Gemini 3.1 parameter pilot and project RPM/TPM/RPD truth.
+
+
 ~~~text
 DOC_STATUS = CANONICAL
 SCOPE = NAVIGATION_ONLY
