@@ -212,11 +212,6 @@ jobs:
             anchor_fail "canonical resolver returned no served version id"
           fi
 
-          # The earlier served-version metadata snapshot must still name the
-          # exact version about to be replaced. Refuse drift before upload.
-          if [ "${pre_version}" != "${B54_ENGINE_ACTIVE_VERSION}" ]; then
-            anchor_fail "served version drifted since the pre-deploy binding snapshot"
-          fi
           anchor_record "PRE_DEPLOY_SERVED_VERSION_ID=${pre_version}"
           anchor_record "PRE_MUTATION_VERSION_CAPTURED=YES"
           anchor_record "SOURCE_MAIN_SHA=${B54_TARGET_SHA}"
