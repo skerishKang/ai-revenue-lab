@@ -1,13 +1,9 @@
 name: B62 Saved Outputs Browser QA
 
+
+# Pull-request execution is centrally owned by b62-browser-qa-unified.yml.
+# This original workflow stays dispatchable for independent targeted QA.
 on:
-  pull_request:
-    paths:
-      - "apps/padiem-chat/**"
-      - "!apps/padiem-chat/tests/**"
-      - "!apps/padiem-chat/worker.py"
-      - ".github/scripts/b62_saved_outputs_browser_qa.py"
-      - ".github/workflows/b62-saved-outputs-browser-qa.yml"
   workflow_dispatch:
 
 permissions:

@@ -38,6 +38,8 @@ from app.pilot.errors import (
     UpstreamTimeout,
 )
 from app.pilot.sensenova_provider import is_transient_busy_429
+from app.pilot.atria_timeout_diagnostics import log_atria_timeout
+from app.pilot.agnes_429_diagnostics import log_agnes_429
 from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
 from app.pilot.stream_types import StreamEvent, StreamUsage
@@ -279,8 +281,9 @@ async def call_platform_chat_completions(
                 json=body,
                 follow_redirects=False,
             )
-    except httpx.TimeoutException:
-        raise UpstreamTimeout()
+    except httpx.TimeoutException as exc:
+        log_atria_timeout(logger, platform_provider_id, exc, "completed")
+        raise UpstreamTimeout() from exc
     except httpx.RequestError as e:
         logger.error(
             "platform_request_error provider=%s error=%s",
@@ -290,6 +293,11 @@ async def call_platform_chat_completions(
         raise UpstreamServerError()
 
     if response.status_code < 200 or response.status_code >= 300:
+        if platform_provider_id == "agnes-ai" and response.status_code == 429:
+            log_agnes_429(
+                logger, platform_provider_id, response.status_code,
+                response.headers, response.text,
+            )
         _raise_upstream_error(
             response.status_code, platform_provider_id, response.text
         )
@@ -436,6 +444,11 @@ async def stream_platform_chat_completions(
                     # Read the small error body so provider-specific 429
                     # normalization (#2003) can inspect it.
                     error_body = (await response.aread()).decode("utf-8", "replace")
+                    if platform_provider_id == "agnes-ai" and response.status_code == 429:
+                        log_agnes_429(
+                            logger, platform_provider_id, response.status_code,
+                            response.headers, error_body,
+                        )
                     _raise_upstream_error(
                         response.status_code, platform_provider_id, error_body
                     )
@@ -462,6 +475,7 @@ async def stream_platform_chat_completions(
                         if event.done:
                             saw_done = True
     except httpx.TimeoutException as exc:
+        log_atria_timeout(logger, platform_provider_id, exc, "stream")
         raise UpstreamTimeout() from exc
     except httpx.RequestError as exc:
         logger.error(

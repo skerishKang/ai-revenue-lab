@@ -5,6 +5,8 @@ on:
     paths:
       - ".github/workflows/b62-production-code-deploy-gate.yml"
       - ".github/scripts/b62_cloudflare_production_deploy_config.py"
+      - ".github/scripts/b62_cloudflare_rollback_deployment_request.py"
+      - ".github/tests/test_b62_cloudflare_rollback_deployment_request.py"
       - ".github/scripts/b62_public_origin_504_guard.py"
       - ".github/scripts/b62_cloudflare_504_readonly_get.sh"
       - ".github/tests/test_b62_cloudflare_504_readonly_get.py"
@@ -14,6 +16,8 @@ on:
       - ".github/scripts/cloudflare_served_version_cli.py"
       - ".github/scripts/cloudflare_served_version_lineage.py"
       - ".github/tests/test_cloudflare_served_version_lineage.py"
+      - ".github/scripts/b62_code_deploy_served_preflight.py"
+      - ".github/tests/test_b62_code_deploy_served_preflight.py"
       - ".github/scripts/b62_claw_live_config_activation.py"
       - ".github/scripts/b62_d1_migration_008_schema.py"
       - ".github/tests/test_b62_binding_state_guard.py"
@@ -110,6 +114,10 @@ jobs:
         shell: bash
         run: python .github/scripts/b62_cloudflare_mock_config_guard.py apps/padiem-chat/wrangler.toml
 
+      - name: Prove Cloudflare rollback deployment request shape
+        shell: bash
+        run: python .github/tests/test_b62_cloudflare_rollback_deployment_request.py
+
       - name: Test 504-only public-origin proof with negative controls
         shell: bash
         run: python .github/tests/test_b62_public_origin_504_gate.py
@@ -127,6 +135,14 @@ jobs:
           python -m pip install --disable-pip-version-check --quiet pytest
           python -m pytest .github/tests/test_b62_served_version_secret_guard.py -q
           echo "B62_SERVED_VERSION_SECRET_GUARD_TESTS=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Validate new-main upload-vs-served release preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pytest .github/tests/test_b62_code_deploy_served_preflight.py -q
+          echo "NEW_MAIN_DEPLOY_PREFLIGHT_TESTS=PASS"
           echo "PRODUCTION_MUTATION=0"
 
       # PR-only CI: this contract tests the separate manual Owner D1 release.
@@ -187,10 +203,9 @@ jobs:
           assert "last updated via the script API" in workflow
           assert "Aborting the upload operation because of conflicts" in workflow
 
-          # #2458: the cloudflare_readonly job must publish the active served
-          # version id as bounded non-secret operational evidence, while keeping
-          # the canonical extraction, the single-version/100% and latest==active
-          # assertions, and the existing GITHUB_OUTPUT consumer unchanged.
+          # #3523: preserve single-version/100%-traffic canonical active evidence.
+          # Strict readonly still proves latest==active; new exact-main deploys
+          # accept a pre-existing unactivated upload but pin both IDs before mutation.
           readonly_job = workflow.split("\n  cloudflare-readonly:", 1)[1].split("\n  deploy-production-code:", 1)[0]
           assert "cloudflare_served_version_cli.py resolve-active" in readonly_job
           assert ".result.deployments[0].versions[0].version_id" not in readonly_job
@@ -203,6 +218,9 @@ jobs:
           # ACTIVE_VERSION publication it evidences.
           assert 'test "${latest}" = "${active}"' not in readonly_job
           assert "cloudflare_served_version_lineage.py" in readonly_job
+          assert "b62_code_deploy_served_preflight.py" in readonly_job
+          assert 'if [ "$' + '{{ inputs.mode }}' + '" = "deploy_production_code" ]; then' in readonly_job
+          assert 'echo "latest_version=${latest}" >> "${GITHUB_OUTPUT}"' in readonly_job
           assert 'echo "LATEST_VERSION_EQUALS_ACTIVE_VERSION' not in readonly_job
           assert 'echo "active_version=${active}" >> "${GITHUB_OUTPUT}"' in readonly_job
           assert 'echo "ACTIVE_VERSION=${active}"' in readonly_job
@@ -279,6 +297,7 @@ jobs:
       contents: read
     outputs:
       active_version: ${{ steps.audit.outputs.active_version }}
+      latest_version: ${{ steps.audit.outputs.latest_version }}
       public_base_url_state: ${{ steps.audit.outputs.public_base_url_state }}
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -316,13 +335,22 @@ jobs:
           versions="${RUNNER_TEMP}/b62-versions-readonly.json"
           bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions?page=1&per_page=1" "${versions}"
           latest="$(jq -r '.result.items[0].id // empty' "${versions}")"
-          # #2451 item 7 / child #2898: the latest==active equality authority is the
-          # canonical lineage primitive. It publishes LATEST_VERSION_EQUALS_ACTIVE_VERSION
-          # itself and fails closed (non-zero exit) on a mismatch, a missing id or an
-          # unsafe id, so this workflow must not restate the comparison or the marker.
-          python3 .github/scripts/cloudflare_served_version_lineage.py \
-            --active-version="${active}" \
-            --latest-version="${latest}"
+          # For read-only audit preserve the canonical latest==active guard.
+          # For exact-main NEW code deploy validate both IDs, tolerate an uploaded
+          # undeployed version, then recheck both IDs unchanged before mutation.
+          if [ "${{ inputs.mode }}" = "deploy_production_code" ]; then
+            # New exact-main code deploys may supersede an unactivated upload.
+            # Validate both IDs, then lock both again before mutation below.
+            python3 .github/scripts/b62_code_deploy_served_preflight.py \
+              --active-version="$active" \
+              --latest-version="$latest"
+          else
+            # Preserve canonical strict lineage for all normal read-only modes.
+            python3 .github/scripts/cloudflare_served_version_lineage.py \
+              --active-version="${active}" \
+              --latest-version="${latest}"
+          fi
+          echo "latest_version=${latest}" >> "${GITHUB_OUTPUT}"
           echo "active_version=${active}" >> "${GITHUB_OUTPUT}"
           echo "ACTIVE_VERSION=${active}"
 
@@ -380,6 +408,7 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       READONLY_ACTIVE_VERSION: ${{ needs.cloudflare-readonly.outputs.active_version }}
+      READONLY_LATEST_VERSION: ${{ needs.cloudflare-readonly.outputs.latest_version }}
       PUBLIC_BASE_URL_STATE: ${{ needs.cloudflare-readonly.outputs.public_base_url_state }}
       CONFIRMATION: ${{ inputs.confirmation }}
     steps:
@@ -439,6 +468,11 @@ jobs:
           active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
           test "${active}" = "${READONLY_ACTIVE_VERSION}"
           echo "PREMUTATION_ACTIVE_VERSION_STABLE=PASS"
+          versions="${RUNNER_TEMP}/b62-versions-before.json"
+          bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions?page=1&per_page=1" "${versions}"
+          current_latest="$(jq -r '.result.items[0].id // empty' "${versions}")"
+          test "${current_latest}" = "${READONLY_LATEST_VERSION}"
+          echo "PREMUTATION_LATEST_UPLOADED_VERSION_STABLE=PASS"
           detail="${RUNNER_TEMP}/b62-version-before.json"
           bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions/${active}" "${detail}"
           etag_before="$(jq -er '.result.resources.script.etag' "${detail}")"
@@ -742,8 +776,11 @@ jobs:
             echo "ROLLBACK_EFFECT=NONE_VERIFIED"
             exit 0
           fi
+          rollback_request="${RUNNER_TEMP}/b62-auto-rollback-request.json"
+          python3 .github/scripts/b62_cloudflare_rollback_deployment_request.py \
+            --version-id "${PREVIOUS_VERSION_ID}" --output "${rollback_request}"
           curl -fsS "${auth[@]}" -X POST "${api}/deployments" \
-            -d "{\"version_id\": \"${PREVIOUS_VERSION_ID}\", \"percentage\": 100}" \
+            -d "@${rollback_request}" \
             -o "${RUNNER_TEMP}/b62-auto-rollback.json"
           echo "ROLLBACK_POST_ATTEMPTED=YES"
           for attempt in $(seq 1 12); do
@@ -827,8 +864,11 @@ jobs:
           set -euo pipefail
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
           api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
+          rollback_request="${RUNNER_TEMP}/b62-manual-rollback-request.json"
+          python3 .github/scripts/b62_cloudflare_rollback_deployment_request.py \
+            --version-id "${PREVIOUS_VERSION_ID}" --output "${rollback_request}"
           curl -fsS "${auth[@]}" -X POST "${api}/deployments" \
-            -d "{\"version_id\": \"${PREVIOUS_VERSION_ID}\", \"percentage\": 100}" \
+            -d "@${rollback_request}" \
             -o "${RUNNER_TEMP}/b62-rollback-deploy.json"
           for attempt in $(seq 1 12); do
             deployments="${RUNNER_TEMP}/b62-rollback-state.json"

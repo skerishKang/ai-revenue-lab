@@ -21,7 +21,7 @@ import tomllib
 
 EXPECTED_WORKER = "padiem-chat"
 OWNER_P01_D1_BINDING = "BROWSER_CONTROL_OWNER_P01_D1"
-SUPPORTED_BINDING_TYPES = {"assets", "service", "d1", "r2_bucket", "plain_text", "secret_text", "version_metadata"}
+SUPPORTED_BINDING_TYPES = {"assets", "service", "d1", "r2_bucket", "plain_text", "secret_text", "version_metadata", "secrets_store_secret"}
 REQUIRED_VARS = ("PADIEM_CHAT_RUNTIME_MODE", "PADIEM_CHAT_LIVE_ENABLED")
 PUBLIC_BASE_URL_VAR = "PADIEM_CHAT_PUBLIC_BASE_URL"
 # #3252: a live version_metadata binding is runtime provenance. Exactly one may
@@ -55,6 +55,7 @@ def parse_live_bindings(settings_payload: object) -> dict[str, object]:
     r2: list[dict] = []
     plain_vars: dict[str, str] = {}
     secret_names: list[str] = []
+    secrets_store: list[dict] = []
     version_metadata: list[dict] = []
     for raw in bindings:
         if not isinstance(raw, dict):
@@ -87,6 +88,16 @@ def parse_live_bindings(settings_payload: object) -> dict[str, object]:
             if not isinstance(text, str):
                 raise ProductionConfigError(f"plain_text binding {name!r} has no text value")
             plain_vars[name] = text
+        elif kind == "secrets_store_secret":
+            if not _BINDING_NAME_RE.fullmatch(name):
+                raise ProductionConfigError("Secrets Store binding name invalid")
+            store_id = raw.get("store_id")
+            secret_name = raw.get("secret_name")
+            if not isinstance(store_id, str) or not re.fullmatch(r"[a-f0-9]{32}", store_id):
+                raise ProductionConfigError("Secrets Store store_id invalid")
+            if not isinstance(secret_name, str) or not _BINDING_NAME_RE.fullmatch(secret_name):
+                raise ProductionConfigError("Secrets Store secret_name invalid")
+            secrets_store.append({"name": name, "store_id": store_id, "secret_name": secret_name})
         elif kind == "version_metadata":
             if not _BINDING_NAME_RE.fullmatch(name):
                 raise ProductionConfigError(
@@ -106,6 +117,7 @@ def parse_live_bindings(settings_payload: object) -> dict[str, object]:
         "r2": r2,
         "vars": plain_vars,
         "secret_names": secret_names,
+        "secrets_store": secrets_store,
         "version_metadata": version_metadata[0] if version_metadata else None,
     }
 
@@ -226,6 +238,7 @@ def build_production_config(
             + [item["name"] for item in live["r2"]]
             + list(live["vars"])
             + list(live["secret_names"])
+            + [item["name"] for item in live["secrets_store"]]
         )
         if live["version_metadata"] is not None:
             all_names.append(live["version_metadata"]["name"])
@@ -264,6 +277,15 @@ def build_production_config(
         jurisdiction = bucket.get("jurisdiction")
         if isinstance(jurisdiction, str) and jurisdiction:
             lines.append(f"jurisdiction = {_toml_string(jurisdiction)}")
+        lines.append("")
+
+    # Source-only deploy generator must preserve all already-serving Secrets
+    # Store links by identity, not convert them to secret_text or omit them.
+    for item in live["secrets_store"]:
+        lines.append("[[secrets_store_secrets]]")
+        lines.append(f"binding = {_toml_string(item['name'])}")
+        lines.append(f"store_id = {_toml_string(item['store_id'])}")
+        lines.append(f"secret_name = {_toml_string(item['secret_name'])}")
         lines.append("")
 
     plain_vars = live["vars"]
@@ -358,6 +380,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"R2_BINDINGS={len(live['r2'])}")
     print(f"PLAIN_TEXT_VARS={len(plain_vars)}")
     print(f"SECRET_BINDINGS_PRESERVED_BY_PLATFORM={len(secret_names)}")
+    print(f"SECRETS_STORE_BINDINGS_PRESERVED={len(live['secrets_store'])}")
     print("SECRET_VALUES_READ=0")
     print("SECRET_VALUES_EMITTED=0")
     print("PADIEM_CHAT_PUBLIC_BASE_URL_PRESTATE=EXPECTED")

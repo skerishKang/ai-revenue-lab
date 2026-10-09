@@ -14,7 +14,7 @@ class B62AccessibilityTestDelegation(unittest.TestCase):
         self.assertIn("name: B62 tests", chat)
         self.assertIn("  pull_request:", chat)
         self.assertIn('      - "apps/padiem-chat/**"', chat)
-        self.assertIn("      - 'apps/padiem-chat/**'", qa)
+        self.assertIn("apps/padiem-chat/**", (FOLDER.parent / "ci" / "b62_browser_qa_paths.json").read_text(encoding="utf-8"))
         self.assertNotIn("Run B62 regression suite", qa)
         self.assertNotIn("run: uv run pytest -q", qa)
         self.assertIn("Desktop and mobile accessibility QA", qa)

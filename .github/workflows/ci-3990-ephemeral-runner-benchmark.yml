@@ -1,0 +1,93 @@
+name: CI Runner 3990 Ephemeral Benchmark
+
+# This is a manual and main-only non-secret source-contract test lane.
+# It is NOT a replacement for any PR-required test or production job.
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Choose GitHub-hosted baseline or disposable self-hosted runner
+        required: true
+        default: github-hosted
+        type: choice
+        options:
+          - github-hosted
+          - ephemeral
+      runner_label:
+        description: Fresh unpredictable padiem-pilot- plus 32 lowercase hex chars for one VM/job
+        required: false
+        default: ''
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-3990-benchmark-${{ github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - name: Validate isolated runner target
+        shell: bash
+        env:
+          BENCH_TARGET: ${{ inputs.target }}
+          BENCH_LABEL: ${{ inputs.runner_label }}
+        run: |
+          set -euo pipefail
+          case "$BENCH_TARGET" in
+            github-hosted)
+              test -z "$BENCH_LABEL" || { echo "Hosted baseline requires empty custom label"; exit 1; }
+              ;;
+            ephemeral)
+              [[ "$BENCH_LABEL" =~ ^padiem-pilot-[0-9a-f]{32}$ ]] || {
+                echo "Ephemeral pilot requires a fresh 128-bit runner label"; exit 1;
+              }
+              ;;
+            *)
+              echo "Unknown CI runner target"; exit 1 ;;
+          esac
+
+  benchmark:
+    needs: validate
+    if: github.ref == 'refs/heads/main'
+    runs-on: ${{ inputs.target == 'ephemeral' && fromJSON(format('["self-hosted","Linux","X64","{0}"]', inputs.runner_label)) || 'ubuntu-24.04' }}
+    timeout-minutes: 23
+    env:
+      UV_NO_PROGRESS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.5'
+      - name: Check JavaScript syntax
+        working-directory: apps/padiem-chat
+        run: node --check static/app.js
+      - name: Resolve committed B62 dependencies
+        working-directory: apps/padiem-chat
+        run: uv sync --locked --extra dev
+      - name: Run three bounded source-contract benchmark trials
+        run: python .github/scripts/ci_runner_3990_benchmark.py
+      - name: Publish non-secret benchmark data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-3990-${{ inputs.target }}-${{ github.run_id }}
+          path: .tmp/ci-runner-3990-benchmark.json
+          if-no-files-found: warn
+          retention-days: 7
