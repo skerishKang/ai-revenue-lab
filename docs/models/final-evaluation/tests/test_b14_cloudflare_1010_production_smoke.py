@@ -37,7 +37,7 @@ class B14Live1010OutcomeGuard(unittest.TestCase):
         for x in ("PRODUCTION_B14_QUOTE_STRICT_PASS","2,532ms","3,563ms",
                   "QKR-002","엄격 견적 정답 PASS","attempt 1","fallback false"):
             self.assertIn(x,self.mercury)
-        self.assertIn("PRODUCTION_B14_CHAT_HTTP200 / QUOTE_QKR002_STRICT_PASS",self.ledger)
+        self.assertIn("F4_B14_HTTP200_10/10 / F5_STRICT_8/10",self.ledger)
         self.assertIn("F6_NOT_TESTED",self.mercury)
 
     def test_atria_canonical_timeout_is_distinct_from_preview_pass(self):

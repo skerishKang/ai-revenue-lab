@@ -43,7 +43,7 @@
 | 4 | `google/gemma-4-31b-it` | **F1 Dense 30.7B·출력 32,768 / F2 30RPM·16K TPM·14.4K RPD / Minimal 원본 1/10·내용 5/10 / High 원본 0/10·내용 0/10 / B14 504** |
 | 5 | `poolside/laguna-s-2.1` (Poolside 직접 API, Kilo 제외) | **F1 공식 118B/활성8B·1M / F2 계정한도 UNKNOWN / 직접 기본 9/10(10.89s), 추론 끔 8/10(4.63s), 켬 8/10(9.56s) / B14 9/10 HTTP200 / 실제 AI→PDF PASS** |
 | 6 | `sensenova/sensenova-6.8-flash-lite` | **F1 제공자 262,144/65,536 · F2 계정 한도 UNKNOWN · B14 10/10 · 직접 기본 10/10 · 리즈닝 none 10/10 2633ms; low 10/10 6528ms; medium 10/10 6278ms; high 10/10 6503ms · 12품목 로컬 PDF PASS** |
-| 7 | `inception/mercury-2.5` | **PRODUCTION_B14_CHAT_HTTP200 / QUOTE_QKR002_STRICT_PASS / IN_PROGRESS** — 평가 클라이언트 403은 Cloudflare Error1010(기본 User-Agent 차단); 명시적 평가 UA로 B14 GET200·키 확인, 실제 B14 모델 명시 인사 2,532ms HTTP200 및 QKR-002 3,563ms HTTP200/엄격 PASS, 각 1회·fallback 없음. 직접 API에서는 간헐 timeout 재발, 10문항·고객 PDF 미완료. [상세](B14_FINAL_MERCURY_2_5_2026-10-09.md) |
+| 7 | `inception/mercury-2.5` | **F4_B14_HTTP200_10/10 / F5_STRICT_8/10 / F6_LOCAL_PDF_PIPELINE_PASS_WITH_LABEL_MISMATCH / CUSTOMER_F6_NOT_TESTED / IN_PROGRESS** — 운영 B14 10문항 무재시도·무fallback, 8 PASS/ QKR008 이름 공백 12건/ QKR009 B66 정규화 거부. B66 실제 Mercury 출력 12품목·총715만원·A4 PDF 2페이지 기술 파이프라인 PASS, 고객 저장 템플릿 E2E 아직 미완료. [상세](B14_FINAL_MERCURY_2_5_2026-10-09.md) |
 | 8 | `atria/Atria-Dawn-Preview` | **PRODUCTION_B14_CHAT_HTTP200 / STREAM_PREVIEW_QKR001_STRICT_PASS / IN_PROGRESS** — GET403은 평가 클라이언트 Error1010; B14 인사 6,078ms HTTP200, 일반 QKR-001 HTTP504/`upstream_timeout` 10,563ms, **수동 스트리밍 Preview** QKR-001 HTTP200/엄격 PASS 50,640ms(첫 조각 43,531ms). 직접 API 지연 반복, 고객 표준채팅의 스트리밍 자동 연결·PDF 미검증. [상세](B14_FINAL_ATRIA_DAWN_PREVIEW_2026-10-09.md) |
 | 9 | `agnes-ai/agnes-3.0-flash` | **ERROR_B14_HTTP429 / DEFERRED / 후순위** — 운영 B14에서 짧은 대화와 견적 추출 모두 429, 로컬 직접 API/로컬 B14는 200. 기존 품질 기록은 유지하며 운영 오류 해결 후 재평가. 최종 승인·자동 대체 없음. [상세](B14_FINAL_AGNES_3_0_FLASH_2026-10-09.md), [장애 #3913](https://github.com/skerishKang/ai-revenue-lab/issues/3913) |
 
@@ -244,3 +244,10 @@ EVIDENCE = <source SHA, dated real-call markers, tested PDF evidence>
 
 공식 문서: [Cloudflare Error 1010](https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-1xxx-errors/error-1010/), [Browser Integrity Check](https://developers.cloudflare.com/waf/tools/browser-integrity-check/).
 증거(키·생성 원문 없음): `E:\b14-mercury-atria-PRODUCTION-GREETINGS-20261009.json`, `E:\b14-mercury-atria-PRODUCTION-QUOTES-20261009.json`, `E:\b14-ATRIA-PRODUCTION-STREAM-QKR001-20261009.json`.
+
+## 2026-10-09 Mercury 2.5 — 10문항 및 AI→QuoteCore→PDF 후속
+
+- 운영 B14 exact 모델 Mercury QKR-001~010 **HTTP200 10/10, strict PASS 8/10**; 각 문항 1회, 재시도·fallback 없음.
+- QKR-008 12품목 금액 정확하지만 `01호`→`01 호` 등 모든 품목명 공백이 달라 FAIL; QKR-009 B66 normalize ValueError로 INVALID.
+- QKR-008 모델 원문 데이터(수정하지 않음) → B66 QuoteExtraction → QuoteCore → A4 PDF **2페이지/12품목/총 7,150,000원** 기술 경로 PASS. 고객의 저장 템플릿으로 최종 PDF 다운로드하는 F6는 NOT_TESTED.
+- Atria는 운영 표준 QKR-001 HTTP504, 수동 스트리밍 Preview HTTP200/PASS(50.640초); Preview를 기본 서비스로 승격하기 전 별도 UI/보안 검증 필요. Agnes 429 후순위 유지.

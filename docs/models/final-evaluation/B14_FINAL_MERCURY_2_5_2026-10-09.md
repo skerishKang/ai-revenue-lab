@@ -100,3 +100,30 @@ Owner 지시: 짧은 대화 → 이전 QKR-003 타임아웃 1회 재검증 → �
 - 운영 B14 QKR-002 동일 exact route: **HTTP200 / 3,563ms / 엄격 견적 정답 PASS / route identity PASS / attempt 1 / fallback false**.
 - 표본 두 건이 10문항 전체 검증이나 추론 지원·고객 PDF 통합 성공을 뜻하지 않는다. 직접 provider 경로의 QKR-004 45초 timeout 기록도 그대로 유지한다.
 - **현재 판정: B14_STANDARD_CHAT_AND_QUOTE_PROVEN_SAMPLED / FULL_FINAL_APPROVAL_NOT_YET**.
+
+## 2026-10-09 Production B14 — Mercury 2.5 신규 10문항 정확도 및 PDF 연결
+
+**2026-10-09 Owner 작업 순서 ① 안정성 → ② PDF:** 운영 `b14-live` 명시적 `inception/mercury-2.5` 수동 모델, QKR-001..010 고정 합성 corpus. 각각 정확히 **한 번의 POST**, `max_attempts=1`, `max_retries=0`, `allow_external_fallback=false`, `temperature=0`, `max_tokens=1,800`(QKR-008만 2,400). Cloudflare Error1010 회피를 위해 기존 canonical 평가 스크립트에 정의된 **정직한 평가용 `User-Agent: PADIEM-Source-Eval/1.0`** 사용. Credential, 응답 원문은 GitHub에 저장하지 않음.
+
+| 문항 | HTTP | 엄격 견적 | 응답 ms | 설명 |
+|---|---|---|---:|---|
+| QKR-001 | 200 | PASS | 3,390 | 모든 필드·품목 PASS |
+| QKR-003 | 200 | PASS | 3,547 | 모든 필드·품목 PASS |
+| QKR-004 | 200 | PASS | 3,813 | 모든 필드·품목 PASS |
+| QKR-005 | 200 | PASS | 5,922 | 모든 필드·품목 PASS |
+| QKR-006 | 200 | PASS | 4,109 | 모든 필드·품목 PASS |
+| QKR-007 | 200 | PASS | 4,188 | 모든 필드·품목 PASS |
+| QKR-008 | 200 | FAIL | 5,422 | 12품목 전부 수량·단가·총계 정확, 품목명 `01호`→`01 호` 등 **12개 전부 공백 차이** |
+| QKR-009 | 200 | INVALID_ValueError | 3,031 | B66 정규화 `ValueError` — 응답 원문/정확도 미확정 |
+| QKR-010 | 200 | PASS | 3,641 | 모든 필드·품목 PASS |
+| QKR-002 | 200 | **PASS** | 3,563 | 직전 독립 live B14 1회 증거, 이번 9회에 중복 포함하지 않음 |
+
+- 운영 **HTTP200 10/10**, B14 동일 exact 모델·메타데이터·단일 attempt·fallback false 10/10, **엄격 정확도 PASS 8/10**.
+- 정상 응답의 지연은 약 **3–6초대**(QKR-001..010의 이번 표본, 과거 제공자 직접 45초/65초 타임아웃과 별개). 이번 운영 B14 QKR 10건에서는 타임아웃 0건.
+- QKR-008은 원문 JSON 유효, B66 Normalize PASS, 품목수 12, 3개 주요 필드·수량·단가가 일치하지만 품목명 `호` 앞 공백을 추가했다. 엄격 평점 **FAIL 유지**, 임의 자동 정답 교체하지 않음.
+- QKR-009는 제공자 HTTP200이고 응답 content가 있으나 B66 Normalizer `ValueError`로 엄격 채점 불가. **INVALID**이지 단순 필드 FAIL/가격 오차로 치환하지 않음.
+- QKR-008 실제 Mercury 출력(**수정하지 않은 원문 JSON**)→기존 B66 `QuoteExtraction.buildDraftCandidate`→`QuoteCore.computeDraftTotals`→브라우저 `#quotePaper` A4 PDF 생성: **QuoteDraft PASS / 12 items / preview 12/12 / 공급가 6,500,000원 / VAT 650,000원 / 총액 7,150,000원 / 금액 검산 PASS / PDF 2페이지 / 133,473 bytes**. 이 증거는 **기술적 PDF 생성 파이프라인 PASS**이며 위 품목명 공백까지 정확하다는 뜻이 아니다. 최종 2페이지 중 2페이지는 하단 안내문만 이월.
+- 이 PDF는 로컬 B66 공통 렌더러의 **샘플 공급자** 템플릿이다. 실제 고객이 저장한 템플릿으로 권한·Drive 저장·다운로드까지 검증한 **제품 F6 완결은 여전히 NOT_TESTED**.
+- **현재 독립 verdict:** `F4_B14_10of10_HTTP200 / F5_STRICT_8of10 / F6_LOCAL_PDF_PIPELINE_PASS_WITH_LABEL_MISMATCH / CUSTOMER_F6_NOT_TESTED / FINAL_APPROVAL_IN_PROGRESS`. Mercury 후보가 운영에서는 빠르게 응답했다는 표본은 입증됐지만 제품 최종 합격/선정은 아님.
+
+로컬 메타데이터: `E:\b14-mercury25-B14-REMAINING-QKR-20261009.json` (9건) 및 이전 `E:\b14-mercury-atria-PRODUCTION-QUOTES-20261009.json` (QKR-002). PDF: `E:\b14-mercury25-PDF-20261009\rendered\QKR-008-Mercury25-QuoteCore.pdf`. 원문 JSON은 로컬 개발 환경에만 유지.
