@@ -38,6 +38,11 @@ LIVE_4PLUS_ROW_PROOF=NOT_YET_ESTABLISHED
 
 This is the owner lock for the **current CGI product rendering implementation**. Customer source custody (#3884) and D1 quote history (#3405) are separate concerns, not permission to select a different CGI output template.
 
+## 최신 이슈·PR·담당 작업 현황 (2026-10-10)
+
+- [ACTIVE_ISSUES_2026-10-10.md](ACTIVE_ISSUES_2026-10-10.md): B66 원본 양식·견적의 활성 이슈, 로컬 담당, 소스 병합과 실서비스 수용 차이, #3542 Sol 6.1 임시 담당 및 #3839 네이티브 다중 페이지 병목, #3884·#3871·#3906 후속 조건을 중앙에서 정리한 **시점별 현황표**.
+- 이 문서는 상태 **인덱스**다. 확정된 Owner 정책과 기술 수용 기준은 아래의 원래 B66 README, [SOURCE_TEMPLATE_FIDELITY.md](SOURCE_TEMPLATE_FIDELITY.md), 그리고 각 GitHub 이슈가 우선한다.
+
 ## Canonical product flow
 
 ```text
