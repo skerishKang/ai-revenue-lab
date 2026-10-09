@@ -5,12 +5,13 @@ const Core = require("../quote-core.js");
 const Contract = require("../quote-drive-contract.js");
 const Client = require("../quote-drive-client.js");
 
-const CLIENT_ID = "test-client-id.apps.googleusercontent.com";
+const Fixtures = require("./drive-fixtures.cjs");
+const CLIENT_ID = Fixtures.CLIENT_ID;
 const JSON_MIME = Contract.JSON_MIME;
 const PDF_MIME = Contract.PDF_MIME;
-const SKILL_ID = "b66skill_2eb55d822407f626b7a75c8c88d32c40";
-const TEMPLATE = { savedSkillId: SKILL_ID, fingerprint: "fp-cgi-v1" };
-const APPROVED = [{ savedSkillId: SKILL_ID, fingerprint: "fp-cgi-v1", approved: true, active: true }];
+const SKILL_ID = Fixtures.SKILL_ID;
+const TEMPLATE = Fixtures.templateReference();
+const APPROVED = Fixtures.approvedTemplates();
 
 function draftFixture() {
   return Core.normalizeDraft({
@@ -34,12 +35,7 @@ function draftFixture() {
   });
 }
 
-function pdfBytes(marker) {
-  const bytes = new Uint8Array(512);
-  [37, 80, 68, 70, 45].forEach((byte, index) => { bytes[index] = byte; });
-  if (marker) bytes[400] = marker;
-  return bytes;
-}
+const pdfBytes = Fixtures.pdfBytes;
 
 function packageTextFor(draft, packageId, template) {
   const built = Contract.buildPackage({
