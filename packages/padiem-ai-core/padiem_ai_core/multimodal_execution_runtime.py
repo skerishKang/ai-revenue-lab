@@ -16,12 +16,26 @@ from .execution_runtime import (
     ExecutionRuntimeError,
     _compose_system_instruction,
     _error_class_for_b14,
+    _native_model_parameters,
     _normalize_additional_system_context,
     _normalize_model_policy,
     _safe_identifier,
     _safe_message_for_b14,
 )
 from .streaming_runtime import StreamingExecutionRuntime
+
+
+def _reject_multimodal_native_parameters(agent: AgentProfile) -> None:
+    """The image lane has no verified native-parameter contract (#3977).
+
+    Refusing an explicit request keeps the promise that a stated parameter is
+    either honoured or rejected. Silently dropping it would let a caller believe
+    a level or override reached the provider when the image payload carries none.
+    """
+    if _native_model_parameters(agent):
+        raise ValueError(
+            "model_parameters are not carried by the multimodal B14 contract"
+        )
 
 
 def _normalize_multimodal_messages(
@@ -129,6 +143,7 @@ class MultimodalExecutionRuntime(ExecutionRuntime):
         try:
             system_instruction = _compose_system_instruction(request)  # type: ignore[arg-type]
             model, temperature, routing = _normalize_model_policy(request.agent)
+            _reject_multimodal_native_parameters(request.agent)
             messages = request.messages
             if system_instruction is not None:
                 messages = (
@@ -234,6 +249,8 @@ class MultimodalStreamingExecutionRuntime(StreamingExecutionRuntime):
         try:
             system_instruction = _compose_system_instruction(request)
             model, temperature, routing = _normalize_model_policy(request.agent)
+            # Same refusal as the non-streaming image lane above.
+            _reject_multimodal_native_parameters(request.agent)
             messages = request.messages
             if system_instruction is not None:
                 messages = ({"role": "system", "content": system_instruction}, *messages)
