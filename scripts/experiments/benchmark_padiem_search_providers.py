@@ -28,6 +28,9 @@ MAX_RESULTS = 5
 MAX_RESPONSE_BYTES = 1_048_576
 MAX_TEXT_CHARS = 2_000
 DEFAULT_TIMEOUT_SECONDS = 20.0
+# Same precedence as the product path (`padiem_ai_core.web_runtime._TINYFISH_SNIPPET_KEYS`), so the
+# benchmark never records an empty snippet for a key the Core provider normalizes.
+TINYFISH_SNIPPET_KEYS = ("snippet", "description", "summary", "content")
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CORPUS = REPO_ROOT / "docs/experiments/PADIEM_SEARCH_PROVIDER_BENCHMARK_CORPUS_v1.tsv"
 
@@ -371,6 +374,10 @@ def _normalize_items(provider: str, data: dict[str, Any], limit: int = MAX_RESUL
             snippet = item.get("contents")
             published = item.get("datetime")
             score = None
+        elif provider == "tinyfish":
+            snippet = next((item.get(key) for key in TINYFISH_SNIPPET_KEYS if item.get(key)), None)
+            published = item.get("date") or item.get("published_date")
+            score = item.get("score")
         else:
             snippet = item.get("snippet") or item.get("description")
             published = item.get("date") or item.get("published_date")

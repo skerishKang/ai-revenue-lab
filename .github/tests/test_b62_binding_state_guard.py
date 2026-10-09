@@ -308,3 +308,121 @@ def test_owner_addition_preserves_full_live_size_binding_matrix(worker, types):
     corrupted = settings(*[b for b in after["result"]["bindings"] if b["name"] != "SECRET_0"])
     with pytest.raises(mod.BindingStateError):
         mod.assert_one_owner_d1_added(before, corrupted, _OWNER_ID)
+
+
+
+# #3782 live commissioning: immutable version resources protect code and assets.
+def _owner_served_version(version_id="pre", *, with_owner=False):
+    bindings = [
+        {"type": "service", "name": "IDENTITY_AUTHORITY_SERVICE",
+         "service": "padiem-control-plane-identity"},
+        {"type": "secret_text", "name": "P01_ENGINE_CREDENTIAL"},
+        {"type": "d1", "name": "PADIEM_CHAT_DB", "database_id": _OTHER_ID},
+    ]
+    if with_owner:
+        bindings.append({"type": "d1", "name": "BROWSER_CONTROL_OWNER_P01_D1",
+                         "database_id": _OWNER_ID})
+    return {"success": True, "result": {"id": version_id, "resources": {
+        "bindings": bindings,
+        "script": {
+            "etag": "unchanged-code-etag",
+            "handlers": ["fetch"],
+            "last_deployed_from": "wrangler",
+        },
+        "script_runtime": {
+            "assets": {"jwt": "unchanged-assets-authority"},
+            "compatibility_date": "2026-08-25",
+            "compatibility_flags": ["python_workers"],
+            "usage_model": "standard",
+        },
+    }}}
+
+
+def test_owner_immutable_version_integrity_accepts_exact_one_d1_and_unchanged_worker():
+    before = _owner_served_version()
+    after = _owner_served_version("post", with_owner=True)
+    mod.assert_owner_version_integrity(before, after, _OWNER_ID)
+
+
+@pytest.mark.parametrize("change", [
+    "script_etag", "script_handler", "assets", "compatibility_date",
+    "compatibility_flags", "usage_model", "missing_script", "missing_runtime",
+    "missing_etag", "missing_compatibility", "new_resource",
+    "remove_resource", "same_version_id", "wrong_secret",
+    "settings_instead_of_version",
+])
+def test_owner_immutable_version_integrity_rejects_unrelated_changes(change):
+    before = _owner_served_version()
+    after = _owner_served_version("post", with_owner=True)
+    resources = after["result"]["resources"]
+    if change == "script_etag":
+        resources["script"]["etag"] = "DIFFERENT"
+    elif change == "script_handler":
+        resources["script"]["handlers"] = ["scheduled"]
+    elif change == "assets":
+        resources["script_runtime"]["assets"]["jwt"] = "DIFFERENT"
+    elif change == "compatibility_date":
+        resources["script_runtime"]["compatibility_date"] = "2026-08-26"
+    elif change == "compatibility_flags":
+        resources["script_runtime"]["compatibility_flags"] = []
+    elif change == "usage_model":
+        resources["script_runtime"]["usage_model"] = "bundled"
+    elif change == "missing_script":
+        del resources["script"]
+    elif change == "missing_runtime":
+        del resources["script_runtime"]
+    elif change == "missing_etag":
+        del resources["script"]["etag"]
+    elif change == "missing_compatibility":
+        del resources["script_runtime"]["compatibility_date"]
+    elif change == "new_resource":
+        resources["some_new_resource"] = "unexpected"
+    elif change == "remove_resource":
+        del resources["script_runtime"]["assets"]
+    elif change == "same_version_id":
+        after["result"]["id"] = before["result"]["id"]
+    elif change == "wrong_secret":
+        resources["bindings"][1]["name"] = "OTHER_SECRET"
+    elif change == "settings_instead_of_version":
+        after = settings(*resources["bindings"])
+    with pytest.raises(mod.BindingStateError):
+        mod.assert_owner_version_integrity(before, after, _OWNER_ID)
+
+
+def test_owner_immutable_version_integrity_cli_requires_opt_in(tmp_path, capsys):
+    before = tmp_path / "pre.json"
+    after = tmp_path / "post.json"
+    before.write_text(json.dumps(_owner_served_version()), encoding="utf-8")
+    after.write_text(json.dumps(_owner_served_version("post", with_owner=True)), encoding="utf-8")
+    base = ["--before", str(before), "--after", str(after)]
+    args = base + ["--expected-add-owner-d1", "--owner-d1-database-id", _OWNER_ID]
+    assert mod.main(args + ["--require-served-resource-integrity"]) == 0
+    output = capsys.readouterr().out
+    assert "OWNER_P01_D1_SERVED_RESOURCE_INTEGRITY=PASS" in output
+    assert _OWNER_ID not in output
+    assert mod.main(base + ["--require-served-resource-integrity"]) == 1
+    assert "requires additive mode" in capsys.readouterr().err
+
+
+
+def test_owner_immutable_cli_cannot_bypass_runtime_safety_by_omitting_flag(tmp_path, capsys):
+    before = tmp_path / "before.json"
+    after = tmp_path / "after.json"
+    original = _owner_served_version()
+    changed = _owner_served_version("after", with_owner=True)
+    changed["result"]["resources"]["script"]["etag"] = "SILENT_CODE_CHANGE"
+    before.write_text(json.dumps(original), encoding="utf-8")
+    after.write_text(json.dumps(changed), encoding="utf-8")
+    args = ["--before", str(before), "--after", str(after),
+            "--expected-add-owner-d1", "--owner-d1-database-id", _OWNER_ID]
+    # Immutable served versions demand full integrity even with no extra flag.
+    assert mod.main(args) == 1
+    err = capsys.readouterr().err
+    assert "Worker script, assets, or runtime authority drift" in err
+    assert "SILENT_CODE_CHANGE" not in err
+    assert mod.main(args + ["--require-served-resource-integrity"]) == 1
+    capsys.readouterr()
+    changed["result"]["resources"]["script"]["etag"] = "unchanged-code-etag"
+    after.write_text(json.dumps(changed), encoding="utf-8")
+    assert mod.main(args) == 0
+    assert "OWNER_P01_D1_SERVED_RESOURCE_INTEGRITY=PASS" in capsys.readouterr().out

@@ -149,3 +149,126 @@ def test_live_output_cannot_be_written_inside_repository():
 
 def test_parallel_distribution_gate_is_fail_closed():
     assert benchmark.PROVIDERS["parallel"].distribution_gate == "internal_only_without_written_benchmark_consent"
+
+
+TINYFISH_SNIPPET_FIELDS = [
+    ("snippet", {"snippet": "core snippet field"}),
+    ("description", {"description": "core description field"}),
+    ("summary", {"summary": "core summary field"}),
+    ("content", {"content": "core content field"}),
+]
+
+
+@pytest.mark.parametrize(("key", "fields"), TINYFISH_SNIPPET_FIELDS)
+def test_tinyfish_benchmark_reads_every_key_the_core_provider_accepts(key, fields):
+    payload = {"results": [{"title": "Tiny", "url": "https://example.com/t", **fields}]}
+    result = benchmark._normalize_items("tinyfish", payload, limit=5)
+    assert [item.snippet for item in result] == [fields[key]]
+
+
+@pytest.mark.parametrize(
+    ("fields", "expected"),
+    [
+        ({"snippet": "s", "description": "d", "summary": "u", "content": "c"}, "s"),
+        ({"description": "d", "summary": "u", "content": "c"}, "d"),
+        ({"summary": "u", "content": "c"}, "u"),
+        ({"content": "c"}, "c"),
+        ({"snippet": "", "description": "", "summary": "u"}, "u"),
+        ({"snippet": None, "description": 0, "content": "c"}, "c"),
+    ],
+)
+def test_tinyfish_benchmark_snippet_precedence_matches_the_core_provider(fields, expected):
+    payload = {"results": [{"title": "Tiny", "url": "https://example.com/t", **fields}]}
+    result = benchmark._normalize_items("tinyfish", payload, limit=5)
+    assert [item.snippet for item in result] == [expected]
+
+
+def test_tinyfish_benchmark_declares_the_expected_snippet_key_order():
+    assert benchmark.TINYFISH_SNIPPET_KEYS == ("snippet", "description", "summary", "content")
+
+
+def test_tinyfish_benchmark_precedence_matches_the_core_provider_behaviourally():
+    import asyncio
+
+    import httpx
+
+    from padiem_ai_core.web_runtime import TinyFishWebProvider, WebRuntimeConfig
+
+    payload = {"results": [
+        {"title": "A", "url": "https://example.com/a", "summary": "only summary"},
+        {"title": "B", "url": "https://example.com/b", "content": "only content"},
+        {"title": "C", "url": "https://example.com/c", "snippet": "s", "description": "d",
+         "summary": "u", "content": "c"},
+        {"title": "D", "url": "https://example.com/d", "text": "unsupported key only"},
+    ]}
+
+    served = []
+
+    class _StubTransport(httpx.AsyncBaseTransport):
+        """The only way this test can answer; an unstubbed client would raise instead."""
+
+        async def handle_async_request(self, request):
+            served.append(request)
+            return httpx.Response(200, json=payload)
+
+    def _blocked(*args, **kwargs):
+        raise AssertionError("no real network transport is allowed in this test")
+
+    original_client = httpx.AsyncClient
+
+    def _guard(*args, **kwargs):
+        if kwargs.get("transport") is None:
+            _blocked()
+        return original_client(*args, **kwargs)
+
+    httpx.AsyncClient = _guard
+    try:
+        core = asyncio.run(TinyFishWebProvider(
+            WebRuntimeConfig(provider="tinyfish", tinyfish_api_key="not-a-real-credential"),
+            transport=_StubTransport(),
+        ).search("q"))
+    finally:
+        httpx.AsyncClient = original_client
+
+    assert len(served) == 1, "the stub transport must be the only responder"
+    assert served[0].url.host == "api.search.tinyfish.ai"
+    runner = benchmark._normalize_items("tinyfish", payload, limit=5)
+    assert [item.snippet for item in runner] == [evidence.snippet for evidence in core]
+    assert [item.snippet for item in runner] == ["only summary", "only content", "s", ""]
+
+
+@pytest.mark.parametrize(
+    "fields",
+    [{"text": "unsupported key only"}, {"title": "no snippet field"}, {}],
+)
+def test_tinyfish_benchmark_keeps_the_row_with_an_empty_snippet_on_unknown_or_missing_keys(fields):
+    payload = {"results": [{**fields, "url": "https://example.com/t"}]}
+    result = benchmark._normalize_items("tinyfish", payload, limit=5)
+    assert len(result) == 1
+    assert result[0].snippet == ""
+    assert result[0].url == "https://example.com/t"
+    assert result[0].title == (fields.get("title") or "https://example.com/t")
+
+
+def test_tinyfish_published_and_score_metadata_stay_unchanged():
+    payload = {"results": [
+        {"title": "T1", "url": "https://example.com/t1", "summary": "u", "date": "2026-09-03", "score": 0.5},
+        {"title": "T2", "url": "https://example.com/t2", "content": "c", "published_date": "2026-09-04"},
+    ]}
+    result = benchmark._normalize_items("tinyfish", payload, limit=5)
+    assert [(item.rank, item.snippet) for item in result] == [(1, "u"), (2, "c")]
+    assert [(item.published_at, item.score) for item in result] == [("2026-09-03", 0.5), ("2026-09-04", None)]
+
+
+@pytest.mark.parametrize(
+    ("fields", "expected"),
+    [
+        ({"snippet": "s", "description": "d"}, "s"),
+        ({"description": "d"}, "d"),
+        ({"summary": "u", "content": "c"}, ""),
+    ],
+)
+def test_other_providers_keep_their_existing_snippet_branch(fields, expected):
+    payload = {"web": {"results": [{"title": "Brave", "url": "https://example.com/b", **fields}]}}
+    result = benchmark._normalize_items("brave", payload, limit=5)
+    assert [item.snippet for item in result] == [expected]
