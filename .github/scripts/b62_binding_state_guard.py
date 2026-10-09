@@ -14,10 +14,12 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from uuid import UUID
 from pathlib import Path
 from typing import Any
 
 SUPPORTED_TYPES = {"assets", "service", "d1", "r2_bucket", "plain_text", "secret_text"}
+OWNER_P01_D1_BINDING = "BROWSER_CONTROL_OWNER_P01_D1"
 
 
 class BindingStateError(RuntimeError):
@@ -137,6 +139,35 @@ def assert_preserved(before: object, after: object) -> None:
         )
 
 
+def validate_owner_d1_id(value: str) -> str:
+    """Accept one canonical UUID, never reveal it in failure diagnostics."""
+    try:
+        parsed = UUID(value)
+    except (ValueError, AttributeError, TypeError) as exc:
+        raise BindingStateError("approved Owner D1 ID is not a UUID") from exc
+    if str(parsed) != value or parsed.int == 0:
+        raise BindingStateError("approved Owner D1 ID must be a nonzero canonical UUID")
+    return value
+
+
+def assert_one_owner_d1_added(before: object, after: object, owner_database_id: str) -> None:
+    """Allow exactly one approved Owner D1 addition, preserving all other authority."""
+    db_id = validate_owner_d1_id(owner_database_id)
+    before_state = canonical_state(before)
+    after_state = canonical_state(after)
+    if any(entry[1] == OWNER_P01_D1_BINDING for entry in before_state):
+        raise BindingStateError("Owner D1 binding already exists before additive install")
+    # Never accidentally bind the Owner click database to the Engine or Chat D1.
+    if any(entry[0] == "d1" and entry[2] == db_id for entry in before_state):
+        raise BindingStateError("Owner D1 aliases an existing Worker D1")
+    expected = tuple(sorted(
+        (*before_state, ("d1", OWNER_P01_D1_BINDING, db_id)),
+        key=lambda entry: (str(entry[0]), str(entry[1])),
+    ))
+    if after_state != expected:
+        raise BindingStateError("binding authority drift detected; expected only approved Owner D1 addition")
+
+
 def _load(path: Path) -> object:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
@@ -148,14 +179,27 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--before", required=True, type=Path)
     parser.add_argument("--after", required=True, type=Path)
+    parser.add_argument("--expected-add-owner-d1", action="store_true")
+    parser.add_argument("--owner-d1-database-id")
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
     try:
-        assert_preserved(_load(args.before), _load(args.after))
+        if args.expected_add_owner_d1:
+            if args.owner_d1_database_id is None:
+                raise BindingStateError("additive mode requires explicit Owner D1 ID")
+            assert_one_owner_d1_added(_load(args.before), _load(args.after), args.owner_d1_database_id)
+        else:
+            if args.owner_d1_database_id is not None:
+                raise BindingStateError("Owner D1 ID is not accepted in standard equality mode")
+            assert_preserved(_load(args.before), _load(args.after))
     except BindingStateError as exc:
         print("B62_BINDING_AUTHORITY_PRESERVED=FAIL", file=sys.stderr)
         print(f"REASON={exc}", file=sys.stderr)
         return 1
-    print("B62_BINDING_AUTHORITY_PRESERVED=PASS")
+    if args.expected_add_owner_d1:
+        print("OWNER_P01_D1_EXACTLY_ONE_ADDITION=PASS")
+        print("EXISTING_WORKER_BINDINGS_PRESERVED=PASS")
+    else:
+        print("B62_BINDING_AUTHORITY_PRESERVED=PASS")
     print("SECRET_VALUES_READ=0")
     return 0
 
