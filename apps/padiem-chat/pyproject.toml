@@ -36,3 +36,6 @@ include = ["app*"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+#4070: observe Linux CI per-test slow paths without changing selection/exit status.
+# This is reporting only; all 3,616 Chat cases remain part of the existing suite.
+addopts = "--durations=50 --durations-min=0.2"
