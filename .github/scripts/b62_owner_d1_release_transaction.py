@@ -9,6 +9,10 @@ Mutation is owned ONLY by the separate, manually approved GitHub Actions workflo
 from __future__ import annotations
 
 import argparse
+import base64
+import binascii
+import copy
+import hashlib
 import json
 import os
 import sys
@@ -158,9 +162,60 @@ def prepare(
     return candidate, anchor
 
 
+def _version_module_manifest(payload: object, expected_version: str) -> tuple[tuple, ...]:
+    """Hash *every* module from official GET /workers/workers/.../versions/{id}?include=modules.
+
+    The version-specific response, not mutable script HEAD, is authoritative.
+    Return only (name, MIME type, byte length, SHA-256); never print code.
+    """
+    version = _object_result(payload)
+    if version.get("id") != expected_version:
+        raise TransactionError("CODE_MODULE_VERSION_ID_MISMATCH")
+    modules = version.get("modules")
+    if not isinstance(modules, list) or not modules:
+        raise TransactionError("CODE_MODULES_MISSING")
+    entries = []
+    for module in modules:
+        if not isinstance(module, dict) or set(module) != {
+            "name", "content_type", "content_base64"
+        }:
+            raise TransactionError("CODE_MODULE_SHAPE_INVALID")
+        name, media, encoded = (
+            module["name"], module["content_type"], module["content_base64"]
+        )
+        if not isinstance(name, str) or not name or not isinstance(media, str) or not media:
+            raise TransactionError("CODE_MODULE_SHAPE_INVALID")
+        # Cloudflare may return a zero-byte source module as empty base64.
+        # It is valid content; hash b"" rather than rejecting the module.
+        if not isinstance(encoded, str):
+            raise TransactionError("CODE_MODULE_SHAPE_INVALID")
+        try:
+            raw = base64.b64decode(encoded, validate=True)
+        except (binascii.Error, ValueError) as exc:
+            raise TransactionError("CODE_MODULE_BASE64_INVALID") from exc
+        entries.append((name, media, len(raw), hashlib.sha256(raw).hexdigest()))
+    if len({entry[0] for entry in entries}) != len(entries):
+        raise TransactionError("CODE_MODULE_DUPLICATE_NAME")
+    return tuple(sorted(entries))
+
+
+def assert_exact_worker_code(
+    pre_modules: object, post_modules: object, before_id: str, after_id: str
+) -> int:
+    """Prove every module's source bytes and content-type match across versions."""
+    if before_id == after_id:
+        raise TransactionError("CODE_MODULE_SAME_VERSION_UNEXPECTED")
+    before = _version_module_manifest(pre_modules, before_id)
+    after = _version_module_manifest(post_modules, after_id)
+    if before != after:
+        raise TransactionError("CODE_MODULE_CONTENT_DRIFT")
+    return len(before)
+
+
 def verify(
     pre: object, post: object, deployments: object, post_settings: object,
-    owner_id: str, anchor: dict
+    owner_id: str, anchor: dict,
+    pre_modules: object, post_modules: object,
 ) -> str:
     current = _active(deployments)
     original_id = anchor.get("rollback_version_id")
@@ -170,8 +225,33 @@ def verify(
         raise TransactionError("POST_VERSION_NOT_ACTIVE")
     if _object_result(pre).get("id") != original_id:
         raise TransactionError("ROLLBACK_ANCHOR_VERSION_MISMATCH")
+    module_count = assert_exact_worker_code(
+        pre_modules, post_modules, original_id, current
+    )
+    if module_count < 1:
+        raise TransactionError("CODE_MODULES_MISSING")
+    original_script = _object_result(pre).get("resources", {}).get("script")
+    changed_script = _object_result(post).get("resources", {}).get("script")
+    if not isinstance(original_script, dict) or not isinstance(changed_script, dict):
+        raise TransactionError("CODE_SCRIPT_METADATA_MISSING")
+    if set(original_script) != set(changed_script):
+        raise TransactionError("CODE_SCRIPT_METADATA_KEYS_DRIFT")
+    # Cloudflare may regenerate script etag and last_deployed_from during a
+    # settings-only API version upload. Official module bytes are stronger
+    # evidence than etag metadata; normalize ONLY these two fields, and ONLY
+    # after byte-for-byte equality was proven for every module.
+    metadata_change_allowed = {"etag", "last_deployed_from"}
+    if any(
+        original_script[key] != changed_script[key]
+        for key in original_script if key not in metadata_change_allowed
+    ):
+        raise TransactionError("CODE_SCRIPT_OTHER_METADATA_DRIFT")
+    comparable_post = copy.deepcopy(post)
+    for key in metadata_change_allowed:
+        if key in original_script:
+            comparable_post["result"]["resources"]["script"][key] = original_script[key]
     try:
-        assert_owner_version_integrity(pre, post, owner_id)
+        assert_owner_version_integrity(pre, comparable_post, owner_id)
         if canonical_state(post_settings) != canonical_state(post):
             raise TransactionError("POST_SETTINGS_NOT_SERVED")
     except BindingStateError as exc:
@@ -313,7 +393,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--candidate", required=True, type=Path)
     p.add_argument("--anchor", required=True, type=Path)
     v = sub.add_parser("verify")
-    for label in ("pre", "post", "deployments", "settings", "d1-owner", "d1-chat", "d1-engine", "anchor"):
+    for label in ("pre", "post", "deployments", "settings", "d1-owner", "d1-chat", "d1-engine", "anchor", "pre-modules", "post-modules"):
         v.add_argument("--" + label, required=True, type=Path)
     v.add_argument("--worker", choices=tuple(WORKERS), required=True)
     patch_response = sub.add_parser("verify-patch-response")
@@ -367,7 +447,8 @@ def main(argv: list[str] | None = None) -> int:
             if anchor.get("worker") != WORKERS[args.worker][0]:
                 raise TransactionError("ANCHOR_WORKER_MISMATCH")
             verify(_read(args.pre), _read(args.post), _read(args.deployments),
-                   _read(args.settings), ids[OWNER_NAME], anchor)
+                           _read(args.settings), ids[OWNER_NAME], anchor,
+                           _read(args.pre_modules), _read(args.post_modules))
             print("OWNER_D1_POST_SERVED_RESOURCES=PASS")
         elif args.mode == "verify-patch-response":
             ids = _database_ids({

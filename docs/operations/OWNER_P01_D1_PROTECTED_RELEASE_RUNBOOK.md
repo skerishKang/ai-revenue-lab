@@ -53,6 +53,27 @@ The job runs through a strict sequence:
 - The API-generated version changed both script `etag` and `last_deployed_from` (Wrangler → API), while handlers and runtime matched. Cloudflare documents etag as hashed script content, so **code equivalence has NOT been proven**. Keep the existing exact script-resource integrity guard until independent per-version content proof or an approved equally strong replacement is available. Do not declare a second live apply ready solely because the payload JSON tests pass.
 - A new live Engine apply requires **separate owner approval**, exact current version checks, a new prewrite rollback anchor and resolution of the code-integrity evidence issue.
 
+## Actual 1,804-module source equivalence, 2026-10-09 (READ ONLY)
+
+The failed first Engine settings PATCH created version `7bb1efa1-1252-4a18-9aba-9dc03a0d909f` from original version `79311785-1351-49e1-ac89-f069cdcfab0b`. Their ordinary Version Detail `resources.script.etag` values differed, as did `last_deployed_from` (`wrangler` → `api`).
+
+Cloudflare's **documented, version-specific** beta GET API `GET /accounts/{account_id}/workers/workers/{worker_id}/versions/{version_id}?include=modules` returns the complete `modules` list and each module's `content_base64`. Authorized read-only requests for BOTH historical versions returned:
+
+- `BEFORE_MODULE_COUNT=1804` and `AFTER_MODULE_COUNT=1804`.
+- Each contained 1 JavaScript module, 1,580 Python modules, 177 octet-stream modules, 46 plain-text modules; 22,500,883 total decoded module bytes each.
+- Sorted manifest of **(module name, content type, decoded byte SHA-256, decoded byte length)** was exactly identical between versions. Manifest SHA-256 for both: `f9543d2c913673a4c00ad6e3031eb24bdb63350f7bdc510faa37cf0601bef774`. No source bytes, credentials, raw database identifiers, or API tokens were printed or persisted.
+- Conclusion: **the entire version-specific code/module content was identical**, despite the changed Worker script `etag` and upload provenance metadata. This was a valid settings-only source-preserving version transition, and the old check produced a false negative about *code* change while still correctly rejecting the missing Owner D1 binding.
+
+### Updated automatic post-release guard
+
+The controlled release job now fetches both the immutable **pre- and post-Worker versions with `?include=modules`** using GET. The verifier binds both module responses to their expected exact original and actually 100%-served new version IDs, requires every module's name/type/decoded byte length/SHA-256 to match, checks for missing/duplicate modules and invalid base64, and fails closed on any module or unrelated Worker resource drift.
+
+When and **only when** all module bytes match, the verifier permits the two Cloudflare-generated `resources.script` metadata fields `etag` and `last_deployed_from` to differ. Every other script field (handlers, named handlers and all future metadata keys), runtime setting, Asset configuration and every old binding must still match exactly. The Owner D1 addition is still required, and the existing strict `assert_owner_version_integrity` function remains unchanged. No mutable `GET /scripts/{name}/content` is substituted for exact-version proof. The code-module response files stay in runner temp and must never be uploaded as artifacts or logged.
+
+This historical read-only comparison proves the previous incident's script equivalence. It **does not** claim an additional Owner D1 connection; any new live release still requires separate owner authorization and a fresh prewrite rollback anchor.
+
+Cloudflare source: https://developers.cloudflare.com/api/typescript/resources/workers/subresources/beta/subresources/workers/subresources/versions/methods/get/
+
 ## Explicit anchored rollback — separate owner decision/dispatch
 
 After any ambiguous or failed apply, inspect live versions and intended transaction first. The workflow **intentionally does not auto-rollback** a version that could belong to a concurrent publisher. Select the exact affected Worker and apply run's externally stored anchor, verify the expected currently serving version, and authorize a **new, single-use** rollback dispatch:
