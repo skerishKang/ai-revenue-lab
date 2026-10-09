@@ -467,6 +467,16 @@ class P01CoreAdapterTests(SyntheticPlusRouteTestCase, unittest.IsolatedAsyncioTe
         self.assertNotIn("model", rendered)
         self.assertNotIn("route", rendered)
         self.assertEqual(outcome.p01_event_count, 3)
+        # #3930: these real Core events are retrospective, bounded, and contain
+        # neither raw messages nor potentially sensitive tool/metadata fields.
+        self.assertEqual(len(outcome.p01_event_history), 3)
+        self.assertEqual([e["kind"] for e in outcome.p01_event_history], [
+            "run_started", "context_prepared", "run_completed",
+        ])
+        self.assertTrue(all(set(e) == {
+            "event_id", "run_id", "trace_id", "app_id", "kind", "sequence", "timestamp_iso",
+        } for e in outcome.p01_event_history))
+        self.assertNotIn("p01_event_history", rendered)
         self.assertEqual(len(runner.requests), 1)
 
     async def test_approval_pause_does_not_self_resume_or_return_answer(self):

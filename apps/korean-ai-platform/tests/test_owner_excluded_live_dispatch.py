@@ -28,6 +28,8 @@ EXCLUDED = (
     ("b-ai/qwen3.8-flash", "b-ai"),
     ("infron/motif/motif-3", "infron"),
     ("experiential/gpt-5.6-luna", "experiential"),
+    ("kilo/stepfun/step-3.7-flash", "kilo"),
+    ("stepfun/step-3.7-flash", "stepfun"),
 )
 
 
@@ -117,6 +119,27 @@ def test_resolve_endpoint_excluded_returns_no_safe_route_not_model_call(mid,prov
     assert "reason_code" not in err
 
 
+@pytest.mark.parametrize("retired", [
+    "stepfun/step-3.7-flash",
+    "stepfun/step-3.7-flash:free",
+    "kilo/stepfun/step-3.7-flash",
+    "kilo/stepfun/step-3.7-flash:free",
+    "kilo/stepfun-step-3.7-flash-free",
+])
+def test_stepfun_37_all_direct_and_kilo_aliases_are_owner_retired(retired):
+    assert excluded_from_owner_customer_selection(retired)
+
+
+@pytest.mark.parametrize("allowed", [
+    "stepfun/step-5-preview-free",
+    "kilo/stepfun/step-5-preview-free",
+    "stepfun/step-3.5-flash",
+    "inception/mercury-2.5",
+])
+def test_stepfun_37_retirement_does_not_retire_unrelated_models(allowed):
+    assert not excluded_from_owner_customer_selection(allowed)
+
+
 def test_google_selected_route_keeps_its_own_missing_key_gate(monkeypatch):
     google="google/gemini-3.1-flash-lite"
     assert excluded_from_owner_customer_selection(google) is False
@@ -138,6 +161,8 @@ def test_separate_direct_poolside_is_not_inferred_owner_excluded():
     ("b-ai", "qwen3.8-flash"),
     ("infron", "motif/motif-3"),
     ("experiential", "gpt-5.6-luna"),
+    ("kilo", "stepfun/step-3.7-flash"),
+    ("stepfun", "stepfun/step-3.7-flash"),
 ])
 def test_spoofed_safe_public_id_cannot_evoke_owner_excluded_upstream(
     provider,upstream,monkeypatch

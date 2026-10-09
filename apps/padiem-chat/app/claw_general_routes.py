@@ -134,18 +134,33 @@ def _sse_frame(event: str, payload: dict[str, Any]) -> bytes:
     return f"event: {event}\ndata: {data}\n\n".encode("utf-8")
 
 
-def _claw_general_sse(answer: str, evidence_headers: dict[str, str] | None = None) -> Response:
-    """One bounded terminal SSE projection (delta + done).
+def _claw_general_sse(
+    answer: str,
+    evidence_headers: dict[str, str] | None = None,
+    *,
+    history: tuple[dict[str, object], ...] = (),
+) -> Response:
+    """Bounded terminal SSE, optionally preceded by real *post-execution* history.
 
-    Same framing the orchestration bridge already returns to the browser, so the
-    existing SSE reader handles the canonical P01 answer without a second client
-    protocol. The P01 lane resolves one terminal result; no partial upstream is
-    streamed and no answer is fabricated.
+    The current Engine client is synchronous: all P01 events are only available
+    AFTER the run. Never misrepresent this event history as live progress.
+    Legacy clients still see their canonical delta + done frames unchanged.
     """
     headers = {"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"}
     if evidence_headers:
         headers.update(evidence_headers)
-    frames = _sse_frame("delta", {"delta": answer}) + _sse_frame("done", {"done": True})
+    frames = b""
+    if isinstance(history, tuple) and len(history) <= 128:
+        # Fixed public fields only: no free-form message/metadata/tool input.
+        keys = ("event_id", "run_id", "trace_id", "app_id", "kind", "sequence", "timestamp_iso")
+        for event in history:
+            if not isinstance(event, dict) or any(key not in event for key in keys):
+                frames = b""  # fail closed on malformed provider/history data
+                break
+            frames += _sse_frame("p01_event", {
+                **{key: event[key] for key in keys}, "delivery": "post_execution",
+            })
+    frames += _sse_frame("delta", {"delta": answer}) + _sse_frame("done", {"done": True})
     return Response(
         frames,
         status_code=200,
@@ -396,6 +411,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     return _claw_general_sse(
         outcome.answer,
         _claw_evidence_response_headers(run.run_id, outcome) if evidence_requested else None,
+        history=getattr(outcome, "p01_event_history", ()),
     )
 
 
