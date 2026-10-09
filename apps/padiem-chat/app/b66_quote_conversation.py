@@ -717,6 +717,54 @@ def _guard_unconfirmed_approximate_quantities(
     return replace(projection, items=items, detail_groups=tuple(groups)) if modified else projection
 
 
+def _recover_unambiguous_single_item_quantity(
+    message: str, projection: B66QuoteConversationProjection
+) -> B66QuoteConversationProjection:
+    """Recover ONE *exact customer-stated* quantity omitted by B14.
+
+    #3733: a live model returned qty missing even though the customer said
+    "배관 100미터". This deterministic repair uses the customer utterance,
+    not a model's numeric estimate. Only one named item and one unqualified,
+    contiguous number+unit are eligible. All uncertain cases remain missing.
+    Follow-up messages cannot silently override a later customer correction.
+    """
+    if len(projection.items) != 1 or projection.detail_groups or "\n추가 질문:" in message:
+        return projection
+    item = projection.items[0]
+    name = item.get("name")
+    if not isinstance(name, str) or not name.strip():
+        return projection
+    matches = list(_QUANTITY_PHRASE_RE.finditer(message))
+    if len(matches) != 1:
+        return projection
+    hit = matches[0]
+    if hit.group("qualifier") or hit.group("upper") or hit.group("suffix"):
+        return projection
+    # Don't mistake a unit prefix of another token ("mL", "EA123") for a
+    # complete quantity unit. Ambiguous suffixes are never filled in.
+    if hit.end() < len(message) and message[hit.end()].isalnum():
+        return projection
+    local = re.split(r"[,，;\n]", message[max(0, hit.start() - 100):hit.start()])[-1]
+    if name not in local:
+        return projection
+    quantity = _bounded_quantity_number(hit.group("lower"))
+    if quantity is None or quantity <= 0 or quantity > 999999:
+        return projection
+    current = _bounded_quantity_number(item.get("qty"))
+    if current is not None and current == quantity:
+        return projection
+    updated = dict(item)
+    if current is None:
+        # The customer stated this number exactly. No price, tax or any other
+        # field is inferred; the existing missing-field gate still applies.
+        updated["qty"] = int(quantity) if quantity.is_integer() else quantity
+    else:
+        # Model output contradicted a single explicit customer count. Reject
+        # the inconsistent model quantity rather than choose a number silently.
+        updated.pop("qty", None)
+    return replace(projection, items=(updated,))
+
+
 class B66QuoteConversationInterpreter:
     """One bounded model call for variable extraction only."""
 
@@ -770,6 +818,7 @@ class B66QuoteConversationInterpreter:
                 raw_fallback.pop("taxMode", None)
             projection = normalize_conversation_output(raw_fallback)
             projection = _guard_unconfirmed_approximate_quantities(clean, projection)
+            projection = _recover_unambiguous_single_item_quantity(clean, projection)
             return replace(
                 projection,
                 missing=_server_missing_fields(projection, skill),
@@ -782,6 +831,7 @@ class B66QuoteConversationInterpreter:
             raise B66QuoteConversationError("invalid_model_output")
         projection = normalize_conversation_output(answer, server_derives_missing=True)
         projection = _guard_unconfirmed_approximate_quantities(clean, projection)
+        projection = _recover_unambiguous_single_item_quantity(clean, projection)
         return replace(
             projection,
             missing=_server_missing_fields(projection, skill),
