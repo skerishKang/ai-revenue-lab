@@ -37,9 +37,31 @@
 ## 3. Status definitions and remaining work
 
 - `SOURCE_CONTRACT`: ongoing; existing guarded source tests, incremental #3789 exact-tuple and stream negative coverage.
-- `B14_SERVING_CATALOG_PARITY`: not reverified at this snapshot; past production deployment reports do not establish today's exact head as served.
+- `B14_SERVING_CATALOG_PARITY`: **PASS for public model metadata (11/11 IDs, provider IDs, upstream IDs)** via bounded, read-only GET on 2026-10-10; **NO exact deployed Worker code version attestation** and **NO model inference success proof** from this check.
 - `MODEL_PARAMETER_TRANSPORT`: depends on LOCAL1-owned #3977 acceptance; no assumption of completion from B14-side changes.
 - `PROVIDER_LIVE_PER_MODEL`, `CLAW_ENGINE_PER_MODEL`, `CUSTOMER_QUOTE_PDF_PER_MODEL`: **OPEN / NOT_VERIFIED** except narrowly documented independent historical probes.
 - `OWNER_MODEL_SELECTION_CHANGED`: NO. `B14_ROUTE_DEFAULT_CHANGED`: NO. `AUTOMATIC_FALLBACK`: NO. `SECRET_STORE_MUTATION`: NO. `PRODUCTION_DEPLOYMENT`: NO.
 
 A passing registry CI, synthetic regression or simple model response never closes #3554 by itself. Keep #3554 OPEN until actual per-route evidence and consumer E2E acceptance are recorded, even if neighboring product owners completed their own PRs.
+
+
+## 4. 2026-10-10 read-only Production GET receipt (CENTRAL)
+
+**Exact checked source:** `main` commit `31efa84387a01064b2ee39c814e27dffcfb3542b` (B14 canonical 11/8). **Endpoint:** `https://ai-revenue-korean-ai-platform.charliekant.workers.dev`. Calls consisted of **GET** `/api/pilot/health` and **GET** `/api/pilot/models` only, with request bounds and no login, customer content, provider POST or secret reads.
+
+| Observable | Result | Qualification |
+| --- | --- | --- |
+| B14 public health GET | HTTP 200, `status=ok` | Health of B14 wrapper, not live provider completion |
+| B14 public model-list GET | HTTP 200, 11 `registered_routes` | Read-only deployed catalog metadata |
+| Exact model ID set | **11/11 MATCH**, missing 0, extra 0 | All source model IDs in served response |
+| Exact `provider_id + upstream_model` | **11/11 MATCH**, mismatches 0 | Precise serving **metadata** consistency |
+| Provider count | **8/8 MATCH** | Distinct IDs, not provider keys/rate-limit status |
+| `auto_eligible` | 0 / 11 `true` | No public auto-eligible claim |
+| `explicit_only` | 11 / 11 `true` | Manual-pin metadata only |
+| `owner_excluded` | 0 / 11 `true` | Does **not** itself grant customer entitlement or prove exclusion of unregistered aliases |
+
+The existing source-owned `.github/scripts/b66_quote_model_benchmark.py --preflight-live-get` also reported `preflight=MATCH`, `main_model_count=11`, `served_model_count=11`, `live_post_count=0`, `automated_fallback_count=0`. This uses an exact model **ID set** comparison; the separate CENTRAL GET comparison above additionally checked all `provider_id/upstream_model` pairs.
+
+**Not demonstrated:** production Worker code SHA/version parity (endpoint did not attest Git SHA), credential availability, healthy upstream completion, per-model stream response, user-selected Claw→Engine→B14 end-to-end or B66 quote→PDF. No change was deployed in this audit. Historical availability/error evidence in section 1 must not be overwritten by these GET results.
+
+**Related execution proof:** #3789 [PR #4058](https://github.com/skerishKang/ai-revenue-lab/pull/4058) merged `31efa84387a01064b2ee39c814e27dffcfb3542b`, exact-head B14 Alpha and B62 full regression PASS; exact canonical tuples and excluded upstream SSE alias spoofing have new network-free source tests. This remains source contract, not live excluded-model network proof.
