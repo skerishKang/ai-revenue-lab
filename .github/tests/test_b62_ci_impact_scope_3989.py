@@ -119,7 +119,8 @@ class B62ScopeTests(unittest.TestCase):
         self.assertIn("run: uv run --locked python -m pytest -q", text)
         self.assertIn("run: uv run --locked pywrangler deploy --dry-run", text)
         self.assertIn("name: Core tests with Tool Runtime dev dependency", text)
-        self.assertIn("name: Real Worker/Pyodide web transport runtime probe", text)
+        self.assertIn("name: Real Worker/Pyodide probes (all four, parallel, fail-closed)", text)
+        self.assertIn("run: bash ../../.github/scripts/b62_worker_probe_parallel.sh", text)
         self.assertIn("scope: ${{ steps.classify-b62.outputs.scope }}", text)
         self.assertIn("B62_CI_IMPACT_SCOPE=", SCRIPT.read_text(encoding="utf-8"))
 
