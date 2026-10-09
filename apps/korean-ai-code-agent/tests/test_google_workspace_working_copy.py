@@ -282,8 +282,8 @@ class GoogleWorkspaceWorkingCopyTests(unittest.TestCase):
                     dict(parents=["wrong_folder"]),dict(trashed=True),dict(version=0)):
             p=Provider()
             p.copy_override=dict(id=COPY,name="작업 사본",mimeType=DOCS_MIME,
-                                 parents=[FOLDER],version=1,trashed=False,**alt)
-            # Python detects duplicate keys in keyword construction; merge above manually
+                                 parents=[FOLDER],version=1,trashed=False)
+            p.copy_override.update(alt)
             app,_=setup(provider=p)
             with self.assertRaises(WorkspaceCopyError):invoke(app)
             self.assertEqual([name for name,_ in p.calls],["copy"])
