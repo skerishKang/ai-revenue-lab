@@ -459,16 +459,40 @@ class WindowsSubprocessLocalAgentRuntime:
                     process.kill()
                     process.wait(timeout=2)
         finally:
-            for drain_thread in started_threads:
-                drain_thread.join(timeout=2)
-            with self._lock:
-                self._active.pop(request.request_id, None)
-                explicitly_cancelled = request.request_id in self._cancelled
-                self._cancelled.discard(request.request_id)
-            # Terminal cleanup: closing the kill-on-close job handle reaps any
-            # surviving descendant process so no hidden grandchild can outlive
-            # the terminal state of the request.
-            job.close()
+            tree_reaped = False
+            # #3081: terminate the full Job tree and *observe* it empty before
+            # handing control back to callers that may delete the selected cwd.
+            # Kill-on-close alone is asynchronous on Windows; on a drain-thread
+            # startup failure the ordinary process.wait() path never executed.
+            # The canonical Job is still the sole containment authority.
+            try:
+                job.terminate_tree()
+                tree_reaped = job.wait_for_empty(timeout_seconds=5.0)
+                try:
+                    process.wait(timeout=2)
+                except (subprocess.TimeoutExpired, OSError):
+                    tree_reaped = False
+                for drain_thread in started_threads:
+                    drain_thread.join(timeout=2)
+                if any(thread.is_alive() for thread in started_threads):
+                    tree_reaped = False
+            finally:
+                for stream, thread in ((process.stdout, stdout_thread), (process.stderr, stderr_thread)):
+                    if thread not in started_threads and stream is not None:
+                        try:
+                            stream.close()
+                        except OSError:
+                            pass
+                with self._lock:
+                    self._active.pop(request.request_id, None)
+                    explicitly_cancelled = request.request_id in self._cancelled
+                    self._cancelled.discard(request.request_id)
+                job.close()
+        if not tree_reaped:
+            # Never return a successful local execution receipt while a Job
+            # subtree may still hold the selected root or file handles. When
+            # unwinding a prior setup error, its original exception propagates.
+            raise ContractError("Windows process tree cleanup was not confirmed")
 
         ended_at = datetime.now(timezone.utc)
         if ended_at < now:

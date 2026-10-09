@@ -207,7 +207,10 @@ function makeAssistantArticle() {
   label.setAttribute("data-locale-key", "answer-preparing");
   const meta = makeEl("div");
   meta.className = "assistant-meta";
-  meta.append(label);
+  const product = makeEl("span");
+  product.setAttribute("data-assistant-product", "");
+  product.textContent = "Padiem Chat";
+  meta.append(product, label);
   const body = makeEl("div");
   body.className = "assistant-body";
   body.append(meta, content);
@@ -389,6 +392,7 @@ function collectAnswerDom(byId) {
   walk(content);
   return {
     label: label ? label.textContent : null,
+    productLabel: article.querySelector("[data-assistant-product]")?.textContent || null,
     childTags: (content.children || []).map((c) => c.tagName),
     paragraphText: paragraphs.filter((p) => p.tag === "P").map((p) => p.text).join("\n"),
     // Every text node under the answer content, so an error surface can be
@@ -428,6 +432,8 @@ function collectAnswerDom(byId) {
       committed,
       conversationIds,
       errorSurface: byId.runtimeNote ? byId.runtimeNote.textContent : "",
+      shellState: byId.shell.dataset.state,
+      transcriptVisible: byId.messageList.hidden === false,
       sendButtonDisabled: byId.sendButton ? byId.sendButton.disabled : null,
     });
   }
@@ -484,11 +490,15 @@ def test_claw_answer_lands_in_the_answer_dom_and_commits() -> None:
     assert len(general_calls) == 1, result["requests"]
     # #3539 lane purity has to hold on the client too: no silent reroute.
     assert stream_calls == [], stream_calls
+    # #3931: the user and real assistant answer remain in Claw's transcript.
+    assert result["shellState"] == "claw", result
+    assert result["transcriptVisible"] is True, result
 
     dom = result["answerDom"]
     assert dom is not None, "no assistant article was rendered for a 200 SSE answer"
     assert dom["paragraphText"] == ANSWER_WITH_MARKUP, dom
     assert dom["label"] == "AI 답변", dom
+    assert dom["productLabel"] == "Padiem Claw", dom
     assert "completed" in result["lifecycleSets"], result["lifecycleSets"]
     assert result["committed"] == [ANSWER_WITH_MARKUP], result["committed"]
 

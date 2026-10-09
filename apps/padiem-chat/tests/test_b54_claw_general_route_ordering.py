@@ -1,19 +1,8 @@
-"""#3539 — the generic Claw routing decision is snapshotted BEFORE showConversation().
+"""#3539/#3931 — canonical Claw routing and same-workspace composition.
 
-Production E2E proved the server route ``/api/claw/general`` was correct but the
-browser never selected it: ``submitPrompt()`` called ``showConversation()`` first
-(which sets ``shell.dataset.state = "chat"``) and only then did ``requestAnswer()``
-read ``shell.dataset.state === "claw"`` — so the predicate was always false and the
-generic Claw submit silently fell back to ``POST /api/chat/stream``.
-
-String-presence contracts cannot catch that ordering bug, so this test EXECUTES the
-real ``submitPrompt`` / ``requestAnswer`` / ``requestStreamingAnswer`` /
-``clawGeneralRequestActive`` functions extracted from ``static/app.js`` against a
-minimal stub environment (no DOM) and asserts the observable ordering:
-
-    route_decided  ->  showConversation (state: claw -> chat)  ->  transport
-
-with the transport still resolving to the Claw lane after the state flipped.
+Executes real routing and presentation functions from app.js against bounded
+stubs. Claw submit must preserve the Claw workspace and canonical P01 lane;
+normal Chat and explicit manual workflow routes must remain unchanged.
 """
 
 from __future__ import annotations
@@ -28,6 +17,7 @@ APP_JS = APP_DIR / "static" / "app.js"
 SOURCE = APP_JS.read_text(encoding="utf-8")
 
 ROUTING_FUNCTIONS = (
+    "showConversation",
     "clawGeneralRequestActive",
     "submitPrompt",
     "requestAnswer",
@@ -64,7 +54,11 @@ def _harness() -> str:
     return r"""
 // Minimal stub environment: exercises the real routing functions, no DOM needed.
 const trace = [];
+const window = {}; // Browser global; optional #3930 event projection is absent here.
 const shell = { dataset: {} };
+const emptyState = { hidden: false };
+const messageList = { hidden: true };
+const setNavActive = () => {};
 const clawManualForm = { hidden: false };
 const input = { value: "", focus() {} };
 let inFlight = false;
@@ -95,10 +89,6 @@ const renderCancelled = () => {};
 const requestCompletedAnswer = async () => false;
 const addAssistantShell = () => ({ querySelector: () => ({ replaceChildren() {}, appendChild() {} }) });
 const addUserMessage = () => {};
-let showConversation = function () {
-  trace.push("showConversation:state_before=" + shell.dataset.state);
-  shell.dataset.state = "chat";
-};
 const chatTransport = {
   requestClawGeneral: async () => { trace.push("transport:clawGeneral"); return {}; },
   requestStreaming: async () => { trace.push("transport:streaming"); return {}; },
@@ -107,6 +97,14 @@ const chatTransport = {
 };
 
 __EXTRACTED__
+
+// Instrument the actual presentation function, not a simulated replacement.
+const __realShowConversation = showConversation;
+showConversation = function (options) {
+  trace.push("showConversation:state_before=" + shell.dataset.state);
+  __realShowConversation(options);
+  trace.push("showConversation:state_after=" + shell.dataset.state);
+};
 
 // Record exactly when the routing predicate is evaluated.
 const __realClawGeneralRequestActive = clawGeneralRequestActive;
@@ -153,19 +151,15 @@ def _count(trace: list[str], entry: str) -> int:
     return trace.count(entry)
 
 
-def test_claw_general_route_survives_show_conversation_state_flip() -> None:
+def test_claw_general_submit_keeps_claw_workspace_and_canonical_lane() -> None:
     result = _run_harness()
     claw = result["clawGeneral"]
     trace = claw["trace"]
 
-    # The decision is taken BEFORE showConversation() mutates the shell state.
     assert trace[0] == "route_decided:true", trace
     assert trace[1] == "showConversation:state_before=claw", trace
-
-    # showConversation() did mutate the state...
-    assert claw["finalState"] == "chat"
-
-    # ...yet the transport still resolved to the canonical Claw lane.
+    assert trace[2] == "showConversation:state_after=claw", trace
+    assert claw["finalState"] == "claw"
     assert _count(trace, "transport:clawGeneral") == 1, trace
     assert _count(trace, "transport:streaming") == 0, trace
 
@@ -176,6 +170,7 @@ def test_standalone_chat_path_keeps_stream_transport() -> None:
     trace = standalone["trace"]
 
     assert trace[0] == "route_decided:false", trace
+    assert standalone["finalState"] == "chat"
     assert _count(trace, "transport:streaming") == 1, trace
     assert _count(trace, "transport:clawGeneral") == 0, trace
 

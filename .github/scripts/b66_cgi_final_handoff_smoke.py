@@ -250,6 +250,46 @@ def _print_bounded_b66_interpret_failure(response: object) -> None:
     print("B66_INTERPRET_EXCEPTION_FAMILY=" + exception_family, flush=True)
 
 
+_CF_RAY_GRAMMAR = re.compile(r"^[0-9a-fA-F]{8,32}-[A-Za-z]{3,5}$")
+
+
+def _bounded_latency_bucket(elapsed_seconds: object) -> str:
+    """Only bounded timing categories; no free-text diagnostics or payloads."""
+    if isinstance(elapsed_seconds, bool) or not isinstance(elapsed_seconds, (int, float)):
+        return "UNCLASSIFIED"
+    if not 0 <= elapsed_seconds < 3600:
+        return "UNCLASSIFIED"
+    if elapsed_seconds < 1:
+        return "LT_1S"
+    if elapsed_seconds < 5:
+        return "1_5S"
+    if elapsed_seconds < 15:
+        return "5_15S"
+    if elapsed_seconds < 30:
+        return "15_30S"
+    if elapsed_seconds < 60:
+        return "30_60S"
+    return "GE_60S"
+
+
+def _print_bounded_interpret_timing(
+    stage: str, elapsed_seconds: object, response: object
+) -> None:
+    """Read already delivered response once; never call a model or reveal PII.
+
+    CF-Ray is the browser-visible Pages edge identifier only. It does NOT
+    establish a direct B14 provider attempt, and the time includes UI send.
+    """
+    if stage not in ("complete", "partial", "followup"):
+        _fail("invalid_interpret_stage")
+    headers = getattr(response, "headers", None)
+    raw_ray = headers.get("cf-ray") if hasattr(headers, "get") else None
+    pages_ray = raw_ray if isinstance(raw_ray, str) and _CF_RAY_GRAMMAR.fullmatch(raw_ray) else "UNAVAILABLE"
+    print("B66_INTERPRET_TIMING_STAGE=" + stage.upper(), flush=True)
+    print("B66_INTERPRET_CLIENT_DURATION_BUCKET=" + _bounded_latency_bucket(elapsed_seconds), flush=True)
+    print("B66_PAGES_CF_RAY=" + pages_ray, flush=True)
+
+
 def _bounded_error_class(body_text: object) -> tuple[str | None, str | None]:
     """Extract ONLY the bounded error code/detail from a Claw error body.
 
@@ -631,6 +671,51 @@ def _login(page, username: str, password: str) -> None:
     print("SMOKE_STAGE=LOGIN_READY")
 
 
+def _require_b14_completion(response, stage: str) -> None:
+    """HTTP 200 is not sufficient: deterministic rescue is not model E2E."""
+    if response.headers.get("x-b66-result-origin") != "registered_model_completion":
+        _fail(stage + "_not_registered_model_completion")
+
+
+_B66_EXACT_MODEL_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$")
+
+
+def _select_customer_quote_model(page, selected_model_id: str) -> None:
+    """Explicitly select ONE operator-authorized, served B14 model.
+
+    Never invent a default or infer readiness from local/source B14 registry.
+    No network interpret call occurs until the currently served customer
+    dropdown contains this exact selected ID and is enabled.
+    """
+    if (
+        not isinstance(selected_model_id, str)
+        or not _B66_EXACT_MODEL_RE.fullmatch(selected_model_id)
+        or selected_model_id == "b14/auto"
+        or selected_model_id.startswith("padiem-profile/")
+    ):
+        _fail("explicit_quote_model_required")
+    try:
+        selector = page.locator("#padiemQuoteModelSelect")
+        page.wait_for_function(
+            """(expected) => {
+              const select = document.querySelector('#padiemQuoteModelSelect');
+              return !!select && !select.disabled &&
+                Array.from(select.options).some(option => option.value === expected);
+            }""",
+            arg=selected_model_id,
+            timeout=15000,
+        )
+        selector.select_option(value=selected_model_id)
+        if selector.input_value() != selected_model_id:
+            _fail("quote_model_selection_mismatch")
+    except SmokeFailure:
+        raise
+    except Exception as exc:
+        raise SmokeFailure("selected_quote_model_not_ready") from exc
+    print("B66_EXPLICIT_MODEL_SELECTED=PASS")
+    print("B66_MODEL_AUTO_SELECTION=0")
+
+
 def _guided(page, counters: Counters) -> None:
     before = counters.interpret_posts
     print("SMOKE_STAGE=GUIDED_START", flush=True)
@@ -677,11 +762,13 @@ def _guided(page, counters: Counters) -> None:
     print("GUIDED_PRINT_OR_PDF=PASS")
 
 
-def _complete_free_form(page, counters: Counters) -> None:
+def _complete_free_form(page, counters: Counters, selected_model_id: str) -> None:
     _reset_browser_local_quote_state(page)
+    _select_customer_quote_model(page, selected_model_id)
     page.locator("#freeChatStarter").click()
 
     before = counters.interpret_posts
+    started_interpret = time.monotonic()
     with page.expect_response(
         lambda response: (
             response.request.method == "POST"
@@ -691,9 +778,11 @@ def _complete_free_form(page, counters: Counters) -> None:
     ) as info:
         _send(page, COMPLETE_TEXT)
     response = info.value
+    _print_bounded_interpret_timing("complete", time.monotonic() - started_interpret, response)
     if response.status != 200:
         _print_bounded_b66_interpret_failure(response)
         _fail("complete_interpret_http_" + str(response.status))
+    _require_b14_completion(response, "complete")
 
     page.wait_for_function(
         """() => {
@@ -723,11 +812,13 @@ def _complete_free_form(page, counters: Counters) -> None:
     print("COMPLETE_PRINT_OR_PDF=PASS")
 
 
-def _partial_followup(page, counters: Counters) -> None:
+def _partial_followup(page, counters: Counters, selected_model_id: str) -> None:
     _reset_browser_local_quote_state(page)
+    _select_customer_quote_model(page, selected_model_id)
     page.locator("#freeChatStarter").click()
 
     before = counters.interpret_posts
+    started_interpret = time.monotonic()
     with page.expect_response(
         lambda response: (
             response.request.method == "POST"
@@ -737,9 +828,11 @@ def _partial_followup(page, counters: Counters) -> None:
     ) as info:
         _send(page, PARTIAL_TEXT)
     first = info.value
+    _print_bounded_interpret_timing("partial", time.monotonic() - started_interpret, first)
     if first.status != 200:
         _print_bounded_b66_interpret_failure(first)
         _fail("partial_interpret_http_" + str(first.status))
+    _require_b14_completion(first, "partial")
 
     page.wait_for_function(
         """() => {
@@ -762,6 +855,7 @@ def _partial_followup(page, counters: Counters) -> None:
     if not isinstance(pending_issue_date, str) or not pending_issue_date:
         _fail("pending_issue_date_missing")
 
+    started_interpret = time.monotonic()
     with page.expect_response(
         lambda response: (
             response.request.method == "POST"
@@ -771,9 +865,11 @@ def _partial_followup(page, counters: Counters) -> None:
     ) as info:
         _send(page, FOLLOWUP_TEXT)
     second = info.value
+    _print_bounded_interpret_timing("followup", time.monotonic() - started_interpret, second)
     if second.status != 200:
         _print_bounded_b66_interpret_failure(second)
         _fail("followup_interpret_http_" + str(second.status))
+    _require_b14_completion(second, "followup")
 
     page.wait_for_function(
         """() => {
@@ -817,7 +913,7 @@ def _partial_followup(page, counters: Counters) -> None:
     print("FOLLOWUP_PRINT_OR_PDF=PASS")
 
 
-def run_live(username: str, password: str) -> int:
+def run_live(username: str, password: str, selected_model_id: str) -> int:
     if not username or not password:
         print("B66_FINAL_HANDOFF_SMOKE=FAIL_CREDENTIAL_UNAVAILABLE")
         return 2
@@ -857,8 +953,8 @@ def run_live(username: str, password: str) -> int:
             print("RUNTIME_READINESS=PASS")
 
             _guided(page, counters)
-            _complete_free_form(page, counters)
-            _partial_followup(page, counters)
+            _complete_free_form(page, counters, selected_model_id)
+            _partial_followup(page, counters, selected_model_id)
 
             if counters.interpret_posts != MAX_INTERPRET_POSTS:
                 _fail("final_interpret_budget_mismatch")
@@ -1308,6 +1404,7 @@ def main(argv: list[str] | None = None) -> int:
     return run_live(
         os.getenv("B66_CGI_ALPHA_USERNAME", ""),
         os.getenv("B66_CGI_ALPHA_PASSWORD", ""),
+        os.getenv("B66_CGI_SELECTED_MODEL_ID", ""),
     )
 
 
