@@ -261,6 +261,24 @@
       "source": "kiraai.vn/models/qwen3.8-flash-free + verified direct Kira HTTP200 (#4018); current free promotion, not permanent price guarantee",
       "source_checked_at": "2026-10-10",
       "enabled": true
+    },
+    {
+      "id": "google/padiem-ci-4042-probe",
+      "provider_id": "google",
+      "upstream_model": "padiem-ci-4042-probe",
+      "display_name": "TEMPORARY CI only (not a real model)",
+      "provider_name": "Google AI Studio",
+      "capabilities": [
+        "chat",
+        "coding",
+        "image"
+      ],
+      "context_window": 1048576,
+      "input_price_usd_per_1m": 0.25,
+      "output_price_usd_per_1m": 1.5,
+      "source": "offline CI classification probe: DO NOT MERGE",
+      "source_checked_at": "2026-10-10",
+      "enabled": true
     }
   ],
   "groups": {
