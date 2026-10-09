@@ -9,6 +9,7 @@ on:
       # failure, and only this suite catches it. Named exactly, not the whole control-plane
       # package, so the heaviest B14 gate still does not run on unrelated edits.
       - 'packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py'
+      - '.github/scripts/b14_model_registration_ci_plan.py'
       - '.github/workflows/validate-b14-alpha.yml'
   workflow_dispatch:
 
@@ -22,8 +23,76 @@ concurrency:
 # Exact-head gate: product tests remain network-free except the documented
 # localhost-only startup regression, which never reaches an upstream provider.
 jobs:
+  registry-ci-plan:
+    name: B14 changeset classifier (fail-closed)
+    runs-on: ubuntu-latest
+    outputs:
+      lane: ${{ steps.classify.outputs.lane }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test CI lane fail-closed rules
+        run: python -m unittest discover -s .github/tests -p test_b14_model_registration_ci_plan.py -q
+      - name: Classify exact PR changes
+        id: classify
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python .github/scripts/b14_model_registration_ci_plan.py
+
+  alpha-model-registry-contract:
+    name: B14 fast model registration contract
+    needs: registry-ci-plan
+    if: ${{ needs.registry-ci-plan.outputs.lane == 'model_registration_only' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: apps/korean-ai-platform
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.5'
+          enable-cache: true
+          cache-dependency-glob: apps/korean-ai-platform/uv.lock
+      - name: Exact locked dependencies
+        run: uv sync --group dev --frozen
+      - name: B14 model registry + credential isolation + pilot contracts
+        run: |
+          uv run python -m pytest -q             tests/test_b14_model_registry_file.py             tests/test_registered_routes_truth.py             tests/test_b14_native_parameters.py             tests/test_kira_qwen38_free_onboarding.py             tests/test_worker.py
+
   alpha:
     name: Locked Alpha contract
+    if: always()
+    needs: [registry-ci-plan, alpha-full-suite, alpha-model-registry-contract]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enforce selected B14 lane
+        env:
+          LANE: ${{ needs.registry-ci-plan.outputs.lane }}
+          PLAN_RESULT: ${{ needs.registry-ci-plan.result }}
+          FULL_RESULT: ${{ needs.alpha-full-suite.result }}
+          QUICK_RESULT: ${{ needs.alpha-model-registry-contract.result }}
+        run: |
+          set -euo pipefail
+          test "$PLAN_RESULT" = success
+          if [ "$LANE" = model_registration_only ]; then
+            test "$QUICK_RESULT" = success
+            test "$FULL_RESULT" = skipped
+            echo 'B14_CI_MODE=MODEL_REGISTRATION_ONLY'
+          else
+            test "$FULL_RESULT" = success
+            test "$QUICK_RESULT" = skipped
+            echo 'B14_CI_MODE=FULL'
+          fi
+
+  alpha-full-suite:
+    name: Locked Alpha full suite
+    needs: registry-ci-plan
+    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:

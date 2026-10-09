@@ -64,10 +64,17 @@ B62_CHAT_EXPECTED_PATHS = (
     "packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py",
     "reference/business-62-padiem-chat-v1/**",
     ".github/scripts/b62_cloudflare_*.py",
+    ".github/scripts/b14_model_registration_ci_plan.py",
     ".github/workflows/b62-padiem-chat-ci.yml",
     ".github/workflows/b62-cloudflare-worker-deploy.yml",
 )
-B62_CHAT_EXPECTED_JOBS = {"b62-test", "b14-multimodal-test"}
+B62_CHAT_EXPECTED_JOBS = {
+    "registry-ci-plan",
+    "b62-registry-contract",
+    "b62-test",
+    "b62-full-suite",
+    "b14-multimodal-test",
+}
 
 
 def _b62_chat_ci_document() -> dict:
@@ -87,7 +94,7 @@ def _assert_b62_chat_ci_parity(document: dict) -> None:
     """Pin both event scopes to #3764, not merely to one another.
 
     If both trigger arrays drift in the same way, simple equality would pass.
-    An independent eight-path source-contract pin must also reject that case.
+    An independent exact path source-contract pin must also reject that case.
     """
     events = _b62_chat_ci_events(document)
     assert set(events) == {"push", "pull_request", "workflow_dispatch"}
@@ -101,7 +108,7 @@ def _assert_b62_chat_ci_parity(document: dict) -> None:
     for name, block in (("push", push), ("pull_request", review)):
         paths = block["paths"]
         assert isinstance(paths, list)
-        assert len(paths) == 8 and len(set(paths)) == 8, name
+        assert len(paths) == len(B62_CHAT_EXPECTED_PATHS) == len(set(paths)), name
         assert tuple(paths) == B62_CHAT_EXPECTED_PATHS, (
             f"{name} changed #3764 dependency trigger paths"
         )
@@ -112,7 +119,7 @@ def _assert_b62_chat_ci_parity(document: dict) -> None:
 
 
 def _b62_chat_segment_glob(pattern: str, path: str) -> bool:
-    """GitHub path-filter glob subset needed for the eight retained entries.
+    """GitHub path-filter glob subset needed for the current retained entries.
 
     Segment-wise fnmatch prevents a single '*' from crossing '/'.
     '**' matches zero or more complete path segments.
@@ -142,13 +149,13 @@ def _b62_chat_ci_path_triggers(path: str, event: str, branch: str = "main") -> b
     return any(_b62_chat_segment_glob(p, path) for p in events[event]["paths"])
 
 
-def test_b62_chat_ci_push_and_pr_share_exact_eight_path_contract() -> None:
+def test_b62_chat_ci_push_and_pr_share_exact_dependency_path_contract() -> None:
     """Existing #3527 policy job runs this test on every PR."""
     _assert_b62_chat_ci_parity(_b62_chat_ci_document())
 
 
 @pytest.mark.parametrize("event", ("push", "pull_request"))
-@pytest.mark.parametrize("index", range(8))
+@pytest.mark.parametrize("index", range(len(B62_CHAT_EXPECTED_PATHS)))
 def test_b62_chat_ci_deleted_dependency_path_is_rejected(event: str, index: int) -> None:
     document = deepcopy(_b62_chat_ci_document())
     del _b62_chat_ci_events(document)[event]["paths"][index]
@@ -157,7 +164,7 @@ def test_b62_chat_ci_deleted_dependency_path_is_rejected(event: str, index: int)
 
 
 @pytest.mark.parametrize("event", ("push", "pull_request"))
-@pytest.mark.parametrize("index", range(8))
+@pytest.mark.parametrize("index", range(len(B62_CHAT_EXPECTED_PATHS)))
 def test_b62_chat_ci_modified_dependency_path_is_rejected(event: str, index: int) -> None:
     document = deepcopy(_b62_chat_ci_document())
     paths = _b62_chat_ci_events(document)[event]["paths"]
@@ -166,7 +173,7 @@ def test_b62_chat_ci_modified_dependency_path_is_rejected(event: str, index: int
         _assert_b62_chat_ci_parity(document)
 
 
-@pytest.mark.parametrize("index", range(8))
+@pytest.mark.parametrize("index", range(len(B62_CHAT_EXPECTED_PATHS)))
 def test_b62_chat_ci_matching_two_sided_drift_is_rejected(index: int) -> None:
     """Equality alone cannot catch a shared accidental narrowing."""
     document = deepcopy(_b62_chat_ci_document())
@@ -195,6 +202,7 @@ def test_b62_chat_ci_dependency_globs_match_only_intended_scope(event: str) -> N
         "packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py",
         "reference/business-62-padiem-chat-v1/template.json",
         ".github/scripts/b62_cloudflare_deployed_parity.py",
+        ".github/scripts/b14_model_registration_ci_plan.py",
         ".github/workflows/b62-padiem-chat-ci.yml",
         ".github/workflows/b62-cloudflare-worker-deploy.yml",
     )

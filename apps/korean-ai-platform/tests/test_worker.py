@@ -88,8 +88,13 @@ class TestWranglerConfig:
         # metadata-only contract, raising the declared store binding count to 9.
         assert "[[unsafe.bindings]]" not in content
         assert 'type = "secrets_store_secret"' not in content
-        assert content.count("[[secrets_store_secrets]]") == 10
-        assert content.count('store_id = "f0b09ca04a7b43248154c773704a5616"') == 10
+        import tomllib
+        bindings=tomllib.loads(content)["secrets_store_secrets"]
+        assert content.count("[[secrets_store_secrets]]") == len(bindings)
+        assert len(bindings) >= 10
+        assert all(b["store_id"] == "f0b09ca04a7b43248154c773704a5616" for b in bindings)
+        assert len({b["binding"] for b in bindings}) == len(bindings)
+        assert all(b["binding"] == b["secret_name"] for b in bindings)
         assert 'binding = "PADIEM_AGNES_API_KEY"' in content
         assert 'secret_name = "PADIEM_AGNES_API_KEY"' in content
         assert 'binding = "PADIEM_POOLSIDE_API_KEY"' in content

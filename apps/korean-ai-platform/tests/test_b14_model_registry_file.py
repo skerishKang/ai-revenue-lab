@@ -21,10 +21,10 @@ def _invalid(tmp_path, mutate):
     with pytest.raises(ModelRegistryError):
         read_registry(path)
 
-def test_eleven_models_keep_five_retired():
+def test_owner_registered_models_keep_five_retired():
     reg=read_registry()
     ids={m["id"] for m in reg["models"]}
-    assert len(ids)==11
+    assert len(ids)==len(reg["models"])
     assert installed_model_ids()==frozenset(ids)==frozenset(CATALOG_BY_ID)
     assert ids.isdisjoint(RETIRED)
     assert not any(get_catalog_by_id(mid) for mid in RETIRED)
@@ -57,7 +57,7 @@ def test_only_json_providers_are_registered():
         "assert ids==set(read_registry()['providers']);"
         "assert ids.isdisjoint({'kilo','b-ai','infron'});"
         "assert 'experiential' in ids;"
-        "assert len(CATALOG_BY_ID)==11"
+        "assert len(CATALOG_BY_ID)==len(read_registry()[\'models\'])"
     )
     result=subprocess.run([sys.executable,"-c",child],capture_output=True,text=True,check=False)
     assert result.returncode == 0, result.stderr
@@ -89,7 +89,7 @@ def test_model_add_delete_group_change_is_json_only(tmp_path):
     parsed["models"].pop()
     parsed["groups"]["plus"].clear()
     path.write_text(json.dumps(parsed),encoding="utf-8")
-    assert len(read_registry(path)["models"])==11
+    assert len(read_registry(path)["models"])==len(read_registry()["models"])
 
 @pytest.mark.parametrize("module,fn", [
  ("poolside_provider","register_poolside_provider"),

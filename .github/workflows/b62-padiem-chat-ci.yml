@@ -17,6 +17,7 @@ on:
       - "packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py"
       - "reference/business-62-padiem-chat-v1/**"
       - ".github/scripts/b62_cloudflare_*.py"
+      - ".github/scripts/b14_model_registration_ci_plan.py"
       - ".github/workflows/b62-padiem-chat-ci.yml"
       - ".github/workflows/b62-cloudflare-worker-deploy.yml"
   pull_request:
@@ -30,6 +31,7 @@ on:
       - "packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py"
       - "reference/business-62-padiem-chat-v1/**"
       - ".github/scripts/b62_cloudflare_*.py"
+      - ".github/scripts/b14_model_registration_ci_plan.py"
       - ".github/workflows/b62-padiem-chat-ci.yml"
       - ".github/workflows/b62-cloudflare-worker-deploy.yml"
   workflow_dispatch:
@@ -42,7 +44,78 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  registry-ci-plan:
+    name: B14 changeset classifier (fail-closed)
+    runs-on: ubuntu-latest
+    outputs:
+      lane: ${{ steps.classify.outputs.lane }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test CI lane fail-closed rules
+        run: python -m unittest discover -s .github/tests -p test_b14_model_registration_ci_plan.py -q
+      - name: Classify exact PR or push changes
+        id: classify
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python .github/scripts/b14_model_registration_ci_plan.py
+
+  b62-registry-contract:
+    name: B62 B14 registry-only contract
+    needs: registry-ci-plan
+    if: ${{ needs.registry-ci-plan.outputs.lane == 'model_registration_only' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Locked dependencies
+        run: uv sync --locked --extra dev
+      - name: Strict B14 source route and manual-only selection integration
+        run: uv run --locked python -m pytest -q tests/test_b66_real_b14_source_authority.py
+
   b62-test:
+    name: b62-test
+    if: always()
+    needs: [registry-ci-plan, b62-full-suite, b14-multimodal-test, b62-registry-contract]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enforce selected lane and both relevant checks
+        env:
+          LANE: ${{ needs.registry-ci-plan.outputs.lane }}
+          PLAN_RESULT: ${{ needs.registry-ci-plan.result }}
+          FULL_RESULT: ${{ needs.b62-full-suite.result }}
+          MM_RESULT: ${{ needs.b14-multimodal-test.result }}
+          QUICK_RESULT: ${{ needs.b62-registry-contract.result }}
+        run: |
+          set -euo pipefail
+          test "$PLAN_RESULT" = success
+          if [ "$LANE" = model_registration_only ]; then
+            test "$QUICK_RESULT" = success
+            test "$FULL_RESULT" = skipped
+            test "$MM_RESULT" = skipped
+            echo 'B62_CI_MODE=MODEL_REGISTRATION_ONLY'
+          else
+            test "$FULL_RESULT" = success
+            test "$MM_RESULT" = success
+            test "$QUICK_RESULT" = skipped
+            echo 'B62_CI_MODE=FULL'
+          fi
+
+  b62-full-suite:
+    name: B62 full regression
+    needs: registry-ci-plan
+    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     defaults:
@@ -341,6 +414,8 @@ jobs:
         run: uv run --locked pywrangler deploy --dry-run --outdir ../../.tmp/b62-worker-bundle
 
   b14-multimodal-test:
+    needs: registry-ci-plan
+    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     defaults:

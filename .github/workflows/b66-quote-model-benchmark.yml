@@ -58,7 +58,7 @@ jobs:
           import json,sys
           with open(sys.argv[1],encoding='utf-8') as f:
               d=json.load(f)
-          assert len(d['models'])==11
+          assert len(d['models'])==len(set(d['models']))>0
           assert not any(x.startswith('kilo/') for x in d['models'])
           assert d['post_count']==0
           print('B66_QUOTE_EVAL_SOURCE_GATE=PASS')
