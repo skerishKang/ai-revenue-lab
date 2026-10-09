@@ -115,6 +115,7 @@ class B66QuoteConversationClient(Protocol):
         additional_system_context: str | None = None,
         attachments: tuple = (),
         model_id: str | None = None,
+        reasoning_level: str | None = None,
     ) -> dict[str, Any]: ...
 
 
@@ -779,6 +780,7 @@ class B66QuoteConversationInterpreter:
         message: str,
         skill: dict[str, Any],
         model_id: str | None = None,
+        reasoning_level: str | None = None,
     ) -> B66QuoteConversationProjection:
         if not isinstance(message, str):
             raise B66QuoteConversationError("invalid_message")
@@ -790,12 +792,17 @@ class B66QuoteConversationInterpreter:
             # Legacy isolated quote parser clients keep their original
             # completion shape. Production B66 passes the selected exact ID
             # as a separate keyword, never extracted from customer text.
+            # The reasoning level is forwarded the same way and is validated
+            # upstream, so this boundary never re-decides or substitutes it.
             selected_kw = {"model_id": model_id} if model_id is not None else {}
+            call_kwargs = dict(selected_kw)
+            if reasoning_level is not None:
+                call_kwargs["reasoning_level"] = reasoning_level
             result = await self._client.complete(
                 [{"role": "user", "content": clean}],
                 additional_system_context=prompt,
                 attachments=(),
-                **selected_kw,
+                **call_kwargs,
             )
         except Exception as exc:
             # First-MVP resilience boundary (#3391): keep every existing

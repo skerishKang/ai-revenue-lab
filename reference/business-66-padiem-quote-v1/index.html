@@ -69,6 +69,12 @@
             <option value="">모델을 선택하세요</option>
           </select>
         </label>
+        <!-- #3906: per-model reasoning level. The options are supplied by
+             /b66/quote/models and only ever contain levels the selected model
+             actually supports; the provider default is the initial choice. -->
+        <label>추론 수준
+          <select id="padiemQuoteReasoningSelect" aria-label="추론 수준"></select>
+        </label>
       </div>
       <p class="padiem-quote-status" id="padiemQuoteStatus" role="status" aria-live="polite"></p>
     </section>
