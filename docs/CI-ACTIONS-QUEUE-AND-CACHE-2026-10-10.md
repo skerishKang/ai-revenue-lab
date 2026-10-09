@@ -33,3 +33,8 @@ Self-hosted is not automatically faster: compare full PR elapsed time, cache hit
 ## Validation
 
 Run python -m unittest discover -s .github/tests -p test_b62_browser_ci_cache_contract.py -v, parse all changed YAML, and compare parent-versus-head normalized workflow documents to ensure only cache settings and cache steps changed.
+## Stage 1b: publish a cross-PR browser cache on default branch
+
+GitHub caches first written by pull_request runs are scoped to that PR merge ref and should not be assumed reusable by unrelated PRs. After this PR merges into default main, invoke the dispatch-only b62-browser-cache-seed.yml workflow exactly once with ref main. It publishes the same pinned Chromium key as 16 PR browser consumers. Future PRs can restore a cache from the default branch. This publisher has no secrets, no production API, no push/pull_request triggers, and must run only on main. A cold cache is still supported by install --with-deps in each browser QA.
+
+Verify the seed run succeeds and follow-up PR job logs show a cache hit before claiming cross-PR cache reuse. If the cache key changes, rerun the seed after its updated workflow is merged to main. Avoid re-running the seed on every PR.
