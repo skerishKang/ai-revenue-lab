@@ -607,7 +607,8 @@ def test_502_engine_failure_shows_bounded_error_and_never_dispatches_again() -> 
     dom = result["answerDom"]
     assert dom["paragraphText"] == "", dom
     assert dom["label"] == "connection-error", dom
-    assert dom["buttons"] == [], "the Claw error surface must offer no one-click replay"
+    # #3935: only GET-based run-history navigation is allowed, never a replay.
+    assert dom["buttons"] == ["claw-general-open-runs"], "Claw must expose only the read-only run-history action"
 
 
 def test_502_provider_rate_limit_gets_the_bounded_classification_copy() -> None:
