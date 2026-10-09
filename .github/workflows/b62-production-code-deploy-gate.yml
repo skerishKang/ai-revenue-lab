@@ -193,10 +193,9 @@ jobs:
           assert "last updated via the script API" in workflow
           assert "Aborting the upload operation because of conflicts" in workflow
 
-          # #2458: the cloudflare_readonly job must publish the active served
-          # version id as bounded non-secret operational evidence, while keeping
-          # the canonical extraction, the single-version/100% and latest==active
-          # assertions, and the existing GITHUB_OUTPUT consumer unchanged.
+          # #3523: preserve single-version/100%-traffic canonical active evidence.
+          # Strict readonly still proves latest==active; new exact-main deploys
+          # accept a pre-existing unactivated upload but pin both IDs before mutation.
           readonly_job = workflow.split("\n  cloudflare-readonly:", 1)[1].split("\n  deploy-production-code:", 1)[0]
           assert "cloudflare_served_version_cli.py resolve-active" in readonly_job
           assert ".result.deployments[0].versions[0].version_id" not in readonly_job
@@ -209,6 +208,9 @@ jobs:
           # ACTIVE_VERSION publication it evidences.
           assert 'test "${latest}" = "${active}"' not in readonly_job
           assert "cloudflare_served_version_lineage.py" in readonly_job
+          assert "b62_code_deploy_served_preflight.py" in readonly_job
+          assert 'if [ "${{ inputs.mode }}" = "deploy_production_code" ]; then' in readonly_job
+          assert 'echo "latest_version=${latest}" >> "${GITHUB_OUTPUT}"' in readonly_job
           assert 'echo "LATEST_VERSION_EQUALS_ACTIVE_VERSION' not in readonly_job
           assert 'echo "active_version=${active}" >> "${GITHUB_OUTPUT}"' in readonly_job
           assert 'echo "ACTIVE_VERSION=${active}"' in readonly_job
@@ -285,6 +287,7 @@ jobs:
       contents: read
     outputs:
       active_version: ${{ steps.audit.outputs.active_version }}
+      latest_version: ${{ steps.audit.outputs.latest_version }}
       public_base_url_state: ${{ steps.audit.outputs.public_base_url_state }}
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -322,13 +325,22 @@ jobs:
           versions="${RUNNER_TEMP}/b62-versions-readonly.json"
           bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions?page=1&per_page=1" "${versions}"
           latest="$(jq -r '.result.items[0].id // empty' "${versions}")"
-          # #2451 item 7 / child #2898: the latest==active equality authority is the
-          # canonical lineage primitive. It publishes LATEST_VERSION_EQUALS_ACTIVE_VERSION
-          # itself and fails closed (non-zero exit) on a mismatch, a missing id or an
-          # unsafe id, so this workflow must not restate the comparison or the marker.
-          python3 .github/scripts/cloudflare_served_version_lineage.py \
-            --active-version="${active}" \
-            --latest-version="${latest}"
+          # For read-only audit preserve the canonical latest==active guard.
+          # For exact-main NEW code deploy validate both IDs, tolerate an uploaded
+          # undeployed version, then recheck both IDs unchanged before mutation.
+          if [ "${{ inputs.mode }}" = "deploy_production_code" ]; then
+            # New exact-main code deploys may supersede an unactivated upload.
+            # Validate both IDs, then lock both again before mutation below.
+            python3 .github/scripts/b62_code_deploy_served_preflight.py \
+              --active-version="${active}" \
+              --latest-version="${latest}"
+          else
+            # Preserve canonical strict lineage for all normal read-only modes.
+            python3 .github/scripts/cloudflare_served_version_lineage.py \
+              --active-version="${active}" \
+              --latest-version="${latest}"
+          fi
+          echo "latest_version=${latest}" >> "${GITHUB_OUTPUT}"
           echo "active_version=${active}" >> "${GITHUB_OUTPUT}"
           echo "ACTIVE_VERSION=${active}"
 
@@ -386,6 +398,7 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       READONLY_ACTIVE_VERSION: ${{ needs.cloudflare-readonly.outputs.active_version }}
+      READONLY_LATEST_VERSION: ${{ needs.cloudflare-readonly.outputs.latest_version }}
       PUBLIC_BASE_URL_STATE: ${{ needs.cloudflare-readonly.outputs.public_base_url_state }}
       CONFIRMATION: ${{ inputs.confirmation }}
     steps:
@@ -445,6 +458,11 @@ jobs:
           active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
           test "${active}" = "${READONLY_ACTIVE_VERSION}"
           echo "PREMUTATION_ACTIVE_VERSION_STABLE=PASS"
+          versions="${RUNNER_TEMP}/b62-versions-before.json"
+          bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions?page=1&per_page=1" "${versions}"
+          current_latest="$(jq -r '.result.items[0].id // empty' "${versions}")"
+          test "${current_latest}" = "${READONLY_LATEST_VERSION}"
+          echo "PREMUTATION_LATEST_UPLOADED_VERSION_STABLE=PASS"
           detail="${RUNNER_TEMP}/b62-version-before.json"
           bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions/${active}" "${detail}"
           etag_before="$(jq -er '.result.resources.script.etag' "${detail}")"
