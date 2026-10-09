@@ -87,7 +87,9 @@ async def workspace_page(request: Request):
         "modelCount": 0,
         "lang": locale.value,
         "errorCode": None,
-        "maxTokens": 512,
+        # #3977: no synthetic sampling/output default is published to the client.
+        # The workspace client sends no temperature/max_tokens unless the caller
+        # explicitly provides one, so the provider/model default applies.
         "b14ProviderMode": runtime_config.provider_mode,
         "b14HasKey": any_platform_secret_present(),
         "b14SiteName": PLATFORM_SITE_NAME,

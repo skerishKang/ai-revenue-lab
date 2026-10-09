@@ -122,7 +122,7 @@ def _compose_system_instruction(request: "ExecutionRequest") -> str | None:
 
 def _normalize_model_policy(
     agent: AgentProfile,
-) -> tuple[str, float, B14RoutingOptions]:
+) -> tuple[str, float | None, B14RoutingOptions]:
     policy = agent.model_policy
     unknown = set(policy) - _MODEL_POLICY_FIELDS
     if unknown:
@@ -139,9 +139,14 @@ def _normalize_model_policy(
             "model_policy.model is required and must be an explicit non-empty model route"
         )
 
-    temperature = policy.get("temperature", 0.2)
-    if isinstance(temperature, bool) or not isinstance(temperature, (int, float)):
-        raise ValueError("model_policy.temperature must be numeric")
+    # #3977: an omitted model_policy temperature stays None so the B14 request
+    # omits it entirely and the provider/model default applies. There is no
+    # synthetic 0.2 default.
+    temperature = policy.get("temperature")
+    if temperature is not None and (
+        isinstance(temperature, bool) or not isinstance(temperature, (int, float))
+    ):
+        raise ValueError("model_policy.temperature must be numeric or None")
 
     provider_order_value = policy.get("provider_order")
     if provider_order_value is None:
@@ -170,7 +175,7 @@ def _normalize_model_policy(
         max_attempts=max_attempts,
         max_retries=max_retries,
     )
-    return model.strip(), float(temperature), routing
+    return model.strip(), (float(temperature) if temperature is not None else None), routing
 
 
 def _error_class_for_b14(code: str) -> ErrorClass:

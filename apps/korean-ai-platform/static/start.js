@@ -377,11 +377,11 @@
     };
 
     try {
+      // #3977: send no synthetic sampling/output defaults. The selected model's
+      // provider default applies unless the caller explicitly sets a value.
       var payload = {
         model: model,
         messages: [{ role: "user", content: text }],
-        temperature: atriaPreview ? 0 : 0.2,
-        max_tokens: atriaPreview ? 1800 : 512,
         business14: b14_opts,
       };
       var endpoint = "/api/pilot/v1/chat/completions";

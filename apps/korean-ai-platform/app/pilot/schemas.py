@@ -62,7 +62,9 @@ class ChatMessage:
 class PilotChatRequest:
     model: str = ""
     messages: list[dict[str, str]] | list[ChatMessage] = field(default_factory=list)
-    temperature: float | None = 0.2
+    # Omitted temperature stays None (#3977): no synthetic 0.2 default is
+    # injected. The provider/model's own default applies.
+    temperature: float | None = None
     max_tokens: int | None = None
     stream: bool | None = False
     tools: list[dict[str, Any]] | None = None

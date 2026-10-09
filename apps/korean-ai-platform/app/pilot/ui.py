@@ -37,6 +37,30 @@ def _new_request_id() -> str:
     return f"b14req_{uuid.uuid4().hex[:12]}"
 
 
+def _optional_float(raw: object) -> float | None:
+    """Parse an optional numeric form field. Empty/absent → None (omitted).
+
+    #3977: an omitted sampling value must stay omitted so the provider/model's
+    own default applies; the UI must not inject a synthetic 0.2.
+    """
+    if raw is None:
+        return None
+    text = str(raw).strip()
+    if not text:
+        return None
+    return float(text)
+
+
+def _optional_int(raw: object) -> int | None:
+    """Parse an optional integer form field. Empty/absent → None (omitted)."""
+    if raw is None:
+        return None
+    text = str(raw).strip()
+    if not text:
+        return None
+    return int(text)
+
+
 def _validate_chat_request_ui(req: PilotChatRequest) -> None:
     """Simple UI-side validation before calling backend."""
     if req.stream:
@@ -103,8 +127,17 @@ async def pilot_page_post(
     provider_key = form.get("provider_key", "")
     model_id = form.get("model_id", "")
     prompt = form.get("prompt", "")
-    temperature = float(form.get("temperature", 0.2))
-    max_tokens = int(form.get("max_tokens", 300))
+    # Omitted/empty sampling fields stay None and are not sent upstream (#3977).
+    temperature = (
+        None
+        if form.get("use_provider_default_temperature")
+        else _optional_float(form.get("temperature"))
+    )
+    max_tokens = (
+        None
+        if form.get("use_provider_default_max_tokens")
+        else _optional_int(form.get("max_tokens"))
+    )
     state = resolve_configuration()
 
     if state == PilotConfigurationState.INVALID_REGISTRY:

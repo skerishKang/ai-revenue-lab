@@ -293,28 +293,62 @@ class TestPlaceholderKey:
 
 
 # ---------------------------------------------------------------------------
-# Temperature default value test
+# Optional sampling defaults (#3977)
 # ---------------------------------------------------------------------------
 
 
-class TestDefaultTemperature:
-    def test_ui_form_sends_02(self, client):
-        """The HTML range input sends 0.2, not 20."""
+class TestOptionalSamplingDefaults:
+    def test_ui_form_exposes_provider_default_toggle(self, client):
+        """Sampling fields are optional; the form defaults to the provider value."""
         _configure_pilot()
         resp = client.get("/pilot")
         assert resp.status_code == 200
+        assert 'name="use_provider_default_temperature"' in resp.text
+        assert 'name="use_provider_default_max_tokens"' in resp.text
         assert 'value="0.2"' in resp.text
         assert 'max="2"' in resp.text
         assert 'step="0.1"' in resp.text
 
-    def test_ui_post_passes_02(self, client, monkeypatch):
-        """UI POST with default temperature must pass 0.2 to provider."""
+    def test_ui_post_with_provider_default_forwards_no_sampling_value(self, client, monkeypatch):
+        """Selecting the provider default must send no temperature/max_tokens."""
         _configure_pilot()
         from app.pilot import provider as prv
         _captured = {}
 
         async def capturing_call(**kw):
             _captured["temperature"] = kw.get("temperature")
+            _captured["max_tokens"] = kw.get("max_tokens")
+            return {
+                "id": "test", "object": "chat.completion", "model": "test-model-v1",
+                "choices": [{"index": 0, "message": {"role": "assistant", "content": "ok"}, "finish_reason": "stop"}],
+                "usage": {"prompt_tokens": 5, "completion_tokens": 5, "total_tokens": 10},
+                "business14": {"mode": "byok-pilot", "provider": "test", "latency_ms": 50, "estimated_krw": None, "request_id": "b14req_test"},
+            }
+
+        monkeypatch.setattr(prv, "call_chat_completions", capturing_call)
+        resp = client.post(
+            "/pilot",
+            data={
+                "provider_key": "sk-real-key-12345abcdef",
+                "model_id": "test-model-v1",
+                "prompt": "hello",
+                "use_provider_default_temperature": "1",
+                "use_provider_default_max_tokens": "1",
+            },
+        )
+        assert resp.status_code == 200
+        assert _captured.get("temperature") is None
+        assert _captured.get("max_tokens") is None
+
+    def test_ui_post_with_explicit_values_preserves_them(self, client, monkeypatch):
+        """An explicit user value is still forwarded unchanged."""
+        _configure_pilot()
+        from app.pilot import provider as prv
+        _captured = {}
+
+        async def capturing_call(**kw):
+            _captured["temperature"] = kw.get("temperature")
+            _captured["max_tokens"] = kw.get("max_tokens")
             return {
                 "id": "test", "object": "chat.completion", "model": "test-model-v1",
                 "choices": [{"index": 0, "message": {"role": "assistant", "content": "ok"}, "finish_reason": "stop"}],
@@ -335,6 +369,7 @@ class TestDefaultTemperature:
         )
         assert resp.status_code == 200
         assert _captured.get("temperature") == 0.2
+        assert _captured.get("max_tokens") == 300
 
 
 # ---------------------------------------------------------------------------

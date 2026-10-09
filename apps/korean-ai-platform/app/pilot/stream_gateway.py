@@ -307,6 +307,7 @@ async def pilot_stream_preview(request: Request):
                 messages=body["messages"],
                 temperature=body.get("temperature"),
                 max_tokens=body.get("max_tokens"),
+                parameters=body.get("parameters"),
                 transport=transport,
             )
         else:

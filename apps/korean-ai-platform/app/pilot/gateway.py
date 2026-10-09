@@ -41,6 +41,12 @@ from app.pilot.routing import (
 )
 from app.pilot.schemas import PilotChatRequest
 from app.pilot.b14_runtime_config import runtime_config
+from app.pilot.model_parameter_profiles import (
+    B14_OPERATIONAL_REQUEST_TOKEN_CEILING,
+    CANONICAL_OPTIONAL_FIELDS,
+    get_profile,
+    validate_optional_parameters,
+)
 from app.pilot.catalog import (
     CATALOG_BY_ID,
     CATALOG_MODELS,
@@ -127,7 +133,7 @@ _VALID_ROLES = frozenset({"system", "user", "assistant"})
 _ALLOWED_CHAT_FIELDS = frozenset({
     "model", "messages", "temperature", "max_tokens", "stream", "tools",
     "business14",
-})
+}) | frozenset(CANONICAL_OPTIONAL_FIELDS)
 _ALLOWED_MESSAGE_FIELDS = frozenset({"role", "content"})
 _ALLOWED_B14_FIELDS = frozenset({
     "task_type", "required_capabilities", "optimize_for",
@@ -235,7 +241,8 @@ def _validate_body(raw: Any) -> dict:
             raise _InvalidBody(f"messages[{i}] content must not exceed 32000 characters")
         validated_messages.append({"role": role, "content": content})
 
-    # temperature
+    # temperature. Omitted stays omitted (#3977): B14 must never substitute a
+    # universal value such as 0.2 for the provider's own default.
     temp = raw.get("temperature")
     if temp is not None:
         if isinstance(temp, bool) or not isinstance(temp, (int, float)):
@@ -244,14 +251,37 @@ def _validate_body(raw: Any) -> dict:
         if temp < 0.0 or temp > 2.0:
             raise _InvalidBody("temperature must be between 0.0 and 2.0")
 
-    # max_tokens. None is meaningful: preserve omission so a product may either
-    # request an explicit bounded budget or defer to the provider/model default.
+    # max_tokens is the REQUEST OUTPUT BUDGET, not the model's maximum output.
+    # Omitted stays None so the provider/model default applies. An explicit value
+    # is bounded by the B14 operational service ceiling and, when the exact model
+    # documents one, by that model's own maximum output. A value above either is
+    # rejected explicitly — never silently clamped (#3977).
     mt = raw.get("max_tokens")
     if mt is not None:
         if isinstance(mt, bool) or not isinstance(mt, int):
             raise _InvalidBody("max_tokens must be an integer or null")
-        if mt < 1 or mt > 4096:
-            raise _InvalidBody("max_tokens must be between 1 and 4096")
+        if mt < 1:
+            raise _InvalidBody("max_tokens must be at least 1")
+        profile = get_profile(model)
+        model_max = profile.model_max_output if profile is not None else None
+        if model_max is not None and mt > model_max:
+            raise _InvalidBody(
+                f"max_tokens {mt} exceeds the documented maximum output for "
+                f"'{model}' ({model_max})."
+            )
+        if mt > B14_OPERATIONAL_REQUEST_TOKEN_CEILING:
+            raise _InvalidBody(
+                "max_tokens must not exceed the B14 request budget ceiling "
+                f"{B14_OPERATIONAL_REQUEST_TOKEN_CEILING}."
+            )
+
+    # Model-specific optional fields. An option the exact model does not document
+    # fails closed with an explainable 422; it is never dropped, rewritten or
+    # mapped onto another value (#3977).
+    parameters = validate_optional_parameters(
+        model,
+        {name: raw[name] for name in CANONICAL_OPTIONAL_FIELDS if name in raw},
+    )
 
     # stream
     st = raw.get("stream")
@@ -270,8 +300,9 @@ def _validate_body(raw: Any) -> dict:
     return {
         "model": model,
         "messages": validated_messages,
-        "temperature": float(temp) if temp is not None else 0.2,
+        "temperature": float(temp) if temp is not None else None,
         "max_tokens": int(mt) if mt is not None else None,
+        "parameters": parameters,
         "business14": _validate_b14_options(raw.get("business14")),
     }
 
@@ -783,6 +814,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                 messages=body["messages"],
                 temperature=body.get("temperature"),
                 max_tokens=body.get("max_tokens"),
+                parameters=body.get("parameters"),
             )
         raise InvalidRequest(
             "non-platform route is not routable (OpenRouter retired, #1933 S2)"

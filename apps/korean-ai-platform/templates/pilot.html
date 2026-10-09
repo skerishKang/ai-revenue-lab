@@ -82,12 +82,24 @@
           <label for="pilot_temp">Temperature</label>
           <input type="range" id="pilot_temp" name="temperature" min="0" max="2" step="0.1" value="0.2" class="range-input">
           <span class="range-value">0.2</span>
+          <label class="pilot-default-toggle">
+            <input type="checkbox" id="pilot_temp_default" name="use_provider_default_temperature" value="1" checked>
+            제공자 기본값 사용
+          </label>
         </div>
         <div class="pilot-section">
           <label for="pilot_maxtokens">Max tokens</label>
           <input type="number" id="pilot_maxtokens" name="max_tokens" value="300" min="1" max="4096" class="pilot-num-input">
+          <label class="pilot-default-toggle">
+            <input type="checkbox" id="pilot_maxtokens_default" name="use_provider_default_max_tokens" value="1" checked>
+            제공자 기본값 사용
+          </label>
         </div>
       </div>
+      <p class="pilot-default-note muted">
+        기본값 사용을 선택하면 해당 필드를 전송하지 않습니다. B14는 값을 임의로 만들지 않고
+        선택한 모델의 제공업체 기본값을 그대로 사용합니다.
+      </p>
 
       <div class="pilot-actions">
         <button type="submit" class="btn btn-primary btn-lg btn-block">BYOK 요청 실행</button>
@@ -150,5 +162,24 @@
   <strong>/playground</strong>는 네트워크 연결 없이 결정론적 Mock 응답을 반환합니다.<br>
   <strong>/pilot</strong>은 실제 Provider API key로 외부 모델을 호출합니다.
 </div>
+
+<script>
+  // #3977: "제공자 기본값 사용" disables the field so the browser omits it from
+  // the POST body. The server then forwards no sampling value at all.
+  (function () {
+    function bind(checkboxId, inputId) {
+      var box = document.getElementById(checkboxId);
+      var input = document.getElementById(inputId);
+      if (!box || !input) return;
+      function sync() {
+        input.disabled = box.checked;
+      }
+      box.addEventListener("change", sync);
+      sync();
+    }
+    bind("pilot_temp_default", "pilot_temp");
+    bind("pilot_maxtokens_default", "pilot_maxtokens");
+  })();
+</script>
 
 {% endblock %}

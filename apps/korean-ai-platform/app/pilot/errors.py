@@ -74,6 +74,43 @@ class ToolsNotSupported(PilotError):
         )
 
 
+class UnsupportedParameter(PilotError):
+    """An explicit optional request field is not documented for the exact model.
+
+    Fail-closed (#3977): an unsupported option is never silently dropped,
+    rewritten, or mapped to another value, and never triggers a model change.
+    """
+
+    def __init__(self, field_name: str, model_id: str, detail: str = "") -> None:
+        self.field = field_name
+        self.model_id = model_id
+        message = (
+            f"모델 '{model_id}'은(는) 요청 옵션 '{field_name}'을(를) 지원하지 않습니다."
+        )
+        if detail:
+            message += f" {detail}"
+        super().__init__(
+            code="unsupported_parameter",
+            message=message,
+            status_code=422,
+        )
+
+
+class InvalidParameterValue(PilotError):
+    """A supported optional field carried a value outside its documented range."""
+
+    def __init__(self, field_name: str, model_id: str, detail: str) -> None:
+        self.field = field_name
+        self.model_id = model_id
+        super().__init__(
+            code="invalid_parameter_value",
+            message=(
+                f"모델 '{model_id}'의 요청 옵션 '{field_name}' 값이 올바르지 않습니다: {detail}"
+            ),
+            status_code=422,
+        )
+
+
 class UpstreamAuthFailed(PilotError):
     def __init__(self) -> None:
         super().__init__(

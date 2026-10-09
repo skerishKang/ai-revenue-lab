@@ -21,7 +21,7 @@ import json
 import logging
 import time
 import uuid
-from typing import Any
+from typing import Any, Mapping
 
 import httpx
 
@@ -39,6 +39,7 @@ from app.pilot.errors import (
 )
 from app.pilot.sensenova_provider import is_transient_busy_429
 from app.pilot.b14_runtime_config import runtime_config
+from app.pilot.model_parameter_profiles import build_upstream_parameters
 from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
 from app.pilot.stream_types import StreamEvent, StreamUsage
 from app.pilot.platform_secrets import (
@@ -208,8 +209,9 @@ async def call_platform_chat_completions(
     provider: str,
     platform_provider_id: str,
     messages: list[dict[str, str]],
-    temperature: float | None = 0.2,
+    temperature: float | None = None,
     max_tokens: int | None = None,
+    parameters: Mapping[str, Any] | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
 ) -> dict[str, Any]:
     """Completed-JSON call to a fixed platform Provider.
@@ -245,6 +247,10 @@ async def call_platform_chat_completions(
     # explicit limit; None intentionally delegates to the provider/model default.
     if max_tokens is not None:
         body["max_tokens"] = int(max_tokens)
+    # Model-specific optional fields, mapped to the exact upstream JSON shape by
+    # the selected model's documented profile. Omitted fields stay omitted, and
+    # an undocumented field never reaches the provider (#3977).
+    body.update(build_upstream_parameters(model_id, parameters or {}))
 
     client_kwargs: dict[str, Any] = {
         "timeout": httpx.Timeout(
@@ -334,8 +340,9 @@ async def stream_platform_chat_completions(
     provider: str,
     platform_provider_id: str,
     messages: list[dict[str, str]],
-    temperature: float | None = 0.2,
+    temperature: float | None = None,
     max_tokens: int | None = None,
+    parameters: Mapping[str, Any] | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
 ) -> Any:
     """Streaming call to a fixed platform Provider (OpenAI-compatible SSE).
@@ -383,6 +390,9 @@ async def stream_platform_chat_completions(
     # explicit limit; None intentionally delegates to the provider/model default.
     if max_tokens is not None:
         body["max_tokens"] = int(max_tokens)
+    # Same model-specific passthrough contract as the completed-JSON path so
+    # non-stream and stream requests carry identical provider payloads (#3977).
+    body.update(build_upstream_parameters(model_id, parameters or {}))
 
     client_kwargs: dict[str, Any] = {
         "timeout": httpx.Timeout(

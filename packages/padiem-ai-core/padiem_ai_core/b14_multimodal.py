@@ -189,8 +189,10 @@ class B14MultimodalChatRequest(B14ChatRequest):
         payload: dict[str, Any] = {
             "model": self.model,
             "messages": [_thaw_message(message) for message in self.messages],
-            "temperature": self.temperature,
         }
+        # Omitted temperature is omitted from the request (#3977).
+        if self.temperature is not None:
+            payload["temperature"] = self.temperature
         if self.max_tokens is not None:
             payload["max_tokens"] = self.max_tokens
         routing = self.routing.to_dict()

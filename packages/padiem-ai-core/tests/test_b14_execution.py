@@ -173,14 +173,25 @@ def test_explicit_request_does_not_add_stream_or_tools() -> None:
         model="b14/auto",
     )
     payload = request.to_payload()
+    # #3977: an omitted temperature is NOT added to the payload. No synthetic
+    # 0.2 default is injected.
     assert payload == {
         "model": "b14/auto",
         "messages": [{"role": "user", "content": "hello"}],
-        "temperature": 0.2,
     }
+    assert "temperature" not in payload
     assert "stream" not in payload
     assert "tools" not in payload
     assert "business14" not in payload
+
+
+def test_explicit_temperature_is_preserved_in_payload() -> None:
+    request = B14ChatRequest(
+        messages=({"role": "user", "content": "hi"},),
+        model="test/route",
+        temperature=0.7,
+    )
+    assert request.to_payload()["temperature"] == 0.7
 
 
 def test_request_copies_messages_and_is_not_affected_by_caller_mutation() -> None:
@@ -251,7 +262,6 @@ def test_client_uses_exact_endpoint_payload_and_no_provider_credentials() -> Non
             {"role": "system", "content": "Answer clearly."},
             {"role": "user", "content": "안녕하세요"},
         ],
-        "temperature": 0.2,
         "max_tokens": 700,
         "business14": {
             "task_type": "general",
@@ -262,6 +272,8 @@ def test_client_uses_exact_endpoint_payload_and_no_provider_credentials() -> Non
             "max_attempts": 3,
         },
     }
+    # #3977: no synthetic temperature reaches the provider when omitted.
+    assert "temperature" not in seen["body"]
     assert "authorization" not in seen["headers"]
     assert "x-business14-provider-key" not in seen["headers"]
     assert "cookie" not in seen["headers"]

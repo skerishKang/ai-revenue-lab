@@ -81,7 +81,7 @@ def _install_seq(monkeypatch, behaviors):
     calls: list[dict] = []
 
     async def fake(*, model_id, upstream_model, provider, platform_provider_id,
-                   messages, temperature=0.2, max_tokens=300, transport=None):
+                   messages, temperature=0.2, max_tokens=300, parameters=None, transport=None):
         calls.append({"model_id": model_id})
         behavior = behaviors[min(len(calls) - 1, len(behaviors) - 1)]
         if isinstance(behavior, Exception):

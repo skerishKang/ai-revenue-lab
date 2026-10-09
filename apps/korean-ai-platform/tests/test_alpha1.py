@@ -462,7 +462,7 @@ class TestFallbackExecution:
         original = plat.call_platform_chat_completions
         calls = []
 
-        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, parameters=None, transport=None):
             calls.append({"model_id": model_id, "platform_provider_id": platform_provider_id})
             if len(calls) == 1:
                 raise UpstreamRateLimited()
@@ -523,7 +523,7 @@ class TestLiveFailClosed:
             return httpx.Response(200, json=_ok_upstream_json(KILO_UPSTREAM))
 
         async def fake(*, model_id, upstream_model, provider, platform_provider_id,
-                      messages, temperature=0.2, max_tokens=300, transport=None):
+                      messages, temperature=0.2, max_tokens=300, parameters=None, transport=None):
             return await original(
                 model_id=model_id,
                 upstream_model=upstream_model,
@@ -532,6 +532,7 @@ class TestLiveFailClosed:
                 messages=messages,
                 temperature=temperature,
                 max_tokens=max_tokens,
+                parameters=parameters,
                 transport=httpx.MockTransport(handler),
             )
 
@@ -1311,7 +1312,7 @@ class TestFallbackFailClosed:
         original = plat.call_platform_chat_completions
         calls = []
 
-        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, parameters=None, transport=None):
             calls.append(model_id)
             raise ValueError("unexpected")
 
@@ -1349,7 +1350,7 @@ class TestFallbackActualEvidence:
         original = plat.call_platform_chat_completions
 
         async def fake(*, model_id, upstream_model, provider, platform_provider_id,
-                       messages, temperature=0.2, max_tokens=300, transport=None):
+                       messages, temperature=0.2, max_tokens=300, parameters=None, transport=None):
             calls.append(model_id)
             raise UpstreamServerError()
 
@@ -1380,7 +1381,7 @@ class TestFallbackActualEvidence:
         original = plat.call_platform_chat_completions
         calls = []
 
-        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, parameters=None, transport=None):
             calls.append({"model_id": model_id, "upstream_model": upstream_model, "provider": provider})
             if len(calls) == 1:
                 raise UpstreamRateLimited()
@@ -1452,7 +1453,7 @@ class TestOptionEnforcement:
         original = plat.call_platform_chat_completions
         calls = []
 
-        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, parameters=None, transport=None):
             calls.append(model_id)
             raise UpstreamRateLimited()
 
@@ -1726,7 +1727,7 @@ class TestManualRouteDefaultFallback:
         original = plat.call_platform_chat_completions
         calls = []
 
-        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, parameters=None, transport=None):
             calls.append(model_id)
             return {
                 "id": "cmpl-test", "object": "chat.completion",
@@ -1761,7 +1762,7 @@ class TestManualRouteDefaultFallback:
         original = plat.call_platform_chat_completions
         calls = []
 
-        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, parameters=None, transport=None):
             calls.append(model_id)
             if len(calls) == 1:
                 raise UpstreamRateLimited()
@@ -1803,7 +1804,7 @@ class TestManualRouteDefaultFallback:
         original = plat.call_platform_chat_completions
         calls = []
 
-        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, parameters=None, transport=None):
             calls.append(model_id)
             raise UpstreamAuthFailed()
 
@@ -1833,7 +1834,7 @@ class TestManualRouteDefaultFallback:
         original = plat.call_platform_chat_completions
         calls = []
 
-        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, parameters=None, transport=None):
             calls.append(model_id)
             raise UpstreamClientError(404)
 
@@ -1863,7 +1864,7 @@ class TestManualRouteDefaultFallback:
         original = plat.call_platform_chat_completions
         calls = []
 
-        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, parameters=None, transport=None):
             calls.append(model_id)
             raise MalformedUpstreamResponse()
 
@@ -1892,7 +1893,7 @@ class TestManualRouteDefaultFallback:
         original = plat.call_platform_chat_completions
         calls = []
 
-        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, parameters=None, transport=None):
             calls.append(model_id)
             raise ValueError("unexpected internal failure")
 
@@ -1949,7 +1950,7 @@ class TestActualRouteId:
         pass  # OpenRouter retired (#1933 S2): platform adapter is patched directly
         original = plat.call_platform_chat_completions
 
-        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, parameters=None, transport=None):
             return {
                 "id": "cmpl-pk", "object": "chat.completion",
                 "choices": [{"index": 0, "message": {"role": "assistant", "content": "OK"}, "finish_reason": "stop"}],
@@ -1983,7 +1984,7 @@ class TestActualRouteId:
         original = plat.call_platform_chat_completions
         calls = []
 
-        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, parameters=None, transport=None):
             calls.append({"model_id": model_id, "upstream_model": upstream_model, "provider": provider})
             if len(calls) == 1:
                 raise UpstreamRateLimited()
@@ -2027,7 +2028,7 @@ class TestActualRouteId:
         pass  # OpenRouter retired (#1933 S2): platform adapter is patched directly
         original = plat.call_platform_chat_completions
 
-        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, parameters=None, transport=None):
             assert secret not in model_id
             assert secret not in upstream_model
             return {
