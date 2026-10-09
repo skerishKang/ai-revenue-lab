@@ -46,8 +46,8 @@ jobs:
           cache-dependency-glob: apps/padiem-chat/uv.lock
       - name: Resolve B62
         run: uv sync --extra dev
-      - name: Run B62 regression suite
-        run: uv run pytest -q
+      # Full B62 unit regression already runs in b62-padiem-chat-ci.yml for
+      # every apps/padiem-chat/** PR change. Keep this lane browser-specific.
       - name: Install pinned Playwright
         run: uv pip install 'playwright==1.55.0'
       # Share the pinned browser across independent B62 QA workflows.
