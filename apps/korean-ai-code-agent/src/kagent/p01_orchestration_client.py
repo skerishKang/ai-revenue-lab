@@ -318,8 +318,9 @@ class P01EngineOrchestrationClient:
                 failure_detail=P01_FAILURE_DETAIL_CONTRACT,
             )
 
+        stream_iterator = stream_method(payload)
         try:
-            async for record in stream_method(payload):
+            async for record in stream_iterator:
                 if not isinstance(record, dict) or len(record) != 1:
                     raise fail("p01_stream_invalid_record")
                 if "event" in record and terminal_raw is None:
@@ -376,6 +377,13 @@ class P01EngineOrchestrationClient:
                 dispatch_class=P01DispatchClass.UNKNOWN,
                 failure_detail=P01_FAILURE_DETAIL_TRANSPORT,
             ) from exc
+        finally:
+            close = getattr(stream_iterator, "aclose", None)
+            if callable(close):
+                try:
+                    await close()
+                except Exception:
+                    pass
 
         if terminal_raw is None:
             raise fail("p01_stream_missing_result")
