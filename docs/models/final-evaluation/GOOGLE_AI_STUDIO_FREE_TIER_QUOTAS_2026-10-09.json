@@ -1,0 +1,695 @@
+{
+  "snapshot_date": "2026-10-09",
+  "timezone": "Asia/Seoul",
+  "tier": "free",
+  "source": "Owner-provided Google AI Studio Rate limits table",
+  "ui_url": "https://aistudio.google.com/rate-limit",
+  "scope": "displayed project free-tier quota snapshot, project identifier not supplied",
+  "usage_vs_limit": "User table entries are current consumption / permitted limit. Numeric quota properties below are permitted limits; consumption is 0 at capture.",
+  "unit_definitions": {
+    "rpm": "requests per minute",
+    "input_tpm": "input tokens per minute",
+    "rpd": "requests per day",
+    "grounding_rpd": "tool uses per day"
+  },
+  "not_a_model_capability": {
+    "input_tpm": "not context_window",
+    "rpd": "not max_output_tokens"
+  },
+  "b14_registered_google_display_mapping": {
+    "google/gemini-3.1-flash-lite": "Gemini 3.1 Flash Lite",
+    "google/gemini-3.5-flash-lite": "Gemini 3.5 Flash Lite",
+    "google/gemma-4-26b-a4b-it": "Gemma 4 26B",
+    "google/gemma-4-31b-it": "Gemma 4 31B"
+  },
+  "models": [
+    {
+      "display_name": "Antigravity",
+      "category": "에이전트",
+      "rpm": 60,
+      "input_tpm": 100000,
+      "rpd": 100,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Deep Research Pro Preview",
+      "category": "에이전트",
+      "rpm": 0,
+      "input_tpm": 0,
+      "rpd": 0,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 2 Flash",
+      "category": "텍스트 출력 모델",
+      "rpm": 0,
+      "input_tpm": 0,
+      "rpd": 0,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 2 Flash Lite",
+      "category": "텍스트 출력 모델",
+      "rpm": 0,
+      "input_tpm": 0,
+      "rpd": 0,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Computer Use Preview",
+      "category": "기타 모델",
+      "rpm": 0,
+      "input_tpm": 0,
+      "rpd": 0,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 2.5 Flash",
+      "category": "텍스트 출력 모델",
+      "rpm": 5,
+      "input_tpm": 250000,
+      "rpd": 20,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Nano Banana (Gemini 2.5 Flash Preview Image)",
+      "category": "멀티모달 생성 모델",
+      "rpm": 0,
+      "input_tpm": 0,
+      "rpd": 0,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 2.5 Flash Lite",
+      "category": "텍스트 출력 모델",
+      "rpm": 10,
+      "input_tpm": 250000,
+      "rpd": 20,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 2.5 Flash TTS",
+      "category": "멀티모달 생성 모델",
+      "rpm": 3,
+      "input_tpm": 10000,
+      "rpd": 10,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 2.5 Pro",
+      "category": "텍스트 출력 모델",
+      "rpm": 0,
+      "input_tpm": 0,
+      "rpd": 0,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 2.5 Pro TTS",
+      "category": "멀티모달 생성 모델",
+      "rpm": 0,
+      "input_tpm": 0,
+      "rpd": 0,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 3 Flash",
+      "category": "텍스트 출력 모델",
+      "rpm": 5,
+      "input_tpm": 250000,
+      "rpd": 20,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Nano Banana Pro (Gemini 3 Pro Image)",
+      "category": "멀티모달 생성 모델",
+      "rpm": 0,
+      "input_tpm": 0,
+      "rpd": 0,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 3.1 Pro",
+      "category": "텍스트 출력 모델",
+      "rpm": 0,
+      "input_tpm": 0,
+      "rpd": 0,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Nano Banana 2 (Gemini 3.1 Flash Image)",
+      "category": "멀티모달 생성 모델",
+      "rpm": 0,
+      "input_tpm": 0,
+      "rpd": 0,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 3.1 Flash Lite",
+      "category": "텍스트 출력 모델",
+      "rpm": 15,
+      "input_tpm": 250000,
+      "rpd": 500,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Nano Banana 2 Lite (Gemini 3.1 Flash Lite Image)",
+      "category": "멀티모달 생성 모델",
+      "rpm": 0,
+      "input_tpm": 0,
+      "rpd": 0,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 3.1 Flash TTS",
+      "category": "멀티모달 생성 모델",
+      "rpm": 3,
+      "input_tpm": 10000,
+      "rpd": 10,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 3.5 Flash",
+      "category": "텍스트 출력 모델",
+      "rpm": 5,
+      "input_tpm": 250000,
+      "rpd": 20,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 3.5 Flash Lite",
+      "category": "텍스트 출력 모델",
+      "rpm": 15,
+      "input_tpm": 250000,
+      "rpd": 500,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 3.5 Transcribe",
+      "category": "Live API",
+      "rpm": 3,
+      "input_tpm": 10000,
+      "rpd": 25,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 3.6 Flash",
+      "category": "텍스트 출력 모델",
+      "rpm": 5,
+      "input_tpm": 250000,
+      "rpd": 20,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 3.7 Flash",
+      "category": "텍스트 출력 모델",
+      "rpm": 5,
+      "input_tpm": 250000,
+      "rpd": 20,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 3.8 Flash",
+      "category": "텍스트 출력 모델",
+      "rpm": 5,
+      "input_tpm": 250000,
+      "rpd": 20,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 3.8 Flash Lite TTS",
+      "category": "멀티모달 생성 모델",
+      "rpm": 3,
+      "input_tpm": 10000,
+      "rpd": 10,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 3.8 Flash TTS",
+      "category": "멀티모달 생성 모델",
+      "rpm": 3,
+      "input_tpm": 10000,
+      "rpd": 10,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini Embedding 1",
+      "category": "기타 모델",
+      "rpm": 100,
+      "input_tpm": 30000,
+      "rpd": 1000,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini Embedding 2",
+      "category": "기타 모델",
+      "rpm": 100,
+      "input_tpm": 30000,
+      "rpd": 1000,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini Nano Banana 2.1",
+      "category": "미표시",
+      "rpm": 0,
+      "input_tpm": 0,
+      "rpd": 0,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini Omni 1.1 Flash",
+      "category": "멀티모달 생성 모델",
+      "rpm": 0,
+      "input_tpm": 0,
+      "rpd": 0,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini Omni Flash",
+      "category": "멀티모달 생성 모델",
+      "rpm": 0,
+      "input_tpm": 0,
+      "rpd": 0,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini Robotics ER 2 Preview",
+      "category": "기타 모델",
+      "rpm": 5,
+      "input_tpm": 250000,
+      "rpd": 20,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemma 4 26B",
+      "category": "기타 모델",
+      "rpm": 30,
+      "input_tpm": 16000,
+      "rpd": 14400,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemma 4 31B",
+      "category": "기타 모델",
+      "rpm": 30,
+      "input_tpm": 16000,
+      "rpd": 14400,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Lyria 3 Clip",
+      "category": "멀티모달 생성 모델",
+      "rpm": 0,
+      "input_tpm": 0,
+      "rpd": 0,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Lyria 3 Pro",
+      "category": "멀티모달 생성 모델",
+      "rpm": 0,
+      "input_tpm": 0,
+      "rpd": 0,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Veo 3 Fast Generate",
+      "category": "멀티모달 생성 모델",
+      "rpm": 0,
+      "input_tpm": null,
+      "rpd": 0,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": null,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Veo 3 Generate",
+      "category": "멀티모달 생성 모델",
+      "rpm": 0,
+      "input_tpm": null,
+      "rpd": 0,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": null,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Veo 3 Lite Generate",
+      "category": "멀티모달 생성 모델",
+      "rpm": 0,
+      "input_tpm": null,
+      "rpd": 0,
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": null,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 2.5 Flash Native Audio Dialog",
+      "category": "Live API",
+      "rpm": "unlimited",
+      "input_tpm": 1000000,
+      "rpd": "unlimited",
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 3 Flash Live",
+      "category": "Live API",
+      "rpm": "unlimited",
+      "input_tpm": 65000,
+      "rpd": "unlimited",
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 3.5 Live Translate",
+      "category": "Live API",
+      "rpm": "unlimited",
+      "input_tpm": 20000,
+      "rpd": "unlimited",
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 3.5 Transcribe Live",
+      "category": "Live API",
+      "rpm": "unlimited",
+      "input_tpm": 20000,
+      "rpd": "unlimited",
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 3.8 Live",
+      "category": "Live API",
+      "rpm": "unlimited",
+      "input_tpm": 65000,
+      "rpd": "unlimited",
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    },
+    {
+      "display_name": "Gemini 3.8 Live Extended Thinking",
+      "category": "Live API",
+      "rpm": "unlimited",
+      "input_tpm": 65000,
+      "rpd": "unlimited",
+      "observed_usage": {
+        "rpm": 0,
+        "input_tpm": 0,
+        "rpd": 0
+      }
+    }
+  ],
+  "tools": [
+    {
+      "display_name": "Deep Research Pro Preview",
+      "tool_type": "map_grounding",
+      "rpd": 500,
+      "observed_usage_rpd": 0
+    },
+    {
+      "display_name": "Gemini 2 Flash",
+      "tool_type": "map_grounding",
+      "rpd": 500,
+      "observed_usage_rpd": 0
+    },
+    {
+      "display_name": "Computer Use Preview",
+      "tool_type": "map_grounding",
+      "rpd": 500,
+      "observed_usage_rpd": 0
+    },
+    {
+      "display_name": "Gemini 2.5 Flash",
+      "tool_type": "map_grounding",
+      "rpd": 500,
+      "observed_usage_rpd": 0
+    },
+    {
+      "display_name": "Gemini 2.5 Flash Lite",
+      "tool_type": "map_grounding",
+      "rpd": 500,
+      "observed_usage_rpd": 0
+    },
+    {
+      "display_name": "Gemini 2.5 Pro",
+      "tool_type": "map_grounding",
+      "rpd": 0,
+      "observed_usage_rpd": 0
+    },
+    {
+      "display_name": "Gemini 3 Flash",
+      "tool_type": "map_grounding",
+      "rpd": 0,
+      "observed_usage_rpd": 0
+    },
+    {
+      "display_name": "Gemini 3.1 Pro",
+      "tool_type": "map_grounding",
+      "rpd": 0,
+      "observed_usage_rpd": 0
+    },
+    {
+      "display_name": "Gemini 3.1 Flash Lite",
+      "tool_type": "map_grounding",
+      "rpd": 500,
+      "observed_usage_rpd": 0
+    },
+    {
+      "display_name": "Gemini 3.1 Flash TTS",
+      "tool_type": "map_grounding",
+      "rpd": 500,
+      "observed_usage_rpd": 0
+    },
+    {
+      "display_name": "Gemini 3.5 Flash",
+      "tool_type": "map_grounding",
+      "rpd": 0,
+      "observed_usage_rpd": 0
+    },
+    {
+      "display_name": "Gemini 3.5 Flash Lite",
+      "tool_type": "map_grounding",
+      "rpd": 500,
+      "observed_usage_rpd": 0
+    },
+    {
+      "display_name": "Gemini 3.5 Transcribe",
+      "tool_type": "map_grounding",
+      "rpd": 500,
+      "observed_usage_rpd": 0
+    },
+    {
+      "display_name": "Gemini 3.6 Flash",
+      "tool_type": "map_grounding",
+      "rpd": 0,
+      "observed_usage_rpd": 0
+    },
+    {
+      "display_name": "Gemini 3.7 Flash",
+      "tool_type": "map_grounding",
+      "rpd": 0,
+      "observed_usage_rpd": 0
+    },
+    {
+      "display_name": "Gemini 3.8 Flash",
+      "tool_type": "map_grounding",
+      "rpd": 0,
+      "observed_usage_rpd": 0
+    },
+    {
+      "display_name": "Gemini Robotics ER 2 Preview",
+      "tool_type": "map_grounding",
+      "rpd": 500,
+      "observed_usage_rpd": 0
+    },
+    {
+      "display_name": "Gemini 2",
+      "tool_type": "search_grounding",
+      "rpd": 1500,
+      "observed_usage_rpd": 0
+    },
+    {
+      "display_name": "Gemini 2.5",
+      "tool_type": "search_grounding",
+      "rpd": 1500,
+      "observed_usage_rpd": 0
+    },
+    {
+      "display_name": "Gemini 3",
+      "tool_type": "search_grounding",
+      "rpd": 0,
+      "observed_usage_rpd": 0
+    },
+    {
+      "display_name": "Default",
+      "tool_type": "search_grounding",
+      "rpd": 1500,
+      "observed_usage_rpd": 0
+    }
+  ]
+}
