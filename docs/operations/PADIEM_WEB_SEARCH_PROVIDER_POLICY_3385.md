@@ -23,8 +23,8 @@ This is **an intentional, Owner-authorized, condition-specific fallback**, not a
 
 ## Server configuration
 
-- **Live B14 mode, no explicit provider override:** `Settings.from_env()` selects `tinyfish_daum` — TinyFish primary, Daum secondary on 402/429.
-- **Mock/offline mode:** default remains `off` to avoid unexpected egress; an explicitly supplied provider remains authoritative.
+- **Armed live B14 mode (`PADIEM_CHAT_LIVE_ENABLED=true`), no explicit provider override:** `Settings.from_env()` selects `tinyfish_daum` — TinyFish primary, Daum secondary on 402/429.
+- **Mock/offline or unarmed B14 mode:** default remains `off` to avoid unexpected egress; an explicitly supplied provider remains authoritative.
 - **Explicit live provider:** `PADIEM_CHAT_WEB_PROVIDER=tinyfish_daum` where deployment is explicitly configured; `tinyfish`, `daum`, and `off` still mean their direct behaviors.
 - Both previously registered server-side bindings are needed: `TINYFISH_API_KEY` and `PADIEM_CHAT_DAUM_REST_API_KEY`. Owner confirmed credentials **already exist**; do not mint, rotate or ask for keys. A missing live binding is a configuration error, **not** an excuse to silently disable search or use some third provider.
 - Merged source is **not** evidence that an already-serving Worker has applied the setting. Check actual served config/bindings/version separately through the standard bounded #3523 gate; no Production mutation is implied by this policy or test PR.
