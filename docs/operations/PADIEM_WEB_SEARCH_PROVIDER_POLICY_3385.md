@@ -146,3 +146,37 @@ Post-deploy verify 100% newly served exact-main Worker, both exact bindings,
 health/quotas, nominal public-only TinyFish and 402/429 Daum Search fallback.
 Never expose API values in logs or permit private workspace egress.
 Without all guards PASS do not claim production Search activation.
+
+## 2026-10-10 #3523 Evidence selection remediation / bounded production diagnostics
+
+Actual served /api/chat Search requests returned web_unavailable intermittently
+and on one successful TinyFish-route Search HTTP 404 no_evidence. The latter
+means upstream Search success is not by itself sufficient for answer grounding.
+Source quality requires exact entity-token overlaps with min_relevance_score=0.18.
+A navigational query such as `서울특별시 공식 누리집` can score just 0.1667
+when only the topical entity appears in the title and the remaining
+`공식` / `누리집` boilerplate does not appear literally. This is a reproducible
+example; do NOT claim it is proven to be the sole served 404 root cause.
+
+Navigation-term normalization now applies only when a website/navigation
+intent cue is present AND at least one distinct topical token remains.
+It drops navigational terms for matching only; it never changes the user's
+actual provider query or adds/substitutes a search call, lowers the global
+relevance threshold, permits substring entity matches or changes provider
+priority/402-429 fallback policy. Examples: `서울특별시` must NOT match
+`서울시` by substring, unrelated official sites remain irrelevant,
+and `피타고라스 공식` still treats `공식` as topical.
+
+Runtime emits only fixed safe diagnostic categories:
+`TINYFISH_SEARCH_NORMALIZATION=UPSTREAM_EMPTY|NO_USABLE_URL|USABLE`,
+`GROUNDING_SEARCH_EVIDENCE=PROVIDER_EMPTY|QUALITY_FILTER_REJECTED|QUALITY_SELECTED`.
+No raw text, URL, API credential, provider body, error detail or user query
+is printed. These markers clarify whether served no_evidence is provider
+empty, invalid/unsafe normalized URLs, or Core source-quality rejection.
+No private workspace data is sent to the search providers.
+
+Acceptance: exact-head CI, deploy newest reviewed main with existing
+29 Cloudflare bindings preserved, independently probe one public-only
+Search query while observing fixed labels; verify genuine evidence selection
+but do not claim full model completion while B14 user-selected executable
+profile is HOLD. B14 model selection is a separate authority, NOT automatic.

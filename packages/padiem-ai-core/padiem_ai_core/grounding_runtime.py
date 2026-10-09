@@ -341,6 +341,10 @@ class GroundedResearchRuntime:
         except WebRuntimeError as exc:
             raise self._web_error(exc) from exc
         evidence = self._quality_select(query, found, limit=self._policy.max_simple_sources)
+        # A fixed, bounded diagnostic bucket only; never log the query,
+        # evidence text, URLs, provider response data or credentials.
+        outcome = "PROVIDER_EMPTY" if not found else "QUALITY_FILTER_REJECTED" if not evidence else "QUALITY_SELECTED"
+        print("GROUNDING_SEARCH_EVIDENCE=" + outcome, flush=True)
         prepared = prepare_combined_grounding_context(
             evidence,
             additional_system_context=additional_system_context,
