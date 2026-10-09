@@ -127,8 +127,8 @@ def test_workspace_manual_selector_uses_json_registered_models():
         assert 'value="'+retired+'"' not in html
     assert html.count('data-provider=') >= len(models)
 
-def test_cloudflare_wrangler_includes_canonical_json_as_text_module(tmp_path):
-    """Official Wrangler module rule, not Python-generated registry fallback."""
+def test_wrangler_config_declares_canonical_json_text_module(tmp_path):
+    """Static guard only; actual bundle and boot are checked in Linux CI."""
     import tomllib
     from pathlib import Path
 

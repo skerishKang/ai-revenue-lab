@@ -1,0 +1,138 @@
+name: B14 Python Worker JSON Bundle Preflight
+
+# #3842: Verify the canonical JSON survives the real Linux Python Worker
+# package pipeline. PR-only, no secrets, no Production deploy or provider POST.
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/b14-worker-json-bundle-preflight.yml'
+      - 'apps/korean-ai-platform/wrangler.toml'
+      - 'apps/korean-ai-platform/deploy.sh'
+      - 'apps/korean-ai-platform/pyproject.toml'
+      - 'apps/korean-ai-platform/uv.lock'
+      - 'apps/korean-ai-platform/app/pilot/b14_models.json'
+      - 'apps/korean-ai-platform/app/pilot/model_registry_file.py'
+      - 'apps/korean-ai-platform/scripts/check_b14_worker_bundle.py'
+      - 'apps/korean-ai-platform/tests/test_b14_model_registry_file.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b14-json-bundle-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  bundle-preflight:
+    name: Linux pywrangler bundle + fail-closed + local Worker boot
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/korean-ai-platform
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up uv (same tool version as B14 deploy gate)
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.5'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Prepare exact source dependencies without duplicate registries
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv sync --frozen
+          # Same source-copy staging as the canonical deploy.sh, but only
+          # inside this temporary GitHub runner. No writes to the repo remote.
+          cp ../b66-quote-adapter/app/extraction_routing.py app/b66_extraction_routing.py
+          cp ../b66-quote-adapter/app/file_intake.py app/b66_file_intake.py
+          mkdir -p padiem_ai_core
+          printf '%s\n' '"""Deployment-staged package shell for canonical Core parser modules."""' > padiem_ai_core/__init__.py
+          for module in document_semantics.py document_normalization.py document_parser_boundary.py; do
+            cp "../../packages/padiem-ai-core/padiem_ai_core/${module}" "padiem_ai_core/${module}"
+          done
+          test -f app/pilot/b14_models.json
+          echo 'B14_CANONICAL_SOURCE=PASS'
+
+      - name: Real Linux pywrangler sync (no Cloudflare deploy)
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run pywrangler sync --force
+          test -d python_modules
+          rm -rf .venv .venv-workers
+          echo 'B14_PYWRANGLER_SYNC=PASS'
+
+      - name: Create exact Wrangler deployment artifact (dry-run only)
+        shell: bash
+        env:
+          CI: 'true'
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4.149.0 deploy --dry-run --outdir "${RUNNER_TEMP}/b14-worker-bundle" > "${RUNNER_TEMP}/b14-bundle.log" 2>&1 || {
+            tail -n 60 "${RUNNER_TEMP}/b14-bundle.log"
+            exit 1
+          }
+          grep -F 'app/pilot/b14_models.json' "${RUNNER_TEMP}/b14-bundle.log"
+          test -f "${RUNNER_TEMP}/b14-worker-bundle/app/pilot/b14_models.json"
+          echo 'B14_DRY_RUN_BUNDLE=PASS'
+
+      - name: Test real bundle bytes, loader and missing-JSON mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/check_b14_worker_bundle.py \
+            --source app/pilot/b14_models.json \
+            --bundle-dir "${RUNNER_TEMP}/b14-worker-bundle"
+
+      - name: Verify actual local Python Worker boot and nine-model GET
+        shell: bash
+        env:
+          CI: 'true'
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4.149.0 dev --local --ip 127.0.0.1 --port 8789 \
+            > "${RUNNER_TEMP}/b14-local-worker.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "${server_pid}" 2>/dev/null || true' EXIT
+          result="${RUNNER_TEMP}/b14-models-response.json"
+          ok=0
+          for i in $(seq 1 45); do
+            if curl --silent --show-error --fail --max-time 2 \
+              http://127.0.0.1:8789/api/pilot/models -o "${result}" 2>/dev/null; then
+              if python3 - "${result}" <<'PY'
+          import json,sys
+          from pathlib import Path
+          response=json.loads(Path(sys.argv[1]).read_text())
+          ids={row["id"] for row in response["registered_routes"]}
+          expected=json.loads(Path("app/pilot/b14_models.json").read_text())
+          assert ids=={row["id"] for row in expected["models"]}, (len(ids),len(expected["models"]))
+          print("B14_LOCAL_WORKER_BOOT=PASS")
+          print("B14_LOCAL_GET_ROSTER=PASS count=9")
+          PY
+              then
+                ok=1
+                break
+              fi
+            fi
+            sleep 2
+          done
+          if [ "${ok}" -ne 1 ]; then
+            echo 'B14_LOCAL_WORKER_BOOT=FAIL'
+            tail -n 65 "${RUNNER_TEMP}/b14-local-worker.log"
+            exit 1
+          fi
+
+      - name: Never deploy to Production
+        run: |
+          echo 'PRODUCTION_DEPLOYMENT=0'
+          echo 'PROVIDER_POST_CALLS=0'
