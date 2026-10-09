@@ -1,5 +1,9 @@
 name = "ai-revenue-korean-ai-platform"
 main = "worker.py"
+# Wrangler bundling: include the single canonical B14 JSON verbatim.
+find_additional_modules = true
+preserve_file_names = true
+
 compatibility_date = "2026-07-25"
 compatibility_flags = ["python_workers"]
 workers_dev = true
@@ -74,3 +78,9 @@ secret_name = "PADIEM_EXLAB_API_KEY"
 binding = "PADIEM_GEMINI_API_KEY"
 store_id = "f0b09ca04a7b43248154c773704a5616"
 secret_name = "PADIEM_GEMINI_API_KEY"
+
+# The owner-managed registry must be loaded from /session/metadata/app/pilot.
+[[rules]]
+type = "Text"
+globs = ["app/pilot/b14_models.json"]
+fallthrough = true
