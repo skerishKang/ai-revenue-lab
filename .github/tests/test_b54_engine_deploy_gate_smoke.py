@@ -877,3 +877,128 @@ def test_convergence_poll_stays_get_only() -> None:
             assert "-fsS" in line or line.strip().startswith("#")
             assert "--data" not in line and " -X " not in line
     assert "POST_DEPLOY_CONVERGENCE_READS=" in guard_run
+
+
+# --- #3748 / #3878: Smoke-only served-version CLI subprocess parity ---------
+# This file already runs in the PR-only deploy gate contract CI.  The real
+# guard is invoked only with local synthetic fixtures: zero network, zero live
+# Engine calls, and zero credential access.
+
+
+def _assert_3748_smoke_only_argv_contract(src: str) -> None:
+    assert src.count('--active-version="${active_version}"') == 1
+    assert '--active-version "${active_version}"' not in src
+    assert "--expect-overlay" in src
+    assert "--inspect-engine-admission-binding" in src
+    assert "SERVED_VERSION_MISMATCH" in src
+
+
+def _run_3748_smoke_only_guard(*argv: str, detail_id: str = "-safe-smoke-version",
+                               overlay: bool = True, admission_target: str = "correct"):
+    import json
+    import subprocess
+    import sys
+    import tempfile
+
+    bindings = [
+        {"name": "PADIEM_ENGINE_CALLER_REGISTRY_V1",
+         "type": "secret_text", "text": "SYNTHETIC_SMOKE_SECRET_PRIVATE"},
+    ]
+    if overlay:
+        bindings.append(
+            {"name": "PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY",
+             "type": "secret_text", "text": "SYNTHETIC_OVERLAY_PRIVATE"}
+        )
+    bindings.append({
+        "name": "CONTROL_PLANE_ENGINE_ADMISSION",
+        "type": "service",
+        "service": ("padiem-control-plane-engine-admission"
+                    if admission_target == "correct" else "wrong-synthetic-target"),
+    })
+    fixture = {
+        "success": True,
+        "result": {"id": detail_id, "resources": {"bindings": bindings}},
+    }
+    with tempfile.TemporaryDirectory(prefix="smoke-only-3748-") as tmp:
+        path = Path(tmp) / "synthetic-version.json"
+        path.write_text(json.dumps(fixture), encoding="utf-8")
+        return subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / ".github/scripts/b54_engine_served_version_guard.py"),
+                "verify", "--version-settings", str(path),
+                *argv, "--expect-overlay", "--inspect-engine-admission-binding",
+            ],
+            capture_output=True, text=True, timeout=15, check=False,
+        )
+
+
+def test_3748_smoke_only_cli_source_equals_form_exactly_once() -> None:
+    _assert_3748_smoke_only_argv_contract(_smoke_only_text())
+
+
+def test_3748_smoke_only_cli_pr_contract_runs_existing_test_offline() -> None:
+    ci = (ROOT / ".github/workflows/b54-engine-deploy-gate-contract-tests.yml").read_text(
+        encoding="utf-8"
+    )
+    assert "  pull_request:" in ci
+    assert '".github/workflows/b54-engine-production-smoke-only-gate.yml"' in ci
+    assert '".github/tests/test_b54_engine_deploy_gate_smoke.py"' in ci
+    assert "python -m pytest -q .github/tests/test_b54_engine_deploy_gate_smoke.py" in ci
+    assert list(_smoke_only_trigger()) == ["workflow_dispatch"]
+    assert len(_smoke_only_data()["jobs"]) == 1
+
+
+def test_3748_smoke_only_cli_real_guard_accepts_safe_hyphen_prefix() -> None:
+    assert re.fullmatch(r"[A-Za-z0-9._-]{1,64}", "-safe-smoke-version")
+    res = _run_3748_smoke_only_guard("--active-version=-safe-smoke-version")
+    assert res.returncode == 0, res.stderr
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=PASS" in res.stdout
+    assert "ENGINE_OVERLAY_SERVED_BINDING=PRESENT:secret_text" in res.stdout
+    assert "CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING=PRESENT:service" in res.stdout
+    assert "ENGINE_ADMISSION_BINDING_TARGET_VALIDATED=YES" in res.stdout
+    assert "SYNTHETIC_SMOKE_SECRET_PRIVATE" not in (res.stdout + res.stderr)
+
+
+def test_3748_smoke_only_cli_real_guard_rejects_split_option_token() -> None:
+    res = _run_3748_smoke_only_guard("--active-version", "-safe-smoke-version")
+    assert res.returncode == 2, res.stderr
+    assert "expected one argument" in res.stderr
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=PASS" not in res.stdout
+
+
+def test_3748_smoke_only_cli_real_guard_rejects_version_and_binding_drift() -> None:
+    mismatch = _run_3748_smoke_only_guard("--active-version=-wrong-version")
+    assert mismatch.returncode == 1
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in mismatch.stderr
+    no_overlay = _run_3748_smoke_only_guard(
+        "--active-version=-safe-smoke-version", overlay=False
+    )
+    assert no_overlay.returncode == 1
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in no_overlay.stderr
+    wrong_binding = _run_3748_smoke_only_guard(
+        "--active-version=-safe-smoke-version", admission_target="wrong"
+    )
+    assert wrong_binding.returncode == 1
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in wrong_binding.stderr
+    for res in (mismatch, no_overlay, wrong_binding):
+        assert "SYNTHETIC_SMOKE_SECRET_PRIVATE" not in (res.stdout + res.stderr)
+        assert "SYNTHETIC_OVERLAY_PRIVATE" not in (res.stdout + res.stderr)
+
+
+def test_3748_smoke_only_cli_mutation_red_and_original_bytes_unchanged() -> None:
+    # Perform a negative mutation strictly in memory, never on production YAML.
+    original = SMOKE_ONLY_WORKFLOW.read_bytes()
+    src = original.decode("utf-8")
+    _assert_3748_smoke_only_argv_contract(src)
+    mutated = src.replace(
+        '--active-version="${active_version}"', '--active-version "${active_version}"', 1
+    )
+    assert mutated != src
+    try:
+        _assert_3748_smoke_only_argv_contract(mutated)
+    except AssertionError:
+        pass  # red: the original space-form is refused
+    else:
+        raise AssertionError("old argv survived source-contract mutation")
+    assert SMOKE_ONLY_WORKFLOW.read_bytes() == original  # byte-identical green
