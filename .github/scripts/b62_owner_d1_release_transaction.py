@@ -15,7 +15,11 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from b62_binding_state_guard import BindingStateError, assert_owner_version_integrity, canonical_state
+from b62_binding_state_guard import (
+    BindingStateError,
+    assert_owner_version_integrity,
+    canonical_state,
+)
 from b62_owner_d1_release_preflight import (
     OWNER_BINDING,
     OWNER_NAME,
