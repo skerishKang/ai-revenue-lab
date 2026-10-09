@@ -444,7 +444,7 @@ def main(argv: list[str] | None = None) -> int:
             anchor = _read(args.anchor)
             if anchor.get("worker") != WORKERS[args.worker][0]:
                 raise TransactionError("ANCHOR_WORKER_MISMATCH")
-            count = verify(_read(args.pre), _read(args.post), _read(args.deployments),
+            verify(_read(args.pre), _read(args.post), _read(args.deployments),
                            _read(args.settings), ids[OWNER_NAME], anchor,
                            _read(args.pre_modules), _read(args.post_modules))
             print("OWNER_D1_POST_SERVED_RESOURCES=PASS")
