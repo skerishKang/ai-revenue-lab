@@ -307,8 +307,8 @@ jobs:
           # itself and fails closed (non-zero exit) on a mismatch, a missing id or an
           # unsafe id, so this workflow must not restate the comparison or the marker.
           python3 .github/scripts/cloudflare_served_version_lineage.py \
-            --active-version "${active}" \
-            --latest-version "${latest}"
+            --active-version="${active}" \
+            --latest-version="${latest}"
           echo "active_version=${active}" >> "${GITHUB_OUTPUT}"
           echo "ACTIVE_VERSION=${active}"
 
