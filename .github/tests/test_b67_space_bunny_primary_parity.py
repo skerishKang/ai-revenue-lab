@@ -1,12 +1,13 @@
 """Successor-pending canonical-primary parity contract (#3568).
 
-Static and network-free. Space Bunny remains registered as historical/manual
-B14 metadata, but Padiem has no canonical text/vision primary and no executable
-Plus route until an explicit successor is selected.
+Static and network-free. Space Bunny survives only as historical identity
+constants, not as a registered model/provider. Padiem has no canonical
+text/vision primary or executable Plus route pending owner decision.
 """
 
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
@@ -22,6 +23,7 @@ TIER_REGISTRY = ROOT / "apps" / "korean-ai-platform" / "app" / "pilot" / "tier_r
 A9_SCRIPT = ROOT / "apps" / "padiem-ai-engine" / "scripts" / "a9_production_smoke.py"
 A12_SCRIPT = ROOT / "apps" / "padiem-ai-engine" / "scripts" / "a12_stream_replay_production_smoke.py"
 A12_DOC = ROOT / "docs" / "operations" / "A12_STREAM_REPLAY_GATE_DEPENDENCIES.md"
+B14_JSON = ROOT / "apps" / "korean-ai-platform" / "app" / "pilot" / "b14_models.json"
 ROUTING_POLICY = ROOT / "apps" / "korean-ai-platform" / "app" / "pilot" / "routing_policy.py"
 
 
@@ -52,7 +54,20 @@ def test_kilo_catalog_fully_retires_space_bunny_to_historical_metadata() -> None
     assert _string_constant(kilo_text, "KILO_SPACE_BUNNY_MODEL_ID") == "kilo/stealth-space-bunny-alpha"
     assert _string_constant(kilo_text, "KILO_SPACE_BUNNY_UPSTREAM_MODEL") == "stealth/space-bunny-alpha"
     assert _string_constant(kilo_text, "KILO_SPACE_BUNNY_CREDENTIAL_BINDING") == "PADIEM_KILO_API_KEY"
-    assert "credential_source=CredentialSource.NONE" in kilo_text
+    # Owner removed all Kilo live registrations, not just Space Bunny.
+    assert "KILO_FREE_ROUTES: tuple[_KiloFreeRoute, ...] = ()" in kilo_text
+    data=json.loads(B14_JSON.read_text(encoding="utf-8"))
+    ids={m["id"] for m in data["models"]}
+    assert len(ids)==9
+    assert "kilo" not in data["providers"]
+    assert ids.isdisjoint({
+        "kilo/stealth-space-bunny-alpha",
+        "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+        "kilo/poolside-laguna-s-2.1-free",
+        "b-ai/qwen3.8-flash",
+        "infron/motif/motif-3",
+        "experiential/gpt-5.6-luna",
+    })
 
     # Owner final retirement decision: the lane is declared retired, absent
     # from KILO_FREE_ROUTES, and no Space Bunny _KiloFreeRoute entry remains.
@@ -94,7 +109,7 @@ def test_provider_registrations_remain_intact() -> None:
     for path in (SENSENOVA_PROVIDER, AGNES_PROVIDER, POOLSIDE_PROVIDER):
         assert path.is_file(), f"provider module deleted: {path.name}"
         text = path.read_text(encoding="utf-8")
-        assert "register_" in text
+        assert "legacy provider registration disabled: edit b14_models.json" in text
 
 
 def test_b14_auto_chain_is_unchanged() -> None:

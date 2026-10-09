@@ -67,7 +67,7 @@ def test_agnes_is_manual_pin_only_never_public_or_auto():
     route_ids = [r["id"] for r in data["registered_routes"]]
     agnes_route = next(r for r in data["registered_routes"] if r["id"] == AGNES_MODEL_ID)
     assert AGNES_MODEL_ID in route_ids
-    assert AGNES_MODEL_ID not in catalog_ids
+    assert AGNES_MODEL_ID in catalog_ids
     assert agnes_route["explicit_only"] is True
     assert agnes_route["public"] is False
     assert agnes_route["auto_eligible"] is False

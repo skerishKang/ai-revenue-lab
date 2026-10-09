@@ -1,3 +1,5 @@
+> 2026-10-08 모델 등록 구조: apps/korean-ai-platform/app/pilot/b14_models.json이 단일 실제 등록 원본입니다. 5개 제거/9개 유지 및 설정 절차는 B14_MODEL_REGISTRY_SINGLE_SOURCE.md를 참조하세요. 아래 기존 Owner 승인/배포 안전 정책은 유효하며 과거 모델 예시는 역사적 기록입니다.
+
 # B14 owner model decisions and implementation reconciliation (2026-10-08)
 
 **Authority status:** owner decision record and current snapshot; documentation only. This ledger takes precedence over older historical examples in issues #1933, #2107, #2698, #3143, #3209, #3570, and #3589 for reporting current owner choices. It does NOT replace B14 catalog execution permission, activate a model, authorize Production, or override MODEL_CHANGE_OWNER_APPROVAL_POLICY.md. The owner controls new selection and activation.

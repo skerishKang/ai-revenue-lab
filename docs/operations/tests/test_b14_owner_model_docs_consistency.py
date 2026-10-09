@@ -2,6 +2,7 @@
 
 Static docs only: no provider, network, billing, credentials or Production calls.
 """
+import json
 from pathlib import Path
 import unittest
 
@@ -57,8 +58,22 @@ class TestOwnerModelDocTruth(unittest.TestCase):
                 self.assertIn('"google/' + model_id + '"', provider)
         self.assertIn('GOOGLE_BASE_ORIGIN = "https://generativelanguage.googleapis.com/v1beta/openai"', provider)
         self.assertIn('GOOGLE_CREDENTIAL_BINDING = "PADIEM_GEMINI_API_KEY"', provider)
-        self.assertIn("register_google_provider()", platform)
-        self.assertIn("CATALOG_BY_ID[model.model_id] = model", provider)
+        # The current source of registration is one validated JSON registry,
+        # not the historical provider function and its init-time side effects.
+        registry = json.loads(read("apps/korean-ai-platform/app/pilot/b14_models.json"))
+        google = registry["providers"]["google"]
+        self.assertEqual(google["base_origin"], "https://generativelanguage.googleapis.com/v1beta/openai")
+        self.assertEqual(google["credential_binding_name"], "PADIEM_GEMINI_API_KEY")
+        model_rows={m["id"]:m for m in registry["models"]}
+        for model_id in GOOGLE:
+            with self.subTest(model_id=model_id):
+                exact_id="google/"+model_id
+                self.assertIn(exact_id,model_rows)
+                self.assertEqual(model_rows[exact_id]["provider_id"],"google")
+        self.assertEqual(len(model_rows),9)
+        self.assertNotIn("register_google_provider()", platform)
+        catalog=read("apps/korean-ai-platform/app/pilot/catalog.py")
+        self.assertIn("from .model_registry_file import install_models",catalog)
         self.assertIn("GOOGLE_PRODUCTION_READY = NOT_VERIFIED",
                       read("apps/korean-ai-platform/docs/B14_ROUTER_PLATFORM_AND_PADIEM_PROFILE.md"))
 

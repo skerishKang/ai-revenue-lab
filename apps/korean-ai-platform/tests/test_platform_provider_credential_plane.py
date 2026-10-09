@@ -203,16 +203,15 @@ def test_manual_route_fails_closed_when_secret_missing():
 # b14/auto eligibility tied to credential
 # ---------------------------------------------------------------------------
 def test_b14_auto_excludes_platform_model_when_secret_missing():
-    decision = resolve_auto_route(
-        task_type="general",
-        required_capabilities=["chat"],
-        optimize_for="balanced",
-        allow_external_fallback=True,
-    )
-    assert TEST_MODEL_ID not in _auto_pool(decision)
-    reasons = {c.get("model_id"): c.get("reason") for c in decision.excluded_candidates}
-    assert reasons.get(TEST_MODEL_ID) == "provider_secret_missing"
-
+    # Owner removed the remaining default free routes: scorer must fail closed.
+    with pytest.raises(NoSafeRoute) as info:
+        resolve_auto_route(
+            task_type="general",
+            required_capabilities=["chat"],
+            optimize_for="balanced",
+            allow_external_fallback=True,
+        )
+    assert info.value.upstream_called is False
 
 def test_b14_auto_can_include_platform_model_when_secret_present(monkeypatch):
     monkeypatch.setenv(TEST_BINDING, _SYNTH_KEY)
@@ -613,19 +612,15 @@ def test_stream_preview_platform_secret_fails_closed_when_secret_missing(monkeyp
     assert TEST_BINDING not in json.dumps(body)
 
 
-def test_stream_preview_kilo_route_still_streams(monkeypatch):
-    """Keyless Kilo manual route streams via stream-preview (mock mode)."""
-    monkeypatch.delenv(TEST_BINDING, raising=False)
-    client = TestClient(create_app())
-    response = client.post(
-        _STREAM_URL,
-        json={
-            "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-            "stream": True,
-            "messages": [{"role": "user", "content": "hi"}],
-        },
-    )
-    assert response.status_code == 200
-    assert response.headers["content-type"].startswith("text/event-stream")
+def test_stream_preview_retired_kilo_is_rejected_without_dispatch(monkeypatch):
+    monkeypatch.delenv(TEST_BINDING,raising=False)
+    client=TestClient(create_app())
+    response=client.post(_STREAM_URL,json={
+        "model":"kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+        "stream":True,
+        "messages":[{"role":"user","content":"hi"}],
+    })
+    assert response.status_code == 400
+    assert response.json()["error"]["code"] == "unsupported_model"
     assert TEST_BINDING not in response.text
     assert _SYNTH_KEY not in response.text

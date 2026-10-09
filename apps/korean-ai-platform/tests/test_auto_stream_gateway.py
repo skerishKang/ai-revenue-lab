@@ -197,10 +197,8 @@ def test_auto_preview_rejects_explicit_model_while_manual_preview_still_owns_it(
             "stream": True,
         },
     )
-    assert manual.status_code == 200
-    assert "data: [DONE]" in manual.text
-    manual_frames = _json_data_frames(manual.text)
-    assert manual_frames[0]["business14"]["route_mode"] == "manual"
+    assert manual.status_code == 400
+    assert manual.json()["error"]["code"] == "unsupported_model"
 
 
 def test_canonical_endpoint_still_rejects_stream_true_for_b14_auto():

@@ -97,47 +97,25 @@ def test_space_bunny_manual_resolution_fails_closed() -> None:
 
 
 def test_space_bunny_absent_from_auto_chain_and_fallback() -> None:
-    decision = resolve_auto_route(
-        task_type="general",
-        required_capabilities=["free"],
-        optimize_for="balanced",
-        allow_external_fallback=True,
-        max_attempts=3,
-    )
-    assert decision.selected_model != KILO_SPACE_BUNNY_MODEL_ID
-    fallback_ids = {item["model_id"] for item in decision.eligible_fallback}
-    assert KILO_SPACE_BUNNY_MODEL_ID not in fallback_ids
-
+    from app.pilot.errors import NoSafeRoute
+    assert KILO_SPACE_BUNNY_MODEL_ID not in B14_AUTO_CHAIN
+    with pytest.raises(NoSafeRoute) as exc:
+        resolve_auto_route(task_type="general",required_capabilities=["free"],
+                           optimize_for="balanced",allow_external_fallback=True,max_attempts=3)
+    assert exc.value.upstream_called is False
 
 def test_platform_adapter_has_no_space_bunny_auth_special_case() -> None:
-    # SPACE_BUNNY_AUTH_SPECIAL_CASE=REMOVED: the platform adapter builds the
-    # same keyless header shape for the kilo Provider regardless of model_id,
-    # and never reads the historical credential binding.
     import inspect
+    assert "KILO_SPACE_BUNNY" not in inspect.getsource(plat._request_headers)
+    assert ps.get_platform_provider("kilo") is None
+    assert get_catalog_by_id(KILO_SPACE_BUNNY_MODEL_ID) is None
 
-    source = inspect.getsource(plat._request_headers)
-    assert "KILO_SPACE_BUNNY" not in source
-    spec = ps.get_platform_provider("kilo")
-    assert spec is not None
-    headers = plat._request_headers(spec, model_id=KILO_SPACE_BUNNY_MODEL_ID)
-    assert headers == {"Content-Type": "application/json"}
-    assert "Authorization" not in headers
-
-
-def test_live_kilo_free_routes_stay_registered_and_keyless() -> None:
-    # Other Kilo routes keep their existing credential/keyless behavior.
-    route_ids = {route.model_id for route in KILO_FREE_ROUTES}
-    assert route_ids == {KILO_NEMOTRON_MODEL_ID, KILO_LAGUNA_MODEL_ID}
-    nemotron = get_catalog_by_id(KILO_NEMOTRON_MODEL_ID)
-    laguna = get_catalog_by_id(KILO_LAGUNA_MODEL_ID)
-    assert nemotron is not None and laguna is not None
-    assert nemotron.context_window == 1_000_000
-    assert laguna.context_window == 262_144
-
-    # Retired lanes stay unregistered (#2097 + Space Bunny retirement).
-    assert get_catalog_by_id(KILO_HY3_MODEL_ID) is None
-    assert get_catalog_by_id(KILO_MINIMAX_M3_MODEL_ID) is None
-
+def test_owner_removed_all_remaining_kilo_free_routes() -> None:
+    assert KILO_FREE_ROUTES == ()
+    for mid in (KILO_NEMOTRON_MODEL_ID,KILO_LAGUNA_MODEL_ID,
+                KILO_HY3_MODEL_ID,KILO_MINIMAX_M3_MODEL_ID):
+        assert get_catalog_by_id(mid) is None
+    assert ps.get_platform_provider("kilo") is None
 
 def test_business_66_browser_sources_carry_no_model_or_provider_identity() -> None:
     sources = _browser_sources()

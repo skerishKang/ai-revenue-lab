@@ -57,51 +57,22 @@ def test_registered_routes_are_price_and_secret_free(client):
         assert isinstance(entry["owner_excluded"], bool)
 
 
-def test_legacy_public_catalog_route_is_owner_excluded_from_auto(client):
-    routes = _registered_routes(client)
-    public = [r for r in routes if r["public"]]
-    explicit = [r for r in routes if r["explicit_only"]]
+def test_only_nine_manual_models(client):
+    routes=_registered_routes(client)
+    assert len(routes)==9
+    assert CATALOG_MODELS==[]
+    assert all(r["explicit_only"] for r in routes)
+    assert not any(r["auto_eligible"] or r["owner_excluded"] for r in routes)
 
-    assert len(public) == len(CATALOG_MODELS) == 1
-    assert public[0]["id"] == KILO_NEMOTRON_MODEL_ID
-    assert public[0]["provider_id"] == "kilo"
-    assert public[0]["owner_excluded"] is True
-    assert public[0]["auto_eligible"] is False
-    # #2097: minimax + hy3 retirement unregistered two explicit-only lanes.
-    # The owner final retirement decision (2026-10-07) retired the Space Bunny
-    # lane too: nine earlier manual-pin routes plus four Google owner-selected
-    # manual-pin routes (13 total); public auto lane remains unchanged.
-    assert len(explicit) == 13
-    assert all(not r["auto_eligible"] for r in explicit)
+def test_removed_kilo_models_are_unregistered(client):
+    assert not [r for r in _registered_routes(client) if r["provider_id"]=="kilo"]
 
-
-def test_all_registered_kilo_routes_are_not_customer_auto_eligible(client):
-    kilo_routes = [
-        r for r in _registered_routes(client) if r["provider_id"] == "kilo"
-    ]
-
-    # #2097: two of the four original Kilo free lanes are retired/unregistered.
-    # The owner final retirement decision (2026-10-07) retired the Space Bunny
-    # lane too. Both remaining Kilo entries are historical free registrations,
-    # neither customer-auto-eligible under the latest owner exclusion.
-    assert len(kilo_routes) == 2
-    assert all(r["free"] is True for r in kilo_routes)
-    assert sum(r["auto_eligible"] for r in kilo_routes) == 0
-    assert all(r["owner_excluded"] for r in kilo_routes)
-
-
-def test_poolside_and_sensenova_stay_out_of_public_catalog(client):
-    data = client.get("/api/pilot/models").json()
-    catalog_ids = [m["id"] for m in data["catalog"]]
-    route_ids = [r["id"] for r in data["registered_routes"]]
-
-    assert POOLSIDE_MODEL_ID in route_ids
-    assert SENSENOVA_MODEL_ID in route_ids
-    assert POOLSIDE_MODEL_ID not in catalog_ids
-    assert SENSENOVA_MODEL_ID not in catalog_ids
-    assert KILO_NEMOTRON_MODEL_ID in catalog_ids
-    assert "b14/auto" in catalog_ids
-
+def test_remaining_models_visible_in_exact_catalog(client):
+    data=client.get("/api/pilot/models").json()
+    ids={m["id"] for m in data["catalog"]}
+    assert ids=={r["id"] for r in data["registered_routes"]}
+    assert POOLSIDE_MODEL_ID in ids and SENSENOVA_MODEL_ID in ids
+    assert "b14/auto" not in ids
 
 def test_sensenova_route_is_explicit_only_and_not_free(client):
     entry = next(
@@ -129,20 +100,11 @@ def test_poolside_route_is_explicit_only_and_not_free(client):
     assert entry["auto_eligible"] is False
 
 
-def test_owner_excluded_registered_routes_are_never_auto_eligible(client):
-    """Owner exclusion overrides free/public route metadata."""
-    excluded = {
-        "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-        "kilo/poolside-laguna-s-2.1-free",
-        "b-ai/qwen3.8-flash",
-        "infron/motif/motif-3",
-        "experiential/gpt-5.6-luna",
-    }
-    rows = {r["id"]: r for r in _registered_routes(client)}
-    assert excluded.issubset(rows)
-    for model_id in excluded:
-        assert rows[model_id]["owner_excluded"] is True
-        assert rows[model_id]["auto_eligible"] is False
+def test_owner_deleted_five_not_in_registry(client):
+    excluded={"kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+        "kilo/poolside-laguna-s-2.1-free","b-ai/qwen3.8-flash",
+        "infron/motif/motif-3","experiential/gpt-5.6-luna"}
+    assert excluded.isdisjoint({r["id"] for r in _registered_routes(client)})
 
 def test_other_registered_routes_are_not_implicitly_excluded(client):
     rows = {r["id"]: r for r in _registered_routes(client)}

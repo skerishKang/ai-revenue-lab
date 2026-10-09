@@ -1,4 +1,4 @@
-"""Network-free B14 onboarding regressions for the four confirmed candidates."""
+"""Network-free B14 onboarding regressions for two remaining candidates and retired providers."""
 
 from __future__ import annotations
 
@@ -11,10 +11,11 @@ from starlette.testclient import TestClient
 
 from app.factory import create_app
 from app.pilot.catalog import CATALOG_BY_ID, CATALOG_MODELS, get_catalog_by_id
-from app.pilot.errors import PilotNotConfigured
+from app.pilot.errors import PilotNotConfigured, NoSafeRoute
 from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
 from app.pilot.platform import call_platform_chat_completions, stream_platform_chat_completions
 from app.pilot.platform_secrets import get_platform_provider
+from app.pilot.router_core import resolve_manual_route
 
 
 @dataclass(frozen=True)
@@ -29,15 +30,6 @@ class Candidate:
 
 
 CANDIDATES = (
-    Candidate(
-        "infron",
-        "PADIEM_INFRON_API_KEY",
-        "https://llm.onerouter.pro/v1",
-        "llm.onerouter.pro",
-        "infron/motif/motif-3",
-        "motif/motif-3",
-        "Infron",
-    ),
     Candidate(
         "inception",
         "PADIEM_INCEPTION_MERCURY_API_KEY",
@@ -56,15 +48,7 @@ CANDIDATES = (
         "Atria-Dawn-Preview",
         "Atria",
     ),
-    Candidate(
-        "experiential",
-        "PADIEM_EXLAB_API_KEY",
-        "https://api.experientiallabs.ai/v1",
-        "api.experientiallabs.ai",
-        "experiential/gpt-5.6-luna",
-        "gpt-5.6-luna",
-        "Experiential Labs",
-    ),
+
 )
 
 
@@ -286,3 +270,16 @@ async def test_candidate_streaming_uses_exact_model_and_actual_model_evidence(ca
     assert events[0].model == candidate.upstream_model
     assert events[-1].done is True
     assert all(secret not in repr(event) for event in events)
+
+
+@pytest.mark.parametrize("provider_id,model_id", [
+    ("infron","infron/motif/motif-3"),
+    ("experiential","experiential/gpt-5.6-luna"),
+])
+def test_owner_removed_provider_and_model_not_registered_or_dispatchable(provider_id,model_id):
+    assert get_platform_provider(provider_id) is None
+    assert get_catalog_by_id(model_id) is None
+    assert model_id not in CATALOG_BY_ID
+    with pytest.raises(NoSafeRoute) as exc:
+        resolve_manual_route(model_id)
+    assert exc.value.upstream_called is False

@@ -26,7 +26,7 @@ from app.pilot import gateway as gw
 from app.pilot import platform as plat
 from app.pilot.errors import UpstreamAuthFailed, UpstreamServerError, UpstreamTimeout
 
-KILO_MODEL = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+MODEL_ID = "agnes-ai/agnes-3.0-flash"
 
 
 def _ok_response(upstream_model: str) -> dict:
@@ -47,6 +47,12 @@ def _ok_response(upstream_model: str) -> dict:
         "_actual_response_model": upstream_model,
     }
 
+
+@pytest.fixture(autouse=True)
+def _approved_manual_model_secret(monkeypatch):
+    """The owner-approved Agnes model is the retry target, never a retired ID."""
+    monkeypatch.setenv("PADIEM_AGNES_API_KEY","sk-fixture-agnes-retry-0123456789")
+    monkeypatch.setenv("B14_PROVIDER_MODE","live")
 
 @pytest.fixture()
 def client():
@@ -87,7 +93,7 @@ def _install_seq(monkeypatch, behaviors):
 
 
 def _post(client, *, business14=None):
-    body = {"model": KILO_MODEL, "messages": [{"role": "user", "content": "hi"}]}
+    body = {"model": MODEL_ID, "messages": [{"role": "user", "content": "hi"}]}
     if business14 is not None:
         body["business14"] = business14
     return client.post(
@@ -150,10 +156,10 @@ def test_request_max_retries_zero_disables_same_route_retry(client, monkeypatch,
     assert error["attempt_evidence"] == [
         {
             "attempt": 1,
-            "model_id": KILO_MODEL,
-            "upstream_model": "nvidia/nemotron-3-ultra-550b-a55b:free",
-            "provider": "Kilo Gateway / NVIDIA",
-            "route_id": f"platform:{KILO_MODEL}",
+            "model_id": MODEL_ID,
+            "upstream_model": "agnes-3.0-flash",
+            "provider": "Agnes AI",
+            "route_id": f"platform:{MODEL_ID}",
             "outcome": "error",
             "error_code": "upstream_timeout",
             "retry_index": 0,

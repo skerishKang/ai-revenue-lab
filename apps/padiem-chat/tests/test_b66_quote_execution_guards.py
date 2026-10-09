@@ -236,9 +236,13 @@ gateway.asyncio.sleep = zero_sleep
 payload = json.loads(sys.stdin.read())
 # A synthetic route is registered ONLY inside this local subprocess.
 # It cannot turn a real excluded route into a positive customer fixture.
-historical = cat.CATALOG_BY_ID["kilo/nvidia-nemotron-3-ultra-550b-a55b-free"]
+# Copy the schema of a currently registered model, never a removed model.
+# Supply a dummy in-memory credential because the provider is always mocked
+# and must not trigger real upstream network calls.
+os.environ["PADIEM_AGNES_API_KEY"] = "sk-test-only-b66-quote-0123456789"
+approved = cat.CATALOG_BY_ID["agnes-ai/agnes-3.0-flash"]
 cat.CATALOG_BY_ID[payload["model"]] = replace(
-    historical, model_id=payload["model"],
+    approved, model_id=payload["model"],
     upstream_model="test-fixture/b66-quote-response",
     display_name="Synthetic quote budget transport route"
 )
