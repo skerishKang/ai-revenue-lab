@@ -6,6 +6,8 @@ import contextlib
 import importlib.util
 import io
 import json
+import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -156,3 +158,66 @@ def test_canonical_composition_still_reuses_existing_authorities() -> None:
         "scope_authority=scope_authority",
     ):
         assert marker in source
+
+
+def test_e9_workflow_uses_unambiguous_safe_version_argv() -> None:
+    """An option-shaped canonical id must reach the real CLI, not argparse's option parser."""
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    assert workflow.count('--active-version="${active_version}"') == 1
+    assert '--active-version "${active_version}"' not in workflow
+
+
+def test_e9_real_cli_accepts_canonical_leading_hyphen_id_and_rejects_drift() -> None:
+    """Subprocess, not in-process helper.main: argparse is part of the contract."""
+    helper = _load_helper()
+    version_id = "-safe-version"
+    assert helper.is_safe_version_id(version_id)
+
+    payload = _payload(_bindings())
+    payload["result"]["id"] = version_id
+    with tempfile.TemporaryDirectory() as temp:
+        settings = Path(temp) / "version.json"
+        settings.write_text(json.dumps(payload), encoding="utf-8")
+        base = [
+            sys.executable,
+            str(HELPER),
+            "verify",
+            "--version-settings",
+            str(settings),
+        ]
+        flags = [
+            "--require-approval-runtime-bindings",
+            "--require-a6-activation-runtime-bindings",
+        ]
+        accepted = subprocess.run(
+            [*base, f"--active-version={version_id}", *flags],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        assert accepted.returncode == 0, accepted.stderr
+        assert "B54_ENGINE_SERVED_VERSION_GUARD=PASS" in accepted.stdout
+        assert "APPROVAL_RUNTIME_BINDINGS_VALIDATED=YES" in accepted.stdout
+        assert "A6_ACTIVATION_RUNTIME_BINDINGS_VALIDATED=YES" in accepted.stdout
+        assert DB not in accepted.stdout
+        assert "never-print" not in accepted.stdout
+
+        mismatch = subprocess.run(
+            [*base, "--active-version=-different-safe-version", *flags],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        assert mismatch.returncode == 1
+        assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in mismatch.stderr
+
+        ambiguous = subprocess.run(
+            [*base, "--active-version", version_id, *flags],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        assert ambiguous.returncode == 2, ambiguous.stderr
