@@ -245,7 +245,6 @@ class DriveArtifactUploadTests(unittest.TestCase):
         for b in (
             binding(granted_scopes=("https://www.googleapis.com/auth/drive.readonly",)),
             binding(granted_capabilities=("drive.files.get",)),
-            binding(connector_id="gmail"),
             binding(state=ConnectorBindingState.REVOKED, revoked_at=NOW),
             binding(expires_at=NOW - timedelta(minutes=1)),
         ):
@@ -253,6 +252,9 @@ class DriveArtifactUploadTests(unittest.TestCase):
             with self.assertRaises(DriveArtifactUploadError):
                 deliver(adapter)
             self.assertFalse(port.calls)
+        # Wrong connector is rejected even earlier, at composition time.
+        with self.assertRaisesRegex(DriveArtifactUploadError, "binding and scope mismatch"):
+            driver(b=binding(connector_id="gmail"))
 
     def test_wrong_actor_workspace_binding_and_create_tool_refused(self):
         variants = [
