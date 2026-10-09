@@ -1,3 +1,7 @@
+<!-- B14_OWNER_ROLE_SOURCE_OF_TRUTH_20261010 -->
+> **B14 역할 최신 원칙(2026-10-10):** [원제작사 모델·서빙 제공업체·변형 모델의 공식 사양 및 B14 실행 권한](../architecture/B14_MODEL_PROVIDER_EXECUTION_AUTHORITY_2026-10-10.md)을 우선 확인합니다. **B14는 정확히 사용자가 선택한 모델을 해당 업체의 공식 API로 실행**하며, temperature/토큰/리즈닝을 임의 지정하거나 옵션을 조용히 바꾸지 않습니다. 원본 모델의 공식 사양과 실제 API 제공업체의 계약은 별도 증빙합니다. 과거 코드·평가 수치는 이 원칙의 구현 증명이 아닙니다.
+<!-- /B14_OWNER_ROLE_SOURCE_OF_TRUTH_20261010 -->
+
 <!-- B14_OFFICIAL_PARAMETER_AUDIT_20261010 -->
 > **2026-10-10 최신 해석:** [B14 공식 파라미터·재시험 판단 감사](../models/final-evaluation/B14_OFFICIAL_PARAMETER_REVALIDATION_2026-10-10.md)를 먼저 확인하세요. 현재 canonical 등록은 **10모델/7제공자**입니다. 아래 '9개'는 2026-10-09 역사적 현황입니다. 기존 평가에서 사용한 temperature=0 및 공통 max_tokens는 공식 권장 설정으로 간주하지 않습니다. 공식 공급사 기본값/추론/출력 예산을 검증하는 별도 재시험과 B14 전달 검증 전에는 최종 성능 우열로 사용하지 않습니다. 모델 자동 선택, 대체 라우팅 또는 운영 배포를 승인하는 문서가 아닙니다.
 <!-- /B14_OFFICIAL_PARAMETER_AUDIT_20261010 -->
@@ -50,7 +54,7 @@ B14 고정 auto 및 구버전 제품 HOLD는 사용자 지정 모델이 아닙�
 ## 2026-10-09 exact Owner-registry evaluation contract
 
 - Detailed workflow/rubric: docs/operations/B14_B66_QUOTE_MODEL_EVALUATION_PROTOCOL.md. No live nine-model benchmark is authorized by a source-only preflight.
-- Canonical registered candidates: only enabled exact IDs from apps/korean-ai-platform/app/pilot/b14_models.json. Current-main count: nine. .github/scripts/b14_owner_evaluation_registry.py verifies this before model assessment; provider discovery is NOT registration.
+- Canonical registered candidates: only enabled exact IDs from apps/korean-ai-platform/app/pilot/b14_models.json. Historical 2026-10-09 count: nine. Current count is determined only from the canonical JSON (10 as of 2026-10-10). .github/scripts/b14_owner_evaluation_registry.py verifies this before model assessment; provider discovery is NOT registration.
 - Direct Poolside Laguna S 2.1 is poolside/laguna-s-2.1 using https://inference.poolside.ai/v1 and the PADIEM_POOLSIDE_API_KEY binding NAME. All Kilo Laguna aliases remain Owner-excluded.
 - Other excluded identities: B.AI Qwen, Motif 3, GPT-5.6 Luna, NVIDIA Nemotron. Historic five-model comparative fixture aliases are not authorization. The old live workflow is registry-gated, with the deleted models and all-five selector excluded.
 - StepFun #3835 is Draft and does not extend the current-main nine-model roster. Nor does API availability, a synthetic test or an empty credential binding establish live provider readiness.

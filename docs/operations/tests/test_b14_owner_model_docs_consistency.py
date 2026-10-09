@@ -47,7 +47,7 @@ class TestOwnerModelDocTruth(unittest.TestCase):
         s=read("apps/korean-ai-platform/docs/B14_ROUTER_PLATFORM_AND_PADIEM_PROFILE.md").split("## 2. Current Padiem request",1)[1].split("## 3. Auto-routing rule",1)[0]
         self.assertIn("B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md", s)
         self.assertIn("CURRENT_MERGED_PLUS", s)
-        self.assertIn("GOOGLE_SOURCE_AUTHORITY = apps/korean-ai-platform/app/pilot/google_provider.py", s)
+        self.assertIn("CANONICAL_REGISTERED_MODELS_SOURCE = apps/korean-ai-platform/app/pilot/b14_models.json", s)
         self.assertNotIn("GOOGLE_MODEL_SOURCE_MERGED = NO", s)
         self.assertNotIn("No successor is selected yet",s)
     def test_google_registration_is_current_merged_source_not_production_evidence(self):
@@ -74,7 +74,7 @@ class TestOwnerModelDocTruth(unittest.TestCase):
         self.assertNotIn("register_google_provider()", platform)
         catalog=read("apps/korean-ai-platform/app/pilot/catalog.py")
         self.assertIn("from .model_registry_file import install_models",catalog)
-        self.assertIn("GOOGLE_PRODUCTION_READY = NOT_VERIFIED",
+        self.assertIn("GOOGLE_PRODUCTION_READY = PER_MODEL_LIVE_EVIDENCE_REQUIRED",
                       read("apps/korean-ai-platform/docs/B14_ROUTER_PLATFORM_AND_PADIEM_PROFILE.md"))
 
     def test_current_entrypoints_never_claim_google_source_unmerged(self):
@@ -103,6 +103,43 @@ class TestOwnerModelDocTruth(unittest.TestCase):
         p=read("docs/operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md")
         self.assertIn("## 0B. Current owner-selected model facts",p)
         self.assertIn("SILENT_FALLBACK=PROHIBITED",p)
+
+    def test_b14_source_of_truth_role_and_provider_variant_separation(self):
+        charter = read("docs/architecture/B14_MODEL_PROVIDER_EXECUTION_AUTHORITY_2026-10-10.md")
+        for fact in (
+            "DOC_STATUS = CANONICAL_B14_EXECUTION_ROLE",
+            "A. 원제작사 모델을 변경 없이 제공",
+            "B. 제공업체가 개발·수정·튜닝한 별도 모델",
+            "REQUEST_OMITTED_OPTION = OMIT_FROM_UPSTREAM",
+            "UNKNOWN_API_PARAMETER = EXPLICIT_UNSUPPORTED",
+            "B14_ARBITRARY_TEMPERATURE_OR_THINKING = FORBIDDEN",
+            "PROVENANCE_UNVERIFIED",
+            "PARAMETER_SUPPORT_UNKNOWN",
+            "#3977",
+            "#3906",
+        ):
+            with self.subTest(fact=fact):
+                self.assertIn(fact, charter)
+
+    def test_b14_authority_entrypoints_link_to_role_and_no_stale_nemotron_tier(self):
+        paths = (
+            "apps/korean-ai-platform/README.md",
+            "apps/korean-ai-platform/docs/B14_ROUTER_PLATFORM_AND_PADIEM_PROFILE.md",
+            "docs/architecture/PADIEM_AI_VERTICAL_STACK.md",
+            "docs/architecture/PADIEM_AI_CAPABILITY_OWNERSHIP_REGISTRY_v1.md",
+            "docs/operations/B14_MODEL_REGISTRY_SINGLE_SOURCE.md",
+            "docs/operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md",
+            "docs/operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md",
+            "docs/models/README.md",
+            "docs/models/final-evaluation/B14_OFFICIAL_PARAMETER_REVALIDATION_2026-10-10.md",
+        )
+        for path in paths:
+            with self.subTest(path=path):
+                self.assertIn("B14_MODEL_PROVIDER_EXECUTION_AUTHORITY_2026-10-10.md", read(path))
+        stable = read("docs/architecture/PADIEM_AI_CAPABILITY_OWNERSHIP_REGISTRY_v1.md")
+        self.assertNotIn("Padiem Pro  = Nemotron", stable)
+        self.assertIn("PADIEM_PLUS_PRO_MAX_MODEL_GROUPS = EMPTY_IN_CURRENT_B14_REGISTRY", stable)
+
 
 if __name__=="__main__":
     unittest.main()
