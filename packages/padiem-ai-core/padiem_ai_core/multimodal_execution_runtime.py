@@ -18,6 +18,7 @@ from .execution_runtime import (
     _error_class_for_b14,
     _normalize_additional_system_context,
     _normalize_model_policy,
+    _normalize_reasoning_effort,
     _safe_identifier,
     _safe_message_for_b14,
 )
@@ -129,6 +130,10 @@ class MultimodalExecutionRuntime(ExecutionRuntime):
         try:
             system_instruction = _compose_system_instruction(request)  # type: ignore[arg-type]
             model, temperature, routing = _normalize_model_policy(request.agent)
+            # #3906: the image lane has no per-model reasoning-level contract, so
+            # an explicit level is refused here rather than silently dropped.
+            if _normalize_reasoning_effort(request.agent) is not None:
+                raise ValueError("multimodal requests do not carry reasoning_effort")
             messages = request.messages
             if system_instruction is not None:
                 messages = (
@@ -234,6 +239,9 @@ class MultimodalStreamingExecutionRuntime(StreamingExecutionRuntime):
         try:
             system_instruction = _compose_system_instruction(request)
             model, temperature, routing = _normalize_model_policy(request.agent)
+            # #3906: same refusal as the non-streaming image lane above.
+            if _normalize_reasoning_effort(request.agent) is not None:
+                raise ValueError("multimodal requests do not carry reasoning_effort")
             messages = request.messages
             if system_instruction is not None:
                 messages = ({"role": "system", "content": system_instruction}, *messages)

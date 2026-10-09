@@ -350,9 +350,10 @@ async def b66_quote_models(request: Request) -> JSONResponse:
         and any(row["model_id"] == proposed_default for row in models)
     ) else None
     # Per-model selectable reasoning levels (#3906). Each row keeps its exact
-    # registered ID and gains only the options that model may actually use.
-    # Until B14 attests per-model capability (#3977), every model offers only
-    # the fail-closed provider default, so no unverified option is ever shown.
+    # registered ID and gains only the options B14 verified for that exact
+    # served model (#3977 merged capability metadata); a model without verified
+    # levels keeps the fail-closed provider default, so no unverified option is
+    # ever shown.
     rows = [
         {
             "model_id": row["model_id"],

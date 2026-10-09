@@ -9,6 +9,7 @@ from typing import Any, Protocol
 import uuid
 
 from .b14_execution import (
+    REASONING_EFFORT_VALUES,
     B14ChatRequest,
     B14ExecutionError,
     B14ExecutionResult,
@@ -38,6 +39,10 @@ _MODEL_POLICY_FIELDS = frozenset(
         "provider_order",
         "max_attempts",
         "max_retries",
+        # #3906: explicit per-model reasoning level chosen by the user. It is
+        # not a sampling default: omitting it leaves provider default behaviour
+        # untouched, and there is no synthesized fallback value.
+        "reasoning_effort",
     }
 )
 
@@ -171,6 +176,30 @@ def _normalize_model_policy(
         max_retries=max_retries,
     )
     return model.strip(), float(temperature), routing
+
+
+def _normalize_reasoning_effort(agent: AgentProfile) -> str | None:
+    """Read the explicit per-model reasoning level, or None when omitted.
+
+    #3906: a separate accessor keeps the existing ``_normalize_model_policy``
+    return shape intact for every other caller in the repo, while the new
+    option still gets its own bounded validation. The policy must not invent a
+    level, so an unknown spelling is rejected instead of being rounded to a
+    supported one. Which SERVED model accepts which value stays provider
+    capability metadata owned by B14, not a decision this layer makes.
+    """
+    if "reasoning_effort" not in agent.model_policy:
+        return None
+    value = agent.model_policy["reasoning_effort"]
+    if value is None:
+        return None
+    if not isinstance(value, str) or value not in REASONING_EFFORT_VALUES:
+        raise ValueError(
+            "model_policy.reasoning_effort must be one of "
+            + ", ".join(sorted(REASONING_EFFORT_VALUES))
+            + " or None"
+        )
+    return value
 
 
 def _error_class_for_b14(code: str) -> ErrorClass:
@@ -392,6 +421,7 @@ class ExecutionRuntime:
         try:
             system_instruction = _compose_system_instruction(request)
             model, temperature, routing = _normalize_model_policy(request.agent)
+            reasoning_effort = _normalize_reasoning_effort(request.agent)
             messages = request.messages
             if system_instruction is not None:
                 messages = (
@@ -404,6 +434,7 @@ class ExecutionRuntime:
                 temperature=temperature,
                 max_tokens=request.agent.max_tokens,
                 routing=routing,
+                reasoning_effort=reasoning_effort,
             )
         except ValueError:
             metadata = self._metadata(

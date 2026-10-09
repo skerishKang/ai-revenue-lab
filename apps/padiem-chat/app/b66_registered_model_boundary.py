@@ -14,6 +14,7 @@ import re
 from typing import Any, Awaitable, Callable, Protocol
 
 from .b14_client import ChatRuntimeError
+from .b66_reasoning_level import REASONING_EFFORT_FIELD, reasoning_parameter_for_request
 
 
 _SAFE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}\Z")
@@ -95,6 +96,7 @@ class ExactB14QuoteTextExecutor(Protocol):
         messages: list[dict[str, str]],
         additional_system_context: str | None,
         requirements: B66QuoteTaskRequirements,
+        reasoning_effort: str | None = None,
     ) -> dict[str, Any]: ...
 
 
@@ -156,6 +158,7 @@ class B14QuoteExactModelExecutor:
         messages: list[dict[str, str]],
         additional_system_context: str | None,
         requirements: B66QuoteTaskRequirements,
+        reasoning_effort: str | None = None,
     ) -> dict[str, Any]:
         if (
             replace(requirements, selected_model_id=None) != B66QuoteTaskRequirements()
@@ -163,10 +166,19 @@ class B14QuoteExactModelExecutor:
             or route.model_id != requirements.selected_model_id
         ):
             raise B66ModelRouteError("model_identity_invalid")
+        # Omitted stays omitted (#3906): a client that has not adopted the
+        # #3977 reasoning contract keeps its exact pre-existing call shape, and
+        # the request body carries no reasoning key either way.
+        reasoning_kwargs = (
+            {"reasoning_effort": reasoning_effort}
+            if reasoning_effort is not None
+            else {}
+        )
         return await self._client.complete_registered_quote_model(
             messages,
             model=route.model_id,
             additional_system_context=additional_system_context,
+            **reasoning_kwargs,
         )
 
 
@@ -207,7 +219,18 @@ class B66RegisteredModelCompletion:
         additional_system_context: str | None = None,
         attachments: tuple[Any, ...] = (),
         model_id: str | None = None,
+        reasoning_level: str | None = None,
     ) -> dict[str, Any]:
+        # #3906: resolve the upstream reasoning argument BEFORE anything can be
+        # dispatched, so an unsupported level costs no provider call and no
+        # reservation. The level is validated against the exact model the user
+        # selected and is never downgraded to a neighbouring level.
+        try:
+            reasoning_parameters = reasoning_parameter_for_request(model_id, reasoning_level)
+        except ValueError:
+            await self._refund_before_dispatch()
+            raise B66ModelRouteError("model_capability_unavailable") from None
+        reasoning_effort = reasoning_parameters.get(REASONING_EFFORT_FIELD)
         if self._resolver is None or self._executor is None:
             await self._refund_before_dispatch()
             raise B66ModelRouteError("selection_unconfigured")
@@ -254,12 +277,20 @@ class B66RegisteredModelCompletion:
             raise B66ModelRouteError("selection_unavailable") from None
 
         # One dispatcher invocation, never a client-side retry/fallback.
+        # An omitted level adds no keyword, so an executor that predates #3906
+        # keeps working unchanged; a selected level is forwarded explicitly.
+        reasoning_kwargs = (
+            {"reasoning_effort": reasoning_effort}
+            if reasoning_effort is not None
+            else {}
+        )
         try:
             result = await self._executor.execute_quote_text(
                 route=selected,
                 messages=[dict(messages[0])],
                 additional_system_context=additional_system_context,
                 requirements=requirements,
+                **reasoning_kwargs,
             )
         except ChatRuntimeError:
             # Keep the existing bounded provider timeout/server/shape class.

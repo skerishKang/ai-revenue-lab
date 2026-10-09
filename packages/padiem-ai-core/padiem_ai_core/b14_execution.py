@@ -319,6 +319,15 @@ class B14RoutingOptions:
         return out
 
 
+# #3906: the closed vocabulary of the provider-native ``reasoning_effort``
+# option the B14 gateway documents and forwards (see #3977 source
+# apps/korean-ai-platform/app/pilot/model_native_parameters.py). This contract
+# fixes only the wire NAME and the accepted SPELLING. WHICH served model accepts
+# WHICH value stays provider capability metadata owned by B14, so a model that
+# does not document a level is never offered one by a caller.
+REASONING_EFFORT_VALUES = frozenset({"minimal", "low", "medium", "high"})
+
+
 @dataclass(frozen=True, slots=True)
 class B14ChatRequest:
     messages: tuple[Mapping[str, Any], ...]
@@ -329,6 +338,12 @@ class B14ChatRequest:
     temperature: float = 0.2
     max_tokens: int | None = None
     routing: B14RoutingOptions = field(default_factory=B14RoutingOptions)
+    # #3906: an EXPLICIT user-selected reasoning level. Omitted stays omitted so
+    # the served provider applies its own default; the payload then carries no
+    # reasoning key at all. A present value is transmitted as the provider's
+    # documented ``reasoning_effort`` field and is never downgraded, substituted
+    # or silently dropped.
+    reasoning_effort: str | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "messages", _normalize_messages(self.messages))
@@ -366,6 +381,18 @@ class B14ChatRequest:
         if not isinstance(self.routing, B14RoutingOptions):
             raise ValueError("routing must be B14RoutingOptions")
 
+        if (
+            self.reasoning_effort is not None
+            and self.reasoning_effort not in REASONING_EFFORT_VALUES
+        ):
+            # Fail closed on a misspelled or invented level instead of sending a
+            # paid-provider request the gateway would have to reject anyway.
+            raise ValueError(
+                "reasoning_effort must be one of "
+                + ", ".join(sorted(REASONING_EFFORT_VALUES))
+                + " or None"
+            )
+
     def to_payload(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
             "model": self.model,
@@ -374,6 +401,8 @@ class B14ChatRequest:
         }
         if self.max_tokens is not None:
             payload["max_tokens"] = self.max_tokens
+        if self.reasoning_effort is not None:
+            payload["reasoning_effort"] = self.reasoning_effort
         routing = self.routing.to_dict()
         if routing:
             payload["business14"] = routing

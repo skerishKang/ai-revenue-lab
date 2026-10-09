@@ -19,6 +19,7 @@ from .execution_runtime import (
     _compose_system_instruction,
     _error_class_for_b14,
     _normalize_model_policy,
+    _normalize_reasoning_effort,
     _safe_identifier,
     _safe_message_for_b14,
     _selected_model,
@@ -373,6 +374,7 @@ class StreamingExecutionRuntime:
         try:
             system_instruction = _compose_system_instruction(request)
             model, temperature, routing = _normalize_model_policy(request.agent)
+            reasoning_effort = _normalize_reasoning_effort(request.agent)
             messages = request.messages
             if system_instruction is not None:
                 messages = ({"role": "system", "content": system_instruction}, *messages)
@@ -382,6 +384,7 @@ class StreamingExecutionRuntime:
                 temperature=temperature,
                 max_tokens=request.agent.max_tokens,
                 routing=routing,
+                reasoning_effort=reasoning_effort,
             )
         except ValueError:
             metadata = self._metadata(

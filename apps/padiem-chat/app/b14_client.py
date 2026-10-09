@@ -251,6 +251,7 @@ def _agent_profile(
     model: str,
     required_capabilities: tuple[str, ...],
     max_retries: int | None = None,
+    reasoning_effort: str | None = None,
 ) -> AgentProfile:
     """Convert B62-owned TaskMode/model policy into the locked Core contract."""
 
@@ -275,6 +276,10 @@ def _agent_profile(
             "allow_external_fallback": False,
             "max_attempts": 1,
             **({"max_retries": max_retries} if max_retries is not None else {}),
+            # #3906: the user's explicit per-model reasoning level. Omitted stays
+            # omitted, so the provider keeps its own default and the request body
+            # carries no reasoning key at all.
+            **({"reasoning_effort": reasoning_effort} if reasoning_effort is not None else {}),
         },
     )
 
@@ -287,6 +292,7 @@ def _execution_request(
     required_capabilities: tuple[str, ...],
     additional_system_context: str | None,
     max_retries: int | None = None,
+    reasoning_effort: str | None = None,
 ) -> ExecutionRequest:
     return ExecutionRequest(
         agent=_agent_profile(
@@ -294,6 +300,7 @@ def _execution_request(
             model=model,
             required_capabilities=required_capabilities,
             max_retries=max_retries,
+            reasoning_effort=reasoning_effort,
         ),
         messages=tuple(dict(message) for message in messages),
         additional_system_context=_bounded_context(additional_system_context),
@@ -518,6 +525,7 @@ class B14Client:
         additional_system_context: str | None,
         max_retries: int | None = None,
         before_dispatch: Callable[[], Awaitable[None]] | None = None,
+        reasoning_effort: str | None = None,
     ) -> dict[str, Any]:
         request = _execution_request(
             messages,
@@ -526,6 +534,7 @@ class B14Client:
             required_capabilities=("chat",),
             additional_system_context=additional_system_context,
             max_retries=max_retries,
+            reasoning_effort=reasoning_effort,
         )
         core_client = B14ExecutionClient(
             self._completion_config(),
@@ -630,6 +639,7 @@ class B14Client:
         *,
         model: str,
         additional_system_context: str | None = None,
+        reasoning_effort: str | None = None,
     ) -> dict[str, Any]:
         """B66 trusted exact route -> common Core/B14, NOT B62 tier policy.
 
@@ -669,6 +679,13 @@ class B14Client:
             max_tokens=None,
         )
         bounded_context = _bounded_context(additional_system_context)
+        # #3906: only a level the caller actually selected is added, so a
+        # provider-default request keeps the exact pre-#3906 call shape.
+        reasoning_kwargs = (
+            {"reasoning_effort": reasoning_effort}
+            if reasoning_effort is not None
+            else {}
+        )
         return await self._complete_text(
             [dict(messages[0])],
             skill=quote_task,
@@ -676,6 +693,7 @@ class B14Client:
             additional_system_context=bounded_context,
             max_retries=0,
             before_dispatch=self._prepare_registered_quote_dispatch,
+            **reasoning_kwargs,
         )
 
     async def complete(

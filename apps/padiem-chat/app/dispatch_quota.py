@@ -167,13 +167,28 @@ class DispatchAwareB14Client(B14Client):
     async def _prepare_registered_quote_dispatch(self) -> None:
         _mark_active_reservation_dispatched()
 
-    async def complete_registered_quote_model(self, messages, *, model, additional_system_context=None):
-        """Bypass B62 tier HOLD only; keep B66 runtime/admission boundaries."""
+    async def complete_registered_quote_model(
+        self,
+        messages,
+        *,
+        model,
+        additional_system_context=None,
+        reasoning_effort=None,
+    ):
+        """Bypass B62 tier HOLD only; keep B66 runtime/admission boundaries.
+
+        #3906: this override is the last hop before the actual B14 POST, so it
+        must forward every field the base path accepts. Dropping
+        ``reasoning_effort`` here would reject the user's explicit level in
+        production (where this dispatch-aware client is the installed one)
+        even though the base client and the Core wire carry it correctly.
+        """
         try:
             return await super().complete_registered_quote_model(
                 messages,
                 model=model,
                 additional_system_context=additional_system_context,
+                reasoning_effort=reasoning_effort,
             )
         except (ChatRuntimeError, ValueError):
             # Dispatch clears the receipt first. Only local failures still have

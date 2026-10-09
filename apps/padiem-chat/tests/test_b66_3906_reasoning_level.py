@@ -16,6 +16,8 @@ import pytest
 from app.b66_reasoning_level import (
     DEFAULT_REASONING_LEVEL,
     DEFAULT_REASONING_LABEL,
+    REASONING_EFFORT_FIELD,
+    VERIFIED_REASONING_EFFORT,
     is_supported_reasoning_level,
     reasoning_levels_for_model,
     reasoning_options_for_model,
@@ -143,13 +145,11 @@ def test_unsupported_level_is_rejected_with_explainable_4xx_and_never_substitute
 
 
 @pytest.mark.parametrize(
-    "bad",
+    "malformed",
     [
         "ultra",
-        "high",
-        "low",
-        "medium",
         "DEFAULT",
+        "High",
         "default ",
         "de",
         "",
@@ -157,12 +157,31 @@ def test_unsupported_level_is_rejected_with_explainable_4xx_and_never_substitute
         "de:ault",
         "de_fault",
         "../default",
+        "minimal-high",
+        "low2",
     ],
 )
-def test_malformed_or_unknown_levels_are_rejected(bad):
-    assert is_supported_reasoning_level(bad) is False
+def test_malformed_levels_are_never_well_formed_vocabulary(malformed):
+    assert is_supported_reasoning_level(malformed) is False
     with pytest.raises(ValueError):
-        validate_reasoning_level(MODEL, bad)
+        validate_reasoning_level(MODEL, malformed)
+
+
+@pytest.mark.parametrize("documented", ["minimal", "low", "medium", "high"])
+def test_documented_levels_are_rejected_for_a_model_that_does_not_offer_them(documented):
+    """Vocabulary membership is not a capability promise.
+
+    The level is well formed and IS documented for other served models, but a
+    model without verified capability for it must still refuse the request
+    rather than quietly rounding the customer to a neighbouring level.
+    """
+    assert is_supported_reasoning_level(documented) is True
+    assert documented not in reasoning_levels_for_model(MODEL)
+    with pytest.raises(ValueError) as failure:
+        validate_reasoning_level(MODEL, documented)
+    assert str(failure.value) == "unsupported_reasoning_level"
+    with pytest.raises(ValueError):
+        reasoning_parameter_for_request(MODEL, documented)
 
 
 def test_unsupported_field_guard_still_rejects_unknown_fields():
@@ -210,20 +229,65 @@ def test_unverified_model_offers_the_default_option_only():
     assert reasoning_levels_for_model(MODEL) == frozenset({DEFAULT_REASONING_LEVEL})
 
 
-def test_capability_source_is_the_served_registry_row_not_b66_source():
-    """B66 must not hard-code any upstream provider reasoning parameter."""
-    module = Path(__file__).resolve().parents[1] / "app" / "b66_reasoning_level.py"
-    source = module.read_text(encoding="utf-8")
-    # #3977 owns the upstream mapping. Until it lands, no provider key names
-    # (thinkingConfig/reasoning_effort/reasoning.max_tokens) may appear here.
-    for forbidden in (
-        "thinkingConfig",
-        "thinking_budget",
-        "reasoning_effort",
-        "reasoning_tokens",
-        "max_reasoning",
-    ):
-        assert forbidden not in source
+def _b14_verified_reasoning_levels() -> dict[str, set[str]]:
+    """Read the merged B14 capability source (read-only, by file path).
+
+    Both apps ship a top-level ``app`` package, so importing one from the other
+    in a single process would collide on the module name. Loading the file
+    directly keeps B14 as the read-only authority and touches no B14 code.
+    """
+    import importlib.util
+
+    root = Path(__file__).resolve().parents[3]
+    path = root / "apps/korean-ai-platform/app/pilot/model_native_parameters.py"
+    spec = importlib.util.spec_from_file_location("b14_model_native_parameters", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return {
+        model_id: set(options["reasoning_effort"])
+        for model_id, options in module._SUPPORTED.items()
+        if "reasoning_effort" in options
+    }
+
+
+def test_capability_mirror_matches_the_b14_verified_authority():
+    """The pinned mirror must not drift from B14's verified per-model source.
+
+    This is the drift gate: a capability change on the B14 side fails here until
+    the B66 mirror is updated in the same review, so B66 can never advertise a
+    level B14 has not attested (and never hides one it has).
+    """
+    authority = _b14_verified_reasoning_levels()
+    mirror = {model_id: set(levels) for model_id, levels in VERIFIED_REASONING_EFFORT.items()}
+    assert mirror == authority
+    assert authority, "B14 verified capability source must not be empty"
+    for model_id, levels in mirror.items():
+        # Exact registered ID, verified levels, plus the provider default only.
+        assert reasoning_levels_for_model(model_id) == frozenset(levels) | {
+            DEFAULT_REASONING_LEVEL
+        }
+
+
+def test_upstream_reasoning_field_name_is_single_sourced():
+    """#3906 transmits the verified field name, and invents no other key.
+
+    The wire name is written exactly once, as REASONING_EFFORT_FIELD, so the API
+    contract, the B66 -> B14 boundary and the tests cannot drift apart.
+    """
+    app_dir = Path(__file__).resolve().parents[1] / "app"
+    module = app_dir / "b66_reasoning_level.py"
+    assert module.read_text(encoding="utf-8").count('"reasoning_effort"') == 1
+    for source_file in app_dir.glob("*.py"):
+        content = source_file.read_text(encoding="utf-8")
+        for forbidden in (
+            "thinkingConfig",
+            "thinking_budget",
+            "reasoning_tokens",
+            "max_reasoning",
+            "chat_template_kwargs",
+        ):
+            assert forbidden not in content, source_file.name
 
 
 def test_no_parameter_is_emitted_for_any_unproven_level():
@@ -232,12 +296,6 @@ def test_no_parameter_is_emitted_for_any_unproven_level():
     assert reasoning_parameter_for_request(MODEL, None) == {}
     with pytest.raises(ValueError):
         reasoning_parameter_for_request(MODEL, "high")
-
-
-def test_default_option_is_the_sole_builtin_option_constant():
-    assert reasoning_options_for_model(MODEL) == [
-        {"value": DEFAULT_REASONING_LEVEL, "label": DEFAULT_REASONING_LABEL}
-    ]
 
 
 # --------------------------------------------------------------------------
