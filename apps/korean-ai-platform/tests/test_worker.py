@@ -194,3 +194,44 @@ def test_gemini_secret_store_binding_is_metadata_only_and_matches_provider():
     registry = _json.loads((Path(__file__).resolve().parent.parent / "app" / "pilot" / "b14_models.json").read_text(encoding="utf-8"))
     assert registry["providers"]["google"]["credential_binding_name"] == "PADIEM_GEMINI_API_KEY"
     assert len([m for m in registry["models"] if m["provider_id"] == "google"]) == 4
+
+
+def test_worker_projects_every_enabled_platform_secret_registry_binding():
+    """A declared Wrangler binding is unusable unless Worker explicitly
+    collects and mirrors it into the application's environment.
+
+    This checks ALL active providers, not a one-off Google-only literal.
+    """
+    import ast
+    import json
+
+    registry = json.loads(
+        (WRANGLER_TOML.parent / "app" / "pilot" / "b14_models.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    required = {
+        entry["credential_binding_name"]
+        for entry in registry["providers"].values()
+        if entry["enabled"] and entry["credential_source"] == "platform_secret"
+    }
+    worker_ast = ast.parse(WORKER_SRC.read_text(encoding="utf-8"))
+    assignments = [
+        node for node in worker_ast.body
+        if isinstance(node, ast.Assign)
+        and any(isinstance(t, ast.Name) and t.id == "_ENV_KEYS" for t in node.targets)
+    ]
+    assert len(assignments) == 1
+    value = assignments[0].value
+    assert isinstance(value, ast.Call)
+    assert isinstance(value.func, ast.Name) and value.func.id == "frozenset"
+    assert len(value.args) == 1
+    allowlist = ast.literal_eval(value.args[0])
+    assert required <= allowlist, (
+        "Worker missing required provider Secret bindings: "
+        + ", ".join(sorted(required - allowlist))
+    )
+    assert "PADIEM_GEMINI_API_KEY" in required
+    assert "await collect_env_overrides(self.env, _ENV_KEYS)" in WORKER_SRC.read_text(
+        encoding="utf-8"
+    )
