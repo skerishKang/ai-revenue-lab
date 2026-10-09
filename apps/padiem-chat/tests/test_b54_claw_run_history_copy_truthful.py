@@ -151,11 +151,17 @@ def test_historical_artifact_action_stays_one_bounded_download() -> None:
     assert app.count("/api/claw/manual-intake/artifact/") == 1
     assert app.count("function downloadClawArtifact(") == 1
     assert len(re.findall(r"(?<!function )\bdownloadClawArtifact\(", app)) == 3
-    # The card builds exactly one button per artifact and no second control.
+    # Historical cards still create just ONE direct download button. #3932 may
+    # add a separate, explicitly checked PDF viewer via the existing same-origin
+    # authenticated byte route; this must never become a second download owner.
     card_block = app.split("claw-run-card-artifact", 1)[1].split("function fetchClawRunHistory", 1)[0]
-    assert card_block.count("createElement(\"button\")") == 1
+    assert card_block.count('createElement("button")') == 1
     assert "claw-run-card-download" in card_block
-    assert not re.search(r"open|preview|reopen", card_block, re.IGNORECASE)
+    assert card_block.count("downloadClawArtifact(artifact.document_id") == 1
+    assert "validHistoricalArtifact?.(artifact)" in card_block
+    assert "viewer?.setHistorical?.(artifact)" in card_block
+    assert "fetch(" not in card_block and "window.open(" not in card_block
+    assert "innerHTML" not in card_block and "POST" not in card_block
 
 
 # ── behavioral proof via Node harness executing real app.js ─────────────────

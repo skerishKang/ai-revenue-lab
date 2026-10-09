@@ -12,6 +12,7 @@
     const en = String(lang || "").toLowerCase().startsWith("en");
     const variants = {
       action: ["PDF 미리보기", "Preview PDF"],
+      check: ["PDF 미리보기 확인", "Check PDF preview"],
       heading: ["PDF 미리보기", "PDF preview"],
       close: ["닫기", "Close"],
       error: ["PDF 미리보기를 열 수 없습니다. 권한과 파일 상태를 확인하세요.", "PDF preview is unavailable. Check access and the file state."],
@@ -25,6 +26,17 @@
       typeof value.filename === "string" && /\.pdf$/i.test(value.filename) &&
       Number.isInteger(value.byte_length) &&
       value.byte_length > 0 && value.byte_length <= MAX_PDF;
+  }
+  // Run history is owner-scoped, but old records have no byte_length.
+  // The user must explicitly request an availability check; actual PDF bytes
+  // and authorization are still proved by the existing click-only GET.
+  function validHistoricalArtifact(value) {
+    if (!value || typeof value !== "object" ||
+        !VALID_ID.test(value.document_id || "") ||
+        value.media_type !== PDF_TYPE ||
+        typeof value.filename !== "string" || !/\.pdf$/i.test(value.filename)) return false;
+    return value.byte_length == null ||
+      (Number.isInteger(value.byte_length) && value.byte_length > 0 && value.byte_length <= MAX_PDF);
   }
   function isPdf(bytes) {
     if (!(bytes instanceof Uint8Array) || bytes.length < 16 || bytes.length > MAX_PDF) return false;
@@ -127,9 +139,9 @@
         if (epoch === generation && dialog && !dialog.open) closeViewer();
       }
     }
-    function set(artifact) {
+    function setArtifact(artifact, history = false) {
       clear();
-      if (!validArtifact(artifact)) return false;
+      if (!(history ? validHistoricalArtifact(artifact) : validArtifact(artifact))) return false;
       current = Object.freeze({
         document_id: artifact.document_id,
         filename: artifact.filename,
@@ -137,17 +149,27 @@
       button = doc.createElement("button");
       button.type = "button";
       button.className = "claw-pdf-preview-action";
-      button.textContent = copy(doc.documentElement.lang, "action");
+      button.textContent = copy(doc.documentElement.lang,
+        history && artifact.byte_length == null ? "check" : "action");
       button.addEventListener("click", () => { void show(); });
       mount.appendChild(button);
       return true;
     }
-    const instance = Object.freeze({ set, clear, show });
+    let instance;
+    function destroy() {
+      clear();
+      controllers.delete(instance);
+    }
+    instance = Object.freeze({
+      set: (artifact) => setArtifact(artifact),
+      setHistorical: (artifact) => setArtifact(artifact, true),
+      clear, show, destroy,
+    });
     controllers.add(instance);
     return instance;
   }
   function revokeAll() {
     for (const controller of controllers) controller.clear();
   }
-  window.PadiemClawPdfPreview = Object.freeze({ create, validArtifact, isPdf, revokeAll });
+  window.PadiemClawPdfPreview = Object.freeze({ create, validArtifact, validHistoricalArtifact, isPdf, revokeAll });
 })();

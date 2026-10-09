@@ -4228,6 +4228,12 @@
 
   let clawRunHistoryInFlight = false;
   let pendingClawRunFocusId = "";
+  let clawRunHistoryVisibilityEpoch = 0;
+  const clawRunHistoryPdfControllers = new Set();
+  function clearClawRunHistoryPdfPreviews() {
+    for (const controller of clawRunHistoryPdfControllers) controller.destroy();
+    clawRunHistoryPdfControllers.clear();
+  }
 
   function setClawRunHistoryStatus(message) {
     if (!clawRunHistoryError) return;
@@ -4321,6 +4327,17 @@
         if (artifact.document_id) downloadClawArtifact(artifact.document_id, artifact.filename || "");
       });
       artifactRow.append(filename, downloadBtn);
+      // #3932: old owner-scoped run receipts lack byte_length. Display a
+      // truthful click-to-check PDF action, then use the existing authenticated
+      // 10MiB PDF byte route. Never preview DOCX/XLSX or inferred filenames.
+      if (window.PadiemClawPdfPreview?.validHistoricalArtifact?.(artifact)) {
+        const viewer = window.PadiemClawPdfPreview.create({
+          mount: artifactRow,
+          onError: (message) => setClawRunHistoryStatus(message),
+        });
+        if (viewer?.setHistorical?.(artifact)) clawRunHistoryPdfControllers.add(viewer);
+        else viewer?.destroy?.();
+      }
       card.appendChild(artifactRow);
     }
     if (sessionBtn) card.appendChild(sessionBtn);
@@ -4342,14 +4359,21 @@
     if (!clawRunHistory) return;
     const focusRunId = pendingClawRunFocusId;
     pendingClawRunFocusId = "";
+    const visibilityEpoch = clawRunHistoryVisibilityEpoch;
     setClawRunHistoryStatus("");
     if (clawRunHistoryLoading) clawRunHistoryLoading.hidden = false;
     if (clawRunHistoryList) clawRunHistoryList.hidden = true;
     if (clawRunHistoryEmpty) clawRunHistoryEmpty.hidden = true;
+    // On refresh, retire the old cards before dropping their DOM and PDF Blob.
+    clearClawRunHistoryPdfPreviews();
     if (clawRunHistoryList) clawRunHistoryList.replaceChildren();
     try {
       const response = await fetch("/api/claw/runs?limit=10", { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
+      // A response begun before logout/workspace departure is not a license
+      // to paint old owner file cards into a newer authenticated session.
+      if (visibilityEpoch !== clawRunHistoryVisibilityEpoch ||
+          authState.authenticated !== true || clawRunHistory.hidden) return;
       if (!response.ok || !data || data.ok !== true || !Array.isArray(data.runs)) {
         throw new Error(clawRunHistoryErrorMessage(data, response));
       }
@@ -4396,6 +4420,10 @@
       && clawWorkspace?.dataset.view !== "inbox";
     clawRunHistory.hidden = !show;
     if (show) loadClawRunHistory();
+    else {
+      clawRunHistoryVisibilityEpoch += 1;
+      clearClawRunHistoryPdfPreviews();
+    }
   }
 
   if (clawRunHistoryRefresh) {
