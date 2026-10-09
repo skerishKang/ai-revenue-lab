@@ -1904,7 +1904,11 @@
       ? History.isMeaningfulDraft(draft)
       : false),
     /* #3871: 불러온 견적의 템플릿 권위를 현재 인증된 승인 Skill 목록으로 확인한다.
-       목록에 없는 Skill 을 다른 양식으로 자동 대체하지 않는다. */
+       목록에 없는 Skill 을 다른 양식으로 자동 대체하지 않는다.
+       Drive 계약(quote-drive-contract)은 저장된 템플릿의 **템플릿 profile** fingerprint 를
+       승인 목록 fingerprint 와 비교한다. activeTemplateReference() 도 같은 값을 쓰므로,
+       여기서도 skill.fingerprint(=스킬 전체 fingerprint)가 아니라 profile.fingerprint 를
+       먼저 써야 저장→재오픈 왕복이 성립한다. */
     listApprovedSkills: () => {
       const out = [];
       const add = (savedSkillId, skill, profile) => {
@@ -1912,7 +1916,7 @@
         if (out.some((entry) => entry.savedSkillId === savedSkillId)) return;
         out.push({
           savedSkillId: savedSkillId,
-          fingerprint: skill.fingerprint || profile.fingerprint || null,
+          fingerprint: profile.fingerprint || skill.fingerprint || null,
           approved: skill.approved === true,
           active: true,
           label: profile.name || null

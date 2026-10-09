@@ -603,6 +603,13 @@ const keepFile = (h, id, name, mimeType) => {
     assert.ok(/installStartHook\(window, api\)/.test(uiSource), "UI_SELF_START_HOOK_PRESENT");
     assert.ok(/bootstrapState\.handle/.test(uiSource), "UI_BOOTSTRAP_IDEMPOTENT_GUARD");
     assert.ok(appSource.includes("listApprovedSkills"), "APPROVED_SKILL_LIST_BRIDGE_PRESENT");
+    /* #3871 저장→재오픈 왕복: 승인 목록은 Drive 계약/activeTemplateReference 와 같은
+       **템플릿 profile** fingerprint 를 내야 한다. skill.fingerprint(=스킬 전체)를 쓰면
+       저장된 package 의 template fingerprint 와 항상 어긋나 재오픈이 100% 실패한다. */
+    assert.ok(/fingerprint:\s*profile\.fingerprint\s*\|\|\s*skill\.fingerprint/.test(appSource),
+      "APPROVED_SKILL_FINGERPRINT_IS_TEMPLATE_PROFILE_FINGERPRINT");
+    assert.ok(!/fingerprint:\s*skill\.fingerprint\s*\|\|\s*profile\.fingerprint/.test(appSource),
+      "APPROVED_SKILL_MUST_NOT_PREFER_SKILL_FINGERPRINT");
     assert.ok(!/\.innerHTML\s*=/.test(uiSource), "UI has no markup injection surface");
     assert.ok(uiSource.indexOf("localStorage") === -1 && uiSource.indexOf("sessionStorage") === -1,
       "UI stores nothing");
