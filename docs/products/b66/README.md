@@ -25,18 +25,76 @@ existing quotation
 -> repeat quote execution with new facts
 ```
 
-Routine repeat use must be fast and deterministic:
+Routine repeat use must be fast and deterministic. The **approved Saved
+Quote Skill** supplies the reusable structure; **new facts** provide only this
+customer's changed quotation values:
 
 ```text
-new facts
--> Saved Quote Skill
+approved Saved Quote Skill + new facts
 -> QuoteDraft
 -> QuoteCore
--> certified template
+-> certified template renderer
 -> Preview / PDF
 ```
 
 QuoteCore remains the sole calculation authority. The renderer does not become a second money/tax/date calculation engine.
+
+## Stage ownership — one canonical answer for Sol, B14 and final PDF
+
+**These are different operations, not three interchangeable PDF-producing models.**
+For B66, "AI is used in the quote workflow" does not mean "an AI makes the PDF."
+The following is the product's **single stage/role truth**; downstream documents
+link to it and must not define competing stage owners.
+
+| Stage / trigger | Responsible component | Model call contract | Output |
+|---|---|---|---|
+| **A. Source onboarding / template engineering** — an existing quotation source is first analyzed, reproduced or materially reworked | A document-capable **development model** (Sol 6.1 was used for the CGI source-derived template) plus compiler and independent fidelity/certification gates | Sol is an **authoring/engineering tool at this stage**, not a customer repeat-generation route, required B14 default or hard-coded production dependency. Any future development-model decision follows its authorized owner/tooling context. | Versioned **certified template / Saved Quote Skill** |
+| **B1. Repeat quote from natural language** — a customer describes new recipient, items, quantities, prices or corrections | Exactly **one customer-selected B14 registered, Owner-allowed and runtime-ready model** performs **field extraction only**; user confirms missing/ambiguous facts | **At most one authorized interpretation dispatch; zero retry, auto-pick or fallback.** Optional visible/editable default follows the Owner model policy. A model does **not** construct HTML/PDF, decide the template, or compute money. | Structured customer quote facts / QuoteDraft |
+| **B2. Repeat quote from complete structured inputs** — the customer directly enters all required facts | Deterministic input validation / QuoteDraft construction | **Zero inference/model calls.** Do not require Sol or B14 when interpretation is unnecessary. | Structured customer quote facts / QuoteDraft |
+| **C. Amounts and tax** — facts are validated | **QuoteCore**, the sole business arithmetic authority | **Zero model calls.** No model-generated price, total, discount, tax or rounding. | Validated QuoteCore totals and render values |
+| **D. Preview / final downloadable PDF / repeat or reopen** — use an approved Saved Quote Skill | **Certified deterministic renderer/converter**, using the already certified template and QuoteCore values | **Zero model calls to Sol, B14 or any other provider for rendering.** No per-quote source reanalysis, layout reconstruction, certification or paid route. | HTML preview and/or final PDF, with identical rows and totals |
+
+### Unambiguous request paths
+
+```text
+ONBOARD_ONCE:
+  original source -> Sol-assisted source analysis / initial implementation
+  -> independent template reproduction + certification -> approved Saved Quote Skill
+
+CUSTOMER_FREEFORM_REPEAT:
+  customer text -> ONE explicitly selected, allowed B14 interpreter (facts only)
+  -> QuoteDraft -> QuoteCore -> approved Saved Quote Skill
+  -> deterministic renderer -> preview / downloaded PDF
+
+CUSTOMER_STRUCTURED_REPEAT:
+  customer-entered fields -> QuoteDraft -> QuoteCore
+  -> approved Saved Quote Skill -> deterministic renderer -> preview / downloaded PDF
+
+REPEAT_PDF_RENDER_PROVIDER_CALLS=0
+REPEAT_PDF_RENDER_SOL_CALLS=0
+REPEAT_PDF_RENDER_B14_CALLS=0
+QUOTE_FACT_INTERPRETATION_B14_CALLS=0_OR_1_IF_REQUESTED
+QUOTECORE_MODEL_CALLS=0
+```
+
+**Interpretation is not rendering:** if someone says "the customer uses another
+B14 model to make a PDF," the exact technical meaning is **B14 optionally
+interprets that customer's new free-form facts; the certified code renders the
+PDF**. B14 inference must not replace the certified renderer, and Sol must not
+be called per quote. A multi-page/overflow change (e.g. #3839) modifies
+template engineering and certified rendering, **not** the runtime model route.
+Its new geometry/page behavior must pass independent certification before
+customer use; new PDF pages must not be AI-generated at request time.
+
+**Authority split:** B14 model identity/allowed status, runtime readiness and
+per-request user choice are governed only by
+[Owner model policy §0A](../../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md)
+and the live B14 registry; source fidelity, certification and render correctness
+are governed by [SOURCE_TEMPLATE_FIDELITY.md](SOURCE_TEMPLATE_FIDELITY.md).
+[The quote-model evaluation protocol](../../operations/B14_B66_QUOTE_MODEL_EVALUATION_PROTOCOL.md)
+grades **extracted quote fields**, not AI-generated PDF quality. Neither the
+development model's identity nor its earlier success authorizes model activation,
+hidden fallback, PDF production release or skipped visual/customer E2E gates.
 
 ## Current authority map
 
