@@ -296,7 +296,22 @@ async def open_session(page, base: str, skill: dict, fingerprint: str) -> dict:
              return Array.from(select.options).map(option => option.value);
            }"""
     )
-    return {"readiness": readiness, "model_selection": selection, "reasoning_options": reasoning}
+    sender = await page.evaluate(
+        """() => {
+             const profile = window.B66QuoteRuntimeBridge.getCompanyProfile();
+             const draft = window.B66QuoteAppBridge.getDraft();
+             const input = document.getElementById('senderCompany');
+             return {
+               matchesApprovedProfile: !!profile?.company &&
+                 draft.sender.company === profile.company &&
+                 input?.value === profile.company,
+               profileReady: !!profile?.company,
+               senderWasNotDemo: draft.sender.company !== '샘플 공급사'
+             };
+           }"""
+    )
+    return {"readiness": readiness, "model_selection": selection,
+            "reasoning_options": reasoning, "sender_prefill": sender}
 
 
 async def main() -> int:
@@ -326,6 +341,8 @@ async def main() -> int:
             report["session1"] = session
             if not session["readiness"].get("ready"):
                 failures.append("runtime_not_ready")
+            if not session["sender_prefill"].get("matchesApprovedProfile"):
+                failures.append("new_direct_quote_sender_not_prefilled_from_company_profile")
             if session["model_selection"].get("value") != MODEL_ID:
                 failures.append("manual_model_selection_failed")
             if "default" not in session["reasoning_options"]:
