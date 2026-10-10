@@ -79,7 +79,7 @@ class ParallelB62JobsContract(unittest.TestCase):
             "Verify vendored Worker dependency versions",
             "git diff --exit-code -- uv.lock pylock.toml",
             "Verify Worker probe concurrency and failure propagation contract",
-            "Real Worker/Pyodide probes (all four, parallel, fail-closed)",
+            "Real Worker/Pyodide probes (four assertions, one Workerd, fail-closed)",
             "Prove Core vendored for Python Worker",
             "uv run --locked pywrangler deploy --dry-run",
         ):
@@ -109,7 +109,7 @@ class ParallelB62JobsContract(unittest.TestCase):
             "&& needs.registry-ci-plan.outputs.scope != 'b14_only' }}",
             self.worker,
         )
-        self.assertIn("name: Real Worker/Pyodide probes (all four, parallel, fail-closed)",
+        self.assertIn("name: Real Worker/Pyodide probes (four assertions, one Workerd, fail-closed)",
                       self.worker)
         # Every Worker dependency version, pylock, vendor build and bundle
         # contract STILL runs on test-only edits. Only live 4x boot is omitted.

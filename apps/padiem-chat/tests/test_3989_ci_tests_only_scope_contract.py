@@ -111,7 +111,7 @@ class TestsOnlyCIRoutingContract(unittest.TestCase):
     def test_live_runtime_remains_required_for_unknown_scope(self):
         flow = WORKFLOW.read_text(encoding="utf-8")
         worker = flow[flow.index("  b62-worker-suite:"):flow.index("  b14-multimodal-test:")]
-        self.assertIn("name: Real Worker/Pyodide probes (all four, parallel, fail-closed)",
+        self.assertIn("name: Real Worker/Pyodide probes (four assertions, one Workerd, fail-closed)",
                       worker)
         self.assertIn(
             "needs.registry-ci-plan.outputs.scope != 'static_only' && "

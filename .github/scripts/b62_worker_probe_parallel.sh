@@ -46,6 +46,13 @@ if (( $# == 0 )); then
   fi
 fi
 
+# Real-mode: original four underlying probe handlers/assertions execute via
+# one genuine Workerd Python isolate. The 4-argument mode below retains the
+# original concurrent offline fail-propagation canary unchanged.
+if (( $# == 0 )); then
+  exec bash "$SOURCE_DIR/b62_worker_probe_shared_runtime.sh"
+fi
+
 logdir="$(mktemp -d)"
 pids=()
 cleanup() {
