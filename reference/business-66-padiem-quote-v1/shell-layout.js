@@ -450,6 +450,38 @@
     });
   }
 
+  function wireComposerVisualViewport() {
+    var viewport = window.visualViewport;
+    var composer = byId("easyComposer");
+    if (!viewport || !composer) return;
+
+    // Mobile keyboards can resize only the visual viewport (not 100dvh).
+    // Apply the override solely while the canonical chat input is focused.
+    function sync() {
+      var mobile = window.matchMedia("(max-width:900px)").matches;
+      var editing = document.activeElement === composer;
+      var height = viewport.height;
+      var obscured = window.innerHeight - height;
+      var keyboardLike = Number.isFinite(height) && height > 0 &&
+        obscured >= 120 && viewport.scale <= 1.05;
+      if (mobile && editing && keyboardLike) {
+        document.documentElement.style.setProperty(
+          "--b66-visual-height", Math.floor(height) + "px"
+        );
+      } else {
+        document.documentElement.style.removeProperty("--b66-visual-height");
+      }
+    }
+
+    viewport.addEventListener("resize", sync);
+    window.addEventListener("resize", sync);
+    composer.addEventListener("focus", sync);
+    composer.addEventListener("blur", function () {
+      window.requestAnimationFrame(sync);
+    });
+    sync();
+  }
+
   function init() {
     var shell = document.querySelector("main.shell");
     if (!shell || byId("shellRail")) return;
@@ -461,6 +493,7 @@
     syncDirectMode();
     syncMobileDefault();
     wireOverlayKeyboard();
+    wireComposerVisualViewport();
 
     var legacyPanel = byId("padiemAccountPanel");
     if (legacyPanel) legacyPanel.classList.add("shell-legacy-account-panel");
