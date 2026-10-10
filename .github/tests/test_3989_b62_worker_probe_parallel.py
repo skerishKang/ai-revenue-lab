@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / ".github/workflows/b62-padiem-chat-ci.yml"
 SCRIPTS = ROOT / ".github/scripts"
 RUNNER = SCRIPTS / "b62_worker_probe_parallel.sh"
+PREWARM = SCRIPTS / "b62_worker_prewarm_overlap.sh"
 PROBES = {
     "timeout": ("WORKER_TIMEOUT_RUNTIME_PASS", 8787, 9231, ".runtime-timeout-probe.toml"),
     "web_transport": ("WORKER_WEB_TRANSPORT_PASS", 8788, 9232, ".runtime-web-transport-probe.toml"),
@@ -48,6 +49,13 @@ class WorkerProbeParallelContract(unittest.TestCase):
             self.assertIn(marker, script)
             self.assertIn("set -euo pipefail", script)
             self.assertIn("exit 1", script)
+        self.assertIn("b62_worker_prewarm_overlap.sh", workflow)
+        self.assertIn('B62_WORKER_NPX_PREWARMED=1', PREWARM.read_text(encoding="utf-8"))
+        self.assertIn('B62_WORKER_NPX_PREWARM=VERIFIED_PRIOR_STEP', RUNNER.read_text(encoding="utf-8"))
+        self.assertIn('npx --yes wrangler@4.130.0 --version', PREWARM.read_text(encoding="utf-8"))
+        self.assertIn('uv run --locked pywrangler sync --force', PREWARM.read_text(encoding="utf-8"))
+        self.assertIn("B62_WORKER_OVERLAP=FAIL", PREWARM.read_text(encoding="utf-8"))
+        self.assertIn("B62_WORKER_OVERLAP=PASS", PREWARM.read_text(encoding="utf-8"))
         self.assertIn("Pywrangler dependency sync from committed pylock", workflow)
         self.assertLess(
             workflow.index("Pywrangler dependency sync from committed pylock"),
@@ -75,6 +83,7 @@ class WorkerProbeParallelContract(unittest.TestCase):
             fake.write_text("#!/bin/sh\nexit 17\n", encoding="utf-8")
             fake.chmod(0o755)
             env = os.environ.copy()
+            env.pop("B62_WORKER_NPX_PREWARMED", None)
             env["PATH"] = str(temp) + os.pathsep + env.get("PATH", "")
             result = subprocess.run(
                 ["bash", str(RUNNER)], capture_output=True, text=True,
@@ -131,6 +140,73 @@ class WorkerProbeParallelContract(unittest.TestCase):
                     text=True, timeout=10, check=False,
                 )
                 self.assertNotEqual(result.returncode, 0)
+
+
+    def _offline_overlap(self, *, vendor_exit=0, version="4.130.0"):
+        # Both independent preparations must begin before either finishes.
+        # No network, uv, npm, Wrangler, Production or Worker invoked.
+        with tempfile.TemporaryDirectory(prefix="b62-worker-prewarm-") as directory:
+            temp = Path(directory)
+            marker = temp / "interleaving"
+            envfile = temp / "github-env"
+            uv = temp / "uv"
+            uv.write_text(
+                "#!/usr/bin/env bash\\n"
+                'test "$*" = "run --locked pywrangler sync --force" || exit 41\\n'
+                'printf "vendor:start\\\\n" >> "$MARKER"\\n'
+                "sleep 0.3\\n"
+                'printf "vendor:finish\\\\n" >> "$MARKER"\\n'
+                f"exit {vendor_exit}\\n", encoding="utf-8",
+            )
+            npx = temp / "npx"
+            npx.write_text(
+                "#!/usr/bin/env bash\\n"
+                'test "$*" = "--yes wrangler@4.130.0 --version" || exit 42\\n'
+                'printf "wrangler:start\\\\n" >> "$MARKER"\\n'
+                "sleep 0.3\\n"
+                'printf "wrangler:finish\\\\n" >> "$MARKER"\\n'
+                f"echo '{version}'\\n", encoding="utf-8",
+            )
+            uv.chmod(0o755)
+            npx.chmod(0o755)
+            env = os.environ.copy()
+            env["PATH"] = str(temp) + os.pathsep + env.get("PATH", "")
+            env["MARKER"] = str(marker)
+            env["GITHUB_ENV"] = str(envfile)
+            env.pop("B62_WORKER_NPX_PREWARMED", None)
+            proc = subprocess.run(
+                ["bash", str(PREWARM)], capture_output=True, text=True,
+                env=env, cwd=temp, timeout=12, check=False,
+            )
+            return proc, marker.read_text(encoding="utf-8").splitlines(), (
+                envfile.read_text(encoding="utf-8") if envfile.exists() else ""
+            )
+
+    def test_two_independent_preflights_overlap_and_gate_all_probes(self):
+        proc, marks, env = self._offline_overlap()
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertEqual(set(marks[:2]), {"vendor:start", "wrangler:start"})
+        self.assertEqual(set(marks[2:]), {"vendor:finish", "wrangler:finish"})
+        self.assertIn("B62_WORKER_VENDOR_SYNC=PASS", proc.stdout)
+        self.assertIn("B62_WORKER_NPX_PREWARM=PASS", proc.stdout)
+        self.assertIn("B62_WORKER_OVERLAP=PASS", proc.stdout)
+        self.assertEqual(env, "B62_WORKER_NPX_PREWARMED=1\\n")
+
+    def test_failed_vendor_does_not_export_skip_marker(self):
+        proc, marks, env = self._offline_overlap(vendor_exit=17)
+        self.assertNotEqual(proc.returncode, 0)
+        self.assertEqual(len(marks), 4)
+        self.assertEqual(env, "")
+        self.assertIn("B62_WORKER_OVERLAP=FAIL", proc.stderr)
+        self.assertIn("B62_WORKER_VENDOR_SYNC=FAIL", proc.stderr)
+
+    def test_wrong_wrangler_version_fails_before_any_probe(self):
+        proc, marks, env = self._offline_overlap(version="4.149.0")
+        self.assertNotEqual(proc.returncode, 0)
+        self.assertEqual(len(marks), 4)
+        self.assertEqual(env, "")
+        self.assertIn("B62_WORKER_NPX_PREWARM=FAIL", proc.stderr)
+        self.assertIn("B62_WORKER_OVERLAP=FAIL", proc.stderr)
 
 
 if __name__ == "__main__":
