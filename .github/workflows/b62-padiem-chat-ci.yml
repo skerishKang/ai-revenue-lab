@@ -309,8 +309,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      # #3989: retain identical editable B14 + pytest requirements while
+      # avoiding repeated pip metadata/wheel installation on fresh Linux runners.
+      # The pinned uv version is already used by the full and Worker B62 jobs.
+      - name: Install uv for B14 pilot
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
       - name: Install B14 test dependencies
-        run: python -m pip install -e . 'pytest>=8.3,<9' 'pytest-asyncio>=0.24,<1'
+        run: uv pip install --system -e . 'pytest>=8.3,<9' 'pytest-asyncio>=0.24,<1'
       - name: Compile B14 pilot
         run: python -m compileall -q app/pilot app/factory.py
       - name: B14 multimodal and pilot contract tests
