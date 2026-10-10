@@ -18,6 +18,7 @@ MAX_FILES = 100
 FULL = "full"
 CHAT_ONLY = "chat_only"
 STATIC_ONLY = "static_only"
+TESTS_ONLY = "tests_only"
 
 
 def impact_scope(files: object) -> str:
@@ -36,6 +37,12 @@ def impact_scope(files: object) -> str:
         paths.append(path)
     if all(p.startswith("apps/padiem-chat/static/") for p in paths):
         return STATIC_ONLY
+    # #3989: strict test-module-only modifications cannot change the bundled
+    # Worker code or its locked Pyodide dependencies. Run every B62 Chat test,
+    # keep Worker bundling/lock checks, but omit four unchanged live runtimes.
+    # Do NOT classify conftest/helpers, Worker probe entrypoints, or mixed changes.
+    if all(re.fullmatch(r"apps/padiem-chat/tests/test_[^/]+\.py", p) for p in paths):
+        return TESTS_ONLY
     # A B62-only dependency/Worker configuration change can alter the Core
     # execution environment without editing Core sources. Never fast-route it.
     source_roots = ("apps/padiem-chat/app/", "apps/padiem-chat/tests/")
