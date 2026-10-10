@@ -879,12 +879,39 @@ def test_list_is_owner_scoped():
     assert foreign.json()["template_sources"] == []
 
 
-def test_migration_026_stores_metadata_only():
-    migration = (
-        Path(__file__).resolve().parents[1]
-        / "migrations"
-        / "026_b66_template_source.sql"
-    ).read_text(encoding="utf-8")
+def test_real_store_routes_support_owner_scoped_list_and_download():
+    """RouteStore mock alone masked the missing concrete list_for_owner method."""
+    metadata = MemoryMetadata()
+    r2 = MemoryR2()
+    store = B66TemplateSourceStore(metadata, r2)
+    owner = _client(store=store)
+    genuine = _real_xlsx_bytes()
+    uploaded = owner.post("/api/b66/template-sources", json=_upload_payload(body=genuine))
+    assert uploaded.status_code == 201
+    source_id = uploaded.json()["template_source"]["template_source_id"]
+
+    listing = owner.get("/api/b66/template-sources")
+    assert listing.status_code == 200
+    files = listing.json()["template_sources"]
+    assert len(files) == 1
+    assert files[0]["template_source_id"] == source_id
+    assert "object_key" not in files[0]
+    assert "user_id" not in files[0]
+
+    downloaded = owner.get(f"/api/b66/template-sources/{source_id}")
+    assert downloaded.status_code == 200
+    assert downloaded.content == genuine
+
+    foreign = _client(user_id=USER_B, store=store)
+    assert foreign.get("/api/b66/template-sources").json()["template_sources"] == []
+    assert foreign.get(f"/api/b66/template-sources/{source_id}").status_code == 404
+
+
+def test_migration_027_stores_metadata_only_and_uses_unique_sequence():
+    migrations_dir = Path(__file__).resolve().parents[1] / "migrations"
+    prefixes = [p.name.split("_", 1)[0] for p in migrations_dir.glob("*.sql")]
+    assert len(prefixes) == len(set(prefixes)), "D1 migration sequence numbers must be unique"
+    migration = (migrations_dir / "027_b66_template_source.sql").read_text(encoding="utf-8")
     assert "CREATE TABLE IF NOT EXISTS b66_template_source" in migration
     assert "user_id TEXT NOT NULL REFERENCES users(id)" in migration
     assert "workspace_id TEXT NOT NULL" in migration

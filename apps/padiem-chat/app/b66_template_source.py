@@ -480,6 +480,25 @@ class B66TemplateSourceStore:
             raise B66TemplateSourceError("template source storage failed") from exc
         return metadata
 
+    async def list_for_owner(
+        self,
+        *,
+        user_id: str,
+        workspace_id: str,
+        limit: int = MAX_TEMPLATE_SOURCE_LIST,
+    ) -> list[B66TemplateSourceMetadata]:
+        """Owner-scoped listing used by the real customer-facing GET route.
+
+        A route-only mock must not hide a missing concrete-store method: this
+        delegates to the D1 metadata authority, never enumerating R2 keys.
+        """
+        owner = _owner(user_id, label="user_id", limit=80)
+        workspace = _owner(workspace_id, label="workspace_id", limit=160)
+        bounded = max(1, min(int(limit), MAX_TEMPLATE_SOURCE_LIST))
+        return await self.metadata_store.list_for_owner(
+            user_id=owner, workspace_id=workspace, limit=bounded
+        )
+
     async def get_for_owner(
         self,
         *,
