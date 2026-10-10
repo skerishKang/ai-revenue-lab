@@ -43,6 +43,7 @@ from app.approval_smoke_binding import with_approval_smoke_binding
 from app.hark_office_p01_tool_binding import with_hark_office_p01_tool_binding
 from app.web_xlsx_p01_tool_binding import with_web_xlsx_p01_tool_binding
 from app.web_xlsx_p01_trusted_scope_d1 import D1WebXlsxTrustedScopeResolver
+from app.web_xlsx_tool_pending_d1 import D1WebXlsxToolPendingStore
 from app.attachment_byte_store import CloudflareD1ImageByteStore, ScopedImageByteStore
 from app.attachment_admission_service import (
     ATTACHMENT_ADMISSION_PATH,
@@ -907,6 +908,23 @@ def _with_web_xlsx_trusted_scope_for_env(env: Any, base_resolver: Any) -> Any:
     )
 
 
+def _web_xlsx_tool_pending_for_env(env: Any) -> D1WebXlsxToolPendingStore | None:
+    """Enable only after operator-specified exact-source Engine scope and D1.
+
+    Generic Engine tool continuations remain disabled. Never fall back to
+    isolate memory when this separately enabled durable store is unavailable.
+    """
+    if (legacy_worker._binding_value(env, "PADIEM_WEB_XLSX_P01_DURABLE_TOOL_ENABLED") != "true"
+            or legacy_worker._binding_value(env, "PADIEM_WEB_XLSX_P01_ENGINE_SCOPE_ENABLED") != "true"
+            or legacy_worker._binding_value(env, "WEB_XLSX_PRIVATE_B62_D1") is None):
+        return None
+    db = legacy_worker._binding_value(env, ENGINE_CONTINUATION_BINDING_NAME)
+    try:
+        return D1WebXlsxToolPendingStore(db)
+    except (ValueError, TypeError):
+        return None
+
+
 async def _engine_services_for_env(env: Any) -> EngineServices:
     # Preview-lane posture only. Every other isolate clears the override, so the
     # declared capability truth is untouched outside a marked pilot isolate.
@@ -1038,6 +1056,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
     tool_binding_resolver = _with_web_xlsx_trusted_scope_for_env(
         env, tool_binding_resolver,
     )
+    web_xlsx_pending_store = _web_xlsx_tool_pending_for_env(env)
     return EngineServices(
         completed=EngineService(
             runtime_factory=runtime_factory,
@@ -1101,7 +1120,12 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         # `drive_grant_unavailable`, every other tool stays
         # `tool_runtime_unavailable`.
         tool_execution=ToolExecutionEngineService(
-            tool_binding_resolver=tool_binding_resolver
+            tool_binding_resolver=tool_binding_resolver,
+            continuation_store=web_xlsx_pending_store,
+            approval_decision_verifier=(
+                AuthenticatedFirstPartyApprovalDecisionVerifier()
+                if web_xlsx_pending_store is not None else None
+            ),
         ),
         # #1964 source slice: replay composes only the same trusted durable
         # adapter as execution; without it the route fails closed (503).
