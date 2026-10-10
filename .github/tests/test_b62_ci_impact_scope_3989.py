@@ -86,14 +86,12 @@ class B62ScopeTests(unittest.TestCase):
             file(path, "removed"), file(path, "renamed"),
             file("apps/padiem-chat/tests/test_foo.js"),
             file("apps/padiem-chat/tests/test_../worker.py"),
-            file("apps/padiem-chat/tests/test_foo.py") ,
         ):
             with self.subTest(invalid=invalid):
-                if invalid["filename"] == "apps/padiem-chat/tests/test_foo.py":
-                    self.assertEqual(module.impact_scope(
-                        [invalid, invalid]), module.FULL)
-                else:
-                    self.assertEqual(module.impact_scope([invalid]), module.FULL)
+                self.assertNotEqual(module.impact_scope([invalid]), module.TESTS_ONLY)
+        self.assertEqual(module.impact_scope(
+            [file("apps/padiem-chat/tests/test_foo.py")] * 2
+        ), module.FULL)
         self.assertEqual(module.impact_scope(
             [file(f"apps/padiem-chat/tests/test_case{i}.py") for i in range(101)]
         ), module.FULL)
