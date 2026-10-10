@@ -78,6 +78,10 @@ class B62HeadlessShellContract(unittest.TestCase):
         self.assertIn("PADIEM_CHAT_WEB_PROVIDER: off", pilot)
         self.assertIn("playwright==1.55.0", pilot)
         self.assertIn("uv sync --extra dev", pilot)
+        self.assertEqual(pilot.count("uses: actions/setup-node@v4"), 1)
+        self.assertIn('node-version: "22"', pilot)
+        self.assertLess(pilot.index("actions/setup-node@v4"),
+                        pilot.index("name: Structured answer regression"))
         self.assertIn("uv run pytest -q tests/test_rich_responses.py", pilot)
         self.assertIn("uv run python ../../.github/scripts/b62_structured_answer_browser_qa.py", pilot)
         self.assertIn("name: Upload browser evidence", pilot)
