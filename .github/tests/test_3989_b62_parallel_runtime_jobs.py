@@ -23,6 +23,7 @@ class ParallelB62JobsContract(unittest.TestCase):
     def setUpClass(cls):
         cls.source = WORKFLOW.read_text(encoding="utf-8")
         cls.plan = job("registry-ci-plan", cls.source)
+        cls.ui = job("b62-static-ui", cls.source)
         cls.host = job("b62-full-suite", cls.source)
         cls.worker = job("b62-worker-suite", cls.source)
         cls.aggregate = job("b62-test", cls.source)
@@ -32,7 +33,7 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn("name: b62-test", self.aggregate)
         self.assertIn("if: always()", self.aggregate)
         self.assertIn(
-            "needs: [registry-ci-plan, b62-full-suite, b62-worker-suite, b14-multimodal-test, b62-registry-contract]",
+            "needs: [registry-ci-plan, b62-static-ui, b62-full-suite, b62-worker-suite, b14-multimodal-test, b62-registry-contract]",
             self.aggregate,
         )
         self.assertIn("WORKER_RESULT: ${{ needs.b62-worker-suite.result }}", self.aggregate)
@@ -41,7 +42,7 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn('test "$PLAN_RESULT" = success', self.aggregate)
 
     def test_both_parallel_jobs_depend_on_same_fail_closed_plan(self):
-        condition = "if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' }}"
+        condition = "if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' }}"
         for block in [self.host, self.worker]:
             self.assertIn("needs: registry-ci-plan", block)
             self.assertIn(condition, block)
@@ -99,7 +100,7 @@ class ParallelB62JobsContract(unittest.TestCase):
         )
 
     def test_only_proven_static_and_test_module_scopes_skip_live_worker_boots(self):
-        self.assertEqual(self.worker.count("scope != 'static_only'"), 1)
+        self.assertEqual(self.worker.count("scope != 'static_only'"), 2)
         self.assertEqual(self.worker.count("scope != 'tests_only'"), 1)
         self.assertEqual(self.worker.count("scope != 'b14_only'"), 1)
         self.assertIn(
@@ -126,6 +127,27 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn('test "$FULL_RESULT" = success', self.aggregate)
         # B14 pilot source contracts remain selected; only static-only skips.
         self.assertNotIn("scope != 'tests_only'", job("b14-multimodal-test", self.source))
+
+    def test_proven_static_ui_lane_skips_python_vendor_and_worker_jobs(self):
+        self.assertIn("needs: registry-ci-plan", self.ui)
+        self.assertIn("scope == 'static_only'", self.ui)
+        self.assertIn("lane != 'model_registration_only'", self.ui)
+        self.assertIn("Parse every shipped UI JavaScript file", self.ui)
+        self.assertIn("node --check", self.ui)
+        self.assertIn("b62_dom_sink_audit.py", self.ui)
+        self.assertIn("b62_static_origin_audit.py", self.ui)
+        self.assertIn("b62_browser_persistence_audit.py", self.ui)
+        self.assertNotIn("uv sync", self.ui)
+        self.assertNotIn("pywrangler", self.ui)
+        self.assertNotIn("secrets.", self.ui)
+        for block in (self.host,self.worker):
+            self.assertIn("scope != 'static_only'",block)
+        self.assertIn("UI_RESULT:",self.aggregate)
+        self.assertIn('elif [ "$SCOPE" = static_only ]; then',self.aggregate)
+        self.assertIn('test "$UI_RESULT" = success',self.aggregate)
+        self.assertIn("B62_CI_MODE=STATIC_UI_ONLY",self.aggregate)
+        for x in ("FULL_RESULT","WORKER_RESULT","MM_RESULT","QUICK_RESULT"):
+            self.assertIn('test "$'+x+'" = skipped',self.aggregate)
 
     def test_b14_only_keeps_full_b62_chat_b14_and_worker_bundle_gates(self):
         # The b14_only shortcut is allowed only at the live Workerd step.
@@ -159,7 +181,7 @@ class ParallelB62JobsContract(unittest.TestCase):
             pilot,
         )
         self.assertIn('SCOPE: ${{ needs.registry-ci-plan.outputs.scope }}', self.aggregate)
-        self.assertIn('if [ "$SCOPE" = static_only ]; then', self.aggregate)
+        self.assertIn('elif [ "$SCOPE" = static_only ]; then', self.aggregate)
         self.assertIn('test "$MM_RESULT" = skipped', self.aggregate)
         self.assertIn('test "$MM_RESULT" = success', self.aggregate)
         self.assertIn('test "$FULL_RESULT" = success', self.aggregate)

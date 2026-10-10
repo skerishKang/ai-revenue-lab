@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Fail-closed impact classification for B62 CI expensive *unchanged* dependencies.
+"""Fail-closed B62 change-impact classification for CI lanes.
 
-This is not a test-coverage deletion: full B62 pytest, locks, packaging and
-product security checks always run. Only source-invariant shared-Core pytest is
-skipped on B62-only file edits; Worker-native probes are additionally skipped
-when only static assets change. Unknown event/API/changes => all tests.
+Exact static-only edits select static JavaScript parse and DOM/origin/privacy
+audits, with separate path-scoped browser QA; unchanged Python/Worker/Core
+regression and vendoring jobs are skipped. Test-only/B14-only edits retain Chat
+pytest and Worker packaging but skip unchanged real Worker boots; source/runtime
+changes retain their full applicable gates. Unknown event/API/changes => full.
 """
 from __future__ import annotations
 

@@ -86,6 +86,36 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: python .github/scripts/b62_ci_impact_scope_3989.py
 
+  # #3989: source-proven static UI cannot change Python/Worker/Core bytes.
+  # Browser QA and standalone static audit workflows remain separately required.
+  b62-static-ui:
+    name: B62 static UI fast checks
+    needs: registry-ci-plan
+    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope == 'static_only' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Parse every shipped UI JavaScript file
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f apps/padiem-chat/static/app.js
+          while IFS= read -r -d '' file; do
+            node --check "$file"
+          done < <(find apps/padiem-chat/static -type f -name '*.js' -print0)
+          echo 'B62_STATIC_JS_PARSE=PASS'
+      - name: Enforce DOM sink, external-origin and browser-persistence boundaries
+        run: |
+          set -euo pipefail
+          python .github/scripts/b62_dom_sink_audit.py
+          python .github/scripts/b62_static_origin_audit.py
+          python .github/scripts/b62_browser_persistence_audit.py
+          echo 'B62_STATIC_UI_SECURITY=PASS'
+
   b62-registry-contract:
     name: B62 B14 registry-only contract
     needs: registry-ci-plan
@@ -114,7 +144,7 @@ jobs:
   b62-test:
     name: b62-test
     if: always()
-    needs: [registry-ci-plan, b62-full-suite, b62-worker-suite, b14-multimodal-test, b62-registry-contract]
+    needs: [registry-ci-plan, b62-static-ui, b62-full-suite, b62-worker-suite, b14-multimodal-test, b62-registry-contract]
     runs-on: ubuntu-latest
     steps:
       - name: Enforce selected lane and both relevant checks
@@ -122,6 +152,7 @@ jobs:
           LANE: ${{ needs.registry-ci-plan.outputs.lane }}
           SCOPE: ${{ needs.registry-ci-plan.outputs.scope }}
           PLAN_RESULT: ${{ needs.registry-ci-plan.result }}
+          UI_RESULT: ${{ needs.b62-static-ui.result }}
           FULL_RESULT: ${{ needs.b62-full-suite.result }}
           WORKER_RESULT: ${{ needs.b62-worker-suite.result }}
           MM_RESULT: ${{ needs.b14-multimodal-test.result }}
@@ -131,21 +162,24 @@ jobs:
           test "$PLAN_RESULT" = success
           if [ "$LANE" = model_registration_only ]; then
             test "$QUICK_RESULT" = success
+            test "$UI_RESULT" = skipped
             test "$FULL_RESULT" = skipped
             test "$WORKER_RESULT" = skipped
             test "$MM_RESULT" = skipped
             echo 'B62_CI_MODE=MODEL_REGISTRATION_ONLY'
+          elif [ "$SCOPE" = static_only ]; then
+            # The UI suite is required; all unchanged runtimes must be skipped.
+            test "$UI_RESULT" = success
+            test "$FULL_RESULT" = skipped
+            test "$WORKER_RESULT" = skipped
+            test "$MM_RESULT" = skipped
+            test "$QUICK_RESULT" = skipped
+            echo 'B62_CI_MODE=STATIC_UI_ONLY'
           else
+            test "$UI_RESULT" = skipped
             test "$FULL_RESULT" = success
             test "$WORKER_RESULT" = success
-            # Strict static-only changes cannot modify B14 pilot source or its dependencies.
-            # tests_only retains B14 to avoid broadening this unrelated skip.
-            # Any unknown/mixed/chat-only scope remains fail-closed and runs the B14 suite.
-            if [ "$SCOPE" = static_only ]; then
-              test "$MM_RESULT" = skipped
-            else
-              test "$MM_RESULT" = success
-            fi
+            test "$MM_RESULT" = success
             test "$QUICK_RESULT" = skipped
             echo 'B62_CI_MODE=FULL'
           fi
@@ -153,7 +187,7 @@ jobs:
   b62-full-suite:
     name: B62 full regression
     needs: registry-ci-plan
-    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' }}
+    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     defaults:
@@ -195,7 +229,7 @@ jobs:
   b62-worker-suite:
     name: B62 Worker/Pyodide contract
     needs: registry-ci-plan
-    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' }}
+    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     defaults:

@@ -80,6 +80,7 @@ B62_CHAT_EXPECTED_JOBS = {
     "b62-test",
     "b62-full-suite",
     "b62-worker-suite",
+    "b62-static-ui",
     "b14-multimodal-test",
 }
 
@@ -143,13 +144,15 @@ def test_b62_main_push_ci_coalescing_preserves_stable_required_gate() -> None:
     assert set(concurrency) == {"group", "cancel-in-progress"}
     assert concurrency["group"] == B62_EXPECTED_CONCURRENCY
     assert concurrency["cancel-in-progress"] is True
-    # Cancellation applies to the entire *test-only* B62 workflow; the
-    # stable status gate still requires both real host and Worker jobs.
+    # Cancellation applies only to this CI workflow. The stable required
+    # check must fan in full host/Worker for runtime changes and static UI
+    # security/JS checks for proven static-only changes.
     aggregate = workflow["jobs"]["b62-test"]
     assert aggregate["name"] == "b62-test"
     assert aggregate["if"] == "always()"
     assert "b62-full-suite" in aggregate["needs"]
     assert "b62-worker-suite" in aggregate["needs"]
+    assert "b62-static-ui" in aggregate["needs"]
 
 
 def test_b62_main_push_group_is_distinct_from_pr_and_manual_groups() -> None:
