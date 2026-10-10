@@ -24,15 +24,9 @@ class B14RuntimeConfig:
 
     def build_http_timeout(self):
         """Build httpx.Timeout with inlined per-phase bounds."""
-        import httpx
+        from app.pilot.b14_timeout_policy import build_provider_http_timeout
 
-        return httpx.Timeout(
-            None,
-            connect=10.0,
-            read=30.0,
-            write=10.0,
-            pool=10.0,
-        )
+        return build_provider_http_timeout()
 
     @property
     def is_live(self) -> bool:

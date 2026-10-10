@@ -35,6 +35,7 @@ from app.pilot.errors import (
 )
 from app.pilot.redaction import redact_sensitive
 from app.pilot.provider_timeout_diagnostics import log_gateway_deadline
+from app.pilot.b14_timeout_policy import GATEWAY_WALL_SECONDS
 from app.pilot.registry import get_registry
 from app.pilot.routing import (
     PilotConfigurationState,
@@ -80,7 +81,7 @@ from app.pilot.model_registry_file import group_model_ids
 # ---------------------------------------------------------------------------
 _UPSTREAM_RETRY_MAX_RETRIES = 2
 _UPSTREAM_RETRY_BACKOFF_SECONDS = (0.5, 1.0)
-_UPSTREAM_RETRY_BUDGET_SECONDS = 45.0
+_UPSTREAM_RETRY_BUDGET_SECONDS = GATEWAY_WALL_SECONDS
 # Retryable transport classes may be retried on a SAME route for explicit
 # manual routes. The owner-designated auto chain has a total upstream-attempt
 # budget equal to ``decision.max_attempts``: each chain candidate gets at most

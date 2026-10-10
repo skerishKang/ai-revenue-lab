@@ -14,27 +14,19 @@ from app.pilot.errors import UpstreamTimeout
 
 
 def test_only_modelscope_and_previously_approved_kira_have_30s_connect():
-    assert plat._CONNECT_TIMEOUT == 10.0
-    assert plat._KIRA_CONNECT_TIMEOUT == 30.0
-    assert plat._MODELSCOPE_CONNECT_TIMEOUT == 30.0
-    assert plat._READ_TIMEOUT == 30.0
-    assert plat._WRITE_TIMEOUT == 10.0
-    assert plat._POOL_TIMEOUT == 10.0
-    assert plat._provider_connect_timeout("modelscope") == 30.0
-    assert plat._provider_connect_timeout("kira") == 30.0
-    for provider in ("google", "sensenova", "inception", "poolside",
-                     "atria", "experiential", "agnes-ai", "unknown"):
-        assert plat._provider_connect_timeout(provider) == 10.0
+    timeout = plat.build_provider_http_timeout()
+    assert (timeout.connect, timeout.read, timeout.write, timeout.pool) == (
+        30.0, 40.0, 20.0, 10.0
+    )
+    # The prior per-Provider exceptions were superseded by one shared limit.
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("stream", [False, True])
 @pytest.mark.parametrize("provider,model,upstream,expected", [
-    ("modelscope", "modelscope/deepseek-ai/DeepSeek-V4.1-Flash",
-     "deepseek-ai/DeepSeek-V4.1-Flash", 30.0),
-    ("kira", "kira/qwen3.8-flash-free", "qwen3.8-flash-free", 30.0),
     ("sensenova", "sensenova/sensenova-6.8-flash-lite",
-     "sensenova-6.8-flash-lite", 10.0),
+     "sensenova-6.8-flash-lite", 30.0),
+    ("inception", "inception/mercury-2.5", "mercury-2.5", 30.0),
 ])
 async def test_completed_stream_timeout_phase_safe_and_one_mock_call(
         monkeypatch, caplog, stream, provider, model, upstream, expected):
@@ -69,7 +61,7 @@ async def test_completed_stream_timeout_phase_safe_and_one_mock_call(
                     pass
             else:
                 await plat.call_platform_chat_completions(**args)
-    assert timeouts == [(expected, 30.0, 10.0, 10.0)]
+    assert timeouts == [(expected, 40.0, 20.0, 10.0)]
     assert len(requests) == 1
     assert (f"b14_safe_timeout provider={provider} phase=connect "
             f"mode={'stream' if stream else 'completed'}") in caplog.text
