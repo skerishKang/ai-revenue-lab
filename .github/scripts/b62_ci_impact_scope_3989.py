@@ -19,6 +19,7 @@ FULL = "full"
 CHAT_ONLY = "chat_only"
 STATIC_ONLY = "static_only"
 TESTS_ONLY = "tests_only"
+B14_ONLY = "b14_only"
 
 
 def impact_scope(files: object) -> str:
@@ -29,12 +30,26 @@ def impact_scope(files: object) -> str:
         if not isinstance(row, dict) or row.get("status") not in {"added", "modified"}:
             return FULL
         path = row.get("filename")
-        if not isinstance(path, str) or not path.startswith("apps/padiem-chat/"):
+        if not isinstance(path, str) or not (
+            path.startswith("apps/padiem-chat/")
+            or path.startswith("apps/korean-ai-platform/")
+        ):
             return FULL
         # Do not accept malformed paths, explicit traversal or duplicates.
         if not path or "\\" in path or ".." in Path(path).parts or path in paths:
             return FULL
         paths.append(path)
+    # B14 pilot source/tests are a separate deployed application: they cannot
+    # change B62 Worker/Pyodide probe entrypoints, pinned vendor locks or
+    # B62 Core source. Keep full B62 Chat integration + B14 tests + bundle,
+    # but do not launch four source-identical B62 local Workerd runtimes.
+    # Deliberately EXCLUDE B14 pyproject/locks/scripts and mixed changes.
+    if all(
+        re.fullmatch(r"apps/korean-ai-platform/app/(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\.(?:py|json)", p)
+        or re.fullmatch(r"apps/korean-ai-platform/tests/test_[^/]+\.py", p)
+        for p in paths
+    ):
+        return B14_ONLY
     if all(p.startswith("apps/padiem-chat/static/") for p in paths):
         return STATIC_ONLY
     # #3989: strict test-module-only modifications cannot change the bundled
