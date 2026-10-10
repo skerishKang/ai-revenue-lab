@@ -103,7 +103,7 @@ class RecordingExecutor:
         return B14ExecutionResult(answer="ok")
 
 
-def nonstream_transport(seen: dict):
+def nonstream_transport(seen: dict, model_id: str = MODEL_ID):
     def handler(request: httpx.Request) -> httpx.Response:
         seen["url"] = str(request.url)
         seen["body"] = json.loads(request.content)
@@ -111,7 +111,7 @@ def nonstream_transport(seen: dict):
             200,
             json={
                 "choices": [{"message": {"role": "assistant", "content": "ok"}}],
-                "business14": {"selected_model": MODEL_ID},
+                "business14": {"selected_model": model_id},
                 "usage": {"prompt_tokens": 1, "completion_tokens": 1, "total_tokens": 2},
             },
         )
@@ -119,22 +119,27 @@ def nonstream_transport(seen: dict):
     return httpx.MockTransport(handler)
 
 
-def stream_transport(seen: dict):
+def stream_transport(
+    seen: dict, model_id: str = MODEL_ID,
+    provider_name: str = "Google AI Studio",
+    upstream_model: str = "gemini-3.5-flash-lite",
+    provider_id: str = "google",
+):
     def handler(request: httpx.Request) -> httpx.Response:
         first = {
             "id": "b14req_3977",
             "object": "chat.completion.chunk",
-            "model": MODEL_ID,
+            "model": model_id,
             "choices": [
                 {"index": 0, "delta": {"content": "ok"}, "finish_reason": None}
             ],
             "business14": {
                 "request_id": "b14req_3977",
                 "route_mode": "manual",
-                "selected_provider": "Google AI Studio",
-                "selected_model": MODEL_ID,
-                "selected_upstream_model": "gemini-3.5-flash-lite",
-                "selected_route_id": f"google:{MODEL_ID}",
+                "selected_provider": provider_name,
+                "selected_model": model_id,
+                "selected_upstream_model": upstream_model,
+                "selected_route_id": f"{provider_id}:{model_id}",
                 "reason_codes": [],
                 "fallback_used": False,
                 "attempt_count": 1,
@@ -145,7 +150,7 @@ def stream_transport(seen: dict):
         last = {
             "id": "b14req_3977",
             "object": "chat.completion.chunk",
-            "model": MODEL_ID,
+            "model": model_id,
             "choices": [
                 {"index": 0, "delta": {}, "finish_reason": "stop"}
             ],
@@ -213,6 +218,58 @@ def test_every_documented_level_is_carried_verbatim(level: str) -> None:
     assert payload["reasoning_effort"] == level
 
 
+SENSENOVA_NATIVE_EXPLICIT = {
+    "top_p": 0.95, "top_k": 20, "min_p": 0.0,
+    "presence_penalty": 1.5, "repetition_penalty": 1.0,
+}
+
+
+def test_explicit_sensenova_fields_are_top_level_with_no_injected_defaults() -> None:
+    request = chat_request(
+        model="sensenova/sensenova-6.8-flash-lite",
+        model_parameters=SENSENOVA_NATIVE_EXPLICIT,
+    )
+    payload = request.to_payload()
+    assert payload["model"] == "sensenova/sensenova-6.8-flash-lite"
+    for name, value in SENSENOVA_NATIVE_EXPLICIT.items():
+        assert payload[name] == value
+    assert "temperature" not in payload
+    assert "max_tokens" not in payload
+    assert "reasoning_effort" not in payload
+    assert "model_parameters" not in payload
+
+
+@pytest.mark.parametrize("raw", [
+    {"top_p": -0.01}, {"top_p": 1.01}, {"top_p": True},
+    {"top_p": float("nan")}, {"min_p": float("inf")},
+    {"top_k": 0}, {"top_k": False}, {"top_k": 1.5},
+    {"presence_penalty": -2.01}, {"presence_penalty": 2.01},
+    {"repetition_penalty": 0}, {"repetition_penalty": -1},
+    {"repetition_penalty": float("inf")},
+])
+def test_invalid_explicit_numeric_native_fields_fail_closed(raw) -> None:
+    with pytest.raises(ValueError):
+        chat_request(model_parameters=raw)
+
+
+def test_core_runtime_preserves_sensenova_fields_in_selected_exact_route() -> None:
+    executor = RecordingExecutor()
+    runtime = ExecutionRuntime(app_id="padiem-chat", b14_client=executor)
+    profile = agent(model_policy={
+        "model": "sensenova/sensenova-6.8-flash-lite",
+        "model_parameters": SENSENOVA_NATIVE_EXPLICIT,
+        "allow_external_fallback": False,
+    })
+    run(runtime.run(execution_request(profile=profile)))
+    assert len(executor.requests) == 1
+    payload = executor.requests[0].to_payload()
+    assert payload["model"] == "sensenova/sensenova-6.8-flash-lite"
+    for name, value in SENSENOVA_NATIVE_EXPLICIT.items():
+        assert payload[name] == value
+    assert "temperature" not in payload
+    assert "model_parameters" not in payload
+
+
 # --------------------------------------------------------------------------
 # 3. Closed vocabulary: anything unverified fails closed at construction.
 # --------------------------------------------------------------------------
@@ -225,7 +282,7 @@ def test_every_documented_level_is_carried_verbatim(level: str) -> None:
         {"reasoning_effort": 3},                  # not a string
         {"reasoning_effort": ""},                 # empty is not a level
         {"temperature_bias": "low"},              # field this contract omits
-        {"reasoning_effort": "low", "top_p": 0.5},
+        {"reasoning_effort": "low", "min_p": -0.5},
     ],
 )
 def test_unsupported_native_parameters_are_rejected(raw) -> None:
@@ -234,7 +291,10 @@ def test_unsupported_native_parameters_are_rejected(raw) -> None:
 
 
 def test_native_parameter_set_is_the_closed_documented_vocabulary() -> None:
-    assert NATIVE_MODEL_PARAMETER_FIELDS == frozenset({"reasoning_effort"})
+    assert NATIVE_MODEL_PARAMETER_FIELDS == frozenset({
+        "reasoning_effort", "top_p", "top_k", "min_p",
+        "presence_penalty", "repetition_penalty",
+    })
     assert REASONING_EFFORT_VALUES == frozenset({"minimal", "low", "medium", "high"})
 
 
@@ -329,6 +389,55 @@ def test_stream_and_non_stream_bodies_agree_on_the_native_field() -> None:
     assert {k: v for k, v in stream_seen["body"].items() if k != "stream"} == {
         k: v for k, v in nonstream_seen["body"].items()
     }
+
+
+def test_sensenova_explicit_numeric_fields_have_stream_and_nonstream_parity() -> None:
+    """Core wire test only; B14 still validates the exact serving model."""
+    model_id = "sensenova/sensenova-6.8-flash-lite"
+    nonstream_seen: dict = {}
+    stream_seen: dict = {}
+    profile = agent(model_policy={
+        "model": model_id,
+        "model_parameters": SENSENOVA_NATIVE_EXPLICIT,
+        "allow_external_fallback": False,
+    })
+    run(
+        ExecutionRuntime(
+            app_id="padiem-chat",
+            b14_client=B14ExecutionClient(
+                B14ExecutionConfig(BASE_URL),
+                transport=nonstream_transport(nonstream_seen, model_id=model_id),
+            ),
+        ).run(execution_request(profile=profile))
+    )
+    collect(
+        StreamingExecutionRuntime(
+            app_id="padiem-chat",
+            b14_stream_client=B14StreamingClient(
+                B14ExecutionConfig(BASE_URL),
+                transport=stream_transport(
+                    stream_seen,
+                    model_id=model_id,
+                    provider_name="SenseNova",
+                    upstream_model="sensenova-6.8-flash-lite",
+                    provider_id="sensenova",
+                ),
+            ),
+        ).stream(execution_request(profile=profile))
+    )
+
+    for seen in (nonstream_seen, stream_seen):
+        payload = seen["body"]
+        assert payload["model"] == model_id
+        assert "model_parameters" not in payload
+        assert "temperature" not in payload
+        for name, value in SENSENOVA_NATIVE_EXPLICIT.items():
+            assert payload[name] == value
+    assert stream_seen["body"]["stream"] is True
+    assert "stream" not in nonstream_seen["body"]
+    assert {
+        key: value for key, value in stream_seen["body"].items() if key != "stream"
+    } == nonstream_seen["body"]
 
 
 def test_streaming_lane_omits_the_field_when_nothing_was_chosen() -> None:

@@ -270,7 +270,7 @@ def test_core_rejects_an_unknown_native_field_before_any_request() -> None:
             client.complete_registered_quote_model(
                 MESSAGES,
                 model=GEMINI_35,
-                model_parameters={"reasoning_effort": "low", "top_p": 0.5},
+                model_parameters={"reasoning_effort": "low", "temperature_bias": 0.5},
             )
         )
     assert capture.bodies == []

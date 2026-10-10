@@ -329,8 +329,15 @@ class B14RoutingOptions:
 # provider, and nothing is ever silently dropped, downgraded or invented.
 REASONING_EFFORT_VALUES = frozenset({"minimal", "low", "medium", "high"})
 
-_NATIVE_PARAMETER_RULES: dict[str, frozenset[str]] = {
+_NATIVE_PARAMETER_RULES: dict[str, frozenset[str] | str] = {
     "reasoning_effort": REASONING_EFFORT_VALUES,
+    # Provider-specific acceptance is checked AGAIN by the B14 gateway for the
+    # exact registered model. These wire-level shapes are never defaults.
+    "top_p": "unit_interval",
+    "top_k": "positive_integer",
+    "min_p": "unit_interval",
+    "presence_penalty": "signed_two",
+    "repetition_penalty": "positive_number",
 }
 NATIVE_MODEL_PARAMETER_FIELDS = frozenset(_NATIVE_PARAMETER_RULES)
 
@@ -355,10 +362,25 @@ def _normalize_model_parameters(
         if name not in raw or raw[name] is None:
             continue
         value = raw[name]
-        if not isinstance(value, str) or value not in rule:
-            raise ValueError(
-                f"{name} must be one of " + ", ".join(sorted(rule))
-            )
+        if isinstance(rule, frozenset):
+            if not isinstance(value, str) or value not in rule:
+                raise ValueError(
+                    f"{name} must be one of " + ", ".join(sorted(rule))
+                )
+        elif rule == "positive_integer":
+            if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+                raise ValueError(f"{name} must be a positive integer")
+        else:
+            if isinstance(value, bool) or not isinstance(value, (int, float)):
+                raise ValueError(f"{name} must be numeric")
+            if not math.isfinite(float(value)):
+                raise ValueError(f"{name} must be finite")
+            if rule == "unit_interval" and not 0 <= float(value) <= 1:
+                raise ValueError(f"{name} must be between 0 and 1")
+            if rule == "signed_two" and not -2 <= float(value) <= 2:
+                raise ValueError(f"{name} must be between -2 and 2")
+            if rule == "positive_number" and value <= 0:
+                raise ValueError(f"{name} must be positive")
         validated[name] = value
     return MappingProxyType(validated)
 
