@@ -97,7 +97,7 @@
 
 ## 9. 향후 연구 아이디어: 사용자의 작업을 방해하지 않는 Computer Use (2026-10-10)
 
-**현행 제품 결정은 변경하지 않는다:** 웹은 Claw Web, 로컬 PC 연결은 경량 Claw Connect 트레이, 고급 앱은 Full Desktop, 실행기는 기존 Local Runner 하나. 이 절은 **차기 기술 탐색을 위한 아이디어 기록**이며 S0–S4 필수 출시 조건이나 새 구현 착수 지시가 아니다. [공통 실행기 기술 검토 상세](../architecture/B54_CLAW_CONNECT_DESKTOP_SHARED_LOCAL_RUNTIME_ARCHITECTURE_20261010.md#11-후속-연구-기록-비점유-background--isolated--shared-computer-use-2026-10-10)를 따른다.
+**현행 제품 결정은 변경하지 않는다:** 웹은 Claw Web, 로컬 PC 연결은 경량 Claw Connect 트레이, 고급 앱은 Full Desktop, 실행기는 기존 Local Runner 하나. 이 절은 **차기 기술 탐색을 위한 아이디어 기록**이며 S0–S4 필수 출시 조건이나 새 구현 착수 지시가 아니다. [공통 실행기 기술 검토 상세](../architecture/B54_CLAW_CONNECT_DESKTOP_SHARED_LOCAL_RUNTIME_ARCHITECTURE_20261010.md)를 따른다.
 
 ### 사용자 관점의 추가 가치
 
