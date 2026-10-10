@@ -207,6 +207,9 @@ class EngineToolBinding:
     authorities: Mapping[str, TrustedToolAuthority]
     authorization_provider: Callable[[str], ToolAuthorizationContext] | None = None
     resource_policy: ToolResourcePolicy | None = None
+    # Server-owned optional preflight that runs BEFORE any Core pause is issued.
+    # Only private binding composition may install it; request JSON cannot.
+    invocation_preflight: Callable[[Mapping[str, Any]], Any] | None = None
 
     def __post_init__(self) -> None:
         _require_identifier("app_id", self.app_id)
@@ -284,6 +287,12 @@ class EngineToolBinding:
             raise EngineToolProjectionError(
                 "invalid_tool_binding",
                 "authorization_provider must be callable.",
+                status_code=503,
+            )
+        if self.invocation_preflight is not None and not callable(self.invocation_preflight):
+            raise EngineToolProjectionError(
+                "invalid_tool_binding",
+                "invocation_preflight must be a callable trusted Engine guard.",
                 status_code=503,
             )
         if self.resource_policy is not None and not isinstance(

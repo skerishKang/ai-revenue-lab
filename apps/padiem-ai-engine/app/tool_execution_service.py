@@ -442,6 +442,28 @@ class ToolExecutionEngineService:
             binding, authority, canonical_tool_id, invocation, timeout, run_id = (
                 self._prepare_invocation(payload)
             )
+            # #3580: trusted Engine-owned preflight blocks an unknown or
+            # mismatched source *before* issuing a Core user-confirmation
+            # pause. Browser tool JSON never supplies or overrides the guard.
+            if binding.invocation_preflight is not None:
+                try:
+                    checked = binding.invocation_preflight(invocation.arguments)
+                    if inspect.isawaitable(checked):
+                        checked = await checked
+                except EngineToolProjectionError:
+                    raise
+                except Exception as exc:
+                    raise EngineToolProjectionError(
+                        "tool_source_authority_unavailable",
+                        "Trusted tool source authority is unavailable.",
+                        status_code=503,
+                    ) from exc
+                if checked is not True:
+                    raise EngineToolProjectionError(
+                        "tool_source_authority_denied",
+                        "The requested source is not authorized.",
+                        status_code=403,
+                    )
             response, result, runtime_error = await self._execute_via_core(
                 binding=binding,
                 authority=authority,
