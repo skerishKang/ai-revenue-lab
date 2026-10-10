@@ -116,10 +116,13 @@ function makeStorage() {
   };
 }
 
-const jsonResponse = (data, status) => ({
+const jsonResponse = (data, status, suppliedHeaders = {}) => ({
   ok: status === undefined || (status >= 200 && status < 300),
   status: status === undefined ? 200 : status,
-  headers: { get: () => null },
+  headers: {
+    get: (name) => suppliedHeaders[Object.keys(suppliedHeaders).find(
+      (key) => key.toLowerCase() === String(name).toLowerCase())] || null
+  },
   json: async () => data
 });
 
@@ -187,6 +190,11 @@ function buildAccountEnv(options) {
         assert.equal(body.model_id, SELECTED_MODEL_ID,
           "explicit user choice is submitted independently of quote text");
         interpretBodies.push(body.message);
+        if (config.transientFailureTurn === interpretBodies.length) {
+          return jsonResponse({ ok: false, error: { code: "quote_interpretation_failed" } }, 502, {
+            "X-B66-Upstream-Class": config.upstreamClass || "upstream_timeout"
+          });
+        }
         if (config.unrecognizedModelOutput ||
             config.unrecognizedResponseTurn === interpretBodies.length) {
           return jsonResponse({ ok: false, error: { code: "quote_input_unrecognized",
@@ -462,6 +470,53 @@ const assistantTexts = (env) => {
   assert.ok(resetBridge.pendingQuote(), "pending exists before reset");
   resetBridge.clearPending();
   assert.equal(resetBridge.pendingQuote(), null, "explicit reset clears the pending conversation");
+
+  /* #4076 real Production found 502 upstream_timeout vs other 502.
+     Server diagnostics are bounded and relayed via the existing Pages bridge.
+     No automatic retries, silent model fallback, draft mutation or reset of
+     already verified quote facts on a transient failure. */
+  const timed = buildAccountEnv({
+    candidates: [PARTIAL_CANDIDATE, COMPLETE_CANDIDATE, COMPLETE_CANDIDATE],
+    transientFailureTurn: 2,
+    upstreamClass: "upstream_timeout"
+  });
+  await flush();
+  manuallyChooseModel(timed);
+  const timedBridge = timed.context.window.B66QuoteRuntimeBridge;
+  const partialBeforeTimeout = await timedBridge.interpret(TURN1_TEXT);
+  assert.equal(partialBeforeTimeout.code, "incomplete_request");
+  const stableQuoteNo = timedBridge.pendingQuote().quoteNo;
+  const failedFollowup = await timedBridge.interpret(TURN2_TEXT);
+  assert.equal(failedFollowup.code, "interpret_timeout", "502 with exact upstream_timeout is distinct");
+  assert.ok(timedBridge.errorText(failedFollowup.code).includes("시간 초과"));
+  assert.ok(timedBridge.errorText(failedFollowup.code).includes("자동으로 다시 요청하지 않습니다"));
+  assert.equal(timed.interpretBodies.length, 2, "502 does not automatically retry the provider");
+  assert.equal(timedBridge.pendingQuote().quoteNo, stableQuoteNo,
+    "failed provider call does not clear the earlier user answers");
+  assert.equal(timed.allocations(), 1, "502 must not allocate a new quote number");
+  assert.equal(timed.replaceDrafts.length, 0, "502 must not replace a draft");
+  const userResubmission = await timedBridge.interpret(TURN2_TEXT);
+  assert.equal(userResubmission.ok, true, "explicit subsequent user submission can continue");
+  assert.equal(userResubmission.draft.meta.quoteNo, stableQuoteNo);
+  assert.equal(userResubmission.draft.items[0].unitPrice, 18000);
+  assert.equal(timed.interpretBodies.length, 3, "new request requires an explicit new action");
+
+  const otherFailure = buildAccountEnv({
+    transientFailureTurn: 1,
+    upstreamClass: "provider_server_error"
+  });
+  await flush();
+  manuallyChooseModel(otherFailure);
+  const otherBridge = otherFailure.context.window.B66QuoteRuntimeBridge;
+  const generic502 = await otherBridge.interpret(TURN1_TEXT);
+  assert.equal(generic502.code, "interpret_failed", "non-timeout 502 is not mislabeled");
+  assert.ok(otherBridge.errorText(generic502.code).includes("다른 모델을 직접 선택"));
+  assert.equal(otherFailure.interpretBodies.length, 1, "no hidden fallback or retry");
+  assert.equal(otherFailure.allocations(), 0, "failed first turn does not allocate");
+  console.log("B66_502_TIMEOUT_SAFE_CUSTOMER_MESSAGE=PASS");
+  console.log("B66_502_NO_AUTO_RETRY_OR_FALLBACK=PASS");
+  console.log("B66_TRANSIENT_FAILURE_PRESERVES_PENDING_FACTS=PASS");
+  console.log("B66_DISTINCT_NON_TIMEOUT_502_MESSAGE=PASS");
 
   /* Missing name/quantity/price all use the same precise, bounded path.
      The follow-up provider fixture deliberately returns only the answered fact:
