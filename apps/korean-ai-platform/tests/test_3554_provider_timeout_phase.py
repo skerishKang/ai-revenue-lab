@@ -24,7 +24,7 @@ def test_fixed_phase_classification_and_non_timeout_blocked(err, phase):
     assert classify_timeout_phase(ValueError("PRIVATE_ACCOUNT")) is None
 
 
-@pytest.mark.parametrize("provider", ["kira", "sensenova", "google", "inception"])
+@pytest.mark.parametrize("provider", ["kira", "modelscope", "sensenova", "google", "inception"])
 @pytest.mark.parametrize("mode", ["completed", "stream"])
 def test_allowlisted_providers_log_only_safe_phase(caplog, provider, mode):
     with caplog.at_level(logging.WARNING):
