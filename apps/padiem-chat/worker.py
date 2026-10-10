@@ -920,7 +920,12 @@ class Default(WorkerEntrypoint):
                 # either, the composition yields None and the route keeps the
                 # fail-closed unconfigured source installed by create_app.
                 _local_task_result_source, _local_task_result_diag = (
-                    build_local_task_result_source_with_diagnostic(self.env, history_store)
+                    build_local_task_result_source_with_diagnostic(
+                        self.env, history_store,
+                        office_completion=getattr(
+                            _worker_app.state, "claw_office_drive_completion", None
+                        ),
+                    )
                 )
                 _worker_app.state.local_task_result_source = _local_task_result_source
                 _worker_app.state.local_task_result_diagnostic = _local_task_result_diag

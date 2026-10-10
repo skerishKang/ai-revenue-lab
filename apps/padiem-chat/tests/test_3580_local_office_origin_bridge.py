@@ -7,7 +7,6 @@ WRITE. Broker terminal exit=0 alone never attests document material.
 from __future__ import annotations
 
 from dataclasses import replace
-from pathlib import Path
 import unittest
 
 from app.claw_durable_drive_output_pipeline import DurableArtifactCompletionError
@@ -127,6 +126,24 @@ class LocalOfficeOriginTests(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(DurableArtifactCompletionError):
             await self.bridge.complete_approved_office_run(**self.kwargs())
         self.assertEqual(self.broker.calls, 0)
+        self.assertEqual(self.fixture.provider.calls, 0)
+
+    async def test_missing_bound_command_prevents_broker_and_upload(self):
+        self.fixture.db.execute(
+            "DELETE FROM claw_local_task_correlation WHERE run_id=?", (RUN,),
+        )
+        with self.assertRaises(DurableArtifactCompletionError):
+            await self.bridge.complete_approved_office_run(**self.kwargs())
+        self.assertEqual(self.broker.calls, 0)
+        self.assertEqual(self.fixture.provider.calls, 0)
+
+    async def test_workspace_from_run_row_cannot_be_replaced_by_document(self):
+        self.fixture.db.execute(
+            "UPDATE claw_run_history SET workspace_id=? WHERE run_id=?",
+            ("tenant_foreign_3580", RUN),
+        )
+        with self.assertRaises(DurableArtifactCompletionError):
+            await self.bridge.complete_approved_office_run(**self.kwargs())
         self.assertEqual(self.fixture.provider.calls, 0)
 
     async def test_terminal_fact_mismatch_or_failure_denies_all_writes(self):
