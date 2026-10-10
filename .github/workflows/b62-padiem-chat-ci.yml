@@ -23,6 +23,7 @@ on:
       # CI implementation itself: probe runner/test changes require real B62 checks.
       - ".github/scripts/b62_worker_probe_*.sh"
       - ".github/tests/test_3989_b62_worker_probe_parallel.py"
+      - ".github/tests/test_3989_b62_parallel_runtime_jobs.py"
       - ".github/workflows/b62-padiem-chat-ci.yml"
       - ".github/workflows/b62-cloudflare-worker-deploy.yml"
   pull_request:
@@ -42,6 +43,7 @@ on:
       # CI implementation itself: probe runner/test changes require real B62 checks.
       - ".github/scripts/b62_worker_probe_*.sh"
       - ".github/tests/test_3989_b62_worker_probe_parallel.py"
+      - ".github/tests/test_3989_b62_parallel_runtime_jobs.py"
       - ".github/workflows/b62-padiem-chat-ci.yml"
       - ".github/workflows/b62-cloudflare-worker-deploy.yml"
   workflow_dispatch:
@@ -71,6 +73,8 @@ jobs:
         run: python .github/scripts/b14_model_registration_ci_plan.py
       - name: Test B62 scoped-regression fail-closed contract
         run: python -m unittest discover -s .github/tests -p test_b62_ci_impact_scope_3989.py -q
+      - name: Test B62 parallel job fan-in contract
+        run: python -m unittest discover -s .github/tests -p test_3989_b62_parallel_runtime_jobs.py -q
       - name: Classify B62 unchanged-dependency CI scope
         id: classify-b62
         env:
@@ -105,7 +109,7 @@ jobs:
   b62-test:
     name: b62-test
     if: always()
-    needs: [registry-ci-plan, b62-full-suite, b14-multimodal-test, b62-registry-contract]
+    needs: [registry-ci-plan, b62-full-suite, b62-worker-suite, b14-multimodal-test, b62-registry-contract]
     runs-on: ubuntu-latest
     steps:
       - name: Enforce selected lane and both relevant checks
@@ -113,6 +117,7 @@ jobs:
           LANE: ${{ needs.registry-ci-plan.outputs.lane }}
           PLAN_RESULT: ${{ needs.registry-ci-plan.result }}
           FULL_RESULT: ${{ needs.b62-full-suite.result }}
+          WORKER_RESULT: ${{ needs.b62-worker-suite.result }}
           MM_RESULT: ${{ needs.b14-multimodal-test.result }}
           QUICK_RESULT: ${{ needs.b62-registry-contract.result }}
         run: |
@@ -121,10 +126,12 @@ jobs:
           if [ "$LANE" = model_registration_only ]; then
             test "$QUICK_RESULT" = success
             test "$FULL_RESULT" = skipped
+            test "$WORKER_RESULT" = skipped
             test "$MM_RESULT" = skipped
             echo 'B62_CI_MODE=MODEL_REGISTRATION_ONLY'
           else
             test "$FULL_RESULT" = success
+            test "$WORKER_RESULT" = success
             test "$MM_RESULT" = success
             test "$QUICK_RESULT" = skipped
             echo 'B62_CI_MODE=FULL'
@@ -168,6 +175,35 @@ jobs:
         if: ${{ needs.registry-ci-plan.outputs.scope != 'chat_only' && needs.registry-ci-plan.outputs.scope != 'static_only' }}
         working-directory: packages/padiem-ai-core
         run: uv run --extra dev python -m pytest -q
+      - name: Verify locked host dependency versions
+        run: uv run --locked python tests/check_dependency_locks.py --phase host
+  # Run worker checks concurrently with the 3,616-case Chat/Core host suite.
+  # Required b62-test aggregates BOTH results; neither lane can be silently skipped.
+  b62-worker-suite:
+    name: B62 Worker/Pyodide contract
+    needs: registry-ci-plan
+    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+      - name: Verify committed host lock is current
+        run: uv lock --check
+      - name: Resolve B62 with shared Core path dependency
+        run: uv sync --locked --extra dev
       - name: Verify locked host dependency versions
         run: uv run --locked python tests/check_dependency_locks.py --phase host
       - name: Pywrangler dependency sync from committed pylock
