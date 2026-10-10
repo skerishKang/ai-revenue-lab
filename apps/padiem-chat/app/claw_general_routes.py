@@ -333,6 +333,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     except ProductTierRoutesError:
         return _error(503, "tier_unavailable", "AI 등급 설정을 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.")
     if selected_model_id is None and (tier_route is None or not tier_route.model_id):
+        if product_tier is ProductTierLabel.PLUS:
+            return _error(503, "tier_unavailable", "Claw Plus에서는 등록된 실행 모델 ID를 직접 선택해 주세요.")
         return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.")
 
     # #3929: optional SAME-CONVERSATION follow-ups are verified against the
