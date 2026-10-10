@@ -518,3 +518,46 @@ body.b66-three-pane .shell-edit-return:focus-visible {
     line-height: 1.35;
   }
 }
+
+/* #4268 P2: screen-only accessible PDF zoom and bounded overlay controls. */
+body.b66-three-pane .shell-preview-zoom { display: none; }
+@media screen and (max-width: 1250px) {
+  body.b66-three-pane .shell-preview-host .preview-toolbar {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 7px;
+    padding: 9px;
+  }
+  body.b66-three-pane .shell-preview-zoom {
+    display: flex;
+    flex: 1 1 135px;
+    align-items: center;
+    gap: 5px;
+    order: 3;
+  }
+  body.b66-three-pane .shell-preview-zoom button {
+    min-width: 34px;
+    min-height: 34px;
+    border: 1px solid #b7cad6;
+    border-radius: 8px;
+    background: #fff;
+    color: #25465b;
+    font-weight: 750;
+    padding: 2px 6px;
+    cursor: pointer;
+  }
+  body.b66-three-pane .shell-preview-zoom button:disabled { opacity: .45; cursor: default; }
+  body.b66-three-pane .shell-preview-zoom button:focus-visible,
+  body.b66-three-pane .shell-preview-collapse:focus-visible {
+    outline: 3px solid #27699e;
+    outline-offset: 2px;
+  }
+  body.b66-three-pane .shell-preview-zoom-status {
+    min-width: 39px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  body.b66-three-pane .shell-preview-collapse { margin-left: auto; }
+}
