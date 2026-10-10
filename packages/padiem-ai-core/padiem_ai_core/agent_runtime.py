@@ -604,6 +604,14 @@ class BoundedAgentRuntime:
                         + timedelta(seconds=self._approval_pause_seconds),
                         trace_id=request.trace_id,
                         plan_id=request.plan_id,
+                        # This is annotation of the original REGISTERED ToolSpec,
+                        # not additional authorization. The ToolRuntime already
+                        # verified these scopes are granted before it raised a
+                        # USER_CONFIRMATION or EXTERNAL_AUTHORIZATION pause.
+                        # The invocation/model cannot choose or widen them.
+                        approval_scope=self._tool_runtime.registered_approval_scopes(
+                            invocation.tool_id
+                        ),
                     )
                 if pause is not None:
                     return AgentRunResult(

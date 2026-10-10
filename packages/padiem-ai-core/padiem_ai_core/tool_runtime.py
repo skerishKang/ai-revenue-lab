@@ -424,6 +424,18 @@ class ToolRuntime:
     def registered_tool_ids(self) -> tuple[str, ...]:
         return tuple(sorted(self._registry))
 
+    def registered_approval_scopes(self, tool_id: str) -> tuple[str, ...]:
+        """The immutable REGISTERED tool's declared scopes, not model arguments.
+
+        Used exclusively after this runtime returned an explicit confirmation
+        error. The caller must never interpret a scope as a new grant: runtime
+        still checks the previously granted auth scopes before pausing.
+        """
+        registered = self._registry.get(tool_id)
+        if registered is None:
+            return ()
+        return registered.spec.auth_scope
+
     def register(self, spec: ToolSpec, handler: ToolHandler) -> None:
         if not isinstance(spec, ToolSpec):
             raise ValueError("spec must be ToolSpec")
