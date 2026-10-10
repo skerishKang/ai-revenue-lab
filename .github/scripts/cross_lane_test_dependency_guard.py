@@ -65,6 +65,7 @@ import re
 import shlex
 import sys
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 
 try:  # PyYAML is already a CI dependency of the sibling .github guards.
@@ -320,6 +321,7 @@ def pytest_targets_in_script(repo: Path, script: str, cwd: str) -> list[str]:
 # --------------------------------------------------------------------------- #
 # collection-time import closure
 # --------------------------------------------------------------------------- #
+@lru_cache(maxsize=None)
 def module_level_import_roots(path: Path) -> set[str]:
     try:
         tree = ast.parse(path.read_text(encoding="utf-8"))
@@ -467,6 +469,7 @@ def top_level_roots_in_dir(source_dir: Path) -> set[str]:
     return roots
 
 
+@lru_cache(maxsize=None)
 def _component_dirs(repo: Path) -> list[str]:
     dirs: list[str] = []
     for base in COMPONENT_ROOTS:
@@ -479,6 +482,7 @@ def _component_dirs(repo: Path) -> list[str]:
     return dirs
 
 
+@lru_cache(maxsize=None)
 def _root_providers(repo: Path, root: str) -> list[str]:
     providers: list[str] = []
     for component in _component_dirs(repo):
@@ -549,6 +553,7 @@ def _parse_toml(text: str):
     return tomllib.loads(text)
 
 
+@lru_cache(maxsize=None)
 def read_pyproject_dependencies(
     repo: Path, component: str
 ) -> tuple[list[str], list[str]]:
@@ -576,6 +581,7 @@ def _resolve_project_root_path(component: str, req: str) -> str | None:
     return posixpath.normpath(posixpath.join(component, match.group(1)))
 
 
+@lru_cache(maxsize=None)
 def path_dep_root_map(repo: Path, component: str) -> dict[str, str]:
     """Map first-party import root -> source dir for a component's path deps."""
     declared, _ = read_pyproject_dependencies(repo, component)
@@ -711,6 +717,20 @@ def implicit_cwd_dirs(job: dict, step: dict) -> set[str]:
 def evaluate(repo: Path) -> tuple[list[Violation], dict[str, int]]:
     if yaml is None:
         raise RuntimeError("PyYAML is required to evaluate workflows")
+    # Snapshot-scoped memoization only: a second evaluation must observe any
+    # changed conftest, component declaration or source tree (including the
+    # #3593 negative fixture that mutates conftest between evaluations).
+    # Avoid rescanning all components and reparsing identical modules/imports
+    # for every workflow collection within this single immutable CI checkout.
+    for cached in (
+        module_level_import_roots,
+        _component_dirs,
+        _root_providers,
+        read_pyproject_dependencies,
+        path_dep_root_map,
+    ):
+        cached.cache_clear()
+
     violations: list[Violation] = []
     stats = {
         "workflows_scanned": 0,
@@ -718,9 +738,15 @@ def evaluate(repo: Path) -> tuple[list[Violation], dict[str, int]]:
         "conftest_couplings": 0,
     }
     workflows_dir = repo / ".github" / "workflows"
+    # The LibYAML safe loader has the same restricted tag/constructor policy
+    # as SafeLoader, but parses the complete workflow inventory in native code.
+    # Fall back to the existing pure-Python SafeLoader when C bindings are absent.
+    safe_loader = getattr(yaml, "CSafeLoader", yaml.SafeLoader)
 
     for workflow_path in sorted(workflows_dir.glob("*.yml")):
-        data = yaml.safe_load(workflow_path.read_text(encoding="utf-8")) or {}
+        data = yaml.load(
+            workflow_path.read_text(encoding="utf-8"), Loader=safe_loader
+        ) or {}
         stats["workflows_scanned"] += 1
         workflow_name = workflow_path.name
         for job_name, job in (data.get("jobs") or {}).items():
