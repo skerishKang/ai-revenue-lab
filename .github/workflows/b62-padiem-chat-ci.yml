@@ -120,6 +120,7 @@ jobs:
       - name: Enforce selected lane and both relevant checks
         env:
           LANE: ${{ needs.registry-ci-plan.outputs.lane }}
+          SCOPE: ${{ needs.registry-ci-plan.outputs.scope }}
           PLAN_RESULT: ${{ needs.registry-ci-plan.result }}
           FULL_RESULT: ${{ needs.b62-full-suite.result }}
           WORKER_RESULT: ${{ needs.b62-worker-suite.result }}
@@ -137,7 +138,13 @@ jobs:
           else
             test "$FULL_RESULT" = success
             test "$WORKER_RESULT" = success
-            test "$MM_RESULT" = success
+            # Strict static-only changes cannot modify B14 pilot source or its dependencies.
+            # Any unknown/mixed/chat-only scope remains fail-closed and runs the B14 suite.
+            if [ "$SCOPE" = static_only ]; then
+              test "$MM_RESULT" = skipped
+            else
+              test "$MM_RESULT" = success
+            fi
             test "$QUICK_RESULT" = skipped
             echo 'B62_CI_MODE=FULL'
           fi
@@ -237,7 +244,9 @@ jobs:
 
   b14-multimodal-test:
     needs: registry-ci-plan
-    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' }}
+    # Only the proven static-only B62 surface can omit the source-invariant B14 pilot runner.
+    # All Python, shared-Core, B14, registry-mixed and uncertain changes keep B14 coverage.
+    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     defaults:
