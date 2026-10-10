@@ -23,7 +23,7 @@ PROBES = {
 class WorkerProbeParallelContract(unittest.TestCase):
     def test_all_original_real_runtime_probes_retained(self):
         workflow = WORKFLOW.read_text(encoding="utf-8")
-        self.assertIn("Real Worker/Pyodide probes (all four, parallel, fail-closed)", workflow)
+        self.assertIn("Real Worker/Pyodide probes (four assertions, one Workerd, fail-closed)", workflow)
         self.assertIn("bash ../../.github/scripts/b62_worker_probe_parallel.sh", workflow)
         self.assertIn("test_3989_b62_worker_probe_parallel.py", workflow)
         self.assertIn("Prove Core vendored for Python Worker", workflow)
@@ -59,10 +59,10 @@ class WorkerProbeParallelContract(unittest.TestCase):
         self.assertIn("Pywrangler dependency sync from committed pylock", workflow)
         self.assertLess(
             workflow.index("Pywrangler dependency sync from committed pylock"),
-            workflow.index("Real Worker/Pyodide probes (all four, parallel, fail-closed)"),
+            workflow.index("Real Worker/Pyodide probes (four assertions, one Workerd, fail-closed)"),
         )
         self.assertLess(
-            workflow.index("Real Worker/Pyodide probes (all four, parallel, fail-closed)"),
+            workflow.index("Real Worker/Pyodide probes (four assertions, one Workerd, fail-closed)"),
             workflow.index("Python Worker bundle dry-run"),
         )
 

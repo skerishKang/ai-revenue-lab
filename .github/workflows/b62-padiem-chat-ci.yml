@@ -22,7 +22,9 @@ on:
       - ".github/tests/test_b62_ci_impact_scope_3989.py"
       # CI implementation itself: probe runner/test changes require real B62 checks.
       - ".github/scripts/b62_worker_probe_*.sh"
+      - ".github/scripts/b62_worker_probe_shared_assertions.py"
       - ".github/tests/test_3989_b62_worker_probe_parallel.py"
+      - ".github/tests/test_3989_b62_worker_shared_runtime.py"
       - ".github/tests/test_3989_b62_parallel_runtime_jobs.py"
       - ".github/workflows/b62-padiem-chat-ci.yml"
       - ".github/workflows/b62-cloudflare-worker-deploy.yml"
@@ -42,7 +44,9 @@ on:
       - ".github/tests/test_b62_ci_impact_scope_3989.py"
       # CI implementation itself: probe runner/test changes require real B62 checks.
       - ".github/scripts/b62_worker_probe_*.sh"
+      - ".github/scripts/b62_worker_probe_shared_assertions.py"
       - ".github/tests/test_3989_b62_worker_probe_parallel.py"
+      - ".github/tests/test_3989_b62_worker_shared_runtime.py"
       - ".github/tests/test_3989_b62_parallel_runtime_jobs.py"
       - ".github/workflows/b62-padiem-chat-ci.yml"
       - ".github/workflows/b62-cloudflare-worker-deploy.yml"
@@ -263,15 +267,19 @@ jobs:
       - name: Prove sync did not mutate committed locks
         run: git diff --exit-code -- uv.lock pylock.toml
       - name: Verify Worker probe concurrency and failure propagation contract
-        run: uv run --locked python -m unittest discover -s ../../.github/tests -p test_3989_b62_worker_probe_parallel.py -q
-      - name: Real Worker/Pyodide probes (all four, parallel, fail-closed)
+        run: |
+          uv run --locked python -m unittest discover -s ../../.github/tests -p test_3989_b62_worker_probe_parallel.py -q
+          uv run --locked python -m unittest discover -s ../../.github/tests -p test_3989_b62_worker_shared_runtime.py -q
+      - name: Real Worker/Pyodide probes (four assertions, one Workerd, fail-closed)
         # Retain all parallel probes on Python/Worker/mixed/unknown changes.
         # Pure Python test-module edits cannot change deployed Worker bytes or
         # its locked dependencies. Still vendor, audit locks and bundle Worker;
         # Strict B14 application/test-only edits also cannot modify the B62
         # Workerd probe entrypoints/dependencies. Keep full B62 Chat/B14,
         # pinned vendor & Worker bundle, but omit these unchanged live boots.
-        # All B62 source/Worker/mixed/CI/unknown changes run all four probes.
+        # All B62 source/Worker/mixed/CI/unknown changes run all four real
+        # probes, now sharing one isolated Workerd to avoid four cold Pyodide
+        # startups. Original checks, pinned runtime and fail-closed coverage stay.
         if: ${{ needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'tests_only' && needs.registry-ci-plan.outputs.scope != 'b14_only' }}
         run: bash ../../.github/scripts/b62_worker_probe_parallel.sh
       - name: Prove Core vendored for Python Worker

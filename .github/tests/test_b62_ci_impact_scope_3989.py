@@ -244,7 +244,7 @@ class B62ScopeTests(unittest.TestCase):
         self.assertIn("uv run --extra dev python -m pytest -q", runner)
         self.assertIn("B62_HOST_PYTEST_OVERLAP=FAIL", runner)
         self.assertIn("run: uv run --locked pywrangler deploy --dry-run", text)
-        self.assertIn("name: Real Worker/Pyodide probes (all four, parallel, fail-closed)", text)
+        self.assertIn("name: Real Worker/Pyodide probes (four assertions, one Workerd, fail-closed)", text)
         self.assertIn("run: bash ../../.github/scripts/b62_worker_probe_parallel.sh", text)
         # Main owns pinned Wrangler prewarming within its parallel runner.
         runner = (ROOT / ".github/scripts/b62_worker_probe_parallel.sh").read_text(encoding="utf-8")
