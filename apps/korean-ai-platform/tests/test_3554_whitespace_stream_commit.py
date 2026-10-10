@@ -25,14 +25,12 @@ def live_fake_provider(monkeypatch):
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-local-mock-only-3554-123456789")
     monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
-    old_mode, old_key = rcfg.provider_mode, rcfg.api_key
+    old_mode = rcfg.provider_mode
     rcfg.provider_mode = "live"
-    rcfg.api_key = "offline-test-gateway-3554"
     try:
         yield
     finally:
         rcfg.provider_mode = old_mode
-        rcfg.api_key = old_key
 
 
 def _request():
