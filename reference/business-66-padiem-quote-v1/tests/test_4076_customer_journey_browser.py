@@ -97,6 +97,24 @@ class JourneyHandler(http.server.SimpleHTTPRequestHandler):
             return self._json({"ok": False, "error": {"code": "not_stubbed"}}, 404)
         return self._json(payload)
 
+    def do_PUT(self):
+        path = self._route()
+        type(self).calls.append(("PUT", path))
+        if path != "/b66/guided-draft":
+            return self._json({"ok": False, "error": {"code": "not_stubbed"}}, 404)
+        # Synthetic account-backed D1 slot for the offline #4076 browser journey.
+        # Real D1 owner/workspace isolation is covered by test_b66_guided_draft.py.
+        type(self).state[path] = {"ok": True, "state": self._read_json()}
+        return self._json({"ok": True})
+
+    def do_DELETE(self):
+        path = self._route()
+        type(self).calls.append(("DELETE", path))
+        if path != "/b66/guided-draft":
+            return self._json({"ok": False, "error": {"code": "not_stubbed"}}, 404)
+        type(self).state[path] = {"ok": True, "state": None}
+        return self._json({"ok": True})
+
     def do_POST(self):
         path = self._route()
         type(self).calls.append(("POST", path))
@@ -283,6 +301,7 @@ async def open_session(page, base: str, skill: dict, fingerprint: str) -> dict:
             },
         },
         "/b66/quotes": {"ok": True, "quotes": [], "limit": 20},
+        "/b66/guided-draft": {"ok": True, "state": None},
         "interpretScript": [],
         "interpretRequests": [],
         "pdfRequests": [],
