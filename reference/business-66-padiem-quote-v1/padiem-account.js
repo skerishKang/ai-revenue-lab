@@ -941,7 +941,11 @@
           window.setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
         }
         return { ok: true, filename };
-      } catch (_) {
+      } catch (error) {
+        if (error && error.code === "browser_pdf_unsupported_rows") {
+          return pdfFailure("cgi_unsupported_rows",
+            "현재 CGI 견적서 PDF는 품목 최대 3개까지만 지원합니다. 품목을 3개 이하로 줄여 주세요.");
+        }
         return pdfFailure("browser_pdf_unavailable", "CGI 브라우저 PDF를 만들지 못했습니다. 다시 확인해 주세요.");
       }
     }
