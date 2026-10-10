@@ -48,9 +48,15 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertNotIn("needs: b62-worker-suite", self.host)
 
     def test_host_keeps_full_python_tests_and_core_safety(self):
-        self.assertIn("uv run --locked python -m pytest -q", self.host)
-        self.assertIn("Core tests with Tool Runtime dev dependency", self.host)
-        self.assertIn("scope != 'chat_only' && needs.registry-ci-plan.outputs.scope != 'static_only'", self.host)
+        runner = (WORKFLOW.parents[1] / "scripts" / "b62_host_pytest_overlap_4070.sh").read_text(encoding="utf-8")
+        self.assertIn("run: bash ../../.github/scripts/b62_host_pytest_overlap_4070.sh", self.host)
+        self.assertIn("B62_CI_IMPACT_SCOPE: ${{ needs.registry-ci-plan.outputs.scope }}", self.host)
+        self.assertIn("uv run --locked python -m pytest -q", runner)
+        self.assertIn("uv run --extra dev python -m pytest -q", runner)
+        self.assertIn('chat_only|static_only) run_core=0', runner)
+        self.assertIn('*) echo "B62_HOST_PYTEST_SCOPE_UNCERTAIN=', runner)
+        self.assertIn("B62_HOST_PYTEST_OVERLAP=FAIL", runner)
+        self.assertIn("B62_HOST_PYTEST_OVERLAP=PASS", runner)
         self.assertIn("Verify locked host dependency versions", self.host)
         self.assertIn("JavaScript syntax", self.host)
         self.assertNotIn("Real Worker/Pyodide probes", self.host)
