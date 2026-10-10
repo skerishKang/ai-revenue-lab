@@ -40,6 +40,8 @@ backend change; fail-closed backend behavior and Chat streaming stay untouched.
 
 from __future__ import annotations
 
+from functools import lru_cache
+
 import json
 import re
 import shutil
@@ -671,6 +673,10 @@ function cardWith(summary) {
 """
 
 
+# All consumers assert read-only facts from the same completed real app.js
+# behavior journey. Reuse it once per Python module rather than respawning
+# Node for each test; separate pytest processes still run independent checks.
+@lru_cache(maxsize=1)
 def _run_harness() -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required for the behavioral harness"
