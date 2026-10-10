@@ -84,6 +84,7 @@ from app.worker_config import (
     p01_engine_config_from_worker_bindings,
 )
 from app.worker_orchestration import build_orchestration_bridge
+from app.web_xlsx_p01_engine_client import build_web_xlsx_p01_engine_client
 from kagent.claw_automation import ClawAutomationTickRuntime
 from kagent.claw_automation_trigger import ClawAutomationTriggerBoundary
 from workers import Request, Response, WorkerEntrypoint
@@ -885,6 +886,17 @@ class Default(WorkerEntrypoint):
                 ) = build_claw_p01_lanes_with_diagnostic(
                     self.env,
                     request_factory=Request,
+                )
+                # #3580 WEB-FIRST: fixed private Engine ToolRuntime endpoint,
+                # authenticated with the pre-existing P01 service caller.
+                # OFF without explicit deployment feature flag + valid P01
+                # binding. Engine must separately verify private source scope;
+                # no browser-provided tool arguments or secret are accepted.
+                _worker_app.state.web_xlsx_p01_pause_client = (
+                    build_web_xlsx_p01_engine_client(
+                        self.env, request_factory=Request,
+                        runtime_mode=settings.runtime_mode,
+                    )
                 )
                 _worker_app.state.claw_live_sse_enabled = (
                     settings.runtime_mode == "b14"

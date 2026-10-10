@@ -83,33 +83,40 @@ class VerifiedWebXlsxEnginePause:
 
 
 def parse_engine_pause(result: Any, *, original: TrustedWebXlsxP01Request) -> VerifiedWebXlsxEnginePause:
-    """Accept only a genuine Core/Engine paused-tool projection for this app."""
-    if not isinstance(result, dict) or set(result) != {"orchestration"}:
-        raise WebXlsxP01RequestError("unrecognized Engine result")
-    body = result["orchestration"]
-    if not isinstance(body, dict) or body.get("app_id") != _APP:
-        raise WebXlsxP01RequestError("Engine application mismatch")
-    pause = body.get("approval_pause")
-    execution = body.get("execution")
-    if not isinstance(pause, dict) or not isinstance(execution, dict):
-        raise WebXlsxP01RequestError("missing real Engine pause")
-    metadata = execution.get("metadata")
-    events = metadata.get("tool_events") if isinstance(metadata, dict) else None
-    if (metadata is None or metadata.get("status") != "paused"
-        or not isinstance(events, list)
-        or not any(isinstance(e, dict) and e.get("tool_id") == _TOOL
-                   and e.get("status") == "policy_blocked" for e in events)
-        or pause.get("status") != "paused" or pause.get("tool_id") != _TOOL
-        or pause.get("requirement") != "user_confirmation"
-        or pause.get("approval_scope") != ["workspace.xlsx.original.read.intent"]
-        or pause.get("trace_id") != "web_xlsx_" + original.selection_ref):
-        raise WebXlsxP01RequestError("Engine pause does not bind XLSX source intent")
+    """Accept only the real Engine /internal/v1/tools/execute pause contract.
+
+    ToolRuntime's internal ToolInvocation digest is authority held by Engine.
+    Do not accept an unrelated orchestration response or a simulated browser
+    "approval_pause" object as an Engine tool result.
+    """
+    if not isinstance(result, dict) or set(result) != {"ok", "tool"}:
+        raise WebXlsxP01RequestError("unrecognized Engine tool result")
+    if result.get("ok") is not True:
+        raise WebXlsxP01RequestError("Engine tool did not pause")
+    tool = result.get("tool")
+    if not isinstance(tool, dict):
+        raise WebXlsxP01RequestError("missing Engine tool projection")
+    pause = tool.get("approval_pause")
+    if not isinstance(pause, dict):
+        raise WebXlsxP01RequestError("missing real Engine approval pause")
+    if (tool.get("contract_version") != "padiem.engine.tools/1.0"
+            or tool.get("agent_id") != "agent:padiem:web-xlsx-confirm@1"
+            or tool.get("canonical_tool_id") != "tool:padiem:web-xlsx-confirm@1"
+            or tool.get("status") != "paused"
+            or pause.get("status") != "paused"
+            or pause.get("run_id") != tool.get("run_id")
+            or pause.get("tool_id") != _TOOL
+            or pause.get("requirement") != "user_confirmation"
+            or pause.get("approval_scope") != []):
+        raise WebXlsxP01RequestError("Engine ToolRuntime confirmation mismatch")
+    # The trusted request is bound to the exact owner/run/selection/SHA in B62
+    # before dispatch. The Engine must independently authenticate it with a
+    # trusted resolver before registering/enabling this tool at deployment.
     if _utc(pause.get("expires_at")) > _utc(original.selection_expires_at):
-        # Engine may support a longer grant window than a 30-min selection.
-        # No web approval may outlive the original selection authority.
-        raise WebXlsxP01RequestError("pause would outlive selected original")
+        raise WebXlsxP01RequestError("pause outlives selected XLSX")
     return VerifiedWebXlsxEnginePause(
-        engine_run_id=pause["run_id"], continuation_ref=body.get("continuation_ref"),
+        engine_run_id=tool["run_id"],
+        continuation_ref=tool.get("continuation_ref"),
         pause_id=pause.get("continuation_id"), expires_at=pause["expires_at"],
     )
 
