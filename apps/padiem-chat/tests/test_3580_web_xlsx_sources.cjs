@@ -28,3 +28,26 @@ assert.equal(office.validateListing({ ...listing, files: [row, row] }), null);
 assert.equal(office.validateListing({ ...listing, source: "local_pc" }), null);
 assert.equal(office.validateListing({ ...listing, files: [{...row, original_immutable: false}] }), null);
 console.log("web XLSX source browser contract: PASS");
+
+const approvalPendingOnly = {
+  ok: true, contract_version: "claw-web-xlsx-selection.v1",
+  p01_approval_started: false, processing_started: false,
+  workcopy_created: false, drive_uploaded: false,
+  selection: {
+    selection_ref: "sel_" + "c".repeat(32),
+    document_id: row.document_id, filename: row.filename,
+    size_bytes: row.size_bytes, source_sha256: row.source_sha256,
+    status: "source_selected_p01_not_started",
+    p01_approval_started: false, processing_started: false,
+  },
+};
+assert.equal(office.validateSelection(approvalPendingOnly, row), true);
+assert.equal(office.validateSelection({
+  ...approvalPendingOnly, p01_approval_started: true,
+}, row), false);
+assert.equal(office.validateSelection({
+  ...approvalPendingOnly, selection: {...approvalPendingOnly.selection, source_sha256: "f".repeat(64)},
+}, row), false);
+assert.equal(office.validateSelection({
+  ...approvalPendingOnly, selection: {...approvalPendingOnly.selection, status: "approved"},
+}, row), false);

@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - ".github/scripts/b66_cgi_final_handoff_smoke.py"
+      - ".github/scripts/b66_cgi_freeform_one_shot.py"
+      - ".github/tests/test_b66_cgi_freeform_one_shot.py"
       - ".github/tests/test_b66_cgi_final_handoff_smoke.py"
       - ".github/workflows/b66-cgi-final-handoff-smoke.yml"
   workflow_dispatch:
@@ -19,13 +21,14 @@ on:
         default: b66_final_handoff
         options:
           - b66_final_handoff
+          - b66_freeform_one_shot
           - b54_claw_owner_one_shot
       selected_model_id:
         description: "Exact owner-approved B14 ID to manually select for B66 final handoff (required in b66_final_handoff mode)"
         required: false
         type: string
       confirmation:
-        description: "Type RUN_B66_CGI_FINAL_HANDOFF_SMOKE"
+        description: "Full: RUN_B66_CGI_FINAL_HANDOFF_SMOKE; freeform: RUN_B66_CGI_FREEFORM_ONE_SHOT"
         required: true
         type: string
 
@@ -67,6 +70,7 @@ jobs:
           set -euo pipefail
           python .github/scripts/b66_cgi_final_handoff_smoke.py --self-test
           python .github/tests/test_b66_cgi_final_handoff_smoke.py
+          python .github/tests/test_b66_cgi_freeform_one_shot.py
 
       - name: Pin bounded live contract
         shell: bash
@@ -96,7 +100,9 @@ jobs:
   live-smoke:
     if: >-
       github.event_name == 'workflow_dispatch' &&
-      inputs.confirmation == 'RUN_B66_CGI_FINAL_HANDOFF_SMOKE'
+      ((inputs.mode == 'b66_final_handoff' && inputs.confirmation == 'RUN_B66_CGI_FINAL_HANDOFF_SMOKE') ||
+       (inputs.mode == 'b66_freeform_one_shot' && inputs.confirmation == 'RUN_B66_CGI_FREEFORM_ONE_SHOT') ||
+       (inputs.mode == 'b54_claw_owner_one_shot' && inputs.confirmation == 'RUN_B66_CGI_FINAL_HANDOFF_SMOKE'))
     needs: source-contract
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -142,6 +148,8 @@ jobs:
           set -euo pipefail
           if [ "${{ inputs.mode }}" = "b54_claw_owner_one_shot" ]; then
             python .github/scripts/b66_cgi_final_handoff_smoke.py --claw-owner-one-shot
+          elif [ "${{ inputs.mode }}" = "b66_freeform_one_shot" ]; then
+            python .github/scripts/b66_cgi_freeform_one_shot.py
           else
             python .github/scripts/b66_cgi_final_handoff_smoke.py --authorized-live-run
           fi
