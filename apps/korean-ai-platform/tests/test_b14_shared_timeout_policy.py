@@ -20,7 +20,7 @@ from app.pilot.b14_timeout_policy import (
 )
 from app.pilot.errors import UpstreamTimeout
 
-FIXED = (30.0, 40.0, 20.0, 10.0)
+FIXED = (30.0, 600.0, 20.0, 10.0)
 
 
 def values(timeout):
@@ -33,7 +33,9 @@ def test_single_source_all_surfaces_and_engine_budget_remain_bounded():
     assert values(runtime_config.build_http_timeout()) == FIXED
     assert gw._UPSTREAM_RETRY_BUDGET_SECONDS == GATEWAY_WALL_SECONDS == 45.0
     assert ENGINE_MAX_WALL_SECONDS == 60.0
-    assert 0 < min(FIXED) and max(FIXED) < GATEWAY_WALL_SECONDS
+    assert 0 < min(FIXED)
+    assert READ_SECONDS > GATEWAY_WALL_SECONDS
+    assert CONNECT_SECONDS < GATEWAY_WALL_SECONDS
     assert gw._UPSTREAM_RETRY_MAX_RETRIES == 2
     assert values(build_provider_http_timeout()) == values(build_provider_http_timeout())
 

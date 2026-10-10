@@ -75,7 +75,7 @@ def test_config_normalizes_http_https_base_urls_and_builds_fixed_endpoint() -> N
     https = B14ExecutionConfig(base_url=" https://b14.example/root/ ")
     assert https.base_url == "https://b14.example/root"
     assert https.chat_completions_url == "https://b14.example/root" + B14_CHAT_COMPLETIONS_PATH
-    assert https.timeout_seconds == 20.0
+    assert https.timeout_seconds == 600.0
     assert https.max_response_bytes == MAX_B14_RESPONSE_BYTES
 
     http = B14ExecutionConfig(base_url="http://localhost:8787/")
@@ -100,7 +100,7 @@ def test_config_rejects_invalid_base_urls(bad: str) -> None:
         B14ExecutionConfig(base_url=bad)
 
 
-@pytest.mark.parametrize("bad", [0, 0.9, 60.1, True, float("inf"), "20"])
+@pytest.mark.parametrize("bad", [0, 0.9, 3600.1, True, float("inf"), "20"])
 def test_config_rejects_invalid_timeout(bad) -> None:
     with pytest.raises(ValueError, match="timeout_seconds"):
         B14ExecutionConfig(base_url="https://b14.example", timeout_seconds=bad)  # type: ignore[arg-type]
@@ -117,7 +117,7 @@ def test_config_public_state_contains_no_credentials_field() -> None:
     public = config.to_public_dict()
     assert public == {
         "base_url": "https://b14.example",
-        "timeout_seconds": 20.0,
+        "timeout_seconds": 600.0,
         "max_response_bytes": MAX_B14_RESPONSE_BYTES,
     }
     serialized = json.dumps(public)

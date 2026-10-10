@@ -17,7 +17,7 @@ class PilotSettings:
     pilot_base_url: str = ""
     pilot_model_id: str = ""
     pilot_upstream_model: str = ""
-    pilot_timeout_seconds: int = 30
+    pilot_timeout_seconds: int = 600
     provider_registry_json: str = ""
 
     def __init__(self) -> None:
@@ -31,10 +31,10 @@ class PilotSettings:
         )
         try:
             self.pilot_timeout_seconds = int(
-                os.environ.get("BUSINESS14_PILOT_TIMEOUT_SECONDS", "30")
+                os.environ.get("BUSINESS14_PILOT_TIMEOUT_SECONDS", "600")
             )
         except (ValueError, TypeError):
-            self.pilot_timeout_seconds = 30
+            self.pilot_timeout_seconds = 600
         self.provider_registry_json = os.environ.get(
             "BUSINESS14_PROVIDER_REGISTRY_JSON", ""
         )

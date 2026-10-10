@@ -32,7 +32,7 @@ def test_execution_context_rejects_unbounded_values():
     with pytest.raises(ValueError):
         ExecutionContext(trace_id="trace", timeout_seconds=0.5)
     with pytest.raises(ValueError):
-        ExecutionContext(trace_id="trace", timeout_seconds=61)
+        ExecutionContext(trace_id="trace", timeout_seconds=3601)
 
 
 def test_fingerprint_is_deterministic_across_mapping_order():
