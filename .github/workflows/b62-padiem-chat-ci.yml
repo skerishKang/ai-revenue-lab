@@ -51,8 +51,13 @@ on:
 permissions:
   contents: read
 
+# #3989: Only the latest B62-relevant main commit needs an expensive full
+# regression; a later qualifying push contains all earlier merged source.
+# Preserve separate PR groups and keep manual dispatch runs independent.
+# This is test-only: deploy / migration workflows have their own non-cancellable
+# concurrency contracts and must not share this group.
 concurrency:
-  group: b62-padiem-chat-ci-${{ github.event.pull_request.number || github.run_id }}
+  group: b62-padiem-chat-ci-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || github.event_name == 'push' && format('push-{0}', github.ref) || format('manual-{0}', github.run_id) }}
   cancel-in-progress: true
 
 jobs:
