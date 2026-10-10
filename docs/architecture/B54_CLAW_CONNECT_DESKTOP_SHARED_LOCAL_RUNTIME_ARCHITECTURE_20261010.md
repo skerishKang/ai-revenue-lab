@@ -182,3 +182,44 @@ PRODUCTION_MUTATION=0
 **S0 미결 결정:** (A) 통합 설치기/모드 vs (B) 경량/Full 별도 설치기·하나의 Resident, 사용자 로그인/권한 UX, Windows 지원 범위, 설치 크기/성능 목표, 배포·업데이트·제거 책임. **본 문서의 기술 방향은 기존 #3074·#3583·#3098·#3014의 권위에 종속된다.**
 
 **우선순위:** S0 설계 기록은 가능. #3523 Golden Path P0를 완료하기 전 S1~S4의 무관한 병렬 개발은 기본 보류. 이 이슈/문서는 개발 허가나 운영 활성화 권한이 아니다.
+
+
+## 11. 후속 연구 기록: 비점유 Background / Isolated / Shared Computer Use (2026-10-10)
+
+> **우선순위/상태:** 제안·후보 비교만 기록. **현재 S0–S4의 필수 출시 기능 아님**, 소스·실험·Production 구현/승인 없음. [#4139](https://github.com/skerishKang/ai-revenue-lab/issues/4139)의 기존 Web+Connect / Full Desktop / 단일 Resident 경계를 유지하고, [#3583](https://github.com/skerishKang/ai-revenue-lab/issues/3583)의 native OS GUI Computer Use 보류 및 [#3782](https://github.com/skerishKang/ai-revenue-lab/issues/3782)의 browser execution 권한 체계를 건드리지 않는다.
+
+### 11.1 브라우저 입력 독립성과 대상 OS 입력 독립성은 다르다
+
+2026-10-10 승인된 Tabbit + BrowserSkill → Chrome Remote Desktop Canvas → 별도 Surface Windows 실험에서 **컨트롤 PC의 물리 마우스 이동 없이** 시작 메뉴와 VS Code 실행을 확인했다. 이는 **컨트롤 PC의 브라우저 자동화 입력**에 대한 제한된 관찰이다. **원격 대상 PC의 커서/포커스 비점유, 같은 PC 로컬 브라우저로 자기 데스크톱 화면을 제어할 때의 비간섭, 연속 GUI 작업, 오디오 통합은 실증되지 않았다.** 메인 PC에 `SetCursorPos`/`SendInput`을 직접 전달한 이전 방식은 사용자의 실제 마우스를 점유했으므로 금지한다.
+
+**제안:** 사용자 자신의 PC 화면을 로컬 브라우저로 보여주고 Browser Use로 클릭하는 것만으로는 입력이 분리되지 않는다. 같은 Windows 로그인 세션의 **실제 사용자 데스크톱으로 클릭/키보드 이벤트를 전송하면 공유 입력/포커스에 경합**이 생길 수 있다. 단순 Windows Virtual Desktop UI 전환은 독립 OS 세션의 증거가 아니다.
+
+### 11.2 실행 모드 3종의 연구 경계
+
+| Mode | 후보 실행/관찰 메커니즘 | 입력 비간섭 판단 | 계약/일정 상태 |
+| --- | --- | --- | --- |
+| **BACKGROUND** | 기존 Padiem Local Runner의 파일·CLI·프로세스·공식 API; 가능한 경우 Windows UI Automation의 `InvokePattern`/`ValuePattern` 등 | 파일/프로세스·일부 UIA 패턴은 물리 마우스 없이 처리할 수 있으나 앱 구현·포커스 요구에 따라 달라짐 | **EXISTING_EXECUTOR_REUSE**, UIA는 기술 검토 전용 |
+| **ISOLATED** | 독립 OS 사용자/에이전트 세션 또는 별도 VM에서 앱 실행, **해당 독립 화면**을 브라우저에 스트림 + 입력 라우팅 | 실제 입력/창/클립보드 격리가 보장될 때 사람의 현재 데스크톱과 병행 가능 | **DEFERRED_RESEARCH**, 세션/VM 지원·성능·제품 재배포/라이선스 미검증 |
+| **SHARED** | 사용자의 현재 Windows GUI 화면을 브라우저/VNC/RDP/CRD 계열에서 관찰·조작 | 실제 사용자와 입력/포커스를 공유할 수 있음. 조작 시 상태 표시/승인/중단 필수 | **OPTIONAL_FUTURE_REVIEW**, 기본 백그라운드 모드 아님 |
+
+기술 후보: Windows UI Automation, 브라우저 기반 desktop viewer(noVNC/Apache Guacamole 같은 계층), 독립 세션/VM, Microsoft의 별도 에이전트 세션 또는 실행 컨테이너 계열. **Windows Agent Workspace/MXC의 현재 제공·공식 개발 API·지원 Windows 에디션·제품 내 재배포 가능 여부는 최신 공식문서/라이선스 조사 전 미확인**으로 남긴다. GUI 관찰 도구와 OS 실행 권한·보안 경계는 별개다.
+
+### 11.3 향후 안전성/비간섭 수용 게이트 (아직 PASS 아님)
+
+```text
+RESEARCH_MODE=DEFERRED_OPTIONAL_ADAPTER
+S0_S4_CRITICAL_PATH_CHANGED=NO
+CONTROL_PC_PHYSICAL_CURSOR_UNTOUCHED=TEST_PER_ENVIRONMENT
+TARGET_USER_CURSOR_INTERFERENCE=NOT_TESTED
+TARGET_FOREGROUND_FOCUS_STEAL=NOT_TESTED
+TARGET_TYPING_INTERRUPTION=NOT_TESTED
+ISOLATED_INPUT_SESSION=NOT_TESTED
+SCREEN_AUDIO_USER_CONSENT=REQUIRED_BEFORE_ANY_CAPTURE
+CANONICAL_P01_BROKER_DEVICE_AUTHORITY=MUST_REUSE
+SECOND_EXECUTOR_OR_APPROVAL_AUTHORITY=FORBIDDEN
+PRODUCTION_ENABLEMENT=NO
+```
+
+후속 검증 시에는 같은 사용자 세션/격리 세션/VM을 **서로 다른 실험군**으로 나누고, 실제 사람이 타이핑·클릭하는 동안 커서 이동·창 포커스·키 입력 손실·클립보드/오디오 경합·화면 캡처 범위·기기 revoke·종료 후 명령을 측정한다. 사용자 PC의 외부 포트 공개·무단 GUI/마이크 수집·에이전트 활동 은폐/사람 수행 위장 금지. 음성은 별도 사용자 승인, 원본/전사 출처, 시간 동기화 검증이 필요하다.
+
+이 연구를 위해 새로운 제품/실행기·별도 Broker/P01을 만들지 않으며, 필요성이 검증되면 기존 [#2996](https://github.com/skerishKang/ai-revenue-lab/issues/2996) 기술 채택 정책 아래 **하나의 정책 통제형 실행 어댑터**로 평가한다.
