@@ -28,10 +28,10 @@
 | Engine | B14 연결50초, run ctx20~60초 | `apps/padiem-ai-engine/{worker.py,app/execution_context_wire.py}`, `.../execution_context.py` | 모델600 / run900, max3600 |
 | Chat/B62·B66 quote 재사용 | stream20초, completed50초 | `apps/padiem-chat/app/{config.py,worker_config.py}` | B66 모델 요청도 Chat 호출자 설정 상속 |
 | Hark/Claw/P01 | 기본20초, HTTP 네트워크90초 | `apps/korean-ai-code-agent/src/kagent/{p01_adapter.py,p01_run_flow.py}` | ctx900, transport3600 |
-| Living Learning | 20초 | `apps/living-learning/app/ai/padiem_core.py` | Core client 기본600 |
+| Living Learning | 20초 | `apps/living-learning/app/{ai/padiem_core.py,config.py,factory.py}` | Core client 기본600 |
 | Living Travel | 30초, max120초 | `apps/living-travel/app/{config.py,ai/openai_compatible.py}` | 기본600, max3600 |
 | Living Fiction | 60초 | `apps/living-fiction/app/ai/openai_compat.py` | read600, phases 30/20/10 |
-| Personal Edition | 120초 | `apps/personal-edition/app/ai/external.py` | socket 모델 요청600 |
+| Personal Edition | 120초 | `apps/personal-edition/app/{ai/external.py,config.py}` | socket 모델 요청600 |
 
 ## 3. 변경하지 않는 것 (모델 추론 실행시간과 목적이 다름)
 
