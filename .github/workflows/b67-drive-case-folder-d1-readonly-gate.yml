@@ -12,6 +12,15 @@ on:
   push:
     branches:
       - main
+    # #3989: match PR's proven B67 ownership; don't start a full runner
+    # for unrelated B62/B14/CI-only main merges. Manual gate unchanged.
+    paths:
+      - ".github/workflows/b67-drive-case-folder-d1-readonly-gate.yml"
+      - ".github/tests/test_b67_drive_case_folder_d1_readonly_contract.py"
+      - "apps/padiem-ai-engine/app/drive_case_folder_binding.py"
+      - "apps/padiem-ai-engine/app/document_reference.py"
+      - "apps/padiem-ai-engine/migrations/0008_engine_drive_case_folder_bindings.sql"
+      - "apps/padiem-ai-engine/wrangler.toml"
   workflow_dispatch:
     inputs:
       expected_main_sha:

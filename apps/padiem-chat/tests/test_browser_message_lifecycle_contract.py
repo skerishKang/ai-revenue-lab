@@ -85,6 +85,7 @@ console.log(JSON.stringify({
         "FAILED": "failed",
         "CANCELLED": "cancelled",
         "TIMED_OUT": "timed_out",
+        "WAITING_APPROVAL": "waiting_for_approval",
     }
     assert result["before"] is False
     assert result["streaming"] is False

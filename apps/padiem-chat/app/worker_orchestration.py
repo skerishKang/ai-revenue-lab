@@ -12,8 +12,10 @@ from padiem_ai_engine_client import (
     ENGINE_MULTIMODAL_ATTACHMENTS_PATH,
     ENGINE_ORCHESTRATE_CANCEL_PATH,
     ENGINE_ORCHESTRATE_PATH,
+    ENGINE_ORCHESTRATE_STREAM_PATH,
     ENGINE_ORCHESTRATE_RESUME_PATH,
     EngineTransportResponse,
+    EngineStreamTransportResponse,
     PadiemAiEngineClient,
 )
 from padiem_ai_core.b14_multimodal import MAX_B14_IMAGE_BYTES
@@ -24,6 +26,7 @@ from .service_binding_response import (
     ServiceBindingResponseError,
     ServiceBindingResponseTooLarge,
     read_bounded_service_binding_body,
+    cloudflare_chunk_bytes,
 )
 from .worker_config import binding_value
 
@@ -128,6 +131,90 @@ class CloudflareEngineServiceTransport:
             status=int(response.status),
             body=encoded,
             headers=response_headers,
+        )
+
+
+    async def stream_request(
+        self,
+        *,
+        method: str,
+        url: str,
+        headers: Mapping[str, str],
+        body: bytes | None,
+    ) -> EngineStreamTransportResponse:
+        """Narrow, opt-in NDJSON Engine stream over the existing Service Binding.
+
+        Unlike request(), this never buffers the entire response. The HTTP
+        target is fixed and size/cancel guards stay active while iterating.
+        Existing completed Engine requests cannot silently select this route.
+        """
+        parsed = urlparse(url)
+        expected = urlparse(ENGINE_INTERNAL_ORIGIN)
+        if (
+            parsed.scheme != expected.scheme
+            or parsed.netloc != expected.netloc
+            or parsed.path != ENGINE_ORCHESTRATE_STREAM_PATH
+            or parsed.query or parsed.fragment
+            or method != "POST"
+            or body is None
+            or not isinstance(body, bytes)
+            or len(body) > _MAX_ENGINE_REQUEST_BYTES
+        ):
+            raise ValueError("Engine stream target or request is unsupported")
+        try:
+            payload = body.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise ValueError("Engine stream request must be UTF-8 JSON") from exc
+        request = self._request_factory(
+            url, method="POST", headers=dict(headers), body=payload,
+        )
+        response = await self._binding.fetch(request.js_object)
+        stream = getattr(response, "body", None)
+        get_reader = getattr(stream, "getReader", None)
+        if not callable(get_reader):
+            # Fail closed. Never fall back to buffered body()/text() and
+            # misrepresent an already-completed answer as a live stream.
+            raise ServiceBindingResponseError("Engine stream body is unavailable")
+
+        async def iter_chunks():
+            try:
+                reader = get_reader()
+            except Exception as exc:
+                raise ServiceBindingResponseError("Engine stream reader unavailable") from exc
+            finished = False
+            received = 0
+            try:
+                while True:
+                    result = await reader.read()
+                    if bool(getattr(result, "done", False)):
+                        finished = True
+                        return
+                    chunk = cloudflare_chunk_bytes(getattr(result, "value", None))
+                    received += len(chunk)
+                    if received > _MAX_ENGINE_RESPONSE_BYTES:
+                        raise ServiceBindingResponseTooLarge("Engine stream exceeded bound")
+                    if chunk:
+                        yield chunk
+            finally:
+                if not finished:
+                    cancel = getattr(reader, "cancel", None)
+                    if callable(cancel):
+                        try:
+                            await cancel()
+                        except Exception:
+                            pass
+                release = getattr(reader, "releaseLock", None)
+                if callable(release):
+                    try:
+                        release()
+                    except Exception:
+                        pass
+
+        content_type = response.headers.get("content-type")
+        return EngineStreamTransportResponse(
+            status=int(response.status),
+            chunks=iter_chunks(),
+            headers={"content-type": str(content_type or "")},
         )
 
 

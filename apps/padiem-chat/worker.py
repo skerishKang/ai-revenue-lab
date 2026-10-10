@@ -79,6 +79,7 @@ from app.worker_config import (
     apply_live_deadman_switch,
     binding_value,
     response_headers_for_path,
+    resolve_web_secrets_store_keys,
     settings_from_worker_bindings,
     p01_engine_config_from_worker_bindings,
 )
@@ -707,7 +708,13 @@ class Default(WorkerEntrypoint):
 
         if _worker_app is None:
             try:
-                settings = apply_live_deadman_switch(settings_from_worker_bindings(self.env))
+                # Resolve Cloudflare same-account Secrets Store bindings only
+                # for an explicitly selected or live-armed public Search route.
+                # Values stay server-side; no user input can name a binding.
+                web_keys = await resolve_web_secrets_store_keys(self.env)
+                settings = apply_live_deadman_switch(
+                    settings_from_worker_bindings(self.env, resolved_web_keys=web_keys)
+                )
                 db_binding = binding_value(self.env, D1_BINDING_NAME)
                 b14_binding = binding_value(self.env, B14_SERVICE_BINDING_NAME)
                 b66_pdf_binding = binding_value(self.env, B66_PDF_RENDERER_SERVICE_BINDING_NAME)
@@ -846,12 +853,20 @@ class Default(WorkerEntrypoint):
                 # never synthesize b14/auto or a hidden retry/fallback.
                 quote_model_resolver = B66ExplicitQuoteModelResolver(service_transport)
                 _worker_app.state.b66_quote_model_resolver = quote_model_resolver
+                b66_quote_executor = B14QuoteExactModelExecutor(
+                    _worker_app.state.b14_client
+                )
+                # #3977: the selectable-level gate is the same measured capability
+                # the dispatch path uses, not a literal. With a Core build that
+                # cannot carry native parameters B66 offers the provider default
+                # only and refuses an explicit level before dispatch.
+                _worker_app.state.b66_reasoning_transport_supported = bool(
+                    b66_quote_executor.supports_native_parameters
+                )
                 _worker_app.state.b66_quote_interpreter = B66QuoteConversationInterpreter(
                     B66RegisteredModelCompletion(
                         resolver=quote_model_resolver,
-                        executor=B14QuoteExactModelExecutor(
-                            _worker_app.state.b14_client
-                        ),
+                        executor=b66_quote_executor,
                         refund_pre_dispatch=_refund_active_reservation,
                     )
                 )
@@ -870,6 +885,11 @@ class Default(WorkerEntrypoint):
                 ) = build_claw_p01_lanes_with_diagnostic(
                     self.env,
                     request_factory=Request,
+                )
+                _worker_app.state.claw_live_sse_enabled = (
+                    settings.runtime_mode == "b14"
+                    and getattr(self.env, "PADIEM_CLAW_P01_LIVE_SSE_ENABLED", None) == "true"
+                    and getattr(_worker_app.state.claw_p01_adapter, "subject_identity_lane", False) is True
                 )
                 # #3094: compose the concrete canonical local-access source
                 # from a trusted broker-authority binding only. When the
@@ -900,7 +920,12 @@ class Default(WorkerEntrypoint):
                 # either, the composition yields None and the route keeps the
                 # fail-closed unconfigured source installed by create_app.
                 _local_task_result_source, _local_task_result_diag = (
-                    build_local_task_result_source_with_diagnostic(self.env, history_store)
+                    build_local_task_result_source_with_diagnostic(
+                        self.env, history_store,
+                        office_completion=getattr(
+                            _worker_app.state, "claw_office_drive_completion", None
+                        ),
+                    )
                 )
                 _worker_app.state.local_task_result_source = _local_task_result_source
                 _worker_app.state.local_task_result_diagnostic = _local_task_result_diag

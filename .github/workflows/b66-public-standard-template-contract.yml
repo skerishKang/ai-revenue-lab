@@ -4,6 +4,11 @@ on:
   pull_request:
     paths:
       - 'reference/b66-public-standard-templates/**'
+      - 'apps/b66-sol61-multipage/**'
+      - 'reference/business-66-padiem-quote-v1/quote-sol-pdf-outputs.js'
+      - 'reference/business-66-padiem-quote-v1/quote-sol-pdf-runtime-bridge.js'
+      - 'reference/business-66-padiem-quote-v1/tests/quote-sol-pdf-outputs.test.cjs'
+      - 'reference/business-66-padiem-quote-v1/tests/quote-sol-pdf-runtime-bridge.test.cjs'
       - 'docs/products/b66/TEMPLATE_CUSTODY_POLICY.md'
       - '.github/workflows/b66-public-standard-template-contract.yml'
   push:
@@ -11,6 +16,11 @@ on:
       - main
     paths:
       - 'reference/b66-public-standard-templates/**'
+      - 'apps/b66-sol61-multipage/**'
+      - 'reference/business-66-padiem-quote-v1/quote-sol-pdf-outputs.js'
+      - 'reference/business-66-padiem-quote-v1/quote-sol-pdf-runtime-bridge.js'
+      - 'reference/business-66-padiem-quote-v1/tests/quote-sol-pdf-outputs.test.cjs'
+      - 'reference/business-66-padiem-quote-v1/tests/quote-sol-pdf-runtime-bridge.test.cjs'
       - '.github/workflows/b66-public-standard-template-contract.yml'
 
 permissions:
@@ -22,5 +32,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify one original Sol PDF feeds preview download and Drive (#4117)
+        run: |
+          node reference/business-66-padiem-quote-v1/tests/quote-sol-pdf-outputs.test.cjs
+          node reference/business-66-padiem-quote-v1/tests/quote-sol-pdf-runtime-bridge.test.cjs
       - name: Verify immutable public template release hashes and no private fonts
         run: python3 reference/b66-public-standard-templates/cgi/v1/tests/test_public_bundle_contract.py
+      - name: Install pinned native PDF test dependencies
+        run: python -m pip install -r apps/b66-sol61-multipage/requirements-test.txt
+      - name: Guard public Sol manifest versus historical private certificate (#4117)
+        run: python -B -m pytest -q -p no:cacheprovider apps/b66-sol61-multipage/tests/test_native_server_adapter_4117.py::test_4117_public_manifest_cannot_inherit_historical_private_certificate
+      - name: Verify native frame ownership and rendered boundaries without host fonts
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          B66_SOL61_FRAME_RASTER: '1'
+        run: >-
+          python -B -m pytest -q -p no:cacheprovider
+          apps/b66-sol61-multipage/tests/test_multipage_frame_regression.py
+          apps/b66-sol61-multipage/tests/test_multipage_composition_polish.py
+          apps/b66-sol61-multipage/tests/test_multipage_image_regression.py::test_t1_operands_precede_their_operator
+          -k 'not windows_real_pdf_smoke and not frozen_pre_fix_pdf and not top_occlusion_is_identical_to_the_certified_source'

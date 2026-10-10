@@ -504,3 +504,41 @@ def test_owner_d1_candidate_cli_is_explicit_and_not_used_by_normal_deploy(tmp_pa
     workflow = _read_workflow()
     assert "--owner-d1-database-id" not in workflow
     assert "BINDINGS_PRESERVED_EXACTLY=PASS" in workflow
+
+
+def test_secrets_store_worker_bindings_are_exactly_preserved(tmp_path):
+    import tomllib
+
+    expected = [
+        {"type": "secrets_store_secret", "name": "TINYFISH_API_KEY",
+         "store_id": "f0b09ca04a7b43248154c773704a5616",
+         "secret_name": "PADIEM_TINY_FISH_API_KEY"},
+        {"type": "secrets_store_secret", "name": "PADIEM_CHAT_DAUM_REST_API_KEY",
+         "store_id": "f0b09ca04a7b43248154c773704a5616",
+         "secret_name": "PADIEM_KAKAO_API_KEY"},
+    ]
+    module = _load_module()
+    live = module.parse_live_bindings(_settings_payload(_production_bindings() + expected))
+    output = module.build_production_config(live, _write_repo_config(tmp_path), PUBLIC_URL)
+    module.verify_mutation_zero(output, live)
+    parsed = tomllib.loads(output)
+    assert parsed["secrets_store_secrets"] == [
+        {"binding": x["name"], "store_id": x["store_id"], "secret_name": x["secret_name"]}
+        for x in expected
+    ]
+    assert "tf-confidential" not in output
+    assert "secret_text" not in output
+
+
+@pytest.mark.parametrize("broken", [
+    {"type": "secrets_store_secret", "name": "TINYFISH_API_KEY",
+     "store_id": "not-a-valid-id", "secret_name": "PADIEM_TINY_FISH_API_KEY"},
+    {"type": "secrets_store_secret", "name": "TINYFISH_API_KEY",
+     "store_id": "f0b09ca04a7b43248154c773704a5616", "secret_name": "bad name"},
+    {"type": "secrets_store_secret", "name": "TINYFISH_API_KEY",
+     "store_id": "f0b09ca04a7b43248154c773704a5616"},
+])
+def test_secrets_store_malformed_binding_fails_closed(broken):
+    module = _load_module()
+    with pytest.raises(module.ProductionConfigError):
+        module.parse_live_bindings(_settings_payload(_production_bindings() + [broken]))

@@ -232,6 +232,7 @@ def resolve_manual_route(
             for m in all_models
             if m.model_id != model_id
             and not excluded_from_owner_customer_selection(m.model_id)
+            and m.model_id != "experiential/qwen3.8-flash-next-uncensored"
         ][:3]  # limit to top 3 fallback candidates
 
     reason_codes = ["manual_selection"]
@@ -313,6 +314,7 @@ def resolve_auto_route(
         source_candidates = [
             m for m in source_candidates
             if not excluded_from_owner_customer_selection(m.model_id)
+            and m.model_id != "experiential/qwen3.8-flash-next-uncensored"
         ]
 
     requested = list(required_capabilities or [])
@@ -351,6 +353,7 @@ def resolve_auto_route(
         all_models = [
             m for m in all_models
             if not excluded_from_owner_customer_selection(m.model_id)
+            and m.model_id != "experiential/qwen3.8-flash-next-uncensored"
         ]
     candidates = []
     for m in all_models:

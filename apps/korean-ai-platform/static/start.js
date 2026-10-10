@@ -113,6 +113,7 @@
     DOM.presetChips = document.querySelectorAll(".preset-chip");
     DOM.optimizeSelect = $("start_optimize_for");
     DOM.externalFallback = $("start_external_fallback");
+    DOM.atriaStreamPreview = $("start_atria_stream_preview");
     DOM.sendBtn = $("start_send");
     DOM.sendLoading = $("start_send_loading");
     DOM.routePreview = $("start_route_preview");
@@ -138,6 +139,13 @@
     state.externalFallback = DOM.externalFallback ? DOM.externalFallback.checked : true;
 
     // Attach event listeners
+    // Keep the owner-visible fallback switch authoritative after initialization.
+    if (DOM.externalFallback) {
+      DOM.externalFallback.addEventListener("change", function () {
+        state.externalFallback = DOM.externalFallback.checked;
+        updateRoutePreview();
+      });
+    }
     if (DOM.sendBtn) DOM.sendBtn.addEventListener("click", sendMessage);
     if (DOM.modelSelect) DOM.modelSelect.addEventListener("change", onModelChange);
     if (DOM.prompt) DOM.prompt.addEventListener("keydown", onPromptKeydown);
@@ -262,6 +270,71 @@
   }
 
   // ── Send message ────────────────────────────────────────────────────
+  // Explicit, manual Atria SSE preview only. Never treat partial/error frames as success.
+  // The existing backend preview route enforces exactly one upstream model and no fallback.
+  async function readAtriaPreview(resp, exactModel) {
+    if (!resp || typeof resp.text !== "function") {
+      return { error: { code: "stream_unavailable", message: "스트리밍 응답을 읽을 수 없습니다." } };
+    }
+    var raw = await resp.text();
+    if (raw.length > 1024 * 1024) {
+      return { error: { code: "stream_too_large", message: "스트리밍 응답이 너무 큽니다." } };
+    }
+    var content = "";
+    var meta = null;
+    var usage = {};
+    var model = null;
+    var done = false;
+    var frames = raw.split(/\r?\n\r?\n/);
+    for (var index = 0; index < frames.length; index++) {
+      var lines = frames[index].split(/\r?\n/);
+      var dataLines = [];
+      var eventType = "";
+      for (var j = 0; j < lines.length; j++) {
+        if (lines[j].indexOf("event:") === 0) eventType = lines[j].slice(6).trim();
+        if (lines[j].indexOf("data:") === 0) dataLines.push(lines[j].slice(5).trimStart());
+      }
+      if (!dataLines.length) continue;
+      var payload = dataLines.join("\n");
+      if (payload === "[DONE]") {
+        done = true;
+        break;
+      }
+      var chunk;
+      try { chunk = JSON.parse(payload); }
+      catch (err) {
+        return { error: { code: "stream_invalid_frame", message: "스트리밍 응답 형식이 올바르지 않습니다." } };
+      }
+      if (eventType === "error" || chunk.error) {
+        return { error: { code: (chunk.error && chunk.error.code) || "stream_error",
+                          message: "선택한 모델의 스트리밍이 중단되었습니다.",
+                          request_id: chunk.error && chunk.error.request_id } };
+      }
+      var observed = chunk.business14 || {};
+      if (observed.selected_model !== exactModel ||
+          observed.route_mode !== "manual" ||
+          observed.attempt_count !== 1 ||
+          observed.fallback_used !== false) {
+        return { error: { code: "stream_route_mismatch", message: "선택한 모델의 실행 경로를 확인하지 못했습니다." } };
+      }
+      if (chunk.model !== "Atria-Dawn-Preview") {
+        return { error: { code: "stream_model_mismatch", message: "다른 모델의 응답은 사용할 수 없습니다." } };
+      }
+      meta = observed;
+      model = chunk.model;
+      if (chunk.usage) usage = chunk.usage;
+      if (chunk.choices && chunk.choices[0] && chunk.choices[0].delta &&
+          typeof chunk.choices[0].delta.content === "string") {
+        content += chunk.choices[0].delta.content;
+      }
+    }
+    if (!done || !meta || !content.trim()) {
+      return { error: { code: "stream_incomplete", message: "스트리밍 응답이 완전히 종료되지 않았습니다." } };
+    }
+    return { model: model, choices: [{ message: { role: "assistant", content: content } }],
+             business14: meta, usage: usage };
+  }
+
   async function sendMessage() {
     if (state.isSending) return;
 
@@ -275,6 +348,15 @@
     if (!state.b14HasKey && state.b14ProviderMode === "live") {
       addSystemMsg("❌ " + _sentinels.no_key_live, true);
       scrollToBottom();
+      return;
+    }
+
+    var atriaPreview = !!(DOM.atriaStreamPreview && DOM.atriaStreamPreview.checked);
+    if (atriaPreview && (state.activeRouteMode !== "manual" ||
+                         state.activeModel !== "atria/Atria-Dawn-Preview" ||
+                         state.externalFallback)) {
+      displayError("stream_preview_requires_manual",
+                   "Atria 스트리밍 시험은 Atria 수동 선택 및 외부 fallback 해제 시에만 가능합니다.", "");
       return;
     }
 
@@ -295,21 +377,32 @@
     };
 
     try {
-      var resp = await fetch("/api/pilot/v1/chat/completions", {
+      var payload = {
+        model: model,
+        messages: [{ role: "user", content: text }],
+        business14: b14_opts,
+      };
+      var endpoint = "/api/pilot/v1/chat/completions";
+      if (atriaPreview) {
+        endpoint += "/stream-preview";
+        payload.stream = true;
+        payload.business14 = {
+          task_type: b14_opts.task_type,
+          required_capabilities: b14_opts.required_capabilities,
+          optimize_for: b14_opts.optimize_for,
+          allow_external_fallback: false,
+          max_attempts: 1,
+          max_retries: 0,
+        };
+      }
+      var resp = await fetch(endpoint, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: model,
-          messages: [{ role: "user", content: text }],
-          temperature: 0.2,
-          max_tokens: 512,
-          business14: b14_opts,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
-
-      var data = await resp.json();
+      var data = (atriaPreview && resp.ok)
+        ? await readAtriaPreview(resp, model)
+        : await resp.json();
 
       if (!resp.ok || data.error) {
         var errCode = data.error ? data.error.code : "http_error";
@@ -459,5 +552,5 @@
     initializeFromDocument();
   }
 
-  global.Business14Start = { init: init, state: state };
+  global.Business14Start = { init: init, state: state, readAtriaPreview: readAtriaPreview };
 })(window);

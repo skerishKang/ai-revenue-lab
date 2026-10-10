@@ -561,6 +561,11 @@ async def test_interpreter_calls_model_once_for_fields_only_and_hides_template_c
     assert "detailGroups" in context
     assert "summaryIndex" in context
     assert "계산하지 말고 unitPrice를 null" in context
+    assert "문맥상 의미가 하나로 확실한 경우에만 해석" in context
+    assert "고객이 확인해야 할 고유 정보가 불명확하면 추측하지 말고" in context
+    assert "수량, 단가, 세금 조건은 임의로 만들거나" in context
+    assert "서비스가 고객에게 다시 질문하게" in context
+    assert "missing은 서비스가 검증된 값에서 직접 계산" in context
     assert "QuoteCore가 상세 소계를 요약 단가로 파생" in context
     assert "items[].section" not in context or "section" in context
     assert "template-private" not in context

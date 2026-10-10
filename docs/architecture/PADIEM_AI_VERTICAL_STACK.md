@@ -1,3 +1,7 @@
+<!-- B14_OWNER_ROLE_SOURCE_OF_TRUTH_20261010 -->
+> **B14 역할 최신 원칙(2026-10-10):** [원제작사 모델·서빙 제공업체·변형 모델의 공식 사양 및 B14 실행 권한](B14_MODEL_PROVIDER_EXECUTION_AUTHORITY_2026-10-10.md)을 우선 확인합니다. **B14는 정확히 사용자가 선택한 모델을 해당 업체의 공식 API로 실행**하며, temperature/토큰/리즈닝을 임의 지정하거나 옵션을 조용히 바꾸지 않습니다. 원본 모델의 공식 사양과 실제 API 제공업체의 계약은 별도 증빙합니다. 과거 코드·평가 수치는 이 원칙의 구현 증명이 아닙니다.
+<!-- /B14_OWNER_ROLE_SOURCE_OF_TRUTH_20261010 -->
+
 # Padiem AI Vertical Stack
 
 ```text
@@ -109,7 +113,7 @@ Control Plane은 모델 실행 스택의 한 단계라기보다 모든 계층에
 | Embedded shell | IP-SIDECAR | reusable shell lifecycle, browser-safe bootstrap, host-context envelope, public-safe event projection, host adapter integration contract | product domain meaning, Core semantics, Engine machine auth/transport, B14 routing/credentials |
 | Service boundary | IP-ENGINE | trusted caller/service boundary, wire projection, cross-runtime execution/orchestration exposure | product UX, generic semantic authority, Provider/model routing |
 | Shared semantics | IP-CORE | execution, evidence, grounding, permission, retrieval/memory semantics, Tool/Skill/Agent/orchestration contracts | product domain schema, product UI, Provider catalog/credentials |
-| Execution plane | B14 | Provider/model registry, exact route validation/selection, inference credentials, upstream execution, execution-level retry/fallback policy | product memory/domain state, product UX, Control Plane identity truth |
+| Execution plane | B14 | Provider/model registry, user-chosen exact route verification, official-provider API parameter fidelity, inference credentials, upstream execution; retry/fallback only under separately Owner-approved route policy | product memory/domain state, product UX, Control Plane identity truth |
 | Cross-cutting authority | IP-CONTROL | identity, canonical subject/tenant, entitlement, usage/credits/subscription/audit, neutral cross-product declarations | model Provider execution, product conversation state |
 | External execution | Provider/Model | upstream model capability | Padiem product policy |
 

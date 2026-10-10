@@ -38,6 +38,9 @@ from app.pilot.errors import (
     UpstreamTimeout,
 )
 from app.pilot.sensenova_provider import is_transient_busy_429
+from app.pilot.provider_timeout_diagnostics import log_provider_timeout
+from app.pilot.b14_timeout_policy import build_provider_http_timeout
+from app.pilot.agnes_429_diagnostics import log_agnes_429
 from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
 from app.pilot.stream_types import StreamEvent, StreamUsage
@@ -49,17 +52,15 @@ from app.pilot.platform_secrets import (
     resolve_secret,
 )
 from app.pilot.redaction import redact_sensitive
+from app.pilot.upstream_answer_contract import UpstreamEmptyAnswer, require_completed_text_answer
 
 logger = logging.getLogger("korean-ai-platform.pilot.platform")
 
 MAX_RESPONSE_BYTES = 1024 * 1024
 MAX_ERROR_BODY_CHARS = 500
 
-_CONNECT_TIMEOUT = 10.0
-_READ_TIMEOUT = 30.0
-_WRITE_TIMEOUT = 10.0
-_POOL_TIMEOUT = 10.0
-
+# All Providers share one phase policy. A Pyodide/Fetch ConnectTimeout
+# label alone does not prove a native TCP handshake delay.
 
 def _mock_response(model_id: str, upstream_model: str, provider: str) -> dict[str, Any]:
     """Clearly-labeled mock response (no upstream call)."""
@@ -193,6 +194,7 @@ def _require_owner_allowed_live_model(
         or ("qwen" in upstream and platform_provider_id == "b-ai")
         or "motif-3" in upstream
         or "gpt-5.6-luna" in upstream
+        or excluded_from_owner_customer_selection(upstream_model)
     )
     if excluded_from_owner_customer_selection(model_id) or owner_excluded_upstream:
         raise PilotNotConfigured(
@@ -207,8 +209,9 @@ async def call_platform_chat_completions(
     provider: str,
     platform_provider_id: str,
     messages: list[dict[str, str]],
-    temperature: float | None = 0.2,
+    temperature: float | None = None,
     max_tokens: int | None = None,
+    model_parameters: dict[str, Any] | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
 ) -> dict[str, Any]:
     """Completed-JSON call to a fixed platform Provider.
@@ -244,15 +247,20 @@ async def call_platform_chat_completions(
     # explicit limit; None intentionally delegates to the provider/model default.
     if max_tokens is not None:
         body["max_tokens"] = int(max_tokens)
+    # Re-validate direct adapter calls too. A caller must not bypass the
+    # exact-model vendor API allow-list by skipping the gateway.
+    if model_parameters:
+        from .model_native_parameters import (
+            UnsupportedModelParameter, validate_native_parameters,
+        )
+        from .errors import InvalidRequest
+        try:
+            body.update(validate_native_parameters(model_id, model_parameters))
+        except UnsupportedModelParameter as exc:
+            raise InvalidRequest(str(exc)) from exc
 
     client_kwargs: dict[str, Any] = {
-        "timeout": httpx.Timeout(
-            None,
-            connect=_CONNECT_TIMEOUT,
-            read=_READ_TIMEOUT,
-            write=_WRITE_TIMEOUT,
-            pool=_POOL_TIMEOUT,
-        ),
+        "timeout": build_provider_http_timeout(),
     }
     if transport is not None:
         client_kwargs["transport"] = transport
@@ -266,8 +274,9 @@ async def call_platform_chat_completions(
                 json=body,
                 follow_redirects=False,
             )
-    except httpx.TimeoutException:
-        raise UpstreamTimeout()
+    except httpx.TimeoutException as exc:
+        log_provider_timeout(logger, platform_provider_id, exc, "completed")
+        raise UpstreamTimeout() from exc
     except httpx.RequestError as e:
         logger.error(
             "platform_request_error provider=%s error=%s",
@@ -277,6 +286,11 @@ async def call_platform_chat_completions(
         raise UpstreamServerError()
 
     if response.status_code < 200 or response.status_code >= 300:
+        if platform_provider_id == "agnes-ai" and response.status_code == 429:
+            log_agnes_429(
+                logger, platform_provider_id, response.status_code,
+                response.headers, response.text,
+            )
         _raise_upstream_error(
             response.status_code, platform_provider_id, response.text
         )
@@ -291,9 +305,10 @@ async def call_platform_chat_completions(
     if "choices" not in response_data:
         raise MalformedUpstreamResponse()
 
+    # HTTP 200 with choices but no user-visible text is NOT a valid completion.
+    # A small output budget may exhaust on reasoning alone; never call it success.
+    require_completed_text_answer(response_data)
     choices = response_data["choices"]
-    if not isinstance(choices, list) or len(choices) == 0:
-        raise MalformedUpstreamResponse()
 
     usage = response_data.get("usage")
     prompt_tokens = usage.get("prompt_tokens") if isinstance(usage, dict) else None
@@ -333,8 +348,9 @@ async def stream_platform_chat_completions(
     provider: str,
     platform_provider_id: str,
     messages: list[dict[str, str]],
-    temperature: float | None = 0.2,
+    temperature: float | None = None,
     max_tokens: int | None = None,
+    model_parameters: dict[str, Any] | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
 ) -> Any:
     """Streaming call to a fixed platform Provider (OpenAI-compatible SSE).
@@ -382,20 +398,27 @@ async def stream_platform_chat_completions(
     # explicit limit; None intentionally delegates to the provider/model default.
     if max_tokens is not None:
         body["max_tokens"] = int(max_tokens)
+    # Re-validate direct adapter calls too. A caller must not bypass the
+    # exact-model vendor API allow-list by skipping the gateway.
+    if model_parameters:
+        from .model_native_parameters import (
+            UnsupportedModelParameter, validate_native_parameters,
+        )
+        from .errors import InvalidRequest
+        try:
+            body.update(validate_native_parameters(model_id, model_parameters))
+        except UnsupportedModelParameter as exc:
+            raise InvalidRequest(str(exc)) from exc
 
     client_kwargs: dict[str, Any] = {
-        "timeout": httpx.Timeout(
-            None,
-            connect=_CONNECT_TIMEOUT,
-            read=_READ_TIMEOUT,
-            write=_WRITE_TIMEOUT,
-            pool=_POOL_TIMEOUT,
-        ),
+        "timeout": build_provider_http_timeout(),
     }
     if transport is not None:
         client_kwargs["transport"] = transport
 
     saw_done = False
+    saw_text = False
+    last_finish_reason: str | None = None
     buffer = b""
     total_bytes = 0
     try:
@@ -411,6 +434,11 @@ async def stream_platform_chat_completions(
                     # Read the small error body so provider-specific 429
                     # normalization (#2003) can inspect it.
                     error_body = (await response.aread()).decode("utf-8", "replace")
+                    if platform_provider_id == "agnes-ai" and response.status_code == 429:
+                        log_agnes_429(
+                            logger, platform_provider_id, response.status_code,
+                            response.headers, error_body,
+                        )
                     _raise_upstream_error(
                         response.status_code, platform_provider_id, error_body
                     )
@@ -425,18 +453,32 @@ async def stream_platform_chat_completions(
                         event = _parse_sse_frame(frame)
                         if event is None:
                             continue
+                        if event.delta_content and event.delta_content.strip():
+                            saw_text = True
+                        if event.finish_reason is not None:
+                            last_finish_reason = event.finish_reason
+                        if event.done:
+                            if not saw_text:
+                                raise UpstreamEmptyAnswer(last_finish_reason, streamed=True)
+                            saw_done = True
                         yield event
                         if event.done:
-                            saw_done = True
                             return
 
                 if buffer.strip():
                     event = _parse_sse_frame(buffer)
                     if event is not None:
-                        yield event
+                        if event.delta_content and event.delta_content.strip():
+                            saw_text = True
+                        if event.finish_reason is not None:
+                            last_finish_reason = event.finish_reason
                         if event.done:
+                            if not saw_text:
+                                raise UpstreamEmptyAnswer(last_finish_reason, streamed=True)
                             saw_done = True
+                        yield event
     except httpx.TimeoutException as exc:
+        log_provider_timeout(logger, platform_provider_id, exc, "stream")
         raise UpstreamTimeout() from exc
     except httpx.RequestError as exc:
         logger.error(

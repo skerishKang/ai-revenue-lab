@@ -803,6 +803,11 @@ def build_resident_host(
     acceptance_request_id: str = "",
     acceptance_request_fingerprint: str = "",
     browser_open_host: Any | None = None,
+    approved_office_pairs: Any | None = None,
+    office_file_requests: Any | None = None,
+    office_file_authorization_port: Any | None = None,
+    office_renderer: Any | None = None,
+    office_p01_plan_source: Any | None = None,
 ) -> LocalAgentResidentRuntimeHost:
     """Construct *the* resident host, once, on the redeemed binding."""
 
@@ -883,6 +888,47 @@ def build_resident_host(
         acceptance_request_id=acceptance_request_id,
         host=browser_open_host,
     )
+    # #3580: only a deployment-injected trusted P01/Office producer may
+    # opt into post-ACK byte staging. Ordinary pairing/env/browser/model cannot
+    # supply a file path or mint Google Drive WRITE consent.
+    office_staging = None
+    if office_p01_plan_source is not None:
+        if (approved_office_pairs is not None or office_file_requests is not None
+                or office_file_authorization_port is not None):
+            raise ContractError("competing P01 Office authority sources refused")
+        from .trusted_p01_office_file_plan import TrustedP01OfficeFilePlanBridge
+        from .windows_local_filesystem import P01LocalPermissionWindowsFileAuthorizationPort
+
+        office_bridge = TrustedP01OfficeFilePlanBridge(source=office_p01_plan_source)
+        office_file_requests = office_bridge
+        office_file_authorization_port = P01LocalPermissionWindowsFileAuthorizationPort(
+            permission_profile=default_device_permission_profile(device=device),
+            evidence_port=office_bridge,
+        )
+    if (approved_office_pairs is not None and
+            (office_file_requests is not None or office_file_authorization_port is not None)):
+        raise ContractError("two competing Office producer authorities refused")
+    if office_file_requests is not None or office_file_authorization_port is not None:
+        from .approved_windows_office_pair_producer import compose_approved_windows_office_pairs
+        approved_office_pairs = compose_approved_windows_office_pairs(
+            device=device, file_requests=office_file_requests,
+            file_authorization_port=office_file_authorization_port,
+            clock=clock, renderer=office_renderer,
+        )
+    elif office_renderer is not None:
+        raise ContractError("Office renderer without P01 file READ authority refused")
+    if approved_office_pairs is not None:
+        from .local_office_chunk_publisher import LocalOfficeChunkPublisher
+        from .local_resident_office_delivery import ResidentOfficePairPublisher
+        from .local_agent_control_plane_https import StdlibPinnedHttpsJsonRequestPort
+
+        office_staging = ResidentOfficePairPublisher(
+            approved_pairs=approved_office_pairs,
+            publisher=LocalOfficeChunkPublisher(
+                transport=StdlibPinnedHttpsJsonRequestPort(),
+                config=config,
+            ),
+        )
     # #3140 stall diagnosis: the facts a stalled SQLite open would have produced,
     # reported only once the store is actually ready. No path, no handle.
     try:
@@ -912,6 +958,7 @@ def build_resident_host(
         session_id_factory=entry.session_id_factory,
         heartbeat_interval_seconds=30,
         session_ttl_seconds=900,
+        office_staging=office_staging,
     )
     _observe_phase("host_build_host_done")
     return host

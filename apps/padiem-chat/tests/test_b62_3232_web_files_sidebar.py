@@ -187,6 +187,43 @@ const doc = {
 };
 byId.projectForm.querySelector = () => makeEl("div");
 
+// #3989: keep every original 50ms/30ms navigation observation window
+// while advancing only the real app.js VM callbacks, not sleeping on CI.
+let virtualNow = 0;
+let timerSequence = 0;
+const virtualTimers = new Map();
+function virtualSetTimeout(callback, delay=0, ...args) {
+  const id = ++timerSequence;
+  virtualTimers.set(id, {
+    when: virtualNow + Math.max(0, Number(delay) || 0), callback, args,
+  });
+  return id;
+}
+function virtualClearTimeout(id) { virtualTimers.delete(id); }
+async function flushAsync() {
+  await new Promise((resolve) => setImmediate(resolve));
+}
+async function tick(ms) {
+  await flushAsync();
+  const deadline = virtualNow + ms;
+  let iterations = 0;
+  while (true) {
+    let chosenId = null, chosen = null;
+    for (const [id, timer] of virtualTimers) {
+      if (timer.when <= deadline && (!chosen || timer.when < chosen.when)) {
+        chosenId = id; chosen = timer;
+      }
+    }
+    if (!chosen) break;
+    virtualNow = chosen.when;
+    virtualTimers.delete(chosenId);
+    chosen.callback(...chosen.args);
+    await flushAsync();
+    if (++iterations > 10000) throw new Error("unbounded navigation timer loop");
+  }
+  virtualNow = deadline;
+  await flushAsync();
+}
 const requests = [];
 function jsonResponse(status, obj) { return { ok: status >= 200 && status < 300, status, json: async () => obj }; }
 async function fetchImpl(url, opts) {
@@ -207,7 +244,7 @@ async function fetchImpl(url, opts) {
 const sandbox = {
   document: doc,
   fetch: fetchImpl,
-  setTimeout, clearTimeout, console,
+  setTimeout: virtualSetTimeout, clearTimeout: virtualClearTimeout, console,
   CustomEvent: class {},
   location: { href: "http://localhost/", assign() {} },
   addEventListener() {},
@@ -238,7 +275,6 @@ function firstProjectRowButton() {
 
 (async () => {
   const fail = (m) => { console.log(JSON.stringify({ ok: false, error: m })); process.exit(0); };
-  const tick = (ms) => new Promise((r) => setTimeout(r, ms));
   await tick(50);
   const mode = FIXTURE.mode;
   const snapshot = () => ({

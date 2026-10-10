@@ -19,7 +19,7 @@ import re
 import socket
 import sys
 import time
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode, urlsplit
 from urllib.request import Request, urlopen
@@ -88,7 +88,12 @@ class BenchmarkHttpError(BenchmarkError):
     def __init__(self, status: int):
         super().__init__(f"provider returned HTTP {status}")
         self.status = status
-        if status == 429:
+        # 402 = the provider's free allowance is exhausted (TinyFish documents
+        # HTTP 402 / `INSUFFICIENT_CREDITS`). It must abort the run like 429 so a
+        # live benchmark can never silently spend past the free quota.
+        if status == 402:
+            self.code = "HTTP_402"
+        elif status == 429:
             self.code = "HTTP_429"
         elif 400 <= status < 500:
             self.code = "HTTP_4XX"
@@ -423,14 +428,16 @@ def run_case(
     *,
     limit: int = MAX_RESULTS,
     timeout: float = DEFAULT_TIMEOUT_SECONDS,
-    transport=_perform_request,
+    transport: Callable[..., tuple[int, bytes]] | None = None,
 ) -> dict[str, Any]:
     credential = os.environ.get(spec.credential_env, "").strip()
     if not credential:
         raise MissingCredential(f"{spec.credential_env} is not configured")
     method, url, headers, body = _request_for(spec, case, credential, limit)
     started = time.perf_counter()
-    status, raw = transport(method, url, headers, body, timeout)
+    # Resolve the transport at call time (never as a captured default argument),
+    # so a test can inject a transport without any risk of reaching the network.
+    status, raw = (transport or _perform_request)(method, url, headers, body, timeout)
     latency_ms = round((time.perf_counter() - started) * 1000, 1)
     data = _decode_json(raw)
     results = _normalize_items(spec.provider, data, limit)
@@ -556,7 +563,7 @@ def main(argv: list[str] | None = None) -> int:
                     "results": [],
                 }
                 print(json.dumps(record, ensure_ascii=False, sort_keys=True), file=handle, flush=True)
-                if exc.code in {"MISSING_CREDENTIAL", "HTTP_429"}:
+                if exc.code in {"MISSING_CREDENTIAL", "HTTP_402", "HTTP_429"}:
                     return 2
                 continue
             print(json.dumps(record, ensure_ascii=False, sort_keys=True), file=handle, flush=True)

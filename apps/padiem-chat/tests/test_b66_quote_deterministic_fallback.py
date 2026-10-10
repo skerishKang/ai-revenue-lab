@@ -81,6 +81,8 @@ async def test_interpreter_uses_fallback_only_after_model_client_failure():
     assert projection.items == ({"name": "배관", "qty": 100, "unit": "미터"},)
     assert projection.tax_mode == "EXCLUSIVE"
     assert projection.missing == ("unitPrice",)
+    assert projection.result_origin == "deterministic_fallback"
+    assert "result_origin" not in projection.safe_dict()
 
 
 @pytest.mark.asyncio

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from typing import Protocol
 
 from . import httpx_compat as httpx
@@ -87,6 +88,8 @@ def _runtime_error_message(exc: WebRuntimeError) -> str:
         return "웹 도구 설정을 확인할 수 없습니다."
     if exc.code == "web_busy":
         return "웹 검색 사용량이 많습니다. 잠시 후 다시 시도해 주세요."
+    if exc.code == "web_quota_exhausted":
+        return "웹 검색 무료 사용량이 모두 소진되었습니다. 잠시 후 다시 시도해 주세요."
     if exc.code == "web_request_failed":
         return "웹 요청을 처리하지 못했습니다."
     if exc.code == "web_malformed":
@@ -255,6 +258,47 @@ class TinyFishWebProvider:
         return _from_core_evidence(item)
 
 
+class TinyFishDaumWebProvider:
+    """Owner-approved priority: TinyFish, then Daum on quota/rate exhaustion only.
+
+    Two bounded Search calls maximum. Each search result retains its real
+    provider provenance. Failed fetch is never replaced by a Daum or Firecrawl
+    scraper (Daum has no native page-fetch endpoint).
+    """
+
+    def __init__(self, settings: Settings, transport: httpx.AsyncBaseTransport | None = None):
+        if settings.web_provider != "tinyfish_daum":
+            raise ValueError("TinyFish/Daum priority requires explicit provider configuration")
+        if not settings.tinyfish_api_key or not settings.daum_rest_api_key:
+            raise ValueError("TinyFish/Daum priority requires both server-side API keys")
+        self._primary = TinyFishWebProvider(
+            replace(settings, web_provider="tinyfish"), transport=transport
+        )
+        # Firecrawl is not allowed into the secondary search/fetch path.
+        self._secondary = DaumWebProvider(
+            replace(settings, web_provider="daum", firecrawl_api_key=None),
+            transport=transport,
+        )
+
+    async def search(self, query: str, limit: int = 5) -> list[Evidence]:
+        try:
+            evidence = await self._primary.search(query, limit=limit)
+            # Fixed diagnostic only: no search text, URLs, keys or results.
+            print("PADIEM_WEB_SEARCH_ROUTE=TINYFISH", flush=True)
+            return evidence
+        except WebToolError as exc:
+            # HTTP 402 = allowance/credit failure; HTTP 429 = rate allowance.
+            # Other provider errors and genuine zero-results do NOT switch.
+            if exc.code not in {"web_quota_exhausted", "web_busy"}:
+                raise
+        evidence = await self._secondary.search(query, limit=limit)
+        print("PADIEM_WEB_SEARCH_ROUTE=DAUM_ON_402_429", flush=True)
+        return evidence
+
+    async def fetch(self, url: str) -> Evidence:
+        return await self._primary.fetch(url)
+
+
 def create_web_provider(
     settings: Settings,
     transport: httpx.AsyncBaseTransport | None = None,
@@ -269,6 +313,8 @@ def create_web_provider(
         provider = DaumWebProvider(settings, transport=transport)
     elif settings.web_provider == "tinyfish":
         provider = TinyFishWebProvider(settings, transport=transport)
+    elif settings.web_provider == "tinyfish_daum":
+        provider = TinyFishDaumWebProvider(settings, transport=transport)
     else:
         raise RuntimeError("unreachable web provider configuration")
 

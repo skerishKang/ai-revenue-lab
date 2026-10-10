@@ -178,21 +178,26 @@ class B14MultimodalChatRequest(B14ChatRequest):
             temperature=self.temperature,
             max_tokens=self.max_tokens,
             routing=self.routing,
+            model_parameters=self.model_parameters,
         )
         object.__setattr__(self, "messages", normalized)
         object.__setattr__(self, "model", validated.model)
         object.__setattr__(self, "temperature", validated.temperature)
         object.__setattr__(self, "max_tokens", validated.max_tokens)
         object.__setattr__(self, "routing", validated.routing)
+        object.__setattr__(self, "model_parameters", validated.model_parameters)
 
     def to_payload(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
             "model": self.model,
             "messages": [_thaw_message(message) for message in self.messages],
-            "temperature": self.temperature,
         }
+        if self.temperature is not None:
+            payload["temperature"] = self.temperature
         if self.max_tokens is not None:
             payload["max_tokens"] = self.max_tokens
+        for name in sorted(self.model_parameters):
+            payload[name] = self.model_parameters[name]
         routing = self.routing.to_dict()
         if routing:
             payload["business14"] = routing

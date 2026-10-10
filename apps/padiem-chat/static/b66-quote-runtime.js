@@ -42,6 +42,7 @@
   let runtime = null;
   let skills = [];
   let modelIds = [];
+  let reasoningByModel = {};
   let initialized = false;
   let refreshPromise = null;
   let currentRequestId = null;
@@ -186,6 +187,17 @@
     modelSelect.required = true;
     modelLabel.append(modelText, modelSelect);
 
+    // #3906: per-model reasoning level. Options come only from
+    // /api/b66/quote/models, so the control never offers a level the selected
+    // model does not actually support. The provider default is first.
+    const reasoningLabel = el("label", "b66-quote-field");
+    const reasoningText = el("span", "", document.documentElement.lang === "en"
+      ? "Reasoning level" : "추론 수준");
+    reasoningText.dataset.b66QuoteReasoningLabel = "true";
+    const reasoningSelect = document.createElement("select");
+    reasoningSelect.id = "b66QuoteReasoningSelect";
+    reasoningLabel.append(reasoningText, reasoningSelect);
+
     const submit = el("button", "b66-quote-generate", copy().generate);
     submit.id = "b66QuoteGenerate";
     submit.type = "submit";
@@ -203,7 +215,7 @@
     frame.referrerPolicy = "no-referrer";
     frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-modals");
 
-    form.append(selectLabel, modelLabel, messageLabel, submit, status);
+    form.append(selectLabel, modelLabel, reasoningLabel, messageLabel, submit, status);
     panel.append(header, form, frame);
     dialog.append(panel);
     document.body.append(dialog);
@@ -265,6 +277,7 @@
     const select = document.getElementById("b66QuoteModelSelect");
     if (!select) return;
     modelIds = [];
+    reasoningByModel = {};
     select.replaceChildren();
     const placeholder = document.createElement("option");
     placeholder.value = "";
@@ -283,11 +296,56 @@
       option.textContent = record.name;
       select.append(option);
       modelIds.push(record.model_id);
+      // #3906: keep only the levels this exact model advertises.
+      reasoningByModel[record.model_id] = Array.isArray(record.reasoning_levels)
+        ? record.reasoning_levels.filter((level) => level &&
+            typeof level.value === "string" &&
+            /^[a-z0-9-]{1,32}$/.test(level.value) &&
+            typeof level.label === "string")
+        : [];
     });
     const configured = response.data.default_model_id;
     select.value = typeof configured === "string" && modelIds.includes(configured)
       ? configured : "";
     select.disabled = modelIds.length === 0;
+    syncReasoningOptions();
+    select.addEventListener("change", syncReasoningOptions);
+  }
+
+  // #3906: only levels the selected model actually supports are offered, and a
+  // model switch re-validates the current choice so an unsupported level can
+  // never be submitted. No recommended level is auto-applied.
+  function reasoningOptionsForModel(modelId) {
+    if (typeof modelId !== "string" || !modelIds.includes(modelId)) return [];
+    const levels = reasoningByModel[modelId];
+    if (!Array.isArray(levels) || !levels.length) return [];
+    return levels;
+  }
+
+  function syncReasoningOptions() {
+    const modelSelect = document.getElementById("b66QuoteModelSelect");
+    const reasoningSelect = document.getElementById("b66QuoteReasoningSelect");
+    if (!modelSelect || !reasoningSelect) return;
+    const options = reasoningOptionsForModel(modelSelect.value);
+    reasoningSelect.replaceChildren();
+    options.forEach((level) => {
+      const option = document.createElement("option");
+      option.value = level.value;
+      option.textContent = level.label;
+      reasoningSelect.append(option);
+    });
+    reasoningSelect.value = options.length ? options[0].value : "";
+    reasoningSelect.disabled = options.length === 0;
+  }
+
+  // #3906: the reasoning choice actually offered for this exact model, or ""
+  // when the control has none so the request keeps its pre-#3906 shape.
+  function selectedReasoningLevel(modelId) {
+    const reasoningSelect = document.getElementById("b66QuoteReasoningSelect");
+    if (!reasoningSelect) return "";
+    const options = reasoningOptionsForModel(modelId);
+    const current = reasoningSelect.value;
+    return options.some((level) => level.value === current) ? current : "";
   }
 
   function populateSkills() {
@@ -453,10 +511,16 @@
     frame.hidden = true;
     setStatus(c.working, "working");
     try {
+      // #3906: forward the explicit reasoning choice with the exact model. The
+      // field is omitted when the control offers none, preserving the
+      // pre-#3906 request shape.
+      const payload = { saved_skill_id: savedSkillId, message: requestText, model_id: modelId };
+      const reasoningLevel = selectedReasoningLevel(modelId);
+      if (reasoningLevel) payload.reasoning_level = reasoningLevel;
       const interpreted = await readJson("/api/b66/quote/interpret", {
         method: "POST",
         headers: { "Accept": "application/json", "Content-Type": "application/json" },
-        body: JSON.stringify({ saved_skill_id: savedSkillId, message: requestText, model_id: modelId })
+        body: JSON.stringify(payload)
       });
       if (!interpreted.response.ok || !interpreted.data || interpreted.data.ok !== true) {
         throw new Error("interpret_failed");

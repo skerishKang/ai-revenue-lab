@@ -17,6 +17,8 @@ recording fetch. The harness proves actual change -> request behavior:
 
 from __future__ import annotations
 
+from functools import lru_cache
+
 import base64
 import json
 import shutil
@@ -357,6 +359,10 @@ function pickAndUpload(file) {
 """
 
 
+# All consumers assert read-only facts from the same completed real app.js
+# behavior journey. Reuse it once per Python module rather than respawning
+# Node for each test; separate pytest processes still run independent checks.
+@lru_cache(maxsize=1)
 def _run_harness() -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required for the behavioral harness"

@@ -319,6 +319,72 @@ class B14RoutingOptions:
         return out
 
 
+# ── Provider-native optional request parameters (#3977) ──────────────────────
+# The shared Core owns the WIRE NAME and the accepted SPELLING of these
+# documented fields. It deliberately owns neither which served model accepts
+# which value, nor any default for a field the caller left out: that is B14
+# capability authority (apps/korean-ai-platform/app/pilot/model_native_parameters.py),
+# re-checked on the request body at the gateway. An unlisted field or a value
+# outside the closed vocabulary fails closed here instead of reaching a paid
+# provider, and nothing is ever silently dropped, downgraded or invented.
+REASONING_EFFORT_VALUES = frozenset({"minimal", "low", "medium", "high"})
+
+_NATIVE_PARAMETER_RULES: dict[str, frozenset[str] | str] = {
+    "reasoning_effort": REASONING_EFFORT_VALUES,
+    # Provider-specific acceptance is checked AGAIN by the B14 gateway for the
+    # exact registered model. These wire-level shapes are never defaults.
+    "top_p": "unit_interval",
+    "top_k": "positive_integer",
+    "min_p": "unit_interval",
+    "presence_penalty": "signed_two",
+    "repetition_penalty": "positive_number",
+}
+NATIVE_MODEL_PARAMETER_FIELDS = frozenset(_NATIVE_PARAMETER_RULES)
+
+
+def _normalize_model_parameters(
+    raw: object,
+) -> Mapping[str, Any]:
+    """Validate explicit provider-native overrides; empty stays empty."""
+    if raw is None:
+        return MappingProxyType({})
+    if not isinstance(raw, Mapping):
+        raise ValueError("model_parameters must be a mapping")
+    unknown = {key for key in raw if key not in NATIVE_MODEL_PARAMETER_FIELDS}
+    if unknown:
+        # Never forward a field this contract does not name: an invented key
+        # would either be dropped unnoticed or accepted by a different vendor.
+        raise ValueError(
+            "unsupported model_parameters fields: " + ", ".join(sorted(map(str, unknown)))
+        )
+    validated: dict[str, Any] = {}
+    for name, rule in _NATIVE_PARAMETER_RULES.items():
+        if name not in raw or raw[name] is None:
+            continue
+        value = raw[name]
+        if isinstance(rule, frozenset):
+            if not isinstance(value, str) or value not in rule:
+                raise ValueError(
+                    f"{name} must be one of " + ", ".join(sorted(rule))
+                )
+        elif rule == "positive_integer":
+            if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+                raise ValueError(f"{name} must be a positive integer")
+        else:
+            if isinstance(value, bool) or not isinstance(value, (int, float)):
+                raise ValueError(f"{name} must be numeric")
+            if not math.isfinite(float(value)):
+                raise ValueError(f"{name} must be finite")
+            if rule == "unit_interval" and not 0 <= float(value) <= 1:
+                raise ValueError(f"{name} must be between 0 and 1")
+            if rule == "signed_two" and not -2 <= float(value) <= 2:
+                raise ValueError(f"{name} must be between -2 and 2")
+            if rule == "positive_number" and value <= 0:
+                raise ValueError(f"{name} must be positive")
+        validated[name] = value
+    return MappingProxyType(validated)
+
+
 @dataclass(frozen=True, slots=True)
 class B14ChatRequest:
     messages: tuple[Mapping[str, Any], ...]
@@ -326,9 +392,16 @@ class B14ChatRequest:
     # route silently widen into Router auto execution. Explicit generic auto
     # requests remain valid by passing model="b14/auto".
     model: str
-    temperature: float = 0.2
+    # Unspecified sampling must reach the exact provider as omission.
+    temperature: float | None = None
     max_tokens: int | None = None
     routing: B14RoutingOptions = field(default_factory=B14RoutingOptions)
+    # Validated provider-native overrides. They are transmitted as TOP-LEVEL
+    # request fields, never as a nested ``model_parameters`` object, because
+    # that is the shape the B14 gateway and the vendor APIs document (#3977).
+    # An empty mapping contributes nothing, so an unspecified request keeps its
+    # exact pre-#3977 layout.
+    model_parameters: Mapping[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "messages", _normalize_messages(self.messages))
@@ -339,14 +412,15 @@ class B14ChatRequest:
             raise ValueError(f"model must not exceed {MAX_B14_MODEL_CHARS} characters")
         object.__setattr__(self, "model", model)
 
-        if (
+        if self.temperature is not None and (
             isinstance(self.temperature, bool)
             or not isinstance(self.temperature, (int, float))
             or not math.isfinite(float(self.temperature))
             or not 0 <= float(self.temperature) <= 2
         ):
             raise ValueError("temperature must be between 0 and 2")
-        object.__setattr__(self, "temperature", float(self.temperature))
+        if self.temperature is not None:
+            object.__setattr__(self, "temperature", float(self.temperature))
 
         # PRODUCT_REQUESTED_LIMIT authority: explicit output budget must stay
         # within the product's explicit-request compatibility ceiling. The
@@ -366,14 +440,22 @@ class B14ChatRequest:
         if not isinstance(self.routing, B14RoutingOptions):
             raise ValueError("routing must be B14RoutingOptions")
 
+        object.__setattr__(
+            self, "model_parameters", _normalize_model_parameters(self.model_parameters)
+        )
+
     def to_payload(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
             "model": self.model,
             "messages": [dict(message) for message in self.messages],
-            "temperature": self.temperature,
         }
+        if self.temperature is not None:
+            payload["temperature"] = self.temperature
         if self.max_tokens is not None:
             payload["max_tokens"] = self.max_tokens
+        # Documented native fields go at the TOP LEVEL of the request body.
+        for name in sorted(self.model_parameters):
+            payload[name] = self.model_parameters[name]
         routing = self.routing.to_dict()
         if routing:
             payload["business14"] = routing

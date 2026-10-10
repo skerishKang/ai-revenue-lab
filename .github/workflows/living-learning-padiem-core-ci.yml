@@ -6,6 +6,8 @@ on:
       - 'apps/living-learning/**'
       - 'packages/padiem-ai-core/**'
       - 'scripts/experiments/benchmark_padiem_search_providers.py'
+      - 'scripts/experiments/benchmark_padiem_fetch_providers.py'
+      - '.github/tests/test_3989_engine_living_learning_ci_scope.py'
       - '.github/workflows/living-learning-padiem-core-ci.yml'
   workflow_dispatch:
 

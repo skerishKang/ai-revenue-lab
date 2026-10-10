@@ -115,6 +115,7 @@ class B66QuoteConversationClient(Protocol):
         additional_system_context: str | None = None,
         attachments: tuple = (),
         model_id: str | None = None,
+        reasoning_level: str | None = None,
     ) -> dict[str, Any]: ...
 
 
@@ -129,6 +130,10 @@ class B66QuoteConversationProjection:
     missing: tuple[str, ...]
     project_name: str | None = None
     detail_groups: tuple[dict[str, Any], ...] = ()
+    # Server-owned provenance only. Never read from or serialize to quote facts.
+    # "registered_model_completion" proves a validated B14 completion reached
+    # this interpreter, NOT by itself a Google/provider-side POST receipt.
+    result_origin: str = "unattributed"
 
     def safe_dict(self) -> dict[str, Any]:
         return {
@@ -258,8 +263,16 @@ def _recover_single_json_payload(text: str) -> Any:
     return value
 
 
-def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
-    """Validate untrusted model output into variable-only quote fields."""
+def normalize_conversation_output(
+    raw: Any, *, server_derives_missing: bool = False
+) -> B66QuoteConversationProjection:
+    """Validate model facts; optionally discard untrusted missing-field labels.
+
+    In the live B66 interpreter, _server_missing_fields is authoritative.
+    Preserve structural bounds and all quote fact/forbidden-field checks, but
+    never reject a usable model answer merely because the model listed indexed
+    or otherwise noncanonical missing-field names.
+    """
 
     if isinstance(raw, str):
         if not raw:
@@ -457,7 +470,12 @@ def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
         if tax_mode not in TAX_MODES:
             raise B66QuoteConversationError("invalid_tax_mode", path="taxMode", observed_type="string")
 
-    missing_raw = raw.get("missing")
+    # During model-backed extraction the provider's "missing" field has no
+    # authority. Its labels, duplicates or even its container shape must not
+    # reject otherwise valid customer facts. The answer-size guard and all
+    # forbidden-key/fact validators still run before this point.
+    # The interpreter recomputes missing from approved Saved Skill facts.
+    missing_raw = [] if server_derives_missing else raw.get("missing")
     if missing_raw is None:
         missing_raw = []
     if (
@@ -522,10 +540,18 @@ def _conversation_prompt(skill: dict[str, Any]) -> str:
     return (
         "당신은 견적서 생성기가 아니라 견적 입력값 추출기입니다. "
         "사용자의 한 문장에서 실제로 말한 값만 JSON 객체 하나로 추출하십시오. "
+        "고객의 일상적인 띄어쓰기, 조사 오류나 분명한 철자 오타는 문맥상 의미가 하나로 확실한 경우에만 해석하십시오. "
+        "뜻이 여러 개이거나 업체명, 담당자명, 품목명처럼 고객이 확인해야 할 고유 정보가 불명확하면 추측하지 말고 해당 값은 null로 두십시오. "
+        "수량, 단가, 세금 조건은 임의로 만들거나 유추한 숫자로 채우지 마십시오. "
+        "약, 대충, 정도, 내외, 범위로 표현한 수량은 확정 숫자가 아니므로 null로 두고 고객에게 정확한 수량을 다시 확인하십시오. "
+        "정보가 불분명하면 다른 필드의 확실한 사실은 보존하고 불분명한 필드만 null로 두어 서비스가 고객에게 다시 질문하게 하십시오. "
         "최상위 키는 recipient, quoteNo, issueDate, projectName, items, detailGroups, memo, taxMode, missing 만 허용됩니다. "
         "recipient는 company/person/address/email을 사용하십시오. "
         "items는 name/spec/unit/qty/unitPrice/note 만 사용하십시오. "
         "사용자가 건명을 말하면 projectName에 그대로 넣으십시오. "
+        "품목명이 원문에 명확히 나타나면 내부 공백·숫자·단위 접미사까지 원문 그대로 복사하십시오. "
+        "예를 들어 원문이 '부품 01호'라면 '부품 01 호'로 바꾸지 마십시오. "
+        "원문 품목명이 불명확하면 임의로 공백을 붙이거나 지우지 말고 이름만 null로 두십시오. "
         "상세내역을 말한 경우 detailGroups 배열을 사용하고 각 그룹은 summaryIndex/title/items만 사용하십시오. "
         "summaryIndex는 연결할 요약 items의 1부터 시작하는 순번입니다. "
         "상세 그룹이 연결된 요약 item의 단가를 사용자가 말하지 않았다면 계산하지 말고 unitPrice를 null로 두십시오. "
@@ -533,7 +559,7 @@ def _conversation_prompt(skill: dict[str, Any]) -> str:
         "상세 items는 name/spec/unit/qty/unitPrice/note/section만 사용하십시오. "
         "금액 합계, 공급가액, 부가세 금액, 총액을 계산하거나 반환하지 마십시오. "
         "sender, template, approval, fingerprint를 변경하거나 반환하지 마십시오. "
-        "없는 값은 null 또는 빈 배열로 두고 필요한 추가 입력 필드 이름만 missing 배열에 넣으십시오. "
+        "알 수 없는 필수 값은 null 또는 빈 배열로 두십시오. missing은 서비스가 검증된 값에서 직접 계산하므로 빈 배열 []을 사용하십시오. "
         "설명/마크다운 없이 JSON만 반환하십시오. "
         "아래 서버 제공 계약 밖 필드는 추출하지 마십시오.\n"
         + json.dumps(contract, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
@@ -572,6 +598,174 @@ def _server_missing_fields(
     return tuple(missing)
 
 
+# Owner #3916: customer-authored quantity qualifiers outrank a model's numeric
+# projection. This is a finalization guard, not a new extraction authority.
+# Match number+quantity unit only; a price such as "약 2만원" is not quantity.
+_QUANTITY_UNIT_RE = r"(?:미터|박스|세트|묶음|kg|KG|mm|cm|m2|EA|ea|개|대|장|톤|식|본|롤|통|병|쌍|건|벌|포|m|M|㎡)"
+_QUANTITY_NUMBER_RE = r"(?:\d{1,6}(?:,\d{3})*(?:\.\d+)?)"
+_QUANTITY_PHRASE_RE = re.compile(
+    rf"(?P<qualifier>약|대략|대충|한)?\s*"
+    rf"(?P<lower>{_QUANTITY_NUMBER_RE})\s*"
+    rf"(?:(?:~|～|∼|-)\s*(?P<upper>{_QUANTITY_NUMBER_RE})\s*)?"
+    rf"(?P<unit>{_QUANTITY_UNIT_RE})\s*"
+    rf"(?P<suffix>정도|쯤|내외|가량|안팎)?"
+)
+
+
+def _bounded_quantity_number(value: Any) -> float | None:
+    if isinstance(value, bool) or not isinstance(value, (int, float, str)):
+        return None
+    try:
+        number = float(value.replace(",", "") if isinstance(value, str) else value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    return number if math.isfinite(number) else None
+
+
+def _guard_unconfirmed_approximate_quantities(
+    message: str, projection: B66QuoteConversationProjection
+) -> B66QuoteConversationProjection:
+    """Do not let approximate source quantities become finalized QuoteCore facts.
+
+    The browser's existing bounded follow-up sends the original message and
+    customer-only "답변:" lines. A numerical, unqualified quantity in one of
+    those answer lines is the ONLY confirmation allowed here. An unqualified
+    "네" is intentionally insufficient: the customer must restate a quantity.
+    Neither the model's missing metadata nor generated question text can
+    authorize confirmation.
+    """
+    original = message.split("\n추가 질문:", 1)[0]
+    approximate = [
+        hit for hit in _QUANTITY_PHRASE_RE.finditer(original)
+        if hit.group("qualifier") or hit.group("upper") or hit.group("suffix")
+    ]
+    if not approximate:
+        return projection
+
+    estimates: set[float] = set()
+    for hit in approximate:
+        for key in ("lower", "upper"):
+            if hit.group(key):
+                value = _bounded_quantity_number(hit.group(key))
+                if value is not None:
+                    estimates.add(value)
+
+    # Deliberately do not trust numeric text in the initial estimate or in a
+    # model-generated "추가 질문:"; only explicit subsequent user replies.
+    confirmed: set[float] = set()
+    for answer in re.findall(r"(?:^|\n)답변:\s*([^\n]{0,1000})", message):
+        for hit in _QUANTITY_PHRASE_RE.finditer(answer):
+            if hit.group("qualifier") or hit.group("upper") or hit.group("suffix"):
+                continue
+            value = _bounded_quantity_number(hit.group("lower"))
+            if value is not None:
+                confirmed.add(value)
+
+    # Prefer the item name immediately preceding each rough quantity within
+    # the same comma-delimited phrase. This preserves independent exact items
+    # even when the customer later confirms a DIFFERENT count. If attribution
+    # is unclear, fail closed instead of trusting any numeric model guess.
+    all_items = list(projection.items) + [
+        item for group in projection.detail_groups for item in group["items"]
+    ]
+    blocked: set[int] = set()
+    for hit in approximate:
+        local = original[max(0, hit.start() - 100):hit.start()]
+        local = re.split(r"[,，;\n]", local)[-1]
+        names = [
+            (local.rfind(item["name"]), idx)
+            for idx, item in enumerate(all_items)
+            if isinstance(item.get("name"), str) and item["name"] in local
+        ]
+        if names:
+            blocked.add(max(names)[1])
+            continue
+        span_values = {
+            _bounded_quantity_number(hit.group(key))
+            for key in ("lower", "upper") if hit.group(key)
+        }
+        matching = [
+            idx for idx, item in enumerate(all_items)
+            if _bounded_quantity_number(item.get("qty")) in span_values
+        ]
+        if matching:
+            blocked.update(matching)
+        else:
+            blocked.update(range(len(all_items)))
+
+    modified = False
+
+    def guard_item(item: dict[str, Any], idx: int) -> dict[str, Any]:
+        nonlocal modified
+        copy = dict(item)
+        if idx in blocked and "qty" in copy:
+            value = _bounded_quantity_number(copy["qty"])
+            if value not in confirmed:
+                del copy["qty"]
+                modified = True
+        return copy
+
+    items = tuple(guard_item(item, idx) for idx, item in enumerate(projection.items))
+    offset = len(projection.items)
+    groups = []
+    for group in projection.detail_groups:
+        group_items = [
+            guard_item(item, offset + idx)
+            for idx, item in enumerate(group["items"])
+        ]
+        offset += len(group_items)
+        groups.append({**group, "items": group_items})
+    return replace(projection, items=items, detail_groups=tuple(groups)) if modified else projection
+
+
+def _recover_unambiguous_single_item_quantity(
+    message: str, projection: B66QuoteConversationProjection
+) -> B66QuoteConversationProjection:
+    """Recover ONE *exact customer-stated* quantity omitted by B14.
+
+    #3733: a live model returned qty missing even though the customer said
+    "배관 100미터". This deterministic repair uses the customer utterance,
+    not a model's numeric estimate. Only one named item and one unqualified,
+    contiguous number+unit are eligible. All uncertain cases remain missing.
+    Follow-up messages cannot silently override a later customer correction.
+    """
+    if len(projection.items) != 1 or projection.detail_groups or "\n추가 질문:" in message:
+        return projection
+    item = projection.items[0]
+    name = item.get("name")
+    if not isinstance(name, str) or not name.strip():
+        return projection
+    matches = list(_QUANTITY_PHRASE_RE.finditer(message))
+    if len(matches) != 1:
+        return projection
+    hit = matches[0]
+    if hit.group("qualifier") or hit.group("upper") or hit.group("suffix"):
+        return projection
+    # Don't mistake a unit prefix of another token ("mL", "EA123") for a
+    # complete quantity unit. Ambiguous suffixes are never filled in.
+    if hit.end() < len(message) and message[hit.end()].isalnum():
+        return projection
+    local = re.split(r"[,，;\n]", message[max(0, hit.start() - 100):hit.start()])[-1]
+    if name not in local:
+        return projection
+    quantity = _bounded_quantity_number(hit.group("lower"))
+    if quantity is None or quantity <= 0 or quantity > 999999:
+        return projection
+    current = _bounded_quantity_number(item.get("qty"))
+    if current is not None and current == quantity:
+        return projection
+    updated = dict(item)
+    if current is None:
+        # The customer stated this number exactly. No price, tax or any other
+        # field is inferred; the existing missing-field gate still applies.
+        updated["qty"] = int(quantity) if quantity.is_integer() else quantity
+    else:
+        # Model output contradicted a single explicit customer count. Reject
+        # the inconsistent model quantity rather than choose a number silently.
+        updated.pop("qty", None)
+    return replace(projection, items=(updated,))
+
+
 class B66QuoteConversationInterpreter:
     """One bounded model call for variable extraction only."""
 
@@ -586,6 +780,7 @@ class B66QuoteConversationInterpreter:
         message: str,
         skill: dict[str, Any],
         model_id: str | None = None,
+        reasoning_level: str | None = None,
     ) -> B66QuoteConversationProjection:
         if not isinstance(message, str):
             raise B66QuoteConversationError("invalid_message")
@@ -597,12 +792,17 @@ class B66QuoteConversationInterpreter:
             # Legacy isolated quote parser clients keep their original
             # completion shape. Production B66 passes the selected exact ID
             # as a separate keyword, never extracted from customer text.
+            # The reasoning level is forwarded the same way and is validated
+            # upstream, so this boundary never re-decides or substitutes it.
             selected_kw = {"model_id": model_id} if model_id is not None else {}
+            call_kwargs = dict(selected_kw)
+            if reasoning_level is not None:
+                call_kwargs["reasoning_level"] = reasoning_level
             result = await self._client.complete(
                 [{"role": "user", "content": clean}],
                 additional_system_context=prompt,
                 attachments=(),
-                **selected_kw,
+                **call_kwargs,
             )
         except Exception as exc:
             # First-MVP resilience boundary (#3391): keep every existing
@@ -624,17 +824,23 @@ class B66QuoteConversationInterpreter:
             if schema.get("taxMode") is not True:
                 raw_fallback.pop("taxMode", None)
             projection = normalize_conversation_output(raw_fallback)
+            projection = _guard_unconfirmed_approximate_quantities(clean, projection)
+            projection = _recover_unambiguous_single_item_quantity(clean, projection)
             return replace(
                 projection,
                 missing=_server_missing_fields(projection, skill),
+                result_origin="deterministic_fallback",
             )
         if not isinstance(result, dict):
             raise B66QuoteConversationError("invalid_model_output")
         answer = result.get("answer")
         if not isinstance(answer, str):
             raise B66QuoteConversationError("invalid_model_output")
-        projection = normalize_conversation_output(answer)
+        projection = normalize_conversation_output(answer, server_derives_missing=True)
+        projection = _guard_unconfirmed_approximate_quantities(clean, projection)
+        projection = _recover_unambiguous_single_item_quantity(clean, projection)
         return replace(
             projection,
             missing=_server_missing_fields(projection, skill),
+            result_origin="registered_model_completion",
         )

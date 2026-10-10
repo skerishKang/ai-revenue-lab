@@ -55,6 +55,33 @@
       "credential_source": "platform_secret",
       "credential_binding_name": "PADIEM_SENSENOVA_API_KEY",
       "enabled": true
+    },
+    "experiential": {
+      "base_origin": "https://api.experientiallabs.ai/v1",
+      "allowed_hosts": [
+        "api.experientiallabs.ai"
+      ],
+      "credential_source": "platform_secret",
+      "credential_binding_name": "PADIEM_EXLAB_API_KEY",
+      "enabled": true
+    },
+    "kira": {
+      "base_origin": "https://kiraai.vn/api/v1",
+      "allowed_hosts": [
+        "kiraai.vn"
+      ],
+      "credential_source": "platform_secret",
+      "credential_binding_name": "PADIEM_KIRAAI_API_KEY",
+      "enabled": true
+    },
+    "modelscope": {
+      "base_origin": "https://api-inference.modelscope.cn/v1",
+      "allowed_hosts": [
+        "api-inference.modelscope.cn"
+      ],
+      "credential_source": "platform_secret",
+      "credential_binding_name": "PADIEM_MODELSCOPE_API_KEY",
+      "enabled": true
     }
   },
   "models": [
@@ -209,6 +236,55 @@
       "output_price_usd_per_1m": null,
       "source": "sensenova_token_api_measured",
       "source_checked_at": "2026-09-06",
+      "enabled": true
+    },
+    {
+      "id": "experiential/qwen3.8-flash-next-uncensored",
+      "provider_id": "experiential",
+      "upstream_model": "qwen3.8-flash-next-uncensored",
+      "display_name": "ExLab: Qwen3.8 Flash Next Uncensored",
+      "provider_name": "Experiential Labs",
+      "capabilities": [
+        "chat",
+        "coding"
+      ],
+      "context_window": 262144,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "experiential_public_model_detail_2026-10-10 (GET /api/models/qwen3.8-flash-next-uncensored)",
+      "source_checked_at": "2026-10-10",
+      "enabled": true
+    },
+    {
+      "id": "kira/qwen3.8-flash-free",
+      "provider_id": "kira",
+      "upstream_model": "qwen3.8-flash-free",
+      "display_name": "Kira: Qwen3.8 Flash Free",
+      "provider_name": "Kira AI",
+      "capabilities": [
+        "chat"
+      ],
+      "context_window": 1000000,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "kiraai.vn/models/qwen3.8-flash-free + verified direct Kira HTTP200 (#4018); current free promotion, not permanent price guarantee",
+      "source_checked_at": "2026-10-10",
+      "enabled": true
+    },
+    {
+      "id": "modelscope/deepseek-ai/DeepSeek-V4.1-Flash",
+      "provider_id": "modelscope",
+      "upstream_model": "deepseek-ai/DeepSeek-V4.1-Flash",
+      "display_name": "ModelScope: DeepSeek V4.1 Flash",
+      "provider_name": "ModelScope",
+      "capabilities": [
+        "chat"
+      ],
+      "context_window": 0,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "https://www.modelscope.cn/models/deepseek-ai/DeepSeek-V4.1-Flash",
+      "source_checked_at": "2026-10-10",
       "enabled": true
     }
   ],

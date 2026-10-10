@@ -14,6 +14,8 @@ from .b14_execution import (
     B14ExecutionResult,
     B14RouteMetadata,
     B14RoutingOptions,
+    NATIVE_MODEL_PARAMETER_FIELDS,
+    _normalize_model_parameters,
 )
 from .contracts import (
     AgentProfile,
@@ -38,6 +40,9 @@ _MODEL_POLICY_FIELDS = frozenset(
         "provider_order",
         "max_attempts",
         "max_retries",
+        # #3977: explicitly requested provider-native overrides. Absent means
+        # no such field is sent; there is no synthesized value in this layer.
+        "model_parameters",
     }
 )
 
@@ -122,7 +127,7 @@ def _compose_system_instruction(request: "ExecutionRequest") -> str | None:
 
 def _normalize_model_policy(
     agent: AgentProfile,
-) -> tuple[str, float, B14RoutingOptions]:
+) -> tuple[str, float | None, B14RoutingOptions]:
     policy = agent.model_policy
     unknown = set(policy) - _MODEL_POLICY_FIELDS
     if unknown:
@@ -139,8 +144,11 @@ def _normalize_model_policy(
             "model_policy.model is required and must be an explicit non-empty model route"
         )
 
-    temperature = policy.get("temperature", 0.2)
-    if isinstance(temperature, bool) or not isinstance(temperature, (int, float)):
+    # No implied 0.2: omitted policy delegates to the selected provider.
+    temperature = policy.get("temperature")
+    if temperature is not None and (
+        isinstance(temperature, bool) or not isinstance(temperature, (int, float))
+    ):
         raise ValueError("model_policy.temperature must be numeric")
 
     provider_order_value = policy.get("provider_order")
@@ -170,7 +178,30 @@ def _normalize_model_policy(
         max_attempts=max_attempts,
         max_retries=max_retries,
     )
-    return model.strip(), float(temperature), routing
+    return model.strip(), (float(temperature) if temperature is not None else None), routing
+
+
+def _native_model_parameters(agent: AgentProfile) -> Mapping[str, Any]:
+    """Return the caller's explicit provider-native overrides, validated.
+
+    #3977: this layer checks the closed wire vocabulary only. Whether the
+    exact served model accepts a value is B14 capability authority and is
+    re-validated on the request body at the gateway, so a value can never be
+    invented, widened or quietly discarded here. An omitted policy key yields an
+    empty mapping, which contributes nothing to the request.
+    """
+    raw = agent.model_policy.get("model_parameters")
+    if raw is None:
+        return MappingProxyType({})
+    if not isinstance(raw, Mapping):
+        raise ValueError("model_policy.model_parameters must be a mapping")
+    unknown = {key for key in raw if key not in NATIVE_MODEL_PARAMETER_FIELDS}
+    if unknown:
+        raise ValueError(
+            "unsupported model_policy.model_parameters fields: "
+            + ", ".join(sorted(map(str, unknown)))
+        )
+    return _normalize_model_parameters(raw)
 
 
 def _error_class_for_b14(code: str) -> ErrorClass:
@@ -392,6 +423,7 @@ class ExecutionRuntime:
         try:
             system_instruction = _compose_system_instruction(request)
             model, temperature, routing = _normalize_model_policy(request.agent)
+            model_parameters = _native_model_parameters(request.agent)
             messages = request.messages
             if system_instruction is not None:
                 messages = (
@@ -404,6 +436,7 @@ class ExecutionRuntime:
                 temperature=temperature,
                 max_tokens=request.agent.max_tokens,
                 routing=routing,
+                model_parameters=model_parameters,
             )
         except ValueError:
             metadata = self._metadata(

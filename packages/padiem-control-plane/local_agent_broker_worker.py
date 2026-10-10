@@ -2,21 +2,14 @@ from __future__ import annotations
 from typing import Callable, TypeVar
 
 from workers import DurableObject, Response, WorkerEntrypoint
-from padiem_control_plane.local_agent_broker_http import (
-    DurableLocalAgentSessionRecord,
-    LocalAgentMaterialResolutionRequest,
-)
+from padiem_control_plane.local_agent_broker_http import DurableLocalAgentSessionRecord, LocalAgentMaterialResolutionRequest
 from local_agent_broker_device_http import LocalAgentBrokerDeviceHttpService
 from local_agent_broker_durable_runtime import LocalAgentBrokerDurableRuntime
-from local_agent_broker_material_store import (
-    MAX_DURABLE_COMMAND_MATERIAL_BYTES,
-    CloudflareDurableObjectCommandMaterialStore,
-)
+from local_agent_broker_material_store import MAX_DURABLE_COMMAND_MATERIAL_BYTES, CloudflareDurableObjectCommandMaterialStore
 from local_agent_broker_private_http_bridge import handle_private_device_fetch
+from local_agent_broker_office_chunks import compose_broker_office_chunks, read_broker_office_part_rpc
 from local_agent_broker_sql_state import (
-    CloudflareDurableObjectHttpSessionState,
-    CloudflareDurableObjectSerializedStateBackend,
-    safe_ref,
+    CloudflareDurableObjectHttpSessionState, CloudflareDurableObjectSerializedStateBackend, safe_ref,
 )
 
 _T = TypeVar("_T")
@@ -33,6 +26,10 @@ class LocalAgentBrokerDurableObject(DurableObject):
         self._state_port = self._runtime.state_port
         self.http_state = self._runtime.http_state
         self.material_store = self._runtime.material_store
+        self.office_chunks = compose_broker_office_chunks(
+            storage=ctx.storage, state_port=self._runtime.state_port,
+            authority_ref=self._runtime.authority_ref(), env=env,
+        )
         self._device_http = LocalAgentBrokerDeviceHttpService(
             state_port=self._runtime.state_port,
             pepper=str(env.LOCAL_AGENT_BROKER_PEPPER).encode("utf-8"),
@@ -41,6 +38,7 @@ class LocalAgentBrokerDurableObject(DurableObject):
             http_state=self._runtime.http_state,
             material_resolver=self._runtime.material_store,
             session_open_transaction=self._storage.transactionSync,
+            office_chunks=self.office_chunks,
         )
 
     def _authority_ref(self) -> str:
@@ -100,6 +98,9 @@ class LocalAgentBrokerDurableObject(DurableObject):
     async def terminal_command_result(self, payload: dict) -> dict:  # #3139 read-only RPC
         return self._runtime.terminal_command_result(payload)
 
+    async def read_office_artifact_part(self, payload: dict) -> dict:
+        return read_broker_office_part_rpc(self.office_chunks, payload)
+
     async def fetch(self, request):
         del request
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
@@ -129,10 +130,7 @@ class Default(WorkerEntrypoint):
     async def open_session(self, payload: dict) -> dict:
         return await self._stub().open_session(payload)
 
-    # #3127 — the product command path is the atomic one. The split
-    # `enqueue_command` / `store_command_material` pair is deliberately absent
-    # here: it would let a caller write a durable command with no material. Both
-    # stay on the Durable Object as internal composition, unreachable from here.
+    # #3127: only atomic enqueue+material is public through this gateway.
     async def enqueue_command_with_material(self, payload: dict, material: dict) -> dict:
         return await self._stub().enqueue_command_with_material(payload, material)
 
@@ -162,6 +160,9 @@ class Default(WorkerEntrypoint):
 
     async def terminal_command_result(self, payload: dict) -> dict:
         return await self._stub().terminal_command_result(payload)
+
+    async def read_office_artifact_part(self, payload: dict) -> dict:
+        return await self._stub().read_office_artifact_part(payload)
 
     async def fetch(self, request):
         return await handle_private_device_fetch(request, self._stub)

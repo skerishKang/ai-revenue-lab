@@ -1,0 +1,1309 @@
+name: B62 Unified Browser QA
+
+# One PR workflow run instead of 16; names of the original 16 QA jobs remain intact.
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      lane:
+        description: Select one B62 browser QA lane, or all
+        required: true
+        type: choice
+        default: all
+        options:
+          - all
+          - accessibility-browser-qa
+          - auth-history-browser-qa
+          - browser-qa
+          - conversation-delete-browser-qa
+          - conversation-export-browser-qa
+          - deep-research-browser-qa
+          - document-browser-qa
+          - error-retry-browser-qa
+          - image-browser-qa
+          - mobile-touch-target-qa
+          - project-delete-browser-qa
+          - project-files-browser-qa
+          - projects-browser-qa
+          - saved-outputs-browser-qa
+          - structured-answer-browser-qa
+          - web-search-browser-qa
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: b62-unified-browser-qa-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    outputs:
+      accessibility_browser_qa: ${{ steps.classify.outputs.accessibility_browser_qa }}
+      auth_history_browser_qa: ${{ steps.classify.outputs.auth_history_browser_qa }}
+      browser_qa: ${{ steps.classify.outputs.browser_qa }}
+      conversation_delete_browser_qa: ${{ steps.classify.outputs.conversation_delete_browser_qa }}
+      conversation_export_browser_qa: ${{ steps.classify.outputs.conversation_export_browser_qa }}
+      deep_research_browser_qa: ${{ steps.classify.outputs.deep_research_browser_qa }}
+      document_browser_qa: ${{ steps.classify.outputs.document_browser_qa }}
+      error_retry_browser_qa: ${{ steps.classify.outputs.error_retry_browser_qa }}
+      image_browser_qa: ${{ steps.classify.outputs.image_browser_qa }}
+      mobile_touch_target_qa: ${{ steps.classify.outputs.mobile_touch_target_qa }}
+      project_delete_browser_qa: ${{ steps.classify.outputs.project_delete_browser_qa }}
+      project_files_browser_qa: ${{ steps.classify.outputs.project_files_browser_qa }}
+      projects_browser_qa: ${{ steps.classify.outputs.projects_browser_qa }}
+      saved_outputs_browser_qa: ${{ steps.classify.outputs.saved_outputs_browser_qa }}
+      structured_answer_browser_qa: ${{ steps.classify.outputs.structured_answer_browser_qa }}
+      web_search_browser_qa: ${{ steps.classify.outputs.web_search_browser_qa }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Regression check for QA path ownership
+        run: python -m unittest discover -s .github/tests -p test_b62_browser_qa_unified.py -v
+      # Source-only test; no browser install or new CI runner.
+      - name: Regression check for bounded visual tail and fail-closed fan-in
+        run: python -m unittest discover -s .github/tests -p test_3989_b62_browser_tail_parallel.py -v
+      - name: Select jobs for changed PR paths
+        id: classify
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          B62_MANUAL_LANE: ${{ inputs.lane }}
+        run: python .github/scripts/b62_browser_qa_path_plan.py
+
+  accessibility-browser-qa:
+    needs: plan
+    if: ${{ needs.plan.outputs.accessibility_browser_qa == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PADIEM_CHAT_RUNTIME_MODE: mock
+      PADIEM_CHAT_LIVE_ENABLED: 'false'
+      PADIEM_CHAT_WEB_PROVIDER: off
+      B62_A11Y_QA_BASE_URL: http://127.0.0.1:8773
+      B62_A11Y_QA_OUT_DIR: ../../.tmp/b62-accessibility-browser-qa
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: '0.12.5'
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Resolve B62
+        run: uv sync --extra dev
+      # Full B62 unit regression already runs in b62-padiem-chat-ci.yml for
+      # every apps/padiem-chat/** PR change. Keep this lane browser-specific.
+      - name: Install pinned Playwright
+        run: uv pip install 'playwright==1.55.0'
+      # Share the pinned browser across independent B62 QA workflows.
+      # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Cache pinned Playwright Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      - name: Install Chromium runtime
+        run: uv run playwright install --with-deps chromium
+      - name: Start mock Padiem Chat
+        run: |
+          set -euo pipefail
+          uv run uvicorn app.main:app --host 127.0.0.1 --port 8773 > /tmp/b62-a11y-browser-server.log 2>&1 &
+          echo $! > /tmp/b62-a11y-browser-server.pid
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8773/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/b62-a11y-browser-server.log
+          exit 1
+      - name: Desktop and mobile accessibility QA
+        run: uv run python ../../.github/scripts/b62_accessibility_browser_qa.py
+      - name: All-theme small-type accessibility QA
+        run: uv run python ../../.github/scripts/b62_small_type_accessibility_qa.py
+      - name: All-theme product confirmation dialog QA
+        run: uv run python ../../.github/scripts/b62_confirm_dialog_browser_qa.py
+      - name: Print QA report
+        if: always()
+        run: |
+          if [ -f ../../.tmp/b62-accessibility-browser-qa/report.json ]; then
+            cat ../../.tmp/b62-accessibility-browser-qa/report.json
+          fi
+          if [ -f ../../.tmp/b62-accessibility-browser-qa/small-type-accessibility-report.json ]; then
+            cat ../../.tmp/b62-accessibility-browser-qa/small-type-accessibility-report.json
+          fi
+          if [ -f ../../.tmp/b62-accessibility-browser-qa/confirm-dialog-report.json ]; then
+            cat ../../.tmp/b62-accessibility-browser-qa/confirm-dialog-report.json
+          fi
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-accessibility-browser-qa
+          path: .tmp/b62-accessibility-browser-qa
+          if-no-files-found: error
+          retention-days: 14
+
+  auth-history-browser-qa:
+    needs: plan
+    if: ${{ needs.plan.outputs.auth_history_browser_qa == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    env:
+      PADIEM_CHAT_RUNTIME_MODE: mock
+      PADIEM_CHAT_LIVE_ENABLED: "false"
+      PADIEM_CHAT_WEB_PROVIDER: off
+      B62_AUTH_HISTORY_QA_BASE_URL: http://127.0.0.1:8769
+      B62_AUTH_HISTORY_QA_OUT_DIR: ../../.tmp/b62-auth-history-browser-qa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Resolve B62
+        run: uv sync --extra dev
+      - name: Run auth/history and account-session contract tests
+        run: uv run pytest -q tests/test_auth_history.py tests/test_b62_1816_account_session_presentation.py
+      - name: Install pinned Playwright
+        run: uv pip install 'playwright==1.55.0'
+      # Share the pinned browser across independent B62 QA workflows.
+      # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Cache pinned Playwright Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      - name: Install Chromium runtime
+        run: uv run playwright install --with-deps chromium
+      - name: Start mock Padiem Chat
+        run: |
+          set -euo pipefail
+          uv run uvicorn app.main:app --host 127.0.0.1 --port 8769 > /tmp/b62-auth-history-server.log 2>&1 &
+          echo $! > /tmp/b62-auth-history-server.pid
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8769/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/b62-auth-history-server.log
+          exit 1
+      - name: Desktop and mobile authenticated history QA
+        run: uv run python ../../.github/scripts/b62_auth_history_browser_qa.py
+      - name: Account and session presentation QA
+        run: |
+          set -euo pipefail
+
+          # Keep the fast, already-stable cases parallel. Expired-session probes
+          # mutate the same account presentation surface through two browser
+          # projection layers and are intentionally serialized so a failing
+          # Chromium process cannot poison sibling Playwright pipes or hide the
+          # primary diagnostic behind xargs/EPIPE noise.
+          stable_cases_file="$(mktemp)"
+          for theme in light dark cinematic padiem-home padiem-glass; do
+            for viewport in desktop mobile; do
+              for account_case in signed unavailable; do
+                printf '%s %s %s\n' "$theme" "$viewport" "$account_case" >> "$stable_cases_file"
+              done
+            done
+          done
+
+          xargs -r -P 4 -n 3 bash -c '
+            set -euo pipefail
+            theme="$1"
+            viewport="$2"
+            account_case="$3"
+            echo "RUN_ACCOUNT_SESSION_CASE=${theme}-${viewport}-${account_case}"
+            timeout 30s uv run python ../../.github/scripts/b62_account_session_browser_qa.py \
+              --theme "$theme" \
+              --viewport "$viewport" \
+              --case "$account_case"
+          ' _ < "$stable_cases_file"
+
+          for theme in light dark cinematic padiem-home padiem-glass; do
+            for viewport in desktop mobile; do
+              echo "RUN_ACCOUNT_SESSION_CASE=${theme}-${viewport}-expired"
+              timeout 30s uv run python ../../.github/scripts/b62_account_session_browser_qa.py \
+                --theme "$theme" \
+                --viewport "$viewport" \
+                --case expired
+            done
+          done
+
+          timeout 30s uv run python ../../.github/scripts/b62_account_session_browser_qa.py \
+            --theme light \
+            --viewport desktop \
+            --case english-expired
+      - name: Print QA reports
+        if: always()
+        run: |
+          if [ -f ../../.tmp/b62-auth-history-browser-qa/report.json ]; then
+            cat ../../.tmp/b62-auth-history-browser-qa/report.json
+          fi
+          for report in ../../.tmp/b62-auth-history-browser-qa/account-session-*.json; do
+            if [ -f "$report" ]; then
+              echo "=== $report ==="
+              cat "$report"
+            fi
+          done
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-auth-history-browser-qa
+          path: .tmp/b62-auth-history-browser-qa
+          if-no-files-found: error
+          retention-days: 14
+
+  browser-qa:
+    needs: plan
+    if: ${{ needs.plan.outputs.browser_qa == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    env:
+      PADIEM_CHAT_RUNTIME_MODE: mock
+      PADIEM_CHAT_LIVE_ENABLED: "false"
+      B62_QA_BASE_URL: http://127.0.0.1:8765
+      B62_QA_OUT_DIR: ../../.tmp/b62-browser-qa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Resolve B62
+        run: uv sync --extra dev
+      - name: Install pinned Playwright
+        run: uv pip install 'playwright==1.55.0'
+      # Share the pinned browser across independent B62 QA workflows.
+      # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Cache pinned Playwright Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      - name: Install Chromium runtime
+        run: uv run playwright install --with-deps chromium
+      - name: Start mock Padiem Chat
+        run: |
+          set -euo pipefail
+          uv run uvicorn app.main:app --host 127.0.0.1 --port 8765 > /tmp/b62-browser-server.log 2>&1 &
+          echo $! > /tmp/b62-browser-server.pid
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8765/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/b62-browser-server.log
+          exit 1
+      - name: Desktop and mobile browser QA
+        run: uv run python ../../.github/scripts/b62_browser_visual_qa.py
+      - name: Sidebar and home IA browser QA
+        run: uv run python ../../.github/scripts/b62_sidebar_ia_browser_qa.py
+      - name: Provider-neutral mode presentation browser QA
+        run: uv run python ../../.github/scripts/b62_mode_presentation_browser_qa.py
+      - name: Shared capability presentation browser QA
+        run: uv run python ../../.github/scripts/b62_capability_presentation_browser_qa.py
+      - name: Composer and response interaction polish browser QA
+        run: uv run python ../../.github/scripts/b62_interaction_polish_browser_qa.py
+      - name: Product surface v2 certification browser QA
+        run: uv run python ../../.github/scripts/b62_product_surface_certification_browser_qa.py
+      - name: Post-certification long-answer and mobile hardening QA
+        run: uv run python ../../.github/scripts/b62_post_certification_browser_qa.py
+      - name: Settled product certification evidence QA
+        run: uv run python ../../.github/scripts/b62_product_surface_certification_evidence_qa.py
+      # #3989: three source-invariant visual suites own separate page contexts
+      # and disjoint report names. Run at most two browsers concurrently in the
+      # *same* CI job to preserve its existing required status and artifact.
+      # Wrapper is fail-closed: every suite must run and all three must pass.
+      - name: Glass zoom, shell, and gutter visual QA (all three, bounded parallel)
+        run: uv run python ../../.github/scripts/b62_browser_qa_tail_parallel.py
+      - name: Print QA report
+        if: always()
+        run: |
+          if [ -f ../../.tmp/b62-browser-qa/report.json ]; then
+            cat ../../.tmp/b62-browser-qa/report.json
+          fi
+          if [ -f ../../.tmp/b62-browser-qa/sidebar-ia-report.json ]; then
+            cat ../../.tmp/b62-browser-qa/sidebar-ia-report.json
+          fi
+          if [ -f ../../.tmp/b62-browser-qa/mode-presentation-report.json ]; then
+            cat ../../.tmp/b62-browser-qa/mode-presentation-report.json
+          fi
+          if [ -f ../../.tmp/b62-browser-qa/capability-presentation-report.json ]; then
+            cat ../../.tmp/b62-browser-qa/capability-presentation-report.json
+          fi
+          if [ -f ../../.tmp/b62-browser-qa/interaction-polish-report.json ]; then
+            cat ../../.tmp/b62-browser-qa/interaction-polish-report.json
+          fi
+          if [ -f ../../.tmp/b62-browser-qa/product-surface-certification-report.json ]; then
+            cat ../../.tmp/b62-browser-qa/product-surface-certification-report.json
+          fi
+          if [ -f ../../.tmp/b62-browser-qa/post-certification-hardening-report.json ]; then
+            cat ../../.tmp/b62-browser-qa/post-certification-hardening-report.json
+          fi
+          if [ -f ../../.tmp/b62-browser-qa/glass-zoom-report.json ]; then
+            cat ../../.tmp/b62-browser-qa/glass-zoom-report.json
+          fi
+          if [ -f ../../.tmp/b62-browser-qa/shared-gutter-report.json ]; then
+            cat ../../.tmp/b62-browser-qa/shared-gutter-report.json
+          fi
+          if [ -f ../../.tmp/b62-browser-qa/glass-shell-report.json ]; then
+            cat ../../.tmp/b62-browser-qa/glass-shell-report.json
+          fi
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-browser-visual-qa
+          path: .tmp/b62-browser-qa
+          if-no-files-found: error
+          retention-days: 14
+
+  conversation-delete-browser-qa:
+    needs: plan
+    if: ${{ needs.plan.outputs.conversation_delete_browser_qa == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    env:
+      PADIEM_CHAT_RUNTIME_MODE: mock
+      PADIEM_CHAT_LIVE_ENABLED: "false"
+      PADIEM_CHAT_WEB_PROVIDER: off
+      B62_CONVERSATION_DELETE_QA_BASE_URL: http://127.0.0.1:8775
+      B62_CONVERSATION_DELETE_QA_OUT_DIR: ../../.tmp/b62-conversation-delete-browser-qa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Resolve B62
+        run: uv sync --extra dev
+      - name: Run auth/history deletion contracts
+        run: uv run pytest -q tests/test_auth_history.py
+      - name: Install pinned Playwright
+        run: uv pip install 'playwright==1.55.0'
+      # Share the pinned browser across independent B62 QA workflows.
+      # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Cache pinned Playwright Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      - name: Install Chromium runtime
+        run: uv run playwright install --with-deps chromium
+      - name: Start mock Padiem Chat
+        run: |
+          set -euo pipefail
+          uv run uvicorn app.main:app --host 127.0.0.1 --port 8775 > /tmp/b62-conversation-delete-browser-server.log 2>&1 &
+          echo $! > /tmp/b62-conversation-delete-browser-server.pid
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8775/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/b62-conversation-delete-browser-server.log
+          exit 1
+      - name: Desktop and mobile conversation deletion QA
+        run: uv run python ../../.github/scripts/b62_conversation_delete_browser_qa.py
+      - name: Print QA report
+        if: always()
+        run: |
+          if [ -f ../../.tmp/b62-conversation-delete-browser-qa/report.json ]; then
+            cat ../../.tmp/b62-conversation-delete-browser-qa/report.json
+          fi
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-conversation-delete-browser-qa
+          path: .tmp/b62-conversation-delete-browser-qa
+          if-no-files-found: error
+          retention-days: 14
+
+# Exact-head acceptance gate for #1042. Product/runtime selection remains unchanged.
+
+  conversation-export-browser-qa:
+    needs: plan
+    if: ${{ needs.plan.outputs.conversation_export_browser_qa == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    env:
+      PADIEM_CHAT_RUNTIME_MODE: mock
+      PADIEM_CHAT_LIVE_ENABLED: "false"
+      PADIEM_CHAT_WEB_PROVIDER: off
+      B62_CONVERSATION_EXPORT_QA_BASE_URL: http://127.0.0.1:8777
+      B62_CONVERSATION_EXPORT_QA_OUT_DIR: ../../.tmp/b62-conversation-export-browser-qa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Resolve B62
+        run: uv sync --extra dev
+      - name: Compile conversation export QA
+        run: uv run python -m py_compile ../../.github/scripts/b62_conversation_export_browser_qa.py
+      - name: Run existing Saved Outputs contracts
+        run: uv run pytest -q tests/test_saved_outputs.py
+      - name: Install pinned Playwright
+        run: uv pip install 'playwright==1.55.0'
+      # Share the pinned browser across independent B62 QA workflows.
+      # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Cache pinned Playwright Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      - name: Install Chromium runtime
+        run: uv run playwright install --with-deps chromium
+      - name: Start mock Padiem Chat
+        run: |
+          set -euo pipefail
+          uv run uvicorn app.main:app --host 127.0.0.1 --port 8777 > /tmp/b62-conversation-export-browser-server.log 2>&1 &
+          echo $! > /tmp/b62-conversation-export-browser-server.pid
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8777/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/b62-conversation-export-browser-server.log
+          exit 1
+      - name: Desktop and mobile conversation export QA
+        run: uv run python ../../.github/scripts/b62_conversation_export_browser_qa.py
+      - name: Print QA report
+        if: always()
+        run: |
+          if [ -f ../../.tmp/b62-conversation-export-browser-qa/report.json ]; then
+            cat ../../.tmp/b62-conversation-export-browser-qa/report.json
+          fi
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-conversation-export-browser-qa
+          path: .tmp/b62-conversation-export-browser-qa
+          if-no-files-found: error
+          retention-days: 14
+
+# Branch-only acceptance gate for #1062 while the parallel P2 audit remains read-only.
+
+  deep-research-browser-qa:
+    needs: plan
+    if: ${{ needs.plan.outputs.deep_research_browser_qa == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    env:
+      PADIEM_CHAT_RUNTIME_MODE: mock
+      PADIEM_CHAT_LIVE_ENABLED: "false"
+      PADIEM_CHAT_WEB_PROVIDER: off
+      B62_DEEP_RESEARCH_QA_BASE_URL: http://127.0.0.1:8773
+      B62_DEEP_RESEARCH_QA_OUT_DIR: ../../.tmp/b62-deep-research-browser-qa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Resolve B62
+        run: uv sync --extra dev
+      - name: Deep Research and source contract regression
+        run: uv run pytest -q tests/test_deep_research.py tests/test_search_sources_ui.py
+      - name: Install pinned Playwright
+        run: uv pip install 'playwright==1.55.0'
+      # Share the pinned browser across independent B62 QA workflows.
+      # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Cache pinned Playwright Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      - name: Install Chromium runtime
+        run: uv run playwright install --with-deps chromium
+      - name: Start fail-closed mock Padiem Chat
+        run: |
+          set -euo pipefail
+          uv run uvicorn app.main:app --host 127.0.0.1 --port 8773 > /tmp/b62-deep-research-browser-server.log 2>&1 &
+          echo $! > /tmp/b62-deep-research-browser-server.pid
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8773/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/b62-deep-research-browser-server.log
+          exit 1
+      - name: Desktop and mobile deterministic Deep Research QA
+        run: uv run python ../../.github/scripts/b62_deep_research_browser_qa.py
+      - name: Print QA report
+        if: always()
+        run: |
+          if [ -f ../../.tmp/b62-deep-research-browser-qa/report.json ]; then
+            cat ../../.tmp/b62-deep-research-browser-qa/report.json
+          fi
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-deep-research-browser-qa
+          path: .tmp/b62-deep-research-browser-qa
+          if-no-files-found: error
+          retention-days: 14
+
+  document-browser-qa:
+    needs: plan
+    if: ${{ needs.plan.outputs.document_browser_qa == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    env:
+      PADIEM_CHAT_RUNTIME_MODE: mock
+      PADIEM_CHAT_LIVE_ENABLED: "false"
+      PADIEM_CHAT_WEB_PROVIDER: off
+      B62_DOCUMENT_QA_BASE_URL: http://127.0.0.1:8767
+      B62_DOCUMENT_QA_OUT_DIR: ../../.tmp/b62-document-browser-qa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Resolve B62
+        run: uv sync --extra dev
+      - name: Install pinned Playwright
+        run: uv pip install 'playwright==1.55.0'
+      # Share the pinned browser across independent B62 QA workflows.
+      # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Cache pinned Playwright Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      - name: Install Chromium runtime
+        run: uv run playwright install --with-deps chromium
+      - name: Start mock Padiem Chat
+        run: |
+          set -euo pipefail
+          uv run uvicorn app.main:app --host 127.0.0.1 --port 8767 > /tmp/b62-document-browser-server.log 2>&1 &
+          echo $! > /tmp/b62-document-browser-server.pid
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8767/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/b62-document-browser-server.log
+          exit 1
+      - name: Desktop and mobile document QA
+        run: uv run python ../../.github/scripts/b62_document_browser_qa.py
+      - name: Print QA report
+        if: always()
+        run: |
+          if [ -f ../../.tmp/b62-document-browser-qa/report.json ]; then
+            cat ../../.tmp/b62-document-browser-qa/report.json
+          fi
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-document-browser-qa
+          path: .tmp/b62-document-browser-qa
+          if-no-files-found: error
+          retention-days: 14
+
+  error-retry-browser-qa:
+    needs: plan
+    if: ${{ needs.plan.outputs.error_retry_browser_qa == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    env:
+      PADIEM_CHAT_RUNTIME_MODE: mock
+      PADIEM_CHAT_LIVE_ENABLED: "false"
+      PADIEM_CHAT_WEB_PROVIDER: off
+      B62_ERROR_RETRY_QA_BASE_URL: http://127.0.0.1:8773
+      B62_ERROR_RETRY_QA_OUT_DIR: ../../.tmp/b62-error-retry-browser-qa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Resolve B62
+        run: uv sync --extra dev
+      - name: Run existing browser streaming contract tests
+        run: uv run pytest -q tests/test_browser_streaming_contract.py
+      - name: Install pinned Playwright
+        run: uv pip install 'playwright==1.55.0'
+      # Share the pinned browser across independent B62 QA workflows.
+      # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Cache pinned Playwright Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      # #3989: pilot Ubuntu's canonical archive when the hosted Azure mirror
+      # slows font downloads. The complete Playwright OS dependency installer
+      # remains mandatory and unchanged (no --with-deps bypass).
+      - name: Select Ubuntu archive for Playwright OS dependencies (pilot)
+        run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
+      - name: Install Chromium runtime
+        run: uv run playwright install --with-deps chromium
+      - name: Start mock Padiem Chat
+        run: |
+          set -euo pipefail
+          uv run uvicorn app.main:app --host 127.0.0.1 --port 8773 > /tmp/b62-error-retry-browser-server.log 2>&1 &
+          echo $! > /tmp/b62-error-retry-browser-server.pid
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8773/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/b62-error-retry-browser-server.log
+          exit 1
+      - name: Desktop and mobile error retry QA
+        run: uv run python ../../.github/scripts/b62_error_retry_browser_qa.py
+      - name: Print QA report
+        if: always()
+        run: |
+          if [ -f ../../.tmp/b62-error-retry-browser-qa/report.json ]; then
+            cat ../../.tmp/b62-error-retry-browser-qa/report.json
+          fi
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-error-retry-browser-qa
+          path: .tmp/b62-error-retry-browser-qa
+          if-no-files-found: error
+          retention-days: 14
+
+  image-browser-qa:
+    needs: plan
+    if: ${{ needs.plan.outputs.image_browser_qa == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    env:
+      PADIEM_CHAT_RUNTIME_MODE: mock
+      PADIEM_CHAT_LIVE_ENABLED: "false"
+      PADIEM_CHAT_WEB_PROVIDER: off
+      B62_IMAGE_QA_BASE_URL: http://127.0.0.1:8768
+      B62_IMAGE_QA_OUT_DIR: ../../.tmp/b62-image-browser-qa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Resolve B62
+        run: uv sync --extra dev
+      - name: Install pinned Playwright
+        run: uv pip install 'playwright==1.55.0'
+      # Share the pinned browser across independent B62 QA workflows.
+      # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Cache pinned Playwright Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      - name: Install Chromium runtime
+        run: uv run playwright install --with-deps chromium
+      - name: Start mock Padiem Chat
+        run: |
+          set -euo pipefail
+          uv run uvicorn app.main:app --host 127.0.0.1 --port 8768 > /tmp/b62-image-browser-server.log 2>&1 &
+          echo $! > /tmp/b62-image-browser-server.pid
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8768/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/b62-image-browser-server.log
+          exit 1
+      - name: Desktop and mobile image QA
+        run: uv run python ../../.github/scripts/b62_image_browser_qa.py
+      - name: Print QA report
+        if: always()
+        run: |
+          if [ -f ../../.tmp/b62-image-browser-qa/report.json ]; then
+            cat ../../.tmp/b62-image-browser-qa/report.json
+          fi
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-image-browser-qa
+          path: .tmp/b62-image-browser-qa
+          if-no-files-found: error
+          retention-days: 14
+
+  mobile-touch-target-qa:
+    needs: plan
+    if: ${{ needs.plan.outputs.mobile_touch_target_qa == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PADIEM_CHAT_RUNTIME_MODE: mock
+      PADIEM_CHAT_LIVE_ENABLED: 'false'
+      PADIEM_CHAT_WEB_PROVIDER: off
+      B62_TOUCH_QA_BASE_URL: http://127.0.0.1:8784
+      B62_TOUCH_QA_OUT_DIR: ../../.tmp/b62-mobile-touch-target-qa
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: '0.12.5'
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Resolve B62
+        run: uv sync --extra dev
+      - name: Compile touch-target QA
+        run: uv run python -m py_compile ../../.github/scripts/b62_mobile_touch_target_qa.py
+      - name: Install pinned Playwright
+        run: uv pip install 'playwright==1.55.0'
+      # Share the pinned browser across independent B62 QA workflows.
+      # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Cache pinned Playwright Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      - name: Install Chromium runtime
+        run: uv run playwright install --with-deps chromium
+      - name: Start mock Padiem Chat
+        run: |
+          set -euo pipefail
+          uv run uvicorn app.main:app --host 127.0.0.1 --port 8784 > /tmp/b62-touch-browser-server.log 2>&1 &
+          echo $! > /tmp/b62-touch-browser-server.pid
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8784/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/b62-touch-browser-server.log
+          exit 1
+      - name: Verify 390x844 mobile touch targets
+        run: uv run python ../../.github/scripts/b62_mobile_touch_target_qa.py
+      - name: Print QA report
+        if: always()
+        run: |
+          if [ -f ../../.tmp/b62-mobile-touch-target-qa/report.json ]; then
+            cat ../../.tmp/b62-mobile-touch-target-qa/report.json
+          fi
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-mobile-touch-target-qa
+          path: .tmp/b62-mobile-touch-target-qa
+          if-no-files-found: error
+          retention-days: 14
+
+  project-delete-browser-qa:
+    needs: plan
+    if: ${{ needs.plan.outputs.project_delete_browser_qa == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    env:
+      PADIEM_CHAT_RUNTIME_MODE: mock
+      PADIEM_CHAT_LIVE_ENABLED: "false"
+      PADIEM_CHAT_WEB_PROVIDER: off
+      B62_PROJECT_DELETE_QA_BASE_URL: http://127.0.0.1:8773
+      B62_PROJECT_DELETE_QA_OUT_DIR: ../../.tmp/b62-project-delete-browser-qa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Resolve B62
+        run: uv sync --extra dev
+      - name: Run Projects contract tests
+        run: uv run pytest -q tests/test_projects.py
+      - name: Compile browser QA
+        run: uv run python -m py_compile ../../.github/scripts/b62_project_delete_browser_qa.py
+      - name: Install pinned Playwright
+        run: uv pip install 'playwright==1.55.0'
+      # Share the pinned browser across independent B62 QA workflows.
+      # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Cache pinned Playwright Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      - name: Install Chromium runtime
+        run: uv run playwright install --with-deps chromium
+      - name: Start mock Padiem Chat
+        run: |
+          set -euo pipefail
+          uv run uvicorn app.main:app --host 127.0.0.1 --port 8773 > /tmp/b62-project-delete-browser-server.log 2>&1 &
+          echo $! > /tmp/b62-project-delete-browser-server.pid
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8773/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/b62-project-delete-browser-server.log
+          exit 1
+      - name: Desktop and mobile Project deletion QA
+        run: uv run python ../../.github/scripts/b62_project_delete_browser_qa.py
+      - name: Print QA report
+        if: always()
+        run: |
+          if [ -f ../../.tmp/b62-project-delete-browser-qa/report.json ]; then
+            cat ../../.tmp/b62-project-delete-browser-qa/report.json
+          fi
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-project-delete-browser-qa
+          path: .tmp/b62-project-delete-browser-qa
+          if-no-files-found: error
+          retention-days: 14
+
+  project-files-browser-qa:
+    needs: plan
+    if: ${{ needs.plan.outputs.project_files_browser_qa == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    env:
+      PADIEM_CHAT_RUNTIME_MODE: mock
+      PADIEM_CHAT_LIVE_ENABLED: "false"
+      PADIEM_CHAT_WEB_PROVIDER: off
+      B62_PROJECT_FILES_QA_BASE_URL: http://127.0.0.1:8772
+      B62_PROJECT_FILES_QA_OUT_DIR: ../../.tmp/b62-project-files-browser-qa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Resolve B62
+        run: uv sync --extra dev
+      - name: Run existing document and Project Files contract tests
+        run: uv run pytest -q tests/test_documents.py
+      - name: Install pinned Playwright
+        run: uv pip install 'playwright==1.55.0'
+      # Share the pinned browser across independent B62 QA workflows.
+      # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Cache pinned Playwright Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      - name: Install Chromium runtime
+        run: uv run playwright install --with-deps chromium
+      - name: Start mock Padiem Chat
+        run: |
+          set -euo pipefail
+          uv run uvicorn app.main:app --host 127.0.0.1 --port 8772 > /tmp/b62-project-files-browser-server.log 2>&1 &
+          echo $! > /tmp/b62-project-files-browser-server.pid
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8772/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/b62-project-files-browser-server.log
+          exit 1
+      - name: Desktop and mobile Project Files QA
+        run: uv run python ../../.github/scripts/b62_project_files_browser_qa.py
+      - name: Print QA report
+        if: always()
+        run: |
+          if [ -f ../../.tmp/b62-project-files-browser-qa/report.json ]; then
+            cat ../../.tmp/b62-project-files-browser-qa/report.json
+          fi
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-project-files-browser-qa
+          path: .tmp/b62-project-files-browser-qa
+          if-no-files-found: error
+          retention-days: 14
+
+  projects-browser-qa:
+    needs: plan
+    if: ${{ needs.plan.outputs.projects_browser_qa == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    env:
+      PADIEM_CHAT_RUNTIME_MODE: mock
+      PADIEM_CHAT_LIVE_ENABLED: "false"
+      PADIEM_CHAT_WEB_PROVIDER: off
+      B62_PROJECTS_QA_BASE_URL: http://127.0.0.1:8770
+      B62_PROJECTS_QA_OUT_DIR: ../../.tmp/b62-projects-browser-qa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Resolve B62
+        run: uv sync --extra dev
+      - name: Run existing Projects contract tests
+        run: uv run pytest -q tests/test_projects.py
+      - name: Install pinned Playwright
+        run: uv pip install 'playwright==1.55.0'
+      # Share the pinned browser across independent B62 QA workflows.
+      # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Cache pinned Playwright Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      - name: Install Chromium runtime
+        run: uv run playwright install --with-deps chromium
+      - name: Start mock Padiem Chat
+        run: |
+          set -euo pipefail
+          uv run uvicorn app.main:app --host 127.0.0.1 --port 8770 > /tmp/b62-projects-browser-server.log 2>&1 &
+          echo $! > /tmp/b62-projects-browser-server.pid
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8770/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/b62-projects-browser-server.log
+          exit 1
+      - name: Desktop and mobile Projects QA
+        run: uv run python ../../.github/scripts/b62_projects_browser_qa.py
+      - name: Print QA report
+        if: always()
+        run: |
+          if [ -f ../../.tmp/b62-projects-browser-qa/report.json ]; then
+            cat ../../.tmp/b62-projects-browser-qa/report.json
+          fi
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-projects-browser-qa
+          path: .tmp/b62-projects-browser-qa
+          if-no-files-found: error
+          retention-days: 14
+
+  saved-outputs-browser-qa:
+    needs: plan
+    if: ${{ needs.plan.outputs.saved_outputs_browser_qa == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    env:
+      PADIEM_CHAT_RUNTIME_MODE: mock
+      PADIEM_CHAT_LIVE_ENABLED: "false"
+      PADIEM_CHAT_WEB_PROVIDER: off
+      B62_OUTPUTS_QA_BASE_URL: http://127.0.0.1:8771
+      B62_OUTPUTS_QA_OUT_DIR: ../../.tmp/b62-saved-outputs-browser-qa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Resolve B62
+        run: uv sync --extra dev
+      - name: Run existing Saved Outputs contract tests
+        run: uv run pytest -q tests/test_saved_outputs.py
+      - name: Install pinned Playwright
+        run: uv pip install 'playwright==1.55.0'
+      # Share the pinned browser across independent B62 QA workflows.
+      # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Cache pinned Playwright Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      # #3989: pilot Ubuntu's canonical archive when the hosted Azure mirror
+      # slows font downloads. The complete Playwright OS dependency installer
+      # remains mandatory and unchanged (no --with-deps bypass).
+      - name: Select Ubuntu archive for Playwright OS dependencies (pilot)
+        run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
+      - name: Install Chromium runtime
+        run: uv run playwright install --with-deps chromium
+      - name: Start mock Padiem Chat
+        run: |
+          set -euo pipefail
+          uv run uvicorn app.main:app --host 127.0.0.1 --port 8771 > /tmp/b62-saved-outputs-browser-server.log 2>&1 &
+          echo $! > /tmp/b62-saved-outputs-browser-server.pid
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8771/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/b62-saved-outputs-browser-server.log
+          exit 1
+      - name: Desktop and mobile Saved Outputs QA
+        run: uv run python ../../.github/scripts/b62_saved_outputs_browser_qa.py
+      - name: Print QA report
+        if: always()
+        run: |
+          if [ -f ../../.tmp/b62-saved-outputs-browser-qa/report.json ]; then
+            cat ../../.tmp/b62-saved-outputs-browser-qa/report.json
+          fi
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-saved-outputs-browser-qa
+          path: .tmp/b62-saved-outputs-browser-qa
+          if-no-files-found: error
+          retention-days: 14
+
+  structured-answer-browser-qa:
+    needs: plan
+    if: ${{ needs.plan.outputs.structured_answer_browser_qa == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    env:
+      PADIEM_CHAT_RUNTIME_MODE: mock
+      PADIEM_CHAT_LIVE_ENABLED: "false"
+      PADIEM_CHAT_WEB_PROVIDER: off
+      B62_STRUCTURED_QA_BASE_URL: http://127.0.0.1:8774
+      B62_STRUCTURED_QA_OUT_DIR: ../../.tmp/b62-structured-answer-browser-qa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Resolve B62
+        run: uv sync --extra dev
+      - name: Structured answer regression
+        run: uv run pytest -q tests/test_rich_responses.py tests/test_browser_streaming_rich_integration.py
+      - name: Install pinned Playwright
+        run: uv pip install 'playwright==1.55.0'
+      # Share the pinned browser across independent B62 QA workflows.
+      # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Cache pinned Playwright Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      - name: Install Chromium runtime
+        run: uv run playwright install --with-deps chromium
+      - name: Start fail-closed mock Padiem Chat
+        run: |
+          set -euo pipefail
+          uv run uvicorn app.main:app --host 127.0.0.1 --port 8774 > /tmp/b62-structured-browser-server.log 2>&1 &
+          echo $! > /tmp/b62-structured-browser-server.pid
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8774/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/b62-structured-browser-server.log
+          exit 1
+      - name: Desktop and mobile structured-answer QA
+        run: uv run python ../../.github/scripts/b62_structured_answer_browser_qa.py
+      - name: Print QA report
+        if: always()
+        run: |
+          if [ -f ../../.tmp/b62-structured-answer-browser-qa/report.json ]; then
+            cat ../../.tmp/b62-structured-answer-browser-qa/report.json
+          fi
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-structured-answer-browser-qa
+          path: .tmp/b62-structured-answer-browser-qa
+          if-no-files-found: error
+          retention-days: 14
+
+  web-search-browser-qa:
+    needs: plan
+    if: ${{ needs.plan.outputs.web_search_browser_qa == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    env:
+      PADIEM_CHAT_RUNTIME_MODE: mock
+      PADIEM_CHAT_LIVE_ENABLED: "false"
+      PADIEM_CHAT_WEB_PROVIDER: mock
+      B62_WEB_QA_BASE_URL: http://127.0.0.1:8766
+      B62_WEB_QA_OUT_DIR: ../../.tmp/b62-web-search-browser-qa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Resolve B62
+        run: uv sync --extra dev
+      - name: Install pinned Playwright
+        run: uv pip install 'playwright==1.55.0'
+      # Share the pinned browser across independent B62 QA workflows.
+      # Cache keys pin the Playwright release to prevent binary drift.
+      - name: Cache pinned Playwright Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      - name: Install Chromium runtime
+        run: uv run playwright install --with-deps chromium
+      - name: Start mock-web Padiem Chat
+        run: |
+          set -euo pipefail
+          uv run uvicorn app.main:app --host 127.0.0.1 --port 8766 > /tmp/b62-web-browser-server.log 2>&1 &
+          echo $! > /tmp/b62-web-browser-server.pid
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8766/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/b62-web-browser-server.log
+          exit 1
+      - name: Desktop and mobile mock web-search QA
+        run: uv run python ../../.github/scripts/b62_web_search_browser_qa.py
+      - name: Print QA report
+        if: always()
+        run: |
+          if [ -f ../../.tmp/b62-web-search-browser-qa/report.json ]; then
+            cat ../../.tmp/b62-web-search-browser-qa/report.json
+          fi
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-web-search-browser-qa
+          path: .tmp/b62-web-search-browser-qa
+          if-no-files-found: error
+          retention-days: 14

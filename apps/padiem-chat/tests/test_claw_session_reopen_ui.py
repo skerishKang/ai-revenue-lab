@@ -40,6 +40,8 @@ backend change; fail-closed backend behavior and Chat streaming stay untouched.
 
 from __future__ import annotations
 
+from functools import lru_cache
+
 import json
 import re
 import shutil
@@ -264,7 +266,14 @@ def test_session_action_stays_b54_static_slice_safe() -> None:
     card_block = app.split("claw-run-card-artifact", 1)[1].split("function fetchClawRunHistory", 1)[0]
     assert card_block.count('createElement("button")') == 1
     assert "claw-run-card-download" in card_block
-    assert not re.search(r"open|preview|reopen", card_block, re.IGNORECASE), card_block
+    # #3932 adds a PDF-only read/preview controller, not a session reopening
+    # authority or a second generic document action. Download remains unchanged.
+    assert card_block.count("downloadClawArtifact(artifact.document_id") == 1
+    assert "validHistoricalArtifact?.(artifact)" in card_block
+    assert "viewer?.setHistorical?.(artifact)" in card_block
+    assert "openSavedConversation(sessionConversationId)" not in card_block
+    assert "fetch(" not in card_block and "/api/" not in card_block
+    assert "window.open(" not in card_block and "innerHTML" not in card_block
 
 
 # ── static structural contracts: copy and preserved anchors ────────────────
@@ -664,6 +673,10 @@ function cardWith(summary) {
 """
 
 
+# All consumers assert read-only facts from the same completed real app.js
+# behavior journey. Reuse it once per Python module rather than respawning
+# Node for each test; separate pytest processes still run independent checks.
+@lru_cache(maxsize=1)
 def _run_harness() -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required for the behavioral harness"

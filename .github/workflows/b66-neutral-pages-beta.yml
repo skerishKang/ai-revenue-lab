@@ -14,6 +14,15 @@ on:
       - 'apps/b66-quote-adapter/**'
       - '.github/workflows/b66-neutral-pages-beta.yml'
   workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'Exact current main commit authorized for one B66 Pages release'
+        required: true
+        type: string
+      confirmation:
+        description: 'Type DEPLOY_B66_PAGES_FROM_EXACT_MAIN_ONCE'
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -30,7 +39,7 @@ jobs:
       PROJECT_NAME: quick-quote-kr
       SOURCE_DIR: reference/business-66-padiem-quote-v1
       PRODUCTION_BRANCH: main
-      TARGET_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TARGET_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.target_sha || github.event.pull_request.head.sha || github.sha }}
 
     steps:
       - name: Checkout exact target
@@ -78,13 +87,31 @@ jobs:
           test -f "${SOURCE_DIR}/quote-embed-browser.js"
           test -f "${SOURCE_DIR}/quote-embed.css"
           test -f "apps/b66-quote-adapter/app/file_intake.py"
-          for js_file in _worker.js app.js quote-account-scope.js file-intake.js easy-mode.js quote-template.js quote-template-store.js quote-template-renderer.js quote-template-selection.js quote-template-ui.js quote-template-candidate.js quote-template-cloner.js quote-skill.js quote-skill-store.js quote-skill-candidate.js quote-skill-registration.js quote-template-registration.js quote-registration-session.js quote-skill-ui.js padiem-account.js shell-layout.js cgi-template-v2.js quote-embed-bridge.js quote-embed-browser.js; do
-            node --check "${SOURCE_DIR}/${js_file}"
-          done
+          node "${SOURCE_DIR}/tests/run-b66-contracts.cjs" --syntax
           echo "B66_SHIP_GUARD=PASS"
 
+      - name: B66 full offline tests before any authorized Production mutation
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        working-directory: ${{ env.SOURCE_DIR }}
+        run: node tests/run-b66-contracts.cjs --tests
+
+      - name: Authorize current-main Pages production release
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        env:
+          OPERATOR_CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = 'refs/heads/main'
+          test "${OPERATOR_CONFIRMATION}" = 'DEPLOY_B66_PAGES_FROM_EXACT_MAIN_ONCE'
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'B66_PAGES_EXACT_MAIN_AUTHORIZED=YES'
+
       - name: Confirm Cloudflare credentials
-        if: github.event_name != 'pull_request'
+        if: github.event_name == 'workflow_dispatch'
         shell: bash
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -96,7 +123,7 @@ jobs:
           echo "CLOUDFLARE_CREDENTIALS=PRESENT"
 
       - name: Ensure dedicated Pages project
-        if: github.event_name != 'pull_request'
+        if: github.event_name == 'workflow_dispatch'
         shell: bash
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -118,10 +145,8 @@ jobs:
               echo "EXISTING_PROJECT_REUSED=YES"
               ;;
             404)
-              jq -e '.success == false' "${project_file}" >/dev/null
-              npx --yes wrangler@4 pages project create "${PROJECT_NAME}"                 --production-branch "${PRODUCTION_BRANCH}"
-              echo "PAGES_PROJECT=CREATED"
-              echo "EXISTING_PROJECT_REUSED=NO"
+              echo 'B66 Pages production project is absent; refuse to create an alternate project.' >&2
+              exit 1
               ;;
             *)
               echo "Unexpected Cloudflare Pages project lookup HTTP ${status}." >&2
@@ -130,8 +155,42 @@ jobs:
               ;;
           esac
 
+      - name: Check Cloudflare Pages deployment pacing (read only)
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          deployments_file="$(mktemp)"
+          trap 'rm -f "${deployments_file}"' EXIT
+          http_status="$(curl --silent --show-error --connect-timeout 15 --max-time 60 \
+            --output "${deployments_file}" --write-out '%{http_code}' \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}/deployments?env=production&per_page=20")"
+          test "${http_status}" = '200'
+          jq -e '.success == true and (.result | type) == "array"' "${deployments_file}" >/dev/null
+          latest_created="$(jq -r '[.result[] | select(.environment == "production") | .created_on // empty] | sort | last // empty' "${deployments_file}")"
+          latest_hash="$(jq -r '[.result[] | select(.environment == "production")] | sort_by(.created_on) | last | .deployment_trigger.metadata.commit_hash // empty' "${deployments_file}")"
+          if [ "${latest_hash}" = "${TARGET_SHA}" ]; then
+            echo 'B66_PAGES_EXACT_COMMIT_ALREADY_DEPLOYED=YES; no duplicate deployment.' >&2
+            exit 1
+          fi
+          if [ -n "${latest_created}" ]; then
+            latest_seconds="$(date -u -d "${latest_created}" +%s)"
+            age_seconds="$(( $(date -u +%s) - latest_seconds ))"
+            test "${age_seconds}" -ge 0
+            # Conservative LOCAL guard, not a claimed Cloudflare-published cooldown.
+            if [ "${age_seconds}" -lt 3600 ]; then
+              echo 'B66_PAGES_PACING_BLOCKED=YES (last production deployment under conservative 60-minute gap)' >&2
+              exit 1
+            fi
+          fi
+          echo 'B66_PAGES_READONLY_PACING_PREFLIGHT=PASS'
+
       - name: Deploy exact B66 beta
-        if: github.event_name != 'pull_request'
+        if: github.event_name == 'workflow_dispatch'
         id: deploy
         shell: bash
         env:
@@ -139,6 +198,8 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
           output_file="$(mktemp)"
           clean_output="$(mktemp)"
           trap 'rm -f "${output_file}" "${clean_output}"' EXIT
@@ -157,7 +218,7 @@ jobs:
           echo "DEPLOYMENT_URL=${deployment_url}"
 
       - name: Verify exact deployment and stable user entrypoint
-        if: github.event_name != 'pull_request'
+        if: github.event_name == 'workflow_dispatch'
         shell: bash
         env:
           DEPLOYMENT_URL: ${{ steps.deploy.outputs.url }}
@@ -183,6 +244,26 @@ jobs:
           verify_page "${DEPLOYMENT_URL}/" "${exact_html}"
           verify_page "${expected_apex}" "${apex_html}"
 
+          # An HTML title check alone cannot prove the new customer-input UI
+          # is served. Verify the exact source bytes on the production alias.
+          for asset in padiem-account.js easy-mode.js; do
+            actual_file="$(mktemp)"
+            matched=0
+            for attempt in $(seq 1 12); do
+              if curl -fsS --connect-timeout 5 --max-time 20 \
+                -H 'Cache-Control: no-cache' \
+                "${expected_apex}${asset}?release=${TARGET_SHA}-${attempt}" -o "${actual_file}" \
+                && cmp -s "${SOURCE_DIR}/${asset}" "${actual_file}"; then
+                matched=1
+                break
+              fi
+              sleep 5
+            done
+            rm -f "${actual_file}"
+            test "${matched}" = '1'
+          done
+
+          echo "B66_PAGES_EXACT_CUSTOMER_UI_BYTES=PASS"
           echo "PUBLIC_BYTES_VERIFIED=YES"
           echo "PUBLIC_ENTRYPOINT=${expected_apex}"
           echo "CUSTOM_DOMAIN_MUTATION=0"
@@ -197,8 +278,9 @@ jobs:
             echo "- exact SHA: ${TARGET_SHA}"
             echo "- source: ${SOURCE_DIR}"
             echo "- project: ${PROJECT_NAME}"
-            echo "- PR deployment mutation: ${{ github.event_name == 'pull_request' && '0' || 'main-only' }}"
-            if [ "${{ github.event_name }}" != "pull_request" ]; then
+            echo "- auto-push/PR production mutation: 0"
+            echo "- manual production mutation: ${{ github.event_name == 'workflow_dispatch' && 'exact-main-owner-approved-only' || '0' }}"
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
               echo "- user entrypoint: https://${PROJECT_NAME}.pages.dev/"
               echo "- custom domain mutation: 0"
             fi
@@ -236,65 +318,8 @@ jobs:
         working-directory: ${{ env.SOURCE_DIR }}
         run: |
           set -euo pipefail
-          node --check _worker.js
-          node --check app.js
-          node --check quote-account-scope.js
-          node --check file-intake.js
-          node --check easy-mode.js
-          node --check quote-template.js
-          node --check quote-template-store.js
-          node --check quote-template-renderer.js
-          node --check quote-browser-pdf.js
-          node --check quote-template-selection.js
-          node --check quote-template-ui.js
-          node --check quote-template-candidate.js
-          node --check quote-template-cloner.js
-          node --check quote-skill.js
-          node --check quote-skill-store.js
-          node --check quote-skill-candidate.js
-          node --check quote-skill-registration.js
-          node --check quote-template-registration.js
-          node --check quote-registration-session.js
-          node --check quote-skill-ui.js
-          node --check padiem-account.js
-          node --check shell-layout.js
-          node --check cgi-template-v2.js
-          node --check quote-embed-bridge.js
-          node --check quote-embed-browser.js
-          node tests/quote-core.test.cjs
-          node tests/quote-extraction.test.cjs
-          node tests/quote-history.test.cjs
-          node tests/history-behavior.test.cjs
-          node tests/quote-history-server.test.cjs
-          node tests/history-server-behavior.test.cjs
-          node tests/quote-history-bridge-origin.test.mjs
-          node tests/account-scope-3480.test.cjs
-          node tests/production-draft-safety.test.cjs
-          node tests/file-intake.test.cjs
-          node tests/static-contract.test.cjs
-          node tests/quote-template.test.cjs
-          node tests/quote-template-store.test.cjs
-          node tests/quote-template-renderer.test.cjs
-          node tests/quote-template-selection.test.cjs
-          node tests/quote-template-ui.test.cjs
-          node tests/quote-template-candidate.test.cjs
-          node tests/quote-template-cloner.test.cjs
-          node tests/quote-skill.test.cjs
-          node tests/quote-skill-store.test.cjs
-          node tests/quote-skill-candidate.test.cjs
-          node tests/quote-skill-registration.test.cjs
-          node tests/quote-template-registration.test.cjs
-          node tests/quote-registration-session.test.cjs
-          node tests/quote-skill-ui.test.cjs
-          node tests/quote-embed-bridge.test.cjs
-          node tests/quote-skill-live-analysis.test.cjs
-          node tests/pages-live-intake.test.mjs
-          node tests/padiem-account-bridge.test.mjs
-          node tests/quote-browser-pdf.test.cjs
-          node tests/missing-field-followup.test.cjs
-          node tests/mvp-runtime.test.cjs
-          node tests/cgi-v2.test.cjs
-          node tests/three-pane-shell-contract.test.cjs
+          # Execute all discovered tests, including company-profile and XLSX contracts.
+          node tests/run-b66-contracts.cjs --tests
 
       - name: Run B66 server intake adapter contracts
         shell: bash

@@ -4,7 +4,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 STATIC = ROOT / "apps" / "padiem-chat" / "static"
 QA = ROOT / ".github" / "scripts" / "b62_post_certification_browser_qa.py"
-WORKFLOW = ROOT / ".github" / "workflows" / "b62-browser-visual-qa.yml"
+WORKFLOW = ROOT / ".github" / "workflows" / "b62-browser-qa-unified.yml"
 
 
 def test_long_answer_browser_qa_proves_no_client_truncation_contract() -> None:

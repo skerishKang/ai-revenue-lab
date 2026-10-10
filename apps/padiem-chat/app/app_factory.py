@@ -25,6 +25,7 @@ from .b66_quote_assets import B66QuoteAssetStore, D1B66QuoteAssetMetadataStore
 from .b66_certified_quote_bundle import B66CertifiedQuoteBundleStore
 from .b66_certified_preview import B66CertifiedPreviewStore
 from .b66_certified_pdf_routes import b66_certified_pdf, b66_certified_preview_base
+from .b66_native_sol_routes import b66_native_sol_pdf, b66_native_sol_scope
 from .b66_quote_routes import (
     b66_quote_interpret,
     b66_quote_models,
@@ -46,7 +47,14 @@ from .auth_routes import (
 )
 from .auto_grounding import AutoGroundingService
 from .chat_routes import api_chat, api_chat_stream
-from .claw_general_routes import claw_general_execute
+from .claw_general_routes import claw_general_execute, claw_general_capabilities
+from .claw_artifact_preview_routes import claw_artifact_inline_preview
+from .claw_conversation_artifact_routes import claw_conversation_artifact_followup
+from .claw_durable_drive_output_pipeline import ClawDurableDriveOutputPipeline
+from .claw_office_drive_completion import ClawOfficeDriveCompletion
+from .claw_durable_drive_artifact_routes import (
+    claw_drive_artifact_download, claw_drive_artifact_preview,
+)
 from .claw_routes import (
     claw_approval_decision,
     claw_manual_intake_artifact,
@@ -80,6 +88,12 @@ from .claw_local_access_routes import (
     CLAW_LOCAL_ACCESS_PATH,
     UnconfiguredClawLocalAccessTruthSource,
     claw_local_access,
+)
+from .claw_local_connect_routes import (
+    CLAW_LOCAL_CONNECT_PATH,
+    UnconfiguredClawLocalPairingConnectPort,
+    claw_local_connect,
+    claw_local_connect_status,
 )
 from .claw_task_alert_store import D1ClawTaskAlertStore
 from .claw_automation_store import D1ClawAutomationStore
@@ -133,13 +147,16 @@ STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 async def health(request: Request) -> JSONResponse:
     settings: Settings = request.app.state.settings
     usage_gate: UsageGate = request.app.state.usage_gate
-    web_ready = settings.web_provider in {"mock", "firecrawl"}
+    # Config validation already requires keys for live web providers. This is
+    # configuration readiness, not proof of upstream provider availability.
+    web_ready = settings.web_provider in {"mock", "firecrawl", "daum", "tinyfish", "tinyfish_daum"}
+    research_ready = settings.runtime_mode == "b14" and settings.web_provider in {"mock", "firecrawl"}
     abuse_ready = usage_gate.ready
     return JSONResponse({
         "status": "ok", "app": "padiem-chat", "runtime": settings.runtime_mode,
         "b14_configured": bool(settings.b14_base_url),
         "web_tools_ready": web_ready,
-        "deep_research_ready": settings.runtime_mode == "b14" and web_ready,
+        "deep_research_ready": research_ready,
         "image_attachment_ready": True,
         "text_document_attachment_ready": True,
         "auth_configured": settings.auth_mode != "off",
@@ -178,6 +195,8 @@ def create_app(
     d1_binding=None,
     r2_binding=None,
     claw_p01_adapter=None,
+    claw_drive_artifact_uploader=None,
+    claw_drive_artifact_reader=None,
     claw_telegram_authority=None,
     approved_memory_store: ApprovedMemoryStore | None = None,
     b66_saved_quote_skill_store: SavedQuoteSkillStore | None = None,
@@ -187,6 +206,8 @@ def create_app(
     b66_certified_quote_bundle_store=None,
     b66_certified_preview_store=None,
     b66_pdf_renderer_client=None,
+    b66_native_sol_pdf_client=None,
+    b66_native_sol_releases=None,
     b66_quote_interpreter=None,
     claw_task_alert_store=None,
     calendar_store: CalendarStore | None = None,
@@ -194,6 +215,7 @@ def create_app(
     telemetry_emitter=None,
     claw_p01_continuation_client=None,
     claw_local_access_source=None,
+    claw_local_connect_port=None,
     local_task_result_source=None,
     desktop_device_session_authority=None,
     auth_abuse_store: AuthAbuseStore | None = None,
@@ -283,6 +305,8 @@ def create_app(
         Route("/api/b66/quote/models", b66_quote_models, methods=["GET"]),
         Route("/api/b66/quote/preview-base", b66_certified_preview_base, methods=["GET"]),
         Route("/api/b66/quote/pdf", b66_certified_pdf, methods=["POST"]),
+        Route("/api/b66/quote/native-sol-pdf", b66_native_sol_pdf, methods=["POST"]),
+        Route("/api/b66/quote/native-sol-scope", b66_native_sol_scope, methods=["GET"]),
         Route("/api/b66/quotes", b66_quote_history_list, methods=["GET"]),
         Route("/api/b66/quotes", b66_quote_history_save, methods=["POST"]),
         Route(
@@ -300,6 +324,7 @@ def create_app(
         # #3539: the generic Claw composer runs through the canonical #3382 P01
         # Engine lane. It is a distinct B54 product boundary from manual-intake
         # and has no direct-B14 (/api/chat/stream) fallback.
+        Route("/api/claw/general/capabilities", claw_general_capabilities, methods=["GET"]),
         Route("/api/claw/general", claw_general_execute, methods=["POST"]),
         Route(
             "/api/claw/manual-intake/quote-compare",
@@ -307,7 +332,12 @@ def create_app(
             methods=["POST"],
         ),
         Route("/api/claw/manual-intake/artifact/{document_id}", claw_manual_intake_artifact, methods=["GET"]),
+        # #3932 preview is a separate GET; existing download remains attachment-only.
+        Route("/api/claw/manual-intake/artifact/{document_id}/preview", claw_artifact_inline_preview, methods=["GET"]),
         Route("/api/claw/telegram/ingest/{binding_ref}", claw_telegram_ingest, methods=["POST"]),
+        Route("/api/claw/conversations/{conversation_id}/artifact-followup", claw_conversation_artifact_followup, methods=["GET"]),
+        Route("/api/claw/conversations/{conversation_id}/artifacts/{artifact_id}/download", claw_drive_artifact_download, methods=["GET"]),
+        Route("/api/claw/conversations/{conversation_id}/artifacts/{artifact_id}/preview", claw_drive_artifact_preview, methods=["GET"]),
         Route("/api/claw/runs", claw_runs_history, methods=["GET"]),
         Route("/api/claw/approvals/decision", claw_approval_decision, methods=["POST"]),
         Route("/api/claw/memory/approve", claw_memory_approve, methods=["POST"]),
@@ -337,6 +367,11 @@ def create_app(
         # #3094: the one real read-only source behind the "Connect this computer"
         # panel. Owner-scoped; it pairs nothing and approves nothing.
         Route(CLAW_LOCAL_ACCESS_PATH, claw_local_access, methods=["GET"]),
+        # #3650: the local/nonprod initiating leg. Fail-closed unless the run
+        # composition explicitly installs a connect port; the central #3476
+        # same-origin guard covers it like every cookie-authenticated POST.
+        Route(CLAW_LOCAL_CONNECT_PATH, claw_local_connect, methods=["POST"]),
+        Route(CLAW_LOCAL_CONNECT_PATH, claw_local_connect_status, methods=["GET"]),
         Route("/api/claw/runs/{run_id}/local-result", local_runner_result, methods=["POST"]),
         Route("/api/claw/inbox/{kind}", claw_inbox_list, methods=["GET"]),
         Route("/api/claw/inbox/{kind}/{item_id}", claw_inbox_status, methods=["PATCH"]),
@@ -422,6 +457,31 @@ def create_app(
     # composition root from trusted bindings; None means unconfigured and the
     # execute route fails closed before any transport.
     app.state.claw_p01_adapter = claw_p01_adapter
+    # #3929/#3580: no default Google/Drive WRITE. The CP-authorized host
+    # must explicitly inject an existing approved Drive uploader; mere D1
+    # binding / auth-cookie / model answer can never activate an upload.
+    app.state.claw_durable_drive_output_pipeline = (
+        ClawDurableDriveOutputPipeline(
+            history=history_store, uploader=claw_drive_artifact_uploader
+        )
+        if history_store is not None and claw_drive_artifact_uploader is not None
+        else None
+    )
+    # A verified local Office producer can hand over its two canonical outputs
+    # only when the host has separately injected the approved Drive uploader.
+    # No P01/Office producer or Drive grant is activated by this composition.
+    app.state.claw_office_drive_completion = (
+        ClawOfficeDriveCompletion(
+            pipeline=app.state.claw_durable_drive_output_pipeline
+        )
+        if app.state.claw_durable_drive_output_pipeline is not None
+        else None
+    )
+    # READ is a separate current-grant host capability. WRITE approval never
+    # authorizes browser download; no implicit Worker transport is installed.
+    app.state.claw_drive_artifact_reader = claw_drive_artifact_reader
+    # Explicit trusted server opt-in; no browser-provided activation authority.
+    app.state.claw_live_sse_enabled = False
     # #2961 owner approval decision lane: the same composed Engine client, used
     # only to submit a server-derived decision to the canonical resume route.
     # None keeps the decision route fail-closed before any Engine transport.
@@ -434,6 +494,14 @@ def create_app(
         claw_local_access_source
         if claw_local_access_source is not None
         else UnconfiguredClawLocalAccessTruthSource()
+    )
+    # #3650 local/nonprod connect initiating leg. None keeps the route at its
+    # bounded fail-closed refusal: production never composes one, so no
+    # challenge can be minted there and no pairing store appears.
+    app.state.claw_local_connect = (
+        claw_local_connect_port
+        if claw_local_connect_port is not None
+        else UnconfiguredClawLocalPairingConnectPort()
     )
     # #3139 return leg: the server-owned consumer of a Local Runner terminal
     # result. None keeps the route fail-closed until the Worker root composes
@@ -531,6 +599,10 @@ def create_app(
             _b66_preview_store = None
     app.state.b66_certified_preview_store = _b66_preview_store
     app.state.b66_pdf_renderer_client = b66_pdf_renderer_client
+    # #4117: deliberately not wired from the legacy PDF Worker binding.
+    # Only a separately certified native Sol runtime may populate these.
+    app.state.b66_native_sol_pdf_client = b66_native_sol_pdf_client
+    app.state.b66_native_sol_releases = b66_native_sol_releases
 
     # #2341 Task/Alert inbox: consume the existing migration-010 D1 authority.
     # No schema creation or alternate DB authority is introduced here.

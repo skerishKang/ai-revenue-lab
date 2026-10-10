@@ -14,22 +14,27 @@ from b14_owner_evaluation_registry import (
     authorize_historical_selector, load_current_models, main,
 )
 
-NINE={
+ELEVEN={
     "agnes-ai/agnes-3.0-flash",
     "atria/Atria-Dawn-Preview",
+    "experiential/qwen3.8-flash-next-uncensored",
     "google/gemini-3.1-flash-lite",
     "google/gemini-3.5-flash-lite",
     "google/gemma-4-26b-a4b-it",
     "google/gemma-4-31b-it",
     "inception/mercury-2.5",
+    "kira/qwen3.8-flash-free",
     "poolside/laguna-s-2.1",
     "sensenova/sensenova-6.8-flash-lite",
 }
 
-def test_current_roster_is_nine_registered_models_only():
+def test_current_roster_contains_all_prior_owner_registered_models():
     got=load_current_models()
-    assert set(got)==NINE
-    assert len(got)==9
+    canonical=json.loads(CANONICAL_REGISTRY.read_text(encoding="utf8"))
+    ids={model["id"] for model in canonical["models"]}
+    assert ELEVEN <= set(got)
+    assert set(got)==ids
+    assert len(got)==len(canonical["models"])
     assert not (set(got)&OWNER_RETIRED)
     assert authorize_exact_models(tuple(got))==tuple(got)
     assert got["poolside/laguna-s-2.1"]["provider_id"]=="poolside"
@@ -40,10 +45,79 @@ def test_current_roster_is_nine_registered_models_only():
     "kilo/poolside-laguna-s-2.1",
     "kilo/nvidia-nemotron-3-ultra-550b-a55b:free",
     "kilo/stepfun/step-5-preview-free",
+    "kilo/stepfun/step-3.7-flash:free",
+    "kilo/stepfun-step-3.7-flash-free",
+    "thinkingmachines/inkling-small:free",
+    "kilo/thinkingmachines/inkling-small:free",
+    "kilo/thinkingmachines-inkling-small-free",
 ])
 def test_retired_discovered_or_draft_routes_cannot_be_evaluated(deleted):
     with pytest.raises(ValueError):
         authorize_exact_models((deleted,))
+
+def test_retirement_is_exact_to_inkling_small_only():
+    from b14_owner_evaluation_registry import _disallowed_model_id
+    for name in (
+        "thinkingmachines/inkling-small:free",
+        "kilo/thinkingmachines/inkling-small:free",
+        "kilo/thinkingmachines-inkling-small-free",
+    ):
+        assert _disallowed_model_id(name)
+    for allowed in (
+        "thinkingmachines/inkling-smallish:free",
+        "thinkingmachines/inkling-large:free",
+        "cohere/north-mini-code:free",
+        "stepfun/step-5-preview-free",
+    ):
+        assert not _disallowed_model_id(allowed)
+
+
+def test_stepfun_37_retirement_is_not_overridden_by_a_future_registry(tmp_path):
+    canonical=json.loads(CANONICAL_REGISTRY.read_text(encoding="utf-8"))
+    # Even a future accidentally introduced provider/registration must fail
+    # before an eval caller reaches credentials or network.
+    canonical["providers"]["kilo"]={
+        "base_origin":"https://api.kilo.ai/api/gateway",
+        "credential_source":"none",
+        "enabled":True,
+    }
+    for mid,upstream in (
+        ("kilo/stepfun/step-3.7-flash","stepfun/step-3.7-flash"),
+        ("kilo/stepfun-step-3.7-flash-free","stepfun/step-3.7-flash"),
+    ):
+        data=json.loads(json.dumps(canonical))
+        data["models"].append({
+            "id":mid,"provider_id":"kilo","upstream_model":upstream,"enabled":True
+        })
+        path=tmp_path/(str(len(mid))+".json")
+        path.write_text(json.dumps(data),encoding="utf-8")
+        with pytest.raises(ValueError,match="owner_retired_model_in_registry"):
+            load_current_models(path)
+
+
+def test_owner_retired_inkling_small_cannot_be_reintroduced_via_registry(tmp_path):
+    source = json.loads(CANONICAL_REGISTRY.read_text(encoding="utf-8"))
+    source["providers"]["kilo"] = {
+        "base_origin": "https://api.kilo.ai/api/gateway",
+        "credential_source": "none",
+        "enabled": True,
+    }
+    for public_id, upstream in [
+        ("kilo/thinkingmachines/inkling-small:free", "thinkingmachines/inkling-small:free"),
+        ("kilo/safe-model", "thinkingmachines/inkling-small:free"),
+    ]:
+        mutated = json.loads(json.dumps(source))
+        mutated["models"].append({
+            "id": public_id,
+            "provider_id": "kilo",
+            "upstream_model": upstream,
+            "enabled": True,
+        })
+        path=tmp_path/(public_id.split("/")[-1] + ".json")
+        path.write_text(json.dumps(mutated), encoding="utf-8")
+        with pytest.raises(ValueError, match="owner_retired_model_in_registry"):
+            load_current_models(path)
+
 
 def test_no_duplicate_batch_or_implicit_auto():
     one = next(iter(load_current_models()))
@@ -85,7 +159,12 @@ def test_exact_poolside_provider_route_cannot_drift_to_kilo(tmp_path):
 def test_main_inert_list_and_only_exact_selector(capsys):
     assert main(["--list"])==0
     out=json.loads(capsys.readouterr().out)
-    assert set(out["model_ids"])==NINE
+    # The historical owner-approved roster is a required subset, not a frozen total.
+    # New exact-ID registrations must appear in --list without relaxing retirement gates.
+    current=set(load_current_models())
+    assert ELEVEN <= current
+    assert set(out["model_ids"])==current
+    assert not (current & OWNER_RETIRED)
     assert out["network_calls"]==0
     assert out["automatic_fallbacks"]==0
     assert not out["production_changed"]

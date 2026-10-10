@@ -217,6 +217,120 @@ def _assert_no_values_leak(response, *forbidden: str) -> None:
             assert needle not in body, f"body leaked a value via {name}"
 
 
+def test_b66_success_response_marks_registered_model_completion_only():
+    provider = _AnswerClient(json.dumps({
+        "recipient": {"company": "Synthetic Buyer"},
+        "items": [{"name": "Synthetic Pipe", "qty": 100, "unitPrice": None}],
+        "missing": [],
+    }))
+    response = _post(
+        _client(B66QuoteConversationInterpreter(provider)),
+        "Synthetic Buyer quoted Synthetic Pipe x100",
+    )
+    assert response.status_code == 200
+    assert response.headers.get("x-b66-result-origin") == "registered_model_completion"
+    assert provider.calls == 1
+    assert response.json()["candidate"]["missing"] == ["unitPrice"]
+    assert "result_origin" not in response.json()["candidate"]
+    assert "model_id" not in response.json()["candidate"]
+    assert response.headers.get("cache-control") == "no-store, max-age=0"
+    _assert_no_values_leak(response, "test-fixture/quote-projection")
+
+
+def test_model_missing_labels_are_discarded_and_server_derives_true_missing():
+    # Synthetic reproduction of the class observed in the real Gemini canary:
+    # HTTP 422 invalid_missing_fields while extracting a partial quotation.
+    # Model-produced missing labels are advisory and never the server authority.
+    provider = _AnswerClient(json.dumps({
+        "recipient": {"company": "Synthetic Buyer"},
+        "items": [{"name": "Synthetic Pipe", "qty": 100, "unitPrice": None}],
+        "missing": ["items[0].unitPrice", "recipient.company", "items[0].unitPrice"],
+    }))
+    response = _post(
+        _client(B66QuoteConversationInterpreter(provider)),
+        "Synthetic Buyer quoted Synthetic Pipe x100",
+    )
+    assert response.status_code == 200
+    assert response.headers.get("x-b66-result-origin") == "registered_model_completion"
+    assert response.json()["candidate"]["missing"] == ["unitPrice"]
+    assert "items[0].unitPrice" not in response.text
+    assert provider.calls == 1
+
+
+@pytest.mark.parametrize("advisory_missing", [
+    {"unitPrice": True},
+    "items[0].unitPrice",
+    ["items[0].unitPrice"] * 20,
+    12,
+])
+def test_model_missing_advice_never_blocks_valid_facts(advisory_missing):
+    # Model metadata is entirely untrusted. The approved Saved Skill and
+    # verified item facts are the only authority for missing-field questions.
+    provider = _AnswerClient(json.dumps({
+        "recipient": {"company": "Synthetic Buyer"},
+        "items": [{"name": "Synthetic Pipe", "qty": 100}],
+        "missing": advisory_missing,
+    }))
+    response = _post(
+        _client(B66QuoteConversationInterpreter(provider)),
+        "Synthetic Buyer quoted Synthetic Pipe x100",
+    )
+    assert response.status_code == 200
+    assert response.headers.get("x-b66-result-origin") == "registered_model_completion"
+    assert response.json()["candidate"]["missing"] == ["unitPrice"]
+    assert provider.calls == 1
+
+
+def test_unclear_item_name_asks_for_confirmation_without_guessing_price():
+    # Model cannot confidently identify a typo: retain known quantity and
+    # explicitly ask for the item name and absent price in the next UI turn.
+    provider = _AnswerClient(json.dumps({
+        "recipient": {"company": "Synthetic Buyer"},
+        "items": [{"name": None, "qty": 8, "unitPrice": None}],
+        "missing": ["품목명을 확인해 주세요"],
+    }, ensure_ascii=False))
+    response = _post(
+        _client(B66QuoteConversationInterpreter(provider)),
+        "Synthetic Buyer 부픔 8개 견적",
+    )
+    assert response.status_code == 200
+    candidate = response.json()["candidate"]
+    assert candidate["items"][0]["qty"] == 8
+    assert "name" not in candidate["items"][0]
+    assert "unitPrice" not in candidate["items"][0]
+    assert candidate["missing"] == ["name", "unitPrice"]
+    assert response.headers.get("x-b66-result-origin") == "registered_model_completion"
+    assert provider.calls == 1
+
+
+def test_b66_fallback_response_is_distinct_from_registered_model_completion():
+    provider = _RaisingClient(
+        ChatRuntimeError(502, "provider_server_error", "synthetic upstream error")
+    )
+    response = _post(
+        _client(B66QuoteConversationInterpreter(provider)),
+        "대한건설에 배관 100미터, 부가세 별도",
+    )
+    assert response.status_code == 200
+    assert response.headers.get("x-b66-result-origin") == "deterministic_fallback"
+    assert response.json()["candidate"]["missing"] == ["unitPrice"]
+    assert "result_origin" not in response.json()["candidate"]
+    assert provider.calls == 1
+
+
+def test_failed_quote_has_no_success_result_origin():
+    provider = _RaisingClient(
+        ChatRuntimeError(504, "upstream_timeout", "synthetic upstream timeout")
+    )
+    response = _post(
+        _client(B66QuoteConversationInterpreter(provider)),
+        "대한건설에 배관 100미터, 부가세 별도",
+    )
+    assert response.status_code == 502
+    assert "x-b66-result-origin" not in response.headers
+    assert provider.calls == 1
+
+
 def test_allowlisted_upstream_classes_are_relayed_exactly_once():
     for code in ALLOWLISTED_CLASSES:
         provider = _RaisingClient(ChatRuntimeError(502, code, "bounded upstream diagnostic"))

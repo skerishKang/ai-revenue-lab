@@ -16,9 +16,14 @@ import json
 import sys
 from pathlib import Path
 from typing import Any
+
+_SCRIPTS_DIR = Path(__file__).resolve().parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+from b62_web_secrets_store_contract import expected_web_secret_bindings
 from uuid import UUID
 
-SUPPORTED_TYPES = {"assets", "service", "d1", "r2_bucket", "plain_text", "secret_text"}
+SUPPORTED_TYPES = {"assets", "service", "d1", "r2_bucket", "plain_text", "secret_text", "secrets_store_secret"}
 OWNER_P01_D1_BINDING = "BROWSER_CONTROL_OWNER_P01_D1"
 
 
@@ -80,6 +85,12 @@ def canonical_binding(raw: object) -> tuple[object, ...]:
             _required_text(raw, "bucket_name"),
             _optional_text(raw, "jurisdiction"),
         )
+    if kind == "secrets_store_secret":
+        return (
+            kind, name,
+            _required_text(raw, "store_id"),
+            _required_text(raw, "secret_name"),
+        )
     if kind == "plain_text":
         text = raw.get("text")
         if not isinstance(text, str):
@@ -137,6 +148,26 @@ def assert_preserved(before: object, after: object) -> None:
             "binding authority drift detected; "
             f"removed_count={len(removed)} added_count={len(added)}"
         )
+
+
+def assert_web_secret_additions_only(before: object, after: object) -> None:
+    """Only missing Owner-approved same-account Secret Store entries may appear."""
+    original = canonical_state(before)
+    final = canonical_state(after)
+    existing_names = {entry[1] for entry in original}
+    expected = {
+        name: canonical_binding(item)
+        for name, item in expected_web_secret_bindings().items()
+    }
+    # If already installed, require existing identity exactly; never overwrite.
+    for name, target in expected.items():
+        original_match = [entry for entry in original if entry[1] == name]
+        if original_match and original_match != [target]:
+            raise BindingStateError("web Secrets Store binding alias collision")
+    additions = tuple(target for name, target in expected.items() if name not in existing_names)
+    required = tuple(sorted((*original, *additions), key=lambda e: (str(e[0]), str(e[1]))))
+    if final != required:
+        raise BindingStateError("binding authority drift; expected only exact web Secrets Store additions")
 
 
 def validate_owner_d1_id(value: str) -> str:
@@ -226,11 +257,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--before", required=True, type=Path)
     parser.add_argument("--after", required=True, type=Path)
     parser.add_argument("--expected-add-owner-d1", action="store_true")
+    parser.add_argument("--expected-add-web-secrets-store", action="store_true")
     parser.add_argument("--owner-d1-database-id")
     parser.add_argument("--require-served-resource-integrity", action="store_true")
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
     try:
-        if args.expected_add_owner_d1:
+        if args.expected_add_owner_d1 and args.expected_add_web_secrets_store:
+            raise BindingStateError("multiple additive authority modes prohibited")
+        if args.expected_add_web_secrets_store:
+            assert_web_secret_additions_only(_load(args.before), _load(args.after))
+        elif args.expected_add_owner_d1:
             if args.owner_d1_database_id is None:
                 raise BindingStateError("additive mode requires explicit Owner D1 ID")
             before_payload = _load(args.before)

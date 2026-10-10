@@ -176,10 +176,12 @@
     if (tasksNav) tasksNav.setAttribute("aria-current", state === "claw" && inboxKind === "tasks" ? "page" : "false");
     if (alertsNav) alertsNav.setAttribute("aria-current", state === "claw" && inboxKind === "alerts" ? "page" : "false");
   }
-  function showConversation() {
+  function showConversation({ preserveClaw = false } = {}) {
     emptyState.hidden = true;
     messageList.hidden = false;
-    shell.dataset.state = "chat";
+    // #3931: Keep an in-flight Claw conversation in the Claw workspace.
+    // Saved Chat conversations and ordinary Chat sends still use Chat.
+    if (!preserveClaw) shell.dataset.state = "chat";
     setNavActive();
   }
   function addUserMessage(text, attachment) {
@@ -198,6 +200,10 @@
   function addAssistantShell(label) {
     const fragment = document.getElementById("assistantMessageTemplate").content.cloneNode(true);
     const article = fragment.querySelector(".assistant-message");
+    // #3931: identify the product whose conversation is currently rendered.
+    // The shared shell is not evidence that a Claw run came from Chat.
+    const productLabel = article.querySelector("[data-assistant-product]");
+    if (productLabel) productLabel.textContent = shell.dataset.state === "claw" ? "Padiem Claw" : "Padiem Chat";
     article.querySelector("[data-runtime-label]").textContent = label;
     messageList.appendChild(fragment);
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
@@ -255,7 +261,22 @@
     if (clawGeneralRequest) {
       const hint = document.createElement("p");
       hint.textContent = uiT("claw-general-check-runs");
-      box.append(strong, p, hint);
+      // #3935: navigation only. This button opens the existing owner-scoped
+      // GET /api/claw/runs history and never replays the failed P01 POST.
+      const openRuns = document.createElement("button");
+      openRuns.type = "button";
+      openRuns.className = "claw-inbox-retry claw-check-runs-button";
+      openRuns.textContent = uiT("claw-general-open-runs");
+      openRuns.disabled = authState.authenticated !== true;
+      openRuns.addEventListener("click", () => {
+        if (authState.authenticated !== true) return;
+        openClawWorkspace(); // refresh is handled by existing owner-scoped history UI
+        const history = document.getElementById("clawRunHistory");
+        if (!history || history.hidden) return;
+        history.scrollIntoView?.({ block: "start", behavior: "smooth" });
+        history.querySelector?.("#clawRunHistoryRefresh")?.focus?.();
+      });
+      box.append(strong, p, hint, openRuns);
       return box;
     }
     retry.addEventListener("click", async () => {
@@ -883,6 +904,8 @@
         if (workspace.dataset.view === "inbox") workspace.dataset.view = "general";
         if (workspace.dataset.view === "automation") workspace.dataset.view = "general";
       }
+      // Auth loss also closes PDF previews and revokes ephemeral private blobs.
+      window.PadiemClawPdfPreview?.revokeAll?.();
       // Auth loss tears down any pending execute recovery: no timer outlives the session.
       clearClawRecovery({ syncControls: true });
       clearClawWait();
@@ -1220,6 +1243,12 @@
     // The decision is an immutable snapshot taken before showConversation()
     // mutates shell.dataset.state, so it is never re-derived from live state.
     const clawGeneralRequest = !!(route && route.clawGeneral);
+    // #3930: no fabricated stages. Only validated server-emitted P01 envelopes
+    // can change the runtime label; a legacy delta/done stream retains its
+    // existing truthful response status.
+    const canonicalEventProjection = clawGeneralRequest ? window.PadiemClawRunEventProjection?.create?.() : null;
+    const verifiedClawRecovery = clawGeneralRequest ? window.PadiemClawRecoveryTruth?.create?.() : null;
+    const historicalStages = [];
     const response = clawGeneralRequest
       ? await chatTransport.requestClawGeneral(payload, signal)
       : await chatTransport.requestStreaming(payload, signal);
@@ -1228,8 +1257,47 @@
     let paragraph = null;
     let done = false;
     let terminalError = false;
+    // #3935: terminal P01 events outrank a later transport done/connection
+    // loss. Keep any partial text, show bounded status, never mint an approval
+    // button or silently submit a second request.
+    function showVerifiedClawRecovery(state) {
+      const content = article.querySelector(".assistant-content");
+      const typing = content?.querySelector(".typing");
+      if (typing) typing.remove();
+      const status = document.createElement("p");
+      status.className = "claw-recovery-truth";
+      status.setAttribute("role", "status");
+      status.textContent = window.PadiemClawRecoveryTruth.copy(state, document.documentElement.lang);
+      content?.appendChild(status);
+      const marker = article.querySelector("[data-runtime-label]");
+      if (marker) marker.textContent = status.textContent;
+      PadiemChatLifecycle.set(article, state === "waiting_for_approval"
+        ? MESSAGE_LIFECYCLE.WAITING_APPROVAL
+        : state === "cancelled" ? MESSAGE_LIFECYCLE.CANCELLED : MESSAGE_LIFECYCLE.FAILED);
+      revealErrorState(article);
+    }
     try {
       await chatTransport.readSseEvents(response, async (frame) => {
+        if (frame.event === "p01_event") {
+          if (!clawGeneralRequest || !canonicalEventProjection) return false;
+          let envelope;
+          try { envelope = JSON.parse(frame.data); } catch (_) { return false; }
+          if (envelope.delivery !== "live" && envelope.delivery !== "post_execution") return false;
+          const projected = canonicalEventProjection.consume(envelope);
+          if (!projected.accepted) return false;
+          // #3935: only an accepted canonical event can affect terminal truth.
+          verifiedClawRecovery?.observe(projected.kind);
+          const label = window.PadiemClawRunEventProjection.label(projected.kind, document.documentElement.lang);
+          if (envelope.delivery === "post_execution") {
+            // The Engine returned a completed run, not an actual live event.
+            // Preserve truth: show these labels only as a retrospective log.
+            if (label && historicalStages.length < 12) historicalStages.push(label);
+            return false;
+          }
+          const marker = article.querySelector("[data-runtime-label]");
+          if (label && marker) marker.textContent = label;
+          return false;
+        }
         if (!["delta", "done", "error"].includes(frame.event)) return false;
         let data;
         try {
@@ -1238,6 +1306,9 @@
           throw new Error(uiT("stream-format-invalid"));
         }
         if (frame.event === "delta") {
+          // Never append new content after a verified P01 failure, cancellation
+          // or approval pause; a later delta cannot revive a stopped run.
+          if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) return false;
           if (!data || typeof data.delta !== "string") throw new Error(uiT("stream-format-invalid"));
           if (!data.delta) return false;
           if (!paragraph) {
@@ -1252,27 +1323,71 @@
           return false;
         }
         if (frame.event === "error") {
-          const message = data && data.error && typeof data.error.message === "string"
-            ? data.error.message
-            : uiT("stream-continue-failed");
+          if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) {
+            terminalError = true;
+            showVerifiedClawRecovery(verifiedClawRecovery.state());
+            return true;
+          }
+          const message = clawGeneralRequest
+            ? (window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang) || uiT("claw-general-check-runs"))
+            : data && data.error && typeof data.error.message === "string"
+              ? data.error.message : uiT("stream-continue-failed");
           if (!paragraph) throw chatTransport.errorFor(data, message);
           terminalError = true;
           renderStreamError(article, message, outboundMessages, skill, contextSnapshot, clawGeneralRequest, lifecycleForError(chatTransport.errorFor(data, message)));
+          return true;
+        }
+        if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) {
+          terminalError = true;
+          showVerifiedClawRecovery(verifiedClawRecovery.state());
           return true;
         }
         if (!data || data.done !== true || !paragraph || !answer) throw new Error(uiT("stream-complete-invalid"));
         if (done) throw new Error(uiT("stream-done-duplicate"));
         done = true;
         applyStreamDone(article, data, answer, outboundMessages, contextSnapshot);
+        if (historicalStages.length) {
+          const details = document.createElement("details");
+          details.className = "claw-event-history";
+          const summary = document.createElement("summary");
+          summary.textContent = uiT("claw-event-history-post-execution");
+          const stages = document.createElement("ul");
+          for (const label of historicalStages) {
+            const item = document.createElement("li");
+            item.textContent = label;
+            stages.appendChild(item);
+          }
+          details.append(summary, stages);
+          article.querySelector(".assistant-body")?.appendChild(details);
+        }
         return true;
       });
       if (done) return true;
       if (terminalError) return false;
+      // No transport done: a *verified* P01 failure/cancellation/approval pause
+      // still has to be represented truthfully, not replaced with "completed".
+      if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) {
+        showVerifiedClawRecovery(verifiedClawRecovery.state());
+        return false;
+      }
       throw new Error(uiT("stream-incomplete"));
     } catch (error) {
       if (error && error.name === "AbortError") throw error;
+      if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) {
+        showVerifiedClawRecovery(verifiedClawRecovery.state());
+        return false;
+      }
       if (paragraph) {
-        renderStreamError(article, error instanceof Error ? error.message : uiT("stream-continue-failed"), outboundMessages, skill, contextSnapshot, clawGeneralRequest);
+        if (clawGeneralRequest) {
+          renderStreamError(article,
+            (window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang) || uiT("claw-general-check-runs")),
+            outboundMessages, skill, contextSnapshot, true);
+        } else {
+          // Preserve the original standalone Chat catch path and its existing
+          // rich-stream/browser contract. Only Claw uses bounded safe copy.
+          renderStreamError(article, error instanceof Error ? error.message : uiT("stream-continue-failed"),
+            outboundMessages, skill, contextSnapshot, false);
+        }
         return false;
       }
       throw error;
@@ -1351,7 +1466,9 @@
         article,
         clawGeneralRequest && error?.clawFailureDetail === "engine_provider_rate_limited"
           ? uiT("claw-general-provider-limit")
-          : (error instanceof Error ? error.message : uiT("try-again")),
+          : clawGeneralRequest
+            ? (window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang) || uiT("claw-general-check-runs"))
+            : (error instanceof Error ? error.message : uiT("try-again")),
         outboundMessages,
         skill,
         attachment,
@@ -1374,7 +1491,7 @@
   // #3539: the generic B54 Claw composer runs on the canonical P01 Engine lane.
   // This predicate documents the product state that selects the lane: the Claw
   // shell with the explicit manual form hidden. It must be read at submit time,
-  // BEFORE showConversation() flips shell.dataset.state to "chat".
+  // BEFORE any conversation presentation transition.
   function clawGeneralRequestActive() {
     return shell.dataset.state === "claw" && !(clawManualForm && !clawManualForm.hidden);
   }
@@ -1385,14 +1502,14 @@
     if (selectedSkill) conversationState.setSkill(selectedSkill);
     const attachmentSnapshot = selectedAttachment;
     const contextSnapshot = { conversationId: conversationState.getConversationId(), project: activeProject };
-    // #3539: snapshot the routing decision BEFORE showConversation() resets the
-    // shell state. The immutable snapshot is threaded through requestAnswer so a
-    // generic Claw submit cannot silently fall back to /api/chat/stream.
+    // #3539: snapshot the canonical lane before changing presentation;
+    // #3931: keep a general Claw request in the same Claw conversation.
+    // Neither UI state nor the selected model ID may authorize fallback.
     const clawGeneralRequest = clawGeneralRequestActive();
     contextSnapshot.selectedModelId =
       clawGeneralRequest && typeof clawModelIdInput !== "undefined" && clawModelIdInput
         ? clawModelIdInput.value.trim() : "";
-    showConversation();
+    showConversation({ preserveClaw: clawGeneralRequest });
     addUserMessage(prompt, attachmentSnapshot);
     input.value = "";
     const outbound = conversationState.outboundWithUser(prompt);
@@ -2065,9 +2182,9 @@
     }
   }
 
-  // A generated document exposes exactly one action: the bounded download.
-  // There is no in-browser open/preview capability, so no second control may
-  // exist that would only repeat this same route behind a false "open" label (#2771).
+  // A generated document always retains its original bounded download action.
+  // #3932 preview is separate and only appears for an actual PDF receipt,
+  // with fresh server-side tenant validation and real PDF bytes.
   function setClawDocumentAction(enabled, documentId, filename) {
     const btn = clawResultDocx;
     if (!btn) return;
@@ -2085,12 +2202,16 @@
     delete btn.dataset.filename;
   }
 
+  let clawPdfPreviewController = null;
   function clearClawArtifact() {
+    clawPdfPreviewController?.clear();
     if (clawArtifactMeta) clawArtifactMeta.hidden = true;
     if (clawArtifactName) clawArtifactName.textContent = "";
     if (clawArtifactSize) clawArtifactSize.textContent = "";
     if (clawResultSuccessNote) clawResultSuccessNote.hidden = true;
     setClawDocumentAction(false);
+    const downloadLabel = clawResultDocx?.querySelector?.('[data-locale-key="claw-result-docx"]');
+    if (downloadLabel) downloadLabel.textContent = clawT("claw-result-docx");
   }
 
   function formatClawBytes(bytes) {
@@ -2112,6 +2233,17 @@
     if (clawArtifactMeta) clawArtifactMeta.hidden = false;
     if (clawResultSuccessNote) clawResultSuccessNote.hidden = false;
     setClawDocumentAction(true, artifact.document_id, artifact.filename);
+    const downloadLabel = clawResultDocx?.querySelector?.('[data-locale-key="claw-result-docx"]');
+    if (downloadLabel) downloadLabel.textContent = artifact.media_type === "application/pdf"
+      ? clawT("claw-result-pdf")
+      : clawT("claw-result-docx");
+    if (!clawPdfPreviewController && clawArtifactMeta && window.PadiemClawPdfPreview?.create) {
+      clawPdfPreviewController = window.PadiemClawPdfPreview.create({
+        mount: clawArtifactMeta,
+        onError: (message) => setClawStatus(message, "error"),
+      });
+    }
+    clawPdfPreviewController?.set(artifact);
   }
 
   function safeClawErrorMessage(data, response) {
@@ -4089,13 +4221,23 @@
   // exposes to the signed-in owner and never mints its own run/history truth.
   const clawRunHistory = document.getElementById("clawRunHistory");
   const clawRunHistoryRefresh = document.getElementById("clawRunHistoryRefresh");
+  const clawRunHistoryExpand = document.getElementById("clawRunHistoryExpand");
   const clawRunHistoryLoading = document.getElementById("clawRunHistoryLoading");
   const clawRunHistoryError = document.getElementById("clawRunHistoryError");
   const clawRunHistoryList = document.getElementById("clawRunHistoryList");
   const clawRunHistoryEmpty = document.getElementById("clawRunHistoryEmpty");
 
   let clawRunHistoryInFlight = false;
+  // #3932: server caps owner-scoped history at MAX_CLAW_RUNS=30.
+  // Expanding is a read-only, explicit user action, not pagination authority.
+  let clawRunHistoryLimit = 10;
   let pendingClawRunFocusId = "";
+  let clawRunHistoryVisibilityEpoch = 0;
+  const clawRunHistoryPdfControllers = new Set();
+  function clearClawRunHistoryPdfPreviews() {
+    for (const controller of clawRunHistoryPdfControllers) controller.destroy();
+    clawRunHistoryPdfControllers.clear();
+  }
 
   function setClawRunHistoryStatus(message) {
     if (!clawRunHistoryError) return;
@@ -4189,6 +4331,27 @@
         if (artifact.document_id) downloadClawArtifact(artifact.document_id, artifact.filename || "");
       });
       artifactRow.append(filename, downloadBtn);
+      // #3935: a history artifact reference does not make a failed, cancelled,
+      // approval-paused or unknown run completed. Keep its original badge and
+      // existing click-to-check download; never auto-retry or claim delivery.
+      if (run.status !== "completed") {
+        const caveat = document.createElement("p");
+        caveat.className = "claw-run-card-partial-note";
+        caveat.setAttribute("role", "note");
+        caveat.textContent = clawT("claw-runs-artifact-unverified");
+        artifactRow.appendChild(caveat);
+      }
+      // #3932: old owner-scoped run receipts lack byte_length. Display a
+      // truthful click-to-check PDF action, then use the existing authenticated
+      // 10MiB PDF byte route. Never preview DOCX/XLSX or inferred filenames.
+      if (window.PadiemClawPdfPreview?.validHistoricalArtifact?.(artifact)) {
+        const viewer = window.PadiemClawPdfPreview.create({
+          mount: artifactRow,
+          onError: (message) => setClawRunHistoryStatus(message),
+        });
+        if (viewer?.setHistorical?.(artifact)) clawRunHistoryPdfControllers.add(viewer);
+        else viewer?.destroy?.();
+      }
       card.appendChild(artifactRow);
     }
     if (sessionBtn) card.appendChild(sessionBtn);
@@ -4210,14 +4373,22 @@
     if (!clawRunHistory) return;
     const focusRunId = pendingClawRunFocusId;
     pendingClawRunFocusId = "";
+    const visibilityEpoch = clawRunHistoryVisibilityEpoch;
     setClawRunHistoryStatus("");
     if (clawRunHistoryLoading) clawRunHistoryLoading.hidden = false;
     if (clawRunHistoryList) clawRunHistoryList.hidden = true;
     if (clawRunHistoryEmpty) clawRunHistoryEmpty.hidden = true;
+    if (clawRunHistoryExpand) clawRunHistoryExpand.hidden = true;
+    // On refresh, retire the old cards before dropping their DOM and PDF Blob.
+    clearClawRunHistoryPdfPreviews();
     if (clawRunHistoryList) clawRunHistoryList.replaceChildren();
     try {
-      const response = await fetch("/api/claw/runs?limit=10", { headers: { "Accept": "application/json" }, cache: "no-store" });
+      const response = await fetch(`/api/claw/runs?limit=${clawRunHistoryLimit}`, { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
+      // A response begun before logout/workspace departure is not a license
+      // to paint old owner file cards into a newer authenticated session.
+      if (visibilityEpoch !== clawRunHistoryVisibilityEpoch ||
+          authState.authenticated !== true || clawRunHistory.hidden) return;
       if (!response.ok || !data || data.ok !== true || !Array.isArray(data.runs)) {
         throw new Error(clawRunHistoryErrorMessage(data, response));
       }
@@ -4228,6 +4399,10 @@
         return;
       }
       if (clawRunHistoryList) clawRunHistoryList.hidden = false;
+      // Equal to the requested limit suggests (but does not prove) older runs.
+      // Never invent a count or claim further runs exist until the next GET.
+      if (clawRunHistoryExpand) clawRunHistoryExpand.hidden =
+        clawRunHistoryLimit !== 10 || data.runs.length < 10;
       data.runs.forEach((run) => {
         if (!run || typeof run.run_id !== "string") return;
         clawRunHistoryList?.appendChild(renderClawRunCard(run));
@@ -4241,7 +4416,10 @@
         }
       }
     } catch (error) {
+      if (visibilityEpoch !== clawRunHistoryVisibilityEpoch ||
+          authState.authenticated !== true || clawRunHistory.hidden) return;
       if (clawRunHistoryLoading) clawRunHistoryLoading.hidden = true;
+      if (clawRunHistoryExpand) clawRunHistoryExpand.hidden = true;
       setClawRunHistoryStatus(error instanceof Error ? error.message : clawT("claw-runs-error"));
     }
   }
@@ -4264,10 +4442,25 @@
       && clawWorkspace?.dataset.view !== "inbox";
     clawRunHistory.hidden = !show;
     if (show) loadClawRunHistory();
+    else {
+      clawRunHistoryVisibilityEpoch += 1;
+      clawRunHistoryLimit = 10;
+      if (clawRunHistoryExpand) clawRunHistoryExpand.hidden = true;
+      clearClawRunHistoryPdfPreviews();
+    }
   }
 
   if (clawRunHistoryRefresh) {
     clawRunHistoryRefresh.addEventListener("click", () => loadClawRunHistory());
+  }
+  if (clawRunHistoryExpand) {
+    clawRunHistoryExpand.addEventListener("click", () => {
+      if (clawRunHistoryInFlight || clawRunHistoryLimit !== 10 ||
+          authState.authenticated !== true || clawRunHistory.hidden) return;
+      clawRunHistoryLimit = 30;
+      clawRunHistoryExpand.hidden = true;
+      void loadClawRunHistory();
+    });
   }
 
   // ---------------------------------------------------------------------------

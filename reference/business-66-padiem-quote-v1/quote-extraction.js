@@ -76,8 +76,20 @@
   }
 
   function optionalISODate(value) {
-    var text = optionalText(value, 10, "invalid_issue_date");
-    if (text == null) return null;
+    // LLM extraction sometimes returns the customer's unambiguous Korean
+    // written date. Normalize format only, not an inferred/missing date.
+    // Keep all invalid or ambiguous forms fail-closed.
+    if (value == null) return null;
+    if (typeof value !== "string") fail("invalid_issue_date");
+    var text = value.trim();
+    if (text === "") return null;
+    if (text.length > 40) fail("invalid_issue_date");
+    var korean = /^(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일$/.exec(text);
+    if (korean) {
+      text = korean[1] + "-" +
+        ("0" + Number(korean[2])).slice(-2) + "-" +
+        ("0" + Number(korean[3])).slice(-2);
+    }
     if (!/^\d{4}-\d{2}-\d{2}$/.test(text)) fail("invalid_issue_date");
     var parts = text.split("-").map(Number);
     var date = new Date(parts[0], parts[1] - 1, parts[2]);

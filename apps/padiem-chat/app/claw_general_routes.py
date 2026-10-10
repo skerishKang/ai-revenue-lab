@@ -51,6 +51,8 @@ from kagent.p01_adapter import (
 from kagent.p01_run_flow import create_claw_run
 
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
+from .claw_live_canary import live_stream_allowed
+from .claw_general_run_history import project_completed_general_run
 from .claw_routes import (
     _BROWSER_TIER_MAP,
     _NO_STORE_HEADERS,
@@ -58,12 +60,15 @@ from .claw_routes import (
     _safe_composition_diagnostic,
     _safe_engine_failure_detail,
     _usage_gate_denial,
+    _resolve_intake_session_reference,
 )
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 
 MAX_CLAW_GENERAL_BODY_BYTES = 64 * 1024  # 64 KiB
 MAX_CLAW_GENERAL_MESSAGE_CHARS = 8_000
 MAX_CLAW_GENERAL_MESSAGES = 40
+CLAW_LIVE_REQUEST_HEADER = "X-Padiem-Claw-Live"
+CLAW_LIVE_REQUEST_MARKER = "p01-events-v1"
 _CLAW_GENERAL_ROLES = frozenset({"user", "assistant"})
 
 # NO_EXECUTABLE_ROUTE product HOLD (#3568/#3566): these adapter codes mean the
@@ -134,18 +139,33 @@ def _sse_frame(event: str, payload: dict[str, Any]) -> bytes:
     return f"event: {event}\ndata: {data}\n\n".encode("utf-8")
 
 
-def _claw_general_sse(answer: str, evidence_headers: dict[str, str] | None = None) -> Response:
-    """One bounded terminal SSE projection (delta + done).
+def _claw_general_sse(
+    answer: str,
+    evidence_headers: dict[str, str] | None = None,
+    *,
+    history: tuple[dict[str, object], ...] = (),
+) -> Response:
+    """Bounded terminal SSE, optionally preceded by real *post-execution* history.
 
-    Same framing the orchestration bridge already returns to the browser, so the
-    existing SSE reader handles the canonical P01 answer without a second client
-    protocol. The P01 lane resolves one terminal result; no partial upstream is
-    streamed and no answer is fabricated.
+    The current Engine client is synchronous: all P01 events are only available
+    AFTER the run. Never misrepresent this event history as live progress.
+    Legacy clients still see their canonical delta + done frames unchanged.
     """
     headers = {"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"}
     if evidence_headers:
         headers.update(evidence_headers)
-    frames = _sse_frame("delta", {"delta": answer}) + _sse_frame("done", {"done": True})
+    frames = b""
+    if isinstance(history, tuple) and len(history) <= 128:
+        # Fixed public fields only: no free-form message/metadata/tool input.
+        keys = ("event_id", "run_id", "trace_id", "app_id", "kind", "sequence", "timestamp_iso")
+        for event in history:
+            if not isinstance(event, dict) or any(key not in event for key in keys):
+                frames = b""  # fail closed on malformed provider/history data
+                break
+            frames += _sse_frame("p01_event", {
+                **{key: event[key] for key in keys}, "delivery": "post_execution",
+            })
+    frames += _sse_frame("delta", {"delta": answer}) + _sse_frame("done", {"done": True})
     return Response(
         frames,
         status_code=200,
@@ -187,6 +207,69 @@ def _claw_general_user_text(data: dict[str, Any]) -> tuple[str | None, JSONRespo
     if not text:
         return None, _error(400, "invalid_messages", "메시지를 입력해 주세요.")
     return text, None
+
+
+async def claw_general_capabilities(request: Request) -> JSONResponse:
+    """Read-only session-specific SSE capability and opt-in pre-dispatch diagnostic.
+
+    The normal browser GET keeps its existing one-field response and does not
+    trigger an extra Control Plane lookup when live SSE is disabled. Diagnostic
+    mode checks ONLY signed auth, P01 adapter presence, and current canonical
+    B54 session: never quota, entitlement, Engine, B14 or Provider.
+    """
+    from .auth_routes import auth_ready, current_user_id
+
+    adapter = getattr(request.app.state, "claw_p01_adapter", None)
+    runner = getattr(adapter, "_runner", None)
+    signed_in = bool(auth_ready(request) and current_user_id(request) is not None)
+    subject_lane = (
+        adapter is not None
+        and getattr(adapter, "subject_identity_lane", False) is True
+    )
+    diagnostic = request.query_params.get("diagnostic") == "pre_dispatch_v1"
+    live_candidate = bool(
+        signed_in
+        and getattr(request.app.state, "claw_live_sse_enabled", False) is True
+        and callable(getattr(runner, "run_stream", None))
+        and subject_lane
+    )
+
+    # One read-only CP session lookup maximum per GET. Normal callers with
+    # live SSE disabled do not incur an additional identity roundtrip.
+    session = None
+    if signed_in and subject_lane and (live_candidate or diagnostic):
+        from .b54_canonical_session import resolve_current_b54_canonical_session
+
+        try:
+            session = await resolve_current_b54_canonical_session(request)
+        except Exception:
+            # Read-only diagnostics never disclose Control Plane failures.
+            session = None
+
+    enabled = bool(
+        live_candidate
+        and session is not None
+        and live_stream_allowed(
+            request.app.state, session.auth_session.subject.subject_id
+        )
+    )
+    result: dict[str, object] = {"live_events_available": enabled}
+    if diagnostic:
+        # Fixed codes only. No owner, tenant, subject, session, quota, model,
+        # credential, request body or raw Control Plane exception is returned.
+        if not signed_in:
+            state = "authentication_required"
+        elif adapter is None:
+            state = "p01_adapter_unavailable"
+        elif not subject_lane:
+            state = "canonical_subject_lane_unverified"
+        elif session is None:
+            state = "canonical_b54_session_unavailable"
+        else:
+            state = "pre_quota_ready"
+        result["pre_dispatch_status"] = state
+        result["pre_dispatch_scope"] = "auth_adapter_session_only"
+    return JSONResponse(result, headers=_NO_STORE_HEADERS)
 
 
 async def claw_general_execute(request: Request) -> JSONResponse | Response:
@@ -252,6 +335,15 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     if selected_model_id is None and (tier_route is None or not tier_route.model_id):
         return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.")
 
+    # #3929: optional SAME-CONVERSATION follow-ups are verified against the
+    # existing owner-scoped D1 conversation before quota/provider. No model,
+    # filename, query string or user-reported owner can bind a conversation.
+    conversation_id, conversation_error = await _resolve_intake_session_reference(
+        request, data,
+    )
+    if conversation_error is not None:
+        return conversation_error
+
     # #3382/#3539: the canonical USER subject is resolved SERVER-SIDE before the
     # usage gate and before any P01/Engine dispatch, so a failed revalidation
     # never consumes quota and never reaches a provider.
@@ -259,6 +351,12 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         request.app.state, "claw_p01_adapter", None
     )
     subject_id: str | None = None
+    authorized_workspace_id: str | None = None
+    if conversation_id is not None and (
+        adapter is None or getattr(adapter, "subject_identity_lane", False) is not True
+    ):
+        return _error(403, "canonical_b54_session_unavailable",
+                      "??? Claw ?? ?? ??? ??? ? ????.")
     if adapter is not None and getattr(
         adapter, "subject_identity_lane", False
     ) is True:
@@ -272,6 +370,20 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                 "인증된 Claw 실행 권한을 확인할 수 없습니다.",
             )
         subject_id = b54_session.auth_session.subject.subject_id
+        if conversation_id is not None:
+            authorized_workspace_id = b54_session.auth_session.tenant_id
+            if not isinstance(authorized_workspace_id, str) or not authorized_workspace_id:
+                return _error(403, "workspace_scope_unavailable",
+                              "Claw ???? ??? ??? ? ????.")
+
+    live_requested = (
+        request.headers.get(CLAW_LIVE_REQUEST_HEADER, "").strip()
+        == CLAW_LIVE_REQUEST_MARKER
+    )
+    if live_requested and not live_stream_allowed(request.app.state, subject_id):
+        # Admission is pre-quota, pre-Engine and cannot be broadened by
+        # a forged browser header or a stale GET capability response.
+        return _error(503, "claw_live_stream_unavailable", "Claw 실시간 실행 상태를 사용할 수 없습니다.")
 
     denial = await _usage_gate_denial(request)
     if denial is not None:
@@ -295,6 +407,18 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             headers=_NO_STORE_HEADERS,
         )
 
+    # #3930: An explicitly requested live SSE relay requires BOTH the reviewed
+    # server authority and the canonical P01 stream port. No silent fallback to
+    # completed requests, direct B14, or an unapproved UI mode is permitted.
+    if live_requested:
+        runner = getattr(adapter, "_runner", None)
+        if (
+            getattr(request.app.state, "claw_live_sse_enabled", False) is not True
+            or not callable(getattr(runner, "run_stream", None))
+        ):
+            await _refund_active_reservation()
+            return _error(503, "claw_live_stream_unavailable", "Claw 실시간 실행 상태를 사용할 수 없습니다.")
+
     run = create_claw_run("padiem-chat", user_text)
 
     # #3655: evidence mode is opt-in per request; normal callers see the exact
@@ -302,6 +426,16 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     evidence_requested = (
         request.headers.get(CLAW_EVIDENCE_REQUEST_HEADER, "").strip() == CLAW_EVIDENCE_MARKER
     )
+
+    if live_requested:
+        if evidence_requested:
+            await _refund_active_reservation()
+            return _error(422, "live_evidence_mode_unsupported", "실시간 상태와 감사 증거 요청은 동시에 사용할 수 없습니다.")
+        from .claw_live_events import live_claw_sse
+        live_args = {"product_tier": product_tier, "subject_id": subject_id}
+        if selected_model_id is not None:
+            live_args["selected_model_id"] = selected_model_id
+        return live_claw_sse(adapter, run, live_args)
 
     try:
         dispatch_args = {"product_tier": product_tier, "subject_id": subject_id}
@@ -393,9 +527,24 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             headers=_NO_STORE_HEADERS,
         )
 
+    # #4072/#3928: preserve successful P01 execution in the pre-existing
+    # owner-scoped read model when D1 supports it. This is NOT a same-thread
+    # or artifact lineage claim. A failed history write must never replay
+    # Engine/tool execution or suppress an already-completed answer.
+    if conversation_id is None:
+        await project_completed_general_run(
+            request, run_id=run.run_id, user_text=user_text, answer=outcome.answer
+        )
+    else:
+        await project_completed_general_run(
+            request, run_id=run.run_id, user_text=user_text, answer=outcome.answer,
+            conversation_id=conversation_id,
+            workspace_id=authorized_workspace_id,
+        )
     return _claw_general_sse(
         outcome.answer,
         _claw_evidence_response_headers(run.run_id, outcome) if evidence_requested else None,
+        history=getattr(outcome, "p01_event_history", ()),
     )
 
 

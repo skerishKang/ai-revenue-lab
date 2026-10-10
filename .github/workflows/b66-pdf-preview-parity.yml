@@ -10,11 +10,14 @@ on:
       - "reference/business-66-padiem-quote-v1/styles.css"
       - "reference/business-66-padiem-quote-v1/quote-template.js"
       - "reference/business-66-padiem-quote-v1/quote-template-renderer.js"
+      - "reference/business-66-padiem-quote-v1/quote-sol-pdf-snapshot.js"
+      - "reference/business-66-padiem-quote-v1/tests/quote-sol-pdf-snapshot.test.cjs"
       - "reference/business-66-padiem-quote-v1/shell-layout.js"
       - "reference/business-66-padiem-quote-v1/cgi-template-v2.js"
       - "reference/business-66-padiem-quote-v1/tests/cgi-v2.test.cjs"
       - "reference/business-66-padiem-quote-v1/tests/three-pane-shell-contract.test.cjs"
       - "reference/business-66-padiem-quote-v1/tests/test_3536_unified_composer_browser.py"
+      - "reference/business-66-padiem-quote-v1/tests/test_4076_customer_journey_browser.py"
       - ".github/scripts/b66_shell_cgi_v2_smoke.py"
       - "reference/business-66-padiem-quote-v1/tests/quote-template-renderer.test.cjs"
       - "reference/business-66-padiem-quote-v1/tests/static-contract.test.cjs"
@@ -55,6 +58,7 @@ jobs:
         run: |
           set -euo pipefail
           node reference/business-66-padiem-quote-v1/tests/quote-template-renderer.test.cjs
+          node reference/business-66-padiem-quote-v1/tests/quote-sol-pdf-snapshot.test.cjs
           node reference/business-66-padiem-quote-v1/tests/static-contract.test.cjs
           node reference/business-66-padiem-quote-v1/tests/cgi-v2.test.cjs
           node reference/business-66-padiem-quote-v1/tests/three-pane-shell-contract.test.cjs
@@ -71,3 +75,9 @@ jobs:
           set -euo pipefail
           python .github/scripts/b66_shell_cgi_v2_smoke.py
           python reference/business-66-padiem-quote-v1/tests/test_3536_unified_composer_browser.py
+
+      - name: Verify the first-customer journey end to end (#4076)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python reference/business-66-padiem-quote-v1/tests/test_4076_customer_journey_browser.py

@@ -140,6 +140,7 @@ class ControlPlaneHttpsOperation(str, Enum):
     MATERIAL = "material"
     ACKNOWLEDGE = "acknowledge"
     RECONCILE = "reconcile"
+    OFFICE_PART = "office-part"  # #3580 opt-in, authenticated byte staging only
 
 
 class PinnedHttpsJsonRequestPort(Protocol):

@@ -74,7 +74,17 @@ def test_quote_model_options_require_authentication_and_no_store():
     response = authenticated.get("/api/b66/quote/models")
     assert response.status_code == 200
     assert response.json() == {
-        "ok": True, "models": [{"model_id": MODEL, "name": "registered"}],
+        "ok": True,
+        "models": [
+            {
+                "model_id": MODEL,
+                "name": "registered",
+                # #3906: every row advertises only the reasoning levels that
+                # model may actually use. With #3977 still unattested, that is
+                # the single fail-closed provider default, never a guess.
+                "reasoning_levels": [{"value": "default", "label": "기본(제공자 기본값)"}],
+            }
+        ],
         "default_model_id": None,
     }
     assert "no-store" in response.headers["cache-control"].lower()

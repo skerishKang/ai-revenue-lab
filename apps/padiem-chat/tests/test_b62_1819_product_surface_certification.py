@@ -3,7 +3,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 CERTIFICATION = ROOT / ".github" / "scripts" / "b62_product_surface_certification_browser_qa.py"
-WORKFLOW = ROOT / ".github" / "workflows" / "b62-browser-visual-qa.yml"
+WORKFLOW = ROOT / ".github" / "workflows" / "b62-browser-qa-unified.yml"
 
 
 def test_certification_covers_required_all_theme_desktop_mobile_matrix() -> None:
@@ -55,17 +55,7 @@ def test_certification_requires_existing_regression_gates() -> None:
     source = CERTIFICATION.read_text(encoding="utf-8")
     for workflow_name in (
         "B62 Padiem Chat CI",
-        "B62 Browser Visual QA",
-        "B62 Accessibility Browser QA",
-        "B62 Auth History Browser QA",
-        "B62 Saved Outputs Browser QA",
-        "B62 Projects Browser QA",
-        "B62 Project Files Browser QA",
-        "B62 Document Browser QA",
-        "B62 Image Browser QA",
-        "B62 Error Retry Browser QA",
-        "B62 Conversation Export Browser QA",
-        "B62 Conversation Delete Browser QA",
+        "B62 Unified Browser QA",
         "P01 Deployment Boundary Guard",
     ):
         assert f'"{workflow_name}"' in source

@@ -116,10 +116,13 @@ function makeStorage() {
   };
 }
 
-const jsonResponse = (data, status) => ({
+const jsonResponse = (data, status, suppliedHeaders = {}) => ({
   ok: status === undefined || (status >= 200 && status < 300),
   status: status === undefined ? 200 : status,
-  headers: { get: () => null },
+  headers: {
+    get: (name) => suppliedHeaders[Object.keys(suppliedHeaders).find(
+      (key) => key.toLowerCase() === String(name).toLowerCase())] || null
+  },
   json: async () => data
 });
 
@@ -187,6 +190,16 @@ function buildAccountEnv(options) {
         assert.equal(body.model_id, SELECTED_MODEL_ID,
           "explicit user choice is submitted independently of quote text");
         interpretBodies.push(body.message);
+        if (config.transientFailureTurn === interpretBodies.length) {
+          return jsonResponse({ ok: false, error: { code: "quote_interpretation_failed" } }, 502, {
+            "X-B66-Upstream-Class": config.upstreamClass || "upstream_timeout"
+          });
+        }
+        if (config.unrecognizedModelOutput ||
+            config.unrecognizedResponseTurn === interpretBodies.length) {
+          return jsonResponse({ ok: false, error: { code: "quote_input_unrecognized",
+            message: "견적 입력값을 확인해 주세요." } }, 422);
+        }
         if (config.candidates) {
           const candidate = config.candidates[interpretBodies.length - 1];
           assert.ok(candidate, "one fixture per interpretation turn");
@@ -458,6 +471,53 @@ const assistantTexts = (env) => {
   resetBridge.clearPending();
   assert.equal(resetBridge.pendingQuote(), null, "explicit reset clears the pending conversation");
 
+  /* #4076 real Production found 502 upstream_timeout vs other 502.
+     Server diagnostics are bounded and relayed via the existing Pages bridge.
+     No automatic retries, silent model fallback, draft mutation or reset of
+     already verified quote facts on a transient failure. */
+  const timed = buildAccountEnv({
+    candidates: [PARTIAL_CANDIDATE, COMPLETE_CANDIDATE, COMPLETE_CANDIDATE],
+    transientFailureTurn: 2,
+    upstreamClass: "upstream_timeout"
+  });
+  await flush();
+  manuallyChooseModel(timed);
+  const timedBridge = timed.context.window.B66QuoteRuntimeBridge;
+  const partialBeforeTimeout = await timedBridge.interpret(TURN1_TEXT);
+  assert.equal(partialBeforeTimeout.code, "incomplete_request");
+  const stableQuoteNo = timedBridge.pendingQuote().quoteNo;
+  const failedFollowup = await timedBridge.interpret(TURN2_TEXT);
+  assert.equal(failedFollowup.code, "interpret_timeout", "502 with exact upstream_timeout is distinct");
+  assert.ok(timedBridge.errorText(failedFollowup.code).includes("시간 초과"));
+  assert.ok(timedBridge.errorText(failedFollowup.code).includes("자동으로 다시 요청하지 않습니다"));
+  assert.equal(timed.interpretBodies.length, 2, "502 does not automatically retry the provider");
+  assert.equal(timedBridge.pendingQuote().quoteNo, stableQuoteNo,
+    "failed provider call does not clear the earlier user answers");
+  assert.equal(timed.allocations(), 1, "502 must not allocate a new quote number");
+  assert.equal(timed.replaceDrafts.length, 0, "502 must not replace a draft");
+  const userResubmission = await timedBridge.interpret(TURN2_TEXT);
+  assert.equal(userResubmission.ok, true, "explicit subsequent user submission can continue");
+  assert.equal(userResubmission.draft.meta.quoteNo, stableQuoteNo);
+  assert.equal(userResubmission.draft.items[0].unitPrice, 18000);
+  assert.equal(timed.interpretBodies.length, 3, "new request requires an explicit new action");
+
+  const otherFailure = buildAccountEnv({
+    transientFailureTurn: 1,
+    upstreamClass: "provider_server_error"
+  });
+  await flush();
+  manuallyChooseModel(otherFailure);
+  const otherBridge = otherFailure.context.window.B66QuoteRuntimeBridge;
+  const generic502 = await otherBridge.interpret(TURN1_TEXT);
+  assert.equal(generic502.code, "interpret_failed", "non-timeout 502 is not mislabeled");
+  assert.ok(otherBridge.errorText(generic502.code).includes("다른 모델을 직접 선택"));
+  assert.equal(otherFailure.interpretBodies.length, 1, "no hidden fallback or retry");
+  assert.equal(otherFailure.allocations(), 0, "failed first turn does not allocate");
+  console.log("B66_502_TIMEOUT_SAFE_CUSTOMER_MESSAGE=PASS");
+  console.log("B66_502_NO_AUTO_RETRY_OR_FALLBACK=PASS");
+  console.log("B66_TRANSIENT_FAILURE_PRESERVES_PENDING_FACTS=PASS");
+  console.log("B66_DISTINCT_NON_TIMEOUT_502_MESSAGE=PASS");
+
   /* Missing name/quantity/price all use the same precise, bounded path.
      The follow-up provider fixture deliberately returns only the answered fact:
      prior recipient and item facts must survive without defaults or a retype. */
@@ -487,6 +547,34 @@ const assistantTexts = (env) => {
     assert.equal(sequence.interpretBodies.length, 2, "one request per turn, including a number-only quantity answer");
     assert.ok(sequence.interpretBodies[1].includes(firstTurn.question), "question identifies the meaning of a bare numeric answer");
   }
+
+  /* #3916: an estimated customer quantity is not silently finalized.
+     The server withholds qty; the browser keeps the quote and asks for an
+     exact numerical correction before creating the final draft. */
+  const estimated = buildAccountEnv({ candidates: [
+    { recipient: { company: "대한건설" }, items: [{ name: "배관", unitPrice: 2000 }] },
+    { recipient: { company: "대한건설" }, items: [{ name: "배관", qty: 120, unitPrice: 2000 }] }
+  ] });
+  await flush();
+  manuallyChooseModel(estimated);
+  const estimatedBridge = estimated.context.B66QuoteRuntimeBridge;
+  const estimateFirst = await estimatedBridge.interpret("대한건설 배관 대충 100개 정도, 단가 2000원");
+  assert.equal(estimateFirst.ok, false);
+  assert.equal(estimateFirst.code, "incomplete_request");
+  assert.deepEqual(estimateFirst.missing, ["qty"]);
+  assert.match(estimateFirst.question, /최종 수량을 정확한 숫자와 단위/);
+  assert.equal(estimated.allocations(), 1);
+  assert.equal(estimated.replaceDrafts.length, 0, "unconfirmed quantity cannot create final draft");
+  const estimatedNumber = estimatedBridge.pendingQuote().quoteNo;
+  const estimateSecond = await estimatedBridge.interpret("120개");
+  assert.equal(estimateSecond.ok, true, "explicit revised quantity completes pending quote");
+  assert.equal(estimateSecond.draft.meta.quoteNo, estimatedNumber);
+  assert.equal(estimateSecond.draft.items[0].qty, 120);
+  assert.equal(estimated.allocations(), 1, "no extra allocation when confirming quantity");
+  assert.equal(estimated.interpretBodies.length, 2, "one POST per turn");
+  assert.ok(estimated.interpretBodies[1].includes("120개"));
+  assert.equal(estimatedBridge.pendingQuote(), null);
+  console.log("APPROXIMATE_QUANTITY_CONFIRMATION_UI=PASS");
 
   const multi = buildAccountEnv({ candidates: [
     { recipient: { company: "Synthetic buyer", person: "Known person" }, items: [
@@ -577,6 +665,50 @@ const assistantTexts = (env) => {
   const genericBuilt = await generic.context.B66QuoteRuntimeBridge.interpret("Synthetic generic request");
   assert.equal(genericBuilt.ok, true, "CGI row scope does not become a generic QuoteCore cap");
   assert.equal(genericBuilt.draft.items.length, 4);
+
+  /* If the model emitted malformed output, ask for clarification rather than
+     showing an opaque technical error or fabricating a price. */
+  const unclear = buildAccountEnv({ unrecognizedModelOutput: true });
+  await flush();
+  manuallyChooseModel(unclear);
+  const unclearBridge = unclear.context.B66QuoteRuntimeBridge;
+  const unclearResult = await unclearBridge.interpret("부픔 ㅇㅇ몇개 견적");
+  assert.equal(unclearResult.ok, false);
+  assert.equal(unclearResult.code, "needs_clarification");
+  assert.ok(unclearResult.question.includes("거래처명"));
+  assert.equal(unclear.allocations(), 0);
+  assert.equal(unclearBridge.pendingQuote(), null);
+  assert.equal(unclear.replaceDrafts.length, 0);
+  assert.ok(!JSON.stringify(unclearResult).includes("invalid_missing_fields"));
+  console.log("MALFORMED_MODEL_OUTPUT_FRIENDLY_CLARIFICATION=PASS");
+
+  const typoFollowup = buildAccountEnv({
+    unrecognizedResponseTurn: 2,
+    candidates: [
+      Object.assign({ missing: ["unitPrice"] }, PARTIAL_CANDIDATE),
+      null,
+      Object.assign({ missing: [] }, COMPLETE_CANDIDATE)
+    ]
+  });
+  await flush();
+  manuallyChooseModel(typoFollowup);
+  const typoBridge = typoFollowup.context.B66QuoteRuntimeBridge;
+  const pendingBeforeTypo = await typoBridge.interpret(TURN1_TEXT);
+  assert.equal(pendingBeforeTypo.code, "incomplete_request");
+  const stableNumber = typoBridge.pendingQuote().quoteNo;
+  const misunderstood = await typoBridge.interpret("1만팔처너");
+  assert.equal(misunderstood.code, "incomplete_request",
+    "a misspelled clarification is not a discarded quote");
+  assert.ok(misunderstood.question.includes("단가는 얼마인가요?"));
+  assert.equal(typoBridge.pendingQuote().quoteNo, stableNumber);
+  assert.equal(typoFollowup.allocations(), 1);
+  const corrected = await typoBridge.interpret(TURN2_TEXT);
+  assert.equal(corrected.ok, true);
+  assert.equal(corrected.draft.meta.quoteNo, stableNumber);
+  assert.equal(corrected.draft.items[0].unitPrice, 18000);
+  assert.equal(typoFollowup.allocations(), 1);
+  assert.equal(typoFollowup.interpretBodies.length, 3);
+  console.log("FOLLOWUP_TYPO_PRESERVES_CONFIRMED_FACTS=PASS");
 
   console.log("MISSING_NAME_QUANTITY_PRICE_BOUNDED_FOLLOWUP=PASS");
   console.log("MULTIPLE_ITEM_QUANTITY_ANSWER_MAPPING=PASS");

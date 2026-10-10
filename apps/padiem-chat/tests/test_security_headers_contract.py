@@ -27,7 +27,7 @@ def test_csp_is_fail_closed_for_code_execution_and_browser_network():
     assert csp["connect-src"] == ("'self'",)
     assert csp["base-uri"] == ("'none'",)
     assert csp["object-src"] == ("'none'",)
-    assert csp["frame-src"] == ("'none'",)
+    assert csp["frame-src"] == ("blob:",)
     assert csp["frame-ancestors"] == ("'none'",)
     assert csp["form-action"] == ("'self'",)
 

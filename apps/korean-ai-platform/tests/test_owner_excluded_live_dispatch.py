@@ -15,6 +15,8 @@ from app.factory import create_app
 from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.errors import NoSafeRoute, PilotNotConfigured
 from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
+from app.pilot.model_registry_file import read_registry
+from app.pilot.platform import _require_owner_allowed_live_model
 from app.pilot.platform import (
     call_platform_chat_completions,
     stream_platform_chat_completions,
@@ -28,6 +30,10 @@ EXCLUDED = (
     ("b-ai/qwen3.8-flash", "b-ai"),
     ("infron/motif/motif-3", "infron"),
     ("experiential/gpt-5.6-luna", "experiential"),
+    ("kilo/stepfun/step-3.7-flash", "kilo"),
+    ("stepfun/step-3.7-flash", "stepfun"),
+    ("thinkingmachines/inkling-small:free", "thinkingmachines"),
+    ("kilo/thinkingmachines/inkling-small:free", "kilo"),
 )
 
 
@@ -117,6 +123,69 @@ def test_resolve_endpoint_excluded_returns_no_safe_route_not_model_call(mid,prov
     assert "reason_code" not in err
 
 
+@pytest.mark.parametrize("retired", [
+    "stepfun/step-3.7-flash",
+    "stepfun/step-3.7-flash:free",
+    "kilo/stepfun/step-3.7-flash",
+    "kilo/stepfun/step-3.7-flash:free",
+    "kilo/stepfun-step-3.7-flash-free",
+])
+def test_stepfun_37_all_direct_and_kilo_aliases_are_owner_retired(retired):
+    assert excluded_from_owner_customer_selection(retired)
+
+
+@pytest.mark.parametrize("allowed", [
+    "stepfun/step-5-preview-free",
+    "kilo/stepfun/step-5-preview-free",
+    "stepfun/step-3.5-flash",
+    "inception/mercury-2.5",
+])
+def test_stepfun_37_retirement_does_not_retire_unrelated_models(allowed):
+    assert not excluded_from_owner_customer_selection(allowed)
+
+
+@pytest.mark.parametrize("retired", [
+    "thinkingmachines/inkling-small:free",
+    "thinkingmachines/inkling-small",
+    "kilo/thinkingmachines/inkling-small:free",
+    "kilo/thinkingmachines-inkling-small-free",
+    "thinkingmachines/Inkling-Small:FREE",
+])
+def test_inkling_small_direct_and_discovery_aliases_are_owner_retired(retired):
+    assert excluded_from_owner_customer_selection(retired)
+
+
+@pytest.mark.parametrize("allowed", [
+    "thinkingmachines/inkling-large:free",
+    "thinkingmachines/inkling-medium:free",
+    "thinkingmachines/inkling-smallish:free",
+    "cohere/north-mini-code:free",
+    "google/gemini-3.5-flash-lite",
+    "stepfun/step-5-preview-free",
+])
+def test_inkling_small_retirement_is_specific_to_exact_model(allowed):
+    assert not excluded_from_owner_customer_selection(allowed)
+
+
+def test_inkling_small_upstream_spoof_blocked_before_network():
+    calls = []
+    def unexpected(request):
+        calls.append(request)
+        raise AssertionError("retired model reached HTTP egress")
+    async def call():
+        return await call_platform_chat_completions(
+            model_id="test-fixture/neutral-safe-id",
+            upstream_model="thinkingmachines/inkling-small:free",
+            provider="kilo",
+            platform_provider_id="kilo",
+            messages=[{"role":"user","content":"fixture"}],
+            transport=httpx.MockTransport(unexpected),
+        )
+    with pytest.raises(PilotNotConfigured):
+        asyncio.run(call())
+    assert calls == []
+
+
 def test_google_selected_route_keeps_its_own_missing_key_gate(monkeypatch):
     google="google/gemini-3.1-flash-lite"
     assert excluded_from_owner_customer_selection(google) is False
@@ -138,6 +207,8 @@ def test_separate_direct_poolside_is_not_inferred_owner_excluded():
     ("b-ai", "qwen3.8-flash"),
     ("infron", "motif/motif-3"),
     ("experiential", "gpt-5.6-luna"),
+    ("kilo", "stepfun/step-3.7-flash"),
+    ("stepfun", "stepfun/step-3.7-flash"),
 ])
 def test_spoofed_safe_public_id_cannot_evoke_owner_excluded_upstream(
     provider,upstream,monkeypatch
@@ -168,3 +239,68 @@ def test_direct_poolside_upstream_not_implicitly_excluded():
     _require_owner_allowed_live_model(
         "poolside/laguna-s-2.1","poolside/laguna-s-2.1","poolside"
     )
+
+
+
+def test_canonical_registry_model_tuples_keep_distinct_live_exclusion_gate():
+    """Every actual enabled canonical model must be admitted by the OWNER
+    exclusion *predicate* for its exact ID + upstream/provider tuple.
+
+    This is NOT a credential, quota, entitlement or live provider readiness
+    test. The 11-model set is loaded dynamically to preserve future append-only
+    model onboarding and to avoid hardcoding yesterday's 9/10-model snapshots.
+    """
+    canonical = read_registry()
+    assert canonical["models"]
+    ids = set()
+    for model in canonical["models"]:
+        mid = model["id"]
+        provider = model["provider_id"]
+        upstream = model["upstream_model"]
+        assert mid not in ids
+        ids.add(mid)
+        assert not excluded_from_owner_customer_selection(mid), mid
+        _require_owner_allowed_live_model(mid, upstream, provider)
+
+
+@pytest.mark.parametrize("provider,upstream", [
+    ("kilo", "nvidia/nemotron-3-ultra-550b-a55b:free"),
+    ("kilo", "poolside/laguna-s-2.1:free"),
+    ("b-ai", "qwen3.8-flash"),
+    ("infron", "motif/motif-3"),
+    ("experiential", "gpt-5.6-luna"),
+    ("kilo", "stepfun/step-3.7-flash"),
+])
+def test_safe_looking_public_id_cannot_stream_excluded_upstream(provider, upstream):
+    """A benign public alias must not bypass the last pre-network SSE guard.
+
+    Every injected transport is fail-on-use and credentials remain untouched.
+    """
+    hits = []
+
+    def unexpected(request):
+        hits.append(request)
+        raise AssertionError("excluded upstream sent an SSE network request")
+
+    async def invoke():
+        async for _ in stream_platform_chat_completions(
+            model_id="test-fixture/neutral-safe-id",
+            upstream_model=upstream,
+            provider=provider,
+            platform_provider_id=provider,
+            messages=[{"role": "user", "content": "synthetic fixture"}],
+            transport=httpx.MockTransport(unexpected),
+        ):
+            pass
+
+    with pytest.raises(PilotNotConfigured):
+        asyncio.run(invoke())
+    assert hits == []
+
+
+def test_non_excluded_qwen_provider_is_not_the_excluded_b_ai_identity():
+    """Owner's B.AI Qwen exclusion must not cross to unrelated Kira Qwen."""
+    _require_owner_allowed_live_model(
+        "kira/qwen3.8-flash-free", "qwen3.8-flash-free", "kira"
+    )
+    # Passing this predicate never means the provider is ready or authorized.
