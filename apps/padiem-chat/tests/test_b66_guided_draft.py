@@ -180,3 +180,27 @@ def test_oversize_and_secret_fields_are_not_stored(source):
         obj["draft"][term] = "forbidden"
         with pytest.raises(GuidedDraftError):
             normalize_guided_state(obj)
+
+
+def test_same_user_foreign_workspace_is_unreadable_and_untouched(source):
+    """The authenticated route derives workspace; query/body cannot select another slot."""
+    db, store = source
+    foreign_workspace = "owner:independent-workspace"
+    saved = json.dumps(normalize_guided_state(sample()), ensure_ascii=False)
+    db.execute(
+        "INSERT INTO b66_guided_draft (user_id,workspace_id,state_json,updated_at)"
+        " VALUES (?,?,?,?)", (A, foreign_workspace, saved, "2026-10-10")
+    )
+    db.commit()
+    own = _client(store)
+    url = "/api/b66/guided-draft?workspace_id=" + foreign_workspace
+    assert own.get(url).json() == {"ok": True, "state": None}
+    assert own.delete(url).status_code == 200
+    assert own.get(url).json() == {"ok": True, "state": None}
+    row = db.execute(
+        "SELECT state_json FROM b66_guided_draft WHERE user_id=? AND workspace_id=?",
+        (A, foreign_workspace)
+    ).fetchone()
+    assert row is not None and row["state_json"] == saved
+    assert own.put("/api/b66/guided-draft", json=sample()).status_code == 200
+    assert db.execute("SELECT COUNT(*) FROM b66_guided_draft").fetchone()[0] == 2

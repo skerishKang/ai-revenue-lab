@@ -401,7 +401,9 @@
     disableInput("새 견적은 처음으로 돌아가서 시작할 수 있습니다.");
   }
 
-  function startGuidedIfReady() {
+  let guidedStartInFlight = false;
+  async function startGuidedIfReady() {
+    if (guidedStartInFlight) return;
     const bridge = window.B66QuoteRuntimeBridge;
     const readiness = bridge && typeof bridge.readiness === "function" ? bridge.readiness() : null;
     if (!readiness || !readiness.ready) {
@@ -409,6 +411,34 @@
       addMessage("assistant", runtimeNotReadyMessage(readiness));
       setChips([{ label: "처음으로", action: showHome }]);
       disableInput("로그인과 CGI 기본 견적서 준비가 끝나면 시작할 수 있습니다.");
+      return;
+    }
+    // #3396: never silently replace an unfinished account-backed quotation.
+    // Check the canonical server slot, not a browser-local navigation snapshot.
+    if (accountSignedIn && GuidedAPI) {
+      const scopeRevision = accountScopeRevision;
+      guidedStartInFlight = true;
+      try {
+        await guidedSaveQueue.catch(() => {});
+        if (scopeRevision !== accountScopeRevision || !accountSignedIn) return;
+        const result = await GuidedAPI.load();
+        if (scopeRevision !== accountScopeRevision || !accountSignedIn) return;
+        if (!result.ok) {
+          App.toast("기존 질문형 견적 저장 여부를 확인하지 못해 새 견적을 시작하지 않았습니다.");
+          return;
+        }
+        if (result.state && !window.confirm(
+          "계정에 작성 중인 질문형 견적이 있습니다. 새 견적을 시작하면 기존 진행 상태가 덮어써집니다. 계속하시겠습니까?"
+        )) return;
+        if (scopeRevision !== accountScopeRevision || !accountSignedIn) return;
+        startGuided();
+      } catch (_) {
+        if (scopeRevision === accountScopeRevision && accountSignedIn) {
+          App.toast("기존 질문형 견적 상태를 확인하지 못해 새 견적을 시작하지 않았습니다.");
+        }
+      } finally {
+        guidedStartInFlight = false;
+      }
       return;
     }
     startGuided();
