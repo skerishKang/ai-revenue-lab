@@ -9,6 +9,8 @@ on:
       - 'scripts/experiments/benchmark_padiem_fetch_providers.py'
       - '.github/tests/test_3989_engine_living_learning_ci_scope.py'
       - '.github/workflows/living-learning-padiem-core-ci.yml'
+      - '.github/scripts/living_learning_core_parallel_3989.sh'
+      - '.github/tests/test_3989_living_learning_parallel_scope.py'
   workflow_dispatch:
 
 permissions:
@@ -44,15 +46,15 @@ jobs:
           python -m compileall -q apps/living-learning/app
           python -m compileall -q packages/padiem-ai-core/padiem_ai_core
 
-      - name: Living Learning full tests
-        working-directory: apps/living-learning
-        env:
-          LL_PROVIDER_TYPE: mock
-        run: pytest -q
+      # #3989: Both complete pytest suites remain mandatory. The same Ubuntu
+      # runner runs each from its original working directory and collects both
+      # independent statuses even if the other suite fails.
+      - name: Validate Living Learning/Core parallel failure propagation
+        run: python .github/tests/test_3989_living_learning_parallel_scope.py
 
-      - name: Padiem AI Core full tests
-        working-directory: packages/padiem-ai-core
-        run: pytest -q
+      - name: Living Learning full tests and Padiem AI Core full tests
+        shell: bash
+        run: bash .github/scripts/living_learning_core_parallel_3989.sh
 
       - name: Prove default provider remains mock
         working-directory: apps/living-learning

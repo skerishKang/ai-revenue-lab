@@ -48,6 +48,7 @@ test("candidate pick -> exact existing Engine approve; no forged file authority"
     "clawOfficeChooser", "clawOfficeFind", "clawOfficeNotice",
     "clawOfficeCandidates", "clawOfficeDecision", "clawOfficeDecisionLabel",
     "clawOfficeApprove", "clawOfficeDeny",
+    "clawOfficeResult", "clawOfficeCheckResult", "clawOfficePreview",
   ];
   const elements = Object.fromEntries(names.map((name) => [name, new Element()]));
   const doc = { getElementById: (id) => elements[id], createElement: () => new Element() };
@@ -70,6 +71,8 @@ test("candidate pick -> exact existing Engine approve; no forged file authority"
         approval_required: true, engine_run_id: "p01_3580_verified_pause",
         processing_started: false, file_read_authorized: false,
       };
+    } else if (url === "/api/claw/runs/" + RUN + "/local-result") {
+      body = { ok: true, projection: { runId: RUN, status: "completed", appended: true } };
     } else if (url === "/api/claw/approvals/decision") {
       body = { ok: true, result: { run_id: "p01_3580_verified_pause", status: "running" } };
     } else {
@@ -95,6 +98,11 @@ test("candidate pick -> exact existing Engine approve; no forged file authority"
     });
     assert.equal(view.getState().approvalPending, false);
     assert.match(elements.clawOfficeNotice.textContent, /Engine/);
+    assert.equal(elements.clawOfficeResult.hidden, false);
+    await elements.clawOfficeCheckResult.click(); await tick();
+    assert.equal(elements.clawOfficePreview.hidden, false);
+    assert.equal(elements.clawOfficePreview.href,
+      "/api/claw/office/runs/" + RUN + "/pdf");
   } finally {
     delete global.window;
     delete global.fetch;
@@ -106,6 +114,7 @@ test("absent canonical connected run never calls backend", async () => {
     "clawOfficeChooser", "clawOfficeFind", "clawOfficeNotice",
     "clawOfficeCandidates", "clawOfficeDecision", "clawOfficeDecisionLabel",
     "clawOfficeApprove", "clawOfficeDeny",
+    "clawOfficeResult", "clawOfficeCheckResult", "clawOfficePreview",
   ];
   const elements = Object.fromEntries(names.map((name) => [name, new Element()]));
   global.window = {
