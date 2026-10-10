@@ -319,3 +319,29 @@ class BrokerOfficeChunkStore:
 
 
 PRODUCTION_OFFICE_TRANSFER_ENABLED = False
+
+
+def compose_broker_office_chunks(*, storage: Any, state_port: Any,
+                                 authority_ref: str, env: Any):
+    """Feature-off by default; never infer WRITE grant from broker pairing."""
+    if str(getattr(env, "LOCAL_AGENT_OFFICE_CHUNK_TRANSFER_ENABLED", "")).lower() != "true":
+        return None
+    return BrokerOfficeChunkStore(
+        storage=storage, state_port=state_port, authority_ref=authority_ref,
+    )
+
+
+def read_broker_office_part_rpc(store: BrokerOfficeChunkStore | None,
+                                 payload: dict) -> dict:
+    """PRIVATE Service Binding only, never a public device HTTP route."""
+    if store is None or type(payload) is not dict:
+        return {"ok": False, "error": {"code": "office_transfer_not_configured"}}
+    try:
+        fields = frozenset({
+            "owner", "workspace", "run_id", "command_id", "kind", "part_index",
+        })
+        if frozenset(payload) != fields:
+            raise OfficeChunkRefused("closed private Office reader contract required")
+        return {"ok": True, "artifact_part": store.read_part(**payload)}
+    except Exception:
+        return {"ok": False, "error": {"code": "office_artifact_unavailable"}}

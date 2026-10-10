@@ -2,22 +2,14 @@ from __future__ import annotations
 from typing import Callable, TypeVar
 
 from workers import DurableObject, Response, WorkerEntrypoint
-from padiem_control_plane.local_agent_broker_http import (
-    DurableLocalAgentSessionRecord,
-    LocalAgentMaterialResolutionRequest,
-)
+from padiem_control_plane.local_agent_broker_http import DurableLocalAgentSessionRecord, LocalAgentMaterialResolutionRequest
 from local_agent_broker_device_http import LocalAgentBrokerDeviceHttpService
 from local_agent_broker_durable_runtime import LocalAgentBrokerDurableRuntime
-from local_agent_broker_material_store import (
-    MAX_DURABLE_COMMAND_MATERIAL_BYTES,
-    CloudflareDurableObjectCommandMaterialStore,
-)
+from local_agent_broker_material_store import MAX_DURABLE_COMMAND_MATERIAL_BYTES, CloudflareDurableObjectCommandMaterialStore
 from local_agent_broker_private_http_bridge import handle_private_device_fetch
-from local_agent_broker_office_chunks import BrokerOfficeChunkStore
+from local_agent_broker_office_chunks import compose_broker_office_chunks, read_broker_office_part_rpc
 from local_agent_broker_sql_state import (
-    CloudflareDurableObjectHttpSessionState,
-    CloudflareDurableObjectSerializedStateBackend,
-    safe_ref,
+    CloudflareDurableObjectHttpSessionState, CloudflareDurableObjectSerializedStateBackend, safe_ref,
 )
 
 _T = TypeVar("_T")
@@ -34,15 +26,9 @@ class LocalAgentBrokerDurableObject(DurableObject):
         self._state_port = self._runtime.state_port
         self.http_state = self._runtime.http_state
         self.material_store = self._runtime.material_store
-        # A production deployment must opt in explicitly; browser login or
-        # broker pairing never silently enables durable binary staging.
-        self.office_chunks = (
-            BrokerOfficeChunkStore(
-                storage=ctx.storage, state_port=self._runtime.state_port,
-                authority_ref=self._runtime.authority_ref(),
-            )
-            if str(getattr(env, "LOCAL_AGENT_OFFICE_CHUNK_TRANSFER_ENABLED", "")).lower() == "true"
-            else None
+        self.office_chunks = compose_broker_office_chunks(
+            storage=ctx.storage, state_port=self._runtime.state_port,
+            authority_ref=self._runtime.authority_ref(), env=env,
         )
         self._device_http = LocalAgentBrokerDeviceHttpService(
             state_port=self._runtime.state_port,
@@ -113,16 +99,7 @@ class LocalAgentBrokerDurableObject(DurableObject):
         return self._runtime.terminal_command_result(payload)
 
     async def read_office_artifact_part(self, payload: dict) -> dict:
-        if self.office_chunks is None or not isinstance(payload, dict):
-            return {"ok": False, "error": {"code": "office_transfer_not_configured"}}
-        try:
-            expected = frozenset({"owner", "workspace", "run_id", "command_id", "kind", "part_index"})
-            if frozenset(payload) != expected:
-                raise ValueError("closed private Office reader contract required")
-            result = self.office_chunks.read_part(**payload)
-            return {"ok": True, "artifact_part": result}
-        except Exception:
-            return {"ok": False, "error": {"code": "office_artifact_unavailable"}}
+        return read_broker_office_part_rpc(self.office_chunks, payload)
 
     async def fetch(self, request):
         del request
@@ -153,10 +130,7 @@ class Default(WorkerEntrypoint):
     async def open_session(self, payload: dict) -> dict:
         return await self._stub().open_session(payload)
 
-    # #3127 — the product command path is the atomic one. The split
-    # `enqueue_command` / `store_command_material` pair is deliberately absent
-    # here: it would let a caller write a durable command with no material. Both
-    # stay on the Durable Object as internal composition, unreachable from here.
+    # #3127: only atomic enqueue+material is public through this gateway.
     async def enqueue_command_with_material(self, payload: dict, material: dict) -> dict:
         return await self._stub().enqueue_command_with_material(payload, material)
 
