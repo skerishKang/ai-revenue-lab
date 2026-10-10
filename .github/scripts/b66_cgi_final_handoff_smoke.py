@@ -716,10 +716,62 @@ def _select_customer_quote_model(page, selected_model_id: str) -> None:
     print("B66_MODEL_AUTO_SELECTION=0")
 
 
+def _require_empty_guided_slot(page) -> None:
+    """Fail closed if CGI alpha already owns an unfinished guided quotation.
+
+    Never auto-confirm an overwrite or clear unknown server-owned customer state.
+    Returning only bounded booleans/status keeps quote data out of CI logs.
+    """
+    try:
+        result = page.evaluate(
+            """async () => {
+              const r=await fetch('/api/padiem/b66/guided-draft',{
+                method:'GET',credentials:'same-origin',cache:'no-store'
+              });
+              const j=await r.json().catch(()=>null);
+              return {status:r.status,valid:j?.ok===true,
+                      empty:j?.ok===true&&j.state===null};
+            }"""
+        )
+        if (not isinstance(result, dict) or result.get("status") != 200
+                or result.get("valid") is not True):
+            _fail("guided_slot_preflight_unavailable")
+        if result.get("empty") is not True:
+            _fail("guided_slot_preexisting_no_mutation")
+    except SmokeFailure:
+        raise
+    except Exception as exc:
+        raise SmokeFailure("guided_slot_preflight_failed") from exc
+    print("GUIDED_ACCOUNT_SLOT_EMPTY=PASS", flush=True)
+
+
+def _require_guided_input_ready(page) -> None:
+    """Wait for startGuidedIfReady's async D1 check to finish before first fill."""
+    try:
+        page.wait_for_function(
+            """() => {
+              const input=document.getElementById('easyComposer');
+              const send=document.getElementById('easySend');
+              const view=window.history.state?.b66View;
+              return view==='guided' && !!input && !!send &&
+                !input.disabled && !send.disabled &&
+                input.getClientRects().length>0;
+            }""",
+            timeout=12000,
+        )
+    except Exception as exc:
+        raise SmokeFailure("guided_first_question_not_ready") from exc
+    print("GUIDED_FIRST_INPUT_READY=PASS", flush=True)
+
+
 def _guided(page, counters: Counters) -> None:
     before = counters.interpret_posts
     print("SMOKE_STAGE=GUIDED_START", flush=True)
-    page.locator("#guidedStarter").click()
+    try:
+        page.locator("#guidedStarter").click(timeout=8000)
+    except Exception as exc:
+        raise SmokeFailure("guided_start_button_not_actionable") from exc
+    _require_guided_input_ready(page)
 
     _send(page, "\uac00\uc774\ub4dc\ud14c\uc2a4\ud2b8\uac74\uc124")
     _click_chip_index(page, index=0, expected_count=1, stage="recipient_person_none")
@@ -994,6 +1046,7 @@ def run_live(username: str, password: str, selected_model_id: str) -> int:
             print("ASSIGNED_SAVED_SKILL_COUNT=1")
             print("RUNTIME_READINESS=PASS")
 
+            _require_empty_guided_slot(page)
             _guided(page, counters)
             _complete_free_form(page, counters, selected_model_id)
             _partial_followup(page, counters, selected_model_id)
