@@ -66,6 +66,31 @@ class WorkerProbeParallelContract(unittest.TestCase):
             workflow.index("Python Worker bundle dry-run"),
         )
 
+    def test_each_real_probe_reports_phase_boundaries_without_changing_assertions(self):
+        # Linux CI phase markers distinguish Workerd/Pyodide start from the
+        # actual HTTP and Python assertion work, with no probe or gate skipped.
+        phases = ("START", "WORKER_LAUNCHED", "READY",
+                  "REQUEST_START", "RESPONSE", "ASSERT_PASS")
+        for name, (success, _, _, _) in PROBES.items():
+            with self.subTest(name=name):
+                source_path = SCRIPTS / f"b62_worker_probe_{name}.sh"
+                script = source_path.read_text(encoding="utf-8")
+                label = name.upper()
+                self.assertIn(f"B62_PROBE_TIMING_LABEL={label}", script)
+                self.assertIn("B62_WORKER_PHASE_%s_%s_MS=%s", script)
+                self.assertIn('$(date +%s%3N)', script)
+                positions = [script.index(f"b62_probe_mark {p}") for p in phases]
+                self.assertEqual(positions, sorted(positions))
+                self.assertLess(script.index("b62_probe_mark READY"), script.index("HTTP_CODE="))
+                self.assertLess(script.index("b62_probe_mark RESPONSE"), script.index("if [ \"$HTTP_CODE\" != \"200\" ]"))
+                self.assertLess(script.index(success), script.index("b62_probe_mark ASSERT_PASS"))
+                self.assertIn("if [ \"$READY\" -ne 1 ]; then", script)
+                self.assertIn("if [ \"$HTTP_CODE\" != \"200\" ]; then", script)
+                syntax = subprocess.run(["bash", "-n", str(source_path)],
+                                        capture_output=True, text=True, timeout=5,
+                                        check=False)
+                self.assertEqual(syntax.returncode, 0, syntax.stderr)
+
     def test_cold_cache_npx_preflight_fails_closed_before_any_real_probe(self):
         runner = RUNNER.read_text(encoding="utf-8")
         self.assertIn("npx --yes wrangler@4.130.0 --version", runner)
