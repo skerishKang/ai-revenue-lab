@@ -105,6 +105,84 @@ function padiemTarget(url, method) {
   return null;
 }
 
+/* ── #3871 B66 브라우저 Drive 설정 전달 경로 ──
+   Pages 프로젝트 환경변수(B66 전용)에서 **공개 브라우저 값만** 읽어 정확한 경로로 제공한다.
+   - 값이 없거나 형식이 틀리면 빈 문자열을 내보낸다(fail-closed). 기능은 비활성으로 남는다.
+   - 자격증명·토큰·서버 시크릿은 어떤 경우에도 내보내지 않고, 오류 응답에도 값을 담지 않는다.
+   - 기존 정적 자산 경로(env.ASSETS.fetch)와 PADIEM 프록시는 그대로 둔다. */
+const DRIVE_CONFIG_PATH = "/drive-config.js";
+const DRIVE_CONFIG_ENV = {
+  clientId: "B66_DRIVE_CLIENT_ID",
+  pickerAppId: "B66_DRIVE_PICKER_APP_ID",
+  pickerDeveloperKey: "B66_DRIVE_PICKER_DEVELOPER_KEY"
+};
+/* 승인된 공개 값의 형식만 통과시킨다. 그 외 문자는 애초에 통과할 수 없다. */
+const BROWSER_CLIENT_ID_PATTERN = /^[0-9A-Za-z._-]{6,200}\.apps\.googleusercontent\.com$/;
+const BROWSER_PICKER_APP_ID_PATTERN = /^[0-9]{1,20}$/;
+const BROWSER_PICKER_KEY_PATTERN = /^[0-9A-Za-z_.-]{16,128}$/;
+const DRIVE_CONFIG_MAX_CHARS = 512;
+
+function readEnvString(env, name) {
+  if (!env) return "";
+  let value;
+  try {
+    value = env[name];
+  } catch (_) {
+    return "";
+  }
+  if (typeof value !== "string") return "";
+  const text = value.trim();
+  if (!text || text.length > DRIVE_CONFIG_MAX_CHARS) return "";
+  return text;
+}
+
+function approvedBrowserValue(env, name, pattern) {
+  const value = readEnvString(env, name);
+  if (!value || !pattern.test(value)) return "";
+  return value;
+}
+
+/* <script> 안에서 탈출할 수 없도록 JSON 직렬화 후 위험 문자를 이스케이프한다. */
+function jsStringLiteral(value) {
+  return JSON.stringify(String(value))
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
+}
+
+function driveConfigBody(env) {
+  const clientId = approvedBrowserValue(env, DRIVE_CONFIG_ENV.clientId, BROWSER_CLIENT_ID_PATTERN);
+  const pickerAppId = approvedBrowserValue(env, DRIVE_CONFIG_ENV.pickerAppId, BROWSER_PICKER_APP_ID_PATTERN);
+  const pickerDeveloperKey = approvedBrowserValue(env, DRIVE_CONFIG_ENV.pickerDeveloperKey, BROWSER_PICKER_KEY_PATTERN);
+  return [
+    "/* B66 Drive 런타임 설정 (Pages 환경변수에서 생성). 값이 없거나 형식이 틀리면 빈 문자열이다. */",
+    "window.B66_DRIVE_CLIENT_ID = " + jsStringLiteral(clientId) + ";",
+    "window.B66_DRIVE_PICKER_APP_ID = " + jsStringLiteral(pickerAppId) + ";",
+    "window.B66_DRIVE_PICKER_DEVELOPER_KEY = " + jsStringLiteral(pickerDeveloperKey) + ";",
+    ""
+  ].join("\n");
+}
+
+function handleDriveConfig(request, env) {
+  const headers = new Headers({
+    "Content-Type": "application/javascript; charset=utf-8",
+    "Cache-Control": "no-store",
+    "X-Content-Type-Options": "nosniff"
+  });
+  if (request.method === "GET") return new Response(driveConfigBody(env), { status: 200, headers });
+  if (request.method === "HEAD") return new Response(null, { status: 200, headers });
+  return new Response(null, {
+    status: 405,
+    headers: {
+      "Allow": "GET, HEAD",
+      "Content-Type": "application/javascript; charset=utf-8",
+      "Cache-Control": "no-store"
+    }
+  });
+}
+
 function relaySetCookies(source, target) {
   const getSetCookie = source && typeof source.getSetCookie === "function"
     ? source.getSetCookie.bind(source)
@@ -150,7 +228,15 @@ async function handlePadiemBridge(request, url, env) {
   }
 
   const target = new URL(upstreamPath, PADIEM_CHAT_ORIGIN);
-  if (upstreamPath === "/api/b66/quote/preview-base") target.search = url.search;
+  // Google redirects to the B66 Pages callback with ?state=...&code=....
+  // Preserve that query exactly or the Chat backend cannot verify the signed
+  // OAuth-state cookie and must reject an otherwise valid login (#3871).
+  // Keep the existing strict route allowlist: other bridge queries are NOT
+  // forwarded, apart from the separately bounded preview/limit routes.
+  if (upstreamPath === "/api/b66/quote/preview-base" ||
+      upstreamPath === "/auth/google/callback") {
+    target.search = url.search;
+  }
   const init = {
     method: request.method,
     headers,
@@ -216,6 +302,9 @@ export default {
     }
     if (url.pathname === PADIEM_PREFIX || url.pathname.startsWith(PADIEM_PREFIX + "/")) {
       return handlePadiemBridge(request, url, env);
+    }
+    if (url.pathname === DRIVE_CONFIG_PATH) {
+      return handleDriveConfig(request, env);
     }
     return env.ASSETS.fetch(request);
   }

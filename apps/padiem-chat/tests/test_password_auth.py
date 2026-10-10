@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+from functools import lru_cache
 from datetime import datetime, timedelta, timezone
 
 import httpx
@@ -30,6 +31,17 @@ from app.password_auth import (
 )
 
 SESSION_SECRET = "password-auth-session-secret-not-real-credential-000000"
+
+
+@lru_cache(maxsize=1)
+def _registered_password_hash() -> str:
+    """Real production PBKDF2 credential reused by isolated state-machine tests.
+
+    KDF iterations and authentication verification remain unchanged. Tests
+    exercising hashing itself still call hash_password afresh, and registration
+    still hashes through the real application route for each request.
+    """
+    return hash_password("correct horse battery staple")
 
 
 def password_settings(**overrides) -> Settings:
@@ -222,7 +234,7 @@ async def test_password_login_accepts_username_or_email_and_reuses_tenant() -> N
     store = MemoryStore()
     shadow = ShadowStore()
     authority = Authority()
-    encoded = hash_password("correct horse battery staple")
+    encoded = _registered_password_hash()
     await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
     authority.memberships[:] = ["tenant_0123456789abcdef0123456789abcdef"]
     app = create_app(
@@ -311,7 +323,7 @@ async def test_login_failures_are_nondisclosing_across_missing_wrong_and_locked(
     store = MemoryStore()
     shadow = ShadowStore()
     authority = Authority()
-    encoded = hash_password("correct horse battery staple")
+    encoded = _registered_password_hash()
     await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
     await store.register_password_user("second.user", "second@example.test", "Second", encoded)
     authority.memberships[:] = ["tenant_0123456789abcdef0123456789abcdef"]
@@ -352,7 +364,7 @@ async def test_locked_attempts_do_not_extend_lock() -> None:
     # on schedule and cannot be stretched by further unauthenticated
     # attempts.
     store = MemoryStore()
-    encoded = hash_password("correct horse battery staple")
+    encoded = _registered_password_hash()
     await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
     app = create_app(
         password_settings(),
@@ -389,7 +401,7 @@ async def test_expired_lock_decays_instead_of_ratcheting() -> None:
     # A lapsed lock restarts the count: one stray failure after expiry
     # must not re-lock the account on its own.
     store = MemoryStore()
-    encoded = hash_password("correct horse battery staple")
+    encoded = _registered_password_hash()
     profile = await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
     past = (datetime.now(timezone.utc) - timedelta(minutes=1)).isoformat()
     await store.record_password_failure(profile.id, 5, past)
@@ -427,7 +439,7 @@ async def test_success_resets_failure_count() -> None:
     store = MemoryStore()
     shadow = ShadowStore()
     authority = Authority()
-    encoded = hash_password("correct horse battery staple")
+    encoded = _registered_password_hash()
     await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
     authority.memberships[:] = ["tenant_0123456789abcdef0123456789abcdef"]
     app = create_app(
@@ -475,7 +487,7 @@ async def test_verifier_runs_for_missing_and_existing_identifiers(monkeypatch) -
 
     monkeypatch.setattr(auth_routes, "verify_password", counting)
     store = MemoryStore()
-    encoded = hash_password("correct horse battery staple")
+    encoded = _registered_password_hash()
     await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
     app = create_app(password_settings(), history_store=store)
 
@@ -545,7 +557,7 @@ async def test_exhausted_abuse_budget_still_relocks_and_escalates() -> None:
     # be re-formed by the next full failure block, at an escalated duration.
     store = MemoryStore()
     abuse = InMemoryAuthAbuseStore()
-    encoded = hash_password("correct horse battery staple")
+    encoded = _registered_password_hash()
     profile = await store.register_password_user(
         "owner.test",
         "owner@example.test",
@@ -638,7 +650,7 @@ async def test_saturated_identifier_budget_does_not_weaken_unrelated_account() -
     # different account reached from the same network.
     store = MemoryStore()
     abuse = InMemoryAuthAbuseStore()
-    encoded = hash_password("correct horse battery staple")
+    encoded = _registered_password_hash()
     await store.register_password_user("victim.test", "victim@example.test", "Victim", encoded)
     await store.register_password_user(
         "bystander.test", "bystander@example.test", "Bystander", encoded
@@ -682,7 +694,7 @@ async def test_saturated_network_and_global_scopes_never_disable_protection() ->
     # fail-open and global fail-open regressions.
     store = MemoryStore()
     abuse = InMemoryAuthAbuseStore()
-    encoded = hash_password("correct horse battery staple")
+    encoded = _registered_password_hash()
     await store.register_password_user("bystander.test", "bystander@example.test", "Bystander", encoded)
     settings = password_settings()
     app = create_app(
@@ -731,7 +743,7 @@ async def test_correct_password_recovers_after_attacker_abuse_state() -> None:
     # authenticates even though the attacker burned the whole abuse window.
     store = MemoryStore()
     abuse = InMemoryAuthAbuseStore()
-    encoded = hash_password("correct horse battery staple")
+    encoded = _registered_password_hash()
     profile = await store.register_password_user(
         "owner.test", "owner@example.test", "Owner", encoded
     )
@@ -775,7 +787,7 @@ async def test_missing_existing_locked_and_window_exhausted_are_indistinguishabl
     # spent. No throttle state may leak through status, code, or message.
     store = MemoryStore()
     abuse = InMemoryAuthAbuseStore()
-    encoded = hash_password("correct horse battery staple")
+    encoded = _registered_password_hash()
     await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
     await store.register_password_user(
         "second.test", "second@example.test", "Second", encoded
@@ -823,7 +835,7 @@ async def test_public_header_matrix_is_identical_across_failure_classes() -> Non
     # hard failure rather than an unnoticed oracle.
     store = MemoryStore()
     abuse = InMemoryAuthAbuseStore()
-    encoded = hash_password("correct horse battery staple")
+    encoded = _registered_password_hash()
     await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
     await store.register_password_user(
         "second.test", "second@example.test", "Second", encoded
@@ -906,7 +918,7 @@ async def test_verifier_runs_exactly_once_per_attempt(monkeypatch) -> None:
 
     store = MemoryStore()
     abuse = InMemoryAuthAbuseStore()
-    encoded = hash_password("correct horse battery staple")
+    encoded = _registered_password_hash()
     await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
     app = create_app(
         password_settings(),
@@ -960,7 +972,7 @@ async def test_abuse_store_outage_keeps_base_lock_without_oracle() -> None:
             raise RuntimeError("simulated auth-abuse store outage")
 
     store = MemoryStore()
-    encoded = hash_password("correct horse battery staple")
+    encoded = _registered_password_hash()
     profile = await store.register_password_user(
         "owner.test", "owner@example.test", "Owner", encoded
     )
@@ -1011,7 +1023,7 @@ async def test_denied_subject_does_not_consume_another_subject_counter() -> None
     # subject's counter.
     store = MemoryStore()
     abuse = InMemoryAuthAbuseStore()
-    encoded = hash_password("correct horse battery staple")
+    encoded = _registered_password_hash()
     await store.register_password_user("first.test", "first@example.test", "First", encoded)
     await store.register_password_user("second.test", "second@example.test", "Second", encoded)
     app = create_app(
@@ -1059,7 +1071,7 @@ async def test_durable_abuse_keys_never_contain_raw_identifier_or_ip() -> None:
 
     store = MemoryStore()
     abuse = CapturingStore()
-    encoded = hash_password("correct horse battery staple")
+    encoded = _registered_password_hash()
     await store.register_password_user(
         "private.user@example.test", "private.user@example.test", "Private", encoded
     )
@@ -1151,7 +1163,7 @@ async def test_failure_durable_shape_is_equalized_across_classes(
 
     abuse = ShapeProbeAbuseStore()
     store = ShapeProbeHistoryStore()
-    encoded = hash_password("correct horse battery staple")
+    encoded = _registered_password_hash()
     await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
     await store.register_password_user(
         "second.test", "second@example.test", "Second", encoded
@@ -1212,7 +1224,7 @@ async def test_every_failure_path_blocks_on_durable_abuse_gate() -> None:
     abuse = ShapeProbeAbuseStore()
     abuse.released.clear()
     store = ShapeProbeHistoryStore()
-    encoded = hash_password("correct horse battery staple")
+    encoded = _registered_password_hash()
     await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
     app = create_app(
         password_settings(), history_store=store, auth_abuse_store=abuse
@@ -1273,7 +1285,7 @@ async def test_decoy_keyspace_stays_bounded_for_arbitrary_missing_identifiers() 
     # every real identifier bucket.
     abuse = InMemoryAuthAbuseStore()
     store = MemoryStore()
-    encoded = hash_password("correct horse battery staple")
+    encoded = _registered_password_hash()
     await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
     app = create_app(
         password_settings(), history_store=store, auth_abuse_store=abuse
@@ -1314,7 +1326,7 @@ async def test_locked_attempts_never_mutate_real_identifier_counter() -> None:
     # become a new remote lock amplification.
     abuse = InMemoryAuthAbuseStore()
     store = MemoryStore()
-    encoded = hash_password("correct horse battery staple")
+    encoded = _registered_password_hash()
     await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
     app = create_app(
         password_settings(), history_store=store, auth_abuse_store=abuse
@@ -1369,7 +1381,7 @@ async def test_decoy_saturation_never_feeds_real_lock_decisions() -> None:
 
     abuse = InMemoryAuthAbuseStore()
     store = MemoryStore()
-    encoded = hash_password("correct horse battery staple")
+    encoded = _registered_password_hash()
     await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
     app = create_app(
         password_settings(), history_store=store, auth_abuse_store=abuse

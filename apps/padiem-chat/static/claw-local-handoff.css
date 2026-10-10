@@ -181,3 +181,37 @@
     animation: none !important;
   }
 }
+
+/* #3650 — the local/nonprod connect initiating affordance. Invisible unless
+   the server composition explicitly installed a connect port. */
+.claw-local-connect {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.claw-local-connect[hidden] {
+  display: none;
+}
+
+.claw-local-connect-cta {
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.14));
+  background: transparent;
+  color: inherit;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.claw-local-connect-cta:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.claw-local-connect-note {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.75;
+}

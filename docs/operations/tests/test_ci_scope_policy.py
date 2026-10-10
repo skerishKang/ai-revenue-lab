@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import json
 from fnmatch import fnmatchcase
 from pathlib import Path
 
@@ -21,19 +22,22 @@ def test_b62_browser_qa_does_not_fan_out_for_tests_or_worker_entrypoint_only() -
     it must explicitly exclude those two non-browser surfaces.
     """
 
-    browser_workflows = sorted(WORKFLOWS.glob("b62-*-browser-qa.yml"))
-    assert browser_workflows, "expected B62 browser QA workflows"
-
-    for path in browser_workflows:
-        text = path.read_text(encoding="utf-8")
-        if 'apps/padiem-chat/**' not in text:
+    manifest_path = REPO / ".github" / "ci" / "b62_browser_qa_paths.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))["jobs"]
+    assert len(manifest) == 16
+    unified = (WORKFLOWS / "b62-browser-qa-unified.yml").read_text(encoding="utf-8")
+    assert not list(WORKFLOWS.glob("b62-*-browser-qa.yml"))
+    for job, paths in manifest.items():
+        assert f"  {job}:" in unified, job
+        assert isinstance(paths, list), job
+        if "apps/padiem-chat/**" not in paths:
             continue
-        assert '!apps/padiem-chat/tests/**' in text, (
-            f"{path.name} broadly watches apps/padiem-chat/** but does not "
+        assert "!apps/padiem-chat/tests/**" in paths, (
+            f"{job} broadly watches apps/padiem-chat/** but does not "
             "exclude tests-only changes"
         )
-        assert '!apps/padiem-chat/worker.py' in text, (
-            f"{path.name} broadly watches apps/padiem-chat/** but does not "
+        assert "!apps/padiem-chat/worker.py" in paths, (
+            f"{job} broadly watches apps/padiem-chat/** but does not "
             "exclude the Cloudflare Worker entrypoint that this browser QA "
             "does not execute"
         )
@@ -60,10 +64,24 @@ B62_CHAT_EXPECTED_PATHS = (
     "packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py",
     "reference/business-62-padiem-chat-v1/**",
     ".github/scripts/b62_cloudflare_*.py",
+    ".github/scripts/b14_model_registration_ci_plan.py",
+    # #3989 scoped Chat CI source/guard changes always trigger FULL lane.
+    ".github/scripts/b62_ci_impact_scope_3989.py",
+    ".github/tests/test_b62_ci_impact_scope_3989.py",
+    ".github/scripts/b62_worker_probe_*.sh",
+    ".github/tests/test_3989_b62_worker_probe_parallel.py",
+    ".github/tests/test_3989_b62_parallel_runtime_jobs.py",
     ".github/workflows/b62-padiem-chat-ci.yml",
     ".github/workflows/b62-cloudflare-worker-deploy.yml",
 )
-B62_CHAT_EXPECTED_JOBS = {"b62-test", "b14-multimodal-test"}
+B62_CHAT_EXPECTED_JOBS = {
+    "registry-ci-plan",
+    "b62-registry-contract",
+    "b62-test",
+    "b62-full-suite",
+    "b62-worker-suite",
+    "b14-multimodal-test",
+}
 
 
 def _b62_chat_ci_document() -> dict:
@@ -83,7 +101,7 @@ def _assert_b62_chat_ci_parity(document: dict) -> None:
     """Pin both event scopes to #3764, not merely to one another.
 
     If both trigger arrays drift in the same way, simple equality would pass.
-    An independent eight-path source-contract pin must also reject that case.
+    An independent exact path source-contract pin must also reject that case.
     """
     events = _b62_chat_ci_events(document)
     assert set(events) == {"push", "pull_request", "workflow_dispatch"}
@@ -97,18 +115,79 @@ def _assert_b62_chat_ci_parity(document: dict) -> None:
     for name, block in (("push", push), ("pull_request", review)):
         paths = block["paths"]
         assert isinstance(paths, list)
-        assert len(paths) == 8 and len(set(paths)) == 8, name
+        assert len(paths) == len(B62_CHAT_EXPECTED_PATHS) == len(set(paths)), name
         assert tuple(paths) == B62_CHAT_EXPECTED_PATHS, (
             f"{name} changed #3764 dependency trigger paths"
         )
     assert push["paths"] == review["paths"], "main and PR coverage diverged"
     assert set(document["jobs"]) == B62_CHAT_EXPECTED_JOBS, (
-        "preserve B62's two existing CI jobs"
+        "preserve the B62 job graph and required gate"
+    )
+
+
+
+# #3989: expensive B62 main regression should follow latest qualifying commit.
+# The exact workflow expression is pinned below; the Python examples document
+# its event-specific group semantics, not an alternate runtime implementation.
+B62_EXPECTED_CONCURRENCY = (
+    "b62-padiem-chat-ci-${{ "
+    "github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) "
+    "|| github.event_name == 'push' && format('push-{0}', github.ref) "
+    "|| format('manual-{0}', github.run_id) }}"
+)
+
+
+def test_b62_main_push_ci_coalescing_preserves_stable_required_gate() -> None:
+    workflow = _b62_chat_ci_document()
+    concurrency = workflow["concurrency"]
+    assert set(concurrency) == {"group", "cancel-in-progress"}
+    assert concurrency["group"] == B62_EXPECTED_CONCURRENCY
+    assert concurrency["cancel-in-progress"] is True
+    # Cancellation applies to the entire *test-only* B62 workflow; the
+    # stable status gate still requires both real host and Worker jobs.
+    aggregate = workflow["jobs"]["b62-test"]
+    assert aggregate["name"] == "b62-test"
+    assert aggregate["if"] == "always()"
+    assert "b62-full-suite" in aggregate["needs"]
+    assert "b62-worker-suite" in aggregate["needs"]
+
+
+def test_b62_main_push_group_is_distinct_from_pr_and_manual_groups() -> None:
+    # The above pinned event expression must yield precisely these outcomes:
+    # - two B62-relevant main pushes share one group (supersede stale work)
+    # - other PRs never cancel each other, and force-pushes to one PR can
+    #   supersede only that PR's previous test run
+    # - manually dispatched diagnostics remain independent even on main
+    def example_group(event: str, *, number: int = 0,
+                      ref: str = "refs/heads/main", run_id: int = 0) -> str:
+        if event == "pull_request":
+            return f"b62-padiem-chat-ci-pr-{number}"
+        if event == "push":
+            return f"b62-padiem-chat-ci-push-{ref}"
+        return f"b62-padiem-chat-ci-manual-{run_id}"
+
+    assert example_group("push", run_id=38009178502) == example_group(
+        "push", run_id=38009215242
+    )
+    assert example_group("pull_request", number=4083, run_id=1) == example_group(
+        "pull_request", number=4083, run_id=2
+    )
+    assert example_group("pull_request", number=4083) != example_group(
+        "pull_request", number=4084
+    )
+    assert example_group("push", ref="refs/heads/main") != example_group(
+        "pull_request", number=4083
+    )
+    assert example_group("workflow_dispatch", run_id=9001) != example_group(
+        "workflow_dispatch", run_id=9002
+    )
+    assert example_group("workflow_dispatch", run_id=9001) != example_group(
+        "push", ref="refs/heads/main"
     )
 
 
 def _b62_chat_segment_glob(pattern: str, path: str) -> bool:
-    """GitHub path-filter glob subset needed for the eight retained entries.
+    """GitHub path-filter glob subset needed for the current retained entries.
 
     Segment-wise fnmatch prevents a single '*' from crossing '/'.
     '**' matches zero or more complete path segments.
@@ -138,13 +217,13 @@ def _b62_chat_ci_path_triggers(path: str, event: str, branch: str = "main") -> b
     return any(_b62_chat_segment_glob(p, path) for p in events[event]["paths"])
 
 
-def test_b62_chat_ci_push_and_pr_share_exact_eight_path_contract() -> None:
+def test_b62_chat_ci_push_and_pr_share_exact_dependency_path_contract() -> None:
     """Existing #3527 policy job runs this test on every PR."""
     _assert_b62_chat_ci_parity(_b62_chat_ci_document())
 
 
 @pytest.mark.parametrize("event", ("push", "pull_request"))
-@pytest.mark.parametrize("index", range(8))
+@pytest.mark.parametrize("index", range(len(B62_CHAT_EXPECTED_PATHS)))
 def test_b62_chat_ci_deleted_dependency_path_is_rejected(event: str, index: int) -> None:
     document = deepcopy(_b62_chat_ci_document())
     del _b62_chat_ci_events(document)[event]["paths"][index]
@@ -153,7 +232,7 @@ def test_b62_chat_ci_deleted_dependency_path_is_rejected(event: str, index: int)
 
 
 @pytest.mark.parametrize("event", ("push", "pull_request"))
-@pytest.mark.parametrize("index", range(8))
+@pytest.mark.parametrize("index", range(len(B62_CHAT_EXPECTED_PATHS)))
 def test_b62_chat_ci_modified_dependency_path_is_rejected(event: str, index: int) -> None:
     document = deepcopy(_b62_chat_ci_document())
     paths = _b62_chat_ci_events(document)[event]["paths"]
@@ -162,7 +241,7 @@ def test_b62_chat_ci_modified_dependency_path_is_rejected(event: str, index: int
         _assert_b62_chat_ci_parity(document)
 
 
-@pytest.mark.parametrize("index", range(8))
+@pytest.mark.parametrize("index", range(len(B62_CHAT_EXPECTED_PATHS)))
 def test_b62_chat_ci_matching_two_sided_drift_is_rejected(index: int) -> None:
     """Equality alone cannot catch a shared accidental narrowing."""
     document = deepcopy(_b62_chat_ci_document())
@@ -191,6 +270,7 @@ def test_b62_chat_ci_dependency_globs_match_only_intended_scope(event: str) -> N
         "packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py",
         "reference/business-62-padiem-chat-v1/template.json",
         ".github/scripts/b62_cloudflare_deployed_parity.py",
+        ".github/scripts/b14_model_registration_ci_plan.py",
         ".github/workflows/b62-padiem-chat-ci.yml",
         ".github/workflows/b62-cloudflare-worker-deploy.yml",
     )

@@ -50,11 +50,21 @@ class FakeB14Executor:
         self.response = response
         self.raises = raises
         self.calls = []
+        self.model_parameters = []
 
     async def execute_quote_text(
-        self, *, route, messages, additional_system_context, requirements
+        self,
+        *,
+        route,
+        messages,
+        additional_system_context,
+        requirements,
+        model_parameters=None,
     ):
         self.calls.append((route, messages, additional_system_context, requirements))
+        # Recorded so a caller that forwards an unexpected native parameter is
+        # visible here rather than silently accepted.
+        self.model_parameters.append(model_parameters)
         if self.raises is not None:
             raise self.raises
         return self.response if self.response is not None else {

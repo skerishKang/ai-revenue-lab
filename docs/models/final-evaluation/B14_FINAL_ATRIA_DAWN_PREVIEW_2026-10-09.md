@@ -1,3 +1,11 @@
+<!-- OWNER_DEFERRED_20261010 -->
+> **Owner 결정(2026-10-10):** 수동 SSE 운영 HTTP200/[DONE] 성공과 별도로 간헐적 HTTP504 및 견적→PDF E2E 미검증이 있어 **모델 평가 후순위·추가 대응 보류**. [#3922](https://github.com/skerishKang/ai-revenue-lab/issues/3922)는 **장애 해결 선언 없이 보류 종료**했습니다. 안전 진단 PR #4008 및 SSE UI는 이미 병합·운영 반영. [현재 평가 우선순위](B14_OWNER_EVALUATION_PRIORITY_2026-10-10.md).
+<!-- /OWNER_DEFERRED_20261010 -->
+
+<!-- B14_OFFICIAL_PARAMETER_AUDIT_20261010 -->
+> **2026-10-10 최신 해석:** [B14 공식 파라미터·재시험 판단 감사](B14_OFFICIAL_PARAMETER_REVALIDATION_2026-10-10.md)를 먼저 확인하세요. 아래 과거 실측·우열·추천은 **기록 당시 파라미터에서의 결과**로만 유지합니다. 기존 평가에서 사용한 temperature=0 및 공통 max_tokens는 공식 권장 설정으로 간주하지 않습니다. 공식 공급사 기본값/추론/출력 예산을 검증하는 별도 재시험과 B14 전달 검증 전에는 최종 성능 우열로 사용하지 않습니다. 모델 자동 선택, 대체 라우팅 또는 운영 배포를 승인하는 문서가 아닙니다.
+<!-- /B14_OFFICIAL_PARAMETER_AUDIT_20261010 -->
+
 # B14 신규 독립 최종 평가 — Atria Dawn Preview
 
 **독립 라운드:** `B14_FINAL_MODEL_EVALUATION_2026-10-09`

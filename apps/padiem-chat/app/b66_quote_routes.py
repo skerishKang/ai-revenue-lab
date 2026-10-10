@@ -26,6 +26,12 @@ from .b66_quote_conversation import (
     B66QuoteConversationError,
     MAX_CONVERSATION_CHARS,
 )
+from .b66_reasoning_level import (
+    DEFAULT_REASONING_LEVEL,
+    reasoning_options_for_model,
+    reasoning_transport_available,
+    validate_reasoning_level,
+)
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .claw_memory_routes import _resolve_memory_workspace
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
@@ -169,9 +175,27 @@ async def _authorize_quote_usage(request: Request, uid: str) -> JSONResponse | N
         )
 
 
-async def _interpret_reserved(interpret_fn, *, message: str, skill: dict, model_id: str):
+async def _interpret_reserved(
+    interpret_fn,
+    *,
+    message: str,
+    skill: dict,
+    model_id: str,
+    reasoning_level: str | None = None,
+):
     try:
-        value = interpret_fn(message=message, skill=skill, model_id=model_id)
+        # An omitted reasoning level is passed as an absence, exactly like an
+        # omitted model_id, so legacy interpreters and quote-parser clients that
+        # do not know the #3906 keyword keep their original call shape.
+        if reasoning_level is None:
+            value = interpret_fn(message=message, skill=skill, model_id=model_id)
+        else:
+            value = interpret_fn(
+                message=message,
+                skill=skill,
+                model_id=model_id,
+                reasoning_level=reasoning_level,
+            )
         return await value if inspect.isawaitable(value) else value
     finally:
         # The dispatch adapter marks the receipt before the actual B14 POST.
@@ -197,6 +221,17 @@ def _model_route_error_response(exc: B66ModelRouteError) -> JSONResponse:
         )
         response.headers["X-B66-Interpret-Failure-Stage"] = "model_selection"
     return response
+
+
+def _reasoning_transport_supported(request: Request) -> bool:
+    """Whether the shared Core transport can carry native model parameters.
+
+    The flag is set by whoever wires the B14/Core client that implements the
+    validated opt-in contract (#3977). Absent or non-True means B66 offers the
+    provider default only and refuses an explicit level before dispatch. It is
+    never inferred, defaulted to True, or read from the request itself.
+    """
+    return getattr(request.app.state, "b66_reasoning_transport_supported", False) is True
 
 
 def _owner(request: Request) -> str | None:
@@ -327,7 +362,25 @@ async def b66_quote_models(request: Request) -> JSONResponse:
         isinstance(proposed_default, str)
         and any(row["model_id"] == proposed_default for row in models)
     ) else None
-    return JSONResponse({"ok": True, "models": models, "default_model_id": default}, headers=_NO_STORE)
+    # Per-model selectable reasoning levels (#3906). Each row keeps its exact
+    # registered ID and gains only the options that model may actually use.
+    # Until B14 attests per-model capability (#3977), every model offers only
+    # the fail-closed provider default, so no unverified option is ever shown.
+    rows = [
+        {
+            "model_id": row["model_id"],
+            "name": row["name"],
+            "reasoning_levels": reasoning_options_for_model(
+                row["model_id"],
+                transport_supported=_reasoning_transport_supported(request),
+            ),
+        }
+        for row in models
+    ]
+    return JSONResponse(
+        {"ok": True, "models": rows, "default_model_id": default},
+        headers=_NO_STORE,
+    )
 
 
 async def b66_quote_interpret(request: Request) -> JSONResponse:
@@ -338,15 +391,43 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
     data = await _json(request)
     if isinstance(data, JSONResponse):
         return data
-    if set(data) - {"saved_skill_id", "message", "model_id"}:
+    if set(data) - {"saved_skill_id", "message", "model_id", "reasoning_level"}:
         return _error(400, "unsupported_field", "지원되지 않는 요청 필드가 있습니다.")
     saved_skill_id = data.get("saved_skill_id")
     message = data.get("message")
     model_id = data.get("model_id")
+    reasoning_level = data.get("reasoning_level")
     if not isinstance(model_id, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}", model_id):
         return _error(400, "model_selection_required", "사용할 AI 모델을 선택해 주세요.")
     if model_id in {"b14/auto"} or model_id.startswith("padiem-profile/"):
         return _error(400, "model_selection_required", "사용할 AI 모델을 선택해 주세요.")
+    # Explicit reasoning level is validated against the SAME exact model the
+    # user chose (#3906). An unsupported level is rejected with an explainable
+    # 4xx and is never ignored, downgraded, or silently replaced by another
+    # level. An omitted level keeps the pre-existing request behaviour.
+    try:
+        accepted_reasoning_level = validate_reasoning_level(model_id, reasoning_level)
+    except ValueError:
+        return _error(
+            400,
+            "unsupported_reasoning_level",
+            "선택한 모델이 지원하지 않는 추론 수준입니다.",
+        )
+    if (
+        accepted_reasoning_level is not None
+        and accepted_reasoning_level != DEFAULT_REASONING_LEVEL
+        and not reasoning_transport_available(
+            model_id, transport_supported=_reasoning_transport_supported(request)
+        )
+    ):
+        # The level is documented for this exact model, but the shared Core
+        # transport that carries it is not available yet. Refuse before any
+        # dispatch instead of silently answering with the provider default.
+        return _error(
+            422,
+            "reasoning_level_unavailable",
+            "선택한 추론 수준을 지금은 전달할 수 없습니다. 기본값으로 진행해 주세요.",
+        )
     if not isinstance(saved_skill_id, str) or not saved_skill_id:
         return _error(400, "invalid_saved_skill_id", "내 견적서 ID가 필요합니다.")
     if (
@@ -383,7 +464,13 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
     if denied is not None:
         return denied
     try:
-        projection = await _interpret_reserved(interpret_fn, message=message.strip(), skill=skill, model_id=model_id)
+        projection = await _interpret_reserved(
+            interpret_fn,
+            message=message.strip(),
+            skill=skill,
+            model_id=model_id,
+            reasoning_level=accepted_reasoning_level,
+        )
     except B66ModelRouteError as exc:
         return _model_route_error_response(exc)
     except B66QuoteConversationError as exc:

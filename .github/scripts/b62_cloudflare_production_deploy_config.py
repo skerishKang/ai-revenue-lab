@@ -19,9 +19,14 @@ from uuid import UUID
 
 import tomllib
 
+_SCRIPTS_DIR = Path(__file__).resolve().parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+from b62_web_secrets_store_contract import expected_web_secret_bindings, require_exact_web_secrets_store
+
 EXPECTED_WORKER = "padiem-chat"
 OWNER_P01_D1_BINDING = "BROWSER_CONTROL_OWNER_P01_D1"
-SUPPORTED_BINDING_TYPES = {"assets", "service", "d1", "r2_bucket", "plain_text", "secret_text", "version_metadata"}
+SUPPORTED_BINDING_TYPES = {"assets", "service", "d1", "r2_bucket", "plain_text", "secret_text", "version_metadata", "secrets_store_secret"}
 REQUIRED_VARS = ("PADIEM_CHAT_RUNTIME_MODE", "PADIEM_CHAT_LIVE_ENABLED")
 PUBLIC_BASE_URL_VAR = "PADIEM_CHAT_PUBLIC_BASE_URL"
 # #3252: a live version_metadata binding is runtime provenance. Exactly one may
@@ -55,6 +60,7 @@ def parse_live_bindings(settings_payload: object) -> dict[str, object]:
     r2: list[dict] = []
     plain_vars: dict[str, str] = {}
     secret_names: list[str] = []
+    secrets_store: list[dict] = []
     version_metadata: list[dict] = []
     for raw in bindings:
         if not isinstance(raw, dict):
@@ -87,6 +93,16 @@ def parse_live_bindings(settings_payload: object) -> dict[str, object]:
             if not isinstance(text, str):
                 raise ProductionConfigError(f"plain_text binding {name!r} has no text value")
             plain_vars[name] = text
+        elif kind == "secrets_store_secret":
+            if not _BINDING_NAME_RE.fullmatch(name):
+                raise ProductionConfigError("Secrets Store binding name invalid")
+            store_id = raw.get("store_id")
+            secret_name = raw.get("secret_name")
+            if not isinstance(store_id, str) or not re.fullmatch(r"[a-f0-9]{32}", store_id):
+                raise ProductionConfigError("Secrets Store store_id invalid")
+            if not isinstance(secret_name, str) or not _BINDING_NAME_RE.fullmatch(secret_name):
+                raise ProductionConfigError("Secrets Store secret_name invalid")
+            secrets_store.append({"type": kind, "name": name, "store_id": store_id, "secret_name": secret_name})
         elif kind == "version_metadata":
             if not _BINDING_NAME_RE.fullmatch(name):
                 raise ProductionConfigError(
@@ -106,6 +122,7 @@ def parse_live_bindings(settings_payload: object) -> dict[str, object]:
         "r2": r2,
         "vars": plain_vars,
         "secret_names": secret_names,
+        "secrets_store": secrets_store,
         "version_metadata": version_metadata[0] if version_metadata else None,
     }
 
@@ -115,6 +132,7 @@ def build_production_config(
     repo_config_path: Path,
     public_base_url: str,
     owner_d1_database_id: str | None = None,
+    attach_web_secrets_store: bool = False,
 ) -> str:
     try:
         repo = tomllib.loads(repo_config_path.read_text(encoding="utf-8"))
@@ -226,6 +244,7 @@ def build_production_config(
             + [item["name"] for item in live["r2"]]
             + list(live["vars"])
             + list(live["secret_names"])
+            + [item["name"] for item in live["secrets_store"]]
         )
         if live["version_metadata"] is not None:
             all_names.append(live["version_metadata"]["name"])
@@ -264,6 +283,32 @@ def build_production_config(
         jurisdiction = bucket.get("jurisdiction")
         if isinstance(jurisdiction, str) and jurisdiction:
             lines.append(f"jurisdiction = {_toml_string(jurisdiction)}")
+        lines.append("")
+
+    # Existing bindings are still the authority; this opt-in release may add
+    # exactly the two Owner-confirmed same-account Secrets Store identities,
+    # never replace or drop a pre-existing Worker binding.
+    store_bindings = list(live["secrets_store"])
+    if attach_web_secrets_store:
+        all_other_names = (
+            {item["name"] for key in ("assets", "services", "d1", "r2") for item in live[key]}
+            | set(live["vars"])
+            | set(live["secret_names"])
+        )
+        if live["version_metadata"] is not None:
+            all_other_names.add(live["version_metadata"]["name"])
+        if all_other_names & set(expected_web_secret_bindings()):
+            raise ProductionConfigError("web Secrets Store alias collides with live Worker binding")
+        try:
+            additions = require_exact_web_secrets_store(store_bindings, allow_absent=True)
+        except ValueError as exc:
+            raise ProductionConfigError("web Secrets Store identity drift") from exc
+        store_bindings.extend(additions.values())
+    for item in store_bindings:
+        lines.append("[[secrets_store_secrets]]")
+        lines.append(f"binding = {_toml_string(item['name'])}")
+        lines.append(f"store_id = {_toml_string(item['store_id'])}")
+        lines.append(f"secret_name = {_toml_string(item['secret_name'])}")
         lines.append("")
 
     plain_vars = live["vars"]
@@ -330,12 +375,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--public-base-url", required=True)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--owner-d1-database-id", help="candidate-only approved D1 UUID; never deploys")
+    parser.add_argument("--attach-existing-web-secrets-store", action="store_true", help="add exactly two Owner-approved same-account web Secret Store bindings")
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
 
     try:
         payload = json.loads(args.settings.read_text(encoding="utf-8"))
         live = parse_live_bindings(payload)
-        config_text = build_production_config(live, args.repo_config, args.public_base_url, args.owner_d1_database_id)
+        config_text = build_production_config(live, args.repo_config, args.public_base_url, args.owner_d1_database_id, attach_web_secrets_store=args.attach_existing_web_secrets_store)
         verify_mutation_zero(config_text, live)
     except (ProductionConfigError, OSError, json.JSONDecodeError) as exc:
         print(f"B62_PRODUCTION_CONFIG_GENERATED=FAIL\nREASON={exc}", file=sys.stderr)
@@ -358,6 +404,8 @@ def main(argv: list[str] | None = None) -> int:
     print(f"R2_BINDINGS={len(live['r2'])}")
     print(f"PLAIN_TEXT_VARS={len(plain_vars)}")
     print(f"SECRET_BINDINGS_PRESERVED_BY_PLATFORM={len(secret_names)}")
+    print(f"SECRETS_STORE_BINDINGS_PRESERVED={len(live['secrets_store'])}")
+    print(f"WEB_SECRETS_STORE_ATTACH_REQUESTED={int(args.attach_existing_web_secrets_store)}")
     print("SECRET_VALUES_READ=0")
     print("SECRET_VALUES_EMITTED=0")
     print("PADIEM_CHAT_PUBLIC_BASE_URL_PRESTATE=EXPECTED")

@@ -161,14 +161,35 @@
     return syntheticSseResponse(data);
   }
 
+  async function clawLiveEventsAvailable(signal) {
+    // Readiness only. No execution, quota consumption, read ACK, or retry.
+    try {
+      const response = await fetch("/api/claw/general/capabilities", {
+        method: "GET",
+        headers: { "Accept": "application/json" },
+        cache: "no-store",
+        signal,
+      });
+      if (!response.ok) return false;
+      const data = await response.json().catch(() => null);
+      return !!(data && data.live_events_available === true);
+    } catch (error) {
+      if (error?.name === "AbortError") throw error;
+      return false; // Conservative completed-path behavior, before dispatch.
+    }
+  }
+
   async function requestClawGeneral(payload, signal) {
     // #3539: the B54 Claw general composer runs on the canonical P01 Engine
     // lane. There is deliberately NO fallback to the standalone B62
     // /api/chat/stream direct-B14 route: an unavailable P01 lane surfaces as a
     // bounded error instead of silently changing products.
+    const liveReady = await clawLiveEventsAvailable(signal);
+    const headers = { "Content-Type": "application/json", "Accept": "text/event-stream" };
+    if (liveReady) headers["X-Padiem-Claw-Live"] = "p01-events-v1";
     const response = await fetch("/api/claw/general", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "Accept": "text/event-stream" },
+      headers,
       body: JSON.stringify(payload),
       signal,
     });

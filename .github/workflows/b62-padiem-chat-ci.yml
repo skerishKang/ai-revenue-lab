@@ -17,6 +17,13 @@ on:
       - "packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py"
       - "reference/business-62-padiem-chat-v1/**"
       - ".github/scripts/b62_cloudflare_*.py"
+      - ".github/scripts/b14_model_registration_ci_plan.py"
+      - ".github/scripts/b62_ci_impact_scope_3989.py"
+      - ".github/tests/test_b62_ci_impact_scope_3989.py"
+      # CI implementation itself: probe runner/test changes require real B62 checks.
+      - ".github/scripts/b62_worker_probe_*.sh"
+      - ".github/tests/test_3989_b62_worker_probe_parallel.py"
+      - ".github/tests/test_3989_b62_parallel_runtime_jobs.py"
       - ".github/workflows/b62-padiem-chat-ci.yml"
       - ".github/workflows/b62-cloudflare-worker-deploy.yml"
   pull_request:
@@ -30,6 +37,13 @@ on:
       - "packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py"
       - "reference/business-62-padiem-chat-v1/**"
       - ".github/scripts/b62_cloudflare_*.py"
+      - ".github/scripts/b14_model_registration_ci_plan.py"
+      - ".github/scripts/b62_ci_impact_scope_3989.py"
+      - ".github/tests/test_b62_ci_impact_scope_3989.py"
+      # CI implementation itself: probe runner/test changes require real B62 checks.
+      - ".github/scripts/b62_worker_probe_*.sh"
+      - ".github/tests/test_3989_b62_worker_probe_parallel.py"
+      - ".github/tests/test_3989_b62_parallel_runtime_jobs.py"
       - ".github/workflows/b62-padiem-chat-ci.yml"
       - ".github/workflows/b62-cloudflare-worker-deploy.yml"
   workflow_dispatch:
@@ -37,12 +51,109 @@ on:
 permissions:
   contents: read
 
+# #3989: Only the latest B62-relevant main commit needs an expensive full
+# regression; a later qualifying push contains all earlier merged source.
+# Preserve separate PR groups and keep manual dispatch runs independent.
+# This is test-only: deploy / migration workflows have their own non-cancellable
+# concurrency contracts and must not share this group.
 concurrency:
-  group: b62-padiem-chat-ci-${{ github.event.pull_request.number || github.run_id }}
+  group: b62-padiem-chat-ci-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || github.event_name == 'push' && format('push-{0}', github.ref) || format('manual-{0}', github.run_id) }}
   cancel-in-progress: true
 
 jobs:
+  registry-ci-plan:
+    name: B14 changeset classifier (fail-closed)
+    runs-on: ubuntu-latest
+    outputs:
+      lane: ${{ steps.classify.outputs.lane }}
+      scope: ${{ steps.classify-b62.outputs.scope }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test CI lane fail-closed rules
+        run: python -m unittest discover -s .github/tests -p test_b14_model_registration_ci_plan.py -q
+      - name: Classify exact PR or push changes
+        id: classify
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python .github/scripts/b14_model_registration_ci_plan.py
+      - name: Test B62 scoped-regression fail-closed contract
+        run: python -m unittest discover -s .github/tests -p test_b62_ci_impact_scope_3989.py -q
+      - name: Test B62 parallel job fan-in contract
+        run: python -m unittest discover -s .github/tests -p test_3989_b62_parallel_runtime_jobs.py -q
+      - name: Classify B62 unchanged-dependency CI scope
+        id: classify-b62
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python .github/scripts/b62_ci_impact_scope_3989.py
+
+  b62-registry-contract:
+    name: B62 B14 registry-only contract
+    needs: registry-ci-plan
+    if: ${{ needs.registry-ci-plan.outputs.lane == 'model_registration_only' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Locked dependencies
+        run: uv sync --locked --extra dev
+      - name: Strict B14 source route and manual-only selection integration
+        run: uv run --locked python -m pytest -q tests/test_b66_real_b14_source_authority.py
+
   b62-test:
+    name: b62-test
+    if: always()
+    needs: [registry-ci-plan, b62-full-suite, b62-worker-suite, b14-multimodal-test, b62-registry-contract]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enforce selected lane and both relevant checks
+        env:
+          LANE: ${{ needs.registry-ci-plan.outputs.lane }}
+          SCOPE: ${{ needs.registry-ci-plan.outputs.scope }}
+          PLAN_RESULT: ${{ needs.registry-ci-plan.result }}
+          FULL_RESULT: ${{ needs.b62-full-suite.result }}
+          WORKER_RESULT: ${{ needs.b62-worker-suite.result }}
+          MM_RESULT: ${{ needs.b14-multimodal-test.result }}
+          QUICK_RESULT: ${{ needs.b62-registry-contract.result }}
+        run: |
+          set -euo pipefail
+          test "$PLAN_RESULT" = success
+          if [ "$LANE" = model_registration_only ]; then
+            test "$QUICK_RESULT" = success
+            test "$FULL_RESULT" = skipped
+            test "$WORKER_RESULT" = skipped
+            test "$MM_RESULT" = skipped
+            echo 'B62_CI_MODE=MODEL_REGISTRATION_ONLY'
+          else
+            test "$FULL_RESULT" = success
+            test "$WORKER_RESULT" = success
+            # Strict static-only changes cannot modify B14 pilot source or its dependencies.
+            # tests_only retains B14 to avoid broadening this unrelated skip.
+            # Any unknown/mixed/chat-only scope remains fail-closed and runs the B14 suite.
+            if [ "$SCOPE" = static_only ]; then
+              test "$MM_RESULT" = skipped
+            else
+              test "$MM_RESULT" = success
+            fi
+            test "$QUICK_RESULT" = skipped
+            echo 'B62_CI_MODE=FULL'
+          fi
+
+  b62-full-suite:
+    name: B62 full regression
+    needs: registry-ci-plan
+    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     defaults:
@@ -70,264 +181,65 @@ jobs:
         run: uv run --locked python -m compileall -q app worker.py ../../packages/padiem-ai-core/padiem_ai_core
       - name: JavaScript syntax
         run: node --check static/app.js && node --check static/b66-quote-runtime.js && node --check static/claw-local-handoff.js && node --check static/claw-local-adapter.js
-      - name: B62 tests
-        run: uv run --locked python -m pytest -q
-      - name: Core tests with Tool Runtime dev dependency
-        working-directory: packages/padiem-ai-core
-        run: uv run --extra dev python -m pytest -q
+      - name: B62 Chat and eligible Core tests (same-runner fail-closed overlap)
+        # #4070: same two original pytest commands, distinct cwd/.venv, one
+        # runner and one mandatory exit status. Only proven chat_only/static_only/
+        # tests_only/b14_only omit unchanged Core; unknown/mixed run both suites.
+        env:
+          B62_CI_IMPACT_SCOPE: ${{ needs.registry-ci-plan.outputs.scope }}
+        run: bash ../../.github/scripts/b62_host_pytest_overlap_4070.sh
+      - name: Verify locked host dependency versions
+        run: uv run --locked python tests/check_dependency_locks.py --phase host
+  # Run worker checks concurrently with the 3,616-case Chat/Core host suite.
+  # Required b62-test aggregates BOTH results; neither lane can be silently skipped.
+  b62-worker-suite:
+    name: B62 Worker/Pyodide contract
+    needs: registry-ci-plan
+    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+      - name: Verify committed host lock is current
+        run: uv lock --check
+      - name: Resolve B62 with shared Core path dependency
+        run: uv sync --locked --extra dev
       - name: Verify locked host dependency versions
         run: uv run --locked python tests/check_dependency_locks.py --phase host
       - name: Pywrangler dependency sync from committed pylock
-        run: uv run --locked pywrangler sync --force
+        # #3989: preserve the exact locked sync and Wrangler 4.130.0 prewarm,
+        # but run these independent preparations together on one runner.
+        # Marker is exported only after BOTH finish and pass.
+        run: bash ../../.github/scripts/b62_worker_prewarm_overlap.sh
       - name: Verify vendored Worker dependency versions
         run: uv run --locked python tests/check_dependency_locks.py --phase vendor
       - name: Prove sync did not mutate committed locks
         run: git diff --exit-code -- uv.lock pylock.toml
-      - name: Real Worker/Pyodide timeout runtime probe
-        run: |
-          set -euo pipefail
-          cat > .runtime-timeout-probe.toml <<'EOF'
-          name = "padiem-chat-runtime-timeout-probe"
-          main = "worker_runtime_timeout_probe.py"
-          compatibility_date = "2026-08-25"
-          compatibility_flags = ["python_workers"]
-          workers_dev = true
-          EOF
-
-          uv run --locked python tests/worker_runtime_probe_origin.py --port 9099 > /tmp/b62-timeout-origin.log 2>&1 &
-          ORIGIN_PID=$!
-          npx --yes wrangler@4.130.0 dev --config .runtime-timeout-probe.toml --port 8787 > /tmp/b62-timeout-workerd.log 2>&1 &
-          WORKER_PID=$!
-
-          cleanup() {
-            kill "$WORKER_PID" "$ORIGIN_PID" 2>/dev/null || true
-            rm -f .runtime-timeout-probe.toml
-          }
-          trap cleanup EXIT
-
-          READY=0
-          for _ in $(seq 1 90); do
-            if curl -fsS http://127.0.0.1:8787/ready >/dev/null 2>&1; then
-              READY=1
-              break
-            fi
-            sleep 1
-          done
-          if [ "$READY" -ne 1 ]; then
-            cat /tmp/b62-timeout-workerd.log
-            exit 1
-          fi
-
-          HTTP_CODE="$(curl -sS -o /tmp/b62-timeout-result.json -w '%{http_code}' http://127.0.0.1:8787/probe)"
-          cat /tmp/b62-timeout-result.json
-          if [ "$HTTP_CODE" != "200" ]; then
-            cat /tmp/b62-timeout-workerd.log
-            exit 1
-          fi
-
-          uv run --locked python - <<'PY'
-          import json
-          from pathlib import Path
-
-          data = json.loads(Path("/tmp/b62-timeout-result.json").read_text())
-          required = (
-              "abortsignal_import",
-              "abortsignal_timeout_call",
-              "fetch_accepts_signal",
-              "local_normal_fetch",
-              "local_post_form",
-              "local_delay_timeout",
-              "local_body_timeout",
-          )
-          failed = [name for name in required if data.get(name) is not True]
-          if failed:
-              raise SystemExit(f"Worker timeout runtime probe failed: {failed}; data={data}")
-          print("WORKER_TIMEOUT_RUNTIME_PASS")
-          PY
-      - name: Real Worker/Pyodide web transport runtime probe
-        run: |
-          set -euo pipefail
-          cat > .runtime-web-transport-probe.toml <<'EOF'
-          name = "padiem-chat-runtime-web-transport-probe"
-          main = "worker_runtime_web_transport_probe.py"
-          compatibility_date = "2026-08-25"
-          compatibility_flags = ["python_workers"]
-          workers_dev = true
-          EOF
-
-          uv run --locked python tests/worker_runtime_probe_origin.py --port 9100 > /tmp/b62-web-origin.log 2>&1 &
-          ORIGIN_PID=$!
-          npx --yes wrangler@4.130.0 dev --config .runtime-web-transport-probe.toml --port 8788 > /tmp/b62-web-workerd.log 2>&1 &
-          WORKER_PID=$!
-
-          cleanup() {
-            kill "$WORKER_PID" "$ORIGIN_PID" 2>/dev/null || true
-            rm -f .runtime-web-transport-probe.toml
-          }
-          trap cleanup EXIT
-
-          READY=0
-          for _ in $(seq 1 90); do
-            if curl -fsS http://127.0.0.1:8788/ready >/dev/null 2>&1; then
-              READY=1
-              break
-            fi
-            sleep 1
-          done
-          if [ "$READY" -ne 1 ]; then
-            cat /tmp/b62-web-workerd.log
-            exit 1
-          fi
-
-          HTTP_CODE="$(curl -sS -o /tmp/b62-web-result.json -w '%{http_code}' http://127.0.0.1:8788/probe)"
-          cat /tmp/b62-web-result.json
-          if [ "$HTTP_CODE" != "200" ]; then
-            cat /tmp/b62-web-workerd.log
-            exit 1
-          fi
-
-          uv run --locked python - <<'PY'
-          import json
-          from pathlib import Path
-
-          data = json.loads(Path("/tmp/b62-web-result.json").read_text())
-          required = (
-              "real_httpx_transport_class",
-              "js_fetch_import",
-              "abortsignal_import",
-              "fetch_accepts_signal",
-              "local_normal_fetch",
-              "local_post_body_headers",
-              "local_incremental_body",
-              "local_delay_timeout",
-              "local_body_timeout",
-              "early_close_release",
-          )
-          failed = [name for name in required if data.get(name) is not True]
-          if failed:
-              raise SystemExit(f"Worker web transport runtime probe failed: {failed}; data={data}")
-          print("WORKER_WEB_TRANSPORT_PASS")
-          PY
-      - name: Real Worker/Pyodide P01 Engine-binding composition probe
-        run: |
-          set -euo pipefail
-          cat > .runtime-p01-binding-probe.toml <<'EOF'
-          name = "padiem-chat-runtime-p01-binding-probe"
-          main = "worker_runtime_p01_binding_probe.py"
-          compatibility_date = "2026-08-25"
-          compatibility_flags = ["python_workers"]
-          workers_dev = true
-          EOF
-
-          npx --yes wrangler@4.130.0 dev --config .runtime-p01-binding-probe.toml --port 8789 > /tmp/b62-p01-binding-workerd.log 2>&1 &
-          WORKER_PID=$!
-
-          cleanup() {
-            kill "$WORKER_PID" 2>/dev/null || true
-            rm -f .runtime-p01-binding-probe.toml
-          }
-          trap cleanup EXIT
-
-          READY=0
-          for _ in $(seq 1 90); do
-            if curl -fsS http://127.0.0.1:8789/ready >/dev/null 2>&1; then
-              READY=1
-              break
-            fi
-            sleep 1
-          done
-          if [ "$READY" -ne 1 ]; then
-            cat /tmp/b62-p01-binding-workerd.log
-            exit 1
-          fi
-
-          HTTP_CODE="$(curl -sS -o /tmp/b62-p01-binding-result.json -w '%{http_code}' http://127.0.0.1:8789/probe)"
-          cat /tmp/b62-p01-binding-result.json
-          if [ "$HTTP_CODE" != "200" ]; then
-            cat /tmp/b62-p01-binding-workerd.log
-            exit 1
-          fi
-
-          uv run --locked python - <<'PY'
-          import json
-          from pathlib import Path
-
-          data = json.loads(Path("/tmp/b62-p01-binding-result.json").read_text())
-          required = (
-              "adapter_composed",
-              "worker_request_factory_real",
-              "plus_route_entered",
-              "binding_fetch_called_once",
-              "bounded_error_after_fetch",
-          )
-          failed = [name for name in required if data.get(name) is not True]
-          if failed or data.get("unexpected_exception") is not False:
-              raise SystemExit(
-                  f"Worker P01 binding composition probe failed: {failed}; "
-                  f"error_type={data.get('error_type', 'NONE')}"
-              )
-          print("WORKER_P01_BINDING_COMPOSITION_PASS")
-          PY
-      - name: Real Worker/Pyodide R2 ObjectBody read probe
-        run: |
-          set -euo pipefail
-          cat > .runtime-r2-read-probe.toml <<'EOF'
-          name = "padiem-chat-runtime-r2-read-probe"
-          main = "worker_runtime_r2_read_probe.py"
-          compatibility_date = "2026-08-25"
-          compatibility_flags = ["python_workers"]
-          workers_dev = true
-          EOF
-
-          npx --yes wrangler@4.130.0 dev --config .runtime-r2-read-probe.toml --port 8790 > /tmp/b62-r2-read-workerd.log 2>&1 &
-          WORKER_PID=$!
-
-          cleanup() {
-            kill "$WORKER_PID" 2>/dev/null || true
-            rm -f .runtime-r2-read-probe.toml
-          }
-          trap cleanup EXIT
-
-          READY=0
-          for _ in $(seq 1 90); do
-            if curl -fsS http://127.0.0.1:8790/ready >/dev/null 2>&1; then
-              READY=1
-              break
-            fi
-            sleep 1
-          done
-          if [ "$READY" -ne 1 ]; then
-            cat /tmp/b62-r2-read-workerd.log
-            exit 1
-          fi
-
-          HTTP_CODE="$(curl -sS -o /tmp/b62-r2-read-result.json -w '%{http_code}' http://127.0.0.1:8790/probe)"
-          cat /tmp/b62-r2-read-result.json
-          if [ "$HTTP_CODE" != "200" ]; then
-            cat /tmp/b62-r2-read-workerd.log
-            exit 1
-          fi
-
-          uv run --locked python - <<'PY'
-          import json
-          from pathlib import Path
-
-          data = json.loads(Path("/tmp/b62-r2-read-result.json").read_text())
-          required = (
-              "js_arraybuffer_to_bytes",
-              "object_arraybuffer_called_once",
-              "bucket_get_called_once",
-              "stream_body_not_used",
-              "payload_matches",
-          )
-          failed = [name for name in required if data.get(name) is not True]
-          if failed or data.get("unexpected_exception") is not False:
-              raise SystemExit(
-                  f"Worker R2 ObjectBody read probe failed: {failed}; "
-                  f"error_type={data.get('error_type', 'NONE')}"
-              )
-          print("WORKER_R2_OBJECTBODY_READ_PASS")
-          PY
+      - name: Verify Worker probe concurrency and failure propagation contract
+        run: uv run --locked python -m unittest discover -s ../../.github/tests -p test_3989_b62_worker_probe_parallel.py -q
+      - name: Real Worker/Pyodide probes (all four, parallel, fail-closed)
+        # Retain all parallel probes on Python/Worker/mixed/unknown changes.
+        # Pure Python test-module edits cannot change deployed Worker bytes or
+        # its locked dependencies. Still vendor, audit locks and bundle Worker;
+        # Strict B14 application/test-only edits also cannot modify the B62
+        # Workerd probe entrypoints/dependencies. Keep full B62 Chat/B14,
+        # pinned vendor & Worker bundle, but omit these unchanged live boots.
+        # All B62 source/Worker/mixed/CI/unknown changes run all four probes.
+        if: ${{ needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'tests_only' && needs.registry-ci-plan.outputs.scope != 'b14_only' }}
+        run: bash ../../.github/scripts/b62_worker_probe_parallel.sh
       - name: Prove Core vendored for Python Worker
         run: |
           set -euo pipefail
@@ -341,6 +253,10 @@ jobs:
         run: uv run --locked pywrangler deploy --dry-run --outdir ../../.tmp/b62-worker-bundle
 
   b14-multimodal-test:
+    needs: registry-ci-plan
+    # Only the proven static-only B62 surface can omit the source-invariant B14 pilot runner.
+    # All Python, shared-Core, B14, registry-mixed and uncertain changes keep B14 coverage.
+    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     defaults:

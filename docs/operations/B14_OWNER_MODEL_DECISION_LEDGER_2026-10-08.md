@@ -1,3 +1,7 @@
+<!-- B14_OWNER_ROLE_SOURCE_OF_TRUTH_20261010 -->
+> **B14 역할 최신 원칙(2026-10-10):** [원제작사 모델·서빙 제공업체·변형 모델의 공식 사양 및 B14 실행 권한](../architecture/B14_MODEL_PROVIDER_EXECUTION_AUTHORITY_2026-10-10.md)을 우선 확인합니다. **B14는 정확히 사용자가 선택한 모델을 해당 업체의 공식 API로 실행**하며, temperature/토큰/리즈닝을 임의 지정하거나 옵션을 조용히 바꾸지 않습니다. 원본 모델의 공식 사양과 실제 API 제공업체의 계약은 별도 증빙합니다. 과거 코드·평가 수치는 이 원칙의 구현 증명이 아닙니다.
+<!-- /B14_OWNER_ROLE_SOURCE_OF_TRUTH_20261010 -->
+
 > 2026-10-08 모델 등록 구조: apps/korean-ai-platform/app/pilot/b14_models.json이 단일 실제 등록 원본입니다. 5개 제거/9개 유지 및 설정 절차는 B14_MODEL_REGISTRY_SINGLE_SOURCE.md를 참조하세요. 아래 기존 Owner 승인/배포 안전 정책은 유효하며 과거 모델 예시는 역사적 기록입니다.
 
 # B14 owner model decisions and implementation reconciliation (2026-10-08)
@@ -5,6 +9,26 @@
 **Authority status:** owner decision record and current snapshot; documentation only. This ledger takes precedence over older historical examples in issues #1933, #2107, #2698, #3143, #3209, #3570, and #3589 for reporting current owner choices. It does NOT replace B14 catalog execution permission, activate a model, authorize Production, or override MODEL_CHANGE_OWNER_APPROVAL_POLICY.md. The owner controls new selection and activation.
 
 **Snapshot reconciliation (2026-10-08):** B14 Google four manual-pin model registrations were merged by PR #3788 at SHA bcb05bb7fea9a31b72d805e7237441e045883b1b. Separate LOCAL product naming/tier drafts are not thereby merged. Source registration is not a Plus product route or proof of Production readiness; recheck exact-main B14 catalog, Control Plane declaration and credential-backed live evidence.
+
+## 0D. Owner-selected ExLab Qwen3.8 Flash Next Uncensored (2026-10-10)
+
+- Owner explicitly requested `experiential/qwen3.8-flash-next-uncensored`, the ExLab gateway upstream `qwen3.8-flash-next-uncensored`. Canonical B14 source now has **10 registered models / 7 platform providers**; the prior nine-model discussions are historical snapshots. This is separate from retired B.AI Qwen (`b-ai/qwen3.8-flash`) and retired ExLab GPT-5.6 Luna.
+- The existing Cloudflare Secrets Store binding name `PADIEM_EXLAB_API_KEY` is reused, without reading or changing its value. No automatic fallback, tier assignment or Production deployment.
+- **Owner correction 2026-10-10:** The Owner expressly accepts ExLab data-retention concerns for the current free-promotion live evaluation and did not request a special release hold. Remove `model_data_policy_pending` and matching last-egress refusal from PR #3961. Preserve manual-only selection, normal credential and network error controls, no automatic model selection, silent fallback or default/tier mutation. Live Worker success is not established by mocked tests.
+
+## 0C. Owner final retirement — Thinking Machines Inkling Small (2026-10-10, newest)
+
+- **REMOVE / DO NOT EVALUATE / DO NOT REGISTER / DO NOT RECOMMEND:** Thinking Machines **Inkling Small**, exact public Kilo free ID `thinkingmachines/inkling-small:free`, direct upstream and Kilo aliases. The Owner explicitly rejected this small-capacity candidate; do not propose it again as the next model or place it in B14/Claw/B62/B66 candidate, manual selection, Auto, fallback or recurring benchmark queues.
+- **Narrow exclusion, no blanket ban:** Other vendors' Small/Mini and other Thinking Machines models are not excluded by this decision. StepFun **Step 5 Preview Free** and all nine currently registered B14 models remain unchanged.
+- The latest canonical B14 registry (nine models) and read-only served model roster **never included Inkling Small**, so no provider entry, credential or Production endpoint was deleted. The owner exclusion guard, last pre-network gate and evaluation registration tests prevent accidental future admission.
+- Vendor-managed Kilo public catalog visibility is unrelated to PADIEM approval; historical records remain for audit.
+
+## 0B. Owner final retirement — StepFun Step 3.7 Flash (2026-10-09)
+
+- **RETIRE / DO NOT EVALUATE / DO NOT REGISTER / DO NOT RECOMMEND:** StepFun **Step 3.7 Flash**. This covers public direct `stepfun/step-3.7-flash`, any draft `kilo/stepfun/step-3.7-flash`, catalog/discovery aliases and model presets that point to this upstream. Do not put it in B14/Claw/B62/B66 candidate or manual model lists, Auto, fallback, or future benchmark schedule.
+- **Current B14 nine-model canonical JSON:** Step 3.7 Flash was **never present**, so no actual registered-model deletion, deployment or credential mutation was necessary. Exact model exclusion is enforced in live pre-egress and read-only evaluation registry gates so later drafts cannot silently re-introduce it. Vendor's public Kilo /models listing is external discovery and cannot be deleted by PADIEM.
+- **StepFun Step 5 Preview Free is NOT Step 3.7** and remains an approved *evaluation candidate*, not automatically a customer default. The independent source-only Step 5 10/10 QKR report (PR #3947) remains evidence; do not alter it or reuse the disallowed 3.7 route.
+- Prior issue/PR/test references to Step 3.7 are **historical only**, not a current proposal. This owner decision supersedes the 2026-10-09 statement that Step 3.7 would be next.
 
 ## 0. Owner reconciliation — 2026-10-09 (current over 2026-10-08 snapshot)
 

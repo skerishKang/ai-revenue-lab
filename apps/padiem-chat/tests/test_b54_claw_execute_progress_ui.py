@@ -52,6 +52,8 @@ policy change, fake progress, polling, auto-retry, or cancel authority.
 
 from __future__ import annotations
 
+from functools import lru_cache
+
 import json
 import re
 import shutil
@@ -304,7 +306,7 @@ def test_wait_does_not_add_routes_or_touch_the_server() -> None:
     assert app.count('fetch("/api/claw/manual-intake/execute"') == 1
     # The run-history route keeps exactly one consumer (the #2746 surface) and is
     # never used as a progress channel.
-    assert app.count('fetch("/api/claw/runs') == 1
+    assert app.count('fetch(`/api/claw/runs?limit=${clawRunHistoryLimit}`') == 1
     block = _wait_block()
     assert "/api/" not in block
 
@@ -852,6 +854,9 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
 """
 
 
+# Every named consumer checks immutable fields from the same real app.js
+# behavioral journey. Cache only within this process; never share across CI runs.
+@lru_cache(maxsize=1)
 def _run_harness() -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required for the behavioral harness"

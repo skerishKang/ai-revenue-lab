@@ -18,7 +18,8 @@ FINGERPRINT = "b" * 64
 
 
 def _terminal_broker() -> LoopbackPairingBroker:
-    broker = LoopbackPairingBroker()
+    # #3650: the host principal is now injected, never defaulted.
+    broker = LoopbackPairingBroker(account_ref="account.1", workspace_ref="workspace.1")
     authority = broker.authority
     authority.register_binding(
         binding_ref="binding.3217",

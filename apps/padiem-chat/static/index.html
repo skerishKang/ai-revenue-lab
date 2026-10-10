@@ -551,6 +551,7 @@
           <div class="claw-run-history-loading" id="clawRunHistoryLoading" data-locale-key="claw-runs-loading" role="status" aria-live="polite" hidden>불러오는 중…</div>
           <p class="claw-run-history-error" id="clawRunHistoryError" role="alert" hidden></p>
           <div class="claw-run-history-list" id="clawRunHistoryList" hidden></div>
+          <button type="button" class="claw-refresh-button claw-run-history-expand" id="clawRunHistoryExpand" data-locale-key="claw-runs-show-up-to-30" hidden>이전 실행 기록 더 보기 (최대 30건)</button>
           <p class="claw-run-history-empty" id="clawRunHistoryEmpty" data-locale-key="claw-runs-empty" hidden>최근 실행 기록이 없습니다.</p>
         </section>
         <section class="claw-quote-compare" id="clawQuoteCompare" aria-labelledby="clawQuoteCompareTitle" hidden>
@@ -783,6 +784,8 @@
   <script src="./claw-local-handoff.js"></script>
   <script src="./message-lifecycle.js"></script>
   <script src="./claw-run-event-projection.js"></script>
+  <script src="./claw-recovery-truth.js"></script>
+  <script src="./claw-pdf-preview.js"></script>
   <script src="./calendar.js"></script>
   <script src="./app.js"></script>
   <script src="./b66-quote-runtime.js"></script>
@@ -795,6 +798,7 @@
   <script src="./claw-quote-compare.js"></script>
   <!-- #3094: the guarded handoff adapter. Loaded last so the #3084 projection
        seam installed by app.js already exists when it resolves its source. -->
+  <script src="./claw-local-connect.js" defer></script>
   <script src="./claw-local-adapter.js"></script>
 </body>
 </html>

@@ -170,8 +170,67 @@
     };
   }
 
+
+  /* #3586: reusable-template REGISTRATION source allowlist, not generic
+     quote fact extraction nor #3884 private original-file custody. */
+  var TEMPLATE_SOURCE_EXTENSIONS = Object.freeze([".xlsx"]);
+
+  function classifyTemplateSourceFile(fileLike) {
+    var extension = extensionOf(fileLike && fileLike.name);
+    if (extension === ".xls") return { ok: false, error: "legacy_xls_unsupported" };
+    if (extension === ".hwp") return { ok: false, error: "legacy_hwp_unsupported" };
+    if (extension === ".hwpx") return { ok: false, error: "template_hwpx_not_available" };
+    if (TEMPLATE_SOURCE_EXTENSIONS.indexOf(extension) === -1) {
+      return { ok: false, error: "template_source_format_not_allowed" };
+    }
+    return classifyFile(fileLike);
+  }
+
+  /* Accepts FileIntake {ok,value}, or legacy analyzer preflight {ok,name,
+     extension,media,size}, or file-source registration metadata. Re-check
+     filename/extension/MIME/size on every registration entrypoint. */
+  function validateTemplateSourcePreflight(preflight) {
+    if (!preflight || preflight.ok !== true) {
+      return preflight && preflight.error
+        ? { ok: false, error: preflight.error }
+        : { ok: false, error: "invalid_preflight" };
+    }
+    var source = preflight.value && typeof preflight.value === "object"
+      ? preflight.value : preflight;
+    var name = typeof source.name === "string" ? source.name : source.filename;
+    var declaredExtension = source.extension;
+    if (declaredExtension !== undefined &&
+        declaredExtension !== extensionOf(name)) {
+      return { ok: false, error: "template_source_extension_mismatch" };
+    }
+    var size = source.byteSize !== undefined ? source.byteSize : source.size;
+    var type = source.mediaType !== undefined ? source.mediaType : source.media;
+    var checked = classifyTemplateSourceFile({ name: name, type: type, size: size });
+    if (!checked.ok) return checked;
+    return {
+      ok: true,
+      name: checked.value.name,
+      extension: checked.value.extension,
+      media: checked.value.mediaType,
+      size: checked.value.byteSize,
+      value: checked.value
+    };
+  }
+
   function errorMessage(result) {
     var code = result && result.error;
+    if (code === "legacy_xls_unsupported") {
+      return "이 형식은 구형 Excel(.xls) 문서라 양식 등록에서 지원하지 않습니다. Excel에서 .xlsx로 저장한 뒤 업로드해 주세요.";
+    }
+    if (code === "template_hwpx_not_available") {
+      return "HWPX 양식 등록은 추후 지원합니다. 현재 재사용 양식은 Excel .xlsx만 등록할 수 있습니다.";
+    }
+    if (code === "template_source_format_not_allowed") {
+      return "재사용 견적서 양식 등록은 .xlsx 파일만 지원합니다. PDF·이미지는 일반 견적 내용 분석에서 사용할 수 있습니다.";
+    }
+    if (code === "template_source_extension_mismatch") {
+      return "양식 등록 파일 이름과 확장자 정보가 일치하지 않습니다. .xlsx 파일을 다시 선택해 주세요.";
+    }
     if (code === "legacy_hwp_unsupported") {
       return "기존 HWP(.hwp)는 아직 지원하지 않습니다. 가능하면 HWPX 또는 PDF로 저장해 주세요.";
     }
@@ -194,6 +253,9 @@
     formatBytes: formatBytes,
     isGenericMedia: isGenericMedia,
     classifyFile: classifyFile,
+    TEMPLATE_SOURCE_EXTENSIONS: TEMPLATE_SOURCE_EXTENSIONS,
+    classifyTemplateSourceFile: classifyTemplateSourceFile,
+    validateTemplateSourcePreflight: validateTemplateSourcePreflight,
     errorMessage: errorMessage
   };
 });

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Callable, Mapping
+from collections.abc import Awaitable, Callable, Mapping
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import hashlib
@@ -206,6 +206,9 @@ class ClawOrchestrationOutcome:
     selected_route_id: str | None = None
     provider_attempt_count: int | None = None
     fallback_used: bool | None = None
+    # #3930: post-execution, correlation-validated P01 event evidence only.
+    # Not live streaming; never export raw message, metadata or tool arguments.
+    p01_event_history: tuple[dict[str, object], ...] = ()
 
     def safe_dict(self) -> dict[str, object]:
         # pause_id / pause_expires_at / trusted_request stay server-side only;
@@ -701,6 +704,7 @@ class P01CoreOrchestrationAdapter:
         product_tier: ProductTierLabel | None = None,
         subject_id: str | None = None,
         selected_model_id: str | None = None,
+        on_event: Callable[[OrchestrationEvent], Awaitable[None]] | None = None,
     ) -> ClawOrchestrationOutcome:
         try:
             bundle = self._factory.build(
@@ -715,7 +719,39 @@ class P01CoreOrchestrationAdapter:
                 trace_id=bundle.context.trace_id,
                 app_id=bundle.orchestration_request.app_id,
             )
-            port_result = await self._runner.run(bundle.orchestration_request)
+            # #3930: live events are opt-in. Existing execute()/run() remains
+            # byte-for-byte compatible when no observer was provided.
+            live_terminal: OrchestrationEvent | None = None
+            if on_event is None:
+                port_result = await self._runner.run(bundle.orchestration_request)
+            else:
+                run_stream = getattr(self._runner, "run_stream", None)
+                if not callable(run_stream):
+                    raise P01AdapterError(
+                        "p01_stream_unavailable",
+                        "The canonical P01 runner has no live stream capability.",
+                        dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+                    )
+                terminal_kinds = {
+                    OrchestrationEventKind.RUN_COMPLETED,
+                    OrchestrationEventKind.RUN_FAILED,
+                    OrchestrationEventKind.RUN_CANCELLED,
+                    OrchestrationEventKind.APPROVAL_PAUSED,
+                }
+
+                async def project_live_event(event: OrchestrationEvent) -> None:
+                    nonlocal live_terminal
+                    # Source-only Core event: never expose its message/metadata
+                    # directly from this server-owned observer boundary.
+                    projector.consume(event)
+                    if event.kind in terminal_kinds:
+                        live_terminal = event
+                    else:
+                        await on_event(event)
+
+                port_result = await run_stream(
+                    bundle.orchestration_request, on_event=project_live_event
+                )
             approval_pause_wire: EngineApprovalPauseWire | None = None
             if isinstance(port_result, P01PausedWireResult):
                 approval_pause_wire = port_result.wire
@@ -730,6 +766,27 @@ class P01CoreOrchestrationAdapter:
             self._validate_result_correlation(run, bundle, result)
             for event in result.events:
                 projector.consume(event)
+            # A completed Engine response carries only retrospectively available
+            # canonical events. Never call these live stages; bound the export and
+            # erase free-form event text/metadata at this server trust boundary.
+            history: tuple[dict[str, object], ...] = ()
+            if 0 < len(result.events) <= 128:
+                seen_ids: set[str] = set()
+                clean_events: list[dict[str, object]] = []
+                for event in result.events:
+                    if event.event_id in seen_ids:
+                        continue  # projector already validated identical replay
+                    seen_ids.add(event.event_id)
+                    clean_events.append({
+                        "event_id": event.event_id,
+                        "run_id": event.run_id,
+                        "trace_id": event.trace_id,
+                        "app_id": event.app_id,
+                        "kind": event.kind.value,
+                        "sequence": event.sequence,
+                        "timestamp_iso": event.timestamp_iso,
+                    })
+                history = tuple(clean_events)
 
             if not run.terminal and run.status is not ClawRunStatus.WAITING_APPROVAL:
                 raise P01AdapterError(
@@ -773,6 +830,16 @@ class P01CoreOrchestrationAdapter:
                     failure_detail=P01_FAILURE_DETAIL_CONTRACT,
                 )
 
+            if on_event is not None:
+                if live_terminal is None or not result.events or result.events[-1] != live_terminal:
+                    raise P01AdapterError(
+                        "p01_live_terminal_mismatch",
+                        "Live P01 event did not match the verified terminal result.",
+                        dispatch_class=P01DispatchClass.DISPATCHED,
+                        failure_detail=P01_FAILURE_DETAIL_CONTRACT,
+                    )
+                await on_event(live_terminal)
+
             answer = (
                 redact_secrets(result.execution_result.answer)
                 if run.status is ClawRunStatus.COMPLETED
@@ -801,6 +868,7 @@ class P01CoreOrchestrationAdapter:
                 selected_route_id=result.execution_result.route.selected_route_id,
                 provider_attempt_count=result.execution_result.route.attempt_count,
                 fallback_used=result.execution_result.route.fallback_used,
+                p01_event_history=history,
             )
         except asyncio.CancelledError:
             self._cancel_run_if_possible(run)

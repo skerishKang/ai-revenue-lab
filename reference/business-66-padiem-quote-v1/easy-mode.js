@@ -200,6 +200,7 @@
 
     messageList.appendChild(article);
     article.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    return article;
   }
 
   function setChips(chips) {
@@ -306,7 +307,7 @@
     const requestScopeRevision = accountScopeRevision;
     interpretationInFlight = true;
     addMessage("user", text);
-    addMessage("assistant", "CGI 기본 견적서로 작성하고 있습니다…");
+    const processingMessage = addMessage("assistant", "CGI 기본 견적서로 작성하고 있습니다…");
     disableInput("견적을 만드는 동안에는 입력을 잠시 멈춥니다.");
     Promise.resolve().then(() => {
       // Closing/switching the owner before the dispatch microtask must cancel the call.
@@ -335,7 +336,13 @@
           { label: "질문받으며 만들기", action: startGuidedIfReady },
           { label: "처음으로", action: showHome }
         ]);
-        setInput(submitFreeFormText, "다시 한 문장으로 적어 주세요");
+        // A model outage during a missing-field follow-up does not erase the
+        // pending quote. Don't tell the customer to retype their whole request.
+        const pending = bridge && typeof bridge.pendingQuote === "function"
+          ? bridge.pendingQuote() : null;
+        setInput(submitFreeFormText, pending
+          ? "방금 답변을 다시 적어 주세요"
+          : "다시 한 문장으로 적어 주세요");
         return;
       }
       const replace = App.replaceDraft(result.draft, {});
@@ -350,6 +357,9 @@
       addMessage("assistant", "해석 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.");
       setInput(submitFreeFormText, "다시 한 문장으로 적어 주세요");
     }).finally(() => {
+      // Keep only the completed result, the missing-field question, or the
+      // failure notice. A stale "작성하고 있습니다" misleads customers.
+      processingMessage.remove();
       if (requestScopeRevision === accountScopeRevision) interpretationInFlight = false;
     });
   }
@@ -410,7 +420,7 @@
       return;
     }
     const taxUnknown = guided.taxUnknown;
-    addMessage("assistant", "CGI 기본 견적서로 작성하고 있습니다…");
+    const processingMessage = addMessage("assistant", "CGI 기본 견적서로 작성하고 있습니다…");
     const facts = {
       recipient: guided.draft.recipient,
       items: guided.draft.items.map((item) => ({
@@ -442,6 +452,8 @@
       addResultReview(result.draft, taxUnknown);
     }).catch(() => {
       addMessage("assistant", "견적 생성에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+    }).finally(() => {
+      processingMessage.remove();
     });
   }
 
@@ -820,8 +832,26 @@
     setInput(processGuidedInput, "예: 다음 달 10일까지 납품");
   }
 
+  /* #4076 CGI MVP: the approved server CompanyProfile, not a typed guided
+     sender override, owns the sender identity on the final quotation. */
+  function approvedRuntimeSender() {
+    const bridge = window.B66QuoteRuntimeBridge;
+    const ready = bridge && typeof bridge.readiness === "function" ? bridge.readiness() : null;
+    const profile = ready && ready.ready && typeof bridge.getCompanyProfile === "function"
+      ? bridge.getCompanyProfile() : null;
+    return safeText(profile && profile.company);
+  }
+
   function askSender() {
     guided.step = "senderChoice";
+    const approved = approvedRuntimeSender();
+    if (approved) {
+      guided.draft.sender.company = approved;
+      addMessage("assistant", "보내는 사람은 내 회사 정보에 등록된 '" + approved + "'로 적용됩니다. 변경하려면 설정의 '내 회사'에서 수정해 주세요.");
+      setChips([{ label: "다음으로", action: () => processGuidedInput("현재") }]);
+      setInput(processGuidedInput, "다음으로");
+      return;
+    }
     const company = safeText(guided.draft.sender.company) || "미입력";
     addMessage("assistant", "보내는 사람은 현재 '" + company + "'로 되어 있어요. 이 정보를 사용할까요?");
     setChips([
@@ -852,8 +882,9 @@
 
     addMessage(
       "assistant",
-      "이렇게 준비했어요.\n\n받는 곳: " +
-      (guided.draft.recipient.company || "미입력") +
+      "이렇게 준비했어요.\n\n보내는 곳: " +
+      (guided.draft.sender.company || "미입력") +
+      "\n받는 곳: " + (guided.draft.recipient.company || "미입력") +
       (guided.draft.recipient.person ? " · " + guided.draft.recipient.person : "") +
       "\n\n" + itemLines +
       "\n\n" + taxLine +
@@ -958,7 +989,18 @@
         askSender();
         break;
 
-      case "senderChoice":
+      case "senderChoice": {
+        const approved = approvedRuntimeSender();
+        if (approved) {
+          // Never display a user-entered sender that will be ignored by the
+          // approved CGI Saved Skill when the real PDF is produced.
+          guided.draft.sender.company = approved;
+          if (/상호|수정|변경/u.test(text)) {
+            addMessage("assistant", "회사명은 설정의 '내 회사'에서 변경해 주세요. 이번 견적은 승인된 회사 정보로 작성됩니다.");
+          }
+          showGuidedSummary();
+          break;
+        }
         if (/상호/u.test(text)) {
           guided.step = "senderCompany";
           addMessage("assistant", "보내는 사람의 상호를 입력해 주세요. 나머지 정보는 확인 화면에서 채울 수 있어요.");
@@ -973,6 +1015,7 @@
           askSender();
         }
         break;
+      }
 
       case "senderCompany":
         guided.draft.sender.company = text;

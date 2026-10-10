@@ -10,6 +10,7 @@ from app.web_tools import (
     TINYFISH_FETCH_ORIGIN,
     TINYFISH_SEARCH_ORIGIN,
     TinyFishWebProvider,
+    WebToolError,
     create_web_provider,
 )
 
@@ -88,11 +89,16 @@ async def test_tinyfish_fetch_posts_url_and_unwraps_envelope() -> None:
         return httpx.Response(
             200,
             json={
-                "data": {
-                    "markdown": "page body content",
-                    "title": "Fetched page",
-                    "url": "https://example.com/final#ignored",
-                }
+                "results": [
+                    {
+                        "url": "https://example.com/",
+                        "final_url": "https://example.com/final#ignored",
+                        "title": "Fetched page",
+                        "format": "markdown",
+                        "text": "page body content",
+                    }
+                ],
+                "errors": [],
             },
         )
 
@@ -105,7 +111,7 @@ async def test_tinyfish_fetch_posts_url_and_unwraps_envelope() -> None:
     assert seen["method"] == "POST"
     assert seen["url"] == TINYFISH_FETCH_ORIGIN
     assert seen["api_key"] == "tf-server-only"
-    assert seen["body"] == {"url": "https://example.com/start"}
+    assert seen["body"] == {"urls": ["https://example.com/start"]}
     assert evidence.url == "https://example.com/final"
     assert evidence.snippet == "page body content"
     assert evidence.provider == "tinyfish"
@@ -142,3 +148,21 @@ async def test_tinyfish_live_runtime_enables_automatic_search_flag() -> None:
     provider = create_web_provider(settings, transport=httpx.MockTransport(lambda request: None))
     assert isinstance(provider, TinyFishWebProvider)
     assert getattr(provider, "_automatic_search_enabled") is True
+
+
+@pytest.mark.asyncio
+async def test_tinyfish_quota_exhausted_is_distinct_from_a_generic_failure() -> None:
+    async def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(402, json={"error": "INSUFFICIENT_CREDITS"})
+
+    provider = TinyFishWebProvider(
+        Settings.from_values(web_provider="tinyfish", tinyfish_api_key="tf-server-only"),
+        httpx.MockTransport(handler),
+    )
+    with pytest.raises(WebToolError) as info:
+        await provider.search("test")
+    assert info.value.code == "web_quota_exhausted"
+    assert info.value.code != "web_request_failed"
+    assert "소진" in info.value.user_message
+    assert "INSUFFICIENT_CREDITS" not in info.value.user_message
+    assert "tf-server-only" not in info.value.user_message

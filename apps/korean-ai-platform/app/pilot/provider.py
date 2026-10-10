@@ -105,7 +105,7 @@ def _parse_upstream_response(
 async def call_chat_completions(
     api_key: str,
     messages: list[dict[str, str]],
-    temperature: float | None = 0.2,
+    temperature: float | None = None,
     max_tokens: int | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
     *,

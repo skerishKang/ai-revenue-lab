@@ -127,9 +127,25 @@ def test_unknown_multimodal_fields_and_types_rejected(client, content):
     assert response.status_code == 422
 
 
-def test_remote_image_url_rejected(client):
-    response = post_image(client, content=multimodal_content("https://example.com/photo.png"))
+@pytest.mark.parametrize("remote_url", [
+    "https://example.com/photo.png",
+    "http://127.0.0.1/private.png",
+    "file:///etc/passwd",
+])
+def test_remote_image_url_rejected_before_provider_egress(client, monkeypatch, remote_url):
+    """Untrusted image URLs cannot trigger model-provider calls or SSRF."""
+    from app.pilot import platform as plat
+
+    provider_calls = []
+
+    async def forbidden_provider_call(**kwargs):
+        provider_calls.append(kwargs)
+        raise AssertionError("rejected image URL must not reach model provider")
+
+    monkeypatch.setattr(plat, "call_platform_chat_completions", forbidden_provider_call)
+    response = post_image(client, content=multimodal_content(remote_url))
     assert response.status_code == 422
+    assert provider_calls == []
 
 
 @pytest.mark.parametrize(

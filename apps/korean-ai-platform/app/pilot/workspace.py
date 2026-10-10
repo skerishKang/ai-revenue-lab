@@ -87,7 +87,7 @@ async def workspace_page(request: Request):
         "modelCount": 0,
         "lang": locale.value,
         "errorCode": None,
-        "maxTokens": 512,
+        "maxTokens": None,
         "b14ProviderMode": runtime_config.provider_mode,
         "b14HasKey": any_platform_secret_present(),
         "b14SiteName": PLATFORM_SITE_NAME,

@@ -120,12 +120,9 @@ HWPX는 미래 지원 대상이고 XLS/HWP는 제외됩니다(#3586).
 
 ```bash
 cd reference/business-66-padiem-quote-v1
-node tests/static-contract.test.cjs
-node tests/quote-core.test.cjs
-node tests/quote-browser-pdf.test.cjs
-node tests/mvp-runtime.test.cjs
-node tests/xlsx-export.test.cjs
-node tests/padiem-account-bridge.test.mjs
+node tests/run-b66-contracts.cjs --all
+# 선택적으로 문법 검사만: node tests/run-b66-contracts.cjs --syntax
+# 선택적으로 Node 회귀 테스트만: node tests/run-b66-contracts.cjs --tests
 ```
 
 이는 해당 테스트가 **로컬에서 실행하는 회귀 검사**입니다.

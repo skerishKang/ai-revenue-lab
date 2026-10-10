@@ -21,6 +21,8 @@ Coverage:
 
 from __future__ import annotations
 
+from functools import lru_cache
+
 import json
 from pathlib import Path
 import re
@@ -510,6 +512,9 @@ vm.runInContext(CALENDAR_JS, sandbox, { filename: "calendar.js" });
 """
 
 
+# Every named consumer checks immutable fields from the same real app.js
+# behavioral journey. Cache only within this process; never share across CI runs.
+@lru_cache(maxsize=1)
 def _run_harness() -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required for the behavioral harness"

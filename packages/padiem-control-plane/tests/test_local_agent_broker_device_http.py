@@ -230,6 +230,7 @@ def test_device_service_boundary_truth() -> None:
         "/acknowledge",
         "/heartbeat",
         "/material",
+        "/office-part",
         "/poll",
         "/reconcile",
         "/session",

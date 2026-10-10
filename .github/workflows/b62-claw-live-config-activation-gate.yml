@@ -5,6 +5,8 @@ on:
     paths:
       - ".github/workflows/b62-claw-live-config-activation-gate.yml"
       - ".github/scripts/b62_claw_live_config_activation.py"
+      - ".github/scripts/b62_p01_sse_optin_gate.py"
+      - ".github/tests/test_3930_p01_sse_optin_gate.py"
       - ".github/scripts/cloudflare_served_version_cli.py"
       - ".github/scripts/b62_binding_state_guard.py"
       - ".github/tests/test_b62_claw_live_config_activation.py"
@@ -20,6 +22,7 @@ on:
           - repository_preflight
           - cloudflare_readonly
           - activate_config
+          - activate_p01_sse
           - replace_p01_engine_credential
           - rollback_config
       target_sha:
@@ -53,6 +56,14 @@ on:
         type: string
       credential_created_by_activation:
         description: "Whether the recorded activation run created P01_ENGINE_CREDENTIAL"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+      sse_optin_rollback:
+        description: "Explicitly allow reverting only the #3930 SSE opt-in binding from snapshot"
         required: false
         default: "false"
         type: choice
@@ -115,6 +126,9 @@ jobs:
       - name: Run deploy prereq and config rollback contract tests
         run: python .github/tests/test_b62_deploy_prereq_rollback_contracts.py
 
+      - name: Run dedicated #3930 SSE opt-in contract tests
+        run: python .github/tests/test_3930_p01_sse_optin_gate.py
+
       - name: Source-only evidence
         run: |
           echo 'B62_CLAW_LIVE_CONFIG_SOURCE_CONTRACT=PASS'
@@ -122,7 +136,7 @@ jobs:
 
   cloudflare-readonly:
     needs: source-contract
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight' && inputs.mode != 'replace_p01_engine_credential' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight' && inputs.mode != 'replace_p01_engine_credential' && inputs.mode != 'activate_p01_sse' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
@@ -713,6 +727,7 @@ jobs:
       ROLLBACK_VERSION_ID: ${{ inputs.rollback_version_id }}
       PREMUTATION_RUN_ID: ${{ inputs.premutation_run_id }}
       CREDENTIAL_CREATED_BY_ACTIVATION: ${{ inputs.credential_created_by_activation }}
+      SSE_OPTIN_ROLLBACK: ${{ inputs.sse_optin_rollback }}
     steps:
       - name: Require explicit rollback authorization
         shell: bash
@@ -722,6 +737,7 @@ jobs:
           echo "${ROLLBACK_VERSION_ID}" | grep -Eq '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
           echo "${PREMUTATION_RUN_ID}" | grep -Eq '^[0-9]+$'
           case "${CREDENTIAL_CREATED_BY_ACTIVATION}" in true|false) ;; *) exit 1;; esac
+          case "${SSE_OPTIN_ROLLBACK}" in true|false) ;; *) exit 1;; esac
           echo 'B62_CLAW_LIVE_CONFIG_ROLLBACK_AUTHORIZATION=PASS'
           echo 'CODE_VERSION_ROLLBACK_AND_CONFIG_ROLLBACK_ARE_DISTINCT=YES'
 
@@ -863,6 +879,7 @@ jobs:
             --settings "${RUNNER_TEMP}/b62-settings-current-for-rollback.json" \
             --snapshot "${CONFIG_SNAPSHOT_PATH}" \
             --credential-created-by-activation "${CREDENTIAL_CREATED_BY_ACTIVATION}" \
+            --sse-optin-rollback "${SSE_OPTIN_ROLLBACK}" \
             --target-sha "${TARGET_SHA}" \
             --output "${RUNNER_TEMP}/b62-config-rollback-patch.json" >"${plan_log}" 2>&1
           plan_status=$?
@@ -940,3 +957,159 @@ jobs:
           echo 'PIECEMEAL_SECRET_RESTORE=0'
           echo 'SECRET_VALUES_READ=0'
           echo 'UNRELATED_CONFIG_MUTATED=0'
+
+
+  # #3930 SSE-only opt-in. Reuses this existing B62 production environment,
+  # exact-main authority, pre-mutation snapshot and rollback-config workflow.
+  # Does not redeploy code, mint a canary subject or write any credential.
+  activate-p01-sse:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'activate_p01_sse' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: production
+    permissions:
+      contents: read
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+    steps:
+      - name: Require explicit one-feature Production authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "CONFIRM_ACTIVATE_B62_P01_SSE_OPTIN"
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          echo 'P01_SSE_EXPLICIT_PRODUCTION_AUTHORIZATION=PASS'
+          echo 'PROVIDER_REQUESTS=0'
+
+      - name: Checkout exact main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Capture immutable served code and pre-mutation settings
+        id: snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
+          curl -fsS "${auth[@]}" "${base}/settings" -o "${RUNNER_TEMP}/sse-before-settings.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${RUNNER_TEMP}/sse-before-deployments.json"
+          active="$(python .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${RUNNER_TEMP}/sse-before-deployments.json")"
+          test -n "${active}"
+          curl -fsS "${auth[@]}" "${base}/versions/${active}" -o "${RUNNER_TEMP}/sse-before-version.json"
+          evidence="$(python .github/scripts/b62_p01_sse_optin_gate.py plan \
+            --settings "${RUNNER_TEMP}/sse-before-settings.json" \
+            --deployments "${RUNNER_TEMP}/sse-before-deployments.json" \
+            --version "${RUNNER_TEMP}/sse-before-version.json" \
+            --target-sha "${TARGET_SHA}" --output "${RUNNER_TEMP}/sse-patch.json")"
+          echo "${evidence}"
+          no_op="$(printf '%s\n' "${evidence}" | sed -n 's/^P01_SSE_OPTIN_NO_OP=//p')"
+          case "${no_op}" in 0|1) ;; *) exit 1;; esac
+          echo "P01_SSE_OPTIN_NO_OP=${no_op}" >> "${GITHUB_ENV}"
+          echo "P01_SSE_PREMUTATION_VERSION_ID=${active}"
+          cp "${RUNNER_TEMP}/sse-before-settings.json" "${RUNNER_TEMP}/b62-settings-premutation.json"
+          echo 'P01_SSE_PREMUTATION_SOURCE_SHA=EXACT'
+          echo 'SECRET_VALUES_READ=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+      - name: Retain rollback-config compatible pre-mutation snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-claw-config-premutation-settings
+          path: ${{ runner.temp }}/b62-settings-premutation.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Reconfirm current main and protected served state immediately before PATCH
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
+          curl -fsS "${auth[@]}" "${base}/settings" -o "${RUNNER_TEMP}/sse-current-settings.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${RUNNER_TEMP}/sse-current-deployments.json"
+          active="$(python .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${RUNNER_TEMP}/sse-current-deployments.json")"
+          curl -fsS "${auth[@]}" "${base}/versions/${active}" -o "${RUNNER_TEMP}/sse-current-version.json"
+          python .github/scripts/b62_p01_sse_optin_gate.py compare-before \
+            --before-settings "${RUNNER_TEMP}/sse-before-settings.json" \
+            --before-deployments "${RUNNER_TEMP}/sse-before-deployments.json" \
+            --before-version "${RUNNER_TEMP}/sse-before-version.json" \
+            --settings "${RUNNER_TEMP}/sse-current-settings.json" \
+            --deployments "${RUNNER_TEMP}/sse-current-deployments.json" \
+            --version "${RUNNER_TEMP}/sse-current-version.json" --target-sha "${TARGET_SHA}"
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+
+      - name: Apply one explicit SSE plain-text binding through existing Worker settings API
+        if: ${{ env.P01_SSE_OPTIN_NO_OP == '0' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
+          status="$(curl -sS -X PATCH -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -F "settings=<${RUNNER_TEMP}/sse-patch.json;type=application/json" \
+            "${base}/settings" -o "${RUNNER_TEMP}/sse-patch-response.json" -w '%{http_code}')"
+          case "${status}" in 200|201) ;; *) echo 'P01_SSE_PATCH=BLOCKED' >&2; exit 1;; esac
+          jq -e '.success == true' "${RUNNER_TEMP}/sse-patch-response.json" >/dev/null
+          echo 'P01_SSE_PATCH=SUBMITTED'
+          echo 'PRODUCTION_MUTATION=1'
+          echo 'SECRET_VALUE_READ_OR_REWRITTEN=NO'
+          echo 'WORKER_CODE_REDEPLOY=0'
+
+      - name: Prove post-PATCH served version and exactly one allowed configuration change
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
+          ready=no
+          for attempt in $(seq 1 30); do
+            curl -fsS "${auth[@]}" "${base}/settings" -o "${RUNNER_TEMP}/sse-after-settings.json"
+            curl -fsS "${auth[@]}" "${base}/deployments" -o "${RUNNER_TEMP}/sse-after-deployments.json"
+            active="$(python .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${RUNNER_TEMP}/sse-after-deployments.json")" || active=""
+            if [ -n "${active}" ]; then
+              curl -fsS "${auth[@]}" "${base}/versions/${active}" -o "${RUNNER_TEMP}/sse-after-version.json"
+              noop_arg=()
+              if [ "${P01_SSE_OPTIN_NO_OP}" = '1' ]; then noop_arg=(--no-op); fi
+              if python .github/scripts/b62_p01_sse_optin_gate.py verify \
+                --before-settings "${RUNNER_TEMP}/sse-before-settings.json" \
+                --before-deployments "${RUNNER_TEMP}/sse-before-deployments.json" \
+                --before-version "${RUNNER_TEMP}/sse-before-version.json" \
+                --settings "${RUNNER_TEMP}/sse-after-settings.json" \
+                --deployments "${RUNNER_TEMP}/sse-after-deployments.json" \
+                --version "${RUNNER_TEMP}/sse-after-version.json" \
+                --target-sha "${TARGET_SHA}" "${noop_arg[@]}" > "${RUNNER_TEMP}/sse-verify.log" 2>&1; then
+                cat "${RUNNER_TEMP}/sse-verify.log"
+                ready=yes
+                break
+              fi
+            fi
+            sleep 2
+          done
+          if [ "${ready}" != yes ]; then
+            echo 'P01_SSE_POST_SERVED_INTEGRITY=BLOCKED' >&2
+            echo 'RECOVERY=EXISTING_ROLLBACK_CONFIG_REQUIRES_EXPLICIT_PRODUCTION_APPROVAL' >&2
+            echo 'CUSTOMER_CANARY_ACCEPTANCE=NO' >&2
+            exit 1
+          fi
+          echo 'P01_SSE_POST_SERVED_INTEGRITY=PASS'
+          echo 'B62_P01_SSE_CANARY_PREFLIGHT_ONLY=YES'
+          echo 'AUTHENTICATED_USER_E2E=NOT_EXECUTED'
+          echo 'MODEL_REQUESTS=0'
+          echo 'SECRET_VALUES_READ=0'

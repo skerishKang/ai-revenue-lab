@@ -52,57 +52,37 @@ jobs:
       - name: Install test dependencies
         run: python -m pip install --disable-pip-version-check 'pytest>=8,<10' 'PyYAML>=6,<7'
 
+      # Existing documentation authority contract explicitly pins this exact
+      # command as an all-PR, standalone collector. Keep it independent.
       - name: Run operating policy consistency tests
         run: python -m pytest -q docs/operations/tests
 
-      - name: Run pull request contract guard tests
-        run: python -m pytest -q .github/tests/test_pr_contract_guard.py
-
-      - name: Run R2 credential authority split contract tests
-        run: python -m pytest -q .github/tests/test_r2_credential_authority_split.py
-
-      # #3527: workflow trigger scope is a policy consistency property. This
-      # lane has no paths filter, so the trigger contract test always runs and
-      # a re-broadened (or silently too-narrow) trigger cannot land unnoticed.
-      - name: Run CI trigger scope contract tests
-        run: |
-          python -m pytest -q \
-            .github/tests/test_b62_pr_preview_trigger_scope.py \
-            .github/tests/test_b62_worker_deploy_trigger_scope.py
-
-      # #3625: a merge-forward can show CHANGED_FILE_OVERLAP=0 and still break a
-      # lane that collects another component's test tree, because a shared
-      # conftest/fixture import is not a changed file in that lane. This guard
-      # is derived from source, never a hardcoded package allowlist.
+      # Direct scripts remain standalone blocking gates (no pytest dependency).
       - name: Run cross-lane test dependency guard
         run: python .github/scripts/cross_lane_test_dependency_guard.py
 
-      - name: Run cross-lane dependency guard contract tests
-        run: python -m pytest -q .github/tests/test_cross_lane_test_dependency_guard.py
-
-      # #3652: the Engine canaries hash working-copy bytes, so a PINNED_SHA256
-      # target without an autocrlf-proof .gitattributes rule passes on
-      # ubuntu-latest and fails only on a Windows checkout. This guard couples the
-      # two lists statically and is collected from source, never a hardcoded path
-      # allowlist.
       - name: Run frozen-source checkout-byte guard
         run: python .github/scripts/frozen_source_checkout_byte_guard.py
 
-      - name: Run frozen-source checkout-byte guard contract tests
-        run: python -m pytest -q .github/tests/test_frozen_source_checkout_byte_guard.py
+      # Existing Engine/LL ownership contract pins this exact invocation.
+      - name: Run Engine/Living Learning CI ownership tests
+        run: python -m pytest -q .github/tests/test_3989_engine_living_learning_ci_scope.py
 
-      # #3658: a shared user interpreter plus editable installs recorded from another worktree can
-      # answer a suite's imports, so a green local run may prove nothing about the checkout under
-      # review. The preflight contract is pure stdlib and needs no local packages installed.
-      - name: Run import-origin preflight contract tests
-        run: python -m pytest -q .github/tests/test_verify_import_origin.py
-
-      # #3679: the generic B66 analyzer reads customer workbooks, and nothing else in CI ever
-      # executes it. This suite is stdlib-only (no PyMuPDF, no local packages), so the archive
-      # bounds and the refusals they produce are enforced on every pull request at the cost of one
-      # already-running job.
-      - name: Run bounded archive contract tests for the generic analyzer
-        run: python -m pytest -q tools/b66_generic/tests/test_b66_generic_archive_bounds.py
+      # #3989: consolidate the seven other pytest invocations into one.
+      # All exact original suite paths remain; any failure blocks the job.
+      # Stable required check names and reporting job remain untouched.
+      - name: Run remaining policy and security contract tests
+        run: |
+          python -m pytest -q \
+            .github/tests/test_pr_contract_guard.py \
+            .github/tests/test_r2_credential_authority_split.py \
+            .github/tests/test_b62_pr_preview_trigger_scope.py \
+            .github/tests/test_b62_worker_deploy_trigger_scope.py \
+            .github/tests/test_cross_lane_test_dependency_guard.py \
+            .github/tests/test_frozen_source_checkout_byte_guard.py \
+            .github/tests/test_verify_import_origin.py \
+            tools/b66_generic/tests/test_b66_generic_archive_bounds.py \
+            .github/tests/test_3989_operations_guard_pytest_batch.py
 
       - name: Record guard scope
         run: |

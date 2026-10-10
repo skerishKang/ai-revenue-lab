@@ -10,6 +10,7 @@
     user: null,
     skills: [],
     quoteModels: [],
+    quoteReasoningByModel: {},
     loadedSkill: null,
     companyProfile: null,
     companyProfileLoaded: false,
@@ -149,8 +150,14 @@
     state.user = null;
     state.skills = [];
     state.quoteModels = [];
+    state.quoteReasoningByModel = {};
     const modelSelect = byId("padiemQuoteModelSelect");
     if (modelSelect) modelSelect.replaceChildren();
+    const reasoningSelect = byId("padiemQuoteReasoningSelect");
+    if (reasoningSelect) {
+      reasoningSelect.replaceChildren();
+      reasoningSelect.disabled = true;
+    }
     state.companyProfile = null;
     state.companyProfileLoaded = false;
     clearPendingQuote();
@@ -255,6 +262,7 @@
     if (!select) return;
     state.quoteModels = [];
     select.replaceChildren();
+    select.addEventListener("change", syncReasoningOptions);
     const placeholder = document.createElement("option");
     placeholder.value = "";
     placeholder.textContent = "\uBAA8\uB378\uC744 \uC120\uD0DD\uD558\uC138\uC694";
@@ -276,13 +284,71 @@
         select.append(option);
       });
       state.quoteModels = records.map((row) => row.model_id);
+      state.quoteReasoningByModel = {};
+      records.forEach((row) => {
+        state.quoteReasoningByModel[row.model_id] = Array.isArray(row.reasoning_levels)
+          ? row.reasoning_levels.filter((level) => level &&
+              typeof level.value === "string" && /^[a-z0-9-]{1,32}$/.test(level.value) &&
+              typeof level.label === "string")
+          : [];
+      });
       const configured = result.data.default_model_id;
       select.value = typeof configured === "string" && state.quoteModels.includes(configured)
         ? configured : "";
       select.disabled = records.length === 0;
+      syncReasoningOptions();
     } catch (_) {
       select.disabled = true;
+      state.quoteReasoningByModel = {};
+      syncReasoningOptions();
     }
+  }
+
+  /* #3906: the reasoning control only ever offers the levels the selected model
+     actually supports. Switching models re-validates the current choice, so a
+     level that the new model does not support can never be submitted. The
+     provider default is always first and is the initial choice; no recommended
+     level is auto-applied and nothing is persisted per user. */
+  function reasoningOptionsForModel(modelId) {
+    if (typeof modelId !== "string" || !state.quoteModels.includes(modelId)) return [];
+    const levels = state.quoteReasoningByModel[modelId];
+    if (!Array.isArray(levels) || !levels.length) return [];
+    const fallback = [{ value: "default", label: "\uAE30\uBCF8(\uC81C\uACF5\uC790 \uAE30\uBCF8\uAC12)" }];
+    const allowed = /^[a-z0-9-]{1,32}$/;
+    const valid = levels.filter((level) => level &&
+      typeof level.value === "string" && allowed.test(level.value) &&
+      typeof level.label === "string" && level.label.length <= 80);
+    if (!valid.length) return fallback;
+    return valid.slice().sort((a, b) => (a.value === "default" ? -1 : b.value === "default" ? 1 : 0));
+  }
+
+  /* #3906: the reasoning choice actually being offered for this exact model.
+     Returns "" when the control has no option for the model, so the request
+     keeps the pre-#3906 shape instead of inventing an unsupported level. */
+  function selectedReasoningLevel(modelId) {
+    const reasoningSelect = byId("padiemQuoteReasoningSelect");
+    if (!reasoningSelect) return "";
+    const options = reasoningOptionsForModel(modelId);
+    if (!options.length) return "";
+    const current = reasoningSelect.value;
+    return options.some((level) => level.value === current) ? current : "";
+  }
+
+  function syncReasoningOptions() {
+    const modelSelect = byId("padiemQuoteModelSelect");
+    const reasoningSelect = byId("padiemQuoteReasoningSelect");
+    if (!modelSelect || !reasoningSelect) return;
+    const options = reasoningOptionsForModel(modelSelect.value);
+    reasoningSelect.replaceChildren();
+    options.forEach((level) => {
+      const option = document.createElement("option");
+      option.value = level.value;
+      option.textContent = level.label;
+      reasoningSelect.append(option);
+    });
+    const defaultFirst = options.some((level) => level.value === "default");
+    reasoningSelect.value = defaultFirst ? "default" : (options[0] ? options[0].value : "");
+    reasoningSelect.disabled = options.length === 0;
   }
 
   async function loadSkills() {
@@ -437,6 +503,8 @@
       case "cgi_unsupported_details": return "CGI 기본 견적서는 현재 요약 품목만 PDF로 만들 수 있습니다. 상세내역은 지원하지 않으므로 요약 품목의 수량과 단가를 알려 주세요.";
       case "cgi_scope_unavailable": return "CGI 견적서의 지원 범위를 확인하지 못했습니다. 새로고침 후 다시 시도해 주세요.";
       case "interpret_unavailable": return "해석 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.";
+      case "interpret_timeout": return "선택한 AI 모델의 응답이 시간 초과되었습니다. 자동으로 다시 요청하지 않습니다. 다른 모델을 직접 선택하거나 질문받으며 만들기를 이용해 주세요.";
+      case "interpret_failed": return "선택한 AI 모델이 견적 요청을 처리하지 못했습니다. 다른 모델을 직접 선택하거나 질문받으며 만들기를 이용해 주세요.";
       default: return "견적 요청을 해석하지 못했습니다.";
     }
   }
@@ -692,11 +760,22 @@
       }
     }
 
+    /* #3906: forward the user's explicit reasoning choice alongside the exact
+       model. Omission keeps the pre-#3906 byte layout; the field is only sent
+       when the control actually offers a level for THIS model. */
+    const payload = {
+      saved_skill_id: state.loadedSkill.savedSkillId,
+      message,
+      model_id: modelId
+    };
+    const reasoningLevel = selectedReasoningLevel(modelId);
+    if (reasoningLevel) payload.reasoning_level = reasoningLevel;
+
     try {
       const result = await api("/b66/quote/interpret", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({ saved_skill_id: state.loadedSkill.savedSkillId, message, model_id: modelId })
+        body: JSON.stringify(payload)
       });
       const data = result.data;
       if (!result.response.ok || !data || data.ok !== true || !data.candidate) {
@@ -724,7 +803,15 @@
             question: "표현이 불분명한 부분이 있습니다. 거래처명, 품목명, 수량과 단가를 확인해 견적 내용을 다시 알려 주세요."
           };
         }
-        return { ok: false, code: "interpret_failed", detail: safeMessage(data, "") };
+        // A bounded, server-emitted diagnostic distinguishes a real upstream
+        // timeout from malformed model output. Never surface raw provider data
+        // or silently retry/switch the customer's explicitly selected model.
+        if (result.response.status === 502 &&
+            result.response.headers &&
+            result.response.headers.get("X-B66-Upstream-Class") === "upstream_timeout") {
+          return { ok: false, code: "interpret_timeout" };
+        }
+        return { ok: false, code: "interpret_failed" };
       }
       const candidate = allocated ? mergePendingCandidate(allocated.lastCandidate, data.candidate) : data.candidate;
       const scopeFailure = candidateScopeFailure(candidate);
@@ -864,7 +951,11 @@
           window.setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
         }
         return { ok: true, filename };
-      } catch (_) {
+      } catch (error) {
+        if (error && error.code === "browser_pdf_unsupported_rows") {
+          return pdfFailure("cgi_unsupported_rows",
+            "현재 CGI 견적서 PDF는 품목 최대 3개까지만 지원합니다. 품목을 3개 이하로 줄여 주세요.");
+        }
         return pdfFailure("browser_pdf_unavailable", "CGI 브라우저 PDF를 만들지 못했습니다. 다시 확인해 주세요.");
       }
     }

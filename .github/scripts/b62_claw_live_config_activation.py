@@ -67,6 +67,7 @@ P01_SERVICE_NAME = "P01_ENGINE_SERVICE"
 P01_CALLER_NAME = "P01_ENGINE_CALLER_ID"
 P01_CALLER_VALUE = "b54-p01-overlay-20260914-a1"
 P01_CREDENTIAL_NAME = "P01_ENGINE_CREDENTIAL"
+P01_SSE_OPTIN_FLAG = "PADIEM_CLAW_P01_LIVE_SSE_ENABLED"
 
 # Bounded source-credential replacement gate (#2428). These thresholds mirror
 # the runtime authority in apps/padiem-chat/app/worker_config.py
@@ -449,6 +450,7 @@ def build_rollback_plan(
     *,
     credential_created_by_activation: bool,
     target_sha: str,
+    sse_optin_rollback: bool = False,
 ) -> dict:
     """Plan a settings restore bounded to the pre-activation snapshot.
 
@@ -480,7 +482,7 @@ def build_rollback_plan(
             continue
         if current is not None and canonical_binding(snapshot) == canonical_binding(current):
             patch_bindings.append(_inherit(name))
-        elif name in TARGET_NAMES:
+        elif name in TARGET_NAMES or (sse_optin_rollback and name == P01_SSE_OPTIN_FLAG):
             patch_bindings.append(_inline_binding(snapshot))
             changes.append(f"CONFIG_RESTORE_{name}")
         else:
@@ -499,7 +501,7 @@ def build_rollback_plan(
                     f"{name}: present live but absent from the pre-activation snapshot and this "
                     "rollback run does not attribute its creation to the recorded activation"
                 )
-        elif name in TARGET_NAMES:
+        elif name in TARGET_NAMES or (sse_optin_rollback and name == P01_SSE_OPTIN_FLAG):
             changes.append(f"CONFIG_REMOVE_{name}")
         else:
             patch_bindings.append(_inherit(name))
@@ -549,6 +551,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--snapshot", type=Path)
     parser.add_argument("--pre-settings", type=Path)
     parser.add_argument("--credential-created-by-activation", default="false")
+    parser.add_argument("--sse-optin-rollback", default="false")
     parser.add_argument("--deployments", type=Path)
     parser.add_argument("--pre-version", default="")
     parser.add_argument("--observations-file", type=Path)
@@ -656,6 +659,9 @@ def _main_rollback_plan(args: argparse.Namespace) -> int:
     if args.credential_created_by_activation not in {"true", "false"}:
         print("--credential-created-by-activation must be true or false", file=sys.stderr)
         return 2
+    if args.sse_optin_rollback not in {"true", "false"}:
+        print("--sse-optin-rollback must be true or false", file=sys.stderr)
+        return 2
     try:
         current_payload = json.loads(args.settings.read_text(encoding="utf-8"))
         snapshot_payload = json.loads(args.snapshot.read_text(encoding="utf-8"))
@@ -668,6 +674,7 @@ def _main_rollback_plan(args: argparse.Namespace) -> int:
             current_payload,
             credential_created_by_activation=args.credential_created_by_activation == "true",
             target_sha=args.target_sha,
+            sse_optin_rollback=args.sse_optin_rollback == "true",
         )
     except ManualConfigRecoveryRequired as exc:
         print(

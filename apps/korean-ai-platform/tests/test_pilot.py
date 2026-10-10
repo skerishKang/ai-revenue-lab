@@ -151,7 +151,7 @@ class TestSchemaValidation:
 
     def test_max_tokens_too_high(self):
         with pytest.raises(ValidationError):
-            PilotChatRequest(model="test", messages=[ChatMessage(role="user", content="hi")], max_tokens=99999)
+            PilotChatRequest(model="test", messages=[ChatMessage(role="user", content="hi")], max_tokens=2147483648)
 
     def test_max_tokens_zero(self):
         with pytest.raises(ValidationError):
@@ -298,12 +298,13 @@ class TestPlaceholderKey:
 
 
 class TestDefaultTemperature:
-    def test_ui_form_sends_02(self, client):
-        """The HTML range input sends 0.2, not 20."""
+    def test_ui_form_defaults_to_provider_native(self, client):
+        """Do not force a sampling default in the form."""
         _configure_pilot()
         resp = client.get("/pilot")
         assert resp.status_code == 200
-        assert 'value="0.2"' in resp.text
+        assert 'id="pilot_temp" name="temperature"' in resp.text
+        assert 'name="temperature" min="0" max="2" step="0.1" value=""' in resp.text
         assert 'max="2"' in resp.text
         assert 'step="0.1"' in resp.text
 

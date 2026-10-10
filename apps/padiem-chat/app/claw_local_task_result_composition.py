@@ -135,9 +135,85 @@ class LocalRunnerResultSource:
 
     configured = True
 
-    def __init__(self, *, history: Any, result_port: BrokerAuthorityLocalRunnerResultPort) -> None:
+    def __init__(self, *, history: Any, result_port: BrokerAuthorityLocalRunnerResultPort,
+                 office_completion=None) -> None:
         self._history = history
         self._result_port = result_port
+        # An explicit approved Drive pipeline is a host-only optional port.
+        # The normal broker result projection never triggers a file upload.
+        self._office_completion = office_completion
+        self._office_reader = None
+        if callable(getattr(getattr(result_port, "_binding", None),
+                            "read_office_artifact_part", None)):
+            from .claw_local_office_binary_reader import BrokerOfficeBinaryReader
+            self._office_reader = BrokerOfficeBinaryReader(
+                private_binding=result_port._binding
+            )
+
+    async def read_staged_office_output(
+        self, *, owner_id: str, run_ref: str, kind: str,
+    ):
+        """Trusted host-only, owner/run-verified private binary read.
+
+        Never exposed through the public local-result route. The broker and D1
+        must independently agree on an exact, completed, successful command.
+        """
+        from .claw_local_office_binary_reader import OfficeBinaryReadRefused
+        from .claw_local_task_result_projection import LocalRunnerTerminalObservation
+        from .history import validate_conversation_id
+        if self._office_reader is None:
+            raise OfficeBinaryReadRefused("private Office bytes unavailable")
+        row = await self._history.get_claw_run(owner_id, run_ref)
+        if not isinstance(row, dict) or row.get("run_id") != run_ref:
+            raise OfficeBinaryReadRefused("owner-bound Office run unavailable")
+        cid = validate_conversation_id(row.get("conversation_id"))
+        workspace = row.get("workspace_id")
+        if (cid is None or not isinstance(workspace, str) or not workspace
+                or row.get("status") != "completed"
+                or await self._history.verify_owner_conversation_artifacts(
+                    owner_id, cid
+                ) is not True):
+            raise OfficeBinaryReadRefused("completed owner conversation unavailable")
+        bound = await self._history.get_local_task_correlation(owner_id, run_ref)
+        fields = (
+            "command_id", "tool_request_ref", "request_id",
+            "revision_ref", "evidence_ref", "request_fingerprint",
+        )
+        if not isinstance(bound, dict) or any(k not in bound for k in fields):
+            raise OfficeBinaryReadRefused("canonical command correlation unavailable")
+        try:
+            fact = await self._result_port.command_result(
+                command_id=bound["command_id"], run_id=run_ref,
+                owner_id=owner_id, workspace_id=workspace,
+            )
+        except Exception:
+            raise OfficeBinaryReadRefused("canonical broker result unavailable") from None
+        if (not isinstance(fact, LocalRunnerTerminalObservation)
+                or fact.state != "acknowledged" or fact.termination != "exited"
+                or fact.exit_code != 0 or fact.run_id != run_ref
+                or any(getattr(fact, k) != bound[k] for k in fields)):
+            raise OfficeBinaryReadRefused("successful exact broker command unverified")
+        return await self._office_reader.read(
+            owner_id=owner_id, workspace_ref=workspace,
+            run_ref=run_ref, command_id=bound["command_id"], kind=kind,
+        )
+
+    async def complete_approved_office_run(
+        self, *, owner_id, run_ref, outputs, xlsx_intent, pdf_intent, now,
+    ):
+        """Trusted host callback, NEVER invoked by the public terminal GET/POST."""
+        from .claw_local_office_origin_bridge import LocalOfficeOriginBridge
+        from .claw_durable_drive_output_pipeline import DurableArtifactCompletionError
+        if self._office_completion is None:
+            raise DurableArtifactCompletionError("approved Office/Drive host unavailable")
+        bridge = LocalOfficeOriginBridge(
+            history=self._history, terminal_port=self._result_port,
+            completion=self._office_completion,
+        )
+        return await bridge.complete_approved_office_run(
+            owner_id=owner_id, run_ref=run_ref, outputs=outputs,
+            xlsx_intent=xlsx_intent, pdf_intent=pdf_intent, now=now,
+        )
 
     async def project_local_runner_result(
         self,
@@ -226,7 +302,7 @@ class LocalRunnerResultSource:
 
 
 def build_local_task_result_source_with_diagnostic(
-    env: Any, history_store: Any
+    env: Any, history_store: Any, *, office_completion=None
 ) -> tuple[LocalRunnerResultSource | None, str | None]:
     """Compose the concrete source from the trusted binding, or fail closed."""
 
@@ -245,12 +321,15 @@ def build_local_task_result_source_with_diagnostic(
         source = LocalRunnerResultSource(
             history=history_store,
             result_port=BrokerAuthorityLocalRunnerResultPort(boundary),
+            office_completion=office_completion,
         )
     except Exception:
         return None, LOCAL_RUNNER_RESULT_DIAG_CONSTRUCTION_FAILED
     return source, None
 
 
-def build_local_task_result_source(env: Any, history_store: Any) -> LocalRunnerResultSource | None:
-    source, _ = build_local_task_result_source_with_diagnostic(env, history_store)
+def build_local_task_result_source(env: Any, history_store: Any, *, office_completion=None) -> LocalRunnerResultSource | None:
+    source, _ = build_local_task_result_source_with_diagnostic(
+        env, history_store, office_completion=office_completion,
+    )
     return source

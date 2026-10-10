@@ -39,12 +39,17 @@ _ALLOWED_DAUM_SORTS = frozenset({"accuracy", "recency"})
 # TinyFish search result fields, in the precedence order the in-repo benchmark
 # runner already uses for this provider.
 _TINYFISH_SNIPPET_KEYS = ("snippet", "description", "summary", "content")
-# TinyFish fetch content fields. The fetch wire shape is declared by #3385 as
-# POST against a fixed origin but is not yet empirically verified, so the
-# accepted envelope is deliberately narrow and documented rather than guessed
-# open-endedly; anything unrecognized fails closed as `web_malformed`.
-_TINYFISH_FETCH_CONTENT_KEYS = ("markdown", "text", "content", "snippet", "description")
+# TinyFish fetch wire shape. The published Fetch API returns
+# `{"results": [{"url", "final_url", "title", "description", "language",
+# "format", "text"}], "errors": []}` for a `{"urls": [...]}` request (#3385).
+# The `data`/`result` dict envelopes are kept only as a narrow compatibility
+# fallback for the shape this provider shipped with before the published
+# contract was reconciled; anything unrecognized still fails closed as
+# `web_malformed`.
+_TINYFISH_FETCH_CONTENT_KEYS = ("text", "markdown", "content", "snippet", "description")
+_TINYFISH_FETCH_RESULT_LIST_KEYS = ("results",)
 _TINYFISH_FETCH_ENVELOPE_KEYS = ("data", "result")
+_TINYFISH_FETCH_URL_KEYS = ("final_url", "url", "source_url")
 
 
 class WebRuntimeError(RuntimeError):
@@ -526,6 +531,24 @@ class DaumWebProvider:
         return await extractor.fetch(safe_url)
 
 
+def _tinyfish_transport_kind(exc: httpx.HTTPError) -> str:
+    """Fixed error class only: never serialize exception messages or request data."""
+    for error_type, kind in (
+        (httpx.ConnectError, "CONNECT"),
+        (httpx.ReadError, "READ"),
+        (httpx.WriteError, "WRITE"),
+        (httpx.RemoteProtocolError, "REMOTE_PROTOCOL"),
+        (httpx.LocalProtocolError, "LOCAL_PROTOCOL"),
+        (httpx.ProxyError, "PROXY"),
+        (httpx.DecodingError, "DECODING"),
+        (httpx.ProtocolError, "PROTOCOL"),
+        (httpx.RequestError, "REQUEST"),
+    ):
+        if isinstance(exc, error_type):
+            return kind
+    return "OTHER"
+
+
 class TinyFishWebProvider:
     """TinyFish Search/Fetch provider (#3385 source child, #3622).
 
@@ -533,8 +556,8 @@ class TinyFishWebProvider:
     a GET against the fixed Search origin with an `X-API-Key` header and reads the
     `{"results": [...]}` envelope — the shape the in-repo benchmark runner
     (`scripts/experiments/benchmark_padiem_search_providers.py`) already uses for
-    this provider. Fetch POSTs exactly one `normalize_public_url`-approved URL to
-    the fixed Fetch origin.
+    this provider. Fetch POSTs one `normalize_public_url`-approved URL as
+    `{"urls": [...]}` to the fixed Fetch origin.
 
     Both requests reuse the reviewed provider safety envelope: fixed origin, no
     redirect following, bounded streaming response size, bounded timeout, and the
@@ -543,10 +566,14 @@ class TinyFishWebProvider:
     projection. Selecting the provider without a key fails closed in
     `WebRuntimeConfig`, so there is no keyless fallback to another provider.
 
-    The Fetch response envelope is declared by #3385 but not yet empirically
-    verified, so the accepted shape is deliberately narrow and documented:
-    a JSON object, optionally wrapped in `data`/`result`, carrying at least one
-    recognized content field. Anything else fails closed as `web_malformed`.
+    The Fetch wire shape follows the published Fetch API (#3385):
+    `POST {"urls": [...]}` against a fixed origin, read back from the
+    `{"results": [{"url", "final_url", "title", "text"}], "errors": []}`
+    envelope. The earlier `data`/`result` dict envelope is still accepted as a
+    narrow compatibility fallback; anything unrecognized fails closed as
+    `web_malformed`, and an empty `results` list fails closed as
+    `web_request_failed`. HTTP 402 (free allowance exhausted) is surfaced as its
+    own `web_quota_exhausted` code.
     """
 
     def __init__(self, config: WebRuntimeConfig, transport: httpx.AsyncBaseTransport | None = None):
@@ -595,13 +622,24 @@ class TinyFishWebProvider:
         except httpx.TimeoutException as exc:
             raise WebRuntimeError("web_timeout", "web provider timed out", 504) from exc
         except httpx.HTTPError as exc:
+            # Bounded operator-only diagnostic. No URLs, queries, tokens, headers
+            # or exception details ever appear in Worker logs.
+            print("TINYFISH_EGRESS_FAILURE=TRANSPORT", flush=True)
+            print("TINYFISH_EGRESS_KIND=" + _tinyfish_transport_kind(exc), flush=True)
             raise WebRuntimeError("web_unavailable", "web provider transport failed", 502) from exc
 
         if status in {401, 403}:
             raise WebRuntimeError("web_auth", "web provider authentication failed", 503)
+        # #3385: the published TinyFish billing contract returns HTTP 402 with
+        # code `INSUFFICIENT_CREDITS` once the daily free allowance is used and
+        # the wallet balance is zero. Surface it as its own fail-closed code so
+        # quota exhaustion is never confused with an ordinary rejected request.
+        if status == 402:
+            raise WebRuntimeError("web_quota_exhausted", "web provider free quota is exhausted", 503)
         if status == 429:
             raise WebRuntimeError("web_busy", "web provider is rate limited", 503)
         if status >= 500:
+            print("TINYFISH_EGRESS_FAILURE=UPSTREAM_5XX", flush=True)
             raise WebRuntimeError("web_unavailable", "web provider is unavailable", 502)
         if status < 200 or status >= 300:
             raise WebRuntimeError("web_request_failed", "web provider rejected the request", 502)
@@ -642,6 +680,9 @@ class TinyFishWebProvider:
             )
             if evidence is not None:
                 result.append(evidence)
+        # Only fixed, bounded outcome metadata; no query, URL or provider text.
+        marker = "UPSTREAM_EMPTY" if not items else "NO_USABLE_URL" if not result else "USABLE"
+        print("TINYFISH_SEARCH_NORMALIZATION=" + marker, flush=True)
         return result
 
     async def fetch(self, url: str) -> Evidence:
@@ -654,14 +695,27 @@ class TinyFishWebProvider:
                 "Content-Type": "application/json",
                 "Accept": "application/json",
             },
-            json_body={"url": safe_url},
+            json_body={"urls": [safe_url]},
         )
         payload: Any = data
-        for envelope in _TINYFISH_FETCH_ENVELOPE_KEYS:
-            candidate = payload.get(envelope)
-            if isinstance(candidate, dict):
-                payload = candidate
+        for list_key in _TINYFISH_FETCH_RESULT_LIST_KEYS:
+            candidate = payload.get(list_key)
+            if isinstance(candidate, list):
+                # The published Fetch API answers HTTP 200 with an empty
+                # `results` list when a URL could not be fetched; fail closed
+                # instead of returning an empty page as if it had succeeded.
+                if not candidate:
+                    raise WebRuntimeError(
+                        "web_request_failed", "web provider could not fetch the page", 502
+                    )
+                payload = candidate[0]
                 break
+        else:
+            for envelope in _TINYFISH_FETCH_ENVELOPE_KEYS:
+                candidate = payload.get(envelope)
+                if isinstance(candidate, dict):
+                    payload = candidate
+                    break
         if not isinstance(payload, dict) or not any(
             key in payload for key in _TINYFISH_FETCH_CONTENT_KEYS
         ):
@@ -674,9 +728,14 @@ class TinyFishWebProvider:
             ),
             "",
         )
-        returned_url = (
-            payload.get("url") or payload.get("final_url") or payload.get("source_url") or safe_url
-        )
+        returned_url = next(
+            (
+                payload.get(key)
+                for key in _TINYFISH_FETCH_URL_KEYS
+                if isinstance(payload.get(key), str) and payload.get(key)
+            ),
+            "",
+        ) or safe_url
         evidence = _evidence(
             title=payload.get("title"),
             url=returned_url,

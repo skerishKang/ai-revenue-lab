@@ -268,7 +268,9 @@ async def _prime_until_visible(
                 )
             raise _pilot_error_from_router_event(event)
 
-        if event.delta_content:
+        # Mirror the Router/Provider visible-text definition: whitespace
+        # cannot commit a route or force HTTP 200 before a real answer.
+        if event.delta_content and event.delta_content.strip():
             if not event.committed:
                 raise PilotError(
                     code="stream_execution_error",

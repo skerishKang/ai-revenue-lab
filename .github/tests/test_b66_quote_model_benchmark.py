@@ -28,10 +28,12 @@ def raw_for(case):
     }
 
 
-def test_authority_current_nine_only():
+def test_authority_current_owner_registry_only():
     models=m.approved_models()
-    assert len(models)==9
-    assert len(set(models))==9
+    canonical=json.loads((ROOT/"apps/korean-ai-platform/app/pilot/b14_models.json").read_text(encoding="utf8"))
+    expected={item["id"] for item in canonical["models"]}
+    assert len(set(models))==len(models)
+    assert set(models)==expected
     assert not any(name.startswith("kilo/") for name in models)
     assert any(name.startswith("poolside/") for name in models)
     with pytest.raises(ValueError):
@@ -119,17 +121,67 @@ def test_external_response_envelope_fails_closed_for_fallback_and_identity():
 
 
 def test_unavailable_and_drift_blocked_by_get_only_preflight():
-    model_ids=list(m.approved_models())
-    good=[{"id":name} for name in model_ids]
-    result=m.live_catalog_preflight(fetch=lambda:json.dumps({"registered_routes":good}).encode())
+    # A matching public model ID is not sufficient: the serving provider and
+    # upstream model must agree with the exact canonical tuple.
+    canonical=m.load_current_models()
+    good=[{
+        "id":name,
+        "provider_id":model["provider_id"],
+        "upstream_model":model["upstream_model"],
+    } for name,model in canonical.items()]
+    result=m.live_catalog_preflight(
+        fetch=lambda:json.dumps({"registered_routes":good}).encode())
     assert result["preflight"]=="MATCH"
+    assert result["main_model_count"]==len(canonical)
+    assert result["served_model_count"]==len(canonical)
+    assert result["mismatched_provider_upstream_model_ids"]==[]
     assert result["live_post_count"]==0
     drift=[*good,{"id":"retired-test-placeholder"}]
-    bad=m.live_catalog_preflight(fetch=lambda:json.dumps({"registered_routes":drift}).encode())
+    bad=m.live_catalog_preflight(
+        fetch=lambda:json.dumps({"registered_routes":drift}).encode())
     assert bad["preflight"]=="BLOCKED_REGISTRY_DRIFT"
     assert bad["live_post_count"]==0
     assert bad["unapproved_served_model_ids"]==["retired-test-placeholder"]
     assert m.live_catalog_preflight(fetch=lambda:b"not json")["preflight"]=="UNAVAILABLE"
+
+
+@pytest.mark.parametrize("field,wrong_value", [
+    ("provider_id", "unexpected-provider"),
+    ("upstream_model", "unexpected-upstream"),
+    ("provider_id", None),
+    ("upstream_model", None),
+])
+def test_live_catalog_preflight_rejects_same_id_with_changed_execution_tuple(
+    field,wrong_value
+):
+    models=m.load_current_models()
+    served=[{
+        "id":id_,
+        "provider_id":spec["provider_id"],
+        "upstream_model":spec["upstream_model"],
+    } for id_,spec in models.items()]
+    victim=served[0]["id"]
+    served[0][field]=wrong_value
+    result=m.live_catalog_preflight(
+        fetch=lambda:json.dumps({"registered_routes":served}).encode())
+    assert result["preflight"]=="BLOCKED_REGISTRY_DRIFT"
+    assert result["mismatched_provider_upstream_model_ids"]==[victim]
+    assert result["missing_current_model_ids"]==[]
+    assert result["unapproved_served_model_ids"]==[]
+    assert result["live_post_count"]==0
+
+
+def test_live_catalog_preflight_rejects_duplicate_exact_route_id():
+    models=m.load_current_models()
+    served=[{
+        "id":id_, "provider_id":spec["provider_id"],
+        "upstream_model":spec["upstream_model"]
+    } for id_,spec in models.items()]
+    served.append(dict(served[0]))
+    result=m.live_catalog_preflight(
+        fetch=lambda:json.dumps({"registered_routes":served}).encode())
+    assert result["preflight"]=="BLOCKED_REGISTRY_DRIFT"
+    assert result["live_post_count"]==0
 
 
 def test_cli_inert_list_and_exact_prompt_without_real_calls(capsys):

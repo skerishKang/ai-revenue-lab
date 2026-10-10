@@ -39,6 +39,7 @@ from __future__ import annotations
 import os
 import subprocess
 import threading
+import time
 from typing import Any, Callable
 
 from .contracts import ContractError
@@ -341,8 +342,12 @@ class WindowsGitWorktreeStatePort:
         finally:
             # The drain threads own their streams and close them; closing here
             # would race a still-running reader and truncate the response.
+            # Share one five-second deadline across both independent readers:
+            # two stalled pipes must not extend a bounded probe to ten seconds.
+            # Any reader still alive after the deadline fails closed below.
+            reader_join_deadline = time.monotonic() + 5.0
             for reader in readers:
-                reader.join(timeout=5)
+                reader.join(timeout=max(0.0, reader_join_deadline - time.monotonic()))
         if timed_out:
             raise ContractError(
                 "git_worktree_probe_timeout: git status did not complete within the probe bound",
