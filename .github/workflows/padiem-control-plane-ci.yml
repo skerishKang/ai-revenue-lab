@@ -77,6 +77,9 @@ jobs:
       # #3989: full pytest and all six Worker --dry-run packages remain mandatory.
       # The packaging subtree is a disposable checkout-byte copy, preventing
       # temporary wrangler.jsonc and Python bundle files from racing tests.
+      - name: Verify full-suite and six Worker dry-run ownership contract
+        run: python .github/tests/test_3989_control_plane_ci_overlap.py
+
       - name: Overlap full Control Plane tests and six isolated Worker package dry-runs
         shell: bash
         run: bash .github/scripts/control_plane_ci_overlap_3989.sh
