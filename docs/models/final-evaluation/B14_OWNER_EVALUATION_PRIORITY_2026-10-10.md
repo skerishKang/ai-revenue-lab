@@ -1,5 +1,21 @@
 # B14 모델 평가 우선순위 — Owner 결정 (2026-10-10)
 
+<!-- CENTRAL_OWNER_20261010_BILLING_LIVE_PROBE_PRIORITY -->
+## 2026-10-10 Owner 최신 계정 조건 / #3554 평가 재정렬
+
+**이번 최신 Owner 정보가 아래 과거 'Kira 평가 증거 없음' 및 '프로모션 무료' 단정을 대체합니다.** 계정 사용권·실제 모델별 요금·한도는 서로 다른 사실이며, 공개 저장소에 API 키·계정 잔액·결제 정보는 기록하지 않습니다.
+
+| 순서 | 등록된 exact B14 모델 | Owner 계정 관측 / 검증 경계 | 결정 |
+|---|---|---|---|
+| 1 | `sensenova/sensenova-6.8-flash-lite` | **유료**, Owner 크레딧 충분(정확한 잔액·실제 요금·RPM은 UNKNOWN). 과거 직접/운영 성공 증거 존재 | **최우선** — 이전과 다른 현재 코드의 일반 응답을 1회 제한 검증하는 계획 준비. 유료 API POST는 별도 승인 전 0회 |
+| 2 | `kira/qwen3.8-flash-free` | **Kira 계정 유료** 및 Owner가 **일일 10,000,000토큰 충전**을 보고. 그러나 Kira 공식 구독 안내는 포함 토큰이 `kira-` 접두어 모델에 적용된다고 명시; 등록된 upstream `qwen3.8-flash-free`는 그 접두어가 없어 **이 모델의 해당 충전량 적용 여부 UNKNOWN**. 과거 Kira 직접 실호출 1회 HTTP200·비어 있지 않은 응답 있음 | **두 번째** — 정확한 모델별 요금/사용권 확인 후 1회 승인된 제한 검증. 모델 ID의 `-free`를 계정 무료로 해석 금지 |
+| 보류 | `experiential/qwen3.8-flash-next-uncensored` | Owner 현재 **사용 제한 의심**; 과거 B14 HTTP429 기록. 무료 프로모션 공개 표기는 현재 계정의 요청 허용이나 속도 보장 아님 | **호출 0회**. 429 원인(프로젝트 quota/분당 제한/공급자 용량) 미확인. 사용 가능성 확인 전 품질 점수 산정 금지 |
+
+이 작업 큐는 **테스트 수행 계획**이며 실제 API 호출 승인, 자동 모델/요금제 변경, 재시도 허가, 등록 순서 변경, Production 배포 허가가 아닙니다. 이전 Google/Gemma/Poolside/Mercury 항목과 Agnes/Atria 후순위 결정을 폐기하지 않습니다. 현재 사용자 지정 exact model만 실행하며 fallback 0.
+
+**근거:** [Kira 공식 요금제 적용 범위](https://kiraai.vn/) (subscription applies only to model IDs prefixed `kira-`), 기존 [Kira 직접 200 기록](B14_KIRA_QWEN38_FLASH_FREE_ONBOARDING_2026-10-10.md), [SenseNova 직접·운영 평가](B14_FINAL_SENSENOVA_6_8_FLASH_LITE_2026-10-09.md), [ExLab 기존 429 근거](B14_EXLAB_QWEN38_NEXT_UNCENSORED_2026-10-10.md), [#3554 무호출 사전 준비](B14_3554_OWNER_QUOTA_AND_LIVE_PROBE_GATE_2026-10-10.md).
+<!-- /CENTRAL_OWNER_20261010_BILLING_LIVE_PROBE_PRIORITY -->
+
 > **평가·재시험 작업 대기열이며 실서비스 자동 모델 순위·라우팅 정책이 아니다.**
 > 정확한 사용자 지정 모델 선택이 유일한 실행 권한이다. 이 문서 때문에 어떤 모델도 등록 해제, 자동 변경, 우회·fallback, 기본 추천/선택하지 않는다.
 

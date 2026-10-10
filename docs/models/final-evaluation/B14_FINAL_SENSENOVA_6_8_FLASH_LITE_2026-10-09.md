@@ -4,6 +4,14 @@
 
 # B14 최종 모델 평가 — SenseNova 6.8 Flash Lite
 
+<!-- OWNER_PAID_CREDITS_REBASE_20261010 -->
+## 2026-10-10 현재 Owner 보유 크레딧과 검증 우선순위
+
+Owner가 **SenseNova는 유료 이용이며 사용할 크레딧이 충분하다**고 확인했습니다. 단, 구체적인 잔여 금액·요청 한도(RPM/TPM/RPD)·모델별 과금 단가는 여전히 **UNKNOWN**입니다. 아래 2026-10-09 실측 시점에 기록된 `실제 계정 플랜=UNKNOWN`은 당시 증거로 보존하되 최신 Owner 계정 설명을 부정하지 않습니다.
+
+11개 등록 모델 중 `sensenova/sensenova-6.8-flash-lite`를 #3554의 **최우선 제한 실응답 재검증 후보**로 지정합니다. 이전 B14 10/10과 직접 10/10, 네 단계 reasoning 실험의 성공 기록은 재사용하며, 같은 50건을 반복하지 않습니다. 다만 새 Core 네이티브 옵션 및 현재 배포 SHA에 대한 실제 실증은 별도입니다. **유료 Provider POST는 Owner 별도 승인 전 0건**, 1회 검증에서는 user-selected exact model·retry 0·fallback 0·요청 예산 명시·비어 있지 않은 응답·usage/finish_reason 확인 원칙을 따릅니다.
+<!-- /OWNER_PAID_CREDITS_REBASE_20261010 -->
+
 **라운드:** B14_FINAL_MODEL_EVALUATION_2026-10-09
 **기록일:** 2026-10-09
 **B14 선택 ID:** `sensenova/sensenova-6.8-flash-lite`
