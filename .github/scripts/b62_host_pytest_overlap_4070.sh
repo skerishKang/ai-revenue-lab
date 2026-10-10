@@ -7,7 +7,7 @@ set -euo pipefail
 ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
 SCOPE="${B62_CI_IMPACT_SCOPE:-full}"
 case "$SCOPE" in
-  chat_only|static_only|tests_only) run_core=0 ;;
+  chat_only|static_only|tests_only|b14_only) run_core=0 ;;
   full) run_core=1 ;;
   *) echo "B62_HOST_PYTEST_SCOPE_UNCERTAIN=$SCOPE (fail-closed: full)" >&2; run_core=1 ;;
 esac
