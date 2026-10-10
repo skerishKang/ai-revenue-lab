@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# #3989: B62 Linux Playwright APT download mirror fail-closed selection.
+# #3989: B62 Linux Playwright APT download mirror pilot.
 # Swap *only* Ubuntu's archive mirror on ephemeral Ubuntu 24.04 Actions runners;
 # ubuntu-security / Microsoft package sources, package signatures and the
 # required Playwright install --with-deps chromium step remain unchanged.
