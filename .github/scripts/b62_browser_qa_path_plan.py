@@ -31,6 +31,30 @@ ROOT = Path(__file__).resolve().parents[2]
 MANIFEST = ROOT / ".github" / "ci" / "b62_browser_qa_paths.json"
 MAX_PR_FILES = 3000
 
+# Only isolated leaf modules can omit unrelated Glass visual tail.
+GLASS_TAIL_UNCHANGED_LEAVES = frozenset({
+    "apps/padiem-chat/static/claw-web-xlsx-sources.js",
+    "apps/padiem-chat/static/conversation-export.js",
+})
+
+
+def require_glass_visual_tail(
+    changed_paths: set[str] | None, statuses: dict[str, str] | None,
+    *, manual: bool = False, expected_files: int | None = None,
+) -> bool:
+    """Return required unless exact modified UI leaf paths are proven."""
+    if manual or not changed_paths or statuses is None:
+        return True
+    # A truncated API response or missing PR changed_files is never proof.
+    if type(expected_files) is not int or expected_files != len(changed_paths):
+        return True
+    if not changed_paths.issubset(GLASS_TAIL_UNCHANGED_LEAVES):
+        return True
+    if set(statuses) != changed_paths:
+        return True
+    return any(s != "modified" for s in statuses.values())
+
+
 # Any policy update to the shared dispatcher must exercise every QA lane.
 PLAN_FILES = frozenset(
     {
@@ -91,7 +115,7 @@ def choose_manual_lanes(
     return {job: job == lane for job in patterns_by_job}
 
 
-def fetch_changed_paths(event: dict, environ: dict[str, str]) -> set[str] | None:
+def fetch_changed_paths(event: dict, environ: dict[str, str], statuses: dict[str, str] | None = None) -> set[str] | None:
     pr = event.get("pull_request") or {}
     number = pr.get("number") or event.get("number")
     if not isinstance(number, int) or number < 1:
@@ -124,9 +148,15 @@ def fetch_changed_paths(event: dict, environ: dict[str, str]) -> set[str] | None
         for entry in items:
             if not isinstance(entry, dict) or not isinstance(entry.get("filename"), str):
                 return None
-            names.add(entry["filename"])
+            filename = entry["filename"]
+            names.add(filename)
+            if statuses is not None:
+                statuses[filename] = entry.get("status", "")
             if entry.get("status") == "renamed" and entry.get("previous_filename"):
-                names.add(entry["previous_filename"])
+                previous = entry["previous_filename"]
+                names.add(previous)
+                if statuses is not None:
+                    statuses[previous] = "renamed"
         if len(items) < 100:
             return names
         if page == 30:
@@ -142,18 +172,27 @@ def main() -> int:
         lane = os.environ.get("B62_MANUAL_LANE", "")
         chosen = choose_manual_lanes(lane, patterns)
         changed = None
+        statuses = None
+        expected_files = None
     else:
+        statuses = {}
+        expected_files = None
         try:
             event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text(encoding="utf-8"))
-            changed = fetch_changed_paths(event, os.environ)
+            expected_files = (event.get("pull_request") or {}).get("changed_files")
+            changed = fetch_changed_paths(event, os.environ, statuses)
         except (KeyError, ValueError, OSError, json.JSONDecodeError):
             changed = None
         chosen = choose_lanes(changed, patterns)
+    glass_tail_required = require_glass_visual_tail(
+        changed, statuses, manual=manual, expected_files=expected_files,
+    )
     output = os.environ.get("GITHUB_OUTPUT")
     if not output:
         raise RuntimeError("GITHUB_OUTPUT is missing: cannot report QA selection")
     # Explicitly report every job. No implicit default-to-skip.
     with open(output, "a", encoding="utf-8") as out:
+        out.write(f"glass_visual_tail_required={'true' if glass_tail_required else 'false'}\n")
         for job, selected in chosen.items():
             safe_name = job.replace("-", "_")
             out.write(f"{safe_name}={'true' if selected else 'false'}\n")
@@ -166,8 +205,10 @@ def main() -> int:
         with open(summary, "a", encoding="utf-8") as out:
             out.write("### B62 Browser QA selection\n\n")
             out.write(f"Changed-file classifier: {selection_label}\n\n")
+            out.write(f"Glass visual tail: {'REQUIRED' if glass_tail_required else 'SKIP_PROVEN_LEAF'}\n\n")
             for job, selected in chosen.items():
                 out.write(f"- {job}: {'RUN' if selected else 'SKIP'}\n")
+    print(f"B62_GLASS_VISUAL_TAIL={'REQUIRED' if glass_tail_required else 'SKIP_PROVEN_UNCHANGED'}")
     print(
         "B62_QA_PATH_PLAN=",
         "manual-" + lane if manual else ("fallback-all" if changed is None else "filtered"),

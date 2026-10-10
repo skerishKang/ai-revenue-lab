@@ -1,5 +1,9 @@
 """Regression tests for B62 PR path routing and fail-open behavior."""
 import importlib.util
+import io
+import json
+import os
+import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -136,6 +140,98 @@ class B62UnifiedBrowserQAContract(unittest.TestCase):
             {"apps/padiem-chat/static/claw-local-handoff.js"}, self.paths).values()), 15)
         self.assertEqual(sum(planner.choose_lanes(
             {"apps/padiem-chat/static/padiem-first-use.css"}, self.paths).values()), 16)
+
+    def test_only_exact_modified_leaf_can_skip_glass_tail(self):
+        leafs = planner.GLASS_TAIL_UNCHANGED_LEAVES
+        self.assertEqual(leafs, frozenset({
+            "apps/padiem-chat/static/claw-web-xlsx-sources.js",
+            "apps/padiem-chat/static/conversation-export.js",
+        }))
+        for leaf in leafs:
+            self.assertFalse(planner.require_glass_visual_tail(
+                {leaf}, {leaf: "modified"}, expected_files=1))
+            self.assertTrue(planner.choose_lanes({leaf}, self.paths)["browser-qa"])
+            for status in ("added", "removed", "renamed", "", "copied"):
+                self.assertTrue(planner.require_glass_visual_tail(
+                    {leaf}, {leaf: status}, expected_files=1))
+            # Count mismatch or absent changed_files fails closed.
+            for count in (None, 0, 2, True, "1"):
+                self.assertTrue(planner.require_glass_visual_tail(
+                    {leaf}, {leaf: "modified"}, expected_files=count))
+        self.assertFalse(planner.require_glass_visual_tail(
+            set(leafs), {p: "modified" for p in leafs},
+            expected_files=2))
+
+    def test_glass_tail_fail_closed_for_shared_mixed_unknown_and_manual(self):
+        leaf = "apps/padiem-chat/static/conversation-export.js"
+        for other in (
+            "apps/padiem-chat/static/app.js",
+            "apps/padiem-chat/static/index.html",
+            "apps/padiem-chat/static/padiem-glass.css",
+            "apps/padiem-chat/static/padiem-glass-shell.js",
+            "apps/padiem-chat/app/app_factory.py",
+            ".github/ci/b62_browser_qa_paths.json",
+            ".github/workflows/b62-browser-qa-unified.yml",
+        ):
+            pair = {leaf, other}
+            self.assertTrue(planner.require_glass_visual_tail(
+                pair, {p: "modified" for p in pair}, expected_files=2))
+        for paths, statuses in (
+            (None, None), (set(), {}), ({leaf}, None), ({leaf}, {}),
+            ({leaf}, {"other.js": "modified"}),
+            ({leaf}, {leaf: "modified", "other.js": "modified"}),
+        ):
+            self.assertTrue(planner.require_glass_visual_tail(paths, statuses, expected_files=1))
+        self.assertTrue(planner.require_glass_visual_tail(
+            {leaf}, {leaf: "modified"}, manual=True, expected_files=1))
+
+    def test_glass_tail_workflow_keeps_base_visual_and_evidence_steps(self):
+        flow = MASTER.read_text(encoding="utf-8")
+        self.assertIn("glass_visual_tail_required: ${{ steps.classify.outputs.glass_visual_tail_required }}", flow)
+        browser = flow.split("\n  browser-qa:\n", 1)[1].split(
+            "\n  conversation-delete-browser-qa:\n", 1)[0]
+        self.assertIn("if: ${{ needs.plan.outputs.glass_visual_tail_required != 'false' }}", browser)
+        self.assertIn("uv run python ../../.github/scripts/b62_browser_visual_qa.py", browser)
+        self.assertIn("name: Product surface v2 certification browser QA", browser)
+        self.assertIn("name: Upload browser evidence", browser)
+        self.assertEqual(browser.count("b62_browser_qa_tail_parallel.py"), 1)
+        self.assertIn("glass_visual_tail_required=", SCRIPT.read_text(encoding="utf-8"))
+
+    def test_live_dispatcher_output_proves_exact_file_status_and_count(self):
+        leaf = "apps/padiem-chat/static/conversation-export.js"
+        for status, count, expected in (
+            ("modified", 1, "false"),
+            ("added", 1, "true"),
+            ("renamed", 1, "true"),
+            ("modified", 2, "true"),
+        ):
+            with self.subTest(status=status, count=count):
+                with tempfile.TemporaryDirectory() as directory:
+                    folder = Path(directory)
+                    event_file = folder / "event.json"
+                    output_file = folder / "output.txt"
+                    event_file.write_text(json.dumps({
+                        "pull_request": {"number": 123, "changed_files": count}
+                    }), encoding="utf-8")
+                    output_file.write_text("", encoding="utf-8")
+                    api_rows = [{"filename": leaf, "status": status}]
+                    env = {
+                        "GITHUB_EVENT_NAME": "pull_request",
+                        "GITHUB_EVENT_PATH": str(event_file),
+                        "GITHUB_OUTPUT": str(output_file),
+                        "GITHUB_API_URL": "https://api.github.com",
+                        "GITHUB_REPOSITORY": "skerishKang/ai-revenue-lab",
+                        "GITHUB_TOKEN": "fake-test-token",
+                    }
+                    with patch.dict(os.environ, env):
+                        with patch.object(planner, "urlopen", return_value=io.BytesIO(
+                            json.dumps(api_rows).encode("utf-8")
+                        )):
+                            self.assertEqual(planner.main(), 0)
+                    results = dict(line.split("=", 1) for line in
+                                   output_file.read_text(encoding="utf-8").splitlines())
+                    self.assertEqual(results["glass_visual_tail_required"], expected)
+                    self.assertEqual(results["browser_qa"], "true")
 
     def test_test_only_and_worker_only_changes_do_not_run_browser_qa(self):
         for filename in (
