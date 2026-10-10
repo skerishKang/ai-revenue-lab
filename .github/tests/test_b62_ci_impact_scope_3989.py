@@ -108,6 +108,69 @@ class B62ScopeTests(unittest.TestCase):
                     module.changed_files(event, event_type, REPO, "token")),
                     module.TESTS_ONLY)
 
+    def test_b14_isolated_pilot_app_and_test_modules_prove_worker_source_unchanged(self):
+        # B62 Workerd probes import B62 sources/Core, not the independent B14
+        # app. Keep B62 Chat integration and B14 suites, but skip 4 unchanged
+        # Workerd process launches and unchanged Core pytest.
+        samples = (
+            "apps/korean-ai-platform/app/factory.py",
+            "apps/korean-ai-platform/app/pilot/b14_execution.py",
+            "apps/korean-ai-platform/app/pilot/b14_models.json",
+            "apps/korean-ai-platform/app/pilot/nested/runner.py",
+            "apps/korean-ai-platform/tests/test_multimodal.py",
+        )
+        for path in samples:
+            with self.subTest(path=path):
+                self.assertEqual(module.impact_scope([file(path)]), module.B14_ONLY)
+        self.assertEqual(module.impact_scope([
+            file("apps/korean-ai-platform/app/pilot/runner.py"),
+            file("apps/korean-ai-platform/tests/test_pilot.py"),
+        ]), module.B14_ONLY)
+
+    def test_b14_isolated_scope_fails_closed_for_mixed_deps_ci_and_unknown(self):
+        b14 = file("apps/korean-ai-platform/app/pilot/b14_execution.py")
+        hazards = (
+            "apps/korean-ai-platform/pyproject.toml",
+            "apps/korean-ai-platform/requirements.txt",
+            "apps/korean-ai-platform/uv.lock",
+            "apps/korean-ai-platform/app/middleware.js",
+            "apps/korean-ai-platform/tests/conftest.py",
+            "apps/korean-ai-platform/tests/test_nested/test_b14.py",
+            "apps/padiem-chat/worker.py",
+            "apps/padiem-chat/pylock.toml",
+            "apps/padiem-chat/app/claw_routes.py",
+            "apps/padiem-chat/tests/test_password_auth.py",
+            "apps/padiem-chat/static/app.js",
+            "packages/padiem-ai-core/padiem_ai_core/b14_transport.py",
+            ".github/workflows/b62-padiem-chat-ci.yml",
+            ".github/scripts/b62_ci_impact_scope_3989.py",
+        )
+        for path in hazards:
+            with self.subTest(path=path):
+                self.assertNotEqual(module.impact_scope([b14, file(path)]),
+                                    module.B14_ONLY)
+        for invalid in (
+            [file(b14["filename"], "renamed")],
+            [file(b14["filename"], "deleted")],
+            [b14, b14],
+            [file("apps/korean-ai-platform/app/pilot/../worker.py")],
+            [file("apps/korean-ai-platform/app/pilot\\worker.py")],
+        ):
+            with self.subTest(paths=invalid):
+                self.assertEqual(module.impact_scope(invalid), module.FULL)
+
+    def test_exact_pr_and_push_compare_b14_only(self):
+        for event_type in ("pull_request", "push"):
+            event = fake_event(event_type)
+            data = {"status": "ahead", "files": [
+                file("apps/korean-ai-platform/app/pilot/b14_execution.py")
+            ]}
+            with patch.object(module.urllib.request, "urlopen",
+                              return_value=io.BytesIO(json.dumps(data).encode())):
+                self.assertEqual(module.impact_scope(
+                    module.changed_files(event, event_type, REPO, "token")
+                ), module.B14_ONLY)
+
     def test_mixed_product_or_ci_files_always_full(self):
         for outside in (
             "packages/padiem-ai-core/padiem_ai_core/web_runtime.py",

@@ -184,7 +184,7 @@ jobs:
       - name: B62 Chat and eligible Core tests (same-runner fail-closed overlap)
         # #4070: same two original pytest commands, distinct cwd/.venv, one
         # runner and one mandatory exit status. Only proven chat_only/static_only/
-        # tests_only omit unchanged Core; unknown/mixed scopes run both suites.
+        # tests_only/b14_only omit unchanged Core; unknown/mixed run both suites.
         env:
           B62_CI_IMPACT_SCOPE: ${{ needs.registry-ci-plan.outputs.scope }}
         run: bash ../../.github/scripts/b62_host_pytest_overlap_4070.sh
@@ -234,8 +234,11 @@ jobs:
         # Retain all parallel probes on Python/Worker/mixed/unknown changes.
         # Pure Python test-module edits cannot change deployed Worker bytes or
         # its locked dependencies. Still vendor, audit locks and bundle Worker;
-        # all source/Worker/mixed/CI/unknown changes retain all four live probes.
-        if: ${{ needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'tests_only' }}
+        # Strict B14 application/test-only edits also cannot modify the B62
+        # Workerd probe entrypoints/dependencies. Keep full B62 Chat/B14,
+        # pinned vendor & Worker bundle, but omit these unchanged live boots.
+        # All B62 source/Worker/mixed/CI/unknown changes run all four probes.
+        if: ${{ needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'tests_only' && needs.registry-ci-plan.outputs.scope != 'b14_only' }}
         run: bash ../../.github/scripts/b62_worker_probe_parallel.sh
       - name: Prove Core vendored for Python Worker
         run: |

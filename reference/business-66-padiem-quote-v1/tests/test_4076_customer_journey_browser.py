@@ -63,11 +63,13 @@ class JourneyHandler(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *_args):  # pragma: no cover - keep output clean
         return
 
-    def _json(self, payload, status=200):
+    def _json(self, payload, status=200, extra_headers=None):
         body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
+        for name, value in (extra_headers or {}).items():
+            self.send_header(name, value)
         self.end_headers()
         self.wfile.write(body)
 
@@ -106,7 +108,11 @@ class JourneyHandler(http.server.SimpleHTTPRequestHandler):
                 return self._json({"ok": False, "error": {"code": "not_stubbed"}}, 503)
             state.setdefault("interpretRequests", []).append(body)
             index = len(state["interpretRequests"]) - 1
-            return self._json(script[min(index, len(script) - 1)])
+            scripted = script[min(index, len(script) - 1)]
+            if "__http_status" in scripted:
+                return self._json(scripted["body"], scripted["__http_status"],
+                                  scripted.get("headers"))
+            return self._json(scripted)
         if path == "/b66/quote/pdf":
             state.setdefault("pdfRequests", []).append(body)
             payload = b"%PDF-1.4\n%certified-sol-stub\n%%EOF\n"
@@ -380,7 +386,53 @@ async def main() -> int:
                 failures.append("price_fabricated_before_customer_answered")
             await shot(page, "02-missing-price-question")
 
-            # Step 2: the customer answers with their own price; same quote completes.
+            # A real Production incident: the customer supplied a missing price,
+            # but B14 timed out (502 + an allowlisted upstream_timeout header).
+            # The existing pending quote must survive and the composer must ask
+            # to retry only the answer, not the entire original request.
+            before_timeout = await page.evaluate(
+                "() => window.B66QuoteRuntimeBridge.pendingQuote()?.quoteNo"
+            )
+            calls_before_timeout = len(JourneyHandler.state["interpretRequests"])
+            JourneyHandler.state["interpretScript"] = [{
+                "__http_status": 502,
+                "headers": {"X-B66-Upstream-Class": "upstream_timeout",
+                            "X-B66-Interpret-Failure-Stage": "interpreter_exception"},
+                "body": {"ok": False, "error": {
+                    "code": "quote_interpretation_failed",
+                    "message": "견적 요청을 해석하지 못했습니다."}},
+            }]
+            await page.fill("#easyComposer", f"단가는 {DEMO['unitPrice']:,}원입니다")
+            await page.click("#easySend")
+            await page.wait_for_function(
+                "() => document.getElementById('easyMessageList')?.innerText.includes('시간 초과')",
+                timeout=10000
+            )
+            after_timeout = await page.evaluate("""() => ({
+                pendingQuoteNo: window.B66QuoteRuntimeBridge.pendingQuote()?.quoteNo,
+                placeholder: document.getElementById('easyComposer').placeholder,
+                enabled: !document.getElementById('easyComposer').disabled,
+                reviewDisplayed: document.getElementById('easyMessageList')
+                    .innerText.includes('견적이 준비되었습니다'),
+                errorDisplayed: document.getElementById('easyMessageList')
+                    .innerText.includes('시간 초과'),
+            })""")
+            report["502_pending_followup_browser"] = after_timeout
+            if after_timeout["pendingQuoteNo"] != before_timeout:
+                failures.append("timeout_dropped_pending_quote")
+            if after_timeout["placeholder"] != "방금 답변을 다시 적어 주세요":
+                failures.append("timeout_prompts_to_retype_whole_quote")
+            if not after_timeout["enabled"] or not after_timeout["errorDisplayed"]:
+                failures.append("timeout_composer_not_usable")
+            if after_timeout["reviewDisplayed"]:
+                failures.append("timeout_fabricated_successful_quote")
+            if len(JourneyHandler.state["interpretRequests"]) != calls_before_timeout + 1:
+                failures.append("timeout_triggered_hidden_model_retry")
+            if any(prices(await page.evaluate(READ_DRAFT_JS))):
+                failures.append("timeout_committed_unapproved_draft")
+            await shot(page, "02b-timeout-pending-preserved")
+
+            # Step 2: user explicitly resubmits their price; same quote completes.
             JourneyHandler.state["interpretScript"] = [
                 interpret_response(complete_candidate(with_price=True))
             ]
