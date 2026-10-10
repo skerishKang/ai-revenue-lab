@@ -9,6 +9,8 @@
 
 > **LOCAL2 추가 검증 (2026-10-10 KST):** [PR #4088](https://github.com/skerishKang/ai-revenue-lab/pull/4088) **SQUASH MERGED** `c5c4d0345f7a`·CI **9 SUCCESS/16 SKIP**. 기존 B66 PDF Preview Parity CI 스텝에서 localhost Chromium으로 수동 모델 선택·Free-form·가격 누락 후속 질문·QuoteCore·Guided(모델 0호출)·PDF 요청 경로·서버 이력 클라이언트까지 **오프라인 고객 흐름 PASS**. 실 B14 추론은 스텁, PDF 응답은 가짜 PDF 바이트, D1 저장/이력·타 계정 거부는 가짜 API JSON이다. **실 Production PDF/D1/다른 계정 인수 NOT_TESTED**. LOCAL2 로컬 증거 7 PNG·보고서 존재 확인, **6번·7번 PNG 내용 완전 동일(동일 SHA256)**이므로 별도 시각 증명 불인정. [#4076 중앙 검토](https://github.com/skerishKang/ai-revenue-lab/issues/4076), [MVP 근거표](CGI_FIRST_CUSTOMER_MVP_CHECKPOINT_2026-10-10.md) 참조. 본 업데이트로 Production 배포·고객 인수를 완료 처리하지 않는다.
 
+> **장기 신규 고객 제품 방향 (2026-10-10):** [#4106](https://github.com/skerishKang/ai-revenue-lab/issues/4106) **OPEN · P1 · 기획/문서 전용**. [공식 원본 보존·편집형 출력 정책](SOURCE_PRESERVING_EDITABLE_OUTPUT_ROADMAP.md)에 **PDF + 편집 가능한 XLSX/HWPX**, 원본 구조 유지, 최초 인증 후 반복 생성, 내용 정확도와 승인된 시각 오차의 구분을 기록. 기존 #3586 입력 허용 정책(XLSX/향후 HWPX, 구형 XLS/HWP 거부), #3496 출력 이력, #3595 재현/인증, #3708 연기된 컴파일러를 그대로 유지. **현재 CGI Sol 6.1 단일 PDF 정책·#4076 고객 인수의 필수 범위가 아니며 구현/Production 활성화 지시가 아니다.**
+
 ## 최신 CGI 첫 고객 MVP — 배포 완료와 인수 미완료 구분
 
 | 축 | 현재 | 다음 인수 증거·담당 |
@@ -38,6 +40,7 @@
 | 이슈 | 상태/우선순위 | 실제 담당·진행 증거 | 남은 수용 기준 / 다음 행동 |
 |---|---|---|---|
 | [#3180](https://github.com/skerishKang/ai-revenue-lab/issues/3180) Saved Quote Skill EPIC | **OPEN** (상위) | CENTRAL/B66 종합; 현행 제품 계약 유지 | 원본 온보딩·인증·반복 생성의 통합 고객 여정 증명 후 종료 |
+| [#4106](https://github.com/skerishKang/ai-revenue-lab/issues/4106) 원본 보존·편집형 출력 정책 | **OPEN · P1 · 향후 제품 로드맵** | 새 고객의 XLSX 원본 구조 보존·추후 HWPX, PDF와 편집 가능한 출력의 형식별 인증 정책을 [문서](SOURCE_PRESERVING_EDITABLE_OUTPUT_ROADMAP.md)로 기록 | 구현/포맷별 Live 지원은 별도. CGI Sol 6.1 PDF 교체 및 현재 #4076 P0 범위 추가 금지 |
 | [#3186](https://github.com/skerishKang/ai-revenue-lab/issues/3186) 새 견적서 만들기 | **OPEN · P1** | 자동/직접/맡기기 3경로 정의; CGI는 지원·직접형 우선 | 계정에 승인 Skill 연결해 반복 생성 실제 검증; 자동 분석을 현재 MVP 필수조건으로 승격하지 않음 |
 | [#3405](https://github.com/skerishKang/ai-revenue-lab/issues/3405) D1 최근 견적 | **OPEN · P1** | 계정별 D1 이력 기반 소스 존재, 기존 브라우저 로컬 캐시 유지 | 실제 로그인/재로그인·다른 브라우저 복원·계정 A/B 격리·히스토리 에러 조건 검증; Drive가 이를 대체하지 않음 |
 | [#3542](https://github.com/skerishKang/ai-revenue-lab/issues/3542) 최초 원본 분석 | **OPEN · 범용 자동화 보류** | **임시 분석 모델 Sol 6.1 (Owner 확정)**. 기존 CGI 원본 분석 완료 | 두 번째 고객 양식 필요 시 승인된 최초 온보딩에서 Sol 수동/보조 분석; 일반 자동분석기 신규 개발은 수행하지 않음 |
