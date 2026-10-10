@@ -1,4 +1,4 @@
-# #3989 B62 Browser QA Chromium OS dependency mirror: measured pilot and rollout
+# #3989 B62 Browser QA Chromium OS dependency mirror pilot
 
 **2026-10-10, scope: ephemeral GitHub Actions runners only.**
 
@@ -27,15 +27,13 @@ The PR must show exact-head Linux `plan`, both pilot lanes, remaining 14 QA lane
 
 Rollback: revert two YAML pilot steps and script/test changes, leaving required Playwright dependency installation intact.
 
+## Exact-head pilot Linux acceptance and rejected full rollout
 
-## Pilot result and full 16-lane rollout decision
+**Accepted source shape: only two outlier lanes**, `error-retry-browser-qa` and `saved-outputs-browser-qa`. All 16 original upstream Playwright OS dependency installers remain mandatory. This document deliberately retains the failed broadening evidence so that a future CI owner will not repeat the mistake.
 
-PR #4098 pilot HEAD `73af47f55d6874c2f0b0cc570095ee9bce35e696`: [Actions run 38031786884](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38031786884) **SUCCESS**, all 16 browser lanes + plan success, P01 and Operations Policy Guard success.
+- Validated pilot HEAD `73af47f55d6874c2f0b0cc570095ee9bce35e696`: [Linux run 38031786884](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38031786884) **SUCCESS**, all 16 QA lanes + planner passed; companion P01 Deployment Boundary and Operations Policy Guard also SUCCESS.
+- Same signed-package installation: **9 missing packages + 1 upgrade** in both pilot lanes, complete `playwright install --with-deps chromium`, 21.5 MB downloaded. From Azure prior run 38030917850 → official Ubuntu mirror pilot: `error-retry` downloaded in **158s → 2s**, total lane 195s → 58s; `saved-outputs` downloaded in **171s → 3s**, total lane 207s → 47s. Sum of all runner-job elapsed durations **1,263s → 967s**; observational comparison, not controlled A/B and not billed GitHub minutes.
+- Attempted **full 16-lane mirror rollout** in HEAD `3fb9d202a6dd56f966d4cac7b9150a8c1e4430c1` and [run 38032101992](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38032101992). **REJECTED**. Fifteen browser QA lanes passed and package downloads were 0–3 seconds in multiple sampled runners, but the core `browser-qa` failed its unchanged Glass evidence `progress >= 0.68` assertion (observed 0.671). A **single failed-job-only rerun** on the same source HEAD then passed the earlier assertion but failed the unchanged Glass Shell and Glass Zoom visual QA suites. Overall workflow remained FAIL. Cause may be timing/resource contention; do not declare it a proven mirror defect or relax product test thresholds.
+- Accordingly **restored the exact source/test/helper of the validated two-lane pilot**. A fresh final HEAD Linux proof is required. The failed full rollout is **not** being merged.
 
-The pilot actually switched both Azure hosts to canonical `archive.ubuntu.com` (marker `B62_APT_MIRROR=OFFICIAL_UBUNTU_ARCHIVE`). Full upstream `playwright install --with-deps chromium` ran unchanged and installed exactly **9 previously missing packages + 1 upgraded** in each. Real Linux apt 21.5 MB download timings:
-
-- `error-retry-browser-qa`: **158s (Azure) → 2s (Ubuntu archive)**, job **195s → 58s**.
-- `saved-outputs-browser-qa`: **171s (Azure) → 3s (Ubuntu archive)**, job **207s → 47s**.
-- Full 16-lane job elapsed sum: **1,263s → 967s**; cannot attribute all to mirror alone because hosted runner conditions vary. Wall time and billed runner minutes are distinct metrics.
-
-Based on both pilot checks PASS + real package-count parity, the **same single already tested mirror selector** is used by all 16 browser QA lanes. It changes only the ephemeral runner Ubuntu host when on Ubuntu 24.04; the **16 original mandatory Playwright `--with-deps` installations are retained**. Source contract tests prove 16/16 selectors and 16/16 upstream installers. Follow-up exact-head full 16-lane Linux CI is REQUIRED before merge; if it fails, rollback the broadening or PR. No test target or owner status has been removed.
+Rollback is removal of only two pre-install selector steps + helper and contract-test assertion. **Next work:** investigate Glass dynamic-visual timing reliability separately before considering any broad mirror rollout; retain fail-closed CI.
