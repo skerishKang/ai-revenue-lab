@@ -110,6 +110,10 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      # #3989: prefer Ubuntu's official archive on ephemeral Ubuntu 24.04
+      # runners; preserve the full upstream Playwright OS dependency install.
+      - name: Select Ubuntu archive for Playwright OS dependencies
+        run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
       - name: Install Chromium runtime
         run: uv run playwright install --with-deps chromium
       - name: Start mock Padiem Chat
@@ -190,6 +194,10 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      # #3989: prefer Ubuntu's official archive on ephemeral Ubuntu 24.04
+      # runners; preserve the full upstream Playwright OS dependency install.
+      - name: Select Ubuntu archive for Playwright OS dependencies
+        run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
       - name: Install Chromium runtime
         run: uv run playwright install --with-deps chromium
       - name: Start mock Padiem Chat
@@ -307,6 +315,10 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      # #3989: prefer Ubuntu's official archive on ephemeral Ubuntu 24.04
+      # runners; preserve the full upstream Playwright OS dependency install.
+      - name: Select Ubuntu archive for Playwright OS dependencies
+        run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
       - name: Install Chromium runtime
         run: uv run playwright install --with-deps chromium
       - name: Start mock Padiem Chat
@@ -424,6 +436,10 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      # #3989: prefer Ubuntu's official archive on ephemeral Ubuntu 24.04
+      # runners; preserve the full upstream Playwright OS dependency install.
+      - name: Select Ubuntu archive for Playwright OS dependencies
+        run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
       - name: Install Chromium runtime
         run: uv run playwright install --with-deps chromium
       - name: Start mock Padiem Chat
@@ -498,6 +514,10 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      # #3989: prefer Ubuntu's official archive on ephemeral Ubuntu 24.04
+      # runners; preserve the full upstream Playwright OS dependency install.
+      - name: Select Ubuntu archive for Playwright OS dependencies
+        run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
       - name: Install Chromium runtime
         run: uv run playwright install --with-deps chromium
       - name: Start mock Padiem Chat
@@ -570,6 +590,10 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      # #3989: prefer Ubuntu's official archive on ephemeral Ubuntu 24.04
+      # runners; preserve the full upstream Playwright OS dependency install.
+      - name: Select Ubuntu archive for Playwright OS dependencies
+        run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
       - name: Install Chromium runtime
         run: uv run playwright install --with-deps chromium
       - name: Start fail-closed mock Padiem Chat
@@ -638,6 +662,10 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      # #3989: prefer Ubuntu's official archive on ephemeral Ubuntu 24.04
+      # runners; preserve the full upstream Playwright OS dependency install.
+      - name: Select Ubuntu archive for Playwright OS dependencies
+        run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
       - name: Install Chromium runtime
         run: uv run playwright install --with-deps chromium
       - name: Start mock Padiem Chat
@@ -708,10 +736,9 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
-      # #3989: pilot Ubuntu's canonical archive when the hosted Azure mirror
-      # slows font downloads. The complete Playwright OS dependency installer
-      # remains mandatory and unchanged (no --with-deps bypass).
-      - name: Select Ubuntu archive for Playwright OS dependencies (pilot)
+      # #3989: prefer Ubuntu's official archive on ephemeral Ubuntu 24.04
+      # runners; preserve the full upstream Playwright OS dependency install.
+      - name: Select Ubuntu archive for Playwright OS dependencies
         run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
       - name: Install Chromium runtime
         run: uv run playwright install --with-deps chromium
@@ -781,6 +808,10 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      # #3989: prefer Ubuntu's official archive on ephemeral Ubuntu 24.04
+      # runners; preserve the full upstream Playwright OS dependency install.
+      - name: Select Ubuntu archive for Playwright OS dependencies
+        run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
       - name: Install Chromium runtime
         run: uv run playwright install --with-deps chromium
       - name: Start mock Padiem Chat
@@ -851,6 +882,10 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      # #3989: prefer Ubuntu's official archive on ephemeral Ubuntu 24.04
+      # runners; preserve the full upstream Playwright OS dependency install.
+      - name: Select Ubuntu archive for Playwright OS dependencies
+        run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
       - name: Install Chromium runtime
         run: uv run playwright install --with-deps chromium
       - name: Start mock Padiem Chat
@@ -923,6 +958,10 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      # #3989: prefer Ubuntu's official archive on ephemeral Ubuntu 24.04
+      # runners; preserve the full upstream Playwright OS dependency install.
+      - name: Select Ubuntu archive for Playwright OS dependencies
+        run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
       - name: Install Chromium runtime
         run: uv run playwright install --with-deps chromium
       - name: Start mock Padiem Chat
@@ -993,6 +1032,10 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      # #3989: prefer Ubuntu's official archive on ephemeral Ubuntu 24.04
+      # runners; preserve the full upstream Playwright OS dependency install.
+      - name: Select Ubuntu archive for Playwright OS dependencies
+        run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
       - name: Install Chromium runtime
         run: uv run playwright install --with-deps chromium
       - name: Start mock Padiem Chat
@@ -1063,6 +1106,10 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      # #3989: prefer Ubuntu's official archive on ephemeral Ubuntu 24.04
+      # runners; preserve the full upstream Playwright OS dependency install.
+      - name: Select Ubuntu archive for Playwright OS dependencies
+        run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
       - name: Install Chromium runtime
         run: uv run playwright install --with-deps chromium
       - name: Start mock Padiem Chat
@@ -1133,10 +1180,9 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
-      # #3989: pilot Ubuntu's canonical archive when the hosted Azure mirror
-      # slows font downloads. The complete Playwright OS dependency installer
-      # remains mandatory and unchanged (no --with-deps bypass).
-      - name: Select Ubuntu archive for Playwright OS dependencies (pilot)
+      # #3989: prefer Ubuntu's official archive on ephemeral Ubuntu 24.04
+      # runners; preserve the full upstream Playwright OS dependency install.
+      - name: Select Ubuntu archive for Playwright OS dependencies
         run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
       - name: Install Chromium runtime
         run: uv run playwright install --with-deps chromium
@@ -1208,6 +1254,10 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      # #3989: prefer Ubuntu's official archive on ephemeral Ubuntu 24.04
+      # runners; preserve the full upstream Playwright OS dependency install.
+      - name: Select Ubuntu archive for Playwright OS dependencies
+        run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
       - name: Install Chromium runtime
         run: uv run playwright install --with-deps chromium
       - name: Start fail-closed mock Padiem Chat
@@ -1276,6 +1326,10 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      # #3989: prefer Ubuntu's official archive on ephemeral Ubuntu 24.04
+      # runners; preserve the full upstream Playwright OS dependency install.
+      - name: Select Ubuntu archive for Playwright OS dependencies
+        run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
       - name: Install Chromium runtime
         run: uv run playwright install --with-deps chromium
       - name: Start mock-web Padiem Chat
