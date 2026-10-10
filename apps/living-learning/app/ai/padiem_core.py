@@ -136,7 +136,7 @@ class PadiemCoreProvider:
         *,
         base_url: str,
         model: str = "b14/auto",
-        timeout_seconds: float = 20.0,
+        timeout_seconds: float = 600.0,
     ) -> "PadiemCoreProvider":
         config = B14ExecutionConfig(
             base_url=base_url,

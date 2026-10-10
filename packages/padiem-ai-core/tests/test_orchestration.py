@@ -137,6 +137,30 @@ def make_context(trace_id: str = "trace_abc", idempotency_key: str | None = None
 # HARDENING #1 & #6: Event Semantics & No Fabricated Tool Events
 # ==============================================================================
 
+
+def test_trusted_agent_bridge_run_id_requires_canonical_server_identity() -> None:
+    """Never allow a malformed filesystem path or browser-shaped scope ID."""
+    agent = make_agent_profile()
+    base = {
+        "execution_request": ExecutionRequest(
+            agent=agent, messages=({"role": "user", "content": "check"},),
+            trace_id="trace_office_3580",
+        ),
+        "context": make_context("trace_office_3580"),
+        "app_id": "hark_office_p01",
+    }
+    assert OrchestrationRequest(**base).trusted_agent_bridge_run_id is None
+    trusted = OrchestrationRequest(
+        **base, trusted_agent_bridge_run_id="run_exact_broker_3580",
+    )
+    assert trusted.trusted_agent_bridge_run_id == "run_exact_broker_3580"
+    for invalid in ("", "../other", " C:/secret", "x" * 500, "one\\two"):
+        with pytest.raises(OrchestrationError):
+            OrchestrationRequest(
+                **base, trusted_agent_bridge_run_id=invalid,
+            )
+
+
 async def test_agent_only_run_emits_no_tool_events() -> None:
     runtime = FakeRuntime("agent-only answer", tool_events=())
     runner = OrchestrationRunner(runtime=runtime)

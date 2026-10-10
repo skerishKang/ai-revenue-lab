@@ -259,7 +259,7 @@ class P01RequestFactoryTests(SyntheticPlusRouteTestCase):
         with self.assertRaises(P01AdapterError):
             P01RequestFactory(timeout_seconds=0.5)
         with self.assertRaises(P01AdapterError):
-            P01RequestFactory(timeout_seconds=61)
+            P01RequestFactory(timeout_seconds=3601)
         bundle = P01RequestFactory(timeout_seconds=30).build(self.local_run("run_timeout"))
         self.assertEqual(bundle.context.timeout_seconds, 30.0)
 

@@ -41,7 +41,7 @@ from .security import redact_secrets
 
 P01_APP_ID = "b54-padiem-claw"
 P01_AGENT_ID = "b54-padiem-claw"
-DEFAULT_P01_TIMEOUT_SECONDS = 20.0
+DEFAULT_P01_TIMEOUT_SECONDS = 900.0
 
 # #3382: the canonical USER subject is CP-issued in the exact
 # `sub_<32 lowercase hex>` form. The Engine's own `_parse_subject_id` accepts
