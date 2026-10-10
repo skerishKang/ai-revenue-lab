@@ -60,6 +60,7 @@ from .claw_routes import (
     _safe_composition_diagnostic,
     _safe_engine_failure_detail,
     _usage_gate_denial,
+    _resolve_intake_session_reference,
 )
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 
@@ -334,6 +335,15 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     if selected_model_id is None and (tier_route is None or not tier_route.model_id):
         return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.")
 
+    # #3929: optional SAME-CONVERSATION follow-ups are verified against the
+    # existing owner-scoped D1 conversation before quota/provider. No model,
+    # filename, query string or user-reported owner can bind a conversation.
+    conversation_id, conversation_error = await _resolve_intake_session_reference(
+        request, data,
+    )
+    if conversation_error is not None:
+        return conversation_error
+
     # #3382/#3539: the canonical USER subject is resolved SERVER-SIDE before the
     # usage gate and before any P01/Engine dispatch, so a failed revalidation
     # never consumes quota and never reaches a provider.
@@ -341,6 +351,12 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         request.app.state, "claw_p01_adapter", None
     )
     subject_id: str | None = None
+    authorized_workspace_id: str | None = None
+    if conversation_id is not None and (
+        adapter is None or getattr(adapter, "subject_identity_lane", False) is not True
+    ):
+        return _error(403, "canonical_b54_session_unavailable",
+                      "??? Claw ?? ?? ??? ??? ? ????.")
     if adapter is not None and getattr(
         adapter, "subject_identity_lane", False
     ) is True:
@@ -354,6 +370,11 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                 "인증된 Claw 실행 권한을 확인할 수 없습니다.",
             )
         subject_id = b54_session.auth_session.subject.subject_id
+        if conversation_id is not None:
+            authorized_workspace_id = b54_session.auth_session.tenant_id
+            if not isinstance(authorized_workspace_id, str) or not authorized_workspace_id:
+                return _error(403, "workspace_scope_unavailable",
+                              "Claw ???? ??? ??? ? ????.")
 
     live_requested = (
         request.headers.get(CLAW_LIVE_REQUEST_HEADER, "").strip()
@@ -510,9 +531,16 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # owner-scoped read model when D1 supports it. This is NOT a same-thread
     # or artifact lineage claim. A failed history write must never replay
     # Engine/tool execution or suppress an already-completed answer.
-    await project_completed_general_run(
-        request, run_id=run.run_id, user_text=user_text, answer=outcome.answer
-    )
+    if conversation_id is None:
+        await project_completed_general_run(
+            request, run_id=run.run_id, user_text=user_text, answer=outcome.answer
+        )
+    else:
+        await project_completed_general_run(
+            request, run_id=run.run_id, user_text=user_text, answer=outcome.answer,
+            conversation_id=conversation_id,
+            workspace_id=authorized_workspace_id,
+        )
     return _claw_general_sse(
         outcome.answer,
         _claw_evidence_response_headers(run.run_id, outcome) if evidence_requested else None,
