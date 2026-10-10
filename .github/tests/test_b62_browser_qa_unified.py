@@ -42,6 +42,37 @@ class B62UnifiedBrowserQAContract(unittest.TestCase):
             [],
         )
 
+    def test_official_ubuntu_mirror_pilot_preserves_full_browser_dependency_contract(self):
+        master = MASTER.read_text(encoding="utf-8")
+        self.assertEqual(master.count("run: uv run playwright install --with-deps chromium"), 16)
+        self.assertEqual(
+            master.count("run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh"),
+            2,
+        )
+        pieces = master.split("\n  ")
+        job_sources = {}
+        for piece in pieces:
+            name = piece.split(":\n", 1)[0]
+            if name in self.paths:
+                job_sources[name] = piece
+        self.assertEqual(len(job_sources), 16)
+        for name, source in job_sources.items():
+            with self.subTest(name=name):
+                expected = name in ("error-retry-browser-qa", "saved-outputs-browser-qa")
+                self.assertEqual("b62_playwright_apt_mirror_3989.sh" in source, expected)
+                self.assertIn("uv run playwright install --with-deps chromium", source)
+        script = (ROOT / ".github/scripts/b62_playwright_apt_mirror_3989.sh").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("ubuntu-24.04", script)
+        self.assertIn("azure.archive.ubuntu.com/ubuntu/", script)
+        self.assertIn("archive.ubuntu.com/ubuntu/", script)
+        self.assertIn("set -euo pipefail", script)
+        self.assertIn("B62_APT_INSTALL_CONTRACT=PLAYWRIGHT_WITH_DEPS_UNCHANGED", script)
+        self.assertNotIn("apt-get install", script)
+        self.assertNotIn("apt-get update", script)
+        self.assertNotIn("http://security.ubuntu.com", script)
+
     def test_targeted_manual_dispatch_matches_original_one_job_behavior(self):
         for lane in self.paths:
             with self.subTest(lane=lane):
