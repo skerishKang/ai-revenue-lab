@@ -170,6 +170,16 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn('test "$WORKER_RESULT" = skipped', self.aggregate)
         self.assertIn('test "$MM_RESULT" = skipped', self.aggregate)
 
+    def test_b14_multimodal_runner_preserves_pilot_tests_with_pinned_uv(self):
+        pilot = job("b14-multimodal-test", self.source)
+        self.assertIn('python-version: "3.12"', pilot)
+        self.assertIn("astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9", pilot)
+        self.assertIn('version: "0.12.5"', pilot)
+        self.assertIn("uv pip install --system -e . 'pytest>=8.3,<9' 'pytest-asyncio>=0.24,<1'", pilot)
+        self.assertIn("python -m compileall -q app/pilot app/factory.py", pilot)
+        self.assertIn("python -m pytest -q tests/test_multimodal.py tests/test_pilot.py", pilot)
+        self.assertNotIn("python -m pip install", pilot)
+
     def test_b14_multimodal_runner_only_skips_proven_static_only(self):
         pilot = job("b14-multimodal-test", self.source)
         # Registration-only already uses its own quick contract; no broad skip
