@@ -296,3 +296,14 @@
   overflow-wrap: anywhere;
 }
 #clawWebXlsxList a { text-underline-offset: 3px; }
+
+/* #3580 WEB-FIRST: P01 consent is scoped to a server-owned XLSX selection. */
+.claw-web-office-approval {
+  border-top: 1px solid var(--border, rgba(150,160,180,.35));
+  margin-top: 12px;
+  padding-top: 10px;
+}
+.claw-web-office-approval[hidden],
+.claw-web-office-approval button[hidden] { display: none; }
+#clawWebXlsxP01Selected { font-weight: 600; overflow-wrap: anywhere; }
+#clawWebXlsxP01Status { min-height: 1.5em; }

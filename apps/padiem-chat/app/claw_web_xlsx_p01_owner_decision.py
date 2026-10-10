@@ -30,6 +30,80 @@ class D1WebXlsxP01OwnerDecisionStore:
             raise ValueError("private B62 D1 required")
         self.db = db
 
+    async def load_status(
+        self, *, owner_id: str, workspace_id: str, selection_ref: str,
+    ) -> dict[str, Any] | None:
+        """Public-safe status from B62 owner-scoped private D1; no Engine refs."""
+        if not isinstance(selection_ref, str) or not _SEL.fullmatch(selection_ref):
+            return None
+        row = _row_to_dict(await _await(self.db.prepare(
+            "SELECT s.selection_ref,s.document_id,s.source_sha256,s.filename,"
+            "s.size_bytes,s.status AS selection_status,s.expires_at AS selection_expiry,"
+            "p.status AS request_status,p.run_id,p.pause_expires_at,"
+            "p.source_sha256 AS request_sha,p.document_id AS request_doc,"
+            "p.pause_id AS request_pause_id,d.pause_id AS decision_pause_id,"
+            "d.user_id AS decision_owner,d.workspace_id AS decision_workspace,"
+            "d.selection_ref AS decision_selection,d.source_sha256 AS decision_sha,"
+            "d.state AS decision_state,d.outcome AS decision_outcome "
+            "FROM claw_web_xlsx_selections s "
+            "LEFT JOIN claw_web_xlsx_p01_requests p "
+            "ON p.selection_ref=s.selection_ref AND p.user_id=s.user_id "
+            "AND p.workspace_id=s.workspace_id AND p.document_id=s.document_id "
+            "LEFT JOIN claw_web_xlsx_p01_decision_receipts d "
+            "ON d.request_ref=p.request_ref "
+            "WHERE s.selection_ref=? AND s.user_id=? AND s.workspace_id=? LIMIT 1"
+        ).bind(selection_ref, owner_id, workspace_id).first()))
+        if row is None:
+            return None
+        now = datetime.now(timezone.utc)
+        if (row.get("selection_status") != "source_selected_p01_not_started"
+                or not isinstance(row.get("source_sha256"), str)
+                or not _SHA.fullmatch(row["source_sha256"])
+                or row.get("request_sha") not in (None, row["source_sha256"])
+                or row.get("request_doc") not in (None, row["document_id"])):
+            raise WebXlsxP01RequestError("selected source or request changed")
+        selection_alive = _utc(row["selection_expiry"]) > now
+        stage = "not_requested"
+        decision = row.get("decision_state")
+        bad_decision_scope = (
+            row.get("decision_pause_id") is not None
+            and (row.get("decision_pause_id") != row.get("request_pause_id")
+                 or row.get("decision_owner") != owner_id
+                 or row.get("decision_workspace") != workspace_id
+                 or row.get("decision_selection") != selection_ref
+                 or row.get("decision_sha") != row["source_sha256"])
+        )
+        if bad_decision_scope:
+            stage = "manual_review"
+        elif not selection_alive:
+            stage = "expired"
+        elif decision == "confirmed" and row.get("decision_outcome") == "approve":
+            stage = "confirmed"
+        elif decision == "denied" and row.get("decision_outcome") == "deny":
+            stage = "denied"
+        elif decision == "dispatching":
+            stage = "decision_unknown"
+        elif decision is not None:
+            stage = "manual_review"
+        elif row.get("request_status") == "dispatching":
+            stage = "request_unknown"
+        elif row.get("request_status") == "waiting_p01":
+            if not row.get("pause_expires_at") or _utc(row["pause_expires_at"]) <= now:
+                stage = "expired"
+            else:
+                stage = "waiting_p01"
+        elif row.get("request_status") is not None:
+            stage = "manual_review"
+        return {
+            "selection_ref": row["selection_ref"],
+            "document_id": row["document_id"],
+            "source_sha256": row["source_sha256"],
+            "filename": row["filename"],
+            "size_bytes": row["size_bytes"],
+            "status": stage,
+            "run_id": row.get("run_id") if stage == "waiting_p01" else None,
+        }
+
     async def load_waiting(self, *, owner_id: str, workspace_id: str,
                            selection_ref: str) -> dict[str, Any] | None:
         if not isinstance(selection_ref, str) or not _SEL.fullmatch(selection_ref):

@@ -483,6 +483,16 @@
             </div>
             <p role="status" aria-live="polite" id="clawWebXlsxNotice">파일을 선택하면 원본을 보존하며, 읽기·수정 승인은 별도로 진행합니다.</p>
             <ul id="clawWebXlsxList" aria-label="보관된 웹 Excel 원본"></ul>
+            <section id="clawWebXlsxP01Panel" class="claw-web-office-approval" aria-label="선택한 Excel 원본의 P01 승인" hidden>
+              <p id="clawWebXlsxP01Selected"></p>
+              <p id="clawWebXlsxP01Status" role="status" aria-live="polite">승인 상태 확인 중</p>
+              <div class="claw-web-office-actions">
+                <button type="button" id="clawWebXlsxP01Refresh">승인 상태 확인</button>
+                <button type="button" id="clawWebXlsxP01Approve" hidden disabled>원본 확인 승인</button>
+                <button type="button" id="clawWebXlsxP01Deny" hidden disabled>거절</button>
+              </div>
+              <p>승인해도 Excel 원본을 읽거나 변경하지 않습니다. 실제 작업 사본과 PDF 처리는 아직 시작하지 않습니다.</p>
+            </section>
           </details>
         </section>
         <div class="message-list" id="messageList" hidden></div>
