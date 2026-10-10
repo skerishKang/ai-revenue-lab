@@ -13,6 +13,11 @@ main = "worker_runtime_timeout_probe.py"
 compatibility_date = "2026-08-25"
 compatibility_flags = ["python_workers"]
 workers_dev = true
+
+# #3989: Preserve all Python source modules; remove only generated caches.
+# Wrangler defaults already exclude *.pyc, but not __pycache__ directories.
+[python_modules]
+exclude = ["**/*.pyc", "**/__pycache__"]
 EOF
 
 # Each concurrent workerd must have its own local SQLite/persistence state.
