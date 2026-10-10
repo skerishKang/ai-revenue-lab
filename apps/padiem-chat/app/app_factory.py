@@ -48,6 +48,12 @@ from .auth_routes import (
 from .auto_grounding import AutoGroundingService
 from .chat_routes import api_chat, api_chat_stream
 from .claw_general_routes import claw_general_execute, claw_general_capabilities
+from .claw_office_chooser_routes import (
+    LIST_PATH as CLAW_OFFICE_CANDIDATES_PATH,
+    SELECT_PATH as CLAW_OFFICE_SELECT_PATH,
+    candidates as claw_office_candidates,
+    select_candidate as claw_office_select_candidate,
+)
 from .claw_artifact_preview_routes import claw_artifact_inline_preview
 from .claw_conversation_artifact_routes import claw_conversation_artifact_followup
 from .claw_durable_drive_output_pipeline import ClawDurableDriveOutputPipeline
@@ -216,6 +222,7 @@ def create_app(
     claw_p01_continuation_client=None,
     claw_local_access_source=None,
     claw_local_connect_port=None,
+    claw_office_chooser_source=None,
     local_task_result_source=None,
     desktop_device_session_authority=None,
     auth_abuse_store: AuthAbuseStore | None = None,
@@ -372,6 +379,8 @@ def create_app(
         # same-origin guard covers it like every cookie-authenticated POST.
         Route(CLAW_LOCAL_CONNECT_PATH, claw_local_connect, methods=["POST"]),
         Route(CLAW_LOCAL_CONNECT_PATH, claw_local_connect_status, methods=["GET"]),
+        Route(CLAW_OFFICE_CANDIDATES_PATH, claw_office_candidates, methods=["GET"]),
+        Route(CLAW_OFFICE_SELECT_PATH, claw_office_select_candidate, methods=["POST"]),
         Route("/api/claw/runs/{run_id}/local-result", local_runner_result, methods=["POST"]),
         Route("/api/claw/inbox/{kind}", claw_inbox_list, methods=["GET"]),
         Route("/api/claw/inbox/{kind}/{item_id}", claw_inbox_status, methods=["PATCH"]),
@@ -507,6 +516,9 @@ def create_app(
     # result. None keeps the route fail-closed until the Worker root composes
     # the concrete source from the trusted broker binding.
     app.state.local_task_result_source = local_task_result_source
+    # Office chooser is fail-closed until the real trusted Engine/Resident
+    # operator supplies an owner-bound, pre-approved candidate/approval source.
+    app.state.claw_office_chooser_source = claw_office_chooser_source
     # #3436 B2c: the canonical broker device-session authority behind the
     # GET-only Desktop conversation surface. Composed from the trusted
     # LOCAL_AGENT_BROKER_AUTHORITY_SERVICE binding by the Worker root; the

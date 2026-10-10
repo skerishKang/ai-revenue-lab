@@ -215,3 +215,32 @@
   font-size: 12px;
   opacity: 0.75;
 }
+
+/* #3580 Hark Office chooser — metadata-only, small-screen friendly. */
+.claw-office-list {
+  display: grid;
+  gap: 7px;
+  margin: 9px 0;
+  padding: 0;
+  list-style: none;
+  max-height: 15rem;
+  overflow-y: auto;
+}
+.claw-office-choice {
+  display: block;
+  width: 100%;
+  text-align: left;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--line, rgba(17, 24, 39, 0.12));
+  border-radius: 8px;
+  padding: 9px 12px;
+  color: inherit;
+  background: var(--surface, transparent);
+  cursor: pointer;
+}
+.claw-office-choice:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+#clawOfficeChooser button:disabled { opacity: 0.6; cursor: not-allowed; }
+#clawOfficeNotice,
+#clawOfficeDecisionLabel { font-size: 0.8125rem; line-height: 1.5; }
+#clawOfficeDecision:not([hidden]) { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+#clawOfficeDecisionLabel { flex-basis: 100%; }
