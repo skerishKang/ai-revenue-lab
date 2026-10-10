@@ -10,6 +10,8 @@ on:
       - "reference/business-66-padiem-quote-v1/styles.css"
       - "reference/business-66-padiem-quote-v1/quote-template.js"
       - "reference/business-66-padiem-quote-v1/quote-template-renderer.js"
+      - "reference/business-66-padiem-quote-v1/quote-sol-pdf-snapshot.js"
+      - "reference/business-66-padiem-quote-v1/tests/quote-sol-pdf-snapshot.test.cjs"
       - "reference/business-66-padiem-quote-v1/shell-layout.js"
       - "reference/business-66-padiem-quote-v1/cgi-template-v2.js"
       - "reference/business-66-padiem-quote-v1/tests/cgi-v2.test.cjs"
@@ -56,6 +58,7 @@ jobs:
         run: |
           set -euo pipefail
           node reference/business-66-padiem-quote-v1/tests/quote-template-renderer.test.cjs
+          node reference/business-66-padiem-quote-v1/tests/quote-sol-pdf-snapshot.test.cjs
           node reference/business-66-padiem-quote-v1/tests/static-contract.test.cjs
           node reference/business-66-padiem-quote-v1/tests/cgi-v2.test.cjs
           node reference/business-66-padiem-quote-v1/tests/three-pane-shell-contract.test.cjs
