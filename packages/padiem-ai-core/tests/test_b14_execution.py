@@ -176,8 +176,8 @@ def test_explicit_request_does_not_add_stream_or_tools() -> None:
     assert payload == {
         "model": "b14/auto",
         "messages": [{"role": "user", "content": "hello"}],
-        "temperature": 0.2,
     }
+    assert "temperature" not in payload
     assert "stream" not in payload
     assert "tools" not in payload
     assert "business14" not in payload
@@ -251,7 +251,6 @@ def test_client_uses_exact_endpoint_payload_and_no_provider_credentials() -> Non
             {"role": "system", "content": "Answer clearly."},
             {"role": "user", "content": "안녕하세요"},
         ],
-        "temperature": 0.2,
         "max_tokens": 700,
         "business14": {
             "task_type": "general",

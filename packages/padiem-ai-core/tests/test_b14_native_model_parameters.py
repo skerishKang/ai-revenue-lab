@@ -178,12 +178,11 @@ PNG_DATA_URL = (
 # 1. Omission is the default: nothing new enters the request.
 # --------------------------------------------------------------------------
 
-def test_no_native_parameter_keeps_the_pre_3977_payload_exactly() -> None:
+def test_no_native_parameter_keeps_provider_sampling_default_omitted() -> None:
     payload = chat_request().to_payload()
     assert payload == {
         "model": MODEL_ID,
         "messages": [{"role": "user", "content": "hello"}],
-        "temperature": 0.2,
     }
     assert "reasoning_effort" not in payload
     assert "model_parameters" not in payload
@@ -413,7 +412,10 @@ def test_policies_without_native_parameters_are_unchanged(policy) -> None:
     assert "reasoning_effort" not in payload
     assert "model_parameters" not in payload
     assert payload["model"] == policy["model"]
-    assert payload["temperature"] == policy.get("temperature", 0.2)
+    if "temperature" in policy:
+        assert payload["temperature"] == policy["temperature"]
+    else:
+        assert "temperature" not in payload
 
 
 # --------------------------------------------------------------------------
