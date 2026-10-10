@@ -51,6 +51,7 @@ from app.pilot.platform_secrets import (
     resolve_secret,
 )
 from app.pilot.redaction import redact_sensitive
+from app.pilot.upstream_answer_contract import UpstreamEmptyAnswer, require_completed_text_answer
 
 logger = logging.getLogger("korean-ai-platform.pilot.platform")
 
@@ -312,9 +313,10 @@ async def call_platform_chat_completions(
     if "choices" not in response_data:
         raise MalformedUpstreamResponse()
 
+    # HTTP 200 with choices but no user-visible text is NOT a valid completion.
+    # A small output budget may exhaust on reasoning alone; never call it success.
+    require_completed_text_answer(response_data)
     choices = response_data["choices"]
-    if not isinstance(choices, list) or len(choices) == 0:
-        raise MalformedUpstreamResponse()
 
     usage = response_data.get("usage")
     prompt_tokens = usage.get("prompt_tokens") if isinstance(usage, dict) else None
@@ -429,6 +431,8 @@ async def stream_platform_chat_completions(
         client_kwargs["transport"] = transport
 
     saw_done = False
+    saw_text = False
+    last_finish_reason: str | None = None
     buffer = b""
     total_bytes = 0
     try:
@@ -463,17 +467,30 @@ async def stream_platform_chat_completions(
                         event = _parse_sse_frame(frame)
                         if event is None:
                             continue
+                        if event.delta_content and event.delta_content.strip():
+                            saw_text = True
+                        if event.finish_reason is not None:
+                            last_finish_reason = event.finish_reason
+                        if event.done:
+                            if not saw_text:
+                                raise UpstreamEmptyAnswer(last_finish_reason, streamed=True)
+                            saw_done = True
                         yield event
                         if event.done:
-                            saw_done = True
                             return
 
                 if buffer.strip():
                     event = _parse_sse_frame(buffer)
                     if event is not None:
-                        yield event
+                        if event.delta_content and event.delta_content.strip():
+                            saw_text = True
+                        if event.finish_reason is not None:
+                            last_finish_reason = event.finish_reason
                         if event.done:
+                            if not saw_text:
+                                raise UpstreamEmptyAnswer(last_finish_reason, streamed=True)
                             saw_done = True
+                        yield event
     except httpx.TimeoutException as exc:
         log_atria_timeout(logger, platform_provider_id, exc, "stream")
         raise UpstreamTimeout() from exc
