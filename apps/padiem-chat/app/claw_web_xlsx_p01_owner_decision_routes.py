@@ -191,6 +191,39 @@ async def web_xlsx_p01_owner_status(request: Request) -> Response:
         and callable(getattr(ledger, "reserve", None))
         and callable(getattr(ledger, "commit", None))
     )
+    # File-selected, no pause yet: expose a server-calculated REQUEST ability,
+    # not a browser-granted Engine approval or a user-controlled run ID.
+    request_ready = False
+    if state["status"] == "not_requested":
+        pause_client = getattr(request.app.state, "web_xlsx_p01_pause_client", None)
+        request_store = getattr(request.app.state, "web_xlsx_p01_request_store", None)
+        if (callable(getattr(pause_client, "start_pause", None))
+                and callable(getattr(request_store, "preflight_start", None))
+                and callable(getattr(request_store, "reserve", None))
+                and callable(getattr(request_store, "commit_pause", None))
+                and callable(getattr(history, "create_web_xlsx_p01_run", None))):
+            try:
+                original = await original_store.get_web_xlsx_metadata(
+                    tenant_id=workspace, owner_id=owner, workspace_id=workspace,
+                    document_id=state["document_id"],
+                )
+                unique = request_store.preflight_start(
+                    owner_id=owner, workspace_id=workspace,
+                    selection_ref=selection_ref,
+                )
+                if inspect.isawaitable(unique):
+                    unique = await unique
+                request_ready = bool(
+                    unique is True and isinstance(original, dict)
+                    and original.get("document_id") == state["document_id"]
+                    and original.get("source_sha256") == state["source_sha256"]
+                    and original.get("filename") == state["filename"]
+                    and original.get("size_bytes") == state["size_bytes"]
+                    and original.get("original_immutable") is True
+                    and original.get("processing_authorized") is False
+                )
+            except Exception:
+                request_ready = False
     return JSONResponse({
         "ok": True,
         "contract_version": "claw-web-xlsx-p01-status.v1",
@@ -201,6 +234,7 @@ async def web_xlsx_p01_owner_status(request: Request) -> Response:
         "size_bytes": state["size_bytes"],
         "status": state["status"],
         "owner_decision_enabled": ready,
+        "owner_request_enabled": request_ready,
         "processing_started": False,
         "workcopy_created": False,
     }, headers=_NO_STORE)

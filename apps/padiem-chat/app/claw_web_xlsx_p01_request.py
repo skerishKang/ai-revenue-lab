@@ -129,6 +129,18 @@ class D1WebXlsxP01RequestStore:
             raise ValueError("private D1 binding required")
         self.db = db
 
+    async def preflight_start(
+        self, *, owner_id: str, workspace_id: str, selection_ref: str,
+    ) -> bool:
+        """Read-only D1 schema/duplicate gate before minting an owner run."""
+        if not isinstance(selection_ref, str) or not _SEL.fullmatch(selection_ref):
+            raise WebXlsxP01RequestError("invalid selection")
+        result = await self.db.prepare(
+            "SELECT request_ref FROM claw_web_xlsx_p01_requests "
+            "WHERE selection_ref=? AND user_id=? AND workspace_id=? LIMIT 1"
+        ).bind(selection_ref, owner_id, workspace_id).first()
+        return _row_to_dict(result) is None
+
     async def reserve(self, request: TrustedWebXlsxP01Request) -> str:
         if not isinstance(request, TrustedWebXlsxP01Request):
             raise WebXlsxP01RequestError("trusted selection required")

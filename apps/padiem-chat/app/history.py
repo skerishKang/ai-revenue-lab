@@ -668,6 +668,35 @@ class D1HistoryStore:
             await self._run("UPDATE projects SET updated_at=? WHERE id=? AND user_id=?", now, project_id, user_id)
         return cid
 
+    async def create_web_xlsx_p01_run(
+        self, *, user_id: str, workspace_id: str, filename: str,
+    ) -> str:
+        """Create a real owner-bound conversation/run for web file approval.
+
+        This is a metadata-only waiting workflow: no fake assistant message,
+        model call, file read, or caller-supplied execution identity.
+        """
+        import uuid
+        if not isinstance(user_id, str) or not user_id:
+            raise HistoryError("authenticated owner required")
+        scope = _safe_identifier("workspace_id", workspace_id)
+        if not isinstance(filename, str) or not filename.lower().endswith(".xlsx"):
+            raise HistoryError("XLSX filename required")
+        cid = _chat_id()
+        run_id = "web_p01_" + uuid.uuid4().hex
+        now = _now_iso()
+        await self._run(
+            "INSERT INTO conversations (id,user_id,project_id,title,created_at,updated_at) "
+            "VALUES (?,?,NULL,?,?,?)",
+            cid, user_id, ("웹 XLSX 원본 승인: " + filename)[:80], now, now,
+        )
+        await self.record_claw_run(
+            user_id=user_id, run_id=run_id, channel="web", action="xlsx_p01",
+            title=("XLSX 원본 확인: " + filename)[:120], status="running",
+            conversation_id=cid, workspace_id=scope,
+        )
+        return run_id
+
     async def record_claw_run(
         self,
         user_id: str,
