@@ -34,6 +34,7 @@ from app.pilot.errors import (
     UpstreamTimeout,
 )
 from app.pilot.redaction import redact_sensitive
+from app.pilot.provider_timeout_diagnostics import log_gateway_deadline
 from app.pilot.registry import get_registry
 from app.pilot.routing import (
     PilotConfigurationState,
@@ -838,6 +839,10 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                     response_data = await _invoke_upstream(current)
             except TimeoutError as exc:
                 # asyncio.timeout hard ceiling fired (adapter timeout did not).
+                # Fixed allowlisted metadata only; never log content or credentials.
+                log_gateway_deadline(
+                    logger, current.get("platform_provider_id") or decision.platform_provider_id,
+                )
                 timeout_error = UpstreamTimeout()
                 timeout_error.__cause__ = exc
                 error: PilotError = timeout_error
