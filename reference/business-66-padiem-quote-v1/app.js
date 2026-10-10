@@ -1631,7 +1631,7 @@
     template_hwpx_not_available: "HWPX 양식 등록은 추후 지원합니다. 현재는 .xlsx 파일만 등록할 수 있습니다.",
     template_source_format_not_allowed: "재사용 양식 등록은 Excel .xlsx만 지원합니다. PDF 등은 일반 견적 분석에서 사용해 주세요.",
     template_source_extension_mismatch: "확장자 정보가 일치하지 않습니다. .xlsx 파일을 다시 선택해 주세요.",
-    legacy_hwp_unsupported: "구형 HWP 파일은 지원하지 않습니다. HWPX로 변환해 주세요.",
+    legacy_hwp_unsupported: "구형 HWP는 양식 등록에 사용할 수 없습니다. HWPX도 아직 미지원이며, 현재는 Excel .xlsx만 선택해 주세요.",
     unsupported_file_type: "지원하지 않는 파일 형식입니다.",
     invalid_file_size: "파일 크기가 허용 범위를 벗어났습니다.",
     empty_file: "빈 파일은 사용할 수 없습니다.",
@@ -1702,7 +1702,7 @@
     const result = TemplateCloner.startFromFile(session, preflight);
     applyClonerResult(result);
     if (result.ok) {
-      toast("파일 검증을 마쳤습니다. 문서 분석기는 아직 연결되지 않았습니다.", 4200);
+      toast("파일명·형식·크기 사전 확인만 완료했습니다. 파일 내용 검사·업로드·양식 자동 생성은 아직 지원하지 않습니다.", 4200);
     }
     return result.ok;
   }
