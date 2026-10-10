@@ -70,6 +70,7 @@ B62_CHAT_EXPECTED_PATHS = (
     ".github/tests/test_b62_ci_impact_scope_3989.py",
     ".github/scripts/b62_worker_probe_*.sh",
     ".github/tests/test_3989_b62_worker_probe_parallel.py",
+    ".github/tests/test_3989_b62_parallel_runtime_jobs.py",
     ".github/workflows/b62-padiem-chat-ci.yml",
     ".github/workflows/b62-cloudflare-worker-deploy.yml",
 )
@@ -78,6 +79,7 @@ B62_CHAT_EXPECTED_JOBS = {
     "b62-registry-contract",
     "b62-test",
     "b62-full-suite",
+    "b62-worker-suite",
     "b14-multimodal-test",
 }
 
@@ -119,7 +121,7 @@ def _assert_b62_chat_ci_parity(document: dict) -> None:
         )
     assert push["paths"] == review["paths"], "main and PR coverage diverged"
     assert set(document["jobs"]) == B62_CHAT_EXPECTED_JOBS, (
-        "preserve B62's two existing CI jobs"
+        "preserve the B62 job graph and required gate"
     )
 
 
