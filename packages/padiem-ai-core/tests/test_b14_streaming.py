@@ -357,3 +357,104 @@ def test_stream_event_is_frozen_public_contract():
     with pytest.raises(FrozenInstanceError):
         event.delta_content = "y"  # type: ignore[misc]
     assert event.to_public_dict()["delta_content"] == "x"
+
+
+class DelayedChunkStream(httpx.AsyncByteStream):
+    """A fake stream that can outlive a total deadline while remaining active."""
+
+    def __init__(self, chunks: list[bytes], *, delay: float):
+        self.chunks = chunks
+        self.delay = delay
+        self.closed = False
+
+    async def __aiter__(self):
+        for chunk in self.chunks:
+            await asyncio.sleep(self.delay)
+            yield chunk
+
+    async def aclose(self) -> None:
+        self.closed = True
+
+
+def test_per_chunk_idle_watchdog_allows_healthy_stream_beyond_total_timeout():
+    """Two 0.65s chunks should succeed even when total response exceeds 1s."""
+    stream = DelayedChunkStream(
+        [sse(chunk_payload(content="progress")), b"data: [DONE]\n\n"], delay=0.65
+    )
+
+    async def handler(req: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200, headers={"content-type": "text/event-stream"}, stream=stream
+        )
+
+    client = B14StreamingClient(
+        B14ExecutionConfig(BASE_URL, timeout_seconds=1.0),
+        transport=httpx.MockTransport(handler),
+    )
+    result = collect(client, request())
+    assert result[0].delta_content == "progress"
+    assert result[-1].done is True
+    assert stream.closed is True
+
+
+def test_per_chunk_idle_watchdog_times_out_and_closes_stalled_stream():
+    """Even a non-HTTPX-compliant transport cannot wait forever for a chunk."""
+    stream = DelayedChunkStream(
+        [sse(chunk_payload(content="too late"))], delay=1.15
+    )
+
+    async def handler(req: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200, headers={"content-type": "text/event-stream"}, stream=stream
+        )
+
+    client = B14StreamingClient(
+        B14ExecutionConfig(BASE_URL, timeout_seconds=1.0),
+        transport=httpx.MockTransport(handler),
+    )
+    with pytest.raises(B14ExecutionError) as exc:
+        collect(client, request())
+    assert exc.value.code == "upstream_timeout"
+    assert stream.closed is True
+
+
+def test_stream_header_wait_has_idle_limit_even_without_httpx_timeout_support():
+    async def handler(req: httpx.Request) -> httpx.Response:
+        await asyncio.sleep(1.15)
+        return httpx.Response(200, headers={"content-type": "text/event-stream"})
+
+    client = B14StreamingClient(
+        B14ExecutionConfig(BASE_URL, timeout_seconds=1.0),
+        transport=httpx.MockTransport(handler),
+    )
+    with pytest.raises(B14ExecutionError) as exc:
+        collect(client, request())
+    assert exc.value.code == "upstream_timeout"
+
+
+@pytest.mark.asyncio
+async def test_stream_user_cancel_propagates_without_waiting_for_idle_timeout():
+    stream = DelayedChunkStream([sse(chunk_payload(content="late"))], delay=5.0)
+
+    async def handler(req: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200, headers={"content-type": "text/event-stream"}, stream=stream
+        )
+
+    client = B14StreamingClient(
+        B14ExecutionConfig(BASE_URL, timeout_seconds=600.0),
+        transport=httpx.MockTransport(handler),
+    )
+    entered = asyncio.Event()
+
+    async def runner():
+        entered.set()
+        return [event async for event in client.stream(request())]
+
+    task = asyncio.create_task(runner())
+    await entered.wait()
+    await asyncio.sleep(0.05)
+    task.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await task
+    assert stream.closed is True
