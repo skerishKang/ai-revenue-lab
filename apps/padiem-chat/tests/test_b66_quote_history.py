@@ -9,6 +9,7 @@ recalculation markers and the D1 migration/store regression.
 from __future__ import annotations
 
 import json
+import sqlite3
 import re
 from pathlib import Path
 from unittest.mock import MagicMock
@@ -19,11 +20,13 @@ from starlette.testclient import TestClient
 from app.app_factory import create_app
 from app.auth import SESSION_COOKIE, create_session_token
 from app.b66_quote_history_store import (
+    D1QuoteHistoryStore,
     MAX_QUOTE_HISTORY_LIMIT,
     MAX_SNAPSHOT_JSON_BYTES,
     QuoteHistoryStoreError,
     normalize_quote_draft_snapshot,
     validate_row_id,
+    _public_projection,
 )
 from app.config import Settings
 
@@ -296,6 +299,125 @@ def test_store_failure_is_reported_without_disclosure():
     response = client.get("/api/b66/quotes")
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "quote_history_read_failed"
+
+
+# ── previously persisted malformed detail cannot trigger Worker 1101 ──────
+
+@pytest.mark.parametrize("snapshot_json,sender_json", [
+    ('{"items":[],"unitPrice":NaN}', None),
+    ('{"items":[],"note":"\\ud800"}', None),
+    ('{"items":[]}', '{"company":Infinity}'),
+    ('{"items":[]}', 'not-json'),
+    ('["not-a-quote"]', None),
+])
+def test_malformed_persisted_detail_returns_bounded_error(snapshot_json, sender_json):
+    """A poisoned historical row must not escape JSONResponse as an unhandled 500.
+
+    No live D1 mutation, no customer data read, no accidental other-owner response.
+    """
+    row_id = "b66quote_" + "d" * 32
+
+    class MalformedDetailStore(MemoryQuoteHistoryStore):
+        async def get_quote(self, *, user_id, workspace_id, quote_history_id):
+            if user_id != USER_A or workspace_id != WORKSPACE_A or quote_history_id != row_id:
+                return None
+            return _public_projection({
+                "id": row_id, "quote_no": "SYNTHETIC", "issue_date": "2026-10-09",
+                "saved_skill_id": None, "skill_fingerprint": None,
+                "created_at": "2026-10-09T00:00:00Z", "updated_at": "2026-10-09T00:00:00Z",
+                "snapshot_json": snapshot_json, "sender_json": sender_json,
+            }, include_snapshot=True)
+
+    client = _client(store=MalformedDetailStore())
+    result = client.get(f"/api/b66/quotes/{row_id}")
+    assert result.status_code == 503
+    assert result.json()["error"]["code"] == "quote_history_read_failed"
+    assert "SYNTHETIC" not in result.text
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), float("-inf"), "\ud800"])
+def test_new_snapshot_cannot_persist_non_json_number_or_invalid_unicode(value):
+    unsafe = dict(SNAPSHOT)
+    unsafe["memo"] = value
+    with pytest.raises(QuoteHistoryStoreError):
+        normalize_quote_draft_snapshot(unsafe)
+
+    unsafe_sender = dict(SNAPSHOT)
+    unsafe_sender["sender"] = {"company": value}
+    with pytest.raises(QuoteHistoryStoreError):
+        normalize_quote_draft_snapshot(unsafe_sender)
+
+
+# ── real migration SQL / concrete D1 adapter integration ────────────────
+
+@pytest.mark.asyncio
+async def test_real_d1_sqlite_save_projects_complete_new_snapshot_and_bounds_legacy():
+    """The concrete D1 INSERT readback must include snapshot_json and sender_json.
+
+    Route-only mock tests did not exercise the real D1 SELECT. A serializer
+    hardening change could otherwise make every new saved quote fail.
+    """
+    conn = sqlite3.connect(":memory:")
+    conn.row_factory = sqlite3.Row
+    try:
+        conn.execute("CREATE TABLE users (id TEXT PRIMARY KEY)")
+        conn.executemany("INSERT INTO users(id) VALUES (?)", [(USER_A,), (USER_B,)])
+        conn.executescript(MIGRATION.read_text(encoding="utf-8"))
+
+        class Statement:
+            def __init__(self, sql):
+                self.sql, self.params = sql, ()
+
+            def bind(self, *values):
+                self.params = values
+                return self
+
+            async def run(self):
+                rows = conn.execute(self.sql, self.params).fetchall()
+                conn.commit()
+                return {"results": [dict(row) for row in rows]}
+
+            async def first(self):
+                row = conn.execute(self.sql, self.params).fetchone()
+                return dict(row) if row else None
+
+        class SQLiteD1:
+            def prepare(self, sql):
+                return Statement(sql)
+
+        store = D1QuoteHistoryStore(SQLiteD1())
+        normalized = normalize_quote_draft_snapshot(SNAPSHOT)
+        saved = await store.save_quote(
+            user_id=USER_A, workspace_id=WORKSPACE_A, snapshot=normalized,
+        )
+        assert saved["snapshot"]["recipient"] == SNAPSHOT["recipient"]
+        assert saved["sender"]["company"] == SNAPSHOT["sender"]["company"]
+        assert saved["totals_authority"] == "quote-core"
+        row_id = saved["quote_history_id"]
+
+        retrieved = await store.get_quote(
+            user_id=USER_A, workspace_id=WORKSPACE_A, quote_history_id=row_id,
+        )
+        assert retrieved is not None and retrieved["snapshot"] == saved["snapshot"]
+        assert await store.get_quote(
+            user_id=USER_B, workspace_id=WORKSPACE_B, quote_history_id=row_id,
+        ) is None
+
+        conn.execute(
+            "UPDATE b66_quote_history SET snapshot_json=? WHERE id=?",
+            ('{"items":[],"unitPrice":NaN}', row_id),
+        )
+        conn.commit()
+        with pytest.raises(QuoteHistoryStoreError, match="stored quote JSON"):
+            await store.get_quote(
+                user_id=USER_A, workspace_id=WORKSPACE_A,
+                quote_history_id=row_id,
+            )
+        # The corrupted detail must not contaminate the safe metadata list.
+        listing = await store.list_quotes(user_id=USER_A, workspace_id=WORKSPACE_A)
+        assert len(listing) == 1 and "snapshot" not in listing[0]
+    finally:
+        conn.close()
 
 
 # ── migration regression ────────────────────────────────────────────────
