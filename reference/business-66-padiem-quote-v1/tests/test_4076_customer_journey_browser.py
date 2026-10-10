@@ -9,8 +9,8 @@ in the order a first customer actually uses it:
    -> the same quote completes with the customer's own price, never an invented one
 4. a complete Free-form quote -> authoritative draft + QuoteCore totals
 5. Guided view shows the same quote, and editing it costs **0** model calls
-6. the quote leaves through the certified Sol PDF endpoint (no print fallback)
-7. reload -> D1 recent-quote round-trip, and a foreign account sees nothing
+6. the quote's mocked PDF endpoint is exercised (NOT native Sol parity)
+7. reload -> mocked D1 recent-quote round-trip, and a foreign account sees nothing
 
 Nothing here contacts a provider, Production, Secrets or a real identity: the
 B14 interpreter is replaced by a scripted stub, exactly like the existing #3536
@@ -211,7 +211,7 @@ SELECT_MODEL_JS = """() => {
 READ_DRAFT_JS = "() => window.B66QuoteAppBridge.getDraft()"
 
 MESSAGES_JS = """() => Array.from(
-    document.querySelectorAll('#easyMessageList article.easy-message-content'))
+    document.querySelectorAll('#easyMessageList .easy-message-content'))
   .map(node => node.textContent || '')"""
 
 
@@ -364,6 +364,9 @@ async def main() -> int:
             await page.wait_for_timeout(1200)
             transcript = await page.evaluate(MESSAGES_JS)
             report["followup_transcript"] = transcript
+            progress_marker = "CGI 기본 견적서로 작성하고 있습니다…"
+            if progress_marker in transcript:
+                failures.append("stale_processing_message_after_missing_field_question")
             # The bridge's own verdict is the product decision under test.
             probe = await page.evaluate(
                 """async () => {
@@ -408,6 +411,10 @@ async def main() -> int:
                 "() => document.getElementById('easyMessageList')?.innerText.includes('시간 초과')",
                 timeout=10000
             )
+            await page.wait_for_function(
+                "() => !document.getElementById('easyMessageList')?.innerText.includes('CGI 기본 견적서로 작성하고 있습니다…')",
+                timeout=10000
+            )
             after_timeout = await page.evaluate("""() => ({
                 pendingQuoteNo: window.B66QuoteRuntimeBridge.pendingQuote()?.quoteNo,
                 placeholder: document.getElementById('easyComposer').placeholder,
@@ -441,6 +448,11 @@ async def main() -> int:
             await page.wait_for_timeout(1500)
             draft = await page.evaluate(READ_DRAFT_JS)
             report["completed_draft"] = draft
+            completed_messages = await page.evaluate(MESSAGES_JS)
+            if progress_marker in completed_messages:
+                failures.append("stale_processing_message_after_completed_quote")
+            if not any("견적이 준비되었습니다" in line for line in completed_messages):
+                failures.append("completed_quote_confirmation_missing")
             final_prices = prices(draft)
             report["completed_unit_prices"] = final_prices
             if not final_prices:
@@ -516,7 +528,7 @@ async def main() -> int:
                 failures.append("guided_edit_used_model_call")
             await shot(page, "04-guided-preview")
 
-            # ===== certified Sol PDF endpoint ==============================
+            # ===== synthetic PDF endpoint (NOT live Sol-native proof) =======
             await page.evaluate(
                 "() => { const b = document.getElementById('printPdf'); if (b) b.click(); }"
             )
