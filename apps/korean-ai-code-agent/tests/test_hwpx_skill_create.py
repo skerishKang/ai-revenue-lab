@@ -346,17 +346,25 @@ class SuggestedFilenameTests(unittest.TestCase):
         self.assertNotIn(":", result.receipt.suggested_filename)
 
     def test_control_characters_and_dot_only_names_fall_back_to_default(self) -> None:
+        # Filename handling is metadata-only: exercise every input at its
+        # actual sanitizer, not through twelve separate parser-child launches.
         for name in ("..", ".", "\x00\x01", "   ", "", "unnamed"):
             with self.subTest(name=name):
-                result = hwpx_create(_content(("이름",)), filename=name)
-                self.assertEqual(result.receipt.status, STATUS_OK)
-                self.assertEqual(result.receipt.suggested_filename, DEFAULT_CREATE_FILENAME)
+                self.assertEqual(hwpx_skill._suggested_filename(name), DEFAULT_CREATE_FILENAME)
+        # Retain an end-to-end facade contract with real gate, isolated
+        # validate/read, and the receipt filename wired to the sanitizer.
+        result = hwpx_create(_content(("이름",)), filename="..")
+        self.assertEqual(result.receipt.status, STATUS_OK)
+        self.assertEqual(result.receipt.suggested_filename, DEFAULT_CREATE_FILENAME)
 
     def test_foreign_extension_is_replaced_by_the_canonical_suffix(self) -> None:
         for name in ("report.txt", "report", "report.docx", "report.hwpx"):
             with self.subTest(name=name):
-                result = hwpx_create(_content(("이름",)), filename=name)
-                self.assertEqual(result.receipt.suggested_filename, f"report{HWPX_SUFFIX}")
+                self.assertEqual(hwpx_skill._suggested_filename(name), f"report{HWPX_SUFFIX}")
+        # Preserve one complete real parser/receipt integration for extensions.
+        result = hwpx_create(_content(("이름",)), filename="report.docx")
+        self.assertEqual(result.receipt.status, STATUS_OK)
+        self.assertEqual(result.receipt.suggested_filename, f"report{HWPX_SUFFIX}")
 
     def test_long_name_stays_within_the_core_name_bound(self) -> None:
         result = hwpx_create(_content(("이름",)), filename="가" * 400)
