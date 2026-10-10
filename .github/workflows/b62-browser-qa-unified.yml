@@ -71,6 +71,7 @@ jobs:
           python -m unittest discover -s .github/tests -p test_3989_b62_owner_leaf_browser_base.py -v
           python -m unittest discover -s .github/tests -p test_3989_b62_headless_shell_install.py -v
           python -m unittest discover -s .github/tests -p test_3989_b66_quote_css_scope.py -v
+          python -m unittest discover -s .github/tests -p test_3989_claw_manual_css_scope.py -v
       # Source-only test; no browser install or new CI runner.
       - name: Regression check for bounded visual tail and fail-closed fan-in
         run: |

@@ -32,6 +32,24 @@ ROOT = Path(__file__).resolve().parents[2]
 MANIFEST = ROOT / ".github" / "ci" / "b62_browser_qa_paths.json"
 MAX_PR_FILES = 3000
 B66_QUOTE_CSS = "apps/padiem-chat/static/b66-quote-runtime.css"
+
+# #3989: the two Claw manual-entry CSS rules affect only labelled inputs
+# inside the Claw workspace. Preserve browser smoke, accessibility, identity,
+# document and project-file coverage while skipping other unrelated journeys.
+CLAW_MANUAL_INTAKE_CSS = "apps/padiem-chat/static/claw-manual-intake.css"
+CLAW_MANUAL_QA_OWNERS = frozenset({
+    "accessibility-browser-qa",
+    "auth-history-browser-qa",
+    "browser-qa",
+    "document-browser-qa",
+    "project-files-browser-qa",
+})
+_CLAW_MANUAL_SELECTORS = frozenset({
+    ".claw-field",
+    ".claw-field input",
+    ".claw-field select",
+})
+
 # Both the B66 JS bridge and these styles belong solely to the hidden B66
 # quote dialog. The CSS exclusion is valid only while every selector remains
 # anchored to an exact B66 quote class. This guard fails open on ambiguity.
@@ -76,6 +94,7 @@ PLAN_FILES = frozenset(
         ".github/tests/test_3989_b62_owner_leaf_browser_base.py",
         ".github/tests/test_3989_b62_headless_shell_install.py",
         ".github/tests/test_3989_b66_quote_css_scope.py",
+        ".github/tests/test_3989_claw_manual_css_scope.py",
         ".github/ci/b62_browser_qa_paths.json",
     }
 )
@@ -155,6 +174,39 @@ def b66_quote_css_is_isolated(source: str | None = None) -> bool:
     return count > 0 and not stack and not cleaned[position:].strip()
 
 
+def claw_manual_css_is_isolated(source: str | None = None) -> bool:
+    """Proof for exact Claw field selectors; anything else runs all lanes.
+
+    No permissive CSS parsing: disallow at-rules, nested rules, global and
+    sibling selectors. Missing/malformed source or an unknown selector must
+    never silently reduce browser QA.
+    """
+    if source is None:
+        try:
+            source = (ROOT / CLAW_MANUAL_INTAKE_CSS).read_text(encoding="utf-8")
+        except (OSError, UnicodeError):
+            return False
+    if source.count("/*") != source.count("*/"):
+        return False
+    cleaned = re.sub(r"/\*.*?\*/", "", source, flags=re.S)
+    if "/*" in cleaned or "*/" in cleaned or "@" in cleaned:
+        return False
+    position = 0
+    seen: set[str] = set()
+    rule = re.compile(r"\s*([^{}]+?)\s*\{([^{}]*)\}", re.S)
+    while position < len(cleaned) and cleaned[position:].strip():
+        hit = rule.match(cleaned, position)
+        if hit is None:
+            return False
+        for selector in hit.group(1).split(","):
+            selector = " ".join(selector.split())
+            if selector not in _CLAW_MANUAL_SELECTORS:
+                return False
+            seen.add(selector)
+        position = hit.end()
+    return ".claw-field" in seen and not cleaned[position:].strip()
+
+
 def choose_lanes(
     changed_paths: set[str] | None, patterns_by_job: dict[str, list[str]]
 ) -> dict[str, bool]:
@@ -169,8 +221,15 @@ def choose_lanes(
         return {job: True for job in patterns_by_job}
     if changed_paths & PLAN_FILES:
         return {job: True for job in patterns_by_job}
+    claw_field_change = CLAW_MANUAL_INTAKE_CSS in changed_paths
+    if claw_field_change and not claw_manual_css_is_isolated():
+        return {job: True for job in patterns_by_job}
+    remaining = changed_paths - {CLAW_MANUAL_INTAKE_CSS} if claw_field_change else changed_paths
     return {
-        job: any(path_matches(path, patterns) for path in changed_paths)
+        job: (
+            (claw_field_change and job in CLAW_MANUAL_QA_OWNERS)
+            or any(path_matches(path, patterns) for path in remaining)
+        )
         for job, patterns in patterns_by_job.items()
     }
 
