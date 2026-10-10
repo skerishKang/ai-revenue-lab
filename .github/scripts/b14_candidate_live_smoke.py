@@ -746,6 +746,38 @@ def _locks(provider_posts: int, retries: int) -> None:
     print("PRODUCTION_MUTATION=0")
 
 
+# Safe answer-shape diagnostics: never print any upstream message value.
+_SAFE_FINISH_REASONS = frozenset(
+    {"stop", "length", "content_filter", "tool_calls", "function_call"}
+)
+
+
+def _emit_empty_answer_diagnostics(chat: dict[str, Any]) -> None:
+    """Classify an HTTP-200-without-text response without emitting user data."""
+    choices = chat.get("choices")
+    first = choices[0] if isinstance(choices, list) and choices and isinstance(choices[0], dict) else {}
+    message = first.get("message")
+    message = message if isinstance(message, dict) else {}
+    content = message.get("content")
+    state = (
+        "null" if content is None else
+        "empty_string" if content == "" else
+        "whitespace_string" if isinstance(content, str) and not content.strip() else
+        "non_string" if not isinstance(content, str) else
+        "nonempty"
+    )
+    finish = first.get("finish_reason")
+    finish = finish if isinstance(finish, str) and finish in _SAFE_FINISH_REASONS else "other_or_missing"
+    usage = chat.get("usage")
+    tokens = usage.get("completion_tokens") if isinstance(usage, dict) else None
+    safe_tokens = tokens if type(tokens) is int and 0 <= tokens <= 1_000_000 else "unknown"
+    print("EMPTY_ANSWER_CONTENT_STATE=" + state)
+    print("EMPTY_ANSWER_FINISH_REASON=" + finish)
+    print("EMPTY_ANSWER_COMPLETION_TOKENS=" + str(safe_tokens))
+    print("EMPTY_ANSWER_REQUESTED_MAX_TOKENS=8")
+    print("EMPTY_ANSWER_PRIVATE_CONTENT_OUTPUT=0")
+
+
 # --------------------------------------------------------------------------
 # The bounded run.
 # --------------------------------------------------------------------------
@@ -988,6 +1020,7 @@ def run(
         or not choices[0]["message"]["content"].strip()
     ):
         _emit_result(cid, "FAIL_EMPTY_ANSWER")
+        _emit_empty_answer_diagnostics(chat)
         _locks(provider_posts, network_retries)
         return 1
 
