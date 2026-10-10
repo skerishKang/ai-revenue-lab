@@ -429,6 +429,26 @@ class WorkspaceDocumentStore:
             raise WorkspaceStorageError("web XLSX metadata listing malformed")
         return [self._web_xlsx_projection(row, prefix) for row in records]
 
+    async def get_web_xlsx_metadata(self, *, tenant_id: str, owner_id: str,
+                                    workspace_id: str, document_id: str,
+                                    now: datetime | None = None) -> dict[str, Any] | None:
+        """Verify owner-scoped ORIGINAL metadata without reading R2 content.
+
+        Merely selecting an uploaded file must never imply approval to read its
+        bytes for processing. This method does not call the R2 binding.
+        """
+        prefix = self._web_xlsx_prefix(tenant_id, owner_id, workspace_id)
+        doc_id = _safe_identifier("document_id", document_id)
+        metadata = await self.metadata_store.get_active(doc_id)
+        if metadata is None or metadata.tenant_id != tenant_id:
+            return None
+        if not metadata.object_key.startswith(prefix + doc_id + "/"):
+            return None
+        current = now or _utcnow()
+        if current >= metadata.expires_at:
+            return None
+        return self._web_xlsx_projection(metadata, prefix)
+
     async def get_web_xlsx(self, *, tenant_id: str, owner_id: str,
                            workspace_id: str, document_id: str,
                            now: datetime | None = None) -> tuple[dict[str, Any], bytes] | None:

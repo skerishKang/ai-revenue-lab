@@ -7,6 +7,7 @@
   const ID = /^doc_[0-9a-f]{32}$/;
   const HASH = /^[a-f0-9]{64}$/;
   const ENDPOINT = "/api/claw/office/web-sources";
+  const SELECTIONS = "/api/claw/office/web-selections";
 
   function validFile(file) {
     return Boolean(file && typeof file.document_id === "string" && ID.test(file.document_id)
@@ -17,6 +18,25 @@
       && file.size_bytes <= MAX_BYTES
       && HASH.test(file.source_sha256)
       && file.original_immutable === true && file.processing_authorized === false);
+  }
+
+  function validateSelection(body, source) {
+    const selected = body?.selection;
+    return Boolean(source && validFile(source)
+      && body?.ok === true
+      && body.contract_version === "claw-web-xlsx-selection.v1"
+      && body.p01_approval_started === false
+      && body.processing_started === false
+      && body.workcopy_created === false
+      && body.drive_uploaded === false
+      && selected && /^sel_[a-f0-9]{32}$/.test(selected.selection_ref)
+      && selected.document_id === source.document_id
+      && selected.source_sha256 === source.source_sha256
+      && selected.size_bytes === source.size_bytes
+      && selected.filename === source.filename
+      && selected.status === "source_selected_p01_not_started"
+      && selected.p01_approval_started === false
+      && selected.processing_started === false);
   }
 
   function validateListing(body) {
@@ -72,6 +92,7 @@
 
     let busy = false;
     let selectedDocumentId = null;
+    let selectedSelectionRef = null;
     let loaded = false;
     const report = (value) => { message.textContent = value; };
     const setBusy = (value) => {
@@ -89,15 +110,35 @@
         const select = root.createElement("button");
         select.type = "button";
         select.textContent = "선택: " + item.filename + " (" + Math.ceil(item.size_bytes / 1024) + "KB)";
-        select.addEventListener("click", () => {
-          selectedDocumentId = item.document_id;
-          report("원본 '" + item.filename + "' 선택됨. 읽기·수정 처리는 아직 승인·실행되지 않았습니다.");
-        });
+        select.addEventListener("click", () => void selectSource(item));
         const link = root.createElement("a");
         link.textContent = "원본 다운로드";
         link.href = ENDPOINT + "/" + encodeURIComponent(item.document_id) + "/download";
         li.append(select, link);
         list.appendChild(li);
+      }
+    }
+
+    async function selectSource(item) {
+      if (busy || !validFile(item)) return;
+      setBusy(true);
+      report("원본의 소유권과 정확한 파일 지문을 확인하고 있습니다.");
+      try {
+        const body = await jsonRequest(SELECTIONS, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({ document_id: item.document_id }),
+        });
+        if (!validateSelection(body, item)) {
+          throw new Error("파일 선택 기록을 검증할 수 없습니다.");
+        }
+        selectedDocumentId = body.selection.document_id;
+        selectedSelectionRef = body.selection.selection_ref;
+        report("'" + item.filename + "' 원본 선택이 서버에 저장됐습니다. P01 승인은 아직 시작되지 않았으며, 읽기·수정·변환도 진행되지 않았습니다.");
+      } catch (error) {
+        report(error.message);
+      } finally {
+        setBusy(false);
       }
     }
 
@@ -147,7 +188,8 @@
           throw new Error("웹 원본 저장 결과를 확인할 수 없습니다.");
         }
         input.value = "";
-        selectedDocumentId = body.file.document_id;
+        selectedDocumentId = null;
+        selectedSelectionRef = null;
         report("원본 XLSX 보관 완료. 수정·PDF 변환은 시작되지 않았으며 별도 승인이 필요합니다.");
       } catch (error) {
         report(error.message);
@@ -162,10 +204,12 @@
     panel.addEventListener("toggle", () => {
       if (panel.open && !loaded) void reload();
     });
-    return { getState: () => ({ busy, loaded, selectedDocumentId, p01Approved: false }) };
+    return { getState: () => ({
+      busy, loaded, selectedDocumentId, selectedSelectionRef, p01Approved: false,
+    }) };
   }
 
-  const api = Object.freeze({ validFile, validateListing, init });
+  const api = Object.freeze({ validFile, validateListing, validateSelection, init });
   if (typeof module === "object" && module.exports) module.exports = api;
   if (typeof window === "object") window.PadiemClawWebXlsxSources = api;
   if (typeof document === "object") init(document);
