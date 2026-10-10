@@ -135,9 +135,30 @@ class LocalRunnerResultSource:
 
     configured = True
 
-    def __init__(self, *, history: Any, result_port: BrokerAuthorityLocalRunnerResultPort) -> None:
+    def __init__(self, *, history: Any, result_port: BrokerAuthorityLocalRunnerResultPort,
+                 office_completion=None) -> None:
         self._history = history
         self._result_port = result_port
+        # An explicit approved Drive pipeline is a host-only optional port.
+        # The normal broker result projection never triggers a file upload.
+        self._office_completion = office_completion
+
+    async def complete_approved_office_run(
+        self, *, owner_id, run_ref, outputs, xlsx_intent, pdf_intent, now,
+    ):
+        """Trusted host callback, NEVER invoked by the public terminal GET/POST."""
+        from .claw_local_office_origin_bridge import LocalOfficeOriginBridge
+        from .claw_durable_drive_output_pipeline import DurableArtifactCompletionError
+        if self._office_completion is None:
+            raise DurableArtifactCompletionError("approved Office/Drive host unavailable")
+        bridge = LocalOfficeOriginBridge(
+            history=self._history, terminal_port=self._result_port,
+            completion=self._office_completion,
+        )
+        return await bridge.complete_approved_office_run(
+            owner_id=owner_id, run_ref=run_ref, outputs=outputs,
+            xlsx_intent=xlsx_intent, pdf_intent=pdf_intent, now=now,
+        )
 
     async def project_local_runner_result(
         self,
@@ -226,7 +247,7 @@ class LocalRunnerResultSource:
 
 
 def build_local_task_result_source_with_diagnostic(
-    env: Any, history_store: Any
+    env: Any, history_store: Any, *, office_completion=None
 ) -> tuple[LocalRunnerResultSource | None, str | None]:
     """Compose the concrete source from the trusted binding, or fail closed."""
 
@@ -245,12 +266,15 @@ def build_local_task_result_source_with_diagnostic(
         source = LocalRunnerResultSource(
             history=history_store,
             result_port=BrokerAuthorityLocalRunnerResultPort(boundary),
+            office_completion=office_completion,
         )
     except Exception:
         return None, LOCAL_RUNNER_RESULT_DIAG_CONSTRUCTION_FAILED
     return source, None
 
 
-def build_local_task_result_source(env: Any, history_store: Any) -> LocalRunnerResultSource | None:
-    source, _ = build_local_task_result_source_with_diagnostic(env, history_store)
+def build_local_task_result_source(env: Any, history_store: Any, *, office_completion=None) -> LocalRunnerResultSource | None:
+    source, _ = build_local_task_result_source_with_diagnostic(
+        env, history_store, office_completion=office_completion,
+    )
     return source

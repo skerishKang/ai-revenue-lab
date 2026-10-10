@@ -1472,7 +1472,9 @@ def test_the_worker_root_composes_the_source_from_the_real_binding(harness, tmp_
     # work in the deployed app: dropping any one of them leaves the product root
     # answering 503.
     assert "from app.claw_local_task_result_composition import" in text
-    assert "build_local_task_result_source_with_diagnostic(self.env, history_store)" in text
+    assert "build_local_task_result_source_with_diagnostic(" in text
+    assert "self.env, history_store," in text
+    assert "office_completion=getattr(" in text
     assert "_worker_app.state.local_task_result_source = _local_task_result_source" in text
 
 
