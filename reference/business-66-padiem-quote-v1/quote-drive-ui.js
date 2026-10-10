@@ -187,11 +187,12 @@
     var pendingOutcome = null;
     var fileIndex = [];
     var busy = false;
+    var initializingConnection = true;
 
     function setStatus(text, tone) {
       status.textContent = typeof text === "string" ? text : "";
       status.dataset.tone = tone || "info";
-      if (bridge && typeof bridge.toast === "function" && typeof text === "string" && text) {
+      if (!initializingConnection && bridge && typeof bridge.toast === "function" && typeof text === "string" && text) {
         bridge.toast(text, 4200);
       }
     }
@@ -667,7 +668,9 @@
       doc.addEventListener("b66:auth-changed", onAuthChanged);
     }
 
+    // Initial optional Drive readiness stays in its own panel, not over the quote composer.
     renderConnection();
+    initializingConnection = false;
 
     return {
       ok: true,

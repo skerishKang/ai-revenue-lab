@@ -433,3 +433,88 @@ body.b66-three-pane .shell-edit-return:focus-visible {
     align-self: flex-start;
   }
 }
+
+/* #4268: Medium notebook gets a full-width editor, with an optional overlay preview. */
+@media screen and (min-width: 901px) and (max-width: 1250px) {
+  body.b66-three-pane main.shell {
+    grid-template-columns: 260px minmax(0, 1fr);
+  }
+  body.b66-three-pane.rail-collapsed main.shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  body.b66-three-pane .shell-preview-host {
+    position: fixed;
+    inset: 92px 12px 12px auto;
+    z-index: 85;
+    width: min(640px, calc(100vw - 28px));
+    height: auto;
+    grid-column: auto;
+    box-shadow: 0 20px 48px rgba(22, 44, 58, .25);
+  }
+  body.b66-three-pane .shell-preview-host .shell-divider {
+    display: none;
+  }
+  body.b66-three-pane.preview-collapsed .shell-preview-reopen {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    bottom: auto;
+    z-index: 60;
+    grid-column: auto;
+  }
+  body.b66-three-pane .easy-view .easy-conversation {
+    padding-top: clamp(18px, 4vh, 42px);
+  }
+  body.b66-three-pane .toast {
+    top: 80px;
+    bottom: auto;
+    right: 14px;
+    max-width: min(420px, calc(100vw - 30px));
+  }
+}
+@media screen and (max-width: 900px) {
+  /* 100dvh must be allowed to shrink when a mobile keyboard opens. */
+  body.b66-three-pane .easy-view {
+    height: max(185px, calc(100dvh - 165px));
+  }
+  /* Keep transient information away from the input at the bottom. */
+  body.b66-three-pane .toast {
+    top: 138px;
+    bottom: auto;
+    left: 12px;
+    right: 12px;
+    max-height: min(125px, 28dvh);
+    overflow-y: auto;
+    width: auto;
+    z-index: 100;
+  }
+  /* Compact the preview affordance to avoid covering the brand heading. */
+  body.b66-three-pane .shell-preview-reopen {
+    top: 16px;
+    right: 9px;
+    bottom: auto;
+    width: 44px;
+    min-height: 44px;
+    padding: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 0;
+  }
+  body.b66-three-pane .shell-preview-reopen::after {
+    content: "▤";
+    display: inline-block;
+    font-size: 21px;
+    line-height: 44px;
+  }
+  body.b66-three-pane .topbar .brand {
+    max-width: calc(100vw - 140px);
+  }
+  body.b66-three-pane .topbar .brand h1 {
+    font-size: clamp(19px, 5.7vw, 23px);
+    line-height: 1.2;
+  }
+  body.b66-three-pane .topbar .brand p {
+    font-size: 11px;
+    line-height: 1.35;
+  }
+}

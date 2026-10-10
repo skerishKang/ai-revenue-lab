@@ -313,6 +313,9 @@
   function syncMobileDefault() {
     if (window.matchMedia("(max-width:" + MOBILE_BREAKPOINT + "px)").matches) {
       document.body.classList.add("rail-collapsed");
+    }
+    // Medium laptop widths must retain sufficient room for the primary editor.
+    if (window.matchMedia("(max-width:1250px)").matches) {
       document.body.classList.add("preview-collapsed");
     }
   }
