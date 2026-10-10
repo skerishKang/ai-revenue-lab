@@ -470,3 +470,98 @@ class WorkspaceDocumentStore:
         if hashlib.sha256(payload).hexdigest() != projection["source_sha256"]:
             raise WorkspaceStorageError("web XLSX source digest mismatch")
         return projection, payload
+
+    async def create_approved_web_xlsx_workcopy(
+        self, *, tenant_id: str, owner_id: str, workspace_id: str,
+        source_document_id: str, expected_source_sha256: str,
+        run_id: str, grant_verifier: Any,
+    ) -> dict[str, Any]:
+        """Private host-only operation after independent Core/P01 READ grant.
+
+        There is deliberately NO public browser route for this method.
+        The trusted host must supply an authority verifier from Engine/Core;
+        a browser decision status, persisted receipt or boolean is NOT a grant.
+        Verify the exact original a second time before copying bytes.
+        """
+        import inspect as _inspect
+        tenant = _safe_identifier("tenant_id", tenant_id)
+        owner = _safe_identifier("owner_id", owner_id)
+        workspace = _safe_identifier("workspace_id", workspace_id)
+        run = _safe_identifier("run_id", run_id)
+        source_id = _safe_identifier("source_document_id", source_document_id)
+        if (not isinstance(expected_source_sha256, str)
+                or not re.fullmatch(r"[0-9a-f]{64}", expected_source_sha256)
+                or not callable(grant_verifier)):
+            raise WorkspaceStorageAccessError("verified P01 read grant required")
+        original = await self.get_web_xlsx_metadata(
+            tenant_id=tenant, owner_id=owner, workspace_id=workspace,
+            document_id=source_id,
+        )
+        if (original is None or original["source_sha256"] != expected_source_sha256
+                or original["original_immutable"] is not True):
+            raise WorkspaceStorageAccessError("original owner or fingerprint mismatch")
+
+        # The verifier is host-composed, never a browser-supplied callback.
+        # No R2 bytes are read before this exact-operation authority check.
+        allowed = grant_verifier(
+            owner_id=owner, workspace_id=workspace, run_id=run,
+            document_id=source_id, source_sha256=expected_source_sha256,
+            operation="read_for_workcopy",
+        )
+        if _inspect.isawaitable(allowed):
+            allowed = await allowed
+        if allowed is not True:
+            raise WorkspaceStorageAccessError("P01 original read not authorized")
+        loaded = await self.get_web_xlsx(
+            tenant_id=tenant, owner_id=owner, workspace_id=workspace,
+            document_id=source_id,
+        )
+        if loaded is None:
+            raise WorkspaceStorageAccessError("approved original expired")
+        verified, payload = loaded
+        if (verified["source_sha256"] != expected_source_sha256
+                or verified["size_bytes"] != len(payload)):
+            raise WorkspaceStorageError("approved original changed")
+        digest = hashlib.sha256(payload).hexdigest()
+        if digest != expected_source_sha256:
+            raise WorkspaceStorageError("approved original digest mismatch")
+
+        copy_id = _document_id()
+        key = (f"workspaces/{tenant}/claw/web-office-workcopies/"
+               f"{owner}/{workspace}/{run}/{source_id}/{copy_id}/{digest}")
+        now = _utcnow()
+        source_expires = _parse_time(verified["expires_at"])
+        if source_expires <= now:
+            raise WorkspaceStorageAccessError("approved original expired")
+        metadata = ClawDocumentMetadata(
+            document_id=copy_id, tenant_id=tenant, object_key=key,
+            filename=verified["filename"], media_type=XLSX_MEDIA_TYPE,
+            byte_length=len(payload), created_at=now,
+            expires_at=min(source_expires, now + WEB_XLSX_RETENTION),
+        )
+        try:
+            written = self.r2_bucket.put(
+                key, payload, httpMetadata={"contentType": XLSX_MEDIA_TYPE},
+            )
+            if _inspect.isawaitable(written):
+                await written
+            await self.metadata_store.insert(metadata)
+        except Exception as exc:
+            try:
+                deleted = self.r2_bucket.delete(key)
+                if _inspect.isawaitable(deleted):
+                    await deleted
+            except Exception:
+                pass
+            raise WorkspaceStorageError("approved workcopy write failed") from exc
+        return {
+            "source_document_id": source_id,
+            "source_sha256": digest,
+            "workcopy_document_id": copy_id,
+            "workcopy_sha256": digest,
+            "run_id": run,
+            "size_bytes": len(payload),
+            "original_immutable": True,
+            "workcopy_created": True,
+            "processing_authorized_for_this_copy": True,
+        }
