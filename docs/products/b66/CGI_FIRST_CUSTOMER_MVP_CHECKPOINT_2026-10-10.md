@@ -24,6 +24,12 @@
 - **검증:** exact-head CI 4 workflows SUCCESS, 7 checks SUCCESS+16 path skips; CENTRAL 원격 Windows 기하/원본 계약 63 PASS/6 SKIP/5 제외 및 실제 Sol PDF 집중 19 PASS. 새 통합 소스로 1/2/3/4/8/25/100품목 실 PDF 생성, PDF 해시 일치·QuoteCore 합계·페이지 1/1/1/2/2/4/11 검증. 1~3 인증 해시는 기존 v1과 동일. 자세한 파일별 SHA·판정 범위는 [Sol v2 기술 인증 패킷](SOL61_MULTIPAGE_V2_CERTIFICATION_CHECKPOINT_2026-10-10.md) 참조.
 - **구분:** `SOURCE_INTEGRATED=YES`, `REAL_PDF_OFFLINE_PROVEN=YES`, **`NEW_V2_CERTIFICATE=NO` / `PRODUCTION_V2_ACTIVE=NO` / `CUSTOMER_E2E=NOT_TESTED`**. Owner가 새로운 다중페이지 원본 양식 차이·허용 오차를 확정하고, 별도 버전 인증서를 발급·운영 라우트에서 확인한 후 #4076 실로그인 견적 여정을 검증해야 한다. 기존 배포 SHA `52b05ae...`는 변경하지 않았다.
 
+## P0 최종 인수 차단: 화면 미리보기·다운로드·Drive PDF ≠ 실제 Sol 렌더러
+
+[이슈 #4117](https://github.com/skerishKang/ai-revenue-lab/issues/4117) 신설(2026-10-10): 기존 CGI 화면은 Sol 원본에서 추출한 **PNG + DOM 텍스트**, 다운로드/Drive PDF는 별도 Canvas→JPEG **단일 페이지 래스터 PDF**다. Sol 6.1 원본 양식을 활용하더라도 **인증한 native Sol PDF의 페이지/벡터/바이트와 동일하지 않다**. 4품목 이상 HTML 미리보기는 인증 Sol 미리보기가 아니고 실제 브라우저 PDF는 행수 초과로 거절될 수 있다. [PR #4111](https://github.com/skerishKang/ai-revenue-lab/pull/4111)의 CLI 원본 Sol 다중 페이지 구현은 main 소스로만 통합됐고, 현재 웹앱 PDF 생성·프리뷰·Drive로 직접 연결되지 않았다.
+
+**김범신 대표 최종 인수 = 같은 QuoteCore/승인된 Saved Skill → native Sol PDF 한 건 → 화면에서 동일 PDF 미리보기 → 동일 SHA PDF 다운로드 → 고객 Drive에 동일 PDF 저장(선택) → D1 실제 인수.** 1~3 기존 v1 인증 SHA는 보존하고 4+는 별도 새 v2 인증/실행 권위 필요. Python/Windows 글꼴·Node 런타임과 1페이지 전용 Worker의 차이를 해결하기 전에는 '고객 Sol v2 READY' 주장 금지. 기존 Drive 연결·파일 저장 E2E는 그대로 PASS_REPORTED로 유지하되 **파일 출처가 native Sol인지 여부는 미검증**. 본 체크포인트는 `CUSTOMER_CGI_SOL_PREVIEW_PARITY=NOT_READY`, `CGI_FINAL_MVP_READY=NO`를 우선한다.
+
 ## 1. 확정된 릴리스 근거
 
 | 구분 | 결과 / 근거 |
