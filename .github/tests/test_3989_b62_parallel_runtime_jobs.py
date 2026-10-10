@@ -146,16 +146,16 @@ class ParallelB62JobsContract(unittest.TestCase):
             marker = tmp / "calls.log"
             fake_uv = tmp / "uv"
             fake_uv.write_text(
-                "#!/usr/bin/env bash\\n"
-                'printf "start:%s:%s\\\\n" "$PWD" "$*" >> "$B62_TEST_MARKER"\\n'
-                'sleep 0.20\\n'
-                'printf "finish:%s:%s\\\\n" "$PWD" "$*" >> "$B62_TEST_MARKER"\\n'
-                'case "$PWD" in\\n'
-                '  */packages/padiem-ai-core) test "$B62_FAIL_TARGET" != core || exit 17 ;;\\n'
-                '  */apps/padiem-chat) test "$B62_FAIL_TARGET" != chat || exit 18 ;;\\n'
-                '  *) exit 41 ;;\\n'
-                'esac\\n'
-                'echo "FAKE_PYTEST_PASS:$PWD"\\n',
+                "#!/usr/bin/env bash\n"
+                'printf "start:%s:%s\\n" "$PWD" "$*" >> "$B62_TEST_MARKER"\n'
+                'sleep 0.20\n'
+                'printf "finish:%s:%s\\n" "$PWD" "$*" >> "$B62_TEST_MARKER"\n'
+                'case "$PWD" in\n'
+                '  */packages/padiem-ai-core) test "$B62_FAIL_TARGET" != core || exit 17 ;;\n'
+                '  */apps/padiem-chat) test "$B62_FAIL_TARGET" != chat || exit 18 ;;\n'
+                '  *) exit 41 ;;\n'
+                'esac\n'
+                'echo "FAKE_PYTEST_PASS:$PWD"\n',
                 encoding="utf-8",
             )
             fake_uv.chmod(0o755)
