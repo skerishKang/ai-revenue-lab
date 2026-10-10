@@ -7,11 +7,14 @@
 > **상태 최신화 (2026-10-10 KST):** 스냅샷 `main=52b05ae4623fb211c32d31fe286d8e483803330f`; **B66 Pages Production** 승인된 수동 [run #38006616259](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38006616259) 및 사후 계약 검사 **SUCCESS**. OAuth 콜백 수정 [#4073](https://github.com/skerishKang/ai-revenue-lab/pull/4073) 포함. LOCAL3 보고: 새 운영 버전 B66 **비밀번호 로그인** 및 **Google Drive OAuth 연결·기존 초안 승인/취소 처리·재계산·세션 격리 PASS_REPORTED**. B66 계정 자체 Google 로그인·다른 브라우저/폰은 **NOT_TESTED**; [#4074](https://github.com/skerishKang/ai-revenue-lab/pull/4074)는 중복으로 CLOSED/UNMERGED. [**첫 고객 인수 기준·릴리스 증거**](CGI_FIRST_CUSTOMER_MVP_CHECKPOINT_2026-10-10.md) 및 [#4076](https://github.com/skerishKang/ai-revenue-lab/issues/4076)이 최우선 현재 상태를 정의한다. LOCAL1=#3839 Sol 다중 페이지, LOCAL2=#4076 통합, LOCAL3=#3871 Drive. 병합된 #4069 공유 Core / #3998 B66 모델 UX와 미완료 #3906 사용자 실전달 수용을 구분한다.
 > **기존 점검 기록:** 이전 main `7f9b89eaf10c`에서의 담당 배분은 역사적 스냅샷이다. 현재 운영·병합 상태는 위 항목을 우선한다.
 
+> **LOCAL2 추가 검증 (2026-10-10 KST):** [PR #4088](https://github.com/skerishKang/ai-revenue-lab/pull/4088) **SQUASH MERGED** `c5c4d0345f7a`·CI **9 SUCCESS/16 SKIP**. 기존 B66 PDF Preview Parity CI 스텝에서 localhost Chromium으로 수동 모델 선택·Free-form·가격 누락 후속 질문·QuoteCore·Guided(모델 0호출)·PDF 요청 경로·서버 이력 클라이언트까지 **오프라인 고객 흐름 PASS**. 실 B14 추론은 스텁, PDF 응답은 가짜 PDF 바이트, D1 저장/이력·타 계정 거부는 가짜 API JSON이다. **실 Production PDF/D1/다른 계정 인수 NOT_TESTED**. LOCAL2 로컬 증거 7 PNG·보고서 존재 확인, **6번·7번 PNG 내용 완전 동일(동일 SHA256)**이므로 별도 시각 증명 불인정. [#4076 중앙 검토](https://github.com/skerishKang/ai-revenue-lab/issues/4076), [MVP 근거표](CGI_FIRST_CUSTOMER_MVP_CHECKPOINT_2026-10-10.md) 참조. 본 업데이트로 Production 배포·고객 인수를 완료 처리하지 않는다.
+
 ## 최신 CGI 첫 고객 MVP — 배포 완료와 인수 미완료 구분
 
 | 축 | 현재 | 다음 인수 증거·담당 |
 |---|---|---|
 | 기존 1차 인수 #3521 | **CLOSED** (기존 제한 범위) | 재오픈 금지; 새로운 최종 고객 인수 [#4076](https://github.com/skerishKang/ai-revenue-lab/issues/4076) **OPEN** |
+| LOCAL2 CGI 고객 여정 #4076 | **오프라인 Chromium 통합 PASS** · PR #4088 MERGED | 실제 Sol PDF·D1 소유권·실 B14 답변·Production 전체 브라우저 여정은 별도 LIVE 검증, LOCAL2 담당 |
 | OAuth Pages 소스 | #4073 **MERGED** · #4074 중복 **CLOSED/UNMERGED** | 실제 Google 브라우저에서 새 Production 로그인 검증: LOCAL3 |
 | B66 Pages Production | **SUCCESS**, 정확 SHA `52b05ae4623f`, run **#38006616259** | 정적 UI·로그인 상태 API 200은 실제 로그인 성공과 별개 |
 | Sol 1~3품목 | 기존 v1 인증 유지 | 새 배포 실제 고객 QuoteCore/PDF: LOCAL2 |
