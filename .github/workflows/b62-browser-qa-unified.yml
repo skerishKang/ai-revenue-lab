@@ -42,6 +42,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 3
     outputs:
+      glass_visual_tail_required: ${{ steps.classify.outputs.glass_visual_tail_required }}
       accessibility_browser_qa: ${{ steps.classify.outputs.accessibility_browser_qa }}
       auth_history_browser_qa: ${{ steps.classify.outputs.auth_history_browser_qa }}
       browser_qa: ${{ steps.classify.outputs.browser_qa }}
@@ -342,7 +343,11 @@ jobs:
       # and disjoint report names. Run at most two browsers concurrently in the
       # *same* CI job to preserve its existing required status and artifact.
       # Wrapper is fail-closed: every suite must run and all three must pass.
+      # Only exactly modified independent leaf JS may omit unrelated Glass
+      # visual suites. Missing/unknown output means RUN all three suites.
+      # Base desktop/mobile and owner-specific browser QA remain mandatory.
       - name: Glass zoom, shell, and gutter visual QA (all three, bounded parallel)
+        if: ${{ needs.plan.outputs.glass_visual_tail_required != 'false' }}
         run: uv run python ../../.github/scripts/b62_browser_qa_tail_parallel.py
       - name: Print QA report
         if: always()

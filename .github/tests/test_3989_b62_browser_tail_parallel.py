@@ -38,6 +38,7 @@ class BrowserQATailContract(unittest.TestCase):
             "\n  conversation-delete-browser-qa:\n", 1
         )[0]
         self.assertEqual(job.count("b62_browser_qa_tail_parallel.py"), 1)
+        self.assertIn("if: ${{ needs.plan.outputs.glass_visual_tail_required != 'false' }}", job)
         self.assertIn("run: uv run python ../../.github/scripts/b62_browser_visual_qa.py", job)
         self.assertIn("run: uv run python ../../.github/scripts/b62_product_surface_certification_evidence_qa.py", job)
         self.assertIn("name: Upload browser evidence", job)
