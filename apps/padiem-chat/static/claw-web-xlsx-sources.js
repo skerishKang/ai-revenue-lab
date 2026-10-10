@@ -56,7 +56,17 @@
       && body.size_bytes === selected.size_bytes
       && P01_STAGES.has(body.status)
       && typeof body.owner_decision_enabled === "boolean"
+      && (body.owner_request_enabled === undefined || typeof body.owner_request_enabled === "boolean")
+      && (body.status === "not_requested" || body.owner_request_enabled !== true)
       && (body.status === "waiting_p01" || body.owner_decision_enabled === false)
+      && body.processing_started === false && body.workcopy_created === false);
+  }
+
+  function validateP01Start(body, selectionRef) {
+    return Boolean(body?.ok === true
+      && body.contract_version === "claw-web-xlsx-p01-start.v1"
+      && body.selection_ref === selectionRef
+      && body.status === "waiting_p01"
       && body.processing_started === false && body.workcopy_created === false);
   }
 
@@ -140,10 +150,11 @@
     const approvalSelected = $("clawWebXlsxP01Selected");
     const approvalStatus = $("clawWebXlsxP01Status");
     const approvalRefresh = $("clawWebXlsxP01Refresh");
+    const requestStart = $("clawWebXlsxP01Start");
     const approve = $("clawWebXlsxP01Approve");
     const deny = $("clawWebXlsxP01Deny");
     if (![panel, input, upload, refresh, message, list, approvalPanel,
-      approvalSelected, approvalStatus, approvalRefresh, approve, deny].every(Boolean)) return null;
+      approvalSelected, approvalStatus, approvalRefresh, requestStart, approve, deny].every(Boolean)) return null;
     // The legacy Project Files input stays text/PDF/DOCX-only. This separate
     // browser-original intake allows XLSX without changing that contract.
     input.accept = ".xlsx";
@@ -153,6 +164,9 @@
     let selectedSelectionRef = null;
     let selectedSource = null;
     let ownerDecisionReady = false;
+    let ownerRequestReady = false;
+    let requestAttempted = false;
+    const requestAttemptedRefs = new Set();
     let decisionAttempted = false;
     const attemptedRefs = new Set(); // never POST twice per selection in this page lifetime
     let loaded = false;
@@ -163,13 +177,14 @@
       refresh.disabled = value;
       input.disabled = value;
       approvalRefresh.disabled = value || !selectedSelectionRef;
+      requestStart.disabled = value || !ownerRequestReady || requestAttempted;
       approve.disabled = value || !ownerDecisionReady || decisionAttempted;
       deny.disabled = value || !ownerDecisionReady || decisionAttempted;
       panel.setAttribute("aria-busy", value ? "true" : "false");
     };
 
     const P01_MESSAGES = Object.freeze({
-      not_requested: "원본 선택 완료. P01 승인 요청이 아직 시작되지 않았습니다.",
+      not_requested: "원본을 선택했습니다. 서버에서 P01 승인 요청을 시작할 수 있습니다.",
       request_unknown: "P01 승인 요청 결과가 불확실합니다. 자동 재시도하지 않습니다.",
       waiting_p01: "원본 확인 승인을 기다리고 있습니다. 승인 또는 거절을 직접 선택하세요.",
       decision_unknown: "승인 결정 전달 결과가 불확실합니다. 다시 제출하지 마세요.",
@@ -178,6 +193,12 @@
       expired: "원본 선택 또는 승인 대기 기한이 만료됐습니다.",
       manual_review: "승인 상태를 검증할 수 없습니다. 운영 확인이 필요합니다.",
     });
+
+    function hideRequest() {
+      ownerRequestReady = false;
+      requestStart.hidden = true;
+      requestStart.disabled = true;
+    }
 
     function hideDecisions() {
       ownerDecisionReady = false;
@@ -192,6 +213,7 @@
       const selectionRef = selectedSelectionRef;
       const source = selectedSource;
       hideDecisions();
+      hideRequest();
       approvalStatus.textContent = "서버에 기록된 P01 승인 상태를 확인하고 있습니다.";
       const status = await jsonRequest(
         SELECTIONS + "/" + encodeURIComponent(selectionRef) + "/p01-status",
@@ -200,6 +222,10 @@
       if (!validateP01Status(status, source, selectionRef)) {
         throw new Error("소유자별 P01 승인 상태를 확인할 수 없습니다.");
       }
+      ownerRequestReady = status.status === "not_requested"
+        && status.owner_request_enabled === true && !requestAttempted;
+      requestStart.hidden = !ownerRequestReady;
+      requestStart.disabled = busy || !ownerRequestReady;
       ownerDecisionReady = status.status === "waiting_p01"
         && status.owner_decision_enabled === true && !decisionAttempted;
       approve.hidden = !ownerDecisionReady;
@@ -207,6 +233,9 @@
       approve.disabled = busy || !ownerDecisionReady;
       deny.disabled = busy || !ownerDecisionReady;
       approvalStatus.textContent = P01_MESSAGES[status.status];
+      if (status.status === "not_requested" && !status.owner_request_enabled) {
+        approvalStatus.textContent = "선택한 원본은 안전하게 보관됐습니다. 웹 P01 요청 시작 기능은 아직 연결되지 않았습니다.";
+      }
       if (status.status === "waiting_p01" && !status.owner_decision_enabled) {
         approvalStatus.textContent = "P01 승인 대기는 있지만 웹 승인 기능이 아직 연결되지 않았습니다.";
       }
@@ -218,13 +247,16 @@
       selectedSelectionRef = selectionRef;
       selectedSource = source;
       decisionAttempted = attemptedRefs.has(selectionRef);
+      requestAttempted = requestAttemptedRefs.has(selectionRef);
       approvalPanel.hidden = false;
       approvalSelected.textContent = "선택한 원본: " + source.filename;
       hideDecisions();
+      hideRequest();
       try {
         await checkSelectedStatus();
       } catch (_error) {
         hideDecisions();
+        hideRequest();
         approvalStatus.textContent = "승인 상태를 안전하게 확인하지 못했습니다. 상태 확인을 눌러 다시 조회하세요.";
       }
       approvalRefresh.disabled = busy;
@@ -237,9 +269,42 @@
         await checkSelectedStatus();
       } catch (_error) {
         hideDecisions();
+        hideRequest();
         approvalStatus.textContent = "서버의 승인 상태를 확인하지 못했습니다. 결정을 보내지 않았습니다.";
       } finally {
         setBusy(false);
+      }
+    }
+
+    async function startP01() {
+      if (busy || !ownerRequestReady || requestAttempted
+          || !selectedSelectionRef || !selectedSource) return;
+      const ref = selectedSelectionRef;
+      requestAttempted = true;
+      requestAttemptedRefs.add(ref);
+      hideRequest();
+      hideDecisions();
+      setBusy(true);
+      approvalStatus.textContent = "P01 승인 대기 요청을 한 번만 전송하고 있습니다.";
+      try {
+        const body = await jsonRequest(
+          SELECTIONS + "/" + encodeURIComponent(ref) + "/start-p01",
+          { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: "{}" },
+        );
+        if (!validateP01Start(body, ref)) throw new Error("P01 시작 결과를 검증할 수 없습니다.");
+        report("P01 승인 요청이 시작됐습니다. 파일 내용은 아직 처리하지 않았습니다.");
+      } catch (_error) {
+        approvalStatus.textContent = "시작 요청 결과가 불확실합니다. 재전송하지 말고 상태를 확인하세요.";
+        report("P01 시작을 재시도하지 않습니다. 안전한 상태 조회만 가능합니다.");
+      } finally {
+        setBusy(false);
+      }
+      try {
+        await checkSelectedStatus();
+      } catch (_error) {
+        hideDecisions();
+        hideRequest();
       }
     }
 
@@ -281,6 +346,7 @@
         await checkSelectedStatus();
       } catch (_error) {
         hideDecisions();
+        hideRequest();
       }
     }
 
@@ -400,6 +466,7 @@
         selectedSource = null;
         approvalPanel.hidden = true;
         hideDecisions();
+        hideRequest();
         report("원본 XLSX 보관 완료. 수정·PDF 변환은 시작되지 않았으며 별도 승인이 필요합니다.");
       } catch (error) {
         report(error.message);
@@ -412,6 +479,8 @@
     upload.addEventListener("click", () => void save());
     refresh.addEventListener("click", () => void reload());
     approvalRefresh.addEventListener("click", () => void refreshSelectedStatus());
+    requestStart.addEventListener("click", () => void startP01());
+    requestStart.addEventListener("click", () => void startP01());
     approve.addEventListener("click", () => void decideP01("approve"));
     deny.addEventListener("click", () => void decideP01("deny"));
     panel.addEventListener("toggle", () => {
@@ -419,13 +488,14 @@
     });
     return { getState: () => ({
       busy, loaded, selectedDocumentId, selectedSelectionRef,
-      p01Approved: false, ownerDecisionReady, decisionAttempted,
+      p01Approved: false, ownerDecisionReady, ownerRequestReady,
+      requestAttempted, decisionAttempted,
     }) };
   }
 
   const api = Object.freeze({
     validFile, validateListing, validateSelection,
-    validateSelectionsListing, validateP01Status, validateP01Decision, init,
+    validateSelectionsListing, validateP01Status, validateP01Start, validateP01Decision, init,
   });
   if (typeof module === "object" && module.exports) module.exports = api;
   if (typeof window === "object") window.PadiemClawWebXlsxSources = api;

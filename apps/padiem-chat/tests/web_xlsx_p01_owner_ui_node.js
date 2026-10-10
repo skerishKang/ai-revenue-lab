@@ -38,7 +38,8 @@ function fakeRoot() {
     "clawWebOfficeDetails", "clawWebXlsxInput", "clawWebXlsxSave",
     "clawWebXlsxRefresh", "clawWebXlsxNotice", "clawWebXlsxList",
     "clawWebXlsxP01Panel", "clawWebXlsxP01Selected", "clawWebXlsxP01Status",
-    "clawWebXlsxP01Refresh", "clawWebXlsxP01Approve", "clawWebXlsxP01Deny",
+    "clawWebXlsxP01Refresh", "clawWebXlsxP01Start",
+    "clawWebXlsxP01Approve", "clawWebXlsxP01Deny",
   ];
   const elements = Object.fromEntries(ids.map(id => [id, new FakeNode()]));
   elements.clawWebXlsxP01Panel.hidden = true;
@@ -54,8 +55,8 @@ function response(body, status = 200) {
 async function settle() {
   for (let i = 0; i < 12; ++i) await new Promise(resolve => setImmediate(resolve));
 }
-function server({ initial = "waiting_p01", enabled = true, failPost = false, badSource = false } = {}) {
-  let stage = initial, sent = [];
+function server({ initial = "waiting_p01", enabled = true, failPost = false, failStart = false, badSource = false } = {}) {
+  let stage = initial, sent = [], starts = [];
   global.fetch = async (url, options = {}) => {
     assert.equal(options.credentials, "same-origin");
     assert.equal(options.cache, "no-store");
@@ -81,8 +82,18 @@ function server({ initial = "waiting_p01", enabled = true, failPost = false, bad
         filename: SRC.filename, size_bytes: SRC.size_bytes,
         source_sha256: badSource ? "f".repeat(64) : SRC.source_sha256,
         status: stage, owner_decision_enabled: enabled && stage === "waiting_p01",
+        owner_request_enabled: enabled && stage === "not_requested",
         processing_started: false, workcopy_created: false,
       });
+    }
+    if (url.endsWith("/start-p01") && method === "POST") {
+      assert.deepEqual(JSON.parse(options.body), {});
+      starts.push("start");
+      stage = failStart ? "request_unknown" : "waiting_p01";
+      if (failStart) return response({ ok: false }, 503);
+      return response({ ok: true, contract_version: "claw-web-xlsx-p01-start.v1",
+        selection_ref: REF, status: stage, processing_started: false,
+        workcopy_created: false }, 202);
     }
     if (url.endsWith("/p01-decision") && method === "POST") {
       const body = JSON.parse(options.body);
@@ -102,7 +113,7 @@ function server({ initial = "waiting_p01", enabled = true, failPost = false, bad
     }
     throw Error("UNEXPECTED_REQUEST " + method + " " + url);
   };
-  return { sent, get stage() { return stage; } };
+  return { sent, starts, get stage() { return stage; } };
 }
 async function prepare(config) {
   const network = server(config);
@@ -135,6 +146,24 @@ async function prepare(config) {
   assert.equal(ready.root.nodes.clawWebXlsxP01Approve.disabled, true);
   ready.root.nodes.clawWebXlsxP01Approve.handlers.click(); await settle();
   assert.deepEqual(ready.network.sent, ["approve"]);
+
+  const fresh = await prepare({initial: "not_requested"});
+  assert.equal(fresh.root.nodes.clawWebXlsxP01Start.hidden, false);
+  fresh.root.nodes.clawWebXlsxP01Start.handlers.click();
+  fresh.root.nodes.clawWebXlsxP01Start.handlers.click();
+  await settle();
+  assert.deepEqual(fresh.network.starts, ["start"]);
+  assert.equal(fresh.root.nodes.clawWebXlsxP01Start.disabled, true);
+  assert.equal(fresh.root.nodes.clawWebXlsxP01Approve.hidden, false);
+  fresh.existing.handlers.click(); await settle();
+  assert.equal(fresh.root.nodes.clawWebXlsxP01Start.disabled, true);
+  assert.deepEqual(fresh.network.starts, ["start"]);
+
+  const unknownStart = await prepare({ initial: "not_requested", failStart: true });
+  unknownStart.root.nodes.clawWebXlsxP01Start.handlers.click(); await settle();
+  unknownStart.root.nodes.clawWebXlsxP01Refresh.handlers.click(); await settle();
+  unknownStart.existing.handlers.click(); await settle();
+  assert.deepEqual(unknownStart.network.starts, ["start"], "uncertain P01 start NEVER retried");
 
   const denied = await prepare();
   denied.root.nodes.clawWebXlsxP01Deny.handlers.click(); await settle();
@@ -176,4 +205,5 @@ async function prepare(config) {
   console.log("WEB_XLSX_REAL_BROWSER_OWNER_DECISION=PASS");
   console.log("WEB_XLSX_ONE_SHOT_UNKNOWN_OUTCOME=PASS");
   console.log("WEB_XLSX_SERVER_STATUS_ONLY=PASS");
+  console.log("WEB_XLSX_BROWSER_START_ONE_SHOT=PASS");
 })().catch(error => { console.error(error); process.exitCode = 1; });

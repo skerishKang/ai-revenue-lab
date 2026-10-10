@@ -70,6 +70,9 @@ from .claw_web_xlsx_p01_owner_decision_routes import (
 from .claw_web_xlsx_p01_request_routes import (
     WEB_XLSX_REQUEST_P01_PATH, web_xlsx_request_p01,
 )
+from .claw_web_xlsx_p01_start_routes import (
+    WEB_XLSX_START_P01_PATH, web_xlsx_start_p01,
+)
 from .claw_office_chooser_routes import (
     LIST_PATH as CLAW_OFFICE_CANDIDATES_PATH,
     SELECT_PATH as CLAW_OFFICE_SELECT_PATH,
@@ -355,6 +358,7 @@ def create_app(
         Route(WEB_SELECTIONS_PATH, web_xlsx_selections, methods=["GET", "POST"]),
         Route(WEB_SELECTION_PATH, web_xlsx_selection_detail, methods=["GET"]),
         Route(WEB_XLSX_REQUEST_P01_PATH, web_xlsx_request_p01, methods=["POST"]),
+        Route(WEB_XLSX_START_P01_PATH, web_xlsx_start_p01, methods=["POST"]),
         Route(WEB_XLSX_P01_OWNER_DECISION_PATH, web_xlsx_p01_owner_decision, methods=["POST"]),
         Route(WEB_XLSX_P01_OWNER_STATUS_PATH, web_xlsx_p01_owner_status, methods=["GET"]),
         Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"]),
