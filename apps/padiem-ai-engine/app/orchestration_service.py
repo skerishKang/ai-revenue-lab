@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import AsyncIterator, Callable, Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 import inspect
 import json
@@ -48,6 +48,10 @@ from padiem_ai_core.execution_runtime import ExecutionRuntimeError
 from padiem_ai_core.tool_runtime import MAX_TOOL_ARGUMENT_BYTES, ToolInvocation
 
 from app.execution_context_wire import parse_execution_context
+from app.hark_office_p01_receipt import (
+    ApprovedOfficeReadReceiptSink,
+    prepare_approved_office_read_receipt,
+)
 from app.tool_projection import (
     MAX_WIRE_TOOL_ARGUMENTS_BYTES,
     EngineToolBinding,
@@ -367,11 +371,16 @@ class OrchestrationEngineService:
         approval_decision_verifier: ApprovalDecisionVerifier | None = None,
         continuation_store: ContinuationStore | None = None,
         tool_binding_resolver: Callable[[str], EngineToolBinding | None] | None = None,
+        approved_office_read_sink: ApprovedOfficeReadReceiptSink | None = None,
     ) -> None:
         if not callable(runtime_factory):
             raise ValueError("runtime_factory must be callable")
         if tool_binding_resolver is not None and not callable(tool_binding_resolver):
             raise ValueError("tool_binding_resolver must be callable")
+        if approved_office_read_sink is not None and not callable(
+            getattr(approved_office_read_sink, "record_verified_office_read", None)
+        ):
+            raise ValueError("approved_office_read_sink must provide record_verified_office_read")
         if approval_decision_verifier is not None and not callable(getattr(approval_decision_verifier, "verify", None)):
             raise ValueError("approval_decision_verifier must provide verify()")
         if continuation_store is not None:
@@ -396,6 +405,9 @@ class OrchestrationEngineService:
         self._continuation_store = continuation_store or _DEFAULT_CONTINUATION_STORE
         self._continuation_store_is_explicit = continuation_store is not None
         self._tool_binding_resolver = tool_binding_resolver
+        # Never composed by the shipping Engine Worker unless an explicitly
+        # trusted private durable sink is provided. No browser-facing endpoint.
+        self._approved_office_read_sink = approved_office_read_sink
 
     # ------------------------------------------------------------------
     # Trusted tool-runtime attachment (#1746)
@@ -809,12 +821,39 @@ class OrchestrationEngineService:
 
         return app_id, orch_req, exec_req, _execution_request_fingerprint(app_id=app_id, request=exec_req)
 
-    async def orchestrate_payload(self, payload: Any) -> ServiceResponse:
-        """Execute an orchestration request through OrchestrationRunner."""
+    async def orchestrate_payload(
+        self, payload: Any, *, trusted_office_run_id: str | None = None,
+    ) -> ServiceResponse:
+        """Execute public input or a server-owned exact Office Broker run.
+
+        The keyword is private Python composition only; it is never parsed
+        from the Engine HTTP JSON payload or accepted as a model argument.
+        """
         built = self._orchestrate_request_from_payload(payload)
         if isinstance(built, ServiceResponse):
             return built
         app_id, orch_req, exec_req, request_fingerprint_value = built
+        if trusted_office_run_id is not None:
+            # No ordinary app may select the Core Agent pause run id. The
+            # first-party owner/Broker authority must provide this exact
+            # server-owned identity; the caller\u0027s arguments cannot replace it.
+            from app.hark_office_p01_tool_binding import APP_ID, LIST_TOOL_ID, READ_TOOL_ID
+            plan = orch_req.agent_plan
+            args = getattr(orch_req, "tool_arguments", None)
+            if (app_id != APP_ID
+                    or type(trusted_office_run_id) is not str
+                    or plan is None or len(plan.steps) != 1
+                    or plan.steps[0].tool_id not in (LIST_TOOL_ID, READ_TOOL_ID)
+                    or not isinstance(args, Mapping) or len(args) != 1):
+                return _service_error("invalid_request", "Trusted Office run identity is invalid.", status_code=400)
+            only_args = next(iter(args.values()))
+            if (not isinstance(only_args, Mapping)
+                    or only_args.get("run_id") != trusted_office_run_id):
+                return _service_error("office_run_identity_mismatch", "Office command run identity mismatch.", status_code=409)
+            try:
+                orch_req = replace(orch_req, trusted_agent_bridge_run_id=trusted_office_run_id)
+            except (ValueError, TypeError):
+                return _service_error("invalid_request", "Trusted Office run identity is invalid.", status_code=400)
 
         try:
             runtime = self._runtime_factory(app_id)
@@ -1093,6 +1132,36 @@ class OrchestrationEngineService:
         except ServiceContractError as commit_exc:
             return _service_error(commit_exc.code, commit_exc.safe_message, status_code=commit_exc.status_code)
 
+        # #3580: only AFTER the Engine has verified an actual first-party
+        # decision, completed the registered ToolRuntime confirmation, and
+        # atomically CONSUMED the continuation may a PRIVATE durable sink
+        # receive the immutable canonical Office READ receipt. There is no
+        # browser/wire field to supply the decision or invoke this sink.
+        if self._approved_office_read_sink is not None:
+            try:
+                receipt = prepare_approved_office_read_receipt(
+                    app_id=app_id,
+                    continuation_ref=record.continuation_ref,
+                    pause=record.pause,
+                    decision=decision,
+                    tool_arguments=tool_kwargs.get("tool_arguments"),
+                    execution_status=result.execution_result.metadata.status,
+                )
+                if receipt is not None:
+                    persisted = self._approved_office_read_sink.record_verified_office_read(receipt)
+                    if inspect.isawaitable(persisted):
+                        persisted = await persisted
+                    if persisted is not True:
+                        raise ValueError("trusted Office receipt not persisted")
+            except Exception:
+                # Continuation is already consumed; never return success or
+                # dispatch a local file operation when durable evidence
+                # recording is unknown. Owner must start a fresh operation.
+                return _service_error(
+                    "office_approval_receipt_unavailable",
+                    "Verified Office authorization receipt was not persisted.",
+                    status_code=503,
+                )
         try:
             orchestration_body = await self._orchestration_body(
                 result,
