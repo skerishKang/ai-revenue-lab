@@ -13,7 +13,7 @@ import re
 from typing import Any
 
 from starlette.requests import Request
-from starlette.responses import Response
+from starlette.responses import JSONResponse, Response
 
 from .auth_routes import auth_ready, current_user_id
 from .b66_saved_quote_skill_store import SavedQuoteSkillStoreError, validate_row_id
@@ -64,6 +64,76 @@ def _valid_quote_model(model: Any) -> int:
     if not isinstance(effective, list) or not effective:
         return 0
     return len(effective) if len(effective) <= 100 else 0
+
+
+async def b66_native_sol_scope(request: Request) -> Response:
+    """Owner-only, read-only proof that a separate trusted native release exists.
+
+    NEVER supplies a certificate from the historical public CGI bundle. The
+    current production app injects neither client nor trusted releases and
+    responds 503. No PDF render, paid call, or storage mutation takes place.
+    """
+    if not auth_ready(request):
+        return _error(401, "unauthorized")
+    try:
+        user_id = current_user_id(request)
+    except Exception:
+        user_id = None
+    if not user_id:
+        return _error(401, "unauthorized")
+    params = request.query_params
+    if set(params) != {"saved_skill_id", "item_count"} or any(
+        len(params.getlist(name)) != 1 for name in params
+    ):
+        return _error(400, "invalid_native_sol_scope_query")
+    try:
+        saved_skill_id = validate_row_id(params["saved_skill_id"])
+    except SavedQuoteSkillStoreError:
+        return _error(400, "invalid_saved_skill_id")
+    raw_count = params["item_count"]
+    if not re.fullmatch(r"[1-9][0-9]{0,2}", raw_count or ""):
+        return _error(400, "invalid_item_count")
+    item_count = int(raw_count)
+    if not (1 <= item_count <= 100):
+        return _error(400, "invalid_item_count")
+
+    # Fail before private Saved Skill access if either trusted service or
+    # independently registered release is absent.
+    service = getattr(request.app.state, "b66_native_sol_pdf_client", None)
+    render = getattr(service, "render_pdf", None)
+    releases = getattr(request.app.state, "b66_native_sol_releases", None)
+    release = _certified_release(releases, item_count)
+    store = getattr(request.app.state, "b66_saved_quote_skill_store", None)
+    get_skill = getattr(store, "get_skill", None)
+    if not callable(render) or release is None or not callable(get_skill):
+        return _error(503, "native_sol_not_certified")
+    try:
+        workspace_id = await _resolve_memory_workspace(request, user_id)
+    except Exception:
+        workspace_id = None
+    if workspace_id is None:
+        return _error(503, "workspace_authority_unavailable")
+    try:
+        saved_value = get_skill(user_id=user_id, workspace_id=workspace_id,
+                                saved_skill_id=saved_skill_id)
+        saved = await saved_value if inspect.isawaitable(saved_value) else saved_value
+    except Exception:
+        return _error(503, "saved_quote_skill_read_failed")
+    if not isinstance(saved, dict):
+        return _error(404, "saved_quote_skill_not_found")
+    profile = _approved_profile(saved, saved_skill_id=saved_skill_id,
+                                workspace_id=workspace_id)
+    fingerprint = saved.get("skill_fingerprint")
+    if (not profile or not isinstance(fingerprint, str) or
+            not _HEX64.fullmatch(fingerprint) or not _HEX64.fullmatch(profile)):
+        return _error(503, "saved_quote_skill_invalid")
+    return JSONResponse({
+        "schemaVersion": 1, "available": True, "renderer": "sol61-native",
+        "savedSkillId": saved_skill_id, "itemCount": item_count,
+        "certificateSha256": release["certificateSha256"],
+        "skillFingerprint": fingerprint, "profileFingerprint": profile,
+        "minItems": release["minItems"], "maxItems": release["maxItems"],
+    }, headers={**_NO_STORE, "X-B66-Native-Scope": "owner-certified-release"})
 
 
 async def b66_native_sol_pdf(request: Request) -> Response:
