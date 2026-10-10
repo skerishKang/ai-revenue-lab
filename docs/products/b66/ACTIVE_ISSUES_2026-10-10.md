@@ -4,7 +4,7 @@
 >
 > **조사 기준:** 2026-10-10 KST, 저장소 `skerishKang/ai-revenue-lab`, 작업 시작 main `b55b634c7f17e5581cfc9ea26da57eea43453f10`.
 > **범위:** 현재 대화에서 검토한 B66 원본 양식/견적 기능과 직접 연결된 B14·Claw 이슈. 저장소의 *모든* OPEN 이슈를 포괄한 대장이 아니다.
-> **상태 최신화 (2026-10-10 KST):** 스냅샷 `main=52b05ae4623fb211c32d31fe286d8e483803330f`; **B66 Pages Production** 승인된 수동 [run #38006616259](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38006616259) 및 사후 계약 검사 **SUCCESS**. OAuth 콜백 수정 [#4073](https://github.com/skerishKang/ai-revenue-lab/pull/4073) 포함. 독립 로그인/Drive 고객 E2E는 **NOT_TESTED**; [#4074](https://github.com/skerishKang/ai-revenue-lab/pull/4074)는 중복으로 CLOSED/UNMERGED. [**첫 고객 인수 기준·릴리스 증거**](CGI_FIRST_CUSTOMER_MVP_CHECKPOINT_2026-10-10.md) 및 [#4076](https://github.com/skerishKang/ai-revenue-lab/issues/4076)이 최우선 현재 상태를 정의한다. LOCAL1=#3839 Sol 다중 페이지, LOCAL2=#4076 통합, LOCAL3=#3871 Drive. 병합된 #4069 공유 Core / #3998 B66 모델 UX와 미완료 #3906 사용자 실전달 수용을 구분한다.
+> **상태 최신화 (2026-10-10 KST):** 스냅샷 `main=52b05ae4623fb211c32d31fe286d8e483803330f`; **B66 Pages Production** 승인된 수동 [run #38006616259](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38006616259) 및 사후 계약 검사 **SUCCESS**. OAuth 콜백 수정 [#4073](https://github.com/skerishKang/ai-revenue-lab/pull/4073) 포함. LOCAL3 보고: 새 운영 버전 B66 **비밀번호 로그인** 및 **Google Drive OAuth 연결·기존 초안 승인/취소 처리·재계산·세션 격리 PASS_REPORTED**. B66 계정 자체 Google 로그인·다른 브라우저/폰은 **NOT_TESTED**; [#4074](https://github.com/skerishKang/ai-revenue-lab/pull/4074)는 중복으로 CLOSED/UNMERGED. [**첫 고객 인수 기준·릴리스 증거**](CGI_FIRST_CUSTOMER_MVP_CHECKPOINT_2026-10-10.md) 및 [#4076](https://github.com/skerishKang/ai-revenue-lab/issues/4076)이 최우선 현재 상태를 정의한다. LOCAL1=#3839 Sol 다중 페이지, LOCAL2=#4076 통합, LOCAL3=#3871 Drive. 병합된 #4069 공유 Core / #3998 B66 모델 UX와 미완료 #3906 사용자 실전달 수용을 구분한다.
 > **기존 점검 기록:** 이전 main `7f9b89eaf10c`에서의 담당 배분은 역사적 스냅샷이다. 현재 운영·병합 상태는 위 항목을 우선한다.
 
 ## 최신 CGI 첫 고객 MVP — 배포 완료와 인수 미완료 구분
@@ -16,7 +16,7 @@
 | B66 Pages Production | **SUCCESS**, 정확 SHA `52b05ae4623f`, run **#38006616259** | 정적 UI·로그인 상태 API 200은 실제 로그인 성공과 별개 |
 | Sol 1~3품목 | 기존 v1 인증 유지 | 새 배포 실제 고객 QuoteCore/PDF: LOCAL2 |
 | Sol 4+품목 | [#4001](https://github.com/skerishKang/ai-revenue-lab/pull/4001)/[#4010](https://github.com/skerishKang/ai-revenue-lab/pull/4010) Draft, **v2 미인증** | 표 세로선·합계 격자·다중 페이지 수정+독립 시각 검토: LOCAL1 |
-| D1/Google Drive 재열기 | 계정별 D1 실 E2E는 미확정; Drive 이전 버전 부분 실측 | D1: LOCAL2. Drive 실제 취소·승인·계정 격리: LOCAL3 |
+| D1/Google Drive 재열기 | D1 cross-browser 실증 미확정. **Drive 새 Production** 내용 있는 초안의 취소 처리 분기/실제 승인·재계산·세션 분리 **PASS_REPORTED** (LOCAL3) | D1: LOCAL2. Drive의 실제 다른 브라우저/폰·late callback·B66 Google 로그인 및 서버 타계정 접근 차단: LOCAL3 |
 | B14 추론 수준 | B66 #3998 및 공유 Core #4069 **MERGED** | 모델·SSE·정확한 공급자 계약 실전달: LOCAL2 #3906. LOCAL6 #3988 숨은 기본값 별도 |
 | 최종 고객 인수 | **NOT_READY** | #4076의 새 Production 실제 인수 시나리오·4+ Sol v2 승인 후 재판정 |
 
@@ -42,7 +42,7 @@
 | [#3595](https://github.com/skerishKang/ai-revenue-lab/issues/3595) 원본 재현·인증 | **OPEN · P0** | 기존 CGI Sol 1–3행 기준 인증·1행 변이 테스트 근거 보존 | 다른 고객의 **실질적으로 독립된 두 번째 양식** 재현·변이·시각·자산 인증; CGI 4+행은 #3839에서 별도 재인증 |
 | [#3708](https://github.com/skerishKang/ai-revenue-lab/issues/3708) 대형 컴파일러 | **OPEN · P2 · DEFERRED** | 외부 Modal/Oracle/GCP 실행 위치 **미선정** | 실제 두 번째 고객 수요/원본 보관·분석 근거 생길 때 계약, 비용·시간 실측 후 재개; CGI 인도 장애가 아님 |
 | [#3839](https://github.com/skerishKang/ai-revenue-lab/issues/3839) Sol 다중 페이지 | **OPEN · LOCAL1** | [Draft #4001](https://github.com/skerishKang/ai-revenue-lab/pull/4001) `c8a7cf24`, [Draft #4010](https://github.com/skerishKang/ai-revenue-lab/pull/4010) `a163f11d`, **미병합·v2 미인증**. 오른쪽 외곽선 실 PDF 196페이지 부분 벡터 PASS만 확보 | 중간페이지 내부 세로선·마지막 합계 격자 시각 HOLD 수정, 1–3 v1 바이트/원본 보존, 4+ Sol v2 독립 인증·실 E2E 전 고객 제한 해제 금지 |
-| [#3871](https://github.com/skerishKang/ai-revenue-lab/issues/3871) 고객 Google Drive | **OPEN · LOCAL3** | [#4029](https://github.com/skerishKang/ai-revenue-lab/pull/4029) 초안 승인창, [#4073](https://github.com/skerishKang/ai-revenue-lab/pull/4073) OAuth 콜백 **MERGED**. 새 Production [#38006616259](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38006616259) **SUCCESS**. 중복 #4074 CLOSED/UNMERGED | **새 배포 실제 로그인은 아직 NOT_TESTED**, 내용 있는 초안의 불러오기 취소/승인, JSON+PDF, 다른 계정·브라우저·폰의 LIVE E2E 필요. 이전 버전 Drive 부분 실측을 전체 완료로 주장 금지 |
+| [#3871](https://github.com/skerishKang/ai-revenue-lab/issues/3871) Google Drive | **OPEN · LOCAL3, LIVE 주요 시나리오 PASS_REPORTED** | 새 Production SHA `52b05ae4623f`에서 B66 비밀번호 로그인·승인 CGI 스킬, Google Drive OAuth 연결, 내용 있는 초안의 `confirm(false)` 취소 분기(초안 보존), 네이티브 대화상자 승인(견적 교체·QuoteCore 748,000), JSON/PDF 2쌍 소유권, 로그아웃·다른 B66 계정의 Drive 세션 미승계 보고 PASS | B66 계정 Google 로그인, 네이티브 **취소 클릭**, 서버 직접 타계정 403/404, 다른 브라우저·폰·late-callback, 파일 바이트/인증 재검증은 **NOT_TESTED**. 고객 인수 #4076은 계속 OPEN |
 | [#3884](https://github.com/skerishKang/ai-revenue-lab/issues/3884) 고객 비공개 원본 | **OPEN · 중점 선행 의존성** | 기존 **별도 로컬 브랜치** `b66-template-custody-3884` / [Draft #3925](https://github.com/skerishKang/ai-revenue-lab/pull/3925); **로컬 번호는 GitHub 근거로 미확정** | HTTP 원문 크기 상한(파싱 전), OOXML 구조 안전성, R2 orphan 삭제실패 대응, D1 owner 분리 및 원본 SHA-256 복원, 버전/삭제/보유정책, 실제 cross-browser E2E. 현재 PR 미병합 |
 | [#3906](https://github.com/skerishKang/ai-revenue-lab/issues/3906) 모델별 추론 수준 | **OPEN · LOCAL2** | B66 UI/어댑터 [#3998](https://github.com/skerishKang/ai-revenue-lab/pull/3998) **MERGED**, 공유 Core opt-in [#4069](https://github.com/skerishKang/ai-revenue-lab/pull/4069) **MERGED** `fcf168f3`. Exact-head CI 완료; 유료 Provider 실제 응답을 증명한 것은 아님 | B66 실제 로그인 어댑터→Core→B14 일반/SSE 전달, 정확한 모델 ID·생략·미지원 fail-closed·quota, 비기본 추론 수준 활성화 승인 별도 |
 | [#4028](https://github.com/skerishKang/ai-revenue-lab/issues/4028) B66 테스트 구조 정리 | **CLOSED · CENTRAL** | PR #4030/#4031/#4032/#4034/#4038/#4040/#4041 모두 병합. B66 JS 테스트 파일 **56개 자동 발견/실행**; 제품 JS 36개 문법 검사; static mega-test 1,315→457줄 | 구조 정리 재개 금지, 전역 워크플로 fanout·B62 browser QA 선택 최적화는 #3989 LOCAL2 담당 |
@@ -68,7 +68,7 @@
 
 ## 다음 단계 — 소유자·병렬 진행
 
-> **2026-10-10 고객 인수 실행 순서:** (1) LOCAL3 #3871 — 이미 배포된 #4073 코드로 운영 OAuth 재로그인 및 Drive 취소/승인; (2) LOCAL2 #4076 — 이미 배포된 B66에서 1~3품목 Guided/Free-form/미완성 후속질문·D1 실증; (3) LOCAL1 #3839 — 기존 Sol 6.1 소스에서 4+/다중 페이지 시각 오류를 수정·신규 인증 후보 제출; (4) CENTRAL — Sol v2 승인 후 고객 인수 범위 판단. **#3977 공유 Core는 #4069 병합 완료**, 아래 이전 메모의 “신규 구현 시작” 단계는 과거 상태다. [단일 인수표](CGI_FIRST_CUSTOMER_MVP_CHECKPOINT_2026-10-10.md) 참조.
+> **2026-10-10 고객 인수 실행 순서:** (1) LOCAL3 #3871 — 운영 Drive 연결/취소 분기·실제 승인 PASS 보고 완료, 다른 브라우저/폰·Google **B66 로그인**·네이티브 취소 추가 검증; (2) LOCAL2 #4076 — 이미 배포된 B66에서 1~3품목 Guided/Free-form/미완성 후속질문·D1 실증; (3) LOCAL1 #3839 — 기존 Sol 6.1 소스에서 4+/다중 페이지 시각 오류를 수정·신규 인증 후보 제출; (4) CENTRAL — Sol v2 승인 후 고객 인수 범위 판단. **#3977 공유 Core는 #4069 병합 완료**, 아래 이전 메모의 “신규 구현 시작” 단계는 과거 상태다. [단일 인수표](CGI_FIRST_CUSTOMER_MVP_CHECKPOINT_2026-10-10.md) 참조.
 
 ### 이전 배정 참고 기록 (현재 완료된 항목은 다시 구현하지 않음)
 

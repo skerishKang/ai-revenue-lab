@@ -6,21 +6,31 @@ PRODUCT=B66_STANDALONE_QUOTATIONS
 ISSUE=#3871
 SOURCE_MERGED=YES  (#3924/#3960/#3981; fingerprint #4007; confirm #4029 MERGED)
 SOURCE_EVIDENCE=docs/products/b66/GOOGLE_DRIVE_SAVE_OPEN.md
-LIVE_DRIVE_VERIFIED=PARTIAL_PASS_LOCAL3_REPORTED
-LIVE_POPULATED_DRAFT_CONFIRM_CANCEL=NOT_TESTED
+LIVE_DRIVE_VERIFIED=CORE_SCENARIOS_PASS_REPORTED_LOCAL3
+B66_ACCOUNT_PASSWORD_SIGNIN=PASS_REPORTED
+B66_ACCOUNT_GOOGLE_SIGNIN=NOT_TESTED
+GOOGLE_DRIVE_OAUTH_CONNECT=PASS_REPORTED
+LIVE_POPULATED_DRAFT_CANCEL_HANDLER=PASS_REPORTED_STUBBED_CONFIRM_FALSE
+LIVE_NATIVE_DIALOG_APPROVE=PASS_REPORTED
+LIVE_NATIVE_DIALOG_CANCEL_CLICK=NOT_TESTED
+QUOTECORE_IMPORT_PARITY=PASS_REPORTED
+DRIVE_JSON_PDF_PAIR_EXISTENCE_OWNER=PASS_REPORTED
+DRIVE_BINARY_HASH_PARITY=NOT_INDEPENDENTLY_VERIFIED
+OTHER_ACCOUNT_DRIVE_SESSION_ISOLATION=PASS_REPORTED
+FOREIGN_ACCOUNT_SERVER_READ_DENIAL=NOT_TESTED
 CROSS_BROWSER_DRIVE_REOPEN=NOT_TESTED
-SECOND_ACCOUNT_ISOLATION=NOT_TESTED
+LATE_OAUTH_CALLBACK=NOT_TESTED
 REAL_PHONE=NOT_TESTED
-LAST_CONFIRMED_PAGES_RELEASE=37997944674_SUCCESS_SHA_ee11c1cb
+LAST_CONFIRMED_PAGES_RELEASE=38006616259_SUCCESS_SHA_52b05ae4623f
 ```
 
-> **2026-10-10 최신 실행 근거:** LOCAL3 보고에서는 #4007 수정 반영 후 OAuth 로그인·고객 Drive JSON/PDF 쌍 저장·동일 계정의 **빈 편집기에서 재열기**·수정/QuoteCore 재계산·재저장·로그아웃(`/revoke` 요청 0건)이 PASS였다. CENTRAL은 GitHub Production [#37988106633](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37988106633)과 새 확인창 수정 [#4029](https://github.com/skerishKang/ai-revenue-lab/pull/4029)의 후속 Production [#37997944674](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37997944674) SUCCESS를 독립 확인했다. **그러나 #4029 운영 배포 이후의 실제 내용 있는 편집기에서 대화상자 승인/취소 시나리오, 별도 브라우저·계정·실기기 검증은 아직 증빙 없음.** 아래 '현재 차단 사유' 및 JS origin 인벤토리는 **초기 환경 조사 이력**이며 최신 운영 설정 부재로 오해하지 말 것.
+> **2026-10-10 CENTRAL 최신 운영 기록:** Owner 승인 단일 Pages Production [run #38006616259](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38006616259) **SUCCESS**, 배포 SHA `52b05ae4623fb211c32d31fe286d8e483803330f`, OAuth 콜백 수정 #4073 포함. 이후 LOCAL3 **실브라우저 보고**로 B66 비밀번호 로그인·승인 CGI 스킬·Google Drive 동의/연결·재연결·내용 있는 초안의 **취소 처리 분기**(테스트 동안 `window.confirm = () => false` 주입 후 즉시 복구, 기존 초안/합계 보존)·**네이티브 승인**(저장 견적으로 교체, QuoteCore 680,000/68,000/748,000 일치)·Drive JSON/PDF 2쌍(총 4개) 존재 및 소유권·로그아웃·다른 계정에서 Drive 세션/이전 초안 미승계가 **PASS_REPORTED**. CENTRAL은 이 브라우저의 클릭/파일 바이트를 직접 독립 재현하지 않았음. **B66 계정 자체 Google 로그인은 미실행** (비밀번호 로그인과 Drive OAuth를 혼동 금지). 네이티브 **취소 클릭**, 직접 서버 타계정 접근 거부, 다른 실제 브라우저·실기기·late callback, 파일 전체 바이트 해시/인증 PDF 독립 확인은 **NOT_TESTED**. [#3871](https://github.com/skerishKang/ai-revenue-lab/issues/3871)은 OPEN. 아래 1절의 OAuth 클라이언트/JS 원본 부재와 미배포 기술 내용은 *구버전 초기 조사 이력*으로 보존하며 최신 운영 차단 상태가 아니다.
 
 이 문서는 **소스 병합 이후의 실제(라이브) 검증** 절차다.
 소스·오프라인 검증은 이미 완료됐고(위 `SOURCE_EVIDENCE`), 여기서는 실제 Google 계정·Drive 로만 증명할 수 있는
 항목을 다룬다. **오프라인 스텁 통과를 라이브 증거로 사용하지 않는다.**
 
-## 1. 현재 차단 사유 (2026-10-10 기준 조사 결과)
+## 1. 초기 차단 사유 기록 (과거 조사 이력 · 현재 배포 상태로 해석 금지)
 
 ### 1.1 OAuth 클라이언트 재사용 인벤토리 (2026-10-10 LOCAL3 read-only 실측)
 
@@ -86,7 +96,7 @@ ROUTINE_GOOGLE_REVOKE_CALLS=0 (소스 · 회귀 테스트로 고정)
 프로젝트 전체 권한 철회가 필요하면 별도 명시 동작 + 영향 범위 검토 + Owner 승인을 거쳐야 한다.
 일반 로그아웃을 Google 계정 전체 동의 철회로 바꾸지 않는다. UI 안내 문구도 이 구분을 반영한다.
 
-### 1.4 프로덕션 번들에 아직 이 기능이 없다
+### 1.4 초기 미배포 문제 (현재는 신규 Production 배포 완료)
 
 `quick-quote-kr` Pages 프로젝트의 프로덕션 배포는 `workflow_dispatch` 게이트에서만 수행된다
 (`b66-neutral-pages-beta.yml` 의 deploy 단계는 `if: github.event_name == 'workflow_dispatch'`).
@@ -99,9 +109,9 @@ curl -fsS "https://quick-quote-kr.pages.dev/" | grep -c 'driveStoragePanel'   # 
 curl -fsS "https://quick-quote-kr.pages.dev/" | grep -c 'quote-drive-ui.js'   # 0 = 아직 미배포
 ```
 
-따라서 라이브 검증 전에 **승인된 프로덕션 릴리스 1회**가 필요하다(Production 활성화 = CENTRAL 보고 대상).
+**현재 정정 (2026-10-10):** 별도 Owner 승인 [run #38006616259](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38006616259)로 새 Production 배포·사후 계약 검사 **PASS**. 이 위의 웹 페이지 검사 예시는 **과거 미배포 상태를 분석하기 위한 것**이며 현재 다시 배포하라는 지시가 아니다. 실제 Drive 연결·승인/취소 처리 핵심 동작도 위 LOCAL3 보고 기준 PASS.
 
-## 2. 선행 조건 (재사용 우선)
+## 2. 초기 도입 선행 조건 (과거 설정 체크리스트; 현행 실운영은 상단 갱신 기록 우선)
 
 ```text
 REUSE_FIRST=YES
