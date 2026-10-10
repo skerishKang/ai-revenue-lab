@@ -13,6 +13,14 @@ B66 is Padiem's standalone quotation product for businesses that already have qu
 
 The user-facing reusable concept is **내 견적서 / Saved Quote Skill**. Internal template/profile/compiler terminology is not the primary user concept.
 
+## 신규 고객 원본 보존·편집형 출력 장기 정책 — #4106 (현재 CGI와 분리)
+
+> **[공식 정책 문서: SOURCE_PRESERVING_EDITABLE_OUTPUT_ROADMAP.md](SOURCE_PRESERVING_EDITABLE_OUTPUT_ROADMAP.md)** · [오픈 이슈 #4106](https://github.com/skerishKang/ai-revenue-lab/issues/4106)
+
+**앞으로의 다른 고객 견적서**는 PDF/이미지 원본 재현, XLSX 원본 패키지 유지, 추후 HWPX 원본 구조 보존을 **형식별로 다르게** 처리한다. 최종 출력은 인증된 **PDF + 편집 가능한 원본 계열 XLSX/HWPX** 제공을 목표로 하지만 현재 모든 파일 형식을 지원한다는 뜻은 아니다. **QuoteCore 금액 정확성은 필수**, 양식의 비핵심 시각 차이는 고객/Owner가 명시적으로 승인한 허용 오차만 인정한다. 최초 원본 분석/인증은 한 번, 반복 견적은 경량·결정적으로 실행한다.
+
+**형식 제한은 여전히 [#3586](https://github.com/skerishKang/ai-revenue-lab/issues/3586) 기준**(XLSX 현재 등록 사전검증 허용, HWPX 추후, 구형 XLS/HWP 거부). PDF/이미지 사실 추출 ≠ 자동 인증되는 재사용 템플릿. 이전 XLSX 출력 [#3496](https://github.com/skerishKang/ai-revenue-lab/issues/3496) 및 원본 재현 [#3595](https://github.com/skerishKang/ai-revenue-lab/issues/3595), 연기된 대형 컴파일러 [#3708](https://github.com/skerishKang/ai-revenue-lab/issues/3708)을 중복 개발하지 않는다. **현재 김범신 대표 CGI의 유일한 PDF 템플릿은 아래의 기존 Sol 6.1**이며 이번 P1 정책을 이유로 첫 고객 인수 #4076을 지연하거나 CGI PDF를 다른 렌더러로 교체하지 않는다.
+
 ## CGI 첫 고객 최종 MVP 상태 — 2026-10-10 KST
 
 > **최신 운영·인수 기준:** [CGI_FIRST_CUSTOMER_MVP_CHECKPOINT_2026-10-10.md](CGI_FIRST_CUSTOMER_MVP_CHECKPOINT_2026-10-10.md) · 인수 이슈 [#4076](https://github.com/skerishKang/ai-revenue-lab/issues/4076) **OPEN**. 기존 한정 범위 MVP [#3521](https://github.com/skerishKang/ai-revenue-lab/issues/3521) **CLOSED**와 구분한다.
