@@ -58,7 +58,7 @@ class AgentExecutionBudget:
     max_steps: int = 12
     max_tool_calls: int = 12
     max_skill_calls: int = 8
-    max_wall_seconds: int = 180
+    max_wall_seconds: int = 900  # align agent default with Core's 15-minute run context
 
     def __post_init__(self) -> None:
         limits = {

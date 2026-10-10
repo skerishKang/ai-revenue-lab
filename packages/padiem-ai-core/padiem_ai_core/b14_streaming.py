@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import asyncio
 from collections.abc import AsyncIterator
+from contextlib import AsyncExitStack
 from dataclasses import dataclass, field
 import json
 from typing import Any, Mapping
@@ -361,11 +363,14 @@ class B14StreamingClient:
                 timeout=timeout,
                 follow_redirects=False,
             ) as client:
-                async with client.stream(
-                    "POST",
-                    url,
-                    json=payload,
-                ) as response:
+                # Workers Service Bindings and JS Fetch may ignore HTTPX's
+                # per-read timeout. Guard *header arrival only*, not the
+                # entire healthy SSE lifetime, and release the stream on stop.
+                async with AsyncExitStack() as stack:
+                    async with asyncio.timeout(self._config.timeout_seconds):
+                        response = await stack.enter_async_context(
+                            client.stream("POST", url, json=payload)
+                        )
                     status_code = response.status_code
                     _raise_status_error(status_code)
                     content_type = response.headers.get("content-type", "").lower()
@@ -376,7 +381,16 @@ class B14StreamingClient:
                             upstream_status_code=status_code,
                         )
 
-                    async for chunk in response.aiter_bytes():
+                    # ZCode parity: refresh the idle watchdog for every
+                    # incoming chunk, even on transports without native
+                    # HTTPX read-idle enforcement. Never add a total SSE cap.
+                    incoming = response.aiter_bytes()
+                    while True:
+                        try:
+                            async with asyncio.timeout(self._config.timeout_seconds):
+                                chunk = await anext(incoming)
+                        except StopAsyncIteration:
+                            break
                         total_bytes += len(chunk)
                         if total_bytes > self._config.max_response_bytes:
                             raise B14ExecutionError(
@@ -410,6 +424,12 @@ class B14StreamingClient:
                             yield event
         except B14ExecutionError:
             raise
+        except TimeoutError as exc:
+            raise B14ExecutionError(
+                "upstream_timeout",
+                "Business 14 model stream was idle beyond the configured timeout.",
+                retryable=True,
+            ) from exc
         except httpx.TimeoutException as exc:
             raise B14ExecutionError(
                 "upstream_timeout",

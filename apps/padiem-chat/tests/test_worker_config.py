@@ -261,3 +261,14 @@ def test_phase1_css_blob_content_remains_byte_equal():
 def test_b66_pdf_renderer_binding_is_fixed_server_authority():
     from app.worker_config import B66_PDF_RENDERER_SERVICE_BINDING_NAME
     assert B66_PDF_RENDERER_SERVICE_BINDING_NAME == "B66_PDF_RENDERER_SERVICE"
+
+
+def test_source_wrangler_model_idle_matches_chat_worker_default():
+    """A deploy from source must not resurrect the pre-#4200 20s timeout."""
+    import tomllib
+
+    source = Path(__file__).resolve().parents[1] / "wrangler.toml"
+    config = tomllib.loads(source.read_text(encoding="utf-8"))
+    assert config["vars"]["PADIEM_CHAT_RUNTIME_MODE"] == "mock"
+    assert config["vars"]["PADIEM_CHAT_TIMEOUT_SECONDS"] == "600"
+    assert settings_from_worker_bindings(config["vars"]).timeout_seconds == 600.0
