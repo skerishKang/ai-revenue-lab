@@ -19,12 +19,18 @@ EOF
 # Distinct HTTP and inspector ports do not isolate Wrangler's default .wrangler/state.
 PERSIST_DIR="$(mktemp -d "${TMPDIR:-/tmp}/b62-worker-p01_binding-state.XXXXXXXX")"
 
-npx --yes wrangler@4.130.0 dev --config .runtime-p01-binding-probe.toml --port 8789 --inspector-port 9233 --persist-to "$PERSIST_DIR" > /tmp/b62-p01-binding-workerd.log 2>&1 &
+setsid npx --yes wrangler@4.130.0 dev --config .runtime-p01-binding-probe.toml --port 8789 --inspector-port 9233 --persist-to "$PERSIST_DIR" > /tmp/b62-p01-binding-workerd.log 2>&1 &
 WORKER_PID=$!
 b62_probe_mark WORKER_LAUNCHED
 
 cleanup() {
-  kill "$WORKER_PID" 2>/dev/null || true
+  # #3989: setsid isolates this Wrangler/npm/workerd tree from the CI shell.
+  # The prior kill of only npx left workerd grandchildren alive until runner
+  # teardown. Signal this probe-only process group, not the host runner group.
+  kill -TERM -- "-$WORKER_PID" 2>/dev/null || true
+  sleep 0.2
+  kill -KILL -- "-$WORKER_PID" 2>/dev/null || true
+  wait "$WORKER_PID" 2>/dev/null || true
   rm -rf -- "$PERSIST_DIR"
   rm -f .runtime-p01-binding-probe.toml
 }
