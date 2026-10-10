@@ -131,10 +131,16 @@ function harness(options) {
       const params = parseQuery(target);
       const nameMatch = /name = '((?:[^'\\]|\\.)*)'/.exec(params.q || "");
       if (nameMatch) {
+        if (Object.prototype.hasOwnProperty.call(state, "namePayloadOverride")) {
+          return jsonResponse(state.namePayloadOverride);
+        }
         const wanted = nameMatch[1].replace(/\\'/g, "'").replace(/\\\\/g, "\\");
         return jsonResponse({
           files: state.files.filter((file) => file.name === wanted).map((file) => ({ id: file.id, name: file.name }))
         });
+      }
+      if (Object.prototype.hasOwnProperty.call(state, "listPayloadOverride")) {
+        return jsonResponse(state.listPayloadOverride);
       }
       const pageSize = Number(params.pageSize) || 100;
       const offset = params.pageToken ? Number(params.pageToken) : 0;
@@ -316,6 +322,48 @@ function harness(options) {
     assert.equal(outcome.code, "naming_check_incomplete", "TRUNCATED_NAMING_CHECK_DENIES_SAVE");
     assert.equal(uploadCalls(h).length, 0, "NO_UPLOAD_ON_TRUNCATED_LIST");
   }
+
+  /* #3871: a malformed Google Drive list is never an empty folder or a free
+     filename. The app must make ZERO upload requests in every case. */
+  for (const invalid of [
+    {},
+    { files: null },
+    { files: {} },
+    { files: [null] },
+    { files: [{ id: "file", name: "existing.json" }] },
+    { files: [], nextPageToken: 12 },
+    { files: [{ id: 42, name: "existing.json", mimeType: JSON_MIME }] }
+  ]) {
+    const h = harness({ uploads: [{ mimeType: JSON_MIME }, { mimeType: PDF_MIME }] });
+    const pending = h.client.connect();
+    await h.approve();
+    await pending;
+    h.state.listPayloadOverride = invalid;
+    const listing = await h.client.listQuoteFiles();
+    assert.equal(listing.ok, false, "MALFORMED_LIST_DENIED");
+    assert.equal(listing.code, "invalid_response", "MALFORMED_LIST_CLASSIFIED");
+    const result = await h.client.savePair({ draft: draftFixture(), template: TEMPLATE, pdfBytes: pdfBytes() });
+    assert.equal(result.code, "naming_check_unavailable", "MALFORMED_LIST_NAMING_BLOCKED");
+    assert.equal(uploadCalls(h).length, 0, "MALFORMED_LIST_ZERO_UPLOADS");
+  }
+  for (const invalid of [
+    {},
+    { files: null },
+    { files: {} },
+    { files: [null] },
+    { files: [{ name: "existing.json" }] },
+    { files: [{ id: "file" }] }
+  ]) {
+    const h = harness({ uploads: [{ mimeType: JSON_MIME }, { mimeType: PDF_MIME }] });
+    const pending = h.client.connect();
+    await h.approve();
+    await pending;
+    h.state.namePayloadOverride = invalid;
+    const result = await h.client.savePair({ draft: draftFixture(), template: TEMPLATE, pdfBytes: pdfBytes() });
+    assert.equal(result.code, "naming_check_unavailable", "MALFORMED_NAME_CHECK_BLOCKED");
+    assert.equal(uploadCalls(h).length, 0, "MALFORMED_NAME_CHECK_ZERO_UPLOADS");
+  }
+  console.log("B66_DRIVE_MALFORMED_LIST_FAIL_CLOSED=PASS");
 
   /* ── 8. 부분 실패 → 원래 쌍을 유지한 채 재시도 ── */
   {
