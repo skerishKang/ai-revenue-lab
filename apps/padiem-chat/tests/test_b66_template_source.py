@@ -7,6 +7,7 @@ import base64
 import hashlib
 import io
 import json
+import sqlite3
 import zipfile
 from pathlib import Path
 from unittest.mock import MagicMock
@@ -905,6 +906,72 @@ def test_real_store_routes_support_owner_scoped_list_and_download():
     foreign = _client(user_id=USER_B, store=store)
     assert foreign.get("/api/b66/template-sources").json()["template_sources"] == []
     assert foreign.get(f"/api/b66/template-sources/{source_id}").status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_real_sqlite_d1_migration_and_r2_custody_round_trip():
+    """Exercise actual migration SQL and prepared binds, not only D1 stubs."""
+    conn = sqlite3.connect(":memory:")
+    conn.row_factory = sqlite3.Row
+    try:
+        conn.execute("CREATE TABLE users (id TEXT PRIMARY KEY)")
+        conn.executemany("INSERT INTO users(id) VALUES (?)", [(USER_A,), (USER_B,)])
+        migration = (Path(__file__).resolve().parents[1] / "migrations"
+                     / "027_b66_template_source.sql")
+        conn.executescript(migration.read_text(encoding="utf-8"))
+
+        class Prepared:
+            def __init__(self, sql):
+                self.sql, self.values = sql, ()
+
+            def bind(self, *values):
+                self.values = values
+                return self
+
+            async def run(self):
+                cursor = conn.execute(self.sql, self.values)
+                conn.commit()
+                return {"results": [dict(row) for row in cursor.fetchall()]}
+
+            async def all(self):
+                cursor = conn.execute(self.sql, self.values)
+                return {"results": [dict(row) for row in cursor.fetchall()]}
+
+            async def first(self):
+                row = conn.execute(self.sql, self.values).fetchone()
+                return dict(row) if row else None
+
+        class SQLiteD1:
+            def prepare(self, sql):
+                return Prepared(sql)
+
+        store = B66TemplateSourceStore(
+            D1B66TemplateSourceMetadataStore(SQLiteD1()), MemoryR2()
+        )
+        original = _real_xlsx_bytes()
+        saved = await store.put_template_source(
+            user_id=USER_A, workspace_id=WORKSPACE_A,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            original_filename="고객원본.xlsx", body=original
+        )
+        own = await store.list_for_owner(user_id=USER_A, workspace_id=WORKSPACE_A)
+        other = await store.list_for_owner(user_id=USER_B, workspace_id=WORKSPACE_B)
+        assert [item.template_source_id for item in own] == [saved.template_source_id]
+        assert other == []
+        reread = await store.get_for_owner(
+            user_id=USER_A, workspace_id=WORKSPACE_A,
+            template_source_id=saved.template_source_id
+        )
+        assert reread is not None and reread[1] == original
+        assert await store.get_for_owner(
+            user_id=USER_B, workspace_id=WORKSPACE_B,
+            template_source_id=saved.template_source_id
+        ) is None
+        stored = conn.execute("SELECT user_id, workspace_id, sha256 FROM b66_template_source").fetchone()
+        assert stored["user_id"] == USER_A and stored["workspace_id"] == WORKSPACE_A
+        assert stored["sha256"] == hashlib.sha256(original).hexdigest()
+    finally:
+        conn.close()
 
 
 def test_migration_027_stores_metadata_only_and_uses_unique_sequence():
