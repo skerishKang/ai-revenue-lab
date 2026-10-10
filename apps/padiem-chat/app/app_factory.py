@@ -65,6 +65,7 @@ from .claw_web_xlsx_p01_request import D1WebXlsxP01RequestStore
 from .claw_web_xlsx_p01_owner_decision import D1WebXlsxP01OwnerDecisionStore
 from .claw_web_xlsx_p01_owner_decision_routes import (
     WEB_XLSX_P01_OWNER_DECISION_PATH, web_xlsx_p01_owner_decision,
+    WEB_XLSX_P01_OWNER_STATUS_PATH, web_xlsx_p01_owner_status,
 )
 from .claw_web_xlsx_p01_request_routes import (
     WEB_XLSX_REQUEST_P01_PATH, web_xlsx_request_p01,
@@ -355,6 +356,7 @@ def create_app(
         Route(WEB_SELECTION_PATH, web_xlsx_selection_detail, methods=["GET"]),
         Route(WEB_XLSX_REQUEST_P01_PATH, web_xlsx_request_p01, methods=["POST"]),
         Route(WEB_XLSX_P01_OWNER_DECISION_PATH, web_xlsx_p01_owner_decision, methods=["POST"]),
+        Route(WEB_XLSX_P01_OWNER_STATUS_PATH, web_xlsx_p01_owner_status, methods=["GET"]),
         Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"]),
         Route("/api/claw/manual-intake/execute", claw_manual_intake_execute, methods=["POST"]),
         # #3539: the generic Claw composer runs through the canonical #3382 P01
