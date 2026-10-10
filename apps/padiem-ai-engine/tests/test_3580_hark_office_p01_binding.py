@@ -30,7 +30,7 @@ def _args(*, listing: bool) -> dict:
                 "whole_pc_scan": False}
     return {**common, "operation": "read",
             "path_relative": "original_quote.xlsx",
-            "requested_at": datetime.now(timezone.utc).isoformat(),
+            "requested_at": "2026-10-10T12:00:00+00:00",
             "content_bytes": 0, "content_sha256": None,
             "directory_enumeration": False, "recursive_delete": False,
             "admin_elevation": False}
