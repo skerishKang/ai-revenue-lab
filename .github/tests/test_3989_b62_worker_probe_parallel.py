@@ -223,6 +223,45 @@ class WorkerProbeParallelContract(unittest.TestCase):
             self.assertEqual(passed.returncode, 0, passed.stderr)
             self.assertIn("B62_WORKER_PROBES=PASS", passed.stdout)
 
+    def test_worker_boots_are_bounded_to_two_concurrent_processes(self):
+        # Synthetic shell canary: prove both waves execute, with at most two
+        # children alive at once. No uv, Wrangler, network, or Worker startup.
+        runner_text = RUNNER.read_text(encoding="utf-8")
+        self.assertIn("B62_WORKER_PROBE_BOOT_CONCURRENCY=2", runner_text)
+        with tempfile.TemporaryDirectory(prefix="b62-boot-waves-") as directory:
+            temp = Path(directory)
+            events_path = temp / "events"
+            scripts = []
+            for i in range(4):
+                script = temp / f"synthetic{i}.sh"
+                script.write_text(
+                    "#!/usr/bin/env bash\n"
+                    f"echo start:{i} >> '{events_path}'\n"
+                    "sleep 0.25\n"
+                    f"echo finish:{i} >> '{events_path}'\n",
+                    encoding="utf-8",
+                )
+                scripts.append(str(script))
+            result = subprocess.run(
+                ["bash", str(RUNNER), *scripts],
+                capture_output=True, text=True, cwd=temp,
+                timeout=15, check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("B62_WORKER_PROBE_COUNT=4", result.stdout)
+            self.assertIn("B62_WORKER_PROBES=PASS", result.stdout)
+            lines = events_path.read_text(encoding="utf-8").splitlines()
+            self.assertEqual(len(lines), 8)
+            self.assertLess(max(lines.index("finish:0"), lines.index("finish:1")),
+                            min(lines.index("start:2"), lines.index("start:3")))
+            active = peak = 0
+            for line in lines:
+                active += 1 if line.startswith("start:") else -1
+                peak = max(peak, active)
+                self.assertGreaterEqual(active, 0)
+            self.assertEqual(active, 0)
+            self.assertEqual(peak, 2)
+
     def test_runner_fails_on_invalid_or_missing_probe_argument(self):
         for args in [["x"], ["/tmp/b62-not-existent-probe.sh"] * 4]:
             with self.subTest(args=args):

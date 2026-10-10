@@ -59,20 +59,30 @@ cleanup() {
 }
 trap cleanup EXIT
 
-for index in 0 1 2 3; do
-  bash "${probes[$index]}" >"$logdir/probe-$index.log" 2>&1 &
-  pids+=("$!")
-done
+# Four simultaneous cold Python Worker/Pyodide starts on the same runner
+# showed correlated 90-129s readiness (HTTP assertions are <1s). Test two
+# concurrent starts per wave, keeping all four REAL probes and their exit gates.
+# The final marker stays fail-closed even if an earlier wave fails.
 failed=0
-for index in 0 1 2 3; do
-  if wait "${pids[$index]}"; then
-    echo "B62_WORKER_PROBE_$index=PASS"
-  else
-    echo "B62_WORKER_PROBE_$index=FAIL" >&2
-    failed=1
-  fi
-  # Include all original probe contract markers and bounded failure detail.
-  cat "$logdir/probe-$index.log"
+echo 'B62_WORKER_PROBE_BOOT_CONCURRENCY=2'
+for batch_start in 0 2; do
+  pids=()
+  for offset in 0 1; do
+    index=$((batch_start + offset))
+    bash "${probes[$index]}" >"$logdir/probe-$index.log" 2>&1 &
+    pids+=("$!")
+  done
+  for offset in 0 1; do
+    index=$((batch_start + offset))
+    if wait "${pids[$offset]}"; then
+      echo "B62_WORKER_PROBE_$index=PASS"
+    else
+      echo "B62_WORKER_PROBE_$index=FAIL" >&2
+      failed=1
+    fi
+    # Include all original probe contract markers and bounded failure detail.
+    cat "$logdir/probe-$index.log"
+  done
 done
 echo 'B62_WORKER_PROBE_COUNT=4'
 if (( failed )); then
