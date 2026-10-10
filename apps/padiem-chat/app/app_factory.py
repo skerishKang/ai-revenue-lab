@@ -62,6 +62,10 @@ from .claw_web_xlsx_selection_routes import (
 )
 from .claw_web_xlsx_selection_store import D1WebXlsxSelectionStore
 from .claw_web_xlsx_p01_request import D1WebXlsxP01RequestStore
+from .claw_web_xlsx_p01_owner_decision import D1WebXlsxP01OwnerDecisionStore
+from .claw_web_xlsx_p01_owner_decision_routes import (
+    WEB_XLSX_P01_OWNER_DECISION_PATH, web_xlsx_p01_owner_decision,
+)
 from .claw_web_xlsx_p01_request_routes import (
     WEB_XLSX_REQUEST_P01_PATH, web_xlsx_request_p01,
 )
@@ -350,6 +354,7 @@ def create_app(
         Route(WEB_SELECTIONS_PATH, web_xlsx_selections, methods=["GET", "POST"]),
         Route(WEB_SELECTION_PATH, web_xlsx_selection_detail, methods=["GET"]),
         Route(WEB_XLSX_REQUEST_P01_PATH, web_xlsx_request_p01, methods=["POST"]),
+        Route(WEB_XLSX_P01_OWNER_DECISION_PATH, web_xlsx_p01_owner_decision, methods=["POST"]),
         Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"]),
         Route("/api/claw/manual-intake/execute", claw_manual_intake_execute, methods=["POST"]),
         # #3539: the generic Claw composer runs through the canonical #3382 P01
@@ -500,6 +505,11 @@ def create_app(
         if _workspace_store is not None and d1_binding is not None else None
     )
     app.state.web_xlsx_p01_pause_client = None
+    app.state.web_xlsx_p01_owner_decision_store = (
+        D1WebXlsxP01OwnerDecisionStore(d1_binding)
+        if _workspace_store is not None and d1_binding is not None else None
+    )
+    app.state.web_xlsx_p01_owner_decision_client = None
     # Worker-native Claw P01/Engine adapter (#2229). Injected by the Worker
     # composition root from trusted bindings; None means unconfigured and the
     # execute route fails closed before any transport.
