@@ -56,6 +56,11 @@ from .claw_web_xlsx_source_routes import (
     WEB_SOURCES_PATH, WEB_SOURCE_DOWNLOAD_PATH,
     web_xlsx_sources, web_xlsx_download,
 )
+from .claw_web_xlsx_selection_routes import (
+    WEB_SELECTIONS_PATH, WEB_SELECTION_PATH,
+    web_xlsx_selections, web_xlsx_selection_detail,
+)
+from .claw_web_xlsx_selection_store import D1WebXlsxSelectionStore
 from .claw_office_chooser_routes import (
     LIST_PATH as CLAW_OFFICE_CANDIDATES_PATH,
     SELECT_PATH as CLAW_OFFICE_SELECT_PATH,
@@ -338,6 +343,8 @@ def create_app(
         ),
         Route(WEB_SOURCES_PATH, web_xlsx_sources, methods=["GET", "POST"]),
         Route(WEB_SOURCE_DOWNLOAD_PATH, web_xlsx_download, methods=["GET"]),
+        Route(WEB_SELECTIONS_PATH, web_xlsx_selections, methods=["GET", "POST"]),
+        Route(WEB_SELECTION_PATH, web_xlsx_selection_detail, methods=["GET"]),
         Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"]),
         Route("/api/claw/manual-intake/execute", claw_manual_intake_execute, methods=["POST"]),
         # #3539: the generic Claw composer runs through the canonical #3382 P01
@@ -475,6 +482,12 @@ def create_app(
             _workspace_store = None
     app.state.workspace_document_store = _workspace_store
     app.state._workspace_metadata_store = _metadata_store
+    # #3580: D1-persisted owner-scoped selection only; cannot mint an Engine
+    # approval, access R2 bytes, or process a workbook. Separate migration 029.
+    app.state.claw_web_xlsx_selection_store = (
+        D1WebXlsxSelectionStore(d1_binding)
+        if _workspace_store is not None and d1_binding is not None else None
+    )
     # Worker-native Claw P01/Engine adapter (#2229). Injected by the Worker
     # composition root from trusted bindings; None means unconfigured and the
     # execute route fails closed before any transport.
