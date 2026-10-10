@@ -250,7 +250,7 @@ class B62ScopeTests(unittest.TestCase):
         runner = (ROOT / ".github/scripts/b62_worker_probe_parallel.sh").read_text(encoding="utf-8")
         self.assertIn("npx --yes wrangler@4.130.0 --version", runner)
         self.assertLess(runner.index("npx --yes wrangler@4.130.0 --version"),
-                        runner.index("for index in 0 1 2 3; do"))
+                        runner.index("for batch_start in 0 2; do"))
         self.assertIn("scope: ${{ steps.classify-b62.outputs.scope }}", text)
         self.assertIn("B62_CI_IMPACT_SCOPE=", SCRIPT.read_text(encoding="utf-8"))
 

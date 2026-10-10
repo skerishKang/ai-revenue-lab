@@ -164,7 +164,7 @@ class WorkerProbeParallelContract(unittest.TestCase):
         self.assertIn("B62_WORKER_NPX_PREWARM=PASS", runner)
         self.assertLess(
             runner.index("npx --yes wrangler@4.130.0 --version"),
-            runner.index("for index in 0 1 2 3; do"),
+            runner.index("for batch_start in 0 2; do"),
         )
         # A failed first-use package install must NOT start four real Workers.
         # Provide a failing synthetic npx; never contact npm/Cloudflare.
