@@ -1,5 +1,13 @@
 # B14 #3554 — Owner account entitlement and bounded live-response verification gate
 
+<!-- OWNER_KIRA_LIVE_SINGLE_PROOF_20261010 -->
+## Current Owner latest (18:08 KST) — both limited provider connectivity probes complete
+
+**Kira exact-model Production B14 1-call CONNECTIVITY_PASS**: [live evidence and official temporary-free promotion scope](B14_KIRA_LIVE_ONCE_AND_PROMO_SCOPE_2026-10-10.md). HTTP200, 7,781ms, `OK`, one manual attempt/no fallback, prompt 1,934 / completion 103 / total 2,037 tokens. The previous “Kira NOT CALLED” and “Kira SECOND / approval pending” entries below describe the **earlier planning state**, now superseded by this 2026-10-10 18:08 KST single-call result.
+
+**SenseNova** prior exact Production B14 limited test **PASS** (HTTP200, 8,328ms, 385 reported tokens). **ExLab** still limited/suspected, no calls. **Neither** one-shot implies quality/PDF/Claw E2E or authorizes another provider call. Kira published model-specific **free promotion with countdown** was checked immediately before the call; Owner daily 10M membership token applicability and actual account billing deductions remain **UNKNOWN**, since official membership applies only to `kira-` upstream IDs and this model ID lacks that prefix. **Kira new B14 POST total=1, SenseNova new B14 POST total=1, ExLab=0; no Secrets/Production changes.**
+<!-- /OWNER_KIRA_LIVE_SINGLE_PROOF_20261010 -->
+
 **Date:** 2026-10-10 KST. **Authority:** Owner's latest account observations and current `main` B14 canonical registry, 11 models / 8 serving providers. **Current status: SenseNova single Owner-approved live paid B14 call PASSED / Kira NOT CALLED / ExLab HOLD / NO PRODUCTION RELEASE.** Evaluation priority only, never automatic product routing.
 
 ## Current exact-provider live evidence — 2026-10-10 18:00 KST
