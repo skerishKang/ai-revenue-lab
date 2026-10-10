@@ -137,7 +137,7 @@ class TestsOnlyCIRoutingContract(unittest.TestCase):
             with self.subTest(marker=marker):
                 self.assertIn(marker, worker)
         host = HOST_RUNNER.read_text(encoding="utf-8")
-        self.assertIn("chat_only|static_only|tests_only) run_core=0", host)
+        self.assertIn("chat_only|static_only|tests_only|b14_only) run_core=0", host)
         self.assertIn("uv run --locked python -m pytest -q", host)
         self.assertIn("B62_CHAT_PYTEST=PASS", host)
         self.assertIn("name: b62-test", flow)

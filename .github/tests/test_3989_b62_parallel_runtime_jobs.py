@@ -56,7 +56,7 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn("B62_CI_IMPACT_SCOPE: ${{ needs.registry-ci-plan.outputs.scope }}", self.host)
         self.assertIn("uv run --locked python -m pytest -q", runner)
         self.assertIn("uv run --extra dev python -m pytest -q", runner)
-        self.assertIn('chat_only|static_only|tests_only) run_core=0', runner)
+        self.assertIn('chat_only|static_only|tests_only|b14_only) run_core=0', runner)
         self.assertIn('*) echo "B62_HOST_PYTEST_SCOPE_UNCERTAIN=', runner)
         self.assertIn("B62_HOST_PYTEST_OVERLAP=FAIL", runner)
         self.assertIn("B62_HOST_PYTEST_OVERLAP=PASS", runner)
@@ -101,9 +101,11 @@ class ParallelB62JobsContract(unittest.TestCase):
     def test_only_proven_static_and_test_module_scopes_skip_live_worker_boots(self):
         self.assertEqual(self.worker.count("scope != 'static_only'"), 1)
         self.assertEqual(self.worker.count("scope != 'tests_only'"), 1)
+        self.assertEqual(self.worker.count("scope != 'b14_only'"), 1)
         self.assertIn(
             "if: ${{ needs.registry-ci-plan.outputs.scope != 'static_only' "
-            "&& needs.registry-ci-plan.outputs.scope != 'tests_only' }}",
+            "&& needs.registry-ci-plan.outputs.scope != 'tests_only' "
+            "&& needs.registry-ci-plan.outputs.scope != 'b14_only' }}",
             self.worker,
         )
         self.assertIn("name: Real Worker/Pyodide probes (all four, parallel, fail-closed)",
@@ -124,6 +126,20 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn('test "$FULL_RESULT" = success', self.aggregate)
         # B14 pilot source contracts remain selected; only static-only skips.
         self.assertNotIn("scope != 'tests_only'", job("b14-multimodal-test", self.source))
+
+    def test_b14_only_keeps_full_b62_chat_b14_and_worker_bundle_gates(self):
+        # The b14_only shortcut is allowed only at the live Workerd step.
+        # All other gates and the registry-only branch are unchanged.
+        self.assertIn("needs.registry-ci-plan.outputs.lane != 'model_registration_only'",
+                      self.host)
+        self.assertIn("B62 Chat and eligible Core tests", self.host)
+        self.assertIn("b62_worker_prewarm_overlap.sh", self.worker)
+        self.assertIn("Verify vendored Worker dependency versions", self.worker)
+        self.assertIn("pywrangler deploy --dry-run", self.worker)
+        self.assertNotIn("b14_only", job("b14-multimodal-test", self.source))
+        self.assertIn('test "$FULL_RESULT" = success', self.aggregate)
+        self.assertIn('test "$WORKER_RESULT" = success', self.aggregate)
+        self.assertIn('test "$MM_RESULT" = success', self.aggregate)
 
     def test_registry_quick_path_still_has_aggregator_and_is_not_blocked(self):
         self.assertIn("if: ${{ needs.registry-ci-plan.outputs.lane == 'model_registration_only' }}", self.registry)
@@ -204,7 +220,7 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn("B62_HOST_PYTEST_OVERLAP=PASS", proc.stdout)
 
     def test_scope_preserves_original_core_skip_without_skipping_chat(self):
-        for scope in ("chat_only", "static_only", "tests_only"):
+        for scope in ("chat_only", "static_only", "tests_only", "b14_only"):
             with self.subTest(scope=scope):
                 proc, lines = self._exercise_host_overlap(scope)
                 self.assertEqual(proc.returncode, 0, proc.stderr)
