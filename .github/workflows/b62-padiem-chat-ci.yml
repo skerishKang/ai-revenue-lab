@@ -139,6 +139,7 @@ jobs:
             test "$FULL_RESULT" = success
             test "$WORKER_RESULT" = success
             # Strict static-only changes cannot modify B14 pilot source or its dependencies.
+            # tests_only retains B14 to avoid broadening this unrelated skip.
             # Any unknown/mixed/chat-only scope remains fail-closed and runs the B14 suite.
             if [ "$SCOPE" = static_only ]; then
               test "$MM_RESULT" = skipped
@@ -182,8 +183,8 @@ jobs:
         run: node --check static/app.js && node --check static/b66-quote-runtime.js && node --check static/claw-local-handoff.js && node --check static/claw-local-adapter.js
       - name: B62 Chat and eligible Core tests (same-runner fail-closed overlap)
         # #4070: same two original pytest commands, distinct cwd/.venv, one
-        # runner and one mandatory exit status. Only chat_only/static_only
-        # omit unchanged Core; all unknown/full scopes run both suites.
+        # runner and one mandatory exit status. Only proven chat_only/static_only/
+        # tests_only omit unchanged Core; unknown/mixed scopes run both suites.
         env:
           B62_CI_IMPACT_SCOPE: ${{ needs.registry-ci-plan.outputs.scope }}
         run: bash ../../.github/scripts/b62_host_pytest_overlap_4070.sh
@@ -231,7 +232,10 @@ jobs:
         run: uv run --locked python -m unittest discover -s ../../.github/tests -p test_3989_b62_worker_probe_parallel.py -q
       - name: Real Worker/Pyodide probes (all four, parallel, fail-closed)
         # Retain all parallel probes on Python/Worker/mixed/unknown changes.
-        if: ${{ needs.registry-ci-plan.outputs.scope != 'static_only' }}
+        # Pure Python test-module edits cannot change deployed Worker bytes or
+        # its locked dependencies. Still vendor, audit locks and bundle Worker;
+        # all source/Worker/mixed/CI/unknown changes retain all four live probes.
+        if: ${{ needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'tests_only' }}
         run: bash ../../.github/scripts/b62_worker_probe_parallel.sh
       - name: Prove Core vendored for Python Worker
         run: |
