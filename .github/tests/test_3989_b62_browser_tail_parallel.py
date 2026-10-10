@@ -29,7 +29,7 @@ class BrowserQATailContract(unittest.TestCase):
             "b62_glass_zoom_visual_qa.py",
             "b62_chat_gutter_visual_qa.py",
         ))
-        self.assertEqual(tail.MAX_PARALLEL, 2)
+        self.assertEqual(tail.MAX_PARALLEL, 1)
         self.assertEqual(tail.TIMEOUT_SECONDS, 240)
         for name in tail.SCRIPTS:
             self.assertTrue((tail.SCRIPT_DIR / name).is_file(), name)
@@ -94,7 +94,7 @@ class BrowserQATailContract(unittest.TestCase):
                 observed.append(name)
                 active += 1
                 maximum = max(maximum, active)
-            time.sleep(0.025)
+            time.sleep(0.01)
             with lock:
                 active -= 1
             return name, (1 if name == tail.SCRIPTS[1] else 0), 0.025, "source-evidence\n"
@@ -105,7 +105,8 @@ class BrowserQATailContract(unittest.TestCase):
                 with redirect_stdout(out):
                     self.assertEqual(tail.main(), 1)
         self.assertCountEqual(observed, tail.SCRIPTS)
-        self.assertEqual(maximum, 2)
+        self.assertEqual(maximum, 1)
+        self.assertEqual(observed, list(tail.SCRIPTS))
         self.assertIn("B62_VISUAL_TAIL_EXECUTED=3", out.getvalue())
         self.assertIn("B62_VISUAL_TAIL_FAIL_COUNT=1", out.getvalue())
 

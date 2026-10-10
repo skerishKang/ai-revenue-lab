@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""#3989: run independent B62 visual evidence suites with bounded concurrency.
+"""#3989: run all B62 visual evidence suites without concurrent Chromium processes.
 
 The preceding eight browser-qa scripts retain their original sequential steps.
-Only these three page-local visual suites run concurrently: each opens its own
+These three page-local visual suites run in their original sequential order: each opens its own
 Playwright browser/context and writes a unique prefixed screenshot/report family
 in the existing artifact folder. No suites or assertions are deleted.
 """
@@ -21,7 +21,7 @@ SCRIPTS = (
     "b62_glass_zoom_visual_qa.py",
     "b62_chat_gutter_visual_qa.py",
 )
-MAX_PARALLEL = 2
+MAX_PARALLEL = 1
 TIMEOUT_SECONDS = 240
 SCRIPT_DIR = Path(__file__).resolve().parent
 
@@ -52,10 +52,12 @@ def execute(script_name: str) -> tuple[str, int, float, str]:
 
 
 def main() -> int:
-    # A single CI job owns the server; at most two local browsers concurrently.
-    # Each child inherits the same mock-only environment as the original steps.
+    # #4101: GitHub-hosted 2-core runners dropped to 6.6/7.8 FPS when
+    # shell and zoom Chromium processes overlapped. Serialize on this
+    # runner; keep all three full suites, reports and hard failure fan-in.
+    # Each child inherits the mock-only environment of the original steps.
     assert len(SCRIPTS) == len(set(SCRIPTS)) == 3
-    assert 1 < MAX_PARALLEL < len(SCRIPTS)
+    assert MAX_PARALLEL == 1 and len(SCRIPTS) == 3
     if os.environ.get("PADIEM_CHAT_RUNTIME_MODE") != "mock":
         print("B62_VISUAL_TAIL_REJECTED=NON_MOCK_RUNTIME", flush=True)
         return 1
