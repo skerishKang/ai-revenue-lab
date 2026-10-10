@@ -61,10 +61,10 @@ class OperationsGuardBatchContract(unittest.TestCase):
         for target in (*ORIGINAL_PYTEST_TARGETS[1:5],
                        *ORIGINAL_PYTEST_TARGETS[6:], BATCH_CONTRACT):
             with self.subTest(target=target):
-                self.assertEqual(block.count("\\n            " + target), 1)
+                self.assertEqual(block.count("\n            " + target), 1)
         # The two independently owned suites are not needlessly re-collected.
         for target in (ORIGINAL_PYTEST_TARGETS[0], ORIGINAL_PYTEST_TARGETS[5]):
-            self.assertNotIn("\\n            " + target, block)
+            self.assertNotIn("\n            " + target, block)
         for forbidden in (
             "--ignore", "--deselect", "--continue-on-collection-errors",
             " -x ", " -k ", " --lf", "--last-failed", "--maxfail",
