@@ -37,6 +37,16 @@ class GuidedIsolatedContract(unittest.TestCase):
                 "POST","https://quick-quote-kr.pages.dev"+path),"continue")
         self.assertEqual(module.routing_decision(
             "GET","https://quick-quote-kr.pages.dev/index.html"),"continue")
+    def test_sender_company_profile_one_chips_contract(self):
+        # The approved CompanyProfile owns sender identity, so the Guided
+        # wizard offers only the single Continue chip, not the legacy trio.
+        root=PATH.parents[1]
+        source=(root/"scripts"/"b66_cgi_final_handoff_smoke.py").read_text(encoding="utf-8")
+        ui=(root.parent/"reference"/"business-66-padiem-quote-v1"/"easy-mode.js").read_text(encoding="utf-8")
+        self.assertIn('_click_chip_index(page, index=0, expected_count=1, stage="sender_current")', source)
+        self.assertIn("function approvedRuntimeSender()", ui)
+        self.assertIn('setChips([{ label: "다음으로", action: () => processGuidedInput("현재") }]);', ui)
+
     def test_real_browser_and_virtual_slot(self):
         src=PATH.read_text(encoding="utf-8")
         self.assertIn('base._guided(page,counters)',src)

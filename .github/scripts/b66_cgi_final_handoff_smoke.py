@@ -781,7 +781,7 @@ def _guided(page, counters: Counters) -> None:
     _click_chip_index(page, index=1, expected_count=2, stage="items_done")
     _click_chip_index(page, index=0, expected_count=4, stage="tax_exclusive")
     _click_chip_index(page, index=0, expected_count=1, stage="memo_none")
-    _click_chip_index(page, index=0, expected_count=3, stage="sender_current")
+    _click_chip_index(page, index=0, expected_count=1, stage="sender_current")
     _click_chip_index(page, index=0, expected_count=3, stage="finish")
     page.wait_for_function(
         """() => {
