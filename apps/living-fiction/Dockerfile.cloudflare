@@ -12,8 +12,10 @@ WORKDIR /srv/living-fiction
 
 COPY . .
 
-RUN python -m pip install --upgrade pip \
-    && python -m pip install ".[postgres]"
+# The official Python 3.13 slim base already ships pip. A redundant
+# upgrade checks the network without changing the installed version on the
+# verified baseline, while the full postgres dependency install remains.
+RUN python -m pip install --disable-pip-version-check ".[postgres]"
 
 EXPOSE 8080
 
