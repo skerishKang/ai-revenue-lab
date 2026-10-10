@@ -13,7 +13,7 @@ from io import BytesIO
 
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Font
-import pytest
+import unittest
 
 from kagent.artifact_lineage import LineageArtifactRef
 from kagent.artifact_registration import register_canonical_artifact
@@ -146,136 +146,137 @@ def execute(source=None, editor=None, verifier=None, renderer=None, **updates):
     return revise_and_render_local_xlsx_pdf(**args)
 
 
-def test_real_xlsx_edit_semantics_and_canonical_pdf_lineage():
-    source = synthetic_source()
-    original_bytes, original_digest = source.content, sha256(source.content).hexdigest()
-    result = execute(source=source)
-    assert isinstance(result, LocalRevisedXlsxPdf)
-    assert source.content == original_bytes
-    assert sha256(source.content).hexdigest() == original_digest
-    actual = load_workbook(BytesIO(result.revised_bytes), data_only=False).active
-    assert actual["A1"].value == "New School"
-    assert actual["B2"].value == 99_200_000
-    assert actual["B3"].value == "=B2*0.1"
-    assert actual["B4"].value == "=B2+B3"
-    assert actual["A1"].font.bold is True
-    assert "A5:C5" in str(actual.merged_cells)
-    assert result.revised.integrity_ref == sha256(result.revised_bytes).hexdigest()
-    assert result.pdf.integrity_ref == sha256(PDF).hexdigest()
-    assert result.lineage.source.artifact_id == source.record.artifact_id
-    assert result.lineage.source.integrity_ref == original_digest
-    assert result.lineage.working_artifact_id == result.revised.artifact_id
-    assert result.lineage.output_artifact_ids == (result.pdf.artifact_id,)
-    for record, content in (
-        (result.revised, result.revised_bytes), (result.pdf, result.pdf_bytes)
-    ):
-        ref = LineageArtifactRef(record.artifact_id, record.integrity_ref)
-        material = result.resolve_artifact_material(ref, workspace_ref=WORKSPACE, run_ref=RUN)
-        assert material is not None
-        assert material.content == content
-        assert result.resolve_artifact_material(
-            ref, workspace_ref="foreign_workspace", run_ref=RUN
+class ReviewedXlsxRevisionContractTests(unittest.TestCase):
+    def test_real_xlsx_edit_semantics_and_canonical_pdf_lineage(self):
+        source = synthetic_source()
+        original_bytes, original_digest = source.content, sha256(source.content).hexdigest()
+        result = execute(source=source)
+        assert isinstance(result, LocalRevisedXlsxPdf)
+        assert source.content == original_bytes
+        assert sha256(source.content).hexdigest() == original_digest
+        actual = load_workbook(BytesIO(result.revised_bytes), data_only=False).active
+        assert actual["A1"].value == "New School"
+        assert actual["B2"].value == 99_200_000
+        assert actual["B3"].value == "=B2*0.1"
+        assert actual["B4"].value == "=B2+B3"
+        assert actual["A1"].font.bold is True
+        assert "A5:C5" in str(actual.merged_cells)
+        assert result.revised.integrity_ref == sha256(result.revised_bytes).hexdigest()
+        assert result.pdf.integrity_ref == sha256(PDF).hexdigest()
+        assert result.lineage.source.artifact_id == source.record.artifact_id
+        assert result.lineage.source.integrity_ref == original_digest
+        assert result.lineage.working_artifact_id == result.revised.artifact_id
+        assert result.lineage.output_artifact_ids == (result.pdf.artifact_id,)
+        for record, content in (
+            (result.revised, result.revised_bytes), (result.pdf, result.pdf_bytes)
+        ):
+            ref = LineageArtifactRef(record.artifact_id, record.integrity_ref)
+            material = result.resolve_artifact_material(ref, workspace_ref=WORKSPACE, run_ref=RUN)
+            assert material is not None
+            assert material.content == content
+            assert result.resolve_artifact_material(
+                ref, workspace_ref="foreign_workspace", run_ref=RUN
+            ) is None
+            assert result.resolve_artifact_material(
+                ref, workspace_ref=WORKSPACE, run_ref="foreign_run"
+            ) is None
+        projection = result.public_projection()
+        assert projection["drive_write_authorized"] is False
+        assert projection["pdf_fidelity_attested"] is False
+        assert projection["raw_document_bytes"] is False
+        assert not PRODUCTION_REVISION_HOST_COMPOSED
+        assert not PRODUCTION_DRIVE_WRITE_AUTHORIZED
+        assert "Existing School" not in str(projection)
+
+
+    def test_unknown_source_or_wrong_run_denied_before_edit(self):
+        editor = TrustedEditor()
+        source = synthetic_source()
+        for kwargs in (
+            {"workspace_ref": "foreign_workspace"},
+            {"run_ref": "other_run"},
+            {"source": replace(source, content=source.content + b"tampered")},
+            {"source": replace(source, route=replace(source.route, reason="model_claim"))},
+        ):
+            with self.assertRaises(ContractError):
+                execute(editor=editor, **kwargs)
+        assert editor.calls == 0
+
+
+    def test_verification_refusal_prevents_pdf_and_registration(self):
+        editor = TrustedEditor()
+        verifier = IndependentVerifier(accepted=False)
+        renderer = FakePdfRenderer()
+        with self.assertRaisesRegex(ContractError, "requested-only"):
+            execute(editor=editor, verifier=verifier, renderer=renderer)
+        assert editor.calls == verifier.calls == 1
+        assert renderer.calls == 0
+
+
+    def test_duplicate_or_unreviewed_edits_rejected_before_execution(self):
+        editor = TrustedEditor()
+        for edits in (
+            (),
+            EDITS + (EDITS[0],),
+            EDITS * (MAX_REVISIONS // 2 + 1),
+            ("not an edit",),
+        ):
+            with self.assertRaises(ContractError):
+                execute(edits=edits, editor=editor)
+        assert editor.calls == 0
+        for args in (
+            ("Quote", "B3", "=B2*0.1", "100"),
+            ("Quote", "A1", "School", "=EVIL()"),
+            ("Quote", "A1", "School", "-EVIL()"),
+            ("Quote", "A1", "School", "School"),
+            ("Quote", "A0", 1, 2),
+            ("Quote", "A1", True, 2),
+        ):
+            with self.assertRaises(ContractError):
+                ReviewedCellRevision(*args)
+
+
+    def test_invalid_editor_or_invalid_pdf_fail_closed(self):
+        class Unchanged:
+            def revise_xlsx_copy(self, data, edits):
+                return data
+
+        class Corrupt:
+            def revise_xlsx_copy(self, data, edits):
+                return b"not an xlsx"
+
+        for editor in (Unchanged(), Corrupt(), object()):
+            with self.assertRaises(ContractError):
+                execute(editor=editor)
+        for pdf in (b"", b"no pdf", b"%PDF-1.4\nmissing eof"):
+            with self.assertRaises(ContractError):
+                execute(renderer=FakePdfRenderer(pdf))
+
+
+    def test_duplicate_artifact_id_rejected_pre_execution(self):
+        editor = TrustedEditor()
+        with self.assertRaises(ContractError):
+            execute(editor=editor, revised_artifact_id="quote_source_3933")
+        assert editor.calls == 0
+
+
+    def test_tampered_output_material_refused(self):
+        result = execute()
+        ref = LineageArtifactRef(result.pdf.artifact_id, result.pdf.integrity_ref)
+        assert replace(result, pdf_bytes=PDF + b"spoof").resolve_artifact_material(
+            ref, workspace_ref=WORKSPACE, run_ref=RUN
         ) is None
-        assert result.resolve_artifact_material(
-            ref, workspace_ref=WORKSPACE, run_ref="foreign_run"
+        assert replace(result, pdf=replace(result.pdf, workspace_ref="foreign_workspace")).resolve_artifact_material(
+            ref, workspace_ref=WORKSPACE, run_ref=RUN
         ) is None
-    projection = result.public_projection()
-    assert projection["drive_write_authorized"] is False
-    assert projection["pdf_fidelity_attested"] is False
-    assert projection["raw_document_bytes"] is False
-    assert not PRODUCTION_REVISION_HOST_COMPOSED
-    assert not PRODUCTION_DRIVE_WRITE_AUTHORIZED
-    assert "Existing School" not in str(projection)
+        assert replace(result, lineage=replace(result.lineage, run_ref="other_run")).resolve_artifact_material(
+            ref, workspace_ref=WORKSPACE, run_ref=RUN
+        ) is None
 
 
-def test_unknown_source_or_wrong_run_denied_before_edit():
-    editor = TrustedEditor()
-    source = synthetic_source()
-    for kwargs in (
-        {"workspace_ref": "foreign_workspace"},
-        {"run_ref": "other_run"},
-        {"source": replace(source, content=source.content + b"tampered")},
-        {"source": replace(source, route=replace(source.route, reason="model_claim"))},
-    ):
-        with pytest.raises(ContractError):
-            execute(editor=editor, **kwargs)
-    assert editor.calls == 0
-
-
-def test_verification_refusal_prevents_pdf_and_registration():
-    editor = TrustedEditor()
-    verifier = IndependentVerifier(accepted=False)
-    renderer = FakePdfRenderer()
-    with pytest.raises(ContractError, match="requested-only"):
-        execute(editor=editor, verifier=verifier, renderer=renderer)
-    assert editor.calls == verifier.calls == 1
-    assert renderer.calls == 0
-
-
-def test_duplicate_or_unreviewed_edits_rejected_before_execution():
-    editor = TrustedEditor()
-    for edits in (
-        (),
-        EDITS + (EDITS[0],),
-        EDITS * (MAX_REVISIONS // 2 + 1),
-        ("not an edit",),
-    ):
-        with pytest.raises(ContractError):
-            execute(edits=edits, editor=editor)
-    assert editor.calls == 0
-    for args in (
-        ("Quote", "B3", "=B2*0.1", "100"),
-        ("Quote", "A1", "School", "=EVIL()"),
-        ("Quote", "A1", "School", "-EVIL()"),
-        ("Quote", "A1", "School", "School"),
-        ("Quote", "A0", 1, 2),
-        ("Quote", "A1", True, 2),
-    ):
-        with pytest.raises(ContractError):
-            ReviewedCellRevision(*args)
-
-
-def test_invalid_editor_or_invalid_pdf_fail_closed():
-    class Unchanged:
-        def revise_xlsx_copy(self, data, edits):
-            return data
-
-    class Corrupt:
-        def revise_xlsx_copy(self, data, edits):
-            return b"not an xlsx"
-
-    for editor in (Unchanged(), Corrupt(), object()):
-        with pytest.raises(ContractError):
-            execute(editor=editor)
-    for pdf in (b"", b"no pdf", b"%PDF-1.4\nmissing eof"):
-        with pytest.raises(ContractError):
-            execute(renderer=FakePdfRenderer(pdf))
-
-
-def test_duplicate_artifact_id_rejected_pre_execution():
-    editor = TrustedEditor()
-    with pytest.raises(ContractError):
-        execute(editor=editor, revised_artifact_id="quote_source_3933")
-    assert editor.calls == 0
-
-
-def test_tampered_output_material_refused():
-    result = execute()
-    ref = LineageArtifactRef(result.pdf.artifact_id, result.pdf.integrity_ref)
-    assert replace(result, pdf_bytes=PDF + b"spoof").resolve_artifact_material(
-        ref, workspace_ref=WORKSPACE, run_ref=RUN
-    ) is None
-    assert replace(result, pdf=replace(result.pdf, workspace_ref="foreign_workspace")).resolve_artifact_material(
-        ref, workspace_ref=WORKSPACE, run_ref=RUN
-    ) is None
-    assert replace(result, lineage=replace(result.lineage, run_ref="other_run")).resolve_artifact_material(
-        ref, workspace_ref=WORKSPACE, run_ref=RUN
-    ) is None
-
-
-def test_stale_formula_cache_never_called_verified_pdf():
-    result = execute()
-    assert result.public_projection()["pdf_fidelity_attested"] is False
-    # Formula AST preserved; no claim of Excel recalc/cache or printed values.
-    wb = load_workbook(BytesIO(result.revised_bytes), data_only=False)
-    assert wb.active["B3"].value == "=B2*0.1"
+    def test_stale_formula_cache_never_called_verified_pdf(self):
+        result = execute()
+        assert result.public_projection()["pdf_fidelity_attested"] is False
+        # Formula AST preserved; no claim of Excel recalc/cache or printed values.
+        wb = load_workbook(BytesIO(result.revised_bytes), data_only=False)
+        assert wb.active["B3"].value == "=B2*0.1"
