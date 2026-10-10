@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import inspect
 import re
+from collections.abc import Mapping
 from collections.abc import Callable
 from dataclasses import dataclass
 
@@ -99,20 +100,38 @@ def web_xlsx_confirmation_spec() -> ToolSpec:
 
 def build_web_xlsx_p01_tool_binding(
     selection_resolver: Callable[[str], TrustedWebXlsxSelectionScope | None],
+    *, approved_selection_resolver: Callable[[str], TrustedWebXlsxSelectionScope | None] | None = None,
 ) -> EngineToolBinding:
     if not callable(selection_resolver):
         raise ValueError("trusted selection source is required")
 
-    async def confirm_only(arguments: dict) -> dict:
-        selected = selection_resolver(arguments["selection_ref"])
+    async def verify_exact_source(arguments: dict, *, post_approval: bool = False) -> bool:
+        if not isinstance(arguments, Mapping):
+            return False
+        selection_ref = arguments.get("selection_ref")
+        if not isinstance(selection_ref, str):
+            return False
+        resolver = approved_selection_resolver if post_approval and approved_selection_resolver is not None else selection_resolver
+        selected = resolver(selection_ref)
         if inspect.isawaitable(selected):
             selected = await selected
-        if not isinstance(selected, TrustedWebXlsxSelectionScope):
-            raise ValueError("selected source unavailable")
-        if any(getattr(selected, key) != arguments[key] for key in _FIELDS):
-            raise ValueError("selected source does not match")
-        if not selected.original_immutable or not selected.source_active:
-            raise ValueError("selected source expired")
+        return bool(
+            isinstance(selected, TrustedWebXlsxSelectionScope)
+            and all(getattr(selected, key) == arguments.get(key) for key in _FIELDS)
+            and selected.original_immutable is True
+            and selected.source_active is True
+            and arguments.get("original_immutable") is True
+            and arguments.get("read_content") is False
+            and arguments.get("drive_write") is False
+            and arguments.get("local_pc_access") is False
+            and arguments.get("source_kind") == "browser_upload"
+            and arguments.get("operation") == "read_for_workcopy"
+        )
+
+    async def confirm_only(arguments: dict) -> dict:
+        # Defense in depth: source state must still match AFTER approval.
+        if not await verify_exact_source(arguments, post_approval=True):
+            raise ValueError("verified source scope changed")
         return {
             "p01_intent_confirmed": True,
             "source_sha256": arguments["source_sha256"],
@@ -157,6 +176,7 @@ def build_web_xlsx_p01_tool_binding(
             compiled=compiled, authorization=auth,
         )},
         authorization_provider=None, resource_policy=ToolResourcePolicy(),
+        invocation_preflight=verify_exact_source,
     )
 
 
@@ -165,11 +185,14 @@ def with_web_xlsx_p01_tool_binding(
     *,
     enabled: bool = False,
     selection_resolver: Callable[[str], TrustedWebXlsxSelectionScope | None] | None = None,
+    approved_selection_resolver: Callable[[str], TrustedWebXlsxSelectionScope | None] | None = None,
 ) -> Callable[[str], EngineToolBinding | None] | None:
     # No authenticated host resolver: no runtime feature registration.
     if enabled is not True or not callable(selection_resolver):
         return base_resolver
-    binding = build_web_xlsx_p01_tool_binding(selection_resolver)
+    binding = build_web_xlsx_p01_tool_binding(
+        selection_resolver, approved_selection_resolver=approved_selection_resolver,
+    )
 
     def resolve(app_id: str) -> EngineToolBinding | None:
         if app_id == APP_ID:

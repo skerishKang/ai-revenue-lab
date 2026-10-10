@@ -49,4 +49,4 @@ async def test_real_tool_runtime_issues_canonical_web_xlsx_confirmation_pause():
     assert pause["requirement"] == "user_confirmation"
     assert pause["approval_scope"] == []  # Core ToolExecution pause projects no scopes; ToolSpec.auth_scope gates runtime
     assert tool["continuation_ref"].startswith("cont_")
-    assert called == []  # no R2 bytes or source read before user approval
+    assert called == [scope.selection_ref]  # server metadata preflight; no R2 bytes or handler execution

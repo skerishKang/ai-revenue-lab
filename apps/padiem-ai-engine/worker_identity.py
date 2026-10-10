@@ -41,6 +41,8 @@ from app.capability_manifest import set_posture_overrides
 from app.approval_verifier import AuthenticatedFirstPartyApprovalDecisionVerifier
 from app.approval_smoke_binding import with_approval_smoke_binding
 from app.hark_office_p01_tool_binding import with_hark_office_p01_tool_binding
+from app.web_xlsx_p01_tool_binding import with_web_xlsx_p01_tool_binding
+from app.web_xlsx_p01_trusted_scope_d1 import D1WebXlsxTrustedScopeResolver
 from app.attachment_byte_store import CloudflareD1ImageByteStore, ScopedImageByteStore
 from app.attachment_admission_service import (
     ATTACHMENT_ADMISSION_PATH,
@@ -880,6 +882,31 @@ def _agent_skill_service_for_env(
     )
 
 
+def _with_web_xlsx_trusted_scope_for_env(env: Any, base_resolver: Any) -> Any:
+    """#3580 optional Engine-only B62 D1 read authority, never browser claims.
+
+    The deployment binding must be a read-only connection to the canonical
+    B62 metadata database, not the Engine D1 continuation database. This
+    composition is OFF by default and does not itself enable tool resume.
+    """
+    if legacy_worker._binding_value(
+        env, "PADIEM_WEB_XLSX_P01_ENGINE_SCOPE_ENABLED"
+    ) != "true":
+        return base_resolver
+    binding = legacy_worker._binding_value(env, "WEB_XLSX_PRIVATE_B62_D1")
+    try:
+        source = D1WebXlsxTrustedScopeResolver(binding)
+    except (TypeError, ValueError):
+        return base_resolver
+    approved_source = D1WebXlsxTrustedScopeResolver(
+        binding, required_status="waiting_p01",
+    )
+    return with_web_xlsx_p01_tool_binding(
+        base_resolver, enabled=True, selection_resolver=source,
+        approved_selection_resolver=approved_source,
+    )
+
+
 async def _engine_services_for_env(env: Any) -> EngineServices:
     # Preview-lane posture only. Every other isolate clears the override, so the
     # declared capability truth is untouched outside a marked pilot isolate.
@@ -1002,6 +1029,13 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
     # The absent deployment-owned flag retains the original resolver identity.
     # No Bridge/Resident/file authority is created by enabling this tool.
     tool_binding_resolver = with_hark_office_p01_tool_binding(
+        env, tool_binding_resolver,
+    )
+    # #3580 Engine independently re-reads the SAME private B62 D1 tables.
+    # A configured but missing/invalid D1 binding NEVER enables XLSX P01.
+    # Operator must prove actual B62 D1 identity before setting this flag;
+    # merely trusting browser-supplied owner/hash is forbidden.
+    tool_binding_resolver = _with_web_xlsx_trusted_scope_for_env(
         env, tool_binding_resolver,
     )
     return EngineServices(
