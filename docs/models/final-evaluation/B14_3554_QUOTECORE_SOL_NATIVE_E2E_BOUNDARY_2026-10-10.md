@@ -1,5 +1,9 @@
 # B14 #3554 — SenseNova/Kira quotation → QuoteCore → Sol 6.1 E2E evidence boundaries
 
+<!-- KIRA_LIVE_QKR_504_20261010 -->
+**Latest Kira actual QKR-008 availability (2026-10-10 18:31 KST):** The Owner-approved **single** real Production B14 `kira/qwen3.8-flash-free` QKR-008 request returned **HTTP 504 after 11,094ms**, attempt 1, retry/fallback 0, with **no answer** to grade. The previous synthetic QKR-008→QuoteCore mock Sol test remains **OFFLINE PASS**; it does **not** mean Kira actually solved the 12-row input. Status is now `REAL_KIRA_QKR_ATTEMPTED_TIMEOUT_504`, `REAL_KIRA_QKR_ACCURACY=UNSCORABLE`, not `KIRA_QKR_PASS` or reasoning score zero. [Bounded incident evidence](B14_KIRA_QKR008_ONE_SHOT_504_2026-10-10.md).
+<!-- /KIRA_LIVE_QKR_504_20261010 -->
+
 **Checked:** 2026-10-10 KST. **Current result: OFFLINE BOUNDARY CONTRACT PASS; CUSTOMER NATIVE SOL PDF E2E NOT VERIFIED.** These are different gates; do not infer an operating PDF generator from a client-side cache.
 
 ## 1. Evidence matrix and division of ownership
