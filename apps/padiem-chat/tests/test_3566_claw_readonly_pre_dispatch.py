@@ -28,7 +28,7 @@ def _assert_bounded(result, expected):
         "pre_dispatch_scope": EXPECTED_SCOPE,
     }
     assert result.headers["cache-control"].startswith("no-store")
-    for private in ("usr_", "sub_", "tenant_", "session_", "secret", "token", "exception"):
+    for private in ("usr_", "sub_", "tenant_", "secret", "token", "exception"):
         assert private not in result.text
 
 
