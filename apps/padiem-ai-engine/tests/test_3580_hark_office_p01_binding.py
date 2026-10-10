@@ -41,13 +41,14 @@ class _NeverProvider:
         raise AssertionError("provider cannot run during deterministic P01 approval")
 
 
-def _engine(binding):
+def _engine(binding, *, receipt_sink=None):
     store = InMemoryContinuationStore()
     service = OrchestrationEngineService(
         runtime_factory=lambda _: _NeverProvider(),
         b14_service_bound=True, continuation_store=store,
         approval_decision_verifier=AuthenticatedFirstPartyApprovalDecisionVerifier(),
         tool_binding_resolver=lambda app_id: binding if app_id == APP_ID else None,
+        approved_office_read_sink=receipt_sink,
     )
     return service, store
 
@@ -183,3 +184,182 @@ async def test_toolruntime_denies_cross_scope_and_forbidden_extra_arguments():
                 authority.compiled.runtime_profile, confirmed,
             )
         assert exc.value.code == "invalid_tool_arguments"
+
+class _VerifiedReceiptSink:
+    def __init__(self, *, persist=True):
+        self.persist = persist
+        self.receipts = []
+
+    async def record_verified_office_read(self, receipt):
+        from app.hark_office_p01_receipt import ApprovedOfficeReadReceipt
+        assert isinstance(receipt, ApprovedOfficeReadReceipt)
+        self.receipts.append(receipt)
+        return self.persist
+
+
+async def _actual_approved_office_resume(*, listing, sink, outcome="approved"):
+    binding = build_hark_office_p01_tool_binding()
+    engine, store = _engine(binding, receipt_sink=sink)
+    payload = _payload(binding, listing=listing)
+    paused = await engine.orchestrate_payload(
+        payload, trusted_office_run_id=payload["tool_arguments"]["step_1"]["run_id"],
+    )
+    assert paused.status_code == 200, paused.body
+    continuation_ref = paused.body["orchestration"]["continuation_ref"]
+    record = store.resolve(app_id=APP_ID, continuation_ref=continuation_ref)
+    submission = {
+        "decision_id": "decision_hark_receipt_" + ("list" if listing else "read"),
+        "pause_id": record.pause.pause_id,
+        "outcome": outcome,
+        "authority_ref": "trusted_user_session",
+        "evidence_ref": "first_party_verified_session",
+        "decided_at": min(datetime.now(timezone.utc), record.pause.expires_at).isoformat(),
+    }
+    resumed = {
+        k: v for k, v in payload.items()
+        if k not in {"require_evidence", "require_verification"}
+    }
+    resumed["continuation_ref"] = continuation_ref
+    resumed["decision"] = submission
+    result = await engine.resume_payload(resumed)
+    return result, engine, store, resumed, continuation_ref
+
+
+@pytest.mark.asyncio
+async def test_only_actually_verified_consumed_read_emits_private_office_receipt():
+    sink = _VerifiedReceiptSink()
+    result, engine, store, replay, ref = await _actual_approved_office_resume(
+        listing=False, sink=sink,
+    )
+    assert result.status_code == 200, result.body
+    assert len(sink.receipts) == 1
+    receipt = sink.receipts[0]
+    assert receipt.pause.run_id == _args(listing=False)["run_id"]
+    assert receipt.request_fingerprint == "b" * 64
+    assert receipt.verified_decision.outcome.value == "approved"
+    assert receipt.continuation_ref == ref
+    assert receipt.safe_dict()["device_permission_granted"] is False
+    assert receipt.safe_dict()["resident_dispatched"] is False
+    assert "verified_decision" not in str(result.body)
+    assert "first_party_verified_session" not in str(result.body)
+    replayed = await engine.resume_payload(replay)
+    assert replayed.status_code != 200
+    assert len(sink.receipts) == 1
+
+
+@pytest.mark.asyncio
+async def test_list_approval_never_becomes_selected_file_read_receipt():
+    sink = _VerifiedReceiptSink()
+    outcome, *_ = await _actual_approved_office_resume(listing=True, sink=sink)
+    assert outcome.status_code == 200
+    assert sink.receipts == []
+
+
+@pytest.mark.asyncio
+async def test_denied_office_read_never_emits_receipt():
+    sink = _VerifiedReceiptSink()
+    outcome, *_ = await _actual_approved_office_resume(
+        listing=False, sink=sink, outcome="denied",
+    )
+    assert outcome.status_code != 200
+    assert sink.receipts == []
+
+
+@pytest.mark.asyncio
+async def test_failed_private_receipt_storage_fail_closed_after_consumed():
+    sink = _VerifiedReceiptSink(persist=False)
+    outcome, engine, store, replay, ref = await _actual_approved_office_resume(
+        listing=False, sink=sink,
+    )
+    assert outcome.status_code == 503
+    assert outcome.body["error"]["code"] == "office_approval_receipt_unavailable"
+    assert len(sink.receipts) == 1
+    another = await engine.resume_payload(replay)
+    assert another.status_code != 200
+    assert len(sink.receipts) == 1
+
+
+def test_approved_receipt_is_immutable_and_exact_digest_only():
+    from dataclasses import replace
+    from datetime import timedelta
+    from app.hark_office_p01_receipt import ApprovedOfficeReadReceipt
+    from padiem_ai_core.agent_approval import (
+        ApprovalOutcome, ApprovalPause, ApprovalRequirement,
+        VerifiedApprovalDecision, tool_invocation_digest,
+    )
+    now = datetime.now(timezone.utc)
+    args = _args(listing=False)
+    pause = ApprovalPause(
+        pause_id="pause_receipt_3580", run_id=args["run_id"],
+        agent_runtime_id="agent_receipt_3580", tool_id=READ_TOOL_ID,
+        invocation_sha256=tool_invocation_digest(
+            ToolInvocation(tool_id=READ_TOOL_ID, arguments=args)
+        ),
+        requirement=ApprovalRequirement.USER_CONFIRMATION,
+        step_index=1, created_at=now - timedelta(minutes=3),
+        expires_at=now + timedelta(minutes=3),
+        approval_scope=(FILE_SCOPE,),
+    )
+    decision = VerifiedApprovalDecision(
+        decision_id="dec_receipt_3580",
+        pause_id=pause.pause_id,
+        outcome=ApprovalOutcome.APPROVED,
+        authority_ref="trusted_engine",
+        evidence_ref="first_party_verified",
+        decided_at=now,
+    )
+    receipt = ApprovedOfficeReadReceipt(
+        app_id=APP_ID, continuation_ref="cont_real_receipt_3580",
+        pause=pause, verified_decision=decision,
+        exact_tool_arguments=tuple(sorted(args.items())),
+    )
+    assert receipt.pause.invocation_sha256 == pause.invocation_sha256
+    for mutation in (
+        {"path_relative": "another.xlsx"},
+        {"run_id": "foreign_user_run"},
+        {"request_fingerprint": "c"*64},
+        {"path_relative": "../secrets.xlsx"},
+        {"directory_enumeration": True},
+    ):
+        tampered = {**args, **mutation}
+        with pytest.raises(ValueError):
+            replace(receipt, exact_tool_arguments=tuple(sorted(tampered.items())))
+    with pytest.raises(ValueError):
+        replace(receipt, verified_decision=replace(
+            decision, outcome=ApprovalOutcome.DENIED,
+        ))
+
+@pytest.mark.asyncio
+async def test_trusted_engine_office_run_requires_exact_registered_request_identity():
+    binding = build_hark_office_p01_tool_binding()
+    engine, store = _engine(binding, receipt_sink=_VerifiedReceiptSink())
+    request = _payload(binding, listing=False)
+    foreign = await engine.orchestrate_payload(
+        request, trusted_office_run_id="run_other_owner",
+    )
+    assert foreign.status_code == 409
+    assert foreign.body["error"]["code"] == "office_run_identity_mismatch"
+    wrong_shape = await engine.orchestrate_payload(
+        request, trusted_office_run_id="../outside",
+    )
+    assert wrong_shape.status_code == 409
+    # Public JSON cannot smuggle the keyword into the private call.
+    request["trusted_office_run_id"] = _args(listing=False)["run_id"]
+    denied = await engine.orchestrate_payload(request)
+    assert denied.status_code == 400
+    assert denied.body["error"]["code"] == "invalid_request"
+
+
+@pytest.mark.asyncio
+async def test_unconfigured_sink_does_not_export_any_private_approval():
+    binding = build_hark_office_p01_tool_binding()
+    engine, store = _engine(binding)
+    payload = _payload(binding, listing=False)
+    result = await engine.orchestrate_payload(payload)
+    assert result.status_code == 200
+    assert result.body["orchestration"]["execution"]["metadata"]["status"] == "paused"
+    record = store.resolve(
+        app_id=APP_ID,
+        continuation_ref=result.body["orchestration"]["continuation_ref"],
+    )
+    assert record.pause.run_id.startswith("bridge_run_")
