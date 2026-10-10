@@ -102,6 +102,54 @@ def test_spoofed_upstream_alias_does_not_inherit_original_card(monkeypatch):
     assert item.official_source_url is None
 
 
+def test_google_ai_studio_free_quota_snapshot_has_four_exact_models():
+    """Historical account-observed quota and model-card output are separate."""
+    indexed = {item.model_id: item for item in registered_serving_evidence()}
+    expected = {
+        "google/gemini-3.1-flash-lite": (15, 250000, 500),
+        "google/gemini-3.5-flash-lite": (15, 250000, 500),
+        "google/gemma-4-26b-a4b-it": (30, 16000, 14400),
+        "google/gemma-4-31b-it": (30, 16000, 14400),
+    }
+    for model_id, (rpm, input_tpm, rpd) in expected.items():
+        model = indexed[model_id]
+        snapshot = model.google_ai_studio_free_tier_observed
+        assert snapshot is not None
+        assert (snapshot.rpm, snapshot.input_tpm, snapshot.rpd) == (rpm, input_tpm, rpd)
+        assert snapshot.observed_on == "2026-10-09"
+        assert snapshot.scope == "per_model_per_project"
+        assert snapshot.source == "owner_reported_google_ai_studio_rate_limit"
+        # Limits on request count/input tokens are not an output-token budget.
+        assert model.serving_model_max_output is None
+        assert model.output_limit_status == "UNKNOWN"
+    for model_id in set(indexed) - set(expected):
+        assert indexed[model_id].google_ai_studio_free_tier_observed is None
+
+
+def test_fake_google_serving_origin_disables_quota_snapshot(monkeypatch):
+    data = deepcopy(read_registry())
+    data["providers"]["google"]["base_origin"] = "https://other-provider.example/v1"
+    monkeypatch.setattr(evidence_api, "read_registry", lambda: data)
+    for item in registered_serving_evidence():
+        assert item.google_ai_studio_free_tier_observed is None
+
+
+def test_renamed_served_upstream_must_not_inherit_stale_quota(monkeypatch):
+    data = deepcopy(read_registry())
+    target = next(x for x in data["models"] if x["id"] == "google/gemini-3.5-flash-lite")
+    target["upstream_model"] = "gemini-3.5-flash-lite-special"
+    monkeypatch.setattr(evidence_api, "read_registry", lambda: data)
+    item = next(x for x in registered_serving_evidence() if x.model_id == target["id"])
+    assert item.google_ai_studio_free_tier_observed is None
+
+
+def test_immutable_quota_observation_is_not_live_mutable_limit():
+    snapshot = registered_serving_evidence()[2].google_ai_studio_free_tier_observed
+    assert snapshot is not None
+    with pytest.raises(FrozenInstanceError):
+        snapshot.rpd = 50000
+
+
 def test_native_options_remain_only_exact_registered_documented_allowlists():
     evidence = registered_serving_evidence()
     assert {x.model_id for x in evidence if x.native_override_fields} == set(_SUPPORTED)
