@@ -8,13 +8,14 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from padiem_ai_core import (
-    AgentExecutionBudget, ApprovalPolicy, BoundedAgentDefinition,
-    ToolAuthorizationContext, ToolRegistrySnapshot, ToolResourcePolicy,
-    ToolRuntime, ToolRuntimeBinding, ToolSideEffect, ToolSpec,
-    TrustedAgentRuntimePolicy, compile_agent_profile,
+from padiem_ai_core.agent_definition import AgentExecutionBudget, BoundedAgentDefinition
+from padiem_ai_core.agent_profile_adapter import (
+    ToolRuntimeBinding, TrustedAgentRuntimePolicy, compile_agent_profile,
 )
-from padiem_ai_core.tool_registry import RegisteredTool
+from padiem_ai_core.contracts import ApprovalPolicy, ToolSideEffect, ToolSpec
+from padiem_ai_core.tool_runtime import ToolAuthorizationContext, ToolRuntime
+from padiem_ai_core.tool_registry import RegisteredTool, ToolRegistrySnapshot
+from padiem_ai_core.tool_resource_policy import ToolResourcePolicy
 from app.tool_projection import EngineToolBinding, TrustedToolAuthority
 
 ENABLE_ENV = "PADIEM_ENGINE_HARK_OFFICE_P01_ENABLED"
