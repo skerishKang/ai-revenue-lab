@@ -803,6 +803,7 @@ def build_resident_host(
     acceptance_request_id: str = "",
     acceptance_request_fingerprint: str = "",
     browser_open_host: Any | None = None,
+    approved_office_pairs: Any | None = None,
 ) -> LocalAgentResidentRuntimeHost:
     """Construct *the* resident host, once, on the redeemed binding."""
 
@@ -883,6 +884,22 @@ def build_resident_host(
         acceptance_request_id=acceptance_request_id,
         host=browser_open_host,
     )
+    # #3580: only a deployment-injected trusted P01/Office producer may
+    # opt into post-ACK byte staging. Ordinary pairing/env/browser/model cannot
+    # supply a file path or mint Google Drive WRITE consent.
+    office_staging = None
+    if approved_office_pairs is not None:
+        from .local_office_chunk_publisher import LocalOfficeChunkPublisher
+        from .local_resident_office_delivery import ResidentOfficePairPublisher
+        from .local_agent_control_plane_https import StdlibPinnedHttpsJsonRequestPort
+
+        office_staging = ResidentOfficePairPublisher(
+            approved_pairs=approved_office_pairs,
+            publisher=LocalOfficeChunkPublisher(
+                transport=StdlibPinnedHttpsJsonRequestPort(),
+                config=config,
+            ),
+        )
     # #3140 stall diagnosis: the facts a stalled SQLite open would have produced,
     # reported only once the store is actually ready. No path, no handle.
     try:
@@ -912,6 +929,7 @@ def build_resident_host(
         session_id_factory=entry.session_id_factory,
         heartbeat_interval_seconds=30,
         session_ttl_seconds=900,
+        office_staging=office_staging,
     )
     _observe_phase("host_build_host_done")
     return host
