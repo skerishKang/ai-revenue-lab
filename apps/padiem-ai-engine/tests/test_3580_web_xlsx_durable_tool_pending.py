@@ -138,7 +138,7 @@ async def test_real_pause_is_single_durable_row_with_exact_tool_hash():
 
 
 @pytest.mark.asyncio
-async def test_cross_isolate_denial_consumes_once_without_tool_work():
+async def test_cross_isolate_denial_requires_real_owner_receipt():
     db = database()
     tool = await pause(service(db))
     fresh_worker = service(db)
@@ -147,12 +147,12 @@ async def test_cross_isolate_denial_consumes_once_without_tool_work():
         "decision": decision(tool),
     }
     refused = await fresh_worker.resume_payload(req)
-    assert refused.status_code == 409
-    assert refused.body["error"]["code"] == "approval_denied"
+    assert refused.status_code == 403
+    assert refused.body["error"]["code"] == "web_xlsx_owner_grant_unavailable"
     row = db.execute("SELECT state FROM padiem_web_xlsx_tool_continuations").fetchone()
-    assert row["state"] == "consumed"
-    replay = await service(db).resume_payload(req)
-    assert replay.status_code == 409
+    assert row["state"] == "active"
+    # Genuine first-party owner denial is covered by the cross-D1 test
+    # test_3580_web_xlsx_owner_approval_grant.py.
     db.close()
 
 
@@ -168,15 +168,14 @@ async def test_cross_isolate_approved_grant_is_not_a_wire_self_grant():
     blocked = await service(db).resume_payload(req)
     assert blocked.status_code in (403, 409)
     assert db.execute("SELECT state FROM padiem_web_xlsx_tool_continuations").fetchone()["state"] == "active"
-    # In this isolated test ONLY, a server-side grant provider represents
-    # the independently verified first-party decision not yet wired for prod.
-    approved = await service(db, grant=True).resume_payload(req)
-    assert approved.status_code == 200, approved.body
-    assert approved.body["tool"]["status"] == "completed"
-    assert approved.body["tool"]["output"]["read_executed"] is False
-    assert db.execute("SELECT state FROM padiem_web_xlsx_tool_continuations").fetchone()["state"] == "consumed"
-    again = await service(db, grant=True).resume_payload(req)
-    assert again.status_code == 409
+    # A standalone server-side user_confirmed_tools flag no longer bypasses
+    # the Engine's independent B62 owner decision receipt guard (#3580).
+    # The genuine positive cross-isolate path is covered by
+    # test_3580_web_xlsx_owner_approval_grant.py with both D1 stores.
+    still_blocked = await service(db, grant=True).resume_payload(req)
+    assert still_blocked.status_code == 403
+    assert still_blocked.body["error"]["code"] == "web_xlsx_owner_grant_unavailable"
+    assert db.execute("SELECT state FROM padiem_web_xlsx_tool_continuations").fetchone()["state"] == "active"
     db.close()
 
 

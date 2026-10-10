@@ -898,6 +898,14 @@ class Default(WorkerEntrypoint):
                         runtime_mode=settings.runtime_mode,
                     )
                 )
+                # Explicit independent gate; no browser decision endpoint
+                # activation merely because XLSX pause dispatch is enabled.
+                _worker_app.state.web_xlsx_p01_owner_decision_client = (
+                    _worker_app.state.web_xlsx_p01_pause_client
+                    if getattr(
+                        self.env, "PADIEM_WEB_XLSX_P01_OWNER_DECISION_ENABLED", None
+                    ) == "true" else None
+                )
                 _worker_app.state.claw_live_sse_enabled = (
                     settings.runtime_mode == "b14"
                     and getattr(self.env, "PADIEM_CLAW_P01_LIVE_SSE_ENABLED", None) == "true"

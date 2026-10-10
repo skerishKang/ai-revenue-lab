@@ -185,3 +185,94 @@ def test_closed_engine_pause_projection_rejects_old_or_fabricated_protocol():
         bad["tool"][key] = val
         with pytest.raises(WebXlsxP01RequestError):
             parse_engine_pause(bad, original=scope_request)
+
+
+@pytest.mark.asyncio
+async def test_owner_decision_uses_only_fixed_private_tool_resume_route():
+    from kagent.p01_approval_continuation import build_first_party_decision_submission
+    submission = build_first_party_decision_submission(
+        pause_id="pause:" + "b"*32,
+        decision="approve",
+        owner_id=scope().owner_id,
+    )
+    cont = "cont_" + "c"*32
+    engine = EngineBinding(
+        result={
+            "ok": True, "tool": {
+                "canonical_tool_id": "tool:padiem:web-xlsx-confirm@1",
+                "status": "completed", "continuation_ref": cont,
+                "output": {
+                    "p01_intent_confirmed": True, "read_executed": False,
+                    "workcopy_created": False,
+                },
+            },
+        }, status=200,
+    )
+    result = await client(engine).resume_owner_decision(
+        continuation_ref=cont, submission=submission,
+    )
+    assert result == {"ok": True, "status": "confirmed"}
+    assert len(engine.calls) == 1
+    wire = engine.factories[0]
+    assert wire["url"].endswith("/internal/v1/tools/resume")
+    assert wire["url"].startswith("https://")
+    data = json.loads(wire["body"])
+    assert set(data) == {"app_id", "continuation_ref", "decision"}
+    assert data["app_id"] == "padiem-web-xlsx-p01"
+    assert data["decision"] == submission
+    assert data["continuation_ref"] == cont
+    assert not any(k in wire["body"] for k in ("tool_arguments", "source_sha256", "local_pc_access"))
+
+
+@pytest.mark.asyncio
+async def test_owner_decision_denial_is_real_engine_consumed_409():
+    from kagent.p01_approval_continuation import build_first_party_decision_submission
+    engine = EngineBinding(
+        result={"ok": False, "error": {"code": "approval_denied"}},
+        status=409,
+    )
+    submission = build_first_party_decision_submission(
+        pause_id="pause:" + "b"*32,
+        decision="deny", owner_id=scope().owner_id,
+    )
+    result = await client(engine).resume_owner_decision(
+        continuation_ref="cont_" + "c"*32, submission=submission,
+    )
+    assert result == {"ok": True, "status": "denied"}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("status,body", [
+    (200, {"ok": True, "tool": {"status": "completed", "canonical_tool_id": "other"}}),
+    (202, {"ok": True, "tool": {"status": "paused"}}),
+    (403, {"ok": False, "error": {"code": "web_xlsx_owner_grant_unavailable"}}),
+    (409, {"ok": False, "error": {"code": "invalid_decision"}}),
+])
+async def test_owner_decision_rejects_all_unverified_engine_responses(status, body):
+    from kagent.p01_approval_continuation import build_first_party_decision_submission
+    engine = EngineBinding(result=body, status=status)
+    submission = build_first_party_decision_submission(
+        pause_id="pause:" + "b"*32,
+        decision="approve", owner_id=scope().owner_id,
+    )
+    with pytest.raises(WebXlsxP01RequestError):
+        await client(engine).resume_owner_decision(
+            continuation_ref="cont_" + "c"*32, submission=submission,
+        )
+    assert len(engine.calls) == 1
+
+
+@pytest.mark.asyncio
+async def test_owner_decision_rejects_injected_engine_authority_before_fetch():
+    binding = EngineBinding()
+    for bogus in (
+        {"pause_id": "pause:" + "b"*32, "outcome": "approved", "tool_id": "other"},
+        {"outcome": "approved"},
+        {"decision_id": "bad", "pause_id": "bad", "outcome": "other",
+         "authority_ref": "fake", "evidence_ref": "fake", "decided_at": "today"},
+    ):
+        with pytest.raises(WebXlsxP01RequestError):
+            await client(binding).resume_owner_decision(
+                continuation_ref="cont_" + "c"*32, submission=bogus,
+            )
+    assert binding.calls == []

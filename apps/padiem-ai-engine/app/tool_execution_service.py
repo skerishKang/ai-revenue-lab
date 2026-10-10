@@ -29,7 +29,7 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import Callable, Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timedelta, timezone
 import inspect
 import json
@@ -45,7 +45,9 @@ from padiem_ai_core.agent_approval import (
     ContinuationStatus,
 )
 from padiem_ai_core.tool_lifecycle import ToolLifecycleEvent, ToolLifecycleKind
-from padiem_ai_core.tool_runtime import ToolExecutionResult, ToolInvocation, ToolRuntimeError
+from padiem_ai_core.tool_runtime import (
+    ToolAuthorizationContext, ToolExecutionResult, ToolInvocation, ToolRuntimeError,
+)
 
 from app.orchestration_service import (
     ApprovalDecisionVerifier,
@@ -127,6 +129,7 @@ class ToolExecutionEngineService:
         tool_binding_resolver: Callable[[str], EngineToolBinding | None] | None = None,
         approval_decision_verifier: ApprovalDecisionVerifier | None = None,
         continuation_store: ContinuationStore | None = None,
+        web_xlsx_owner_approval_grant: Callable[..., Any] | None = None,
     ) -> None:
         if tool_binding_resolver is not None and not callable(tool_binding_resolver):
             raise ValueError("tool_binding_resolver must be callable")
@@ -148,6 +151,13 @@ class ToolExecutionEngineService:
         self._approval_decision_verifier = approval_decision_verifier
         self._continuation_store = continuation_store
         self._continuation_store_is_explicit = continuation_store is not None
+        if web_xlsx_owner_approval_grant is not None:
+            from app.approval_verifier import AuthenticatedFirstPartyApprovalDecisionVerifier
+            if (not callable(web_xlsx_owner_approval_grant)
+                    or not isinstance(approval_decision_verifier, AuthenticatedFirstPartyApprovalDecisionVerifier)
+                    or not callable(getattr(continuation_store, 'load_tool_pending', None))):
+                raise ValueError('web XLSX grant requires first-party verifier and durable tool store')
+        self._web_xlsx_owner_approval_grant = web_xlsx_owner_approval_grant
         self._pending: dict[str, _PendingToolContinuation] = {}
 
     # ------------------------------------------------------------------
@@ -610,6 +620,40 @@ class ToolExecutionEngineService:
                 status_code=409,
             )
 
+        if app_id == "padiem-web-xlsx-p01" and state.status in (
+            ContinuationStatus.DENIED, ContinuationStatus.RESUMABLE,
+        ):
+            # Both owner approvals AND denials require independent B62 D1
+            # signed-in owner receipt evidence before consuming or granting.
+            guard = self._web_xlsx_owner_approval_grant
+            if (guard is None
+                    or pending.canonical_agent_id != "agent:padiem:web-xlsx-confirm@1"
+                    or pending.canonical_tool_id != "tool:padiem:web-xlsx-confirm@1"
+                    or pending.invocation.tool_id != "workspace.xlsx.confirm_original_read"):
+                return _service_error(
+                    "web_xlsx_owner_grant_unavailable",
+                    "Independent owner decision authority is unavailable.",
+                    status_code=403,
+                )
+            try:
+                permitted = guard(
+                    pause=record.pause, decision=decision,
+                    invocation=pending.invocation, continuation_ref=continuation_ref,
+                )
+                if inspect.isawaitable(permitted):
+                    permitted = await permitted
+            except Exception:
+                return _service_error(
+                    "web_xlsx_owner_grant_unavailable",
+                    "Owner decision authority could not be checked.",
+                    status_code=503,
+                )
+            if permitted is not True:
+                return _service_error(
+                    "web_xlsx_owner_grant_denied",
+                    "This XLSX decision does not match the authenticated owner.",
+                    status_code=403,
+                )
         if state.status is ContinuationStatus.DENIED:
             return await self._consume_denied(app_id, continuation_ref, record)
         if state.status is not ContinuationStatus.RESUMABLE:
@@ -643,6 +687,17 @@ class ToolExecutionEngineService:
                     "continuation_identity_mismatch",
                     "The paused invocation no longer matches the trusted binding.",
                     status_code=409,
+                )
+            if app_id == "padiem-web-xlsx-p01":
+                # The owner decision was independently checked before claim.
+                # Grant ONLY the one original-read confirmation ToolSpec.
+                authority = replace(
+                    authority, authorization=ToolAuthorizationContext(
+                        app_id=app_id,
+                        agent_id=authority.compiled.runtime_profile.id,
+                        granted_auth_scopes=authority.authorization.granted_auth_scopes,
+                        user_confirmed_tools=("workspace.xlsx.confirm_original_read",),
+                    ),
                 )
             response, result, runtime_error = await self._execute_via_core(
                 binding=binding,

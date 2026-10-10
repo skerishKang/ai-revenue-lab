@@ -44,6 +44,7 @@ from app.hark_office_p01_tool_binding import with_hark_office_p01_tool_binding
 from app.web_xlsx_p01_tool_binding import with_web_xlsx_p01_tool_binding
 from app.web_xlsx_p01_trusted_scope_d1 import D1WebXlsxTrustedScopeResolver
 from app.web_xlsx_tool_pending_d1 import D1WebXlsxToolPendingStore
+from app.web_xlsx_p01_owner_approval_d1 import D1WebXlsxOwnerApprovalGrant
 from app.attachment_byte_store import CloudflareD1ImageByteStore, ScopedImageByteStore
 from app.attachment_admission_service import (
     ATTACHMENT_ADMISSION_PATH,
@@ -1057,6 +1058,19 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         env, tool_binding_resolver,
     )
     web_xlsx_pending_store = _web_xlsx_tool_pending_for_env(env)
+    web_xlsx_owner_grant = None
+    if (web_xlsx_pending_store is not None
+            and legacy_worker._binding_value(
+                env, "PADIEM_WEB_XLSX_P01_OWNER_DECISION_ENABLED"
+            ) == "true"):
+        # The Engine must read the canonical B62 owner decision receipt
+        # independently. The Service Binding credential is not owner consent.
+        try:
+            web_xlsx_owner_grant = D1WebXlsxOwnerApprovalGrant(
+                legacy_worker._binding_value(env, "WEB_XLSX_PRIVATE_B62_D1")
+            )
+        except (ValueError, TypeError):
+            web_xlsx_owner_grant = None
     return EngineServices(
         completed=EngineService(
             runtime_factory=runtime_factory,
@@ -1126,6 +1140,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
                 AuthenticatedFirstPartyApprovalDecisionVerifier()
                 if web_xlsx_pending_store is not None else None
             ),
+            web_xlsx_owner_approval_grant=web_xlsx_owner_grant,
         ),
         # #1964 source slice: replay composes only the same trusted durable
         # adapter as execution; without it the route fails closed (503).

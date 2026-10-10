@@ -114,6 +114,74 @@ class CloudflareWebXlsxP01EngineClient:
             raise WebXlsxP01RequestError("Engine did not issue a P01 pause")
         return body
 
+    async def resume_owner_decision(
+        self, *, continuation_ref: str, submission: dict[str, Any],
+    ) -> dict[str, Any]:
+        """One private Engine continuation; no tool or arguments in resume.
+
+        The owner session and continuation are independently looked up in B62
+        private D1 by the caller. The Engine still has to verify the decision
+        and issue a server-only ToolRuntime confirmation grant.
+        """
+        from .claw_web_xlsx_p01_request import _CONT
+        if (not isinstance(continuation_ref, str)
+                or not _CONT.fullmatch(continuation_ref)
+                or not isinstance(submission, dict)
+                or set(submission) != {
+                    "decision_id", "pause_id", "outcome", "authority_ref",
+                    "evidence_ref", "decided_at",
+                }
+                or submission.get("outcome") not in ("approved", "denied")):
+            raise WebXlsxP01RequestError("invalid trusted owner decision")
+        encoded = json.dumps(
+            {"app_id": _APP, "continuation_ref": continuation_ref,
+             "decision": submission},
+            separators=(",", ":"), ensure_ascii=False,
+        )
+        if len(encoded.encode("utf-8")) > _MAX_BODY_BYTES:
+            raise WebXlsxP01RequestError("owner decision exceeds internal bound")
+        req = self._request_factory(
+            f"{ENGINE_INTERNAL_ORIGIN}/internal/v1/tools/resume",
+            method="POST",
+            headers={
+                "content-type": "application/json", "accept": "application/json",
+                "x-padiem-engine-caller": self._caller_id,
+                "x-padiem-engine-credential": self._credential,
+            },
+            body=encoded,
+        )
+        try:
+            resp = await self._binding.fetch(req.js_object)
+            raw = await read_bounded_service_binding_body(
+                resp, max_bytes=_MAX_RESPONSE_BYTES,
+            )
+            status = int(resp.status)
+            response = json.loads(raw.decode("utf-8"))
+        except (ServiceBindingResponseError, ServiceBindingResponseTooLarge,
+                TypeError, ValueError, UnicodeDecodeError, AttributeError) as exc:
+            raise WebXlsxP01RequestError("private Engine decision response unavailable") from exc
+        # Engine rejects approval without its own first-party tool grant.
+        # Denial is a genuine consumed Core continuation (409), not a 200.
+        if (submission["outcome"] == "denied"
+                and status == 409 and isinstance(response, dict)
+                and response.get("ok") is False
+                and isinstance(response.get("error"), dict)
+                and response["error"].get("code") == "approval_denied"):
+            return {"ok": True, "status": "denied"}
+        if (submission["outcome"] == "approved"
+                and status == 200 and isinstance(response, dict)
+                and response.get("ok") is True
+                and isinstance(response.get("tool"), dict)
+                and response["tool"].get("canonical_tool_id") == _TOOL
+                and response["tool"].get("status") == "completed"
+                and response["tool"].get("continuation_ref") == continuation_ref
+                and isinstance(response["tool"].get("output"), dict)
+                and response["tool"]["output"].get("p01_intent_confirmed") is True
+                and response["tool"]["output"].get("read_executed") is False
+                and response["tool"]["output"].get("workcopy_created") is False):
+            return {"ok": True, "status": "confirmed"}
+        raise WebXlsxP01RequestError("Engine did not verify owner P01 outcome")
+
 
 WEB_XLSX_P01_TOOL_DISPATCH_FLAG = "PADIEM_WEB_XLSX_P01_TOOL_DISPATCH_ENABLED"
 
