@@ -1,12 +1,13 @@
-"""Run the complete KAgent unittest suite once, in two isolated local processes.
+"""Run the complete KAgent unittest suite once, in three isolated local processes.
 
 No coverage selection or sample mode: the controller discovers *every* unittest
 case, proves an exact disjoint partition by test ID, and independently verifies
 both child discoveries before allowing either suite to run. All skipped,
 failed and import-error cases remain part of the normal unittest result.
 
-The heavy HWPX group uses one child; the rest uses another. Separate Python
-processes avoid cross-worker module monkeypatch/global state contamination.
+The four heavy HWPX modules are split into two independent children, and
+all remaining tests run in a third child. Separate Python processes avoid
+cross-worker module monkeypatch/global state contamination.
 This is parallelism inside the *same* GitHub Actions runner: no new billed jobs.
 """
 
@@ -20,15 +21,16 @@ import tempfile
 import unittest
 from pathlib import Path
 
-_HEAVY_MODULES = frozenset(
-    {
-        "test_hwpx_skill_create",
-        "test_hwpx_skill_edit",
-        "test_hwpx_skill_insert_table",
-        "test_hwpx_skill_template_fill",
-    }
-)
-_GROUPS = ("heavy", "rest")
+_GROUP_MODULES = {
+    "hwpx_create_fill": frozenset(
+        {"test_hwpx_skill_create", "test_hwpx_skill_template_fill"}
+    ),
+    "hwpx_edit_table": frozenset(
+        {"test_hwpx_skill_edit", "test_hwpx_skill_insert_table"}
+    ),
+}
+_ALL_HEAVY_MODULES = frozenset().union(*_GROUP_MODULES.values())
+_GROUPS = ("hwpx_create_fill", "hwpx_edit_table", "rest")
 
 
 def _flatten(suite: unittest.TestSuite):
@@ -49,10 +51,16 @@ def _discover() -> list[unittest.case.TestCase]:
 def _select(tests: list[unittest.case.TestCase], group: str):
     if group not in _GROUPS:
         raise ValueError("unknown KAgent test group")
+    if group == "rest":
+        return [
+            test
+            for test in tests
+            if test.id().split(".", 1)[0] not in _ALL_HEAVY_MODULES
+        ]
     return [
         test
         for test in tests
-        if (test.id().split(".", 1)[0] in _HEAVY_MODULES) == (group == "heavy")
+        if test.id().split(".", 1)[0] in _GROUP_MODULES[group]
     ]
 
 
@@ -109,7 +117,7 @@ def _controller() -> int:
     discovered = _discover()
     groups = {group: _select(discovered, group) for group in _GROUPS}
     expected = len(discovered)
-    if not groups["heavy"] or not groups["rest"]:
+    if any(not tests for tests in groups.values()):
         print("KAGENT_PARALLEL_EMPTY_PARTITION", file=sys.stderr)
         return 2
     if sum(len(tests) for tests in groups.values()) != expected:
@@ -166,7 +174,7 @@ def _controller() -> int:
         if any(code != 0 for _, code, _ in results):
             print("KAGENT_PARALLEL_FAILURE", file=sys.stderr)
             return 1
-    print(f"KAGENT_FULL_SUITE_PASS total={expected} groups=2", flush=True)
+    print(f"KAGENT_FULL_SUITE_PASS total={expected} groups=3", flush=True)
     return 0
 
 
