@@ -66,6 +66,8 @@ class TestEngineLLPathOwnership:
             "scripts/experiments/benchmark_padiem_fetch_providers.py",
             SELF_PATH,
             ".github/workflows/living-learning-padiem-core-ci.yml",
+            ".github/scripts/living_learning_core_parallel_3989.sh",
+            ".github/tests/test_3989_living_learning_parallel_scope.py",
         )
 
     def test_no_dropped_core_or_cross_product_regression(self):
