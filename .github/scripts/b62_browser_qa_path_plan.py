@@ -67,6 +67,7 @@ PLAN_FILES = frozenset(
         ".github/workflows/b62-glass-animation-timing-certification.yml",
         ".github/tests/test_3989_b62_glass_timing_ownership.py",
         ".github/tests/test_3989_b62_owner_leaf_browser_base.py",
+        ".github/tests/test_3989_b62_headless_shell_install.py",
         ".github/ci/b62_browser_qa_paths.json",
     }
 )

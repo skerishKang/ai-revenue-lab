@@ -28,7 +28,7 @@ class B62BrowserCacheContractTests(unittest.TestCase):
                 self.assertEqual(block.count("Cache pinned Playwright Chromium"), 1)
                 self.assertEqual(block.count("actions/cache@v4"), 1)
                 self.assertIn("path: ~/.cache/ms-playwright", block)
-                self.assertIn("key: b62-playwright-1.55.0-", block)
+                self.assertIn("key: b62-playwright-headless-shell-1.55.0-", block)
                 self.assertIn("runner.os", block)
                 self.assertIn("runner.arch", block)
                 self.assertLess(
