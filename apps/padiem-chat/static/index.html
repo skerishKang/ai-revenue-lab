@@ -489,6 +489,18 @@
             <p class="claw-local-block-title" id="clawLocalApprovalTitle" data-locale-key="claw-local-approval-title">승인이 필요합니다</p>
             <p class="claw-local-block-body" id="clawLocalApprovalBody" data-locale-key="claw-local-approval-pending">이 작업을 진행하려면 먼저 승인이 필요합니다.</p>
           </div>
+          <section class="claw-local-block" id="clawOfficeChooser" aria-labelledby="clawOfficeChooserTitle">
+            <p class="claw-local-block-title" id="clawOfficeChooserTitle">로컬 견적서 찾기</p>
+            <p class="claw-local-block-body">현재 작업의 승인된 폴더에서 Excel 견적서 후보만 조회합니다. 파일을 읽거나 업로드하려면 별도의 승인이 필요합니다.</p>
+            <button type="button" id="clawOfficeFind" class="claw-local-cta">견적서 후보 조회</button>
+            <p id="clawOfficeNotice" role="status" aria-live="polite">컴퓨터 연결과 파일 목록 조회 승인이 필요합니다.</p>
+            <ul id="clawOfficeCandidates" class="claw-office-list" aria-label="견적서 후보 목록"></ul>
+            <div id="clawOfficeDecision" hidden>
+              <p id="clawOfficeDecisionLabel" role="status"></p>
+              <button type="button" id="clawOfficeApprove" class="claw-local-cta">파일 읽기 승인</button>
+              <button type="button" id="clawOfficeDeny">거절</button>
+            </div>
+          </section>
           <div class="claw-local-block" id="clawLocalStatus" role="status" hidden>
             <p class="claw-local-block-title" id="clawLocalStatusTitle" data-locale-key="claw-local-status-title">진행 상황</p>
             <p class="claw-local-block-body" id="clawLocalStatusBody"></p>
@@ -799,6 +811,7 @@
   <!-- #3094: the guarded handoff adapter. Loaded last so the #3084 projection
        seam installed by app.js already exists when it resolves its source. -->
   <script src="./claw-local-connect.js" defer></script>
+  <script src="./claw-office-chooser.js" defer></script>
   <script src="./claw-local-adapter.js"></script>
 </body>
 </html>
