@@ -459,22 +459,33 @@ class SolMultipage:
                 and any(abs(box[0]-x) < 0.01 for x in self.columns[1:-1])
                 and self.height-box[1] > self.body_top+0.001)
 
-    def _column_fragments(self, line: dict, last_bottom: float,
-                          include_summary: bool, include_body_art: bool) -> list[dict]:
+    def _column_fragments(self, line: dict) -> list[dict]:
+        """End interior column rules at ONE horizontal item-table edge.
+
+        Two regions are genuine page furniture for the source's own column rules:
+        the certified column-header separators above the item table, and the
+        payment-account panel rules below ``footer_top``. Everything between them
+        is owned by the generated grid in :meth:`_grid`, which draws the interior
+        rules across the actual row band and stops at the last row boundary.
+
+        Re-emitting the source's *middle* segments as well produced the two
+        presentational defects from this single cause: strokes that started inside
+        the band and stopped in mid-air above the payment panel, and item-column
+        lines running straight through the 소계/부가세/합계 block on the final page.
+        Shortening them somewhere else would leave a different partial stroke, so
+        this renderer emits neither of those segments on any page.
+
+        Outer frame rules are structural and are emitted whole by the caller.
+        """
         top, bottom = line["top"], self.height-line["box"][1]
-        intervals = [(top, min(bottom, self.body_top)),
-                     (max(top, last_bottom), bottom)]
+        x = line["box"][0]
         result = []
-        for lo, hi in intervals:
+        for lo, hi in ((top, min(bottom, self.body_top)),
+                       (max(top, self.footer_top), bottom)):
             if hi-lo <= 0.001:
                 continue
-            cuts = sorted({lo, hi, *(b for b in (self.totals_top, self.footer_top) if lo < b < hi)})
-            for start, end in zip(cuts, cuts[1:]):
-                if end-start <= 0.001 or not self._include(start, include_summary, include_body_art, False):
-                    continue
-                x = line["box"][0]
-                result.append({**line, "top": start,
-                               "box": [x, self._pdf(end), x, self._pdf(start)]})
+            result.append({**line, "top": lo,
+                           "box": [x, self._pdf(hi), x, self._pdf(lo)]})
         return result
 
     @staticmethod
@@ -641,7 +652,7 @@ class SolMultipage:
                     out += self._emit_line(prim)
                     continue
                 if self._is_body_column_rule(prim):
-                    for fragment in self._column_fragments(prim, last_bottom, include_summary, include_body_art):
+                    for fragment in self._column_fragments(prim):
                         out += self._emit_line(fragment)
                     continue
                 if (self._is_binding_underline(prim) or self._is_row_boundary_rule(prim)

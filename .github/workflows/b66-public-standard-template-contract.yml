@@ -38,5 +38,6 @@ jobs:
         run: >-
           python -B -m pytest -q -p no:cacheprovider
           apps/b66-sol61-multipage/tests/test_multipage_frame_regression.py
+          apps/b66-sol61-multipage/tests/test_multipage_composition_polish.py
           apps/b66-sol61-multipage/tests/test_multipage_image_regression.py::test_t1_operands_precede_their_operator
           -k 'not windows_real_pdf_smoke and not frozen_pre_fix_pdf and not top_occlusion_is_identical_to_the_certified_source'
