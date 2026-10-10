@@ -9,6 +9,7 @@ from dataclasses import replace
 from datetime import timedelta
 from hashlib import sha256
 from pathlib import Path
+import os
 import tempfile
 import unittest
 
@@ -127,7 +128,10 @@ class RealP01OfficePlanBridgeTests(unittest.TestCase):
         self.device = LocalAgentDeviceProfile(
             device_id="dev_host_1", workspace_ref="ws_host_1",
             platform=LocalAgentPlatform.WINDOWS,
-            roots=(LocalRoot(root_ref="root_repo", windows_path=str(root)),),
+            roots=(LocalRoot(
+                root_ref="root_repo",
+                windows_path=str(root) if os.name == "nt" else r"C:\padiem\synthetic-office-root",
+            ),),
         )
 
     def tearDown(self):
