@@ -370,7 +370,8 @@ class B14ChatRequest:
     # route silently widen into Router auto execution. Explicit generic auto
     # requests remain valid by passing model="b14/auto".
     model: str
-    temperature: float = 0.2
+    # Unspecified sampling must reach the exact provider as omission.
+    temperature: float | None = None
     max_tokens: int | None = None
     routing: B14RoutingOptions = field(default_factory=B14RoutingOptions)
     # Validated provider-native overrides. They are transmitted as TOP-LEVEL
@@ -389,14 +390,15 @@ class B14ChatRequest:
             raise ValueError(f"model must not exceed {MAX_B14_MODEL_CHARS} characters")
         object.__setattr__(self, "model", model)
 
-        if (
+        if self.temperature is not None and (
             isinstance(self.temperature, bool)
             or not isinstance(self.temperature, (int, float))
             or not math.isfinite(float(self.temperature))
             or not 0 <= float(self.temperature) <= 2
         ):
             raise ValueError("temperature must be between 0 and 2")
-        object.__setattr__(self, "temperature", float(self.temperature))
+        if self.temperature is not None:
+            object.__setattr__(self, "temperature", float(self.temperature))
 
         # PRODUCT_REQUESTED_LIMIT authority: explicit output budget must stay
         # within the product's explicit-request compatibility ceiling. The
@@ -424,8 +426,9 @@ class B14ChatRequest:
         payload: dict[str, Any] = {
             "model": self.model,
             "messages": [dict(message) for message in self.messages],
-            "temperature": self.temperature,
         }
+        if self.temperature is not None:
+            payload["temperature"] = self.temperature
         if self.max_tokens is not None:
             payload["max_tokens"] = self.max_tokens
         # Documented native fields go at the TOP LEVEL of the request body.

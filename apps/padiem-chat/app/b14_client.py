@@ -303,7 +303,7 @@ def _agent_profile(
         required_capabilities=required_capabilities,
         model_policy={
             "model": model,
-            "temperature": 0.2,
+            # Keep unchosen sampling absent: B14 honours provider native defaults.
             "allow_external_fallback": False,
             "max_attempts": 1,
             **({"max_retries": max_retries} if max_retries is not None else {}),
