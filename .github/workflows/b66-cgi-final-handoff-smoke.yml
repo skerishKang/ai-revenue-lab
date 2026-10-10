@@ -5,6 +5,8 @@ on:
     paths:
       - ".github/scripts/b66_cgi_final_handoff_smoke.py"
       - ".github/scripts/b66_cgi_freeform_one_shot.py"
+      - ".github/scripts/b66_cgi_guided_isolated_pdf.py"
+      - ".github/tests/test_b66_cgi_guided_isolated_pdf.py"
       - ".github/tests/test_b66_cgi_freeform_one_shot.py"
       - ".github/tests/test_b66_cgi_final_handoff_smoke.py"
       - ".github/workflows/b66-cgi-final-handoff-smoke.yml"
@@ -23,13 +25,14 @@ on:
           - b66_final_handoff
           - b66_freeform_one_shot
           - b66_partial_followup_one_shot
+          - b66_guided_isolated_pdf
           - b54_claw_owner_one_shot
       selected_model_id:
         description: "Exact owner-approved B14 ID to manually select for B66 final handoff (required in b66_final_handoff mode)"
         required: false
         type: string
       confirmation:
-        description: "Full RUN_B66_CGI_FINAL_HANDOFF_SMOKE; freeform RUN_B66_CGI_FREEFORM_ONE_SHOT; followup RUN_B66_CGI_PARTIAL_FOLLOWUP_ONE_SHOT"
+        description: "Full RUN_B66_CGI_FINAL_HANDOFF_SMOKE; freeform RUN_B66_CGI_FREEFORM_ONE_SHOT; followup RUN_B66_CGI_PARTIAL_FOLLOWUP_ONE_SHOT; Guided RUN_B66_CGI_GUIDED_ISOLATED_PDF"
         required: true
         type: string
 
@@ -72,6 +75,7 @@ jobs:
           python .github/scripts/b66_cgi_final_handoff_smoke.py --self-test
           python .github/tests/test_b66_cgi_final_handoff_smoke.py
           python .github/tests/test_b66_cgi_freeform_one_shot.py
+          python .github/tests/test_b66_cgi_guided_isolated_pdf.py
 
       - name: Pin bounded live contract
         shell: bash
@@ -104,6 +108,7 @@ jobs:
       ((inputs.mode == 'b66_final_handoff' && inputs.confirmation == 'RUN_B66_CGI_FINAL_HANDOFF_SMOKE') ||
        (inputs.mode == 'b66_freeform_one_shot' && inputs.confirmation == 'RUN_B66_CGI_FREEFORM_ONE_SHOT') ||
        (inputs.mode == 'b66_partial_followup_one_shot' && inputs.confirmation == 'RUN_B66_CGI_PARTIAL_FOLLOWUP_ONE_SHOT') ||
+       (inputs.mode == 'b66_guided_isolated_pdf' && inputs.confirmation == 'RUN_B66_CGI_GUIDED_ISOLATED_PDF') ||
        (inputs.mode == 'b54_claw_owner_one_shot' && inputs.confirmation == 'RUN_B66_CGI_FINAL_HANDOFF_SMOKE'))
     needs: source-contract
     runs-on: ubuntu-24.04
@@ -151,6 +156,8 @@ jobs:
           set -euo pipefail
           if [ "${{ inputs.mode }}" = "b54_claw_owner_one_shot" ]; then
             python .github/scripts/b66_cgi_final_handoff_smoke.py --claw-owner-one-shot
+          elif [ "${{ inputs.mode }}" = "b66_guided_isolated_pdf" ]; then
+            python .github/scripts/b66_cgi_guided_isolated_pdf.py
           elif [ "${{ inputs.mode }}" = "b66_freeform_one_shot" ] || [ "${{ inputs.mode }}" = "b66_partial_followup_one_shot" ]; then
             python .github/scripts/b66_cgi_freeform_one_shot.py
           else
