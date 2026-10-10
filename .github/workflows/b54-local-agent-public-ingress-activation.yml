@@ -151,9 +151,13 @@ jobs:
           state_worker_source = (root / "local_agent_broker_worker.py").read_text(encoding="utf-8")
           assert "PUBLIC_ENDPOINT_ADDED = False" in state_worker_source
           assert "ADMIN_BROKER_RPC_PUBLIC = False" in state_worker_source
-          assert 'LOCAL_AGENT_OFFICE_CHUNK_TRANSFER_ENABLED' in state_worker_source
-          assert 'else None' in state_worker_source
+          assert 'compose_broker_office_chunks(' in state_worker_source
           assert 'office_chunks=self.office_chunks' in state_worker_source
+          office_store_source = (root / "local_agent_broker_office_chunks.py").read_text(encoding="utf-8")
+          assert 'LOCAL_AGENT_OFFICE_CHUNK_TRANSFER_ENABLED' in office_store_source
+          assert '!= "true"' in office_store_source
+          assert 'return None' in office_store_source
+          assert 'def read_broker_office_part_rpc(' in office_store_source
 
           workflow = Path(".github/workflows/b54-local-agent-public-ingress-activation.yml").read_text(encoding="utf-8")
           pull_paths = workflow.split("pull_request:", 1)[1].split("workflow_dispatch:", 1)[0]
