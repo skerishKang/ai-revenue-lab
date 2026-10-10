@@ -1,15 +1,23 @@
 from __future__ import annotations
 
+import hashlib
 import inspect
 import re
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
+from io import BytesIO
 from typing import Any
+from zipfile import BadZipFile, ZipFile
+
+from padiem_ai_core.document_normalization import DocumentNormalizationError, validate_ooxml_archive
 
 SINGLE_FILE_MAX_BYTES = 10 * 1024 * 1024
 GENERATED_DOCUMENT_RETENTION_DAYS = 30
 DOCX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+XLSX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+MAX_WEB_XLSX_BYTES = 1_048_576
+WEB_XLSX_RETENTION = timedelta(days=1)
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _SAFE_FILENAME_RE = re.compile(r"[^A-Za-z0-9._-]+")
 
@@ -162,6 +170,35 @@ class D1ClawDocumentMetadataStore:
             document_id,
         )
 
+    async def list_web_xlsx(self, *, tenant_id: str, key_prefix: str,
+                            now: datetime, limit: int = 40) -> list[ClawDocumentMetadata]:
+        if type(limit) is not int or not 1 <= limit <= 40:
+            raise ValueError("bounded web office listing required")
+        stmt = self.db.prepare(
+            "SELECT document_id, tenant_id, object_key, filename, media_type, byte_length, created_at, expires_at "
+            "FROM claw_document_metadata WHERE tenant_id=? AND deleted_at IS NULL "
+            "AND substr(object_key, 1, length(?))=? AND expires_at>? "
+            "ORDER BY created_at DESC, document_id DESC LIMIT ?"
+        ).bind(tenant_id, key_prefix, key_prefix, now.isoformat(), limit)
+        result = await stmt.all()
+        if isinstance(result, (list, tuple)):
+            rows = result
+        elif isinstance(result, dict):
+            rows = result.get("results")
+        else:
+            rows = getattr(result, "results", None)
+            if rows is None:
+                try:
+                    rows = list(result)
+                except (TypeError, ValueError) as exc:
+                    raise WorkspaceStorageError("web Office metadata list is unavailable") from exc
+        if rows is None:
+            raise WorkspaceStorageError("web Office metadata list is unavailable")
+        records = [_row_to_dict(row) for row in rows]
+        if any(row is None for row in records):
+            raise WorkspaceStorageError("web Office metadata list is malformed")
+        return [_metadata_from_row(row) for row in records]
+
 
 async def _read_r2_object_bytes(obj: Any) -> bytes:
     """Read bytes from a real R2ObjectBody or a bytes-shaped test double."""
@@ -296,3 +333,120 @@ class WorkspaceDocumentStore:
         except Exception as exc:
             raise WorkspaceStorageError("workspace document deletion failed") from exc
         return True
+
+    # #3580 WEB-FIRST: user-selected XLSX ORIGINAL bytes. This is a storage
+    # surface, not P01 permission to process the workbook or Drive WRITE.
+    @staticmethod
+    def _web_xlsx_prefix(tenant_id: str, owner_id: str, workspace_id: str) -> str:
+        tenant = _safe_identifier("tenant_id", tenant_id)
+        owner = _safe_identifier("owner_id", owner_id)
+        workspace = _safe_identifier("workspace_id", workspace_id)
+        return f"workspaces/{tenant}/claw/web-office/{owner}/{workspace}/"
+
+    @staticmethod
+    def _web_xlsx_projection(metadata: ClawDocumentMetadata, prefix: str) -> dict[str, Any]:
+        relative = metadata.object_key.removeprefix(prefix)
+        parts = relative.split("/")
+        if (not metadata.object_key.startswith(prefix)
+                or len(parts) != 3 or parts[0] != metadata.document_id
+                or len(parts[1]) != 64 or not re.fullmatch(r"[0-9a-f]{64}", parts[1])
+                or parts[2] != metadata.filename
+                or metadata.media_type != XLSX_MEDIA_TYPE):
+            raise WorkspaceStorageError("web XLSX metadata scope invalid")
+        return {
+            "document_id": metadata.document_id,
+            "filename": metadata.filename,
+            "size_bytes": metadata.byte_length,
+            "source_sha256": parts[1],
+            "expires_at": metadata.expires_at.isoformat(),
+            "original_immutable": True,
+            "processing_authorized": False,
+        }
+
+    async def put_web_xlsx(self, *, tenant_id: str, owner_id: str,
+                           workspace_id: str, filename: str, body: bytes,
+                           now: datetime | None = None) -> dict[str, Any]:
+        prefix = self._web_xlsx_prefix(tenant_id, owner_id, workspace_id)
+        if (type(filename) is not str or not 1 <= len(filename) <= 155
+                or filename in (".", "..")
+                or filename != filename.strip()
+                or any(ord(ch) < 32 or ch in '<>:"/\\|?*' for ch in filename)
+                or not filename.lower().endswith(".xlsx")):
+            raise ValueError("bounded XLSX basename required")
+        if not isinstance(body, bytes) or not 0 < len(body) <= MAX_WEB_XLSX_BYTES:
+            raise ValueError("web Office XLSX exceeds upload limit")
+        try:
+            validate_ooxml_archive(body)
+            with ZipFile(BytesIO(body)) as archive:
+                members = set(archive.namelist())
+                if ("[Content_Types].xml" not in members
+                        or "xl/workbook.xml" not in members
+                        or not any(n.startswith("xl/worksheets/") and n.endswith(".xml")
+                                   for n in members)):
+                    raise ValueError("not an XLSX workbook")
+        except (DocumentNormalizationError, BadZipFile, ValueError) as exc:
+            raise ValueError("invalid or unsafe XLSX workbook") from exc
+        current = now or _utcnow()
+        if current.tzinfo is None or current.utcoffset() is None:
+            raise ValueError("aware timestamp required")
+        doc_id = _document_id()
+        digest = hashlib.sha256(body).hexdigest()
+        key = f"{prefix}{doc_id}/{digest}/{filename}"
+        metadata = ClawDocumentMetadata(
+            document_id=doc_id, tenant_id=tenant_id, object_key=key,
+            filename=filename, media_type=XLSX_MEDIA_TYPE,
+            byte_length=len(body), created_at=current,
+            expires_at=current + WEB_XLSX_RETENTION,
+        )
+        try:
+            written = self.r2_bucket.put(
+                key, body, httpMetadata={"contentType": XLSX_MEDIA_TYPE},
+            )
+            if inspect.isawaitable(written):
+                await written
+            await self.metadata_store.insert(metadata)
+        except Exception as exc:
+            try:
+                cleanup = self.r2_bucket.delete(key)
+                if inspect.isawaitable(cleanup):
+                    await cleanup
+            except Exception:
+                pass
+            raise WorkspaceStorageError("web XLSX write failed") from exc
+        return self._web_xlsx_projection(metadata, prefix)
+
+    async def list_web_xlsx(self, *, tenant_id: str, owner_id: str,
+                            workspace_id: str, now: datetime | None = None) -> list[dict[str, Any]]:
+        prefix = self._web_xlsx_prefix(tenant_id, owner_id, workspace_id)
+        current = now or _utcnow()
+        method = getattr(self.metadata_store, "list_web_xlsx", None)
+        if not callable(method):
+            raise WorkspaceStorageError("web XLSX metadata listing unavailable")
+        records = method(tenant_id=tenant_id, key_prefix=prefix, now=current)
+        if inspect.isawaitable(records):
+            records = await records
+        if not isinstance(records, list) or len(records) > 40:
+            raise WorkspaceStorageError("web XLSX metadata listing malformed")
+        return [self._web_xlsx_projection(row, prefix) for row in records]
+
+    async def get_web_xlsx(self, *, tenant_id: str, owner_id: str,
+                           workspace_id: str, document_id: str,
+                           now: datetime | None = None) -> tuple[dict[str, Any], bytes] | None:
+        prefix = self._web_xlsx_prefix(tenant_id, owner_id, workspace_id)
+        doc_id = _safe_identifier("document_id", document_id)
+        metadata = await self.metadata_store.get_active(doc_id)
+        if metadata is None or metadata.tenant_id != tenant_id:
+            return None
+        # Check owner/workspace + immutable content digest BEFORE touching R2.
+        if not metadata.object_key.startswith(prefix + doc_id + "/"):
+            return None
+        projection = self._web_xlsx_projection(metadata, prefix)
+        result = await self.get_for_tenant(
+            tenant_id=tenant_id, document_id=doc_id, now=now,
+        )
+        if result is None:
+            return None
+        _, payload = result
+        if hashlib.sha256(payload).hexdigest() != projection["source_sha256"]:
+            raise WorkspaceStorageError("web XLSX source digest mismatch")
+        return projection, payload
