@@ -149,10 +149,14 @@ class TestEnvBridge:
 
     def test_secret_binding_helper_is_used(self):
         src = WORKER_SRC.read_text()
-        assert "from app.pilot.worker_env import collect_env_overrides" in src
+        assert "from app.pilot.worker_env import (" in src
+        assert "bind_request_env," in src
+        assert "collect_env_overrides," in src
+        assert "reset_request_env," in src
         assert "await collect_env_overrides(self.env, _ENV_KEYS)" in src
         assert "for _env_key, _value in overrides.items()" in src
         assert "_os.environ[_env_key] = str(_value)" in src
+        assert "if _env_key in _NON_SECRET_ENV_KEYS:" in src
 
     def test_env_keys_defined(self):
         src = WORKER_SRC.read_text()

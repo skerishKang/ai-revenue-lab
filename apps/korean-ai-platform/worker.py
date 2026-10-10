@@ -95,16 +95,25 @@ class Default(WorkerEntrypoint):
                 },
             )
 
-        from app.pilot.worker_env import collect_env_overrides
+        from app.pilot.worker_env import (
+            bind_request_env,
+            collect_env_overrides,
+            reset_request_env,
+        )
 
         env_overrides = await collect_env_overrides(self.env, _ENV_KEYS)
 
-        # Apply Worker env bindings BEFORE app processes the request.
+        # Immutable deployment config remains bootstrapped once. Provider
+        # credentials are NEVER written to os.environ: bind them to the
+        # async request so concurrent requests and rotations cannot mix keys.
         if env_overrides:
             _apply_env_once(env_overrides)
-
-        native_resp = await asgi.fetch(app, request.js_object, self.env)
-        return _apply_security_headers(native_resp)
+        token = bind_request_env(env_overrides)
+        try:
+            native_resp = await asgi.fetch(app, request.js_object, self.env)
+            return _apply_security_headers(native_resp)
+        finally:
+            reset_request_env(token)
 
 
 # ---------------------------------------------------------------------------
@@ -158,11 +167,20 @@ def _apply_env_once(overrides: dict[str, str]) -> None:
     from app.pilot.registry import reset_registry
     reset_registry()
 
-    # Mirror the allow-listed Worker bindings into process environment so both
-    # legacy settings and generic platform-provider code observe the same
-    # deployment configuration. Secret values remain internal and are never
-    # logged or exposed in responses.
+    # Only non-secret deployment configuration may enter process globals.
+    # Never copy platform-owned API keys into os.environ: dynamic Secrets
+    # Store values belong exclusively to the request ContextVar above.
     import os as _os
 
+    _NON_SECRET_ENV_KEYS = {
+        "B14_PROVIDER_MODE",
+        "BUSINESS14_PROVIDER_REGISTRY_JSON",
+        "BUSINESS14_PILOT_BASE_URL",
+        "BUSINESS14_PILOT_MODEL_ID",
+        "BUSINESS14_PILOT_PROVIDER_ID",
+        "BUSINESS14_PILOT_UPSTREAM_MODEL",
+        "BUSINESS14_PILOT_TIMEOUT_SECONDS",
+    }
     for _env_key, _value in overrides.items():
-        _os.environ[_env_key] = str(_value)
+        if _env_key in _NON_SECRET_ENV_KEYS:
+            _os.environ[_env_key] = str(_value)
