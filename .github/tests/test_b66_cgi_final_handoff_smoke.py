@@ -29,6 +29,60 @@ class FinalHandoffSmokeContractTests(unittest.TestCase):
         self.assertEqual(module.RETRY, 0)
         self.assertEqual(module.FALLBACK, 0)
 
+    def test_guided_canary_preflight_preserves_any_existing_account_draft(self):
+        class Page:
+            def __init__(self, response):
+                self.response = response
+                self.requests = []
+            def evaluate(self, javascript):
+                self.requests.append(javascript)
+                return self.response
+
+        cases = (
+            ({"status": 200, "valid": True, "empty": True}, None),
+            ({"status": 200, "valid": True, "empty": False},
+             "guided_slot_preexisting_no_mutation"),
+            ({"status": 401, "valid": False, "empty": False},
+             "guided_slot_preflight_unavailable"),
+            ({"status": 503, "valid": False, "empty": False},
+             "guided_slot_preflight_unavailable"),
+        )
+        for response, expected in cases:
+            page = Page(response)
+            with self.subTest(expected=expected):
+                if expected is None:
+                    with redirect_stdout(io.StringIO()) as output:
+                        module._require_empty_guided_slot(page)
+                    self.assertIn("GUIDED_ACCOUNT_SLOT_EMPTY=PASS", output.getvalue())
+                else:
+                    with self.assertRaisesRegex(module.SmokeFailure, expected):
+                        module._require_empty_guided_slot(page)
+                self.assertEqual(len(page.requests), 1)
+                self.assertIn("method:'GET'", page.requests[0])
+                self.assertIn("credentials:'same-origin'", page.requests[0])
+                self.assertNotIn("DELETE", page.requests[0])
+                self.assertNotIn("PUT", page.requests[0])
+
+    def test_guided_first_input_explicitly_waits_for_async_d1_check(self):
+        class Page:
+            def __init__(self, failure=False):
+                self.failure = failure
+                self.waited = None
+            def wait_for_function(self, javascript, *, timeout):
+                self.waited = (javascript, timeout)
+                if self.failure:
+                    raise TimeoutError("simulated test timeout")
+
+        page = Page()
+        with redirect_stdout(io.StringIO()) as output:
+            module._require_guided_input_ready(page)
+        self.assertEqual(page.waited[1], 12000)
+        self.assertIn("view==='guided'", page.waited[0])
+        self.assertIn("!input.disabled", page.waited[0])
+        self.assertIn("GUIDED_FIRST_INPUT_READY=PASS", output.getvalue())
+        with self.assertRaisesRegex(module.SmokeFailure, "guided_first_question_not_ready"):
+            module._require_guided_input_ready(Page(failure=True))
+
     def test_manual_quote_model_is_selected_only_when_exactly_ready(self):
         class Select:
             def __init__(self):
