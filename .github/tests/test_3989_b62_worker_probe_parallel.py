@@ -157,6 +157,70 @@ class WorkerProbeParallelContract(unittest.TestCase):
             self.assertEqual(passed.returncode, 0, passed.stderr)
             self.assertIn("B62_WORKER_PROBES=PASS", passed.stdout)
 
+    def test_three_then_one_runs_all_mock_probes_in_two_waves(self):
+        # Exactly three subprocesses may start concurrently, then the fourth.
+        with tempfile.TemporaryDirectory(prefix="b62-worker-three-one-") as dirname:
+            temp = Path(dirname)
+            events = temp / "events.log"
+            scripts = []
+            for i in range(4):
+                script = temp / f"probe{i}.sh"
+                script.write_text(
+                    "#!/usr/bin/env bash\n"
+                    f"printf 'start-{i}\\n' >> \"$EVENTS\"\n"
+                    "sleep 0.35\n"
+                    f"printf 'end-{i}\\n' >> \"$EVENTS\"\n",
+                    encoding="utf-8",
+                )
+                scripts.append(str(script))
+            env = os.environ.copy()
+            env["EVENTS"] = str(events)
+            proc = subprocess.run(
+                ["bash", str(RUNNER), *scripts], env=env, cwd=temp,
+                capture_output=True, text=True, timeout=12, check=False,
+            )
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            lines = events.read_text(encoding="utf-8").splitlines()
+            self.assertEqual(set(lines), {
+                *(f"start-{i}" for i in range(4)),
+                *(f"end-{i}" for i in range(4)),
+            })
+            self.assertLess(max(lines.index(f"start-{i}") for i in range(3)),
+                            min(lines.index(f"end-{i}") for i in range(3)))
+            self.assertLess(max(lines.index(f"end-{i}") for i in range(3)),
+                            lines.index("start-3"))
+            self.assertIn("B62_WORKER_WAVE=FIRST_THREE_FINISHED", proc.stdout)
+            self.assertIn("B62_WORKER_WAVE=FOURTH_FINISHED", proc.stdout)
+            self.assertIn("B62_WORKER_PROBE_COUNT=4", proc.stdout)
+            self.assertIn("B62_WORKER_PROBES=PASS", proc.stdout)
+
+    def test_three_then_one_retains_fail_closed_all_four_reporting(self):
+        with tempfile.TemporaryDirectory(prefix="b62-worker-three-one-fail-") as dirname:
+            temp = Path(dirname)
+            events = temp / "started.log"
+            scripts = []
+            for i in range(4):
+                script = temp / f"probe{i}.sh"
+                script.write_text(
+                    "#!/usr/bin/env bash\n"
+                    f"printf '{i}\\n' >> \"$EVENTS\"\n"
+                    f"exit {5 if i == 1 else 0}\n",
+                    encoding="utf-8",
+                )
+                scripts.append(str(script))
+            env = os.environ.copy()
+            env["EVENTS"] = str(events)
+            proc = subprocess.run(
+                ["bash", str(RUNNER), *scripts], env=env, cwd=temp,
+                capture_output=True, text=True, timeout=12, check=False,
+            )
+            self.assertNotEqual(proc.returncode, 0)
+            self.assertIn("B62_WORKER_PROBE_1=FAIL", proc.stderr)
+            self.assertIn("B62_WORKER_PROBE_3=PASS", proc.stdout)
+            self.assertIn("B62_WORKER_PROBES=FAIL", proc.stderr)
+            self.assertEqual(set(events.read_text(encoding="utf-8").splitlines()),
+                             {"0", "1", "2", "3"})
+
     def test_runner_fails_on_invalid_or_missing_probe_argument(self):
         for args in [["x"], ["/tmp/b62-not-existent-probe.sh"] * 4]:
             with self.subTest(args=args):
