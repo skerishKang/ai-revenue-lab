@@ -389,8 +389,7 @@ def test_logo_and_seal_are_emitted_on_every_page(engine, n, tmp_path):
         assert names, f"page {pno+1} lost the logo/seal XObjects"
 
 
-@REQUIRES_DOCUMENT
-def test_restoring_middle_segments_reproduces_both_defects(tmp_path):
+def test_restoring_middle_segments_reproduces_both_defects():
     """The guards above are load-bearing: reverting the policy recreates the defects.
 
     A subclass re-adds the source segments between the table edge and the payment
