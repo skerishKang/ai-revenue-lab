@@ -807,6 +807,7 @@ def build_resident_host(
     office_file_requests: Any | None = None,
     office_file_authorization_port: Any | None = None,
     office_renderer: Any | None = None,
+    office_p01_plan_source: Any | None = None,
 ) -> LocalAgentResidentRuntimeHost:
     """Construct *the* resident host, once, on the redeemed binding."""
 
@@ -891,6 +892,19 @@ def build_resident_host(
     # opt into post-ACK byte staging. Ordinary pairing/env/browser/model cannot
     # supply a file path or mint Google Drive WRITE consent.
     office_staging = None
+    if office_p01_plan_source is not None:
+        if (approved_office_pairs is not None or office_file_requests is not None
+                or office_file_authorization_port is not None):
+            raise ContractError("competing P01 Office authority sources refused")
+        from .trusted_p01_office_file_plan import TrustedP01OfficeFilePlanBridge
+        from .windows_local_filesystem import P01LocalPermissionWindowsFileAuthorizationPort
+
+        office_bridge = TrustedP01OfficeFilePlanBridge(source=office_p01_plan_source)
+        office_file_requests = office_bridge
+        office_file_authorization_port = P01LocalPermissionWindowsFileAuthorizationPort(
+            permission_profile=default_device_permission_profile(device=device),
+            evidence_port=office_bridge,
+        )
     if (approved_office_pairs is not None and
             (office_file_requests is not None or office_file_authorization_port is not None)):
         raise ContractError("two competing Office producer authorities refused")
