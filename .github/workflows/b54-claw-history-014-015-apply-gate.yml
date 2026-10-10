@@ -1,0 +1,210 @@
+name: B54 Claw history D1 014/015 explicitly guarded apply
+
+# Production change is disabled by default. This workflow is never auto-dispatched.
+# Requires the OWNER's separate approval, a typed confirmation, and production environment.
+on:
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: "Exact authorized current main commit"
+        required: true
+        type: string
+      confirmation:
+        description: "Exact OWNER confirmation phrase for additive D1 014+015"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-claw-d1-history-additive-production
+  cancel-in-progress: false
+
+jobs:
+  source-and-authorization:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Exact owner approval and current-main policy gate
+        shell: bash
+        env:
+          TARGET_SHA: ${{ inputs.target_sha }}
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "${CONFIRMATION}" = "APPLY_B54_CLAW_D1_014_015_ONCE"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo "OWNER_TYPED_CONFIRMATION=PASS"
+          echo "PREMUTATION_EXACT_MAIN_SHA=PASS"
+      - name: Test real additive migrations and fail-closed expected schema
+        run: |
+          python .github/tests/test_b54_claw_history_schema_014_015.py -v
+          python .github/tests/test_b54_claw_history_014_015_apply_guard.py -v
+          echo "PRODUCTION_MUTATION=0"
+
+  production-additive-repair:
+    needs: source-and-authorization
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: production
+    env:
+      TARGET_SHA: ${{ inputs.target_sha }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Recheck explicit authorization and exact main before mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "${CONFIRMATION}" = "APPLY_B54_CLAW_D1_014_015_ONCE"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+      - name: Re-resolve exact live bound database
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          settings="${RUNNER_TEMP}/claw-d1-repair-settings.json"
+          curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-chat/settings" -o "${settings}"
+          DB_ID="$(python - "${settings}" <<'PY'
+          import json,re,sys
+          d=json.load(open(sys.argv[1],encoding='utf-8'))
+          if d.get("success") is not True: raise SystemExit("live Worker settings GET failed")
+          hits=[x for x in d.get("result",{}).get("bindings",[])
+                if x.get("type")=="d1" and x.get("name")=="PADIEM_CHAT_DB"]
+          if len(hits)!=1: raise SystemExit("not exactly one trusted database binding")
+          db=hits[0].get("id")
+          if not isinstance(db,str) or not re.fullmatch(r"[0-9a-fA-F-]{32,36}",db):
+              raise SystemExit("unsafe binding id")
+          print(db)
+          PY
+          )"
+          test -n "${DB_ID}"
+          echo "::add-mask::${DB_ID}"
+          echo "DB_ID=${DB_ID}" >> "${GITHUB_ENV}"
+          echo "LIVE_PADIEM_CHAT_DB_DERIVED=PASS"
+          echo "D1_IDENTIFIER_OUTPUT=0"
+      - name: Preflight read-only schema and determine exact additive plan
+        shell: bash
+        run: |
+          set -euo pipefail
+          query="${RUNNER_TEMP}/claw-d1-before-query.json"
+          python - "${query}" <<'PY'
+          import json,sys
+          sql=("SELECT name,type,sql FROM sqlite_master "
+               "WHERE name IN ('claw_run_history','idx_claw_run_history_user_created') ORDER BY name;"
+               "PRAGMA table_info(claw_run_history);"
+               "PRAGMA index_info(idx_claw_run_history_user_created);")
+          with open(sys.argv[1],"w",encoding="utf-8") as f: json.dump({"sql":sql},f)
+          PY
+          result="${RUNNER_TEMP}/claw-d1-before.json"
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${query}" -o "${result}"
+          evidence="$(python .github/scripts/b54_claw_history_schema_014_015.py "${result}")"
+          echo "${evidence}"
+          state="$(printf '%s\n' "${evidence}" | sed -n 's/^B54_CLAW_HISTORY_D1_SCHEMA=//p')"
+          case "${state}" in
+            "BASE_009"|"CONVERSATION_014"|"READY_015") ;;
+            *) echo "SCHEMA_PREMUTATION=BLOCKED" >&2; exit 1 ;;
+          esac
+          echo "SCHEMA_STATE=${state}" >> "${GITHUB_ENV}"
+          echo "D1_ROW_DATA_READ=0"
+          echo "SCHEMA_PREMUTATION=PASS"
+      - name: Apply only missing additive columns — one bounded API call
+        if: ${{ env.SCHEMA_STATE != 'READY_015' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="${RUNNER_TEMP}/claw-d1-additive-apply.json"
+          python - "${SCHEMA_STATE}" "${payload}" <<'PY'
+          from pathlib import Path
+          import json,sys
+          state=sys.argv[1]
+          root=Path("apps/padiem-chat/migrations")
+          allowed=[
+              ("014_claw_run_history_conversation.sql",
+               "ALTER TABLE claw_run_history ADD COLUMN conversation_id TEXT;"),
+              ("015_claw_run_history_workspace.sql",
+               "ALTER TABLE claw_run_history ADD COLUMN workspace_id TEXT;"),
+          ]
+          plan=allowed if state=="BASE_009" else allowed[1:] if state=="CONVERSATION_014" else None
+          if plan is None: raise SystemExit("unsupported pre-mutation state")
+          statements=[]
+          for filename,expected in plan:
+              text=(root / filename).read_text(encoding="utf-8")
+              sql="\n".join(s.strip() for s in text.splitlines()
+                            if s.strip() and not s.lstrip().startswith("--"))
+              if sql != expected: raise SystemExit("source migration differs from approved exact ALTER")
+              statements.append(sql)
+          if not statements or len(statements)>2: raise SystemExit("non-bounded migration plan")
+          with open(sys.argv[2],"w",encoding="utf-8") as f:
+              json.dump({"sql":"\n".join(statements)},f)
+          print("REPAIR_APPROVED_ADDITIVE_STATEMENT_COUNT="+str(len(statements)))
+          PY
+          result="${RUNNER_TEMP}/claw-d1-additive-result.json"
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${payload}" -o "${result}"
+          jq -e '.success == true and (.result | type == "array") and all(.result[]; .success == true)' "${result}" >/dev/null
+          echo "ADDITIVE_D1_014_015=APPLY_RESPONSE_SUCCESS"
+          echo "PRODUCTION_MUTATION=1"
+      - name: No-op if both columns are already present
+        if: ${{ env.SCHEMA_STATE == 'READY_015' }}
+        run: |
+          echo 'ADDITIVE_D1_014_015=SKIPPED_ALREADY_READY'
+          echo 'PRODUCTION_MUTATION=0'
+      - name: Read back the full required 014/015 schema (no user data)
+        shell: bash
+        run: |
+          set -euo pipefail
+          query="${RUNNER_TEMP}/claw-d1-after-query.json"
+          python - "${query}" <<'PY'
+          import json,sys
+          sql=("SELECT name,type,sql FROM sqlite_master "
+               "WHERE name IN ('claw_run_history','idx_claw_run_history_user_created') ORDER BY name;"
+               "PRAGMA table_info(claw_run_history);"
+               "PRAGMA index_info(idx_claw_run_history_user_created);")
+          with open(sys.argv[1],"w",encoding="utf-8") as f: json.dump({"sql":sql},f)
+          PY
+          result="${RUNNER_TEMP}/claw-d1-after.json"
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${query}" -o "${result}"
+          evidence="$(python .github/scripts/b54_claw_history_schema_014_015.py "${result}")"
+          echo "${evidence}"
+          printf '%s\n' "${evidence}" | grep -qx 'B54_CLAW_HISTORY_D1_SCHEMA=READY_015'
+          echo 'B54_CLAW_HISTORY_D1_POST_READBACK=PASS'
+          echo 'D1_ROW_DATA_READ=0'
+          echo 'WORKER_DEPLOY=0'
+          echo 'PROVIDER_POST_COUNT=0'
+          echo 'SECRET_MUTATION=0'
