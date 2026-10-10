@@ -99,6 +99,44 @@ class B62UnifiedBrowserQAContract(unittest.TestCase):
         chosen = planner.choose_lanes({"apps/padiem-chat/static/padiem-first-use.css"}, self.paths)
         self.assertEqual(sum(chosen.values()), 16)
 
+    def test_leaf_owned_ui_modules_select_only_related_browser_journeys(self):
+        # Explicit exact leaf paths; shared app, auth, CSS, and unknown scope stay broad.
+        cases = {
+            "apps/padiem-chat/static/claw-web-xlsx-sources.js": {
+                "accessibility-browser-qa", "auth-history-browser-qa",
+                "browser-qa", "document-browser-qa", "project-files-browser-qa",
+            },
+            "apps/padiem-chat/static/conversation-export.js": {
+                "accessibility-browser-qa", "auth-history-browser-qa",
+                "browser-qa", "conversation-export-browser-qa",
+                "error-retry-browser-qa", "saved-outputs-browser-qa",
+            },
+        }
+        for path, expected in cases.items():
+            with self.subTest(path=path):
+                self.assertEqual({j for j, enabled in planner.choose_lanes({path}, self.paths).items()
+                                  if enabled}, expected)
+                for shared in ("apps/padiem-chat/static/app.js",
+                               "apps/padiem-chat/app/app_factory.py"):
+                    self.assertEqual(planner.choose_lanes({path, shared}, self.paths),
+                                     planner.choose_lanes({shared}, self.paths))
+                self.assertTrue(all(planner.choose_lanes(
+                    {path, ".github/ci/b62_browser_qa_paths.json"}, self.paths).values()))
+                for job, patterns in self.paths.items():
+                    if job == "mobile-touch-target-qa":
+                        continue
+                    excl = "!" + path
+                    if job in expected:
+                        self.assertNotIn(excl, patterns)
+                    else:
+                        self.assertIn(excl, patterns)
+                        self.assertGreater(patterns.index(excl),
+                                           patterns.index("!apps/padiem-chat/static/b66-quote-runtime.js"))
+        self.assertEqual(sum(planner.choose_lanes(
+            {"apps/padiem-chat/static/claw-local-handoff.js"}, self.paths).values()), 15)
+        self.assertEqual(sum(planner.choose_lanes(
+            {"apps/padiem-chat/static/padiem-first-use.css"}, self.paths).values()), 16)
+
     def test_test_only_and_worker_only_changes_do_not_run_browser_qa(self):
         for filename in (
             "apps/padiem-chat/tests/test_projects.py",

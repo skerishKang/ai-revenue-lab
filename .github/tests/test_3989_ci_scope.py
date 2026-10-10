@@ -77,6 +77,26 @@ class B66ScopedBrowserQA(unittest.TestCase):
                 with self.subTest(shared=shared, b66=b66):
                     self.assertEqual(lanes({shared, b66}), lanes({shared}))
 
+    def test_leaf_only_scope_never_suppresses_shared_or_uncertain_journeys(self):
+        expected = {
+            "apps/padiem-chat/static/claw-web-xlsx-sources.js": {
+                "accessibility-browser-qa", "auth-history-browser-qa",
+                "browser-qa", "document-browser-qa", "project-files-browser-qa",
+            },
+            "apps/padiem-chat/static/conversation-export.js": {
+                "accessibility-browser-qa", "auth-history-browser-qa",
+                "browser-qa", "conversation-export-browser-qa",
+                "error-retry-browser-qa", "saved-outputs-browser-qa",
+            },
+        }
+        for path, jobs in expected.items():
+            with self.subTest(path=path):
+                self.assertEqual(lanes({path}), jobs)
+                self.assertEqual(lanes({path, "apps/padiem-chat/static/app.js"}),
+                                 lanes({"apps/padiem-chat/static/app.js"}))
+        self.assertEqual(len(lanes({".github/ci/b62_browser_qa_paths.json"})), 16)
+        self.assertTrue(all(planner.choose_lanes(None, self.paths).values()))
+
     def test_core_and_test_only_changes_keep_their_narrow_scope(self):
         self.assertEqual(
             lanes({"packages/padiem-ai-core/padiem_ai_core/router.py"}),
