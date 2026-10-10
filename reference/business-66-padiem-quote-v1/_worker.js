@@ -86,6 +86,11 @@ function padiemTarget(url, method) {
 
   /* #3405 Slice B: canonical quote-history 프록시. 서버가 세션에서 owner/
      workspace 를 도출하므로 브리지는 경로/limit/기록 id 형태만 경계한다. */
+  if (path === "/api/padiem/b66/guided-draft" &&
+      (method === "GET" || method === "PUT" || method === "DELETE")) {
+    return "/api/b66/guided-draft";
+  }
+
   if (path === "/api/padiem/b66/quotes" && (method === "GET" || method === "POST")) {
     if (method === "POST") return "/api/b66/quotes";
     const raw = url.searchParams.get("limit");

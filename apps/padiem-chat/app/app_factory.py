@@ -21,6 +21,7 @@ from .b66_quote_history_routes import (
     b66_quote_history_save,
 )
 from .b66_quote_history_store import D1QuoteHistoryStore
+from .b66_guided_draft import D1GuidedDraftStore, guided_draft_route
 from .b66_quote_assets import B66QuoteAssetStore, D1B66QuoteAssetMetadataStore
 from .b66_certified_quote_bundle import B66CertifiedQuoteBundleStore
 from .b66_certified_preview import B66CertifiedPreviewStore
@@ -208,6 +209,7 @@ def create_app(
     b66_saved_quote_skill_store: SavedQuoteSkillStore | None = None,
     b66_company_profile_store: CompanyProfileStore | None = None,
     b66_quote_history_store=None,
+    b66_guided_draft_store=None,
     b66_quote_asset_store=None,
     b66_certified_quote_bundle_store=None,
     b66_certified_preview_store=None,
@@ -316,6 +318,7 @@ def create_app(
         Route("/api/b66/quote/native-sol-scope", b66_native_sol_scope, methods=["GET"]),
         Route("/api/b66/quotes", b66_quote_history_list, methods=["GET"]),
         Route("/api/b66/quotes", b66_quote_history_save, methods=["POST"]),
+        Route("/api/b66/guided-draft", guided_draft_route, methods=["GET", "PUT", "DELETE"]),
         Route(
             "/api/b66/quotes/{quote_history_id}",
             b66_quote_history_detail,
@@ -579,6 +582,12 @@ def create_app(
         except Exception:
             _b66_quote_history_store = None
     app.state.b66_quote_history_store = _b66_quote_history_store
+
+    # #3396: one authenticated in-progress guided task per owner/workspace.
+    _b66_guided_draft_store = b66_guided_draft_store
+    if _b66_guided_draft_store is None and d1_binding is not None:
+        _b66_guided_draft_store = D1GuidedDraftStore(d1_binding)
+    app.state.b66_guided_draft_store = _b66_guided_draft_store
 
     # B66 #3402: private logo/stamp bytes reuse the existing private workspace
     # R2 binding, while D1 stores only owner/workspace-scoped metadata. No

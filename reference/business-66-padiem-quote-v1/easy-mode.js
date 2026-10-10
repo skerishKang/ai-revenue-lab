@@ -10,6 +10,7 @@
   const FileIntake = window.B66FileIntake;
   const App = window.B66QuoteAppBridge;
   const AccountScope = window.QuoteAccountScope || null;
+  const GuidedAPI = window.B66GuidedDraftServer || null;
 
   if (!Core || !History || !FileIntake || !App) return;
 
@@ -33,6 +34,8 @@
   let restoringProductHistory = false;
   let interpretationInFlight = false;
   let accountScopeRevision = 0;
+  let guidedSaveQueue = Promise.resolve();
+  let guidedSaveRevision = 0;
   const PRODUCT_HISTORY_KEY = "b66View";
 
   const QUARANTINE_ACTIONS = AccountScope
@@ -239,7 +242,7 @@
 
   function refreshStarters() {
     const activeDraft = App.getDraft();
-    $("resumeDraftStarter").hidden = !History.isMeaningfulDraft(activeDraft);
+    $("resumeDraftStarter").hidden = !(accountSignedIn || History.isMeaningfulDraft(activeDraft));
     /* server authority 동안에는 local cache 가 비어 있어도 최근 견적에
        접근할 수 있어야 한다(서버 목록이 authority). */
     $("recentQuoteStarter").hidden = serverAuthorityRecent()
@@ -248,14 +251,14 @@
 
     let hint = document.getElementById("easyResumeHint");
     if (accountSignedIn) {
-      if (History.isMeaningfulDraft(activeDraft)) {
+      if (History.isMeaningfulDraft(activeDraft) || accountSignedIn) {
         if (!hint) {
           hint = document.createElement("div");
           hint.id = "easyResumeHint";
           hint.className = "easy-resume-hint";
           $("easyStarterGrid").before(hint);
         }
-        hint.textContent = "이전에 작성하던 견적이 있습니다. 이어서 진행할 수 있어요.";
+        hint.textContent = "견적 이어쓰기를 누르면 이 계정에 저장된 질문형 작성 상태를 확인합니다.";
       } else if (hint) {
         hint.remove();
       }
@@ -450,6 +453,9 @@
         return;
       }
       addResultReview(result.draft, taxUnknown);
+      clearAccountGuidedState();
+      guided = null;
+      guidedSnapshot = null;
     }).catch(() => {
       addMessage("assistant", "견적 생성에 실패했습니다. 잠시 후 다시 시도해 주세요.");
     }).finally(() => {
@@ -657,6 +663,112 @@
     return fresh;
   }
 
+  /* #3396: canonical in-progress state is one private D1 slot, not the
+     browser-local navigation snapshot and never a Chat conversation. */
+  function packagedGuidedState() {
+    if (!guided) return null;
+    const draft = guided.draft;
+    return {
+      schema: "b66.guided-draft.v1",
+      mode: "guided",
+      step: guided.step,
+      currentItem: guided.currentItem,
+      taxUnknown: guided.taxUnknown === true,
+      savedSkillId: window.B66QuoteRuntimeBridge?.assignedSavedSkillId?.() || "",
+      draft: {
+        recipient: {
+          company: String(draft.recipient?.company || ""),
+          person: String(draft.recipient?.person || ""),
+          address: String(draft.recipient?.address || ""),
+          email: String(draft.recipient?.email || "")
+        },
+        sender: { company: String(draft.sender?.company || "") },
+        items: (draft.items || []).map(item => ({
+          id: String(item.id || ""),
+          name: String(item.name || ""),
+          unit: String(item.unit || ""),
+          qty: item.qty ?? null,
+          unitPrice: item.unitPrice ?? null
+        })),
+        tax: { mode: draft.tax?.mode },
+        memo: String(draft.memo || ""),
+        meta: {
+          quoteNo: String(draft.meta?.quoteNo || ""),
+          issueDate: String(draft.meta?.issueDate || "")
+        }
+      }
+    };
+  }
+
+  function saveGuidedToAccount() {
+    if (!accountSignedIn || !guided || !GuidedAPI) return;
+    const revision = guidedSaveRevision;
+    const state = packagedGuidedState();
+    guidedSaveQueue = guidedSaveQueue.catch(() => {}).then(async () => {
+      if (revision !== guidedSaveRevision || !accountSignedIn) return;
+      const response = await GuidedAPI.save(state);
+      if (!response.ok && revision === guidedSaveRevision) {
+        App.toast("진행 상태를 계정에 저장하지 못했습니다. 다시 시도해 주세요.");
+      }
+    }).catch(() => {
+      if (revision === guidedSaveRevision) App.toast("진행 상태의 서버 저장을 확인하지 못했습니다.");
+    });
+  }
+
+  function clearAccountGuidedState() {
+    if (!accountSignedIn || !GuidedAPI) return;
+    const revision = guidedSaveRevision;
+    guidedSaveQueue = guidedSaveQueue.catch(() => {}).then(async () => {
+      if (revision !== guidedSaveRevision || !accountSignedIn) return;
+      const response = await GuidedAPI.clear();
+      if (!response.ok && revision === guidedSaveRevision) {
+        App.toast("서버에 완료된 초안이 남아 있습니다. 다시 확인해 주세요.");
+      }
+    }).catch(() => {
+      if (revision === guidedSaveRevision) App.toast("완료한 초안의 서버 정리를 확인하지 못했습니다.");
+    });
+  }
+
+  async function resumeAccountGuidedOrLocal() {
+    if (!accountSignedIn) {
+      setWorkspaceMode("direct");
+      return;
+    }
+    const revision = accountScopeRevision;
+    if (!GuidedAPI) {
+      App.toast("계정별 질문형 이어쓰기를 이용할 수 없습니다.");
+      return;
+    }
+    try {
+      await guidedSaveQueue.catch(() => {});
+      if (revision !== accountScopeRevision || !accountSignedIn) return;
+      const payload = await GuidedAPI.load();
+      if (revision !== accountScopeRevision || !accountSignedIn) return;
+      if (!payload.ok) {
+        App.toast("서버의 이어쓰기 상태를 읽지 못했습니다. 계정 로그인을 확인해 주세요.");
+        return;
+      }
+      if (!payload.state) {
+        if (History.isMeaningfulDraft(App.getDraft())) setWorkspaceMode("direct");
+        else App.toast("계정에 저장된 진행 중 질문형 견적이 없습니다.");
+        return;
+      }
+      const state = payload.state;
+      const currentSkill = window.B66QuoteRuntimeBridge?.assignedSavedSkillId?.() || "";
+      if (state.schema !== "b66.guided-draft.v1" || state.mode !== "guided" ||
+          (state.savedSkillId && state.savedSkillId !== currentSkill)) {
+        App.toast("현재 계정의 승인 견적서와 저장된 질문형 견적이 다릅니다. 복원을 중단했습니다.");
+        return;
+      }
+      lastEasyView = "guided";
+      setWorkspaceMode("easy", { history: false });
+      recordProductState("guided");
+      resumeGuidedConversation(state);
+    } catch (_) {
+      if (revision === accountScopeRevision) App.toast("진행 상태를 불러오지 못했습니다.");
+    }
+  }
+
   /* 진행 중인 guided 대화는 화면 전환으로 버려지지 않고 스냅샷 한 슬롯으로만 보존한다(bounded).
      브라우저 Back/Forward 복원은 App draft 대신 이 guided 상태를 이어 쓴다. */
   function snapshotGuidedConversation() {
@@ -684,9 +796,18 @@
 
   function resumeGuidedConversation(state) {
     startConversation();
+    const fresh = guidedDraft();
+    // Never reuse another account's cached sender/profile as server authority.
+    const carried = clone(state.draft);
+    fresh.recipient = carried.recipient;
+    fresh.items = carried.items;
+    fresh.tax.mode = carried.tax.mode;
+    fresh.memo = carried.memo;
+    fresh.meta.quoteNo = carried.meta.quoteNo;
+    fresh.meta.issueDate = carried.meta.issueDate;
     guided = {
       step: state.step,
-      draft: clone(state.draft),
+      draft: fresh,
       currentItem: state.currentItem,
       taxUnknown: state.taxUnknown
     };
@@ -742,6 +863,7 @@
       currentItem: -1,
       taxUnknown: false
     };
+    saveGuidedToAccount();
     if (reference) {
       addMessage("user", reference);
       addMessage(
@@ -1026,6 +1148,7 @@
       default:
         break;
     }
+    saveGuidedToAccount();
   }
 
   function startFreeChat(options) {
@@ -1209,10 +1332,7 @@
   $("easyModeButton").addEventListener("click", () => setWorkspaceMode("easy"));
   $("directModeButton").addEventListener("click", () => setWorkspaceMode("direct"));
   $("directStarter").addEventListener("click", () => setWorkspaceMode("direct"));
-  $("resumeDraftStarter").addEventListener("click", () => {
-    App.toast("중단했던 견적을 이어서 엽니다.");
-    setWorkspaceMode("direct");
-  });
+  $("resumeDraftStarter").addEventListener("click", resumeAccountGuidedOrLocal);
   $("recentQuoteStarter").addEventListener("click", showRecentHistory);
   $("guidedStarter").addEventListener("click", startGuidedIfReady);
   $("freeChatStarter").addEventListener("click", startFreeChat);
@@ -1243,6 +1363,7 @@
     interpretationInFlight = false;
     /* 계정 경계가 바뀌면 private 텍스트/답변/진행 중 문맥을 화면에서도
        모두 지운다 (#3480, #3536). 응답이 늦게 와도 revision guard 가 폐기한다. */
+    guidedSaveRevision += 1;
     guided = null;
     guidedSnapshot = null;
     selectedFile = null;
@@ -1252,6 +1373,7 @@
 
   document.addEventListener("b66:auth-changed", (event) => {
     accountSignedIn = Boolean(event.detail && event.detail.authenticated);
+    if (!accountSignedIn) guidedSaveRevision += 1;
     refreshStarters();
   });
   window.addEventListener("b66:history-changed", refreshStarters);
