@@ -804,6 +804,9 @@ def build_resident_host(
     acceptance_request_fingerprint: str = "",
     browser_open_host: Any | None = None,
     approved_office_pairs: Any | None = None,
+    office_file_requests: Any | None = None,
+    office_file_authorization_port: Any | None = None,
+    office_renderer: Any | None = None,
 ) -> LocalAgentResidentRuntimeHost:
     """Construct *the* resident host, once, on the redeemed binding."""
 
@@ -888,6 +891,18 @@ def build_resident_host(
     # opt into post-ACK byte staging. Ordinary pairing/env/browser/model cannot
     # supply a file path or mint Google Drive WRITE consent.
     office_staging = None
+    if (approved_office_pairs is not None and
+            (office_file_requests is not None or office_file_authorization_port is not None)):
+        raise ContractError("two competing Office producer authorities refused")
+    if office_file_requests is not None or office_file_authorization_port is not None:
+        from .approved_windows_office_pair_producer import compose_approved_windows_office_pairs
+        approved_office_pairs = compose_approved_windows_office_pairs(
+            device=device, file_requests=office_file_requests,
+            file_authorization_port=office_file_authorization_port,
+            clock=clock, renderer=office_renderer,
+        )
+    elif office_renderer is not None:
+        raise ContractError("Office renderer without P01 file READ authority refused")
     if approved_office_pairs is not None:
         from .local_office_chunk_publisher import LocalOfficeChunkPublisher
         from .local_resident_office_delivery import ResidentOfficePairPublisher
