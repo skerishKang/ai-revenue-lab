@@ -869,6 +869,35 @@ class D1HistoryStore:
             persisted.get(key) for key in columns
         ) == expected
 
+    async def get_owner_conversation_artifact(
+        self, *, user_id: str, conversation_id: str,
+        workspace_ref: str, artifact_id: str,
+    ) -> dict[str, Any] | None:
+        """#3929: single exact durable artifact, tied to current owner and completed run.
+
+        Never use caller-supplied provider IDs. The result is an INTERNAL row;
+        public routes must never expose location_ref or raw Drive metadata.
+        """
+        cid = validate_conversation_id(conversation_id)
+        scope = _safe_identifier("workspace_ref", workspace_ref)
+        if (cid is None or not isinstance(user_id, str) or not user_id
+                or not isinstance(artifact_id, str) or not artifact_id
+                or len(artifact_id) > 128):
+            raise HistoryError("owner-scoped artifact identity required")
+        return await self._first(
+            "SELECT a.ordinal, a.artifact_id, a.user_id, a.conversation_id, "
+            "a.workspace_ref, a.source_run_ref, a.filename, a.media_type, "
+            "a.size_bytes, a.integrity_ref, a.location_kind, a.location_ref "
+            "FROM claw_conversation_artifact_index a "
+            "JOIN conversations c ON c.id=a.conversation_id AND c.user_id=a.user_id "
+            "JOIN claw_run_history r ON r.run_id=a.source_run_ref "
+            "AND r.user_id=a.user_id AND r.conversation_id=a.conversation_id "
+            "AND r.workspace_id=a.workspace_ref AND r.status='completed' "
+            "WHERE a.artifact_id=? AND a.user_id=? AND a.conversation_id=? "
+            "AND a.workspace_ref=?",
+            artifact_id, user_id, cid, scope,
+        )
+
     async def list_owner_conversation_artifacts(
         self, *, user_id: str, conversation_id: str,
         workspace_ref: str, limit: int = 31,
