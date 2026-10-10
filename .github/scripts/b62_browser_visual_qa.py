@@ -1149,6 +1149,10 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     # server. We delay the first stream long enough to capture the real typing UI,
     # and later fail exactly one stream request to exercise the existing retry UI.
     stream_control = {"delay_next": True, "fail_next": False}
+    # A fixed 1s mock delay was used only to preserve the loading screenshot.
+    # Hold this first request until the real typing evidence has been saved,
+    # then unblock immediately. This cannot omit the visible typing assertion.
+    loading_evidence_saved = asyncio.Event()
 
     async def handle_stream(route) -> None:
         if stream_control["fail_next"]:
@@ -1169,7 +1173,9 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
             return
         if stream_control["delay_next"]:
             stream_control["delay_next"] = False
-            await asyncio.sleep(1.0)
+            # Bounded, fail-closed wait for the first visible loading screenshot.
+            # Avoid racing the screenshot against a fixed 1s reply clock.
+            await asyncio.wait_for(loading_evidence_saved.wait(), timeout=30.0)
         await route.continue_()
 
     await page.route("**/api/chat/stream", handle_stream)
@@ -1188,7 +1194,12 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     if await typing.get_attribute("aria-label") != "답변 준비 중":
         raise AssertionError("typing state must expose the visible '답변 준비 중' label")
     await _assert_no_horizontal_overflow(page, f"{name}-loading")
-    await page.screenshot(path=str(OUT_DIR / f"{name}-loading.png"), full_page=True)
+    try:
+        await page.screenshot(path=str(OUT_DIR / f"{name}-loading.png"), full_page=True)
+    finally:
+        # A failed screenshot still raises and fails CI; release any pending
+        # intercepted request so that Playwright can tear down cleanly.
+        loading_evidence_saved.set()
 
     first_assistant = page.locator("#messageList .assistant-message").first
     await first_assistant.wait_for(state="visible", timeout=15_000)
