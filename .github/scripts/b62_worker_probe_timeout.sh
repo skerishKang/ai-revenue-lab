@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-# #3989: Linux monotonic phase attribution using UTC epoch milliseconds.
+# #3989: Linux real-run phase attribution via epoch milliseconds.
 # These markers are observability only; they never replace a readiness or assertion gate.
 B62_PROBE_TIMING_LABEL=TIMEOUT
 b62_probe_mark() {
