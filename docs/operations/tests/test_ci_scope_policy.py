@@ -125,6 +125,67 @@ def _assert_b62_chat_ci_parity(document: dict) -> None:
     )
 
 
+
+# #3989: expensive B62 main regression should follow latest qualifying commit.
+# The exact workflow expression is pinned below; the Python examples document
+# its event-specific group semantics, not an alternate runtime implementation.
+B62_EXPECTED_CONCURRENCY = (
+    "b62-padiem-chat-ci-${{ "
+    "github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) "
+    "|| github.event_name == 'push' && format('push-{0}', github.ref) "
+    "|| format('manual-{0}', github.run_id) }}"
+)
+
+
+def test_b62_main_push_ci_coalescing_preserves_stable_required_gate() -> None:
+    workflow = _b62_chat_ci_document()
+    concurrency = workflow["concurrency"]
+    assert set(concurrency) == {"group", "cancel-in-progress"}
+    assert concurrency["group"] == B62_EXPECTED_CONCURRENCY
+    assert concurrency["cancel-in-progress"] is True
+    # Cancellation applies to the entire *test-only* B62 workflow; the
+    # stable status gate still requires both real host and Worker jobs.
+    aggregate = workflow["jobs"]["b62-test"]
+    assert aggregate["name"] == "b62-test"
+    assert aggregate["if"] == "always()"
+    assert "b62-full-suite" in aggregate["needs"]
+    assert "b62-worker-suite" in aggregate["needs"]
+
+
+def test_b62_main_push_group_is_distinct_from_pr_and_manual_groups() -> None:
+    # The above pinned event expression must yield precisely these outcomes:
+    # - two B62-relevant main pushes share one group (supersede stale work)
+    # - other PRs never cancel each other, and force-pushes to one PR can
+    #   supersede only that PR's previous test run
+    # - manually dispatched diagnostics remain independent even on main
+    def example_group(event: str, *, number: int = 0,
+                      ref: str = "refs/heads/main", run_id: int = 0) -> str:
+        if event == "pull_request":
+            return f"b62-padiem-chat-ci-pr-{number}"
+        if event == "push":
+            return f"b62-padiem-chat-ci-push-{ref}"
+        return f"b62-padiem-chat-ci-manual-{run_id}"
+
+    assert example_group("push", run_id=38009178502) == example_group(
+        "push", run_id=38009215242
+    )
+    assert example_group("pull_request", number=4083, run_id=1) == example_group(
+        "pull_request", number=4083, run_id=2
+    )
+    assert example_group("pull_request", number=4083) != example_group(
+        "pull_request", number=4084
+    )
+    assert example_group("push", ref="refs/heads/main") != example_group(
+        "pull_request", number=4083
+    )
+    assert example_group("workflow_dispatch", run_id=9001) != example_group(
+        "workflow_dispatch", run_id=9002
+    )
+    assert example_group("workflow_dispatch", run_id=9001) != example_group(
+        "push", ref="refs/heads/main"
+    )
+
+
 def _b62_chat_segment_glob(pattern: str, path: str) -> bool:
     """GitHub path-filter glob subset needed for the current retained entries.
 
