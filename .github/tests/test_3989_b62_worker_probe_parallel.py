@@ -120,7 +120,7 @@ class WorkerProbeParallelContract(unittest.TestCase):
         import signal
 
         proc = subprocess.Popen(
-            ["setsid", "bash", "-c", 'sleep 30 & echo "$ $!"; wait'],
+            ["setsid", "bash", "-c", 'sleep 30 & echo "$BASHPID $!"; wait'],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
         )
         try:
