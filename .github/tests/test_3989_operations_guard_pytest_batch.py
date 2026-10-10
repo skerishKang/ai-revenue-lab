@@ -43,14 +43,28 @@ class OperationsGuardBatchContract(unittest.TestCase):
         self.assertIn("contents: read", self.source)
 
     def test_every_original_pytest_target_retained_exactly_once(self):
+        # Both source-owner contracts require these exact independent CI
+        # invocations. Preserve them instead of editing those tests.
+        self.assertIn(
+            "run: python -m pytest -q docs/operations/tests", self.policy
+        )
+        self.assertIn(
+            "run: python -m pytest -q "
+            ".github/tests/test_3989_engine_living_learning_ci_scope.py",
+            self.policy,
+        )
+        self.assertEqual(self.policy.count("python -m pytest -q"), 3)
         block = self.policy.split(
-            "      - name: Run complete policy and security contract test collection", 1
+            "      - name: Run remaining policy and security contract tests", 1
         )[1].split("      - name: Record guard scope", 1)[0]
-        self.assertEqual(self.policy.count("python -m pytest -q"), 1)
         self.assertIn("python -m pytest -q", block)
-        for target in (*ORIGINAL_PYTEST_TARGETS, BATCH_CONTRACT):
+        for target in (*ORIGINAL_PYTEST_TARGETS[1:5],
+                       *ORIGINAL_PYTEST_TARGETS[6:], BATCH_CONTRACT):
             with self.subTest(target=target):
-                self.assertEqual(block.count("\n            " + target), 1)
+                self.assertEqual(block.count("\\n            " + target), 1)
+        # The two independently owned suites are not needlessly re-collected.
+        for target in (ORIGINAL_PYTEST_TARGETS[0], ORIGINAL_PYTEST_TARGETS[5]):
+            self.assertNotIn("\\n            " + target, block)
         for forbidden in (
             "--ignore", "--deselect", "--continue-on-collection-errors",
             " -x ", " -k ", " --lf", "--last-failed", "--maxfail",
