@@ -33,7 +33,9 @@ class FreeformContract(unittest.TestCase):
 
     def test_existing_one_shot_code_guards(self):
         source=SCRIPT.read_text(encoding="utf-8")
-        self.assertIn('counts["interpret"]>=1',source)
+        self.assertIn('counts["interpret"]>=allowed_posts',source)
+        self.assertIn('base._partial_followup(page,live_counters,model)',source)
+        self.assertIn('allowed_posts=1 if flow=="complete" else 2',source)
         self.assertIn("service_workers=\"block\"",source)
         self.assertIn("base._complete_free_form(page,live_counters,model)",source)
         self.assertNotIn("base._guided(page",source)
