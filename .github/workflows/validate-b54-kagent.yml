@@ -120,17 +120,20 @@ jobs:
       # editable distribution. An editable .pth would make the reviewed parser
       # child importable even when a test deliberately empties PYTHONPATH, so the
       # real import-failure contract would be invalidated.
+      # Install the three reviewed editable projects and the focused test
+      # runner in one resolver transaction. Separate pip invocations previously
+      # repeated startup/resolution on both operating systems. Do not change the
+      # pre-verified local Pillow wheel or its installed-artifact proof below.
       - name: Install monorepo conformance dependencies
         working-directory: apps/korean-ai-code-agent
         shell: bash
         run: |
           set -euo pipefail
           python -m pip install --disable-pip-version-check \
-            -e "../../packages/padiem-ai-core[tools,documents,render,tables,authoring]"
-          python -m pip install --disable-pip-version-check \
-            -e "../../packages/padiem-control-plane"
-          python -m pip install --disable-pip-version-check \
-            -e "../../apps/padiem-ai-engine/clients/python"
+            -e "../../packages/padiem-ai-core[tools,documents,render,tables,authoring]" \
+            -e "../../packages/padiem-control-plane" \
+            -e "../../apps/padiem-ai-engine/clients/python" \
+            "pytest>=8,<10"
 
       # Prove the artifact that is actually installed is the approved one, rather
       # than a same-version wheel some other step resolved.
@@ -186,7 +189,7 @@ jobs:
           PYTHONPATH: packages/padiem-ai-core
         run: |
           set -euo pipefail
-          python -m pip install --disable-pip-version-check "pytest>=8,<10"
+          # pytest was installed with all three projects in the preceding step.
           focused_log="$RUNNER_TEMP/padiem-focused-image-tests.log"
           python -m pytest -q \
             packages/padiem-ai-core/tests/test_pillow_wheel_receipts.py \
