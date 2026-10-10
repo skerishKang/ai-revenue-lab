@@ -216,7 +216,7 @@ def test_plus_production_composition_reaches_engine_service_binding_once() -> No
     assert payload["agent"]["task_type"] == "coding"
     assert payload["agent"]["required_capabilities"] == []
     assert payload["agent"]["max_tokens"] is None
-    assert payload["execution_context"]["timeout_seconds"] == 20.0
+    assert payload["execution_context"]["timeout_seconds"] == 900.0
     serialized = json.dumps(payload, ensure_ascii=False)
     assert VALID_CREDENTIAL not in serialized
     assert "provider" not in payload["agent"]

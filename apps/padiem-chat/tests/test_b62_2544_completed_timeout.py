@@ -1,13 +1,8 @@
 from __future__ import annotations
 
-"""#2544 — the completed (non-streaming) path gets its own bounded timeout.
-
-The B14 gateway behind the ``B14_SERVICE`` binding runs a bounded retry/fallback
-envelope of 45s (#1988/#1990). The shared ``timeout_seconds`` (20s) also drives
-the streaming client, so the completed path could not simply raise it. These tests
-pin the separation: ``completed_timeout_seconds`` (50s) governs ONLY the completed
-text/image path, while ``timeout_seconds`` (20s) keeps governing streaming.
-"""
+"""#4194: Completed and stream model calls share a 600-second initial
+model idle/response budget by default. Explicit per-request overrides remain
+independent and bounded; older 20/50s production defaults are retired."""
 
 import json
 
@@ -85,8 +80,8 @@ def _completed_client(service: FakeServiceTransport) -> B14Client:
 
 def test_default_settings_separate_completed_from_streaming_timeout():
     settings = Settings()
-    assert settings.timeout_seconds == 20.0, "streaming/shared timeout must stay at 20s"
-    assert settings.completed_timeout_seconds == 50.0, "completed path gets the 50s envelope"
+    assert settings.timeout_seconds == 600.0, "streaming/shared timeout must stay at 20s"
+    assert settings.completed_timeout_seconds == 600.0, "completed path gets the 50s envelope"
 
 
 def test_completed_timeout_exceeds_b14_gateway_envelope():
@@ -94,13 +89,13 @@ def test_completed_timeout_exceeds_b14_gateway_envelope():
     assert settings.completed_timeout_seconds > B14_GATEWAY_ENVELOPE_SECONDS, (
         "completed deadline must be longer than the B14 gateway retry envelope"
     )
-    assert settings.completed_timeout_seconds <= 60.0, "must stay within the Core 1..60 bound"
+    assert settings.completed_timeout_seconds <= 3600.0, "must stay within the Core 1..60 bound"
 
 
 def test_completed_timeout_validation_bounds_and_numeric():
-    with pytest.raises(ConfigError, match="PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS must be between 1 and 60"):
-        Settings.from_values(completed_timeout_seconds=999)
-    with pytest.raises(ConfigError, match="PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS must be between 1 and 60"):
+    with pytest.raises(ConfigError, match="PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS must be between 1 and 3600"):
+        Settings.from_values(completed_timeout_seconds=3601)
+    with pytest.raises(ConfigError, match="PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS must be between 1 and 3600"):
         Settings.from_values(completed_timeout_seconds=0)
     with pytest.raises(ConfigError, match="PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS must be numeric"):
         Settings.from_values(completed_timeout_seconds="not-a-number")
@@ -118,8 +113,8 @@ def test_env_default_is_fifty(monkeypatch):
     monkeypatch.delenv("PADIEM_CHAT_TIMEOUT_SECONDS", raising=False)
     monkeypatch.delenv("PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS", raising=False)
     settings = Settings.from_env()
-    assert settings.timeout_seconds == 20.0
-    assert settings.completed_timeout_seconds == 50.0
+    assert settings.timeout_seconds == 600.0
+    assert settings.completed_timeout_seconds == 600.0
 
 
 def test_env_override_is_respected(monkeypatch):
@@ -134,8 +129,8 @@ def test_env_override_is_respected(monkeypatch):
 
 def test_worker_binding_defaults_are_untouched():
     settings = settings_from_worker_bindings({})
-    assert settings.timeout_seconds == 20.0, "live PADIEM_CHAT_TIMEOUT_SECONDS default must stay 20"
-    assert settings.completed_timeout_seconds == 50.0
+    assert settings.timeout_seconds == 600.0, "live PADIEM_CHAT_TIMEOUT_SECONDS default must stay 20"
+    assert settings.completed_timeout_seconds == 600.0
 
 
 def test_worker_binding_reads_completed_override():
@@ -160,11 +155,11 @@ def test_completed_transport_and_config_use_completed_timeout_only():
     )
 
     # Streaming / shared config keeps the 20s timeout.
-    assert client._config().timeout_seconds == 20.0
-    # Completed config and completed transport use the 50s completed timeout.
-    assert client._completion_config().timeout_seconds == 50.0
+    assert client._config().timeout_seconds == 600.0
+    # Completed config and completed transport use the 600s completed timeout.
+    assert client._completion_config().timeout_seconds == 600.0
     completion_transport = client._completion_transport()
-    assert completion_transport._timeout_seconds == 50.0
+    assert completion_transport._timeout_seconds == 600.0
 
 
 @pytest.mark.asyncio
@@ -179,12 +174,12 @@ async def test_completed_path_passes_the_fifty_second_deadline(monkeypatch):
     result = await client.complete(USER_MESSAGES)
 
     assert result["runtime"] == "b14"
-    assert probe.observed_timeout == 50.0
+    assert probe.observed_timeout == 600.0
 
 
 @pytest.mark.asyncio
 async def test_completed_request_succeeds_beyond_the_old_twenty_second_cap(monkeypatch):
-    # 30s is longer than the OLD 20s shared cap but shorter than the new 50s
+    # 30s is longer than the OLD 20s shared cap but shorter than the new 600s
     # completed deadline, so it must now SUCCEED. Under the previous wiring this
     # same upstream duration would have been abandoned at 20s.
     service = FakeServiceTransport()
@@ -194,21 +189,21 @@ async def test_completed_request_succeeds_beyond_the_old_twenty_second_cap(monke
     result = await client.complete(USER_MESSAGES)
 
     assert result["runtime"] == "b14"
-    assert probe.observed_timeout == 50.0, "the governing completed deadline is 50s, not 20s"
+    assert probe.observed_timeout == 600.0, "the governing completed deadline is 600s, not 20s"
     assert len(service.calls) == 1
 
 
 @pytest.mark.asyncio
 async def test_completed_request_times_out_beyond_the_fifty_second_deadline(monkeypatch):
-    # 55s exceeds the 50s completed deadline -> the transport raises
+    # 55s exceeds the 600s completed deadline -> the transport raises
     # httpx.ReadTimeout, which maps to upstream_timeout / HTTP 504.
     service = FakeServiceTransport()
     client = _completed_client(service)
-    probe = _install_deadline_probe(monkeypatch, logical_duration_seconds=55.0)
+    probe = _install_deadline_probe(monkeypatch, logical_duration_seconds=605.0)
 
     with pytest.raises(ChatRuntimeError) as info:
         await client.complete(USER_MESSAGES)
 
-    assert probe.observed_timeout == 50.0
+    assert probe.observed_timeout == 600.0
     assert info.value.status_code == 504
     assert info.value.code == "upstream_timeout"

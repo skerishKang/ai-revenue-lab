@@ -179,10 +179,10 @@ def test_j_response_byte_and_time_guards_unchanged() -> None:
     assert MAX_B14_RESPONSE_BYTES == 1_048_576
     assert b14_execution_module.MAX_CONFIGURED_B14_RESPONSE_BYTES == 8 * 1_048_576
     config = b14_execution_module.B14ExecutionConfig(base_url="https://b14.example.test")
-    assert config.timeout_seconds == 20.0
+    assert config.timeout_seconds == 600.0
     assert config.max_response_bytes == MAX_B14_RESPONSE_BYTES
     with pytest.raises(ValueError):
-        b14_execution_module.B14ExecutionConfig(base_url="https://b14.example.test", timeout_seconds=61)
+        b14_execution_module.B14ExecutionConfig(base_url="https://b14.example.test", timeout_seconds=3601)
     with pytest.raises(ValueError):
         b14_execution_module.B14ExecutionConfig(
             base_url="https://b14.example.test",

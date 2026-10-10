@@ -513,7 +513,7 @@ class TestAIProviderSettings:
         from app.config import Settings
 
         with pytest.raises(ValueError, match="LT_AI_TIMEOUT_SECONDS"):
-            Settings(environment="testing", ai_timeout_seconds=121)
+            Settings(environment="testing", ai_timeout_seconds=3601)
 
     def test_valid_timeout_min_edge(self):
         from app.config import Settings
@@ -524,8 +524,8 @@ class TestAIProviderSettings:
     def test_valid_timeout_max_edge(self):
         from app.config import Settings
 
-        s = Settings(environment="testing", ai_timeout_seconds=120)
-        assert s.ai_timeout_seconds == 120
+        s = Settings(environment="testing", ai_timeout_seconds=3600)
+        assert s.ai_timeout_seconds == 3600
 
     def test_invalid_cost_class_fails(self):
         from app.config import Settings

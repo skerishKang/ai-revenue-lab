@@ -71,13 +71,12 @@ from app.pilot.model_registry_file import group_model_ids
 # (Kilo Gateway's own ~10s limit on free models). Direct/manual routes used
 # to attempt once and give up despite the failure being retryable.
 #
-# Budget: the engine's orchestration budget is 60s. The whole B14 attempt
-# chain (initial + retries + backoffs) is capped at 45s wall time via a
-# per-attempt deadline, leaving >=15s of headroom for engine overhead.
-#   worst typical case: 3 attempts x ~10s (Kilo 504) + 0.5s + 1.0s backoff
-#                     = ~31.5s <= 45s
-#   pathological case : each attempt is hard-capped at the remaining budget
-#                     by asyncio.timeout, so total <= 45s by construction.
+# The 45s budget limits *additional* retry/fallback dispatches, not the
+# initial model inference. For both manual and auto routes the initial
+# attempt is governed by model idle detection and caller cancellation.
+# After it completes, additional physical requests are allowed only when
+# the shared retry window has remaining budget. The old 60s Engine ceiling
+# is an independent caller contract, not a B14 model-generation deadline.
 # ---------------------------------------------------------------------------
 _UPSTREAM_RETRY_MAX_RETRIES = 2
 _UPSTREAM_RETRY_BACKOFF_SECONDS = (0.5, 1.0)
@@ -835,8 +834,11 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                 break
 
             attempt_count += 1
+            # The first physical model attempt (manual OR auto) has no
+            # arbitrary 45s wall cap. Later attempts retain retry budget.
+            attempt_timeout = None if attempt_count == 1 else remaining
             try:
-                async with asyncio.timeout(remaining):
+                async with asyncio.timeout(attempt_timeout):
                     response_data = await _invoke_upstream(current)
             except TimeoutError as exc:
                 # asyncio.timeout hard ceiling fired (adapter timeout did not).

@@ -230,11 +230,11 @@ def _execution_context(value: Any) -> dict[str, Any] | None:
         if (
             isinstance(timeout, bool)
             or not isinstance(timeout, (int, float))
-            or not 1 <= float(timeout) <= 60
+            or not 1 <= float(timeout) <= 3600
         ):
             raise PadiemAiEngineClientError(
                 "invalid_engine_request",
-                "execution_context.timeout_seconds must be between 1 and 60",
+                "execution_context.timeout_seconds must be between 1 and 3600",
             )
         normalized["timeout_seconds"] = timeout
     return normalized

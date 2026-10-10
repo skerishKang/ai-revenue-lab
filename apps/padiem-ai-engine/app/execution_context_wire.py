@@ -35,7 +35,7 @@ def parse_execution_context(value: Any) -> ExecutionContext | None:
     return ExecutionContext(
         trace_id=trace_id,
         idempotency_key=data.get("idempotency_key"),
-        timeout_seconds=data.get("timeout_seconds", 20.0),
+        timeout_seconds=data.get("timeout_seconds", 900.0),
     )
 
 
