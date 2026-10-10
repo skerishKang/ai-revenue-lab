@@ -1,14 +1,15 @@
-"""Run the complete KAgent unittest suite once, in three isolated local processes.
+"""Run the complete KAgent unittest suite in four isolated local processes.
 
 No coverage selection or sample mode: the controller discovers *every* unittest
-case, proves an exact disjoint partition by test ID, and independently verifies
-both child discoveries before allowing either suite to run. All skipped,
-failed and import-error cases remain part of the normal unittest result.
+case, proves exact disjoint partition by test ID, and independently verifies
+child discoveries before allowing any suite to pass.
 
-The four heavy HWPX modules are split into two independent children, and
-all remaining tests run in a third child. Separate Python processes avoid
-cross-worker module monkeypatch/global state contamination.
-This is parallelism inside the *same* GitHub Actions runner: no new billed jobs.
+The original four heavy HWPX modules stay in two independent children; the
+former 3,700+ test 'rest' bottleneck is divided by complete unittest module
+into two balanced children. Tests within the same module remain together to
+preserve module-local state. Deterministic case-count balancing is computed
+from exact discovery and verified independently by workers. Both GitHub
+Linux and Windows run all original cases on the same respective runner.
 """
 
 from __future__ import annotations
@@ -30,7 +31,30 @@ _GROUP_MODULES = {
     ),
 }
 _ALL_HEAVY_MODULES = frozenset().union(*_GROUP_MODULES.values())
-_GROUPS = ("hwpx_create_fill", "hwpx_edit_table", "rest")
+_GROUPS = ("hwpx_create_fill", "hwpx_edit_table", "rest_a", "rest_b")
+
+
+def _rest_module_allocation(tests: list[unittest.case.TestCase]) -> dict[str, str]:
+    """Exact discovery's remaining modules are sorted and greedily balanced.
+
+    A complete module must stay with one child: many KAgent tests have module-
+    local patches/import state. The deterministic sorting and count balancing
+    make the independent subprocesses re-derive the identical partition.
+    """
+    from collections import Counter
+
+    counts = Counter(
+        test.id().split(".", 1)[0]
+        for test in tests
+        if test.id().split(".", 1)[0] not in _ALL_HEAVY_MODULES
+    )
+    loads = {"rest_a": 0, "rest_b": 0}
+    allocation: dict[str, str] = {}
+    for module, count in sorted(counts.items(), key=lambda item: (-item[1], item[0])):
+        group = min(loads, key=lambda g: (loads[g], g))
+        allocation[module] = group
+        loads[group] += count
+    return allocation
 
 
 def _flatten(suite: unittest.TestSuite):
@@ -51,11 +75,12 @@ def _discover() -> list[unittest.case.TestCase]:
 def _select(tests: list[unittest.case.TestCase], group: str):
     if group not in _GROUPS:
         raise ValueError("unknown KAgent test group")
-    if group == "rest":
+    if group in ("rest_a", "rest_b"):
+        allocation = _rest_module_allocation(tests)
         return [
             test
             for test in tests
-            if test.id().split(".", 1)[0] not in _ALL_HEAVY_MODULES
+            if allocation.get(test.id().split(".", 1)[0]) == group
         ]
     return [
         test
@@ -174,7 +199,7 @@ def _controller() -> int:
         if any(code != 0 for _, code, _ in results):
             print("KAGENT_PARALLEL_FAILURE", file=sys.stderr)
             return 1
-    print(f"KAGENT_FULL_SUITE_PASS total={expected} groups=3", flush=True)
+    print(f"KAGENT_FULL_SUITE_PASS total={expected} groups=4", flush=True)
     return 0
 
 
