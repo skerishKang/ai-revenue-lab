@@ -54,8 +54,8 @@ class Settings:
     runtime_mode: str = "mock"
     b14_base_url: str | None = None
     b66_quote_base_url: str | None = None
-    timeout_seconds: float = 20.0
-    completed_timeout_seconds: float = 50.0
+    timeout_seconds: float = 600.0
+    completed_timeout_seconds: float = 600.0
     live_enabled: bool = False
     web_provider: str = "off"
     firecrawl_api_key: str | None = field(default=None, repr=False)
@@ -80,8 +80,8 @@ class Settings:
         cls,
         runtime_mode: object = "mock",
         b14_base_url: object = None,
-        timeout_seconds: object = 20.0,
-        completed_timeout_seconds: object = 50.0,
+        timeout_seconds: object = 600.0,
+        completed_timeout_seconds: object = 600.0,
         live_enabled: object = False,
         web_provider: object = "off",
         firecrawl_api_key: object = None,
@@ -122,15 +122,15 @@ class Settings:
             timeout = float(timeout_seconds)
         except (TypeError, ValueError) as exc:
             raise ConfigError("PADIEM_CHAT_TIMEOUT_SECONDS must be numeric") from exc
-        if not 1 <= timeout <= 60:
-            raise ConfigError("PADIEM_CHAT_TIMEOUT_SECONDS must be between 1 and 60")
+        if not 1 <= timeout <= 3600:
+            raise ConfigError("PADIEM_CHAT_TIMEOUT_SECONDS must be between 1 and 3600")
 
         try:
             completed_timeout = float(completed_timeout_seconds)
         except (TypeError, ValueError) as exc:
             raise ConfigError("PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS must be numeric") from exc
-        if not 1 <= completed_timeout <= 60:
-            raise ConfigError("PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS must be between 1 and 60")
+        if not 1 <= completed_timeout <= 3600:
+            raise ConfigError("PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS must be between 1 and 3600")
 
         live = _strict_bool(live_enabled, name="PADIEM_CHAT_LIVE_ENABLED")
 
@@ -258,8 +258,8 @@ class Settings:
             runtime_mode=runtime_mode,
             b14_base_url=os.getenv("PADIEM_CHAT_B14_BASE_URL"),
             b66_quote_base_url=os.getenv("PADIEM_CHAT_B66_QUOTE_BASE_URL"),
-            timeout_seconds=os.getenv("PADIEM_CHAT_TIMEOUT_SECONDS", "20"),
-            completed_timeout_seconds=os.getenv("PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS", "50"),
+            timeout_seconds=os.getenv("PADIEM_CHAT_TIMEOUT_SECONDS", "600"),
+            completed_timeout_seconds=os.getenv("PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS", "600"),
             live_enabled=os.getenv("PADIEM_CHAT_LIVE_ENABLED", "false"),
             web_provider=(default_provider if configured_provider is None else configured_provider),
             firecrawl_api_key=os.getenv("FIRECRAWL_API_KEY"),

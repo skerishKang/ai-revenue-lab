@@ -15,7 +15,7 @@ from app.pilot.errors import UpstreamTimeout
 def test_connect_timeout_provider_scope_is_exact_and_bounded():
     timeout = plat.build_provider_http_timeout()
     assert (timeout.connect, timeout.read, timeout.write, timeout.pool) == (
-        30.0, 40.0, 20.0, 10.0
+        30.0, 600.0, 20.0, 10.0
     )
     # No Provider-specific exception or implicit fallback is installed.
 
@@ -61,7 +61,7 @@ async def test_exact_live_adapter_uses_provider_connect_timeout_once(
                     pass
             else:
                 await plat.call_platform_chat_completions(**params)
-    assert captured == [(expected, 40.0, 20.0, 10.0)]
+    assert captured == [(expected, 600.0, 20.0, 10.0)]
     assert len(requests) == 1
     assert f"b14_safe_timeout provider={provider} phase=connect mode={'stream' if stream else 'completed'}" in caplog.text
     assert "SYNTHETIC_ONLY_NO_CREDENTIAL_OR_EGRESS" not in caplog.text

@@ -37,7 +37,7 @@ def test_worker_bindings_default_to_mock_web_off_auth_off_with_finite_limits():
     settings = settings_from_worker_bindings({})
     assert settings.runtime_mode == "mock"
     assert settings.b14_base_url is None
-    assert settings.timeout_seconds == 20.0
+    assert settings.timeout_seconds == 600.0
     assert settings.live_enabled is False
     assert settings.web_provider == "off"
     assert settings.firecrawl_api_key is None

@@ -1,5 +1,7 @@
 # PADIEM 전 제품 모델 실행시간 감사와 코딩 에이전트 동등성 기준
 
+> **역사적 베이스라인 문서:** 아래 20/40/45/50/60초 값은 2026-10-10 최초 코드 감사 시점의 기존 값입니다. 사용자 지시에 따라 전 제품 코드 변경·최신 정책은 [#4194 전 제품 마이그레이션](4194_ALL_MODEL_LANES_TIMEOUT_MIGRATION_2026-10-10.md)을 기준으로 합니다. 실제 운영 적용 여부는 별도 검증 전까지 확정할 수 없습니다.
+
 > **Issue:** [#4194](https://github.com/skerishKang/ai-revenue-lab/issues/4194) · B14 후속 [#4191](https://github.com/skerishKang/ai-revenue-lab/issues/4191) · 2026-10-10 KST
 > **Evidence main:** `9324248e1bb2c80a72b3ed9b62b8554328e4a52e`
 > **Audit boundary:** SOURCE/READ-ONLY, no provider API calls, Production/Secrets mutation 0. This is a policy proposal, not deployment approval.

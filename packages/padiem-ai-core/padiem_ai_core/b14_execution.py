@@ -29,7 +29,7 @@ B14_CHAT_COMPLETIONS_PATH = "/api/pilot/v1/chat/completions"
 #       B14's own resource-abuse guards, independent of max_tokens:
 #       response byte cap (MAX_B14_RESPONSE_BYTES / configurable up to
 #       MAX_CONFIGURED_B14_RESPONSE_BYTES) and request timeout bounds
-#       (B14ExecutionConfig.timeout_seconds, 1..60s). Values unchanged.
+#       (B14ExecutionConfig.timeout_seconds, 1..3600s). Model-read policy now 600s.
 #   PROVIDER_MODEL_MAX_OUTPUT
 #       What the selected provider/model can technically produce.
 #       Capability metadata only (see padiem_ai_core.b14_output_limits).
@@ -203,7 +203,7 @@ def _b14_rate_limit_diagnostic(raw: bytes) -> str | None:
 class B14ExecutionConfig:
     base_url: str
     # RUNTIME_HARD_SAFETY_CEILING: duration guard, independent of max_tokens (#3553).
-    timeout_seconds: float = 20.0
+    timeout_seconds: float = 600.0  # model-response idle budget; no 45s global cap
     # RUNTIME_HARD_SAFETY_CEILING: response byte guard, independent of max_tokens.
     max_response_bytes: int = MAX_B14_RESPONSE_BYTES
 
@@ -213,9 +213,9 @@ class B14ExecutionConfig:
             isinstance(self.timeout_seconds, bool)
             or not isinstance(self.timeout_seconds, (int, float))
             or not math.isfinite(float(self.timeout_seconds))
-            or not 1 <= float(self.timeout_seconds) <= 60
+            or not 1 <= float(self.timeout_seconds) <= 3600
         ):
-            raise ValueError("timeout_seconds must be between 1 and 60")
+            raise ValueError("timeout_seconds must be between 1 and 3600")
         object.__setattr__(self, "timeout_seconds", float(self.timeout_seconds))
         if (
             isinstance(self.max_response_bytes, bool)
@@ -585,9 +585,9 @@ class B14ExecutionClient:
             raise ValueError("request must be B14ChatRequest")
 
         timeout = httpx.Timeout(
-            connect=min(self._config.timeout_seconds, 10.0),
+            connect=min(self._config.timeout_seconds, 30.0),
             read=self._config.timeout_seconds,
-            write=min(self._config.timeout_seconds, 10.0),
+            write=min(self._config.timeout_seconds, 20.0),
             pool=min(self._config.timeout_seconds, 10.0),
         )
 

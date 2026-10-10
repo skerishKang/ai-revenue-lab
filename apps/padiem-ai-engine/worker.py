@@ -95,9 +95,9 @@ ENGINE_WEB_TIMEOUT_SECONDS_ENV = "PADIEM_ENGINE_WEB_TIMEOUT_SECONDS"
 # #1990: the B14 transport timeout must cover B14's full retry chain
 # (#1988: 45s hard cap + ~1.5s backoff overhead). Default 50s = 45s retry
 # cap + 5s margin; the engine orchestration budget is 60s, leaving 10s.
-# Core enforces the 1-60s bound on B14ExecutionConfig.timeout_seconds.
+# Core enforces the 1-3600s bound on B14ExecutionConfig.timeout_seconds.
 ENGINE_B14_TIMEOUT_SECONDS_ENV = "PADIEM_ENGINE_B14_TIMEOUT_SECONDS"
-B14_TIMEOUT_DEFAULT_SECONDS = 50.0
+B14_TIMEOUT_DEFAULT_SECONDS = 600.0
 
 
 def _binding_value(env: Any, name: str) -> Any | None:
@@ -118,7 +118,7 @@ def _env_text(env: Any, name: str) -> str | None:
 def _b14_timeout_seconds_for_env(env: Any) -> float:
     """B14 transport timeout (seconds), env-tunable via a plain Worker var.
 
-    Default 50.0 (#1990). Values outside Core's 1-60 bound fail closed in
+    Default 600.0 (ZCode model idle parity). Values outside Core's 1-3600 bound fail closed in
     B14ExecutionConfig itself; this helper only parses, never clamps.
     """
 
