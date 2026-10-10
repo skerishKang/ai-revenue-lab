@@ -126,11 +126,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # Resolve the same three reviewed editable distributions in one pip
+          # transaction. This retains all extras, dependency constraints and the
+          # previously verified Pillow wheel while removing two redundant pip
+          # initialization / metadata / resolver passes on both operating systems.
           python -m pip install --disable-pip-version-check \
-            -e "../../packages/padiem-ai-core[tools,documents,render,tables,authoring]"
-          python -m pip install --disable-pip-version-check \
-            -e "../../packages/padiem-control-plane"
-          python -m pip install --disable-pip-version-check \
+            -e "../../packages/padiem-ai-core[tools,documents,render,tables,authoring]" \
+            -e "../../packages/padiem-control-plane" \
             -e "../../apps/padiem-ai-engine/clients/python"
 
       # Prove the artifact that is actually installed is the approved one, rather
