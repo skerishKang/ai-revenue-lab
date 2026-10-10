@@ -14,6 +14,8 @@ import unittest
 from openpyxl import Workbook
 
 from app.history import D1HistoryStore
+from app.app_factory import create_app
+import test_b54_claw_general_p01_routing as base
 from app.claw_durable_drive_output_pipeline import (
     ClawDurableDriveOutputPipeline, DurableArtifactCompletionError,
 )
@@ -125,6 +127,7 @@ class OfficeDriveCompletionTests(unittest.IsolatedAsyncioTestCase):
             artifacts=self.outputs, folders=adapter._folders,
             approval=self.approval, upload=self.provider,
         )
+        self.trusted_adapter = trusted
         self.completion = ClawOfficeDriveCompletion(
             pipeline=ClawDurableDriveOutputPipeline(
                 history=self.history, uploader=trusted,
@@ -160,6 +163,19 @@ class OfficeDriveCompletionTests(unittest.IsolatedAsyncioTestCase):
         data.update(overrides)
         return data
 
+    async def test_factory_requires_explicit_approved_adapter(self):
+        app = create_app(settings=base._settings(), history_store=self.history)
+        self.assertIsNone(app.state.claw_office_drive_completion)
+        configured = create_app(
+            settings=base._settings(), history_store=self.history,
+            claw_drive_artifact_uploader=self.trusted_adapter,
+        )
+        self.assertIsInstance(
+            configured.state.claw_office_drive_completion,
+            ClawOfficeDriveCompletion,
+        )
+        self.assertEqual(self.provider.calls, 0)
+
     async def test_actual_canonical_xlsx_pdf_both_registered_after_approved_upload(self):
         result = await self.completion.upload_completed_revision(**self.kwargs())
         self.assertEqual(self.provider.calls, 2)
@@ -178,7 +194,8 @@ class OfficeDriveCompletionTests(unittest.IsolatedAsyncioTestCase):
             {row["integrity_ref"] for row in rows},
             {self.outputs.revised.integrity_ref, self.outputs.pdf.integrity_ref},
         )
-        self.assertNotIn("provider_file_", str(result.public_projection()))
+        self.assertNotIn("provider_file_1", str(result.public_projection()))
+        self.assertNotIn("provider_file_2", str(result.public_projection()))
 
     async def test_preflight_all_material_and_intents_before_first_write(self):
         wrong_intent = replace(self.pdf_intent, payload_fingerprint="0"*64)
@@ -186,7 +203,7 @@ class OfficeDriveCompletionTests(unittest.IsolatedAsyncioTestCase):
             {"outputs": replace(self.outputs, pdf_bytes=PDF + b"tampered")},
             {"outputs": replace(self.outputs, lineage=replace(
                 self.outputs.lineage, run_ref="other_run"
-            )},
+            ))},
             {"pdf_intent": wrong_intent},
             {"pdf_intent": replace(self.pdf_intent, idempotency_key="idem_office_xlsx")},
             {"pdf_intent": replace(self.pdf_intent, approval_ref="approval_office_xlsx")},
@@ -204,6 +221,12 @@ class OfficeDriveCompletionTests(unittest.IsolatedAsyncioTestCase):
             await self.completion.upload_completed_revision(
                 **self.kwargs(owner_id=FOREIGN)
             )
+        self.assertEqual(self.provider.calls, 0)
+        self.db.execute(
+            "UPDATE claw_run_history SET status='failed' WHERE run_id=?", (RUN,)
+        )
+        with self.assertRaises(DurableArtifactCompletionError):
+            await self.completion.upload_completed_revision(**self.kwargs())
         self.assertEqual(self.provider.calls, 0)
 
     async def test_second_upload_failure_does_not_claim_pair_or_replay_first(self):

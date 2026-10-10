@@ -51,6 +51,7 @@ from .claw_general_routes import claw_general_execute, claw_general_capabilities
 from .claw_artifact_preview_routes import claw_artifact_inline_preview
 from .claw_conversation_artifact_routes import claw_conversation_artifact_followup
 from .claw_durable_drive_output_pipeline import ClawDurableDriveOutputPipeline
+from .claw_office_drive_completion import ClawOfficeDriveCompletion
 from .claw_durable_drive_artifact_routes import (
     claw_drive_artifact_download, claw_drive_artifact_preview,
 )
@@ -464,6 +465,16 @@ def create_app(
             history=history_store, uploader=claw_drive_artifact_uploader
         )
         if history_store is not None and claw_drive_artifact_uploader is not None
+        else None
+    )
+    # A verified local Office producer can hand over its two canonical outputs
+    # only when the host has separately injected the approved Drive uploader.
+    # No P01/Office producer or Drive grant is activated by this composition.
+    app.state.claw_office_drive_completion = (
+        ClawOfficeDriveCompletion(
+            pipeline=app.state.claw_durable_drive_output_pipeline
+        )
+        if app.state.claw_durable_drive_output_pipeline is not None
         else None
     )
     # READ is a separate current-grant host capability. WRITE approval never
