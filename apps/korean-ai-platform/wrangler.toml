@@ -8,6 +8,15 @@ compatibility_date = "2026-07-25"
 compatibility_flags = ["python_workers"]
 workers_dev = true
 
+# #3554 owner-approved B14 504 forensics (2026-10-10): persist bounded Worker
+# invocation logs, safe provider timeout phase and overall gateway deadline.
+# 100% sampling is intentional while this low-traffic diagnostic is open;
+# review pricing/retention and reduce sampling once the incident is resolved.
+# Never log provider credentials, customer documents or response bodies.
+[observability]
+enabled = true
+head_sampling_rate = 1
+
 [assets]
 directory = "static"
 binding = "ASSETS"

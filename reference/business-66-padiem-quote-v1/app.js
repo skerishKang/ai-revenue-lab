@@ -1856,6 +1856,35 @@
     applyAccountScopeDetail(event.detail);
   });
 
+  /* #4076 first-customer MVP: a new signed-in Direct draft must not require
+     retyping the sender company already verified in CompanyProfile. Preserve
+     any existing nonblank sender and every customer-specific quote field.
+     The authenticated runtime remains the authority, never a demo default. */
+  document.addEventListener("b66:runtime-changed", (event) => {
+    if (!event.detail || event.detail.ready !== true || !serverHistorySignedIn ||
+        !draft || !draft.sender || String(draft.sender.company || "").trim()) return;
+    const runtime = window.B66QuoteRuntimeBridge;
+    const profile = runtime && typeof runtime.getCompanyProfile === "function"
+      ? runtime.getCompanyProfile() : null;
+    if (!profile || typeof profile.company !== "string" || !profile.company.trim()) return;
+    const senderFields = {
+      company: profile.company.trim(),
+      rep: typeof profile.representative === "string" ? profile.representative : "",
+      contactPerson: typeof profile.contactPerson === "string" ? profile.contactPerson : "",
+      bizNo: typeof profile.businessNumber === "string" ? profile.businessNumber : "",
+      address: typeof profile.address === "string" ? profile.address : "",
+      phone: typeof profile.phone === "string" ? profile.phone : "",
+      email: typeof profile.email === "string" ? profile.email : ""
+    };
+    Object.keys(senderFields).forEach((key) => {
+      if (!String(draft.sender[key] || "").trim() && senderFields[key].trim()) {
+        draft.sender[key] = senderFields[key];
+      }
+    });
+    fillInputsFromDraft();
+    render();
+  });
+
   window.B66QuoteExtractionBridge = Object.freeze({
     validate: validateExtractionResult,
     apply: applyExtractionResult,

@@ -45,9 +45,68 @@ class B62ScopeTests(unittest.TestCase):
             "apps/padiem-chat/worker.py",
             "apps/padiem-chat/app/web_tools.py",
             "apps/padiem-chat/app/b66_quote_routes.py",
-            "apps/padiem-chat/tests/test_worker_web_fetch_transport.py",
         ):
             self.assertEqual(module.impact_scope([file(path)]), module.CHAT_ONLY)
+
+    def test_strict_test_modules_only_have_no_live_worker_source_change(self):
+        # The entire B62 pytest suite still runs, and pylock/bundle are checked.
+        for path in (
+            "apps/padiem-chat/tests/test_password_auth.py",
+            "apps/padiem-chat/tests/test_worker_web_fetch_transport.py",
+            "apps/padiem-chat/tests/test_b66_quote_pdf.py",
+        ):
+            self.assertEqual(module.impact_scope([file(path)]), module.TESTS_ONLY)
+        self.assertEqual(module.impact_scope([
+            file("apps/padiem-chat/tests/test_password_auth.py"),
+            file("apps/padiem-chat/tests/test_b54_claw_run_history_ui.py", "added"),
+        ]), module.TESTS_ONLY)
+
+    def test_test_only_scope_fails_closed_for_any_unsupported_file(self):
+        path = "apps/padiem-chat/tests/test_password_auth.py"
+        dangerous = (
+            "apps/padiem-chat/worker.py",
+            "apps/padiem-chat/worker_runtime_timeout_probe.py",
+            "apps/padiem-chat/app/auth_routes.py",
+            "apps/padiem-chat/wrangler.toml",
+            "apps/padiem-chat/pylock.toml",
+            ".github/scripts/b62_worker_probe_timeout.sh",
+            ".github/workflows/b62-padiem-chat-ci.yml",
+            "packages/padiem-ai-core/padiem_ai_core/workflow.py",
+            "apps/korean-ai-platform/app/pilot/b14_models.json",
+            "apps/padiem-chat/tests/conftest.py",
+            "apps/padiem-chat/tests/worker_runtime_probe_origin.py",
+            "apps/padiem-chat/tests/test_nested/test_foo.py",
+            "apps/padiem-chat/static/app.js",
+        )
+        for change in dangerous:
+            with self.subTest(change=change):
+                self.assertNotEqual(module.impact_scope([file(path), file(change)]),
+                                    module.TESTS_ONLY)
+        for invalid in (
+            file(path, "removed"), file(path, "renamed"),
+            file("apps/padiem-chat/tests/test_foo.js"),
+            file("apps/padiem-chat/tests/test_../worker.py"),
+        ):
+            with self.subTest(invalid=invalid):
+                self.assertNotEqual(module.impact_scope([invalid]), module.TESTS_ONLY)
+        self.assertEqual(module.impact_scope(
+            [file("apps/padiem-chat/tests/test_foo.py")] * 2
+        ), module.FULL)
+        self.assertEqual(module.impact_scope(
+            [file(f"apps/padiem-chat/tests/test_case{i}.py") for i in range(101)]
+        ), module.FULL)
+
+    def test_api_exact_compare_proves_test_only_for_pr_and_push(self):
+        for event_type in ("pull_request", "push"):
+            event = fake_event(event_type)
+            data = {"status": "ahead", "files": [
+                file("apps/padiem-chat/tests/test_password_auth.py")
+            ]}
+            with patch.object(module.urllib.request, "urlopen",
+                              return_value=io.BytesIO(json.dumps(data).encode())):
+                self.assertEqual(module.impact_scope(
+                    module.changed_files(event, event_type, REPO, "token")),
+                    module.TESTS_ONLY)
 
     def test_mixed_product_or_ci_files_always_full(self):
         for outside in (
