@@ -1,0 +1,100 @@
+name: B66 3396 CGI Two-Browser Readonly Acceptance
+
+on:
+  pull_request:
+    paths:
+      - ".github/scripts/b66_3396_cgi_two_browser_readonly.py"
+      - ".github/tests/test_b66_3396_cgi_two_browser_readonly.py"
+      - ".github/workflows/b66-3396-cgi-two-browser-readonly.yml"
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      confirmation:
+        description: "Type RUN_B66_3396_CGI_TWO_BROWSER_READONLY"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b66-3396-cgi-two-browser-readonly
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || inputs.target_sha }}
+          persist-credentials: false
+      - name: Exact main guard on dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        env:
+          TARGET_SHA: ${{ inputs.target_sha }}
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'B66_3396_READONLY_EXACT_MAIN=PASS'
+      - name: Fail-closed request and evidence contract
+        run: |
+          set -euo pipefail
+          python .github/scripts/b66_3396_cgi_two_browser_readonly.py --self-test
+          python .github/tests/test_b66_3396_cgi_two_browser_readonly.py
+          echo 'PRODUCTION_MUTATION=0'
+          echo 'CGI_ALPHA_CREDENTIAL_READ=0'
+          echo 'PROVIDER_CALLS=0'
+
+  live-cgi-readonly:
+    needs: source-contract
+    if: >-
+      ${{ github.event_name == 'workflow_dispatch' &&
+          inputs.confirmation == 'RUN_B66_3396_CGI_TWO_BROWSER_READONLY' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production
+    env:
+      TARGET_SHA: ${{ inputs.target_sha }}
+      B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
+      B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+      - name: Recheck exact main and credential presence
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          test -n "${B66_CGI_ALPHA_USERNAME}"
+          test -n "${B66_CGI_ALPHA_PASSWORD}"
+          echo 'B66_3396_LIVE_CGI_PRECALL=PASS'
+          echo 'CREDENTIAL_VALUES_LOGGED=0'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned Playwright
+        run: |
+          python -m pip install --disable-pip-version-check --quiet "playwright==1.55.0"
+          python -m playwright install --with-deps chromium
+      - name: Two separate CGI logins, GET-only draft parity, two canonical logouts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/b66_3396_cgi_two_browser_readonly.py --authorized-live-readonly
+          echo 'CUSTOMER_QUOTE_MUTATION=0'
+          echo 'MODEL_POSTS=0'
+          echo 'CGI_CREDENTIAL_OUTPUT=0'
