@@ -56,18 +56,39 @@ jobs:
         working-directory: apps/living-fiction
         run: python -m compileall -q app deploy/cloudflare/worker.py
 
-      - name: Build Cloudflare Container image
-        working-directory: apps/living-fiction
-        run: docker build --pull -f Dockerfile.cloudflare -t living-fiction-cloudflare-m0:${{ github.sha }} .
-
       - name: Setup Node 22
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
-      - name: Install current Cloudflare tooling for dry-run only
+      # #3989: Docker build and Cloudflare CLI installation have independent
+      # inputs. Run both on the SAME runner, not an extra billed runner.
+      # node_modules is excluded from the Docker build context by .dockerignore.
+      # Log both completely and fail closed if either command fails.
+      - name: Build Cloudflare Container and install dry-run CLI (overlap)
         working-directory: apps/living-fiction
-        run: npm install --no-save --ignore-scripts wrangler @cloudflare/containers
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker_log="$(mktemp)"
+          npm_log="$(mktemp)"
+          trap 'rm -f "$docker_log" "$npm_log"' EXIT
+          docker build --pull -f Dockerfile.cloudflare -t living-fiction-cloudflare-m0:${{ github.sha }} . >"$docker_log" 2>&1 &
+          docker_pid=$!
+          npm install --no-save --ignore-scripts wrangler @cloudflare/containers >"$npm_log" 2>&1 &
+          npm_pid=$!
+          if wait "$docker_pid"; then docker_result=0; else docker_result=$?; fi
+          if wait "$npm_pid"; then npm_result=0; else npm_result=$?; fi
+          echo "::group::Full Docker --pull image build log"
+          cat "$docker_log"
+          echo "::endgroup::"
+          echo "::group::Full npm Cloudflare CLI installation log"
+          cat "$npm_log"
+          echo "::endgroup::"
+          echo "B03_DOCKER_BUILD_EXIT=$docker_result"
+          echo "B03_NPM_TOOLING_EXIT=$npm_result"
+          test "$docker_result" -eq 0
+          test "$npm_result" -eq 0
 
       - name: Wrangler Container bundle/config dry-run
         working-directory: apps/living-fiction
