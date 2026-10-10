@@ -23,7 +23,15 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: false
+          # Exact original Git history is still needed by the full-range
+          # merge-base + git diff --check safety guard below.
           fetch-depth: 0
+          # #3989: retain the complete Docker build context, migration history,
+          # test sources, and this workflow; materialize no unrelated products.
+          sparse-checkout: |
+            apps/living-fiction/**
+            .github/workflows/b03-living-fiction-cloudflare-m0-ci.yml
+          sparse-checkout-cone-mode: false
 
       - name: Setup Python 3.13
         uses: actions/setup-python@v5
@@ -33,21 +41,16 @@ jobs:
       - name: Install pytest only
         run: python -m pip install --disable-pip-version-check 'pytest>=8,<10'
 
-      - name: Cloudflare migration source contracts
+      # Both full original test files (Cloudflare migration source-contracts
+      # and #3110 grandfathered prefix/upgrade validation) must run together.
+      # No -k / selection / ignored tests. New CI guard pins Docker/dry-run.
+      - name: Cloudflare migration and sequence prefix contracts
         working-directory: apps/living-fiction
-        run: python -m pytest -q tests/test_cloudflare_migration_contract.py
-
-      # #3110: a new migration must not reuse an existing sequence prefix.
-      # Run against the real migrations/ directory so the shipped history is
-      # what gets validated, and so the grandfathered 005 pair is exercised on
-      # every pull request rather than only in a local run.
-      #
-      # The test file also proves the upgrade path from an already-migrated
-      # database applies nothing again, which is the property that makes the
-      # historical pair safe to leave in place.
-      - name: Migration sequence prefix guard
-        working-directory: apps/living-fiction
-        run: python -m pytest -q tests/test_migration_prefix_guard_3110.py
+        run: |
+          python -m pytest -q \
+            tests/test_cloudflare_migration_contract.py \
+            tests/test_migration_prefix_guard_3110.py \
+            tests/test_3989_b03_m0_ci_scope.py
 
       - name: Python syntax gate
         working-directory: apps/living-fiction
