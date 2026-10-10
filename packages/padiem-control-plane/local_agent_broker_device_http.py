@@ -20,7 +20,7 @@ from padiem_control_plane.local_agent_broker_http import (
 #: edge. #3128 — `/reconcile` carries one restarted runner's durable admitted
 #: correlation to the #3121 broker exit and grants no execution authority.
 _DEVICE_HTTP_ROUTES = frozenset(
-    {"/session", "/poll", "/material", "/heartbeat", "/acknowledge", "/reconcile"}
+    {"/session", "/poll", "/material", "/heartbeat", "/acknowledge", "/reconcile", "/office-part"}
 )
 _ENVELOPE_KEYS = frozenset({"method", "route", "content_type", "body_b64", "tls_verified"})
 _MAX_BODY_B64_CHARS = ((MAX_LOCAL_AGENT_HTTP_BODY_BYTES + 2) // 3) * 4
@@ -107,6 +107,7 @@ class LocalAgentBrokerDeviceHttpService:
         material_resolver,
         session_open_transaction: Callable[[Callable[[], Any]], Any],
         clock: Callable[[], datetime] | None = None,
+        office_chunks=None,
     ) -> None:
         if not callable(rpc_factory):
             raise ValueError("rpc_factory must be callable")
@@ -124,6 +125,7 @@ class LocalAgentBrokerDeviceHttpService:
         self._material_resolver = material_resolver
         self._session_open_transaction = session_open_transaction
         self._clock = clock or (lambda: datetime.now(timezone.utc))
+        self._office_chunks = office_chunks
 
     def _server_now(self) -> datetime:
         value = self._clock()
@@ -174,6 +176,22 @@ class LocalAgentBrokerDeviceHttpService:
             return _structured_response(
                 _error(401, "local_agent_http_auth_required", "authenticated Local Agent broker access is required")
             )
+
+        if route == "/office-part":
+            # The device credential is verified by canonical broker authority
+            # above; the payload is only artifact material, NEVER ownership.
+            if self._office_chunks is None:
+                return _structured_response(_error(503, "office_transfer_not_configured", "Office binary transfer is not enabled"))
+            try:
+                material = {k: v for k, v in decoded.items()
+                            if k not in ("binding_ref", "credential_b64")}
+                stored = self._session_open_transaction(lambda: self._office_chunks.put(
+                    material, binding_ref=binding.binding_ref,
+                    owner=binding.account_ref, workspace=binding.workspace_ref,
+                ))
+            except Exception:
+                return _structured_response(_error(409, "office_transfer_refused", "Office binary transfer was refused"))
+            return _structured_response(LocalAgentBrokerHttpResponse(status=200, body={"ok": True, "office_part": stored}))
 
         auth = TrustedLocalAgentHttpAuthContext(
             principal_ref=binding.device_id,

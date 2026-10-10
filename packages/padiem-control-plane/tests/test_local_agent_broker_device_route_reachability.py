@@ -293,6 +293,7 @@ def test_reconcile_route_reaches_canonical_reconciliation_through_the_private_ed
             "/session",
             "/poll",
             "/material",
+            "/office-part",
             "/heartbeat",
             "/acknowledge",
             "/reconcile",
