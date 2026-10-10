@@ -1,7 +1,9 @@
 """Single B14 HTTPX transport policy for Cloudflare Python Worker (Pyodide).
 
 The caller-facing synchronous gateway owns one 45-second wall-clock attempt
-budget because the current Engine tool budget is 60 seconds.  These four
+budget: historically chosen under the Engine *maximum* 60-second ceiling.
+Some actual callers use a 20-second default or 50-second completion budget;
+none are silently widened by this patch. These four
 HTTPX phase bounds are NOT additive and NOT a total request deadline:
 - connect is the phase that the Worker/Pyodide HTTPX Fetch patch reports,
   not evidence of a specific socket TCP/TLS handshake;
@@ -24,10 +26,10 @@ READ_SECONDS = 40.0
 WRITE_SECONDS = 20.0
 POOL_SECONDS = 10.0
 GATEWAY_WALL_SECONDS = 45.0
-ENGINE_CURRENT_WALL_SECONDS = 60.0
+ENGINE_MAX_WALL_SECONDS = 60.0  # Core ceiling, NOT its 20s default
 
 assert 0 < POOL_SECONDS <= WRITE_SECONDS <= CONNECT_SECONDS < GATEWAY_WALL_SECONDS
-assert 0 < READ_SECONDS < GATEWAY_WALL_SECONDS < ENGINE_CURRENT_WALL_SECONDS
+assert 0 < READ_SECONDS < GATEWAY_WALL_SECONDS < ENGINE_MAX_WALL_SECONDS
 
 
 def build_provider_http_timeout() -> httpx.Timeout:

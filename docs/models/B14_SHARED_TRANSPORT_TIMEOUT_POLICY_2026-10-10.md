@@ -23,7 +23,7 @@ Date: 2026-10-10. Scope: B14 transport architecture for **all existing model Pro
 | write | 20s | 요청 body chunk 전송 대기 한도 |
 | pool | 10s | 연결 풀 획득 한도. 매번 새 AsyncClient 생성 정책은 이번에 변경하지 않음 |
 | B14 gateway | **45s overall** | 첫 호출과 허용된 **동일 경로 재시도/백오프 전체**를 포함한 asyncio wall ceiling |
-| current Engine execution | **60s** | 현재 Core의 `MAX_TIMEOUT_SECONDS`이며, B14 gateway가 15s 여유를 남기도록 원래 설계됨 |
+| current Engine execution | **60s** | 현재 Core의 **최대** `MAX_TIMEOUT_SECONDS=60`이고, **기본값은 20초**이다. 파디엠 챗 설정은 완료형 기본 50초/스트리밍 기본 20초이다. 따라서 어느 호출 경로가 해당 예산을 적용하는지 구분해야 하며, 45초보다 먼저 끊길 수 있다 |
 
 - 위 30+40+20+10은 **순차 합산되는 요청 시간 100초가 아니다**. Phase별 timeout이 먼저 작동하거나, 45s 전체 한도가 먼저 작동하면 중단된다.
 - **45s 이상의 비스트리밍 모델 응답**은 현재 제품 경로에서 실패할 수 있다. 이를 해결하려면 Engine/호출자/client timeout contract와 비동기 작업 큐 또는 streaming UX를 설계해야 한다. 단순히 45→120으로 올리면 Engine 60s가 먼저 끊어질 수 있으므로 여기서는 변경하지 않았다. 향후 별도 Owner 검토 대상.
