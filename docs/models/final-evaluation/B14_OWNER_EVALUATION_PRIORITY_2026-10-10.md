@@ -1,5 +1,9 @@
 # B14 모델 평가 우선순위 — Owner 결정 (2026-10-10)
 
+<!-- OWNER_KIRA_LIVE_REBASE_20261010_1808 -->
+**2026-10-10 18:08 KST 최신 상태:** Kira `kira/qwen3.8-flash-free`는 실제 B14 운영 경유 **1회 HTTP200/정확한 모델 식별/비어 있지 않은 답변**을 확인했습니다([근거](B14_KIRA_LIVE_ONCE_AND_PROMO_SCOPE_2026-10-10.md)). 아래 이전 “Kira 평가 증거 없음·신규 등록만”과 “Kira 2번째 호출 대기”는 **과거 상태**로 보존한 것입니다. **연결 가능성 검증 PASS ≠ 10-case QKR 모델 품질/PDF 완료**. 공식 모델별 시간제한 무료 프로모션 확인, Owner 일일 1,000만 구독 토큰 적용/실제 청구 기록은 UNKNOWN. SenseNova 1회 운영 연결도 PASS, ExLab 보류 유지. 자동 라우팅/모델 추천/기본 선택 변경 없음.
+<!-- /OWNER_KIRA_LIVE_REBASE_20261010_1808 -->
+
 <!-- CENTRAL_OWNER_20261010_BILLING_LIVE_PROBE_PRIORITY -->
 ## 2026-10-10 Owner 최신 계정 조건 / #3554 평가 재정렬
 
