@@ -96,6 +96,8 @@ def run():
 
             context.route("**/*",guard)
             page=context.new_page()
+            browser_downloads=[]
+            page.on("download",lambda download: browser_downloads.append(download))
             try:
                 base._login(page,username,password)
                 logged=True
@@ -103,6 +105,22 @@ def run():
                 # The CGI alpha server state is intentionally neither read nor
                 # modified by GuidedAPI. Only the per-browser slot is used.
                 base._guided(page,counters)
+                if len(browser_downloads)!=1:
+                    raise base.SmokeFailure("cgi_pdf_download_not_unique")
+                from b66_cgi_original_visual_compare import measure
+                root=Path(__file__).resolve().parents[2]
+                original=root/"reference/b66-public-standard-templates/cgi/v1/source/original.pdf"
+                template=root/"reference/b66-public-standard-templates/cgi/v1/sol61/template/template.json"
+                manifest=root/"reference/b66-public-standard-templates/cgi/v1/PUBLIC_RELEASE_MANIFEST.json"
+                report=measure(original,Path(browser_downloads[0].path()).read_bytes(),template,manifest)
+                print("CGI_ORIGINAL_REFERENCE_HASH=PASS",flush=True)
+                print("CGI_ORIGINAL_PAGE_A4=PASS",flush=True)
+                print("CGI_BROWSER_PDF_TEXT_CHARACTERS="+str(report["browserTextCharacters"]),flush=True)
+                print("CGI_ORIGINAL_PDF_TEXT_CHARACTERS="+str(report["originalTextCharacters"]),flush=True)
+                print("CGI_ORIGINAL_UNMASKED_MAE="+str(report["unmaskedMAE"]),flush=True)
+                print("CGI_ORIGINAL_UNMASKED_CHANGED16_PCT="+str(report["unmaskedChanged16Percent"]),flush=True)
+                print("CGI_ORIGINAL_UNMASKED_CHANGED32_PCT="+str(report["unmaskedChanged32Percent"]),flush=True)
+                print("CGI_ORIGINAL_VISUAL_CERTIFICATION=NOT_ASSERTED",flush=True)
                 if counters.interpret_posts or counters.pdf_posts:
                     raise base.SmokeFailure("unexpected_model_or_server_pdf_call")
                 # The completion clears only the in-memory virtual slot.
