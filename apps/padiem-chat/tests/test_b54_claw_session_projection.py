@@ -407,10 +407,12 @@ def test_phase_b_adds_exactly_one_additive_nullable_conversation_migration() -> 
     migration_files = sorted(migrations_dir.glob("*.sql"))
     names = [p.name for p in migration_files]
     assert "014_claw_run_history_conversation.sql" in names
-    # Exactly one migration references conversation_id + claw_run_history.
+    # Exactly one migration MODIFIES the existing run-history conversation
+    # column. Later additive tables may legitimately reference a completed
+    # Claw run without re-ALTER-ing that existing column (#3929).
     hits = [p.name for p in migration_files
-            if "conversation_id" in p.read_text(encoding="utf-8").lower()
-            and "claw_run_history" in p.read_text(encoding="utf-8").lower()]
+            if "alter table claw_run_history" in p.read_text(encoding="utf-8").lower()
+            and "add column conversation_id" in p.read_text(encoding="utf-8").lower()]
     assert hits == ["014_claw_run_history_conversation.sql"]
     content = (migrations_dir / "014_claw_run_history_conversation.sql").read_text(encoding="utf-8").lower()
     assert "alter table claw_run_history add column conversation_id text;" in content
