@@ -18,6 +18,7 @@ on:
       - "reference/business-66-padiem-quote-v1/tests/three-pane-shell-contract.test.cjs"
       - "reference/business-66-padiem-quote-v1/tests/test_3536_unified_composer_browser.py"
       - "reference/business-66-padiem-quote-v1/tests/test_4076_customer_journey_browser.py"
+      - "reference/business-66-padiem-quote-v1/tests/test_3396_isolated_browser_resume.py"
       - ".github/scripts/b66_shell_cgi_v2_smoke.py"
       - "reference/business-66-padiem-quote-v1/tests/quote-template-renderer.test.cjs"
       - "reference/business-66-padiem-quote-v1/tests/static-contract.test.cjs"
@@ -81,3 +82,4 @@ jobs:
         run: |
           set -euo pipefail
           python reference/business-66-padiem-quote-v1/tests/test_4076_customer_journey_browser.py
+          python reference/business-66-padiem-quote-v1/tests/test_3396_isolated_browser_resume.py
