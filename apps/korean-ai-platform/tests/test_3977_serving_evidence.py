@@ -79,6 +79,71 @@ def test_seven_non_google_models_and_unverified_serving_caps_stay_unknown():
         assert item.serving_model_max_output is None
 
 
+def test_four_exact_non_google_serving_api_sources_are_bounded_and_read_only():
+    indexed = {record.model_id: record for record in registered_serving_evidence()}
+    expected_sources = {
+        "atria/Atria-Dawn-Preview": "https://api.atria-asi.ai/docs",
+        "sensenova/sensenova-6.8-flash-lite": "https://github.com/OpenSenseNova/SenseNova-Skills/blob/main/INSTALL.md",
+        "poolside/laguna-s-2.1": "https://www.poolside.ai/models",
+        "inception/mercury-2.5": "https://www.inceptionlabs.ai/models",
+    }
+    assert {
+        item.model_id for item in indexed.values() if item.verified_serving_api
+    } == set(expected_sources)
+    for model_id, source in expected_sources.items():
+        record = indexed[model_id]
+        api = record.verified_serving_api
+        assert api is not None
+        assert api.source_url == source
+        assert api.checked_on == "2026-10-10"
+        # Serving API documentation != original model lineage != runtime acceptance.
+        assert record.provenance_status == "UNKNOWN"
+        assert record.manufacturer is None
+        assert record.serving_model_max_output is None
+        assert record.output_limit_status == "UNKNOWN"
+        with pytest.raises(FrozenInstanceError):
+            api.source_url = "https://forged.example"
+
+    atria = indexed["atria/Atria-Dawn-Preview"].verified_serving_api
+    assert atria.context_window_tokens == 256000
+    assert atria.request_output_parameter_max_tokens == 65536
+    assert atria.documented_input_modalities == ("text",)
+    assert indexed["atria/Atria-Dawn-Preview"].serving_model_max_output is None
+    mercury = indexed["inception/mercury-2.5"].verified_serving_api
+    assert mercury.context_window_label == "260K"
+    assert mercury.context_window_tokens is None
+    for model_id in ("poolside/laguna-s-2.1", "sensenova/sensenova-6.8-flash-lite"):
+        api = indexed[model_id].verified_serving_api
+        assert api.context_window_tokens is None
+        assert api.request_output_parameter_max_tokens is None
+
+
+@pytest.mark.parametrize("model_id", [
+    "atria/Atria-Dawn-Preview",
+    "sensenova/sensenova-6.8-flash-lite",
+    "poolside/laguna-s-2.1",
+    "inception/mercury-2.5",
+])
+def test_spoofed_serving_origin_or_upstream_must_not_inherit_official_fact(
+    monkeypatch, model_id
+):
+    original = deepcopy(read_registry())
+    target = next(x for x in original["models"] if x["id"] == model_id)
+    provider = target["provider_id"]
+    original_upstream = target["upstream_model"]
+    original_origin = original["providers"][provider]["base_origin"]
+
+    original["providers"][provider]["base_origin"] = "https://spoofed.example/v1"
+    monkeypatch.setattr(evidence_api, "read_registry", lambda: original)
+    candidate = next(x for x in registered_serving_evidence() if x.model_id == model_id)
+    assert candidate.verified_serving_api is None
+
+    original["providers"][provider]["base_origin"] = original_origin
+    target["upstream_model"] = original_upstream + "-vendor-fork"
+    candidate = next(x for x in registered_serving_evidence() if x.model_id == model_id)
+    assert candidate.verified_serving_api is None
+
+
 def test_spoofed_google_origin_disables_all_first_party_provenance(monkeypatch):
     data = deepcopy(read_registry())
     data["providers"]["google"]["base_origin"] = "https://thirdparty.example.test/v1"

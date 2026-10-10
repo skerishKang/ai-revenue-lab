@@ -44,6 +44,74 @@ _GOOGLE_FIRST_PARTY_SOURCES: dict[str, tuple[str, int | None]] = {
 
 
 @dataclass(frozen=True)
+class VerifiedServingAPIFacts:
+    """Read-only serving API documentation; not a tested runtime capability.
+
+    The supported origin/ID must match exactly. A request output parameter
+    ceiling is NOT the model's actual maximum generated output tokens.
+    """
+    source_url: str
+    checked_on: str = "2026-10-10"
+    context_window_tokens: int | None = None
+    context_window_label: str | None = None
+    request_output_parameter_max_tokens: int | None = None
+    documented_input_modalities: tuple[str, ...] = ()
+
+
+# Only independently checked official *serving* API pages, as of 2026-10-10.
+# model_id -> (provider_id, exact upstream, exact origin, serving API facts)
+# These do not prove manufacturer/variant lineage, API live acceptance or
+# actual serving max output. Unlisted Agnes/ExLab/Kira remain unknown.
+_VERIFIED_SERVING_API: dict[
+    str, tuple[str, str, str, VerifiedServingAPIFacts]
+] = {
+    "atria/Atria-Dawn-Preview": (
+        "atria", "Atria-Dawn-Preview", "https://api.atria-asi.ai/v1",
+        VerifiedServingAPIFacts(
+            source_url="https://api.atria-asi.ai/docs",
+            context_window_tokens=256000,
+            request_output_parameter_max_tokens=65536,
+            documented_input_modalities=("text",),
+        ),
+    ),
+    "sensenova/sensenova-6.8-flash-lite": (
+        "sensenova", "sensenova-6.8-flash-lite", "https://token.sensenova.ai/v1",
+        VerifiedServingAPIFacts(
+            source_url="https://github.com/OpenSenseNova/SenseNova-Skills/blob/main/INSTALL.md",
+            # The .ai address is the international serving endpoint; .cn
+            # belongs to a different regional account/key environment.
+        ),
+    ),
+    "poolside/laguna-s-2.1": (
+        "poolside", "poolside/laguna-s-2.1", "https://inference.poolside.ai/v1",
+        VerifiedServingAPIFacts(source_url="https://www.poolside.ai/models"),
+        # Local/self-hosted context samples are NOT hosted API evidence.
+    ),
+    "inception/mercury-2.5": (
+        "inception", "mercury-2.5", "https://api.inceptionlabs.ai/v1",
+        VerifiedServingAPIFacts(
+            source_url="https://www.inceptionlabs.ai/models",
+            context_window_label="260K",  # published label; exact count UNKNOWN
+        ),
+    ),
+}
+
+
+def _exact_serving_api_fact(
+    model_id: str, provider_id: str, upstream: str, origin: str
+) -> VerifiedServingAPIFacts | None:
+    entry = _VERIFIED_SERVING_API.get(model_id)
+    if entry is None:
+        return None
+    expected_provider, expected_upstream, expected_origin, facts = entry
+    if (provider_id, upstream, origin.rstrip("/")) != (
+        expected_provider, expected_upstream, expected_origin
+    ):
+        return None
+    return facts
+
+
+@dataclass(frozen=True)
 class GoogleAIStudioFreeTierSnapshot:
     """Owner-reported observed Google API quota; NOT a model capability.
 
@@ -82,6 +150,7 @@ class ServingModelEvidence:
     manufacturer: str | None = None
     variant_kind: str | None = None
     official_source_url: str | None = None
+    verified_serving_api: VerifiedServingAPIFacts | None = None
     google_ai_studio_free_tier_observed: GoogleAIStudioFreeTierSnapshot | None = None
     manufacturer_model_max_output: int | None = None
     serving_model_max_output: int | None = None
@@ -166,6 +235,9 @@ def registered_serving_evidence() -> tuple[ServingModelEvidence, ...]:
             manufacturer=manufacturer,
             variant_kind=variant,
             official_source_url=source_url,
+            verified_serving_api=_exact_serving_api_fact(
+                model_id, provider_id, upstream, origin
+            ),
             google_ai_studio_free_tier_observed=quota_snapshot,
             manufacturer_model_max_output=maker_output,
             # Serving API max output and explicit per-request budgets are
