@@ -1,6 +1,9 @@
 name: B62 Unified Browser QA
 
 # One PR workflow run instead of 16; names of the original 16 QA jobs remain intact.
+# #3989: All 16 QA jobs launch default headless Chromium without a channel.
+# Keep Linux OS dependencies and fonts; cache/install only the required
+# Playwright 1.55.0 headless-shell binary instead of the unused full browser.
 on:
   pull_request:
   workflow_dispatch:
@@ -66,6 +69,7 @@ jobs:
           python -m unittest discover -s .github/tests -p test_b62_browser_qa_unified.py -v
           python -m unittest discover -s .github/tests -p test_3989_b62_visual_leaf_smoke.py -v
           python -m unittest discover -s .github/tests -p test_3989_b62_owner_leaf_browser_base.py -v
+          python -m unittest discover -s .github/tests -p test_3989_b62_headless_shell_install.py -v
       # Source-only test; no browser install or new CI runner.
       - name: Regression check for bounded visual tail and fail-closed fan-in
         run: |
@@ -115,9 +119,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+          key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
       - name: Install Chromium runtime
-        run: uv run playwright install --with-deps chromium
+        run: uv run playwright install --with-deps --only-shell chromium
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
@@ -195,9 +199,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+          key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
       - name: Install Chromium runtime
-        run: uv run playwright install --with-deps chromium
+        run: uv run playwright install --with-deps --only-shell chromium
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
@@ -312,9 +316,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+          key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
       - name: Install Chromium runtime
-        run: uv run playwright install --with-deps chromium
+        run: uv run playwright install --with-deps --only-shell chromium
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
@@ -454,9 +458,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+          key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
       - name: Install Chromium runtime
-        run: uv run playwright install --with-deps chromium
+        run: uv run playwright install --with-deps --only-shell chromium
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
@@ -528,9 +532,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+          key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
       - name: Install Chromium runtime
-        run: uv run playwright install --with-deps chromium
+        run: uv run playwright install --with-deps --only-shell chromium
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
@@ -600,9 +604,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+          key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
       - name: Install Chromium runtime
-        run: uv run playwright install --with-deps chromium
+        run: uv run playwright install --with-deps --only-shell chromium
       - name: Start fail-closed mock Padiem Chat
         run: |
           set -euo pipefail
@@ -668,9 +672,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+          key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
       - name: Install Chromium runtime
-        run: uv run playwright install --with-deps chromium
+        run: uv run playwright install --with-deps --only-shell chromium
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
@@ -738,14 +742,14 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+          key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
       # #3989: pilot Ubuntu's canonical archive when the hosted Azure mirror
       # slows font downloads. The complete Playwright OS dependency installer
       # remains mandatory and unchanged (no --with-deps bypass).
       - name: Select Ubuntu archive for Playwright OS dependencies (pilot)
         run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
       - name: Install Chromium runtime
-        run: uv run playwright install --with-deps chromium
+        run: uv run playwright install --with-deps --only-shell chromium
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
@@ -811,9 +815,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+          key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
       - name: Install Chromium runtime
-        run: uv run playwright install --with-deps chromium
+        run: uv run playwright install --with-deps --only-shell chromium
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
@@ -881,9 +885,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+          key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
       - name: Install Chromium runtime
-        run: uv run playwright install --with-deps chromium
+        run: uv run playwright install --with-deps --only-shell chromium
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
@@ -953,9 +957,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+          key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
       - name: Install Chromium runtime
-        run: uv run playwright install --with-deps chromium
+        run: uv run playwright install --with-deps --only-shell chromium
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
@@ -1023,9 +1027,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+          key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
       - name: Install Chromium runtime
-        run: uv run playwright install --with-deps chromium
+        run: uv run playwright install --with-deps --only-shell chromium
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
@@ -1093,9 +1097,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+          key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
       - name: Install Chromium runtime
-        run: uv run playwright install --with-deps chromium
+        run: uv run playwright install --with-deps --only-shell chromium
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
@@ -1163,14 +1167,14 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+          key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
       # #3989: pilot Ubuntu's canonical archive when the hosted Azure mirror
       # slows font downloads. The complete Playwright OS dependency installer
       # remains mandatory and unchanged (no --with-deps bypass).
       - name: Select Ubuntu archive for Playwright OS dependencies (pilot)
         run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh
       - name: Install Chromium runtime
-        run: uv run playwright install --with-deps chromium
+        run: uv run playwright install --with-deps --only-shell chromium
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
@@ -1238,9 +1242,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+          key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
       - name: Install Chromium runtime
-        run: uv run playwright install --with-deps chromium
+        run: uv run playwright install --with-deps --only-shell chromium
       - name: Start fail-closed mock Padiem Chat
         run: |
           set -euo pipefail
@@ -1306,9 +1310,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+          key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
       - name: Install Chromium runtime
-        run: uv run playwright install --with-deps chromium
+        run: uv run playwright install --with-deps --only-shell chromium
       - name: Start mock-web Padiem Chat
         run: |
           set -euo pipefail
