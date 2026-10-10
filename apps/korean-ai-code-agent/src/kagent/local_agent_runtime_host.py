@@ -222,6 +222,7 @@ class LocalAgentResidentRuntimeHost:
         credential_store: DeviceCredentialStore,
         durable_store: DurableRunStore,
         coordinator: ControlPlaneAdmittedExecutionCoordinator | None = None,
+        office_staging=None,
         clock: Callable[[], datetime] | None = None,
         monotonic: Callable[[], float] | None = None,
         instance_lock: SingleInstanceLockPort | None = None,
@@ -287,6 +288,11 @@ class LocalAgentResidentRuntimeHost:
             durable_store=durable_store,
         )
         self._durable_store = durable_store
+        if office_staging is not None and not callable(
+            getattr(office_staging, "on_acknowledged", None)
+        ):
+            raise ContractError("trusted post-ACK Office output delivery port required")
+        self._office_staging = office_staging
         self._recovery = LocalAgentRestartRecoveryDriver(
             store=durable_store,
             channel=channel,
@@ -761,7 +767,7 @@ class LocalAgentResidentRuntimeHost:
                 self._active_command_id = command.command_id
                 material_ref = f"mat_{command.command_id}_{command.sequence}"
                 try:
-                    self._coordinator.execute_polled_command(
+                    receipt = self._coordinator.execute_polled_command(
                         binding=binding,
                         session=session,
                         command=command,
@@ -776,6 +782,38 @@ class LocalAgentResidentRuntimeHost:
                         "EXECUTED",
                         f"Command {command.command_id} sequence {command.sequence} executed and acknowledged",
                     )
+                    # Office material is a post-ACK, explicitly composed side
+                    # effect, NEVER part of the command result/ack authority.
+                    # On staging failure preserve the ACKed command truth; do
+                    # not silently convert it into a second execution/retry.
+                    if self._office_staging is not None:
+                        try:
+                            fact = receipt.execution
+                            if (fact.command_id != command.command_id
+                                    or fact.run_id != command.run_id
+                                    or fact.termination.value != "exited"
+                                    or fact.exit_code != 0
+                                    or fact.revision_ref != command.revision_ref):
+                                raise ContractError("successful exact broker receipt required")
+                            credential = self._credential_store.load(
+                                binding=binding, now=self._now(),
+                            )
+                            staged = self._office_staging.on_acknowledged(
+                                binding=binding, command=command, receipt=receipt,
+                                credential=credential,
+                            )
+                            if staged is not None:
+                                self._record_diagnostic(
+                                    "office", "STAGED",
+                                    "Authorized Office XLSX/PDF bytes staged in private broker",
+                                )
+                        except Exception:
+                            # Do not leak paths, Office content, TLS credentials
+                            # or misleadingly report an execution failure.
+                            self._record_diagnostic(
+                                "office", "STAGING_REFUSED",
+                                "Private Office staging incomplete; no Drive upload",
+                            )
                 except Exception as exc:
                     self._record_diagnostic("execution", "EXECUTION_ERROR", str(exc))
                     if isinstance(exc, OSError):
