@@ -21,11 +21,16 @@ def test_b03_m0_full_original_migration_and_upgrade_suites_remain_required():
         assert text.count(f"tests/{name}") == 1, name
         assert (APP / "tests" / name).is_file()
     assert text.count("python -m pytest -q") == 1
+    # Restrict test selection checks to the pytest command, not the whole
+    # workflow: npm --ignore-scripts is required by the original dry-run gate.
+    test_step = text.split(
+        "      - name: Cloudflare migration and sequence prefix contracts", 1
+    )[1].split("      - name: Python syntax gate", 1)[0]
     for forbidden in (
         "--ignore", "--deselect", "--last-failed", "--maxfail",
         "continue-on-error", "|| true", " -k ", " --lf",
     ):
-        assert forbidden not in text
+        assert forbidden not in test_step
 
 def test_b03_m0_full_build_and_review_security_remain_required():
     text = WORKFLOW.read_text(encoding="utf-8")
