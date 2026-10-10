@@ -92,6 +92,24 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn('test "$WORKER_RESULT" = skipped', self.aggregate)
         self.assertIn('test "$MM_RESULT" = skipped', self.aggregate)
 
+    def test_b14_multimodal_runner_only_skips_proven_static_only(self):
+        pilot = job("b14-multimodal-test", self.source)
+        # Registration-only already uses its own quick contract; no broad skip
+        # is allowed for chat_only, mixed/Core, B14, unknown or manual cases.
+        self.assertIn("needs: registry-ci-plan", pilot)
+        self.assertIn(
+            "needs.registry-ci-plan.outputs.lane != 'model_registration_only' "
+            "&& needs.registry-ci-plan.outputs.scope != 'static_only'",
+            pilot,
+        )
+        self.assertIn('SCOPE: ${{ needs.registry-ci-plan.outputs.scope }}', self.aggregate)
+        self.assertIn('if [ "$SCOPE" = static_only ]; then', self.aggregate)
+        self.assertIn('test "$MM_RESULT" = skipped', self.aggregate)
+        self.assertIn('test "$MM_RESULT" = success', self.aggregate)
+        self.assertIn('test "$FULL_RESULT" = success', self.aggregate)
+        self.assertIn('test "$WORKER_RESULT" = success', self.aggregate)
+        self.assertIn('test "$QUICK_RESULT" = skipped', self.aggregate)
+
     def test_classifier_tests_and_both_impact_triggers_retained(self):
         self.assertIn("test_3989_b62_parallel_runtime_jobs.py -q", self.plan)
         self.assertEqual(self.source.count('      - ".github/tests/test_3989_b62_parallel_runtime_jobs.py"'), 2)
