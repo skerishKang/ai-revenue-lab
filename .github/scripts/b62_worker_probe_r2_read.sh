@@ -8,11 +8,16 @@ compatibility_flags = ["python_workers"]
 workers_dev = true
 EOF
 
-npx --yes wrangler@4.130.0 dev --config .runtime-r2-read-probe.toml --port 8790 --inspector-port 9234 > /tmp/b62-r2-read-workerd.log 2>&1 &
+# Each concurrent workerd must have its own local SQLite/persistence state.
+# Distinct HTTP and inspector ports do not isolate Wrangler's default .wrangler/state.
+PERSIST_DIR="$(mktemp -d "${TMPDIR:-/tmp}/b62-worker-r2_read-state.XXXXXXXX")"
+
+npx --yes wrangler@4.130.0 dev --config .runtime-r2-read-probe.toml --port 8790 --inspector-port 9234 --persist-to "$PERSIST_DIR" > /tmp/b62-r2-read-workerd.log 2>&1 &
 WORKER_PID=$!
 
 cleanup() {
   kill "$WORKER_PID" 2>/dev/null || true
+  rm -rf -- "$PERSIST_DIR"
   rm -f .runtime-r2-read-probe.toml
 }
 trap cleanup EXIT
