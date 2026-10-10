@@ -24,6 +24,7 @@ on:
       # so a declaration change has to run this suite even when no Claw file moves.
       - 'packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py'
       - '.github/workflows/validate-b54-kagent.yml'
+      - '.github/scripts/kagent_parallel_contract_tests.py'
   workflow_dispatch:
 
 permissions:
@@ -204,6 +205,11 @@ jobs:
           set -euo pipefail
           python -m compileall -q src tests
 
+      # The runner discovers the exact original unittest suite, proves a
+      # disjoint complete partition by test IDs, then runs both groups in two
+      # isolated Python processes on this single Linux/Windows GitHub runner.
+      # Each child independently re-discovers and checks the test-ID digest,
+      # preserves all failures and skips, and reports the slowest 50 durations.
       - name: Run KAgent contract tests
         working-directory: apps/korean-ai-code-agent
         shell: bash
@@ -211,4 +217,4 @@ jobs:
           PYTHONPATH: src
         run: |
           set -euo pipefail
-          python -m unittest discover -s tests -v --durations=50
+          python "$GITHUB_WORKSPACE/.github/scripts/kagent_parallel_contract_tests.py"
