@@ -89,3 +89,21 @@ def test_phase_expectations_and_privacy_markers_are_pinned() -> None:
     )
     for marker in required:
         assert marker in workflow
+
+
+def test_main_push_matches_exact_pr_b67_source_scope() -> None:
+    # #3989: unrelated B62/B14 and docs-only merges must not launch an
+    # unrelated B67 source-only runner. All PR-owned paths remain covered
+    # on main, and workflow_dispatch remains unrestricted/unchanged.
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    pr_region = workflow.split("\n  pull_request:\n", 1)[1].split("\n  push:\n", 1)[0]
+    push_region = workflow.split("\n  push:\n", 1)[1].split("\n  workflow_dispatch:\n", 1)[0]
+    pull_paths = [line.strip() for line in pr_region.splitlines() if line.strip().startswith('- "')]
+    main_paths = [line.strip() for line in push_region.splitlines() if line.strip().startswith('- "')]
+    assert len(pull_paths) == len(main_paths) == 6
+    assert len(set(pull_paths)) == len(pull_paths)
+    assert main_paths == pull_paths
+    assert "branches:\n      - main" in push_region
+    assert "workflow_dispatch:" in workflow
+    assert '"apps/padiem-chat/**"' not in main_paths
+    assert '"packages/padiem-ai-core/**"' not in main_paths
