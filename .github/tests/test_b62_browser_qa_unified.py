@@ -49,12 +49,16 @@ class B62UnifiedBrowserQAContract(unittest.TestCase):
             master.count("run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh"),
             2,
         )
-        pieces = master.split("\n  ")
+        # Match anchored top-level YAML job headers only; splitting on
+        # "\\n  " also splits deeper indented lines and loses the job IDs.
+        import re
+        headings = list(re.finditer(r"(?m)^  ([a-z][a-z0-9-]+):\\n", master))
         job_sources = {}
-        for piece in pieces:
-            name = piece.split(":\n", 1)[0]
+        for index, heading in enumerate(headings):
+            name = heading.group(1)
             if name in self.paths:
-                job_sources[name] = piece
+                end = headings[index + 1].start() if index + 1 < len(headings) else len(master)
+                job_sources[name] = master[heading.end():end]
         self.assertEqual(len(job_sources), 16)
         for name, source in job_sources.items():
             with self.subTest(name=name):
