@@ -68,7 +68,7 @@ check(css.includes("body.b66-three-pane .shell-edit-heading { display: none !imp
 
 check(shell.includes('max-width:1250px') && refresh.includes('min-width: 901px'),
   "mid-width notebooks default to a wide quote editor with optional overlay preview");
-check(refresh.includes('height: max(185px, calc(100dvh - 165px))'),
+check(refresh.includes('height: max(185px, calc(var(--b66-visual-height, 100dvh) - 165px))'),
   "mobile conversation responds to compact keyboard viewport height");
 check(refresh.includes('body.b66-three-pane .shell-preview-reopen::after'),
   "mobile preview opener is compact rather than colliding with the brand");
@@ -94,6 +94,16 @@ check(shell.includes('zoomFactor') && shell.includes('zoomControls') &&
   "screen-only preview viewer supports fit, zoom and horizontal scroll");
 check(!html.includes('id="shell-preview-zoom"'), "certified HTML paper stays unchanged");
 
+check(shell.includes("function wireComposerVisualViewport()") &&
+  shell.includes('viewport.addEventListener("resize", sync)') &&
+  shell.includes('document.activeElement === composer') &&
+  shell.includes('obscured >= 120') &&
+  shell.includes('viewport.scale <= 1.05') &&
+  shell.includes('style.removeProperty("--b66-visual-height")'),
+  "visual-only mobile keyboard shrink must be bounded to a focused composer and reset");
+check(refresh.includes("var(--b66-visual-height, 100dvh)") &&
+  refresh.includes("height: max(185px"),
+  "keyboard-aware composer keeps the pre-existing dvh fallback and bounded minimum");
 console.log("B66_THREE_PANE_SHELL=PASS");
 console.log("B66_PRIMARY_INPUT_AUTHORITY=EASY_COMPOSER");
 console.log("B66_CANONICAL_PREVIEW_COUNT=1");

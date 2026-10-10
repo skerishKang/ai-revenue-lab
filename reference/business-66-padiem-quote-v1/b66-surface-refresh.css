@@ -473,9 +473,9 @@ body.b66-three-pane .shell-edit-return:focus-visible {
   }
 }
 @media screen and (max-width: 900px) {
-  /* 100dvh must be allowed to shrink when a mobile keyboard opens. */
+  /* Use the visible viewport while the keyboard overlays 100dvh; print stays unchanged. */
   body.b66-three-pane .easy-view {
-    height: max(185px, calc(100dvh - 165px));
+    height: max(185px, calc(var(--b66-visual-height, 100dvh) - 165px));
   }
   /* Keep transient information away from the input at the bottom. */
   body.b66-three-pane .toast {
