@@ -25,6 +25,7 @@ on:
       - 'packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py'
       - '.github/workflows/validate-b54-kagent.yml'
       - '.github/scripts/kagent_parallel_contract_tests.py'
+      - '.github/tests/test_3989_kagent_rest_partition.py'
   workflow_dispatch:
 
 permissions:
@@ -210,6 +211,10 @@ jobs:
       # isolated Python processes on this single Linux/Windows GitHub runner.
       # Each child independently re-discovers and checks the test-ID digest,
       # preserves all failures and skips, and reports the slowest 50 durations.
+      - name: Verify complete and deterministic KAgent rest partitions
+        shell: bash
+        run: python .github/tests/test_3989_kagent_rest_partition.py
+
       - name: Run KAgent contract tests
         working-directory: apps/korean-ai-code-agent
         shell: bash
