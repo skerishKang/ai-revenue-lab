@@ -18,7 +18,7 @@ from test_3929_claw_drive_output_registration import (
     ports, PDF, ARTIFACT_ID, SHA, NOW, WORKSPACE, OWNER, CHAT, RUN,
 )
 from test_3929_claw_conversation_artifact_d1 import (
-    D1Sqlite, setup_database, FOREIGN_CHAT,
+    D1Sqlite, setup_database, FOREIGN_CHAT, FOREIGN,
 )
 import test_b54_claw_general_p01_routing as base
 
@@ -117,6 +117,18 @@ class DurableArtifactReadTests(unittest.IsolatedAsyncioTestCase):
         self.reader.data = b"x" * len(PDF)
         res = await self.request()
         self.assertEqual(res.status_code, 503)
+
+    async def test_foreign_user_cannot_read_even_with_exact_artifact_id(self):
+        await self.register()
+        res = await self.request(owner=FOREIGN)
+        self.assertEqual(res.status_code, 404, res.text)
+        self.assertEqual(self.reader.calls, 0)
+
+    async def test_untrusted_artifact_id_format_refused_before_lookup(self):
+        await self.register()
+        res = await self.request(artifact="bad.file")
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(self.reader.calls, 0)
 
     async def test_missing_index_no_download(self):
         res = await self.request()

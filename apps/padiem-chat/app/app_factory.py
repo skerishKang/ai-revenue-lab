@@ -51,6 +51,9 @@ from .claw_general_routes import claw_general_execute, claw_general_capabilities
 from .claw_artifact_preview_routes import claw_artifact_inline_preview
 from .claw_conversation_artifact_routes import claw_conversation_artifact_followup
 from .claw_durable_drive_output_pipeline import ClawDurableDriveOutputPipeline
+from .claw_durable_drive_artifact_routes import (
+    claw_drive_artifact_download, claw_drive_artifact_preview,
+)
 from .claw_routes import (
     claw_approval_decision,
     claw_manual_intake_artifact,
@@ -192,6 +195,7 @@ def create_app(
     r2_binding=None,
     claw_p01_adapter=None,
     claw_drive_artifact_uploader=None,
+    claw_drive_artifact_reader=None,
     claw_telegram_authority=None,
     approved_memory_store: ApprovedMemoryStore | None = None,
     b66_saved_quote_skill_store: SavedQuoteSkillStore | None = None,
@@ -331,6 +335,8 @@ def create_app(
         Route("/api/claw/manual-intake/artifact/{document_id}/preview", claw_artifact_inline_preview, methods=["GET"]),
         Route("/api/claw/telegram/ingest/{binding_ref}", claw_telegram_ingest, methods=["POST"]),
         Route("/api/claw/conversations/{conversation_id}/artifact-followup", claw_conversation_artifact_followup, methods=["GET"]),
+        Route("/api/claw/conversations/{conversation_id}/artifacts/{artifact_id}/download", claw_drive_artifact_download, methods=["GET"]),
+        Route("/api/claw/conversations/{conversation_id}/artifacts/{artifact_id}/preview", claw_drive_artifact_preview, methods=["GET"]),
         Route("/api/claw/runs", claw_runs_history, methods=["GET"]),
         Route("/api/claw/approvals/decision", claw_approval_decision, methods=["POST"]),
         Route("/api/claw/memory/approve", claw_memory_approve, methods=["POST"]),
@@ -460,6 +466,9 @@ def create_app(
         if history_store is not None and claw_drive_artifact_uploader is not None
         else None
     )
+    # READ is a separate current-grant host capability. WRITE approval never
+    # authorizes browser download; no implicit Worker transport is installed.
+    app.state.claw_drive_artifact_reader = claw_drive_artifact_reader
     # Explicit trusted server opt-in; no browser-provided activation authority.
     app.state.claw_live_sse_enabled = False
     # #2961 owner approval decision lane: the same composed Engine client, used
