@@ -8,6 +8,7 @@ const css = fs.readFileSync(path.join(ROOT, "styles.css"), "utf8");
 const shell = fs.readFileSync(path.join(ROOT, "shell-layout.js"), "utf8");
 const app = fs.readFileSync(path.join(ROOT, "app.js"), "utf8");
 const refresh = fs.readFileSync(path.join(ROOT, "b66-surface-refresh.css"), "utf8");
+const driveUi = fs.readFileSync(path.join(ROOT, "quote-drive-ui.js"), "utf8");
 const check = (condition, label) => assert.ok(condition, "contract failed: " + label);
 
 check(html.includes('<script src="shell-layout.js" defer></script>'),
@@ -64,6 +65,19 @@ check(refresh.includes('position: fixed;') && refresh.includes('shell-preview-ho
   "mobile preview opens above the form instead of after the full-length form");
 check(css.includes("body.b66-three-pane .shell-edit-heading { display: none !important; }"),
   "screen-only edit explanation must never appear in printed CGI PDF");
+
+check(shell.includes('max-width:1250px') && refresh.includes('min-width: 901px'),
+  "mid-width notebooks default to a wide quote editor with optional overlay preview");
+check(refresh.includes('height: max(185px, calc(100dvh - 165px))'),
+  "mobile conversation responds to compact keyboard viewport height");
+check(refresh.includes('body.b66-three-pane .shell-preview-reopen::after'),
+  "mobile preview opener is compact rather than colliding with the brand");
+check(refresh.includes('body.b66-three-pane .toast') && refresh.includes('bottom: auto'),
+  "mobile and medium-width status notices stay away from the bottom composer");
+check(driveUi.includes('var initializingConnection = true;') &&
+  driveUi.includes('if (!initializingConnection && bridge') &&
+  driveUi.includes('initializingConnection = false;'),
+  "optional Google Drive startup readiness does not create an obstructive toast");
 
 console.log("B66_THREE_PANE_SHELL=PASS");
 console.log("B66_PRIMARY_INPUT_AUTHORITY=EASY_COMPOSER");
