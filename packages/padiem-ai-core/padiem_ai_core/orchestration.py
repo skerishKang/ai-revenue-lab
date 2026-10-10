@@ -116,6 +116,9 @@ class OrchestrationRequest:
     context: ExecutionContext
     app_id: str
     subject_id: str | None = None
+    # Only server-trusted OrchestrationRequest construction may supply the
+    # existing Broker/Resident run id. Public Engine JSON is NOT mapped here.
+    trusted_agent_bridge_run_id: str | None = None
 
     # Memory / RAG (Optional)
     memory_authorization: MemoryReadAuthorization | None = None
@@ -161,6 +164,9 @@ class OrchestrationRequest:
         object.__setattr__(self, "app_id", _safe_id("app_id", self.app_id))
         if self.subject_id is not None:
             object.__setattr__(self, "subject_id", _safe_id("subject_id", self.subject_id))
+        if self.trusted_agent_bridge_run_id is not None:
+            object.__setattr__(self, "trusted_agent_bridge_run_id",
+                               _safe_id("trusted_agent_bridge_run_id", self.trusted_agent_bridge_run_id))
 
         # Trace ID alignment invariant
         if self.execution_request.trace_id != self.context.trace_id:
@@ -973,7 +979,8 @@ class OrchestrationRunner:
                         authorization=request.tool_authorization,
                         tool_runtime=request.tool_runtime,
                         input_text=prompt_input or "Run agent plan",
-                        run_id=f"bridge_run_{uuid.uuid4().hex[:12]}",
+                        run_id=(request.trusted_agent_bridge_run_id
+                                or f"bridge_run_{uuid.uuid4().hex[:12]}"),
                         tool_arguments=request.tool_arguments,
                     ),
                     timeout=request.context.timeout_seconds,
