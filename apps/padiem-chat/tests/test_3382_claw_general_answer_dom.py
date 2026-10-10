@@ -244,6 +244,58 @@ function buildSandbox(sseCase) {
   const conversationIds = [];
   let currentConversationId = null;
 
+  // #3989: real app/transport code, deterministic per-case 400ms observation.
+  // Each sandbox owns a separate clock and its actual scheduled callbacks;
+  // never accelerate past them or replace the response reader with a fake.
+  const RealDate = Date;
+  let virtualNow = RealDate.now();
+  let nextTimerId = 0;
+  const virtualTimers = new Map();
+  class VirtualDate extends RealDate {
+    constructor(...args) { if (args.length) super(...args); else super(virtualNow); }
+    static now() { return virtualNow; }
+  }
+  function schedule(callback, delay, repeat, args) {
+    const period = repeat ? Math.max(1, Number(delay) || 0) : 0;
+    const id = ++nextTimerId;
+    virtualTimers.set(id, {
+      when: virtualNow + (repeat ? period : Math.max(0, Number(delay) || 0)),
+      period, callback, args,
+    });
+    return id;
+  }
+  const virtualSetTimeout = (fn, delay=0, ...args) => schedule(fn, delay, false, args);
+  const virtualSetInterval = (fn, delay=0, ...args) => schedule(fn, delay, true, args);
+  const virtualClearTimer = (id) => virtualTimers.delete(id);
+  const flush = async () => {
+    // Let nested real promise/microtask chains (including fragmented real SSE
+    // decoding) settle before advancing the simulated wall clock.
+    await new Promise((resolve) => setImmediate(resolve));
+  };
+  async function advanceClock(ms) {
+    await flush();
+    const end = virtualNow + ms;
+    let count = 0;
+    while (true) {
+      let selectedId = null;
+      let selected = null;
+      for (const [id, timer] of virtualTimers) {
+        if (timer.when <= end && (!selected || timer.when < selected.when)) {
+          selectedId = id; selected = timer;
+        }
+      }
+      if (!selected) break;
+      virtualNow = selected.when;
+      if (selected.period > 0) selected.when += selected.period;
+      else virtualTimers.delete(selectedId);
+      selected.callback(...selected.args);
+      await flush();
+      if (++count > 10000) throw new Error("unbounded virtual timer loop");
+    }
+    virtualNow = end;
+    await flush();
+  }
+
   const doc = {
     documentElement: { lang: "ko", classList: { add() {}, remove() {}, contains() { return false; } } },
     body: makeEl("body"),
@@ -340,8 +392,9 @@ function buildSandbox(sseCase) {
       }
       return jsonResponses(200, {});
     },
-    setTimeout, clearTimeout, setInterval, clearInterval,
-    TextDecoder, TextEncoder, AbortController, Promise, JSON, Math, Date, Buffer,
+    setTimeout: virtualSetTimeout, clearTimeout: virtualClearTimer,
+    setInterval: virtualSetInterval, clearInterval: virtualClearTimer,
+    TextDecoder, TextEncoder, AbortController, Promise, JSON, Math, Date: VirtualDate, Buffer,
     __padiemLocale: { text: (key, vars) => (key === "ai-response" ? "AI 답변" : key) },
     PadiemChatLifecycle: {
       states: { IDLE: "idle", STREAMING: "streaming", COMPLETED: "completed", FAILED: "failed", CANCELLED: "cancelled", TIMED_OUT: "timed_out" },
@@ -371,10 +424,8 @@ function buildSandbox(sseCase) {
   // production PadiemChatTransport, not a stand-in.
   vm.runInContext(TRANSPORT, sandbox, { filename: "chat-transport.js" });
   vm.runInContext(APP, sandbox, { filename: "app.js" });
-  return { sandbox, byId, doc, requests, lifecycleSets, committed, conversationIds };
+  return { sandbox, byId, doc, requests, lifecycleSets, committed, conversationIds, advanceClock };
 }
-
-const tick = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function collectAnswerDom(byId) {
   const list = byId.messageList;
@@ -417,13 +468,15 @@ function collectAnswerDom(byId) {
 (async () => {
   const results = [];
   for (const sseCase of CASES) {
-    const { byId, requests, lifecycleSets, committed, conversationIds } = buildSandbox(sseCase);
+    const { byId, requests, lifecycleSets, committed, conversationIds, advanceClock } = buildSandbox(sseCase);
     byId.messageInput.value = sseCase.prompt || "견적 상태를 알려줘.";
     // The real Claw model field (index.html:677): a user selection has to be set
     // where the user sets it, or the wire assertion would only prove nothing.
     if (typeof sseCase.modelId === "string") byId.clawModelIdInput.value = sseCase.modelId;
     byId.composerForm.requestSubmit();
-    await tick(400);
+    // Preserve the FULL 400ms opportunity to catch delayed/duplicate POSTs
+    // and terminal SSE frames. Drive real app timers without sleeping 400ms.
+    await advanceClock(400);
     results.push({
       name: sseCase.name,
       requests,
