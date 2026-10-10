@@ -942,3 +942,55 @@ def test_text_default_behavior_is_unchanged_for_all_candidates() -> None:
                 "content": "Production route smoke. Reply with the single word OK.",
             }
         ]
+
+
+@pytest.mark.parametrize(
+    ("content", "finish", "completion_tokens", "expected_state", "expected_finish", "expected_tokens"),
+    [
+        (None, "length", 8, "null", "length", "8"),
+        ("", "stop", 0, "empty_string", "stop", "0"),
+        ("  \n", "PRIVATE_REASON_SENTINEL_123", -1,
+         "whitespace_string", "other_or_missing", "unknown"),
+        ({"data": "PRIVATE_CONTENT_SENTINEL_456"}, "stop", "8",
+         "non_string", "stop", "unknown"),
+    ],
+)
+def test_http200_empty_sensenova_response_has_only_safe_diagnostics(
+    content, finish, completion_tokens, expected_state, expected_finish, expected_tokens
+) -> None:
+    """HTTP200 + empty answer is never silently scored successful or retried."""
+    candidate = smoke.CANDIDATE_REGISTRY["sensenova"]
+    body = json.loads(_chat(candidate).decode("utf-8"))
+    body["choices"][0]["message"]["content"] = content
+    body["choices"][0]["finish_reason"] = finish
+    body["usage"] = {"completion_tokens": completion_tokens}
+    calls = []
+
+    def transport(method: str, path: str, payload: dict | None):
+        calls.append((method, path))
+        if path == smoke.HEALTH_PATH:
+            return 200, _health(candidate)
+        if path == smoke.MODELS_PATH:
+            return 200, _models(candidate)
+        assert path == smoke.CHAT_PATH
+        return 200, _json(body)
+
+    out = io.StringIO()
+    with contextlib.redirect_stdout(out):
+        rc = smoke.run("sensenova", transport=transport)
+
+    receipt = out.getvalue()
+    assert rc == 1
+    assert "SENSENOVA_PRODUCTION_SMOKE=FAIL_EMPTY_ANSWER" in receipt
+    assert "EMPTY_ANSWER_CONTENT_STATE=" + expected_state in receipt
+    assert "EMPTY_ANSWER_FINISH_REASON=" + expected_finish in receipt
+    assert "EMPTY_ANSWER_COMPLETION_TOKENS=" + expected_tokens in receipt
+    assert "EMPTY_ANSWER_REQUESTED_MAX_TOKENS=8" in receipt
+    assert "EMPTY_ANSWER_PRIVATE_CONTENT_OUTPUT=0" in receipt
+    assert "PRIVATE_REASON_SENTINEL_123" not in receipt
+    assert "PRIVATE_CONTENT_SENTINEL_456" not in receipt
+    assert "PRIVATE_ANSWER_SENTINEL_42" not in receipt
+    assert "NETWORK_RETRY_COUNT=0" in receipt
+    assert "FALLBACK=0" in receipt
+    assert [x[0] for x in calls] == ["GET", "GET", "POST"]
+

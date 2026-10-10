@@ -8,13 +8,18 @@ compatibility_flags = ["python_workers"]
 workers_dev = true
 EOF
 
+# Each concurrent workerd must have its own local SQLite/persistence state.
+# Distinct HTTP and inspector ports do not isolate Wrangler's default .wrangler/state.
+PERSIST_DIR="$(mktemp -d "${TMPDIR:-/tmp}/b62-worker-web_transport-state.XXXXXXXX")"
+
 uv run --locked python tests/worker_runtime_probe_origin.py --port 9100 > /tmp/b62-web-origin.log 2>&1 &
 ORIGIN_PID=$!
-npx --yes wrangler@4.130.0 dev --config .runtime-web-transport-probe.toml --port 8788 --inspector-port 9232 > /tmp/b62-web-workerd.log 2>&1 &
+npx --yes wrangler@4.130.0 dev --config .runtime-web-transport-probe.toml --port 8788 --inspector-port 9232 --persist-to "$PERSIST_DIR" > /tmp/b62-web-workerd.log 2>&1 &
 WORKER_PID=$!
 
 cleanup() {
   kill "$WORKER_PID" "$ORIGIN_PID" 2>/dev/null || true
+  rm -rf -- "$PERSIST_DIR"
   rm -f .runtime-web-transport-probe.toml
 }
 trap cleanup EXIT

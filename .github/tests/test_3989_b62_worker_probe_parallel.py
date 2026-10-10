@@ -35,6 +35,14 @@ class WorkerProbeParallelContract(unittest.TestCase):
             self.assertIn("npx --yes wrangler@4.130.0 dev", script)
             self.assertIn(f"--port {port}", script)
             self.assertIn(f"--inspector-port {inspector}", script)
+            # Real probes execute concurrently on one runner. Separate ports
+            # alone did not prevent workerd SQLite lock collisions (#3989).
+            # Every invocation must receive a unique mktemp-backed local state
+            # directory and remove only that directory at exit.
+            self.assertIn('PERSIST_DIR="$(mktemp -d ', script)
+            self.assertIn(f"b62-worker-{name}-state.XXXXXXXX", script)
+            self.assertIn('--persist-to "$PERSIST_DIR"', script)
+            self.assertIn('rm -rf -- "$PERSIST_DIR"', script)
             self.assertIn(config, script)
             self.assertIn("trap cleanup EXIT", script)
             self.assertIn(marker, script)
