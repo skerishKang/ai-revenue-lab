@@ -3,6 +3,13 @@ name: B54 Claw history D1 014/015 explicitly guarded apply
 # Production change is disabled by default. This workflow is never auto-dispatched.
 # Requires the OWNER's separate approval, a typed confirmation, and production environment.
 on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-claw-history-014-015-apply-gate.yml"
+      - ".github/tests/test_b54_claw_history_014_015_apply_guard.py"
+      - ".github/scripts/b54_claw_history_schema_014_015.py"
+      - "apps/padiem-chat/migrations/014_claw_run_history_conversation.sql"
+      - "apps/padiem-chat/migrations/015_claw_run_history_workspace.sql"
   workflow_dispatch:
     inputs:
       target_sha:
@@ -22,7 +29,26 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  source-pr-check:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Source-only additive migration guards
+        run: |
+          python .github/tests/test_b54_claw_history_schema_014_015.py -v
+          python .github/tests/test_b54_claw_history_014_015_apply_guard.py -v
+          echo "PRODUCTION_MUTATION=0"
+
   source-and-authorization:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 8
     steps:
