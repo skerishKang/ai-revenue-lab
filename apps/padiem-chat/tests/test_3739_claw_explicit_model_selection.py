@@ -156,6 +156,7 @@ def test_claw_api_missing_model_keeps_plus_hold_before_dispatch():
         response = client.post("/api/claw/general", json=_payload())
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "tier_unavailable"
+    assert "등록된 실행 모델 ID" in response.json()["error"]["message"]
     adapter.execute.assert_not_called()
 
 
@@ -179,6 +180,8 @@ def test_claw_api_rejects_pro_hold_bypass():
 
 def test_claw_browser_keeps_explicit_id_in_submit_snapshot_only():
     assert 'id="clawModelIdInput"' in INDEX
+    assert 'placeholder="등록된 B14 모델 ID를 입력하세요"' in INDEX
+    assert "agnes-ai/agnes-3.0-flash" not in INDEX  # Do not suggest deferred providers as defaults.
     assert "clawGeneralRequestActive()" in FRONT
     assert "contextSnapshot.selectedModelId" in FRONT
     assert "clawModelIdInput.value.trim()" in FRONT
