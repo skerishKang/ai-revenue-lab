@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import asyncio
 from datetime import datetime, timedelta, timezone
+from functools import lru_cache
 import inspect
 import pathlib
 
@@ -67,6 +68,17 @@ TENANT = "tenant_0123456789abcdef0123456789abcdef"
 PASSWORD = "correct horse battery staple"
 
 
+@lru_cache(maxsize=1)
+def _seeded_server_password_hash() -> str:
+    """One real production KDF value for repeated isolated login fixtures.
+
+    Each route test still creates a fresh credential row and verifies the real
+    password at the ASGI boundary. Only identical fixture hash *generation*
+    is shared; production registration, the verifier and KDF policy are untouched.
+    """
+    return hash_password(PASSWORD)
+
+
 def password_settings(**overrides) -> Settings:
     values = dict(
         runtime_mode="mock",
@@ -92,7 +104,7 @@ class MemoryStore:
         self.credentials[username] = PasswordCredential(
             user=profile,
             username=username,
-            password_hash=hash_password(PASSWORD),
+            password_hash=_seeded_server_password_hash(),
             failed_attempts=0,
             locked_until=None,
         )
