@@ -23,6 +23,8 @@ The user-facing reusable concept is **내 견적서 / Saved Quote Skill**. Inter
 
 > **Sol 다중 페이지 코드 통합 및 새 인증 증거 (2026-10-10):** [PR #4111](https://github.com/skerishKang/ai-revenue-lab/pull/4111) **MERGED**, #4001+#4092 채택·#4010 디자인 제외. 1~3품목 기존 인증 PDF byte SHA 불변, 4/8/25/100품목 실제 PDF·QuoteCore·페이지·외곽선·시각 검증 PASS. **[새 버전 기술 인증 패킷](SOL61_MULTIPAGE_V2_CERTIFICATION_CHECKPOINT_2026-10-10.md)**을 별도 기록. **새 v2 인증서 발급/활성화, 고객 E2E, 운영 배포는 미완료**. 기존 v1 인증서와 고객 사용 경로를 바꾸지 않았다.
 
+> **P0 고객 화면/출력 불일치 (2026-10-10, [#4117](https://github.com/skerishKang/ai-revenue-lab/issues/4117))**: Sol native 다중 페이지 구현과 실제 PDF 기술 검증은 완료됐으나, 현재 **B66 CGI 화면 미리보기는 Sol 원본 PDF 파생 PNG + DOM 텍스트**이며 다운로드·Drive 저장 PDF는 브라우저 **Canvas/JPEG 래스터 PDF**다. 이것은 최신 Sol PDF 바이트와 동일하지 않으며 4+품목도 미지원. 제품 최종 방향은 **하나의 인증된 Sol PDF 바이트를 미리보기·다운로드·Drive 저장에 동일하게 사용**하는 것이다. 미검증 상태에서 고객에게 Sol PDF 미리보기/전품목 사용 READY를 선언하거나 기존 HTML/GLM/브라우저 래스터를 Sol 대체 경로로 승인하지 않는다. [Sol 기술 증거와 출시 구분](SOL61_MULTIPAGE_V2_CERTIFICATION_CHECKPOINT_2026-10-10.md). 신규 v2 인증/운영 활성화는 #4117 해결 전 HOLD.
+
 ## CGI 첫 고객 최종 MVP 상태 — 2026-10-10 KST
 
 > **최신 운영·인수 기준:** [CGI_FIRST_CUSTOMER_MVP_CHECKPOINT_2026-10-10.md](CGI_FIRST_CUSTOMER_MVP_CHECKPOINT_2026-10-10.md) · 인수 이슈 [#4076](https://github.com/skerishKang/ai-revenue-lab/issues/4076) **OPEN**. 기존 한정 범위 MVP [#3521](https://github.com/skerishKang/ai-revenue-lab/issues/3521) **CLOSED**와 구분한다.
