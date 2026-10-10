@@ -36,6 +36,9 @@ PLAN_FILES = frozenset(
     {
         ".github/workflows/b62-browser-qa-unified.yml",
         ".github/scripts/b62_browser_qa_path_plan.py",
+        # Schedule implementation/test updates must prove every affected lane.
+        ".github/scripts/b62_browser_qa_tail_parallel.py",
+        ".github/tests/test_3989_b62_browser_tail_parallel.py",
         ".github/ci/b62_browser_qa_paths.json",
     }
 )
