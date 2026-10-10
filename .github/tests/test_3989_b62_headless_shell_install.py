@@ -37,13 +37,19 @@ def jobs():
 
 
 class B62HeadlessShellContract(unittest.TestCase):
-    def test_all_sixteen_jobs_install_pinned_headless_shell_with_os_deps(self):
+    def test_fifteen_host_jobs_install_shell_and_one_pilot_uses_container(self):
         observed = jobs()
         self.assertEqual(set(observed), EXPECTED_JOBS)
         exact = "uv run playwright install --with-deps --only-shell chromium"
         cache_key = "key: b62-playwright-headless-shell-1.55.0-"
         for name, job in observed.items():
             with self.subTest(job=name):
+                if name == "structured-answer-browser-qa":
+                    self.assertEqual(job.count("name: Install Chromium runtime"), 0)
+                    self.assertEqual(job.count("Cache pinned Playwright Chromium"), 0)
+                    self.assertIn("container:", job)
+                    self.assertIn("PLAYWRIGHT_BROWSERS_PATH: /ms-playwright", job)
+                    continue
                 self.assertEqual(job.count("name: Install Chromium runtime"), 1)
                 self.assertEqual(job.count(exact), 1)
                 self.assertEqual(job.count(cache_key), 1)
@@ -54,7 +60,35 @@ class B62HeadlessShellContract(unittest.TestCase):
                 self.assertNotIn("install chromium --only-shell", job)
                 self.assertIn("actions/cache@v4", job)
                 self.assertIn("actions/upload-artifact@v4", job)
-        self.assertEqual(WORKFLOW.read_text(encoding="utf-8").count(exact), 16)
+        self.assertEqual(WORKFLOW.read_text(encoding="utf-8").count(exact), 15)
+
+    def test_container_pilot_pins_version_digest_and_keeps_mock_evidence(self):
+        workflow = WORKFLOW.read_text(encoding="utf-8")
+        observed = jobs()
+        pilot = observed["structured-answer-browser-qa"]
+        image = ("mcr.microsoft.com/playwright/python:v1.55.0-noble-amd64"
+                 "@sha256:f48dffadeef431c469ddb4d3325abaa084a855cc2ef7c89c9c44537acca23a2b")
+        self.assertEqual(workflow.count("    container:"), 1)
+        self.assertIn("image: " + image, pilot)
+        self.assertIn("options: --ipc=host", pilot)
+        self.assertIn("shell: bash", pilot)
+        self.assertIn("PLAYWRIGHT_BROWSERS_PATH: /ms-playwright", pilot)
+        self.assertIn("PADIEM_CHAT_RUNTIME_MODE: mock", pilot)
+        self.assertIn('PADIEM_CHAT_LIVE_ENABLED: "false"', pilot)
+        self.assertIn("PADIEM_CHAT_WEB_PROVIDER: off", pilot)
+        self.assertIn("playwright==1.55.0", pilot)
+        self.assertIn("uv sync --extra dev", pilot)
+        self.assertIn("uv run pytest -q tests/test_rich_responses.py", pilot)
+        self.assertIn("uv run python ../../.github/scripts/b62_structured_answer_browser_qa.py", pilot)
+        self.assertIn("name: Upload browser evidence", pilot)
+        self.assertIn("if-no-files-found: error", pilot)
+        self.assertNotIn("Cache pinned Playwright Chromium", pilot)
+        self.assertNotIn("Install Chromium runtime", pilot)
+        self.assertNotIn("continue-on-error: true", pilot)
+        for name, job in observed.items():
+            if name != "structured-answer-browser-qa":
+                self.assertNotIn("    container:", job)
+                self.assertIn("name: Install Chromium runtime", job)
 
     def test_all_chromium_call_sites_launch_only_default_headless_shell(self):
         inspected = []

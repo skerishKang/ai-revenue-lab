@@ -39,7 +39,7 @@ class B62UnifiedBrowserQAContract(unittest.TestCase):
                 self.assertIn("needs.plan.outputs." + job.replace("-", "_"), master)
                 self.assertIn("          - " + job + "\n", master)
                 self.assertIn("Cache pinned Playwright Chromium", master)
-        self.assertEqual(master.count("Cache pinned Playwright Chromium"), 16)
+        self.assertEqual(master.count("Cache pinned Playwright Chromium"), 15)
         # No standalone QA workflow is retained just for a duplicate manual trigger.
         self.assertEqual(
             [file.name for file in FOLDER.glob("b62-*-browser-qa.yml")],
@@ -48,7 +48,7 @@ class B62UnifiedBrowserQAContract(unittest.TestCase):
 
     def test_official_ubuntu_mirror_pilot_preserves_full_browser_dependency_contract(self):
         master = MASTER.read_text(encoding="utf-8")
-        self.assertEqual(master.count("run: uv run playwright install --with-deps --only-shell chromium"), 16)
+        self.assertEqual(master.count("run: uv run playwright install --with-deps --only-shell chromium"), 15)
         self.assertEqual(
             master.count("run: bash ../../.github/scripts/b62_playwright_apt_mirror_3989.sh"),
             2,
@@ -68,7 +68,12 @@ class B62UnifiedBrowserQAContract(unittest.TestCase):
             with self.subTest(name=name):
                 expected = name in ("error-retry-browser-qa", "saved-outputs-browser-qa")
                 self.assertEqual("b62_playwright_apt_mirror_3989.sh" in source, expected)
-                self.assertIn("uv run playwright install --with-deps --only-shell chromium", source)
+                if name == "structured-answer-browser-qa":
+                    self.assertIn("mcr.microsoft.com/playwright/python:v1.55.0-noble-amd64@", source)
+                    self.assertIn("PLAYWRIGHT_BROWSERS_PATH: /ms-playwright", source)
+                    self.assertNotIn("uv run playwright install --with-deps --only-shell chromium", source)
+                else:
+                    self.assertIn("uv run playwright install --with-deps --only-shell chromium", source)
         script = (ROOT / ".github/scripts/b62_playwright_apt_mirror_3989.sh").read_text(
             encoding="utf-8"
         )

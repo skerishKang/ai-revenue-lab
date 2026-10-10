@@ -14,7 +14,7 @@ class B62BrowserCacheContractTests(unittest.TestCase):
         text = MASTER.read_text(encoding="utf-8")
         jobs = json.loads(MANIFEST.read_text(encoding="utf-8"))["jobs"]
         self.assertEqual(len(jobs), 16)
-        self.assertEqual(text.count("Cache pinned Playwright Chromium"), 16)
+        self.assertEqual(text.count("Cache pinned Playwright Chromium"), 15)
         for job in jobs:
             match = re.search(
                 r"(?ms)^  " + re.escape(job) + r":\n(.*?)(?=^  [a-z][a-z0-9_-]*:\n|\Z)",
@@ -23,6 +23,15 @@ class B62BrowserCacheContractTests(unittest.TestCase):
             with self.subTest(job=job):
                 self.assertIsNotNone(match)
                 block = match.group(1)
+                if job == "structured-answer-browser-qa":
+                    # The official digest-pinned image contains fonts/browsers;
+                    # it must not restore or reinstall them inside the job.
+                    self.assertIn("container:", block)
+                    self.assertIn("PLAYWRIGHT_BROWSERS_PATH: /ms-playwright", block)
+                    self.assertNotIn("Cache pinned Playwright Chromium", block)
+                    self.assertNotIn("name: Install Chromium runtime", block)
+                    self.assertIn("enable-cache: true", block)  # uv cache stays
+                    continue
                 self.assertIn("enable-cache: true", block)
                 self.assertIn("cache-dependency-glob: apps/padiem-chat/uv.lock", block)
                 self.assertEqual(block.count("Cache pinned Playwright Chromium"), 1)

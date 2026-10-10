@@ -1209,9 +1209,16 @@ jobs:
     needs: plan
     if: ${{ needs.plan.outputs.structured_answer_browser_qa == 'true' }}
     runs-on: ubuntu-latest
+    # #3989 bounded pilot: official Playwright Python 1.55.0 Noble amd64,
+    # digest-pinned (no untrusted URL/browser), identical package/browser ABI.
+    # Only this lane uses a container; other 15 jobs retain host installation.
+    container:
+      image: mcr.microsoft.com/playwright/python:v1.55.0-noble-amd64@sha256:f48dffadeef431c469ddb4d3325abaa084a855cc2ef7c89c9c44537acca23a2b
+      options: --ipc=host
     timeout-minutes: 15
     defaults:
       run:
+        shell: bash
         working-directory: apps/padiem-chat
     env:
       PADIEM_CHAT_RUNTIME_MODE: mock
@@ -1219,6 +1226,8 @@ jobs:
       PADIEM_CHAT_WEB_PROVIDER: off
       B62_STRUCTURED_QA_BASE_URL: http://127.0.0.1:8774
       B62_STRUCTURED_QA_OUT_DIR: ../../.tmp/b62-structured-answer-browser-qa
+      # Official Playwright image contains matching preinstalled browser and OS fonts.
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -1236,15 +1245,8 @@ jobs:
         run: uv run pytest -q tests/test_rich_responses.py tests/test_browser_streaming_rich_integration.py
       - name: Install pinned Playwright
         run: uv pip install 'playwright==1.55.0'
-      # Share the pinned browser across independent B62 QA workflows.
-      # Cache keys pin the Playwright release to prevent binary drift.
-      - name: Cache pinned Playwright Chromium
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
-      - name: Install Chromium runtime
-        run: uv run playwright install --with-deps --only-shell chromium
+      # Official image already contains the version-matched browser, OS deps
+      # and fonts. No apt-get, browser download or browser cache restore here.
       - name: Start fail-closed mock Padiem Chat
         run: |
           set -euo pipefail
