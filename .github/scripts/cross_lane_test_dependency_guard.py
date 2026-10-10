@@ -738,9 +738,15 @@ def evaluate(repo: Path) -> tuple[list[Violation], dict[str, int]]:
         "conftest_couplings": 0,
     }
     workflows_dir = repo / ".github" / "workflows"
+    # The LibYAML safe loader has the same restricted tag/constructor policy
+    # as SafeLoader, but parses the complete workflow inventory in native code.
+    # Fall back to the existing pure-Python SafeLoader when C bindings are absent.
+    safe_loader = getattr(yaml, "CSafeLoader", yaml.SafeLoader)
 
     for workflow_path in sorted(workflows_dir.glob("*.yml")):
-        data = yaml.safe_load(workflow_path.read_text(encoding="utf-8")) or {}
+        data = yaml.load(
+            workflow_path.read_text(encoding="utf-8"), Loader=safe_loader
+        ) or {}
         stats["workflows_scanned"] += 1
         workflow_name = workflow_path.name
         for job_name, job in (data.get("jobs") or {}).items():
