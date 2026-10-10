@@ -871,9 +871,17 @@ def test_no_new_backend_route_or_worker_endpoint_is_introduced() -> None:
     """#3084 is a Web slice. It must not add a server endpoint of its own."""
     assert "/api/" not in _source()
 
-    present = set(re.findall(r'"/api/[^"]+"', _app_source()))
+    app = _app_source()
+    # #3932: same existing run-history endpoint, bounded 10/30 on explicit user click.
+    # Keep the old baseline route in scope; never admit a new endpoint silently.
+    assert app.count("fetch(`/api/claw/runs?limit=${clawRunHistoryLimit}`") == 1
+    assert "let clawRunHistoryLimit = 10;" in app
+    assert "clawRunHistoryLimit = 30;" in app
+    present = set(re.findall(r'"/api/[^"]+"', app))
     # The regex captures the surrounding quotes; the pinned baseline does not.
     present = {value.strip('"') for value in present}
+    # A safe template-literal GET replaces the previous literal limit=10 call.
+    present.add("/api/claw/runs?limit=10")
     added = present - ALLOWED_APP_ENDPOINTS
     assert not added, f"#3084 introduced new endpoints: {sorted(added)}"
     # No historical endpoint disappeared, and the only later reconciled

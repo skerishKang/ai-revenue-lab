@@ -304,7 +304,7 @@ def test_wait_does_not_add_routes_or_touch_the_server() -> None:
     assert app.count('fetch("/api/claw/manual-intake/execute"') == 1
     # The run-history route keeps exactly one consumer (the #2746 surface) and is
     # never used as a progress channel.
-    assert app.count('fetch("/api/claw/runs') == 1
+    assert app.count('fetch(`/api/claw/runs?limit=${clawRunHistoryLimit}`') == 1
     block = _wait_block()
     assert "/api/" not in block
 
