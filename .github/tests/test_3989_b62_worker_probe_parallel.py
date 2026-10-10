@@ -45,6 +45,13 @@ class WorkerProbeParallelContract(unittest.TestCase):
             self.assertIn('--persist-to "$PERSIST_DIR"', script)
             self.assertIn('rm -rf -- "$PERSIST_DIR"', script)
             self.assertIn(config, script)
+            # Official Wrangler Python Workers: omit only generated
+            # __pycache__/bytecode, never source packages or real probes.
+            self.assertIn('[python_modules]', script)
+            self.assertIn('exclude = ["**/*.pyc", "**/__pycache__"]', script)
+            self.assertEqual(script.count('[python_modules]'), 1)
+            self.assertIn('workers_dev = true', script)
+            self.assertIn('b62_probe_mark ASSERT_PASS', script)
             self.assertIn("trap cleanup EXIT", script)
             self.assertIn(marker, script)
             self.assertIn("set -euo pipefail", script)
