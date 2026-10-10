@@ -1,0 +1,75 @@
+name: B62 Glass Animation Timing Certification
+
+# #3989: separate frame-sensitive Glass shell timing from required PR checks.
+# A timing failure remains a hard FAILED scheduled check with retained reports.
+# It does not weaken the original strict 1800-3600/1600-3600 ms thresholds.
+# Scheduled on default main once per day, not on every source edit or PR.
+on:
+  schedule:
+    - cron: '25 18 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-glass-animation-timing-main
+  cancel-in-progress: false
+
+jobs:
+  glass-shell-strict-timing:
+    name: B62 Glass strict animation timing
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      PADIEM_CHAT_RUNTIME_MODE: mock
+      PADIEM_CHAT_LIVE_ENABLED: "false"
+      B62_GLASS_SHELL_MODE: strict
+      B62_QA_BASE_URL: http://127.0.0.1:8765
+      B62_QA_OUT_DIR: ../../.tmp/b62-glass-timing-certification
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+          enable-cache: true
+          cache-dependency-glob: apps/padiem-chat/uv.lock
+      - name: Resolve locked mock Chat environment
+        run: uv sync --extra dev
+      - name: Install pinned Playwright
+        run: uv pip install 'playwright==1.55.0'
+      - name: Cache pinned Playwright Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+      - name: Install Chromium runtime
+        run: uv run playwright install --with-deps chromium
+      - name: Start mock Padiem Chat
+        run: |
+          set -euo pipefail
+          uv run uvicorn app.main:app --host 127.0.0.1 --port 8765 > /tmp/b62-glass-timing-server.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8765/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/b62-glass-timing-server.log
+          exit 1
+      - name: Strict original female/male shell timing, frames and behavior
+        run: uv run python ../../.github/scripts/b62_glass_shell_visual_qa.py
+      - name: Upload strict timing evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-glass-strict-timing-evidence
+          path: .tmp/b62-glass-timing-certification
+          if-no-files-found: warn
+          retention-days: 30

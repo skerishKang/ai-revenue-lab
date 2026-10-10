@@ -67,7 +67,9 @@ jobs:
           python -m unittest discover -s .github/tests -p test_3989_b62_visual_leaf_smoke.py -v
       # Source-only test; no browser install or new CI runner.
       - name: Regression check for bounded visual tail and fail-closed fan-in
-        run: python -m unittest discover -s .github/tests -p test_3989_b62_browser_tail_parallel.py -v
+        run: |
+          python -m unittest discover -s .github/tests -p test_3989_b62_browser_tail_parallel.py -v
+          python -m unittest discover -s .github/tests -p test_3989_b62_glass_timing_ownership.py -v
       - name: Select jobs for changed PR paths
         id: classify
         env:
@@ -355,6 +357,11 @@ jobs:
       # Base desktop/mobile and owner-specific browser QA remain mandatory.
       - name: Glass zoom, shell, and gutter visual QA (all three, bounded parallel)
         if: ${{ needs.plan.outputs.glass_visual_tail_required != 'false' }}
+        # Shell pointer/answer/mask/viewport/accessibility remain blocking on PR.
+        # Strict frame-window certification runs daily on main in a separate
+        # non-required workflow, using the original unchanged thresholds.
+        env:
+          B62_GLASS_SHELL_MODE: functional
         run: uv run python ../../.github/scripts/b62_browser_qa_tail_parallel.py
       - name: Print QA report
         if: always()
