@@ -180,13 +180,13 @@ jobs:
         run: uv run --locked python -m compileall -q app worker.py ../../packages/padiem-ai-core/padiem_ai_core
       - name: JavaScript syntax
         run: node --check static/app.js && node --check static/b66-quote-runtime.js && node --check static/claw-local-handoff.js && node --check static/claw-local-adapter.js
-      - name: B62 tests
-        run: uv run --locked python -m pytest -q
-      - name: Core tests with Tool Runtime dev dependency
-        # Shared Core source/dependency changes always use original full CI.
-        if: ${{ needs.registry-ci-plan.outputs.scope != 'chat_only' && needs.registry-ci-plan.outputs.scope != 'static_only' }}
-        working-directory: packages/padiem-ai-core
-        run: uv run --extra dev python -m pytest -q
+      - name: B62 Chat and eligible Core tests (same-runner fail-closed overlap)
+        # #4070: same two original pytest commands, distinct cwd/.venv, one
+        # runner and one mandatory exit status. Only chat_only/static_only
+        # omit unchanged Core; all unknown/full scopes run both suites.
+        env:
+          B62_CI_IMPACT_SCOPE: ${{ needs.registry-ci-plan.outputs.scope }}
+        run: bash ../../.github/scripts/b62_host_pytest_overlap_4070.sh
       - name: Verify locked host dependency versions
         run: uv run --locked python tests/check_dependency_locks.py --phase host
   # Run worker checks concurrently with the 3,616-case Chat/Core host suite.
