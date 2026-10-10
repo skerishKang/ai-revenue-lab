@@ -46,6 +46,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 INDEX_HTML = ROOT / "static/index.html"
@@ -925,13 +927,25 @@ def _run_harness() -> dict:
     return json.loads(line)
 
 
-def test_behavioral_harness_passes() -> None:
+@pytest.fixture(scope="module")
+def behavioral_harness_payload() -> dict:
+    """Run the immutable real-app.js Node journey once, not once per assertion.
+
+    The harness takes ~19s, and the three public-safety assertions below only
+    READ its checks/requests. A module-scoped pytest fixture preserves all
+    assertions and propagates a single failed behavioral run to every consumer.
+    """
     payload = _run_harness()
     assert payload.get("ok") is True, f"behavioral harness failed: {payload}"
+    return payload
 
 
-def test_behavioral_execute_recovery_journey() -> None:
-    payload = _run_harness()
+def test_behavioral_harness_passes(behavioral_harness_payload: dict) -> None:
+    assert behavioral_harness_payload.get("ok") is True, behavioral_harness_payload
+
+
+def test_behavioral_execute_recovery_journey(behavioral_harness_payload: dict) -> None:
+    payload = behavioral_harness_payload
     assert payload.get("ok") is True, payload
     checks = payload["checks"]
     for name in (
@@ -970,8 +984,8 @@ def test_behavioral_execute_recovery_journey() -> None:
         assert checks.get(name) is True, name
 
 
-def test_behavioral_execute_posts_stay_within_existing_authority() -> None:
-    payload = _run_harness()
+def test_behavioral_execute_posts_stay_within_existing_authority(behavioral_harness_payload: dict) -> None:
+    payload = behavioral_harness_payload
     assert payload.get("ok") is True, payload
     execute_posts = [r for r in payload["requests"] if r["url"] == "/api/claw/manual-intake/execute"]
     assert execute_posts, "no execute POST recorded"
@@ -1008,7 +1022,10 @@ if __name__ == "__main__":
     test_locale_keys_are_declared_for_both_languages()
     test_runtime_copy_stays_locale_driven()
     test_recovery_roles_inherit_shared_tokens()
-    test_behavioral_harness_passes()
-    test_behavioral_execute_recovery_journey()
-    test_behavioral_execute_posts_stay_within_existing_authority()
+    # Preserve direct script execution without bypassing the real Node harness;
+    # all three read-only assertions now consume the same completed journey.
+    direct_payload = _run_harness()
+    test_behavioral_harness_passes(direct_payload)
+    test_behavioral_execute_recovery_journey(direct_payload)
+    test_behavioral_execute_posts_stay_within_existing_authority(direct_payload)
     print("B54_CLAW_EXECUTE_RETRY_UI_TESTS=PASS")
