@@ -542,3 +542,18 @@ def test_secrets_store_malformed_binding_fails_closed(broken):
     module = _load_module()
     with pytest.raises(module.ProductionConfigError):
         module.parse_live_bindings(_settings_payload(_production_bindings() + [broken]))
+
+def test_3566_claw_model_predispatch_guest_get_is_existing_deploy_smoke():
+    """No new CI lane or paid model call; fail if opted-in diagnostic disappears."""
+    workflow = _read_workflow()
+    smoke_start = workflow.index("- name: Production smoke")
+    smoke_end = workflow.index("- name: Auto-rollback", smoke_start)
+    smoke = workflow[smoke_start:smoke_end]
+    assert "/api/claw/general/capabilities?diagnostic=pre_dispatch_v1" in smoke
+    assert 'test "${claw_diag_status}" = "200"' in smoke
+    assert '.pre_dispatch_status == "authentication_required"' in smoke
+    assert '.pre_dispatch_scope == "auth_adapter_session_only"' in smoke
+    assert '(keys | sort)' in smoke
+    assert 'echo "CLAW_MODEL_PROVIDER_POSTS=0"' in smoke
+    assert "CLAW_MODEL_PREDISPATCH_GUEST_GET=PASS" in smoke
+    assert "POST /api/claw/general" not in smoke
