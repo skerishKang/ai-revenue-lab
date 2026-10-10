@@ -79,6 +79,21 @@ check(driveUi.includes('var initializingConnection = true;') &&
   driveUi.includes('initializingConnection = false;'),
   "optional Google Drive startup readiness does not create an obstructive toast");
 
+check(shell.includes('function wireOverlayKeyboard()') &&
+  shell.includes('event.key === "Escape"') && shell.includes('event.key !== "Tab"') &&
+  shell.includes('panel.setAttribute("role", "dialog")') &&
+  shell.includes('panel.setAttribute("aria-modal", "true")') &&
+  shell.includes('toggle.setAttribute("aria-expanded"') &&
+  shell.includes('reopen.setAttribute("aria-expanded"'),
+  "compact rail and preview must have Escape, focus trap, and accessible dialog state");
+check(shell.includes('reopen.focus()') && shell.includes('toggle.focus()') &&
+  shell.includes('first.focus()') && shell.includes('last.focus()'),
+  "closing dialogs restores the opener and loops keyboard focus");
+check(shell.includes('zoomFactor') && shell.includes('zoomControls') &&
+  shell.includes('syncPreviewScale()') && refresh.includes('.shell-preview-zoom'),
+  "screen-only preview viewer supports fit, zoom and horizontal scroll");
+check(!html.includes('id="shell-preview-zoom"'), "certified HTML paper stays unchanged");
+
 console.log("B66_THREE_PANE_SHELL=PASS");
 console.log("B66_PRIMARY_INPUT_AUTHORITY=EASY_COMPOSER");
 console.log("B66_CANONICAL_PREVIEW_COUNT=1");
