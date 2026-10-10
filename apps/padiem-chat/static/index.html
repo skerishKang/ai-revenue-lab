@@ -471,6 +471,20 @@
             <button type="button" class="starter" id="webSearchStarterButton" disabled aria-disabled="true" aria-pressed="false" hidden><span class="starter-icon" aria-hidden="true">⌕</span><span><strong data-locale-key="web-starter-title">웹에서 찾아줘</strong><small data-locale-key="web-starter-copy">웹 검색 · 준비 중</small></span></button>
           </div>
         </div>
+        <section class="claw-web-office" id="clawWebOffice" aria-labelledby="clawWebOfficeTitle">
+          <details id="clawWebOfficeDetails">
+            <summary id="clawWebOfficeTitle">웹에서 Excel 원본 보관 · 컴퓨터 연결 불필요</summary>
+            <p>웹에서 XLSX를 직접 선택해 원본 그대로 보관합니다(최대 1 MiB, 24시간). 이 단계는 파일을 수정하거나 PDF로 변환하지 않습니다. 실제 처리는 별도의 P01 승인이 필요합니다.</p>
+            <div class="claw-web-office-actions">
+              <label for="clawWebXlsxInput">XLSX 파일 선택</label>
+              <input type="file" id="clawWebXlsxInput" />
+              <button type="button" id="clawWebXlsxSave">원본 보관</button>
+              <button type="button" id="clawWebXlsxRefresh">보관한 원본 조회</button>
+            </div>
+            <p role="status" aria-live="polite" id="clawWebXlsxNotice">파일을 선택하면 원본을 보존하며, 읽기·수정 승인은 별도로 진행합니다.</p>
+            <ul id="clawWebXlsxList" aria-label="보관된 웹 Excel 원본"></ul>
+          </details>
+        </section>
         <div class="message-list" id="messageList" hidden></div>
         <article class="message claw-request-echo" id="clawRequestEcho" hidden><div class="message-bubble" id="clawRequestEchoText"></div></article>
         <section class="claw-local" id="clawLocalHandoff" data-locale-aria-label="claw-local-panel-aria" aria-label="컴퓨터 연결 안내" data-claw-local-contract="b62-claw-local-handoff/1" hidden>
@@ -816,6 +830,7 @@
        seam installed by app.js already exists when it resolves its source. -->
   <script src="./claw-local-connect.js" defer></script>
   <script src="./claw-office-chooser.js" defer></script>
+  <script src="./claw-web-xlsx-sources.js" defer></script>
   <script src="./claw-local-adapter.js"></script>
 </body>
 </html>

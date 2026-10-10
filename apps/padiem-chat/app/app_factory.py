@@ -52,6 +52,10 @@ from .claw_general_routes import claw_general_execute, claw_general_capabilities
 from .claw_office_preview_routes import (
     OFFICE_PDF_PREVIEW_PATH, claw_office_pdf_preview,
 )
+from .claw_web_xlsx_source_routes import (
+    WEB_SOURCES_PATH, WEB_SOURCE_DOWNLOAD_PATH,
+    web_xlsx_sources, web_xlsx_download,
+)
 from .claw_office_chooser_routes import (
     LIST_PATH as CLAW_OFFICE_CANDIDATES_PATH,
     SELECT_PATH as CLAW_OFFICE_SELECT_PATH,
@@ -332,6 +336,8 @@ def create_app(
             b66_quote_history_delete,
             methods=["DELETE"],
         ),
+        Route(WEB_SOURCES_PATH, web_xlsx_sources, methods=["GET", "POST"]),
+        Route(WEB_SOURCE_DOWNLOAD_PATH, web_xlsx_download, methods=["GET"]),
         Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"]),
         Route("/api/claw/manual-intake/execute", claw_manual_intake_execute, methods=["POST"]),
         # #3539: the generic Claw composer runs through the canonical #3382 P01

@@ -244,3 +244,55 @@
 #clawOfficeDecisionLabel { font-size: 0.8125rem; line-height: 1.5; }
 #clawOfficeDecision:not([hidden]) { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 #clawOfficeDecisionLabel { flex-basis: 100%; }
+
+/* #3580 web-first XLSX intake, independent of the desktop connection panel. */
+.claw-web-office {
+  width: min(100%, 720px);
+  margin: 12px auto;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+.claw-web-office details {
+  border: 1px solid var(--border, rgba(150,160,180,.35));
+  border-radius: 12px;
+  padding: 10px 14px;
+  background: var(--panel, rgba(80,90,120,.08));
+}
+.claw-web-office summary {
+  cursor: pointer;
+  font-weight: 650;
+}
+.claw-web-office p {
+  font-size: .86rem;
+  line-height: 1.5;
+}
+.claw-web-office-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.claw-web-office-actions input[type="file"] { max-width: 240px; min-height: 32px; }
+.claw-web-office button {
+  border: 1px solid currentColor;
+  border-radius: 8px;
+  padding: 6px 10px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.claw-web-office button:disabled { opacity: .55; cursor: not-allowed; }
+#clawWebXlsxList {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+}
+#clawWebXlsxList li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin: 7px 0;
+  overflow-wrap: anywhere;
+}
+#clawWebXlsxList a { text-underline-offset: 3px; }
