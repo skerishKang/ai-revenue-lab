@@ -45,7 +45,9 @@
       "!apps/padiem-chat/worker.py",
       ".github/scripts/b62_conversation_delete_browser_qa.py",
       "!apps/padiem-chat/app/b66_*",
-      "!apps/padiem-chat/static/b66-quote-runtime.js"
+      "!apps/padiem-chat/static/b66-quote-runtime.js",
+      "!apps/padiem-chat/static/claw-web-xlsx-sources.js",
+      "!apps/padiem-chat/static/conversation-export.js"
     ],
     "conversation-export-browser-qa": [
       "apps/padiem-chat/**",
@@ -53,7 +55,8 @@
       "!apps/padiem-chat/worker.py",
       ".github/scripts/b62_conversation_export_browser_qa.py",
       "!apps/padiem-chat/app/b66_*",
-      "!apps/padiem-chat/static/b66-quote-runtime.js"
+      "!apps/padiem-chat/static/b66-quote-runtime.js",
+      "!apps/padiem-chat/static/claw-web-xlsx-sources.js"
     ],
     "deep-research-browser-qa": [
       "apps/padiem-chat/**",
@@ -62,7 +65,9 @@
       "packages/padiem-ai-core/**",
       ".github/scripts/b62_deep_research_browser_qa.py",
       "!apps/padiem-chat/app/b66_*",
-      "!apps/padiem-chat/static/b66-quote-runtime.js"
+      "!apps/padiem-chat/static/b66-quote-runtime.js",
+      "!apps/padiem-chat/static/claw-web-xlsx-sources.js",
+      "!apps/padiem-chat/static/conversation-export.js"
     ],
     "document-browser-qa": [
       "apps/padiem-chat/**",
@@ -70,7 +75,8 @@
       "!apps/padiem-chat/worker.py",
       ".github/scripts/b62_document_browser_qa.py",
       "!apps/padiem-chat/app/b66_*",
-      "!apps/padiem-chat/static/b66-quote-runtime.js"
+      "!apps/padiem-chat/static/b66-quote-runtime.js",
+      "!apps/padiem-chat/static/conversation-export.js"
     ],
     "error-retry-browser-qa": [
       "apps/padiem-chat/**",
@@ -78,7 +84,8 @@
       "!apps/padiem-chat/worker.py",
       ".github/scripts/b62_error_retry_browser_qa.py",
       "!apps/padiem-chat/app/b66_*",
-      "!apps/padiem-chat/static/b66-quote-runtime.js"
+      "!apps/padiem-chat/static/b66-quote-runtime.js",
+      "!apps/padiem-chat/static/claw-web-xlsx-sources.js"
     ],
     "image-browser-qa": [
       "apps/padiem-chat/**",
@@ -86,7 +93,9 @@
       "!apps/padiem-chat/worker.py",
       ".github/scripts/b62_image_browser_qa.py",
       "!apps/padiem-chat/app/b66_*",
-      "!apps/padiem-chat/static/b66-quote-runtime.js"
+      "!apps/padiem-chat/static/b66-quote-runtime.js",
+      "!apps/padiem-chat/static/claw-web-xlsx-sources.js",
+      "!apps/padiem-chat/static/conversation-export.js"
     ],
     "mobile-touch-target-qa": [
       "apps/padiem-chat/static/padiem-first-use.css",
@@ -98,7 +107,9 @@
       "!apps/padiem-chat/worker.py",
       ".github/scripts/b62_project_delete_browser_qa.py",
       "!apps/padiem-chat/app/b66_*",
-      "!apps/padiem-chat/static/b66-quote-runtime.js"
+      "!apps/padiem-chat/static/b66-quote-runtime.js",
+      "!apps/padiem-chat/static/claw-web-xlsx-sources.js",
+      "!apps/padiem-chat/static/conversation-export.js"
     ],
     "project-files-browser-qa": [
       "apps/padiem-chat/**",
@@ -106,7 +117,8 @@
       "!apps/padiem-chat/worker.py",
       ".github/scripts/b62_project_files_browser_qa.py",
       "!apps/padiem-chat/app/b66_*",
-      "!apps/padiem-chat/static/b66-quote-runtime.js"
+      "!apps/padiem-chat/static/b66-quote-runtime.js",
+      "!apps/padiem-chat/static/conversation-export.js"
     ],
     "projects-browser-qa": [
       "apps/padiem-chat/**",
@@ -114,7 +126,9 @@
       "!apps/padiem-chat/worker.py",
       ".github/scripts/b62_projects_browser_qa.py",
       "!apps/padiem-chat/app/b66_*",
-      "!apps/padiem-chat/static/b66-quote-runtime.js"
+      "!apps/padiem-chat/static/b66-quote-runtime.js",
+      "!apps/padiem-chat/static/claw-web-xlsx-sources.js",
+      "!apps/padiem-chat/static/conversation-export.js"
     ],
     "saved-outputs-browser-qa": [
       "apps/padiem-chat/**",
@@ -122,7 +136,8 @@
       "!apps/padiem-chat/worker.py",
       ".github/scripts/b62_saved_outputs_browser_qa.py",
       "!apps/padiem-chat/app/b66_*",
-      "!apps/padiem-chat/static/b66-quote-runtime.js"
+      "!apps/padiem-chat/static/b66-quote-runtime.js",
+      "!apps/padiem-chat/static/claw-web-xlsx-sources.js"
     ],
     "structured-answer-browser-qa": [
       "apps/padiem-chat/**",
@@ -130,7 +145,9 @@
       "!apps/padiem-chat/worker.py",
       ".github/scripts/b62_structured_answer_browser_qa.py",
       "!apps/padiem-chat/app/b66_*",
-      "!apps/padiem-chat/static/b66-quote-runtime.js"
+      "!apps/padiem-chat/static/b66-quote-runtime.js",
+      "!apps/padiem-chat/static/claw-web-xlsx-sources.js",
+      "!apps/padiem-chat/static/conversation-export.js"
     ],
     "web-search-browser-qa": [
       "apps/padiem-chat/**",
@@ -139,7 +156,9 @@
       "packages/padiem-ai-core/**",
       ".github/scripts/b62_web_search_browser_qa.py",
       "!apps/padiem-chat/app/b66_*",
-      "!apps/padiem-chat/static/b66-quote-runtime.js"
+      "!apps/padiem-chat/static/b66-quote-runtime.js",
+      "!apps/padiem-chat/static/claw-web-xlsx-sources.js",
+      "!apps/padiem-chat/static/conversation-export.js"
     ]
   }
 }
