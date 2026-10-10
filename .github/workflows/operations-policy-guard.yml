@@ -52,27 +52,32 @@ jobs:
       - name: Install test dependencies
         run: python -m pip install --disable-pip-version-check 'pytest>=8,<10' 'PyYAML>=6,<7'
 
-      # Keep the direct source guards independent of pytest. A failure remains
-      # blocking even if all Python contract test cases would pass.
+      # Existing documentation authority contract explicitly pins this exact
+      # command as an all-PR, standalone collector. Keep it independent.
+      - name: Run operating policy consistency tests
+        run: python -m pytest -q docs/operations/tests
+
+      # Direct scripts remain standalone blocking gates (no pytest dependency).
       - name: Run cross-lane test dependency guard
         run: python .github/scripts/cross_lane_test_dependency_guard.py
 
       - name: Run frozen-source checkout-byte guard
         run: python .github/scripts/frozen_source_checkout_byte_guard.py
 
-      # #3989: all originally selected pytest modules still execute, now in
-      # ONE collector/interpreter startup rather than nine independent pytest
-      # processes. No suite filtering, xfail, retries or new runner.
-      # Each failing test retains its full file/node ID in standard pytest logs.
-      - name: Run complete policy and security contract test collection
+      # Existing Engine/LL ownership contract pins this exact invocation.
+      - name: Run Engine/Living Learning CI ownership tests
+        run: python -m pytest -q .github/tests/test_3989_engine_living_learning_ci_scope.py
+
+      # #3989: consolidate the seven other pytest invocations into one.
+      # All exact original suite paths remain; any failure blocks the job.
+      # Stable required check names and reporting job remain untouched.
+      - name: Run remaining policy and security contract tests
         run: |
           python -m pytest -q \
-            docs/operations/tests \
             .github/tests/test_pr_contract_guard.py \
             .github/tests/test_r2_credential_authority_split.py \
             .github/tests/test_b62_pr_preview_trigger_scope.py \
             .github/tests/test_b62_worker_deploy_trigger_scope.py \
-            .github/tests/test_3989_engine_living_learning_ci_scope.py \
             .github/tests/test_cross_lane_test_dependency_guard.py \
             .github/tests/test_frozen_source_checkout_byte_guard.py \
             .github/tests/test_verify_import_origin.py \
