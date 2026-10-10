@@ -219,7 +219,10 @@ jobs:
       - name: Verify locked host dependency versions
         run: uv run --locked python tests/check_dependency_locks.py --phase host
       - name: Pywrangler dependency sync from committed pylock
-        run: uv run --locked pywrangler sync --force
+        # #3989: preserve the exact locked sync and Wrangler 4.130.0 prewarm,
+        # but run these independent preparations together on one runner.
+        # Marker is exported only after BOTH finish and pass.
+        run: bash ../../.github/scripts/b62_worker_prewarm_overlap.sh
       - name: Verify vendored Worker dependency versions
         run: uv run --locked python tests/check_dependency_locks.py --phase vendor
       - name: Prove sync did not mutate committed locks
