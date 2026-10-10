@@ -59,21 +59,33 @@ cleanup() {
 }
 trap cleanup EXIT
 
+# #3989 CPU contention trial: three simultaneous real Workerd/Pyodide
+# startups, followed by the fourth alone. Original four scripts, distinct
+# ports/SQLite roots, pinned Wrangler and every assertion remain unchanged.
+# Batch two executes even when any probe from the first batch fails.
+failed=0
+report_probe() {
+  local completed_index="$1"
+  if wait "${pids[$completed_index]}"; then
+    echo "B62_WORKER_PROBE_$completed_index=PASS"
+  else
+    echo "B62_WORKER_PROBE_$completed_index=FAIL" >&2
+    failed=1
+  fi
+  cat "$logdir/probe-$completed_index.log"
+}
 for index in 0 1 2 3; do
+  if (( index == 3 )); then
+    for completed_index in 0 1 2; do
+      report_probe "$completed_index"
+    done
+    echo 'B62_WORKER_WAVE=FIRST_THREE_FINISHED'
+  fi
   bash "${probes[$index]}" >"$logdir/probe-$index.log" 2>&1 &
   pids+=("$!")
 done
-failed=0
-for index in 0 1 2 3; do
-  if wait "${pids[$index]}"; then
-    echo "B62_WORKER_PROBE_$index=PASS"
-  else
-    echo "B62_WORKER_PROBE_$index=FAIL" >&2
-    failed=1
-  fi
-  # Include all original probe contract markers and bounded failure detail.
-  cat "$logdir/probe-$index.log"
-done
+report_probe 3
+echo 'B62_WORKER_WAVE=FOURTH_FINISHED'
 echo 'B62_WORKER_PROBE_COUNT=4'
 if (( failed )); then
   echo 'B62_WORKER_PROBES=FAIL' >&2
