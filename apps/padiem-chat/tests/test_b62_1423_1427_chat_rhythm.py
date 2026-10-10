@@ -6,6 +6,7 @@ REPO_ROOT = ROOT.parents[1]
 ALIGNMENT_CSS = (ROOT / "static/padiem-glass-gutter-alignment.css").read_text(encoding="utf-8")
 GUTTER_QA = (REPO_ROOT / ".github/scripts/b62_chat_gutter_visual_qa.py").read_text(encoding="utf-8")
 VISUAL_WORKFLOW = (REPO_ROOT / ".github/workflows/b62-browser-qa-unified.yml").read_text(encoding="utf-8")
+VISUAL_TAIL = (REPO_ROOT / ".github/scripts/b62_browser_qa_tail_parallel.py").read_text(encoding="utf-8")
 
 
 def test_1423_outer_surfaces_stay_wide_while_prose_has_readable_measure() -> None:
@@ -47,8 +48,12 @@ def test_1427_responsive_qa_covers_desktop_tablet_and_mobile() -> None:
     assert "user bubble right" in GUTTER_QA
     assert "assistant meta/content gap out of range" in GUTTER_QA
     assert "horizontal overflow" in GUTTER_QA
-    assert ".github/scripts/b62_chat_gutter_visual_qa.py" in VISUAL_WORKFLOW
-    assert "Shared gutter responsive browser QA" in VISUAL_WORKFLOW
+    # The #3989 unified workflow invokes the bounded visual-tail runner;
+    # gutter QA remains mandatory inside its fail-closed SCRIPTS contract.
+    assert ".github/scripts/b62_browser_qa_tail_parallel.py" in VISUAL_WORKFLOW
+    assert '"b62_chat_gutter_visual_qa.py"' in VISUAL_TAIL
+    assert "B62_VISUAL_TAIL_FAIL_COUNT" in VISUAL_TAIL
+    assert "shared-gutter-report.json" in VISUAL_WORKFLOW
 
 
 def test_child_polish_remains_layout_only() -> None:
