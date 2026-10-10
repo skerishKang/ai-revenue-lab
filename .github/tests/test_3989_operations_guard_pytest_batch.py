@@ -38,6 +38,12 @@ class OperationsGuardBatchContract(unittest.TestCase):
         self.assertIn("name: Pull request contract report", self.reporter)
         self.assertIn("if: always()", self.reporter)
         self.assertIn("run: python .github/scripts/pr_contract_guard.py", self.reporter)
+        self.assertIn("sparse-checkout: |", self.reporter)
+        self.assertIn("sparse-checkout-cone-mode: false", self.reporter)
+        self.assertIn(".github/scripts/pr_contract_guard.py", self.reporter)
+        # The blocking policy tests must continue using the entire repository.
+        self.assertNotIn("sparse-checkout:", self.policy)
+        self.assertEqual(self.reporter.count("uses: actions/checkout@v4"), 1)
         self.assertIn("PR_CONTRACT_GUARD_MODE=REPORT_BY_DEFAULT", self.reporter)
         self.assertIn("  cancel-in-progress: true", self.source)
         self.assertIn("contents: read", self.source)
