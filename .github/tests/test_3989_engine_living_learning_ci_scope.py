@@ -112,6 +112,28 @@ class TestEngineLLPathOwnership:
         for name, (files, expected) in cases.items():
             assert (triggered(engine, files), triggered(living, files)) == expected, name
 
+
+
+    def test_engine_core_ll_parallel_runner_keeps_both_fail_closed_suites(self):
+        engine = ENGINE_PATH.read_text(encoding="utf-8")
+        script = (ROOT / ".github/scripts/engine_core_ll_parallel_3989.sh").read_text(encoding="utf-8")
+        assert "name: Padiem AI Core full tests and Living Learning Core-reuse regression" in engine
+        assert "run: bash .github/scripts/engine_core_ll_parallel_3989.sh" in engine
+        for required in (
+            "uv run --extra dev python -m pytest -q",
+            "python -m pip install --disable-pip-version-check -r requirements-padiem-core.txt",
+            "python -m pip install --disable-pip-version-check -e '.[dev]'",
+            "python -m pip install --disable-pip-version-check 'jsonschema>=4.23,<5'",
+            "python -m pip check",
+            "python -m pytest -q",
+            "export LL_PROVIDER_TYPE=mock",
+            'wait "$core_pid"',
+            'wait "$ll_pid"',
+            'if [[ "$core_status" -ne 0 || "$ll_status" -ne 0 ]]',
+            "ENGINE_CORE_LL_PARALLEL=PASS",
+        ):
+            assert required in script
+
     def test_policy_guard_enforces_scope_contract(self):
         text = POLICY_PATH.read_text(encoding="utf-8")
         assert "python -m pytest -q .github/tests/test_3989_engine_living_learning_ci_scope.py" in text
