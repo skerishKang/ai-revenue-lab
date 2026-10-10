@@ -348,3 +348,30 @@ def test_worker_entrypoint_injects_external_web_transport_into_app_factory():
     assert "class CloudflareExternalHttpTransport(httpx.AsyncBaseTransport)" in source
     assert "from js import fetch as js_fetch" in source
     assert "from js import AbortSignal as js_abort_signal" in source
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("encoding", ["gzip", "br", "deflate"])
+async def test_worker_fetch_decoded_json_not_decoded_twice_by_httpx(encoding):
+    """JS Fetch stream is decoded; original compression metadata must not re-decode."""
+    transport_type = _load_worker_web_transport()
+    raw_json = json.dumps({"results": [{"title": "ok", "url": "https://example.com/ok"}]}).encode("utf-8")
+
+    async def fake_fetch(url, init):
+        return SimpleNamespace(
+            status=200,
+            headers=FakeHeaders({
+                "content-type": "application/json",
+                "content-encoding": encoding,
+                "content-length": "33",
+                "x-origin": "preserved",
+            }),
+            body=FakeBody([raw_json]),
+        )
+
+    transport = transport_type(fetch_impl=fake_fetch, abort_signal_api=FakeAbortSignalAPI())
+    async with httpx.AsyncClient(transport=transport, timeout=3.0) as client:
+        response = await client.get("https://api.search.tinyfish.ai?query=public")
+        assert response.json() == {"results": [{"title": "ok", "url": "https://example.com/ok"}]}
+        assert "content-encoding" not in response.headers
+        assert "content-length" not in response.headers
+        assert response.headers["x-origin"] == "preserved"

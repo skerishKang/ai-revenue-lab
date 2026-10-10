@@ -668,6 +668,21 @@ class CloudflareExternalHttpTransport(httpx.AsyncBaseTransport):
                 js_response.headers,
                 request=request,
             )
+            # Workers JS Fetch exposes a decompressed body stream while origin
+            # Content-Encoding can still describe the compressed wire payload.
+            # Passing that stale header to httpx would decode the bytes again,
+            # raising httpx.DecodingError for otherwise-valid TinyFish JSON.
+            # Content-Length also describes the compressed representation.
+            encoding = next(
+                (str(value).strip().lower() for key, value in response_headers.items()
+                 if key.lower() == "content-encoding"),
+                "",
+            )
+            if encoding in {"gzip", "br", "deflate"}:
+                response_headers = {
+                    key: value for key, value in response_headers.items()
+                    if key.lower() not in {"content-encoding", "content-length"}
+                }
             response_body = getattr(js_response, "body", None)
         except httpx.ProtocolError:
             raise
