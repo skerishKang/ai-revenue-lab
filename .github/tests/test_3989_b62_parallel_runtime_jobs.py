@@ -65,7 +65,7 @@ class ParallelB62JobsContract(unittest.TestCase):
             "uv lock --check",
             "uv sync --locked --extra dev",
             "Verify locked host dependency versions",
-            "uv run --locked pywrangler sync --force",
+            "run: bash ../../.github/scripts/b62_worker_prewarm_overlap.sh",
             "Verify vendored Worker dependency versions",
             "git diff --exit-code -- uv.lock pylock.toml",
             "Verify Worker probe concurrency and failure propagation contract",
@@ -75,6 +75,19 @@ class ParallelB62JobsContract(unittest.TestCase):
         ):
             with self.subTest(marker=marker):
                 self.assertIn(marker, self.worker)
+        helper = WORKFLOW.parent.parent / "scripts" / "b62_worker_prewarm_overlap.sh"
+        source = helper.read_text(encoding="utf-8")
+        # It is still the original locked vendor sync, executed via the
+        # fail-closed overlap helper. The original tests must not accidentally
+        # accept removing or weakening the dependency lock at a call-site.
+        self.assertIn("uv run --locked pywrangler sync --force", source)
+        self.assertIn("npx --yes wrangler@4.130.0 --version", source)
+        self.assertIn("B62_WORKER_OVERLAP=FAIL", source)
+        self.assertIn("B62_WORKER_OVERLAP=PASS", source)
+        self.assertLess(
+            self.worker.index("b62_worker_prewarm_overlap.sh"),
+            self.worker.index("Verify vendored Worker dependency versions"),
+        )
 
     def test_static_only_skips_only_live_worker_probes(self):
         self.assertEqual(self.worker.count("scope != 'static_only'"), 1)

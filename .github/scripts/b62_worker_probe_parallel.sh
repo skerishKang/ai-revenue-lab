@@ -32,11 +32,18 @@ done
 # The four real Worker runtime probes still execute concurrently afterward.
 # Offline 4-mock-script canaries must not require network or npm.
 if (( $# == 0 )); then
-  if ! npx --yes wrangler@4.130.0 --version; then
-    echo 'B62_WORKER_NPX_PREWARM=FAIL' >&2
-    exit 1
+  if [[ "${B62_WORKER_NPX_PREWARMED:-}" == '1' ]]; then
+    # The preceding same-job CI step proves the exact Wrangler version and
+    # writes this marker to GITHUB_ENV only after both preflights PASS.
+    echo 'B62_WORKER_NPX_PREWARM=VERIFIED_PRIOR_STEP'
+  else
+    # Standalone runs retain their original fail-closed npm prewarm.
+    if ! npx --yes wrangler@4.130.0 --version; then
+      echo 'B62_WORKER_NPX_PREWARM=FAIL' >&2
+      exit 1
+    fi
+    echo 'B62_WORKER_NPX_PREWARM=PASS'
   fi
-  echo 'B62_WORKER_NPX_PREWARM=PASS'
 fi
 
 logdir="$(mktemp -d)"
