@@ -180,7 +180,7 @@ def test_claw_api_rejects_pro_hold_bypass():
 
 def test_claw_browser_keeps_explicit_id_in_submit_snapshot_only():
     assert 'id="clawModelIdInput"' in INDEX
-    assert 'placeholder="등록된 B14 모델 ID를 입력하세요"' in INDEX
+    assert 'placeholder="등록된 모델 ID를 입력하세요"' in INDEX
     assert "agnes-ai/agnes-3.0-flash" not in INDEX  # Do not suggest deferred providers as defaults.
     assert "clawGeneralRequestActive()" in FRONT
     assert "contextSnapshot.selectedModelId" in FRONT
