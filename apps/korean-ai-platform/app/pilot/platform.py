@@ -38,7 +38,7 @@ from app.pilot.errors import (
     UpstreamTimeout,
 )
 from app.pilot.sensenova_provider import is_transient_busy_429
-from app.pilot.atria_timeout_diagnostics import log_atria_timeout
+from app.pilot.provider_timeout_diagnostics import log_provider_timeout
 from app.pilot.agnes_429_diagnostics import log_agnes_429
 from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
@@ -283,7 +283,7 @@ async def call_platform_chat_completions(
                 follow_redirects=False,
             )
     except httpx.TimeoutException as exc:
-        log_atria_timeout(logger, platform_provider_id, exc, "completed")
+        log_provider_timeout(logger, platform_provider_id, exc, "completed")
         raise UpstreamTimeout() from exc
     except httpx.RequestError as e:
         logger.error(
@@ -492,7 +492,7 @@ async def stream_platform_chat_completions(
                             saw_done = True
                         yield event
     except httpx.TimeoutException as exc:
-        log_atria_timeout(logger, platform_provider_id, exc, "stream")
+        log_provider_timeout(logger, platform_provider_id, exc, "stream")
         raise UpstreamTimeout() from exc
     except httpx.RequestError as exc:
         logger.error(
