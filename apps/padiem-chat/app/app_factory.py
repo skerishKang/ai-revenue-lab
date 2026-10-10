@@ -50,6 +50,7 @@ from .chat_routes import api_chat, api_chat_stream
 from .claw_general_routes import claw_general_execute, claw_general_capabilities
 from .claw_artifact_preview_routes import claw_artifact_inline_preview
 from .claw_conversation_artifact_routes import claw_conversation_artifact_followup
+from .claw_durable_drive_output_pipeline import ClawDurableDriveOutputPipeline
 from .claw_routes import (
     claw_approval_decision,
     claw_manual_intake_artifact,
@@ -190,6 +191,7 @@ def create_app(
     d1_binding=None,
     r2_binding=None,
     claw_p01_adapter=None,
+    claw_drive_artifact_uploader=None,
     claw_telegram_authority=None,
     approved_memory_store: ApprovedMemoryStore | None = None,
     b66_saved_quote_skill_store: SavedQuoteSkillStore | None = None,
@@ -448,6 +450,16 @@ def create_app(
     # composition root from trusted bindings; None means unconfigured and the
     # execute route fails closed before any transport.
     app.state.claw_p01_adapter = claw_p01_adapter
+    # #3929/#3580: no default Google/Drive WRITE. The CP-authorized host
+    # must explicitly inject an existing approved Drive uploader; mere D1
+    # binding / auth-cookie / model answer can never activate an upload.
+    app.state.claw_durable_drive_output_pipeline = (
+        ClawDurableDriveOutputPipeline(
+            history=history_store, uploader=claw_drive_artifact_uploader
+        )
+        if history_store is not None and claw_drive_artifact_uploader is not None
+        else None
+    )
     # Explicit trusted server opt-in; no browser-provided activation authority.
     app.state.claw_live_sse_enabled = False
     # #2961 owner approval decision lane: the same composed Engine client, used
