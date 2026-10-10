@@ -227,7 +227,8 @@ check(account.includes("settingsButton.hidden = true") &&
 check(easy.includes('addEventListener("b66:auth-changed"') &&
       account.includes('b66:auth-changed", { detail: { authenticated: true } }') &&
       easy.includes("로그인하면 견적을 이어서 진행할 수 있습니다.") &&
-      easy.includes("이전에 작성하던 견적이 있습니다"),
+      easy.includes("견적 이어쓰기를 누르면 이 계정에 저장된 질문형 작성 상태를 확인합니다.") &&
+      easy.includes("GuidedAPI.load()"),
   "EASY_MODE_CONTRACT: resume hint follows sign-in state");
 check(easy.includes('"b66:local-data-reset"') &&
       easy.includes('fileInput.value = ""'),

@@ -720,6 +720,65 @@ const buttonWith = (env, label) => env.created.filter(
   }
 
   /* ── final invariants ── */
+
+  /* #3396: a new wizard must not overwrite an unfinished server slot silently. */
+  {
+    const accountEnv = buildEnv();
+    const writes = [];
+    let reply = { ok: true, state: { schema: "b66.guided-draft.v1", step: "price" } };
+    const prompts = [];
+    accountEnv.context.B66GuidedDraftServer = {
+      load: async () => reply,
+      save: async (state) => { writes.push(state); return { ok: true }; },
+      clear: async () => ({ ok: true })
+    };
+    accountEnv.context.confirm = (message) => { prompts.push(String(message)); return false; };
+    new vm.Script(easySource, { filename: "easy-mode.js" }).runInContext(accountEnv.context);
+    accountEnv.context.document.dispatchEvent({
+      type: "b66:auth-changed", detail: { authenticated: true }
+    });
+    clickStarter(accountEnv, "guidedStarter");
+    await flush();
+    check(prompts.length === 1 && prompts[0].includes("덮어써집니다") &&
+          countCalls(accountEnv, "createFreshDraft") === 0 && writes.length === 0,
+      "GUIDED_EXISTING_SERVER_STATE_CANCEL=PASS (no replacement, allocation or write)");
+    accountEnv.context.confirm = (message) => { prompts.push(String(message)); return true; };
+    clickStarter(accountEnv, "guidedStarter");
+    await flush();
+    check(prompts.length === 2 && countCalls(accountEnv, "createFreshDraft") === 1 &&
+          writes.length === 1,
+      "GUIDED_EXISTING_SERVER_STATE_CONFIRM=PASS (exactly one new draft/write)");
+    reply = { ok: false, error: "guided_state_unavailable" };
+    clickStarter(accountEnv, "guidedStarter");
+    await flush();
+    check(countCalls(accountEnv, "createFreshDraft") === 1 && writes.length === 1 &&
+          accountEnv.appCalls.some(call => call.startsWith("toast:기존 질문형 견적")),
+      "GUIDED_SERVER_READ_FAILURE_NO_OVERWRITE=PASS");
+  }
+  {
+    const switched = buildEnv();
+    let resolveLoad;
+    switched.context.B66GuidedDraftServer = {
+      load: () => new Promise(resolve => { resolveLoad = resolve; }),
+      save: async () => ({ ok: true }),
+      clear: async () => ({ ok: true })
+    };
+    new vm.Script(easySource, { filename: "easy-mode.js" }).runInContext(switched.context);
+    switched.context.document.dispatchEvent({
+      type: "b66:auth-changed", detail: { authenticated: true }
+    });
+    clickStarter(switched, "guidedStarter");
+    await flush();
+    switched.context.document.dispatchEvent({
+      type: "b66:account-scope-changed",
+      detail: { privateStateReadable: false, action: "quarantine" }
+    });
+    resolveLoad({ ok: true, state: null });
+    await flush();
+    check(countCalls(switched, "createFreshDraft") === 0,
+      "GUIDED_ACCOUNT_SWITCH_PENDING_READ=NO_NEW_DRAFT");
+  }
+
   const depthBounded = env.history._depth() <= 2;
   check(depthBounded, "HISTORY_PUSH_LOOP=0 (depth never exceeded 2 across all back/forward)");
   results.draftPreserved = results.draftPreserved &&

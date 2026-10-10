@@ -1009,6 +1009,7 @@
     certifiedPreviewBaseUrl,
     pendingQuote: () => pendingQuote(),
     supportedItemRows: () => supportedItemRows(),
+    assignedSavedSkillId: () => state.loadedSkill?.savedSkillId || "",
     clearPending: () => { clearPendingQuote(); },
     getCompanyProfile: () => (state.companyProfile ? JSON.parse(JSON.stringify(state.companyProfile)) : null),
     errorText: interpretErrorText
