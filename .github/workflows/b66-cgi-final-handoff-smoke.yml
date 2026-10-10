@@ -6,6 +6,7 @@ on:
       - ".github/scripts/b66_cgi_final_handoff_smoke.py"
       - ".github/scripts/b66_cgi_freeform_one_shot.py"
       - ".github/scripts/b66_cgi_guided_isolated_pdf.py"
+      - ".github/scripts/b66_cgi_original_visual_compare.py"
       - ".github/tests/test_b66_cgi_guided_isolated_pdf.py"
       - ".github/tests/test_b66_cgi_freeform_one_shot.py"
       - ".github/tests/test_b66_cgi_final_handoff_smoke.py"
@@ -149,6 +150,10 @@ jobs:
 
       - name: Install Chromium runtime
         run: python -m playwright install --with-deps chromium
+
+      - name: Install PDF visual comparison dependency only for isolated Guided
+        if: inputs.mode == 'b66_guided_isolated_pdf'
+        run: python -m pip install --disable-pip-version-check --quiet "pymupdf==1.26.5"
 
       - name: Run one bounded Production browser smoke
         shell: bash
