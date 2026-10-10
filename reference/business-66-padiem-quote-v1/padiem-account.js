@@ -503,6 +503,8 @@
       case "cgi_unsupported_details": return "CGI 기본 견적서는 현재 요약 품목만 PDF로 만들 수 있습니다. 상세내역은 지원하지 않으므로 요약 품목의 수량과 단가를 알려 주세요.";
       case "cgi_scope_unavailable": return "CGI 견적서의 지원 범위를 확인하지 못했습니다. 새로고침 후 다시 시도해 주세요.";
       case "interpret_unavailable": return "해석 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.";
+      case "interpret_timeout": return "선택한 AI 모델의 응답이 시간 초과되었습니다. 자동으로 다시 요청하지 않습니다. 다른 모델을 직접 선택하거나 질문받으며 만들기를 이용해 주세요.";
+      case "interpret_failed": return "선택한 AI 모델이 견적 요청을 처리하지 못했습니다. 다른 모델을 직접 선택하거나 질문받으며 만들기를 이용해 주세요.";
       default: return "견적 요청을 해석하지 못했습니다.";
     }
   }
@@ -801,7 +803,15 @@
             question: "표현이 불분명한 부분이 있습니다. 거래처명, 품목명, 수량과 단가를 확인해 견적 내용을 다시 알려 주세요."
           };
         }
-        return { ok: false, code: "interpret_failed", detail: safeMessage(data, "") };
+        // A bounded, server-emitted diagnostic distinguishes a real upstream
+        // timeout from malformed model output. Never surface raw provider data
+        // or silently retry/switch the customer's explicitly selected model.
+        if (result.response.status === 502 &&
+            result.response.headers &&
+            result.response.headers.get("X-B66-Upstream-Class") === "upstream_timeout") {
+          return { ok: false, code: "interpret_timeout" };
+        }
+        return { ok: false, code: "interpret_failed" };
       }
       const candidate = allocated ? mergePendingCandidate(allocated.lastCandidate, data.candidate) : data.candidate;
       const scopeFailure = candidateScopeFailure(candidate);
