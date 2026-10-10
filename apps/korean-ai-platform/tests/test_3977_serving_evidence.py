@@ -23,10 +23,10 @@ GEMINI_LITE = {
 }
 
 
-def test_all_canonical_11_have_exact_provider_upstream_and_origin():
+def test_all_canonical_models_have_exact_provider_upstream_and_origin():
     data = read_registry()
     evidence = registered_serving_evidence()
-    assert len(evidence) == len(data["models"]) == 11
+    assert len(evidence) == len(data["models"]) >= 11
     assert len(set(x.model_id for x in evidence)) == len(evidence)
     for record, model in zip(evidence, data["models"]):
         assert (
@@ -65,10 +65,10 @@ def test_only_two_google_flash_lite_cards_have_documented_65536_output():
         assert item.manufacturer_output_limit_status == "UNKNOWN"
 
 
-def test_seven_non_google_models_and_unverified_serving_caps_stay_unknown():
+def test_non_google_models_and_unverified_serving_caps_stay_unknown():
     remaining = [item for item in registered_serving_evidence()
                  if item.model_id not in GOOGLE_OFFICIAL]
-    assert len(remaining) == 7
+    assert len(remaining) == len(read_registry()["models"]) - len(GOOGLE_OFFICIAL)
     for item in remaining:
         assert item.provenance_status == "UNKNOWN"
         assert item.manufacturer is None

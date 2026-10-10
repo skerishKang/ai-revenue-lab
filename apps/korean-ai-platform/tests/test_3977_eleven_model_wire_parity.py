@@ -15,7 +15,7 @@ from app.pilot.upstream_answer_contract import UpstreamEmptyAnswer
 
 
 REGISTERED = read_registry()["models"]
-assert len(REGISTERED) == 11
+assert len(REGISTERED) >= 11  # Iterate the canonical registry; future JSON additions are included.
 
 
 @pytest.mark.asyncio

@@ -95,6 +95,15 @@ binding = "PADIEM_KIRAAI_API_KEY"
 store_id = "f0b09ca04a7b43248154c773704a5616"
 secret_name = "PADIEM_KIRAAI_API_KEY"
 
+
+# ModelScope inference: existing Charliekant Secrets Store name, metadata ONLY.
+# Exact DeepSeek-V4.1-Flash upstream uses ModelScope token, never DeepSeek direct API.
+# Do not deploy until current credential binding/readiness and intended use verified.
+[[secrets_store_secrets]]
+binding = "PADIEM_MODELSCOPE_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_MODELSCOPE_API_KEY"
+
 # The owner-managed registry must be loaded from /session/metadata/app/pilot.
 [[rules]]
 type = "Text"

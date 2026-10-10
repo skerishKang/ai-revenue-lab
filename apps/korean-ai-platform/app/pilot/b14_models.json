@@ -73,6 +73,15 @@
       "credential_source": "platform_secret",
       "credential_binding_name": "PADIEM_KIRAAI_API_KEY",
       "enabled": true
+    },
+    "modelscope": {
+      "base_origin": "https://api-inference.modelscope.cn/v1",
+      "allowed_hosts": [
+        "api-inference.modelscope.cn"
+      ],
+      "credential_source": "platform_secret",
+      "credential_binding_name": "PADIEM_MODELSCOPE_API_KEY",
+      "enabled": true
     }
   },
   "models": [
@@ -259,6 +268,22 @@
       "input_price_usd_per_1m": null,
       "output_price_usd_per_1m": null,
       "source": "kiraai.vn/models/qwen3.8-flash-free + verified direct Kira HTTP200 (#4018); current free promotion, not permanent price guarantee",
+      "source_checked_at": "2026-10-10",
+      "enabled": true
+    },
+    {
+      "id": "modelscope/deepseek-ai/DeepSeek-V4.1-Flash",
+      "provider_id": "modelscope",
+      "upstream_model": "deepseek-ai/DeepSeek-V4.1-Flash",
+      "display_name": "ModelScope: DeepSeek V4.1 Flash",
+      "provider_name": "ModelScope",
+      "capabilities": [
+        "chat"
+      ],
+      "context_window": 0,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "https://www.modelscope.cn/models/deepseek-ai/DeepSeek-V4.1-Flash",
       "source_checked_at": "2026-10-10",
       "enabled": true
     }
