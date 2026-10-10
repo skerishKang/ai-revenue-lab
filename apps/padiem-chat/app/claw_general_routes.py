@@ -239,7 +239,11 @@ async def claw_general_capabilities(request: Request) -> JSONResponse:
     if signed_in and subject_lane and (live_candidate or diagnostic):
         from .b54_canonical_session import resolve_current_b54_canonical_session
 
-        session = await resolve_current_b54_canonical_session(request)
+        try:
+            session = await resolve_current_b54_canonical_session(request)
+        except Exception:
+            # Read-only diagnostics never disclose Control Plane failures.
+            session = None
 
     enabled = bool(
         live_candidate
