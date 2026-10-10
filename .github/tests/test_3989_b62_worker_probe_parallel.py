@@ -151,21 +151,21 @@ class WorkerProbeParallelContract(unittest.TestCase):
             envfile = temp / "github-env"
             uv = temp / "uv"
             uv.write_text(
-                "#!/usr/bin/env bash\\n"
-                'test "$*" = "run --locked pywrangler sync --force" || exit 41\\n'
-                'printf "vendor:start\\\\n" >> "$MARKER"\\n'
-                "sleep 0.3\\n"
-                'printf "vendor:finish\\\\n" >> "$MARKER"\\n'
-                f"exit {vendor_exit}\\n", encoding="utf-8",
+                "#!/usr/bin/env bash\n"
+                'test "$*" = "run --locked pywrangler sync --force" || exit 41\n'
+                'printf "vendor:start\\n" >> "$MARKER"\n'
+                "sleep 0.3\n"
+                'printf "vendor:finish\\n" >> "$MARKER"\n'
+                f"exit {vendor_exit}\n", encoding="utf-8",
             )
             npx = temp / "npx"
             npx.write_text(
-                "#!/usr/bin/env bash\\n"
-                'test "$*" = "--yes wrangler@4.130.0 --version" || exit 42\\n'
-                'printf "wrangler:start\\\\n" >> "$MARKER"\\n'
-                "sleep 0.3\\n"
-                'printf "wrangler:finish\\\\n" >> "$MARKER"\\n'
-                f"echo '{version}'\\n", encoding="utf-8",
+                "#!/usr/bin/env bash\n"
+                'test "$*" = "--yes wrangler@4.130.0 --version" || exit 42\n'
+                'printf "wrangler:start\\n" >> "$MARKER"\n'
+                "sleep 0.3\n"
+                'printf "wrangler:finish\\n" >> "$MARKER"\n'
+                f"echo '{version}'\n", encoding="utf-8",
             )
             uv.chmod(0o755)
             npx.chmod(0o755)
@@ -190,7 +190,7 @@ class WorkerProbeParallelContract(unittest.TestCase):
         self.assertIn("B62_WORKER_VENDOR_SYNC=PASS", proc.stdout)
         self.assertIn("B62_WORKER_NPX_PREWARM=PASS", proc.stdout)
         self.assertIn("B62_WORKER_OVERLAP=PASS", proc.stdout)
-        self.assertEqual(env, "B62_WORKER_NPX_PREWARMED=1\\n")
+        self.assertEqual(env, "B62_WORKER_NPX_PREWARMED=1\n")
 
     def test_failed_vendor_does_not_export_skip_marker(self):
         proc, marks, env = self._offline_overlap(vendor_exit=17)
