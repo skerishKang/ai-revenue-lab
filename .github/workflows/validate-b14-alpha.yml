@@ -118,10 +118,11 @@ jobs:
       - name: Install Chromium
         run: uv run playwright install chromium
 
-      - name: Run full tests
-        run: uv run pytest -q
-
-      - name: Run warning-strict tests
+      # Same complete pytest discovery as both previous steps, now executed
+      # exactly once under their stronger warning-as-error contract. A passing
+      # strict run has exercised every test and rejected all uncaught warnings.
+      # Other smoke, browser, startup and live-readiness gates stay separate.
+      - name: Run full tests with warning-strict enforcement
         env:
           PYTHONWARNINGS: error
         run: uv run pytest -q

@@ -173,5 +173,32 @@ class TestRegistryChangeSet(unittest.TestCase):
         b["models"][-1]["id"]="google/test-new-manual-model"
         self.assertTrue(lane.model_registration_only(files(lane.REGISTRY),a,b))
 
+class TestAlphaStrictSuiteSinglePass(unittest.TestCase):
+    def test_full_lane_retains_every_pytest_and_browser_gate_under_strict_warnings(self):
+        workflow = (ROOT / ".github/workflows/validate-b14-alpha.yml").read_text(
+            encoding="utf-8"
+        )
+        full = workflow.split("  alpha-full-suite:", 1)[1]
+        self.assertIn("Run full tests with warning-strict enforcement", full)
+        self.assertEqual(full.count("run: uv run pytest -q\n"), 1)
+        self.assertIn("PYTHONWARNINGS: error\n        run: uv run pytest -q", full)
+        for marker in (
+            "uv sync --group dev --frozen",
+            "uv run playwright install chromium",
+            "uv run python -m compileall -q app tests",
+            "uv run pytest -q tests/test_owner_startup_command.py",
+            "uv run python browser_tests/alpha1_start_screen_smoke.py",
+            "PADIEM_SENSENOVA_API_KEY: ''",
+            "PADIEM_POOLSIDE_API_KEY: ''",
+            "B14_PROVIDER_MODE: live",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, full)
+        # The fail-closed registry-only fast lane and permanent status remain.
+        self.assertIn("name: B14 fast model registration contract", workflow)
+        self.assertIn("name: Locked Alpha contract", workflow)
+        self.assertIn('test "$FULL_RESULT" = success', workflow)
+
+
 if __name__ == "__main__":
     unittest.main()
