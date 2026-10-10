@@ -7,7 +7,6 @@ Google Drive authorization or an arbitrary URL/path.
 from __future__ import annotations
 
 import base64
-import binascii
 from dataclasses import dataclass
 from hashlib import sha256
 import inspect

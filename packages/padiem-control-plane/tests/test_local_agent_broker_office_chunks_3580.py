@@ -6,7 +6,7 @@ and actual XLSX/PDF bytes, with only HTTPS network replaced by a local port.
 from __future__ import annotations
 
 import base64
-from dataclasses import replace
+from math import ceil
 from datetime import timedelta
 from hashlib import sha256
 import json
@@ -19,10 +19,6 @@ from local_agent_broker_office_chunks import (
 )
 from test_local_agent_broker_device_http import (
     _service_fixture, _envelope, BASE, CREDENTIAL, AUTHORITY_REF,
-)
-from kagent.local_office_chunk_publisher import LocalOfficeChunkPublisher
-from kagent.local_agent_secure_transport import (
-    OutboundBrokerEndpoint, OutboundTransportConfig, OutboundTransportMode,
 )
 
 
@@ -46,13 +42,44 @@ class DeviceHttpPort:
     def __init__(self, service):
         self.service = service
         self.calls = 0
-    def post(self, *, config, operation, payload, timeout_seconds):
-        assert config.endpoint.url == "https://broker.example.test/"
-        assert operation.value == "office-part"
+    def post(self, *, payload):
         self.calls += 1
         body = json.dumps(payload, separators=(",", ":")).encode()
         response = self.service.handle(_envelope(body, route="/office-part"))
         return response["body"]
+
+
+class SyntheticDevicePublisher:
+    """Wire fixture only: independent KAgent client tests pin the real sender."""
+
+    def __init__(self, http):
+        self._transport = http
+
+    def publish(self, *, binding_ref, credential, command_id, run_id,
+                artifact_id, filename, media_type, content, kind):
+        count = ceil(len(content) / OFFICE_CHUNK_BYTES)
+        integrity = sha256(content).hexdigest()
+        for index in range(count):
+            part = content[index*OFFICE_CHUNK_BYTES:(index+1)*OFFICE_CHUNK_BYTES]
+            wire = {
+                "binding_ref": binding_ref,
+                "credential_b64": base64.b64encode(credential).decode(),
+                "contract_version": "claw-office-artifact-chunk.v1",
+                "command_id": command_id, "run_id": run_id,
+                "kind": kind, "artifact_id": artifact_id,
+                "filename": filename, "media_type": media_type,
+                "size_bytes": len(content), "integrity_ref": integrity,
+                "part_index": index, "part_count": count,
+                "part_sha256": sha256(part).hexdigest(),
+                "data_b64": base64.b64encode(part).decode(),
+            }
+            response = self._transport.post(payload=wire)
+            if response.get("ok") is not True:
+                raise ValueError("broker refused part")
+        return SimpleNamespace(
+            private_staging_only=True, drive_upload_granted=False,
+            part_count=count, integrity_ref=integrity,
+        )
 
 
 def fixture(*, installed=True, completed=True):
@@ -94,14 +121,7 @@ def fixture(*, installed=True, completed=True):
     if installed:
         service._office_chunks = store
     http = DeviceHttpPort(service)
-    config = OutboundTransportConfig(
-        endpoint=OutboundBrokerEndpoint(
-            endpoint_ref="broker.office.3580",
-            url="https://broker.example.test/",
-            mode=OutboundTransportMode.HTTPS_LONG_POLL,
-        ),
-    )
-    client = LocalOfficeChunkPublisher(transport=http, config=config)
+    client = SyntheticDevicePublisher(http)
     return authority, service, store, sql, http, client
 
 
@@ -186,9 +206,6 @@ def test_no_artifact_authority_from_browser_or_wrong_owner():
             run_id="run.office.3580", command_id="command.office.3580",
             kind="pdf", part_index=0,
         )
-    invalid = client.publish if False else None
-    del invalid
-    http = DeviceHttpPort(service)
     bad = {
         "binding_ref": "binding.http.1",
         "credential_b64": base64.b64encode(b"invalid credential").decode(),
@@ -254,15 +271,16 @@ def test_staged_file_expires_and_reclaims_sql_rows_after_one_day():
     assert sql.conn.execute("SELECT count(*) FROM local_agent_office_part").fetchone()[0] == 0
 
 
-def test_real_xlsx_workbook_bytes_are_staged_as_distinct_kind():
+def test_ooxml_zip_container_is_staged_as_distinct_xlsx_kind():
     from io import BytesIO
-    from openpyxl import Workbook
+    from zipfile import ZipFile
     _, _, store, _, _, client = fixture()
-    wb = Workbook()
-    wb.active["A1"] = "Quote"
-    wb.active["B2"] = 1250000
     buffer = BytesIO()
-    wb.save(buffer)
+    with ZipFile(buffer, "w") as zf:
+        zf.writestr("[Content_Types].xml", "<Types/>")
+        zf.writestr("_rels/.rels", "<Relationships/>")
+        zf.writestr("xl/workbook.xml", "<workbook/>")
+        zf.writestr("xl/worksheets/sheet1.xml", "<worksheet><sheetData/></worksheet>")
     data = buffer.getvalue()
     receipt = client.publish(**{
         **PARAMS, "artifact_id": "artifact.office.xlsx.3580",
