@@ -16,6 +16,7 @@ from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import read_bounded_request_body, RequestBodyTooLarge
+from .claw_memory_routes import _resolve_memory_workspace
 
 LIST_PATH = "/api/claw/office/candidates"
 SELECT_PATH = "/api/claw/office/candidates/select"
@@ -147,6 +148,33 @@ async def select_candidate(request: Request) -> JSONResponse:
             or result.get("approval_required") is not True
             or result.get("status") != "awaiting_approval"
             or _run(result.get("engine_run_id")) is None):
+        return _error(409, "p01_engine_pause_not_verified")
+    # A source declaring "awaiting_approval" is not sufficient authority.
+    # The existing B62 /api/claw/approvals/decision route looks up a durable
+    # approval handoff by ORIGINAL owner/Hark run + canonical workspace, then
+    # derives the Engine P01 run from that handoff. Verify the identical row
+    # was actually persisted before allowing the browser to offer Approve.
+    store = getattr(request.app.state, "history_store", None)
+    load = getattr(store, "load_claw_approval_handoff", None)
+    if not callable(load):
+        return _error(503, "p01_approval_handoff_unconfigured")
+    try:
+        workspace_id = await _resolve_memory_workspace(request, owner_id)
+        if workspace_id is None:
+            return _error(503, "p01_workspace_authority_unavailable")
+        handoff = load(user_id=owner_id, run_id=run_id, workspace_id=workspace_id)
+        if inspect.isawaitable(handoff):
+            handoff = await handoff
+    except Exception:
+        return _error(503, "p01_approval_handoff_unavailable")
+    if (not isinstance(handoff, dict)
+            or handoff.get("p01_run_id") != result["engine_run_id"]
+            or not isinstance(handoff.get("continuation_ref"), str)
+            or not handoff["continuation_ref"]
+            or not isinstance(handoff.get("pause_id"), str)
+            or not handoff["pause_id"]
+            or not isinstance(handoff.get("trusted_request"), dict)
+            or not handoff["trusted_request"]):
         return _error(409, "p01_engine_pause_not_verified")
     return JSONResponse({
         "ok": True, "run_id": run_id,
