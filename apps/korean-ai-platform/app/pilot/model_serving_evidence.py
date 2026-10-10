@@ -44,6 +44,34 @@ _GOOGLE_FIRST_PARTY_SOURCES: dict[str, tuple[str, int | None]] = {
 
 
 @dataclass(frozen=True)
+class GoogleAIStudioFreeTierSnapshot:
+    """Owner-reported observed Google API quota; NOT a model capability.
+
+    This is not a live balance, automatic limiter, or permanent guarantee.
+    """
+    rpm: int
+    input_tpm: int
+    rpd: int
+    observed_on: str = "2026-10-09"
+    source: str = "owner_reported_google_ai_studio_rate_limit"
+    scope: str = "per_model_per_project"
+
+
+# User's verified 2026-10-09 Google AI Studio Free-tier dashboard snapshot.
+# Exact project/model limit, not official permanent manufacturer capacity.
+# Recheck dashboard https://aistudio.google.com/rate-limit and official
+# rate-limit rules https://ai.google.dev/gemini-api/docs/rate-limits .
+# Never use these numbers to clamp max_tokens, automatically change models,
+# or classify rate-limited 429 as model-quality failure.
+_GOOGLE_FREE_TIER_OBSERVED: dict[str, tuple[int, int, int]] = {
+    "google/gemini-3.1-flash-lite": (15, 250000, 500),
+    "google/gemini-3.5-flash-lite": (15, 250000, 500),
+    "google/gemma-4-26b-a4b-it": (30, 16000, 14400),
+    "google/gemma-4-31b-it": (30, 16000, 14400),
+}
+
+
+@dataclass(frozen=True)
 class ServingModelEvidence:
     model_id: str
     serving_provider_id: str
@@ -54,6 +82,7 @@ class ServingModelEvidence:
     manufacturer: str | None = None
     variant_kind: str | None = None
     official_source_url: str | None = None
+    google_ai_studio_free_tier_observed: GoogleAIStudioFreeTierSnapshot | None = None
     manufacturer_model_max_output: int | None = None
     serving_model_max_output: int | None = None
     native_override_fields: tuple[str, ...] = ()
@@ -121,6 +150,11 @@ def registered_serving_evidence() -> tuple[ServingModelEvidence, ...]:
         manufacturer, variant, source_url, maker_output = _official_google_fact(
             model_id, provider_id, upstream, origin
         )
+        observed_limits = _GOOGLE_FREE_TIER_OBSERVED.get(model_id) if source_url else None
+        quota_snapshot = (
+            GoogleAIStudioFreeTierSnapshot(*observed_limits)
+            if observed_limits is not None else None
+        )
         native = _SUPPORTED.get(model_id)
         result.append(ServingModelEvidence(
             model_id=model_id,
@@ -132,6 +166,7 @@ def registered_serving_evidence() -> tuple[ServingModelEvidence, ...]:
             manufacturer=manufacturer,
             variant_kind=variant,
             official_source_url=source_url,
+            google_ai_studio_free_tier_observed=quota_snapshot,
             manufacturer_model_max_output=maker_output,
             # Serving API max output and explicit per-request budgets are
             # separate from official manufacturer/model-card max output.

@@ -18,6 +18,12 @@
 - **증거 보존:** CENTRAL은 원격 `E:\local2-4076-evidence\`에서 PNG 7장과 보고서 존재를 확인했다. 다만 `06-d1-recent.png`와 `07-foreign-account-empty.png`의 SHA-256 해시가 **동일**하여, 서로 다른 계정 화면을 보여 주는 독립 시각 증거로 사용할 수 없다. LOCAL2가 보고한 Google Drive 업로드 `403 storageQuotaExceeded`는 보조 보고서 업로드 실패이며 인수 하네스나 B66 고객 Drive 서비스의 실패로 혼동하지 않는다. 기존 로컬 원본을 보존하고 업로드 재시도를 인수 차단으로 만들지 않는다.
 - **운영·인수:** #4088은 테스트 전용 소스 병합이며 이 PR로 Production 새 배포를 수행하거나 필요하다고 판단하지 않는다. LOCAL2는 [#4076](https://github.com/skerishKang/ai-revenue-lab/issues/4076)에서 승인된 계정 실제 Guided/Free-form/후속 질문/1~3행 Sol PDF/D1 API 고객 여정 수용을 이어 간다. LOCAL1 [#3839](https://github.com/skerishKang/ai-revenue-lab/issues/3839) Sol v2 시각 인증, LOCAL3 [#3871](https://github.com/skerishKang/ai-revenue-lab/issues/3871) Drive 후속 검증은 별도. **`FULL_CGI_MVP_HANDOFF=NOT_READY`**.
 
+## Sol CGI v2 통합 소스 및 기술 인증 패킷 — 2026-10-10 KST
+
+- **[PR #4111](https://github.com/skerishKang/ai-revenue-lab/pull/4111) SQUASH MERGED** `66a34b5796e48bd16959a31e5be98cbcbd6cdbbd`: #4001 오른쪽 외곽선 + #4092 내부 세로선/합계 밴드 수정. #4010 얇은 단일 선 변경은 **원본 양식 충실도 우선으로 제외·CLOSED/UNMERGED**. 원본 인증 Sol v1 파일 0개 변경.
+- **검증:** exact-head CI 4 workflows SUCCESS, 7 checks SUCCESS+16 path skips; CENTRAL 원격 Windows 기하/원본 계약 63 PASS/6 SKIP/5 제외 및 실제 Sol PDF 집중 19 PASS. 새 통합 소스로 1/2/3/4/8/25/100품목 실 PDF 생성, PDF 해시 일치·QuoteCore 합계·페이지 1/1/1/2/2/4/11 검증. 1~3 인증 해시는 기존 v1과 동일. 자세한 파일별 SHA·판정 범위는 [Sol v2 기술 인증 패킷](SOL61_MULTIPAGE_V2_CERTIFICATION_CHECKPOINT_2026-10-10.md) 참조.
+- **구분:** `SOURCE_INTEGRATED=YES`, `REAL_PDF_OFFLINE_PROVEN=YES`, **`NEW_V2_CERTIFICATE=NO` / `PRODUCTION_V2_ACTIVE=NO` / `CUSTOMER_E2E=NOT_TESTED`**. Owner가 새로운 다중페이지 원본 양식 차이·허용 오차를 확정하고, 별도 버전 인증서를 발급·운영 라우트에서 확인한 후 #4076 실로그인 견적 여정을 검증해야 한다. 기존 배포 SHA `52b05ae...`는 변경하지 않았다.
+
 ## 1. 확정된 릴리스 근거
 
 | 구분 | 결과 / 근거 |

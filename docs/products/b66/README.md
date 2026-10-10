@@ -21,6 +21,8 @@ The user-facing reusable concept is **내 견적서 / Saved Quote Skill**. Inter
 
 **형식 제한은 여전히 [#3586](https://github.com/skerishKang/ai-revenue-lab/issues/3586) 기준**(XLSX 현재 등록 사전검증 허용, HWPX 추후, 구형 XLS/HWP 거부). PDF/이미지 사실 추출 ≠ 자동 인증되는 재사용 템플릿. 이전 XLSX 출력 [#3496](https://github.com/skerishKang/ai-revenue-lab/issues/3496) 및 원본 재현 [#3595](https://github.com/skerishKang/ai-revenue-lab/issues/3595), 연기된 대형 컴파일러 [#3708](https://github.com/skerishKang/ai-revenue-lab/issues/3708)을 중복 개발하지 않는다. **현재 김범신 대표 CGI의 유일한 PDF 템플릿은 아래의 기존 Sol 6.1**이며 이번 P1 정책을 이유로 첫 고객 인수 #4076을 지연하거나 CGI PDF를 다른 렌더러로 교체하지 않는다.
 
+> **Sol 다중 페이지 코드 통합 및 새 인증 증거 (2026-10-10):** [PR #4111](https://github.com/skerishKang/ai-revenue-lab/pull/4111) **MERGED**, #4001+#4092 채택·#4010 디자인 제외. 1~3품목 기존 인증 PDF byte SHA 불변, 4/8/25/100품목 실제 PDF·QuoteCore·페이지·외곽선·시각 검증 PASS. **[새 버전 기술 인증 패킷](SOL61_MULTIPAGE_V2_CERTIFICATION_CHECKPOINT_2026-10-10.md)**을 별도 기록. **새 v2 인증서 발급/활성화, 고객 E2E, 운영 배포는 미완료**. 기존 v1 인증서와 고객 사용 경로를 바꾸지 않았다.
+
 ## CGI 첫 고객 최종 MVP 상태 — 2026-10-10 KST
 
 > **최신 운영·인수 기준:** [CGI_FIRST_CUSTOMER_MVP_CHECKPOINT_2026-10-10.md](CGI_FIRST_CUSTOMER_MVP_CHECKPOINT_2026-10-10.md) · 인수 이슈 [#4076](https://github.com/skerishKang/ai-revenue-lab/issues/4076) **OPEN**. 기존 한정 범위 MVP [#3521](https://github.com/skerishKang/ai-revenue-lab/issues/3521) **CLOSED**와 구분한다.
