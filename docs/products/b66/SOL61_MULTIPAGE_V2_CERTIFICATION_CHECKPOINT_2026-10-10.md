@@ -19,6 +19,28 @@ PRODUCTION_DEPLOY=NO
 FIRST_CUSTOMER_END_TO_END_ACCEPTANCE=#4076_OPEN
 ```
 
+## P0 최신 발견 — 고객 화면은 아직 실제 native Sol PDF 미리보기가 아님
+
+**2026-10-10 KST CENTRAL 소스 검수 / [수정 이슈 #4117](https://github.com/skerishKang/ai-revenue-lab/issues/4117)**
+
+이 문서는 Sol 다중 페이지 **오프라인 실제 PDF**의 소스·기하·SHA 증거다. **현재 고객 B66 화면이 해당 PDF를 그대로 미리보기/다운로드/Drive에 사용한다는 증거가 아니다.** Owner 요청에 따라 이 구분을 제품 출시의 **P0 전제조건**으로 상향한다.
+
+- 현재 `quote-template-renderer.js`의 CGI 화면은 인증 원본 PDF에서 파생된 고정 private PNG 위에 **별도 CSS/DOM 문자열**을 얹어 보여준다. `quote-browser-pdf.js`는 동일 draw-ops를 Canvas → JPEG **이미지 PDF**로 다시 만든다. CGI 4+품목은 기존 draw-ops의 행수 제한으로 거부되고 미리보기에는 별도 HTML CGI 레이아웃이 표시될 수 있다.
+- 현재 `app.js`/ `padiem-account.js`는 CGI PDF 다운로드와 Drive PDF 저장에 **브라우저 래스터 PDF 경로를 우선 사용**한다. `apps/padiem-chat/app/b66_certified_pdf_routes.py`의 다른 PDF Worker도 별도 1페이지 overlay 계약이며 다중 페이지 Sol CLI 엔진과 연결되지 않았다.
+- **정정:** 원본 Sol PDF의 PNG를 *배경 이미지로 사용*한다는 사실 ≠ 최신 Sol 렌더러가 만든 **동일 결과 PDF를 보여준다**는 뜻. 이 문서의 4/8/25/100 PDF 해시는 실제 CLI 출력으로 유효하지만 고객 화면/다운로드/Drive 해시라고 주장할 수 없다.
+- **필수 구조:** 승인된 CGI Saved Skill + QuoteDraft/QuoteCore → **하나의 인증 Sol 6.1 native PDF renderer** → **같은 PDF 바이트 스냅샷** → 화면 미리보기 / 고객 다운로드 / 고객 동의 Drive 저장. PDF 화면 표시를 위해 실제 PDF를 래스터화해도 되지만 PDF 자체를 브라우저 DOM/Canvas로 **독립 재구성 금지**. 해시·페이지 수·금액과 단일 계정/버전/템플릿 fingerprint 검증, 변경·계정 전환 시 오래된 미리보기 캐시 폐기.
+- **미해결 런타임 과제:** Windows 전용 폰트/Node와 Python 렌더러를 고객 서비스에서 안전·합법·결정적으로 구동할 실제 배포 런타임을 검증해야 한다. 이전 별도 Modal standby [#3736](https://github.com/skerishKang/ai-revenue-lab/issues/3736)을 임의 활성화/과금/Secrets 변경 금지. **고객 v2 인증서 발급·4+ 운영 활성화는 #4117의 실제 PDF 일원화와 클라우드 런타임 계약 검증 전까지 HOLD**.
+
+```text
+NATIVE_SOL_OFFLINE_REAL_PDF=PASS
+CURRENT_CGI_ONSCREEN_PDF_SHA_EQUALS_SOL=NOT_PROVEN
+CURRENT_CGI_DOWNLOAD_USES_SOL_NATIVE_BYTES=NO
+CURRENT_CGI_DRIVE_USES_SOL_NATIVE_BYTES=NO
+LIVE_4PLUS_NATIVE_SOL_RENDERING=NO
+P0_BLOCKER=#4117_OPEN
+V2_CUSTOMER_RELEASE_CERTIFICATE=HOLD
+```
+
 ## 1. Source·브랜치·승인된 디자인
 
 - [최신 main 통합 PR #4111](https://github.com/skerishKang/ai-revenue-lab/pull/4111) **MERGED** `66a34b5796e48bd16959a31e5be98cbcbd6cdbbd`, reviewed head `95fe85c7be6165ea5364f3e83227a7cc820ac7a1`.
