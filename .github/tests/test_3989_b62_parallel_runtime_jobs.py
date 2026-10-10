@@ -1,7 +1,10 @@
 """#3989: prove B62 Python/Worker parallelism preserves fail-closed required checks."""
 
 from pathlib import Path
+import os
 import re
+import subprocess
+import tempfile
 import unittest
 
 WORKFLOW = Path(__file__).resolve().parents[1] / "workflows" / "b62-padiem-chat-ci.yml"
@@ -134,6 +137,81 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertEqual(self.source.count('      - ".github/tests/test_3989_b62_parallel_runtime_jobs.py"'), 2)
         self.assertIn("b62_ci_impact_scope_3989.py", self.plan)
         self.assertEqual(self.source.count('      - ".github/workflows/b62-padiem-chat-ci.yml"'), 2)
+
+
+    def _exercise_host_overlap(self, scope="full", fail_target=""):
+        script = WORKFLOW.parents[1] / "scripts" / "b62_host_pytest_overlap_4070.sh"
+        with tempfile.TemporaryDirectory(prefix="b62-host-overlap-contract-") as dirname:
+            tmp = Path(dirname)
+            marker = tmp / "calls.log"
+            fake_uv = tmp / "uv"
+            fake_uv.write_text(
+                "#!/usr/bin/env bash\\n"
+                'printf "start:%s:%s\\\\n" "$PWD" "$*" >> "$B62_TEST_MARKER"\\n'
+                'sleep 0.20\\n'
+                'printf "finish:%s:%s\\\\n" "$PWD" "$*" >> "$B62_TEST_MARKER"\\n'
+                'case "$PWD" in\\n'
+                '  */packages/padiem-ai-core) test "$B62_FAIL_TARGET" != core || exit 17 ;;\\n'
+                '  */apps/padiem-chat) test "$B62_FAIL_TARGET" != chat || exit 18 ;;\\n'
+                '  *) exit 41 ;;\\n'
+                'esac\\n'
+                'echo "FAKE_PYTEST_PASS:$PWD"\\n',
+                encoding="utf-8",
+            )
+            fake_uv.chmod(0o755)
+            env = os.environ.copy()
+            env["PATH"] = str(tmp) + os.pathsep + env.get("PATH", "")
+            env["B62_TEST_MARKER"] = str(marker)
+            env["B62_CI_IMPACT_SCOPE"] = scope
+            env["B62_FAIL_TARGET"] = fail_target
+            env["TMPDIR"] = str(tmp)
+            result = subprocess.run(
+                ["bash", str(script)],
+                capture_output=True, text=True,
+                env=env, timeout=15, check=False,
+            )
+            return result, marker.read_text(encoding="utf-8").splitlines()
+
+    def test_chat_and_core_full_scope_overlap_without_extra_runner(self):
+        proc, lines = self._exercise_host_overlap("full")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertEqual(len(lines), 4)
+        self.assertTrue(lines[0].startswith("start:"))
+        self.assertTrue(lines[1].startswith("start:"))
+        self.assertTrue(all(line.startswith("finish:") for line in lines[2:]))
+        self.assertTrue(any("/packages/padiem-ai-core" in l for l in lines))
+        self.assertTrue(any("/apps/padiem-chat" in l for l in lines))
+        self.assertIn("B62_CHAT_PYTEST=PASS", proc.stdout)
+        self.assertIn("B62_CORE_PYTEST=PASS", proc.stdout)
+        self.assertIn("B62_HOST_PYTEST_OVERLAP=PASS", proc.stdout)
+
+    def test_scope_preserves_original_core_skip_without_skipping_chat(self):
+        for scope in ("chat_only", "static_only"):
+            with self.subTest(scope=scope):
+                proc, lines = self._exercise_host_overlap(scope)
+                self.assertEqual(proc.returncode, 0, proc.stderr)
+                self.assertEqual(len(lines), 2)
+                self.assertTrue(all("/apps/padiem-chat" in line for line in lines))
+                self.assertIn("B62_CHAT_PYTEST=PASS", proc.stdout)
+                self.assertIn("B62_CORE_PYTEST=SKIPPED_PROVEN_UNCHANGED", proc.stdout)
+
+    def test_unknown_scope_fails_closed_to_both_suites(self):
+        proc, lines = self._exercise_host_overlap("unknown")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertEqual(len(lines), 4)
+        self.assertIn("B62_HOST_PYTEST_SCOPE_UNCERTAIN=", proc.stderr)
+        self.assertIn("B62_CORE_PYTEST=PASS", proc.stdout)
+
+    def test_either_suite_failure_propagates_after_other_finishes(self):
+        for target in ("chat", "core"):
+            with self.subTest(target=target):
+                proc, lines = self._exercise_host_overlap("full", target)
+                self.assertNotEqual(proc.returncode, 0)
+                self.assertEqual(len(lines), 4)
+                self.assertIn("B62_HOST_PYTEST_OVERLAP=FAIL", proc.stderr)
+                self.assertIn(f"B62_{target.upper()}_PYTEST=FAIL", proc.stderr)
+                opposite = "CORE" if target == "chat" else "CHAT"
+                self.assertIn(f"B62_{opposite}_PYTEST=PASS", proc.stderr)
 
 
 if __name__ == "__main__":
