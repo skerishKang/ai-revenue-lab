@@ -58,13 +58,16 @@
     const label = $("clawOfficeDecisionLabel");
     const approve = $("clawOfficeApprove");
     const deny = $("clawOfficeDeny");
+    const resultPanel = $("clawOfficeResult");
+    const checkResult = $("clawOfficeCheckResult");
+    const pdfPreview = $("clawOfficePreview");
     if (![panel, find, notice, list, group, label, approve, deny].every(Boolean)) return null;
     let active = null;
     let pending = null;
     let busy = false;
     const setBusy = (value) => {
       busy = value;
-      for (const button of [find, approve, deny]) button.disabled = value;
+      for (const button of [find, approve, deny, checkResult]) if (button) button.disabled = value;
     };
     const setMessage = (text) => { notice.textContent = text; };
 
@@ -81,6 +84,8 @@
       active = null;
       pending = null;
       group.hidden = true;
+      if (resultPanel) resultPanel.hidden = true;
+      if (pdfPreview) pdfPreview.hidden = true;
       list.replaceChildren();
       const runId = currentRun();
       if (!runId) {
@@ -160,6 +165,8 @@
         }
         pending = null;
         group.hidden = true;
+        if (resultPanel) resultPanel.hidden = decision !== "approve";
+        if (pdfPreview) pdfPreview.hidden = true;
         setMessage(decision === "deny"
           ? "승인이 거절되었습니다. 파일을 읽지 않았습니다."
           : "Engine 승인 처리가 완료됐습니다. 실제 파일 처리 결과는 실행 이력에서 확인해 주세요.");
@@ -169,6 +176,32 @@
         setBusy(false);
       }
     }
+    if (checkResult) checkResult.addEventListener("click", async () => {
+      if (busy || !active || currentRun() !== active.runId) return;
+      setBusy(true);
+      if (pdfPreview) pdfPreview.hidden = true;
+      setMessage("승인된 PC 작업의 완료 여부를 확인합니다.");
+      try {
+        const body = await readJson("/api/claw/runs/" + encodeURIComponent(active.runId) + "/local-result", {
+          method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({}),
+        });
+        if (body.projection?.runId !== active.runId || body.projection?.status !== "completed"
+            || body.projection?.appended !== true) {
+          setMessage("파일 작업이 아직 완료되지 않았거나 확인할 수 없습니다.");
+          return;
+        }
+        setMessage("실행 완료를 확인했습니다. PDF가 준비됐다면 미리보기를 열 수 있습니다.");
+        if (pdfPreview) {
+          pdfPreview.href = "/api/claw/office/runs/" + encodeURIComponent(active.runId) + "/pdf";
+          pdfPreview.hidden = false;
+        }
+      } catch (error) {
+        setMessage(error.message);
+      } finally {
+        setBusy(false);
+      }
+    });
     approve.addEventListener("click", () => void decide("approve"));
     deny.addEventListener("click", () => void decide("deny"));
     return { getState: () => ({ busy, hasCandidates: Boolean(active), approvalPending: Boolean(pending) }) };
