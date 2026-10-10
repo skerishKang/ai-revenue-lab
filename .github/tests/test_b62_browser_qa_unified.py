@@ -52,7 +52,7 @@ class B62UnifiedBrowserQAContract(unittest.TestCase):
         # Match anchored top-level YAML job headers only; splitting on
         # "\\n  " also splits deeper indented lines and loses the job IDs.
         import re
-        headings = list(re.finditer(r"(?m)^  ([a-z][a-z0-9-]+):\\n", master))
+        headings = list(re.finditer(r"(?m)^  ([a-z][a-z0-9-]+):$", master))
         job_sources = {}
         for index, heading in enumerate(headings):
             name = heading.group(1)
