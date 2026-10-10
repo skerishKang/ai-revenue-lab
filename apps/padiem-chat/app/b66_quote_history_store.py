@@ -420,8 +420,11 @@ class D1QuoteHistoryStore:
             snapshot.saved_skill_id, snapshot.skill_fingerprint,
             snapshot.serialized_json, snapshot.sender_json, now, now,
         )
+        # The save response includes a full snapshot. Reading only list columns
+        # here would make the strict persisted-JSON projection fail for every
+        # newly stored quote, despite the D1 INSERT having succeeded.
         row = await self._first(
-            f"SELECT {_SELECT_COLUMNS} FROM b66_quote_history "
+            f"SELECT {_SELECT_COLUMNS}, snapshot_json, sender_json FROM b66_quote_history "
             "WHERE id=? AND user_id=? AND workspace_id=?",
             row_id, owner, workspace,
         )
