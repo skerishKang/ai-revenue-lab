@@ -1147,6 +1147,11 @@
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
+.claw-run-history-expand {
+  margin-top: 12px;
+  width: 100%;
+  min-height: 44px;
+}
 .claw-run-card-filename {
   font-size: 12px;
   color: var(--muted);
