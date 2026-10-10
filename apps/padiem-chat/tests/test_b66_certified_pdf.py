@@ -630,3 +630,79 @@ def test_4117_native_route_invalid_quote_never_reaches_renderer():
     model["template"]["approved"] = False
     assert _native_post(client, model).status_code == 422
     assert service.calls == []
+
+
+# #4117 authenticated and independently released Sol discovery: read-only.
+def _native_scope(client, *, count=1, saved_id=SAVED_ID):
+    return client.get("/api/b66/quote/native-sol-scope",
+                      params={"saved_skill_id": saved_id, "item_count": count})
+
+
+def test_4117_scope_default_production_fail_closed_before_private_store_read():
+    skills = _Skills()
+    response = _native_scope(_client(skills=skills))
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "native_sol_not_certified"
+    assert skills.calls == []
+
+
+def test_4117_scope_requires_login_exact_workspace_and_saved_skill_owner():
+    service = _NativeSolService()
+    skills = _Skills()
+    kw = {"skills": skills, "b66_native_sol_pdf_client": service,
+          "b66_native_sol_releases": _NATIVE_RELEASES}
+    assert _native_scope(_client(signed_in=False, **kw)).status_code == 401
+    assert skills.calls == []
+    assert _native_scope(_client(user=USER_B, **kw)).status_code == 404
+    assert service.calls == []
+    skills.rows[(USER_A, WORKSPACE, SAVED_ID)]["status"] = "disabled"
+    assert _native_scope(_client(**kw)).status_code == 404
+
+
+def test_4117_scope_returns_only_server_authenticated_fingerprints_and_release():
+    service = _NativeSolService()
+    skills = _Skills()
+    kw = {"skills": skills, "b66_native_sol_pdf_client": service,
+          "b66_native_sol_releases": _NATIVE_RELEASES}
+    response = _native_scope(_client(**kw))
+    assert response.status_code == 200
+    assert response.headers["cache-control"].startswith("private, no-store")
+    assert response.headers["x-b66-native-scope"] == "owner-certified-release"
+    assert response.json() == {
+        "schemaVersion": 1, "available": True, "renderer": "sol61-native",
+        "savedSkillId": SAVED_ID, "itemCount": 1,
+        "certificateSha256": "a" * 64,
+        "skillFingerprint": SKILL_HASH, "profileFingerprint": PROFILE_HASH,
+        "minItems": 1, "maxItems": 3,
+    }
+    assert service.calls == [], "Scope discovery must never call PDF renderer"
+    assert skills.calls[-1] == {
+        "user_id": USER_A, "workspace_id": WORKSPACE, "saved_skill_id": SAVED_ID,
+    }
+
+
+@pytest.mark.parametrize("count", ["0", "001", "101", "1x", "-1", "four"])
+def test_4117_scope_rejects_invalid_count_before_private_read(count):
+    skills = _Skills()
+    service = _NativeSolService()
+    response = _native_scope(_client(skills=skills,
+        b66_native_sol_pdf_client=service, b66_native_sol_releases=_NATIVE_RELEASES), count=count)
+    assert response.status_code == 400
+    assert skills.calls == service.calls == []
+
+
+def test_4117_scope_v2_does_not_inherit_v1():
+    skills = _Skills()
+    service = _NativeSolService()
+    response = _native_scope(_client(skills=skills,
+        b66_native_sol_pdf_client=service, b66_native_sol_releases=_NATIVE_RELEASES), count=4)
+    assert response.status_code == 503
+    assert skills.calls == service.calls == []
+
+
+def test_4117_scope_fails_for_missing_renderer_even_if_release_injected():
+    skills = _Skills()
+    response = _native_scope(_client(skills=skills,
+        b66_native_sol_releases=_NATIVE_RELEASES))
+    assert response.status_code == 503
+    assert skills.calls == []

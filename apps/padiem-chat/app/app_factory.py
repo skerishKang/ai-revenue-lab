@@ -25,7 +25,7 @@ from .b66_quote_assets import B66QuoteAssetStore, D1B66QuoteAssetMetadataStore
 from .b66_certified_quote_bundle import B66CertifiedQuoteBundleStore
 from .b66_certified_preview import B66CertifiedPreviewStore
 from .b66_certified_pdf_routes import b66_certified_pdf, b66_certified_preview_base
-from .b66_native_sol_routes import b66_native_sol_pdf
+from .b66_native_sol_routes import b66_native_sol_pdf, b66_native_sol_scope
 from .b66_quote_routes import (
     b66_quote_interpret,
     b66_quote_models,
@@ -299,6 +299,7 @@ def create_app(
         Route("/api/b66/quote/preview-base", b66_certified_preview_base, methods=["GET"]),
         Route("/api/b66/quote/pdf", b66_certified_pdf, methods=["POST"]),
         Route("/api/b66/quote/native-sol-pdf", b66_native_sol_pdf, methods=["POST"]),
+        Route("/api/b66/quote/native-sol-scope", b66_native_sol_scope, methods=["GET"]),
         Route("/api/b66/quotes", b66_quote_history_list, methods=["GET"]),
         Route("/api/b66/quotes", b66_quote_history_save, methods=["POST"]),
         Route(

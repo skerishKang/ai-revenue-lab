@@ -6,7 +6,9 @@ on:
       - 'reference/b66-public-standard-templates/**'
       - 'apps/b66-sol61-multipage/**'
       - 'reference/business-66-padiem-quote-v1/quote-sol-pdf-outputs.js'
+      - 'reference/business-66-padiem-quote-v1/quote-sol-pdf-runtime-bridge.js'
       - 'reference/business-66-padiem-quote-v1/tests/quote-sol-pdf-outputs.test.cjs'
+      - 'reference/business-66-padiem-quote-v1/tests/quote-sol-pdf-runtime-bridge.test.cjs'
       - 'docs/products/b66/TEMPLATE_CUSTODY_POLICY.md'
       - '.github/workflows/b66-public-standard-template-contract.yml'
   push:
@@ -16,7 +18,9 @@ on:
       - 'reference/b66-public-standard-templates/**'
       - 'apps/b66-sol61-multipage/**'
       - 'reference/business-66-padiem-quote-v1/quote-sol-pdf-outputs.js'
+      - 'reference/business-66-padiem-quote-v1/quote-sol-pdf-runtime-bridge.js'
       - 'reference/business-66-padiem-quote-v1/tests/quote-sol-pdf-outputs.test.cjs'
+      - 'reference/business-66-padiem-quote-v1/tests/quote-sol-pdf-runtime-bridge.test.cjs'
       - '.github/workflows/b66-public-standard-template-contract.yml'
 
 permissions:
@@ -32,7 +36,9 @@ jobs:
         with:
           python-version: '3.11'
       - name: Verify one original Sol PDF feeds preview download and Drive (#4117)
-        run: node reference/business-66-padiem-quote-v1/tests/quote-sol-pdf-outputs.test.cjs
+        run: |
+          node reference/business-66-padiem-quote-v1/tests/quote-sol-pdf-outputs.test.cjs
+          node reference/business-66-padiem-quote-v1/tests/quote-sol-pdf-runtime-bridge.test.cjs
       - name: Verify immutable public template release hashes and no private fonts
         run: python3 reference/b66-public-standard-templates/cgi/v1/tests/test_public_bundle_contract.py
       - name: Install pinned native PDF test dependencies
