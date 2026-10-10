@@ -23,6 +23,11 @@ def run():
     user=os.getenv("B66_CGI_ALPHA_USERNAME","")
     password=os.getenv("B66_CGI_ALPHA_PASSWORD","")
     model=os.getenv("B66_CGI_SELECTED_MODEL_ID","")
+    flow=os.getenv("B66_CGI_FLOW_MODE","complete")
+    if flow not in ("complete","partial_followup"):
+        print("B66_CGI_FREEFORM=FAIL_INVALID_FLOW")
+        return 2
+    allowed_posts=1 if flow=="complete" else 2
     if not user or not password or not base._B66_EXACT_MODEL_RE.fullmatch(model) or model=="b14/auto":
         print("B66_CGI_FREEFORM=FAIL_PREFLIGHT")
         return 2
@@ -42,7 +47,7 @@ def run():
                     route.abort("blockedbyclient")
                     return
                 if req.method=="POST" and path==base.INTERPRET_PATH:
-                    if counts["interpret"]>=1:
+                    if counts["interpret"]>=allowed_posts:
                         counts["blocked"]+=1
                         route.abort("blockedbyclient")
                         return
@@ -59,13 +64,17 @@ def run():
                 logged_in=True
                 print("CGI_LOGIN_AND_SAVED_SKILL=PASS",flush=True)
                 # The D1 Guided row is never written, cleared, or modified.
-                base._complete_free_form(page,live_counters,model)
-                if counts["interpret"]!=1 or counts["pdf"] or counts["blocked"]:
+                if flow=="partial_followup":
+                    base._partial_followup(page,live_counters,model)
+                else:
+                    base._complete_free_form(page,live_counters,model)
+                if counts["interpret"]!=allowed_posts or counts["pdf"] or counts["blocked"]:
                     raise base.SmokeFailure("bounded_network_contract")
-                print("FREEFORM_CGI_PDF_DOWNLOAD=PASS",flush=True)
+                print("CGI_"+flow.upper()+"_PDF_DOWNLOAD=PASS",flush=True)
                 print("GUIDED_D1_MUTATIONS=0",flush=True)
                 base._logout_after_verified_pdf_handoff(page)
                 logged_in=False
+                print("CGI_MODEL_INTERPRET_POSTS="+str(counts["interpret"]),flush=True)
                 print("B66_CGI_FREEFORM=PASS",flush=True)
                 return 0
             finally:
