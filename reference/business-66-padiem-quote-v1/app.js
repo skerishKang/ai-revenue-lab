@@ -1316,6 +1316,8 @@
     renderTemplateUi();
     render();
     toast("보내는 사람 정보는 유지하고 새 고객 견적을 시작합니다.");
+    // The shell must change views only after the reset was confirmed and committed.
+    document.dispatchEvent(new CustomEvent("b66:open-easy-chat"));
   });
 
   /* ── PDF: 배정된 Saved Skill 의 인증 renderer 를 통해 다운로드한다 ── */

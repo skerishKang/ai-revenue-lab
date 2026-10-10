@@ -146,7 +146,6 @@
     if (newQuoteButton) {
       newQuoteButton.addEventListener("click", function () {
         clickExisting("newQuote");
-        document.dispatchEvent(new CustomEvent("b66:open-easy-chat"));
       });
     }
     if (skillStatus) {
@@ -283,6 +282,24 @@
   function syncDirectMode() {
     var direct = byId("directView");
     if (!direct) return;
+    // Editing is a separate, explicitly labelled task, not a new blank quotation.
+    var directTab = byId("directModeButton");
+    if (directTab) directTab.textContent = "세부 항목 편집";
+    var manualStarter = byId("directStarter");
+    if (manualStarter) {
+      var starterTitle = manualStarter.querySelector("strong");
+      var starterNote = manualStarter.querySelector("small");
+      if (starterTitle) starterTitle.textContent = "세부 항목 직접 편집";
+      if (starterNote) starterNote.textContent = "보내는 사람·품목·금액을 직접 수정합니다";
+    }
+    var editHeader = document.createElement("div");
+    editHeader.className = "shell-edit-heading";
+    editHeader.innerHTML = '<div><strong>세부 항목 편집 중</strong><p>현재 견적의 내용을 직접 수정하는 화면입니다. 새 견적 시작과는 다릅니다.</p></div>' +
+      '<button type="button" class="shell-edit-return">채팅으로 돌아가기</button>';
+    editHeader.querySelector("button").addEventListener("click", function () {
+      document.dispatchEvent(new CustomEvent("b66:open-easy-chat"));
+    });
+    direct.insertBefore(editHeader, direct.firstChild);
     function sync() {
       document.body.classList.toggle("mode-direct", !direct.hidden);
     }
