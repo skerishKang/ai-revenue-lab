@@ -52,21 +52,18 @@ def projected_pause(source: TrustedWebXlsxP01Request):
         datetime.fromisoformat(source.selection_expires_at),
     ).isoformat()
     return {
-        "orchestration": {
-            "app_id": "padiem-web-xlsx-p01",
-            "execution": {"metadata": {
-                "status": "paused",
-                "tool_events": [{
-                    "tool_id": "workspace.xlsx.confirm_original_read",
-                    "status": "policy_blocked",
-                }],
-            }},
+        "ok": True,
+        "tool": {
+            "contract_version": "padiem.engine.tools/1.0",
+            "agent_id": "agent:padiem:web-xlsx-confirm@1",
+            "canonical_tool_id": "tool:padiem:web-xlsx-confirm@1",
+            "run_id": "torun:" + "f"*24,
+            "status": "paused",
             "approval_pause": {
-                "status": "paused",
-                "run_id": "bridge_run_8f3a", "tool_id": "workspace.xlsx.confirm_original_read",
+                "status": "paused", "run_id": "torun:" + "f"*24,
+                "tool_id": "workspace.xlsx.confirm_original_read",
                 "requirement": "user_confirmation",
-                "approval_scope": ["workspace.xlsx.original.read.intent"],
-                "trace_id": "web_xlsx_" + source.selection_ref,
+                "approval_scope": [],
                 "continuation_id": "pause:" + "b" * 32,
                 "expires_at": expiry,
             },
@@ -87,9 +84,9 @@ class CapturingEngine:
             raise RuntimeError("uncertain internal Engine call")
         body = projected_pause(req)
         if self.mode == "fake_approved":
-            body["orchestration"]["execution"]["metadata"]["status"] = "completed"
+            body["tool"]["status"] = "completed"
         elif self.mode == "wrong_source":
-            body["orchestration"]["approval_pause"]["trace_id"] = "not_this_source"
+            body["tool"]["canonical_tool_id"] = "tool:padiem:other-source@1"
         return body
 
 
@@ -264,7 +261,7 @@ async def test_pause_response_window_cannot_outlast_source_selection():
     class LongEngine:
         async def start_pause(self, req):
             body = projected_pause(req)
-            body["orchestration"]["approval_pause"]["expires_at"] = (
+            body["tool"]["approval_pause"]["expires_at"] = (
                 datetime.now(timezone.utc) + timedelta(hours=2)).isoformat()
             return body
     app.state.web_xlsx_p01_pause_client = LongEngine()
