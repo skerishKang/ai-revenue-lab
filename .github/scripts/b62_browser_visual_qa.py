@@ -24,6 +24,11 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 TIMING_EVIDENCE: list[dict[str, Any]] = []
 
+# The required base desktop/mobile/tablet browser QA runs in both modes.
+# 'leaf' is supplied only by the fail-closed PR changed-file classifier in
+# b62-browser-qa-unified.yml; all unknown/mixed/manual changes use 'full'.
+VISUAL_SCOPE = os.environ.get("B62_QA_VISUAL_SCOPE", "full")
+
 
 async def _profile_phase(
     report: dict[str, Any],
@@ -1270,7 +1275,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     }
 
 
-async def _run_checks(report: dict[str, Any]) -> None:
+async def _run_checks(report: dict[str, Any], *, visual_scope: str = "full") -> None:
     async with async_playwright() as playwright:
         browser = await playwright.chromium.launch(headless=True)
         try:
@@ -1295,6 +1300,16 @@ async def _run_checks(report: dict[str, Any]) -> None:
                 report, "claw_tablet_820", _run_claw_intermediate(claw_tablet_page)
             )
             await claw_tablet_page.close()
+
+            # Exact independently owned JS may not affect Glass visual,
+            # animation, touch or portrait resources. Keep real Chromium
+            # desktop/mobile chat and Claw tablet checks, screenshots and
+            # fail-closed artifacts, and omit only these unrelated probes.
+            if visual_scope == "leaf":
+                report["padiem_glass_preview"]["status"] = "SKIPPED_PROVEN_UNCHANGED"
+                report["padiem_glass_reduced_motion"] = {"status": "SKIPPED_PROVEN_UNCHANGED"}
+                report["padiem_glass_touch"] = {"status": "SKIPPED_PROVEN_UNCHANGED"}
+                return
 
             for variant in ("female", "male"):
                 async def _preview_cycle(variant: str = variant) -> dict[str, Any]:
@@ -1390,7 +1405,10 @@ async def _run_checks(report: dict[str, Any]) -> None:
 
 
 async def main() -> None:
+    if VISUAL_SCOPE not in ("full", "leaf"):
+        raise RuntimeError(f"unsupported B62 visual QA scope: {VISUAL_SCOPE!r}")
     report: dict[str, Any] = {
+        "visual_scope": VISUAL_SCOPE,
         "base_url": BASE_URL,
         "runtime_expectation": "mock",
         "provider_calls_expected": 0,
@@ -1399,21 +1417,27 @@ async def main() -> None:
     }
     out = OUT_DIR / "report.json"
     try:
-        await _run_checks(report)
-        female_home = OUT_DIR / report["padiem_glass_preview"]["female"]["home_screenshot"]
-        male_home = OUT_DIR / report["padiem_glass_preview"]["male"]["home_screenshot"]
-        female_hash = _sha256_file(female_home)
-        male_hash = _sha256_file(male_home)
-        if female_hash == male_hash:
-            raise AssertionError(
-                "Padiem Glass Female/Male variants rendered pixel-identical home screenshots; portrait layer is not visibly contributing"
-            )
-        report["padiem_glass_visual_distinction"] = {
-            "female_home_sha256": female_hash,
-            "male_home_sha256": male_hash,
-            "different": True,
-            "status": "PASS",
-        }
+        await _run_checks(report, visual_scope=VISUAL_SCOPE)
+        if VISUAL_SCOPE == "full":
+            female_home = OUT_DIR / report["padiem_glass_preview"]["female"]["home_screenshot"]
+            male_home = OUT_DIR / report["padiem_glass_preview"]["male"]["home_screenshot"]
+            female_hash = _sha256_file(female_home)
+            male_hash = _sha256_file(male_home)
+            if female_hash == male_hash:
+                raise AssertionError(
+                    "Padiem Glass Female/Male variants rendered pixel-identical home screenshots; portrait layer is not visibly contributing"
+                )
+            report["padiem_glass_visual_distinction"] = {
+                "female_home_sha256": female_hash,
+                "male_home_sha256": male_hash,
+                "different": True,
+                "status": "PASS",
+            }
+        else:
+            # No portrait/timing evidence is fabricated for the leaf scope.
+            report["padiem_glass_visual_distinction"] = {
+                "status": "SKIPPED_PROVEN_UNCHANGED",
+            }
         report["status"] = "PASS"
         if TIMING_EVIDENCE:
             report["timing_evidence"] = TIMING_EVIDENCE
