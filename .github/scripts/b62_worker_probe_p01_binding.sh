@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
+# #3989: Linux monotonic phase attribution using UTC epoch milliseconds.
+# These markers are observability only; they never replace a readiness or assertion gate.
+B62_PROBE_TIMING_LABEL=P01_BINDING
+b62_probe_mark() {
+  printf 'B62_WORKER_PHASE_%s_%s_MS=%s\n' "$B62_PROBE_TIMING_LABEL" "$1" "$(date +%s%3N)"
+}
+b62_probe_mark START
 cat > .runtime-p01-binding-probe.toml <<'EOF'
 name = "padiem-chat-runtime-p01-binding-probe"
 main = "worker_runtime_p01_binding_probe.py"
@@ -14,6 +21,7 @@ PERSIST_DIR="$(mktemp -d "${TMPDIR:-/tmp}/b62-worker-p01_binding-state.XXXXXXXX"
 
 npx --yes wrangler@4.130.0 dev --config .runtime-p01-binding-probe.toml --port 8789 --inspector-port 9233 --persist-to "$PERSIST_DIR" > /tmp/b62-p01-binding-workerd.log 2>&1 &
 WORKER_PID=$!
+b62_probe_mark WORKER_LAUNCHED
 
 cleanup() {
   kill "$WORKER_PID" 2>/dev/null || true
@@ -35,7 +43,10 @@ if [ "$READY" -ne 1 ]; then
   exit 1
 fi
 
+b62_probe_mark READY
+b62_probe_mark REQUEST_START
 HTTP_CODE="$(curl -sS -o /tmp/b62-p01-binding-result.json -w '%{http_code}' http://127.0.0.1:8789/probe)"
+b62_probe_mark RESPONSE
 cat /tmp/b62-p01-binding-result.json
 if [ "$HTTP_CODE" != "200" ]; then
   cat /tmp/b62-p01-binding-workerd.log
@@ -62,3 +73,4 @@ if failed or data.get("unexpected_exception") is not False:
     )
 print("WORKER_P01_BINDING_COMPOSITION_PASS")
 PY
+b62_probe_mark ASSERT_PASS
