@@ -63,6 +63,9 @@ PLAN_FILES = frozenset(
         # Schedule implementation/test updates must prove every affected lane.
         ".github/scripts/b62_browser_qa_tail_parallel.py",
         ".github/tests/test_3989_b62_browser_tail_parallel.py",
+        ".github/scripts/b62_glass_shell_visual_qa.py",
+        ".github/workflows/b62-glass-animation-timing-certification.yml",
+        ".github/tests/test_3989_b62_glass_timing_ownership.py",
         ".github/ci/b62_browser_qa_paths.json",
     }
 )

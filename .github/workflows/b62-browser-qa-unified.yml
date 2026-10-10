@@ -61,11 +61,15 @@ jobs:
       web_search_browser_qa: ${{ steps.classify.outputs.web_search_browser_qa }}
     steps:
       - uses: actions/checkout@v4
-      - name: Regression check for QA path ownership
-        run: python -m unittest discover -s .github/tests -p test_b62_browser_qa_unified.py -v
+      - name: Regression check for QA path ownership and scoped base visual behavior
+        run: |
+          python -m unittest discover -s .github/tests -p test_b62_browser_qa_unified.py -v
+          python -m unittest discover -s .github/tests -p test_3989_b62_visual_leaf_smoke.py -v
       # Source-only test; no browser install or new CI runner.
       - name: Regression check for bounded visual tail and fail-closed fan-in
-        run: python -m unittest discover -s .github/tests -p test_3989_b62_browser_tail_parallel.py -v
+        run: |
+          python -m unittest discover -s .github/tests -p test_3989_b62_browser_tail_parallel.py -v
+          python -m unittest discover -s .github/tests -p test_3989_b62_glass_timing_ownership.py -v
       - name: Select jobs for changed PR paths
         id: classify
         env:
@@ -323,7 +327,12 @@ jobs:
           done
           cat /tmp/b62-browser-server.log
           exit 1
+      # Proven modified-only independent leaf JS: keep real Chromium
+      # desktop/mobile/Claw tablet chat checks, omit unrelated Glass previews.
+      # Missing/unknown planner output selects the full visual suite.
       - name: Desktop and mobile browser QA
+        env:
+          B62_QA_VISUAL_SCOPE: ${{ needs.plan.outputs.glass_visual_tail_required == 'false' && 'leaf' || 'full' }}
         run: uv run python ../../.github/scripts/b62_browser_visual_qa.py
       - name: Sidebar and home IA browser QA
         run: uv run python ../../.github/scripts/b62_sidebar_ia_browser_qa.py
@@ -348,6 +357,11 @@ jobs:
       # Base desktop/mobile and owner-specific browser QA remain mandatory.
       - name: Glass zoom, shell, and gutter visual QA (all three, bounded parallel)
         if: ${{ needs.plan.outputs.glass_visual_tail_required != 'false' }}
+        # Shell pointer/answer/mask/viewport/accessibility remain blocking on PR.
+        # Strict frame-window certification runs daily on main in a separate
+        # non-required workflow, using the original unchanged thresholds.
+        env:
+          B62_GLASS_SHELL_MODE: functional
         run: uv run python ../../.github/scripts/b62_browser_qa_tail_parallel.py
       - name: Print QA report
         if: always()

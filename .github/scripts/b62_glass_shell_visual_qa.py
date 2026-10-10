@@ -26,6 +26,9 @@ VARIANTS = ("female", "male")
 # with the report (PASS and FAIL alike), so failure evidence records the
 # actually-sampled page-clock elapsed for each timing window.
 TIMING_EVIDENCE: list[dict[str, Any]] = []
+# Default strict for scheduled certification and direct invocation.
+# Pull requests explicitly choose functional in the workflow step.
+SHELL_CERTIFICATION_MODE = os.environ.get("B62_GLASS_SHELL_MODE", "strict")
 
 
 _SHELL_STATE_EXPR = """
@@ -469,6 +472,78 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
     }
 
 
+async def _check_variant_functional(page: Page, variant: str) -> dict[str, Any]:
+    """PR-required visual behavior, independent of animation frame timing.
+
+    The original _check_variant remains the daily *strict* timing authority.
+    This mode proves live pointer/answer and settled-shell behavior with the
+    same mock browser. It never claims page-clock evidence or timing PASS.
+    """
+    name = f"glass-shell-{variant}"
+    await _goto_glass(page, variant=variant, extra="&mask=auto")
+    await _wait_completed_shell(page, f"{name}-functional-idle")
+    idle = await _shell_state(page)
+    if idle["fragCount"] != 20 or not idle["portalPresent"]:
+        raise AssertionError(f"{name}: source fragments or portal missing: {idle}")
+    if f"padiem-glass-{variant}-shell.jpg" not in idle["portalImage"]:
+        raise AssertionError(f"{name}: wrong portrait asset: {idle}")
+    if idle["portalOpacity"] < 0.80 or idle["fragVisible"] > 0:
+        raise AssertionError(f"{name}: idle shell must be assembled: {idle}")
+
+    await _hover_portrait(page)
+    await _wait_progress_below(page, 0.05, f"{name}-functional-peel")
+    peeled = await _shell_state(page)
+    if peeled["ptr"] <= 0.8 or peeled["progress"] > 0.08:
+        raise AssertionError(f"{name}: pointer did not peel shell: {peeled}")
+    if peeled["fragVisible"] > 0 or peeled["fragMaxOpacity"] > 0.05:
+        raise AssertionError(f"{name}: fragments remained over portrait: {peeled}")
+    if peeled["portalOpacity"] > 0.05:
+        raise AssertionError(f"{name}: shell portal remained over portrait: {peeled}")
+    await page.screenshot(path=str(OUT_DIR / f"{name}-pointer.png"), full_page=False)
+
+    await page.mouse.move(70, 90)
+    await _wait_completed_shell(page, f"{name}-functional-recover")
+    recovered = await _shell_state(page)
+    if recovered["portalOpacity"] < 0.80 or recovered["fragVisible"] > 0:
+        raise AssertionError(f"{name}: exit did not restore shell: {recovered}")
+    await page.screenshot(path=str(OUT_DIR / f"{name}-recovered.png"), full_page=False)
+
+    # No pointer during a mock streamed answer: the portrait must stay covered.
+    await _send_answer_turn(page, f"{variant}-functional-answer")
+    await page.wait_for_function(
+        "() => (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--glass-answer-reveal')) || 0) > .05",
+        timeout=5_000,
+    )
+    answer_only = await _shell_state(page)
+    if answer_only["ptr"] > 0.1 or answer_only["progress"] < 0.90:
+        raise AssertionError(f"{name}: answer-only unexpectedly peeled shell: {answer_only}")
+
+    await _hover_portrait(page)
+    await _send_answer_turn(page, f"{variant}-functional-combined")
+    await _wait_progress_below(page, 0.05, f"{name}-functional-combined")
+    combined = await _shell_state(page)
+    if combined["ptr"] <= 0.8 or combined["progress"] > 0.08:
+        raise AssertionError(f"{name}: combined answer/pointer did not peel: {combined}")
+    if combined["fragVisible"] > 0 or combined["portalOpacity"] > 0.05:
+        raise AssertionError(f"{name}: combined mode left shell visible: {combined}")
+    await page.screenshot(path=str(OUT_DIR / f"{name}-combined.png"), full_page=False)
+
+    await page.mouse.move(70, 90)
+    await _wait_completed_shell(
+        page, f"{name}-functional-final-recover", min_portal_opacity=0.35,
+    )
+    final = await _shell_state(page)
+    if final["fragVisible"] > 0:
+        raise AssertionError(f"{name}: final shell recovery left fragments: {final}")
+    await _assert_no_horizontal_overflow(page, name)
+    return {
+        "status": "PASS",
+        "timing_certification": "NOT_RUN_IN_PR",
+        "idle": idle, "peeled": peeled, "recovered": recovered,
+        "answer_only": answer_only, "combined": combined, "final": final,
+    }
+
+
 async def _check_mask_modes(page: Page) -> dict[str, Any]:
     # mask=on: shell portrait fully revealed without interaction
     await _goto_glass(page, variant="female", extra="&mask=on")
@@ -577,7 +652,11 @@ async def _run_checks(report: dict[str, Any]) -> None:
                 context = await browser.new_context(viewport={"width": 1600, "height": 1000})
                 page = await context.new_page()
                 try:
-                    return await _check_variant(page, variant)
+                    check = (
+                        _check_variant if SHELL_CERTIFICATION_MODE == "strict"
+                        else _check_variant_functional
+                    )
+                    return await check(page, variant)
                 finally:
                     await context.close()
 
@@ -599,7 +678,17 @@ async def _run_checks(report: dict[str, Any]) -> None:
 
 
 async def main() -> None:
-    report: dict[str, Any] = {"base_url": BASE_URL, "views": {}}
+    if SHELL_CERTIFICATION_MODE not in ("strict", "functional"):
+        raise ValueError(f"Unsupported B62 Glass shell certification mode: {SHELL_CERTIFICATION_MODE!r}")
+    report: dict[str, Any] = {
+        "base_url": BASE_URL,
+        "views": {},
+        "certification_mode": SHELL_CERTIFICATION_MODE,
+        "timing_certification": (
+            "REQUIRED_STRICT" if SHELL_CERTIFICATION_MODE == "strict"
+            else "SCHEDULED_SEPARATELY"
+        ),
+    }
     out = OUT_DIR / "glass-shell-report.json"
     try:
         await _run_checks(report)
