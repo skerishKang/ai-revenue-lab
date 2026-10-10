@@ -13,6 +13,18 @@ B66 is Padiem's standalone quotation product for businesses that already have qu
 
 The user-facing reusable concept is **내 견적서 / Saved Quote Skill**. Internal template/profile/compiler terminology is not the primary user concept.
 
+## CGI 첫 고객 최종 MVP 상태 — 2026-10-10 KST
+
+> **최신 운영·인수 기준:** [CGI_FIRST_CUSTOMER_MVP_CHECKPOINT_2026-10-10.md](CGI_FIRST_CUSTOMER_MVP_CHECKPOINT_2026-10-10.md) · 인수 이슈 [#4076](https://github.com/skerishKang/ai-revenue-lab/issues/4076) **OPEN**. 기존 한정 범위 MVP [#3521](https://github.com/skerishKang/ai-revenue-lab/issues/3521) **CLOSED**와 구분한다.
+
+- **B66 Pages Production 배포 완료:** 승인된 단일 수동 [Actions #38006616259](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38006616259) **SUCCESS**. 정확한 배포 SHA `52b05ae4623fb211c32d31fe286d8e483803330f`; 기존 `https://quick-quote-kr.pages.dev/` 및 버전 URL `https://6c937f60.quick-quote-kr.pages.dev/` 정상 응답, 배포 후 계약 검사 성공.
+- **OAuth 프록시 코드 수정 포함:** [PR #4073](https://github.com/skerishKang/ai-revenue-lab/pull/4073) **MERGED**; [중복 Draft #4074](https://github.com/skerishKang/ai-revenue-lab/pull/4074)는 원인 분석 기록을 보존한 채 **CLOSED/UNMERGED**. *실제 새 Production Google 로그인 성공은 아직 NOT_TESTED* (LOCAL3 #3871 담당).
+- **Sol CGI PDF:** 1~3품목은 기존 인증 범위, 4+품목은 **LOCAL1 #3839 미완료/시각 승인 HOLD**. 기존 Sol 6.1 구현을 확장·재인증해야 하며 대체 PDF 렌더러는 금지.
+- **고객 전체 여정:** LOCAL2 #4076이 Guided/Free-form/누락 단가 후속질문/QuoteCore/실제 PDF/D1 저장·재열기를 검증 중이며 **전체 고객 인수는 NOT_READY**. LOCAL3는 Google Drive 취소·승인·계정 격리를 별도 증명한다.
+- **추론 수준:** B66 [#3998](https://github.com/skerishKang/ai-revenue-lab/pull/3998)와 공유 Core [#4069](https://github.com/skerishKang/ai-revenue-lab/pull/4069) **MERGED**. 모델별 실제 공급자 wire 검증·기본값 제거·고객 활성화는 **#3906/#3977/#3988에서 OPEN**; 이것이 Sol PDF 인증 완료를 뜻하지 않는다.
+
+**릴리스 판단:** `CODE_MERGED` ≠ `PRODUCTION_DEPLOYED` ≠ `LIVE_E2E_ACCEPTED` ≠ `SOL_V2_CERTIFIED`. 승인되지 않은 4+품목 CGI PDF를 HTML/GLM/다른 형식으로 우회하거나 전체 MVP 완료라고 표시하지 않는다.
+
 ## Owner-locked CGI rendering decision — 2026-10-09
 
 **For the current Kim Beom-shin CGI quotation, the existing Sol 6.1 source-derived CGI template is the ONE AND ONLY layout and PDF output implementation.** Do not select, re-create, substitute, or silently fall back to another template for any item count.
@@ -40,6 +52,7 @@ This is the owner lock for the **current CGI product rendering implementation**.
 
 ## 최신 이슈·PR·담당 작업 현황 (2026-10-10)
 
+- [CGI_FIRST_CUSTOMER_MVP_CHECKPOINT_2026-10-10.md](CGI_FIRST_CUSTOMER_MVP_CHECKPOINT_2026-10-10.md): 최신 승인된 B66 Pages Production SHA·실배포/사후검증 증거·LOCAL1/2/3 담당·CGI 고객 인수 PASS/NOT_TESTED 기준과 남은 Blocker.
 - [ACTIVE_ISSUES_2026-10-10.md](ACTIVE_ISSUES_2026-10-10.md): B66 원본 양식·견적의 활성 이슈, 로컬 담당, 소스 병합과 실서비스 수용 차이, #3542 Sol 6.1 임시 담당 및 #3839 네이티브 다중 페이지 병목, #3884·#3871·#3906 후속 조건을 중앙에서 정리한 **시점별 현황표**.
 - 이 문서는 상태 **인덱스**다. 확정된 Owner 정책과 기술 수용 기준은 아래의 원래 B66 README, [SOURCE_TEMPLATE_FIDELITY.md](SOURCE_TEMPLATE_FIDELITY.md), 그리고 각 GitHub 이슈가 우선한다.
 
@@ -135,7 +148,7 @@ hidden fallback, PDF production release or skipped visual/customer E2E gates.
 | Reproduction / certification / compiler generalization | #3595 | source certification/generalization proven (including a second unrelated template); parent issue #3595 remains OPEN for tracking disposition |
 | Template registration source formats | #3586 | XLSX now; HWPX future; legacy XLS/HWP rejected |
 | Quote shell / single composer UX | #3536 | product UX |
-| **Quotation storage / customer-owned Drive** | [QUOTE_STORAGE_STRATEGY.md](QUOTE_STORAGE_STRATEGY.md), #3405, #3871 | **기존 D1 이력 불변.** Google Drive JSON+인증 PDF 소스 및 수정 #4007/#4029 MERGED, 승인된 B66 Pages Production 배포 [#37997944674](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37997944674) SUCCESS. LOCAL3의 동일 계정 빈 편집기 재열기·수정/저장·로그아웃 실브라우저 PASS 보고와 구분해, 새 승인/취소 확인창의 운영 E2E 및 계정 격리/다른 브라우저/실기기는 아직 NOT_TESTED. 가격/쿼터 미승인. |
+| **Quotation storage / customer-owned Drive** | [QUOTE_STORAGE_STRATEGY.md](QUOTE_STORAGE_STRATEGY.md), #3405, #3871 | **기존 D1 이력 불변.** Drive JSON+인증 PDF 소스와 #4007/#4029 MERGED, 이전 배포 LOCAL3 부분 실측. #4073 OAuth 콜백 수정까지 포함한 새로운 Production [#38006616259](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38006616259) SUCCESS. 그러나 **새 버전 실제 Google 로그인·내용 있는 초안의 승인/취소·계정 격리/다른 브라우저/실기기 E2E는 NOT_TESTED**. 고객 데이터/쿼터 정책 임의 변경 금지. |
 | **Public standard template + private customer custody** | [TEMPLATE_CUSTODY_POLICY.md](TEMPLATE_CUSTODY_POLICY.md), [CGI public standard v1](../../../reference/b66-public-standard-templates/cgi/v1/README.md), #3883, #3884 | Owner-authorized CGI source / Sol renderer and GLM comparator tracked separately in Git; customer originals remain private in R2 (future full custody/return E2E). No automatic release. |
 | Native XLSX output | #3496 | optional editable output; not PDF critical path |
 | B66 quote-model decision authority | [Single model authority index](../../models/README.md), [Owner approval policy §0A](../../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md), #3760 | **Owner policy corrected and merged (#3796):** user selects one exact registered, allowed, ready B14 model per run; optional visible/replaceable default only if configured; no free/paid filter, backend automatic selection or fallback. Matching B66 UI/API implementation was merged via #3831; no claim of served Production readiness or accepted customer E2E follows from that merge. |
