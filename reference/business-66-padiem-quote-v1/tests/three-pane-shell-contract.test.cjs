@@ -6,6 +6,8 @@ const ROOT = path.join(__dirname, "..");
 const html = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
 const css = fs.readFileSync(path.join(ROOT, "styles.css"), "utf8");
 const shell = fs.readFileSync(path.join(ROOT, "shell-layout.js"), "utf8");
+const app = fs.readFileSync(path.join(ROOT, "app.js"), "utf8");
+const refresh = fs.readFileSync(path.join(ROOT, "b66-surface-refresh.css"), "utf8");
 const check = (condition, label) => assert.ok(condition, "contract failed: " + label);
 
 check(html.includes('<script src="shell-layout.js" defer></script>'),
@@ -41,6 +43,27 @@ check(shell.includes('classList.toggle("rail-collapsed")'), "rail collapse/reope
 check(css.includes("@media (max-width: 900px)"), "mobile shell has explicit bounded layout");
 check(html.match(/id="quotePaper"/g)?.length === 1, "exactly one canonical quote paper exists");
 check(html.match(/id="easyComposer"/g)?.length === 1, "exactly one chat composer exists");
+
+check(html.includes('<link rel="stylesheet" href="b66-surface-refresh.css" media="screen">'),
+  "UI-only stylesheet is loaded for screen, never CGI PDF print geometry");
+const resetStart = app.indexOf('  $("newQuote").addEventListener("click", () => {');
+const resetConfirm = app.indexOf('if (!window.confirm(', resetStart);
+const resetCommitted = app.indexOf('    draft = next;', resetStart);
+const navigateAfterCommit = app.indexOf('document.dispatchEvent(new CustomEvent("b66:open-easy-chat"));', resetStart);
+check(resetStart !== -1 && resetConfirm > resetStart && resetCommitted > resetConfirm &&
+  navigateAfterCommit > resetCommitted, "new quote navigates only after confirmed reset");
+check(!/clickExisting\("newQuote"\);\s*document\.dispatchEvent/.test(shell),
+  "cancelled new-quote action never navigates from the rail itself");
+check(shell.includes('세부 항목 편집 중') && shell.includes('shell-edit-return'),
+  "direct-edit mode is explicitly labelled with a non-destructive way back");
+check(refresh.includes('.direct-view > .modebar { display: none; }'),
+  "duplicate direct-edit navigation is hidden only in the B66 shell");
+check(refresh.includes('overflow-y: auto') && refresh.includes('overscroll-behavior: contain') &&
+  refresh.includes('flex: 0 0 auto;'), "mobile keeps the composer visible while conversation scrolls");
+check(refresh.includes('position: fixed;') && refresh.includes('shell-preview-host'),
+  "mobile preview opens above the form instead of after the full-length form");
+check(css.includes("body.b66-three-pane .shell-edit-heading { display: none !important; }"),
+  "screen-only edit explanation must never appear in printed CGI PDF");
 
 console.log("B66_THREE_PANE_SHELL=PASS");
 console.log("B66_PRIMARY_INPUT_AUTHORITY=EASY_COMPOSER");

@@ -1731,3 +1731,8 @@ body.b66-three-pane #recentQuoteStarter { display: none !important; }
 .drive-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .drive-actions .btn { min-height: 44px; }
 .drive-file-select { min-height: 44px; max-width: 100%; }
+
+/* UI-only edit hint must never shift certified CGI PDF print geometry. */
+@media print {
+  body.b66-three-pane .shell-edit-heading { display: none !important; }
+}
