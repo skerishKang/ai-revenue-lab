@@ -41,6 +41,7 @@ from app.pilot.sensenova_provider import is_transient_busy_429
 from app.pilot.provider_timeout_diagnostics import log_provider_timeout
 from app.pilot.b14_timeout_policy import build_provider_http_timeout
 from app.pilot.agnes_429_diagnostics import log_agnes_429
+from app.pilot.exlab_429_diagnostics import log_exlab_429
 from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
 from app.pilot.stream_types import StreamEvent, StreamUsage
@@ -291,6 +292,11 @@ async def call_platform_chat_completions(
                 logger, platform_provider_id, response.status_code,
                 response.headers, response.text,
             )
+        if platform_provider_id == "experiential" and response.status_code == 429:
+            log_exlab_429(
+                logger, platform_provider_id, response.status_code,
+                response.headers, response.text,
+            )
         _raise_upstream_error(
             response.status_code, platform_provider_id, response.text
         )
@@ -436,6 +442,11 @@ async def stream_platform_chat_completions(
                     error_body = (await response.aread()).decode("utf-8", "replace")
                     if platform_provider_id == "agnes-ai" and response.status_code == 429:
                         log_agnes_429(
+                            logger, platform_provider_id, response.status_code,
+                            response.headers, error_body,
+                        )
+                    if platform_provider_id == "experiential" and response.status_code == 429:
+                        log_exlab_429(
                             logger, platform_provider_id, response.status_code,
                             response.headers, error_body,
                         )
