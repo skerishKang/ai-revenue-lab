@@ -91,6 +91,72 @@ class WorkerProbeParallelContract(unittest.TestCase):
                                         check=False)
                 self.assertEqual(syntax.returncode, 0, syntax.stderr)
 
+    def test_real_probe_wrangle_process_group_cleanup_contract(self):
+        # npm's pinned npx process is a parent; Workerd remains a descendant.
+        # A probe-local new session ensures group signals cannot kill the
+        # GitHub runner, its sibling probes, or other CI workloads.
+        for name in PROBES:
+            with self.subTest(probe=name):
+                script = (SCRIPTS / f"b62_worker_probe_{name}.sh").read_text(encoding="utf-8")
+                self.assertIn("setsid npx --yes wrangler@4.130.0 dev", script)
+                self.assertEqual(script.count('kill -TERM -- "-$WORKER_PID"'), 1)
+                self.assertEqual(script.count('kill -KILL -- "-$WORKER_PID"'), 1)
+                self.assertIn('wait "$WORKER_PID" 2>/dev/null || true', script)
+                self.assertLess(script.index('kill -TERM -- "-$WORKER_PID"'),
+                                script.index('kill -KILL -- "-$WORKER_PID"'))
+                self.assertIn("trap cleanup EXIT", script)
+                self.assertIn('rm -rf -- "$PERSIST_DIR"', script)
+                syntax = subprocess.run(
+                    ["bash", "-n", str(SCRIPTS / f"b62_worker_probe_{name}.sh")],
+                    capture_output=True, text=True, timeout=5, check=False,
+                )
+                self.assertEqual(syntax.returncode, 0, syntax.stderr)
+
+    @unittest.skipUnless(os.name == "posix", "GitHub Actions Worker runner uses Linux")
+    def test_setsid_isolates_probe_processes_from_parent_test_runner(self):
+        # Real offline OS canary: no Wrangler/network/paid backend is contacted.
+        # The simulated process tree shares one isolated PGID, distinct from
+        # this Python test runner. Signal it and enforce a bounded shutdown.
+        import signal
+
+        proc = subprocess.Popen(
+            ["setsid", "bash", "-c", 'sleep 30 & echo "$BASHPID $!"; wait'],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+        )
+        try:
+            assert proc.stdout is not None
+            launcher, child = map(int, proc.stdout.readline().strip().split())
+            self.assertEqual(proc.pid, launcher)
+            self.assertEqual(os.getpgid(proc.pid), proc.pid)
+            self.assertEqual(os.getpgid(child), proc.pid)
+            self.assertNotEqual(os.getpgid(os.getpid()), proc.pid)
+            os.killpg(proc.pid, signal.SIGTERM)
+            proc.wait(timeout=3)
+            # A zombie is harmless and is awaiting init reaping; a runnable
+            # descendant would be a resource leak after Wrangler exits.
+            status = subprocess.run(
+                ["ps", "-o", "stat=", "-p", str(child)],
+                capture_output=True, text=True, timeout=3, check=False,
+            )
+            self.assertTrue(
+                status.returncode != 0 or status.stdout.strip().startswith("Z"),
+                status.stdout,
+            )
+        finally:
+            try:
+                os.killpg(proc.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            try:
+                proc.wait(timeout=3)
+            except subprocess.TimeoutExpired:
+                proc.kill()
+                proc.wait(timeout=3)
+            if proc.stdout:
+                proc.stdout.close()
+            if proc.stderr:
+                proc.stderr.close()
+
     def test_cold_cache_npx_preflight_fails_closed_before_any_real_probe(self):
         runner = RUNNER.read_text(encoding="utf-8")
         self.assertIn("npx --yes wrangler@4.130.0 --version", runner)
