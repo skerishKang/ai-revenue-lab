@@ -1,5 +1,7 @@
 # Hark #3580: browser candidate selection and canonical Engine decision handoff
 
+> **2026-10-11 owner decision — WEB FIRST:** The live product priority is B62 web upload/authorized Drive READ selection -> first-party P01 approval -> server-supported processing -> web preview/download. The local Windows Office chooser and Resident delivery discussed below are **optional later fallback**, not the next mandatory milestone. Superseding priority: [CLAW_HARK_WEB_FIRST_OWNER_PRIORITY_20261011.md](CLAW_HARK_WEB_FIRST_OWNER_PRIORITY_20261011.md). The historical implementation details below remain factual.
+
 Date: 2026-10-10. This implementation is an **owner-facing, fail-closed UI/API slice**, not proof of the full production Hark Office E2E. Do not enable it on Production until the real trusted source is supplied.
 
 ## Implemented

@@ -1,5 +1,7 @@
 # Hark #3580 — Fix original Hark run approval and durable P01 readback
 
+> **2026-10-11 owner decision — WEB FIRST:** Apply this owner-run approval correction first to browser-selected uploads and authorized Google Drive READ workbooks. Resident/Windows is only an explicitly chosen local-PC or Office fidelity fallback. Do not treat the former Resident-first blocker as the delivery priority. See [authoritative priority](CLAW_HARK_WEB_FIRST_OWNER_PRIORITY_20261011.md).
+
 Date: 2026-10-10. This is a real B62 product authorization/UI correctness repair, not a claim of full broker-to-resident file execution.
 
 ## Observed bug

@@ -1,5 +1,7 @@
 # #3580 — Verified Engine Office READ evidence -> Resident P01 plan bridge
 
+> **WEB-FIRST sequencing supersession (2026-10-11):** This source-complete Resident adapter remains preserved for **optional later local-PC/Excel fallback**. Owner priority is authenticated B62 web upload/Drive READ -> P01 -> server-capable result/preview. It is **not** a prerequisite for web MVP. See [web-first decision](CLAW_HARK_WEB_FIRST_OWNER_PRIORITY_20261011.md).
+
 Date: 2026-10-11 KST
 
 ## Milestone

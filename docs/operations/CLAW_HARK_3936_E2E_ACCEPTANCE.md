@@ -1,5 +1,7 @@
 # #3936 Hark 8-scene UX / real-document E2E acceptance
 
+> **2026-10-11 WEB FIRST:** Evaluate authenticated browser-only upload/authorized Drive READ -> P01 approval -> supported web processing -> artifact preview/download first. Windows Resident / Excel COM tests are separate **fallback-specific** gates, never a prerequisite for web-only acceptance. See [authoritative owner sequencing](CLAW_HARK_WEB_FIRST_OWNER_PRIORITY_20261011.md).
+
 **Status: BLOCKED_REAL_E2E.** This report documents testable evidence and remaining
 real-world acceptance gates, not a Hark pixel-by-pixel copy nor a Production release
 certificate. #3928 stays OPEN while #3523, #3580, #3929, #3932, #3933, #3934,
