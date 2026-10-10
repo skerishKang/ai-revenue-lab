@@ -40,6 +40,7 @@ from app.agent_skill_authority import build_agent_skill_binding_resolver
 from app.capability_manifest import set_posture_overrides
 from app.approval_verifier import AuthenticatedFirstPartyApprovalDecisionVerifier
 from app.approval_smoke_binding import with_approval_smoke_binding
+from app.hark_office_p01_tool_binding import with_hark_office_p01_tool_binding
 from app.attachment_byte_store import CloudflareD1ImageByteStore, ScopedImageByteStore
 from app.attachment_admission_service import (
     ATTACHMENT_ADMISSION_PATH,
@@ -996,6 +997,12 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
     tool_binding_resolver = with_approval_smoke_binding(
         env,
         tool_binding_resolver,
+    )
+    # #3580 registered, explicit Engine LIST/READ confirmation only.
+    # The absent deployment-owned flag retains the original resolver identity.
+    # No Bridge/Resident/file authority is created by enabling this tool.
+    tool_binding_resolver = with_hark_office_p01_tool_binding(
+        env, tool_binding_resolver,
     )
     return EngineServices(
         completed=EngineService(
