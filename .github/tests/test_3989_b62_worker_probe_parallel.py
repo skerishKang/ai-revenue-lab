@@ -157,6 +157,74 @@ class WorkerProbeParallelContract(unittest.TestCase):
             self.assertEqual(passed.returncode, 0, passed.stderr)
             self.assertIn("B62_WORKER_PROBES=PASS", passed.stdout)
 
+    def test_two_by_two_worker_batches_cap_concurrency_without_skips(self):
+        # Four original mock probes all run; no more than two run at once.
+        # Source contracts alone cannot prove max concurrency.
+        with tempfile.TemporaryDirectory(prefix="b62-worker-two-by-two-") as dirname:
+            temp = Path(dirname)
+            marker = temp / "events.log"
+            scripts = []
+            for i in range(4):
+                script = temp / f"probe{i}.sh"
+                script.write_text(
+                    "#!/usr/bin/env bash\n"
+                    f"printf 'start-{i}\\n' >> \"$MARKER\"\n"
+                    "sleep 0.20\n"
+                    f"printf 'finish-{i}\\n' >> \"$MARKER\"\n",
+                    encoding="utf-8",
+                )
+                scripts.append(str(script))
+            env = os.environ.copy()
+            env["MARKER"] = str(marker)
+            proc = subprocess.run(
+                ["bash", str(RUNNER), *scripts], cwd=temp, env=env,
+                capture_output=True, text=True, timeout=12, check=False,
+            )
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            events = marker.read_text(encoding="utf-8").splitlines()
+            self.assertEqual(len(events), 8)
+            self.assertEqual(set(events), {
+                *(f"start-{i}" for i in range(4)),
+                *(f"finish-{i}" for i in range(4)),
+            })
+            self.assertLess(max(events.index("start-0"), events.index("start-1")),
+                            min(events.index("finish-0"), events.index("finish-1")))
+            self.assertLess(max(events.index("finish-0"), events.index("finish-1")),
+                            min(events.index("start-2"), events.index("start-3")))
+            self.assertLess(max(events.index("start-2"), events.index("start-3")),
+                            min(events.index("finish-2"), events.index("finish-3")))
+            self.assertIn("B62_WORKER_BATCH=0,1:FINISHED", proc.stdout)
+            self.assertIn("B62_WORKER_BATCH=2,3:FINISHED", proc.stdout)
+            self.assertIn("B62_WORKER_PROBE_COUNT=4", proc.stdout)
+            self.assertIn("B62_WORKER_PROBES=PASS", proc.stdout)
+
+    def test_first_batch_failure_still_runs_and_reports_second_batch(self):
+        with tempfile.TemporaryDirectory(prefix="b62-worker-two-wave-fail-") as dirname:
+            temp = Path(dirname)
+            marker = temp / "started.log"
+            scripts = []
+            for i in range(4):
+                script = temp / f"probe{i}.sh"
+                script.write_text(
+                    "#!/usr/bin/env bash\n"
+                    f"printf '{i}\\n' >> \"$MARKER\"\n"
+                    f"exit {9 if i == 0 else 0}\n",
+                    encoding="utf-8",
+                )
+                scripts.append(str(script))
+            env = os.environ.copy()
+            env["MARKER"] = str(marker)
+            proc = subprocess.run(
+                ["bash", str(RUNNER), *scripts], cwd=temp, env=env,
+                capture_output=True, text=True, timeout=12, check=False,
+            )
+            self.assertNotEqual(proc.returncode, 0)
+            self.assertIn("B62_WORKER_PROBE_0=FAIL", proc.stderr)
+            self.assertIn("B62_WORKER_PROBE_3=PASS", proc.stdout)
+            self.assertIn("B62_WORKER_PROBES=FAIL", proc.stderr)
+            self.assertEqual(set(marker.read_text(encoding="utf-8").splitlines()),
+                             {"0", "1", "2", "3"})
+
     def test_runner_fails_on_invalid_or_missing_probe_argument(self):
         for args in [["x"], ["/tmp/b62-not-existent-probe.sh"] * 4]:
             with self.subTest(args=args):
