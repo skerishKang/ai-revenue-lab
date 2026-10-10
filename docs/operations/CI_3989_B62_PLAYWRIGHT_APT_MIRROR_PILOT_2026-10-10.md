@@ -1,4 +1,4 @@
-# #3989 B62 Browser QA Chromium OS dependency mirror pilot
+# #3989 B62 Browser QA Chromium OS dependency mirror: measured pilot and rollout
 
 **2026-10-10, scope: ephemeral GitHub Actions runners only.**
 
@@ -26,3 +26,16 @@ Ubuntu's package signature checks, all requested OS dependency packages and orig
 The PR must show exact-head Linux `plan`, both pilot lanes, remaining 14 QA lanes, P01 boundary and Operations Policy Guard success. Confirm `B62_APT_MIRROR=OFFICIAL_UBUNTU_ARCHIVE` **in both pilot logs**, and capture actual apt package fetching time from both. If the canonical archive mirror does not improve the outlier or breaks package resolution, revert pilot or leave PR unmerged. Do **not** extrapolate an uncontrolled two-lane sample to 16-lane runner cost savings.
 
 Rollback: revert two YAML pilot steps and script/test changes, leaving required Playwright dependency installation intact.
+
+
+## Pilot result and full 16-lane rollout decision
+
+PR #4098 pilot HEAD `73af47f55d6874c2f0b0cc570095ee9bce35e696`: [Actions run 38031786884](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38031786884) **SUCCESS**, all 16 browser lanes + plan success, P01 and Operations Policy Guard success.
+
+The pilot actually switched both Azure hosts to canonical `archive.ubuntu.com` (marker `B62_APT_MIRROR=OFFICIAL_UBUNTU_ARCHIVE`). Full upstream `playwright install --with-deps chromium` ran unchanged and installed exactly **9 previously missing packages + 1 upgraded** in each. Real Linux apt 21.5 MB download timings:
+
+- `error-retry-browser-qa`: **158s (Azure) → 2s (Ubuntu archive)**, job **195s → 58s**.
+- `saved-outputs-browser-qa`: **171s (Azure) → 3s (Ubuntu archive)**, job **207s → 47s**.
+- Full 16-lane job elapsed sum: **1,263s → 967s**; cannot attribute all to mirror alone because hosted runner conditions vary. Wall time and billed runner minutes are distinct metrics.
+
+Based on both pilot checks PASS + real package-count parity, the **same single already tested mirror selector** is used by all 16 browser QA lanes. It changes only the ephemeral runner Ubuntu host when on Ubuntu 24.04; the **16 original mandatory Playwright `--with-deps` installations are retained**. Source contract tests prove 16/16 selectors and 16/16 upstream installers. Follow-up exact-head full 16-lane Linux CI is REQUIRED before merge; if it fails, rollback the broadening or PR. No test target or owner status has been removed.
