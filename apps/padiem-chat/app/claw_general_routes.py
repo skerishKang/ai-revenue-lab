@@ -52,6 +52,7 @@ from kagent.p01_run_flow import create_claw_run
 
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .claw_live_canary import live_stream_allowed
+from .claw_general_run_history import project_completed_general_run
 from .claw_routes import (
     _BROWSER_TIER_MAP,
     _NO_STORE_HEADERS,
@@ -470,6 +471,13 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             headers=_NO_STORE_HEADERS,
         )
 
+    # #4072/#3928: preserve successful P01 execution in the pre-existing
+    # owner-scoped read model when D1 supports it. This is NOT a same-thread
+    # or artifact lineage claim. A failed history write must never replay
+    # Engine/tool execution or suppress an already-completed answer.
+    await project_completed_general_run(
+        request, run_id=run.run_id, user_text=user_text, answer=outcome.answer
+    )
     return _claw_general_sse(
         outcome.answer,
         _claw_evidence_response_headers(run.run_id, outcome) if evidence_requested else None,
