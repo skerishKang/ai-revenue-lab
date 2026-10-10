@@ -765,6 +765,22 @@ jobs:
           test "${health_status}" = "200"
           echo "HEALTH_STATUS=${health_status}"
 
+          # #3566: one GET-only Claw model pre-dispatch gate, in the existing
+          # production smoke step. Guest receives bounded first-fail truth;
+          # no provider/Engine dispatch, user data, or secret-bearing fields.
+          claw_diag="${RUNNER_TEMP}/b62-claw-model-predispatch-guest.json"
+          claw_diag_status="$(curl -sS --connect-timeout 8 --max-time 20 \
+            -o "${claw_diag}" -w '%{http_code}' \
+            "${B62_PUBLIC_BASE_URL}/api/claw/general/capabilities?diagnostic=pre_dispatch_v1")"
+          test "${claw_diag_status}" = "200"
+          jq -e '.pre_dispatch_status == "authentication_required" and
+            .pre_dispatch_scope == "auth_adapter_session_only" and
+            (.live_events_available | type == "boolean") and
+            ((keys | sort) == ["live_events_available","pre_dispatch_scope","pre_dispatch_status"])' \
+            "${claw_diag}" >/dev/null
+          echo "CLAW_MODEL_PREDISPATCH_GUEST_GET=PASS"
+          echo "CLAW_MODEL_PROVIDER_POSTS=0"
+
           logout_status="$(curl -sS -o /dev/null -w '%{http_code}' -X POST -H "Origin: ${B62_PUBLIC_BASE_URL}" "${B62_PUBLIC_BASE_URL}/api/auth/logout")"
           test "${logout_status}" = "200"
           echo "LOGOUT_STATUS=${logout_status}"
