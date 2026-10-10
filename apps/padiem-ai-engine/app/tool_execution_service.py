@@ -375,23 +375,32 @@ class ToolExecutionEngineService:
         )
         if pause is None:
             return None
-        self._pending[pause.pause_id] = _PendingToolContinuation(
-            app_id=app_id,
-            canonical_agent_id=authority.canonical_agent_id,
-            canonical_tool_id=canonical_tool_id,
-            invocation=invocation,
-        )
-        try:
+        durable = callable(getattr(self._continuation_store, "issue_tool", None))
+        if durable:
+            # One D1 insert records BOTH immutable ToolInvocation and pause;
+            # a second isolate can safely recover their exact hash. Never
+            # leave a memory-only authority for this durable lane.
             continuation_ref = await self._continuation_call(
-                "issue",
-                app_id=app_id,
-                pause=pause,
-                plan_id=None,
-                request_fingerprint=f"toolinv:{pause.invocation_sha256}",
+                "issue_tool", app_id=app_id, pause=pause,
+                canonical_agent_id=authority.canonical_agent_id,
+                canonical_tool_id=canonical_tool_id,
+                invocation=invocation,
             )
-        except ServiceContractError:
-            self._pending.pop(pause.pause_id, None)
-            raise
+        else:
+            self._pending[pause.pause_id] = _PendingToolContinuation(
+                app_id=app_id,
+                canonical_agent_id=authority.canonical_agent_id,
+                canonical_tool_id=canonical_tool_id,
+                invocation=invocation,
+            )
+            try:
+                continuation_ref = await self._continuation_call(
+                    "issue", app_id=app_id, pause=pause, plan_id=None,
+                    request_fingerprint=f"toolinv:{pause.invocation_sha256}",
+                )
+            except ServiceContractError:
+                self._pending.pop(pause.pause_id, None)
+                raise
         return ServiceResponse(
             status_code=202,
             body={
@@ -539,10 +548,35 @@ class ToolExecutionEngineService:
                     "decision does not match the server-issued continuation.",
                     status_code=409,
                 )
-            pending = self._pending.get(record.pause.pause_id)
+            if callable(getattr(self._continuation_store, "load_tool_pending", None)):
+                # Rehydrate exclusively from Engine D1, never from resume JSON.
+                state = await self._continuation_call(
+                    "load_tool_pending", app_id=app_id,
+                    continuation_ref=continuation_ref,
+                )
+                if not isinstance(state, Mapping):
+                    raise ServiceContractError(
+                        "continuation_identity_mismatch", "Invalid durable tool invocation.",
+                        status_code=409,
+                    )
+                pending = _PendingToolContinuation(
+                    app_id=state["app_id"],
+                    canonical_agent_id=state["canonical_agent_id"],
+                    canonical_tool_id=state["canonical_tool_id"],
+                    invocation=ToolInvocation(
+                        tool_id=state["tool_id"], arguments=state["arguments"],
+                    ),
+                )
+                from padiem_ai_core.agent_approval import tool_invocation_digest
+                if tool_invocation_digest(pending.invocation) != record.pause.invocation_sha256:
+                    raise ServiceContractError(
+                        "continuation_identity_mismatch", "Durable tool identity changed.",
+                        status_code=409,
+                    )
+            else:
+                pending = self._pending.get(record.pause.pause_id)
             if pending is None or pending.app_id != app_id:
-                # Without the original server-held invocation a continuation
-                # cannot run; callers cannot supply a replacement tool or args.
+                # Resume never accepts a replacement tool or arguments.
                 raise ServiceContractError(
                     "continuation_identity_mismatch",
                     "The original tool invocation is not available for this continuation.",
@@ -602,7 +636,9 @@ class ToolExecutionEngineService:
             authority = binding.resolve_authority(pending.canonical_agent_id)
             entry = binding.resolve_tool(pending.canonical_tool_id)
             effective = binding.effective_resources(entry)
-            if entry.runtime_tool_id != pending.invocation.tool_id:
+            if (entry.runtime_tool_id != pending.invocation.tool_id
+                    or record.pause.tool_id != pending.invocation.tool_id
+                    or authority.compiled.runtime_profile.id != record.pause.agent_runtime_id):
                 raise ServiceContractError(
                     "continuation_identity_mismatch",
                     "The paused invocation no longer matches the trusted binding.",
