@@ -63,6 +63,11 @@ _CONNECT_TIMEOUT = 10.0
 # fires after ~11.08 s, while Kira's vendor dashboard previously showed
 # response-token generation. Scope the bounded 30 s connect allowance to the
 # exact registered Provider; all other Providers retain their existing budget.
+# #4176 ModelScope production one-shot returned HTTP504 after 10.515s.
+# Exact phase was NOT logged (new Provider was missing diagnostics allowlist).
+# Give its connect phase the same bounded Kira allowance pending one approved
+# phase-aware retest; this does NOT certify the root cause or provider SLA.
+_MODELSCOPE_CONNECT_TIMEOUT = 30.0
 _KIRA_CONNECT_TIMEOUT = 30.0
 _READ_TIMEOUT = 30.0
 _WRITE_TIMEOUT = 10.0
@@ -76,7 +81,11 @@ def _provider_connect_timeout(platform_provider_id: str) -> float:
     It does not change the fixed 45-second gateway attempt budget, retries,
     provider route, read timeout or other Providers' connection limits.
     """
-    return _KIRA_CONNECT_TIMEOUT if platform_provider_id == "kira" else _CONNECT_TIMEOUT
+    if platform_provider_id == "kira":
+        return _KIRA_CONNECT_TIMEOUT
+    if platform_provider_id == "modelscope":
+        return _MODELSCOPE_CONNECT_TIMEOUT
+    return _CONNECT_TIMEOUT
 
 
 def _mock_response(model_id: str, upstream_model: str, provider: str) -> dict[str, Any]:

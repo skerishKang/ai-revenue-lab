@@ -15,7 +15,7 @@ from .atria_timeout_diagnostics import log_atria_timeout
 # not use user-supplied provider names or arbitrary exception strings as labels.
 _ALLOWED = frozenset((
     "agnes-ai", "atria", "experiential", "google",
-    "inception", "kira", "poolside", "sensenova",
+    "inception", "kira", "modelscope", "poolside", "sensenova",
 ))
 _MODES = frozenset(("completed", "stream"))
 
