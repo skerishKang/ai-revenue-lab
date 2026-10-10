@@ -468,10 +468,21 @@
         } catch (err) {
           return { ok: false, code: "invalid_response", files: [], truncated: false };
         }
+        /* A malformed Drive response is NOT proof that the folder is empty.
+           Treating it as [] can cause a duplicate quote/JSON+PDF upload. */
+        if (!data || !Array.isArray(data.files) ||
+            data.files.some(function (file) {
+              return !file || typeof file !== "object" ||
+                typeof file.id !== "string" || !file.id ||
+                typeof file.name !== "string" ||
+                typeof file.mimeType !== "string";
+            }) ||
+            (data.nextPageToken != null && typeof data.nextPageToken !== "string")) {
+          return { ok: false, code: "invalid_response", files: [], truncated: false };
+        }
         pages += 1;
-        var batch = Array.isArray(data && data.files) ? data.files : [];
-        batch.forEach(function (file) { collected.push(file); });
-        pageToken = data && typeof data.nextPageToken === "string" && data.nextPageToken ? data.nextPageToken : null;
+        data.files.forEach(function (file) { collected.push(file); });
+        pageToken = data.nextPageToken || null;
         if (!pageToken) break;
       }
       var truncated = Boolean(pageToken);
@@ -531,8 +542,17 @@
       } catch (err) {
         return { ok: false, code: "invalid_response" };
       }
-      var files = Array.isArray(data && data.files) ? data.files : [];
-      return { ok: true, taken: files.some(function (file) { return file && file.name === name; }) };
+      /* Before uploading, a malformed name query must fail closed: missing
+         files is NOT the same as confirmed name-available. */
+      if (!data || !Array.isArray(data.files) ||
+          data.files.some(function (file) {
+            return !file || typeof file !== "object" ||
+              typeof file.id !== "string" || !file.id ||
+              typeof file.name !== "string";
+          })) {
+        return { ok: false, code: "invalid_response" };
+      }
+      return { ok: true, taken: data.files.some(function (file) { return file.name === name; }) };
     }
 
     /* ── Picker: 사용자가 직접 파일을 고른다 ── */
