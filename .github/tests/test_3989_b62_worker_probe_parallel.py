@@ -50,6 +50,18 @@ class WorkerProbeParallelContract(unittest.TestCase):
             self.assertIn("set -euo pipefail", script)
             self.assertIn("exit 1", script)
         self.assertIn("b62_worker_prewarm_overlap.sh", workflow)
+        # #3989: cache confined to real Worker; pinned executable check remains.
+        worker = workflow.split("  b62-worker-suite:", 1)[1].split("  b14-multimodal-test:", 1)[0]
+        host = workflow.split("  b62-full-suite:", 1)[1].split("  b62-worker-suite:", 1)[0]
+        self.assertEqual(workflow.count("Restore pinned Wrangler npm exec cache"), 1)
+        self.assertIn("uses: actions/cache@v4", worker)
+        self.assertIn("path: ~/.npm/_npx", worker)
+        self.assertIn("node22-wrangler-4.130.0-v1", worker)
+        self.assertIn("runner.os", worker)
+        self.assertIn("runner.arch", worker)
+        self.assertNotIn("Restore pinned Wrangler npm exec cache", host)
+        self.assertLess(worker.index("Restore pinned Wrangler npm exec cache"),
+                        worker.index("Pywrangler dependency sync from committed pylock"))
         self.assertIn('B62_WORKER_NPX_PREWARMED=1', PREWARM.read_text(encoding="utf-8"))
         self.assertIn('B62_WORKER_NPX_PREWARM=VERIFIED_PRIOR_STEP', RUNNER.read_text(encoding="utf-8"))
         self.assertIn('npx --yes wrangler@4.130.0 --version', PREWARM.read_text(encoding="utf-8"))
