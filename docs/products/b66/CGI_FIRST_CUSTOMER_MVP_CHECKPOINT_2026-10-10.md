@@ -10,6 +10,14 @@
 - 배포된 버전에는 [#4073](https://github.com/skerishKang/ai-revenue-lab/pull/4073) OAuth 콜백 `state/code` 쿼리 보존이 포함된다. 중복 Draft [#4074](https://github.com/skerishKang/ai-revenue-lab/pull/4074)는 **CLOSED, UNMERGED**; LOCAL3 실측 증거·커밋은 보존한다.
 - **운영 검증 진전 (LOCAL3 보고, 중앙에서 별도 재현하지 않음):** B66 계정 **비밀번호 로그인**, 승인 CGI 스킬, Google **Drive OAuth 연결**, 편집 중인 초안의 취소 처리 분기(임시 `confirm(false)`), 실제 대화상자 승인·견적 교체·QuoteCore 재계산, JSON/PDF 2쌍 존재/소유권, 로그아웃·다른 계정 UI 세션 분리 **PASS_REPORTED**. B66 계정 자체의 **Google 로그인**, 네이티브 취소 버튼, 서버 직접 타 계정 읽기 차단, 다른 브라우저·폰·late-callback은 **NOT_TESTED**. 파일 쌍 존재 확인은 PDF 바이트/서명·시각 인증과 구분한다.
 
+## LOCAL2 고객 여정 오프라인 통합 인수 업데이트 — 2026-10-10 KST
+
+- **[PR #4088](https://github.com/skerishKang/ai-revenue-lab/pull/4088) SQUASH MERGED** `c5c4d0345f7ab47bdde5add4113dc5b05eff5ede`, 원 HEAD `b12b4d80cf0b61eaf88e444e60adeebcb0f7c3bb`, exact-head CI **9 SUCCESS / 16 의도적 SKIPPED / 0 FAILURE**. 527줄 브라우저 고객 여정 Python 하네스와 **기존** B66 PDF Preview Parity workflow의 한 스텝만 추가, 신규 CI lane 없음. 고객 앱/Worker/PDF/Drive/Engine/Control Plane 코드는 변경되지 않았다.
+- **확인된 성공 범위는 `OFFLINE_BROWSER_INTEGRATION=PASS`:** loopback Chromium에서 승인 CGI 스킬·회사정보 준비/재접속, 정확한 모델 ID 수동 선택 및 기본 추론값 wire 생략, Free-form 완성형, 누락 단가 한 번 질문 후 정확한 사용자 단가 반영, QuoteCore 합계, Guided 수량 편집 시 모델 0호출, PDF 엔드포인트 POST(브라우저 인쇄 폴백 없음), B66 견적이력 API 클라이언트 동작을 검증했다. 공급자 호출·실 계정·실 Google 로그인·Production 호출은 0건.
+- **범위를 과장하지 않는다:** 인터프리터는 스크립트 스텁, PDF 응답은 실제 Sol PDF가 아니라 `%PDF-1.4 / %certified-sol-stub` 테스트 바이트, D1 데이터도 실 DB 대신 스텁의 `/b66/quotes` JSON이다. 다른 계정 테스트는 실제 계정을 바꾸지 않고 스텁 응답을 빈 배열로 변경한 검사다. 따라서 `LIVE_REAL_B14 / ACTUAL_SOL_PDF_BYTES / ACTUAL_D1_PERSIST_REOPEN / SERVER_FOREIGN_ACCOUNT_DENIAL` 모두 **NOT_TESTED_BY_4088**.
+- **증거 보존:** CENTRAL은 원격 `E:\local2-4076-evidence\`에서 PNG 7장과 보고서 존재를 확인했다. 다만 `06-d1-recent.png`와 `07-foreign-account-empty.png`의 SHA-256 해시가 **동일**하여, 서로 다른 계정 화면을 보여 주는 독립 시각 증거로 사용할 수 없다. LOCAL2가 보고한 Google Drive 업로드 `403 storageQuotaExceeded`는 보조 보고서 업로드 실패이며 인수 하네스나 B66 고객 Drive 서비스의 실패로 혼동하지 않는다. 기존 로컬 원본을 보존하고 업로드 재시도를 인수 차단으로 만들지 않는다.
+- **운영·인수:** #4088은 테스트 전용 소스 병합이며 이 PR로 Production 새 배포를 수행하거나 필요하다고 판단하지 않는다. LOCAL2는 [#4076](https://github.com/skerishKang/ai-revenue-lab/issues/4076)에서 승인된 계정 실제 Guided/Free-form/후속 질문/1~3행 Sol PDF/D1 API 고객 여정 수용을 이어 간다. LOCAL1 [#3839](https://github.com/skerishKang/ai-revenue-lab/issues/3839) Sol v2 시각 인증, LOCAL3 [#3871](https://github.com/skerishKang/ai-revenue-lab/issues/3871) Drive 후속 검증은 별도. **`FULL_CGI_MVP_HANDOFF=NOT_READY`**.
+
 ## 1. 확정된 릴리스 근거
 
 | 구분 | 결과 / 근거 |
@@ -58,6 +66,12 @@ OAUTH_CALLBACK_SOURCE_MERGED=YES
 B66_ACCOUNT_GOOGLE_SIGNIN_NEW_DEPLOY=NOT_TESTED
 B66_PASSWORD_SIGNIN_NEW_DEPLOY=PASS_REPORTED_LOCAL3
 DRIVE_OAUTH_CONNECT_NEW_DEPLOY=PASS_REPORTED_LOCAL3
+B66_OFFLINE_BROWSER_CUSTOMER_JOURNEY=PASS_PR4088
+B66_OFFLINE_PDF_ENDPOINT_ROUTE=PASS_STUBBED_PDF
+B66_OFFLINE_QUOTE_HISTORY_CLIENT=PASS_STUBBED_D1
+B66_4088_REAL_SOL_PDF_BYTES=NOT_TESTED
+B66_4088_REAL_D1_PERSISTENCE=NOT_TESTED
+B66_4088_REAL_FOREIGN_ACCOUNT_DENIAL=NOT_TESTED
 B66_GUIDED_NEW_DEPLOY=NOT_TESTED
 B66_FREEFORM_COMPLETE_NEW_DEPLOY=NOT_TESTED
 B66_FREEFORM_FOLLOWUP_NEW_DEPLOY=NOT_TESTED
