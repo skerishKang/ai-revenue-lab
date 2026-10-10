@@ -50,6 +50,16 @@ def test_b03_m0_full_build_and_review_security_remain_required():
         "PRODUCTION_MUTATION=0",
     ):
         assert required in text, required
+    assert "docker_pid=$!" in text and "npm_pid=$!" in text
+    assert 'if wait "$docker_pid"' in text
+    assert 'if wait "$npm_pid"' in text
+    assert 'test "$docker_result" -eq 0' in text
+    assert 'test "$npm_result" -eq 0' in text
+    assert "B03_DOCKER_BUILD_EXIT=" in text
+    assert "B03_NPM_TOOLING_EXIT=" in text
+    # Required: concurrent npm install cannot modify the shipped Docker image.
+    ignore = (APP / ".dockerignore").read_text(encoding="utf-8")
+    assert "node_modules" in ignore.splitlines()
     assert (APP / "Dockerfile.cloudflare").is_file()
     assert (APP / "wrangler.cloudflare-container.toml").is_file()
     assert (APP / "deploy/cloudflare/worker.py").is_file()
