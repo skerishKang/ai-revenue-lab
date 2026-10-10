@@ -59,20 +59,29 @@ cleanup() {
 }
 trap cleanup EXIT
 
+# #3989 trial: avoid oversubscribing the usual two-core GitHub Linux
+# runner with four simultaneously booting Pyodide runtimes. Start two real
+# Workerd probes at a time; wait BOTH, then start the remaining two. Every
+# original probe, unique port/state root, assertion and failure marker remains.
+# A failure in batch 1 does NOT hide or skip the second batch.
+failed=0
 for index in 0 1 2 3; do
   bash "${probes[$index]}" >"$logdir/probe-$index.log" 2>&1 &
   pids+=("$!")
-done
-failed=0
-for index in 0 1 2 3; do
-  if wait "${pids[$index]}"; then
-    echo "B62_WORKER_PROBE_$index=PASS"
-  else
-    echo "B62_WORKER_PROBE_$index=FAIL" >&2
-    failed=1
+  if (( index % 2 == 1 )); then
+    echo "B62_WORKER_BATCH=$((index-1)),$index:STARTED"
+    for completed_index in "$((index-1))" "$index"; do
+      if wait "${pids[$completed_index]}"; then
+        echo "B62_WORKER_PROBE_$completed_index=PASS"
+      else
+        echo "B62_WORKER_PROBE_$completed_index=FAIL" >&2
+        failed=1
+      fi
+      # Report the exact original probe assertions and bounded failures.
+      cat "$logdir/probe-$completed_index.log"
+    done
+    echo "B62_WORKER_BATCH=$((index-1)),$index:FINISHED"
   fi
-  # Include all original probe contract markers and bounded failure detail.
-  cat "$logdir/probe-$index.log"
 done
 echo 'B62_WORKER_PROBE_COUNT=4'
 if (( failed )); then
