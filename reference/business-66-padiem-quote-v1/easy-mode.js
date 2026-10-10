@@ -335,7 +335,13 @@
           { label: "질문받으며 만들기", action: startGuidedIfReady },
           { label: "처음으로", action: showHome }
         ]);
-        setInput(submitFreeFormText, "다시 한 문장으로 적어 주세요");
+        // A model outage during a missing-field follow-up does not erase the
+        // pending quote. Don't tell the customer to retype their whole request.
+        const pending = bridge && typeof bridge.pendingQuote === "function"
+          ? bridge.pendingQuote() : null;
+        setInput(submitFreeFormText, pending
+          ? "방금 답변을 다시 적어 주세요"
+          : "다시 한 문장으로 적어 주세요");
         return;
       }
       const replace = App.replaceDraft(result.draft, {});
