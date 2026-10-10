@@ -21,6 +21,7 @@ from __future__ import annotations
 import fnmatch
 import json
 import os
+import re
 import sys
 from pathlib import Path
 from urllib.error import HTTPError, URLError
@@ -30,6 +31,12 @@ from urllib.request import Request, urlopen
 ROOT = Path(__file__).resolve().parents[2]
 MANIFEST = ROOT / ".github" / "ci" / "b62_browser_qa_paths.json"
 MAX_PR_FILES = 3000
+B66_QUOTE_CSS = "apps/padiem-chat/static/b66-quote-runtime.css"
+# Both the B66 JS bridge and these styles belong solely to the hidden B66
+# quote dialog. The CSS exclusion is valid only while every selector remains
+# anchored to an exact B66 quote class. This guard fails open on ambiguity.
+_B66_CSS_SELECTOR = re.compile(r"^\.b66-quote-[\w-]+(?=$|[\s.:#\[>+~])")
+
 
 # Only isolated leaf modules can omit unrelated Glass visual tail.
 GLASS_TAIL_UNCHANGED_LEAVES = frozenset({
@@ -68,6 +75,7 @@ PLAN_FILES = frozenset(
         ".github/tests/test_3989_b62_glass_timing_ownership.py",
         ".github/tests/test_3989_b62_owner_leaf_browser_base.py",
         ".github/tests/test_3989_b62_headless_shell_install.py",
+        ".github/tests/test_3989_b66_quote_css_scope.py",
         ".github/ci/b62_browser_qa_paths.json",
     }
 )
@@ -96,9 +104,67 @@ def path_matches(filename: str, patterns: list[str]) -> bool:
     return selected
 
 
+def b66_quote_css_is_isolated(source: str | None = None) -> bool:
+    """Reject any rule that could style non-B66 Chat UI; no CSS dependency.
+
+    Parsing is intentionally narrow: only B66 class-anchored selectors and
+    media-query groups are allowed. Unknown at-rules, malformed CSS, missing
+    source or comment/brace ambiguity trigger the full B62 browser suite.
+    """
+    if source is None:
+        try:
+            source = (ROOT / B66_QUOTE_CSS).read_text(encoding="utf-8")
+        except (OSError, UnicodeError):
+            return False
+    if re.search(r"@(?:import|font-face|keyframes|property|layer|namespace|charset)\b", source, re.I):
+        return False
+    if source.count("/*") != source.count("*/"):
+        return False
+    cleaned = re.sub(r"/\*.*?\*/", "", source, flags=re.S)
+    if "/*" in cleaned or "*/" in cleaned:
+        return False
+    stack: list[str] = []
+    count = 0
+    position = 0
+    for part in re.finditer(r"([^{}]*)([{}])", cleaned, flags=re.S):
+        if part.start() != position:
+            return False
+        prefix = part.group(1).strip()
+        brace = part.group(2)
+        position = part.end()
+        if brace == "{":
+            if prefix.startswith("@media "):
+                if stack and stack[-1] != "group":
+                    return False
+                stack.append("group")
+            else:
+                if not prefix or prefix.startswith("@"):
+                    return False
+                if stack and stack[-1] != "group":
+                    return False
+                if not all(_B66_CSS_SELECTOR.match(sel.strip()) for sel in prefix.split(",")):
+                    return False
+                stack.append("rule")
+                count += 1
+        else:
+            if not stack:
+                return False
+            if stack[-1] == "group" and prefix:
+                return False
+            stack.pop()
+    return count > 0 and not stack and not cleaned[position:].strip()
+
+
 def choose_lanes(
     changed_paths: set[str] | None, patterns_by_job: dict[str, list[str]]
 ) -> dict[str, bool]:
+    if changed_paths is not None and B66_QUOTE_CSS in changed_paths:
+        if not b66_quote_css_is_isolated():
+            return {job: True for job in patterns_by_job}
+        # Exact B66-only stylesheet is loaded with Chat, but its selectors
+        # cannot affect B62 surfaces while the strict local scope guard passes.
+        # Remove only this path, preserving every other mixed-PR dependency.
+        changed_paths = changed_paths - {B66_QUOTE_CSS}
     if changed_paths is None:
         return {job: True for job in patterns_by_job}
     if changed_paths & PLAN_FILES:

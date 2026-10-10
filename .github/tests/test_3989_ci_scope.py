@@ -40,6 +40,7 @@ B66_ONLY = (
     "apps/padiem-chat/app/b66_reasoning_level.py",
     "apps/padiem-chat/app/b66_registered_model_boundary.py",
     "apps/padiem-chat/static/b66-quote-runtime.js",
+    "apps/padiem-chat/static/b66-quote-runtime.css",
 )
 # Files every B62 lane genuinely depends on.
 SHARED = (
