@@ -22,6 +22,15 @@ from .b66_quote_history_routes import (
 )
 from .b66_quote_history_store import D1QuoteHistoryStore
 from .b66_quote_assets import B66QuoteAssetStore, D1B66QuoteAssetMetadataStore
+from .b66_template_source import (
+    B66TemplateSourceStore,
+    D1B66TemplateSourceMetadataStore,
+)
+from .b66_template_source_routes import (
+    b66_template_source_detail,
+    b66_template_source_list,
+    b66_template_source_upload,
+)
 from .b66_certified_quote_bundle import B66CertifiedQuoteBundleStore
 from .b66_certified_preview import B66CertifiedPreviewStore
 from .b66_certified_pdf_routes import b66_certified_pdf, b66_certified_preview_base
@@ -203,6 +212,7 @@ def create_app(
     b66_company_profile_store: CompanyProfileStore | None = None,
     b66_quote_history_store=None,
     b66_quote_asset_store=None,
+    b66_template_source_store=None,
     b66_certified_quote_bundle_store=None,
     b66_certified_preview_store=None,
     b66_pdf_renderer_client=None,
@@ -299,6 +309,23 @@ def create_app(
         Route(
             "/api/b66/assets/{asset_id}",
             b66_quote_asset_detail,
+            methods=["GET"],
+        ),
+        # B66 #3884 Slice 1: private customer template source custody.
+        # Upload/list/download only; no approve/compile route exists in this slice.
+        Route(
+            "/api/b66/template-sources",
+            b66_template_source_upload,
+            methods=["POST"],
+        ),
+        Route(
+            "/api/b66/template-sources",
+            b66_template_source_list,
+            methods=["GET"],
+        ),
+        Route(
+            "/api/b66/template-sources/{template_source_id}",
+            b66_template_source_detail,
             methods=["GET"],
         ),
         Route("/api/b66/quote/interpret", b66_quote_interpret, methods=["POST"]),
@@ -579,6 +606,21 @@ def create_app(
         except Exception:
             _b66_quote_asset_store = None
     app.state.b66_quote_asset_store = _b66_quote_asset_store
+
+    # B66 #3884 Slice 1: private customer template source custody reuses the same
+    # private R2 binding for immutable original bytes and D1 for owner-scoped
+    # metadata. Upload alone stores status='uploaded' and never certifies; no
+    # approve/compile route is composed here.
+    _b66_template_source_store = b66_template_source_store
+    if _b66_template_source_store is None and d1_binding is not None and r2_binding is not None:
+        try:
+            _b66_template_source_metadata = D1B66TemplateSourceMetadataStore(d1_binding)
+            _b66_template_source_store = B66TemplateSourceStore(
+                _b66_template_source_metadata, r2_binding
+            )
+        except Exception:
+            _b66_template_source_store = None
+    app.state.b66_template_source_store = _b66_template_source_store
 
     # Certified private PDF bundles reuse the approved Saved Quote Skill and
     # existing private R2 binding. This composition reads only; no upload,
