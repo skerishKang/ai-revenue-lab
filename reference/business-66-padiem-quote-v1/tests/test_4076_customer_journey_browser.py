@@ -509,6 +509,46 @@ async def main() -> int:
                 failures.append("foreign_account_saw_data")
             await shot(page, "07-foreign-account-empty")
 
+            # #4076 real product regression: in the approved CGI path the
+            # guided sender question must match the CompanyProfile authority
+            # that the final PDF actually uses. No ignored custom sender.
+            await page.evaluate(
+                "() => document.getElementById('guidedStarter').click()"
+            )
+            for answer in [
+                "MVP 수신사", "없음", "MVP 품목", "2", "50000",
+                "다음", "별도", "없음"
+            ]:
+                await page.fill("#easyComposer", answer)
+                await page.click("#easySend")
+            sender_proof = await page.evaluate(
+                """() => {
+                  const profile = window.B66QuoteRuntimeBridge.getCompanyProfile();
+                  const prompt = document.getElementById('easyMessageList').innerText;
+                  const chips = Array.from(document.querySelectorAll('#easyChipRow button'))
+                    .map(e => e.textContent.trim());
+                  return {
+                    hasApprovedCompany: !!profile?.company && prompt.includes(profile.company),
+                    onlyNext: chips.length === 1 && chips[0] === '다음으로',
+                    hasMisleadingSenderEdit: chips.some(x => x.includes('상호 입력'))
+                  };
+                }"""
+            )
+            report["guided_sender_authority"] = sender_proof
+            if not sender_proof.get("hasApprovedCompany") or not sender_proof.get("onlyNext") or sender_proof.get("hasMisleadingSenderEdit"):
+                failures.append("guided_sender_does_not_match_approved_pdf_company")
+            await page.click("#easyChipRow button")
+            final_sender = await page.evaluate(
+                """() => {
+                  const profile = window.B66QuoteRuntimeBridge.getCompanyProfile();
+                  return !!profile?.company &&
+                    document.getElementById('easyMessageList').innerText.includes('보내는 곳: ' + profile.company);
+                }"""
+            )
+            report["guided_sender_summary_matches_profile"] = final_sender
+            if not final_sender:
+                failures.append("guided_sender_summary_mismatches_approved_profile")
+
             report["api_calls"] = sorted({f"{method} {path}" for method, path in JourneyHandler.calls})
         finally:
             await browser.close()
