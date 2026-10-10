@@ -1192,10 +1192,10 @@ class TestResponseLimits:
 
     def test_timeout_bounds_configured(self):
         timeout = rcfg.build_http_timeout()
-        assert timeout.connect <= 10
-        assert timeout.read <= 30
-        assert timeout.write <= 10
-        assert timeout.pool <= 10
+        # Same single source as the live B14 completed and SSE adapters.
+        assert (timeout.connect, timeout.read, timeout.write, timeout.pool) == (
+            30.0, 40.0, 20.0, 10.0
+        )
 
 
 # ============================================================================

@@ -39,6 +39,7 @@ from app.pilot.errors import (
 )
 from app.pilot.sensenova_provider import is_transient_busy_429
 from app.pilot.provider_timeout_diagnostics import log_provider_timeout
+from app.pilot.b14_timeout_policy import build_provider_http_timeout
 from app.pilot.agnes_429_diagnostics import log_agnes_429
 from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
@@ -58,35 +59,8 @@ logger = logging.getLogger("korean-ai-platform.pilot.platform")
 MAX_RESPONSE_BYTES = 1024 * 1024
 MAX_ERROR_BODY_CHARS = 500
 
-_CONNECT_TIMEOUT = 10.0
-# #3554 exact Kira QKR-008 Production phase trace: httpx.ConnectTimeout
-# fires after ~11.08 s, while Kira's vendor dashboard previously showed
-# response-token generation. Scope the bounded 30 s connect allowance to the
-# exact registered Provider; all other Providers retain their existing budget.
-# #4176 ModelScope production one-shot returned HTTP504 after 10.515s.
-# Exact phase was NOT logged (new Provider was missing diagnostics allowlist).
-# Give its connect phase the same bounded Kira allowance pending one approved
-# phase-aware retest; this does NOT certify the root cause or provider SLA.
-_MODELSCOPE_CONNECT_TIMEOUT = 30.0
-_KIRA_CONNECT_TIMEOUT = 30.0
-_READ_TIMEOUT = 30.0
-_WRITE_TIMEOUT = 10.0
-_POOL_TIMEOUT = 10.0
-
-
-def _provider_connect_timeout(platform_provider_id: str) -> float:
-    """Provider-scoped B14 connect timeout, never a global document deadline.
-
-    This is a bounded mitigation for a *proven* Kira connect-phase 504.
-    It does not change the fixed 45-second gateway attempt budget, retries,
-    provider route, read timeout or other Providers' connection limits.
-    """
-    if platform_provider_id == "kira":
-        return _KIRA_CONNECT_TIMEOUT
-    if platform_provider_id == "modelscope":
-        return _MODELSCOPE_CONNECT_TIMEOUT
-    return _CONNECT_TIMEOUT
-
+# All Providers share one phase policy. A Pyodide/Fetch ConnectTimeout
+# label alone does not prove a native TCP handshake delay.
 
 def _mock_response(model_id: str, upstream_model: str, provider: str) -> dict[str, Any]:
     """Clearly-labeled mock response (no upstream call)."""
@@ -286,13 +260,7 @@ async def call_platform_chat_completions(
             raise InvalidRequest(str(exc)) from exc
 
     client_kwargs: dict[str, Any] = {
-        "timeout": httpx.Timeout(
-            None,
-            connect=_provider_connect_timeout(platform_provider_id),
-            read=_READ_TIMEOUT,
-            write=_WRITE_TIMEOUT,
-            pool=_POOL_TIMEOUT,
-        ),
+        "timeout": build_provider_http_timeout(),
     }
     if transport is not None:
         client_kwargs["transport"] = transport
@@ -443,13 +411,7 @@ async def stream_platform_chat_completions(
             raise InvalidRequest(str(exc)) from exc
 
     client_kwargs: dict[str, Any] = {
-        "timeout": httpx.Timeout(
-            None,
-            connect=_provider_connect_timeout(platform_provider_id),
-            read=_READ_TIMEOUT,
-            write=_WRITE_TIMEOUT,
-            pool=_POOL_TIMEOUT,
-        ),
+        "timeout": build_provider_http_timeout(),
     }
     if transport is not None:
         client_kwargs["transport"] = transport
