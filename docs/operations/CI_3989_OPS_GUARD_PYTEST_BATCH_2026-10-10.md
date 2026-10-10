@@ -14,13 +14,13 @@ Three recent complete runs: [38009938216](https://github.com/skerishKang/ai-reve
 ## Change and safety boundaries
 
 - Retain **both original job IDs and human-readable check names**, required/advisory status behavior, `pull_request` without paths filters, `workflow_dispatch`, group cancellation and read-only token permissions.
-- Retain **all ten existing pytest target paths** without `-k`, `-x`, skips, retries or hidden xfail changes. Execute them in one pytest collection/interpreter process instead of nine sequential pytest process startups.
+- Retain **all ten existing pytest target paths** without `-k`, `-x`, skips, retries or hidden xfail changes. Two source-owner contracts require independent exact invocations: `python -m pytest -q docs/operations/tests` and `python -m pytest -q .github/tests/test_3989_engine_living_learning_ci_scope.py`. Keep these unchanged. Consolidate the **seven remaining pytest processes** into one for **9 → 3 processes** overall. Initial 9 → 1 experiment failed 4 source-authority tests and was corrected *without changing or bypassing the original contract tests*.
 - Keep both direct `cross_lane_test_dependency_guard.py` and `frozen_source_checkout_byte_guard.py` checks as separate blocking shell steps.
 - Add `.github/tests/test_3989_operations_guard_pytest_batch.py` to the same collection, permanently pinning original check-name and test-target coverage.
 - Preserve `PR_CONTRACT_GUARD_MODE=REPORT_BY_DEFAULT`, repository governance, B66 archive safety tests, R2 credential authority tests, trigger scope and Engine/LL guards.
 
 ## Measurement and acceptance
 
-Before/after reports must separate **workflow wall time**, **sum of non-skipped job elapsed seconds**, **pytest test counts**, status context names and test failures. A change in isolated collection may expose fixtures/process-state coupling: if so, restore separate pytest processes rather than skipping cases. Target reproducible Linux PR + postmerge `main` results and avoid modifying any unrelated product/test implementation.
+Before/after reports must separate **workflow wall time**, **sum of non-skipped job elapsed seconds**, **pytest test counts**, status context names and test failures. The initial PR-head Linux attempt failed exactly four source-authority tests when the two explicitly pinned commands were folded into the batch. The corrected version preserves those two independent steps. A change in isolated collection may still expose fixtures/process-state coupling: if so, restore separate pytest processes rather than skipping cases. Target reproducible Linux PR + postmerge `main` results and avoid modifying any unrelated product/test implementation.
 
 **Rollback:** revert this one workflow refactor and its companion contract test in a new PR; existing GitHub Actions check names do not change.
