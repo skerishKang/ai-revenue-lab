@@ -16,6 +16,7 @@ on:
       - "reference/business-66-padiem-quote-v1/cgi-template-v2.js"
       - "reference/business-66-padiem-quote-v1/tests/cgi-v2.test.cjs"
       - "reference/business-66-padiem-quote-v1/tests/three-pane-shell-contract.test.cjs"
+      - "reference/business-66-padiem-quote-v1/tests/test_4268_visual_keyboard_browser.py"
       - "reference/business-66-padiem-quote-v1/tests/test_3536_unified_composer_browser.py"
       - "reference/business-66-padiem-quote-v1/tests/test_4076_customer_journey_browser.py"
       - "reference/business-66-padiem-quote-v1/tests/test_3396_isolated_browser_resume.py"
@@ -76,6 +77,7 @@ jobs:
           set -euo pipefail
           python .github/scripts/b66_shell_cgi_v2_smoke.py
           python reference/business-66-padiem-quote-v1/tests/test_3536_unified_composer_browser.py
+          python reference/business-66-padiem-quote-v1/tests/test_4268_visual_keyboard_browser.py
 
       - name: Verify the first-customer journey end to end (#4076)
         shell: bash
