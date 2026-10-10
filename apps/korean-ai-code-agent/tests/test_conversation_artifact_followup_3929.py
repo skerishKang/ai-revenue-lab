@@ -83,6 +83,7 @@ class ConversationFollowupArtifactTests(unittest.TestCase):
         self.assertEqual(out.artifact_ref,LineageArtifactRef(
             second.record.artifact_id,second.record.integrity_ref))
         self.assertEqual(out.source_run_ref,second.source_run_ref)
+        self.assertEqual(out.public_projection()["source_integrity_ref"], second.record.integrity_ref)
         self.assertNotEqual(first.source_run_ref,second.source_run_ref)
         self.assertFalse(out.public_projection()["read_grant_issued"])
         self.assertFalse(out.public_projection()["memory_restored"])
@@ -106,6 +107,11 @@ class ConversationFollowupArtifactTests(unittest.TestCase):
         self.assertEqual({x.artifact_id for x in out.choices},
                          {v1.record.artifact_id,v2.record.artifact_id})
         self.assertEqual([x.ordinal for x in out.choices],[2,1])
+        self.assertEqual(out.choices[0].integrity_ref,v2.record.integrity_ref)
+        self.assertEqual(
+            out.public_projection()["choices"][0]["integrity_ref"],
+            v2.record.integrity_ref,
+        )
         explicit=resolve_followup_artifact(
             selection=select(selector="exact", artifact_id=v2.record.artifact_id,
                              integrity_ref=v2.record.integrity_ref),
@@ -189,6 +195,15 @@ class ConversationFollowupArtifactTests(unittest.TestCase):
             {"kind":"js"},
         ]:
             with self.subTest(kwargs=kwargs),self.assertRaises(ContractError):
+                select(**kwargs)
+
+    def test_overflow_sentinel_and_structured_request_types(self):
+        index = Index((row(seq=1),))
+        out = resolve_followup_artifact(selection=select(), index=index)
+        self.assertEqual(out.status, FollowupStatus.RESOLVED)
+        self.assertEqual(index.listed[0]["limit"], MAX_CANDIDATES + 1)
+        for kwargs in ({"kind": []}, {"kind": {}}, {"selector": []}):
+            with self.subTest(kwargs=kwargs), self.assertRaises(ContractError):
                 select(**kwargs)
 
     def test_non_downloadable_type_and_no_prod_truth(self):

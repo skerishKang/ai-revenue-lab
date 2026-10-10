@@ -16,13 +16,16 @@ a model-selected filesystem path. They require:
 3. Existing **durable**, canonical `CanonicalArtifactRecord` objects from the
    selected conversation; exact owner, workspace, source run and digest checked
    even if a supposedly trusted adapter accidentally returns a foreign row.
-   Bounded to 30 candidates, no local raw paths or provider references.
+   Fetch 31 as an overflow sentinel and accept no more than 30 candidates;
+   no local raw paths or provider references.
 4. A typed `FollowupSelection` with output kind XLSX/PDF and selector:
    - `latest`: newest stored chronology ordinal only when unambiguous;
      duplicate filenames even across versions require confirmation.
    - `filename`: exact in-scope filename; duplicate matches require confirmation.
    - `exact`: UI-confirmed canonical artifact id **AND** matching SHA-256;
      fake/stale/renamed identity returns NOT_AVAILABLE, never silent fallback.
+     Confirmation choices carry both exact canonical ID and source SHA-256
+     (not provider file IDs), so the UI can submit a fully bound selection.
 5. The result is only a `LineageArtifactRef` (existing #3599 identity +
    digest) with its original `source_run_ref`. This permits a *later* P01
    operation in a new run to request that source **after** its own independent

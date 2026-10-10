@@ -53,9 +53,9 @@ class FollowupSelection:
     def __post_init__(self) -> None:
         for field in ("owner_id", "conversation_id", "workspace_ref"):
             _id(getattr(self, field))
-        if self.output_kind not in _KIND_TO_MEDIA:
+        if not isinstance(self.output_kind, str) or self.output_kind not in _KIND_TO_MEDIA:
             raise ContractError("supported XLSX or PDF output kind required")
-        if self.selector not in ("latest", "filename", "exact"):
+        if not isinstance(self.selector, str) or self.selector not in ("latest", "filename", "exact"):
             raise ContractError("explicit bounded follow-up selector required")
         if self.selector == "filename":
             if (not isinstance(self.filename, str)
@@ -124,6 +124,7 @@ class FollowupChoice:
     artifact_id: str
     filename: str
     ordinal: int
+    integrity_ref: str
 
 
 @dataclass(frozen=True, slots=True)
@@ -138,9 +139,11 @@ class FollowupResult:
             "contract_version": "claw-conversation-artifact-followup.v1",
             "status": self.status.value,
             "source_artifact_id": self.artifact_ref.artifact_id if self.artifact_ref else None,
+            "source_integrity_ref": self.artifact_ref.integrity_ref if self.artifact_ref else None,
             "source_run_ref": self.source_run_ref,
             "choices": [
-                {"artifact_id": x.artifact_id, "filename": x.filename, "ordinal": x.ordinal}
+                {"artifact_id": x.artifact_id, "filename": x.filename,
+                 "ordinal": x.ordinal, "integrity_ref": x.integrity_ref}
                 for x in self.choices
             ],
             "read_grant_issued": False,
@@ -175,7 +178,9 @@ def resolve_followup_artifact(
     # source name is never proof of CURRENT access.
     if verify(**kwargs) is not True:
         return FollowupResult(FollowupStatus.NOT_AVAILABLE)
-    rows = list_items(**kwargs, limit=MAX_CANDIDATES)
+    # Request one extra row: a store cap at 30 must not silently hide
+    # a conflicting older file with the same display name.
+    rows = list_items(**kwargs, limit=MAX_CANDIDATES + 1)
     if type(rows) is not tuple or len(rows) > MAX_CANDIDATES:
         raise ContractError("bounded server-trusted artifact index result required")
     ids: set[str] = set()
@@ -215,7 +220,10 @@ def resolve_followup_artifact(
         if selection.selector == "filename" or ambiguous_filename or ambiguous_order:
             if len(matches) != 1 or ambiguous_filename or ambiguous_order:
                 choices = tuple(
-                    FollowupChoice(m.record.artifact_id, m.record.filename, m.ordinal)
+                    FollowupChoice(
+                        m.record.artifact_id, m.record.filename,
+                        m.ordinal, m.record.integrity_ref
+                    )
                     for m in sorted(matches, key=lambda x: (-x.ordinal, x.record.artifact_id))
                 )
                 return FollowupResult(FollowupStatus.CONFIRMATION_REQUIRED, choices=choices)
