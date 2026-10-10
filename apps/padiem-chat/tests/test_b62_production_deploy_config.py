@@ -557,3 +557,62 @@ def test_3566_claw_model_predispatch_guest_get_is_existing_deploy_smoke():
     assert 'echo "CLAW_MODEL_PROVIDER_POSTS=0"' in smoke
     assert "CLAW_MODEL_PREDISPATCH_GUEST_GET=PASS" in smoke
     assert "POST /api/claw/general" not in smoke
+
+def test_4194_live_model_timeout_drift_audit_reuses_existing_readonly_step():
+    workflow = _read_workflow()
+    readonly_job = workflow.split("\n  cloudflare-readonly:", 1)[1].split(
+        "\n  deploy-production-code:", 1
+    )[0]
+    assert "b62_stream_model_timeout_readback.py" in readonly_job
+    assert '--settings "${settings}"' in readonly_job
+    assert "--strict" not in readonly_job
+    assert "warn without blocking unrelated releases" in readonly_job
+
+
+def test_4194_stream_model_timeout_readback_aligns_and_warns_without_leak(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str],
+):
+    """Read-only snapshot: 20-second production drift vs 600s source default."""
+    root = Path(__file__).resolve().parents[3]
+    path = root / ".github/scripts/b62_stream_model_timeout_readback.py"
+    spec = importlib.util.spec_from_file_location("b62_stream_model_timeout_readback", path)
+    assert spec is not None and spec.loader is not None
+    checker = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(checker)
+
+    def snapshot(bindings: list[dict]) -> Path:
+        target = tmp_path / "safe-settings.json"
+        target.write_text(json.dumps(_settings_payload(bindings)), encoding="utf-8")
+        return target
+
+    legacy = _production_bindings()
+    assert checker.check_timeout_bindings(_settings_payload(legacy)) == "DRIFT"
+    legacy_path = snapshot(legacy)
+    assert checker.main(["--settings", str(legacy_path)]) == 0
+    warning = capsys.readouterr().out
+    assert "B62_STREAM_MODEL_TIMEOUT_PARITY=DRIFT" in warning
+    assert "::warning::B62_STREAM_MODEL_TIMEOUT_REQUIRES_OWNER_REVIEW" in warning
+    assert "B62_TIMEOUT_PRODUCTION_MUTATION=0" in warning
+    assert "PADIEM_CHAT_QUOTA_SALT" not in warning
+    assert checker.main(["--settings", str(legacy_path), "--strict"]) == 2
+    capsys.readouterr()
+
+    corrected = [dict(row) for row in legacy]
+    for row in corrected:
+        if row.get("name") == "PADIEM_CHAT_TIMEOUT_SECONDS":
+            row["text"] = "600"
+    assert checker.check_timeout_bindings(_settings_payload(corrected)) == "ALIGNED_600"
+    assert checker.main(["--settings", str(snapshot(corrected)), "--strict"]) == 0
+    capsys.readouterr()
+
+    absent = [row for row in corrected if row.get("name") != "PADIEM_CHAT_TIMEOUT_SECONDS"]
+    assert checker.check_timeout_bindings(_settings_payload(absent)) == "DEFAULT_600"
+    assert checker.main(["--settings", str(snapshot(absent)), "--strict"]) == 0
+    capsys.readouterr()
+
+    unsafe = [*absent, {"type": "plain_text", "name": "PADIEM_CHAT_TIMEOUT_SECONDS",
+                        "text": "synthetic_private_string_should_never_be_emitted"}]
+    assert checker.main(["--settings", str(snapshot(unsafe))]) == 2
+    output = capsys.readouterr().out
+    assert "B62_STREAM_MODEL_TIMEOUT_PARITY=UNVERIFIED" in output
+    assert "synthetic_private_string_should_never_be_emitted" not in output

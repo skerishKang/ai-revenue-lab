@@ -342,6 +342,12 @@ jobs:
           bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/settings" "${settings}"
           jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
 
+          # #4194: live override may retain 20s although source default is
+          # 600s. This is read-only; warn without blocking unrelated releases
+          # or silently rewriting an Owner-authoritative production binding.
+          python3 .github/scripts/b62_stream_model_timeout_readback.py \
+            --settings "${settings}"
+
           deployments="${RUNNER_TEMP}/b62-deployments-readonly.json"
           bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/deployments" "${deployments}"
           active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
