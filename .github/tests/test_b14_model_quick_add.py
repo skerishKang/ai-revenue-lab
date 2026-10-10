@@ -38,7 +38,7 @@ class ModelQuickAddTests(unittest.TestCase):
         x = json.loads(out.getvalue())
         self.assertEqual(x["status"], "PASS")
         self.assertEqual(x["provider_api_posts"], 0)
-        self.assertEqual(x["model_count"], 11)
+        self.assertEqual(x["model_count"], len(BASE["models"]))
 
     def test_preview_does_not_change_registry(self):
         before = quick.REGISTRY.read_bytes()
