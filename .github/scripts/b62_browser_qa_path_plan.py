@@ -37,6 +37,9 @@ B66_QUOTE_CSS = "apps/padiem-chat/static/b66-quote-runtime.css"
 # inside the Claw workspace. Preserve browser smoke, accessibility, identity,
 # document and project-file coverage while skipping other unrelated journeys.
 CLAW_MANUAL_INTAKE_CSS = "apps/padiem-chat/static/claw-manual-intake.css"
+# Supplier quote comparison is a separate Claw-only UI surface. Keep the
+# same conservative five shared-smoke/a11y/auth/document/file checks.
+CLAW_QUOTE_COMPARE_CSS = "apps/padiem-chat/static/claw-quote-compare.css"
 CLAW_MANUAL_QA_OWNERS = frozenset({
     "accessibility-browser-qa",
     "auth-history-browser-qa",
@@ -48,6 +51,21 @@ _CLAW_MANUAL_SELECTORS = frozenset({
     ".claw-field",
     ".claw-field input",
     ".claw-field select",
+})
+# Narrow, explicit CSS grammar. Every target still lives inside Claw quote
+# comparison, including two selectors guarded by the parent app state.
+_CLAW_QUOTE_SELECTOR = re.compile(
+    r"\.claw-(?:quote-compare|qc-[a-z0-9-]+)"
+    r"(?::(?:first-of-type|disabled|focus-visible)|\[data-state=\"(?:error|success)\"\])?"
+    r"(?:\s+(?:select|input)(?::focus-visible)?|\s*>\s*button)?\Z"
+)
+_CLAW_QUOTE_STATE_SELECTORS = frozenset({
+    '.app-shell:not([data-state="claw"]) .claw-quote-compare',
+    '.claw-workspace[data-view="inbox"] ~ .claw-quote-compare',
+})
+_CLAW_QUOTE_MEDIA = frozenset({
+    "@media (max-width: 920px)",
+    "@media (max-width: 560px)",
 })
 
 # Both the B66 JS bridge and these styles belong solely to the hidden B66
@@ -95,6 +113,7 @@ PLAN_FILES = frozenset(
         ".github/tests/test_3989_b62_headless_shell_install.py",
         ".github/tests/test_3989_b66_quote_css_scope.py",
         ".github/tests/test_3989_claw_manual_css_scope.py",
+        ".github/tests/test_3989_claw_quote_css_scope.py",
         ".github/ci/b62_browser_qa_paths.json",
     }
 )
@@ -207,6 +226,57 @@ def claw_manual_css_is_isolated(source: str | None = None) -> bool:
     return ".claw-field" in seen and not cleaned[position:].strip()
 
 
+def claw_quote_css_is_isolated(source: str | None = None) -> bool:
+    """Verify ALL selectors in Claw quote CSS, including responsive groups.
+
+    Any new selector, media query, at-rule, malformed/unreadable CSS, nesting
+    or global escape restores the original full browser QA instead of skipping.
+    """
+    if source is None:
+        try:
+            source = (ROOT / CLAW_QUOTE_COMPARE_CSS).read_text(encoding="utf-8")
+        except (OSError, UnicodeError):
+            return False
+    if source.count("/*") != source.count("*/"):
+        return False
+    cleaned = re.sub(r"/\*.*?\*/", "", source, flags=re.S)
+    if "/*" in cleaned or "*/" in cleaned or re.search(r"url\s*\(", cleaned, re.I):
+        return False
+    stack: list[str] = []
+    position = 0
+    rules = 0
+    for token in re.finditer(r"([^{}]*)([{}])", cleaned, flags=re.S):
+        if token.start() != position:
+            return False
+        prefix = token.group(1).strip()
+        position = token.end()
+        if token.group(2) == "{":
+            if prefix in _CLAW_QUOTE_MEDIA and not stack:
+                stack.append("media")
+            elif not stack or stack[-1] == "media":
+                if not prefix or prefix.startswith("@"):
+                    return False
+                for selector in prefix.split(","):
+                    selector = " ".join(selector.split())
+                    if (selector not in _CLAW_QUOTE_STATE_SELECTORS
+                            and not _CLAW_QUOTE_SELECTOR.fullmatch(selector)):
+                        return False
+                stack.append("rule")
+                rules += 1
+            else:
+                return False
+        else:
+            if not stack or (stack[-1] == "media" and prefix):
+                return False
+            # Rule contents must be declarations, never nested CSS/at-rules.
+            if stack[-1] == "rule" and (
+                not prefix or "@" in prefix or "<" in prefix or ">" in prefix
+            ):
+                return False
+            stack.pop()
+    return rules > 0 and not stack and not cleaned[position:].strip()
+
+
 def choose_lanes(
     changed_paths: set[str] | None, patterns_by_job: dict[str, list[str]]
 ) -> dict[str, bool]:
@@ -224,10 +294,14 @@ def choose_lanes(
     claw_field_change = CLAW_MANUAL_INTAKE_CSS in changed_paths
     if claw_field_change and not claw_manual_css_is_isolated():
         return {job: True for job in patterns_by_job}
-    remaining = changed_paths - {CLAW_MANUAL_INTAKE_CSS} if claw_field_change else changed_paths
+    claw_quote_change = CLAW_QUOTE_COMPARE_CSS in changed_paths
+    if claw_quote_change and not claw_quote_css_is_isolated():
+        return {job: True for job in patterns_by_job}
+    isolated_claw_css = {CLAW_MANUAL_INTAKE_CSS, CLAW_QUOTE_COMPARE_CSS}
+    remaining = changed_paths - isolated_claw_css
     return {
         job: (
-            (claw_field_change and job in CLAW_MANUAL_QA_OWNERS)
+            ((claw_field_change or claw_quote_change) and job in CLAW_MANUAL_QA_OWNERS)
             or any(path_matches(path, patterns) for path in remaining)
         )
         for job, patterns in patterns_by_job.items()
