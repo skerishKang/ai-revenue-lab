@@ -21,6 +21,31 @@ PROBES = {
 
 
 class WorkerProbeParallelContract(unittest.TestCase):
+    def test_worker_uv_cache_is_bound_to_both_committed_locks(self):
+        workflow = WORKFLOW.read_text(encoding="utf-8")
+        worker = workflow.split("  b62-worker-suite:", 1)[1].split(
+            "  b14-multimodal-test:", 1
+        )[0]
+        self.assertIn("enable-cache: true", worker)
+        self.assertIn("cache-python: true", worker)
+        self.assertIn("cache-dependency-glob: |", worker)
+        self.assertIn("apps/padiem-chat/uv.lock", worker)
+        self.assertIn("apps/padiem-chat/pylock.toml", worker)
+        # A restored cache is never an assertion or build replacement.
+        for required in (
+            "uv lock --check",
+            "uv sync --locked --extra dev",
+            "check_dependency_locks.py --phase host",
+            "b62_worker_prewarm_overlap.sh",
+            "check_dependency_locks.py --phase vendor",
+            "git diff --exit-code -- uv.lock pylock.toml",
+            "test_3989_b62_worker_probe_parallel.py",
+            "b62_worker_probe_parallel.sh",
+            "pywrangler deploy --dry-run",
+        ):
+            with self.subTest(required=required):
+                self.assertIn(required, worker)
+
     def test_all_original_real_runtime_probes_retained(self):
         workflow = WORKFLOW.read_text(encoding="utf-8")
         self.assertIn("Real Worker/Pyodide probes (all four, parallel, fail-closed)", workflow)
