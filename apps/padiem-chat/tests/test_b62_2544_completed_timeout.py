@@ -129,7 +129,7 @@ def test_env_override_is_respected(monkeypatch):
 
 def test_worker_binding_defaults_are_untouched():
     settings = settings_from_worker_bindings({})
-    assert settings.timeout_seconds == 600.0, "live PADIEM_CHAT_TIMEOUT_SECONDS default must stay 20"
+    assert settings.timeout_seconds == 600.0, "live PADIEM_CHAT_TIMEOUT_SECONDS default must stay 600"
     assert settings.completed_timeout_seconds == 600.0
 
 
@@ -154,7 +154,7 @@ def test_completed_transport_and_config_use_completed_timeout_only():
         require_service_binding=True,
     )
 
-    # Streaming / shared config keeps the 20s timeout.
+    # Streaming / shared config uses the 600s model-idle default.
     assert client._config().timeout_seconds == 600.0
     # Completed config and completed transport use the 600s completed timeout.
     assert client._completion_config().timeout_seconds == 600.0

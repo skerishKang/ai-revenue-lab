@@ -26,8 +26,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      # #3989: only these files are consumed. Keep every tracked workflow
+      # YAML and exact source-owned guard/test; never narrow the audited scope.
       - name: Checkout exact head
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            .github/workflows/**
+            .github/scripts/p01_deployment_boundary_guard.py
+            .github/tests/test_p01_deployment_boundary_guard.py
+          sparse-checkout-cone-mode: false
 
       - name: Run repository deployment-boundary guard
         run: python .github/scripts/p01_deployment_boundary_guard.py
