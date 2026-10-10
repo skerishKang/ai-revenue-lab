@@ -173,6 +173,7 @@
     host.className = "shell-preview-host";
     host.id = "shellPreviewHost";
     host.setAttribute("aria-label", "견적서 미리보기 패널");
+    host.setAttribute("tabindex", "-1");
 
     var divider = document.createElement("div");
     divider.className = "shell-divider";
@@ -192,6 +193,7 @@
     collapse.setAttribute("aria-controls", "shellPreviewHost");
     collapse.addEventListener("click", function () {
       document.body.classList.add("preview-collapsed");
+      if (window.matchMedia("(max-width:1250px)").matches) reopen.focus();
     });
     if (toolbar) toolbar.appendChild(collapse);
 
@@ -201,9 +203,43 @@
     reopen.textContent = "미리보기 열기 ◀";
     reopen.setAttribute("aria-controls", "shellPreviewHost");
     reopen.addEventListener("click", function () {
+      if (window.matchMedia("(max-width:900px)").matches) {
+        document.body.classList.add("rail-collapsed");
+      }
       document.body.classList.remove("preview-collapsed");
+      if (window.matchMedia("(max-width:1250px)").matches) collapse.focus();
     });
     shell.appendChild(reopen);
+
+    // Viewer-only zoom: no changes to the certified quote DOM or print geometry.
+    var zoomFactor = 1;
+    var zoomStatus = document.createElement("span");
+    zoomStatus.className = "shell-preview-zoom-status";
+    zoomStatus.setAttribute("role", "status");
+    zoomStatus.setAttribute("aria-live", "polite");
+    var zoomControls = document.createElement("div");
+    zoomControls.className = "shell-preview-zoom";
+    zoomControls.setAttribute("role", "group");
+    zoomControls.setAttribute("aria-label", "미리보기 확대");
+    function zoomButton(label, symbol, value) {
+      var button = document.createElement("button");
+      button.type = "button";
+      button.textContent = symbol;
+      button.setAttribute("aria-label", label);
+      button.addEventListener("click", function () {
+        zoomFactor = value === 0 ? 1 : Math.min(3, Math.max(1, zoomFactor + value));
+        syncPreviewScale();
+      });
+      return button;
+    }
+    var zoomOut = zoomButton("미리보기 축소", "−", -0.5);
+    var zoomReset = zoomButton("화면에 맞추기", "맞춤", 0);
+    var zoomIn = zoomButton("미리보기 확대", "+", 0.5);
+    zoomControls.appendChild(zoomOut);
+    zoomControls.appendChild(zoomStatus);
+    zoomControls.appendChild(zoomIn);
+    zoomControls.appendChild(zoomReset);
+    if (toolbar) toolbar.insertBefore(zoomControls, collapse);
 
     function syncPreviewScale() {
       var paper = byId("quotePaper");
@@ -212,7 +248,10 @@
       if (!Number.isFinite(naturalWidth) || naturalWidth <= 0) return;
       var available = Math.max(0, preview.clientWidth - 18);
       var scale = Math.min(1, available / naturalWidth);
-      var zoom = String(Math.max(0.25, scale));
+      var zoom = String(Math.max(0.25, scale * zoomFactor));
+      zoomStatus.textContent = Math.round(Number(zoom) * 100) + "%";
+      zoomOut.disabled = zoomFactor <= 1;
+      zoomIn.disabled = zoomFactor >= 3;
       paper.style.zoom = zoom;
       var details = document.querySelectorAll("#pvDetailPages .quote-detail-page");
       details.forEach(function (page) { page.style.zoom = zoom; });
@@ -272,6 +311,15 @@
     toggle.setAttribute("aria-controls", "shellRail");
     toggle.addEventListener("click", function () {
       document.body.classList.toggle("rail-collapsed");
+      if (window.matchMedia("(max-width:900px)").matches) {
+        if (!document.body.classList.contains("rail-collapsed")) {
+          document.body.classList.add("preview-collapsed");
+          var first = byId("shellNewQuote");
+          if (first) first.focus();
+        } else {
+          toggle.focus();
+        }
+      }
     });
 
     left.appendChild(toggle);
@@ -320,6 +368,88 @@
     }
   }
 
+
+  function wireOverlayKeyboard() {
+    var rail = byId("shellRail");
+    var preview = byId("shellPreviewHost");
+    var toggle = byId("shellRailToggle");
+    var reopen = document.querySelector(".shell-preview-reopen");
+    if (!rail || !preview || !toggle || !reopen) return;
+
+    function isRailModal() {
+      return window.matchMedia("(max-width:900px)").matches &&
+        !document.body.classList.contains("rail-collapsed");
+    }
+    function isPreviewModal() {
+      return window.matchMedia("(max-width:1250px)").matches &&
+        !document.body.classList.contains("preview-collapsed");
+    }
+    function syncSemantics() {
+      var railOpen = isRailModal();
+      var previewOpen = isPreviewModal();
+      toggle.setAttribute("aria-expanded", String(
+        !document.body.classList.contains("rail-collapsed")
+      ));
+      reopen.setAttribute("aria-expanded", String(
+        !document.body.classList.contains("preview-collapsed")
+      ));
+      [rail, preview].forEach(function (panel, index) {
+        if (index === 0 ? railOpen : previewOpen) {
+          panel.setAttribute("role", "dialog");
+          panel.setAttribute("aria-modal", "true");
+        } else {
+          panel.removeAttribute("role");
+          panel.removeAttribute("aria-modal");
+        }
+      });
+    }
+    syncSemantics();
+    new MutationObserver(syncSemantics).observe(document.body, {
+      attributes: true, attributeFilter: ["class"]
+    });
+    window.addEventListener("resize", syncSemantics);
+
+    document.addEventListener("keydown", function (event) {
+      var panel = isPreviewModal() ? preview : (isRailModal() ? rail : null);
+      if (!panel) return;
+      if (event.key === "Escape") {
+        event.preventDefault();
+        if (panel === preview) {
+          document.body.classList.add("preview-collapsed");
+          reopen.focus();
+        } else {
+          document.body.classList.add("rail-collapsed");
+          toggle.focus();
+        }
+        return;
+      }
+      if (event.key !== "Tab") return;
+      var candidates = Array.prototype.slice.call(panel.querySelectorAll(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), ' +
+        'textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )).filter(function (node) {
+        return node.getClientRects().length > 0 && !node.closest("[hidden]");
+      });
+      if (!candidates.length) {
+        event.preventDefault();
+        panel.focus();
+        return;
+      }
+      var first = candidates[0];
+      var last = candidates[candidates.length - 1];
+      if (!panel.contains(document.activeElement)) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
+      } else if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
+  }
+
   function init() {
     var shell = document.querySelector("main.shell");
     if (!shell || byId("shellRail")) return;
@@ -330,6 +460,7 @@
     buildTopbarToggle();
     syncDirectMode();
     syncMobileDefault();
+    wireOverlayKeyboard();
 
     var legacyPanel = byId("padiemAccountPanel");
     if (legacyPanel) legacyPanel.classList.add("shell-legacy-account-panel");
