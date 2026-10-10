@@ -34,11 +34,33 @@ def test_request_budget():
     print("B66_3396_READONLY_REQUEST_BUDGET=PASS")
 
 
+def test_synthetic_slot_boundary():
+    marker = "B66-3396-CGI-ALPHA-SYNTH-SAFE-UNIT"
+    payload = mod.synthetic_payload(marker)
+    assert mod.exact_synthetic(payload, marker)
+    assert not mod.exact_synthetic(payload, marker + "OTHER")
+    assert not mod.exact_synthetic({**payload, "step": "tax"}, marker)
+    assert not mod.exact_synthetic(None, marker)
+    for method in ("PUT", "DELETE"):
+        assert mod.synthetic_http(method, mod.ORIGIN + mod.GUIDED)
+        assert not mod.allow_http(method, mod.ORIGIN + mod.GUIDED)
+        for path in ("/api/padiem/b66/quotes", "/api/padiem/b66/quote/interpret",
+                     "/api/padiem/b66/quote/pdf", "/api/padiem/b66/company-profile",
+                     "/api/padiem/b66/saved-skills", "/api/padiem/auth/password/login"):
+            assert not mod.synthetic_http(method, mod.ORIGIN + path)
+        assert not mod.synthetic_http(method, "https://evil.invalid" + mod.GUIDED)
+    assert not mod.synthetic_http("POST", mod.ORIGIN + mod.GUIDED)
+    print("B66_3396_TEMP_GUIDED_SLOT_BOUNDARY=PASS")
+
+
 def test_only_exact_main_can_have_credential():
     workflow = WORKFLOW.read_text(encoding="utf-8")
     expected = (
         "pull_request:", "workflow_dispatch:", "environment: production",
         "RUN_B66_3396_CGI_TWO_BROWSER_READONLY",
+        "RUN_B66_3396_CGI_SYNTHETIC_RESUME_ONCE",
+        "inputs.mode == 'synthetic'",
+        "--authorized-live-synthetic",
         "test \"${GITHUB_REF}\" = \"refs/heads/main\"",
         'test "$(git rev-parse origin/main)" = "${TARGET_SHA}"',
         "persist-credentials: false",
@@ -78,6 +100,7 @@ def test_no_model_or_customer_writes():
 
 if __name__ == "__main__":
     test_request_budget()
+    test_synthetic_slot_boundary()
     test_only_exact_main_can_have_credential()
     test_no_model_or_customer_writes()
     print("B66_3396_CGI_READONLY_CONTRACT=PASS")

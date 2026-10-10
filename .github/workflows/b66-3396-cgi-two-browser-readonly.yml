@@ -8,12 +8,20 @@ on:
       - ".github/workflows/b66-3396-cgi-two-browser-readonly.yml"
   workflow_dispatch:
     inputs:
+      mode:
+        description: "readonly (no D1 write), or synthetic (one CGI alpha temp guided slot, exact-marker cleanup)"
+        required: true
+        type: choice
+        default: readonly
+        options:
+          - readonly
+          - synthetic
       target_sha:
         description: "Exact current main SHA"
         required: true
         type: string
       confirmation:
-        description: "Type RUN_B66_3396_CGI_TWO_BROWSER_READONLY"
+        description: "READONLY: RUN_B66_3396_CGI_TWO_BROWSER_READONLY; SYNTHETIC: RUN_B66_3396_CGI_SYNTHETIC_RESUME_ONCE"
         required: true
         type: string
 
@@ -58,7 +66,8 @@ jobs:
     needs: source-contract
     if: >-
       ${{ github.event_name == 'workflow_dispatch' &&
-          inputs.confirmation == 'RUN_B66_3396_CGI_TWO_BROWSER_READONLY' }}
+          ((inputs.mode == 'readonly' && inputs.confirmation == 'RUN_B66_3396_CGI_TWO_BROWSER_READONLY') ||
+          (inputs.mode == 'synthetic' && inputs.confirmation == 'RUN_B66_3396_CGI_SYNTHETIC_RESUME_ONCE')) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     environment: production
@@ -66,6 +75,7 @@ jobs:
       TARGET_SHA: ${{ inputs.target_sha }}
       B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
       B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
+      B66_3396_MODE: ${{ inputs.mode }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -90,11 +100,19 @@ jobs:
         run: |
           python -m pip install --disable-pip-version-check --quiet "playwright==1.55.0"
           python -m playwright install --with-deps chromium
-      - name: Two separate CGI logins, GET-only draft parity, two canonical logouts
+      - name: 'Exactly scoped CGI alpha mode: two isolated logins and guaranteed cleanup'
         shell: bash
         run: |
           set -euo pipefail
-          python .github/scripts/b66_3396_cgi_two_browser_readonly.py --authorized-live-readonly
-          echo 'CUSTOMER_QUOTE_MUTATION=0'
+          if [ "${B66_3396_MODE}" = "synthetic" ]; then
+            python .github/scripts/b66_3396_cgi_two_browser_readonly.py --authorized-live-synthetic
+            echo 'SYNTHETIC_TEMP_ROW_CLEANUP_REQUIRED=PASS'
+          else
+            test "${B66_3396_MODE}" = "readonly"
+            python .github/scripts/b66_3396_cgi_two_browser_readonly.py --authorized-live-readonly
+            echo 'CUSTOMER_QUOTE_MUTATION=0'
+          fi
           echo 'MODEL_POSTS=0'
+          echo 'PDF_POSTS=0'
+          echo 'CUSTOMER_HISTORY_WRITES=0'
           echo 'CGI_CREDENTIAL_OUTPUT=0'
