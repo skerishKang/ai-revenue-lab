@@ -200,6 +200,7 @@
 
     messageList.appendChild(article);
     article.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    return article;
   }
 
   function setChips(chips) {
@@ -306,7 +307,7 @@
     const requestScopeRevision = accountScopeRevision;
     interpretationInFlight = true;
     addMessage("user", text);
-    addMessage("assistant", "CGI 기본 견적서로 작성하고 있습니다…");
+    const processingMessage = addMessage("assistant", "CGI 기본 견적서로 작성하고 있습니다…");
     disableInput("견적을 만드는 동안에는 입력을 잠시 멈춥니다.");
     Promise.resolve().then(() => {
       // Closing/switching the owner before the dispatch microtask must cancel the call.
@@ -356,6 +357,9 @@
       addMessage("assistant", "해석 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.");
       setInput(submitFreeFormText, "다시 한 문장으로 적어 주세요");
     }).finally(() => {
+      // Keep only the completed result, the missing-field question, or the
+      // failure notice. A stale "작성하고 있습니다" misleads customers.
+      processingMessage.remove();
       if (requestScopeRevision === accountScopeRevision) interpretationInFlight = false;
     });
   }
@@ -416,7 +420,7 @@
       return;
     }
     const taxUnknown = guided.taxUnknown;
-    addMessage("assistant", "CGI 기본 견적서로 작성하고 있습니다…");
+    const processingMessage = addMessage("assistant", "CGI 기본 견적서로 작성하고 있습니다…");
     const facts = {
       recipient: guided.draft.recipient,
       items: guided.draft.items.map((item) => ({
@@ -448,6 +452,8 @@
       addResultReview(result.draft, taxUnknown);
     }).catch(() => {
       addMessage("assistant", "견적 생성에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+    }).finally(() => {
+      processingMessage.remove();
     });
   }
 
