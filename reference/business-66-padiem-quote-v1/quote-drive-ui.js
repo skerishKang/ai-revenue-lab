@@ -387,8 +387,12 @@
         if (superseded(epoch)) return;
         if (!pdf || pdf.ok !== true || !pdf.bytes) {
           /* PDF 없이 JSON만 올려 외톨이 파일을 만들지 않는다. */
-          setStatus("인증된 PDF를 만들지 못해 저장을 시작하지 않았습니다. 견적 내용을 확인해 주세요. (" +
-            ((pdf && pdf.code) || "pdf_source_unavailable") + ")", "error");
+          if (pdf && pdf.code === "cgi_unsupported_rows") {
+            setStatus("현재 CGI 견적서 PDF는 품목 최대 3개까지만 지원합니다. 품목을 3개 이하로 줄인 뒤 다시 저장해 주세요.", "error");
+          } else {
+            setStatus("인증된 PDF를 만들지 못해 저장을 시작하지 않았습니다. 견적 내용을 확인해 주세요. (" +
+              ((pdf && pdf.code) || "pdf_source_unavailable") + ")", "error");
+          }
           return;
         }
         var template = typeof bridge.activeTemplateReference === "function"

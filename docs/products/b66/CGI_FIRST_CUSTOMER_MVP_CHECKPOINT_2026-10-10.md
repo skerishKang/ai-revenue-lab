@@ -1,5 +1,9 @@
 # B66 CGI 첫 고객 MVP — Production 배포 및 고객 인수 기준 (2026-10-10 KST)
 
+> **현행 오너 결정 / 이 문서 이전 스냅샷 내용의 우선순위 교정:** **B66 웹 견적서 MVP 자체가 P0**이고, [#4117](https://github.com/skerishKang/ai-revenue-lab/issues/4117) Sol-native PDF 바이트 완전 동일화·별도 Windows 서버 개발은 **PARKED / 현재 MVP 필수 차단 아님**. 아래 과거의 'P0 최종 인수 차단: 화면 미리보기·다운로드·Drive PDF ≠ 실제 Sol 렌더러' 문장은 이전 기술 검토 기록으로만 읽는다. 별도 서버·인증서를 만들라는 현재 작업 지시가 **아니다**. 고객 첫 출시의 4품목 이상 지원 범위는 오너가 따로 결정하기 전까지 FULL SCOPE 미완료로 유지하며, 임의로 1–3품목 전체 완료 판정도 하지 않는다.
+>
+> **현행 실측 (2026-10-10, #4076):** 실제 CGI 고객 계정으로 로그인, 승인 Saved Skill·CompanyProfile 자동 조회, 직접 입력 1품목과 3품목의 QuoteCore 합계·1페이지 PDF 실제 브라우저 다운로드 **PASS**. 같은 계정의 **다른 Chromium 프로필/독립 브라우저 저장소**에서 실제 D1 저장된 견적 목록·상세·편집기 적용 및 합계 재계산 **PASS**. 로그아웃→재로그인→서버 D1 재열기 **PASS**. 다른 로그인 계정의 동일 견적 직접 GET **404 DENIED PASS**. 해당 계정의 합성 테스트 견적은 정리 후 **0건 잔존 확인**. 질문받으며 만들기→PDF **REAL PASS**, 한 번에 말하기+단가 누락 후속 질문→PDF는 **실제 웹·계정·양식·PDF + 모델 해석 응답만 합성 스텁인 통합 검증 PASS**, 실제 제공자 응답은 **NOT_TESTED**. 4품목 PDF 시도는 실제 운영에서 지원 한도 3을 넘어 **정상 미생성**, 그러나 사용자 안내가 막연해 [#4076]의 별도 최소 UI 보강 대상으로 분리했다. [#4153](https://github.com/skerishKang/ai-revenue-lab/pull/4153), [#4157](https://github.com/skerishKang/ai-revenue-lab/pull/4157)는 **main 병합 완료 / B66 Production 신규 배포 전**. 전체 고객 MVP 완료 선언 전에는 **실제 모델 호출 검증, 수정 코드 Production 반영 및 승인된 품목 범위**의 3가지 게이트를 남긴다.
+
 > **CENTRAL 시점별 스냅샷.** 제품 원칙은 [B66 README](README.md), [SOURCE_TEMPLATE_FIDELITY](SOURCE_TEMPLATE_FIDELITY.md), 각 이슈가 우선한다. 이 문서는 특정 배포 및 검증 상태를 기록하며 이후 `main` 이동이 과거 배포 SHA를 바꾸지 않는다.
 
 ## 결론

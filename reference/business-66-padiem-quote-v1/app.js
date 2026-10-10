@@ -1477,7 +1477,8 @@
       const bytes = await browserPdf.makePdf(model, previewModel);
       return { ok: true, bytes: bytes, fileName: "견적서_" + (draft.meta.quoteNo || "") + ".pdf" };
     } catch (err) {
-      return { ok: false, code: "browser_pdf_unavailable" };
+      return { ok: false, code: err && err.code === "browser_pdf_unsupported_rows"
+        ? "cgi_unsupported_rows" : "browser_pdf_unavailable" };
     }
   }
 
