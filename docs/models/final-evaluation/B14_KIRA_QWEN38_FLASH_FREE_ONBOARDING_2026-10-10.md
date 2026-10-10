@@ -1,5 +1,13 @@
 # B14 신규 제공업체 Kira / Qwen3.8 Flash Free (#4018)
 
+<!-- OWNER_KIRA_REAL_B14_SINGLE_PROOF_20261010 -->
+## 2026-10-10 최신 실행 증거 — 이전 직접 API 성공에 B14 운영 검증 1회 추가
+
+**현재 검증: B14 Production exact Kira route 1-call CONNECTIVITY_PASS.** 최신 직접 모델 공개 페이지에서 [시간제한 무료 프로모션](https://kiraai.vn/models/qwen3.8-flash-free/)의 HTTP200/0원 토큰 공시/잔여시간 표시를 재확인한 직후, Owner 승인대로 한 번만 B14 운영 Chat API 호출: **HTTP200 / 7,781 ms / literal `OK` / finish_reason=stop / prompt 1,934+completion 103=total 2,037 tokens / exact selected upstream and actual model MATCH / attempt 1 / fallback 0**. 실호출/계정 범위 및 증거: [B14 Kira 1회 검증](B14_KIRA_LIVE_ONCE_AND_PROMO_SCOPE_2026-10-10.md), [이슈 #3554](https://github.com/skerishKang/ai-revenue-lab/issues/3554#issuecomment-6095979271).
+
+이는 기존 **Kira 직접 API 1회 HTTP200**과 별개의 실제 **B14 운영 경유** 성공입니다. 아래 역사적 “B14 배포·실응답 검증 별개” 기록을 현재 미실행 판정으로 사용하지 않습니다. 하지만 이 증거가 **현재 Product/Claw/Engine/PDF E2E**, 활성 배포 SHA, 구독의 1,000만 토큰 적용 여부, 장기적인 무상 제공·실제 과금액을 입증하지는 않습니다. 후속 유료/무료 Provider POST는 새 승인 전 금지.
+<!-- /OWNER_KIRA_REAL_B14_SINGLE_PROOF_20261010 -->
+
 <!-- OWNER_BILLING_REBASE_20261010 -->
 ## 2026-10-10 Owner 계정 요금제 정정 — 기존 프로모션 설명보다 우선
 
