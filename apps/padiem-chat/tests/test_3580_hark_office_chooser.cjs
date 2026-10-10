@@ -74,7 +74,7 @@ test("candidate pick -> exact existing Engine approve; no forged file authority"
     } else if (url === "/api/claw/runs/" + RUN + "/local-result") {
       body = { ok: true, projection: { runId: RUN, status: "completed", appended: true } };
     } else if (url === "/api/claw/approvals/decision") {
-      body = { ok: true, result: { run_id: "p01_3580_verified_pause", status: "running" } };
+      body = { ok: true, result: { run_id: RUN, status: "completed" } };
     } else {
       throw new Error("unexpected URL");
     }
@@ -94,7 +94,7 @@ test("candidate pick -> exact existing Engine approve; no forged file authority"
     });
     await elements.clawOfficeApprove.click(); await tick();
     assert.deepEqual(JSON.parse(calls[2].args.body), {
-      run_id: "p01_3580_verified_pause", decision: "approve",
+      run_id: RUN, decision: "approve",
     });
     assert.equal(view.getState().approvalPending, false);
     assert.match(elements.clawOfficeNotice.textContent, /Engine/);

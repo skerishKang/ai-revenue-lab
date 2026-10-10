@@ -137,7 +137,10 @@
             || body.approval_required !== true || body.processing_started !== false
             || body.file_read_authorized !== false || typeof body.engine_run_id !== "string"
             || !RUN.test(body.engine_run_id)) throw new Error("P01 승인 대기 상태를 확인하지 못했습니다.");
-        pending = { runId: active.runId, candidateRef, engineRunId: body.engine_run_id };
+        // B62 decision endpoint is keyed to the owner-scoped Hark run, NOT
+        // the Engine-internal P01 run. Its durable handoff resolves P01 run
+        // and canonical continuation server-side. Do not send Engine IDs.
+        pending = { runId: active.runId, candidateRef };
         const selected = active.candidates.find((c) => c.candidate_ref === candidateRef);
         label.textContent = "선택 파일: " + selected.filename + " · 파일 읽기를 승인하시겠습니까?";
         group.hidden = false;
@@ -158,9 +161,9 @@
         const body = await readJson("/api/claw/approvals/decision", {
           method: "POST",
           headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify({ run_id: submitted.engineRunId, decision }),
+          body: JSON.stringify({ run_id: submitted.runId, decision }),
         });
-        if (body.result?.run_id !== submitted.engineRunId) {
+        if (body.result?.run_id !== submitted.runId) {
           throw new Error("다른 실행의 승인 결과는 적용할 수 없습니다.");
         }
         pending = null;

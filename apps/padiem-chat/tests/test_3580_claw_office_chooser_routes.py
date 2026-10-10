@@ -21,6 +21,21 @@ ORIGIN = "https://chat.example.test"
 
 
 class ReadyStore:
+    def __init__(self, *, missing=False, engine_run_id="p01_pending_3580"):
+        self.missing = missing
+        self.engine_run_id = engine_run_id
+        self.readback_calls = []
+
+    async def load_claw_approval_handoff(self, *, user_id, run_id, workspace_id=None):
+        self.readback_calls.append((user_id, run_id, workspace_id))
+        if (self.missing or user_id != OWNER or run_id != RUN
+                or workspace_id != f"owner:{OWNER}"):
+            return None
+        return {"p01_run_id": self.engine_run_id,
+                "continuation_ref": "cont_real_owner_pause",
+                "pause_id": "pause_real_owner_read",
+                "trusted_request": {"app_id": "trusted_engine_office"}}
+
     async def get_user(self, user_id):
         return None
 
@@ -67,12 +82,12 @@ class OwnerSource:
         }
 
 
-async def exchange(*, source=None, owner=OWNER, method="GET", body=None, content_type=True):
+async def exchange(*, source=None, owner=OWNER, method="GET", body=None, content_type=True, store=None):
     settings = Settings(
         session_secret="hark-chooser-tests-secret", auth_mode="mock",
         public_base_url=ORIGIN,
     )
-    app = create_app(settings, history_store=ReadyStore(), claw_office_chooser_source=source)
+    app = create_app(settings, history_store=store or ReadyStore(), claw_office_chooser_source=source)
     headers = {"Origin": ORIGIN}
     if owner is not None:
         headers["Cookie"] = SESSION_COOKIE + "=" + create_session_token(settings, owner)
@@ -138,6 +153,33 @@ def test_selection_can_return_only_engine_pause_not_file_authority():
     assert body["processing_started"] is False
     assert "UNTRUSTED" not in selected.text
     assert source.calls == [("select", OWNER, RUN, TOKEN)]
+
+
+def test_selection_requires_same_owner_workspace_and_engine_pause_history():
+    payload = {"run_id": RUN, "candidate_ref": TOKEN}
+    for store in (
+        ReadyStore(missing=True),
+        ReadyStore(engine_run_id="foreign_p01_execution"),
+    ):
+        response = run(
+            source=OwnerSource(), method="POST", body=payload, store=store,
+        )
+        assert response.status_code == 409
+        assert response.json()["error"]["code"] == "p01_engine_pause_not_verified"
+        assert store.readback_calls == [(OWNER, RUN, f"owner:{OWNER}")]
+
+
+def test_selection_without_durable_approval_handoff_store_refuses():
+    class NoHandoffStore:
+        async def get_user(self, user_id):
+            return None
+
+    response = run(
+        source=OwnerSource(), method="POST",
+        body={"run_id": RUN, "candidate_ref": TOKEN},
+        store=NoHandoffStore(),
+    )
+    assert response.status_code == 503
 
 
 def test_browser_cannot_supply_approval_workspace_root_device_or_filename():
