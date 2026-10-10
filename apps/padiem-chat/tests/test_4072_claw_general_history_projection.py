@@ -4,7 +4,8 @@ Real TestClient route with provider-fake adapter; no Production D1, model,
 Drive, Office, secrets, or external network activity.
 """
 from contextlib import contextmanager
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, patch
+from types import SimpleNamespace
 
 from starlette.testclient import TestClient
 
@@ -51,7 +52,6 @@ def test_real_completed_p01_answer_written_once_to_existing_owner_history():
     store = OwnerStore()
     adapter = base._make_adapter(outcome=base._make_outcome(answer="정상 완료된 사용자 결과"))
     payload = base._payload(
-        conversation_id="conv_untrusted_browser",
         workspace_id="another-tenant",
         user_id="usr_forged",
         run_id="run_forged",
@@ -78,7 +78,6 @@ def test_real_completed_p01_answer_written_once_to_existing_owner_history():
     # has been accepted as authority.
     assert "usr_forged" not in str(saved)
     assert "another-tenant" not in str(saved)
-    assert "conv_untrusted_browser" not in str(saved)
 
 
 def test_record_failure_does_not_mask_answer_or_repeat_irreversible_p01_run():
@@ -152,8 +151,70 @@ def test_storage_projection_has_no_fake_lineage_or_private_details():
     assert 'action="general"' in text
     assert 'channel="web"' in text
     assert 'status="completed"' in text
-    assert "conversation_id=None" in text
+    assert "conversation_id=conversation_id" in text
     assert "artifact_document_id=None" in text
     assert "except Exception:" in text
     for forbidden in ("wrangler", "drive.files", "file_modified", "pdf_exported", "localStorage", "subprocess"):
         assert forbidden not in text
+
+# #3929: the optional canonical conversation is no longer ignored when
+# explicitly supplied. It is OWNER-checked before dispatch, then projected
+# with the server-resolved canonical CP tenant, never browser workspace_id.
+
+_OWNED_THREAD_3929 = "chat_" + "4" * 32
+_TENANT_3929 = "tenant_3929_cp"
+
+
+class _OwnedConversationStore(OwnerStore):
+    async def get_conversation(self, user_id, conversation_id):
+        if user_id == base.SIGNED_IN_USER_ID and conversation_id == _OWNED_THREAD_3929:
+            return {"id": conversation_id}
+        return None
+
+
+def test_explicit_owned_general_conversation_links_completed_run_and_canonical_tenant():
+    store = _OwnedConversationStore()
+    adapter = base._make_adapter(
+        subject_lane=True,
+        outcome=base._make_outcome(answer="?? ??"),
+    )
+    bridge = SimpleNamespace(auth_session=SimpleNamespace(
+        subject=SimpleNamespace(subject_id="subject_3929_test"),
+        tenant_id=_TENANT_3929,
+    ))
+    with patch(
+        "app.b54_canonical_session.resolve_current_b54_canonical_session",
+        new_callable=AsyncMock, return_value=bridge,
+    ):
+        with owner_client(store, adapter) as client:
+            response = client.post(base.GENERAL_ROUTE_PATH, json=base._payload(
+                conversation_id=_OWNED_THREAD_3929,
+                workspace_id="fake_browser_workspace",
+                user_id="usr_foreign",
+            ))
+    assert response.status_code == 200, response.text
+    adapter.execute.assert_awaited_once()
+    assert len(store.calls) == 1
+    row = store.calls[0]
+    assert row["conversation_id"] == _OWNED_THREAD_3929
+    assert row["workspace_id"] == _TENANT_3929
+    assert row["user_id"] == base.SIGNED_IN_USER_ID
+    assert "fake_browser_workspace" not in str(row)
+
+
+def test_explicit_foreign_or_malformed_conversation_denied_before_quota_p01():
+    store = _OwnedConversationStore()
+    adapter = base._make_adapter(subject_lane=True)
+    with owner_client(store, adapter) as client:
+        invalid = client.post(base.GENERAL_ROUTE_PATH, json=base._payload(
+            conversation_id="not_a_canonical_conversation",
+        ))
+        foreign = client.post(base.GENERAL_ROUTE_PATH, json=base._payload(
+            conversation_id="chat_" + "f" * 32,
+        ))
+    assert invalid.status_code == 400
+    assert invalid.json()["error"]["code"] == "invalid_conversation_id"
+    assert foreign.status_code == 404
+    assert foreign.json()["error"]["code"] == "conversation_not_found"
+    adapter.execute.assert_not_called()
+    assert store.calls == []

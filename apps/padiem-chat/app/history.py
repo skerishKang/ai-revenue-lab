@@ -774,6 +774,129 @@ class D1HistoryStore:
             )
         return [_run_history_public(row) for row in rows]
 
+    async def verify_owner_conversation_artifacts(
+        self, user_id: str, conversation_id: str,
+    ) -> bool:
+        """#3929: current D1 conversation ownership, no cached/browser proof."""
+        cid = validate_conversation_id(conversation_id)
+        if cid is None or not isinstance(user_id, str) or not user_id:
+            return False
+        row = await self._first(
+            "SELECT id FROM conversations WHERE id=? AND user_id=?",
+            cid, user_id,
+        )
+        return isinstance(row, dict) and row.get("id") == cid
+
+    async def register_owner_conversation_artifact(
+        self, *, user_id: str, conversation_id: str,
+        workspace_ref: str, artifact: Any,
+    ) -> bool:
+        """Trusted host only: immutable durable record for an *already completed*
+        owner/conversation/workspace-bound Claw run. Never called by user JSON.
+
+        The INSERT is an INSERT..SELECT restricted by BOTH owner conversation
+        and the completed owner run; no caller-chosen run id can grant a file.
+        Existing exact-id rows are not transferable or silently overwritten.
+        """
+        from kagent.artifact_registration import (
+            ArtifactLifecycle, CanonicalArtifactRecord,
+        )
+        cid = validate_conversation_id(conversation_id)
+        scope = _safe_identifier("workspace_ref", workspace_ref)
+        if (cid is None or not isinstance(user_id, str) or not user_id
+                or not isinstance(artifact, CanonicalArtifactRecord)
+                or artifact.lifecycle is not ArtifactLifecycle.DURABLE
+                or artifact.durable_location is None
+                or artifact.workspace_ref != scope
+                or not isinstance(artifact.run_ref, str)
+                or artifact.media_type not in (
+                    "application/pdf",
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                )
+                or not artifact.filename.lower().endswith(
+                    ".pdf" if artifact.media_type == "application/pdf" else ".xlsx"
+                )):
+            return False
+        if not await self.verify_owner_conversation_artifacts(user_id, cid):
+            return False
+        run = await self._first(
+            "SELECT run_id FROM claw_run_history "
+            "WHERE run_id=? AND user_id=? AND conversation_id=? "
+            "AND workspace_id=? AND status='completed'",
+            artifact.run_ref, user_id, cid, scope,
+        )
+        if run is None:
+            return False
+        existing = await self._first(
+            "SELECT user_id, conversation_id, workspace_ref, source_run_ref, "
+            "filename, media_type, size_bytes, integrity_ref, location_kind, "
+            "location_ref FROM claw_conversation_artifact_index WHERE artifact_id=?",
+            artifact.artifact_id,
+        )
+        location = artifact.durable_location
+        expected = (
+            user_id, cid, scope, artifact.run_ref, artifact.filename,
+            artifact.media_type, artifact.size_bytes, artifact.integrity_ref,
+            location.location_kind, location.location_ref,
+        )
+        columns = (
+            "user_id", "conversation_id", "workspace_ref", "source_run_ref",
+            "filename", "media_type", "size_bytes", "integrity_ref",
+            "location_kind", "location_ref",
+        )
+        if existing is not None:
+            return tuple(existing.get(key) for key in columns) == expected
+        await self._run(
+            "INSERT OR IGNORE INTO claw_conversation_artifact_index "
+            "(artifact_id, user_id, conversation_id, workspace_ref, source_run_ref, "
+            "filename, media_type, size_bytes, integrity_ref, location_kind, "
+            "location_ref, created_at) "
+            "SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? "
+            "FROM conversations c INNER JOIN claw_run_history r "
+            "ON r.conversation_id=c.id AND r.user_id=c.user_id "
+            "WHERE c.id=? AND c.user_id=? AND r.run_id=? "
+            "AND r.workspace_id=? AND r.status='completed'",
+            artifact.artifact_id, *expected, _now_iso(),
+            cid, user_id, artifact.run_ref, scope,
+        )
+        persisted = await self._first(
+            "SELECT user_id, conversation_id, workspace_ref, source_run_ref, "
+            "filename, media_type, size_bytes, integrity_ref, location_kind, "
+            "location_ref FROM claw_conversation_artifact_index WHERE artifact_id=?",
+            artifact.artifact_id,
+        )
+        return persisted is not None and tuple(
+            persisted.get(key) for key in columns
+        ) == expected
+
+    async def list_owner_conversation_artifacts(
+        self, *, user_id: str, conversation_id: str,
+        workspace_ref: str, limit: int = 31,
+    ) -> list[dict[str, Any]]:
+        """Current owner+conversation+workspace read with live run binding.
+
+        Strictly bounded; never returns provider location to an HTTP caller
+        except via the trusted private adapter that strips it.
+        """
+        cid = validate_conversation_id(conversation_id)
+        scope = _safe_identifier("workspace_ref", workspace_ref)
+        if (cid is None or not isinstance(user_id, str) or not user_id
+                or type(limit) is not int or not 1 <= limit <= 31):
+            raise HistoryError("bounded owner/conversation artifact lookup required")
+        return await self._all(
+            "SELECT a.ordinal, a.artifact_id, a.user_id, a.conversation_id, "
+            "a.workspace_ref, a.source_run_ref, a.filename, a.media_type, "
+            "a.size_bytes, a.integrity_ref, a.location_kind, a.location_ref "
+            "FROM claw_conversation_artifact_index a "
+            "JOIN conversations c ON c.id=a.conversation_id AND c.user_id=a.user_id "
+            "JOIN claw_run_history r ON r.run_id=a.source_run_ref "
+            "AND r.user_id=a.user_id AND r.conversation_id=a.conversation_id "
+            "AND r.workspace_id=a.workspace_ref AND r.status='completed' "
+            "WHERE a.user_id=? AND a.conversation_id=? AND a.workspace_ref=? "
+            "ORDER BY a.ordinal DESC LIMIT ?",
+            user_id, cid, scope, limit,
+        )
+
     async def update_claw_run_status(
         self,
         user_id: str,
