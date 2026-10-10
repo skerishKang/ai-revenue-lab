@@ -65,9 +65,12 @@ cat "$log_dir/worker-sync.log"
 printf 'ENGINE_CORE_TEST_EXIT=%s\n' "$core_status"
 printf 'ENGINE_LL_REGRESSION_EXIT=%s\n' "$ll_status"
 printf 'ENGINE_WORKER_SYNC_EXIT=%s\n' "$worker_sync_status"
-if [[ "$core_status" -ne 0 || "$ll_status" -ne 0 || "$worker_sync_status" -ne 0 ]]; then
-  echo 'ENGINE_CORE_LL_WORKER_SYNC=FAIL' >&2
+if [[ "$core_status" -ne 0 || "$ll_status" -ne 0 ]]; then
   echo 'ENGINE_CORE_LL_PARALLEL=FAIL' >&2
+  exit 1
+fi
+if [[ "$worker_sync_status" -ne 0 ]]; then
+  echo 'ENGINE_CORE_LL_WORKER_SYNC=FAIL' >&2
   exit 1
 fi
 echo 'ENGINE_CORE_LL_PARALLEL=PASS'
