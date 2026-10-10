@@ -13,6 +13,7 @@ from local_agent_broker_material_store import (
     CloudflareDurableObjectCommandMaterialStore,
 )
 from local_agent_broker_private_http_bridge import handle_private_device_fetch
+from local_agent_broker_office_chunks import BrokerOfficeChunkStore
 from local_agent_broker_sql_state import (
     CloudflareDurableObjectHttpSessionState,
     CloudflareDurableObjectSerializedStateBackend,
@@ -33,6 +34,16 @@ class LocalAgentBrokerDurableObject(DurableObject):
         self._state_port = self._runtime.state_port
         self.http_state = self._runtime.http_state
         self.material_store = self._runtime.material_store
+        # A production deployment must opt in explicitly; browser login or
+        # broker pairing never silently enables durable binary staging.
+        self.office_chunks = (
+            BrokerOfficeChunkStore(
+                storage=ctx.storage, state_port=self._runtime.state_port,
+                authority_ref=self._runtime.authority_ref(),
+            )
+            if str(getattr(env, "LOCAL_AGENT_OFFICE_CHUNK_TRANSFER_ENABLED", "")).lower() == "true"
+            else None
+        )
         self._device_http = LocalAgentBrokerDeviceHttpService(
             state_port=self._runtime.state_port,
             pepper=str(env.LOCAL_AGENT_BROKER_PEPPER).encode("utf-8"),
@@ -41,6 +52,7 @@ class LocalAgentBrokerDurableObject(DurableObject):
             http_state=self._runtime.http_state,
             material_resolver=self._runtime.material_store,
             session_open_transaction=self._storage.transactionSync,
+            office_chunks=self.office_chunks,
         )
 
     def _authority_ref(self) -> str:
@@ -99,6 +111,18 @@ class LocalAgentBrokerDurableObject(DurableObject):
 
     async def terminal_command_result(self, payload: dict) -> dict:  # #3139 read-only RPC
         return self._runtime.terminal_command_result(payload)
+
+    async def read_office_artifact_part(self, payload: dict) -> dict:
+        if self.office_chunks is None or not isinstance(payload, dict):
+            return {"ok": False, "error": {"code": "office_transfer_not_configured"}}
+        try:
+            expected = frozenset({"owner", "workspace", "run_id", "command_id", "kind", "part_index"})
+            if frozenset(payload) != expected:
+                raise ValueError("closed private Office reader contract required")
+            result = self.office_chunks.read_part(**payload)
+            return {"ok": True, "artifact_part": result}
+        except Exception:
+            return {"ok": False, "error": {"code": "office_artifact_unavailable"}}
 
     async def fetch(self, request):
         del request
@@ -162,6 +186,9 @@ class Default(WorkerEntrypoint):
 
     async def terminal_command_result(self, payload: dict) -> dict:
         return await self._stub().terminal_command_result(payload)
+
+    async def read_office_artifact_part(self, payload: dict) -> dict:
+        return await self._stub().read_office_artifact_part(payload)
 
     async def fetch(self, request):
         return await handle_private_device_fetch(request, self._stub)
