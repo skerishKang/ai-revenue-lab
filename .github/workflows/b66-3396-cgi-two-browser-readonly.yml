@@ -16,12 +16,13 @@ on:
         options:
           - readonly
           - synthetic
+          - foreign_window
       target_sha:
         description: "Exact current main SHA"
         required: true
         type: string
       confirmation:
-        description: "READONLY: RUN_B66_3396_CGI_TWO_BROWSER_READONLY; SYNTHETIC: RUN_B66_3396_CGI_SYNTHETIC_RESUME_ONCE"
+        description: "readonly=RUN_B66_3396_CGI_TWO_BROWSER_READONLY; synthetic=RUN_B66_3396_CGI_SYNTHETIC_RESUME_ONCE; foreign_window=RUN_B66_3396_CGI_FOREIGN_WINDOW_ONCE"
         required: true
         type: string
 
@@ -67,7 +68,8 @@ jobs:
     if: >-
       ${{ github.event_name == 'workflow_dispatch' &&
           ((inputs.mode == 'readonly' && inputs.confirmation == 'RUN_B66_3396_CGI_TWO_BROWSER_READONLY') ||
-          (inputs.mode == 'synthetic' && inputs.confirmation == 'RUN_B66_3396_CGI_SYNTHETIC_RESUME_ONCE')) }}
+          (inputs.mode == 'synthetic' && inputs.confirmation == 'RUN_B66_3396_CGI_SYNTHETIC_RESUME_ONCE') ||
+          (inputs.mode == 'foreign_window' && inputs.confirmation == 'RUN_B66_3396_CGI_FOREIGN_WINDOW_ONCE')) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     environment: production
@@ -104,7 +106,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ "${B66_3396_MODE}" = "synthetic" ]; then
+          if [ "${B66_3396_MODE}" = "foreign_window" ]; then
+            python .github/scripts/b66_3396_cgi_two_browser_readonly.py --authorized-live-foreign-window
+            echo 'CGI_FOREIGN_WINDOW_EXACT_MARKER_CLEANUP_REQUIRED=PASS'
+          elif [ "${B66_3396_MODE}" = "synthetic" ]; then
             python .github/scripts/b66_3396_cgi_two_browser_readonly.py --authorized-live-synthetic
             echo 'SYNTHETIC_TEMP_ROW_CLEANUP_REQUIRED=PASS'
           else

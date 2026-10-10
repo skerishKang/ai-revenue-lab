@@ -280,7 +280,7 @@ def synthetic_payload(marker: str) -> dict:
     }
 
 
-def run_live_synthetic() -> int:
+def run_live_synthetic(*, foreign_window: bool = False) -> int:
     """One dedicated CGI-alpha synthetic slot. Fail closed on any preexisting row.
 
     This is a test-only Production D1 mutation, not a customer quote creation.
@@ -353,6 +353,17 @@ def run_live_synthetic() -> int:
                     raise BoundedFailure("second_browser_wrong_question")
                 print("CGI_SYNTHETIC_SECOND_BROWSER_PRICE_RESUME=PASS", flush=True)
                 stage_pass = True
+                if foreign_window:
+                    # This bounded window allows a separate already-signed-in
+                    # operator browser with a DIFFERENT canonical account to
+                    # perform authenticated GET while CGI alpha's row exists.
+                    # It never accepts or uses foreign account credentials.
+                    import time
+                    assert exact_synthetic(api_snapshot(a)[1], marker)
+                    print("CGI_FOREIGN_WINDOW_OPEN=PASS", flush=True)
+                    time.sleep(90)
+                    assert exact_synthetic(api_snapshot(a)[1], marker)
+                    print("CGI_FOREIGN_WINDOW_CLOSE=PASS", flush=True)
             finally:
                 # Cleanup is attempted even if the API call or UI verification
                 # fails; NEVER delete a row with a different marker.
@@ -404,12 +415,16 @@ def main():
     parser.add_argument("--self-test", action="store_true")
     parser.add_argument("--authorized-live-readonly", action="store_true")
     parser.add_argument("--authorized-live-synthetic", action="store_true")
+    parser.add_argument("--authorized-live-foreign-window", action="store_true")
     args = parser.parse_args()
     if args.self_test:
         return self_test()
-    if args.authorized_live_synthetic and args.authorized_live_readonly:
+    if sum((args.authorized_live_synthetic, args.authorized_live_readonly,
+            args.authorized_live_foreign_window)) > 1:
         print("B66_3396_CGI=FAIL_CONFLICTING_MODES")
         return 2
+    if args.authorized_live_foreign_window:
+        return run_live_synthetic(foreign_window=True)
     if args.authorized_live_synthetic:
         return run_live_synthetic()
     if args.authorized_live_readonly:
