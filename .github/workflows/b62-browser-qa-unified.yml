@@ -65,6 +65,7 @@ jobs:
         run: |
           python -m unittest discover -s .github/tests -p test_b62_browser_qa_unified.py -v
           python -m unittest discover -s .github/tests -p test_3989_b62_visual_leaf_smoke.py -v
+          python -m unittest discover -s .github/tests -p test_3989_b62_owner_leaf_browser_base.py -v
       # Source-only test; no browser install or new CI runner.
       - name: Regression check for bounded visual tail and fail-closed fan-in
         run: |
@@ -334,19 +335,30 @@ jobs:
         env:
           B62_QA_VISUAL_SCOPE: ${{ needs.plan.outputs.glass_visual_tail_required == 'false' && 'leaf' || 'full' }}
         run: uv run python ../../.github/scripts/b62_browser_visual_qa.py
+      # #3989 exact modified-only independent JS owner scope: these shared
+      # visual/product-certification checks do not exercise the leaf modules.
+      # Run them for any mixed/shared/unknown PR. Baseline desktop/mobile/Claw,
+      # composer interaction, owner-specific jobs and evidence always remain.
+      # Reuse the already fail-closed changed-file-status + count classifier.
       - name: Sidebar and home IA browser QA
+        if: ${{ needs.plan.outputs.glass_visual_tail_required != 'false' }}
         run: uv run python ../../.github/scripts/b62_sidebar_ia_browser_qa.py
       - name: Provider-neutral mode presentation browser QA
+        if: ${{ needs.plan.outputs.glass_visual_tail_required != 'false' }}
         run: uv run python ../../.github/scripts/b62_mode_presentation_browser_qa.py
       - name: Shared capability presentation browser QA
+        if: ${{ needs.plan.outputs.glass_visual_tail_required != 'false' }}
         run: uv run python ../../.github/scripts/b62_capability_presentation_browser_qa.py
       - name: Composer and response interaction polish browser QA
         run: uv run python ../../.github/scripts/b62_interaction_polish_browser_qa.py
       - name: Product surface v2 certification browser QA
+        if: ${{ needs.plan.outputs.glass_visual_tail_required != 'false' }}
         run: uv run python ../../.github/scripts/b62_product_surface_certification_browser_qa.py
       - name: Post-certification long-answer and mobile hardening QA
+        if: ${{ needs.plan.outputs.glass_visual_tail_required != 'false' }}
         run: uv run python ../../.github/scripts/b62_post_certification_browser_qa.py
       - name: Settled product certification evidence QA
+        if: ${{ needs.plan.outputs.glass_visual_tail_required != 'false' }}
         run: uv run python ../../.github/scripts/b62_product_surface_certification_evidence_qa.py
       # #3989: three source-invariant visual suites own separate page contexts
       # and disjoint report names. Run at most two browsers concurrently in the
