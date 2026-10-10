@@ -796,9 +796,12 @@
 
   function resumeGuidedConversation(state) {
     startConversation();
-    const fresh = guidedDraft();
-    // Never reuse another account's cached sender/profile as server authority.
+    // Restoring is not a new quotation. Never call App.createFreshDraft here:
+    // it consumes a quote number and fails the zero-allocation Back/Forward contract.
+    // QuoteCore creates a pristine detached structure, not a browser-cached App draft.
+    const fresh = Core.createProductionDraft();
     const carried = clone(state.draft);
+    fresh.sender.company = approvedRuntimeSender() || carried.sender?.company || "";
     fresh.recipient = carried.recipient;
     fresh.items = carried.items;
     fresh.tax.mode = carried.tax.mode;
