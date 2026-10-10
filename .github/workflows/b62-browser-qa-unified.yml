@@ -62,6 +62,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Regression check for QA path ownership
         run: python -m unittest discover -s .github/tests -p test_b62_browser_qa_unified.py -v
+      # Source-only test; no browser install or new CI runner.
+      - name: Regression check for bounded visual tail and fail-closed fan-in
+        run: python -m unittest discover -s .github/tests -p test_3989_b62_browser_tail_parallel.py -v
       - name: Select jobs for changed PR paths
         id: classify
         env:
@@ -335,12 +338,12 @@ jobs:
         run: uv run python ../../.github/scripts/b62_post_certification_browser_qa.py
       - name: Settled product certification evidence QA
         run: uv run python ../../.github/scripts/b62_product_surface_certification_evidence_qa.py
-      - name: Glass zoom-equivalent desktop QA
-        run: uv run python ../../.github/scripts/b62_glass_zoom_visual_qa.py
-      - name: Glass shell interaction QA
-        run: uv run python ../../.github/scripts/b62_glass_shell_visual_qa.py
-      - name: Shared gutter responsive browser QA
-        run: uv run python ../../.github/scripts/b62_chat_gutter_visual_qa.py
+      # #3989: three source-invariant visual suites own separate page contexts
+      # and disjoint report names. Run at most two browsers concurrently in the
+      # *same* CI job to preserve its existing required status and artifact.
+      # Wrapper is fail-closed: every suite must run and all three must pass.
+      - name: Glass zoom, shell, and gutter visual QA (all three, bounded parallel)
+        run: uv run python ../../.github/scripts/b62_browser_qa_tail_parallel.py
       - name: Print QA report
         if: always()
         run: |
