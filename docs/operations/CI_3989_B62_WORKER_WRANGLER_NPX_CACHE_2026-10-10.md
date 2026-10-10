@@ -1,0 +1,15 @@
+# #3989 — B62 Worker pinned Wrangler npx cache trial (2026-10-10)
+
+## Measured reason
+GitHub Linux [main #38037564786](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38037564786) showed pinned Wrangler npm prewarm alongside pywrangler vendor sync lasting approximately 19.7 seconds (08:21:25–08:21:45 UTC). Postmerge [main #38038647066](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38038647066) showed the same stage approximately 25.4 seconds; latest main [#38038965098](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38038965098) approximately 19.0 seconds. These durations reflect **both concurrently running preflights**, so not all elapsed time can be attributed to npm. The four actual Worker probes each still need Workerd/Pyodide runtime tests and sometimes take 74–101 seconds overall.
+
+## Trial changes and exact safety boundary
+- Only `b62-worker-suite` gets `actions/cache@v4` for the **Linux Node22 pinned Wrangler npx executable cache directory `~/.npm/_npx`**. The cache key includes OS, architecture, Node major, exact `wrangler@4.130.0` and an explicit invalidation suffix. No `node_modules`, Python `.venv`, `python_modules`, persistence, Wrangler state, secrets or production artifacts are cached.
+- Cache restoration happens after setup-node and before `uv` installation and original same-runner vendor/Wrangler overlap; the original `npx --yes wrangler@4.130.0 --version` **must still execute and attest 4.130.0** in every run. A miss executes the exact previous pinned download/install and creates a cache for the next run. A hit may avoid repeated npm executable install.
+- Retain all four isolated real Worker/Pyodide probes with their original assertions, unique HTTP/inspector ports and separate ephemeral SQLite/persist roots; bundle dry-run, locked deps, source checks, B14 classifier/multimodal and required `b62-test` gate unchanged. No new runner or new required check context.
+- Added source contract in `test_3989_b62_worker_probe_parallel.py` pins scope, cache path/version, and ensures it precedes the preflight. Cache hit never substitutes for a runtime test.
+
+## Acceptance / measurement
+Use PR exact-head full GitHub Linux CI and all selected policy/P01 checks first. Record `actions/cache` Cache restored from key / cache miss log, pinned version attestation, prewarm stage timestamps, four actual Worker marker lines, locked Worker dry-run, final `b62-test`. For a cache miss, rerun only the expensive `B62 Worker/Pyodide contract` job at the exact SHA once to get a warm-hit sample, **not** the entire workflow. Compare cache restore overhead and post-job cache save overhead as well as full Worker job elapsed, workflow wall and total runners. A cache archive can erase savings; no performance claim until actual successful warm CI run. Any failure, degraded security or net regression => do not merge / revert to removing the two added YAML steps and assertion clauses.
+
+**Exclusions:** no workflow dispatch, Production deploy, provider paid calls, secrets modification, test deletions or B14/B66/Claw code changes.
