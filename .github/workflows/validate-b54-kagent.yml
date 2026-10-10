@@ -211,4 +211,4 @@ jobs:
           PYTHONPATH: src
         run: |
           set -euo pipefail
-          python -m unittest discover -s tests -v
+          python -m unittest discover -s tests -v --durations=50
