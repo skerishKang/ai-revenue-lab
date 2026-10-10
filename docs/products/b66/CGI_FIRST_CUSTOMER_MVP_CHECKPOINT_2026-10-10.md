@@ -1,3 +1,6 @@
+<!-- FINAL_CGI_1TO3_HANDOFF_20261011 -->
+> **최신 상태 (2026-10-11):** [CGI 첫 고객 1~3품목 최종 인수인계·증거 패킷](CGI_CUSTOMER_1TO3_FINAL_HANDOFF_2026-10-11.md)이 이 문서의 과거 미완료 스냅샷보다 우선한다. #4076 승인 MVP는 CLOSED, 독립 QA 실제 D1 2브라우저 완주·CGI PDF는 PASS, 운영 고객 기존 초안 2브라우저 복원/보존은 PASS, **해당 고객의 보존된 초안 실제 완료는 NOT_TESTED(#4229 OPEN)**. 원본 PDF 내부 구조 동일성은 주장하지 않고 #4117/#3839는 PARKED. 과거 기록은 감사 추적을 위해 유지한다.
+<!-- /FINAL_CGI_1TO3_HANDOFF_20261011 -->
 # B66 CGI 첫 고객 MVP — Production 배포 및 고객 인수 기준 (2026-10-10 KST)
 
 > **현행 오너 결정 / 이 문서 이전 스냅샷 내용의 우선순위 교정:** **B66 웹 견적서 MVP 자체가 P0**이고, [#4117](https://github.com/skerishKang/ai-revenue-lab/issues/4117) Sol-native PDF 바이트 완전 동일화·별도 Windows 서버 개발은 **PARKED / 현재 MVP 필수 차단 아님**. 아래 과거의 'P0 최종 인수 차단: 화면 미리보기·다운로드·Drive PDF ≠ 실제 Sol 렌더러' 문장은 이전 기술 검토 기록으로만 읽는다. 별도 서버·인증서를 만들라는 현재 작업 지시가 **아니다**. 고객 첫 출시의 4품목 이상 지원 범위는 오너가 따로 결정하기 전까지 FULL SCOPE 미완료로 유지하며, 임의로 1–3품목 전체 완료 판정도 하지 않는다.

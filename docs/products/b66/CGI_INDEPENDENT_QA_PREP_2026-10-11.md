@@ -1,3 +1,6 @@
+<!-- FINAL_CGI_1TO3_HANDOFF_20261011 -->
+> **최신 상태 (2026-10-11):** [CGI 첫 고객 1~3품목 최종 인수인계·증거 패킷](CGI_CUSTOMER_1TO3_FINAL_HANDOFF_2026-10-11.md)이 이 문서의 과거 미완료 스냅샷보다 우선한다. #4076 승인 MVP는 CLOSED, 독립 QA 실제 D1 2브라우저 완주·CGI PDF는 PASS, 운영 고객 기존 초안 2브라우저 복원/보존은 PASS, **해당 고객의 보존된 초안 실제 완료는 NOT_TESTED(#4229 OPEN)**. 원본 PDF 내부 구조 동일성은 주장하지 않고 #4117/#3839는 PARKED. 과거 기록은 감사 추적을 위해 유지한다.
+<!-- /FINAL_CGI_1TO3_HANDOFF_20261011 -->
 # B66 CGI independent QA: current proof and next safe operator gate (2026-10-11)
 
 ## Scope: Kim Beom-shin CGI 1–3 item quotation MVP only
