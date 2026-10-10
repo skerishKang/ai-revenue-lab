@@ -449,12 +449,59 @@ function localeText(key, variables) {
 }
 
 const winListeners = {};
+// #3989: advance ONLY this Node harness's clock, never the app source.
+// Exercise every scheduled callback and 1-second cooldown transition, preserving
+// the existing real-app.js DOM/fetch checks without waiting for wall-clock time.
+const RealDate = Date;
+let virtualNow = RealDate.now();
+let timerSequence = 0;
+const virtualTimers = new Map();
+class VirtualDate extends RealDate {
+  constructor(...args) { if (args.length) super(...args); else super(virtualNow); }
+  static now() { return virtualNow; }
+}
+function virtualSetTimeout(callback, delay=0, ...args) {
+  const id = ++timerSequence;
+  virtualTimers.set(id, {when: virtualNow + Math.max(0, Number(delay)||0), period:0, callback, args});
+  return id;
+}
+function virtualSetInterval(callback, delay=0, ...args) {
+  const period = Math.max(1, Number(delay)||0);
+  const id = ++timerSequence;
+  virtualTimers.set(id, {when: virtualNow + period, period, callback, args});
+  return id;
+}
+function virtualClearTimer(id) { virtualTimers.delete(id); }
+async function advanceClock(ms) {
+  const until = virtualNow + ms;
+  let iterations = 0;
+  while (true) {
+    let chosenId = null;
+    let chosen = null;
+    for (const [id, timer] of virtualTimers) {
+      if (timer.when <= until && (!chosen || timer.when < chosen.when)) {
+        chosenId = id;
+        chosen = timer;
+      }
+    }
+    if (!chosen) break;
+    virtualNow = chosen.when;
+    if (chosen.period > 0) chosen.when += chosen.period;
+    else virtualTimers.delete(chosenId);
+    chosen.callback(...chosen.args);
+    await Promise.resolve();
+    if (++iterations > 10000) throw new Error("timer loop");
+  }
+  virtualNow = until;
+  await new Promise((r) => setImmediate(r));
+}
 const sandbox = {
   document: doc,
   fetch: fetchImpl,
   AbortController: class { constructor() { this.signal = {}; } abort() {} },
   URL: { createObjectURL: () => "blob:x", revokeObjectURL() {}, revokeURL() {} },
-  setTimeout, clearTimeout, setInterval, clearInterval, console,
+  setTimeout: virtualSetTimeout, clearTimeout: virtualClearTimer,
+  setInterval: virtualSetInterval, clearInterval: virtualClearTimer, Date: VirtualDate, console,
   CustomEvent: class {},
   location: { href: "http://localhost/", assign() {} },
   addEventListener: (type, fn) => { (winListeners[type] = winListeners[type] || []).push(fn); },
@@ -482,7 +529,7 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   const fail = (m) => { console.log(JSON.stringify({ ok: false, error: m, requests, checks })); process.exit(0); };
   process.on("unhandledRejection", (e) => { console.log(JSON.stringify({ ok: false, error: "unhandledRejection " + String((e && e.stack) || e) })); process.exit(0); });
   process.on("uncaughtException", (e) => { console.log(JSON.stringify({ ok: false, error: "uncaughtException " + String((e && e.stack) || e) })); process.exit(0); });
-  const tick = (ms) => new Promise((r) => setTimeout(r, ms));
+  const tick = advanceClock;
   const execPosts = () => requests.filter((r) => r.url === "/api/claw/manual-intake/execute" && r.method === "POST");
   const lastExec = () => execPosts()[execPosts().length - 1];
   // Every dispatched execute POST is accounted for by exactly one user action.
@@ -931,8 +978,8 @@ def _run_harness() -> dict:
 def behavioral_harness_payload() -> dict:
     """Run the immutable real-app.js Node journey once, not once per assertion.
 
-    The harness takes ~19s, and the three public-safety assertions below only
-    READ its checks/requests. A module-scoped pytest fixture preserves all
+    The real-time harness used to wait ~19s; the virtual clock still executes all
+    scheduled callbacks and the original checks/requests. The module fixture preserves
     assertions and propagates a single failed behavioral run to every consumer.
     """
     payload = _run_harness()
