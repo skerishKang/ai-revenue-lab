@@ -100,6 +100,12 @@ def _worker(group: str, expected_count: int, expected_digest: str) -> int:
 
 
 def _controller() -> int:
+    # GitHub-hosted Windows can expose a cp1252 parent stdout even when the
+    # workers write UTF-8 logs. Print those full Korean test logs as UTF-8,
+    # preserving errors and diagnostics rather than truncating them.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="backslashreplace")
     discovered = _discover()
     groups = {group: _select(discovered, group) for group in _GROUPS}
     expected = len(discovered)
