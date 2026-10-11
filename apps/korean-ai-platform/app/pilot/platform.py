@@ -260,11 +260,10 @@ def _require_owner_allowed_live_model(
     excluded or approved by this function.
     """
     # TokenHarbor's credential can access paid routes too. The owner approved
-    # exactly two free upstream IDs, so guard the final pre-network adapter
+    # only the DeepSeek free upstream ID, so guard the final pre-network adapter
     # boundary even when a caller bypasses catalog/router validation.
     if platform_provider_id == "tokenharbor":
         allowed_pairs = {
-            "tokenharbor/claude-haiku-5.5:free": "claude-haiku-5.5:free",
             "tokenharbor/deepseek-v4.1-flash:free": "deepseek-v4.1-flash:free",
         }
         if allowed_pairs.get(model_id) != upstream_model:

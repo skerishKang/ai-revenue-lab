@@ -39,12 +39,12 @@ def isolated_provider(monkeypatch):
 def test_exact_modelscope_provider_identity_price_and_future_quota_unknown():
     d = read_registry()
     ids = [x["id"] for x in d["models"]]
-    assert len(ids) == 14 and len(set(ids)) == 14
+    assert len(ids) == 13 and len(set(ids)) == 13
     assert len(d["providers"]) == 10
-    assert MID == ids[-3]  # Two newer TokenHarbor free routes appended
+    assert MID == ids[-2]  # Only DeepSeek TokenHarbor candidate remains
     assert ids[10] == "kira/qwen3.8-flash-free"
     assert d["groups"] == {"plus": [], "pro": [], "max": []}
-    row = d["models"][-3]
+    row = d["models"][-2]
     assert row["provider_id"] == "modelscope"
     assert row["upstream_model"] == UPSTREAM
     assert row["capabilities"] == ["chat"]
@@ -65,7 +65,7 @@ def test_registered_route_manual_no_key_or_model_substitution():
         response = client.get("/api/pilot/models")
     assert response.status_code == 200
     routes = response.json()["registered_routes"]
-    assert len(routes) == 14
+    assert len(routes) == 13
     item = next(x for x in routes if x["id"] == MID)
     assert item["upstream_model"] == UPSTREAM
     assert item["provider_id"] == "modelscope"

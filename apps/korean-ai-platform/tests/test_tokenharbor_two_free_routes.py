@@ -1,4 +1,4 @@
-"""TokenHarbor: exactly two owner-approved free routes, no real upstream calls.
+"""TokenHarbor: DeepSeek-only owner-approved free route, no real upstream calls.
 
 The universal key may access paid models, so the final platform adapter
 checks its own fixed free-model allowlist independently of routing metadata.
@@ -26,7 +26,6 @@ PROVIDER = "tokenharbor"
 BINDING = "PADIEM_TOKEN_HARBOR_API_KEY"
 ORIGIN = "https://tokenharbor.ai/v1"
 ALLOWED = {
-    "tokenharbor/claude-haiku-5.5:free": "claude-haiku-5.5:free",
     "tokenharbor/deepseek-v4.1-flash:free": "deepseek-v4.1-flash:free",
 }
 SYNTHETIC = "synthetic_tokenharbor_key_no_actual_account"
@@ -49,7 +48,7 @@ def _completed(*, model):
     }
 
 
-def test_canonical_registration_exactly_two_free_routes():
+def test_canonical_registration_only_deepseek_free_route():
     registry = read_registry()
     provider = registry["providers"][PROVIDER]
     assert provider == {
@@ -172,7 +171,7 @@ def test_paid_or_unapproved_upstream_cannot_escape_adapter(upstream, live_key):
         raise AssertionError("Forbidden paid/unapproved upstream call")
     with pytest.raises(PilotNotConfigured, match="owner-approved free"):
         asyncio.run(call_platform_chat_completions(
-            model_id="tokenharbor/claude-haiku-5.5:free",
+            model_id="tokenharbor/deepseek-v4.1-flash:free",
             upstream_model=upstream,
             provider="TokenHarbor", platform_provider_id=PROVIDER,
             messages=[{"role": "user", "content": "test"}],
@@ -181,8 +180,28 @@ def test_paid_or_unapproved_upstream_cannot_escape_adapter(upstream, live_key):
     assert called == []
 
 
+
+def test_retired_haiku_cannot_be_dispatched_from_final_adapter(live_key):
+    """Catalog and final adapter both deny Haiku even with a working TokenHarbor key."""
+    called = []
+    def should_not_call(req):
+        called.append(req)
+        raise AssertionError("Haiku must not reach upstream")
+    with pytest.raises(NoSafeRoute):
+        resolve_manual_route("tokenharbor/claude-haiku-5.5:free", allow_external_fallback=False)
+    with pytest.raises(PilotNotConfigured, match="owner-approved free"):
+        asyncio.run(call_platform_chat_completions(
+            model_id="tokenharbor/claude-haiku-5.5:free",
+            upstream_model="claude-haiku-5.5:free",
+            provider="TokenHarbor",
+            platform_provider_id=PROVIDER,
+            messages=[{"role": "user", "content": "retired"}],
+            transport=httpx.MockTransport(should_not_call),
+        ))
+    assert not called
+
 def test_unapproved_public_model_has_no_manual_route(live_key):
-    for mid in ("tokenharbor/mimo-v2.6-flash:free", "tokenharbor/claude-haiku-5.5"):
+    for mid in ("tokenharbor/mimo-v2.6-flash:free", "tokenharbor/claude-haiku-5.5", "tokenharbor/claude-haiku-5.5:free"):
         with pytest.raises(NoSafeRoute):
             resolve_manual_route(mid, allow_external_fallback=False)
 
@@ -259,8 +278,8 @@ def test_tokenharbor_auth_failure_logs_only_safe_classification(
     with caplog.at_level("WARNING", logger="korean-ai-platform.pilot.platform"):
         with pytest.raises(UpstreamAuthFailed):
             asyncio.run(call_platform_chat_completions(
-                model_id="tokenharbor/claude-haiku-5.5:free",
-                upstream_model="claude-haiku-5.5:free",
+                model_id="tokenharbor/deepseek-v4.1-flash:free",
+                upstream_model="deepseek-v4.1-flash:free",
                 provider="TokenHarbor",
                 platform_provider_id=PROVIDER,
                 messages=[{"role": "user", "content": "no_customer_data"}],
@@ -315,8 +334,8 @@ def test_tokenharbor_rejection_diagnostic_shared_by_completed_and_stream(
         )
 
     kwargs = {
-        "model_id": "tokenharbor/claude-haiku-5.5:free",
-        "upstream_model": "claude-haiku-5.5:free",
+        "model_id": "tokenharbor/deepseek-v4.1-flash:free",
+        "upstream_model": "deepseek-v4.1-flash:free",
         "provider": "TokenHarbor",
         "platform_provider_id": PROVIDER,
         "messages": [{"role": "user", "content": "private_request_do_not_log"}],
