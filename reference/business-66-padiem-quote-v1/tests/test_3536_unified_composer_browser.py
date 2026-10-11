@@ -47,7 +47,7 @@ async def main():
                   activeSend: document.querySelectorAll('#easySend').length,
                   legacyInput: document.querySelectorAll('#padiemQuoteRequest').length,
                   legacySend: document.querySelectorAll('#padiemQuoteGenerate').length,
-                  modelInRail: document.querySelectorAll('#shellModelSelect #padiemQuoteModelSelect').length,
+                  modelInComposer: document.querySelectorAll('#easyModelToolbar #padiemQuoteModelSelect').length,
                   modelCount: document.querySelectorAll('#padiemQuoteModelSelect').length,
                   skillInRail: document.querySelectorAll('#shellSkillSelect #padiemSavedSkillSelect').length,
                   statusInRail: document.querySelectorAll('#shellRail #padiemQuoteStatus').length,
@@ -55,7 +55,7 @@ async def main():
                 })""")
                 assert result == {
                     "activeInput": 1, "activeSend": 1, "legacyInput": 0,
-                    "legacySend": 0, "modelInRail": 1, "modelCount": 1,
+                    "legacySend": 0, "modelInComposer": 1, "modelCount": 1,
                     "skillInRail": 1, "statusInRail": 1,
                     "modelHiddenSignedOut": True,
                 }, result
@@ -78,8 +78,9 @@ async def main():
                 assert await page.evaluate("() => document.getElementById('directView').hidden")
                 assert await page.evaluate("() => !document.getElementById('easyHistoryPanel').hidden")
                 await page.click("#directModeButton")
+                await page.click("#easyModeButton")
                 async with page.expect_file_chooser():
-                    await page.click("#shellFileImport")
+                    await page.click("#easyAttach")
                 assert await page.evaluate("() => !document.getElementById('easyView').hidden")
 
                 # One mocked interpretation request; second immediate click must be ignored.

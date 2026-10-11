@@ -366,8 +366,30 @@ async def main() -> int:
             report["session1"] = session
             if not session["readiness"].get("ready"):
                 failures.append("runtime_not_ready")
-            if not session["sender_prefill"].get("matchesApprovedProfile"):
-                failures.append("new_direct_quote_sender_not_prefilled_from_company_profile")
+            # Owner-approved UX: CompanyProfile is optional and only imported
+            # by pressing the existing sender-only button in Direct Edit.
+            report["sender_before_explicit_import"] = session["sender_prefill"]
+            await page.click("#directModeButton")
+            await page.evaluate("""() => {
+              window.confirm = () => true; // test fixture approves only this explicit import
+              document.getElementById('importCompanyProfile').click();
+            }""")
+            sender_import = await page.evaluate("""() => {
+              const profile = window.B66QuoteRuntimeBridge.getCompanyProfile();
+              const draft = window.B66QuoteAppBridge.getDraft();
+              const input = document.getElementById('senderCompany');
+              return {
+                matchesApprovedProfile: !!profile?.company &&
+                  draft.sender.company === profile.company &&
+                  input?.value === profile.company,
+                profileReady: !!profile?.company,
+                senderWasNotDemo: draft.sender.company !== '샘플 공급사'
+              };
+            }""")
+            report["sender_after_explicit_import"] = sender_import
+            await page.click("#easyModeButton")
+            if not sender_import.get("matchesApprovedProfile"):
+                failures.append("explicit_company_information_import_failed")
             if session["model_selection"].get("value") != MODEL_ID:
                 failures.append("manual_model_selection_failed")
             if "default" not in session["reasoning_options"]:
