@@ -515,7 +515,6 @@ async def stream_platform_chat_completions(
     saw_text = False
     last_finish_reason: str | None = None
     buffer = b""
-    total_bytes = 0
     try:
         async with httpx.AsyncClient(**client_kwargs) as client:
             async with client.stream(
@@ -547,12 +546,15 @@ async def stream_platform_chat_completions(
                     )
 
                 async for chunk in response.aiter_bytes():
-                    total_bytes += len(chunk)
-                    if total_bytes > MAX_RESPONSE_BYTES:
-                        raise UpstreamResponseTooLarge(MAX_RESPONSE_BYTES)
                     buffer += chunk
                     frames, buffer = _pop_sse_frames(buffer)
+                    # Bound a single unfinished event for Worker memory safety,
+                    # not a provider's total multi-event generation length.
+                    if len(buffer) > MAX_RESPONSE_BYTES:
+                        raise UpstreamResponseTooLarge(MAX_RESPONSE_BYTES)
                     for frame in frames:
+                        if len(frame) > MAX_RESPONSE_BYTES:
+                            raise UpstreamResponseTooLarge(MAX_RESPONSE_BYTES)
                         event = _parse_sse_frame(frame)
                         if event is None:
                             continue

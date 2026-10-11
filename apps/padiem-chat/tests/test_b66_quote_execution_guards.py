@@ -199,8 +199,8 @@ def test_direct_http_quote_receipt_is_consumed_only_after_serialization(failure)
 def test_actual_quote_core_budget_reaches_b14_gateway_with_one_provider_timeout():
     """Actual product/Core payload + actual B14 gateway, provider replaced in memory.
 
-    Restoring the missing max_retries defect makes this same gateway call three
-    times. The differential control proves max_attempts=1 alone is insufficient.
+    B14 now defaults to a single upstream call. B66 also explicitly pins
+    max_retries=0 so future gateway policy changes cannot widen the quote flow.
     """
     # Test actual product/Core/gateway retry budgets with a synthetic exact ID,
     # NOT the owner-excluded historical NVIDIA catalog route.
@@ -248,10 +248,10 @@ cat.CATALOG_BY_ID[payload["model"]] = replace(
 )
 async def run():
     results = []
-    for restore_defect in (False, True):
+    for omit_explicit_override in (False, True):
         calls.clear()
         options = dict(payload["business14"])
-        if restore_defect:
+        if omit_explicit_override:
             del options["max_retries"]
         response = await gateway._handle_alpha_chat("synthetic-b66-guard", {
             **payload, "business14": options,
@@ -267,7 +267,7 @@ print("OFFLINE_RESULT=" + json.dumps(asyncio.run(run())))
         env={**os.environ, "PYTHONPATH": os.pathsep.join(map(str, paths)), "PYTHONDONTWRITEBYTECODE": "1"},
     )
     output = next(line for line in result.stdout.splitlines() if line.startswith("OFFLINE_RESULT="))
-    assert json.loads(output.removeprefix("OFFLINE_RESULT=")) == [[504, 1, 1], [504, 3, 3]]
+    assert json.loads(output.removeprefix("OFFLINE_RESULT=")) == [[504, 1, 1], [504, 1, 1]]
 
 
 def test_other_product_core_request_keeps_existing_b14_retry_default():

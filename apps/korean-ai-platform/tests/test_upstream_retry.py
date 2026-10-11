@@ -95,12 +95,26 @@ def _install_seq(monkeypatch, behaviors):
 
 def _post(client, *, business14=None):
     body = {"model": MODEL_ID, "messages": [{"role": "user", "content": "hi"}]}
-    if business14 is not None:
-        body["business14"] = business14
+    # Retry behavior tests explicitly opt in; production defaults to one call.
+    if business14 is None:
+        business14 = {"max_retries": gw._UPSTREAM_RETRY_MAX_RETRIES}
+    body["business14"] = business14
     return client.post(
         "/api/pilot/v1/chat/completions",
         json=body,
     )
+
+
+def test_default_one_upstream_attempt_without_retry_opt_in(client, monkeypatch):
+    """Provider handles its own rate policy; B14 never retries by default."""
+    calls = _install_seq(monkeypatch, [UpstreamTimeout(), _ok_response])
+    response = client.post(
+        "/api/pilot/v1/chat/completions",
+        json={"model": MODEL_ID, "messages": [{"role": "user", "content": "hi"}]},
+    )
+    assert response.status_code == 504
+    assert len(calls) == 1
+    assert response.json()["error"]["attempt_count"] == 1
 
 
 # ---------------------------------------------------------------------------
@@ -140,8 +154,8 @@ def test_502_server_error_retries_then_succeeds(client, monkeypatch, no_sleep):
 def test_request_max_retries_zero_disables_same_route_retry(client, monkeypatch, no_sleep):
     """A bounded capability proof can force exactly one upstream attempt.
 
-    The production default remains #1982's retry policy; this opt-down is
-    request-scoped and cannot increase the global retry ceiling.
+    The production default is already zero; this also proves explicit
+    max_retries=0 is supported without fallback or duplicate dispatch.
     """
     calls = _install_seq(monkeypatch, [UpstreamTimeout(), _ok_response])
 
