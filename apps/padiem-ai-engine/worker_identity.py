@@ -37,6 +37,7 @@ from app.agent_preview_authority import (
 )
 from app.agent_skill_service import AgentSkillEngineService
 from app.agent_skill_authority import build_agent_skill_binding_resolver
+from app.agent_durable_d1 import D1AgentRunLedger
 from app.capability_manifest import set_posture_overrides
 from app.approval_verifier import AuthenticatedFirstPartyApprovalDecisionVerifier
 from app.approval_smoke_binding import with_approval_smoke_binding
@@ -880,12 +881,26 @@ def _agent_skill_service_for_env(
     preview = build_preview_agent_lane(env)
     if preview is not None:
         return preview.service
+    durable_enabled = legacy_worker._binding_value(env, "PADIEM_ENGINE_AGENT_DURABLE_ENABLED") == "true"
+    agent_run_ledger = None
+    if durable_enabled:
+        # Engine's *existing* identity-bound D1 database, no new binding scope.
+        # Migration 0011 must be provisioned first; missing D1 fails closed.
+        db = legacy_worker._binding_value(env, ENGINE_CONTINUATION_BINDING_NAME)
+        if db is None:
+            raise ServiceContractError(
+                "agent_run_lease_unavailable",
+                "Trusted Agent run storage is unavailable.",
+                status_code=503,
+            )
+        agent_run_ledger = D1AgentRunLedger(db)
     return AgentSkillEngineService(
         runtime_factory=runtime_factory,
         binding_resolver=binding_resolver,
         idempotency_adapter=idempotency_adapter,
         approval_decision_verifier=approval_decision_verifier,
         continuation_store=continuation_store,
+        agent_run_ledger=agent_run_ledger,
     )
 
 
