@@ -8,8 +8,10 @@ test -n "${CLOUDFLARE_API_TOKEN:-}"
 test -n "${CLOUDFLARE_ACCOUNT_ID:-}"
 test -n "${B62_WORKER:-}"
 base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
+# Production route proof uses one fixed hostname, not arbitrary account domains.
+domain_url="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains?hostname=chat.padiem.net"
 case "${url}" in
-  "${base}/settings"|"${base}/deployments"|"${base}/subdomain"|"${base}/versions"*)
+  "${base}/settings"|"${base}/deployments"|"${base}/subdomain"|"${base}/versions"*|"${domain_url}")
     ;;
   *) echo 'CF_B62_READONLY_GET=UNAUTHORIZED_PATH' >&2; exit 2 ;;
 esac
