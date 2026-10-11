@@ -633,6 +633,7 @@ def test_live_production_custom_domain_is_retained_in_generated_config(tmp_path)
     assert parsed["base_dir"] == ".b66-worker-src"
     assert parsed["routes"] == [{"pattern": "chat.padiem.net", "custom_domain": True}]
     assert parsed["workers_dev"] is True
+    assert parsed["preview_urls"] is True
     assert parsed["assets"]["binding"] == "ASSETS"
     assert parsed["d1_databases"][0]["binding"] == "PADIEM_CHAT_DB"
 
@@ -640,6 +641,7 @@ def test_live_production_custom_domain_is_retained_in_generated_config(tmp_path)
     synthetic_live = module.parse_live_bindings(_settings_payload(_production_bindings()))
     synthetic = module.build_production_config(synthetic_live, _write_repo_config(tmp_path), PUBLIC_URL)
     assert "routes" not in tomllib.loads(synthetic)
+    assert "preview_urls" not in tomllib.loads(synthetic)
 
 
 def test_b62_release_requires_real_custom_domain_readback_before_and_after():

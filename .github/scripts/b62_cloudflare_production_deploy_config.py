@@ -183,6 +183,11 @@ def build_production_config(
     flag_text = ", ".join(_toml_string(f) for f in flags)
     lines.append(f"compatibility_flags = [{flag_text}]")
     lines.append("workers_dev = true")
+    # Existing canonical Worker has version/Preview URLs enabled; once a Custom
+    # Domain route is declared Wrangler otherwise assumes preview_urls=false.
+    # Preserve the observed live true state instead of mutating Preview routing.
+    if public_base_url == "https://chat.padiem.net":
+        lines.append("preview_urls = true")
     if base_dir is not None:
         lines.append(f"base_dir = {_toml_string(base_dir)}")
     # Preserve the already-attached canonical production Custom Domain. Without
