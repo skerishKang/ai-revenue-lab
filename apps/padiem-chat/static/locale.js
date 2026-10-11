@@ -483,7 +483,7 @@
   function applyStaticBindings(lang) {
     const textBindings = [
       ["#newChatButton span:last-child", "new-chat"], [".side-item:nth-child(1) span:nth-child(2)", "search"], ["#projectsNavButton span:nth-child(2)", "projects"], ["#outputsNavButton span:nth-child(2)", "saved"],
-      ["#recentTitle", "recent"], [".recent-item:nth-of-type(1)", "easy"], [".recent-item:nth-of-type(2)", "trip"], [".recent-item:nth-of-type(3)", "dinner"], [".model-pill:not(#ownerModelPreviewOpen) span:last-child", "mode"],
+      ["#recentTitle", "recent"], [".recent-item:nth-of-type(1)", "easy"], [".recent-item:nth-of-type(2)", "trip"], [".recent-item:nth-of-type(3)", "dinner"], [".model-pill span:last-child", "mode"],
       [".empty-copy", "copy"], [".starter:nth-child(1) strong", "easy-title"], [".starter:nth-child(1) small", "easy-copy"], [".starter:nth-child(2) strong", "life-title"], [".starter:nth-child(2) small", "life-copy"],
       [".starter:nth-child(3) strong", "document-title"], ["#attachmentButton span:last-child", "file"], ["#webSearchButton span:last-child", "web"], ["#deepResearchButton span:last-child", "research"], [".sidebar-footer span:last-child", "footer"], [".side-item:nth-child(1) .mini-badge", "coming-soon"],
       ["#projectsTitle", "projects"], ["#projectsEmpty", "projects-empty"], ["#historyTitle", "history-title"], ["#historyEmpty", "history-empty"], ["#outputsTitle", "saved"], ["#outputsEmpty", "outputs-empty"],
@@ -533,7 +533,7 @@
     setText(".project-form-note", "project-instructions-note", lang);
     [
       ["#sidebar", "aria-label", "main-menu"], ["#mobileClose", "aria-label", "close-menu"], [".brand", "aria-label", "home-aria"], [".home-link", "aria-label", "home-open"], [".side-nav", "aria-label", "chat-menu"], ["#workspaceNav", "aria-label", "workspace-menu"],
-      ["#projectCreateButton", "aria-label", "create-project-aria"], [".sidebar-bottom", "aria-label", "account-settings"], ["#mobileMenu", "aria-label", "open-menu"], [".model-pill:not(#ownerModelPreviewOpen)", "aria-label", "mode"], ["#settingsCloseButton", "aria-label", "settings-close"],
+      ["#projectCreateButton", "aria-label", "create-project-aria"], [".sidebar-bottom", "aria-label", "account-settings"], ["#mobileMenu", "aria-label", "open-menu"], [".model-pill", "aria-label", "mode"], ["#settingsCloseButton", "aria-label", "settings-close"],
       ["#themePicker", "aria-label", "theme-picker"], ["#languagePicker", "aria-label", "language-picker"], [".starter-grid", "aria-label", "starter-grid"], [".composer-wrap", "aria-label", "composer"], ["#attachmentThumb", "alt", "attachment-preview-alt"],
       ["#removeAttachment", "aria-label", "attachment-remove"], [".composer-tools .tool-button:nth-of-type(2)", "title", "web-unavailable-title"], ["#deepResearchButton", "title", "research-unavailable-title"], ["#cancelStreamButton", "aria-label", "cancel-answer"], ["#sendButton", "aria-label", "send"],
       ["#projectDialogClose", "aria-label", "project-close"], ["#savedOutputClose", "aria-label", "saved-output-close"], ["#savedOutputContent", "aria-label", "saved-output-content"],

@@ -67,3 +67,23 @@
   color: var(--muted, #666);
   font-size: .8rem;
 }
+
+.owner-model-preview-trigger {
+  border: 1px solid var(--line, #dedee8);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted, #666);
+  font: inherit;
+  font-size: .78rem;
+  padding: 8px 11px;
+  cursor: pointer;
+}
+.owner-model-preview-trigger:hover,
+.owner-model-preview-trigger:focus-visible {
+  color: var(--text, #222);
+  border-color: currentColor;
+}
+.owner-model-preview-trigger:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
