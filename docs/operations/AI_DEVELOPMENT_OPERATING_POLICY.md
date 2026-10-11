@@ -208,6 +208,59 @@ Until then, report `ACTIVE`.
 
 Shared Padiem Platform infrastructure does not collapse products into one another. Product-local work remains with its product owner. A generic defect discovered inside a product is split to the proper Platform/Core/Engine/Control-Plane owner rather than moving the whole product task into that lane.
 
+## 3C. Implementation closeout + batched product verification issues
+
+**Owner decision (2026-10-11): one enduring validation issue per product/release acceptance scope, rather than one lingering verification issue for every finished implementation.** This section controls GitHub issue bookkeeping; it does **not** weaken required pre-merge evidence, authority/security checks or the Finish-first product acceptance gate in §3B.
+
+### Issue types and closure authority
+
+1. **Implementation issue (A, C, D ...):** one bounded code/config/document deliverable. To close it, prove the issue's **implementation acceptance**: reviewed exact-head changes; focused tests; applicable required CI, independent validation (or `NOT_REQUIRED` with reason), security and owner gates; authorized merge to the intended branch. Post the PR, exact head/merge SHA, test result and link to the canonical product validation issue before closing. Use `SOURCE_COMPLETE=YES; PRODUCT_LIVE_E2E=NOT_YET_PROVEN` when applicable. A merged PR alone does **not** close an issue whose original acceptance explicitly required operational activation or end-user delivery. Complete that scope or transparently split the remaining work into the existing validation issue **only if it is genuinely validation rather than missing implementation**; do not silently redefine the owner's deliverable.
+2. **Consolidated verification issue (B):** one **OPEN** issue per product + release/primary user journey, created when the first implementation needs later integrated evidence; **reuse the existing matching issue** before creating a new one. It owns the actual browser/Production E2E evidence and cross-component test matrix, not a second implementation queue. For Hark WEB-FIRST, use existing **#3936** under epic **#3928**; don't create a parallel Hark test ticket for every PR.
+3. **Epic/feature acceptance:** remains open while its own user-visible milestone is incomplete. Closing implementation slices does not imply B/epic closure, operational readiness, production activation, or customer handoff.
+
+### Continuous accumulation: A → B, C → B, D → B
+
+When a new implementation finishes, update B's **single living checklist** with:
+
+- implementation issue/PR and **exact tested SHA / merged SHA**;
+- specific affected **user-visible acceptance claim**, component and target environment;
+- whether the claim is `SOURCE_CI`, `INDEPENDENT_VALIDATION`, `STAGING` or `PRODUCTION_AUTHENTICATED_E2E`;
+- `PENDING | BLOCKED | FAILED | PASS | NOT_REQUIRED`, concrete blocker and immutable **sanitized evidence link**; do not mark `PASS` from an unexecuted workflow or mock;
+- any necessary user-authorized credentials, billable calls, external WRITE/SEND, and rollback boundaries.
+
+Deduplicate an existing test rather than appending identical test instructions for each PR. A, C and D may be closed separately while their remaining **legitimate post-merge integrated checks** accumulate in B. If E2E proves an actual code defect, open or reopen only the **specific repair implementation issue**, with a reproduction and B backlink. Do not multiply generic verification issues.
+
+### Efficient validation and truthful finalization
+
+Run B's consolidated journey after the relevant set of changes is deployed/ready; use one bounded end-to-end run covering the accepted path plus required negative authorization cases. Retest only affected claims if a later revision changes the behavior. **Do not batch or postpone** security checks, exact-head CI, independent validation expressly required **before merge**, irreversible external mutations, or an owner-reserved approval. The §3A handoff gate and §3B Finish-first `AXIS_DONE` remain unchanged.
+
+Close B only when **every required scoped checklist item** has real, reproducible evidence; the tested Production version and applicable owner authorization are identified; required external/browser/file outputs and negative controls pass; and known blocking failures are resolved. A blocked Production tool/credential does not count as PASS. B's issue title/body should identify a **single product release/acceptance journey**, not a rolling repository-wide all-products QA bucket.
+
+**Compact implementation closure record:**
+
+```text
+IMPLEMENTATION_ISSUE=#A
+PR=#NNNN
+TESTED_HEAD_SHA=<exact>
+MERGE_SHA=<exact>
+IMPLEMENTATION_ACCEPTANCE=PASS
+REQUIRED_PREMERGE_GATES=PASS|NOT_REQUIRED_WITH_REASON
+PRODUCT_LIVE_E2E=PENDING|PASS|NOT_APPLICABLE
+CONSOLIDATED_VERIFICATION_ISSUE=#B
+ISSUE_CLOSE_REASON=IMPLEMENTATION_SCOPE_COMPLETE
+```
+
+**Compact B checklist record:**
+
+```text
+SOURCE_ISSUE=#A
+PR=#NNNN
+ACCEPTANCE_CLAIM=<one concrete user-visible contract>
+ENVIRONMENT=PRODUCTION_AUTHENTICATED_E2E
+STATUS=PENDING|BLOCKED|FAILED|PASS|NOT_REQUIRED
+EVIDENCE=<immutable link or blocker>
+```
+
 ## 4. Mandatory design-gate overlay for visual redesign
 
 When the work is a new visual system, owner-rejected redesign or broad multi-route visual reset, use:
