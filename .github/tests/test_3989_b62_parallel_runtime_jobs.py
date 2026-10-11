@@ -42,7 +42,7 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn('test "$PLAN_RESULT" = success', self.aggregate)
 
     def test_both_parallel_jobs_depend_on_same_fail_closed_plan(self):
-        condition = "if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' }}"
+        condition = "if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'b14_tests_only' }}"
         for block in [self.host, self.worker]:
             self.assertIn("needs: registry-ci-plan", block)
             self.assertIn(condition, block)
@@ -50,6 +50,20 @@ class ParallelB62JobsContract(unittest.TestCase):
             self.assertIn("timeout-minutes: 12", block)
         self.assertNotIn("needs: b62-full-suite", self.worker)
         self.assertNotIn("needs: b62-worker-suite", self.host)
+
+    def test_b14_unit_tests_only_skip_unchanged_b62_jobs_but_keep_required_status(self):
+        # Source/lock changes cannot enter b14_tests_only; only exact B14 unit
+        # test modules. B14 pilot still runs and the independent B14 workflow
+        # covers all tests, while required b62-test reports success/failure.
+        self.assertIn("scope != 'b14_tests_only'", self.host)
+        self.assertIn("scope != 'b14_tests_only'", self.worker)
+        pilot = job("b14-multimodal-test", self.source)
+        self.assertNotIn("b14_tests_only", pilot)
+        self.assertIn('elif [ "$SCOPE" = b14_tests_only ]; then', self.aggregate)
+        self.assertIn("B62_CI_MODE=B14_TESTS_ONLY", self.aggregate)
+        self.assertIn('test "$MM_RESULT" = success', self.aggregate)
+        for name in ("UI_RESULT", "FULL_RESULT", "WORKER_RESULT", "QUICK_RESULT"):
+            self.assertIn('test "$' + name + '" = skipped', self.aggregate)
 
     def test_host_keeps_full_python_tests_and_core_safety(self):
         runner = (WORKFLOW.parents[1] / "scripts" / "b62_host_pytest_overlap_4070.sh").read_text(encoding="utf-8")
