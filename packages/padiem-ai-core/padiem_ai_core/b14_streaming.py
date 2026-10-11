@@ -353,7 +353,7 @@ class B14StreamingClient:
             pool=min(self._config.timeout_seconds, 10.0),
         )
 
-        total_bytes = 0
+        # Bound each SSE frame, not the cumulative healthy provider output.
         buffer = b""
         saw_done = False
         last_route = B14RouteMetadata()
@@ -391,26 +391,32 @@ class B14StreamingClient:
                                 chunk = await anext(incoming)
                         except StopAsyncIteration:
                             break
-                        total_bytes += len(chunk)
-                        if total_bytes > self._config.max_response_bytes:
-                            raise B14ExecutionError(
-                                "upstream_response_too_large",
-                                "Business 14 response exceeded the configured safety limit.",
-                                upstream_status_code=status_code,
+                        # A transport chunk can contain many short, valid
+                        # frames. Slice it so parser memory remains bounded.
+                        frame_cap = self._config.max_response_bytes
+                        for start in range(0, len(chunk), frame_cap):
+                            frames, buffer = _pop_sse_frames(
+                                buffer + chunk[start:start + frame_cap]
                             )
-                        buffer += chunk
-                        frames, buffer = _pop_sse_frames(buffer)
-                        for raw_frame in frames:
-                            decoded = _decode_sse_frame(raw_frame)
-                            if decoded is None:
-                                continue
-                            event = _parse_data_frame(decoded)
-                            if event.done:
-                                saw_done = True
-                                yield B14StreamEvent(route=last_route, done=True)
-                                return
-                            last_route = event.route
-                            yield event
+                            if len(buffer) > frame_cap or any(
+                                len(frame) > frame_cap for frame in frames
+                            ):
+                                raise B14ExecutionError(
+                                    "upstream_response_too_large",
+                                    "Business 14 stream frame exceeds parser safety limit.",
+                                    upstream_status_code=status_code,
+                                )
+                            for raw_frame in frames:
+                                decoded = _decode_sse_frame(raw_frame)
+                                if decoded is None:
+                                    continue
+                                event = _parse_data_frame(decoded)
+                                if event.done:
+                                    saw_done = True
+                                    yield B14StreamEvent(route=last_route, done=True)
+                                    return
+                                last_route = event.route
+                                yield event
 
                     if buffer.strip():
                         decoded = _decode_sse_frame(buffer)
