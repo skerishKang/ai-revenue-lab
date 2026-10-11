@@ -12,7 +12,10 @@ This module is that place. It is a boundary, not an authority:
 WHAT THIS FILE IS
   One fail-closed builder that assembles the canonical uploader from the
   already-composed Drive WRITE port plus the host's trusted binding, scope,
-  artifact-material, folder-proof and approval ports.
+  artifact-material, folder-proof and approval ports. When the host supplies
+  only the canonical P01 evidence source, the builder wraps it in the one
+  canonical ``AuthorizedDriveWriteApprovalPort`` — so the approval seam is now
+  completable with real components instead of a test double.
 
 WHAT IT IS NOT
   Not a grant, not an approval schema, not a Drive transport and not a second
@@ -31,6 +34,7 @@ refuses to construct anything from a binding that fails it.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
@@ -41,6 +45,9 @@ from kagent.google_drive_artifact_upload import (
 )
 from kagent.google_drive_scope import DriveScopeProjection
 from kagent.google_drive_upload_composition import GoogleDriveUploadComposition
+from kagent.google_drive_write_approval import (
+    AuthorizedDriveWriteApprovalPort, InMemoryDriveWriteApprovalConsumption,
+)
 
 #: Static contract markers for this boundary.
 HOST_INJECTION_BOUNDARY_IMPLEMENTED = True
@@ -49,6 +56,7 @@ NEW_DRIVE_AUTHORITY = False
 NEW_APPROVAL_AUTHORITY = False
 SECOND_UPLOAD_ADAPTER = False
 READ_SCOPE_IS_NOT_WRITE = True
+CANONICAL_APPROVAL_PORT_BUILDER = True
 
 #: The host ports the canonical upload adapter requires, and the exact method
 #: each one must expose. Checked structurally so a look-alike cannot slip in.
@@ -127,6 +135,24 @@ def drive_write_grant_present(
     return _carries_drive_write_authority(binding) and binding.usable_at(now)
 
 
+def build_canonical_drive_write_approval_port(
+    *,
+    evidence_port: Any = None,
+    consumption: InMemoryDriveWriteApprovalConsumption | None = None,
+    clock: Callable[[], datetime] | None = None,
+) -> AuthorizedDriveWriteApprovalPort:
+    """The one canonical Drive WRITE approval port a host may inject.
+
+    Reuses the existing canonical P01 approval machinery
+    (``ApprovalPause`` / ``VerifiedApprovalDecision`` / ``resolve_approval_pause``)
+    through ``AuthorizedDriveWriteApprovalPort``. With no trusted evidence
+    source wired it refuses every request, so it is safe to construct.
+    """
+    return AuthorizedDriveWriteApprovalPort(
+        evidence_port=evidence_port, consumption=consumption, clock=clock,
+    )
+
+
 def build_claw_drive_upload_host_state(
     *,
     binding: ConnectorBindingProjection | None = None,
@@ -134,6 +160,8 @@ def build_claw_drive_upload_host_state(
     artifacts: Any = None,
     folders: Any = None,
     approval: Any = None,
+    approval_evidence: Any = None,
+    approval_clock: Callable[[], datetime] | None = None,
     composition: GoogleDriveUploadComposition | None = None,
 ) -> ClawDriveUploadHostState:
     """Assemble the canonical uploader, or explain exactly what is missing.
@@ -141,6 +169,12 @@ def build_claw_drive_upload_host_state(
     Every input must come from the trusted host. Nothing here reads an
     environment variable, a request body, a model answer or a browser cookie,
     and nothing mints a grant, an approval or a credential.
+
+    ``approval`` may be the canonical ``AuthorizedDriveWriteApprovalPort``
+    directly, or omitted in favour of ``approval_evidence`` — the trusted
+    canonical P01 evidence source the boundary then wraps in that same
+    canonical port. There is no third option: this module cannot mint an
+    approval, and a READ approval can never satisfy the port.
     """
     reasons: list[str] = []
 
@@ -159,6 +193,11 @@ def build_claw_drive_upload_host_state(
         and scope.binding_ref != binding.binding_ref
     ):
         reasons.append("the Drive scope does not belong to the trusted binding")
+
+    if approval is None and approval_evidence is not None:
+        approval = build_canonical_drive_write_approval_port(
+            evidence_port=approval_evidence, clock=approval_clock,
+        )
 
     supplied = {"artifacts": artifacts, "folders": folders, "approval": approval}
     for name, method in _REQUIRED_HOST_PORTS:
@@ -188,11 +227,13 @@ def build_claw_drive_artifact_uploader(
 
 
 __all__ = [
+    "CANONICAL_APPROVAL_PORT_BUILDER",
     "ClawDriveUploadHostError",
     "ClawDriveUploadHostState",
     "HOST_INJECTION_BOUNDARY_IMPLEMENTED",
     "PRODUCTION_DRIVE_UPLOADER_INJECTED",
     "READ_SCOPE_IS_NOT_WRITE",
+    "build_canonical_drive_write_approval_port",
     "build_claw_drive_artifact_uploader",
     "build_claw_drive_upload_host_state",
     "drive_write_grant_present",
