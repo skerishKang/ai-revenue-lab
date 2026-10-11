@@ -233,3 +233,103 @@
     margin-right: auto !important;
   }
 }
+
+/* #442x: distinguish Chat from Claw without altering their canonical routes.
+ * Pseudo-labels preserve the existing button text and keyboard focus order. */
+.sidebar > .new-chat[data-mode-hint]::after,
+#clawNavButton[data-mode-hint]::after {
+  content: attr(data-mode-hint);
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0;
+  opacity: .7;
+  white-space: nowrap;
+}
+.sidebar > .new-chat[data-mode-hint]::after {
+  padding-right: 3px;
+}
+@media (max-width: 470px) {
+  .sidebar > .new-chat[data-mode-hint]::after {
+    display: none;
+  }
+}
+/* The signed-in summary is a keyboard-accessible disclosure. Existing login
+ * and settings controls stay visible and keep all their original authority. */
+.sidebar-account {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  column-gap: 8px;
+}
+.sidebar-account .account-profile-toggle {
+  min-width: 0;
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  padding: 4px;
+  background: transparent;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  text-align: left;
+}
+.sidebar-account .account-profile-toggle:hover,
+.sidebar-account .account-profile-toggle[aria-expanded="true"] {
+  border-color: var(--line);
+  background: var(--accent-soft);
+}
+.sidebar-account .account-profile-toggle:focus-visible,
+.sidebar-account .account-profile-settings:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.sidebar-account .account-profile-panel {
+  grid-column: 1 / -1;
+  min-width: 0;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+}
+.sidebar-account .account-profile-settings {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 8px 10px;
+  background: var(--accent-soft);
+  color: var(--text);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Keep the original account DOM contract: capability projection may insert an
+ * avatar before accountName, so both remain direct accountContainer children.
+ * An accessible overlay covers the avatar/name, not the login/logout action. */
+.sidebar-account > .account-profile-toggle {
+  grid-column: 1 / 3;
+  grid-row: 1;
+  z-index: 1;
+}
+.sidebar-account > .account-avatar {
+  grid-column: 1;
+  grid-row: 1;
+  margin-left: 4px;
+  pointer-events: none;
+  z-index: 2;
+}
+.sidebar-account > .account-name {
+  grid-column: 2;
+  grid-row: 1;
+  pointer-events: none;
+  z-index: 2;
+}
+.sidebar-account > .login-button {
+  grid-column: 3;
+  grid-row: 1;
+  z-index: 3;
+}

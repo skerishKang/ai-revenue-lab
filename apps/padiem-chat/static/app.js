@@ -58,6 +58,38 @@
   const accountName = document.getElementById("accountName");
   const accountAvatar = document.getElementById("accountAvatar");
   const accountContainer = document.querySelector(".sidebar-account");
+  // Presentation-only account summary. The canonical login/logout button stays
+  // visible and retains its existing auth guards and keyboard contract.
+  const profileToggle = document.createElement("button");
+  profileToggle.type = "button";
+  profileToggle.id = "accountProfileButton";
+  profileToggle.className = "account-profile-toggle";
+  profileToggle.setAttribute("aria-controls", "accountProfilePanel");
+  profileToggle.setAttribute("aria-expanded", "false");
+  profileToggle.dataset.localeAriaLabel = "account-profile-toggle";
+  profileToggle.setAttribute("aria-label", uiT("account-profile-toggle"));
+  // Some auth fixtures mount account controls without the original avatar as a
+  // direct child; prepend never assumes a particular descendant relationship.
+  accountContainer?.prepend(profileToggle);
+  // Keep #accountAvatar and #accountName as direct accountContainer children:
+  // product-capabilities.js rehomes fallback avatars before the account name.
+  // A separate accessible button overlays those text/visual nodes instead.
+  const profilePanel = document.createElement("div");
+  profilePanel.id = "accountProfilePanel";
+  profilePanel.className = "account-profile-panel";
+  profilePanel.hidden = true;
+  const profileSettingsAction = document.createElement("button");
+  profileSettingsAction.type = "button";
+  profileSettingsAction.className = "account-profile-settings";
+  profileSettingsAction.dataset.localeKey = "account-profile-settings";
+  profileSettingsAction.textContent = uiT("account-profile-settings");
+  profilePanel.append(profileSettingsAction);
+  accountContainer?.append(profilePanel);
+  function closeProfilePanel(restoreFocus = false) {
+    profilePanel.hidden = true;
+    profileToggle.setAttribute("aria-expanded", "false");
+    if (restoreFocus && !accountContainer?.hidden) profileToggle.focus();
+  }
   const historySection = document.getElementById("historySection");
   const historyList = document.getElementById("historyList");
   const historyEmpty = document.getElementById("historyEmpty");
@@ -186,6 +218,8 @@
     const tasksNav = document.getElementById("tasksNavButton");
     const alertsNav = document.getElementById("alertsNavButton");
     const inboxKind = workspace && workspace.dataset.view === "inbox" ? workspace.dataset.inboxKind : "";
+    if (chatNav) chatNav.dataset.modeHint = uiT("nav-chat-hint");
+    if (clawNav) clawNav.dataset.modeHint = uiT("nav-claw-hint");
     if (chatNav) chatNav.setAttribute("aria-current", state === "claw" ? "false" : "page");
     if (clawNav) clawNav.setAttribute("aria-current", state === "claw" && !inboxKind ? "page" : "false");
     if (tasksNav) tasksNav.setAttribute("aria-current", state === "claw" && inboxKind === "tasks" ? "page" : "false");
@@ -943,6 +977,7 @@
       accountContainer.dataset.accountState = sessionState;
       accountContainer.hidden = sessionState === "unavailable";
     }
+    closeProfilePanel();
     if (accountAvatar) {
       const displayName = sessionState === "signed_in" && typeof authState.user?.name === "string"
         ? authState.user.name.trim() : "";
@@ -1627,6 +1662,7 @@
     else sidebarCollapseButton?.focus();
   }
   function closeSidebar() {
+    closeProfilePanel();
     shell.classList.remove("sidebar-open");
     mobileMenu.setAttribute("aria-expanded", "false");
     sidebarScrim.hidden = true;
@@ -1749,7 +1785,21 @@
     closeSidebar();
   }));
   newChatButton.addEventListener("click", () => resetConversation(true));
-  settingsButton.addEventListener("click", openSettings);
+  profileToggle.addEventListener("click", () => {
+    if (accountContainer?.hidden) return;
+    const opening = profilePanel.hidden;
+    profilePanel.hidden = !opening;
+    profileToggle.setAttribute("aria-expanded", opening ? "true" : "false");
+    if (opening) profileSettingsAction.focus();
+  });
+  profileSettingsAction.addEventListener("click", () => {
+    closeProfilePanel();
+    settingsButton.click(); // keep the existing settings-dialog authority
+  });
+  document.addEventListener("pointerdown", (event) => {
+    if (!profilePanel.hidden && !accountContainer?.contains(event.target)) closeProfilePanel();
+  });
+  settingsButton.addEventListener("click", () => { closeProfilePanel(); openSettings(); });
   settingsDialog.addEventListener("close", () => settingsButton.setAttribute("aria-expanded", "false"));
   settingsDialog.addEventListener("cancel", (event) => {
     event.preventDefault();
@@ -1762,10 +1812,15 @@
   mobileClose.addEventListener("click", closeSidebar);
   sidebarScrim.addEventListener("click", closeSidebar);
   document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !profilePanel.hidden) {
+      closeProfilePanel(true);
+      return;
+    }
     if (event.key === "Escape" && shell.classList.contains("sidebar-open")) closeSidebar();
   });
   window.addEventListener("padiem:localechange", () => {
     applyAuthState(authState);
+    setNavActive();
     if (projectsReady) renderProjects();
     renderProjectState();
     if (!selectedAttachment) setNote(idleNote());
