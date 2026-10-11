@@ -274,8 +274,11 @@ check(!easy.includes("fetch(") && !easy.includes("XMLHttpRequest") &&
       !intake.includes("fetch(") && !intake.includes("XMLHttpRequest"),
   "EASY_MODE_CONTRACT: no network/model call in Easy/file intake mode");
 check(!easy.includes("아직 자동 해석 모델은 연결 전") &&
-      easy.includes("CGI 기본 견적서 양식과 회사 정보가 자동으로 적용됩니다"),
-  "EASY_MODE_CONTRACT: free-form runs the live assigned-skill runtime (placeholder removed)");
+      easy.includes("ready && ready.ready") &&
+      easy.includes("승인된 견적서와 회사 정보를 사용해 AI로 작성합니다.") &&
+      easy.includes("startGuidedIfReady(text)") &&
+      easy.includes("return bridge.interpret(text)"),
+  "EASY_MODE_CONTRACT: approved CGI routes to the model; missing CGI starts an honest guided draft");
 check(easy.includes("자동 분석 서버는 아직 활성화 전") &&
       easy.includes("이 파일은 외부로 전송되지 않습니다."),
   "EASY_MODE_CONTRACT: selected file is truthful about non-live analysis");

@@ -67,15 +67,20 @@
       '<label class="shell-picker-label">견적서 양식<select-host id="shellSkillSelect"></select-host></label>' +
       '<p class="shell-runtime-status" id="shellRuntimeStatus" role="status" aria-live="polite"></p>' +
       '<label class="shell-picker-label" id="shellModelControl" hidden><select-host id="shellModelSelect"></select-host></label>';
-    // A reusable template starts from an existing file, not from quote line-item
-    // editing. Reuse the registered Saved Quote Skill file intake/wizard.
+    // A reusable template is created in a dedicated choice dialog, not
+    // by switching to the line-item editor.
     var manual = makeButton(
       "shellManualQuote",
       "▤",
       "새 양식 만들기",
-      "기존 견적서 파일을 선택해 새 양식을 검토합니다"
+      "파일에서 등록하거나 빈 양식을 직접 만듭니다"
     );
     manual.addEventListener("click", function () {
+      // On narrow screens the rail is a modal drawer. Dismiss it before
+      // opening the independent form dialog so it cannot cover the composer.
+      if (window.matchMedia("(max-width: 900px)").matches) {
+        document.body.classList.add("rail-collapsed");
+      }
       document.dispatchEvent(new CustomEvent("b66:open-skill-register"));
     });
     newSection.appendChild(manual);
