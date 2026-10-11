@@ -262,8 +262,8 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
     if html_metrics["scrollWidth"] > html_metrics["innerWidth"] + 1:
         raise AssertionError(f"{name} horizontal overflow: {html_metrics}")
 
-    # Owner-facing parity contract (#2594): the manual Claw surface must reuse
-    # the same outer frame/composer geometry and initial input copy as Chat Home.
+    # Claw general-to-manual entry and input-copy parity survive even though
+    # the owner-approved Claw workbench no longer shares Chat Home geometry.
     await _open_claw(page, width=width)
     claw_conversation = await _box(page, ".conversation")
     claw_composer = await _box(page, ".composer-wrap")
@@ -280,25 +280,47 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
         }"""
     )
 
-    _assert_close(home_conversation["x"], claw_conversation["x"], name=f"{name} home/claw conversation left", tolerance=2)
-    _assert_close(_right(home_conversation), _right(claw_conversation), name=f"{name} home/claw conversation right", tolerance=2)
-    _assert_close(home_composer["x"], claw_composer["x"], name=f"{name} home/claw composer left", tolerance=2)
-    _assert_close(_right(home_composer), _right(claw_composer), name=f"{name} home/claw composer right", tolerance=2)
-    _assert_close(home_conversation["y"], claw_conversation["y"], name=f"{name} home/claw top breathing room", tolerance=2)
+    # 2026-10-12 Claw Focus: the owner explicitly chose a clear B66-like
+    # WORKBENCH rather than Chat Home's portrait-reserved cinematic lane.
+    # Preserve the centered, bounded geometry and browser usability; do not
+    # require the two intentionally different surfaces to share x/width.
+    main_panel = await _box(page, ".main-panel")
+    for surface, box in (("conversation", claw_conversation), ("composer", claw_composer)):
+        if box["x"] < main_panel["x"] - 1 or _right(box) > _right(main_panel) + 1:
+            raise AssertionError(f"{name} Claw {surface} exceeds main panel: {box} / {main_panel}")
+        if box["width"] < min(300, width - 30):
+            raise AssertionError(f"{name} Claw {surface} is cramped: {box}")
     _assert_close(
-        _bottom_inset(home_composer, height),
-        _bottom_inset(claw_composer, height),
-        name=f"{name} home/claw composer bottom inset",
+        claw_conversation["x"] + claw_conversation["width"] / 2,
+        claw_composer["x"] + claw_composer["width"] / 2,
+        name=f"{name} Claw centered conversation/composer",
         tolerance=2,
     )
-
+    if claw_composer["width"] > claw_conversation["width"] + 1:
+        raise AssertionError(f"{name} Claw composer wider than conversation")
+    if claw_conversation["y"] < 62 or claw_conversation["y"] >= height:
+        raise AssertionError(f"{name} Claw conversation overlaps topbar/viewport")
+    if not 0 <= _bottom_inset(claw_composer, height) <= 33:
+        raise AssertionError(f"{name} Claw composer not docked to bottom")
     for side in ("top", "right", "bottom", "left"):
-        _assert_close(
-            float(home_composer_padding[side]),
-            float(claw_composer_padding[side]),
-            name=f"{name} home/claw composer padding {side}",
-            tolerance=0.5,
-        )
+        if not 0 <= float(claw_composer_padding[side]) <= 40:
+            raise AssertionError(f"{name} Claw composer padding {side} out of bounds")
+    if width >= 1024 and claw_conversation["width"] < home_conversation["width"] - 2:
+        raise AssertionError(f"{name} Claw remains narrower than cinematic Home")
+    # Safety: portrait art is decorative in Chat Home, not in a Claw workbench.
+    portrait = await page.locator(".main-panel").evaluate(
+        "el => getComputedStyle(el, '::before').content"
+    )
+    if portrait != "none":
+        raise AssertionError(f"{name} Claw portrait still active: {portrait}")
+    for art in (".glass-shell-portrait", ".glass-shell-field"):
+        if await page.locator(art).count() and await page.locator(art).is_visible():
+            raise AssertionError(f"{name} Claw injected portrait still visible: {art}")
+    metrics = await page.evaluate(
+        "() => ({scrollWidth: document.documentElement.scrollWidth, width: innerWidth})"
+    )
+    if metrics["scrollWidth"] > metrics["width"] + 1:
+        raise AssertionError(f"{name} Claw horizontal overflow: {metrics}")
 
     if claw_placeholder != home_placeholder:
         raise AssertionError(
@@ -329,10 +351,10 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
         "home_composer": home_composer,
         "claw_conversation": claw_conversation,
         "claw_composer": claw_composer,
-        "home_claw_outer_parity": True,
-        "home_claw_top_breathing_room_parity": True,
-        "home_claw_bottom_inset_parity": True,
-        "home_claw_composer_padding_parity": True,
+        "claw_centered_workbench": True,
+        "claw_composer_bounded": True,
+        "claw_portrait_hidden": True,
+        "claw_viewport_safe": True,
         "home_claw_placeholder_parity": True,
         "claw_general_default_view": True,
         "claw_manual_hidden_by_default": True,

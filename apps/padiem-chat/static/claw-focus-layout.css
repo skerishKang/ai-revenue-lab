@@ -1,0 +1,329 @@
+/* Claw Focus UI (2026-10): a workbench rather than a cinematic landing page.
+ * Strict Claw data-state scoping preserves Chat, B66 and theme choices.
+ * No executable action, model selection, approval or run state is changed.
+ */
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] {
+  --claw-focus-accent: #315d7b;
+  --claw-focus-border: #d6e2ed;
+  --claw-focus-muted: #596c7b;
+  --claw-focus-surface: #f4f8fb;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .main-panel {
+  background: linear-gradient(180deg, #e6f0f7 0, #f1f6fa 340px, #f4f7fa 100%);
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .main-panel::before {
+  /* Portrait art belongs to the cinematic chat landing view, not the workbench. */
+  content: none;
+  display: none;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation,
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation {
+  width: min(1000px, calc(100% - 48px));
+  margin: 14px auto 0;
+  padding: 24px 28px calc(var(--claw-composer-clearance, 174px) + 42px);
+  border: 1px solid var(--claw-focus-border);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .95);
+  box-shadow: 0 10px 34px rgba(32, 67, 96, .06);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  max-height: calc(100dvh - 92px);
+  scroll-padding-bottom: calc(var(--claw-composer-clearance, 174px) + 18px);
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .topbar {
+  background: rgba(234, 243, 249, .95);
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #workspaceNav .side-item:disabled {
+  /* Hide only unavailable navigation in Claw; never conceal enabled features. */
+  display: none;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-hub {
+  width: 100%;
+  margin: 0 auto 18px;
+  padding: 16px 18px;
+  border: 1px solid var(--claw-focus-border);
+  border-radius: 14px;
+  background: var(--claw-focus-surface);
+  box-shadow: none;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-hub-heading h2 {
+  margin: 1px 0 6px;
+  color: #1d3549;
+  font-size: clamp(20px, 2.5vw, 25px);
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-hub-heading > p:last-child {
+  margin: 0 0 12px;
+  color: var(--claw-focus-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-hub-grid {
+  gap: 9px;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option,
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option-primary {
+  min-height: 105px;
+  gap: 5px;
+  padding: 12px 13px;
+  border: 1px solid var(--claw-focus-border);
+  border-radius: 11px;
+  background: #fff;
+  box-shadow: none;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:hover,
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:focus-visible {
+  border-color: #5b8dae;
+  background: #edf5fb;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option strong {
+  font-size: 14px;
+  color: #213f56;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option > span {
+  font-size: 12px;
+  line-height: 1.4;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option small {
+  margin-top: auto;
+  font-size: 11px;
+  color: var(--claw-focus-accent);
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-tag {
+  background: #eaf2f8;
+  font-size: 9px;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation:has(#messageList:not([hidden]) .message) #clawTaskHub,
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation:has(#clawRequestEcho:not([hidden])) #clawTaskHub {
+  /* After work begins, results and conversation take priority over examples. */
+  display: none;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .composer-wrap,
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .composer-wrap {
+  left: calc(264px + (100vw - 264px) / 2);
+  transform: translateX(-50%);
+  width: min(920px, calc(100vw - 264px - 64px));
+  padding: 8px 0 14px;
+  background: linear-gradient(to bottom, transparent, rgba(240, 246, 250, .98) 28%, #f0f6fa 100%) !important;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm,
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 3px 12px;
+  padding: 10px 13px;
+  border: 1px solid var(--claw-focus-border);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 8px 28px rgba(35, 68, 92, .12);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > .attachment-tray {
+  flex: 1 1 100%;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > .claw-model-choice {
+  flex: 1 1 230px;
+  min-width: 0;
+  max-width: 440px;
+  padding: 0;
+  gap: 2px;
+  font-size: 11px;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawVerifiedModelSelect {
+  min-height: 36px;
+  border-color: var(--claw-focus-border);
+  background: #f3f7fa;
+  color: #24394b;
+  border-radius: 8px;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawVerifiedModelHint {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: 10px;
+  color: var(--claw-focus-muted);
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > .claw-model-advanced {
+  flex: 0 0 auto;
+  align-self: center;
+  padding: 0;
+  font-size: 12px;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-model-advanced > summary {
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--claw-focus-accent);
+  padding: 0 10px;
+  border: 1px solid var(--claw-focus-border);
+  border-radius: 8px;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-model-advanced[open] {
+  flex: 1 1 100%;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-model-advanced[open] > summary {
+  width: fit-content;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-model-advanced > .claw-model-choice {
+  margin-top: 8px;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > #ownerModelPreviewOpen {
+  flex: 0 0 auto;
+  min-height: 36px;
+  margin: 0;
+  padding: 0 10px;
+  border: 1px solid var(--claw-focus-border);
+  border-radius: 8px;
+  background: #f3f7fa;
+  color: var(--claw-focus-accent);
+  font-size: 11px;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > #messageInput {
+  flex: 1 1 100%;
+  min-width: 0;
+  min-height: 42px;
+  max-height: 150px;
+  margin: 2px 0 0;
+  padding: 8px 5px 2px;
+  font-size: 16px;
+  color: #21394f;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > .composer-actions {
+  flex: 1 1 100%;
+  min-height: 39px;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm .send-button {
+  background: var(--claw-focus-accent);
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm :is(select, input, button, summary):focus-visible,
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:focus-visible {
+  outline: 3px solid #72a3c5;
+  outline-offset: 2px;
+}
+@media (max-width: 1100px) {
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation,
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation {
+    width: calc(100% - 32px);
+    padding: 18px 18px calc(var(--claw-composer-clearance, 174px) + 26px);
+  }
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .composer-wrap,
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .composer-wrap {
+    width: calc(100vw - 264px - 32px);
+  }
+}
+@media (max-width: 920px) {
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-hub-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option {
+    min-height: 112px;
+  }
+}
+@media (max-width: 760px) {
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-hub-grid {
+    grid-template-columns: 1fr;
+  }
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option {
+    min-height: 0;
+    padding: 10px 12px;
+  }
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option > span {
+    display: none;
+  }
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option small {
+    margin-top: 0;
+  }
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .composer-wrap,
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .composer-wrap {
+    left: 50%;
+    width: calc(100vw - 24px);
+  }
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation,
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation {
+    width: calc(100% - 20px);
+    padding: 14px 12px calc(var(--claw-composer-clearance, 132px) + 20px);
+    border-radius: 14px;
+  }
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-hub {
+    padding: 13px;
+  }
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > .claw-model-choice {
+    max-width: none;
+  }
+}
+@media (max-width: 600px) {
+  /* Preserve the existing mobile collapsed/expanded controls and touch heights. */
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawMobileComposerToggle {
+    min-height: 44px;
+  }
+  html body html[data-theme="padiem-glass"] .app-shell[data-state="claw"][data-claw-composer-collapsed="true"] .composer-wrap {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+/* The Glass portrait has legacy desktop !important width/left constraints.
+ * They must be overridden in Claw only; hiding the portrait is insufficient.
+ * The sidebar's actual rail token is 252px, not the old 264px constant.
+ */
+@media (min-width: 921px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .conversation {
+    width: min(1000px, calc(100% - 48px)) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .composer-wrap {
+    left: calc(var(--workspace-rail, 252px) + (100vw - var(--workspace-rail, 252px)) / 2) !important;
+    transform: translateX(-50%) !important;
+    width: min(920px, calc(100vw - var(--workspace-rail, 252px) - 64px)) !important;
+    padding-top: 8px !important;
+    padding-bottom: 12px !important;
+  }
+}
+/* The manual-document shortcut is a secondary affordance; the conversation
+ * composer remains the clear primary entry point, like B66's bottom input.
+ */
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawManualEntryBar {
+  justify-content: flex-end;
+  padding: 0 0 5px;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawManualEntryButton {
+  min-height: 32px;
+  padding: 4px 10px;
+  font-size: 11px;
+  border-radius: 8px;
+}
+@media (min-width: 761px) {
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawVerifiedModelHint {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+/* The cinematic theme also injects separate live shell/fragment DOM nodes.
+ * Suppress every visual art layer on Claw, not just main-panel::before.
+ */
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] :is(.glass-shell-portrait, .glass-shell-field) {
+  display: none !important;
+}
+/* These are duplicated, non-executable prompts in the general workflow. The
+ * real Excel details become visible immediately when the user picks Excel.
+ */
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation #clawWebOffice:not(:has(#clawWebOfficeDetails[open])),
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-disabled-controls {
+  display: none;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > .composer-actions {
+  justify-content: flex-end;
+}
+/* Medium touch/tablet viewport: the original Glass theme keeps a desktop
+ * 252px rail offset until 920px, while the actual navigation is an overlay.
+ * Center Claw's independent composer with its workbench, not that stale rail.
+ */
+@media (min-width: 761px) and (max-width: 920px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .composer-wrap {
+    left: 50% !important;
+    width: calc(100vw - 32px) !important;
+    transform: translateX(-50%) !important;
+  }
+}
