@@ -43,6 +43,6 @@ def test_chat_ui_has_no_textarea_maxlength_but_claw_retains_its_guard():
     app_js = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
     composer = html.split('id="messageInput"', 1)[1].split("</textarea>", 1)[0]
     assert "maxlength=" not in composer
-    assert 'if (isClaw) input.setAttribute("maxlength", "8000");' in app_js
-    assert 'else input.removeAttribute("maxlength");' in app_js
+    assert 'input.removeAttribute("maxlength");' in app_js
+    assert 'input.setAttribute("maxlength", "8000");' not in app_js
     assert 'input.setAttribute("maxlength", "4000");' in app_js

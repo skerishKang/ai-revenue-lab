@@ -153,7 +153,22 @@ class ClawTaskIntent:
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "task_id", _safe_id(self.task_id, "task_id"))
-        object.__setattr__(self, "task", _bounded_text(self.task, "task", limit=12_000))
+        # Only the canonical local, model-only Claw conversation lane can
+        # carry provider-native prompts beyond the old 12k CLI task contract.
+        # Cloud tasks and all other executable intents retain their 12k guard.
+        model_only_text = (
+            self.source_surface == "padiem_claw_general_model_only"
+            and self.repository_ref == "padiem-chat"
+            and self.execution_mode in (ExecutionMode.LOCAL, "local")
+        )
+        if model_only_text:
+            if not isinstance(self.task, str) or not self.task.strip():
+                raise ContractError("task is required")
+            if _CONTROL_RE.search(self.task.strip()):
+                raise ContractError("task contains control characters")
+            object.__setattr__(self, "task", self.task.strip())
+        else:
+            object.__setattr__(self, "task", _bounded_text(self.task, "task", limit=12_000))
         object.__setattr__(
             self,
             "repository_ref",

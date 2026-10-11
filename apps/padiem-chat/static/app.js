@@ -1955,9 +1955,9 @@
       input.placeholder = localeOr("input", "Ask anything");
       input.removeAttribute("aria-describedby");
       input.removeAttribute("aria-invalid");
-      // General Claw retains its separate task-ingress guard until Claw is audited.
-      if (isClaw) input.setAttribute("maxlength", "8000");
-      else input.removeAttribute("maxlength");
+      // General Claw and Chat accept provider-native prompts. The distinct
+      // manual intake still carries its own workflow-specific 4k field guard.
+      input.removeAttribute("maxlength");
     }
   }
 
