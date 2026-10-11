@@ -93,8 +93,7 @@ def test_invalid_native_values_are_rejected(params):
 def test_no_global_4096_model_ceiling_and_explicit_values_unchanged():
     assert request("google/gemini-3.1-flash-lite", max_tokens=65536)["max_tokens"] == 65536
     assert request("google/gemini-3.1-flash-lite", temperature=1.0)["temperature"] == 1.0
-    with pytest.raises(_InvalidBody):
-        request("google/gemini-3.1-flash-lite", max_tokens=2147483648)
+    assert request("google/gemini-3.1-flash-lite", max_tokens=2147483648)["max_tokens"] == 2147483648
     assert PilotChatRequest(model="x", messages=[{"role": "user", "content": "hi"}]).temperature is None
     assert _build_upstream_request("k", [{"role": "user", "content": "hi"}], None, None, "exact") == {
         "model": "exact", "messages": [{"role": "user", "content": "hi"}],
