@@ -69,7 +69,9 @@ from app.orchestration_service import (
 )
 from app.service import (
     MAX_REQUEST_BODY_BYTES,
+    MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES,
     EngineService,
+    EXECUTE_PATH,
     HEALTH_PATH,
     ServiceResponse,
 )
@@ -571,6 +573,8 @@ class Default(WorkerEntrypoint):
             max_body_bytes = (
                 MAX_MEMORY_REQUEST_BODY_BYTES
                 if path in {MEMORY_PATH, MEMORY_WRITE_PATH}
+                else MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES
+                if path == EXECUTE_PATH
                 else MAX_REQUEST_BODY_BYTES
             )
             try:

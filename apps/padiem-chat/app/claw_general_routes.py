@@ -74,8 +74,9 @@ MAX_CLAW_GENERAL_BODY_BYTES = 6_000_000
 MAX_CLAW_GENERAL_MESSAGE_CHARS: int | None = None
 MAX_CLAW_GENERAL_MESSAGES: int | None = None
 # Model capability is not constrained by this number: the canonical Engine
-# still enforces its 128 KiB serialized HTTP request memory-safety envelope.
-P01_ENGINE_REQUEST_ENVELOPE_BYTES = 128 * 1024
+# still enforces a finite 6MB serialized HTTP request memory-safety envelope.
+# Reserve transport overhead for agent/route metadata; never silently truncate.
+P01_ENGINE_REQUEST_ENVELOPE_BYTES = 5_500_000
 CLAW_LIVE_REQUEST_HEADER = "X-Padiem-Claw-Live"
 CLAW_LIVE_REQUEST_MARKER = "p01-events-v1"
 _CLAW_GENERAL_ROLES = frozenset({"user", "assistant"})
