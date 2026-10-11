@@ -164,3 +164,26 @@ async def test_engine_missing_schema_fails_before_tool_dispatch(sql):
     assert response.body["error"]["code"] == "agent_run_lease_unavailable"
     assert fx.handler_calls == 0
     assert fx.provider.calls == 0
+
+
+def test_engine_identity_composition_gate_default_off_and_explicit_on(sql):
+    from worker_identity import _agent_skill_service_for_env
+    from app.service import ServiceContractError
+    db, _ = sql
+    fx = Fixture()
+    common = dict(
+        runtime_factory=lambda app_id: fx.provider,
+        binding_resolver=lambda app_id: fx.binding if app_id == APP_ID else None,
+    )
+    ordinary = _agent_skill_service_for_env({}, **common)
+    assert ordinary._agent_run_ledger is None
+    selected = _agent_skill_service_for_env(
+        {"PADIEM_ENGINE_AGENT_DURABLE_ENABLED": "true",
+         "ENGINE_CONTINUATION": SQLiteD1(db)},
+        **common,
+    )
+    assert isinstance(selected._agent_run_ledger, D1AgentRunLedger)
+    with pytest.raises(ServiceContractError):
+        _agent_skill_service_for_env(
+            {"PADIEM_ENGINE_AGENT_DURABLE_ENABLED": "true"}, **common
+        )
