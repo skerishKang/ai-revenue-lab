@@ -149,10 +149,10 @@ def test_workflow_has_protected_manual_only_mutation_and_rollback():
     verify_step = workflow.split(
         "- name: Verify newly served immutable Worker", 1
     )[1].split("- name: Auto rollback", 1)[0]
-    assert "workers/workers/\${worker}/versions/\${active}" in read_step
+    assert "workers/workers/${worker}/versions/${active}" in read_step
     assert "HARK_PREMUTATION_VERSION_MODULES=PASS" in read_step
     assert "_version_module_manifest" in read_step
-    assert "workers/workers/\${WORKER}/versions/\${active}" in verify_step
+    assert "workers/workers/${WORKER}/versions/${active}" in verify_step
     assert "assert_exact_worker_code" in verify_step
     assert "?include=modules" not in read_step + verify_step
 
