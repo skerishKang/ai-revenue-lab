@@ -442,3 +442,37 @@ def test_same_account_secrets_store_binding_identity_must_be_preserved():
             mod.assert_preserved(before, settings(*base_bindings(), changed))
     with pytest.raises(mod.BindingStateError):
         mod.assert_preserved(before, settings(*base_bindings()))
+
+
+def test_hark_browser_binding_and_version_metadata_preserve_only_exact_same_identity():
+    before = _version(
+        *_engine_bindings(),
+        {"type": "browser", "name": "BROWSER"},
+        {"type": "version_metadata", "name": "CF_VERSION_METADATA"},
+        version_id="before",
+    )
+    unchanged = _version(
+        *_engine_bindings(),
+        {"type": "browser", "name": "BROWSER"},
+        {"type": "version_metadata", "name": "CF_VERSION_METADATA"},
+        version_id="after",
+    )
+    mod.assert_preserved(before, unchanged)
+    missing_browser = _version(
+        *_engine_bindings(),
+        {"type": "version_metadata", "name": "CF_VERSION_METADATA"},
+        version_id="after",
+    )
+    with pytest.raises(mod.BindingStateError, match="binding authority drift"):
+        mod.assert_preserved(before, missing_browser)
+    added_browser = _version(
+        *_engine_bindings(),
+        {"type": "browser", "name": "BROWSER"},
+        version_id="after",
+    )
+    with pytest.raises(mod.BindingStateError, match="binding authority drift"):
+        mod.assert_preserved(_version(*_engine_bindings(), version_id="before"), added_browser)
+    with pytest.raises(mod.BindingStateError, match="unexpected Browser"):
+        mod.canonical_state(_version(
+            *_engine_bindings(), {"type": "browser", "name": "FOREIGN"}, version_id="after",
+        ))
