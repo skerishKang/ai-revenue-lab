@@ -10,16 +10,22 @@ Agent runtime, Tool authority, approval state machine, or Provider router.
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
+from dataclasses import replace
+import asyncio
+import hashlib
 import json
 import secrets
 from typing import Any
 
 from padiem_ai_core.execution_context import ExecutionContext, IdempotencyConflictError
 from padiem_ai_core.orchestration import OrchestrationError, OrchestrationRequest, OrchestrationRunner
+from padiem_ai_core.logical_execution_identity import canonical_logical_execution_fingerprint
+from padiem_ai_core.agent_durable_lease import AgentDurableLeaseError
 from padiem_ai_core.skill_registry import SkillRegistryError
 from padiem_ai_core.skill_runtime_adapter import SkillRuntimeAdapterError
 
 from app.agent_skill_authority import EngineAgentSkillAuthorityError, EngineAgentSkillBinding
+from app.agent_durable_d1 import D1AgentRunLedger
 from app.agent_skill_continuation_service import AgentSkillContinuationCoordinator
 from app.agent_skill_projection import project_agent_skill_result
 from app.agent_skill_wire import (
@@ -50,6 +56,7 @@ class AgentSkillEngineService:
         idempotency_adapter: Any | None = None,
         approval_decision_verifier: Any | None = None,
         continuation_store: ContinuationStore | None = None,
+        agent_run_ledger: D1AgentRunLedger | None = None,
     ) -> None:
         if not callable(runtime_factory):
             raise ValueError("runtime_factory must be callable")
@@ -58,6 +65,9 @@ class AgentSkillEngineService:
         self._runtime_factory = runtime_factory
         self._binding_resolver = binding_resolver
         self._idempotency_adapter = idempotency_adapter
+        if agent_run_ledger is not None and not isinstance(agent_run_ledger, D1AgentRunLedger):
+            raise ValueError("trusted D1 Agent ledger required")
+        self._agent_run_ledger = agent_run_ledger
         self._continuation = AgentSkillContinuationCoordinator(
             runtime_factory=runtime_factory,
             binding_resolver=self._resolve_binding,
@@ -90,6 +100,77 @@ class AgentSkillEngineService:
                 status_code=503,
             )
         return binding
+
+
+    async def _run_trusted_agent(self, request: OrchestrationRequest):
+        """Opt-in D1 fencing for already-authenticated Agent/Skill execution.
+
+        The separate D1 provisioning gate must be activated explicitly.
+        """
+        ledger = self._agent_run_ledger
+        if ledger is None:
+            return await OrchestrationRunner(
+                runtime=self._runtime_factory(request.app_id),
+                idempotency=self._idempotency_adapter,
+            ).run(request)
+        if not request.subject_id or request.agent_plan is None:
+            raise AgentDurableLeaseError("trusted Agent subject and plan required")
+        scope = "scope_" + hashlib.sha256(
+            (request.app_id + ":" + request.subject_id).encode("utf-8")
+        ).hexdigest()
+        fingerprint = canonical_logical_execution_fingerprint(
+            app_id=request.app_id, request=request.execution_request,
+            context=request.context, subject_id=request.subject_id,
+            plan=request.agent_plan, recovery_policy=request.recovery_policy,
+            max_retries=request.max_retries, require_evidence=request.require_evidence,
+            require_verification=request.require_verification,
+        )
+        lease = await ledger.start(
+            run_id="arun_" + secrets.token_hex(16),
+            owner_scope=scope, request_fingerprint=fingerprint,
+            worker_id="eng_" + secrets.token_hex(12), lease_seconds=120,
+        )
+        stopped = asyncio.Event()
+        main_task = asyncio.current_task()
+
+        async def renew() -> None:
+            while not stopped.is_set():
+                try:
+                    await asyncio.wait_for(stopped.wait(), timeout=30)
+                    return
+                except asyncio.TimeoutError:
+                    try:
+                        active = await ledger.heartbeat(lease, lease_seconds=120)
+                    except Exception:
+                        active = False
+                    if not active:
+                        if main_task is not None:
+                            main_task.cancel()
+                        return
+
+        heartbeat_task = asyncio.create_task(renew())
+        try:
+            bound_request = replace(request, trusted_agent_bridge_run_id=lease.run_id)
+            result = await OrchestrationRunner(
+                runtime=self._runtime_factory(request.app_id),
+                idempotency=self._idempotency_adapter,
+                agent_run_guard=ledger.execution_guard(lease),
+                agent_checkpoint_hook=lambda step: ledger.checkpoint(lease, completed_step=step),
+            ).run(bound_request)
+            terminal_state = "awaiting_approval" if result.approval_pause else "completed"
+            if not await ledger.finish(lease, state=terminal_state):
+                raise AgentDurableLeaseError("Agent run lease was lost")
+            return result
+        except BaseException:
+            try:
+                await ledger.finish(lease, state="failed")
+            except Exception:
+                pass  # Unknown side effects stay uncertain; never replay.
+            raise
+        finally:
+            stopped.set()
+            heartbeat_task.cancel()
+            await asyncio.gather(heartbeat_task, return_exceptions=True)
 
     async def run_payload(self, payload: Any) -> ServiceResponse:
         if not isinstance(payload, Mapping):
@@ -138,10 +219,9 @@ class AgentSkillEngineService:
             return _service_error("invalid_request", "Agent/Skill request fields are invalid.", status_code=400)
 
         try:
-            result = await OrchestrationRunner(
-                runtime=self._runtime_factory(app_id),
-                idempotency=self._idempotency_adapter,
-            ).run(request)
+            result = await self._run_trusted_agent(request)
+        except AgentDurableLeaseError:
+            return _service_error("agent_run_lease_unavailable", "Trusted Agent run storage is unavailable.", status_code=503)
         except IdempotencyConflictError:
             return _service_error(
                 "idempotency_conflict",
