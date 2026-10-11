@@ -287,7 +287,7 @@ check(easy.includes("function startGuided(referenceText, options)") &&
       easy.includes("참고용으로 그대로 남겨둘게요"),
   "FREE_TEXT_CONTINUITY_CONTRACT: guided reference text stays visible and non-authoritative");
 check(easy.includes("inputHandler = (text) => startHomeInterpretation(text);") &&
-      easy.includes("보내면 CGI 기본 견적서로 바로 만들어 드립니다") &&
+      !easy.includes("보내면 CGI 기본 견적서로 바로 만들어 드립니다") &&
       !easy.includes("문장을 알아듣는 기능은 준비 중이라"),
   "EASY_MODE_CONTRACT: home composer submit runs the real free-form runtime");
 check(easy.includes("QuoteDraft에 자동 반영하지 않습니다."),

@@ -157,8 +157,7 @@
     easyEmpty.hidden = false;
     composer.value = "";
     composer.placeholder = "견적 내용을 한 문장으로 편하게 적어 보세요";
-    $("easyComposerNote").textContent =
-      "보내면 CGI 기본 견적서로 바로 만들어 드립니다. 단계별로 답하려면 '질문받으며 만들기'를 선택하세요.";
+    $("easyComposerNote").textContent = ""; // No misleading persistent CGI send caption.
     inputHandler = (text) => startHomeInterpretation(text);
     composer.disabled = false;
     sendButton.disabled = false;
@@ -242,12 +241,13 @@
 
   function refreshStarters() {
     const activeDraft = App.getDraft();
-    $("resumeDraftStarter").hidden = !(accountSignedIn || History.isMeaningfulDraft(activeDraft));
+    // The entry is always visible across devices. Guest access requests sign-in;
+    // no private guided draft or account history is read until authenticated.
+    $("resumeDraftStarter").hidden = false;
     /* server authority 동안에는 local cache 가 비어 있어도 최근 견적에
        접근할 수 있어야 한다(서버 목록이 authority). */
-    $("recentQuoteStarter").hidden = serverAuthorityRecent()
-      ? false
-      : readHistory().entries.length === 0;
+    // Four primary home actions only; recent quote browsing stays in the rail.
+    $("recentQuoteStarter").hidden = true;
 
     let hint = document.getElementById("easyResumeHint");
     if (accountSignedIn) {
@@ -773,7 +773,10 @@
 
   async function resumeAccountGuidedOrLocal() {
     if (!accountSignedIn) {
-      setWorkspaceMode("direct");
+      App.toast("지난 견적을 이어서 사용하려면 먼저 로그인해 주세요.");
+      const signInButton = document.querySelector("#shellAccountRow > button") ||
+        document.querySelector(".topbar-actions > button");
+      if (signInButton) signInButton.click(); // canonical login dialog only
       return;
     }
     const revision = accountScopeRevision;
@@ -1210,7 +1213,7 @@
       { label: "처음으로", action: showHome }
     ]);
     setInput(submitFreeFormText, "예: 대한건설에 배관 100미터, 미터당 18000원, 부가세 별도");
-    $("easyComposerNote").textContent = "보내면 CGI 기본 견적서로 바로 만들어 드립니다.";
+    $("easyComposerNote").textContent = "";
   }
 
   function openFileChooser() {

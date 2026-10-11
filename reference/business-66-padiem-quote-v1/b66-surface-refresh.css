@@ -927,3 +927,134 @@ body.b66-three-pane #easySend {
   body.b66-three-pane .shell-preview-readiness,
   body.b66-three-pane .b66-certified-sender-note { display: none !important; }
 }
+
+/* #4350 2026-10-11 B66: four consistent starter choices and balanced small mobile UI.
+   Screen-only: do not modify certified quotePaper, PDF, print or document typography. */
+@media screen {
+  body.b66-three-pane .easy-composer-note:empty { display: none !important; }
+  body.b66-three-pane #recentQuoteStarter { display: none !important; }
+  body.b66-three-pane #resumeDraftStarter[hidden] { display: flex; }
+}
+@media screen and (max-width: 900px) {
+  body.b66-three-pane .easy-view {
+    background: linear-gradient(158deg, rgba(251,253,255,.88), rgba(237,245,251,.68));
+  }
+  body.b66-three-pane .easy-view .easy-conversation {
+    padding: 10px 10px 6px;
+  }
+  body.b66-three-pane .easy-empty { padding: 0 1px 3px; }
+  body.b66-three-pane .easy-empty::before {
+    height: 142px;
+    top: -25px;
+    opacity: .44;
+  }
+  body.b66-three-pane .easy-avatar {
+    width: 33px;
+    height: 33px;
+    margin-bottom: 3px;
+    background: linear-gradient(140deg, #789eb8, #456c87);
+    border: 1px solid #afcadb;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(53,91,119,.12);
+    font-size: 14px;
+  }
+  body.b66-three-pane .easy-eyebrow {
+    letter-spacing: .14em;
+    font-weight: 650;
+    font-size: 10px;
+    margin: 3px 0;
+  }
+  body.b66-three-pane .easy-empty h2 {
+    font-size: clamp(24px, 6.7vw, 30px);
+    font-weight: 700;
+    letter-spacing: -.045em;
+    margin: 3px 0 6px;
+  }
+  body.b66-three-pane .easy-empty > p:not(.easy-eyebrow) {
+    display: block;
+    width: min(100%, 295px);
+    max-width: 295px;
+    margin: 0 auto 7px;
+    font-size: 12.5px;
+    font-weight: 450;
+    line-height: 1.48;
+    text-align: center;
+    text-wrap: balance;
+    overflow-wrap: break-word;
+  }
+  body.b66-three-pane .easy-resume-hint {
+    display: none !important; /* The first card already gives the sign-in instruction. */
+  }
+  body.b66-three-pane .easy-starter-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 9px;
+  }
+  body.b66-three-pane .easy-starter {
+    min-width: 0;
+    min-height: 102px;
+    padding: 10px;
+    gap: 5px;
+    align-items: flex-start;
+    border-radius: 13px;
+    box-shadow: 0 4px 12px rgba(53,84,109,.035);
+  }
+  body.b66-three-pane .easy-starter strong {
+    font-size: 12px;
+    font-weight: 690;
+    line-height: 1.34;
+    word-break: keep-all;
+  }
+  body.b66-three-pane .easy-starter small {
+    font-size: 10.5px;
+    font-weight: 440;
+    line-height: 1.37;
+    word-break: keep-all;
+  }
+  body.b66-three-pane .easy-starter-icon {
+    width: 29px;
+    height: 29px;
+    flex-basis: 29px;
+    font-size: 13px;
+    border-radius: 9px;
+    background: #eff5f9;
+    color: #49718a;
+  }
+  body.b66-three-pane #shellModelControl,
+  body.b66-three-pane #padiemQuoteModelSelect {
+    min-width: 0;
+  }
+  body.b66-three-pane #padiemQuoteModelSelect {
+    width: clamp(116px, 34vw, 145px);
+    max-width: 145px;
+    font-weight: 650;
+  }
+  body.b66-three-pane .easy-view .easy-composer-wrap {
+    padding-top: 4px;
+  }
+}
+@media screen and (max-width: 340px) {
+  body.b66-three-pane .easy-empty h2 { font-size: 24px; }
+  body.b66-three-pane .easy-starter { min-height: 98px; padding: 8px; }
+  body.b66-three-pane .easy-starter strong { font-size: 11.5px; }
+  body.b66-three-pane .easy-starter small { font-size: 10px; }
+  body.b66-three-pane .easy-starter-grid { gap: 7px; }
+  body.b66-three-pane #padiemQuoteModelSelect { width: 116px; max-width: 116px; }
+}
+
+@media screen and (max-width: 340px) {
+  body.b66-three-pane .easy-starter-grid { margin-top: 4px; }
+  body.b66-three-pane .easy-avatar { margin-bottom: 0; }
+  body.b66-three-pane .easy-empty > p:not(.easy-eyebrow) { margin-bottom: 3px; }
+}
+
+@media screen and (max-width: 340px) {
+  body.b66-three-pane .easy-starter-grid { margin-top: 0; gap: 5px; }
+  body.b66-three-pane .easy-starter { padding: 6px 8px; gap: 3px; }
+  body.b66-three-pane .easy-starter small { line-height: 1.27; }
+}
+
+@media screen and (max-width: 340px) {
+  body.b66-three-pane .topbar .brand p { display: none; }
+}

@@ -152,7 +152,14 @@
     state.quoteModels = [];
     state.quoteReasoningByModel = {};
     const modelSelect = byId("padiemQuoteModelSelect");
-    if (modelSelect) modelSelect.replaceChildren();
+    if (modelSelect) {
+      modelSelect.replaceChildren();
+      const guestOption = document.createElement("option");
+      guestOption.value = "";
+      guestOption.textContent = "로그인 후 모델 사용";
+      modelSelect.append(guestOption);
+      modelSelect.disabled = true;
+    }
     const reasoningSelect = byId("padiemQuoteReasoningSelect");
     if (reasoningSelect) {
       reasoningSelect.replaceChildren();
@@ -295,9 +302,14 @@
               typeof level.label === "string")
           : [];
       });
+      // B66 owner-approved default; only choose when the authenticated server
+      // actually registers this model. Never construct a synthetic model option.
+      const preferred = "google/gemini-3.5-flash-lite";
       const configured = result.data.default_model_id;
-      select.value = typeof configured === "string" && state.quoteModels.includes(configured)
-        ? configured : "";
+      select.value = state.quoteModels.includes(preferred)
+        ? preferred
+        : (typeof configured === "string" && state.quoteModels.includes(configured)
+          ? configured : "");
       select.disabled = records.length === 0;
       syncReasoningOptions();
     } catch (_) {

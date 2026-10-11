@@ -140,7 +140,10 @@
         var signedIn = event && event.detail
           ? event.detail.authenticated === true
           : !!(byId("padiemAccountPanel") && !byId("padiemAccountPanel").hidden);
-        modelControl.hidden = !signedIn;
+        // A visible, disabled signed-out selector tells mobile users where the
+        // model will appear; the server only enables registered models after login.
+        modelControl.hidden = false;
+        if (modelSelect && !signedIn) modelSelect.disabled = true;
         reasoningControl.hidden = true; // Never expose a customer-level thinking override.
       }
       document.addEventListener("b66:auth-changed", syncModelControl);
