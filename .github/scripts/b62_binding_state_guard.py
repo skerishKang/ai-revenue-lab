@@ -150,6 +150,37 @@ def assert_preserved(before: object, after: object) -> None:
         )
 
 
+
+# #4194 guarded one-time Engine rollout after #4304:
+# the existing Engine has 18 bindings; canonical main adds precisely the
+# named Hark B62 D1 reference plus one non-secret Agent lease enable var.
+# Never allow arbitrary additions/removals/identity drift in this mode.
+_ENGINE_4194_APPROVED_ADDITIONS = frozenset({
+    ("d1", "WEB_XLSX_PRIVATE_B62_D1", "702bb62b-36f5-41a0-973f-c4f663ee01e6"),
+    ("plain_text", "PADIEM_ENGINE_AGENT_DURABLE_ENABLED", "true"),
+})
+
+
+def assert_engine_4194_exact_rollout(before: object, after: object) -> None:
+    """Preserve ALL previous bindings; permit only two exact reviewed additions.
+
+    Already-commissioned bindings may be present in the before version, to
+    keep later no-drift code redeploys valid. The after version MUST contain
+    both approved identities and no unreviewed changes.
+    """
+    prior, current = set(canonical_state(before)), set(canonical_state(after))
+    if not _ENGINE_4194_APPROVED_ADDITIONS.issubset(current):
+        raise BindingStateError("Engine #4194 required exact binding identities missing")
+    removed = prior - current
+    added = current - prior
+    if removed or not added.issubset(_ENGINE_4194_APPROVED_ADDITIONS):
+        raise BindingStateError(
+            "Engine #4194 binding authority drift detected; "
+            f"removed_count={len(removed)} unexpected_added_count="
+            f"{len(added - _ENGINE_4194_APPROVED_ADDITIONS)}"
+        )
+
+
 def assert_web_secret_additions_only(before: object, after: object) -> None:
     """Only missing Owner-approved same-account Secret Store entries may appear."""
     original = canonical_state(before)
@@ -258,13 +289,22 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--after", required=True, type=Path)
     parser.add_argument("--expected-add-owner-d1", action="store_true")
     parser.add_argument("--expected-add-web-secrets-store", action="store_true")
+    parser.add_argument("--expected-engine-4194-rollout", action="store_true")
     parser.add_argument("--owner-d1-database-id")
     parser.add_argument("--require-served-resource-integrity", action="store_true")
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
     try:
-        if args.expected_add_owner_d1 and args.expected_add_web_secrets_store:
+        if sum((
+            args.expected_add_owner_d1,
+            args.expected_add_web_secrets_store,
+            args.expected_engine_4194_rollout,
+        )) > 1:
             raise BindingStateError("multiple additive authority modes prohibited")
-        if args.expected_add_web_secrets_store:
+        if args.expected_engine_4194_rollout:
+            if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
+                raise BindingStateError("Engine #4194 mode refuses unrelated authorization arguments")
+            assert_engine_4194_exact_rollout(_load(args.before), _load(args.after))
+        elif args.expected_add_web_secrets_store:
             assert_web_secret_additions_only(_load(args.before), _load(args.after))
         elif args.expected_add_owner_d1:
             if args.owner_d1_database_id is None:
@@ -297,7 +337,9 @@ def main(argv: list[str] | None = None) -> int:
         print("B62_BINDING_AUTHORITY_PRESERVED=FAIL", file=sys.stderr)
         print(f"REASON={exc}", file=sys.stderr)
         return 1
-    if args.expected_add_owner_d1:
+    if args.expected_engine_4194_rollout:
+        print("ENGINE_4194_EXACT_ADDITIONS_AND_PREEXISTING_BINDINGS_PRESERVED=PASS")
+    elif args.expected_add_owner_d1:
         print("OWNER_P01_D1_EXACTLY_ONE_ADDITION=PASS")
         print("EXISTING_WORKER_BINDINGS_PRESERVED=PASS")
         if args.require_served_resource_integrity or version_evidence:
