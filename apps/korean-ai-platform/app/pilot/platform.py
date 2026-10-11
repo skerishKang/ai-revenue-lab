@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import time
 import uuid
 from typing import Any
@@ -300,6 +301,22 @@ async def call_platform_chat_completions(
         raise UpstreamServerError()
 
     if response.status_code < 200 or response.status_code >= 300:
+        if platform_provider_id == "tokenharbor" and response.status_code in (401, 403):
+            # Only two non-sensitive classification fields. No keys, hashes,
+            # key lengths, HTTP headers, upstream bodies or request contents.
+            credential_shape = (
+                "expected"
+                if re.fullmatch(
+                    r"Bearer thk_[A-Za-z0-9_-]{20,160}",
+                    headers.get("Authorization", ""),
+                )
+                else "unexpected"
+            )
+            logger.warning(
+                "tokenharbor_auth_diagnostic upstream_http_status=%d credential_shape=%s",
+                response.status_code,
+                credential_shape,
+            )
         if platform_provider_id == "agnes-ai" and response.status_code == 429:
             log_agnes_429(
                 logger, platform_provider_id, response.status_code,

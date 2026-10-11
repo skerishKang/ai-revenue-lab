@@ -225,3 +225,42 @@ def test_free_route_rejects_external_fallback_to_other_paid_provider(mid, live_k
     with pytest.raises(NoSafeRoute) as exc:
         resolve_manual_route(mid, allow_external_fallback=True)
     assert exc.value.reason_code == "tokenharbor_free_only_fallback_disabled"
+
+@pytest.mark.parametrize("upstream_http_status", [401, 403])
+@pytest.mark.parametrize("credential_shape", ["expected", "unexpected"])
+def test_tokenharbor_auth_failure_logs_only_safe_classification(
+    monkeypatch, caplog, upstream_http_status, credential_shape,
+):
+    from app.pilot.errors import UpstreamAuthFailed
+
+    fake_key = "thk_" + "a9b2c3d4e5f6g7h8" * 4
+    if credential_shape == "unexpected":
+        fake_key = '"' + fake_key + '"'
+    monkeypatch.setenv("B14_PROVIDER_MODE", "live")
+    monkeypatch.setenv(BINDING, fake_key)
+
+    def fail_with_upstream_status(request):
+        assert request.url.host == "tokenharbor.ai"
+        return httpx.Response(
+            upstream_http_status,
+            json={"error": {"message": "do_not_log_upstream_body"}},
+        )
+
+    with caplog.at_level("WARNING", logger="korean-ai-platform.pilot.platform"):
+        with pytest.raises(UpstreamAuthFailed):
+            asyncio.run(call_platform_chat_completions(
+                model_id="tokenharbor/claude-haiku-5.5:free",
+                upstream_model="claude-haiku-5.5:free",
+                provider="TokenHarbor",
+                platform_provider_id=PROVIDER,
+                messages=[{"role": "user", "content": "no_customer_data"}],
+                transport=httpx.MockTransport(fail_with_upstream_status),
+            ))
+
+    assert (
+        f"tokenharbor_auth_diagnostic upstream_http_status={upstream_http_status} "
+        f"credential_shape={credential_shape}"
+    ) in caplog.text
+    assert fake_key not in caplog.text
+    assert "do_not_log_upstream_body" not in caplog.text
+    assert "no_customer_data" not in caplog.text
