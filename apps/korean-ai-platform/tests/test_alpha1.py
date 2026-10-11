@@ -913,8 +913,8 @@ class TestEndpoints:
         ids = {m["id"] for m in catalog}
         assert "b14/auto" not in ids
         assert "kilo/nvidia-nemotron-3-ultra-550b-a55b-free" not in ids
-        from app.pilot.model_registry_file import installed_model_ids
-        assert ids == installed_model_ids()
+        from app.pilot.catalog import CATALOG_BY_ID
+        assert ids == {mid for mid, item in CATALOG_BY_ID.items() if item.enabled}
 
     def test_legacy_models_still_work(self, client):
         from app.pilot.config import pilot_settings

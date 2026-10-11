@@ -38,7 +38,7 @@ def test_b14_get_models_matches_json_exact():
     data=resp.json()
     expected={m["id"]:m for m in reg["models"]}
     assert {r["id"] for r in data["registered_routes"]}==set(expected)
-    assert {r["id"] for r in data["catalog"]}==set(expected)
+    assert {r["id"] for r in data["catalog"]} == {m["id"] for m in reg["models"] if m["enabled"] and reg["providers"][m["provider_id"]]["enabled"]}
     for row in data["catalog"]:
         assert row["name"]==expected[row["id"]]["display_name"]
     assert data["model_groups"]==reg["groups"]==group_model_ids()
@@ -121,7 +121,8 @@ def test_workspace_manual_selector_uses_json_registered_models():
         response=client.get("/workspace")
     assert response.status_code == 200
     html=unescape(response.text)
-    models=read_registry()["models"]
+    registry=read_registry()
+    models=[m for m in registry["models"] if m["enabled"] and registry["providers"][m["provider_id"]]["enabled"]]
     for row in models:
         assert 'value="'+row["id"]+'"' in html
     for retired in RETIRED:
@@ -193,10 +194,15 @@ def test_opencodego_and_zanslab_are_registered_disabled_without_credentials():
     assert providers["zanslab"]["credential_binding_name"] == "PADIEM_ZANSLAB_API_KEY"
     assert providers["opencode-go"]["enabled"] is False
     assert providers["zanslab"]["enabled"] is False
-    # Credentials and verified account-specific ZansLab model IDs are absent;
-    # do not invent an executable route or even an inactive catalog model.
-    assert not any(row["provider_id"] in {"opencode-go", "zanslab"}
-                   for row in reg["models"])
+    # Five owner-selected Go IDs are registered as inactive candidates;
+    # ZansLab awaits proof of the exact account-specific Luna ID.
+    rows = [row for row in reg["models"] if row["provider_id"] == "opencode-go"]
+    assert {row["upstream_model"] for row in rows} == {
+        "longcat-2.5-preview-free", "step-5-preview-free",
+        "muse-spark-1.3-contributor", "gpt-6-luna", "claude-haiku-5-5",
+    }
+    assert all(row["enabled"] is False for row in rows)
+    assert not any(row["provider_id"] == "zanslab" for row in reg["models"])
     assert not any(model_id.startswith(("opencode-go/", "zanslab/"))
                    for tier in ("plus", "pro", "max") for model_id in reg["groups"][tier])
     from pathlib import Path
