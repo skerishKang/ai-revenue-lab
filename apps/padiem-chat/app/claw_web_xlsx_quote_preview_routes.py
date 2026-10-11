@@ -16,6 +16,8 @@ from starlette.responses import JSONResponse, Response
 from .bounded_request_body import read_bounded_request_body, RequestBodyTooLarge
 from .claw_web_xlsx_p01_owner_decision_routes import web_xlsx_p01_workcopy_download
 from .claw_web_xlsx_source_routes import _error, _NO_STORE
+from .claw_web_xlsx_quote_write_pause_store import D1WebQuoteWritePauseStore
+from .claw_web_xlsx_quote_write_owner_decision import D1WebQuoteWriteOwnerDecisionStore
 from .claw_web_xlsx_quote_editor import (
     revise_single_sheet_quote, WebQuoteEditUnsupported,
 )
@@ -95,7 +97,16 @@ async def web_xlsx_quote_edit_preview(request: Request) -> Response:
             is True
             and callable(getattr(
                 getattr(request.app.state, "web_xlsx_quote_write_client", None),
-                "confirm_exact_write", None))
+                "start_pause", None))
+            and callable(getattr(
+                getattr(request.app.state, "web_xlsx_quote_write_client", None),
+                "resume_owner_decision", None))
+            and isinstance(getattr(
+                request.app.state, "web_xlsx_quote_write_pause_store", None),
+                D1WebQuoteWritePauseStore)
+            and isinstance(getattr(
+                request.app.state, "web_xlsx_quote_write_owner_decision_store", None),
+                D1WebQuoteWriteOwnerDecisionStore)
             and getattr(request.app.state, "web_xlsx_quote_write_store", None)
             is not None
         ),

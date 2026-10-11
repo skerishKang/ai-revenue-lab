@@ -199,9 +199,17 @@
     const editPreviewResult = root.createElement("p");
     editPreviewResult.setAttribute("aria-live", "polite");
     editPreviewResult.textContent = "별도 P01 쓰기 승인과 PDF 변환은 아직 지원되지 않습니다.";
+    const writeApprove = root.createElement("button");
+    writeApprove.type = "button";
+    writeApprove.textContent = "수정된 XLSX 저장 승인";
+    writeApprove.hidden = true;
+    const writeDeny = root.createElement("button");
+    writeDeny.type = "button";
+    writeDeny.textContent = "파일 수정 거절";
+    writeDeny.hidden = true;
     editPreviewPanel.append(
       schoolLabel, priceLabel, editPreviewButton, editCommitButton,
-      editedLink, editPreviewResult,
+      editedLink, editPreviewResult, writeApprove, writeDeny,
     );
     approvalPanel?.appendChild(editPreviewPanel);
     if (![panel, input, upload, refresh, message, list, approvalPanel,
@@ -222,9 +230,14 @@
     const attemptedRefs = new Set(); // never POST twice per selection in this page lifetime
     let loaded = false;
     let trustedPreview = null;
+    let pendingWrite = null;
     const commitAttemptedRefs = new Set();
+    const writeDecisionsAttempted = new Set();
     const hideRevision = () => {
       trustedPreview = null;
+      pendingWrite = null;
+      writeApprove.hidden = true;
+      writeDeny.hidden = true;
       editCommitButton.hidden = true;
       editCommitButton.disabled = true;
       editedLink.hidden = true;
@@ -240,6 +253,36 @@
       editPreviewResult.textContent = "수정 파일을 저장하지 않았습니다. 별도 P01 쓰기 승인이 필요합니다.";
     };
     async function readRevisionStatus(selectionRef) {
+      try {
+        const auth = await jsonRequest(
+          SELECTIONS + "/" + encodeURIComponent(selectionRef)
+            + "/quote-edit/approval-status",
+          { method: "GET", headers: {"Accept": "application/json"} },
+        );
+        if (selectedSelectionRef !== selectionRef || editPreviewPanel.hidden) return;
+        if (auth.ok === true
+            && auth.contract_version === "claw-web-xlsx-quote-write-approval-status.v1"
+            && auth.selection_ref === selectionRef
+            && auth.state === "waiting_p01"
+            && HASH.test(auth.edit_sha256)
+            && typeof auth.school_name === "string"
+            && Number.isSafeInteger(auth.supply_amount)
+            && !writeDecisionsAttempted.has(selectionRef)) {
+          schoolInput.value = auth.school_name;
+          priceInput.value = String(auth.supply_amount);
+          pendingWrite = {
+            ref: selectionRef, editSHA: auth.edit_sha256,
+            schoolName: auth.school_name, supplyAmount: auth.supply_amount,
+          };
+          writeApprove.hidden = false;
+          writeDeny.hidden = false;
+          editCommitButton.hidden = true;
+          editPreviewResult.textContent =
+            "수정 내용 확인 후 별도의 P01 쓰기 승인을 선택하세요. PDF는 아직 지원되지 않습니다.";
+        }
+      } catch (_error) {
+        // No authority or unknown result may never expose an approval button.
+      }
       try {
         const receipt = await jsonRequest(
           SELECTIONS + "/" + encodeURIComponent(selectionRef) + "/quote-edit/status",
@@ -344,15 +387,13 @@
           || editCommitButton.disabled || commitAttemptedRefs.has(plan.ref)
           || schoolInput.value.trim() !== plan.schoolName
           || Number(priceInput.value) !== plan.supplyAmount) return;
-      // One single explicit user click. Unknown network outcomes are never
-      // retried, since the Engine may already have consumed the WRITE P01.
       commitAttemptedRefs.add(plan.ref);
       hideRevision();
       setBusy(true);
-      editPreviewResult.textContent = "별도 P01 쓰기 승인과 수정본 저장 결과를 확인하고 있습니다.";
+      editPreviewResult.textContent = "별도 P01 쓰기 승인을 요청하고 있습니다.";
       try {
         const result = await jsonRequest(
-          SELECTIONS + "/" + encodeURIComponent(plan.ref) + "/quote-edit/commit",
+          SELECTIONS + "/" + encodeURIComponent(plan.ref) + "/quote-edit/request",
           { method: "POST", headers: {
             "Content-Type": "application/json", "Accept": "application/json",
           }, body: JSON.stringify({
@@ -361,29 +402,89 @@
           }) },
         );
         if (plan.ref !== selectedSelectionRef || editPreviewPanel.hidden) return;
-        if (!(result.ok === true && result.state === "confirmed"
-            && result.contract_version === "claw-web-xlsx-quote-write.v1"
+        if (!(result.ok === true
+            && result.contract_version === "claw-web-xlsx-quote-write-pause.v1"
             && result.selection_ref === plan.ref
-            && result.revised_xlsx_created === true && result.pdf_exported === false
-            && result.original_overwritten === false
-            && HASH.test(result.edit_sha256) && result.edit_sha256 === plan.editSHA
-            && HASH.test(result.revision_sha256)
-            && ID.test(result.revision_document_id))) {
-          throw new Error("수정본 저장 결과를 확인할 수 없습니다.");
+            && result.state === "waiting_p01"
+            && result.edit_sha256 === plan.editSHA
+            && result.school_name === plan.schoolName
+            && result.supply_amount === plan.supplyAmount
+            && result.write_approved === false
+            && result.revised_xlsx_created === false
+            && result.pdf_exported === false
+            && result.original_overwritten === false)) {
+          throw new Error("별도 쓰기 승인 요청을 확인하지 못했습니다.");
         }
-        editedLink.href = SELECTIONS + "/" + encodeURIComponent(plan.ref)
-          + "/quote-edit/download";
-        editedLink.hidden = false;
-        editPreviewResult.textContent = "별도 쓰기 승인이 확인되어 수정된 XLSX를 저장했습니다. PDF는 아직 생성되지 않았습니다.";
+        pendingWrite = plan;
+        writeApprove.hidden = false;
+        writeDeny.hidden = false;
+        editPreviewResult.textContent =
+          "변경안을 다시 확인한 후 '수정된 XLSX 저장 승인' 또는 '파일 수정 거절'을 선택하세요.";
       } catch (_error) {
         if (plan.ref === selectedSelectionRef) {
-          editPreviewResult.textContent = "쓰기 승인 또는 저장 결과를 확정할 수 없습니다. 자동 재시도하지 마세요. 상태 확인이 필요합니다.";
+          editPreviewResult.textContent =
+            "승인 요청 결과를 확정할 수 없습니다. 자동 재시도하지 않고 기록을 확인해야 합니다.";
         }
       } finally {
         setBusy(false);
       }
     }
     editCommitButton.addEventListener("click", () => void commitQuoteEdit());
+    async function decideQuoteEdit(choice) {
+      const plan = pendingWrite;
+      if (busy || !plan || plan.ref !== selectedSelectionRef
+          || writeDecisionsAttempted.has(plan.ref)
+          || !["approve", "deny"].includes(choice)) return;
+      writeDecisionsAttempted.add(plan.ref);
+      writeApprove.hidden = true;
+      writeDeny.hidden = true;
+      setBusy(true);
+      editPreviewResult.textContent = "별도 Core 쓰기 승인 결과를 검증하고 있습니다.";
+      try {
+        const result = await jsonRequest(
+          SELECTIONS + "/" + encodeURIComponent(plan.ref) + "/quote-edit/decision",
+          { method: "POST", headers: {
+            "Content-Type": "application/json", "Accept": "application/json",
+          }, body: JSON.stringify({decision: choice}) },
+        );
+        if (plan.ref !== selectedSelectionRef || editPreviewPanel.hidden) return;
+        if (choice === "deny") {
+          if (!(result.ok === true
+              && result.contract_version === "claw-web-xlsx-quote-write-decision.v1"
+              && result.selection_ref === plan.ref
+              && result.state === "denied"
+              && result.revised_xlsx_created === false
+              && result.pdf_exported === false)) throw new Error("거절 결과 불명확");
+          editPreviewResult.textContent = "수정을 거절했습니다. 파일이 변경되지 않았습니다.";
+          return;
+        }
+        if (!(result.ok === true && result.state === "confirmed"
+            && result.contract_version === "claw-web-xlsx-quote-write.v1"
+            && result.selection_ref === plan.ref
+            && result.revised_xlsx_created === true && result.pdf_exported === false
+            && result.original_overwritten === false
+            && result.edit_sha256 === plan.editSHA
+            && HASH.test(result.revision_sha256)
+            && ID.test(result.revision_document_id))) {
+          throw new Error("수정본 저장 결과 불명확");
+        }
+        editedLink.href = SELECTIONS + "/" + encodeURIComponent(plan.ref)
+          + "/quote-edit/download";
+        editedLink.hidden = false;
+        editPreviewResult.textContent =
+          "승인된 수정 XLSX를 저장했습니다. 아래에서 다운로드하세요. PDF는 아직 미지원입니다.";
+      } catch (_error) {
+        if (plan.ref === selectedSelectionRef) {
+          editPreviewResult.textContent =
+            "쓰기 승인·저장 결과 불명확: 자동 재시도하지 않습니다. 상태를 확인하세요.";
+        }
+      } finally {
+        pendingWrite = null;
+        setBusy(false);
+      }
+    }
+    writeApprove.addEventListener("click", () => void decideQuoteEdit("approve"));
+    writeDeny.addEventListener("click", () => void decideQuoteEdit("deny"));
     const report = (value) => { message.textContent = value; };
     const setBusy = (value) => {
       busy = value;
@@ -396,6 +497,8 @@
       deny.disabled = value || !ownerDecisionReady || decisionAttempted;
       editPreviewButton.disabled = value || editPreviewPanel.hidden;
       editCommitButton.disabled = value || editCommitButton.hidden;
+      writeApprove.disabled = value || writeApprove.hidden;
+      writeDeny.disabled = value || writeDeny.hidden;
       panel.setAttribute("aria-busy", value ? "true" : "false");
     };
 
