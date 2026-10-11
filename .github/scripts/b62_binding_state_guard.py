@@ -167,6 +167,23 @@ _ENGINE_4194_APPROVED_ADDITIONS = frozenset({
 })
 
 
+def assert_exact_b66_membership_secret_only(before: object, after: object) -> None:
+    """Single explicitly permitted B66 secret binding, preserving every other binding.
+
+    This permits metadata-only preservation of an existing concurrent B66
+    membership enforcement secret during a B62 code-only release. It does not
+    read or set a secret value. Once already served, exact equality is required.
+    """
+    old = set(canonical_state(before))
+    new = set(canonical_state(after))
+    allowed = ("secret_text", "B66_MEMBERSHIP_ENFORCED")
+    if allowed in old:
+        if old != new:
+            raise BindingStateError("B66 membership already served; unrelated authority drift")
+    elif new != old | {allowed}:
+        raise BindingStateError("expected only exact B66 membership secret addition")
+
+
 def assert_engine_4194_exact_rollout(before: object, after: object) -> None:
     """Preserve ALL previous bindings; permit only two exact reviewed additions.
 
@@ -317,6 +334,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--expected-add-web-secrets-store", action="store_true")
     parser.add_argument("--expected-engine-4194-rollout", action="store_true")
     parser.add_argument("--expected-add-hark-browser", action="store_true")
+    parser.add_argument("--expected-add-b66-membership-secret", action="store_true")
     parser.add_argument("--owner-d1-database-id")
     parser.add_argument("--require-served-resource-integrity", action="store_true")
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
@@ -326,6 +344,7 @@ def main(argv: list[str] | None = None) -> int:
             args.expected_add_web_secrets_store,
             args.expected_engine_4194_rollout,
             args.expected_add_hark_browser,
+            args.expected_add_b66_membership_secret,
         )) > 1:
             raise BindingStateError("multiple additive authority modes prohibited")
         if args.expected_engine_4194_rollout:
@@ -336,6 +355,10 @@ def main(argv: list[str] | None = None) -> int:
             if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
                 raise BindingStateError("Hark Browser mode refuses unrelated authorization flags")
             assert_hark_browser_added_only(_load(args.before), _load(args.after))
+        elif args.expected_add_b66_membership_secret:
+            if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
+                raise BindingStateError("B66 membership secret mode refuses unrelated authority flags")
+            assert_exact_b66_membership_secret_only(_load(args.before), _load(args.after))
         elif args.expected_add_web_secrets_store:
             assert_web_secret_additions_only(_load(args.before), _load(args.after))
         elif args.expected_add_owner_d1:
