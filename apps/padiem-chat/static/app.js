@@ -1111,7 +1111,8 @@
       const verifiedClawIds = new Set();
       if (data.conversations.length) {
         try {
-          const runsResponse = await fetch("/api/claw/runs?limit=30", {
+          const threadRunHistoryLimit = 30;
+          const runsResponse = await fetch(`/api/claw/runs?limit=${threadRunHistoryLimit}`, {
             headers: { "Accept": "application/json" }, cache: "no-store",
           });
           const runsData = await runsResponse.json().catch(() => null);
