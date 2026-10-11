@@ -34,7 +34,8 @@ assert.match(shell, /"b66AccountMenuDrive"/, "existing profile exposes Drive dir
 assert.match(shell, /clickExisting\("settingsDriveChoice"\)/, "Drive shortcut reuses settings authority");
 assert.match(html, /id="driveSettingsView"/, "Drive is a dedicated settings page");
 assert.match(app, /driveChoice\.addEventListener\("click"/, "Drive settings is functional");
-assert.match(shell, /advancedTools\.appendChild\(manual\)/, "new template candidate is under advanced tools");
+assert.match(shell, /newSection\.appendChild\(manual\)/, "file-based template creation is immediately below New Quote");
+assert.match(app, /skillUiApi\.actions\.openWizard\(\$\("shellManualQuote"\)\)/, "file wizard reused without approval bypass");
 assert.match(polish, /#directStarter \{ display: none !important; \}/, "duplicate edit card hidden; edit tab remains");
 assert.match(shell, /senderNote\.hidden = !\(quotePaper\.getAttribute/, "CGI fixed sender disclosure is scoped");
 assert.match(shell, /readinessStatus\.textContent = ready \? "출력 준비" : "작성 중"/);

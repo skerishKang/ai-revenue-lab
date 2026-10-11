@@ -2171,12 +2171,15 @@
       }
     });
   }
-  document.addEventListener("b66:open-manual-skill", () => {
-    if (!manualSkillApi) return;
+  document.addEventListener("b66:open-skill-register", () => {
+    // Entry from the rail always opens the existing file-based Saved Skill
+    // wizard. This does not bypass approval or create an active template.
+    if (!skillUiApi || !skillUiApi.actions ||
+        typeof skillUiApi.actions.openWizard !== "function") return;
     const directTab = $("directModeButton");
     if (directTab) directTab.click();
-    manualSkillApi.open(directTab || null);
-    const panel = $("skillManualPanel");
+    skillUiApi.actions.openWizard($("shellManualQuote"));
+    const panel = $("skillWizardPanel");
     if (panel && typeof panel.scrollIntoView === "function") {
       panel.scrollIntoView({ block: "nearest" });
     }

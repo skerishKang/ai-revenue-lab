@@ -31,12 +31,13 @@ check(shell.includes('b66:open-recent-quotes') && shell.includes('b66:open-file-
 check(shell.includes('id="shellNewQuote"') && shell.includes('clickExisting("newQuote")'),
   "rail exposes an explicit new-quote action");
 check(shell.includes('shellManualQuote') && shell.includes('새 양식 만들기') &&
-  shell.includes('b66:open-manual-skill') && shell.includes('advancedTools.appendChild(manual)') &&
+  shell.includes('b66:open-skill-register') && shell.includes('newSection.appendChild(manual)') &&
   shell.includes('id="shellNewQuote"'),
-  "새 견적 시작(견적 초기화)과 새 양식 만들기(검토 후보)가 분리되어 기존 흐름으로 연결된다");
-check(app.includes('b66:open-manual-skill') && app.includes('bindManualSection') &&
-  app.includes('MANUAL_DRAFT_STORAGE_KEY'),
-  "app 이 직접 만들기 화면과 계정 격리 키를 배선한다");
+  "파일 기반 새 양식 등록은 새 견적 시작 버튼 바로 아래에 연결된다");
+check(app.includes('b66:open-skill-register') &&
+      app.includes('skillUiApi.actions.openWizard($("shellManualQuote"))') &&
+      app.includes('SkillUi.bindSkillSection'),
+  "파일을 선택해 검토하는 기존 Saved Skill 마법사를 사용한다");
 check(shell.includes('account.appendChild(accountButton)'),
   "rail moves actual account button");
 check(shell.includes('host.appendChild(preview)'),

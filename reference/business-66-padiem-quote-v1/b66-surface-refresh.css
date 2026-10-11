@@ -1099,3 +1099,52 @@ body.b66-three-pane #easySend {
     box-shadow: 0 6px 22px rgba(38,63,81,.13);
   }
 }
+
+/* B66 current owner UX: no initial chat scrollbar; transcript scrolls once used.
+   Output-paper/print/PDF geometry untouched. */
+@media screen {
+  body.b66-three-pane .easy-view.easy-chat-home .easy-conversation {
+    overflow-y: hidden;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+  }
+  body.b66-three-pane .easy-view.easy-chat-home .easy-conversation::-webkit-scrollbar {
+    display: none;
+  }
+  body.b66-three-pane .easy-view:not(.easy-chat-home) .easy-conversation {
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    padding-bottom: 20px;
+  }
+  /* Keep the canonical disabled microphone icon without a status caption. */
+  body.b66-three-pane #easyVoiceMic:disabled {
+    display: inline-flex !important;
+    opacity: .7;
+    cursor: default;
+  }
+  body.b66-three-pane #easyAttach,
+  body.b66-three-pane #easyVoiceMic,
+  body.b66-three-pane #easySend {
+    height: 42px;
+    min-height: 42px;
+    max-height: 42px;
+    width: 42px;
+    min-width: 42px;
+    flex: 0 0 42px;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+  }
+}
+@media screen and (max-width: 700px) {
+  body.b66-three-pane #easyAttach,
+  body.b66-three-pane #easyVoiceMic,
+  body.b66-three-pane #easySend {
+    height: 38px;
+    min-height: 38px;
+    max-height: 38px;
+    width: 38px;
+    min-width: 38px;
+    flex: 0 0 38px;
+  }
+}
