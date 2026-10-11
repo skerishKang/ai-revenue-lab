@@ -59,7 +59,11 @@
       && (body.owner_request_enabled === undefined || typeof body.owner_request_enabled === "boolean")
       && (body.status === "not_requested" || body.owner_request_enabled !== true)
       && (body.status === "waiting_p01" || body.owner_decision_enabled === false)
-      && body.processing_started === false && body.workcopy_created === false);
+      && typeof body.workcopy_created === "boolean"
+      && body.processing_started === body.workcopy_created
+      && (!body.workcopy_created
+        ? body.workcopy_document_id === null || body.workcopy_document_id === undefined
+        : body.status === "confirmed" && ID.test(body.workcopy_document_id)));
   }
 
   function validateP01Start(body, selectionRef) {
@@ -75,8 +79,12 @@
       && body.contract_version === "claw-web-xlsx-p01-owner-decision.v1"
       && body.selection_ref === selectionRef
       && body.status === (decision === "approve" ? "confirmed" : "denied")
-      && body.owner_intent_only === true
-      && body.processing_started === false && body.workcopy_created === false);
+      && typeof body.workcopy_created === "boolean"
+      && body.owner_intent_only === !body.workcopy_created
+      && body.processing_started === body.workcopy_created
+      && (!body.workcopy_created
+        ? body.workcopy_document_id === null || body.workcopy_document_id === undefined
+        : decision === "approve" && ID.test(body.workcopy_document_id)));
   }
 
   function validateSelectionsListing(body, files) {
@@ -153,6 +161,11 @@
     const requestStart = $("clawWebXlsxP01Start");
     const approve = $("clawWebXlsxP01Approve");
     const deny = $("clawWebXlsxP01Deny");
+    const workcopyLink = root.createElement("a");
+    workcopyLink.hidden = true;
+    workcopyLink.textContent = "승인된 작업 사본 다운로드 (XLSX)";
+    workcopyLink.setAttribute("download", "");
+    approvalPanel?.appendChild(workcopyLink);
     if (![panel, input, upload, refresh, message, list, approvalPanel,
       approvalSelected, approvalStatus, approvalRefresh, requestStart, approve, deny].every(Boolean)) return null;
     // The legacy Project Files input stays text/PDF/DOCX-only. This separate
@@ -170,6 +183,17 @@
     let decisionAttempted = false;
     const attemptedRefs = new Set(); // never POST twice per selection in this page lifetime
     let loaded = false;
+    const hideWorkcopy = () => {
+      workcopyLink.hidden = true;
+      workcopyLink.href = "";
+    };
+    const showWorkcopy = (selectionRef, copyId) => {
+      if (!SELECTION_ID.test(selectionRef) || !ID.test(copyId)) return hideWorkcopy();
+      // Selection-ref path, NOT an arbitrary R2 document_id URL.
+      workcopyLink.href = SELECTIONS + "/" + encodeURIComponent(selectionRef)
+        + "/workcopy/download";
+      workcopyLink.hidden = false;
+    };
     const report = (value) => { message.textContent = value; };
     const setBusy = (value) => {
       busy = value;
@@ -188,7 +212,7 @@
       request_unknown: "P01 승인 요청 결과가 불확실합니다. 자동 재시도하지 않습니다.",
       waiting_p01: "원본 확인 승인을 기다리고 있습니다. 승인 또는 거절을 직접 선택하세요.",
       decision_unknown: "승인 결정 전달 결과가 불확실합니다. 다시 제출하지 마세요.",
-      confirmed: "원본 확인 의도가 승인되었습니다. 파일 읽기·작업 사본·PDF 처리는 시작하지 않았습니다.",
+      confirmed: "원본 읽기 의도가 승인되었습니다. 수정 작업과 PDF 생성은 별도 승인이 필요합니다.",
       denied: "원본 확인을 거절했습니다. 파일은 처리되지 않았습니다.",
       expired: "원본 선택 또는 승인 대기 기한이 만료됐습니다.",
       manual_review: "승인 상태를 검증할 수 없습니다. 운영 확인이 필요합니다.",
@@ -214,6 +238,7 @@
       const source = selectedSource;
       hideDecisions();
       hideRequest();
+      hideWorkcopy();
       approvalStatus.textContent = "서버에 기록된 P01 승인 상태를 확인하고 있습니다.";
       const status = await jsonRequest(
         SELECTIONS + "/" + encodeURIComponent(selectionRef) + "/p01-status",
@@ -233,6 +258,10 @@
       approve.disabled = busy || !ownerDecisionReady;
       deny.disabled = busy || !ownerDecisionReady;
       approvalStatus.textContent = P01_MESSAGES[status.status];
+      if (status.status === "confirmed" && status.workcopy_created) {
+        showWorkcopy(selectionRef, status.workcopy_document_id);
+        approvalStatus.textContent = "승인된 원본의 XLSX 작업 사본을 내려받을 수 있습니다. 수정·PDF 변환은 별도 승인과 지원 기능이 필요합니다.";
+      }
       if (status.status === "not_requested" && !status.owner_request_enabled) {
         approvalStatus.textContent = "선택한 원본은 안전하게 보관됐습니다. 웹 P01 요청 시작 기능은 아직 연결되지 않았습니다.";
       }
@@ -252,6 +281,7 @@
       approvalSelected.textContent = "선택한 원본: " + source.filename;
       hideDecisions();
       hideRequest();
+      hideWorkcopy();
       try {
         await checkSelectedStatus();
       } catch (_error) {
@@ -332,9 +362,17 @@
         if (!validateP01Decision(body, decision, ref)) {
           throw new Error("결정 결과를 확인할 수 없습니다.");
         }
-        approvalStatus.textContent = decision === "approve"
-          ? P01_MESSAGES.confirmed : P01_MESSAGES.denied;
-        report("사용자 결정은 서버에서 확인됐습니다. 원본 내용 처리는 아직 시작하지 않았습니다.");
+        if (body.workcopy_created) {
+          showWorkcopy(ref, body.workcopy_document_id);
+        } else {
+          hideWorkcopy();
+        }
+        approvalStatus.textContent = body.workcopy_created
+          ? "승인된 원본으로 XLSX 작업 사본을 만들었습니다. 수정·PDF는 별도 절차가 필요합니다."
+          : (decision === "approve" ? P01_MESSAGES.confirmed : P01_MESSAGES.denied);
+        report(body.workcopy_created
+          ? "작업 사본을 내려받을 수 있습니다. 원본은 변경되지 않았습니다."
+          : "사용자 결정이 서버에서 확인됐습니다. 원본 내용 처리는 아직 시작하지 않았습니다.");
       } catch (_error) {
         approvalStatus.textContent = "결정 전송 결과가 불확실합니다. 재전송하지 말고 상태를 조회하세요.";
         report("P01 결정 결과가 확인되지 않았습니다. 중복 승인·거절을 보내지 않습니다.");

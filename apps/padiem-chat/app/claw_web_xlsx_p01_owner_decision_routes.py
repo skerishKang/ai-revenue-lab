@@ -1,8 +1,11 @@
 """#3580 authenticated browser owner approve/deny, exact Engine Tool continuation."""
 from __future__ import annotations
 
+import hashlib
 import inspect
 import json
+import re
+from urllib.parse import quote
 from datetime import datetime, timedelta, timezone
 
 from starlette.requests import Request
@@ -23,6 +26,9 @@ WEB_XLSX_P01_OWNER_DECISION_PATH = (
 )
 WEB_XLSX_P01_OWNER_STATUS_PATH = (
     "/api/claw/office/web-selections/{selection_ref}/p01-status"
+)
+WEB_XLSX_P01_WORKCOPY_DOWNLOAD_PATH = (
+    "/api/claw/office/web-selections/{selection_ref}/workcopy/download"
 )
 
 
@@ -299,3 +305,86 @@ async def web_xlsx_p01_owner_status(request: Request) -> Response:
         "workcopy_created": copy is not None,
         "workcopy_document_id": copy["workcopy_document_id"] if copy else None,
     }, headers=_NO_STORE)
+
+async def web_xlsx_p01_workcopy_download(request: Request) -> Response:
+    """Download exactly the approved owner's original-byte workcopy, not a
+    generic R2 object, edited workbook, PDF or proof of edit authorization.
+    """
+    scope = await _scope(request)
+    if isinstance(scope, Response):
+        return scope
+    store, selections, owner, workspace = scope
+    ledger = getattr(request.app.state, "web_xlsx_p01_owner_decision_store", None)
+    if (not callable(getattr(ledger, "load_status", None))
+            or not callable(getattr(store, "find_approved_web_xlsx_workcopy", None))
+            or not callable(getattr(store, "get_for_tenant", None))):
+        return _error(503, "approved_workcopy_download_unavailable")
+    selection_ref = request.path_params.get("selection_ref")
+    if not isinstance(selection_ref, str) or not re.fullmatch(
+        r"sel_[a-f0-9]{32}", selection_ref
+    ):
+        return _error(404, "owner_approved_workcopy_not_found")
+    try:
+        state = await ledger.load_status(
+            owner_id=owner, workspace_id=workspace,
+            selection_ref=selection_ref,
+        )
+        if (not isinstance(state, dict) or state.get("status") != "confirmed"
+                or not isinstance(state.get("run_id"), str)
+                or not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9._:@+-]{0,127}", state["run_id"])
+                or not isinstance(state.get("source_sha256"), str)
+                or not re.fullmatch(r"[0-9a-f]{64}", state["source_sha256"])):
+            return _error(404, "owner_approved_workcopy_not_found")
+        selected = selections.load_owner(
+            owner_id=owner, workspace_id=workspace,
+            selection_ref=selection_ref,
+        )
+        if inspect.isawaitable(selected):
+            selected = await selected
+        original = await store.get_web_xlsx_metadata(
+            tenant_id=workspace, owner_id=owner, workspace_id=workspace,
+            document_id=state["document_id"],
+        )
+        if (not isinstance(selected, dict) or not isinstance(original, dict)
+                or selected.get("document_id") != state["document_id"]
+                or selected.get("source_sha256") != state["source_sha256"]
+                or original.get("source_sha256") != state["source_sha256"]
+                or original.get("filename") != state["filename"]
+                or original.get("size_bytes") != state["size_bytes"]
+                or original.get("original_immutable") is not True):
+            return _error(404, "owner_approved_workcopy_not_found")
+        receipt = await store.find_approved_web_xlsx_workcopy(
+            tenant_id=workspace, owner_id=owner, workspace_id=workspace,
+            run_id=state["run_id"], source_document_id=state["document_id"],
+            expected_source_sha256=state["source_sha256"],
+        )
+        if not isinstance(receipt, dict) or receipt.get("workcopy_created") is not True:
+            return _error(404, "owner_approved_workcopy_not_found")
+        document_id = receipt["workcopy_document_id"]
+        data = await store.get_for_tenant(
+            tenant_id=workspace, document_id=document_id,
+        )
+        if data is None:
+            return _error(404, "owner_approved_workcopy_not_found")
+        metadata, payload = data
+        from .workspace_storage import XLSX_MEDIA_TYPE
+        if (metadata.document_id != document_id
+                or metadata.media_type != XLSX_MEDIA_TYPE
+                or not isinstance(payload, bytes)
+                or hashlib.sha256(payload).hexdigest() != state["source_sha256"]):
+            return _error(503, "approved_workcopy_integrity_failed")
+    except (KeyError, TypeError, ValueError, AttributeError):
+        return _error(503, "approved_workcopy_metadata_invalid")
+    except Exception:
+        return _error(503, "approved_workcopy_read_unavailable")
+    return Response(
+        payload, media_type=XLSX_MEDIA_TYPE,
+        headers={
+            **_NO_STORE,
+            "Cross-Origin-Resource-Policy": "same-origin",
+            "Vary": "Cookie",
+            "Content-Disposition": "attachment; filename*=UTF-8''"
+            + quote(original["filename"], safe=""),
+            "Content-Length": str(len(payload)),
+        },
+    )
