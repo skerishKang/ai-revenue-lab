@@ -1509,6 +1509,10 @@
     contextSnapshot.selectedModelId =
       clawGeneralRequest && selectedProductTier() === "plus" && typeof clawModelIdInput !== "undefined" && clawModelIdInput
         ? clawModelIdInput.value.trim() : "";
+    if (clawGeneralRequest && !contextSnapshot.selectedModelId) {
+      setNote(uiT("claw-verified-model-required"), "error");
+      return false; // no quota/provider call without explicit model
+    }
     showConversation({ preserveClaw: clawGeneralRequest });
     addUserMessage(prompt, attachmentSnapshot);
     input.value = "";

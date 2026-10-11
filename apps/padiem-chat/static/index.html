@@ -716,10 +716,19 @@
               <button id="removeAttachment" class="attachment-remove" type="button" data-locale-aria-label="attachment-remove" aria-label="첨부 파일 제거">×</button>
             </div>
           </div>
+          <label for="clawVerifiedModelSelect" class="claw-model-choice">
+            <span data-locale-key="claw-verified-model-label">파디엠플러스 검증 모델 선택</span>
+            <select id="clawVerifiedModelSelect" aria-describedby="clawVerifiedModelHint">
+              <option value="">모델을 직접 선택하세요</option>
+            </select>
+            <small id="clawVerifiedModelHint" role="status" aria-live="polite">미검증 모델은 선택할 수 없습니다.</small>
+          </label>
+          <details class="claw-model-advanced"><summary data-locale-key="claw-model-advanced">직접 모델 ID 입력 (고급)</summary>
           <label for="clawModelIdInput" class="claw-model-choice"><span data-locale-key="claw-model-choice-label">실행 모델 ID (등록된 모델)</span>
-            <input id="clawModelIdInput" type="text" value="google/gemini-3.5-flash-lite" maxlength="128" autocomplete="off" autocapitalize="off" spellcheck="false" data-locale-placeholder="claw-model-choice-placeholder" placeholder="등록된 모델 ID를 입력하세요" aria-describedby="clawModelChoiceHint" />
+            <input id="clawModelIdInput" type="text" value="" maxlength="128" autocomplete="off" autocapitalize="off" spellcheck="false" data-locale-placeholder="claw-model-choice-placeholder" placeholder="등록된 모델 ID를 입력하세요" aria-describedby="clawModelChoiceHint" />
             <small id="clawModelChoiceHint" data-locale-key="claw-model-choice-hint">Claw Plus 기본: Gemini 3.5 Flash-Lite · 직접 변경 가능 · 자동 대체 없음</small>
           </label>
+          </details>
           <button class="owner-model-preview-trigger" id="ownerModelPreviewOpen" type="button" aria-haspopup="dialog" aria-controls="ownerModelPreviewDialog" aria-expanded="false" data-locale-aria-label="owner-model-preview-open" aria-label="파디엠플러스 모델 현황"><span data-locale-key="owner-model-preview-open">파디엠플러스 모델 현황</span></button>
           <label for="messageInput" class="sr-only" data-locale-key="message-input-label">메시지 입력</label>
           <textarea id="messageInput" rows="1" data-locale-placeholder="input" placeholder="무엇이든 물어보세요" autocomplete="off" maxlength="8000"></textarea>
@@ -821,7 +830,7 @@
       <h2 id="ownerModelPreviewTitle" data-locale-key="owner-model-preview-title">파디엠플러스 모델 현황</h2>
       <button type="button" id="ownerModelPreviewClose" class="owner-model-preview-close" data-locale-aria-label="owner-model-preview-close" aria-label="닫기">×</button>
     </div>
-    <p id="ownerModelPreviewScope" data-locale-key="owner-model-preview-scope">확인된 Google 모델 일부입니다. 전체 선정 목록은 아니며, 아직 고객 실행은 제공되지 않습니다.</p>
+    <p id="ownerModelPreviewScope" data-locale-key="owner-model-preview-scope">Google 모델 이름 일부입니다. 전체 선정 목록은 아니며 실행 가능한 모델은 Claw 모델 선택란에서 확인하세요.</p>
     <p id="ownerModelPreviewStatus" role="status" aria-live="polite"></p>
     <ul id="ownerModelPreviewList" class="owner-model-preview-list" aria-label="모델 현황"></ul>
     <p data-locale-key="owner-model-preview-no-activation">모델을 표시해도 자동 선택·호출·결제가 발생하지 않습니다.</p>
@@ -833,6 +842,7 @@
   <script src="./attachment-capabilities.js"></script>
   <script src="./locale.js"></script>
   <script src="./owner-model-preview.js"></script>
+  <script src="./claw-verified-model-choice.js"></script>
   <script src="./document-binary.js"></script>
   <script src="./chat-transport.js"></script>
   <script src="./conversation-state.js"></script>

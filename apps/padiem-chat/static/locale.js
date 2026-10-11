@@ -8,10 +8,19 @@
 
   const labels = {
     ko: {
+      "claw-verified-model-label": "파디엠플러스 검증 모델 선택",
+      "claw-verified-model-placeholder": "모델을 직접 선택하세요",
+      "claw-verified-model-loading": "검증된 모델 확인 중",
+      "claw-verified-model-ready": "검증된 모델만 선택 가능하며 자동 선택은 하지 않습니다.",
+      "claw-verified-model-unavailable": "모델 목록을 확인할 수 없습니다. 로그인 상태를 확인하세요.",
+      "claw-verified-model-hold": "사용 준비 중",
+      "claw-verified-model-required": "실행할 모델을 직접 선택해 주세요.",
+      "claw-model-advanced": "직접 모델 ID 입력 (고급)",
+
       "owner-model-preview-open": "파디엠플러스 모델 현황",
       "owner-model-preview-title": "파디엠플러스 모델 현황",
       "owner-model-preview-close": "모델 현황 닫기",
-      "owner-model-preview-scope": "확인된 Google 모델 일부입니다. 전체 선정 목록은 아니며, 고객 실행은 아직 제공되지 않습니다.",
+      "owner-model-preview-scope": "Google 모델 이름 일부입니다. 전체 선정 목록은 아니며 실행 가능 여부는 Claw 모델 선택에서 확인하세요.",
       "owner-model-preview-no-activation": "조회만 가능합니다. 자동 선택·모델 호출·결제는 발생하지 않습니다.",
       "owner-model-preview-loading": "모델 현황을 불러오는 중입니다.",
       "owner-model-preview-unavailable": "모델 현황을 확인할 수 없습니다.",
@@ -185,10 +194,19 @@
       "export": "대화 내보내기", "export-aria": "현재 대화를 텍스트 파일로 내보내기", "active-project-note": "‘{name}’ 프로젝트의 지침과 저장 파일을 이 대화에 적용합니다.", "attachment-photo": "사진", "attachment-document": "문서", "project-files-used": "프로젝트 파일 {count}개를 참고했습니다.", "answer-load-failed": "답변을 불러오지 못했습니다.", "try-again": "잠시 후 다시 시도해 주세요.", "generation-cancelled": "생성 취소됨", "generation-cancelled-copy": "생성 중인 답변을 취소했습니다. 완성되지 않은 내용은 저장하거나 내보낼 수 없습니다.", "regenerate": "다시 생성", "attachment-image-note": "선택한 사진은 이 질문과 함께 한 번만 전송됩니다.", "attachment-document-note": "선택한 문서는 이 질문의 참고 자료로만 사용되며 대화 기록에 파일 내용이 저장되지 않습니다.", "image-read-failed": "사진을 읽지 못했습니다.", "document-read-failed": "문서를 읽지 못했습니다.", "empty-document": "빈 문서는 첨부할 수 없습니다.", "binary-document": "바이너리 파일은 텍스트 문서로 첨부할 수 없습니다.", "image-format-invalid": "사진 형식을 확인할 수 없습니다.", "image-data-empty": "사진 데이터가 비어 있습니다.", "file-read-failed": "파일을 읽지 못했습니다.", "project-files-count": "파일 {count}개", "project-manage-aria": "‘{name}’ 프로젝트 관리", "project-files-load-failed": "프로젝트 파일을 불러오지 못했습니다.", "character-count": "{count}자", "document-saving": "문서 저장 중…", "project-file-save-failed": "프로젝트 파일을 저장하지 못했습니다.", "project-file-delete-title": "프로젝트 파일을 삭제할까요?", "project-file-delete-message": "‘{name}’ 파일을 이 프로젝트에서 삭제합니다. 삭제한 파일은 복구할 수 없습니다.", "project-file-delete-failed": "프로젝트 파일을 삭제하지 못했습니다.", "project-name-required": "프로젝트 이름을 입력해 주세요.", "project-save-failed": "프로젝트를 저장하지 못했습니다.", "project-delete-title": "프로젝트를 삭제할까요?", "project-delete-message": "‘{name}’ 프로젝트를 삭제합니다. 프로젝트의 대화는 남지만 프로젝트 연결은 해제됩니다. 삭제한 프로젝트는 복구할 수 없습니다.", "project-delete-failed": "프로젝트를 삭제하지 못했습니다.", "signed-in": "로그인됨", "session-expired": "세션 만료", "guest": "게스트", "conversation-delete-aria": "‘{title}’ 대화 삭제", "conversation-delete-title": "대화를 삭제할까요?", "conversation-delete-message": "‘{title}’ 대화를 삭제합니다. 삭제한 대화는 복구할 수 없습니다.", "conversation-delete-failed": "대화를 삭제하지 못했습니다.", "conversation-load-failed": "저장된 대화를 불러오지 못했습니다.", "conversation-project-load-failed": "이 대화의 프로젝트를 불러오지 못했습니다.", "stream-format-invalid": "AI 스트리밍 응답 형식을 확인할 수 없습니다.", "stream-continue-failed": "스트리밍 답변을 계속하지 못했습니다. 다시 시도해 주세요.", "stream-complete-invalid": "AI 스트리밍 응답이 정상적으로 완료되지 않았습니다.", "stream-done-duplicate": "AI 스트리밍 완료 신호가 중복되었습니다.", "stream-incomplete": "AI 스트리밍 응답이 완료되지 않았습니다. 다시 시도해 주세요.", "answer-cancelled-note": "답변 생성을 취소했습니다. 완성되지 않은 내용은 저장하거나 내보낼 수 없습니다.", "connectors-grid-aria": "커넥터 지원 및 워크스페이스 연결 상태", "skills-grid-aria": "준비 중 스킬", "coming-features-aria": "준비 중인 기능", "glass-background": "Padiem Glass 배경", "glass-background-selection": "Padiem Glass 배경 선택", "glass-a": "배경 A", "glass-b": "배경 B"
     },
     en: {
+      "claw-verified-model-label": "Padiem Plus verified model selection",
+      "claw-verified-model-placeholder": "Select a model explicitly",
+      "claw-verified-model-loading": "Loading verified models",
+      "claw-verified-model-ready": "Only verified models can be chosen. No automatic choice.",
+      "claw-verified-model-unavailable": "Model list unavailable. Check your login.",
+      "claw-verified-model-hold": "Not yet available",
+      "claw-verified-model-required": "Select an exact model first.",
+      "claw-model-advanced": "Enter exact model ID (advanced)",
+
       "owner-model-preview-open": "Padiem Plus model status",
       "owner-model-preview-title": "Padiem Plus model status",
       "owner-model-preview-close": "Close model status",
-      "owner-model-preview-scope": "This is only part of the confirmed Google models, not the full approved inventory. Customer execution is not enabled.",
+      "owner-model-preview-scope": "This is not the full approved inventory. Check Claw verified model choices for executable options.",
       "owner-model-preview-no-activation": "Viewing model names cannot auto-select, execute, or bill for a model.",
       "owner-model-preview-loading": "Loading model status…",
       "owner-model-preview-unavailable": "Model status is unavailable.",
