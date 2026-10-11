@@ -202,11 +202,14 @@ check(worker.includes('headers.set("Origin", PADIEM_CHAT_ORIGIN)'),
   "/api/padiem/auth/password/register",
   "/api/padiem/auth/logout",
   "/api/padiem/b66/quote/interpret",
-  "/api/padiem/b66/saved-skills"
+  "/api/padiem/b66/saved-skills",
+  "/api/padiem/b66/saved-skill-candidates"
 ].forEach((route) => check(worker.includes(route),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: bounded route " + route));
 check(worker.includes("padiem_route_not_allowed") && worker.includes("SAVED_SKILL_ROW"),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: arbitrary upstream path denied");
+check(worker.includes("SKILL_CANDIDATE_ROW"),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: candidate row ids are shape-bounded in the bridge");
 check(worker.includes('request.headers.get("cookie")') &&
       !worker.includes('request.headers.get("authorization")'),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: opaque session forwarded without browser Authorization authority");

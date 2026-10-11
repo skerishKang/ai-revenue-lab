@@ -2079,7 +2079,13 @@
         authenticated: serverHistorySignedIn === true,
         privateStateReadable: privateStateReadable()
       }),
-      toast
+      fetch: (url, options) => window.fetch(url, options),
+      toast,
+      refreshAssignedSkills: () => {
+        /* 승인이 끝나면 배정된 내 견적서 목록을 서버 authority 에서 다시 읽는다. */
+        const bridge = window.B66QuoteSkillBridge;
+        if (bridge && typeof bridge.refresh === "function") bridge.refresh();
+      }
     });
   }
   document.addEventListener("b66:open-manual-skill", () => {
