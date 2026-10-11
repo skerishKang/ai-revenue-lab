@@ -141,3 +141,15 @@ def test_workflow_has_protected_manual_only_mutation_and_rollback():
     assert "HARK_PRODUCTION_STAGE=PASS" in workflow
     assert "BROWSER_QUICK_ACTION_CALLS=0" in workflow
     assert "PADIEM_WEB_XLSX_QUOTE_PDF_ENABLED" not in workflow  # flags owned by script
+    # Previous production engine_read run 38118608721 failed at curl(2):
+    # the PATCH omitted its target URL, then requested rollback even though
+    # nothing reached Cloudflare. Guard the *actual* live PATCH command, not
+    # only the offline planner.
+    mutation = workflow.split(
+        "- name: Apply only reviewed live-inherit and approved flag additions", 1
+    )[1].split("- name: Verify newly served immutable Worker", 1)[0]
+    assert 'api="https://api.cloudflare.com/client/v4/accounts/' in mutation
+    assert '-X PATCH' in mutation
+    assert """-w '%{http_code}' \\
+            "${api}")""" in mutation
+
