@@ -211,15 +211,13 @@ def _validate_body(raw: Any) -> dict:
         raise _InvalidBody("model must be a non-empty string")
 
     model = raw["model"].strip()
-    if len(model) > 200:
-        raise _InvalidBody("model must not exceed 200 characters")
-
-    # messages
+    # Provider/model controls supported context size and message count.
+    # B14 validates the message shape, not a second artificial context cap.
     msgs = raw.get("messages")
     if not isinstance(msgs, list):
         raise _InvalidBody("messages must be a non-empty array")
-    if len(msgs) < 1 or len(msgs) > 100:
-        raise _InvalidBody("messages must have 1–100 items")
+    if not msgs:
+        raise _InvalidBody("messages must be a non-empty array")
 
     validated_messages: list[dict[str, str]] = []
     for i, msg in enumerate(msgs):
@@ -235,8 +233,6 @@ def _validate_body(raw: Any) -> dict:
         if not isinstance(content, str) or not content.strip():
             raise _InvalidBody(f"messages[{i}] content must be a non-empty string")
         content = content.strip()
-        if len(content) > 32000:
-            raise _InvalidBody(f"messages[{i}] content must not exceed 32000 characters")
         validated_messages.append({"role": role, "content": content})
 
     # temperature
@@ -245,8 +241,8 @@ def _validate_body(raw: Any) -> dict:
         if isinstance(temp, bool) or not isinstance(temp, (int, float)):
             raise _InvalidBody("temperature must be a number or null")
         temp = float(temp)
-        if not math.isfinite(temp) or temp < 0.0 or temp > 2.0:
-            raise _InvalidBody("temperature must be between 0.0 and 2.0")
+        if not math.isfinite(temp):
+            raise _InvalidBody("temperature must be finite; provider validates its supported range")
 
     # max_tokens. None is meaningful: preserve omission so a product may either
     # request an explicit bounded budget or defer to the provider/model default.
@@ -254,8 +250,8 @@ def _validate_body(raw: Any) -> dict:
     if mt is not None:
         if isinstance(mt, bool) or not isinstance(mt, int):
             raise _InvalidBody("max_tokens must be an integer or null")
-        if mt < 1 or mt > 2147483647:
-            raise _InvalidBody("max_tokens must be a positive 32-bit integer (provider model limit applies)")
+        if mt < 1:
+            raise _InvalidBody("max_tokens must be positive; provider validates its supported maximum")
 
     # stream
     st = raw.get("stream")
@@ -783,9 +779,8 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
     # same-route retry default, but allow a bounded caller to explicitly lower
     # the retry ceiling (including zero). This does not widen the maximum and
     # does not affect auto-chain fallback semantics.
-    same_route_retry_limit = b14_opts.get(
-        "max_retries", _UPSTREAM_RETRY_MAX_RETRIES
-    )
+    # Do not multiply provider traffic by default; retries require caller opt-in.
+    same_route_retry_limit = b14_opts.get("max_retries", 0)
 
     start_time = time.monotonic()
     deadline = start_time + _UPSTREAM_RETRY_BUDGET_SECONDS
