@@ -21,6 +21,7 @@ CHAT_ONLY = "chat_only"
 STATIC_ONLY = "static_only"
 TESTS_ONLY = "tests_only"
 B14_ONLY = "b14_only"
+B14_TESTS_ONLY = "b14_tests_only"
 
 
 def impact_scope(files: object) -> str:
@@ -40,6 +41,14 @@ def impact_scope(files: object) -> str:
         if not path or "\\" in path or ".." in Path(path).parts or path in paths:
             return FULL
         paths.append(path)
+    # B14 unit-test-only changes never alter either product's shipped sources,
+    # pinned dependencies or runtime probes. B14's independent validate-b14-alpha
+    # workflow runs the *complete* B14 test suite on every such PR and main push.
+    # Keep the B14 pilot contract check here and the stable b62-test check context,
+    # but omit unchanged B62 host/Worker jobs only for this exact narrow case.
+    if all(re.fullmatch(r"apps/korean-ai-platform/tests/test_[^/]+\.py", p) for p in paths):
+        return B14_TESTS_ONLY
+
     # B14 pilot source/tests are a separate deployed application: they cannot
     # change B62 Worker/Pyodide probe entrypoints, pinned vendor locks or
     # B62 Core source. Keep full B62 Chat integration + B14 tests + bundle,

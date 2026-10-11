@@ -171,6 +171,16 @@ jobs:
             test "$WORKER_RESULT" = skipped
             test "$MM_RESULT" = skipped
             echo 'B62_CI_MODE=MODEL_REGISTRATION_ONLY'
+          elif [ "$SCOPE" = b14_tests_only ]; then
+            # Independent validate-b14-alpha.yml runs all B14 tests. This B62
+            # required check only needs the retained B14 pilot contract: B62
+            # source, locks, Worker and Core are byte-identical.
+            test "$MM_RESULT" = success
+            test "$UI_RESULT" = skipped
+            test "$FULL_RESULT" = skipped
+            test "$WORKER_RESULT" = skipped
+            test "$QUICK_RESULT" = skipped
+            echo 'B62_CI_MODE=B14_TESTS_ONLY'
           elif [ "$SCOPE" = static_only ]; then
             # The UI suite is required; all unchanged runtimes must be skipped.
             test "$UI_RESULT" = success
@@ -191,7 +201,7 @@ jobs:
   b62-full-suite:
     name: B62 full regression
     needs: registry-ci-plan
-    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' }}
+    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'b14_tests_only' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     defaults:
@@ -233,7 +243,7 @@ jobs:
   b62-worker-suite:
     name: B62 Worker/Pyodide contract
     needs: registry-ci-plan
-    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' }}
+    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'b14_tests_only' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     defaults:

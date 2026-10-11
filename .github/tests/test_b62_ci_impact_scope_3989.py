@@ -117,7 +117,6 @@ class B62ScopeTests(unittest.TestCase):
             "apps/korean-ai-platform/app/pilot/b14_execution.py",
             "apps/korean-ai-platform/app/pilot/b14_models.json",
             "apps/korean-ai-platform/app/pilot/nested/runner.py",
-            "apps/korean-ai-platform/tests/test_multimodal.py",
         )
         for path in samples:
             with self.subTest(path=path):
@@ -126,6 +125,67 @@ class B62ScopeTests(unittest.TestCase):
             file("apps/korean-ai-platform/app/pilot/runner.py"),
             file("apps/korean-ai-platform/tests/test_pilot.py"),
         ]), module.B14_ONLY)
+
+    def test_b14_test_module_only_keeps_independent_b14_and_stable_b62_status(self):
+        for path in (
+            "apps/korean-ai-platform/tests/test_multimodal.py",
+            "apps/korean-ai-platform/tests/test_pilot.py",
+            "apps/korean-ai-platform/tests/test_b14_native_parameters.py",
+        ):
+            with self.subTest(path=path):
+                self.assertEqual(module.impact_scope([file(path)]), module.B14_TESTS_ONLY)
+        self.assertEqual(module.impact_scope([
+            file("apps/korean-ai-platform/tests/test_multimodal.py"),
+            file("apps/korean-ai-platform/tests/test_pilot.py", "added"),
+        ]), module.B14_TESTS_ONLY)
+
+        # Mixed B14 source+tests must run B62's existing integration and bundle.
+        self.assertEqual(module.impact_scope([
+            file("apps/korean-ai-platform/tests/test_pilot.py"),
+            file("apps/korean-ai-platform/app/pilot/b14_execution.py"),
+        ]), module.B14_ONLY)
+        for unsafe in (
+            "apps/korean-ai-platform/tests/conftest.py",
+            "apps/korean-ai-platform/tests/test_nested/test_provider.py",
+            "apps/korean-ai-platform/pyproject.toml",
+            "apps/korean-ai-platform/uv.lock",
+            "apps/padiem-chat/app/claw_general_routes.py",
+            ".github/workflows/b62-padiem-chat-ci.yml",
+        ):
+            with self.subTest(unsafe=unsafe):
+                self.assertEqual(module.impact_scope([
+                    file("apps/korean-ai-platform/tests/test_multimodal.py"),
+                    file(unsafe),
+                ]), module.FULL)
+        for bad in (
+            [file("apps/korean-ai-platform/tests/test_pilot.py", "removed")],
+            [file("apps/korean-ai-platform/tests/test_pilot.py", "renamed")],
+            [file("apps/korean-ai-platform/tests/test_pilot.py")] * 2,
+        ):
+            self.assertEqual(module.impact_scope(bad), module.FULL)
+
+    def test_b14_test_scope_uses_exact_pr_and_push_comparison(self):
+        for event_type in ("pull_request", "push"):
+            event = fake_event(event_type)
+            data = {"status": "ahead", "files": [
+                file("apps/korean-ai-platform/tests/test_pilot.py"),
+            ]}
+            with patch.object(module.urllib.request, "urlopen",
+                              return_value=io.BytesIO(json.dumps(data).encode())):
+                self.assertEqual(module.impact_scope(
+                    module.changed_files(event, event_type, REPO, "token")
+                ), module.B14_TESTS_ONLY)
+
+    def test_b14_test_scope_maintains_required_status_and_independent_full_b14(self):
+        workflow = (ROOT / ".github/workflows/b62-padiem-chat-ci.yml").read_text(encoding="utf-8")
+        independent = (ROOT / ".github/workflows/validate-b14-alpha.yml").read_text(encoding="utf-8")
+        self.assertIn("name: b62-test", workflow)
+        self.assertIn('elif [ "$SCOPE" = b14_tests_only ]; then', workflow)
+        self.assertIn('test "$MM_RESULT" = success', workflow)
+        self.assertIn("B62_CI_MODE=B14_TESTS_ONLY", workflow)
+        self.assertEqual(workflow.count("outputs.scope != 'b14_tests_only'"), 2)
+        self.assertIn("run: uv run pytest -q", independent)
+        self.assertIn("apps/korean-ai-platform/**", independent)
 
     def test_b14_isolated_scope_fails_closed_for_mixed_deps_ci_and_unknown(self):
         b14 = file("apps/korean-ai-platform/app/pilot/b14_execution.py")
