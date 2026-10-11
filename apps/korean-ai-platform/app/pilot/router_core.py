@@ -206,6 +206,15 @@ def resolve_manual_route(
             upstream_called=False,
         )
 
+    # Free-only TokenHarbor routes may never fall back to another provider's
+    # paid model, even when a client requests external fallback.
+    if cm.platform_provider_id == "tokenharbor" and allow_external_fallback:
+        raise NoSafeRoute(
+            reason_code="tokenharbor_free_only_fallback_disabled",
+            message="TokenHarbor free-only routes do not allow external fallback.",
+            upstream_called=False,
+        )
+
     cred_ok, cred_status, cred_source, plat_pid = _credential_status_for(cm)
 
     # Platform-owned secret missing -> fail closed with zero upstream calls.
