@@ -472,6 +472,30 @@
             <button type="button" class="starter" id="webSearchStarterButton" disabled aria-disabled="true" aria-pressed="false" hidden><span class="starter-icon" aria-hidden="true">⌕</span><span><strong data-locale-key="web-starter-title">웹에서 찾아줘</strong><small data-locale-key="web-starter-copy">웹 검색 · 준비 중</small></span></button>
           </div>
         </div>
+        <section class="claw-task-hub" id="clawTaskHub" aria-labelledby="clawTaskHubTitle">
+          <div class="claw-task-hub-heading">
+            <p class="claw-workspace-kicker">PADIEM CLAW · WEB</p>
+            <h2 id="clawTaskHubTitle">어떤 업무를 시작하시겠어요?</h2>
+            <p>한 가지 업무를 선택해 시작하세요. 승인되지 않은 파일 읽기·수정은 진행되지 않습니다.</p>
+          </div>
+          <div class="claw-task-hub-grid">
+            <button type="button" class="claw-task-option claw-task-option-primary" id="clawExcelStartButton" aria-controls="clawWebOfficeDetails">
+              <strong>Excel 파일 작업 <span class="claw-task-tag">WEB-FIRST</span></strong>
+              <span>XLSX 업로드와 파일 선택부터 시작합니다. 파일 읽기·수정에는 별도 승인이 필요합니다.</span>
+              <small>파일 선택 시작 →</small>
+            </button>
+            <button type="button" class="claw-task-option" id="clawCompareStartButton" aria-controls="clawQuoteCompare" aria-expanded="false">
+              <strong>공급업체 견적 비교</strong>
+              <span>두 곳 이상의 가격·납기·결제 조건을 비교합니다.</span>
+              <small>비교 양식 열기 →</small>
+            </button>
+            <button type="button" class="claw-task-option" id="clawDocumentStartButton">
+              <strong>문서 초안 작성</strong>
+              <span>견적서·발주서·답장·요청사항을 대화로 정리합니다.</span>
+              <small>문서 작업 시작 →</small>
+            </button>
+          </div>
+        </section>
         <section class="claw-web-office" id="clawWebOffice" aria-labelledby="clawWebOfficeTitle">
           <details id="clawWebOfficeDetails">
             <summary id="clawWebOfficeTitle">웹에서 Excel 원본 보관 · 컴퓨터 연결 불필요</summary>
@@ -600,8 +624,9 @@
           <header class="claw-run-history-header">
             <div class="claw-workspace-identity">
               <p class="claw-workspace-kicker" data-locale-key="claw-qc-kicker">PADIEM CLAW COMPARE</p>
-              <h2 class="claw-workspace-title" id="clawQuoteCompareTitle" data-locale-key="claw-qc-title">공급업체 견적 비교</h2>
+              <h2 class="claw-workspace-title" id="clawQuoteCompareTitle" data-locale-key="claw-qc-title" tabindex="-1">공급업체 견적 비교</h2>
             </div>
+            <button type="button" class="claw-qc-secondary" id="clawCompareCloseButton">비교 양식 닫기</button>
           </header>
           <p class="claw-workspace-tagline" data-locale-key="claw-qc-tagline">2개 이상의 캡처된 견적을 추론 없이 비교합니다.</p>
           <form class="claw-qc-form" id="clawQuoteCompareForm" data-locale-aria-label="claw-qc-form-aria" aria-label="공급업체 견적 비교 양식">
@@ -649,6 +674,7 @@
         </details>
       </section>
       <section class="composer-wrap" data-locale-aria-label="composer" aria-label="메시지 작성">
+        <button type="button" class="claw-mobile-composer-toggle" id="clawMobileComposerToggle" aria-expanded="true" aria-controls="composerForm">채팅·모델 설정 접기</button>
         <div class="project-banner" id="projectBanner" hidden>
           <div class="project-banner-copy"><span data-locale-key="project-banner">프로젝트</span><strong id="activeProjectName"></strong><small id="activeProjectFiles" hidden></small></div>
           <div class="project-banner-actions">
