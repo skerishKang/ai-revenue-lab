@@ -180,3 +180,74 @@ def test_browser_disconnection_cancels_live_p01_run():
         assert adapter.cancelled
 
     asyncio.run(verify())
+
+def test_real_failed_terminal_reaches_browser_before_bounded_error():
+    """The existing client recovery module can classify only delivered P01 events."""
+    adapter = _streaming_adapter()
+
+    async def failed_after_start(run, *, on_event, **kwargs):
+        await on_event(_event(1, OrchestrationEventKind.RUN_STARTED))
+        await on_event(_event(2, OrchestrationEventKind.RUN_FAILED))
+        raise P01AdapterError(
+            "p01_engine_stream_failed", "private failure evidence",
+            dispatch_class=P01DispatchClass.UNKNOWN,
+        )
+
+    adapter.execute = AsyncMock(side_effect=failed_after_start)
+    response = _call(adapter)
+    assert response.status_code == 200
+    assert response.text.count("event: p01_event") == 2
+    assert response.text.index('"kind":"run_failed"') < response.text.index("event: error")
+    assert "event: done" not in response.text
+    assert "private failure evidence" not in response.text
+
+
+def test_cancelled_and_failed_core_outcomes_preserve_verified_terminal_state():
+    for status, event_kind in (
+        ("cancelled", OrchestrationEventKind.RUN_CANCELLED),
+        ("failed", OrchestrationEventKind.RUN_FAILED),
+    ):
+        adapter = _streaming_adapter()
+
+        async def noncompleted(run, *, on_event, **kwargs):
+            await on_event(_event(1, OrchestrationEventKind.RUN_STARTED))
+            await on_event(_event(2, event_kind))
+            return _make_outcome(status=status, answer=None)
+
+        adapter.execute = AsyncMock(side_effect=noncompleted)
+        response = _call(adapter)
+        assert response.status_code == 200
+        assert response.text.count("event: p01_event") == 2
+        assert f'"kind":"{event_kind.value}"' in response.text
+        assert response.text.index(event_kind.value) < response.text.index("event: error")
+        assert "event: done" not in response.text
+
+
+def test_actual_core_approval_pause_reaches_recovery_without_minting_consent():
+    response = _call(_streaming_adapter(status="waiting_approval"))
+    assert response.status_code == 200
+    assert response.text.count("event: p01_event") == 4
+    assert response.text.index('"kind":"approval_paused"') < response.text.index("event: error")
+    assert "claw_general_approval_required" in response.text
+    assert "event: done" not in response.text
+    assert "continuation_ref" not in response.text
+
+
+def test_unverified_error_never_emits_previous_completed_terminal():
+    adapter = _streaming_adapter()
+
+    async def completion_then_failure(run, *, on_event, **kwargs):
+        await on_event(_event(1, OrchestrationEventKind.RUN_STARTED))
+        await on_event(_event(2, OrchestrationEventKind.RUN_COMPLETED))
+        raise P01AdapterError(
+            "p01_engine_stream_failed", "private incomplete completion",
+            dispatch_class=P01DispatchClass.UNKNOWN,
+        )
+
+    adapter.execute = AsyncMock(side_effect=completion_then_failure)
+    response = _call(adapter)
+    assert response.status_code == 200
+    assert response.text.count("event: p01_event") == 1
+    assert '"kind":"run_completed"' not in response.text
+    assert "event: done" not in response.text
+    assert "private incomplete completion" not in response.text
