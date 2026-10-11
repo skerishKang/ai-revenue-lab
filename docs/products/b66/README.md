@@ -4,12 +4,15 @@
 DOC_STATUS = CANONICAL_PRODUCT_ENTRYPOINT
 OWNER = B66 product
 PRODUCT_EPIC = #3180
-SOURCE_ANALYSIS_AUTHORITY = #3542
+SOURCE_ANALYSIS_AUTHORITY = CUSTOMER_ONBOARDING_SOP (#3180; historic #3542 closed)
 REPRODUCTION_CERTIFICATION_AUTHORITY = #3595
 SOURCE_FORMAT_POLICY = #3586
 ```
 
 B66 is Padiem's standalone quotation product for businesses that already have quotation formats they use repeatedly.
+
+**2026-10-11 source-analysis operating rule:** the initial analysis of each authorized customer quotation is a normal **one-time onboarding step** (see [SOURCE_TEMPLATE_FIDELITY.md](SOURCE_TEMPLATE_FIDELITY.md#new-customer-source-analysis--standing-onboarding-procedure-2026-10-11)), **not a permanently OPEN development task**. Historic [#3542](https://github.com/skerishKang/ai-revenue-lab/issues/3542) is closed as redundant for that operational step. Sol 6.1 can assist initial source analysis, but a generic automated analyzer is deferred. Stored originals and owner scope remain #3884, proposed skill enrollment #3186, and actual source/reference certification #3595 remain independently OPEN. Existing CGI analysis is already done; repeat PDF rendering does not re-analyze the source or call Sol/B14 to draw the document.
+
 
 The user-facing reusable concept is **내 견적서 / Saved Quote Skill**. Internal template/profile/compiler terminology is not the primary user concept.
 
@@ -157,7 +160,7 @@ hidden fallback, PDF production release or skipped visual/customer E2E gates.
 | Area | Current authority | Status meaning |
 |---|---|---|
 | Product / Saved Quote Skill | #3180 | overall product epic |
-| Source analysis | #3542 | source facts -> ANALYZED candidate |
+| Source analysis (each approved new customer/source version) | [SOURCE_TEMPLATE_FIDELITY.md](SOURCE_TEMPLATE_FIDELITY.md), #3180 | standard one-time onboarding SOP -> ANALYZED candidate; historic #3542 archived, never replaces certification #3595 |
 | Reproduction / certification / compiler generalization | #3595 | source certification/generalization proven (including a second unrelated template); parent issue #3595 remains OPEN for tracking disposition |
 | Template registration source formats | #3586 | XLSX now; HWPX future; legacy XLS/HWP rejected |
 | Quote shell / single composer UX | #3536 | product UX |

@@ -3,10 +3,21 @@
 ```text
 DOC_STATUS = CANONICAL_PRODUCT
 OWNER = B66 product
-ANALYSIS_AUTHORITY = #3542
+ANALYSIS_AUTHORITY = STANDARD_PER_CUSTOMER_ONBOARDING_SOP (#3180; historic #3542 closed)
 CERTIFICATION_AUTHORITY = #3595
 SCOPE = source-derived quotation templates, document/image fidelity implementation and certification
 ```
+
+## New-customer source analysis — standing onboarding procedure (2026-10-11)
+
+When an owner-authorized new customer provides a quotation source, perform **one analysis for that source/version** as routine onboarding; **do not open or reopen a generic #3542 ticket per customer**. The existing CGI 1–3 item source is already analyzed; do not re-analyze it without a changed source/version and explicit need.
+
+1. Apply the [#3586](https://github.com/skerishKang/ai-revenue-lab/issues/3586) **current registration format policy** and [#3884](https://github.com/skerishKang/ai-revenue-lab/issues/3884) actual customer-original custody and owner authorization. A format preflight alone is not a verified upload or certified reusable template.
+2. For a separately authorized original, inspect real cells, merges, fonts, formulas, geometry, drawings, logos/stamps, print rules, provenance and supported/unsupported elements. **Sol 6.1 may assist the one-time analysis/engineering** under the existing owner decision; there is no requirement for a universal automated analyzer or a model call on each quote.
+3. Record a bounded **ANALYZED** candidate distinguishing **observed source facts, derived mappings, explicit approximations and unknown/unsupported features**. Link the candidate to a possible Saved Quote Skill/QuoteTemplateProfile for review under [#3180](https://github.com/skerishKang/ai-revenue-lab/issues/3180) and [#3186](https://github.com/skerishKang/ai-revenue-lab/issues/3186). No automatic approval or private source publication.
+4. Perform the separate reproduction/visual/structure comparison and any customer-approved deviations under [#3595](https://github.com/skerishKang/ai-revenue-lab/issues/3595) **before** activating a reusable Saved Quote Skill. Repeat generation uses QuoteDraft → QuoteCore → certified deterministic renderer, with source re-analysis = 0 and render model calls = 0.
+
+A distinct, evidence-backed **generic automated analyzer/processor feature** may receive a new development issue later only if the owner actually authorizes that investment. Closing #3542 does not certify another customer template, activate HWPX, or lift the #3884 security gate.
 
 ## 1. Scope
 
@@ -50,7 +61,7 @@ definition of the product flow.
 
 ### ANALYSIS
 
-#3542 owns source analysis.
+Source analysis is the one-time per-customer onboarding procedure in this canonical contract, supervised by #3180. Historic #3542 was closed as a redundant standing development ticket; it is not a precondition to analyze each approved new customer.
 
 Analysis records what is actually present and classifies facts as:
 
@@ -315,7 +326,7 @@ These issues remain evidence but are no longer competing authorities for current
 - #3581 — Google Drive/Sheets renderer experiment;
 - #3584 — Google-native asset/camera normalization experiment.
 
-Current decisions should be read from this document plus #3542/#3595, not reconstructed by combining older experiment threads.
+Current decisions should be read from this document together with #3180/#3595, not reconstructed by combining older experiment threads. Historic #3542 remains a reference to the closed analysis-ticket discussion.
 
 ## #3586 reusable template registration upload allowlist (2026-10-10)
 
