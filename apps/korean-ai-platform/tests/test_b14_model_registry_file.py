@@ -180,3 +180,27 @@ def test_disabled_provider_makes_its_registered_models_unavailable(tmp_path):
         assert item is not None and item.enabled is False
     finally:
         install_models()
+
+
+
+def test_opencodego_and_zanslab_are_registered_disabled_without_credentials():
+    """Owner intake is metadata only until distinct credentials and transport are verified."""
+    reg = read_registry()
+    providers = reg["providers"]
+    assert providers["opencode-go"]["base_origin"] == "https://opencode.ai/zen/go/v1"
+    assert providers["opencode-go"]["credential_binding_name"] == "PADIEM_OPENCODE_GO_API_KEY"
+    assert providers["zanslab"]["base_origin"] == "https://zanslab.id/v1"
+    assert providers["zanslab"]["credential_binding_name"] == "PADIEM_ZANSLAB_API_KEY"
+    assert providers["opencode-go"]["enabled"] is False
+    assert providers["zanslab"]["enabled"] is False
+    # Credentials and verified account-specific ZansLab model IDs are absent;
+    # do not invent an executable route or even an inactive catalog model.
+    assert not any(row["provider_id"] in {"opencode-go", "zanslab"}
+                   for row in reg["models"])
+    assert not any(model_id.startswith(("opencode-go/", "zanslab/"))
+                   for tier in ("plus", "pro", "max") for model_id in reg["groups"][tier])
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    wrangler = (root / "wrangler.toml").read_text(encoding="utf-8")
+    assert "PADIEM_OPENCODE_GO_API_KEY" not in wrangler
+    assert "PADIEM_ZANSLAB_API_KEY" not in wrangler

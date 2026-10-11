@@ -91,6 +91,20 @@
       "credential_source": "platform_secret",
       "credential_binding_name": "PADIEM_TOKEN_HARBOR_API_KEY",
       "enabled": true
+    },
+    "opencode-go": {
+      "base_origin": "https://opencode.ai/zen/go/v1",
+      "allowed_hosts": ["opencode.ai"],
+      "credential_source": "platform_secret",
+      "credential_binding_name": "PADIEM_OPENCODE_GO_API_KEY",
+      "enabled": false
+    },
+    "zanslab": {
+      "base_origin": "https://zanslab.id/v1",
+      "allowed_hosts": ["zanslab.id"],
+      "credential_source": "platform_secret",
+      "credential_binding_name": "PADIEM_ZANSLAB_API_KEY",
+      "enabled": false
     }
   },
   "models": [
