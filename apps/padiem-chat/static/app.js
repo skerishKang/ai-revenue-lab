@@ -1910,6 +1910,8 @@
     "claw-runs-open-session": "Open session",
     "claw-runs-status-completed": "Completed",
     "claw-runs-status-waiting_approval": "Approval required",
+    "claw-runs-kind-aria": "File type {kind}",
+    "claw-runs-download-only": "This format is download-only. Save the file to view its contents.",
     "claw-approval-actions-aria": "Approval decision",
     "claw-approval-required": "This run is waiting for your approval.",
     "claw-approval-approve": "Approve",
@@ -4359,6 +4361,32 @@
   }
 
   function renderClawRunCard(run) {
+    // L2 result-file card: the kind shown on a completed run's file is derived
+    // ONLY from the server-verified media_type the owner-scoped run projection
+    // already carries. A filename extension is never used to invent a type, and
+    // an absent or unregistered media type renders no chip rather than a guess.
+    // The map is closed, so a hostile media type can only fail to match.
+    const artifactKindMap = Object.freeze({
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "XLSX",
+      "application/vnd.ms-excel": "XLS",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "DOCX",
+      "application/msword": "DOC",
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation": "PPTX",
+      "application/pdf": "PDF",
+      "text/csv": "CSV",
+      "text/plain": "TXT",
+      "application/zip": "ZIP",
+      "image/png": "PNG",
+      "image/jpeg": "JPG",
+      "image/webp": "WEBP",
+    });
+    const artifactKindOf = (mediaType) => {
+      if (typeof mediaType !== "string") return "";
+      const normalized = mediaType.trim().toLowerCase();
+      // Object prototype members such as "constructor" and "__proto__"
+      // are not registered media types and must never produce a file chip.
+      return Object.hasOwn(artifactKindMap, normalized) ? artifactKindMap[normalized] : "";
+    };
     const card = document.createElement("div");
     card.className = "claw-run-card";
     card.dataset.runId = typeof run.run_id === "string" ? run.run_id : "";
@@ -4409,9 +4437,23 @@
     if (artifact) {
       const artifactRow = document.createElement("div");
       artifactRow.className = "claw-run-card-artifact";
+      // L2: the file's own identity is grouped so a type chip can sit beside the
+      // name. Grouping keeps the row's two-element shape (identity + one action)
+      // and lets a long filename shrink instead of pushing the action out.
+      const fileGroup = document.createElement("span");
+      fileGroup.className = "claw-run-card-file";
+      const artifactKind = artifactKindOf(artifact.media_type);
+      if (artifactKind) {
+        const kindChip = document.createElement("span");
+        kindChip.className = "claw-run-card-kind";
+        kindChip.textContent = artifactKind;
+        kindChip.setAttribute("aria-label", clawT("claw-runs-kind-aria", { kind: artifactKind }));
+        fileGroup.appendChild(kindChip);
+      }
       const filename = document.createElement("span");
       filename.className = "claw-run-card-filename";
       filename.textContent = typeof artifact.filename === "string" ? artifact.filename : "";
+      fileGroup.appendChild(filename);
       const downloadBtn = document.createElement("button");
       downloadBtn.type = "button";
       downloadBtn.className = "claw-run-card-download";
@@ -4420,7 +4462,9 @@
         // Reuses the existing bounded artifact route through its single owner.
         if (artifact.document_id) downloadClawArtifact(artifact.document_id, artifact.filename || "");
       });
-      artifactRow.append(filename, downloadBtn);
+      artifactRow.append(fileGroup, downloadBtn);
+      // L2: one verified-preview decision, reused by the note and the controller.
+      const previewable = Boolean(window.PadiemClawPdfPreview?.validHistoricalArtifact?.(artifact));
       // #3935: a history artifact reference does not make a failed, cancelled,
       // approval-paused or unknown run completed. Keep its original badge and
       // existing click-to-check download; never auto-retry or claim delivery.
@@ -4431,10 +4475,19 @@
         caveat.textContent = clawT("claw-runs-artifact-unverified");
         artifactRow.appendChild(caveat);
       }
+      // L2: when no verified preview exists for this file, say so plainly so the
+      // single download action is never read as a preview affordance.
+      if (!previewable) {
+        const downloadOnly = document.createElement("p");
+        downloadOnly.className = "claw-run-card-download-only";
+        downloadOnly.setAttribute("role", "note");
+        downloadOnly.textContent = clawT("claw-runs-download-only");
+        fileGroup.appendChild(downloadOnly);
+      }
       // #3932: old owner-scoped run receipts lack byte_length. Display a
       // truthful click-to-check PDF action, then use the existing authenticated
       // 10MiB PDF byte route. Never preview DOCX/XLSX or inferred filenames.
-      if (window.PadiemClawPdfPreview?.validHistoricalArtifact?.(artifact)) {
+      if (previewable) {
         const viewer = window.PadiemClawPdfPreview.create({
           mount: artifactRow,
           onError: (message) => setClawRunHistoryStatus(message),
