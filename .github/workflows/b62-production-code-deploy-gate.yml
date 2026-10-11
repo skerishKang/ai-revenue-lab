@@ -55,6 +55,11 @@ on:
         required: false
         default: ""
         type: string
+      commission_hark_browser:
+        description: "Explicit owner-authorized BROWSER-only additive install; no PDF rendering or Hark flag activation"
+        required: false
+        type: boolean
+        default: false
       attach_existing_web_secrets_store:
         description: "Atomically attach the two existing Charliekant TinyFish and Daum secret bindings with new main code"
         required: false
@@ -446,12 +451,19 @@ jobs:
       PUBLIC_BASE_URL_STATE: ${{ needs.cloudflare-readonly.outputs.public_base_url_state }}
       CONFIRMATION: ${{ inputs.confirmation }}
       ATTACH_WEB_SECRETS_STORE: ${{ inputs.attach_existing_web_secrets_store }}
+      COMMISSION_HARK_BROWSER: ${{ inputs.commission_hark_browser }}
     steps:
       - name: Require explicit production code deploy authorization
         shell: bash
         run: |
           set -euo pipefail
-          test "${CONFIRMATION}" = "DEPLOY_B62_PRODUCTION_CODE_FROM_EXACT_MAIN"
+          if [ "${COMMISSION_HARK_BROWSER}" = "true" ]; then
+            test "${CONFIRMATION}" = "DEPLOY_B62_HARK_BROWSER_FROM_EXACT_MAIN"
+            test "${ATTACH_WEB_SECRETS_STORE}" != "true"
+            echo "HARK_BROWSER_COMMISSION_OWNER_AUTHORIZED=PASS"
+          else
+            test "${CONFIRMATION}" = "DEPLOY_B62_PRODUCTION_CODE_FROM_EXACT_MAIN"
+          fi
           test "${ATTACH_WEB_SECRETS_STORE}" = "true" || test "${ATTACH_WEB_SECRETS_STORE}" = "false"
           test -n "${READONLY_ACTIVE_VERSION}"
           if [ "${PUBLIC_BASE_URL_STATE}" != "expected" ]; then
@@ -596,6 +608,10 @@ jobs:
           if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ]; then
             extra_args=(--attach-existing-web-secrets-store)
           fi
+          if [ "${COMMISSION_HARK_BROWSER}" = "true" ]; then
+            test "${ATTACH_WEB_SECRETS_STORE}" != "true"
+            extra_args=(--commission-hark-browser)
+          fi
           python .github/scripts/b62_cloudflare_production_deploy_config.py \
             "${extra_args[@]}" \
             --settings "${RUNNER_TEMP}/b62-settings-before.json" \
@@ -716,11 +732,14 @@ jobs:
           if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ]; then
             verify_args=(--expected-add-web-secrets-store)
           fi
+          if [ "${COMMISSION_HARK_BROWSER}" = "true" ]; then
+            verify_args=(--expected-add-hark-browser)
+          fi
           python .github/scripts/b62_binding_state_guard.py \
             "${verify_args[@]}" \
             --before "${normalized_before}" \
             --after "${settings}"
-          if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ]; then
+          if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ] || [ "${COMMISSION_HARK_BROWSER}" = "true" ]; then
             echo "BINDINGS_PRESERVED_AND_APPROVED_ADDED=PASS"
           else
             echo "BINDINGS_PRESERVED_EXACTLY=PASS"
@@ -745,6 +764,15 @@ jobs:
 
           detail="${RUNNER_TEMP}/b62-version-after.json"
           bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions/${active}" "${detail}"
+          if [ "${COMMISSION_HARK_BROWSER}" = "true" ]; then
+            python .github/scripts/b62_binding_state_guard.py \
+              --expected-add-hark-browser \
+              --before "${RUNNER_TEMP}/b62-version-before.json" \
+              --after "${detail}"
+            jq -e '.result.resources.bindings | any(.name == "BROWSER" and .type == "browser")' "${detail}" >/dev/null
+            echo "HARK_BROWSER_SERVED_IMMUTABLE_BINDING=PASS"
+            echo "HARK_BROWSER_QUICK_ACTION_CALLS=0"
+          fi
           etag_after="$(jq -er '.result.resources.script.etag' "${detail}")"
           test "${etag_after}" != "${PREVIOUS_SCRIPT_ETAG}"
           echo "SCRIPT_ETAG_CHANGED=PASS"
