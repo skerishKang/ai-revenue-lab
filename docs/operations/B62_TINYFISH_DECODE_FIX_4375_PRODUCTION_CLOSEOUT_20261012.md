@@ -5,6 +5,22 @@
 **판정:** `SOURCE_MERGED=YES`, `PRODUCTION_DEPLOYED=YES`, `SEARCH_TRANSPORT_502_NOT_REPRODUCED_IN_BOUNDED_PROBES=YES`; **전체 모델 답변 E2E는 별도 미완료**.  
 **관련:** [구현 PR #4375](https://github.com/skerishKang/ai-revenue-lab/pull/4375), [중복 원본 PR #4049](https://github.com/skerishKang/ai-revenue-lab/pull/4049), [기존 완료 이슈 #3523](https://github.com/skerishKang/ai-revenue-lab/issues/3523), [B62 실사용 통합검증 #4317](https://github.com/skerishKang/ai-revenue-lab/issues/4317), [Search 우선순위 정책 #3385](./PADIEM_WEB_SEARCH_PROVIDER_POLICY_3385.md).
 
+## 0. 오류 귀속 분리: HTTP 503 `model_profile_unassigned` ≠ TinyFish 오류
+
+**CENTRAL CTO 확정 분류 (2026-10-12 KST):** 이 기록에 등장하는 **HTTP 503 `model_profile_unassigned`는 TinyFish Search·Fetch/API키·사용량·Daum fallback의 오류가 아니다.** 해당 오류는 일반 Chat의 **B62 제품 모델 프로필 선택·실행 매핑과 B14 모델 실행/라우팅 계약이 만나는 AI 모델 경계**에서 발생한 것이다. TinyFish는 웹 출처 수집만 담당하고 B14는 선택된 AI 모델의 실행을 담당한다. TinyFish를 B14의 모델 라우터에 등록하거나 TinyFish를 모델 공급자로 취급하지 않는다.
+
+```text
+USER_WEB_SEARCH_REQUEST
+  -> B62 Chat / Core: TinyFish Search 및 출처 선택
+  -> B14: 선택된 AI 모델의 실행 적격성 확인 및 답변 생성
+  -> HTTP 503 model_profile_unassigned: MODEL PROFILE / EXECUTION BOUNDARY
+     NOT TinyFish Search/Fetch error
+```
+
+**범위가 확인된 증거:** 기존 502/DECODING은 #4375 수정·병합·보호 배포 후 익명 공개 검색 7회에서 재발 **미관찰**, 실제 Worker 로그에서 `GROUNDING_SEARCH_EVIDENCE=QUALITY_SELECTED` **최소 1회** 확인. 반면 7회 모두 클라이언트의 마지막 오류는 503 `model_profile_unassigned`였다. 이는 검색을 수행한 다음 B14 synthesizer가 호출되는 현재 소스 구조와 부합한다. **정확히 어떤 B62/B14 제품 프로필 매핑이 누락됐는지는 아직 미확정**이므로 재구성·설정 임의 변경 없이 현행 B14 계약을 따로 조사한다.
+
+**운영 분류·후속:** `503 model_profile_unassigned` 발생 시 TinyFish 이슈를 다시 열거나 TinyFish 키·검색 설정을 바꾸지 않는다. 검색 이슈 #3385는 CLOSED, 수정 PR #4375는 MERGED 상태 유지. 일반 Chat 모델 선택·실사용 E2E는 기존 [#4317](https://github.com/skerishKang/ai-revenue-lab/issues/4317)에서 추적한다. **B14 모델 자동 선택/자동 fallback은 승인하지 않는다.** 실제 502 `web_unavailable` + `TINYFISH_EGRESS_KIND=DECODING`이 새로 재현될 때에만 별도 TinyFish 전송 회귀를 검토한다. Cloudflare와 B14의 변경·재배포는 이 기록만으로 허용되지 않는다.
+
 ## 1. 무엇을 해결했고 무엇은 아직 아닌가
 
 과거 실제 Production에서 공개 검색 `POST /api/chat` 요청이 간헐적으로 HTTP 502 `web_unavailable`을 반환했고, Worker의 안전한 고정 범주 로그가 `TINYFISH_EGRESS_FAILURE=TRANSPORT`, `TINYFISH_EGRESS_KIND=DECODING`을 표시했다. 웹 공급자 자격증명·쿼리·모델 자체 오류로 단정하지 않는다. [실측 근거 #3523](https://github.com/skerishKang/ai-revenue-lab/issues/3523#issuecomment-6090243048).
