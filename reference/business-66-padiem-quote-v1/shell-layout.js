@@ -40,37 +40,33 @@
     var newSection = document.createElement("section");
     newSection.className = "shell-rail-section";
     newSection.innerHTML =
-      '<h2>새 견적</h2>' +
+      '<h2>시작</h2>' +
       '<button type="button" class="shell-rail-item shell-new-quote" id="shellNewQuote">' +
       '<span class="shell-rail-icon" aria-hidden="true">＋</span>' +
-      '<span><strong>새 견적 시작</strong><small>내용을 비우고 대화에서 새 견적을 시작합니다.</small></span>' +
-      '</button>' +
-      '<div class="shell-template-current">' +
-      '<span class="shell-rail-icon" aria-hidden="true">▣</span>' +
-      '<span><strong>배정된 내 견적서</strong>' +
-      '<small id="shellTemplateName">로그인한 계정의 Saved Skill을 불러옵니다.</small></span>' +
-      '</div>' +
-      '<p class="shell-runtime-status" id="shellRuntimeStatus" role="status" aria-live="polite"></p>';
+      '<span><strong>새 견적 시작</strong><small>현재 내용을 비우고 새 견적을 작성합니다</small></span>' +
+      '</button>';
     menu.appendChild(newSection);
 
     var managementSection = document.createElement("section");
     managementSection.className = "shell-rail-section";
     managementSection.innerHTML =
-      '<h2>견적서 관리</h2>' +
-      '<label class="shell-picker-label">배정된 내 견적서<select-host id="shellSkillSelect"></select-host></label>' +
+      '<h2>양식</h2>' +
+      '<label class="shell-picker-label">내 기본 양식<select-host id="shellSkillSelect"></select-host></label>' +
       '<label class="shell-picker-label">출력 양식<select-host id="shellQuoteTemplateSelect"></select-host></label>' +
-      '<label class="shell-picker-label" id="shellModelControl" hidden>AI 모델<select-host id="shellModelSelect"></select-host></label>';
-    /* #4319 / #3186 경로 B: 견적서 관리 하위의 새 견적서 만들기 → 직접 만들기 진입점.
+      '<p class="shell-runtime-status" id="shellRuntimeStatus" role="status" aria-live="polite"></p>' +
+      '<label class="shell-picker-label" id="shellModelControl" hidden><select-host id="shellModelSelect"></select-host></label>';
+    /* #4319 / #3186 경로 B: 양식 구획의 새 양식 만들기 진입점(기존 후보 생성 기능 재사용).
        입력·검토·승인 요청 화면 본체는 #skillSection 의 기존 Saved Skill 영역에 있다. */
-    var createSubhead = document.createElement("h3");
-    createSubhead.className = "shell-rail-subhead";
-    createSubhead.textContent = "새 견적서 만들기";
-    managementSection.appendChild(createSubhead);
+    // #3186: creating a *new reusable template* is distinct from starting a new quote.
+    var createDivider = document.createElement("div");
+    createDivider.className = "shell-rail-feature-divider";
+    createDivider.setAttribute("role", "separator");
+    managementSection.appendChild(createDivider);
     var manual = makeButton(
       "shellManualQuote",
       "✎",
-      "직접 만들기",
-      "회사 기본값을 직접 입력해 후보를 만듭니다"
+      "새 양식 만들기",
+      "별도 양식 후보를 만들고 검토합니다 · 승인 전 사용 불가"
     );
     manual.addEventListener("click", function () {
       document.dispatchEvent(new CustomEvent("b66:open-manual-skill"));
@@ -112,21 +108,7 @@
     var toolbar = byId("easyModelToolbar");
     if (skillSelect && skillHost) {
       skillHost.appendChild(skillSelect);
-      function syncTemplateName() {
-        var name = byId("shellTemplateName");
-        if (!name) return;
-        var option = skillSelect.selectedOptions && skillSelect.selectedOptions[0];
-        name.textContent = option && option.textContent
-          ? option.textContent + " · 사용 중"
-          : "로그인 후 템플릿을 불러옵니다";
-      }
-      skillSelect.addEventListener("change", syncTemplateName);
-      new MutationObserver(syncTemplateName).observe(skillSelect, {
-        childList: true,
-        subtree: true,
-        attributes: true
-      });
-      syncTemplateName();
+      // The selector itself shows the current approved template; do not repeat it in a second card.
     }
     if (templateSelect && templateHost) {
       templateHost.appendChild(templateSelect);
@@ -140,7 +122,7 @@
       var reasoningControl = document.createElement("label");
       reasoningControl.id = "shellReasoningControl";
       reasoningControl.className = "shell-picker-label b66-composer-reasoning";
-      reasoningControl.textContent = "추론";
+      reasoningControl.hidden = true; // Product admin policy will own reasoning later.
       if (reasoningSelect) reasoningControl.appendChild(reasoningSelect);
       toolbar.appendChild(reasoningControl);
       function syncModelControl(event) {
@@ -148,7 +130,7 @@
           ? event.detail.authenticated === true
           : !!(byId("padiemAccountPanel") && !byId("padiemAccountPanel").hidden);
         modelControl.hidden = !signedIn;
-        reasoningControl.hidden = !signedIn || !reasoningSelect;
+        reasoningControl.hidden = true; // Never expose a customer-level thinking override.
       }
       document.addEventListener("b66:auth-changed", syncModelControl);
       syncModelControl();
@@ -167,7 +149,11 @@
     var accountButton = byId("padiemAccountButton");
     var settingsButton = byId("settingsButton");
     if (accountButton) account.appendChild(accountButton);
-    if (settingsButton) account.appendChild(settingsButton);
+    // Keep the existing programmatic trigger for the account menu; never show two settings buttons.
+    if (settingsButton) {
+      settingsButton.hidden = true;
+      account.appendChild(settingsButton);
+    }
 
     var accountMenu = document.createElement("div");
     accountMenu.id = "b66AccountMenu";

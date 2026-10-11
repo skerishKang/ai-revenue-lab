@@ -187,7 +187,7 @@
     if (label) label.textContent = accountName(state.user) + " · 내 견적서";
     if (panel) panel.hidden = false;
     const settingsButton = byId("settingsButton");
-    if (settingsButton) settingsButton.hidden = false;
+    if (settingsButton) settingsButton.hidden = true; // Account menu is the only visible settings entry.
     document.dispatchEvent(new CustomEvent("b66:auth-changed", { detail: { authenticated: true } }));
   }
 
@@ -256,7 +256,7 @@
       setQuoteStatus("내 견적서 렌더러를 준비하지 못했습니다.", "error");
       return false;
     }
-    setQuoteStatus("배정된 양식을 불러왔습니다. 거래처·품목·수량·단가를 한 문장으로 입력해 주세요.", "ready");
+    setQuoteStatus("", "ready"); // Selected approved template is already visible; avoid redundant confirmation.
     return true;
   }
 
@@ -350,7 +350,8 @@
       reasoningSelect.append(option);
     });
     const defaultFirst = options.some((level) => level.value === "default");
-    reasoningSelect.value = defaultFirst ? "default" : (options[0] ? options[0].value : "");
+    // A hidden control must never silently select a non-default thinking tier.
+    reasoningSelect.value = defaultFirst ? "default" : "";
     reasoningSelect.disabled = options.length === 0;
   }
 
