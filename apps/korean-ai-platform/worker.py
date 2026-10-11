@@ -97,15 +97,16 @@ class Default(WorkerEntrypoint):
 
         from app.pilot.worker_env import (
             bind_request_env,
-            collect_env_overrides,
+            collect_request_bindings,
             reset_request_env,
         )
 
-        env_overrides = await collect_env_overrides(self.env, _ENV_KEYS)
+        # Retain only handles; do not fetch every Provider secret on GET/POST.
+        env_overrides = collect_request_bindings(self.env, _ENV_KEYS)
 
-        # Immutable deployment config remains bootstrapped once. Provider
-        # credentials are NEVER written to os.environ: bind them to the
-        # async request so concurrent requests and rotations cannot mix keys.
+        # Deployment config remains bootstrapped once. Provider credentials
+        # are resolved lazily by the chosen route within this request, never
+        # written to os.environ or reused across concurrent requests.
         if env_overrides:
             _apply_env_once(env_overrides)
         token = bind_request_env(env_overrides)

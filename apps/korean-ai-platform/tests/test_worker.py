@@ -151,9 +151,9 @@ class TestEnvBridge:
         src = WORKER_SRC.read_text()
         assert "from app.pilot.worker_env import (" in src
         assert "bind_request_env," in src
-        assert "collect_env_overrides," in src
+        assert "collect_request_bindings," in src
         assert "reset_request_env," in src
-        assert "await collect_env_overrides(self.env, _ENV_KEYS)" in src
+        assert "collect_request_bindings(self.env, _ENV_KEYS)" in src
         assert "for _env_key, _value in overrides.items()" in src
         assert "_os.environ[_env_key] = str(_value)" in src
         assert "if _env_key in _NON_SECRET_ENV_KEYS:" in src
@@ -253,6 +253,6 @@ def test_worker_projects_every_enabled_platform_secret_registry_binding():
         + ", ".join(sorted(required - allowlist))
     )
     assert "PADIEM_GEMINI_API_KEY" in required
-    assert "await collect_env_overrides(self.env, _ENV_KEYS)" in WORKER_SRC.read_text(
+    assert "collect_request_bindings(self.env, _ENV_KEYS)" in WORKER_SRC.read_text(
         encoding="utf-8"
     )

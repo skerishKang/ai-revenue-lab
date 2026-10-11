@@ -437,6 +437,8 @@ def _catalog_summary_dicts() -> list[dict]:
 @router.route("/health", methods=["GET"])
 async def pilot_health(request: Request):
     """Pilot health check. Includes Alpha (platform catalog) and BYOK status."""
+    from .platform_secrets import ensure_all_platform_secrets
+    await ensure_all_platform_secrets()
     state = resolve_configuration()
 
     b14_info = {
@@ -587,6 +589,13 @@ async def pilot_router_resolve(
                 },
             )
 
+        from .platform_secrets import ensure_route_secrets
+        await ensure_route_secrets(
+            model_id,
+            allow_external_fallback=b14_opts.get(
+                "allow_external_fallback", model_id == "b14/auto"
+            ),
+        )
         decision = rcore.resolve_route(model_id, b14_opts)
 
         return JSONResponse({
@@ -740,6 +749,13 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
     model_id = body["model"]
     b14_opts = body.get("business14", {})
 
+    from .platform_secrets import ensure_route_secrets
+    await ensure_route_secrets(
+        model_id,
+        allow_external_fallback=b14_opts.get(
+            "allow_external_fallback", model_id == "b14/auto"
+        ),
+    )
     decision = rcore.resolve_route(model_id, b14_opts)
 
     candidate = rcore.RouteCandidate(

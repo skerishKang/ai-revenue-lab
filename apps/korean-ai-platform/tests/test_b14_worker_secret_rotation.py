@@ -18,6 +18,8 @@ from app.pilot.platform_secrets import (
 from app.pilot.worker_env import (
     bind_request_env,
     collect_env_overrides,
+    collect_request_bindings,
+    load_request_secret,
     reset_request_env,
     scoped_secret,
 )
@@ -141,9 +143,10 @@ async def test_resolve_fresh_secret_binding_get_each_request():
     spec_exlab = spec("experiential")
     values = []
     for _ in range(2):
-        overrides = await collect_env_overrides(environment, (spec_exlab.credential_binding_name,))
+        overrides = collect_request_bindings(environment, (spec_exlab.credential_binding_name,))
         token = bind_request_env(overrides)
         try:
+            await load_request_secret(spec_exlab.credential_binding_name)
             values.append(resolve_secret(spec_exlab))
         finally:
             reset_request_env(token)
@@ -209,6 +212,7 @@ async def test_actual_worker_fetch_scopes_and_resets_overlapping_requests(monkey
         await asyncio.sleep(0)
         if label == "error":
             raise RuntimeError("synthetic_failed_handler")
+        await load_request_secret("PADIEM_EXPERIENTIAL_API_KEY")
         return {
             "scoped": scoped_secret("PADIEM_EXPERIENTIAL_API_KEY"),
         }
@@ -231,3 +235,206 @@ async def test_actual_worker_fetch_scopes_and_resets_overlapping_requests(monkey
     assert isinstance(bad, RuntimeError)
     assert str(bad) == "synthetic_failed_handler"
     assert scoped_secret("PADIEM_EXPERIENTIAL_API_KEY") is None
+
+
+@pytest.mark.asyncio
+async def test_lazy_gemini_does_not_fetch_unrelated_provider():
+    from types import SimpleNamespace
+    from app.pilot import platform as _registration  # noqa: F401
+    from app.pilot.platform_secrets import ensure_route_secrets
+
+    class CountingSecret:
+        def __init__(self, value):
+            self.value = value
+            self.calls = 0
+
+        async def get(self):
+            self.calls += 1
+            return self.value
+
+    gemini = CountingSecret("synthetic_gemini_new")
+    kira = CountingSecret("synthetic_kira_unrelated")
+    exlab = CountingSecret("synthetic_exlab_unrelated")
+    env = SimpleNamespace(
+        PADIEM_GEMINI_API_KEY=gemini,
+        PADIEM_KIRAAI_API_KEY=kira,
+        PADIEM_EXLAB_API_KEY=exlab,
+    )
+    handles = collect_request_bindings(env, (
+        "PADIEM_GEMINI_API_KEY", "PADIEM_KIRAAI_API_KEY", "PADIEM_EXLAB_API_KEY"
+    ))
+    assert (gemini.calls, kira.calls, exlab.calls) == (0, 0, 0)
+    token = bind_request_env(handles)
+    try:
+        await ensure_route_secrets("google/gemini-3.1-flash-lite")
+        await ensure_route_secrets("google/gemini-3.1-flash-lite")
+        assert scoped_secret("PADIEM_GEMINI_API_KEY") == "synthetic_gemini_new"
+        assert (gemini.calls, kira.calls, exlab.calls) == (1, 0, 0)
+        assert scoped_secret("PADIEM_KIRAAI_API_KEY") == ""
+    finally:
+        reset_request_env(token)
+    assert scoped_secret("PADIEM_GEMINI_API_KEY") is None
+
+
+@pytest.mark.asyncio
+async def test_lazy_revoke_rotation_and_failed_get_are_fail_closed(monkeypatch):
+    from types import SimpleNamespace
+    key = "PADIEM_GEMINI_API_KEY"
+    monkeypatch.setenv(key, "synthetic_global_must_not_be_used")
+
+    class MutableSecret:
+        calls = 0
+        value = "synthetic_initial_secret"
+
+        async def get(self):
+            self.calls += 1
+            if isinstance(self.value, Exception):
+                raise self.value
+            return self.value
+
+    secret = MutableSecret()
+    spec_gemini = spec("gemini")
+    for candidate, expected in (
+        ("synthetic_initial_secret", "synthetic_initial_secret"),
+        ("synthetic_rotated_secret", "synthetic_rotated_secret"),
+        (None, ""),
+        (RuntimeError("synthetic_unavailable"), ""),
+    ):
+        secret.value = candidate
+        token = bind_request_env(collect_request_bindings(
+            SimpleNamespace(PADIEM_GEMINI_API_KEY=secret), (key,)
+        ))
+        try:
+            assert resolve_secret(spec_gemini) == ""
+            await load_request_secret(key)
+            await load_request_secret(key)
+            assert resolve_secret(spec_gemini) == expected
+        finally:
+            reset_request_env(token)
+    assert secret.calls == 4
+
+
+@pytest.mark.asyncio
+async def test_lazy_overlapping_requests_isolate_handle_and_key():
+    from types import SimpleNamespace
+    key = "PADIEM_GEMINI_API_KEY"
+
+    class BoundSecret:
+        def __init__(self, value):
+            self.value = value
+            self.calls = 0
+
+        async def get(self):
+            self.calls += 1
+            await asyncio.sleep(0)
+            return self.value
+
+    async def invoke(value):
+        binding = BoundSecret(value)
+        token = bind_request_env(collect_request_bindings(
+            SimpleNamespace(PADIEM_GEMINI_API_KEY=binding), (key,)
+        ))
+        try:
+            await load_request_secret(key)
+            return (scoped_secret(key), binding.calls)
+        finally:
+            reset_request_env(token)
+
+    assert await asyncio.gather(
+        invoke("synthetic_request_alpha"), invoke("synthetic_request_beta")
+    ) == [
+        ("synthetic_request_alpha", 1),
+        ("synthetic_request_beta", 1),
+    ]
+
+
+@pytest.mark.asyncio
+async def test_auto_chain_fetches_only_chain_and_stops_without_fallback(monkeypatch):
+    from app.pilot.b14_runtime_config import runtime_config
+    monkeypatch.setattr(runtime_config, "provider_mode", "live")
+    from types import SimpleNamespace
+    from app.pilot import platform as _registration  # noqa: F401
+    from app.pilot.routing_policy import B14_AUTO_CHAIN
+    from app.pilot.platform_secrets import (
+        ensure_route_secrets, get_platform_provider,
+    )
+    from app.pilot.catalog import get_catalog_by_id
+
+    class Binding:
+        def __init__(self, value):
+            self.value = value
+            self.calls = 0
+
+        async def get(self):
+            self.calls += 1
+            return self.value
+
+    chain_keys = [
+        get_platform_provider(get_catalog_by_id(mid).platform_provider_id).credential_binding_name
+        for mid in B14_AUTO_CHAIN
+    ]
+    assert len(chain_keys) == 2
+    first, second, other = Binding("synthetic_agnes_usable"), Binding("synthetic_poolside"), Binding("synthetic_exlab")
+    env = SimpleNamespace(**dict(zip(chain_keys, (first, second))),
+                          PADIEM_EXLAB_API_KEY=other)
+    token = bind_request_env(collect_request_bindings(
+        env, (*chain_keys, "PADIEM_EXLAB_API_KEY")
+    ))
+    try:
+        await ensure_route_secrets("b14/auto", allow_external_fallback=False)
+        assert (first.calls, second.calls, other.calls) == (1, 0, 0)
+    finally:
+        reset_request_env(token)
+
+    # Without fallback, a revoked primary must permit the next *ready*
+    # fixed-chain position to be selected, not falsely report no route.
+    first.value = None
+    token = bind_request_env(collect_request_bindings(
+        env, (*chain_keys, "PADIEM_EXLAB_API_KEY")
+    ))
+    try:
+        await ensure_route_secrets("b14/auto", allow_external_fallback=False)
+        assert (first.calls, second.calls, other.calls) == (2, 1, 0)
+    finally:
+        reset_request_env(token)
+    first.value = "synthetic_agnes_usable"
+
+    token = bind_request_env(collect_request_bindings(
+        env, (*chain_keys, "PADIEM_EXLAB_API_KEY")
+    ))
+    try:
+        await ensure_route_secrets("b14/auto", allow_external_fallback=True)
+        assert (first.calls, second.calls, other.calls) == (3, 2, 0)
+    finally:
+        reset_request_env(token)
+
+
+
+@pytest.mark.asyncio
+async def test_same_request_concurrent_loads_share_inflight_read():
+    from types import SimpleNamespace
+    key = "PADIEM_GEMINI_API_KEY"
+
+    class SlowSecret:
+        calls = 0
+
+        async def get(self):
+            self.calls += 1
+            await asyncio.sleep(0.001)
+            return "synthetic_same_request"
+
+    binding = SlowSecret()
+    token = bind_request_env(collect_request_bindings(
+        SimpleNamespace(PADIEM_GEMINI_API_KEY=binding), (key,)
+    ))
+    try:
+        async def reader():
+            await load_request_secret(key)
+            return scoped_secret(key)
+
+        assert await asyncio.gather(reader(), reader()) == [
+            "synthetic_same_request", "synthetic_same_request",
+        ]
+        assert binding.calls == 1
+    finally:
+        reset_request_env(token)
