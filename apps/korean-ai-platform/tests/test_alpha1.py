@@ -1540,7 +1540,66 @@ class TestOptionEnforcement:
         assert resp.status_code == 422
 
 
+class TestProviderOwnedLimits:
+    def test_no_b14_context_or_generation_shadow_ceiling(self):
+        from app.pilot.gateway import _validate_body
+
+        messages = [{"role": "user", "content": "x" * 32001}]
+        messages.extend({"role": "user", "content": "ok"} for _ in range(100))
+        result = _validate_body({
+            "model": "google/gemma-4-26b-a4b-it",
+            "messages": messages,
+            "temperature": 3.25,
+            "max_tokens": 2**31,
+        })
+        assert len(result["messages"]) == 101
+        assert len(result["messages"][0]["content"]) == 32001
+        assert result["temperature"] == 3.25
+        assert result["max_tokens"] == 2**31
+
+    @pytest.mark.parametrize("parameter,value", [
+        ("max_tokens", -1),
+        ("max_tokens", 0),
+        ("temperature", float("inf")),
+        ("temperature", float("nan")),
+    ])
+    def test_malformed_values_still_rejected(self, parameter, value):
+        from app.pilot.gateway import _validate_body, _InvalidBody
+        with pytest.raises(_InvalidBody):
+            _validate_body({
+                "model": "google/gemma-4-26b-a4b-it",
+                "messages": [{"role": "user", "content": "ok"}],
+                parameter: value,
+            })
+
+
 class TestStreamedResponseLimit:
+    @pytest.mark.asyncio
+    async def test_long_framed_stream_exceeds_old_total_budget_without_rejection(self):
+        """Healthy provider SSE may exceed 1 MiB across many small frames."""
+        rcfg.provider_mode = "live"
+        event = b"data: " + json.dumps({
+            "choices": [{"delta": {"content": "x" * 11500}, "finish_reason": None}]
+        }).encode() + b"\\n\\n"
+        payload = event * 100 + b"data: [DONE]\\n\\n"
+        assert len(payload) > plat.MAX_RESPONSE_BYTES
+
+        def respond(request):
+            return httpx.Response(200, content=payload)
+
+        events = [
+            part async for part in plat.stream_platform_chat_completions(
+                model_id=KILO_MODEL,
+                upstream_model=KILO_UPSTREAM,
+                provider=KILO_PROVIDER,
+                platform_provider_id="test-fixture",
+                messages=[{"role": "user", "content": "hi"}],
+                transport=httpx.MockTransport(respond),
+            )
+        ]
+        assert len([e for e in events if e.delta_content]) == 100
+        assert events[-1].done is True
+
     @pytest.mark.asyncio
     async def test_oversize_response_aborts_before_full_body(self):
         # Platform streaming enforces MAX_RESPONSE_BYTES without buffering.
