@@ -68,6 +68,8 @@ async def workspace_page(request: Request):
     application/json script element (no |safe JSON in script context).
     Supports locale switching via ?lang= or locale_preference cookie.
     """
+    from app.pilot.platform_secrets import ensure_any_platform_secret
+    await ensure_any_platform_secret()
     locale = locale_from_request(request)
     _ = lambda key: gettext(key, locale)  # noqa: E731
     state = resolve_configuration()

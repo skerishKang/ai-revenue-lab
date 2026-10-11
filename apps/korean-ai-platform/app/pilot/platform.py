@@ -236,6 +236,8 @@ async def call_platform_chat_completions(
     _require_owner_allowed_live_model(
         model_id, upstream_model, platform_provider_id
     )
+    from .worker_env import load_request_secret
+    await load_request_secret(spec.credential_binding_name)
     headers = _request_headers(spec, model_id=model_id)
     chat_url = f"{spec.base_origin.rstrip('/')}/chat/completions"
     body: dict[str, Any] = {
@@ -391,6 +393,8 @@ async def stream_platform_chat_completions(
     _require_owner_allowed_live_model(
         model_id, upstream_model, platform_provider_id
     )
+    from .worker_env import load_request_secret
+    await load_request_secret(spec.credential_binding_name)
     headers = _request_headers(spec, model_id=model_id)
     chat_url = f"{spec.base_origin.rstrip('/')}/chat/completions"
     body: dict[str, Any] = {
