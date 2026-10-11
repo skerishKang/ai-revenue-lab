@@ -90,6 +90,20 @@ jobs:
           } >> "${GITHUB_ENV}"
           echo 'PREMUTATION_SERVED_VERSION_GUARD=PASS'
 
+      # #4383: immutable served-version names/types + explicit Wrangler
+      # keep_vars guard BEFORE the rollout anchor or any mutation.
+      - name: Verify six live XLSX flags will be retained before deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${B54_ENGINE_ACTIVE_VERSION:-}"
+          python3 .github/scripts/b54_engine_preserve_live_vars_4383.py \
+            --wrangler apps/padiem-ai-engine/wrangler.toml \
+            --version-details "${RUNNER_TEMP}/version-pre.json" \
+            --active-version "${B54_ENGINE_ACTIVE_VERSION}"
+          echo 'B54_ENGINE_LIVE_FLAG_PRESERVATION_PREFLIGHT=PASS'
+          echo 'PRODUCTION_MUTATION=0'
+
       - name: Pre-deploy A7 Control Plane admission readiness
         shell: bash
         env:
@@ -271,7 +285,7 @@ jobs:
           echo 'DEPLOY_ATTEMPTED=YES'
           # pywrangler deploy itself is unchanged and stays the single deploy
           # authority; only the evidence around it is recorded.
-          if uv run pywrangler deploy 2>&1 | tee "${RUNNER_TEMP}/b54-engine-deploy.log"; then
+          if uv run pywrangler deploy --keep-vars 2>&1 | tee "${RUNNER_TEMP}/b54-engine-deploy.log"; then
             # Reached only on success, so DEPLOY_EXECUTED=YES can never be
             # recorded for a deploy that did not complete.
             printf 'DEPLOY_EXECUTED=YES\n' >> "${RUNNER_TEMP}/b54-engine-deploy-evidence.txt"
