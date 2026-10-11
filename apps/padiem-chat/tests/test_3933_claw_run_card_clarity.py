@@ -31,6 +31,10 @@ def test_korean_and_english_explanations_and_fallbacks():
         assert f'"{key}"' in ko
         assert f'"{key}"' in en
         assert f'"{key}"' in APP
+    for status in ("failed", "cancelled"):
+        assert f'"claw-runs-status-{status}"' in ko
+        assert f'"claw-runs-status-{status}"' in en
+        assert f'"claw-runs-status-{status}"' in APP
     assert "아직 완료되지 않았습니다" in ko
     assert "does not prove success" in en
 

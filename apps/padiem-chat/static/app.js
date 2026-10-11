@@ -1910,6 +1910,8 @@
     "claw-runs-open-session": "Open session",
     "claw-runs-status-completed": "Completed",
     "claw-runs-status-waiting_approval": "Approval required",
+    "claw-runs-status-failed": "Failed",
+    "claw-runs-status-cancelled": "Cancelled",
     "claw-runs-next-waiting_approval": "This run is waiting for your decision; it has not completed.",
     "claw-runs-next-failed": "The run failed. A recorded file does not mean the task succeeded.",
     "claw-runs-next-cancelled": "This run was cancelled; no completion is claimed.",
