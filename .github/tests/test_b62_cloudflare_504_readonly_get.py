@@ -27,6 +27,16 @@ def test_allowed_endpoint_path_is_b62_worker_only():
     assert 'https://example.com' not in text
 
 
+def test_canonical_domain_query_allowed_without_broadening_worker_paths():
+    text = HELPER.read_text(encoding="utf-8")
+    assert 'domain_url="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains?hostname=chat.padiem.net"' in text
+    assert '"${domain_url}"' in text
+    assert 'UNAUTHORIZED_PATH' in text
+    assert 'domains?hostname=*' not in text
+    assert 'workers/domains"' not in text
+    assert " -X POST" not in text
+
+
 def test_deploy_gate_only_wraps_readonly_get_and_preserves_mutation_controls():
     text = WORKFLOW.read_text(encoding="utf-8")
     assert text.count("bash .github/scripts/b62_cloudflare_504_readonly_get.sh") >= 10
