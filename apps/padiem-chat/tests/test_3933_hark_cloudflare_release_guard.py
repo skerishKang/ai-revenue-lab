@@ -256,7 +256,7 @@ def test_release_cli_only_accepts_distinct_real_shaped_candidates(tmp_path, caps
         encoding="utf-8",
     )
     assert guard.main(args) == 2
-    assert "distinct immutable" in capsys.readouterr().out
+    assert "same-version reuse requires unchanged resources" in capsys.readouterr().out
 
     # Even with both exact desired bindings, an unrelated added service
     # must never be approved for Hark release.
@@ -274,3 +274,56 @@ def test_release_cli_only_accepts_distinct_real_shaped_candidates(tmp_path, caps
     )
     assert guard.main(args) == 2
     assert "ADD unapproved bindings" in capsys.readouterr().out
+
+
+def test_after_engine_d1_live_b62_only_rollout_can_reuse_exact_engine_version(tmp_path, capsys):
+    source_b62 = [
+        {"name": "PADIEM_CHAT_DB", "type": "d1",
+         "database_id": guard.ENGINE_PRIVATE_DB_ID},
+        {"name": "SECRET", "type": "secret_text"},
+    ]
+    source_engine = [
+        {"name": guard.ENGINE_ADDED_BINDING, "type": "d1",
+         "database_id": guard.ENGINE_PRIVATE_DB_ID},
+        {"name": "ENGINE_CONTINUATION", "type": "d1",
+         "database_id": "6b77ad02-bc27-488f-bb97-6325f6750cba"},
+        {"name": "AUTH", "type": "secret_text"},
+    ]
+    worker_versions = {
+        "b62_before": _version_export(
+            "50cd1dc1-c0da-4963-abbe-b235a950c9b1", source_b62,
+        ),
+        "b62_after": _version_export(
+            "5ac1c513-f3e8-43e0-aea6-95cb66889aad",
+            source_b62 + [{"name": "BROWSER", "type": "browser"}],
+        ),
+        "engine_before": _version_export(
+            "f1287678-dc9c-4067-953e-aaaa06d6f7f7", source_engine,
+        ),
+        "engine_after": _version_export(
+            "f1287678-dc9c-4067-953e-aaaa06d6f7f7", source_engine,
+        ),
+    }
+    paths = {}
+    for key, data in worker_versions.items():
+        p = tmp_path / (key + ".json")
+        p.write_text(json.dumps(data), encoding="utf-8")
+        paths[key] = p
+    args = [
+        "--chat-toml", str(CHAT), "--engine-toml", str(ENGINE),
+        "--live-b62-version", str(paths["b62_before"]),
+        "--live-engine-version", str(paths["engine_before"]),
+        "--candidate-b62-version", str(paths["b62_after"]),
+        "--candidate-engine-version", str(paths["engine_after"]),
+    ]
+    assert guard.main(args) == 0
+    assert "BINDING_NAME_TYPE_RESOURCE_ID_PARITY=PASS" in capsys.readouterr().out
+
+    # Same Engine UUID with altered resources cannot masquerade as no-op.
+    modified = _version_export(
+        "f1287678-dc9c-4067-953e-aaaa06d6f7f7",
+        source_engine + [{"name": "FORGED_SERVICE", "type": "service"}],
+    )
+    paths["engine_after"].write_text(json.dumps(modified), encoding="utf-8")
+    assert guard.main(args) == 2
+    assert "same-version reuse requires unchanged resources" in capsys.readouterr().out
