@@ -264,7 +264,6 @@ def _require_owner_allowed_live_model(
     # boundary even when a caller bypasses catalog/router validation.
     if platform_provider_id == "tokenharbor":
         allowed_pairs = {
-            "tokenharbor/claude-haiku-5.5:free": "claude-haiku-5.5:free",
             "tokenharbor/deepseek-v4.1-flash:free": "deepseek-v4.1-flash:free",
         }
         if allowed_pairs.get(model_id) != upstream_model:
