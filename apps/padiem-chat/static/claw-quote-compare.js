@@ -152,6 +152,7 @@
     let lastComparison = null;
     let artifact = null;
     let busy = false;
+    let compareRequested = false;
 
     function setStatus(key, state = "") {
       status.hidden = !key;
@@ -342,8 +343,11 @@
 
     function syncVisibility() {
       const workspace = document.getElementById("clawWorkspace"); const shell = document.querySelector(".app-shell");
-      const show = Boolean(workspace && shell && !workspace.hidden && shell.dataset.state === "claw" && workspace.dataset.view !== "inbox");
+      const eligible = Boolean(workspace && shell && shell.dataset.state === "claw" && workspace.dataset.view === "general");
+      if (!eligible) compareRequested = false;
+      const show = eligible && compareRequested;
       section.hidden = !show;
+      document.getElementById("clawCompareStartButton")?.setAttribute("aria-expanded", String(show));
       if (show) syncAuth();
     }
 
@@ -353,12 +357,89 @@
     addRow(); addRow();
     add.addEventListener("click", addRow); form.addEventListener("submit", compareQuotes); docx.addEventListener("click", saveDocx); download.addEventListener("click", downloadDocx);
     window.addEventListener("padiem:localechange", () => { renumber(); if (lastComparison) render(lastComparison); });
-    const workspace = document.getElementById("clawWorkspace"); const shell = document.querySelector(".app-shell"); const login = document.getElementById("loginButton");
-    const observer = typeof MutationObserver === "function" ? new MutationObserver(syncVisibility) : null;
+    const workspace = document.getElementById("clawWorkspace");
+    const shell = document.querySelector(".app-shell");
+    const login = document.getElementById("loginButton");
+    const excelDetails = document.getElementById("clawWebOfficeDetails");
+    const excelEntry = document.getElementById("clawExcelStartButton");
+    const quoteEntry = document.getElementById("clawCompareStartButton");
+    const quoteClose = document.getElementById("clawCompareCloseButton");
+    const documentEntry = document.getElementById("clawDocumentStartButton");
+    const composerToggle = document.getElementById("clawMobileComposerToggle");
+    const composerWrap = document.querySelector(".composer-wrap");
+    const mobileMedia = window.matchMedia("(max-width: 600px)");
+    let wasMobileGeneral = false;
+
+    function syncComposerState() {
+      if (!shell) return;
+      const mobileGeneral = mobileMedia.matches && shell.dataset.state === "claw"
+        && workspace?.dataset.view === "general";
+      if (mobileGeneral && !wasMobileGeneral) shell.dataset.clawComposerCollapsed = "true";
+      if (!mobileGeneral) delete shell.dataset.clawComposerCollapsed;
+      wasMobileGeneral = mobileGeneral;
+      const collapsed = shell.dataset.clawComposerCollapsed === "true";
+      if (composerToggle) {
+        composerToggle.setAttribute("aria-expanded", String(!collapsed));
+        composerToggle.textContent = collapsed ? "채팅·모델 설정 열기" : "채팅·모델 설정 접기";
+      }
+    }
+
+    excelEntry?.addEventListener("click", () => {
+      compareRequested = false;
+      syncVisibility();
+      if (excelDetails) {
+        excelDetails.open = true;
+        document.getElementById("clawWebOffice")?.scrollIntoView({ block: "start" });
+        document.getElementById("clawWebXlsxInput")?.focus({ preventScroll: true });
+      }
+    });
+    quoteEntry?.addEventListener("click", () => {
+      compareRequested = true;
+      if (excelDetails) excelDetails.open = false;
+      syncVisibility();
+      if (!section.hidden) {
+        section.scrollIntoView({ block: "start" });
+        document.getElementById("clawQuoteCompareTitle")?.focus({ preventScroll: true });
+      }
+    });
+    quoteClose?.addEventListener("click", () => {
+      compareRequested = false;
+      syncVisibility();
+      quoteEntry?.focus();
+    });
+    documentEntry?.addEventListener("click", () => {
+      compareRequested = false;
+      syncVisibility();
+      document.getElementById("clawManualEntryButton")?.click();
+    });
+    excelDetails?.addEventListener("toggle", () => {
+      if (excelDetails.open) {
+        compareRequested = false;
+        syncVisibility();
+      }
+    });
+    composerToggle?.addEventListener("click", () => {
+      if (!shell || !wasMobileGeneral) return;
+      shell.dataset.clawComposerCollapsed =
+        shell.dataset.clawComposerCollapsed === "true" ? "false" : "true";
+      syncComposerState();
+      if (shell.dataset.clawComposerCollapsed !== "true")
+        document.getElementById("messageInput")?.focus({ preventScroll: true });
+    });
+    const observer = typeof MutationObserver === "function"
+      ? new MutationObserver(() => { syncVisibility(); syncComposerState(); }) : null;
     if (observer && workspace) observer.observe(workspace, { attributes: true, attributeFilter: ["hidden", "data-view"] });
     if (observer && shell) observer.observe(shell, { attributes: true, attributeFilter: ["data-state"] });
     if (observer && login) observer.observe(login, { attributes: true, attributeFilter: ["data-authenticated", "disabled"] });
+    mobileMedia.addEventListener?.("change", syncComposerState);
+    if (composerWrap && shell && typeof ResizeObserver === "function") {
+      new ResizeObserver(() => {
+        const height = Math.ceil(composerWrap.getBoundingClientRect().height);
+        if (height) shell.style.setProperty("--claw-composer-clearance", height + "px");
+      }).observe(composerWrap);
+    }
     syncVisibility();
+    syncComposerState();
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", createModule, { once: true });
