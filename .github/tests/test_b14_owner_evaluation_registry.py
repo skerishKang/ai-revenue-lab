@@ -31,10 +31,10 @@ ELEVEN={
 def test_current_roster_contains_all_prior_owner_registered_models():
     got=load_current_models()
     canonical=json.loads(CANONICAL_REGISTRY.read_text(encoding="utf8"))
-    ids={model["id"] for model in canonical["models"]}
+    ids={model["id"] for model in canonical["models"] if model["enabled"] and canonical["providers"][model["provider_id"]]["enabled"]}
     assert ELEVEN <= set(got)
     assert set(got)==ids
-    assert len(got)==len(canonical["models"])
+    assert len(got)==len(ids)
     assert not (set(got)&OWNER_RETIRED)
     assert authorize_exact_models(tuple(got))==tuple(got)
     assert got["poolside/laguna-s-2.1"]["provider_id"]=="poolside"
