@@ -117,6 +117,38 @@ def test_live_dump_is_authority_and_repo_mock_vars_do_not_leak(tmp_path):
     assert "compatibility_flags = [" in config
 
 
+def test_production_config_preserves_exact_padiem_custom_domain(tmp_path):
+    """Never detach chat.padiem.net when replacing the production Worker."""
+    import tomllib
+
+    live_bindings = _production_bindings()
+    for binding in live_bindings:
+        if binding.get("name") == "PADIEM_CHAT_PUBLIC_BASE_URL":
+            binding["text"] = "https://chat.padiem.net"
+    live = _load_module().parse_live_bindings(_settings_payload(live_bindings))
+    rendered = _load_module().build_production_config(
+        live, _write_repo_config(tmp_path), "https://chat.padiem.net"
+    )
+    parsed = tomllib.loads(rendered)
+    assert parsed["routes"] == [
+        {"pattern": "chat.padiem.net", "custom_domain": True}
+    ]
+    assert parsed["workers_dev"] is True
+    assert parsed["vars"]["PADIEM_CHAT_TIMEOUT_SECONDS"] == "20"
+    _load_module().verify_mutation_zero(rendered, live)
+
+
+def test_nonproduction_origin_never_invents_custom_domain(tmp_path):
+    """Only the exact approved production origin may produce a route."""
+    import tomllib
+
+    live = _load_module().parse_live_bindings(_settings_payload(_production_bindings()))
+    config = _load_module().build_production_config(
+        live, _write_repo_config(tmp_path), PUBLIC_URL
+    )
+    assert "routes" not in tomllib.loads(config)
+
+
 def test_secret_binding_values_are_never_emitted(tmp_path):
     module = _load_module()
     live = module.parse_live_bindings(_settings_payload(_production_bindings()))
