@@ -211,7 +211,7 @@ def test_owner_switch_hides_previous_devices_and_clear_on_navigation(browser, se
     page.locator("#clawDeviceManagerList li").first.wait_for()
     page.locator("#clawDeviceManagerList li button").click()
     fixture["body"] = payload([offline("pc2", "계정 B PC")])
-    page.evaluate('window.dispatchEvent(new Event("padiem:auth-changed"))')
+    page.evaluate('window.dispatchEvent(new CustomEvent("padiem:auth-state", {detail: {authenticated: true}}))')
     page.get_by_text("계정 B PC").wait_for()
     assert page.get_by_text("계정 A PC").count() == 0
     assert page.locator("#clawDeviceManagerList li button").is_disabled()

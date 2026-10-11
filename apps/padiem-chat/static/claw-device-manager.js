@@ -328,7 +328,7 @@
         void load();
       }
     });
-    for (const evt of ["padiem:auth-changed", "padiem:account-changed"]) {
+    for (const evt of ["padiem:auth-state", "padiem:auth-changed", "padiem:account-changed"]) {
       window.addEventListener(evt, () => {
         reset();
         if (opened && isClaw()) void load();
