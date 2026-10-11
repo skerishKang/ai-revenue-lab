@@ -47,6 +47,9 @@ from app.claw_drive_upload_host_composition import (
 from app.claw_telegram_delivery_host_composition import (
     build_claw_telegram_artifact_delivery,
 )
+from app.claw_artifact_delivery_receipt_store import (
+    D1ArtifactDeliveryReceiptStore,
+)
 from app.claw_task_alert_store import D1ClawTaskAlertStore
 from app.b66_quote_conversation import B66QuoteConversationInterpreter
 from app.b66_registered_model_boundary import (
@@ -787,6 +790,21 @@ class Default(WorkerEntrypoint):
                 # authority composed for the Worker — so this fails closed to
                 # None. The bot token and chat id are never Worker settings.
                 claw_telegram_artifact_delivery = build_claw_telegram_artifact_delivery()
+                # #3580: the delivery consumer's one-attempt-per-artifact receipt
+                # record, under the existing Claw history D1 owner. Creating the
+                # adapter still needs the CP SEND grant and the trusted outbound
+                # binding, so the route answers 403 before this store is ever
+                # consulted. Applying migration 036 is a separate owner-run gate.
+                claw_artifact_delivery_receipt_store = (
+                    D1ArtifactDeliveryReceiptStore(db_binding)
+                    if db_binding is not None
+                    else None
+                )
+                # #3580: the host's server-derived channel + approval binding for
+                # one delivery. No host approval source is composed in this
+                # build, so this stays None and the route refuses with 403
+                # rather than inventing an approval.
+                claw_telegram_delivery_request_builder = None
                 _worker_app = create_app(
                     settings=settings,
                     history_store=history_store,
@@ -796,6 +814,12 @@ class Default(WorkerEntrypoint):
                     b66_pdf_renderer_client=b66_pdf_renderer_client,
                     claw_drive_artifact_uploader=claw_drive_artifact_uploader,
                     claw_telegram_artifact_delivery=claw_telegram_artifact_delivery,
+                    claw_artifact_delivery_receipt_store=(
+                        claw_artifact_delivery_receipt_store
+                    ),
+                    claw_telegram_delivery_request_builder=(
+                        claw_telegram_delivery_request_builder
+                    ),
                 )
                 _worker_app.state.control_plane_identity_authority = identity_authority
                 _worker_app.state.identity_shadow_store = identity_shadow_store
