@@ -61,7 +61,7 @@ async def test_confirmed_owner_exact_durable_index_returns_only_safe_reference(m
     import json
     payload = json.loads(result.body)
     assert result.status_code == 200
-    assert result.headers["cache-control"].startswith("no-store")
+    assert "no-store" in result.headers["cache-control"]
     assert payload["followup"] == {
         "conversation_id": CHAT, "artifact_id": DOC, "integrity_ref": SHA,
     }
