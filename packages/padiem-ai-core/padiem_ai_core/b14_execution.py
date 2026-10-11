@@ -13,33 +13,11 @@ from .contracts import UsageMetadata
 
 B14_CHAT_COMPLETIONS_PATH = "/api/pilot/v1/chat/completions"
 
-# ── B14 output-limit authorities (#3553) ─────────────────────────────────────
-# Three different authorities must never be merged into one number:
-#
-#   PRODUCT_REQUESTED_LIMIT
-#       What a product/feature actually asks for as an output budget.
-#       The explicit-request compatibility ceiling below is a LEGACY B14
-#       PILOT VALIDATION VALUE, not model-capability truth:
-#       origin commit d8714ad4 (2026-07-25, #142) validated explicit
-#       max_tokens as 1..4096 in gateway.py/schemas.py; the shared Core
-#       contract later copied the same range (1d6e1b7f, 2026-08-26).
-#       GLOBAL_4096_ORIGIN=EARLY_B14_PILOT_VALIDATION
-#       GLOBAL_4096_IS_PROVIDER_MODEL_MAX=NO
-#   RUNTIME_HARD_SAFETY_CEILING
-#       B14's own resource-abuse guards, independent of max_tokens:
-#       response byte cap (MAX_B14_RESPONSE_BYTES / configurable up to
-#       MAX_CONFIGURED_B14_RESPONSE_BYTES) and request timeout bounds
-#       (B14ExecutionConfig.timeout_seconds, 1..3600s). Model-read policy now 600s.
-#   PROVIDER_MODEL_MAX_OUTPUT
-#       What the selected provider/model can technically produce.
-#       Capability metadata only (see padiem_ai_core.b14_output_limits).
-#       It must never become the global request validator and must never
-#       be fabricated when unknown.
-#
-# AUTOMATIC_MAX_OUTPUT_WIDENING=NO: raising PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING
-# is a deliberate product decision with targeted tests and byte/time safeguards,
-# never an automatic copy of a provider maximum.
-PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING = 4096
+# The old global 4096 max_tokens limit was a B14 pilot compatibility setting,
+# not any provider's capability. It must not constrain all AI products (#4379).
+# Keep this exported symbol for old callers; None means no global product cap.
+# A feature may opt into its own explicit budget via b14_output_limits.
+PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING: int | None = None
 
 MAX_B14_RESPONSE_BYTES = 1_048_576  # RUNTIME_HARD_SAFETY_CEILING (response bytes)
 MAX_CONFIGURED_B14_RESPONSE_BYTES = 8 * 1_048_576  # RUNTIME_HARD_SAFETY_CEILING (configured cap)
@@ -422,21 +400,15 @@ class B14ChatRequest:
         if self.temperature is not None:
             object.__setattr__(self, "temperature", float(self.temperature))
 
-        # PRODUCT_REQUESTED_LIMIT authority: explicit output budget must stay
-        # within the product's explicit-request compatibility ceiling. The
-        # omitted-value contract is separate (#3551): None stays None and the
-        # payload omits the field. RUNTIME byte/time guards and provider/model
-        # capability metadata are separate authorities and are not consulted
-        # here (capability must never be fabricated; see b14_output_limits).
+        # Exact positive requested budget passes through. Only the upstream
+        # provider/model can decide its maximum; per-feature budgets remain
+        # separate opt-in product policy. Omitted None stays omitted.
         if self.max_tokens is not None and (
             isinstance(self.max_tokens, bool)
             or not isinstance(self.max_tokens, int)
-            or not 1 <= self.max_tokens <= PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING
+            or self.max_tokens < 1
         ):
-            raise ValueError(
-                "max_tokens must be between 1 and "
-                f"{PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING} or None"
-            )
+            raise ValueError("max_tokens must be a positive integer or None")
         if not isinstance(self.routing, B14RoutingOptions):
             raise ValueError("routing must be B14RoutingOptions")
 

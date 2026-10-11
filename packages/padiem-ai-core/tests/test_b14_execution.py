@@ -216,7 +216,7 @@ def test_request_rejects_obvious_invalid_messages(messages) -> None:
         {"temperature": 2.1},
         {"temperature": True},
         {"max_tokens": 0},
-        {"max_tokens": 4097},
+        {"max_tokens": -1},
         {"max_tokens": True},
     ],
 )

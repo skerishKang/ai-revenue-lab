@@ -4,12 +4,12 @@ Covers the #3553 test matrix A..K:
 
   A. omitted max_tokens stays None (#3551 semantics preserved)
   B. explicit 1 allowed
-  C. explicit current product max (4096) allowed
-  D. explicit product max + 1 rejected by PRODUCT authority
+  C. explicit > old global ceiling allowed
+  D. opt-in product budget still enforced
   E. product permits but runtime hard ceiling smaller -> rejected by RUNTIME
   F. product/runtime permit but known provider/model capability smaller
      -> rejected by MODEL capability
-  G. known provider max much larger -> product budget does NOT auto-widen
+  G. known provider max > legacy pilot cap is not globally rejected
   H. unknown provider max -> no fabricated capability, check skipped
   I. B66 structured extraction budget untouched (source-level guard)
   J. response byte/time guards unchanged
@@ -74,22 +74,18 @@ def test_b_explicit_one_allowed() -> None:
 
 
 def test_c_explicit_current_product_max_allowed() -> None:
-    assert request(PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING).max_tokens == 4096
-    assert validate_output_budget(PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING).ok is True
-    # the ceiling keeps its documented meaning
-    assert PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING == 4096
-
+    assert PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING is None
+    assert request(8192).max_tokens == 8192
+    assert request(32768).to_payload()["max_tokens"] == 32768
+    assert validate_output_budget(32768).ok is True
 
 # ── D. product max + 1 rejected by PRODUCT authority ──
 def test_d_product_max_plus_one_rejected_by_product_authority() -> None:
-    with pytest.raises(ValueError):
-        request(PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING + 1)
-    decision = validate_output_budget(PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING + 1)
+    assert request(4097).max_tokens == 4097
+    decision = validate_output_budget(4097, product_max=4096)
     assert decision.ok is False
     assert decision.rejected_by == "PRODUCT_REQUESTED_LIMIT"
-    # capability did not cause the rejection — the product authority did
-    assert decision.authority == "PRODUCT_REQUESTED_LIMIT"
-
+    assert validate_output_budget(4096, product_max=4096).ok is True
 
 # ── E. product permits but runtime hard ceiling smaller ──
 def test_e_runtime_hard_ceiling_rejects_when_product_permits() -> None:
@@ -120,16 +116,11 @@ def test_f_known_capability_rejects_over_capability_request() -> None:
 
 # ── G. larger known provider max does not auto-widen product budget ──
 def test_g_known_larger_capability_does_not_auto_widen_product_budget() -> None:
-    decision = validate_output_budget(4096, capability=capability(32768))
-    assert decision.ok is True  # still judged against the product ceiling
-    with pytest.raises(ValueError):
-        request(8192)  # 32k-capable model does NOT raise the product ceiling
-    assert PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING == 4096
-    assert b14_execution_module.PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING == 4096
-    # the conceptual validator still rejects above the product budget
-    over = validate_output_budget(8192, capability=capability(32768))
-    assert over.rejected_by == "PRODUCT_REQUESTED_LIMIT"
-
+    assert request(8192).max_tokens == 8192
+    assert validate_output_budget(8192, capability=capability(32768)).ok is True
+    assert PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING is None
+    assert b14_execution_module.PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING is None
+    assert validate_output_budget(8192, product_max=4096, capability=capability(32768)).rejected_by == "PRODUCT_REQUESTED_LIMIT"
 
 # ── H. unknown capability is never fabricated ──
 def test_h_unknown_capability_not_fabricated() -> None:
@@ -157,9 +148,8 @@ def test_i_b66_structured_extraction_budget_independent() -> None:
     import pathlib
 
     core_source = pathlib.Path(b14_execution_module.__file__).read_text(encoding="utf-8")
-    # the legacy ceiling is unchanged and explicitly labelled as a product limit
-    assert "PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING = 4096" in core_source
-    assert "GLOBAL_4096_ORIGIN=EARLY_B14_PILOT_VALIDATION" in core_source
+    assert "PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING: int | None = None" in core_source
+    assert "max_tokens must be a positive integer or None" in core_source
     # no B66-specific budget logic was introduced into Core
     assert "b66" not in core_source.lower()
     # B66 conversation module on this branch carries no output-limit widening.
@@ -215,4 +205,4 @@ def test_authorities_are_distinct_concepts() -> None:
     assert validate_output_budget(8192, product_max=8192, runtime_ceiling=4096).ok is False  # runtime rejects
     assert validate_output_budget(2048, capability=capability(2048)).ok is True
     # capability metadata is descriptive, not the request validator
-    assert b14_execution_module.PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING == 4096
+    assert b14_execution_module.PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING is None
