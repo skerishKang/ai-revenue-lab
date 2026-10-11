@@ -1,3 +1,14 @@
+<!-- FINAL_4229_OWNER_GUIDED_COMPLETED_20261011 -->
+## 최종 운영 테스트 계정 인수 결과 — 2026-10-11 KST (기존 기록 갱신)
+
+**[#4229](https://github.com/skerishKang/ai-revenue-lab/issues/4229)은 CLOSED / COMPLETED.** 대표가 **현재 실제 운영 고객이 없고 기존 CGI alpha 계정은 테스트용**이라고 확인하며 기존 저장된 질문형 초안을 직접 이어서 완성·검증하도록 승인했다. 기존 초안은 사전 인증 GET에서 수신자·품목·메모·단가 없는 시작 상태였고, 승인 CGI Saved Quote Skill이 정상 연결되어 있었다.
+
+실제 운영 사이트에서 **기존 초안 이어쓰기** → 합성 1품목 2×₩10,000 → QuoteCore 합계 **₩22,000**(VAT 포함) → A4 브라우저 PDF **실제 다운로드**가 성공했다. 첫 완료 시에는 DELETE보다 늦게 저장된 단계가 다시 나타나면서 단순 즉시 GET-null만으로는 부적합했으므로 완료 판정을 보류했다. 이후 [재검증 #38102705328](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38102705328)에서 **정확히 일치하는 테스트용 재등장 상태만 복원**, 제품의 실제 DELETE 요청 확인 및 **6초 후 서버 D1 비어 있음** PASS; [별도 새 로그인 #38102783112](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38102783112)에서도 서버 초안 state=null 최종 확인 PASS. 모든 자격증명은 GitHub 보호 환경에서만 처리하고 로그에 출력하지 않았다. [상세 증거](https://github.com/skerishKang/ai-revenue-lab/issues/4229#issuecomment-6104314154).
+
+**정확한 범위:** 이는 운영 **테스트 alpha 계정**의 실제 질문형 초안 완주·PDF·서버 정리 증명이며 실유료 고객의 최종 인수나 Sol 네이티브/벡터/원본 PDF 바이트 동일성 증명은 아니다. 기존 #4076 1~3품목 MVP 승인 및 4~100품목 PARKED 결정은 유지한다. 아래 #4229 OPEN / NOT_TESTED 문구는 이 검증 이전 **역사적 기록**이며 최신 판정에 의해 대체된다.
+
+<!-- /FINAL_4229_OWNER_GUIDED_COMPLETED_20261011 -->
+
 # B66 CGI 1~3품목 견적서 — 최종 고객 인수인계 및 증거 패킷
 
 **최신 기준: 2026-10-11 KST.** 첫 CGI 고객 1~3품목 MVP는 사용자 승인 [#4076](https://github.com/skerishKang/ai-revenue-lab/issues/4076) CLOSED. 이 문서가 과거 시점의 미완료 스냅샷보다 우선한다. 역사적 기록은 보존한다.
