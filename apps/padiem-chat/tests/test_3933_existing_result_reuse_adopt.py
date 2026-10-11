@@ -429,6 +429,7 @@ class AdoptBoundarySourceTests(unittest.TestCase):
             "EXISTING_RESULT_REUSE_CONTEXT_TO_PANEL_CONNECTION=PASS",
             "EXISTING_RESULT_REUSE_ADOPT_MINTS_NEW_IDENTITY=PASS",
             "EXISTING_RESULT_REUSE_NEW_READ_APPROVAL_REQUIRED=PASS",
+            "EXISTING_RESULT_REUSE_SELECTION_FAILURE_NOT_SUCCESS=PASS",
         ):
             assert marker in result.stdout
 

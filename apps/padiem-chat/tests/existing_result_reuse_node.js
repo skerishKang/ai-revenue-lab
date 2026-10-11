@@ -59,7 +59,16 @@ const PANEL_IDS = [
 
 function fakeDocument() {
   const nodes = Object.fromEntries(PANEL_IDS.map((id) => [id, new FakeNode()]));
+  // Mirror the shipped index.html initial state exactly, so an approval
+  // control that becomes visible in this harness can only do so because the
+  // module itself proved a new selection to the server.
   nodes.clawWebXlsxP01Panel.hidden = true;
+  nodes.clawWebXlsxP01Start.hidden = true;
+  nodes.clawWebXlsxP01Start.disabled = true;
+  nodes.clawWebXlsxP01Approve.hidden = true;
+  nodes.clawWebXlsxP01Approve.disabled = true;
+  nodes.clawWebXlsxP01Deny.hidden = true;
+  nodes.clawWebXlsxP01Deny.disabled = true;
   return {
     nodes,
     getElementById(id) { return nodes[id] || null; },
@@ -86,7 +95,7 @@ function textOf(node) {
 
 /* One shared stub transport for BOTH modules. It records every call so the
  * test can prove which module made which request. */
-function stubServer() {
+function stubServer({ refuseSelection = false } = {}) {
   const log = [];
   let adopted = null;
   let selections = [{
@@ -148,6 +157,11 @@ function stubServer() {
       assert.deepEqual(Object.keys(body), ["document_id"]);
       assert.equal(body.document_id, ADOPTED.document_id,
         "Only the adopted NEW identity may be selected");
+      if (refuseSelection) {
+        return response({
+          ok: false, error: { code: "web_xlsx_selection_unavailable" },
+        }, 503);
+      }
       selections = [{
         selection_ref: ADOPTED_REF, document_id: ADOPTED.document_id,
         filename: ADOPTED.filename, size_bytes: ADOPTED.size_bytes,
@@ -182,8 +196,9 @@ function stubServer() {
   return {
     log,
     urls: () => log.map((entry) => entry.url),
-    count: (fragment) => log.filter(
-      (entry) => entry.url.includes(fragment)).length,
+    count: (fragment, method) => log.filter(
+      (entry) => entry.url.includes(fragment)
+        && (method === undefined || entry.method === method)).length,
   };
 }
 
@@ -265,6 +280,52 @@ function stubServer() {
     console.log("EXISTING_RESULT_REUSE_CONTEXT_TO_PANEL_CONNECTION=PASS");
     console.log("EXISTING_RESULT_REUSE_ADOPT_MINTS_NEW_IDENTITY=PASS");
     console.log("EXISTING_RESULT_REUSE_NEW_READ_APPROVAL_REQUIRED=PASS");
+
+    // 6. CTO blocker: the adopt call can succeed while the SEPARATE selection
+    //    is refused. The card must then NOT claim a completed continuation, the
+    //    action must stay usable, and no P01/WRITE step may be started.
+    const refusedDoc = fakeDocument();
+    const refusedServer = stubServer({ refuseSelection: true });
+    const refusedPanel = panelApi.init(refusedDoc);
+    const refusedHost = {
+      hidden: true, children: [], ownerDocument: refusedDoc, attributes: {},
+      append(...elements) { this.children.push(...elements); },
+      replaceChildren(...nodes) { this.children = nodes; },
+      setAttribute(name, value) { this.attributes[name] = value; },
+    };
+    const refusedContext = contextApi.init(refusedHost);
+    await refusedContext.show(CHAT);
+    await settle();
+    const refusedResume = refusedHost.children.find(
+      (node) => node.tag === "button" && /이어서 작업/.test(node.textContent));
+    assert.ok(refusedResume);
+    await refusedResume.click();
+    await settle();
+    assert.equal(refusedServer.count("/artifact-followup/adopt"), 1,
+      "Exactly one adopt is attempted, and it is never retried");
+    assert.equal(refusedServer.count("/api/claw/office/web-selections", "POST"), 1,
+      "Exactly one selection is attempted");
+    assert.equal(refusedPanel.getState().selectedDocumentId, null,
+      "A refused selection must never look selected");
+    assert.equal(refusedPanel.getState().selectedSelectionRef, null);
+    assert.doesNotMatch(refusedDoc.nodes.clawWebXlsxNotice.textContent,
+      /새 P01 읽기 승인이 필요합니다/,
+      "The user must never be told the reuse completed");
+    assert.match(refusedDoc.nodes.clawWebXlsxNotice.textContent,
+      /시작되지 않았습니다/);
+    assert.equal(refusedDoc.nodes.clawWebXlsxP01Start.hidden, true,
+      "No new P01 READ request may be offered without a selection");
+    assert.equal(refusedServer.count("/start-p01"), 0,
+      "No P01 step is started automatically");
+    assert.equal(refusedServer.count("/p01-decision"), 0);
+    assert.equal(refusedServer.count("/quote-edit/request"), 0);
+    assert.equal(refusedServer.count("/quote-edit/pdf"), 0);
+    assert.equal(refusedDoc.nodes.clawWebXlsxList.children.length, 2,
+      "The stored new source is still honestly listed for manual selection");
+    assert.equal(refusedResume.disabled, false,
+      "The card action must stay usable after an honest failure");
+
+    console.log("EXISTING_RESULT_REUSE_SELECTION_FAILURE_NOT_SUCCESS=PASS");
   } finally {
     delete global.window;
   }

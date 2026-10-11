@@ -973,10 +973,15 @@
       }
     }
 
+    // Returns true ONLY when the server bound a NEWLY verified selection and
+    // that selection is the one now held in the page. A refused or unbound
+    // selection POST is reported as false to the caller: an internal catch
+    // must never let a caller announce a completed follow-up while no new P01
+    // selection exists.
     async function selectSource(item, force = false) {
       // `force` is the internal re-entrant path used by adoptFromArtifact:
       // the caller already holds the page latch and owns releasing it.
-      if ((busy && !force) || !validFile(item)) return;
+      if ((busy && !force) || !validFile(item)) return false;
       setBusy(true);
       report("원본의 소유권과 정확한 파일 지문을 확인하고 있습니다.");
       try {
@@ -989,9 +994,17 @@
           throw new Error("파일 선택 기록을 검증할 수 없습니다.");
         }
         await showSelection(item, body.selection.selection_ref);
+        // showSelection is itself fail-closed, so the claim of success is
+        // conditioned on the state it is supposed to have bound.
+        if (selectedDocumentId !== item.document_id
+            || selectedSelectionRef !== body.selection.selection_ref) {
+          throw new Error("파일 선택 기록이 현재 선택으로 반영되지 않았습니다.");
+        }
         report("'" + item.filename + "' 원본 선택이 서버에 저장됐습니다. 별도의 P01 승인 대기 상태가 있어야 승인·거절할 수 있습니다.");
+        return true;
       } catch (error) {
         report(error.message);
+        return false;
       } finally {
         if (!force) setBusy(false);
       }
@@ -1029,7 +1042,18 @@
         const item = lastFiles.find(
           (file) => file.document_id === body.file.document_id);
         if (!item) throw new Error("불러온 원본이 보관 목록에서 확인되지 않았습니다.");
-        await selectSource(item, true);
+        // The new source may now exist, but the follow-up is NOT complete
+        // until a NEW selection is bound. A refused selection must never be
+        // announced as a successful continuation, and neither the adopt nor
+        // any P01 step is retried automatically.
+        const selected = await selectSource(item, true);
+        if (selected !== true
+            || selectedDocumentId !== body.file.document_id
+            || !SELECTION_ID.test(String(selectedSelectionRef))) {
+          throw new Error("'" + item.filename + "' 파일은 새 원본으로 등록됐을 수 있지만 "
+            + "새 선택 기록과 P01 읽기 승인이 시작되지 않았습니다. "
+            + "자동으로 다시 시도하지 않습니다. 보관 목록에서 직접 선택해 주세요.");
+        }
         report("'" + item.filename + "' 파일을 새 원본으로 불러왔습니다. "
           + "이전 승인은 재사용되지 않았으며, 처리를 시작하려면 새 P01 읽기 승인이 필요합니다.");
         return true;

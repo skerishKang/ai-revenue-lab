@@ -50,6 +50,7 @@ def test_browser_real_xlsx_approval_ui_one_shot_and_server_only_state():
         "WEB_XLSX_SERVER_STATUS_ONLY=PASS",
         "WEB_XLSX_READ_WORKCOPY_CONVERSATION_HANDOFF=PASS",
         "WEB_XLSX_COMPLETED_RESULT_REUSE_NEW_APPROVAL=PASS",
+        "WEB_XLSX_REUSE_SELECTION_FAILURE_NEVER_REPORTS_SUCCESS=PASS",
     ):
         assert marker in result.stdout
 
@@ -71,3 +72,11 @@ def test_existing_result_reuse_is_one_owner_scoped_adopt_call():
     # A caller can never inject a document identity or a base64 body here.
     assert "artifact_id: artifactId, integrity_ref: integrityRef" in js
     assert "base64" not in js.split("function validateAdopt")[1].split("function init")[0]
+    # CTO blocker fix: the follow-up is complete only when the SEPARATE
+    # selection actually bound, so a refused selection can never be announced
+    # as a successful continuation.
+    assert "const selected = await selectSource(item, true);" in js
+    assert "selected !== true" in js
+    assert "selectedDocumentId !== body.file.document_id" in js
+    assert "!SELECTION_ID.test(String(selectedSelectionRef))" in js
+    assert "자동으로 다시 시도하지 않습니다" in js

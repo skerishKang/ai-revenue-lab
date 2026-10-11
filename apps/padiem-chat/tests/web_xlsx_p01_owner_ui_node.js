@@ -70,7 +70,7 @@ function response(body, status = 200) {
 async function settle() {
   for (let i = 0; i < 12; ++i) await new Promise(resolve => setImmediate(resolve));
 }
-function server({ initial = "waiting_p01", enabled = true, failPost = false, failStart = false, badSource = false, workcopy = false, forgedPreviewWrite = false, writeAvailable = false, pdfAvailable = false, followupAvailable = false, followupForged = false, readConversation = false, readConversationForged = false, adoptAvailable = true, adoptForged = false } = {}) {
+function server({ initial = "waiting_p01", enabled = true, failPost = false, failStart = false, badSource = false, workcopy = false, forgedPreviewWrite = false, writeAvailable = false, pdfAvailable = false, followupAvailable = false, followupForged = false, readConversation = false, readConversationForged = false, adoptAvailable = true, adoptForged = false, selectionRefused = false, selectionMalformed = false } = {}) {
   let stage = initial, sent = [], starts = [], previews = [], commits = [],
     writeDecisions = [], pdfPreviews = [], followupReads = [], adopts = [],
     selectionPosts = [], adoptedStatusReads = [];
@@ -148,10 +148,16 @@ function server({ initial = "waiting_p01", enabled = true, failPost = false, fai
       assert.equal(body.document_id, ADOPTED.document_id);
       assert.ok(adopted !== null, "Selection requires a stored source");
       selectionPosts.push(body.document_id);
+      if (selectionRefused) {
+        return response({
+          ok: false, error: { code: "web_xlsx_selection_unavailable" },
+        }, 503);
+      }
       return response({
         ok: true, contract_version: "claw-web-xlsx-selection.v1",
         selection: {
-          selection_ref: ADOPT_REF, document_id: ADOPTED.document_id,
+          selection_ref: selectionMalformed ? "not-a-selection" : ADOPT_REF,
+          document_id: ADOPTED.document_id,
           filename: ADOPTED.filename, size_bytes: ADOPTED.size_bytes,
           source_sha256: ADOPTED.source_sha256,
           status: "source_selected_p01_not_started",
@@ -719,6 +725,53 @@ async function prepare(config) {
     "A forged reuse claim must never become a new selection");
   assert.equal(forgedAdopt.client.getState().selectedDocumentId, SRC.document_id);
 
+  // CENTRAL CTO blocker: the adopt POST can succeed while the SEPARATE
+  // selection POST is refused or binds nothing. The new source then exists but
+  // no new P01 selection does, so the panel must not announce a completed
+  // continuation, must not return true (the card action stays unlocked) and
+  // must not retry adopt or any P01 step.
+  for (const [label, opts] of [
+    ["refused selection POST", {selectionRefused: true}],
+    ["malformed selection reference", {selectionMalformed: true}],
+  ]) {
+    const failed = await prepare(opts);
+    const before = failed.client.getState();
+    assert.equal(
+      await failed.client.adoptFromArtifact(WORK_CHAT, REV_ID, REV_SHA), false,
+      "A stored source without a new selection is not a completed reuse: " + label);
+    await settle();
+    assert.equal(failed.network.adopts.length, 1, label);
+    assert.deepEqual(failed.network.selectionPosts, [ADOPTED.document_id], label);
+    assert.equal(failed.client.getState().selectedDocumentId, SRC.document_id,
+      "A failed selection must never look selected: " + label);
+    assert.equal(failed.client.getState().selectedSelectionRef, REF, label);
+    assert.doesNotMatch(failed.root.nodes.clawWebXlsxNotice.textContent,
+      /새 P01 읽기 승인이 필요합니다/,
+      "A failed selection must never be announced as a completed reuse: " + label);
+    assert.match(failed.root.nodes.clawWebXlsxNotice.textContent,
+      /시작되지 않았습니다/, label);
+    assert.match(failed.root.nodes.clawWebXlsxP01Selected.textContent,
+      new RegExp(SRC.filename.replace(".", "\\.")),
+      "The still-selected original must stay truthfully shown: " + label);
+    // The approval surface is left exactly as it was: no half-state, no new
+    // authority, and no automatically retried adopt or P01 step.
+    assert.equal(failed.client.getState().ownerRequestReady,
+      before.ownerRequestReady, label);
+    assert.equal(failed.client.getState().ownerDecisionReady,
+      before.ownerDecisionReady, label);
+    assert.deepEqual(failed.network.sent, [],
+      "No P01 decision may be replayed: " + label);
+    assert.deepEqual(failed.network.starts, [],
+      "No P01 start may be triggered: " + label);
+    assert.equal(failed.network.commits.length, 0, label);
+    assert.equal(failed.network.writeDecisions.length, 0, label);
+    assert.equal(failed.network.pdfPreviews.length, 0, label);
+    assert.equal(failed.client.getState().busy, false,
+      "The page latch is always released: " + label);
+    assert.equal(failed.root.nodes.clawWebXlsxList.children.length, 2,
+      "The stored new source is still honestly listed for manual selection: " + label);
+  }
+
   const validAdopt = {
     ok: true, contract_version: "claw-web-xlsx-source-adopt.v1",
     source: "previous_completed_result", adopted_from_artifact_id: REV_ID,
@@ -770,4 +823,5 @@ async function prepare(config) {
   console.log("WEB_XLSX_BROWSER_START_ONE_SHOT=PASS");
   console.log("WEB_XLSX_READ_WORKCOPY_CONVERSATION_HANDOFF=PASS");
   console.log("WEB_XLSX_COMPLETED_RESULT_REUSE_NEW_APPROVAL=PASS");
+  console.log("WEB_XLSX_REUSE_SELECTION_FAILURE_NEVER_REPORTS_SUCCESS=PASS");
 })().catch(error => { console.error(error); process.exitCode = 1; });
