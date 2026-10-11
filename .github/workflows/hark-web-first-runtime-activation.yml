@@ -25,8 +25,11 @@ on:
 permissions:
   contents: read
 
+# #3933: serialize Hark flag PATCH/GET windows with the B62 code-deploy gate.
+# Both workflows mutate the same padiem-chat Worker version/binding authority;
+# distinct concurrency groups allowed a code deploy to replace chat_write flags.
 concurrency:
-  group: hark-web-first-runtime-production
+  group: b62-production-code-deploy-gate
   cancel-in-progress: false
 
 jobs:
