@@ -1,0 +1,102 @@
+name: B66 4229 Owner Existing Guided Completion
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        required: true
+        type: choice
+        options:
+          - audit
+          - finish
+      target_sha:
+        description: Exact current main SHA (no moving code)
+        required: true
+        type: string
+      confirmation:
+        description: audit=RUN_B66_4229_OWNER_AUDIT; finish=RUN_B66_4229_OWNER_FINISH_EXISTING
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b66-4229-owner-guided-existing
+  cancel-in-progress: false
+
+jobs:
+  static-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          persist-credentials: false
+      - name: Exact immutable main and safety syntax
+        shell: bash
+        env:
+          TARGET_SHA: ${{ inputs.target_sha }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "$TARGET_SHA"
+          python -m py_compile .github/scripts/b66_4229_owner_existing_guided.py
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('.github/scripts/b66_4229_owner_existing_guided.py').read_text()
+          for required in ('existing_draft_not_blank_test_start',
+                           'recipientCompany', 'itemCount', 'approvedSkill',
+                           '_open_result_and_download', 'j.state===null',
+                           '_logout_after_verified_pdf_handoff'):
+              assert required in s, required
+          print("B66_4229_FINISH_EXACT_TEST_ONLY_GUARDS=PASS")
+          PY
+
+  live-owned-account:
+    needs: static-contract
+    if: >-
+      ${{
+        (inputs.mode == 'audit' && inputs.confirmation == 'RUN_B66_4229_OWNER_AUDIT') ||
+        (inputs.mode == 'finish' && inputs.confirmation == 'RUN_B66_4229_OWNER_FINISH_EXISTING')
+      }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production
+    env:
+      TARGET_SHA: ${{ inputs.target_sha }}
+      B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
+      B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
+      EXEC_MODE: ${{ inputs.mode }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+      - name: Recheck exact main and protected credentials presence only
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "$TARGET_SHA"
+          test -n "$B66_CGI_ALPHA_USERNAME"
+          test -n "$B66_CGI_ALPHA_PASSWORD"
+          echo "B66_4229_OWNER_PRECALL=PASS"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned headless browser
+        run: |
+          python -m pip install --disable-pip-version-check --quiet "playwright==1.55.0"
+          python -m playwright install --with-deps chromium
+      - name: Owner authorized existing Guided audit or completion
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/b66_4229_owner_existing_guided.py --mode "$EXEC_MODE"
+          echo "B66_4229_PROTECTED_ENV_NO_CREDENTIAL_OUTPUT=PASS"
