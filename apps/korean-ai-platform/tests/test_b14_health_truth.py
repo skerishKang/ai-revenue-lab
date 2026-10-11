@@ -89,7 +89,7 @@ def test_live_with_platform_secret_is_top_level_healthy(client, monkeypatch):
     data = response.json()
     assert data["status"] == "ok"
     assert data["mode"] == "b14-live"
-    assert data["configured_providers"] == len(read_registry()["providers"])
+    assert data["configured_providers"] == len({m["provider_id"] for m in read_registry()["models"]})
     assert data["configured_models"] == len(list_catalog_summaries())
     assert data["registered_routes"] == len(CATALOG_BY_ID)
     assert data["business14"]["provider_mode"] == "live"
@@ -197,7 +197,7 @@ def test_business14_providers_reflect_registered_route_owners(client):
     _set_live()
     data = client.get("/api/pilot/health").json()
     providers = data["business14"]["providers"]
-    assert [p["id"] for p in providers] == sorted(read_registry()["providers"])
+    assert [p["id"] for p in providers] == sorted({m["provider_id"] for m in read_registry()["models"]})
     for entry in providers:
         assert set(entry.keys()) == {"id", "registered", "has_key"}
         assert entry["registered"] is True

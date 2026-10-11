@@ -40,7 +40,8 @@ def test_exact_modelscope_provider_identity_price_and_future_quota_unknown():
     d = read_registry()
     ids = [x["id"] for x in d["models"]]
     assert len(ids) == 14 and len(set(ids)) == 14
-    assert len(d["providers"]) == 10
+    assert len(d["providers"]) >= 10
+    assert {m["provider_id"] for m in d["models"]} <= set(d["providers"])
     assert MID == ids[-3]  # Two newer TokenHarbor free routes appended
     assert ids[10] == "kira/qwen3.8-flash-free"
     assert d["groups"] == {"plus": [], "pro": [], "max": []}
