@@ -325,3 +325,28 @@ def test_browser_history_bridge_requires_owner_run_link_not_title():
     assert "run?.session?.conversation_id" in app
     assert "openClawWorkspace();" in app
     assert "showConversation({ preserveClaw: isVerifiedClawThread });" in app
+
+
+def test_real_d1_owner_conversation_created_only_after_completed_claw():
+    """Reuse D1-accurate fake to prove GET list/detail and SSE ID, not fake UI."""
+    import json
+    import re
+    import test_history_workspace_linkage as d1_fixture
+
+    store = d1_fixture._store()
+    adapter = base._make_adapter(outcome=base._make_outcome(answer="persisted on D1"))
+    with owner_client(store, adapter) as client:
+        completed = client.post(base.GENERAL_ROUTE_PATH, json=base._payload())
+        match = re.search(r'event: done\\ndata: (\\{[^\\n]+\\})', completed.text)
+        cid = json.loads(match.group(1)).get("conversation_id") if match else None
+        listed = client.get("/api/conversations")
+        detail = client.get("/api/conversations/" + cid) if cid else None
+    assert completed.status_code == 200
+    assert isinstance(cid, str) and cid.startswith("chat_")
+    assert listed.status_code == 200
+    assert any(row["id"] == cid for row in listed.json()["conversations"])
+    assert detail is not None and detail.status_code == 200
+    assert detail.json()["conversation"]["messages"] == [
+        {"role": "user", "content": base._payload()["messages"][-1]["content"]},
+        {"role": "assistant", "content": "persisted on D1"},
+    ]
