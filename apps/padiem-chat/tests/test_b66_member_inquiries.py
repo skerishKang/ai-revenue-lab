@@ -113,3 +113,43 @@ async def test_public_submission_requires_auth_and_valid_input(monkeypatch):
     assert (json.loads(saved.body)["inquiry_id"]).startswith("b66inq_")
     assert len(await store.list_user(user)) == 1
     assert len(await store.list_user(admin)) == 0
+
+@pytest.mark.asyncio
+async def test_inquiries_admin_only_and_status_updates(monkeypatch):
+    import json
+    from types import SimpleNamespace
+    from app import b66_member_inquiries as mod
+    from app.b66_member_admin import D1B66MemberAdminStore
+    db, admin, member, store = inquiry_store()
+    inquiry = await store.submit(member, "usage", "How to export", "Where is the export?")
+    admin_store = D1B66MemberAdminStore(db, admin_email="admin@example.test")
+
+    class Request:
+        headers = {"content-type": "application/json"}
+        query_params = {"status": "all"}
+        path_params = {"inquiry_id": inquiry["inquiry_id"]}
+        app = SimpleNamespace(state=SimpleNamespace(
+            b66_inquiry_store=store, b66_member_admin_store=admin_store))
+        async def stream(self):
+            yield b'{"status":"resolved"}'
+
+    req = Request()
+    monkeypatch.setattr(mod, "current_user_id", lambda _: None)
+    assert (await mod.b66_admin_inquiries(req)).status_code == 401
+    assert (await mod.b66_admin_inquiry_status(req)).status_code == 401
+
+    monkeypatch.setattr(mod, "current_user_id", lambda _: member)
+    assert (await mod.b66_admin_inquiries(req)).status_code == 403
+    assert (await mod.b66_admin_inquiry_status(req)).status_code == 403
+
+    monkeypatch.setattr(mod, "current_user_id", lambda _: admin)
+    entries = await mod.b66_admin_inquiries(req)
+    assert entries.status_code == 200
+    body = json.loads(entries.body)
+    assert len(body["inquiries"]) == 1
+    assert body["inquiries"][0]["body"] == "Where is the export?"
+    assert (await mod.b66_admin_inquiry_status(req)).status_code == 200
+    assert len(await store.list_admin("resolved")) == 1
+
+    req.query_params = {"status": "invalid"}
+    assert (await mod.b66_admin_inquiries(req)).status_code == 400

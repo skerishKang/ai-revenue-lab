@@ -18,8 +18,9 @@
   .topbar { position: relative; }
   #b66OpenInquiry {
     position: absolute;
-    top: 0;
+    top: calc(100% + 8px);
     right: 0;
+    z-index: 1;
     min-height: 31px;
     padding: 5px 8px;
     font-size: 12px;
