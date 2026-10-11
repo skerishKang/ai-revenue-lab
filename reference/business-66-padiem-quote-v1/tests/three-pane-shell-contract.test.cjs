@@ -31,7 +31,7 @@ check(shell.includes('b66:open-recent-quotes') && shell.includes('b66:open-file-
 check(shell.includes('id="shellNewQuote"') && shell.includes('clickExisting("newQuote")'),
   "rail exposes an explicit new-quote action");
 check(shell.includes('shellManualQuote') && shell.includes('새 양식 만들기') &&
-  shell.includes('b66:open-manual-skill') && shell.includes('shell-rail-feature-divider') &&
+  shell.includes('b66:open-manual-skill') && shell.includes('advancedTools.appendChild(manual)') &&
   shell.includes('id="shellNewQuote"'),
   "새 견적 시작(견적 초기화)과 새 양식 만들기(검토 후보)가 분리되어 기존 흐름으로 연결된다");
 check(app.includes('b66:open-manual-skill') && app.includes('bindManualSection') &&

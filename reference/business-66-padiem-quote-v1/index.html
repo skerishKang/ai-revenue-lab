@@ -90,14 +90,19 @@
       <div class="b66-settings-menu" role="group" aria-label="설정 항목">
         <button id="settingsPrivacyChoice" type="button" aria-controls="privacySettingsView" aria-expanded="false">개인정보 <span aria-hidden="true">›</span></button>
         <button id="settingsCompanyChoice" type="button" aria-controls="companySettingsView" aria-expanded="false">회사정보 <span aria-hidden="true">›</span></button>
+        <button id="settingsDriveChoice" type="button" aria-controls="driveSettingsView" aria-expanded="false">Google Drive 저장 <span aria-hidden="true">›</span></button>
       </div>
       <div id="privacySettingsView" class="b66-settings-detail" hidden>
         <h3>개인정보</h3>
         <p id="b66AccountSummary" class="settings-note">로그인 계정 정보</p>
         <p class="settings-note">작성 중 견적은 이 브라우저에 저장됩니다. '내 회사' 정보는 로그인 계정에 저장되어 다른 기기에서도 사용됩니다. 회사정보는 별도 메뉴에서 관리합니다.</p>
         <button class="settings-reset" id="resetLocalData" type="button">저장 데이터 초기화</button>
+      </div>
+      <div id="driveSettingsView" class="b66-settings-detail" hidden>
+        <h3>Google Drive 저장</h3>
+        <p class="settings-note">파디엠 로그인과 Google Drive 저장 계정은 별개입니다. 현재 연결 상태를 확인하고 저장·불러오기를 이용할 수 있습니다.</p>
         <div class="drive-storage" id="driveStoragePanel" aria-label="내 Google Drive 저장">
-          <!-- 기존 Drive UI를 그대로 재사용 -->
+          <!-- 기존 Drive UI 인스턴스와 인증 경계 재사용 -->
         </div>
       </div>
       <div id="companySettingsView" class="b66-settings-detail" hidden>
@@ -171,7 +176,7 @@
             <button class="easy-send" id="easySend" type="button" aria-label="보내기">↑</button>
           </div>
         </div>
-        <p class="easy-composer-note" id="easyComposerNote">바로 입력해도 질문이 시작됩니다. 문장을 알아듣는 기능은 준비 중이라, 필요한 값은 하나씩 여쭤봅니다.</p>
+        <p class="easy-composer-note" id="easyComposerNote">AI에게 견적을 요청하려면 모델을 먼저 선택하세요. 세부 항목은 AI 없이 직접 편집할 수도 있습니다.</p>
       </div>
     </section>
 

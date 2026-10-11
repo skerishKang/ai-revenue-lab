@@ -18,13 +18,13 @@ assert.doesNotMatch(shell,/<h2>견적서 관리<\/h2>|새 견적서 만들기|sh
 assert.doesNotMatch(shell,/<h2>(시작|양식|최근 견적)<\/h2>/, "no redundant sidebar section headings");
 assert.match(shell,/견적서 양식<select-host id="shellSkillSelect"/);
 assert.doesNotMatch(shell,/shellQuoteTemplateSelect/, "no second primary template selector");
-assert.match(shell,/shell-rail-feature-divider/);
+assert.match(shell,/advancedTools\.appendChild\(manual\)/, "advanced disclosure retains new-template action without primary CTA");
 assert.match(shell,/if \(settingsButton\) \{\s*settingsButton\.hidden = true;/);
 assert.match(account,/if \(settingsButton\) settingsButton\.hidden = true; \/\/ Account menu/);
 assert.match(css,/#settingsButton \{ display: none !important; \}/);
-assert.match(css,/.easy-composer-note \{ display: none !important; \}/);
+assert.match(css,/\.easy-composer-note \{[\s\S]*?display: block !important;/, "model help is visible near composer");
 assert.match(html,/id="easyVoiceMic"[^>]*disabled><svg/);
-assert.match(css,/\.b66-mic-button:disabled \{\s*opacity: 1/);
+assert.match(css,/#easyVoiceMic:disabled \{ display: none !important; \}/, "unfinished microphone not presented as actionable");
 assert.match(account,/setQuoteStatus\("", "ready"\)/);
 assert.doesNotMatch(shell,/AI 모델/,"consumer sees model selector itself, no redundant AI model caption");
 assert.match(shell,/#3186/,"separate template candidate owned by existing implementation ticket");
