@@ -57,7 +57,7 @@ async def main():
                     "activeInput": 1, "activeSend": 1, "legacyInput": 0,
                     "legacySend": 0, "modelInComposer": 1, "modelCount": 1,
                     "skillInRail": 1, "statusInRail": 1,
-                    "modelHiddenSignedOut": True,
+                    "modelHiddenSignedOut": False,
                 }, result
 
                 await page.evaluate("""() => document.dispatchEvent(new CustomEvent(
@@ -68,7 +68,7 @@ async def main():
                 await page.evaluate("""() => document.dispatchEvent(new CustomEvent(
                     'b66:auth-changed', {detail:{authenticated:false}}))""")
                 assert await page.evaluate(
-                    "() => document.getElementById('shellModelControl').hidden"
+                    "() => !document.getElementById('shellModelControl').hidden"
                 )
 
                 await page.click("#directModeButton")
