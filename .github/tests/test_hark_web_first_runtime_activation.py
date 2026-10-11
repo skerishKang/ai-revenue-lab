@@ -140,6 +140,22 @@ def test_workflow_has_protected_manual_only_mutation_and_rollback():
     assert "HARK_ROLLBACK_VERSION_ID" in workflow
     assert "HARK_PRODUCTION_STAGE=PASS" in workflow
     assert "BROWSER_QUICK_ACTION_CALLS=0" in workflow
+    # workers/scripts/.../versions GET only provides metadata. Source
+    # modules must come from a version-ID-bound workers/workers endpoint.
+    # An absent pre-mutation byte manifest must block BEFORE any PATCH.
+    read_step = workflow.split(
+        "- name: Read actual 100-percent served target and peer authority", 1
+    )[1].split("- name: Build additive exact-only patch", 1)[0]
+    verify_step = workflow.split(
+        "- name: Verify newly served immutable Worker", 1
+    )[1].split("- name: Auto rollback", 1)[0]
+    assert "workers/workers/${worker}/versions/${active}" in read_step
+    assert "HARK_PREMUTATION_VERSION_MODULES=PASS" in read_step
+    assert "_version_module_manifest" in read_step
+    assert "workers/workers/${WORKER}/versions/${active}" in verify_step
+    assert "assert_exact_worker_code" in verify_step
+    assert "?include=modules" not in read_step + verify_step
+
     assert "PADIEM_WEB_XLSX_QUOTE_PDF_ENABLED" not in workflow  # flags owned by script
     # Previous production engine_read run 38118608721 failed at curl(2):
     # the PATCH omitted its target URL, then requested rollback even though
