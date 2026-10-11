@@ -19,6 +19,7 @@
   const directView = $("directView");
   const easyEmpty = $("easyEmpty");
   const messageList = $("easyMessageList");
+  const conversation = $("easyConversation");
   const historyPanel = $("easyHistoryPanel");
   const chipRow = $("easyChipRow");
   const composer = $("easyComposer");
@@ -155,6 +156,8 @@
     lastEasyView = "home";
     if (!options || options.history !== false) recordProductState("home");
     easyEmpty.hidden = false;
+    easyView.classList.add("easy-chat-home");
+    if (conversation) conversation.scrollTop = 0;
     composer.value = "";
     composer.placeholder = "견적 내용을 한 문장으로 편하게 적어 보세요";
     $("easyComposerNote").textContent = ""; // No misleading persistent CGI send caption.
@@ -166,6 +169,8 @@
 
   function startConversation() {
     easyEmpty.hidden = true;
+    easyView.classList.remove("easy-chat-home");
+    if (conversation) conversation.scrollTop = 0;
     messageList.innerHTML = "";
     historyPanel.innerHTML = "";
     historyPanel.hidden = true;
@@ -200,8 +205,12 @@
       article.appendChild(bubble);
     }
 
+    // Scroll only the chat transcript, never the entire workspace/window.
+    // Stay with the latest message until a user intentionally scrolls back.
+    const wasNearBottom = !conversation ||
+      conversation.scrollHeight - conversation.scrollTop - conversation.clientHeight < 120;
     messageList.appendChild(article);
-    article.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    if (conversation && wasNearBottom) conversation.scrollTop = conversation.scrollHeight;
     return article;
   }
 

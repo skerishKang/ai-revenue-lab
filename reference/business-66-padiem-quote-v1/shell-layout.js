@@ -67,25 +67,18 @@
       '<label class="shell-picker-label">견적서 양식<select-host id="shellSkillSelect"></select-host></label>' +
       '<p class="shell-runtime-status" id="shellRuntimeStatus" role="status" aria-live="polite"></p>' +
       '<label class="shell-picker-label" id="shellModelControl" hidden><select-host id="shellModelSelect"></select-host></label>';
-    /* #4319 / #3186 경로 B: 양식 구획의 새 양식 만들기 진입점(기존 후보 생성 기능 재사용).
-       입력·검토·승인 요청 화면 본체는 #skillSection 의 기존 Saved Skill 영역에 있다. */
-    // #3186: creating a *new reusable template* is distinct from starting a new quote.
-    var advancedTools = document.createElement("details");
-    advancedTools.className = "shell-rail-advanced";
-    var advancedSummary = document.createElement("summary");
-    advancedSummary.textContent = "고급 · 새 양식 관리";
-    advancedTools.appendChild(advancedSummary);
+    // A reusable template starts from an existing file, not from quote line-item
+    // editing. Reuse the registered Saved Quote Skill file intake/wizard.
     var manual = makeButton(
       "shellManualQuote",
-      "✎",
+      "▤",
       "새 양식 만들기",
-      "별도 양식 후보를 만들고 검토합니다 · 승인 전 사용 불가"
+      "기존 견적서 파일을 선택해 새 양식을 검토합니다"
     );
     manual.addEventListener("click", function () {
-      document.dispatchEvent(new CustomEvent("b66:open-manual-skill"));
+      document.dispatchEvent(new CustomEvent("b66:open-skill-register"));
     });
-    advancedTools.appendChild(manual);
-    managementSection.appendChild(advancedTools);
+    newSection.appendChild(manual);
     menu.appendChild(managementSection);
 
     var historySection = document.createElement("section");
@@ -378,6 +371,48 @@
     }
     window.addEventListener("resize", syncPreviewScale);
     window.setTimeout(syncPreviewScale, 0);
+
+    // When pagination grows from one A4 sheet to two or three, follow the
+    // newly added page within the preview scroller only. Respect manual scroll.
+    var detailHost = byId("pvDetailPages");
+    if (detailHost && typeof MutationObserver === "function") {
+      var previousPages = detailHost.querySelectorAll(".quote-detail-page").length;
+      var followNewPages = true;
+      var programmaticPreviewScroll = false;
+      var pendingPage = null;
+
+      function showNewPage(page) {
+        if (!page || !followNewPages || document.body.classList.contains("preview-collapsed")) {
+          pendingPage = page || pendingPage;
+          return;
+        }
+        pendingPage = null;
+        window.requestAnimationFrame(function () {
+          if (!followNewPages) return;
+          var box = page.getBoundingClientRect();
+          var viewerBox = preview.getBoundingClientRect();
+          var top = preview.scrollTop + box.top - viewerBox.top - 12;
+          programmaticPreviewScroll = true;
+          preview.scrollTop = Math.max(0, top);
+          window.requestAnimationFrame(function () { programmaticPreviewScroll = false; });
+        });
+      }
+
+      preview.addEventListener("scroll", function () {
+        if (programmaticPreviewScroll) return;
+        followNewPages = preview.scrollHeight - preview.clientHeight - preview.scrollTop <= 96;
+      }, { passive: true });
+
+      new MutationObserver(function () {
+        var pages = detailHost.querySelectorAll(".quote-detail-page");
+        if (pages.length > previousPages) showNewPage(pages[pages.length - 1]);
+        previousPages = pages.length;
+      }).observe(detailHost, { childList: true, subtree: true });
+
+      reopen.addEventListener("click", function () {
+        if (pendingPage) showNewPage(pendingPage);
+      });
+    }
 
     divider.addEventListener("mousedown", function (event) {
       event.preventDefault();
