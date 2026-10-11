@@ -328,12 +328,46 @@ def test_browser_history_bridge_requires_owner_run_link_not_title():
 
 
 def test_real_d1_owner_conversation_created_only_after_completed_claw():
-    """Reuse D1-accurate fake to prove GET list/detail and SSE ID, not fake UI."""
+    """SQLite executes the same owner-scoped D1 SQL as Production history."""
     import json
-    import re
-    import test_history_workspace_linkage as d1_fixture
+    import sqlite3
+    from app.history import D1HistoryStore
 
-    store = d1_fixture._store()
+    db = sqlite3.connect(":memory:", check_same_thread=False)
+    db.row_factory = sqlite3.Row
+    db.executescript(
+        "CREATE TABLE conversations (id TEXT PRIMARY KEY, user_id TEXT, "
+        "project_id TEXT, title TEXT, created_at TEXT, updated_at TEXT);"
+        "CREATE TABLE messages (id TEXT PRIMARY KEY, conversation_id TEXT, "
+        "sequence_number INTEGER, role TEXT, content TEXT, created_at TEXT);"
+    )
+
+    class Statement:
+        def __init__(self, sql):
+            self.sql = sql
+            self.values = ()
+
+        def bind(self, *values):
+            self.values = values
+            return self
+
+        async def run(self):
+            db.execute(self.sql, self.values)
+            db.commit()
+            return {"success": True}
+
+        async def first(self):
+            found = db.execute(self.sql, self.values).fetchone()
+            return dict(found) if found else None
+
+        async def all(self):
+            return [dict(row) for row in db.execute(self.sql, self.values).fetchall()]
+
+    class SQLiteD1:
+        def prepare(self, sql):
+            return Statement(sql)
+
+    store = D1HistoryStore(SQLiteD1())
     adapter = base._make_adapter(outcome=base._make_outcome(answer="persisted on D1"))
     with owner_client(store, adapter) as client:
         completed = client.post(base.GENERAL_ROUTE_PATH, json=base._payload())
@@ -350,3 +384,4 @@ def test_real_d1_owner_conversation_created_only_after_completed_claw():
         {"role": "user", "content": base._payload()["messages"][-1]["content"]},
         {"role": "assistant", "content": "persisted on D1"},
     ]
+    db.close()
