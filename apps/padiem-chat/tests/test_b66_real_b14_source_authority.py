@@ -172,8 +172,8 @@ def test_real_b14_source_registered_routes_and_google_manual_only(b14_source_get
     assert all(not row["owner_excluded"] for row in rows)
     assert not any(row.get("public") is True for row in rows)
     # Previously the owner registry had zero free routes. Only the one
-    # explicitly approved TokenHarbor free variants may now appear; neither
-    # becomes a public/auto selection or silently changes the B66 pin.
+    # explicitly approved TokenHarbor DeepSeek free variant may now appear;
+    # it is not public/auto-eligible and does not change the B66 pin.
     assert {row["id"] for row in rows if row["free"]} == {
         "tokenharbor/deepseek-v4.1-flash:free",
     }
