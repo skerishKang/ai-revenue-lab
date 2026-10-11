@@ -115,6 +115,11 @@ from .claw_office_drive_completion import ClawOfficeDriveCompletion
 from .claw_durable_drive_artifact_routes import (
     claw_drive_artifact_download, claw_drive_artifact_preview,
 )
+# NOTE: aliased because ``create_app`` has a parameter of the same name (the
+# injected adapter); the route list is built inside that function.
+from .claw_telegram_delivery_routes import (
+    TELEGRAM_DELIVERY_PATH, claw_telegram_artifact_delivery as _claw_telegram_delivery_route,
+)
 from .claw_routes import (
     claw_approval_decision,
     claw_manual_intake_artifact,
@@ -260,6 +265,8 @@ def create_app(
     claw_drive_artifact_reader=None,
     claw_telegram_authority=None,
     claw_telegram_artifact_delivery=None,
+    claw_artifact_delivery_receipt_store=None,
+    claw_telegram_delivery_request_builder=None,
     approved_memory_store: ApprovedMemoryStore | None = None,
     b66_saved_quote_skill_store: SavedQuoteSkillStore | None = None,
     b66_saved_skill_candidate_store: SavedQuoteSkillCandidateStore | None = None,
@@ -441,6 +448,11 @@ def create_app(
         Route("/api/claw/conversations/{conversation_id}/artifact-followup", claw_conversation_artifact_followup, methods=["GET"]),
         Route("/api/claw/conversations/{conversation_id}/artifacts/{artifact_id}/download", claw_drive_artifact_download, methods=["GET"]),
         Route("/api/claw/conversations/{conversation_id}/artifacts/{artifact_id}/preview", claw_drive_artifact_preview, methods=["GET"]),
+        # #3580: the one consumer of the trusted Telegram delivery adapter. It
+        # creates no WRITE/SEND authority; with no injected adapter, receipt
+        # store and host request builder it answers 403 and no provider path
+        # exists at all.
+        Route(TELEGRAM_DELIVERY_PATH, _claw_telegram_delivery_route, methods=["POST"]),
         Route("/api/claw/runs", claw_runs_history, methods=["GET"]),
         Route("/api/claw/approvals/decision", claw_approval_decision, methods=["POST"]),
         Route("/api/claw/memory/approve", claw_memory_approve, methods=["POST"]),
@@ -679,6 +691,16 @@ def create_app(
     # app.claw_telegram_delivery_host_composition, and no token, chat id or
     # destination is ever a request value.
     app.state.claw_telegram_artifact_delivery = claw_telegram_artifact_delivery
+    # #3580: the delivery consumer's two remaining trusted seams. The receipt
+    # store is the one-attempt-per-artifact record; the request builder is the
+    # host's server-derived channel + approval binding. None keeps the route at
+    # its 403 refusal with no provider path.
+    app.state.claw_artifact_delivery_receipt_store = (
+        claw_artifact_delivery_receipt_store
+    )
+    app.state.claw_telegram_delivery_request_builder = (
+        claw_telegram_delivery_request_builder
+    )
     # Durable explicitly user-approved memory (#2331): reuse the existing
     # PADIEM_CHAT_DB D1 binding with no new database authority. An explicitly
     # injected store wins (network-free tests); otherwise derive from the

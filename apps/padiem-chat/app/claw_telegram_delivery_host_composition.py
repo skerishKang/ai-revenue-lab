@@ -34,10 +34,17 @@ transport, so neither a model nor a browser can supply them.
 
 from __future__ import annotations
 
+import hashlib
+import json
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
 
+from kagent.artifact_delivery_execution_receipt import (
+    ArtifactDeliveryExecutionRequest, declare_delivery_execution_request,
+)
+from kagent.artifact_delivery_intent import DeliveryKind
+from kagent.artifact_lineage import LineageArtifactRef
 from kagent.connector_trust import ConnectorBindingProjection
 from kagent.contracts import ContractError
 from kagent.telegram_artifact_delivery import TelegramArtifactDeliveryAdapter
@@ -46,6 +53,9 @@ from kagent.telegram_document_send_composition import TelegramDocumentSendCompos
 from kagent.telegram_outbound_binding import (
     TelegramBotTokenSecretPort, TelegramProviderChatIdPort,
     TrustedTelegramOutboundBinding,
+)
+from kagent.trusted_channel_reference import (
+    bind_delivery_intent, resolve_trusted_channel_reference,
 )
 
 TELEGRAM_CONNECTOR_ID = "telegram"
@@ -143,6 +153,85 @@ def telegram_send_grant_present(
     if not isinstance(now, datetime) or now.tzinfo is None or now.utcoffset() is None:
         return False
     return _carries_telegram_send_authority(binding) and binding.usable_at(now)
+
+
+def _delivery_identity_digest(
+    *, workspace_ref: str, run_ref: str, artifact_ref: LineageArtifactRef,
+) -> str:
+    """Deterministic attempt/intent identity for one artifact delivery.
+
+    Stable across retries, so a repeated request maps to the same logical
+    attempt and the adapter's own attempt registry refuses a replay.
+    """
+    payload = json.dumps({
+        "workspace_ref": workspace_ref,
+        "run_ref": run_ref,
+        "artifact_id": artifact_ref.artifact_id,
+        "artifact_integrity_ref": artifact_ref.integrity_ref,
+    }, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def build_claw_telegram_delivery_request(
+    *,
+    channel_context: Any,
+    account_ref: str,
+    workspace_ref: str,
+    run_ref: str,
+    artifact_ref: LineageArtifactRef,
+    approval_ref: str,
+    now: datetime,
+    connector_id: str = TELEGRAM_CONNECTOR_ID,
+) -> ArtifactDeliveryExecutionRequest:
+    """Bind one owner-proved artifact to the *current* trusted Telegram channel.
+
+    The destination is never a parameter: it comes from re-resolving the
+    trusted current-channel context the host supplies. The approval handle must
+    come from the **existing** approval authority — this function never mints
+    one, and an absent handle is a refusal at the caller, not a default here.
+    """
+    if not callable(channel_context):
+        raise ClawTelegramDeliveryHostError("trusted current-channel context required")
+    if not isinstance(artifact_ref, LineageArtifactRef):
+        raise ClawTelegramDeliveryHostError("canonical artifact reference required")
+    if not isinstance(approval_ref, str) or not approval_ref:
+        raise ClawTelegramDeliveryHostError("existing send approval reference required")
+    if not isinstance(now, datetime) or now.tzinfo is None or now.utcoffset() is None:
+        raise ClawTelegramDeliveryHostError("trusted aware time required")
+
+    context = channel_context()
+    reference = resolve_trusted_channel_reference(
+        context, now=now, expected_account_ref=account_ref,
+        expected_workspace_ref=workspace_ref,
+        supported_connector_ids=(connector_id,),
+    )
+    digest = _delivery_identity_digest(
+        workspace_ref=workspace_ref, run_ref=run_ref, artifact_ref=artifact_ref,
+    )
+    intent = bind_delivery_intent(
+        delivery_intent_id="tgint" + digest[:32],
+        artifact_ref=artifact_ref,
+        reference=reference,
+        workspace_ref=workspace_ref,
+        run_ref=run_ref,
+        created_at=now,
+        approval_ref=approval_ref,
+    )
+    if intent.delivery_kind is not DeliveryKind.EXTERNAL_CONNECTOR:
+        raise ClawTelegramDeliveryHostError(
+            "the trusted channel did not resolve to an external connector delivery"
+        )
+    return declare_delivery_execution_request(
+        attempt_ref="tgdlv" + digest[:32],
+        intent=intent,
+        reference=reference,
+        context=context,
+        now=now,
+        expected_account_ref=account_ref,
+        expected_workspace_ref=workspace_ref,
+        supported_connector_ids=(connector_id,),
+        approval_ref=approval_ref,
+    )
 
 
 def build_canonical_telegram_outbound_binding(
@@ -278,5 +367,6 @@ __all__ = [
     "build_canonical_telegram_outbound_binding",
     "build_claw_telegram_artifact_delivery",
     "build_claw_telegram_delivery_host_state",
+    "build_claw_telegram_delivery_request",
     "telegram_send_grant_present",
 ]
