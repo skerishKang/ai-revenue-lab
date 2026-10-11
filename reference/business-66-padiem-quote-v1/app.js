@@ -1581,13 +1581,17 @@
   const settingsPanel = $("settingsPanel");
   const privacyView = $("privacySettingsView");
   const companyView = $("companySettingsView");
+  const driveView = $("driveSettingsView");
   const privacyChoice = $("settingsPrivacyChoice");
   const companyChoice = $("settingsCompanyChoice");
+  const driveChoice = $("settingsDriveChoice");
   function chooseSettings(section) {
     privacyView.hidden = section !== "privacy";
     companyView.hidden = section !== "company";
+    driveView.hidden = section !== "drive";
     privacyChoice.setAttribute("aria-expanded", String(section === "privacy"));
     companyChoice.setAttribute("aria-expanded", String(section === "company"));
+    driveChoice.setAttribute("aria-expanded", String(section === "drive"));
     const accountSummary = $("b66AccountSummary");
     const accountButton = document.querySelector("#shellAccountRow > button");
     if (accountSummary && accountButton) accountSummary.textContent = accountButton.textContent || "로그인 계정";
@@ -1600,8 +1604,14 @@
   });
   privacyChoice.addEventListener("click", () => chooseSettings(privacyView.hidden ? "privacy" : null));
   companyChoice.addEventListener("click", () => chooseSettings(companyView.hidden ? "company" : null));
+  driveChoice.addEventListener("click", () => chooseSettings(driveView.hidden ? "drive" : null));
   $("settingsClose").addEventListener("click", () => {
     if (settingsPanel) settingsPanel.hidden = true;
+  });
+  ["easyModeButton", "directModeButton"].forEach((id) => {
+    $(id).addEventListener("click", () => {
+      if (settingsPanel) settingsPanel.hidden = true;
+    });
   });
 
   /* ── 모드 전환 (upload/chat은 의도된 future affordance) ── */

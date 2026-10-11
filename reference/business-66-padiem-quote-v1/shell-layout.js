@@ -70,10 +70,11 @@
     /* #4319 / #3186 경로 B: 양식 구획의 새 양식 만들기 진입점(기존 후보 생성 기능 재사용).
        입력·검토·승인 요청 화면 본체는 #skillSection 의 기존 Saved Skill 영역에 있다. */
     // #3186: creating a *new reusable template* is distinct from starting a new quote.
-    var createDivider = document.createElement("div");
-    createDivider.className = "shell-rail-feature-divider";
-    createDivider.setAttribute("role", "separator");
-    managementSection.appendChild(createDivider);
+    var advancedTools = document.createElement("details");
+    advancedTools.className = "shell-rail-advanced";
+    var advancedSummary = document.createElement("summary");
+    advancedSummary.textContent = "고급 · 새 양식 관리";
+    advancedTools.appendChild(advancedSummary);
     var manual = makeButton(
       "shellManualQuote",
       "✎",
@@ -83,7 +84,8 @@
     manual.addEventListener("click", function () {
       document.dispatchEvent(new CustomEvent("b66:open-manual-skill"));
     });
-    managementSection.appendChild(manual);
+    advancedTools.appendChild(manual);
+    managementSection.appendChild(advancedTools);
     menu.appendChild(managementSection);
 
     var historySection = document.createElement("section");
@@ -170,6 +172,7 @@
     accountMenu.hidden = true;
     accountMenu.setAttribute("aria-label", "계정 메뉴");
     accountMenu.innerHTML = '<button id="b66AccountMenuSettings" type="button">설정</button>' +
+      '<button id="b66AccountMenuDrive" type="button">Google Drive 저장</button>' +
       '<button id="b66AccountMenuLogout" type="button">로그아웃</button>';
     account.appendChild(accountMenu);
     if (accountButton) {
@@ -180,6 +183,12 @@
       accountMenu.hidden = true;
       if (accountButton) accountButton.setAttribute("aria-expanded", "false");
       clickExisting("settingsButton");
+    });
+    byId("b66AccountMenuDrive").addEventListener("click", function () {
+      accountMenu.hidden = true;
+      if (accountButton) accountButton.setAttribute("aria-expanded", "false");
+      clickExisting("settingsButton");
+      clickExisting("settingsDriveChoice"); // existing settings and Drive UI; no new OAuth path
     });
     byId("b66AccountMenuLogout").addEventListener("click", function () {
       accountMenu.hidden = true;
@@ -258,15 +267,45 @@
       if (typeof window.B66QuotePrintPreview === "function") window.B66QuotePrintPreview();
     });
     if (toolbar) {
+      var readinessStatus = document.createElement("span");
+      readinessStatus.id = "shellPreviewReadiness";
+      readinessStatus.className = "shell-preview-readiness";
+      readinessStatus.textContent = "작성 중";
+      readinessStatus.setAttribute("role", "status");
+      toolbar.appendChild(readinessStatus);
       toolbar.appendChild(pdfShortcut);
       toolbar.appendChild(printShortcut);
       toolbar.appendChild(collapse);
+      function syncReadiness() {
+        var core = window.QuoteCore;
+        var app = window.B66QuoteAppBridge;
+        var runtime = window.B66QuoteRuntimeBridge;
+        var ready = false;
+        try {
+          ready = !!(core && app && runtime &&
+            core.printReadiness(app.getDraft()).ready &&
+            runtime.readiness().ready === true);
+        } catch (_) { ready = false; }
+        readinessStatus.textContent = ready ? "출력 준비" : "작성 중";
+        readinessStatus.dataset.ready = String(ready);
+      }
+      document.addEventListener("input", syncReadiness);
+      document.addEventListener("change", syncReadiness);
+      document.addEventListener("b66:auth-changed", syncReadiness);
+      var readinessPaper = byId("quotePaper");
+      if (readinessPaper && typeof MutationObserver === "function") {
+        new MutationObserver(syncReadiness).observe(readinessPaper, {
+          childList: true, subtree: true, attributes: true
+        });
+      }
+      window.setTimeout(syncReadiness, 0);
     }
 
     var reopen = document.createElement("button");
     reopen.type = "button";
     reopen.className = "shell-preview-reopen";
-    reopen.textContent = "미리보기 열기 ◀";
+    reopen.textContent = "견적서 보기";
+    reopen.setAttribute("aria-label", "견적서 미리보기 열기");
     reopen.setAttribute("aria-controls", "shellPreviewHost");
     reopen.addEventListener("click", function () {
       if (window.matchMedia("(max-width:900px)").matches) {
@@ -414,6 +453,27 @@
       document.dispatchEvent(new CustomEvent("b66:open-easy-chat"));
     });
     direct.insertBefore(editHeader, direct.firstChild);
+    var senderSection = direct.querySelector(".panel > .section");
+    var quotePaper = byId("quotePaper");
+    if (senderSection && quotePaper) {
+      var senderNote = document.createElement("p");
+      senderNote.id = "b66CertifiedSenderNote";
+      senderNote.className = "b66-certified-sender-note";
+      senderNote.hidden = true;
+      senderNote.textContent = "이 CGI 양식의 회사정보·직인은 승인된 고정 배경에 포함됩니다. 아래 입력값만 수정해도 고정된 회사정보는 바뀌지 않으니, 다른 회사 견적서로 사용하지 마세요.";
+      var senderLoad = senderSection.querySelector(".b66-sender-load");
+      if (senderLoad) senderLoad.insertAdjacentElement("afterend", senderNote);
+      function syncSenderNote() {
+        senderNote.hidden = !(quotePaper.getAttribute("data-layout-variant") === "cgi-v2" &&
+          quotePaper.getAttribute("data-certified-preview") === "true");
+      }
+      if (typeof MutationObserver === "function") {
+        new MutationObserver(syncSenderNote).observe(quotePaper, {
+          attributes: true, attributeFilter: ["data-layout-variant", "data-certified-preview"]
+        });
+      }
+      syncSenderNote();
+    }
     function sync() {
       document.body.classList.toggle("mode-direct", !direct.hidden);
     }
