@@ -352,7 +352,9 @@ def test_real_d1_owner_conversation_created_only_after_completed_claw():
             return self
 
         async def run(self):
-            db.execute(self.sql, self.values)
+            cursor = db.execute(self.sql, self.values)
+            if self.sql.lstrip().upper().startswith("SELECT"):
+                return {"success": True, "results": [dict(row) for row in cursor.fetchall()]}
             db.commit()
             return {"success": True}
 
