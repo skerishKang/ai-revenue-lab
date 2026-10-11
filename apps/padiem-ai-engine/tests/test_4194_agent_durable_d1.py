@@ -14,7 +14,7 @@ import pytest
 
 from app.agent_durable_d1 import D1AgentRunLedger
 from padiem_ai_core.agent_durable_lease import AgentDurableLeaseError
-from test_agent_skill_service import Fixture, APP_ID, SUBJECT_ID
+from tests.test_agent_skill_service import Fixture, APP_ID, SUBJECT_ID
 
 MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "0011_engine_agent_durable_runs.sql"
 FP = "a" * 64
