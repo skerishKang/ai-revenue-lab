@@ -1417,3 +1417,86 @@ async def test_decoy_saturation_never_feeds_real_lock_decisions() -> None:
         _parse_locked_until(credential.locked_until) - datetime.now(timezone.utc)
     ).total_seconds() / 60
     assert 10 < minutes <= 15
+
+
+@pytest.mark.asyncio
+async def test_password_registration_establishes_b54_canonical_session_without_second_login(monkeypatch):
+    """Registration signs B62 in; B54 must get a session from a persisted credential."""
+    import app.auth_routes as auth_routes
+
+    store = MemoryStore()
+    calls = []
+
+    async def capture_b54_registration(request, credential):
+        assert credential is await store.find_password_credential(credential.username)
+        calls.append((credential.user.id, credential.username))
+
+    monkeypatch.setattr(
+        auth_routes, "establish_b54_canonical_session_after_login",
+        capture_b54_registration,
+    )
+    app = create_app(
+        password_settings(),
+        history_store=store,
+        control_plane_identity_authority=Authority(),
+        identity_shadow_store=ShadowStore(),
+    )
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        registered = await client.post(
+            "/api/auth/password/register",
+            json={
+                "username": "claw.signup",
+                "email": "claw.signup@example.test",
+                "name": "Synthetic Signup",
+                "password": "correct horse battery staple",
+            },
+        )
+        status = await client.get("/api/auth/status")
+    assert registered.status_code == 200
+    assert status.json()["authenticated"] is True
+    assert calls == [(next(iter(store.users)), "claw.signup")]
+
+
+@pytest.mark.asyncio
+async def test_registration_does_not_bridge_mismatched_server_credential(monkeypatch):
+    """A credential pointing at another product user cannot create a B54 grant."""
+    import app.auth_routes as auth_routes
+
+    store = MemoryStore()
+    async def mismatch(_identifier):
+        return PasswordCredential(
+            user=UserProfile("usr_" + "9" * 32, "other@example.test", "Other", ""),
+            username="claw.signup",
+            password_hash="fake-never-used",
+            failed_attempts=0,
+            locked_until=None,
+        )
+    store.find_password_credential = mismatch
+    calls = []
+    async def capture(*args):
+        calls.append(args)
+    monkeypatch.setattr(auth_routes, "establish_b54_canonical_session_after_login", capture)
+    app = create_app(
+        password_settings(),
+        history_store=store,
+        control_plane_identity_authority=Authority(),
+        identity_shadow_store=ShadowStore(),
+    )
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        response = await client.post(
+            "/api/auth/password/register",
+            json={
+                "username": "claw.signup",
+                "email": "claw.signup@example.test",
+                "name": "Synthetic Signup",
+                "password": "correct horse battery staple",
+            },
+        )
+    assert response.status_code == 200
+    assert calls == []
