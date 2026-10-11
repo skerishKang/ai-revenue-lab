@@ -216,7 +216,7 @@
     pdfPreviewFrame.hidden = true;
     pdfPreviewFrame.setAttribute("sandbox", "allow-scripts");
     pdfPreviewFrame.setAttribute("referrerpolicy", "no-referrer");
-    pdfPreviewFrame.setAttribute("style", "display:block;width:100%;height:min(70vh,720px);border:1px solid currentColor;");
+    pdfPreviewFrame.setAttribute("style", "width:100%;height:min(70vh,720px);border:1px solid currentColor;");
     pdfPreviewRegion.append(pdfPreviewClose, pdfPreviewStatus, pdfPreviewFrame);
     editedLink.hidden = true;
     editedLink.textContent = "수정된 XLSX 다운로드";
@@ -930,7 +930,6 @@
     upload.addEventListener("click", () => void save());
     refresh.addEventListener("click", () => void reload());
     approvalRefresh.addEventListener("click", () => void refreshSelectedStatus());
-    requestStart.addEventListener("click", () => void startP01());
     requestStart.addEventListener("click", () => void startP01());
     approve.addEventListener("click", () => void decideP01("approve"));
     deny.addEventListener("click", () => void decideP01("deny"));
