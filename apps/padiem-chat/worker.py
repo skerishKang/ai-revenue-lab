@@ -85,6 +85,7 @@ from app.worker_config import (
 )
 from app.worker_orchestration import build_orchestration_bridge
 from app.web_xlsx_p01_engine_client import build_web_xlsx_p01_engine_client
+from app.web_xlsx_quote_write_engine_client import build_web_quote_write_engine_client
 from kagent.claw_automation import ClawAutomationTickRuntime
 from kagent.claw_automation_trigger import ClawAutomationTriggerBoundary
 from workers import Request, Response, WorkerEntrypoint
@@ -913,6 +914,24 @@ class Default(WorkerEntrypoint):
                     and getattr(
                         self.env, "PADIEM_WEB_XLSX_WORKCOPY_AFTER_P01_ENABLED", None
                     ) == "true"
+                )
+                # The independent WRITE ToolRuntime is OFF unless the
+                # signed-in READ and private workcopy path are both enabled,
+                # plus the explicit separate operator WRITE flag+caller.
+                _worker_app.state.web_xlsx_quote_write_client = (
+                    build_web_quote_write_engine_client(
+                        self.env, request_factory=Request,
+                        runtime_mode=settings.runtime_mode,
+                    )
+                    if _worker_app.state.web_xlsx_p01_workcopy_after_grant_enabled
+                    else None
+                )
+                _worker_app.state.web_xlsx_quote_write_enabled = (
+                    _worker_app.state.web_xlsx_quote_write_client is not None
+                    and _worker_app.state.web_xlsx_quote_write_store is not None
+                    and _worker_app.state.web_xlsx_quote_write_pause_store is not None
+                    and _worker_app.state.web_xlsx_quote_write_owner_decision_store
+                        is not None
                 )
                 _worker_app.state.claw_live_sse_enabled = (
                     settings.runtime_mode == "b14"

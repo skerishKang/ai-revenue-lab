@@ -57,7 +57,8 @@ async function settle() {
   for (let i = 0; i < 12; ++i) await new Promise(resolve => setImmediate(resolve));
 }
 function server({ initial = "waiting_p01", enabled = true, failPost = false, failStart = false, badSource = false, workcopy = false, forgedPreviewWrite = false, writeAvailable = false } = {}) {
-  let stage = initial, sent = [], starts = [], previews = [], commits = [];
+  let stage = initial, sent = [], starts = [], previews = [], commits = [],
+    writeDecisions = [];
   global.fetch = async (url, options = {}) => {
     assert.equal(options.credentials, "same-origin");
     assert.equal(options.cache, "no-store");
@@ -99,12 +100,33 @@ function server({ initial = "waiting_p01", enabled = true, failPost = false, fai
         pdf_exported: false,
       });
     }
-    if (url.endsWith("/quote-edit/commit") && method === "POST") {
-      assert.ok(writeAvailable && workcopy && stage === "confirmed");
+    if (url.endsWith("/quote-edit/approval-status") && method === "GET") {
+      if (commits.length < 1) return response({ok:false},404);
+      return response({
+        ok: true,
+        contract_version: "claw-web-xlsx-quote-write-approval-status.v1",
+        selection_ref: REF,
+        state: writeDecisions.length ? "confirmed" : "waiting_p01",
+        edit_sha256: "a".repeat(64),
+        school_name: "Gwangju University",
+        supply_amount: 99200000,
+        write_approved: writeDecisions.length > 0,
+        revised_xlsx_created: writeDecisions.length > 0,
+        pdf_exported: false,
+      });
+    }
+    if (url.endsWith("/quote-edit/decision") && method === "POST") {
       const body = JSON.parse(options.body);
-      assert.deepEqual(Object.keys(body).sort(),
-        ["edit_sha256", "school_name", "supply_amount"]);
-      commits.push(body);
+      assert.deepEqual(Object.keys(body), ["decision"]);
+      assert.ok(["approve","deny"].includes(body.decision));
+      writeDecisions.push(body.decision);
+      if (body.decision === "deny") {
+        return response({
+          ok: true, contract_version: "claw-web-xlsx-quote-write-decision.v1",
+          selection_ref: REF, state: "denied", revised_xlsx_created: false,
+          pdf_exported: false,
+        });
+      }
       return response({
         ok: true, contract_version: "claw-web-xlsx-quote-write.v1",
         selection_ref: REF, state: "confirmed",
@@ -113,7 +135,24 @@ function server({ initial = "waiting_p01", enabled = true, failPost = false, fai
         edit_sha256: "a".repeat(64),
         revised_xlsx_created: true, pdf_exported: false,
         original_overwritten: false,
-      }, 201);
+      },201);
+    }
+    if (url.endsWith("/quote-edit/request") && method === "POST") {
+      assert.ok(writeAvailable && workcopy && stage === "confirmed");
+      const body = JSON.parse(options.body);
+      assert.deepEqual(Object.keys(body).sort(),
+        ["edit_sha256", "school_name", "supply_amount"]);
+      commits.push(body);
+      return response({
+        ok: true, contract_version: "claw-web-xlsx-quote-write-pause.v1",
+        selection_ref: REF, state: "waiting_p01",
+        edit_sha256: "a".repeat(64),
+        school_name: body.school_name,
+        supply_amount: body.supply_amount,
+        write_approved: false,
+        revised_xlsx_created: false, pdf_exported: false,
+        original_overwritten: false,
+      }, 202);
     }
     if (url.endsWith("/quote-edit/preview") && method === "POST") {
       assert.equal(workcopy && stage === "confirmed", true,
@@ -164,7 +203,8 @@ function server({ initial = "waiting_p01", enabled = true, failPost = false, fai
     }
     throw Error("UNEXPECTED_REQUEST " + method + " " + url);
   };
-  return { sent, starts, previews, commits, get stage() { return stage; } };
+  return { sent, starts, previews, commits, writeDecisions,
+    get stage() { return stage; } };
 }
 async function prepare(config) {
   const network = server(config);
@@ -259,6 +299,13 @@ async function prepare(config) {
   assert.equal(writing.network.commits.length, 1,
     "Explicit WRITE is ONE-SHOT; never auto-repeat");
   assert.equal(writing.network.commits[0].edit_sha256, "a".repeat(64));
+  assert.equal(revisedLink.hidden, true, "WRITE request is NOT approval");
+  const yes = form.children[6], no = form.children[7];
+  assert.equal(yes.hidden, false);
+  assert.equal(no.hidden, false);
+  yes.handlers.click(); yes.handlers.click(); await settle();
+  assert.deepEqual(writing.network.writeDecisions, ["approve"],
+    "Owner must separately authorize Core WRITE, exactly once");
   assert.equal(revisedLink.hidden, false);
   assert.equal(revisedLink.href,
     "/api/claw/office/web-selections/" + REF + "/quote-edit/download");
@@ -324,6 +371,7 @@ async function prepare(config) {
         processing_started: true, workcopy_created: false }, SRC, REF,
     ), false,
   );
+  console.log("WEB_XLSX_EXPLICIT_CORE_WRITE_TWO_PHASE_OWNER=PASS");
   console.log("WEB_XLSX_ONE_SHOT_WRITE_REVISION_DOWNLOAD=PASS");
   console.log("WEB_XLSX_QUOTE_EDIT_PREVIEW_NO_WRITE=PASS");
   console.log("WEB_XLSX_ACTUAL_WORKCOPY_DOWNLOAD_LINK=PASS");

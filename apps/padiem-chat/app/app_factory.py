@@ -70,6 +70,12 @@ from .claw_web_xlsx_p01_owner_decision_routes import (
 )
 from .claw_web_xlsx_quote_write_store import D1WebQuoteWriteReceiptStore
 from .claw_web_xlsx_quote_write_owner_decision import D1WebQuoteWriteOwnerDecisionStore
+from .claw_web_xlsx_quote_write_pause_store import D1WebQuoteWritePauseStore
+from .claw_web_xlsx_quote_approval_routes import (
+    REQUEST as WRITE_REQUEST_PATH, DECISION as WRITE_DECISION_PATH,
+    DECISION_STATUS as WRITE_APPROVAL_STATUS_PATH,
+    request_quote_write, decide_quote_write, quote_write_approval_status,
+)
 from .claw_web_xlsx_quote_write_routes import (
     WRITE_PATH, WRITE_STATUS_PATH, WRITE_DOWNLOAD_PATH,
     web_xlsx_quote_edit_commit, web_xlsx_quote_edit_status,
@@ -375,6 +381,9 @@ def create_app(
         Route(WEB_XLSX_P01_WORKCOPY_DOWNLOAD_PATH, web_xlsx_p01_workcopy_download, methods=["GET"]),
         Route(WEB_XLSX_QUOTE_PREVIEW_PATH, web_xlsx_quote_edit_preview, methods=["POST"]),
         Route(WRITE_PATH, web_xlsx_quote_edit_commit, methods=["POST"]),
+        Route(WRITE_REQUEST_PATH, request_quote_write, methods=["POST"]),
+        Route(WRITE_DECISION_PATH, decide_quote_write, methods=["POST"]),
+        Route(WRITE_APPROVAL_STATUS_PATH, quote_write_approval_status, methods=["GET"]),
         Route(WRITE_STATUS_PATH, web_xlsx_quote_edit_status, methods=["GET"]),
         Route(WRITE_DOWNLOAD_PATH, web_xlsx_quote_edit_download, methods=["GET"]),
         Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"]),
@@ -537,6 +546,10 @@ def create_app(
     app.state.web_xlsx_p01_workcopy_after_grant_enabled = False
     app.state.web_xlsx_quote_write_store = (
         D1WebQuoteWriteReceiptStore(d1_binding) if d1_binding is not None else None
+    )
+    app.state.web_xlsx_quote_write_pause_store = (
+        D1WebQuoteWritePauseStore(d1_binding)
+        if _workspace_store is not None and d1_binding is not None else None
     )
     # Separate explicit owner WRITE consent ledger. This does not enable the
     # public edit route or mint any Engine ToolRuntime grant by itself.
