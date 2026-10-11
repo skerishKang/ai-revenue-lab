@@ -75,6 +75,87 @@ async def test_real_owner_signed_approve_creates_distinct_r2_workcopy_once_and_g
 
 
 @pytest.mark.asyncio
+async def test_confirmed_workcopy_exposes_only_the_verified_owner_work_conversation():
+    app, settings, metadata, r2, db, history, engine = ready()
+    original, selection = await setup_pause(app, settings)
+    enable_real_copy(app, metadata)
+    engine.status = "confirmed"
+    engine.verified_source_sha256 = original["source_sha256"]
+    chat = "chat_" + "a" * 32
+
+    async def owner_run(owner, run):
+        if owner != OWNER or run != "run_web_3580_actual":
+            return None
+        return {
+            "run_id": run, "workspace_id": history.workspace,
+            "status": "running", "conversation_id": chat,
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }
+
+    async def verified_owner(user_id, conversation_id):
+        return user_id == OWNER and conversation_id == chat
+
+    before = await status(app, settings, selection["selection_ref"])
+    assert before.json()["workcopy_created"] is False
+    assert before.json()["work_conversation"] is None
+
+    approved = await decide(app, settings, selection, decision="approve")
+    assert approved.status_code == 200, approved.text
+    assert approved.json()["workcopy_created"] is True
+
+    # A workcopy alone is not a conversation handle: the owner run and the
+    # conversation ownership must both verify independently.
+    unverified = await status(app, settings, selection["selection_ref"])
+    assert unverified.json()["workcopy_created"] is True
+    assert unverified.json()["work_conversation"] is None
+
+    history.get_claw_run = owner_run
+    history.verify_owner_conversation_artifacts = verified_owner
+    refreshed = await status(app, settings, selection["selection_ref"])
+    assert refreshed.status_code == 200, refreshed.text
+    assert refreshed.json()["work_conversation"] == {"conversation_id": chat}
+    # Still an owner status projection: no run id, pause or grant evidence.
+    assert "run_id" not in refreshed.json()
+    assert not any(item in refreshed.json() for item in (
+        "pause_id", "continuation_ref", "engine_run_id", "grant", "credential",
+    ))
+
+    # A foreign/non-owned conversation, a malformed id or a foreign workspace
+    # run never becomes a navigation handle.
+    async def foreign_owner(user_id, conversation_id):
+        return False
+
+    history.verify_owner_conversation_artifacts = foreign_owner
+    assert (await status(app, settings, selection["selection_ref"])).json()[
+        "work_conversation"] is None
+    history.verify_owner_conversation_artifacts = verified_owner
+
+    async def malformed_run(owner, run):
+        row = await owner_run(owner, run)
+        if row is not None:
+            row["conversation_id"] = "conv_real_web"
+        return row
+
+    history.get_claw_run = malformed_run
+    assert (await status(app, settings, selection["selection_ref"])).json()[
+        "work_conversation"] is None
+
+    async def foreign_workspace_run(owner, run):
+        row = await owner_run(owner, run)
+        if row is not None:
+            row["workspace_id"] = "owner:foreign"
+        return row
+
+    history.get_claw_run = foreign_workspace_run
+    assert (await status(app, settings, selection["selection_ref"])).json()[
+        "work_conversation"] is None
+
+    history.get_claw_run = owner_run
+    assert (await status(app, settings, selection["selection_ref"], owner=FOREIGN)).status_code == 404
+    db.close()
+
+
+@pytest.mark.asyncio
 async def test_denied_has_no_workcopy_even_when_operator_flag_enabled():
     app, settings, metadata, r2, db, history, engine = ready()
     original, selection = await setup_pause(app, settings)

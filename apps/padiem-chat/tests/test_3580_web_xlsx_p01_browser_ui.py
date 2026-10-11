@@ -48,5 +48,6 @@ def test_browser_real_xlsx_approval_ui_one_shot_and_server_only_state():
         "WEB_XLSX_REAL_BROWSER_OWNER_DECISION=PASS",
         "WEB_XLSX_ONE_SHOT_UNKNOWN_OUTCOME=PASS",
         "WEB_XLSX_SERVER_STATUS_ONLY=PASS",
+        "WEB_XLSX_READ_WORKCOPY_CONVERSATION_HANDOFF=PASS",
     ):
         assert marker in result.stdout

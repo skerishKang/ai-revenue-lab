@@ -3,6 +3,16 @@
   const shell = document.querySelector(".app-shell");
   const emptyState = document.getElementById("emptyState");
   const messageList = document.getElementById("messageList");
+  // #3933 Hark WEB-FIRST: previous completed work files of the currently
+  // displayed conversation, resolved only from the owner-scoped server index
+  // (GET-only, no file bytes, no grant). Hidden until a verified reference
+  // exists. The context module registers itself before this script runs.
+  const conversationArtifacts = document.createElement("section");
+  conversationArtifacts.id = "clawConversationArtifacts";
+  conversationArtifacts.hidden = true;
+  messageList.parentNode?.insertBefore(conversationArtifacts, messageList);
+  const conversationArtifactContext =
+    window.PadiemClawConversationArtifactContext?.init?.(conversationArtifacts) ?? null;
   const form = document.getElementById("composerForm");
   const input = document.getElementById("messageInput");
   const clawModelIdInput = document.getElementById("clawModelIdInput");
@@ -707,6 +717,7 @@
     clearAttachment();
     messageList.replaceChildren();
     messageList.hidden = true;
+    conversationArtifactContext?.clear?.();
     emptyState.hidden = false;
     shell.dataset.state = "home";
     // Leaving for home drops any pending Claw execute recovery timer/state.
@@ -1185,6 +1196,7 @@
       renderProjectState();
       if (activeProject) refreshActiveProjectFileCount();
       showConversation();
+      conversationArtifactContext?.show?.(data.conversation.id);
       data.conversation.messages.forEach((item) => {
         if (!item || typeof item.content !== "string") return;
         if (item.role === "user") addUserMessage(item.content, null);
@@ -1207,21 +1219,32 @@
     const detail = event?.detail;
     if (!authState.authenticated || inFlight || !detail
         || typeof detail.conversationId !== "string"
-        || !/^chat_[a-f0-9]{32}$/.test(detail.conversationId)
-        || typeof detail.artifactId !== "string"
-        || !/^doc_[a-f0-9]{32}$/.test(detail.artifactId)
-        || typeof detail.integrityRef !== "string"
-        || !/^[a-f0-9]{64}$/.test(detail.integrityRef)) return;
+        || !/^chat_[a-f0-9]{32}$/.test(detail.conversationId)) return;
+    // Two server-verified handoff shapes exist: an exact owner-indexed
+    // artifact reference (completed revision) or a conversation-only handle
+    // for the verified owner workcopy. A partial artifact reference is
+    // refused instead of being treated as verified, and neither shape is a
+    // new file READ/WRITE grant.
+    const hasArtifact = detail.artifactId !== undefined
+      || detail.integrityRef !== undefined;
+    if (hasArtifact
+        && !(typeof detail.artifactId === "string"
+             && /^doc_[a-f0-9]{32}$/.test(detail.artifactId)
+             && typeof detail.integrityRef === "string"
+             && /^[a-f0-9]{64}$/.test(detail.integrityRef))) return;
     // The work conversation is loaded through the existing authenticated,
     // owner-scoped /api/conversations/:id endpoint. The XLSX UI separately
-    // confirmed the exact owner-scoped artifact GET before raising this event.
+    // confirmed the exact owner-scoped artifact GET before raising an
+    // artifact-bearing event, and the owner workcopy status read for the
+    // conversation-only one.
     const opened = await openSavedConversation(detail.conversationId);
     if (!opened) return;
     const notice = document.createElement("p");
     notice.className = "reference-note";
     notice.setAttribute("role", "status");
-    notice.textContent =
-      uiT("claw-web-work-conversation-opened");
+    notice.textContent = uiT(hasArtifact
+      ? "claw-web-work-conversation-opened"
+      : "claw-web-work-conversation-opened-read");
     messageList.prepend(notice);
     setNote(uiT("claw-web-work-conversation-note"));
   });

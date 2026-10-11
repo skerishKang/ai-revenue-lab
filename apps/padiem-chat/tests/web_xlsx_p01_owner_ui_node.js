@@ -59,7 +59,7 @@ function response(body, status = 200) {
 async function settle() {
   for (let i = 0; i < 12; ++i) await new Promise(resolve => setImmediate(resolve));
 }
-function server({ initial = "waiting_p01", enabled = true, failPost = false, failStart = false, badSource = false, workcopy = false, forgedPreviewWrite = false, writeAvailable = false, pdfAvailable = false, followupAvailable = false, followupForged = false } = {}) {
+function server({ initial = "waiting_p01", enabled = true, failPost = false, failStart = false, badSource = false, workcopy = false, forgedPreviewWrite = false, writeAvailable = false, pdfAvailable = false, followupAvailable = false, followupForged = false, readConversation = false, readConversationForged = false } = {}) {
   let stage = initial, sent = [], starts = [], previews = [], commits = [],
     writeDecisions = [], pdfPreviews = [], followupReads = [];
   global.fetch = async (url, options = {}) => {
@@ -111,6 +111,9 @@ function server({ initial = "waiting_p01", enabled = true, failPost = false, fai
         processing_started: workcopy && stage === "confirmed",
         workcopy_created: workcopy && stage === "confirmed",
         workcopy_document_id: workcopy && stage === "confirmed" ? COPY_ID : null,
+        work_conversation: readConversation && workcopy && stage === "confirmed"
+          ? { conversation_id: readConversationForged ? "conv_real_web" : WORK_CHAT }
+          : null,
       });
     }
     if (url.endsWith("/quote-edit/status") && method === "GET") {
@@ -395,6 +398,90 @@ async function prepare(config) {
   assert.equal(writing.network.writeDecisions.length, 1,
     "Opening the work conversation never replays P01 WRITE or Browser PDF");
 
+  // #3933 READ handoff: the server-verified work-conversation handle for the
+  // approved workcopy exposes conversation-only navigation. It must never
+  // claim an indexed revision, re-check an artifact or replay READ/WRITE/PDF.
+  const readHandoff = await prepare({workcopy: true, readConversation: true});
+  readHandoff.root.nodes.clawWebXlsxP01Approve.handlers.click(); await settle();
+  const readButton = readHandoff.root.nodes.clawWebXlsxP01Panel.children.find(
+    item => item.tag === "button" && /작업 대화/.test(item.textContent));
+  assert.ok(readButton, "Verified workcopy must expose the work conversation");
+  assert.equal(readButton.hidden, false);
+  assert.equal(readHandoff.client.getState().workConversationReady, true);
+  assert.equal(readHandoff.network.sent.length, 1);
+  const readEvents = [];
+  global.window = {dispatchEvent(e) {readEvents.push(e);}};
+  global.CustomEvent = class {constructor(name, options) {
+    this.type = name; this.detail = options.detail;
+  }};
+  readButton.handlers.click(); await settle();
+  assert.equal(readEvents.length, 1);
+  assert.equal(readEvents[0].type, "padiem:claw-web-work-conversation-open");
+  assert.deepEqual(readEvents[0].detail, {conversationId: WORK_CHAT},
+    "READ handoff carries the conversation handle only, no artifact claim");
+  assert.deepEqual(readHandoff.network.followupReads, [],
+    "READ handoff must not re-check the revision artifact index");
+  assert.equal(readHandoff.network.commits.length, 0);
+  assert.equal(readHandoff.network.pdfPreviews.length, 0);
+  assert.equal(readHandoff.network.sent.length, 1,
+    "READ handoff never replays the P01 READ approval");
+  readHandoff.existing.handlers.click(); await settle();
+  assert.equal(readButton.hidden, false, "Owner-only handle survives refresh");
+
+  // A malformed conversation id invalidates the whole owner status readback
+  // instead of exposing a half-verified handle.
+  const forgedHandle = await prepare({
+    workcopy: true, readConversation: true, readConversationForged: true,
+  });
+  forgedHandle.root.nodes.clawWebXlsxP01Approve.handlers.click(); await settle();
+  const forgedButton = forgedHandle.root.nodes.clawWebXlsxP01Panel.children.find(
+    item => item.tag === "button" && /작업 대화/.test(item.textContent));
+  assert.ok(forgedButton, "The closed control must exist");
+  assert.equal(forgedButton.hidden, true);
+  assert.equal(forgedHandle.client.getState().workConversationReady, false,
+    "A malformed conversation handle must invalidate the status readback");
+  assert.deepEqual(forgedHandle.network.sent, ["approve"]);
+  const forgedDispatched = [];
+  global.window = {dispatchEvent(e) {forgedDispatched.push(e);}};
+  forgedButton.handlers.click(); await settle();
+  assert.deepEqual(forgedDispatched, []);
+
+  // No verified handle yet (no workcopy, or a workcopy without the handle)
+  // must never expose the READ handoff button or dispatch any navigation.
+  for (const opts of [{workcopy: true}, {readConversation: true}]) {
+    const unverified = await prepare(opts);
+    assert.equal(unverified.root.nodes.clawWebXlsxP01Approve.hidden, false,
+      JSON.stringify(opts));
+    unverified.root.nodes.clawWebXlsxP01Approve.handlers.click(); await settle();
+    const button = unverified.root.nodes.clawWebXlsxP01Panel.children.find(
+      item => item.tag === "button" && /작업 대화/.test(item.textContent));
+    assert.ok(button, "The closed control must exist but stay hidden");
+    assert.equal(button.hidden, true, JSON.stringify(opts));
+    assert.equal(unverified.client.getState().workConversationReady, false,
+      JSON.stringify(opts));
+    const dispatched = [];
+    global.window = {dispatchEvent(e) {dispatched.push(e);}};
+    button.handlers.click(); await settle();
+    assert.deepEqual(dispatched, [],
+      "No unverified conversation handle may ever be dispatched");
+    assert.equal(unverified.network.sent.length, 1, JSON.stringify(opts));
+  }
+  assert.equal(
+    ui.validateWorkConversation({conversation_id: WORK_CHAT}, "confirmed", true),
+    true,
+  );
+  for (const [value, state, copy] of [
+    [{conversation_id: WORK_CHAT}, "waiting_p01", false],
+    [{conversation_id: WORK_CHAT}, "confirmed", false],
+    [{conversation_id: "conv_real_web"}, "confirmed", true],
+    [{conversation_id: WORK_CHAT, run_id: "x"}, "confirmed", true],
+    [{conversation_id: WORK_CHAT}, "confirmed", "true"],
+  ]) {
+    assert.equal(ui.validateWorkConversation(value, state, copy), false,
+      JSON.stringify([value, state, copy]));
+  }
+  assert.equal(ui.validateWorkConversation(null, "confirmed", false), true);
+
   const fresh = await prepare({initial: "not_requested"});
   assert.equal(fresh.root.nodes.clawWebXlsxP01Start.hidden, false);
   fresh.root.nodes.clawWebXlsxP01Start.handlers.click();
@@ -460,4 +547,5 @@ async function prepare(config) {
   console.log("WEB_XLSX_ONE_SHOT_UNKNOWN_OUTCOME=PASS");
   console.log("WEB_XLSX_SERVER_STATUS_ONLY=PASS");
   console.log("WEB_XLSX_BROWSER_START_ONE_SHOT=PASS");
+  console.log("WEB_XLSX_READ_WORKCOPY_CONVERSATION_HANDOFF=PASS");
 })().catch(error => { console.error(error); process.exitCode = 1; });
