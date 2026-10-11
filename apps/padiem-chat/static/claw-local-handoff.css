@@ -297,6 +297,48 @@
 }
 #clawWebXlsxList a { text-underline-offset: 3px; }
 
+/* #3933 WEB-FIRST: previous completed work files of the displayed conversation.
+   Reference-only context: no file bytes, no grant, no WRITE action. */
+#clawConversationArtifacts {
+  width: min(100%, 720px);
+  margin: 8px auto 0;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+#clawConversationArtifacts[hidden] { display: none; }
+#clawConversationArtifacts .claw-conversation-artifact-title {
+  font-weight: 650;
+  font-size: 0.86rem;
+  margin: 0 0 4px;
+}
+#clawConversationArtifacts .claw-conversation-artifact-name {
+  font-size: 0.86rem;
+  margin: 0 0 4px;
+  overflow-wrap: anywhere;
+}
+#clawConversationArtifacts .claw-conversation-artifact-note {
+  font-size: 0.86rem;
+  line-height: 1.5;
+  margin: 0 0 6px;
+}
+#clawConversationArtifacts .claw-conversation-artifact-choices {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 6px;
+  display: grid;
+  gap: 6px;
+}
+#clawConversationArtifacts button {
+  border: 1px solid currentColor;
+  border-radius: 8px;
+  padding: 6px 10px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+#clawConversationArtifacts button:disabled { opacity: 0.55; cursor: not-allowed; }
+
 /* #3580 WEB-FIRST: P01 consent is scoped to a server-owned XLSX selection. */
 .claw-web-office-approval {
   border-top: 1px solid var(--border, rgba(150,160,180,.35));

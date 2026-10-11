@@ -147,7 +147,23 @@ async def claw_conversation_artifact_followup(request: Request) -> JSONResponse:
         # Schema not yet applied, current DB unavailable, malformed private
         # source, tampered record or overflow must never become an unsafe hit.
         return _error(503, "artifact_index_read_failed")
-    return JSONResponse({"ok": True, "followup": result.public_projection()},
+    projection = result.public_projection()
+    # #3933 display-only extension of the existing v1 projection: a RESOLVED
+    # reference additionally carries the display filename from the SAME
+    # bounded owner-index rows it was selected from, so the browser can show
+    # the previous work result precisely. Never a local path, provider id,
+    # byte material, grant or a wider lookup; ambiguous/absent cases keep the
+    # existing shape, including the per-choice filenames.
+    if result.artifact_ref is not None:
+        name = next((
+            row.record.filename for row in index.rows
+            if row.record.artifact_id == result.artifact_ref.artifact_id
+            and row.record.integrity_ref == result.artifact_ref.integrity_ref
+        ), None)
+        if (isinstance(name, str) and 1 <= len(name) <= 180
+                and not any(ch in name for ch in ("\\", "/", "\r", "\n", "\x00"))):
+            projection["source_filename"] = name
+    return JSONResponse({"ok": True, "followup": projection},
                         status_code=200, headers=_NO_STORE)
 
 

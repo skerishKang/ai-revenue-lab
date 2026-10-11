@@ -47,6 +47,17 @@
       && selected.processing_started === false);
   }
 
+  // The server-verified work-conversation handle is exposed only alongside a
+  // real owner workcopy receipt. It is a navigation handle, not an artifact
+  // index entry, file READ grant or WRITE authorization.
+  function validateWorkConversation(value, status, workcopyCreated) {
+    if (value === undefined || value === null) return true;
+    return Boolean(typeof value === "object" && !Array.isArray(value)
+      && Object.keys(value).length === 1
+      && CHAT_ID.test(value.conversation_id)
+      && status === "confirmed" && workcopyCreated === true);
+  }
+
   function validateP01Status(body, selected, selectionRef) {
     return Boolean(validFile(selected) && SELECTION_ID.test(selectionRef)
       && body?.ok === true
@@ -63,6 +74,8 @@
       && (body.status === "waiting_p01" || body.owner_decision_enabled === false)
       && typeof body.workcopy_created === "boolean"
       && body.processing_started === body.workcopy_created
+      && validateWorkConversation(
+        body.work_conversation, body.status, body.workcopy_created)
       && (!body.workcopy_created
         ? body.workcopy_document_id === null || body.workcopy_document_id === undefined
         : body.status === "confirmed" && ID.test(body.workcopy_document_id)));
@@ -168,6 +181,11 @@
     workcopyLink.textContent = "승인된 작업 사본 다운로드 (XLSX)";
     workcopyLink.setAttribute("download", "");
     approvalPanel?.appendChild(workcopyLink);
+    const openReadWorkConversation = root.createElement("button");
+    openReadWorkConversation.type = "button";
+    openReadWorkConversation.hidden = true;
+    openReadWorkConversation.textContent = "승인된 작업 대화 열기 (다음 작업)";
+    approvalPanel?.appendChild(openReadWorkConversation);
     const editPreviewPanel = root.createElement("div");
     editPreviewPanel.className = "claw-web-quote-edit-preview";
     editPreviewPanel.hidden = true;
@@ -255,6 +273,7 @@
     let selectedSource = null;
     let ownerDecisionReady = false;
     let ownerRequestReady = false;
+    let workConversationHandle = null;
     let requestAttempted = false;
     const requestAttemptedRefs = new Set();
     let decisionAttempted = false;
@@ -360,6 +379,9 @@
     const hideWorkcopy = () => {
       workcopyLink.hidden = true;
       workcopyLink.href = "";
+      openReadWorkConversation.hidden = true;
+      openReadWorkConversation.disabled = false;
+      workConversationHandle = null;
       editPreviewPanel.hidden = true;
       hideRevision();
       editPreviewResult.textContent = "수정 파일을 저장하지 않았습니다. 별도 P01 쓰기 승인이 필요합니다.";
@@ -472,6 +494,17 @@
       } finally {
         setBusy(false);
       }
+    });
+    openReadWorkConversation.addEventListener("click", () => {
+      const handle = workConversationHandle;
+      if (busy || !handle || handle.selectionRef !== selectedSelectionRef) return;
+      // The handle names the owner's own server-minted work conversation and
+      // was verified by the authenticated p01-status readback above. Nothing
+      // here reads file bytes, re-checks an artifact index or grants WRITE;
+      // navigation reuses the existing authenticated conversation loader.
+      window.dispatchEvent(new CustomEvent("padiem:claw-web-work-conversation-open", {
+        detail: { conversationId: handle.conversationId },
+      }));
     });
     const showWorkcopy = (selectionRef, copyId) => {
       if (!SELECTION_ID.test(selectionRef) || !ID.test(copyId)) return hideWorkcopy();
@@ -678,6 +711,7 @@
       writeDeny.disabled = value || writeDeny.hidden;
       pdfPreviewButton.disabled = value || pdfPreviewButton.hidden || pdfPreviewLoading;
       openWorkConversation.disabled = value || openWorkConversation.hidden;
+      openReadWorkConversation.disabled = value || openReadWorkConversation.hidden;
       panel.setAttribute("aria-busy", value ? "true" : "false");
     };
 
@@ -735,6 +769,14 @@
       if (status.status === "confirmed" && status.workcopy_created) {
         showWorkcopy(selectionRef, status.workcopy_document_id);
         approvalStatus.textContent = "승인된 원본의 XLSX 작업 사본을 내려받을 수 있습니다. 수정·PDF 변환은 별도 승인과 지원 기능이 필요합니다.";
+        const handle = status.work_conversation;
+        if (handle && CHAT_ID.test(handle.conversation_id)) {
+          workConversationHandle = {
+            selectionRef, conversationId: handle.conversation_id,
+          };
+          openReadWorkConversation.hidden = false;
+          openReadWorkConversation.disabled = busy;
+        }
       }
       if (status.status === "not_requested" && !status.owner_request_enabled) {
         approvalStatus.textContent = "선택한 원본은 안전하게 보관됐습니다. 웹 P01 요청 시작 기능은 아직 연결되지 않았습니다.";
@@ -1001,11 +1043,12 @@
       busy, loaded, selectedDocumentId, selectedSelectionRef,
       p01Approved: false, ownerDecisionReady, ownerRequestReady,
       requestAttempted, decisionAttempted,
+      workConversationReady: workConversationHandle !== null,
     }) };
   }
 
   const api = Object.freeze({
-    validFile, validateListing, validateSelection,
+    validFile, validateListing, validateSelection, validateWorkConversation,
     validateSelectionsListing, validateP01Status, validateP01Start, validateP01Decision, init,
   });
   if (typeof module === "object" && module.exports) module.exports = api;

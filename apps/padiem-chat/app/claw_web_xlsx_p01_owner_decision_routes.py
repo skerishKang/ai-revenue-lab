@@ -290,6 +290,40 @@ async def web_xlsx_p01_owner_status(request: Request) -> Response:
                 )
             except Exception:
                 return _error(503, "approved_workcopy_status_unavailable")
+    # #3933 READ handoff: the server-minted owner work conversation for this
+    # exact owner/workspace/run, exposed only after the same owner-scoped
+    # workcopy receipt above proved the approved copy exists. This is a
+    # navigation handle for the owner's own conversation only: never an
+    # artifact-index claim, a file READ grant or a WRITE authorization, and
+    # the conversation is opened through the existing authenticated loader.
+    work_conversation = None
+    if (copy is not None
+            and isinstance(state.get("run_id"), str)
+            and callable(getattr(history, "get_claw_run", None))
+            and callable(getattr(history, "verify_owner_conversation_artifacts", None))):
+        try:
+            owned_run = history.get_claw_run(owner, state["run_id"])
+            if inspect.isawaitable(owned_run):
+                owned_run = await owned_run
+            if (isinstance(owned_run, dict)
+                    and owned_run.get("run_id") == state["run_id"]
+                    and owned_run.get("workspace_id") == workspace
+                    and isinstance(owned_run.get("conversation_id"), str)
+                    and re.fullmatch(
+                        r"chat_[a-f0-9]{32}", owned_run["conversation_id"])):
+                owned = history.verify_owner_conversation_artifacts(
+                    owner, owned_run["conversation_id"],
+                )
+                if inspect.isawaitable(owned):
+                    owned = await owned
+                if owned is True:
+                    work_conversation = {
+                        "conversation_id": owned_run["conversation_id"],
+                    }
+        except Exception:
+            # A missing/stale conversation handle is never fabricated; the
+            # workcopy receipt above stays independently available.
+            work_conversation = None
     return JSONResponse({
         "ok": True,
         "contract_version": "claw-web-xlsx-p01-status.v1",
@@ -304,6 +338,7 @@ async def web_xlsx_p01_owner_status(request: Request) -> Response:
         "processing_started": copy is not None,
         "workcopy_created": copy is not None,
         "workcopy_document_id": copy["workcopy_document_id"] if copy else None,
+        "work_conversation": work_conversation,
     }, headers=_NO_STORE)
 
 async def web_xlsx_p01_workcopy_download(request: Request) -> Response:

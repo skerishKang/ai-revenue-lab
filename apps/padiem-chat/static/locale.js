@@ -9,6 +9,7 @@
   const labels = {
     ko: {
       "claw-web-work-conversation-opened": "승인된 XLSX 작업 대화를 열었습니다. 수정본의 참조만 확인됐으며, 실제 파일을 다시 읽거나 수정하려면 별도 사용자 승인이 필요합니다.",
+      "claw-web-work-conversation-opened-read": "승인된 작업 사본의 대화를 열었습니다. 이 대화에는 아직 등록된 완료 결과만 확인되며, 파일을 다시 읽거나 수정하려면 별도 사용자 승인이 필요합니다.",
       "claw-web-work-conversation-note": "웹 XLSX 작업 대화로 이동했습니다. 파일 읽기·추가 변경은 별도 승인됩니다.",
       "claw-verified-model-label": "파디엠플러스 모델 선택",
       "claw-verified-model-placeholder": "모델을 직접 선택하세요",
@@ -197,6 +198,7 @@
     },
     en: {
       "claw-web-work-conversation-opened": "Opened the approved XLSX work conversation. Only the verified file reference is available; reading or changing the file requires separate user approval.",
+      "claw-web-work-conversation-opened-read": "Opened the work conversation for the approved working copy. Only already registered completed results are shown; reading or changing the file requires separate owner approval.",
       "claw-web-work-conversation-note": "Opened the XLSX work conversation. File reads and additional edits require separate approval.",
       "claw-verified-model-label": "Padiem Plus model selection",
       "claw-verified-model-placeholder": "Select a model explicitly",
