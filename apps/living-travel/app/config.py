@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     ai_base_url: str = ""
     ai_api_key: str = ""
     ai_model: str = ""
-    ai_timeout_seconds: int = 30
+    ai_timeout_seconds: int = 600
     ai_cost_class: str = "free"
 
     model_config = {"env_prefix": "LT_", "env_file": ".env", "extra": "ignore"}
@@ -187,9 +187,9 @@ class Settings(BaseSettings):
                 f"Got: '{self.ai_cost_class}'"
             )
 
-        if not (1 <= self.ai_timeout_seconds <= 120):
+        if not (1 <= self.ai_timeout_seconds <= 3600):
             raise ValueError(
-                "LT_AI_TIMEOUT_SECONDS must be between 1 and 120."
+                "LT_AI_TIMEOUT_SECONDS must be between 1 and 3600."
             )
 
         if self.ai_provider == "openai_compatible":

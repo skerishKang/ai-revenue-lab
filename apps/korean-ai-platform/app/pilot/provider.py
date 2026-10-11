@@ -105,8 +105,8 @@ def _parse_upstream_response(
 async def call_chat_completions(
     api_key: str,
     messages: list[dict[str, str]],
-    temperature: float | None = 0.2,
-    max_tokens: int | None = 300,
+    temperature: float | None = None,
+    max_tokens: int | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
     *,
     # Phase 2 multi-provider: RouteTarget override
@@ -163,7 +163,8 @@ async def call_chat_completions(
     }
 
     client_kwargs: dict[str, Any] = {
-        "timeout": httpx.Timeout(resolved_timeout),
+        "timeout": httpx.Timeout(None, connect=min(resolved_timeout, 30), read=resolved_timeout,
+                                 write=min(resolved_timeout, 20), pool=min(resolved_timeout, 10)),
     }
     if transport:
         client_kwargs["transport"] = transport

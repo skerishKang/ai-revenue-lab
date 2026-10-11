@@ -12,8 +12,10 @@ for an unknown id. Document bodies live only inside the serialized record
 columns: reprs, diagnostics and error messages never render plaintext body,
 internal ``att_*`` references or storage locators.
 
-Source-only in S4b: nothing in the composition root or worker code imports
-this module yet; production activation is a later, explicit gate.
+The adapter is composed by the Engine identity worker only through the
+deployment-owned ENGINE_EVIDENCE_STORE D1 binding (#2954). Declaring and wiring
+that binding is still source readiness: schema application, Worker deployment,
+live retention evidence, and manifest activation remain separate explicit gates.
 """
 
 from __future__ import annotations

@@ -15,6 +15,7 @@ from padiem_ai_core.b14_execution import (
     B14ExecutionConfig,
     B14ExecutionError,
     B14RoutingOptions,
+    _b14_rate_limit_diagnostic,
 )
 
 
@@ -74,7 +75,7 @@ def test_config_normalizes_http_https_base_urls_and_builds_fixed_endpoint() -> N
     https = B14ExecutionConfig(base_url=" https://b14.example/root/ ")
     assert https.base_url == "https://b14.example/root"
     assert https.chat_completions_url == "https://b14.example/root" + B14_CHAT_COMPLETIONS_PATH
-    assert https.timeout_seconds == 20.0
+    assert https.timeout_seconds == 600.0
     assert https.max_response_bytes == MAX_B14_RESPONSE_BYTES
 
     http = B14ExecutionConfig(base_url="http://localhost:8787/")
@@ -99,7 +100,7 @@ def test_config_rejects_invalid_base_urls(bad: str) -> None:
         B14ExecutionConfig(base_url=bad)
 
 
-@pytest.mark.parametrize("bad", [0, 0.9, 60.1, True, float("inf"), "20"])
+@pytest.mark.parametrize("bad", [0, 0.9, 3600.1, True, float("inf"), "20"])
 def test_config_rejects_invalid_timeout(bad) -> None:
     with pytest.raises(ValueError, match="timeout_seconds"):
         B14ExecutionConfig(base_url="https://b14.example", timeout_seconds=bad)  # type: ignore[arg-type]
@@ -116,7 +117,7 @@ def test_config_public_state_contains_no_credentials_field() -> None:
     public = config.to_public_dict()
     assert public == {
         "base_url": "https://b14.example",
-        "timeout_seconds": 20.0,
+        "timeout_seconds": 600.0,
         "max_response_bytes": MAX_B14_RESPONSE_BYTES,
     }
     serialized = json.dumps(public)
@@ -175,8 +176,8 @@ def test_explicit_request_does_not_add_stream_or_tools() -> None:
     assert payload == {
         "model": "b14/auto",
         "messages": [{"role": "user", "content": "hello"}],
-        "temperature": 0.2,
     }
+    assert "temperature" not in payload
     assert "stream" not in payload
     assert "tools" not in payload
     assert "business14" not in payload
@@ -250,7 +251,6 @@ def test_client_uses_exact_endpoint_payload_and_no_provider_credentials() -> Non
             {"role": "system", "content": "Answer clearly."},
             {"role": "user", "content": "안녕하세요"},
         ],
-        "temperature": 0.2,
         "max_tokens": 700,
         "business14": {
             "task_type": "general",
@@ -359,6 +359,59 @@ def test_rate_limit_is_normalized_and_retryable() -> None:
     assert info.value.code == "upstream_rate_limited"
     assert info.value.retryable is True
     assert "PRIVATE-UPSTREAM-BODY" not in json.dumps(info.value.to_public_dict())
+    assert info.value.diagnostic_class is None
+
+
+@pytest.mark.parametrize(
+    "b14_code",
+    ["upstream_rate_limited", "upstream_rate_limited_busy", "kilo_free_rate_limited"],
+)
+def test_rate_limit_retains_b14s_own_subclass_without_changing_the_public_class(
+    b14_code: str,
+) -> None:
+    async def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            429,
+            json={"error": {"code": b14_code, "message": "PRIVATE-B14-MESSAGE", "attempt_count": 2}},
+        )
+
+    client = B14ExecutionClient(
+        B14ExecutionConfig(base_url="https://b14.example"),
+        httpx.MockTransport(handler),
+    )
+    with pytest.raises(B14ExecutionError) as info:
+        run(client.execute(request_fixture()))
+    # The collapsed public class, status and retry decision must not move.
+    assert info.value.code == "upstream_rate_limited"
+    assert info.value.upstream_status_code == 429
+    assert info.value.retryable is True
+    # Only B14's enumerated sub-class is retained as provenance.
+    assert info.value.diagnostic_class == b14_code
+    assert "PRIVATE-B14-MESSAGE" not in json.dumps(info.value.to_public_dict())
+    assert "PRIVATE-B14-MESSAGE" not in str(info.value.diagnostic_class)
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        b"",
+        b"not json",
+        b"\xff\xfe",
+        b"[]",
+        b"{}",
+        b'{"secret": "PRIVATE-UPSTREAM-BODY"}',
+        b'{"error": null}',
+        b'{"error": "upstream_rate_limited"}',
+        b'{"error": {}}',
+        b'{"error": {"code": 429}}',
+        b'{"error": {"code": "UPSTREAM_RATE_LIMITED"}}',
+        b'{"error": {"code": "upstream_server_error"}}',
+        b'{"error": {"code": "kilo_free_rate_limited PRIVATE-KEY"}}',
+        b'{"error": {"message": "PRIVATE-B14-MESSAGE"}}',
+    ],
+)
+def test_untrusted_rate_limit_body_degrades_the_diagnostic_to_closed(body: bytes) -> None:
+    assert _b14_rate_limit_diagnostic(body) is None
 
 
 @pytest.mark.parametrize(
@@ -397,19 +450,24 @@ def test_malformed_json_or_utf8_fails_closed(content: bytes) -> None:
     with pytest.raises(B14ExecutionError) as info:
         run(client.execute(request_fixture()))
     assert info.value.code == "malformed_upstream"
+    assert info.value.diagnostic_class == "upstream_malformed_json"
+    assert "diagnostic_class" not in info.value.to_public_dict()
 
 
 @pytest.mark.parametrize(
-    "payload",
+    ("payload", "diagnostic_class"),
     [
-        {},
-        {"choices": []},
-        {"choices": [{}]},
-        {"choices": [{"message": {}}]},
-        {"choices": [{"message": {"content": 123}}]},
+        ({}, "upstream_missing_content"),
+        ({"choices": []}, "upstream_missing_content"),
+        ({"choices": [{}]}, "upstream_missing_content"),
+        ({"choices": [{"message": {}}]}, "upstream_missing_content"),
+        ({"choices": [{"message": {"content": 123}}]}, "upstream_non_text_content"),
     ],
 )
-def test_missing_or_invalid_assistant_content_fails_closed(payload) -> None:
+def test_missing_or_invalid_assistant_content_fails_closed(
+    payload,
+    diagnostic_class: str,
+) -> None:
     async def handler(request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, json=payload)
 
@@ -420,6 +478,21 @@ def test_missing_or_invalid_assistant_content_fails_closed(payload) -> None:
     with pytest.raises(B14ExecutionError) as info:
         run(client.execute(request_fixture()))
     assert info.value.code == "malformed_upstream"
+    assert info.value.diagnostic_class == diagnostic_class
+
+
+def test_unexpected_top_level_shape_has_bounded_diagnostic_class() -> None:
+    async def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json=[])
+
+    client = B14ExecutionClient(
+        B14ExecutionConfig(base_url="https://b14.example"),
+        httpx.MockTransport(handler),
+    )
+    with pytest.raises(B14ExecutionError) as info:
+        run(client.execute(request_fixture()))
+    assert info.value.code == "malformed_upstream"
+    assert info.value.diagnostic_class == "upstream_unexpected_shape"
 
 
 def test_empty_assistant_answer_has_distinct_error() -> None:
@@ -436,6 +509,7 @@ def test_empty_assistant_answer_has_distinct_error() -> None:
     with pytest.raises(B14ExecutionError) as info:
         run(client.execute(request_fixture()))
     assert info.value.code == "empty_upstream_answer"
+    assert info.value.diagnostic_class == "upstream_empty_answer"
 
 
 def test_success_parses_bounded_route_and_usage_metadata_without_raw_unknowns() -> None:
@@ -544,3 +618,39 @@ def test_missing_business14_and_usage_metadata_is_valid() -> None:
         "output_tokens": None,
         "total_tokens": None,
     }
+
+
+# #3382/#3566: B14 same-route retry budget must be expressible and pinnable to
+# zero so a product lane can enforce PROVIDER_CALL_COUNT_MAX=1 (RETRY=0).
+def test_routing_options_max_retries_zero_serializes_single_dispatch() -> None:
+    assert B14RoutingOptions(max_retries=0).to_dict() == {"max_retries": 0}
+
+
+def test_routing_options_max_retries_none_omits_field_keeps_b14_default() -> None:
+    assert B14RoutingOptions().to_dict() == {}
+
+
+def test_explicit_request_payload_pins_business14_max_retries_zero() -> None:
+    request = B14ChatRequest(
+        messages=({"role": "user", "content": "x"},),
+        model="test/route",
+        routing=B14RoutingOptions(max_retries=0),
+    )
+    payload = request.to_payload()
+    assert payload["business14"] == {"max_retries": 0}
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "match"),
+    [
+        ({"max_retries": 3}, "max_retries"),
+        ({"max_retries": -1}, "max_retries"),
+        ({"max_retries": True}, "max_retries"),
+        ({"max_retries": "0"}, "max_retries"),
+    ],
+)
+def test_routing_options_max_retries_fail_closed_before_network(
+    kwargs, match: str
+) -> None:
+    with pytest.raises(ValueError, match=match):
+        B14RoutingOptions(**kwargs)

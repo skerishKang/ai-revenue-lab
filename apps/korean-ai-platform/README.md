@@ -1,4 +1,11 @@
+<!-- B14_OWNER_ROLE_SOURCE_OF_TRUTH_20261010 -->
+> **B14 역할 최신 원칙(2026-10-10):** [원제작사 모델·서빙 제공업체·변형 모델의 공식 사양 및 B14 실행 권한](../../docs/architecture/B14_MODEL_PROVIDER_EXECUTION_AUTHORITY_2026-10-10.md)을 우선 확인합니다. **B14는 정확히 사용자가 선택한 모델을 해당 업체의 공식 API로 실행**하며, temperature/토큰/리즈닝을 임의 지정하거나 옵션을 조용히 바꾸지 않습니다. 원본 모델의 공식 사양과 실제 API 제공업체의 계약은 별도 증빙합니다. 과거 코드·평가 수치는 이 원칙의 구현 증명이 아닙니다.
+<!-- /B14_OWNER_ROLE_SOURCE_OF_TRUTH_20261010 -->
+
 # Korean AI Platform — Business 14
+
+Current OWNER model decisions, exclusions, name policy and distinct B14 source/Production evidence: [owner model decision ledger](../../docs/operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md). This product guide does not duplicate the model roster or grant route/Production activation.
+
 
 ## Current authority
 
@@ -14,9 +21,9 @@ Padiem Routing Profile v1 = first product/customer-specific routing profile
 Padiem has already selected the routes it wants for the current MVP. Therefore Padiem Profile v1 does not require a generic automatic best-model router to be active.
 
 ```text
-Padiem Plus = kilo/poolside-laguna-s-2.1-free
-Padiem Pro  = kilo/nvidia-nemotron-3-ultra-550b-a55b-free
-Padiem Max  = HOLD
+Padiem Plus = HOLD / padiem-profile/plus-hold (product route declaration; Google B14 source registration is independently merged)
+Padiem Pro  = HOLD / padiem-profile/pro-hold
+Padiem Max  = HOLD / padiem-profile/max-hold
 
 PADIEM_PROFILE_V1_AUTO_ROUTING = NO
 PADIEM_USER_VISIBLE_AUTO = NO
@@ -49,11 +56,21 @@ Padiem product/profile declaration
 
 | Padiem tier | Route | Status |
 |---|---|---|
-| Plus | `kilo/poolside-laguna-s-2.1-free` | explicit / executable when B14 catalog permits |
-| Pro | `kilo/nvidia-nemotron-3-ultra-550b-a55b-free` | explicit / executable when B14 catalog permits |
+| Plus | padiem-profile/plus-hold | Product HOLD, while separate B14 source registration exists; exact executable status requires B14 and live evidence |
+| Pro | `padiem-profile/pro-hold` | HOLD / non-executable (owner decision #2601) |
 | Max | `padiem-profile/max-hold` | HOLD / non-executable |
 
+Product-declaration data that is **not** a product route:
+
+| Route | Declaration state | Why it is still recorded |
+|---|---|---|
+| `agnes-ai/agnes-3.0-flash` | `HOLD_AS_DATA_ONLY` | Historical Plus route superseded by owner decision #3209; provider registration is preserved, but it is not a silent fallback. |
+| `poolside/laguna-s-2.1` | `HOLD_AS_DATA_ONLY` | Historical routing data; never a Padiem tier route or a silent fallback. |
+| `kilo/poolside-laguna-s-2.1-free`, `kilo/nvidia-nemotron-3-ultra-550b-a55b-free` | superseded | Earlier Plus/Pro mapping. No Padiem tier points at them; a B14 route exists only while the current catalog registers it. |
+
 Retired historical routes such as MiniMax M3 and Tencent HY3 must not re-enter the executable catalog or a Padiem tier through stale documentation, fallback, or compatibility defaults.
+
+**Current successor boundary:** Space Bunny is fully retired. B14 Google manual-pin registration has merged in PR #3788, but the shared Plus product declaration remains HOLD. No Google Plus route, credential-backed Production execution, or release is proven. Older routes may not be silently promoted (#3568/#3554).
 
 ## Router Platform roadmap
 
@@ -111,6 +128,24 @@ python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 `app.main` loads working-directory `.env` before creating the application; the documented owner-startup contract intentionally does not use `--env-file .env`.
 
 Useful local surfaces may include the workspace and pilot APIs exposed by the current application. Always verify endpoint availability against current source/tests rather than historical phase docs.
+
+## Generation-budget semantics
+
+B14 distinguishes a product-requested output limit from provider/model defaults and from runtime safety ceilings.
+
+```text
+max_tokens omitted / null
+  -> preserve None through B14
+  -> provider adapter omits max_tokens
+  -> provider/model default behavior
+
+max_tokens explicitly set
+  -> preserve the explicit value
+  -> validate it against the current B14 request contract
+  -> send the explicit value upstream
+```
+
+Do not silently replace an omitted value with a hidden product budget. Product-specific workloads may intentionally choose a bounded value; that choice belongs to the product/runtime profile, not to a generic provider adapter default. The current explicit `1..4096` request range is retained pending the separate hard-ceiling/model-capability review in #3553.
 
 ## Security boundary
 
@@ -172,7 +207,7 @@ A B14 Production release must use the repository-owned exact-SHA deployment gate
 - #2101 — remove implicit `b14/auto` defaults from Padiem-facing execution contracts while preserving future generic autorouter capability
 - #2102 — Padiem Max route evidence/selection
 - #2103 — generic B14 BYOK/credential policy + Padiem boundary
-- #2104 — evidence backfill for the current Padiem Pro Nemotron route
+- #2104 — evidence backfill for the then-current Padiem Pro Nemotron route (closed; Pro moved to HOLD by owner decision #2601)
 - #2107 — future Padiem operator/provider-model console
 - #1955 — exact-SHA B14 Production deployment gate
 

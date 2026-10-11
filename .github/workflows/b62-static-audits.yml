@@ -1,0 +1,73 @@
+name: B62 Static Audits
+
+# Three independent one-script audits that all read the same Chat static bundle.
+# They run as one workflow run with three jobs instead of three workflow runs,
+# so a static change costs 1 queued run instead of 3 while every audit still
+# executes and still fails independently.
+#
+# Job ids are unchanged, so existing check names and any required status
+# context keep resolving exactly as before. Nothing is dropped: each job runs
+# the same script, with the same permissions, on the same trigger surface.
+# The retired per-audit workflow filenames stay in the path filter so a revert
+# of this consolidation still triggers the audits.
+
+on:
+  pull_request:
+    paths:
+      - 'apps/padiem-chat/static/**'
+      - '.github/scripts/b62_dom_sink_audit.py'
+      - '.github/scripts/b62_static_origin_audit.py'
+      - '.github/scripts/b62_browser_persistence_audit.py'
+      - '.github/workflows/b62-static-audits.yml'
+      # Retired workflows, kept so rolling this change back re-triggers them.
+      - '.github/workflows/b62-dom-sink-audit.yml'
+      - '.github/workflows/b62-static-origin-audit.yml'
+      - '.github/workflows/b62-browser-persistence-audit.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/padiem-chat/static/**'
+      - '.github/scripts/b62_dom_sink_audit.py'
+      - '.github/scripts/b62_static_origin_audit.py'
+      - '.github/scripts/b62_browser_persistence_audit.py'
+      - '.github/workflows/b62-static-audits.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-static-audits-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  dom-sink-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify B62 unsafe DOM sink boundary
+        run: python .github/scripts/b62_dom_sink_audit.py
+
+  static-origin-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify B62 static third-party origin budget
+        run: python .github/scripts/b62_static_origin_audit.py
+
+  browser-persistence-audit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify B62 browser persistence privacy boundary
+        run: python .github/scripts/b62_browser_persistence_audit.py

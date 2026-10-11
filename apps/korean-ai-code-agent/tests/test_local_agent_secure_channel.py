@@ -74,6 +74,7 @@ class RecordingPhysicalTransport:
                 sequence=request.after_sequence + 1,
                 issued_at=NOW,
                 expires_at=NOW + timedelta(minutes=1),
+                revision_ref="revision_1",
             ),
         )
 

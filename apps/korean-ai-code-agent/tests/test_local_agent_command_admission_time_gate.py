@@ -46,6 +46,7 @@ def _command(base: datetime, session: DeviceSession) -> DeviceCommandEnvelope:
         sequence=3,
         issued_at=base + timedelta(minutes=1),
         expires_at=base + timedelta(minutes=10),
+        revision_ref="revision_time_1",
     )
 
 
@@ -105,6 +106,7 @@ class CommandMaterializationTimeGateTests(unittest.TestCase):
             request_fingerprint=fingerprint,
             accepted_at=base + timedelta(minutes=1, seconds=30),
             expires_at=base + timedelta(minutes=5),
+            revision_ref=command.revision_ref,
         )
         assembly = _FakeAssembly(_receipt(request, session, base))
         bridge = AdmittedLocalAgentExecutionBridge(
@@ -162,6 +164,7 @@ class CommandMaterializationTimeGateTests(unittest.TestCase):
             request_fingerprint=fingerprint,
             accepted_at=base + timedelta(minutes=1, seconds=30),
             expires_at=base + timedelta(minutes=5),
+            revision_ref=command.revision_ref,
         )
         assembly = _FakeAssembly(_receipt(request, session, base))
         bridge = AdmittedLocalAgentExecutionBridge(

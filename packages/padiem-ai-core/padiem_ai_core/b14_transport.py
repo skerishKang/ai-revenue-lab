@@ -35,15 +35,15 @@ class B14PostJSONTransport(httpx.AsyncBaseTransport):
     translates the transport boundary and never retries.
     """
 
-    def __init__(self, transport: B14Transport, *, timeout_seconds: float = 20.0) -> None:
+    def __init__(self, transport: B14Transport, *, timeout_seconds: float = 600.0) -> None:
         if transport is None:
             raise ValueError("transport is required")
         if (
             isinstance(timeout_seconds, bool)
             or not isinstance(timeout_seconds, (int, float))
-            or not 1 <= float(timeout_seconds) <= 60
+            or not 1 <= float(timeout_seconds) <= 3600
         ):
-            raise ValueError("timeout_seconds must be between 1 and 60")
+            raise ValueError("timeout_seconds must be between 1 and 3600")
         self._transport = transport
         self._timeout_seconds = float(timeout_seconds)
 

@@ -289,6 +289,89 @@ async def test_prestart_core_error_stays_bounded_json_and_closes_iterator() -> N
     assert runtime.iterator is not None and runtime.iterator.closed is True
 
 
+def _b14_server_error(
+    *, upstream_status_code: int | None = 504
+) -> ExecutionRuntimeError:
+    return ExecutionRuntimeError(
+        "upstream_server_error",
+        "safe core stream message",
+        retryable=True,
+        upstream_status_code=upstream_status_code,
+        metadata=RunMetadata(
+            trace_id="trace-1",
+            app_id="lovebud",
+            agent_id="relationship-coach",
+            session_id="session-1",
+            status=RunStatus.FAILED,
+            error_class=ErrorClass.INTERNAL_ERROR,
+        ),
+    )
+
+
+@pytest.mark.asyncio
+async def test_prestart_b14_status_is_preserved_inside_error_metadata() -> None:
+    runtime = FakeRuntime(error=_b14_server_error(upstream_status_code=504))
+    service = StreamingEngineService(runtime_factory=lambda app_id: runtime, b14_service_bound=True)
+
+    result = await service.prepare(
+        method="POST",
+        path=STREAM_PATH,
+        content_type="application/json",
+        body=json.dumps(valid_payload()).encode(),
+    )
+
+    assert isinstance(result, ServiceResponse)
+    # The public status stays Engine-derived from the code; B14's own number is
+    # preserved separately, so the two can never be confused for each other.
+    assert result.status_code == 502
+    error = result.body["error"]
+    assert error["code"] == "upstream_server_error"
+    assert set(error.keys()) == {"code", "message", "retryable", "metadata"}
+    assert error["metadata"]["upstream_status_code"] == 504
+
+
+@pytest.mark.asyncio
+async def test_poststart_b14_status_is_preserved_in_the_terminal_error_line() -> None:
+    runtime = FakeRuntime([progress()], error=_b14_server_error(upstream_status_code=503))
+    service = StreamingEngineService(runtime_factory=lambda app_id: runtime, b14_service_bound=True)
+    prepared = await service.prepare(
+        method="POST",
+        path=STREAM_PATH,
+        content_type="application/json",
+        body=json.dumps(valid_payload()).encode(),
+    )
+    assert isinstance(prepared, PreparedStream)
+
+    lines = [json.loads(line) async for line in service.iter_ndjson(prepared)]
+
+    assert len(lines) == 2
+    assert lines[1]["ok"] is False
+    assert set(lines[1]["error"].keys()) == {"code", "message", "retryable", "metadata"}
+    assert lines[1]["error"]["metadata"]["upstream_status_code"] == 503
+
+
+@pytest.mark.asyncio
+async def test_transport_failure_without_status_reports_none_and_stays_secret_free() -> None:
+    runtime = FakeRuntime(error=_b14_server_error(upstream_status_code=None))
+    service = StreamingEngineService(runtime_factory=lambda app_id: runtime, b14_service_bound=True)
+
+    result = await service.prepare(
+        method="POST",
+        path=STREAM_PATH,
+        content_type="application/json",
+        body=json.dumps(valid_payload()).encode(),
+    )
+
+    assert isinstance(result, ServiceResponse)
+    metadata = result.body["error"]["metadata"]
+    assert metadata["upstream_status_code"] is None
+    # Preserving a status must not widen what the Engine publishes: no
+    # secret-shaped key, and no provider identity promoted into the body.
+    assert not {"api_key", "credential", "secret", "token"} & set(metadata)
+    assert metadata["provider"] is None
+    assert metadata["model"] is None
+
+
 @pytest.mark.asyncio
 async def test_poststart_core_error_emits_one_safe_terminal_line() -> None:
     runtime = FakeRuntime([progress()], error=runtime_error())

@@ -1,0 +1,569 @@
+/* claw-shell.css — SHARED-LIKE (Claw) application shell for B67 Padiem Legal.
+ *
+ * PROVENANCE
+ * Transcribed from the canonical Padiem Chat shell:
+ *   apps/padiem-chat/static/styles.css           (app-shell grid, sidebar, composer, media queries)
+ *   apps/padiem-chat/static/padiem-foundation.css (sidebar/brand/topbar surfaces, focus ring)
+ *   apps/padiem-chat/static/claw-workspace.css   (44px/48px targets, chip idiom, card idiom, type scale)
+ *
+ * CONFORMANCE NOTES (why specific values, not taste)
+ *   - 920px / 620px are the canonical breakpoints. They are written as literals,
+ *     not custom properties, so the same selectors stay greppable by the
+ *     canonical QA suite and by matchMedia() in the controller.
+ *   - Touch targets are literal `min-height: 44px` / `48px` for the same reason.
+ *   - Font weights stay on Claw's ladder (650/700/750/770/800). No 500/600.
+ *   - Bare `var(--token)` only — never `var(--token, fallback)`.
+ *   - No hardcoded hex outside claw-tokens.css.
+ *   - No `html[data-theme=...]` component rules: this surface owns no palette.
+ *
+ * WHAT IS CLAW HERE
+ * The 3-column desktop workspace (cases | conversation | evidence) is a legal
+ * information-architecture need, but every part of it is built from Claw parts:
+ * the 264px fixed sidebar, the fixed bottom composer, the .claw-chip row, the
+ * 16px-radius --card-bg cards, the canonical collapse points, and the
+ * translateX drawer + scrim mobile pattern.
+ *
+ * ABSORPTION NOTE
+ * Contains NO legal-domain logic. Nothing here mentions authority, statute,
+ * case, or provenance. It moves into Claw as-is.
+ */
+
+/* ── Reset / base ──────────────────────────────────────────────────────── */
+* { box-sizing: border-box; }
+
+html { background: var(--bg); }
+
+body {
+  position: relative;
+  min-width: 320px;
+  overflow-x: hidden;
+  color: var(--text);
+  background: var(--bg);
+  font-family: var(--font-body);
+  letter-spacing: -.012em;
+  -webkit-font-smoothing: antialiased;
+}
+
+button, textarea, input, select { font-family: var(--font-body); }
+button { font: inherit; }
+button:disabled { cursor: not-allowed; }
+
+button:focus-visible,
+textarea:focus-visible,
+input:focus-visible,
+select:focus-visible,
+a:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+::selection { color: var(--text); background: var(--accent-soft); }
+
+[hidden] { display: none !important; }
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: 12px; top: -80px;
+  z-index: 90;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 16px;
+  border-radius: 12px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 750;
+  text-decoration: none;
+  transition: top .18s ease;
+}
+.skip-link:focus { top: 12px; }
+
+/* ── App shell grid: cases | conversation | evidence ────────────────────── */
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 264px minmax(0, 1fr);
+}
+
+/* The evidence column is a layout reservation; the panel itself is fixed. */
+.app-shell[data-view="conversation"] {
+  grid-template-columns: 264px minmax(0, 1fr) 380px;
+}
+
+.main-panel {
+  grid-column: 2;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.app-shell[data-view="home"] .main-panel { grid-column: 2; }
+
+/* ── Sidebar (fixed, 264px — canonical) ────────────────────────────────── */
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 264px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 14px 16px;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  background: var(--sidebar);
+  border-right: 1px solid var(--line);
+  box-shadow: 22px 0 70px rgba(0, 0, 0, .16);
+}
+
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  text-decoration: none;
+  font-family: var(--font-label);
+  font-size: 15px;
+  font-weight: 750;
+  letter-spacing: -.01em;
+}
+
+.brand-mark,
+.assistant-avatar {
+  position: relative;
+  overflow: hidden;
+  display: inline-grid;
+  place-items: center;
+  width: 32px; height: 32px;
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  color: var(--accent-contrast);
+  font-family: var(--font-label);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .05em;
+  background: linear-gradient(145deg, rgba(255, 255, 255, .11), rgba(255, 255, 255, .045)), var(--card-bg);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .11), 0 10px 24px rgba(0, 0, 0, .22);
+}
+.brand-mark::after,
+.assistant-avatar::after {
+  content: "";
+  position: absolute;
+  inset: auto -18% -38% 12%;
+  height: 38%;
+  border-radius: 999px;
+  background: var(--accent);
+  filter: blur(9px);
+  opacity: .18;
+}
+
+.mobile-close {
+  display: none;
+  place-items: center;
+  width: 44px; height: 44px;
+  margin-left: auto;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text);
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.new-chat {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 0 14px;
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .055);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05);
+  transition: border-color .24s ease, background .24s ease, transform .24s ease;
+}
+.new-chat:hover { border-color: var(--line); background: rgba(255, 255, 255, .10); transform: translateY(-1px); }
+
+.side-nav { display: grid; gap: 2px; }
+
+.side-item {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 650;
+  text-align: left;
+  cursor: pointer;
+  transition: color .2s ease, background .2s ease;
+}
+.side-item:hover { color: var(--text); background: rgba(255, 255, 255, .07); }
+
+/* Active-destination signature, transcribed from claw-workspace.css:614-622. */
+.side-item[aria-current="page"] {
+  background: var(--accent-soft);
+  border-color: var(--line);
+  color: var(--text);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.side-icon {
+  width: 18px;
+  flex: 0 0 18px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.recent-section { display: grid; gap: 8px; }
+
+.recent-section h2 {
+  margin: 0;
+  padding: 0 4px;
+  color: var(--muted);
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.recent-item {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 650;
+  text-align: left;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+  transition: color .2s ease, background .2s ease, transform .2s ease;
+}
+.recent-item:hover { color: var(--text); background: rgba(255, 255, 255, .07); transform: translateX(2px); }
+.recent-item[aria-current="true"] { background: var(--accent-soft); border-color: var(--line); color: var(--text); }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.sidebar-footer .preview-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  margin-right: 6px;
+  border-radius: 50%;
+  vertical-align: middle;
+  background: var(--accent);
+  box-shadow: 0 0 11px rgba(159, 192, 221, .56);
+}
+
+.sidebar-scrim {
+  position: fixed; inset: 0; z-index: 18;
+  border: 0;
+  background: rgba(16, 16, 24, .42);
+  cursor: pointer;
+}
+
+/* ── Topbar ────────────────────────────────────────────────────────────── */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 14;
+  min-height: 66px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 18px;
+  border-bottom: 1px solid var(--line);
+  background: var(--topbar-bg);
+}
+
+.topbar-identity { display: grid; gap: 2px; min-width: 0; }
+
+/* Claw kicker, transcribed from claw-workspace.css:77-83. */
+.topbar-kicker {
+  margin: 0;
+  color: var(--accent);
+  font-family: var(--font-label);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .13em;
+}
+
+.topbar-title {
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topbar-spacer { margin-left: auto; }
+
+.mobile-menu {
+  display: none;
+  place-items: center;
+  /* min-width/flex, not just width: as a topbar flex item it would otherwise
+     shrink below the 44px touch floor. */
+  min-width: 44px;
+  min-height: 44px;
+  flex: 0 0 44px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* ── Conversation column ───────────────────────────────────────────────── */
+.conversation {
+  flex: 1 1 auto;
+  width: min(760px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 24px 0 280px;
+  min-height: 0;
+  max-height: calc(100vh - 96px);
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+}
+
+/* ── Composer (fixed, canonical) ───────────────────────────────────────── */
+.composer-wrap {
+  position: fixed;
+  /* Centred on the CONVERSATION column, not on the whole main area. The
+   * translateX(-50%) below does the centring, so `left` is the centre point.
+   * Subtracting both the sidebar and the evidence column is what keeps the
+   * composer from overlapping the evidence panel at desktop widths. */
+  left: calc(264px + (100vw - 264px - 380px) / 2);
+  /* `left` is the CENTRE point of the conversation column; the shift does the
+   * centring. Without it the composer starts at that point and runs off the
+   * right edge, over the evidence panel. */
+  transform: translateX(-50%);
+  bottom: 0;
+  z-index: 12;
+  width: min(760px, calc(100vw - 264px - 380px - 40px));
+  padding: 14px 0 20px;
+  background: linear-gradient(to bottom, transparent, var(--bg) 28%, var(--bg));
+}
+
+.app-shell[data-view="home"] .composer-wrap {
+  left: calc(264px + (100vw - 264px) / 2);
+  transform: translateX(-50%);
+  width: min(760px, calc(100vw - 264px - 40px));
+}
+
+.composer {
+  position: relative;
+  padding: 10px 11px 9px;
+  border: 1px solid var(--composer-border);
+  border-radius: 20px;
+  background: var(--composer-bg);
+  box-shadow: var(--shadow);
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+.composer:focus-within {
+  border-color: var(--accent);
+  box-shadow: var(--shadow), 0 0 0 3px var(--focus-ring);
+}
+
+.composer textarea {
+  display: block;
+  width: 100%;
+  min-height: 46px;
+  max-height: 180px;
+  padding: 6px 8px 2px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  /* 16px floor prevents iOS focus auto-zoom — canonical Claw rule. */
+  font-size: 16px;
+  line-height: 1.6;
+  resize: none;
+}
+.composer textarea::placeholder { color: var(--muted); }
+.composer textarea:focus { outline: none; }
+
+.composer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.composer-tools { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+.tool-button {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 11px;
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  background: var(--card-bg);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: color .2s ease, background .2s ease, border-color .2s ease;
+}
+.tool-button:hover { color: var(--text); background: rgba(255, 255, 255, .08); }
+.tool-button[aria-pressed="true"] {
+  background: var(--accent-soft);
+  border-color: var(--line);
+  color: var(--text);
+  font-weight: 750;
+}
+
+.send-button {
+  margin-left: auto;
+  min-height: 48px;
+  min-width: 48px;
+  display: inline-grid;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: filter .2s ease, transform .2s ease;
+}
+.send-button:not(:disabled):hover { transform: translateY(-1px); }
+
+.composer-note {
+  margin: 8px 8px 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* ── Responsive: the canonical 920 / 620 collapse ──────────────────────── */
+@media (max-width: 1440px) {
+  .app-shell[data-view="conversation"] { grid-template-columns: 264px minmax(0, 1fr) 340px; }
+  .composer-wrap {
+    left: calc(264px + (100vw - 264px - 340px) / 2);
+    width: min(760px, calc(100vw - 264px - 340px - 40px));
+  }
+}
+
+@media (max-width: 1180px) {
+  .app-shell[data-view="conversation"] { grid-template-columns: 264px minmax(0, 1fr) 300px; }
+  .composer-wrap {
+    left: calc(264px + (100vw - 264px - 300px) / 2);
+    width: min(700px, calc(100vw - 264px - 300px - 32px));
+  }
+}
+
+@media (max-width: 920px) {
+  .app-shell,
+  .app-shell[data-view="home"],
+  .app-shell[data-view="conversation"] {
+    display: block;
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    width: min(86vw, 320px);
+    transform: translateX(-100%);
+    transition: transform .2s ease;
+    box-shadow: 18px 0 40px rgba(0, 0, 0, .45);
+  }
+  .app-shell.sidebar-open .sidebar { transform: translateX(0); }
+  .mobile-close { display: inline-grid; }
+  .mobile-menu { display: inline-grid; }
+
+  .main-panel { min-height: 100vh; }
+
+  .conversation {
+    width: calc(100% - 28px);
+    padding: 18px 0 260px;
+  }
+
+  .composer-wrap,
+  .app-shell[data-view="home"] .composer-wrap {
+    left: 50%;
+    width: calc(100vw - 28px);
+  }
+}
+
+@media (max-width: 620px) {
+  .topbar { min-height: 62px; padding: 0 12px; }
+  .conversation { width: calc(100% - 20px); padding: 16px 0 250px; }
+  .composer-wrap,
+  .app-shell[data-view="home"] .composer-wrap {
+    width: calc(100vw - 20px);
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+  .composer { border-radius: 20px; padding: 8px; }
+  .composer textarea { min-height: 48px; padding: 7px 7px 2px; font-size: 16px; }
+  .tool-button { min-height: 44px; padding: 0 10px; }
+  .composer-note { font-size: 10px; margin-inline: 2px; }
+}
+
+/* Reduced motion. The canonical shell ships a global block; a surface that
+ * animates its own panels ships its own too, so the animation is suppressed
+ * even when this file is used outside the canonical cascade. */
+@media (prefers-reduced-motion: reduce) {
+  .sidebar,
+  .skip-link,
+  .new-chat,
+  .side-item,
+  .recent-item,
+  .composer,
+  .send-button,
+  .tool-button,
+  .app-shell,
+  .main-panel {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}

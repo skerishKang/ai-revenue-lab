@@ -1,0 +1,113 @@
+name: B62 Workspace R2 Binding Gate
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b62-workspace-r2-binding-gate.yml"
+      - ".github/scripts/b62_cloudflare_production_deploy_config.py"
+      - "apps/padiem-chat/tests/test_b62_production_r2_binding.py"
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-workspace-r2-binding-gate
+  cancel-in-progress: false
+
+env:
+  B62_WORKER: padiem-chat
+  R2_BINDING: PADIEM_WORKSPACE_FILES
+  TARGET_SHA: ${{ inputs.target_sha }}
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout PR exact head
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout exact dispatch SHA
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main for dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo "R2_GATE_EXACT_MAIN=PASS"
+
+      - name: Assert source contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          workflow = Path('.github/workflows/b62-workspace-r2-binding-gate.yml').read_text(encoding='utf-8')
+          generator = Path('.github/scripts/b62_cloudflare_production_deploy_config.py').read_text(encoding='utf-8')
+          assert 'PADIEM_WORKSPACE_FILES' in workflow
+          assert 'r2_bucket' in workflow
+          assert 'bucket_name' in workflow
+          assert 'R2_GATE_EXACT_MAIN=PASS' in workflow
+          assert 'R2_BINDING_READBACK=PASS' in workflow
+          assert 'PRODUCTION_MUTATION=0' in workflow
+          assert '"r2_bucket"' in generator
+          assert '[[r2_buckets]]' in generator
+          assert 'bucket_name' in generator
+          print('B62_WORKSPACE_R2_GATE_SOURCE=PASS')
+          print('PRODUCTION_MUTATION=0')
+          PY
+
+  cloudflare-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Read back private workspace R2 binding
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
+          settings="${RUNNER_TEMP}/b62-r2-settings.json"
+          curl -fsS "${auth[@]}" "${api}/settings" -o "${settings}"
+          jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
+          jq -e --arg name "${R2_BINDING}" '
+            [.result.bindings[] | select(.name == $name)] as $b |
+            ($b | length) == 1 and
+            $b[0].type == "r2_bucket" and
+            ($b[0].bucket_name | type == "string") and
+            ($b[0].bucket_name | length) > 0
+          ' "${settings}" >/dev/null
+          jq -e '[.result.bindings[] | .name] | length == (unique | length)' "${settings}" >/dev/null
+          echo "R2_BINDING_READBACK=PASS"
+          echo "R2_BINDING_NAME=${R2_BINDING}"
+          echo "R2_BUCKET_NAME_REDACTED=YES"
+          echo "PRODUCTION_MUTATION=0"

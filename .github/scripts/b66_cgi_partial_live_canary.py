@@ -1,0 +1,459 @@
+"""One-shot authenticated B66 CGI Production partial-input canary (#3391).
+
+Consumes the existing Production Environment credential without printing it.
+Per run: one password login, read-only auth/skill lookups, and exactly one B66
+quote-interpret POST. No retry, fallback, Saved Quote Skill mutation, or raw
+response output.
+"""
+
+from __future__ import annotations
+
+import argparse
+import http.cookiejar
+import json
+import os
+import re
+import sys
+import urllib.error
+import urllib.request
+from dataclasses import dataclass
+from typing import Any
+
+BASE_URL = "https://quick-quote-kr.pages.dev"
+PARTIAL_TEXT = "대한건설에 배관 100미터, 부가세 별도"
+APPROX_QUANTITY_TEXT = "대한건설에 배관 대충 100개 정도, 가격은 적당히"
+CASE_ENV = "B66_CGI_CANARY_CASE"
+ALLOWED_CASES = frozenset({"partial", "approx_qty"})
+MAX_BODY_BYTES = 64 * 1024
+MAX_INTERPRET_POSTS = 1
+SELECTED_MODEL_ENV = "B66_CGI_CANARY_SELECTED_MODEL_ID"
+USER_AGENT = "padiem-b66-cgi-partial-canary/1.0 (+github-actions)"
+RETRY = 0
+FALLBACK = 0
+
+ALLOWED_UPSTREAM_CLASSES = frozenset(
+    {
+        "upstream_timeout",
+        "upstream_busy",
+        "upstream_response_too_large",
+        "malformed_upstream",
+        "upstream_malformed_json",
+        "upstream_unexpected_shape",
+        "upstream_missing_content",
+        "upstream_non_text_content",
+        "upstream_empty_answer",
+        "upstream_unavailable",
+        "provider_auth_error",
+        "provider_route_error",
+        "provider_server_error",
+        "upstream_execution_failed",
+        "upstream_error",
+    }
+)
+ALLOWED_PUBLIC_ERRORS = frozenset(
+    {"quote_interpretation_failed", "quote_input_unrecognized"}
+)
+# Result origin is attributed only by the deployed B66 interpreter branch;
+# this does NOT independently attest the underlying Google provider POST.
+MODEL_COMPLETION_ORIGIN = "registered_model_completion"
+FALLBACK_ORIGIN = "deterministic_fallback"
+# The B66 server derives canonical missing field names (not indexed UI paths).
+# See b66_quote_conversation._server_missing_fields.
+ALLOWED_MISSING_FIELDS = frozenset(
+    {"recipient", "items", "name", "qty", "unitPrice"}
+)
+
+
+def selected_model_id(value: object, models: object) -> str:
+    """A single explicit operator-chosen, currently selectable B14 exact ID."""
+    if (
+        not isinstance(value, str)
+        or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}", value) is None
+        or value == "b14/auto"
+        or value.startswith("padiem-profile/")
+    ):
+        raise ValueError("explicit_exact_model_id_required")
+    if not isinstance(models, list) or len(models) > 256:
+        raise ValueError("selectable_model_list_unavailable")
+    matching = [
+        row for row in models
+        if isinstance(row, dict) and row.get("model_id") == value
+    ]
+    if len(matching) != 1:
+        raise ValueError("selected_model_unavailable_or_ambiguous")
+    return value
+
+
+@dataclass(frozen=True)
+class SafeHttpResult:
+    status: int
+    headers: Any
+    body: bytes
+
+
+def _bounded_body(response: Any) -> bytes:
+    body = response.read(MAX_BODY_BYTES + 1)
+    if len(body) > MAX_BODY_BYTES:
+        raise RuntimeError("response_body_too_large")
+    return body
+
+
+def _request(opener: Any, request: urllib.request.Request) -> SafeHttpResult:
+    try:
+        response = opener.open(request, timeout=60)
+        try:
+            return SafeHttpResult(
+                status=int(response.status),
+                headers=response.headers,
+                body=_bounded_body(response),
+            )
+        finally:
+            response.close()
+    except urllib.error.HTTPError as exc:
+        try:
+            return SafeHttpResult(
+                status=int(exc.code),
+                headers=exc.headers,
+                body=_bounded_body(exc),
+            )
+        finally:
+            exc.close()
+
+
+def _json_request(
+    opener: Any,
+    path: str,
+    *,
+    method: str = "GET",
+    payload: dict[str, Any] | None = None,
+) -> SafeHttpResult:
+    data = None
+    headers = {"Accept": "application/json", "User-Agent": USER_AGENT}
+    # The Pages CGI bridge requires same-origin Origin on mutations carrying
+    # an authenticated session cookie. Missing Origin is a pre-dispatch 403.
+    if method.upper() in {"POST", "PUT", "PATCH", "DELETE"}:
+        headers["Origin"] = BASE_URL
+    if payload is not None:
+        data = json.dumps(
+            payload,
+            ensure_ascii=False,
+            separators=(",", ":"),
+        ).encode("utf-8")
+        headers["Content-Type"] = "application/json"
+    return _request(
+        opener,
+        urllib.request.Request(
+            BASE_URL + path,
+            data=data,
+            headers=headers,
+            method=method,
+        ),
+    )
+
+
+def _decode_json(body: bytes) -> dict[str, Any] | None:
+    try:
+        value = json.loads(body.decode("utf-8"))
+    except Exception:
+        return None
+    return value if isinstance(value, dict) else None
+
+
+def sanitize_upstream_class(value: Any) -> str:
+    text = str(value or "")
+    return text if text in ALLOWED_UPSTREAM_CLASSES else "ABSENT_OR_UNKNOWN"
+
+
+def sanitize_public_error(value: Any) -> str:
+    text = str(value or "")
+    return text if text in ALLOWED_PUBLIC_ERRORS else "ABSENT_OR_UNKNOWN"
+
+
+def sanitize_missing(value: Any) -> tuple[str, ...]:
+    if not isinstance(value, list):
+        return ()
+    out: list[str] = []
+    for item in value:
+        text = str(item)
+        out.append(text if text in ALLOWED_MISSING_FIELDS else "UNKNOWN_FIELD")
+    return tuple(out)
+
+
+def _header(headers: Any, name: str) -> str | None:
+    try:
+        return headers.get(name)
+    except Exception:
+        return None
+
+
+def _bounded_diagnostic(value: Any) -> str:
+    text = str(value or "")
+    if not text:
+        return "ABSENT"
+    return text[:80] if re.fullmatch(r"[A-Za-z0-9_.\[\]-]{1,80}", text) else "PRESENT_REDACTED"
+
+
+def selected_case(value: object) -> str:
+    if not isinstance(value, str) or value not in ALLOWED_CASES:
+        raise ValueError("explicit_valid_canary_case_required")
+    return value
+
+
+def _canary_contract_satisfied(
+    case: str, *, response_status: int, origin: str,
+    candidate: object, summary: dict[str, Any],
+) -> bool:
+    if case not in ALLOWED_CASES or not isinstance(candidate, dict):
+        return False
+    if response_status != 200 or origin != MODEL_COMPLETION_ORIGIN:
+        return False
+    if summary.get("SAFE_RECIPIENT_MATCH") != "TRUE" or summary.get("SAFE_ITEM_MATCH") != "TRUE":
+        return False
+    if summary.get("UNIT_PRICE_NULL") != "TRUE":
+        return False
+    missing = sanitize_missing(candidate.get("missing"))
+    if case == "approx_qty":
+        return (
+            "qty" in missing and "unitPrice" in missing
+            and summary.get("APPROX_QTY_NULL") == "TRUE"
+        )
+    return missing == ("unitPrice",) and summary.get("SAFE_QTY_MATCH") == "TRUE"
+
+
+def _print_summary(summary: dict[str, Any]) -> None:
+    order = (
+        "CANARY_CASE",
+        "LOGIN_HTTP",
+        "AUTH_HTTP",
+        "AUTHENTICATED",
+        "SAVED_SKILL_HTTP",
+        "SAVED_SKILL_COUNT",
+        "INTERPRET_HTTP",
+        "X_B66_UPSTREAM_CLASS",
+        "X_B66_RESULT_ORIGIN",
+        "X_B66_REJECTION_REASON",
+        "X_B66_REJECTION_PATH",
+        "X_B66_REJECTION_TYPE",
+        "PUBLIC_ERROR",
+        "CANDIDATE_PRESENT",
+        "MISSING_FIELDS",
+        "SAFE_RECIPIENT_MATCH",
+        "SAFE_ITEM_MATCH",
+        "SAFE_QTY_MATCH",
+        "UNIT_PRICE_NULL",
+        "APPROX_QTY_NULL",
+        "MODEL_OPTIONS_HTTP",
+        "MODEL_SELECTION_RESULT",
+        "SELECTED_MODEL_ID",
+        "INTERPRET_POSTS",
+        "LIVE_PROVIDER_CALLS_EXECUTED",
+        "COOKIE_OUTPUT",
+        "PASSWORD_OUTPUT",
+        "TOKEN_OUTPUT",
+        "RAW_RESPONSE_OUTPUT",
+        "PRODUCTION_DATA_MUTATION",
+    )
+    for key in order:
+        if key in summary:
+            print(f"{key}={summary[key]}")
+
+
+def run_live(username: str, password: str) -> int:
+    # Fail closed before any authentication or model request if the caller did
+    # not explicitly choose one of the two network-bounded safety probes.
+    try:
+        case = selected_case(os.getenv(CASE_ENV))
+    except ValueError:
+        print("B66_CGI_PARTIAL_CANARY=FAIL_CASE_SELECTION")
+        return 8
+    if not username or not password:
+        print("B66_CGI_PARTIAL_CANARY=FAIL_CREDENTIAL_UNAVAILABLE")
+        return 2
+
+    jar = http.cookiejar.CookieJar()
+    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
+    summary: dict[str, Any] = {
+        "CANARY_CASE": case,
+        "COOKIE_OUTPUT": 0,
+        "PASSWORD_OUTPUT": 0,
+        "TOKEN_OUTPUT": 0,
+        "RAW_RESPONSE_OUTPUT": 0,
+        "PRODUCTION_DATA_MUTATION": 0,
+        "INTERPRET_POSTS": 0,
+        "LIVE_PROVIDER_CALLS_EXECUTED": 0,
+    }
+
+    login = _json_request(
+        opener,
+        "/api/padiem/auth/password/login",
+        method="POST",
+        payload={"identifier": username, "password": password},
+    )
+    summary["LOGIN_HTTP"] = login.status
+    if login.status != 200:
+        _print_summary(summary)
+        print("B66_CGI_PARTIAL_CANARY=FAIL_LOGIN")
+        return 3
+
+    auth = _json_request(opener, "/api/padiem/auth/status")
+    auth_json = _decode_json(auth.body) or {}
+    summary["AUTH_HTTP"] = auth.status
+    summary["AUTHENTICATED"] = str(auth_json.get("authenticated") is True).upper()
+    if auth.status != 200 or auth_json.get("authenticated") is not True:
+        _print_summary(summary)
+        print("B66_CGI_PARTIAL_CANARY=FAIL_AUTH")
+        return 4
+
+    skills_result = _json_request(opener, "/api/padiem/b66/saved-skills?limit=20")
+    skills_json = _decode_json(skills_result.body) or {}
+    skills = skills_json.get("skills")
+    skills = skills if isinstance(skills, list) else []
+    summary["SAVED_SKILL_HTTP"] = skills_result.status
+    summary["SAVED_SKILL_COUNT"] = len(skills)
+    if skills_result.status != 200 or skills_json.get("ok") is not True or len(skills) != 1:
+        _print_summary(summary)
+        print("B66_CGI_PARTIAL_CANARY=FAIL_SAVED_SKILL")
+        return 5
+
+    row = skills[0] if isinstance(skills[0], dict) else {}
+    saved_skill_id = row.get("saved_skill_id")
+    if not isinstance(saved_skill_id, str) or not re.fullmatch(
+        r"b66skill_[0-9a-f]{32}",
+        saved_skill_id,
+    ):
+        _print_summary(summary)
+        print("B66_CGI_PARTIAL_CANARY=FAIL_SAVED_SKILL_ID")
+        return 6
+
+    models_result = _json_request(opener, "/api/padiem/b66/quote/models")
+    model_options = _decode_json(models_result.body) or {}
+    summary["MODEL_OPTIONS_HTTP"] = models_result.status
+    if models_result.status != 200 or model_options.get("ok") is not True:
+        _print_summary(summary)
+        print("B66_CGI_PARTIAL_CANARY=FAIL_MODEL_OPTIONS")
+        return 7
+    try:
+        chosen_model_id = selected_model_id(
+            os.environ.get(SELECTED_MODEL_ENV), model_options.get("models")
+        )
+    except ValueError as exc:
+        summary["MODEL_SELECTION_RESULT"] = str(exc)
+        _print_summary(summary)
+        print("B66_CGI_PARTIAL_CANARY=FAIL_MODEL_SELECTION")
+        return 8
+    summary["SELECTED_MODEL_ID"] = chosen_model_id
+
+    summary["INTERPRET_POSTS"] = 1
+    # An HTTP request can be rejected by Pages/CGI before any provider call.
+    # Do not present an attempted CGI POST as a confirmed provider dispatch.
+    summary["LIVE_PROVIDER_CALLS_EXECUTED"] = "UNVERIFIED"
+    interpreted = _json_request(
+        opener,
+        "/api/padiem/b66/quote/interpret",
+        method="POST",
+        payload={
+            "saved_skill_id": saved_skill_id,
+            "message": PARTIAL_TEXT if case == "partial" else APPROX_QUANTITY_TEXT,
+            "model_id": chosen_model_id,
+        },
+    )
+    summary["INTERPRET_HTTP"] = interpreted.status
+    summary["X_B66_UPSTREAM_CLASS"] = sanitize_upstream_class(
+        _header(interpreted.headers, "X-B66-Upstream-Class")
+    )
+    origin = _header(interpreted.headers, "X-B66-Result-Origin")
+    summary["X_B66_RESULT_ORIGIN"] = (
+        origin if origin in (MODEL_COMPLETION_ORIGIN, FALLBACK_ORIGIN)
+        else "ABSENT_OR_UNKNOWN"
+    )
+    for header, key in (
+        ("X-B66-Rejection-Reason", "X_B66_REJECTION_REASON"),
+        ("X-B66-Rejection-Path", "X_B66_REJECTION_PATH"),
+        ("X-B66-Rejection-Type", "X_B66_REJECTION_TYPE"),
+    ):
+        summary[key] = _bounded_diagnostic(_header(interpreted.headers, header))
+
+    body = _decode_json(interpreted.body) or {}
+    summary["PUBLIC_ERROR"] = sanitize_public_error(body.get("error_code"))
+
+    candidate = body.get("candidate")
+    summary["CANDIDATE_PRESENT"] = str(isinstance(candidate, dict)).upper()
+    if interpreted.status == 200 and isinstance(candidate, dict):
+        missing = sanitize_missing(candidate.get("missing"))
+        summary["MISSING_FIELDS"] = ",".join(missing) if missing else "NONE"
+        recipient = candidate.get("recipient")
+        items = candidate.get("items")
+        item = (
+            items[0]
+            if isinstance(items, list)
+            and len(items) == 1
+            and isinstance(items[0], dict)
+            else {}
+        )
+        summary["SAFE_RECIPIENT_MATCH"] = str(
+            isinstance(recipient, dict)
+            and recipient.get("company") == "대한건설"
+        ).upper()
+        summary["SAFE_ITEM_MATCH"] = str(item.get("name") == "배관").upper()
+        summary["SAFE_QTY_MATCH"] = str(item.get("qty") == 100).upper()
+        summary["UNIT_PRICE_NULL"] = str(item.get("unitPrice") is None).upper()
+        summary["APPROX_QTY_NULL"] = str(item.get("qty") is None).upper()
+
+    _print_summary(summary)
+
+    accepted = _canary_contract_satisfied(
+        case,
+        response_status=interpreted.status,
+        origin=summary["X_B66_RESULT_ORIGIN"],
+        candidate=candidate,
+        summary=summary,
+    )
+    print("B66_CGI_PARTIAL_CANARY=" + ("PASS" if accepted else "FAIL"))
+    return 0 if accepted else 7
+
+
+def self_test() -> int:
+    assert MAX_INTERPRET_POSTS == 1
+    assert USER_AGENT == "padiem-b66-cgi-partial-canary/1.0 (+github-actions)"
+    assert RETRY == 0
+    assert FALLBACK == 0
+    assert sanitize_upstream_class("upstream_non_text_content") == "upstream_non_text_content"
+    assert sanitize_upstream_class("secret-provider-detail") == "ABSENT_OR_UNKNOWN"
+    assert sanitize_public_error("quote_interpretation_failed") == "quote_interpretation_failed"
+    assert sanitize_public_error("raw-secret") == "ABSENT_OR_UNKNOWN"
+    assert sanitize_missing(["unitPrice"]) == ("unitPrice",)
+    assert MODEL_COMPLETION_ORIGIN != FALLBACK_ORIGIN
+    assert selected_case("partial") == "partial"
+    assert selected_case("approx_qty") == "approx_qty"
+    assert sanitize_missing(["private.foo"]) == ("UNKNOWN_FIELD",)
+    assert _bounded_diagnostic("items[0].unitPrice") == "items[0].unitPrice"
+    assert _bounded_diagnostic("raw value with spaces") == "PRESENT_REDACTED"
+    print("B66_CGI_PARTIAL_CANARY_SELF_TEST=PASS")
+    print("DEFAULT_LIVE_EXECUTION=BLOCKED")
+    print("SECRET_VALUE_OUTPUT=0")
+    print("RAW_RESPONSE_OUTPUT=0")
+    print("PRODUCTION_DATA_MUTATION=0")
+    return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--authorized-live-run", action="store_true")
+    parser.add_argument("--self-test", action="store_true")
+    args = parser.parse_args(sys.argv[1:] if argv is None else argv)
+
+    if args.self_test:
+        return self_test()
+    if not args.authorized_live_run:
+        print("B66_CGI_PARTIAL_CANARY=FAIL_AUTHORIZATION_REQUIRED")
+        print("DEFAULT_LIVE_EXECUTION=BLOCKED")
+        return 1
+
+    return run_live(
+        os.getenv("B66_CGI_ALPHA_USERNAME", ""),
+        os.getenv("B66_CGI_ALPHA_PASSWORD", ""),
+    )
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -14,7 +14,7 @@ from datetime import datetime, timezone
 import re
 from types import MappingProxyType
 import uuid
-from typing import Any, Callable
+from typing import Any, Awaitable, Callable
 
 from .agent_approval import (
     AgentApprovalError,
@@ -44,6 +44,11 @@ from .execution_state_machine import (
 )
 from .agent_definition import AgentTerminalReason, BoundedAgentDefinition
 from .agent_execution_bridge import AgentPlanExecutor, PlanBackedStepDriver
+from .agent_progress import (
+    AgentIdleTimeoutError,
+    AgentProgressTracker,
+    await_with_agent_progress,
+)
 from .agent_planner import AgentPlan, AgentPlanner, validate_agent_plan
 from .agent_profile_adapter import CompiledAgentProfile
 from .agent_runtime import AgentRuntimeError
@@ -63,6 +68,7 @@ from .evidence_verification import (
     VerificationVerdict,
     accept_verification_verdict,
 )
+from .dispatch_evidence import mark_execution_dispatch_started
 from .execution_context import (
     ExecutionContext,
     IdempotencyAdapter,
@@ -115,6 +121,9 @@ class OrchestrationRequest:
     context: ExecutionContext
     app_id: str
     subject_id: str | None = None
+    # Only server-trusted OrchestrationRequest construction may supply the
+    # existing Broker/Resident run id. Public Engine JSON is NOT mapped here.
+    trusted_agent_bridge_run_id: str | None = None
 
     # Memory / RAG (Optional)
     memory_authorization: MemoryReadAuthorization | None = None
@@ -160,6 +169,9 @@ class OrchestrationRequest:
         object.__setattr__(self, "app_id", _safe_id("app_id", self.app_id))
         if self.subject_id is not None:
             object.__setattr__(self, "subject_id", _safe_id("subject_id", self.subject_id))
+        if self.trusted_agent_bridge_run_id is not None:
+            object.__setattr__(self, "trusted_agent_bridge_run_id",
+                               _safe_id("trusted_agent_bridge_run_id", self.trusted_agent_bridge_run_id))
 
         # Trace ID alignment invariant
         if self.execution_request.trace_id != self.context.trace_id:
@@ -746,6 +758,8 @@ class OrchestrationRunner:
         runtime: Any,
         idempotency: IdempotencyAdapter | None = None,
         event_sink: Callable[[OrchestrationEvent], Any] | None = None,
+        agent_run_guard: Callable[[], bool | Awaitable[bool]] | None = None,
+        agent_checkpoint_hook: Callable[[int], bool | Awaitable[bool]] | None = None,
     ) -> None:
         if not hasattr(runtime, "run") or not callable(getattr(runtime, "run", None)):
             raise OrchestrationError("invalid_runtime", "runtime must provide a callable run method")
@@ -754,6 +768,12 @@ class OrchestrationRunner:
         self._runtime = runtime
         self._idempotency = idempotency
         self._event_sink = event_sink
+        if agent_run_guard is not None and not callable(agent_run_guard):
+            raise OrchestrationError("invalid_agent_run_guard", "trusted Agent guard must be callable")
+        self._agent_run_guard = agent_run_guard
+        if agent_checkpoint_hook is not None and not callable(agent_checkpoint_hook):
+            raise OrchestrationError("invalid_agent_checkpoint", "trusted checkpoint hook must be callable")
+        self._agent_checkpoint_hook = agent_checkpoint_hook
 
     def _deliver_event(self, evt: OrchestrationEvent) -> None:
         """Deliver one emitted event to the optional synchronous event sink.
@@ -964,7 +984,11 @@ class OrchestrationRunner:
                     if request.execution_request.messages
                     else "Run agent plan"
                 )
-                bridge_res = await asyncio.wait_for(
+                # Inactivity watchdog, not a fixed wall clock: the Agent run is
+                # bounded by verified progress gaps so a healthy long run
+                # (many steps, long generations) is never force-failed (#4194).
+                agent_progress = AgentProgressTracker()
+                bridge_res = await await_with_agent_progress(
                     executor.execute(
                         plan=request.agent_plan,
                         definition=request.agent_definition,
@@ -972,10 +996,15 @@ class OrchestrationRunner:
                         authorization=request.tool_authorization,
                         tool_runtime=request.tool_runtime,
                         input_text=prompt_input or "Run agent plan",
-                        run_id=f"bridge_run_{uuid.uuid4().hex[:12]}",
+                        run_id=(request.trusted_agent_bridge_run_id
+                                or f"bridge_run_{uuid.uuid4().hex[:12]}"),
                         tool_arguments=request.tool_arguments,
+                        run_guard=self._agent_run_guard,
+                        checkpoint_hook=self._agent_checkpoint_hook,
+                        progress=agent_progress,
                     ),
-                    timeout=request.context.timeout_seconds,
+                    tracker=agent_progress,
+                    idle_seconds=request.context.timeout_seconds,
                 )
 
                 if bridge_res.terminal_reason is AgentTerminalReason.APPROVAL_REQUIRED:
@@ -1044,8 +1073,11 @@ class OrchestrationRunner:
 
                 if bridge_res.terminal_reason is AgentTerminalReason.MAX_WALL_TIME:
                     await _abort_idempotency("timeout")
-                    emit(OrchestrationEventKind.RUN_FAILED, "Agent execution reached max wall time", {"reason": "timeout"})
-                    raise OrchestrationError("orchestration_timeout", "Agent execution reached max wall time")
+                    emit(OrchestrationEventKind.RUN_FAILED, "Agent execution stopped after inactivity", {"reason": "timeout"})
+                    raise OrchestrationError(
+                        "orchestration_timeout",
+                        "Agent execution produced no verified progress inside the inactivity window",
+                    )
 
                 if bridge_res.terminal_reason in (
                     AgentTerminalReason.AUTHORIZATION_DENIED,
@@ -1100,6 +1132,11 @@ class OrchestrationRunner:
                     trace_id=trace_id,
                 )
 
+                mark_execution_dispatch_started()
+                # Single-shot model lane: this keeps the caller-declared
+                # ExecutionContext budget (default 900s, max 3600s) unchanged.
+                # The model transport owns its own 600s per-event read idle
+                # watchdog; no new short cap is introduced here (#4194).
                 result = await asyncio.wait_for(
                     self._runtime.run(exec_req),
                     timeout=request.context.timeout_seconds,
@@ -1121,11 +1158,11 @@ class OrchestrationRunner:
                         "error_class": te.error_class.value if te.error_class else None,
                         "duration_ms": te.duration_ms,
                     })
-        except asyncio.TimeoutError:
+        except (asyncio.TimeoutError, AgentIdleTimeoutError):
             await _abort_idempotency("timeout")
             state_machine.timeout("execution_timeout")
-            emit(OrchestrationEventKind.RUN_FAILED, "Execution timed out", {"reason": "timeout"})
-            raise OrchestrationError("orchestration_timeout", f"Execution exceeded {request.context.timeout_seconds}s timeout") from None
+            emit(OrchestrationEventKind.RUN_FAILED, "Execution stopped after inactivity", {"reason": "timeout"})
+            raise OrchestrationError("orchestration_timeout", f"Execution produced no verified progress for {request.context.timeout_seconds}s") from None
         except asyncio.CancelledError:
             await _abort_idempotency("cancelled")
             state_machine.cancel("execution_cancelled")
@@ -1470,8 +1507,9 @@ class OrchestrationRunner:
                 if request.execution_request.messages
                 else "Resume agent plan"
             )
+            resume_progress = AgentProgressTracker()
             try:
-                bridge_res = await asyncio.wait_for(
+                bridge_res = await await_with_agent_progress(
                     executor.execute(
                         plan=request.agent_plan,
                         definition=request.agent_definition,
@@ -1486,13 +1524,20 @@ class OrchestrationRunner:
                         initial_tool_events=request.initial_tool_events,
                         trace_id=trace_id,
                         plan_id=request.agent_plan.agent_id,
+                        run_guard=self._agent_run_guard,
+                        checkpoint_hook=self._agent_checkpoint_hook,
+                        progress=resume_progress,
                     ),
-                    timeout=request.context.timeout_seconds,
+                    tracker=resume_progress,
+                    idle_seconds=request.context.timeout_seconds,
                 )
 
                 if bridge_res.terminal_reason is AgentTerminalReason.MAX_WALL_TIME:
-                    emit(OrchestrationEventKind.RUN_FAILED, "Agent execution reached max wall time on resume", {"reason": "timeout"})
-                    raise OrchestrationError("orchestration_timeout", "Agent execution reached max wall time on resume")
+                    emit(OrchestrationEventKind.RUN_FAILED, "Agent execution stopped after inactivity on resume", {"reason": "timeout"})
+                    raise OrchestrationError(
+                        "orchestration_timeout",
+                        "Agent execution produced no verified progress inside the inactivity window on resume",
+                    )
 
                 if bridge_res.terminal_reason in (
                     AgentTerminalReason.AUTHORIZATION_DENIED,
@@ -1521,9 +1566,9 @@ class OrchestrationRunner:
                         tool_events=bridge_res.tool_events,
                     ),
                 )
-            except asyncio.TimeoutError:
-                emit(OrchestrationEventKind.RUN_FAILED, "Execution timed out on resume", {"reason": "timeout"})
-                raise OrchestrationError("orchestration_timeout", f"Execution exceeded {request.context.timeout_seconds}s timeout on resume") from None
+            except (asyncio.TimeoutError, AgentIdleTimeoutError):
+                emit(OrchestrationEventKind.RUN_FAILED, "Execution stopped after inactivity on resume", {"reason": "timeout"})
+                raise OrchestrationError("orchestration_timeout", f"Execution produced no verified progress for {request.context.timeout_seconds}s on resume") from None
             except asyncio.CancelledError:
                 await _abort_idempotency("cancelled")
                 emit(OrchestrationEventKind.RUN_CANCELLED, "Execution was cancelled on resume", {"reason": "downstream_cancellation"})
@@ -1537,6 +1582,8 @@ class OrchestrationRunner:
         else:
             # Fallback simple runtime execution
             try:
+                mark_execution_dispatch_started()
+                # Single-shot model lane: caller-declared budget retained (#4194).
                 result = await asyncio.wait_for(
                     self._runtime.run(request.execution_request),
                     timeout=request.context.timeout_seconds,

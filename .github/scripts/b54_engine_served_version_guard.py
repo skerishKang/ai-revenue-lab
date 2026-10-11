@@ -1,0 +1,583 @@
+#!/usr/bin/env python3
+"""Fail-closed served-version caller-registry guard for padiem-ai-engine.
+
+Validates the caller-registry secrets on the *actually served* Worker version
+(the version identified by the deployments API), not the mutable settings plane.
+Consumes bounded Cloudflare API GET responses saved to disk by the deploy gate:
+
+- ``resolve-active``: extract the active version id from a deployments GET body.
+- ``verify``: assert ``PADIEM_ENGINE_CALLER_REGISTRY_V1`` (and the overlay
+  secret when expected) are ``PRESENT:secret_text`` on that exact version.
+
+Version-detail parsing follows the documented Cloudflare response authority:
+identity is ``result.id`` and bindings are ``result.resources.bindings``
+(list or name-keyed map). Settings-plane payloads are never accepted as
+served-version proof.
+
+``resolve-active`` accepts ONLY the canonical Cloudflare deployments envelope,
+converged under #2452 with the #2427 B62 contract and shared as one
+implementation since #2737 through ``cloudflare_served_version.py``: object
+``result``, active deployment ``result.deployments[0]``, exactly one version at
+100 percent, safe ``version_id``. Raw top-level lists, list-shaped ``result``
+values, and the ``result.versions`` shortcut are refused with no ordering
+fallback. This guard publishes that resolver's reason codes under its own
+established wording.
+
+Emits NAME/TYPE state only. Never reads or prints any binding value, raw
+settings JSON, or the Cloudflare account id. Performs no mutation.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+# The scripts directory is not a package, so make the canonical resolver
+# importable whether this guard runs directly or is loaded through importlib in
+# a test.
+_SCRIPTS_DIR = Path(__file__).resolve().parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+
+from cloudflare_served_version import (  # noqa: E402
+    ServedVersionReason,
+    ServedVersionResolutionError,
+    is_safe_version_id,
+    resolve_served_version_id,
+)
+
+REGISTRY_SECRET_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1"
+OVERLAY_SECRET_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY"
+REQUIRED_BINDING_TYPE = "secret_text"
+CONNECTOR_GRANTS_BINDING_NAME = "ENGINE_CONNECTOR_GRANTS"
+CONNECTOR_GRANTS_BINDING_TYPE = "d1"
+CONNECTOR_GRANTS_DATABASE_ID = "6b77ad02-bc27-488f-bb97-6325f6750cba"
+CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME = "CONTROL_PLANE_GOOGLE_OAUTH"
+CONTROL_PLANE_GOOGLE_OAUTH_BINDING_TYPE = "service"
+CONTROL_PLANE_GOOGLE_OAUTH_SERVICE = "padiem-google-oauth-state"
+
+# A7 (#3308): private Control Plane Engine-admission Service Binding.  The
+# read-only attestation may report ABSENT while A7 remains deferred, but any
+# PRESENT state must be the exact reviewed service target.
+CONTROL_PLANE_ENGINE_ADMISSION_BINDING_NAME = "CONTROL_PLANE_ENGINE_ADMISSION"
+CONTROL_PLANE_ENGINE_ADMISSION_BINDING_TYPE = "service"
+CONTROL_PLANE_ENGINE_ADMISSION_SERVICE = "padiem-control-plane-engine-admission"
+
+# A6 (#1971 A6-S2B): the two durable byte stores the multimodal and document
+# routes compose. Every reviewed Engine D1 binding resolves to the single
+# provisioned `padiem-engine` database, so this is the same canonical id the
+# Drive contract above asserts. It is deliberately a separate constant so the
+# Drive guard keeps its own frozen contract, and a test pins that the two
+# expectations have not silently diverged. The value is used for internal
+# comparison only and is never emitted.
+A6_ENGINE_DATABASE_ID = "6b77ad02-bc27-488f-bb97-6325f6750cba"
+A6_D1_BINDING_TYPE = "d1"
+ENGINE_IMAGE_STORE_BINDING_NAME = "ENGINE_IMAGE_STORE"
+ENGINE_DOCUMENT_STORE_BINDING_NAME = "ENGINE_DOCUMENT_STORE"
+
+# Shared E9 activation read-only authorities (#3314).  These constants are
+# comparison-only; identifiers/targets are never emitted as raw values.
+ENGINE_CONTINUATION_BINDING_NAME = "ENGINE_CONTINUATION"
+ENGINE_CONTINUATION_BINDING_TYPE = "d1"
+B14_SERVICE_BINDING_NAME = "B14_SERVICE"
+B14_SERVICE_BINDING_TYPE = "service"
+B14_SERVICE_TARGET = "ai-revenue-korean-ai-platform"
+CONTROL_PLANE_IDENTITY_BINDING_NAME = "CONTROL_PLANE_IDENTITY"
+CONTROL_PLANE_IDENTITY_BINDING_TYPE = "service"
+CONTROL_PLANE_IDENTITY_SERVICE = "padiem-control-plane-identity"
+
+# Canonical resolver failure codes published under this guard's established
+# wording. The rules live in ``cloudflare_served_version.py``; only the text is
+# local, because deploy-gate regressions assert these phrases on this output.
+_RESOLVER_REASONS = {
+    ServedVersionReason.ENVELOPE:
+        "deployments payload is not a successful Cloudflare API envelope",
+    ServedVersionReason.RESULT_OBJECT:
+        "ambiguous active deployment: deployments payload has no result object",
+    ServedVersionReason.DEPLOYMENT_RECORDS:
+        "ambiguous active deployment: no deployment records returned",
+    ServedVersionReason.DEPLOYMENT_ENTRY:
+        "ambiguous active deployment: deployment entry is not an object",
+    ServedVersionReason.VERSION_COUNT:
+        "ambiguous active deployment: expected exactly one served version",
+    ServedVersionReason.VERSION_ENTRY:
+        "ambiguous active deployment: served version entry is not an object",
+    ServedVersionReason.TRAFFIC:
+        "ambiguous active deployment: served version traffic split is not 100",
+    ServedVersionReason.VERSION_ID:
+        "active version id is missing or unsafe",
+}
+
+
+class ServedVersionGuardError(RuntimeError):
+    pass
+
+
+def _load(path: str) -> object:
+    try:
+        return json.loads(Path(path).read_text(encoding="utf-8"))
+    except OSError:
+        raise ServedVersionGuardError("payload file could not be read")
+    except json.JSONDecodeError:
+        raise ServedVersionGuardError("payload file is not valid JSON")
+
+
+def _success_result(payload: object, what: str) -> object:
+    if not isinstance(payload, dict) or payload.get("success") is not True:
+        raise ServedVersionGuardError(f"{what} response is not successful")
+    return payload.get("result")
+
+
+def resolve_active(payload: object) -> str:
+    """Return the served version id from a canonical Cloudflare deployments envelope.
+
+    The rules are the shared canonical contract in
+    ``cloudflare_served_version.py``: a successful envelope with an object
+    ``result``, ``result.deployments[0]`` as the actively serving deployment,
+    exactly one version at 100 percent traffic, and a safe ``version_id`` read
+    from the ``version_id`` field only — a bare ``id`` is a version-list/detail
+    field, so a payload from an endpoint other than ``/deployments`` can never
+    resolve as served version. Raw top-level lists, list-shaped ``result``
+    values and the ``result.versions`` shortcut are refused with no ordering
+    guess and no fallback.
+
+    Each canonical reason is published in this guard's own wording. Fails closed
+    on empty, ambiguous, or malformed input. Performs no mutation and reads no
+    binding value.
+    """
+    try:
+        return resolve_served_version_id(payload)
+    except ServedVersionResolutionError as exc:
+        raise ServedVersionGuardError(
+            _RESOLVER_REASONS.get(
+                exc.reason, f"ambiguous active deployment: {exc.reason}"
+            )
+        ) from exc
+
+
+def _binding_entries(bindings: object) -> list[dict]:
+    """Normalize the documented bindings collection (list or name-keyed map).
+
+    A name-keyed map is tolerated only when each entry's own ``name`` (if
+    present) agrees with its key, so normalization can never invent or mask a
+    binding identity.
+    """
+    if isinstance(bindings, list):
+        for raw in bindings:
+            if not isinstance(raw, dict):
+                raise ServedVersionGuardError("served version bindings array is malformed")
+        return list(bindings)
+    if isinstance(bindings, dict):
+        entries: list[dict] = []
+        for name, raw in bindings.items():
+            if not isinstance(raw, dict):
+                raise ServedVersionGuardError(f"served binding {name!r} metadata is malformed")
+            if isinstance(raw.get("name"), str) and raw["name"] != name:
+                raise ServedVersionGuardError(
+                    f"served binding key {name!r} disagrees with its entry name"
+                )
+            entries.append({**raw, "name": name})
+        return entries
+    raise ServedVersionGuardError("served version bindings collection is missing or malformed")
+
+
+def _version_bindings(payload: object, active_version: str) -> list[dict]:
+    """Return the served version bindings, proving version identity first.
+
+    Canonical documented version-detail shape: identity is ``result.id`` and
+    bindings are ``result.resources.bindings``. A settings-plane payload is
+    rejected here, so a settings-only readback can never pass as
+    served-version validation.
+    """
+    result = _success_result(payload, "version detail")
+    if not isinstance(result, dict):
+        raise ServedVersionGuardError("version detail result is malformed")
+
+    identity = result.get("id")
+    if not isinstance(identity, str) or not identity.strip():
+        raise ServedVersionGuardError("served version identity unproven")
+    if not is_safe_version_id(identity):
+        raise ServedVersionGuardError("version id is unsafe")
+    if identity != active_version:
+        raise ServedVersionGuardError("version detail id does not match active version")
+
+    resources = result.get("resources")
+    if not isinstance(resources, dict):
+        raise ServedVersionGuardError("version detail has no resources object")
+    return _binding_entries(resources.get("bindings"))
+
+
+def _classify(bindings: list[dict], name: str) -> str:
+    matches = [b for b in bindings if b.get("name") == name]
+    if len(matches) > 1:
+        raise ServedVersionGuardError(f"duplicate binding name on served version: {name}")
+    if not matches:
+        return "ABSENT"
+    binding_type = matches[0].get("type")
+    if not isinstance(binding_type, str) or not binding_type.strip():
+        raise ServedVersionGuardError(f"binding has no valid type: {name}")
+    return f"PRESENT:{binding_type.strip()}"
+
+
+def _single_binding(bindings: list[dict], name: str) -> dict:
+    matches = [binding for binding in bindings if binding.get("name") == name]
+    if len(matches) > 1:
+        raise ServedVersionGuardError(f"duplicate binding name on served version: {name}")
+    if not matches:
+        raise ServedVersionGuardError(f"required served binding is missing: {name}")
+    return matches[0]
+
+
+def _verify_drive_runtime_bindings(bindings: list[dict]) -> dict[str, str]:
+    """Require the non-secret bindings needed to compose the Drive runtime.
+
+    This checks only binding name/type and the reviewed D1/service identities;
+    no binding value is read or emitted.
+    """
+    grants = _single_binding(bindings, CONNECTOR_GRANTS_BINDING_NAME)
+    if grants.get("type") != CONNECTOR_GRANTS_BINDING_TYPE:
+        raise ServedVersionGuardError(
+            "served connector grants binding type is not d1"
+        )
+    if grants.get("id") != CONNECTOR_GRANTS_DATABASE_ID:
+        raise ServedVersionGuardError(
+            "served connector grants binding database identity drift"
+        )
+
+    oauth = _single_binding(bindings, CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME)
+    if oauth.get("type") != CONTROL_PLANE_GOOGLE_OAUTH_BINDING_TYPE:
+        raise ServedVersionGuardError(
+            "served Google OAuth binding type is not service"
+        )
+    if oauth.get("service") != CONTROL_PLANE_GOOGLE_OAUTH_SERVICE:
+        raise ServedVersionGuardError(
+            "served Google OAuth service target drift"
+        )
+    return {
+        "ENGINE_CONNECTOR_GRANTS_SERVED_BINDING": "PRESENT:d1",
+        "CONTROL_PLANE_GOOGLE_OAUTH_SERVED_BINDING": "PRESENT:service",
+    }
+
+
+def _verify_a6_runtime_bindings(bindings: list[dict]) -> dict[str, str]:
+    """Require the non-secret D1 stores that back the A6 durable byte paths.
+
+    Same fail-closed semantics as the Drive verifier: exact single binding,
+    exact type, exact canonical database identity. Only binding name/type is
+    inspected and only a bounded ``PRESENT:d1`` marker is returned, so no
+    binding value, token, database identifier or version detail is read or
+    emitted.
+    """
+    states: dict[str, str] = {}
+    for binding_name in (
+        ENGINE_IMAGE_STORE_BINDING_NAME,
+        ENGINE_DOCUMENT_STORE_BINDING_NAME,
+    ):
+        binding = _single_binding(bindings, binding_name)
+        if binding.get("type") != A6_D1_BINDING_TYPE:
+            raise ServedVersionGuardError(
+                f"served {binding_name} binding type is not d1"
+            )
+        if binding.get("id") != A6_ENGINE_DATABASE_ID:
+            raise ServedVersionGuardError(
+                f"served {binding_name} binding database identity drift"
+            )
+        states[f"{binding_name}_SERVED_BINDING"] = "PRESENT:d1"
+    return states
+
+
+def _require_shared_engine_service_bindings(bindings: list[dict]) -> dict[str, str]:
+    """Require exact B14 + Control Plane identity service authorities."""
+    expected = (
+        (
+            B14_SERVICE_BINDING_NAME,
+            B14_SERVICE_BINDING_TYPE,
+            B14_SERVICE_TARGET,
+            "B14_SERVICE_SERVED_BINDING",
+        ),
+        (
+            CONTROL_PLANE_IDENTITY_BINDING_NAME,
+            CONTROL_PLANE_IDENTITY_BINDING_TYPE,
+            CONTROL_PLANE_IDENTITY_SERVICE,
+            "CONTROL_PLANE_IDENTITY_SERVED_BINDING",
+        ),
+    )
+    states: dict[str, str] = {}
+    for name, binding_type, service_target, marker in expected:
+        binding = _single_binding(bindings, name)
+        if binding.get("type") != binding_type:
+            raise ServedVersionGuardError(
+                f"served {name} binding type drift"
+            )
+        if binding.get("service") != service_target:
+            raise ServedVersionGuardError(
+                f"served {name} service target drift"
+            )
+        states[marker] = "PRESENT:service"
+    return states
+
+
+def _verify_approval_runtime_bindings(bindings: list[dict]) -> dict[str, str]:
+    """Require the existing durable continuation + shared service authorities."""
+    continuation = _single_binding(bindings, ENGINE_CONTINUATION_BINDING_NAME)
+    if continuation.get("type") != ENGINE_CONTINUATION_BINDING_TYPE:
+        raise ServedVersionGuardError(
+            "served ENGINE_CONTINUATION binding type is not d1"
+        )
+    if continuation.get("id") != A6_ENGINE_DATABASE_ID:
+        raise ServedVersionGuardError(
+            "served ENGINE_CONTINUATION database identity drift"
+        )
+    states = {
+        "ENGINE_CONTINUATION_SERVED_BINDING": "PRESENT:d1",
+    }
+    states.update(_require_shared_engine_service_bindings(bindings))
+    states["APPROVAL_RUNTIME_BINDINGS_VALIDATED"] = "YES"
+    return states
+
+
+def _verify_a6_activation_runtime_bindings(bindings: list[dict]) -> dict[str, str]:
+    """Require image storage plus the shared identity/model service authorities."""
+    image = _single_binding(bindings, ENGINE_IMAGE_STORE_BINDING_NAME)
+    if image.get("type") != A6_D1_BINDING_TYPE:
+        raise ServedVersionGuardError(
+            "served ENGINE_IMAGE_STORE binding type is not d1"
+        )
+    if image.get("id") != A6_ENGINE_DATABASE_ID:
+        raise ServedVersionGuardError(
+            "served ENGINE_IMAGE_STORE database identity drift"
+        )
+    states = {
+        "ENGINE_IMAGE_STORE_SERVED_BINDING": "PRESENT:d1",
+    }
+    states.update(_require_shared_engine_service_bindings(bindings))
+    states["A6_ACTIVATION_RUNTIME_BINDINGS_VALIDATED"] = "YES"
+    return states
+
+
+def _inspect_engine_admission_binding(bindings: list[dict]) -> dict[str, str]:
+    """Report the A7 admission binding without turning absence into activation failure.
+
+    ABSENT is a valid read-only observation while A7 is DEFERRED.  If the
+    binding exists, however, its type and reviewed service target must be exact
+    or the attestation fails closed.
+    """
+    state = _classify(bindings, CONTROL_PLANE_ENGINE_ADMISSION_BINDING_NAME)
+    if state == "ABSENT":
+        return {
+            "CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING": "ABSENT",
+            "ENGINE_ADMISSION_BINDING_TARGET_VALIDATED": "NOT_APPLICABLE",
+        }
+    if state != f"PRESENT:{CONTROL_PLANE_ENGINE_ADMISSION_BINDING_TYPE}":
+        raise ServedVersionGuardError(
+            "served Control Plane Engine admission binding type drift"
+        )
+    binding = _single_binding(bindings, CONTROL_PLANE_ENGINE_ADMISSION_BINDING_NAME)
+    if binding.get("service") != CONTROL_PLANE_ENGINE_ADMISSION_SERVICE:
+        raise ServedVersionGuardError(
+            "served Control Plane Engine admission service target drift"
+        )
+    return {
+        "CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING": "PRESENT:service",
+        "ENGINE_ADMISSION_BINDING_TARGET_VALIDATED": "YES",
+    }
+
+
+def verify_served(
+    payload: object,
+    active_version: str,
+    expect_overlay: bool,
+    require_drive_runtime_bindings: bool = False,
+    require_a6_runtime_bindings: bool = False,
+    inspect_engine_admission_binding: bool = False,
+    require_approval_runtime_bindings: bool = False,
+    require_a6_activation_runtime_bindings: bool = False,
+) -> dict[str, str]:
+    """Return NAME -> state for the registry and overlay secrets on the version.
+
+    Fails closed on: unproven version identity, version id mismatch, duplicate
+    binding names, missing V1, expected overlay missing, and any type drift.
+    """
+    if not is_safe_version_id(active_version):
+        raise ServedVersionGuardError("active version id is unsafe")
+    bindings = _version_bindings(payload, active_version)
+
+    registry = _classify(bindings, REGISTRY_SECRET_NAME)
+    overlay = _classify(bindings, OVERLAY_SECRET_NAME)
+
+    if registry != f"PRESENT:{REQUIRED_BINDING_TYPE}":
+        raise ServedVersionGuardError(
+            f"served version registry binding is not {REQUIRED_BINDING_TYPE}: {registry}"
+        )
+    if overlay not in ("ABSENT", f"PRESENT:{REQUIRED_BINDING_TYPE}"):
+        raise ServedVersionGuardError(
+            f"served version overlay binding is not {REQUIRED_BINDING_TYPE}: {overlay}"
+        )
+    if overlay == "ABSENT" and expect_overlay:
+        raise ServedVersionGuardError("expected overlay binding is missing on served version")
+
+    overlay_state = overlay if overlay != "ABSENT" else "NOT_EXPECTED"
+    states = {
+        "ENGINE_V1_SERVED_BINDING": registry,
+        "ENGINE_OVERLAY_SERVED_BINDING": overlay_state,
+        "B54_ENGINE_OVERLAY_EXPECTED": "YES" if overlay != "ABSENT" else "NO",
+    }
+    if require_drive_runtime_bindings:
+        states.update(_verify_drive_runtime_bindings(bindings))
+        states["DRIVE_RUNTIME_BINDINGS_VALIDATED"] = "YES"
+    if require_a6_runtime_bindings:
+        states.update(_verify_a6_runtime_bindings(bindings))
+        states["A6_STORAGE_BINDINGS_VALIDATED"] = "YES"
+    if inspect_engine_admission_binding:
+        states.update(_inspect_engine_admission_binding(bindings))
+    if require_approval_runtime_bindings:
+        states.update(_verify_approval_runtime_bindings(bindings))
+    if require_a6_activation_runtime_bindings:
+        states.update(_verify_a6_activation_runtime_bindings(bindings))
+    return states
+
+
+def _run_resolve(args: argparse.Namespace) -> int:
+    version_id = resolve_active(_load(args.deployments))
+    print("ENGINE_ACTIVE_VERSION_IDENTIFIED=PASS")
+    print(f"ENGINE_ACTIVE_VERSION_ID={version_id}")
+    print("SETTINGS_PLANE_ONLY_ACCEPTANCE=NO")
+    print("BINDING_NAME_AND_TYPE_ONLY=YES")
+    print("RAW_SECRET_OUTPUT=0")
+    print("PRODUCTION_MUTATION=0")
+    return 0
+
+
+def _run_verify(args: argparse.Namespace) -> int:
+    states = verify_served(
+        _load(args.version_settings),
+        args.active_version,
+        args.expect_overlay,
+        args.require_drive_runtime_bindings,
+        args.require_a6_runtime_bindings,
+        args.inspect_engine_admission_binding,
+        args.require_approval_runtime_bindings,
+        args.require_a6_activation_runtime_bindings,
+    )
+    print("B54_ENGINE_SERVED_VERSION_GUARD=PASS")
+    print(f"ENGINE_SERVED_VERSION_ID={args.active_version}")
+    for key in (
+        "ENGINE_V1_SERVED_BINDING",
+        "ENGINE_OVERLAY_SERVED_BINDING",
+        "B54_ENGINE_OVERLAY_EXPECTED",
+        "ENGINE_CONNECTOR_GRANTS_SERVED_BINDING",
+        "CONTROL_PLANE_GOOGLE_OAUTH_SERVED_BINDING",
+        "DRIVE_RUNTIME_BINDINGS_VALIDATED",
+        "ENGINE_IMAGE_STORE_SERVED_BINDING",
+        "ENGINE_DOCUMENT_STORE_SERVED_BINDING",
+        "A6_STORAGE_BINDINGS_VALIDATED",
+        "CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING",
+        "ENGINE_ADMISSION_BINDING_TARGET_VALIDATED",
+        "ENGINE_CONTINUATION_SERVED_BINDING",
+        "B14_SERVICE_SERVED_BINDING",
+        "CONTROL_PLANE_IDENTITY_SERVED_BINDING",
+        "APPROVAL_RUNTIME_BINDINGS_VALIDATED",
+        "A6_ACTIVATION_RUNTIME_BINDINGS_VALIDATED",
+    ):
+        if key not in states:
+            continue
+        print(f"{key}={states[key]}")
+    print("SERVED_VERSION_SECRET_SET_VALIDATION=YES")
+    print("SETTINGS_PLANE_ONLY_ACCEPTANCE=NO")
+    print("BINDING_NAME_AND_TYPE_ONLY=YES")
+    print("RAW_BINDING_VALUE_OUTPUT=0")
+    print("SECRET_VALUE_OUTPUT=0")
+    print("RAW_SECRET_OUTPUT=0")
+    print("PRODUCTION_MUTATION=0")
+    return 0
+
+
+def _run_validate_version_id(args: argparse.Namespace) -> int:
+    """Prove a caller-supplied version id is safe to name as a rollback target.
+
+    This is the canonical charset contract from the shared resolver, reused
+    rather than re-derived (#2748): the same rule that refuses to resolve an
+    unsafe served id must refuse to hand one to Wrangler.
+    """
+    if not is_safe_version_id(args.version_id):
+        # The rejected value is deliberately NOT echoed. An unsafe id is exactly
+        # the untrusted string this rule exists to keep out of CI logs and
+        # GITHUB_ENV, so printing it would defeat the check.
+        raise ServedVersionGuardError(
+            "version id is missing, empty, or carries an unsafe charset"
+        )
+    print("B54_ENGINE_VERSION_ID_VALIDATION=PASS")
+    print("VERSION_ID_SAFE_CHARSET=YES")
+    print("UNSAFE_VERSION_ID_ECHOED=NO")
+    print("BINDING_NAME_AND_TYPE_ONLY=YES")
+    print("RAW_SECRET_OUTPUT=0")
+    print("PRODUCTION_MUTATION=0")
+    return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(prog="b54_engine_served_version_guard.py")
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    resolve = sub.add_parser("resolve-active", help="extract the served version id")
+    resolve.add_argument("--deployments", required=True, help="deployments GET response JSON file")
+    resolve.set_defaults(handler=_run_resolve)
+
+    verify = sub.add_parser("verify", help="assert registry secrets on the served version")
+    verify.add_argument("--version-settings", required=True, help="version detail GET response JSON file")
+    verify.add_argument("--active-version", required=True, help="expected served version id")
+    verify.add_argument(
+        "--expect-overlay",
+        action="store_true",
+        help="require the overlay secret to be present on the served version",
+    )
+    verify.add_argument(
+        "--require-drive-runtime-bindings",
+        action="store_true",
+        help="require the reviewed D1 and Google OAuth service bindings",
+    )
+    verify.add_argument(
+        "--require-a6-runtime-bindings",
+        action="store_true",
+        help="require the reviewed A6 image and document D1 store bindings",
+    )
+    verify.add_argument(
+        "--inspect-engine-admission-binding",
+        action="store_true",
+        help=(
+            "report the reviewed A7 Control Plane Engine-admission binding; "
+            "absence is reported, while type/target drift fails closed"
+        ),
+    )
+    verify.add_argument(
+        "--require-approval-runtime-bindings",
+        action="store_true",
+        help="require continuation, B14 and Control Plane identity bindings",
+    )
+    verify.add_argument(
+        "--require-a6-activation-runtime-bindings",
+        action="store_true",
+        help="require image store, B14 and Control Plane identity bindings",
+    )
+    verify.set_defaults(handler=_run_verify)
+
+    validate = sub.add_parser(
+        "validate-version-id",
+        help="prove a version id is safe to name as an explicit rollback target",
+    )
+    validate.add_argument("--version-id", required=True, help="candidate version id")
+    validate.set_defaults(handler=_run_validate_version_id)
+
+    args = parser.parse_args(argv)
+    try:
+        return args.handler(args)
+    except ServedVersionGuardError as exc:
+        print("B54_ENGINE_SERVED_VERSION_GUARD=FAIL", file=sys.stderr)
+        print(f"REASON={exc}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

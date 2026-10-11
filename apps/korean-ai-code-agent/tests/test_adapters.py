@@ -33,7 +33,7 @@ class AdapterBoundaryTests(unittest.TestCase):
                 task_id="task_bridge_001",
                 execution_mode=ExecutionMode.CLOUD,
                 source_surface="cli",
-                requested_revision="abc123",
+                requested_revision="abcdef1234567890abcdef1234567890abcdef12",
             )
             rendered = intent.safe_dict()
             self.assertEqual(rendered["repository_ref"], str(root.resolve()))

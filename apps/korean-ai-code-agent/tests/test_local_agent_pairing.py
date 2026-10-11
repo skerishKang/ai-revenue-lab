@@ -49,6 +49,7 @@ def command(binding_ref: str, **kwargs):
         sequence=1,
         issued_at=NOW + timedelta(seconds=3),
         expires_at=NOW + timedelta(minutes=5),
+        revision_ref="revision_1",
     )
     values.update(kwargs)
     return DeviceCommandEnvelope(**values)

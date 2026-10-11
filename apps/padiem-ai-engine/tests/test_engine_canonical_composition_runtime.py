@@ -394,3 +394,109 @@ def test_memory_write_route_serves_from_bound_write_service_in_canonical_entrypo
     assert "private-storage-1" not in json.dumps(payload)
     assert "private-server-ref-1" not in json.dumps(payload)
     assert "remember project baseline" not in json.dumps(payload)
+
+
+class _StreamReadResult:
+    def __init__(self, *, value: bytes | None = None, done: bool = False) -> None:
+        self.value = value
+        self.done = done
+
+
+class _StreamReader:
+    def __init__(self, chunks: list[bytes]) -> None:
+        self._chunks = list(chunks)
+        self._index = 0
+        self.read_calls = 0
+        self.cancel_calls = 0
+        self.release_calls = 0
+
+    async def read(self):
+        self.read_calls += 1
+        if self._index >= len(self._chunks):
+            return _StreamReadResult(done=True)
+        value = self._chunks[self._index]
+        self._index += 1
+        return _StreamReadResult(value=value)
+
+    async def cancel(self):
+        self.cancel_calls += 1
+
+    def releaseLock(self):
+        self.release_calls += 1
+
+
+class _StreamBody:
+    def __init__(self, reader: _StreamReader) -> None:
+        self._reader = reader
+
+    def getReader(self):
+        return self._reader
+
+
+class _StreamRequest:
+    def __init__(self, path: str, chunks: list[bytes]) -> None:
+        self.url = f"https://engine.internal{path}"
+        self.method = "POST"
+        self.headers = {"content-type": "application/json"}
+        self.reader = _StreamReader(chunks)
+        self.body = _StreamBody(self.reader)
+
+
+def test_legacy_worker_rejects_chunked_oversize_during_read(identity_modules) -> None:
+    legacy, _identity = identity_modules
+    from app.service import MAX_REQUEST_BODY_BYTES
+
+    request = _StreamRequest(
+        "/internal/v1/execute",
+        [b"x" * MAX_REQUEST_BODY_BYTES, b"y", b"never-read"],
+    )
+    response = asyncio.run(legacy.Default(ctx=None, env=_identity_env()).fetch(request))
+
+    assert response.status == 413
+    assert _body(response)["error"]["code"] == "request_too_large"
+    assert request.reader.read_calls == 2
+    assert request.reader.cancel_calls == 1
+    assert request.reader.release_calls == 1
+
+
+def test_legacy_memory_route_keeps_32k_ceiling_during_read(identity_modules) -> None:
+    legacy, _identity = identity_modules
+    from app.memory_service import MAX_MEMORY_REQUEST_BODY_BYTES, MEMORY_PATH
+
+    request = _StreamRequest(
+        MEMORY_PATH,
+        [b"x" * MAX_MEMORY_REQUEST_BODY_BYTES, b"y", b"never-read"],
+    )
+    response = asyncio.run(legacy.Default(ctx=None, env=_identity_env()).fetch(request))
+
+    assert response.status == 413
+    assert _body(response)["error"]["code"] == "request_too_large"
+    assert request.reader.read_calls == 2
+    assert request.reader.cancel_calls == 1
+    assert request.reader.release_calls == 1
+
+
+def test_identity_calendar_activation_keeps_4k_vocab_and_cancels(identity_modules) -> None:
+    _legacy, identity = identity_modules
+    from app.calendar_read_activation import CALENDAR_READ_ACTIVATION_PATH
+
+    request = _StreamRequest(
+        CALENDAR_READ_ACTIVATION_PATH,
+        [b"x" * 4096, b"y", b"never-read"],
+    )
+    response = _fetch(identity, _identity_env(), request)
+
+    assert response.status == 400
+    payload = _body(response)
+    assert payload["error"]["code"] == "invalid_request"
+    assert payload["error"]["message"] == "Calendar activation request is too large."
+    assert request.reader.read_calls == 2
+    assert request.reader.cancel_calls == 1
+    assert request.reader.release_calls == 1
+
+
+def test_engine_worker_entrypoints_have_no_full_text_body_read() -> None:
+    for name in ("worker.py", "worker_identity.py"):
+        source = (APP_ROOT / name).read_text(encoding="utf-8")
+        assert "await request.text()" not in source, name
+        assert "read_bounded_worker_request_body" in source, name

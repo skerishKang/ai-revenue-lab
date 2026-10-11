@@ -1,0 +1,26 @@
+# #3580 — WEB-FIRST XLSX owner approve/deny → real Engine Core confirmation
+
+**Date:** 2026-10-11 KST. **Code + synthetic cross-D1 tests only; NOT Production enabled or customer-file E2E.**
+
+## New browser session–scoped decision path
+
+- B62 adds `POST /api/claw/office/web-selections/{selection_ref}/p01-decision` with JSON containing **exactly** `{"decision":"approve"}` or `{"decision":"deny"}`. Browser MUST NOT supply any Engine app/tool/continuation/pause ID/owner/workspace/source SHA, model or ToolInvocation arguments.
+- Rechecks the actual authenticated user and workspace, selection D1 record, private original XLSX metadata and immutable SHA-256, existing recent running conversation-linked Claw run, and the Engine-issued P01 pause receipt (exact owner, selection, run, document, source SHA, continuation, unexpired pause).
+- B62 migration **031** adds a one-shot owner decision dispatch receipt. It reserves the decision **BEFORE** the Engine request, preventing racing clicks, replay and ambiguous network outcome retries. After real Engine acknowledgment it marks **denied** or **confirmed**. Unknown/error outcome remains `dispatching` and cannot be automatically retried or switched to the opposite decision.
+- The dedicated B62 `CloudflareWebXlsxP01EngineClient.resume_owner_decision` uses only the existing authenticated `P01_ENGINE_SERVICE`, POSTs to the constant `/internal/v1/tools/resume`, and receives the Engine's real ToolRuntime result. A genuine 409 `approval_denied` is recognized only for a denial; an approval requires HTTP 200 with the exact canonical confirmation tool, original continuation, and `p01_intent_confirmed=true`, `read_executed=false`, `workcopy_created=false`. No response is allowed to represent XLSX processing.
+- B62 Worker keeps this distinct decision client **OFF unless** `PADIEM_WEB_XLSX_P01_OWNER_DECISION_ENABLED=true` in addition to the existing P01 pause transport requirements. Default returns 503. The existing generic Claw `/api/claw/approvals/decision` is untouched.
+
+## Engine — owner proof and bounded Core grant
+
+- A new **Engine-side independent read-only B62 D1** guard joins owner decision receipt migration 031 with the precise owner-scoped P01 request. It rechecks original owner/workspace/run/selection/document/SHA, Engine pause and continuation, user session-derived `b54_session:<owner>` decision authority, exact deterministic decision/evidence ID, live original D1 source state/TTL, and whether the receipt's **approve/deny** outcome matches the verified first-party Engine submission.
+- The guard is required **for both approval and denial before** the Engine consumes a continuation. Thus even another authorized internal caller cannot self-assert that the user denied an operation. With an **approved** owner decision, Engine grants a temporary `ToolAuthorizationContext.user_confirmed_tools` containing exactly `workspace.xlsx.confirm_original_read` for that original invocation; no Drive WRITE, local PC, models, XLSX workcopy, or file bytes. Core ToolRuntime executes the genuine confirmation handler, which independently rechecks the owner/source D1 a second time after approval.
+- The guard is injected only with actual `WEB_XLSX_PRIVATE_B62_D1`, an enabled Engine durable P01 continuation store, an authenticated first-party Engine decision verifier and explicit Engine `PADIEM_WEB_XLSX_P01_OWNER_DECISION_ENABLED=true`. No generic tool client, capability or legacy P01 approval is widened. All production flags are absent by default.
+
+## Evidence and blocked operations
+
+- Tests use **actual B62 migrations 008/009/014/015/029/030/031 and Engine migration 0009** in SQLite to exercise real two-D1 Core/Engine cross-isolate pause→B62-signed owner receipt→approved Core confirmation/denial and consumed replay. Negative tests: foreign owner, stale run, expired/mutated source SHA, injection of pause/continuation/tool, absent migration/DB binding, concurrent decisions, uncertain Engine request, forged/altered Engine pause/evidence, denied without owner receipt, changed/deleted original, no Server-only grant, double consumption.
+- Test-injected Engine approvals produce only intent confirmation and never XLSX bytes or workcopy. No live customer source, paid model call, Drive WRITE, Production deployment or database migration was executed.
+- **Remaining before true XLSX workflow:** authenticated B62 web UI controls to POST the new decision path and display receipt state; separately SHA256-verified original R2 read and a non-destructive working copy; XLSX edit, PDF and web preview; operational binding/flags/migration rollout with explicit approval.
+- **Failure caveat:** if a Worker crashes or network times out after a one-shot decision reservation, the request remains `dispatching` and needs explicit operational reconciliation, not blind retry. D1 read-after-write consistency of canonical B62 database via the Engine's read-only binding must be independently proven before any Production activation. A Core P01 intent confirmation is **not** a blanket XLSX processing authorization.
+
+**Gates:** `WEB_XLSX_B62_OWNER_DECISION_CODE=YES`; `ENGINE_VERIFIED_OWNER_GRANT_CODE=YES`; `CUSTOMER_XLSX_PROCESSING_E2E=NO`; `PRODUCTION_LIVE=NO`. Keep #3580 OPEN.

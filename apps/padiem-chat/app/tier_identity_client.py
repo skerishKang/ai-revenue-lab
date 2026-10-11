@@ -10,7 +10,7 @@ from .model_policy import (
     ModelPolicyError,
     model_policy_is_executable,
     product_tier_name,
-    resolve_model_policy,
+    resolve_request_model_policy,
 )
 from .task_modes import TaskMode, get_task_mode, task_mode_public_metadata
 
@@ -86,7 +86,7 @@ class PadiemTierB14Client(B14Client):
         additional_system_context: str | None = None,
         attachments: tuple[ImageAttachment, ...] = (),
     ) -> dict[str, Any]:
-        policy = resolve_model_policy(messages, require_executable=False)
+        policy = resolve_request_model_policy(messages, require_executable=False)
         answer = None if attachments else tier_identity_answer(policy.messages, policy.model_id)
         if answer is not None:
             resolved_skill = skill or get_task_mode()
@@ -97,7 +97,7 @@ class PadiemTierB14Client(B14Client):
                 "route": {"mode": "manual", "model": policy.model_id, "provider": None},
                 "skill": task_mode_public_metadata(resolved_skill),
             }
-        if not model_policy_is_executable(policy.model_id):
+        if self.settings.runtime_mode != "mock" and not model_policy_is_executable(policy.model_id):
             raise ChatRuntimeError(422, "tier_unavailable", _TIER_UNAVAILABLE_MESSAGE)
         return await super().complete(
             messages,
@@ -113,13 +113,13 @@ class PadiemTierB14Client(B14Client):
         skill: TaskMode | None = None,
         additional_system_context: str | None = None,
     ) -> AsyncIterator[ChatStreamEvent]:
-        policy = resolve_model_policy(messages, require_executable=False)
+        policy = resolve_request_model_policy(messages, require_executable=False)
         answer = tier_identity_answer(policy.messages, policy.model_id)
         if answer is not None:
             yield ChatStreamEvent(delta_content=answer)
             yield ChatStreamEvent(done=True)
             return
-        if not model_policy_is_executable(policy.model_id):
+        if self.settings.runtime_mode != "mock" and not model_policy_is_executable(policy.model_id):
             raise ChatRuntimeError(422, "tier_unavailable", _TIER_UNAVAILABLE_MESSAGE)
 
         stream = super().stream_text_auto(

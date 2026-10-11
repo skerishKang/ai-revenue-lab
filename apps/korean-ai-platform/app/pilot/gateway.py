@@ -11,7 +11,9 @@ Supports multi-provider registry and legacy single-provider fallback.
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
+import math
 import time
 import uuid
 from typing import Any
@@ -32,6 +34,8 @@ from app.pilot.errors import (
     UpstreamTimeout,
 )
 from app.pilot.redaction import redact_sensitive
+from app.pilot.provider_timeout_diagnostics import log_gateway_deadline
+from app.pilot.b14_timeout_policy import GATEWAY_WALL_SECONDS
 from app.pilot.registry import get_registry
 from app.pilot.routing import (
     PilotConfigurationState,
@@ -57,6 +61,8 @@ from app.pilot import provider as prv
 from app.pilot import router_core as rcore
 from app.pilot import platform as plat
 from app.pilot.routing_policy import B14_AUTO_CHAIN, ROUTING_POLICY_ID
+from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
+from app.pilot.model_registry_file import group_model_ids
 
 # ---------------------------------------------------------------------------
 # Bounded same-route retry for retryable upstream failures (#1982)
@@ -65,21 +71,20 @@ from app.pilot.routing_policy import B14_AUTO_CHAIN, ROUTING_POLICY_ID
 # (Kilo Gateway's own ~10s limit on free models). Direct/manual routes used
 # to attempt once and give up despite the failure being retryable.
 #
-# Budget: the engine's orchestration budget is 60s. The whole B14 attempt
-# chain (initial + retries + backoffs) is capped at 45s wall time via a
-# per-attempt deadline, leaving >=15s of headroom for engine overhead.
-#   worst typical case: 3 attempts x ~10s (Kilo 504) + 0.5s + 1.0s backoff
-#                     = ~31.5s <= 45s
-#   pathological case : each attempt is hard-capped at the remaining budget
-#                     by asyncio.timeout, so total <= 45s by construction.
+# The 45s budget limits *additional* retry/fallback dispatches, not the
+# initial model inference. For both manual and auto routes the initial
+# attempt is governed by model idle detection and caller cancellation.
+# After it completes, additional physical requests are allowed only when
+# the shared retry window has remaining budget. The old 60s Engine ceiling
+# is an independent caller contract, not a B14 model-generation deadline.
 # ---------------------------------------------------------------------------
 _UPSTREAM_RETRY_MAX_RETRIES = 2
 _UPSTREAM_RETRY_BACKOFF_SECONDS = (0.5, 1.0)
-_UPSTREAM_RETRY_BUDGET_SECONDS = 45.0
-# Retryable transport classes retried on the SAME route once no fallback
-# candidate remains. Hourly-quota 429s are excluded (Kilo free is an hourly
-# quota); the SenseNova transient-busy 429 (#2003) IS included — it is
-# capacity pressure with UpstreamTimeout-equivalent semantics.
+_UPSTREAM_RETRY_BUDGET_SECONDS = GATEWAY_WALL_SECONDS
+# Retryable transport classes may be retried on a SAME route for explicit
+# manual routes. The owner-designated auto chain has a total upstream-attempt
+# budget equal to ``decision.max_attempts``: each chain candidate gets at most
+# one call so that Agnes -> Poolside remains a two-call maximum.
 _SAME_ROUTE_RETRYABLE_CODES = frozenset({
     "upstream_timeout",
     "upstream_server_error",
@@ -91,6 +96,32 @@ logger = logging.getLogger("korean-ai-platform.pilot")
 router = Router()
 
 _INVALID_REGISTRY_MESSAGE = "Provider registry 설정이 올바르지 않습니다."
+_INTERNAL_ERROR_MESSAGE = "요청을 처리하는 중 내부 오류가 발생했습니다. Request ID로 관리자에게 문의하십시오."
+
+
+async def _read_json_body(request: Request) -> Any:
+    """Read JSON through the ASGI body boundary, not Request.json().
+
+    Cloudflare's Python Workers bridge can expose a request object whose
+    convenience ``json()`` path differs from Starlette's CPython behavior.
+    Reading bytes explicitly keeps the production and local paths aligned.
+    """
+    raw = await request.body()
+    try:
+        return json.loads(raw)
+    except (TypeError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise _InvalidBody("Request body must be valid JSON") from exc
+
+
+def _log_unexpected_error(event: str, request_id: str, exc: Exception) -> None:
+    message = redact_sensitive(str(exc))[:240]
+    logger.error(
+        "%s request_id=%s exception_type=%s exception_message=%s",
+        event,
+        request_id,
+        type(exc).__name__,
+        message,
+    )
 
 
 # Allowed fields for PilotChatRequest (dataclass field names)
@@ -98,12 +129,14 @@ _VALID_ROLES = frozenset({"system", "user", "assistant"})
 _ALLOWED_CHAT_FIELDS = frozenset({
     "model", "messages", "temperature", "max_tokens", "stream", "tools",
     "business14",
+    "reasoning_effort", "top_p", "top_k", "min_p",
+    "presence_penalty", "repetition_penalty",
 })
 _ALLOWED_MESSAGE_FIELDS = frozenset({"role", "content"})
 _ALLOWED_B14_FIELDS = frozenset({
     "task_type", "required_capabilities", "optimize_for",
     "allow_external_fallback", "provider_order", "max_attempts",
-    "allow_paid",
+    "max_retries", "allow_paid",
 })
 _B14_OPTIMIZE_FOR = frozenset({"balanced", "cost", "latency", "korean"})
 _B14_TASK_TYPES = frozenset({"general", "korean", "coding", "document", "batch"})
@@ -212,16 +245,17 @@ def _validate_body(raw: Any) -> dict:
         if isinstance(temp, bool) or not isinstance(temp, (int, float)):
             raise _InvalidBody("temperature must be a number or null")
         temp = float(temp)
-        if temp < 0.0 or temp > 2.0:
+        if not math.isfinite(temp) or temp < 0.0 or temp > 2.0:
             raise _InvalidBody("temperature must be between 0.0 and 2.0")
 
-    # max_tokens
+    # max_tokens. None is meaningful: preserve omission so a product may either
+    # request an explicit bounded budget or defer to the provider/model default.
     mt = raw.get("max_tokens")
     if mt is not None:
         if isinstance(mt, bool) or not isinstance(mt, int):
             raise _InvalidBody("max_tokens must be an integer or null")
-        if mt < 1 or mt > 4096:
-            raise _InvalidBody("max_tokens must be between 1 and 4096")
+        if mt < 1 or mt > 2147483647:
+            raise _InvalidBody("max_tokens must be a positive 32-bit integer (provider model limit applies)")
 
     # stream
     st = raw.get("stream")
@@ -237,11 +271,24 @@ def _validate_body(raw: Any) -> dict:
             raise _InvalidBody("tools must be an array or null")
         raise ToolsNotSupported()
 
+    # Model-native overrides are opt-in. Reject unsupported vendor fields
+    # instead of silently dropping or guessing an original-model default.
+    from .model_native_parameters import (
+        OPTIONAL_FIELDS, UnsupportedModelParameter, validate_native_parameters,
+    )
+    try:
+        native_options = validate_native_parameters(
+            model, {key: raw[key] for key in OPTIONAL_FIELDS if key in raw}
+        )
+    except UnsupportedModelParameter as exc:
+        raise _InvalidBody(str(exc)) from exc
+
     return {
         "model": model,
         "messages": validated_messages,
-        "temperature": float(temp) if temp is not None else 0.2,
-        "max_tokens": int(mt) if mt is not None else 300,
+        "temperature": float(temp) if temp is not None else None,
+        "max_tokens": int(mt) if mt is not None else None,
+        "model_parameters": native_options,
         "business14": _validate_b14_options(raw.get("business14")),
     }
 
@@ -296,6 +343,20 @@ def _validate_b14_options(raw: Any) -> dict:
             raise _InvalidBody("business14.max_attempts must be an integer between 1 and 5")
         opts["max_attempts"] = ma
 
+    mr = raw.get("max_retries")
+    if mr is not None:
+        if (
+            isinstance(mr, bool)
+            or not isinstance(mr, int)
+            or mr < 0
+            or mr > _UPSTREAM_RETRY_MAX_RETRIES
+        ):
+            raise _InvalidBody(
+                "business14.max_retries must be an integer between 0 and "
+                f"{_UPSTREAM_RETRY_MAX_RETRIES}"
+            )
+        opts["max_retries"] = mr
+
     ap = raw.get("allow_paid")
     if ap is not None:
         if not isinstance(ap, bool):
@@ -336,52 +397,41 @@ def _registered_route_dicts() -> list[dict]:
     for model in sorted(CATALOG_BY_ID.values(), key=lambda m: m.model_id):
         is_public = model.model_id in public_ids
         is_free = is_evidenced_free(model)
+        owner_excluded = excluded_from_owner_customer_selection(model.model_id)
         entries.append({
             "id": model.model_id,
             "provider_id": model.platform_provider_id,
             "upstream_model": model.upstream_model,
+            "capabilities": sorted(model.capabilities),
             "free": is_free,
             "public": is_public,
             "explicit_only": not is_public,
-            "auto_eligible": is_public and is_free,
+            # Preserve registry provenance but never present owner-excluded
+            # models as auto-eligible for B66 or another product consumer.
+            "owner_excluded": owner_excluded,
+            "auto_eligible": is_public and is_free and not owner_excluded,
         })
     return entries
 
 
 def _catalog_summary_dicts() -> list[dict]:
-    """Return catalog models as display dicts with extra Alpha fields."""
-    result = []
-    for m in list_catalog_summaries():
-        model = get_catalog_by_id(m["model_id"])
-        result.append({
-            "id": m["model_id"],
-            "name": m["name"],
-            "provider_id": model.platform_provider_id if model else "unknown",
-            "provider_name": m["provider"],
-            "pilot_available": True,
+    """All approved exact models from B14 JSON, with no synthetic auto option."""
+    return [
+        {
+            "id": m.model_id,
+            "name": m.display_name,
+            "provider_id": m.platform_provider_id,
+            "provider_name": m.provider,
+            "pilot_available": m.enabled,
             "input_krw_per_1k": None,
             "output_krw_per_1k": None,
-            "tags": ["alpha"] + list(m["capabilities"]),
-            "input_price_usd_per_1m": m["input_price_usd_per_1m"],
-            "output_price_usd_per_1m": m["output_price_usd_per_1m"],
-            "korean_score": m["korean_score"],
-            "context_window": m["context_window"],
-        })
-    result.insert(0, {
-        "id": "b14/auto",
-        "name": "Business 14 자동 선택",
-        "provider_id": "b14",
-        "provider_name": "B14 Router",
-        "pilot_available": True,
-        "input_krw_per_1k": None,
-        "output_krw_per_1k": None,
-        "tags": ["alpha", "auto"],
-        "input_price_usd_per_1m": 0,
-        "output_price_usd_per_1m": 0,
-        "korean_score": 0,
-        "context_window": 0,
-    })
-    return result
+            "tags": sorted(m.capabilities),
+            "input_price_usd_per_1m": m.input_price_usd_per_1m,
+            "output_price_usd_per_1m": m.output_price_usd_per_1m,
+            "context_window": m.context_window,
+        }
+        for m in sorted(CATALOG_BY_ID.values(), key=lambda m: m.model_id) if m.enabled
+    ]
 
 
 @router.route("/health", methods=["GET"])
@@ -467,6 +517,7 @@ async def pilot_models(request: Request):
             "mode": "multi-provider",
             "catalog": _catalog_summary_dicts(),
             "registered_routes": _registered_route_dicts(),
+            "model_groups": group_model_ids(),
         })
 
     if state == PilotConfigurationState.INVALID_REGISTRY:
@@ -492,6 +543,7 @@ async def pilot_models(request: Request):
             "mode": "single-provider",
             "catalog": _catalog_summary_dicts(),
             "registered_routes": _registered_route_dicts(),
+            "model_groups": group_model_ids(),
         })
 
     return JSONResponse({
@@ -499,6 +551,7 @@ async def pilot_models(request: Request):
         "configured": False,
         "catalog": _catalog_summary_dicts(),
         "registered_routes": _registered_route_dicts(),
+            "model_groups": group_model_ids(),
     })
 
 
@@ -516,7 +569,7 @@ async def pilot_router_resolve(
 
     try:
         x_business14_provider_key = request.headers.get("x-business14-provider-key")
-        raw_body = await request.json()
+        raw_body = await _read_json_body(request)
         body = _validate_body(raw_body)
 
         model_id = body["model"]
@@ -581,17 +634,14 @@ async def pilot_router_resolve(
                 }
             },
         )
-    except Exception:
-        logger.error(
-            "pilot_resolve_unexpected_error request_id=%s",
-            request_id,
-        )
+    except Exception as exc:
+        _log_unexpected_error("pilot_resolve_unexpected_error", request_id, exc)
         return JSONResponse(
             status_code=500,
             content={
                 "error": {
                     "code": "internal_error",
-                    "message": "요청을 처리하는 중 내부 오류가 발생했습니다. Request ID로 관리자에게 문의하십시오.",
+                    "message": _INTERNAL_ERROR_MESSAGE,
                     "request_id": request_id,
                 }
             },
@@ -713,6 +763,13 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
     ] if decision.fallback_allowed else []
 
     max_attempts = decision.max_attempts
+    # #3221/#3212 capability-proof control: preserve the normal #1982
+    # same-route retry default, but allow a bounded caller to explicitly lower
+    # the retry ceiling (including zero). This does not widen the maximum and
+    # does not affect auto-chain fallback semantics.
+    same_route_retry_limit = b14_opts.get(
+        "max_retries", _UPSTREAM_RETRY_MAX_RETRIES
+    )
 
     start_time = time.monotonic()
     deadline = start_time + _UPSTREAM_RETRY_BUDGET_SECONDS
@@ -743,6 +800,8 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                 messages=body["messages"],
                 temperature=body.get("temperature"),
                 max_tokens=body.get("max_tokens"),
+                **({"model_parameters": body["model_parameters"]}
+                   if body.get("model_parameters") else {}),
             )
         raise InvalidRequest(
             "non-platform route is not routable (OpenRouter retired, #1933 S2)"
@@ -775,11 +834,18 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                 break
 
             attempt_count += 1
+            # The first physical model attempt (manual OR auto) has no
+            # arbitrary 45s wall cap. Later attempts retain retry budget.
+            attempt_timeout = None if attempt_count == 1 else remaining
             try:
-                async with asyncio.timeout(remaining):
+                async with asyncio.timeout(attempt_timeout):
                     response_data = await _invoke_upstream(current)
             except TimeoutError as exc:
                 # asyncio.timeout hard ceiling fired (adapter timeout did not).
+                # Fixed allowlisted metadata only; never log content or credentials.
+                log_gateway_deadline(
+                    logger, current.get("platform_provider_id") or decision.platform_provider_id,
+                )
                 timeout_error = UpstreamTimeout()
                 timeout_error.__cause__ = exc
                 error: PilotError = timeout_error
@@ -844,13 +910,17 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                 "actual_response_model": None,
             })
 
-            # Same-route bounded retry for retryable transport failures
-            # (#1982). Non-retryable classes (auth, bad request) never reach
-            # a retry: they are not in _SAME_ROUTE_RETRYABLE_CODES and the
+            # Same-route bounded retry for explicit manual routes (#1982).
+            # fixed_chain_v1 treats max_attempts as the total upstream call
+            # budget, so auto candidates advance without a same-route retry.
+            # Non-retryable classes (auth, bad request) never reach a retry:
+            # they are not in _SAME_ROUTE_RETRYABLE_CODES and the
             # fallback-prohibited check below breaks on the first attempt.
             if (
+                decision.route_mode != "auto"
+                and
                 error.code in _SAME_ROUTE_RETRYABLE_CODES
-                and retry_index < _UPSTREAM_RETRY_MAX_RETRIES
+                and retry_index < same_route_retry_limit
             ):
                 backoff = _UPSTREAM_RETRY_BACKOFF_SECONDS[
                     min(retry_index, len(_UPSTREAM_RETRY_BACKOFF_SECONDS) - 1)
@@ -1010,7 +1080,7 @@ async def pilot_chat_completions(
 
     try:
         x_business14_provider_key = request.headers.get("x-business14-provider-key")
-        raw_body = await request.json()
+        raw_body = await _read_json_body(request)
 
         body = _validate_body(raw_body)
 
@@ -1101,17 +1171,13 @@ async def pilot_chat_completions(
             },
         )
     except Exception as e:
-        logger.error(
-            "pilot_unexpected_error request_id=%s error=%s",
-            request_id,
-            redact_sensitive(str(e)),
-        )
+        _log_unexpected_error("pilot_unexpected_error", request_id, e)
         return JSONResponse(
             status_code=500,
             content={
                 "error": {
                     "code": "internal_error",
-                    "message": "요청을 처리하는 중 내부 오류가 발생했습니다. Request ID로 관리자에게 문의하십시오.",
+                    "message": _INTERNAL_ERROR_MESSAGE,
                     "request_id": request_id,
                 }
             },

@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import unittest
 from unittest import mock
+from p01_test_model_route import SyntheticPlusRouteMixin
 import urllib.error
 
 from padiem_ai_engine_client import EngineTransportResponse
@@ -313,7 +314,7 @@ class UrllibEngineTransportTests(unittest.TestCase):
         self.assertEqual(sent["user-agent"], "custom-agent/9")
 
 
-class P01CliRunFlowTests(unittest.TestCase):
+class P01CliRunFlowTests(SyntheticPlusRouteMixin, unittest.TestCase):
     def test_cli_p01_run_fails_closed_without_configuration(self) -> None:
         stdout, stderr = io.StringIO(), io.StringIO()
         with mock.patch.dict(os.environ, {}, clear=True):

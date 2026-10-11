@@ -1,0 +1,121 @@
+name: B54 Claw run-history D1 014/015 read-only audit
+
+# No production apply, deploy, mutation or provider-call path.
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-claw-history-014-015-readonly.yml"
+      - ".github/scripts/b54_claw_history_schema_014_015.py"
+      - ".github/tests/test_b54_claw_history_schema_014_015.py"
+      - "apps/padiem-chat/migrations/014_claw_run_history_conversation.sql"
+      - "apps/padiem-chat/migrations/015_claw_run_history_workspace.sql"
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: "Exact current main SHA (read-only)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-claw-history-readonly-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.target_sha || github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Replay real 009 014 015 migrations in isolated memory
+        run: python .github/tests/test_b54_claw_history_schema_014_015.py -v
+      - name: Source-only safe receipt
+        run: |
+          echo "MIGRATION_ORDER=009_THEN_014_THEN_015"
+          echo "DATABASE_TEST_TARGET=SQLITE_IN_MEMORY"
+          echo "PRODUCTION_MUTATION=0"
+          echo "PROVIDER_POST_COUNT=0"
+
+  production-readonly:
+    needs: offline-source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      TARGET_SHA: ${{ inputs.target_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Verify exact current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'READONLY_EXACT_MAIN_SHA=PASS'
+      - name: Derive live PADIEM_CHAT_DB from Worker settings
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          settings="${RUNNER_TEMP}/claw-history-worker-settings.json"
+          curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-chat/settings" -o "${settings}"
+          DB_ID="$(python - "${settings}" <<'PY'
+          import json,re,sys
+          doc=json.load(open(sys.argv[1],encoding='utf-8'))
+          if doc.get("success") is not True: raise SystemExit("worker settings GET failed")
+          items=doc.get("result",{}).get("bindings",[])
+          hits=[b for b in items if b.get("type")=="d1" and b.get("name")=="PADIEM_CHAT_DB"]
+          if len(hits)!=1: raise SystemExit("missing or ambiguous trusted D1 binding")
+          db=hits[0].get("id")
+          if not isinstance(db,str) or not re.fullmatch(r"[a-fA-F0-9-]{32,36}",db):
+              raise SystemExit("invalid D1 binding")
+          print(db)
+          PY
+          )"
+          test -n "${DB_ID}"
+          echo "::add-mask::${DB_ID}"
+          echo "DB_ID=${DB_ID}" >> "${GITHUB_ENV}"
+          echo 'LIVE_PADIEM_CHAT_DB_DERIVED=PASS'
+          echo 'D1_IDENTIFIER_OUTPUT=0'
+      - name: Read schema metadata only
+        shell: bash
+        run: |
+          set -euo pipefail
+          query="${RUNNER_TEMP}/claw-history-014-015-query.json"
+          python - "${query}" <<'PY'
+          import json,sys
+          sql=("SELECT name,type,sql FROM sqlite_master "
+               "WHERE name IN ('claw_run_history','idx_claw_run_history_user_created') ORDER BY name;"
+               "PRAGMA table_info(claw_run_history);"
+               "PRAGMA index_info(idx_claw_run_history_user_created);")
+          with open(sys.argv[1],"w",encoding="utf-8") as f: json.dump({"sql":sql},f)
+          PY
+          result="${RUNNER_TEMP}/claw-history-schema-response.json"
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${query}" -o "${result}"
+          python .github/scripts/b54_claw_history_schema_014_015.py "${result}"
+          echo "PROVIDER_POST_COUNT=0"
+          echo "ROW_DATA_READ=0"
+          echo "PRODUCTION_MUTATION=0"

@@ -1,13 +1,19 @@
+<!-- B14_OWNER_ROLE_SOURCE_OF_TRUTH_20261010 -->
+> **B14 역할 최신 원칙(2026-10-10):** [원제작사 모델·서빙 제공업체·변형 모델의 공식 사양 및 B14 실행 권한](B14_MODEL_PROVIDER_EXECUTION_AUTHORITY_2026-10-10.md)을 우선 확인합니다. **B14는 정확히 사용자가 선택한 모델을 해당 업체의 공식 API로 실행**하며, temperature/토큰/리즈닝을 임의 지정하거나 옵션을 조용히 바꾸지 않습니다. 원본 모델의 공식 사양과 실제 API 제공업체의 계약은 별도 증빙합니다. 과거 코드·평가 수치는 이 원칙의 구현 증명이 아닙니다.
+<!-- /B14_OWNER_ROLE_SOURCE_OF_TRUTH_20261010 -->
+
 # Padiem AI Capability Ownership Registry v1
 
 ```text
 DOC_STATUS = CANONICAL_CAPABILITY_OWNERSHIP
 OWNER = Padiem platform architecture
 SCOPE = stable ownership of reusable AI capabilities
-LAST_VERIFIED = 2026-09-08
+LAST_VERIFIED = 2026-09-15
 ```
 
 This registry answers **who owns a capability**. It is intentionally not a live dashboard for deployment, Provider readiness, exact route IDs, open PRs or Production activation.
+
+Shared-runtime boundary detail for the P01/B62-era Engine caller paths is locked in `docs/architecture/P01_B62_SHARED_RUNTIME_BOUNDARY_LOCK_2409.md` (#2409 Wave 0) and is summarized under "Contract vs enforcement vs repo-ops" below.
 
 ## Canonical ownership rule
 
@@ -45,8 +51,8 @@ If two layers appear to own the same generic policy, implementation stops until 
 | IP-SIDECAR | reusable embedded shell lifecycle, browser-safe bootstrap, host-context envelope, public-safe event projection, host adapter integration contract | product domain meaning, Core semantics, Engine service identity/transport, B14 routing/credentials |
 | IP-ENGINE | trusted cross-runtime service/API projection of accepted Core semantics | competing Core policy engine, product UX, Provider routing |
 | IP-CORE | reusable execution, grounding, permission, retrieval/memory, Evidence, Tool, Skill, Agent and orchestration semantics | product-domain schema/UI, Provider catalog/credentials |
-| B14 Korean AI Platform | Provider/model registry, inference credentials, executable route validation/selection, Provider adapters and actual execution | product memory/domain state, Control Plane identity truth |
-| IP-CONTROL | canonical identity/subject/tenant, entitlement, usage/credits/subscription/audit and neutral cross-product declarations | Provider/model execution, product conversation state |
+| B14 Korean AI Platform | Provider/model registry, inference credentials, verification of user-selected exact route, official serving-provider parameter fidelity, Provider adapters and actual execution | product memory/domain state, Control Plane identity truth |
+| IP-CONTROL | canonical identity/subject/tenant, entitlement, usage/credits/subscription/audit and neutral cross-product declarations | Provider/model execution, product conversation state, Cloudflare Worker secret/version/deployment/rollback machinery |
 
 ## IP-CORE capability families
 
@@ -66,7 +72,7 @@ Products may provide bounded domain adapters and presentation but must not fork 
 
 ## IP-ENGINE ownership
 
-IP-ENGINE owns cross-runtime projection: trusted caller identity, Service Binding/API transport, execute/stream/orchestration projection, wire normalization, capability manifests and truthful health reporting.
+IP-ENGINE owns cross-runtime projection: trusted caller identity, Service Binding/API transport, execute/stream/orchestration projection, wire normalization, capability manifests and truthful health reporting. Concrete caller-registry enforcement and Cloudflare transport normalization are Engine runtime authority, not Core content; their platform-independent shapes are Core contracts (see the #2409 lock below).
 
 It does not select Providers/models and does not own browser/product UX.
 
@@ -76,7 +82,7 @@ B14 owns Provider/model execution authority:
 
 - Provider/model catalog and registry;
 - inference credentials and trusted binding references;
-- executable route validation/selection;
+- executable user-selected exact route validation; generic Auto selection requires a separate Owner-approved policy and is currently deferred;
 - Provider adapters/upstream transport;
 - completed/streaming/multimodal model execution;
 - route metadata and execution-level retry/fallback policy where explicitly enabled.
@@ -84,9 +90,10 @@ B14 owns Provider/model execution authority:
 Current Padiem product declarations are explicit:
 
 ```text
-Padiem Plus = Laguna
-Padiem Pro  = Nemotron
-Padiem Max  = HOLD
+B14_REGISTERED_MODELS = EXACT_CANONICAL_JSON_ONLY
+PADIEM_PLUS_PRO_MAX_MODEL_GROUPS = EMPTY_IN_CURRENT_B14_REGISTRY
+USER_MODEL_CHOICE = EXACT_ALLOWED_ID
+OWNER_RETIRED_NEMOTRON = NOT_EXECUTABLE
 USER_VISIBLE_AUTO = NO
 SILENT_FALLBACK = NO
 ```
@@ -97,11 +104,36 @@ Exact IDs and executability are volatile and must be checked against current Con
 
 IP-CONTROL owns neutral cross-product authority such as canonical subject/tenant, entitlement/subscription/credit, usage and audit contracts plus accepted shared declarations. It is not a second Provider router.
 
+It is also **not** the owner of generic Cloudflare Worker deployment/runtime machinery. Cross-product operational machinery (secret lifecycle, version activation, binding preservation/readback, deployment rollback) belongs to the repository operations layer under `.github` with parameterized shared helpers and product/Engine-specific thin wrappers. `NEW_PYTHON_PACKAGE_FOR_DEPLOYMENT_RUNTIME = NO` at this stage.
+
+## Contract vs enforcement vs repo-ops (#2409 Wave 0 lock)
+
+The P01/B62-shared Engine caller surface is split by responsibility shape, not by historical lane number:
+
+```text
+CONTRACT      platform-independent P01 wire contract, caller identity data
+              model, credential-shape policy, fail-closed policy
+              -> IP-CORE
+
+ENFORCEMENT   concrete trusted caller enforcement, caller registry,
+              Service Binding transport normalization
+              -> IP-ENGINE
+
+COMPOSITION   product binding names (P01_ENGINE_SERVICE / P01_ENGINE_CALLER_ID /
+              P01_ENGINE_CREDENTIAL) and the Worker composition adapter
+              -> Product (B62 apps/padiem-chat)
+
+DEPLOY_OPS    Worker secret/version/deployment/rollback machinery
+              -> REPOSITORY OPERATIONS LAYER (.github)
+```
+
+Boundary authority and the incident-near `DO_NOT_MOVE_YET` list are recorded in `docs/architecture/P01_B62_SHARED_RUNTIME_BOUNDARY_LOCK_2409.md`.
+
 ## Product ownership locks
 
 ### B62 · Padiem Chat
 
-Owns chat UX, conversations/history, Projects, attachments, Saved Outputs, TaskModes/profile presentation and product context adapters. Generic Tool/Skill/Agent/Memory/Evidence semantics and Provider routing remain outside B62.
+Owns chat UX, conversations/history, Projects, attachments, Saved Outputs, TaskModes/profile presentation and product context adapters, including the P01/Engine Worker binding names and the product composition adapter. Generic Tool/Skill/Agent/Memory/Evidence semantics and Provider routing remain outside B62.
 
 ### B54 · Padiem Claw
 
@@ -142,6 +174,20 @@ PATH = docs/architecture/PADIEM_AI_CAPABILITY_OWNERSHIP_REGISTRY_v1.md
 ```
 
 `docs/history/2026-09-01/PADIEM_AI_CAPABILITY_OWNERSHIP_REGISTRY_v1.audit.md` is the stable historical pointer to that revision. The old point-in-time status inventory does not override this canonical ownership registry.
+
+## Ownership does not pin implementation forever
+
+This registry defines **who owns the product capability and policy**, not which library/provider must implement it forever.
+
+```text
+STABLE_CAPABILITY_OWNER
+!=
+PERMANENT_IMPLEMENTATION_VENDOR
+```
+
+Commodity technology should sit behind the owning layer's stable contract so a better OSS/commercial implementation can be introduced, benchmarked, selected as primary, or rolled back without moving product authority.
+
+Replacing a PDF/OCR/sandbox/vector/browser implementation does not create a second product authority when the canonical Padiem contract remains authoritative.
 
 ## Readiness rule
 

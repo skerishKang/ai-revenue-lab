@@ -12,8 +12,37 @@ import httpx
 from .contracts import UsageMetadata
 
 B14_CHAT_COMPLETIONS_PATH = "/api/pilot/v1/chat/completions"
-MAX_B14_RESPONSE_BYTES = 1_048_576
-MAX_CONFIGURED_B14_RESPONSE_BYTES = 8 * 1_048_576
+
+# ── B14 output-limit authorities (#3553) ─────────────────────────────────────
+# Three different authorities must never be merged into one number:
+#
+#   PRODUCT_REQUESTED_LIMIT
+#       What a product/feature actually asks for as an output budget.
+#       The explicit-request compatibility ceiling below is a LEGACY B14
+#       PILOT VALIDATION VALUE, not model-capability truth:
+#       origin commit d8714ad4 (2026-07-25, #142) validated explicit
+#       max_tokens as 1..4096 in gateway.py/schemas.py; the shared Core
+#       contract later copied the same range (1d6e1b7f, 2026-08-26).
+#       GLOBAL_4096_ORIGIN=EARLY_B14_PILOT_VALIDATION
+#       GLOBAL_4096_IS_PROVIDER_MODEL_MAX=NO
+#   RUNTIME_HARD_SAFETY_CEILING
+#       B14's own resource-abuse guards, independent of max_tokens:
+#       response byte cap (MAX_B14_RESPONSE_BYTES / configurable up to
+#       MAX_CONFIGURED_B14_RESPONSE_BYTES) and request timeout bounds
+#       (B14ExecutionConfig.timeout_seconds, 1..3600s). Model-read policy now 600s.
+#   PROVIDER_MODEL_MAX_OUTPUT
+#       What the selected provider/model can technically produce.
+#       Capability metadata only (see padiem_ai_core.b14_output_limits).
+#       It must never become the global request validator and must never
+#       be fabricated when unknown.
+#
+# AUTOMATIC_MAX_OUTPUT_WIDENING=NO: raising PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING
+# is a deliberate product decision with targeted tests and byte/time safeguards,
+# never an automatic copy of a provider maximum.
+PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING = 4096
+
+MAX_B14_RESPONSE_BYTES = 1_048_576  # RUNTIME_HARD_SAFETY_CEILING (response bytes)
+MAX_CONFIGURED_B14_RESPONSE_BYTES = 8 * 1_048_576  # RUNTIME_HARD_SAFETY_CEILING (configured cap)
 MAX_B14_MESSAGES = 100
 MAX_B14_MESSAGE_CHARS = 32_000
 MAX_B14_MODEL_CHARS = 200
@@ -21,6 +50,14 @@ MAX_B14_MODEL_CHARS = 200
 _TASK_TYPES = frozenset({"general", "korean", "coding", "document", "batch"})
 _OPTIMIZE_FOR = frozenset({"balanced", "cost", "latency", "korean"})
 _MESSAGE_ROLES = frozenset({"system", "user", "assistant"})
+# B14's own enumerated rate-limit classes (apps/korean-ai-platform app/pilot/errors.py).
+# The 429 body is provider-controlled text, so only these exact values may reach the
+# diagnostic channel; anything else degrades to None instead of carrying a payload string.
+_B14_RATE_LIMIT_DIAGNOSTIC_CODES = frozenset({
+    "upstream_rate_limited",
+    "upstream_rate_limited_busy",
+    "kilo_free_rate_limited",
+})
 
 
 def _normalize_base_url(value: str) -> str:
@@ -146,10 +183,28 @@ def _safe_reason_codes(value: Any) -> tuple[str, ...]:
     return tuple(result)
 
 
+def _b14_rate_limit_diagnostic(raw: bytes) -> str | None:
+    # The status alone cannot tell a provider free-tier exhaustion from a transient
+    # capacity 429, and B14 already answers with one of its enumerated codes.
+    try:
+        data = json.loads(bytes(raw).decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    if not isinstance(data, Mapping):
+        return None
+    error = data.get("error")
+    if not isinstance(error, Mapping):
+        return None
+    code = error.get("code")
+    return code if isinstance(code, str) and code in _B14_RATE_LIMIT_DIAGNOSTIC_CODES else None
+
+
 @dataclass(frozen=True, slots=True)
 class B14ExecutionConfig:
     base_url: str
-    timeout_seconds: float = 20.0
+    # RUNTIME_HARD_SAFETY_CEILING: duration guard, independent of max_tokens (#3553).
+    timeout_seconds: float = 600.0  # model-response idle budget; no 45s global cap
+    # RUNTIME_HARD_SAFETY_CEILING: response byte guard, independent of max_tokens.
     max_response_bytes: int = MAX_B14_RESPONSE_BYTES
 
     def __post_init__(self) -> None:
@@ -158,9 +213,9 @@ class B14ExecutionConfig:
             isinstance(self.timeout_seconds, bool)
             or not isinstance(self.timeout_seconds, (int, float))
             or not math.isfinite(float(self.timeout_seconds))
-            or not 1 <= float(self.timeout_seconds) <= 60
+            or not 1 <= float(self.timeout_seconds) <= 3600
         ):
-            raise ValueError("timeout_seconds must be between 1 and 60")
+            raise ValueError("timeout_seconds must be between 1 and 3600")
         object.__setattr__(self, "timeout_seconds", float(self.timeout_seconds))
         if (
             isinstance(self.max_response_bytes, bool)
@@ -191,6 +246,11 @@ class B14RoutingOptions:
     allow_external_fallback: bool | None = None
     provider_order: tuple[str, ...] | None = None
     max_attempts: int | None = None
+    # B14 same-route retry ceiling for one dispatch. The gateway accepts
+    # business14.max_retries in [0, 2] and defaults to 2 when the field is
+    # omitted, so None keeps the historical behavior while an explicit 0
+    # pins a single provider call per dispatch (#3382 one-shot contract).
+    max_retries: int | None = None
 
     def __post_init__(self) -> None:
         if self.task_type is not None:
@@ -233,6 +293,13 @@ class B14RoutingOptions:
         ):
             raise ValueError("max_attempts must be between 1 and 5")
 
+        if self.max_retries is not None and (
+            isinstance(self.max_retries, bool)
+            or not isinstance(self.max_retries, int)
+            or not 0 <= self.max_retries <= 2
+        ):
+            raise ValueError("max_retries must be between 0 and 2")
+
     def to_dict(self) -> dict[str, Any]:
         out: dict[str, Any] = {}
         if self.task_type is not None:
@@ -247,7 +314,75 @@ class B14RoutingOptions:
             out["provider_order"] = list(self.provider_order)
         if self.max_attempts is not None:
             out["max_attempts"] = self.max_attempts
+        if self.max_retries is not None:
+            out["max_retries"] = self.max_retries
         return out
+
+
+# ── Provider-native optional request parameters (#3977) ──────────────────────
+# The shared Core owns the WIRE NAME and the accepted SPELLING of these
+# documented fields. It deliberately owns neither which served model accepts
+# which value, nor any default for a field the caller left out: that is B14
+# capability authority (apps/korean-ai-platform/app/pilot/model_native_parameters.py),
+# re-checked on the request body at the gateway. An unlisted field or a value
+# outside the closed vocabulary fails closed here instead of reaching a paid
+# provider, and nothing is ever silently dropped, downgraded or invented.
+REASONING_EFFORT_VALUES = frozenset({"minimal", "low", "medium", "high"})
+
+_NATIVE_PARAMETER_RULES: dict[str, frozenset[str] | str] = {
+    "reasoning_effort": REASONING_EFFORT_VALUES,
+    # Provider-specific acceptance is checked AGAIN by the B14 gateway for the
+    # exact registered model. These wire-level shapes are never defaults.
+    "top_p": "unit_interval",
+    "top_k": "positive_integer",
+    "min_p": "unit_interval",
+    "presence_penalty": "signed_two",
+    "repetition_penalty": "positive_number",
+}
+NATIVE_MODEL_PARAMETER_FIELDS = frozenset(_NATIVE_PARAMETER_RULES)
+
+
+def _normalize_model_parameters(
+    raw: object,
+) -> Mapping[str, Any]:
+    """Validate explicit provider-native overrides; empty stays empty."""
+    if raw is None:
+        return MappingProxyType({})
+    if not isinstance(raw, Mapping):
+        raise ValueError("model_parameters must be a mapping")
+    unknown = {key for key in raw if key not in NATIVE_MODEL_PARAMETER_FIELDS}
+    if unknown:
+        # Never forward a field this contract does not name: an invented key
+        # would either be dropped unnoticed or accepted by a different vendor.
+        raise ValueError(
+            "unsupported model_parameters fields: " + ", ".join(sorted(map(str, unknown)))
+        )
+    validated: dict[str, Any] = {}
+    for name, rule in _NATIVE_PARAMETER_RULES.items():
+        if name not in raw or raw[name] is None:
+            continue
+        value = raw[name]
+        if isinstance(rule, frozenset):
+            if not isinstance(value, str) or value not in rule:
+                raise ValueError(
+                    f"{name} must be one of " + ", ".join(sorted(rule))
+                )
+        elif rule == "positive_integer":
+            if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+                raise ValueError(f"{name} must be a positive integer")
+        else:
+            if isinstance(value, bool) or not isinstance(value, (int, float)):
+                raise ValueError(f"{name} must be numeric")
+            if not math.isfinite(float(value)):
+                raise ValueError(f"{name} must be finite")
+            if rule == "unit_interval" and not 0 <= float(value) <= 1:
+                raise ValueError(f"{name} must be between 0 and 1")
+            if rule == "signed_two" and not -2 <= float(value) <= 2:
+                raise ValueError(f"{name} must be between -2 and 2")
+            if rule == "positive_number" and value <= 0:
+                raise ValueError(f"{name} must be positive")
+        validated[name] = value
+    return MappingProxyType(validated)
 
 
 @dataclass(frozen=True, slots=True)
@@ -257,9 +392,16 @@ class B14ChatRequest:
     # route silently widen into Router auto execution. Explicit generic auto
     # requests remain valid by passing model="b14/auto".
     model: str
-    temperature: float = 0.2
+    # Unspecified sampling must reach the exact provider as omission.
+    temperature: float | None = None
     max_tokens: int | None = None
     routing: B14RoutingOptions = field(default_factory=B14RoutingOptions)
+    # Validated provider-native overrides. They are transmitted as TOP-LEVEL
+    # request fields, never as a nested ``model_parameters`` object, because
+    # that is the shape the B14 gateway and the vendor APIs document (#3977).
+    # An empty mapping contributes nothing, so an unspecified request keeps its
+    # exact pre-#3977 layout.
+    model_parameters: Mapping[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "messages", _normalize_messages(self.messages))
@@ -270,32 +412,50 @@ class B14ChatRequest:
             raise ValueError(f"model must not exceed {MAX_B14_MODEL_CHARS} characters")
         object.__setattr__(self, "model", model)
 
-        if (
+        if self.temperature is not None and (
             isinstance(self.temperature, bool)
             or not isinstance(self.temperature, (int, float))
             or not math.isfinite(float(self.temperature))
             or not 0 <= float(self.temperature) <= 2
         ):
             raise ValueError("temperature must be between 0 and 2")
-        object.__setattr__(self, "temperature", float(self.temperature))
+        if self.temperature is not None:
+            object.__setattr__(self, "temperature", float(self.temperature))
 
+        # PRODUCT_REQUESTED_LIMIT authority: explicit output budget must stay
+        # within the product's explicit-request compatibility ceiling. The
+        # omitted-value contract is separate (#3551): None stays None and the
+        # payload omits the field. RUNTIME byte/time guards and provider/model
+        # capability metadata are separate authorities and are not consulted
+        # here (capability must never be fabricated; see b14_output_limits).
         if self.max_tokens is not None and (
             isinstance(self.max_tokens, bool)
             or not isinstance(self.max_tokens, int)
-            or not 1 <= self.max_tokens <= 4096
+            or not 1 <= self.max_tokens <= PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING
         ):
-            raise ValueError("max_tokens must be between 1 and 4096 or None")
+            raise ValueError(
+                "max_tokens must be between 1 and "
+                f"{PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING} or None"
+            )
         if not isinstance(self.routing, B14RoutingOptions):
             raise ValueError("routing must be B14RoutingOptions")
+
+        object.__setattr__(
+            self, "model_parameters", _normalize_model_parameters(self.model_parameters)
+        )
 
     def to_payload(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
             "model": self.model,
             "messages": [dict(message) for message in self.messages],
-            "temperature": self.temperature,
         }
+        if self.temperature is not None:
+            payload["temperature"] = self.temperature
         if self.max_tokens is not None:
             payload["max_tokens"] = self.max_tokens
+        # Documented native fields go at the TOP LEVEL of the request body.
+        for name in sorted(self.model_parameters):
+            payload[name] = self.model_parameters[name]
         routing = self.routing.to_dict()
         if routing:
             payload["business14"] = routing
@@ -356,12 +516,14 @@ class B14ExecutionError(RuntimeError):
         *,
         upstream_status_code: int | None = None,
         retryable: bool = False,
+        diagnostic_class: str | None = None,
     ) -> None:
         super().__init__(safe_message)
         self.code = code
         self.safe_message = safe_message
         self.upstream_status_code = upstream_status_code
         self.retryable = retryable
+        self.diagnostic_class = diagnostic_class
 
     def to_public_dict(self) -> dict[str, Any]:
         return {
@@ -423,9 +585,9 @@ class B14ExecutionClient:
             raise ValueError("request must be B14ChatRequest")
 
         timeout = httpx.Timeout(
-            connect=min(self._config.timeout_seconds, 10.0),
+            connect=min(self._config.timeout_seconds, 30.0),
             read=self._config.timeout_seconds,
-            write=min(self._config.timeout_seconds, 10.0),
+            write=min(self._config.timeout_seconds, 20.0),
             pool=min(self._config.timeout_seconds, 10.0),
         )
 
@@ -477,6 +639,7 @@ class B14ExecutionClient:
                 "Business 14 is rate limiting requests.",
                 upstream_status_code=status_code,
                 retryable=True,
+                diagnostic_class=_b14_rate_limit_diagnostic(raw),
             )
         if 400 <= status_code < 500:
             raise B14ExecutionError(
@@ -505,12 +668,14 @@ class B14ExecutionClient:
                 "malformed_upstream",
                 "Business 14 returned malformed JSON.",
                 upstream_status_code=status_code,
+                diagnostic_class="upstream_malformed_json",
             ) from exc
         if not isinstance(data, Mapping):
             raise B14ExecutionError(
                 "malformed_upstream",
                 "Business 14 returned an unexpected response shape.",
                 upstream_status_code=status_code,
+                diagnostic_class="upstream_unexpected_shape",
             )
 
         try:
@@ -520,12 +685,14 @@ class B14ExecutionClient:
                 "malformed_upstream",
                 "Business 14 response did not contain assistant content.",
                 upstream_status_code=status_code,
+                diagnostic_class="upstream_missing_content",
             ) from exc
         if not isinstance(answer, str):
             raise B14ExecutionError(
                 "malformed_upstream",
                 "Business 14 assistant content was not text.",
                 upstream_status_code=status_code,
+                diagnostic_class="upstream_non_text_content",
             )
         normalized_answer = answer.strip()
         if not normalized_answer:
@@ -533,6 +700,7 @@ class B14ExecutionClient:
                 "empty_upstream_answer",
                 "Business 14 returned an empty assistant answer.",
                 upstream_status_code=status_code,
+                diagnostic_class="upstream_empty_answer",
             )
 
         return B14ExecutionResult(

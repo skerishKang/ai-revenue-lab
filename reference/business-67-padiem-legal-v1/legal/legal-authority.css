@@ -1,0 +1,340 @@
+/* legal-authority.css — LEGAL-SPECIFIC (Padiem Legal vertical).
+ *
+ * This is the half of B67 that is NOT generic Claw. It styles exactly three
+ * things the generic shell does not know about:
+ *   1. authority class   — official primary vs party document vs secondary
+ *   2. provenance        — where inside a document a claim is anchored
+ *   3. matter / corpus   — the legal case folder concept
+ *
+ * Everything here hooks onto classes owned by the shared Claw layers
+ * (.ev, .ev-num, .ev-meta, .ev-quote, .claw-chip). Swapping these rules out
+ * leaves a fully working generic grounded-research surface, which is the point:
+ * B67 is a Legal vertical ON Claw, not a fork of Claw.
+ *
+ * A lawyer must be able to answer "can I trust this and where do I check?"
+ * without reading prose. The class therefore carries THREE independent signals
+ * — rail style, badge label text, badge fill — so it never depends on hue
+ * alone (WCAG 1.4.1).
+ */
+
+/* ── Authority class rail on the shared .ev card ────────────────────────── */
+/* Solid rail  = official primary authority.
+   Gold rail   = party-produced document (evidence in the matter).
+   Dashed/muted rail = secondary commentary, news, general web. */
+
+.ev[data-authority="primary"] { border-left-color: var(--accent); }
+.ev[data-authority="party"] { border-left-color: var(--gold); }
+.ev[data-authority="secondary"] {
+  border-left-color: transparent;
+  border-left-style: dashed;
+  border-left-width: 3px;
+  border-left-color: rgba(255, 255, 255, .28);
+}
+.ev[data-authority="internal"] { border-left-color: rgba(201, 178, 138, .55); }
+
+/* ── Authority badge ───────────────────────────────────────────────────── */
+.auth-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px;
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  font-family: var(--font-label);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .03em;
+  white-space: nowrap;
+}
+
+/* 1차자료 — the badge is filled so it survives greyscale printing. */
+.auth-badge[data-authority="primary"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+.auth-badge[data-authority="primary"]::before { content: "◆"; font-size: 9px; }
+
+/* 당사자 문서 — evidence produced inside the matter. */
+.auth-badge[data-authority="party"] {
+  background: var(--gold-soft);
+  border-color: rgba(201, 178, 138, .30);
+  color: var(--gold);
+}
+.auth-badge[data-authority="party"]::before { content: "▤"; font-size: 9px; }
+
+/* 내부 산출물 — firm-generated, not an authority. */
+.auth-badge[data-authority="internal"] {
+  background: transparent;
+  border-color: rgba(201, 178, 138, .24);
+  border-style: dashed;
+  color: rgba(201, 178, 138, .82);
+}
+.auth-badge[data-authority="internal"]::before { content: "✎"; font-size: 9px; }
+
+/* 2차자료 — never filled; reads as reference, not as proof. */
+.auth-badge[data-authority="secondary"] {
+  background: transparent;
+  border-style: dashed;
+  color: var(--muted);
+}
+.auth-badge[data-authority="secondary"]::before { content: "◇"; font-size: 9px; }
+
+/* ── Source-type chip (official / Drive / web routing result) ──────────── */
+.src-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .035);
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+.src-chip::before { font-size: 9px; opacity: .9; }
+.src-chip[data-source-type="official"]::before { content: "⚖"; }
+.src-chip[data-source-type="drive"]::before { content: "▤"; }
+.src-chip[data-source-type="web"]::before { content: "◍"; }
+.src-chip[data-source-type="internal"]::before { content: "✎"; }
+
+/* ── Provenance block ──────────────────────────────────────────────────── */
+/* The contract this block renders (from CENTRAL's pre-local reuse audit):
+ *   source_type, source_id, title, authority_class, document_id,
+ *   page_or_section, retrieved_at, effective_date_or_version,
+ *   url_or_drive_ref, quote_span
+ *
+ * It is deliberately shaped as a labelled fact table, not as free prose, and
+ * it always shows retrieval/version state. The page locator is rendered as a
+ * link into a viewer that does not exist yet, and says so. */
+.prov {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding: 10px 11px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .022);
+}
+
+.prov-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, .68);
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .10em;
+  text-transform: uppercase;
+}
+
+.prov-row {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+}
+.prov-row dt {
+  margin: 0;
+  /* 11px text must clear 4.5:1, so this cannot use the lower decorative
+   * muted tone the larger surfaces use. */
+  color: rgba(255, 255, 255, .62);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.prov-row dd {
+  margin: 0;
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+.prov-row dd code {
+  font-size: 11.5px;
+  color: var(--accent-strong);
+  overflow-wrap: anywhere;
+}
+
+/* The page/section locator. A page number is only meaningful when it is
+ * attached to a verified provenance record, so this never renders a bare
+ * number — it renders the locator WITH its source and its state. */
+/* An UNVERIFIED target. Deliberately not accent-coloured: a page number that
+ * has not been joined to a document-segment locator must never look as settled
+ * as a confirmed citation. */
+.prov-locator {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  border: 1px solid var(--gold);
+  border-radius: 10px;
+  background: var(--gold-soft);
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease;
+}
+.prov-locator:hover { background: var(--accent-soft); border-color: var(--accent); }
+.prov-locator::after { content: "→"; font-size: 11px; }
+.prov-locator .prov-pending { color: var(--gold); font-size: 11px; }
+.prov-locator[data-verified="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+/* State marker for a field the backend will supply but this surface does not
+ * yet resolve. Reuses the canonical .demo-label idiom from the shared layer. */
+.prov-pending {
+  color: rgba(255, 255, 255, .46);
+  font-style: normal;
+}
+
+/* ── Matter / corpus sidebar block ─────────────────────────────────────── */
+.corpus {
+  display: grid;
+  gap: 8px;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card-bg);
+}
+
+.corpus-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.corpus-state {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+.corpus-state::before {
+  content: "";
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 9px rgba(159, 192, 221, .5);
+}
+.corpus-state[data-state="demo"]::before { background: var(--gold); box-shadow: 0 0 9px rgba(201, 178, 138, .45); }
+.corpus-state[data-state="disconnected"]::before { background: rgba(255, 255, 255, .32); box-shadow: none; }
+
+.corpus-doc {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 650;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease;
+}
+.corpus-doc:hover { background: rgba(255, 255, 255, .06); border-color: var(--line); }
+
+.corpus-doc-kind {
+  flex: 0 0 auto;
+  padding: 2px 6px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--muted);
+  font-family: var(--font-label);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.corpus-doc-name { min-width: 0; overflow-wrap: anywhere; }
+
+.corpus-doc-pages {
+  margin-left: auto;
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.corpus-empty {
+  margin: 0;
+  padding: 10px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* ── Format support strip (what the document path really accepts) ───────── */
+.fmt-strip {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding: 10px 11px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card-bg);
+  list-style: none;
+}
+.fmt-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+.fmt-key {
+  flex: 0 0 52px;
+  color: var(--text);
+  font-family: var(--font-label);
+  font-weight: 700;
+  font-size: 10.5px;
+}
+.fmt-state { margin-left: auto; flex: 0 0 auto; color: var(--muted); font-size: 10.5px; }
+.fmt-row[data-support="foundation"] .fmt-state { color: var(--accent-strong); }
+.fmt-row[data-support="bridge-later"] .fmt-state { color: var(--gold); }
+.fmt-row[data-support="unsupported"] .fmt-state { color: var(--muted); }
+.fmt-row[data-support="unsupported"] { opacity: .72; }
+
+@media (max-width: 920px) {
+  .prov-row { grid-template-columns: 76px minmax(0, 1fr); }
+  .prov-locator { min-height: 44px; padding: 0 12px; }
+  .ev-action { flex: 1 1 auto; justify-content: center; }
+  .corpus-doc { min-height: 44px; }
+}
+
+/* Reduced motion — surfaces own their animations, so the suppression ships with
+ * them rather than relying on a global rule the surface may not inherit. */
+@media (prefers-reduced-motion: reduce) {
+  .ev,
+  .prov-locator,
+  .corpus-doc {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}

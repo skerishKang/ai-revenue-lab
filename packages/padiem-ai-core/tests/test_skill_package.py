@@ -116,3 +116,9 @@ def test_package_has_no_self_approval_or_grant_fields() -> None:
     assert not hasattr(package, "granted_tools")
     assert not hasattr(package, "oauth_token")
     assert not hasattr(package, "provider_credential")
+
+
+def test_default_skill_run_budget_matches_long_form_agent():
+    assert SkillExecutionBudget().max_wall_seconds == 900
+    with pytest.raises(SkillPackageError):
+        SkillExecutionBudget(max_wall_seconds=3601)

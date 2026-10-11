@@ -168,6 +168,7 @@ class ControlPlanePhysicalRuntimeTransport(ControlPlaneHttpsLongPollTransport):
         binding: DeviceBinding,
         session: DeviceSession,
         now: datetime,
+        previous_last_seen_at: datetime | None = None,
     ) -> ControlPlaneHeartbeatReceipt:
         now = _aware(now, "now")
         _binding_session_exact(binding, session, now=now)
@@ -199,8 +200,26 @@ class ControlPlanePhysicalRuntimeTransport(ControlPlaneHttpsLongPollTransport):
             raise ContractError("broker heartbeat credential generation mismatch")
         last_seen = _timestamp(payload["last_seen_at"], "last_seen_at")
         expires = _timestamp(payload["session_expires_at"], "session_expires_at")
-        if last_seen != now:
-            raise ContractError("broker heartbeat last_seen_at must equal acknowledged heartbeat time")
+        # The acknowledged last-seen is server-owned (#3080). A broker that runs as
+        # its own process keeps its own clock and never adopts the resident's `now`
+        # as its time authority, so an equality check against the local clock can
+        # never hold across two processes. The receipt is validated against the
+        # server-owned session lifetime instead - the same property
+        # `project_server_backed_online_binding` enforces - while the client `now`
+        # stays request evidence only.
+        if not (session.issued_at <= last_seen < session.expires_at):
+            raise ContractError(
+                "broker heartbeat last_seen_at must be acknowledged inside the server session lifetime"
+            )
+        if previous_last_seen_at is not None:
+            previous = _aware(previous_last_seen_at, "previous_last_seen_at")
+            # Non-decreasing, never strictly-greater: the server timestamp resolution
+            # can legitimately repeat a value across two acknowledgements, so equality
+            # is acceptable and only a backwards move is a contract breach.
+            if last_seen < previous:
+                raise ContractError(
+                    "broker heartbeat last_seen_at must not move backwards within a session"
+                )
         if expires != session.expires_at:
             raise ContractError("broker heartbeat session expiry mismatch")
         return ControlPlaneHeartbeatReceipt(
@@ -222,6 +241,8 @@ class ControlPlanePhysicalRuntimeTransport(ControlPlaneHttpsLongPollTransport):
             "heartbeat_seconds_max": 300,
             "server_last_seen_required": True,
             "client_last_seen_authority": False,
+            "client_now_sent": CLIENT_NOW_SENT,
+            "client_now_authority": CLIENT_NOW_AUTHORITY,
         }
 
 
@@ -245,6 +266,7 @@ class ControlPlanePhysicalRuntimeChannel(ControlPlanePinnedHttpsChannel):
         binding: DeviceBinding,
         session: DeviceSession,
         now: datetime,
+        previous_last_seen_at: datetime | None = None,
     ) -> ControlPlaneHeartbeatReceipt:
         now = _aware(now, "now")
         self.authority.require_current_binding(binding, now=now)
@@ -254,6 +276,7 @@ class ControlPlanePhysicalRuntimeChannel(ControlPlanePinnedHttpsChannel):
             binding=binding,
             session=session,
             now=now,
+            previous_last_seen_at=previous_last_seen_at,
         )
 
     def acknowledge(
@@ -283,6 +306,10 @@ class ControlPlanePhysicalRuntimeChannel(ControlPlanePinnedHttpsChannel):
 HEARTBEAT_BOUNDED = True
 SERVER_LAST_SEEN_REQUIRED = True
 CLIENT_LAST_SEEN_AUTHORITY = False
+# #3140: the request still carries `now` for compatibility/telemetry, but it is
+# never a time authority for the acknowledgement.
+CLIENT_NOW_SENT = True
+CLIENT_NOW_AUTHORITY = False
 GENERIC_ACKNOWLEDGE_DISABLED = True
 ADMISSION_BOUND_ACKNOWLEDGE = True
 PUBLIC_INBOUND_PORT = False

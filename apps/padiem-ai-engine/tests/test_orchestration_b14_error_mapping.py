@@ -101,12 +101,16 @@ async def test_orchestrate_b14_failure_maps_to_4xx(
     exp_status: int,
     exp_retryable: bool,
 ) -> None:
-    message = f"Model execution failed ({code})."
+    # An arbitrary, potentially-unsafe internal safe_message. The Engine public
+    # boundary must NOT forward it verbatim for B14/model failures (#2475):
+    # Core already canonicalizes the normal B14 transport, but the mapper itself
+    # must be fail-closed and emit one stable bounded message instead.
+    raw_safe_message = f"SENTINEL_{code}_raw_upstream_detail"
 
     def fake_run(self, request):  # noqa: ANN001 - monkeypatched onto OrchestrationRunner
         raise ExecutionRuntimeError(
             code,
-            message,
+            raw_safe_message,
             metadata=_run_metadata(error_class),
             retryable=retryable,
         )
@@ -134,7 +138,9 @@ async def test_orchestrate_b14_failure_maps_to_4xx(
     # No upstream response body / raw detail leaks: only the safe contract shape.
     assert set(body.keys()) == {"ok", "error"}
     assert set(body["error"].keys()) == {"code", "message", "retryable", "metadata"}
-    assert body["error"]["message"] == message
+    # Fail-closed: a single stable bounded message, never the internal safe_message.
+    assert body["error"]["message"] == "Model execution failed."
+    assert raw_safe_message not in repr(body)
 
 
 async def test_orchestrate_b14_failure_never_500(monkeypatch) -> None:
@@ -177,6 +183,66 @@ async def test_orchestrate_genuine_internal_stays_500(monkeypatch) -> None:
     response = await service.orchestrate_payload(make_valid_payload())
     assert response.status_code == 500
     assert response.body["error"]["code"] == "engine_internal_error"
+
+
+async def test_base_mapper_never_forwards_arbitrary_safe_message(monkeypatch) -> None:
+    """#2475 fail-closed probe: the canonical mapper must not copy an arbitrary
+    ExecutionRuntimeError.safe_message into the public B14/model envelope."""
+    sentinel = "SENTINEL_base_boundary_5e8c"
+
+    def fake_run(self, request):  # noqa: ANN001
+        raise ExecutionRuntimeError(
+            "upstream_rate_limited",
+            sentinel,
+            metadata=_run_metadata(ErrorClass.PROVIDER_RATE_LIMIT),
+            retryable=True,
+        )
+
+    monkeypatch.setattr(OrchestrationRunner, "run", fake_run)
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: _StubRuntime(),
+        b14_service_bound=True,
+    )
+    response = await service.orchestrate_payload(make_valid_payload())
+    assert response.status_code == 429
+    assert response.body["error"]["code"] == "upstream_rate_limited"
+    assert response.body["error"]["retryable"] is True
+    assert response.body["error"]["message"] == "Model execution failed."
+    assert sentinel not in repr(response.body)
+
+
+def test_shared_canonical_mapper_is_fail_closed_for_stream_and_json() -> None:
+    """The single canonical mapper is shared by the JSON route and the NDJSON
+    stream; hardening it once fixes both. Prove the mapper directly (network-free)
+    and prove the stream path references it (source contract, no second table)."""
+    import inspect
+
+    sentinel = "SENTINEL_shared_mapper_1a7f"
+    exc = ExecutionRuntimeError(
+        "upstream_timeout",
+        sentinel,
+        metadata=_run_metadata(ErrorClass.PROVIDER_TIMEOUT),
+        retryable=True,
+    )
+    response = OrchestrationEngineService._orchestration_run_error_response(exc)
+    assert response is not None
+    assert response.status_code == 429
+    assert response.body["error"]["code"] == "upstream_timeout"
+    assert response.body["error"]["retryable"] is True
+    assert response.body["error"]["message"] == "Model execution failed."
+    assert sentinel not in repr(response.body)
+
+    # Source contract: JSON + stream both route run-time errors through the one
+    # canonical mapper rather than building their own B14 message.
+    src = inspect.getsource(OrchestrationEngineService)
+    assert src.count("_orchestration_run_error_response(") >= 2
+
+    # Leak-signature contract: no B14 branch anywhere in the module may forward
+    # exc.safe_message into the public envelope (the mapper + inline resume/cancel
+    # handlers all use the single stable bounded message constant).
+    module_src = inspect.getsource(inspect.getmodule(OrchestrationEngineService))
+    assert "exc.safe_message,\n                    status_code=_b14_model_error_status" not in module_src
+    assert module_src.count("_B14_MODEL_ERROR_PUBLIC_MESSAGE") >= 3
 
 
 _LEAK_SENTINEL = "LEAK_SENTINEL_9f3a2b"

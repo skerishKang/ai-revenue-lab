@@ -8,6 +8,8 @@ from kagent.contracts import ContractError
 from kagent.local_agent_control_plane_runtime import (
     ADMISSION_BOUND_ACKNOWLEDGE,
     CLIENT_LAST_SEEN_AUTHORITY,
+    CLIENT_NOW_AUTHORITY,
+    CLIENT_NOW_SENT,
     GENERIC_ACKNOWLEDGE_DISABLED,
     HEARTBEAT_BOUNDED,
     LIVE_BROKER_CONFIGURED,
@@ -124,7 +126,7 @@ class PhysicalRuntimeHeartbeatTests(unittest.TestCase):
         channel = ControlPlanePhysicalRuntimeChannel(authority=authority, transport=transport)
         return current_binding, current_session, request_port, transport, channel
 
-    def test_heartbeat_requires_exact_server_last_seen_receipt(self) -> None:
+    def test_heartbeat_requires_server_owned_last_seen_receipt(self) -> None:
         current_binding, current_session, request_port, transport, channel = self.make_runtime()
         receipt = channel.heartbeat(
             binding=current_binding,
@@ -147,9 +149,49 @@ class PhysicalRuntimeHeartbeatTests(unittest.TestCase):
         self.assertEqual(transport.safe_dict()["heartbeat_seconds_min"], 5)
         self.assertEqual(transport.safe_dict()["heartbeat_seconds_max"], 300)
 
-    def test_heartbeat_rejects_stale_last_seen_or_raw_credential_claim(self) -> None:
+    def test_heartbeat_accepts_server_owned_last_seen_that_differs_from_local_clock(self) -> None:
+        """#3140: a broker in its own process acknowledges on its own clock.
+
+        The old equality could only ever hold when the broker echoed the client's
+        `now`, which the canonical broker never does - it owns `last_seen_at`.
+        """
         current_binding, current_session, request_port, _, channel = self.make_runtime()
-        request_port.last_seen_offset_seconds = -1
+        request_port.last_seen_offset_seconds = -5
+        receipt = channel.heartbeat(binding=current_binding, session=current_session, now=BASE)
+        self.assertNotEqual(receipt.last_seen_at, BASE)
+        self.assertEqual(receipt.last_seen_at, BASE - timedelta(seconds=5))
+        self.assertEqual(receipt.session_expires_at, current_session.expires_at)
+
+    def test_heartbeat_rejects_a_last_seen_that_moves_backwards(self) -> None:
+        """#3140: inside one session the server-owned last-seen must not regress."""
+        current_binding, current_session, request_port, _, channel = self.make_runtime()
+        request_port.last_seen_offset_seconds = -5
+        channel.heartbeat(binding=current_binding, session=current_session, now=BASE)
+        with self.assertRaisesRegex(ContractError, "must not move backwards"):
+            channel.heartbeat(
+                binding=current_binding,
+                session=current_session,
+                now=BASE,
+                previous_last_seen_at=BASE - timedelta(seconds=1),
+            )
+
+    def test_heartbeat_accepts_a_repeated_last_seen_as_non_regression(self) -> None:
+        """Non-decreasing, not strictly greater: server resolution may repeat a value."""
+        current_binding, current_session, request_port, _, channel = self.make_runtime()
+        request_port.last_seen_offset_seconds = -5
+        receipt = channel.heartbeat(
+            binding=current_binding,
+            session=current_session,
+            now=BASE,
+            previous_last_seen_at=BASE - timedelta(seconds=5),
+        )
+        self.assertEqual(receipt.last_seen_at, BASE - timedelta(seconds=5))
+
+    def test_heartbeat_rejects_last_seen_outside_session_lifetime_or_raw_credential_claim(self) -> None:
+        current_binding, current_session, request_port, _, channel = self.make_runtime()
+        # A stale acknowledgement from before the session was issued is refused
+        # even though it is a server-owned value.
+        request_port.last_seen_offset_seconds = -31
         with self.assertRaisesRegex(ContractError, "last_seen_at"):
             channel.heartbeat(binding=current_binding, session=current_session, now=BASE)
 
@@ -199,6 +241,8 @@ class RuntimeTruthTests(unittest.TestCase):
         self.assertTrue(HEARTBEAT_BOUNDED)
         self.assertTrue(SERVER_LAST_SEEN_REQUIRED)
         self.assertFalse(CLIENT_LAST_SEEN_AUTHORITY)
+        self.assertTrue(CLIENT_NOW_SENT)
+        self.assertFalse(CLIENT_NOW_AUTHORITY)
         self.assertTrue(GENERIC_ACKNOWLEDGE_DISABLED)
         self.assertTrue(ADMISSION_BOUND_ACKNOWLEDGE)
         self.assertFalse(PUBLIC_INBOUND_PORT)

@@ -161,9 +161,10 @@ class DeviceCommandEnvelope:
     sequence: int
     issued_at: datetime
     expires_at: datetime
+    revision_ref: str
 
     def __post_init__(self) -> None:
-        for field_name in ("command_id", "run_id", "tool_request_ref", "binding_ref"):
+        for field_name in ("command_id", "run_id", "tool_request_ref", "binding_ref", "revision_ref"):
             object.__setattr__(self, field_name, _ref(getattr(self, field_name), field_name))
         if isinstance(self.sequence, bool) or not isinstance(self.sequence, int) or self.sequence < 1:
             raise ContractError("sequence must be a positive integer")
@@ -181,10 +182,12 @@ class DeviceCommandEnvelope:
             "tool_request_ref": self.tool_request_ref,
             "binding_ref": self.binding_ref,
             "sequence": self.sequence,
+            "revision_ref": self.revision_ref,
             "issued_at": self.issued_at.isoformat().replace("+00:00", "Z"),
             "expires_at": self.expires_at.isoformat().replace("+00:00", "Z"),
             "raw_tool_args": False,
             "client_authority": False,
+            "revision_semantics": "opaque_correlation_only",
         }
 
 

@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable, Mapping
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import hashlib
+import re
 from typing import Protocol
 
 from padiem_ai_core import (
@@ -16,6 +17,12 @@ from padiem_ai_core import (
     OrchestrationRequest,
     OrchestrationResult,
 )
+from padiem_ai_core.logical_execution_identity import agent_identity_payload
+from padiem_control_plane.product_tier_routes import (
+    ProductTierLabel,
+    ProductTierRoutesError,
+    active_route_for,
+)
 
 from .contracts import (
     ClawRunStatus,
@@ -24,20 +31,141 @@ from .contracts import (
     SandboxLease,
     SandboxLeaseState,
 )
+from .p01_approval_pause_transport import (
+    EngineApprovalPauseWire,
+    P01PausedWireResult,
+)
 from .runs import ClawRun, RunStateError
 from .security import redact_secrets
 
 
 P01_APP_ID = "b54-padiem-claw"
 P01_AGENT_ID = "b54-padiem-claw"
-DEFAULT_P01_TIMEOUT_SECONDS = 20.0
+DEFAULT_P01_TIMEOUT_SECONDS = 900.0
+
+# #3382: the canonical USER subject is CP-issued in the exact
+# `sub_<32 lowercase hex>` form. The Engine's own `_parse_subject_id` accepts
+# a broader safe-identifier shape, so this narrower grammar is the canonical
+# lane's contract check. Both the factory and the Engine client reuse this
+# validator, so a subject that bypasses the factory still fails closed.
+_CANONICAL_SUBJECT_RE = re.compile(r"^sub_[0-9a-f]{32}$")
+_EXPLICIT_B14_MODEL_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$")
+
+
+def validate_explicit_b14_model_id(value: object) -> str:
+    """Validate syntax only; the existing B14 catalog owns model availability.
+
+    Explicit choice is per execution, never b14/auto or a product HOLD sentinel.
+    Unknown model IDs fail closed in B14 rather than falling back to another route.
+    """
+    if (
+        not isinstance(value, str)
+        or not _EXPLICIT_B14_MODEL_ID_RE.fullmatch(value)
+        or value == "b14/auto"
+        or value.startswith("padiem-profile/")
+    ):
+        raise P01AdapterError(
+            "invalid_selected_model",
+            "Explicit model ID must identify a single registered B14 model.",
+            dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+        )
+    return value
+
+
+def validate_canonical_subject_id(subject_id: object) -> str:
+    """Validate a canonical USER subject: ``sub_`` + 32 lowercase hex.
+
+    Raises ``P01AdapterError`` on any violation. Returns the subject id as a
+    string on success.
+    """
+    if (
+        not isinstance(subject_id, str)
+        or not _CANONICAL_SUBJECT_RE.fullmatch(subject_id)
+    ):
+        raise P01AdapterError(
+            "invalid_subject_id",
+            "P01 subject identity must be a canonical sub_<32hex> identifier.",
+            dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+        )
+    return subject_id
+
+P01_FAILURE_DETAIL_AUTHENTICATION = "engine_authentication_failed"
+P01_FAILURE_DETAIL_AUTHORIZATION = "engine_authorization_failed"
+P01_FAILURE_DETAIL_TRANSPORT = "engine_transport_or_response_failed"
+P01_FAILURE_DETAIL_DOWNSTREAM = "engine_downstream_execution_failed"
+P01_FAILURE_DETAIL_CONTRACT = "p01_contract_failure"
+P01_FAILURE_DETAIL_UNKNOWN = "unknown_engine_failure"
+# Bounded provider terminal classes (#3566 evidence rule). These mirror the
+# closed Engine/B14 upstream_* transport vocabulary one-to-one so the exact
+# application-level provider error class survives to the Claw terminal record
+# instead of collapsing into a single downstream constant. Values are
+# enumerated codes only — never messages, prompts, or provider payloads.
+P01_FAILURE_DETAIL_PROVIDER_SERVER_ERROR = "engine_provider_server_error"
+P01_FAILURE_DETAIL_PROVIDER_TIMEOUT = "engine_provider_timeout"
+P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED = "engine_provider_rate_limited"
+P01_FAILURE_DETAIL_PROVIDER_UNAVAILABLE = "engine_provider_unavailable"
+P01_FAILURE_DETAIL_PROVIDER_AUTHORIZATION = "engine_provider_authorization_failed"
+P01_FAILURE_DETAIL_PROVIDER_REQUEST_REJECTED = "engine_provider_request_rejected"
+P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE = "engine_provider_bad_response"
+# #3566 evidence rule: the Engine's trusted-admission gate fails closed with
+# enumerated entitlement/admission codes; retaining the admission class lets
+# the final canary record ENGINE_ADMISSION_RESULT instead of collapsing it
+# into the downstream bucket.
+P01_FAILURE_DETAIL_ENGINE_ADMISSION = "engine_admission_denied"
+P01_FAILURE_DETAILS = frozenset(
+    {
+        P01_FAILURE_DETAIL_AUTHENTICATION,
+        P01_FAILURE_DETAIL_AUTHORIZATION,
+        P01_FAILURE_DETAIL_TRANSPORT,
+        P01_FAILURE_DETAIL_DOWNSTREAM,
+        P01_FAILURE_DETAIL_CONTRACT,
+        P01_FAILURE_DETAIL_UNKNOWN,
+        P01_FAILURE_DETAIL_PROVIDER_SERVER_ERROR,
+        P01_FAILURE_DETAIL_PROVIDER_TIMEOUT,
+        P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED,
+        P01_FAILURE_DETAIL_PROVIDER_UNAVAILABLE,
+        P01_FAILURE_DETAIL_PROVIDER_AUTHORIZATION,
+        P01_FAILURE_DETAIL_PROVIDER_REQUEST_REJECTED,
+        P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE,
+        P01_FAILURE_DETAIL_ENGINE_ADMISSION,
+    }
+)
+
+
+class P01DispatchClass:
+    """Authoritative dispatch classification for one P01 execution attempt (#2226).
+
+    Canonical accounting policy (#830/#1230): a consumed B62 request-quota
+    authorization may be compensated only when the failure is proven to have
+    happened before any Engine/P01 transport attempt. ``DISPATCHED`` and
+    ``UNKNOWN`` (ambiguous timeout/network, conservative default) are never
+    refundable. Usage accounting stays in B62; this module only classifies
+    where the execution chain failed.
+    """
+
+    NOT_DISPATCHED = "not_dispatched"
+    DISPATCHED = "dispatched"
+    UNKNOWN = "unknown"
 
 
 class P01AdapterError(RuntimeError):
-    def __init__(self, code: str, safe_message: str) -> None:
+    def __init__(
+        self,
+        code: str,
+        safe_message: str,
+        *,
+        dispatch_class: str = P01DispatchClass.UNKNOWN,
+        failure_detail: str | None = None,
+    ) -> None:
         super().__init__(safe_message)
         self.code = code
         self.safe_message = safe_message
+        self.dispatch_class = dispatch_class
+        self.failure_detail = (
+            failure_detail
+            if isinstance(failure_detail, str) and failure_detail in P01_FAILURE_DETAILS
+            else None
+        )
 
 
 class P01ProjectionError(P01AdapterError):
@@ -45,7 +173,9 @@ class P01ProjectionError(P01AdapterError):
 
 
 class P01OrchestrationPort(Protocol):
-    async def run(self, request: OrchestrationRequest) -> OrchestrationResult: ...
+    async def run(
+        self, request: OrchestrationRequest
+    ) -> OrchestrationResult | P01PausedWireResult: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -61,13 +191,34 @@ class ClawOrchestrationOutcome:
     answer: str | None
     p01_run_id: str | None
     p01_event_count: int
+    # #2946: Engine-issued opaque continuation reference when the run is
+    # WAITING_APPROVAL; never minted, parsed, or stored by B54.
+    continuation_ref: str | None = None
+    # #2956: Engine-issued pause identity + server-derived trusted P01 request
+    # snapshot for one owner-scoped durable handoff. None outside WAITING.
+    pause_id: str | None = None
+    pause_expires_at: str | None = None
+    trusted_request: dict[str, object] | None = None
+    # #3655 canary evidence: bounded refs threaded from the Engine result's
+    # existing B14 route metadata (selected_route_id / attempt_count /
+    # fallback_used). Server-side only — safe_dict does not project them —
+    # and the chat route grammar-checks each value before any header emit.
+    selected_route_id: str | None = None
+    provider_attempt_count: int | None = None
+    fallback_used: bool | None = None
+    # #3930: post-execution, correlation-validated P01 event evidence only.
+    # Not live streaming; never export raw message, metadata or tool arguments.
+    p01_event_history: tuple[dict[str, object], ...] = ()
 
     def safe_dict(self) -> dict[str, object]:
+        # pause_id / pause_expires_at / trusted_request stay server-side only;
+        # the browser never receives resume authority or the trusted request.
         return {
             "projection": self.projection.safe_dict(),
             "answer": redact_secrets(self.answer) if self.answer is not None else None,
             "p01_run_id": self.p01_run_id,
             "p01_event_count": self.p01_event_count,
+            "continuation_ref": self.continuation_ref,
         }
 
 
@@ -78,14 +229,99 @@ def _trace_id_for(run: ClawRun) -> str:
     return f"claw_{digest}"
 
 
-def _agent_profile() -> AgentProfile:
+def _json_safe_handoff_value(value: object) -> object:
+    """Return a deep JSON-compatible copy without weakening identity semantics.
+
+    Core deliberately freezes AgentProfile mappings with MappingProxyType and
+    tuple containers. The durable B54 handoff boundary owns only a thawed copy:
+    Core identity objects stay immutable, keys stay unchanged, and unsupported
+    values fail closed instead of being stringified lossily.
+    """
+    if value is None or isinstance(value, (str, bool, int, float)):
+        return value
+    if isinstance(value, Mapping):
+        thawed: dict[str, object] = {}
+        for key, item in value.items():
+            if not isinstance(key, str):
+                raise TypeError("trusted P01 handoff mappings require string keys")
+            thawed[key] = _json_safe_handoff_value(item)
+        return thawed
+    if isinstance(value, (tuple, list)):
+        return [_json_safe_handoff_value(item) for item in value]
+    raise TypeError(f"trusted P01 handoff value is not JSON-safe: {type(value).__name__}")
+
+
+def _trusted_p01_request_snapshot(bundle: P01RequestBundle) -> dict[str, object]:
+    """Server-derived trusted P01 request shape for one durable handoff (#2956).
+
+    Mirrors the Engine ``execution_request_identity_payload`` closed shape so a
+    later canonical Engine resume can reconstruct the original execution without
+    the browser re-supplying authority fields. No credentials, tool arguments,
+    provider tokens, or hidden reasoning are included.
+    """
+    execution_request = bundle.execution_request
+    context = bundle.context
+    snapshot = {
+        "app_id": bundle.orchestration_request.app_id,
+        "agent": agent_identity_payload(execution_request),
+        "messages": execution_request.messages,
+        "session_id": execution_request.session_id,
+        "additional_system_context": execution_request.additional_system_context,
+        "trace_id": execution_request.trace_id,
+        "execution_context": {
+            "trace_id": context.trace_id,
+            "idempotency_key": context.idempotency_key,
+            "timeout_seconds": context.timeout_seconds,
+        },
+    }
+    json_safe = _json_safe_handoff_value(snapshot)
+    if not isinstance(json_safe, dict):  # defensive: top-level shape is closed above
+        raise TypeError("trusted P01 handoff snapshot must remain an object")
+    return json_safe
+
+
+def _agent_profile(
+    product_tier: ProductTierLabel = ProductTierLabel.PLUS,
+    *,
+    selected_model_id: str | None = None,
+) -> AgentProfile:
     """Return the conservative B54 product profile consumed by P01.
 
-    Claw directly connects to the owner-approved pinned model
-    'sensenova/sensenova-6.8-flash-lite' (#2003, owner-provisioned key).
-    Product/client task input cannot pin an arbitrary
-    Provider, model, fallback order, or credential through this adapter.
+    The model route is derived from the canonical Padiem v1 product-tier
+    declaration (padiem_control_plane.product_tier_routes), shared with
+    B62 Padiem Chat.  B14 remains provider/model execution authority.
+
+    Plus without a requested model → HOLD (#3568).
+    Plus with an explicit single B14 model → user-selected MVP lane (#3554);
+    B14 retains registered-provider authorization. Pro/Max stay HOLD.
     """
+    try:
+        route = active_route_for(product_tier)
+    except ProductTierRoutesError as exc:
+        raise P01AdapterError(
+            "invalid_product_tier",
+            f"제품 등급 라우트 계약이 무효합니다: {exc}",
+            dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+        ) from exc
+
+    if selected_model_id is not None and product_tier is not ProductTierLabel.PLUS:
+        raise P01AdapterError(
+            "explicit_model_tier_unsupported",
+            "Explicit model choice is currently limited to the Plus MVP lane.",
+            dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+        )
+    chosen_model = (
+        validate_explicit_b14_model_id(selected_model_id)
+        if selected_model_id is not None
+        else (route.model_id if route is not None else None)
+    )
+    if chosen_model is None:
+        code = "max_tier_hold" if product_tier is ProductTierLabel.MAX else "tier_hold"
+        raise P01AdapterError(
+            code,
+            f"{product_tier.value}은(는) 현재 실행 가능한 라우트가 없습니다 (HOLD).",
+            dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+        )
 
     return AgentProfile(
         id=P01_AGENT_ID,
@@ -102,7 +338,11 @@ def _agent_profile() -> AgentProfile:
         allowed_tools=(),
         required_capabilities=(),
         context_policy={},
-        model_policy={"model": "sensenova/sensenova-6.8-flash-lite"},
+        # #3382/#3566 one-shot canary contract: the Claw lane dispatches the
+        # provider at most once. `max_retries=0` pins B14's same-route retry
+        # ceiling to zero; the port refuses any other budget, so widening
+        # requires a fresh explicit owner decision.
+        model_policy={"model": chosen_model, "max_retries": 0},
         max_steps=1,
         output_contract={},
     )
@@ -114,9 +354,21 @@ class P01RequestFactory:
         *,
         timeout_seconds: float = DEFAULT_P01_TIMEOUT_SECONDS,
         clock: Callable[[], datetime] | None = None,
+        product_tier: ProductTierLabel = ProductTierLabel.PLUS,
+        allow_subject_identity: bool = False,
     ) -> None:
         if isinstance(timeout_seconds, bool) or not isinstance(timeout_seconds, (int, float)):
-            raise P01AdapterError("invalid_timeout", "P01 timeout must be numeric.")
+            raise P01AdapterError(
+                "invalid_timeout",
+                "P01 timeout must be numeric.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+            )
+        if not isinstance(allow_subject_identity, bool):
+            raise P01AdapterError(
+                "invalid_subject_lane",
+                "P01 subject identity lane must be a boolean.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+            )
         normalized_timeout = float(timeout_seconds)
         # Validate against the canonical public P01 contract instead of importing
         # private/internal timeout constants. This makes Core the single authority
@@ -130,13 +382,45 @@ class P01RequestFactory:
             raise P01AdapterError(
                 "invalid_timeout",
                 "P01 timeout is outside the canonical Core execution-context bounds.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             ) from None
         self._timeout_seconds = normalized_timeout
         self._clock = clock or (lambda: datetime.now(timezone.utc))
+        self._product_tier = product_tier
+        # #3382: only the reviewed canonical USER lane may carry a subject
+        # identity on the P01 wire. The default lane keeps the historical
+        # subjectless contract; a subject passed here without the lane opt-in
+        # is a hard error, never a silent drop.
+        self._allow_subject_identity = allow_subject_identity
 
-    def build(self, run: ClawRun, *, lease: SandboxLease | None = None) -> P01RequestBundle:
+    def build(
+        self,
+        run: ClawRun,
+        *,
+        lease: SandboxLease | None = None,
+        product_tier: ProductTierLabel | None = None,
+        subject_id: str | None = None,
+        selected_model_id: str | None = None,
+    ) -> P01RequestBundle:
         if run.terminal:
-            raise P01AdapterError("terminal_run", "Terminal Claw run cannot start P01 execution.")
+            raise P01AdapterError(
+                "terminal_run",
+                "Terminal Claw run cannot start P01 execution.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+            )
+
+        if subject_id is not None:
+            if not self._allow_subject_identity:
+                raise P01AdapterError(
+                    "p01_authority_field_unsupported",
+                    "P01 subject identity requires the reviewed canonical USER lane.",
+                    dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+                )
+            # #3382: the canonical USER subject is CP-issued in the exact
+            # `sub_<32 lowercase hex>` form. The Engine's own
+            # `_parse_subject_id` accepts a broader safe-identifier shape, so
+            # this narrower grammar is the canonical lane's contract check.
+            validate_canonical_subject_id(subject_id)
 
         if run.intent.execution_mode is ExecutionMode.CLOUD:
             self._validate_cloud_lease(run, lease)
@@ -144,12 +428,14 @@ class P01RequestFactory:
                 raise P01AdapterError(
                     "cloud_run_not_prepared",
                     "Cloud Claw run must be in PREPARING after workspace allocation.",
+                    dispatch_class=P01DispatchClass.NOT_DISPATCHED,
                 )
         else:
             if lease is not None:
                 raise P01AdapterError(
                     "unexpected_cloud_lease",
                     "Local Claw run must not receive a cloud sandbox lease.",
+                    dispatch_class=P01DispatchClass.NOT_DISPATCHED,
                 )
             if run.status is ClawRunStatus.QUEUED:
                 run.transition(ClawRunStatus.PREPARING, summary="P01 실행 준비")
@@ -157,11 +443,15 @@ class P01RequestFactory:
                 raise P01AdapterError(
                     "local_run_not_preparable",
                     f"Local Claw run cannot prepare P01 from {run.status.value}.",
+                    dispatch_class=P01DispatchClass.NOT_DISPATCHED,
                 )
 
         trace_id = _trace_id_for(run)
         execution_request = ExecutionRequest(
-            agent=_agent_profile(),
+            agent=_agent_profile(
+                product_tier or self._product_tier,
+                selected_model_id=selected_model_id,
+            ),
             messages=({"role": "user", "content": run.intent.task},),
             session_id=run.run_id,
             additional_system_context=None,
@@ -176,7 +466,7 @@ class P01RequestFactory:
             execution_request=execution_request,
             context=context,
             app_id=P01_APP_ID,
-            subject_id=None,
+            subject_id=subject_id,
         )
         return P01RequestBundle(
             execution_request=execution_request,
@@ -189,32 +479,38 @@ class P01RequestFactory:
             raise P01AdapterError(
                 "cloud_lease_required",
                 "Cloud Claw run requires an active sandbox lease before P01 handoff.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
         if lease.run_id != run.run_id:
             raise P01AdapterError(
                 "cloud_lease_run_mismatch",
                 "Sandbox lease does not belong to this Claw run.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
         if lease.execution_mode is not ExecutionMode.CLOUD:
             raise P01AdapterError(
                 "cloud_lease_mode_mismatch",
                 "Sandbox lease is not a cloud execution lease.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
         if lease.state is not SandboxLeaseState.RESERVED:
             raise P01AdapterError(
                 "cloud_lease_inactive",
                 "Sandbox lease must be active before P01 handoff.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
         now = self._clock()
         if not isinstance(now, datetime) or now.tzinfo is None or now.utcoffset() is None:
             raise P01AdapterError(
                 "invalid_clock",
                 "Sandbox lease validation clock must be timezone-aware.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
         if now.astimezone(timezone.utc) >= lease.expires_at:
             raise P01AdapterError(
                 "cloud_lease_expired",
                 "Sandbox lease expired before P01 handoff.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
 
 
@@ -231,6 +527,7 @@ class ClawOrchestrationProjector:
             raise P01ProjectionError(
                 "run_not_preparing",
                 "Claw run must be PREPARING before P01 event projection.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
         self._run = run
         self._trace_id = trace_id
@@ -248,12 +545,19 @@ class ClawOrchestrationProjector:
         return len(self._seen_events)
 
     def consume(self, event: OrchestrationEvent) -> RunProjection:
+        # consume() is only reached after the Engine returned a result, so every
+        # projection failure here is post-dispatch and never refundable (#2226).
         if not isinstance(event, OrchestrationEvent):
-            raise P01ProjectionError("invalid_event", "Expected canonical P01 OrchestrationEvent.")
+            raise P01ProjectionError(
+                "invalid_event",
+                "Expected canonical P01 OrchestrationEvent.",
+                dispatch_class=P01DispatchClass.DISPATCHED,
+            )
         if event.trace_id != self._trace_id or event.app_id != self._app_id:
             raise P01ProjectionError(
                 "event_correlation_mismatch",
                 "P01 event does not match the Claw trace/app correlation.",
+                dispatch_class=P01DispatchClass.DISPATCHED,
             )
 
         fingerprint = self._event_fingerprint(event)
@@ -263,6 +567,7 @@ class ClawOrchestrationProjector:
                 raise P01ProjectionError(
                     "event_id_reuse_conflict",
                     "P01 event_id was reused with different lifecycle data.",
+                    dispatch_class=P01DispatchClass.DISPATCHED,
                 )
             return self._run.projection()
 
@@ -271,12 +576,14 @@ class ClawOrchestrationProjector:
                 raise P01ProjectionError(
                     "missing_run_started",
                     "First P01 event must be RUN_STARTED at sequence 1.",
+                    dispatch_class=P01DispatchClass.DISPATCHED,
                 )
             self._p01_run_id = event.run_id
         elif event.run_id != self._p01_run_id:
             raise P01ProjectionError(
                 "p01_run_mismatch",
                 "P01 event belongs to a different orchestration run.",
+                dispatch_class=P01DispatchClass.DISPATCHED,
             )
 
         expected_sequence = self._last_sequence + 1
@@ -284,6 +591,7 @@ class ClawOrchestrationProjector:
             raise P01ProjectionError(
                 "event_sequence_gap",
                 "P01 event sequence must be contiguous and monotonic.",
+                dispatch_class=P01DispatchClass.DISPATCHED,
             )
 
         try:
@@ -292,6 +600,7 @@ class ClawOrchestrationProjector:
             raise P01ProjectionError(
                 "invalid_event_transition",
                 "P01 event is incompatible with the current Claw lifecycle state.",
+                dispatch_class=P01DispatchClass.DISPATCHED,
             ) from None
         self._last_sequence = event.sequence
         self._seen_events[event.event_id] = fingerprint
@@ -316,6 +625,7 @@ class ClawOrchestrationProjector:
             raise P01ProjectionError(
                 "terminal_run_event",
                 "Late P01 event cannot resurrect or mutate a terminal Claw run.",
+                dispatch_class=P01DispatchClass.DISPATCHED,
             )
 
         if kind is OrchestrationEventKind.RUN_STARTED:
@@ -353,52 +663,212 @@ class P01CoreOrchestrationAdapter:
         runner: P01OrchestrationPort,
         *,
         request_factory: P01RequestFactory | None = None,
+        allow_subject_identity: bool = False,
     ) -> None:
         run_method = getattr(runner, "run", None)
         if not callable(run_method):
-            raise P01AdapterError("invalid_runner", "P01 runner must expose async run(request).")
+            raise P01AdapterError(
+                "invalid_runner",
+                "P01 runner must expose async run(request).",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+            )
+        if not isinstance(allow_subject_identity, bool):
+            raise P01AdapterError(
+                "invalid_subject_lane",
+                "P01 subject identity lane must be a boolean.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+            )
         self._runner = runner
-        self._factory = request_factory or P01RequestFactory()
+        self._factory = request_factory or P01RequestFactory(
+            allow_subject_identity=allow_subject_identity
+        )
+        # #3382: the canonical USER lane must reach the wire serializer too —
+        # the Engine client's blanket subject rejection is relaxed only when
+        # this same flag is on, so factory and client can never disagree.
+        enable_subject_identity = getattr(runner, "enable_subject_identity", None)
+        if callable(enable_subject_identity):
+            enable_subject_identity(allow_subject_identity)
+        self._allow_subject_identity = allow_subject_identity
+
+    @property
+    def subject_identity_lane(self) -> bool:
+        """True when this adapter may carry a canonical USER subject (#3382)."""
+
+        return self._allow_subject_identity
 
     async def execute(
         self,
         run: ClawRun,
         *,
         lease: SandboxLease | None = None,
+        product_tier: ProductTierLabel | None = None,
+        subject_id: str | None = None,
+        selected_model_id: str | None = None,
+        on_event: Callable[[OrchestrationEvent], Awaitable[None]] | None = None,
     ) -> ClawOrchestrationOutcome:
         try:
-            bundle = self._factory.build(run, lease=lease)
+            bundle = self._factory.build(
+                run,
+                lease=lease,
+                product_tier=product_tier,
+                subject_id=subject_id,
+                selected_model_id=selected_model_id,
+            )
             projector = ClawOrchestrationProjector(
                 run,
                 trace_id=bundle.context.trace_id,
                 app_id=bundle.orchestration_request.app_id,
             )
-            result = await self._runner.run(bundle.orchestration_request)
+            # #3930: live events are opt-in. Existing execute()/run() remains
+            # byte-for-byte compatible when no observer was provided.
+            live_terminal: OrchestrationEvent | None = None
+            if on_event is None:
+                port_result = await self._runner.run(bundle.orchestration_request)
+            else:
+                run_stream = getattr(self._runner, "run_stream", None)
+                if not callable(run_stream):
+                    raise P01AdapterError(
+                        "p01_stream_unavailable",
+                        "The canonical P01 runner has no live stream capability.",
+                        dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+                    )
+                terminal_kinds = {
+                    OrchestrationEventKind.RUN_COMPLETED,
+                    OrchestrationEventKind.RUN_FAILED,
+                    OrchestrationEventKind.RUN_CANCELLED,
+                    OrchestrationEventKind.APPROVAL_PAUSED,
+                }
+
+                async def project_live_event(event: OrchestrationEvent) -> None:
+                    nonlocal live_terminal
+                    # Source-only Core event: never expose its message/metadata
+                    # directly from this server-owned observer boundary.
+                    projector.consume(event)
+                    if event.kind in terminal_kinds:
+                        live_terminal = event
+                    else:
+                        await on_event(event)
+
+                port_result = await run_stream(
+                    bundle.orchestration_request, on_event=project_live_event
+                )
+            approval_pause_wire: EngineApprovalPauseWire | None = None
+            if isinstance(port_result, P01PausedWireResult):
+                approval_pause_wire = port_result.wire
+                port_result = port_result.result
+            result = port_result
             if not isinstance(result, OrchestrationResult):
                 raise P01AdapterError(
                     "invalid_p01_result",
                     "P01 runner returned an invalid orchestration result.",
+                    dispatch_class=P01DispatchClass.DISPATCHED,
                 )
             self._validate_result_correlation(run, bundle, result)
             for event in result.events:
                 projector.consume(event)
+            # A completed Engine response carries only retrospectively available
+            # canonical events. Never call these live stages; bound the export and
+            # erase free-form event text/metadata at this server trust boundary.
+            history: tuple[dict[str, object], ...] = ()
+            if 0 < len(result.events) <= 128:
+                seen_ids: set[str] = set()
+                clean_events: list[dict[str, object]] = []
+                for event in result.events:
+                    if event.event_id in seen_ids:
+                        continue  # projector already validated identical replay
+                    seen_ids.add(event.event_id)
+                    clean_events.append({
+                        "event_id": event.event_id,
+                        "run_id": event.run_id,
+                        "trace_id": event.trace_id,
+                        "app_id": event.app_id,
+                        "kind": event.kind.value,
+                        "sequence": event.sequence,
+                        "timestamp_iso": event.timestamp_iso,
+                    })
+                history = tuple(clean_events)
 
             if not run.terminal and run.status is not ClawRunStatus.WAITING_APPROVAL:
                 raise P01AdapterError(
                     "incomplete_p01_lifecycle",
                     "P01 result ended without terminal or approval-paused lifecycle evidence.",
+                    dispatch_class=P01DispatchClass.DISPATCHED,
                 )
+            if run.status is ClawRunStatus.WAITING_APPROVAL:
+                if approval_pause_wire is None or not approval_pause_wire.continuation_ref:
+                    # A paused Claw run without the Engine-issued continuation
+                    # identity cannot be resumed truthfully; fail closed (#2946).
+                    raise P01AdapterError(
+                        "missing_continuation_ref",
+                        "P01 approval pause arrived without an Engine-issued continuation reference.",
+                        dispatch_class=P01DispatchClass.DISPATCHED,
+                        failure_detail=P01_FAILURE_DETAIL_CONTRACT,
+                    )
+                pause_id = approval_pause_wire.approval_pause.get("continuation_id")
+                pause_expires_at = approval_pause_wire.approval_pause.get("expires_at")
+                if not isinstance(pause_id, str) or not pause_id:
+                    # #2956: a pause without its Engine-issued identity cannot
+                    # form a durable owner-scoped handoff; fail closed.
+                    raise P01AdapterError(
+                        "missing_pause_id",
+                        "P01 approval pause arrived without an Engine-issued pause identity.",
+                        dispatch_class=P01DispatchClass.DISPATCHED,
+                        failure_detail=P01_FAILURE_DETAIL_CONTRACT,
+                    )
+                if not isinstance(pause_expires_at, str) or not pause_expires_at:
+                    raise P01AdapterError(
+                        "missing_pause_expires_at",
+                        "P01 approval pause arrived without an Engine-issued expiry.",
+                        dispatch_class=P01DispatchClass.DISPATCHED,
+                        failure_detail=P01_FAILURE_DETAIL_CONTRACT,
+                    )
+            elif approval_pause_wire is not None:
+                raise P01AdapterError(
+                    "continuation_without_pause",
+                    "P01 returned Engine continuation identity without WAITING_APPROVAL lifecycle state.",
+                    dispatch_class=P01DispatchClass.DISPATCHED,
+                    failure_detail=P01_FAILURE_DETAIL_CONTRACT,
+                )
+
+            if on_event is not None:
+                if live_terminal is None or not result.events or result.events[-1] != live_terminal:
+                    raise P01AdapterError(
+                        "p01_live_terminal_mismatch",
+                        "Live P01 event did not match the verified terminal result.",
+                        dispatch_class=P01DispatchClass.DISPATCHED,
+                        failure_detail=P01_FAILURE_DETAIL_CONTRACT,
+                    )
+                await on_event(live_terminal)
 
             answer = (
                 redact_secrets(result.execution_result.answer)
                 if run.status is ClawRunStatus.COMPLETED
                 else None
             )
+            if run.status is ClawRunStatus.WAITING_APPROVAL:
+                assert approval_pause_wire is not None
+                return ClawOrchestrationOutcome(
+                    projection=run.projection(),
+                    answer=answer,
+                    p01_run_id=projector.p01_run_id,
+                    p01_event_count=projector.event_count,
+                    continuation_ref=approval_pause_wire.continuation_ref,
+                    pause_id=str(approval_pause_wire.approval_pause.get("continuation_id")),
+                    pause_expires_at=str(approval_pause_wire.approval_pause.get("expires_at")),
+                    trusted_request=_trusted_p01_request_snapshot(bundle),
+                )
             return ClawOrchestrationOutcome(
                 projection=run.projection(),
                 answer=answer,
                 p01_run_id=projector.p01_run_id,
                 p01_event_count=projector.event_count,
+                continuation_ref=None,
+                # #3655: thread the existing B14 route metadata through for
+                # the canary evidence seam; None values stay None.
+                selected_route_id=result.execution_result.route.selected_route_id,
+                provider_attempt_count=result.execution_result.route.attempt_count,
+                fallback_used=result.execution_result.route.fallback_used,
+                p01_event_history=history,
             )
         except asyncio.CancelledError:
             self._cancel_run_if_possible(run)
@@ -411,12 +881,14 @@ class P01CoreOrchestrationAdapter:
             raise P01AdapterError(
                 "p01_contract_failure",
                 "P01 orchestration contract could not be safely projected.",
+                failure_detail=P01_FAILURE_DETAIL_CONTRACT,
             ) from None
         except Exception:
             self._fail_run_if_possible(run)
             raise P01AdapterError(
                 "p01_execution_failed",
                 "P01 orchestration failed without a safe product result.",
+                failure_detail=P01_FAILURE_DETAIL_UNKNOWN,
             ) from None
 
     @staticmethod
@@ -439,6 +911,7 @@ class P01CoreOrchestrationAdapter:
             raise P01AdapterError(
                 "p01_result_correlation_mismatch",
                 "P01 result does not match the trusted Claw run correlation.",
+                dispatch_class=P01DispatchClass.DISPATCHED,
             )
 
     @staticmethod

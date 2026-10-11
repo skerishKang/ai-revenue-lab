@@ -151,7 +151,7 @@ class TestSchemaValidation:
 
     def test_max_tokens_too_high(self):
         with pytest.raises(ValidationError):
-            PilotChatRequest(model="test", messages=[ChatMessage(role="user", content="hi")], max_tokens=99999)
+            PilotChatRequest(model="test", messages=[ChatMessage(role="user", content="hi")], max_tokens=2147483648)
 
     def test_max_tokens_zero(self):
         with pytest.raises(ValidationError):
@@ -298,12 +298,13 @@ class TestPlaceholderKey:
 
 
 class TestDefaultTemperature:
-    def test_ui_form_sends_02(self, client):
-        """The HTML range input sends 0.2, not 20."""
+    def test_ui_form_defaults_to_provider_native(self, client):
+        """Do not force a sampling default in the form."""
         _configure_pilot()
         resp = client.get("/pilot")
         assert resp.status_code == 200
-        assert 'value="0.2"' in resp.text
+        assert 'id="pilot_temp" name="temperature"' in resp.text
+        assert 'name="temperature" min="0" max="2" step="0.1" value=""' in resp.text
         assert 'max="2"' in resp.text
         assert 'step="0.1"' in resp.text
 
@@ -364,6 +365,25 @@ class TestErrorRedaction:
         assert "sk-abcdef1234567890" not in body
         assert "SECRET_KEY" not in body
         assert resp.json()["error"]["message"] == "요청을 처리하는 중 내부 오류가 발생했습니다. Request ID로 관리자에게 문의하십시오."
+
+    def test_json_body_uses_explicit_asgi_body_boundary(self, client, monkeypatch):
+        """The gateway must not depend on Starlette Request.json() in Workers."""
+        from app.pilot import gateway
+
+        monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-test-agnes-route-0123456789")
+        original = gateway.Request.json
+
+        async def broken_json(_request):
+            raise RuntimeError("convenience json bridge unavailable")
+
+        monkeypatch.setattr(gateway.Request, "json", broken_json)
+        response = client.post(
+            "/api/pilot/router/resolve",
+            json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
+        )
+        assert response.status_code == 200
+        assert response.json()["selected_model"]
+        monkeypatch.setattr(gateway.Request, "json", original)
 
     def test_api_error_has_request_id(self, client):
         _configure_pilot()

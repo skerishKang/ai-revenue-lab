@@ -3,10 +3,30 @@ main = "worker.py"
 compatibility_date = "2026-08-25"
 compatibility_flags = ["python_workers"]
 workers_dev = true
+base_dir = ".b66-worker-src"
+
+# #3933 WEB-FIRST opt-in Browser Run standard quote summary PDF.
+# A browser binding does not authorize XLSX READ/WRITE, trigger a PDF,
+# or enable the feature. Rendering requires a separate explicit flag
+# PADIEM_WEB_XLSX_QUOTE_PDF_ENABLED=true only after live owner E2E.
+# API: BROWSER.quickAction("pdf", {"html": ...}).
+# Compatibility date 2026-08-25 satisfies Quick Actions >=2026-03-24.
+[browser]
+binding = "BROWSER"
+
+[build]
+command = "uv run python scripts/build_b66_worker_dependencies.py"
 
 [assets]
 directory = "static"
 binding = "ASSETS"
+
+# #3252 source declaration: the served Worker exposes its own version provenance
+# so a server-side lane can read the exact deployed git revision. This is a
+# runtime provenance binding, not a cron trigger, and it is NOT live Production
+# activation — live settings remain the production authority.
+[version_metadata]
+binding = "CF_VERSION_METADATA"
 
 [[services]]
 binding = "B14_SERVICE"
@@ -14,5 +34,6 @@ service = "ai-revenue-korean-ai-platform"
 
 [vars]
 PADIEM_CHAT_RUNTIME_MODE = "mock"
-PADIEM_CHAT_TIMEOUT_SECONDS = "20"
+PADIEM_CHAT_TIMEOUT_SECONDS = "600"
 PADIEM_CHAT_LIVE_ENABLED = "false"
+PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"

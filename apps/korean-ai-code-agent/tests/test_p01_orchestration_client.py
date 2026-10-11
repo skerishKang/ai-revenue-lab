@@ -3,8 +3,15 @@ from __future__ import annotations
 import asyncio
 from dataclasses import replace
 import json
+from unittest import mock
 import unittest
 
+from padiem_ai_core import (
+    AgentProfile,
+    ExecutionContext,
+    ExecutionRequest,
+    OrchestrationRequest,
+)
 from padiem_ai_core.b14_execution import B14RouteMetadata
 from padiem_ai_core.contracts import RunMetadata, RunStatus
 from padiem_ai_core.execution_runtime import ExecutionResult
@@ -16,6 +23,12 @@ from padiem_ai_core.orchestration_events import (
 from padiem_ai_engine_client import (
     EngineTransportResponse,
     PadiemAiEngineClient,
+    PadiemAiEngineClientError,
+)
+
+from padiem_control_plane.product_tier_routes import (
+    ProductTierLabel,
+    active_route_for,
 )
 
 from kagent.contracts import ClawRunStatus, ClawTaskIntent, ExecutionMode
@@ -25,13 +38,51 @@ from kagent.p01_adapter import (
     P01AdapterError,
     P01CoreOrchestrationAdapter,
     P01RequestFactory,
+    P01_FAILURE_DETAIL_AUTHENTICATION,
+    P01_FAILURE_DETAIL_AUTHORIZATION,
+    P01_FAILURE_DETAIL_CONTRACT,
+    P01_FAILURE_DETAIL_DOWNSTREAM,
+    P01_FAILURE_DETAIL_ENGINE_ADMISSION,
+    P01_FAILURE_DETAIL_PROVIDER_AUTHORIZATION,
+    P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE,
+    P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED,
+    P01_FAILURE_DETAIL_PROVIDER_REQUEST_REJECTED,
+    P01_FAILURE_DETAIL_PROVIDER_SERVER_ERROR,
+    P01_FAILURE_DETAIL_PROVIDER_TIMEOUT,
+    P01_FAILURE_DETAIL_PROVIDER_UNAVAILABLE,
+    P01_FAILURE_DETAIL_TRANSPORT,
 )
-from kagent.p01_orchestration_client import P01EngineOrchestrationClient
+from kagent.p01_approval_pause_transport import P01PausedWireResult
+from kagent.p01_orchestration_client import (
+    P01EngineOrchestrationClient,
+    _engine_failure_detail,
+)
+import kagent.p01_orchestration_client as p01_orchestration_client_module
 from kagent.runs import ClawRun
 
 
+# #3767: this module used to skip its whole execution port while the canonical
+# declaration held Plus. It now runs against the bounded test-only synthetic Plus
+# route (model_route_fixture); the transports are fakes, so no provider is called.
+from model_route_fixture import SyntheticPlusRouteTestCase  # noqa: E402
+
 _FAKE_CREDENTIAL = "b54-test-credential-" + ("0" * 32)
 _COMPLETED_RUN_ID = "orch_test_001"
+_ENGINE_CONTINUATION_REF = "cont_EngineOpaqueRef_01"
+
+_ENGINE_APPROVAL_PAUSE_PUBLIC = {
+    "status": "paused",
+    "continuation_id": "pause_engine_001",
+    "run_id": _COMPLETED_RUN_ID,
+    "trace_id": None,
+    "step_index": 1,
+    "agent_id": P01_AGENT_ID,
+    "tool_id": "tool_engine",
+    "requirement": "user_confirmation",
+    "approval_scope": ["tool.execute"],
+    "created_at": "2026-09-05T10:00:00+00:00",
+    "expires_at": "2026-09-06T10:00:00+00:00",
+}
 
 
 class FakeEngineTransport:
@@ -105,6 +156,57 @@ def _public_result(request, *, answer: str = "완료 답변") -> dict:
     return result.to_public_dict()
 
 
+def _paused_public_result(request) -> dict:
+    kinds = (
+        OrchestrationEventKind.RUN_STARTED,
+        OrchestrationEventKind.CONTEXT_PREPARED,
+        OrchestrationEventKind.APPROVAL_PAUSED,
+    )
+    events = [
+        public_orchestration_event(
+            event_id=f"evt_pause_{sequence:03d}",
+            run_id=_COMPLETED_RUN_ID,
+            trace_id=request.context.trace_id,
+            app_id=request.app_id,
+            kind=kind,
+            sequence=sequence,
+            message=None,
+            timestamp_iso="2026-09-05T10:00:00+00:00",
+        )
+        for sequence, kind in enumerate(kinds, start=1)
+    ]
+    result = OrchestrationResult(
+        execution_result=ExecutionResult(
+            # Core requires a non-empty wire answer even while paused; B54
+            # projects answer=None whenever the Claw run is WAITING_APPROVAL.
+            answer="승인 대기 중",
+            route=B14RouteMetadata(),
+            metadata=RunMetadata(
+                trace_id=request.context.trace_id,
+                app_id=request.app_id,
+                agent_id=P01_AGENT_ID,
+                session_id=request.execution_request.session_id,
+                status=RunStatus.PAUSED,
+            ),
+        ),
+        context=request.context,
+        app_id=request.app_id,
+        subject_id=None,
+        plan=None,
+        activated_skill=None,
+        resolved_tool_ids=(),
+        evidence_graph=None,
+        claim_assessments=(),
+        grounded_citations=(),
+        events=tuple(events),
+    )
+    public = result.to_public_dict()
+    # Engine-owned pause keys the generic Core parser intentionally refuses.
+    public["approval_pause"] = dict(_ENGINE_APPROVAL_PAUSE_PUBLIC)
+    public["continuation_ref"] = _ENGINE_CONTINUATION_REF
+    return public
+
+
 def _ok_transport(public: dict) -> FakeEngineTransport:
     body = json.dumps({"ok": True, "orchestration": public}, ensure_ascii=False)
     return FakeEngineTransport(EngineTransportResponse(status=200, body=body.encode("utf-8")))
@@ -119,7 +221,7 @@ def _client(transport: FakeEngineTransport) -> PadiemAiEngineClient:
     )
 
 
-class P01EngineOrchestrationClientTests(unittest.TestCase):
+class P01EngineOrchestrationClientTests(SyntheticPlusRouteTestCase):
     def run_port(self, transport: FakeEngineTransport, request):
         port = P01EngineOrchestrationClient(_client(transport))
         return asyncio.run(port.run(request))
@@ -145,7 +247,7 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
         self.assertEqual([event.sequence for event in result.events], [1, 2, 3])
         self.assertEqual(transport.requests[0]["url"], "https://padiem-ai-engine.internal/internal/v1/orchestrate")
 
-    def test_outgoing_payload_pins_approved_free_model_only(self) -> None:
+    def test_outgoing_payload_pins_approved_plus_model_only(self) -> None:
         _, request = _build_request()
         transport = _ok_transport(_public_result(request))
 
@@ -159,7 +261,15 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
         )
         self.assertEqual(payload["app_id"], P01_APP_ID)
         self.assertEqual(payload["agent"]["id"], P01_AGENT_ID)
-        self.assertEqual(payload["agent"]["model_policy"], {"model": "sensenova/sensenova-6.8-flash-lite"})
+        # #2800: derived from the shared declaration, not restated as a model literal.
+        # #3382/#3566: the port pins the single-dispatch retry budget on the wire.
+        self.assertEqual(
+            payload["agent"]["model_policy"],
+            {
+                "model": active_route_for(ProductTierLabel.PLUS).model_id,
+                "max_retries": 0,
+            },
+        )
         self.assertNotIn("provider", json.dumps(payload).lower())
         self.assertNotIn("credential", payload["agent"])
         self.assertNotIn("api_key", json.dumps(payload).lower())
@@ -172,6 +282,24 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
         bad_agent = replace(
             request.execution_request.agent,
             model_policy={"model": "google/gemini-2.5-flash"},
+        )
+        bad_execution = replace(request.execution_request, agent=bad_agent)
+        bad_request = replace(request, execution_request=bad_execution)
+        transport = _ok_transport(_public_result(request))
+
+        with self.assertRaises(P01AdapterError) as ctx:
+            self.run_port(transport, bad_request)
+        self.assertEqual(ctx.exception.code, "p01_authority_pinning")
+        self.assertEqual(transport.requests, [])
+
+    def test_extra_model_policy_authority_key_is_refused_before_transport(self) -> None:
+        _, request = _build_request()
+        bad_agent = replace(
+            request.execution_request.agent,
+            model_policy={
+                "model": "b-ai/qwen3.8-flash",
+                "provider": "caller-provider",
+            },
         )
         bad_execution = replace(request.execution_request, agent=bad_agent)
         bad_request = replace(request, execution_request=bad_execution)
@@ -204,18 +332,112 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
             self.run_port(transport, request)
         self.assertEqual(ctx.exception.code, "unsupported_result_field")
 
-    def test_approval_pause_result_fails_closed(self) -> None:
+    def test_engine_approval_pause_wire_projects_waiting_without_minting_authority(
+        self,
+    ) -> None:
+        run, request = _build_request()
+        public = _paused_public_result(request)
+        transport = _ok_transport(public)
+
+        port_result = self.run_port(transport, request)
+
+        self.assertIsInstance(port_result, P01PausedWireResult)
+        wire = port_result.wire
+        self.assertEqual(wire.continuation_ref, _ENGINE_CONTINUATION_REF)
+        self.assertEqual(
+            wire.approval_pause["continuation_id"],
+            _ENGINE_APPROVAL_PAUSE_PUBLIC["continuation_id"],
+        )
+        # Generic Core parser reconstructs the result without pause authority.
+        self.assertIsNone(port_result.result.approval_pause)
+        self.assertIsNone(port_result.result.continuation_state)
+        self.assertEqual(
+            [event.kind for event in port_result.result.events],
+            [
+                OrchestrationEventKind.RUN_STARTED,
+                OrchestrationEventKind.CONTEXT_PREPARED,
+                OrchestrationEventKind.APPROVAL_PAUSED,
+            ],
+        )
+
+        adapter = P01CoreOrchestrationAdapter(
+            P01EngineOrchestrationClient(_client(transport))
+        )
+        outcome = asyncio.run(adapter.execute(run))
+        self.assertEqual(run.status, ClawRunStatus.WAITING_APPROVAL)
+        self.assertIsNone(outcome.answer)
+        self.assertEqual(outcome.continuation_ref, _ENGINE_CONTINUATION_REF)
+        self.assertTrue(outcome.projection.approval_required)
+
+    def test_approval_pause_without_continuation_ref_fails_closed(self) -> None:
         _, request = _build_request()
-        public = _public_result(request)
-        public["approval_pause"] = {"status": "paused", "continuation_id": "cont_abc12345"}
-        public["continuation_ref"] = "cont_abc12345"
+        public = _paused_public_result(request)
+        public["continuation_ref"] = None
         transport = _ok_transport(public)
 
         with self.assertRaises(P01AdapterError) as ctx:
             self.run_port(transport, request)
-        self.assertEqual(ctx.exception.code, "unsupported_result_approval_pause")
+        self.assertEqual(ctx.exception.code, "missing_continuation_ref")
+        self.assertEqual(ctx.exception.failure_detail, P01_FAILURE_DETAIL_CONTRACT)
 
-    def test_engine_error_maps_to_adapter_error_without_leakage(self) -> None:
+    def test_malformed_continuation_ref_fails_closed(self) -> None:
+        _, request = _build_request()
+        public = _paused_public_result(request)
+        public["continuation_ref"] = "not-an-engine-ref"
+        transport = _ok_transport(public)
+
+        with self.assertRaises(P01AdapterError) as ctx:
+            self.run_port(transport, request)
+        self.assertEqual(ctx.exception.code, "malformed_continuation_ref")
+        self.assertEqual(ctx.exception.failure_detail, P01_FAILURE_DETAIL_CONTRACT)
+
+    def test_pause_without_lifecycle_evidence_fails_closed(self) -> None:
+        _, request = _build_request()
+        public = _paused_public_result(request)
+        public["events"] = [public["events"][0]]
+        transport = _ok_transport(public)
+
+        with self.assertRaises(P01AdapterError) as ctx:
+            self.run_port(transport, request)
+        self.assertEqual(ctx.exception.code, "pause_without_lifecycle_evidence")
+
+    def test_continuation_without_pause_fails_closed(self) -> None:
+        _, request = _build_request()
+        public = _public_result(request)
+        public["continuation_ref"] = _ENGINE_CONTINUATION_REF
+        transport = _ok_transport(public)
+
+        with self.assertRaises(P01AdapterError) as ctx:
+            self.run_port(transport, request)
+        self.assertEqual(ctx.exception.code, "continuation_without_pause")
+
+    def test_unknown_pause_authority_fields_fail_closed(self) -> None:
+        _, request = _build_request()
+        public = _paused_public_result(request)
+        public["approval_pause"] = {
+            **_ENGINE_APPROVAL_PAUSE_PUBLIC,
+            "invocation_sha256": "a" * 64,
+        }
+        transport = _ok_transport(public)
+
+        with self.assertRaises(P01AdapterError) as ctx:
+            self.run_port(transport, request)
+        self.assertEqual(ctx.exception.code, "unknown_extra_authority_fields")
+
+    def test_pause_event_run_mismatch_fails_closed(self) -> None:
+        _, request = _build_request()
+        public = _paused_public_result(request)
+        public["approval_pause"] = {
+            **_ENGINE_APPROVAL_PAUSE_PUBLIC,
+            "run_id": "orch_somewhere_else",
+        }
+        transport = _ok_transport(public)
+
+        with self.assertRaises(P01AdapterError) as ctx:
+            self.run_port(transport, request)
+        self.assertEqual(ctx.exception.code, "correlation_mismatch")
+
+    def test_engine_error_maps_to_bounded_downstream_detail_without_leakage(self) -> None:
         _, request = _build_request()
         body = json.dumps(
             {
@@ -231,8 +453,98 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
         with self.assertRaises(P01AdapterError) as ctx:
             self.run_port(transport, request)
         self.assertEqual(ctx.exception.code, "p01_engine_request_failed")
+        # #3767: this assertion predates the provider-specific detail split and
+        # pinned the generic downstream bucket while the test never executed.
+        # ``upstream_rate_limited`` is the provider rate-limit lane, so the
+        # bounded detail is that lane's constant -- and the detail is still
+        # drawn from the closed product vocabulary, never from Engine text.
+        self.assertEqual(
+            ctx.exception.failure_detail,
+            P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED,
+        )
+        self.assertIn(
+            ctx.exception.failure_detail,
+            frozenset(
+                {
+                    P01_FAILURE_DETAIL_AUTHENTICATION,
+                    P01_FAILURE_DETAIL_AUTHORIZATION,
+                    P01_FAILURE_DETAIL_CONTRACT,
+                    P01_FAILURE_DETAIL_DOWNSTREAM,
+                    P01_FAILURE_DETAIL_ENGINE_ADMISSION,
+                    P01_FAILURE_DETAIL_PROVIDER_AUTHORIZATION,
+                    P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE,
+                    P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED,
+                    P01_FAILURE_DETAIL_PROVIDER_REQUEST_REJECTED,
+                    P01_FAILURE_DETAIL_PROVIDER_SERVER_ERROR,
+                    P01_FAILURE_DETAIL_PROVIDER_TIMEOUT,
+                    P01_FAILURE_DETAIL_PROVIDER_UNAVAILABLE,
+                    P01_FAILURE_DETAIL_TRANSPORT,
+                }
+            ),
+        )
         self.assertNotIn("provider", ctx.exception.safe_message.lower())
         self.assertNotIn("secret", ctx.exception.safe_message.lower())
+
+    def test_engine_authentication_codes_map_to_authentication_detail(self) -> None:
+        for code in ("service_authentication_failed", "invalid_service_credential"):
+            _, request = _build_request()
+            body = json.dumps({"ok": False, "error": {"code": code, "message": "secret sentinel"}}).encode()
+            transport = FakeEngineTransport(EngineTransportResponse(status=401, body=body))
+            with self.subTest(code=code), self.assertRaises(P01AdapterError) as ctx:
+                self.run_port(transport, request)
+            self.assertEqual(ctx.exception.failure_detail, P01_FAILURE_DETAIL_AUTHENTICATION)
+            self.assertNotIn(code, ctx.exception.safe_message)
+            self.assertNotIn("secret sentinel", ctx.exception.safe_message)
+
+    def test_engine_authorization_code_maps_to_authorization_detail(self) -> None:
+        _, request = _build_request()
+        body = json.dumps(
+            {"ok": False, "error": {"code": "service_app_not_authorized", "message": "provider sentinel"}}
+        ).encode()
+        transport = FakeEngineTransport(EngineTransportResponse(status=403, body=body))
+        with self.assertRaises(P01AdapterError) as ctx:
+            self.run_port(transport, request)
+        self.assertEqual(ctx.exception.failure_detail, P01_FAILURE_DETAIL_AUTHORIZATION)
+        self.assertNotIn("provider sentinel", ctx.exception.safe_message)
+
+    def test_engine_transport_codes_map_to_transport_detail(self) -> None:
+        for code, status, body in (
+            ("invalid_engine_response", 502, b"not-json"),
+            ("engine_http_error", 503, b'{"ok":true}'),
+            ("invalid_engine_transport", 502, b"{}"),
+        ):
+            _, request = _build_request()
+            if code == "invalid_engine_transport":
+                class BrokenClient:
+                    app_id = P01_APP_ID
+
+                    async def orchestrate(self, payload):
+                        del payload
+                        raise PadiemAiEngineClientError(code, "raw exception sentinel")
+
+                port = P01EngineOrchestrationClient(BrokenClient())
+                with self.subTest(code=code), self.assertRaises(P01AdapterError) as ctx:
+                    asyncio.run(port.run(request))
+            else:
+                if code == "invalid_engine_response":
+                    response_body = body
+                else:
+                    response_body = json.dumps(
+                        {"ok": False, "error": {"code": code, "message": "raw provider sentinel"}}
+                    ).encode()
+                transport = FakeEngineTransport(EngineTransportResponse(status=status, body=response_body))
+                with self.subTest(code=code), self.assertRaises(P01AdapterError) as ctx:
+                    self.run_port(transport, request)
+            self.assertEqual(ctx.exception.failure_detail, P01_FAILURE_DETAIL_TRANSPORT)
+
+    def test_projection_failure_maps_to_contract_detail(self) -> None:
+        _, request = _build_request()
+        public = _public_result(request)
+        public["tool_authorization"] = {"provider": "secret sentinel"}
+        transport = _ok_transport(public)
+        with self.assertRaises(P01AdapterError) as ctx:
+            self.run_port(transport, request)
+        self.assertEqual(ctx.exception.failure_detail, P01_FAILURE_DETAIL_CONTRACT)
 
     def test_authority_bearing_request_is_refused_before_transport(self) -> None:
         _, request = _build_request()
@@ -300,3 +612,179 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def _hand_built_request(model_policy: dict) -> OrchestrationRequest:
+    """Build a port request without the executable-route-dependent factory.
+
+    The shared product-tier declaration is in successor-pending HOLD on the
+    audited main, so the request is assembled directly from Core contracts;
+    the executable-route set is patched per test.
+    """
+    agent = AgentProfile(
+        id=P01_AGENT_ID,
+        title="Padiem Claw",
+        description="B54 repository task execution consumer",
+        system_instruction=None,
+        task_type="coding",
+        optimize_for="balanced",
+        max_tokens=None,
+        allowed_tools=(),
+        required_capabilities=(),
+        context_policy={},
+        model_policy=model_policy,
+        max_steps=1,
+        output_contract={},
+    )
+    execution_request = ExecutionRequest(
+        agent=agent,
+        messages=({"role": "user", "content": "단일 dispatch 검증"},),
+        session_id=_COMPLETED_RUN_ID,
+        trace_id="trace_single_dispatch",
+    )
+    context = ExecutionContext(trace_id="trace_single_dispatch", timeout_seconds=20.0)
+    return OrchestrationRequest(
+        execution_request=execution_request,
+        context=context,
+        app_id=P01_APP_ID,
+        subject_id=None,
+    )
+
+
+class P01SingleDispatchRetryBudgetTests(unittest.TestCase):
+    """#3382/#3566: the port only accepts the single-dispatch retry budget.
+
+    PROVIDER_CALL_COUNT_MAX=1 / RETRY=0 is enforced at the P01 wire boundary,
+    independent of which model route is currently executable.
+    """
+
+    _EXECUTABLE = frozenset({"test/model"})
+
+    def _run_port(self, model_policy: dict):
+        request = _hand_built_request(model_policy)
+        transport = _ok_transport(_public_result(request))
+        port = P01EngineOrchestrationClient(_client(transport))
+        with mock.patch.object(
+            p01_orchestration_client_module,
+            "PADIEM_EXECUTABLE_MODEL_IDS",
+            self._EXECUTABLE,
+        ):
+            asyncio.run(port.run(request))
+        return transport
+
+    def _refused(self, model_policy: dict):
+        request = _hand_built_request(model_policy)
+        transport = _ok_transport(_public_result(request))
+        port = P01EngineOrchestrationClient(_client(transport))
+        with mock.patch.object(
+            p01_orchestration_client_module,
+            "PADIEM_EXECUTABLE_MODEL_IDS",
+            self._EXECUTABLE,
+        ):
+            with self.assertRaises(P01AdapterError) as ctx:
+                asyncio.run(port.run(request))
+        self.assertEqual(ctx.exception.code, "p01_authority_pinning")
+        self.assertEqual(transport.requests, [])
+
+    def test_owner_explicit_models_use_exact_ids_without_auto_fallback(self) -> None:
+        # Non-tier B14 catalog identities are allowed only with explicit
+        # max_retries=0; B14 remains final catalog/provider authority.
+        for model_id in ("agnes-ai/agnes-3.0-flash", "poolside/laguna-s-2.1"):
+            with self.subTest(model_id=model_id):
+                transport = self._run_port({"model": model_id, "max_retries": 0})
+                self.assertEqual(len(transport.requests), 1)
+                payload = json.loads(transport.requests[0]["body"].decode("utf-8"))
+                self.assertEqual(
+                    payload["agent"]["model_policy"],
+                    {"model": model_id, "max_retries": 0},
+                )
+
+    def test_invalid_explicit_or_automatic_choices_are_rejected(self) -> None:
+        for model_id in ("b14/auto", "padiem-profile/plus-hold", "../bad"):
+            with self.subTest(model_id=model_id):
+                self._refused({"model": model_id, "max_retries": 0})
+        # A non-tier route must never bypass authority pinning by omitting the
+        # one-shot budget (the legacy no-retry-key path remains tier-only).
+        self._refused({"model": "agnes-ai/agnes-3.0-flash"})
+
+    def test_single_dispatch_budget_is_pinned_on_the_wire(self) -> None:
+        transport = self._run_port({"model": "test/model", "max_retries": 0})
+        payload = json.loads(transport.requests[0]["body"].decode("utf-8"))
+        self.assertEqual(
+            payload["agent"]["model_policy"],
+            {"model": "test/model", "max_retries": 0},
+        )
+
+    def test_nonzero_retry_budgets_are_refused_before_transport(self) -> None:
+        for retries in (1, 2, True, "0"):
+            with self.subTest(retries=retries):
+                self._refused({"model": "test/model", "max_retries": retries})
+
+    def test_max_retries_without_model_is_refused(self) -> None:
+        self._refused({"max_retries": 0})
+
+    def test_extra_authority_key_beside_max_retries_is_refused(self) -> None:
+        self._refused(
+            {"model": "test/model", "max_retries": 0, "provider_order": ["x"]}
+        )
+
+
+class EngineProviderFailureDetailTests(unittest.TestCase):
+    """#3566 evidence rule: the exact provider terminal class must survive.
+
+    The Engine's bounded orchestrate error envelope carries the enumerated
+    B14 transport code; the port must project that class, not collapse it
+    into a single downstream constant. Values stay enumerated codes only.
+    """
+
+    def test_b14_provider_terminal_classes_are_retained(self) -> None:
+        cases = {
+            "upstream_server_error": P01_FAILURE_DETAIL_PROVIDER_SERVER_ERROR,
+            "upstream_timeout": P01_FAILURE_DETAIL_PROVIDER_TIMEOUT,
+            "upstream_rate_limited": P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED,
+            "upstream_unavailable": P01_FAILURE_DETAIL_PROVIDER_UNAVAILABLE,
+            "upstream_auth_error": P01_FAILURE_DETAIL_PROVIDER_AUTHORIZATION,
+            "upstream_request_error": P01_FAILURE_DETAIL_PROVIDER_REQUEST_REJECTED,
+            "malformed_upstream": P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE,
+            "empty_upstream_answer": P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE,
+            "upstream_response_too_large": P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE,
+        }
+        for code, expected in cases.items():
+            with self.subTest(code=code):
+                self.assertEqual(_engine_failure_detail(code), expected)
+
+    def test_engine_admission_denial_is_retained(self) -> None:
+        # #3655: the Engine's enumerated trusted-admission denial codes must
+        # surface as ENGINE_ADMISSION_RESULT=DENIED, not the downstream bucket.
+        for code in (
+            "missing_entitlement",
+            "entitlement_denied",
+            "entitlement_expired",
+            "entitlement_app_mismatch",
+            "entitlement_subject_mismatch",
+            "invalid_admission",
+            "invalid_admission_request",
+        ):
+            with self.subTest(code=code):
+                self.assertEqual(
+                    _engine_failure_detail(code),
+                    P01_FAILURE_DETAIL_ENGINE_ADMISSION,
+                )
+
+    def test_engine_boundary_and_unknown_codes_keep_their_buckets(self) -> None:
+        self.assertEqual(
+            _engine_failure_detail("engine_http_error"),
+            P01_FAILURE_DETAIL_TRANSPORT,
+        )
+        self.assertEqual(
+            _engine_failure_detail("service_authentication_failed"),
+            P01_FAILURE_DETAIL_AUTHENTICATION,
+        )
+        self.assertEqual(
+            _engine_failure_detail("service_app_not_authorized"),
+            P01_FAILURE_DETAIL_AUTHORIZATION,
+        )
+        self.assertEqual(
+            _engine_failure_detail("never_seen_code"),
+            P01_FAILURE_DETAIL_DOWNSTREAM,
+        )

@@ -1,0 +1,8 @@
+[project]
+name = "padiem-b66-pdf-renderer"
+version = "0.1.0"
+requires-python = ">=3.13.2"
+dependencies = ["PyMuPDF==1.26.3"]
+
+[tool.pywrangler]
+allow-build = true

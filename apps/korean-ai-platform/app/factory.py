@@ -116,6 +116,12 @@ def create_app() -> Starlette:
     install_gateway_multimodal_contract(pilot_gateway)
     pilot_api_router = pilot_gateway.router
 
+    # B66 live image registration bridge (#3249).  Import after installing the
+    # canonical multimodal wrapper because this endpoint deliberately reuses
+    # pilot_gateway._validate_body / _handle_alpha_chat rather than defining a
+    # second image execution authority.
+    from app.b66_quote_endpoint import router as b66_quote_router
+
     # Slice 12: preview-only manual-route streaming surface. Import after the
     # multimodal contract installation so its reuse of the canonical validator
     # observes the same installed validation authority as the main gateway.
@@ -146,6 +152,14 @@ def create_app() -> Starlette:
         app.router.routes.append(new_route)
     for route in pilot_ui_router.routes:
         app.router.routes.append(route)
+
+    for route in b66_quote_router.routes:
+        new_route = StarletteRoute(
+            path="/api/b66" + route.path,
+            endpoint=route.endpoint,
+            methods=list(route.methods) if route.methods else ["POST"],
+        )
+        app.router.routes.append(new_route)
 
     # Phase 3: Korean session workspace
     from app.pilot.workspace import router as workspace_router

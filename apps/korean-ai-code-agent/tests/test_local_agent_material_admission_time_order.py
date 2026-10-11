@@ -51,6 +51,7 @@ class MaterialAdmissionTimeOrderTests(unittest.TestCase):
             sequence=1,
             issued_at=base + timedelta(seconds=30),
             expires_at=base + timedelta(minutes=10),
+            revision_ref="revision_time_1",
         )
         request = LocalCommandRequest(
             request_id="request_time_1",
@@ -115,6 +116,7 @@ class MaterialAdmissionTimeOrderTests(unittest.TestCase):
             request_fingerprint=fingerprint,
             accepted_at=base + timedelta(seconds=40),
             expires_at=base + timedelta(minutes=5),
+            revision_ref=command.revision_ref,
         )
         assembly_receipt = LocalAgentRuntimeAssemblyReceipt(
             assembly_ref="assembly_time_1",

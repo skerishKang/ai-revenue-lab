@@ -19,6 +19,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+  "PyMuPDF==1.26.3",
   "pytest>=8,<10",
   "pytest-asyncio>=0.23,<2",
   "workers-py>=1.16.2,<2",

@@ -8,16 +8,31 @@ from typing import Any
 
 from playwright.async_api import Page, async_playwright
 
+from b62_visual_timing import (
+    TimingOvershoot,
+    check_settle_window,
+    wait_state_settled,
+    with_timing_retries,
+)
 
 BASE_URL = os.environ.get("B62_QA_BASE_URL", "http://127.0.0.1:8765")
 OUT_DIR = Path(os.environ.get("B62_QA_OUT_DIR", ".tmp/b62-browser-qa"))
 OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+TIMING_EVIDENCE: list[dict[str, Any]] = []
 
 VIEWPORTS = (
     ("glass-zoom75-equivalent", 2560, 1440),
     ("glass-zoom100-equivalent", 1920, 1080),
     ("glass-zoom150-equivalent", 1280, 720),
 )
+
+_FOLLOW_STATE_EXPR = """
+() => ({
+  following: window.__padiemConversationMotion.isFollowingLatest(),
+  y: window.scrollY,
+})
+"""
 
 
 async def _box(page: Page, selector: str) -> dict[str, float]:
@@ -100,8 +115,8 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
         )
 
     # Grow the current assistant answer deterministically. Conversation follow
-    # still tracks the newest tokens, but the Glass portrait must stay visually
-    # fixed because reading mode is keyed to explicit app conversation state.
+    # still tracks the newest tokens, while the Glass portrait may now perform
+    # the bounded answer-driven reveal requested for active reading.
     await page.evaluate(
         """
         () => {
@@ -139,24 +154,47 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
         raise AssertionError(f"latest-answer growth was not followed at {name}: {followed}")
     if followed["latestBottom"] > followed["composerTop"] - 12:
         raise AssertionError(f"latest answer is covered by the fixed composer at {name}: {followed}")
-    if abs(float(followed["reveal"])) > 0.01:
-        raise AssertionError(f"Glass portrait reveal moved during active reading at {name}: {followed}")
+    if not 0.15 <= float(followed["reveal"]) <= 1.0:
+        raise AssertionError(
+            f"Glass answer-driven reveal must be visible and bounded during active reading at {name}: {followed}"
+        )
 
     # An intentional upward wheel is a user signal: auto-follow must pause.
     await page.wait_for_timeout(600)
     await page.mouse.wheel(0, -520)
-    await page.wait_for_timeout(180)
-    paused_before = await page.evaluate(
-        """
-        () => ({
-          following: window.__padiemConversationMotion.isFollowingLatest(),
-          y: window.scrollY,
-        })
-        """
+    # Detect the pause on the page clock instead of sampling a fixed host
+    # sleep: on a loaded CI runner the old 180ms sleep + read round-trip could
+    # land either before the wheel was processed (false "did not pause") or
+    # at an uncontrolled time.  The pause must still arrive within the
+    # original ~180ms budget (200ms ceiling absorbs only the deterministic
+    # ~one-tick in-page detection granularity, not the former host slack).
+    wheel_observed = await page.evaluate("performance.now()")
+    pause_wait = await wait_state_settled(
+        page,
+        started_ms=wheel_observed,
+        done_expr="() => !window.__padiemConversationMotion.isFollowingLatest()",
+        timeout_ms=900,
+        read_expr=_FOLLOW_STATE_EXPR,
+        fallback_ms=8.0,
     )
+    paused_before = pause_wait["state"]
+    check_settle_window(
+        f"user scroll-up did not pause auto-follow at {name}: {paused_before}",
+        pause_wait,
+        lo_ms=0,
+        hi_ms=200,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"{name}-scroll-pause",
+    )
+    # Record the paused viewport only once any in-flight wheel scrolling has
+    # settled, so the later ±8px comparison measures product behavior and not
+    # where in the scroll the detection tick happened to land.
+    await page.wait_for_timeout(120)
+    paused_before = await page.evaluate(_FOLLOW_STATE_EXPR)
     if paused_before["following"]:
         raise AssertionError(f"user scroll-up did not pause auto-follow at {name}: {paused_before}")
 
+    resume_growth_started = await page.evaluate("performance.now()")
     await page.evaluate(
         """
         () => {
@@ -187,15 +225,39 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
         )
 
     # Returning to the end restores normal progressive-follow behavior.
+    resume_started = await page.evaluate("performance.now()")
     await page.evaluate(
         "window.scrollTo(0, Math.max(document.documentElement.scrollHeight, document.body.scrollHeight))"
     )
-    await page.wait_for_timeout(180)
-    resumed = await page.evaluate(
-        "window.__padiemConversationMotion.isFollowingLatest()"
+    resume_wait = await wait_state_settled(
+        page,
+        started_ms=resume_started,
+        done_expr="""() => {
+          const motion = window.__padiemConversationMotion;
+          const remaining = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)
+            - (window.scrollY + window.innerHeight);
+          return Boolean(motion && motion.isFollowingLatest()) && remaining <= 4;
+        }""",
+        timeout_ms=2_500,
+        read_expr="""() => ({
+          following: window.__padiemConversationMotion?.isFollowingLatest?.() || false,
+          y: window.scrollY,
+          remaining: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)
+            - (window.scrollY + window.innerHeight),
+        })""",
+        evidence_log=TIMING_EVIDENCE,
+        label=f"{name}-resume-end",
     )
-    if not resumed:
-        raise AssertionError(f"returning to conversation end did not resume follow at {name}")
+    resumed_state = resume_wait["state"]
+    if not resume_wait["done"]:
+        check_settle_window(
+            f"returning to conversation end did not resume follow at {name}: {resumed_state}",
+            resume_wait,
+            lo_ms=0,
+            hi_ms=2_500,
+            evidence_log=TIMING_EVIDENCE,
+            label=f"{name}-resume-end",
+        )
 
     await page.evaluate(
         """
@@ -208,21 +270,51 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
         }
         """
     )
-    await page.wait_for_timeout(220)
-    resumed_state = await page.evaluate(
-        """
-        () => ({
-          following: window.__padiemConversationMotion.isFollowingLatest(),
+    resume_growth_wait = await wait_state_settled(
+        page,
+        started_ms=resume_growth_started,
+        done_expr="""() => {
+          const motion = window.__padiemConversationMotion;
+          const remaining = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)
+            - (window.scrollY + window.innerHeight);
+          return Boolean(motion && motion.isFollowingLatest()) && remaining <= 4;
+        }""",
+        timeout_ms=2_500,
+        read_expr="""() => ({
+          following: window.__padiemConversationMotion?.isFollowingLatest?.() || false,
           remaining: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)
             - (window.scrollY + window.innerHeight),
           reveal: Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--glass-reveal')) || 0,
-        })
-        """
+        })""",
+        evidence_log=TIMING_EVIDENCE,
+        label=f"{name}-progressive-follow",
     )
+    resumed_state = resume_growth_wait["state"]
+    if not resume_growth_wait["done"]:
+        raise AssertionError(
+            f"progressive follow did not resume at {name}: {resumed_state} "
+            f"[condition-wait elapsed_ms={resume_growth_wait['elapsed_ms']:.0f}, "
+            f"fps={resume_growth_wait['fps']:.1f}]"
+        )
     if not resumed_state["following"] or resumed_state["remaining"] > 4:
         raise AssertionError(f"progressive follow did not resume at {name}: {resumed_state}")
-    if abs(float(resumed_state["reveal"])) > 0.01:
-        raise AssertionError(f"Glass portrait reveal resumed with scroll follow at {name}: {resumed_state}")
+    if not 0.15 <= float(resumed_state["reveal"]) <= 1.0:
+        raise AssertionError(
+            f"Glass answer-driven reveal must remain visible and bounded after follow resumes at {name}: {resumed_state}"
+        )
+
+    # After token activity stops, the portrait must settle back to the calm
+    # reading posture. Move the pointer out of the portrait zone first so this
+    # assertion isolates answer activity from the independent pointer driver.
+    await page.mouse.move(70, 80)
+    await page.wait_for_timeout(1900)
+    settled_reveal = await page.evaluate(
+        "() => Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--glass-reveal')) || 0"
+    )
+    if float(settled_reveal) > 0.03:
+        raise AssertionError(
+            f"Glass answer-driven reveal did not settle after inactivity at {name}: {settled_reveal}"
+        )
 
     return {
         "helper_loaded": True,
@@ -235,6 +327,7 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
         "return_to_end_resumes": True,
         "glass_reveal_after_growth": followed["reveal"],
         "glass_reveal_after_resume": resumed_state["reveal"],
+        "glass_reveal_after_settle": settled_reveal,
         "sidebar_generic_recommendations_removed": True,
         "status": "PASS",
     }
@@ -363,6 +456,32 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
     }
 
 
+async def _run_checks(report: dict[str, Any]) -> None:
+    async with async_playwright() as playwright:
+        browser = await playwright.chromium.launch(headless=True)
+        try:
+            for name, width, height in VIEWPORTS:
+                async def _viewport_cycle(
+                    name: str = name, width: int = width, height: int = height
+                ) -> dict[str, Any]:
+                    page = await browser.new_page()
+                    try:
+                        return await _capture(page, name=name, width=width, height=height)
+                    finally:
+                        await page.close()
+
+                # Overshoot retries re-sample the identical thresholds in a
+                # fresh page+viewport once the in-page measurement has proven
+                # the runner, not the product, missed the requested window.
+                report["views"][name] = await with_timing_retries(
+                    _viewport_cycle,
+                    label=name,
+                    evidence_log=TIMING_EVIDENCE,
+                )
+        finally:
+            await browser.close()
+
+
 async def main() -> None:
     report: dict[str, Any] = {
         "base_url": BASE_URL,
@@ -370,22 +489,24 @@ async def main() -> None:
         "browser_zoom_forced": False,
         "views": {},
     }
-    async with async_playwright() as playwright:
-        browser = await playwright.chromium.launch(headless=True)
-        try:
-            for name, width, height in VIEWPORTS:
-                page = await browser.new_page()
-                try:
-                    report["views"][name] = await _capture(
-                        page, name=name, width=width, height=height
-                    )
-                finally:
-                    await page.close()
-        finally:
-            await browser.close()
+    report_path = OUT_DIR / "glass-zoom-report.json"
+    try:
+        await _run_checks(report)
+    except Exception as exc:
+        report["status"] = (
+            "OVERSHOOT-EXHAUSTED" if isinstance(exc, TimingOvershoot) else "FAIL"
+        )
+        report["error"] = str(exc)[:2000]
+        if TIMING_EVIDENCE:
+            report["timing_evidence"] = TIMING_EVIDENCE
+        report_path.write_text(
+            json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+        )
+        raise
 
     report["status"] = "PASS"
-    report_path = OUT_DIR / "glass-zoom-report.json"
+    if TIMING_EVIDENCE:
+        report["timing_evidence"] = TIMING_EVIDENCE
     report_path.write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )

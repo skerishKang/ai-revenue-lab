@@ -187,9 +187,16 @@ def test_invalid_envelope_and_empty_plaintext_fail_closed():
 
 def test_context_rejects_unreviewed_connector_and_unsafe_refs():
     with pytest.raises(ControlPlaneContractError):
-        context(connector_id="google-calendar")
+        context(connector_id="google-slides")
     with pytest.raises(ControlPlaneContractError):
         context(record_ref="../../escape")
+
+
+def test_context_accepts_reviewed_calendar_readonly_connector():
+    """#2010: google-calendar joins the same single reviewed OAuth authority."""
+
+    seal_context = context(connector_id="google-calendar")
+    assert seal_context.connector_id == "google-calendar"
 
 
 def test_cloudflare_port_is_lazy_import_and_declares_exact_runtime_crypto_contract():

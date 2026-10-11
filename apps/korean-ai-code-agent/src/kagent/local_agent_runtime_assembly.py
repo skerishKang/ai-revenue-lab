@@ -8,6 +8,8 @@ import re
 import threading
 from typing import Any, Protocol
 
+from .browser_open import BrowserOpenRefusal, BrowserOpenRequest  # noqa: F401
+from .browser_open_authority import BrowserOpenAuthority, BrowserOpenAuthorityOutcome
 from .contracts import ContractError
 from .local_agent import LocalAgentDeviceProfile, LocalCommandRequest
 from .local_agent_pairing import DeviceBinding, DeviceLifecycle, DeviceSession
@@ -196,6 +198,7 @@ class BoundLocalAgentRuntimeAssembly:
         permissions: DevicePermissionProfile,
         broker_authority: PinnedOutboundBrokerBinding,
         runtime: WindowsReceiptRuntimePort,
+        browser_open: BrowserOpenAuthority | None = None,
     ) -> None:
         if not isinstance(device, LocalAgentDeviceProfile):
             raise ContractError("device must be LocalAgentDeviceProfile")
@@ -228,6 +231,15 @@ class BoundLocalAgentRuntimeAssembly:
         self._permissions = permissions
         self._broker_authority = broker_authority
         self._runtime = runtime
+        # #3611: the approved `browser.open` composition is injected, exactly like
+        # the Windows receipt runtime. When absent the slice fails closed rather
+        # than silently borrowing another authority.
+        if browser_open is not None:
+            if not isinstance(browser_open, BrowserOpenAuthority):
+                raise ContractError("browser_open must be a BrowserOpenAuthority")
+            if browser_open.workspace_ref != device.workspace_ref:
+                raise ContractError("browser open authority workspace correlation mismatch")
+        self._browser_open = browser_open
         self._active_owners: dict[str, str] = {}
         self._lock = threading.Lock()
 
@@ -278,6 +290,54 @@ class BoundLocalAgentRuntimeAssembly:
             receipt=receipt,
         )
 
+    @property
+    def browser_open_configured(self) -> bool:
+        return self._browser_open is not None
+
+    @property
+    def browser_open_authority(self) -> BrowserOpenAuthority | None:
+        """The composed `browser.open` authority, or None when unwired.
+
+        Exposed so the resident host can hand the Desktop exactly one redemption
+        entry point without growing a second authority or a second pipe.
+        """
+
+        return self._browser_open
+
+    def open_browser(
+        self,
+        *,
+        session: DeviceSession,
+        request: BrowserOpenRequest,
+        now: datetime,
+    ) -> BrowserOpenAuthorityOutcome:
+        """Run the approved `browser.open` slice under this assembly's identity.
+
+        #3611 has no generic command channel and no browser IPC. A trusted work
+        ticket resolves to one exact ``BrowserOpenRequest``; the existing
+        `browser.open` ASK capability and the canonical P01 approval are consumed
+        by the injected authority, and the durable one-shot is the existing #3082
+        store row. This method adds the same ONLINE binding + session gate as
+        ``execute`` and nothing else.
+        """
+
+        if not isinstance(session, DeviceSession):
+            raise ContractError("session must be DeviceSession")
+        if not isinstance(request, BrowserOpenRequest):
+            raise ContractError("request must be BrowserOpenRequest")
+        now = _aware(now, "now")
+        self._require_context(session=session, now=now)
+        if request.device_id != self._device.device_id:
+            raise ContractError("browser open request device mismatch")
+        if request.requested_at > now:
+            raise ContractError("browser open request cannot be from the future")
+        if self._browser_open is None:
+            raise BrowserOpenRefusal(
+                "host_unavailable",
+                "no approved browser.open authority is composed on this assembly",
+            )
+        return self._browser_open.open(request=request, now=now)
+
     def cancel(
         self,
         *,
@@ -321,6 +381,9 @@ class BoundLocalAgentRuntimeAssembly:
             "online_required": True,
             "p01_authorization_reused": True,
             "windows_executor_reused": True,
+            "browser_open_composed": self._browser_open is not None,
+            "browser_control_composed": False,
+            "second_browser_authority": False,
             "broker_wire_protocol_defined": False,
             "replay_model_duplicated": False,
             "raw_device_credential": False,

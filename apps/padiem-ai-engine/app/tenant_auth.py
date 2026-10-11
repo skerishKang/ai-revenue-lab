@@ -40,6 +40,7 @@ from app.execution_admission import (
     ExecutionAdmissionError,
     ExecutionAdmissionRequest,
     TrustedExecutionAdmission,
+    TrustedUsageReservation,
 )
 
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$")
@@ -59,7 +60,7 @@ _SNAPSHOT_KEYS = frozenset(
 )
 _SUBJECT_KEYS = frozenset({"subject_type", "subject_id"})
 _GRANT_KEYS = frozenset({"key", "allowed", "limit"})
-_RESERVATION_KEYS = frozenset({"reservation_ref", "admitted", "expires_at"})
+_RESERVATION_KEYS = frozenset({"reservation_ref", "admitted", "expires_at", "reserved_at"})
 _RECEIPT_ACK_KEYS = frozenset({"accepted", "event_id"})
 
 
@@ -358,20 +359,59 @@ class ControlPlaneTenantAdmissionAdapter:
         )
 
         grant = snapshot.grants.get(request.capability)
-        allowed = bool(grant is not None and grant["allowed"])
+        allowed = bool(
+            grant is not None
+            and grant["allowed"]
+            and (
+                grant["limit"] is None
+                or self._estimated_units <= grant["limit"]
+            )
+        )
         authority_ref = f"control-plane:entitlement:{snapshot.snapshot_id}"
+        usage_reservation: TrustedUsageReservation | None = None
 
-        if allowed and self._require_usage_reservation:
-            reservation = self._build_reservation(request, tenant, snapshot, now)
+        # Resume revalidates entitlement but continues the original run's
+        # reservation; a second reservation would split one logical execution.
+        should_reserve = request.capability != "orchestration.resume"
+        if allowed and self._require_usage_reservation and should_reserve:
+            if request.usage_reservation_identity is None:
+                raise ExecutionAdmissionError(
+                    "entitlement_unavailable",
+                    "Server-owned usage reservation identity is unavailable.",
+                    status_code=503,
+                )
+            reservation = self._build_reservation(request, tenant, now)
+            reservation_payload = await _maybe_await(
+                self._client.reserve_usage(reservation=reservation.to_public_dict())
+            )
+            # The Control Plane stamps reserved_at when the reservation is
+            # actually created, after the entitlement round-trip above. Validate
+            # that authority timestamp against a fresh post-RPC observation
+            # rather than the pre-entitlement clock captured at method entry.
+            reservation_observed_at = self._clock()
+            _timestamp_value(reservation_observed_at, "reservation_observed_at")
             decision = parse_usage_reservation(
-                await _maybe_await(self._client.reserve_usage(reservation=reservation.to_public_dict())),
+                reservation_payload,
                 reservation=reservation,
-                now=now,
+                now=reservation_observed_at,
             )
             if not decision["admitted"]:
                 allowed = False
             else:
                 authority_ref = f"{authority_ref}@{decision['reservation_ref']}"
+                if reservation.request_fingerprint is None:
+                    raise ExecutionAdmissionError("entitlement_request_mismatch", "Usage reservation must bind the execution request.", status_code=403)
+                usage_reservation = TrustedUsageReservation(
+                    reservation_ref=decision["reservation_ref"],
+                    idempotency_key=reservation.idempotency_key,
+                    billing_semantic_id=reservation.billing_semantic_id,
+                    product_id=reservation.product_id,
+                    subject_type=tenant.subject_type,
+                    subject_id=tenant.subject_id,
+                    request_fingerprint=reservation.request_fingerprint,
+                    reserved_at=decision["reserved_at"],
+                    expires_at=decision["expires_at"],
+                )
 
         expires_at = min(snapshot.expires_at, now + self._max_admission_ttl)
         if expires_at <= now:
@@ -390,6 +430,7 @@ class ControlPlaneTenantAdmissionAdapter:
             issued_at=now,
             expires_at=expires_at,
             request_fingerprint=request.request_fingerprint,
+            usage_reservation=usage_reservation,
         )
 
     async def record_usage_receipt(self, receipt: UsageReceipt) -> dict[str, Any]:
@@ -414,6 +455,8 @@ class ControlPlaneTenantAdmissionAdapter:
         accepted = ack["accepted"]
         if not isinstance(accepted, bool):
             raise _unavailable("usage receipt acknowledgement accepted must be a boolean.")
+        if not accepted:
+            raise ExecutionAdmissionError("usage_receipt_rejected", "Control Plane did not accept the usage receipt.", status_code=503)
         event_id = _identifier(ack["event_id"], "event_id")
         if event_id != receipt.event_id:
             raise ExecutionAdmissionError(
@@ -427,16 +470,15 @@ class ControlPlaneTenantAdmissionAdapter:
         self,
         request: ExecutionAdmissionRequest,
         tenant: TenantIdentity,
-        snapshot: EntitlementSnapshotView,
         now: datetime,
     ) -> UsageReservation:
+        assert request.usage_reservation_identity is not None
         identity = "|".join(
             (
-                "reserve",
+                "reserve-v2",
                 request.app_id,
                 request.capability,
-                request.request_fingerprint or "unbound",
-                snapshot.revision,
+                request.usage_reservation_identity,
             )
         )
         digest = hashlib.sha256(identity.encode("utf-8")).hexdigest()
@@ -461,6 +503,11 @@ def parse_usage_reservation(payload: Any, *, reservation: UsageReservation, now:
     if not isinstance(admitted, bool):
         raise _unavailable("usage reservation admitted must be a boolean.")
     expires_at = _timestamp(decision["expires_at"], "reservation expires_at")
+    reserved_at = _timestamp(decision["reserved_at"], "reservation reserved_at")
+    if reserved_at > now:
+        raise _unavailable("usage reservation reserved_at is from the future.")
+    if expires_at <= reserved_at:
+        raise _unavailable("usage reservation expiry is not after reservation time.")
     if expires_at <= now:
         if admitted:
             raise ExecutionAdmissionError(
@@ -472,6 +519,8 @@ def parse_usage_reservation(payload: Any, *, reservation: UsageReservation, now:
         "reservation_ref": reservation_ref,
         "admitted": admitted,
         "idempotency_key": reservation.idempotency_key,
+        "expires_at": expires_at,
+        "reserved_at": reserved_at,
     }
 
 

@@ -31,24 +31,105 @@ from padiem_ai_core.web_runtime import create_web_provider
 from workers import Request
 
 import worker as legacy_worker
+from app.agent_preview_authority import (
+    build_preview_agent_lane,
+    preview_capability_overrides,
+)
 from app.agent_skill_service import AgentSkillEngineService
+from app.agent_skill_authority import build_agent_skill_binding_resolver
+from app.agent_durable_d1 import D1AgentRunLedger
+from app.capability_manifest import set_posture_overrides
 from app.approval_verifier import AuthenticatedFirstPartyApprovalDecisionVerifier
+from app.approval_smoke_binding import with_approval_smoke_binding
+from app.hark_office_p01_tool_binding import with_hark_office_p01_tool_binding
+from app.web_xlsx_p01_tool_binding import with_web_xlsx_p01_tool_binding
+from app.web_xlsx_p01_trusted_scope_d1 import D1WebXlsxTrustedScopeResolver
+from app.web_xlsx_tool_pending_d1 import D1WebXlsxToolPendingStore
+from app.web_xlsx_p01_owner_approval_d1 import D1WebXlsxOwnerApprovalGrant
+from app.web_xlsx_quote_write_tool_binding import with_web_quote_write_tool_binding
+from app.web_xlsx_quote_write_scope_d1 import D1WebQuoteWriteScopeResolver
+from app.web_xlsx_quote_write_tool_pending_d1 import D1WebQuoteWriteToolPendingStore
+from app.web_xlsx_dual_tool_pending_d1 import DualWebXlsxToolPendingStore
+from app.web_xlsx_quote_write_owner_approval_d1 import D1WebQuoteOwnerWriteApprovalGrant
 from app.attachment_byte_store import CloudflareD1ImageByteStore, ScopedImageByteStore
+from app.attachment_admission_service import (
+    ATTACHMENT_ADMISSION_PATH,
+    MAX_ADMISSION_REQUEST_BODY_BYTES,
+    AttachmentAdmissionEngineService,
+)
 from app.auth_session_scope_authority import AuthSessionScopeAuthority
+from app.cloudflare_request_body import (
+    RequestBodyReadError,
+    RequestBodyTooLarge,
+    read_bounded_worker_request_body,
+)
 from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
     CloudflareB14ServiceBindingTransport,
 )
+from app.cloudflare_external_transport import (
+    calendar_worker_transport,
+    drive_worker_transport,
+    gmail_worker_transport,
+)
 from app.connector_bindings import (
     build_tool_binding_resolver,
+    CalendarGrant,
+    DRIVE_REFERENCE_APP_ID,
+    DriveGrant,
+    GmailGrant,
+    SlackGrant,
+    TelegramGrant,
 )
 from app.connector_grants_d1 import CloudflareD1ConnectorGrantStore
 from app.continuation_d1 import CloudflareD1IdentityBoundContinuationStore
-from app.gmail_port_httpx import HttpxGmailReadPort
-from app.document_context_service import DOCUMENT_CONTEXT_PATH
+from app.calendar_port_cp_lease import (
+    ControlPlaneLeaseGoogleCalendarReadPort,
+    parse_calendar_ids,
+)
+from app.gmail_port_cp_lease import ControlPlaneLeaseGmailReadPort
+from app.slack_port_httpx import HttpxSlackReadPort, parse_slack_channel_ids
+from app.telegram_port_httpx import HttpxTelegramReadPort, parse_paired_chat_ids
+from app.drive_port_cp_lease import ControlPlaneLeaseDriveReadPort
+from app.google_oauth_access_lease import (
+    CloudflareControlPlaneGoogleOAuthAccessLeaseClient,
+)
+from app.document_admission_service import (
+    DOCUMENT_ADMISSION_PATH,
+    MAX_DOCUMENT_ADMISSION_REQUEST_BODY_BYTES,
+    DocumentAdmissionEngineService,
+)
+from app.document_byte_store import (
+    CloudflareD1DocumentByteStore,
+    ScopedDocumentByteStore,
+)
+from app.document_context_service import (
+    DOCUMENT_CONTEXT_PATH,
+    DocumentContextEngineService,
+)
+from app.document_reference import DOCUMENT_STORE_BINDING_NAME
 from app.engine_composition import EngineServices
 from app.idempotency_replay_service import IdempotencyReplayEngineService
-from app.identity_enforcement import CALLER_CREDENTIAL_HEADER, CALLER_ID_HEADER
+from app.authority_diagnostic import (
+    AUTHORITY_DIAGNOSTIC_PATH,
+    diagnostic_response,
+)
+from app.calendar_credential_presence import (
+    CALENDAR_CREDENTIAL_PRESENCE_PATH,
+    MAX_PRESENCE_BODY_BYTES,
+    calendar_presence_response,
+)
+from app.calendar_read_activation import (
+    CALENDAR_READ_ACTIVATION_PATH,
+    CalendarReadActivationService,
+    CloudflareCalendarBindingClient,
+    CloudflareConnectorWorkspaceClient,
+    parse_calendar_activation_request,
+)
+from app.calendar_read_state import (
+    CALENDAR_READ_STATE_PATH,
+    CalendarReadStateService,
+)
 from app.multimodal_attachment_service import (
     MULTIMODAL_EXECUTE_PATH,
     MULTIMODAL_STREAM_PATH,
@@ -58,10 +139,28 @@ from app.multimodal_attachment_service import (
 from app.orchestration_idempotency_service import (
     CanonicalIdempotencyOrchestrationEngineService,
 )
-from app.service import EngineService, ServiceContractError, ServiceResponse
+from app.execution_admission import ExecutionAdmissionError
+from app.execution_admission_service import (
+    AdmissionBoundOrchestrationEngineService,
+)
+from app.control_plane_trust_client import (
+    ControlPlaneTrustClientError,
+    control_plane_trust_client_for_env,
+)
+from app.tenant_auth import (
+    ControlPlaneTenantAdmissionAdapter,
+    build_control_plane_admission_adapter,
+)
+from app.service import (
+    MAX_REQUEST_BODY_BYTES,
+    EngineService,
+    ServiceContractError,
+    ServiceResponse,
+)
 from app.streaming_service import StreamingEngineService
 from app.tool_execution_service import ToolExecutionEngineService
 from app.tool_projection import (
+    EngineToolProjectionError,
     TOOL_CANCEL_PATH,
     TOOL_EXECUTE_PATH,
     TOOL_RESUME_PATH,
@@ -71,14 +170,70 @@ from app.auth_session_scope_authority import (
     AuthSessionScopeAuthority,
     CloudflareControlPlaneAuthSessionClient,
 )
+from app.evidence_storage_d1 import CloudflareD1EvidenceStoragePort
+from app.trusted_document_resolver import DurableDocumentStoragePort, TrustedDocumentResolver
 
 ENGINE_CONTINUATION_BINDING_NAME = "ENGINE_CONTINUATION"
-ENGINE_GOOGLE_OAUTH_CLIENT_ID_ENV = "ENGINE_GOOGLE_OAUTH_CLIENT_ID"
-ENGINE_GOOGLE_OAUTH_CLIENT_SECRET_ENV = "ENGINE_GOOGLE_OAUTH_CLIENT_SECRET"
-ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN_ENV = "ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN"
+# #2010: the canonical Calendar Production composition no longer reads
+# Engine-owned Google long-lived credentials. The shared Google OAuth authority
+# is the Control Plane Service Binding below
+# (CALENDAR_ENGINE_DIRECT_REFRESH_PRODUCTION_FALLBACK=NO).
 ENGINE_CONNECTOR_GRANTS_BINDING = "ENGINE_CONNECTOR_GRANTS"
 ENGINE_IMAGE_STORE_BINDING = "ENGINE_IMAGE_STORE"
+ENGINE_EVIDENCE_STORE_BINDING = "ENGINE_EVIDENCE_STORE"
 CONTROL_PLANE_IDENTITY_BINDING_NAME = "CONTROL_PLANE_IDENTITY"
+CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME = "CONTROL_PLANE_GOOGLE_OAUTH"
+CONTROL_PLANE_ENGINE_ADMISSION_BINDING_NAME = (
+    "CONTROL_PLANE_ENGINE_ADMISSION"
+)
+# Telegram promotion (#2353): the bot token is a Worker secret; the paired-chat
+# allowlist is server-derived configuration. Neither value is ever logged and
+# no caller-provided chat id can widen the allowlist.
+ENGINE_TELEGRAM_BOT_TOKEN_ENV = "ENGINE_TELEGRAM_BOT_TOKEN"
+ENGINE_TELEGRAM_PAIRED_CHAT_IDS_ENV = "ENGINE_TELEGRAM_PAIRED_CHAT_IDS"
+# Slack promotion (#2356): the bot token is a Worker secret; the channel
+# allowlist is server-derived configuration. The optional private-channel
+# subset must stay inside the allowlist. Nothing is ever logged and no
+# caller-provided channel id can widen the allowlist.
+ENGINE_SLACK_BOT_TOKEN_ENV = "ENGINE_SLACK_BOT_TOKEN"
+ENGINE_SLACK_ALLOWED_CHANNELS_ENV = "ENGINE_SLACK_ALLOWED_CHANNELS"
+ENGINE_SLACK_PRIVATE_CHANNELS_ENV = "ENGINE_SLACK_PRIVATE_CHANNELS"
+# Calendar promotion (#2358): the port reuses the existing Google OAuth
+# secrets above (no second OAuth stack, no new secret name); the calendar
+# allowlist is server-derived configuration. Nothing is ever logged and no
+# caller-provided calendar id can widen the allowlist.
+ENGINE_CALENDAR_ALLOWED_CALENDARS_ENV = "ENGINE_CALENDAR_ALLOWED_CALENDARS"
+_CALENDAR_READ_REQUEST_BODY_BYTES = 4_096
+
+
+async def _read_bounded_post_body(
+    request: Any,
+    *,
+    max_bytes: int,
+    too_large_code: str = "request_too_large",
+    too_large_message: str = "Request body exceeds the internal Engine safety limit.",
+    too_large_status: int = 413,
+    read_error_message: str = "Request body could not be read.",
+) -> tuple[bytes | None, Any | None]:
+    """Read one POST body while preserving the route's existing error contract."""
+
+    if str(getattr(request, "method", "")).upper() != "POST":
+        return b"", None
+    try:
+        body = await read_bounded_worker_request_body(request, max_bytes=max_bytes)
+    except RequestBodyTooLarge:
+        return None, legacy_worker._error_response(
+            too_large_code,
+            too_large_message,
+            too_large_status,
+        )
+    except RequestBodyReadError:
+        return None, legacy_worker._error_response(
+            "invalid_request",
+            read_error_message,
+            400,
+        )
+    return body, None
 
 
 def _continuation_store_for_env(
@@ -117,6 +272,63 @@ def _multimodal_authorities_for_env(
     return _image_byte_store_for_env(env), _scope_authority_for_env(env)
 
 
+def _document_byte_store_for_env(env: Any) -> ScopedDocumentByteStore | None:
+    """Resolve the deployment-owned scoped document byte store (#2764).
+
+    Mirrors the image store boundary: the ``ENGINE_DOCUMENT_STORE`` D1 binding
+    and the ``0006_engine_document_bytes`` schema are provisioned by the
+    deployment owner; app code never creates or mutates schema. A missing or
+    unusable binding yields ``None`` so the admission and context routes keep
+    failing closed instead of reading an in-memory stand-in.
+    """
+    binding = legacy_worker._binding_value(env, DOCUMENT_STORE_BINDING_NAME)
+    if binding is None:
+        return None
+    try:
+        return ScopedDocumentByteStore(port=CloudflareD1DocumentByteStore(binding))
+    except (TypeError, ValueError):
+        return None
+
+
+def _document_authorities_for_env(
+    env: Any,
+) -> tuple[ScopedDocumentByteStore | None, TrustedDocumentResolver | None]:
+    """Compose the one canonical durable document lineage per request (#2764).
+
+    ``ENGINE_DOCUMENT_STORE -> CloudflareD1DocumentByteStore ->
+    ScopedDocumentByteStore -> DurableDocumentStoragePort -> TrustedDocumentResolver``
+    is built exactly once and shared by document admission and document
+    context; there is deliberately no second document store or resolver
+    registry. Missing binding yields ``(None, None)``.
+    """
+    store = _document_byte_store_for_env(env)
+    if store is None:
+        return None, None
+    try:
+        resolver = TrustedDocumentResolver(storage=DurableDocumentStoragePort(store))
+    except (TypeError, ValueError):
+        return None, None
+    return store, resolver
+
+
+def _evidence_storage_for_env(env: Any) -> CloudflareD1EvidenceStoragePort | None:
+    """Resolve the deployment-owned durable evidence storage port (#2954).
+
+    The ``ENGINE_EVIDENCE_STORE`` D1 binding and the ``0007_engine_evidence``
+    schema are provisioned by the deployment owner; app code never creates or
+    mutates schema. A missing or unusable binding yields ``None`` so the
+    document context route keeps failing closed with 503
+    ``evidence_storage_unavailable`` instead of retaining evidence in memory.
+    """
+    binding = legacy_worker._binding_value(env, ENGINE_EVIDENCE_STORE_BINDING)
+    if binding is None:
+        return None
+    try:
+        return CloudflareD1EvidenceStoragePort(binding)
+    except (TypeError, ValueError):
+        return None
+
+
 def _research_service_for_env(
     env: Any,
     execution_runtime_factory: Any,
@@ -136,48 +348,140 @@ def _research_service_for_env(
 
 
 async def _tool_binding_resolver_for_env(env: Any):
-    """Compose the Engine Gmail tool binding resolver (WO-10 PR-C activation).
+    """Compose the Engine Gmail + Drive + Telegram + Slack + Calendar tool binding resolver.
 
-    Reads the three Worker secrets and the ENGINE_CONNECTOR_GRANTS D1 binding
-    from the deployment env. If any piece is missing the factory returns None,
-    keeping the canonical composition fail-closed. A grant store outage
-    (``ServiceContractError`` from ``_gmail_grants_for_env``) is NOT treated as
-    \"grant missed\": the port and binding are present, so every app_id gets a
-    resolver that surfaces the same 503 ``connector_grants_unavailable`` instead
-    of a silent fail-closed misread.
+    Gmail and Drive are canonicalized through the private
+    ``CONTROL_PLANE_GOOGLE_OAUTH`` Service Binding: the Engine receives only
+    short-lived access leases and never a long-lived Google refresh credential.
+    Telegram (#2353) uses its own bot-token secret plus a
+    server-derived paired-chat allowlist and has no Google OAuth dependency.
+    Slack (#2356) uses its own bot-token secret plus a server-derived channel
+    allowlist and is READ-only: outbound posting stays behind the P01
+    approval authority in the reference product. Calendar (#2358) reuses the
+    existing Gmail/Drive Google OAuth authority (same secrets, no second
+    stack) plus a server-derived calendar allowlist and is READ-only: event
+    create/update/delete/respond authority is never minted here. All
+    connectors continue to share the trusted ENGINE_CONNECTOR_GRANTS D1
+    binding. Missing authorities fail closed.
     """
-    port = _gmail_port_for_env(env)
-    if port is None:
-        return None
+    gmail_port = _gmail_port_for_env(env)
+    drive_port = _drive_port_for_env(env)
+    telegram_port = _telegram_port_for_env(env)
+    slack_port = _slack_port_for_env(env)
+    calendar_port = _calendar_port_for_env(env)
+    if (
+        gmail_port is None
+        and drive_port is None
+        and telegram_port is None
+        and slack_port is None
+        and calendar_port is None
+    ):
+        # Preserve a bounded Drive-specific activation diagnostic instead of
+        # collapsing the canonical Drive app into generic
+        # tool_runtime_unavailable. This resolver performs no provider call.
+        def no_provider_resolver(app_id: str):
+            if app_id == DRIVE_REFERENCE_APP_ID:
+                raise EngineToolProjectionError(
+                    "drive_port_unavailable",
+                    "The Engine Drive provider port is not provisioned.",
+                    status_code=503,
+                )
+            return None
+
+        return no_provider_resolver
     try:
-        grants = await _gmail_grants_for_env(env)
+        (
+            gmail_grants,
+            drive_grants,
+            telegram_grants,
+            slack_grants,
+            calendar_grants,
+        ) = await asyncio.gather(
+            _gmail_grants_for_env(env),
+            _drive_grants_for_env(env),
+            _telegram_grants_for_env(env),
+            _slack_grants_for_env(env),
+            _calendar_grants_for_env(env),
+        )
     except ServiceContractError as exc:
-        # `except ... as exc` clears `exc` when the block ends, so the closure
-        # must capture the value through a persistent local name.
         grant_error = exc
 
         def unavailable(_app_id: str) -> None:
             raise grant_error
 
         return unavailable
-    if not grants:
+    resolver = build_tool_binding_resolver(
+        gmail_port=gmail_port,
+        grants=gmail_grants or None,
+        drive_port=drive_port,
+        drive_grants=drive_grants or None,
+        telegram_port=telegram_port,
+        telegram_grants=telegram_grants or None,
+        slack_port=slack_port,
+        slack_grants=slack_grants or None,
+        calendar_port=calendar_port,
+        calendar_grants=calendar_grants or None,
+    )
+
+    def production_resolver(app_id: str):
+        # The canonical Drive app has enough deployment-owned identity to
+        # distinguish activation stages without exposing any binding value,
+        # grant reference, actor reference, OAuth material, or user data.
+        # An unregistered-tool probe can therefore prove composition with
+        # zero provider calls.
+        if app_id == DRIVE_REFERENCE_APP_ID:
+            if drive_port is None:
+                raise EngineToolProjectionError(
+                    "drive_port_unavailable",
+                    "The Engine Drive provider port is not provisioned.",
+                    status_code=503,
+                )
+            if not drive_grants or DRIVE_REFERENCE_APP_ID not in drive_grants:
+                raise EngineToolProjectionError(
+                    "drive_grant_unavailable",
+                    "The Engine Drive capability grant is not provisioned.",
+                    status_code=503,
+                )
+        if resolver is None:
+            return None
+        return resolver(app_id)
+
+    def subject_for_app(app_id: str) -> str | None:
+        for grants in (
+            gmail_grants,
+            drive_grants,
+            telegram_grants,
+            slack_grants,
+            calendar_grants,
+        ):
+            grant = grants.get(app_id)
+            actor_ref = getattr(grant, "actor_ref", None)
+            if isinstance(actor_ref, str):
+                return actor_ref
         return None
-    return build_tool_binding_resolver(gmail_port=port, grants=grants)
+
+    production_resolver.subject_for_app = subject_for_app  # type: ignore[attr-defined]
+
+    return production_resolver
 
 
-def _gmail_port_for_env(env: Any) -> HttpxGmailReadPort | None:
-    client_id = legacy_worker._binding_value(env, ENGINE_GOOGLE_OAUTH_CLIENT_ID_ENV)
-    client_secret = legacy_worker._binding_value(env, ENGINE_GOOGLE_OAUTH_CLIENT_SECRET_ENV)
-    refresh_token = legacy_worker._binding_value(env, ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN_ENV)
-    if not client_id or not client_secret or not refresh_token:
+def _gmail_port_for_env(env: Any) -> ControlPlaneLeaseGmailReadPort | None:
+    """Resolve canonical Gmail READ via the private CP OAuth authority.
+
+    There is deliberately no Production fallback to Engine-owned Google
+    client-secret or refresh-token values. Missing/malformed CP authority keeps
+    Gmail unavailable rather than silently widening credential ownership.
+    """
+    binding = legacy_worker._binding_value(env, CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME)
+    if binding is None:
         return None
     try:
-        return HttpxGmailReadPort(
-            client_id=client_id,
-            client_secret=client_secret,
-            refresh_token=refresh_token,
+        lease_client = CloudflareControlPlaneGoogleOAuthAccessLeaseClient(binding)
+        return ControlPlaneLeaseGmailReadPort(
+            lease_client=lease_client,
+            transport=gmail_worker_transport(),
         )
-    except Exception:
+    except (RuntimeError, TypeError, ValueError):
         return None
 
 
@@ -196,6 +500,317 @@ async def _gmail_grants_for_env(env: Any) -> dict[str, GmailGrant]:
             "Connector grant storage could not be loaded.",
             status_code=503,
         ) from None
+
+
+def _drive_port_for_env(env: Any) -> ControlPlaneLeaseDriveReadPort | None:
+    """Resolve canonical Drive execution via the private CP OAuth authority.
+
+    There is deliberately no fallback to the Engine's legacy client-secret /
+    refresh-token compatibility values. If the private CP OAuth Service
+    Binding is absent or malformed, Drive remains unavailable.
+    """
+    binding = legacy_worker._binding_value(env, CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME)
+    if binding is None:
+        return None
+    try:
+        lease_client = CloudflareControlPlaneGoogleOAuthAccessLeaseClient(binding)
+        return ControlPlaneLeaseDriveReadPort(
+            lease_client=lease_client,
+            transport=drive_worker_transport(),
+        )
+    except (RuntimeError, TypeError, ValueError):
+        return None
+
+
+def _drive_workspace_grant_provider_for_env(env: Any):
+    """B67 workspace-scoped Drive grant provider (#3193).
+
+    Reuses the existing ``CONTROL_PLANE_GOOGLE_OAUTH`` Service Binding; no new
+    binding is declared. A missing binding yields ``None`` (fail closed) - it
+    never falls back to the global ``ENGINE_CONNECTOR_GRANTS`` Drive grant.
+    """
+
+    from app.drive_workspace_grant import (
+        CloudflareControlPlaneDriveBindingClient,
+        WorkspaceScopedDriveGrantProvider,
+    )
+
+    binding = legacy_worker._binding_value(env, CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME)
+    if binding is None or not callable(getattr(binding, "select_drive_binding", None)):
+        return None
+    return WorkspaceScopedDriveGrantProvider(
+        client=CloudflareControlPlaneDriveBindingClient(binding)
+    )
+
+
+def _drive_case_folder_dependencies_for_env(env: Any):
+    """Resolve the one canonical dependency set for B67 selected-folder reads.
+
+    Both folder-management and PDF-acquisition services consume these same
+    server authorities. No product-local Drive grant, OAuth stack, folder store
+    or provider client is introduced.
+    """
+
+    from app.drive_case_folder_binding import (
+        CloudflareD1DriveCaseFolderBindingStore,
+        DriveCaseFolderBindingAuthority,
+    )
+
+    binding = legacy_worker._binding_value(env, DOCUMENT_STORE_BINDING_NAME)
+    if binding is None:
+        return None
+    try:
+        store = CloudflareD1DriveCaseFolderBindingStore(binding)
+    except (RuntimeError, TypeError, ValueError):
+        return None
+    return (
+        _drive_workspace_grant_provider_for_env(env),
+        _drive_port_for_env(env),
+        DriveCaseFolderBindingAuthority(store=store),
+    )
+
+
+def _drive_case_folder_service_for_env(env: Any):
+    """B67 private Drive case-folder Engine service (#3190).
+
+    Reuses the existing CONTROL_PLANE_GOOGLE_OAUTH binding for the
+    workspace-scoped grant and trusted Drive port, plus the canonical Engine D1
+    selected-folder store. Any missing dependency fails closed.
+    """
+
+    from app.drive_case_folder_service import DriveCaseFolderEngineService
+
+    dependencies = _drive_case_folder_dependencies_for_env(env)
+    if dependencies is None:
+        return None
+    grant_provider, drive_port, binding_authority = dependencies
+    return DriveCaseFolderEngineService(
+        grant_provider=grant_provider,
+        drive_port=drive_port,
+        binding_authority=binding_authority,
+    )
+
+
+def _drive_case_pdf_service_for_env(env: Any):
+    """B67 private selected-folder PDF acquisition composition (#3350).
+
+    Source-only composition. It reuses exactly the same workspace-scoped grant,
+    CP access-lease Drive port, and durable selected-folder authority as the
+    existing B67 folder service. No new binding or public route is created.
+    """
+
+    from app.drive_case_pdf_service import DriveCasePdfService
+
+    dependencies = _drive_case_folder_dependencies_for_env(env)
+    if dependencies is None:
+        return None
+    grant_provider, drive_port, binding_authority = dependencies
+    return DriveCasePdfService(
+        grant_provider=grant_provider,
+        drive_port=drive_port,
+        binding_authority=binding_authority,
+    )
+
+
+async def _drive_grants_for_env(env: Any) -> dict[str, DriveGrant]:
+    binding = legacy_worker._binding_value(env, ENGINE_CONNECTOR_GRANTS_BINDING)
+    if binding is None:
+        return {}
+    try:
+        store = CloudflareD1ConnectorGrantStore(binding)
+        return await store.load_drive_grants()
+    except ServiceContractError:
+        raise
+    except Exception:
+        raise ServiceContractError(
+            "connector_grants_unavailable",
+            "Connector grant storage could not be loaded.",
+            status_code=503,
+        ) from None
+
+
+def _telegram_port_for_env(env: Any) -> HttpxTelegramReadPort | None:
+    """Resolve the promoted Telegram read port (#2353).
+
+    Requires both the bot-token secret and a non-empty server-derived
+    paired-chat allowlist. Missing or malformed authorities fail closed by
+    returning ``None``; there is no caller-side override and no Google OAuth
+    dependency.
+    """
+    bot_token = legacy_worker._binding_value(env, ENGINE_TELEGRAM_BOT_TOKEN_ENV)
+    paired_raw = legacy_worker._binding_value(env, ENGINE_TELEGRAM_PAIRED_CHAT_IDS_ENV)
+    if not bot_token or not paired_raw:
+        return None
+    try:
+        paired_chat_ids = parse_paired_chat_ids(str(paired_raw))
+        if not paired_chat_ids:
+            return None
+        return HttpxTelegramReadPort(bot_token=bot_token, paired_chat_ids=paired_chat_ids)
+    except Exception:
+        return None
+
+
+async def _telegram_grants_for_env(env: Any) -> dict[str, TelegramGrant]:
+    binding = legacy_worker._binding_value(env, ENGINE_CONNECTOR_GRANTS_BINDING)
+    if binding is None:
+        return {}
+    try:
+        store = CloudflareD1ConnectorGrantStore(binding)
+        return await store.load_telegram_grants()
+    except ServiceContractError:
+        raise
+    except Exception:
+        raise ServiceContractError(
+            "connector_grants_unavailable",
+            "Connector grant storage could not be loaded.",
+            status_code=503,
+        ) from None
+
+
+def _slack_port_for_env(env: Any) -> HttpxSlackReadPort | None:
+    """Resolve the promoted Slack read port (#2356).
+
+    Requires both the bot-token secret and non-empty server-derived public
+    and private channel partitions. The two partitions are disjoint; missing,
+    overlapping, or malformed authorities fail closed by returning ``None``.
+    There is no caller-side override and no Google OAuth dependency.
+    """
+    bot_token = legacy_worker._binding_value(env, ENGINE_SLACK_BOT_TOKEN_ENV)
+    allowed_raw = legacy_worker._binding_value(env, ENGINE_SLACK_ALLOWED_CHANNELS_ENV)
+    private_raw = legacy_worker._binding_value(env, ENGINE_SLACK_PRIVATE_CHANNELS_ENV)
+    if not bot_token or not allowed_raw:
+        return None
+    try:
+        allowed_channel_ids = parse_slack_channel_ids(str(allowed_raw))
+        if not allowed_channel_ids:
+            return None
+        private_channel_ids = (
+            parse_slack_channel_ids(str(private_raw)) if private_raw else frozenset()
+        )
+        return HttpxSlackReadPort(
+            bot_token=bot_token,
+            allowed_channel_ids=allowed_channel_ids,
+            explicitly_private_channel_ids=private_channel_ids,
+        )
+    except Exception:
+        return None
+
+
+async def _slack_grants_for_env(env: Any) -> dict[str, SlackGrant]:
+    binding = legacy_worker._binding_value(env, ENGINE_CONNECTOR_GRANTS_BINDING)
+    if binding is None:
+        return {}
+    try:
+        store = CloudflareD1ConnectorGrantStore(binding)
+        return await store.load_slack_grants()
+    except ServiceContractError:
+        raise
+    except Exception:
+        raise ServiceContractError(
+            "connector_grants_unavailable",
+            "Connector grant storage could not be loaded.",
+            status_code=503,
+        ) from None
+
+
+def _calendar_port_for_env(env: Any) -> ControlPlaneLeaseGoogleCalendarReadPort | None:
+    """Resolve canonical Google Calendar READ via the private CP OAuth authority.
+
+    #2010 convergence: the canonical Production Calendar path is the same
+    short-lived Control Plane access-lease architecture already used by Gmail
+    and Drive. There is deliberately NO Production fallback to Engine-owned
+    Google client-secret or refresh-token values
+    (``CALENDAR_ENGINE_DIRECT_REFRESH_PRODUCTION_FALLBACK=NO``); the legacy
+    direct-secret port (``calendar_port_httpx.py``) is no longer imported or
+    selected by this canonical composition root.
+
+    The server-derived calendar allowlist stays a separate authority: a missing
+    or malformed ``ENGINE_CALENDAR_ALLOWED_CALENDARS`` keeps Calendar
+    unavailable rather than widening credential or calendar scope.
+    """
+    binding = legacy_worker._binding_value(env, CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME)
+    if binding is None:
+        return None
+    allowed_raw = legacy_worker._binding_value(env, ENGINE_CALENDAR_ALLOWED_CALENDARS_ENV)
+    if not allowed_raw:
+        return None
+    try:
+        allowed_calendar_ids = parse_calendar_ids(str(allowed_raw))
+        if not allowed_calendar_ids:
+            return None
+        lease_client = CloudflareControlPlaneGoogleOAuthAccessLeaseClient(binding)
+        return ControlPlaneLeaseGoogleCalendarReadPort(
+            lease_client=lease_client,
+            allowed_calendar_ids=allowed_calendar_ids,
+            allowlist_configured=True,
+            transport=calendar_worker_transport(),
+        )
+    except (RuntimeError, TypeError, ValueError):
+        return None
+
+
+async def _calendar_grants_for_env(env: Any) -> dict[str, CalendarGrant]:
+    binding = legacy_worker._binding_value(env, ENGINE_CONNECTOR_GRANTS_BINDING)
+    if binding is None:
+        return {}
+    try:
+        store = CloudflareD1ConnectorGrantStore(binding)
+        return await store.load_calendar_grants()
+    except ServiceContractError:
+        raise
+    except Exception:
+        raise ServiceContractError(
+            "connector_grants_unavailable",
+            "Connector grant storage could not be loaded.",
+            status_code=503,
+        ) from None
+
+
+def _calendar_read_activation_service_for_env(
+    env: Any,
+) -> CalendarReadActivationService | None:
+    """Compose the private Calendar READ activation authority from served bindings."""
+
+    identity = legacy_worker._binding_value(env, CONTROL_PLANE_IDENTITY_BINDING_NAME)
+    oauth = legacy_worker._binding_value(env, CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME)
+    grants = legacy_worker._binding_value(env, ENGINE_CONNECTOR_GRANTS_BINDING)
+    if identity is None or oauth is None or grants is None:
+        return None
+    try:
+        return CalendarReadActivationService(
+            workspace_client=CloudflareConnectorWorkspaceClient(identity),
+            binding_client=CloudflareCalendarBindingClient(oauth),
+            grant_store=CloudflareD1ConnectorGrantStore(grants),
+        )
+    except (TypeError, ValueError):
+        return None
+
+
+def _calendar_read_state_service_for_env(
+    env: Any,
+) -> CalendarReadStateService | None:
+    """Compose the read-only persisted READ-grant state projection.
+
+    Reuses the activation composition's own authorities — the same Control
+    Plane identity binding, the same private Google OAuth binding selector and
+    the same canonical D1 grant store — so no second selector, grant store or
+    OAuth authority exists. Missing bindings fail closed to None (the route
+    then answers 503, never a fabricated state).
+    """
+
+    identity = legacy_worker._binding_value(env, CONTROL_PLANE_IDENTITY_BINDING_NAME)
+    oauth = legacy_worker._binding_value(env, CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME)
+    grants = legacy_worker._binding_value(env, ENGINE_CONNECTOR_GRANTS_BINDING)
+    if identity is None or oauth is None or grants is None:
+        return None
+    try:
+        return CalendarReadStateService(
+            workspace_client=CloudflareConnectorWorkspaceClient(identity),
+            binding_client=CloudflareCalendarBindingClient(oauth),
+            grant_store=CloudflareD1ConnectorGrantStore(grants),
+        )
+    except (TypeError, ValueError):
+        return None
 
 
 def _scope_authority_for_env(env: Any) -> AuthSessionScopeAuthority | None:
@@ -220,10 +835,126 @@ def _scope_authority_for_env(env: Any) -> AuthSessionScopeAuthority | None:
         return None
 
 
+def _admission_adapter_for_env(
+    env: Any,
+) -> ControlPlaneTenantAdmissionAdapter | None:
+    """Compose canonical E7 admission authority or fail closed.
+
+    Missing or malformed private Control Plane authority never falls back to
+    unguarded orchestration. The caller composes AdmissionBound orchestration
+    whenever B14 execution is available; a None adapter then produces the
+    reviewed entitlement_unavailable response before Core dispatch.
+    """
+
+    try:
+        client = control_plane_trust_client_for_env(
+            env
+        )
+        return build_control_plane_admission_adapter(
+            client
+        )
+    except (
+        ControlPlaneTrustClientError,
+        ExecutionAdmissionError,
+        TypeError,
+        ValueError,
+    ):
+        return None
+
+
+def _agent_skill_service_for_env(
+    env: Any,
+    *,
+    runtime_factory: Any,
+    binding_resolver: Any = None,
+    idempotency_adapter: Any | None = None,
+    approval_decision_verifier: Any | None = None,
+    continuation_store: Any | None = None,
+) -> AgentSkillEngineService:
+    """Compose the Agent/Skill service: preview lane, or the passed authority.
+
+    An explicitly marked non-production isolate gets the synthetic preview lane.
+    Every other isolate -- Production included -- gets exactly the authority this
+    composition already passed in (the real bound resolver, its verifier and its
+    continuation store), so an unmarked deployment is byte-for-byte unchanged.
+    """
+    preview = build_preview_agent_lane(env)
+    if preview is not None:
+        return preview.service
+    durable_enabled = legacy_worker._binding_value(env, "PADIEM_ENGINE_AGENT_DURABLE_ENABLED") == "true"
+    agent_run_ledger = None
+    if durable_enabled:
+        # Engine's *existing* identity-bound D1 database, no new binding scope.
+        # Migration 0011 must be provisioned first; missing D1 fails closed.
+        db = legacy_worker._binding_value(env, ENGINE_CONTINUATION_BINDING_NAME)
+        if db is None:
+            raise ServiceContractError(
+                "agent_run_lease_unavailable",
+                "Trusted Agent run storage is unavailable.",
+                status_code=503,
+            )
+        agent_run_ledger = D1AgentRunLedger(db)
+    return AgentSkillEngineService(
+        runtime_factory=runtime_factory,
+        binding_resolver=binding_resolver,
+        idempotency_adapter=idempotency_adapter,
+        approval_decision_verifier=approval_decision_verifier,
+        continuation_store=continuation_store,
+        agent_run_ledger=agent_run_ledger,
+    )
+
+
+def _with_web_xlsx_trusted_scope_for_env(env: Any, base_resolver: Any) -> Any:
+    """#3580 optional Engine-only B62 D1 read authority, never browser claims.
+
+    The deployment binding must be a read-only connection to the canonical
+    B62 metadata database, not the Engine D1 continuation database. This
+    composition is OFF by default and does not itself enable tool resume.
+    """
+    if legacy_worker._binding_value(
+        env, "PADIEM_WEB_XLSX_P01_ENGINE_SCOPE_ENABLED"
+    ) != "true":
+        return base_resolver
+    binding = legacy_worker._binding_value(env, "WEB_XLSX_PRIVATE_B62_D1")
+    try:
+        source = D1WebXlsxTrustedScopeResolver(binding)
+    except (TypeError, ValueError):
+        return base_resolver
+    approved_source = D1WebXlsxTrustedScopeResolver(
+        binding, required_status="waiting_p01",
+    )
+    return with_web_xlsx_p01_tool_binding(
+        base_resolver, enabled=True, selection_resolver=source,
+        approved_selection_resolver=approved_source,
+    )
+
+
+def _web_xlsx_tool_pending_for_env(env: Any) -> D1WebXlsxToolPendingStore | None:
+    """Enable only after operator-specified exact-source Engine scope and D1.
+
+    Generic Engine tool continuations remain disabled. Never fall back to
+    isolate memory when this separately enabled durable store is unavailable.
+    """
+    if (legacy_worker._binding_value(env, "PADIEM_WEB_XLSX_P01_DURABLE_TOOL_ENABLED") != "true"
+            or legacy_worker._binding_value(env, "PADIEM_WEB_XLSX_P01_ENGINE_SCOPE_ENABLED") != "true"
+            or legacy_worker._binding_value(env, "WEB_XLSX_PRIVATE_B62_D1") is None):
+        return None
+    db = legacy_worker._binding_value(env, ENGINE_CONTINUATION_BINDING_NAME)
+    try:
+        return D1WebXlsxToolPendingStore(db)
+    except (ValueError, TypeError):
+        return None
+
+
 async def _engine_services_for_env(env: Any) -> EngineServices:
+    # Preview-lane posture only. Every other isolate clears the override, so the
+    # declared capability truth is untouched outside a marked pilot isolate.
+    set_posture_overrides(preview_capability_overrides(env))
     scope_authority = _scope_authority_for_env(env)
     binding = legacy_worker._binding_value(env, legacy_worker.B14_SERVICE_BINDING_NAME)
     image_byte_store, scope_authority = _multimodal_authorities_for_env(env)
+    document_byte_store, document_resolver = _document_authorities_for_env(env)
+    evidence_storage = _evidence_storage_for_env(env)
     if binding is None:
         unavailable = lambda app_id: (_ for _ in ()).throw(
             RuntimeError("unreachable without B14 service binding")
@@ -255,15 +986,35 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
                 image_byte_store=image_byte_store,
                 scope_authority=scope_authority,
             ),
-            # E7 tool execution/continuation remains a source seam: the
-            # resolver factory below returns None until a real port and grant
-            # store are bound (PR-C). With no port/grant every request still
-            # fails closed as `tool_runtime_unavailable` exactly as before.
+            attachment_admission=AttachmentAdmissionEngineService(
+                image_byte_store=image_byte_store,
+                scope_authority=scope_authority,
+            ),
+            # #2764/#2954 durable document lineage: the context service consumes the
+            # composed resolver, the admission service the same scoped store,
+            # and context retains durable evidence via CloudflareD1EvidenceStoragePort.
+            # All fail closed on every missing authority.
+            documents=DocumentContextEngineService(
+                scope_authority=scope_authority,
+                document_resolver=document_resolver,
+                evidence_storage=evidence_storage,
+            ),
+            document_admission=DocumentAdmissionEngineService(
+                document_byte_store=document_byte_store,
+                scope_authority=scope_authority,
+            ),
+            # E7 tool execution/continuation: the resolver factory below composes
+            # the real CP-OAuth/D1-backed tool binding resolver (A3 re-activated,
+            # #2738). With no port/grant every request still fails closed: the
+            # Drive reference app raises `drive_port_unavailable` /
+            # `drive_grant_unavailable`, every other tool stays
+            # `tool_runtime_unavailable`.
             tool_execution=ToolExecutionEngineService(
                 tool_binding_resolver=await _tool_binding_resolver_for_env(env)
             ),
-            # binding_resolver stays None until a trusted Agent/Skill registry source exists (#1969); every request fails closed 503 agent_skill_runtime_unavailable.
-            agent_skill=AgentSkillEngineService(
+            # Agent authority reuses the trusted Tool binding; Skill authority remains deferred.
+            agent_skill=_agent_skill_service_for_env(
+                env,
                 runtime_factory=unavailable,
                 binding_resolver=None,
             ),
@@ -282,6 +1033,9 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
     b14_stream_client = B14StreamingClient(config, transport=transport)
     continuation_store = _continuation_store_for_env(env)
     idempotency_adapter = legacy_worker._idempotency_adapter_for_env(env)
+    admission_adapter = _admission_adapter_for_env(
+        env
+    )
 
     def runtime_factory(app_id: str) -> ExecutionRuntime:
         return ExecutionRuntime(app_id=app_id, b14_client=b14_client)
@@ -301,6 +1055,68 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             b14_stream_client=b14_stream_client,
         )
 
+    tool_binding_resolver = await _tool_binding_resolver_for_env(env)
+    # #3317: source-only approval smoke fixture. The wrapper returns the exact
+    # original resolver object while the deployment-owned enable flag is absent
+    # (the default/current Production state), so no ordinary product/connector
+    # authority changes merely because this source exists.
+    tool_binding_resolver = with_approval_smoke_binding(
+        env,
+        tool_binding_resolver,
+    )
+    # #3580 registered, explicit Engine LIST/READ confirmation only.
+    # The absent deployment-owned flag retains the original resolver identity.
+    # No Bridge/Resident/file authority is created by enabling this tool.
+    tool_binding_resolver = with_hark_office_p01_tool_binding(
+        env, tool_binding_resolver,
+    )
+    # #3580 Engine independently re-reads the SAME private B62 D1 tables.
+    # A configured but missing/invalid D1 binding NEVER enables XLSX P01.
+    # Operator must prove actual B62 D1 identity before setting this flag;
+    # merely trusting browser-supplied owner/hash is forbidden.
+    tool_binding_resolver = _with_web_xlsx_trusted_scope_for_env(
+        env, tool_binding_resolver,
+    )
+    web_xlsx_pending_store = _web_xlsx_tool_pending_for_env(env)
+    web_quote_write_owner_grant = None
+    # Both sides require independent private D1 authority and existing
+    # durable READ ToolRuntime. Without all operator flags, WRITE is absent.
+    if (web_xlsx_pending_store is not None
+            and legacy_worker._binding_value(
+                env, "PADIEM_WEB_XLSX_QUOTE_WRITE_ENGINE_ENABLED") == "true"
+            and legacy_worker._binding_value(
+                env, "PADIEM_WEB_XLSX_QUOTE_WRITE_DURABLE_ENABLED") == "true"
+            and legacy_worker._binding_value(
+                env, "PADIEM_WEB_XLSX_QUOTE_WRITE_OWNER_DECISION_ENABLED") == "true"):
+        try:
+            b62_db = legacy_worker._binding_value(env, "WEB_XLSX_PRIVATE_B62_D1")
+            engine_db = legacy_worker._binding_value(env, ENGINE_CONTINUATION_BINDING_NAME)
+            write_resolver = D1WebQuoteWriteScopeResolver(b62_db)
+            write_pending = D1WebQuoteWriteToolPendingStore(engine_db)
+            write_grant = D1WebQuoteOwnerWriteApprovalGrant(b62_db)
+            tool_binding_resolver = with_web_quote_write_tool_binding(
+                tool_binding_resolver, enabled=True,
+                scope_resolver=write_resolver,
+            )
+            web_xlsx_pending_store = DualWebXlsxToolPendingStore(
+                web_xlsx_pending_store, write_pending,
+            )
+            web_quote_write_owner_grant = write_grant
+        except (ValueError, TypeError, KeyError):
+            web_quote_write_owner_grant = None
+    web_xlsx_owner_grant = None
+    if (web_xlsx_pending_store is not None
+            and legacy_worker._binding_value(
+                env, "PADIEM_WEB_XLSX_P01_OWNER_DECISION_ENABLED"
+            ) == "true"):
+        # The Engine must read the canonical B62 owner decision receipt
+        # independently. The Service Binding credential is not owner consent.
+        try:
+            web_xlsx_owner_grant = D1WebXlsxOwnerApprovalGrant(
+                legacy_worker._binding_value(env, "WEB_XLSX_PRIVATE_B62_D1")
+            )
+        except (ValueError, TypeError):
+            web_xlsx_owner_grant = None
     return EngineServices(
         completed=EngineService(
             runtime_factory=runtime_factory,
@@ -311,13 +1127,14 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             b14_service_bound=True,
             idempotency_adapter=idempotency_adapter,
         ),
-        orchestration=CanonicalIdempotencyOrchestrationEngineService(
+        orchestration=AdmissionBoundOrchestrationEngineService(
             runtime_factory=runtime_factory,
             b14_service_bound=True,
             idempotency_adapter=idempotency_adapter,
             continuation_store=continuation_store,
             approval_decision_verifier=AuthenticatedFirstPartyApprovalDecisionVerifier(),
-            tool_binding_resolver=await _tool_binding_resolver_for_env(env),
+            tool_binding_resolver=tool_binding_resolver,
+            admission_adapter=admission_adapter,
         ),
         research=_research_service_for_env(
             env,
@@ -339,22 +1156,54 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             image_byte_store=image_byte_store,
             scope_authority=scope_authority,
         ),
-        # E7 tool execution/continuation remains a source seam: the
-        # resolver factory below returns None until a real port and grant
-        # store are bound (PR-C). With no port/grant every request still
-        # fails closed as `tool_runtime_unavailable` exactly as before.
+        attachment_admission=AttachmentAdmissionEngineService(
+            image_byte_store=image_byte_store,
+            scope_authority=scope_authority,
+        ),
+        # #2764/#2954 durable document lineage: the context service consumes the
+        # composed resolver and the admission service the same scoped store;
+        # both fail closed on every missing authority. Evidence retention is
+        # wired via the deployment-owned ENGINE_EVIDENCE_STORE (#2954).
+        documents=DocumentContextEngineService(
+            scope_authority=scope_authority,
+            document_resolver=document_resolver,
+            evidence_storage=evidence_storage,
+        ),
+        document_admission=DocumentAdmissionEngineService(
+            document_byte_store=document_byte_store,
+            scope_authority=scope_authority,
+        ),
+        # E7 tool execution/continuation: the resolver factory below composes
+        # the real CP-OAuth/D1-backed tool binding resolver (A3 re-activated,
+        # #2738). With no port/grant every request still fails closed: the
+        # Drive reference app raises `drive_port_unavailable` /
+        # `drive_grant_unavailable`, every other tool stays
+        # `tool_runtime_unavailable`.
         tool_execution=ToolExecutionEngineService(
-            tool_binding_resolver=await _tool_binding_resolver_for_env(env)
+            tool_binding_resolver=tool_binding_resolver,
+            continuation_store=web_xlsx_pending_store,
+            approval_decision_verifier=(
+                AuthenticatedFirstPartyApprovalDecisionVerifier()
+                if web_xlsx_pending_store is not None else None
+            ),
+            web_xlsx_owner_approval_grant=web_xlsx_owner_grant,
+            web_quote_write_approval_grant=web_quote_write_owner_grant,
         ),
         # #1964 source slice: replay composes only the same trusted durable
         # adapter as execution; without it the route fails closed (503).
         idempotency_replay=IdempotencyReplayEngineService(
             idempotency_adapter=idempotency_adapter,
         ),
-        # binding_resolver stays None until a trusted Agent/Skill registry source exists (#1969); every request fails closed 503 agent_skill_runtime_unavailable.
-        agent_skill=AgentSkillEngineService(
+        agent_skill=_agent_skill_service_for_env(
+            env,
             runtime_factory=runtime_factory,
-            binding_resolver=None,
+            # Trusted registry/session/entitlement and continuation authority for
+            # Production; an explicitly marked non-production pilot isolate
+            # substitutes the synthetic preview lane instead.
+            binding_resolver=build_agent_skill_binding_resolver(
+                tool_binding_resolver,
+                getattr(tool_binding_resolver, "subject_for_app", None),
+            ),
             idempotency_adapter=idempotency_adapter,
             approval_decision_verifier=AuthenticatedFirstPartyApprovalDecisionVerifier(),
             continuation_store=continuation_store,
@@ -376,15 +1225,194 @@ class Default(legacy_worker.Default):
 
     async def fetch(self, request: Any) -> Any:
         path = urlparse(str(request.url)).path
+        if path == AUTHORITY_DIAGNOSTIC_PATH:
+            return self._fetch_authority_diagnostic(request)
+        if path == CALENDAR_CREDENTIAL_PRESENCE_PATH:
+            return await self._fetch_calendar_credential_presence(request)
+        if path == CALENDAR_READ_ACTIVATION_PATH:
+            return await self._fetch_calendar_read_activation(request)
+        if path == CALENDAR_READ_STATE_PATH:
+            return await self._fetch_calendar_read_state(request)
         if path == DOCUMENT_CONTEXT_PATH:
             return await self._fetch_document_context(request, path)
         if path == MULTIMODAL_EXECUTE_PATH:
             return await self._fetch_multimodal(request, path)
         if path == MULTIMODAL_STREAM_PATH:
             return await self._fetch_multimodal_stream(request, path)
+        if path == ATTACHMENT_ADMISSION_PATH:
+            return await self._fetch_attachment_admission(request, path)
+        if path == DOCUMENT_ADMISSION_PATH:
+            return await self._fetch_document_admission(request, path)
         if path in {TOOL_EXECUTE_PATH, TOOL_RESUME_PATH, TOOL_CANCEL_PATH}:
             return await self._fetch_tool(request, path)
         return await super().fetch(request)
+
+    def _fetch_authority_diagnostic(self, request: Any) -> Any:
+        """Content-blind caller-authority diagnostic (#2439), token-gated.
+
+        Registry-independent by construction: it must keep answering when the
+        caller registry itself is the broken component, so it never enters the
+        service-auth composition path, reads no storage, and is authenticated
+        only by the dedicated operator-token binding.
+        """
+        method = str(getattr(request, "method", ""))
+        headers = getattr(request, "headers", None)
+        status, body = diagnostic_response(self.env, method, headers)
+        return legacy_worker._json_response(
+            ServiceResponse(status_code=status, body=body)
+        )
+
+    async def _fetch_calendar_credential_presence(self, request: Any) -> Any:
+        """Private read-only Calendar credential-presence surface (#2010).
+
+        Same operator-token gate as the authority diagnostic, and the same
+        closed-projection discipline: the caller supplies only a server-trusted
+        workspace reference, the connector is fixed in code, and the answer is
+        the bounded four-fact presence projection. No storage resolver, no
+        caller-registry path, no access lease and no token unseal are involved.
+        """
+        method = str(getattr(request, "method", ""))
+        headers = getattr(request, "headers", None)
+
+        raw = b""
+        if method.upper() == "POST":
+            try:
+                raw = await read_bounded_worker_request_body(
+                    request,
+                    max_bytes=MAX_PRESENCE_BODY_BYTES,
+                )
+            except RequestBodyTooLarge:
+                # Preserve the existing token-auth-first projection: the
+                # presence service receives only a bounded oversize sentinel,
+                # never the attacker-controlled remainder of the stream.
+                raw = bytes(MAX_PRESENCE_BODY_BYTES + 1)
+            except RequestBodyReadError:
+                raw = b""
+
+        status, body = await calendar_presence_response(self.env, method, headers, raw)
+        return legacy_worker._json_response(
+            ServiceResponse(status_code=status, body=body)
+        )
+
+    async def _fetch_calendar_read_activation(self, request: Any) -> Any:
+        """Activate only the canonical Calendar READ grant for a trusted session."""
+
+        method = str(getattr(request, "method", "")).upper()
+        if method != "POST":
+            return legacy_worker._error_response(
+                "method_not_allowed",
+                "Calendar READ activation requires POST.",
+                405,
+            )
+        headers = getattr(request, "headers", None)
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=_CALENDAR_READ_REQUEST_BODY_BYTES,
+            too_large_code="invalid_request",
+            too_large_message="Calendar activation request is too large.",
+            too_large_status=400,
+            read_error_message="Calendar activation request could not be read.",
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
+
+        auth_error = legacy_worker._authenticate_non_health_request(
+            self.env,
+            headers,
+            body,
+        )
+        if auth_error is not None:
+            return auth_error
+
+        try:
+            session_id = parse_calendar_activation_request(body)
+        except ServiceContractError as exc:
+            return legacy_worker._error_response(
+                exc.code,
+                exc.safe_message,
+                exc.status_code,
+            )
+
+        service = _calendar_read_activation_service_for_env(self.env)
+        if service is None:
+            return legacy_worker._error_response(
+                "calendar_activation_unavailable",
+                "Calendar READ activation authority is unavailable.",
+                503,
+            )
+        try:
+            result = await service.activate(session_id=session_id)
+        except ServiceContractError as exc:
+            return legacy_worker._error_response(
+                exc.code,
+                exc.safe_message,
+                exc.status_code,
+            )
+        return legacy_worker._json_response(result)
+
+    async def _fetch_calendar_read_state(self, request: Any) -> Any:
+        """Read-only persisted Calendar READ grant state for a trusted session.
+
+        Same caller credential, same closed request body and the same
+        fail-closed surface discipline as the activation route. A failed check
+        is an error response (the chat projection maps it to ``unavailable``),
+        never an ``inactive`` state.
+        """
+
+        method = str(getattr(request, "method", "")).upper()
+        if method != "POST":
+            return legacy_worker._error_response(
+                "method_not_allowed",
+                "Calendar READ state requires POST.",
+                405,
+            )
+        headers = getattr(request, "headers", None)
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=_CALENDAR_READ_REQUEST_BODY_BYTES,
+            too_large_code="invalid_request",
+            too_large_message="Calendar state request is too large.",
+            too_large_status=400,
+            read_error_message="Calendar state request could not be read.",
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
+
+        auth_error = legacy_worker._authenticate_non_health_request(
+            self.env,
+            headers,
+            body,
+        )
+        if auth_error is not None:
+            return auth_error
+
+        try:
+            session_id = parse_calendar_activation_request(body)
+        except ServiceContractError as exc:
+            return legacy_worker._error_response(
+                exc.code,
+                exc.safe_message,
+                exc.status_code,
+            )
+
+        service = _calendar_read_state_service_for_env(self.env)
+        if service is None:
+            return legacy_worker._error_response(
+                "calendar_activation_unavailable",
+                "Calendar READ state authority is unavailable.",
+                503,
+            )
+        try:
+            result = await service.state(session_id=session_id)
+        except ServiceContractError as exc:
+            return legacy_worker._error_response(
+                exc.code,
+                exc.safe_message,
+                exc.status_code,
+            )
+        return legacy_worker._json_response(result)
 
     async def _fetch_multimodal(self, request: Any, path: str) -> Any:
         """E5A trusted multimodal reference route: source-wired, fail-closed.
@@ -397,26 +1425,13 @@ class Default(legacy_worker.Default):
         headers = getattr(request, "headers", None)
         content_type = headers.get("content-type") if headers is not None else None
 
-        body = b""
-        if method.upper() == "POST":
-            try:
-                text = await request.text()
-                body = str(text).encode("utf-8")
-            except Exception:
-                return legacy_worker._json_response(
-                    ServiceResponse(
-                        status_code=400,
-                        body={
-                            "ok": False,
-                            "error": {
-                                "code": "invalid_request",
-                                "message": "Request body could not be read.",
-                                "retryable": False,
-                                "metadata": None,
-                            },
-                        },
-                    )
-                )
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=MAX_REQUEST_BODY_BYTES,
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
 
         auth_error = legacy_worker._authenticate_non_health_request(
             self.env,
@@ -441,21 +1456,103 @@ class Default(legacy_worker.Default):
         )
         return legacy_worker._json_response(result)
 
+    async def _fetch_attachment_admission(self, request: Any, path: str) -> Any:
+        """E5C trusted admission route: source-wired, fail-closed.
+
+        This repeats only the same body-read/service-auth boundary before
+        invoking the named admission service; the canonical scoped byte store
+        remains the sole size/media/receipt authority and no storage resolver
+        or alternate authentication mechanism lives here.
+        """
+        method = str(getattr(request, "method", ""))
+        headers = getattr(request, "headers", None)
+        content_type = headers.get("content-type") if headers is not None else None
+
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=MAX_ADMISSION_REQUEST_BODY_BYTES,
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
+
+        auth_error = legacy_worker._authenticate_non_health_request(
+            self.env,
+            headers,
+            body,
+        )
+        if auth_error is not None:
+            return auth_error
+
+        services = await self.engine_services_factory(self.env)
+        if services.attachment_admission is None:
+            return legacy_worker._error_response(
+                "attachment_admission_unavailable",
+                "Trusted attachment admission authority is unavailable.",
+                503,
+            )
+        result = await services.attachment_admission.handle(
+            method=method,
+            path=path,
+            content_type=content_type,
+            body=body,
+        )
+        return legacy_worker._json_response(result)
+
+    async def _fetch_document_admission(self, request: Any, path: str) -> Any:
+        """E8C-B trusted document admission route (#2764): source-wired, fail-closed.
+
+        Same body-read/service-auth boundary as attachment admission; the
+        canonical scoped document byte store remains the sole size/media/
+        receipt authority and no storage resolver or alternate authentication
+        mechanism lives here.
+        """
+        method = str(getattr(request, "method", ""))
+        headers = getattr(request, "headers", None)
+        content_type = headers.get("content-type") if headers is not None else None
+
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=MAX_DOCUMENT_ADMISSION_REQUEST_BODY_BYTES,
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
+
+        auth_error = legacy_worker._authenticate_non_health_request(
+            self.env,
+            headers,
+            body,
+        )
+        if auth_error is not None:
+            return auth_error
+
+        services = await self.engine_services_factory(self.env)
+        if services.document_admission is None:
+            return legacy_worker._error_response(
+                "document_admission_unavailable",
+                "Trusted document admission authority is unavailable.",
+                503,
+            )
+        result = await services.document_admission.handle(
+            method=method,
+            path=path,
+            content_type=content_type,
+            body=body,
+        )
+        return legacy_worker._json_response(result)
+
     async def _fetch_multimodal_stream(self, request: Any, path: str) -> Any:
         method = str(getattr(request, "method", ""))
         headers = getattr(request, "headers", None)
         content_type = headers.get("content-type") if headers is not None else None
-        body = b""
-        if method.upper() == "POST":
-            try:
-                body = str(await request.text()).encode("utf-8")
-            except Exception:
-                return legacy_worker._json_response(
-                    ServiceResponse(status_code=400, body={"ok": False, "error": {
-                        "code": "invalid_request", "message": "Request body could not be read.",
-                        "retryable": False, "metadata": None,
-                    }})
-                )
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=MAX_REQUEST_BODY_BYTES,
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
         auth_error = legacy_worker._authenticate_non_health_request(self.env, headers, body)
         if auth_error is not None:
             return auth_error
@@ -485,26 +1582,14 @@ class Default(legacy_worker.Default):
         headers = getattr(request, "headers", None)
         content_type = headers.get("content-type") if headers is not None else None
 
-        body = b""
-        if method.upper() == "POST":
-            try:
-                text = await request.text()
-                body = str(text).encode("utf-8")
-            except Exception:
-                return legacy_worker._json_response(
-                    ServiceResponse(
-                        status_code=400,
-                        body={
-                            "ok": False,
-                            "error": {
-                                "code": "invalid_request",
-                                "message": "Request body could not be read.",
-                                "retryable": False,
-                                "metadata": None,
-                            },
-                        },
-                    )
-                )
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=MAX_REQUEST_BODY_BYTES,
+            too_large_message="Request body exceeds the safety limit.",
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
 
         auth_error = legacy_worker._authenticate_non_health_request(
             self.env,
@@ -532,42 +1617,30 @@ class Default(legacy_worker.Default):
     async def _fetch_document_context(self, request: Any, path: str) -> Any:
         """E5B trusted document context route: source-wired, fail-closed.
 
-        The wire carries only an ``att_*`` reference, so the shared body-app
-        authenticator cannot bind it; caller credential verification and the
-        server-owned scope triple are the injected scope authority's job. The
-        canonical composition leaves the whole service uninjected until the
-        Production activation gate provides that authority plus the resolver
-        and evidence port, so every request fails closed before any port is
-        reachable. No storage endpoint may be named by the caller here.
+        This uses the same body-app authentication boundary as multimodal and
+        attachment admission. The request's app id is authenticated before
+        the named document service is reached; its opaque session id is passed
+        only to the server-side Control Plane scope authority. Document
+        resolver/evidence activation remains separately gated.
         """
         method = str(getattr(request, "method", ""))
         headers = getattr(request, "headers", None)
         content_type = headers.get("content-type") if headers is not None else None
-        caller_id = headers.get(CALLER_ID_HEADER) if headers is not None else None
-        credential = (
-            headers.get(CALLER_CREDENTIAL_HEADER) if headers is not None else None
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=MAX_REQUEST_BODY_BYTES,
         )
+        if body_error is not None:
+            return body_error
+        assert body is not None
 
-        body = b""
-        if method.upper() == "POST":
-            try:
-                text = await request.text()
-                body = str(text).encode("utf-8")
-            except Exception:
-                return legacy_worker._json_response(
-                    ServiceResponse(
-                        status_code=400,
-                        body={
-                            "ok": False,
-                            "error": {
-                                "code": "invalid_request",
-                                "message": "Request body could not be read.",
-                                "retryable": False,
-                                "metadata": None,
-                            },
-                        },
-                    )
-                )
+        auth_error = legacy_worker._authenticate_non_health_request(
+            self.env,
+            headers,
+            body,
+        )
+        if auth_error is not None:
+            return auth_error
 
         services = await self.engine_services_factory(self.env)
         if services.documents is None:
@@ -581,7 +1654,5 @@ class Default(legacy_worker.Default):
             path=path,
             content_type=content_type,
             body=body,
-            caller_id=caller_id if isinstance(caller_id, str) else "",
-            credential=credential if isinstance(credential, str) else "",
         )
         return legacy_worker._json_response(result)

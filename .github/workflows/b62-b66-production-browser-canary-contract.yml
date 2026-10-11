@@ -1,0 +1,70 @@
+name: B62 B66 Production Browser Canary Contract
+
+on:
+  pull_request:
+    paths:
+      - ".github/scripts/b62_b66_production_browser_canary.py"
+      - ".github/tests/test_b62_b66_production_browser_canary.py"
+      - ".github/workflows/b62-b66-production-browser-canary-contract.yml"
+      - "apps/padiem-chat/app/b66_quote_conversation.py"
+      - "apps/padiem-chat/app/b66_quote_routes.py"
+      - "apps/padiem-chat/static/b66-quote-runtime.js"
+      - "reference/business-66-padiem-quote-v1/embed.html"
+      - "reference/business-66-padiem-quote-v1/quote-core.js"
+      - "reference/business-66-padiem-quote-v1/quote-skill.js"
+      - "reference/business-66-padiem-quote-v1/quote-template-renderer.js"
+      - "reference/business-66-padiem-quote-v1/quote-embed-bridge.js"
+      - "reference/business-66-padiem-quote-v1/quote-embed-browser.js"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/scripts/b62_b66_production_browser_canary.py"
+      - ".github/tests/test_b62_b66_production_browser_canary.py"
+      - ".github/workflows/b62-b66-production-browser-canary-contract.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-b66-production-browser-canary-contract
+  cancel-in-progress: true
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install source-test dependency
+        run: python -m pip install --disable-pip-version-check --quiet "pytest>=8,<10"
+
+      - name: Run B66 Production browser canary source contract
+        run: python -m pytest -q .github/tests/test_b62_b66_production_browser_canary.py
+
+      - name: Pin local authenticated-session boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          SCRIPT=.github/scripts/b62_b66_production_browser_canary.py
+          grep -Fq 'TARGET_URL = "https://chat.padiem.net/"' "$SCRIPT"
+          grep -Fq 'B66_RUNTIME_HOST = "quick-quote-kr.pages.dev"' "$SCRIPT"
+          grep -Fq 'ALLOWED_CDP_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})' "$SCRIPT"
+          grep -Fq 'DEFAULT_LIVE_EXECUTION=BLOCKED' "$SCRIPT"
+          grep -Fq 'COOKIE_OUTPUT=0' "$SCRIPT"
+          grep -Fq 'TOKEN_OUTPUT=0' "$SCRIPT"
+          grep -Fq 'RAW_USER_OUTPUT=0' "$SCRIPT"
+          grep -Fq 'RAW_SKILL_OUTPUT=0' "$SCRIPT"
+          echo 'LOCAL_AUTHENTICATED_CDP_ONLY=PASS'
+          echo 'LIVE_BROWSER_SESSION=0'
+          echo 'COOKIE_EXPORT=0'
+          echo 'TOKEN_EXPORT=0'
+          echo 'PRODUCTION_MUTATION=0'

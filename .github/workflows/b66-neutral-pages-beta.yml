@@ -1,0 +1,362 @@
+name: B66 neutral Pages beta
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'reference/business-66-padiem-quote-v1/**'
+      - 'apps/b66-quote-adapter/**'
+      - '.github/workflows/b66-neutral-pages-beta.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'reference/business-66-padiem-quote-v1/**'
+      - 'apps/b66-quote-adapter/**'
+      - '.github/workflows/b66-neutral-pages-beta.yml'
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'Exact current main commit authorized for one B66 Pages release'
+        required: true
+        type: string
+      confirmation:
+        description: 'Type DEPLOY_B66_PAGES_FROM_EXACT_MAIN_ONCE'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b66-neutral-pages-beta
+  cancel-in-progress: false
+
+jobs:
+  validate-and-release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PROJECT_NAME: quick-quote-kr
+      SOURCE_DIR: reference/business-66-padiem-quote-v1
+      PRODUCTION_BRANCH: main
+      TARGET_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.target_sha || github.event.pull_request.head.sha || github.sha }}
+
+    steps:
+      - name: Checkout exact target
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify exact B66 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test -f "${SOURCE_DIR}/index.html"
+          test -f "${SOURCE_DIR}/_worker.js"
+          test -f "${SOURCE_DIR}/app.js"
+          test -f "${SOURCE_DIR}/quote-core.js"
+          test -f "${SOURCE_DIR}/quote-history.js"
+          test -f "${SOURCE_DIR}/quote-account-scope.js"
+          test -f "${SOURCE_DIR}/file-intake.js"
+          test -f "${SOURCE_DIR}/easy-mode.js"
+          test -f "${SOURCE_DIR}/quote-template.js"
+          test -f "${SOURCE_DIR}/quote-template-store.js"
+          test -f "${SOURCE_DIR}/quote-template-renderer.js"
+          test -f "${SOURCE_DIR}/quote-template-selection.js"
+          test -f "${SOURCE_DIR}/quote-template-ui.js"
+          test -f "${SOURCE_DIR}/quote-template-candidate.js"
+          test -f "${SOURCE_DIR}/quote-template-cloner.js"
+          test -f "${SOURCE_DIR}/quote-skill.js"
+          test -f "${SOURCE_DIR}/quote-skill-store.js"
+          test -f "${SOURCE_DIR}/quote-skill-candidate.js"
+          test -f "${SOURCE_DIR}/quote-skill-registration.js"
+          test -f "${SOURCE_DIR}/quote-template-registration.js"
+          test -f "${SOURCE_DIR}/quote-registration-session.js"
+          test -f "${SOURCE_DIR}/quote-skill-ui.js"
+          test -f "${SOURCE_DIR}/padiem-account.js"
+          test -f "${SOURCE_DIR}/padiem-account.css"
+          test -f "${SOURCE_DIR}/shell-layout.js"
+          test -f "${SOURCE_DIR}/cgi-template-v2.js"
+          test -f "${SOURCE_DIR}/tests/padiem-account-bridge.test.mjs"
+          test -f "${SOURCE_DIR}/tests/account-scope-3480.test.cjs"
+          test -f "${SOURCE_DIR}/embed.html"
+          test -f "${SOURCE_DIR}/quote-embed-bridge.js"
+          test -f "${SOURCE_DIR}/quote-embed-browser.js"
+          test -f "${SOURCE_DIR}/quote-embed.css"
+          test -f "apps/b66-quote-adapter/app/file_intake.py"
+          node "${SOURCE_DIR}/tests/run-b66-contracts.cjs" --syntax
+          echo "B66_SHIP_GUARD=PASS"
+
+      - name: B66 full offline tests before any authorized Production mutation
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        working-directory: ${{ env.SOURCE_DIR }}
+        run: node tests/run-b66-contracts.cjs --tests
+
+      - name: Authorize current-main Pages production release
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        env:
+          OPERATOR_CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = 'refs/heads/main'
+          test "${OPERATOR_CONFIRMATION}" = 'DEPLOY_B66_PAGES_FROM_EXACT_MAIN_ONCE'
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'B66_PAGES_EXACT_MAIN_AUTHORIZED=YES'
+
+      - name: Confirm Cloudflare credentials
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          echo "CLOUDFLARE_CREDENTIALS=PRESENT"
+
+      - name: Ensure dedicated Pages project
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          project_file="$(mktemp)"
+          trap 'rm -f "${project_file}"' EXIT
+
+          project_url="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}"
+          status="$(
+            curl --silent --show-error               --connect-timeout 15               --max-time 60               --output "${project_file}"               --write-out '%{http_code}'               --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"               --header 'Content-Type: application/json'               "${project_url}"
+          )"
+
+          case "${status}" in
+            200)
+              jq -e --arg name "${PROJECT_NAME}" --arg branch "${PRODUCTION_BRANCH}"                 '.success == true and .result.name == $name and .result.production_branch == $branch'                 "${project_file}" >/dev/null
+              echo "PAGES_PROJECT=EXISTS"
+              echo "EXISTING_PROJECT_REUSED=YES"
+              ;;
+            404)
+              echo 'B66 Pages production project is absent; refuse to create an alternate project.' >&2
+              exit 1
+              ;;
+            *)
+              echo "Unexpected Cloudflare Pages project lookup HTTP ${status}." >&2
+              cat "${project_file}" >&2
+              exit 1
+              ;;
+          esac
+
+      - name: Check Cloudflare Pages deployment pacing (read only)
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          deployments_file="$(mktemp)"
+          trap 'rm -f "${deployments_file}"' EXIT
+          http_status="$(curl --silent --show-error --connect-timeout 15 --max-time 60 \
+            --output "${deployments_file}" --write-out '%{http_code}' \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}/deployments?env=production&per_page=20")"
+          test "${http_status}" = '200'
+          jq -e '.success == true and (.result | type) == "array"' "${deployments_file}" >/dev/null
+          latest_created="$(jq -r '[.result[] | select(.environment == "production") | .created_on // empty] | sort | last // empty' "${deployments_file}")"
+          latest_hash="$(jq -r '[.result[] | select(.environment == "production")] | sort_by(.created_on) | last | .deployment_trigger.metadata.commit_hash // empty' "${deployments_file}")"
+          if [ "${latest_hash}" = "${TARGET_SHA}" ]; then
+            echo 'B66_PAGES_EXACT_COMMIT_ALREADY_DEPLOYED=YES; no duplicate deployment.' >&2
+            exit 1
+          fi
+          if [ -n "${latest_created}" ]; then
+            latest_seconds="$(date -u -d "${latest_created}" +%s)"
+            age_seconds="$(( $(date -u +%s) - latest_seconds ))"
+            test "${age_seconds}" -ge 0
+            # Local anti-burst guard: 5 minutes. Cloudflare does not mandate a 60-minute cooldown.
+            # Exact-main authorization, deployment concurrency, and same-hash dedup remain mandatory.
+            if [ "${age_seconds}" -lt 300 ]; then
+              echo 'B66_PAGES_PACING_BLOCKED=YES (last production deployment under 5-minute anti-burst gap)' >&2
+              exit 1
+            fi
+          fi
+          echo 'B66_PAGES_READONLY_PACING_PREFLIGHT=PASS'
+
+      - name: Deploy exact B66 beta
+        if: github.event_name == 'workflow_dispatch'
+        id: deploy
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          output_file="$(mktemp)"
+          clean_output="$(mktemp)"
+          trap 'rm -f "${output_file}" "${clean_output}"' EXIT
+
+          npx --yes wrangler@4 pages deploy "${SOURCE_DIR}"             --project-name "${PROJECT_NAME}"             --branch "${PRODUCTION_BRANCH}"             --commit-hash "${TARGET_SHA}"             --commit-message "B66 neutral beta ${TARGET_SHA}"             --commit-dirty=false 2>&1 | tee "${output_file}"
+
+          sed -E $'s/\x1B\[[0-9;]*[A-Za-z]//g' "${output_file}" > "${clean_output}"
+          deployment_url="$({
+            grep -Eo 'https://[A-Za-z0-9.-]+\.pages\.dev' "${clean_output}" || true
+          } | grep -E "(^https://${PROJECT_NAME}\.pages\.dev$|\.${PROJECT_NAME}\.pages\.dev$)" | head -n 1 || true)"
+          test -n "${deployment_url}" || {
+            echo "Wrangler did not report a B66 deployment URL." >&2
+            exit 1
+          }
+          echo "url=${deployment_url}" >> "${GITHUB_OUTPUT}"
+          echo "DEPLOYMENT_URL=${deployment_url}"
+
+      - name: Verify exact deployment and stable user entrypoint
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          set -euo pipefail
+          expected_apex="https://${PROJECT_NAME}.pages.dev/"
+          exact_html="$(mktemp)"
+          apex_html="$(mktemp)"
+          trap 'rm -f "${exact_html}" "${apex_html}"' EXIT
+
+          verify_page() {
+            url="$1"
+            output="$2"
+            for attempt in $(seq 1 36); do
+              if curl -fsS --connect-timeout 5 --max-time 20                   -H 'Cache-Control: no-cache'                   "${url}?release=${TARGET_SHA}-${attempt}" -o "${output}"                 && grep -F '<title>견적서 만들기</title>' "${output}" >/dev/null                 && grep -F 'id="easyView"' "${output}" >/dev/null                 && grep -F 'id="padiemAccountButton"' "${output}" >/dev/null                 && grep -F '>로그인</button>' "${output}" >/dev/null                 && ! grep -F 'B66 DEMO' "${output}" >/dev/null; then
+                return 0
+              fi
+              sleep 5
+            done
+            return 1
+          }
+
+          verify_page "${DEPLOYMENT_URL}/" "${exact_html}"
+          verify_page "${expected_apex}" "${apex_html}"
+
+          # An HTML title check alone cannot prove the new customer-input UI
+          # is served. Verify the exact source bytes on the production alias.
+          for asset in padiem-account.js easy-mode.js; do
+            actual_file="$(mktemp)"
+            matched=0
+            for attempt in $(seq 1 12); do
+              if curl -fsS --connect-timeout 5 --max-time 20 \
+                -H 'Cache-Control: no-cache' \
+                "${expected_apex}${asset}?release=${TARGET_SHA}-${attempt}" -o "${actual_file}" \
+                && cmp -s "${SOURCE_DIR}/${asset}" "${actual_file}"; then
+                matched=1
+                break
+              fi
+              sleep 5
+            done
+            rm -f "${actual_file}"
+            test "${matched}" = '1'
+          done
+
+          echo "B66_PAGES_EXACT_CUSTOMER_UI_BYTES=PASS"
+          echo "PUBLIC_BYTES_VERIFIED=YES"
+          echo "PUBLIC_ENTRYPOINT=${expected_apex}"
+          echo "CUSTOM_DOMAIN_MUTATION=0"
+
+      - name: Publish summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## B66 neutral Pages beta"
+            echo
+            echo "- exact SHA: ${TARGET_SHA}"
+            echo "- source: ${SOURCE_DIR}"
+            echo "- project: ${PROJECT_NAME}"
+            echo "- auto-push/PR production mutation: 0"
+            echo "- manual production mutation: ${{ github.event_name == 'workflow_dispatch' && 'exact-main-owner-approved-only' || '0' }}"
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+              echo "- user entrypoint: https://${PROJECT_NAME}.pages.dev/"
+              echo "- custom domain mutation: 0"
+            fi
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+  post-deploy-contracts:
+    needs: [validate-and-release]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      SOURCE_DIR: reference/business-66-padiem-quote-v1
+      TARGET_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Checkout exact target
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Deferred source label assertions
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -F '<title>견적서 만들기</title>' "${SOURCE_DIR}/index.html" >/dev/null
+          grep -F 'id="easyView"' "${SOURCE_DIR}/index.html" >/dev/null
+          grep -F 'id="padiemAccountButton"' "${SOURCE_DIR}/index.html" >/dev/null
+          grep -F '>로그인</button>' "${SOURCE_DIR}/index.html" >/dev/null
+          ! grep -F 'B66 DEMO' "${SOURCE_DIR}/index.html" >/dev/null
+          echo "B66_PRODUCT_SOURCE=PASS"
+          echo "PADIEM_ACCOUNT_ENTRY=PASS"
+
+      - name: Run B66 contracts
+        shell: bash
+        working-directory: ${{ env.SOURCE_DIR }}
+        run: |
+          set -euo pipefail
+          # Execute all discovered tests, including company-profile and XLSX contracts.
+          node tests/run-b66-contracts.cjs --tests
+
+      - name: Run B66 server intake adapter contracts
+        shell: bash
+        env:
+          PYTHONPATH: ${{ github.workspace }}/packages/padiem-ai-core:${{ github.workspace }}/apps/b66-quote-adapter
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet 'httpx>=0.27,<1'
+          python -m unittest discover -s apps/b66-quote-adapter/tests -v
+          echo "B66_SERVER_INTAKE_CONTRACT=PASS"
+          echo "CORE_DOCUMENT_PARSER_REUSED=YES"
+          echo "B66_EXTRACTION_AUTHORITY_SOURCE=PASS"
+          echo "MODEL_DEPENDENCY=SERVER_ONLY"
+
+      - name: Local HTTP smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --directory "${SOURCE_DIR}" >"${RUNNER_TEMP}/b66-http.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "${server_pid}" || true' EXIT
+          for attempt in $(seq 1 20); do
+            if curl -fsS http://127.0.0.1:4173/ -o "${RUNNER_TEMP}/b66-local.html"; then
+              break
+            fi
+            sleep 1
+          done
+          grep -F '<title>견적서 만들기</title>' "${RUNNER_TEMP}/b66-local.html" >/dev/null
+          grep -F 'id="padiemAccountButton"' "${RUNNER_TEMP}/b66-local.html" >/dev/null
+          grep -F '>로그인</button>' "${RUNNER_TEMP}/b66-local.html" >/dev/null
+          ! grep -F 'B66 DEMO' "${RUNNER_TEMP}/b66-local.html" >/dev/null
+          curl -fsS http://127.0.0.1:4173/embed.html -o "${RUNNER_TEMP}/b66-embed.html"
+          grep -F '<title>견적서 미리보기</title>' "${RUNNER_TEMP}/b66-embed.html" >/dev/null
+          grep -F "connect-src 'none'" "${RUNNER_TEMP}/b66-embed.html" >/dev/null
+          ! grep -F 'app.js' "${RUNNER_TEMP}/b66-embed.html"
+          ! grep -F 'file-intake.js' "${RUNNER_TEMP}/b66-embed.html"
+          echo "B66_EMBED_HTTP_SMOKE=PASS"
+          echo "LOCAL_HTTP_SMOKE=PASS"
+

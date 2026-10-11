@@ -1,0 +1,9 @@
+lock-version = "1.0"
+created-by = "uv"
+requires-python = ">=3.13.2"
+
+[[packages]]
+name = "pymupdf"
+version = "1.26.3"
+sdist = { url = "https://files.pythonhosted.org/packages/6d/d4/70a265e4bcd43e97480ae62da69396ef4507c8f9cfd179005ee731c92a04/pymupdf-1.26.3.tar.gz", hashes = { sha256 = "b7d2c3ffa9870e1e4416d18862f5ccd356af5fe337b4511093bbbce2ca73b7e5" } }
+wheels = [{ url = "https://cdn.jsdelivr.net/pyodide/v0.28.3/full/pymupdf-1.26.3-cp313-none-pyodide_2025_0_wasm32.whl", hashes = { sha256 = "8b343b6584098287e02c5131369341267f54461b0f2a233deec1a31dfe47693c" } }]

@@ -12,14 +12,28 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
-import tomllib
 from pathlib import Path
+from uuid import UUID
+
+import tomllib
+
+_SCRIPTS_DIR = Path(__file__).resolve().parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+from b62_web_secrets_store_contract import expected_web_secret_bindings, require_exact_web_secrets_store
 
 EXPECTED_WORKER = "padiem-chat"
-SUPPORTED_BINDING_TYPES = {"assets", "service", "d1", "plain_text", "secret_text"}
+OWNER_P01_D1_BINDING = "BROWSER_CONTROL_OWNER_P01_D1"
+SUPPORTED_BINDING_TYPES = {"assets", "service", "d1", "r2_bucket", "browser", "plain_text", "secret_text", "version_metadata", "secrets_store_secret"}
+HARK_BROWSER_BINDING = "BROWSER"
 REQUIRED_VARS = ("PADIEM_CHAT_RUNTIME_MODE", "PADIEM_CHAT_LIVE_ENABLED")
 PUBLIC_BASE_URL_VAR = "PADIEM_CHAT_PUBLIC_BASE_URL"
+# #3252: a live version_metadata binding is runtime provenance. Exactly one may
+# exist, its name must be a bounded identifier, and it is preserved verbatim —
+# never invented and never dropped.
+_BINDING_NAME_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]{0,63}$")
 
 
 class ProductionConfigError(RuntimeError):
@@ -44,8 +58,12 @@ def parse_live_bindings(settings_payload: object) -> dict[str, object]:
     assets: list[dict] = []
     services: list[dict] = []
     d1: list[dict] = []
+    r2: list[dict] = []
     plain_vars: dict[str, str] = {}
     secret_names: list[str] = []
+    secrets_store: list[dict] = []
+    version_metadata: list[dict] = []
+    browser: list[dict] = []
     for raw in bindings:
         if not isinstance(raw, dict):
             raise ProductionConfigError("binding entry is not an object")
@@ -64,21 +82,57 @@ def parse_live_bindings(settings_payload: object) -> dict[str, object]:
             services.append(raw)
         elif kind == "d1":
             d1.append(raw)
+        elif kind == "r2_bucket":
+            bucket_name = raw.get("bucket_name")
+            if not isinstance(bucket_name, str) or not bucket_name:
+                raise ProductionConfigError(f"r2 binding {name!r} has no bucket_name")
+            jurisdiction = raw.get("jurisdiction")
+            if jurisdiction is not None and jurisdiction not in {"eu", "fedramp", "fedramp-high", "us"}:
+                raise ProductionConfigError(f"r2 binding {name!r} has unsupported jurisdiction")
+            r2.append(raw)
+        elif kind == "browser":
+            if name != HARK_BROWSER_BINDING:
+                raise ProductionConfigError("unexpected live Browser Rendering binding name")
+            browser.append(raw)
         elif kind == "plain_text":
             text = raw.get("text")
             if not isinstance(text, str):
                 raise ProductionConfigError(f"plain_text binding {name!r} has no text value")
             plain_vars[name] = text
+        elif kind == "secrets_store_secret":
+            if not _BINDING_NAME_RE.fullmatch(name):
+                raise ProductionConfigError("Secrets Store binding name invalid")
+            store_id = raw.get("store_id")
+            secret_name = raw.get("secret_name")
+            if not isinstance(store_id, str) or not re.fullmatch(r"[a-f0-9]{32}", store_id):
+                raise ProductionConfigError("Secrets Store store_id invalid")
+            if not isinstance(secret_name, str) or not _BINDING_NAME_RE.fullmatch(secret_name):
+                raise ProductionConfigError("Secrets Store secret_name invalid")
+            secrets_store.append({"type": kind, "name": name, "store_id": store_id, "secret_name": secret_name})
+        elif kind == "version_metadata":
+            if not _BINDING_NAME_RE.fullmatch(name):
+                raise ProductionConfigError(
+                    f"version_metadata binding name {name!r} is not a bounded identifier"
+                )
+            version_metadata.append(raw)
         else:
             secret_names.append(name)
     if len(names) != len(set(names)):
         raise ProductionConfigError("duplicate binding names in live settings")
+    if len(version_metadata) > 1:
+        raise ProductionConfigError("duplicate version_metadata bindings in live settings")
+    if len(browser) > 1:
+        raise ProductionConfigError("duplicate Browser Rendering bindings in live settings")
     return {
         "assets": assets,
         "services": services,
         "d1": d1,
+        "r2": r2,
         "vars": plain_vars,
         "secret_names": secret_names,
+        "secrets_store": secrets_store,
+        "version_metadata": version_metadata[0] if version_metadata else None,
+        "browser": browser[0] if browser else None,
     }
 
 
@@ -86,6 +140,9 @@ def build_production_config(
     live: dict[str, object],
     repo_config_path: Path,
     public_base_url: str,
+    owner_d1_database_id: str | None = None,
+    attach_web_secrets_store: bool = False,
+    commission_hark_browser: bool = False,
 ) -> str:
     try:
         repo = tomllib.loads(repo_config_path.read_text(encoding="utf-8"))
@@ -97,6 +154,18 @@ def build_production_config(
     for key in ("main", "compatibility_date"):
         if not isinstance(repo.get(key), str) or not repo[key]:
             raise ProductionConfigError(f"repository config must define {key!r}")
+    base_dir = repo.get("base_dir")
+    if base_dir is not None and (not isinstance(base_dir, str) or not base_dir):
+        raise ProductionConfigError("repository base_dir must be a non-empty string")
+    build = repo.get("build")
+    build_command = None
+    if build is not None:
+        if not isinstance(build, dict):
+            raise ProductionConfigError("repository [build] must be a table")
+        build_command = build.get("command")
+        if not isinstance(build_command, str) or not build_command:
+            raise ProductionConfigError("repository [build].command must be a non-empty string")
+
     assets_dir = (repo.get("assets") or {}).get("directory")
     assets_binding = (repo.get("assets") or {}).get("binding")
     if not isinstance(assets_dir, str) or not assets_dir:
@@ -124,11 +193,61 @@ def build_production_config(
     flag_text = ", ".join(_toml_string(f) for f in flags)
     lines.append(f"compatibility_flags = [{flag_text}]")
     lines.append("workers_dev = true")
+    # Existing live Worker exposes version/preview URLs; match that remote
+    # state explicitly so --strict never attempts to disable them on upload.
+    lines.append("preview_urls = true")
+    if base_dir is not None:
+        lines.append(f"base_dir = {_toml_string(base_dir)}")
+    # Preserve the already-attached canonical production Custom Domain. Without
+    # this exact route, Wrangler --strict correctly rejects a deploy that would
+    # detach chat.padiem.net from the production Worker.
+    if public_base_url == "https://chat.padiem.net":
+        lines.append("")
+        lines.append("[[routes]]")
+        lines.append('pattern = "chat.padiem.net"')
+        lines.append("custom_domain = true")
     lines.append("")
+    if build_command is not None:
+        lines.append("[build]")
+        lines.append(f"command = {_toml_string(build_command)}")
+        lines.append("")
     lines.append("[assets]")
     lines.append(f"directory = {_toml_string(assets_dir)}")
     lines.append(f"binding = {_toml_string(assets_binding)}")
     lines.append("")
+
+    # #3933: preserve an already provisioned Hark Browser Rendering binding.
+    # A repository [browser] declaration is NOT operational authorization to
+    # commission it; the live account/settings inventory remains authoritative.
+    live_browser = live["browser"]
+    repo_browser = repo.get("browser")
+    if live_browser is not None or commission_hark_browser:
+        if (not isinstance(repo_browser, dict)
+                or repo_browser.get("binding") != HARK_BROWSER_BINDING):
+            raise ProductionConfigError("live Browser Rendering binding lacks matching source declaration")
+        lines.append("[browser]")
+        lines.append(f"binding = {_toml_string(HARK_BROWSER_BINDING)}")
+        lines.append("")
+
+    # #3252: the repository config may declare the expected version_metadata
+    # source binding name, but the LIVE settings remain the production
+    # authority. The binding is preserved verbatim when live has one and is
+    # never invented when live does not.
+    repo_version_metadata = repo.get("version_metadata") or {}
+    repo_version_binding = (
+        repo_version_metadata.get("binding") if isinstance(repo_version_metadata, dict) else None
+    )
+    live_version_metadata = live["version_metadata"]
+    if live_version_metadata is not None:
+        live_name = live_version_metadata.get("name")
+        if repo_version_binding is not None and repo_version_binding != live_name:
+            raise ProductionConfigError(
+                "repository version_metadata binding "
+                f"{repo_version_binding!r} drifts from live binding {live_name!r}"
+            )
+        lines.append("[version_metadata]")
+        lines.append(f"binding = {_toml_string(str(live_name))}")
+        lines.append("")
 
     for service in live["services"]:
         target = service.get("service")
@@ -144,6 +263,30 @@ def build_production_config(
             lines.append(f"environment = {_toml_string(environment)}")
         lines.append("")
 
+    if owner_d1_database_id is not None:
+        # This opt-in merely builds a candidate config; it does not deploy.
+        try:
+            parsed = UUID(owner_d1_database_id)
+        except (TypeError, ValueError, AttributeError) as exc:
+            raise ProductionConfigError("Owner D1 ID must be a UUID") from exc
+        if str(parsed) != owner_d1_database_id or parsed.int == 0:
+            raise ProductionConfigError("Owner D1 ID must be a nonzero canonical UUID")
+        all_names = (
+            [item["name"] for item in live["assets"]]
+            + [item["name"] for item in live["services"]]
+            + [item["name"] for item in live["d1"]]
+            + [item["name"] for item in live["r2"]]
+            + list(live["vars"])
+            + list(live["secret_names"])
+            + [item["name"] for item in live["secrets_store"]]
+        )
+        if live["version_metadata"] is not None:
+            all_names.append(live["version_metadata"]["name"])
+        if OWNER_P01_D1_BINDING in all_names:
+            raise ProductionConfigError("Owner D1 binding already exists in live settings")
+        if any(entry.get("id") == owner_d1_database_id for entry in live["d1"]):
+            raise ProductionConfigError("Owner D1 aliases a live D1 database")
+
     for database in live["d1"]:
         database_id = database.get("id")
         if not isinstance(database_id, str) or not database_id:
@@ -153,6 +296,53 @@ def build_production_config(
         lines.append("[[d1_databases]]")
         lines.append(f"binding = {_toml_string(str(database['name']))}")
         lines.append(f"database_id = {_toml_string(database_id)}")
+        lines.append("")
+
+    if owner_d1_database_id is not None:
+        lines.append("[[d1_databases]]")
+        lines.append(f"binding = {_toml_string(OWNER_P01_D1_BINDING)}")
+        lines.append('database_name = "padiem-browser-owner-p01"')
+        lines.append(f"database_id = {_toml_string(owner_d1_database_id)}")
+        lines.append("")
+
+    for bucket in live["r2"]:
+        bucket_name = bucket.get("bucket_name")
+        if not isinstance(bucket_name, str) or not bucket_name:
+            raise ProductionConfigError(
+                f"r2 binding {bucket.get('name')!r} has no bucket_name"
+            )
+        lines.append("[[r2_buckets]]")
+        lines.append(f"binding = {_toml_string(str(bucket['name']))}")
+        lines.append(f"bucket_name = {_toml_string(bucket_name)}")
+        jurisdiction = bucket.get("jurisdiction")
+        if isinstance(jurisdiction, str) and jurisdiction:
+            lines.append(f"jurisdiction = {_toml_string(jurisdiction)}")
+        lines.append("")
+
+    # Existing bindings are still the authority; this opt-in release may add
+    # exactly the two Owner-confirmed same-account Secrets Store identities,
+    # never replace or drop a pre-existing Worker binding.
+    store_bindings = list(live["secrets_store"])
+    if attach_web_secrets_store:
+        all_other_names = (
+            {item["name"] for key in ("assets", "services", "d1", "r2") for item in live[key]}
+            | set(live["vars"])
+            | set(live["secret_names"])
+        )
+        if live["version_metadata"] is not None:
+            all_other_names.add(live["version_metadata"]["name"])
+        if all_other_names & set(expected_web_secret_bindings()):
+            raise ProductionConfigError("web Secrets Store alias collides with live Worker binding")
+        try:
+            additions = require_exact_web_secrets_store(store_bindings, allow_absent=True)
+        except ValueError as exc:
+            raise ProductionConfigError("web Secrets Store identity drift") from exc
+        store_bindings.extend(additions.values())
+    for item in store_bindings:
+        lines.append("[[secrets_store_secrets]]")
+        lines.append(f"binding = {_toml_string(item['name'])}")
+        lines.append(f"store_id = {_toml_string(item['store_id'])}")
+        lines.append(f"secret_name = {_toml_string(item['secret_name'])}")
         lines.append("")
 
     plain_vars = live["vars"]
@@ -165,13 +355,18 @@ def build_production_config(
     if plain_vars.get("PADIEM_CHAT_LIVE_ENABLED") != "true":
         raise ProductionConfigError("live arm is not enabled in live settings; deploy aborted")
 
+    # The deploy never injects or rewrites plain-text variables. The live settings
+    # are the authority; the expected public base URL must already be present and
+    # exact, otherwise this run fails closed and the activation gate owns the fix.
     existing_public = plain_vars.get(PUBLIC_BASE_URL_VAR)
-    if existing_public is not None and existing_public != public_base_url:
+    if existing_public is None:
+        raise ProductionConfigError(
+            f"{PUBLIC_BASE_URL_VAR} is absent from live settings; deploy does not inject it"
+        )
+    if existing_public != public_base_url:
         raise ProductionConfigError(
             f"{PUBLIC_BASE_URL_VAR} drift: live value differs from the expected production origin"
         )
-    plain_vars = dict(plain_vars)
-    plain_vars[PUBLIC_BASE_URL_VAR] = public_base_url
 
     lines.append("[vars]")
     for name in sorted(plain_vars):
@@ -180,18 +375,66 @@ def build_production_config(
     return "\n".join(lines) + ""
 
 
+def verify_mutation_zero(config_text: str, live: dict[str, object]) -> None:
+    """The generated [vars] block must equal the live plain-text variables exactly."""
+    plain_vars = live["vars"]
+    assert isinstance(plain_vars, dict)
+    generated: dict[str, str] = {}
+    in_vars = False
+    for line in config_text.splitlines():
+        if line.strip() == "[vars]":
+            in_vars = True
+            continue
+        if in_vars:
+            if line.startswith("["):
+                break
+            if not line.strip():
+                continue
+            name, _, value = line.partition("=")
+            generated[name.strip()] = json.loads(value)
+    if generated != plain_vars:
+        changed = sorted(
+            name for name in set(generated) | set(plain_vars)
+            if generated.get(name) != plain_vars.get(name)
+        )
+        raise ProductionConfigError(
+            f"generated config mutates live plain-text vars: {', '.join(changed)}"
+        )
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--settings", required=True, type=Path)
     parser.add_argument("--repo-config", required=True, type=Path)
     parser.add_argument("--public-base-url", required=True)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--owner-d1-database-id", help="candidate-only approved D1 UUID; never deploys")
+    parser.add_argument("--attach-existing-web-secrets-store", action="store_true", help="add exactly two Owner-approved same-account web Secret Store bindings")
+    parser.add_argument("--commission-hark-browser", action="store_true", help="owner-authorized additive BROWSER binding, no PDF calls")
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
 
     try:
         payload = json.loads(args.settings.read_text(encoding="utf-8"))
         live = parse_live_bindings(payload)
-        config_text = build_production_config(live, args.repo_config, args.public_base_url)
+        if args.commission_hark_browser and args.attach_existing_web_secrets_store:
+            raise ProductionConfigError("multiple additive authority modes prohibited")
+        if args.commission_hark_browser:
+            # No Hark write/PDF activation as a side effect of Browser install.
+            for flag in (
+                "PADIEM_WEB_XLSX_QUOTE_PDF_ENABLED",
+                "PADIEM_WEB_XLSX_QUOTE_WRITE_ENABLED",
+                "PADIEM_WEB_XLSX_QUOTE_WRITE_ENGINE_ENABLED",
+                "PADIEM_WEB_XLSX_QUOTE_WRITE_DURABLE_ENABLED",
+                "PADIEM_WEB_XLSX_QUOTE_WRITE_OWNER_DECISION_ENABLED",
+            ):
+                if live["vars"].get(flag, "false").lower() == "true":
+                    raise ProductionConfigError("active Hark flag blocks Browser install: " + flag)
+        config_text = build_production_config(
+            live, args.repo_config, args.public_base_url, args.owner_d1_database_id,
+            attach_web_secrets_store=args.attach_existing_web_secrets_store,
+            commission_hark_browser=args.commission_hark_browser,
+        )
+        verify_mutation_zero(config_text, live)
     except (ProductionConfigError, OSError, json.JSONDecodeError) as exc:
         print(f"B62_PRODUCTION_CONFIG_GENERATED=FAIL\nREASON={exc}", file=sys.stderr)
         return 1
@@ -206,19 +449,20 @@ def main(argv: list[str] | None = None) -> int:
     plain_vars = live["vars"]
     assert isinstance(secret_names, list)
     assert isinstance(plain_vars, dict)
-    public_state = (
-        "already_expected"
-        if plain_vars.get(PUBLIC_BASE_URL_VAR) == args.public_base_url
-        else "injected"
-    )
     print("B62_PRODUCTION_CONFIG_GENERATED=PASS")
+    print(f"OWNER_P01_D1_CANDIDATE_ADDITION={int(args.owner_d1_database_id is not None)}")
     print(f"SERVICE_BINDINGS={len(live['services'])}")
     print(f"D1_BINDINGS={len(live['d1'])}")
+    print(f"R2_BINDINGS={len(live['r2'])}")
     print(f"PLAIN_TEXT_VARS={len(plain_vars)}")
     print(f"SECRET_BINDINGS_PRESERVED_BY_PLATFORM={len(secret_names)}")
+    print(f"SECRETS_STORE_BINDINGS_PRESERVED={len(live['secrets_store'])}")
+    print(f"WEB_SECRETS_STORE_ATTACH_REQUESTED={int(args.attach_existing_web_secrets_store)}")
     print("SECRET_VALUES_READ=0")
     print("SECRET_VALUES_EMITTED=0")
-    print(f"{PUBLIC_BASE_URL_VAR}_STATE={public_state}")
+    print("PADIEM_CHAT_PUBLIC_BASE_URL_PRESTATE=EXPECTED")
+    print("DEPLOY_CONFIG_MUTATION_ZERO=PASS")
+    print(f"VERSION_METADATA_PRESERVED={1 if live['version_metadata'] is not None else 0}")
     return 0
 
 

@@ -1,7 +1,12 @@
 from __future__ import annotations
 
+import inspect
+import os
+import tracemalloc
+import zlib
+from dataclasses import replace
 from io import BytesIO
-from zipfile import ZIP_DEFLATED, ZipFile
+from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 import pytest
 
@@ -19,6 +24,7 @@ except ModuleNotFoundError:  # Core base install intentionally excludes document
 
 from padiem_ai_core.document_normalization import (
     MAX_BINARY_DOCUMENT_BYTES,
+    read_hwpx_package_members,
     MAX_DOCUMENT_CHARS,
     MAX_OOXML_ENTRIES,
     MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES,
@@ -26,13 +32,22 @@ from padiem_ai_core.document_normalization import (
     MAX_PDF_PAGES,
     BINARY_DOCUMENT_MEDIA,
     DocumentNormalizationError,
+    _safe_ooxml_member,
     extract_binary_document,
     extract_docx_text,
     extract_hwpx_text,
     extract_pptx_text,
+    inspect_pdf,
+    normalize_pdf_inspection,
     normalize_text_document,
+    parse_hwpx_sections,
     validate_document_identity,
     validate_ooxml_archive,
+)
+import padiem_ai_core.document_normalization as document_normalization
+from padiem_ai_core.hwpx_package_serializer import (
+    HwpxPackageSection,
+    deserialize_hwpx_package,
 )
 
 PDF_MIME = "application/pdf"
@@ -43,10 +58,26 @@ HWPX_MIME = "application/hwp+zip"
 
 
 def _zip_bytes(entries: dict[str, bytes]) -> bytes:
+    """Build an in-memory ZIP whose member names survive verbatim.
+
+    ``ZipInfo.__init__`` rewrites ``os.sep`` to ``/``, so on Windows a member
+    named ``a\\b.xml`` was silently stored as ``a/b.xml``. The unsafe-path guard
+    that rejects a backslash member was therefore never actually exercised on
+    Windows, and the adversarial fixture was quietly not adversarial there.
+    Assigning the name *after* construction keeps the raw member name on every
+    platform, which is what the guard has to be tested against.
+    """
+
     output = BytesIO()
     with ZipFile(output, "w", compression=ZIP_DEFLATED) as archive:
         for name, payload in entries.items():
-            archive.writestr(name, payload)
+            member = ZipInfo(name)
+            member.filename = name
+            # ``writestr(str, ...)`` sets this from the archive default; passing
+            # a ZipInfo does not, so it is set here to keep the compression
+            # behaviour of every existing fixture exactly as it was.
+            member.compress_type = ZIP_DEFLATED
+            archive.writestr(member, payload)
     return output.getvalue()
 
 
@@ -121,6 +152,35 @@ def _minimal_text_pdf(text: str) -> bytes:
     escaped = text.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
     content.set_data(f"BT /F1 14 Tf 36 90 Td ({escaped}) Tj ET".encode("ascii"))
     page[NameObject("/Contents")] = writer._add_object(content)
+    output = BytesIO()
+    writer.write(output)
+    return output.getvalue()
+
+
+def _multi_page_text_pdf(*texts: str) -> bytes:
+    _require_pdf_extra()
+    assert PdfWriter is not None
+    assert DictionaryObject is not None and NameObject is not None and DecodedStreamObject is not None
+    writer = PdfWriter()
+    font = DictionaryObject(
+        {
+            NameObject("/Type"): NameObject("/Font"),
+            NameObject("/Subtype"): NameObject("/Type1"),
+            NameObject("/BaseFont"): NameObject("/Helvetica"),
+        }
+    )
+    font_ref = writer._add_object(font)
+    for text in texts:
+        page = writer.add_blank_page(width=320, height=180)
+        if not text:
+            continue
+        page[NameObject("/Resources")] = DictionaryObject(
+            {NameObject("/Font"): DictionaryObject({NameObject("/F1"): font_ref})}
+        )
+        content = DecodedStreamObject()
+        escaped = text.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
+        content.set_data(f"BT /F1 14 Tf 36 90 Td ({escaped}) Tj ET".encode("ascii"))
+        page[NameObject("/Contents")] = writer._add_object(content)
     output = BytesIO()
     writer.write(output)
     return output.getvalue()
@@ -223,6 +283,56 @@ def test_binary_identity_is_product_neutral_and_has_no_path_or_url_authority() -
     import inspect
 
     assert tuple(inspect.signature(extract_binary_document).parameters) == ("name", "media_type", "payload")
+
+
+def test_pdf_inspection_normalizes_to_exact_page_segments() -> None:
+    payload = _multi_page_text_pdf("Page One", "Page Two")
+    inspection = inspect_pdf(name="case.pdf", media_type=PDF_MIME, payload=payload)
+
+    document = normalize_pdf_inspection(inspection)
+
+    assert document.text == "Page One\n\nPage Two"
+    assert document.byte_size == len(payload)
+    assert document.source_kind == "binary"
+    assert [segment.order for segment in document.segments] == [0, 1]
+    assert [segment.locator.to_public_dict() for segment in document.segments if segment.locator] == [
+        {"kind": "page", "value": "1", "precision": "exact"},
+        {"kind": "page", "value": "2", "precision": "exact"},
+    ]
+    assert "Page One" not in repr(document)
+    assert "Page Two" not in repr(document)
+
+
+def test_pdf_inspection_skips_empty_pages_without_renumbering() -> None:
+    payload = _multi_page_text_pdf("First", "", "Third")
+    inspection = inspect_pdf(name="case.pdf", media_type=PDF_MIME, payload=payload)
+
+    document = normalize_pdf_inspection(inspection)
+
+    assert [segment.locator.value for segment in document.segments if segment.locator] == ["1", "3"]
+    assert document.text == "First\n\nThird"
+
+
+def test_pdf_inspection_page_provenance_fails_closed() -> None:
+    payload = _multi_page_text_pdf("Only")
+    inspection = inspect_pdf(name="case.pdf", media_type=PDF_MIME, payload=payload)
+    bad_page = replace(inspection.pages[0], page_number=2)
+    malformed = replace(inspection, pages=(bad_page,))
+
+    with pytest.raises(DocumentNormalizationError) as exc:
+        normalize_pdf_inspection(malformed)
+
+    assert exc.value.code == "invalid_pdf_page_provenance"
+
+
+def test_pdf_inspection_without_native_text_requires_ocr_path() -> None:
+    payload = _blank_pdf()
+    inspection = inspect_pdf(name="scan.pdf", media_type=PDF_MIME, payload=payload)
+
+    with pytest.raises(DocumentNormalizationError) as exc:
+        normalize_pdf_inspection(inspection)
+
+    assert exc.value.code == "pdf_empty_text"
 
 
 def test_pdf_extracts_text_and_never_retains_raw_binary() -> None:
@@ -349,6 +459,140 @@ def test_hwpx_encrypted_archive_fails_closed_and_legacy_hwp_stays_unsupported() 
     assert extension.value.code == "media_extension_mismatch"
 
 
+# --------------------------------------------------------------------------- #
+# #2966: parse_hwpx_sections is now the single HWPX archive-and-XML read
+# authority. These cases pin the facts it reports, the flat projection it feeds,
+# and the fact that the flat path no longer walks an archive of its own.
+# --------------------------------------------------------------------------- #
+
+_HWPX_NS = (
+    'xmlns:hs="http://www.hancom.co.kr/hwpml/2011/section" '
+    'xmlns:hp="http://www.hancom.co.kr/hwpml/2011/paragraph"'
+)
+
+
+def _hwpx_raw_section(body: str) -> bytes:
+    return f'<?xml version="1.0" encoding="UTF-8"?><hs:sec {_HWPX_NS}>{body}</hs:sec>'.encode()
+
+
+def _hwpx_para(text: str) -> str:
+    return f"<hp:p><hp:runs><hp:t>{text}</hp:t></hp:runs></hp:p>"
+
+
+def _hwpx_payload(*section_bodies: bytes) -> bytes:
+    entries = {"mimetype": b"application/hwp+zip"}
+    entries.update(
+        {f"Contents/section{index}.xml": body for index, body in enumerate(section_bodies, start=1)}
+    )
+    return _zip_bytes(entries)
+
+
+def test_parse_hwpx_sections_reports_shape_the_flat_text_flattens() -> None:
+    table = (
+        _hwpx_para("intro")
+        + "<hp:p><hp:tbl><hp:tr><hp:tc>"
+        + _hwpx_para("cell-a")
+        + "</hp:tc></hp:tr></hp:tbl></hp:p>"
+    )
+    payload = _hwpx_payload(_hwpx_raw_section(table))
+    (section,) = parse_hwpx_sections(payload)
+    assert [(item.text, item.text_nodes, item.holds_nested_paragraph) for item in section.paragraphs] == [
+        ("intro", 1, False),
+        ("cell-a", 1, True),
+        ("cell-a", 1, False),
+    ]
+    assert section.root_tag.endswith("}sec")
+    assert section.unsupported_nodes == 3
+    assert section.has_carriage_return is False
+
+
+def test_parse_hwpx_sections_orders_by_section_number_not_member_name() -> None:
+    sequential = _hwpx_payload(
+        _hwpx_section_xml("one"),
+        _hwpx_section_xml("two"),
+        _hwpx_section_xml("three"),
+    )
+    entries = {
+        "mimetype": b"application/hwp+zip",
+        "Contents/section1.xml": _hwpx_section_xml("one"),
+        "Contents/section10.xml": _hwpx_section_xml("ten"),
+        "Contents/section2.xml": _hwpx_section_xml("two"),
+    }
+    assert [section.index for section in parse_hwpx_sections(_zip_bytes(entries))] == [1, 2, 10]
+    assert [section.index for section in parse_hwpx_sections(sequential)] == [1, 2, 3]
+
+
+def test_parse_hwpx_sections_flags_a_carriage_return_the_parser_would_erase() -> None:
+    with_return = _hwpx_payload(_hwpx_raw_section(_hwpx_para("일\r\n이")))
+    without_return = _hwpx_payload(_hwpx_raw_section(_hwpx_para("일\n이")))
+    assert parse_hwpx_sections(with_return)[0].has_carriage_return is True
+    assert parse_hwpx_sections(without_return)[0].has_carriage_return is False
+    # Both still flatten: the flat authority never promised byte-exact control
+    # characters, and its behaviour must not move.
+    assert extract_hwpx_text(with_return) == extract_hwpx_text(without_return) == "일\n이"
+
+
+def test_flat_hwpx_text_projection_is_pinned_after_the_factoring() -> None:
+    cases: list[tuple[bytes, str]] = [
+        (_hwpx_payload(_hwpx_section_xml("alone")), "alone"),
+        (_hwpx_payload(_hwpx_section_xml("a", "b")), "a\nb"),
+        (_hwpx_payload(_hwpx_section_xml("", "b")), "b"),
+        (_hwpx_payload(_hwpx_section_xml("  a  ", "  b  ")), "a  \n  b"),
+        (_hwpx_payload(_hwpx_section_xml(), _hwpx_section_xml("본문")), "본문"),
+        (_hwpx_payload(_hwpx_raw_section("<hp:p><hp:runs><hp:t>앞</hp:t></hp:runs>"
+                                         "<hp:runs><hp:t>뒤</hp:t></hp:runs></hp:p>")), "앞뒤"),
+        (_hwpx_payload(_hwpx_raw_section("<hp:p/>" + _hwpx_para("본문"))), "본문"),
+        (_hwpx_payload(_hwpx_raw_section('<hp:p><hp:runs><hp:img href="rId1"/></hp:runs></hp:p>'
+                                         + _hwpx_para("본문"))), "본문"),
+        (_hwpx_payload(_hwpx_raw_section("<hp:p><hp:sub>" + _hwpx_para("a") + _hwpx_para("b")
+                                         + "</hp:sub>tail</hp:p>")), "a\nb"),
+        (_hwpx_payload(_hwpx_raw_section(_hwpx_para("일\r\n이") + _hwpx_para("둘"))), "일\n이" + "\n" + "둘"),
+    ]
+    for payload, expected in cases:
+        assert extract_hwpx_text(payload) == expected
+
+    # A paragraph that carries text directly instead of through hp:t has always
+    # produced nothing, and the factoring keeps it that way.
+    direct_text = _hwpx_payload(
+        _hwpx_raw_section("<hp:p><hp:sub><hp:p>a</hp:p><hp:p>b</hp:p></hp:sub>tail</hp:p>")
+    )
+    with pytest.raises(DocumentNormalizationError) as unreadable:
+        extract_hwpx_text(direct_text)
+    assert unreadable.value.code == "hwpx_empty"
+
+
+def test_extract_hwpx_text_keeps_no_archive_or_xml_walk_of_its_own() -> None:
+    source = inspect.getsource(document_normalization)
+    flat_path = source.split("def extract_hwpx_text")[1].split("\ndef ")[0]
+    for forbidden in ("ZipFile(", "namelist(", "_parse_xml(", "validate_ooxml_archive(", "archive.read("):
+        assert forbidden not in flat_path, forbidden
+    assert "parse_hwpx_sections(" in flat_path
+
+
+def test_both_hwpx_projections_route_through_the_same_single_parse_path(monkeypatch: pytest.MonkeyPatch) -> None:
+    import padiem_ai_core.hwpx_package_serializer as serializer_module
+
+    payload = _hwpx_payload(_hwpx_section_xml("단일 경로"), _hwpx_section_xml("둘째"))
+    calls: list[bytes] = []
+    real = document_normalization.parse_hwpx_sections
+
+    def counting(parsed_payload: bytes):
+        calls.append(parsed_payload)
+        return real(parsed_payload)
+
+    monkeypatch.setattr(document_normalization, "parse_hwpx_sections", counting)
+    monkeypatch.setattr(serializer_module, "parse_hwpx_sections", counting)
+
+    assert document_normalization.extract_hwpx_text(payload) == "단일 경로" + "\n" + "둘째"
+    assert len(calls) == 1
+    assert deserialize_hwpx_package(payload).sections == (
+        HwpxPackageSection(paragraphs=("단일 경로",)),
+        HwpxPackageSection(paragraphs=("둘째",)),
+    )
+    assert len(calls) == 2
+    assert calls == [payload, payload]
+
+
 def test_ooxml_malformed_missing_dtd_encryption_and_paths_fail_closed() -> None:
     with pytest.raises(DocumentNormalizationError) as malformed:
         extract_docx_text(b"not-a-zip")
@@ -369,10 +613,46 @@ def test_ooxml_malformed_missing_dtd_encryption_and_paths_fail_closed() -> None:
         extract_docx_text(encrypted)
     assert locked.value.code == "ooxml_encrypted"
 
-    for unsafe in ("../evil.xml", "/absolute.xml", "C:/drive.xml", "a\\b.xml", "a//b.xml"):
+    for unsafe in ("../evil.xml", "/absolute.xml", "C:/drive.xml", "a//b.xml"):
         payload = _zip_bytes({unsafe: b"x", "word/document.xml": _docx_xml("safe")})
         with pytest.raises(DocumentNormalizationError) as path_error:
             extract_docx_text(payload)
+        assert path_error.value.code == "ooxml_unsafe_path"
+
+
+def test_ooxml_backslash_member_guard_is_actually_executed() -> None:
+    """The backslash branch of the unsafe-path guard must really run.
+
+    ``zipfile`` normalizes ``os.sep`` to ``/`` on **read** as well as write:
+    ``ZipFile._RealGetContents`` builds ``ZipInfo(name)`` from the on-disk name,
+    so on Windows a backslash member can never reach the guard through an archive
+    at all. Previously this case sat inside the archive loop above, where it
+    silently stopped being adversarial on Windows: the document was admitted
+    because the fixture had been rewritten, not because the guard was bypassed.
+
+    So the guard is asserted directly — which executes it on every platform —
+    and the archive-level behaviour is asserted per platform instead of
+    disappearing from coverage. No Core parser source changes for this.
+    """
+
+    assert _safe_ooxml_member("a" + chr(92) + "b.xml") is False
+    # Positive control: the assertion above is about the backslash, not about
+    # the helper rejecting everything.
+    assert _safe_ooxml_member("a/b.xml") is True
+
+    archive = _zip_bytes({"a\\b.xml": b"x", "word/document.xml": _docx_xml("safe")})
+    with ZipFile(BytesIO(archive)) as opened:
+        stored = opened.namelist()[0]
+
+    if os.sep == "\\":
+        # The member is written with a real backslash, and the stdlib reader is
+        # what neutralises it before the guard can see it.
+        assert stored == "a/b.xml"
+        assert extract_docx_text(archive) == "safe"
+    else:
+        assert stored == "a\\b.xml"
+        with pytest.raises(DocumentNormalizationError) as path_error:
+            extract_docx_text(archive)
         assert path_error.value.code == "ooxml_unsafe_path"
 
 
@@ -421,3 +701,169 @@ def test_binary_size_bound_fails_without_echoing_payload() -> None:
         extract_binary_document(name="x.pdf", media_type=PDF_MIME, payload=payload)
     assert exc.value.code == "binary_too_large"
     assert "PRIVATE" not in str(exc.value)
+
+
+def _lying_declared_size_zip(entry_name: str, real: bytes, declared: int) -> bytes:
+    """A ZIP that declares a tiny uncompressed size for a huge deflate stream.
+
+    Both the local header and the central directory are rewritten, and the CRC
+    is rewritten to match the declared prefix so the archive is rejected by a
+    size policy rather than by a CRC error. That is what makes this an
+    amplification fixture instead of a malformed-archive fixture: every piece of
+    declared metadata is internally consistent and passes every declared bound.
+    """
+
+    payload = bytearray(_zip_bytes({entry_name: real}))
+    crc = zlib.crc32(real[:declared]) & 0xFFFFFFFF
+    for signature, crc_offset, size_offset in (
+        (b"PK\x03\x04", 14, 22),
+        (b"PK\x01\x02", 16, 24),
+    ):
+        index = payload.find(signature)
+        assert index >= 0
+        while index != -1:
+            payload[index + crc_offset : index + crc_offset + 4] = crc.to_bytes(4, "little")
+            payload[index + size_offset : index + size_offset + 4] = declared.to_bytes(4, "little")
+            index = payload.find(signature, index + 4)
+    return bytes(payload)
+
+
+def _forge_declared_size(payload: bytes, target: str, real: bytes, declared: int) -> bytes:
+    """Rewrite one member's declared uncompressed size over a real deflate stream.
+
+    Both the local header and the central directory are rewritten, and the CRC
+    is rewritten to match the declared prefix, so the member is internally
+    consistent and passes every declared-metadata bound while its deflate stream
+    expands far beyond the declaration.
+    """
+
+    data = bytearray(payload)
+    name = target.encode("utf-8")
+    crc = zlib.crc32(real[:declared]) & 0xFFFFFFFF
+    for signature, name_at, crc_at, size_at in (
+        (b"PK\x03\x04", 30, 14, 22),
+        (b"PK\x01\x02", 46, 16, 24),
+    ):
+        index = data.find(signature)
+        while index != -1:
+            if bytes(data[index + name_at : index + name_at + len(name)]) == name:
+                data[index + crc_at : index + crc_at + 4] = crc.to_bytes(4, "little")
+                data[index + size_at : index + size_at + 4] = declared.to_bytes(4, "little")
+            index = data.find(signature, index + 4)
+    return bytes(data)
+
+
+def _traced_peak(action) -> tuple[object, int]:
+    tracemalloc.start()
+    try:
+        value = action()
+        _, peak = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+    return value, peak
+
+
+def test_ooxml_declared_size_lie_cannot_amplify_decompression_work() -> None:
+    """A declared size is a claim, so it must not license real inflation.
+
+    ``ZipExtFile.read()`` without a length inflates the whole deflate stream and
+    only then truncates to the declared size, which let a ~260 KB archive that
+    declares 24 bytes allocate hundreds of megabytes before any member bound was
+    consulted. The declared-metadata bounds stay exactly as they were; what this
+    pins is that the *work* is bounded by the same number.
+    """
+
+    real = b"<?xml version='1.0'?>" + b"\x00" * (8 * 1024 * 1024)
+    lying = _lying_declared_size_zip("word/document.xml", real, 24)
+    assert len(lying) < 64 * 1024
+
+    _, validate_peak = _traced_peak(lambda: validate_ooxml_archive(lying))
+    _, extract_peak = _traced_peak(lambda: _extract_docx_expecting_failure(lying))
+
+    # ~8 MiB of real deflate expansion from a well under 64 KB archive.
+    assert validate_peak < 1024 * 1024, validate_peak
+    assert extract_peak < 1024 * 1024, extract_peak
+
+
+def _extract_docx_expecting_failure(payload: bytes) -> str:
+    try:
+        return extract_docx_text(payload)
+    except DocumentNormalizationError:
+        # The truncated member is not a whole document, so failing closed here is
+        # the correct outcome; the point of the fixture is the bounded work.
+        return ""
+
+
+def test_xlsx_third_party_reader_never_receives_the_untrusted_original_archive() -> None:
+    """XLSX must not hand the original ZIP back to openpyxl after validation.
+
+    ``openpyxl`` opens its own ``ZipFile`` over whatever file-like object it is
+    given, so passing the original bytes re-exposed the declared-size deflate
+    amplification the canonical gate had just bounded. The fixture is a
+    syntactically XLSX-shaped workbook whose ``[Content_Types].xml`` - a member
+    openpyxl always reads - declares 64 bytes over a 16 MiB deflate stream.
+    """
+
+    _require_xlsx_extra()
+    declared = 64
+    real = b"<Types>" + b"\x00" * (16 * 1024 * 1024)
+    forged = _forge_declared_size(
+        _replace_zip_entry(_xlsx_bytes(), "[Content_Types].xml", real),
+        "[Content_Types].xml",
+        real,
+        declared,
+    )
+    assert len(forged) < 128 * 1024
+
+    def run():
+        try:
+            return extract_binary_document(name="bomb.xlsx", media_type=XLSX_MIME, payload=forged)
+        except DocumentNormalizationError as exc:
+            # A truncated Content-Types part is not a whole workbook, so failing
+            # closed is the correct outcome; the fixture pins the bounded work.
+            return exc.code
+
+    outcome, peak = _traced_peak(run)
+    assert peak < 1024 * 1024, peak
+    assert isinstance(outcome, str), outcome
+    assert outcome == "xlsx_invalid", outcome
+
+
+def test_bounded_ooxml_repackage_preserves_a_well_formed_workbook() -> None:
+    """The sanitized copy must keep every member openpyxl needs."""
+
+    _require_xlsx_extra()
+    payload = _xlsx_bytes()
+    document = extract_binary_document(name="book.xlsx", media_type=XLSX_MIME, payload=payload)
+    assert "[Summary!A1] Padiem XLSX" in document.text
+    assert "[Summary!B2] 42" in document.text
+    assert "[Detail!C3] bounded" in document.text
+
+    sanitized = document_normalization._bounded_ooxml_repackage(payload)
+    with ZipFile(BytesIO(payload)) as original, ZipFile(BytesIO(sanitized)) as copy:
+        assert copy.namelist() == original.namelist()
+        for name in original.namelist():
+            assert copy.read(name) == original.read(name), name
+            entry = copy.getinfo(name)
+            # Stored, so the copy cannot declare a size it does not really hold.
+            assert entry.compress_type == 0
+            assert entry.file_size == entry.compress_size
+
+
+def test_bounded_member_read_returns_the_full_declared_content() -> None:
+    """Honest members must read byte-identically, including CRC verification."""
+
+    big = bytes(range(256)) * 2_400
+    assert len(big) <= MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
+    payload = _zip_bytes(
+        {
+            "mimetype": b"application/hwp+zip",
+            "Contents/section0.xml": _hwpx_section_xml("hello"),
+            "BinData/big.bin": big,
+        }
+    )
+    members = {member.name: member.payload for member in read_hwpx_package_members(payload)}
+    assert members["BinData/big.bin"] == big
+    assert len(members["BinData/big.bin"]) == len(big)
+    assert members["Contents/section0.xml"] == _hwpx_section_xml("hello")
+    assert extract_hwpx_text(payload) == "hello"

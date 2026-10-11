@@ -194,6 +194,8 @@ async def test_health_endpoint_metadata_is_non_secret_booleans_and_statuses():
             "live_enabled",
             "canonical_identity_bound",
             "identity_shadow_bound",
+            # #1975: boolean-only telemetry channel presence flag.
+            "request_telemetry_enabled",
         }
         assert set(payload.keys()) == allowed_keys
 

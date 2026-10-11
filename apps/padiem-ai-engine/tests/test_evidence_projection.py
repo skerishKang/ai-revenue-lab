@@ -23,6 +23,8 @@ from padiem_ai_core import (
     ClaimDerivation,
     ClaimEvidenceLink,
     ClaimEvidenceRelation,
+    DocumentLocator,
+    DocumentSegment,
     Evidence,
     EvidenceClaim,
     EvidenceGraphError,
@@ -31,9 +33,12 @@ from padiem_ai_core import (
     GroundedCitation,
     GroundedResearchRuntime,
     GroundedSynthesisResult,
+    LocatorKind,
+    LocatorPrecision,
     MockWebProvider,
     OrchestrationResult,
     PreparedGrounding,
+    RetrievedItem,
     RunMetadata,
     RunStatus,
     StreamingExecutionEvent,
@@ -45,6 +50,7 @@ from padiem_ai_core import (
     evidence_graph,
     project_grounded_citations,
 )
+from padiem_ai_core.retrieval import evidence_from_retrieved_item
 
 from app.contract_manifest import current_engine_contract_manifest
 from app.evidence_projection import (
@@ -75,6 +81,33 @@ def evidence(index: int, *, url: str | None = None) -> Evidence:
         provider="test",
         source_type="search",
         url=url or f"https://example.com/{index}",
+    )
+
+
+def located_evidence(index: int = 7) -> Evidence:
+    locator = DocumentLocator(
+        kind=LocatorKind.PAGE,
+        value=str(index),
+        precision=LocatorPrecision.EXACT,
+    )
+    segment = DocumentSegment(
+        text=f"Located source {index} body.",
+        order=index - 1,
+        locator=locator,
+    )
+    retrieved = RetrievedItem.from_document_segment(
+        id=f"chunk-{index}",
+        namespace="project.legal",
+        source_type="drive_file",
+        provider="padiem_index",
+        source_ref=f"drive:file_{index}",
+        segment=segment,
+        title=f"brief-{index}.pdf",
+    )
+    return evidence_from_retrieved_item(
+        retrieved,
+        evidence_id=f"src-located-{index}",
+        retrieved_at="2026-10-01T00:00:00Z",
     )
 
 
@@ -213,7 +246,18 @@ def accepted_verification(disposition: VerificationDisposition) -> AcceptedVerif
 
 
 def test_source_field_set_matches_core_serialization() -> None:
-    assert set(evidence(1).to_public_dict()) == set(ENGINE_EVIDENCE_SOURCE_FIELDS)
+    unlocated_fields = set(evidence(1).to_public_dict())
+    assert unlocated_fields == set(ENGINE_EVIDENCE_SOURCE_FIELDS) - {"document_locator"}
+
+    located = located_evidence()
+    public = located.to_public_dict()
+    assert set(public) == set(ENGINE_EVIDENCE_SOURCE_FIELDS)
+    assert public["document_locator"] == {
+        "kind": "page",
+        "value": "7",
+        "precision": "exact",
+    }
+    assert "source_ref" not in public
 
 
 def test_citation_field_set_matches_core_serialization() -> None:
@@ -227,7 +271,39 @@ def test_citation_field_set_matches_core_serialization() -> None:
         source_type="search",
         relation=ClaimEvidenceRelation.SUPPORTS,
     )
-    assert set(citation.to_public_dict()) == set(ENGINE_EVIDENCE_CITATION_FIELDS)
+    assert set(citation.to_public_dict()) == set(ENGINE_EVIDENCE_CITATION_FIELDS) - {
+        "document_locator"
+    }
+
+    source = located_evidence()
+    claim = EvidenceClaim(
+        id="claim-located",
+        text="The located brief supports this claim.",
+        derivation=ClaimDerivation.OBSERVED,
+    )
+    graph = evidence_graph(
+        sources=(source,),
+        claims=(claim,),
+        links=(
+            ClaimEvidenceLink(
+                "claim-located",
+                source.id,
+                ClaimEvidenceRelation.SUPPORTS,
+            ),
+        ),
+    )
+    located_citation = project_grounded_citations(
+        graph,
+        "claim-located",
+    ).citations[0]
+    public = located_citation.to_public_dict()
+    assert set(public) == set(ENGINE_EVIDENCE_CITATION_FIELDS)
+    assert public["document_locator"] == {
+        "kind": "page",
+        "value": "7",
+        "precision": "exact",
+    }
+    assert "source_ref" not in public
 
 
 # ---------------------------------------------------------------------------

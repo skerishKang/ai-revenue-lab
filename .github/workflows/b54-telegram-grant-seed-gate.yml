@@ -1,0 +1,452 @@
+name: B54 Telegram Grant Seed Gate
+
+# One-shot Production seed of the canonical Telegram READ grant for #2712.
+# The grant row pins app/agent/connector identity plus the canonical binding
+# and actor references; capability is exactly ["read"], so send/write paths
+# stay fail-closed. Reads mirror the Telegram readiness preflight; the only
+# D1 mutation is the single reviewed INSERT executed by the canonical seed
+# script (dry-run reviewed inline first). No provider call, no Worker code
+# change, no secret handling.
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/b54-telegram-grant-seed-gate.yml'
+      - '.github/tests/test_b54_telegram_grant_seed_gate.py'
+      - 'apps/padiem-ai-engine/scripts/connector_grant_seed.py'
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'Exact current main SHA authorized for this one-shot Telegram READ grant seed'
+        required: true
+      confirmation:
+        description: 'Type RUN_B54_TELEGRAM_GRANT_SEED_ONCE to authorize exactly one Telegram READ grant seed'
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-telegram-grant-seed
+  cancel-in-progress: false
+
+env:
+  ENGINE_WORKER: padiem-ai-engine
+  EXPECTED_D1_ID: 6b77ad02-bc27-488f-bb97-6325f6750cba
+  TELEGRAM_APP_ID: b54-padiem-claw-telegram
+  TELEGRAM_AGENT_ID: agent:padiem:claw_telegram_reader@1
+  TELEGRAM_CONNECTOR_ID: connector:telegram:bot@1
+  TELEGRAM_BINDING_REF: bind:telegram-bot-owner-1
+  TELEGRAM_ACTOR_REF: actor:owner-1
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout source under review
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target_sha || github.sha }}
+          persist-credentials: false
+
+      - name: Dispatch exact-main preflight
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          echo 'PREFLIGHT_EXACT_MAIN=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run bounded seed contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet pytest pytest-asyncio
+          python -m pip install --disable-pip-version-check --quiet -e packages/padiem-ai-core
+          python -m pytest -q apps/padiem-ai-engine/tests/test_connector_grant_seed_script.py
+
+      - name: Run Telegram grant seed gate contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet 'pyyaml>=6,<7'
+          python -m pytest -q .github/tests/test_b54_telegram_grant_seed_gate.py
+          echo 'B54_TELEGRAM_GRANT_SEED_GATE_SOURCE_CONTRACT=PASS'
+
+      - name: Prove reviewed Telegram seed SQL without executing it
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$(python apps/padiem-ai-engine/scripts/connector_grant_seed.py \
+            --action seed --connector telegram \
+            --app-id "${TELEGRAM_APP_ID}" \
+            --agent-id "${TELEGRAM_AGENT_ID}" \
+            --binding-ref "${TELEGRAM_BINDING_REF}" \
+            --actor-ref "${TELEGRAM_ACTOR_REF}" \
+            --capabilities read | tr -d '\r')"
+          printf '%s\n' "${out}" | grep -Fq "INSERT INTO padiem_engine_connector_grants"
+          printf '%s\n' "${out}" | grep -Fq "'b54-padiem-claw-telegram'"
+          printf '%s\n' "${out}" | grep -Fq "'agent:padiem:claw_telegram_reader@1'"
+          printf '%s\n' "${out}" | grep -Fq "'connector:telegram:bot@1'"
+          printf '%s\n' "${out}" | grep -Fq "'bind:telegram-bot-owner-1'"
+          printf '%s\n' "${out}" | grep -Fq "'actor:owner-1'"
+          printf '%s\n' "${out}" | grep -Fq "'[]', '[\"read\"]', 1,"
+          printf '%s\n' "${out}" | grep -Fq 'ON CONFLICT(app_id, connector_id) DO UPDATE SET active=1'
+          printf '%s\n' "${out}" | grep -Fq "binding_ref=excluded.binding_ref, actor_ref=excluded.actor_ref"
+          printf '%s\n' "${out}" | grep -Fq 'granted_capabilities_json=excluded.granted_capabilities_json'
+          echo 'TELEGRAM_SEED_SQL_CONTRACT=PASS'
+          echo 'TELEGRAM_GRANT_SEED_EXECUTED=0'
+          echo 'D1_MUTATION=0'
+          echo 'TELEGRAM_PROVIDER_CALLS=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+  live-telegram-seed:
+    needs: source-contract
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.event.inputs.confirmation == 'RUN_B54_TELEGRAM_GRANT_SEED_ONCE'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact authorized main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+
+      - name: Re-check exact current main before seed
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          echo 'LIVE_EXACT_MAIN=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install reviewed seed script runtime dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet -e packages/padiem-ai-core
+          echo 'TELEGRAM_SEED_SCRIPT_DEPS=INSTALLED'
+
+      - name: Resolve actually served Engine version
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}"
+          deployments="${RUNNER_TEMP}/telegram-seed-deployments.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}"
+          resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"
+          active_version="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          test -n "${active_version}"
+          echo "::add-mask::${active_version}"
+          echo "ACTIVE_ENGINE_VERSION=${active_version}" >> "${GITHUB_ENV}"
+          echo 'ENGINE_ACTIVE_VERSION_IDENTIFIED=PASS'
+          echo 'ENGINE_VERSION_ID_OUTPUT=0'
+
+      - name: Resolve served connector-grants D1 identity without output
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}"
+          detail="${RUNNER_TEMP}/telegram-seed-version.json"
+          curl -fsS "${auth[@]}" "${base}/versions/${ACTIVE_ENGINE_VERSION}" -o "${detail}"
+          DB_ID="$(python - "${detail}" "${ACTIVE_ENGINE_VERSION}" "${EXPECTED_D1_ID}" <<'PY'
+          import json, sys
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          result = payload.get("result") if payload.get("success") is True else None
+          if not isinstance(result, dict) or result.get("id") != sys.argv[2]:
+              raise SystemExit("served version identity mismatch")
+          resources = result.get("resources")
+          raw = resources.get("bindings") if isinstance(resources, dict) else None
+          if isinstance(raw, dict):
+              bindings = [{**value, "name": name} for name, value in raw.items() if isinstance(value, dict)]
+          elif isinstance(raw, list):
+              bindings = raw
+          else:
+              raise SystemExit("served binding collection malformed")
+          hits = [b for b in bindings if isinstance(b, dict) and b.get("name") == "ENGINE_CONNECTOR_GRANTS"]
+          if len(hits) != 1 or hits[0].get("type") != "d1":
+              raise SystemExit("served ENGINE_CONNECTOR_GRANTS binding missing or wrong type")
+          db_id = hits[0].get("id")
+          if db_id != sys.argv[3]:
+              raise SystemExit("served connector-grants D1 identity drifted")
+          print(db_id)
+          PY
+          )"
+          test -n "${DB_ID}"
+          echo "::add-mask::${DB_ID}"
+          echo "DB_ID=${DB_ID}" >> "${GITHUB_ENV}"
+          echo 'LIVE_ENGINE_CONNECTOR_GRANTS_D1_DERIVED=PASS'
+          echo 'D1_IDENTIFIER_OUTPUT=0'
+
+      - name: Guard on the pre-seed Telegram grant aggregate
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          query_payload="${RUNNER_TEMP}/telegram-seed-presql.json"
+          python - "${query_payload}" "${TELEGRAM_APP_ID}" "${TELEGRAM_AGENT_ID}" "${TELEGRAM_CONNECTOR_ID}" <<'PY'
+          import json, sys
+          app_id, agent_id, connector_id = sys.argv[2:5]
+          sql = """
+          SELECT
+            COUNT(*) AS total_rows,
+            SUM(CASE WHEN active = 1 THEN 1 ELSE 0 END) AS active_count,
+            SUM(CASE WHEN active = 1 AND canonical_agent_id = ? THEN 1 ELSE 0 END) AS exact_identity_count,
+            SUM(CASE
+                  WHEN active = 1
+                   AND json_valid(granted_capabilities_json) = 1
+                   AND json_array_length(granted_capabilities_json) = 1
+                   AND json_extract(granted_capabilities_json, '$[0]') = 'read'
+                  THEN 1 ELSE 0 END) AS read_capability_count,
+            SUM(CASE
+                  WHEN active = 1
+                   AND binding_ref IS NOT NULL
+                   AND length(trim(binding_ref)) > 0
+                  THEN 1 ELSE 0 END) AS binding_ref_present_count,
+            SUM(CASE
+                  WHEN active = 1
+                   AND actor_ref IS NOT NULL
+                   AND length(trim(actor_ref)) > 0
+                  THEN 1 ELSE 0 END) AS actor_ref_present_count
+          FROM padiem_engine_connector_grants
+          WHERE app_id = ? AND connector_id = ?;
+          """
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump({"sql": sql, "params": [agent_id, app_id, connector_id]}, handle)
+          PY
+
+          response="${RUNNER_TEMP}/telegram-seed-pre-response.json"
+          curl -fsS -X POST "${auth[@]}"             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query"             --data-binary "@${query_payload}" -o "${response}"
+
+          state="$(python - "${response}" <<'PY'
+          import json, sys
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          if payload.get("success") is not True:
+              raise SystemExit("pre-seed aggregate query failed")
+          result = payload.get("result")
+          if not isinstance(result, list) or len(result) != 1 or result[0].get("success") is not True:
+              raise SystemExit("pre-seed aggregate envelope invalid")
+          rows = result[0].get("results")
+          if not isinstance(rows, list) or len(rows) != 1:
+              raise SystemExit("pre-seed aggregate row invalid")
+          row = rows[0]
+          values = (
+              int(row.get("total_rows") or 0),
+              int(row.get("active_count") or 0),
+              int(row.get("exact_identity_count") or 0),
+              int(row.get("read_capability_count") or 0),
+              int(row.get("binding_ref_present_count") or 0),
+              int(row.get("actor_ref_present_count") or 0),
+          )
+          if all(value == 0 for value in values):
+              print("ABSENT_ZERO")
+          elif values == (1, 1, 1, 1, 1, 1):
+              print("EXACT_ACTIVE_READ")
+          else:
+              print("NONCANONICAL")
+          PY
+          )"
+          if [ "${state}" = "NONCANONICAL" ]; then
+            echo 'TELEGRAM_PRE_SEED_STATE=NONCANONICAL'
+            echo 'TELEGRAM_GRANT_SEED=0'
+            echo 'D1_MUTATION=0'
+            exit 1
+          fi
+          if [ "${state}" = "EXACT_ACTIVE_READ" ]; then
+            echo 'TELEGRAM_PRE_SEED_STATE=EXACT_ACTIVE_READ'
+            echo 'TELEGRAM_SEED_SKIPPED_ALREADY_SEEDED=YES'
+            echo 'TELEGRAM_GRANT_SEED=0'
+            echo 'D1_MUTATION=0'
+          else
+            echo 'TELEGRAM_PRE_SEED_STATE=ABSENT_ZERO'
+            echo 'TELEGRAM_SEED_SKIPPED_ALREADY_SEEDED=NO'
+          fi
+          echo "TELEGRAM_SEED_GATE_PRE_STATE=${state}" >> "${GITHUB_ENV}"
+
+      - name: Execute exactly one reviewed Telegram READ grant INSERT
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${TELEGRAM_SEED_GATE_PRE_STATE}" != "ABSENT_ZERO" ]; then
+            echo 'TELEGRAM_GRANT_SEED=0'
+            echo 'D1_MUTATION=0'
+            exit 0
+          fi
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          sql_file="${RUNNER_TEMP}/telegram-reviewed-seed.sql"
+          python apps/padiem-ai-engine/scripts/connector_grant_seed.py             --action seed --connector telegram             --app-id "${TELEGRAM_APP_ID}"             --agent-id "${TELEGRAM_AGENT_ID}"             --binding-ref "${TELEGRAM_BINDING_REF}"             --actor-ref "${TELEGRAM_ACTOR_REF}"             --capabilities read > "${sql_file}"
+          python - "${sql_file}" "${TELEGRAM_APP_ID}" "${TELEGRAM_AGENT_ID}" "${TELEGRAM_CONNECTOR_ID}" "${TELEGRAM_BINDING_REF}" "${TELEGRAM_ACTOR_REF}" <<'PY'
+          import sys
+
+          sql = open(sys.argv[1], encoding="utf-8").read().strip()
+          app_id, agent_id, connector_id, binding_ref, actor_ref = sys.argv[2:7]
+          for token in (app_id, agent_id, connector_id, binding_ref, actor_ref):
+              if token not in sql:
+                  raise SystemExit("reviewed seed SQL deviates from the canonical Telegram identity")
+          if "'[]'" not in sql or "'[\"read\"]'" not in sql:
+              raise SystemExit("reviewed seed SQL deviates from the READ-only columns")
+          if "ON CONFLICT(app_id, connector_id) DO UPDATE SET active=1" not in sql:
+              raise SystemExit("reviewed seed SQL misses the canonical upsert")
+          print("TELEGRAM_SEED_SQL_REVIEWED=PASS")
+          PY
+
+          mutation_payload="${RUNNER_TEMP}/telegram-seed-mutation.json"
+          python - "${sql_file}" "${mutation_payload}" <<'PY'
+          import json, sys
+          sql = open(sys.argv[1], encoding="utf-8").read()
+          with open(sys.argv[2], "w", encoding="utf-8") as handle:
+              json.dump({"sql": sql}, handle)
+          PY
+
+          response="${RUNNER_TEMP}/telegram-seed-mutation-response.json"
+          curl -fsS -X POST "${auth[@]}"             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query"             --data-binary "@${mutation_payload}" -o "${response}"
+
+          python - "${response}" <<'PY'
+          import json, sys
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          if payload.get("success") is not True:
+              raise SystemExit("Telegram READ grant mutation failed")
+          result = payload.get("result")
+          if not isinstance(result, list) or not result or any(entry.get("success") is not True for entry in result):
+              raise SystemExit("Telegram READ grant mutation envelope invalid")
+          print("TELEGRAM_GRANT_SEED_EXECUTED=1")
+          print("D1_MUTATION=1")
+          PY
+
+          echo 'RAW_BINDING_REF_OUTPUT=0'
+          echo 'RAW_ACTOR_REF_OUTPUT=0'
+          echo 'ROW_VALUE_OUTPUT=AGGREGATES_ONLY'
+          echo 'TELEGRAM_PROVIDER_CALLS=0'
+          echo 'TELEGRAM_SEND=0'
+          echo 'SECRET_MUTATION=0'
+          echo 'ENGINE_DEPLOY=0'
+
+      - name: Attest the post-seed Telegram grant aggregate
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          query_payload="${RUNNER_TEMP}/telegram-seed-postsql.json"
+          python - "${query_payload}" "${TELEGRAM_APP_ID}" "${TELEGRAM_AGENT_ID}" "${TELEGRAM_CONNECTOR_ID}" <<'PY'
+          import json, sys
+          app_id, agent_id, connector_id = sys.argv[2:5]
+          sql = """
+          SELECT
+            COUNT(*) AS total_rows,
+            SUM(CASE WHEN active = 1 THEN 1 ELSE 0 END) AS active_count,
+            SUM(CASE WHEN active = 1 AND canonical_agent_id = ? THEN 1 ELSE 0 END) AS exact_identity_count,
+            SUM(CASE
+                  WHEN active = 1
+                   AND json_valid(granted_capabilities_json) = 1
+                   AND json_array_length(granted_capabilities_json) = 1
+                   AND json_extract(granted_capabilities_json, '$[0]') = 'read'
+                  THEN 1 ELSE 0 END) AS read_capability_count,
+            SUM(CASE
+                  WHEN active = 1
+                   AND binding_ref IS NOT NULL
+                   AND length(trim(binding_ref)) > 0
+                  THEN 1 ELSE 0 END) AS binding_ref_present_count,
+            SUM(CASE
+                  WHEN active = 1
+                   AND actor_ref IS NOT NULL
+                   AND length(trim(actor_ref)) > 0
+                  THEN 1 ELSE 0 END) AS actor_ref_present_count
+          FROM padiem_engine_connector_grants
+          WHERE app_id = ? AND connector_id = ?;
+          """
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump({"sql": sql, "params": [agent_id, app_id, connector_id]}, handle)
+          PY
+
+          response="${RUNNER_TEMP}/telegram-seed-post-response.json"
+          curl -fsS -X POST "${auth[@]}"             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query"             --data-binary "@${query_payload}" -o "${response}"
+
+          python - "${response}" <<'PY'
+          import json, sys
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          if payload.get("success") is not True:
+              raise SystemExit("post-seed aggregate query failed")
+          result = payload.get("result")
+          if not isinstance(result, list) or len(result) != 1 or result[0].get("success") is not True:
+              raise SystemExit("post-seed aggregate envelope invalid")
+          rows = result[0].get("results")
+          if not isinstance(rows, list) or len(rows) != 1:
+              raise SystemExit("post-seed aggregate row invalid")
+          row = rows[0]
+          values = {
+              "total_rows": int(row.get("total_rows") or 0),
+              "active_count": int(row.get("active_count") or 0),
+              "exact_identity_count": int(row.get("exact_identity_count") or 0),
+              "read_capability_count": int(row.get("read_capability_count") or 0),
+              "binding_ref_present_count": int(row.get("binding_ref_present_count") or 0),
+              "actor_ref_present_count": int(row.get("actor_ref_present_count") or 0),
+          }
+          print(f"TELEGRAM_GRANT_TOTAL_ROWS={values['total_rows']}")
+          print(f"TELEGRAM_GRANT_ACTIVE_COUNT={values['active_count']}")
+          print("TELEGRAM_GRANT_EXACT_IDENTITY=YES" if values["exact_identity_count"] == 1 else "TELEGRAM_GRANT_EXACT_IDENTITY=NO")
+          print('TELEGRAM_GRANT_CAPABILITIES=["read"]' if values["read_capability_count"] == 1 else "TELEGRAM_GRANT_CAPABILITIES=OTHER_OR_MISSING")
+          print("TELEGRAM_GRANT_BINDING_REF_PRESENT=YES" if values["binding_ref_present_count"] == 1 else "TELEGRAM_GRANT_BINDING_REF_PRESENT=NO")
+          print("TELEGRAM_GRANT_ACTOR_REF_PRESENT=YES" if values["actor_ref_present_count"] == 1 else "TELEGRAM_GRANT_ACTOR_REF_PRESENT=NO")
+          if values != {
+              "total_rows": 1,
+              "active_count": 1,
+              "exact_identity_count": 1,
+              "read_capability_count": 1,
+              "binding_ref_present_count": 1,
+              "actor_ref_present_count": 1,
+          }:
+              print("TELEGRAM_GRANT_STATE=NONCANONICAL")
+              raise SystemExit("post-seed Telegram grant state is noncanonical")
+          print("TELEGRAM_GRANT_STATE=EXACT_ACTIVE_READ")
+          PY
+
+          echo 'RAW_BINDING_REF_OUTPUT=0'
+          echo 'RAW_ACTOR_REF_OUTPUT=0'
+          echo 'ROW_VALUE_OUTPUT=AGGREGATES_ONLY'
+          echo 'PROVIDER_CREDENTIAL_OUTPUT=0'
+          echo 'D1_QUERY_MODE=READ_ONLY'
+          echo 'TELEGRAM_GRANT_ATTESTED=1'
+          echo 'TELEGRAM_PROVIDER_CALLS=0'
+          echo 'TELEGRAM_SEND=0'
+          echo 'TELEGRAM_EDIT=0'
+          echo 'TELEGRAM_CALLBACK_WRITE=0'
+          echo 'WEBHOOK_MUTATION=0'
+          echo 'ENGINE_DEPLOY=0'
+          echo 'SECRET_MUTATION=0'
+          echo 'PRODUCTION_MUTATION=SCOPED_TELEGRAM_GRANT_SEED'
+
+      - name: Publish bounded seed evidence
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## B54 Telegram grant seed gate"
+            echo
+            echo "- seed scope: one canonical Telegram READ grant row ([\"read\"] only)"
+            echo "- refs in source-fixed literals; pre/post aggregates only"
+            echo "- no provider call, no secret handling, no Worker change"
+            echo "- next step: bounded live getMe READ canary under a separate authority"
+          } >> "${GITHUB_STEP_SUMMARY}"
+

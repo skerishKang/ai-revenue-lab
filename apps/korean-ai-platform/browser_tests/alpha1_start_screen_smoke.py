@@ -60,6 +60,9 @@ def start_server() -> subprocess.Popen[bytes]:
     global _SERVER_LOG
     env = os.environ.copy()
     env["B14_PROVIDER_MODE"] = "mock"
+    # The chosen Agnes exact model is secret-gated even in mock. Provide a
+    # synthetic test-only value to this mock child; never call an upstream.
+    env["PADIEM_AGNES_API_KEY"] = "sk-fixture-browser-only-0123456789"
     # Drain server logs to a file, never to unread PIPEs: uvicorn writes an
     # access-log line per request, an undrained pipe fills after ~50 requests,
     # and the blocked server then times out the mobile phase's first goto.
@@ -313,9 +316,9 @@ def run_desktop(p: Any) -> dict:
 
     # ── 20. Manual model selection ──
     def s20():
-        page.locator("#start_model").select_option("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
+        page.locator("#start_model").select_option("agnes-ai/agnes-3.0-flash")
         page.wait_for_timeout(200)
-        assert page.locator("#start_model").input_value() == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        assert page.locator("#start_model").input_value() == "agnes-ai/agnes-3.0-flash"
         radio = page.locator('input[name="start_route_mode"][value="manual"]')
         radio.check()
         page.wait_for_timeout(200)
@@ -350,7 +353,7 @@ def run_desktop(p: Any) -> dict:
         page.wait_for_timeout(1500)
         assert len(chat_responses) > before, "no second chat/completions network response"
         biz = chat_responses[-1].get("business14", {})
-        assert biz.get("selected_model") == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free", (
+        assert biz.get("selected_model") == "agnes-ai/agnes-3.0-flash", (
             f"expected manual model, got {biz.get('selected_model')}"
         )
         assert biz.get("fallback_allowed") is True, "fallback_allowed should be true when checkbox ON"

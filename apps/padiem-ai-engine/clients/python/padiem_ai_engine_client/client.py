@@ -13,7 +13,9 @@ from datetime import datetime
 import json
 import re
 from types import MappingProxyType
-from typing import Any, Mapping, Protocol
+from typing import Any, AsyncIterator, Mapping, Protocol
+
+from .orchestration_stream import EngineNdjsonContractError, decode_orchestration_ndjson
 
 ENGINE_INTERNAL_ORIGIN = "https://padiem-ai-engine.internal"
 ENGINE_CONTRACT_MAJOR = 1
@@ -21,14 +23,29 @@ ENGINE_CONTRACT_VERSION = "1.0"
 ENGINE_EXECUTE_PATH = "/internal/v1/execute"
 ENGINE_HEALTH_PATH = "/internal/v1/health"
 ENGINE_ORCHESTRATE_PATH = "/internal/v1/orchestrate"
+ENGINE_ORCHESTRATE_STREAM_PATH = "/internal/v1/orchestrate/stream"
 ENGINE_ORCHESTRATE_RESUME_PATH = "/internal/v1/orchestrate/resume"
 ENGINE_ORCHESTRATE_CANCEL_PATH = "/internal/v1/orchestrate/cancel"
+ENGINE_MULTIMODAL_ATTACHMENTS_PATH = "/internal/v1/multimodal/attachments"
 
 _ENGINE_CALLER_HEADER = "X-Padiem-Engine-Caller"
 _ENGINE_CREDENTIAL_HEADER = "X-Padiem-Engine-Credential"
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 _IDEMPOTENCY_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$")
 _CONTINUATION_RE = re.compile(r"^cont_[A-Za-z0-9_-]{8,123}$")
+_ATTACHMENT_REF_RE = re.compile(r"^att_[A-Za-z0-9_-]{16,120}$")
+
+# Canonical image attachment admission (#3210). Engine surfaces remain the
+# single size/media/grammar authority; this client mirrors the same bounded
+# contract so malformed requests fail before any network transport.
+SUPPORTED_ATTACHMENT_MEDIA_TYPES = frozenset({"image/jpeg", "image/png", "image/webp"})
+_ATTACHMENT_MAX_IMAGE_BYTES = 4 * 1024 * 1024  # == padiem_ai_core MAX_B14_IMAGE_BYTES
+MAX_ATTACHMENT_IMAGE_BASE64_CHARS = ((_ATTACHMENT_MAX_IMAGE_BYTES + 2) // 3) * 4 + 4
+_ATTACHMENT_ADMISSION_ALLOWED = frozenset(
+    {"session_id", "media_type", "image_base64", "trace_id"}
+)
+_ATTACHMENT_ADMISSION_REQUIRED = frozenset({"session_id", "media_type", "image_base64"})
+_ATTACHMENT_PROJECTION_FIELDS = ("attachment_ref", "media_type", "byte_size", "expires_at")
 
 _EXECUTION_ALLOWED = frozenset(
     {
@@ -135,6 +152,13 @@ class EngineTransportResponse:
             raise ValueError("headers must be a mapping")
 
 
+@dataclass(frozen=True, slots=True)
+class EngineStreamTransportResponse:
+    status: int
+    chunks: AsyncIterator[bytes]
+    headers: Mapping[str, str] = field(default_factory=dict)
+
+
 class EngineTransport(Protocol):
     async def request(
         self,
@@ -206,11 +230,11 @@ def _execution_context(value: Any) -> dict[str, Any] | None:
         if (
             isinstance(timeout, bool)
             or not isinstance(timeout, (int, float))
-            or not 1 <= float(timeout) <= 60
+            or not 1 <= float(timeout) <= 3600
         ):
             raise PadiemAiEngineClientError(
                 "invalid_engine_request",
-                "execution_context.timeout_seconds must be between 1 and 60",
+                "execution_context.timeout_seconds must be between 1 and 3600",
             )
         normalized["timeout_seconds"] = timeout
     return normalized
@@ -305,6 +329,102 @@ def _cancel_payload(app_id: str, request: Any) -> dict[str, Any]:
     return payload
 
 
+def _attachment_admission_payload(app_id: str, request: Any) -> dict[str, Any]:
+    if not isinstance(request, Mapping):
+        raise PadiemAiEngineClientError(
+            "invalid_engine_request", "Engine attachment request must be an object"
+        )
+    data = dict(request)
+    if set(data) - _ATTACHMENT_ADMISSION_ALLOWED:
+        raise PadiemAiEngineClientError(
+            "invalid_engine_request",
+            "Engine attachment request contains unsupported fields",
+        )
+    if _ATTACHMENT_ADMISSION_REQUIRED - set(data):
+        raise PadiemAiEngineClientError(
+            "invalid_engine_request",
+            "Engine attachment request is missing required fields",
+        )
+    session_id = _safe_identifier("session_id", data["session_id"])
+    media_type = data["media_type"]
+    if (
+        not isinstance(media_type, str)
+        or media_type.strip().lower() not in SUPPORTED_ATTACHMENT_MEDIA_TYPES
+    ):
+        raise PadiemAiEngineClientError(
+            "invalid_engine_request",
+            "Engine attachment media_type is not a supported image type",
+        )
+    image_base64 = data["image_base64"]
+    if not isinstance(image_base64, str):
+        raise PadiemAiEngineClientError(
+            "invalid_engine_request", "Engine attachment payload must be a base64 string"
+        )
+    if len(image_base64) > MAX_ATTACHMENT_IMAGE_BASE64_CHARS:
+        raise PadiemAiEngineClientError(
+            "invalid_engine_request",
+            "Image attachment payload exceeds the bounded multimodal base64 size",
+        )
+    payload: dict[str, Any] = {
+        "app_id": app_id,
+        "session_id": session_id,
+        "media_type": media_type.strip().lower(),
+        "image_base64": image_base64,
+    }
+    if "trace_id" in data:
+        payload["trace_id"] = _safe_identifier("trace_id", data["trace_id"])
+    return payload
+
+
+def _attachment_projection(body: dict[str, Any]) -> dict[str, Any]:
+    if body.get("ok") is not True:
+        raise PadiemAiEngineClientError(
+            "invalid_engine_response", "Engine attachment admission response is invalid"
+        )
+    attachment = body.get("attachment")
+    if not isinstance(attachment, Mapping):
+        raise PadiemAiEngineClientError(
+            "invalid_engine_response", "Engine attachment admission response is invalid"
+        )
+    attachment = dict(attachment)
+    if set(attachment) != set(_ATTACHMENT_PROJECTION_FIELDS):
+        raise PadiemAiEngineClientError(
+            "invalid_engine_response", "Engine attachment admission response is invalid"
+        )
+    ref = attachment["attachment_ref"]
+    if not isinstance(ref, str) or not _ATTACHMENT_REF_RE.fullmatch(ref):
+        raise PadiemAiEngineClientError(
+            "invalid_engine_response", "Engine attachment admission response is invalid"
+        )
+    media_type = attachment["media_type"]
+    if not isinstance(media_type, str) or media_type not in SUPPORTED_ATTACHMENT_MEDIA_TYPES:
+        raise PadiemAiEngineClientError(
+            "invalid_engine_response", "Engine attachment admission response is invalid"
+        )
+    byte_size = attachment["byte_size"]
+    if isinstance(byte_size, bool) or not isinstance(byte_size, int) or byte_size < 1:
+        raise PadiemAiEngineClientError(
+            "invalid_engine_response", "Engine attachment admission response is invalid"
+        )
+    expires_at = attachment["expires_at"]
+    if expires_at is not None:
+        if not isinstance(expires_at, str):
+            raise PadiemAiEngineClientError(
+                "invalid_engine_response", "Engine attachment admission response is invalid"
+            )
+        try:
+            parsed = datetime.fromisoformat(expires_at)
+        except ValueError:
+            raise PadiemAiEngineClientError(
+                "invalid_engine_response", "Engine attachment admission response is invalid"
+            ) from None
+        if parsed.tzinfo is None or parsed.utcoffset() is None:
+            raise PadiemAiEngineClientError(
+                "invalid_engine_response", "Engine attachment admission response is invalid"
+            )
+    return {name: attachment[name] for name in _ATTACHMENT_PROJECTION_FIELDS}
+
+
 def _json_body(response: EngineTransportResponse) -> dict[str, Any]:
     try:
         body = json.loads(response.body.decode("utf-8"))
@@ -380,6 +500,46 @@ class PadiemAiEngineClient:
             )
         return dict(orchestration)
 
+    async def stream_orchestration(
+        self, request: Mapping[str, Any]
+    ) -> AsyncIterator[dict[str, Any]]:
+        """Opt-in Engine NDJSON transport; no implicit switch from orchestrate().
+
+        The caller must validate P01 correlation and the terminal result before
+        committing success. Partial event yields have no approval/dispatch power.
+        """
+        payload = _run_payload(self.app_id, request, allowed=_ORCHESTRATION_ALLOWED)
+        stream_request = getattr(self._transport, "stream_request", None)
+        if not callable(stream_request):
+            raise PadiemAiEngineClientError(
+                "engine_stream_unavailable", "Engine streaming transport is not configured"
+            )
+        response = await stream_request(
+            method="POST",
+            url=f"{ENGINE_INTERNAL_ORIGIN}{ENGINE_ORCHESTRATE_STREAM_PATH}",
+            headers=self._headers(),
+            body=json.dumps(payload, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode("utf-8"),
+        )
+        if not isinstance(response, EngineStreamTransportResponse):
+            raise PadiemAiEngineClientError("invalid_engine_stream", "Engine stream response is invalid")
+        # A non-200 response is a JSON error, never stream events. Never retry.
+        if response.status != 200 or response.headers.get("content-type", "").split(";", 1)[0].lower() != "application/x-ndjson":
+            close = getattr(response.chunks, "aclose", None)
+            if callable(close):
+                await close()
+            raise PadiemAiEngineClientError(
+                "engine_stream_unavailable" if response.status == 404 else "engine_http_error",
+                "Padiem AI Engine stream request failed", status=response.status,
+            )
+        try:
+            async for item in decode_orchestration_ndjson(response.chunks):
+                yield item
+        except EngineNdjsonContractError as exc:
+            raise PadiemAiEngineClientError(
+                "invalid_engine_stream", "Engine streaming contract failed",
+                metadata={"reason": exc.code},
+            ) from exc
+
     async def resume_orchestration(self, request: Mapping[str, Any]) -> dict[str, Any]:
         body = await self._post(
             ENGINE_ORCHESTRATE_RESUME_PATH,
@@ -397,6 +557,13 @@ class PadiemAiEngineClient:
             ENGINE_ORCHESTRATE_CANCEL_PATH,
             _cancel_payload(self.app_id, request),
         )
+
+    async def admit_image_attachment(self, request: Mapping[str, Any]) -> dict[str, Any]:
+        body = await self._post(
+            ENGINE_MULTIMODAL_ATTACHMENTS_PATH,
+            _attachment_admission_payload(self.app_id, request),
+        )
+        return _attachment_projection(body)
 
     async def health(self) -> dict[str, Any]:
         response = await self._transport.request(

@@ -4,7 +4,21 @@ Purpose: give every Business/product a repeatable path for adding AI without reb
 
 ## 1. Default decision sequence
 
-Before writing AI code for a Business, classify the requested capability.
+Before writing AI or infrastructure code for a Business, first ask whether the capability should be **reused, bought, adopted or adapted** rather than built.
+
+```text
+SEARCH_EXTERNAL_AND_INTERNAL
+→ REUSE_EXISTING_PADIEM
+→ BUY / ADOPT / ADAPT
+→ SIDECAR / LOCAL_SERVICE
+→ EXTEND_OR_BUILD_PADIEM
+```
+
+For commodity capabilities such as OCR, PDF/document parsing, sandboxing, browser/computer-use, vector/search, speech/vision/media and standard connector/runtime mechanisms, external technology evaluation is mandatory unless an accepted parent decision already exists.
+
+Commercial SDK/API/self-hosted products are valid candidates. Do not optimize for zero license cost at the expense of weeks of engineering time.
+
+After the adoption decision, classify the Padiem ownership boundary:
 
 ```text
 PRODUCT_ADAPTER
@@ -108,7 +122,7 @@ Define:
 - explicit persistence/save behavior;
 - product-specific safety/presentation behavior.
 
-### B. Reuse audit
+### B. Reuse and technology-adoption audit
 
 Check `IP-CORE` before implementing:
 
@@ -122,6 +136,18 @@ Check `IP-CORE` before implementing:
 - orchestration.
 
 If the capability already exists, reuse it.
+
+Then, for a substantial commodity capability, check credible external OSS and commercial projects before extending Core or building product-local infrastructure.
+
+Record:
+- candidates reviewed;
+- shortlist (max three by default);
+- software/model/artifact license posture;
+- commercial/paid option where relevant;
+- integration mode: embed / sidecar / local service / managed service;
+- why the selected option is better than custom build.
+
+The non-duplication rule applies to Padiem-facing authority. An adopted project may have complex internals behind a single reviewed adapter.
 
 ### C. Transport audit
 
@@ -181,7 +207,31 @@ LoveTree save semantics = PRODUCT_ADAPTER
 
 LoveBud therefore does not duplicate Core Web Runtime, provider routing, or another product's Engine credential.
 
-## 7. Platform discoverability
+## 7. Replaceable implementation slots
+
+For commodity technology, prefer one Padiem-facing contract with replaceable implementations.
+
+Examples:
+
+```text
+OCRRuntime
+  -> current deterministic implementation
+  -> candidate DeepSeek/Paddle/Hunyuan/etc adapter
+
+PDFRenderer
+  -> current embedded-image subset
+  -> candidate renderer/toolkit adapter
+
+SandboxProvider
+  -> current fake/pre-live adapter
+  -> candidate managed provider adapter
+```
+
+A better technology may replace the primary implementation even after custom code has already landed. Do not remove the old implementation until contract parity, benchmark evidence and rollback are established unless a security/license issue requires immediate retirement.
+
+Use shared conformance tests so implementations are interchangeable rather than deeply entangled with product code.
+
+## 8. Platform discoverability
 
 Use the Portfolio Console `Internal Platform` view or `INTERNAL_PLATFORM_REGISTRY.md` to locate the component before starting a new architecture lane.
 
@@ -194,3 +244,19 @@ Canonical prefixes for new shared-platform work:
 ```
 
 Refs #1707.
+
+<!-- AGENT_ADOPTION_EXECUTION_CROSSWALK_20261009 -->
+## Agent/coding/browser reuse checklist (2026-10-09)
+
+For new substantial generic Claw/agent machinery, use the existing technology-adoption policy before greenfield implementation. Start at #2996 and the technology component registry rather than creating another roadmap: compare exact current B54/P01/IP-ENGINE/IP-CORE/B14 modules against immutable-pinned official upstream source. Known screened references include ZCode (#3436 `ADAPT_PARTIAL`; #3583 future), OpenCode, OpenClaw, Browser Use and Kilo Code. No unreviewed runtime is automatically approved by appearing in this list.
+
+Record separately for EACH replaceable component slot:
+- precise Padiem interface and missing user-visible requirement;
+- upstream executable module/API, immutable SHA, license/NOTICE and transitive dependencies;
+- whether source reuse is direct, adapted, sidecar-only, reference-only or unsuitable;
+- Windows/Worker/cloud, sandbox, subprocess, secrets and network egress fit;
+- offline behavioral conformance and integration complexity versus maintaining existing code;
+- account/workspace, approval, credential and canonical run-state authorities preserved;
+- rollback plan and `RETAIN / ADAPT / REPLACE_LATER / REJECT` decision.
+
+Do not import Z.ai, OpenCode, OpenClaw or Kilo account/identity/billing/provider routing as a second Padiem authority. P01 approvals, B14 model execution, Control Plane canonical identity/usage and B54 task/run authority must remain unchanged. An upstream AI agent is not a substitute for a server-side entitlement or tenancy check. In-flight #3523 Golden Path support work continues; the intake scan is parallel READ-ONLY until CENTRAL scopes a separate adapter-based implementation. OWNER alone makes model selections; no provider call, silent fallback or Production mutation is implied by the comparison.

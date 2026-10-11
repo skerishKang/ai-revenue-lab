@@ -18,6 +18,16 @@ SKIP_PARTS = {
 }
 
 EXPECTED_RUNTIME_ROOT_IMPORTS = {
+    "apps/korean-ai-code-agent/src/kagent/external_coding_agent.py": frozenset(
+        {
+            "AgentContinuationState",
+            "ApprovalOutcome",
+            "ApprovalPause",
+            "ApprovalRequirement",
+            "ContinuationStatus",
+            "VerifiedApprovalDecision",
+        }
+    ),
     "apps/korean-ai-code-agent/src/kagent/github_draft_pr.py": frozenset(
         {"ApprovalOutcome", "VerifiedApprovalDecision"}
     ),
@@ -39,6 +49,13 @@ EXPECTED_RUNTIME_ROOT_IMPORTS = {
             "OrchestrationEventKind",
             "OrchestrationRequest",
             "OrchestrationResult",
+        }
+    ),
+    "apps/korean-ai-code-agent/src/kagent/p01_approval_continuation.py": frozenset(
+        {
+            "OrchestrationError",
+            "OrchestrationResult",
+            "orchestration_result_from_public",
         }
     ),
     "apps/korean-ai-code-agent/src/kagent/p01_orchestration_client.py": frozenset(
@@ -70,6 +87,22 @@ EXPECTED_RUNTIME_ROOT_IMPORTS = {
             "ExecutionResult",
             "ExecutionRuntime",
             "ExecutionRuntimeError",
+        }
+    ),
+    "apps/padiem-ai-engine/app/approval_smoke_binding.py": frozenset(
+        {
+            "AgentExecutionBudget",
+            "ApprovalPolicy",
+            "BoundedAgentDefinition",
+            "ToolAuthorizationContext",
+            "ToolRegistrySnapshot",
+            "ToolResourcePolicy",
+            "ToolRuntime",
+            "ToolRuntimeBinding",
+            "ToolSideEffect",
+            "ToolSpec",
+            "TrustedAgentRuntimePolicy",
+            "compile_agent_profile",
         }
     ),
     "apps/padiem-ai-engine/app/cloudflare_transport.py": frozenset(
@@ -433,7 +466,11 @@ def test_all_direct_root_imports_reference_declared_exports() -> None:
 def test_root_module_attribute_access_is_declared_or_audited_private_surface() -> None:
     exported = set(core.__all__)
     inventory = collect_package_root_consumers()
-    allowed_private = {"__all__", "_TOOL_RUNTIME_EXPORTS"}
+    allowed_private = {
+        "__all__",
+        "_TOOL_RUNTIME_EXPORTS",
+        "_IMAGE_HELPER_EXPORTS",
+    }
 
     undeclared = {
         str(name)

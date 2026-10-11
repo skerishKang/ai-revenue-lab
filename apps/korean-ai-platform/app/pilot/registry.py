@@ -148,8 +148,8 @@ class ProviderRegistry:
                 self._parse_error = str(e)
                 return
 
-            timeout = entry.get("timeout_seconds", 30)
-            if not isinstance(timeout, int) or timeout < 1 or timeout > 120:
+            timeout = entry.get("timeout_seconds", 600)
+            if not isinstance(timeout, int) or timeout < 1 or timeout > 3600:
                 self._parse_error = f"Provider '{provider_id}' has invalid timeout_seconds: {timeout}"
                 return
 

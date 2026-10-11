@@ -117,7 +117,7 @@ async def test_b14_request_is_fixed_explicit_default_pro_route_and_has_no_provid
 
 
 @pytest.mark.asyncio
-async def test_pro_alias_strips_command_and_keeps_exact_default_manual_route():
+async def test_plus_alias_strips_command_and_keeps_exact_default_manual_route():
     seen = {}
 
     async def handler(request):
@@ -127,7 +127,7 @@ async def test_pro_alias_strips_command_and_keeps_exact_default_manual_route():
     result = await B14Client(
         Settings(runtime_mode="b14", b14_base_url="https://b14.example"),
         httpx.MockTransport(handler),
-    ).complete([{"role": "user", "content": "/pro 오늘 날씨를 설명해줘"}])
+    ).complete([{"role": "user", "content": "/plus 오늘 날씨를 설명해줘"}])
 
     assert seen["body"]["model"] == ACTIVE_MODEL
     assert seen["body"]["messages"][-1] == {"role": "user", "content": "오늘 날씨를 설명해줘"}
@@ -207,6 +207,7 @@ async def test_malformed_b14_success_fails_closed():
     with pytest.raises(ChatRuntimeError) as info:
         await client.complete(USER_MESSAGES)
     assert info.value.code == "malformed_upstream"
+    assert info.value.upstream_class == "upstream_missing_content"
 
 
 @pytest.mark.asyncio
@@ -344,12 +345,16 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
     root = Path(__file__).resolve().parents[1]
     html = (root / "static/index.html").read_text(encoding="utf-8")
     js = (root / "static/app.js").read_text(encoding="utf-8")
+    locale = (root / "static/locale.js").read_text(encoding="utf-8")
     capabilities = (root / "static/attachment-capabilities.js").read_text(encoding="utf-8")
+    product_capabilities = (root / "static/product-capabilities.js").read_text(encoding="utf-8")
     transport = (root / "static/chat-transport.js").read_text(encoding="utf-8")
     conversation_state = (root / "static/conversation-state.js").read_text(encoding="utf-8")
     assert "무엇을 도와드릴까요" in html
     assert "무엇이든 물어보세요" in html
-    assert "자동 추천" in html
+    assert "자동 추천" not in html
+    assert 'AVAILABLE_TIERS = Object.freeze(["plus"])' in product_capabilities
+    assert 'let selectedTier = "plus";' in product_capabilities
     assert '<div class="starter-grid" aria-label="추천 질문">' in html
     assert 'data-skill="explain"' in html
     assert 'data-skill="plan"' in html
@@ -361,7 +366,8 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
         assert f'label: "{label}"' in capabilities
     assert "PDF·Office 문서는 아직 지원하지 않습니다" not in html
     assert "웹 검색 · 준비 중" in html
-    assert "모의 응답 · 실제 모델 호출 없음" in js
+    assert 'uiT("mock-response")' in js
+    assert '"mock-response": "모의 응답 · 실제 모델 호출 없음"' in locale
     assert "chatTransport.requestCompleted(payload, signal)" in js
     assert 'fetch("/api/chat"' in transport
     assert "conversationState.setSkill(selectedSkill)" in js

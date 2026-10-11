@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import io
 import tempfile
-from pathlib import Path
 import unittest
 import zipfile
+from pathlib import Path
 
 try:
     from pypdf import PdfWriter
@@ -13,9 +13,15 @@ except ModuleNotFoundError:
     PdfWriter = None
     DecodedStreamObject = DictionaryObject = NameObject = None
 
-from kagent.document_intake import LEGACY_HWP_NOTE, intake_document
+from kagent.document_intake import (
+    GATE_REJECTION_NOTE_PREFIX,
+    LEGACY_HWP_NOTE,
+    intake_document,
+)
 from kagent.draft_flow import DraftFlowError, _read_draft_input
 from kagent.review_flow import _collect_review_files
+
+PNG_BYTES = b"\x89PNG\r\n\x1a\n" + b"\x00" * 32
 
 
 def _minimal_pdf(text: str = "Hello Padiem Document") -> bytes:
@@ -159,12 +165,27 @@ class DocumentIntakeTests(unittest.TestCase):
         self.assertEqual(result.note, LEGACY_HWP_NOTE)
 
     def test_non_document_is_not_routed(self) -> None:
+        # Plain text and images keep the existing caller text path: no document
+        # route, and no new parser authority.
         self.assertIsNone(intake_document("README.md", b"# hi\n"))
-        self.assertIsNone(intake_document("fake.pdf", b"plain text, not a PDF"))
-        self.assertIsNone(intake_document("fake.docx", b"not a zip archive"))
-        self.assertIsNone(
-            intake_document("fake.hwpx", b"PK not a real hwpx archive")
-        )
+        self.assertIsNone(intake_document("photo.png", PNG_BYTES))
+
+    def test_spoofed_document_extension_fails_closed(self) -> None:
+        # #2824-S2: the extension is a claim, not authority. Content the common
+        # gate cannot confirm as that document is rejected with a bounded note
+        # instead of silently falling back to the UTF-8 text path.
+        for name, payload in (
+            ("fake.pdf", b"plain text, not a PDF"),
+            ("fake.docx", b"not a zip archive"),
+            ("fake.hwpx", b"PK not a real hwpx archive"),
+        ):
+            with self.subTest(name=name):
+                result = intake_document(name, payload)
+                self.assertIsNotNone(result)
+                self.assertIsNone(result.text)
+                self.assertTrue(
+                    result.note.startswith(GATE_REJECTION_NOTE_PREFIX), result.note
+                )
 
 
 class ReviewIntakeTests(unittest.TestCase):

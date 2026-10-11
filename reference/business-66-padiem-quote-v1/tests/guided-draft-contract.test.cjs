@@ -1,0 +1,56 @@
+/* #3396 - browser-to-account D1 guided-draft bridge; no live credentials. */
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const vm = require("node:vm");
+const root = path.resolve(__dirname, "..");
+const source = fs.readFileSync(path.join(root, "guided-draft-server.js"), "utf8");
+const easy = fs.readFileSync(path.join(root, "easy-mode.js"), "utf8");
+const account = fs.readFileSync(path.join(root, "padiem-account.js"), "utf8");
+const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
+const worker = fs.readFileSync(path.join(root, "_worker.js"), "utf8");
+
+const calls = [];
+let status = 200;
+let body = {ok:true,state:null};
+const window = {};
+const fakeFetch = async (url, init) => {
+  calls.push({url,init});
+  return {ok:status>=200 && status<300,status,json:async()=>body};
+};
+vm.runInNewContext(source, {window,fetch:fakeFetch}, {filename:"guided-draft-server.js"});
+(async()=>{
+  const api = window.B66GuidedDraftServer;
+  assert.equal(Object.isFrozen(api),true);
+  const state={schema:"b66.guided-draft.v1",mode:"guided",step:"qty"};
+  const saved=await api.save(state);
+  assert.equal(saved.ok,true);
+  assert.equal(calls[0].url,"/api/padiem/b66/guided-draft");
+  assert.equal(calls[0].init.method,"PUT");
+  assert.equal(calls[0].init.credentials,"same-origin");
+  assert.equal(JSON.parse(calls[0].init.body).step,"qty");
+  assert.equal(calls[0].init.headers["Content-Type"],"application/json");
+  body={ok:true,state:{step:"moreItems"}};
+  const loaded=await api.load();
+  assert.equal(loaded.ok,true);assert.equal(loaded.state.step,"moreItems");
+  assert.equal(calls[1].init.method,"GET");
+  assert.equal(calls[1].init.cache,"no-store");
+  assert.equal((await api.clear()).ok,true);
+  assert.equal(calls[2].init.method,"DELETE");
+  status=503;body={ok:false,error:{code:"guided_state_unavailable"}};
+  assert.equal((await api.load()).ok,false);
+  assert.equal(calls[3].init.credentials,"same-origin");
+  assert.ok(html.indexOf('guided-draft-server.js')<html.indexOf('easy-mode.js'));
+  assert.match(worker, /\/api\/padiem\/b66\/guided-draft/);
+  assert.match(worker, /method === "PUT" \|\| method === "DELETE"/);
+  assert.match(easy, /GuidedAPI\.save\(state\)/);
+  assert.match(easy, /GuidedAPI\.load\(\)/);
+  assert.match(easy, /GuidedAPI\.clear\(\)/);
+  assert.match(easy, /guidedSaveRevision \+= 1/);
+  assert.match(easy, /accountScopeRevision/);
+  assert.match(account, /assignedSavedSkillId: \(\) => state\.loadedSkill/);
+  assert.ok(!easy.includes("/api/padiem/"), "domain controller must not own backend transport");
+  console.log("GUIDED_DRAFT_SERVER_TRANSPORT=PASS");
+  console.log("GUIDED_OWNER_SCOPED_BRIDGE_BOUNDARY=PASS");
+  console.log("GUIDED_FAIL_CLOSED_API=PASS");
+})().catch(e=>{console.error(e);process.exitCode=1;});

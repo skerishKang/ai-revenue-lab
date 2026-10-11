@@ -1,17 +1,21 @@
-"""Resolve-to-projection pipeline for Engine E5B-S3 (#1750).
+"""Resolve-to-projection pipeline for Engine E5B-S3 (#1750),
+async durable seam for E8C-B (#2741).
 
 Connects the S2 trusted resolver and normalization bridge to the two S3
 destinations without changing either contract:
 
-    att_* --resolve--> (bytes, meta) --normalize--> NormalizedDocument
+    doc_* --await resolve--> (bytes, meta) --normalize--> NormalizedDocument
         |-> ContextWindowProjection   (bounded, body-free)
         |-> EvidenceStorageProjection (full retention, internal refs only)
 
-There is no route and no durable storage yet. Evidence storage locators are
-synthetic opaque tokens owned by the engine, not real object addresses.
+There is no route here and the durable byte store is owned by admission
+(#2741), not by this pipeline. Evidence storage locators are synthetic
+opaque tokens owned by the engine, not real object addresses.
 """
 
 from __future__ import annotations
+
+from inspect import isawaitable
 
 from padiem_ai_core.document_normalization import NormalizedDocument
 
@@ -45,7 +49,7 @@ def project_to_context(
 
 
 def project_to_evidence(
-    att_ref: object,
+    doc_ref: object,
     document: NormalizedDocument,
     meta: ResolvedDocumentMeta,
     storage_locator: str,
@@ -56,7 +60,7 @@ def project_to_evidence(
     """Derive the full-retention evidence projection behind an engine id."""
 
     return EvidenceStorageProjection.from_resolver_result(
-        att_ref,
+        doc_ref,
         document,
         meta,
         storage_locator,
@@ -65,9 +69,9 @@ def project_to_evidence(
     )
 
 
-def att_to_context_evidence(
+async def att_to_context_evidence(
     resolver: TrustedDocumentResolver,
-    att_ref: object,
+    doc_ref: object,
     *,
     app_id: str,
     subject_id: str,
@@ -78,15 +82,16 @@ def att_to_context_evidence(
 ) -> tuple[ContextWindowProjection, EvidenceStorageProjection]:
     """Run the S3 through-line: reference -> document -> both projections.
 
-    Resolution happens exactly once; normalization reuses the S2 dispatch
-    (``normalize_resolved_document``) on the freshly resolved bytes. When an
-    evidence storage port is supplied the projection is retained and its
-    minted id is the storage handle; the synthetic ``evidence://`` token
-    itself is opaque engine state and never a caller input.
+    Resolution happens exactly once through the async durable seam;
+    normalization reuses the S2 dispatch (``normalize_resolved_document``)
+    on the freshly resolved bytes. When an evidence storage port is supplied
+    the projection is retained and its minted id is the storage handle; the
+    synthetic ``evidence://`` token itself is opaque engine state and never
+    a caller input. Retention ports may be sync or async.
     """
 
-    raw, meta = resolver.resolve(
-        att_ref,
+    raw, meta = await resolver.resolve(
+        doc_ref,
         app_id=app_id,
         subject_id=subject_id,
         tenant_id=tenant_id,
@@ -97,7 +102,7 @@ def att_to_context_evidence(
         max_text_chars=context_max_text_chars,
         max_segments=context_max_segments,
     )
-    reference = require_document_reference(att_ref)
+    reference = require_document_reference(doc_ref)
     evidence_projection = project_to_evidence(
         reference,
         document,
@@ -105,5 +110,7 @@ def att_to_context_evidence(
         f"evidence://{reference}",
     )
     if evidence_storage is not None:
-        evidence_storage.store(evidence_projection)
+        retained = evidence_storage.store(evidence_projection)
+        if isawaitable(retained):
+            await retained
     return context_projection, evidence_projection

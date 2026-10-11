@@ -8,10 +8,10 @@ const repoRoot = path.resolve(__dirname, '..', '..');
 const labSource = path.join(repoRoot, 'apps', 'padiem-lab');
 const out = path.join(repoRoot, 'dist', 'padiem-lab');
 const staticAppSourceTreePins = Object.freeze({
-  'apps/living-travel/pages-preview/site': 'fedd8846e3870661502ccb6947d8ed852eecc0b6'
+  'apps/living-travel/pages-preview/site': '388d5c737b5f78211136b410c64e327fe2824c10'
 });
 const generatedSourceTreePins = Object.freeze({
-  'apps/personal-edition': '8044c7a0fed5c6e9256a173e7633cb47dd7ba010',
+  'apps/personal-edition': 'e89bb4ef0d93e9f5f23a01946cd1cfdd42c4930e',
   'apps/personal-video-archive': '580be319152fdf2001d979438b345e4172a2e2d4'
 });
 

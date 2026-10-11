@@ -69,8 +69,11 @@ class SandboxProviderEvidenceReviewTests(unittest.TestCase):
         self.assertTrue(reviewed.eligible_for_acceptance(NOW))
         pack = reviewed.promote_to_v1(NOW)
         assessment = pack.assess()
-        self.assertTrue(assessment.accepted_for_cloud_m1)
-        self.assertEqual(assessment.missing_controls, ())
+        # The review is acceptance-grade as evidence and still promotes, but Cloud M1
+        # acceptance also requires numeric limit values, which a boolean review pack
+        # cannot express (#1405).
+        self.assertFalse(assessment.accepted_for_cloud_m1)
+        self.assertEqual(assessment.missing_controls, ("resource_limits_reported",))
 
     def test_official_documentation_alone_cannot_promote_to_acceptance(self):
         reviewed = review(controls=rows(basis=ProviderEvidenceBasis.OFFICIAL_DOCUMENTATION))

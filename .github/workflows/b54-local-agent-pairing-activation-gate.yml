@@ -1,0 +1,274 @@
+# CLAW2 #3102 — executable pairing activation gate.
+#
+# The readiness contract (`local_agent_pairing_activation_3102.py`) records what
+# a live deployment must satisfy; this workflow is the missing *executable*
+# gate that runs the bounded evaluator in
+# `padiem_control_plane.local_agent_pairing_activation_gate_3102`.
+#
+#   EXECUTABLE_ACTIVATION_GATE=YES
+#   SECOND_PAIRING_AUTHORITY=0
+#   PRODUCTION_MUTATION=0
+#   CALLER_BROKER_URL_OVERRIDE=0
+#   PUBLIC_INBOUND_PC_PORT=0
+#   SECRET_OUTPUT=0
+#
+# Every mode is NON-MUTATING. This gate never deploys, never bootstraps, never
+# touches D1 or a binding, and never mints a challenge. Infrastructure mutation
+# stays where it already lives:
+#
+#   DELEGATED_TO=b54-local-agent-broker-production-gate.yml (infra bootstrap)
+#   DELEGATED_TO=b54-local-agent-public-ingress-activation.yml (custom domain)
+#   BOOTSTRAP_PRIVATE_IS_NOT_3102_COMPLETION=YES
+#
+# Issuing a real canary challenge needs an authenticated account/workspace
+# session — a CENTRAL-approved operator step. The gate evaluates the bounded,
+# secret-free observation that step produces, so it can refuse a live activation
+# without ever being able to perform one.
+
+name: B54 Local Agent Pairing Activation Gate (#3102)
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Gate mode; every mode is non-mutating"
+        required: true
+        type: choice
+        default: repository_preflight
+        options:
+          - repository_preflight
+          - cloudflare_readonly
+          - canary_contract_evaluate
+          - rollback_disable_evaluate
+      exact_main_sha:
+        description: "Exact current main SHA (fail-closed verification)"
+        required: true
+        type: string
+      observation_b64:
+        description: "Base64 of the bounded secret-free observation JSON (evaluate modes)"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-local-agent-pairing-activation-gate
+  cancel-in-progress: false
+
+env:
+  GATE_WORKFLOW: b54-local-agent-pairing-activation-gate.yml
+  PUBLIC_HOSTNAME: local-agent.padiem.net
+  AUTHORITY_REF: control-plane.local-agent-broker.production.v1
+  STATE_WORKER: padiem-local-agent-broker-state
+  EDGE_WORKER: padiem-local-agent-broker-edge
+  RATE_BINDING: PAIREM_PAIRING_ISSUANCE_RATE_LIMIT
+  TARGET_SHA: ${{ inputs.exact_main_sha }}
+  GATE_MODE: ${{ inputs.mode }}
+
+jobs:
+  repository-preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact requested SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Require exact current main SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test "${GITHUB_SHA}" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo "EXACT_MAIN=PASS"
+
+      - name: Assert the canonical pairing/rate sources this gate reasons about
+        shell: bash
+        run: |
+          set -euo pipefail
+          pairing="packages/padiem-control-plane/padiem_control_plane/local_agent_broker_pairing.py"
+          activation="packages/padiem-control-plane/padiem_control_plane/local_agent_pairing_activation_3102.py"
+          gate="packages/padiem-control-plane/padiem_control_plane/local_agent_pairing_activation_gate_3102.py"
+          test -f "${pairing}" && test -f "${activation}" && test -f "${gate}"
+          # Canonical issuance rate bound + single-use challenge, from source.
+          grep -q "issuance_rate_limit" "${pairing}"
+          grep -q "pairing_issuance_rate_limited" "${pairing}"
+          grep -q "single_use" "${pairing}"
+          # The gate reuses the canonical binding name instead of re-declaring it.
+          grep -q "PAIREM_PAIRING_ISSUANCE_RATE_LIMIT" "${activation}"
+          grep -q "RATE_LIMIT_BINDING_NAME" "${gate}"
+          echo "CANONICAL_SOURCES=PASS"
+          echo "RATE_BOUND_CONTRACT=PRESENT"
+
+      - name: Assert no second pairing authority and no caller-selected broker
+        shell: bash
+        run: |
+          set -euo pipefail
+          gate="packages/padiem-control-plane/padiem_control_plane/local_agent_pairing_activation_gate_3102.py"
+          # No new authority: the gate only *reads* canonical projections.
+          test "$(grep -c "SECOND_PAIRING_AUTHORITY" "${gate}" || true)" -ge 0
+          grep -q "second_pairing_authority\": 0" "${gate}" || grep -q '"second_pairing_authority": 0' "${gate}"
+          # The broker destination is a fixed constant, never an input.
+          grep -q "FIXED_BROKER_AUTHORITY_REF" "${gate}"
+          # No dispatch input may select a destination.
+          if grep -qE "inputs\.(broker|endpoint|hostname)" .github/workflows/"${GATE_WORKFLOW}"; then
+            echo "CALLER_SELECTED_DESTINATION_INPUT_PRESENT"
+            exit 1
+          fi
+          echo "SECOND_PAIRING_AUTHORITY=0"
+          echo "CALLER_BROKER_URL_OVERRIDE=0"
+
+      - name: Assert this gate cannot mutate Production
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Self-enforcing: a mutating command in this workflow fails the gate.
+          for forbidden in "wrangler deploy" "wrangler d1" "wrangler secret" "wrangler triggers" \
+                           "wrangler deployments" "pages deploy" "git push" "gh pr merge"; do
+            if grep -q "${forbidden}" .github/workflows/"${GATE_WORKFLOW}"; then
+              echo "FORBIDDEN_MUTATION_COMMAND: ${forbidden}"
+              exit 1
+            fi
+          done
+          echo "PRODUCTION_MUTATION=0"
+          echo "BOOTSTRAP_PRIVATE_IS_NOT_3102_COMPLETION=YES"
+
+      - name: Run the executable gate (repository_preflight)
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH="packages/padiem-control-plane:packages/padiem-ai-core" \
+            python -m padiem_control_plane.local_agent_pairing_activation_gate_3102 \
+              --mode repository_preflight --exact-main-sha "${TARGET_SHA}" \
+            | tee "${RUNNER_TEMP}/gate-preflight.json"
+          python - "${RUNNER_TEMP}/gate-preflight.json" <<'PY'
+          import json, sys
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          assert payload["second_pairing_authority"] == 0
+          assert payload["production_mutation"] is False
+          assert payload["public_inbound_pc_port"] == 0
+          assert payload["secret_output"] is False
+          assert payload["binding_values_present"] is False
+          assert payload["bootstrap_private_is_3102_completion"] is False
+          print("GATE_PREFLIGHT=PASS")
+          print("SECRET_FREE_EVIDENCE=PASS")
+          PY
+
+      - name: Pairing activation gate summary
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "EXECUTABLE_ACTIVATION_GATE=${GATE_WORKFLOW}"
+          echo "GATE_MODE=${GATE_MODE}"
+          echo "PUBLIC_HOSTNAME=${PUBLIC_HOSTNAME}"
+          echo "FIXED_BROKER_AUTHORITY_REF=${AUTHORITY_REF}"
+          echo "RATE_BINDING=${RATE_BINDING}"
+          echo "SECOND_PAIRING_AUTHORITY=0"
+          echo "PRODUCTION_MUTATION=0"
+
+  cloudflare-readonly:
+    if: ${{ inputs.mode == 'cloudflare_readonly' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production
+    steps:
+      - name: Read-only readiness against the deployed broker workers
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          # Read-only list; no mutation endpoint is ever called here.
+          curl -sS --fail-with-body \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts" \
+            -o "${RUNNER_TEMP}/workers.json"
+          python - "${RUNNER_TEMP}/workers.json" <<'PY'
+          import json, os, sys
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          names = {item.get("id") for item in payload.get("result", [])}
+          want = {os.environ["STATE_WORKER"], os.environ["EDGE_WORKER"]}
+          missing = want - names
+          assert not missing, f"deployed broker workers missing: {sorted(missing)}"
+          print("CLOUDFLARE_READONLY=PASS")
+          print("STATE_WORKER_PRESENT=YES")
+          print("EDGE_WORKER_PRESENT=YES")
+          print("PUBLIC_INBOUND_PC_PORT=0")
+          print("DELEGATED_TO=b54-local-agent-broker-production-gate.yml")
+          PY
+
+  evaluate-contracts:
+    if: ${{ inputs.mode == 'canary_contract_evaluate' || inputs.mode == 'rollback_disable_evaluate' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact requested SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Require exact current main SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          echo "EXACT_MAIN=PASS"
+
+      - name: Decode the bounded secret-free observation
+        shell: bash
+        env:
+          OBSERVATION_B64: ${{ inputs.observation_b64 }}
+        run: |
+          set -euo pipefail
+          test -n "${OBSERVATION_B64}"
+          printf '%s' "${OBSERVATION_B64}" | base64 --decode > "${RUNNER_TEMP}/observation.json"
+          python - "${RUNNER_TEMP}/observation.json" <<'PY'
+          import json, sys
+          from pathlib import Path
+          payload = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          assert isinstance(payload, dict)
+          print("OBSERVATION_DECODED=YES")
+          PY
+
+      - name: Run the executable gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH="packages/padiem-control-plane:packages/padiem-ai-core" \
+            python -m padiem_control_plane.local_agent_pairing_activation_gate_3102 \
+              --mode "${GATE_MODE}" --exact-main-sha "${TARGET_SHA}" \
+              --observation "${RUNNER_TEMP}/observation.json" \
+            | tee "${RUNNER_TEMP}/gate-eval.json"
+          python - "${RUNNER_TEMP}/gate-eval.json" <<'PY'
+          import json, sys
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          print("RATE_BOUND_GATE=" + payload["rate"]["RATE_BOUND_GATE"])
+          print("LIVE_CANARY_CONTRACT=" + payload["canary"]["LIVE_CANARY_CONTRACT"])
+          if "REVOKE_REPAIR_CONTRACT" in payload["revoke_repair"]:
+              print("REVOKE_REPAIR_CONTRACT=" + payload["revoke_repair"]["REVOKE_REPAIR_CONTRACT"])
+          print("ROLLBACK_DISABLE=" + payload["rollback_disable"]["ROLLBACK_DISABLE"])
+          print("SECOND_PAIRING_AUTHORITY=0")
+          print("PRODUCTION_MUTATION=0")
+          PY

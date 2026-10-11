@@ -8,6 +8,32 @@ workers_dev = false
 binding = "B14_SERVICE"
 service = "ai-revenue-korean-ai-platform"
 
+[[services]]
+binding = "CONTROL_PLANE_IDENTITY"
+service = "padiem-control-plane-identity"
+
+[[services]]
+binding = "CONTROL_PLANE_ENGINE_ADMISSION"
+service = "padiem-control-plane-engine-admission"
+
+# #2216: canonical Google OAuth credential authority remains Control Plane.
+# Engine receives only short-lived access leases over this private Service
+# Binding; long-lived refresh credentials never enter Engine composition.
+[[services]]
+binding = "CONTROL_PLANE_GOOGLE_OAUTH"
+service = "padiem-google-oauth-state"
+
+# #3933 WEB-FIRST independent P01 READ/WRITE verifier: same LIVE B62 D1
+# as padiem-chat PADIEM_CHAT_DB. Confirmed with deployment-version readback
+# on 2026-10-11. The code uses only SELECT via scoped verifier functions.
+# NOTE: D1 platform bindings are not read-only credentials; safeguard
+# through verifier code, first-party owner proof and OFF-by-default flags.
+# Merely adding the binding does NOT activate Hark WRITE/READ permissions.
+[[d1_databases]]
+binding = "WEB_XLSX_PRIVATE_B62_D1"
+database_name = "padiem-chat-db"
+database_id = "702bb62b-36f5-41a0-973f-c4f663ee01e6"
+
 # WO-8 PR-B (#1235 A9): durable idempotency + identity-bound continuation
 # authority. Both bindings point at the SAME provisioned database
 # (padiem-engine, database_id below; provision evidence: CI run 34042827563,
@@ -25,8 +51,8 @@ database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"
 
 # WO-10 PR-C2 (D28): OAuth connector grant references only.
 # Same provisioned database as ENGINE_IDEMPOTENCY/ENGINE_CONTINUATION.
-# Schema 0003 applied by the D1 provision gate. Credential material is
-# never stored here; the three OAuth secrets come from Worker secrets.
+# Schema 0003 applied by the D1 provision gate. Credential material is never
+# stored in this D1 binding; canonical Google OAuth credentials stay in CP.
 [[d1_databases]]
 binding = "ENGINE_CONNECTOR_GRANTS"
 database_name = "padiem-engine"
@@ -41,3 +67,47 @@ database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"
 binding = "ENGINE_IMAGE_STORE"
 database_name = "padiem-engine"
 database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"
+
+# #2741 (E8C-B): Engine-owned document byte retention for the doc_* resolver.
+# Same provisioned database as the other Engine D1 bindings. Schema 0006
+# (0006_engine_document_bytes.sql) is applied by the D1 provision gate; app
+# code never creates or mutates it. This declares the repo-owned binding
+# only - it does not provision, migrate or activate storage, and the
+# composition wiring (LOCAL3) is a separately gated later slice.
+[[d1_databases]]
+binding = "ENGINE_DOCUMENT_STORE"
+database_name = "padiem-engine"
+database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"
+
+# #2954 ([E9][A6-Document]): canonical Engine evidence retention for
+# DocumentContextEngineService. Same provisioned database as the other Engine D1
+# bindings. Schema 0007 (0007_engine_evidence.sql) is applied by the D1
+# provision gate; app code never creates or mutates it. This declares the
+# repo-owned binding only - it does not provision, migrate or activate storage.
+[[d1_databases]]
+binding = "ENGINE_EVIDENCE_STORE"
+database_name = "padiem-engine"
+database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"
+
+# #4194 Owner-approved dedicated D1 Agent/Skill run lease activation.
+# Additive schema 0011 is present on the exact Charliekant padiem-engine D1;
+# verified separate from code deployment, with empty new table.
+# No existing service/secret/D1 bindings are changed. Roll back to the
+# previous served Worker version to disable if acceptance checks fail.
+[vars]
+PADIEM_ENGINE_AGENT_DURABLE_ENABLED = "true"
+
+# #2786 Stage 11-C M3-2: preview-only Agent pilot lane.
+#
+# A dedicated worker with NO services, NO D1 and NO secrets. The Production
+# [vars] above enables ONLY the schema-gated Agent D1 lease; the preview-only
+# marker pair below remains isolated to this environment.
+# workers_dev stays false: the preview worker is reachable only by an internal /
+# service-binding caller, never from the public internet.
+[env.preview]
+name = "padiem-ai-engine-preview"
+workers_dev = false
+
+[env.preview.vars]
+ENGINE_DEPLOY_ENV = "preview"
+ENGINE_AGENT_PREVIEW_ENABLED = "ENABLE_PREVIEW_AGENT_PILOT"

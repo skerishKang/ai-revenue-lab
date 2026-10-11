@@ -152,6 +152,8 @@ class ClawAlertKind(str, Enum):
     PRICE_CHANGE = "price_change"
     UNRESOLVED_REQUEST = "unresolved_request"
     MEMORY_PROPOSAL = "memory_proposal"
+    # #2833 S2F3B: generic scheduled-automation alert kind (additive).
+    AUTOMATION = "automation"
 
 
 class ClawAlertSeverity(str, Enum):

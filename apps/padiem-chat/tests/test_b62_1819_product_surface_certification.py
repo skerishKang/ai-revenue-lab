@@ -3,7 +3,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 CERTIFICATION = ROOT / ".github" / "scripts" / "b62_product_surface_certification_browser_qa.py"
-WORKFLOW = ROOT / ".github" / "workflows" / "b62-browser-visual-qa.yml"
+WORKFLOW = ROOT / ".github" / "workflows" / "b62-browser-qa-unified.yml"
 
 
 def test_certification_covers_required_all_theme_desktop_mobile_matrix() -> None:
@@ -31,10 +31,13 @@ def test_certification_preserves_ui_backend_production_truth_boundary() -> None:
 
 def test_capability_matrix_routes_non_b62_authority_to_owners() -> None:
     source = CERTIFICATION.read_text(encoding="utf-8")
-    assert '"presentation": "PREVIEW_ONLY"' in source
+    assert '"surface": "tier_plus_only"' in source
+    assert '"browser_visible": ["plus"]' in source
+    assert '"surface": "tier_max"' in source
+    assert '"presentation": "BROWSER_HIDDEN"' in source
     assert '"guest_state": "HIDDEN"' in source
     assert '"presentation": "PREVIEW_ONLY_FOR_DEMO_FIXTURES"' in source
-    assert '"owner": "B14 / IP-ENGINE"' in source
+    assert '"owner": "shared Padiem product-tier contract / B14"' in source
     assert '"owner": "IP-ENGINE / IP-CORE"' in source
     assert '"owner": "Control Plane"' in source
     assert '"owner": "release operations / owning platform"' in source
@@ -52,17 +55,7 @@ def test_certification_requires_existing_regression_gates() -> None:
     source = CERTIFICATION.read_text(encoding="utf-8")
     for workflow_name in (
         "B62 Padiem Chat CI",
-        "B62 Browser Visual QA",
-        "B62 Accessibility Browser QA",
-        "B62 Auth History Browser QA",
-        "B62 Saved Outputs Browser QA",
-        "B62 Projects Browser QA",
-        "B62 Project Files Browser QA",
-        "B62 Document Browser QA",
-        "B62 Image Browser QA",
-        "B62 Error Retry Browser QA",
-        "B62 Conversation Export Browser QA",
-        "B62 Conversation Delete Browser QA",
+        "B62 Unified Browser QA",
         "P01 Deployment Boundary Guard",
     ):
         assert f'"{workflow_name}"' in source

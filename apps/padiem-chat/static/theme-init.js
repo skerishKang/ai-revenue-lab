@@ -2,20 +2,29 @@
   try{
     var T=["light","dark","cinematic","padiem-home","padiem-glass"];
     var G=["female","male"];
+    var M=["auto","on","off"];
     var s=null;
     var glass="female";
+    var mask="auto";
+    var speed=100;
     try{
       var params=new URLSearchParams(location.search);
       var p=params.get("theme");
       var g=params.get("glass");
+      var mk=params.get("mask");
+      var sp=parseInt(params.get("speed")||"",10);
       if(T.indexOf(p)!==-1) s=p;
       if(G.indexOf(g)!==-1) glass=g;
+      if(M.indexOf(mk)!==-1) mask=mk;
+      if(sp>=20&&sp<=300) speed=sp;
     }catch(e){}
     if(T.indexOf(s)===-1){
       s="padiem-glass";
     }
     document.documentElement.setAttribute("data-theme",s);
     document.documentElement.setAttribute("data-glass-variant",glass);
+    document.documentElement.setAttribute("data-glass-mask",mask);
+    document.documentElement.setAttribute("data-glass-speed",String(speed));
     if(s==="padiem-glass"){
       if(!document.querySelector('link[data-padiem-glass-theme]')){
         var gl=document.createElement("link");

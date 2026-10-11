@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import Any
 
 from workers import DurableObject, Response, WorkerEntrypoint
@@ -7,7 +8,11 @@ from workers import DurableObject, Response, WorkerEntrypoint
 from padiem_control_plane.connector_connect_ticket import ConnectorConnectTicketAuthority
 from padiem_control_plane.contracts import ControlPlaneContractError
 
-from google_oauth_durable_store import CloudflareDurableGoogleOAuthStore
+from google_oauth_access_lease import (
+    CloudflareGoogleOAuthRefreshPort,
+    GoogleOAuthAccessLeaseRuntime,
+)
+from google_oauth_persisted_store import CloudflareDurableGoogleOAuthStore
 from google_oauth_ingress_runtime import (
     CloudflareGoogleOAuthTokenExchangePort,
     GoogleOAuthIngressConfig,
@@ -21,6 +26,19 @@ from google_oauth_webcrypto_sealer import GoogleOAuthWebCryptoSealer
 _AUTHORITY_REF_FALLBACK = "control-plane.google-oauth.production.v1"
 _CONNECT_KEYS = frozenset({"connect_ticket"})
 _CALLBACK_KEYS = frozenset({"state_ref", "authorization_code", "provider_error"})
+_ACCESS_LEASE_KEYS = frozenset({"binding_ref", "connector_id"})
+_WORKSPACE_CONNECTOR_STATE_KEYS = frozenset({"workspace_ref"})
+# #2010: the Calendar credential-presence read accepts exactly the same closed
+# payload. The connector itself is fixed in code, never supplied by the caller.
+_WORKSPACE_CALENDAR_CONNECTOR_STATE_KEYS = frozenset({"workspace_ref"})
+WORKSPACE_CALENDAR_CONNECTOR_ID = "google-calendar"
+# #2952/#3023: private Calendar binding-selection RPC. Same closed payload;
+# the connector is fixed in code to the reviewed Calendar OAuth authority.
+_WORKSPACE_CALENDAR_BINDING_KEYS = frozenset({"workspace_ref"})
+# #3193: private Drive binding-selection RPC. Same closed payload; the
+# connector is fixed in code to the reviewed Drive OAuth authority.
+_WORKSPACE_DRIVE_BINDING_KEYS = frozenset({"workspace_ref"})
+WORKSPACE_DRIVE_CONNECTOR_ID = "google-drive"
 
 
 def _closed_payload(payload: Any, keys: frozenset[str], field_name: str) -> dict[str, Any]:
@@ -55,24 +73,32 @@ class GoogleOAuthDurableObject(DurableObject):
     def __init__(self, ctx, env):
         super().__init__(ctx, env)
         self._store = CloudflareDurableGoogleOAuthStore(ctx.storage)
+        sealer = GoogleOAuthWebCryptoSealer(
+            key_secret_b64url=_required_env(env, "GOOGLE_OAUTH_SEAL_KEY"),
+        )
+        config = GoogleOAuthIngressConfig(
+            client_id=_required_env(env, "GOOGLE_OAUTH_CLIENT_ID"),
+            client_secret=_required_env(env, "GOOGLE_OAUTH_CLIENT_SECRET"),
+            redirect_uri=_required_env(env, "GOOGLE_OAUTH_REDIRECT_URI"),
+        )
         self._runtime = GoogleOAuthIngressRuntime(
             store=self._store,
-            sealer=GoogleOAuthWebCryptoSealer(
-                key_secret_b64url=_required_env(env, "GOOGLE_OAUTH_SEAL_KEY"),
-            ),
+            sealer=sealer,
             ticket_authority=ConnectorConnectTicketAuthority(
                 signing_key=_decode_key_secret(
                     _required_env(env, "GOOGLE_CONNECT_TICKET_KEY"),
                     "GOOGLE_CONNECT_TICKET_KEY",
                 )
             ),
-            config=GoogleOAuthIngressConfig(
-                client_id=_required_env(env, "GOOGLE_OAUTH_CLIENT_ID"),
-                client_secret=_required_env(env, "GOOGLE_OAUTH_CLIENT_SECRET"),
-                redirect_uri=_required_env(env, "GOOGLE_OAUTH_REDIRECT_URI"),
-            ),
+            config=config,
             token_exchange=CloudflareGoogleOAuthTokenExchangePort(),
             random_token=production_google_oauth_token,
+        )
+        self._access_lease_runtime = GoogleOAuthAccessLeaseRuntime(
+            store=self._store,
+            sealer=sealer,
+            config=config,
+            refresh_port=CloudflareGoogleOAuthRefreshPort(),
         )
 
     async def begin_connect(self, payload: dict) -> dict:
@@ -92,6 +118,132 @@ class GoogleOAuthDurableObject(DurableObject):
                 provider_error=payload["provider_error"],
             )
             return {"ok": True, "connection": receipt.safe_dict()}
+        except ControlPlaneContractError as exc:
+            return _safe_rpc_error(exc)
+
+    async def issue_access_lease(self, payload: dict) -> dict:
+        """Return one short-lived access credential over private RPC only.
+
+        The long-lived refresh credential is loaded, unsealed and refreshed
+        inside this Durable Object. It never appears in the RPC response.
+        """
+        try:
+            payload = _closed_payload(
+                payload,
+                _ACCESS_LEASE_KEYS,
+                "Google OAuth access-lease RPC",
+            )
+            lease = await self._access_lease_runtime.issue(
+                binding_ref=payload["binding_ref"],
+                connector_id=payload["connector_id"],
+            )
+            return {"ok": True, "lease": lease.to_private_rpc_dict()}
+        except ControlPlaneContractError as exc:
+            return _safe_rpc_error(exc)
+
+    async def workspace_connector_state(self, payload: dict) -> dict:
+        """Return bounded, identity-free Google connector truth for one workspace.
+
+        Phase B-0 (#2830) read slice. The payload is closed to exactly
+        ``workspace_ref``. The response carries only connector_id / state /
+        usable / expires_present / ambiguous. No binding_ref, actor_ref,
+        account_ref, workspace_ref echo, scopes or sealed material is returned,
+        no refresh credential is unsealed and no access lease is issued.
+        """
+        try:
+            payload = _closed_payload(
+                payload,
+                _WORKSPACE_CONNECTOR_STATE_KEYS,
+                "Google OAuth workspace connector-state RPC",
+            )
+            states = self._store.list_workspace_connector_state(
+                workspace_ref=payload["workspace_ref"],
+                now=datetime.now(timezone.utc),
+            )
+            return {
+                "ok": True,
+                "connectors": [state.to_bounded_dict() for state in states],
+            }
+        except ControlPlaneContractError as exc:
+            return _safe_rpc_error(exc)
+
+    async def workspace_calendar_connector_state(self, payload: dict) -> dict:
+        """Return bounded, identity-free Calendar credential presence (#2010).
+
+        Pre-connect observation authority: before any Calendar OAuth connect is
+        approved, this read answers exactly one question per workspace - does an
+        existing reviewed ``google-calendar`` durable credential exist - without
+        mutating anything.
+
+        The payload is closed to exactly ``workspace_ref``. The connector is
+        fixed in code to the reviewed ``google-calendar`` OAuth authority, so a
+        caller can never select a connector, scope, binding_ref, actor_ref,
+        account_ref or provider identifier. The response reuses the existing
+        bounded workspace-state projection: connector_id / state / usable /
+        expires_present / ambiguous only. No binding_ref, actor_ref, account_ref,
+        workspace_ref echo, scopes or sealed material is returned, no refresh
+        credential is unsealed and no access lease is issued.
+        """
+        try:
+            payload = _closed_payload(
+                payload,
+                _WORKSPACE_CALENDAR_CONNECTOR_STATE_KEYS,
+                "Google OAuth Calendar connector-presence RPC",
+            )
+            states = self._store.list_workspace_connector_state(
+                workspace_ref=payload["workspace_ref"],
+                now=datetime.now(timezone.utc),
+                connector_ids=(WORKSPACE_CALENDAR_CONNECTOR_ID,),
+            )
+            return {
+                "ok": True,
+                "connectors": [state.to_bounded_dict() for state in states],
+            }
+        except ControlPlaneContractError as exc:
+            return _safe_rpc_error(exc)
+
+    async def select_calendar_binding(self, payload: dict) -> dict:
+        """Private Calendar binding-selection RPC for one trusted workspace."""
+        try:
+            payload = _closed_payload(
+                payload,
+                _WORKSPACE_CALENDAR_BINDING_KEYS,
+                "Google OAuth Calendar binding-selection RPC",
+            )
+            selection = self._store.select_active_calendar_binding(
+                workspace_ref=payload["workspace_ref"],
+                now=datetime.now(timezone.utc),
+            )
+            private = selection.to_private_dict()
+            private.pop("account_ref", None)
+            return {"ok": True, "selection": private}
+        except ControlPlaneContractError as exc:
+            return _safe_rpc_error(exc)
+
+    async def select_drive_binding(self, payload: dict) -> dict:
+        """Private Drive binding-selection RPC (#3193).
+
+        The payload is closed to exactly ``workspace_ref``; the connector is
+        fixed in code to ``google-drive``, so a caller can never select a
+        connector, binding_ref, actor_ref, account_ref, scope or token. The
+        response carries only the minimum private identity (status /
+        connector_id / workspace_ref, plus binding_ref / actor_ref when
+        resolved). More than one usable Drive credential for the workspace is
+        ambiguous and returns a bounded error, never a status payload. No refresh
+        credential is unsealed, no access lease is issued and this is not a
+        public route.
+        """
+        try:
+            payload = _closed_payload(
+                payload,
+                _WORKSPACE_DRIVE_BINDING_KEYS,
+                "Google OAuth Drive binding-selection RPC",
+            )
+            selection = self._store.select_active_drive_binding(
+                workspace_ref=payload["workspace_ref"],
+                now=datetime.now(timezone.utc),
+            )
+            return {"ok": True, "selection": selection.to_private_dict()}
         except ControlPlaneContractError as exc:
             return _safe_rpc_error(exc)
 
@@ -120,6 +272,21 @@ class Default(WorkerEntrypoint):
     async def complete_callback(self, payload: dict) -> dict:
         return await self._stub().complete_callback(payload)
 
+    async def issue_access_lease(self, payload: dict) -> dict:
+        return await self._stub().issue_access_lease(payload)
+
+    async def workspace_connector_state(self, payload: dict) -> dict:
+        return await self._stub().workspace_connector_state(payload)
+
+    async def workspace_calendar_connector_state(self, payload: dict) -> dict:
+        return await self._stub().workspace_calendar_connector_state(payload)
+
+    async def select_calendar_binding(self, payload: dict) -> dict:
+        return await self._stub().select_calendar_binding(payload)
+
+    async def select_drive_binding(self, payload: dict) -> dict:
+        return await self._stub().select_drive_binding(payload)
+
     async def fetch(self, request):
         del request
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
@@ -132,10 +299,50 @@ PUBLIC_FETCH = False
 PRODUCTION_RANDOM_SOURCE_HARDENED = True
 CONNECT_TICKET_RAW_RPC_RESPONSE = False
 AUTHORIZATION_CODE_RAW_RPC_RESPONSE = False
+# Kept for onboarding-RPC compatibility. The access token is exposed only by
+# the dedicated private issue_access_lease RPC and never by public fetch or
+# onboarding callback projections.
 ACCESS_TOKEN_RAW_RPC_RESPONSE = False
+ACCESS_TOKEN_PRIVATE_LEASE_RPC = True
 REFRESH_TOKEN_RAW_RPC_RESPONSE = False
 LOCAL_AGENT_INGRESS_CHANGED = False
 PRODUCTION_ROUTE_CONFIGURED = False
 PRODUCTION_DEPLOYMENT = False
 PRODUCTION_MUTATION = False
 PRODUCTION_READY = False
+# Phase B-0 (#2830): workspace-scoped connector truth read RPC.
+# Private service-binding RPC only; never reachable through public fetch().
+WORKSPACE_CONNECTOR_STATE_RPC = True
+WORKSPACE_CONNECTOR_STATE_PUBLIC_ROUTE = False
+WORKSPACE_CONNECTOR_STATE_PAYLOAD_CLOSED = True
+WORKSPACE_CONNECTOR_STATE_LEAKS_BINDING_REF = False
+WORKSPACE_CONNECTOR_STATE_LEAKS_ACTOR_REF = False
+WORKSPACE_CONNECTOR_STATE_LEAKS_ACCOUNT_REF = False
+WORKSPACE_CONNECTOR_STATE_ECHOES_WORKSPACE_REF = False
+WORKSPACE_CONNECTOR_STATE_LEAKS_SCOPES = False
+WORKSPACE_CONNECTOR_STATE_LEAKS_SEALED_CREDENTIAL = False
+WORKSPACE_CONNECTOR_STATE_UNSEALS_REFRESH_TOKEN = False
+WORKSPACE_CONNECTOR_STATE_ISSUES_ACCESS_LEASE = False
+WORKSPACE_CONNECTOR_STATE_WRITE_AUTHORITY = False
+WORKSPACE_CONNECTOR_STATE_DUPLICATE_POLICY = "ambiguous_fail_closed"
+# #2010 Calendar existing-credential presence read (source-only slice).
+# Same private authority and same bounded projection; the connector is fixed to
+# google-calendar and neither refs nor tokens are ever exported.
+CALENDAR_CREDENTIAL_PRESENCE_READ_RPC = True
+CALENDAR_CREDENTIAL_PRESENCE_READ_CONNECTOR = "google-calendar"
+CALENDAR_CREDENTIAL_PRESENCE_READ_PAYLOAD_CLOSED = True
+CALENDAR_CREDENTIAL_PRESENCE_READ_PUBLIC_ROUTE = False
+CALENDAR_CREDENTIAL_PRESENCE_READ_CONNECTOR_FIXED_IN_CODE = True
+CALENDAR_CREDENTIAL_EXISTENCE_READ = True
+CALENDAR_REF_OUTPUT = False
+CALENDAR_TOKEN_OUTPUT = False
+CALENDAR_CREDENTIAL_READ_UNSEALS_REFRESH_TOKEN = False
+CALENDAR_CREDENTIAL_READ_ISSUES_ACCESS_LEASE = False
+CALENDAR_CREDENTIAL_READ_WRITE_AUTHORITY = False
+CALENDAR_BINDING_SELECTION_RPC = True
+CALENDAR_BINDING_SELECTION_PUBLIC_ROUTE = False
+CALENDAR_BINDING_SELECTION_CONNECTOR_FIXED_IN_CODE = True
+CALENDAR_BINDING_SELECTION_RAW_CREDENTIAL_OUTPUT = False
+CALENDAR_BINDING_SELECTION_ACCESS_LEASE_ISSUED = False
+DEFAULT_WORKSPACE_STATUS_INCLUDES_CALENDAR = False
+B62_PUBLIC_CALENDAR_TRUTH_WIDENED = False

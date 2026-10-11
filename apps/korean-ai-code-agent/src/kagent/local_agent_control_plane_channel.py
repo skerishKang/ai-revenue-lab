@@ -117,6 +117,10 @@ class ControlPlanePinnedHttpsChannel(PinnedOutboundLocalAgentChannel):
         command_id: str,
         admission_ref: str,
         evidence_ref: str,
+        revision_ref: str,
+        termination: str,
+        request_id: str,
+        exit_code: int | None,
         now: datetime,
     ) -> None:
         now = _aware(now, "now")
@@ -126,6 +130,10 @@ class ControlPlanePinnedHttpsChannel(PinnedOutboundLocalAgentChannel):
         observed = self._polled_commands.get(command_id)
         if observed is None or observed[0] != session.session_id:
             raise ContractError("acknowledgement requires exact command previously polled by this channel/session")
+        if observed[1].revision_ref != revision_ref:
+            raise ContractError("acknowledgement revision_ref does not match exact polled command")
+        if exit_code is not None and (isinstance(exit_code, bool) or not isinstance(exit_code, int)):
+            raise ContractError("acknowledgement exit_code must be a bounded process exit status or null")
         self._control_plane_transport.acknowledge(
             config=self.authority.config,
             binding=binding,
@@ -133,9 +141,81 @@ class ControlPlanePinnedHttpsChannel(PinnedOutboundLocalAgentChannel):
             command_id=command_id,
             admission_ref=admission_ref,
             evidence_ref=evidence_ref,
+            revision_ref=revision_ref,
+            termination=termination,
+            request_id=request_id,
+            exit_code=exit_code,
             now=now,
         )
         self._polled_commands.pop(command_id, None)
+
+    def acknowledge_recovered_run(
+        self,
+        *,
+        binding: DeviceBinding,
+        session: DeviceSession,
+        command_id: str,
+        admission_ref: str,
+        evidence_ref: str,
+        revision_ref: str,
+        request_id: str,
+        termination: str,
+        exit_code: int | None,
+        now: datetime,
+    ) -> None:
+        """#3128 — replay one exact acknowledgement held in a durable record."""
+
+        now = _aware(now, "now")
+        self.authority.require_current_binding(binding, now=now)
+        self.authority.require_session(session, now=now)
+        self._control_plane_transport.acknowledge_recovered(
+            config=self.authority.config,
+            binding=binding,
+            session=session,
+            command_id=command_id,
+            admission_ref=admission_ref,
+            evidence_ref=evidence_ref,
+            revision_ref=revision_ref,
+            request_id=request_id,
+            termination=termination,
+            exit_code=exit_code,
+            now=now,
+        )
+
+    def reconcile_recovered_run(
+        self,
+        *,
+        binding: DeviceBinding,
+        session: DeviceSession,
+        command_id: str,
+        admission_ref: str,
+        evidence_ref: str,
+        revision_ref: str,
+        request_id: str,
+        request_fingerprint: str,
+        termination: str | None,
+        exit_code: int | None,
+        now: datetime,
+    ) -> None:
+        """#3128 — hand one durable record's admitted correlation to #3121."""
+
+        now = _aware(now, "now")
+        self.authority.require_current_binding(binding, now=now)
+        self.authority.require_session(session, now=now)
+        self._control_plane_transport.reconcile_recovered(
+            config=self.authority.config,
+            binding=binding,
+            session=session,
+            command_id=command_id,
+            admission_ref=admission_ref,
+            evidence_ref=evidence_ref,
+            revision_ref=revision_ref,
+            request_id=request_id,
+            request_fingerprint=request_fingerprint,
+            termination=termination,
+            exit_code=exit_code,
+            now=now,
+        )
 
     def safe_dict(self) -> dict[str, Any]:
         base = super().safe_dict()
@@ -145,9 +225,16 @@ class ControlPlanePinnedHttpsChannel(PinnedOutboundLocalAgentChannel):
             "material_fingerprint_caller_supplied": False,
             "ack_admission_ref_required": True,
             "ack_evidence_ref_required": True,
+            "ack_revision_ref_required": True,
+            "ack_bounded_termination_required": True,
+            "ack_request_id_required": True,
+            "ack_bounded_exit_code_required": True,
             "public_inbound_port": False,
             "production_broker_configured": False,
             "real_remote_execution": False,
+            "durable_recovery_ack_surface": True,
+            "durable_recovery_reconcile_surface": True,
+            "recovery_grants_execution_authority": False,
         }
 
 
@@ -155,6 +242,10 @@ PINNED_CONTROL_PLANE_HTTPS_CHANNEL = True
 MATERIAL_FINGERPRINT_CALLER_SUPPLIED = False
 ACK_ADMISSION_REF_REQUIRED = True
 ACK_EVIDENCE_REF_REQUIRED = True
+ACK_REVISION_REF_REQUIRED = True
+ACK_BOUNDED_TERMINATION_REQUIRED = True
+ACK_REQUEST_ID_REQUIRED = True
+ACK_BOUNDED_EXIT_CODE_REQUIRED = True
 PUBLIC_INBOUND_PORT = False
 PRODUCTION_BROKER_CONFIGURED = False
 PRODUCTION_READY = False

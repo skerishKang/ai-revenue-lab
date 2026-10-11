@@ -93,6 +93,7 @@ def command() -> DeviceCommandEnvelope:
         sequence=1,
         issued_at=NOW - timedelta(seconds=10),
         expires_at=NOW + timedelta(minutes=5),
+        revision_ref="revision_1",
     )
 
 
@@ -157,11 +158,32 @@ class CommandMaterialContractTests(unittest.TestCase):
         resolved = parse_command_material_wire_projection(wire, outbound_request=outbound)
         self.assertEqual(resolved.request, current_request)
         self.assertEqual(resolved.request_fingerprint, fingerprint)
+        self.assertEqual(resolved.revision_ref, command().revision_ref)
+        self.assertEqual(wire["revision_ref"], command().revision_ref)
         safe = resolved.safe_dict()
         self.assertFalse(safe["raw_argv"])
         self.assertFalse(safe["environment_payload"])
         self.assertFalse(safe["shell_authority"])
         self.assertFalse(safe["admin_elevation"])
+        self.assertEqual(safe["revision_ref"], command().revision_ref)
+        self.assertEqual(safe["revision_semantics"], "opaque_correlation_only")
+
+    def test_material_revision_must_equal_the_polled_envelope_revision(self):
+        outbound = material_request()
+        wire = build_command_material_wire_projection(
+            command=command(), request=local_request(), request_fingerprint=outbound.request_fingerprint
+        )
+        self.assertEqual(parse_command_material_wire_projection(wire, outbound_request=outbound).revision_ref, command().revision_ref)
+
+        foreign = dict(wire)
+        foreign["revision_ref"] = "rev.00000000000000000000000000000000"
+        with self.assertRaisesRegex(ContractError, "command material revision_ref mismatch"):
+            parse_command_material_wire_projection(foreign, outbound_request=outbound)
+
+        legacy = dict(wire)
+        del legacy["revision_ref"]
+        with self.assertRaisesRegex(ContractError, "schema mismatch"):
+            parse_command_material_wire_projection(legacy, outbound_request=outbound)
 
     def test_schema_and_authority_expansion_fail_closed(self):
         outbound = material_request()

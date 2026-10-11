@@ -21,6 +21,7 @@ from app.agent_skill_authority import (
     TrustedAgentSkillSelection,
 )
 from app.execution_context_wire import parse_execution_context
+from app.orchestration_wire import _parse_agent_plan
 from app.service import ServiceContractError
 from app.tool_projection import MAX_WIRE_TOOL_ARGUMENTS_BYTES, EngineToolProjectionError, json_size
 
@@ -32,13 +33,12 @@ _SAFE_ID_CHARS = frozenset("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
 
 TRUSTED_AGENT_SKILL_REQUIRED = frozenset({"app_id", "agent_id", "messages"})
 TRUSTED_AGENT_SKILL_ALLOWED = TRUSTED_AGENT_SKILL_REQUIRED | frozenset(
-    {"skill_id", "session_id", "trace_id", "execution_context", "tool_arguments"}
+    {"skill_id", "session_id", "trace_id", "execution_context", "tool_arguments", "agent_plan"}
 )
 
 AUTHORITY_SHAPED_KEYS = frozenset(
     {
         "agent",
-        "agent_plan",
         "compiled_profile",
         "compiled_agent_profile",
         "tool_bindings",
@@ -118,8 +118,13 @@ def build_trusted_agent_skill_request(
             status_code=503,
         )
 
+    try:
+        agent_plan = _parse_agent_plan(data.get("agent_plan"))
+    except ServiceContractError:
+        raise
     selection = binding.resolve(
         agent_id=data.get("agent_id"),
+        plan=agent_plan,
         skill_id=data.get("skill_id"),
     )
     try:

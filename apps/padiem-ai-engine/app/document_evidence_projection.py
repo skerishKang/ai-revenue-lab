@@ -1,7 +1,7 @@
 """Evidence-storage projection of a resolved document for Engine E5B-S3 (#1750).
 
 Evidence retention is the counterpart of the context projection: it keeps the
-full segment body, segment provenance locators and the internal ``att_*``
+full segment body, segment provenance locators and the internal ``doc_*``
 reference behind an engine-minted evidence id. The wire never sees a storage
 locator; the repr redacts internal references so logs cannot leak them. Only
 an in-memory port exists in S3 — durable evidence storage arrives with S4.

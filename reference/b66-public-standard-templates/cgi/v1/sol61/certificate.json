@@ -1,0 +1,72 @@
+{
+  "status": "CERTIFIED",
+  "scope": "CGI fixed one-page source-derived local profile; supported fields only",
+  "date": "2026-10-07",
+  "timeZone": "Asia/Seoul",
+  "SYSTEM_ASSUMED_TOLERANCE": "NO",
+  "validatedCandidateManifestSha256": "5d121370f11f7e2df9e27bdeaae9bbee23d39e1ebc2b190e65bcb572bf69fd8c",
+  "certifiedManifestSha256": "515835253e61d87a189af8f9176b250122f017f7921cb60c234c9bba791fc690",
+  "renderingPayloadSha256": "cb195d098efc1a58e58a6d8cd9eb2ce72bcd47b93a0605943ead19b5687cf5c6",
+  "metadataPromotionOnly": true,
+  "baseline": {
+    "PAGE_SIZE": "PASS",
+    "PAGE_COUNT": "PASS",
+    "LAYOUT_GEOMETRY": "PASS",
+    "TEXT_POSITION": "PASS",
+    "FONT_FAMILY": "PASS",
+    "FONT_SIZE": "PASS",
+    "TEXT_SPACING": "PASS",
+    "TEXT_BASELINE": "PASS",
+    "LINE_HEIGHT": "PASS",
+    "TABLE_LINES": "PASS",
+    "LOGO_GEOMETRY": "PASS",
+    "LOGO_ALPHA": "PASS",
+    "STAMP_GEOMETRY": "PASS",
+    "STAMP_ALPHA": "PASS",
+    "CAMERA_STRUCTURE": "PASS",
+    "REFERENCE_VALUE_PARITY": "PASS",
+    "RASTER_DIFF_RAW": 0,
+    "RASTER_DIFF_ALIGNED": 0,
+    "OVERALL": "PASS"
+  },
+  "mutation": {
+    "caseCount": 15,
+    "MUTATION_ROBUSTNESS": "PASS",
+    "UNCHANGED_REGION_STABILITY": "PASS",
+    "INTENDED_CHANGE_ONLY": "PASS",
+    "outsideChangedPixels": 0
+  },
+  "runtimeSourceAccessDeniedProof": "PASS",
+  "supportedFields": [
+    "recipient",
+    "project",
+    "subtotal",
+    "issueDate",
+    "quoteNo",
+    "items"
+  ],
+  "supportedItemCount": {
+    "minimum": 1,
+    "maximum": 3,
+    "rowHeightChanges": false
+  },
+  "packageFiles": {
+    "engine/certify.py": "42f28e737b78a507d9191f51811f35bd2268ec23e9732a4fffd336f62cb24329",
+    "engine/font_support.py": "2683db32f6b3d403350ab6dfc9f531055d5ed48a6d8e88700180e06d70329f42",
+    "engine/quote_template.py": "6f5af5525c299381c25f2d43ddc71dc13dedcbdd7f19eb636a697fa22d0ddb51",
+    "engine/slots.cjs": "6559871e4a6b8205733f2f2baf8185ea7874c667610649d0a692946585c4bcf2",
+    "evidence/certification-matrix.json": "43037b0aaf0964a284fed3592acace82c3483dfa77218ce80a69a90f4519a17c",
+    "evidence/independent-validation.json": "3d9f99abd27f6bc8f68ec979708e10da8ce41085225707734631bb7dcf900e74",
+    "evidence/independent-validation.md": "8fa641369cfcd93e352f6f6666deabc9a77b922dc4dd81adc643835396cff5fd",
+    "generate.ps1": "4e4e2eeaa17fe539a11b06f12a4c62ea9149ccffe1e30a7716d8c9f0e2490cb4",
+    "quote-core.js": "c6a4d8c76cae2d33208638e4d1c4b55e8529aeadee9f6541becf5723c8a0f3a5",
+    "template/program.zlib": "92734d4e0dc0febe53af5b81c89058eac46e5ee66d8f568b4cf58a3e44c887e9",
+    "template/provenance/image0.png": "b1d3059eb5086d4b636f1abf8b62136425a5128fc01810312cd9d45888e78884",
+    "template/provenance/image1.png": "8f687a0b3b76cda45dc78ef0f1d324885db2c22ac7adacb07bfa81febd130b1b",
+    "template/provenance/image2.jpeg": "780fa78b91a65f1c725ac3ea9d61c8c9602424ea6ba7a42a6af70a159959b854",
+    "template/provenance/image3.emf": "455b551f9921de1fa53c2ad4c723185f55030aff6cf5b3c675e20c28eb28f8f5",
+    "template/resources.pdf": "0bc1197cc2d424606e824d15288b9bc16c2d8bfb5755b314cd02f7b0edeb4b87",
+    "template/template.json": "515835253e61d87a189af8f9176b250122f017f7921cb60c234c9bba791fc690",
+    "사용법.md": "d8c2324a94ebb39453cda1f64bd8f31e2a8dbce704fa726c8fae652e2904892d"
+  }
+}

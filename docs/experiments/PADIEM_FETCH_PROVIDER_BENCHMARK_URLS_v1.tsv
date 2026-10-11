@@ -1,0 +1,17 @@
+id	language	category	url	expectation
+KR-NEWS-01	ko	news	https://www.yna.co.kr/	html_text
+KR-NEWS-02	ko	news	https://www.khan.co.kr/	html_text
+KR-GOV-01	ko	government	https://www.korea.kr/	html_text
+KR-GOV-02	ko	government	https://www.molit.go.kr/	html_text
+KR-DOC-01	ko	documentation	https://ko.wikipedia.org/wiki/%EB%8C%80%ED%95%9C%EB%AF%BC%EA%B5%AD	html_text
+KR-ENC-01	ko	korean_text	https://www.hankyung.com/	korean_text
+EN-NEWS-01	en	news	https://www.reuters.com/	html_text
+EN-DOC-01	en	documentation	https://docs.python.org/3/library/asyncio-task.html	html_text
+EN-DOC-02	en	documentation	https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods	html_text
+EN-COM-01	en	community	https://news.ycombinator.com/	html_text
+EN-EDGE-01	en	edge_case	https://www.example.com/	html_text
+EN-EDGE-02	en	edge_case	https://www.example.com/this-page-does-not-exist-404	not_found
+EN-EDGE-03	en	edge_case	https://httpbin.org/redirect/1	redirect
+EN-EDGE-04	en	edge_case	https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf	pdf
+EN-EDGE-05	en	edge_case	https://www.w3.org/TR/html52/	large_page
+EN-EDGE-06	en	edge_case	https://www.iana.org/domains/reserved	html_text

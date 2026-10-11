@@ -1,20 +1,103 @@
-"""Claw Manual Intake Preview Route (#2086).
+"""Claw Manual Intake Preview + Real Execution Routes (#2086 / #2215).
 
-Provides a fail-closed, read-only preview endpoint for Claw manual intake
-inside Padiem Chat. Requests are processed deterministically via
-kagent.manual_intake.ManualIntakeRouter without database mutations,
-connector interactions, OAuth calls, or external provider requests.
+Provides:
+- POST /api/claw/manual-intake/preview — deterministic preview (existing)
+- POST /api/claw/manual-intake/execute — real P01/Engine-backed execution (#2215)
+- POST /api/claw/manual-intake/quote-compare — deterministic supplier quote
+  comparison and draft-only negotiation (#2812)
+
+The preview route remains deterministic and never calls provider/P01.
+The execute route consumes a Worker-native P01 adapter composed from trusted
+B62 bindings at app/route composition time (see ``claw_p01_composition``) and
+exposed on ``app.state.claw_p01_adapter``. It never reads ``os.environ``. The
+composition chain it drives is the existing B54 P01 contract:
+
+    ManualIntakeRequest
+    → create_claw_run
+    → P01CoreOrchestrationAdapter
+    → P01EngineOrchestrationClient
+    → Engine
+    → B14
+
+Both routes are fail-closed: missing/malformed input, a missing Worker P01/Engine
+binding (adapter unbound), Engine timeout/unreachable, and malformed P01
+responses all return bounded safe errors. No credential/provider raw text leaks
+into the browser. No silent preview fallback after explicit execute.
+
+Artifact download (#2308): an unauthorized cross-tenant ``document_id`` is
+projected as the same non-disclosing ``404 artifact_not_found`` as a missing
+artifact, so no caller can learn whether a foreign document exists. Genuine
+storage failures stay ``503 workspace_document_read_failed``. The store keeps
+raising on tenant mismatch; only the HTTP projection is normalized.
+
+Quota accounting (#2226): the B62 UsageGate consumes before the P01/Engine
+transport. A consumed authorization is compensated only when the failure is
+provably pre-dispatch (unbound adapter or ``P01DispatchClass.NOT_DISPATCHED``
+classification from the P01 chain). Success, dispatched failures, ambiguous
+timeouts, and gate denials never refund. Callers cannot request or mint a
+refund: the decision derives solely from server-side dispatch classification.
+
+Run history (#2317): ``GET /api/claw/runs`` serves a bounded, owner-scoped list
+of recent Claw runs (run id, channel, action, title, status, timestamps, a
+truncated result summary, and a document reference for artifact runs). Rows are
+written by the execute path through the existing D1 ``PADIEM_CHAT_DB`` history
+authority; raw request content, provider secrets, session cookies, OAuth tokens,
+and object keys are never persisted. A history write/read failure fails closed
+with a stable public-safe 503 instead of silently claiming persistence.
+
+Canonical session projection (#2829): the execute route may carry an optional
+``conversation_id`` referencing the existing canonical conversation authority.
+It is validated by the conversation validator itself and resolved with the
+owner-scoped conversation lookup — no new session, account, or workspace
+authority. Missing/foreign references fail closed with the same non-disclosing
+``conversation_not_found`` projection the chat routes use, before any quota,
+tenant, or P01/Engine work. The resolved handle echoes on the execute result
+for UI session routing. Run-history rows gain a bounded ``session`` projection
+that carries a validated owner conversation reference only when the stored row
+supplies one; legacy rows (which persist no reference) project ``session: null``
+rather than a fabricated session. Persisting per-run linkage would require a
+separately justified storage migration and is deliberately NOT part of Phase A.
 """
 
 from __future__ import annotations
 
+import inspect
 import json
+import re
 from typing import Any
 import uuid
 
 from starlette.requests import Request
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, Response
 
+from padiem_control_plane.product_tier_routes import (
+    ProductTierLabel,
+    ProductTierRoutesError,
+    active_route_for,
+)
+
+from .auth_routes import auth_ready, current_user_id
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
+from .control_plane_identity_shadow import (
+    IdentityShadowRecord,
+    IdentityShadowStore,
+    CurrentCanonicalSessionAuthority,
+    resolve_refreshed_session,
+)
+from .dispatch_quota import _clear_reservation, _refund_active_reservation
+from .claw_memory_routes import _resolve_memory_workspace
+from .history import (
+    MAX_CLAW_RUNS,
+    MAX_RUN_RESULT_SUMMARY_CHARS,
+    HistoryStore,
+    validate_conversation_id,
+)
+from .usage_gate import UsageGate
+from kagent.document_export import (
+    DocumentExportError,
+    GeneratedDocumentArtifact,
+    build_document_artifact,
+)
 from kagent.manual_intake import (
     ContractError,
     ManualIntakeAction,
@@ -22,6 +105,32 @@ from kagent.manual_intake import (
     ManualIntakeRequest,
     ManualIntakeRouter,
 )
+from kagent.ops_quote_compare_flow import (
+    COMPARISON_DOCUMENT_TYPE,
+    OpsQuoteCompareFlowError,
+    build_comparison_document,
+    compare_supplier_quotes,
+)
+from kagent.p01_adapter import (
+    P01AdapterError,
+    P01CoreOrchestrationAdapter,
+    P01DispatchClass,
+    P01ProjectionError,
+    P01_FAILURE_DETAIL_CONTRACT,
+    P01_FAILURE_DETAIL_DOWNSTREAM,
+    P01_FAILURE_DETAIL_TRANSPORT,
+    P01_FAILURE_DETAIL_UNKNOWN,
+    P01_FAILURE_DETAILS,
+)
+from kagent.p01_approval_continuation import (
+    OWNER_APPROVAL_DECISIONS,
+    P01ApprovalContinuationService,
+    build_first_party_decision_submission,
+    reconstruct_trusted_resume_request,
+)
+from kagent.p01_run_flow import create_claw_run
+from .worker_config import P01_COMPOSITION_DIAGNOSTICS
+from .workspace_storage import WorkspaceStorageAccessError, WorkspaceStorageError
 
 MAX_MANUAL_INTAKE_BODY_BYTES = 64 * 1024  # 64 KiB
 MAX_CONTENT_CHARS = 4_000
@@ -46,6 +155,12 @@ _ACTION_MAP: dict[str, ManualIntakeAction] = {
     "extract_candidates": ManualIntakeAction.EXTRACT_CANDIDATES,
 }
 
+_BROWSER_TIER_MAP: dict[str, ProductTierLabel] = {
+    "plus": ProductTierLabel.PLUS,
+    "pro": ProductTierLabel.PRO,
+    "max": ProductTierLabel.MAX,
+}
+
 _CHANNEL_MAP: dict[str, ManualIntakeChannel] = {
     "kakao": ManualIntakeChannel.KAKAO,
     "sms": ManualIntakeChannel.SMS,
@@ -64,16 +179,211 @@ def _error(status_code: int, code: str, message: str) -> JSONResponse:
     )
 
 
+def _error_with_detail(
+    status_code: int, code: str, message: str, detail: str
+) -> JSONResponse:
+    """One bounded failure response carrying only a closed-set safe detail code."""
+    return JSONResponse(
+        {"ok": False, "error": {"code": code, "message": message, "detail": detail}},
+        status_code=status_code,
+        headers=_NO_STORE_HEADERS,
+    )
+
+
+_P01_CONTRACT_ERROR_CODES = frozenset(
+    {
+        "invalid_p01_result",
+        "incomplete_p01_lifecycle",
+        "p01_contract_failure",
+        "p01_result_correlation_mismatch",
+        "unsupported_result_field",
+        "unsupported_result_approval_pause",
+        # #2946 Engine approval-pause wire fail-closed codes.
+        "missing_continuation_ref",
+        "malformed_continuation_ref",
+        "continuation_without_pause",
+        "pause_without_lifecycle_evidence",
+        "unknown_extra_authority_fields",
+        "correlation_mismatch",
+        "invalid_engine_result",
+    }
+)
+_P01_DOWNSTREAM_ERROR_CODES = frozenset(
+    {"p01_engine_request_failed", "engine_unavailable"}
+)
+_P01_TRANSPORT_ERROR_CODES = frozenset(
+    {"p01_engine_unreachable", "p01_engine_response_too_large", "p01_engine_url_invalid"}
+)
+
+
+def _safe_engine_failure_detail(exc: P01AdapterError) -> str:
+    """Project only the closed failure vocabulary to the public route."""
+    if exc.failure_detail in P01_FAILURE_DETAILS:
+        return exc.failure_detail
+    if isinstance(exc, P01ProjectionError) or exc.code in _P01_CONTRACT_ERROR_CODES:
+        return P01_FAILURE_DETAIL_CONTRACT
+    if exc.code in _P01_TRANSPORT_ERROR_CODES:
+        return P01_FAILURE_DETAIL_TRANSPORT
+    if exc.code in _P01_DOWNSTREAM_ERROR_CODES:
+        return P01_FAILURE_DETAIL_DOWNSTREAM
+    return P01_FAILURE_DETAIL_UNKNOWN
+
+
+def _safe_composition_diagnostic(request: Request) -> str:
+    """Return the bounded P01 composition diagnostic for a public 503 (#2413).
+
+    Only a value from the closed allowlist is ever projected; anything else
+    (including an unset state) degrades to ``composition_unavailable``. The
+    generic ``engine_not_configured`` code is preserved unchanged for existing
+    clients; the diagnostic rides in a separate bounded ``detail`` field.
+    """
+    diagnostic = getattr(request.app.state, "claw_p01_composition_diagnostic", None)
+    if isinstance(diagnostic, str) and diagnostic in P01_COMPOSITION_DIAGNOSTICS:
+        return diagnostic
+    return "composition_unavailable"
+
+
+_WORKSPACE_READ_DETAIL_METADATA_INVALID = "metadata_invalid"
+_WORKSPACE_READ_DETAIL_R2_READ_FAILED = "r2_read_failed"
+_WORKSPACE_READ_DETAIL_BYTE_LENGTH_MISMATCH = "byte_length_mismatch"
+_WORKSPACE_READ_DETAIL_UNKNOWN = "storage_unknown"
+
+
+def _safe_workspace_read_failure_detail(exc: Exception) -> str:
+    """Project storage read failures to a closed, non-secret public vocabulary."""
+    if not isinstance(exc, WorkspaceStorageError):
+        return _WORKSPACE_READ_DETAIL_UNKNOWN
+    return {
+        "workspace document metadata is invalid": _WORKSPACE_READ_DETAIL_METADATA_INVALID,
+        "workspace document read failed": _WORKSPACE_READ_DETAIL_R2_READ_FAILED,
+        "workspace document length mismatch": _WORKSPACE_READ_DETAIL_BYTE_LENGTH_MISMATCH,
+    }.get(str(exc), _WORKSPACE_READ_DETAIL_UNKNOWN)
+
+def _usage_denied_response(decision) -> JSONResponse:
+    headers = dict(_NO_STORE_HEADERS)
+    if decision.retry_after_seconds is not None:
+        headers["Retry-After"] = str(decision.retry_after_seconds)
+    return JSONResponse(
+        {"ok": False, "error": {"code": decision.code, "message": decision.user_message}},
+        status_code=decision.status_code,
+        headers=headers,
+    )
+
+
+async def _usage_gate_denial(request: Request) -> JSONResponse | None:
+    """Server-derived B62 usage gate for the real-execution path.
+
+    Identity comes only from the signed-in session cookie and the trusted
+    edge IP header; nothing in the request body can supply or override it.
+    Returns a bounded product-safe response when denied, otherwise None.
+    """
+    if not getattr(request.app.state, "usage_gate_enforced", False):
+        return None
+    uid = current_user_id(request) if auth_ready(request) else None
+    usage_gate: UsageGate = request.app.state.usage_gate
+    decision = await usage_gate.authorize(
+        raw_ip=request.headers.get("cf-connecting-ip"),
+        user_id=uid,
+    )
+    return _usage_denied_response(decision) if not decision.allowed else None
+
+
+async def _resolve_canonical_tenant(request: Request) -> str | None:
+    """Resolve the canonical tenant_id from the signed-in session.
+
+    Flow:
+        signed-in user_id → identity shadow → Control Plane session refresh
+        → shared canonical contract validation (RefreshingCanonicalSubjectResolver
+        contract: session id, chat product id, USER subject, canonical subject
+        id, monotonic revision, ACTIVE effective state, snapshot type)
+        → AuthSessionSnapshot.tenant_id
+
+    The tenant is returned only when every contract check passes; any
+    violation (revoked, expired, product/subject mismatch, revision rollback,
+    invalid snapshot) resolves to None and the caller fails closed.
+    """
+    if not auth_ready(request):
+        return None
+    product_user_id = current_user_id(request)
+    if not product_user_id:
+        return None
+    shadow_store: IdentityShadowStore | None = getattr(
+        request.app.state, "identity_shadow_store", None
+    )
+    authority: CurrentCanonicalSessionAuthority | None = getattr(
+        request.app.state, "control_plane_identity_authority", None
+    )
+    if shadow_store is None or authority is None:
+        return None
+    try:
+        session = await resolve_refreshed_session(
+            authority=authority,
+            store=shadow_store,
+            product_user_id=product_user_id,
+        )
+    except Exception:
+        return None
+    tenant_id = session.tenant_id
+    if not isinstance(tenant_id, str) or not tenant_id:
+        return None
+    return tenant_id
+
+
+async def _resolve_intake_session_reference(
+    request: Request, data: dict[str, Any]
+) -> tuple[str | None, JSONResponse | None]:
+    """Resolve the optional canonical conversation/session reference (#2829).
+
+    The reference reuses the existing conversation authority itself: the same
+    ``validate_conversation_id`` shape validator and the same owner-scoped
+    ``get_conversation`` lookup the chat routes use — no new session, account,
+    or workspace authority. A non-owner or missing conversation is the same
+    non-disclosing ``conversation_not_found`` projection used elsewhere; the
+    caller stops before any quota decision, tenant resolution, or P01/Engine
+    dispatch. Carrying no reference keeps legacy execute behavior byte-for-byte
+    identical.
+    """
+    raw = data.get("conversation_id")
+    if raw is None:
+        return None, None
+    try:
+        candidate = validate_conversation_id(raw)
+    except ValueError:
+        return None, _error(400, "invalid_conversation_id", "대화 세션 참조 형식이 올바르지 않습니다.")
+    if candidate is None:
+        return None, None
+    uid = current_user_id(request) if auth_ready(request) else None
+    if uid is None:
+        return None, _error(401, "unauthorized", "세션 참조를 확인하려면 로그인이 필요합니다.")
+    store: HistoryStore | None = getattr(request.app.state, "history_store", None)
+    get_conversation = getattr(store, "get_conversation", None) if store is not None else None
+    if not callable(get_conversation):
+        return None, _error(503, "conversation_authority_unavailable", "대화 세션 권한을 확인할 수 없습니다.")
+    try:
+        conversation = get_conversation(uid, candidate)
+        if inspect.isawaitable(conversation):
+            conversation = await conversation
+    except Exception:
+        return None, _error(503, "conversation_authority_unavailable", "대화 세션 권한을 확인할 수 없습니다.")
+    if not isinstance(conversation, dict) or conversation.get("id") != candidate:
+        return None, _error(404, "conversation_not_found", "대화를 찾을 수 없습니다.")
+    return candidate, None
+
+
 async def claw_manual_intake_preview(request: Request) -> JSONResponse:
     content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
     if content_type != "application/json":
         return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
 
-    raw_body = await request.body()
+    try:
+        raw_body = await read_bounded_request_body(
+            request,
+            max_bytes=MAX_MANUAL_INTAKE_BODY_BYTES,
+        )
+    except RequestBodyTooLarge:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     if not raw_body:
         return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
-    if len(raw_body) > MAX_MANUAL_INTAKE_BODY_BYTES:
-        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
 
     try:
         data = json.loads(raw_body.decode("utf-8"))
@@ -148,3 +458,962 @@ async def claw_manual_intake_preview(request: Request) -> JSONResponse:
         status_code=200,
         headers=_NO_STORE_HEADERS,
     )
+
+
+async def claw_manual_intake_execute(request: Request) -> JSONResponse:
+    content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
+    if content_type != "application/json":
+        return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
+
+    try:
+        raw_body = await read_bounded_request_body(
+            request,
+            max_bytes=MAX_MANUAL_INTAKE_BODY_BYTES,
+        )
+    except RequestBodyTooLarge:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
+    if not raw_body:
+        return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
+
+    try:
+        data = json.loads(raw_body.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return _error(400, "invalid_json", "유효한 JSON 형식이 아닙니다.")
+
+    if not isinstance(data, dict):
+        return _error(400, "invalid_payload", "요청 데이터는 객체여야 합니다.")
+
+    content = data.get("content")
+    if not isinstance(content, str) or not content.strip():
+        return _error(400, "invalid_content", "요청 원문을 입력해 주세요.")
+    content_clean = content.strip()
+    if len(content_clean) > MAX_CONTENT_CHARS:
+        return _error(400, "content_too_long", f"요청 원문은 {MAX_CONTENT_CHARS}자 이하로 입력해 주세요.")
+
+    raw_channel = str(data.get("channel") or "other").strip().lower()
+    channel = _CHANNEL_MAP.get(raw_channel)
+    if channel is None:
+        return _error(400, "invalid_channel", f"지원되지 않는 채널입니다: {raw_channel}")
+
+    raw_action = str(data.get("action") or "quote").strip().lower()
+    action = _ACTION_MAP.get(raw_action)
+    if action is None:
+        return _error(400, "invalid_action", f"지원되지 않는 작업입니다: {raw_action}")
+
+    sender_hint: str | None = None
+    if "sender_hint" in data and data["sender_hint"] is not None:
+        raw_sender = str(data["sender_hint"]).strip()
+        if len(raw_sender) > MAX_SENDER_CHARS:
+            return _error(400, "sender_hint_too_long", f"발신자 힌트는 {MAX_SENDER_CHARS}자 이하로 입력해 주세요.")
+        sender_hint = raw_sender or None
+
+    raw_tier = data.get("tier", "plus")
+    if not isinstance(raw_tier, str):
+        return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
+    product_tier = _BROWSER_TIER_MAP.get(raw_tier.strip().lower())
+    if product_tier is None:
+        return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
+    try:
+        tier_route = active_route_for(product_tier)
+    except ProductTierRoutesError:
+        return _error(503, "tier_unavailable", "AI 등급 설정을 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.")
+    if tier_route is None or not tier_route.model_id:
+        return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.")
+
+    try:
+        intake_req = ManualIntakeRequest(
+            request_id=f"exec_{uuid.uuid4().hex[:12]}",
+            workspace_id="execute_ephemeral_workspace",
+            channel=channel,
+            action=action,
+            raw_content=content_clean,
+            sender_hint=sender_hint,
+            requested_format="md",
+        )
+        router = ManualIntakeRouter()
+        router.process(intake_req)
+    except ContractError as exc:
+        return _error(400, "contract_violation", str(exc))
+    except Exception:
+        # Unexpected router/runtime details are never browser-facing. Contract
+        # violations above remain specific; everything else is an internal
+        # execution failure with bounded product copy.
+        return _error(
+            500,
+            "intake_generation_failed",
+            "요청 처리 준비 중 오류가 발생했습니다. 다시 시도해 주세요.",
+        )
+
+    # Canonical session reference (#2829): resolved through the conversation
+    # authority itself, and it fails closed before quota, tenant, or dispatch.
+    session_conversation_id, session_error = await _resolve_intake_session_reference(
+        request, data
+    )
+    if session_error is not None:
+        return session_error
+
+    # Artifact-producing actions require canonical tenant + storage authority
+    # before quota consumption or any P01/Engine/B14 dispatch (#2583).
+    artifact_tenant_id: str | None = None
+    artifact_store: Any = None
+    if action in (ManualIntakeAction.QUOTE_DRAFT, ManualIntakeAction.ORDER_DRAFT):
+        artifact_tenant_id = await _resolve_canonical_tenant(request)
+        if artifact_tenant_id is None:
+            return _error(
+                503,
+                "workspace_scope_unavailable",
+                "문서 저장 권한을 확인할 수 없습니다.",
+            )
+        artifact_store = getattr(request.app.state, "workspace_document_store", None)
+        if artifact_store is None:
+            return _error(
+                503,
+                "workspace_storage_unavailable",
+                "문서 저장소가 설정되지 않았습니다.",
+            )
+
+    # #3382: the adapter is read BEFORE the usage gate because the canonical
+    # USER lane check (subject identity) must happen BEFORE quota consumption.
+    # The usage gate is still applied before the actual P01 dispatch, so the
+    # contract intent is preserved.
+    adapter: P01CoreOrchestrationAdapter | None = getattr(
+        request.app.state, "claw_p01_adapter", None
+    )
+
+    # #3382: the canonical USER subject is resolved BEFORE the usage gate so a
+    # failed revalidation never consumes quota. The subject is derived
+    # SERVER-SIDE from the signed Padiem session (current_user_id → current B54
+    # canonical session → canonical sub_*) and travels only on the P01 wire.
+    # Nothing about the subject, product user, tenant or workspace is read from
+    # the request, and the value is never returned to the browser. When the
+    # identity authority is not bound (legacy/test composition), the lane is
+    # off and the old subjectless contract applies — the Engine admission
+    # rejects the request with 503 entitlement_unavailable.
+    subject_id: str | None = None
+    if adapter is not None and getattr(
+        adapter, "subject_identity_lane", False
+    ) is True:
+        from .b54_canonical_session import resolve_current_b54_canonical_session
+
+        b54_session = await resolve_current_b54_canonical_session(request)
+        if b54_session is None:
+            return _error(
+                403,
+                "canonical_b54_session_unavailable",
+                "인증된 Claw 실행 권한을 확인할 수 없습니다.",
+            )
+        subject_id = b54_session.auth_session.subject.subject_id
+
+    denial = await _usage_gate_denial(request)
+    if denial is not None:
+        return denial
+
+    if adapter is None:
+        # No composed transport exists, so the consumed authorization is
+        # provably un-dispatched: compensate the exact receipt (#2226).
+        await _refund_active_reservation()
+        # Public code stays the generic ``engine_not_configured`` for existing
+        # clients; the bounded non-secret ``detail`` distinguishes why the
+        # composition failed closed (#2413).
+        return JSONResponse(
+            {
+                "ok": False,
+                "error": {
+                    "code": "engine_not_configured",
+                    "message": "Engine 클라이언트가 설정되지 않았습니다.",
+                    "detail": _safe_composition_diagnostic(request),
+                },
+            },
+            status_code=503,
+            headers=_NO_STORE_HEADERS,
+        )
+
+    task_text = _build_execute_task(action, content_clean)
+    run = create_claw_run("padiem-chat", task_text)
+
+    try:
+        outcome = await adapter.execute(
+            run, product_tier=product_tier, subject_id=subject_id
+        )
+    except P01AdapterError as exc:
+        # Canonical #830 invariant: refund only when B62 can prove the Engine
+        # call was never dispatched. Dispatched/ambiguous failures stay counted.
+        if exc.dispatch_class == P01DispatchClass.NOT_DISPATCHED:
+            await _refund_active_reservation()
+        else:
+            _clear_reservation()
+        return JSONResponse(
+            {
+                "ok": False,
+                "error": {
+                    "code": "engine_execution_failed",
+                    "message": "Engine 실행에 실패했습니다.",
+                    "detail": _safe_engine_failure_detail(exc),
+                },
+            },
+            status_code=502,
+            headers=_NO_STORE_HEADERS,
+        )
+    except Exception:
+        _clear_reservation()
+        return JSONResponse(
+            {
+                "ok": False,
+                "error": {
+                    "code": "engine_execution_failed",
+                    "message": "Engine 실행에 실패했습니다.",
+                    "detail": P01_FAILURE_DETAIL_UNKNOWN,
+                },
+            },
+            status_code=502,
+            headers=_NO_STORE_HEADERS,
+        )
+    _clear_reservation()
+
+    # #2946: bounded WAITING_APPROVAL projection. The Engine-issued
+    # continuation_ref is opaque and is echoed only as that identity; no
+    # terminal success claim, no fabricated answer, no approval decision, and
+    # no resume/cancel side effect on this route.
+    if outcome.projection.status.value == "waiting_approval":
+        waiting_ref = getattr(outcome, "continuation_ref", None)
+        if not isinstance(waiting_ref, str) or not waiting_ref:
+            return JSONResponse(
+                {
+                    "ok": False,
+                    "error": {
+                        "code": "engine_execution_failed",
+                        "message": "Engine 실행이 완료되지 않았습니다.",
+                        "detail": P01_FAILURE_DETAIL_CONTRACT,
+                    },
+                },
+                status_code=502,
+                headers=_NO_STORE_HEADERS,
+            )
+        waiting_title = (
+            f"[{channel.value.upper()}] {action.value}: {sender_hint or '미지정'}"
+        )
+        waiting_result: dict[str, Any] = {
+            "request_id": run.run_id,
+            "channel": channel.value,
+            "action": action.value,
+            "title": waiting_title,
+            "result_text": None,
+            "status": "waiting_approval",
+            "approval_required": True,
+            "continuation_ref": waiting_ref,
+            "p01_run_id": outcome.p01_run_id,
+            "p01_event_count": outcome.p01_event_count,
+            "direct_kakao_send": False,
+            "direct_sms_send": False,
+            "connector_required": False,
+        }
+        if session_conversation_id is not None:
+            waiting_result["conversation_id"] = session_conversation_id
+        history_failure = await _record_claw_run_history(
+            request,
+            run_id=run.run_id,
+            channel=channel.value,
+            action=action.value,
+            title=waiting_title,
+            status="waiting_approval",
+            result_text=None,
+            artifact=None,
+            conversation_id=session_conversation_id,
+        )
+        if history_failure is not None:
+            return history_failure
+        # #2956: one owner-scoped durable approval handoff after canonical
+        # history success. Server-derived owner/workspace only; the browser
+        # never supplies resume authority fields.
+        handoff_failure = await _record_claw_approval_handoff(
+            request,
+            run_id=run.run_id,
+            continuation_ref=waiting_ref,
+            pause_id=getattr(outcome, "pause_id", None),
+            pause_expires_at=getattr(outcome, "pause_expires_at", None),
+            trusted_request=getattr(outcome, "trusted_request", None),
+            conversation_id=session_conversation_id,
+            p01_run_id=getattr(outcome, "p01_run_id", None),
+        )
+        if handoff_failure is not None:
+            return handoff_failure
+        return JSONResponse(
+            {"ok": True, "result": waiting_result},
+            status_code=200,
+            headers=_NO_STORE_HEADERS,
+        )
+
+    if outcome.projection.status.value != "completed" or not outcome.answer:
+        return JSONResponse(
+            {
+                "ok": False,
+                "error": {
+                    "code": "engine_execution_failed",
+                    "message": "Engine 실행이 완료되지 않았습니다.",
+                    "detail": P01_FAILURE_DETAIL_CONTRACT,
+                },
+            },
+            status_code=502,
+            headers=_NO_STORE_HEADERS,
+        )
+
+    title = f"[{channel.value.upper()}] {action.value}: {sender_hint or '미지정'}"
+
+    # Artifact authority was preflighted before quota/P01 dispatch above.
+    artifact_descriptor: dict[str, Any] | None = None
+    if artifact_tenant_id is not None and artifact_store is not None:
+        try:
+            artifact = build_document_artifact(
+                document_type=action.value.replace("_draft", ""),
+                file_format="docx",
+                title=title,
+                metadata_fields=[
+                    ("채널", channel.value),
+                    ("작업", action.value),
+                    ("발신자", sender_hint or "미지정"),
+                ],
+                section_title=f"실행 결과 — {action.value}",
+                body_text=outcome.answer or "",
+                items=[],
+                total="",
+                markdown_fallback_text=outcome.answer or "",
+            )
+            metadata = await artifact_store.put_generated_docx(
+                tenant_id=artifact_tenant_id,
+                filename=artifact.filename,
+                body=artifact.content_bytes(),
+            )
+            artifact_descriptor = metadata.public_projection()
+        except DocumentExportError:
+            return _error(
+                500,
+                "artifact_generation_failed",
+                "문서 아티팩트 생성에 실패했습니다.",
+            )
+        except Exception:
+            return _error(
+                500,
+                "artifact_storage_failed",
+                "문서 저장에 실패했습니다.",
+            )
+
+    result: dict[str, Any] = {
+        "request_id": run.run_id,
+        "channel": channel.value,
+        "action": action.value,
+        "title": title,
+        "result_text": outcome.answer,
+        "status": outcome.projection.status.value,
+        "p01_run_id": outcome.p01_run_id,
+        "p01_event_count": outcome.p01_event_count,
+        "direct_kakao_send": False,
+        "direct_sms_send": False,
+        "connector_required": False,
+    }
+    if artifact_descriptor is not None:
+        result["artifact"] = artifact_descriptor
+    if session_conversation_id is not None:
+        # Bounded canonical session handle for UI session routing only; a
+        # validated conversation id, never an internal storage row/user id.
+        result["conversation_id"] = session_conversation_id
+
+    history_failure = await _record_claw_run_history(
+        request,
+        run_id=run.run_id,
+        channel=channel.value,
+        action=action.value,
+        title=title,
+        status=outcome.projection.status.value,
+        result_text=outcome.answer,
+        artifact=artifact_descriptor,
+        conversation_id=session_conversation_id,
+    )
+    if history_failure is not None:
+        return history_failure
+
+    return JSONResponse(
+        {"ok": True, "result": result},
+        status_code=200,
+        headers=_NO_STORE_HEADERS,
+    )
+
+
+async def claw_manual_intake_artifact(request: Request) -> JSONResponse | Response:
+    document_id = request.path_params.get("document_id", "")
+    if not document_id or not re.match(r"^doc_[A-Za-z0-9]{32}$", document_id):
+        return _error(400, "invalid_document_id", "잘못된 문서 ID입니다.")
+
+    tenant_id = await _resolve_canonical_tenant(request)
+    if tenant_id is None:
+        return _error(401, "workspace_scope_unavailable", "인증 세션이 필요합니다.")
+
+    workspace_store: Any = getattr(request.app.state, "workspace_document_store", None)
+    if workspace_store is None:
+        return _error(503, "workspace_storage_unavailable", "문서 저장소가 설정되지 않았습니다.")
+
+    try:
+        result = await workspace_store.get_for_tenant(
+            tenant_id=tenant_id,
+            document_id=document_id,
+        )
+    except WorkspaceStorageAccessError:
+        # #2308: a canonical-tenant denial must be observationally identical to
+        # a missing artifact. Returning 503 here disclosed that a foreign
+        # document id exists; the same 404 body removes that oracle. The store
+        # still raises (tenant enforcement unchanged) — only the projection is
+        # normalized.
+        return _error(404, "artifact_not_found", "아티팩트를 찾을 수 없습니다.")
+    except Exception as exc:
+        return JSONResponse(
+            {
+                "ok": False,
+                "error": {
+                    "code": "workspace_document_read_failed",
+                    "message": "문서 읽기 중 오류가 발생했습니다.",
+                    "detail": _safe_workspace_read_failure_detail(exc),
+                },
+            },
+            status_code=503,
+            headers=_NO_STORE_HEADERS,
+        )
+
+    if result is None:
+        return _error(404, "artifact_not_found", "아티팩트를 찾을 수 없습니다.")
+
+    metadata, content = result
+    import urllib.parse as _urllib_parse
+
+    return Response(
+        content,
+        status_code=200,
+        headers={
+            "Content-Type": metadata.media_type,
+            "Content-Disposition": f"attachment; filename*=UTF-8''{_urllib_parse.quote(metadata.filename)}",
+            "Cache-Control": "no-store, max-age=0",
+            "Content-Length": str(len(content)),
+            "X-Content-Type-Options": "nosniff",
+        },
+    )
+
+
+async def _record_claw_run_history(
+    request: Request,
+    *,
+    run_id: str,
+    channel: str,
+    action: str,
+    title: str,
+    status: str,
+    result_text: str | None,
+    artifact: dict[str, Any] | None,
+    conversation_id: str | None = None,
+) -> JSONResponse | None:
+    """Persist a bounded owner-scoped run history row (#2317, #2829).
+
+    Fail-closed: a store that advertises ``record_claw_run`` but raises is a
+    storage failure and returns a stable public-safe 503 so the caller never
+    sees a success that silently dropped history. A store that does not
+    implement the capability (a presence-only auth stub) is a no-op, and an
+    anonymous run has no owner to record against, so both return ``None``.
+
+    #2829 Phase B: the optional ``conversation_id`` is the already-validated
+    canonical conversation handle from ``_resolve_intake_session_reference``.
+    It is persisted only when the caller carried a reference that passed the
+    existing canonical conversation authority; otherwise ``None`` keeps legacy
+    rows at ``session: null``. No new session authority is created.
+    """
+    uid = current_user_id(request) if auth_ready(request) else None
+    if uid is None:
+        return None
+    history_store = getattr(request.app.state, "history_store", None)
+    record = getattr(history_store, "record_claw_run", None)
+    if record is None:
+        return None
+    summary = result_text[:MAX_RUN_RESULT_SUMMARY_CHARS] if result_text else None
+    try:
+        outcome_record = record(
+            user_id=uid,
+            run_id=run_id,
+            channel=channel,
+            action=action,
+            title=title,
+            status=status,
+            result_summary=summary,
+            artifact_document_id=artifact.get("document_id") if artifact else None,
+            artifact_filename=artifact.get("filename") if artifact else None,
+            artifact_media_type=artifact.get("media_type") if artifact else None,
+            conversation_id=conversation_id,
+        )
+        if inspect.isawaitable(outcome_record):
+            await outcome_record
+    except Exception:
+        return _error(503, "run_history_write_failed", "실행 이력 저장에 실패했습니다.")
+    return None
+
+
+async def _record_claw_approval_handoff(
+    request: Request,
+    *,
+    run_id: str,
+    continuation_ref: str,
+    pause_id: Any,
+    pause_expires_at: Any,
+    trusted_request: Any,
+    conversation_id: str | None = None,
+    p01_run_id: Any = None,
+) -> JSONResponse | None:
+    """Persist one owner-scoped approval handoff after WAITING history success (#2956).
+
+    Fail-closed: a store that advertises ``record_claw_approval_handoff`` but
+    raises is a storage failure and returns a stable public-safe 503. A store
+    that does not implement the capability (a presence-only auth stub) is a
+    no-op, and an anonymous run has no owner to record against, so both return
+    ``None``. Missing pause identity or an incomplete trusted request fails
+    closed before any write so a half-formed handoff never reaches storage.
+    """
+    uid = current_user_id(request) if auth_ready(request) else None
+    if uid is None:
+        return None
+    history_store = getattr(request.app.state, "history_store", None)
+    record = getattr(history_store, "record_claw_approval_handoff", None)
+    if record is None:
+        return None
+    if (
+        not isinstance(continuation_ref, str)
+        or not continuation_ref
+        or not isinstance(pause_id, str)
+        or not pause_id
+        or not isinstance(pause_expires_at, str)
+        or not pause_expires_at
+        or not isinstance(trusted_request, dict)
+        or not trusted_request
+    ):
+        return JSONResponse(
+            {
+                "ok": False,
+                "error": {
+                    "code": "engine_execution_failed",
+                    "message": "Engine 실행이 완료되지 않았습니다.",
+                    "detail": P01_FAILURE_DETAIL_CONTRACT,
+                },
+            },
+            status_code=502,
+            headers=_NO_STORE_HEADERS,
+        )
+    workspace_id: str | None = None
+    try:
+        workspace_id = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        return _error(503, "approval_handoff_write_failed", "승인 인계 저장에 실패했습니다.")
+    try:
+        outcome_record = record(
+            user_id=uid,
+            run_id=run_id,
+            continuation_ref=continuation_ref,
+            pause_id=pause_id,
+            pause_expires_at=pause_expires_at,
+            trusted_request=trusted_request,
+            workspace_id=workspace_id,
+            conversation_id=conversation_id,
+            **({"p01_run_id": p01_run_id} if isinstance(p01_run_id, str) and p01_run_id else {}),
+        )
+        if inspect.isawaitable(outcome_record):
+            await outcome_record
+    except Exception:
+        return _error(503, "approval_handoff_write_failed", "승인 인계 저장에 실패했습니다.")
+    return None
+
+
+MAX_APPROVAL_DECISION_BODY_BYTES = 8 * 1024  # 8 KiB: two bounded fields only
+_APPROVAL_DECISION_BODY_KEYS = frozenset({"run_id", "decision"})
+_APPROVAL_NOT_AVAILABLE_MESSAGE = "승인 요청을 확인할 수 없습니다."
+
+
+async def claw_approval_decision(request: Request) -> JSONResponse:
+    """Consume one authenticated owner approve/deny through the canonical lane (#2961).
+
+    The caller supplies exactly ``run_id`` + ``decision``. Owner and workspace
+    are server-derived from the existing B54/B62 session authority, the trusted
+    P01 request comes only from the #2956 durable handoff, and the Engine stays
+    the only approval verifier and continuation authority. A foreign, expired,
+    consumed, or malformed handoff is one bounded non-disclosing result, and no
+    Engine call is attempted until the stored context reconstructs cleanly.
+    """
+    content_type = (request.headers.get("content-type") or "").split(";", 1)[0].strip().lower()
+    if content_type != "application/json":
+        return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
+    uid = current_user_id(request) if auth_ready(request) else None
+    if uid is None:
+        return _error(401, "unauthorized", "로그인이 필요합니다.")
+
+    try:
+        raw_body = await read_bounded_request_body(
+            request,
+            max_bytes=MAX_APPROVAL_DECISION_BODY_BYTES,
+        )
+    except RequestBodyTooLarge:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
+    if not raw_body:
+        return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
+    try:
+        data = json.loads(raw_body.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return _error(400, "invalid_json", "유효한 JSON 형식이 아닙니다.")
+    if not isinstance(data, dict):
+        return _error(400, "invalid_payload", "요청 데이터는 객체여야 합니다.")
+    # Caller authority is exactly two fields. Anything else — a continuation_ref,
+    # pause/app/session/trace/workspace/model/tool value, or a decision-evidence
+    # field — is refused rather than merged, so it can never become authority.
+    if set(data) - _APPROVAL_DECISION_BODY_KEYS:
+        return _error(
+            400,
+            "unexpected_approval_authority_field",
+            "승인 요청에 허용되지 않는 필드가 있습니다.",
+        )
+    run_id = data.get("run_id")
+    if not isinstance(run_id, str) or not run_id.strip() or len(run_id.strip()) > 128:
+        return _error(400, "invalid_run_id", "run_id가 올바르지 않습니다.")
+    run_id = run_id.strip()
+    decision = data.get("decision")
+    if not isinstance(decision, str) or decision not in OWNER_APPROVAL_DECISIONS:
+        return _error(422, "invalid_approval_decision", "승인 결정이 올바르지 않습니다.")
+
+    history_store = getattr(request.app.state, "history_store", None)
+    load = getattr(history_store, "load_claw_approval_handoff", None)
+    if load is None:
+        return _error(503, "approval_handoff_unavailable", _APPROVAL_NOT_AVAILABLE_MESSAGE)
+    try:
+        workspace_id = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        return _error(503, "approval_handoff_unavailable", _APPROVAL_NOT_AVAILABLE_MESSAGE)
+    try:
+        handoff = load(user_id=uid, run_id=run_id, workspace_id=workspace_id)
+        if inspect.isawaitable(handoff):
+            handoff = await handoff
+    except Exception:
+        return _error(503, "approval_handoff_unavailable", _APPROVAL_NOT_AVAILABLE_MESSAGE)
+    if not isinstance(handoff, dict):
+        return _error(404, "approval_not_available", _APPROVAL_NOT_AVAILABLE_MESSAGE)
+
+    try:
+        trusted = reconstruct_trusted_resume_request(
+            trusted_request=handoff.get("trusted_request"),
+            run_id=run_id,
+            p01_run_id=handoff.get("p01_run_id"),
+        )
+        submission = build_first_party_decision_submission(
+            pause_id=handoff.get("pause_id"),
+            decision=decision,
+            owner_id=uid,
+        )
+    except P01AdapterError:
+        return _error(
+            409,
+            "approval_handoff_unusable",
+            "승인 컨텍스트를 안전하게 복원할 수 없습니다.",
+        )
+
+    continuation_client = getattr(request.app.state, "claw_p01_continuation_client", None)
+    if continuation_client is None:
+        return JSONResponse(
+            {
+                "ok": False,
+                "error": {
+                    "code": "engine_not_configured",
+                    "message": "Engine 클라이언트가 설정되지 않았습니다.",
+                    "detail": _safe_composition_diagnostic(request),
+                },
+            },
+            status_code=503,
+            headers=_NO_STORE_HEADERS,
+        )
+
+    try:
+        outcome = await P01ApprovalContinuationService(continuation_client).decide(
+            run_id=run_id,
+            continuation_ref=str(handoff.get("continuation_ref") or ""),
+            request=trusted,
+            submission=submission,
+        )
+    except P01AdapterError as exc:
+        if exc.dispatch_class == P01DispatchClass.NOT_DISPATCHED:
+            # The Engine rejected this submission without consuming the stored
+            # continuation: the handoff stays active and the run keeps waiting.
+            return _error(
+                409,
+                "approval_decision_rejected",
+                "승인 결정을 처리하지 못했습니다. 다시 시도해 주세요.",
+            )
+        return _error_with_detail(
+            502,
+            "engine_execution_failed",
+            "Engine 승인 처리에 실패했습니다.",
+            _safe_engine_failure_detail(exc),
+        )
+    except Exception:
+        return _error(502, "engine_execution_failed", "Engine 승인 처리에 실패했습니다.")
+
+    # Every path below has proven Engine consumption (commit) or canonical
+    # denial, so the decided handoff becomes unusable only now.
+    consume = getattr(history_store, "consume_claw_approval_handoff", None)
+    if consume is not None:
+        try:
+            consumed = consume(user_id=uid, run_id=run_id, workspace_id=workspace_id)
+            if inspect.isawaitable(consumed):
+                consumed = await consumed
+        except Exception:
+            return _error(503, "approval_handoff_unavailable", "승인 상태를 저장하지 못했습니다.")
+        if consumed is not True:
+            return _error(503, "approval_handoff_unavailable", "승인 상태를 저장하지 못했습니다.")
+
+    status = outcome.projection.status.value
+    if outcome.next_continuation_ref is not None:
+        handoff_failure = await _record_claw_approval_handoff(
+            request,
+            run_id=run_id,
+            continuation_ref=outcome.next_continuation_ref,
+            pause_id=outcome.next_pause_id,
+            pause_expires_at=outcome.next_pause_expires_at,
+            trusted_request=(
+                dict(outcome.next_trusted_request)
+                if outcome.next_trusted_request is not None
+                else None
+            ),
+            conversation_id=handoff.get("conversation_id"),
+            p01_run_id=outcome.next_p01_run_id,
+        )
+        if handoff_failure is not None:
+            return handoff_failure
+
+    result_text = outcome.answer
+    if result_text is None and status == "cancelled":
+        result_text = "승인이 거절되었습니다."
+    update = getattr(history_store, "update_claw_run_status", None)
+    if update is not None:
+        try:
+            updated = update(
+                user_id=uid,
+                run_id=run_id,
+                status=status,
+                result_summary=result_text,
+            )
+            if inspect.isawaitable(updated):
+                updated = await updated
+        except Exception:
+            return _error(503, "run_history_write_failed", "실행 이력 저장에 실패했습니다.")
+        if updated is False:
+            return _error(404, "approval_not_available", _APPROVAL_NOT_AVAILABLE_MESSAGE)
+
+    result: dict[str, Any] = {
+        "run_id": run_id,
+        "status": status,
+        "approval_required": status == "waiting_approval",
+        "result_text": result_text,
+    }
+    if outcome.next_continuation_ref is not None:
+        result["continuation_ref"] = outcome.next_continuation_ref
+    conversation_id = handoff.get("conversation_id")
+    if isinstance(conversation_id, str) and conversation_id:
+        result["conversation_id"] = conversation_id
+    return JSONResponse({"ok": True, "result": result}, status_code=200, headers=_NO_STORE_HEADERS)
+
+
+async def claw_runs_history(request: Request) -> JSONResponse:
+    """Owner-scoped bounded recent run history (#2317).
+
+    Identity is server-derived only; a caller can never list another owner's
+    runs because every read is filtered by the session user id, and a
+    non-owner ``run_id`` is not distinguishable from a missing one.
+    """
+    uid = current_user_id(request) if auth_ready(request) else None
+    if uid is None:
+        return _error(401, "unauthorized", "인증이 필요합니다.")
+
+    history_store = getattr(request.app.state, "history_store", None)
+    list_runs = getattr(history_store, "list_recent_claw_runs", None)
+    if list_runs is None:
+        return _error(503, "run_history_unavailable", "실행 이력을 사용할 수 없습니다.")
+
+    raw_limit = request.query_params.get("limit")
+    try:
+        limit = MAX_CLAW_RUNS if raw_limit is None else int(raw_limit)
+    except (TypeError, ValueError):
+        return _error(400, "invalid_limit", "limit 는 정수여야 합니다.")
+    if limit < 1:
+        return _error(400, "invalid_limit", "limit 는 1 이상이어야 합니다.")
+
+    try:
+        runs = list_runs(uid, limit)
+        if inspect.isawaitable(runs):
+            runs = await runs
+    except Exception:
+        return _error(503, "run_history_read_failed", "실행 이력 읽기에 실패했습니다.")
+    if not isinstance(runs, list):
+        return _error(503, "run_history_read_failed", "실행 이력 읽기에 실패했습니다.")
+
+    # #3139: opening the run history IS the product call site for the Local
+    # Runner return leg. Each of the owner's own runs is reconciled against the
+    # canonical broker here, so a result that became terminal while the user was
+    # away lands in the conversation that started it — without the user doing
+    # anything and without any caller choosing a destination.
+    await _reconcile_local_runner_runs(request, uid, runs)
+
+    return JSONResponse({"ok": True, "runs": runs}, status_code=200, headers=_NO_STORE_HEADERS)
+
+
+async def _reconcile_local_runner_runs(request: Request, uid: str, runs: list) -> None:
+    """Project terminal Local Runner results into their own conversations.
+
+    Fail-closed and side-effect-free from the caller's perspective: a missing or
+    unconfigured source, or any single refusal, leaves the run history exactly as
+    it was. The projection itself is idempotent, so this may run on every load.
+    """
+
+    source = getattr(request.app.state, "local_task_result_source", None)
+    project = getattr(source, "project_local_runner_result", None)
+    if project is None or getattr(source, "configured", True) is False:
+        return
+    for run in runs:
+        if not isinstance(run, dict):
+            continue
+        run_id = run.get("run_id")
+        if not isinstance(run_id, str) or not run_id:
+            continue
+        try:
+            projected = project(owner_id=uid, run_id=run_id)
+            if inspect.isawaitable(projected):
+                await projected
+        except Exception:
+            # A single refused reconciliation must never break the history read.
+            continue
+
+
+def _build_execute_task(action: ManualIntakeAction, content: str) -> str:
+    action_prompts: dict[ManualIntakeAction, str] = {
+        ManualIntakeAction.QUOTE_DRAFT: f"다음 요청에 대한 견적서 초안을 작성하세요.\n\n{content}",
+        ManualIntakeAction.ORDER_DRAFT: f"다음 요청에 대한 발주서 초안을 작성하세요.\n\n{content}",
+        ManualIntakeAction.REPLY_DRAFT: f"다음 요청에 대한 답장을 작성하세요.\n\n{content}",
+        ManualIntakeAction.SUMMARIZE_REQUEST: f"다음 요청을 요약하세요.\n\n{content}",
+        ManualIntakeAction.EXTRACT_CANDIDATES: f"다음 요청에서 후보 정보를 추출하세요.\n\n{content}",
+    }
+    return action_prompts.get(action, content)
+
+
+# ── #2812 deterministic supplier quote comparison + draft-only negotiation ───
+
+_QUOTE_COMPARE_ARTIFACT_FORMATS = frozenset({"docx"})
+
+
+async def claw_manual_intake_quote_compare(request: Request) -> JSONResponse:
+    """Compare captured supplier quotes with the existing Claw Ops engine (#2812).
+
+    This route closes the product-wiring gap found in the Claw Ops audit: the
+    deterministic ``SupplierComparisonEngine`` already existed with no HTTP
+    surface. Authority stays where it already is — the engine decides price,
+    delivery and payment-terms ranking, and the negotiation target is bounded by
+    another captured quote. Nothing here reaches a model, provider, quota
+    reservation or outbound connector, and the comparison itself persists nothing:
+
+    - no ``claw_p01_adapter`` / ``create_claw_run`` / Engine / B14 dispatch, and
+      deliberately no usage-gate call because nothing is dispatched;
+    - storing the result is opt-in. With no ``artifact`` field the route writes
+      nothing at all; with ``artifact="docx"`` it writes through the existing
+      generated-document store -- the same D1 metadata plus private R2 bytes the
+      execute route already uses -- and the existing
+      ``GET /api/claw/manual-intake/artifact/{document_id}`` path serves it back.
+      That is the only persistence on this route: no new table, no migration and
+      no Claw Ops ledger write, and it needs the same canonical tenant authority
+      as the execute route, failing closed without it;
+    - a value the caller did not capture stays ``null`` plus an engine
+      ``unknown_fields`` entry; the flow never fills a price, date or term in.
+
+    Malformed, empty and over-bound input fails closed with the flow's own
+    bounded code vocabulary.
+    """
+    content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
+    if content_type != "application/json":
+        return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
+
+    try:
+        raw_body = await read_bounded_request_body(
+            request,
+            max_bytes=MAX_MANUAL_INTAKE_BODY_BYTES,
+        )
+    except RequestBodyTooLarge:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
+    if not raw_body:
+        return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
+
+    try:
+        data = json.loads(raw_body.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return _error(400, "invalid_json", "유효한 JSON 형식이 아닙니다.")
+
+    if not isinstance(data, dict):
+        return _error(400, "invalid_payload", "요청 데이터는 객체여야 합니다.")
+
+    raw_artifact = data.get("artifact")
+    artifact_format: str | None = None
+    if raw_artifact not in (None, False, ""):
+        if not isinstance(raw_artifact, str) or raw_artifact.strip().lower() not in (
+            _QUOTE_COMPARE_ARTIFACT_FORMATS
+        ):
+            return _error(400, "invalid_artifact_format", "저장 가능한 비교 문서 형식은 DOCX 입니다.")
+        artifact_format = raw_artifact.strip().lower()
+
+    try:
+        outcome = compare_supplier_quotes(data)
+    except OpsQuoteCompareFlowError as exc:
+        return _error(400, exc.error_code, exc.public_message)
+    except ContractError:
+        return _error(400, "contract_violation", "견적 입력을 비교할 수 없습니다.")
+    except Exception:
+        return _error(500, "quote_compare_failed", "견적 비교에 실패했습니다.")
+
+    comparison = outcome.safe_dict()
+    projection = {"ok": True, "comparison": comparison}
+
+    if artifact_format is not None:
+        tenant_id = await _resolve_canonical_tenant(request)
+        if tenant_id is None:
+            return _error(503, "workspace_scope_unavailable", "문서 저장 권한을 확인할 수 없습니다.")
+        artifact_store: Any = getattr(request.app.state, "workspace_document_store", None)
+        if artifact_store is None:
+            return _error(503, "workspace_storage_unavailable", "문서 저장소가 설정되지 않았습니다.")
+        try:
+            document_text = build_comparison_document(outcome)
+            artifact = build_document_artifact(
+                document_type=COMPARISON_DOCUMENT_TYPE,
+                file_format=artifact_format,
+                title=outcome.document_title(),
+                metadata_fields=[
+                    ("비교 모드", comparison["mode"]),
+                    (
+                        "가중치",
+                        "가격 {price} / 납기 {delivery} / 결제조건 {cashflow}".format(
+                            **comparison["weights"]
+                        ),
+                    ),
+                    ("통화", comparison["currency"]),
+                    ("비교 공급업체 수", str(comparison["supplier_count"])),
+                    ("추천 공급업체", comparison["recommended_supplier_label"]),
+                    ("협상 초안", "작성됨 (DRAFT ONLY)" if comparison["negotiation"] else "미작성"),
+                ],
+                section_title="공급업체 견적 비교",
+                body_text=document_text,
+                items=outcome.document_table(),
+                total=outcome.document_total(),
+                markdown_fallback_text=document_text,
+            )
+            metadata = await artifact_store.put_generated_docx(
+                tenant_id=tenant_id,
+                filename=artifact.filename,
+                body=artifact.content_bytes(),
+            )
+            projection["artifact"] = metadata.public_projection()
+        except DocumentExportError:
+            return _error(500, "artifact_generation_failed", "문서 아티팩트 생성에 실패했습니다.")
+        except Exception:
+            return _error(500, "artifact_storage_failed", "문서 저장에 실패했습니다.")
+
+    return JSONResponse(projection, status_code=200, headers=_NO_STORE_HEADERS)

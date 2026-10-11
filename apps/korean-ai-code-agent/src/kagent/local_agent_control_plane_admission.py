@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from collections.abc import Callable
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Callable
+from typing import Any, Protocol
 from urllib.parse import urlsplit
 
 from .contracts import ContractError
@@ -12,12 +13,18 @@ from .control_plane_broker_conformance import (
     ConformedControlPlaneBrokerCommand,
     parse_control_plane_broker_admission,
 )
+from .local_agent import LocalCommandRequest
 from .local_agent_command_admission import (
     AdmittedLocalAgentExecutionBridge,
     AdmittedLocalCommandExecutionReceipt,
     DeterministicTrustedDeviceCommandAdmissionClient,
 )
 from .local_agent_command_material import ResolvedLocalCommandMaterial
+from .local_agent_durable_run import (
+    DurableRunRecord,
+    DurableRunState,
+    DurableRunTermination,
+)
 from .local_agent_control_plane_https import (
     ControlPlaneHttpsOperation,
     PinnedHttpsJsonRequestPort,
@@ -148,12 +155,14 @@ class ControlPlanePhysicalAdmissionTransport(ControlPlanePhysicalRuntimeTranspor
             command.binding_ref,
             command.sequence,
             observed.request_fingerprint,
+            command.revision_ref,
         )
         actual = (
             resolved.command_id,
             resolved.binding_ref,
             resolved.sequence,
             resolved.request_fingerprint,
+            resolved.revision_ref,
         )
         if actual != expected:
             raise ContractError("broker admission requires exact resolved command material")
@@ -169,6 +178,7 @@ class ControlPlanePhysicalAdmissionTransport(ControlPlanePhysicalRuntimeTranspor
                 "credential_b64": self._credential_b64(binding, now=now),
                 "command_id": command.command_id,
                 "request_fingerprint": observed.request_fingerprint,
+                "request_id": resolved.request.request_id,
                 "now": now.isoformat().replace("+00:00", "Z"),
             },
             timeout_seconds=min(config.poll_timeout_seconds, 30),
@@ -187,6 +197,7 @@ class ControlPlanePhysicalAdmissionTransport(ControlPlanePhysicalRuntimeTranspor
             command=observed,
             expected_authority_ref=self._expected_admission_authority_ref,
             expected_session_id=session.session_id,
+            expected_request_id=resolved.request.request_id,
             now=conformance_now,
         )
 
@@ -271,14 +282,43 @@ class ControlPlaneAdmittedExecutionReceipt:
             "execution": self.execution.safe_dict(),
             "evidence_ref": self.evidence_ref,
             "acknowledged_at": self.acknowledged_at.isoformat().replace("+00:00", "Z"),
+            "revision_ref": self.execution.revision_ref,
+            "termination": self.execution.termination.value,
+            "request_id": self.execution.request_id,
+            "exit_code": self.execution.exit_code,
+            "revision_semantics": "opaque_correlation_only",
             "material_before_admission": True,
             "ack_exact_admission_evidence": True,
+            "ack_revision_ref_opaque_correlation": True,
+            "ack_bounded_termination_returned": True,
+            "ack_request_id_returned": True,
+            "ack_bounded_exit_code_returned": True,
+            "ack_raw_stdout_returned": False,
+            "ack_raw_stderr_returned": False,
             "raw_argv": False,
             "stdout": False,
             "stderr": False,
             "raw_device_credential": False,
             "p01_payload": False,
         }
+
+
+class LocalAgentDurableRunRecoveryPort(Protocol):
+    """The durable run store surface the execution order depends on.
+
+    #3128 owns the order, not a second store: admit, persist the admitted
+    correlation, execute, persist the terminal result, acknowledge, and only
+    then record the server fact. Every method is the existing DurableRunStore API.
+    """
+
+    def put(self, record: DurableRunRecord) -> None:
+        ...
+
+    def record_terminal(self, record: DurableRunRecord) -> None:
+        ...
+
+    def acknowledge(self, *, command_id: str, acknowledged_at: datetime) -> None:
+        ...
 
 
 class ControlPlaneAdmittedExecutionCoordinator:
@@ -294,6 +334,7 @@ class ControlPlaneAdmittedExecutionCoordinator:
         channel: ControlPlanePhysicalAdmissionChannel,
         assembly: BoundLocalAgentRuntimeAssembly,
         clock: Callable[[], datetime],
+        durable_store: LocalAgentDurableRunRecoveryPort,
     ) -> None:
         if not isinstance(channel, ControlPlanePhysicalAdmissionChannel):
             raise ContractError("channel must be ControlPlanePhysicalAdmissionChannel")
@@ -301,9 +342,16 @@ class ControlPlaneAdmittedExecutionCoordinator:
             raise ContractError("assembly must be BoundLocalAgentRuntimeAssembly")
         if not callable(clock):
             raise ContractError("clock must be callable")
+        for method_name in ("put", "record_terminal", "acknowledge"):
+            if not callable(getattr(durable_store, method_name, None)):
+                raise ContractError("durable_store must implement the durable run store writes")
         self._channel = channel
         self._assembly = assembly
         self._clock = clock
+        # #3128: mandatory, not optional. Without a durable store the runner
+        # cannot persist a terminal result before acknowledging, so there is
+        # deliberately no construction path that executes without one.
+        self._durable_store = durable_store
 
     def _now(self) -> datetime:
         return _aware(self._clock(), "runtime_clock")
@@ -315,6 +363,8 @@ class ControlPlaneAdmittedExecutionCoordinator:
         session: DeviceSession,
         command: DeviceCommandEnvelope,
         material_request_ref: str,
+        on_execution_start: Callable[[str], None] | None = None,
+        on_execution_end: Callable[[], None] | None = None,
     ) -> ControlPlaneAdmittedExecutionReceipt:
         material_now = self._now()
         resolved = self._channel.resolve_broker_material(
@@ -334,6 +384,17 @@ class ControlPlaneAdmittedExecutionCoordinator:
             now=admission_now,
         )
 
+        # #3128: the admitted correlation is durable before anything executes, so a
+        # crash after this point still leaves a record recovery can act on.
+        admitted_record = self._durable_record(
+            command=command,
+            session=session,
+            binding=binding,
+            conformed=conformed,
+            request=resolved.request,
+        )
+        self._durable_store.put(admitted_record)
+
         # The existing admitted-execution bridge remains the execution gate.
         # Feed it the freshly conformed trusted evidence through its existing
         # client port rather than introducing a second validation path.
@@ -343,29 +404,143 @@ class ControlPlaneAdmittedExecutionCoordinator:
             admission_client=admission_client,
         )
         execution_now = max(self._now(), conformed.evidence.accepted_at)
-        execution = bridge.execute(
-            session=session,
-            command=command,
-            request=resolved.request,
-            assembly=self._assembly,
-            now=execution_now,
+        started_at = execution_now
+        try:
+            if on_execution_start is not None:
+                on_execution_start(resolved.request.request_id)
+            try:
+                execution = bridge.execute(
+                    session=session,
+                    command=command,
+                    request=resolved.request,
+                    assembly=self._assembly,
+                    now=execution_now,
+                )
+            except Exception as exc:
+                # #3140: a refused execution is evidence too. The canonical P01
+                # port refuses a DENIED envelope before any process starts, so
+                # this records the refusal and re-raises: no acknowledgement,
+                # no terminal record, never a fabricated success.
+                try:
+                    from .local_agent_resident_process import _emit as _resident_emit
+
+                    _resident_emit(
+                        event="execution_refused",
+                        command_id=command.command_id,
+                        request_id=resolved.request.request_id,
+                        reason=type(exc).__name__,
+                        detail=str(exc)[:160],
+                        approved_process_spawn_count=0,
+                    )
+                except Exception:  # noqa: BLE001 - evidence never breaks refusal
+                    pass
+                raise
+        finally:
+            if on_execution_end is not None:
+                on_execution_end()
+
+        # #3140 PHASE 3: the execution result the resident itself observed, in
+        # one bounded evidence line. Secret-free: ids, refs, digests, codes.
+        # The same 8 keys the final correlation predicate compares.
+        try:
+            from .local_agent_command_material import command_request_fingerprint
+            from .local_agent_resident_process import _emit as _resident_emit
+
+            _resident_emit(
+                event="command_result",
+                command_id=command.command_id,
+                run_id=command.run_id,
+                request_id=execution.request_id,
+                request_fingerprint=command_request_fingerprint(resolved.request),
+                binding_ref=binding.binding_ref,
+                admission_ref=conformed.evidence.admission_ref,
+                evidence_ref=conformed.evidence_ref,
+                revision_ref=execution.revision_ref,
+                exit_code=execution.exit_code,
+                termination=execution.termination.value,
+                approved_process_spawn_count=1 if execution.exit_code is not None else 0,
+                terminal_result_observed=execution.exit_code is not None,
+            )
+        except Exception:  # noqa: BLE001 - evidence never breaks execution
+            pass
+
+        # #3128: the terminal result is durable BEFORE the acknowledgement is
+        # emitted. If this write fails the exception propagates and no
+        # acknowledgement is sent, so the broker is never told about an execution
+        # whose result the device could not durably keep.
+        terminated_at = max(self._now(), started_at)
+        self._durable_store.record_terminal(
+            replace(
+                admitted_record,
+                state=DurableRunState.TERMINAL,
+                termination=DurableRunTermination(execution.termination.value),
+                started_at=started_at,
+                terminated_at=terminated_at,
+                exit_code=execution.exit_code,
+            )
         )
 
         # No acknowledgement is emitted unless the existing execution bridge
-        # returned a fully correlated execution receipt.
-        ack_now = self._now()
+        # returned a fully correlated execution receipt. The acknowledgement time
+        # never precedes the durable termination it reports.
+        ack_now = max(self._now(), terminated_at)
+        if execution.revision_ref != command.revision_ref:
+            raise ContractError("execution revision_ref does not match the polled command envelope")
+        if execution.request_id != resolved.request.request_id:
+            raise ContractError("execution request_id does not match the resolved material request")
         self._channel.acknowledge_admitted(
             binding=binding,
             session=session,
             command_id=command.command_id,
             admission_ref=conformed.evidence.admission_ref,
             evidence_ref=conformed.evidence_ref,
+            revision_ref=execution.revision_ref,
+            termination=execution.termination.value,
+            request_id=execution.request_id,
+            exit_code=execution.exit_code,
             now=ack_now,
         )
+        # #3128: the orthogonal server fact is recorded only once the canonical
+        # broker accepted the acknowledgement, and it never reopens the record.
+        self._durable_store.acknowledge(command_id=command.command_id, acknowledged_at=ack_now)
         return ControlPlaneAdmittedExecutionReceipt(
             execution=execution,
             evidence_ref=conformed.evidence_ref,
             acknowledged_at=ack_now,
+        )
+
+    def _durable_record(
+        self,
+        *,
+        command: DeviceCommandEnvelope,
+        session: DeviceSession,
+        binding: DeviceBinding,
+        conformed: Any,
+        request: LocalCommandRequest,
+    ) -> DurableRunRecord:
+        """Copy the admitted correlation verbatim into one durable record."""
+
+        evidence = conformed.evidence
+        return DurableRunRecord(
+            command_id=command.command_id,
+            run_id=command.run_id,
+            tool_request_ref=command.tool_request_ref,
+            request_id=request.request_id,
+            revision_ref=command.revision_ref,
+            device_id=session.device_id,
+            binding_ref=command.binding_ref,
+            session_id=session.session_id,
+            account_ref=session.account_ref,
+            workspace_ref=session.workspace_ref,
+            sequence=command.sequence,
+            credential_generation=binding.credential_generation,
+            request_fingerprint=evidence.request_fingerprint,
+            fingerprint_source="broker",
+            command_issued_at=command.issued_at,
+            command_expires_at=command.expires_at,
+            admitted_at=evidence.accepted_at,
+            admission_ref=evidence.admission_ref,
+            admission_evidence_ref=conformed.evidence_ref,
         )
 
     def safe_dict(self) -> dict[str, Any]:
@@ -377,6 +552,12 @@ class ControlPlaneAdmittedExecutionCoordinator:
             "windows_authorization_reused": True,
             "ack_exact_admission_evidence": True,
             "ack_on_execution_failure": False,
+            "ack_revision_ref_opaque_correlation": True,
+            "ack_bounded_termination_returned": True,
+            "ack_request_id_returned": True,
+            "ack_bounded_exit_code_returned": True,
+            "ack_raw_stdout_returned": False,
+            "ack_raw_stderr_returned": False,
             "second_replay_sequence_authority": False,
             "second_fingerprint_authority": False,
             "p01_authority_duplicated": False,
@@ -384,6 +565,9 @@ class ControlPlaneAdmittedExecutionCoordinator:
             "live_broker_configured": False,
             "live_windows_acceptance": False,
             "production_ready": False,
+            "durable_terminal_before_ack": True,
+            "durable_admitted_before_execution": True,
+            "durable_server_ack_after_broker_ack": True,
         }
 
 
@@ -397,9 +581,25 @@ ADMITTED_EXECUTION_BRIDGE_REUSED = True
 WINDOWS_AUTHORIZATION_REUSED = True
 ACK_EXACT_ADMISSION_EVIDENCE = True
 ACK_ON_EXECUTION_FAILURE = False
+ACK_REVISION_REF_OPAQUE_CORRELATION = True
+ACK_BOUNDED_TERMINATION_RETURNED = True
+ACK_REQUEST_ID_RETURNED = True
+ACK_BOUNDED_EXIT_CODE_RETURNED = True
+ACK_RAW_STDOUT_RETURNED = False
+ACK_RAW_STDERR_RETURNED = False
 SECOND_REPLAY_SEQUENCE_AUTHORITY = False
 SECOND_FINGERPRINT_AUTHORITY = False
 P01_AUTHORITY_DUPLICATED = False
+REVISION_CORRELATION = True
+REVISION_CORRELATION_THROUGH_MATERIAL = True
+REQUEST_ID_RETURNED_AND_EXACT = True
+EXIT_CODE_BOUNDED_RETURN = True
+RESULT_RETURN_IS_BOUNDED = True
+RAW_STDOUT_STDERR_RETURNED = False
+RAW_DEVICE_SECRET_RETURNED = False
+CAPABILITY_AUTHORITY_DUPLICATED = False
+TASK_ADMISSION_AUTHORITY_DUPLICATED = False
+REPLAY_AUTHORITY_DUPLICATED = False
 PUBLIC_INBOUND_PORT = False
 LIVE_BROKER_CONFIGURED = False
 LIVE_WINDOWS_ACCEPTANCE = False

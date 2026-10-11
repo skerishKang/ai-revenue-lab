@@ -61,5 +61,17 @@ def test_wrangler_remains_internal_service_binding_only() -> None:
         {
             "binding": "B14_SERVICE",
             "service": "ai-revenue-korean-ai-platform",
-        }
+        },
+        {
+            "binding": "CONTROL_PLANE_IDENTITY",
+            "service": "padiem-control-plane-identity",
+        },
+        {
+            "binding": "CONTROL_PLANE_ENGINE_ADMISSION",
+            "service": "padiem-control-plane-engine-admission",
+        },
+        {
+            "binding": "CONTROL_PLANE_GOOGLE_OAUTH",
+            "service": "padiem-google-oauth-state",
+        },
     ]

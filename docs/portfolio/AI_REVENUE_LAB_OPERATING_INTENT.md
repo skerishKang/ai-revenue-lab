@@ -57,6 +57,19 @@ Shared code is extracted only after implemented products prove a stable common r
 
 ## 4. Execution principle
 
+AI Revenue Lab optimizes for **time to trustworthy product**, not the amount of code authored internally.
+
+Before substantial commodity capability development:
+
+```text
+product need
+→ search internal + OSS + commercial landscape
+→ buy/adopt/adapt when credible
+→ build custom only when justified
+```
+
+Paid APIs, SDKs, commercial licenses and self-hosted products are valid when their total cost and delivery speed beat custom engineering. Padiem should own product authority and differentiating behavior, not every implementation mechanism.
+
 The default execution loop is:
 
 ```text

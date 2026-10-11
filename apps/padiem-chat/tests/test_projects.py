@@ -6,6 +6,13 @@ from pathlib import Path
 import httpx
 import pytest
 
+# #3767: the autouse ``tests/conftest.py`` fixture installs a bounded test-only
+# Plus route for this module, so the project-context contracts below always
+# execute instead of skipping on the current all-HOLD declaration. The genuine
+# production HOLD posture stays asserted in the dedicated policy modules
+# (``test_model_policy.py``, ``test_plus_space_bunny_image.py``,
+# ``test_tier_route_consumer_coverage.py``).
+
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.history import (

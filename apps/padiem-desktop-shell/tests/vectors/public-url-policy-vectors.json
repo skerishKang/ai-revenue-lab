@@ -1,0 +1,315 @@
+{
+  "issue": "#3611",
+  "canonical_policy": "padiem_ai_core.web_runtime.normalize_public_url (packages/padiem-ai-core/padiem_ai_core/web_runtime.py)",
+  "host_mirror": "apps/padiem-desktop-shell/src/browser/public-url-policy.ts",
+  "parity_invariant": "host-allowed implies canonical-allowed: the host mirror may be stricter than the canonical literal-host policy but never weaker.",
+  "read_by": [
+    "apps/korean-ai-code-agent/tests/test_browser_open.py (SharedUrlPolicyVectorTests)",
+    "apps/padiem-desktop-shell/tests/browser-open-host.test.ts (public URL policy vectors)"
+  ],
+  "generated_by": "both expectations were produced by running each implementation, not by hand",
+  "vectors": [
+    {
+      "input": "https://example.com/report?id=7#section",
+      "python": "allow",
+      "python_normalized": "https://example.com/report?id=7",
+      "ts": "allow",
+      "why": "public https URL; fragment stripped by the canonical policy"
+    },
+    {
+      "input": "http://example.com/plain",
+      "python": "allow",
+      "python_normalized": "http://example.com/plain",
+      "ts": "allow",
+      "why": "plain http on a public host is permitted"
+    },
+    {
+      "input": "HTTPS://Example.COM/Upper#frag",
+      "python": "allow",
+      "python_normalized": "https://example.com/Upper",
+      "ts": "allow",
+      "why": "scheme and host are case-folded; fragment stripped"
+    },
+    {
+      "input": "https://example.com./trailing-dot",
+      "python": "allow",
+      "python_normalized": "https://example.com/trailing-dot",
+      "ts": "allow",
+      "why": "trailing root dot is removed by the canonical policy"
+    },
+    {
+      "input": "https://bücher.example/path",
+      "python": "allow",
+      "python_normalized": "https://xn--bcher-kva.example/path",
+      "ts": "allow",
+      "why": "IDN host is punycoded"
+    },
+    {
+      "input": "https://example.com:8443/port",
+      "python": "allow",
+      "python_normalized": "https://example.com:8443/port",
+      "ts": "allow",
+      "why": "explicit in-range port is preserved"
+    },
+    {
+      "input": "https://example.com",
+      "python": "allow",
+      "python_normalized": "https://example.com/",
+      "ts": "allow",
+      "why": "empty path becomes /"
+    },
+    {
+      "input": "https://93.184.216.34/ip-literal",
+      "python": "allow",
+      "python_normalized": "https://93.184.216.34/ip-literal",
+      "ts": "reject",
+      "ts_reason": "ip_literal_host",
+      "why": "global IPv4 literal",
+      "note": "INTENTIONAL ASYMMETRY: the canonical literal-host policy allows global IP literals; the host mirror refuses every IP-literal host."
+    },
+    {
+      "input": "https://[2606:4700::1111]/v6-global",
+      "python": "allow",
+      "python_normalized": "https://[2606:4700::1111]/v6-global",
+      "ts": "reject",
+      "ts_reason": "ip_literal_host",
+      "why": "global IPv6 literal",
+      "note": "INTENTIONAL ASYMMETRY: host mirror refuses IP-literal hosts."
+    },
+    {
+      "input": "https://224.0.0.1/multicast",
+      "python": "allow",
+      "python_normalized": "https://224.0.0.1/multicast",
+      "ts": "reject",
+      "ts_reason": "ip_literal_host",
+      "why": "multicast address literal",
+      "note": "CANONICAL_QUIRK: python ipaddress reports is_global=True for this multicast address, so the canonical policy accepts it; the host mirror refuses it. Reported for CENTRAL as a separate policy finding — not patched here."
+    },
+    {
+      "input": "https://exa mple.com/space",
+      "python": "allow",
+      "python_normalized": "https://exa mple.com/space",
+      "ts": "reject",
+      "ts_reason": "malformed",
+      "why": "space inside the host",
+      "note": "CANONICAL_QUIRK: the canonical policy accepts a space in the host; the host mirror refuses it (WHATWG parsing). Reported for CENTRAL — not patched here."
+    },
+    {
+      "input": "https://user:pass@example.com/",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "userinfo",
+      "why": "embedded credentials are never allowed"
+    },
+    {
+      "input": "http://localhost:3000/dashboard",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "blocked_host",
+      "why": "loopback host"
+    },
+    {
+      "input": "https://localhost.localdomain/",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "blocked_host",
+      "why": "loopback alias"
+    },
+    {
+      "input": "https://127.0.0.1/",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "ip_literal_host",
+      "why": "loopback address"
+    },
+    {
+      "input": "https://[::1]/v6-loopback",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "ip_literal_host",
+      "why": "IPv6 loopback"
+    },
+    {
+      "input": "https://10.0.0.5/",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "ip_literal_host",
+      "why": "RFC1918 private address"
+    },
+    {
+      "input": "https://172.16.9.9/",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "ip_literal_host",
+      "why": "RFC1918 private address"
+    },
+    {
+      "input": "https://192.168.1.5/",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "ip_literal_host",
+      "why": "RFC1918 private address"
+    },
+    {
+      "input": "https://169.254.169.254/latest/meta-data",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "ip_literal_host",
+      "why": "link-local cloud metadata endpoint"
+    },
+    {
+      "input": "https://100.64.0.1/",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "ip_literal_host",
+      "why": "carrier-grade NAT range"
+    },
+    {
+      "input": "https://0.0.0.0/",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "ip_literal_host",
+      "why": "unspecified address"
+    },
+    {
+      "input": "https://[::ffff:127.0.0.1]/mapped",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "ip_literal_host",
+      "why": "IPv4-mapped loopback"
+    },
+    {
+      "input": "https://198.51.100.7/doc-range",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "ip_literal_host",
+      "why": "documentation range"
+    },
+    {
+      "input": "https://203.0.113.9/doc-range2",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "ip_literal_host",
+      "why": "documentation range"
+    },
+    {
+      "input": "https://255.255.255.255/",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "ip_literal_host",
+      "why": "broadcast address"
+    },
+    {
+      "input": "https://[2001:db8::1]/v6-doc",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "ip_literal_host",
+      "why": "IPv6 documentation range"
+    },
+    {
+      "input": "https://1.2.3/ambiguous-numeric",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "ip_literal_host",
+      "why": "ambiguous numeric host notation"
+    },
+    {
+      "input": "https://metadata.google.internal/",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "blocked_host",
+      "why": "cloud metadata host name"
+    },
+    {
+      "input": "https://service.internal/",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "blocked_host",
+      "why": "internal host suffix"
+    },
+    {
+      "input": "https://host.lan/",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "blocked_host",
+      "why": "lan host suffix"
+    },
+    {
+      "input": "https://thing.local/",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "blocked_host",
+      "why": "local host suffix"
+    },
+    {
+      "input": "https://example.home/",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "blocked_host",
+      "why": "home host suffix"
+    },
+    {
+      "input": "https://example.com:99999/",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "malformed",
+      "why": "out-of-range port"
+    },
+    {
+      "input": "file:///C:/Users/limone/secrets.txt",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "scheme",
+      "why": "file scheme is never a browser-open target"
+    },
+    {
+      "input": "padiem://pair?code=abc",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "scheme",
+      "why": "padiem scheme has no browser-open authority (deep links stay in the pairing handoff path)"
+    },
+    {
+      "input": "javascript:alert(1)",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "scheme",
+      "why": "script scheme"
+    },
+    {
+      "input": "data:text/html,<h1>x</h1>",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "scheme",
+      "why": "data scheme"
+    },
+    {
+      "input": "ftp://example.com/file",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "scheme",
+      "why": "non-http(s) scheme"
+    },
+    {
+      "input": "not-a-url",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "malformed",
+      "why": "missing scheme"
+    },
+    {
+      "input": "https://",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "malformed",
+      "why": "missing host"
+    },
+    {
+      "input": "https://example.com/\u0000null",
+      "python": "reject",
+      "ts": "reject",
+      "ts_reason": "control_characters",
+      "why": "control character in the URL"
+    }
+  ]
+}

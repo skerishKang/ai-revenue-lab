@@ -6,6 +6,7 @@ import json
 import re
 from typing import Any, Callable, Protocol
 
+from .local_agent_broker import EXECUTION_TERMINATIONS as _EXECUTION_TERMINATIONS
 from .local_agent_broker_rpc import LocalAgentBrokerRpcFacade
 
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
@@ -18,7 +19,8 @@ _ROUTE_POLL = "/poll"
 _ROUTE_MATERIAL = "/material"
 _ROUTE_HEARTBEAT = "/heartbeat"
 _ROUTE_ACKNOWLEDGE = "/acknowledge"
-_ROUTES = frozenset({_ROUTE_SESSION, _ROUTE_POLL, _ROUTE_MATERIAL, _ROUTE_HEARTBEAT, _ROUTE_ACKNOWLEDGE})
+_ROUTE_RECONCILE = "/reconcile"
+_ROUTES = frozenset({_ROUTE_SESSION, _ROUTE_POLL, _ROUTE_MATERIAL, _ROUTE_HEARTBEAT, _ROUTE_ACKNOWLEDGE, _ROUTE_RECONCILE})
 
 _SESSION_REQUEST_KEYS = frozenset(
     {"session_id", "binding_ref", "credential_b64", "account_ref", "workspace_ref", "now", "ttl_seconds"}
@@ -31,7 +33,13 @@ _MATERIAL_REQUEST_KEYS = frozenset(
 )
 _HEARTBEAT_REQUEST_KEYS = frozenset({"session_id", "binding_ref", "credential_b64", "now"})
 _ACK_REQUEST_KEYS = frozenset(
-    {"session_id", "binding_ref", "credential_b64", "command_id", "admission_ref", "evidence_ref", "now"}
+    {"session_id", "binding_ref", "credential_b64", "command_id", "admission_ref", "evidence_ref", "revision_ref", "termination", "request_id", "exit_code", "now"}
+)
+#: #3128 — the device recovery surface. It carries the exact admitted correlation a
+#: restarted runner already holds durably and nothing else: no argv, no approval
+#: payload, no execution authority.
+_RECONCILE_REQUEST_KEYS = frozenset(
+    {"session_id", "binding_ref", "credential_b64", "command_id", "admission_ref", "evidence_ref", "revision_ref", "request_id", "request_fingerprint", "termination", "exit_code", "now"}
 )
 _SESSION_KEYS = frozenset(
     {
@@ -63,6 +71,10 @@ _COMMAND_KEYS = frozenset(
         "admitted_session_id",
         "admitted_at",
         "acknowledged_at",
+        "revision_ref",
+        "termination",
+        "request_id",
+        "exit_code",
         "raw_argv",
         "raw_file_content",
         "raw_device_credential",
@@ -70,7 +82,7 @@ _COMMAND_KEYS = frozenset(
     }
 )
 _MATERIAL_WIRE_KEYS = frozenset(
-    {"contract_version", "command_id", "binding_ref", "sequence", "request_fingerprint", "material"}
+    {"contract_version", "command_id", "binding_ref", "sequence", "request_fingerprint", "revision_ref", "material"}
 )
 _HEARTBEAT_KEYS = frozenset(
     {
@@ -323,6 +335,7 @@ class LocalAgentBrokerHttpHandler:
         state: DurableLocalAgentBrokerStatePort,
         material_resolver: LocalAgentCommandMaterialResolverPort,
         clock: Callable[[], datetime],
+        session_open_transaction: Callable[[Callable[[], dict[str, Any]]], dict[str, Any]] | None = None,
     ) -> None:
         if not isinstance(rpc, LocalAgentBrokerRpcFacade):
             raise ValueError("rpc must be LocalAgentBrokerRpcFacade")
@@ -335,10 +348,13 @@ class LocalAgentBrokerHttpHandler:
             raise ValueError("material_resolver must implement resolve")
         if not callable(clock):
             raise ValueError("clock must be callable")
+        if session_open_transaction is not None and not callable(session_open_transaction):
+            raise ValueError("session_open_transaction must be callable")
         self._rpc = rpc
         self._state = state
         self._material_resolver = material_resolver
         self._clock = clock
+        self._session_open_transaction = session_open_transaction
 
     def _error(self, status: int, code: str, message: str) -> LocalAgentBrokerHttpResponse:
         return LocalAgentBrokerHttpResponse(
@@ -437,6 +453,32 @@ class LocalAgentBrokerHttpHandler:
         }
         return self._rpc_result(self._rpc.poll(probe), "commands")
 
+    def _open_and_persist_session(
+        self,
+        auth: TrustedLocalAgentHttpAuthContext,
+        payload: dict[str, Any],
+        *,
+        server_now: datetime,
+    ) -> dict[str, Any]:
+        """Run the session-open write pair; the caller supplies the atomicity.
+
+        The canonical broker session CAS and the durable HTTP session row are
+        one logical write (#3129): when a transaction port is wired, this pair
+        runs inside it so a crash or failure between the two writes rolls back
+        to both-or-neither. Failure results short-circuit without writing the
+        HTTP row; scope validation failures propagate exactly as before.
+        """
+        result = self._rpc_result(self._rpc.open_session(self._server_rpc_payload(payload, server_now)), "session")
+        if result["ok"] is False:
+            return result
+        record = self._session_record(result["session"])
+        if record.account_ref != auth.account_ref or record.workspace_ref != auth.workspace_ref:
+            raise PermissionError("broker session escaped authenticated account/workspace scope")
+        if record.binding_ref != _ref(payload["binding_ref"], "binding_ref"):
+            raise ValueError("broker session binding mismatch")
+        self._state.save_session(record)
+        return result
+
     def _handle_session(
         self,
         auth: TrustedLocalAgentHttpAuthContext,
@@ -450,15 +492,12 @@ class LocalAgentBrokerHttpHandler:
         if _ref(payload["workspace_ref"], "workspace_ref") != auth.workspace_ref:
             raise PermissionError("session workspace does not match authenticated workspace")
         _positive_int(payload["ttl_seconds"], "ttl_seconds", minimum=60, maximum=3600)
-        result = self._rpc_result(self._rpc.open_session(self._server_rpc_payload(payload, server_now)), "session")
-        if result["ok"] is False:
-            return LocalAgentBrokerHttpResponse(200, result)
-        record = self._session_record(result["session"])
-        if record.account_ref != auth.account_ref or record.workspace_ref != auth.workspace_ref:
-            raise PermissionError("broker session escaped authenticated account/workspace scope")
-        if record.binding_ref != _ref(payload["binding_ref"], "binding_ref"):
-            raise ValueError("broker session binding mismatch")
-        self._state.save_session(record)
+        if self._session_open_transaction is not None:
+            result = self._session_open_transaction(
+                lambda: self._open_and_persist_session(auth, payload, server_now=server_now)
+            )
+        else:
+            result = self._open_and_persist_session(auth, payload, server_now=server_now)
         return LocalAgentBrokerHttpResponse(200, result)
 
     def _handle_poll(
@@ -522,7 +561,7 @@ class LocalAgentBrokerHttpHandler:
         request: LocalAgentMaterialResolutionRequest,
     ) -> tuple[dict[str, Any], int]:
         wire = _closed_mapping(wire, _MATERIAL_WIRE_KEYS, "command material wire projection")
-        if wire["contract_version"] != "claw-local-command-material.v1":
+        if wire["contract_version"] != "claw-local-command-material.v2":
             raise ValueError("unsupported Local Agent command material contract version")
         if _ref(wire["command_id"], "command_id") != request.command_id:
             raise ValueError("command material command_id mismatch")
@@ -530,6 +569,7 @@ class LocalAgentBrokerHttpHandler:
             raise ValueError("command material binding_ref mismatch")
         if _digest(wire["request_fingerprint"], "request_fingerprint") != request.request_fingerprint:
             raise ValueError("command material request_fingerprint mismatch")
+        _ref(wire["revision_ref"], "revision_ref")
         sequence = _positive_int(wire["sequence"], "sequence")
         if type(wire["material"]) is not dict:
             raise ValueError("command material payload must be a plain mapping")
@@ -579,6 +619,7 @@ class LocalAgentBrokerHttpHandler:
             or _ref(command["binding_ref"], "binding_ref") != request.binding_ref
             or _positive_int(command["sequence"], "sequence") != sequence
             or _digest(command["request_fingerprint"], "request_fingerprint") != request.request_fingerprint
+            or _ref(command["revision_ref"], "revision_ref") != _ref(wire["revision_ref"], "revision_ref")
             or command["state"] != "queued"
         ):
             return self._error(409, "local_agent_material_command_mismatch", "command material does not match canonical queued command")
@@ -595,15 +636,91 @@ class LocalAgentBrokerHttpHandler:
         self._load_scoped_session(auth=auth, payload=payload, server_now=server_now)
         _ref(payload["admission_ref"], "admission_ref")
         _ref(payload["evidence_ref"], "evidence_ref")
-        result = self._rpc_result(self._rpc.acknowledge(self._server_rpc_payload(payload, server_now)), "command")
+        _ref(payload["revision_ref"], "revision_ref")
+        _ref(payload["request_id"], "request_id")
+        if payload["termination"] not in _EXECUTION_TERMINATIONS:
+            raise ValueError("acknowledge termination must be a bounded execution termination")
+        if payload["exit_code"] is not None and type(payload["exit_code"]) is not int:
+            raise ValueError("acknowledge exit_code must be a bounded process exit status or null")
+        # #3123: the acknowledge state mutation (including any terminal-history
+        # compaction it triggers, which moves used-command-id ledger rows) runs
+        # inside the same deployable storage transaction #3129 introduced for
+        # the session-open double write - the seam now covers every device-HTTP
+        # mutation that touches broker state. Without it a crash between the
+        # ledger and the blob could strand identity or state mid-mutation.
+        if self._session_open_transaction is not None:
+            result = self._session_open_transaction(
+                lambda: self._rpc_result(self._rpc.acknowledge(self._server_rpc_payload(payload, server_now)), "command")
+            )
+        else:
+            result = self._rpc_result(self._rpc.acknowledge(self._server_rpc_payload(payload, server_now)), "command")
         if result["ok"] is True:
             command = _closed_mapping(result["command"], _COMMAND_KEYS, "acknowledged broker command")
             if command["state"] != "acknowledged":
                 raise ValueError("broker acknowledgement did not reach acknowledged state")
             if command["admission_ref"] != payload["admission_ref"] or command["evidence_ref"] != payload["evidence_ref"]:
                 raise ValueError("broker acknowledgement admission/evidence correlation mismatch")
+            if command["revision_ref"] != payload["revision_ref"]:
+                raise ValueError("broker acknowledgement did not preserve server-owned revision_ref correlation")
+            if command["termination"] != payload["termination"]:
+                raise ValueError("broker acknowledgement did not preserve bounded termination correlation")
+            if command["request_id"] != payload["request_id"]:
+                raise ValueError("broker acknowledgement did not preserve the exact material request_id correlation")
+            if command["exit_code"] != payload["exit_code"]:
+                raise ValueError("broker acknowledgement did not preserve the bounded exit_code result")
             if command["raw_device_credential"] is not False:
                 raise ValueError("broker acknowledgement exposed device credential material")
+        return LocalAgentBrokerHttpResponse(200, result)
+
+    def _handle_reconcile(
+        self,
+        auth: TrustedLocalAgentHttpAuthContext,
+        payload: dict[str, Any],
+        *,
+        server_now: datetime,
+    ) -> LocalAgentBrokerHttpResponse:
+        """#3128 — carry one restarted runner's durable admitted correlation to #3121."""
+
+        payload = _closed_mapping(payload, _RECONCILE_REQUEST_KEYS, "reconcile request")
+        self._load_scoped_session(auth=auth, payload=payload, server_now=server_now)
+        for field_name in ("admission_ref", "evidence_ref", "revision_ref", "request_id"):
+            _ref(payload[field_name], field_name)
+        _digest(payload["request_fingerprint"], "request_fingerprint")
+        if payload["termination"] is not None and payload["termination"] not in _EXECUTION_TERMINATIONS:
+            raise ValueError("reconcile termination must be a bounded execution termination or null")
+        if payload["exit_code"] is not None and type(payload["exit_code"]) is not int:
+            raise ValueError("reconcile exit_code must be a bounded process exit status or null")
+        rpc_payload = {key: value for key, value in payload.items() if key != "evidence_ref"}
+        # #3123: the reconciliation state mutation (including any terminal-history
+        # compaction it triggers, which moves used-command-id ledger rows) runs
+        # inside the same deployable storage transaction as the #3129 session-open
+        # double write and the #3123 acknowledge mutation. Without it a crash
+        # between the ledger and the blob could strand identity or state
+        # mid-mutation.
+        if self._session_open_transaction is not None:
+            result = self._session_open_transaction(
+                lambda: self._rpc_result(
+                    self._rpc.reconcile_expired_command(self._server_rpc_payload(rpc_payload, server_now)),
+                    "command",
+                )
+            )
+        else:
+            result = self._rpc_result(
+                self._rpc.reconcile_expired_command(self._server_rpc_payload(rpc_payload, server_now)),
+                "command",
+            )
+        if result["ok"] is True:
+            command = _closed_mapping(result["command"], _COMMAND_KEYS, "reconciled broker command")
+            if command["state"] not in {"acknowledged", "expired"}:
+                raise ValueError("broker reconciliation did not reach a terminal state")
+            if command["command_id"] != payload["command_id"] or command["admission_ref"] != payload["admission_ref"]:
+                raise ValueError("broker reconciliation admission correlation mismatch")
+            if command["evidence_ref"] != payload["evidence_ref"]:
+                raise ValueError("broker reconciliation did not preserve the admitted evidence correlation")
+            if command["revision_ref"] != payload["revision_ref"] or command["request_id"] != payload["request_id"]:
+                raise ValueError("broker reconciliation revision/request correlation mismatch")
+            if command["raw_device_credential"] is not False:
+                raise ValueError("broker reconciliation exposed device credential material")
         return LocalAgentBrokerHttpResponse(200, result)
 
     def handle(
@@ -642,6 +759,8 @@ class LocalAgentBrokerHttpHandler:
                 return self._handle_material(auth, payload, server_now=server_now)
             if route == _ROUTE_HEARTBEAT:
                 return self._handle_heartbeat(auth, payload, server_now=server_now)
+            if route == _ROUTE_RECONCILE:
+                return self._handle_reconcile(auth, payload, server_now=server_now)
             return self._handle_acknowledge(auth, payload, server_now=server_now)
         except PermissionError:
             return self._error(403, "local_agent_http_scope_mismatch", "authenticated Local Agent scope does not match request")
@@ -680,8 +799,18 @@ HEARTBEAT_SERVER_LAST_SEEN = True
 POLL_REQUEST_FINGERPRINT_PRESERVED = True
 MATERIAL_FINGERPRINT_EXACT = True
 ACK_ADMISSION_EVIDENCE_EXACT = True
+#: #3128 — the only device recovery surface, and it carries correlation only.
+DEVICE_RECONCILIATION_SURFACE = True
+RECONCILE_EXECUTION_AUTHORITY = False
+RECONCILE_REPLAY_AUTHORITY = False
 DURABLE_STORE_PORT_DEFINED = True
 IN_MEMORY_COUNTS_AS_DURABLE = False
+# --- issue #3129: atomic session open ---------------------------------------
+SESSION_OPEN_WRITE_PAIR_ATOMIC = True
+SESSION_OPEN_TRANSACTION_PORT = True
+SESSION_DOUBLE_WRITE_PRESENT = False
+SESSION_OPEN_BROKER_CAS_AND_HTTP_ROW = True
+SECOND_SESSION_AUTHORITY = False
 RAW_DEVICE_CREDENTIAL_LOGGED = False
 CLIENT_TIME_AUTHORITY = False
 PRODUCTION_ENDPOINT_CONFIGURED = False

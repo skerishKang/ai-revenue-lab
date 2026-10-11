@@ -137,6 +137,7 @@ def _admission_payload() -> dict:
         "credential_b64": base64.b64encode(CREDENTIAL).decode("ascii"),
         "command_id": "command.admission.1",
         "request_fingerprint": FINGERPRINT,
+        "request_id": "request.admission.1",
         "now": (BASE + timedelta(seconds=3)).isoformat(),
     }
 
@@ -161,6 +162,7 @@ def test_admission_refs_and_time_are_server_owned_and_projection_is_bounded() ->
     assert admission["session_id"] == "session.admission.1"
     assert admission["binding_ref"] == "binding.admission.1"
     assert admission["request_fingerprint"] == FINGERPRINT
+    assert admission["request_id"] == "request.admission.1"
     assert datetime.fromisoformat(admission["accepted_at"].replace("Z", "+00:00")) == clock.now
     assert admission["raw_argv"] is False
     assert admission["raw_device_credential"] is False

@@ -190,6 +190,7 @@ class ControlPlaneBrokerAdmissionConformanceTests(unittest.TestCase):
             credential=CREDENTIAL,
             command_id=command.command_id,
             request_fingerprint=FINGERPRINT,
+            request_id="request.conformance.1",
             now=BASE + timedelta(seconds=30),
         )
         return binding, session, conformed_command, admission
@@ -201,6 +202,7 @@ class ControlPlaneBrokerAdmissionConformanceTests(unittest.TestCase):
             command=command,
             expected_authority_ref="local_agent_broker_authority",
             expected_session_id=session.session_id,
+            expected_request_id="request.conformance.1",
             now=BASE + timedelta(seconds=30),
         )
         self.assertEqual(conformed.evidence_ref, "broker_evidence_1")
@@ -223,6 +225,7 @@ class ControlPlaneBrokerAdmissionConformanceTests(unittest.TestCase):
                 command=command,
                 expected_authority_ref="local_agent_broker_authority",
                 expected_session_id=session.session_id,
+                expected_request_id="request.conformance.1",
                 now=BASE + timedelta(seconds=30),
             )
 
@@ -232,6 +235,7 @@ class ControlPlaneBrokerAdmissionConformanceTests(unittest.TestCase):
                 command=command,
                 expected_authority_ref="different_authority",
                 expected_session_id=session.session_id,
+                expected_request_id="request.conformance.1",
                 now=BASE + timedelta(seconds=30),
             )
 
@@ -245,6 +249,7 @@ class ControlPlaneBrokerAdmissionConformanceTests(unittest.TestCase):
                 command=command,
                 expected_authority_ref="local_agent_broker_authority",
                 expected_session_id=session.session_id,
+                expected_request_id="request.conformance.1",
                 now=BASE + timedelta(seconds=30),
             )
 
@@ -256,6 +261,7 @@ class ControlPlaneBrokerAdmissionConformanceTests(unittest.TestCase):
                 command=command,
                 expected_authority_ref="local_agent_broker_authority",
                 expected_session_id=session.session_id,
+                expected_request_id="request.conformance.1",
                 now=BASE + timedelta(seconds=30),
             )
 
@@ -269,8 +275,25 @@ class ControlPlaneBrokerAdmissionConformanceTests(unittest.TestCase):
                 command=command,
                 expected_authority_ref="local_agent_broker_authority",
                 expected_session_id=session.session_id,
+                expected_request_id="request.conformance.1",
                 now=BASE + timedelta(seconds=30),
             )
+
+    def test_admission_request_id_must_equal_the_resolved_material_request(self) -> None:
+        _, session, command, admission = self._admitted()
+        with self.assertRaisesRegex(ContractError, "request_id mismatch"):
+            parse_control_plane_broker_admission(
+                admission.to_public_dict(),
+                command=command,
+                expected_authority_ref="local_agent_broker_authority",
+                expected_session_id=session.session_id,
+                expected_request_id="request.unrelated",
+                now=BASE + timedelta(seconds=30),
+            )
+        self.assertEqual(
+            admission.to_public_dict()["request_id"],
+            "request.conformance.1",
+        )
 
 
 class BrokerConformanceStatusTests(unittest.TestCase):

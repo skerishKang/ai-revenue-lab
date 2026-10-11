@@ -20,7 +20,9 @@ MAX_SEALED_PAYLOAD_BYTES = AES_GCM_IV_BYTES + MAX_SEALED_PLAINTEXT_BYTES + AES_G
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+\-]{0,255}$")
 _KEY_SECRET_RE = re.compile(r"^[A-Za-z0-9_-]{43}$")
 _ENVELOPE_RE = re.compile(r"^sealed:v1:[A-Za-z0-9_-]+$")
-_REVIEWED_CONNECTORS = frozenset({"gmail", "google-drive"})
+# Reviewed Google readonly OAuth connectors whose sealed material this sealer
+# may protect. #2010 added google-calendar to the same single OAuth authority.
+_REVIEWED_CONNECTORS = frozenset({"gmail", "google-drive", "google-calendar"})
 
 
 class GoogleOAuthSealPurpose(str, Enum):

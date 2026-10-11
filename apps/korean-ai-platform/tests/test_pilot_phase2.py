@@ -224,7 +224,7 @@ class TestRegistry:
         assert not r.configured
 
     def test_invalid_timeout_rejected(self):
-        data = [{"provider_id": "p1", "base_url": "https://example.com", "timeout_seconds": 999, "models": [
+        data = [{"provider_id": "p1", "base_url": "https://example.com", "timeout_seconds": 3601, "models": [
             {"model_id": "m1", "upstream_model": "u1", "display_name": "M1"}]}]
         pilot_settings.provider_registry_json = json.dumps(data)
         reset_registry()

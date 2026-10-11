@@ -57,7 +57,7 @@ def client(app):
 # candidate. They never alter the committed catalog.
 # ---------------------------------------------------------------------------
 GEMINI_MODEL_ID = "google/gemini-2.5-flash"
-AGNES_MODEL_ID = "agnes-ai/agnes-2.5-flash"
+AGNES_MODEL_ID = "agnes-ai/agnes-3.0-flash"
 
 
 def _gemini_catalog_model():
@@ -88,8 +88,8 @@ def _agnes_catalog_model():
 
     return CatalogModel(
         model_id=AGNES_MODEL_ID,
-        upstream_model="agnes-2.5-flash",
-        display_name="Agnes AI: Agnes 2.5 Flash",
+        upstream_model="agnes-3.0-flash",
+        display_name="Agnes AI: Agnes 3.0 Flash",
         provider="Agnes AI",
         provider_type="platform",
         input_price_usd_per_1m=None,

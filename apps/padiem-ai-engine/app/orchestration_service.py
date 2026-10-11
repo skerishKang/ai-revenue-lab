@@ -7,8 +7,8 @@ resumption, and cancellation over the internal Engine transport.
 from __future__ import annotations
 
 import asyncio
-from collections.abc import AsyncIterator, Callable, Mapping
-from dataclasses import dataclass
+from collections.abc import AsyncIterator, Callable, Mapping, Sequence
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 import inspect
 import json
@@ -48,6 +48,10 @@ from padiem_ai_core.execution_runtime import ExecutionRuntimeError
 from padiem_ai_core.tool_runtime import MAX_TOOL_ARGUMENT_BYTES, ToolInvocation
 
 from app.execution_context_wire import parse_execution_context
+from app.hark_office_p01_receipt import (
+    ApprovedOfficeReadReceiptSink,
+    prepare_approved_office_read_receipt,
+)
 from app.tool_projection import (
     MAX_WIRE_TOOL_ARGUMENTS_BYTES,
     EngineToolBinding,
@@ -67,6 +71,13 @@ from app.orchestration_continuation import (
     ContinuationRecord,
     ContinuationStore,
     InMemoryContinuationStore,
+)
+
+# S13-5 Phase 1: the orchestrate route mirrors the AGENT-SKILL continuation
+# lifecycle plane by reusing the S13-4 projection rather than re-deriving it.
+from app.agent_skill_continuation_projection import (
+    ENGINE_AGENT_LIFECYCLE_CONTRACT_VERSION,
+    project_agent_lifecycle_events,
 )
 
 # Compatibility surface: the wire contract moved to app.orchestration_wire
@@ -113,6 +124,51 @@ def _server_generated_trace_id() -> str:
     return f"tr_{secrets.token_urlsafe(24)}"
 
 
+def _orchestration_lifecycle_block(
+    *,
+    record: ContinuationRecord | None,
+    transition: str,
+    events: Sequence[Any],
+) -> dict[str, Any] | None:
+    """S13-5 Phase 1: additive continuation lifecycle block for the orchestrate route.
+
+    The AGENT-SKILL route publishes the continuation lifecycle plane from
+    ``app.agent_skill_continuation_projection``.  The orchestrate route names the
+    same facts here by reusing that projection, so both routes speak one lifecycle
+    contract.  Nothing is re-derived: the event kinds, their ordering and their
+    ids all come from the shared projection.
+
+    ``task_id``/``trace_id`` follow the rule documented on
+    ``project_agent_continuation_result``: the paused run identity when the record
+    carries it, otherwise the first public run event.  When there is no continuation
+    record there is no lifecycle to name, so the caller must omit the block entirely
+    -- the Engine never invents events, ids, timestamps or state.
+    """
+
+    if record is None:
+        return None
+    public_events = [event.to_public_dict() for event in events]
+    task_id = record.pause.run_id or (
+        public_events[0].get("run_id") if public_events else None
+    )
+    trace_id = record.pause.trace_id or (
+        public_events[0].get("trace_id") if public_events else None
+    )
+    return {
+        "continuation_id": record.continuation_ref,
+        # S13-5 Phase 1: internal consumption only.  The additive sibling key is
+        # the whole compatibility surface; see docs/operations/AGENT_CONTINUATION_CONTRACT.md.
+        "lifecycle_contract_version": ENGINE_AGENT_LIFECYCLE_CONTRACT_VERSION,
+        "lifecycle_events": project_agent_lifecycle_events(
+            continuation_id=record.continuation_ref,
+            transition=transition,
+            task_id=task_id,
+            trace_id=trace_id,
+            events=events,
+        ),
+    }
+
+
 def _execution_request_with_trace(request: ExecutionRequest, trace_id: str) -> ExecutionRequest:
     """Copy an ExecutionRequest while binding a server-selected trace_id."""
     return ExecutionRequest(
@@ -137,6 +193,66 @@ class ApprovalDecisionVerifier(Protocol):
 
 
 _DEFAULT_CONTINUATION_STORE = InMemoryContinuationStore()
+
+
+def bind_verified_approval_to_tool_authorization(
+    authorization: ToolAuthorizationContext,
+    *,
+    pause: ApprovalPause,
+    decision: VerifiedApprovalDecision,
+) -> ToolAuthorizationContext:
+    """Apply only the exact verified pause delta to server-owned Tool authority.
+
+    Core intentionally resolves continuation lifecycle without minting Tool
+    authorization.  The Engine is the trusted boundary that already owns the
+    base ToolAuthorizationContext, so it may narrow-copy that context after a
+    verified APPROVED decision.  Caller JSON never contributes any authority
+    list or scope here.
+    """
+    if not isinstance(authorization, ToolAuthorizationContext):
+        raise ServiceContractError(
+            "invalid_verified_decision",
+            "Trusted tool authorization is invalid.",
+            status_code=422,
+        )
+    if not isinstance(pause, ApprovalPause) or not isinstance(
+        decision, VerifiedApprovalDecision
+    ):
+        raise ServiceContractError(
+            "invalid_verified_decision",
+            "Verified approval context is invalid.",
+            status_code=422,
+        )
+    if decision.pause_id != pause.pause_id:
+        raise ServiceContractError(
+            "approval_decision_mismatch",
+            "Verified approval decision does not match the paused continuation.",
+            status_code=409,
+        )
+    if decision.outcome is not ApprovalOutcome.APPROVED:
+        return authorization
+
+    confirmed = authorization.user_confirmed_tools
+    external = authorization.externally_authorized_tools
+    if pause.requirement is ApprovalRequirement.USER_CONFIRMATION:
+        confirmed = tuple(dict.fromkeys((*confirmed, pause.tool_id)))
+    elif pause.requirement is ApprovalRequirement.EXTERNAL_AUTHORIZATION:
+        external = tuple(dict.fromkeys((*external, pause.tool_id)))
+    else:
+        raise ServiceContractError(
+            "invalid_verified_decision",
+            "Approval pause requirement is unsupported.",
+            status_code=422,
+        )
+
+    return ToolAuthorizationContext(
+        app_id=authorization.app_id,
+        agent_id=authorization.agent_id,
+        granted_auth_scopes=authorization.granted_auth_scopes,
+        user_confirmed_tools=confirmed,
+        externally_authorized_tools=external,
+    )
+
 
 # ---------------------------------------------------------------------------
 # Orchestration NDJSON stream (#1962)
@@ -208,6 +324,14 @@ _B14_MODEL_ERROR_CLASSES = frozenset(
     }
 )
 
+# Fail-closed public message for every B14/model-execution failure. The Engine
+# public boundary never forwards an ExecutionRuntimeError.safe_message verbatim:
+# even though the ordinary Core B14 transport already canonicalizes the upstream
+# detail via _safe_message_for_b14(code), the mapper must not trust an arbitrary
+# internal safe_message string. One stable bounded message is emitted for all
+# B14/model failures; the safe code, status, and retryable carry the class.
+_B14_MODEL_ERROR_PUBLIC_MESSAGE = "Model execution failed."
+
 
 def _is_b14_model_error(exc: ExecutionRuntimeError) -> bool:
     """True when exc is a B14/model-service execution failure (not engine-internal)."""
@@ -247,11 +371,16 @@ class OrchestrationEngineService:
         approval_decision_verifier: ApprovalDecisionVerifier | None = None,
         continuation_store: ContinuationStore | None = None,
         tool_binding_resolver: Callable[[str], EngineToolBinding | None] | None = None,
+        approved_office_read_sink: ApprovedOfficeReadReceiptSink | None = None,
     ) -> None:
         if not callable(runtime_factory):
             raise ValueError("runtime_factory must be callable")
         if tool_binding_resolver is not None and not callable(tool_binding_resolver):
             raise ValueError("tool_binding_resolver must be callable")
+        if approved_office_read_sink is not None and not callable(
+            getattr(approved_office_read_sink, "record_verified_office_read", None)
+        ):
+            raise ValueError("approved_office_read_sink must provide record_verified_office_read")
         if approval_decision_verifier is not None and not callable(getattr(approval_decision_verifier, "verify", None)):
             raise ValueError("approval_decision_verifier must provide verify()")
         if continuation_store is not None:
@@ -276,6 +405,9 @@ class OrchestrationEngineService:
         self._continuation_store = continuation_store or _DEFAULT_CONTINUATION_STORE
         self._continuation_store_is_explicit = continuation_store is not None
         self._tool_binding_resolver = tool_binding_resolver
+        # Never composed by the shipping Engine Worker unless an explicitly
+        # trusted private durable sink is provided. No browser-facing endpoint.
+        self._approved_office_read_sink = approved_office_read_sink
 
     # ------------------------------------------------------------------
     # Trusted tool-runtime attachment (#1746)
@@ -605,7 +737,7 @@ class OrchestrationEngineService:
             if _is_b14_model_error(exc):
                 return _service_error(
                     exc.code,
-                    exc.safe_message,
+                    _B14_MODEL_ERROR_PUBLIC_MESSAGE,
                     status_code=_b14_model_error_status(exc),
                     retryable=exc.retryable,
                 )
@@ -689,12 +821,39 @@ class OrchestrationEngineService:
 
         return app_id, orch_req, exec_req, _execution_request_fingerprint(app_id=app_id, request=exec_req)
 
-    async def orchestrate_payload(self, payload: Any) -> ServiceResponse:
-        """Execute an orchestration request through OrchestrationRunner."""
+    async def orchestrate_payload(
+        self, payload: Any, *, trusted_office_run_id: str | None = None,
+    ) -> ServiceResponse:
+        """Execute public input or a server-owned exact Office Broker run.
+
+        The keyword is private Python composition only; it is never parsed
+        from the Engine HTTP JSON payload or accepted as a model argument.
+        """
         built = self._orchestrate_request_from_payload(payload)
         if isinstance(built, ServiceResponse):
             return built
         app_id, orch_req, exec_req, request_fingerprint_value = built
+        if trusted_office_run_id is not None:
+            # No ordinary app may select the Core Agent pause run id. The
+            # first-party owner/Broker authority must provide this exact
+            # server-owned identity; the caller\u0027s arguments cannot replace it.
+            from app.hark_office_p01_tool_binding import APP_ID, LIST_TOOL_ID, READ_TOOL_ID
+            plan = orch_req.agent_plan
+            args = getattr(orch_req, "tool_arguments", None)
+            if (app_id != APP_ID
+                    or type(trusted_office_run_id) is not str
+                    or plan is None or len(plan.steps) != 1
+                    or plan.steps[0].tool_id not in (LIST_TOOL_ID, READ_TOOL_ID)
+                    or not isinstance(args, Mapping) or len(args) != 1):
+                return _service_error("invalid_request", "Trusted Office run identity is invalid.", status_code=400)
+            only_args = next(iter(args.values()))
+            if (not isinstance(only_args, Mapping)
+                    or only_args.get("run_id") != trusted_office_run_id):
+                return _service_error("office_run_identity_mismatch", "Office command run identity mismatch.", status_code=409)
+            try:
+                orch_req = replace(orch_req, trusted_agent_bridge_run_id=trusted_office_run_id)
+            except (ValueError, TypeError):
+                return _service_error("invalid_request", "Trusted Office run identity is invalid.", status_code=400)
 
         try:
             runtime = self._runtime_factory(app_id)
@@ -838,6 +997,15 @@ class OrchestrationEngineService:
                 raw_tool_arguments=payload.get("tool_arguments"),
                 resume=True,
             )
+            base_tool_authorization = tool_kwargs.get("tool_authorization")
+            if base_tool_authorization is not None:
+                tool_kwargs["tool_authorization"] = (
+                    bind_verified_approval_to_tool_authorization(
+                        base_tool_authorization,
+                        pause=record.pause,
+                        decision=decision,
+                    )
+                )
             if (
                 plan is not None
                 and "tool_runtime" in tool_kwargs
@@ -929,7 +1097,7 @@ class OrchestrationEngineService:
             if _is_b14_model_error(exc):
                 return _service_error(
                     exc.code,
-                    exc.safe_message,
+                    _B14_MODEL_ERROR_PUBLIC_MESSAGE,
                     status_code=_b14_model_error_status(exc),
                     retryable=exc.retryable,
                 )
@@ -964,6 +1132,36 @@ class OrchestrationEngineService:
         except ServiceContractError as commit_exc:
             return _service_error(commit_exc.code, commit_exc.safe_message, status_code=commit_exc.status_code)
 
+        # #3580: only AFTER the Engine has verified an actual first-party
+        # decision, completed the registered ToolRuntime confirmation, and
+        # atomically CONSUMED the continuation may a PRIVATE durable sink
+        # receive the immutable canonical Office READ receipt. There is no
+        # browser/wire field to supply the decision or invoke this sink.
+        if self._approved_office_read_sink is not None:
+            try:
+                receipt = prepare_approved_office_read_receipt(
+                    app_id=app_id,
+                    continuation_ref=record.continuation_ref,
+                    pause=record.pause,
+                    decision=decision,
+                    tool_arguments=tool_kwargs.get("tool_arguments"),
+                    execution_status=result.execution_result.metadata.status,
+                )
+                if receipt is not None:
+                    persisted = self._approved_office_read_sink.record_verified_office_read(receipt)
+                    if inspect.isawaitable(persisted):
+                        persisted = await persisted
+                    if persisted is not True:
+                        raise ValueError("trusted Office receipt not persisted")
+            except Exception:
+                # Continuation is already consumed; never return success or
+                # dispatch a local file operation when durable evidence
+                # recording is unknown. Owner must start a fresh operation.
+                return _service_error(
+                    "office_approval_receipt_unavailable",
+                    "Verified Office authorization receipt was not persisted.",
+                    status_code=503,
+                )
         try:
             orchestration_body = await self._orchestration_body(
                 result,
@@ -972,13 +1170,21 @@ class OrchestrationEngineService:
             )
         except ServiceContractError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
-        return ServiceResponse(
-            status_code=200,
-            body={
-                "ok": True,
-                "orchestration": orchestration_body,
-            },
+        body: dict[str, Any] = {
+            "ok": True,
+            "orchestration": orchestration_body,
+        }
+        # S13-5 Phase 1: additive lifecycle mirror.  The sibling key is added only
+        # when a real continuation record backed this resume; every pre-existing key
+        # and shape above stays untouched.
+        lifecycle_block = _orchestration_lifecycle_block(
+            record=record,
+            transition="resume",
+            events=result.events,
         )
+        if lifecycle_block is not None:
+            body["continuation"] = lifecycle_block
+        return ServiceResponse(status_code=200, body=body)
 
     async def cancel_payload(self, payload: Any) -> ServiceResponse:
         """Cancel only a server-issued continuation."""
@@ -1078,7 +1284,7 @@ class OrchestrationEngineService:
             if _is_b14_model_error(exc):
                 return _service_error(
                     exc.code,
-                    exc.safe_message,
+                    _B14_MODEL_ERROR_PUBLIC_MESSAGE,
                     status_code=_b14_model_error_status(exc),
                     retryable=exc.retryable,
                 )
@@ -1111,14 +1317,21 @@ class OrchestrationEngineService:
         except ServiceContractError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
 
-        return ServiceResponse(
-            status_code=200,
-            body={
-                "ok": True,
-                "status": "cancelled",
-                "events": [e.to_public_dict() for e in events],
-            },
+        body: dict[str, Any] = {
+            "ok": True,
+            "status": "cancelled",
+            "events": [e.to_public_dict() for e in events],
+        }
+        # S13-5 Phase 1: additive lifecycle mirror for the cancel transition.  The
+        # pre-existing keys and shapes are unchanged.
+        lifecycle_block = _orchestration_lifecycle_block(
+            record=record,
+            transition="cancel",
+            events=events,
         )
+        if lifecycle_block is not None:
+            body["continuation"] = lifecycle_block
+        return ServiceResponse(status_code=200, body=body)
 
     async def prepare_stream(
         self,

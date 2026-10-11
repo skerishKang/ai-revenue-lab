@@ -15,6 +15,8 @@ Cross-runtime AI service boundary around Padiem AI Core.
 
 IP-ENGINE owns internal execution transport, Service Binding hosting, trusted first-party caller identity/authentication, and the runtime projection required for independent products to consume shared Core capabilities without owning Provider infrastructure.
 
+Per the #2409 Wave 0 boundary lock, concrete trusted caller enforcement, the caller registry, and Service Binding transport normalization are Engine runtime authority (enforcement; their platform-independent shapes are IP-CORE contracts). See `docs/architecture/P01_B62_SHARED_RUNTIME_BOUNDARY_LOCK_2409.md`.
+
 ## Boundary
 
 IP-ENGINE does not own:
@@ -36,7 +38,9 @@ This platform prerequisite preserves the existing B61 StoryMemory identity while
 ## Start here
 
 - Source: `apps/padiem-ai-engine/`
-- Worker entry: `apps/padiem-ai-engine/worker.py`
+- Production Worker entry: `apps/padiem-ai-engine/worker_identity.py`
+- Shared HTTP/core base + deliberately narrower legacy compatibility composition: `apps/padiem-ai-engine/worker.py`
+- Production composition authority: `worker_identity._engine_services_for_env`; `worker.py::_engine_services_for_env` is a non-Production compatibility composition and must remain narrower
 - Deployment config: `apps/padiem-ai-engine/wrangler.toml`
 - Identity boundary: `apps/padiem-ai-engine/app/identity_enforcement.py`
 - Platform registry: `docs/internal-platform/INTERNAL_PLATFORM_REGISTRY.md`

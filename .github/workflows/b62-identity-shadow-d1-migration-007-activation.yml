@@ -1,0 +1,284 @@
+name: B62 Identity Shadow D1 Migration 007 Activation
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b62-identity-shadow-d1-migration-007-activation.yml"
+      - "apps/padiem-chat/migrations/007_control_plane_identity_shadow.sql"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/b62-identity-shadow-d1-migration-007-activation.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-identity-shadow-d1-migration-007-activation
+  cancel-in-progress: false
+
+env:
+  B62_WORKER: padiem-chat
+  D1_BINDING: PADIEM_CHAT_DB
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact event revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Validate additive migration 007 contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          sql = Path("apps/padiem-chat/migrations/007_control_plane_identity_shadow.sql").read_text(encoding="utf-8")
+          required = (
+              "CREATE TABLE IF NOT EXISTS control_plane_identity_shadow",
+              "CREATE UNIQUE INDEX IF NOT EXISTS idx_control_plane_identity_shadow_session",
+              "REFERENCES users(id) ON DELETE CASCADE",
+          )
+          for token in required:
+              if token not in sql:
+                  raise SystemExit(f"migration 007 missing additive invariant: {token}")
+
+          upper = sql.upper()
+          forbidden = (
+              "DROP TABLE",
+              "ALTER TABLE",
+              "DELETE FROM",
+              "UPDATE ",
+              "INSERT INTO",
+          )
+          for token in forbidden:
+              if token in upper:
+                  raise SystemExit(f"migration 007 contains forbidden mutation class: {token}")
+
+          print("B62_D1_MIGRATION_007_SOURCE_CONTRACT=PASS")
+          print("ADDITIVE_ONLY=YES")
+          print("PRODUCTION_MUTATION=0")
+          PY
+
+  activate-production:
+    needs: source-contract
+    if: ${{ github.event_name == 'push' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact merged main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test "$(git rev-parse origin/main)" = "${GITHUB_SHA}"
+          echo "PREMUTATION_EXACT_MAIN_SHA=PASS"
+
+      - name: Resolve live PADIEM_CHAT_DB binding without emitting identifier
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          settings="${RUNNER_TEMP}/b62-settings-migration-007.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
+            -o "${settings}"
+
+          DB_ID="$(python - "${settings}" "${D1_BINDING}" <<'PY'
+          import json, re, sys
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          bindings = payload.get("result", {}).get("bindings", []) if payload.get("success") is True else []
+          hits = [b for b in bindings if b.get("type") == "d1" and b.get("name") == sys.argv[2]]
+          if len(hits) != 1:
+              raise SystemExit("expected exactly one live PADIEM_CHAT_DB binding")
+          database_id = hits[0].get("id")
+          if not isinstance(database_id, str) or not re.fullmatch(r"[0-9a-fA-F-]{32,36}", database_id):
+              raise SystemExit("live PADIEM_CHAT_DB binding has invalid database id")
+          print(database_id)
+          PY
+          )"
+          test -n "${DB_ID}"
+          echo "::add-mask::${DB_ID}"
+          echo "DB_ID=${DB_ID}" >> "${GITHUB_ENV}"
+          echo "LIVE_PADIEM_CHAT_DB_DERIVED=PASS"
+          echo "D1_IDENTIFIER_OUTPUT=0"
+
+      - name: Read premutation schema state
+        id: prestate
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          payload="${RUNNER_TEMP}/migration-007-prestate-query.json"
+          python - "${payload}" <<'PY'
+          import json, sys
+          sql = """
+          SELECT
+            EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='users') AS users_exists,
+            EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='control_plane_identity_shadow') AS table_exists,
+            (SELECT COUNT(*) FROM pragma_table_info('control_plane_identity_shadow')) AS column_count,
+            (SELECT COUNT(*) FROM pragma_table_info('control_plane_identity_shadow')
+              WHERE name IN (
+                'product_user_id','canonical_subject_id','auth_session_id',
+                'session_revision','session_state','session_expires_at','observed_at'
+              )) AS expected_column_count,
+            EXISTS(SELECT 1 FROM sqlite_master
+              WHERE type='index' AND name='idx_control_plane_identity_shadow_session') AS index_exists;
+          """
+          json.dump({"sql": sql}, open(sys.argv[1], "w", encoding="utf-8"))
+          PY
+
+          response="${RUNNER_TEMP}/migration-007-prestate-response.json"
+          curl -fsS -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${payload}" -o "${response}"
+          jq -e '.success == true and (.result | length) == 1 and .result[0].success == true and (.result[0].results | length) == 1' "${response}" >/dev/null
+
+          users_exists="$(jq -r '.result[0].results[0].users_exists' "${response}")"
+          table_exists="$(jq -r '.result[0].results[0].table_exists' "${response}")"
+          column_count="$(jq -r '.result[0].results[0].column_count' "${response}")"
+          expected_count="$(jq -r '.result[0].results[0].expected_column_count' "${response}")"
+          index_exists="$(jq -r '.result[0].results[0].index_exists' "${response}")"
+
+          test "${users_exists}" = "1"
+
+          if [ "${table_exists}" = "0" ]; then
+            state="missing"
+          elif [ "${column_count}" = "7" ] && [ "${expected_count}" = "7" ] && [ "${index_exists}" = "1" ]; then
+            state="exact"
+          else
+            state="drift"
+          fi
+
+          echo "schema_state=${state}" >> "${GITHUB_OUTPUT}"
+          echo "B62_D1_MIGRATION_007_PRESTATE=${state^^}"
+          echo "ROW_DATA_READ=0"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Refuse schema drift
+        if: ${{ steps.prestate.outputs.schema_state == 'drift' }}
+        shell: bash
+        run: |
+          echo "Refusing migration 007: live schema is neither missing nor exact." >&2
+          exit 1
+
+      - name: Apply additive migration 007 only when missing
+        if: ${{ steps.prestate.outputs.schema_state == 'missing' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          migration="apps/padiem-chat/migrations/007_control_plane_identity_shadow.sql"
+          payload="${RUNNER_TEMP}/migration-007-apply.json"
+          python - "${migration}" "${payload}" <<'PY'
+          import json, sys
+          sql = open(sys.argv[1], encoding="utf-8").read()
+          upper = sql.upper()
+          required = (
+              "CREATE TABLE IF NOT EXISTS CONTROL_PLANE_IDENTITY_SHADOW",
+              "CREATE UNIQUE INDEX IF NOT EXISTS IDX_CONTROL_PLANE_IDENTITY_SHADOW_SESSION",
+          )
+          for token in required:
+              if token not in upper:
+                  raise SystemExit("reviewed migration 007 contract missing")
+          for token in ("DROP TABLE", "ALTER TABLE", "DELETE FROM", "UPDATE ", "INSERT INTO"):
+              if token in upper:
+                  raise SystemExit("migration 007 is not additive")
+          json.dump({"sql": sql}, open(sys.argv[2], "w", encoding="utf-8"))
+          PY
+
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          response="${RUNNER_TEMP}/migration-007-apply-response.json"
+          curl -fsS -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${payload}" -o "${response}"
+          jq -e '.success == true and (.result | type == "array") and all(.result[]; .success == true)' "${response}" >/dev/null
+          echo "B62_D1_MIGRATION_007=APPLIED"
+          echo "PRODUCTION_MUTATION=1"
+
+      - name: Record no-op when already exact
+        if: ${{ steps.prestate.outputs.schema_state == 'exact' }}
+        shell: bash
+        run: |
+          echo "B62_D1_MIGRATION_007=SKIPPED_ALREADY_EXACT"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Read back exact schema and foreign-key integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+
+          payload="${RUNNER_TEMP}/migration-007-poststate-query.json"
+          python - "${payload}" <<'PY'
+          import json, sys
+          sql = """
+          SELECT
+            EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='control_plane_identity_shadow') AS table_exists,
+            (SELECT COUNT(*) FROM pragma_table_info('control_plane_identity_shadow')) AS column_count,
+            (SELECT COUNT(*) FROM pragma_table_info('control_plane_identity_shadow')
+              WHERE name IN (
+                'product_user_id','canonical_subject_id','auth_session_id',
+                'session_revision','session_state','session_expires_at','observed_at'
+              )) AS expected_column_count,
+            EXISTS(SELECT 1 FROM sqlite_master
+              WHERE type='index' AND name='idx_control_plane_identity_shadow_session') AS index_exists;
+          PRAGMA foreign_key_check;
+          """
+          json.dump({"sql": sql}, open(sys.argv[1], "w", encoding="utf-8"))
+          PY
+
+          response="${RUNNER_TEMP}/migration-007-poststate-response.json"
+          curl -fsS -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${payload}" -o "${response}"
+
+          jq -e '.success == true and (.result | length) == 2 and all(.result[]; .success == true)' "${response}" >/dev/null
+          jq -e '.result[0].results[0] |
+            .table_exists == 1 and
+            .column_count == 7 and
+            .expected_column_count == 7 and
+            .index_exists == 1' "${response}" >/dev/null
+          jq -e '((.result[1].results // []) | length) == 0' "${response}" >/dev/null
+
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${GITHUB_SHA}"
+
+          echo "B62_D1_MIGRATION_007_POST_READBACK=EXACT"
+          echo "B62_D1_MIGRATION_007_FOREIGN_KEY_CHECK=PASS"
+          echo "ROW_DATA_READ=0"
+          echo "SECRET_VALUE_OUTPUT=0"
+
+      - name: Publish bounded activation evidence
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## B62 identity shadow migration 007 activation"
+            echo
+            echo "- exact main: `${GITHUB_SHA}`"
+            echo "- migration: additive table/index only"
+            echo "- row data read: no"
+            echo "- secret values output: no"
+          } >> "${GITHUB_STEP_SUMMARY}"

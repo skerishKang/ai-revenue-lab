@@ -211,9 +211,14 @@ def _read_draft_input(path: Path) -> str:
                     f"문서에서 추출된 텍스트가 없습니다: {path}",
                 )
             return intake.text
+        # Public-safe projection: the note is already the gate's bounded
+        # ``file_intake_rejected:<reason_code>`` vocabulary (or a bounded Core
+        # reason code). The caller-supplied path is deliberately not echoed —
+        # ``safe_message`` reaches stderr through the CLI, so a host/absolute
+        # path here would be an output leak.
         raise DraftFlowError(
             "draft_input_invalid",
-            f"문서 변환 실패: {path} — {intake.note or '지원되지 않는 문서'}",
+            f"문서 변환 실패 — {intake.note or '지원되지 않는 문서'}",
         )
     if b"\x00" in data:
         raise DraftFlowError(

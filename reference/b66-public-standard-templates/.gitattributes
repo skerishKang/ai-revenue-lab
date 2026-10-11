@@ -1,0 +1,13 @@
+# Public source and manifests use consistent LF bytes on Windows and Linux.
+# Binary standard-source artifacts must keep their exact SHA-256 on checkout.
+*.json text eol=lf
+*.py text eol=lf
+*.js text eol=lf
+*.cjs text eol=lf
+*.md text eol=lf
+*.pdf -text
+*.xlsx -text
+*.zlib -text
+*.png -text
+*.jpeg -text
+*.emf -text

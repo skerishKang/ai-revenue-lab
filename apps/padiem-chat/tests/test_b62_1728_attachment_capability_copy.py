@@ -40,6 +40,7 @@ def test_composer_does_not_hard_code_format_truth_in_html():
 def test_locale_derives_attachment_copy_without_clobbering_runtime_state():
     assert "const attachmentCapabilities = window.PadiemAttachmentCapabilities;" in LOCALE_JS
     assert "capabilityCopy.documentFormats" in LOCALE_JS
+    assert 'formats.split("·").join(" · \\u200b")' in LOCALE_JS
     assert "attachmentInput.accept = attachmentCapabilities.accept" in LOCALE_JS
     assert "attachmentButton.title = capabilityCopy.fileButtonTitle" in LOCALE_JS
     assert '"document-copy"' not in LOCALE_JS
@@ -76,9 +77,9 @@ def test_binary_reader_derives_formats_and_limit_from_capabilities():
 
 
 def test_project_file_persistence_copy_remains_explicitly_distinct():
-    assert "프로젝트 파일 저장은 TXT·Markdown·CSV·JSON만 지원합니다." in INDEX_HTML
-    assert "PDF·DOCX·PPTX·XLSX는 저장하지 않습니다." in INDEX_HTML
-    assert 'id="projectFileInput" type="file" accept="text/plain,text/markdown,text/csv,application/json,.txt,.md,.markdown,.csv,.json"' in INDEX_HTML
+    assert "PDF·DOCX는 텍스트만 추출해 저장하며 원본은 저장하지 않습니다." in INDEX_HTML
+    assert "PPTX·XLSX는 미지원." in INDEX_HTML
+    assert 'application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx"' in INDEX_HTML
     assert "Project files are a distinct persistence capability." in README
     assert "validated UTF-8 text files only" in README
 
@@ -98,3 +99,8 @@ def test_no_hidden_browser_persistence_or_interception_added():
     combined = CAPABILITIES_JS + "\n" + APP_JS + "\n" + BINARY_JS + "\n" + LOCALE_JS
     for forbidden in ["localStorage", "sessionStorage", "indexedDB", "cookieStore", "window.fetch =", "MutationObserver"]:
         assert forbidden not in combined
+
+
+def test_document_starter_formats_break_only_at_explicit_separators():
+    assert 'id="documentStarterButton"' in INDEX_HTML
+    assert 'formats.split("·").join(" · \\u200b")' in LOCALE_JS

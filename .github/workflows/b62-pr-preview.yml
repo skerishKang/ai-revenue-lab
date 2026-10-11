@@ -3,9 +3,18 @@ name: B62 PR Preview
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+    # #3527: the deploy surface is `apps/padiem-chat/static` only — this job runs
+    # `wrangler pages deploy apps/padiem-chat/static` with no build step, and every
+    # path it reads (index.html, the two glass CSS files, assets/*.jpg) plus the
+    # browser-QA target live inside that directory. Backend (`app/**`), the Worker
+    # entrypoint, tests, Python deps, migrations and `packages/**` cannot change the
+    # produced preview bytes, so they no longer fan out into this lane. The workflow
+    # file itself stays in scope, which keeps a future deploy-command change
+    # self-correcting. Proven by `.github/tests/test_b62_pr_preview_trigger_scope.py`.
     paths:
-      - "apps/padiem-chat/**"
+      - "apps/padiem-chat/static/**"
       - ".github/workflows/b62-pr-preview.yml"
+      - ".github/scripts/b62_pr_preview_glass_qa.py"
 
 permissions:
   contents: read
@@ -136,6 +145,36 @@ jobs:
 
           echo "url=${IMMUTABLE_URL}/?theme=padiem-glass&glass=female" >> "${GITHUB_OUTPUT}"
           echo "alias_url=${ALIAS_URL}/?theme=padiem-glass&glass=female" >> "${GITHUB_OUTPUT}"
+
+      - name: Set up Python for immutable Preview smoke
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pinned Playwright for immutable Preview smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install 'playwright==1.55.0'
+          python -m playwright install --with-deps chromium
+
+      - name: Browser-smoke immutable Glass Preview
+        shell: bash
+        env:
+          B62_QA_BASE_URL: ${{ steps.deploy.outputs.immutable_url }}
+          B62_QA_OUT_DIR: .tmp/b62-preview-browser-qa
+        run: |
+          set -euo pipefail
+          python .github/scripts/b62_pr_preview_glass_qa.py
+
+      - name: Upload immutable Preview browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-pr-preview-browser-qa
+          path: .tmp/b62-preview-browser-qa
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Publish preview URL
         shell: bash

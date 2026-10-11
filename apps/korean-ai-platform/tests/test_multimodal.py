@@ -30,10 +30,18 @@ def multimodal_content(url: str | None = None):
 
 @pytest.fixture(autouse=True)
 def _mock_openrouter_mode():
+    import os
+
+    old_agnes_key = os.environ.get("PADIEM_AGNES_API_KEY")
+    os.environ["PADIEM_AGNES_API_KEY"] = "sk-test-agnes-mm-0123456789"
     old_mode = runtime_config.provider_mode
     runtime_config.provider_mode = "mock"
     yield
     runtime_config.provider_mode = old_mode
+    if old_agnes_key is None:
+        os.environ.pop("PADIEM_AGNES_API_KEY", None)
+    else:
+        os.environ["PADIEM_AGNES_API_KEY"] = old_agnes_key
 
 
 @pytest.fixture()
@@ -68,7 +76,7 @@ def test_valid_multimodal_auto_route_uses_fixed_chain_head(
 
     # D14 (#2044): b14/auto no longer filters by image capability; the fixed
     # chain head answers and the validated multimodal array passes through.
-    monkeypatch.delenv("PADIEM_SENSENOVA_API_KEY", raising=False)
+    monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-chain-unit-agnes-0123456789")
     monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
     captured = {}
 
@@ -87,7 +95,7 @@ def test_valid_multimodal_auto_route_uses_fixed_chain_head(
     response = post_image(client, business14={"required_capabilities": ["chat"]})
     assert response.status_code == 200
     body = response.json()
-    assert body["business14"]["selected_model"] == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+    assert body["business14"]["selected_model"] == "agnes-ai/agnes-3.0-flash"
     assert body["business14"]["routing_policy"] == "fixed_chain_v1"
     outbound = captured["messages"]
     assert isinstance(outbound[0]["content"], list)
@@ -119,9 +127,25 @@ def test_unknown_multimodal_fields_and_types_rejected(client, content):
     assert response.status_code == 422
 
 
-def test_remote_image_url_rejected(client):
-    response = post_image(client, content=multimodal_content("https://example.com/photo.png"))
+@pytest.mark.parametrize("remote_url", [
+    "https://example.com/photo.png",
+    "http://127.0.0.1/private.png",
+    "file:///etc/passwd",
+])
+def test_remote_image_url_rejected_before_provider_egress(client, monkeypatch, remote_url):
+    """Untrusted image URLs cannot trigger model-provider calls or SSRF."""
+    from app.pilot import platform as plat
+
+    provider_calls = []
+
+    async def forbidden_provider_call(**kwargs):
+        provider_calls.append(kwargs)
+        raise AssertionError("rejected image URL must not reach model provider")
+
+    monkeypatch.setattr(plat, "call_platform_chat_completions", forbidden_provider_call)
+    response = post_image(client, content=multimodal_content(remote_url))
     assert response.status_code == 422
+    assert provider_calls == []
 
 
 @pytest.mark.parametrize(
@@ -158,7 +182,7 @@ def test_manual_text_only_model_fails_before_openrouter_call(client, monkeypatch
     monkeypatch.setattr(plat, "call_platform_chat_completions", should_not_call)
     response = post_image(
         client,
-        model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+        model="agnes-ai/agnes-3.0-flash",
         business14={"allow_external_fallback": True},
     )
     assert response.status_code == 503
@@ -172,14 +196,14 @@ def test_auto_route_ignores_capability_filter_hook(client, monkeypatch):
     """D14 (#2044): the scorer capability filter is dead for b14/auto."""
     from app.pilot import router_core as rcore
 
-    monkeypatch.delenv("PADIEM_SENSENOVA_API_KEY", raising=False)
+    monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-chain-unit-agnes-0123456789")
     monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
     monkeypatch.setattr(rcore, "_filter_catalog", lambda **kwargs: [])
     response = post_image(client)
     assert response.status_code == 200
     body = response.json()
     assert body["business14"]["routing_policy"] == "fixed_chain_v1"
-    assert body["business14"]["selected_model"] == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+    assert body["business14"]["selected_model"] == "agnes-ai/agnes-3.0-flash"
 
 
 @pytest.mark.asyncio
@@ -195,7 +219,7 @@ async def test_live_platform_body_preserves_validated_multimodal_array():
             200,
             json={
                 "id": "live-test",
-                "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+                "model": "test-fixture/kilo-multimodal-upstream",
                 "choices": [{"index": 0, "message": {"role": "assistant", "content": "ok"}, "finish_reason": "stop"}],
                 "usage": {"prompt_tokens": 1, "completion_tokens": 1, "total_tokens": 2},
             },
@@ -207,13 +231,27 @@ async def test_live_platform_body_preserves_validated_multimodal_array():
         messages=messages,
         temperature=0.2,
         max_tokens=100,
-        model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-        upstream_model="nvidia/nemotron-3-ultra-550b-a55b:free",
+        model_id="test-fixture/kilo-multimodal",
+        upstream_model="test-fixture/kilo-multimodal-upstream",
         provider="Kilo Gateway / NVIDIA",
-        platform_provider_id="kilo",
+        platform_provider_id="test-fixture",
         transport=httpx.MockTransport(handler),
     )
     assert result["choices"][0]["message"]["content"] == "ok"
     assert captured["json"]["messages"] == messages
-    assert captured["json"]["model"] == "nvidia/nemotron-3-ultra-550b-a55b:free"
+    assert captured["json"]["model"] == "test-fixture/kilo-multimodal-upstream"
     assert "provider" not in captured["json"]
+
+@pytest.fixture(autouse=True)
+def _test_only_keyless_adapter_provider(monkeypatch):
+    """Only this test module can use a generic mocked provider, never owner-retired Kilo."""
+    from app.pilot import platform_secrets as ps
+    provider = ps.PlatformProviderSpec(
+        provider_id="test-fixture",
+        credential_source=ps.CredentialSource.NONE,
+        credential_binding_name="",
+        base_origin="https://test-fixture.example/v1",
+        allowed_hosts=("test-fixture.example",),
+    )
+    monkeypatch.setitem(ps._PLATFORM_PROVIDERS, "test-fixture", provider)
+    yield

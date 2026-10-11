@@ -32,7 +32,10 @@ from padiem_ai_core.skill_runtime_adapter import TrustedSkillRuntimePolicy
 from padiem_ai_core.tool_registry import RegisteredTool, ToolRegistrySnapshot
 from padiem_ai_core.tool_runtime import ToolAuthorizationContext, ToolRuntime
 
-from app.agent_skill_authority import EngineAgentSkillBinding
+from app.agent_skill_authority import (
+    EngineAgentSkillBinding,
+    build_agent_skill_binding_resolver,
+)
 from app.agent_skill_service import AgentSkillEngineService
 from app.tool_projection import EngineToolBinding, TrustedToolAuthority
 
@@ -216,7 +219,6 @@ class Fixture:
             app_id=APP_ID,
             subject_id=SUBJECT_ID,
             tool_binding=self.tool_binding,
-            agent_plans={AGENT_ID: self.plan},
             skill_registry=self.skill_registry,
             skill_installations=self.installations,
             skill_runtime_policy_resolver=lambda skill_id: (
@@ -234,6 +236,7 @@ class Fixture:
             "agent_id": AGENT_ID,
             "skill_id": SKILL_ID,
             "messages": [{"role": "user", "content": "Run the trusted Skill."}],
+            "agent_plan": self.plan.to_public_dict(),
             "tool_arguments": {"search1": {"query": PRIVATE_ARGUMENT}},
         }
         value.update(overrides)
@@ -280,7 +283,6 @@ async def test_trusted_agent_skill_selection_executes_real_core_tool_runtime_onl
     ("field", "value"),
     (
         ("agent", {"id": "caller-profile"}),
-        ("agent_plan", {"steps": []}),
         ("compiled_profile", {"allowed_tools": [RUNTIME_SEARCH]}),
         ("tool_bindings", [{"tool_id": CANONICAL_SEARCH}]),
         ("tool_authorization", {"approved": True}),
@@ -304,6 +306,78 @@ async def test_caller_authority_shaped_fields_are_rejected(field: str, value) ->
     assert response.body["error"]["code"] == "caller_agent_authority_not_allowed"
     assert fx.handler_calls == 0
     assert fx.provider.calls == 0
+
+
+@pytest.mark.asyncio
+async def test_bounded_caller_agent_plan_is_accepted_as_non_authoritative() -> None:
+    fx = Fixture()
+    response = await fx.service.run_payload(fx.payload(skill_id=None))
+    assert response.status_code == 200
+    assert fx.handler_calls == 1
+
+
+@pytest.mark.asyncio
+async def test_agent_plan_is_required_without_hidden_synthetic_plan() -> None:
+    fx = Fixture()
+    payload = fx.payload(skill_id=None)
+    payload.pop("agent_plan")
+    response = await fx.service.run_payload(payload)
+    assert response.status_code == 400
+    assert response.body["error"]["code"] == "agent_plan_required"
+    assert fx.handler_calls == 0
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("mutate", "expected_code"),
+    (
+        (lambda plan: plan.__setitem__("agent_id", "agent:acme:other@1"), "agent_plan_identity_mismatch"),
+        (lambda plan: plan["steps"][0].__setitem__("tool_id", "rogue.tool"), "agent_plan_tool_not_allowed"),
+        (
+            lambda plan: plan["steps"].extend(
+                {
+                    "step_id": f"step{i}",
+                    "objective": "bounded",
+                    "tool_id": RUNTIME_SEARCH,
+                }
+                for i in range(2, 5)
+            ),
+            "agent_plan_budget_exceeded",
+        ),
+    ),
+)
+async def test_caller_plan_cannot_widen_trusted_agent(
+    mutate, expected_code: str
+) -> None:
+    fx = Fixture()
+    payload = fx.payload(skill_id=None)
+    mutate(payload["agent_plan"])
+    response = await fx.service.run_payload(payload)
+    assert response.status_code == (403 if expected_code != "agent_plan_budget_exceeded" else 400)
+    assert response.body["error"]["code"] == expected_code
+    assert fx.handler_calls == 0
+
+
+def test_production_agent_binding_resolver_derives_subject_from_server_authority() -> None:
+    fx = Fixture()
+    resolver = build_agent_skill_binding_resolver(
+        lambda app_id: fx.tool_binding if app_id == APP_ID else None,
+        lambda app_id: SUBJECT_ID if app_id == APP_ID else None,
+    )
+    assert resolver is not None
+    binding = resolver(APP_ID)
+    assert isinstance(binding, EngineAgentSkillBinding)
+    assert binding.subject_id == SUBJECT_ID
+    assert binding.resolve(agent_id=AGENT_ID, plan=fx.plan).subject_id == SUBJECT_ID
+
+
+def test_production_agent_binding_resolver_fails_closed_without_safe_subject() -> None:
+    fx = Fixture()
+    resolver = build_agent_skill_binding_resolver(lambda _app_id: fx.tool_binding, lambda _app_id: "bad subject")
+    assert resolver is not None
+    with pytest.raises(Exception) as exc_info:
+        resolver(APP_ID)
+    assert getattr(exc_info.value, "code", None) == "agent_skill_runtime_unavailable"
 
 
 @pytest.mark.asyncio

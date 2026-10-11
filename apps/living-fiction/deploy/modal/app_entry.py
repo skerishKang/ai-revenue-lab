@@ -62,6 +62,7 @@ RUNTIME_DEPENDENCIES = (
     "pydantic-settings>=2.6,<3",
     "jinja2>=3.1,<4",
     "python-multipart>=0.0.18,<1",
+    "httpx>=0.28,<1",
     "psycopg[binary]>=3.2,<4",
     "psycopg-pool>=3.2,<4",
 )

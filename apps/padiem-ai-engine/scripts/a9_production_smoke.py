@@ -5,9 +5,13 @@ product-owned smoke caller credential (PADIEM_ENGINE_SMOKE_CALLER_ID/_SECRET,
 allowed_app_ids=["b54-padiem-claw"]). Standard library only.
 
 Steps:
-  S0  GET  /internal/v1/health                    -> 200, 15 endpoints,
-      "/internal/v1/idempotency/completed/replay" advertised, capabilities
-      idempotency_replay == "available" (activated by WO-8 PR-C).
+  S0  GET  /internal/v1/health                    -> 200, endpoints is a list,
+      "/internal/v1/orchestrate" and
+      "/internal/v1/idempotency/completed/replay" both advertised with no
+      duplicate paths, capabilities idempotency_replay == "available"
+      (activated by WO-8 PR-C). A9 is an idempotency/orchestration smoke, so it
+      checks only these contract-relevant facts and NOT the total endpoint
+      count (the manifest cardinality is free to grow with unrelated routes).
   S1  POST /internal/v1/orchestrate (pinned model, max_steps=1, idempotency
       key a9-smoke-<RUN_ID>-1)                    -> 200, ONE real provider call.
   S2  Same payload, same key                      -> 200 served from durable
@@ -43,12 +47,19 @@ import urllib.error
 import urllib.request
 from typing import Any
 
+# #3209: the orchestrate leg pins the canonical platform text primary
+# (single-source declaration in ``padiem_ai_core.model_primary``); the pin
+# stays a module constant — a silent fallback would change what the smoke
+# proves. SenseNova is not the text primary; its provider registration and
+# its own provider tests remain separate.
+from padiem_ai_core.model_primary import TEXT_PRIMARY_MODEL_ID
+
 ENGINE_BASE_URL = os.environ.get("ENGINE_BASE_URL", "https://engine.padiem.net").rstrip("/")
 CALLER_ID = os.environ.get("CALLER_ID", "")
 CALLER_SECRET = os.environ.get("CALLER_SECRET", "")
 GITHUB_RUN_ID = os.environ.get("GITHUB_RUN_ID", "local")
 
-PINNED_MODEL = "sensenova/sensenova-6.8-flash-lite"
+PINNED_MODEL = TEXT_PRIMARY_MODEL_ID
 HEALTH_PATH = "/internal/v1/health"
 ORCHESTRATE_PATH = "/internal/v1/orchestrate"
 REPLAY_PATH = "/internal/v1/idempotency/completed/replay"
@@ -68,6 +79,9 @@ def _fail(step: str, message: str, raw: Any = None) -> None:
 
 
 def _require_env() -> bool:
+    if not isinstance(PINNED_MODEL, str) or not PINNED_MODEL:
+        print("A9_SMOKE=BLOCKED_NO_PRIMARY_MODEL", file=sys.stderr)
+        return False
     if not CALLER_ID or not CALLER_SECRET:
         print("SMOKE=SKIPPED_MISSING_SECRET", file=sys.stderr)
         return False
@@ -112,7 +126,7 @@ def _orchestrate_payload() -> dict[str, Any]:
     fields — the Engine wire contract (orchestration_wire._ORCHESTRATE_ALLOWED)
     rejects them; the pin rides on agent.model_policy and max_steps is pinned to
     1 server-side (service.build_execution_request)."""
-    return {
+    fixed_payload = {
         "app_id": "b54-padiem-claw",
         "agent": {
             "id": "agent:padiem:orchestrator_1",
@@ -133,6 +147,16 @@ def _orchestrate_payload() -> dict[str, Any]:
             "idempotency_key": IDEMPOTENCY_KEY,
         },
     }
+    custom_payload = os.environ.get("CUSTOM_PAYLOAD_JSON", "").strip()
+    if not custom_payload:
+        return fixed_payload
+    try:
+        parsed = json.loads(custom_payload)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"CUSTOM_PAYLOAD_JSON is invalid JSON: {exc.msg}") from exc
+    if not isinstance(parsed, dict):
+        raise RuntimeError("CUSTOM_PAYLOAD_JSON must decode to a JSON object")
+    return parsed
 
 
 def _bound_fingerprint(s1_body: dict[str, Any]) -> str | None:
@@ -182,11 +206,25 @@ def s0_health() -> None:
     if not isinstance(endpoints, list):
         _fail("S0", "health endpoints missing", body)
         return
-    if len(endpoints) != 15:
-        _fail("S0", f"endpoints count {len(endpoints)} != 15", endpoints)
-    paths = {str(endpoint.get("path")) for endpoint in endpoints if isinstance(endpoint, dict)}
-    if REPLAY_PATH not in paths:
-        _fail("S0", f"{REPLAY_PATH} not advertised", sorted(paths))
+    # A9 is an idempotency/orchestration smoke, not a whole-manifest cardinality
+    # smoke. It asserts only the contract facts it actually depends on: the two
+    # A9 routes are advertised, they are not duplicated, and the idempotency
+    # replay capability is available. The total endpoint count is intentionally
+    # NOT pinned, so an unrelated future endpoint never produces a false S0
+    # failure against a healthy runtime.
+    paths = [str(endpoint.get("path")) for endpoint in endpoints if isinstance(endpoint, dict)]
+    seen: set[str] = set()
+    duplicates: set[str] = set()
+    for path in paths:
+        if path in seen:
+            duplicates.add(path)
+        else:
+            seen.add(path)
+    if duplicates:
+        _fail("S0", f"duplicate endpoint paths advertised: {sorted(duplicates)}", sorted(paths))
+    for required_path in (ORCHESTRATE_PATH, REPLAY_PATH):
+        if required_path not in seen:
+            _fail("S0", f"{required_path} not advertised", sorted(seen))
     capabilities = body.get("capabilities")
     if not isinstance(capabilities, dict):
         _fail("S0", "health capabilities missing", body)
@@ -196,7 +234,10 @@ def s0_health() -> None:
             "S0",
             f"capabilities.idempotency_replay={capabilities.get('idempotency_replay')!r} != 'available' (PR-C not deployed)",
         )
-    print("[S0] health OK: 15 endpoints, replay advertised, idempotency_replay=available")
+    print(
+        f"[S0] health OK: {len(endpoints)} endpoints advertised, "
+        "orchestrate+replay present, idempotency_replay=available"
+    )
 
 
 def s1_first_run(payload: dict[str, Any]) -> tuple[dict[str, Any], str | None, int]:

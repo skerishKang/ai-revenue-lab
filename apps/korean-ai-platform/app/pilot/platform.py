@@ -38,7 +38,12 @@ from app.pilot.errors import (
     UpstreamTimeout,
 )
 from app.pilot.sensenova_provider import is_transient_busy_429
+from app.pilot.provider_timeout_diagnostics import log_provider_timeout
+from app.pilot.b14_timeout_policy import build_provider_http_timeout
+from app.pilot.agnes_429_diagnostics import log_agnes_429
+from app.pilot.exlab_429_diagnostics import log_exlab_429
 from app.pilot.b14_runtime_config import runtime_config
+from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
 from app.pilot.stream_types import StreamEvent, StreamUsage
 from app.pilot.platform_secrets import (
     CredentialSource,
@@ -48,17 +53,15 @@ from app.pilot.platform_secrets import (
     resolve_secret,
 )
 from app.pilot.redaction import redact_sensitive
+from app.pilot.upstream_answer_contract import UpstreamEmptyAnswer, require_completed_text_answer
 
 logger = logging.getLogger("korean-ai-platform.pilot.platform")
 
 MAX_RESPONSE_BYTES = 1024 * 1024
 MAX_ERROR_BODY_CHARS = 500
 
-_CONNECT_TIMEOUT = 10.0
-_READ_TIMEOUT = 30.0
-_WRITE_TIMEOUT = 10.0
-_POOL_TIMEOUT = 10.0
-
+# All Providers share one phase policy. A Pyodide/Fetch ConnectTimeout
+# label alone does not prove a native TCP handshake delay.
 
 def _mock_response(model_id: str, upstream_model: str, provider: str) -> dict[str, Any]:
     """Clearly-labeled mock response (no upstream call)."""
@@ -115,16 +118,27 @@ def _provider_mode() -> str:
     return runtime_config.provider_mode
 
 
-def _request_headers(spec: PlatformProviderSpec) -> dict[str, str]:
-    """Build the fixed Provider auth boundary without credential widening."""
+def _request_headers(
+    spec: PlatformProviderSpec,
+    *,
+    model_id: str = "",
+) -> dict[str, str]:
+    """Build the fixed Provider auth boundary without credential widening.
+
+    Kilo's historical free lanes keep the shared keyless Provider spec. No
+    model-scoped auth special-case exists: the retired Space Bunny lane
+    supports no runtime execution and no runtime auth handling (owner final
+    retirement decision, 2026-10-07). Callers cannot supply or override any
+    credential mode.
+    """
     headers = {"Content-Type": "application/json"}
+
     if spec.credential_source == CredentialSource.NONE:
         return headers
     if spec.credential_source == CredentialSource.PLATFORM_SECRET:
         secret = resolve_secret(spec)
         if not secret:
             if spec.provider_id == "kilo":
-                # Kilo Gateway free tier supports anonymous requests when KILO_API_KEY is unset
                 return headers
             raise PilotNotConfigured(
                 f"Provider '{spec.provider_id}' secret is not configured "
@@ -163,6 +177,32 @@ def _raise_upstream_error(
     raise MalformedUpstreamResponse()
 
 
+def _require_owner_allowed_live_model(
+    model_id: str, upstream_model: str, platform_provider_id: str
+) -> None:
+    """Last pre-network gate, even for callers that bypass Router Core.
+
+    Both the public exact ID and fixed upstream/provider tuple are checked.
+    A benign-looking model ID must not disguise an excluded upstream route.
+    Historical direct Poolside (distinct from Kilo Laguna) is not inferred
+    excluded or approved by this function.
+    """
+    upstream = upstream_model.strip().casefold()
+    owner_excluded_upstream = (
+        "nemotron" in upstream
+        or ("poolside" in upstream and "laguna" in upstream
+            and platform_provider_id == "kilo")
+        or ("qwen" in upstream and platform_provider_id == "b-ai")
+        or "motif-3" in upstream
+        or "gpt-5.6-luna" in upstream
+        or excluded_from_owner_customer_selection(upstream_model)
+    )
+    if excluded_from_owner_customer_selection(model_id) or owner_excluded_upstream:
+        raise PilotNotConfigured(
+            "OWNER가 제외한 모델은 이 실행 경로에서 사용할 수 없습니다."
+        )
+
+
 async def call_platform_chat_completions(
     *,
     model_id: str,
@@ -170,8 +210,9 @@ async def call_platform_chat_completions(
     provider: str,
     platform_provider_id: str,
     messages: list[dict[str, str]],
-    temperature: float | None = 0.2,
-    max_tokens: int | None = 300,
+    temperature: float | None = None,
+    max_tokens: int | None = None,
+    model_parameters: dict[str, Any] | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
 ) -> dict[str, Any]:
     """Completed-JSON call to a fixed platform Provider.
@@ -192,7 +233,10 @@ async def call_platform_chat_completions(
         )
         return _mock_response(model_id, upstream_model, provider)
 
-    headers = _request_headers(spec)
+    _require_owner_allowed_live_model(
+        model_id, upstream_model, platform_provider_id
+    )
+    headers = _request_headers(spec, model_id=model_id)
     chat_url = f"{spec.base_origin.rstrip('/')}/chat/completions"
     body: dict[str, Any] = {
         "model": upstream_model,
@@ -200,17 +244,24 @@ async def call_platform_chat_completions(
     }
     if temperature is not None:
         body["temperature"] = float(temperature)
+    # Do not invent a generation budget here. Product/runtime policy owns any
+    # explicit limit; None intentionally delegates to the provider/model default.
     if max_tokens is not None:
         body["max_tokens"] = int(max_tokens)
+    # Re-validate direct adapter calls too. A caller must not bypass the
+    # exact-model vendor API allow-list by skipping the gateway.
+    if model_parameters:
+        from .model_native_parameters import (
+            UnsupportedModelParameter, validate_native_parameters,
+        )
+        from .errors import InvalidRequest
+        try:
+            body.update(validate_native_parameters(model_id, model_parameters))
+        except UnsupportedModelParameter as exc:
+            raise InvalidRequest(str(exc)) from exc
 
     client_kwargs: dict[str, Any] = {
-        "timeout": httpx.Timeout(
-            None,
-            connect=_CONNECT_TIMEOUT,
-            read=_READ_TIMEOUT,
-            write=_WRITE_TIMEOUT,
-            pool=_POOL_TIMEOUT,
-        ),
+        "timeout": build_provider_http_timeout(),
     }
     if transport is not None:
         client_kwargs["transport"] = transport
@@ -224,8 +275,9 @@ async def call_platform_chat_completions(
                 json=body,
                 follow_redirects=False,
             )
-    except httpx.TimeoutException:
-        raise UpstreamTimeout()
+    except httpx.TimeoutException as exc:
+        log_provider_timeout(logger, platform_provider_id, exc, "completed")
+        raise UpstreamTimeout() from exc
     except httpx.RequestError as e:
         logger.error(
             "platform_request_error provider=%s error=%s",
@@ -235,6 +287,16 @@ async def call_platform_chat_completions(
         raise UpstreamServerError()
 
     if response.status_code < 200 or response.status_code >= 300:
+        if platform_provider_id == "agnes-ai" and response.status_code == 429:
+            log_agnes_429(
+                logger, platform_provider_id, response.status_code,
+                response.headers, response.text,
+            )
+        if platform_provider_id == "experiential" and response.status_code == 429:
+            log_exlab_429(
+                logger, platform_provider_id, response.status_code,
+                response.headers, response.text,
+            )
         _raise_upstream_error(
             response.status_code, platform_provider_id, response.text
         )
@@ -249,9 +311,10 @@ async def call_platform_chat_completions(
     if "choices" not in response_data:
         raise MalformedUpstreamResponse()
 
+    # HTTP 200 with choices but no user-visible text is NOT a valid completion.
+    # A small output budget may exhaust on reasoning alone; never call it success.
+    require_completed_text_answer(response_data)
     choices = response_data["choices"]
-    if not isinstance(choices, list) or len(choices) == 0:
-        raise MalformedUpstreamResponse()
 
     usage = response_data.get("usage")
     prompt_tokens = usage.get("prompt_tokens") if isinstance(usage, dict) else None
@@ -291,8 +354,9 @@ async def stream_platform_chat_completions(
     provider: str,
     platform_provider_id: str,
     messages: list[dict[str, str]],
-    temperature: float | None = 0.2,
-    max_tokens: int | None = 300,
+    temperature: float | None = None,
+    max_tokens: int | None = None,
+    model_parameters: dict[str, Any] | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
 ) -> Any:
     """Streaming call to a fixed platform Provider (OpenAI-compatible SSE).
@@ -324,7 +388,10 @@ async def stream_platform_chat_completions(
             yield event
         return
 
-    headers = _request_headers(spec)
+    _require_owner_allowed_live_model(
+        model_id, upstream_model, platform_provider_id
+    )
+    headers = _request_headers(spec, model_id=model_id)
     chat_url = f"{spec.base_origin.rstrip('/')}/chat/completions"
     body: dict[str, Any] = {
         "model": upstream_model,
@@ -333,22 +400,31 @@ async def stream_platform_chat_completions(
     }
     if temperature is not None:
         body["temperature"] = float(temperature)
+    # Do not invent a generation budget here. Product/runtime policy owns any
+    # explicit limit; None intentionally delegates to the provider/model default.
     if max_tokens is not None:
         body["max_tokens"] = int(max_tokens)
+    # Re-validate direct adapter calls too. A caller must not bypass the
+    # exact-model vendor API allow-list by skipping the gateway.
+    if model_parameters:
+        from .model_native_parameters import (
+            UnsupportedModelParameter, validate_native_parameters,
+        )
+        from .errors import InvalidRequest
+        try:
+            body.update(validate_native_parameters(model_id, model_parameters))
+        except UnsupportedModelParameter as exc:
+            raise InvalidRequest(str(exc)) from exc
 
     client_kwargs: dict[str, Any] = {
-        "timeout": httpx.Timeout(
-            None,
-            connect=_CONNECT_TIMEOUT,
-            read=_READ_TIMEOUT,
-            write=_WRITE_TIMEOUT,
-            pool=_POOL_TIMEOUT,
-        ),
+        "timeout": build_provider_http_timeout(),
     }
     if transport is not None:
         client_kwargs["transport"] = transport
 
     saw_done = False
+    saw_text = False
+    last_finish_reason: str | None = None
     buffer = b""
     total_bytes = 0
     try:
@@ -364,6 +440,16 @@ async def stream_platform_chat_completions(
                     # Read the small error body so provider-specific 429
                     # normalization (#2003) can inspect it.
                     error_body = (await response.aread()).decode("utf-8", "replace")
+                    if platform_provider_id == "agnes-ai" and response.status_code == 429:
+                        log_agnes_429(
+                            logger, platform_provider_id, response.status_code,
+                            response.headers, error_body,
+                        )
+                    if platform_provider_id == "experiential" and response.status_code == 429:
+                        log_exlab_429(
+                            logger, platform_provider_id, response.status_code,
+                            response.headers, error_body,
+                        )
                     _raise_upstream_error(
                         response.status_code, platform_provider_id, error_body
                     )
@@ -378,18 +464,32 @@ async def stream_platform_chat_completions(
                         event = _parse_sse_frame(frame)
                         if event is None:
                             continue
+                        if event.delta_content and event.delta_content.strip():
+                            saw_text = True
+                        if event.finish_reason is not None:
+                            last_finish_reason = event.finish_reason
+                        if event.done:
+                            if not saw_text:
+                                raise UpstreamEmptyAnswer(last_finish_reason, streamed=True)
+                            saw_done = True
                         yield event
                         if event.done:
-                            saw_done = True
                             return
 
                 if buffer.strip():
                     event = _parse_sse_frame(buffer)
                     if event is not None:
-                        yield event
+                        if event.delta_content and event.delta_content.strip():
+                            saw_text = True
+                        if event.finish_reason is not None:
+                            last_finish_reason = event.finish_reason
                         if event.done:
+                            if not saw_text:
+                                raise UpstreamEmptyAnswer(last_finish_reason, streamed=True)
                             saw_done = True
+                        yield event
     except httpx.TimeoutException as exc:
+        log_provider_timeout(logger, platform_provider_id, exc, "stream")
         raise UpstreamTimeout() from exc
     except httpx.RequestError as exc:
         logger.error(
@@ -508,17 +608,5 @@ def _parse_sse_frame(frame: bytes) -> StreamEvent | None:
     )
 
 
-# ---------------------------------------------------------------------------
-# Provider onboarding — generic, one registration per Provider.
-# ---------------------------------------------------------------------------
-from app.pilot.poolside_provider import register_poolside_provider
-from app.pilot.kilo_provider import register_kilo_provider
-from app.pilot.sensenova_provider import register_sensenova_provider
-from app.pilot.agnes_provider import register_agnes_provider
-from app.pilot.bai_provider import register_bai_provider
-
-register_poolside_provider()
-register_kilo_provider()
-register_sensenova_provider()
-register_agnes_provider()
-register_bai_provider()
+# Model/provider registration is sourced exclusively from b14_models.json.
+# Loaded by catalog.py; do not call legacy module-local register_* functions here.

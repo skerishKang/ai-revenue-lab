@@ -231,7 +231,8 @@ def test_revoked_session_cannot_mint_ticket_or_create_connector_context():
 
 
 def test_private_worker_rpc_accepts_no_client_actor_account_or_workspace_fields():
-    source = Path("identity_authority_worker.py").read_text(encoding="utf-8")
+    from pathlib import Path as _Path
+    source = (_Path(__file__).parent.parent / "identity_authority_worker.py").read_text(encoding="utf-8")
     assert '_CONNECT_KEYS = frozenset({"session_id", "connector_id"})' in source
     assert 'wire = _closed(payload, _CONNECT_KEYS, "Google connect-ticket RPC")' in source
     assert 'actor_ref=wire[' not in source

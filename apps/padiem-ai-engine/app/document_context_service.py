@@ -1,10 +1,11 @@
 """Trusted document context Engine route for #1750 E5B-S4.
 
-The wire carries one opaque server-issued ``att_*`` reference and nothing
-else: application/subject/tenant scope is never a request field. A trusted,
-deployment-owned scope authority resolves the authenticated first-party
-caller into a server-minted ``TrustedCallerScope``; the S2 resolver and the
-S3 context/evidence bridge then run the accepted through-line. Response is
+The wire carries an authenticated application id, an opaque Control Plane
+auth-session id and one server-issued ``att_*`` reference. Tenant/subject
+scope is never a request field: the canonical per-request auth-session
+authority resolves the application/session into a server-minted
+``TrustedCallerScope``; the S2 resolver and the S3 context/evidence bridge then
+run the accepted through-line. Response is
 the bounded ``ContextWindowProjection`` view plus the engine-minted
 evidence id — never document body text beyond the bounded preview, never a
 ``DocumentLocator``, storage locator, raw ``att_*`` reference or scope triple.
@@ -22,7 +23,6 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 import json
 from typing import Protocol
-
 from padiem_ai_core.document_semantics import DocumentNormalizationError
 
 from app.context_evidence_bridge import att_to_context_evidence
@@ -38,9 +38,10 @@ from app.trusted_document_resolver import (
 
 DOCUMENT_CONTEXT_PATH = "/internal/v1/document/context"
 
-# Reference-only wire: scope identifiers, agent/message payloads, inline
-# bytes, paths and storage coordinates are not accepted by this route.
-_REQUIRED_FIELDS = frozenset({"document_ref"})
+# The wire carries only the authenticated app/session clues plus the opaque
+# document reference; tenant/subject, inline bytes, paths and storage
+# coordinates are not accepted by this route.
+_REQUIRED_FIELDS = frozenset({"app_id", "session_id", "document_ref"})
 
 _MAX_IDENTIFIER_CHARS = 256
 _MAX_AUTHORITY_ERROR_CODE_CHARS = 64
@@ -67,9 +68,9 @@ class TrustedCallerScope:
     """Server-minted scope triple for one authenticated Engine caller.
 
     Values come only from the trusted identity/session context behind
-    ``TrustedCallerScopeAuthority`` — never from request wire content. The S2
-    resolver independently re-validates every field and enforces an exact
-    match against the stored document's own scope.
+    the Control Plane auth-session authority — never from request wire content.
+    The S2 resolver independently re-validates every field and enforces an
+    exact match against the stored document's own scope.
     """
 
     app_id: str
@@ -95,17 +96,11 @@ class TrustedCallerScope:
                 )
 
 
-class TrustedCallerScopeAuthority(Protocol):
-    """Deployment-owned authority binding wire credentials to server scope.
+class DocumentScopeAuthority(Protocol):
+    """Structural seam for the canonical CP auth-session scope authority."""
 
-    Implementations perform the actual first-party credential verification
-    against the caller registry and map the authenticated session identity to
-    the scope triple that owns the requested documents. A caller cannot
-    influence the returned scope through request content.
-    """
-
-    def scope_for_caller(
-        self, *, caller_id: str, credential: str
+    async def scope_for_request(
+        self, *, app_id: str, auth_session_id: str
     ) -> TrustedCallerScope: ...
 
 
@@ -115,14 +110,14 @@ class DocumentContextEngineService:
     def __init__(
         self,
         *,
-        scope_authority: TrustedCallerScopeAuthority | None = None,
+        scope_authority: DocumentScopeAuthority | None = None,
         document_resolver: TrustedDocumentResolver | None = None,
         evidence_storage: object | None = None,
     ) -> None:
         if scope_authority is not None and not callable(
-            getattr(scope_authority, "scope_for_caller", None)
+            getattr(scope_authority, "scope_for_request", None)
         ):
-            raise ValueError("scope_authority must expose scope_for_caller")
+            raise ValueError("scope_authority must expose async scope_for_request")
         if document_resolver is not None and not callable(
             getattr(document_resolver, "resolve", None)
         ):
@@ -135,25 +130,8 @@ class DocumentContextEngineService:
         self._document_resolver = document_resolver
         self._evidence_storage = evidence_storage
 
-    @staticmethod
-    def _authenticate(
-        caller_id: object, credential: object
-    ) -> tuple[str, str] | ServiceResponse:
-        if (
-            not isinstance(caller_id, str)
-            or not caller_id.strip()
-            or not isinstance(credential, str)
-            or not credential
-        ):
-            return _service_error(
-                "service_authentication_failed",
-                "Engine caller authentication failed.",
-                status_code=401,
-            )
-        return caller_id.strip(), credential
-
     async def execute_document_context(
-        self, payload: object, *, caller_id: str, credential: str
+        self, payload: object
     ) -> ServiceResponse:
         if not isinstance(payload, Mapping):
             return _service_error(
@@ -171,6 +149,12 @@ class DocumentContextEngineService:
             return _service_error(
                 "invalid_request",
                 "Document context request is missing required fields.",
+                status_code=400,
+            )
+        if any(not isinstance(data[field], str) for field in _REQUIRED_FIELDS):
+            return _service_error(
+                "invalid_request",
+                "Document context request fields are invalid.",
                 status_code=400,
             )
         if self._scope_authority is None:
@@ -193,8 +177,9 @@ class DocumentContextEngineService:
             )
 
         try:
-            scope = self._scope_authority.scope_for_caller(
-                caller_id=caller_id, credential=credential
+            scope = await self._scope_authority.scope_for_request(
+                app_id=data["app_id"],
+                auth_session_id=data["session_id"],
             )
         except DocumentAuthorityError as exc:
             return _service_error(
@@ -216,7 +201,7 @@ class DocumentContextEngineService:
             )
 
         try:
-            context_projection, evidence_projection = att_to_context_evidence(
+            context_projection, evidence_projection = await att_to_context_evidence(
                 self._document_resolver,
                 data["document_ref"],
                 app_id=scope.app_id,
@@ -253,8 +238,6 @@ class DocumentContextEngineService:
         path: str,
         content_type: str | None = None,
         body: bytes = b"",
-        caller_id: str = "",
-        credential: str = "",
     ) -> ServiceResponse:
         normalized_method = method.upper() if isinstance(method, str) else ""
         if path != DOCUMENT_CONTEXT_PATH:
@@ -274,10 +257,6 @@ class DocumentContextEngineService:
                 "Content-Type must be application/json.",
                 status_code=415,
             )
-        auth = self._authenticate(caller_id, credential)
-        if isinstance(auth, ServiceResponse):
-            return auth
-        authenticated_caller_id, authenticated_credential = auth
         if not isinstance(body, (bytes, bytearray, memoryview)):
             return _service_error(
                 "invalid_request", "Request body is invalid.", status_code=400
@@ -297,8 +276,4 @@ class DocumentContextEngineService:
                 "Request body must contain valid UTF-8 JSON.",
                 status_code=400,
             )
-        return await self.execute_document_context(
-            payload,
-            caller_id=authenticated_caller_id,
-            credential=authenticated_credential,
-        )
+        return await self.execute_document_context(payload)

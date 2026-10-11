@@ -1,0 +1,450 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Padiem AI Engine — Internal API",
+    "version": "1.0.0",
+    "summary": "Language-neutral, internal execution contract for the Padiem AI Engine (IP-ENGINE).",
+    "description": "This specification documents the internal HTTP contract exposed by the Padiem AI Engine Worker over a Cloudflare Service Binding. It is consumed by first-party callers (e.g. Padiem Chat / B62, Padiem Claw) and is NOT publicly routable.\n\nThe contract is source-bound: `apps/padiem-ai-engine/tests/test_openapi_contract.py` asserts that the paths, required request fields, and the request-body safety limit in this file match the constants in `apps/padiem-ai-engine/app/service.py`. Do not edit the two independently; update both together.",
+    "contact": {
+      "name": "Padiem Internal Platform — Engine"
+    },
+    "license": {
+      "name": "Proprietary"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://engine.internal.padiem",
+      "description": "Internal Service Binding endpoint. Not publicly routable; first-party caller only."
+    }
+  ],
+  "tags": [
+    {
+      "name": "engine",
+      "description": "Internal execution and readiness endpoints."
+    }
+  ],
+  "paths": {
+    "/internal/v1/health": {
+      "get": {
+        "tags": ["engine"],
+        "operationId": "engineHealth",
+        "summary": "Engine readiness and capability posture.",
+        "description": "Returns liveness (always 200 when the Worker is up). Feature readiness is reported truthfully in `capabilities`; degraded capabilities are reported as `unavailable` rather than hidden. Only GET is accepted.",
+        "responses": {
+          "200": {
+            "description": "Worker is live. Capability posture is in `capabilities`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health200Response"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method not allowed (only GET is accepted).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/v1/execute": {
+      "post": {
+        "tags": ["engine"],
+        "operationId": "engineExecute",
+        "summary": "Execute a completed-run (or orchestration) request.",
+        "description": "Executes a language-neutral execution request against the Engine runtime. The request body MUST be `application/json` and MUST NOT exceed the safety limit (see `x-engine-max-body-bytes`). Unknown top-level fields and unknown `agent` fields are rejected with `400 invalid_request`.",
+        "x-engine-max-body-bytes": 131072,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteRequest"
+              },
+              "examples": {
+                "completed_run": {
+                  "summary": "Minimal completed-run request",
+                  "value": {
+                    "app_id": "padiem-chat",
+                    "agent": {
+                      "id": "general-chat",
+                      "title": "General Chat",
+                      "description": "Default general-purpose assistant.",
+                      "system_instruction": "You are a helpful assistant.",
+                      "task_type": "chat",
+                      "optimize_for": "quality",
+                      "max_tokens": 2048
+                    },
+                    "messages": [
+                      {
+                        "role": "user",
+                        "content": "Explain Cloudflare Workers in one sentence."
+                      }
+                    ],
+                    "trace_id": "example-trace-0001"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Execution completed. The `ok` field is true and `answer` carries the result. Evidence/projection fields are spread into the body by the canonical Engine evidence projection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Execute200Response"
+                },
+                "examples": {
+                  "ok": {
+                    "summary": "Successful completed run",
+                    "value": {
+                      "ok": true,
+                      "answer": "Cloudflare Workers run serverless functions at the edge.",
+                      "route": {
+                        "provider_id": "sensenova",
+                        "model_id": "sensenova-6.8-flash-lite"
+                      },
+                      "metadata": {
+                        "duration_ms": 812
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request (missing/invalid required fields, invalid JSON, or invalid execution request/context).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown internal Engine route.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method not allowed (only POST is accepted).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency key already bound to a different execution request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request body exceeds the internal Engine safety limit.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Content-Type is not application/json.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Semantic boundary unavailable (context permission boundary, execution context, or policy blocked).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Engine internal error or invalid execution result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Upstream provider/model error (non-timeout).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Business 14 service binding unavailable, or upstream rate limited.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Execution or upstream timeout.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "required": ["ok", "error"],
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "enum": [false],
+            "description": "Always false on error responses."
+          },
+          "error": {
+            "type": "object",
+            "required": ["code", "message", "retryable"],
+            "properties": {
+              "code": {
+                "type": "string",
+                "description": "Stable, machine-readable error code (e.g. invalid_request, not_found, idempotency_conflict, b14_service_unavailable)."
+              },
+              "message": {
+                "type": "string",
+                "description": "Human-readable, non-secret message."
+              },
+              "retryable": {
+                "type": "boolean",
+                "description": "Whether the caller may safely retry."
+              },
+              "metadata": {
+                "type": "object",
+                "nullable": true,
+                "description": "Optional public-safe metadata from the underlying error, or null."
+              }
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "Message": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "description": "Message role (e.g. system, user, assistant, tool)."
+          },
+          "content": {
+            "type": "string",
+            "description": "Message content."
+          }
+        },
+        "additionalProperties": true
+      },
+      "AgentSpec": {
+        "type": "object",
+        "required": ["id", "title", "description", "system_instruction", "task_type", "optimize_for", "max_tokens"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Stable agent identifier."
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "system_instruction": {
+            "type": "string"
+          },
+          "task_type": {
+            "type": "string"
+          },
+          "optimize_for": {
+            "type": "string",
+            "description": "Optimization intent (e.g. quality, speed)."
+          },
+          "max_tokens": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "required_capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Optional capability requirements."
+          },
+          "model_policy": {
+            "type": "object",
+            "description": "Optional explicit model policy override.",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ExecuteRequest": {
+        "type": "object",
+        "required": ["app_id", "agent", "messages"],
+        "properties": {
+          "app_id": {
+            "type": "string",
+            "description": "Calling product/app identifier (e.g. padiem-chat)."
+          },
+          "agent": {
+            "$ref": "#/components/schemas/AgentSpec"
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Message"
+            },
+            "minItems": 1,
+            "description": "Conversation messages."
+          },
+          "session_id": {
+            "type": "string"
+          },
+          "additional_system_context": {
+            "type": "string"
+          },
+          "trace_id": {
+            "type": "string",
+            "description": "Caller-supplied trace identifier."
+          },
+          "execution_context": {
+            "type": "object",
+            "description": "Orchestration/continuation context for contextual execution.",
+            "additionalProperties": true
+          },
+          "context_permission": {
+            "type": "object",
+            "description": "Trusted context permission projection supplied by the caller.",
+            "additionalProperties": true
+          },
+          "context_permission_required": {
+            "type": "boolean",
+            "description": "If true, a valid context_permission boundary is required."
+          }
+        },
+        "additionalProperties": true
+      },
+      "Execute200Response": {
+        "type": "object",
+        "required": ["ok", "answer", "route", "metadata"],
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "enum": [true]
+          },
+          "answer": {
+            "type": "string"
+          },
+          "route": {
+            "type": "object",
+            "description": "Resolved provider/model route projection.",
+            "additionalProperties": true
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Execution metadata projection.",
+            "additionalProperties": true
+          },
+          "context_permission": {
+            "type": "object",
+            "description": "Diagnostics for the applied context permission, present only when a boundary was supplied.",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true,
+        "description": "Evidence/projection fields from the canonical Engine evidence projection are spread into this object alongside `answer`, `route`, and `metadata`."
+      },
+      "Health200Response": {
+        "type": "object",
+        "required": ["status", "service", "core_available", "b14_service_bound", "capabilities", "service_identity", "endpoints"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["ok"]
+          },
+          "service": {
+            "type": "string",
+            "enum": ["padiem-ai-engine"]
+          },
+          "core_available": {
+            "type": "boolean"
+          },
+          "b14_service_bound": {
+            "type": "boolean",
+            "description": "Whether the Business 14 Service Binding is available for execution."
+          },
+          "capabilities": {
+            "type": "object",
+            "description": "Truthful bounded capability posture (e.g. completed_run, provider_streaming_run, orchestration_run). Values are 'available' or 'unavailable'.",
+            "additionalProperties": true
+          },
+          "service_identity": {
+            "type": "string",
+            "description": "Identity enforcement posture for non-health routes."
+          },
+          "endpoints": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  }
+}

@@ -21,6 +21,7 @@ from kagent.sandbox_provider_probe import (
     SandboxProviderLiveProbeResult,
     build_candidate_launch_profile,
     build_live_probe_plan,
+    validate_gcp_seoul_n2_request_shape,
 )
 from kagent.sandbox_provider_review import ProviderEvidenceStatus
 
@@ -33,7 +34,7 @@ def lease(**kwargs):
         run_id="run-fixture",
         execution_mode=ExecutionMode.CLOUD,
         repository_ref="repo:fixture",
-        requested_revision="0123456789abcdef",
+        requested_revision="abcdef1234567890abcdef1234567890abcdef12",
         ttl_seconds=900,
         network_policy=NetworkPolicy.OFF,
     )
@@ -123,6 +124,166 @@ class CloudM1ProviderLaunchProfileTests(unittest.TestCase):
         self.assertEqual(e2b["timeout_action"], "kill")
         self.assertIs(e2b["auto_resume"], False)
 
+    def test_vercel_candidate_and_cloud_m1_request_shape_are_locked(self):
+        self.assertIs(SandboxProviderCandidate("vercel_sandbox"), SandboxProviderCandidate.VERCEL_SANDBOX)
+        profile = build_candidate_launch_profile(SandboxProviderCandidate.VERCEL_SANDBOX)
+        rendered = profile.safe_dict()
+        self.assertEqual(rendered["candidate"], "vercel_sandbox")
+        self.assertEqual(rendered["profile_ref"], "profile:cloud-m1/vercel_sandbox/v1")
+        self.assertEqual(rendered["max_ttl_seconds"], 900)
+        self.assertTrue(rendered["request_shape_ready"])
+        self.assertFalse(rendered["live_execution_ready"])
+        self.assertFalse(rendered["provider_selected"])
+        self.assertFalse(rendered["deployment_approval"])
+        self.assertFalse(rendered["production_ready_claim"])
+        self.assertFalse(rendered["credential_fields"])
+        self.assertFalse(rendered["provider_endpoint_fields"])
+
+        self.assertEqual(
+            profile.setting_map,
+            {
+                "networkPolicy": "deny-all",
+                "persistent": False,
+                "public_port_count": 0,
+                "guest_secret_count": 0,
+                "snapshot_reuse": False,
+                "fork_reuse": False,
+                "getOrCreate": False,
+                "resume": False,
+                "teardown_sequence": "stop_then_permanent_delete",
+                "exact_revision_verification": True,
+                "padiem_wall_clock_ttl_seconds": "lease_ttl_seconds",
+            },
+        )
+        self.assertNotIn("allow_internet_access", profile.setting_map)
+        self.assertNotIn("timeout_action", profile.setting_map)
+        self.assertEqual(
+            profile.unresolved_live_requirements,
+            (
+                "applied_disk_and_process_hard_limits",
+                "provider_metadata_blocking",
+                "privileged_runtime_semantics",
+                "process_tree_death",
+                "exact_teardown_and_non_resurrectability",
+                "bounded_terminal_and_log_behavior",
+                "padiem_wall_clock_ttl_enforcement",
+            ),
+        )
+
+    def test_gcp_seoul_n2_profile_is_explicit_local_ssd_nested_kvm_source_shape(self):
+        self.assertIs(SandboxProviderCandidate("gcp_seoul_n2"), SandboxProviderCandidate.GCP_SEOUL_N2)
+        profile = build_candidate_launch_profile(SandboxProviderCandidate.GCP_SEOUL_N2)
+        rendered = profile.safe_dict()
+        self.assertEqual(rendered["candidate"], "gcp_seoul_n2")
+        self.assertEqual(rendered["profile_ref"], "profile:cloud-m1/gcp_seoul_n2/v1")
+        self.assertEqual(profile.setting_map["region"], "asia-northeast3")
+        self.assertEqual(profile.setting_map["zone"], "asia-northeast3-a|b|c")
+        self.assertEqual(profile.setting_map["machine_family"], "N2")
+        self.assertEqual(profile.setting_map["cpu_platform"], "Intel")
+        self.assertEqual(profile.setting_map["cpu_minimum_generation"], "Haswell-or-newer")
+        self.assertIs(profile.setting_map["nested_virtualization"], True)
+        self.assertIs(profile.setting_map["local_ssd_run_data"], True)
+        self.assertEqual(profile.setting_map["vpc"], "dedicated_non_default")
+        self.assertEqual(profile.setting_map["default_egress_policy"], "deny-default")
+        self.assertIs(profile.setting_map["public_ip"], False)
+        self.assertEqual(profile.setting_map["public_port_count"], 0)
+        self.assertEqual(profile.setting_map["guest_secret_count"], 0)
+        self.assertIs(profile.setting_map["mig_auto_recreate"], False)
+        self.assertIs(profile.setting_map["snapshot_reuse"], False)
+        self.assertIs(profile.setting_map["resume"], False)
+        self.assertEqual(profile.setting_map["max_run_duration_action"], "DELETE")
+        self.assertIn("metadata_link_local_blocking", profile.unresolved_live_requirements)
+        self.assertIn("local_ssd_nested_virtualization_combination", profile.unresolved_live_requirements)
+        self.assertFalse(rendered["provider_selected"])
+        self.assertFalse(rendered["deployment_approval"])
+        self.assertFalse(rendered["production_ready_claim"])
+        self.assertFalse(rendered["credential_fields"])
+        self.assertFalse(rendered["provider_endpoint_fields"])
+
+    def test_gcp_seoul_n2_shape_rejects_wrong_region_machine_storage_and_lifecycle(self):
+        valid = dict(
+            region="asia-northeast3",
+            zone="asia-northeast3-a",
+            machine_family="N2",
+            cpu_platform="Intel",
+            cpu_minimum_generation="Haswell-or-newer",
+            local_ssd_enabled=True,
+            nested_virtualization_enabled=True,
+            vpc="dedicated_non_default",
+            default_egress_policy="deny-default",
+            public_ip_enabled=False,
+            public_port_count=0,
+            guest_secret_count=0,
+            mig_enabled=False,
+            snapshot_reuse=False,
+            resume_enabled=False,
+            max_run_duration_action="DELETE",
+            max_run_duration_seconds=900,
+        )
+        validate_gcp_seoul_n2_request_shape(**valid)
+        for key, value in (
+            ("region", "us-central1"),
+            ("zone", "europe-west1-b"),
+            ("machine_family", "N4"),
+            ("cpu_platform", "AMD"),
+            ("cpu_minimum_generation", "Ivy-Bridge"),
+            ("local_ssd_enabled", False),
+            ("nested_virtualization_enabled", False),
+            ("vpc", "default"),
+            ("default_egress_policy", "allow-all"),
+            ("public_ip_enabled", True),
+            ("public_port_count", 1),
+            ("public_port_count", False),
+            ("public_port_count", 0.0),
+            ("guest_secret_count", 1),
+            ("guest_secret_count", False),
+            ("guest_secret_count", 0.0),
+            ("mig_enabled", True),
+            ("snapshot_reuse", True),
+            ("resume_enabled", True),
+            ("max_run_duration_action", "STOP"),
+            ("max_run_duration_seconds", 901),
+        ):
+            with self.subTest(key=key, value=value):
+                with self.assertRaises(ContractError):
+                    validate_gcp_seoul_n2_request_shape(**{**valid, key: value})
+
+    def test_gcp_seoul_n2_generated_plan_covers_every_control_exactly_once(self):
+        profile = build_candidate_launch_profile(SandboxProviderCandidate.GCP_SEOUL_N2)
+        plan = build_live_probe_plan(profile)
+        controls = tuple(item.control for item in plan.probes)
+        self.assertEqual(set(controls), set(capability_control_names()))
+        self.assertEqual(len(controls), len(set(controls)))
+        self.assertEqual(plan.plan_ref, "plan:cloud-m1/gcp_seoul_n2/live-probe-v1")
+        self.assertTrue(all(probe.probe_id.startswith("probe:gcp_seoul_n2/") for probe in plan.probes))
+        plan.validate_profile(profile)
+        rendered = plan.safe_dict()
+        self.assertTrue(rendered["complete_control_coverage"])
+        self.assertFalse(rendered["real_provider_call_executed"])
+        self.assertFalse(rendered["provider_selected"])
+        self.assertFalse(rendered["security_certification"])
+        self.assertFalse(rendered["deployment_approval"])
+        self.assertFalse(rendered["production_ready_claim"])
+
+        with self.assertRaises(ContractError):
+            build_candidate_launch_profile("vercel")
+        with self.assertRaises(ContractError):
+            build_candidate_launch_profile("e2b_typo")
+
+    def test_vercel_lease_and_ttl_bounds_remain_fail_closed(self):
+        profile = build_candidate_launch_profile(SandboxProviderCandidate.VERCEL_SANDBOX)
+        profile.validate_lease_request(lease(ttl_seconds=900))
+        with self.assertRaises(ContractError):
+            profile.validate_lease_request(lease(ttl_seconds=901))
+        with self.assertRaises(ContractError):
+            profile.validate_lease_request(lease(execution_mode=ExecutionMode.LOCAL))
+        with self.assertRaises(ContractError):
+            profile.validate_lease_request(lease(requested_revision="main"))
+        with self.assertRaises(ContractError):
+            profile.validate_lease_request(lease(network_policy=NetworkPolicy.RESTRICTED))
+        with self.assertRaises(ContractError):
+            build_candidate_launch_profile(SandboxProviderCandidate.VERCEL_SANDBOX, max_ttl_seconds=3601)
+
     def test_cloud_m1_profile_rejects_weakened_shape_duplicate_or_secret_material(self):
         base = build_candidate_launch_profile(SandboxProviderCandidate.E2B)
         with self.assertRaises(ContractError):
@@ -178,6 +339,34 @@ class CloudM1ProviderLiveProbePlanTests(unittest.TestCase):
         self.assertFalse(rendered["provider_selected"])
         self.assertFalse(rendered["security_certification"])
         self.assertFalse(rendered["deployment_approval"])
+
+    def test_vercel_generated_plan_covers_every_control_exactly_once(self):
+        profile = build_candidate_launch_profile(SandboxProviderCandidate.VERCEL_SANDBOX)
+        plan = build_live_probe_plan(profile)
+        self.assertEqual(plan.candidate, SandboxProviderCandidate.VERCEL_SANDBOX)
+        self.assertEqual(plan.plan_ref, "plan:cloud-m1/vercel_sandbox/live-probe-v1")
+        self.assertEqual(plan.launch_profile_ref, profile.profile_ref)
+        self.assertTrue(
+            all(probe.probe_id.startswith("probe:vercel_sandbox/") for probe in plan.probes)
+        )
+        privileged_probe = next(
+            probe for probe in plan.probes if probe.control == "privileged_runtime_disabled"
+        )
+        self.assertIs(privileged_probe.method, ProbeMethod.IN_SANDBOX_NEGATIVE_TEST)
+        self.assertIn("privileged_runtime_semantics", profile.unresolved_live_requirements)
+        self.assertEqual(
+            [probe.control for probe in plan.probes],
+            list(capability_control_names()),
+        )
+        self.assertEqual(len(plan.probes), len(set(probe.control for probe in plan.probes)))
+        plan.validate_profile(profile)
+        rendered = plan.safe_dict()
+        self.assertTrue(rendered["complete_control_coverage"])
+        self.assertFalse(rendered["real_provider_call_executed"])
+        self.assertFalse(rendered["provider_selected"])
+        self.assertFalse(rendered["security_certification"])
+        self.assertFalse(rendered["deployment_approval"])
+        self.assertFalse(rendered["production_ready_claim"])
 
     def test_probe_methods_match_control_type(self):
         profile = build_candidate_launch_profile(SandboxProviderCandidate.E2B)
@@ -236,8 +425,11 @@ class CloudM1ProviderLiveProbeResultTests(unittest.TestCase):
         self.assertTrue(reviewed.eligible_for_acceptance(NOW))
         pack = reviewed.promote_to_v1(NOW)
         assessment = pack.assess()
-        self.assertTrue(assessment.accepted_for_cloud_m1)
-        self.assertEqual(assessment.missing_controls, ())
+        # Promotion through the v2/v1 evidence gates still works; what it produces is
+        # declaration evidence. Cloud M1 acceptance additionally needs numeric limit
+        # evidence, which an evidence pack does not carry (#1405).
+        self.assertFalse(assessment.accepted_for_cloud_m1)
+        self.assertEqual(assessment.missing_controls, ("resource_limits_reported",))
 
     def test_unproven_unsupported_and_stale_live_observations_remain_blockers(self):
         profile = build_candidate_launch_profile(SandboxProviderCandidate.E2B)

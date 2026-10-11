@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
 import json
 import re
-from typing import Any, Callable, TypeVar
+from collections.abc import Callable
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from typing import Any, TypeVar
 
 from padiem_control_plane.contracts import ControlPlaneContractError
 
@@ -17,10 +19,21 @@ MAX_CONNECT_TICKET_RESIDUAL_LIFETIME_SECONDS = 330
 
 GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly"
 GOOGLE_DRIVE_READONLY_SCOPE = "https://www.googleapis.com/auth/drive.readonly"
-_REVIEWED_SCOPES: dict[str, tuple[str, ...]] = {
+# #2010: the Control Plane owns the long-lived Google refresh credential and
+# issues short-lived read leases. Calendar joins the same reviewed OAuth
+# authority with exactly one readonly scope.
+GOOGLE_CALENDAR_READONLY_SCOPE = "https://www.googleapis.com/auth/calendar.readonly"
+# Internal OAuth-reviewed authority set. It is deliberately WIDER than the
+# public/default workspace-status projection: a connector may be a reviewed
+# OAuth authority without being part of the authorized #2830 B-0 surface.
+_OAUTH_REVIEWED_SCOPES: dict[str, tuple[str, ...]] = {
     "gmail": (GMAIL_READONLY_SCOPE,),
     "google-drive": (GOOGLE_DRIVE_READONLY_SCOPE,),
+    "google-calendar": (GOOGLE_CALENDAR_READONLY_SCOPE,),
 }
+# Backwards-compatible module-level map used by the Control Plane modules.
+_REVIEWED_SCOPES = _OAUTH_REVIEWED_SCOPES
+OAUTH_REVIEWED_CONNECTORS = tuple(sorted(_REVIEWED_SCOPES))
 
 _TICKET_SCHEMA = """
 CREATE TABLE IF NOT EXISTS google_oauth_connect_ticket_use (
@@ -145,6 +158,7 @@ def _rows(cursor: Any) -> list[Any]:
 
 
 def _rows_written(cursor: Any) -> int:
+    _rows(cursor)
     value = getattr(cursor, "rowsWritten", None)
     if isinstance(value, bool) or not isinstance(value, (int, float)) or int(value) != value or value < 0:
         raise RuntimeError("Durable Object SQL returned invalid rowsWritten")
@@ -252,6 +266,195 @@ class DurableGoogleOAuthCredential:
             "raw_access_token": False,
             "raw_client_secret": False,
         }
+
+
+class GoogleOAuthBindingSelectionStatus(str, Enum):
+    NOT_CONNECTED = "not_connected"
+    RESOLVED = "resolved"
+
+
+@dataclass(frozen=True, slots=True)
+class GoogleOAuthBindingSelection:
+    """Private identity selection result; never a public workspace projection."""
+
+    status: GoogleOAuthBindingSelectionStatus
+    connector_id: str
+    workspace_ref: str
+    binding_ref: str | None = None
+    actor_ref: str | None = None
+    account_ref: str | None = None
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.status, GoogleOAuthBindingSelectionStatus):
+            try:
+                object.__setattr__(self, "status", GoogleOAuthBindingSelectionStatus(self.status))
+            except (TypeError, ValueError) as exc:
+                raise ControlPlaneContractError(
+                    "invalid_google_oauth_binding_selection",
+                    "selection status must be not_connected or resolved",
+                ) from exc
+        object.__setattr__(self, "connector_id", _safe_ref(self.connector_id, "connector_id"))
+        object.__setattr__(self, "workspace_ref", _safe_ref(self.workspace_ref, "workspace_ref"))
+        if self.connector_id not in REVIEWED_BINDING_SELECTION_CONNECTORS:
+            raise ControlPlaneContractError(
+                "invalid_google_oauth_binding_selection",
+                "binding selection is restricted to reviewed Google connectors",
+            )
+        if self.status is GoogleOAuthBindingSelectionStatus.RESOLVED:
+            for name in ("binding_ref", "actor_ref"):
+                object.__setattr__(self, name, _safe_ref(getattr(self, name), name))
+            if self.account_ref is not None:
+                object.__setattr__(self, "account_ref", _safe_ref(self.account_ref, "account_ref"))
+        elif any(value is not None for value in (self.binding_ref, self.actor_ref, self.account_ref)):
+            raise ControlPlaneContractError(
+                "invalid_google_oauth_binding_selection",
+                "not_connected selection cannot carry identity",
+            )
+
+    @property
+    def resolved(self) -> bool:
+        return self.status is GoogleOAuthBindingSelectionStatus.RESOLVED
+
+    def to_private_dict(self) -> dict[str, Any]:
+        """Return the minimum identity for a trusted private caller only."""
+
+        result: dict[str, Any] = {
+            "status": self.status.value,
+            "connector_id": self.connector_id,
+            "workspace_ref": self.workspace_ref,
+        }
+        if self.resolved:
+            result.update(
+                {
+                    "binding_ref": self.binding_ref,
+                    "actor_ref": self.actor_ref,
+                }
+            )
+            if self.account_ref is not None:
+                result["account_ref"] = self.account_ref
+        return result
+
+    def to_bounded_dict(self) -> dict[str, Any]:
+        """Return a public-safe status projection without identity fields."""
+
+        return {
+            "status": self.status.value,
+            "connector_id": self.connector_id,
+            "usable": self.resolved,
+            "identity_projection": False,
+            "raw_refresh_token": False,
+            "sealed_refresh_token": False,
+            "access_token": False,
+            "provider_payload": False,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class GoogleOAuthWorkspaceConnectorState:
+    """Bounded, identity-free connector truth for one workspace + connector.
+
+    This projection is the *only* shape the workspace-status read path may
+    return. It is deliberately narrower than ``DurableGoogleOAuthCredential``:
+    the durable credential carries ``binding_ref`` / ``actor_ref`` /
+    ``account_ref`` / ``workspace_ref`` / ``scopes`` / ``sealed_refresh_token``,
+    none of which may cross the workspace-status boundary. Only the connector
+    id, a tri-state usability verdict, whether an expiry is present, and the
+    duplicate-binding ambiguity flag are exposed.
+
+    ``state`` is tri-state on purpose:
+
+    * ``"connected"`` — exactly one usable row (not revoked, not expired)
+    * ``"not_connected"`` — zero usable rows
+    * ``"ambiguous"`` — more than one usable row for the same workspace and
+      connector (see ``AMBIGUOUS`` handling below)
+
+    The schema has no ``UNIQUE(workspace_ref, connector_id)`` constraint, so
+    "multiple usable rows" is a reachable state. Picking a winner would be
+    latest-wins/first-row-wins identity fabrication, so the read fails closed
+    into ``ambiguous`` and the caller must treat the connector as unusable.
+    """
+
+    connector_id: str
+    state: str
+    expires_present: bool
+    ambiguous: bool = False
+
+    _STATES = ("connected", "not_connected", "ambiguous")
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "connector_id", _safe_ref(self.connector_id, "connector_id"))
+        if self.connector_id not in _REVIEWED_SCOPES:
+            raise ControlPlaneContractError(
+                "invalid_google_oauth_durable_record",
+                "connector_id is not a reviewed Google readonly connector",
+            )
+        if self.state not in self._STATES:
+            raise ControlPlaneContractError(
+                "invalid_google_oauth_durable_record",
+                "workspace connector state must be connected, not_connected or ambiguous",
+            )
+        if not isinstance(self.expires_present, bool) or not isinstance(self.ambiguous, bool):
+            raise ControlPlaneContractError(
+                "invalid_google_oauth_durable_record",
+                "workspace connector state flags must be strict booleans",
+            )
+        if self.state == "ambiguous" and not self.ambiguous:
+            raise ControlPlaneContractError(
+                "invalid_google_oauth_durable_record",
+                "ambiguous workspace connector state must set the ambiguity flag",
+            )
+        if self.state != "ambiguous" and self.ambiguous:
+            raise ControlPlaneContractError(
+                "invalid_google_oauth_durable_record",
+                "only ambiguous workspace connector state may set the ambiguity flag",
+            )
+
+    @property
+    def usable(self) -> bool:
+        return self.state == "connected"
+
+    def to_bounded_dict(self) -> dict[str, Any]:
+        """Return the reviewed public projection; never widens to raw identity."""
+        return {
+            "connector_id": self.connector_id,
+            "state": self.state,
+            "usable": self.usable,
+            "expires_present": self.expires_present,
+            "ambiguous": self.ambiguous,
+        }
+
+
+def workspace_connector_state(
+    *,
+    connector_id: str,
+    usable_rows: int,
+    expires_present: bool,
+) -> GoogleOAuthWorkspaceConnectorState:
+    """Map a usable-row count to the tri-state workspace connector verdict.
+
+    Single source of truth for the duplicate-active-binding rule, so the
+    store, the private RPC and the tests cannot drift apart.
+    """
+    if usable_rows < 0:
+        raise RuntimeError("usable_rows cannot be negative")
+    if usable_rows == 0:
+        return GoogleOAuthWorkspaceConnectorState(
+            connector_id=connector_id,
+            state="not_connected",
+            expires_present=False,
+        )
+    if usable_rows == 1:
+        return GoogleOAuthWorkspaceConnectorState(
+            connector_id=connector_id,
+            state="connected",
+            expires_present=bool(expires_present),
+        )
+    return GoogleOAuthWorkspaceConnectorState(
+        connector_id=connector_id,
+        state="ambiguous",
+        expires_present=bool(expires_present),
+        ambiguous=True,
+    )
 
 
 class CloudflareDurableGoogleOAuthStore:
@@ -477,6 +680,184 @@ class CloudflareDurableGoogleOAuthStore:
             )
         return record
 
+    def select_active_calendar_binding(
+        self,
+        *,
+        workspace_ref: str,
+        now: datetime,
+    ) -> GoogleOAuthBindingSelection:
+        """Select one private Calendar identity from a trusted workspace context.
+
+        This is a private Control Plane primitive, not a public route. The
+        workspace must be supplied by a server-derived authority; the method
+        never accepts a caller-selected workspace as an authority signal. It
+        reads only identity and validity metadata, never the sealed refresh
+        token, and never picks a winner from duplicate usable rows.
+        """
+
+        workspace_ref = _safe_ref(workspace_ref, "workspace_ref")
+        now = _utc(now, "now")
+        rows = _rows(
+            self._sql.exec(
+                "SELECT binding_ref, connector_id, actor_ref, account_ref, workspace_ref, "
+                "scopes_json, expires_at, revoked_at "
+                "FROM google_oauth_refresh_credential "
+                "WHERE workspace_ref = ? AND connector_id = ?",
+                workspace_ref,
+                CALENDAR_OAUTH_REVIEWED_CONNECTOR,
+            )
+        )
+        usable: list[dict[str, Any]] = []
+        for row in rows:
+            row_connector = _row_value(row, "connector_id")
+            row_workspace = _row_value(row, "workspace_ref")
+            if row_connector != CALENDAR_OAUTH_REVIEWED_CONNECTOR:
+                raise ControlPlaneContractError(
+                    "google_oauth_connector_mismatch",
+                    "Calendar binding selector returned a different connector",
+                )
+            if row_workspace != workspace_ref:
+                raise ControlPlaneContractError(
+                    "google_oauth_workspace_mismatch",
+                    "Calendar binding selector returned a different workspace",
+                )
+            revoked_text = _row_value(row, "revoked_at")
+            if revoked_text is not None:
+                continue
+            expires_text = _row_value(row, "expires_at")
+            if expires_text is not None and now >= _parse_iso(expires_text, "expires_at"):
+                continue
+            try:
+                scopes = json.loads(_row_value(row, "scopes_json"))
+            except (TypeError, json.JSONDecodeError) as exc:
+                raise ControlPlaneContractError(
+                    "google_oauth_scope_mismatch",
+                    "Calendar binding scope metadata is invalid",
+                ) from exc
+            if not isinstance(scopes, list) or scopes != [GOOGLE_CALENDAR_READONLY_SCOPE]:
+                raise ControlPlaneContractError(
+                    "google_oauth_scope_mismatch",
+                    "Calendar binding must have exactly the reviewed readonly scope",
+                )
+            usable.append(
+                {
+                    "binding_ref": _row_value(row, "binding_ref"),
+                    "connector_id": row_connector,
+                    "actor_ref": _row_value(row, "actor_ref"),
+                    "account_ref": _row_value(row, "account_ref"),
+                    "workspace_ref": row_workspace,
+                }
+            )
+
+        if len(usable) > 1:
+            raise ControlPlaneContractError(
+                "ambiguous_google_oauth_binding",
+                "multiple usable Calendar bindings exist for the trusted workspace",
+            )
+        if not usable:
+            return GoogleOAuthBindingSelection(
+                status=GoogleOAuthBindingSelectionStatus.NOT_CONNECTED,
+                connector_id=CALENDAR_OAUTH_REVIEWED_CONNECTOR,
+                workspace_ref=workspace_ref,
+            )
+        selected = usable[0]
+        return GoogleOAuthBindingSelection(
+            status=GoogleOAuthBindingSelectionStatus.RESOLVED,
+            connector_id=selected["connector_id"],
+            workspace_ref=selected["workspace_ref"],
+            binding_ref=selected["binding_ref"],
+            actor_ref=selected["actor_ref"],
+            account_ref=selected["account_ref"],
+        )
+
+    def select_active_drive_binding(
+        self,
+        *,
+        workspace_ref: str,
+        now: datetime,
+    ) -> GoogleOAuthBindingSelection:
+        """Select one private Drive identity from a trusted workspace context.
+
+        Private Control Plane primitive, not a public route (#3193). Reads only
+        identity/validity metadata, never the sealed refresh token, and never
+        picks a winner from duplicate usable rows: more than one usable Drive
+        credential for the workspace is ambiguous and fails closed.
+        """
+
+        workspace_ref = _safe_ref(workspace_ref, "workspace_ref")
+        now = _utc(now, "now")
+        rows = _rows(
+            self._sql.exec(
+                "SELECT binding_ref, connector_id, actor_ref, workspace_ref, "
+                "scopes_json, expires_at, revoked_at "
+                "FROM google_oauth_refresh_credential "
+                "WHERE workspace_ref = ? AND connector_id = ?",
+                workspace_ref,
+                DRIVE_OAUTH_REVIEWED_CONNECTOR,
+            )
+        )
+        usable: list[dict[str, Any]] = []
+        for row in rows:
+            row_connector = _row_value(row, "connector_id")
+            row_workspace = _row_value(row, "workspace_ref")
+            if row_connector != DRIVE_OAUTH_REVIEWED_CONNECTOR:
+                raise ControlPlaneContractError(
+                    "google_oauth_connector_mismatch",
+                    "Drive binding selector returned a different connector",
+                )
+            if row_workspace != workspace_ref:
+                raise ControlPlaneContractError(
+                    "google_oauth_workspace_mismatch",
+                    "Drive binding selector returned a different workspace",
+                )
+            revoked_text = _row_value(row, "revoked_at")
+            if revoked_text is not None:
+                continue
+            expires_text = _row_value(row, "expires_at")
+            if expires_text is not None and now >= _parse_iso(expires_text, "expires_at"):
+                continue
+            try:
+                scopes = json.loads(_row_value(row, "scopes_json"))
+            except (TypeError, json.JSONDecodeError) as exc:
+                raise ControlPlaneContractError(
+                    "google_oauth_scope_mismatch",
+                    "Drive binding scope metadata is invalid",
+                ) from exc
+            if not isinstance(scopes, list) or scopes != [GOOGLE_DRIVE_READONLY_SCOPE]:
+                raise ControlPlaneContractError(
+                    "google_oauth_scope_mismatch",
+                    "Drive binding must have exactly the reviewed readonly scope",
+                )
+            usable.append(
+                {
+                    "binding_ref": _row_value(row, "binding_ref"),
+                    "connector_id": row_connector,
+                    "actor_ref": _row_value(row, "actor_ref"),
+                    "workspace_ref": row_workspace,
+                }
+            )
+
+        if len(usable) > 1:
+            raise ControlPlaneContractError(
+                "ambiguous_google_oauth_binding",
+                "multiple usable Drive bindings exist for the trusted workspace",
+            )
+        if not usable:
+            return GoogleOAuthBindingSelection(
+                status=GoogleOAuthBindingSelectionStatus.NOT_CONNECTED,
+                connector_id=DRIVE_OAUTH_REVIEWED_CONNECTOR,
+                workspace_ref=workspace_ref,
+            )
+        selected = usable[0]
+        return GoogleOAuthBindingSelection(
+            status=GoogleOAuthBindingSelectionStatus.RESOLVED,
+            connector_id=selected["connector_id"],
+            workspace_ref=selected["workspace_ref"],
+            binding_ref=selected["binding_ref"],
+            actor_ref=selected["actor_ref"],
+            account_ref=None,
+        )
+
     def revoke_credential(self, *, binding_ref: str, revoked_at: datetime) -> None:
         binding_ref = _safe_ref(binding_ref, "binding_ref")
         revoked_at = _utc(revoked_at, "revoked_at")
@@ -510,6 +891,106 @@ class CloudflareDurableGoogleOAuthStore:
 
         self.transaction(operation)
 
+    def list_workspace_connector_state(
+        self,
+        *,
+        workspace_ref: str,
+        now: datetime,
+        connector_ids: tuple[str, ...] | None = None,
+    ) -> tuple[GoogleOAuthWorkspaceConnectorState, ...]:
+        """Bounded workspace-scoped Google connector truth; identity-free.
+
+        This is the read primitive behind the future connector-status surface.
+        It deliberately returns *only* :class:`GoogleOAuthWorkspaceConnectorState`
+        values. The query selects nothing but ``connector_id``, ``expires_at``
+        and ``revoked_at``; that is the minimum needed to evaluate usability and
+        expiry presence. Raw identity (``binding_ref``, ``actor_ref``,
+        ``account_ref``, ``workspace_ref``), ``scopes`` and
+        ``sealed_refresh_token`` are neither selected nor projected back to the
+        caller.
+
+        ``expires_present`` is derived from the **usable row set only**. An
+        expired or revoked row is not active truth, so it must not influence the
+        flag: otherwise a workspace whose single usable binding has no expiry
+        would report ``expires_present=True`` merely because some inactive row
+        carried one.
+
+        ``workspace_ref`` is the durable row's own canonical workspace key; the
+        query is always anchored to ``WHERE workspace_ref = ?`` so a caller can
+        never observe another workspace's bindings.
+
+        ``connector_ids`` is an internal bounded narrowing filter, not a public
+        API surface. It must be a duplicate-free tuple drawn from the reviewed
+        Google readonly connector set, so one request can never emit the same
+        connector twice.
+
+        No token is unsealed, no access lease is issued, and nothing is written.
+        """
+        workspace_ref = _safe_ref(workspace_ref, "workspace_ref")
+        now = _utc(now, "now")
+        if connector_ids is None:
+            # #2830 non-widening rule: the default surface stays exactly the
+            # authorized B-0 set (gmail + google-drive). Adding google-calendar
+            # as a reviewed OAuth authority above must never widen this
+            # public/default projection.
+            reviewed = tuple(WORKSPACE_READ_CONNECTOR_SCOPE)
+        else:
+            if not isinstance(connector_ids, tuple):
+                raise ControlPlaneContractError(
+                    "invalid_google_oauth_durable_record",
+                    "connector_ids filter must be a tuple of reviewed connector ids",
+                )
+            if len(set(connector_ids)) != len(connector_ids):
+                raise ControlPlaneContractError(
+                    "invalid_google_oauth_durable_record",
+                    "connector_ids filter must not repeat a connector id",
+                )
+            reviewed = tuple(connector_ids)
+        if not reviewed:
+            return ()
+        for connector_id in reviewed:
+            if connector_id not in _REVIEWED_SCOPES:
+                raise ControlPlaneContractError(
+                    "invalid_google_oauth_durable_record",
+                    "connector_id is not a reviewed Google readonly connector",
+                )
+        placeholders = ", ".join("?" for _ in reviewed)
+        rows = _rows(
+            self._sql.exec(
+                "SELECT connector_id, expires_at, revoked_at "
+                "FROM google_oauth_refresh_credential "
+                f"WHERE workspace_ref = ? AND connector_id IN ({placeholders})",
+                workspace_ref,
+                *reviewed,
+            )
+        )
+        # Per connector, track the expiry presence of *usable* rows only.
+        usable_expiry: dict[str, list[bool]] = {connector_id: [] for connector_id in reviewed}
+        for row in rows:
+            connector_id = _row_value(row, "connector_id")
+            if connector_id not in usable_expiry:
+                continue
+            expires_text = _row_value(row, "expires_at")
+            revoked_text = _row_value(row, "revoked_at")
+            expires_at = _parse_iso(expires_text, "expires_at") if expires_text is not None else None
+            revoked_at = _parse_iso(revoked_text, "revoked_at") if revoked_text is not None else None
+            if revoked_at is not None or (expires_at is not None and now >= expires_at):
+                # Inactive truth: never contributes to state or expires_present.
+                continue
+            usable_expiry[connector_id].append(expires_at is not None)
+
+        states: list[GoogleOAuthWorkspaceConnectorState] = []
+        for connector_id in reviewed:
+            verdicts = usable_expiry[connector_id]
+            states.append(
+                workspace_connector_state(
+                    connector_id=connector_id,
+                    usable_rows=len(verdicts),
+                    expires_present=any(verdicts),
+                )
+            )
+        return tuple(states)
+
     def safe_dict(self) -> dict[str, Any]:
         return {
             "cloudflare_durable_object": True,
@@ -524,6 +1005,10 @@ class CloudflareDurableGoogleOAuthStore:
             "raw_refresh_token_persisted": False,
             "raw_pkce_verifier_persisted": False,
             "raw_connect_ticket_persisted": False,
+            "calendar_binding_selection_private_only": CALENDAR_BINDING_SELECTION_PRIVATE_ONLY,
+            "calendar_binding_selection_public_route": CALENDAR_BINDING_SELECTION_PUBLIC_ROUTE,
+            "calendar_binding_selection_identity_projection": False,
+            "calendar_binding_selection_raw_credential_output": False,
             "cryptography_implemented_here": False,
             "webcrypto_sealer_required": True,
             "production_deployment": False,
@@ -536,3 +1021,40 @@ WEBCRYPTO_SEALER_REQUIRED = True
 SEALED_ENVELOPE_VERSION = "v1"
 PUBLIC_OAUTH_ROUTE_ADDED = False
 PRODUCTION_MUTATION = False
+# Phase B-0 (#2830): workspace-scoped Google connector truth read primitive.
+# Bounded projection only; raw identity and sealed material never leave the row.
+WORKSPACE_KEYED_CONNECTOR_READ = True
+WORKSPACE_READ_REQUIRES_EXACT_WORKSPACE_REF = True
+# Authorized #2830 Phase B-0 surface (Gmail + Drive only). #2010 Calendar is a
+# reviewed OAuth authority in OAUTH_REVIEWED_CONNECTORS, but it is NOT part of
+# this default workspace-status projection.
+WORKSPACE_READ_CONNECTOR_SCOPE = ("gmail", "google-drive")
+# #2830_WORKSPACE_STATUS_SURFACE_WIDENED=NO
+CALENDAR_OAUTH_REVIEWED_CONNECTOR = "google-calendar"
+DRIVE_OAUTH_REVIEWED_CONNECTOR = "google-drive"
+# Reviewed connector set for the shared private binding-selection model. Kept
+# deliberately narrow: no Gmail (or other) connector may use it.
+REVIEWED_BINDING_SELECTION_CONNECTORS = frozenset(
+    {CALENDAR_OAUTH_REVIEWED_CONNECTOR, DRIVE_OAUTH_REVIEWED_CONNECTOR}
+)
+CALENDAR_BINDING_SELECTION_PRIVATE_ONLY = True
+CALENDAR_BINDING_SELECTION_REQUIRES_TRUSTED_WORKSPACE = True
+CALENDAR_BINDING_SELECTION_PUBLIC_ROUTE = False
+CALENDAR_BINDING_SELECTION_SECOND_AUTHORITY = 0
+CALENDAR_BINDING_SELECTION_RAW_CREDENTIAL_OUTPUT = False
+PUBLIC_WORKSPACE_STATUS_IDENTITY_WIDENING = False
+WORKSPACE_READ_CONNECTOR_SCOPE_DEFAULT_WIDENING = False
+OAUTH_REVIEWED_CONNECTORS_INCLUDE_CALENDAR = "google-calendar" in OAUTH_REVIEWED_CONNECTORS
+WORKSPACE_READ_TOKEN_UNSEAL = False
+WORKSPACE_READ_ACCESS_LEASE_ISSUE = False
+WORKSPACE_READ_PUBLIC_ROUTE = False
+WORKSPACE_READ_WRITE_SCOPE = False
+WORKSPACE_READ_DUPLICATE_ACTIVE_POLICY = "ambiguous_fail_closed"
+WORKSPACE_READ_EXPIRES_PRESENT_SCOPE = "usable_rows_only"
+WORKSPACE_READ_DUPLICATE_CONNECTOR_FILTER = "rejected"
+WORKSPACE_READ_BINDING_REF_OUTPUT = False
+WORKSPACE_READ_ACTOR_ACCOUNT_REF_OUTPUT = False
+WORKSPACE_READ_WORKSPACE_REF_ECHO = False
+WORKSPACE_READ_SCOPES_OUTPUT = False
+WORKSPACE_READ_SEALED_CREDENTIAL_OUTPUT = False
+WORKSPACE_READ_SCHEMA_UNIQUE_INDEX_ADDED = False

@@ -29,7 +29,7 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import Callable, Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timedelta, timezone
 import inspect
 import json
@@ -45,7 +45,9 @@ from padiem_ai_core.agent_approval import (
     ContinuationStatus,
 )
 from padiem_ai_core.tool_lifecycle import ToolLifecycleEvent, ToolLifecycleKind
-from padiem_ai_core.tool_runtime import ToolExecutionResult, ToolInvocation, ToolRuntimeError
+from padiem_ai_core.tool_runtime import (
+    ToolAuthorizationContext, ToolExecutionResult, ToolInvocation, ToolRuntimeError,
+)
 
 from app.orchestration_service import (
     ApprovalDecisionVerifier,
@@ -96,6 +98,12 @@ _TOOL_ERROR_STATUS: dict[str, int] = {
     "tool_timeout": 504,
     "tool_execution_failed": 500,
     "invalid_tool_output": 500,
+    "google_oauth_access_lease_unavailable": 503,
+    "google_drive_access_lease_mismatch": 503,
+    "google_drive_provider_unavailable": 503,
+    "google_drive_provider_credential_rejected": 503,
+    "google_drive_provider_boundary_failed": 503,
+    "google_drive_response_contract_mismatch": 502,
 }
 
 _TOOL_CANCEL_ALLOWED = frozenset({"app_id", "continuation_ref", "reason"})
@@ -121,6 +129,8 @@ class ToolExecutionEngineService:
         tool_binding_resolver: Callable[[str], EngineToolBinding | None] | None = None,
         approval_decision_verifier: ApprovalDecisionVerifier | None = None,
         continuation_store: ContinuationStore | None = None,
+        web_xlsx_owner_approval_grant: Callable[..., Any] | None = None,
+        web_quote_write_approval_grant: Callable[..., Any] | None = None,
     ) -> None:
         if tool_binding_resolver is not None and not callable(tool_binding_resolver):
             raise ValueError("tool_binding_resolver must be callable")
@@ -142,6 +152,20 @@ class ToolExecutionEngineService:
         self._approval_decision_verifier = approval_decision_verifier
         self._continuation_store = continuation_store
         self._continuation_store_is_explicit = continuation_store is not None
+        if web_xlsx_owner_approval_grant is not None:
+            from app.approval_verifier import AuthenticatedFirstPartyApprovalDecisionVerifier
+            if (not callable(web_xlsx_owner_approval_grant)
+                    or not isinstance(approval_decision_verifier, AuthenticatedFirstPartyApprovalDecisionVerifier)
+                    or not callable(getattr(continuation_store, 'load_tool_pending', None))):
+                raise ValueError('web XLSX grant requires first-party verifier and durable tool store')
+        self._web_xlsx_owner_approval_grant = web_xlsx_owner_approval_grant
+        if web_quote_write_approval_grant is not None:
+            from app.approval_verifier import AuthenticatedFirstPartyApprovalDecisionVerifier
+            if (not callable(web_quote_write_approval_grant)
+                    or not isinstance(approval_decision_verifier, AuthenticatedFirstPartyApprovalDecisionVerifier)
+                    or not callable(getattr(continuation_store, 'load_tool_pending', None))):
+                raise ValueError('web quote WRITE grant requires independent first-party verification and durable tool store')
+        self._web_quote_write_approval_grant = web_quote_write_approval_grant
         self._pending: dict[str, _PendingToolContinuation] = {}
 
     # ------------------------------------------------------------------
@@ -182,15 +206,21 @@ class ToolExecutionEngineService:
             )
         try:
             binding = self._tool_binding_resolver(app_id)
-        except ServiceContractError:
-            # A resolver may surface a deployment-contract failure (e.g. a
-            # connector grant store outage as 503 connector_grants_unavailable).
-            # Let that distinct code/status reach the caller instead of being
-            # flattened into the generic tool_runtime_unavailable posture.
+        except (EngineToolProjectionError, ServiceContractError):
+            # A resolver may surface a deployment-contract failure or a bounded
+            # projection error from connector binding assembly. Preserve that
+            # reviewed code/status instead of flattening it into the generic
+            # tool_runtime_unavailable posture.
             raise
+        except ImportError as exc:
+            raise EngineToolProjectionError(
+                "tool_runtime_dependency_unavailable",
+                "The Engine Tool runtime production dependency is unavailable.",
+                status_code=503,
+            ) from exc
         except Exception as exc:
             raise EngineToolProjectionError(
-                "tool_runtime_unavailable",
+                "tool_binding_resolution_failed",
                 "The Engine Tool runtime binding resolver failed.",
                 status_code=503,
             ) from exc
@@ -363,23 +393,32 @@ class ToolExecutionEngineService:
         )
         if pause is None:
             return None
-        self._pending[pause.pause_id] = _PendingToolContinuation(
-            app_id=app_id,
-            canonical_agent_id=authority.canonical_agent_id,
-            canonical_tool_id=canonical_tool_id,
-            invocation=invocation,
-        )
-        try:
+        durable = callable(getattr(self._continuation_store, "issue_tool", None))
+        if durable:
+            # One D1 insert records BOTH immutable ToolInvocation and pause;
+            # a second isolate can safely recover their exact hash. Never
+            # leave a memory-only authority for this durable lane.
             continuation_ref = await self._continuation_call(
-                "issue",
-                app_id=app_id,
-                pause=pause,
-                plan_id=None,
-                request_fingerprint=f"toolinv:{pause.invocation_sha256}",
+                "issue_tool", app_id=app_id, pause=pause,
+                canonical_agent_id=authority.canonical_agent_id,
+                canonical_tool_id=canonical_tool_id,
+                invocation=invocation,
             )
-        except ServiceContractError:
-            self._pending.pop(pause.pause_id, None)
-            raise
+        else:
+            self._pending[pause.pause_id] = _PendingToolContinuation(
+                app_id=app_id,
+                canonical_agent_id=authority.canonical_agent_id,
+                canonical_tool_id=canonical_tool_id,
+                invocation=invocation,
+            )
+            try:
+                continuation_ref = await self._continuation_call(
+                    "issue", app_id=app_id, pause=pause, plan_id=None,
+                    request_fingerprint=f"toolinv:{pause.invocation_sha256}",
+                )
+            except ServiceContractError:
+                self._pending.pop(pause.pause_id, None)
+                raise
         return ServiceResponse(
             status_code=202,
             body={
@@ -430,6 +469,28 @@ class ToolExecutionEngineService:
             binding, authority, canonical_tool_id, invocation, timeout, run_id = (
                 self._prepare_invocation(payload)
             )
+            # #3580: trusted Engine-owned preflight blocks an unknown or
+            # mismatched source *before* issuing a Core user-confirmation
+            # pause. Browser tool JSON never supplies or overrides the guard.
+            if binding.invocation_preflight is not None:
+                try:
+                    checked = binding.invocation_preflight(invocation.arguments)
+                    if inspect.isawaitable(checked):
+                        checked = await checked
+                except EngineToolProjectionError:
+                    raise
+                except Exception as exc:
+                    raise EngineToolProjectionError(
+                        "tool_source_authority_unavailable",
+                        "Trusted tool source authority is unavailable.",
+                        status_code=503,
+                    ) from exc
+                if checked is not True:
+                    raise EngineToolProjectionError(
+                        "tool_source_authority_denied",
+                        "The requested source is not authorized.",
+                        status_code=403,
+                    )
             response, result, runtime_error = await self._execute_via_core(
                 binding=binding,
                 authority=authority,
@@ -505,10 +566,35 @@ class ToolExecutionEngineService:
                     "decision does not match the server-issued continuation.",
                     status_code=409,
                 )
-            pending = self._pending.get(record.pause.pause_id)
+            if callable(getattr(self._continuation_store, "load_tool_pending", None)):
+                # Rehydrate exclusively from Engine D1, never from resume JSON.
+                state = await self._continuation_call(
+                    "load_tool_pending", app_id=app_id,
+                    continuation_ref=continuation_ref,
+                )
+                if not isinstance(state, Mapping):
+                    raise ServiceContractError(
+                        "continuation_identity_mismatch", "Invalid durable tool invocation.",
+                        status_code=409,
+                    )
+                pending = _PendingToolContinuation(
+                    app_id=state["app_id"],
+                    canonical_agent_id=state["canonical_agent_id"],
+                    canonical_tool_id=state["canonical_tool_id"],
+                    invocation=ToolInvocation(
+                        tool_id=state["tool_id"], arguments=state["arguments"],
+                    ),
+                )
+                from padiem_ai_core.agent_approval import tool_invocation_digest
+                if tool_invocation_digest(pending.invocation) != record.pause.invocation_sha256:
+                    raise ServiceContractError(
+                        "continuation_identity_mismatch", "Durable tool identity changed.",
+                        status_code=409,
+                    )
+            else:
+                pending = self._pending.get(record.pause.pause_id)
             if pending is None or pending.app_id != app_id:
-                # Without the original server-held invocation a continuation
-                # cannot run; callers cannot supply a replacement tool or args.
+                # Resume never accepts a replacement tool or arguments.
                 raise ServiceContractError(
                     "continuation_identity_mismatch",
                     "The original tool invocation is not available for this continuation.",
@@ -542,6 +628,78 @@ class ToolExecutionEngineService:
                 status_code=409,
             )
 
+        if app_id == "padiem-web-xlsx-p01" and state.status in (
+            ContinuationStatus.DENIED, ContinuationStatus.RESUMABLE,
+        ):
+            # Both owner approvals AND denials require independent B62 D1
+            # signed-in owner receipt evidence before consuming or granting.
+            guard = self._web_xlsx_owner_approval_grant
+            if (guard is None
+                    or pending.canonical_agent_id != "agent:padiem:web-xlsx-confirm@1"
+                    or pending.canonical_tool_id != "tool:padiem:web-xlsx-confirm@1"
+                    or pending.invocation.tool_id != "workspace.xlsx.confirm_original_read"):
+                return _service_error(
+                    "web_xlsx_owner_grant_unavailable",
+                    "Independent owner decision authority is unavailable.",
+                    status_code=403,
+                )
+            try:
+                permitted = guard(
+                    pause=record.pause, decision=decision,
+                    invocation=pending.invocation, continuation_ref=continuation_ref,
+                )
+                if inspect.isawaitable(permitted):
+                    permitted = await permitted
+            except Exception:
+                return _service_error(
+                    "web_xlsx_owner_grant_unavailable",
+                    "Owner decision authority could not be checked.",
+                    status_code=503,
+                )
+            if permitted is not True:
+                return _service_error(
+                    "web_xlsx_owner_grant_denied",
+                    "This XLSX decision does not match the authenticated owner.",
+                    status_code=403,
+                )
+        if app_id == "padiem-web-xlsx-write-p01" and state.status in (
+            ContinuationStatus.DENIED, ContinuationStatus.RESUMABLE,
+        ):
+            # Different from original READ P01. No persistent, independent
+            # owner-confirmed WRITE proof = NO continuation and NO execution.
+            from app.web_xlsx_quote_write_tool_binding import (
+                AGENT_ID as WRITE_AGENT, CANONICAL_TOOL as WRITE_CANONICAL,
+                RUNTIME_TOOL as WRITE_TOOL,
+            )
+            guard = self._web_quote_write_approval_grant
+            if (guard is None or pending.canonical_agent_id != WRITE_AGENT
+                    or pending.canonical_tool_id != WRITE_CANONICAL
+                    or pending.invocation.tool_id != WRITE_TOOL
+                    or not callable(getattr(self._continuation_store, 'load_tool_pending', None))):
+                return _service_error(
+                    "web_xlsx_write_grant_unavailable",
+                    "Independent owner WRITE approval is unavailable.",
+                    status_code=403,
+                )
+            try:
+                permitted = guard(
+                    pause=record.pause, decision=decision,
+                    invocation=pending.invocation, continuation_ref=continuation_ref,
+                )
+                if inspect.isawaitable(permitted):
+                    permitted = await permitted
+            except Exception:
+                return _service_error(
+                    "web_xlsx_write_grant_unavailable",
+                    "Independent owner WRITE approval verification failed.",
+                    status_code=503,
+                )
+            if permitted is not True:
+                return _service_error(
+                    "web_xlsx_write_grant_denied",
+                    "Write decision does not match owner and exact edit plan.",
+                    status_code=403,
+                )
         if state.status is ContinuationStatus.DENIED:
             return await self._consume_denied(app_id, continuation_ref, record)
         if state.status is not ContinuationStatus.RESUMABLE:
@@ -568,11 +726,34 @@ class ToolExecutionEngineService:
             authority = binding.resolve_authority(pending.canonical_agent_id)
             entry = binding.resolve_tool(pending.canonical_tool_id)
             effective = binding.effective_resources(entry)
-            if entry.runtime_tool_id != pending.invocation.tool_id:
+            if (entry.runtime_tool_id != pending.invocation.tool_id
+                    or record.pause.tool_id != pending.invocation.tool_id
+                    or authority.compiled.runtime_profile.id != record.pause.agent_runtime_id):
                 raise ServiceContractError(
                     "continuation_identity_mismatch",
                     "The paused invocation no longer matches the trusted binding.",
                     status_code=409,
+                )
+            if app_id == "padiem-web-xlsx-p01":
+                # The owner decision was independently checked before claim.
+                # Grant ONLY the one original-read confirmation ToolSpec.
+                authority = replace(
+                    authority, authorization=ToolAuthorizationContext(
+                        app_id=app_id,
+                        agent_id=authority.compiled.runtime_profile.id,
+                        granted_auth_scopes=authority.authorization.granted_auth_scopes,
+                        user_confirmed_tools=("workspace.xlsx.confirm_original_read",),
+                    ),
+                )
+            if app_id == "padiem-web-xlsx-write-p01":
+                # A separate Core user confirmation; NEVER inherit READ.
+                authority = replace(
+                    authority, authorization=ToolAuthorizationContext(
+                        app_id=app_id,
+                        agent_id=authority.compiled.runtime_profile.id,
+                        granted_auth_scopes=authority.authorization.granted_auth_scopes,
+                        user_confirmed_tools=("workspace.xlsx.quote.revise_workcopy",),
+                    ),
                 )
             response, result, runtime_error = await self._execute_via_core(
                 binding=binding,

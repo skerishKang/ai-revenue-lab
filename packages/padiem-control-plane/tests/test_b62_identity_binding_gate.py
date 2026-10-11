@@ -85,3 +85,36 @@ def test_binding_gate_rollback_removes_only_identity_binding():
     assert "Rollback modified an existing non-identity binding" in source
     assert "IDENTITY_SERVICE_BINDING_REMOVED=PASS" in source
     assert "PUBLIC_TOPOLOGY_UNCHANGED=PASS" in source
+
+
+def test_binding_gate_readonly_job_uses_the_canonical_served_version_resolver():
+    # #2451 item 4 / child #2900: the served active-version resolution authority in the
+    # readonly job is the canonical resolver primitive, not inline jq, and the job
+    # checks out the exact source read-only for both trigger events.
+    source = GATE.read_text(encoding="utf-8")
+    readonly = source.split("\n  cloudflare-readonly:", 1)[1].split(
+        "\n  activate-identity-binding:", 1
+    )[0]
+
+    # CANONICAL_SERVED_VERSION_RESOLVER_INVOKED=YES
+    assert "cloudflare_served_version" in readonly
+    assert "resolve_served_version_id" in readonly
+    # INLINE_DEPLOYMENTS0_VERSION_ID_EXTRACTION=0 / INLINE_SINGLE_VERSION_TRAFFIC_RESOLVER=0
+    assert ".result.deployments[0].versions[0].version_id" not in readonly
+    assert ".result.deployments[0].versions[0].percentage == 100" not in readonly
+    assert "(.result.deployments[0].versions | length) == 1" not in readonly
+    # PR_EXACT_HEAD_CHECKOUT / DISPATCH_EXACT_TARGET_CHECKOUT / PERSIST_CREDENTIALS_FALSE
+    assert "actions/checkout@v4" in readonly
+    assert "ref: ${{ github.event.pull_request.head.sha }}" in readonly
+    assert "ref: ${{ inputs.target_sha }}" in readonly
+    assert "persist-credentials: false" in readonly
+    assert readonly.index("actions/checkout@v4") < readonly.index(
+        "resolve_served_version_id"
+    )
+    # CANONICAL_RESOLVER_PATH_TRIGGER=YES
+    paths = source.split("on:", 1)[1].split("workflow_dispatch:", 1)[0]
+    assert ".github/scripts/cloudflare_served_version.py" in paths
+    assert ".github/tests/test_cloudflare_served_version.py" in paths
+    # item 7 equality semantics stay untouched by this resolver migration
+    assert 'test "${active}" = "${latest}"' in readonly
+    assert "LATEST_VERSION_EQUALS_ACTIVE_VERSION=PASS" in readonly

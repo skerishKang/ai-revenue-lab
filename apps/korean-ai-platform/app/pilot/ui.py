@@ -103,8 +103,10 @@ async def pilot_page_post(
     provider_key = form.get("provider_key", "")
     model_id = form.get("model_id", "")
     prompt = form.get("prompt", "")
-    temperature = float(form.get("temperature", 0.2))
-    max_tokens = int(form.get("max_tokens", 300))
+    raw_temperature = form.get("temperature")
+    raw_max_tokens = form.get("max_tokens")
+    temperature = float(raw_temperature) if raw_temperature not in (None, "") else None
+    max_tokens = int(raw_max_tokens) if raw_max_tokens not in (None, "") else None
     state = resolve_configuration()
 
     if state == PilotConfigurationState.INVALID_REGISTRY:

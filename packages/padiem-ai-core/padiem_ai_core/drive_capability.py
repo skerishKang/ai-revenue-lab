@@ -43,11 +43,11 @@ import inspect
 import json
 import re
 from typing import Any, Awaitable, Mapping, Protocol
-from urllib.parse import quote
+from urllib.parse import quote, urlsplit
 
 from .connector_registry import ConnectorDescriptor
 from .contracts import ApprovalPolicy, ToolSideEffect, ToolSpec
-from .tool_runtime import MAX_TOOL_OUTPUT_BYTES, ToolHandler, ToolRuntime
+from .tool_runtime import MAX_TOOL_OUTPUT_BYTES, ToolHandler, ToolHandlerError, ToolRuntime
 
 
 class DriveContractError(ValueError):
@@ -112,6 +112,7 @@ MAX_FILE_CONTENT_CHARS = 20_000
 MAX_FILE_REFS = PAGE_SIZE
 MAX_NAME_CHARS = 512
 MAX_MIME_CHARS = 255
+MAX_WEB_VIEW_LINK_CHARS = 2_048
 MAX_PROVIDER_LIST_BYTES = 256_000
 MAX_PROVIDER_METADATA_BYTES = 128_000
 MAX_PROVIDER_CONTENT_BYTES = 1_000_000
@@ -294,6 +295,26 @@ def _bounded_text(value: str, field_name: str, limit: int) -> str:
     return normalized
 
 
+def _optional_https_google_url(value: str | None, field_name: str) -> str | None:
+    if value is None:
+        return None
+    if not isinstance(value, str):
+        raise DriveContractError(f"{field_name} must be a string")
+    normalized = value.strip()
+    if not normalized or len(normalized) > MAX_WEB_VIEW_LINK_CHARS:
+        raise DriveContractError(f"{field_name} must be a bounded Google HTTPS URL")
+    parsed = urlsplit(normalized)
+    host = parsed.hostname or ""
+    if (
+        parsed.scheme != "https"
+        or not (host == "google.com" or host.endswith(".google.com"))
+        or parsed.username is not None
+        or parsed.password is not None
+    ):
+        raise DriveContractError(f"{field_name} must be a bounded Google HTTPS URL")
+    return normalized
+
+
 def _optional_checksum(value: str | None, field_name: str) -> str | None:
     if value is None:
         return None
@@ -446,7 +467,7 @@ class DriveFileProjection:
             self, "head_revision_id", _optional_ref(self.head_revision_id, "head_revision_id")
         )
         object.__setattr__(self, "resource_key", _optional_ref(self.resource_key, "resource_key"))
-        object.__setattr__(self, "web_view_link", _optional_ref(self.web_view_link, "web_view_link"))
+        object.__setattr__(self, "web_view_link", _optional_https_google_url(self.web_view_link, "web_view_link"))
         object.__setattr__(self, "size_bytes", _optional_size(self.size_bytes, "size_bytes"))
         object.__setattr__(
             self, "shortcut_target_id", _optional_ref(self.shortcut_target_id, "shortcut_target_id")
@@ -706,6 +727,20 @@ def drive_capability_snapshot() -> dict[str, object]:
     }
 
 
+def _provider_response_contract_mismatch() -> ToolHandlerError:
+    return ToolHandlerError(
+        "google_drive_response_contract_mismatch",
+        "Google Drive provider response did not match the reviewed metadata contract.",
+    )
+
+
+def _provider_boundary_failed() -> ToolHandlerError:
+    return ToolHandlerError(
+        "google_drive_provider_boundary_failed",
+        "Google Drive provider boundary failed before a reviewed response was available.",
+    )
+
+
 def _bounded_envelope(envelope: dict[str, Any]) -> dict[str, Any]:
     """Bound the final JSON output to Core MAX_TOOL_OUTPUT_BYTES.
 
@@ -755,17 +790,18 @@ async def _port_json(
         result = _call()
         if inspect.isawaitable(result):
             result = await result
+    except ToolHandlerError:
+        # Only the explicit bounded adapter error type may cross this seam.
+        # All arbitrary port exceptions remain sanitized below.
+        raise
     except Exception:
-        # The trusted port boundary is the only place that may surface
-        # diagnostics; Core must not propagate its exception message, the
-        # cause chain, or the implicit context chain.
-        sanitized = DriveContractError("The Google Drive provider port failed.")
+        # Preserve only a reviewed stage code. Raw provider/lease exception
+        # messages and cause chains never cross the Core boundary.
+        raise _provider_boundary_failed() from None
     else:
         if not isinstance(result, dict):
-            raise DriveContractError("The Google Drive provider port returned an invalid body.")
+            raise _provider_boundary_failed() from None
         return result
-
-    raise sanitized
 
 
 async def _port_text(
@@ -793,14 +829,14 @@ async def _port_text(
         result = _call()
         if inspect.isawaitable(result):
             result = await result
+    except ToolHandlerError:
+        raise
     except Exception:
-        sanitized = DriveContractError("The Google Drive provider port failed.")
+        raise _provider_boundary_failed() from None
     else:
         if not isinstance(result, str):
-            raise DriveContractError("The Google Drive provider port returned an invalid body.")
+            raise _provider_boundary_failed() from None
         return result
-
-    raise sanitized
 
 
 def _string_arg(args: dict[str, Any], key: str, *, limit: int = 1_024) -> str | None:
@@ -880,21 +916,24 @@ def build_drive_read_handlers(
             query=params,
             max_response_bytes=MAX_PROVIDER_LIST_BYTES,
         )
-        raw_files = body.get("files", [])
-        if raw_files is None:
-            raw_files = []
-        if not isinstance(raw_files, list):
-            raise DriveContractError("Google Drive returned an invalid file list.")
-        files: list[dict[str, Any]] = []
-        trashed_omitted = 0
-        for item in raw_files[:MAX_FILE_REFS]:
-            if not isinstance(item, dict):
-                continue
-            if item.get("trashed") is True:
-                trashed_omitted += 1
-                continue
-            files.append(project_drive_file(item).safe_dict())
-        more = isinstance(body.get("nextPageToken"), str) and bool(body.get("nextPageToken"))
+        try:
+            raw_files = body.get("files", [])
+            if raw_files is None:
+                raw_files = []
+            if not isinstance(raw_files, list):
+                raise DriveContractError("Google Drive returned an invalid file list.")
+            files: list[dict[str, Any]] = []
+            trashed_omitted = 0
+            for item in raw_files[:MAX_FILE_REFS]:
+                if not isinstance(item, dict):
+                    continue
+                if item.get("trashed") is True:
+                    trashed_omitted += 1
+                    continue
+                files.append(project_drive_file(item).safe_dict())
+            more = isinstance(body.get("nextPageToken"), str) and bool(body.get("nextPageToken"))
+        except DriveContractError:
+            raise _provider_response_contract_mismatch() from None
         return _list_envelope(
             operation=operation,
             files=files,

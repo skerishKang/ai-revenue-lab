@@ -24,9 +24,12 @@ from .web_runtime import (
     MAX_SNIPPET_CHARS,
     MAX_TITLE_CHARS,
     MAX_URL_CHARS,
+    TINYFISH_FETCH_ORIGIN,
+    TINYFISH_SEARCH_ORIGIN,
     FirecrawlWebProvider,
     MockWebProvider,
     OffWebProvider,
+    TinyFishWebProvider,
     WebProvider,
     WebRuntimeConfig,
     WebRuntimeError,
@@ -252,6 +255,22 @@ from .agent_events import (
     AgentEventKind,
     public_agent_event,
 )
+from .document_template import (
+    DOCUMENT_TEMPLATE_SCHEMA_VERSION,
+    MAX_TEMPLATE_COLLECTION_ITEMS,
+    MAX_TEMPLATE_DATA_BYTES,
+    MAX_TEMPLATE_NESTING_DEPTH,
+    MAX_TEMPLATE_NODES,
+    MAX_TEMPLATE_STRING_CHARS,
+    DocumentTemplateApproval,
+    DocumentTemplateCandidate,
+    DocumentTemplateError,
+    DocumentTemplateProfile,
+    DocumentTemplateSourceProvenance,
+    FrozenTemplateArray,
+    FrozenTemplateObject,
+    approve_document_template_candidate,
+)
 from .skill_package import (
     ApprovalHook,
     MAX_ALLOWED_TOOLS,
@@ -413,19 +432,48 @@ _TOOL_RUNTIME_EXPORTS = frozenset(
     }
 )
 
+# Pillow is an optional dependency, so the image helper API is resolved lazily
+# too. The exported surface is deliberately minimal: the four bounded entry
+# points, their two result records, their error type, and the error-code set
+# callers branch on. Bounds and encoder constants stay on
+# ``padiem_ai_core.image_helpers`` so the root stays a surface, not a catalogue.
+_IMAGE_HELPER_EXPORTS = frozenset(
+    {
+        "IMAGE_ERROR_CODES",
+        "ImageContractError",
+        "ImageInspection",
+        "ImageOutput",
+        "inspect_image",
+        "sanitize_metadata",
+        "thumbnail_image",
+        "transform_image",
+    }
+)
+
 
 def __getattr__(name: str):
-    if name not in _TOOL_RUNTIME_EXPORTS:
+    if name in _TOOL_RUNTIME_EXPORTS:
+        try:
+            module = importlib.import_module(".tool_runtime", __name__)
+        except ModuleNotFoundError as exc:
+            if exc.name == "jsonschema":
+                raise ImportError(
+                    "Tool Runtime requires the optional 'tools' dependency: "
+                    "install padiem-ai-core[tools]."
+                ) from exc
+            raise
+    elif name in _IMAGE_HELPER_EXPORTS:
+        try:
+            module = importlib.import_module(".image_helpers", __name__)
+        except ModuleNotFoundError as exc:
+            if exc.name in {"PIL", "_imaging"}:
+                raise ImportError(
+                    "Image helpers require the separately approved Pillow runtime; "
+                    "install the exact verified platform wheel for this lane."
+                ) from exc
+            raise
+    else:
         raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-    try:
-        module = importlib.import_module(".tool_runtime", __name__)
-    except ModuleNotFoundError as exc:
-        if exc.name == "jsonschema":
-            raise ImportError(
-                "Tool Runtime requires the optional 'tools' dependency: "
-                "install padiem-ai-core[tools]."
-            ) from exc
-        raise
     value = getattr(module, name)
     globals()[name] = value
     return value
@@ -510,9 +558,12 @@ __all__ = [
     "MAX_SNIPPET_CHARS",
     "MAX_TITLE_CHARS",
     "MAX_URL_CHARS",
+    "TINYFISH_FETCH_ORIGIN",
+    "TINYFISH_SEARCH_ORIGIN",
     "FirecrawlWebProvider",
     "MockWebProvider",
     "OffWebProvider",
+    "TinyFishWebProvider",
     "WebProvider",
     "WebRuntimeConfig",
     "WebRuntimeError",
@@ -688,6 +739,20 @@ __all__ = [
     "AgentEventError",
     "AgentEventKind",
     "public_agent_event",
+    "DOCUMENT_TEMPLATE_SCHEMA_VERSION",
+    "MAX_TEMPLATE_COLLECTION_ITEMS",
+    "MAX_TEMPLATE_DATA_BYTES",
+    "MAX_TEMPLATE_NESTING_DEPTH",
+    "MAX_TEMPLATE_NODES",
+    "MAX_TEMPLATE_STRING_CHARS",
+    "DocumentTemplateApproval",
+    "DocumentTemplateCandidate",
+    "DocumentTemplateError",
+    "DocumentTemplateProfile",
+    "DocumentTemplateSourceProvenance",
+    "FrozenTemplateArray",
+    "FrozenTemplateObject",
+    "approve_document_template_candidate",
     "ApprovalHook",
     "MAX_ALLOWED_TOOLS",
     "MAX_APPROVAL_HOOKS",
@@ -799,4 +864,12 @@ __all__ = [
     "ToolInvocation",
     "ToolRuntime",
     "ToolRuntimeError",
+    "IMAGE_ERROR_CODES",
+    "ImageContractError",
+    "ImageInspection",
+    "ImageOutput",
+    "inspect_image",
+    "sanitize_metadata",
+    "thumbnail_image",
+    "transform_image",
 ]

@@ -1,0 +1,430 @@
+name: B62 Identity Shadow D1 Readonly Diagnostic
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b62-identity-shadow-d1-readonly-diagnostic.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/b62-identity-shadow-d1-readonly-diagnostic.yml"
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-identity-shadow-d1-readonly-diagnostic
+  cancel-in-progress: false
+
+env:
+  B62_WORKER: padiem-chat
+  D1_BINDING: PADIEM_CHAT_DB
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact event revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.target_sha || github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Validate bounded readonly diagnostic contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          workflow = Path(".github/workflows/b62-identity-shadow-d1-readonly-diagnostic.yml").read_text(encoding="utf-8")
+          required = [
+              "sqlite_master",
+              "pragma_table_info",
+              "control_plane_identity_shadow",
+              "password_credentials",
+              "TEST_USER_EXISTS=",
+              "TEST_USER_SHADOW_EXISTS=",
+              "B67_PROJECT_TEST_USER_RELATION=",
+              "B67_PROJECT_NAME_CARDINALITY=",
+              "B67_OWNER_SHADOW_EXISTS=",
+              "B67_OWNER_SHADOW_SHAPE_VALID=",
+              "B67_OWNER_SHADOW_STATE_ACTIVE=",
+              "B67_OWNER_SHADOW_NOT_EXPIRED=",
+              "TEST_USER_SHADOW_SHAPE_VALID=",
+              "TEST_USER_SHADOW_STATE_ACTIVE=",
+              "TEST_USER_SHADOW_NOT_EXPIRED=",
+              "ROW_VALUE_OUTPUT=0",
+              "SESSION_VALUE_OUTPUT=0",
+              "PRODUCTION_MUTATION=0",
+              "workflow_dispatch:",
+              "target_sha:",
+              "inputs.target_sha",
+              "github.event_name == 'workflow_dispatch'",
+              "READONLY_EXACT_MAIN_SHA=PASS",
+          ]
+          for token in required:
+              if token not in workflow:
+                  raise SystemExit(f"missing readonly diagnostic invariant: {token}")
+
+          # This diagnostic may POST SQL to the D1 query endpoint, but the SQL itself
+          # is restricted to SELECT-only metadata/existence checks.
+          forbidden_sql = (
+              "INSERT " + "INTO",
+              "UP" + "DATE ",
+              "DE" + "LETE FROM",
+              "DR" + "OP TABLE",
+              "AL" + "TER TABLE",
+              "CREATE " + "TABLE",
+              "CREATE " + "INDEX",
+          )
+          query_region = workflow.split("Read live shadow schema and bounded test-account existence", 1)[-1]
+          upper = query_region.upper()
+          for token in forbidden_sql:
+              if token in upper:
+                  raise SystemExit(f"mutation SQL forbidden in readonly diagnostic: {token}")
+
+          print("B62_IDENTITY_SHADOW_DIAGNOSTIC_SOURCE=PASS")
+          print("D1_QUERY_MODE=READ_ONLY")
+          print("PRODUCTION_MUTATION=0")
+          PY
+
+  production-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact current main candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.target_sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          TARGET_SHA: ${{ inputs.target_sha }}
+        run: |
+          set -euo pipefail
+          expected="${GITHUB_SHA}"
+          if [ "${EVENT_NAME}" = "workflow_dispatch" ]; then
+            test "${GITHUB_REF}" = "refs/heads/main"
+            test -n "${TARGET_SHA}"
+            expected="${TARGET_SHA}"
+          fi
+          test "$(git rev-parse HEAD)" = "${expected}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${expected}"
+          echo "READONLY_EXACT_MAIN_SHA=PASS"
+
+      - name: Resolve live PADIEM_CHAT_DB binding without emitting identifier
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          settings="${RUNNER_TEMP}/b62-settings-shadow-diagnostic.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
+            -o "${settings}"
+
+          DB_ID="$(python - "${settings}" "${D1_BINDING}" <<'PY'
+          import json, re, sys
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          bindings = payload.get("result", {}).get("bindings", []) if payload.get("success") is True else []
+          hits = [b for b in bindings if b.get("type") == "d1" and b.get("name") == sys.argv[2]]
+          if len(hits) != 1:
+              raise SystemExit("expected exactly one live PADIEM_CHAT_DB binding")
+          database_id = hits[0].get("id")
+          if not isinstance(database_id, str) or not re.fullmatch(r"[0-9a-fA-F-]{32,36}", database_id):
+              raise SystemExit("live PADIEM_CHAT_DB binding has invalid database id")
+          print(database_id)
+          PY
+          )"
+          test -n "${DB_ID}"
+          echo "::add-mask::${DB_ID}"
+          echo "DB_ID=${DB_ID}" >> "${GITHUB_ENV}"
+          echo "LIVE_PADIEM_CHAT_DB_DERIVED=PASS"
+          echo "D1_IDENTIFIER_OUTPUT=0"
+
+      - name: Read live shadow schema and bounded test-account existence
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+
+          schema_payload="${RUNNER_TEMP}/shadow-schema-query.json"
+          python - "${schema_payload}" <<'PY'
+          import json, sys
+          sql = """
+          SELECT
+            EXISTS(
+              SELECT 1 FROM sqlite_master
+              WHERE type='table' AND name='control_plane_identity_shadow'
+            ) AS table_exists,
+            (
+              SELECT COUNT(*) FROM pragma_table_info('control_plane_identity_shadow')
+            ) AS column_count,
+            (
+              SELECT COUNT(*) FROM pragma_table_info('control_plane_identity_shadow')
+              WHERE name IN (
+                'product_user_id','canonical_subject_id','auth_session_id',
+                'session_revision','session_state','session_expires_at','observed_at'
+              )
+            ) AS expected_column_count,
+            EXISTS(
+              SELECT 1 FROM sqlite_master
+              WHERE type='index' AND name='idx_control_plane_identity_shadow_session'
+            ) AS session_index_exists;
+          """
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump({"sql": sql}, handle)
+          PY
+
+          schema_response="${RUNNER_TEMP}/shadow-schema-response.json"
+          curl -fsS -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${schema_payload}" -o "${schema_response}"
+
+          jq -e '.success == true and (.result | length) == 1 and .result[0].success == true and (.result[0].results | length) == 1' "${schema_response}" >/dev/null
+
+          table_exists="$(jq -r '.result[0].results[0].table_exists' "${schema_response}")"
+          column_count="$(jq -r '.result[0].results[0].column_count' "${schema_response}")"
+          expected_count="$(jq -r '.result[0].results[0].expected_column_count' "${schema_response}")"
+          index_exists="$(jq -r '.result[0].results[0].session_index_exists' "${schema_response}")"
+
+          if [ "${table_exists}" = "1" ] && [ "${column_count}" = "7" ] && [ "${expected_count}" = "7" ] && [ "${index_exists}" = "1" ]; then
+            echo "B62_D1_MIGRATION_007_SCHEMA=EXACT"
+
+            account_payload="${RUNNER_TEMP}/shadow-account-exists-query.json"
+            python - "${account_payload}" <<'PY'
+          import json, sys
+          # Only boolean existence is returned. No user id, email, canonical subject,
+          # session id, tenant id, or row contents are selected.
+          sql = """
+          SELECT
+            EXISTS(
+              SELECT 1 FROM password_credentials
+              WHERE username='skerish1' COLLATE NOCASE
+            ) AS test_user_exists,
+            EXISTS(
+              SELECT 1
+              FROM password_credentials pc
+              JOIN control_plane_identity_shadow s ON s.product_user_id=pc.user_id
+              WHERE pc.username='skerish1' COLLATE NOCASE
+            ) AS test_user_shadow_exists;
+          """
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump({"sql": sql}, handle)
+          PY
+
+            account_response="${RUNNER_TEMP}/shadow-account-exists-response.json"
+            curl -fsS -X POST "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+              --data-binary "@${account_payload}" -o "${account_response}"
+            jq -e '.success == true and (.result | length) == 1 and .result[0].success == true and (.result[0].results | length) == 1' "${account_response}" >/dev/null
+
+            test_user_exists="$(jq -r '.result[0].results[0].test_user_exists' "${account_response}")"
+            test_user_shadow_exists="$(jq -r '.result[0].results[0].test_user_shadow_exists' "${account_response}")"
+            case "${test_user_exists}" in 0|1) ;; *) exit 1;; esac
+            case "${test_user_shadow_exists}" in 0|1) ;; *) exit 1;; esac
+            [ "${test_user_exists}" = "1" ] && echo "TEST_USER_EXISTS=YES" || echo "TEST_USER_EXISTS=NO"
+            [ "${test_user_shadow_exists}" = "1" ] && echo "TEST_USER_SHADOW_EXISTS=YES" || echo "TEST_USER_SHADOW_EXISTS=NO"
+
+            # B67 follow-up: bounded booleans only. Prove whether the fixed test
+            # account owns the uniquely named B67 project and whether its shadow
+            # pointer is structurally valid, ACTIVE, and unexpired. No identifier,
+            # timestamp, project id, subject id, or session id is selected.
+            shadow_health_payload="${RUNNER_TEMP}/shadow-health-query.json"
+            python - "${shadow_health_payload}" <<'PY'
+          import json, sys
+          sql = """
+          SELECT
+            (
+              SELECT COUNT(*)
+              FROM projects
+              WHERE name='B67 법률 테스트'
+            ) AS b67_project_name_count,
+            EXISTS(
+              SELECT 1
+              FROM projects p
+              JOIN password_credentials pc ON pc.user_id=p.user_id
+              WHERE p.name='B67 법률 테스트'
+                AND pc.username='skerish1' COLLATE NOCASE
+            ) AS b67_project_owned_by_test_user,
+            EXISTS(
+              SELECT 1
+              FROM password_credentials pc
+              JOIN control_plane_identity_shadow s ON s.product_user_id=pc.user_id
+              WHERE pc.username='skerish1' COLLATE NOCASE
+                AND length(trim(s.canonical_subject_id)) > 0
+                AND length(trim(s.auth_session_id)) > 0
+                AND s.session_revision >= 1
+                AND s.session_state IN ('active','revoked','expired')
+                AND julianday(s.session_expires_at) IS NOT NULL
+                AND julianday(s.observed_at) IS NOT NULL
+            ) AS shadow_shape_valid,
+            EXISTS(
+              SELECT 1
+              FROM password_credentials pc
+              JOIN control_plane_identity_shadow s ON s.product_user_id=pc.user_id
+              WHERE pc.username='skerish1' COLLATE NOCASE
+                AND s.session_state='active'
+            ) AS shadow_state_active,
+            EXISTS(
+              SELECT 1
+              FROM password_credentials pc
+              JOIN control_plane_identity_shadow s ON s.product_user_id=pc.user_id
+              WHERE pc.username='skerish1' COLLATE NOCASE
+                AND julianday(s.session_expires_at) > julianday('now')
+            ) AS shadow_not_expired,
+            EXISTS(
+              SELECT 1
+              FROM projects p
+              JOIN control_plane_identity_shadow s ON s.product_user_id=p.user_id
+              WHERE p.name='B67 법률 테스트'
+                AND (
+                  SELECT COUNT(*) FROM projects WHERE name='B67 법률 테스트'
+                ) = 1
+            ) AS b67_owner_shadow_exists,
+            EXISTS(
+              SELECT 1
+              FROM projects p
+              JOIN control_plane_identity_shadow s ON s.product_user_id=p.user_id
+              WHERE p.name='B67 법률 테스트'
+                AND (
+                  SELECT COUNT(*) FROM projects WHERE name='B67 법률 테스트'
+                ) = 1
+                AND length(trim(s.canonical_subject_id)) > 0
+                AND length(trim(s.auth_session_id)) > 0
+                AND s.session_revision >= 1
+                AND s.session_state IN ('active','revoked','expired')
+                AND julianday(s.session_expires_at) IS NOT NULL
+                AND julianday(s.observed_at) IS NOT NULL
+            ) AS b67_owner_shadow_shape_valid,
+            EXISTS(
+              SELECT 1
+              FROM projects p
+              JOIN control_plane_identity_shadow s ON s.product_user_id=p.user_id
+              WHERE p.name='B67 법률 테스트'
+                AND (
+                  SELECT COUNT(*) FROM projects WHERE name='B67 법률 테스트'
+                ) = 1
+                AND s.session_state='active'
+            ) AS b67_owner_shadow_state_active,
+            EXISTS(
+              SELECT 1
+              FROM projects p
+              JOIN control_plane_identity_shadow s ON s.product_user_id=p.user_id
+              WHERE p.name='B67 법률 테스트'
+                AND (
+                  SELECT COUNT(*) FROM projects WHERE name='B67 법률 테스트'
+                ) = 1
+                AND julianday(s.session_expires_at) > julianday('now')
+            ) AS b67_owner_shadow_not_expired;
+          """
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump({"sql": sql}, handle)
+          PY
+
+            shadow_health_response="${RUNNER_TEMP}/shadow-health-response.json"
+            curl -fsS -X POST "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+              --data-binary "@${shadow_health_payload}" -o "${shadow_health_response}"
+            jq -e '.success == true and (.result | length) == 1 and .result[0].success == true and (.result[0].results | length) == 1' "${shadow_health_response}" >/dev/null
+
+            project_count="$(jq -r '.result[0].results[0].b67_project_name_count' "${shadow_health_response}")"
+            project_owned="$(jq -r '.result[0].results[0].b67_project_owned_by_test_user' "${shadow_health_response}")"
+            shadow_shape_valid="$(jq -r '.result[0].results[0].shadow_shape_valid' "${shadow_health_response}")"
+            shadow_state_active="$(jq -r '.result[0].results[0].shadow_state_active' "${shadow_health_response}")"
+            shadow_not_expired="$(jq -r '.result[0].results[0].shadow_not_expired' "${shadow_health_response}")"
+            b67_owner_shadow_exists="$(jq -r '.result[0].results[0].b67_owner_shadow_exists' "${shadow_health_response}")"
+            b67_owner_shadow_shape_valid="$(jq -r '.result[0].results[0].b67_owner_shadow_shape_valid' "${shadow_health_response}")"
+            b67_owner_shadow_state_active="$(jq -r '.result[0].results[0].b67_owner_shadow_state_active' "${shadow_health_response}")"
+            b67_owner_shadow_not_expired="$(jq -r '.result[0].results[0].b67_owner_shadow_not_expired' "${shadow_health_response}")"
+
+            case "${project_count}" in
+              0) project_count_class="NONE" ;;
+              1) project_count_class="ONE" ;;
+              *) project_count_class="MANY" ;;
+            esac
+            for value in "${project_owned}" "${shadow_shape_valid}" "${shadow_state_active}" "${shadow_not_expired}" "${b67_owner_shadow_exists}" "${b67_owner_shadow_shape_valid}" "${b67_owner_shadow_state_active}" "${b67_owner_shadow_not_expired}"; do
+              case "${value}" in 0|1) ;; *) exit 1;; esac
+            done
+
+            echo "B67_PROJECT_NAME_CARDINALITY=${project_count_class}"
+            if [ "${project_count_class}" = "ONE" ] && [ "${project_owned}" = "1" ]; then
+              echo "B67_PROJECT_TEST_USER_RELATION=PROVEN"
+            else
+              echo "B67_PROJECT_TEST_USER_RELATION=NOT_PROVEN"
+            fi
+            [ "${b67_owner_shadow_exists}" = "1" ] && echo "B67_OWNER_SHADOW_EXISTS=YES" || echo "B67_OWNER_SHADOW_EXISTS=NO"
+            [ "${b67_owner_shadow_shape_valid}" = "1" ] && echo "B67_OWNER_SHADOW_SHAPE_VALID=YES" || echo "B67_OWNER_SHADOW_SHAPE_VALID=NO"
+            [ "${b67_owner_shadow_state_active}" = "1" ] && echo "B67_OWNER_SHADOW_STATE_ACTIVE=YES" || echo "B67_OWNER_SHADOW_STATE_ACTIVE=NO"
+            [ "${b67_owner_shadow_not_expired}" = "1" ] && echo "B67_OWNER_SHADOW_NOT_EXPIRED=YES" || echo "B67_OWNER_SHADOW_NOT_EXPIRED=NO"
+            [ "${shadow_shape_valid}" = "1" ] && echo "TEST_USER_SHADOW_SHAPE_VALID=YES" || echo "TEST_USER_SHADOW_SHAPE_VALID=NO"
+            [ "${shadow_state_active}" = "1" ] && echo "TEST_USER_SHADOW_STATE_ACTIVE=YES" || echo "TEST_USER_SHADOW_STATE_ACTIVE=NO"
+            [ "${shadow_not_expired}" = "1" ] && echo "TEST_USER_SHADOW_NOT_EXPIRED=YES" || echo "TEST_USER_SHADOW_NOT_EXPIRED=NO"
+          elif [ "${table_exists}" = "0" ]; then
+            echo "B62_D1_MIGRATION_007_SCHEMA=MISSING"
+            echo "TEST_USER_EXISTS=NOT_QUERIED"
+            echo "TEST_USER_SHADOW_EXISTS=IMPOSSIBLE_TABLE_MISSING"
+            echo "B67_PROJECT_TEST_USER_RELATION=NOT_QUERIED"
+            echo "B67_PROJECT_NAME_CARDINALITY=NOT_QUERIED"
+            echo "B67_OWNER_SHADOW_EXISTS=NOT_QUERIED"
+            echo "B67_OWNER_SHADOW_SHAPE_VALID=NOT_QUERIED"
+            echo "B67_OWNER_SHADOW_STATE_ACTIVE=NOT_QUERIED"
+            echo "B67_OWNER_SHADOW_NOT_EXPIRED=NOT_QUERIED"
+            echo "TEST_USER_SHADOW_SHAPE_VALID=NOT_QUERIED"
+            echo "TEST_USER_SHADOW_STATE_ACTIVE=NOT_QUERIED"
+            echo "TEST_USER_SHADOW_NOT_EXPIRED=NOT_QUERIED"
+          else
+            echo "B62_D1_MIGRATION_007_SCHEMA=DRIFT"
+            echo "TEST_USER_EXISTS=NOT_QUERIED"
+            echo "TEST_USER_SHADOW_EXISTS=UNKNOWN_SCHEMA_DRIFT"
+            echo "B67_PROJECT_TEST_USER_RELATION=NOT_QUERIED"
+            echo "B67_PROJECT_NAME_CARDINALITY=NOT_QUERIED"
+            echo "B67_OWNER_SHADOW_EXISTS=NOT_QUERIED"
+            echo "B67_OWNER_SHADOW_SHAPE_VALID=NOT_QUERIED"
+            echo "B67_OWNER_SHADOW_STATE_ACTIVE=NOT_QUERIED"
+            echo "B67_OWNER_SHADOW_NOT_EXPIRED=NOT_QUERIED"
+            echo "TEST_USER_SHADOW_SHAPE_VALID=NOT_QUERIED"
+            echo "TEST_USER_SHADOW_STATE_ACTIVE=NOT_QUERIED"
+            echo "TEST_USER_SHADOW_NOT_EXPIRED=NOT_QUERIED"
+          fi
+
+          echo "ROW_VALUE_OUTPUT=0"
+          echo "SESSION_VALUE_OUTPUT=0"
+          echo "CANONICAL_ID_OUTPUT=0"
+          echo "TENANT_ID_OUTPUT=0"
+          echo "D1_QUERY_MODE=READ_ONLY"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Publish bounded diagnostic evidence
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## B62 identity shadow D1 readonly diagnostic"
+            echo
+            echo "- exact main: `${GITHUB_SHA}`"
+            echo "- row values emitted: no"
+            echo "- session/canonical/tenant identifiers emitted: no"
+            echo "- Production mutation: 0"
+          } >> "${GITHUB_STEP_SUMMARY}"

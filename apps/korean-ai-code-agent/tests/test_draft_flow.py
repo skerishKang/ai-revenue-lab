@@ -20,6 +20,15 @@ from padiem_ai_engine_client import (
     EngineTransportResponse,
     PadiemAiEngineClient,
 )
+from padiem_control_plane.product_tier_routes import (
+    ProductTierLabel,
+    active_route_for,
+)
+
+# #3767: the end-to-end adapter contract runs against the bounded test-only
+# synthetic Plus route while the declaration holds the tier, so the flow is
+# exercised with a fake transport instead of being skipped.
+from model_route_fixture import with_synthetic_plus_route
 
 from kagent import review_flow as review_flow_module
 from kagent.cli import main, parser
@@ -465,6 +474,7 @@ class DraftFlowTests(unittest.TestCase):
         )
         self.assertEqual(code, 0)
 
+    @with_synthetic_plus_route
     def test_end_to_end_through_real_adapter_and_fake_transport(self) -> None:
         transport = CorrelatedTransport(
             answers=[
@@ -499,7 +509,11 @@ class DraftFlowTests(unittest.TestCase):
             payload = json.loads(sent["body"].decode("utf-8"))
             self.assertEqual(
                 payload["agent"]["model_policy"],
-                {"model": "sensenova/sensenova-6.8-flash-lite"},
+                {
+                    "model": active_route_for(ProductTierLabel.PLUS).model_id,
+                    # #3382/#3566: the Claw lane pins the one-shot canary ceiling.
+                    "max_retries": 0,
+                },
             )
             self.assertNotIn("provider", json.dumps(payload).lower())
             self.assertNotIn("credential", payload["agent"])

@@ -24,6 +24,7 @@ _WIRE_KEYS = frozenset(
         "binding_ref",
         "sequence",
         "request_fingerprint",
+        "revision_ref",
         "material",
     }
 )
@@ -44,7 +45,7 @@ _MATERIAL_KEYS = frozenset(
         "p01_approval_payload",
     }
 )
-_CONTRACT_VERSION = "claw-local-command-material.v1"
+_CONTRACT_VERSION = "claw-local-command-material.v2"
 
 
 def _ref(value: Any, field_name: str) -> str:
@@ -160,6 +161,7 @@ class ResolvedLocalCommandMaterial:
     sequence: int
     request_fingerprint: str
     request: LocalCommandRequest
+    revision_ref: str
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "command_id", _ref(self.command_id, "command_id"))
@@ -170,6 +172,7 @@ class ResolvedLocalCommandMaterial:
             "request_fingerprint",
             _digest(self.request_fingerprint, "request_fingerprint"),
         )
+        object.__setattr__(self, "revision_ref", _ref(self.revision_ref, "revision_ref"))
         if not isinstance(self.request, LocalCommandRequest):
             raise ContractError("request must be LocalCommandRequest")
         if command_request_fingerprint(self.request) != self.request_fingerprint:
@@ -177,11 +180,13 @@ class ResolvedLocalCommandMaterial:
 
     def safe_dict(self) -> dict[str, Any]:
         return {
-            "contract_version": "claw-resolved-local-command-material.v1",
+            "contract_version": "claw-resolved-local-command-material.v2",
             "command_id": self.command_id,
             "binding_ref": self.binding_ref,
             "sequence": self.sequence,
             "request_fingerprint": self.request_fingerprint,
+            "revision_ref": self.revision_ref,
+            "revision_semantics": "opaque_correlation_only",
             "request": self.request.safe_dict(),
             "raw_argv": False,
             "environment_payload": False,
@@ -251,6 +256,7 @@ def build_command_material_wire_projection(
         "binding_ref": command.binding_ref,
         "sequence": command.sequence,
         "request_fingerprint": fingerprint,
+        "revision_ref": command.revision_ref,
         "material": {
             "request_id": request.request_id,
             "run_id": request.run_id,
@@ -299,6 +305,8 @@ def parse_command_material_wire_projection(
     fingerprint = _digest(payload["request_fingerprint"], "request_fingerprint")
     if fingerprint != outbound_request.request_fingerprint:
         raise ContractError("command material broker fingerprint mismatch")
+    if _ref(payload["revision_ref"], "revision_ref") != command.revision_ref:
+        raise ContractError("command material revision_ref mismatch")
 
     material = _closed_mapping(payload["material"], _MATERIAL_KEYS, "command material")
     _require_false(material, "shell_authority")
@@ -342,6 +350,7 @@ def parse_command_material_wire_projection(
         sequence=command.sequence,
         request_fingerprint=fingerprint,
         request=local_request,
+        revision_ref=command.revision_ref,
     )
 
 
@@ -350,6 +359,9 @@ COMMAND_MATERIAL_RESOLUTION_CONTRACT = True
 LOCAL_COMMAND_REQUEST_RECONSTRUCTED = True
 REQUEST_FINGERPRINT_RECOMPUTED = True
 EXACT_POLLED_COMMAND_CORRELATION = True
+REVISION_CORRELATION_THROUGH_MATERIAL = True
+LOCAL_MATERIAL_REVISION_MINT = False
+LOCAL_MATERIAL_REVISION_PARSE = False
 UNKNOWN_WIRE_FIELDS_FAIL_CLOSED = True
 NUMERIC_COERCION = False
 ENVIRONMENT_PAYLOAD = False

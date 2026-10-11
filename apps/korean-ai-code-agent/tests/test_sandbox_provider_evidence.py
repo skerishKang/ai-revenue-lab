@@ -29,7 +29,11 @@ class SandboxProviderEvidenceTests(unittest.TestCase):
         self.assertEqual(capabilities.provider_id, "candidate_fixture")
         self.assertTrue(all(getattr(capabilities, name) for name in capability_control_names()))
         assessment = pack.assess()
-        self.assertEqual(assessment.missing_controls, ())
+        # A fully boolean pack is complete declaration evidence, not a Cloud M1
+        # acceptance ticket: numeric limit evidence is a separate requirement the
+        # gate owns (#1405), so the only thing missing is exactly that.
+        self.assertEqual(assessment.missing_controls, ("resource_limits_reported",))
+        self.assertFalse(assessment.accepted_for_cloud_m1)
         safe = pack.safe_dict()
         self.assertTrue(safe["full_control_coverage"])
         self.assertFalse(safe["provider_selected"])

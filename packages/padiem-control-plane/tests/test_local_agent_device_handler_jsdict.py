@@ -93,6 +93,7 @@ def _service_fixture():
         rpc_factory=rpc_factory,
         http_state=http_state,
         material_resolver=_UnusedMaterialResolver(),
+        session_open_transaction=lambda operation: operation(),
         clock=lambda: BASE + timedelta(seconds=10),
     )
     return state, authority, http_state, service

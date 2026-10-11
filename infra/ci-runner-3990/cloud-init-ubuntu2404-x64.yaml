@@ -1,0 +1,31 @@
+#cloud-config
+# Disposable, secret-free Ubuntu 24.04 AMD64 host for one trusted CI job.
+# Supply SSH access via the cloud provider. Never put keys/tokens in user-data.
+users:
+  - default
+  - name: padiem-runner
+    gecos: Isolated one-shot GitHub Actions worker
+    shell: /bin/bash
+    lock_passwd: true
+    sudo: []
+ssh_pwauth: false
+disable_root: true
+package_update: true
+package_upgrade: true
+packages:
+  - ca-certificates
+  - curl
+  - git
+  - tar
+  - gzip
+  - jq
+  - unzip
+  - python3
+  - python3-venv
+  - iptables
+runcmd:
+  - [bash, -lc, "set -euo pipefail; iptables -I OUTPUT -m owner --uid-owner padiem-runner -d 169.254.169.254/32 -j REJECT"]
+  - [bash, -lc, "set -euo pipefail; iptables -I OUTPUT -m owner --uid-owner padiem-runner -d 100.100.100.200/32 -j REJECT"]
+  - [bash, -lc, "install -o padiem-runner -g padiem-runner -m 0700 -d /home/padiem-runner/padiem-gha"]
+  - [bash, -lc, "install -o root -g root -m 0755 -d /opt/padiem-ci"]
+final_message: "PADIEM isolated runner VM bootstrap complete. No runner registered."

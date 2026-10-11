@@ -177,48 +177,79 @@ class RefreshingCanonicalSubjectResolver:
         product_user_id: str,
         now: datetime | None = None,
     ) -> str:
-        shadow = await self._store.load_projection(product_user_id)
-        if shadow is None:
-            raise IdentityBridgeError(
-                503,
-                "control_plane_identity_not_linked",
-                "Canonical identity is not linked for this product session.",
-            )
-        try:
-            current = await _maybe_await(
-                self._authority.resolve_auth_session(session_id=shadow.auth_session_id)
-            )
-        except Exception as exc:
-            raise IdentityBridgeError(
-                503,
-                "control_plane_session_unavailable",
-                "Canonical auth session is unavailable.",
-            ) from exc
-        if not isinstance(current, AuthSessionSnapshot):
-            raise IdentityBridgeError(
-                503,
-                "control_plane_session_invalid",
-                "Canonical auth authority returned an invalid session.",
-            )
-        if (
-            current.session_id != shadow.auth_session_id
-            or current.product_id != PADIEM_CHAT_PRODUCT_ID
-            or current.subject.subject_type is not SubjectType.USER
-            or current.subject.subject_id != shadow.canonical_subject_id
-            or current.revision < shadow.session_revision
-        ):
-            raise IdentityBridgeError(
-                403,
-                "control_plane_session_mismatch",
-                "Canonical auth session does not match the linked product identity.",
-            )
-        effective_now = now if now is not None else datetime.now(timezone.utc)
-        if effective_now.tzinfo is None or effective_now.utcoffset() is None:
-            raise ValueError("now must be timezone-aware")
-        if current.effective_state(now=effective_now) is not AuthSessionState.ACTIVE:
-            raise IdentityBridgeError(
-                401,
-                "control_plane_session_inactive",
-                "Canonical auth session is expired or revoked.",
-            )
+        current = await resolve_refreshed_session(
+            authority=self._authority,
+            store=self._store,
+            product_user_id=product_user_id,
+            now=now,
+        )
         return current.subject.subject_id
+
+
+async def resolve_refreshed_session(
+    *,
+    authority: CurrentCanonicalSessionAuthority,
+    store: IdentityShadowStore,
+    product_user_id: str,
+    now: datetime | None = None,
+) -> AuthSessionSnapshot:
+    """Refresh and validate the canonical auth session behind a product user.
+
+    Shared fail-closed contract used by canonical subject resolution and
+    canonical tenant resolution:
+
+    1. a shadow projection must exist for the product user;
+    2. the current session is re-read from the trusted authority;
+    3. the authority result must be a canonical ``AuthSessionSnapshot``;
+    4. the session must match the shadow pointer (session id, chat product id,
+       USER subject type, canonical subject id, monotonic revision);
+    5. the effective session state must be ACTIVE at ``now``.
+
+    Raises ``IdentityBridgeError`` (503/403/401) on any violation; returns the
+    validated snapshot only when every check passes.
+    """
+    shadow = await store.load_projection(product_user_id)
+    if shadow is None:
+        raise IdentityBridgeError(
+            503,
+            "control_plane_identity_not_linked",
+            "Canonical identity is not linked for this product session.",
+        )
+    try:
+        current = await _maybe_await(
+            authority.resolve_auth_session(session_id=shadow.auth_session_id)
+        )
+    except Exception as exc:
+        raise IdentityBridgeError(
+            503,
+            "control_plane_session_unavailable",
+            "Canonical auth session is unavailable.",
+        ) from exc
+    if not isinstance(current, AuthSessionSnapshot):
+        raise IdentityBridgeError(
+            503,
+            "control_plane_session_invalid",
+            "Canonical auth authority returned an invalid session.",
+        )
+    if (
+        current.session_id != shadow.auth_session_id
+        or current.product_id != PADIEM_CHAT_PRODUCT_ID
+        or current.subject.subject_type is not SubjectType.USER
+        or current.subject.subject_id != shadow.canonical_subject_id
+        or current.revision < shadow.session_revision
+    ):
+        raise IdentityBridgeError(
+            403,
+            "control_plane_session_mismatch",
+            "Canonical auth session does not match the linked product identity.",
+        )
+    effective_now = now if now is not None else datetime.now(timezone.utc)
+    if effective_now.tzinfo is None or effective_now.utcoffset() is None:
+        raise ValueError("now must be timezone-aware")
+    if current.effective_state(now=effective_now) is not AuthSessionState.ACTIVE:
+        raise IdentityBridgeError(
+            401,
+            "control_plane_session_inactive",
+            "Canonical auth session is expired or revoked.",
+        )
+    return current

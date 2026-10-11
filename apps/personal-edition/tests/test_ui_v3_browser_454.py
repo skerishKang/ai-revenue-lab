@@ -79,9 +79,11 @@ def test_issue_454_v3_exact_viewports_and_product_chrome(server: tuple[str,Path]
                     if r.url.startswith(base) and r.status>=400 and p!="/favicon.ico": http_errors.append(f"{r.status} {p}")
                 page.on("response",on_response)
                 for name,path,marker in SCREENS:
-                    response=page.goto(base+path,wait_until="networkidle",timeout=15000)
+                    response=page.goto(base+path,wait_until="load",timeout=15000)
                     assert response is not None and response.status==200,(name,path)
                     assert page.locator(marker).count()>0,(name,marker)
+                    # Preserve font and image readiness without network-idle tail.
+                    page.evaluate("async () => { await document.fonts.ready; await Promise.all(Array.from(document.images, img => img.decode().catch(() => {}))); }")
                     metrics=page.evaluate("""() => ({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth,rm:matchMedia('(prefers-reduced-motion: reduce)').matches,broken:Array.from(document.images).filter(i=>i.complete&&i.naturalWidth===0).map(i=>i.src)})""")
                     assert metrics["sw"]<=metrics["cw"],(name,vp,metrics)
                     assert metrics["rm"] is True
@@ -116,7 +118,7 @@ def test_issue_454_v3_has_meaningful_motion_and_reduced_equivalent(server: tuple
         browser=pw.chromium.launch(headless=True,executable_path=browser_path(),args=["--no-sandbox"])
         try:
             normal=browser.new_context(viewport={"width":1440,"height":1100},reduced_motion="no-preference").new_page()
-            normal.goto(base+"/preview/intro/",wait_until="networkidle")
+            normal.goto(base+"/preview/intro/",wait_until="load")
             art_direction=normal.locator("body").get_attribute("data-art-direction")
             animation=normal.locator(".v3-edition-object").evaluate("el => getComputedStyle(el).animationName")
             if art_direction=="b1-living-index-v6":
@@ -125,7 +127,7 @@ def test_issue_454_v3_has_meaningful_motion_and_reduced_equivalent(server: tuple
                 assert animation=="v3-bind"
             normal.context.close()
             reduced=browser.new_context(viewport={"width":1440,"height":1100},reduced_motion="reduce").new_page()
-            reduced.goto(base+"/preview/intro/",wait_until="networkidle")
+            reduced.goto(base+"/preview/intro/",wait_until="load")
             duration=reduced.locator(".v3-edition-object").evaluate("el => getComputedStyle(el).animationDuration")
             assert duration in ("0s","0.000001s","0.001ms") or float(duration.rstrip('s')) < .01
             reduced.context.close()

@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>견적서 만들기</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="padiem-account.css">
+  <link rel="stylesheet" href="b66-surface-refresh.css" media="screen">
+  <script src="quote-core.js" defer></script>
+  <script src="quote-extraction.js" defer></script>
+  <script src="quote-history.js" defer></script>
+  <script src="quote-history-server.js" defer></script>
+  <script src="guided-draft-server.js" defer></script>
+<script src="quote-account-scope.js" defer></script>
+  <script src="quote-template.js" defer></script>
+  <script src="cgi-template-v2.js" defer></script>
+  <script src="quote-template-store.js" defer></script>
+  <script src="quote-template-renderer.js" defer></script>
+  <script src="quote-skill.js" defer></script>
+  <script src="quote-skill-store.js" defer></script>
+  <script src="quote-skill-candidate.js" defer></script>
+  <script src="quote-skill-registration.js" defer></script>
+  <script src="quote-template-selection.js" defer></script>
+  <script src="quote-template-ui.js" defer></script>
+  <script src="quote-template-candidate.js" defer></script>
+  <script src="file-intake.js" defer></script>
+  <script src="quote-template-cloner.js" defer></script>
+  <script src="quote-template-registration.js" defer></script>
+  <script src="quote-registration-session.js" defer></script>
+  <script src="xlsx-export.js" defer></script>
+  <script src="quote-skill-ui.js" defer></script>
+  <script src="quote-skill-manual.js" defer></script>
+  <script src="app.js" defer></script>
+  <script src="easy-mode.js" defer></script>
+  <script src="company-profile-settings.js" defer></script>
+  <script src="quote-browser-pdf.js" defer></script>
+  <script src="padiem-account.js" defer></script>
+  <script src="drive-config.js" defer></script>
+  <script src="quote-import-atomic.js" defer></script>
+  <script src="quote-drive-contract.js" defer></script>
+  <script src="quote-drive-client.js" defer></script>
+  <script src="quote-drive-ui.js" defer></script>
+  <script src="shell-layout.js" defer></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <h1>견적서 만들기</h1>
+        <p>입력부터 PDF 저장까지 한 화면에서</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="padiem-account-button" id="padiemAccountButton" type="button">로그인</button>
+        <button class="topbar-reset" id="settingsButton" type="button" hidden>설정</button>
+      </div>
+    </header>
+
+    <section class="padiem-account-panel" id="padiemAccountPanel" aria-label="내 견적서" hidden>
+      <div class="padiem-account-head">
+        <strong id="padiemAccountLabel">내 견적서</strong>
+        <button id="padiemLogout" type="button">로그아웃</button>
+      </div>
+      <div class="padiem-quote-grid">
+        <label>배정된 내 견적서
+          <select id="padiemSavedSkillSelect"></select>
+        </label>
+        <!-- #3536: the sole free-form input and send action live at easyComposer/easySend.
+             The registered-model picker is moved to the left rail by shell-layout.js. -->
+        <label>사용할 AI 모델
+          <select id="padiemQuoteModelSelect" aria-label="사용할 AI 모델" required>
+            <option value="">모델을 선택하세요</option>
+          </select>
+        </label>
+        <!-- #3906: per-model reasoning level. The options are supplied by
+             /b66/quote/models and only ever contain levels the selected model
+             actually supports; the provider default is the initial choice. -->
+        <label>추론 수준
+          <select id="padiemQuoteReasoningSelect" aria-label="추론 수준"></select>
+        </label>
+      </div>
+      <p class="padiem-quote-status" id="padiemQuoteStatus" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="settings-panel" id="settingsPanel" aria-label="개인 설정" hidden>
+      <div class="padiem-account-head">
+        <strong>개인 설정</strong>
+        <button id="settingsClose" type="button">닫기</button>
+      </div>
+      <p class="settings-note">작성 중 견적은 이 브라우저에 저장됩니다. 기기를 바꾸거나 브라우저 데이터를 지우면 사라집니다. '내 회사' 정보는 로그인 계정에 저장되어 다른 기기에서도 사용됩니다.</p>
+      <div class="company-profile-section" id="companyProfileSection">
+        <h3 class="company-profile-heading">내 회사</h3>
+        <div id="companyProfileHost"></div>
+      </div>
+      <button class="settings-reset" id="resetLocalData" type="button">저장 데이터 초기화</button>
+      <div class="drive-storage" id="driveStoragePanel" aria-label="내 Google Drive 저장">
+        <!-- #3871 Slice D: 내용은 quote-drive-ui.js 가 채운다. 연결하지 않아도 기존 기능은 그대로다. -->
+      </div>
+    </section>
+
+    <nav class="workspace-modebar" aria-label="견적 작성 모드">
+      <button class="workspace-mode active" id="easyModeButton" type="button" aria-pressed="true">채팅</button>
+      <button class="workspace-mode" id="directModeButton" type="button" aria-pressed="false">직접 입력</button>
+    </nav>
+
+    <section class="easy-view" id="easyView" aria-label="쉽게 견적서 만들기">
+      <div class="easy-conversation" id="easyConversation">
+        <div class="easy-empty" id="easyEmpty">
+          <div class="easy-avatar" aria-hidden="true">견</div>
+          <p class="easy-eyebrow">EASY MODE</p>
+          <h2>편하게 시작하세요</h2>
+          <p>질문에 하나씩 답하거나, 지난 견적을 이어서 사용할 수 있어요.</p>
+          <div class="easy-starter-grid" id="easyStarterGrid">
+            <button class="easy-starter" id="resumeDraftStarter" type="button" hidden>
+              <span class="easy-starter-icon" aria-hidden="true">↩</span>
+              <span><strong>지난 견적 이어서 하기</strong><small>작성하던 내용을 그대로 이어갑니다</small></span>
+            </button>
+            <button class="easy-starter" id="recentQuoteStarter" type="button" hidden>
+              <span class="easy-starter-icon" aria-hidden="true">▤</span>
+              <span><strong>최근 견적 불러오기</strong><small>이 브라우저에 저장한 견적을 엽니다</small></span>
+            </button>
+            <button class="easy-starter" id="guidedStarter" type="button">
+              <span class="easy-starter-icon" aria-hidden="true">?</span>
+              <span><strong>질문받으며 새로 만들기</strong><small>필요한 내용만 하나씩 물어봅니다</small></span>
+            </button>
+            <button class="easy-starter" id="freeChatStarter" type="button">
+              <span class="easy-starter-icon" aria-hidden="true">✎</span>
+              <span><strong>내용을 한번에 말하기</strong><small>자유롭게 적고 질문형으로 이어갑니다</small></span>
+            </button>
+            <button class="easy-starter" id="fileStarter" type="button">
+              <span class="easy-starter-icon" aria-hidden="true">＋</span>
+              <span><strong>파일에서 불러오기</strong><small>PDF·사진·문서를 먼저 안전하게 선택합니다</small></span>
+            </button>
+            <button class="easy-starter" id="directStarter" type="button">
+              <span class="easy-starter-icon" aria-hidden="true">▦</span>
+              <span><strong>직접 입력하기</strong><small>기존 견적서 입력 화면을 바로 엽니다</small></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="easy-message-list" id="easyMessageList" aria-live="polite"></div>
+        <div class="easy-history-panel" id="easyHistoryPanel" hidden></div>
+        <input
+          id="easyFileInput"
+          type="file"
+          hidden
+          accept=".pdf,.docx,.pptx,.xlsx,.hwpx,.jpg,.jpeg,.png,.webp,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/hwp+zip,image/jpeg,image/png,image/webp"
+          aria-label="견적서 파일 선택"
+        >
+      </div>
+
+      <div class="easy-composer-wrap">
+        <div class="easy-chip-row" id="easyChipRow" aria-label="빠른 답변"></div>
+        <div class="easy-composer">
+          <textarea id="easyComposer" rows="1" placeholder="필요한 내용을 편하게 입력하세요" aria-label="견적서 대화 입력"></textarea>
+          <button class="easy-send" id="easySend" type="button" aria-label="보내기">↑</button>
+        </div>
+        <p class="easy-composer-note" id="easyComposerNote">바로 입력해도 질문이 시작됩니다. 문장을 알아듣는 기능은 준비 중이라, 필요한 값은 하나씩 여쭤봅니다.</p>
+      </div>
+    </section>
+
+    <section class="direct-view" id="directView" aria-label="직접 견적서 입력" hidden>
+    <nav class="modebar" aria-label="견적 생성 방식">
+      <button class="mode active" data-mode="manual">직접 입력</button>
+      <button class="mode" data-mode="upload">파일 불러오기</button>
+      <button class="mode" data-mode="chat">채팅</button>
+    </nav>
+    <div class="future-note" id="futureNote"></div>
+
+    <div class="grid">
+      <section class="panel" aria-label="견적 입력">
+        <div class="section">
+          <h2>1. 보내는 사람</h2>
+          <div class="fields">
+            <label>저장된 발신자
+              <select id="senderPreset">
+                <option value="sample">샘플 공급사</option>
+                <option value="custom">직접 입력</option>
+              </select>
+            </label>
+            <label>상호
+              <input id="senderCompany" value="샘플 공급사">
+            </label>
+            <label>대표자
+              <input id="senderRep" value="대표자명">
+            </label>
+            <label>담당자
+              <input id="senderContactPerson" placeholder="실무 담당자">
+            </label>
+            <label>사업자등록번호
+              <input id="senderBizNo" value="000-00-00000">
+            </label>
+            <label>주소
+              <input id="senderAddress" placeholder="공급자 주소">
+            </label>
+            <label>연락처
+              <input id="senderPhone" value="000-0000-0000">
+            </label>
+            <label>이메일
+              <input id="senderEmail" value="hello@example.com">
+            </label>
+          </div>
+          <div class="button-row">
+            <button class="btn soft" id="saveSender">이 발신자 저장</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>2. 받는 사람과 날짜</h2>
+          <div class="fields three">
+            <label>고객 / 업체명
+              <input id="recipientCompany" value="고객사">
+            </label>
+            <label>담당자
+              <input id="recipientPerson" value="담당자님">
+            </label>
+            <label>이메일
+              <input id="recipientEmail" value="">
+            </label>
+            <label class="span-3">고객 주소
+              <input id="recipientAddress" placeholder="공급받는 자 주소">
+            </label>
+            <label>견적일
+              <input id="quoteDate" type="date">
+            </label>
+            <label>유효기간
+              <select id="validity">
+                <option value="7">7일</option>
+                <option value="14">14일</option>
+                <option value="30" selected>30일</option>
+              </select>
+            </label>
+            <label>견적번호
+              <input id="quoteNo">
+            </label>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>3. 품목과 가격</h2>
+          <div class="row-head" aria-hidden="true">
+            <span>품목</span><span>수량</span><span>단가</span><span style="text-align:right">금액</span><span></span>
+          </div>
+          <div id="items"></div>
+          <div class="button-row">
+            <button class="btn" id="addItem">+ 품목 추가</button>
+            <button class="btn" id="newQuote">새 견적</button>
+          </div>
+          <div class="tax-row" id="taxRow">
+            <label>부가세 방식
+              <select id="taxMode" aria-describedby="taxReviewNote">
+                <option value="EXCLUSIVE">별도 — 공급가액에 VAT 10% 추가</option>
+                <option value="INCLUSIVE">포함 — 표시 금액에 VAT 포함</option>
+                <option value="EXEMPT">면세 — 부가세 없음</option>
+              </select>
+            </label>
+            <p class="tax-review-note" id="taxReviewNote" hidden>부가세 방식을 확인해 주세요. 선택하기 전의 합계는 확정 금액이 아닙니다.</p>
+          </div>
+          <div class="summary">
+            <div class="summary-line"><span id="subtotalLabelText">공급가액</span><strong id="subtotalText">0원</strong></div>
+            <div class="summary-line"><span id="vatLabelText">부가세</span><strong id="vatText">0원</strong></div>
+            <div class="summary-line total"><span id="grandLabelText">합계</span><span id="grandText">0원</span></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>4. 비고</h2>
+          <label>결제 / 납기 / 추가 안내
+            <textarea id="memo">견적 유효기간 내 발주 시 상기 금액을 적용합니다.
+세부 일정은 협의 후 확정합니다.</textarea>
+          </label>
+          <div class="button-row">
+            <button class="btn soft" id="saveHistory">최근 견적에 저장</button>
+            <button class="btn primary" id="printPdf">PDF로 저장 / 인쇄</button>
+            <button class="btn soft" id="xlsxDownload">Excel 다운로드</button>
+            <button class="btn" id="emailFuture">이메일 보내기 · 다음 단계</button>
+          </div>
+        </div>
+
+        <div class="section skill-section" id="skillSection">
+          <h2>5. 내 견적서</h2>
+          <div class="template-picker">
+            <label for="skillSelect">현재 사용 중인 내 견적서
+              <select id="skillSelect" aria-describedby="skillStatus"></select>
+            </label>
+          </div>
+          <p class="template-status" id="skillStatus" role="status" aria-live="polite"></p>
+          <p class="template-manage-note" id="skillEmptyState" hidden>아직 등록한 내 견적서가 없습니다. 기본 견적서로 바로 작성하거나, 기존에 사용하던 견적서를 등록할 수 있습니다.</p>
+          <div class="button-row">
+            <button class="btn primary" id="skillRegister" type="button">내가 쓰던 견적서 등록</button>
+            <button class="btn" id="skillWrite" type="button">이 견적서로 작성</button>
+            <button class="btn soft" id="skillManageToggle" type="button" aria-expanded="false" aria-controls="skillManagePanel">내 견적서 관리</button>
+          </div>
+          <div class="template-manage" id="skillManagePanel" hidden>
+            <div class="template-list" id="skillList" role="list" aria-label="저장한 내 견적서"></div>
+          </div>
+          <div class="skill-wizard" id="skillWizardPanel" hidden>
+            <h3 id="skillWizardTitle" tabindex="-1">내가 쓰던 견적서 등록</h3>
+            <p class="template-cloner-status" id="skillWizardStatus" role="status" aria-live="polite"></p>
+            <div class="skill-wizard-body" id="skillWizardBody"></div>
+            <div class="template-cloner-actions">
+              <button class="btn soft" id="skillWizardCancel" type="button">등록 취소</button>
+            </div>
+          </div>
+          <div class="skill-manual" id="skillManualPanel" hidden>
+            <h3 id="skillManualTitle" tabindex="-1">새 견적서 만들기 · 직접 만들기</h3>
+            <p class="template-cloner-status" id="skillManualStatus" role="status" aria-live="polite"></p>
+            <div class="skill-manual-body" id="skillManualBody"></div>
+            <div class="skill-manual-actions">
+              <button class="btn soft" id="skillManualClose" type="button">닫기</button>
+            </div>
+          </div>
+          <input
+            id="skillRegisterFile"
+            type="file"
+            hidden
+            accept=".pdf,.docx,.pptx,.xlsx,.hwpx,.jpg,.jpeg,.png,.webp,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/hwp+zip,image/jpeg,image/png,image/webp"
+            aria-label="등록할 견적서 파일 선택"
+          >
+          <details class="advanced-template">
+            <summary>고급: 기존 양식 직접 관리</summary>
+            <div class="template-picker">
+              <label for="templateSelect">이 견적에 사용할 양식
+                <select id="templateSelect" aria-describedby="templateStatus"></select>
+              </label>
+              <button class="btn soft" id="templateManageToggle" type="button" aria-expanded="false" aria-controls="templateManagePanel">양식 관리</button>
+            </div>
+            <p class="template-status" id="templateStatus" role="status" aria-live="polite"></p>
+            <div class="template-manage" id="templateManagePanel" hidden>
+              <div class="template-list" id="templateList" role="list" aria-label="저장한 견적서 양식"></div>
+              <div class="template-manage-actions">
+                <button class="btn" id="templateCreate" type="button">새 양식 만들기</button>
+                <button class="btn soft" id="templateClone" type="button">견적서 양식 본뜨기</button>
+              </div>
+              <p class="template-manage-note">새 양식은 승인을 거친 뒤에 이 견적에 적용할 수 있습니다.</p>
+              <input
+                id="templateCloneFile"
+                type="file"
+                hidden
+                accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                aria-label="본뜰 견적서 파일 선택"
+              >
+            </div>
+            <p class="template-manage-note">재사용 양식 등록은 Excel .xlsx만 지원합니다. .xls는 Excel에서 .xlsx로 저장한 뒤 선택하세요. HWPX는 추후 지원합니다.</p>
+            <div class="template-cloner" id="templateClonerPanel" hidden>
+              <h3>견적서 양식 본뜨기</h3>
+              <p class="template-cloner-status" id="templateClonerStatus" role="status" aria-live="polite"></p>
+              <div class="template-review" id="templateReview" hidden></div>
+              <div class="template-cloner-actions">
+                <button class="btn primary" id="templateApprove" type="button" hidden>승인하고 저장</button>
+                <button class="btn soft" id="templateReviewCancel" type="button" hidden>본뜨기 취소</button>
+              </div>
+              <p class="template-manage-note">파일 선택과 사전 검증은 이 브라우저 안에서 끝납니다. 업로드·AI 분석은 아직 연결되지 않았습니다.</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <aside class="preview-wrap" aria-label="견적서 미리보기">
+        <div class="preview-toolbar">
+          <strong>견적서 미리보기</strong>
+          <span style="font-size:11px;color:#667085">A4 PDF 출력용</span>
+          <span id="skillPreviewBanner" hidden style="font-size:11px;color:#b54708">미리보기: 승인 전 모양 (저장되지 않음)</span>
+        </div>
+        <article class="quote-paper" id="quotePaper">
+          <section class="cgi-v2-content" id="cgiV2Content" hidden aria-label="CGI 견적서">
+            <h2 class="cgi-v2-title" id="cgiV2Title">견 적 서</h2>
+            <div class="cgi-v2-head-grid">
+              <table class="cgi-v2-head-table cgi-v2-head-left">
+                <tbody>
+                  <tr><th>견적번호</th><td colspan="3" class="cgi-v2-quote-no" id="cgiV2QuoteNo"></td></tr>
+                  <tr><th>작성일자</th><td colspan="3" id="cgiV2IssueDate"></td></tr>
+                  <tr><th>작 성 자</th><td id="cgiV2Author"></td><th class="cgi-v2-tel-label">TEL</th><td id="cgiV2AuthorTel"></td></tr>
+                  <tr><th>제 출 처</th><td id="cgiV2Recipient"></td><td colspan="2" class="cgi-v2-center">귀하</td></tr>
+                  <tr><th>담 당 자</th><td id="cgiV2RecipientPerson"></td><th class="cgi-v2-tel-label">TEL</th><td id="cgiV2RecipientTel"></td></tr>
+                  <tr><th>건    명</th><td colspan="3" id="cgiV2Project"></td></tr>
+                </tbody>
+              </table>
+              <table class="cgi-v2-head-table cgi-v2-head-right">
+                <tbody>
+                  <tr><th>등록번호</th><td class="cgi-v2-center" id="cgiV2BizNo"></td></tr>
+                  <tr><td colspan="2" class="cgi-v2-slogan" id="cgiV2Slogan"></td></tr>
+                  <tr><th>상    호</th><td class="cgi-v2-center" id="cgiV2SenderCompany"></td></tr>
+                  <tr><th>주    소</th><td class="cgi-v2-address" id="cgiV2SenderAddress"></td></tr>
+                  <tr><th>대    표</th><td class="cgi-v2-rep-cell"><span id="cgiV2SenderRep"></span> 인<img class="cgi-v2-stamp" id="cgiV2Stamp" alt="" aria-hidden="true" hidden></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="cgi-v2-total-band"><span id="cgiV2WrittenTotal"></span> ( ₩<span id="cgiV2GrandTop"></span> )</div>
+            <table class="cgi-v2-items-table">
+              <thead><tr id="cgiV2ItemsHead"></tr></thead>
+              <tbody id="cgiV2Items"></tbody>
+            </table>
+            <table class="cgi-v2-pay-table">
+              <tbody><tr><th>결 제 계 좌</th><td id="cgiV2Bank"></td></tr></tbody>
+            </table>
+            <div class="cgi-v2-terms">
+              <strong>⊙ 특기사항</strong>
+              <ol id="cgiV2Terms"></ol>
+            </div>
+            <img class="cgi-v2-logo" id="cgiV2Logo" alt="" aria-hidden="true" hidden>
+          </section>
+          <div id="quoteGenericContent">
+          <img class="quote-private-logo" id="pvLogo" alt="" aria-hidden="true" hidden>
+          <img class="quote-private-stamp" id="pvStamp" alt="" aria-hidden="true" hidden>
+          <div class="quote-title">
+            <h2 id="pvTitle">견 적 서</h2>
+            <div class="meta">
+              <div id="pvQuoteNo"></div>
+              <div id="pvDate"></div>
+              <div id="pvValidity"></div>
+              <div id="pvValidUntil"></div>
+              <div id="pvTaxMode"></div>
+            </div>
+          </div>
+          <div class="quote-project" id="pvProjectName"></div>
+          <div class="parties">
+            <div class="party">
+              <div class="eyebrow" id="pvSenderHeading">공급자</div>
+              <strong id="pvSenderCompany"></strong>
+              <p id="pvSenderRep"></p>
+              <p class="quote-sender-contact-person" id="pvSenderContactPerson"></p>
+              <p id="pvSenderBizNo"></p>
+              <p id="pvSenderAddress"></p>
+              <p id="pvSenderContact"></p>
+            </div>
+            <div class="party">
+              <div class="eyebrow" id="pvRecipientHeading">공급받는 자</div>
+              <strong id="pvRecipientCompany"></strong>
+              <p id="pvRecipientPerson"></p>
+              <p id="pvRecipientAddress"></p>
+              <p id="pvRecipientEmail"></p>
+            </div>
+          </div>
+          <div class="quote-summary-terms" id="pvSummaryTerms"></div>
+          <div class="quote-written-total" id="pvWrittenTotal"></div>
+          <div class="quote-items-heading" id="pvItemsHeading"></div>
+      <table class="quote-table">
+            <thead><tr id="pvItemsHead"><th style="width:42%">품목</th><th>수량</th><th>단가</th><th>금액</th></tr></thead>
+            <tbody id="pvItems"></tbody>
+          </table>
+          <div class="quote-totals">
+            <div><span id="pvSubtotalLabel">공급가액</span><strong id="pvSubtotal"></strong></div>
+            <div><span id="pvVatLabel">부가세</span><strong id="pvVat"></strong></div>
+            <div class="grand"><span id="pvGrandLabel">합계</span><span id="pvGrand"></span></div>
+          </div>
+          <div class="memo" id="pvMemo"></div>
+          <div class="demo-mark" id="pvMark">견적서 베타</div>
+          </div>
+        </article>
+        <div id="pvDetailPages"></div>
+      </aside>
+    </div>
+    </section>
+  </main>
+  <dialog class="padiem-auth-dialog" id="padiemAuthDialog" aria-labelledby="padiemAuthTitle">
+    <section class="padiem-auth-card">
+      <button class="padiem-auth-close" id="padiemAuthClose" type="button" aria-label="로그인 창 닫기">×</button>
+      <div class="padiem-auth-brand" aria-hidden="true">견</div>
+      <h2 id="padiemAuthTitle">로그인</h2>
+      <p class="padiem-auth-lead">로그인하면 배정된 내 견적서를<br>어디에서나 사용할 수 있습니다.</p>
+      <button class="google-signin" id="googleSigninButton" type="button">
+        <svg class="google-signin-logo" aria-hidden="true" width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Google로 로그인
+      </button>
+      <div class="padiem-auth-divider" id="padiemAuthDivider" hidden><span>또는</span></div>
+      <form class="padiem-auth-form" id="padiemLoginForm" hidden>
+        <label for="padiemLoginIdentifier">아이디 또는 이메일
+          <input id="padiemLoginIdentifier" name="identifier" type="text" autocomplete="username" maxlength="320" required>
+        </label>
+        <label for="padiemLoginPassword">비밀번호
+          <input id="padiemLoginPassword" name="password" type="password" autocomplete="current-password" maxlength="128" required>
+        </label>
+        <button id="padiemLoginSubmit" type="submit">아이디/이메일로 로그인</button>
+      </form>
+      <p class="padiem-auth-note">구글 계정 또는 기존 계정으로 로그인할 수 있습니다.</p>
+      <p class="padiem-auth-error" id="padiemAuthError" role="alert"></p>
+    </section>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

@@ -11,7 +11,8 @@ retryable. These tests pin the retry policy:
 - every retry is recorded in ``reason_codes`` as ``upstream_retry:N`` and in
   ``attempt_evidence[].retry_index`` for audit;
 - non-retryable classes (auth, bad request) still fail on the first attempt;
-- the whole attempt chain is hard-capped by the 45s budget deadline.
+- the first manual model attempt may exceed 45s without being aborted;
+- automatic fallback chains and later retries retain the 45s budget.
 """
 
 from __future__ import annotations
@@ -26,7 +27,7 @@ from app.pilot import gateway as gw
 from app.pilot import platform as plat
 from app.pilot.errors import UpstreamAuthFailed, UpstreamServerError, UpstreamTimeout
 
-KILO_MODEL = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+MODEL_ID = "agnes-ai/agnes-3.0-flash"
 
 
 def _ok_response(upstream_model: str) -> dict:
@@ -47,6 +48,12 @@ def _ok_response(upstream_model: str) -> dict:
         "_actual_response_model": upstream_model,
     }
 
+
+@pytest.fixture(autouse=True)
+def _approved_manual_model_secret(monkeypatch):
+    """The owner-approved Agnes model is the retry target, never a retired ID."""
+    monkeypatch.setenv("PADIEM_AGNES_API_KEY","sk-fixture-agnes-retry-0123456789")
+    monkeypatch.setenv("B14_PROVIDER_MODE","live")
 
 @pytest.fixture()
 def client():
@@ -86,10 +93,13 @@ def _install_seq(monkeypatch, behaviors):
     return calls
 
 
-def _post(client):
+def _post(client, *, business14=None):
+    body = {"model": MODEL_ID, "messages": [{"role": "user", "content": "hi"}]}
+    if business14 is not None:
+        body["business14"] = business14
     return client.post(
         "/api/pilot/v1/chat/completions",
-        json={"model": KILO_MODEL, "messages": [{"role": "user", "content": "hi"}]},
+        json=body,
     )
 
 
@@ -125,6 +135,61 @@ def test_502_server_error_retries_then_succeeds(client, monkeypatch, no_sleep):
     assert len(calls) == 2
     biz14 = resp.json()["business14"]
     assert "upstream_retry:1" in biz14["reason_codes"]
+
+
+def test_request_max_retries_zero_disables_same_route_retry(client, monkeypatch, no_sleep):
+    """A bounded capability proof can force exactly one upstream attempt.
+
+    The production default remains #1982's retry policy; this opt-down is
+    request-scoped and cannot increase the global retry ceiling.
+    """
+    calls = _install_seq(monkeypatch, [UpstreamTimeout(), _ok_response])
+
+    resp = _post(client, business14={"max_retries": 0})
+
+    assert resp.status_code == 504
+    assert len(calls) == 1
+    error = resp.json()["error"]
+    assert error["attempt_count"] == 1
+    assert not any(
+        str(code).startswith("upstream_retry:") for code in error["reason_codes"]
+    )
+    assert error["attempt_evidence"] == [
+        {
+            "attempt": 1,
+            "model_id": MODEL_ID,
+            "upstream_model": "agnes-3.0-flash",
+            "provider": "Agnes AI",
+            "route_id": f"platform:{MODEL_ID}",
+            "outcome": "error",
+            "error_code": "upstream_timeout",
+            "retry_index": 0,
+            "actual_response_model": None,
+        }
+    ]
+
+
+def test_request_max_retries_cannot_exceed_global_ceiling(client, monkeypatch):
+    calls = _install_seq(monkeypatch, [_ok_response])
+
+    resp = _post(
+        client,
+        business14={"max_retries": gw._UPSTREAM_RETRY_MAX_RETRIES + 1},
+    )
+
+    assert resp.status_code == 422
+    assert calls == []
+    assert resp.json()["error"]["code"] == "invalid_body"
+
+
+def test_request_max_retries_rejects_boolean(client, monkeypatch):
+    calls = _install_seq(monkeypatch, [_ok_response])
+
+    resp = _post(client, business14={"max_retries": False})
+
+    assert resp.status_code == 422
+    assert calls == []
+    assert resp.json()["error"]["code"] == "invalid_body"
 
 
 def test_retry_exhausted_returns_last_error(client, monkeypatch, no_sleep):
@@ -191,35 +256,124 @@ def test_missing_key_failure_no_retry(client, monkeypatch, no_sleep):
 # Budget ceiling
 # ---------------------------------------------------------------------------
 
-def test_budget_deadline_caps_attempt_chain(client, monkeypatch):
-    """A hung upstream is cut off by the deadline; total wall time stays
-    within the (shrunk-for-test) budget and no retry is attempted once the
-    budget is gone."""
-    monkeypatch.setattr(gw, "_UPSTREAM_RETRY_BUDGET_SECONDS", 1.0)
-
+def test_budget_deadline_caps_subsequent_retry(client, monkeypatch):
+    """The first manual model attempt can run long, but the retry is capped."""
+    monkeypatch.setattr(gw, "_UPSTREAM_RETRY_BUDGET_SECONDS", 0.08)
+    monkeypatch.setattr(gw, "_UPSTREAM_RETRY_BACKOFF_SECONDS", (0.001, 0.001))
     calls = []
 
     async def fake(**kwargs):
         calls.append(kwargs["model_id"])
-        await asyncio.sleep(10)  # far beyond the 1s budget
-        raise UpstreamTimeout()  # unreachable: deadline fires first
+        if len(calls) == 1:
+            raise UpstreamTimeout()
+        await asyncio.sleep(2)
+        return _ok_response(kwargs["upstream_model"])
 
     monkeypatch.setattr(plat, "call_platform_chat_completions", fake)
-
     import time as _time
-
-    wall = _time.monotonic()
+    started = _time.monotonic()
     resp = _post(client)
-    elapsed = _time.monotonic() - wall
+    elapsed = _time.monotonic() - started
 
     assert resp.status_code == 504
     assert resp.json()["error"]["code"] == "upstream_timeout"
-    assert len(calls) == 1  # budget exhausted -> no retry after the deadline
-    assert elapsed < 5.0, f"attempt chain exceeded the budget ceiling: {elapsed:.1f}s"
+    assert len(calls) == 2
+    assert elapsed < 1.0
+
+
+def test_manual_first_model_attempt_survives_retry_deadline(client, monkeypatch):
+    """Do not interrupt healthy initial model inference at retry-chain deadline."""
+    monkeypatch.setattr(gw, "_UPSTREAM_RETRY_BUDGET_SECONDS", 0.02)
+    calls = []
+
+    async def fake(**kwargs):
+        calls.append(kwargs["model_id"])
+        await asyncio.sleep(0.05)
+        return _ok_response(kwargs["upstream_model"])
+
+    monkeypatch.setattr(plat, "call_platform_chat_completions", fake)
+    resp = _post(client, business14={"max_retries": 0})
+
+    assert resp.status_code == 200
+    assert len(calls) == 1
+    assert resp.json()["business14"]["attempt_count"] == 1
+
+
+def test_manual_slow_failure_exhausts_retry_budget_without_second_call(client, monkeypatch):
+    """After a long first attempt, do not dispatch an unplanned paid retry."""
+    monkeypatch.setattr(gw, "_UPSTREAM_RETRY_BUDGET_SECONDS", 0.02)
+    calls = []
+
+    async def fake(**kwargs):
+        calls.append(kwargs["model_id"])
+        await asyncio.sleep(0.05)
+        raise UpstreamTimeout()
+
+    monkeypatch.setattr(plat, "call_platform_chat_completions", fake)
+    resp = _post(client)
+
+    assert resp.status_code == 504
+    assert resp.json()["error"]["attempt_count"] == 1
+    assert len(calls) == 1
+
+
+@pytest.mark.asyncio
+async def test_manual_initial_request_propagates_parent_cancellation(monkeypatch):
+    """Removing the first-attempt hard cap must preserve explicit user abort."""
+    monkeypatch.setattr(gw, "_UPSTREAM_RETRY_BUDGET_SECONDS", 0.02)
+    entered = asyncio.Event()
+    seen_cancel = asyncio.Event()
+
+    async def fake(**kwargs):
+        entered.set()
+        try:
+            await asyncio.Event().wait()
+        except asyncio.CancelledError:
+            seen_cancel.set()
+            raise
+
+    monkeypatch.setattr(plat, "call_platform_chat_completions", fake)
+    task = asyncio.create_task(gw._handle_alpha_chat(
+        "cancel_test", {"model": MODEL_ID, "messages": [{"role": "user", "content": "offline"}]}
+    ))
+    await asyncio.wait_for(entered.wait(), timeout=1.0)
+    task.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await task
+    assert seen_cancel.is_set()
+
+
+def test_auto_initial_attempt_is_not_force_stopped(client, monkeypatch):
+    """Automatic selection must not cut off its first healthy model either."""
+    from dataclasses import replace
+
+    original_resolve_route = gw.rcore.resolve_route
+
+    def forced_auto(model_id, options):
+        manual = original_resolve_route(model_id, options)
+        return replace(manual, route_mode="auto", fallback_allowed=False, max_attempts=1)
+
+    monkeypatch.setattr(gw.rcore, "resolve_route", forced_auto)
+    monkeypatch.setattr(gw, "_UPSTREAM_RETRY_BUDGET_SECONDS", 0.04)
+    calls = []
+
+    async def fake(**kwargs):
+        calls.append(kwargs["model_id"])
+        await asyncio.sleep(2)
+        return _ok_response(kwargs["upstream_model"])
+
+    monkeypatch.setattr(plat, "call_platform_chat_completions", fake)
+    resp = _post(client, business14={"max_retries": 0})
+    assert resp.status_code == 200
+    assert len(calls) == 1
 
 
 def test_budget_constants_fit_engine_60s_window():
-    """Worst-case arithmetic (documented in the PR):
+    """Only auto chains / subsequent retries fit this bounded window.
+
+    The first explicit-model attempt is intentionally outside this budget,
+    so the caller's independent cancellation policy remains authoritative.
+    Legacy worst-case arithmetic:
     3 attempts x 30s adapter read timeout + 0.5s + 1.0s backoff = 91.5s
     unbounded — therefore the 45s deadline is the hard cap:
     sum(attempt wall time) + sum(backoffs) <= 45s by construction,

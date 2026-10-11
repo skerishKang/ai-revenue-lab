@@ -78,7 +78,10 @@ _STORE_ERROR_CODES: dict[str, tuple[str, str, int]] = {
 
 
 def _default_provenance(record: StoredImageRecord) -> str:
-    return _PROVENANCE_PREFIX + secrets.token_urlsafe(_PROVENANCE_ENTROPY_BYTES)
+    # token_urlsafe may begin with '-' or '_', while the shared safe-id
+    # grammar requires the first suffix character to be alphanumeric.
+    # Prefix one fixed alphanumeric sentinel without reducing token entropy.
+    return _PROVENANCE_PREFIX + "p" + secrets.token_urlsafe(_PROVENANCE_ENTROPY_BYTES)
 
 
 @dataclass(frozen=True, slots=True)

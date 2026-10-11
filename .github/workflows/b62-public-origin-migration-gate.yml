@@ -1,0 +1,276 @@
+name: B62 Public Origin Migration Gate
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b62-public-origin-migration-gate.yml"
+      - ".github/workflows/b62-google-auth-production-activation-gate.yml"
+      - ".github/workflows/b62-production-code-deploy-gate.yml"
+      - ".github/scripts/b62_public_origin_migration.py"
+      - ".github/tests/test_b62_public_origin_migration.py"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Canonical public-origin migration mode"
+        required: true
+        type: choice
+        default: preflight_only
+        options:
+          - preflight_only
+          - readiness
+          - migrate_production
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      confirmation:
+        description: "Exact Production migration confirmation"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-public-origin-migration-gate
+  cancel-in-progress: false
+
+env:
+  B62_WORKER: padiem-chat
+  TARGET_SHA: ${{ inputs.target_sha }}
+  OLD_PUBLIC_ORIGIN: https://padiem-chat.charliekant.workers.dev
+  NEW_PUBLIC_ORIGIN: https://chat.padiem.net
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install source-test dependency
+        run: python -m pip install --quiet pytest
+
+      - name: Run public-origin migration source tests
+        run: python -m pytest .github/tests/test_b62_public_origin_migration.py -q
+
+      - name: Source-only evidence
+        run: |
+          echo 'B62_PUBLIC_ORIGIN_MIGRATION_SOURCE_CONTRACT=PASS'
+          echo 'SECRET_VALUES_READ=0'
+          echo 'SECRET_VALUES_OUTPUT=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+  cloudflare-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode != 'preflight_only' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'READINESS_EXACT_MAIN_SHA=PASS'
+
+      - name: Read legacy origin prestate and target host health
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
+          settings="${RUNNER_TEMP}/b62-origin-readonly.json"
+          curl -fsS             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"             -H "Content-Type: application/json"             "${api}/settings" -o "${settings}"
+
+          python .github/scripts/b62_public_origin_migration.py prestate --before "${settings}"
+
+          health_status="$(curl -sS -o /dev/null -w '%{http_code}' "${NEW_PUBLIC_ORIGIN}/health")"
+          test "${health_status}" = "200"
+          echo "TARGET_ORIGIN_HEALTH_STATUS=${health_status}"
+
+          auth_status="${RUNNER_TEMP}/b62-origin-readiness-auth.json"
+          curl -fsS "${NEW_PUBLIC_ORIGIN}/api/auth/status" -o "${auth_status}"
+          jq -e '.ready == true and .authenticated == false and .session_state == "guest"' "${auth_status}" >/dev/null
+          echo 'TARGET_ORIGIN_AUTH_STATUS_READY=PASS'
+          echo 'OWNER_GOOGLE_CALLBACK_CONFIRMATION_REQUIRED=YES'
+          echo 'B62_PUBLIC_ORIGIN_MIGRATION_READINESS=PASS'
+          echo 'SECRET_VALUES_READ=0'
+          echo 'SECRET_VALUES_OUTPUT=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+  migrate-production:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'migrate_production' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+    steps:
+      - name: Require explicit owner-approved migration authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "CONFIRM_MIGRATE_B62_PUBLIC_ORIGIN_TO_CHAT_PADIEM_NET"
+          echo 'OWNER_GOOGLE_CALLBACK_CONFIRMED=REQUIRED_BY_DISPATCH'
+          echo 'B62_PUBLIC_ORIGIN_MIGRATION_AUTHORIZATION=PASS'
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main immediately before mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test "${GITHUB_SHA}" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+
+      - name: Migrate canonical public origin with bounded rollback
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
+          pre="${RUNNER_TEMP}/b62-origin-pre.json"
+          pre_deploy="${RUNNER_TEMP}/b62-origin-pre-deploy.json"
+
+          curl -fsS "${auth[@]}" "${api}/settings" -o "${pre}"
+          curl -fsS "${auth[@]}" "${api}/deployments" -o "${pre_deploy}"
+          jq -e '.success == true and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${pre_deploy}" >/dev/null
+
+          python .github/scripts/b62_public_origin_migration.py prestate --before "${pre}"
+          pre_version="$(jq -r '.result.deployments[0].versions[0].version_id' "${pre_deploy}")"
+          test -n "${pre_version}"
+          echo "PREMUTATION_SERVED_VERSION_ID=${pre_version}"
+
+          patch="${RUNNER_TEMP}/b62-origin-target.json"
+          python .github/scripts/b62_public_origin_migration.py build-target --before "${pre}" --output "${patch}"
+
+          mutated=0
+          rollback() {
+            rc="$?"
+            set +e
+            if [ "${rc}" -ne 0 ] && [ "${mutated}" -eq 1 ]; then
+              echo 'B62_PUBLIC_ORIGIN_ROLLBACK=STARTED'
+              rollback_payload="${RUNNER_TEMP}/b62-origin-rollback.json"
+              python .github/scripts/b62_public_origin_migration.py build-rollback                 --before "${pre}" --output "${rollback_payload}" >/dev/null 2>&1 || true
+              curl -sS -X PATCH                 -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"                 -F "settings=<${rollback_payload};type=application/json"                 "${api}/settings"                 -o "${RUNNER_TEMP}/b62-origin-rollback-response.json" >/dev/null 2>&1 || true
+              post_rollback="${RUNNER_TEMP}/b62-origin-post-rollback.json"
+              if curl -fsS "${auth[@]}" "${api}/settings" -o "${post_rollback}" &&                  python .github/scripts/b62_public_origin_migration.py verify-rollback                    --before "${pre}" --after "${post_rollback}" >/dev/null 2>&1; then
+                echo 'B62_PUBLIC_ORIGIN_ROLLBACK_READBACK=EXACT'
+              else
+                echo 'B62_PUBLIC_ORIGIN_ROLLBACK_READBACK=NOT_EXACT'
+              fi
+              echo 'SECRET_VALUES_READ=0'
+              echo 'SECRET_VALUES_OUTPUT=0'
+            fi
+            exit "${rc}"
+          }
+          trap rollback EXIT
+
+          response="${RUNNER_TEMP}/b62-origin-patch-response.json"
+          status="$(curl -sS -X PATCH             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"             -F "settings=<${patch};type=application/json"             "${api}/settings" -o "${response}" -w '%{http_code}')"
+          rm -f "${patch}"
+          test "${status}" -ge 200
+          test "${status}" -lt 300
+          jq -e '.success == true' "${response}" >/dev/null
+          mutated=1
+
+          verified=no
+          for _ in $(seq 1 30); do
+            post="${RUNNER_TEMP}/b62-origin-post.json"
+            if curl -fsS "${auth[@]}" "${api}/settings" -o "${post}" &&                python .github/scripts/b62_public_origin_migration.py verify-target                  --before "${pre}" --after "${post}" >/dev/null 2>&1; then
+              verified=yes
+              break
+            fi
+            sleep 2
+          done
+          test "${verified}" = yes
+          python .github/scripts/b62_public_origin_migration.py verify-target             --before "${pre}" --after "${post}"
+
+          health_status="$(curl -sS -o /dev/null -w '%{http_code}' "${NEW_PUBLIC_ORIGIN}/health")"
+          test "${health_status}" = "200"
+          echo "HEALTH_STATUS=${health_status}"
+
+          auth_status="${RUNNER_TEMP}/b62-origin-auth-status.json"
+          curl -fsS "${NEW_PUBLIC_ORIGIN}/api/auth/status" -o "${auth_status}"
+          jq -e '.ready == true and .authenticated == false and .session_state == "guest"' "${auth_status}" >/dev/null
+          echo 'AUTH_STATUS_READY=PASS'
+
+          start_headers="${RUNNER_TEMP}/b62-origin-auth-start-headers.txt"
+          start_status="$(curl -sS -D "${start_headers}" -o /dev/null -w '%{http_code}' "${NEW_PUBLIC_ORIGIN}/auth/google/start")"
+          test "${start_status}" = "302"
+          START_HEADERS="${start_headers}" python - <<'PY'
+          import os
+          from urllib.parse import parse_qs, urlsplit
+
+          lines = open(os.environ["START_HEADERS"], encoding="utf-8").read().splitlines()
+          location = next((line.split(":", 1)[1].strip() for line in lines if line.lower().startswith("location:")), "")
+          set_cookie = next((line.split(":", 1)[1].strip() for line in lines if line.lower().startswith("set-cookie:") and "padiem_oauth_state=" in line), "")
+          if not location or not set_cookie:
+              raise SystemExit("AUTH_START_HEADERS=FAIL")
+          query = parse_qs(urlsplit(location).query)
+          redirect_uri = query.get("redirect_uri", [""])[0]
+          if redirect_uri != "https://chat.padiem.net/auth/google/callback":
+              raise SystemExit("AUTH_START_REDIRECT_URI_CANONICAL=FAIL")
+          lowered = set_cookie.lower()
+          for required in ("secure", "httponly", "samesite=lax", "path=/"):
+              if required not in lowered:
+                  raise SystemExit("AUTH_START_STATE_COOKIE_CONTRACT=FAIL")
+          print("AUTH_START_HTTP=302")
+          print("AUTH_START_REDIRECT_URI_CANONICAL=PASS")
+          print("AUTH_START_STATE_COOKIE_CONTRACT=PASS")
+          print("OAUTH_STATE_VALUE_OUTPUT=0")
+          PY
+
+          served_changed=no
+          for _ in $(seq 1 30); do
+            post_deploy="${RUNNER_TEMP}/b62-origin-post-deploy.json"
+            if curl -fsS "${auth[@]}" "${api}/deployments" -o "${post_deploy}" &&                jq -e '.success == true and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${post_deploy}" >/dev/null 2>&1; then
+              post_version="$(jq -r '.result.deployments[0].versions[0].version_id' "${post_deploy}")"
+              if [ -n "${post_version}" ] && [ "${post_version}" != "${pre_version}" ]; then
+                served_changed=yes
+                echo "POST_MIGRATION_SERVED_VERSION_ID=${post_version}"
+                break
+              fi
+            fi
+            sleep 2
+          done
+          test "${served_changed}" = yes
+          echo 'SERVED_VERSION_CHANGED=PASS'
+
+          trap - EXIT
+          echo 'B62_PUBLIC_ORIGIN_MIGRATION=PASS'
+          echo 'LOGIN_ATTEMPT=0'
+          echo 'PHASE_B_REQUEST=0'
+          echo 'SECRET_VALUES_READ=0'
+          echo 'SECRET_VALUES_OUTPUT=0'
+          echo 'PRODUCTION_MUTATION=1'

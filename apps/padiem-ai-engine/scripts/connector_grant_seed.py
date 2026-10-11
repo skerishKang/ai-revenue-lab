@@ -1,23 +1,25 @@
-"""WO-10 ACT-1: connector grant seed/revoke/list script (D1 references only).
+"""Connector grant seed/revoke/list script for Engine D1 references only.
 
-Inserts, revokes, or lists Gmail connector grant REFERENCES (no credential
-material) in the `padiem_engine_connector_grants` D1 table through
-`wrangler d1 execute`. Credential values (client_id, client_secret, refresh_token)
-are never accepted as arguments and never read here.
+Supports the reviewed Gmail READ grant plus Google Drive, Telegram, Google
+Calendar and shared Slack READ capability grants. Credential material is never
+accepted as an argument and never read here.
 
-Values are validated against the same rules the Engine Gmail grant seam uses
-(`apps/padiem-ai-engine/app/connector_bindings.py` + `gmail_tool_binding`):
-- `app_id` must equal `GMAIL_REFERENCE_APP_ID` and match the canonical identifier
-  charset (no quotes, whitespace, semicolons);
-- `agent_id` must equal `GMAIL_MAIL_READER_AGENT_ID` and match the canonical
-  agent-id grammar;
-- `binding_ref` / `actor_ref` must match the canonical identifier charset;
-- `scopes` must be the Gmail readonly scope (Core token `gmail.readonly` or the
-  exact provider URL `https://www.googleapis.com/auth/gmail.readonly`; the Core
-  token is what gets stored, mirroring `connector_grants_d1.py`).
+All connector seeding is fail-closed: the caller must provide trusted
+``binding_ref`` and ``actor_ref`` values produced by the connector's
+server-side authority flow. Gmail accepts only the reviewed readonly scope;
+Drive, Telegram, Calendar and Slack accept only the reviewed ``read``
+capability. No mutation/write capability can be seeded and no synthetic/default
+refs are accepted.
 
-Invalid input exits code 2 before any D1 call. Default run (no `--execute`)
-prints the SQL for review (dry-run).
+The Slack grant reuses the existing single grant store, the existing canonical
+grant-seed authority and the already-promoted canonical Slack app/agent/
+connector identity (``b54-padiem-claw-slack`` /
+``agent:padiem:claw_slack_reader@1`` / ``connector:slack:workspace@1``). It adds
+no second Slack runtime, credential authority or grant store, and Slack
+send/write/events capabilities stay impossible to seed here.
+
+Default run (no ``--execute``) prints SQL for review. ``--execute`` is a
+separate Production mutation action and remains outside source/CI work.
 """
 
 from __future__ import annotations
@@ -26,92 +28,203 @@ import argparse
 import json
 import pathlib
 import re
+import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone
 from typing import Sequence
 
-# Reuse the Engine's canonical identifiers (contract: "import 재사용 가능하면
-# import"). Make `app` importable when the script is run directly from the repo
-# root (`python apps/padiem-ai-engine/scripts/connector_grant_seed.py`) or from
-# inside `apps/padiem-ai-engine`. Standard library only beyond this.
 if __package__ in (None, ""):
     _ENGINE_ROOT = pathlib.Path(__file__).resolve().parents[1]
     if str(_ENGINE_ROOT) not in sys.path:
         sys.path.insert(0, str(_ENGINE_ROOT))
 
 from app.connector_bindings import (
+    CALENDAR_AGENT_ID,
+    CALENDAR_REFERENCE_APP_ID,
+    DRIVE_AGENT_ID,
+    DRIVE_REFERENCE_APP_ID,
     GMAIL_CONNECTOR_ID,
     GMAIL_MAIL_READER_AGENT_ID,
     GMAIL_REFERENCE_APP_ID,
+    SLACK_AGENT_ID,
+    SLACK_CONNECTOR_ID,
+    SLACK_REFERENCE_APP_ID,
+    TELEGRAM_AGENT_ID,
+    TELEGRAM_REFERENCE_APP_ID,
 )
+from padiem_ai_core.calendar_capability import CALENDAR_CONNECTOR_ID, CalendarCapability
+from padiem_ai_core.drive_capability import DRIVE_CONNECTOR_ID, DriveCapability
+from padiem_ai_core.slack_capability import SlackCapability
+from padiem_ai_core.telegram_capability import TELEGRAM_CONNECTOR_ID, TelegramCapability
 
-# Canonical identifier charset — same as `app/tool_projection.py:_IDENTIFIER_RE`.
-# No quotes, whitespace, semicolons can pass, so SQL injection is impossible
-# after validation.
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
-
-# Canonical agent-id grammar — same as `app/tool_projection.py:_CANONICAL_AGENT_ID_RE`.
 _AGENT_ID_RE = re.compile(
     r"^agent:[a-z0-9][a-z0-9._-]{0,63}:[a-z0-9][a-z0-9._-]{0,63}@[1-9][0-9]*$"
 )
 
 _CORE_GMAIL_READONLY_SCOPE = "gmail.readonly"
 _PROVIDER_GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly"
-_ALLOWED_SCOPES = (_CORE_GMAIL_READONLY_SCOPE, _PROVIDER_GMAIL_READONLY_SCOPE)
-
-# connector_id is a constant per contract: connector:google:gmail@1
-_CONNECTOR_ID = GMAIL_CONNECTOR_ID
+_ALLOWED_GMAIL_SCOPES = (_CORE_GMAIL_READONLY_SCOPE, _PROVIDER_GMAIL_READONLY_SCOPE)
+_ALLOWED_DRIVE_CAPABILITIES = (DriveCapability.READ.value,)
+_ALLOWED_TELEGRAM_CAPABILITIES = (TelegramCapability.READ.value,)
+_ALLOWED_CALENDAR_CAPABILITIES = (CalendarCapability.READ.value,)
+_ALLOWED_SLACK_CAPABILITIES = (SlackCapability.READ.value,)
 
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
+_CONNECTOR_IDS = {
+    "gmail": GMAIL_CONNECTOR_ID,
+    "drive": DRIVE_CONNECTOR_ID,
+    "telegram": TELEGRAM_CONNECTOR_ID,
+    "calendar": CALENDAR_CONNECTOR_ID,
+    "slack": SLACK_CONNECTOR_ID,
+}
+_APP_IDS = {
+    "gmail": GMAIL_REFERENCE_APP_ID,
+    "drive": DRIVE_REFERENCE_APP_ID,
+    "telegram": TELEGRAM_REFERENCE_APP_ID,
+    "calendar": CALENDAR_REFERENCE_APP_ID,
+    "slack": SLACK_REFERENCE_APP_ID,
+}
+_AGENT_IDS = {
+    "gmail": GMAIL_MAIL_READER_AGENT_ID,
+    "drive": DRIVE_AGENT_ID,
+    "telegram": TELEGRAM_AGENT_ID,
+    "calendar": CALENDAR_AGENT_ID,
+    "slack": SLACK_AGENT_ID,
+}
+_DEFAULT_READ_CAPABILITIES = {
+    "drive": [DriveCapability.READ.value],
+    "telegram": [TelegramCapability.READ.value],
+    "calendar": [CalendarCapability.READ.value],
+    "slack": [SlackCapability.READ.value],
+}
+
+
+def _connector_id(args: argparse.Namespace) -> str:
+    return _CONNECTOR_IDS[args.connector]
+
+
+def _expected_app_id(args: argparse.Namespace) -> str:
+    return _APP_IDS[args.connector]
+
+
+def _expected_agent_id(args: argparse.Namespace) -> str:
+    return _AGENT_IDS[args.connector]
+
+
+def _apply_connector_defaults(args: argparse.Namespace) -> None:
+    if args.app_id is None:
+        args.app_id = _expected_app_id(args)
+    if args.agent_id is None:
+        args.agent_id = _expected_agent_id(args)
+
+
 def validate_args(args: argparse.Namespace) -> list[str]:
-    """Return a list of validation errors (empty when valid)."""
+    """Return validation errors. Invalid input must fail before any D1 call."""
     errors: list[str] = []
-    if args.app_id != GMAIL_REFERENCE_APP_ID:
-        errors.append(f"app_id must equal GMAIL_REFERENCE_APP_ID {GMAIL_REFERENCE_APP_ID!r}")
-    elif not _IDENTIFIER_RE.match(args.app_id):
-        errors.append("app_id contains characters outside the trusted identifier charset (no quotes, whitespace, semicolons)")
-    if args.agent_id != GMAIL_MAIL_READER_AGENT_ID:
-        errors.append(f"agent_id must equal GMAIL_MAIL_READER_AGENT_ID {GMAIL_MAIL_READER_AGENT_ID!r}")
-    elif not _AGENT_ID_RE.match(args.agent_id):
+
+    expected_app_id = _expected_app_id(args)
+    expected_agent_id = _expected_agent_id(args)
+    if args.app_id != expected_app_id:
+        errors.append(f"app_id must equal the canonical {args.connector} app id {expected_app_id!r}")
+    elif not _IDENTIFIER_RE.fullmatch(args.app_id):
+        errors.append("app_id contains characters outside the trusted identifier charset")
+
+    if args.agent_id != expected_agent_id:
+        errors.append(f"agent_id must equal the canonical {args.connector} agent id {expected_agent_id!r}")
+    elif not _AGENT_ID_RE.fullmatch(args.agent_id):
         errors.append("agent_id does not match the canonical agent-id grammar")
-    if not _IDENTIFIER_RE.match(args.binding_ref):
-        errors.append("binding_ref contains characters outside the trusted identifier charset (no quotes, whitespace, semicolons)")
-    if not _IDENTIFIER_RE.match(args.actor_ref):
-        errors.append("actor_ref contains characters outside the trusted identifier charset (no quotes, whitespace, semicolons)")
-    unknown_scopes = [s for s in args.scopes if s not in _ALLOWED_SCOPES]
-    if unknown_scopes:
-        errors.append(f"scopes must be one of {_ALLOWED_SCOPES!r}; got {unknown_scopes!r}")
+
+    # Seed authority must always come from the just-completed trusted connection.
+    # Revoke targets only (app_id, connector_id), so it does not need raw refs.
+    if args.action == "seed":
+        if not isinstance(args.binding_ref, str) or not _IDENTIFIER_RE.fullmatch(args.binding_ref):
+            if args.binding_ref is None:
+                errors.append(
+                    f"{args.connector} binding_ref is required and must come from trusted server authority"
+                )
+            else:
+                errors.append("binding_ref contains characters outside the trusted identifier charset")
+        if not isinstance(args.actor_ref, str) or not _IDENTIFIER_RE.fullmatch(args.actor_ref):
+            if args.actor_ref is None:
+                errors.append(
+                    f"{args.connector} actor_ref is required and must come from trusted server identity"
+                )
+            else:
+                errors.append("actor_ref contains characters outside the trusted identifier charset")
+
+    if args.connector == "gmail":
+        unknown_scopes = [scope for scope in args.scopes if scope not in _ALLOWED_GMAIL_SCOPES]
+        if unknown_scopes:
+            errors.append(f"scopes must be one of {_ALLOWED_GMAIL_SCOPES!r}; got {unknown_scopes!r}")
+        if args.capabilities:
+            errors.append("capabilities are not accepted for Gmail grants")
+    elif args.connector == "drive":
+        if args.scopes:
+            errors.append("scopes are not accepted for Drive grants; use --capabilities read")
+        if tuple(args.capabilities) != _ALLOWED_DRIVE_CAPABILITIES:
+            errors.append("Drive capabilities must be exactly ('read',); mutation/write is forbidden")
+    elif args.connector == "calendar":
+        if args.scopes:
+            errors.append("scopes are not accepted for Calendar grants; use --capabilities read")
+        if tuple(args.capabilities) != _ALLOWED_CALENDAR_CAPABILITIES:
+            errors.append(
+                "Calendar capabilities must be exactly ('read',); "
+                "create/update/delete/respond/write is forbidden"
+            )
+    elif args.connector == "slack":
+        if args.scopes:
+            errors.append("scopes are not accepted for Slack grants; use --capabilities read")
+        if tuple(args.capabilities) != _ALLOWED_SLACK_CAPABILITIES:
+            errors.append(
+                "Slack capabilities must be exactly ('read',); "
+                "post_message/reply_thread/update_message/upload_file/send/write is forbidden"
+            )
+    else:
+        if args.scopes:
+            errors.append("scopes are not accepted for Telegram grants; use --capabilities read")
+        if tuple(args.capabilities) != _ALLOWED_TELEGRAM_CAPABILITIES:
+            errors.append("Telegram capabilities must be exactly ('read',); send/write is forbidden")
+
     return errors
 
 
-def _normalized_scopes(scopes: Sequence[str]) -> tuple[str, ...]:
-    """Store the Core auth-scope token (mirrors connector_grants_d1.py loads)."""
+def _normalized_gmail_scopes(scopes: Sequence[str]) -> tuple[str, ...]:
     return tuple(
-        _CORE_GMAIL_READONLY_SCOPE if s == _PROVIDER_GMAIL_READONLY_SCOPE else s
-        for s in scopes
+        _CORE_GMAIL_READONLY_SCOPE if scope == _PROVIDER_GMAIL_READONLY_SCOPE else scope
+        for scope in scopes
     )
 
 
 def build_seed_sql(args: argparse.Namespace) -> str:
-    scopes_json = json.dumps(list(_normalized_scopes(args.scopes)), separators=(",", ":"))
     now = _now_iso()
+    connector_id = _connector_id(args)
+    if args.connector == "gmail":
+        scopes_json = json.dumps(list(_normalized_gmail_scopes(args.scopes)), separators=(",", ":"))
+        capabilities_json = "[]"
+    else:
+        scopes_json = "[]"
+        capabilities_json = json.dumps(list(args.capabilities), separators=(",", ":"))
+
     row = (
-        f"'{args.app_id}', '{args.agent_id}', '{_CONNECTOR_ID}', "
-        f"'{args.binding_ref}', '{args.actor_ref}', '{scopes_json}', 1, "
-        f"'{now}', '{now}'"
+        f"'{args.app_id}', '{args.agent_id}', '{connector_id}', "
+        f"'{args.binding_ref}', '{args.actor_ref}', '{scopes_json}', "
+        f"'{capabilities_json}', 1, '{now}', '{now}'"
     )
     return (
         "INSERT INTO padiem_engine_connector_grants "
         "(app_id, canonical_agent_id, connector_id, binding_ref, actor_ref, "
-        "granted_scopes_json, active, created_at, updated_at) VALUES ("
+        "granted_scopes_json, granted_capabilities_json, active, created_at, updated_at) VALUES ("
         f"{row}) ON CONFLICT(app_id, connector_id) DO UPDATE SET active=1, "
         "binding_ref=excluded.binding_ref, actor_ref=excluded.actor_ref, "
-        "granted_scopes_json=excluded.granted_scopes_json, updated_at=excluded.updated_at;"
+        "granted_scopes_json=excluded.granted_scopes_json, "
+        "granted_capabilities_json=excluded.granted_capabilities_json, "
+        "updated_at=excluded.updated_at;"
     )
 
 
@@ -120,21 +233,36 @@ def build_revoke_sql(args: argparse.Namespace) -> str:
     return (
         "UPDATE padiem_engine_connector_grants SET active=0, "
         f"updated_at='{now}' WHERE app_id='{args.app_id}' "
-        f"AND connector_id='{_CONNECTOR_ID}';"
+        f"AND connector_id='{_connector_id(args)}';"
     )
 
 
 def build_list_sql() -> str:
     return (
-        "SELECT app_id, canonical_agent_id, binding_ref, actor_ref, active "
+        "SELECT app_id, canonical_agent_id, connector_id, binding_ref, actor_ref, active "
         "FROM padiem_engine_connector_grants;"
     )
 
 
+def _resolve_npx_executable() -> str | None:
+    """Resolve the platform launcher explicitly.
+
+    On Windows, npx is commonly installed as npx.cmd. Passing the bare name
+    in a list-form subprocess.run call can fail before Wrangler starts.
+    shutil.which resolves PATHEXT on Windows while still returning the
+    ordinary executable path on POSIX.
+    """
+    return shutil.which("npx") or shutil.which("npx.cmd")
+
+
 def run_d1(sql: str) -> int:
-    """Execute one D1 statement through wrangler. No credential material args."""
+    """Execute one reviewed D1 statement through wrangler."""
+    npx_executable = _resolve_npx_executable()
+    if npx_executable is None:
+        print("connector_grant_seed: npx executable not found on PATH", file=sys.stderr)
+        return 127
     cmd = [
-        "npx", "--yes", "wrangler@4", "d1", "execute", "padiem-engine",
+        npx_executable, "--yes", "wrangler@4", "d1", "execute", "padiem-engine",
         "--remote", "--json", "--command", sql,
     ]
     proc = subprocess.run(cmd, text=True, capture_output=True)
@@ -148,26 +276,36 @@ def run_d1(sql: str) -> int:
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--action", choices=("seed", "revoke", "list"), required=True)
-    parser.add_argument("--app-id", default=GMAIL_REFERENCE_APP_ID)
-    parser.add_argument("--agent-id", default=GMAIL_MAIL_READER_AGENT_ID)
-    parser.add_argument("--binding-ref", default="bind:b54-padiem-claw:claw_mail_reader")
-    parser.add_argument("--actor-ref", default="actor:b54-padiem-claw:claw_mail_reader")
-    parser.add_argument("--scopes", nargs="*", default=[_PROVIDER_GMAIL_READONLY_SCOPE])
+    parser.add_argument(
+        "--connector",
+        choices=("gmail", "drive", "telegram", "calendar", "slack"),
+        default="gmail",
+    )
+    parser.add_argument("--app-id", default=None)
+    parser.add_argument("--agent-id", default=None)
+    parser.add_argument("--binding-ref", default=None)
+    parser.add_argument("--actor-ref", default=None)
+    parser.add_argument("--scopes", nargs="*", default=None)
+    parser.add_argument("--capabilities", nargs="*", default=None)
     parser.add_argument("--execute", action="store_true")
     args = parser.parse_args(argv)
 
-    errors = validate_args(args)
-    if errors:
-        for error in errors:
-            print(f"connector_grant_seed: {error}", file=sys.stderr)
-        return 2
+    _apply_connector_defaults(args)
+    if args.scopes is None:
+        args.scopes = [_PROVIDER_GMAIL_READONLY_SCOPE] if args.connector == "gmail" else []
+    if args.capabilities is None:
+        args.capabilities = list(_DEFAULT_READ_CAPABILITIES.get(args.connector, []))
 
-    if args.action == "seed":
-        sql = build_seed_sql(args)
-    elif args.action == "revoke":
-        sql = build_revoke_sql(args)
-    else:
+    # List is read-only and does not require a connection-specific binding ref.
+    if args.action == "list":
         sql = build_list_sql()
+    else:
+        errors = validate_args(args)
+        if errors:
+            for error in errors:
+                print(f"connector_grant_seed: {error}", file=sys.stderr)
+            return 2
+        sql = build_seed_sql(args) if args.action == "seed" else build_revoke_sql(args)
 
     if not args.execute:
         print(sql)

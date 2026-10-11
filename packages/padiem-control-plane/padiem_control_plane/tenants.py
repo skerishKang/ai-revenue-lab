@@ -17,10 +17,10 @@ This module is pure contract: no storage, no network, no side effects.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-import re
 
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _TENANT_ID_PREFIX = "tenant_"
@@ -44,6 +44,27 @@ class CanonicalTenantState(str, Enum):
 class TenantMembershipState(str, Enum):
     ACTIVE = "active"
     INACTIVE = "inactive"
+
+
+class TenantMembershipRole(str, Enum):
+    VIEWER = "viewer"
+    OPERATOR = "operator"
+    APPROVER = "approver"
+    OWNER = "owner"
+
+
+def _membership_role(value: object) -> TenantMembershipRole | None:
+    if value is None:
+        return None
+    if isinstance(value, TenantMembershipRole):
+        return value
+    try:
+        return TenantMembershipRole(value)
+    except (TypeError, ValueError) as exc:
+        raise ControlPlaneTenantError(
+            "invalid_canonical_membership_role",
+            "role must be viewer, operator, approver, or owner",
+        ) from exc
 
 
 def _identifier(name: str, value: object) -> str:
@@ -115,6 +136,7 @@ class TenantMembership:
     canonical_subject_id: str
     state: TenantMembershipState = TenantMembershipState.ACTIVE
     created_at: datetime | None = None
+    role: TenantMembershipRole | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "tenant_id", _server_minted_tenant_id(self.tenant_id))
@@ -130,6 +152,7 @@ class TenantMembership:
             raise ControlPlaneTenantError(
                 "invalid_canonical_tenant", "state must be TenantMembershipState"
             )
+        object.__setattr__(self, "role", _membership_role(self.role))
         if self.created_at is not None:
             object.__setattr__(self, "created_at", _aware("created_at", self.created_at))
 
@@ -139,6 +162,7 @@ class TenantMembership:
             "canonical_subject_id": self.canonical_subject_id,
             "state": self.state.value,
             "created_at": self.created_at.isoformat() if self.created_at else None,
+            "role": self.role.value if self.role is not None else None,
         }
 
 
@@ -148,3 +172,6 @@ CANONICAL_TENANT_CONTRACT_SOURCE = True
 TENANT_SERVER_MINTED_ONLY = True
 REQUEST_ASSERTED_TENANT_AUTHORITY = False
 DEFAULT_TENANT = False
+CANONICAL_MEMBERSHIP_ROLE_AUTHORITY = True
+DEFAULT_MEMBERSHIP_ROLE = False
+MEMBERSHIP_ROLE_REQUIRED_FOR_BACKGROUND = True

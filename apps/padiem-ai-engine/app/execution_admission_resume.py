@@ -21,6 +21,7 @@ from app.execution_admission import (
     ExecutionAdmissionError,
     ExecutionAdmissionRequest,
     TrustedExecutionAdmission,
+    TrustedUsageReservation,
     require_trusted_admission,
 )
 
@@ -39,6 +40,22 @@ class OriginalAdmissionBinding:
     authority_ref: str
     policy_revision: str
     request_fingerprint: str
+    usage_reservation: TrustedUsageReservation | None = None
+
+    def __post_init__(self) -> None:
+        reservation = self.usage_reservation
+        if reservation is None:
+            return
+        if not isinstance(reservation, TrustedUsageReservation):
+            raise ExecutionAdmissionError("invalid_admission", "Original usage reservation evidence is invalid.")
+        if reservation.product_id != self.app_id or reservation.billing_semantic_id != ORCHESTRATION_RUN_CAPABILITY:
+            raise ExecutionAdmissionError("invalid_admission", "Original usage reservation scope is invalid.")
+        if reservation.request_fingerprint != self.request_fingerprint:
+            raise ExecutionAdmissionError("invalid_admission", "Original usage reservation request identity is invalid.")
+        expected_subject_type = "user" if self.subject_id is not None else "account"
+        expected_subject_id = self.subject_id if self.subject_id is not None else self.app_id
+        if reservation.subject_type != expected_subject_type or reservation.subject_id != expected_subject_id:
+            raise ExecutionAdmissionError("invalid_admission", "Original usage reservation subject is invalid.")
 
     @classmethod
     def from_run_admission(cls, admission: TrustedExecutionAdmission) -> "OriginalAdmissionBinding":
@@ -69,6 +86,7 @@ class OriginalAdmissionBinding:
             authority_ref=admission.authority_ref,
             policy_revision=admission.policy_revision,
             request_fingerprint=admission.request_fingerprint,
+            usage_reservation=admission.usage_reservation,
         )
 
 

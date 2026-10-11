@@ -119,11 +119,12 @@ def _prepare(runtime: LocalAgentBrokerDurableRuntime) -> tuple[dict, dict]:
 
 def _wire(command: dict) -> dict:
     return {
-        "contract_version": "claw-local-command-material.v1",
+        "contract_version": "claw-local-command-material.v2",
         "command_id": command["command_id"],
         "binding_ref": command["binding_ref"],
         "sequence": command["sequence"],
         "request_fingerprint": command["request_fingerprint"],
+        "revision_ref": command["revision_ref"],
         "material": {
             "request_id": "request.refactor.1",
             "run_id": command["run_id"],
@@ -202,6 +203,7 @@ def test_material_store_and_lifecycle_runtime_run_without_platform_module() -> N
             "credential_b64": _encoded(CREDENTIAL),
             "command_id": command["command_id"],
             "request_fingerprint": command["request_fingerprint"],
+            "request_id": "request.refactor.1",
             "now": (BASE + timedelta(seconds=4)).isoformat(),
         }
     )
@@ -214,6 +216,10 @@ def test_material_store_and_lifecycle_runtime_run_without_platform_module() -> N
             "command_id": command["command_id"],
             "admission_ref": "admission.refactor.1",
             "evidence_ref": "evidence.refactor.1",
+            "revision_ref": command["revision_ref"],
+            "termination": "exited",
+            "request_id": "request.refactor.1",
+            "exit_code": 0,
             "now": (BASE + timedelta(seconds=5)).isoformat(),
         }
     )
@@ -233,4 +239,29 @@ def test_worker_file_is_thin_and_storage_schemas_live_outside_entrypoint() -> No
     assert "class CloudflareDurableObjectCommandMaterialStore" not in source
     assert "class LocalAgentBrokerDurableRuntime" not in source
     assert "from workers import" in source
-    assert len(source.splitlines()) < 190
+    # Issue #3121 adds one canonical RPC passthrough (reconcile_expired_command)
+    # per entrypoint class; the entrypoint must stay otherwise thin.
+    # #3121 adds one reconcile passthrough per entrypoint class; #3129 wires
+    # session_open_transaction into the device HTTP service. Still thin.
+    #
+    # Issue #3127 adds the atomic enqueue+material passthrough and *removes* the
+    # split `enqueue_command` / `store_command_material` pair from the product
+    # gateway, so this bound is main's, unchanged, and the entrypoint still
+    # holds no storage, schema or authority.
+    #
+    # Issue #3094 adds one read-only RPC passthrough per entrypoint class
+    # (`device_truth`): the narrow canonical device-fact projection the B62
+    # local-access source consumes. Still no storage, schema or authority in
+    # the entrypoint file — the fact vocabulary and markers live in the
+    # durable runtime module.
+    # Issue #3139 adds the read-only terminal-result passthrough per entrypoint
+    # class, exactly like #3094's device_truth: the Claw return leg's source of
+    # truth, on the same private Service Binding surface. Still no storage,
+    # schema or authority in the entrypoint file.
+    # Issue #3436 B2c adds the read-only device-session authentication
+    # passthrough per entrypoint class, on the same pattern and the same
+    # private Service Binding surface: the canonical broker session verifier
+    # the B62 Desktop conversation read consumes. The verifier itself and its
+    # contract markers live in the durable runtime module and the broker auth
+    # seam — this file only forwards. Still no storage, schema or authority.
+    assert len(source.splitlines()) < 236

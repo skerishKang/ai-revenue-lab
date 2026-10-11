@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ko" data-theme="dark" data-b67-preview="synthetic">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#131417" />
+  <link rel="icon" href="data:," />
+  <title>Padiem Legal — B67 검토용 화면 (DEMO)</title>
+  <meta name="description" content="B67 Padiem Legal 근거 기반 법률 조사 워크스페이스의 정적 검토용 화면. 모든 데이터는 샘플입니다." />
+
+  <!-- Shared-like Claw layers. On absorption into Padiem Claw these four files
+       are deleted and the canonical Chat/Claw stylesheets are used instead. -->
+  <link rel="stylesheet" href="./css/claw-tokens.css" />
+  <link rel="stylesheet" href="./css/claw-shell.css" />
+  <link rel="stylesheet" href="./css/claw-conversation.css" />
+  <link rel="stylesheet" href="./css/claw-evidence-card.css" />
+
+  <!-- Legal-specific layer. This is what does NOT move to Claw unchanged. -->
+  <link rel="stylesheet" href="./legal/legal-authority.css" />
+</head>
+<body>
+  <a class="skip-link" href="#conversation">대화로 건너뛰기</a>
+
+  <div class="app-shell" id="appShell" data-view="conversation">
+    <!-- ── Left: matters, corpus, honest format matrix ───────────────── -->
+    <aside class="sidebar" id="sidebar" aria-label="사건 및 자료">
+      <div class="brand-row">
+        <button class="mobile-close" id="sidebarClose" type="button" aria-label="메뉴 닫기">×</button>
+        <a class="brand" href="./" aria-label="Padiem Legal 검토 화면 홈">
+          <span class="brand-mark" aria-hidden="true">P</span>
+          <span>Padiem Legal</span>
+        </a>
+      </div>
+
+      <button class="new-chat" id="newResearch" type="button">
+        <span aria-hidden="true">＋</span>
+        <span>새 조사</span>
+      </button>
+
+      <nav class="side-nav" aria-label="주요 메뉴">
+        <button class="side-item" type="button" aria-current="page">
+          <span class="side-icon" aria-hidden="true">◆</span>
+          <span>Legal</span>
+        </button>
+      </nav>
+
+      <section class="recent-section" aria-labelledby="matterTitle">
+        <h2 id="matterTitle">사건 · 조사</h2>
+        <div id="matterList"></div>
+      </section>
+
+      <section class="recent-section" aria-labelledby="corpusTitle">
+        <h2 id="corpusTitle">사건 자료</h2>
+        <div class="corpus" id="corpus"></div>
+      </section>
+
+      <section class="recent-section" aria-labelledby="formatTitle">
+        <h2 id="formatTitle">문서 지원 상태</h2>
+        <ul class="fmt-strip" id="formatStrip" aria-describedby="formatNote"></ul>
+        <p class="sidebar-footer" id="formatNote" style="border:0;padding:0;margin:0;">
+          실제 처리 경로 기준입니다. 시연 화면과 무관합니다.
+        </p>
+      </section>
+
+      <div class="sidebar-footer">
+        <span class="preview-dot" aria-hidden="true"></span>
+        <span>B67 · 정적 검토 화면 · 실제 검색 없음</span>
+      </div>
+    </aside>
+
+    <button class="sidebar-scrim" id="sidebarScrim" type="button" aria-label="메뉴 닫기" hidden></button>
+
+    <!-- ── Center: conversation + composer ──────────────────────────── -->
+    <main class="main-panel" id="mainPanel">
+      <header class="topbar">
+        <button class="mobile-menu" id="mobileMenu" type="button"
+                aria-controls="sidebar" aria-expanded="false" aria-label="메뉴 열기">☰</button>
+        <div class="topbar-identity">
+          <p class="topbar-kicker">PADIEM CLAW · LEGAL</p>
+          <h2 class="topbar-title" id="topbarTitle">새 조사</h2>
+        </div>
+        <span class="topbar-spacer"></span>
+        <div class="claw-chips" id="stateChips" role="group" aria-label="검토 상태 전환">
+          <button type="button" class="claw-chip" data-value="home" aria-pressed="false">새 조사</button>
+          <button type="button" class="claw-chip" data-value="unified" aria-pressed="true">통합</button>
+          <button type="button" class="claw-chip" data-value="official" aria-pressed="false">공식</button>
+          <button type="button" class="claw-chip" data-value="drive" aria-pressed="false">Drive</button>
+          <button type="button" class="claw-chip" data-value="provenance" aria-pressed="false">페이지</button>
+          <button type="button" class="claw-chip" data-value="fail-closed" aria-pressed="false">근거 없음</button>
+          <button type="button" class="claw-chip" data-value="disconnected" aria-pressed="false">미연결</button>
+        </div>
+      </header>
+
+      <section class="conversation" id="conversation" aria-label="법률 조사 대화"></section>
+
+      <div class="composer-wrap" aria-label="메시지 작성">
+        <div class="evidence-trigger-row" id="evidenceTriggerRow" style="margin-bottom:8px; display:flex;">
+          <button class="evidence-trigger" id="evidenceTrigger" type="button"
+                  aria-haspopup="dialog" aria-controls="evidenceDrawer" aria-expanded="false">
+            <span aria-hidden="true">⌗</span>
+            <span class="trigger-label">근거 0개</span>
+          </button>
+        </div>
+        <form class="composer" id="composerForm">
+          <label class="sr-only" for="composerInput">질문 입력</label>
+          <textarea id="composerInput" rows="1" maxlength="2000"
+                    placeholder="사건 관련 질문을 입력하세요"
+                    autocomplete="off"></textarea>
+          <div class="composer-actions">
+            <div class="composer-tools">
+              <span class="demo-label" data-runtime-label>DEMO</span>
+            </div>
+            <button class="send-button" id="sendButton" type="submit"
+                    aria-label="질문 보내기" disabled>↑</button>
+          </div>
+        </form>
+        <p class="composer-note" id="runtimeNote" role="status" aria-live="polite">
+          이 화면은 샘플 데이터로 만든 정적 시연입니다. 실제 검색·문서 열기·Drive 연결은 동작하지 않습니다.
+        </p>
+      </div>
+    </main>
+
+    <!-- ── Right: desktop evidence panel ─────────────────────────────── -->
+    <aside class="evidence-panel" id="evidencePanel" aria-label="근거 자료">
+      <header class="evidence-header">
+        <div class="evidence-header-copy">
+          <p class="evidence-kicker">EVIDENCE</p>
+          <h2 class="evidence-title">근거 자료</h2>
+        </div>
+        <span class="evidence-count" id="evidenceCount">0개</span>
+        <button class="evidence-close" id="panelClose" type="button" aria-label="근거 닫기">×</button>
+      </header>
+      <ol class="evidence-list" id="evidenceList"></ol>
+      <p class="evidence-foot">
+        1차자료만 법적 근거로 인용하십시오. 2차자료는 참고입니다.
+      </p>
+    </aside>
+  </div>
+
+  <!-- ── Mobile: the SAME evidence list as a bottom sheet ──────────────── -->
+  <button class="drawer-scrim" id="drawerScrim" type="button" aria-label="근거 닫기" hidden></button>
+  <section class="evidence-drawer" id="evidenceDrawer"
+           role="dialog" aria-modal="true" aria-labelledby="drawerTitle" data-open="false" inert>
+    <div class="evidence-drawer-grip" aria-hidden="true"></div>
+    <header class="evidence-header">
+      <div class="evidence-header-copy">
+        <p class="evidence-kicker">EVIDENCE</p>
+        <h2 class="evidence-title" id="drawerTitle">근거 자료</h2>
+      </div>
+      <span class="evidence-count" id="drawerCount">0개</span>
+      <button class="evidence-close" id="drawerClose" type="button" aria-label="근거 닫기">×</button>
+    </header>
+    <ol class="evidence-list" id="drawerList"></ol>
+  </section>
+
+  <script src="./data/demo-corpus.js"></script>
+  <script src="./legal/legal-authority.js"></script>
+  <script src="./js/claw-shell.js"></script>
+  <script src="./js/claw-evidence.js"></script>
+  <script src="./legal/legal-evidence-provenance.js"></script>
+  <script src="./legal/legal-demo.js"></script>
+</body>
+</html>

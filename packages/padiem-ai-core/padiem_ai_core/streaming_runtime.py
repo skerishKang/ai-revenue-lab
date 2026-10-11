@@ -18,6 +18,7 @@ from .execution_runtime import (
     ExecutionRuntimeError,
     _compose_system_instruction,
     _error_class_for_b14,
+    _native_model_parameters,
     _normalize_model_policy,
     _safe_identifier,
     _safe_message_for_b14,
@@ -154,6 +155,7 @@ class StreamingExecutionRuntime:
         safe_message: str,
         error_class: ErrorClass,
         retryable: bool = False,
+        upstream_status_code: int | None = None,
         route: B14RouteMetadata | None = None,
         usage: UsageMetadata | None = None,
         chunk_model: str | None = None,
@@ -177,6 +179,7 @@ class StreamingExecutionRuntime:
                 error_class=error_class,
             ),
             retryable=retryable,
+            upstream_status_code=upstream_status_code,
         )
 
     async def _stream_b14_request(
@@ -337,6 +340,7 @@ class StreamingExecutionRuntime:
                 safe_message=_safe_message_for_b14(exc.code),
                 error_class=_error_class_for_b14(exc.code),
                 retryable=exc.retryable,
+                upstream_status_code=exc.upstream_status_code,
                 route=last_route,
                 usage=last_usage,
                 chunk_model=last_model,
@@ -370,6 +374,10 @@ class StreamingExecutionRuntime:
         try:
             system_instruction = _compose_system_instruction(request)
             model, temperature, routing = _normalize_model_policy(request.agent)
+            # Same validated native contract as the non-streaming lane, so a
+            # customer's explicit level reaches the provider identically in SSE
+            # and JSON shapes (#3977).
+            model_parameters = _native_model_parameters(request.agent)
             messages = request.messages
             if system_instruction is not None:
                 messages = ({"role": "system", "content": system_instruction}, *messages)
@@ -379,6 +387,7 @@ class StreamingExecutionRuntime:
                 temperature=temperature,
                 max_tokens=request.agent.max_tokens,
                 routing=routing,
+                model_parameters=model_parameters,
             )
         except ValueError:
             metadata = self._metadata(

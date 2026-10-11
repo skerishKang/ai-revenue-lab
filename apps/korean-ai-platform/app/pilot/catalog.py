@@ -1,22 +1,4 @@
-"""Model catalog for Business 14.
-
-Defines the single Kilo Gateway free route model under owner decision #1933.
-
-Source of truth
----------------
-The entire legacy OpenRouter catalog has been wiped per owner decision #1933.
-Business 14 connects exclusively to the Kilo Gateway free route:
-- Model ID: ``kilo/nvidia-nemotron-3-ultra-550b-a55b-free``
-- Upstream: ``nvidia/nemotron-3-ultra-550b-a55b:free``
-- Provider: Kilo Gateway / NVIDIA
-- Price: $0 / $0 (evidenced free)
-- Rate Limit: 200 requests/hour (fails closed with 429 when exhausted)
-
-Authentication
---------------
-Authentication follows the platform_secret slot (KILO_API_KEY). If unset,
-anonymous requests are permitted for the free tier per Kilo Gateway policy.
-"""
+"""B14 model catalog data types, with entries loaded exclusively from b14_models.json."""
 
 from __future__ import annotations
 
@@ -110,29 +92,8 @@ class CatalogModel:
 
 # Single provider & route under owner decision #1933: Kilo Gateway free route.
 # Rate limit: 200 requests/hour. Fails closed with 429 when exhausted.
-CATALOG_MODELS: list[CatalogModel] = [
-    CatalogModel(
-        model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-        upstream_model="nvidia/nemotron-3-ultra-550b-a55b:free",
-        display_name="Kilo: NVIDIA Nemotron 3 Ultra (free)",
-        provider="Kilo Gateway / NVIDIA",
-        provider_type="platform",
-        input_price_usd_per_1m=0.0,
-        output_price_usd_per_1m=0.0,
-        currency="usd",
-        context_window=1000000,
-        korean_score=4,
-        latency_ms=1500,
-        capabilities=frozenset({"chat", "coding", "free"}),
-        region="외부",
-        sort_order=10,
-        credential_source="platform_secret",
-        platform_provider_id="kilo",
-        source="kilo_official_gateway_models",
-        source_checked_at=KILO_SOURCE_CHECKED_AT,
-        snapshot_state=SNAPSHOT_STATE_CONFIGURED,
-    ),
-]
+CATALOG_MODELS: list[CatalogModel] = []
+
 
 def ensure_free_tag_requires_known_zero_price(model: CatalogModel) -> None:
     """Reject a ``free`` capability tag on any model without a known zero price.
@@ -163,7 +124,12 @@ def is_evidenced_free(model: CatalogModel) -> bool:
 for _catalog_model in CATALOG_MODELS:
     ensure_free_tag_requires_known_zero_price(_catalog_model)
 
-CATALOG_BY_ID: dict[str, CatalogModel] = {m.model_id: m for m in CATALOG_MODELS}
+CATALOG_BY_ID: dict[str, CatalogModel] = {}
+
+# Canonical JSON is loaded once before consumers resolve routes or provider metadata.
+from .model_registry_file import install_models as _install_models
+_install_models()
+
 
 
 def get_catalog_models() -> list[CatalogModel]:

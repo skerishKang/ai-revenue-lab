@@ -19,7 +19,7 @@ from .local_agent_broker_state import (
     VersionedLocalAgentBrokerState,
 )
 
-BROKER_STATE_WIRE_VERSION = "padiem.local-agent-broker-state-wire.v1"
+BROKER_STATE_WIRE_VERSION = "padiem.local-agent-broker-state-wire.v2"
 MAX_BROKER_STATE_WIRE_BYTES = 8 * 1024 * 1024
 MAX_BROKER_STATE_COLLECTION_ITEMS = 10_000
 
@@ -76,6 +76,10 @@ _COMMAND_KEYS = frozenset(
         "admitted_session_id",
         "admitted_at",
         "acknowledged_at",
+        "revision_ref",
+        "termination",
+        "request_id",
+        "exit_code",
     }
 )
 _SEQUENCE_KEYS = frozenset({"binding_ref", "sequence"})
@@ -125,6 +129,14 @@ def _optional_utc(value: Any, label: str) -> datetime | None:
     if value is None:
         return None
     return _utc(value, label)
+
+
+def _optional_int(value: Any, label: str) -> int | None:
+    if value is None:
+        return None
+    if type(value) is not int:
+        raise _wire_error("invalid_local_agent_broker_state_wire", f"{label} must be an integer without coercion")
+    return value
 
 
 def _iso(value: datetime) -> str:
@@ -195,6 +207,10 @@ def _command_wire(value: BrokerCommandRecord) -> dict[str, Any]:
         "admitted_session_id": value.admitted_session_id,
         "admitted_at": _iso(value.admitted_at) if value.admitted_at is not None else None,
         "acknowledged_at": _iso(value.acknowledged_at) if value.acknowledged_at is not None else None,
+        "revision_ref": value.revision_ref,
+        "termination": value.termination,
+        "request_id": value.request_id,
+        "exit_code": value.exit_code,
     }
 
 
@@ -314,6 +330,10 @@ class LocalAgentBrokerStateJsonCodec:
                     admitted_session_id=_optional_text(item["admitted_session_id"], "admitted_session_id"),
                     admitted_at=_optional_utc(item["admitted_at"], "admitted_at"),
                     acknowledged_at=_optional_utc(item["acknowledged_at"], "acknowledged_at"),
+                    revision_ref=_text(item["revision_ref"], "revision_ref"),
+                    termination=_optional_text(item["termination"], "termination"),
+                    request_id=_optional_text(item["request_id"], "request_id"),
+                    exit_code=_optional_int(item["exit_code"], "exit_code"),
                 )
             )
 
@@ -374,7 +394,18 @@ class AtomicSerializedLocalAgentBrokerStateBackend(Protocol):
         authority_ref: str,
         expected_version: int,
         payload: bytes,
+        new_command_ids: tuple[str, ...] = (),
     ) -> SerializedLocalAgentBrokerStateRecord:
+        """Atomically swap the blob and record newly used command ids (#3123).
+
+        The ledger writes and the blob swap are one unit: a refused CAS must
+        not mark any id as used, or the caller's legitimate retry would be
+        refused as compacted afterwards.
+        """
+        ...
+
+    def has_used_command_id(self, *, authority_ref: str, command_id: str) -> bool:
+        """Exact membership of the durable used-command-id ledger (#3123)."""
         ...
 
 
@@ -385,6 +416,7 @@ class InMemorySerializedLocalAgentBrokerStateBackend:
 
     def __init__(self) -> None:
         self._rows: dict[str, SerializedLocalAgentBrokerStateRecord] = {}
+        self._used_command_ids: dict[str, set[str]] = {}
 
     def load(self, *, authority_ref: str) -> SerializedLocalAgentBrokerStateRecord | None:
         _text(authority_ref, "authority_ref", maximum=256)
@@ -396,6 +428,7 @@ class InMemorySerializedLocalAgentBrokerStateBackend:
         authority_ref: str,
         expected_version: int,
         payload: bytes,
+        new_command_ids: tuple[str, ...] = (),
     ) -> SerializedLocalAgentBrokerStateRecord:
         _text(authority_ref, "authority_ref", maximum=256)
         if type(expected_version) is not int or expected_version < 0:
@@ -405,13 +438,26 @@ class InMemorySerializedLocalAgentBrokerStateBackend:
         current = self._rows.get(authority_ref)
         current_version = current.version if current is not None else 0
         if current_version != expected_version:
+            # Refused CAS: no id is recorded, so the caller can retry the
+            # same command_id against the winning state.
             raise _wire_error(
                 "stale_local_agent_broker_state",
                 "Local Agent broker serialized state changed concurrently; stale write refused",
             )
         stored = SerializedLocalAgentBrokerStateRecord(version=expected_version + 1, payload=payload)
         self._rows[authority_ref] = stored
+        used = self._used_command_ids.setdefault(authority_ref, set())
+        used.update(new_command_ids)
         return stored
+
+    def has_used_command_id(self, *, authority_ref: str, command_id: str) -> bool:
+        _text(authority_ref, "authority_ref", maximum=256)
+        # An id that fails the reference shape can never have been minted,
+        # so it is simply not a member; the canonical ref validation still
+        # reports it properly at the core boundary.
+        if not isinstance(command_id, str) or len(command_id) == 0 or len(command_id) > 256:
+            return False
+        return command_id in self._used_command_ids.get(authority_ref, set())
 
     def safe_dict(self) -> dict[str, Any]:
         return {
@@ -463,6 +509,7 @@ class SerializedLocalAgentBrokerStatePort:
         authority_ref: str,
         expected_version: int,
         snapshot: LocalAgentBrokerStateSnapshot,
+        new_command_ids: tuple[str, ...] = (),
     ) -> VersionedLocalAgentBrokerState:
         _text(authority_ref, "authority_ref", maximum=256)
         if type(expected_version) is not int or expected_version < 0:
@@ -474,6 +521,7 @@ class SerializedLocalAgentBrokerStatePort:
             authority_ref=authority_ref,
             expected_version=expected_version,
             payload=encoded,
+            new_command_ids=new_command_ids,
         )
         if not isinstance(stored, SerializedLocalAgentBrokerStateRecord):
             raise _wire_error("invalid_local_agent_broker_state_wire", "serialized backend returned invalid CAS record")
@@ -481,12 +529,17 @@ class SerializedLocalAgentBrokerStatePort:
             raise _wire_error("invalid_local_agent_broker_state_wire", "serialized backend violated exact CAS contract")
         return VersionedLocalAgentBrokerState(version=stored.version, snapshot=snapshot)
 
+    def has_used_command_id(self, *, authority_ref: str, command_id: str) -> bool:
+        _text(authority_ref, "authority_ref", maximum=256)
+        return self._backend.has_used_command_id(authority_ref=authority_ref, command_id=command_id)
+
     def safe_dict(self) -> dict[str, Any]:
         return {
             "serialized_state_adapter_to_m2f": True,
             "atomic_compare_and_swap": True,
             "backend_durable": self.durable,
             "canonical_snapshot_validation_reused": True,
+            "used_command_id_ledger_exact": True,
             "raw_device_credential_serialized": False,
             "database_driver_selected": False,
             "provider_specific_sql": False,

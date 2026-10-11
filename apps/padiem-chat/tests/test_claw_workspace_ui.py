@@ -3,7 +3,8 @@
 These guard the design decisions accepted in the ACT-0 review:
 - the modal is no longer the primary Claw surface;
 - a data-state="claw" workspace replaces it inside the shared shell;
-- natural-language input is the hero and is sized to avoid iOS focus zoom;
+- the shared bottom composer is the natural-language input (kept visible,
+  >=16px to avoid iOS focus zoom) — #2532 continuity pass;
 - results render as a compact card, never a raw inline document;
 - document/DOCX affordances stay honestly disabled (no fake success);
 - Chat vs Claw navigation exposes aria-current active state.
@@ -33,14 +34,19 @@ def test_modal_is_no_longer_the_primary_claw_surface() -> None:
 def test_workspace_is_a_first_class_shell_state() -> None:
     assert 'shell.dataset.state = "claw"' in APP
     assert ".app-shell[data-state=\"claw\"] .claw-workspace" in WORKSPACE_CSS
-    # Chat/home canvas is hidden while the Claw workspace owns the panel.
+    # Chat/home canvas is hidden while the Claw workspace owns the panel,
+    # but the shared bottom composer stays visible (#2532 continuity).
     assert ".app-shell[data-state=\"claw\"] .conversation" in WORKSPACE_CSS
-    assert ".app-shell[data-state=\"claw\"] .composer-wrap" in WORKSPACE_CSS
+    assert ".app-shell[data-state=\"claw\"] .composer-wrap" not in WORKSPACE_CSS
 
 
-def test_natural_language_input_is_the_hero_and_zoom_safe() -> None:
-    assert 'class="claw-intake-hero"' in INDEX
-    assert 'id="clawRequestText"' in INDEX
+def test_natural_language_input_is_the_composer_and_zoom_safe() -> None:
+    # #2532: the hero textarea is gone; #messageInput is the Claw request input
+    # and the intake form is a compact mode bar inside the composer wrap.
+    assert 'class="claw-intake-hero"' not in INDEX
+    assert 'id="clawRequestText"' not in INDEX
+    assert 'class="claw-mode-bar" id="clawManualForm"' in INDEX
+    assert ".app-shell[data-state=\"claw\"] .composer textarea" in WORKSPACE_CSS
     assert "font-size: 16px" in WORKSPACE_CSS
     # The disclosure fields must not regress to the old 13.6px form controls.
     assert "font-size: 16px" in INTAKE_CSS

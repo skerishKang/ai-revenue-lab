@@ -1,0 +1,274 @@
+name: B54 Drive Grant D1 Read-only Attestation
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-drive-grant-d1-readonly-attestation.yml"
+      - "apps/padiem-ai-engine/app/connector_grants_d1.py"
+      - "apps/padiem-ai-engine/app/connector_bindings.py"
+      - "apps/padiem-ai-engine/wrangler.toml"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/b54-drive-grant-d1-readonly-attestation.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-drive-grant-d1-readonly-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  ENGINE_WORKER: padiem-ai-engine
+  D1_BINDING: ENGINE_CONNECTOR_GRANTS
+  EXPECTED_D1_ID: 6b77ad02-bc27-488f-bb97-6325f6750cba
+  DRIVE_APP_ID: b54-padiem-claw-drive
+  DRIVE_AGENT_ID: agent:padiem:claw_drive_reader@1
+  DRIVE_CONNECTOR_ID: connector:google:drive@1
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact event revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Validate bounded Drive grant D1 read-only contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          workflow = Path(".github/workflows/b54-drive-grant-d1-readonly-attestation.yml").read_text(encoding="utf-8")
+          loader = Path("apps/padiem-ai-engine/app/connector_grants_d1.py").read_text(encoding="utf-8")
+          wrangler = Path("apps/padiem-ai-engine/wrangler.toml").read_text(encoding="utf-8")
+
+          required = (
+              "padiem_engine_connector_grants",
+              "b54-padiem-claw-drive",
+              "agent:padiem:claw_drive_reader@1",
+              "connector:google:drive@1",
+              "ENGINE_CONNECTOR_GRANTS",
+              "6b77ad02-bc27-488f-bb97-6325f6750cba",
+              "DRIVE_GRANT_TOTAL_ROWS=",
+              "DRIVE_GRANT_ACTIVE_COUNT=",
+              "DRIVE_GRANT_EXACT_IDENTITY=",
+              "DRIVE_GRANT_CAPABILITIES=",
+              "DRIVE_GRANT_BINDING_REF_PRESENT=",
+              "DRIVE_GRANT_ACTOR_REF_PRESENT=",
+              "RAW_BINDING_REF_OUTPUT=0",
+              "RAW_ACTOR_REF_OUTPUT=0",
+              "D1_QUERY_MODE=READ_ONLY",
+              "GOOGLE_PROVIDER_CALLS=0",
+              "PRODUCTION_MUTATION=0",
+          )
+          for marker in required:
+              if marker not in workflow:
+                  raise SystemExit(f"missing Drive grant readonly invariant: {marker}")
+
+          if '_TABLE_NAME = "padiem_engine_connector_grants"' not in loader:
+              raise SystemExit("Engine connector grant table name drifted")
+          if 'binding = "ENGINE_CONNECTOR_GRANTS"' not in wrangler:
+              raise SystemExit("Engine connector grants D1 binding missing")
+          if 'database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"' not in wrangler:
+              raise SystemExit("Engine connector grants D1 identity drifted")
+
+          # The live section may POST a D1 query request, but its SQL must remain SELECT-only.
+          live_region = workflow.split("Read exact canonical Drive grant state", 1)[-1].upper()
+          forbidden_sql = (
+              "INSERT " + "INTO",
+              "UP" + "DATE ",
+              "DE" + "LETE FROM",
+              "RE" + "PLACE INTO",
+              "DR" + "OP TABLE",
+              "AL" + "TER TABLE",
+              "CREATE " + "TABLE",
+              "CREATE " + "INDEX",
+          )
+          for token in forbidden_sql:
+              if token in live_region:
+                  raise SystemExit(f"mutation SQL forbidden in Drive grant readonly attestation: {token}")
+
+          print("B54_DRIVE_GRANT_D1_READONLY_SOURCE_CONTRACT=PASS")
+          print("D1_QUERY_MODE=READ_ONLY")
+          print("GOOGLE_PROVIDER_CALLS=0")
+          print("PRODUCTION_MUTATION=0")
+          PY
+
+  production-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact merged main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${GITHUB_SHA}"
+          echo "READONLY_EXACT_MAIN_SHA=PASS"
+
+      - name: Resolve live Engine connector-grants D1 binding without emitting identifier
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          settings="${RUNNER_TEMP}/engine-settings-drive-grant-readonly.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}/settings" \
+            -o "${settings}"
+
+          DB_ID="$(python - "${settings}" "${D1_BINDING}" "${EXPECTED_D1_ID}" <<'PY'
+          import json, re, sys
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          bindings = payload.get("result", {}).get("bindings", []) if payload.get("success") is True else []
+          hits = [b for b in bindings if b.get("type") == "d1" and b.get("name") == sys.argv[2]]
+          if len(hits) != 1:
+              raise SystemExit("expected exactly one live ENGINE_CONNECTOR_GRANTS binding")
+          database_id = hits[0].get("id")
+          if not isinstance(database_id, str) or not re.fullmatch(r"[0-9a-fA-F-]{32,36}", database_id):
+              raise SystemExit("live Engine connector-grants D1 binding has invalid database id")
+          if database_id.lower() != sys.argv[3].lower():
+              raise SystemExit("live Engine connector-grants D1 identity drifted")
+          print(database_id)
+          PY
+          )"
+          test -n "${DB_ID}"
+          echo "::add-mask::${DB_ID}"
+          echo "DB_ID=${DB_ID}" >> "${GITHUB_ENV}"
+          echo "LIVE_ENGINE_CONNECTOR_GRANTS_D1_DERIVED=PASS"
+          echo "LIVE_ENGINE_CONNECTOR_GRANTS_D1_IDENTITY=EXPECTED"
+          echo "D1_IDENTIFIER_OUTPUT=0"
+
+      - name: Read exact canonical Drive grant state
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+
+          query_payload="${RUNNER_TEMP}/drive-grant-readonly-query.json"
+          python - "${query_payload}" "${DRIVE_APP_ID}" "${DRIVE_AGENT_ID}" "${DRIVE_CONNECTOR_ID}" <<'PY'
+          import json, sys
+          app_id, agent_id, connector_id = sys.argv[2:5]
+          sql = """
+          SELECT
+            COUNT(*) AS total_rows,
+            SUM(CASE WHEN active = 1 THEN 1 ELSE 0 END) AS active_count,
+            SUM(CASE WHEN active = 1 AND canonical_agent_id = ? THEN 1 ELSE 0 END) AS exact_identity_count,
+            SUM(CASE
+                  WHEN active = 1
+                   AND json_valid(granted_capabilities_json) = 1
+                   AND json_array_length(granted_capabilities_json) = 1
+                   AND json_extract(granted_capabilities_json, '$[0]') = 'read'
+                  THEN 1 ELSE 0 END) AS read_capability_count,
+            SUM(CASE
+                  WHEN active = 1
+                   AND binding_ref IS NOT NULL
+                   AND length(trim(binding_ref)) > 0
+                  THEN 1 ELSE 0 END) AS binding_ref_present_count,
+            SUM(CASE
+                  WHEN active = 1
+                   AND actor_ref IS NOT NULL
+                   AND length(trim(actor_ref)) > 0
+                  THEN 1 ELSE 0 END) AS actor_ref_present_count
+          FROM padiem_engine_connector_grants
+          WHERE app_id = ? AND connector_id = ?;
+          """
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump({"sql": sql, "params": [agent_id, app_id, connector_id]}, handle)
+          PY
+
+          response="${RUNNER_TEMP}/drive-grant-readonly-response.json"
+          curl -fsS -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${query_payload}" -o "${response}"
+
+          python - "${response}" <<'PY'
+          import json, sys
+
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          if payload.get("success") is not True:
+              raise SystemExit("Drive grant D1 read-only query failed")
+          result = payload.get("result")
+          if not isinstance(result, list) or len(result) != 1 or result[0].get("success") is not True:
+              raise SystemExit("Drive grant D1 read-only result envelope invalid")
+          rows = result[0].get("results")
+          if not isinstance(rows, list) or len(rows) != 1:
+              raise SystemExit("Drive grant D1 read-only aggregate row invalid")
+
+          row = rows[0]
+          values = {
+              "total_rows": int(row.get("total_rows") or 0),
+              "active_count": int(row.get("active_count") or 0),
+              "exact_identity_count": int(row.get("exact_identity_count") or 0),
+              "read_capability_count": int(row.get("read_capability_count") or 0),
+              "binding_ref_present_count": int(row.get("binding_ref_present_count") or 0),
+              "actor_ref_present_count": int(row.get("actor_ref_present_count") or 0),
+          }
+
+          print(f"DRIVE_GRANT_TOTAL_ROWS={values['total_rows']}")
+          print(f"DRIVE_GRANT_ACTIVE_COUNT={values['active_count']}")
+          print("DRIVE_GRANT_EXACT_IDENTITY=YES" if values["exact_identity_count"] == 1 else "DRIVE_GRANT_EXACT_IDENTITY=NO")
+          print('DRIVE_GRANT_CAPABILITIES=["read"]' if values["read_capability_count"] == 1 else "DRIVE_GRANT_CAPABILITIES=OTHER_OR_MISSING")
+          print("DRIVE_GRANT_BINDING_REF_PRESENT=YES" if values["binding_ref_present_count"] == 1 else "DRIVE_GRANT_BINDING_REF_PRESENT=NO")
+          print("DRIVE_GRANT_ACTOR_REF_PRESENT=YES" if values["actor_ref_present_count"] == 1 else "DRIVE_GRANT_ACTOR_REF_PRESENT=NO")
+
+          if values != {
+              "total_rows": 1,
+              "active_count": 1,
+              "exact_identity_count": 1,
+              "read_capability_count": 1,
+              "binding_ref_present_count": 1,
+              "actor_ref_present_count": 1,
+          }:
+              raise SystemExit("canonical Drive grant row is absent, inactive, duplicated, or drifted")
+
+          print("DRIVE_GRANT_RUNTIME_ROW=EXACT_ACTIVE_READ")
+          PY
+
+          echo "RAW_BINDING_REF_OUTPUT=0"
+          echo "RAW_ACTOR_REF_OUTPUT=0"
+          echo "ROW_VALUE_OUTPUT=AGGREGATES_ONLY"
+          echo "PROVIDER_CREDENTIAL_OUTPUT=0"
+          echo "D1_QUERY_MODE=READ_ONLY"
+          echo "D1_MUTATION=0"
+          echo "DRIVE_GRANT_SEED=0"
+          echo "GOOGLE_PROVIDER_CALLS=0"
+          echo "ENGINE_DEPLOY=0"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Publish bounded attestation evidence
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## B54 Drive grant D1 read-only attestation"
+            echo
+            echo "- exact main: `${GITHUB_SHA}`"
+            echo "- D1 SQL mode: SELECT-only"
+            echo "- raw binding/actor refs emitted: no"
+            echo "- Google provider calls: 0"
+            echo "- Production mutation: 0"
+          } >> "${GITHUB_STEP_SUMMARY}"

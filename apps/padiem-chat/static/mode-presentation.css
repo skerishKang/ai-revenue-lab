@@ -1,7 +1,47 @@
+.tier-control-host {
+  position: relative;
+}
+
 .model-pill[data-mode-control="true"] {
   display: inline-flex !important;
+  min-height: 40px;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
   appearance: none;
+  background: rgba(255, 255, 255, .68);
+  color: var(--text);
   cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Glass home is a bright composer surface. The generic Glass model-pill rule
+ * paints near-white text for the dark topbar, so explicitly re-skin the
+ * composer tier trigger where it actually lives. */
+html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"] {
+  border-color: rgba(45, 69, 87, .18);
+  background: rgba(255, 255, 255, .62);
+  color: #25333e;
+  box-shadow:
+    0 8px 22px rgba(28, 38, 49, .08),
+    inset 0 1px 0 rgba(255, 255, 255, .82);
+  backdrop-filter: blur(16px) saturate(106%);
+  -webkit-backdrop-filter: blur(16px) saturate(106%);
+}
+
+html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]:hover {
+  border-color: rgba(45, 69, 87, .28);
+  background: rgba(255, 255, 255, .84);
+  color: #17212a;
+}
+
+html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"] .status-spark {
+  color: #4f86ad;
+  opacity: 1;
+  font-size: 13px;
+  text-shadow: 0 0 10px rgba(79, 134, 173, .28);
 }
 
 .model-pill[data-mode-control="true"]:focus-visible {
@@ -9,12 +49,17 @@
   outline-offset: 3px;
 }
 
+html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]:focus-visible {
+  color: #17212a;
+}
+
 .mode-presentation-panel {
-  position: fixed;
-  z-index: 90;
-  top: 68px;
-  right: 24px;
-  width: min(360px, calc(100vw - 32px));
+  position: absolute;
+  z-index: 110;
+  right: auto;
+  bottom: calc(100% + 12px);
+  left: 0;
+  width: min(340px, calc(100vw - 48px));
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: 18px;
@@ -98,23 +143,62 @@
 
 html[data-theme="dark"] .mode-presentation-panel,
 html[data-theme="cinematic"] .mode-presentation-panel,
-html[data-theme="padiem-home"] .mode-presentation-panel,
-html[data-theme="padiem-glass"] .mode-presentation-panel {
+html[data-theme="padiem-home"] .mode-presentation-panel {
   background: rgba(14, 18, 26, .94);
 }
 
 html[data-theme="dark"] .mode-option,
 html[data-theme="cinematic"] .mode-option,
-html[data-theme="padiem-home"] .mode-option,
-html[data-theme="padiem-glass"] .mode-option {
+html[data-theme="padiem-home"] .mode-option {
   background: rgba(255, 255, 255, .06);
 }
 
+/* Glass is a bright frosted surface. Do not inherit the dark/cinematic tier
+ * popover treatment: that produced a nearly black island over the light home. */
+html[data-theme="padiem-glass"] .mode-presentation-panel {
+  border-color: rgba(255, 255, 255, .72);
+  background:
+    linear-gradient(155deg, rgba(252, 253, 254, .96), rgba(232, 238, 242, .92));
+  color: #17212a;
+  box-shadow:
+    0 24px 70px rgba(24, 33, 42, .22),
+    inset 0 1px 0 rgba(255, 255, 255, .90);
+  backdrop-filter: blur(28px) saturate(108%);
+  -webkit-backdrop-filter: blur(28px) saturate(108%);
+}
+
+html[data-theme="padiem-glass"] .mode-presentation-header small,
+html[data-theme="padiem-glass"] .mode-option small,
+html[data-theme="padiem-glass"] .mode-presentation-truth {
+  color: #53606c;
+}
+
+html[data-theme="padiem-glass"] .mode-option {
+  border-color: rgba(42, 55, 66, .12);
+  background: rgba(255, 255, 255, .66);
+  color: #17212a;
+}
+
+html[data-theme="padiem-glass"] .mode-option[aria-pressed="true"] {
+  border-color: rgba(45, 69, 87, .34);
+  background: rgba(255, 255, 255, .84);
+}
+
+html[data-theme="padiem-glass"] .mode-option-state {
+  background: rgba(45, 69, 87, .10);
+  color: #40515f;
+}
+
 @media (max-width: 720px) {
+  .model-pill[data-mode-control="true"] {
+    min-height: 44px;
+    padding: 0 10px;
+  }
+
   .mode-presentation-panel {
-    top: 60px;
-    right: 12px;
-    left: 12px;
-    width: auto;
+    right: auto;
+    bottom: calc(100% + 10px);
+    left: 0;
+    width: min(320px, calc(100vw - 36px));
   }
 }

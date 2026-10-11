@@ -19,6 +19,7 @@ from typing import Protocol
 
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$")
 _CAPABILITY_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
 class ExecutionAdmissionError(ValueError):
@@ -42,6 +43,7 @@ class ExecutionAdmissionRequest:
     capability: str
     trace_id: str | None = None
     request_fingerprint: str | None = None
+    usage_reservation_identity: str | None = None
 
     def __post_init__(self) -> None:
         _require_safe_id(self.app_id, "app_id")
@@ -52,6 +54,38 @@ class ExecutionAdmissionRequest:
             _require_safe_id(self.trace_id, "trace_id")
         if self.request_fingerprint is not None:
             _require_safe_id(self.request_fingerprint, "request_fingerprint")
+        if self.usage_reservation_identity is not None:
+            _require_safe_id(self.usage_reservation_identity, "usage_reservation_identity")
+
+
+@dataclass(frozen=True, slots=True)
+class TrustedUsageReservation:
+    """Typed server-only evidence for one admitted Control Plane usage reservation."""
+
+    reservation_ref: str
+    idempotency_key: str
+    billing_semantic_id: str
+    product_id: str
+    subject_type: str
+    subject_id: str
+    request_fingerprint: str
+    reserved_at: datetime
+    expires_at: datetime
+
+    def __post_init__(self) -> None:
+        _require_safe_id(self.reservation_ref, "reservation_ref")
+        _require_safe_id(self.idempotency_key, "idempotency_key")
+        _require_capability(self.billing_semantic_id, "billing_semantic_id")
+        _require_safe_id(self.product_id, "product_id")
+        if self.subject_type not in {"user", "account"}:
+            raise ExecutionAdmissionError("invalid_admission", "usage reservation subject type is invalid.")
+        _require_safe_id(self.subject_id, "usage reservation subject_id")
+        if not isinstance(self.request_fingerprint, str) or not _SHA256_RE.fullmatch(self.request_fingerprint):
+            raise ExecutionAdmissionError("invalid_admission", "usage reservation request_fingerprint must be lowercase SHA-256.")
+        _require_timestamp(self.reserved_at, "reserved_at")
+        _require_timestamp(self.expires_at, "usage reservation expires_at")
+        if self.expires_at <= self.reserved_at:
+            raise ExecutionAdmissionError("invalid_admission", "usage reservation expiry must be after reservation time.")
 
 
 @dataclass(frozen=True, slots=True)
@@ -73,6 +107,7 @@ class TrustedExecutionAdmission:
     issued_at: datetime
     expires_at: datetime
     request_fingerprint: str | None = None
+    usage_reservation: TrustedUsageReservation | None = None
 
     def __post_init__(self) -> None:
         _require_safe_id(self.decision_id, "decision_id")
@@ -90,6 +125,20 @@ class TrustedExecutionAdmission:
             raise ExecutionAdmissionError("invalid_admission", "admission expiry must be after issuance.")
         if self.request_fingerprint is not None:
             _require_safe_id(self.request_fingerprint, "request_fingerprint")
+        reservation = self.usage_reservation
+        if reservation is not None:
+            if not isinstance(reservation, TrustedUsageReservation):
+                raise ExecutionAdmissionError("invalid_admission", "usage reservation evidence is invalid.")
+            if not self.allowed:
+                raise ExecutionAdmissionError("invalid_admission", "denied admission cannot carry usage reservation evidence.")
+            if reservation.product_id != self.app_id or reservation.billing_semantic_id != self.capability:
+                raise ExecutionAdmissionError("invalid_admission", "usage reservation scope does not match admission.")
+            if reservation.request_fingerprint != self.request_fingerprint:
+                raise ExecutionAdmissionError("invalid_admission", "usage reservation request identity does not match admission.")
+            expected_subject_type = "user" if self.subject_id is not None else "account"
+            expected_subject_id = self.subject_id if self.subject_id is not None else self.app_id
+            if reservation.subject_type != expected_subject_type or reservation.subject_id != expected_subject_id:
+                raise ExecutionAdmissionError("invalid_admission", "usage reservation subject does not match admission.")
 
 
 class ExecutionAdmissionAdapter(Protocol):

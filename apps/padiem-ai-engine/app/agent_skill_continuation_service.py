@@ -12,18 +12,26 @@ from __future__ import annotations
 import asyncio
 from collections.abc import Callable, Mapping
 import inspect
+import secrets
+import hashlib
 from typing import Any
 
 from padiem_ai_core.agent_approval import ApprovalOutcome, VerifiedApprovalDecision
+from padiem_ai_core.agent_durable_lease import AgentDurableLeaseError, AgentRunLease
 from padiem_ai_core.execution_context import ExecutionContext
 from padiem_ai_core.orchestration import OrchestrationError, OrchestrationResumeRequest, OrchestrationRunner
 
 from app.agent_skill_authority import EngineAgentSkillBinding
+from app.agent_durable_d1 import D1AgentRunLedger
 from app.agent_skill_continuation import (
     AgentSkillContinuationError,
     AgentSkillContinuationFingerprint,
     assert_resume_identity,
     issue_fingerprint,
+)
+from app.agent_skill_continuation_projection import (
+    project_agent_cancellation_result,
+    project_agent_continuation_result,
 )
 from app.agent_skill_projection import project_agent_skill_result
 from app.agent_skill_wire import (
@@ -51,6 +59,7 @@ class AgentSkillContinuationCoordinator:
         approval_decision_verifier: Any | None = None,
         continuation_store: ContinuationStore | None = None,
         idempotency_adapter: Any | None = None,
+        agent_run_ledger: D1AgentRunLedger | None = None,
     ) -> None:
         if not callable(runtime_factory) or not callable(binding_resolver):
             raise ValueError("runtime_factory and binding_resolver must be callable")
@@ -67,6 +76,7 @@ class AgentSkillContinuationCoordinator:
         self._verifier = approval_decision_verifier
         self._store = continuation_store
         self._idempotency = idempotency_adapter
+        self._agent_run_ledger = agent_run_ledger
         self._atomic_cancel = continuation_store is not None and all(
             callable(getattr(continuation_store, name, None))
             for name in ("claim_cancel", "commit_cancel", "release_cancel")
@@ -217,6 +227,54 @@ class AgentSkillContinuationCoordinator:
             )
             raise
 
+    async def _resume_with_ledger(self, request: OrchestrationResumeRequest, lease: AgentRunLease | None):
+        ledger = self._agent_run_ledger if lease is not None else None
+        if ledger is None:
+            return await OrchestrationRunner(
+                runtime=self._runtime_factory(request.app_id),
+                idempotency=self._idempotency,
+            ).resume(request)
+        stopped = asyncio.Event()
+        main_task = asyncio.current_task()
+
+        async def renew() -> None:
+            while not stopped.is_set():
+                try:
+                    await asyncio.wait_for(stopped.wait(), timeout=30)
+                    return
+                except asyncio.TimeoutError:
+                    try:
+                        active = await ledger.heartbeat(lease, lease_seconds=120)
+                    except Exception:
+                        active = False
+                    if not active:
+                        if main_task is not None:
+                            main_task.cancel()
+                        return
+
+        heartbeat = asyncio.create_task(renew())
+        try:
+            result = await OrchestrationRunner(
+                runtime=self._runtime_factory(request.app_id),
+                idempotency=self._idempotency,
+                agent_run_guard=ledger.execution_guard(lease),
+                agent_checkpoint_hook=lambda step: ledger.checkpoint(lease, completed_step=step),
+            ).resume(request)
+            terminal = "awaiting_approval" if result.approval_pause else "completed"
+            if not await ledger.finish(lease, state=terminal):
+                raise AgentDurableLeaseError("approved Agent lease was lost")
+            return result
+        except BaseException:
+            try:
+                await ledger.finish(lease, state="failed")
+            except Exception:
+                pass  # Uncertain side effects are never replayed.
+            raise
+        finally:
+            stopped.set()
+            heartbeat.cancel()
+            await asyncio.gather(heartbeat, return_exceptions=True)
+
     async def resume_payload(self, payload: Any) -> ServiceResponse:
         if not isinstance(payload, Mapping):
             return _service_error("invalid_request", "Request body must be an object.", status_code=400)
@@ -351,11 +409,45 @@ class AgentSkillContinuationCoordinator:
 
         claim_token = claimed.claim_token
         assert claim_token is not None
+        lease = None
+        if self._agent_run_ledger is not None:
+            try:
+                if decision.outcome is ApprovalOutcome.APPROVED:
+                    lease = await self._agent_run_ledger.resume_approved_pause(
+                        run_id=claimed.pause.run_id,
+                        owner_scope="scope_" + hashlib.sha256(
+                            (app_id + ":" + wire.selection.subject_id).encode("utf-8")
+                        ).hexdigest(),
+                        worker_id="eng_" + secrets.token_hex(12),
+                        completed_step=claimed.pause.step_index - 1,
+                    )
+                else:
+                    if not await self._agent_run_ledger.cancel_awaiting_approval(
+                        run_id=claimed.pause.run_id,
+                        completed_step=claimed.pause.step_index - 1,
+                    ):
+                        raise AgentDurableLeaseError("denied Agent approval lease unavailable")
+            except (AgentDurableLeaseError, TypeError, ValueError):
+                try:
+                    await self._store_call(
+                        "release", app_id=app_id,
+                        continuation_ref=continuation_ref, claim_token=claim_token,
+                    )
+                except ServiceContractError:
+                    pass
+                return _service_error(
+                    "agent_run_lease_unavailable",
+                    "Trusted Agent run storage is unavailable.", status_code=503,
+                )
         try:
-            result = await OrchestrationRunner(
-                runtime=self._runtime_factory(app_id),
-                idempotency=self._idempotency,
-            ).resume(resume_request)
+            result = await self._resume_with_ledger(resume_request, lease)
+        except AgentDurableLeaseError:
+            # Do not release a claimed approval after a possible Tool effect:
+            # a failed D1 finalization is a terminal/reconciliation blocker.
+            return _service_error(
+                "agent_run_lease_unavailable",
+                "Trusted Agent run storage is unavailable.", status_code=503,
+            )
         except OrchestrationError as exc:
             method = "commit" if exc.code == "approval_denied" else "release"
             try:
@@ -400,6 +492,16 @@ class AgentSkillContinuationCoordinator:
                 claim_token=claim_token,
             )
             projection = project_agent_skill_result(result, selection=wire.selection)
+            # #2786 S13-4 Phase 1: response assembly hook only. The verified
+            # approval delta has been applied by Core at this point, so the
+            # continuation block records that fact; no flow, state machine,
+            # authorization or store behaviour is touched here.
+            continuation = project_agent_continuation_result(
+                result,
+                selection=wire.selection,
+                record=record,
+                approval_delta_applied=True,
+            )
         except ServiceContractError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
         except (TypeError, ValueError):
@@ -408,7 +510,10 @@ class AgentSkillContinuationCoordinator:
                 "Agent/Skill resume returned an invalid public projection.",
                 status_code=500,
             )
-        return ServiceResponse(status_code=200, body={"ok": True, "agent_skill": projection})
+        return ServiceResponse(
+            status_code=200,
+            body={"ok": True, "agent_skill": projection, "continuation": continuation},
+        )
 
     async def cancel_payload(self, payload: Any) -> ServiceResponse:
         if not isinstance(payload, Mapping):
@@ -447,6 +552,26 @@ class AgentSkillContinuationCoordinator:
                     "Continuation cancel claim failed.",
                     status_code=503,
                 )
+            if self._agent_run_ledger is not None:
+                try:
+                    cancelled = await self._agent_run_ledger.cancel_awaiting_approval(
+                        run_id=claimed.pause.run_id,
+                        completed_step=claimed.pause.step_index - 1,
+                    )
+                    if not cancelled:
+                        raise AgentDurableLeaseError("Agent approval lease unavailable")
+                except (AgentDurableLeaseError, TypeError, ValueError):
+                    try:
+                        await self._store_call(
+                            "release_cancel", app_id=app_id,
+                            continuation_ref=continuation_ref, claim_token=claimed.claim_token,
+                        )
+                    except ServiceContractError:
+                        pass
+                    return _service_error(
+                        "agent_run_lease_unavailable",
+                        "Trusted Agent run storage is unavailable.", status_code=503,
+                    )
             events = OrchestrationRunner(runtime=self._runtime_factory(app_id)).cancel_pause(
                 claimed.pause,
                 trace_id=claimed.pause.trace_id,
@@ -464,6 +589,14 @@ class AgentSkillContinuationCoordinator:
                     "Continuation cancellation did not persist.",
                     status_code=503,
                 )
+            # #2786 S13-4 Phase 2: response assembly hook only. The cancel flow
+            # above is untouched; the block records what it already established.
+            continuation = project_agent_cancellation_result(
+                record=record,
+                committed=committed,
+                events=events,
+                reason=reason,
+            )
         except ServiceContractError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
         except OrchestrationError as exc:
@@ -476,5 +609,6 @@ class AgentSkillContinuationCoordinator:
                 "ok": True,
                 "status": "cancelled",
                 "events": [event.to_public_dict() for event in events],
+                "continuation": continuation,
             },
         )

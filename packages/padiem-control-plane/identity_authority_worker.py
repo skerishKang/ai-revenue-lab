@@ -3,14 +3,6 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from workers import DurableObject, Response, WorkerEntrypoint
-
-from padiem_control_plane.contracts import (
-    CanonicalSubjectRef,
-    ControlPlaneContractError,
-    SubjectType,
-)
-
 from identity_authority_durable import (
     CloudflareCanonicalIdentityAuthorityStore,
     decode_identity_lookup_key,
@@ -20,19 +12,37 @@ from identity_connector_ticket import (
     GoogleConnectTicketIssuer,
     decode_connect_ticket_key,
 )
-
+from padiem_control_plane.contracts import (
+    CanonicalSubjectRef,
+    ControlPlaneContractError,
+    SubjectType,
+)
+from workers import DurableObject, Response, WorkerEntrypoint
 
 _AUTHORITY_REF = "control-plane.identity.production.v1"
-_ALLOWED_PRODUCT = "b62"
+_ALLOWED_PRODUCTS: frozenset[str] = frozenset({"b62", "b54-padiem-claw"})
 _LINK_KEYS = frozenset({"product_id", "product_user_id", "auth_provider", "provider_subject"})
 _SESSION_KEYS = frozenset({"product_id", "subject", "authenticated_at", "not_after"})
 _RESOLVE_KEYS = frozenset({"session_id"})
+# #3243: the current-session lookup names the product and the product user and
+# nothing else. It deliberately accepts no session_id, subject_id, tenant_id,
+# workspace_id, provider, now or expiry, so a caller can neither pick a session
+# nor move the clock the selection is made at.
+_CURRENT_SESSION_KEYS = frozenset({"product_id", "product_user_id"})
+# #3247: the reverse product-user lookup names the product and the canonical
+# subject and nothing else. It deliberately accepts no product_user_id,
+# provider, provider_subject, owner_ref or clock, so a caller can neither pick
+# a link nor smuggle identity material through this read-only path.
+_REVERSE_PRODUCT_USER_KEYS = frozenset({"product_id", "canonical_subject_id"})
 _CONNECT_KEYS = frozenset({"session_id", "connector_id"})
+_CONNECTOR_WORKSPACE_KEYS = frozenset({"session_id"})
 _SUBJECT_KEYS = frozenset({"subject_type", "subject_id"})
-_TENANT_CREATE_KEYS = frozenset()
+_TENANT_CREATE_KEYS: frozenset[str] = frozenset()
 _TENANT_GET_KEYS = frozenset({"tenant_id"})
 _TENANT_MEMBERSHIP_KEYS = frozenset({"tenant_id", "canonical_subject_id"})
+_TENANT_MEMBERSHIP_ROLE_KEYS = frozenset({"tenant_id", "canonical_subject_id", "role"})
 _TENANT_MEMBERSHIP_READ_KEYS = frozenset({"canonical_subject_id"})
+_TENANT_MEMBERSHIP_RESOLVE_KEYS = frozenset({"tenant_id", "canonical_subject_id", "now"})
 
 
 def _required_env(env: Any, name: str) -> str:
@@ -82,20 +92,46 @@ def _safe_error(exc: ControlPlaneContractError) -> dict[str, Any]:
     }
 
 
+def _connector_workspace_wire(context: Any | None) -> dict[str, Any]:
+    """§6 bounded status projection: present/absent, workspace_ref only.
+
+    ``actor_ref``, ``account_ref``, the canonical subject, the product, the
+    caller-asserted tenant and every credential stay inside this private
+    Control Plane Durable Object. This helper is never reachable from public
+    HTTP: the worker exposes no route at all.
+    """
+
+    if context is None:
+        return {"present": False}
+    return {"present": True, "workspace_ref": context.workspace_ref}
+
+
 class CanonicalIdentityDurableObject(DurableObject):
     """Private canonical identity/session and connector-ticket authority."""
 
     def __init__(self, ctx, env):
         super().__init__(ctx, env)
-        allowed = getattr(env, "CONTROL_PLANE_ALLOWED_PRODUCT", _ALLOWED_PRODUCT)
-        if allowed != _ALLOWED_PRODUCT:
-            raise RuntimeError("identity authority product boundary does not match the reviewed product")
+        raw_products = getattr(env, "CONTROL_PLANE_ALLOWED_PRODUCTS", None)
+        if raw_products is None:
+            # Legacy single-product var: accept only if it matches the sole reviewed entry
+            raw_legacy = getattr(env, "CONTROL_PLANE_ALLOWED_PRODUCT", None)
+            parsed: frozenset[str] = (
+                frozenset({raw_legacy.strip()}) if isinstance(raw_legacy, str) and raw_legacy.strip() else _ALLOWED_PRODUCTS
+            )
+        else:
+            parsed = frozenset(
+                p.strip() for p in str(raw_products).split(",") if p.strip()
+            )
+        if parsed != _ALLOWED_PRODUCTS:
+            raise RuntimeError(
+                "identity authority product boundary does not match the reviewed product set"
+            )
         self._store = CloudflareCanonicalIdentityAuthorityStore(
             ctx.storage,
             lookup_key=decode_identity_lookup_key(
                 _required_env(env, "CONTROL_PLANE_IDENTITY_LOOKUP_KEY")
             ),
-            allowed_product_id=_ALLOWED_PRODUCT,
+            allowed_product_ids=_ALLOWED_PRODUCTS,
         )
         self._connector_context_store = CanonicalConnectorContextStore(ctx.storage)
         self._connect_ticket_issuer = GoogleConnectTicketIssuer(
@@ -153,6 +189,53 @@ class CanonicalIdentityDurableObject(DurableObject):
         except ControlPlaneContractError as exc:
             return _safe_error(exc)
 
+    async def resolve_current_auth_session(self, payload: dict) -> dict:
+        """Read-only current-active-session lookup for one product user (#3243).
+
+        The request is closed to ``product_id`` + ``product_user_id``. The
+        Durable Object resolves the canonical subject through the product link,
+        selects the newest effective ACTIVE session, and returns it. The
+        caller's own clock is never used: ``now`` comes from this private
+        authority, so a caller cannot widen a session window or backdate the
+        selection. No row is written, extended or revoked.
+        """
+
+        try:
+            wire = _closed(
+                payload, _CURRENT_SESSION_KEYS, "current-auth-session resolve RPC"
+            )
+            session = self._store.resolve_current_auth_session_for_product_user(
+                product_id=wire["product_id"],
+                product_user_id=wire["product_user_id"],
+                now=datetime.now().astimezone(),
+            )
+            return {"ok": True, "session": session.to_public_dict()}
+        except ControlPlaneContractError as exc:
+            return _safe_error(exc)
+
+    async def resolve_product_user_for_subject(self, payload: dict) -> dict:
+        """Read-only reverse product-link lookup for one canonical subject (#3247).
+
+        The request is closed to ``product_id`` + ``canonical_subject_id``.
+        The Durable Object reads the existing ``canonical_product_identity_link``
+        row for that exact pair and requires exactly one ACTIVE link; missing,
+        inactive, ambiguous or corrupt state fails closed. This RPC is strictly
+        read-only: it never creates a link, never touches a session, and never
+        accepts ``auth_provider`` / ``provider_subject`` / ``owner_ref``.
+        """
+
+        try:
+            wire = _closed(
+                payload, _REVERSE_PRODUCT_USER_KEYS, "reverse product-user resolve RPC"
+            )
+            product_user_id = self._store.resolve_product_user_for_subject(
+                product_id=wire["product_id"],
+                canonical_subject_id=wire["canonical_subject_id"],
+            )
+            return {"ok": True, "product_user_id": product_user_id}
+        except ControlPlaneContractError as exc:
+            return _safe_error(exc)
+
     async def issue_google_connect_ticket(self, payload: dict) -> dict:
         """Mint one short-lived ticket after authoritative session re-read.
 
@@ -169,6 +252,34 @@ class CanonicalIdentityDurableObject(DurableObject):
                 connector_id=wire["connector_id"],
             )
             return {"ok": True, "ticket": receipt.to_private_rpc_dict()}
+        except ControlPlaneContractError as exc:
+            return _safe_error(exc)
+
+    async def resolve_connector_workspace(self, payload: dict) -> dict:
+        """Read-only connector workspace lookup for an active canonical session.
+
+        This is deliberately **not** a connect endpoint. The caller supplies
+        only the canonical session id; it can never supply or assert a
+        ``workspace_ref``, ``tenant_id``, ``subject_id`` or ``product_id``.
+        The Durable Object re-reads authoritative session truth, rejects
+        inactive or foreign sessions, and then performs a read-only existing
+        lookup that issues ``SELECT`` only.
+
+        Because ``resolve_existing`` never mints context, merely asking about
+        connector status cannot create a ``canonical_connector_context`` row.
+        ``present=False`` means the canonical connector context has not been
+        created yet; it does not mean the connector is disconnected, and no
+        B62 status projection is composed here.
+        """
+
+        try:
+            wire = _closed(payload, _CONNECTOR_WORKSPACE_KEYS, "connector workspace resolve RPC")
+            session = self._store.resolve_auth_session(session_id=wire["session_id"])
+            context = self._connector_context_store.resolve_existing(
+                auth_session=session,
+                now=datetime.now().astimezone(),
+            )
+            return {"ok": True, "workspace": _connector_workspace_wire(context)}
         except ControlPlaneContractError as exc:
             return _safe_error(exc)
 
@@ -190,15 +301,28 @@ class CanonicalIdentityDurableObject(DurableObject):
 
     async def assign_tenant_membership(self, payload: dict) -> dict:
         try:
-            wire = _closed(payload, _TENANT_MEMBERSHIP_KEYS, "tenant-membership RPC")
+            if set(payload) == _TENANT_MEMBERSHIP_ROLE_KEYS:
+                wire = _closed(payload, _TENANT_MEMBERSHIP_ROLE_KEYS, "tenant-membership role RPC")
+                role = wire["role"]
+            else:
+                wire = _closed(payload, _TENANT_MEMBERSHIP_KEYS, "tenant-membership RPC")
+                role = None
             membership = self._store.assign_tenant_membership(
                 tenant_id=wire["tenant_id"],
                 canonical_subject_id=wire["canonical_subject_id"],
                 now=datetime.now().astimezone(),
+                role=role,
             )
             return {"ok": True, "membership": membership.to_public_dict()}
-        except ControlPlaneContractError as exc:
-            return _safe_error(exc)
+        except (ControlPlaneContractError, TypeError, ValueError) as exc:
+            if isinstance(exc, ControlPlaneContractError):
+                return _safe_error(exc)
+            return _safe_error(
+                ControlPlaneContractError(
+                    "invalid_identity_authority_rpc",
+                    "canonical identity request is invalid",
+                )
+            )
 
     async def revoke_tenant_membership(self, payload: dict) -> dict:
         try:
@@ -217,6 +341,18 @@ class CanonicalIdentityDurableObject(DurableObject):
             wire = _closed(payload, _TENANT_MEMBERSHIP_READ_KEYS, "tenant-membership read RPC")
             tenant_ids = self._store._active_membership_tenant_ids(wire["canonical_subject_id"])
             return {"ok": True, "tenant_ids": tenant_ids}
+        except ControlPlaneContractError as exc:
+            return _safe_error(exc)
+
+    async def resolve_active_tenant_membership(self, payload: dict) -> dict:
+        try:
+            wire = _closed(payload, _TENANT_MEMBERSHIP_RESOLVE_KEYS, "sessionless membership resolve RPC")
+            membership = self._store.resolve_active_tenant_membership(
+                tenant_id=wire["tenant_id"],
+                canonical_subject_id=wire["canonical_subject_id"],
+                now=_parse_time(wire["now"], "now"),
+            )
+            return {"ok": True, "membership": membership.to_public_dict()}
         except ControlPlaneContractError as exc:
             return _safe_error(exc)
 
@@ -242,8 +378,17 @@ class Default(WorkerEntrypoint):
     async def resolve_auth_session(self, payload: dict) -> dict:
         return await self._stub().resolve_auth_session(payload)
 
+    async def resolve_current_auth_session(self, payload: dict) -> dict:
+        return await self._stub().resolve_current_auth_session(payload)
+
+    async def resolve_product_user_for_subject(self, payload: dict) -> dict:
+        return await self._stub().resolve_product_user_for_subject(payload)
+
     async def issue_google_connect_ticket(self, payload: dict) -> dict:
         return await self._stub().issue_google_connect_ticket(payload)
+
+    async def resolve_connector_workspace(self, payload: dict) -> dict:
+        return await self._stub().resolve_connector_workspace(payload)
 
     async def create_tenant(self, payload: dict) -> dict:
         return await self._stub().create_tenant(payload)
@@ -260,6 +405,9 @@ class Default(WorkerEntrypoint):
     async def resolve_active_memberships(self, payload: dict) -> dict:
         return await self._stub().resolve_active_memberships(payload)
 
+    async def resolve_active_tenant_membership(self, payload: dict) -> dict:
+        return await self._stub().resolve_active_tenant_membership(payload)
+
     async def fetch(self, request):
         del request
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
@@ -272,6 +420,15 @@ PROVIDER_SUBJECT_PERSISTED = False
 PRODUCT_D1_SHADOW_AUTHORITATIVE = False
 CONNECT_TICKET_ISSUED_BY_CONTROL_PLANE = True
 CLIENT_ACTOR_ACCOUNT_WORKSPACE_AUTHORITY = False
+READ_ONLY_CONNECTOR_WORKSPACE_RPC = True
+READ_ONLY_WORKSPACE_RPC_CREATES_CONTEXT = False
+SESSIONLESS_MEMBERSHIP_RESOLVER = True
+MEMBERSHIP_ROLE_AUTHORITY = True
+DEFAULT_MEMBERSHIP_ROLE = False
+READ_ONLY_REVERSE_PRODUCT_LINK_RESOLVER = True
+REVERSE_PRODUCT_LINK_CREATES_LINK = False
+REVERSE_PRODUCT_LINK_ACCEPTS_PROVIDER_SUBJECT = False
+REVERSE_PRODUCT_LINK_ACCEPTS_OWNER_REF = False
 RAW_CONNECT_TICKET_PUBLIC = False
 GOOGLE_WRITE_SCOPE = False
 PUBLIC_FETCH = False

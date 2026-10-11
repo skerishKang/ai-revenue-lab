@@ -14,7 +14,14 @@ from padiem_control_plane.local_agent_broker_http import (
     TrustedLocalAgentHttpAuthContext,
 )
 
-_DEVICE_HTTP_ROUTES = frozenset({"/session", "/poll", "/material", "/heartbeat", "/acknowledge"})
+#: The single canonical device route surface. The private-service bridge derives
+#: its external reachability from this same exported constant, so a route added
+#: here is reachable end to end and one that is absent fails closed at the outer
+#: edge. #3128 — `/reconcile` carries one restarted runner's durable admitted
+#: correlation to the #3121 broker exit and grants no execution authority.
+_DEVICE_HTTP_ROUTES = frozenset(
+    {"/session", "/poll", "/material", "/heartbeat", "/acknowledge", "/reconcile", "/office-part"}
+)
 _ENVELOPE_KEYS = frozenset({"method", "route", "content_type", "body_b64", "tls_verified"})
 _MAX_BODY_B64_CHARS = ((MAX_LOCAL_AGENT_HTTP_BODY_BYTES + 2) // 3) * 4
 
@@ -79,6 +86,14 @@ class LocalAgentBrokerDeviceHttpService:
     account/workspace identity from the canonical persisted device binding after
     verifying the raw credential with the existing broker authority, then invokes
     the already-closed M2e HTTP handler.
+
+    `session_open_transaction` is required (#3129, generalized by #3123): the
+    deployable composition must supply a transaction-capable callable (a
+    Durable Object `storage.transactionSync`), and every device-HTTP mutation
+    that writes broker state plus durable rows runs inside it — the #3129
+    session-open double write and, since #3123, the acknowledge state
+    mutation (whose compaction can also move used-command-id ledger rows).
+    Both-or-neither under crash, never a partial write.
     """
 
     def __init__(
@@ -90,10 +105,14 @@ class LocalAgentBrokerDeviceHttpService:
         rpc_factory: Callable[[], Any],
         http_state,
         material_resolver,
+        session_open_transaction: Callable[[Callable[[], Any]], Any],
         clock: Callable[[], datetime] | None = None,
+        office_chunks=None,
     ) -> None:
         if not callable(rpc_factory):
             raise ValueError("rpc_factory must be callable")
+        if not callable(session_open_transaction):
+            raise ValueError("session_open_transaction must be a transaction-capable callable")
         if not callable(clock) and clock is not None:
             raise ValueError("clock must be callable")
         self._authenticator = StateBackedLocalAgentBindingAuthenticator(
@@ -104,7 +123,9 @@ class LocalAgentBrokerDeviceHttpService:
         self._rpc_factory = rpc_factory
         self._http_state = http_state
         self._material_resolver = material_resolver
+        self._session_open_transaction = session_open_transaction
         self._clock = clock or (lambda: datetime.now(timezone.utc))
+        self._office_chunks = office_chunks
 
     def _server_now(self) -> datetime:
         value = self._clock()
@@ -156,6 +177,22 @@ class LocalAgentBrokerDeviceHttpService:
                 _error(401, "local_agent_http_auth_required", "authenticated Local Agent broker access is required")
             )
 
+        if route == "/office-part":
+            # The device credential is verified by canonical broker authority
+            # above; the payload is only artifact material, NEVER ownership.
+            if self._office_chunks is None:
+                return _structured_response(_error(503, "office_transfer_not_configured", "Office binary transfer is not enabled"))
+            try:
+                material = {k: v for k, v in decoded.items()
+                            if k not in ("binding_ref", "credential_b64")}
+                stored = self._session_open_transaction(lambda: self._office_chunks.put(
+                    material, binding_ref=binding.binding_ref,
+                    owner=binding.account_ref, workspace=binding.workspace_ref,
+                ))
+            except Exception:
+                return _structured_response(_error(409, "office_transfer_refused", "Office binary transfer was refused"))
+            return _structured_response(LocalAgentBrokerHttpResponse(status=200, body={"ok": True, "office_part": stored}))
+
         auth = TrustedLocalAgentHttpAuthContext(
             principal_ref=binding.device_id,
             account_ref=binding.account_ref,
@@ -168,6 +205,7 @@ class LocalAgentBrokerDeviceHttpService:
             state=self._http_state,
             material_resolver=self._material_resolver,
             clock=lambda: server_now,
+            session_open_transaction=self._session_open_transaction,
         )
         response = handler.handle(
             method=envelope["method"],
@@ -205,3 +243,11 @@ RAW_DEVICE_SECRET_LOGGED = False
 PRODUCTION_ROUTE_CONFIGURED = False
 PRODUCTION_DEPLOYMENT = False
 PRODUCTION_READY = False
+
+# --- issue #3129: atomic session open ---------------------------------------
+SESSION_OPEN_ATOMIC = True
+SESSION_OPEN_TRANSACTION_REQUIRED = True
+SESSION_OPEN_TRANSACTION_STORAGE_SEAM = "storage.transactionSync"
+SESSION_DOUBLE_WRITE_PRESENT = False
+SECOND_SESSION_AUTHORITY = False
+HEARTBEAT_TRANSACTION_PATH_UNCHANGED = True

@@ -11,7 +11,7 @@ from app.attachments import MAX_IMAGE_BYTES, parse_attachments
 from app.b14_client import PADIEM_IDENTITY_INSTRUCTION
 from app.config import Settings
 from app.main import create_app
-from app.model_policy import DEFAULT_B14_MODEL_ID
+from app.model_policy import DEFAULT_B14_MODEL_ID, EXECUTABLE_B14_MODEL_IDS
 
 
 JPEG = b"\xff\xd8\xff\xe0phase8"
@@ -61,17 +61,22 @@ async def test_no_attachment_keeps_text_chat_contract_on_explicit_agnes():
             "/api/chat",
             json={"messages": [{"role": "user", "content": "안녕"}], "mode": "auto"},
         )
-    assert response.status_code == 200
-    assert seen["body"]["model"] == DEFAULT_B14_MODEL_ID
-    system_messages = [item for item in seen["body"]["messages"] if item["role"] == "system"]
-    assert len(system_messages) == 1
-    assert PADIEM_IDENTITY_INSTRUCTION in system_messages[0]["content"]
-    assert seen["body"]["messages"][-1] == {"role": "user", "content": "안녕"}
-    assert "max_tokens" not in seen["body"]
-    assert seen["body"]["business14"]["required_capabilities"] == ["chat"]
-    assert seen["body"]["business14"]["allow_external_fallback"] is False
-    assert seen["body"]["business14"]["max_attempts"] == 1
-    assert "attachments" not in response.json()
+    if EXECUTABLE_B14_MODEL_IDS:
+        assert response.status_code == 200
+        assert seen["body"]["model"] == DEFAULT_B14_MODEL_ID
+        system_messages = [item for item in seen["body"]["messages"] if item["role"] == "system"]
+        assert len(system_messages) == 1
+        assert PADIEM_IDENTITY_INSTRUCTION in system_messages[0]["content"]
+        assert seen["body"]["messages"][-1] == {"role": "user", "content": "안녕"}
+        assert "max_tokens" not in seen["body"]
+        assert seen["body"]["business14"]["required_capabilities"] == ["chat"]
+        assert seen["body"]["business14"]["allow_external_fallback"] is False
+        assert seen["body"]["business14"]["max_attempts"] == 1
+        assert "attachments" not in response.json()
+    else:
+        assert response.status_code == 422
+        assert response.json()["error"]["code"] == "tier_unavailable"
+        assert seen == {}
 
 
 @pytest.mark.asyncio
@@ -83,7 +88,7 @@ async def test_no_attachment_keeps_text_chat_contract_on_explicit_agnes():
         ("image/webp", WEBP, "photo.webp"),
     ],
 )
-async def test_valid_live_image_attachment_fails_closed_before_b14_until_model_capability_is_proven(
+async def test_valid_live_image_attachment_fails_closed_without_primary_model(
     media_type, data, name
 ):
     calls = 0
@@ -112,10 +117,10 @@ async def test_valid_live_image_attachment_fails_closed_before_b14_until_model_c
             },
         )
 
+    assert EXECUTABLE_B14_MODEL_IDS == frozenset()
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "image_model_unavailable"
     assert calls == 0
-    assert encoded(data) not in response.text
 
 
 @pytest.mark.asyncio

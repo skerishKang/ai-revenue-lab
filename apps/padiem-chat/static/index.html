@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="dark" />
   <meta name="theme-color" content="#04070d" />
+  <link rel="icon" href="data:," />
   <title>Padiem Chat</title>
   <script src="./theme-init.js"></script>
-  <meta name="description" content="누구나 바로 사용할 수 있는 파디엠의 기본 AI 인터페이스" />
-  <!-- Legacy regression marker only: "자동 추천" is a deprecated label; model selection remains deferred. -->
+  <meta name="description" data-locale-content="meta-description" content="누구나 바로 사용할 수 있는 파디엠의 기본 AI 인터페이스" />
   <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./owner-model-preview.css" />
   <link rel="stylesheet" href="./attachments.css" />
   <link rel="stylesheet" href="./history.css" />
   <link rel="stylesheet" href="./projects.css" />
@@ -24,73 +25,114 @@
   <link rel="stylesheet" href="./capability-nav.css" />
   <link rel="stylesheet" href="./claw-manual-intake.css" />
   <link rel="stylesheet" href="./claw-workspace.css" />
+  <link rel="stylesheet" href="./claw-quote-compare.css" />
+  <link rel="stylesheet" href="./b66-quote-runtime.css" />
+  <link rel="stylesheet" href="./claw-local-handoff.css" />
+  <link rel="stylesheet" href="./padiem-chat-ui-polish.css" />
+  <link rel="stylesheet" href="./calendar.css" />
   <style>[hidden] { display: none !important; }</style>
 </head>
 <body>
   <div class="app-shell" data-state="home">
-    <aside class="sidebar" id="sidebar" aria-label="주요 메뉴">
+    <aside class="sidebar" id="sidebar" data-locale-aria-label="main-menu" aria-label="주요 메뉴">
       <div class="brand-row">
-        <button class="mobile-close" id="mobileClose" aria-label="메뉴 닫기">×</button>
-        <a class="brand" href="./" aria-label="Padiem Chat 홈"><span class="brand-mark" aria-hidden="true">P</span><span>Padiem Chat</span></a>
+        <button class="mobile-close" id="mobileClose" data-locale-aria-label="close-menu" aria-label="메뉴 닫기">×</button>
+        <a class="brand" href="./" data-locale-aria-label="home-aria" aria-label="Padiem Chat 홈"><span class="brand-mark" aria-hidden="true">P</span><span>Padiem Chat</span></a>
       </div>
-      <button class="new-chat" id="newChatButton" type="button"><span aria-hidden="true">＋</span><span>새 채팅</span></button>
-      <nav class="side-nav" aria-label="채팅 메뉴">
-        <button class="side-item" id="sidebarSearchButton" type="button" disabled aria-disabled="true" aria-pressed="false" hidden><span class="side-icon" aria-hidden="true">⌕</span><span>검색</span></button>
-        <button class="side-item" id="projectsNavButton" type="button" disabled aria-disabled="true" hidden><span class="side-icon" aria-hidden="true">▦</span><span>프로젝트</span><span class="mini-badge" id="projectsBadge">확인 중</span></button>
-        <button class="side-item" id="outputsNavButton" type="button" disabled aria-disabled="true" hidden><span class="side-icon" aria-hidden="true">▤</span><span>저장한 답변</span><span class="mini-badge" id="outputsBadge">로그인 후</span></button>
+      <button class="new-chat" id="newChatButton" type="button"><span aria-hidden="true">＋</span><span data-locale-key="new-chat">새 채팅</span></button>
+      <nav class="side-nav" data-locale-aria-label="chat-menu" aria-label="채팅 메뉴">
+        <button class="side-item" id="sidebarSearchButton" type="button" disabled aria-disabled="true" aria-pressed="false" hidden><span class="side-icon" aria-hidden="true">⌕</span><span data-locale-key="search">검색</span></button>
+        <button class="side-item" id="projectsNavButton" type="button" disabled aria-disabled="true" hidden><span class="side-icon" aria-hidden="true">▦</span><span data-locale-key="projects">프로젝트</span><span class="mini-badge" id="projectsBadge">확인 중</span></button>
+        <button class="side-item" id="outputsNavButton" type="button" disabled aria-disabled="true" hidden><span class="side-icon" aria-hidden="true">▤</span><span data-locale-key="saved">저장한 답변</span><span class="mini-badge" id="outputsBadge">로그인 후</span></button>
         <button class="side-item" id="clawNavButton" type="button"><span class="side-icon" aria-hidden="true">◆</span><span data-locale-key="nav-claw">Claw</span></button>
-        <button class="side-item" id="connectorsNavButton" type="button" disabled aria-disabled="true" aria-haspopup="dialog" aria-controls="connectorsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">Connectors</span></button>
+        <button class="side-item" id="calendarNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">▨</span><span data-locale-key="nav-calendar">캘린더</span></button>
+        <button class="side-item" id="connectorsNavButton" type="button" aria-haspopup="dialog" aria-controls="connectorsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">Connectors</span></button>
         <button class="side-item" id="skillsNavButton" type="button" disabled aria-disabled="true" aria-haspopup="dialog" aria-controls="skillsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">✦</span><span data-locale-key="nav-skills">Skills</span></button>
       </nav>
-      <nav class="side-nav" id="workspaceNav" aria-label="워크스페이스 메뉴">
+      <nav class="side-nav" id="workspaceNav" data-locale-aria-label="workspace-menu" aria-label="워크스페이스 메뉴">
         <button class="side-item" id="filesNavButton" type="button" disabled aria-disabled="true"><span class="side-icon" aria-hidden="true">▤</span><span data-locale-key="nav-files">Files</span></button>
+        <button class="side-item" id="automationNavButton" type="button" disabled aria-disabled="true" aria-current="false"><span class="side-icon" aria-hidden="true">◷</span><span data-locale-key="nav-automation">Automation</span></button>
         <button class="side-item" id="alertsNavButton" type="button" disabled aria-disabled="true"><span class="side-icon" aria-hidden="true">◐</span><span data-locale-key="nav-alerts">Alerts</span></button>
         <button class="side-item" id="tasksNavButton" type="button" disabled aria-disabled="true"><span class="side-icon" aria-hidden="true">☑</span><span data-locale-key="nav-tasks">Tasks</span></button>
       </nav>
       <section class="recent-section project-section" id="projectsSection" aria-labelledby="projectsTitle" hidden>
         <div class="section-heading-row">
-          <h2 id="projectsTitle">프로젝트</h2>
-          <button class="section-add-button" id="projectCreateButton" type="button" aria-label="새 프로젝트 만들기">＋</button>
+          <h2 id="projectsTitle" data-locale-key="projects">프로젝트</h2>
+          <button class="section-add-button" id="projectCreateButton" type="button" data-locale-aria-label="create-project-aria" aria-label="새 프로젝트 만들기">＋</button>
         </div>
         <div id="projectsList"></div>
-        <p class="history-empty" id="projectsEmpty" hidden>아직 프로젝트가 없습니다.</p>
+        <p class="history-empty" id="projectsEmpty" data-locale-key="projects-empty" hidden>아직 프로젝트가 없습니다.</p>
       </section>
       <section class="recent-section" id="historySection" aria-labelledby="historyTitle" hidden>
-        <h2 id="historyTitle">최근 대화</h2>
+        <h2 id="historyTitle" data-locale-key="history-title">최근 대화</h2>
         <div id="historyList"></div>
-        <p class="history-empty" id="historyEmpty" hidden>저장된 대화가 없습니다.</p>
+        <p class="history-empty" id="historyEmpty" data-locale-key="history-empty" hidden>저장된 대화가 없습니다.</p>
       </section>
       <section class="recent-section" id="outputsSection" aria-labelledby="outputsTitle" hidden>
-        <h2 id="outputsTitle">저장한 답변</h2>
+        <h2 id="outputsTitle" data-locale-key="saved">저장한 답변</h2>
         <div id="outputsList"></div>
-        <p class="history-empty" id="outputsEmpty" hidden>저장한 답변이 없습니다.</p>
+        <p class="history-empty" id="outputsEmpty" data-locale-key="outputs-empty" hidden>저장한 답변이 없습니다.</p>
       </section>
-      <div class="sidebar-footer"><span class="preview-dot" aria-hidden="true"></span><span>편하게 질문해 보세요</span></div>
-      <div class="sidebar-bottom" aria-label="서비스, 계정 및 설정">
-        <a class="home-link" href="https://padiem.net/" target="_blank" rel="noopener" aria-label="Padiem Home 열기"><span class="home-link-mark" aria-hidden="true">↗</span><span data-locale-key="home-link">Padiem Home</span></a>
+      <div class="sidebar-footer"><span class="preview-dot" aria-hidden="true"></span><span data-locale-key="footer">편하게 질문해 보세요</span></div>
+      <div class="sidebar-bottom" data-locale-aria-label="account-settings" aria-label="서비스, 계정 및 설정">
         <button class="settings-button" id="settingsButton" type="button" aria-haspopup="dialog" aria-controls="settingsDialog" aria-expanded="false"><span aria-hidden="true">⚙</span><span id="settingsButtonLabel" data-locale-key="settings">설정</span></button>
         <div class="sidebar-account account-controls">
           <span class="account-name" id="accountName" hidden></span>
-          <button class="login-button" id="loginButton" type="button" disabled aria-disabled="true" title="Google 계정으로 로그인" hidden>로그인</button>
+          <button class="login-button" id="loginButton" type="button" disabled aria-disabled="true" data-locale-key="login" data-locale-title="login-title" title="Google 계정으로 로그인" hidden>로그인</button>
         </div>
+        <a class="home-link" href="https://padiem.net/" target="_blank" rel="noopener" aria-label="Padiem Home 열기"><span class="home-link-mark" aria-hidden="true">↗</span><span data-locale-key="home-link">Padiem Home</span></a>
       </div>
     </aside>
     <div class="sidebar-scrim" id="sidebarScrim" hidden></div>
     <main class="main-panel">
       <header class="topbar">
-        <button class="mobile-menu" id="mobileMenu" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="메뉴 열기">☰</button>
-        <div class="model-pill" aria-label="대화 모드"><span class="status-spark" aria-hidden="true">✦</span><span>기본 대화</span></div>
+        <button class="mobile-menu" id="mobileMenu" type="button" aria-controls="sidebar" aria-expanded="false" data-locale-aria-label="open-menu" aria-label="메뉴 열기">☰</button>
       </header>
+      <dialog class="auth-dialog" id="authDialog" aria-labelledby="authDialogTitle">
+        <div class="auth-panel">
+          <div class="auth-header">
+            <div><p data-locale-key="auth-kicker">PADIEM ACCOUNT</p><h2 id="authDialogTitle" data-locale-key="auth-title">로그인 / 회원가입</h2></div>
+            <button class="auth-close" id="authDialogClose" type="button" data-locale-aria-label="auth-close" aria-label="로그인 창 닫기">×</button>
+          </div>
+          <button class="auth-google" id="googleLoginButton" type="button" data-locale-key="auth-google">Google 계정으로 계속</button>
+          <div class="auth-divider" id="authDivider"><span data-locale-key="auth-or">또는</span></div>
+          <form class="auth-form" id="passwordLoginForm">
+            <h3 data-locale-key="auth-password-login">아이디로 로그인</h3>
+            <label for="passwordLoginIdentifier" data-locale-key="auth-identifier">아이디 또는 이메일</label>
+            <input id="passwordLoginIdentifier" name="identifier" type="text" autocomplete="username" maxlength="320" required>
+            <label for="passwordLoginPassword" data-locale-key="auth-password">비밀번호</label>
+            <input id="passwordLoginPassword" name="password" type="password" autocomplete="current-password" maxlength="128" required>
+            <p class="auth-error" id="passwordLoginError" role="alert" hidden></p>
+            <button class="auth-primary" id="passwordLoginSubmit" type="submit" data-locale-key="auth-login">로그인</button>
+          </form>
+          <details class="auth-register" id="passwordRegisterSection">
+            <summary data-locale-key="auth-create-account">새 계정 만들기</summary>
+            <form class="auth-form" id="passwordRegisterForm">
+              <label for="passwordRegisterUsername" data-locale-key="auth-username">아이디</label>
+              <input id="passwordRegisterUsername" name="username" type="text" autocomplete="username" minlength="4" maxlength="32" pattern="[a-z0-9][a-z0-9._-]{3,31}" required>
+              <label for="passwordRegisterEmail" data-locale-key="auth-email">이메일</label>
+              <input id="passwordRegisterEmail" name="email" type="email" autocomplete="email" maxlength="320" required>
+              <label for="passwordRegisterName" data-locale-key="auth-name">이름</label>
+              <input id="passwordRegisterName" name="name" type="text" autocomplete="name" maxlength="160">
+              <label for="passwordRegisterPassword" data-locale-key="auth-password">비밀번호</label>
+              <input id="passwordRegisterPassword" name="password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required>
+              <small data-locale-key="auth-password-rule">12자 이상, 아이디 전체를 포함하지 않도록 설정해 주세요.</small>
+              <p class="auth-error" id="passwordRegisterError" role="alert" hidden></p>
+              <button class="auth-primary" id="passwordRegisterSubmit" type="submit" data-locale-key="auth-register">회원가입</button>
+            </form>
+          </details>
+        </div>
+      </dialog>
       <dialog class="settings-dialog" id="settingsDialog" aria-labelledby="settingsTitle">
         <form class="settings-panel" method="dialog">
           <div class="settings-header">
             <div><p data-locale-key="settings-kicker">PADIEM CHAT</p><h2 id="settingsTitle" data-locale-key="settings">설정</h2></div>
-            <button class="settings-close" id="settingsCloseButton" type="submit" value="cancel" aria-label="설정 닫기">×</button>
+            <button class="settings-close" id="settingsCloseButton" type="submit" value="cancel" data-locale-aria-label="settings-close" aria-label="설정 닫기">×</button>
           </div>
           <section class="settings-section" aria-labelledby="appearanceTitle">
             <p class="settings-label" data-locale-key="appearance">APPEARANCE</p>
             <h3 id="appearanceTitle" data-locale-key="theme">테마</h3>
-            <div class="theme-picker" role="group" aria-label="테마 선택" id="themePicker">
+            <div class="theme-picker" role="group" data-locale-aria-label="theme-picker" aria-label="테마 선택" id="themePicker">
               <button type="button" class="theme-option" data-theme-value="padiem-home" data-locale-key="home-theme" aria-pressed="false">Padiem Home</button>
               <button type="button" class="theme-option" data-theme-value="light" data-locale-key="light" aria-pressed="false">Light</button>
               <button type="button" class="theme-option" data-theme-value="dark" data-locale-key="dark" aria-pressed="false">Dark</button>
@@ -100,7 +142,7 @@
           <section class="settings-section" aria-labelledby="languageTitle">
             <p class="settings-label" data-locale-key="language">LANGUAGE</p>
             <h3 id="languageTitle" data-locale-key="language-choice">언어</h3>
-            <div class="language-picker" role="group" aria-label="언어 선택" id="languagePicker">
+            <div class="language-picker" role="group" data-locale-aria-label="language-picker" aria-label="언어 선택" id="languagePicker">
               <button type="button" class="language-option" data-locale-value="ko" aria-pressed="true">KR</button>
               <button type="button" class="language-option" data-locale-value="en" aria-pressed="false">EN</button>
             </div>
@@ -111,31 +153,37 @@
       <dialog class="capability-dialog" id="connectorsDialog" aria-labelledby="connectorsDialogTitle">
         <div class="capability-dialog-header">
           <div><p class="capability-kicker" data-locale-key="connectors-kicker">CONNECTORS</p><h2 class="capability-title" id="connectorsDialogTitle" data-locale-key="connectors-title">Connectors</h2></div>
-          <button class="capability-close" id="connectorsDialogClose" type="button" aria-label="닫기">×</button>
+          <button class="capability-close" id="connectorsDialogClose" type="button" data-locale-aria-label="capability-close-aria" aria-label="닫기">×</button>
         </div>
-        <p class="capability-tagline" data-locale-key="connectors-note">커넥터는 아직 연결되지 않았습니다. 연결 예정입니다.</p>
-        <div class="capability-grid" aria-label="연결 예정 커넥터">
-          <div class="capability-card" data-connector="google-drive"><strong>Google Drive</strong><span class="capability-soon">준비 중</span></div>
-          <div class="capability-card" data-connector="gmail"><strong>Gmail</strong><span class="capability-soon">준비 중</span></div>
-          <div class="capability-card" data-connector="discord"><strong>Discord</strong><span class="capability-soon">준비 중</span></div>
-          <div class="capability-card" data-connector="telegram"><strong>Telegram</strong><span class="capability-soon">준비 중</span></div>
-          <div class="capability-card" data-connector="slack"><strong>Slack</strong><span class="capability-soon">준비 중</span></div>
-          <div class="capability-card" data-connector="kakao-business"><strong>Kakao Business</strong><span class="capability-soon">준비 중</span></div>
+        <p class="capability-tagline" data-locale-key="connectors-note">읽기 지원 여부와 이 워크스페이스의 연결 상태를 각각 표시합니다. Google Drive와 Google Calendar 읽기 연결은 이 화면에서 시작할 수 있으며, 전송·쓰기 권한은 변경하지 않습니다.</p>
+        <div class="connector-live-status" id="connectorsLiveStatus" role="status" aria-live="polite" aria-atomic="true">
+          <span id="connectorsLoading" data-locale-key="connectors-loading" hidden>연결 상태 확인 중…</span>
+          <span id="connectorsError" data-locale-key="connectors-error" hidden>연결 상태를 불러오지 못했습니다.</span>
+          <button id="connectorsRetry" class="connector-retry" type="button" data-locale-key="retry" hidden>다시 시도</button>
+        </div>
+        <div class="capability-grid" data-locale-aria-label="connectors-grid-aria" aria-label="커넥터 지원 및 워크스페이스 연결 상태">
+          <div class="capability-card" data-connector="google-drive" data-connector-id="connector:google:drive@1" data-connector-status="loading"><strong>Google Drive</strong><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">지원 상태 확인 중…</span><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">워크스페이스 상태 확인 중…</span><button class="connector-retry connector-connect" type="button" data-google-connector-connect="google-drive" data-google-connect-endpoint="/api/connectors/google/ticket" data-locale-key="connectors-connect-drive" hidden>Google Drive 연결</button></div>
+          <div class="capability-card" data-connector="gmail" data-connector-id="connector:google:gmail@1" data-connector-status="loading"><strong>Gmail</strong><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">지원 상태 확인 중…</span><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">워크스페이스 상태 확인 중…</span></div>
+          <div class="capability-card" data-connector="telegram" data-connector-id="connector:telegram:bot@1" data-connector-status="loading"><strong>Telegram</strong><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">지원 상태 확인 중…</span><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">워크스페이스 상태 확인 중…</span></div>
+          <div class="capability-card" data-connector="slack" data-connector-id="connector:slack:workspace@1" data-connector-status="loading"><strong>Slack</strong><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">지원 상태 확인 중…</span><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">워크스페이스 상태 확인 중…</span></div>
+          <div class="capability-card" data-connector="google-calendar" data-connector-id="connector:google:calendar@1" data-connector-status="loading"><strong>Google Calendar</strong><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">지원 상태 확인 중…</span><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">워크스페이스 상태 확인 중…</span><span class="capability-read-state" data-connector-read-state role="status" data-read-state="pending" data-locale-key="connectors-calendar-read-pending" hidden>Calendar 읽기 권한 활성화 필요</span><button class="connector-retry connector-connect" type="button" data-google-connector-connect="google-calendar" data-google-connect-endpoint="/api/connectors/google/ticket" data-locale-key="connectors-connect-calendar" hidden>Google Calendar 연결</button></div>
+          <div class="capability-card" data-connector="discord" data-connector-status="preparing"><strong>Discord</strong><span class="capability-soon" data-locale-key="coming-soon">준비 중</span></div>
+          <div class="capability-card" data-connector="kakao-business" data-connector-status="preparing"><strong>Kakao Business</strong><span class="capability-soon" data-locale-key="coming-soon">준비 중</span></div>
         </div>
       </dialog>
       <dialog class="capability-dialog" id="skillsDialog" aria-labelledby="skillsDialogTitle">
         <div class="capability-dialog-header">
           <div><p class="capability-kicker" data-locale-key="skills-kicker">SKILLS</p><h2 class="capability-title" id="skillsDialogTitle" data-locale-key="skills-title">Skills</h2></div>
-          <button class="capability-close" id="skillsDialogClose" type="button" aria-label="닫기">×</button>
+          <button class="capability-close" id="skillsDialogClose" type="button" data-locale-aria-label="capability-close-aria" aria-label="닫기">×</button>
         </div>
         <p class="capability-tagline" data-locale-key="skills-note">스킬은 준비 중입니다. 지금은 목록만 표시됩니다.</p>
-        <div class="capability-grid" aria-label="준비 중 스킬">
+        <div class="capability-grid" data-locale-aria-label="skills-grid-aria" aria-label="준비 중 스킬">
           <div class="capability-card"><strong data-locale-key="skill-quote">견적서 만들기</strong></div>
           <div class="capability-card"><strong data-locale-key="skill-order">발주서 만들기</strong></div>
           <div class="capability-card"><strong data-locale-key="skill-reply">답장 초안 만들기</strong></div>
           <div class="capability-card"><strong data-locale-key="skill-requests">요청사항 정리</strong></div>
           <div class="capability-card"><strong data-locale-key="skill-extract">거래처/품목 추출</strong></div>
-          <div class="capability-card"><strong data-locale-key="skill-custom">사용자 정의 스킬 만들기</strong><span class="capability-soon">준비 중</span></div>
+          <div class="capability-card"><strong data-locale-key="skill-custom">사용자 정의 스킬 만들기</strong><span class="capability-soon" data-locale-key="coming-soon">준비 중</span></div>
         </div>
       </dialog>
       <section class="claw-workspace" id="clawWorkspace" aria-labelledby="clawWorkspaceTitle" hidden>
@@ -144,19 +192,485 @@
             <p class="claw-workspace-kicker" data-locale-key="claw-kicker">PADIEM CLAW</p>
             <h2 class="claw-workspace-title" id="clawWorkspaceTitle" data-locale-key="claw-title">Padiem Claw</h2>
           </div>
-          <p class="claw-workspace-chip" data-locale-key="claw-mode-chip">미리보기 · 읽기 전용</p>
+          <p class="claw-workspace-chip" data-locale-key="claw-mode-chip">미리보기 + 실제 실행</p>
         </header>
         <p class="claw-workspace-tagline" data-locale-key="claw-tagline">카톡, 문자, 이메일로 받은 요청을 붙여넣으면 견적서·발주서·답장 초안을 준비하는 업무 에이전트</p>
-        <form class="claw-intake" id="clawManualForm" aria-label="수동 인입 양식">
-          <label class="claw-intake-hero">
-            <span class="claw-intake-label" data-locale-key="claw-field-request">요청 원문 붙여넣기</span>
-            <textarea id="clawRequestText" rows="5" maxlength="4000" autocomplete="off" placeholder="카카오톡, 문자, 이메일, Telegram, Discord 등으로 받은 업무 요청을 붙여넣으세요."></textarea>
-          </label>
-          <div class="claw-chips" role="group" aria-label="Claw 작업 선택">
-            <button type="button" class="claw-chip" id="clawQuoteCard" data-claw-action="quote" aria-pressed="false"><span data-locale-key="claw-chip-quote">견적서</span></button>
-            <button type="button" class="claw-chip" id="clawOrderCard" data-claw-action="order" aria-pressed="false"><span data-locale-key="claw-chip-order">발주서</span></button>
-            <button type="button" class="claw-chip" id="clawReplyCard" data-claw-action="reply" aria-pressed="false"><span data-locale-key="claw-chip-reply">답장</span></button>
-            <button type="button" class="claw-chip" id="clawRequestsCard" data-claw-action="summary" aria-pressed="false"><span data-locale-key="claw-chip-summary">요청 정리</span></button>
+        <p class="claw-workspace-help" data-locale-key="claw-workspace-help">미리보기는 바로 확인하는 임시 결과, 실제 실행은 AI가 완성해 문서까지 준비합니다.</p>
+        <section class="claw-inbox" id="clawInbox" aria-labelledby="clawInboxTitle" hidden>
+          <div class="claw-inbox-header">
+            <div>
+              <p class="claw-workspace-kicker" data-locale-key="claw-inbox-kicker">PADIEM CLAW INBOX</p>
+              <h3 id="clawInboxTitle" data-locale-key="claw-inbox-tasks-title">작업</h3>
+            </div>
+            <button class="claw-inbox-retry" id="clawInboxRetry" type="button" data-locale-key="retry">다시 시도</button>
+          </div>
+          <p class="claw-inbox-help" id="clawInboxHelp" data-locale-key="claw-inbox-help">최근 항목만 표시되며 현재 로그인 계정과 워크스페이스 범위 안에서만 조회됩니다.</p>
+          <div class="claw-inbox-status" id="clawInboxStatus" aria-live="polite" aria-atomic="true">
+            <p id="clawInboxLoading" data-locale-key="claw-inbox-loading" hidden>불러오는 중…</p>
+            <p id="clawInboxError" data-locale-key="claw-inbox-error" hidden>목록을 불러오지 못했습니다.</p>
+          </div>
+          <p class="claw-inbox-empty" id="clawInboxEmpty" data-locale-key="claw-inbox-empty-tasks" hidden>최근 작업이 없습니다.</p>
+          <div class="claw-inbox-list" id="clawInboxList" role="list"></div>
+        </section>
+        <section class="claw-inbox" id="clawAutomation" aria-labelledby="clawAutomationTitle" tabindex="-1" hidden>
+          <div class="claw-inbox-header">
+            <div>
+              <p class="claw-workspace-kicker" data-locale-key="claw-automation-kicker">PADIEM CLAW AUTOMATION</p>
+              <h3 id="clawAutomationTitle" data-locale-key="claw-automation-title">자동화 규칙</h3>
+            </div>
+            <button class="claw-inbox-retry" id="clawAutomationRetry" type="button" data-locale-key="retry">다시 시도</button>
+          </div>
+          <p class="claw-inbox-help" id="clawAutomationHelp" data-locale-key="claw-automation-help">현재 워크스페이스의 자동화 규칙을 표시합니다. 생성은 워크스페이스 소유자만 할 수 있고 수정·삭제는 아직 지원하지 않습니다.</p>
+          <p class="claw-inbox-help" id="clawAutomationSchedulerNote" data-locale-key="claw-automation-scheduler-note">‘규칙 설정’은 규칙에 저장된 설정값이며, 자동 실행이 이미 활성화되어 있다는 뜻이 아닙니다.</p>
+          <details class="calendar-record claw-automation-create" id="clawAutomationCreate">
+            <summary class="calendar-record-summary" id="clawAutomationCreateToggle" data-locale-key="claw-automation-create-summary">+ 자동화 만들기</summary>
+            <p class="calendar-record-hint" data-locale-key="claw-automation-create-hint">자동화 규칙을 만듭니다. 실행 대상(저장소·버전)은 서버가 지정하며 사용자가 지정할 수 없습니다.</p>
+            <form class="calendar-record-form" id="clawAutomationCreateForm" novalidate>
+              <label class="calendar-record-field" for="clawAutomationCreateName">
+                <span data-locale-key="claw-automation-create-name-label">이름</span>
+                <input type="text" id="clawAutomationCreateName" name="name" maxlength="256" autocomplete="off" required data-locale-placeholder="claw-automation-create-name-placeholder" placeholder="예) 매일 아침 알림 요약" />
+              </label>
+              <label class="calendar-record-field" for="clawAutomationCreateTask">
+                <span data-locale-key="claw-automation-create-task-label">할 일</span>
+                <textarea id="clawAutomationCreateTask" name="task" rows="3" maxlength="12000" required data-locale-placeholder="claw-automation-create-task-placeholder" placeholder="자동화가 할 일을 구체적으로 적어 주세요."></textarea>
+              </label>
+              <label class="calendar-record-field" for="clawAutomationCreateKind">
+                <span data-locale-key="claw-automation-create-kind-label">주기 종류</span>
+                <select id="clawAutomationCreateKind" name="schedule_kind">
+                  <option value="daypart" data-locale-key="claw-automation-create-kind-daypart">하루 시간대</option>
+                  <option value="interval" data-locale-key="claw-automation-create-kind-interval">반복 간격</option>
+                  <option value="cron" data-locale-key="claw-automation-create-kind-cron">고급 (cron)</option>
+                </select>
+              </label>
+              <label class="calendar-record-field" for="clawAutomationCreateDaypart" id="clawAutomationCreateDaypartField">
+                <span data-locale-key="claw-automation-create-daypart-label">시간대 선택</span>
+                <select id="clawAutomationCreateDaypart" name="daypart">
+                  <option value="morning" data-locale-key="claw-automation-create-daypart-morning">아침</option>
+                  <option value="midday" data-locale-key="claw-automation-create-daypart-midday">정오</option>
+                  <option value="evening" data-locale-key="claw-automation-create-daypart-evening">저녁</option>
+                  <option value="close_of_business" data-locale-key="claw-automation-create-daypart-cob">업무 종료</option>
+                </select>
+              </label>
+              <label class="calendar-record-field" for="clawAutomationCreateInterval" id="clawAutomationCreateIntervalField" hidden>
+                <span data-locale-key="claw-automation-create-interval-label">반복 간격</span>
+                <input type="text" id="clawAutomationCreateInterval" name="interval" list="clawAutomationIntervalExamples" autocomplete="off" spellcheck="false" placeholder="15m" />
+                <datalist id="clawAutomationIntervalExamples">
+                  <option value="15m"></option>
+                  <option value="1h"></option>
+                  <option value="6h"></option>
+                  <option value="1d"></option>
+                </datalist>
+              </label>
+              <label class="calendar-record-field" for="clawAutomationCreateCron" id="clawAutomationCreateCronField" hidden>
+                <span data-locale-key="claw-automation-create-cron-label">cron 표현식</span>
+                <input type="text" id="clawAutomationCreateCron" name="cron" autocomplete="off" spellcheck="false" placeholder="0 9 * * *" />
+                <small class="claw-automation-create-cron-help" data-locale-key="claw-automation-create-cron-help">고급 입력입니다. 표준 5필드 cron(분 시 일 월 요일)을 그대로 입력합니다.</small>
+              </label>
+              <label class="calendar-record-field" for="clawAutomationCreateTimezone">
+                <span data-locale-key="claw-automation-create-timezone-label">시간대 (IANA, 예: Asia/Seoul)</span>
+                <input type="text" id="clawAutomationCreateTimezone" name="schedule_timezone" autocomplete="off" spellcheck="false" />
+              </label>
+              <label class="calendar-record-field" for="clawAutomationCreateTarget">
+                <span data-locale-key="claw-automation-create-target-label">대상</span>
+                <select id="clawAutomationCreateTarget" name="target_source">
+                  <option value="memory" data-locale-key="claw-automation-create-target-memory">기억</option>
+                  <option value="tasks" data-locale-key="claw-automation-create-target-tasks">작업</option>
+                  <option value="connectors" data-locale-key="claw-automation-create-target-connectors">커넥터</option>
+                  <option value="inbox" data-locale-key="claw-automation-create-target-inbox">수신함</option>
+                </select>
+              </label>
+              <label class="calendar-record-field" for="clawAutomationCreateOutput">
+                <span data-locale-key="claw-automation-create-output-label">결과</span>
+                <select id="clawAutomationCreateOutput" name="output_type">
+                  <option value="alert" data-locale-key="claw-automation-create-output-alert">알림</option>
+                  <option value="draft" data-locale-key="claw-automation-create-output-draft">초안</option>
+                  <option value="report" data-locale-key="claw-automation-create-output-report">보고서</option>
+                  <option value="task_proposal" data-locale-key="claw-automation-create-output-task-proposal">작업 제안</option>
+                </select>
+              </label>
+              <p class="claw-inbox-help" data-locale-key="claw-automation-create-notification-note">결과는 웹 알림 수신함(web_alert_inbox)으로만 전달됩니다.</p>
+              <div class="calendar-record-actions">
+                <button type="button" class="calendar-record-cancel" id="clawAutomationCreateCancel" data-locale-key="claw-automation-create-cancel">취소</button>
+                <button type="submit" class="calendar-record-submit" id="clawAutomationCreateSubmit" data-locale-key="claw-automation-create-submit">자동화 만들기</button>
+              </div>
+            </form>
+            <p class="calendar-record-status" id="clawAutomationCreateStatus" role="status" aria-live="polite" hidden></p>
+          </details>
+          <div class="claw-inbox-status" id="clawAutomationStatus" aria-live="polite" aria-atomic="true">
+            <p id="clawAutomationLoading" data-locale-key="claw-automation-loading" hidden>자동화 규칙을 불러오는 중…</p>
+            <p id="clawAutomationError" data-locale-key="claw-automation-error" hidden>자동화 규칙을 불러오지 못했습니다.</p>
+          </div>
+          <p class="claw-inbox-help" id="clawAutomationToggleStatus" role="status" aria-live="polite" hidden></p>
+          <form class="calendar-record-form claw-automation-edit-form" id="clawAutomationEditForm" hidden novalidate aria-labelledby="clawAutomationEditTitle">
+            <h4 class="claw-automation-edit-title" id="clawAutomationEditTitle" data-locale-key="claw-automation-edit-summary">자동화 규칙 수정</h4>
+            <p class="calendar-record-hint" data-locale-key="claw-automation-edit-hint">이름과 주기만 수정할 수 있습니다. 할 일·실행 대상·저장 위치·알림 채널은 수정할 수 없습니다.</p>
+            <label class="calendar-record-field" for="clawAutomationEditName">
+              <span data-locale-key="claw-automation-create-name-label">이름</span>
+              <input type="text" id="clawAutomationEditName" name="name" maxlength="256" autocomplete="off" required />
+            </label>
+            <label class="calendar-record-field" for="clawAutomationEditKind">
+              <span data-locale-key="claw-automation-create-kind-label">주기 종류</span>
+              <select id="clawAutomationEditKind" name="schedule_kind">
+                <option value="daypart" data-locale-key="claw-automation-create-kind-daypart">하루 시간대</option>
+                <option value="interval" data-locale-key="claw-automation-create-kind-interval">반복 간격</option>
+                <option value="cron" data-locale-key="claw-automation-create-kind-cron">고급 (cron)</option>
+              </select>
+            </label>
+            <label class="calendar-record-field" for="clawAutomationEditDaypart" id="clawAutomationEditDaypartField">
+              <span data-locale-key="claw-automation-create-daypart-label">시간대 선택</span>
+              <select id="clawAutomationEditDaypart" name="daypart">
+                <option value="morning" data-locale-key="claw-automation-create-daypart-morning">아침</option>
+                <option value="midday" data-locale-key="claw-automation-create-daypart-midday">정오</option>
+                <option value="evening" data-locale-key="claw-automation-create-daypart-evening">저녁</option>
+                <option value="close_of_business" data-locale-key="claw-automation-create-daypart-cob">업무 종료</option>
+              </select>
+            </label>
+            <label class="calendar-record-field" for="clawAutomationEditInterval" id="clawAutomationEditIntervalField" hidden>
+              <span data-locale-key="claw-automation-create-interval-label">반복 간격</span>
+              <input type="text" id="clawAutomationEditInterval" name="interval" list="clawAutomationEditIntervalExamples" autocomplete="off" spellcheck="false" placeholder="15m" />
+              <datalist id="clawAutomationEditIntervalExamples">
+                <option value="15m"></option>
+                <option value="1h"></option>
+                <option value="6h"></option>
+                <option value="1d"></option>
+              </datalist>
+            </label>
+            <label class="calendar-record-field" for="clawAutomationEditCron" id="clawAutomationEditCronField" hidden>
+              <span data-locale-key="claw-automation-create-cron-label">cron 표현식</span>
+              <input type="text" id="clawAutomationEditCron" name="cron" autocomplete="off" spellcheck="false" placeholder="0 9 * * *" />
+            </label>
+            <label class="calendar-record-field" for="clawAutomationEditTimezone">
+              <span data-locale-key="claw-automation-create-timezone-label">시간대 (IANA, 예: Asia/Seoul)</span>
+              <input type="text" id="clawAutomationEditTimezone" name="schedule_timezone" autocomplete="off" spellcheck="false" />
+            </label>
+            <div class="calendar-record-actions">
+              <button type="button" class="calendar-record-cancel" id="clawAutomationEditCancel" data-locale-key="claw-automation-edit-cancel">취소</button>
+              <button type="submit" class="calendar-record-submit" id="clawAutomationEditSubmit" data-locale-key="claw-automation-edit-submit">수정 저장</button>
+            </div>
+          </form>
+          <p class="claw-inbox-help" id="clawAutomationEditStatus" role="status" aria-live="polite" hidden></p>
+          <p class="claw-inbox-empty" id="clawAutomationEmpty" data-locale-key="claw-automation-empty" hidden>등록된 자동화 규칙이 없습니다.</p>
+          <div class="claw-inbox-list" id="clawAutomationList" role="list"></div>
+        </section>
+      </section>
+      <section class="calendar-view" id="calendarView" aria-labelledby="calendarViewTitle" hidden>
+        <header class="calendar-view-header">
+          <div>
+            <p class="calendar-view-kicker" data-locale-key="calendar-kicker">PADIEM CALENDAR</p>
+            <h2 class="calendar-view-title" id="calendarViewTitle" data-locale-key="calendar-title">캘린더</h2>
+          </div>
+          <button type="button" class="calendar-refresh-button" id="calendarRefresh" data-locale-aria-label="calendar-refresh-aria" aria-label="목록 새로고침">↻</button>
+        </header>
+        <p class="calendar-view-help" data-locale-key="calendar-help">오늘 예정된 항목과 다가오는 항목을 보여줍니다. 업무 기록과 일정(예약)을 직접 만들 수 있고, 일정 수정·삭제는 아직 지원하지 않습니다.</p>
+        <details class="calendar-record" id="calendarRecord">
+          <summary class="calendar-record-summary" data-locale-key="calendar-record-summary">업무 기록 추가</summary>
+          <p class="calendar-record-hint" data-locale-key="calendar-record-hint">오늘 한 일을 간단히 남깁니다. AI 장기 기억으로 자동 저장되지 않습니다.</p>
+          <form class="calendar-record-form" id="calendarRecordForm" novalidate>
+            <label class="calendar-record-field" for="calendarRecordDate">
+              <span data-locale-key="calendar-record-date">날짜</span>
+              <input type="date" id="calendarRecordDate" name="date" required />
+            </label>
+            <label class="calendar-record-field" for="calendarRecordTitle">
+              <span data-locale-key="calendar-record-title-label">제목</span>
+              <input type="text" id="calendarRecordTitle" name="title" maxlength="200" autocomplete="off" required data-locale-placeholder="calendar-record-title-placeholder" placeholder="예) A사와 납기 협의함" />
+            </label>
+            <label class="calendar-record-field" for="calendarRecordContent">
+              <span data-locale-key="calendar-record-content-label">메모 (선택)</span>
+              <textarea id="calendarRecordContent" name="content" rows="3" maxlength="4000"></textarea>
+            </label>
+            <div class="calendar-record-actions">
+              <button type="submit" class="calendar-record-submit" id="calendarRecordSubmit" data-locale-key="calendar-record-submit">기록 저장</button>
+            </div>
+          </form>
+          <p class="calendar-record-status" id="calendarRecordStatus" role="status" aria-live="polite" hidden></p>
+        </details>
+        <details class="calendar-record" id="calendarAppointment">
+          <summary class="calendar-record-summary" data-locale-key="calendar-appointment-summary">일정 추가</summary>
+          <p class="calendar-record-hint" data-locale-key="calendar-appointment-hint">Padiem Calendar에 일정을 직접 만듭니다. Google이나 Naver 계정 없이도 저장되며, 장기 기억으로 자동 저장되지 않습니다.</p>
+          <form class="calendar-record-form" id="calendarAppointmentForm" novalidate>
+            <label class="calendar-record-field" for="calendarAppointmentType">
+              <span data-locale-key="calendar-appointment-type-label">종류</span>
+              <select id="calendarAppointmentType" name="appointment_type">
+                <option value="date_only" data-locale-key="calendar-appointment-type-date-only">날짜만</option>
+                <option value="all_day" data-locale-key="calendar-appointment-type-all-day">종일</option>
+                <option value="timed" data-locale-key="calendar-appointment-type-timed">시간 지정</option>
+              </select>
+            </label>
+            <label class="calendar-record-field" for="calendarAppointmentTitle">
+              <span data-locale-key="calendar-appointment-title-label">제목</span>
+              <input type="text" id="calendarAppointmentTitle" name="title" maxlength="200" autocomplete="off" required data-locale-placeholder="calendar-appointment-title-placeholder" placeholder="예) A사 계약 미팅" />
+            </label>
+            <label class="calendar-record-field" for="calendarAppointmentDate">
+              <span data-locale-key="calendar-appointment-date-label">날짜</span>
+              <input type="date" id="calendarAppointmentDate" name="date" required />
+            </label>
+            <label class="calendar-record-field" for="calendarAppointmentTimeZone" id="calendarAppointmentTimeZoneField">
+              <span data-locale-key="calendar-appointment-timezone-label">시간대</span>
+              <input type="text" id="calendarAppointmentTimeZone" name="timezone" autocomplete="off" spellcheck="false" />
+            </label>
+            <label class="calendar-record-field" for="calendarAppointmentStart" id="calendarAppointmentStartField">
+              <span data-locale-key="calendar-appointment-start-label">시작 시각</span>
+              <input type="time" id="calendarAppointmentStart" name="start_time" />
+            </label>
+            <label class="calendar-record-field" for="calendarAppointmentEnd" id="calendarAppointmentEndField">
+              <span data-locale-key="calendar-appointment-end-label">종료 시각 (선택)</span>
+              <input type="time" id="calendarAppointmentEnd" name="end_time" />
+            </label>
+            <label class="calendar-record-field" for="calendarAppointmentReminder">
+              <span data-locale-key="calendar-appointment-reminder-label">알림 (선택)</span>
+              <select id="calendarAppointmentReminder" name="reminder_minutes">
+                <option value="" data-locale-key="calendar-reminder-none">없음</option>
+                <option value="10" data-locale-key="calendar-reminder-10">10분 전</option>
+                <option value="30" data-locale-key="calendar-reminder-30">30분 전</option>
+                <option value="60" data-locale-key="calendar-reminder-60">1시간 전</option>
+                <option value="1440" data-locale-key="calendar-reminder-1440">1일 전</option>
+              </select>
+            </label>
+            <label class="calendar-record-field" for="calendarAppointmentDescription">
+              <span data-locale-key="calendar-appointment-description-label">메모 (선택)</span>
+              <textarea id="calendarAppointmentDescription" name="description" rows="3" maxlength="4000"></textarea>
+            </label>
+            <div class="calendar-record-actions">
+              <button type="submit" class="calendar-record-submit" id="calendarAppointmentSubmit" data-locale-key="calendar-appointment-submit">일정 저장</button>
+            </div>
+          </form>
+          <p class="calendar-appointment-note" data-locale-key="calendar-appointment-timezone-note">시간 지정 일정은 명시적 IANA 시간대가 필요합니다. 브라우저나 서버 시간대로 추측하지 않습니다.</p>
+          <p class="calendar-record-status" id="calendarAppointmentStatus" role="status" aria-live="polite" hidden></p>
+        </details>
+        <div class="calendar-tabs" id="calendarTabs" role="tablist" data-locale-aria-label="calendar-tabs-aria" aria-label="캘린더 보기 선택">
+          <button type="button" class="calendar-tab" id="calendarTodayTab" role="tab" data-calendar-tab="today" aria-selected="true" aria-controls="calendarPanel" data-locale-key="calendar-today">오늘</button>
+          <button type="button" class="calendar-tab" id="calendarDayTab" role="tab" data-calendar-tab="day" aria-selected="false" aria-controls="calendarPanel" data-locale-key="calendar-day">일</button>
+          <button type="button" class="calendar-tab" id="calendarWeekTab" role="tab" data-calendar-tab="week" aria-selected="false" aria-controls="calendarPanel" data-locale-key="calendar-week">주</button>
+          <button type="button" class="calendar-tab" id="calendarMonthTab" role="tab" data-calendar-tab="month" aria-selected="false" aria-controls="calendarPanel" data-locale-key="calendar-month">월</button>
+          <button type="button" class="calendar-tab" id="calendarUpcomingTab" role="tab" data-calendar-tab="upcoming" aria-selected="false" aria-controls="calendarPanel" data-locale-key="calendar-upcoming">예정</button>
+        </div>
+        <div class="calendar-range-navigation" id="calendarRangeNavigation" hidden>
+          <button type="button" class="calendar-range-button" id="calendarPreviousRange" data-locale-aria-label="calendar-previous-aria" aria-label="이전 기간">←</button>
+          <span class="calendar-range-label" id="calendarRangeLabel" aria-live="polite"></span>
+          <button type="button" class="calendar-range-button" id="calendarRangeToday" data-locale-key="calendar-today">오늘</button>
+          <button type="button" class="calendar-range-button" id="calendarNextRange" data-locale-aria-label="calendar-next-aria" aria-label="다음 기간">→</button>
+        </div>
+        <div class="calendar-panel" id="calendarPanel" role="tabpanel" aria-labelledby="calendarTodayTab">
+          <p class="calendar-loading" id="calendarLoading" role="status" aria-live="polite" data-locale-key="calendar-loading" hidden>불러오는 중…</p>
+          <div class="calendar-error" id="calendarErrorBox" role="alert" hidden>
+            <p class="calendar-error-copy" id="calendarError" data-locale-key="calendar-error">캘린더를 불러오지 못했습니다.</p>
+            <button type="button" class="calendar-retry-button" id="calendarRetry" data-locale-key="retry">다시 시도</button>
+          </div>
+          <p class="calendar-empty" id="calendarEmpty" hidden></p>
+          <div class="calendar-list" id="calendarList" role="list" hidden></div>
+        </div>
+      </section>
+      <section class="conversation" aria-live="polite">
+        <div class="empty-state" id="emptyState">
+          <p class="eyebrow">PADIEM AI</p>
+          <h1><span data-locale-key="hello">안녕하세요.</span><br /><span data-locale-key="ask">무엇을 도와드릴까요?</span></h1>
+          <p class="empty-copy" data-locale-key="copy">궁금한 것을 평소 말하듯 편하게 물어보세요.</p>
+          <div class="starter-grid" aria-label="추천 질문">
+            <button type="button" class="starter" data-prompt="AI를 처음 쓰는 사람에게 AI가 뭔지 아주 쉽게 설명해줘" data-skill="explain"><span class="starter-icon" aria-hidden="true">☺</span><span><strong data-locale-key="easy-title">쉽게 설명해줘</strong><small data-locale-key="easy-copy">어려운 내용도 쉬운 말로</small></span></button>
+            <button type="button" class="starter" data-prompt="이번 주말 가족과 집 근처에서 할 만한 일을 추천해줘" data-skill="plan"><span class="starter-icon" aria-hidden="true">⌂</span><span><strong data-locale-key="life-title">생활 도움</strong><small data-locale-key="life-copy">일상 질문과 계획 세우기</small></span></button>
+            <button type="button" class="starter" id="documentStarterButton"><span class="starter-icon" aria-hidden="true">▤</span><span><strong>문서와 대화</strong><small>지원 문서 형식</small></span></button>
+            <button type="button" class="starter" id="webSearchStarterButton" disabled aria-disabled="true" aria-pressed="false" hidden><span class="starter-icon" aria-hidden="true">⌕</span><span><strong data-locale-key="web-starter-title">웹에서 찾아줘</strong><small data-locale-key="web-starter-copy">웹 검색 · 준비 중</small></span></button>
+          </div>
+        </div>
+        <section class="claw-web-office" id="clawWebOffice" aria-labelledby="clawWebOfficeTitle">
+          <details id="clawWebOfficeDetails">
+            <summary id="clawWebOfficeTitle">웹에서 Excel 원본 보관 · 컴퓨터 연결 불필요</summary>
+            <p>웹에서 XLSX를 직접 선택해 원본 그대로 보관합니다(최대 1 MiB, 24시간). 이 단계는 파일을 수정하거나 PDF로 변환하지 않습니다. 실제 처리는 별도의 P01 승인이 필요합니다.</p>
+            <div class="claw-web-office-actions">
+              <label for="clawWebXlsxInput">XLSX 파일 선택</label>
+              <input type="file" id="clawWebXlsxInput" />
+              <button type="button" id="clawWebXlsxSave">원본 보관</button>
+              <button type="button" id="clawWebXlsxRefresh">보관한 원본 조회</button>
+            </div>
+            <p role="status" aria-live="polite" id="clawWebXlsxNotice">파일을 선택하면 원본을 보존하며, 읽기·수정 승인은 별도로 진행합니다.</p>
+            <ul id="clawWebXlsxList" aria-label="보관된 웹 Excel 원본"></ul>
+            <section id="clawWebXlsxP01Panel" class="claw-web-office-approval" aria-label="선택한 Excel 원본의 P01 승인" hidden>
+              <p id="clawWebXlsxP01Selected"></p>
+              <p id="clawWebXlsxP01Status" role="status" aria-live="polite">승인 상태 확인 중</p>
+              <div class="claw-web-office-actions">
+                <button type="button" id="clawWebXlsxP01Refresh">승인 상태 확인</button>
+                <button type="button" id="clawWebXlsxP01Start" hidden disabled>P01 승인 요청 시작</button>
+                <button type="button" id="clawWebXlsxP01Approve" hidden disabled>원본 확인 승인</button>
+                <button type="button" id="clawWebXlsxP01Deny" hidden disabled>거절</button>
+              </div>
+              <p>승인해도 Excel 원본을 읽거나 변경하지 않습니다. 실제 작업 사본과 PDF 처리는 아직 시작하지 않습니다.</p>
+            </section>
+          </details>
+        </section>
+        <div class="message-list" id="messageList" hidden></div>
+        <article class="message claw-request-echo" id="clawRequestEcho" hidden><div class="message-bubble" id="clawRequestEchoText"></div></article>
+        <section class="claw-local" id="clawLocalHandoff" data-locale-aria-label="claw-local-panel-aria" aria-label="컴퓨터 연결 안내" data-claw-local-contract="b62-claw-local-handoff/1" hidden>
+          <div class="claw-local-head">
+            <h2 class="claw-local-title" id="clawLocalTitle" data-locale-key="claw-local-title">컴퓨터 연결이 필요합니다</h2>
+            <span class="claw-local-state" id="clawLocalState" data-state="OFFLINE" data-locale-key="claw-local-state-offline">컴퓨터 연결이 끊어져 있습니다.</span>
+          </div>
+          <p class="claw-local-body" id="clawLocalBody" data-locale-key="claw-local-body">이 작업을 대신하려면 지금 사용 중인 컴퓨터에 연결해야 합니다. 연결한 뒤 이 대화에서 그대로 이어서 진행합니다.</p>
+          <div class="claw-local-actions">
+            <button type="button" class="claw-local-cta" id="clawLocalCta" data-locale-key="claw-local-cta-connect" disabled aria-disabled="true">이 컴퓨터 연결</button>
+          </div>
+          <p class="claw-local-note" id="clawLocalInstallNote" data-locale-key="claw-local-install-note" hidden>Padiem 데스크톱이 설치되어 있지 않습니다. 설치 안내를 열고 다시 시도해 주세요.</p>
+          <p class="claw-local-note" id="clawLocalOpenNote" data-locale-key="claw-local-open-note">Padiem 데스크톱을 열면 연결이 이어집니다. 이 대화는 그대로 유지됩니다.</p>
+          <p class="claw-local-identity" id="clawLocalIdentity" data-locale-key="claw-local-identity-note">이 대화가 그대로 이어집니다.</p>
+          <div class="claw-local-block" id="clawLocalApproval" hidden>
+            <p class="claw-local-block-title" id="clawLocalApprovalTitle" data-locale-key="claw-local-approval-title">승인이 필요합니다</p>
+            <p class="claw-local-block-body" id="clawLocalApprovalBody" data-locale-key="claw-local-approval-pending">이 작업을 진행하려면 먼저 승인이 필요합니다.</p>
+          </div>
+          <section class="claw-local-block" id="clawOfficeChooser" aria-labelledby="clawOfficeChooserTitle">
+            <p class="claw-local-block-title" id="clawOfficeChooserTitle">로컬 견적서 찾기</p>
+            <p class="claw-local-block-body">현재 작업의 승인된 폴더에서 Excel 견적서 후보만 조회합니다. 파일을 읽거나 업로드하려면 별도의 승인이 필요합니다.</p>
+            <button type="button" id="clawOfficeFind" class="claw-local-cta">견적서 후보 조회</button>
+            <p id="clawOfficeNotice" role="status" aria-live="polite">컴퓨터 연결과 파일 목록 조회 승인이 필요합니다.</p>
+            <ul id="clawOfficeCandidates" class="claw-office-list" aria-label="견적서 후보 목록"></ul>
+            <div id="clawOfficeDecision" hidden>
+              <p id="clawOfficeDecisionLabel" role="status"></p>
+              <button type="button" id="clawOfficeApprove" class="claw-local-cta">파일 읽기 승인</button>
+              <button type="button" id="clawOfficeDeny">거절</button>
+            </div>
+            <div id="clawOfficeResult" hidden>
+              <button type="button" id="clawOfficeCheckResult" class="claw-local-cta">실행 결과 확인</button>
+              <a id="clawOfficePreview" href="#" target="_blank" rel="noopener noreferrer" hidden>생성된 PDF 미리보기</a>
+            </div>
+          </section>
+          <div class="claw-local-block" id="clawLocalStatus" role="status" hidden>
+            <p class="claw-local-block-title" id="clawLocalStatusTitle" data-locale-key="claw-local-status-title">진행 상황</p>
+            <p class="claw-local-block-body" id="clawLocalStatusBody"></p>
+          </div>
+          <div class="claw-local-block" id="clawLocalResult" hidden>
+            <p class="claw-local-block-title" id="clawLocalResultTitle" data-locale-key="claw-local-result-title">결과</p>
+            <p class="claw-local-block-body" id="clawLocalResultBody"></p>
+          </div>
+          <div class="claw-local-block" id="clawLocalEvidence" hidden>
+            <p class="claw-local-block-title" id="clawLocalEvidenceTitle" data-locale-key="claw-local-evidence-title">확인 내용</p>
+            <ul class="claw-local-evidence-list" id="clawLocalEvidenceList"></ul>
+          </div>
+        </section>
+        <section class="claw-result" id="clawResultArea" data-claw-state="idle">
+          <p class="claw-result-empty" id="clawResultEmpty" data-locale-key="claw-preview-empty">요청 원문을 붙여넣은 뒤 초안을 만들 수 있습니다.</p>
+          <p class="claw-result-hint" id="clawResultHint" data-locale-key="claw-preview-empty-hint">예: “A업체 견적 요청 — 품목 20개, 납기 9월 말”처럼 붙여넣어 보세요.</p>
+          <p class="claw-execute-hint" id="clawExecuteHint" data-locale-key="claw-execute-hint">실제 실행은 AI가 서버에서 완성합니다. 견적서·발주서는 문서로 저장해 다운로드할 수 있습니다.</p>
+          <article class="claw-result-card" id="clawResultCard" hidden>
+            <div class="claw-result-card-head">
+              <span class="claw-result-kind" id="clawResultKind"></span>
+              <span class="claw-result-badge" id="clawResultBadge" data-locale-key="claw-result-badge">미리보기</span>
+            </div>
+            <pre id="clawResultPreview" class="claw-result-body" tabindex="-1"></pre>
+            <div class="claw-artifact-meta" id="clawArtifactMeta" hidden>
+              <span class="claw-artifact-name" id="clawArtifactName"></span>
+              <span class="claw-artifact-size" id="clawArtifactSize"></span>
+            </div>
+            <div class="claw-result-actions">
+              <button type="button" id="clawResultDocx" class="claw-result-action" disabled aria-disabled="true"><span aria-hidden="true">↓</span><span data-locale-key="claw-result-docx">DOCX 다운로드</span></button>
+              <div class="claw-approval-actions" id="clawApprovalActions" role="group" data-locale-aria-label="claw-approval-actions-aria" aria-label="승인 결정" hidden></div>
+            </div>
+            <p class="claw-result-note" data-locale-key="claw-result-note">미리보기는 저장되지 않습니다. 실제 실행 결과에는 문서가 포함될 수 있습니다.</p>
+            <p class="claw-result-success-note" id="clawResultSuccessNote" hidden data-locale-key="claw-artifact-ready">문서가 준비되었습니다. 아래에서 다운로드할 수 있습니다.</p>
+          </article>
+        </section>
+        <section class="claw-memory-review" id="clawMemoryReview" data-locale-aria-label="claw-memory-review-aria" aria-label="메모리 저장 검토" hidden></section>
+        <section class="claw-approved-memory" id="clawApprovedMemory" aria-labelledby="clawApprovedMemoryTitle" hidden>
+          <header class="claw-approved-memory-header">
+            <div class="claw-workspace-identity">
+              <p class="claw-workspace-kicker" data-locale-key="claw-approved-kicker">PADIEM CLAW</p>
+              <h2 class="claw-workspace-title" id="clawApprovedMemoryTitle" data-locale-key="claw-approved-title">승인된 메모리</h2>
+            </div>
+            <button type="button" class="claw-refresh-button" id="clawApprovedRefresh" data-locale-aria-label="claw-approved-refresh-aria" aria-label="목록 새로고침">↻</button>
+          </header>
+          <p class="claw-workspace-tagline" data-locale-key="claw-approved-tagline">명시적으로 승인한 메모리만 표시됩니다. 거절한 제안은 저장되지 않습니다.</p>
+          <div class="claw-approved-loading" id="clawApprovedLoading" data-locale-key="claw-approved-loading" role="status" aria-live="polite" hidden>불러오는 중…</div>
+          <p class="claw-approved-error" id="clawApprovedError" role="alert" hidden></p>
+          <div class="claw-approved-list" id="clawApprovedList" hidden></div>
+          <p class="claw-approved-empty" id="clawApprovedEmpty" data-locale-key="claw-approved-empty" hidden>승인된 메모리가 없습니다.</p>
+        </section>
+        <section class="claw-run-history" id="clawRunHistory" aria-labelledby="clawRunHistoryTitle" hidden>
+          <header class="claw-run-history-header">
+            <div class="claw-workspace-identity">
+              <p class="claw-workspace-kicker" data-locale-key="claw-runs-kicker">PADIEM CLAW</p>
+              <h2 class="claw-workspace-title" id="clawRunHistoryTitle" data-locale-key="claw-runs-title">최근 실행 기록</h2>
+            </div>
+            <button type="button" class="claw-refresh-button" id="clawRunHistoryRefresh" data-locale-aria-label="claw-runs-refresh-aria" aria-label="기록 새로고침">↻</button>
+          </header>
+          <p class="claw-workspace-tagline" data-locale-key="claw-runs-tagline">실제 실행한 기록만 표시됩니다. 결과 요약을 확인하고 생성된 문서를 다시 다운로드할 수 있습니다.</p>
+          <div class="claw-run-history-loading" id="clawRunHistoryLoading" data-locale-key="claw-runs-loading" role="status" aria-live="polite" hidden>불러오는 중…</div>
+          <p class="claw-run-history-error" id="clawRunHistoryError" role="alert" hidden></p>
+          <div class="claw-run-history-list" id="clawRunHistoryList" hidden></div>
+          <button type="button" class="claw-refresh-button claw-run-history-expand" id="clawRunHistoryExpand" data-locale-key="claw-runs-show-up-to-30" hidden>이전 실행 기록 더 보기 (최대 30건)</button>
+          <p class="claw-run-history-empty" id="clawRunHistoryEmpty" data-locale-key="claw-runs-empty" hidden>최근 실행 기록이 없습니다.</p>
+        </section>
+        <section class="claw-quote-compare" id="clawQuoteCompare" aria-labelledby="clawQuoteCompareTitle" hidden>
+          <header class="claw-run-history-header">
+            <div class="claw-workspace-identity">
+              <p class="claw-workspace-kicker" data-locale-key="claw-qc-kicker">PADIEM CLAW COMPARE</p>
+              <h2 class="claw-workspace-title" id="clawQuoteCompareTitle" data-locale-key="claw-qc-title">공급업체 견적 비교</h2>
+            </div>
+          </header>
+          <p class="claw-workspace-tagline" data-locale-key="claw-qc-tagline">2개 이상의 캡처된 견적을 추론 없이 비교합니다.</p>
+          <form class="claw-qc-form" id="clawQuoteCompareForm" data-locale-aria-label="claw-qc-form-aria" aria-label="공급업체 견적 비교 양식">
+            <div class="claw-qc-controls">
+              <label class="claw-qc-control"><span data-locale-key="claw-qc-mode">비교 기준</span><select id="clawQcMode"></select></label>
+              <label class="claw-qc-control"><span data-locale-key="claw-qc-currency">통화</span><select id="clawQcCurrency"></select></label>
+            </div>
+            <div class="claw-qc-suppliers" id="clawQcSuppliers" role="list" aria-label="공급업체 견적 목록"></div>
+            <div class="claw-qc-form-actions">
+              <button type="button" class="claw-qc-secondary" id="clawQcAddSupplier" data-locale-key="claw-qc-add">공급업체 추가</button>
+              <button type="submit" class="claw-qc-primary" id="clawQcCompareBtn" data-locale-key="claw-qc-btn-compare">견적 비교</button>
+              <button type="button" class="claw-qc-secondary" id="clawQcDocxBtn" data-locale-key="claw-qc-btn-docx" disabled aria-disabled="true">DOCX 저장</button>
+              <button type="button" class="claw-qc-secondary" id="clawQcDownloadBtn" data-locale-key="claw-qc-btn-download" disabled aria-disabled="true">문서 다운로드</button>
+            </div>
+            <p class="claw-qc-hint" data-locale-key="claw-qc-hint">모르는 항목은 비워 두세요. 리드타임 문구는 날짜로 변환하지 않습니다.</p>
+            <p class="claw-qc-auth-note" id="clawQcAuthNote" data-locale-key="claw-qc-auth-note" hidden>DOCX 저장은 로그인한 워크스페이스 계정이 필요합니다.</p>
+            <p class="claw-qc-status" id="clawQcStatus" role="status" aria-live="polite" hidden></p>
+          </form>
+          <div class="claw-qc-result" id="clawQcResult" hidden></div>
+        </section>
+        <details class="claw-disabled-controls" data-locale-aria-label="coming-features-aria" aria-label="준비 중인 기능">
+          <summary class="claw-disabled-summary" data-locale-key="claw-disabled-summary">준비 중인 기능 5개</summary>
+          <div class="claw-disabled-grid">
+            <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
+              <strong data-locale-key="claw-ctrl-md-title">Markdown 다운로드</strong>
+              <small data-locale-key="claw-ctrl-md-note">이 작업공간에서는 아직 사용할 수 없습니다.</small>
+            </button>
+            <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
+              <strong data-locale-key="claw-ctrl-docx-title">DOCX 다운로드</strong>
+              <small data-locale-key="claw-ctrl-docx-note">실제 실행 후 결과 카드에서 다운로드할 수 있습니다.</small>
+            </button>
+            <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
+              <strong data-locale-key="claw-ctrl-mem-title">메모리 저장 후보</strong>
+              <small data-locale-key="claw-ctrl-mem-note">사용자 승인 필요 / 준비 중</small>
+            </button>
+            <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
+              <strong data-locale-key="claw-ctrl-email-title">이메일 발송</strong>
+              <small data-locale-key="claw-ctrl-email-note">사용자 승인 필요 / 준비 중</small>
+            </button>
+            <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
+              <strong data-locale-key="claw-ctrl-share-title">공유 링크</strong>
+              <small data-locale-key="claw-ctrl-share-note">저장소 연결 후 가능</small>
+            </button>
+          </div>
+        </details>
+      </section>
+      <section class="composer-wrap" data-locale-aria-label="composer" aria-label="메시지 작성">
+        <div class="project-banner" id="projectBanner" hidden>
+          <div class="project-banner-copy"><span data-locale-key="project-banner">프로젝트</span><strong id="activeProjectName"></strong><small id="activeProjectFiles" hidden></small></div>
+          <div class="project-banner-actions">
+            <button id="editProjectButton" type="button" data-locale-key="project-edit">지침·파일</button>
+            <button id="exitProjectButton" type="button" data-locale-key="project-exit">나가기</button>
+          </div>
+        </div>
+        <div class="claw-entry-bar" id="clawManualEntryBar" hidden>
+          <button type="button" class="claw-inbox-retry" id="clawManualEntryButton" data-locale-key="claw-manual-entry">문서 초안 작성</button>
+        </div>
+        <form class="claw-mode-bar" id="clawManualForm" data-locale-aria-label="claw-form-aria" aria-label="수동 인입 양식" hidden>
+          <div class="claw-mode-bar-row">
+            <div class="claw-chips" role="group" aria-label="Claw 작업 선택">
+              <button type="button" class="claw-chip" id="clawQuoteCard" data-claw-action="quote" aria-pressed="false"><span data-locale-key="claw-chip-quote">견적서</span></button>
+              <button type="button" class="claw-chip" id="clawOrderCard" data-claw-action="order" aria-pressed="false"><span data-locale-key="claw-chip-order">발주서</span></button>
+              <button type="button" class="claw-chip" id="clawReplyCard" data-claw-action="reply" aria-pressed="false"><span data-locale-key="claw-chip-reply">답장</span></button>
+              <button type="button" class="claw-chip" id="clawRequestsCard" data-claw-action="summary" aria-pressed="false"><span data-locale-key="claw-chip-summary">요청 정리</span></button>
+            </div>
+            <div class="claw-actions">
+              <button type="submit" class="claw-generate-button" id="clawGenerateBtn" data-locale-key="claw-btn-generate">초안 만들기</button>
+              <button type="button" class="claw-execute-button" id="clawExecuteButton" data-locale-key="claw-btn-execute">실제 실행</button>
+            </div>
           </div>
           <details class="claw-meta">
             <summary data-locale-key="claw-meta-summary">출처 · 거래처 (선택)</summary>
@@ -174,7 +688,7 @@
               </label>
               <label class="claw-field">
                 <span data-locale-key="claw-field-sender">보낸 사람/거래처 힌트</span>
-                <input type="text" id="clawSender" maxlength="120" autocomplete="off" placeholder="선택 입력: 고객사, 공급사, 발신자명" />
+                <input type="text" id="clawSender" maxlength="120" autocomplete="off" data-locale-placeholder="claw-sender-placeholder" placeholder="선택 입력: 고객사, 공급사, 발신자명" />
               </label>
             </div>
           </details>
@@ -184,88 +698,50 @@
             <option value="reply" data-locale-key="claw-opt-reply">답장 초안</option>
             <option value="summary" data-locale-key="claw-opt-summary">요청사항 정리</option>
           </select>
-          <button type="submit" class="claw-generate-button" id="clawGenerateBtn" data-locale-key="claw-btn-generate">초안 만들기</button>
+          <p class="claw-actions-hint" data-locale-key="claw-actions-hint">미리보기: 저장 없이 바로 확인 · 실제 실행: AI가 완성하고 필요하면 문서로 저장</p>
+          <p class="claw-status" id="clawStatus" role="status" aria-live="polite" hidden></p>
+          <p class="claw-wait" id="clawWait" role="timer" aria-live="off" hidden></p>
+          <p class="claw-recovery-hint" id="clawRetryHint" hidden></p>
+          <div class="claw-retry" id="clawRetryBox" hidden>
+            <p class="claw-retry-copy" id="clawRetryCopy"></p>
+            <button type="button" class="claw-retry-button" id="clawRetryButton" data-locale-key="claw-btn-retry" disabled aria-disabled="true">다시 시도</button>
+          </div>
         </form>
-        <section class="claw-result" id="clawResultArea" aria-live="polite">
-          <p class="claw-result-empty" id="clawResultEmpty" data-locale-key="claw-preview-empty">요청 원문을 붙여넣은 뒤 초안을 만들 수 있습니다.</p>
-          <article class="claw-result-card" id="clawResultCard" hidden>
-            <div class="claw-result-card-head">
-              <span class="claw-result-kind" id="clawResultKind"></span>
-              <span class="claw-result-badge" data-locale-key="claw-result-badge">미리보기</span>
-            </div>
-            <pre id="clawResultPreview" class="claw-result-body"></pre>
-            <div class="claw-result-actions">
-              <button type="button" class="claw-result-action" disabled aria-disabled="true"><span aria-hidden="true">▤</span><span data-locale-key="claw-result-open">문서 열기</span></button>
-              <button type="button" class="claw-result-action" disabled aria-disabled="true"><span aria-hidden="true">↓</span><span data-locale-key="claw-result-docx">DOCX 다운로드</span></button>
-            </div>
-            <p class="claw-result-note" data-locale-key="claw-result-note">백엔드 연결 전까지 미리보기 텍스트만 표시됩니다.</p>
-          </article>
-        </section>
-        <div class="claw-disabled-controls" aria-label="준비 중인 기능">
-          <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
-            <strong data-locale-key="claw-ctrl-md-title">Markdown 다운로드</strong>
-            <small data-locale-key="claw-ctrl-md-note">백엔드 연결 전까지 비활성화</small>
-          </button>
-          <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
-            <strong data-locale-key="claw-ctrl-docx-title">DOCX 다운로드</strong>
-            <small data-locale-key="claw-ctrl-docx-note">백엔드 연결 전까지 비활성화</small>
-          </button>
-          <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
-            <strong data-locale-key="claw-ctrl-mem-title">메모리 저장 후보</strong>
-            <small data-locale-key="claw-ctrl-mem-note">사용자 승인 필요 / 준비 중</small>
-          </button>
-          <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
-            <strong data-locale-key="claw-ctrl-email-title">이메일 발송</strong>
-            <small data-locale-key="claw-ctrl-email-note">사용자 승인 필요 / 준비 중</small>
-          </button>
-          <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
-            <strong data-locale-key="claw-ctrl-share-title">공유 링크</strong>
-            <small data-locale-key="claw-ctrl-share-note">저장소 연결 후 가능</small>
-          </button>
-        </div>
-      </section>
-      <section class="conversation" aria-live="polite">
-        <div class="empty-state" id="emptyState">
-          <p class="eyebrow">PADIEM AI</p>
-          <h1>안녕하세요.<br />무엇을 도와드릴까요?</h1>
-          <p class="empty-copy">궁금한 것을 평소 말하듯 편하게 물어보세요.</p>
-          <div class="starter-grid" aria-label="추천 질문">
-            <button type="button" class="starter" data-prompt="AI를 처음 쓰는 사람에게 AI가 뭔지 아주 쉽게 설명해줘" data-skill="explain"><span class="starter-icon" aria-hidden="true">☺</span><span><strong>쉽게 설명해줘</strong><small>어려운 내용도 쉬운 말로</small></span></button>
-            <button type="button" class="starter" data-prompt="이번 주말 가족과 집 근처에서 할 만한 일을 추천해줘" data-skill="plan"><span class="starter-icon" aria-hidden="true">⌂</span><span><strong>생활 도움</strong><small>일상 질문과 계획 세우기</small></span></button>
-            <button type="button" class="starter" id="documentStarterButton"><span class="starter-icon" aria-hidden="true">▤</span><span><strong>문서와 대화</strong><small>지원 문서 형식</small></span></button>
-            <button type="button" class="starter" id="webSearchStarterButton" disabled aria-disabled="true" aria-pressed="false" hidden><span class="starter-icon" aria-hidden="true">⌕</span><span><strong>웹에서 찾아줘</strong><small>웹 검색 · 준비 중</small></span></button>
-          </div>
-        </div>
-        <div class="message-list" id="messageList" hidden></div>
-      </section>
-      <section class="composer-wrap" aria-label="메시지 작성">
-        <div class="project-banner" id="projectBanner" hidden>
-          <div class="project-banner-copy"><span>프로젝트</span><strong id="activeProjectName"></strong><small id="activeProjectFiles" hidden></small></div>
-          <div class="project-banner-actions">
-            <button id="editProjectButton" type="button">지침·파일</button>
-            <button id="exitProjectButton" type="button">나가기</button>
-          </div>
-        </div>
         <form class="composer" id="composerForm">
           <div class="attachment-tray" id="attachmentTray" hidden>
             <div class="attachment-preview">
-              <img id="attachmentThumb" alt="선택한 사진 미리보기" hidden />
+              <img id="attachmentThumb" data-locale-alt="attachment-preview-alt" alt="선택한 사진 미리보기" hidden />
               <span class="document-attachment-icon" id="attachmentKind" aria-hidden="true" hidden>DOC</span>
               <div class="attachment-copy"><strong id="attachmentName"></strong><small id="attachmentSize"></small></div>
-              <button id="removeAttachment" class="attachment-remove" type="button" aria-label="첨부 파일 제거">×</button>
+              <button id="removeAttachment" class="attachment-remove" type="button" data-locale-aria-label="attachment-remove" aria-label="첨부 파일 제거">×</button>
             </div>
           </div>
-          <label for="messageInput" class="sr-only">메시지 입력</label>
-          <textarea id="messageInput" rows="1" placeholder="무엇이든 물어보세요" autocomplete="off" maxlength="8000"></textarea>
+          <label for="clawVerifiedModelSelect" class="claw-model-choice">
+            <span data-locale-key="claw-verified-model-label">파디엠플러스 모델 선택</span>
+            <select id="clawVerifiedModelSelect" aria-describedby="clawVerifiedModelHint">
+              <option value="">모델을 직접 선택하세요</option>
+            </select>
+            <small id="clawVerifiedModelHint" role="status" aria-live="polite">현재 사용 가능한 모델을 표시합니다.</small>
+          </label>
+          <details class="claw-model-advanced"><summary data-locale-key="claw-model-advanced">직접 모델 ID 입력 (고급)</summary>
+          <label for="clawModelIdInput" class="claw-model-choice"><span data-locale-key="claw-model-choice-label">실행 모델 ID (등록된 모델)</span>
+            <input id="clawModelIdInput" type="text" value="" maxlength="128" autocomplete="off" autocapitalize="off" spellcheck="false" data-locale-placeholder="claw-model-choice-placeholder" placeholder="등록된 모델 ID를 입력하세요" aria-describedby="clawModelChoiceHint" />
+            <small id="clawModelChoiceHint" data-locale-key="claw-model-choice-hint">Claw Plus 기본: Gemini 3.5 Flash-Lite · 직접 변경 가능 · 자동 대체 없음</small>
+          </label>
+          </details>
+          <button class="owner-model-preview-trigger" id="ownerModelPreviewOpen" type="button" aria-haspopup="dialog" aria-controls="ownerModelPreviewDialog" aria-expanded="false" data-locale-aria-label="owner-model-preview-open" aria-label="파디엠플러스 모델 현황"><span data-locale-key="owner-model-preview-open">파디엠플러스 모델 현황</span></button>
+          <label for="messageInput" class="sr-only" data-locale-key="message-input-label">메시지 입력</label>
+          <textarea id="messageInput" rows="1" data-locale-placeholder="input" placeholder="무엇이든 물어보세요" autocomplete="off" maxlength="8000"></textarea>
           <div class="composer-actions">
             <div class="composer-tools">
+              <button class="model-pill composer-tier-trigger" type="button" data-locale-aria-label="mode" aria-label="AI 등급"><span class="status-spark" aria-hidden="true">✦</span><span>Padiem Plus</span></button>
               <input id="attachmentFileInput" type="file" hidden />
               <button type="button" class="tool-button" id="attachmentButton" title="파일 첨부"><span aria-hidden="true">＋</span><span>파일</span></button>
               <button type="button" class="tool-button" disabled id="webSearchButton" aria-disabled="true" aria-pressed="false" title="웹 검색" hidden><span aria-hidden="true">⌕</span><span>웹 검색</span></button>
               <button type="button" class="tool-button" disabled id="deepResearchButton" aria-disabled="true" aria-pressed="false" title="심층 리서치" hidden><span aria-hidden="true">✦</span><span>심층 리서치</span></button>
             </div>
-            <button class="cancel-stream-button" id="cancelStreamButton" type="button" aria-label="답변 생성 취소" hidden>취소</button>
-            <button class="send-button" id="sendButton" type="submit" aria-label="메시지 보내기" disabled><span aria-hidden="true">↑</span></button>
+            <button class="cancel-stream-button" id="cancelStreamButton" type="button" data-locale-key="cancel" data-locale-aria-label="cancel-answer" aria-label="답변 생성 취소" hidden>취소</button>
+            <button class="send-button" id="sendButton" type="submit" data-locale-aria-label="send" aria-label="메시지 보내기" disabled><span aria-hidden="true">↑</span></button>
           </div>
         </form>
         <p class="composer-note" id="runtimeNote">파일 첨부 형식을 확인하는 중입니다.</p>
@@ -276,30 +752,55 @@
   <dialog class="project-dialog" id="projectDialog" aria-labelledby="projectDialogTitle">
     <form class="project-form" id="projectForm">
       <div class="project-dialog-header">
-        <div><p>PROJECT</p><h2 id="projectDialogTitle">새 프로젝트</h2></div>
-        <button id="projectDialogClose" class="project-dialog-close" type="button" aria-label="프로젝트 창 닫기">×</button>
+        <div><p>PROJECT</p><h2 id="projectDialogTitle" data-locale-key="project-new">새 프로젝트</h2></div>
+        <button id="projectDialogClose" class="project-dialog-close" type="button" data-locale-aria-label="project-close" aria-label="프로젝트 창 닫기">×</button>
       </div>
-      <label for="projectNameInput">프로젝트 이름</label>
-      <input id="projectNameInput" name="name" maxlength="80" autocomplete="off" required placeholder="예: 제주 가족여행" />
-      <label for="projectInstructionsInput">프로젝트 지침 <span>선택</span></label>
-      <textarea id="projectInstructionsInput" name="instructions" maxlength="1800" rows="6" placeholder="예: 부모님과 함께 보는 내용이라 쉬운 한국어로 설명해줘."></textarea>
-      <p class="project-form-note">이 지침은 이 프로젝트의 대화에만 적용됩니다.</p>
+      <label for="projectNameInput" data-locale-key="project-name">프로젝트 이름</label>
+      <input id="projectNameInput" name="name" maxlength="80" autocomplete="off" required data-locale-placeholder="project-name-placeholder" placeholder="예: 제주 가족여행" />
+      <label for="projectInstructionsInput"><span data-project-instructions-label data-locale-key="project-instructions">프로젝트 지침</span> <span data-project-instructions-optional data-locale-key="optional">선택</span></label>
+      <textarea id="projectInstructionsInput" name="instructions" maxlength="1800" rows="6" data-locale-placeholder="project-instructions-placeholder" placeholder="예: 판례 요약문을 5줄로 압축하고 쟁점을 먼저 제시해줘.&#10;예: 표준계약서 검토 시 위험 조항을 체크리스트로 정리해줘."></textarea>
+      <p class="project-form-note" data-locale-key="project-instructions-note">이 지침은 이 프로젝트의 대화에만 적용됩니다.</p>
+
+      <section class="project-drive-panel" id="projectDrivePanel" aria-labelledby="projectDriveTitle" hidden>
+        <div class="project-drive-heading">
+          <strong id="projectDriveTitle">Google Drive 사건 폴더</strong>
+          <small>선택한 폴더만 이 프로젝트의 자료로 읽습니다.</small>
+        </div>
+        <p class="project-drive-status" id="projectDriveStatus">사건 폴더가 선택되지 않았습니다.</p>
+        <p class="project-drive-status-live" id="projectDriveStatusLive" role="status" aria-live="polite" aria-busy="false"></p>
+        <div class="project-drive-actions">
+          <button id="projectDrivePickButton" class="project-drive-button" type="button">폴더 선택</button>
+          <button id="projectDriveClearButton" class="project-drive-button project-drive-button-secondary" type="button" hidden>해제</button>
+        </div>
+        <dialog class="project-drive-picker" id="projectDrivePicker" aria-labelledby="projectDrivePickerTitle" hidden>
+          <div class="project-drive-picker-header">
+            <h3 id="projectDrivePickerTitle">Drive 폴더 선택</h3>
+            <button id="projectDrivePickerClose" class="project-drive-button project-drive-button-secondary" type="button" aria-label="폴더 선택 닫기">닫기</button>
+          </div>
+          <label class="project-drive-search-label" for="projectDriveSearchInput">폴더 이름 검색</label>
+          <input id="projectDriveSearchInput" class="project-drive-search" type="text" maxlength="200" autocomplete="off" placeholder="예: 2026 사건" />
+          <div class="project-drive-list" id="projectDriveFolderList"></div>
+          <p class="project-drive-picker-state" id="projectDrivePickerState" role="status" aria-live="polite"></p>
+        </dialog>
+      </section>
+      <script src="./project-drive-folder.js" defer></script>
 
       <section class="project-files-panel" id="projectFilesPanel" hidden aria-labelledby="projectFilesTitle">
         <div class="project-files-heading">
-          <div><strong id="projectFilesTitle">프로젝트 파일</strong><small>TXT·Markdown·CSV·JSON · 최대 12개</small></div>
-          <label class="project-file-add" for="projectFileInput">＋ 파일 추가</label>
-          <input id="projectFileInput" type="file" accept="text/plain,text/markdown,text/csv,application/json,.txt,.md,.markdown,.csv,.json" hidden />
+          <div><strong id="projectFilesTitle" data-locale-key="project-files">프로젝트 파일</strong><small data-locale-key="project-files-limit">TXT·Markdown·CSV·JSON·PDF·DOCX</small><small class="project-files-usage" id="projectFilesUsage" hidden></small></div>
+          <label class="project-file-add" for="projectFileInput" data-locale-key="project-file-add">＋ 파일 추가</label>
+          <input id="projectFileInput" type="file" accept="text/plain,text/markdown,text/csv,application/json,.txt,.md,.markdown,.csv,.json,application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx" hidden />
         </div>
         <div class="project-files-list" id="projectFilesList"></div>
-        <p class="project-files-empty" id="projectFilesEmpty" hidden>저장된 프로젝트 파일이 없습니다.</p>
-        <p class="project-files-note">프로젝트 파일 저장은 TXT·Markdown·CSV·JSON만 지원합니다. Composer 첨부와 달리 PDF·DOCX·PPTX·XLSX는 저장하지 않습니다.</p>
+        <p class="project-files-empty" id="projectFilesEmpty" data-locale-key="project-files-empty" hidden>저장된 프로젝트 파일이 없습니다.</p>
+        <p class="project-files-status" id="projectFileStatus" role="status" aria-live="polite" hidden></p>
+        <p class="project-files-note" data-locale-key="project-files-note">PDF·DOCX는 텍스트만 추출해 저장하며 원본은 저장하지 않습니다. PPTX·XLSX는 미지원.</p>
       </section>
 
       <p class="project-form-error" id="projectFormError" role="alert" hidden></p>
       <div class="project-form-actions">
-        <button id="projectDialogCancel" type="button" class="project-secondary">취소</button>
-        <button id="projectSaveButton" type="submit" class="project-primary">저장</button>
+        <button id="projectDialogCancel" type="button" class="project-secondary" data-locale-key="cancel">취소</button>
+        <button id="projectSaveButton" type="submit" class="project-primary" data-locale-key="save">저장</button>
       </div>
     </form>
   </dialog>
@@ -307,37 +808,64 @@
   <dialog class="saved-output-dialog" id="savedOutputDialog" aria-labelledby="savedOutputDialogTitle">
     <section class="saved-output-view">
       <div class="saved-output-header">
-        <div><p>SAVED OUTPUT</p><h2 id="savedOutputDialogTitle">저장한 답변</h2></div>
-        <button id="savedOutputClose" class="saved-output-close" type="button" aria-label="저장한 답변 닫기">×</button>
+        <div><p>SAVED OUTPUT</p><h2 id="savedOutputDialogTitle" data-locale-key="saved-output-title">저장한 답변</h2></div>
+        <button id="savedOutputClose" class="saved-output-close" type="button" data-locale-aria-label="saved-output-close" aria-label="저장한 답변 닫기">×</button>
       </div>
-      <label for="savedOutputTitleInput">제목</label>
+      <label for="savedOutputTitleInput" data-locale-key="title">제목</label>
       <input class="saved-output-title-input" id="savedOutputTitleInput" maxlength="100" autocomplete="off" />
-      <div class="saved-output-content" id="savedOutputContent" tabindex="0" aria-label="저장한 답변 내용"></div>
+      <div class="saved-output-content" id="savedOutputContent" tabindex="0" data-locale-aria-label="saved-output-content" aria-label="저장한 답변 내용"></div>
       <p class="saved-output-status" id="savedOutputStatus" role="status"></p>
       <div class="saved-output-actions">
-        <button id="savedOutputCopy" type="button">복사</button>
-        <button id="savedOutputDownload" type="button">다운로드</button>
-        <button id="savedOutputRename" type="button" class="saved-output-primary">제목 저장</button>
-        <button id="savedOutputDelete" type="button" class="saved-output-danger">삭제</button>
+        <button id="savedOutputCopy" type="button" data-locale-key="copy-action">복사</button>
+        <button id="savedOutputDownload" type="button" data-locale-key="download">다운로드</button>
+        <button id="savedOutputRename" type="button" class="saved-output-primary" data-locale-key="save-title">제목 저장</button>
+        <button id="savedOutputDelete" type="button" class="saved-output-danger" data-locale-key="delete">삭제</button>
       </div>
     </section>
   </dialog>
 
+  <!-- #3790: read-only model names; never enables dispatch merely from registration. -->
+  <dialog id="ownerModelPreviewDialog" class="owner-model-preview" aria-labelledby="ownerModelPreviewTitle" aria-describedby="ownerModelPreviewScope">
+    <div class="owner-model-preview-head">
+      <h2 id="ownerModelPreviewTitle" data-locale-key="owner-model-preview-title">파디엠플러스 모델 현황</h2>
+      <button type="button" id="ownerModelPreviewClose" class="owner-model-preview-close" data-locale-aria-label="owner-model-preview-close" aria-label="닫기">×</button>
+    </div>
+    <p id="ownerModelPreviewScope" data-locale-key="owner-model-preview-scope">Google 모델 이름 일부입니다. 전체 선정 목록은 아니며 실행 가능한 모델은 Claw 모델 선택란에서 확인하세요.</p>
+    <p id="ownerModelPreviewStatus" role="status" aria-live="polite"></p>
+    <ul id="ownerModelPreviewList" class="owner-model-preview-list" aria-label="모델 현황"></ul>
+    <p data-locale-key="owner-model-preview-no-activation">모델을 표시해도 자동 선택·호출·결제가 발생하지 않습니다.</p>
+  </dialog>
   <template id="userMessageTemplate"><article class="message user-message"><div class="message-bubble"></div></article></template>
-  <template id="assistantMessageTemplate"><article class="message assistant-message"><div class="assistant-avatar" aria-hidden="true">P</div><div class="assistant-body"><div class="assistant-meta"><span>Padiem Chat</span><span class="demo-label" data-runtime-label>답변 준비 중</span></div><div class="assistant-content"></div></div></article></template>
+  <template id="assistantMessageTemplate"><article class="message assistant-message"><div class="assistant-avatar" aria-hidden="true">P</div><div class="assistant-body"><div class="assistant-meta"><span data-assistant-product>Padiem Chat</span><span class="demo-label" data-runtime-label data-locale-key="answer-preparing">답변 준비 중</span></div><div class="assistant-content"></div></div></article></template>
   <script src="./theme.js"></script>
+  <script src="./padiem-glass-shell.js"></script>
   <script src="./attachment-capabilities.js"></script>
   <script src="./locale.js"></script>
+  <script src="./owner-model-preview.js"></script>
+  <script src="./claw-verified-model-choice.js"></script>
   <script src="./document-binary.js"></script>
   <script src="./chat-transport.js"></script>
   <script src="./conversation-state.js"></script>
+  <script src="./claw-local-handoff.js"></script>
   <script src="./message-lifecycle.js"></script>
+  <script src="./claw-run-event-projection.js"></script>
+  <script src="./claw-recovery-truth.js"></script>
+  <script src="./claw-pdf-preview.js"></script>
+  <script src="./calendar.js"></script>
   <script src="./app.js"></script>
+  <script src="./b66-quote-runtime.js"></script>
   <script src="./product-capabilities.js"></script>
   <script src="./a11y.js"></script>
   <script src="./search-sources.js"></script>
   <script src="./rich-response.js"></script>
   <script src="./outputs.js"></script>
   <script src="./conversation-export.js"></script>
+  <script src="./claw-quote-compare.js"></script>
+  <!-- #3094: the guarded handoff adapter. Loaded last so the #3084 projection
+       seam installed by app.js already exists when it resolves its source. -->
+  <script src="./claw-local-connect.js" defer></script>
+  <script src="./claw-office-chooser.js" defer></script>
+  <script src="./claw-web-xlsx-sources.js" defer></script>
+  <script src="./claw-local-adapter.js"></script>
 </body>
 </html>

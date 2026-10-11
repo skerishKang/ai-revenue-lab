@@ -1,11 +1,14 @@
-"""WO-10 ACT-1 commit 1: connector grant seed script contract tests.
+"""Connector grant seed script contract tests (#2222, #2010, #2980).
 
-- dry-run prints SQL and never invokes wrangler (seed/revoke/list);
-- invalid identifiers/scopes exit 2 with zero D1 calls even with ``--execute``;
-- credential-bearing arguments are rejected (argparse, exit 2);
-- ``--execute`` shells through the exact wrangler d1 argument array.
+Covers the reviewed READ connector grant paths:
+- Gmail readonly scope grant with trusted binding/actor refs;
+- Google Drive READ capability grant with trusted binding/actor refs;
+- Telegram Bot READ capability grant with trusted binding/actor refs;
+- Google Calendar READ capability grant with trusted binding/actor refs;
+- shared Slack READ capability grant with trusted binding/actor refs.
 
-Script is loaded by path like ``test_deploy_packaging_staging.py`` does.
+All tests are network-free. Invalid authority input must fail before any D1
+call; credential-bearing arguments are never accepted.
 """
 
 from __future__ import annotations
@@ -26,28 +29,50 @@ def _forbid_subprocess(*_args: object, **_kwargs: object) -> None:
     raise AssertionError("wrangler/subprocess must never run in dry-run mode")
 
 
-# --- dry-run SQL snapshots (no wrangler) ------------------------------------
+def _run_with_d1_probe(argv: list[str], monkeypatch: pytest.MonkeyPatch) -> tuple[int, list[str]]:
+    calls: list[str] = []
 
-def test_seed_dry_run_emits_upsert_sql_without_invoking_wrangler(
+    def _probe_run_d1(sql: str) -> int:
+        calls.append(sql)
+        return 0
+
+    monkeypatch.setattr(_MODULE, "run_d1", _probe_run_d1)
+    return _MODULE.main(argv), calls
+
+
+# --- Gmail READ-only grant path ---------------------------------------------
+
+_GMAIL_BINDING = "google-gmail-binding-owner-1"
+_GMAIL_ACTOR = "actor:owner-1"
+
+
+def test_gmail_seed_dry_run_emits_scope_and_empty_capability_columns(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
     monkeypatch.setattr(_MODULE, "_now_iso", lambda: "2026-09-07T00:00:00+00:00")
-    rc = _MODULE.main(["--action", "seed"])
+    rc = _MODULE.main([
+        "--action", "seed",
+        "--binding-ref", _GMAIL_BINDING,
+        "--actor-ref", _GMAIL_ACTOR,
+    ])
     assert rc == 0
     out = capsys.readouterr().out
     assert out.startswith("INSERT INTO padiem_engine_connector_grants")
+    assert "granted_scopes_json, granted_capabilities_json" in out
     assert (
         "'b54-padiem-claw', 'agent:padiem:claw_mail_reader@1', "
-        "'connector:google:gmail@1', 'bind:b54-padiem-claw:claw_mail_reader', "
-        "'actor:b54-padiem-claw:claw_mail_reader', '[\"gmail.readonly\"]', 1, "
-        "'2026-09-07T00:00:00+00:00', '2026-09-07T00:00:00+00:00'"
+        "'connector:google:gmail@1', 'google-gmail-binding-owner-1', "
+        "'actor:owner-1', '[\"gmail.readonly\"]', "
+        "'[]', 1, '2026-09-07T00:00:00+00:00', '2026-09-07T00:00:00+00:00'"
     ) in out
     assert "ON CONFLICT(app_id, connector_id) DO UPDATE SET active=1" in out
     assert "binding_ref=excluded.binding_ref, actor_ref=excluded.actor_ref" in out
+    assert "granted_scopes_json=excluded.granted_scopes_json" in out
+    assert "granted_capabilities_json=excluded.granted_capabilities_json" in out
 
 
-def test_revoke_dry_run_emits_active_zero_sql_without_invoking_wrangler(
+def test_gmail_revoke_dry_run_targets_gmail_row(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
@@ -59,6 +84,15 @@ def test_revoke_dry_run_emits_active_zero_sql_without_invoking_wrangler(
     assert "WHERE app_id='b54-padiem-claw' AND connector_id='connector:google:gmail@1';" in out
 
 
+def test_gmail_missing_binding_and_actor_fail_before_d1(monkeypatch: pytest.MonkeyPatch) -> None:
+    rc, calls = _run_with_d1_probe(
+        ["--action", "seed", "--connector", "gmail", "--execute"],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
 def test_list_dry_run_emits_read_only_select_without_invoking_wrangler(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
@@ -66,22 +100,103 @@ def test_list_dry_run_emits_read_only_select_without_invoking_wrangler(
     rc = _MODULE.main(["--action", "list"])
     assert rc == 0
     out = capsys.readouterr().out
-    assert out.startswith("SELECT app_id, canonical_agent_id, binding_ref, actor_ref, active")
+    assert out.startswith("SELECT app_id, canonical_agent_id, connector_id, binding_ref, actor_ref, active")
     assert "FROM padiem_engine_connector_grants;" in out
 
 
-# --- validation failures exit 2 and never reach D1 --------------------------
+# --- Drive READ-only grant path --------------------------------------------
 
-def _run_with_d1_probe(argv: list[str], monkeypatch: pytest.MonkeyPatch) -> tuple[int, list[str]]:
-    calls: list[str] = []
+_DRIVE_BINDING = "bind:google-drive-owner-1"
+_DRIVE_ACTOR = "actor:owner-1"
 
-    def _probe_run_d1(_sql: str) -> int:
-        calls.append(_sql)
-        return 0
 
-    monkeypatch.setattr(_MODULE, "run_d1", _probe_run_d1)
-    return _MODULE.main(argv), calls
+def test_drive_seed_dry_run_emits_canonical_read_only_capability(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
+    monkeypatch.setattr(_MODULE, "_now_iso", lambda: "2026-09-09T00:00:00+00:00")
+    rc = _MODULE.main([
+        "--action", "seed",
+        "--connector", "drive",
+        "--binding-ref", _DRIVE_BINDING,
+        "--actor-ref", _DRIVE_ACTOR,
+    ])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert (
+        "'b54-padiem-claw-drive', 'agent:padiem:claw_drive_reader@1', "
+        "'connector:google:drive@1', 'bind:google-drive-owner-1', "
+        "'actor:owner-1', '[]', '[\"read\"]', 1, "
+        "'2026-09-09T00:00:00+00:00', '2026-09-09T00:00:00+00:00'"
+    ) in out
+    assert "mutation" not in out
 
+
+def test_drive_revoke_targets_drive_row(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
+    monkeypatch.setattr(_MODULE, "_now_iso", lambda: "2026-09-09T00:00:00+00:00")
+    rc = _MODULE.main([
+        "--action", "revoke",
+        "--connector", "drive",
+        "--binding-ref", _DRIVE_BINDING,
+        "--actor-ref", _DRIVE_ACTOR,
+    ])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert "WHERE app_id='b54-padiem-claw-drive' AND connector_id='connector:google:drive@1';" in out
+
+
+def test_drive_missing_binding_and_actor_fail_before_d1(monkeypatch: pytest.MonkeyPatch) -> None:
+    rc, calls = _run_with_d1_probe(
+        ["--action", "seed", "--connector", "drive", "--execute"],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+def test_drive_mutation_capability_fails_before_d1(monkeypatch: pytest.MonkeyPatch) -> None:
+    rc, calls = _run_with_d1_probe(
+        [
+            "--action", "seed", "--connector", "drive",
+            "--binding-ref", _DRIVE_BINDING, "--actor-ref", _DRIVE_ACTOR,
+            "--capabilities", "mutation", "--execute",
+        ],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+def test_drive_unknown_capability_fails_before_d1(monkeypatch: pytest.MonkeyPatch) -> None:
+    rc, calls = _run_with_d1_probe(
+        [
+            "--action", "seed", "--connector", "drive",
+            "--binding-ref", _DRIVE_BINDING, "--actor-ref", _DRIVE_ACTOR,
+            "--capabilities", "read", "share", "--execute",
+        ],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+def test_drive_scope_argument_fails_before_d1(monkeypatch: pytest.MonkeyPatch) -> None:
+    rc, calls = _run_with_d1_probe(
+        [
+            "--action", "seed", "--connector", "drive",
+            "--binding-ref", _DRIVE_BINDING, "--actor-ref", _DRIVE_ACTOR,
+            "--scopes", "https://www.googleapis.com/auth/drive.readonly", "--execute",
+        ],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+# --- shared validation / credential safety ---------------------------------
 
 def test_invalid_app_id_exits_2_with_zero_d1_calls(monkeypatch: pytest.MonkeyPatch) -> None:
     rc, calls = _run_with_d1_probe(
@@ -101,7 +216,7 @@ def test_invalid_agent_id_exits_2_with_zero_d1_calls(monkeypatch: pytest.MonkeyP
     assert calls == []
 
 
-def test_invalid_scope_exits_2_with_zero_d1_calls(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_invalid_gmail_scope_exits_2_with_zero_d1_calls(monkeypatch: pytest.MonkeyPatch) -> None:
     rc, calls = _run_with_d1_probe(
         ["--action", "seed", "--scopes", "https://www.googleapis.com/auth/gmail.send", "--execute"],
         monkeypatch,
@@ -123,7 +238,520 @@ def test_sql_injection_binding_ref_exits_2_with_zero_d1_calls(monkeypatch: pytes
     assert calls == []
 
 
-# --- credential-bearing arguments are never accepted -----------------------
+
+# --- Telegram READ-only grant path ------------------------------------------
+
+_TELEGRAM_BINDING = "bind:telegram-bot-owner-1"
+_TELEGRAM_ACTOR = "actor:owner-1"
+
+
+def test_telegram_seed_dry_run_emits_canonical_read_only_capability(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
+    monkeypatch.setattr(_MODULE, "_now_iso", lambda: "2026-09-19T00:00:00+00:00")
+    rc = _MODULE.main([
+        "--action", "seed",
+        "--connector", "telegram",
+        "--binding-ref", _TELEGRAM_BINDING,
+        "--actor-ref", _TELEGRAM_ACTOR,
+    ])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert (
+        "'b54-padiem-claw-telegram', 'agent:padiem:claw_telegram_reader@1', "
+        "'connector:telegram:bot@1', 'bind:telegram-bot-owner-1', "
+        "'actor:owner-1', '[]', '[\"read\"]', 1, "
+        "'2026-09-19T00:00:00+00:00', '2026-09-19T00:00:00+00:00'"
+    ) in out
+    assert "send" not in out.lower()
+
+
+def test_telegram_revoke_targets_telegram_row(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
+    monkeypatch.setattr(_MODULE, "_now_iso", lambda: "2026-09-19T00:00:00+00:00")
+    rc = _MODULE.main([
+        "--action", "revoke",
+        "--connector", "telegram",
+        "--binding-ref", _TELEGRAM_BINDING,
+        "--actor-ref", _TELEGRAM_ACTOR,
+    ])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert (
+        "WHERE app_id='b54-padiem-claw-telegram' "
+        "AND connector_id='connector:telegram:bot@1';"
+    ) in out
+
+
+def test_telegram_missing_binding_and_actor_fail_before_d1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        ["--action", "seed", "--connector", "telegram", "--execute"],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+def test_telegram_send_capability_fails_before_d1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        [
+            "--action", "seed",
+            "--connector", "telegram",
+            "--binding-ref", _TELEGRAM_BINDING,
+            "--actor-ref", _TELEGRAM_ACTOR,
+            "--capabilities", "send_message",
+            "--execute",
+        ],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+# --- Calendar READ-only grant path ------------------------------------------
+
+_CALENDAR_BINDING = "bind:google-calendar-owner-1"
+_CALENDAR_ACTOR = "actor:owner-1"
+
+
+@pytest.mark.parametrize(
+    ("option", "value"),
+    [
+        ("--client-secret", "do-not-print"),
+        ("--refresh-token", "do-not-print"),
+        ("--access-token", "do-not-print"),
+        ("--client-id", "do-not-print"),
+    ],
+)
+def test_calendar_credential_argument_is_rejected(
+    option: str, value: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
+    with pytest.raises(SystemExit) as exc:
+        _MODULE.main([
+            "--action", "seed", "--connector", "calendar", option, value,
+        ])
+    assert exc.value.code == 2
+
+
+def test_calendar_seed_dry_run_emits_canonical_read_only_capability(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
+    monkeypatch.setattr(_MODULE, "_now_iso", lambda: "2026-09-21T00:00:00+00:00")
+    rc = _MODULE.main([
+        "--action", "seed",
+        "--connector", "calendar",
+        "--binding-ref", _CALENDAR_BINDING,
+        "--actor-ref", _CALENDAR_ACTOR,
+    ])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert (
+        "'b54-padiem-claw-calendar', 'agent:padiem:claw_calendar_reader@1', "
+        "'connector:google:calendar@1', 'bind:google-calendar-owner-1', "
+        "'actor:owner-1', '[]', '[\"read\"]', 1, "
+        "'2026-09-21T00:00:00+00:00', '2026-09-21T00:00:00+00:00'"
+    ) in out
+    # Capability column is exactly ["read"]: no other capability token is emitted.
+    assert "'[]', '[\"read\"]', 1," in out
+    assert "'[\"read\"," not in out
+    assert "calendar.write" not in out
+
+
+def test_calendar_capability_defaults_to_read_without_an_explicit_flag(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
+    rc = _MODULE.main([
+        "--action", "seed",
+        "--connector", "calendar",
+        "--binding-ref", _CALENDAR_BINDING,
+        "--actor-ref", _CALENDAR_ACTOR,
+        "--capabilities", "read",
+    ])
+    assert rc == 0
+    assert "'[]', '[\"read\"]', 1," in capsys.readouterr().out
+
+
+def test_calendar_revoke_targets_calendar_row(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
+    monkeypatch.setattr(_MODULE, "_now_iso", lambda: "2026-09-21T00:00:00+00:00")
+    rc = _MODULE.main(["--action", "revoke", "--connector", "calendar"])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert (
+        "WHERE app_id='b54-padiem-claw-calendar' "
+        "AND connector_id='connector:google:calendar@1';"
+    ) in out
+
+
+def test_calendar_missing_binding_and_actor_fail_before_d1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        ["--action", "seed", "--connector", "calendar", "--execute"],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+def test_calendar_missing_actor_only_fails_before_d1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        [
+            "--action", "seed", "--connector", "calendar",
+            "--binding-ref", _CALENDAR_BINDING, "--execute",
+        ],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+@pytest.mark.parametrize(
+    "capability",
+    [
+        "calendar.write",
+        "create",
+        "update",
+        "delete",
+        "respond",
+        "full",
+        "mutation",
+        "unknown",
+        # canonical CalendarCapability mutation values
+        "create_event",
+        "update_event",
+        "delete_event",
+        "cancel_event",
+        "respond_to_event",
+        "attendee_mutation",
+        "reminder_mutation",
+        "conference_mutation",
+    ],
+)
+def test_calendar_write_capability_fails_before_d1(
+    capability: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        [
+            "--action", "seed", "--connector", "calendar",
+            "--binding-ref", _CALENDAR_BINDING, "--actor-ref", _CALENDAR_ACTOR,
+            "--capabilities", capability, "--execute",
+        ],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+def test_calendar_extra_capability_fails_before_d1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        [
+            "--action", "seed", "--connector", "calendar",
+            "--binding-ref", _CALENDAR_BINDING, "--actor-ref", _CALENDAR_ACTOR,
+            "--capabilities", "read", "write", "--execute",
+        ],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+def test_calendar_scope_argument_fails_before_d1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        [
+            "--action", "seed", "--connector", "calendar",
+            "--binding-ref", _CALENDAR_BINDING, "--actor-ref", _CALENDAR_ACTOR,
+            "--scopes", "https://www.googleapis.com/auth/calendar.readonly",
+            "--execute",
+        ],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+def test_calendar_wrong_app_or_agent_refs_fail_before_d1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        [
+            "--action", "seed", "--connector", "calendar",
+            "--app-id", "b54-padiem-claw",
+            "--agent-id", "agent:padiem:claw_mail_reader@1",
+            "--binding-ref", _CALENDAR_BINDING, "--actor-ref", _CALENDAR_ACTOR,
+            "--execute",
+        ],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+def test_calendar_has_no_synthetic_or_default_ref_authority() -> None:
+    """Trusted refs stay explicit inputs: no default/synthetic ref exists."""
+
+    for name in ("DEFAULT_BINDING_REF", "DEFAULT_ACTOR_REF", "SYNTHETIC_REF"):
+        assert not hasattr(_MODULE, name)
+    source = _SCRIPT_PATH.read_text(encoding="utf-8")
+    for forbidden in ("DEFAULT_BINDING_REF", "DEFAULT_ACTOR_REF", "SYNTHETIC_REF"):
+        assert forbidden not in source
+    assert _MODULE._CONNECTOR_IDS["calendar"] == "connector:google:calendar@1"
+    assert _MODULE._APP_IDS["calendar"] == "b54-padiem-claw-calendar"
+    assert _MODULE._AGENT_IDS["calendar"] == "agent:padiem:claw_calendar_reader@1"
+    assert _MODULE._ALLOWED_CALENDAR_CAPABILITIES == ("read",)
+
+
+# --- shared Slack READ-only grant path (#2980) -------------------------------
+
+_SLACK_BINDING = "bind:slack-workspace-owner-1"
+_SLACK_ACTOR = "actor:owner-1"
+
+
+def test_slack_seed_dry_run_emits_canonical_read_only_capability(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
+    monkeypatch.setattr(_MODULE, "_now_iso", lambda: "2026-09-23T00:00:00+00:00")
+    rc = _MODULE.main([
+        "--action", "seed",
+        "--connector", "slack",
+        "--binding-ref", _SLACK_BINDING,
+        "--actor-ref", _SLACK_ACTOR,
+        "--capabilities", "read",
+    ])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert (
+        "'b54-padiem-claw-slack', 'agent:padiem:claw_slack_reader@1', "
+        "'connector:slack:workspace@1', 'bind:slack-workspace-owner-1', "
+        "'actor:owner-1', '[]', '[\"read\"]', 1, "
+        "'2026-09-23T00:00:00+00:00', '2026-09-23T00:00:00+00:00'"
+    ) in out
+    # Capability column is exactly ["read"]: no other capability token is emitted.
+    assert "'[]', '[\"read\"]', 1," in out
+    assert "'[\"read\"," not in out
+    assert "post_message" not in out
+    assert "reply_thread" not in out
+    assert "update_message" not in out
+    assert "upload_file" not in out
+    assert "slack.write" not in out
+
+
+def test_slack_capability_defaults_to_read_without_an_explicit_flag(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
+    rc = _MODULE.main([
+        "--action", "seed",
+        "--connector", "slack",
+        "--binding-ref", _SLACK_BINDING,
+        "--actor-ref", _SLACK_ACTOR,
+    ])
+    assert rc == 0
+    assert "'[]', '[\"read\"]', 1," in capsys.readouterr().out
+
+
+def test_slack_revoke_targets_slack_row(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
+    monkeypatch.setattr(_MODULE, "_now_iso", lambda: "2026-09-23T00:00:00+00:00")
+    rc = _MODULE.main(["--action", "revoke", "--connector", "slack"])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert (
+        "WHERE app_id='b54-padiem-claw-slack' "
+        "AND connector_id='connector:slack:workspace@1';"
+    ) in out
+
+
+def test_slack_missing_binding_and_actor_fail_before_d1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        ["--action", "seed", "--connector", "slack", "--execute"],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+def test_slack_missing_actor_only_fails_before_d1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        [
+            "--action", "seed", "--connector", "slack",
+            "--binding-ref", _SLACK_BINDING, "--execute",
+        ],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+@pytest.mark.parametrize(
+    "capability",
+    [
+        "slack.write",
+        "slack.send",
+        "send",
+        "write",
+        "full",
+        "mutation",
+        "unknown",
+        # canonical SlackCapability outbound write values
+        "post_message",
+        "reply_thread",
+        "update_message",
+        "upload_file",
+    ],
+)
+def test_slack_write_capability_fails_before_d1(
+    capability: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        [
+            "--action", "seed", "--connector", "slack",
+            "--binding-ref", _SLACK_BINDING, "--actor-ref", _SLACK_ACTOR,
+            "--capabilities", capability, "--execute",
+        ],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+def test_slack_extra_capability_fails_before_d1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        [
+            "--action", "seed", "--connector", "slack",
+            "--binding-ref", _SLACK_BINDING, "--actor-ref", _SLACK_ACTOR,
+            "--capabilities", "read", "post_message", "--execute",
+        ],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+def test_slack_scope_argument_fails_before_d1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        [
+            "--action", "seed", "--connector", "slack",
+            "--binding-ref", _SLACK_BINDING, "--actor-ref", _SLACK_ACTOR,
+            "--scopes", "slack.readonly", "--execute",
+        ],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+def test_slack_rejection_is_slack_specific_not_borrowed(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Slack must own its own rejection branch and diagnostics.
+
+    Without this, the Slack branch could be deleted and the shared Telegram
+    fall-through would still reject the same inputs, so the Slack-specific
+    authority boundary would stop being observable.
+    """
+
+    monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
+    rc = _MODULE.main([
+        "--action", "seed", "--connector", "slack",
+        "--binding-ref", _SLACK_BINDING, "--actor-ref", _SLACK_ACTOR,
+        "--capabilities", "post_message",
+        "--scopes", "slack.readonly",
+    ])
+    assert rc == 2
+    err = capsys.readouterr().err
+    assert "Slack capabilities must be exactly ('read',)" in err
+    assert "post_message/reply_thread/update_message/upload_file/send/write is forbidden" in err
+    assert "scopes are not accepted for Slack grants" in err
+    assert "Telegram" not in err
+
+
+def test_slack_wrong_app_or_agent_refs_fail_before_d1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        [
+            "--action", "seed", "--connector", "slack",
+            "--app-id", "b54-padiem-claw-calendar",
+            "--agent-id", "agent:padiem:claw_calendar_reader@1",
+            "--binding-ref", _SLACK_BINDING, "--actor-ref", _SLACK_ACTOR,
+            "--execute",
+        ],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+def test_slack_identity_reuses_the_promoted_canonical_authorities() -> None:
+    """The Slack seed mapping must not invent a second Slack identity."""
+
+    from app.connector_bindings import (
+        SLACK_AGENT_ID,
+        SLACK_CONNECTOR_ID,
+        SLACK_REFERENCE_APP_ID,
+    )
+
+    assert _MODULE._CONNECTOR_IDS["slack"] == SLACK_CONNECTOR_ID
+    assert _MODULE._APP_IDS["slack"] == SLACK_REFERENCE_APP_ID
+    assert _MODULE._AGENT_IDS["slack"] == SLACK_AGENT_ID
+    assert SLACK_CONNECTOR_ID == "connector:slack:workspace@1"
+    assert SLACK_REFERENCE_APP_ID == "b54-padiem-claw-slack"
+    assert SLACK_AGENT_ID == "agent:padiem:claw_slack_reader@1"
+    assert _MODULE._ALLOWED_SLACK_CAPABILITIES == ("read",)
+    assert _MODULE._DEFAULT_READ_CAPABILITIES["slack"] == ["read"]
+
+
+def test_slack_grant_reuses_the_single_existing_grant_store() -> None:
+    """One grant table, one upsert authority: no second Slack grant store."""
+
+    source = _SCRIPT_PATH.read_text(encoding="utf-8")
+    assert "padiem_engine_connector_grants" in source
+    assert source.count("INSERT INTO padiem_engine_connector_grants") == 1
+    assert "ON CONFLICT(app_id, connector_id) DO UPDATE SET active=1" in source
+
+
+def test_slack_has_no_synthetic_or_default_ref_authority() -> None:
+    """Trusted refs stay explicit inputs: no default/synthetic ref exists."""
+
+    for name in ("DEFAULT_BINDING_REF", "DEFAULT_ACTOR_REF", "SYNTHETIC_REF"):
+        assert not hasattr(_MODULE, name)
+    source = _SCRIPT_PATH.read_text(encoding="utf-8")
+    for forbidden in ("DEFAULT_BINDING_REF", "DEFAULT_ACTOR_REF", "SYNTHETIC_REF"):
+        assert forbidden not in source
+
+
+# --- shared credential-argument safety --------------------------------------
+
 
 def test_credential_argument_is_rejected() -> None:
     with pytest.raises(SystemExit) as exc:
@@ -131,10 +759,9 @@ def test_credential_argument_is_rejected() -> None:
     assert exc.value.code == 2
 
 
-# --- execute mode shells through wrangler d1 with exact argv ---------------
-
-def test_execute_mode_uses_exact_wrangler_d1_argument_array(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_execute_mode_uses_resolved_wrangler_launcher(monkeypatch: pytest.MonkeyPatch) -> None:
     captured: dict[str, object] = {}
+    resolved_npx = r"C:\\Program Files\\nodejs\\npx.cmd"
 
     class _FakeResult:
         returncode = 0
@@ -145,15 +772,47 @@ def test_execute_mode_uses_exact_wrangler_d1_argument_array(monkeypatch: pytest.
         captured["cmd"] = cmd
         return _FakeResult()
 
+    monkeypatch.setattr(_MODULE.shutil, "which", lambda name: resolved_npx if name == "npx" else None)
     monkeypatch.setattr(_MODULE.subprocess, "run", _fake_run)
-    rc = _MODULE.main(["--action", "seed", "--execute"])
+    rc = _MODULE.main([
+        "--action", "seed", "--execute",
+        "--binding-ref", _GMAIL_BINDING,
+        "--actor-ref", _GMAIL_ACTOR,
+    ])
     assert rc == 0
     cmd = captured["cmd"]
     assert isinstance(cmd, list)
     assert cmd[:9] == [
-        "npx", "--yes", "wrangler@4", "d1", "execute", "padiem-engine",
+        resolved_npx, "--yes", "wrangler@4", "d1", "execute", "padiem-engine",
         "--remote", "--json", "--command",
     ]
     sql = cmd[9]
     assert isinstance(sql, str)
     assert sql.startswith("INSERT INTO padiem_engine_connector_grants")
+
+
+def test_npx_cmd_fallback_is_resolved_before_subprocess(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[str] = []
+    resolved_npx_cmd = r"C:\\Node\\npx.cmd"
+
+    def _which(name: str) -> str | None:
+        calls.append(name)
+        return resolved_npx_cmd if name == "npx.cmd" else None
+
+    monkeypatch.setattr(_MODULE.shutil, "which", _which)
+    assert _MODULE._resolve_npx_executable() == resolved_npx_cmd
+    assert calls == ["npx", "npx.cmd"]
+
+
+def test_missing_npx_fails_before_subprocess(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(_MODULE.shutil, "which", lambda _name: None)
+    monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
+    rc = _MODULE.main([
+        "--action", "seed", "--execute",
+        "--binding-ref", _GMAIL_BINDING,
+        "--actor-ref", _GMAIL_ACTOR,
+    ])
+    assert rc == 127
+    assert "npx executable not found on PATH" in capsys.readouterr().err

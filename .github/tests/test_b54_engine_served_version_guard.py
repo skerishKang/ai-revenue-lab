@@ -1,0 +1,1323 @@
+"""Network-free contract tests for the served-version caller-registry guard (#2414).
+
+Proves that ``b54_engine_served_version_guard.py`` resolves the active version
+fail-closed from the canonical Cloudflare deployments envelope ONLY (#2452
+convergence to the #2427 contract): ``result.deployments[0]``, exactly one
+version at 100 percent, safe ``version_id``. Raw top-level lists, list-shaped
+``result`` values, and the ``result.versions`` shortcut are REFUSED — including
+the descending/newest-first raw list that the removed last-entry rule falsely
+passed. Validates ``PADIEM_ENGINE_CALLER_REGISTRY_V1`` (and the overlay when
+expected) only on the *served* version using the documented Cloudflare
+version-detail shape (``result.id`` + ``result.resources.bindings``), never
+emits binding values, and that the deploy gate wires both guards GET-only.
+"""
+
+from __future__ import annotations
+
+import contextlib
+import importlib.util
+import io
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+import pytest
+import yaml
+
+ROOT = Path(__file__).resolve().parents[2]
+HELPER = ROOT / ".github/scripts/b54_engine_served_version_guard.py"
+WORKFLOW = ROOT / ".github/workflows/b54-engine-production-deploy-gate.yml"
+
+SENTINEL = "sentinel-secret-value-must-never-appear"
+V1 = "PADIEM_ENGINE_CALLER_REGISTRY_V1"
+OVERLAY = "PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY"
+GRANTS = "ENGINE_CONNECTOR_GRANTS"
+OAUTH = "CONTROL_PLANE_GOOGLE_OAUTH"
+GRANTS_DB = "6b77ad02-bc27-488f-bb97-6325f6750cba"
+OAUTH_SERVICE = "padiem-google-oauth-state"
+IMAGE = "ENGINE_IMAGE_STORE"
+DOCUMENT = "ENGINE_DOCUMENT_STORE"
+A6_DB = "6b77ad02-bc27-488f-bb97-6325f6750cba"
+WRONG_DB = "00000000-dead-beef-0000-000000000000"
+
+
+def _load_helper():
+    spec = importlib.util.spec_from_file_location("b54_engine_served_version_guard", HELPER)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _binding(name: str, binding_type: str, **value_fields: object) -> dict[str, object]:
+    row: dict[str, object] = {"name": name, "type": binding_type}
+    row.update(value_fields)
+    return row
+
+
+def _version_detail(
+    bindings: object,
+    version_id: str | None = "ver-active",
+) -> dict[str, object]:
+    """Exact documented version-detail payload shape: result.id + result.resources.bindings."""
+    result: dict[str, object] = {}
+    if version_id is not None:
+        result["id"] = version_id
+    result["resources"] = {"bindings": bindings}
+    return {"success": True, "result": result}
+
+
+def _invoke(helper, argv_for: object, payload: object) -> tuple[int, str]:
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "payload.json"
+        path.write_text(json.dumps(payload), encoding="utf-8")
+        args = argv_for(str(path))  # type: ignore[operator]
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+        with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+            code = helper.main(args)
+    return code, stdout.getvalue() + stderr.getvalue()
+
+
+def _resolve(helper, payload: object) -> tuple[int, str]:
+    return _invoke(helper, lambda p: ["resolve-active", "--deployments", p], payload)
+
+
+def _verify(
+    helper,
+    payload: object,
+    active: str = "ver-active",
+    expect_overlay: bool = False,
+    require_drive_runtime: bool = False,
+    require_a6_runtime: bool = False,
+) -> tuple[int, str]:
+    args: list[str]
+    def build(p: str) -> list[str]:
+        args = ["verify", "--version-settings", p, "--active-version", active]
+        if expect_overlay:
+            args.append("--expect-overlay")
+        if require_drive_runtime:
+            args.append("--require-drive-runtime-bindings")
+        if require_a6_runtime:
+            args.append("--require-a6-runtime-bindings")
+        return args
+    return _invoke(helper, build, payload)
+
+
+# --- resolve-active -----------------------------------------------------------
+
+def test_resolve_active_canonical_deployments_shape() -> None:
+    helper = _load_helper()
+    payload = {"success": True, "result": {"deployments": [{"versions": [{"version_id": "ver-A", "percentage": 100}]}]}}
+    code, out = _resolve(helper, payload)
+    assert code == 0
+    assert "ENGINE_ACTIVE_VERSION_IDENTIFIED=PASS" in out
+    assert "ENGINE_ACTIVE_VERSION_ID=ver-A" in out
+    assert "SETTINGS_PLANE_ONLY_ACCEPTANCE=NO" in out
+
+
+def test_resolve_active_canonical_history_first_entry_is_served() -> None:
+    # Required test 1 (#2452): deployment HISTORY with several entries; the
+    # first entry is the actively serving deployment (#2426 contract) and must
+    # resolve despite the older history entries present.
+    helper = _load_helper()
+    payload = {"success": True, "result": {"deployments": [
+        {"versions": [{"version_id": "ver-current", "percentage": 100}]},
+        {"versions": [{"version_id": "ver-previous", "percentage": 0}]},
+        {"versions": [{"version_id": "ver-older", "percentage": 0}]},
+    ]}}
+    code, out = _resolve(helper, payload)
+    assert code == 0
+    assert "ENGINE_ACTIVE_VERSION_ID=ver-current" in out
+    assert "ver-previous" not in out and "ver-older" not in out
+
+
+def test_resolve_active_refuses_raw_list_descending_newest_first() -> None:
+    # Required tests 7 + the #2419-proven false-pass fixture: a newest-first
+    # (descending) raw wrangler-style list with two full-rollout entries. The
+    # removed last-entry rule resolved this to the STALE version. The canonical
+    # resolver must REFUSE the shape outright, never pick an entry by order.
+    helper = _load_helper()
+    payload = [
+        {"versions": [{"version_id": "ver-new", "percentage": 100}]},
+        {"versions": [{"version_id": "ver-old", "percentage": 100}]},
+    ]
+    code, out = _resolve(helper, payload)
+    assert code == 1
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in out
+    assert "envelope" in out
+    assert "ENGINE_ACTIVE_VERSION_ID" not in out
+
+
+def test_resolve_active_refuses_raw_list_ascending() -> None:
+    # Required test 8: the oldest-first raw list the old last-entry rule PASSed
+    # is now refused too — list ORDER is not a served-version authority.
+    helper = _load_helper()
+    payload = [
+        {"versions": [{"version_id": "ver-old", "percentage": 0}]},
+        {"versions": [{"version_id": "ver-new", "percentage": 100}]},
+    ]
+    code, out = _resolve(helper, payload)
+    assert code == 1
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in out
+    assert "ENGINE_ACTIVE_VERSION_ID" not in out
+
+
+def test_resolve_active_refuses_result_list() -> None:
+    # Required test 9: a list-shaped result is not the documented deployments
+    # envelope; the old last-entry branch over it is removed.
+    helper = _load_helper()
+    payload = {"success": True, "result": [
+        {"versions": [{"version_id": "ver-old", "percentage": 100}]},
+        {"versions": [{"version_id": "ver-new", "percentage": 100}]},
+    ]}
+    code, out = _resolve(helper, payload)
+    assert code == 1
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in out
+    assert "no result object" in out
+    assert "ENGINE_ACTIVE_VERSION_ID" not in out
+
+
+def test_resolve_active_refuses_result_versions_shortcut() -> None:
+    # Required test 10: ``result.versions`` is a version-list shape, not
+    # deployment authority. Accepting it (and its bare ``id`` fields) allowed a
+    # non-deployments endpoint to masquerade as served-version proof.
+    helper = _load_helper()
+    for payload in (
+        {"success": True, "result": {"versions": [{"id": "ver-B", "percentage": 100}]}},
+        {"success": True, "result": {"versions": [{"version_id": "ver-B", "percentage": 100}]}},
+    ):
+        code, out = _resolve(helper, payload)
+        assert code == 1
+        assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in out
+        assert "no deployment records returned" in out
+        assert "ENGINE_ACTIVE_VERSION_ID" not in out
+
+
+def test_resolve_active_refuses_deployments_without_version_id_field() -> None:
+    # A deployments entry whose version carries only a bare ``id`` comes from an
+    # endpoint other than the documented history shape and is refused.
+    helper = _load_helper()
+    payload = {"success": True, "result": {"deployments": [{"versions": [{"id": "ver-A", "percentage": 100}]}]}}
+    code, out = _resolve(helper, payload)
+    assert code == 1
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in out
+    assert "missing or unsafe" in out
+
+
+def test_resolve_active_ambiguous_versions_fail_closed() -> None:
+    helper = _load_helper()
+    payload = {"success": True, "result": {"deployments": [{"versions": [
+        {"version_id": "ver-A", "percentage": 100},
+        {"version_id": "ver-B", "percentage": 100},
+    ]}]}}
+    code, out = _resolve(helper, payload)
+    assert code == 1
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in out
+    assert "ambiguous" in out
+
+
+def test_resolve_active_no_full_rollout_fails_closed() -> None:
+    helper = _load_helper()
+    payload = {"success": True, "result": {"deployments": [{"versions": [{"version_id": "ver-A", "percentage": 90}]}]}}
+    code, out = _resolve(helper, payload)
+    assert code == 1
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in out
+
+
+def test_resolve_active_empty_deployments_fails_closed() -> None:
+    helper = _load_helper()
+    for payload in ({"success": True, "result": {"deployments": []}}, {"success": False, "result": None}):
+        code, out = _resolve(helper, payload)
+        assert code == 1
+        assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in out
+
+
+def test_resolve_active_unsafe_version_id_fails_closed() -> None:
+    helper = _load_helper()
+    payload = {"success": True, "result": {"deployments": [{"versions": [{"version_id": "ver A; rm -rf /", "percentage": 100}]}]}}
+    code, out = _resolve(helper, payload)
+    assert code == 1
+    assert "unsafe" in out
+
+
+# --- verify: documented payload pass paths -------------------------------------
+
+def test_verify_passes_documented_version_detail_payload() -> None:
+    # Canonical documented shape: result.id + result.resources.bindings (list).
+    helper = _load_helper()
+    payload = _version_detail([_binding(V1, "secret_text", text=SENTINEL)])
+    code, out = _verify(helper, payload)
+    assert code == 0
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=PASS" in out
+    assert "ENGINE_V1_SERVED_BINDING=PRESENT:secret_text" in out
+    assert "ENGINE_OVERLAY_SERVED_BINDING=NOT_EXPECTED" in out
+    assert "B54_ENGINE_OVERLAY_EXPECTED=NO" in out
+    assert "SETTINGS_PLANE_ONLY_ACCEPTANCE=NO" in out
+    assert "PRODUCTION_MUTATION=0" in out
+    assert SENTINEL not in out
+
+
+def test_verify_passes_overlay_when_expected_and_present() -> None:
+    helper = _load_helper()
+    payload = _version_detail([
+        _binding(V1, "secret_text", text=SENTINEL),
+        _binding(OVERLAY, "secret_text", text=SENTINEL),
+    ])
+    code, out = _verify(helper, payload, expect_overlay=True)
+    assert code == 0
+    assert "ENGINE_OVERLAY_SERVED_BINDING=PRESENT:secret_text" in out
+    assert "B54_ENGINE_OVERLAY_EXPECTED=YES" in out
+    assert "SERVED_VERSION_SECRET_SET_VALIDATION=YES" in out
+    assert SENTINEL not in out
+
+
+def _drive_runtime_bindings() -> list[dict[str, object]]:
+    return [
+        _binding(V1, "secret_text", text=SENTINEL),
+        _binding(GRANTS, "d1", id=GRANTS_DB),
+        _binding(OAUTH, "service", service=OAUTH_SERVICE),
+    ]
+
+
+def test_verify_requires_drive_runtime_bindings_when_requested() -> None:
+    helper = _load_helper()
+    code, out = _verify(
+        helper,
+        _version_detail(_drive_runtime_bindings()),
+        require_drive_runtime=True,
+    )
+    assert code == 0
+    assert "ENGINE_CONNECTOR_GRANTS_SERVED_BINDING=PRESENT:d1" in out
+    assert "CONTROL_PLANE_GOOGLE_OAUTH_SERVED_BINDING=PRESENT:service" in out
+    assert "DRIVE_RUNTIME_BINDINGS_VALIDATED=YES" in out
+    assert SENTINEL not in out
+
+
+def test_verify_rejects_missing_drive_runtime_bindings() -> None:
+    helper = _load_helper()
+    for bindings in (
+        [_binding(V1, "secret_text", text=SENTINEL)],
+        [_binding(V1, "secret_text", text=SENTINEL), _binding(GRANTS, "d1", id=GRANTS_DB)],
+    ):
+        code, out = _verify(helper, _version_detail(bindings), require_drive_runtime=True)
+        assert code == 1
+        assert "required served binding is missing" in out
+        assert SENTINEL not in out
+
+
+def test_verify_rejects_drive_runtime_identity_drift() -> None:
+    helper = _load_helper()
+    fixtures = (
+        [_binding(V1, "secret_text"), _binding(GRANTS, "plain_text", id=GRANTS_DB), _binding(OAUTH, "service", service=OAUTH_SERVICE)],
+        [_binding(V1, "secret_text"), _binding(GRANTS, "d1", id="wrong-db"), _binding(OAUTH, "service", service=OAUTH_SERVICE)],
+        [_binding(V1, "secret_text"), _binding(GRANTS, "d1", id=GRANTS_DB), _binding(OAUTH, "service", service="wrong-service")],
+    )
+    for bindings in fixtures:
+        code, out = _verify(helper, _version_detail(bindings), require_drive_runtime=True)
+        assert code == 1
+        assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in out
+        assert "wrong-db" not in out and "wrong-service" not in out
+
+
+def _a6_runtime_bindings() -> list[dict[str, object]]:
+    return [
+        _binding(V1, "secret_text", text=SENTINEL),
+        _binding(IMAGE, "d1", id=A6_DB),
+        _binding(DOCUMENT, "d1", id=A6_DB),
+    ]
+
+
+def test_verify_requires_a6_runtime_bindings_when_requested() -> None:
+    helper = _load_helper()
+    code, out = _verify(
+        helper,
+        _version_detail(_a6_runtime_bindings()),
+        require_a6_runtime=True,
+    )
+    assert code == 0
+    assert "ENGINE_IMAGE_STORE_SERVED_BINDING=PRESENT:d1" in out
+    assert "ENGINE_DOCUMENT_STORE_SERVED_BINDING=PRESENT:d1" in out
+    assert "A6_STORAGE_BINDINGS_VALIDATED=YES" in out
+    assert SENTINEL not in out
+
+
+def test_verify_rejects_missing_a6_runtime_bindings() -> None:
+    helper = _load_helper()
+    for bindings in (
+        [_binding(V1, "secret_text", text=SENTINEL)],
+        [_binding(V1, "secret_text", text=SENTINEL), _binding(IMAGE, "d1", id=A6_DB)],
+        [_binding(V1, "secret_text", text=SENTINEL), _binding(DOCUMENT, "d1", id=A6_DB)],
+    ):
+        code, out = _verify(helper, _version_detail(bindings), require_a6_runtime=True)
+        assert code == 1
+        assert "required served binding is missing" in out
+        assert SENTINEL not in out
+
+
+def test_verify_rejects_a6_binding_type_drift() -> None:
+    helper = _load_helper()
+    for wrong_type in ("plain_text", "kv_namespace", "r2_bucket", "service", ""):
+        bindings = [
+            _binding(V1, "secret_text"),
+            _binding(IMAGE, "d1", id=A6_DB),
+            _binding(DOCUMENT, wrong_type, id=A6_DB),
+        ]
+        code, out = _verify(helper, _version_detail(bindings), require_a6_runtime=True)
+        assert code == 1, wrong_type
+        assert "binding type is not d1" in out
+        assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in out
+
+
+def test_verify_rejects_a6_canonical_database_identity_drift() -> None:
+    helper = _load_helper()
+    for bindings in (
+        [
+            _binding(V1, "secret_text"),
+            _binding(IMAGE, "d1", id=WRONG_DB),
+            _binding(DOCUMENT, "d1", id=A6_DB),
+        ],
+        [
+            _binding(V1, "secret_text"),
+            _binding(IMAGE, "d1", id=A6_DB),
+            _binding(DOCUMENT, "d1", id=WRONG_DB),
+        ],
+        [
+            _binding(V1, "secret_text"),
+            _binding(IMAGE, "d1"),
+            _binding(DOCUMENT, "d1", id=A6_DB),
+        ],
+    ):
+        code, out = _verify(helper, _version_detail(bindings), require_a6_runtime=True)
+        assert code == 1
+        assert "database identity drift" in out
+        # The offending identifier is compared, never echoed.
+        assert WRONG_DB not in out
+        assert A6_DB not in out
+
+
+def test_verify_rejects_duplicate_a6_binding_names() -> None:
+    helper = _load_helper()
+    bindings = [
+        _binding(V1, "secret_text"),
+        _binding(IMAGE, "d1", id=A6_DB),
+        _binding(DOCUMENT, "d1", id=A6_DB),
+        _binding(DOCUMENT, "d1", id=A6_DB),
+    ]
+    code, out = _verify(helper, _version_detail(bindings), require_a6_runtime=True)
+    assert code == 1
+    assert f"duplicate binding name on served version: {DOCUMENT}" in out
+
+
+def test_a6_guard_never_emits_the_canonical_database_identifier() -> None:
+    """On every bounded output path, not just the happy path.
+
+    A leak is most likely in the text written for an operator, so the drift and
+    missing-binding branches are swept as well as the passing one.
+    """
+    helper = _load_helper()
+    payloads = (
+        (_version_detail(_a6_runtime_bindings()), 0),
+        (
+            _version_detail(
+                [
+                    _binding(V1, "secret_text"),
+                    _binding(IMAGE, "d1", id=WRONG_DB),
+                    _binding(DOCUMENT, "d1", id=A6_DB),
+                ]
+            ),
+            1,
+        ),
+        (
+            _version_detail([_binding(V1, "secret_text"), _binding(IMAGE, "d1", id=A6_DB)]),
+            1,
+        ),
+        (
+            _version_detail(
+                [
+                    _binding(V1, "secret_text"),
+                    _binding(IMAGE, "plain_text", id=A6_DB),
+                    _binding(DOCUMENT, "d1", id=A6_DB),
+                ]
+            ),
+            1,
+        ),
+    )
+    for payload, expected_code in payloads:
+        code, out = _verify(helper, payload, require_a6_runtime=True)
+        assert code == expected_code, out
+        assert A6_DB not in out, out
+        assert WRONG_DB not in out, out
+        assert "6b77ad02" not in out, out
+
+
+def test_a6_and_drive_contracts_share_one_canonical_database_identity() -> None:
+    """Two reviewed D1 expectations on the same provisioned database.
+
+    The Drive constant is intentionally not reused by A6 so the frozen Drive
+    contract cannot be moved by A6 work; this pins that the two values have not
+    silently diverged.
+    """
+    helper = _load_helper()
+    assert helper.A6_ENGINE_DATABASE_ID == helper.CONNECTOR_GRANTS_DATABASE_ID
+    assert helper.A6_D1_BINDING_TYPE == helper.CONNECTOR_GRANTS_BINDING_TYPE == "d1"
+
+
+def test_a6_flag_does_not_widen_or_weaken_the_drive_contract() -> None:
+    """Each flag validates exactly its own bindings and nothing else.
+
+    The payloads are intentionally discriminating: the drive-only run carries no
+    A6 stores and the A6-only run carries no Drive bindings, so an implied or
+    defaulted widening has to fail the run instead of quietly passing on
+    bindings that happen to be present.
+    """
+    helper = _load_helper()
+    drive_bindings = [
+        _binding(V1, "secret_text", text=SENTINEL),
+        _binding(GRANTS, "d1", id=GRANTS_DB),
+        _binding(OAUTH, "service", service=OAUTH_SERVICE),
+    ]
+    a6_bindings = [
+        _binding(V1, "secret_text", text=SENTINEL),
+        _binding(IMAGE, "d1", id=A6_DB),
+        _binding(DOCUMENT, "d1", id=A6_DB),
+    ]
+
+    drive_only = _verify(
+        helper, _version_detail(drive_bindings), require_drive_runtime=True
+    )
+    assert drive_only[0] == 0, drive_only[1]
+    assert "DRIVE_RUNTIME_BINDINGS_VALIDATED=YES" in drive_only[1]
+    assert "A6_STORAGE_BINDINGS_VALIDATED" not in drive_only[1]
+
+    a6_only = _verify(helper, _version_detail(a6_bindings), require_a6_runtime=True)
+    assert a6_only[0] == 0, a6_only[1]
+    assert "A6_STORAGE_BINDINGS_VALIDATED=YES" in a6_only[1]
+    assert "DRIVE_RUNTIME_BINDINGS_VALIDATED" not in a6_only[1]
+
+    # Requesting neither leaves the original contract untouched, on both shapes.
+    for bindings in (drive_bindings, a6_bindings, [_binding(V1, "secret_text")]):
+        plain = _verify(helper, _version_detail(bindings))
+        assert plain[0] == 0, plain[1]
+        assert "A6_STORAGE_BINDINGS_VALIDATED" not in plain[1]
+        assert "DRIVE_RUNTIME_BINDINGS_VALIDATED" not in plain[1]
+
+
+def test_runtime_binding_flags_are_opt_in_for_in_process_callers_too() -> None:
+    """Pin the function-level defaults, not just the CLI flags.
+
+    The workflows always pass the flags explicitly, so a flipped signature
+    default is invisible through the CLI and would silently widen every future
+    in-process caller of the canonical guard.
+    """
+    import inspect
+
+    helper = _load_helper()
+    params = inspect.signature(helper.verify_served).parameters
+    assert params["require_drive_runtime_bindings"].default is False
+    assert params["require_a6_runtime_bindings"].default is False
+
+    states = helper.verify_served(
+        _version_detail(
+            [
+                _binding(V1, "secret_text"),
+                _binding(IMAGE, "d1", id=A6_DB),
+                _binding(DOCUMENT, "d1", id=A6_DB),
+            ]
+        ),
+        "ver-active",
+        False,
+    )
+    assert "A6_STORAGE_BINDINGS_VALIDATED" not in states
+    assert "DRIVE_RUNTIME_BINDINGS_VALIDATED" not in states
+    assert "ENGINE_CONNECTOR_GRANTS_SERVED_BINDING" not in states
+    assert set(states) == {
+        "ENGINE_V1_SERVED_BINDING",
+        "ENGINE_OVERLAY_SERVED_BINDING",
+        "B54_ENGINE_OVERLAY_EXPECTED",
+    }
+
+
+def test_verify_passes_name_keyed_binding_map_variant() -> None:
+    # Name-keyed map is tolerated only where the payload contract justifies it;
+    # every entry key must agree with its own name.
+    helper = _load_helper()
+    payload = _version_detail({
+        V1: {"type": "secret_text"},
+        OVERLAY: {"name": OVERLAY, "type": "secret_text"},
+        "PADIEM_CHAT_QUOTA_SALT": {"type": "secret_text"},
+    })
+    code, out = _verify(helper, payload, expect_overlay=True)
+    assert code == 0
+    assert "ENGINE_V1_SERVED_BINDING=PRESENT:secret_text" in out
+    assert "ENGINE_OVERLAY_SERVED_BINDING=PRESENT:secret_text" in out
+
+
+# --- verify: fail-closed on missing/mismatched documented fields ----------------
+
+def test_verify_result_id_mismatch_fails_closed() -> None:
+    helper = _load_helper()
+    payload = _version_detail([_binding(V1, "secret_text", text=SENTINEL)], version_id="ver-other")
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "does not match active version" in out
+
+
+def test_verify_result_id_missing_fails_closed() -> None:
+    helper = _load_helper()
+    payload = _version_detail([_binding(V1, "secret_text", text=SENTINEL)], version_id=None)
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "identity unproven" in out
+
+
+def test_verify_result_id_unsafe_fails_closed() -> None:
+    helper = _load_helper()
+    payload = _version_detail([_binding(V1, "secret_text", text=SENTINEL)], version_id="ver active; rm -rf /")
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "unsafe" in out
+
+
+def test_verify_result_missing_fails_closed() -> None:
+    helper = _load_helper()
+    code, out = _verify(helper, {"success": True})
+    assert code == 1
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in out
+
+
+def test_verify_result_not_object_fails_closed() -> None:
+    helper = _load_helper()
+    payload = {"success": True, "result": [{"id": "ver-active"}]}
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "malformed" in out
+
+
+def test_verify_resources_missing_fails_closed() -> None:
+    helper = _load_helper()
+    payload = {"success": True, "result": {"id": "ver-active"}}
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "no resources object" in out
+
+
+def test_verify_resources_bindings_missing_fails_closed() -> None:
+    helper = _load_helper()
+    payload = {"success": True, "result": {"id": "ver-active", "resources": {}}}
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "bindings collection is missing or malformed" in out
+
+
+def test_verify_bindings_array_entry_not_object_fails_closed() -> None:
+    helper = _load_helper()
+    payload = _version_detail([V1])
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "bindings array is malformed" in out
+
+
+def test_verify_map_key_disagrees_with_entry_name_fails_closed() -> None:
+    helper = _load_helper()
+    payload = _version_detail({V1: {"name": OVERLAY, "type": "secret_text"}})
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "disagrees with its entry name" in out
+
+
+# --- verify: legacy/synthetic shapes must not pass ------------------------------
+
+def test_verify_rejects_flat_result_bindings_without_resources() -> None:
+    # result.bindings without result.resources is not the documented shape.
+    helper = _load_helper()
+    payload = {"success": True, "result": {
+        "id": "ver-active",
+        "bindings": [_binding(V1, "secret_text", text=SENTINEL)],
+    }}
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "no resources object" in out
+
+
+def test_verify_rejects_settings_plane_bindings_even_with_matching_id() -> None:
+    # The #2412 gap: the mutable settings plane must never pass as served-version
+    # validation, not even when the version id happens to match.
+    helper = _load_helper()
+    payload = {"success": True, "result": {
+        "id": "ver-active",
+        "settings": {"bindings": [_binding(V1, "secret_text", text=SENTINEL)]},
+    }}
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "no resources object" in out
+
+
+def test_verify_rejects_tag_identity_without_id() -> None:
+    # result.tag is not version identity authority; result.id is required.
+    helper = _load_helper()
+    payload = {"success": True, "result": {
+        "tag": "ver-active",
+        "resources": {"bindings": [_binding(V1, "secret_text", text=SENTINEL)]},
+    }}
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "identity unproven" in out
+
+
+def test_verify_settings_plane_payload_without_version_identity_is_rejected() -> None:
+    helper = _load_helper()
+    payload = {"success": True, "result": {"settings": {"bindings": [_binding(V1, "secret_text", text=SENTINEL)]}}}
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "identity unproven" in out
+
+
+# --- verify: secret-set contract fail-closed paths -------------------------------
+
+def test_verify_missing_v1_fails_closed() -> None:
+    helper = _load_helper()
+    payload = _version_detail([_binding("UNRELATED_KV", "kv_namespace", id=SENTINEL)])
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "registry binding" in out
+
+
+def test_verify_missing_expected_overlay_fails_closed() -> None:
+    helper = _load_helper()
+    payload = _version_detail([_binding(V1, "secret_text", text=SENTINEL)])
+    code, out = _verify(helper, payload, expect_overlay=True)
+    assert code == 1
+    assert "overlay binding is missing" in out
+
+
+def test_verify_v1_type_drift_fails_closed() -> None:
+    helper = _load_helper()
+    payload = _version_detail([_binding(V1, "plain_text", text=SENTINEL)])
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "registry binding" in out
+
+
+def test_verify_overlay_type_drift_fails_closed_even_when_not_expected() -> None:
+    helper = _load_helper()
+    payload = _version_detail([
+        _binding(V1, "secret_text", text=SENTINEL),
+        _binding(OVERLAY, "plain_text", text=SENTINEL),
+    ])
+    code, out = _verify(helper, payload, expect_overlay=False)
+    assert code == 1
+    assert "overlay binding" in out
+
+
+def test_verify_duplicate_binding_names_fail_closed() -> None:
+    helper = _load_helper()
+    payload = _version_detail([
+        _binding(V1, "secret_text", text=SENTINEL),
+        _binding(V1, "secret_text", text=SENTINEL),
+    ])
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "duplicate" in out
+
+
+def test_verify_never_emits_binding_values() -> None:
+    helper = _load_helper()
+    payloads = [
+        _version_detail([_binding(V1, "secret_text", text=SENTINEL), _binding(OVERLAY, "secret_text", text=SENTINEL)]),
+        _version_detail([_binding(V1, "plain_text", text=SENTINEL)]),
+        _version_detail([], version_id=None),
+        _version_detail([_binding(V1, "secret_text", text=SENTINEL), _binding(V1, "secret_text", text=SENTINEL)]),
+        _version_detail([_binding(V1, "secret_text", text=SENTINEL)], version_id=SENTINEL),
+        _version_detail({V1: {"type": "secret_text", "text": SENTINEL}}),
+    ]
+    for payload in payloads:
+        for argv in (
+            lambda p: ["verify", "--version-settings", p, "--active-version", "ver-active"],
+            lambda p: ["verify", "--version-settings", p, "--active-version", "ver-active", "--expect-overlay"],
+            lambda p: ["resolve-active", "--deployments", p],
+        ):
+            code, out = _invoke(helper, argv, payload)
+            assert SENTINEL not in out, f"binding value leaked (exit={code})"
+
+
+# --- deploy gate wiring (static, no network) ----------------------------------
+
+def _workflow_text() -> str:
+    return WORKFLOW.read_text(encoding="utf-8")
+
+
+def _deploy_job_block() -> str:
+    text = _workflow_text()
+    return text.split("deploy-production-engine:", 1)[1].split("smoke-idempotency:", 1)[0]
+
+
+def test_deploy_job_yaml_exposes_both_guard_steps() -> None:
+    data = yaml.safe_load(_workflow_text())
+    steps = [str(step.get("name", "")) for step in data["jobs"]["deploy-production-engine"]["steps"]]
+    assert "Pre-deploy served-version secret guard" in steps
+    assert "Post-deploy served-version secret guard" in steps
+    assert steps.index("Pre-deploy served-version secret guard") < steps.index("Deploy engine to production")
+    # f88 (run 34889667189): the post-deploy guard ran AFTER the health smoke,
+    # so a smoke failure skipped the guard and the served version stayed
+    # unknown. The guard is GET-only evidence and must precede the smoke.
+    assert steps.index("Post-deploy served-version secret guard") < steps.index("Post-deploy smoke")
+
+
+def test_guards_run_the_shared_script_in_both_phases() -> None:
+    block = _deploy_job_block()
+    assert block.count("b54_engine_served_version_guard.py resolve-active") == 2
+    assert block.count("b54_engine_served_version_guard.py verify") == 2
+    assert "PREMUTATION_SERVED_VERSION_GUARD=PASS" in block
+    assert "POST_DEPLOY_SERVED_VERSION_GUARD=PASS" in block
+    assert block.count("--require-drive-runtime-bindings") == 2
+
+
+def test_guards_are_get_only_and_never_touch_secrets_or_values() -> None:
+    block = _deploy_job_block()
+    for verb in ("-X POST", "-X PUT", "-X PATCH", "-X DELETE", "wrangler secret"):
+        assert verb not in block
+    # The guard consumes whole API GET bodies into RUNNER_TEMP files only.
+    assert "/versions/" in block and "/deployments" in block
+
+
+def test_post_deploy_guard_requires_overlay_when_predeploy_had_it() -> None:
+    block = _deploy_job_block()
+    assert 'B54_ENGINE_OVERLAY_EXPECTED' in block
+    assert "--expect-overlay" in block
+    assert "B54_ENGINE_OVERLAY_EXPECTED=${overlay_expected}" in block
+
+
+def test_rollback_job_proves_served_version_equals_the_explicit_target() -> None:
+    # #2748 deliberately SUPERSEDES the earlier "rollback job is untouched by
+    # the guard" contract, which was correct only while the guard was
+    # deploy-scoped. Rollback is now its own mutation class: a code deploy must
+    # prove the served version CHANGED, a rollback must prove the served version
+    # EQUALS the target the owner named. Wrangler's exit zero alone is not that
+    # proof, because a bare `wrangler rollback` implicitly selects a previous
+    # upload that no evidence names.
+    text = _workflow_text()
+    rollback_block = text.split("rollback-production-engine:", 1)[1]
+
+    # The target must be named by the operator, never inferred.
+    assert "rollback_version_id" in text
+    assert 'ROLLBACK_TARGET: ${{ github.event.inputs.rollback_version_id }}' in rollback_block
+    assert 'REASON=rollback_version_id is required; implicit previous-version selection is refused' in rollback_block
+    assert 'IMPLICIT_PREVIOUS_VERSION_SELECTION=NO' in rollback_block
+
+    # Wrangler receives the explicit target; the bare form is gone.
+    assert 'npx wrangler@4 rollback "${ROLLBACK_TARGET}"' in rollback_block
+    assert "rollback --message" not in rollback_block
+
+    # Readback uses the canonical resolver, and the class obligation is decided
+    # by the shared mutation-evidence primitive, never by shell comparison:
+    # #2752 supersedes #2748's inline `[ "${served_version}" = "${TARGET}" ]`.
+    assert "b54_engine_served_version_guard.py resolve-active" in rollback_block
+    # #3737: these two assertions used to pin the space-separated form, which
+    # meant the suite was documenting the defect -- argparse reads a canonical
+    # leading-hyphen id as an option, so the predicate was never consulted.
+    assert 'validate-version-id --version-id="${ROLLBACK_TARGET}"' in rollback_block
+    assert "cloudflare_mutation_evidence.py evaluate" in rollback_block
+    assert "--class ROLLBACK" in rollback_block
+    assert '--target-version="${ROLLBACK_TARGET}"' in rollback_block
+    assert '--pre-version="${pre_version}"' in rollback_block
+    for ambiguous in ('--version-id "${', '--target-version "${', '--pre-version "${'):
+        assert ambiguous not in rollback_block, f"ambiguous argv form survived: {ambiguous}"
+    assert 'if [ "${served_version}" = "${ROLLBACK_TARGET}" ]; then' not in rollback_block
+    # A baseline is taken before the mutation, and the step is settled by a
+    # decision made with the window CLOSED, so a not-yet-final verdict can never
+    # end the step as a PASS.
+    assert "PRE_ROLLBACK_SERVED_VERSION_ID=${pre_version}" in rollback_block
+    assert rollback_block.index("PRE_ROLLBACK_SERVED_VERSION_ID") < rollback_block.index(
+        "B54_ENGINE_ROLLBACK_COMMAND=EXIT_ZERO"
+    )
+    assert "POST_ROLLBACK_SERVED_EQUALS_TARGET=PASS" in rollback_block
+
+    # No envelope rule may be re-implemented in the workflow (#2740 contract).
+    for forbidden in ("jq ", ".result.deployments", "versions[0]", "percentage"):
+        assert forbidden not in rollback_block, f"inline envelope rule: {forbidden}"
+
+    # Evidence order: command exit is never the final claim; served==target and
+    # the explicit no-earned-pass marker both precede the rollback PASS.
+    assert rollback_block.index("POST_ROLLBACK_SERVED_EQUALS_TARGET=PASS") < rollback_block.index(
+        "B54_ENGINE_PRODUCTION_ROLLBACK=PASS"
+    )
+    assert rollback_block.index("B54_ENGINE_ROLLBACK_COMMAND=EXIT_ZERO") < rollback_block.index(
+        "POST_ROLLBACK_SERVED_EQUALS_TARGET=PASS"
+    )
+    assert "ROLLBACK_COMMAND_EXIT_ZERO_AS_FINAL_PASS=NO" in rollback_block
+    assert rollback_block.index("ROLLBACK_COMMAND_EXIT_ZERO_AS_FINAL_PASS=NO") < rollback_block.index(
+        "B54_ENGINE_PRODUCTION_ROLLBACK=PASS"
+    )
+
+    # Readback stays GET-only.
+    for line in rollback_block.splitlines():
+        if "curl " in line:
+            assert "-fsS" in line and "--data" not in line
+
+
+def test_bare_rollback_pass_marker_appears_exactly_once() -> None:
+    text = _workflow_text()
+    assert text.count("echo 'B54_ENGINE_PRODUCTION_ROLLBACK=PASS'") == 1
+
+
+# --- validate-version-id: the canonical charset rule as a CLI surface (#2748) ---
+
+def _validate(helper, version_id: str) -> tuple[int, str]:
+    # The `=` form is the contract (#3737): as two separate tokens, argparse
+    # consumes a value that begins with `-` as an option and exits with a usage
+    # error before is_safe_version_id is ever reached.
+    stdout, stderr = io.StringIO(), io.StringIO()
+    with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+        code = helper.main(["validate-version-id", f"--version-id={version_id}"])
+    return code, stdout.getvalue() + stderr.getvalue()
+
+
+def test_validate_version_id_as_a_separate_token_bypasses_the_predicate() -> None:
+    """The removed invocation form, kept as the reason the =FORM is required."""
+    helper = _load_helper()
+    assert helper.is_safe_version_id("-safe-version") is True
+    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+        with pytest.raises(SystemExit) as stop:
+            helper.main(["validate-version-id", "--version-id", "-safe-version"])
+    # 2 is argparse's usage error: the canonical contract was never consulted.
+    assert stop.value.code == 2
+
+
+def test_validate_version_id_accepts_canonical_ids() -> None:
+    helper = _load_helper()
+    for version_id in (
+        "ver-A",
+        "a",
+        "9" * 64,
+        "11111111-1111-1111-1111-111111111111",
+        # Legal under ^[A-Za-z0-9._-]{1,64}$, so they must reach the predicate.
+        "-safe-version",
+        "-",
+        "--help",
+    ):
+        code, out = _validate(helper, version_id)
+        assert code == 0, version_id
+        assert "B54_ENGINE_VERSION_ID_VALIDATION=PASS" in out
+        assert "VERSION_ID_SAFE_CHARSET=YES" in out
+
+
+def test_validate_version_id_rejects_unsafe_ids_without_echoing_them() -> None:
+    # An unsafe id is the exact untrusted string this rule exists to keep out of
+    # CI logs and GITHUB_ENV, so the rejection must not print the value back.
+    helper = _load_helper()
+    for version_id in (
+        "",
+        "   ",
+        "ver A; rm -rf /",
+        "a:b",
+        "9" * 65,
+        "ver\nPASS",
+        # Option-shaped but unsafe: refused by the predicate (rc=1), not argparse.
+        "-bad id;rm",
+        "--version-id=X",
+    ):
+        code, out = _validate(helper, version_id)
+        assert code == 1, version_id
+        assert "unsafe charset" in out
+        if version_id:
+            assert version_id not in out
+        assert "B54_ENGINE_VERSION_ID_VALIDATION=PASS" not in out
+
+
+# ---------------------------------------------------------------------------
+# #3737: the rollback step has to RUN, not merely read correctly.
+#
+# Neither defect is visible to string assertions. A step-level working-directory
+# that contradicts the body only shows up when the body executes, and an argv form
+# argparse misreads only shows up in a real process. So these tests execute the
+# step body extracted from the workflow, with only `curl`, `npx` and `sleep`
+# replaced on PATH: the repository's real guard and the real mutation-evidence
+# primitive do all resolving and deciding.
+#
+# The step runs from the real repository root, because that cwd is what the fix
+# restores -- adapter path resolution is part of what is under test here.
+# ---------------------------------------------------------------------------
+
+PRE_VERSION = "aaaaaaaa-0000-0000-0000-000000000000"
+TARGET_VERSION = "bbbbbbbb-1111-1111-1111-111111111111"
+WRONG_VERSION = "cccccccc-2222-2222-2222-222222222222"
+ENGINE_WORKER_DIR = ROOT / "apps" / "padiem-ai-engine"
+
+_STUB_CURL = """#!/usr/bin/env bash
+set -uo pipefail
+out=""
+prev=""
+for arg in "$@"; do
+  if [ "${prev}" = "-o" ]; then out="${arg}"; fi
+  prev="${arg}"
+done
+count="${RUNNER_TEMP}/curl-call-count"
+n=0
+if [ -f "${count}" ]; then n="$(cat "${count}")"; fi
+n=$((n + 1))
+printf '%s' "${n}" > "${count}"
+if [ -n "${CURL_FAIL:-}" ]; then exit 22; fi
+var="BODY_${n}"
+body="${!var:-${BODY_DEFAULT:-}}"
+printf '%s' "${body}" > "${out}"
+"""
+
+_STUB_NPX = """#!/usr/bin/env bash
+printf '%s\\n' "$*" >> "${RUNNER_TEMP}/npx-argv.txt"
+if [ -n "${NPX_FAIL:-}" ]; then exit 1; fi
+exit 0
+"""
+
+_STUB_SLEEP = """#!/usr/bin/env bash
+exit 0
+"""
+
+# PATH must be prepended in the shell's own native form: a drive-letter entry is
+# opened fine but skipped during command lookup, which would silently leave the
+# real `curl` in place and turn a test into a live provider request.
+_DRIVER = """#!/usr/bin/env bash
+set -uo pipefail
+chmod +x "${STUB_DIR}/curl" "${STUB_DIR}/npx" "${STUB_DIR}/sleep"
+STUB_NATIVE="$(cd "${STUB_DIR}" && pwd)"
+export PATH="${STUB_NATIVE}:${PATH}"
+for stubbed in curl npx sleep; do
+  resolved="$(command -v "${stubbed}" || true)"
+  if [ "${resolved}" != "${STUB_NATIVE}/${stubbed}" ]; then
+    printf 'HARNESS_ABORT=%s=%s\\n' "${stubbed}" "${resolved}"
+    exit 8
+  fi
+done
+if [ -n "${STEP_CWD:-}" ]; then
+  cd "${STEP_CWD}" || exit 9
+fi
+bash "${STEP_SCRIPT}"
+printf 'STEP_EXIT=%s\\n' "$?"
+"""
+
+
+def _bash() -> str:
+    # CI (ubuntu) always has /bin/bash. Locally on Windows, resolve Git Bash
+    # explicitly because subprocess does not go through the shell's PATH.
+    bash = shutil.which("bash")
+    if bash is not None:
+        return bash
+    git = shutil.which("git")
+    if git is not None:
+        candidate = Path(git).resolve().parents[2] / "bin" / "bash.exe"
+        if candidate.exists():
+            return str(candidate)
+    raise AssertionError("bash not found; these contracts execute the real bash step")
+
+
+def _native(path) -> str:
+    """A path form both MSYS bash and a Windows interpreter can open."""
+    return str(path).replace("\\", "/")
+
+
+def _rollback_step() -> dict:
+    data = yaml.safe_load(_workflow_text())
+    steps = data["jobs"]["rollback-production-engine"]["steps"]
+    run_steps = [s for s in steps if "run" in s]
+    assert len(run_steps) == 1, "the rollback branch is one bounded step by contract"
+    return run_steps[0]
+
+
+def _rollback_step_body() -> str:
+    return _rollback_step()["run"]
+
+
+def _served(version_id: str, percentage: int = 100) -> dict:
+    return {"version_id": version_id, "percentage": percentage}
+
+
+def _deployments_body(versions: list) -> str:
+    """The documented Cloudflare deployments envelope the real guard consumes."""
+    return json.dumps(
+        {
+            "success": True,
+            "errors": [],
+            "messages": [],
+            "result": {
+                "deployments": [
+                    {
+                        "id": "d1",
+                        "source": "wrangler",
+                        "strategy": "percentage",
+                        "versions": versions,
+                    }
+                ]
+            },
+        }
+    )
+
+
+class _RollbackRun:
+    def __init__(self, result: subprocess.CompletedProcess, npx_argv) -> None:
+        self.output = (result.stdout or "") + (result.stderr or "")
+        if "HARNESS_ABORT=" in self.output:
+            raise AssertionError(f"stub transport did not resolve: {self.output}")
+        marker = re.search(r"STEP_EXIT=(\d+)", self.output)
+        assert marker, f"the step never reported an exit code: {self.output[-400:]}"
+        assert "The requested URL returned error" not in self.output, (
+            "a real HTTP response was observed; this step must only ever reach the stub"
+        )
+        self.exit_code = int(marker.group(1))
+        self.npx_argv = npx_argv
+
+    @property
+    def mutated(self) -> bool:
+        return self.npx_argv is not None
+
+    def token(self, name: str) -> str:
+        match = re.search(rf"^{name}=(.*)$", self.output, re.MULTILINE)
+        assert match, f"{name} missing from {self.output}"
+        return match.group(1)
+
+
+def _run_rollback_step(
+    tmp_path,
+    *,
+    bodies: dict,
+    target: str = TARGET_VERSION,
+    from_cwd=None,
+    **flags,
+) -> _RollbackRun:
+    root = tmp_path / "lane"
+    stub = root / "bin"
+    runner_temp = root / "runner-temp"
+    stub.mkdir(parents=True, exist_ok=True)
+    runner_temp.mkdir(parents=True, exist_ok=True)
+    for name, body in (("curl", _STUB_CURL), ("npx", _STUB_NPX), ("sleep", _STUB_SLEEP)):
+        (stub / name).write_text(body, encoding="utf-8", newline="\n")
+    step_script = root / "step.sh"
+    step_script.write_text(_rollback_step_body(), encoding="utf-8", newline="\n")
+    driver = root / "driver.sh"
+    driver.write_text(_DRIVER, encoding="utf-8", newline="\n")
+
+    env = {
+        **os.environ,
+        "STUB_DIR": _native(stub),
+        "RUNNER_TEMP": _native(runner_temp),
+        "STEP_SCRIPT": _native(step_script),
+        "GITHUB_WORKSPACE": _native(ROOT),
+        "ROLLBACK_TARGET": target,
+        "CLOUDFLARE_API_TOKEN": "stub-token-must-not-be-echoed",
+        "CLOUDFLARE_ACCOUNT_ID": "stub-account-must-not-be-echoed",
+    }
+    if from_cwd is not None:
+        env["STEP_CWD"] = _native(from_cwd)
+    for index, body in bodies.items():
+        env[f"BODY_{index}"] = body
+    env["BODY_DEFAULT"] = bodies.get("default", bodies.get(1, ""))
+    for flag in ("curl_fail", "npx_fail"):
+        if flags.get(flag):
+            env[flag.upper()] = "1"
+
+    result = subprocess.run(
+        [_bash(), _native(driver)],
+        cwd=_native(ROOT),
+        env=env,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    argv_file = runner_temp / "npx-argv.txt"
+    return _RollbackRun(
+        result,
+        argv_file.read_text(encoding="utf-8") if argv_file.exists() else None,
+    )
+
+
+def test_rollback_step_does_not_declare_a_contradicting_working_directory() -> None:
+    """The defect's shape, pinned so it cannot come back silently."""
+    step = _rollback_step()
+    assert "working-directory" not in step, (
+        "a step-level working-directory contradicts the body's own cd pair and "
+        "makes .github/scripts/... unresolvable (#3737)"
+    )
+    body = step["run"]
+    assert "cd apps/padiem-ai-engine" in body
+    assert 'cd "$GITHUB_WORKSPACE"' in body
+    assert ".github/scripts/b54_engine_served_version_guard.py" in body
+
+
+def test_rollback_step_passes_and_names_the_explicit_target(tmp_path) -> None:
+    out = _run_rollback_step(
+        tmp_path,
+        bodies={
+            1: _deployments_body([_served(PRE_VERSION)]),
+            "default": _deployments_body([_served(TARGET_VERSION)]),
+        },
+    )
+    assert out.exit_code == 0, out.output
+    assert out.token("ROLLBACK_TARGET_VERSION_ID") == TARGET_VERSION
+    assert out.token("PRE_ROLLBACK_SERVED_VERSION_ID") == PRE_VERSION
+    assert out.token("POST_ROLLBACK_SERVED_VERSION_ID") == TARGET_VERSION
+    assert out.token("POST_ROLLBACK_CONVERGENCE_READS") == "1"
+    assert out.token("MUTATION_EVIDENCE_REASON") == "ROLLBACK_TARGET_OBSERVED"
+    assert "B54_ENGINE_PRODUCTION_ROLLBACK=PASS" in out.output
+    assert "ROLLBACK_COMMAND_EXIT_ZERO_AS_FINAL_PASS=NO" in out.output
+    assert f"rollback {TARGET_VERSION}" in out.npx_argv
+    assert "stub-token-must-not-be-echoed" not in out.output
+
+
+def test_rollback_step_accepts_a_canonical_leading_hyphen_target(tmp_path) -> None:
+    """The whole step, not just the predicate: a legal id must survive to Wrangler."""
+    target = "-safe-version"
+    out = _run_rollback_step(
+        tmp_path,
+        bodies={
+            1: _deployments_body([_served(PRE_VERSION)]),
+            "default": _deployments_body([_served(target)]),
+        },
+        target=target,
+    )
+    assert out.exit_code == 0, out.output
+    assert "B54_ENGINE_VERSION_ID_VALIDATION=PASS" in out.output
+    assert out.token("ROLLBACK_TARGET_VERSION_ID") == target
+    assert out.token("POST_ROLLBACK_SERVED_VERSION_ID") == target
+    assert f"rollback {target}" in out.npx_argv
+
+
+def test_rollback_step_accepts_a_canonical_leading_hyphen_pre_version(tmp_path) -> None:
+    pre = "-pre-version"
+    out = _run_rollback_step(
+        tmp_path,
+        bodies={
+            1: _deployments_body([_served(pre)]),
+            "default": _deployments_body([_served(TARGET_VERSION)]),
+        },
+    )
+    assert out.exit_code == 0, out.output
+    assert out.token("PRE_ROLLBACK_SERVED_VERSION_ID") == pre
+    assert out.token("POST_ROLLBACK_SERVED_VERSION_ID") == TARGET_VERSION
+
+
+def test_rollback_step_fails_closed_when_a_different_version_is_serving(tmp_path) -> None:
+    out = _run_rollback_step(
+        tmp_path,
+        bodies={
+            1: _deployments_body([_served(PRE_VERSION)]),
+            "default": _deployments_body([_served(WRONG_VERSION)]),
+        },
+    )
+    assert out.exit_code != 0
+    assert "B54_ENGINE_PRODUCTION_ROLLBACK=PASS" not in out.output
+    assert "POST_ROLLBACK_SERVED_EQUALS_TARGET=FAIL" in out.output
+    assert out.token("POST_ROLLBACK_CONVERGENCE_READS") == "30"
+    assert out.mutated is True
+
+
+def test_rollback_step_refuses_an_unnamed_target_without_mutating(tmp_path) -> None:
+    out = _run_rollback_step(tmp_path, bodies={}, target="")
+    assert out.exit_code != 0
+    assert out.mutated is False
+    assert "ROLLBACK_TARGET_EXPLICIT=NO" in out.output
+    assert "REASON=rollback_version_id is required" in out.output
+
+
+def test_rollback_step_refuses_a_hostile_target_and_never_echoes_it(tmp_path) -> None:
+    out = _run_rollback_step(
+        tmp_path,
+        bodies={1: _deployments_body([_served(PRE_VERSION)])},
+        target="bad version;echo stub-token",
+    )
+    assert out.exit_code != 0
+    assert out.mutated is False
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in out.output
+    assert "bad version" not in out.output
+
+
+def test_rollback_step_body_cannot_resolve_adapters_from_the_worker_directory(tmp_path) -> None:
+    """The #3737 pre-fix failure, reproduced rather than described.
+
+    Running the same body from apps/padiem-ai-engine is exactly what the removed
+    step-level `working-directory` did: the adapter path does not exist there, so
+    the step aborts before any mutation and the rollback can never run.
+    """
+    assert not (ENGINE_WORKER_DIR / ".github").exists()
+    out = _run_rollback_step(
+        tmp_path,
+        bodies={
+            1: _deployments_body([_served(PRE_VERSION)]),
+            "default": _deployments_body([_served(TARGET_VERSION)]),
+        },
+        from_cwd=ENGINE_WORKER_DIR,
+    )
+    assert out.exit_code != 0
+    assert out.mutated is False, "the broken cwd must not reach a mutating command"
+    # CPython names the path it could not open in its own words, so the check is
+    # on the interpreter's message plus the adapter's filename, not on a
+    # separator-specific spelling of the path.
+    assert "can't open file" in out.output or "No such file" in out.output
+    assert "b54_engine_served_version_guard.py" in out.output
+    assert "B54_ENGINE_PRODUCTION_ROLLBACK=PASS" not in out.output
+
+
+# #3766 (parent #3748): the two Engine CODE_DEPLOY guard calls must pass a
+# canonical served-version id as one argparse token, including leading '-'.
+# The rollback arm has its own completed =form contract (#3737).
+
+
+def _3766_assert_deploy_guard_argv(run: str) -> None:
+    assert run.count("b54_engine_served_version_guard.py verify") == 1
+    assert '--active-version="${active_version}"' in run
+    assert '--active-version "${active_version}"' not in run
+
+
+def test_3766_pre_and_post_deploy_guards_preserve_canonical_argv_parity() -> None:
+    wf = yaml.safe_load(_workflow_text())
+    steps = wf["jobs"]["deploy-production-engine"]["steps"]
+    for name in ("Pre-deploy served-version secret guard", "Post-deploy served-version secret guard"):
+        step = next(step for step in steps if step.get("name") == name)
+        _3766_assert_deploy_guard_argv(step["run"])
+
+
+def test_3766_reintroducing_space_form_breaks_both_guard_contracts() -> None:
+    wf = yaml.safe_load(_workflow_text())
+    steps = wf["jobs"]["deploy-production-engine"]["steps"]
+    for name in ("Pre-deploy served-version secret guard", "Post-deploy served-version secret guard"):
+        run = next(step["run"] for step in steps if step.get("name") == name)
+        broken = run.replace('--active-version="${active_version}"', '--active-version "${active_version}"')
+        assert broken != run
+        with pytest.raises(AssertionError):
+            _3766_assert_deploy_guard_argv(broken)
+
+
+def test_3766_real_guard_accepts_leading_hyphen_served_version_with_drive_bindings() -> None:
+    helper = _load_helper()
+    version_id = "-canonical-safe-v1"
+    payload = _version_detail(_drive_runtime_bindings(), version_id=version_id)
+    result, stdout = _invoke(
+        helper,
+        lambda p: [
+            "verify", "--version-settings", p,
+            f"--active-version={version_id}", "--require-drive-runtime-bindings",
+        ],
+        payload,
+    )
+    assert result == 0, stdout
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=PASS" in stdout
+    assert "DRIVE_RUNTIME_BINDINGS_VALIDATED=YES" in stdout
+    assert SENTINEL not in stdout
+
+    # The parser accepted the id, but the canonical guard must still refuse a
+    # version-detail identity mismatch; no false success or fallback.
+    wrong, evidence = _invoke(
+        helper,
+        lambda p: [
+            "verify", "--version-settings", p,
+            "--active-version=-different-safe-v1", "--require-drive-runtime-bindings",
+        ],
+        payload,
+    )
+    assert wrong == 1
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in evidence
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=PASS" not in evidence
+    assert SENTINEL not in evidence

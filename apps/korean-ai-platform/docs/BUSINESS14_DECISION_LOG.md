@@ -1,5 +1,7 @@
 # Business 14 Decision Log
 
+> This is a chronological decision log: any previous statement using 'current' refers to the date of THAT entry. For latest model selection see [2026-10-08 owner ledger](../../../docs/operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md). Do not reactivate historical routes.
+
 This document records product-direction decisions for Business 14 so later implementation does not overwrite the original business hypothesis through accumulated feature work.
 
 ## 2026-07-22 — Original opportunity identified
@@ -202,7 +204,7 @@ The platform remains responsible for provider/model registry and execution and m
 - multiple provider families and execution adapters;
 - route evidence, usage/cost observation, and operator controls.
 
-The current Padiem work is classified as the first concrete product/customer profile on that platform:
+The current Padiem work is classified as the first concrete product/customer profile on that platform. The mapping below is what was decided on this date; the Plus and Pro lines were superseded later and the current mapping is recorded in the 2026-09-20 entry at the end of this log:
 
 ```text
 Padiem Routing Profile v1
@@ -238,3 +240,63 @@ Historical Phase 0–3 and provider documents are preserved as development evide
 `docs/B14_ROUTER_PLATFORM_AND_PADIEM_PROFILE.md`
 
 Related authority: #2085, completed #2099, and follow-ups #2100–#2104, #2107, and #1955.
+
+## 2026-09-20 — Padiem Plus is Agnes 3.0 Flash; Poolside Laguna becomes data-only; Pro and Max stay HOLD
+
+Documentation issue #2817 found that the route block in the 2026-09-08 entry above, and the copies of it maintained in `apps/padiem-chat/README.md`, `apps/korean-ai-platform/README.md`, `apps/korean-ai-platform/docs/README.md` and `docs/B14_ROUTER_PLATFORM_AND_PADIEM_PROFILE.md`, were still being read as current product-route authority after the owner route swaps that followed; `docs/architecture/B62_P01_B14_CONTROL_PLANE_OWNERSHIP_REVIEW_20260831.md` carried the same drift as a current-state claim. This entry records the correction. The 2026-09-08 entry is preserved as that date's decision record — only its current-state reading is superseded.
+
+Current Padiem Routing Profile v1 mapping, taken from the shared declaration `packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py`:
+
+```text
+Padiem Plus = agnes-ai/agnes-3.0-flash     only executable product route
+Padiem Pro  = padiem-profile/pro-hold      HOLD (owner decision #2601)
+Padiem Max  = padiem-profile/max-hold      HOLD (#1397 evidence gate)
+
+poolside/laguna-s-2.1 = HOLD_AS_DATA_ONLY  product data + b14/auto fixed-chain second position
+```
+
+What changed since 2026-09-08 and is now stated consistently in current-state documents:
+
+* Padiem Plus moved onto the direct Agnes provider route. `kilo/poolside-laguna-s-2.1-free` and `kilo/nvidia-nemotron-3-ultra-550b-a55b-free` no longer back a Padiem tier; whether either is a B14 route at all is decided by the current catalog, never by documentation.
+* Padiem Pro is disabled by owner decision #2601 while its provider route is replaced and re-verified. Pro is a HOLD identity, not an executable route, and its historical B.AI Qwen3.8-Flash and Kilo Nemotron entries remain declaration data only.
+* Poolside Laguna remains second-position evidence for the gateway-side `fixed_chain_v1`. Because it is not an executable product route, Padiem Chat removed the `/poolside` selector (#2814, PR #2815) instead of keeping an alias that displayed Poolside while dispatching another provider. That change created no Poolside tier route, no alias and no fallback.
+* The default product chat tier is Padiem Plus. AUTO product routing stays off; `b14/auto` remains a gateway-side compatibility resolution path and must not become a user-visible Padiem selector.
+
+Documentation rule this entry reasserts: current-state documents restate the shared declaration and the B14 catalog instead of carrying an independent copy of the mapping, and a dated entry in this log is never rewritten to match a later decision — the correction is a new dated entry that names what it supersedes.
+
+
+## 2026-10-05 — Space Bunny remains current Plus route but is at its retirement boundary
+
+Owner model-role authority #3209 superseded the 2026-09-20 Agnes mapping for the active Padiem Plus route. Current shared source declares:
+
+```text
+Padiem Plus = kilo/stealth-space-bunny-alpha
+upstream    = stealth/space-bunny-alpha
+provider    = kilo
+status      = EXECUTABLE while current catalog/runtime accepts the route
+
+Padiem Pro  = padiem-profile/pro-hold
+Padiem Max  = padiem-profile/max-hold
+```
+
+The September 20 decision entry above remains historical evidence and is not rewritten.
+
+Fresh public Kilo catalog evidence on 2026-10-05 still lists the exact Space Bunny model, but labels it `Space Bunny Alpha (retires Oct 5)` and reports `expiration_date=2026-10-05`. Therefore the route is current source authority but no longer a stable long-term default.
+
+Operational rule:
+
+```text
+CURRENT_ROUTE_AUTHORITY=SPACE_BUNNY_ALPHA
+RETIREMENT_BOUNDARY=2026-10-05
+POST_RETIREMENT_AVAILABILITY=UNPROVEN
+SILENT_RESTORE_OLD_ROUTE=NO
+SUCCESSOR_AUTHORITY=#3554
+```
+
+Agnes, Poolside and other historical provider registrations remain available only according to their current catalog/declaration status. None becomes a product fallback merely because Space Bunny retires.
+
+Related output-generation policy is separate: #3551 owns omitted `max_tokens` semantics and #3553 owns the explicit hard-ceiling/model-capability review.
+
+## 2026-10-08 — Owner Google four, excluded five, and per-model display names
+
+**2026-10-08 latest OWNER model decision (not a live B14 execution claim):** selected Google AI Studio IDs: gemini-3.1-flash-lite, gemini-3.5-flash-lite, gemma-4-26b-a4b-it, gemma-4-31b-it. OWNER-excluded: Kilo Poolside Laguna, B.AI Qwen, Motif 3, GPT-5.6 Luna, NVIDIA Nemotron. Customer name = 파디엠플러스 + individual model name. The Google four are in LOCAL unmerged source, NOT current main/Production. Do not treat the older Space Bunny, Ling, Poolside, Nemotron or fixed-chain histories as current approval; Space Bunny is retired. Image input/understanding test evidence is not verified image generation, and Gemma 4 31B image-input evidence is inconclusive. See [owner model decision ledger](../../../docs/operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md). Owner choices are separate from merged/source/Production readiness; historical Space Bunny, Ling, Agnes and Poolside decisions above are not current global primary/fallback. B66 upstream_timeout does not identify which model was called.

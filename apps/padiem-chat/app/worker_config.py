@@ -1,19 +1,23 @@
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping
-from dataclasses import replace
+import inspect
+from dataclasses import dataclass, field, replace
 from typing import Any
 
-from .config import Settings
+from .config import ConfigError, Settings
 
 WORKER_BINDING_NAMES = frozenset({
     "PADIEM_CHAT_RUNTIME_MODE",
     "PADIEM_CHAT_B14_BASE_URL",
+    "PADIEM_CHAT_B66_QUOTE_BASE_URL",
     "PADIEM_CHAT_TIMEOUT_SECONDS",
     "PADIEM_CHAT_LIVE_ENABLED",
     "PADIEM_CHAT_WEB_PROVIDER",
     "FIRECRAWL_API_KEY",
     "PADIEM_CHAT_DAUM_REST_API_KEY",
+    "TINYFISH_API_KEY",
     "PADIEM_CHAT_WEB_TIMEOUT_SECONDS",
     "PADIEM_CHAT_AUTH_MODE",
     "PADIEM_CHAT_PUBLIC_BASE_URL",
@@ -30,13 +34,62 @@ WORKER_BINDING_NAMES = frozenset({
 })
 D1_BINDING_NAME = "PADIEM_CHAT_DB"
 B14_SERVICE_BINDING_NAME = "B14_SERVICE"
+B66_PDF_RENDERER_SERVICE_BINDING_NAME = "B66_PDF_RENDERER_SERVICE"
 IDENTITY_AUTHORITY_SERVICE_BINDING_NAME = "IDENTITY_AUTHORITY_SERVICE"
+WORKSPACE_R2_BINDING_NAME = "PADIEM_WORKSPACE_FILES"
+# #2830 B-1B private Google OAuth workspace-truth Service Binding. Resolved from
+# trusted Worker bindings only and never from request input. No entry exists in
+# apps/padiem-chat/wrangler.toml yet: a separate activation slice owns that, so
+# until then this resolves to None and every composition path fails closed.
+GOOGLE_OAUTH_SERVICE_BINDING_NAME = "GOOGLE_OAUTH_STATE_SERVICE"
+
+# #3094 local-access truth source boundary. Resolved from trusted Worker
+# bindings only and never from request input. No entry exists in
+# apps/padiem-chat/wrangler.toml: the #3080 broker authority runtime is not a
+# deployed service yet, so this resolves to None and the app keeps the
+# fail-closed unconfigured local-access source until a trusted boundary exists.
+LOCAL_AGENT_BROKER_AUTHORITY_SERVICE_BINDING_NAME = "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE"
+
+# Worker-native P01/Engine configuration surface (#2229). Owned by B62 deployment
+# composition and read only from trusted Worker bindings — never from os.environ
+# and never from browser/request input. The Engine target is the fixed
+# ``P01_ENGINE_SERVICE`` Service Binding; caller identity/credential are
+# server/deployment-owned. Missing or malformed values fail closed.
+P01_ENGINE_SERVICE_BINDING_NAME = "P01_ENGINE_SERVICE"
+P01_ENGINE_CALLER_ID_ENV = "P01_ENGINE_CALLER_ID"
+P01_ENGINE_CREDENTIAL_ENV = "P01_ENGINE_CREDENTIAL"
+P01_ENGINE_BINDING_NAMES = frozenset({
+    P01_ENGINE_SERVICE_BINDING_NAME,
+    P01_ENGINE_CALLER_ID_ENV,
+    P01_ENGINE_CREDENTIAL_ENV,
+})
+_P01_CALLER_ID_MAX = 64
+_P01_CREDENTIAL_MIN_BYTES = 32
+_P01_CREDENTIAL_MAX_BYTES = 512
+_P01_SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
+
+# Bounded public-safe binding diagnostics (#2413). Fixed constants only: they
+# classify *which* validation step failed closed without ever carrying a
+# credential value, credential length, caller value, binding content, or any
+# exception text.
+P01_DIAG_ENGINE_SERVICE_MISSING = "engine_service_missing"
+P01_DIAG_CALLER_ID_SHAPE_INVALID = "caller_id_shape_invalid"
+P01_DIAG_CREDENTIAL_LENGTH_INVALID = "credential_length_invalid"
+P01_DIAG_CLIENT_CONSTRUCTOR_ERROR = "client_constructor_error"
+P01_DIAG_COMPOSITION_UNAVAILABLE = "composition_unavailable"
+P01_COMPOSITION_DIAGNOSTICS = frozenset({
+    P01_DIAG_ENGINE_SERVICE_MISSING,
+    P01_DIAG_CALLER_ID_SHAPE_INVALID,
+    P01_DIAG_CREDENTIAL_LENGTH_INVALID,
+    P01_DIAG_CLIENT_CONSTRUCTOR_ERROR,
+    P01_DIAG_COMPOSITION_UNAVAILABLE,
+})
 
 CONTENT_SECURITY_POLICY = (
     "default-src 'self'; "
     "base-uri 'none'; "
     "object-src 'none'; "
-    "frame-src 'none'; "
+    "frame-src blob:; "
     "frame-ancestors 'none'; "
     "script-src 'self'; "
     "connect-src 'self'; "
@@ -62,15 +115,89 @@ def binding_value(env: Any, key: str) -> Any:
     return getattr(env, key, None)
 
 
-def settings_from_worker_bindings(env: Any) -> Settings:
+async def resolve_web_secrets_store_keys(env: Any) -> dict[str, str]:
+    """Resolve only the selected public Search keys from trusted Worker bindings.
+
+    Cloudflare Secrets Store bindings are async .get() capabilities; they are
+    NOT plaintext. Never read a key in mock/off mode, expose errors, or
+    substitute a missing TinyFish credential with the Daum credential.
+    Ordinary direct secret_text bindings remain backward compatible.
+    """
+    mode = str(binding_value(env, "PADIEM_CHAT_RUNTIME_MODE") or "mock").strip().lower()
+    armed = str(binding_value(env, "PADIEM_CHAT_LIVE_ENABLED") or "false").strip().lower() == "true"
+    selected = binding_value(env, "PADIEM_CHAT_WEB_PROVIDER")
+    if selected is None:
+        selected = "tinyfish_daum" if mode == "b14" and armed else "off"
+    selected = str(selected).strip().lower()
+    names: tuple[str, ...]
+    if selected == "tinyfish":
+        names = ("TINYFISH_API_KEY",)
+    elif selected == "daum":
+        names = ("PADIEM_CHAT_DAUM_REST_API_KEY",)
+    elif selected == "tinyfish_daum":
+        names = ("TINYFISH_API_KEY", "PADIEM_CHAT_DAUM_REST_API_KEY")
+    else:
+        return {}
+
+    resolved: dict[str, str] = {}
+    for name in names:
+        bound = binding_value(env, name)
+        if bound is None:
+            continue  # Settings.from_values enforces the missing-key gate.
+        if isinstance(bound, str):
+            value = bound
+        else:
+            getter = getattr(bound, "get", None)
+            if not callable(getter):
+                raise ConfigError("selected public web credential binding is invalid")
+            try:
+                pending = getter()
+                if not inspect.isawaitable(pending):
+                    raise TypeError("unexpected synchronous Secrets Store capability")
+                value = await pending
+            except Exception:
+                # Never chain or publish provider/FFI exceptions: they may carry
+                # credential contents, headers, URLs, or account identifiers.
+                raise ConfigError("selected public web credential unavailable") from None
+        if not isinstance(value, str) or not value.strip():
+            raise ConfigError("selected public web credential unavailable")
+        resolved[name] = value
+    return resolved
+
+
+def settings_from_worker_bindings(
+    env: Any, *, resolved_web_keys: Mapping[str, str] | None = None
+) -> Settings:
+    runtime_mode = binding_value(env, "PADIEM_CHAT_RUNTIME_MODE") or "mock"
+    live_enabled = binding_value(env, "PADIEM_CHAT_LIVE_ENABLED") or "false"
+    explicit_web_provider = binding_value(env, "PADIEM_CHAT_WEB_PROVIDER")
+    # Source default only when real public B14 execution has been explicitly armed.
+    # Mock and B14 deadman-switch-off modes retain zero-network off default.
+    default_web_provider = (
+        "tinyfish_daum"
+        if str(runtime_mode).strip().lower() == "b14"
+        and str(live_enabled).strip().lower() == "true"
+        else "off"
+    )
     return Settings.from_values(
-        runtime_mode=binding_value(env, "PADIEM_CHAT_RUNTIME_MODE") or "mock",
+        runtime_mode=runtime_mode,
         b14_base_url=binding_value(env, "PADIEM_CHAT_B14_BASE_URL"),
-        timeout_seconds=binding_value(env, "PADIEM_CHAT_TIMEOUT_SECONDS") or "20",
-        live_enabled=binding_value(env, "PADIEM_CHAT_LIVE_ENABLED") or "false",
-        web_provider=binding_value(env, "PADIEM_CHAT_WEB_PROVIDER") or "off",
+        b66_quote_base_url=binding_value(env, "PADIEM_CHAT_B66_QUOTE_BASE_URL"),
+        timeout_seconds=binding_value(env, "PADIEM_CHAT_TIMEOUT_SECONDS") or "600",
+        completed_timeout_seconds=binding_value(env, "PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS") or "600",
+        live_enabled=live_enabled,
+        web_provider=default_web_provider if explicit_web_provider is None else explicit_web_provider,
         firecrawl_api_key=binding_value(env, "FIRECRAWL_API_KEY"),
-        daum_rest_api_key=binding_value(env, "PADIEM_CHAT_DAUM_REST_API_KEY"),
+        daum_rest_api_key=(
+            binding_value(env, "PADIEM_CHAT_DAUM_REST_API_KEY")
+            if resolved_web_keys is None
+            else resolved_web_keys.get("PADIEM_CHAT_DAUM_REST_API_KEY")
+        ),
+        tinyfish_api_key=(
+            binding_value(env, "TINYFISH_API_KEY")
+            if resolved_web_keys is None
+            else resolved_web_keys.get("TINYFISH_API_KEY")
+        ),
         web_timeout_seconds=binding_value(env, "PADIEM_CHAT_WEB_TIMEOUT_SECONDS") or "15",
         auth_mode=binding_value(env, "PADIEM_CHAT_AUTH_MODE") or "off",
         public_base_url=binding_value(env, "PADIEM_CHAT_PUBLIC_BASE_URL"),
@@ -87,6 +214,70 @@ def settings_from_worker_bindings(env: Any) -> Settings:
     )
 
 
+@dataclass(frozen=True, slots=True)
+class P01EngineWorkerConfig:
+    service_binding: Any = field(repr=False)
+    caller_id: str
+    credential: str = field(repr=False)
+
+
+def p01_engine_config_from_worker_bindings(env: Any) -> P01EngineWorkerConfig | None:
+    """Project the Worker-native P01/Engine surface from trusted bindings.
+
+    Returns ``None`` (fail closed, before any transport) unless the Engine
+    Service Binding is present and both server-owned caller values are well
+    formed. Never consults ``os.environ``.
+    """
+    config, _ = _p01_engine_config_and_diagnostic(env)
+    return config
+
+
+def p01_engine_binding_diagnostic(env: Any) -> str | None:
+    """Classify why the P01 binding surface fails closed (#2413).
+
+    Returns one bounded public-safe constant
+    (``engine_service_missing`` / ``caller_id_shape_invalid`` /
+    ``credential_length_invalid``) or ``None`` when the binding surface is
+    valid. The diagnostic is derived from the same validation order as
+    ``p01_engine_config_from_worker_bindings`` and never exposes values,
+    lengths, hashes, or exception text.
+    """
+    _, diagnostic = _p01_engine_config_and_diagnostic(env)
+    return diagnostic
+
+
+def _p01_engine_config_and_diagnostic(
+    env: Any,
+) -> tuple[P01EngineWorkerConfig | None, str | None]:
+    service_binding = binding_value(env, P01_ENGINE_SERVICE_BINDING_NAME)
+    raw_caller = binding_value(env, P01_ENGINE_CALLER_ID_ENV)
+    raw_credential = binding_value(env, P01_ENGINE_CREDENTIAL_ENV)
+    caller_id = raw_caller.strip() if isinstance(raw_caller, str) else ""
+    credential = raw_credential if isinstance(raw_credential, str) else ""
+
+    if service_binding is None and not caller_id and not credential:
+        return None, P01_DIAG_ENGINE_SERVICE_MISSING
+    if service_binding is None:
+        return None, P01_DIAG_ENGINE_SERVICE_MISSING
+    if (
+        not caller_id
+        or len(caller_id) > _P01_CALLER_ID_MAX
+        or not _P01_SAFE_ID_RE.fullmatch(caller_id)
+    ):
+        return None, P01_DIAG_CALLER_ID_SHAPE_INVALID
+    credential_bytes = len(credential.encode("utf-8"))
+    if not _P01_CREDENTIAL_MIN_BYTES <= credential_bytes <= _P01_CREDENTIAL_MAX_BYTES:
+        return None, P01_DIAG_CREDENTIAL_LENGTH_INVALID
+    return (
+        P01EngineWorkerConfig(
+            service_binding=service_binding,
+            caller_id=caller_id,
+            credential=credential,
+        ),
+        None,
+    )
+
+
 def apply_live_deadman_switch(settings: Settings) -> Settings:
     """Keep the public Worker on mock unless live execution is explicitly armed.
 
@@ -99,8 +290,20 @@ def apply_live_deadman_switch(settings: Settings) -> Settings:
     return settings
 
 
-def response_headers_for_path(path: str) -> dict[str, str]:
+def response_headers_for_path(
+    path: str,
+    *,
+    b66_quote_base_url: str | None = None,
+) -> dict[str, str]:
     headers = dict(BASE_SECURITY_HEADERS)
+    if b66_quote_base_url:
+        # Settings already validate this as one HTTPS root origin. Derive the
+        # sole frame authority from the same deployment-owned value that powers
+        # /api/b66/runtime-config; browser/request input cannot widen CSP.
+        headers["Content-Security-Policy"] = CONTENT_SECURITY_POLICY.replace(
+            "frame-src blob:;",
+            f"frame-src blob: {b66_quote_base_url};",
+        )
     if path == "/health" or path.startswith("/api/") or path.startswith("/auth/"):
         headers["Cache-Control"] = "no-store"
     return headers

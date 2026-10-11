@@ -1,5 +1,8 @@
 # Padiem Chat · Business 62
 
+Current OWNER model decisions, exclusions, name policy and distinct B14 source/Production evidence: [owner model decision ledger](../../docs/operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md). This product guide does not duplicate the model roster or grant route/Production activation.
+
+
 ```text
 DOC_STATUS = CURRENT_PRODUCT
 BUSINESS_ID = B62
@@ -8,6 +11,14 @@ LAST_VERIFIED = 2026-09-08
 ```
 
 Padiem Chat is Padiem's Korean-first, general-user AI front door.
+
+Canonical product-language and user-guide references:
+
+- `docs/padiem/PADIEM_PRODUCT_LANGUAGE_VISUAL_SYSTEM_V1.md`
+- `docs/padiem/PADIEM_CHAT_CLAW_ALIGNMENT_AUDIT_V1.md`
+- `docs/padiem/PADIEM_CHAT_CLAW_COPY_GLOSSARY_V1.md`
+- `docs/padiem/PADIEM_CHAT_CLAW_USER_GUIDE_KO.md`
+- `docs/padiem/PADIEM_CHAT_CLAW_USER_GUIDE_EN.md`
 
 Canonical platform references:
 
@@ -61,12 +72,20 @@ packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py
 Current product mapping on the verified source revision:
 
 ```text
-Padiem Plus = kilo/poolside-laguna-s-2.1-free
-Padiem Pro  = kilo/nvidia-nemotron-3-ultra-550b-a55b-free
+Padiem Plus = HOLD / padiem-profile/plus-hold  (product declaration; independent B14 Google registration is source-merged)
+Padiem Pro  = HOLD / padiem-profile/pro-hold    (owner decision #2601)
 Padiem Max  = HOLD / padiem-profile/max-hold
 
-DEFAULT GENERAL CHAT = Padiem Pro
+DEFAULT PRODUCT IDENTITY = Padiem Plus
+DEFAULT MODEL EXECUTION = UNAVAILABLE pending separately authorized product-route integration and credential-backed live readiness
 ```
+
+`poolside/laguna-s-2.1` is declared `HOLD_AS_DATA_ONLY`: it is retained as product data and as
+historical routing data, never as a Padiem product route and never as a silent fallback.
+B62 therefore has no `/poolside` selector; an unknown selector fails closed as
+`unknown_model_alias`. While #3568 HOLD is active, `/plus`, `/pro`, and `/max`
+all fail closed before Provider dispatch. Mock/preview and other non-model product
+features remain available.
 
 Ownership remains separated:
 
@@ -213,7 +232,7 @@ Current URL-level presentation contract includes:
 ?lang=en
 ```
 
-The current default/fallback is `padiem-glass`. Locale fallback is Korean (`ko`). Accepted presentation preferences may be reflected through URL state and bounded `localStorage` / `sessionStorage` use where the frontend contract permits it; those stores are never Provider/model-routing or canonical identity authority.
+The current default/fallback is `padiem-glass`. Locale fallback is Korean (`ko`). Locale preference is currently represented through explicit URL state (`?lang=ko|en`). The browser-persistence privacy contract forbids `localStorage` / `sessionStorage` for this preference. A future account-level cross-product preference requires a separately approved trusted authority.
 
 ## Cloudflare Worker boundary
 

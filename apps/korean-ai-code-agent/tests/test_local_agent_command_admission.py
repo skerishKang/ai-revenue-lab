@@ -73,6 +73,7 @@ def _fixture() -> tuple[
         sequence=7,
         issued_at=base + timedelta(seconds=30),
         expires_at=base + timedelta(minutes=10),
+        revision_ref="revision_exec_1",
     )
     request = LocalCommandRequest(
         request_id="request_exec_1",
@@ -97,6 +98,7 @@ def _fixture() -> tuple[
         request_fingerprint=fingerprint,
         accepted_at=base + timedelta(minutes=1),
         expires_at=base + timedelta(minutes=5),
+        revision_ref=command.revision_ref,
     )
     assembly_receipt = LocalAgentRuntimeAssemblyReceipt(
         assembly_ref="local_assembly_1",
@@ -153,6 +155,7 @@ class TrustedDeviceCommandAdmissionEvidenceTests(unittest.TestCase):
                 request_fingerprint=command_request_fingerprint(request),
                 accepted_at=base,
                 expires_at=base + timedelta(minutes=16),
+                revision_ref=command.revision_ref,
             )
 
 
@@ -229,6 +232,7 @@ class AdmittedLocalAgentExecutionBridgeTests(unittest.TestCase):
             request_fingerprint=evidence.request_fingerprint,
             accepted_at=evidence.accepted_at,
             expires_at=evidence.expires_at,
+            revision_ref=evidence.revision_ref,
         )
         assembly = _FakeAssembly(assembly_receipt)
         bridge = AdmittedLocalAgentExecutionBridge(
@@ -307,6 +311,7 @@ class AdmittedLocalAgentExecutionBridgeTests(unittest.TestCase):
             request_fingerprint=evidence.request_fingerprint,
             accepted_at=evidence.accepted_at,
             expires_at=evidence.expires_at,
+            revision_ref=evidence.revision_ref,
         )
         assembly = _FakeAssembly(assembly_receipt)
         bridge = AdmittedLocalAgentExecutionBridge(
@@ -335,6 +340,7 @@ class AdmittedLocalAgentExecutionBridgeTests(unittest.TestCase):
             request_fingerprint=evidence.request_fingerprint,
             accepted_at=evidence.accepted_at,
             expires_at=evidence.expires_at,
+            revision_ref=evidence.revision_ref,
         )
         bridge = AdmittedLocalAgentExecutionBridge(
             expected_admission_authority_ref=evidence.authority_ref,
@@ -363,6 +369,7 @@ class AdmittedLocalAgentExecutionBridgeTests(unittest.TestCase):
             request_fingerprint=evidence.request_fingerprint,
             accepted_at=base,
             expires_at=base + timedelta(minutes=4),
+            revision_ref=evidence.revision_ref,
         )
         assembly = _FakeAssembly(assembly_receipt)
         bridge = AdmittedLocalAgentExecutionBridge(
@@ -390,6 +397,7 @@ class AdmittedLocalAgentExecutionBridgeTests(unittest.TestCase):
             request_fingerprint=evidence.request_fingerprint,
             accepted_at=base + timedelta(minutes=1),
             expires_at=base + timedelta(minutes=11),
+            revision_ref=evidence.revision_ref,
         )
         bridge = AdmittedLocalAgentExecutionBridge(
             expected_admission_authority_ref=evidence.authority_ref,

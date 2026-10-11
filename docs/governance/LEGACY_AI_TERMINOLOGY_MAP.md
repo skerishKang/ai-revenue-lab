@@ -4,7 +4,7 @@
 DOC_STATUS = CANONICAL_GOVERNANCE
 OWNER = repository documentation governance
 SCOPE = interpretation of legacy Padiem AI names and route/profile terminology
-LAST_VERIFIED = 2026-09-08
+LAST_VERIFIED = 2026-09-15
 ```
 
 This document prevents historical terminology from being mistaken for current architecture or route authority.
@@ -35,6 +35,25 @@ B53         = Padiem Sidecar commercial product
 | MiniMax M3 / Tencent HY3 in current Padiem tier lists | retired historical lanes | must not re-enter current executable product tiers through stale docs |
 | Phase 0/1/2/3 Provider/model lists | dated phase evidence | do not treat as current B14 catalog truth |
 | `Sidecar` used ambiguously | must distinguish B53 vs IP-SIDECAR | B53 is commercial product; IP-SIDECAR is reusable embedded runtime candidate |
+| `B54`-prefixed Engine deployment artifacts (`b54-engine-*` workflows/scripts) | historical Claw-era lane prefix on Engine/ops machinery | valid alias; new artifacts use `padiem-ai-engine-*` / `padiem-production-*` naming families |
+| `B62`-prefixed shared runtime artifacts (`b62-*` deploy/activation/gate scripts) | historical Chat-era lane prefix on product and repo-ops machinery | valid alias; responsibility is classified by the #2409 boundary lock, not by lane number |
+| `P01_ENGINE_SERVICE` / `P01_ENGINE_CALLER_ID` / `P01_ENGINE_CREDENTIAL` | product-owned Worker binding names for Engine access (`P01` is a historical alias inside the name) | binding names stay with the product composition layer; do not read them as Core/Control Plane ownership |
+
+## Lane alias and naming direction (#2409)
+
+```text
+B54 = Padiem Claw product lane
+B62 = Padiem Chat product lane
+B14 = Korean AI Platform
+P01 = legacy shared-platform identifier -> IP-CORE / IP-ENGINE split
+```
+
+Historical issue numbers, commits, workflow names and script prefixes remain
+valid aliases and are never rewritten. Only NEW artifacts move to the
+platform/product naming families (`padiem-claw-*`, `padiem-ai-engine-*`,
+`padiem-ai-core-*`, `padiem-control-plane-*`, `padiem-production-*`).
+No mass rename without an approved migration plan (Wave 4 of #2409).
+Boundary authority: `docs/architecture/P01_B62_SHARED_RUNTIME_BOUNDARY_LOCK_2409.md`.
 
 ## Current Padiem route vocabulary
 

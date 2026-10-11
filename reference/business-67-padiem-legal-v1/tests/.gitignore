@@ -1,0 +1,7 @@
+# Python bytecode from the static contract suite.
+__pycache__/
+*.pyc
+
+# Regenerated on every verification run; the committed PNGs are the review
+# evidence and are kept deliberately.
+.pytest_cache/

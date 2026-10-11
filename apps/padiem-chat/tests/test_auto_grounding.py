@@ -11,7 +11,17 @@ from app.config import Settings
 from app.evidence import Evidence
 from app.grounding import GroundedChatService
 from app.main import create_app
+import app.model_policy as model_policy_module
 from app.model_policy import DEFAULT_B14_MODEL_ID
+
+
+@pytest.fixture(autouse=True)
+def _selected_model_for_grounding_contract(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(
+        model_policy_module,
+        "EXECUTABLE_B14_MODEL_IDS",
+        frozenset({DEFAULT_B14_MODEL_ID}),
+    )
 
 
 CURRENT = [{"role": "user", "content": "오늘 공개된 AI 정책을 찾아서 알려줘"}]

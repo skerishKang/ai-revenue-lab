@@ -1,0 +1,101 @@
+{
+  "adaptations": [
+    "Public XLSX: removed external file relationships, local path defined names and author metadata; layout reference only, not a calculation source",
+    "Sol template: scrubbed two workstation local paths in historical workbook definedNames",
+    "Sol renderer: changed local Codex Node executable default to PATH node",
+    "GLM reference paths: replaced local absolute paths with public-package-relative paths"
+  ],
+  "artifacts": {
+    "glm53/engine/render.py": {
+      "bytes": 17215,
+      "sha256": "49b292b5d3fc2f03048a5053aedaac29cbf2b876c079ef05e3bf1b4eb47f7d4d"
+    },
+    "glm53/engine/textfmt.py": {
+      "bytes": 2820,
+      "sha256": "37ebb524d5b9715ac508698c03d1e6af774ebde83ad317685d0eaaedb8bc6f10"
+    },
+    "glm53/template/base_document.pdf": {
+      "bytes": 120668,
+      "sha256": "ab5b92e38f54dcff5d1d4280dabcf8c5461dafd588886bf55592cc8d7da8d4b4"
+    },
+    "glm53/template/quote_template.json": {
+      "bytes": 23506,
+      "sha256": "b40a597025ebb9a7be49d66fb135c88b7a93e90cf7788229f20a74a2f4b6e6fd"
+    },
+    "sol61/certificate.json": {
+      "bytes": 3255,
+      "sha256": "2a5b987463ab32bb1dbd40c9ae139916b0eba203a7238ae17d78e9727e0c9084"
+    },
+    "sol61/engine/font_support.py": {
+      "bytes": 11312,
+      "sha256": "2683db32f6b3d403350ab6dfc9f531055d5ed48a6d8e88700180e06d70329f42"
+    },
+    "sol61/engine/quote_template.py": {
+      "bytes": 28756,
+      "sha256": "0bffb86cbd40531c793cb3e105d8137bedd69bef172bb6625ad77ed4ffb939d5"
+    },
+    "sol61/engine/slots.cjs": {
+      "bytes": 4619,
+      "sha256": "6559871e4a6b8205733f2f2baf8185ea7874c667610649d0a692946585c4bcf2"
+    },
+    "sol61/quote-core.js": {
+      "bytes": 21412,
+      "sha256": "c6a4d8c76cae2d33208638e4d1c4b55e8529aeadee9f6541becf5723c8a0f3a5"
+    },
+    "sol61/template/program.zlib": {
+      "bytes": 21664,
+      "sha256": "92734d4e0dc0febe53af5b81c89058eac46e5ee66d8f568b4cf58a3e44c887e9"
+    },
+    "sol61/template/provenance/image0.png": {
+      "bytes": 99,
+      "sha256": "b1d3059eb5086d4b636f1abf8b62136425a5128fc01810312cd9d45888e78884"
+    },
+    "sol61/template/provenance/image1.png": {
+      "bytes": 41203,
+      "sha256": "8f687a0b3b76cda45dc78ef0f1d324885db2c22ac7adacb07bfa81febd130b1b"
+    },
+    "sol61/template/provenance/image2.jpeg": {
+      "bytes": 29224,
+      "sha256": "780fa78b91a65f1c725ac3ea9d61c8c9602424ea6ba7a42a6af70a159959b854"
+    },
+    "sol61/template/provenance/image3.emf": {
+      "bytes": 105000,
+      "sha256": "455b551f9921de1fa53c2ad4c723185f55030aff6cf5b3c675e20c28eb28f8f5"
+    },
+    "sol61/template/resources.pdf": {
+      "bytes": 91266,
+      "sha256": "0bc1197cc2d424606e824d15288b9bc16c2d8bfb5755b314cd02f7b0edeb4b87"
+    },
+    "sol61/template/template.json": {
+      "bytes": 2571513,
+      "sha256": "b280e1ad11ccbcfa7da6416c05fe0ae3802e570bb01045bed7c35d754524aa08"
+    },
+    "source/original-public.xlsx": {
+      "bytes": 104487,
+      "sha256": "2635cffbde4bd11cf044e76faa7c374c6ee56bc3b60567012d5c1dd735e87349"
+    },
+    "source/original.pdf": {
+      "bytes": 120668,
+      "sha256": "ab5b92e38f54dcff5d1d4280dabcf8c5461dafd588886bf55592cc8d7da8d4b4"
+    }
+  },
+  "glm53_scope": "comparison_only_not_customer_safe_retains_old_text",
+  "historical_sol_certificate_refers_to_original_private_bundle": true,
+  "name": "CGI standard quotation template (Kim Beom-shin)",
+  "owner_publication_authorized": true,
+  "preferred_template": "sol61",
+  "public_bundle_is_exact_unmodified_source_subset": false,
+  "public_source_spreadsheet": "source/original-public.xlsx",
+  "release_date": "2026-10-09",
+  "runtime_activation": false,
+  "sanitized_source_workbook_is_not_byte_identical_to_original": true,
+  "schema_version": 1,
+  "sol61_scope": "one_page_one_to_three_items",
+  "source_original_pdf_sha256": "ab5b92e38f54dcff5d1d4280dabcf8c5461dafd588886bf55592cc8d7da8d4b4",
+  "source_original_xlsx_retained_in_private_vault": true,
+  "source_original_xlsx_sha256": "9fcabb7294b4feba4fa0c769452fd6527ebba1d9f94a8c761d4bc40dd99f12f5",
+  "source_vault_immutable": true,
+  "standard_reference_includes_owner_authorized_source_values": true,
+  "system_font_binaries_in_git": false,
+  "unrelated_customer_uploaded_templates_in_public_git": false
+}

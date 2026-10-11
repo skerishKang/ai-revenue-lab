@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import asyncio
 import dataclasses
+from datetime import datetime, timedelta, timezone
 import hashlib
 import importlib
 import importlib.util
@@ -39,19 +40,25 @@ from app.document_evidence_projection import (  # noqa: E402
     InMemoryEvidenceStoragePort,
 )
 from app.engine_composition import EngineServices  # noqa: E402
+from app.document_byte_store import (  # noqa: E402
+    InMemoryDocumentByteStore,
+    ScopedDocumentByteStore,
+    StoredDocumentRecord,
+)
 from app.trusted_document_resolver import (  # noqa: E402
-    InMemoryStoragePort,
+    DurableDocumentStoragePort,
     ResolvedDocumentMeta,
     TrustedDocumentResolver,
 )
 
 CALLER_ID = "e5b-route-caller"
 CALLER_SECRET = "e5b-route-secret-0123456789abcdef-0123456789abcdef"
-DOC_REF = "att_e5bRoutefixture01"
+DOC_REF = "doc_e5bRoutefixture01"
 DOC_LOCATOR = "opaque-document-locator-e5b"
 BODY_SHORT = "quarterly revenue projections for beta-corp"
 SECRET_TAIL = "TAILNEVERMOUNTEDINCONTEXT-88091"
-SCOPE = {"app_id": "app.revenue", "subject_id": "user.42", "tenant_id": "tenant.a"}
+SCOPE = {"app_id": "b62", "subject_id": "user.42", "tenant_id": "tenant.a"}
+BASE_TIME_DOC = datetime(2026, 9, 19, 12, 0, 0, tzinfo=timezone.utc)
 
 MULTIMODAL_PATH = "/internal/v1/multimodal/execute"
 
@@ -63,7 +70,11 @@ def _document_text() -> str:
 
 
 def _meta(**overrides: object) -> ResolvedDocumentMeta:
-    values: dict[str, object] = {"media_type": "text/plain", "name": "notes.txt"}
+    values: dict[str, object] = {
+        "media_type": "text/plain",
+        "name": "notes.txt",
+        "byte_size": len(BODY_SHORT.encode("utf-8")),
+    }
     values.update(SCOPE)
     values.update(overrides)
     return ResolvedDocumentMeta(**values)  # type: ignore[arg-type]
@@ -71,16 +82,33 @@ def _meta(**overrides: object) -> ResolvedDocumentMeta:
 
 class _RecordingResolver(TrustedDocumentResolver):
     def __init__(self, text: str) -> None:
-        storage = InMemoryStoragePort()
         payload = text.encode("utf-8")
-        storage.store(DOC_LOCATOR, payload, _meta(byte_size=len(payload)))
-        super().__init__(storage=storage)
-        self.register(DOC_REF, DOC_LOCATOR)
+        port = InMemoryDocumentByteStore()
+
+        async def bind() -> None:
+            await port.put(
+                StoredDocumentRecord(
+                    document_ref=DOC_REF,
+                    app_id=SCOPE["app_id"],
+                    tenant_id=SCOPE["tenant_id"],
+                    subject_id=SCOPE["subject_id"],
+                    media_type="text/plain",
+                    name="notes.txt",
+                    byte_size=len(payload),
+                    created_at=BASE_TIME_DOC,
+                    expires_at=BASE_TIME_DOC + timedelta(hours=24),
+                ),
+                payload,
+            )
+
+        asyncio.run(bind())
+        scoped = ScopedDocumentByteStore(port=port, clock=lambda: BASE_TIME_DOC)
+        super().__init__(storage=DurableDocumentStoragePort(scoped))
         self.calls: list[Any] = []
 
-    def resolve(self, att_ref: object, **scope: str):
-        self.calls.append((att_ref, scope))
-        return super().resolve(att_ref, **scope)
+    async def resolve(self, doc_ref: object, **scope: str):
+        self.calls.append((doc_ref, scope))
+        return await super().resolve(doc_ref, **scope)
 
 
 class _RecordingEvidencePort(InMemoryEvidenceStoragePort):
@@ -106,17 +134,17 @@ class _FakeScopeAuthority:
         self._reject = reject
         self.calls: list[tuple[str, str]] = []
 
-    def scope_for_caller(
-        self, *, caller_id: str, credential: str
+    async def scope_for_request(
+        self, *, app_id: str, auth_session_id: str
     ) -> TrustedCallerScope:
-        self.calls.append((caller_id, credential))
+        self.calls.append((app_id, auth_session_id))
         if self._reject is not None:
             raise self._reject
-        if caller_id != CALLER_ID or credential != CALLER_SECRET:
+        if app_id != SCOPE["app_id"] or auth_session_id != "sess.document-context-01":
             raise DocumentAuthorityError(
-                "caller_not_bound_to_session",
-                "Caller is not bound to a trusted document session.",
-                status_code=401,
+                "auth_scope_mismatch",
+                "Control Plane auth session does not match this request.",
+                status_code=403,
             )
         return self._scope
 
@@ -139,7 +167,11 @@ def _service(
 
 
 def _request_body(**fields: object) -> bytes:
-    payload: dict[str, object] = {"document_ref": DOC_REF}
+    payload: dict[str, object] = {
+        "app_id": "b62",
+        "session_id": "sess.document-context-01",
+        "document_ref": DOC_REF,
+    }
     payload.update(fields)
     return json.dumps(payload).encode("utf-8")
 
@@ -148,8 +180,6 @@ def _handle(
     service: DocumentContextEngineService,
     body: bytes,
     *,
-    caller: str = CALLER_ID,
-    credential: str = CALLER_SECRET,
     method: str = "POST",
     ctype: str | None = "application/json",
     path: str = DOCUMENT_CONTEXT_PATH,
@@ -160,8 +190,6 @@ def _handle(
             path=path,
             content_type=ctype,
             body=body,
-            caller_id=caller,
-            credential=credential,
         )
     )
 
@@ -195,7 +223,7 @@ def test_a_trusted_scope_and_valid_reference_return_bounded_projection() -> None
     assert retained.att_ref == DOC_REF
     assert retained.storage_locator == f"evidence://{DOC_REF}"
     assert port.stored == [evidence_id]
-    assert authority.calls == [(CALLER_ID, CALLER_SECRET)]
+    assert authority.calls == [("b62", "sess.document-context-01")]
     assert [call[1] for call in resolver.calls] == [SCOPE]
     assert "document_ref" not in json.dumps(body)
 
@@ -220,7 +248,7 @@ def test_b_each_missing_trusted_port_fails_closed_without_calls(omit: str) -> No
     assert port.stored == []
 
 
-def test_b_canonical_composition_leaves_documents_seam_uninjected(
+def test_b_canonical_composition_injects_documents_over_the_durable_lineage(
     identity_modules,
 ) -> None:
     _legacy, identity = identity_modules
@@ -228,48 +256,87 @@ def test_b_canonical_composition_leaves_documents_seam_uninjected(
     for env in (_identity_env(), _identity_env(B14_SERVICE=object())):
         services = asyncio.run(identity._engine_services_for_env(env))
         assert isinstance(services, EngineServices)
-        assert services.documents is None
+        # #2764: the seam is canonically injected, but with neither
+        # ENGINE_DOCUMENT_STORE nor a CP authority every internal object
+        # stays None, so each request still fails closed without faked storage.
+        assert isinstance(services.documents, DocumentContextEngineService)
+        assert services.documents._scope_authority is None
+        assert services.documents._document_resolver is None
         with pytest.raises(ValueError, match="'documents'"):
             dataclasses.replace(services, documents=object())
         injected = DocumentContextEngineService()
         assert dataclasses.replace(services, documents=injected).documents is injected
 
 
+class _FakeD1Statement:
+    def bind(self, *_params: Any) -> "_FakeD1Statement":
+        return self
+
+    async def first(self) -> None:
+        raise AssertionError("no D1 read may occur without a trusted scope")
+
+    async def run(self) -> None:
+        raise AssertionError("no D1 byte write may occur without a trusted scope")
+
+
+class _FakeD1Binding:
+    def prepare(self, _sql: str) -> _FakeD1Statement:
+        return _FakeD1Statement()
+
+
+def test_b2_bound_document_store_composes_one_shared_lineage(identity_modules) -> None:
+    from app.document_byte_store import CloudflareD1DocumentByteStore
+
+    _legacy, identity = identity_modules
+    env = _identity_env(ENGINE_DOCUMENT_STORE=_FakeD1Binding())
+    services = asyncio.run(identity._engine_services_for_env(env))
+
+    resolver = services.documents._document_resolver
+    assert resolver is not None
+    store = resolver._storage._store
+    assert isinstance(store, ScopedDocumentByteStore)
+    assert isinstance(store._port, CloudflareD1DocumentByteStore)
+    # one composition per request: admission and context share the same store
+    assert store is services.document_admission._document_byte_store
+    assert services.document_admission._scope_authority is None  # CP gated
+
+
+def test_b3_malformed_document_store_binding_composes_no_lineage(identity_modules) -> None:
+    _legacy, identity = identity_modules
+    for malformed in (object(), "", 0, {"binding": "ENGINE_DOCUMENT_STORE"}, [], b"d1"):
+        services = asyncio.run(
+            identity._engine_services_for_env(
+                _identity_env(ENGINE_DOCUMENT_STORE=malformed)
+            )
+        )
+        assert services.documents._document_resolver is None, repr(malformed)
+        assert services.document_admission._document_byte_store is None, repr(malformed)
+
+
 # --- C: identity before any trusted port --------------------------------------
 
 
-@pytest.mark.parametrize(
-    ("caller", "credential"),
-    [("", CALLER_SECRET), (CALLER_ID, ""), ("   ", CALLER_SECRET)],
-)
-def test_c_anonymous_caller_is_rejected_before_any_port(
-    caller: str, credential: str
-) -> None:
+def test_c_authority_receives_only_app_and_opaque_session_id() -> None:
     service, resolver, port, _ = _service()
 
-    response = _handle(
-        service, _request_body(), caller=caller, credential=credential
-    )
+    response = _handle(service, _request_body())
 
-    assert response.status_code == 401
-    assert response.body["error"]["code"] == "service_authentication_failed"
-    assert resolver.calls == []
-    assert port.stored == []
+    assert response.status_code == 200
+    assert resolver.calls
+    assert port.stored
 
 
-def test_c_mismatched_caller_rejected_by_authority_without_port_touch() -> None:
+def test_c_mismatched_session_scope_rejected_by_authority_without_port_touch() -> None:
     service, resolver, port, authority = _service()
 
     response = _handle(
         service,
-        _request_body(),
-        caller="attacker-caller",
-        credential=CALLER_SECRET,
+        _request_body(session_id="sess.other"),
     )
 
-    assert response.status_code == 401
-    assert response.body["error"]["code"] == "caller_not_bound_to_session"
-    assert authority.calls == [("attacker-caller", CALLER_SECRET)]
+    assert response.status_code == 403
+    assert response.body["error"]["code"] == "auth_scope_mismatch"
+    assert authority.calls == [("b62", "sess.other")]
     assert resolver.calls == []
     assert port.stored == []
 
@@ -317,7 +384,7 @@ def test_d_invalid_references_are_rejected(bad_ref: object) -> None:
         assert bad_ref not in json.dumps(response.body)
 
 
-@pytest.mark.parametrize("scope_field", ["app_id", "subject_id", "tenant_id"])
+@pytest.mark.parametrize("scope_field", ["subject_id", "tenant_id"])
 def test_d_scope_fields_are_never_request_inputs(scope_field: str) -> None:
     service, resolver, port, _ = _service()
 
@@ -326,6 +393,18 @@ def test_d_scope_fields_are_never_request_inputs(scope_field: str) -> None:
     assert response.status_code == 400
     assert response.body["error"]["code"] == "invalid_request"
     assert "selfasserted" not in json.dumps(response.body)
+    assert resolver.calls == []
+    assert port.stored == []
+
+
+def test_d_application_id_is_authenticated_input_not_server_scope() -> None:
+    service, resolver, port, authority = _service()
+
+    response = _handle(service, _request_body(app_id="app.other"))
+
+    assert response.status_code == 403
+    assert response.body["error"]["code"] == "auth_scope_mismatch"
+    assert authority.calls == [("app.other", "sess.document-context-01")]
     assert resolver.calls == []
     assert port.stored == []
 
@@ -359,7 +438,7 @@ def test_d_cross_scope_triple_is_unauthorized_and_never_retained() -> None:
 def test_d_unknown_but_well_formed_reference_is_not_found() -> None:
     service, resolver, port, _ = _service()
 
-    response = _handle(service, _request_body(document_ref="att_neverminted0001"))
+    response = _handle(service, _request_body(document_ref="doc_neverminted000001"))
 
     assert response.status_code == 404
     assert response.body["error"]["code"] == "not_found"
@@ -515,16 +594,14 @@ class _Request:
         *,
         method: str = "POST",
         body: bytes = b"{}",
-        caller_id: str | None = CALLER_ID,
-        credential: str | None = CALLER_SECRET,
+        authenticated: bool = True,
     ) -> None:
         self.url = f"https://engine.internal{path}"
         self.method = method
         headers: dict[str, str] = {"content-type": "application/json"}
-        if caller_id is not None:
-            headers["x-padiem-engine-caller"] = caller_id
-        if credential is not None:
-            headers["x-padiem-engine-credential"] = credential
+        if authenticated:
+            headers["x-padiem-engine-caller"] = CALLER_ID
+            headers["x-padiem-engine-credential"] = CALLER_SECRET
         self.headers = headers
         self._text = body.decode("utf-8")
 
@@ -564,7 +641,10 @@ def test_document_route_fails_closed_on_canonical_fetch(
     assert response.status == 503
     payload = _body(response)
     assert payload["ok"] is False
-    assert payload["error"]["code"] == "document_context_unavailable"
+    # #2764 keeps the service canonically composed; the fail-closed answer now
+    # names the missing authority itself (no CP session authority on this env)
+    # instead of the pre-composition seam gap.
+    assert payload["error"]["code"] == "document_authority_unavailable"
     assert DOC_REF not in str(response.body)
 
 
@@ -589,13 +669,11 @@ def test_injected_documents_service_serves_trusted_caller(
             _Request(
                 DOCUMENT_CONTEXT_PATH,
                 body=_request_body(),
-                caller_id=CALLER_ID,
-                credential=CALLER_SECRET,
             ),
         )
         assert response.status == 200
         assert _body(response)["ok"] is True
-        assert authority.calls[-1] == (CALLER_ID, CALLER_SECRET)
+        assert authority.calls[-1] == ("b62", "sess.document-context-01")
         assert len(port.stored) == 1
         # One successful through-line = one resolver.resolve call (S4b
         # single-resolve; the S4 double-resolve debt is now closed).
@@ -607,8 +685,7 @@ def test_injected_documents_service_serves_trusted_caller(
             _Request(
                 DOCUMENT_CONTEXT_PATH,
                 body=_request_body(),
-                caller_id=None,
-                credential=None,
+                authenticated=False,
             ),
         )
         assert anonymous.status == 401

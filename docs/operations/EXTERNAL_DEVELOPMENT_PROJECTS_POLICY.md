@@ -8,6 +8,26 @@ AI Revenue Lab 내부 저장소와 외부 개발 저장소의 경계를 명확�
 
 Business가 별도 제품으로 확장·승계된 경우의 번호·제품 계보와 실제 구현 위치는 `docs/portfolio/BUSINESS_EXPANSION_LINEAGE.md`에 기록한다.
 
+## 외부 제품과 외부 기술 의존성은 다르다
+
+이 정책의 "내부 중복 구현 금지"는 **외부 제품 저장소를 AI Revenue Lab 안에 복제하지 말라**는 의미다.
+
+다음은 별도 `TECHNOLOGY_ADOPTION_POLICY.md`에 따라 적극 검토할 수 있다.
+
+- 외부 OSS 라이브러리/엔진 의존성;
+- 상용 SDK/API;
+- self-hosted commercial runtime;
+- sidecar/local service;
+- sandboxed tool/runtime.
+
+즉, 외부 제품의 source of truth를 복제하는 것은 금지하지만, 검토된 외부 기술을 Padiem 기능 구현에 사용하는 것은 허용되고 권장될 수 있다.
+
+```text
+NO_EXTERNAL_PRODUCT_DUPLICATION=YES
+REVIEWED_EXTERNAL_TECHNOLOGY_ADOPTION=ALLOWED
+SEARCH_BEFORE_CUSTOM_BUILD=YES
+```
+
 ## 핵심 규칙
 
 ### 1. 번호가 없는 프로젝트는 외부 개발 프로젝트로 취급한다
@@ -98,6 +118,30 @@ B5 Neighbor Market / 우리단지 이웃가게
 - B30의 실제 시민 AI Navigator 구현 원본 → **400-ai-finder**
 
 통합된 원 Business를 보고 별도 앱을 다시 만드는 것은 금지한다. 세부 경계와 B30의 사실로 연계 해석은 `BUSINESS_EXPANSION_LINEAGE.md`를 따른다.
+
+## Global Classroom 현재 운영 결정
+
+Global Classroom / AI Interview Interpreter는 현재 별도 저장소를 canonical source로 유지합니다.
+
+```text
+PRODUCT = Global Classroom / AI Interview Interpreter
+CANONICAL_SOURCE = skerishKang/global-classroom
+PRODUCT_ISSUE_TRACKER = skerishKang/global-classroom/issues
+AI_REVENUE_LAB_INTERNAL_COPY = NO
+SOURCE_MIGRATION = NO
+CURRENT_BI_NUMBER_ASSIGNMENT = NO
+```
+
+운영 규칙:
+
+1. Global Classroom 코드, UI/UX, Interview runtime, Netlify Functions, 제품 E2E와 제품 이슈는 `skerishKang/global-classroom`에서 관리한다.
+2. AI Revenue Lab에는 Global Classroom 제품 구현 이슈를 중복 생성하지 않는다.
+3. Padiem Chat/Claw/Control Plane/공용 connector와 교차되는 플랫폼 작업만 AI Revenue Lab 이슈를 cross-reference한다.
+4. Global Classroom의 독립 저장소 유지 결정은 공용 Padiem identity/connector를 사용하지 않는다는 의미가 아니다. 공용 capability를 소비하되 제품 source authority는 분리할 수 있다.
+5. 사용자의 별도 source-migration 승인 전에는 `apps/global-classroom/`, `reference/business-*/global-classroom` 또는 유사 placeholder를 만들지 않는다.
+6. 향후 BI/Business 번호가 부여되더라도 번호만으로 source migration을 추론하지 않는다. 별도 저장소가 canonical source로 유지될 수 있다.
+
+현재 제품 이슈 authority는 Global Classroom 저장소의 #20~#24에 있으며, 이전에 AI Revenue Lab에 생성됐던 Global Classroom 이슈는 GitHub Issue Transfer로 원 저장소에 이전했다.
 
 ## 외부 개발 프로젝트 목록 운영
 

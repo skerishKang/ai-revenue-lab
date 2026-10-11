@@ -1,0 +1,512 @@
+/**
+ * CLAW4 #3083 — Electron-main-side shell controller.
+ *
+ * Owns the authoritative projection the renderer is allowed to see. Every
+ * channel handler is dispatched through the static allowlist, so an unknown or
+ * wildcard channel can never reach a handler.
+ *
+ *   DISPATCH_VIA_STATIC_ALLOWLIST=YES
+ *   GENERIC_INVOKE_COMMAND_ARGS=NO
+ *   RENDERER_CANNOT_SET_DEVICE_STATE=NO
+ *   RUNNER_EXECUTION_AUTHORITY=NO
+ */
+
+import {
+  DEVICE_LIFECYCLE_STATES,
+  initialDeviceLifecycleProjection,
+  projectDeviceLifecycle,
+  type DeviceLifecycleProjection,
+  type DeviceLifecycleState,
+} from '../contract/device-lifecycle.js';
+import {
+  IPC_CHANNELS,
+  IpcContractError,
+  assertAllowedIpcChannel,
+  type BoundedLogRequest,
+  type BoundedLogResponse,
+  type IpcChannel,
+  type PairingDeepLinkRequest,
+  type PairingDeepLinkResponse,
+  type CanonicalConversationListResponse,
+  type CanonicalConversationReadResponse,
+  type CanonicalRunListResponse,
+  type CanonicalRunReadResponse,
+  type RunnerHealthResponse,
+  type RunnerStartRequest,
+  type RunnerStartResponse,
+  type RunnerStopRequest,
+  type RunnerStopResponse,
+  type ShellStatus,
+  type WorkspaceListResponse,
+  type WorkspaceRootResponse,
+  type WorkspaceSearchResponse,
+} from '../contract/ipc.js';
+import type { LocalWorkspaceController } from '../workspace/local-workspace.js';
+import {
+  CanonicalConversationController,
+} from '../conversation/canonical-conversation.js';
+import {
+  CanonicalRunController,
+} from '../run/canonical-run.js';
+import {
+  pairingHandoffConsumedMarker,
+  parsePairingDeepLink,
+  takePairingCodeTransfer,
+} from '../contract/pairing-deeplink.js';
+import { projectBoundedLog } from '../contract/safe-log-projection.js';
+import type { RunnerSupervisor } from './runner-supervisor.js';
+
+/**
+ * #3095: how many spent-handoff markers one shell session remembers.
+ * Bounded so the replay ledger cannot become unbounded application state.
+ */
+const PAIRING_HANDOFF_LEDGER_LIMIT = 32;
+
+export interface ShellControllerOptions {
+  readonly supervisor: RunnerSupervisor;
+  readonly boundedLogLines: () => readonly string[];
+  readonly workspace?: LocalWorkspaceController;
+  readonly conversations?: CanonicalConversationController;
+  readonly runs?: CanonicalRunController;
+  readonly now?: () => number;
+}
+
+export type IpcHandler = (request: unknown) => Promise<unknown> | unknown;
+
+export class ShellController {
+  readonly #supervisor: RunnerSupervisor;
+  readonly #boundedLogLines: () => readonly string[];
+  readonly #workspace: LocalWorkspaceController | null;
+  readonly #conversations: CanonicalConversationController;
+  readonly #runs: CanonicalRunController;
+  readonly #now: () => number;
+  #device: DeviceLifecycleProjection = initialDeviceLifecycleProjection();
+  #pairingSeamAccepted = false;
+  /**
+   * #3095: the single bounded pairing handoff awaiting the trusted runner.
+   *
+   * Held in the main process only, consumed exactly once, never logged, never
+   * persisted, and never projected to the renderer.
+   */
+  #lastPairingHandoff: {
+    pairingCode: string;
+    correlationRef: string;
+    challengeId: string;
+  } | null = null;
+  /**
+   * #3095 replay ledger.
+   *
+   * Marks already-consumed handoffs so replaying the same deep link cannot hand
+   * the runner a pairing code twice. Only a bounded, non-reversible marker is
+   * retained — never the code — and the ledger is bounded so it cannot grow
+   * without limit. The canonical broker still rejects a reused challenge; this
+   * ledger stops the shell from re-offering a spent handoff in the first place.
+   */
+  #consumedPairingHandoffs = new Set<string>();
+
+  #presenceNote = 'no headless runner observation yet';
+
+  constructor(options: ShellControllerOptions) {
+    this.#supervisor = options.supervisor;
+    this.#boundedLogLines = options.boundedLogLines;
+    this.#workspace = options.workspace ?? null;
+    this.#conversations = options.conversations ?? new CanonicalConversationController();
+    this.#runs = options.runs ?? new CanonicalRunController();
+    this.#now = options.now ?? (() => Date.now());
+  }
+
+  /** The complete, closed handler map. Keys are statically known. */
+  handlers(): Readonly<Record<IpcChannel, IpcHandler>> {
+    return Object.freeze({
+      'padiem:shell:get-status': () => this.getStatus(),
+      'padiem:shell:runner-start': (request) => this.runnerStart(request),
+      'padiem:shell:runner-stop': (request) => this.runnerStop(request),
+      'padiem:shell:runner-health': () => this.runnerHealth(),
+      'padiem:shell:pairing-deeplink-submit': (request) => this.pairingDeepLinkSubmit(request),
+      'padiem:shell:get-bounded-log': (request) => this.getBoundedLog(request),
+      'padiem:shell:workspace-choose-root': () => this.workspaceChooseRoot(),
+      'padiem:shell:workspace-list': (request) => this.workspaceList(request),
+      'padiem:shell:workspace-clear-root': () => this.workspaceClearRoot(),
+      'padiem:shell:workspace-search': (request) => this.workspaceSearch(request),
+      'padiem:shell:conversation-list': () => this.conversationList(),
+      'padiem:shell:conversation-read': (request) => this.conversationRead(request),
+      'padiem:shell:run-list': () => this.runList(),
+      'padiem:shell:run-read': (request) => this.runRead(request),
+    });
+  }
+
+  /** Allowlisted dispatch. Anything not in the static allowlist is refused. */
+  async dispatch(channel: unknown, request: unknown): Promise<unknown> {
+    const allowed = assertAllowedIpcChannel(channel);
+    const handler = this.handlers()[allowed];
+    return handler(request);
+  }
+
+  getStatus(): ShellStatus {
+    const runner = this.#supervisor.snapshot();
+    return Object.freeze({
+      deviceState: this.#device.state,
+      deviceStateRevision: this.#device.sinceRevision,
+      runnerState: runner.state,
+      runnerPid: runner.pid,
+      pairingSeamAccepted: this.#pairingSeamAccepted,
+      presenceNote: this.#presenceNote,
+      authoritativeTruthOwner: '#3080' as const,
+      rendererMayDeclareOnline: false as const,
+    });
+  }
+
+  deviceProjection(): DeviceLifecycleProjection {
+    return this.#device;
+  }
+
+  async runnerStart(request: unknown): Promise<RunnerStartResponse> {
+    if (!isRendererShellRequest(request)) {
+      return Object.freeze({
+        ok: false,
+        state: this.#supervisor.snapshot().state,
+        pid: null,
+        reason: 'runner start request rejected: not a renderer shell request',
+      });
+    }
+    try {
+      const snapshot = await this.#supervisor.start(this.#now());
+      this.#applyRunnerState(snapshot.state);
+      return Object.freeze({
+        ok: true,
+        state: snapshot.state,
+        pid: snapshot.pid,
+        reason: 'headless runner started as a separate process',
+      });
+    } catch (error) {
+      return Object.freeze({
+        ok: false,
+        state: this.#supervisor.snapshot().state,
+        pid: null,
+        reason: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  async runnerStop(request: unknown): Promise<RunnerStopResponse> {
+    if (!isRendererShellRequest(request)) {
+      return Object.freeze({
+        ok: false,
+        state: this.#supervisor.snapshot().state,
+        pid: null,
+        reason: 'runner stop request rejected: not a renderer shell request',
+      });
+    }
+    const snapshot = await this.#supervisor.stop();
+    this.#applyRunnerState(snapshot.state);
+    return Object.freeze({
+      ok: true,
+      state: snapshot.state,
+      pid: snapshot.pid,
+      reason: 'headless runner stopped; no orphan process remains',
+    });
+  }
+
+  async runnerHealth(): Promise<RunnerHealthResponse> {
+    const snapshot = await this.#supervisor.health(this.#now());
+    this.#applyRunnerState(snapshot.state);
+    return Object.freeze({
+      state: snapshot.state,
+      pid: snapshot.pid,
+      alive: snapshot.pid !== null && snapshot.state === 'RUNNING',
+      checkedAtMs: this.#now(),
+      lastExitCode: snapshot.lastExitCode,
+      lastExitSignal: snapshot.lastExitSignal,
+    });
+  }
+
+  async pairingDeepLinkSubmit(request: unknown): Promise<PairingDeepLinkResponse> {
+    const typed = request as PairingDeepLinkRequest;
+    if (typeof typed?.deepLink !== 'string') {
+      return Object.freeze({
+        accepted: false,
+        kind: 'unknown' as const,
+        correlationRef: null,
+        reason: 'deep link payload rejected: expected a string field',
+        pairingAuthorityOwnedBy: '#3080' as const,
+        credentialStored: false as const,
+        sessionMinted: false as const,
+        pairingCodeTransferred: false as const,
+        pairingCodePersisted: false as const,
+        pairingCodeRendererDiagnostic: false as const,
+      });
+    }
+    try {
+      const parsed = parsePairingDeepLink(typed.deepLink);
+      this.#pairingSeamAccepted = true;
+      this.#transition('PAIRING', 'pairing_seam_accepted', 'padiem:// deep link accepted by the shell seam');
+      // #3095: the bounded code is consumed here, in the main process, and is
+      // never returned to the renderer. Only the boolean fact is reported.
+      const pairingCode = takePairingCodeTransfer(parsed);
+      let pairingCodeTransferred = false;
+      if (pairingCode !== null) {
+        const marker = pairingHandoffConsumedMarker(pairingCode);
+        if (this.#consumedPairingHandoffs.has(marker)) {
+          // A spent handoff is never re-armed: replaying the deep link must not
+          // hand the runner the same one-time pairing code again. Reuses the
+          // existing rejection trigger so no new lifecycle trigger is invented.
+          this.#transition(
+            'PAIRING',
+            'pairing_seam_rejected',
+            'padiem:// pairing handoff replay rejected by the shell seam',
+          );
+        } else {
+          this.#lastPairingHandoff = {
+            pairingCode,
+            correlationRef: parsed.correlationRef,
+            // #3140: the server-owned challenge travels with the code so the
+            // resident redeems that challenge at the one configured broker.
+            challengeId: parsed.challengeId,
+          };
+          pairingCodeTransferred = true;
+        }
+      }
+      return Object.freeze({
+        accepted: true,
+        kind: parsed.kind,
+        correlationRef: parsed.correlationRef,
+        reason: `pairing seam accepted; canonical pairing is owned by #3080 (params: ${parsed.paramNames.join(',') || 'none'})`,
+        pairingAuthorityOwnedBy: '#3080' as const,
+        credentialStored: false as const,
+        sessionMinted: false as const,
+        pairingCodeTransferred,
+        pairingCodePersisted: false as const,
+        pairingCodeRendererDiagnostic: false as const,
+      });
+    } catch (error) {
+      this.#transition('NOT_PAIRED', 'pairing_seam_rejected', 'padiem:// deep link rejected by the shell seam');
+      return Object.freeze({
+        accepted: false,
+        kind: 'unknown' as const,
+        correlationRef: null,
+        reason: error instanceof Error ? error.message : String(error),
+        pairingAuthorityOwnedBy: '#3080' as const,
+        credentialStored: false as const,
+        sessionMinted: false as const,
+        pairingCodeTransferred: false as const,
+        pairingCodePersisted: false as const,
+        pairingCodeRendererDiagnostic: false as const,
+      });
+    }
+  }
+
+  /**
+   * #3095: take the single bounded pairing handoff for the trusted runner.
+   *
+   * The handoff is consumed exactly once and the stored reference is dropped
+   * immediately, so a replayed deep link cannot reuse an already-taken code.
+   * Nothing here logs, persists, or projects the value to the renderer.
+   */
+  takePairingHandoffForRunner(): {
+    pairingCode: string;
+    correlationRef: string;
+    challengeId: string;
+  } | null {
+    const handoff = this.#lastPairingHandoff;
+    this.#lastPairingHandoff = null;
+    if (handoff === null) {
+      return null;
+    }
+    // Mark the handoff spent. Only a non-reversible marker is retained, and the
+    // ledger is bounded so a long-lived session cannot grow it without limit.
+    this.#consumedPairingHandoffs.add(pairingHandoffConsumedMarker(handoff.pairingCode));
+    if (this.#consumedPairingHandoffs.size > PAIRING_HANDOFF_LEDGER_LIMIT) {
+      const oldest = this.#consumedPairingHandoffs.values().next();
+      if (!oldest.done) this.#consumedPairingHandoffs.delete(oldest.value);
+    }
+    return handoff;
+  }
+
+  /**
+   * #3140 — the first phase of a two-phase handoff.
+   *
+   * Returns the pending handoff WITHOUT consuming it and WITHOUT marking it
+   * spent, so a delivery that fails leaves the one-time code still armed. The
+   * previous single-shot `takePairingHandoffForRunner()` burned the handoff
+   * before the write was known to have succeeded, which made a transient
+   * failure unrecoverable: the one-time code was gone and never re-offered.
+   *
+   * #3080's canonical broker single-use remains the ultimate replay authority.
+   * This ledger only stops the shell from re-offering a handoff it already
+   * handed over, and it is still bounded and marker-only.
+   */
+  peekPairingHandoffForRunner(): {
+    pairingCode: string;
+    correlationRef: string;
+    challengeId: string;
+  } | null {
+    const handoff = this.#lastPairingHandoff;
+    if (handoff === null) {
+      return null;
+    }
+    return {
+      pairingCode: handoff.pairingCode,
+      correlationRef: handoff.correlationRef,
+      challengeId: handoff.challengeId,
+    };
+  }
+
+  /**
+   * #3140 — the second phase: commit a delivery that is known to have
+   * succeeded. This is the existing one-shot behaviour, now reached only
+   * after the destination acknowledged the envelope.
+   */
+  commitPairingHandoffDelivery(): {
+    pairingCode: string;
+    correlationRef: string;
+    challengeId: string;
+  } | null {
+    return this.takePairingHandoffForRunner();
+  }
+
+  getBoundedLog(request: unknown): BoundedLogResponse {
+    const typed = (request ?? {}) as BoundedLogRequest;
+    const maxLines =
+      typeof typed.maxLines === 'number' ? typed.maxLines : undefined;
+    return projectBoundedLog(this.#boundedLogLines(), maxLines);
+  }
+
+  async workspaceChooseRoot(): Promise<WorkspaceRootResponse> {
+    if (this.#workspace === null) {
+      return Object.freeze({
+        selected: false,
+        rootName: null,
+        rootPath: null,
+        reason: 'current' as const,
+      });
+    }
+    return this.#workspace.chooseRoot();
+  }
+
+  async workspaceList(request: unknown): Promise<WorkspaceListResponse> {
+    if (this.#workspace === null) {
+      return Object.freeze({
+        ok: false,
+        root: Object.freeze({
+          selected: false,
+          rootName: null,
+          rootPath: null,
+          reason: 'current' as const,
+        }),
+        directory: '',
+        entries: Object.freeze([]),
+        truncated: false,
+        maxEntries: 200,
+        errorCode: 'root_not_selected' as const,
+      });
+    }
+    return this.#workspace.listDirectory(request);
+  }
+
+  workspaceClearRoot(): WorkspaceRootResponse {
+    if (this.#workspace === null) {
+      return Object.freeze({
+        selected: false,
+        rootName: null,
+        rootPath: null,
+        reason: 'cleared' as const,
+      });
+    }
+    return this.#workspace.clearRoot();
+  }
+
+  /** #3583 — bounded workspace file search; fails closed without a controller. */
+  async workspaceSearch(request: unknown): Promise<WorkspaceSearchResponse> {
+    if (this.#workspace === null) {
+      return Object.freeze({
+        ok: false,
+        root: Object.freeze({
+          selected: false,
+          rootName: null,
+          rootPath: null,
+          reason: 'current' as const,
+        }),
+        query: '',
+        matches: Object.freeze([]),
+        truncated: false,
+        scannedEntries: 0,
+        maxResults: 50,
+        errorCode: 'root_not_selected' as const,
+      });
+    }
+    return this.#workspace.search(request);
+  }
+
+  /** #3436 B2b — canonical conversation list projection. */
+  async conversationList(): Promise<CanonicalConversationListResponse> {
+    return this.#conversations.listConversations();
+  }
+
+  /** #3436 B2b — one canonical conversation, read-only. */
+  async conversationRead(request: unknown): Promise<CanonicalConversationReadResponse> {
+    return this.#conversations.readConversation(request);
+  }
+
+  /** #3436 B3a — canonical run list projection, read-only. */
+  async runList(): Promise<CanonicalRunListResponse> {
+    return this.#runs.listRuns();
+  }
+
+  /** #3436 B3a — one canonical run, read-only. */
+  async runRead(request: unknown): Promise<CanonicalRunReadResponse> {
+    return this.#runs.readRun(request);
+  }
+
+  /** Electron shutdown path: the runner must not outlive the app. */
+  async shutdown(): Promise<void> {
+    await this.#supervisor.shutdown();
+    this.#applyRunnerState('STOPPED');
+  }
+
+  #applyRunnerState(state: string): void {
+    if (state === 'RUNNING') {
+      if (this.#device.state === 'ONLINE') {
+        this.#presenceNote = 'runner healthy and device presence confirmed by the shell projection';
+        return;
+      }
+      // A locally healthy runner is never proof that this device is paired or
+      // reachable from Padiem Cloud. Until #3080 supplies the canonical server
+      // projection, preserve the current non-ONLINE presentation state.
+      this.#presenceNote =
+        `headless runner is running locally, but device state remains ${this.#device.state}: canonical ONLINE presence is owned by #3080`;
+      return;
+    }
+    this.#presenceNote =
+      this.#device.state === 'ONLINE'
+        ? `headless runner is ${state}; device presence is no longer confirmed`
+        : `headless runner is ${state}`;
+    if (this.#device.state === 'ONLINE') {
+      this.#transition('OFFLINE', 'runner_unhealthy', `headless runner state: ${state}`);
+    }
+  }
+
+  #transition(
+    to: DeviceLifecycleState,
+    trigger: Parameters<typeof projectDeviceLifecycle>[1],
+    reason: string,
+  ): void {
+    if (!DEVICE_LIFECYCLE_STATES.includes(to)) {
+      throw new IpcContractError(`refusing to project unknown device state: ${to}`);
+    }
+    try {
+      this.#device = projectDeviceLifecycle(this.#device, trigger, to, reason);
+    } catch {
+      // Fail closed: an illegal presentation edge is simply not projected.
+    }
+  }
+}
+
+function isRendererShellRequest(request: unknown): request is RunnerStartRequest {
+  return (
+    typeof request === 'object' &&
+    request !== null &&
+    (request as RunnerStartRequest).requestedBy === 'renderer-shell'
+  );
+}
+
+export const SHELL_CONTROLLER_CHANNELS = IPC_CHANNELS;

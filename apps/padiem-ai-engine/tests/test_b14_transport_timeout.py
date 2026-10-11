@@ -75,9 +75,9 @@ class _Env:
 # Config default + env wiring
 # ---------------------------------------------------------------------------
 
-def test_default_b14_timeout_is_50_seconds(worker: Any) -> None:
-    assert worker.B14_TIMEOUT_DEFAULT_SECONDS == 50.0
-    assert worker._b14_timeout_seconds_for_env(_Env()) == 50.0
+def test_default_b14_timeout_is_600_seconds(worker: Any) -> None:
+    assert worker.B14_TIMEOUT_DEFAULT_SECONDS == 600.0
+    assert worker._b14_timeout_seconds_for_env(_Env()) == 600.0
 
 
 def test_b14_timeout_is_env_tunable(worker: Any) -> None:
@@ -86,7 +86,7 @@ def test_b14_timeout_is_env_tunable(worker: Any) -> None:
     # blank/whitespace falls back to the default, never 0
     assert worker._b14_timeout_seconds_for_env(
         _Env(PADIEM_ENGINE_B14_TIMEOUT_SECONDS="  ")
-    ) == 50.0
+    ) == 600.0
 
 
 def test_both_worker_compositions_pass_timeout_to_config() -> None:
@@ -112,9 +112,9 @@ def test_core_bound_still_enforced() -> None:
         base_url="https://b14.internal", timeout_seconds=50.0
     )
     assert config.timeout_seconds == 50.0
-    with pytest.raises(ValueError, match="between 1 and 60"):
-        B14ExecutionConfig(base_url="https://b14.internal", timeout_seconds=61)
-    with pytest.raises(ValueError, match="between 1 and 60"):
+    with pytest.raises(ValueError, match="between 1 and 3600"):
+        B14ExecutionConfig(base_url="https://b14.internal", timeout_seconds=3601)
+    with pytest.raises(ValueError, match="between 1 and 3600"):
         B14ExecutionConfig(base_url="https://b14.internal", timeout_seconds=0.5)
 
 
@@ -165,7 +165,6 @@ def test_transport_receives_configured_timeout(worker: Any) -> None:
 
     assert result.answer == "ok"
     assert transport.captured is not None
-    # read timeout carries the full 50s budget; connect/write/pool stay at the
-    # Core-capped 10s phase limits.
-    assert transport.captured["read"] == 50.0
-    assert transport.captured["connect"] == 10.0
+    # model read is an idle budget; connect/write/pool remain bounded phases.
+    assert transport.captured["read"] == 600.0
+    assert transport.captured["connect"] == 30.0

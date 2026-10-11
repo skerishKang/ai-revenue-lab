@@ -115,7 +115,7 @@ def make_authorization(compiled, **overrides):
     return ToolAuthorizationContext(**values)
 
 
-def make_tool_runtime(*, approval_policy=ApprovalPolicy.NOT_REQUIRED):
+def make_tool_runtime(*, approval_policy=ApprovalPolicy.NOT_REQUIRED, auth_scope=()):
     runtime = ToolRuntime()
     side_effect = (
         ToolSideEffect.READ
@@ -130,6 +130,7 @@ def make_tool_runtime(*, approval_policy=ApprovalPolicy.NOT_REQUIRED):
             owner="core",
             side_effect=side_effect,
             approval_policy=approval_policy,
+            auth_scope=auth_scope,
             input_schema={
                 "type": "object",
                 "properties": {"query": {"type": "string"}},
@@ -255,6 +256,66 @@ def test_agent_runtime_converts_explicit_tool_approval_block_into_pause() -> Non
     assert public["approval_pause"]["pause_id"].startswith("pause:")
     assert "sensitive" not in str(public)
 
+
+
+def test_p01_approval_pause_scope_is_from_registered_tool_not_model_arguments() -> None:
+    definition = make_definition()
+    compiled = compile_definition(definition)
+    scopes = ("filesystem.read",)
+    runtime = make_tool_runtime(
+        approval_policy=ApprovalPolicy.USER_CONFIRMATION,
+        auth_scope=scopes,
+    )
+    invocation = ToolInvocation(
+        tool_id="tool.lookup",
+        arguments={"query": "quote.xlsx"},
+    )
+    agent = BoundedAgentRuntime(
+        step_driver=SequenceDriver(AgentStepDecision.use_tool(invocation)),
+        tool_runtime=runtime,
+        id_factory=lambda: "only",
+    )
+    result = asyncio.run(agent.run(AgentRunRequest(
+        definition=definition,
+        compiled_profile=compiled,
+        authorization=make_authorization(
+            compiled, granted_auth_scopes=scopes,
+        ),
+        input_text="Explicit selected-file confirmation.",
+        run_id="run.exact.office",
+    )))
+    assert result.terminal_reason is AgentTerminalReason.APPROVAL_REQUIRED
+    assert result.approval_pause is not None
+    assert result.approval_pause.run_id == "run.exact.office"
+    assert result.approval_pause.approval_scope == scopes
+    assert result.approval_pause.invocation_sha256
+    # Only the canonical approval object carries the scope. Agent public results
+    # intentionally do not grant or expose additional authorization material.
+    assert result.approval_pause.to_public_dict()["approval_scope"] == list(scopes)
+    assert runtime.registered_approval_scopes("tool.not.registered") == ()
+
+
+def test_ungranted_scope_cannot_be_promoted_to_user_approval_pause() -> None:
+    definition = make_definition()
+    compiled = compile_definition(definition)
+    runtime = make_tool_runtime(
+        approval_policy=ApprovalPolicy.USER_CONFIRMATION,
+        auth_scope=("filesystem.read",),
+    )
+    agent = BoundedAgentRuntime(
+        step_driver=SequenceDriver(AgentStepDecision.use_tool(
+            ToolInvocation(tool_id="tool.lookup", arguments={"query": "quote.xlsx"})
+        )),
+        tool_runtime=runtime,
+    )
+    result = asyncio.run(agent.run(AgentRunRequest(
+        definition=definition, compiled_profile=compiled,
+        authorization=make_authorization(compiled),
+        input_text="No file scopes.", run_id="run.denied.office",
+    )))
+    assert result.terminal_reason is AgentTerminalReason.AUTHORIZATION_DENIED
+    assert result.approval_pause is None
+    assert result.tool_events[-1].status is RunStatus.POLICY_BLOCKED
 
 def test_agent_runtime_treats_non_approval_policy_block_as_authorization_denied() -> None:
     definition = make_definition(allowed_tool_ids=())

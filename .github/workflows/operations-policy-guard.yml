@@ -6,7 +6,8 @@ name: Operations Policy Guard
 #
 # This workflow proves only what it executes:
 #   1. the operating-policy consistency tests pass (blocking);
-#   2. the pull request body carries the contract fields the review chain
+#   2. security-sensitive repository operations contracts stay fail-closed;
+#   3. the pull request body carries the contract fields the review chain
 #      depends on (report by default; blocking only when `enforce` is set).
 #
 # It does not review a change, does not assign a CTO readiness verdict and does
@@ -48,20 +49,51 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install pytest
-        run: python -m pip install --disable-pip-version-check 'pytest>=8,<10'
+      - name: Install test dependencies
+        run: python -m pip install --disable-pip-version-check 'pytest>=8,<10' 'PyYAML>=6,<7'
 
+      # Existing documentation authority contract explicitly pins this exact
+      # command as an all-PR, standalone collector. Keep it independent.
       - name: Run operating policy consistency tests
         run: python -m pytest -q docs/operations/tests
 
-      - name: Run pull request contract guard tests
-        run: python -m pytest -q .github/tests/test_pr_contract_guard.py
+      # Direct scripts remain standalone blocking gates (no pytest dependency).
+      - name: Run cross-lane test dependency guard
+        run: python .github/scripts/cross_lane_test_dependency_guard.py
+
+      - name: Run frozen-source checkout-byte guard
+        run: python .github/scripts/frozen_source_checkout_byte_guard.py
+
+      # Existing Engine/LL ownership contract pins this exact invocation.
+      - name: Run Engine/Living Learning CI ownership tests
+        run: python -m pytest -q .github/tests/test_3989_engine_living_learning_ci_scope.py
+
+      # #3989: consolidate the seven other pytest invocations into one.
+      # All exact original suite paths remain; any failure blocks the job.
+      # Stable required check names and reporting job remain untouched.
+      - name: Run remaining policy and security contract tests
+        run: |
+          python -m pytest -q \
+            .github/tests/test_pr_contract_guard.py \
+            .github/tests/test_r2_credential_authority_split.py \
+            .github/tests/test_b62_pr_preview_trigger_scope.py \
+            .github/tests/test_b62_worker_deploy_trigger_scope.py \
+            .github/tests/test_cross_lane_test_dependency_guard.py \
+            .github/tests/test_frozen_source_checkout_byte_guard.py \
+            .github/tests/test_verify_import_origin.py \
+            tools/b66_generic/tests/test_b66_generic_archive_bounds.py \
+            .github/tests/test_3989_operations_guard_pytest_batch.py
 
       - name: Record guard scope
         run: |
           echo 'OPERATIONS_POLICY_GUARD=PASSED'
           echo 'GUARD_REVIEWS_THE_CHANGE=NO'
           echo 'GUARD_ASSIGNS_CTO_READINESS=NO'
+          echo 'FILE_OVERLAP_GUARD=ADVISORY_ONLY'
+          echo 'CROSS_LANE_DEPENDENCY_GUARD=ENFORCED'
+          echo 'FROZEN_SOURCE_PIN_GUARD=ENFORCED'
+          echo 'IMPORT_ORIGIN_PREFLIGHT=ENFORCED_IN_CORE_CONFTEST'
+          echo 'BOUNDED_ARCHIVE_CONTRACT_B66_GENERIC=ENFORCED'
           echo 'PRODUCTION_MUTATION=NO'
 
   pr-contract:
@@ -69,10 +101,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      # #3989: reporting is a single stdlib-only Python script. The always-on
+      # blocking policy-consistency job still checks out the complete tree.
+      # Keep exact reviewed SHA, job/status name, permissions and report mode.
       - name: Check out reviewed revision
         uses: actions/checkout@v4
         with:
           persist-credentials: false
+          sparse-checkout: |
+            .github/scripts/pr_contract_guard.py
+          sparse-checkout-cone-mode: false
 
       - name: Set up Python
         uses: actions/setup-python@v5

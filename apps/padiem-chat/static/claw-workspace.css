@@ -1,7 +1,7 @@
-/* claw-workspace.css — Padiem Claw first-class workspace surface (#2114 ACT-1).
- * Replaces the #clawDialog modal-as-primary pattern with an architecture-native
- * data-state="claw" canvas inside the existing shell. Natural-language input is
- * the hero; actions are optional override chips; results render as a compact card.
+/* claw-workspace.css — Padiem Claw workspace canvas (#2114 ACT-1, #2532 continuity).
+ * data-state="claw" owns the content column, but the shared bottom composer stays
+ * visible: #messageInput is the Claw request input and #clawManualForm is a compact
+ * mode bar above it. Chat and Claw share one visual language.
  */
 
 /* ── Shell state visibility ───────────────────────────────────────────── */
@@ -10,18 +10,91 @@
 }
 .app-shell[data-state="claw"] .claw-workspace {
   display: flex;
+  /* Keep the workspace above the fixed portrait layer (padiem-glass-portrait.css). */
+  position: relative;
+  z-index: 2;
 }
-.app-shell[data-state="claw"] .conversation,
-.app-shell[data-state="claw"] .composer-wrap {
+/* #2532 corrective pass (R1): manual Claw keeps the shared conversation column
+ * visible so request → result reads as one continuous Chat interaction. Only the
+ * generic Chat empty-state is replaced; the inbox stays a dedicated workspace view
+ * (hidden conversation), while result / memory / approved-memory render inline. */
+.app-shell[data-state="claw"] .conversation {
+  display: block;
+  /* The Claw result/forms live in this shared column while the composer is
+   * fixed. Own the long manual surface here instead of letting the column
+   * expand below the viewport and hide the composer clearance. */
+  min-height: 0;
+  /* Theme breathing margins can move this surface below the 66px topbar;
+   * reserve a stable 96px so the scroll viewport never extends behind the
+   * bottom edge or the fixed composer across tablet/mobile/desktop. */
+  max-height: calc(100vh - 96px);
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  padding-bottom: 280px;
+}
+.app-shell[data-state="claw"] .conversation .empty-state {
+  display: none;
+}
+.app-shell[data-state="claw"] .claw-workspace[data-view="manual"] {
+  display: none;
+}
+/* #3531: the general view hides the workspace canvas like the manual view
+ * does, so the conversation keeps its exact home geometry (the parity
+ * contract tolerates no pushed-down thread). The manual entry control
+ * lives in the fixed composer wrap instead. */
+.app-shell[data-state="claw"] .claw-workspace[data-view="general"] {
+  display: none;
+}
+/* #3531: the general view keeps the conversation (primary result surface)
+ * visible alongside the slim workspace header. Only inbox/automation take
+ * over the canvas and hide the conversation. */
+.app-shell[data-state="claw"] .claw-workspace:not([data-view="manual"]):not([data-view="general"]) ~ .conversation {
+  display: none !important;
+}
+/* #3531: document-workflow chrome (mode chip, workflow help, manual entry
+ * is the inverse) appears only in its own view. The general view shows the
+ * generalized tagline plus the explicit manual-entry control. */
+.app-shell[data-state="claw"] .claw-workspace:not([data-view="manual"]) .claw-workspace-chip,
+.app-shell[data-state="claw"] .claw-workspace:not([data-view="manual"]) .claw-workspace-help {
+  display: none;
+}
+.claw-entry-bar {
+  display: flex;
+  justify-content: center;
+  padding: 0 0 10px;
+}
+.claw-entry-bar[hidden] {
+  display: none;
+}
+/* #3531: the manual result empty/hint copy belongs to the workflow view.
+ * The result card and memory surfaces keep their own explicit reveal logic
+ * and are unaffected by this rule. */
+.app-shell[data-state="claw"] .claw-workspace:not([data-view="manual"]) ~ .conversation #clawResultEmpty,
+.app-shell[data-state="claw"] .claw-workspace:not([data-view="manual"]) ~ .conversation #clawResultHint,
+.app-shell[data-state="claw"] .claw-workspace:not([data-view="manual"]) ~ .conversation #clawExecuteHint {
+  display: none;
+}
+/* Claw-only nodes now live inside the shared conversation column: hide them
+ * whenever the shell is not in the Claw state. */
+.app-shell:not([data-state="claw"]) .claw-result,
+.app-shell:not([data-state="claw"]) .claw-memory-review,
+.app-shell:not([data-state="claw"]) .claw-approved-memory,
+.app-shell:not([data-state="claw"]) .claw-run-history,
+.app-shell:not([data-state="claw"]) .claw-request-echo,
+.app-shell:not([data-state="claw"]) .claw-retry,
+.app-shell:not([data-state="claw"]) .claw-wait,
+.app-shell:not([data-state="claw"]) .claw-recovery-hint,
+.app-shell:not([data-state="claw"]) .claw-disabled-controls {
   display: none !important;
 }
 
 /* ── Workspace layout ─────────────────────────────────────────────────── */
 .claw-workspace {
   flex: 1;
-  width: min(760px, calc(100% - 40px));
+  width: min(800px, calc(100% - 40px));
   margin: 0 auto;
-  padding: clamp(20px, 5vh, 48px) 0 96px;
+  /* Room for the fixed composer + Claw mode bar (#2532). */
+  padding: clamp(20px, 5vh, 48px) 0 280px;
   flex-direction: column;
   gap: 18px;
   overflow-y: auto;
@@ -37,15 +110,16 @@
 .claw-workspace-kicker {
   margin: 0 0 4px;
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  color: var(--accent, #2f6f99);
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  color: var(--accent);
 }
 .claw-workspace-title {
   margin: 0;
-  font-size: clamp(22px, 4vw, 30px);
-  font-weight: 800;
-  color: var(--ink, #111a22);
+  font-size: clamp(26px, 4vw, 34px);
+  font-weight: 770;
+  letter-spacing: -0.045em;
+  color: var(--text);
 }
 .claw-workspace-chip {
   margin: 4px 0 0;
@@ -54,49 +128,82 @@
   border-radius: 999px;
   font-size: 12px;
   font-weight: 650;
-  color: var(--text-muted, #5b6672);
-  background: rgba(121, 188, 231, 0.16);
-  border: 1px solid rgba(121, 188, 231, 0.28);
+  color: var(--text);
+  background: var(--accent-soft);
+  border: 1px solid var(--line);
 }
 .claw-workspace-tagline {
   margin: -6px 0 0;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.5;
-  color: var(--text-muted, #5b6672);
+  color: var(--muted);
 }
 
-/* ── Intake (hero) ────────────────────────────────────────────────────── */
-.claw-intake {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.claw-intake-hero {
+/* ── Composer mode bar (#2532: intake lives above the shared composer) ─── */
+.claw-mode-bar {
   display: grid;
   gap: 8px;
-}
-.claw-intake-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-muted, #5b6672);
-}
-.claw-intake-hero textarea {
-  width: 100%;
-  box-sizing: border-box;
-  min-height: 148px;
-  padding: 16px;
-  border: 1px solid var(--line, rgba(73, 86, 98, 0.22));
+  margin: 0 0 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
   border-radius: 16px;
-  background: var(--card-bg, #fff);
-  color: var(--ink, #111a22);
-  font-family: inherit;
-  font-size: 16px; /* >=16px: prevents iOS focus auto-zoom */
-  line-height: 1.55;
-  resize: vertical;
+  background: var(--card-bg);
+  box-shadow: var(--shadow);
+  box-sizing: border-box;
 }
-.claw-intake-hero textarea:focus {
-  outline: 2px solid var(--accent, #2f6f99);
-  outline-offset: 1px;
+.claw-mode-bar[hidden] {
+  display: none;
+}
+.claw-mode-bar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.claw-mode-bar .claw-actions {
+  flex-wrap: nowrap;
+}
+.claw-mode-bar .claw-generate-button,
+.claw-mode-bar .claw-execute-button {
+  min-height: 48px;
+  flex: 0 0 auto;
+  padding: 8px 18px;
+  font-size: 14px;
+}
+.claw-mode-bar .claw-actions-hint {
+  margin: 0;
+}
+.claw-mode-bar .claw-meta {
+  background: transparent;
+}
+/* The composer is the Claw request input: keep >=16px to prevent iOS focus zoom. */
+.claw-model-choice { display: none; }
+.app-shell[data-state="claw"] .claw-model-choice {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 4px 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.app-shell[data-state="claw"] .claw-model-choice input {
+  width: 100%;
+  min-height: 34px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+.app-shell[data-state="claw"] .claw-model-choice small { font-size: 11px; }
+.app-shell[data-state="claw"] .composer textarea {
+  font-size: 16px;
+}
+.app-shell[data-state="claw"] .composer-tools,
+.app-shell[data-state="claw"] .composer-note {
+  display: none;
 }
 
 /* ── Optional override chips ──────────────────────────────────────────── */
@@ -109,25 +216,25 @@
   min-height: 44px; /* touch target */
   padding: 0 16px;
   border-radius: 999px;
-  border: 1px solid var(--line, rgba(73, 86, 98, 0.22));
-  background: var(--card-bg, #fff);
-  color: var(--ink, #111a22);
+  border: 1px solid var(--line);
+  background: var(--card-bg);
+  color: var(--text);
   font: inherit;
   font-size: 14px;
   font-weight: 650;
   cursor: pointer;
 }
 .claw-chip[aria-pressed="true"] {
-  background: var(--accent, #2f6f99);
-  border-color: var(--accent, #2f6f99);
-  color: #fff;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
 }
 
 /* ── Collapsed source/counterparty disclosure ─────────────────────────── */
 .claw-meta {
-  border: 1px solid var(--line, rgba(73, 86, 98, 0.18));
+  border: 1px solid var(--line);
   border-radius: 14px;
-  background: var(--card-bg, rgba(148, 163, 184, 0.06));
+  background: var(--card-bg);
   padding: 0 14px;
 }
 .claw-meta > summary {
@@ -137,7 +244,7 @@
   cursor: pointer;
   font-size: 14px;
   font-weight: 650;
-  color: var(--text-muted, #5b6672);
+  color: var(--muted);
   list-style: none;
 }
 .claw-meta > summary::-webkit-details-marker {
@@ -175,9 +282,215 @@
   font-weight: 750;
   font-size: 16px;
   cursor: pointer;
-  color: #07111f;
-  background: linear-gradient(135deg, #f8fafc, #c7d2fe);
+  color: var(--accent-contrast);
+  background: var(--accent);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.14);
+}
+
+.claw-execute-button {
+  min-height: 48px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 12px 22px;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--text);
+  background: transparent;
+}
+
+.claw-execute-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.claw-workspace-help {
+  margin: -8px 0 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--accent-soft);
+  border: 1px solid var(--line);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.claw-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.claw-actions .claw-generate-button,
+.claw-actions .claw-execute-button {
+  flex: 1 1 160px;
+}
+.claw-actions-hint {
+  margin: -6px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.claw-result-hint,
+.claw-execute-hint {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text);
+}
+.claw-result-hint {
+  padding: 0 2px;
+}
+.claw-execute-hint {
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+}
+
+.claw-artifact-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  border: 1px solid var(--line);
+  font-size: 13px;
+}
+.claw-artifact-name {
+  font-weight: 700;
+  color: var(--text);
+  word-break: break-all;
+}
+.claw-artifact-size {
+  margin-left: auto;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.claw-result-success-note {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--success-surface);
+  border: 1px solid var(--success-border);
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--success);
+}
+.claw-status {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.claw-status[data-state="running"] {
+  background: var(--accent-soft);
+  border: 1px solid var(--line);
+  color: var(--text);
+}
+.claw-status[data-state="success"] {
+  background: var(--success-surface);
+  border: 1px solid var(--success-border);
+  color: var(--success);
+}
+.claw-status[data-state="error"] {
+  background: var(--danger-surface);
+  border: 1px solid var(--danger-border);
+  color: var(--danger);
+}
+
+/* ── #2763 in-flight elapsed wait: truthful local wait state only ──────── */
+/* Elapsed time only: no bar and no completion estimate exist here because the
+ * server exposes no such truth, so this stays a plain text readout. */
+.claw-wait {
+  margin: 0;
+  justify-self: start;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--accent-soft);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── #2760 execute recovery: pre-dispatch cooldown + ambiguous-failure hint ── */
+.claw-recovery-hint {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--accent-soft);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.claw-retry {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--card-bg);
+}
+.claw-retry-copy {
+  flex: 1 1 220px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text);
+}
+.claw-retry-button {
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 10px 18px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--text);
+  background: transparent;
+}
+.claw-retry-button:not(:disabled) {
+  color: var(--accent-contrast);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.claw-retry-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.claw-retry-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+@media (max-width: 920px) {
+  .claw-retry { align-items: stretch; flex-direction: column; }
+  .claw-retry-button { width: 100%; justify-content: center; }
+}
+.claw-result[data-claw-state="error"] .claw-result-empty {
+  border-color: rgba(220, 62, 62, 0.22);
+  background: rgba(220, 62, 62, 0.04);
+}
+
+.claw-result-action:not(:disabled) {
+  cursor: pointer;
+}
+.claw-result-action:not(:disabled).is-prominent {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+  box-shadow: var(--shadow);
 }
 
 /* ── Result card ──────────────────────────────────────────────────────── */
@@ -185,23 +498,44 @@
   display: grid;
   gap: 10px;
 }
+/* #2532 (R2): the request echo + result render inline in the shared
+ * conversation column, so manual Claw reads as one continuous Chat thread. */
+.conversation .claw-request-echo {
+  /* Mirror the .user-message layout (right-aligned bubble) without reusing that
+   * class, which the shared gutter QA selects strictly. */
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 0 6px;
+}
+.conversation .claw-result {
+  margin-top: 4px;
+}
+.conversation .claw-memory-review {
+  margin-top: 8px;
+}
+.conversation .claw-approved-memory {
+  margin-top: 12px;
+}
+.conversation .claw-disabled-controls {
+  margin-top: 16px;
+}
 .claw-result-empty {
   margin: 0;
   padding: 16px;
-  border: 1px dashed var(--line, rgba(73, 86, 98, 0.24));
+  border: 1px dashed var(--line);
   border-radius: 14px;
   font-size: 14px;
-  color: var(--text-muted, #5b6672);
+  color: var(--text);
   text-align: center;
 }
 .claw-result-card {
   display: grid;
   gap: 12px;
   padding: 16px;
-  border: 1px solid var(--line, rgba(73, 86, 98, 0.2));
+  border: 1px solid var(--line);
   border-radius: 16px;
-  background: var(--card-bg, #fff);
-  box-shadow: 0 8px 26px rgba(20, 29, 38, 0.08);
+  background: var(--card-bg);
+  box-shadow: var(--shadow);
 }
 .claw-result-card-head {
   display: flex;
@@ -211,7 +545,7 @@
 .claw-result-kind {
   font-size: 16px;
   font-weight: 800;
-  color: var(--ink, #111a22);
+  color: var(--text);
 }
 .claw-result-badge {
   margin-left: auto;
@@ -220,19 +554,23 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  color: var(--text-muted, #5b6672);
-  background: rgba(121, 188, 231, 0.18);
+  color: var(--text);
+  background: var(--accent-soft);
 }
 .claw-result-body {
   margin: 0;
   white-space: pre-wrap;
   word-break: break-word;
   font-family: inherit;
-  font-size: 15px;
+  font-size: 16px; /* parity with chat .assistant-content */
   line-height: 1.6;
-  color: var(--ink, #111a22);
+  color: var(--text);
   max-height: 320px;
   overflow: auto;
+}
+.claw-result-body:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 .claw-result-actions {
   display: flex;
@@ -246,9 +584,9 @@
   gap: 8px;
   padding: 0 16px;
   border-radius: 12px;
-  border: 1px solid var(--line, rgba(73, 86, 98, 0.22));
-  background: var(--card-bg, #fff);
-  color: var(--ink, #111a22);
+  border: 1px solid var(--line);
+  background: var(--card-bg);
+  color: var(--text);
   font: inherit;
   font-size: 14px;
   font-weight: 650;
@@ -260,86 +598,730 @@
 .claw-result-note {
   margin: 0;
   font-size: 12px;
-  color: var(--text-muted, #5b6672);
+  color: var(--text);
 }
 
-/* ── Honest "coming soon" group ───────────────────────────────────────── */
+/* ── Honest "coming soon" group — collapsed disclosure (#2532 R3) ──────── */
 .claw-disabled-controls {
+  display: block;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card-bg);
+}
+.claw-disabled-summary {
+  cursor: pointer;
+  padding: 12px 14px;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--muted);
+  list-style: none;
+}
+.claw-disabled-summary::-webkit-details-marker {
+  display: none;
+}
+.claw-disabled-summary::before {
+  content: "▸ ";
+  color: var(--muted);
+}
+.claw-disabled-controls[open] .claw-disabled-summary::before {
+  content: "▾ ";
+}
+.claw-disabled-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
+  padding: 0 12px 12px;
 }
 .claw-disabled-control {
   text-align: left;
-  border: 1px solid var(--line, rgba(148, 163, 184, 0.16));
+  border: 1px solid var(--line);
   border-radius: 12px;
   padding: 12px;
-  background: var(--card-bg, rgba(148, 163, 184, 0.08));
-  color: var(--text-muted, #94a3b8);
+  background: var(--card-bg);
+  color: var(--muted);
   font: inherit;
   cursor: not-allowed;
-  opacity: 0.7;
 }
 .claw-disabled-control strong {
   display: block;
   font-size: 13px;
+  color: var(--text);
 }
 .claw-disabled-control small {
   display: block;
   margin-top: 4px;
   font-size: 11px;
-  opacity: 0.85;
+}
+
+/* ── Guarded buttons: clearer disabled affordance ───────────────────────── */
+.claw-generate-button:disabled,
+.claw-execute-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.claw-generate-button[aria-busy="true"],
+.claw-execute-button[aria-busy="true"] {
+  position: relative;
 }
 
 /* ── Sidebar active state: Chat vs Claw unmistakable ──────────────────── */
 #newChatButton[aria-current="page"],
 #clawNavButton[aria-current="page"] {
-  box-shadow: inset 3px 0 0 var(--accent, #2f6f99);
+  box-shadow: inset 3px 0 0 var(--accent);
 }
 #clawNavButton[aria-current="page"] {
-  background: rgba(47, 111, 153, 0.22);
-  border-color: rgba(121, 188, 231, 0.5);
+  background: var(--accent-soft);
+  border-color: var(--line);
 }
 
-/* ── Glass theme: near-solid workspace surface, hero stays secondary ──── */
-html[data-theme="padiem-glass"] .claw-workspace-title,
-html[data-theme="padiem-glass"] .claw-intake-label,
-html[data-theme="padiem-glass"] .claw-result-kind,
-html[data-theme="padiem-glass"] .claw-result-body {
-  color: #111a22;
+/* ── #3003 approval-required owner decision surface ─────────────── */
+.claw-approval-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
 }
-html[data-theme="padiem-glass"] .claw-intake-hero textarea,
-html[data-theme="padiem-glass"] .claw-chip,
-html[data-theme="padiem-glass"] .claw-result-card,
-html[data-theme="padiem-glass"] .claw-result-action {
-  background: rgba(247, 249, 251, 0.97);
-  color: #111a22;
+.claw-approval-actions[hidden] {
+  display: none;
 }
-html[data-theme="padiem-glass"] .claw-chip[aria-pressed="true"] {
-  background: #2f6f99;
-  color: #fff;
+.claw-approval-copy {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text);
+}
+.claw-approval-button {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.claw-approval-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.claw-approval-approve {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+.claw-approval-deny {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+}
+.claw-approval-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.claw-approval-status {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.claw-approval-status[data-state="error"] {
+  color: var(--danger);
+}
+.claw-run-approval-actions {
+  margin-top: 4px;
 }
 
-/* ── Mobile: single column, hero image minimized during active work ───── */
-@media (max-width: 720px) {
+/* ── Approved memory review ──────────────────────────────────── */
+.claw-memory-review {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--accent-soft);
+}
+.claw-memory-review-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+}
+.claw-memory-proposal {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card-bg);
+}
+.claw-memory-proposal-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+.claw-memory-proposal-type {
+  font-size: 12px;
+  color: var(--muted);
+}
+.claw-memory-proposal-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text);
+}
+.claw-memory-proposal-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.claw-memory-approve,
+.claw-memory-reject {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.claw-memory-approve {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+.claw-memory-reject {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+}
+.claw-memory-approve:focus-visible,
+.claw-memory-reject:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.claw-approved-memory {
+  display: grid;
+  gap: 12px;
+}
+.claw-approved-memory-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.claw-refresh-button {
+  min-height: 44px;
+  min-width: 44px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card-bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+  cursor: pointer;
+}
+.claw-refresh-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.claw-approved-loading {
+  margin: 0;
+  padding: 16px;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  font-size: 14px;
+  color: var(--muted);
+  text-align: center;
+}
+.claw-approved-error {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  display: none;
+}
+.claw-approved-error[data-state="error"] {
+  display: block;
+  background: rgba(220, 62, 62, 0.07);
+  border: 1px solid rgba(220, 62, 62, 0.16);
+  color: var(--danger);
+}
+.claw-approved-list {
+  display: grid;
+  gap: 10px;
+}
+.claw-approved-empty {
+  margin: 0;
+  padding: 16px;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  font-size: 14px;
+  color: var(--muted);
+  text-align: center;
+}
+.claw-approved-card {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card-bg);
+  box-shadow: var(--shadow);
+}
+.claw-approved-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.claw-approved-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+.claw-approved-card-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  background: var(--accent-soft);
+}
+.claw-approved-card-meta {
+  font-size: 12px;
+  color: var(--muted);
+}
+.claw-approved-card-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text);
+}
+.claw-approved-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.claw-approved-action {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--card-bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.claw-approved-action:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.claw-approved-detail {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card-bg);
+}
+.claw-approved-detail-row {
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+}
+.claw-approved-detail-label {
+  font-weight: 700;
+  color: var(--muted);
+  min-width: 80px;
+}
+.claw-approved-detail-value {
+  color: var(--text);
+  word-break: break-word;
+}
+
+/* Claw intentionally owns no theme-specific palette.
+ * Shared visual roles inherit the active Padiem Chat theme tokens above.
+ */
+
+/* ── Mobile: single column, composer mode bar stacks ───────────────────── */
+@media (max-width: 920px) {
   .claw-workspace {
     width: calc(100% - 28px);
-    padding: 16px 0 40px;
+    padding: 16px 0 260px;
     gap: 14px;
   }
   .claw-meta-fields,
-  .claw-disabled-controls {
+  .claw-disabled-grid {
     grid-template-columns: 1fr;
   }
   .claw-result-actions .claw-result-action {
     flex: 1 1 100%;
     justify-content: center;
   }
-  .claw-intake-hero textarea {
-    min-height: 132px;
+  .claw-mode-bar-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .claw-mode-bar .claw-actions {
+    flex-wrap: wrap;
+  }
+  .claw-mode-bar .claw-generate-button,
+  .claw-mode-bar .claw-execute-button {
+    flex: 1 1 140px;
   }
   /* Decorative hero must not compete with input/output on mobile. */
   html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .main-panel::before {
     opacity: 0;
   }
+}
+
+
+/* #2341 task/alert inbox */
+.claw-inbox {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--card-bg);
+  color: var(--text);
+}
+.claw-inbox-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.claw-inbox-header h3 { margin: 2px 0 0; font-size: 1.15rem; }
+.claw-inbox-help,
+.claw-inbox-status,
+.claw-inbox-empty { color: var(--muted); }
+.claw-inbox-list { display: grid; gap: 10px; margin-top: 12px; }
+.claw-inbox-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card-bg);
+}
+.claw-inbox-item-copy { display: grid; gap: 4px; min-width: 0; }
+.claw-inbox-item-copy strong {
+  overflow-wrap: anywhere;
+  color: var(--text);
+}
+.claw-inbox-item-copy span { color: var(--muted); font-size: .9rem; }
+.claw-inbox-retry,
+.claw-inbox-status-action {
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card-bg);
+  color: var(--text);
+  cursor: pointer;
+}
+.claw-inbox-retry:focus-visible,
+.claw-inbox-status-action:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+@media (max-width: 920px) {
+  .claw-inbox { padding: 14px; }
+  .claw-inbox-header,
+  .claw-inbox-item { align-items: stretch; flex-direction: column; }
+  .claw-inbox-retry,
+  .claw-inbox-status-action { width: 100%; }
+}
+
+/* #2317 recent-run presentation: renders only what the owner-scoped
+ * run-history route already returns. Shared theme roles, no Claw palette. */
+.claw-run-history {
+  display: grid;
+  gap: 12px;
+}
+.claw-run-history-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.claw-run-history-loading {
+  margin: 0;
+  padding: 16px;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  font-size: 14px;
+  color: var(--muted);
+  text-align: center;
+}
+.claw-run-history-error {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  display: none;
+}
+.claw-run-history-error[data-state="error"] {
+  display: block;
+  background: var(--danger-surface);
+  border: 1px solid var(--danger-border);
+  color: var(--danger);
+}
+.claw-run-history-list {
+  display: grid;
+  gap: 10px;
+}
+.claw-run-history-empty {
+  margin: 0;
+  padding: 16px;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  font-size: 14px;
+  color: var(--muted);
+  text-align: center;
+}
+.claw-run-card {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card-bg);
+  box-shadow: var(--shadow);
+}
+.claw-run-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.claw-run-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.claw-run-card-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  background: var(--accent-soft);
+}
+.claw-run-card-meta {
+  font-size: 12px;
+  color: var(--muted);
+}
+.claw-run-card-summary {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.claw-run-card-artifact {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+.claw-run-card-partial-note {
+  flex: 1 1 100%;
+  width: 100%;
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.claw-run-history-expand {
+  margin-top: 12px;
+  width: 100%;
+  min-height: 44px;
+}
+.claw-run-card-filename {
+  font-size: 12px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.claw-run-card-download {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--card-bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.claw-run-card-download:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+@media (max-width: 920px) {
+  .claw-run-history-header,
+  .claw-run-card-artifact { align-items: stretch; flex-direction: column; }
+  .claw-run-card-download { width: 100%; justify-content: center; }
+}
+
+/* #3257 — Web Automation Create form (reuses the calendar-record form system) */
+.claw-automation-create { margin-top: 12px; }
+.calendar-record-cancel {
+  border: 1px solid var(--border, rgba(15, 23, 42, 0.18));
+  background: transparent;
+  color: inherit;
+  border-radius: 10px;
+  padding: 10px 16px;
+  min-height: 44px;
+  font: inherit;
+  cursor: pointer;
+}
+.claw-automation-create-cron-help {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+}
+@media (max-width: 920px) {
+  .claw-automation-create .calendar-record-actions { flex-direction: column; }
+  .claw-automation-create .calendar-record-actions button { width: 100%; }
+}
+
+/* #3262 — owner-gated enable/disable control on canonical rule rows */
+.claw-automation-rule-toggle {
+  min-height: 44px;
+  min-width: 44px;
+  margin-top: 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--border, rgba(15, 23, 42, 0.18));
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.claw-automation-rule-toggle[disabled] {
+  cursor: default;
+}
+.claw-automation-rule-toggle:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+@media (max-width: 920px) {
+  .claw-automation-rule-toggle { width: 100%; }
+}
+
+/* #3270 — bounded edit control + form on canonical rule rows */
+.claw-automation-rule-edit {
+  min-height: 44px;
+  min-width: 44px;
+  margin: 8px 0 0 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--border, rgba(15, 23, 42, 0.18));
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.claw-automation-rule-edit:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+.claw-automation-edit-form {
+  margin-top: 12px;
+}
+.claw-automation-edit-title {
+  margin: 0 0 4px;
+  font-size: 14px;
+}
+@media (max-width: 920px) {
+  .claw-automation-rule-edit { width: 100%; margin: 8px 0 0 0; }
+}
+
+/* #3932 Real PDF bytes only: visible action is conditional on server receipt. */
+.claw-pdf-preview-action {
+  min-height: 40px;
+  margin-inline-start: 8px;
+  padding: 6px 12px;
+  border: 1px solid currentColor;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.claw-pdf-preview-action:focus-visible,
+.claw-pdf-preview-head button:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 2px;
+}
+.claw-pdf-preview-modal {
+  position: fixed;
+  width: min(92vw, 980px);
+  height: min(88dvh, 820px);
+  max-width: 92vw;
+  max-height: 88dvh;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  color: var(--text);
+  background: var(--card-bg);
+  overflow: hidden;
+}
+.claw-pdf-preview-modal::backdrop { background: rgba(0, 0, 0, 0.72); }
+.claw-pdf-preview-head {
+  min-height: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+}
+.claw-pdf-preview-head strong {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.claw-pdf-preview-head button {
+  min-height: 44px;
+  min-width: 60px;
+  font: inherit;
+  cursor: pointer;
+}
+.claw-pdf-preview-modal iframe {
+  display: block;
+  width: 100%;
+  height: calc(100% - 58px);
+  border: 0;
+}
+@media (max-width: 600px) {
+  .claw-pdf-preview-modal { width: 100vw; max-width: 100vw; height: 92dvh; max-height: 92dvh; border-radius: 8px; }
+  .claw-pdf-preview-head { padding: 8px; }
+}
+
+/* #3790 verified chooser coexists with optional expert exact-ID field. */
+.claw-model-advanced { display: none; }
+.app-shell[data-state="claw"] .claw-model-advanced { display: block; padding: 0 4px 5px; }
+.claw-model-advanced > summary { cursor: pointer; color: var(--muted); font-size: 12px; }
+.app-shell[data-state="claw"] .claw-model-choice select {
+  width: 100%; min-height: 40px; border: 1px solid var(--line);
+  border-radius: 9px; background: var(--bg); color: var(--text);
+  font-size: 16px; padding: 6px 10px;
 }

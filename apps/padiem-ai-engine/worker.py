@@ -23,11 +23,21 @@ from padiem_ai_core import (
 from padiem_ai_core.grounding_runtime import GroundedResearchRuntime
 from padiem_ai_core.web_runtime import WebRuntimeConfig, create_web_provider
 
+from app.agent_preview_authority import (
+    build_preview_agent_lane,
+    preview_capability_overrides,
+)
 from app.agent_skill_service import (
     AGENT_SKILL_CANCEL_PATH,
     AGENT_SKILL_RESUME_PATH,
     AGENT_SKILL_RUN_PATH,
     AgentSkillEngineService,
+)
+from app.capability_manifest import set_posture_overrides
+from app.cloudflare_request_body import (
+    RequestBodyReadError,
+    RequestBodyTooLarge,
+    read_bounded_worker_request_body,
 )
 from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
@@ -40,7 +50,12 @@ from app.idempotency_replay_service import (
     IdempotencyReplayEngineService,
 )
 from app.identity_enforcement import authenticate_request
-from app.memory_service import MEMORY_PATH, MEMORY_WRITE_PATH, MemoryRetrievalEngineService
+from app.memory_service import (
+    MAX_MEMORY_REQUEST_BODY_BYTES,
+    MEMORY_PATH,
+    MEMORY_WRITE_PATH,
+    MemoryRetrievalEngineService,
+)
 from app.orchestration_service import (
     ORCHESTRATE_CANCEL_PATH,
     ORCHESTRATE_PATH,
@@ -49,7 +64,12 @@ from app.orchestration_service import (
     OrchestrationEngineService,
     PreparedOrchestrationStream,
 )
-from app.service import EngineService, HEALTH_PATH, ServiceResponse
+from app.service import (
+    MAX_REQUEST_BODY_BYTES,
+    EngineService,
+    HEALTH_PATH,
+    ServiceResponse,
+)
 from app.service_identity import ServiceIdentityError
 from app.streaming_service import (
     NDJSON_CONTENT_TYPE,
@@ -75,9 +95,9 @@ ENGINE_WEB_TIMEOUT_SECONDS_ENV = "PADIEM_ENGINE_WEB_TIMEOUT_SECONDS"
 # #1990: the B14 transport timeout must cover B14's full retry chain
 # (#1988: 45s hard cap + ~1.5s backoff overhead). Default 50s = 45s retry
 # cap + 5s margin; the engine orchestration budget is 60s, leaving 10s.
-# Core enforces the 1-60s bound on B14ExecutionConfig.timeout_seconds.
+# Core enforces the 1-3600s bound on B14ExecutionConfig.timeout_seconds.
 ENGINE_B14_TIMEOUT_SECONDS_ENV = "PADIEM_ENGINE_B14_TIMEOUT_SECONDS"
-B14_TIMEOUT_DEFAULT_SECONDS = 50.0
+B14_TIMEOUT_DEFAULT_SECONDS = 600.0
 
 
 def _binding_value(env: Any, name: str) -> Any | None:
@@ -98,7 +118,7 @@ def _env_text(env: Any, name: str) -> str | None:
 def _b14_timeout_seconds_for_env(env: Any) -> float:
     """B14 transport timeout (seconds), env-tunable via a plain Worker var.
 
-    Default 50.0 (#1990). Values outside Core's 1-60 bound fail closed in
+    Default 600.0 (ZCode model idle parity). Values outside Core's 1-3600 bound fail closed in
     B14ExecutionConfig itself; this helper only parses, never clamps.
     """
 
@@ -229,7 +249,42 @@ def _memory_service_for_env(env: Any) -> MemoryRetrievalEngineService:
     return MemoryRetrievalEngineService(bindings={}, write_bindings={})
 
 
+def _agent_skill_service_for_env(
+    env: Any,
+    *,
+    runtime_factory: Any,
+    idempotency_adapter: Any | None = None,
+) -> AgentSkillEngineService:
+    """Compose the Agent/Skill service: preview lane, or the fail-closed default.
+
+    An explicitly marked non-production isolate gets the synthetic preview lane.
+    Every other isolate -- Production included -- gets exactly the resolver-less
+    composition this Engine has always used, so an unmarked deployment can never
+    reach the synthetic authority.
+    """
+    preview = build_preview_agent_lane(env)
+    if preview is not None:
+        return preview.service
+    return AgentSkillEngineService(
+        runtime_factory=runtime_factory,
+        binding_resolver=None,
+        idempotency_adapter=idempotency_adapter,
+    )
+
+
 async def _engine_services_for_env(env: Any) -> EngineServices:
+    """Legacy compatibility composition; never the Production authority.
+
+    Production is deployed from ``worker_identity.py``. This deliberately
+    narrower bundle remains for legacy/base-entrypoint compatibility and tests:
+    it must not silently inherit identity-only widened runtime authorities.
+    ``worker_identity.Default`` subclasses
+    this module's HTTP/core base and overrides ``engine_services_factory`` with
+    the canonical Production composition.
+    """
+    # Preview-lane posture only. Every other isolate clears the override, so the
+    # declared manifest truth is untouched outside an explicitly marked pilot.
+    set_posture_overrides(preview_capability_overrides(env))
     binding = _binding_value(env, B14_SERVICE_BINDING_NAME)
     if binding is None:
         unavailable_factory = lambda app_id: (_ for _ in ()).throw(  # noqa: E731
@@ -256,9 +311,9 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             memory=_memory_service_for_env(env),
             # Agent/Skill source routes remain production-unactivated. Without
             # trusted resolver/store/verifier they fail closed.
-            agent_skill=AgentSkillEngineService(
+            agent_skill=_agent_skill_service_for_env(
+                env,
                 runtime_factory=unavailable_factory,
-                binding_resolver=None,
             ),
             # ACT-2 route admission: the Tool routes are wired, but this
             # composition carries an explicitly unconfigured resolver (no
@@ -314,11 +369,12 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             b14_service_bound=True,
         ),
         memory=_memory_service_for_env(env),
-        agent_skill=AgentSkillEngineService(
+        agent_skill=_agent_skill_service_for_env(
+            env,
             runtime_factory=runtime_factory,
             # Trusted registry/session/entitlement and continuation authority
-            # remain later Production gates (#1751/#1753).
-            binding_resolver=None,
+            # remain later Production gates (#1751/#1753); only an explicitly
+            # marked non-production pilot isolate composes the synthetic lane.
             idempotency_adapter=idempotency_adapter,
         ),
         # #1964 source slice: replay composes only the same trusted durable
@@ -396,35 +452,68 @@ def _ndjson_response(
     )
 
 
+async def _drive_case_folder_rpc_for_env(env: Any, operation: str, payload: Any) -> dict:
+    """Run one private Drive case-folder RPC with the composed Engine service.
+
+    Composition failures degrade to ``service = None`` so the RPC layer returns
+    a bounded unavailable error instead of leaking infrastructure detail. These
+    are Service Binding RPC methods, never public fetch() routes.
+    """
+
+    from app.drive_case_folder_rpc import drive_case_folder_rpc
+    from worker_identity import _drive_case_folder_service_for_env
+
+    try:
+        service = _drive_case_folder_service_for_env(env)
+    except Exception:
+        service = None
+    return await drive_case_folder_rpc(service, operation=operation, payload=payload)
+
+
+async def _drive_case_pdf_rpc_for_env(env: Any, operation: str, payload: Any) -> dict:
+    """Run one private B67 PDF RPC; never reachable through public fetch()."""
+
+    from app.drive_case_pdf_rpc import drive_case_pdf_rpc
+    from worker_identity import _drive_case_pdf_service_for_env
+
+    try:
+        service = _drive_case_pdf_service_for_env(env)
+    except Exception:
+        service = None
+    return await drive_case_pdf_rpc(service, operation=operation, payload=payload)
+
+
 class Default(WorkerEntrypoint):
     engine_services_factory = staticmethod(_engine_services_for_env)
+
+    async def drive_case_folder_status(self, payload: Any) -> Any:
+        return await _drive_case_folder_rpc_for_env(self.env, "drive_case_folder_status", payload)
+
+    async def drive_case_folder_folders(self, payload: Any) -> Any:
+        return await _drive_case_folder_rpc_for_env(self.env, "drive_case_folder_folders", payload)
+
+    async def drive_case_folder_select(self, payload: Any) -> Any:
+        return await _drive_case_folder_rpc_for_env(self.env, "drive_case_folder_select", payload)
+
+    async def drive_case_folder_clear(self, payload: Any) -> Any:
+        return await _drive_case_folder_rpc_for_env(self.env, "drive_case_folder_clear", payload)
+
+    async def b67_case_pdf_candidates(self, payload: Any) -> Any:
+        return await _drive_case_pdf_rpc_for_env(self.env, "b67_case_pdf_candidates", payload)
+
+    async def b67_case_pdf_read(self, payload: Any) -> Any:
+        return await _drive_case_pdf_rpc_for_env(self.env, "b67_case_pdf_read", payload)
+
+    async def b67_case_pdf_review_extraction(self, payload: Any) -> Any:
+        return await _drive_case_pdf_rpc_for_env(
+            self.env, "b67_case_pdf_review_extraction", payload
+        )
 
     async def fetch(self, request: Any) -> Any:
         path = urlparse(str(request.url)).path
         method = str(getattr(request, "method", ""))
         headers = getattr(request, "headers", None)
         content_type = headers.get("content-type") if headers is not None else None
-
-        body = b""
-        if method.upper() == "POST":
-            try:
-                text = await request.text()
-                body = str(text).encode("utf-8")
-            except Exception:
-                return _json_response(
-                    ServiceResponse(
-                        status_code=400,
-                        body={
-                            "ok": False,
-                            "error": {
-                                "code": "invalid_request",
-                                "message": "Request body could not be read.",
-                                "retryable": False,
-                                "metadata": None,
-                            },
-                        },
-                    )
-                )
 
         orchestration_paths = {
             ORCHESTRATE_PATH,
@@ -467,6 +556,32 @@ class Default(WorkerEntrypoint):
                 },
             )
             return _json_response(result)
+
+        body = b""
+        if method.upper() == "POST" and path != HEALTH_PATH:
+            max_body_bytes = (
+                MAX_MEMORY_REQUEST_BODY_BYTES
+                if path in {MEMORY_PATH, MEMORY_WRITE_PATH}
+                else MAX_REQUEST_BODY_BYTES
+            )
+            try:
+                body = await read_bounded_worker_request_body(
+                    request,
+                    max_bytes=max_body_bytes,
+                )
+            except RequestBodyTooLarge:
+                message = (
+                    "Request body exceeds the safety limit."
+                    if path in orchestration_paths or path in tool_paths
+                    else "Request body exceeds the internal Engine safety limit."
+                )
+                return _error_response("request_too_large", message, 413)
+            except RequestBodyReadError:
+                return _error_response(
+                    "invalid_request",
+                    "Request body could not be read.",
+                    400,
+                )
 
         if path != HEALTH_PATH:
             auth_error = _authenticate_non_health_request(self.env, headers, body)

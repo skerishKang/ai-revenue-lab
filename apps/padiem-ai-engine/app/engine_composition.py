@@ -12,7 +12,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from app.agent_skill_service import AgentSkillEngineService
+from app.attachment_admission_service import AttachmentAdmissionEngineService
 from app.auth_session_scope_authority import AuthSessionScopeAuthority
+from app.document_admission_service import DocumentAdmissionEngineService
 from app.document_context_service import DocumentContextEngineService
 from app.idempotency_replay_service import IdempotencyReplayEngineService
 from app.memory_service import MemoryRetrievalEngineService
@@ -51,6 +53,10 @@ class EngineServices:
     # idempotency adapter is explicitly composed.
     idempotency_replay: IdempotencyReplayEngineService | None = None
     scope_authority: AuthSessionScopeAuthority | None = None
+    attachment_admission: AttachmentAdmissionEngineService | None = None
+    # #2764 source composition: the document admission seam follows the same
+    # named-bundle convention as attachment admission; absence fails closed.
+    document_admission: DocumentAdmissionEngineService | None = None
 
     def __post_init__(self) -> None:
         for name in ("completed", "streaming", "orchestration", "research", "memory"):
@@ -91,4 +97,18 @@ class EngineServices:
         ):
             raise ValueError(
                 "engine service 'idempotency_replay' must be IdempotencyReplayEngineService or None"
+            )
+        if self.attachment_admission is not None and not isinstance(
+            self.attachment_admission, AttachmentAdmissionEngineService
+        ):
+            raise ValueError(
+                "engine service 'attachment_admission' must be "
+                "AttachmentAdmissionEngineService or None"
+            )
+        if self.document_admission is not None and not isinstance(
+            self.document_admission, DocumentAdmissionEngineService
+        ):
+            raise ValueError(
+                "engine service 'document_admission' must be "
+                "DocumentAdmissionEngineService or None"
             )

@@ -1,0 +1,334 @@
+/* claw-conversation.css — SHARED-LIKE (Claw) conversation surface.
+ *
+ * PROVENANCE
+ *   apps/padiem-chat/static/padiem-surfaces.css  (empty state, message bubbles, .demo-label)
+ *   apps/padiem-chat/static/search-sources.css   (numbered [n] source rows)
+ *   apps/padiem-chat/static/claw-workspace.css   (.claw-chip, .claw-status, type scale)
+ *
+ * The source-scope row is the generic "which capability is this query routed
+ * through" control. Legal decides what the four scopes MEAN; this file only
+ * owns how a scope chip looks, focuses, and toggles.
+ *
+ * The live region contract: exactly ONE role="status" aria-live="polite" per
+ * rendered answer — the run status line. It is never nested inside another
+ * live region, and the result container carries no ARIA at all.
+ */
+
+.empty-state { animation: claw-rise .72s cubic-bezier(.2, .75, .2, 1) both; }
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+.eyebrow::before {
+  content: "";
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 11px rgba(159, 192, 221, .56);
+}
+
+.empty-state h1 {
+  max-width: 680px;
+  margin: 0;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: clamp(26px, 4vw, 34px);
+  font-weight: 770;
+  letter-spacing: -0.045em;
+  line-height: 1.14;
+}
+.empty-state h1 em { font-style: normal; color: var(--muted); }
+
+.empty-copy {
+  max-width: 620px;
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.5;
+  letter-spacing: -.015em;
+}
+
+.starter-grid {
+  max-width: 640px;
+  display: grid;
+  gap: 10px;
+  margin: 26px 0 0;
+}
+
+.starter {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  background: var(--card-bg);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05);
+  transition: transform .24s ease, border-color .24s ease, background .24s ease;
+}
+.starter:hover { transform: translateY(-2px); border-color: var(--line); }
+
+.starter-icon {
+  width: 34px; height: 34px;
+  flex: 0 0 34px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: 14px;
+}
+.starter strong { display: block; color: var(--text); font-size: 14px; font-weight: 750; }
+.starter small { display: block; margin-top: 2px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+/* ── Message list ──────────────────────────────────────────────────────── */
+.message-list { display: grid; gap: 26px; }
+
+.message { display: grid; gap: 10px; min-width: 0; }
+
+.user-message { justify-items: end; }
+.message-bubble {
+  max-width: 88%;
+  padding: 12px 14px;
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  background: var(--user-bubble-bg);
+  color: var(--user-bubble-text);
+  font-size: 15px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04);
+  white-space: pre-wrap;
+}
+
+.assistant-message {
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+.assistant-avatar { width: 36px; height: 36px; }
+.assistant-body { display: grid; gap: 10px; min-width: 0; }
+
+.assistant-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  color: var(--text);
+  font-family: var(--font-label);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+/* The canonical demo-label idiom (padiem-surfaces.css .demo-label, the same
+ * class the product already uses via data-runtime-label). Reused rather than
+ * reinvented, so a "this is not authoritative" marker looks identical here and
+ * in Padiem Chat. */
+.demo-label {
+  padding: 2px 8px;
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+.assistant-content {
+  color: var(--text);
+  /* 16px: parity with the canonical .claw-result-body scale. */
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.assistant-content p { margin: 0 0 12px; }
+.assistant-content p:last-child { margin-bottom: 0; }
+
+/* ── Inline citation marker [1] ─────────────────────────────────────────── */
+/* Extends the canonical .answer-source-number idiom from search-sources.css: a
+ * plain bracketed ordinal shared by the answer and the evidence card. */
+.cite {
+  min-height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  margin: 0 2px;
+  padding: 0 6px;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: 12px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  vertical-align: 2px;
+  cursor: pointer;
+  transition: background .18s ease, color .18s ease, border-color .18s ease;
+}
+.cite:hover { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); }
+.cite[aria-current="true"] { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); }
+
+/* ── Source scope row (generic routing control) ────────────────────────── */
+.scope-bar {
+  position: sticky;
+  top: 66px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0 0 18px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card-bg);
+  box-shadow: var(--shadow);
+}
+.scope-bar-label {
+  margin: 0 4px 0 0;
+  color: var(--muted);
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.claw-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Transcribed from claw-workspace.css:162-178. */
+.claw-chip {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 15px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease, color .2s ease;
+}
+.claw-chip:hover { border-color: var(--line); background: var(--accent-soft); }
+.claw-chip[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+.chip-icon { font-size: 13px; }
+
+.scope-note {
+  flex: 1 1 100%;
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ── Run status line (transcribed from .claw-status) ───────────────────── */
+/* The single canonical live region for an answer. */
+.run-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.5;
+}
+.run-status[data-state="partial"] {
+  background: var(--gold-soft);
+  border-color: var(--line);
+}
+.run-status .run-dot {
+  width: 7px; height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px rgba(159, 192, 221, .5);
+}
+.run-status[data-state="partial"] .run-dot { background: var(--gold); box-shadow: none; }
+
+/* ── Answer-level actions ──────────────────────────────────────────────── */
+.answer-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.answer-action {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease;
+}
+.answer-action:hover { background: rgba(255, 255, 255, .06); }
+.answer-action .action-icon { color: var(--muted); }
+
+.answer-note {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+@keyframes claw-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 620px) {
+  .starter-grid { margin-top: 22px; }
+  .starter { min-height: 64px; padding: 10px 12px; }
+  .message-list { gap: 20px; }
+  .assistant-message { grid-template-columns: 34px minmax(0, 1fr); gap: 10px; }
+  .assistant-avatar { width: 32px; height: 32px; border-radius: 12px; font-size: 12px; }
+  .message-bubble { max-width: 92%; font-size: 16px; }
+  .assistant-content { font-size: 16px; }
+  .scope-bar { top: 62px; padding: 10px; gap: 6px; }
+  .claw-chip { flex: 1 1 calc(50% - 4px); justify-content: center; padding: 0 10px; font-size: 14px; }
+  .answer-action { flex: 1 1 auto; justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .empty-state,
+  .starter,
+  .cite,
+  .claw-chip,
+  .answer-action {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
+  .starter:hover { transform: none; }
+}

@@ -15,8 +15,18 @@ from padiem_ai_core.b14_execution import (
     B14ExecutionConfig,
     B14ExecutionError,
     B14RoutingOptions,
+    MAX_B14_RESPONSE_BYTES,
+)
+from app.service_binding_response import (
+    ServiceBindingResponseError,
+    ServiceBindingResponseTooLarge,
+    cloudflare_chunk_bytes,
+    read_bounded_service_binding_body,
 )
 from padiem_ai_core.b14_streaming import B14StreamingClient
+from padiem_ai_core.contracts import AgentProfile
+from padiem_ai_core.execution_runtime import ExecutionRequest, ExecutionRuntimeError
+from padiem_ai_core.streaming_runtime import StreamingExecutionRuntime
 
 
 BASE_URL = "https://b14.internal"
@@ -143,6 +153,38 @@ class FakeBinding:
         return self.response
 
 
+def _load_worker_completed_type():
+    source = WORKER_PATH.read_text(encoding="utf-8")
+    tree = ast.parse(source)
+    completed = next(
+        node
+        for node in tree.body
+        if isinstance(node, ast.ClassDef) and node.name == "CloudflareB14ServiceTransport"
+    )
+    module = ast.Module(
+        body=[
+            ast.ImportFrom(
+                module="__future__",
+                names=[ast.alias(name="annotations")],
+                level=0,
+            ),
+            completed,
+        ],
+        type_ignores=[],
+    )
+    namespace = {
+        "Any": Any,
+        "Request": FakeRequest,
+        "json": json,
+        "MAX_B14_RESPONSE_BYTES": MAX_B14_RESPONSE_BYTES,
+        "read_bounded_service_binding_body": read_bounded_service_binding_body,
+        "ServiceBindingResponseTooLarge": ServiceBindingResponseTooLarge,
+        "ServiceBindingResponseError": ServiceBindingResponseError,
+    }
+    exec(compile(ast.fix_missing_locations(module), str(WORKER_PATH), "exec"), namespace)
+    return namespace["CloudflareB14ServiceTransport"]
+
+
 def _load_worker_streaming_types():
     source = WORKER_PATH.read_text(encoding="utf-8")
     tree = ast.parse(source)
@@ -175,12 +217,72 @@ def _load_worker_streaming_types():
         "Any": Any,
         "Request": FakeRequest,
         "httpx": httpx,
+        "cloudflare_chunk_bytes": cloudflare_chunk_bytes,
+        "ServiceBindingResponseError": ServiceBindingResponseError,
     }
     exec(compile(ast.fix_missing_locations(module), str(WORKER_PATH), "exec"), namespace)
     return (
         namespace["_CloudflareReadableByteStream"],
         namespace["CloudflareB14StreamingServiceTransport"],
     )
+
+
+def test_worker_stream_bridge_uses_core_real_httpx_type_family():
+    source = WORKER_PATH.read_text(encoding="utf-8")
+    tree = ast.parse(source)
+
+    imports_real_httpx = any(
+        isinstance(node, ast.Import)
+        and any(alias.name == "httpx" and alias.asname is None for alias in node.names)
+        for node in tree.body
+    )
+    aliases_compat_as_httpx = any(
+        isinstance(node, ast.ImportFrom)
+        and node.module == "app"
+        and any(
+            alias.name == "httpx_compat" and alias.asname == "httpx"
+            for alias in node.names
+        )
+        for node in tree.body
+    )
+
+    assert imports_real_httpx is True
+    assert aliases_compat_as_httpx is False
+
+    stream_type, transport_type = _load_worker_streaming_types()
+    assert issubclass(stream_type, httpx.AsyncByteStream)
+    assert issubclass(transport_type, httpx.AsyncBaseTransport)
+
+
+def test_service_binding_transport_satisfies_real_httpx_client_contract():
+    async def scenario():
+        FakeRequest.created.clear()
+        reader = FakeReader(
+            [_sse(_chunk_payload(content="계약")), b"data: [DONE]\n\n"]
+        )
+        binding = FakeBinding(FakeResponse(200, FakeBody(reader)))
+        _, transport_type = _load_worker_streaming_types()
+        transport = transport_type(binding)
+
+        async with httpx.AsyncClient(
+            transport=transport,
+            timeout=httpx.Timeout(20.0),
+            follow_redirects=False,
+        ) as client:
+            async with client.stream(
+                "POST",
+                BASE_URL + "/api/pilot/v1/chat/completions/stream-preview",
+                json=_request().to_payload() | {"stream": True},
+            ) as response:
+                assert response.status_code == 200
+                assert response.headers["content-type"].startswith("text/event-stream")
+                chunks = [chunk async for chunk in response.aiter_bytes()]
+
+        assert chunks
+        assert len(binding.calls) == 1
+        assert reader.release_count == 1
+
+    asyncio.run(scenario())
 
 
 def _request() -> B14ChatRequest:
@@ -238,6 +340,43 @@ def _client(binding: FakeBinding, *, max_response_bytes: int = 1_048_576):
 
 async def _collect(client: B14StreamingClient):
     return [event async for event in client.stream(_request())]
+
+
+def _runtime_request() -> ExecutionRequest:
+    return ExecutionRequest(
+        agent=AgentProfile(
+            id="b62-service-binding-stream",
+            title="B62 Service Binding Stream",
+            description="Regression profile for the B62 streaming bridge.",
+            system_instruction="Answer briefly.",
+            task_type="general",
+            optimize_for="korean",
+            max_tokens=128,
+            required_capabilities=("free",),
+            model_policy={
+                "model": MODEL,
+                "allow_external_fallback": False,
+                "max_attempts": 1,
+            },
+        ),
+        messages=({"role": "user", "content": "안녕하세요"},),
+        trace_id="trace-b62-service-binding-stream",
+        session_id="session-b62-service-binding-stream",
+    )
+
+
+async def _collect_runtime(binding: Any):
+    runtime = StreamingExecutionRuntime(
+        app_id="padiem-chat",
+        b14_stream_client=_client(binding),
+    )
+    return [event async for event in runtime.stream(_runtime_request())]
+
+
+def _runtime_error(binding: Any) -> ExecutionRuntimeError:
+    with pytest.raises(ExecutionRuntimeError) as info:
+        asyncio.run(_collect_runtime(binding))
+    return info.value
 
 
 def test_service_binding_stream_delivers_first_event_before_final_chunk():
@@ -461,6 +600,88 @@ def test_service_binding_stream_typed_array_first_event_streams_before_final_chu
     asyncio.run(scenario())
 
 
+def test_service_binding_stream_full_runtime_preserves_ordered_deltas_and_done():
+    raw = (
+        _sse(_chunk_payload(content="첫"))
+        + _sse(_chunk_payload(content=" 둘째"))
+        + b"data: [DONE]\n\n"
+    )
+    reader = FakeReader(
+        [raw[:9], raw[9:57], raw[57:]],
+        value_factory=FakeJSTypedArray,
+    )
+    body = FakeBody(reader)
+    binding = FakeBinding(FakeResponse(200, body))
+
+    events = asyncio.run(_collect_runtime(binding))
+
+    deltas = [event.delta_content for event in events if event.delta_content]
+    assert deltas == ["첫", " 둘째"]
+    assert events[-1].done is True
+    assert events[-1].answer == "첫 둘째"
+    assert len(binding.calls) == 1
+    assert body.get_reader_count == 1
+    assert reader.release_count == 1
+
+
+def test_service_binding_fetch_failure_maps_boundedly_through_streaming_runtime():
+    class FailingBinding:
+        def __init__(self):
+            self.calls = 0
+
+        async def fetch(self, request: Any):
+            self.calls += 1
+            raise RuntimeError("synthetic binding failure")
+
+    binding = FailingBinding()
+    error = _runtime_error(binding)
+
+    assert binding.calls == 1
+    assert error.code == "upstream_unavailable"
+    assert error.code != "execution_failed"
+
+
+def test_service_binding_malformed_metadata_maps_boundedly_through_streaming_runtime():
+    class MalformedResponse:
+        @property
+        def status(self):
+            raise RuntimeError("synthetic malformed status")
+
+    class MalformedBinding:
+        def __init__(self):
+            self.calls = 0
+
+        async def fetch(self, request: Any):
+            self.calls += 1
+            return MalformedResponse()
+
+    binding = MalformedBinding()
+    error = _runtime_error(binding)
+
+    assert binding.calls == 1
+    assert error.code == "upstream_unavailable"
+    assert error.code != "execution_failed"
+
+
+def test_service_binding_unsupported_chunk_maps_boundedly_through_streaming_runtime():
+    class UnsupportedChunk:
+        pass
+
+    reader = FakeReader(
+        [b"ignored"],
+        value_factory=lambda _value: UnsupportedChunk(),
+    )
+    body = FakeBody(reader)
+    binding = FakeBinding(FakeResponse(200, body))
+
+    error = _runtime_error(binding)
+
+    assert error.code == "upstream_unavailable"
+    assert error.code != "execution_failed"
+    assert body.get_reader_count == 1
+    assert reader.release_count == 1
+
+
 def test_service_binding_stream_unsupported_chunk_fails_closed_specifically():
     # A chunk that is not bytes/memoryview, has no to_bytes(), and is not
     # integer-iterable must fail closed with the specific adapter error rather
@@ -507,7 +728,9 @@ def test_completed_json_bridge_is_preserved_and_streaming_bridge_never_buffers_r
     streaming = classes["CloudflareB14StreamingServiceTransport"]
     byte_stream = classes["_CloudflareReadableByteStream"]
 
-    assert "await response.text()" in completed
+    assert "await response.text()" not in completed
+    assert "read_bounded_service_binding_body" in completed
+    assert "MAX_B14_RESPONSE_BYTES" in completed
     assert "CloudflareB14ServiceTransport(b14_binding)" in WORKER_PATH.read_text(
         encoding="utf-8"
     )
@@ -519,3 +742,33 @@ def test_completed_json_bridge_is_preserved_and_streaming_bridge_never_buffers_r
     assert "reader.cancel()" not in byte_stream  # cancellation stays dynamically guarded
     assert "getattr(reader, 'cancel', None)" in byte_stream
     assert "getattr(reader, 'releaseLock', None)" in byte_stream
+
+
+def test_completed_json_bridge_stops_at_response_ceiling_and_preserves_core_classification():
+    completed_type = _load_worker_completed_type()
+    reader = FakeReader(
+        [b"x" * MAX_B14_RESPONSE_BYTES, b"y", b"never-read"],
+    )
+    body = FakeBody(reader)
+    binding = FakeBinding(
+        FakeResponse(200, body, content_type="application/json")
+    )
+    transport = completed_type(binding)
+
+    status, payload = asyncio.run(
+        transport.post_json(
+            f"{BASE_URL}/v1/chat/completions",
+            {"messages": [{"role": "user", "content": "bounded"}]},
+        )
+    )
+
+    assert status == 200
+    # Core classifies any body above its configured ceiling as
+    # upstream_response_too_large. The transport returns only one bounded
+    # sentinel byte beyond that ceiling after cancelling the real stream.
+    assert len(payload) == MAX_B14_RESPONSE_BYTES + 1
+    assert reader.read_count == 2
+    assert reader.cancel_count == 1
+    assert reader.release_count == 1
+    # FakeReader is index-based rather than destructive; read_count=2 proves
+    # the third "never-read" chunk was not consumed after overflow.

@@ -144,7 +144,7 @@ class Settings(BaseSettings):
     ai_model: str = "mock-personal-edition-v1"
     ai_base_url: str = ""
     ai_api_key: str = ""
-    ai_timeout_seconds: int = Field(default=120, gt=0)
+    ai_timeout_seconds: int = Field(default=600, gt=0)
     ai_cost_class: str = "free"
     ai_response_format_mode: str = "json_schema"
     prompt_version: str = "personal-edition-v1"

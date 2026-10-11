@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import base64
 import json
 import os
 from dataclasses import dataclass, field
@@ -30,6 +31,19 @@ FILE_ID = "file_00000000000000000000000000000022"
 FILE_NAME = "guide.md"
 FILE_TYPE = "text/markdown"
 FILE_TEXT = "# 제주 준비\nPROJECT_FILE_PRIVATE_MARKER_1032\n신분증과 충전기를 챙긴다."
+# #2342 additive PDF/DOCX fixtures: real base64 payloads, server-side extracted text markers.
+PDF_NAME = "positive.pdf"
+PDF_MEDIA_TYPE = "application/pdf"
+PDF_BYTES = b"%PDF-1.4\n1 0 obj\n<< /Type /Catalog >>\nendobj\ntrailer\n<< /Root 1 0 R >>\n%%EOF\n"
+PDF_BASE64 = base64.b64encode(PDF_BYTES).decode("ascii")
+PDF_EXTRACTED_TEXT = "Positive PDF Text\nPROJECT_FILE_BINARY_PRIVATE_MARKER_2342"
+DOCX_NAME = "report.docx"
+DOCX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+DOCX_BYTES = b"PK\x03\x04deterministic-docx-zip-stub-bytes-for-browser-qa"
+DOCX_BASE64 = base64.b64encode(DOCX_BYTES).decode("ascii")
+DOCX_EXTRACTED_TEXT = "Positive DOCX Text\nPROJECT_FILE_BINARY_PRIVATE_MARKER_2342"
+BINARY_ID_PREFIX = "file_binary_"
+SERVER_REJECT_MARKER = "PROJECT_FILE_SERVER_REJECT_MARKER_2342"
 QUESTION = "프로젝트 자료를 참고해서 준비물을 정리해줘"
 ANSWER = "프로젝트 자료를 참고해 신분증과 충전기를 먼저 챙기세요."
 STATIC_FONT_HOSTS = frozenset({"cdn.jsdelivr.net", "fonts.googleapis.com", "fonts.gstatic.com"})
@@ -42,6 +56,8 @@ class FixtureState:
     file_posts: list[dict[str, Any]] = field(default_factory=list)
     file_deletes: list[str] = field(default_factory=list)
     stream_posts: list[dict[str, Any]] = field(default_factory=list)
+    binary_posts: list[dict[str, Any]] = field(default_factory=list)
+    reject_next_uploads: int = 0
 
     @property
     def project(self) -> dict[str, Any]:
@@ -133,6 +149,41 @@ async def _install_api(page: Page, state: FixtureState) -> None:
             return
         body = _request_json(route)
         state.file_posts.append(body)
+        keys = set(body)
+        if state.reject_next_uploads > 0:
+            state.reject_next_uploads -= 1
+            await _reply_json(route, {"error": {"code": "invalid_project_file", "message": SERVER_REJECT_MARKER}}, status=422)
+            return
+        if keys == {"name", "media_type", "base64"}:
+            # #2342 binary branch: server-legal project binaries are PDF/DOCX only and the
+            # POST must carry exactly {name, media_type, base64}. Persisted rows project the
+            # server-side extracted media type; original bytes never come back to the browser.
+            extracted = {PDF_MEDIA_TYPE: ("extracted/pdf", PDF_EXTRACTED_TEXT, PDF_BASE64),
+                         DOCX_MEDIA_TYPE: ("extracted/docx", DOCX_EXTRACTED_TEXT, DOCX_BASE64)}
+            if body["media_type"] not in extracted:
+                await _reply_json(route, {"error": {"code": "invalid_project_file", "message": "지원하지 않는 파일 형식입니다."}}, status=422)
+                return
+            if body["base64"] != extracted[body["media_type"]][2]:
+                raise AssertionError(f"{body['media_type']} binary POST must carry the exact base64 of the picked file")
+            stored_type, extracted_text, _ = extracted[body["media_type"]]
+            state.binary_posts.append(dict(body))
+            record = {
+                "id": f"{BINARY_ID_PREFIX}{len(state.binary_posts):02d}",
+                "project_id": PROJECT_ID,
+                "name": body["name"],
+                "media_type": stored_type,
+                "content_text": extracted_text,
+                "content_chars": len(extracted_text),
+                "created_at": "2026-09-11T05:11:00Z",
+                "updated_at": "2026-09-11T05:11:00Z",
+            }
+            state.files[record["id"]] = record
+            public = dict(record)
+            public.pop("content_text")
+            await _reply_json(route, {"file": public}, status=201)
+            return
+        if keys != {"name", "media_type", "text"}:
+            raise AssertionError(f"unexpected Project File POST payload keys: {sorted(keys)}")
         expected = {"name": FILE_NAME, "media_type": FILE_TYPE, "text": FILE_TEXT}
         if body != expected:
             raise AssertionError(f"Project File POST must be exact bounded document payload: {body!r}")
@@ -176,8 +227,8 @@ async def _install_api(page: Page, state: FixtureState) -> None:
             raise AssertionError(f"project chat leaked lower-layer/file routing fields: {body!r}")
         if body.get("project_id") != PROJECT_ID:
             raise AssertionError(f"project chat missing server-owned project reference: {body!r}")
-        if FILE_ID in _json(body) or FILE_TEXT in _json(body):
-            raise AssertionError(f"browser sent persisted Project File id/content in chat request: {body!r}")
+        if FILE_ID in _json(body) or FILE_TEXT in _json(body) or PDF_BASE64 in _json(body) or DOCX_BASE64 in _json(body):
+            raise AssertionError(f"browser sent persisted Project File id/content/base64 in chat request: {body!r}")
         if body.get("messages", [])[-1:] != [{"role": "user", "content": QUESTION}]:
             raise AssertionError(f"unexpected project chat message payload: {body!r}")
         sse = (
@@ -328,6 +379,66 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
     await _no_overflow(page, f"{label}-project-file-deleted")
     await page.screenshot(path=str(OUT_DIR / f"{label}-project-file-deleted.png"), full_page=True)
 
+    # ── #2342 additive: PDF/DOCX binary consumption + server-error retry ──────
+    # The manage dialog is already open with an empty file list after the delete above.
+    await page.wait_for_function("() => document.querySelectorAll('#projectFilesList .project-file-row').length === 0", timeout=5_000)
+
+    async def wait_for_binary_row(name: str, stored_type: str) -> None:
+        await page.wait_for_function(
+            "([name, storedType]) => Array.from(document.querySelectorAll('#projectFilesList .project-file-row')).some((row) => row.querySelector('strong')?.textContent.trim() === name && row.querySelector('small')?.textContent.includes(storedType)) && !document.getElementById('projectFilesPanel')?.hasAttribute('aria-busy')",
+            arg=[name, stored_type],
+            timeout=5_000,
+        )
+
+    await page.locator("#projectFileInput").set_input_files({
+        "name": PDF_NAME,
+        "mimeType": PDF_MEDIA_TYPE,
+        "buffer": PDF_BYTES,
+    })
+    await wait_for_binary_row(PDF_NAME, "extracted/pdf")
+    await page.locator("#projectFileInput").set_input_files({
+        "name": DOCX_NAME,
+        "mimeType": DOCX_MEDIA_TYPE,
+        "buffer": DOCX_BYTES,
+    })
+    await wait_for_binary_row(DOCX_NAME, "extracted/docx")
+    expected_binary_posts = [
+        {"name": PDF_NAME, "media_type": PDF_MEDIA_TYPE, "base64": PDF_BASE64},
+        {"name": DOCX_NAME, "media_type": DOCX_MEDIA_TYPE, "base64": DOCX_BASE64},
+    ]
+    if state.binary_posts != expected_binary_posts:
+        raise AssertionError(f"unexpected binary Project File POSTs: {state.binary_posts!r}")
+    if [post for post in state.file_posts if set(post) == {"name", "media_type", "base64"}] != expected_binary_posts:
+        raise AssertionError(f"binary POSTs missing from recorded file_posts: {state.file_posts!r}")
+    body_text = await page.locator("body").inner_text()
+    if PDF_BASE64 in body_text or DOCX_BASE64 in body_text:
+        raise AssertionError("base64 payload leaked into visible UI")
+    if "PROJECT_FILE_BINARY_PRIVATE_MARKER_2342" in body_text:
+        raise AssertionError("extracted binary content leaked into visible UI")
+
+    # Server validation authority: a 422 message surfaces in role=alert, no row is added,
+    # and re-picking the file after the server accepts it succeeds (accessible retry path).
+    state.reject_next_uploads = 1
+    await page.locator("#projectFileInput").set_input_files({
+        "name": "retry.pdf",
+        "mimeType": PDF_MEDIA_TYPE,
+        "buffer": PDF_BYTES,
+    })
+    await _wait_text(page, "#projectFormError", SERVER_REJECT_MARKER)
+    if await page.locator("#projectFilesList .project-file-row").count() != 2:
+        raise AssertionError("rejected upload added a Project File row")
+    if len(state.binary_posts) != 2:
+        raise AssertionError(f"rejected upload was accepted by stub: {state.binary_posts!r}")
+    await page.locator("#projectFileInput").set_input_files({
+        "name": "retry.pdf",
+        "mimeType": PDF_MEDIA_TYPE,
+        "buffer": PDF_BYTES,
+    })
+    await wait_for_binary_row("retry.pdf", "extracted/pdf")
+    await page.wait_for_function("() => document.getElementById('projectFormError')?.hidden === true", timeout=5_000)
+    await _no_overflow(page, f"{label}-project-binary-uploaded")
+    await page.screenshot(path=str(OUT_DIR / f"{label}-project-binary-uploaded.png"), full_page=True)
+
     if native_dialogs:
         raise AssertionError(f"native browser dialog used by destructive flow: {native_dialogs!r}")
     if unexpected_hosts:
@@ -335,6 +446,7 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
 
     return {
         "file_posts": len(state.file_posts),
+        "binary_posts": len(state.binary_posts),
         "file_deletes": len(state.file_deletes),
         "stream_posts": len(state.stream_posts),
         "final_file_count": len(state.files),

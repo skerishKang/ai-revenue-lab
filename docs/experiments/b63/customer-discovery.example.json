@@ -1,0 +1,16 @@
+{
+  "schema_version": "b63.customer-discovery.v1",
+  "business": { "number": 63, "status": "proposed" },
+  "interviews": [
+    {
+      "id": "example-hospital-01",
+      "organization_type": "hospital",
+      "problem_severity": 2,
+      "clinical_domain_gap": 2,
+      "budget_owner": 1,
+      "deployment_feasibility": 1,
+      "poc_intent": 1,
+      "poc_path": "grant_backed"
+    }
+  ]
+}

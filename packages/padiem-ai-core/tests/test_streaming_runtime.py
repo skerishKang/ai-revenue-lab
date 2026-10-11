@@ -280,6 +280,64 @@ def test_b14_stream_error_is_redacted_and_preserves_retryability() -> None:
     assert client.closed == 1
 
 
+@pytest.mark.parametrize("status_code", [502, 503, 504])
+def test_b14_upstream_http_status_survives_the_stream_error_conversion(
+    status_code: int,
+) -> None:
+    client = FakeStreamClient(
+        error=B14ExecutionError(
+            "upstream_server_error",
+            "PRIVATE-B14-SERVER-DETAIL",
+            upstream_status_code=status_code,
+            retryable=True,
+        )
+    )
+    runtime = StreamingExecutionRuntime(app_id="test-app", b14_stream_client=client)
+
+    with pytest.raises(ExecutionRuntimeError) as info:
+        run(collect(runtime, request()))
+
+    assert info.value.code == "upstream_server_error"
+    assert info.value.retryable is True
+    assert info.value.upstream_status_code == status_code
+    # Only the number is preserved; the upstream detail stays canonicalized.
+    assert "PRIVATE-B14-SERVER-DETAIL" not in json.dumps(info.value.to_public_dict())
+
+
+def test_stream_transport_failure_without_status_keeps_upstream_status_none() -> None:
+    client = FakeStreamClient(
+        error=B14ExecutionError("upstream_timeout", "PRIVATE-TIMEOUT", retryable=True)
+    )
+    runtime = StreamingExecutionRuntime(app_id="test-app", b14_stream_client=client)
+
+    with pytest.raises(ExecutionRuntimeError) as info:
+        run(collect(runtime, request()))
+
+    assert info.value.code == "upstream_timeout"
+    assert info.value.upstream_status_code is None
+
+
+def test_in_band_stream_error_frame_reports_http_200_status() -> None:
+    # A mid-stream abort arrives over an HTTP 200 response, so the recorded
+    # status is 200. This is the known in-band caveat, pinned deliberately:
+    # a reader must not mistake 200 here for success.
+    client = FakeStreamClient(
+        error=B14ExecutionError(
+            "upstream_server_error",
+            "PRIVATE-IN-BAND-DETAIL",
+            upstream_status_code=200,
+            retryable=False,
+        )
+    )
+    runtime = StreamingExecutionRuntime(app_id="test-app", b14_stream_client=client)
+
+    with pytest.raises(ExecutionRuntimeError) as info:
+        run(collect(runtime, request()))
+
+    assert info.value.upstream_status_code == 200
+    assert info.value.retryable is False
+
+
 def test_invalid_stream_event_contract_fails_closed() -> None:
     client = FakeStreamClient(({"private": "SECRET"},))
     runtime = StreamingExecutionRuntime(app_id="test-app", b14_stream_client=client)

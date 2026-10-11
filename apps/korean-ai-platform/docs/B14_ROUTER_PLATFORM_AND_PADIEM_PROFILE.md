@@ -1,3 +1,7 @@
+<!-- B14_OWNER_ROLE_SOURCE_OF_TRUTH_20261010 -->
+> **B14 역할 최신 원칙(2026-10-10):** [원제작사 모델·서빙 제공업체·변형 모델의 공식 사양 및 B14 실행 권한](../../../docs/architecture/B14_MODEL_PROVIDER_EXECUTION_AUTHORITY_2026-10-10.md)을 우선 확인합니다. **B14는 정확히 사용자가 선택한 모델을 해당 업체의 공식 API로 실행**하며, temperature/토큰/리즈닝을 임의 지정하거나 옵션을 조용히 바꾸지 않습니다. 원본 모델의 공식 사양과 실제 API 제공업체의 계약은 별도 증빙합니다. 과거 코드·평가 수치는 이 원칙의 구현 증명이 아닙니다.
+<!-- /B14_OWNER_ROLE_SOURCE_OF_TRUTH_20261010 -->
+
 # B14 Router Platform & Padiem Routing Profile
 
 Status: **CURRENT CANONICAL PRODUCT / ROUTING AUTHORITY**  
@@ -26,33 +30,20 @@ B14
 
 B14 is not merely a thin gateway for the current Padiem models. The current profile is the first concrete customer/product configuration on top of the broader Router Platform.
 
-## 2. Current Padiem request
+## 2. Current Padiem request — latest owner choice versus merged source
 
-Padiem has already selected the target routes for the current MVP.
+For current OWNER-approved/excluded model identities, customer-facing naming and source-versus-Production evidence, consult the [owner model decision ledger](../../../docs/operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md). Current exact model registration and provider/upstream identity are governed by `apps/korean-ai-platform/app/pilot/b14_models.json` and its validated adapter, **not** by historical `google_provider.py` registration helpers or this charter. Model/provider official parameter provenance follows the B14 role contract linked above.
+
+The merged Control Plane product declaration still reports Plus/Pro/Max HOLD; this does not mean the OWNER has not selected models. Google four manual-pin B14 registrations are source-merged by PR #3788, but Product Plus activation and credential-backed Production readiness remain unproven. Do not silently activate, bill, or fall back. Historical fixed chains are not a single-primary mandate (#3554).
 
 ```text
-Padiem Plus
-  provider = kilo
-  model = kilo/poolside-laguna-s-2.1-free
-
-Padiem Pro
-  provider = kilo
-  model = kilo/nvidia-nemotron-3-ultra-550b-a55b-free
-
-Padiem Max
-  model = padiem-profile/max-hold
-  executable = NO
+CURRENT_MERGED_PLUS = padiem-profile/plus-hold
+CURRENT_MERGED_PRO  = padiem-profile/pro-hold
+CURRENT_MERGED_MAX  = padiem-profile/max-hold
+OWNER_GOOGLE_SET_SELECTED = YES
+CANONICAL_REGISTERED_MODELS_SOURCE = apps/korean-ai-platform/app/pilot/b14_models.json
+GOOGLE_PRODUCTION_READY = PER_MODEL_LIVE_EVIDENCE_REQUIRED
 ```
-
-Current success criteria are therefore:
-
-1. the exact requested route is declared consistently;
-2. B14 confirms it is registered and executable;
-3. the correct provider/model is actually called;
-4. Chat/Claw can use the route reliably;
-5. provider/runtime failures are normalized truthfully;
-6. retired/unregistered/unsupported routes fail closed;
-7. no secret value is exposed to a product/browser contract.
 
 ## 3. Auto-routing rule
 
@@ -66,6 +57,8 @@ B14_GENERIC_AUTOROUTER = VALID_FUTURE_CAPABILITY
 They are not contradictory.
 
 Padiem v1 currently requests explicit routes, so user-visible Auto, omitted-model auto selection, and silent fallback are out of scope for that profile.
+
+The gateway's own `b14/auto` resolution (`app/pilot/routing_policy.py`, `fixed_chain_v1`) is an internal compatibility path, not a product selector. Older Poolside second-position data is HISTORICAL, not owner approval; the OWNER excluded Kilo Poolside Laguna. Padiem Chat has no `/poolside` selector (#2814), and no B66 selection rule may infer an excluded route.
 
 B14 itself may later support automatic provider/model choice, cost-aware routing, latency-aware routing, capability-aware routing, availability-aware routing, and bounded multi-provider fallback as generic Router Platform features.
 
@@ -119,7 +112,8 @@ For Padiem Profile v1:
 
 - user-facing plan labels are `Padiem Plus`, `Padiem Pro`, `Padiem Max`;
 - user-visible `Auto` is not part of the profile;
-- Plus/Pro use explicit routes from the shared declaration;
+- owner-selected Plus model choices exist but current merged source remains HOLD; this charter does not prove any executable Plus route;
+- Pro and Max resolve to HOLD sentinels and fail closed before Provider dispatch;
 - Max remains HOLD until separately evidenced/approved;
 - product code must not substitute a different route because the chosen route failed;
 - product code must not synthesize `b14/auto` because a model field was omitted;
@@ -195,7 +189,10 @@ They are not current model/catalog authority.
 If a historical document conflicts with current source or this charter:
 
 ```text
-CURRENT SOURCE + THIS CHARTER > HISTORICAL PHASE DOCUMENT
+OWNER LATEST MODEL CHOICE = APPROVED MODEL IDENTITY
+CURRENT SOURCE / RUNTIME = REAL EXECUTION AVAILABILITY
+THIS CHARTER = ARCHITECTURE ONLY
+HISTORICAL PHASE DOCUMENT = PROVENANCE
 ```
 
 Do not rewrite history solely to make old experiments look current. Instead label them as historical and keep current authority centralized here and in the top-level B14 README.
@@ -225,7 +222,7 @@ No issue/document/PR merge alone proves deployment.
 #2101 = remove implicit b14/auto defaults from Padiem-facing contracts
 #2102 = Padiem Max evidence/selection
 #2103 = generic B14 BYOK/credential policy + profile boundary
-#2104 = Padiem Pro Nemotron evidence backfill
+#2104 = Padiem Pro Nemotron evidence backfill (closed; Pro has been HOLD since #2601)
 #2107 = future Padiem provider/model admin console
 #1955 = exact-SHA B14 Production deploy gate
 ```

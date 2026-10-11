@@ -3,12 +3,21 @@ from __future__ import annotations
 from datetime import datetime, timezone
 import unittest
 
-from kagent.contracts import ContractError, ExecutionMode, NetworkPolicy, SandboxLeaseRequest
+from kagent.contracts import (
+    ClawTaskIntent,
+    ContractError,
+    ExecutionMode,
+    NetworkPolicy,
+    SandboxLeaseRequest,
+    exact_commit_revision,
+)
+from kagent.repository_materialization import _sha as materialization_sha
 from kagent.sandbox_conformance import (
     PRODUCTION_SANDBOX_CLAIM,
     REAL_SANDBOX_PROVIDER_CALLS,
     REAL_SANDBOX_PROVIDER_SELECTED,
     IsolationPrimitive,
+    SandboxAppliedLimits,
     SandboxArtifactManifest,
     SandboxArtifactRef,
     SandboxProviderCapabilities,
@@ -16,6 +25,12 @@ from kagent.sandbox_conformance import (
     SandboxSecurityPolicy,
     VerifiedDiffEvidence,
 )
+
+# Cloud M1 acceptance now requires numeric limit evidence as well as the declared
+# booleans (#1405). Tests about something other than the numbers supply these so
+# their original subject stays in focus; the limits contract itself is pinned in
+# test_cloud_m1_policy_enforcement.py.
+_WITHIN_CEILING = SandboxAppliedLimits(cpu_cores=2, memory_mb=4096, disk_mb=5120, process_count=128)
 
 
 class SandboxConformanceTests(unittest.TestCase):
@@ -54,10 +69,20 @@ class SandboxConformanceTests(unittest.TestCase):
         return SandboxProviderCapabilities(**values)
 
     def test_fully_declared_candidate_passes_provider_neutral_gate(self):
-        assessment = SandboxProviderConformanceGate().require_accepted(self.capabilities())
+        gate = SandboxProviderConformanceGate()
+        assessment = gate.require_accepted(self.capabilities(), applied_limits=_WITHIN_CEILING)
         self.assertTrue(assessment.accepted_for_cloud_m1)
         self.assertEqual(assessment.missing_controls, ())
         self.assertEqual(assessment.policy_version, "claw-cloud-m1-sandbox.v1")
+        # Declarations alone are no longer acceptance: the same candidate without
+        # numeric limit evidence is refused by the same gate.
+        self.assertFalse(gate.assess(self.capabilities()).accepted_for_cloud_m1)
+        self.assertEqual(
+            gate.assess(self.capabilities()).missing_controls,
+            ("resource_limits_reported",),
+        )
+        with self.assertRaisesRegex(ContractError, "resource_limits_reported"):
+            gate.require_accepted(self.capabilities())
 
     def test_each_false_security_control_is_visible_and_rejects_candidate(self):
         capabilities = self.capabilities(
@@ -65,7 +90,9 @@ class SandboxConformanceTests(unittest.TestCase):
             provider_metadata_blocked=False,
             cancellation_kills_workload=False,
         )
-        assessment = SandboxProviderConformanceGate().assess(capabilities)
+        # Limits are supplied so this exact-tuple assertion keeps testing the three
+        # declared security controls it names, rather than the limits rule.
+        assessment = SandboxProviderConformanceGate().assess(capabilities, applied_limits=_WITHIN_CEILING)
         self.assertFalse(assessment.accepted_for_cloud_m1)
         self.assertEqual(
             assessment.missing_controls,
@@ -76,7 +103,7 @@ class SandboxConformanceTests(unittest.TestCase):
             ),
         )
         with self.assertRaisesRegex(ContractError, "runtime_socket_hidden"):
-            SandboxProviderConformanceGate().require_accepted(capabilities)
+            SandboxProviderConformanceGate().require_accepted(capabilities, applied_limits=_WITHIN_CEILING)
 
     def test_unknown_isolation_primitive_fails_even_if_booleans_claim_true(self):
         assessment = SandboxProviderConformanceGate().assess(
@@ -105,16 +132,29 @@ class SandboxConformanceTests(unittest.TestCase):
             run_id="run_1",
             execution_mode=ExecutionMode.CLOUD,
             repository_ref="skerishKang/example",
-            requested_revision="0123456789abcdef",
+            requested_revision="abcdef1234567890abcdef1234567890abcdef12",
             ttl_seconds=900,
             network_policy=NetworkPolicy.OFF,
         )
         gate.validate_lease_request(good)
+        # A missing revision is now refused at the lease contract itself, so a
+        # Cloud M1 request that cannot be built also cannot reach a provider.
+        with self.assertRaisesRegex(ContractError, "exact 40-hex commit SHA"):
+            SandboxLeaseRequest(
+                run_id="run_2",
+                execution_mode=ExecutionMode.CLOUD,
+                repository_ref="skerishKang/example",
+                requested_revision=None,
+                network_policy=NetworkPolicy.OFF,
+            )
+        # The gate keeps its own independent check (#2775): prove it still
+        # rejects a non-exact revision on a request the contract layer allows,
+        # so the two layers cannot silently drift if either is edited later.
         with self.assertRaisesRegex(ContractError, "exact immutable"):
             gate.validate_lease_request(
                 SandboxLeaseRequest(
-                    run_id="run_2",
-                    execution_mode=ExecutionMode.CLOUD,
+                    run_id="run_2b",
+                    execution_mode=ExecutionMode.LOCAL,
                     repository_ref="skerishKang/example",
                     requested_revision=None,
                     network_policy=NetworkPolicy.OFF,
@@ -126,7 +166,7 @@ class SandboxConformanceTests(unittest.TestCase):
                     run_id="run_3",
                     execution_mode=ExecutionMode.CLOUD,
                     repository_ref="skerishKang/example",
-                    requested_revision="abcdef",
+                    requested_revision="abcdef1234567890abcdef1234567890abcdef12",
                     network_policy=NetworkPolicy.RESTRICTED,
                 )
             )
@@ -142,7 +182,13 @@ class SandboxConformanceTests(unittest.TestCase):
             lease_id="lease_1",
             artifacts=(
                 SandboxArtifactRef("artifact_1", "diff", 512, "a" * 64),
-                SandboxArtifactRef("artifact_2", "test", 1024, "b" * 64),
+                # Kind was "test", which is not one of the Cloud M1 export types the
+                # server authorizes; #1405 added allowlist enforcement, so this
+                # fixture now uses the canonical "test_report" kind. This test's
+                # subject is size/count/output bounds, not kind acceptance, and
+                # refusal of an unlisted kind is asserted separately in
+                # test_cloud_m1_policy_enforcement.py.
+                SandboxArtifactRef("artifact_2", "test_report", 1024, "b" * 64),
             ),
             terminal_output_bytes=1024,
             terminal_output_sanitized=True,
@@ -213,6 +259,104 @@ class SandboxConformanceTests(unittest.TestCase):
         self.assertFalse(REAL_SANDBOX_PROVIDER_SELECTED)
         self.assertEqual(REAL_SANDBOX_PROVIDER_CALLS, 0)
         self.assertFalse(PRODUCTION_SANDBOX_CLAIM)
+
+
+class ExactRevisionBoundaryTests(unittest.TestCase):
+    """#2775: the lease boundary must actually mean "exact immutable revision"."""
+
+    SHA = "abcdef1234567890abcdef1234567890abcdef12"
+
+    REJECTED = (
+        "main",
+        "refs/heads/main",
+        "v1.2.3",
+        "abcdef1",            # abbreviated hash: still resolvable to many commits
+        "",
+        "   ",
+        None,
+        12345,
+        SHA + "0",            # 41 chars
+        SHA[:39],             # 39 chars
+        "ghobcdef1234567890abcdef1234567890abcdef1",  # non-hex inside length
+    )
+
+    def _request(self, revision, mode=ExecutionMode.CLOUD):
+        return SandboxLeaseRequest(
+            run_id="run_rev",
+            execution_mode=mode,
+            repository_ref="skerishKang/example",
+            requested_revision=revision,
+            network_policy=NetworkPolicy.OFF,
+        )
+
+    def test_mutable_and_malformed_revisions_are_rejected_everywhere(self):
+        gate = SandboxProviderConformanceGate()
+        for value in self.REJECTED:
+            with self.subTest(revision=value):
+                with self.assertRaises(ContractError):
+                    exact_commit_revision(value, "requested_revision")
+                # Cloud M1 lease request cannot even be constructed.
+                with self.assertRaises(ContractError):
+                    self._request(value)
+                # The gate rejects it independently of the contract layer.
+                with self.assertRaises(ContractError):
+                    gate.validate_lease_request(self._request(value, ExecutionMode.LOCAL))
+
+    def test_exact_sha_is_accepted_and_normalized_deterministically(self):
+        self.assertEqual(exact_commit_revision(self.SHA), self.SHA)
+        upper = self.SHA.upper()
+        self.assertEqual(exact_commit_revision(upper), self.SHA)
+        self.assertEqual(exact_commit_revision(f"  {upper} "), self.SHA)
+        # idempotent: normalizing an accepted value again cannot change it
+        once = exact_commit_revision(upper)
+        self.assertEqual(exact_commit_revision(once), once)
+        request = self._request(upper)
+        self.assertEqual(request.requested_revision, self.SHA)
+
+    def test_lease_boundary_and_materialization_cannot_drift_apart(self):
+        # Both layers must accept/reject the identical corpus: a revision the
+        # lease calls exact while acquisition calls unusable (or the reverse) is
+        # the drift this issue exists to prevent.
+        for value in self.REJECTED + (self.SHA, self.SHA.upper()):
+            with self.subTest(revision=value):
+                contract_ok = True
+                try:
+                    expected = exact_commit_revision(value, "requested_revision")
+                except ContractError:
+                    contract_ok = False
+                    expected = None
+                mat_ok = True
+                try:
+                    produced = materialization_sha(value, "commit_sha")
+                except ContractError:
+                    mat_ok = False
+                    produced = None
+                self.assertIs(contract_ok, mat_ok)
+                self.assertEqual(expected, produced)
+
+    def test_no_second_revision_regex_was_introduced(self):
+        import inspect
+
+        from kagent import contracts, repository_materialization, sandbox_conformance
+
+        for module in (repository_materialization, sandbox_conformance):
+            source = inspect.getsource(module)
+            self.assertNotIn("{40}$", source, module.__name__)
+        self.assertIn("{40}$", inspect.getsource(contracts))
+
+    def test_local_intent_may_stay_unpinned_but_a_cloud_lease_may_not(self):
+        # Scope guard: this child tightens the lease boundary only. Product
+        # intent may still name a branch for later resolution by acquisition.
+        intent = ClawTaskIntent(
+            task_id="task_rev",
+            task="메인 브랜치에서 확인해줘",
+            repository_ref="skerishKang/example",
+            execution_mode=ExecutionMode.LOCAL,
+            requested_revision="main",
+        )
+        self.assertEqual(intent.requested_revision, "main")
+        with self.assertRaises(ContractError):
+            self._request("main")
 
 
 if __name__ == "__main__":

@@ -9,23 +9,29 @@ it, and no secret value is ever printed.
 
 What it proves
 --------------
-Every probe carries an OVERSIZED ``arguments`` object (larger than the bounded
-Core argument ceiling, ``MAX_TOOL_ARGUMENT_BYTES`` = 65536). Inside the Engine
-the argument-size bound is enforced AFTER these steps:
+The Engine has two argument-size guards. The global Core ceiling is enforced
+while parsing the tool-execution wire, BEFORE binding / Agent / trusted-tool
+resolution. A later per-tool ceiling is enforced only after those authority
+lookups.
 
-  1. route admission (worker ``allowed_paths``);
-  2. ``_resolve_binding(app_id)``      -> 503 tool_runtime_unavailable;
-  3. ``binding.resolve_authority()``   -> 403 tool_agent_not_bound;
-  4. ``binding.resolve_tool(tool_id)`` -> 403 tool_not_registered;
-  5. argument-size bound               -> 400 tool_arguments_too_large;
-  6. Core ``ToolRuntime.execute``      -> (never reached: provider call).
+S1 deliberately sends an oversized canonical Gmail request. A 400
+``tool_arguments_too_large`` from that request proves only that the route is
+admitted, caller authentication passed, the wire parsed as a canonical tool
+request, and the global argument ceiling rejected it before provider execution.
+It does NOT prove that Tool Runtime is bound, that the Agent is authorized, or
+that the Gmail Tool is registered.
 
-So a 400 ``tool_arguments_too_large`` is a POSITIVE proof that the route is
-wired, the tool runtime is bound, the canonical Gmail Agent is authorized, and
-the canonical Gmail Tool is registered — while the provider is never called.
-REAL_PROVIDER_CALLS=0, ROWS_WRITTEN=0 and D1_MUTATION=0 hold by construction:
-this script never seeds a grant, never mutates D1, never flips the capability
-manifest and never dispatches a workflow.
+S2 therefore uses a separate BOUNDED arguments payload with an unregistered
+tool id. That request can reach the trusted registry:
+  - 403 tool_not_registered -> binding + Agent authority were reached and the
+    trusted registry rejected the unknown tool (positive registry evidence);
+  - 503 tool_runtime_unavailable / connector_grants_unavailable, or
+    403 tool_agent_not_bound -> honest DEFERRED activation evidence;
+  - 2xx -> FAIL, because an unregistered tool must never execute.
+
+REAL_PROVIDER_CALLS=0, ROWS_WRITTEN=0 and D1_MUTATION=0 hold for the intended
+PASS/DEFERRED paths. This script never seeds a grant, never mutates D1, never
+flips the capability manifest and never dispatches a workflow.
 
 Steps
 -----
@@ -97,6 +103,10 @@ FOREIGN_APP_ID = "b62"
 GMAIL_AGENT_ID = "agent:padiem:claw_mail_reader@1"
 GMAIL_TOOL_ID = "tool:google:gmail.search_messages@1"
 UNREGISTERED_TOOL_ID = "tool:google:gmail.a11_smoke_unregistered@1"
+DRIVE_APP_ID = "b54-padiem-claw-drive"
+DRIVE_AGENT_ID = "agent:padiem:claw_drive_reader@1"
+DRIVE_UNREGISTERED_TOOL_ID = "tool:google:drive.a11_smoke_unregistered@1"
+BOUNDED_UNREGISTERED_QUERY = "a11-smoke-unregistered-probe"
 REQUEST_TIMEOUT_SECONDS = 60
 
 # Oversized argument payload: strictly greater than MAX_TOOL_ARGUMENT_BYTES
@@ -114,7 +124,14 @@ UNEXPECTED = "UNEXPECTED"
 
 _ROUTE_NOT_FOUND_CODES = frozenset({"not_found"})
 _RUNTIME_UNAVAILABLE_CODES = frozenset(
-    {"tool_runtime_unavailable", "connector_grants_unavailable"}
+    {
+        "tool_runtime_unavailable",
+        "connector_grants_unavailable",
+        "drive_port_unavailable",
+        "drive_grant_unavailable",
+        "tool_runtime_dependency_unavailable",
+        "tool_binding_resolution_failed",
+    }
 )
 _TOOL_NOT_ALLOWED_CODES = frozenset(
     {
@@ -222,19 +239,25 @@ def classify(status: int, code: str | None) -> str:
     return UNEXPECTED
 
 
-def _execute_probe(app_id: str, tool_id: str) -> tuple[int, dict[str, Any] | str]:
-    """POST one bounded tool-execution probe.
+def _execute_probe(
+    app_id: str,
+    tool_id: str,
+    *,
+    agent_id: str = GMAIL_AGENT_ID,
+    query: str = OVERSIZED_ARGUMENT,
+) -> tuple[int, dict[str, Any] | str]:
+    """POST one tool-execution probe with an explicit query fixture.
 
-    Only the four allowed wire fields are sent (app_id, agent_id, tool_id,
-    arguments). ``arguments`` is deliberately oversized so the Engine rejects
-    the invocation at its argument-size bound — after binding, Agent authority
-    and Tool registry resolution, but before any provider call.
+    S1/S3 use the oversized query to exercise pre-tool execution guards. S2
+    supplies BOUNDED_UNREGISTERED_QUERY so the request clears the global parser
+    ceiling and can reach trusted tool resolution. Only the four canonical wire
+    fields are sent.
     """
     body = {
         "app_id": app_id,
-        "agent_id": GMAIL_AGENT_ID,
+        "agent_id": agent_id,
         "tool_id": tool_id,
-        "arguments": {"query": OVERSIZED_ARGUMENT},
+        "arguments": {"query": query},
     }
     return _request(method="POST", path=TOOL_EXECUTE_PATH, body=body)
 
@@ -265,8 +288,8 @@ def s1_canonical_gmail_probe() -> str:
     print(f"[S1] canonical Gmail probe: status={status} code={code!r} -> {verdict}")
     if verdict == TOOL_CONTRACT_LIVE:
         print(
-            "[S1] tool contract live: route wired, runtime bound, Agent authorized, "
-            "Gmail tool registered — provider never called"
+            "[S1] route/payload contract live: route admitted, caller auth passed, "
+            "canonical wire parsed, global argument ceiling enforced — provider never called"
         )
         return verdict
     if verdict == ROUTE_UNAVAILABLE:
@@ -291,20 +314,37 @@ def s1_canonical_gmail_probe() -> str:
     return verdict
 
 
-def s2_unregistered_tool_probe(s1_verdict: str) -> None:
-    status, body = _execute_probe(SMOKE_APP_ID, UNREGISTERED_TOOL_ID)
+def s2_unregistered_tool_probe() -> str:
+    status, body = _execute_probe(
+        SMOKE_APP_ID,
+        UNREGISTERED_TOOL_ID,
+        query=BOUNDED_UNREGISTERED_QUERY,
+    )
     code = _error_code(body)
     verdict = classify(status, code)
-    if s1_verdict == TOOL_CONTRACT_LIVE:
-        if code != "tool_not_registered" or verdict != TOOL_NOT_ALLOWED:
-            _fail("S2", f"trusted registry did not reject an unregistered tool (status={status}, code={code!r})", body)
-            return
+
+    if status == 403 and code == "tool_not_registered":
         print("[S2] registry authority OK: unregistered tool rejected 403 tool_not_registered")
-        return
-    if verdict != s1_verdict:
-        _fail("S2", f"probe inconsistent with S1 ({s1_verdict}): status={status}, code={code!r}", body)
-        return
-    print(f"[S2] consistent with S1: {verdict}")
+        return "REGISTRY_PROVEN"
+
+    if status == 503 and code in _RUNTIME_UNAVAILABLE_CODES:
+        print(f"[S2] registry probe deferred: runtime unavailable ({code})")
+        return "RUNTIME_UNAVAILABLE"
+
+    if status == 403 and code == "tool_agent_not_bound":
+        print("[S2] registry probe deferred: Agent authority not bound")
+        return "AGENT_UNAVAILABLE"
+
+    if 200 <= status < 300:
+        _fail("S2", f"unregistered tool executed unexpectedly (status={status})", body)
+        return "FAIL"
+
+    _fail(
+        "S2",
+        f"unexpected unregistered-tool result (status={status}, code={code!r}, class={verdict})",
+        body,
+    )
+    return "FAIL"
 
 
 def s3_cross_app_isolation() -> None:
@@ -313,6 +353,49 @@ def s3_cross_app_isolation() -> None:
         _fail("S3", f"cross-app probe status {status} not 4xx", body)
         return
     print(f"[S3] cross-app isolation OK: {status} {_error_code(body)!r}")
+
+
+def s4_drive_resolution_probe() -> tuple[str, str | None]:
+    """Resolve the canonical Drive binding without invoking any registered tool.
+
+    The unregistered tool id forces rejection after trusted app/Agent binding
+    resolution but before Core handler execution, access-lease issuance, or any
+    Google Drive provider call.
+    """
+    status, body = _execute_probe(
+        DRIVE_APP_ID,
+        DRIVE_UNREGISTERED_TOOL_ID,
+        agent_id=DRIVE_AGENT_ID,
+        query=BOUNDED_UNREGISTERED_QUERY,
+    )
+    code = _error_code(body)
+    if status == 403 and code == "tool_not_registered":
+        print("[S4] Drive resolver OK: trusted binding + Agent reached; unregistered tool rejected")
+        print("DRIVE_RUNTIME_RESOLUTION=BOUND")
+        print("DRIVE_PROVIDER_CALLS=0")
+        return "DRIVE_REGISTRY_PROVEN", code
+
+    if status == 503 and code in _RUNTIME_UNAVAILABLE_CODES:
+        print(f"[S4] Drive resolver deferred at bounded stage: {code}")
+        print(f"DRIVE_RUNTIME_RESOLUTION={code}")
+        print("DRIVE_PROVIDER_CALLS=0")
+        return "DRIVE_RUNTIME_UNAVAILABLE", code
+
+    if status == 403 and code == "tool_agent_not_bound":
+        print("[S4] Drive resolver reached binding but canonical Agent is not bound")
+        print("DRIVE_RUNTIME_RESOLUTION=tool_agent_not_bound")
+        print("DRIVE_PROVIDER_CALLS=0")
+        return "DRIVE_AGENT_UNAVAILABLE", code
+
+    if 200 <= status < 300:
+        _fail("S4", f"unregistered Drive tool executed unexpectedly (status={status})", body)
+    else:
+        _fail(
+            "S4",
+            f"unexpected Drive resolver result (status={status}, code={code!r})",
+            body,
+        )
+    return "FAIL", code
 
 
 def main() -> int:
@@ -326,12 +409,19 @@ def main() -> int:
 
     s1_verdict = s1_canonical_gmail_probe()
     route_available = s1_verdict != ROUTE_UNAVAILABLE
-    # S2/S3 only make sense once S1 proved the route is admitted: with a dead
-    # route every probe would just repeat the same 404, and after an
-    # contradictory S1 no further probe should be sent at all.
+    s2_verdict = "NOT_RUN"
+    s4_verdict = "NOT_RUN"
+    s4_code: str | None = None
+
+    # S2 provides the Gmail registry/Agent evidence. S4 then uses the same
+    # protected caller credential against the canonical Drive app with an
+    # unregistered tool id, proving the Drive resolver stage with zero provider
+    # calls. Both probes are bounded below the global argument ceiling.
     if route_available and not _failures:
-        s2_unregistered_tool_probe(s1_verdict)
+        s2_verdict = s2_unregistered_tool_probe()
         s3_cross_app_isolation()
+        if not _failures:
+            s4_verdict, s4_code = s4_drive_resolution_probe()
 
     if _failures:
         print(
@@ -340,27 +430,39 @@ def main() -> int:
         )
         return 1
 
-    if s1_verdict == TOOL_CONTRACT_LIVE:
+    if (
+        s1_verdict == TOOL_CONTRACT_LIVE
+        and s2_verdict == "REGISTRY_PROVEN"
+        and s4_verdict == "DRIVE_REGISTRY_PROVEN"
+    ):
         print(
             "A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS "
             f"{ZERO_SIDE_EFFECT_TOKENS} ROUTE_AVAILABLE=1 "
-            "TOOL_REGISTRY_LIVE=PASS AGENT_BOUND=PASS CROSS_APP=PASS"
+            "TOOL_REGISTRY_LIVE=PASS AGENT_BOUND=PASS CROSS_APP=PASS "
+            "DRIVE_RESOLVER=PASS DRIVE_PROVIDER_CALLS=0"
         )
         return 0
 
-    if s1_verdict == RUNTIME_UNAVAILABLE:
+    if s4_verdict == "DRIVE_RUNTIME_UNAVAILABLE":
+        reason = (s4_code or "drive_runtime_unavailable").upper()
+    elif s4_verdict == "DRIVE_AGENT_UNAVAILABLE":
+        reason = "DRIVE_TOOL_AGENT_NOT_BOUND"
+    elif s2_verdict == "RUNTIME_UNAVAILABLE":
+        reason = "TOOL_RUNTIME_UNAVAILABLE"
+    elif s2_verdict == "AGENT_UNAVAILABLE":
+        reason = "TOOL_AGENT_NOT_BOUND"
+    elif s1_verdict == RUNTIME_UNAVAILABLE:
         reason = "TOOL_RUNTIME_UNAVAILABLE"
     else:
         reason = "TOOL_NOT_ALLOWED"
 
-    # Reaching this line means the route was admitted (a 404 FAILs in S1), so
-    # the DEFERRED record always carries ROUTE_WIRED=1: only the credential /
-    # authorization activation state is deferred.
     print(
         f"A11_GMAIL_TOOL_RUNTIME_SMOKE=DEFERRED REASON={reason} "
         f"ROUTE_AVAILABLE={1 if route_available else 0} "
         f"ACTIVATION=ROUTE_WIRED_CREDENTIAL_PENDING {ZERO_SIDE_EFFECT_TOKENS} "
-        f"CLASSIFICATION={s1_verdict}"
+        f"S1_CLASSIFICATION={s1_verdict} S2_CLASSIFICATION={s2_verdict} "
+        f"S4_DRIVE_CLASSIFICATION={s4_verdict} "
+        f"S4_DRIVE_CODE={s4_code or 'NONE'} DRIVE_PROVIDER_CALLS=0"
     )
     return 0
 

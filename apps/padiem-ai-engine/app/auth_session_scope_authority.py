@@ -1,7 +1,7 @@
 """Per-request CP auth-session scope authority seam for #2168 S3b.
 
-The caller-static ``TrustedCallerScopeAuthority.scope_for_caller`` protocol
-(#2157) cannot express per-request tenant/subject scope. This module adds the
+The caller-static scope protocol (#2157) cannot express per-request
+tenant/subject scope. This module provides the
 smallest Engine-only injectable seam that mints the bounded
 ``TrustedCallerScope`` triple ``(app_id, tenant_id, subject_id)`` for one
 authenticated request:

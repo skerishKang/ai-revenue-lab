@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 import re
 from typing import Any, TypeVar
@@ -47,6 +47,33 @@ class SandboxLeaseState(str, Enum):
     RESERVED = "reserved"
     RELEASED = "released"
     EXPIRED = "expired"
+
+
+SANDBOX_LEASE_MIN_TTL_SECONDS = 60
+
+# Canonical exact-commit-revision rule for the whole Cloud M1 boundary (#2775).
+# It lives at the lowest contract layer on purpose: product intent, the lease
+# request, the provider conformance gate, and repository materialization all
+# consume this one predicate, so "exact immutable revision" cannot mean
+# different things at different layers. Do not add a second revision regex.
+EXACT_COMMIT_REVISION_RE = re.compile(r"^[0-9a-f]{40}$")
+
+
+def exact_commit_revision(value: object, field_name: str = "requested_revision") -> str:
+    """Return ``value`` normalized, or reject anything that is not an exact SHA.
+
+    Mutable refs (``main``, ``refs/heads/main``, ``v1.2.3``) and abbreviated
+    hashes are rejected: they name something that can move, not a commit that
+    was observed. Uppercase hex is accepted and normalized to lowercase so two
+    callers cannot disagree about whether they hold the same revision.
+    """
+    normalized = value.strip().lower() if isinstance(value, str) else ""
+    if not EXACT_COMMIT_REVISION_RE.fullmatch(normalized):
+        raise ContractError(f"{field_name} must be an exact 40-hex commit SHA")
+    return normalized
+
+
+SANDBOX_LEASE_MAX_TTL_SECONDS = 3_600
 
 
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
@@ -187,7 +214,18 @@ class SandboxLeaseRequest:
             "repository_ref",
             _bounded_text(self.repository_ref, "repository_ref", limit=1_024),
         )
-        if self.requested_revision is not None:
+        # A Cloud M1 lease must pin one exact immutable commit: a mutable ref
+        # would let the same run resolve different source over time, which is
+        # what this boundary's own conformance claim already promised (#2775).
+        # Enforcing here rather than only in the gate also means a bad revision
+        # cannot reach SandboxLeasePort.allocate() through the preparer.
+        if self.execution_mode is ExecutionMode.CLOUD:
+            object.__setattr__(
+                self,
+                "requested_revision",
+                exact_commit_revision(self.requested_revision, "requested_revision"),
+            )
+        elif self.requested_revision is not None:
             object.__setattr__(
                 self,
                 "requested_revision",
@@ -201,7 +239,12 @@ class SandboxLeaseRequest:
         object.__setattr__(
             self,
             "ttl_seconds",
-            _bounded_int(self.ttl_seconds, "ttl_seconds", minimum=60, maximum=3_600),
+            _bounded_int(
+                self.ttl_seconds,
+                "ttl_seconds",
+                minimum=SANDBOX_LEASE_MIN_TTL_SECONDS,
+                maximum=SANDBOX_LEASE_MAX_TTL_SECONDS,
+            ),
         )
         object.__setattr__(
             self,
@@ -291,6 +334,36 @@ class SandboxLease:
             created_at=self.created_at,
             expires_at=self.expires_at,
             state=normalized_state,
+        )
+
+    def with_expiry(self, expires_at: datetime) -> "SandboxLease":
+        """Return this lease with an extended expiry, within the bounded-lifetime gate.
+
+        The ceiling is enforced here rather than at the call site so renewal can never
+        hold a sandbox longer than a single lease request is already allowed to, which
+        is the property the provider conformance gate records as ttl_enforced.
+        """
+        if self.state is not SandboxLeaseState.RESERVED:
+            raise ContractError("only a reserved lease may be extended")
+        extended = _aware_utc(expires_at, "expires_at")
+        if extended <= self.expires_at:
+            raise ContractError("lease extension must move expires_at forward")
+        lifetime = extended - self.created_at
+        if lifetime > timedelta(seconds=SANDBOX_LEASE_MAX_TTL_SECONDS):
+            raise ContractError(
+                "lease lifetime may not exceed "
+                f"{SANDBOX_LEASE_MAX_TTL_SECONDS} seconds from creation"
+            )
+        return SandboxLease(
+            lease_id=self.lease_id,
+            run_id=self.run_id,
+            execution_mode=self.execution_mode,
+            resource_class=self.resource_class,
+            network_policy=self.network_policy,
+            writable_workspace=self.writable_workspace,
+            created_at=self.created_at,
+            expires_at=extended,
+            state=self.state,
         )
 
     def safe_dict(self) -> dict[str, Any]:

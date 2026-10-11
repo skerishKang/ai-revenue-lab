@@ -13,7 +13,7 @@ only the trusted registry/installation/policy inputs required by that Core gate.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping
+from collections.abc import Callable
 from dataclasses import dataclass
 import re
 
@@ -30,7 +30,6 @@ _CANONICAL_SKILL_ID_RE = re.compile(
     r"^skill:[a-z0-9][a-z0-9._-]{0,63}:[a-z0-9][a-z0-9._-]{0,63}@[1-9][0-9]*$"
 )
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
-MAX_BOUND_AGENT_PLANS = 64
 
 
 class EngineAgentSkillAuthorityError(ValueError):
@@ -75,7 +74,6 @@ class EngineAgentSkillBinding:
     app_id: str
     subject_id: str
     tool_binding: EngineToolBinding
-    agent_plans: Mapping[str, AgentPlan]
     skill_registry: SkillRegistrySnapshot | None = None
     skill_installations: SkillInstallationSnapshot | None = None
     skill_runtime_policy_resolver: Callable[[str], TrustedSkillRuntimePolicy | None] | None = None
@@ -87,16 +85,17 @@ class EngineAgentSkillBinding:
                 "Agent/Skill binding app_id is invalid.",
                 status_code=503,
             )
-        if not isinstance(self.subject_id, str) or not _SAFE_ID_RE.fullmatch(self.subject_id):
-            raise EngineAgentSkillAuthorityError(
-                "invalid_agent_skill_binding",
-                "Agent/Skill binding subject identity is invalid.",
-                status_code=503,
-            )
         if not isinstance(self.tool_binding, EngineToolBinding):
             raise EngineAgentSkillAuthorityError(
                 "invalid_agent_skill_binding",
                 "Agent/Skill binding must reuse an EngineToolBinding.",
+                status_code=503,
+            )
+        subject_id = self.subject_id
+        if not isinstance(subject_id, str) or not _SAFE_ID_RE.fullmatch(subject_id):
+            raise EngineAgentSkillAuthorityError(
+                "invalid_agent_skill_binding",
+                "Agent/Skill binding subject identity is invalid.",
                 status_code=503,
             )
         if self.tool_binding.app_id != self.app_id:
@@ -105,32 +104,6 @@ class EngineAgentSkillBinding:
                 "Agent/Skill binding does not match Tool authority application scope.",
                 status_code=503,
             )
-        if isinstance(self.agent_plans, (str, bytes)) or not isinstance(self.agent_plans, Mapping):
-            raise EngineAgentSkillAuthorityError(
-                "invalid_agent_skill_binding",
-                "Agent plans must be a trusted mapping.",
-                status_code=503,
-            )
-        plans = dict(self.agent_plans)
-        if len(plans) > MAX_BOUND_AGENT_PLANS:
-            raise EngineAgentSkillAuthorityError(
-                "invalid_agent_skill_binding",
-                "Agent plan binding exceeds the bounded authority count.",
-                status_code=503,
-            )
-        for agent_id, plan in plans.items():
-            if not isinstance(agent_id, str) or not _CANONICAL_AGENT_ID_RE.fullmatch(agent_id):
-                raise EngineAgentSkillAuthorityError(
-                    "invalid_agent_skill_binding",
-                    "Agent plan keys must be canonical Agent identities.",
-                    status_code=503,
-                )
-            if not isinstance(plan, AgentPlan) or plan.agent_id != agent_id:
-                raise EngineAgentSkillAuthorityError(
-                    "invalid_agent_skill_binding",
-                    "Trusted Agent plan identity does not match its binding key.",
-                    status_code=503,
-                )
         if self.skill_registry is not None and not isinstance(self.skill_registry, SkillRegistrySnapshot):
             raise EngineAgentSkillAuthorityError(
                 "invalid_agent_skill_binding",
@@ -158,6 +131,7 @@ class EngineAgentSkillBinding:
         self,
         *,
         agent_id: str,
+        plan: AgentPlan | None,
         skill_id: str | None = None,
     ) -> TrustedAgentSkillSelection:
         """Resolve exact trusted Agent/Skill authority without widening it."""
@@ -176,12 +150,10 @@ class EngineAgentSkillBinding:
                 status_code=exc.status_code,
             ) from exc
 
-        plan = dict(self.agent_plans).get(agent_id)
         if plan is None:
             raise EngineAgentSkillAuthorityError(
-                "agent_plan_unavailable",
-                "The selected Agent has no trusted bounded execution plan.",
-                status_code=503,
+                "agent_plan_required",
+                "A bounded AgentPlan proposal is required.",
             )
         try:
             validate_agent_plan(
@@ -191,9 +163,12 @@ class EngineAgentSkillBinding:
             )
         except AgentPlannerError as exc:
             raise EngineAgentSkillAuthorityError(
-                "invalid_agent_skill_binding",
-                "The trusted Agent plan failed Core validation.",
-                status_code=503,
+                exc.code,
+                exc.safe_message,
+                status_code=403 if exc.code in {
+                    "agent_plan_identity_mismatch",
+                    "agent_plan_tool_not_allowed",
+                } else 400,
             ) from exc
 
         if skill_id is None:
@@ -246,3 +221,55 @@ class EngineAgentSkillBinding:
             skill_installations=self.skill_installations,
             skill_runtime_policy=policy,
         )
+
+
+def build_agent_skill_binding_resolver(
+    tool_binding_resolver: Callable[[str], object | None] | None,
+    subject_resolver: Callable[[str], str | None] | None = None,
+) -> Callable[[str], EngineAgentSkillBinding | None] | None:
+    """Adapt the existing trusted Tool binding resolver for Agent execution."""
+    if tool_binding_resolver is None:
+        return None
+
+    def resolve(app_id: str) -> EngineAgentSkillBinding | None:
+        try:
+            tool_binding = tool_binding_resolver(app_id)
+        except EngineAgentSkillAuthorityError:
+            raise
+        except Exception as exc:
+            raise EngineAgentSkillAuthorityError(
+                "agent_skill_runtime_unavailable",
+                "Trusted Agent/Skill runtime authority resolution failed.",
+                status_code=503,
+            ) from exc
+        if tool_binding is None:
+            return None
+        from app.tool_projection import EngineToolBinding
+
+        if not isinstance(tool_binding, EngineToolBinding):
+            raise EngineAgentSkillAuthorityError(
+                "agent_skill_runtime_unavailable",
+                "Trusted Agent/Skill tool authority is unavailable.",
+                status_code=503,
+            )
+        try:
+            subject_id = subject_resolver(app_id) if subject_resolver is not None else None
+        except Exception as exc:
+            raise EngineAgentSkillAuthorityError(
+                "agent_skill_runtime_unavailable",
+                "Trusted Agent/Skill subject authority resolution failed.",
+                status_code=503,
+            ) from exc
+        if not isinstance(subject_id, str) or not _SAFE_ID_RE.fullmatch(subject_id):
+            raise EngineAgentSkillAuthorityError(
+                "agent_skill_runtime_unavailable",
+                "Trusted Agent/Skill subject authority is unavailable.",
+                status_code=503,
+            )
+        return EngineAgentSkillBinding(
+            app_id=app_id,
+            subject_id=subject_id,
+            tool_binding=tool_binding,
+        )
+
+    return resolve

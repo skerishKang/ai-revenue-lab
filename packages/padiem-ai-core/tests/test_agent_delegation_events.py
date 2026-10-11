@@ -259,3 +259,15 @@ def test_delegation_rejects_malformed_canonical_agent_id(invalid_agent_id: str) 
             capabilities=("search",),
         )
     assert exc_info.value.code == "invalid_agent_delegation"
+
+
+def test_delegation_default_is_long_form_but_not_unbounded_authority():
+    delegation = AgentDelegationRequest(
+        delegation_id="delegation:test:default",
+        parent_agent_id="agent:padiem:parent@1",
+        child_agent_id="agent:padiem:child@1",
+        reason="Test inherited long-running model budget",
+    )
+    assert delegation.max_wall_seconds == 900
+    # An explicit lower 60s limit must still narrow child authority.
+    assert request(definition("agent:padiem:parent@1"), definition("agent:padiem:child@1")).max_wall_seconds == 60

@@ -12,25 +12,20 @@
 </div>
 
 <div class="access-intro">
-  <p>비공개 개인 독서 공간입니다.</p>
-  <p>AI가 텍스트를 생성하는 데 사용되며, 독자의 선택이 이야기의 분기로 이어집니다.</p>
+  <p>누구나 체험할 수 있는 공개 독서 공간입니다.</p>
+  <p>독자의 선택이 이야기의 분기로 이어집니다.</p>
 </div>
 
 {% if error %}
 <div class="error-box">{{ error }}</div>
 {% endif %}
 
-<form method="POST" action="/access" class="access-form">
+<form method="POST" action="/public-access" class="access-form">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <div class="form-group">
-    <label for="invite_code">초대 코드</label>
-    <input type="text" id="invite_code" name="invite_code"
-           placeholder="초대 코드를 입력하세요" autocomplete="off" required>
-  </div>
-  <button type="submit" class="btn">입장하기</button>
+  <button type="submit" class="btn">바로 입장하기</button>
 </form>
 
 <div class="footer-note">
-  독립 출판물 · 편집 원고 · 사적인 독서 기록
+  Living Fiction · 공개 체험판
 </div>
 {% endblock %}

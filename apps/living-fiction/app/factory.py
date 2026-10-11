@@ -22,6 +22,7 @@ from app.config import settings
 from app.database.engine import build_engine
 from app.database.migrate_postgres import verify_schema_current
 from app.db import apply_migrations
+from app.public_reader import register_public_reader_entry
 from app.web import register_web_routes
 
 
@@ -164,6 +165,9 @@ def create_app(
     app.state.provider = resolved_provider
 
     if enable_web:
+        # Public reader entry is registered alongside the existing private/editorial
+        # routes. Admin/editorial authentication remains unchanged.
+        register_public_reader_entry(app)
         # Fail closed: missing/weak secrets, import errors, and route
         # registration runtime errors all propagate. There is no silent
         # degraded mode where /health lives but the product routes vanish.

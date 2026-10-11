@@ -6,12 +6,14 @@ import unittest
 from kagent.contracts import (
     ClawRunStatus,
     ClawTaskIntent,
+    ContractError,
     ExecutionMode,
     NetworkPolicy,
     ResourceClass,
 )
 from kagent.preparation import CloudWorkspacePreparer, WorkspacePolicy
 from kagent.runs import ClawRun, RunStateError
+from kagent.sandbox_conformance import SandboxSecurityPolicy
 from kagent.sandbox import (
     DeterministicFakeSandboxProvider,
     SandboxUnavailableError,
@@ -25,7 +27,7 @@ class CloudWorkspacePreparationTests(unittest.TestCase):
             task_id=f"task_{run_id}",
             task="로그인 오류를 수정해줘",
             repository_ref="skerishKang/example",
-            requested_revision="abc123",
+            requested_revision="abcdef1234567890abcdef1234567890abcdef12",
             execution_mode=ExecutionMode.CLOUD,
         )
         return ClawRun.create(run_id, intent)
@@ -69,15 +71,48 @@ class CloudWorkspacePreparationTests(unittest.TestCase):
         policy = WorkspacePolicy(
             resource_class=ResourceClass.SMALL,
             ttl_seconds=120,
-            network_policy=NetworkPolicy.RESTRICTED,
+            network_policy=NetworkPolicy.OFF,
             writable_workspace=False,
         )
         run = self.cloud_run("run_policy")
         lease = CloudWorkspacePreparer(provider, policy=policy).prepare(run)
         self.assertEqual(lease.resource_class, ResourceClass.SMALL)
-        self.assertEqual(lease.network_policy, NetworkPolicy.RESTRICTED)
+        self.assertEqual(lease.network_policy, NetworkPolicy.OFF)
         self.assertFalse(lease.writable_workspace)
         self.assertEqual((lease.expires_at - lease.created_at).total_seconds(), 120)
+
+    def test_widened_network_policy_is_refused_before_any_allocation(self):
+        """#1405: sizing that relaxes deny-by-default must not reach a provider.
+
+        This replaces an assertion that a RESTRICTED WorkspacePolicy propagated to
+        the lease. The Cloud M1 policy says the network default cannot be relaxed by
+        anyone, including the server-owned sizing, and the conformance gate already
+        refused such a request — so the seam and the gate disagreed, and the seam
+        was the looser one.
+        """
+        now = datetime(2026, 9, 2, 10, 0, tzinfo=timezone.utc)
+        provider = DeterministicFakeSandboxProvider(clock=lambda: now)
+        preparer = CloudWorkspacePreparer(
+            provider,
+            policy=WorkspacePolicy(network_policy=NetworkPolicy.RESTRICTED),
+        )
+        run = self.cloud_run("run_widened_network")
+        with self.assertRaisesRegex(ContractError, "deny-by-default"):
+            preparer.prepare(run)
+        self.assertEqual(provider.active_leases(), ())
+
+    def test_ttl_above_the_security_policy_is_refused_before_any_allocation(self):
+        now = datetime(2026, 9, 2, 10, 0, tzinfo=timezone.utc)
+        provider = DeterministicFakeSandboxProvider(clock=lambda: now)
+        preparer = CloudWorkspacePreparer(
+            provider,
+            policy=WorkspacePolicy(ttl_seconds=2400),
+            security_policy=SandboxSecurityPolicy(max_ttl_seconds=1800),
+        )
+        run = self.cloud_run("run_long_ttl")
+        with self.assertRaisesRegex(ContractError, "TTL"):
+            preparer.prepare(run)
+        self.assertEqual(provider.active_leases(), ())
 
     def test_reprepare_after_run_advances_is_rejected(self):
         now = datetime(2026, 9, 2, 10, 0, tzinfo=timezone.utc)
@@ -89,6 +124,55 @@ class CloudWorkspacePreparationTests(unittest.TestCase):
         run.transition(ClawRunStatus.RUNNING, summary="P01 handoff accepted")
         with self.assertRaises(RunStateError):
             preparer.prepare(run)
+
+
+class ExactRevisionReachesLeaseTests(unittest.TestCase):
+    """#2775: an unpinned revision must never reach a provider allocation."""
+
+    SHA = "abcdef1234567890abcdef1234567890abcdef12"
+
+    class RecordingProvider(DeterministicFakeSandboxProvider):
+        def __init__(self, **kwargs):
+            super().__init__(**kwargs)
+            self.allocate_calls = []
+
+        def allocate(self, request):
+            self.allocate_calls.append(request)
+            return super().allocate(request)
+
+    def intent(self, revision):
+        return ClawTaskIntent(
+            task_id="task_2775",
+            task="특정 커밋에서 준비해줘",
+            repository_ref="skerishKang/example",
+            requested_revision=revision,
+            execution_mode=ExecutionMode.CLOUD,
+        )
+
+    def test_pinned_revision_reaches_the_lease_request_without_drift(self):
+        provider = self.RecordingProvider()
+        run = ClawRun.create("run_2775_ok", self.intent(self.SHA))
+        CloudWorkspacePreparer(provider).prepare(run)
+        self.assertEqual(len(provider.allocate_calls), 1)
+        self.assertEqual(provider.allocate_calls[0].requested_revision, self.SHA)
+
+    def test_revision_is_normalized_once_and_not_rewritten_later(self):
+        provider = self.RecordingProvider()
+        run = ClawRun.create("run_2775_case", self.intent(self.SHA.upper()))
+        CloudWorkspacePreparer(provider).prepare(run)
+        self.assertEqual(provider.allocate_calls[0].requested_revision, self.SHA)
+
+    def test_mutable_revision_never_reaches_allocate(self):
+        # The lease contract rejects before the port is touched, so a branch
+        # name cannot allocate a sandbox even from the product preparer.
+        for index, revision in enumerate(("main", "refs/heads/main", "v1.2.3", "abcdef1", None)):
+            with self.subTest(revision=revision):
+                provider = self.RecordingProvider()
+                run = ClawRun.create(f"run_2775_bad_{index}", self.intent(revision))
+                with self.assertRaises(ContractError):
+                    CloudWorkspacePreparer(provider).prepare(run)
+                self.assertEqual(provider.allocate_calls, [])
+                self.assertEqual(run.status, ClawRunStatus.PREPARING)
 
 
 if __name__ == "__main__":

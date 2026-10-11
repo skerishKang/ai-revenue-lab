@@ -188,6 +188,7 @@ Canonical entry point:
 Supporting policy:
 
 - `docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md`
+- `docs/operations/TEST_SCOPE_AND_DELIVERY_POLICY.md` — repository-wide test budgeting, CI relevance, compact reporting and delivery stop rules
 - `docs/operations/WORKFLOW_STATUS_MODEL.md`
 - `docs/operations/EVIDENCE_REQUIREMENTS.md`
 - `docs/operations/UI_UX_BACKEND_PHASE_GATES.md`
@@ -195,7 +196,7 @@ Supporting policy:
 - `docs/operations/BACKEND_MVP_OPERATING_POLICY.md`
 - `docs/operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
 
-Current product-development mode remains evidence-driven rather than ceremony-driven. The Web CTO chooses the smallest slice that answers the current uncertainty; UI, UX, backend/runtime, security, deployment and commercial verdicts remain distinguishable evidence classes.
+Current product-development mode remains evidence-driven rather than ceremony-driven. Repository-wide testing is also claim-driven: bounded fixes use focused regression plus affected CI, while unrelated CI fan-out, repeated unchanged smoke, and automatic whole-product retesting are not default completion gates. The Web CTO chooses the smallest slice that answers the current uncertainty; UI, UX, backend/runtime, security, deployment and commercial verdicts remain distinguishable evidence classes.
 
 ## Evidence standard
 

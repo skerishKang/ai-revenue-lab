@@ -1,0 +1,42 @@
+name: Web Desktop Non-Model E2E (3098)
+
+on:
+  pull_request:
+    paths:
+      - "tests/e2e/**"
+      - ".github/workflows/web-desktop-nonmodel-e2e.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: web-desktop-nonmodel-e2e-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: E2E ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+      - name: Resolve the chat venv (carries control-plane + kagent + core)
+        run: uv sync --locked --extra dev
+      - name: Web ↔ Desktop non-model E2E gate matrix
+        run: uv run --locked python -m pytest ../../tests/e2e -q

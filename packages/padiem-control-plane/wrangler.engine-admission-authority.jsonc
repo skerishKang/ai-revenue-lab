@@ -1,0 +1,35 @@
+{
+  "$schema": "../../../node_modules/wrangler/config-schema.json",
+  "name": "padiem-control-plane-engine-admission",
+  "main": "engine_admission_authority_worker.py",
+  "compatibility_date": "2026-09-04",
+  "compatibility_flags": ["python_workers", "disable_python_external_sdk"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "vars": {
+    "CONTROL_PLANE_ALLOWED_PRODUCTS": "b62,b54-padiem-claw"
+  },
+  "services": [
+    {
+      "binding": "CONTROL_PLANE_IDENTITY",
+      "service": "padiem-control-plane-identity"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "CONTROL_PLANE_ENGINE_ADMISSION",
+        "class_name": "CanonicalEngineAdmissionDurableObject"
+      }
+    ]
+  },
+  "exports": {
+    "CanonicalEngineAdmissionDurableObject": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    }
+  },
+  "observability": {
+    "enabled": false
+  }
+}

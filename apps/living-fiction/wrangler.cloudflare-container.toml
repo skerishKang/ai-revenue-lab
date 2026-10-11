@@ -1,0 +1,31 @@
+# B03 Living Fiction Cloudflare Container M0.
+# Source-only. No deployment/resource/secret mutation is authorized by this file.
+
+name = "living-fiction-cloudflare-container-m0"
+main = "deploy/cloudflare/container_worker.js"
+compatibility_date = "2026-09-09"
+compatibility_flags = ["nodejs_compat"]
+
+[[containers]]
+class_name = "LivingFictionContainer"
+image = "./Dockerfile.cloudflare"
+instance_type = "lite"
+max_instances = 1
+
+[[durable_objects.bindings]]
+name = "LIVING_FICTION_CONTAINER"
+class_name = "LivingFictionContainer"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["LivingFictionContainer"]
+
+# Required Worker secrets before any authorized deployment; values are never
+# committed. LF_DATABASE_URL is the existing Neon runtime-role connection URL.
+# LF_MIGRATION_DATABASE_URL remains absent from the serving runtime.
+#
+#   LF_DATABASE_URL
+#   LF_ADMIN_SECRET
+#   LF_CREDENTIAL_HMAC_KEY
+#   LF_SESSION_HMAC_KEY
+#   LF_ALLOWED_ORIGINS

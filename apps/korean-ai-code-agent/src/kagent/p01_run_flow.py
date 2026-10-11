@@ -43,9 +43,9 @@ ENV_ENGINE_BASE_URL = "P01_ENGINE_BASE_URL"
 ENV_ENGINE_CALLER_ID = "P01_ENGINE_CALLER_ID"
 ENV_ENGINE_CREDENTIAL = "P01_ENGINE_CREDENTIAL"
 
-# The Engine caps one orchestration budget at 60s; the socket timeout adds a
-# fixed margin so a stalled connection fails closed instead of hanging the CLI.
-TRANSPORT_TIMEOUT_SECONDS = 90.0
+# P01 agent execution now supports long-lived work; keep a finite socket
+# watchdog separate from model stream idle and user cancellation.
+TRANSPORT_TIMEOUT_SECONDS = 3600.0  # long-running P01 sync compatibility; async job follow-up
 
 # Bounded response read. Matches the ingress worker's own response ceiling so
 # the direct engine path never accepts a larger body than the canonical

@@ -11,7 +11,7 @@ _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _IDEMPOTENCY_KEY_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$")
 
 MIN_TIMEOUT_SECONDS = 1.0
-MAX_TIMEOUT_SECONDS = 60.0
+MAX_TIMEOUT_SECONDS = 3600.0  # allow long-running agent work; cancellations remain active
 
 
 class IdempotencyConflictError(RuntimeError):
@@ -100,7 +100,7 @@ class ExecutionContext:
 
     trace_id: str
     idempotency_key: str | None = None
-    timeout_seconds: float = 20.0
+    timeout_seconds: float = 900.0  # default agent run: 15 minutes
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "trace_id", _safe_identifier("trace_id", self.trace_id))

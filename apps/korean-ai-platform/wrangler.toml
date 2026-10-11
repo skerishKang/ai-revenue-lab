@@ -1,18 +1,111 @@
 name = "ai-revenue-korean-ai-platform"
 main = "worker.py"
+# Wrangler bundling: include the single canonical B14 JSON verbatim.
+find_additional_modules = true
+preserve_file_names = true
+
 compatibility_date = "2026-07-25"
 compatibility_flags = ["python_workers"]
 workers_dev = true
+
+# #3554 owner-approved B14 504 forensics (2026-10-10): persist bounded Worker
+# invocation logs, safe provider timeout phase and overall gateway deadline.
+# 100% sampling is intentional while this low-traffic diagnostic is open;
+# review pricing/retention and reduce sampling once the incident is resolved.
+# Never log provider credentials, customer documents or response bodies.
+[observability]
+enabled = true
+head_sampling_rate = 1
 
 [assets]
 directory = "static"
 binding = "ASSETS"
 
 [vars]
-# The canonical B14 deployment is explicitly live. Provider credentials are
-# never stored in this file: BYOK keys arrive per-request, and platform-owned
-# provider secrets (when re-enabled) are resolved through Worker bindings.
-# The vestigial Poolside Secrets Store binding was removed in #1961 — the
-# store item no longer exists, and its authorization check (error 10021)
-# blocked every gated deploy while Poolside is unreachable from the catalog.
+# The canonical B14 deployment is explicitly live. Provider credential values
+# are never stored in this file. BYOK keys arrive per-request; platform-owned
+# credentials are resolved through named Worker bindings.
 B14_PROVIDER_MODE = "live"
+
+# Owner correction #3209: reuse the existing Kilo credential already held in
+# the account Secrets Store. Only binding metadata is committed; the value never
+# enters source, logs, browser responses, Chat, Claw, or Legal.
+[[secrets_store_secrets]]
+binding = "PADIEM_KILO_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_KILO_API_KEY"
+
+# #2571 owner-approved B.AI account secret projection. The Secrets Store value
+# remains account-managed; only the binding metadata is committed here.
+[[secrets_store_secrets]]
+binding = "PADIEM_B_AI_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_B_AI_API_KEY"
+
+# Owner decision 2026-09-18: Agnes plus-pool credential projection. The Secrets
+# Store value remains owner-managed; only the binding metadata is committed here.
+[[secrets_store_secrets]]
+binding = "PADIEM_AGNES_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_AGNES_API_KEY"
+
+# Owner decision 2026-09-18: Poolside credential re-registration. The Secrets
+# Store value remains owner-managed; only the binding metadata is committed here.
+[[secrets_store_secrets]]
+binding = "PADIEM_POOLSIDE_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_POOLSIDE_API_KEY"
+
+# B14 provider onboarding metadata only. Secret values remain owner-managed in
+# Secrets Store and are never committed to this repository.
+[[secrets_store_secrets]]
+binding = "PADIEM_INFRON_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_INFRON_API_KEY"
+
+[[secrets_store_secrets]]
+binding = "PADIEM_INCEPTION_MERCURY_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_INCEPTION_MERCURY_API_KEY"
+
+[[secrets_store_secrets]]
+binding = "PADIEM_ATRIA_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_ATRIA_API_KEY"
+
+[[secrets_store_secrets]]
+binding = "PADIEM_EXLAB_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_EXLAB_API_KEY"
+
+# #3554 owner-selected Google AI Studio routes. The binding name matches
+# GOOGLE_CREDENTIAL_BINDING in app/pilot/google_provider.py; the Secrets Store
+# value is owner-managed and never committed here. Registration is
+# metadata-only: without the store secret the Google routes stay present but
+# resolve no credential and fail closed (platform_secrets.resolve_secret).
+[[secrets_store_secrets]]
+binding = "PADIEM_GEMINI_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_GEMINI_API_KEY"
+
+# #4018 Kira Qwen3.8 Flash Free. Existing Charliekant account-scoped secret;
+# metadata-only. No key value or cross-provider credential reuse.
+[[secrets_store_secrets]]
+binding = "PADIEM_KIRAAI_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_KIRAAI_API_KEY"
+
+
+# ModelScope inference: existing Charliekant Secrets Store name, metadata ONLY.
+# Exact DeepSeek-V4.1-Flash upstream uses ModelScope token, never DeepSeek direct API.
+# Do not deploy until current credential binding/readiness and intended use verified.
+[[secrets_store_secrets]]
+binding = "PADIEM_MODELSCOPE_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_MODELSCOPE_API_KEY"
+
+# The owner-managed registry must be loaded from /session/metadata/app/pilot.
+[[rules]]
+type = "Text"
+globs = ["app/pilot/b14_models.json"]
+fallthrough = true

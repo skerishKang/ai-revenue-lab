@@ -1,0 +1,396 @@
+from __future__ import annotations
+
+import contextlib
+import importlib.util
+import io
+import json
+import pathlib
+import subprocess
+import sys
+import tempfile
+import unittest
+
+ROOT = pathlib.Path(__file__).resolve().parents[2]
+SCRIPT_PATH = ROOT / "apps" / "padiem-ai-engine" / "scripts" / "a14_gmail_read_production_canary.py"
+WORKFLOW_PATH = ROOT / ".github" / "workflows" / "b54-gmail-read-production-canary.yml"
+SERVED_VERSION_GUARD_PATH = ROOT / ".github" / "scripts" / "b54_engine_served_version_guard.py"
+SERVED_VERSION_RESOLVER_PATH = ROOT / ".github" / "scripts" / "cloudflare_served_version.py"
+
+# #3809 (parent #3748): the resolved served version id must reach the canonical
+# argparse surface as ONE token. The canonical grammar accepts a leading hyphen,
+# so the separated form lets argparse consume the id as an option and abort with
+# a usage error before the predicate is ever consulted.
+#
+# This workflow's contract job does NOT install PyYAML, so the workflow is read
+# as text here rather than parsed. The guard invocation is a single command line,
+# with shell line-continuations joined when present.
+CANONICAL_ACTIVE_VERSION_ARGV = '--active-version="${active_version}"'
+SEPARATED_ACTIVE_VERSION_ARGV = '--active-version "${active_version}"'
+CANONICAL_VERSION_ID_GRAMMAR = r"grep -Eq '^[A-Za-z0-9._-]{1,64}$'"
+LEADING_HYPHEN_VERSION_ID = "-canonical-safe-v1"
+REGISTRY_BINDING_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1"
+CONNECTOR_GRANTS_BINDING_NAME = "ENGINE_CONNECTOR_GRANTS"
+CONNECTOR_GRANTS_DATABASE_ID = "6b77ad02-bc27-488f-bb97-6325f6750cba"
+GOOGLE_OAUTH_BINDING_NAME = "CONTROL_PLANE_GOOGLE_OAUTH"
+GOOGLE_OAUTH_SERVICE = "padiem-google-oauth-state"
+SENTINEL = "sentinel-secret-value-must-never-appear"
+
+spec = importlib.util.spec_from_file_location("a14_gmail_read_production_canary", SCRIPT_PATH)
+assert spec is not None and spec.loader is not None
+canary = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(canary)
+
+_resolver_spec = importlib.util.spec_from_file_location(
+    "cloudflare_served_version", SERVED_VERSION_RESOLVER_PATH
+)
+assert _resolver_spec is not None and _resolver_spec.loader is not None
+served_version = importlib.util.module_from_spec(_resolver_spec)
+_resolver_spec.loader.exec_module(served_version)
+
+
+def workflow_text() -> str:
+    return WORKFLOW_PATH.read_text(encoding="utf-8")
+
+
+def served_version_guard_commands() -> list[str]:
+    """Every command in this workflow that invokes the canonical served-version guard.
+
+    Shell line-continuations are joined so a reformatted multi-line invocation is
+    still measured as one command.
+    """
+    lines = workflow_text().splitlines()
+    commands: list[str] = []
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        if "b54_engine_served_version_guard.py verify" not in line:
+            index += 1
+            continue
+        chunk = [line]
+        while chunk[-1].rstrip().endswith("\\") and index + 1 < len(lines):
+            index += 1
+            chunk.append(lines[index])
+        commands.append("\n".join(chunk))
+        index += 1
+    return commands
+
+
+def assert_canonical_active_version_argv(command: str) -> None:
+    """The #3809 contract: one canonical argv token, never a separated pair."""
+    assert command.count("b54_engine_served_version_guard.py verify") == 1
+    assert CANONICAL_ACTIVE_VERSION_ARGV in command
+    assert SEPARATED_ACTIVE_VERSION_ARGV not in command
+
+
+def leading_hyphen_version_detail() -> dict:
+    """Minimal canonical version-detail payload whose id starts with a hyphen.
+
+    Carries exactly the bindings the real Gmail canary guard call requires, so the
+    probe exercises the shipped `--require-drive-runtime-bindings` path too.
+    """
+    return {
+        "success": True,
+        "result": {
+            "id": LEADING_HYPHEN_VERSION_ID,
+            "resources": {
+                "bindings": [
+                    {"name": REGISTRY_BINDING_NAME, "type": "secret_text", "text": SENTINEL},
+                    {
+                        "name": CONNECTOR_GRANTS_BINDING_NAME,
+                        "type": "d1",
+                        "id": CONNECTOR_GRANTS_DATABASE_ID,
+                    },
+                    {
+                        "name": GOOGLE_OAUTH_BINDING_NAME,
+                        "type": "service",
+                        "service": GOOGLE_OAUTH_SERVICE,
+                    },
+                ]
+            },
+        },
+    }
+
+
+def run_guard_cli(argv: list[str]) -> subprocess.CompletedProcess:
+    """Invoke the real guard CLI as a subprocess. Never touches Cloudflare or a provider."""
+    return subprocess.run(
+        [sys.executable, str(SERVED_VERSION_GUARD_PATH), *argv],
+        capture_output=True,
+        text=True,
+    )
+
+
+class GmailReadProductionCanaryTests(unittest.TestCase):
+    def _success_body(self) -> bytes:
+        return json.dumps(
+            {
+                "ok": True,
+                "tool": {
+                    "canonical_tool_id": canary.TOOL_ID,
+                    "status": "completed",
+                    "output_truncated": False,
+                    "output": {
+                        "provider": "gmail",
+                        "operation": "messages.list",
+                        "query": canary.CANARY_QUERY,
+                        "result_status": "OK",
+                        "messages": [
+                            {
+                                "message_id": "sensitive-message-id",
+                                "thread_id": "sensitive-thread-id",
+                            }
+                        ],
+                        "result_count": 1,
+                        "more_results_available": False,
+                        "page_followed": False,
+                        "mail_content_trusted": False,
+                        "raw_credentials_present": "[redacted]",
+                    },
+                },
+            },
+            separators=(",", ":"),
+        ).encode("utf-8")
+
+    def test_fixed_canonical_request_contract(self) -> None:
+        self.assertEqual(canary.ENGINE_BASE_URL, "https://engine.padiem.net")
+        self.assertEqual(canary.TOOL_EXECUTE_PATH, "/internal/v1/tools/execute")
+        self.assertEqual(canary.CALLER_ID, "b54-p01-overlay-20260914-a1")
+        self.assertEqual(
+            canary.canonical_request_body(),
+            {
+                "app_id": "b54-padiem-claw",
+                "agent_id": "agent:padiem:claw_mail_reader@1",
+                "tool_id": "tool:google:gmail.search_messages@1",
+                "arguments": {
+                    "query": 'subject:"__PADIEM_GMAIL_READ_CANARY_NONMATCH_20260919__"'
+                },
+            },
+        )
+        self.assertEqual(canary.PROVIDER_READ_BUDGET_MAX, 2)
+
+    def test_success_uses_one_engine_post_and_emits_only_aggregate_evidence(self) -> None:
+        calls: list[tuple[dict[str, object], str]] = []
+        credential = "super-secret-caller-credential"
+
+        def transport(body: dict[str, object], supplied_credential: str) -> tuple[int, bytes]:
+            calls.append((body, supplied_credential))
+            return 200, self._success_body()
+
+        stdout = io.StringIO()
+        with contextlib.redirect_stdout(stdout):
+            rc = canary.run(credential, transport=transport)
+
+        self.assertEqual(rc, 0)
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0][0], canary.canonical_request_body())
+        self.assertEqual(calls[0][1], credential)
+        output = stdout.getvalue()
+        self.assertIn("GMAIL_READ_CANARY=PASS", output)
+        self.assertIn("GMAIL_RESULT_ITEM_COUNT=1", output)
+        self.assertIn("ENGINE_TOOL_EXECUTE_POST_COUNT=1", output)
+        self.assertIn("NETWORK_RETRY_COUNT=0", output)
+        self.assertIn("GMAIL_PROVIDER_READ_BUDGET_MAX=2", output)
+        self.assertIn("RAW_MESSAGE_ID_OUTPUT=0", output)
+        self.assertIn("RAW_THREAD_ID_OUTPUT=0", output)
+        for forbidden in (
+            credential,
+            "sensitive-message-id",
+            "sensitive-thread-id",
+        ):
+            self.assertNotIn(forbidden, output)
+
+    def test_empty_search_is_valid_provider_read(self) -> None:
+        payload = json.loads(self._success_body().decode("utf-8"))
+        payload["tool"]["output"]["result_status"] = "UNKNOWN"
+        payload["tool"]["output"]["messages"] = []
+        payload["tool"]["output"]["result_count"] = 0
+        count, pagination, truncated = canary.classify_success(payload)
+        self.assertEqual(count, 0)
+        self.assertEqual(pagination, "NO")
+        self.assertFalse(truncated)
+
+    def test_result_list_is_bounded_and_contains_refs_only(self) -> None:
+        payload = json.loads(self._success_body().decode("utf-8"))
+        payload["tool"]["output"]["messages"] = [
+            {"message_id": f"m{i}", "thread_id": f"t{i}"}
+            for i in range(canary.MAX_RESULT_ITEMS + 1)
+        ]
+        payload["tool"]["output"]["result_count"] = len(payload["tool"]["output"]["messages"])
+        with self.assertRaises(ValueError):
+            canary.classify_success(payload)
+
+        payload = json.loads(self._success_body().decode("utf-8"))
+        payload["tool"]["output"]["messages"][0]["subject"] = "private subject"
+        with self.assertRaises(ValueError):
+            canary.classify_success(payload)
+
+    def test_no_message_content_surface_is_accepted(self) -> None:
+        for forbidden_key in (
+            "projection",
+            "body",
+            "body_segments",
+            "subject",
+            "from_address",
+            "to_addresses",
+            "attachments",
+            "filename",
+            "raw_attachment_bytes_present",
+        ):
+            payload = json.loads(self._success_body().decode("utf-8"))
+            payload["tool"]["output"][forbidden_key] = "private"
+            with self.assertRaises(ValueError):
+                canary.classify_success(payload)
+
+    def test_headers_keep_credential_private(self) -> None:
+        credential = "private-value"
+        headers = canary._headers(credential)
+        self.assertEqual(headers["x-padiem-engine-caller"], canary.CALLER_ID)
+        self.assertEqual(headers["x-padiem-engine-credential"], credential)
+        self.assertNotIn(credential, repr(canary.canonical_request_body()))
+
+    def test_non_200_emits_only_bounded_error_code(self) -> None:
+        stdout = io.StringIO()
+        with contextlib.redirect_stdout(stdout):
+            rc = canary.run(
+                "credential",
+                transport=lambda body, credential: (
+                    503,
+                    b'{"error":{"code":"google_oauth_access_lease_unavailable","message":"private detail"}}',
+                ),
+            )
+        output = stdout.getvalue()
+        self.assertEqual(rc, 1)
+        self.assertIn("GMAIL_READ_CANARY=FAIL_ENGINE_RESPONSE", output)
+        self.assertIn("ENGINE_ERROR_CODE=google_oauth_access_lease_unavailable", output)
+        self.assertNotIn("private detail", output)
+        self.assertIn("ENGINE_TOOL_EXECUTE_POST_COUNT=1", output)
+        self.assertIn("NETWORK_RETRY_COUNT=0", output)
+
+    def test_malformed_success_fails_closed_without_raw_output(self) -> None:
+        raw = b'{"ok":true,"tool":{"status":"completed","output":{"subject":"private-subject"}}}'
+        stdout = io.StringIO()
+        with contextlib.redirect_stdout(stdout):
+            rc = canary.run("credential", transport=lambda body, credential: (200, raw))
+        output = stdout.getvalue()
+        self.assertEqual(rc, 1)
+        self.assertIn("GMAIL_READ_CANARY=FAIL_NONCANONICAL_SUCCESS", output)
+        self.assertNotIn("private-subject", output)
+
+    def test_transport_exception_is_not_retried(self) -> None:
+        calls = 0
+
+        def transport(body: dict[str, object], credential: str) -> tuple[int, bytes]:
+            nonlocal calls
+            calls += 1
+            raise RuntimeError("sensitive transport failure")
+
+        stdout = io.StringIO()
+        with contextlib.redirect_stdout(stdout):
+            rc = canary.run("credential", transport=transport)
+        self.assertEqual(rc, 1)
+        self.assertEqual(calls, 1)
+        output = stdout.getvalue()
+        self.assertIn("GMAIL_READ_CANARY=FAIL_NETWORK", output)
+        self.assertNotIn("sensitive transport failure", output)
+        self.assertIn("NETWORK_RETRY_COUNT=0", output)
+
+
+class GmailReadProductionCanaryWorkflowContractTests(unittest.TestCase):
+    """#3809 (parent #3748): the canonical served-version argv contract."""
+
+    def test_3809_gmail_canary_passes_the_active_version_as_one_canonical_argv_token(self) -> None:
+        """The sole served-version guard call must use the `=` form."""
+
+        commands = served_version_guard_commands()
+        self.assertEqual(len(commands), 1)
+        command = commands[0]
+        assert_canonical_active_version_argv(command)
+        # The guard call itself is otherwise untouched: same payload, same
+        # reviewed binding requirement, same silence.
+        self.assertIn('--version-settings "${version_detail}"', command)
+        self.assertIn("--require-drive-runtime-bindings", command)
+        self.assertIn(">/dev/null", command)
+
+    def test_3809_canonical_predicate_and_version_equality_are_preserved(self) -> None:
+        """The fix must not relax the grammar or the exact-version equality gate."""
+
+        text = workflow_text()
+        self.assertIn(CANONICAL_VERSION_ID_GRAMMAR, text)
+        self.assertIn('test "${active_version}" = "${EXPECTED_ENGINE_VERSION}"', text)
+        self.assertIn("ENGINE_EXPECTED_VERSION_ACTIVE=PASS", text)
+        # The canonical grammar is the shared resolver's, not a local re-derivation.
+        self.assertEqual(served_version.SERVED_VERSION_ID_RE.pattern, r"^[A-Za-z0-9._-]{1,64}$")
+        self.assertTrue(served_version.is_safe_version_id(LEADING_HYPHEN_VERSION_ID))
+
+    def test_3809_reintroducing_the_separated_argv_form_fails_the_contract(self) -> None:
+        """Negative control: the pre-#3809 form can no longer satisfy the contract."""
+
+        commands = served_version_guard_commands()
+        self.assertEqual(len(commands), 1)
+        command = commands[0]
+        # The shipped workflow must already carry the `=` form for this control to
+        # mean anything; a reverted file fails here, before the mutation is built.
+        assert_canonical_active_version_argv(command)
+        broken = command.replace(CANONICAL_ACTIVE_VERSION_ARGV, SEPARATED_ACTIVE_VERSION_ARGV, 1)
+        self.assertNotEqual(broken, command)
+        self.assertNotIn(CANONICAL_ACTIVE_VERSION_ARGV, broken)
+        self.assertIn(SEPARATED_ACTIVE_VERSION_ARGV, broken)
+        with self.assertRaises(AssertionError):
+            assert_canonical_active_version_argv(broken)
+
+    def test_3809_real_guard_cli_accepts_a_leading_hyphen_id_only_in_the_equals_form(self) -> None:
+        """CLI acceptance == is_safe_version_id() over an option-shaped id (#3748 item 2)."""
+
+        with tempfile.TemporaryDirectory() as tmp:
+            detail = pathlib.Path(tmp) / "gmail-canary-engine-version.json"
+            detail.write_text(json.dumps(leading_hyphen_version_detail()), encoding="utf-8")
+
+            # `=` form: argparse accepts the id, so the canonical predicate decides.
+            accepted = run_guard_cli(
+                [
+                    "verify",
+                    "--version-settings",
+                    str(detail),
+                    f"--active-version={LEADING_HYPHEN_VERSION_ID}",
+                    "--require-drive-runtime-bindings",
+                ]
+            )
+            self.assertEqual(accepted.returncode, 0, accepted.stderr)
+            self.assertIn("B54_ENGINE_SERVED_VERSION_GUARD=PASS", accepted.stdout)
+            self.assertIn("DRIVE_RUNTIME_BINDINGS_VALIDATED=YES", accepted.stdout)
+            self.assertNotIn("usage:", accepted.stderr.lower())
+            self.assertNotIn(SENTINEL, accepted.stdout + accepted.stderr)
+
+            # Separated form: argparse eats the id as an option and aborts first.
+            rejected = run_guard_cli(
+                [
+                    "verify",
+                    "--version-settings",
+                    str(detail),
+                    "--active-version",
+                    LEADING_HYPHEN_VERSION_ID,
+                    "--require-drive-runtime-bindings",
+                ]
+            )
+            self.assertEqual(rejected.returncode, 2)
+            self.assertIn("usage:", rejected.stderr.lower())
+            self.assertNotIn("B54_ENGINE_SERVED_VERSION_GUARD=PASS", rejected.stdout)
+
+            # Mismatch: the parser accepted the id, but the guard still fails closed.
+            mismatch = run_guard_cli(
+                [
+                    "verify",
+                    "--version-settings",
+                    str(detail),
+                    "--active-version=-different-safe-v1",
+                    "--require-drive-runtime-bindings",
+                ]
+            )
+            self.assertEqual(mismatch.returncode, 1)
+            self.assertIn("B54_ENGINE_SERVED_VERSION_GUARD=FAIL", mismatch.stderr)
+            self.assertNotIn("B54_ENGINE_SERVED_VERSION_GUARD=PASS", mismatch.stdout)
+            self.assertNotIn(SENTINEL, mismatch.stdout + mismatch.stderr)
+
+
+if __name__ == "__main__":
+    unittest.main()

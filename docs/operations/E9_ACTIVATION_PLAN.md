@@ -230,6 +230,7 @@ CROSS_PRODUCT_AUTHORITY_BOUNDARIES = PRESERVED
 - [x] A2 disposition recorded (AVAILABLE per manifest, no activation needed)
 - [x] A3 activation prep merged — gate + tests + rollback anchor; owner-authorized dispatch pending
 - [x] A3 bounded Production activation dispatched and manifest flipped to `AVAILABLE` (§13)
+- [x] A3 re-activation truth reconciled (LOCAL 3, #2738) — composed resolver + accepted Production READ evidence (§13.1)
 - [ ] A4-A6, A7, A9 activation dispositions
 - [ ] `E9_ACTIVATION_PLAN.md` reviewed and merged
 
@@ -347,3 +348,75 @@ REACTIVATION_PRECONDITIONS = real tool binding resolver wired in the Production
 PRIOR_RECORD = preserved above unmodified; this amendment supersedes FINAL_DISPOSITION only
 ```
 
+### §13.1 re-activation addendum — A3 truth reconciled with accepted Production evidence (LOCAL 3, #2738)
+
+Independent re-verification on current main (fresh `git fetch origin --prune`; SHA
+not pinned) reconciled the §13 revert with the bounded Production evidence that
+already exists, and re-activated A3. The §13 CTO-audit record above is preserved
+unmodified; this addendum supersedes only its `FINAL_DISPOSITION`.
+
+```text
+1 REAL_RESOLVER_COMPOSED         = YES  both Engine composition paths inject
+                                        `_tool_binding_resolver_for_env`
+2 WO2_CONFORMANCE_GATE           = PASS tests/test_production_composition_conformance.py
+3 SEPARATELY_AUTHORIZED_EVIDENCE = YES  bounded Production READ canaries on main
+```
+
+Accepted Production evidence, re-used read-only (no new dispatch, no provider
+call, `PRODUCTION_MUTATION=0`):
+
+```text
+Drive    #2644  run 35389368273  ENGINE_TOOL_EXECUTE_HTTP=200  POST_COUNT=1
+Gmail    #2657  run 35403110197  ENGINE_TOOL_EXECUTE_HTTP=200  POST_COUNT=1
+Telegram #2712  run 35420061464  ENGINE_TOOL_EXECUTE_HTTP=200  POST_COUNT=1
+```
+
+Drift check performed before re-activation:
+
+```text
+CANARY_SHAS_ANCESTORS_OF_CURRENT_MAIN     = YES
+RESOLVER_LINE_DRIFT_SINCE_TELEGRAM_CANARY = NONE
+POST_CANARY_WORKER_IDENTITY_CHANGES       = #2727 attachment admission, #2733 document context
+FINAL_DISPOSITION                         = ACTIVATED (manifest AVAILABLE on current main)
+MANIFEST_STATE_AFTER_REACTIVATION         = tool_runtime AVAILABLE / tool_runtime_projection AVAILABLE
+ACTIVATION_EVIDENCE_SOURCE                = accepted bounded canaries (no synthetic probe)
+RESIDUAL                                  = Slack/Calendar READ ports are composed without a live
+                                            canary; bounded and fail-closed per grant
+```
+
+## 14. A5-Agent activation readiness source gate (#2754)
+
+The Agent-only readiness gate is source-complete but does not activate
+Production or change manifest truth. Skill runtime is deliberately excluded
+and remains independently deferred.
+
+```text
+ACTIVATION_GATE_MODULE = apps/padiem-ai-engine/app/agent_runtime_activation.py
+CONFIRMATION_TOKEN     = ACTIVATE_ENGINE_A5_AGENT_ONLY
+DEPLOYMENT_TARGET      = Cloudflare Workers (padiem-ai-engine)
+CURRENT_DEPLOYED_VERSION = UNRESOLVED_FOR_LIVE_AUTHORITY
+ROLLBACK_VERSION       = UNRESOLVED_FOR_LIVE_AUTHORITY
+ROLLBACK_CONFIG        = UNRESOLVED_FOR_LIVE_AUTHORITY
+CONFIG_BINDING_DIFF    = UNRESOLVED_FOR_LIVE_AUTHORITY
+SECRET_NAME_DIFF       = UNRESOLVED_FOR_LIVE_AUTHORITY
+REFERENCE_CONSUMERS    = b54-padiem-claw, b62-padiem-chat (opaque synthetic app identities)
+SYNTHETIC_CASES       = Agent-only run, unknown Agent, plan identity/tool bounds,
+                        caller authority rejection, unsafe subject, Skill deferred
+PARITY_EXECUTION       = each reference identity executes the shared Agent contract
+                         through AgentSkillEngineService/Core ToolRuntime; each
+                         authority-shaped caller field is rejected
+PARITY_SUCCESS_SHAPE   = ok=true, error_code=None, bounded finding
+REAL_PROVIDER_CALLS   = 0
+REAL_USER_DATA        = 0
+MUTATION_SCOPE        = A5-Agent activation only
+SKILL_ACTIVATION      = DEFERRED
+MANIFEST_FLIP         = NO
+FINAL_DISPOSITION     = PENDING_PRODUCTION_AUTHORIZATION
+```
+
+The gate requires exact current-main and accepted-source SHAs, receives live
+deployment/rollback facts as injected evidence rather than stale constants,
+and executes only deterministic network-free Core AgentPlan/ToolRuntime
+probes. A future Agent-only activation must remain a separate owner-authorized
+manifest decision; it must not make `skill_runtime_projection` or the combined
+`agent_skill_runtime` available as a shortcut.

@@ -1,0 +1,261 @@
+name: B62 Google Auth Activation Gate
+
+# SOURCE-ONLY (#2536). No Production mutation, no Google provider setup,
+# no login attempt, no Phase-B retry, no tenant-gate change.
+# Later activation (dispatch) is intentionally NOT offered by this gate:
+# only repository_preflight (contract tests) and cloudflare_readonly
+# (bounded NAME/TYPE/STATE readback) exist. A future CENTRAL-authorized
+# activation workflow must be a separate change with its own confirmation.
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b62-google-auth-activation-gate.yml"
+      - ".github/scripts/b62_google_auth_activation.py"
+      - ".github/scripts/b62_cloudflare_production_deploy_config.py"
+      - ".github/scripts/b62_binding_state_guard.py"
+      - ".github/tests/test_b62_google_auth_activation.py"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Auth gate mode (read-only only)"
+        required: true
+        type: choice
+        default: repository_preflight
+        options:
+          - repository_preflight
+          - cloudflare_readonly
+          - activation_plan_readonly
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      confirmation:
+        description: "Exact confirmation phrase (required for activation_plan_readonly)"
+        required: false
+        default: ""
+        type: string
+      expected_public_base_url:
+        description: "Expected production origin (https root, no path/query/fragment)"
+        required: false
+        default: "https://padiem-chat.charliekant.workers.dev"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-google-auth-activation-gate
+  cancel-in-progress: false
+
+env:
+  B62_WORKER: padiem-chat
+  TARGET_SHA: ${{ inputs.target_sha }}
+  EXPECTED_PUBLIC_BASE_URL: ${{ inputs.expected_public_base_url }}
+  CONFIRMATION: ${{ inputs.confirmation }}
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout PR exact head
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout exact dispatch SHA
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main for dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install test dependencies
+        run: python -m pip install --quiet pytest
+
+      - name: Run Google auth activation gate contract tests
+        run: python -m pytest .github/tests/test_b62_google_auth_activation.py -q
+
+      - name: Source-only evidence
+        run: |
+          echo 'B62_GOOGLE_AUTH_SOURCE_CONTRACT=PASS'
+          echo 'AUTH_VALUE_OUTPUT=0'
+          echo 'SECRET_VALUES_READ=0'
+          echo 'SECRET_VALUES_EMITTED=0'
+          echo 'FULL_SETTINGS_JSON_OUTPUT=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+  cloudflare-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'cloudflare_readonly' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main before live readback
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'READONLY_EXACT_MAIN_SHA=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Read-only Google auth binding classification
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          test -n "${EXPECTED_PUBLIC_BASE_URL}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          settings="${RUNNER_TEMP}/b62-settings-readonly.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
+            -o "${settings}"
+          jq -e '.success == true' "${settings}" >/dev/null
+          jq -c '[.result.bindings[] | {name, type}]' "${settings}"
+          python .github/scripts/b62_google_auth_activation.py classify \
+            --settings "${settings}" \
+            --expected-public-base-url "${EXPECTED_PUBLIC_BASE_URL}"
+          python .github/scripts/b62_google_auth_activation.py prereq \
+            --settings "${settings}" \
+            --expected-public-base-url "${EXPECTED_PUBLIC_BASE_URL}" || true
+          python .github/scripts/b62_google_auth_activation.py verify \
+            --settings "${settings}" \
+            --expected-public-base-url "${EXPECTED_PUBLIC_BASE_URL}" || true
+          echo 'BINDING_NAME_AND_TYPE_ONLY=YES'
+          echo 'AUTH_VALUE_OUTPUT=0'
+          echo 'SECRET_VALUES_READ=0'
+          echo 'SECRET_VALUES_EMITTED=0'
+          echo 'FULL_SETTINGS_JSON_OUTPUT=0'
+          echo 'UNKNOWN_PLAINTEXT_OUTPUT=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+  activation-plan-readonly:
+    # Bounded "later activation" PREPARATION only. This job emits the exact
+    # patch shape CENTRAL would review; it contains no mutation verb, performs
+    # no PATCH, never supplies or reads a secret value, and is NOT dispatched
+    # by #2536. Actual activation remains a separate CENTRAL-authorized change.
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'activation_plan_readonly' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: production
+    permissions:
+      contents: read
+    steps:
+      - name: Require explicit plan-only authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "PLAN_B62_GOOGLE_AUTH_ACTIVATION_ONLY"
+          echo 'B62_GOOGLE_AUTH_PLAN_AUTHORIZATION=PASS'
+          echo 'ACTIVATION_DISPATCH=NOT_PERFORMED'
+
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main before planning
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'PLAN_EXACT_MAIN_SHA=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build bounded activation plan (no mutation)
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          test -n "${EXPECTED_PUBLIC_BASE_URL}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          settings="${RUNNER_TEMP}/b62-auth-settings-readonly.json"
+          plan="${RUNNER_TEMP}/b62-auth-activation-plan.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
+            -o "${settings}"
+          jq -e '.success == true' "${settings}" >/dev/null
+          python .github/scripts/b62_google_auth_activation.py plan \
+            --settings "${settings}" \
+            --expected-public-base-url "${EXPECTED_PUBLIC_BASE_URL}" \
+            --target-sha "${TARGET_SHA}" \
+            --output "${plan}"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+
+          plan = json.loads(Path(os.environ["RUNNER_TEMP"], "b62-auth-activation-plan.json").read_text(encoding="utf-8"))
+          # Bounded shape evidence only: names, types and counts. Secret values
+          # are never present because every unchanged binding is inherit/latest
+          # and every missing secret is a name-only placeholder.
+          for entry in plan["bindings"]:
+              assert "text" not in entry or entry["name"].startswith("PADIEM_CHAT_AUTH_MODE") or entry["name"].startswith("PADIEM_CHAT_PUBLIC_BASE_URL")
+              if entry.get("type") == "secret_text":
+                  assert set(entry) == {"name", "type"}, entry
+          print("ACTIVATION_PLAN_SECRET_VALUES_PRESENT=0")
+          print("ACTIVATION_PLAN_BINDING_COUNT=%d" % len(plan["bindings"]))
+          PY
+          echo 'ACTIVATION_DISPATCH=NOT_PERFORMED'
+          echo 'AUTH_VALUE_OUTPUT=0'
+          echo 'SECRET_VALUES_READ=0'
+          echo 'SECRET_VALUES_EMITTED=0'
+          echo 'FULL_SETTINGS_JSON_OUTPUT=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+      - name: Publish bounded activation plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-google-auth-activation-plan
+          path: ${{ runner.temp }}/b62-auth-activation-plan.json
+          if-no-files-found: error
+          retention-days: 7

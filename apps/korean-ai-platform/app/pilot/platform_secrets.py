@@ -32,6 +32,8 @@ from dataclasses import dataclass
 from enum import Enum
 from urllib.parse import urlparse
 
+from .worker_env import scoped_secret
+
 
 class CredentialSource(str, Enum):
     """Minimum supported credential-source contract for platform Providers."""
@@ -128,7 +130,13 @@ def resolve_secret(spec: PlatformProviderSpec) -> str:
     """
     if spec.credential_source != CredentialSource.PLATFORM_SECRET:
         return ""
-    raw = os.environ.get(spec.credential_binding_name, "")
+    # Worker requests use request-scoped Secrets Store values; no previously
+    # cached global credential can satisfy a missing/rotated binding.
+    scoped = scoped_secret(spec.credential_binding_name)
+    raw = (
+        os.environ.get(spec.credential_binding_name, "")
+        if scoped is None else scoped
+    )
     if not raw:
         return ""
     if _looks_like_placeholder(raw):
