@@ -116,7 +116,7 @@ jobs:
               # Fail CLOSED before any PATCH if this Worker cannot provide
               # version-pinned source for the exact currently served ID.
               curl -fsS --retry 2 --retry-delay 2 "${auth[@]}" \
-                "https://api.cloudflare.com/client/v4/accounts/${CLOUD_ACCOUNT_ID}/workers/workers/${worker}/versions/${active}" \
+                "https://api.cloudflare.com/client/v4/accounts/${CLOUD_ACCOUNT_ID}/workers/workers/${worker}/versions/${active}?include=modules" \
                 -o "${RUNNER_TEMP}/hark-target-modules.json"
               # One-line Python command: avoids shell heredoc indentation drift
               # inside the nested 'if target' in GitHub YAML run blocks.
@@ -202,7 +202,7 @@ jobs:
           test "$active" != "${HARK_ROLLBACK_VERSION_ID}"
           curl -fsS "${auth[@]}" "${api}/versions/${active}" -o "${RUNNER_TEMP}/hark-after-version.json"
           curl -fsS "${auth[@]}" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUD_ACCOUNT_ID}/workers/workers/${WORKER}/versions/${active}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUD_ACCOUNT_ID}/workers/workers/${WORKER}/versions/${active}?include=modules" \
             -o "${RUNNER_TEMP}/hark-after-modules.json"
           python - "${RUNNER_TEMP}/hark-target-modules.json" \
             "${RUNNER_TEMP}/hark-after-modules.json" \
