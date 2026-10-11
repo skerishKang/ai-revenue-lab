@@ -12,6 +12,7 @@ const SRC = {
   processing_authorized: false,
 };
 const REF = "sel_" + "c".repeat(32);
+const COPY_ID = "doc_" + "d".repeat(32);
 const SELECTION = {
   selection_ref: REF, document_id: SRC.document_id, filename: SRC.filename,
   size_bytes: SRC.size_bytes, source_sha256: SRC.source_sha256,
@@ -55,7 +56,7 @@ function response(body, status = 200) {
 async function settle() {
   for (let i = 0; i < 12; ++i) await new Promise(resolve => setImmediate(resolve));
 }
-function server({ initial = "waiting_p01", enabled = true, failPost = false, failStart = false, badSource = false } = {}) {
+function server({ initial = "waiting_p01", enabled = true, failPost = false, failStart = false, badSource = false, workcopy = false } = {}) {
   let stage = initial, sent = [], starts = [];
   global.fetch = async (url, options = {}) => {
     assert.equal(options.credentials, "same-origin");
@@ -83,7 +84,9 @@ function server({ initial = "waiting_p01", enabled = true, failPost = false, fai
         source_sha256: badSource ? "f".repeat(64) : SRC.source_sha256,
         status: stage, owner_decision_enabled: enabled && stage === "waiting_p01",
         owner_request_enabled: enabled && stage === "not_requested",
-        processing_started: false, workcopy_created: false,
+        processing_started: workcopy && stage === "confirmed",
+        workcopy_created: workcopy && stage === "confirmed",
+        workcopy_document_id: workcopy && stage === "confirmed" ? COPY_ID : null,
       });
     }
     if (url.endsWith("/start-p01") && method === "POST") {
@@ -107,8 +110,11 @@ function server({ initial = "waiting_p01", enabled = true, failPost = false, fai
       stage = body.decision === "approve" ? "confirmed" : "denied";
       return response({
         ok: true, contract_version: "claw-web-xlsx-p01-owner-decision.v1",
-        selection_ref: REF, status: stage, owner_intent_only: true,
-        processing_started: false, workcopy_created: false,
+        selection_ref: REF, status: stage,
+        owner_intent_only: !(workcopy && stage === "confirmed"),
+        processing_started: workcopy && stage === "confirmed",
+        workcopy_created: workcopy && stage === "confirmed",
+        workcopy_document_id: workcopy && stage === "confirmed" ? COPY_ID : null,
       });
     }
     throw Error("UNEXPECTED_REQUEST " + method + " " + url);
@@ -146,6 +152,21 @@ async function prepare(config) {
   assert.equal(ready.root.nodes.clawWebXlsxP01Approve.disabled, true);
   ready.root.nodes.clawWebXlsxP01Approve.handlers.click(); await settle();
   assert.deepEqual(ready.network.sent, ["approve"]);
+
+  // A genuine server-generated copy receipt must be accepted and expose ONLY
+  // the owner-scoped selection download, never arbitrary R2/object references.
+  const copied = await prepare({workcopy: true});
+  copied.root.nodes.clawWebXlsxP01Approve.handlers.click(); await settle();
+  assert.deepEqual(copied.network.sent, ["approve"]);
+  const link = copied.root.nodes.clawWebXlsxP01Panel.children.find(
+    item => item.tag === "a" && /작업 사본/.test(item.textContent));
+  assert.ok(link);
+  assert.equal(link.hidden, false);
+  assert.equal(link.href,
+    "/api/claw/office/web-selections/" + REF + "/workcopy/download");
+  assert.ok(!link.href.includes(COPY_ID));
+  copied.existing.handlers.click(); await settle();
+  assert.equal(link.hidden, false, "Owner-scoped server readback survives refresh");
 
   const fresh = await prepare({initial: "not_requested"});
   assert.equal(fresh.root.nodes.clawWebXlsxP01Start.hidden, false);
@@ -202,6 +223,7 @@ async function prepare(config) {
         processing_started: true, workcopy_created: false }, SRC, REF,
     ), false,
   );
+  console.log("WEB_XLSX_ACTUAL_WORKCOPY_DOWNLOAD_LINK=PASS");
   console.log("WEB_XLSX_REAL_BROWSER_OWNER_DECISION=PASS");
   console.log("WEB_XLSX_ONE_SHOT_UNKNOWN_OUTCOME=PASS");
   console.log("WEB_XLSX_SERVER_STATUS_ONLY=PASS");
