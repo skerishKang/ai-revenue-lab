@@ -482,7 +482,7 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
     if (
         not isinstance(message, str)
         or not message.strip()
-        or len(message.strip()) > MAX_CONVERSATION_CHARS
+        or (MAX_CONVERSATION_CHARS is not None and len(message.strip()) > MAX_CONVERSATION_CHARS)
     ):
         return _error(400, "invalid_message", "견적 요청 내용을 입력해 주세요.")
 

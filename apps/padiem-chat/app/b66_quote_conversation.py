@@ -17,8 +17,10 @@ from typing import Any, Protocol
 
 from .b66_quote_deterministic_fallback import parse_b66_mvp_fallback
 
-MAX_CONVERSATION_CHARS = 4_000
-MAX_RESULT_CHARS = 24_000
+# Model message and raw answer size are provider/broker-owned. None = unbounded.
+# Do not confuse these with the separately bounded *quote facts* contract.
+MAX_CONVERSATION_CHARS = None
+MAX_RESULT_CHARS = None
 MAX_TEXT_CHARS = 2_000
 MAX_MEMO_CHARS = 4_000
 MAX_ITEMS = 100
@@ -277,7 +279,7 @@ def normalize_conversation_output(
     if isinstance(raw, str):
         if not raw:
             raise B66QuoteConversationError("invalid_model_output", path="answer.empty", observed_type="string")
-        if len(raw) > MAX_RESULT_CHARS:
+        if MAX_RESULT_CHARS is not None and len(raw) > MAX_RESULT_CHARS:
             raise B66QuoteConversationError("invalid_model_output", path="answer.too_large", observed_type="string")
         text = raw.strip()
         fenced = _JSON_FENCE_RE.fullmatch(text)
@@ -785,7 +787,7 @@ class B66QuoteConversationInterpreter:
         if not isinstance(message, str):
             raise B66QuoteConversationError("invalid_message")
         clean = message.strip()
-        if not clean or len(clean) > MAX_CONVERSATION_CHARS:
+        if not clean or (MAX_CONVERSATION_CHARS is not None and len(clean) > MAX_CONVERSATION_CHARS):
             raise B66QuoteConversationError("invalid_message")
         prompt = _conversation_prompt(skill)
         try:

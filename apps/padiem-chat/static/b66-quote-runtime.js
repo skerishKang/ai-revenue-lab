@@ -174,7 +174,6 @@
     const message = document.createElement("textarea");
     message.id = "b66QuoteRequest";
     message.rows = 4;
-    message.maxLength = 4000;
     message.autocomplete = "off";
     message.placeholder = copy().requestPlaceholder;
     messageLabel.append(messageText, message);

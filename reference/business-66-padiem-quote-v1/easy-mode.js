@@ -308,7 +308,8 @@
   function runPrimaryInterpretation(rawText) {
     // A second click/Enter must not launch a second B14 interpretation attempt.
     if (interpretationInFlight) return;
-    const text = safeText(rawText, 4000);
+    // Never truncate a provider-bound quote request in the browser.
+    const text = String(rawText == null ? "" : rawText).trim();
     if (!text) return;
     const bridge = window.B66QuoteRuntimeBridge;
     const readiness = bridge && typeof bridge.readiness === "function" ? bridge.readiness() : null;
