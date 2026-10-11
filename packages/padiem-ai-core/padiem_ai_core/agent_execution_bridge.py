@@ -14,7 +14,7 @@ Invariants:
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Callable, Mapping
+from collections.abc import Awaitable, Callable, Mapping
 from dataclasses import dataclass
 import time
 from typing import Any
@@ -119,7 +119,7 @@ class AgentPlanExecutor:
         initial_tool_events: tuple[ToolEvent, ...] = (),
         trace_id: str | None = None,
         plan_id: str | None = None,
-        run_guard: Callable[[], bool] | None = None,
+        run_guard: Callable[[], bool | Awaitable[bool]] | None = None,
     ) -> AgentRunResult:
         # 1. Authoritative plan validation against compiled profile
         validated_plan = validate_agent_plan(
