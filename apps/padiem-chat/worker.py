@@ -44,6 +44,9 @@ from app.claw_p01_composition import (
 from app.claw_drive_upload_host_composition import (
     build_claw_drive_artifact_uploader,
 )
+from app.claw_telegram_delivery_host_composition import (
+    build_claw_telegram_artifact_delivery,
+)
 from app.claw_task_alert_store import D1ClawTaskAlertStore
 from app.b66_quote_conversation import B66QuoteConversationInterpreter
 from app.b66_registered_model_boundary import (
@@ -775,6 +778,15 @@ class Default(WorkerEntrypoint):
                 # None and the Drive routes stay unbound. Supplying the inputs in
                 # app.claw_drive_upload_host_composition is the whole change.
                 claw_drive_artifact_uploader = build_claw_drive_artifact_uploader()
+                # #3580: the Claw Telegram SEND host injection boundary, the
+                # outbound counterpart of the Drive boundary above. No trusted
+                # authority exists in this build — the Control Plane Telegram
+                # grant is READ-only (#2010), and there is no trusted outbound
+                # binding (bot token / provider chat id), scoped artifact
+                # material resolver, current-channel context or approval
+                # authority composed for the Worker — so this fails closed to
+                # None. The bot token and chat id are never Worker settings.
+                claw_telegram_artifact_delivery = build_claw_telegram_artifact_delivery()
                 _worker_app = create_app(
                     settings=settings,
                     history_store=history_store,
@@ -783,6 +795,7 @@ class Default(WorkerEntrypoint):
                     web_transport=web_transport,
                     b66_pdf_renderer_client=b66_pdf_renderer_client,
                     claw_drive_artifact_uploader=claw_drive_artifact_uploader,
+                    claw_telegram_artifact_delivery=claw_telegram_artifact_delivery,
                 )
                 _worker_app.state.control_plane_identity_authority = identity_authority
                 _worker_app.state.identity_shadow_store = identity_shadow_store
