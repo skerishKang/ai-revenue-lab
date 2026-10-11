@@ -513,6 +513,12 @@
         + "/workcopy/download";
       workcopyLink.hidden = false;
       editPreviewPanel.hidden = false;
+      // Unhiding the panel is not enough: setBusy() latches this flag to true
+      // whenever it runs while the panel is hidden (e.g. reload() on open), and
+      // this restore path never calls setBusy() afterwards. Recompute it here
+      // so a refreshed page can still reach the edit preview, exactly as
+      // closePdfPreview() already does for pdfPreviewButton.
+      editPreviewButton.disabled = busy || editPreviewPanel.hidden;
       void readRevisionStatus(selectionRef);
     };
     async function previewQuoteEdit() {
