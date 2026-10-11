@@ -1,4 +1,8 @@
 name = "padiem-ai-engine"
+# #4383: preserve existing operator-controlled plain_text feature flags on deploy.
+# Wrangler otherwise replaces dashboard vars with only repo [vars], dropping six
+# already-served WEB_XLSX_P01 / QUOTE_WRITE state flags. Never guess their values.
+keep_vars = true
 main = "worker_identity.py"
 compatibility_date = "2026-08-27"
 compatibility_flags = ["python_workers"]
