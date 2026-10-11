@@ -104,6 +104,13 @@ binding = "PADIEM_MODELSCOPE_API_KEY"
 store_id = "f0b09ca04a7b43248154c773704a5616"
 secret_name = "PADIEM_MODELSCOPE_API_KEY"
 
+# TokenHarbor owner-selected free routes only. Secret exists in the existing
+# account Secrets Store; project binding metadata is not a credential value.
+[[secrets_store_secrets]]
+binding = "PADIEM_TOKEN_HARBOR_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_TOKEN_HARBOR_API_KEY"
+
 # The owner-managed registry must be loaded from /session/metadata/app/pilot.
 [[rules]]
 type = "Text"
