@@ -1058,3 +1058,44 @@ body.b66-three-pane #easySend {
 @media screen and (max-width: 340px) {
   body.b66-three-pane .topbar .brand p { display: none; }
 }
+
+/* #4316 Screen-only: same collapse affordance on both side panels.
+   Keep a complete certified A4 page; remove only the tall white viewer backing. */
+@media screen {
+  body.b66-three-pane .shell-rail-collapse {
+    top: 11px;
+    right: 12px;
+    min-width: 0;
+    min-height: 34px;
+    padding: 0 10px;
+    border: 1px solid #d3e2ec;
+    border-radius: 999px;
+    background: #fff;
+    color: #375b72;
+    font-size: 11px;
+    font-weight: 750;
+    line-height: normal;
+  }
+  body.b66-three-pane .shell-rail-collapse::before { content: none; }
+  body.b66-three-pane .shell-rail-collapse:focus-visible {
+    outline: 3px solid #27699e;
+    outline-offset: 2px;
+  }
+  body.b66-three-pane .shell-preview-host > .preview-wrap {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  body.b66-three-pane .shell-preview-host .preview-toolbar {
+    border: 1px solid #d5e2ec;
+    border-radius: 14px;
+    box-shadow: 0 3px 14px rgba(44,65,81,.05);
+  }
+  body.b66-three-pane .shell-preview-host #quotePaper,
+  body.b66-three-pane .shell-preview-host .quote-detail-page {
+    margin-top: 12px;
+    margin-bottom: 16px;
+    box-shadow: 0 6px 22px rgba(38,63,81,.13);
+  }
+}

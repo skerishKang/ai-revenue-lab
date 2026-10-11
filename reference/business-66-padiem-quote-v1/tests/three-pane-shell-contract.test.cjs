@@ -41,6 +41,17 @@ check(shell.includes('account.appendChild(accountButton)'),
   "rail moves actual account button");
 check(shell.includes('host.appendChild(preview)'),
   "right pane moves canonical preview node");
+check(shell.includes('railCollapse.className = "shell-pane-button shell-rail-collapse"') &&
+      shell.includes('railCollapse.textContent = "접기 ‹"') &&
+      shell.includes('collapse.textContent = "접기 »"'),
+  "both sidebar collapse actions use the same button family and opposing arrows");
+check(refresh.includes('.shell-rail-collapse::before { content: none; }') &&
+      refresh.includes('.shell-preview-host > .preview-wrap {\n    background: transparent;') &&
+      refresh.includes('.shell-preview-host #quotePaper,') &&
+      refresh.includes('box-shadow: 0 6px 22px rgba(38,63,81,.13);'),
+  "only the A4 paper is white; the tall preview backing is transparent on screen");
+check(html.includes('href="b66-surface-refresh.css" media="screen"'),
+  "viewer presentation never changes print or certified A4 geometry");
 check(!shell.includes('createElement("iframe")') && !shell.includes("b66-cgi-form.html"),
   "production shell never embeds CGI prototype iframe");
 check(css.includes(".shell-legacy-account-panel") && css.includes("display: none !important"),

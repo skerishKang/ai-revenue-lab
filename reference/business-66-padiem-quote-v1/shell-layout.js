@@ -36,8 +36,8 @@
     var railCollapse = document.createElement("button");
     railCollapse.id = "shellRailCollapse";
     railCollapse.type = "button";
-    railCollapse.className = "shell-rail-collapse";
-    railCollapse.textContent = "접기";
+    railCollapse.className = "shell-pane-button shell-rail-collapse";
+    railCollapse.textContent = "접기 ‹";
     railCollapse.setAttribute("aria-label", "왼쪽 메뉴 접기");
     railCollapse.setAttribute("aria-controls", "shellRail");
     railCollapse.addEventListener("click", function () {
