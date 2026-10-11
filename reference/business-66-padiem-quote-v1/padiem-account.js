@@ -582,7 +582,8 @@
      최종 견적이 확정될 때까지 같은 번호/발행일을 유지한다. 저장소는 브라우저 메모리 1개뿐이다. */
 
   const MAX_PENDING_TURNS = 4;
-  const MAX_PENDING_TEXT = 4000;
+  // Provider/broker owns message context; this is not a B66 character cap.
+  const MAX_PENDING_TEXT = Number.POSITIVE_INFINITY;
   const MISSING_QUESTIONS = {
     name: "품목명을 알려 주세요.",
     qty: "수량은 몇 개인가요?",
@@ -762,7 +763,7 @@
   }
 
   async function interpretRequest(requestText) {
-    const text = typeof requestText === "string" ? requestText.trim().slice(0, MAX_PENDING_TEXT) : "";
+    const text = typeof requestText === "string" ? requestText.trim() : "";
     if (!text) return { ok: false, code: "empty_request" };
     const readiness = runtimeReadiness();
     if (!readiness.ready) {

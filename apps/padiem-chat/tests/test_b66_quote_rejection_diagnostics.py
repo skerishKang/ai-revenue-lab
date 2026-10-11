@@ -16,7 +16,7 @@ from starlette.testclient import TestClient
 
 from app.app_factory import create_app
 from app.auth import SESSION_COOKIE, create_session_token
-from app.b66_quote_conversation import B66QuoteConversationInterpreter, MAX_RESULT_CHARS
+from app.b66_quote_conversation import B66QuoteConversationInterpreter, normalize_conversation_output
 from app.config import Settings
 
 USER = "usr_" + "a" * 32
@@ -233,7 +233,6 @@ def test_generic_public_error_contract_unchanged_for_engine_failures():
 def test_invalid_model_output_reports_specific_bounded_answer_stage():
     cases = [
         ("", "answer.empty"),
-        ("x" * (MAX_RESULT_CHARS + 1), "answer.too_large"),
         ("plain prose without a JSON object", "answer.no_json_object"),
         (
             "```json\\n{}\\n```\\n```json\\n{}\\n```",
