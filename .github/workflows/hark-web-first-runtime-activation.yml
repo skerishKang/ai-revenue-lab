@@ -110,6 +110,11 @@ jobs:
             latest="$(jq -er '.result.items[0].id' "${base}-latest.json")"
             test "${active}" = "${latest}"
             curl -fsS --retry 2 --retry-delay 2 "${auth[@]}" "${api}/${worker}/versions/${active}" -o "${base}-version.json"
+            if [ "$item" = target ]; then
+              curl -fsS --retry 2 --retry-delay 2 "${auth[@]}" \
+                "${api}/${worker}/versions/${active}?include=modules" \
+                -o "${RUNNER_TEMP}/hark-target-modules.json"
+            fi
             curl -fsS --retry 2 --retry-delay 2 "${auth[@]}" "${api}/${worker}/settings" -o "${base}-settings.json"
             python .github/scripts/b62_binding_state_guard.py --before "${base}-version.json" --after "${base}-settings.json"
             if [ "$item" = target ]; then
@@ -187,6 +192,28 @@ jobs:
           test -n "$active"
           test "$active" != "${HARK_ROLLBACK_VERSION_ID}"
           curl -fsS "${auth[@]}" "${api}/versions/${active}" -o "${RUNNER_TEMP}/hark-after-version.json"
+          curl -fsS "${auth[@]}" "${api}/versions/${active}?include=modules" \
+            -o "${RUNNER_TEMP}/hark-after-modules.json"
+          python - "${RUNNER_TEMP}/hark-target-modules.json" \
+            "${RUNNER_TEMP}/hark-after-modules.json" \
+            "${HARK_ROLLBACK_VERSION_ID}" "${active}" \
+            "${RUNNER_TEMP}/hark-target-version.json" \
+            "${RUNNER_TEMP}/hark-after-version.json" <<'PY'
+          import json, sys
+          from pathlib import Path
+          sys.path.insert(0, ".github/scripts")
+          from b62_owner_d1_release_transaction import assert_exact_worker_code
+          pre, post, old_id, new_id, before, after = sys.argv[1:]
+          def read(p): return json.loads(Path(p).read_text(encoding="utf-8"))
+          matched = assert_exact_worker_code(read(pre), read(post), old_id, new_id)
+          original = read(before)["result"]["resources"]
+          current = read(after)["result"]["resources"]
+          assert original["script_runtime"] == current["script_runtime"], (
+              "Worker script runtime drift across Hark flags")
+          print("HARK_WORKER_MODULE_BYTES_PRESERVED=PASS")
+          print("HARK_WORKER_MODULE_COUNT=" + str(matched))
+          print("HARK_SCRIPT_RUNTIME_PRESERVED=PASS")
+          PY
           curl -fsS "${auth[@]}" "${api}/settings" -o "${RUNNER_TEMP}/hark-after-settings.json"
           python .github/scripts/hark_web_first_runtime_activation.py verify \
             --stage "${STAGE}" \
