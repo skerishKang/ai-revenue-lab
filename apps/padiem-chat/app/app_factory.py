@@ -69,6 +69,7 @@ from .claw_web_xlsx_p01_owner_decision_routes import (
     WEB_XLSX_P01_WORKCOPY_DOWNLOAD_PATH, web_xlsx_p01_workcopy_download,
 )
 from .claw_web_xlsx_quote_write_store import D1WebQuoteWriteReceiptStore
+from .claw_web_xlsx_quote_write_owner_decision import D1WebQuoteWriteOwnerDecisionStore
 from .claw_web_xlsx_quote_write_routes import (
     WRITE_PATH, WRITE_STATUS_PATH, WRITE_DOWNLOAD_PATH,
     web_xlsx_quote_edit_commit, web_xlsx_quote_edit_status,
@@ -536,6 +537,12 @@ def create_app(
     app.state.web_xlsx_p01_workcopy_after_grant_enabled = False
     app.state.web_xlsx_quote_write_store = (
         D1WebQuoteWriteReceiptStore(d1_binding) if d1_binding is not None else None
+    )
+    # Separate explicit owner WRITE consent ledger. This does not enable the
+    # public edit route or mint any Engine ToolRuntime grant by itself.
+    app.state.web_xlsx_quote_write_owner_decision_store = (
+        D1WebQuoteWriteOwnerDecisionStore(d1_binding)
+        if _workspace_store is not None and d1_binding is not None else None
     )
     # Separate Core/Engine EDIT/WRITE P01 is deliberately NOT active. A READ
     # approval, preview hash or browser decision cannot enable actual writes.
