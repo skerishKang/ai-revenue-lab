@@ -155,6 +155,7 @@ class AgentSkillEngineService:
                 runtime=self._runtime_factory(request.app_id),
                 idempotency=self._idempotency_adapter,
                 agent_run_guard=ledger.execution_guard(lease),
+                agent_checkpoint_hook=lambda step: ledger.checkpoint(lease, completed_step=step),
             ).run(bound_request)
             terminal_state = "awaiting_approval" if result.approval_pause else "completed"
             if not await ledger.finish(lease, state=terminal_state):
