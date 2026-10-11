@@ -10,7 +10,10 @@ WHAT THIS FILE IS
   One fail-closed builder that binds the already-composed sendDocument
   transport to the existing TelegramArtifactDeliveryAdapter using the host's
   trusted binding, bot scope, artifact-material, channel-context and approval
-  authorities.
+  authorities. When the host supplies only the trusted secret and pairing
+  sources, the builder wraps them in the one canonical
+  ``TrustedTelegramOutboundBinding`` — so the token/chat-id seam is now
+  completable with real components instead of a test double.
 
 WHAT IT IS NOT
   Not a SEND grant, not a bot-token store, not a channel authority and not a
@@ -40,6 +43,10 @@ from kagent.contracts import ContractError
 from kagent.telegram_artifact_delivery import TelegramArtifactDeliveryAdapter
 from kagent.telegram_contracts import TelegramBotScope, TelegramOutboundCapability
 from kagent.telegram_document_send_composition import TelegramDocumentSendComposition
+from kagent.telegram_outbound_binding import (
+    TelegramBotTokenSecretPort, TelegramProviderChatIdPort,
+    TrustedTelegramOutboundBinding,
+)
 
 TELEGRAM_CONNECTOR_ID = "telegram"
 
@@ -55,6 +62,7 @@ SECOND_DELIVERY_ADAPTER = False
 READ_SCOPE_IS_NOT_SEND = True
 TOKEN_IS_NEVER_A_PARAMETER = True
 DESTINATION_IS_NEVER_A_PARAMETER = True
+CANONICAL_OUTBOUND_BINDING_BUILDER = True
 
 #: The host authorities the canonical delivery adapter requires, and the exact
 #: methods each one must expose. Checked structurally so a look-alike cannot
@@ -137,11 +145,32 @@ def telegram_send_grant_present(
     return _carries_telegram_send_authority(binding) and binding.usable_at(now)
 
 
+def build_canonical_telegram_outbound_binding(
+    *,
+    scope: TelegramBotScope | None = None,
+    secrets: TelegramBotTokenSecretPort | None = None,
+    chat_ids: TelegramProviderChatIdPort | None = None,
+) -> TrustedTelegramOutboundBinding | None:
+    """The one canonical outbound binding a host may inject.
+
+    Returns ``None`` without a trusted bot scope. Supplying no secret or
+    pairing source is safe: the binding then refuses every resolution, so it
+    cannot resolve a token or a destination for anything.
+    """
+    if not isinstance(scope, TelegramBotScope):
+        return None
+    return TrustedTelegramOutboundBinding(
+        scope=scope, secrets=secrets, chat_ids=chat_ids,
+    )
+
+
 def build_claw_telegram_delivery_host_state(
     *,
     binding: ConnectorBindingProjection | None = None,
     scope: TelegramBotScope | None = None,
     trusted_binding: Any = None,
+    outbound_secrets: TelegramBotTokenSecretPort | None = None,
+    outbound_chat_ids: TelegramProviderChatIdPort | None = None,
     artifact_material: Any = None,
     channel_context: Any = None,
     approval_authority: Any = None,
@@ -154,6 +183,13 @@ def build_claw_telegram_delivery_host_state(
     Every input must come from the trusted host. Nothing here reads an
     environment variable, a request body, a model answer or a browser cookie,
     and nothing mints a grant, an approval, a token or a chat id.
+
+    ``trusted_binding`` may be the canonical ``TrustedTelegramOutboundBinding``
+    directly, or omitted in favour of ``outbound_secrets`` +
+    ``outbound_chat_ids`` — the trusted secret and pairing sources the boundary
+    then wraps in that same canonical binding. Both sources are required
+    together: a token without a paired destination (or the reverse) cannot
+    deliver anything, and the boundary refuses to pretend otherwise.
     """
     reasons: list[str] = []
 
@@ -174,6 +210,12 @@ def build_claw_telegram_delivery_host_state(
         and scope.workspace_ref != binding.workspace_ref
     ):
         reasons.append("the Telegram bot scope does not belong to the trusted binding")
+
+    if trusted_binding is None and isinstance(scope, TelegramBotScope):
+        if outbound_secrets is not None and outbound_chat_ids is not None:
+            trusted_binding = build_canonical_telegram_outbound_binding(
+                scope=scope, secrets=outbound_secrets, chat_ids=outbound_chat_ids,
+            )
 
     supplied = {
         "trusted_binding": trusted_binding,
@@ -225,6 +267,7 @@ def build_claw_telegram_artifact_delivery(
 
 
 __all__ = [
+    "CANONICAL_OUTBOUND_BINDING_BUILDER",
     "ClawTelegramDeliveryHostError",
     "ClawTelegramDeliveryHostState",
     "HOST_INJECTION_BOUNDARY_IMPLEMENTED",
@@ -232,6 +275,7 @@ __all__ = [
     "READ_SCOPE_IS_NOT_SEND",
     "SEND_DOCUMENT_CAPABILITY",
     "TELEGRAM_CONNECTOR_ID",
+    "build_canonical_telegram_outbound_binding",
     "build_claw_telegram_artifact_delivery",
     "build_claw_telegram_delivery_host_state",
     "telegram_send_grant_present",
