@@ -144,9 +144,14 @@
       canEnforce = result.enforcement_enabled === true;
       id("activatePolicy").checked = result.policy.active === true;
       id("activatePolicy").disabled = !canEnforce;
-      id("enforcementNote").textContent = canEnforce
-        ? (result.policy.active ? "현재 등급별 모델 사용 제한이 적용 중입니다." : "아직 모델 사용 제한은 적용되지 않았습니다.")
-        : "서버 회원 권한 검증을 활성화하기 전입니다. 현재 모델 배정은 저장만 할 수 있습니다.";
+      const globalOffActive = result.global_off_enforcement_enabled === true;
+      id("enforcementNote").textContent = !globalOffActive
+        ? "서버의 모델 전체 ON/OFF 보호 기능이 준비되지 않았습니다. 저장해도 실행 차단을 보장할 수 없습니다."
+        : canEnforce
+          ? (result.policy.active
+            ? "모델 전체 ON/OFF는 항상 적용되며, 등급별 모델 제한도 적용 중입니다."
+            : "모델 전체 ON/OFF는 항상 적용됩니다. 등급별 모델 제한은 별도로 활성화할 수 있습니다.")
+          : "모델 전체 ON/OFF는 저장 즉시 서버의 실제 호출에도 적용됩니다. 등급별 모델 제한은 회원 정책 활성화 후 사용할 수 있습니다.";
       // Every B14-registered model has its own global ON/OFF switch.
       // Tier selections are preserved when OFF, but cannot grant access.
       const disabledModels = new Set(result.policy.disabled_models || []);
