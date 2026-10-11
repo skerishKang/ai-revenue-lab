@@ -71,8 +71,13 @@ fails closed.
   re-reads the private B62 D1 source, still enforces the Core
   `USER_CONFIRMATION` gate, and still requires the durable continuation. This is
   an app-authorization entry only.
-- **WRITE is not registered.** `padiem-web-xlsx-write-p01` stays out of the
-  caller registry; WRITE/PDF flags, composition and migration 0010 are untouched.
+- **WRITE is not registered *by this change*.** `padiem-web-xlsx-write-p01` was
+  left out of the caller registry here, and WRITE/PDF flags, composition and
+  migration 0010 were untouched. *Superseded for the registry entry only:* the
+  #3933 follow-up
+  (`HARK_3933_WEB_XLSX_WRITE_ENGINE_APP_AUTHORIZATION_20261011.md`) later adds
+  the WRITE app as an app-authorization entry; the WRITE flags, composition and
+  approval gates remain OFF there too.
 - No B62 public contract change: the public failure stays a generic 409 with the
   one-shot reservation rule preserved.
 - No #3580 Drive WRITE / Telegram SEND behaviour change.

@@ -27,14 +27,18 @@ name: B54 Engine Caller Registry Overlay Rotation Gate
 #               "allowed_app_ids": ["b54-padiem-claw", "b54-padiem-claw-drive",
 #                                   "b54-padiem-claw-telegram",
 #                                   "b54-padiem-claw-calendar",
-#                                   "padiem-web-xlsx-p01"]}}
+#                                   "padiem-web-xlsx-p01",
+#                                   "padiem-web-xlsx-write-p01"]}}
 #
 # The app list started as the single Claw reader (#2375), gained the canonical
 # Drive reader (#2645) and Telegram reader (#2721), the canonical Calendar
-# reader (#2952), and the Hark WEB-FIRST XLSX READ Engine tool app (#3936);
-# each extension is additive and re-proven by the P01 caller-id parity
-# contract. The #3936 entry is READ-only: the WRITE tool app
-# (``padiem-web-xlsx-write-p01``) stays unregistered until its own activation.
+# reader (#2952), the Hark WEB-FIRST XLSX READ Engine tool app (#3936), and the
+# independent Hark WEB-FIRST XLSX WRITE Engine tool app (#3933); each extension
+# is additive and re-proven by the P01 caller-id parity contract. The #3933
+# WRITE entry is an app-authorization entry ONLY: it lets the WRITE tool request
+# reach the Engine tool service, and it enables nothing — the Engine WRITE
+# binding, its durable continuation store, its owner WRITE grant and the Chat
+# WRITE route all stay independently gated and default OFF.
 #
 # Served-version proof (not the settings plane): a secret PUT may create or
 # activate a NEW Worker version, so pre- and post-mutation readback is proven on
