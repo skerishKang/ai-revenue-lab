@@ -69,6 +69,10 @@
 }
 
 .owner-model-preview-trigger {
+  display: inline-flex;
+  align-items: center;
+  max-width: calc(100% - 8px);
+  margin: 2px 4px 6px;
   border: 1px solid var(--line, #dedee8);
   border-radius: 999px;
   background: transparent;

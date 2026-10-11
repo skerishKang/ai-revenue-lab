@@ -98,3 +98,14 @@ def test_model_status_button_cannot_hijack_existing_tier_picker():
     assert 'const modePill = document.querySelector(".model-pill")' in mode
     assert '[".model-pill span:last-child", "mode"]' in locale
     assert "model-pill:not(#ownerModelPreviewOpen)" not in locale
+
+
+def test_model_status_button_not_in_mobile_composer_tools_row():
+    html = (STATIC / "index.html").read_text(encoding="utf-8")
+    button_pos = html.index('id="ownerModelPreviewOpen"')
+    tools_start = html.index('class="composer-tools"')
+    tools_end = html.index('id="sendButton"', tools_start)
+    assert button_pos < tools_start
+    assert button_pos < html.index('for="messageInput"')
+    assert not (tools_start < button_pos < tools_end)
+    assert 'class="model-pill composer-tier-trigger"' in html
