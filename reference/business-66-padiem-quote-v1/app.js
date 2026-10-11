@@ -1377,6 +1377,37 @@
     }
   });
 
+  // Print the currently rendered A4 quote itself, not a second template or an
+  // unguarded substitute for certified PDF download. The PDF action above
+  // retains its independent server/CGI authority and exact bytes.
+  window.B66QuotePrintPreview = function () {
+    if (pdfDownloadPending) return false;
+    const failure = printReadinessFailure();
+    if (failure) {
+      toast(failure.message, 4200);
+      if (failure.code === "tax_review") focusTaxReview();
+      else focusReadinessTarget(failure.code);
+      return false;
+    }
+    const bridge = window.B66QuoteRuntimeBridge;
+    const readiness = bridge && typeof bridge.readiness === "function" ? bridge.readiness() : null;
+    if (!readiness || readiness.ready !== true ||
+        !TemplateRenderer || typeof TemplateRenderer.buildCertifiedPdfRenderModel !== "function" ||
+        !TemplateRenderer.buildCertifiedPdfRenderModel(draft, activeSkillProfile(), {
+          taxReviewRequired: taxReviewRequired
+        })) {
+      toast("승인된 견적서 양식과 회사 정보를 확인한 뒤 인쇄해 주세요.", 4200);
+      return false;
+    }
+    const paper = document.getElementById("quotePaper");
+    if (!paper || !paper.getClientRects().length) {
+      toast("미리보기가 준비된 뒤 인쇄해 주세요.", 4200);
+      return false;
+    }
+    window.print();
+    return true;
+  };
+
   /* ── #3871 불러오기 원자성: 편집기 상태 스냅샷과 복구 ──
      불러오기 실패가 작성 중 내용과 선택된 승인 템플릿을 바꾸면 안 된다.
      스냅샷은 draft·세금 검토 상태·항목 시퀀스·템플릿 선택·승인 Skill 상태를 담는다. */

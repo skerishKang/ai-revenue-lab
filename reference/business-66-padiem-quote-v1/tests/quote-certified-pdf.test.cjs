@@ -215,12 +215,14 @@ async function verifyCgiBrowserPath(model) {
 
 async function verifyAppButton(model) {
   const app = source("app.js");
-  assert.equal(app.includes("window.print()"), false);
+  const pdfAction = app.slice(app.indexOf('  $("printPdf").addEventListener'), app.indexOf('  window.B66QuotePrintPreview = function'));
+  assert.equal(pdfAction.includes("window.print()"), false, "PDF must never fall back to HTML printing");
   const action = app.slice(app.indexOf("  let pdfDownloadPending = false;"), app.indexOf('  $("emailFuture").addEventListener'));
   let handler;
   let readinessFailure = { code: "tax_review", message: "VAT required" };
   let downloads = 0;
   let taxFocused = 0;
+  let printed = 0;
   let release;
   const button = { disabled: false, addEventListener(type, fn) { handler = fn; } };
   const context = vm.createContext({
@@ -230,7 +232,14 @@ async function verifyAppButton(model) {
     focusTaxReview: () => { taxFocused++; }, focusReadinessTarget() {}, toast() {},
     activeSkillProfile: () => profile,
     TemplateRenderer: { buildCertifiedPdfRenderModel: () => model },
-    window: { B66QuoteRuntimeBridge: { downloadPdf: () => { downloads++; return new Promise((resolve) => { release = resolve; }); } } }
+    document: { getElementById: () => ({ getClientRects: () => [{}] }) },
+    window: {
+      print: () => { printed++; },
+      B66QuoteRuntimeBridge: {
+        downloadPdf: () => { downloads++; return new Promise((resolve) => { release = resolve; }); },
+        readiness: () => ({ ready: false })
+      }
+    }
   });
   new vm.Script(action).runInContext(context);
   await handler();
@@ -244,6 +253,11 @@ async function verifyAppButton(model) {
   release({ ok: true });
   await running;
   assert.equal(button.disabled, false);
+  assert.equal(context.window.B66QuotePrintPreview(), false, "unauthorized print must be blocked");
+  assert.equal(printed, 0);
+  context.window.B66QuoteRuntimeBridge.readiness = () => ({ ready: true });
+  assert.equal(context.window.B66QuotePrintPreview(), true);
+  assert.equal(printed, 1, "approved current preview may be printed without bypassing PDF download");
 }
 
 (async () => {

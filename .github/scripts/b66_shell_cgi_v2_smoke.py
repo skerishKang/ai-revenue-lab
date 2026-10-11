@@ -70,6 +70,7 @@ async def main() -> int:
                   accountInRail: document.querySelectorAll('#shellAccountRow #padiemAccountButton').length,
                   skillInRail: document.querySelectorAll('#shellSkillSelect #padiemSavedSkillSelect').length,
                   templateInRail: document.querySelectorAll('#shellQuoteTemplateSelect #templateSelect').length,
+                  templateInAdvanced: document.querySelectorAll('.advanced-template #templateSelect').length,
                   newQuoteCount: document.querySelectorAll('#shellNewQuote').length,
                   previewCount: document.querySelectorAll('#shellPreviewHost .preview-wrap').length,
                   quotePaperCount: document.querySelectorAll('#quotePaper').length,
@@ -83,7 +84,8 @@ async def main() -> int:
             assert shell["legacyVisible"] is False
             assert shell["accountInRail"] == 1
             assert shell["skillInRail"] == 1
-            assert shell["templateInRail"] == 1
+            assert shell["templateInRail"] == 0
+            assert shell["templateInAdvanced"] == 1
             assert shell["newQuoteCount"] == 1
             assert shell["previewCount"] == 1
             assert shell["quotePaperCount"] == 1

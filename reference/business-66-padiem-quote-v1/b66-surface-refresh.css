@@ -825,5 +825,6 @@ body.b66-three-pane #easySend {
 }
 @media print {
   body.b66-three-pane .shell-rail-collapse,
-  body.b66-three-pane .shell-preview-pdf { display: none !important; }
+  body.b66-three-pane .shell-preview-pdf,
+  body.b66-three-pane .shell-preview-print { display: none !important; }
 }

@@ -248,8 +248,18 @@
     pdfShortcut.addEventListener("click", function () {
       clickExisting("printPdf"); // reuse canonical readiness and PDF authority
     });
+    var printShortcut = document.createElement("button");
+    printShortcut.id = "shellPreviewPrint";
+    printShortcut.type = "button";
+    printShortcut.className = "shell-pane-button shell-preview-print";
+    printShortcut.textContent = "인쇄";
+    printShortcut.title = "현재 견적서 미리보기를 그대로 인쇄";
+    printShortcut.addEventListener("click", function () {
+      if (typeof window.B66QuotePrintPreview === "function") window.B66QuotePrintPreview();
+    });
     if (toolbar) {
       toolbar.appendChild(pdfShortcut);
+      toolbar.appendChild(printShortcut);
       toolbar.appendChild(collapse);
     }
 
