@@ -26,7 +26,8 @@ from b62_web_secrets_store_contract import expected_web_secret_bindings, require
 
 EXPECTED_WORKER = "padiem-chat"
 OWNER_P01_D1_BINDING = "BROWSER_CONTROL_OWNER_P01_D1"
-SUPPORTED_BINDING_TYPES = {"assets", "service", "d1", "r2_bucket", "plain_text", "secret_text", "version_metadata", "secrets_store_secret"}
+SUPPORTED_BINDING_TYPES = {"assets", "service", "d1", "r2_bucket", "browser", "plain_text", "secret_text", "version_metadata", "secrets_store_secret"}
+HARK_BROWSER_BINDING = "BROWSER"
 REQUIRED_VARS = ("PADIEM_CHAT_RUNTIME_MODE", "PADIEM_CHAT_LIVE_ENABLED")
 PUBLIC_BASE_URL_VAR = "PADIEM_CHAT_PUBLIC_BASE_URL"
 # #3252: a live version_metadata binding is runtime provenance. Exactly one may
@@ -62,6 +63,7 @@ def parse_live_bindings(settings_payload: object) -> dict[str, object]:
     secret_names: list[str] = []
     secrets_store: list[dict] = []
     version_metadata: list[dict] = []
+    browser: list[dict] = []
     for raw in bindings:
         if not isinstance(raw, dict):
             raise ProductionConfigError("binding entry is not an object")
@@ -88,6 +90,10 @@ def parse_live_bindings(settings_payload: object) -> dict[str, object]:
             if jurisdiction is not None and jurisdiction not in {"eu", "fedramp", "fedramp-high", "us"}:
                 raise ProductionConfigError(f"r2 binding {name!r} has unsupported jurisdiction")
             r2.append(raw)
+        elif kind == "browser":
+            if name != HARK_BROWSER_BINDING:
+                raise ProductionConfigError("unexpected live Browser Rendering binding name")
+            browser.append(raw)
         elif kind == "plain_text":
             text = raw.get("text")
             if not isinstance(text, str):
@@ -115,6 +121,8 @@ def parse_live_bindings(settings_payload: object) -> dict[str, object]:
         raise ProductionConfigError("duplicate binding names in live settings")
     if len(version_metadata) > 1:
         raise ProductionConfigError("duplicate version_metadata bindings in live settings")
+    if len(browser) > 1:
+        raise ProductionConfigError("duplicate Browser Rendering bindings in live settings")
     return {
         "assets": assets,
         "services": services,
@@ -124,6 +132,7 @@ def parse_live_bindings(settings_payload: object) -> dict[str, object]:
         "secret_names": secret_names,
         "secrets_store": secrets_store,
         "version_metadata": version_metadata[0] if version_metadata else None,
+        "browser": browser[0] if browser else None,
     }
 
 
@@ -205,6 +214,19 @@ def build_production_config(
     lines.append(f"directory = {_toml_string(assets_dir)}")
     lines.append(f"binding = {_toml_string(assets_binding)}")
     lines.append("")
+
+    # #3933: preserve an already provisioned Hark Browser Rendering binding.
+    # A repository [browser] declaration is NOT operational authorization to
+    # commission it; the live account/settings inventory remains authoritative.
+    live_browser = live["browser"]
+    repo_browser = repo.get("browser")
+    if live_browser is not None:
+        if (not isinstance(repo_browser, dict)
+                or repo_browser.get("binding") != HARK_BROWSER_BINDING):
+            raise ProductionConfigError("live Browser Rendering binding lacks matching source declaration")
+        lines.append("[browser]")
+        lines.append(f"binding = {_toml_string(HARK_BROWSER_BINDING)}")
+        lines.append("")
 
     # #3252: the repository config may declare the expected version_metadata
     # source binding name, but the LIVE settings remain the production
