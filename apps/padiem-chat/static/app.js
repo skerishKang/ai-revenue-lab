@@ -866,6 +866,10 @@
     authState = data && typeof data === "object" ? data : { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
     const ready = authState.ready === true;
     const authenticated = ready && authState.authenticated === true;
+    // #3790 signed-in change notification contains no identity or credentials.
+    if (typeof window.dispatchEvent === "function" && typeof CustomEvent === "function") {
+      window.dispatchEvent(new CustomEvent("padiem:auth-state", { detail: { authenticated } }));
+    }
     const inboxNavButtons = [
       document.getElementById("tasksNavButton"),
       document.getElementById("alertsNavButton"),
@@ -1509,6 +1513,10 @@
     contextSnapshot.selectedModelId =
       clawGeneralRequest && selectedProductTier() === "plus" && typeof clawModelIdInput !== "undefined" && clawModelIdInput
         ? clawModelIdInput.value.trim() : "";
+    if (clawGeneralRequest && !contextSnapshot.selectedModelId) {
+      setNote(uiT("claw-verified-model-required"), "error");
+      return false; // no quota/provider call without explicit model
+    }
     showConversation({ preserveClaw: clawGeneralRequest });
     addUserMessage(prompt, attachmentSnapshot);
     input.value = "";
