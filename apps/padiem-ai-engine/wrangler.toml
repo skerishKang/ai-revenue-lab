@@ -23,6 +23,17 @@ service = "padiem-control-plane-engine-admission"
 binding = "CONTROL_PLANE_GOOGLE_OAUTH"
 service = "padiem-google-oauth-state"
 
+# #3933 WEB-FIRST independent P01 READ/WRITE verifier: same LIVE B62 D1
+# as padiem-chat PADIEM_CHAT_DB. Confirmed with deployment-version readback
+# on 2026-10-11. The code uses only SELECT via scoped verifier functions.
+# NOTE: D1 platform bindings are not read-only credentials; safeguard
+# through verifier code, first-party owner proof and OFF-by-default flags.
+# Merely adding the binding does NOT activate Hark WRITE/READ permissions.
+[[d1_databases]]
+binding = "WEB_XLSX_PRIVATE_B62_D1"
+database_name = "padiem-chat-db"
+database_id = "702bb62b-36f5-41a0-973f-c4f663ee01e6"
+
 # WO-8 PR-B (#1235 A9): durable idempotency + identity-bound continuation
 # authority. Both bindings point at the SAME provisioned database
 # (padiem-engine, database_id below; provision evidence: CI run 34042827563,
