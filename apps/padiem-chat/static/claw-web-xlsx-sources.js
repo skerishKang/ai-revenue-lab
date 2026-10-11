@@ -7,6 +7,7 @@
   const MAX_BYTES = 1048576;
   const ID = /^doc_[0-9a-f]{32}$/;
   const HASH = /^[a-f0-9]{64}$/;
+  const CHAT_ID = /^chat_[a-f0-9]{32}$/;
   const PDF_MAX_BYTES = 4_194_304;
   const ENDPOINT = "/api/claw/office/web-sources";
   const SELECTIONS = "/api/claw/office/web-selections";
@@ -219,6 +220,10 @@
     pdfPreviewFrame.setAttribute("style", "width:100%;height:min(70vh,720px);border:1px solid currentColor;");
     pdfPreviewRegion.append(pdfPreviewClose, pdfPreviewStatus, pdfPreviewFrame);
     editedLink.hidden = true;
+    const openWorkConversation = root.createElement("button");
+    openWorkConversation.type = "button";
+    openWorkConversation.hidden = true;
+    openWorkConversation.textContent = "이 파일의 작업 대화 열기 (다음 지시)";
     editedLink.textContent = "수정된 XLSX 다운로드";
     editedLink.setAttribute("download", "");
     const editPreviewResult = root.createElement("p");
@@ -234,7 +239,7 @@
     writeDeny.hidden = true;
     editPreviewPanel.append(
       schoolLabel, priceLabel, editPreviewButton, editCommitButton,
-      editedLink, editPreviewResult, writeApprove, writeDeny, revisedPdfLink,
+      editedLink, openWorkConversation, editPreviewResult, writeApprove, writeDeny, revisedPdfLink,
       pdfPreviewButton, pdfPreviewRegion,
     );
     approvalPanel?.appendChild(editPreviewPanel);
@@ -257,6 +262,7 @@
     let loaded = false;
     let trustedPreview = null;
     let pendingWrite = null;
+    let trustedFollowup = null;
     const commitAttemptedRefs = new Set();
     const writeDecisionsAttempted = new Set();
     let pdfPreviewToken = 0;
@@ -344,6 +350,8 @@
       editCommitButton.disabled = true;
       editedLink.hidden = true;
       editedLink.href = "";
+      trustedFollowup = null;
+      openWorkConversation.hidden = true;
       revisedPdfLink.hidden = true;
       revisedPdfLink.href = "";
     };
@@ -387,6 +395,8 @@
       } catch (_error) {
         // No authority or unknown result may never expose an approval button.
       }
+      trustedFollowup = null;
+      openWorkConversation.hidden = true;
       try {
         const receipt = await jsonRequest(
           SELECTIONS + "/" + encodeURIComponent(selectionRef) + "/quote-edit/status",
@@ -404,6 +414,13 @@
           editedLink.href = SELECTIONS + "/" + encodeURIComponent(selectionRef)
             + "/quote-edit/download";
           editedLink.hidden = false;
+          const followup = receipt.followup;
+          if (followup && CHAT_ID.test(followup.conversation_id)
+              && followup.artifact_id === receipt.revision_document_id
+              && followup.integrity_ref === receipt.revision_sha256) {
+            trustedFollowup = {...followup, selectionRef};
+            openWorkConversation.hidden = false;
+          }
           if (receipt.pdf_download_available === true) {
             revisedPdfLink.href = SELECTIONS + "/" + encodeURIComponent(selectionRef)
               + "/quote-edit/pdf";
@@ -416,6 +433,46 @@
         // of an approved revision. Keep the revision hidden.
       }
     }
+    openWorkConversation.addEventListener("click", async () => {
+      const link = trustedFollowup;
+      if (busy || !link || link.selectionRef !== selectedSelectionRef) return;
+      setBusy(true);
+      try {
+        // A read-only owner-bound locator confirms this immutable output
+        // again. No file bytes, P01 grant, assistant reply or model call.
+        const params = new URLSearchParams({
+          kind: "xlsx", selector: "exact",
+          artifact_id: link.artifact_id, integrity_ref: link.integrity_ref,
+        });
+        const result = await jsonRequest(
+          "/api/claw/conversations/" + encodeURIComponent(link.conversation_id)
+          + "/artifact-followup?" + params,
+          {method: "GET", headers: {"Accept": "application/json"}},
+        );
+        if (link !== trustedFollowup || link.selectionRef !== selectedSelectionRef
+            || result.ok !== true
+            || result.followup?.contract_version !== "claw-conversation-artifact-followup.v1"
+            || result.followup.status !== "resolved"
+            || result.followup.source_artifact_id !== link.artifact_id
+            || result.followup.source_integrity_ref !== link.integrity_ref
+            || result.followup.read_grant_issued !== false
+            || result.followup.source_material_loaded !== false) {
+          throw new Error("verified owner file reference unavailable");
+        }
+        window.dispatchEvent(new CustomEvent("padiem:claw-web-work-conversation-open", {
+          detail: {
+            conversationId: link.conversation_id,
+            artifactId: link.artifact_id,
+            integrityRef: link.integrity_ref,
+          },
+        }));
+      } catch (_error) {
+        editPreviewResult.textContent =
+          "승인된 작업 대화·파일 참조를 확인할 수 없습니다. 파일 수정은 다시 실행하지 않았습니다.";
+      } finally {
+        setBusy(false);
+      }
+    });
     const showWorkcopy = (selectionRef, copyId) => {
       if (!SELECTION_ID.test(selectionRef) || !ID.test(copyId)) return hideWorkcopy();
       // Selection-ref path, NOT an arbitrary R2 document_id URL.
@@ -590,6 +647,9 @@
         editPreviewResult.textContent = result.pdf_download_available === true
           ? "수정 XLSX와 표준 견적 요약 PDF를 다운로드할 수 있습니다. PDF는 Excel 인쇄본과 서식이 다릅니다."
           : "수정 XLSX를 다운로드할 수 있습니다. PDF는 현재 활성화되지 않았습니다.";
+        // Refresh immutable D1 owner index (GET only) to show the work
+        // conversation button only when the completed file is truly indexed.
+        await readRevisionStatus(plan.ref);
       } catch (_error) {
         if (plan.ref === selectedSelectionRef) {
           editPreviewResult.textContent =
@@ -617,6 +677,7 @@
       writeApprove.disabled = value || writeApprove.hidden;
       writeDeny.disabled = value || writeDeny.hidden;
       pdfPreviewButton.disabled = value || pdfPreviewButton.hidden || pdfPreviewLoading;
+      openWorkConversation.disabled = value || openWorkConversation.hidden;
       panel.setAttribute("aria-busy", value ? "true" : "false");
     };
 
