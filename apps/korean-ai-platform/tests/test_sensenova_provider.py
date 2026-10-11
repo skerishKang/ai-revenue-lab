@@ -258,7 +258,8 @@ async def test_busy_429_absorbed_by_gateway_retry(client, monkeypatch):
 
     response = client.post(
         "/api/pilot/v1/chat/completions",
-        json={"model": SENSENOVA_MODEL_ID, "messages": [{"role": "user", "content": "hi"}]},
+        json={"model": SENSENOVA_MODEL_ID, "messages": [{"role": "user", "content": "hi"}],
+              "business14": {"max_retries": 1}},
     )
 
     assert response.status_code == 200
