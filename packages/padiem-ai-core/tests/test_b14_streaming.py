@@ -323,6 +323,42 @@ def test_cumulative_byte_cap_aborts_stream():
     assert exc.value.code == "upstream_response_too_large"
 
 
+def test_many_small_sse_frames_exceeding_old_aggregate_ceiling_still_complete():
+    # The provider sends 12 short deltas, coalesced by the transport.
+    # Each frame is bounded; the total stream is not a new output-token cap.
+    frames = [sse(chunk_payload(content=f"delta-{i}")) for i in range(12)]
+    cap = max(len(frame) for frame in frames) + 40
+    raw = b"".join(frames) + b"data: [DONE]\n\n"
+    assert len(raw) > cap * 3
+
+    async def handler(req: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200, headers={"content-type": "text/event-stream"},
+            stream=ChunkStream([raw]),
+        )
+
+    client = B14StreamingClient(
+        B14ExecutionConfig(BASE_URL, max_response_bytes=cap),
+        transport=httpx.MockTransport(handler),
+    )
+    events = collect(client, request())
+    assert [e.delta_content for e in events if e.delta_content] == [
+        f"delta-{i}" for i in range(12)
+    ]
+    assert events[-1].done is True
+
+
+def test_fragmented_single_oversize_sse_frame_fails_closed():
+    frame = sse(chunk_payload(content="x" * 900))
+    async def handler(req: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, headers={"content-type": "text/event-stream"},
+                              stream=ChunkStream([frame[:100], frame[100:]]))
+    client = B14StreamingClient(B14ExecutionConfig(BASE_URL, max_response_bytes=700),
+                                transport=httpx.MockTransport(handler))
+    with pytest.raises(B14ExecutionError) as err:
+        collect(client, request())
+    assert err.value.code == "upstream_response_too_large"
+
 def test_timeout_and_transport_errors_are_normalized():
     async def timeout_handler(req: httpx.Request) -> httpx.Response:
         raise httpx.ReadTimeout("secret timeout detail", request=req)
