@@ -31,7 +31,7 @@ def raw_for(case):
 def test_authority_current_owner_registry_only():
     models=m.approved_models()
     canonical=json.loads((ROOT/"apps/korean-ai-platform/app/pilot/b14_models.json").read_text(encoding="utf8"))
-    expected={item["id"] for item in canonical["models"]}
+    expected={item["id"] for item in canonical["models"] if item["enabled"] and canonical["providers"][item["provider_id"]]["enabled"]}
     assert len(set(models))==len(models)
     assert set(models)==expected
     assert not any(name.startswith("kilo/") for name in models)
