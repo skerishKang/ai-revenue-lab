@@ -216,15 +216,33 @@ def main(argv=None) -> int:
         if not opts.candidate_b62_version or not opts.candidate_engine_version:
             print("PRODUCTION_DEPLOYMENT=BLOCKED candidate version manifests absent")
             return 2
-        # Candidate must be a distinct immutable Worker version, never
-        # a synthetic binding list or re-labeled copy of the served version.
+        # Every candidate must have immutable Cloudflare provenance. A same-ID
+        # no-op is permitted only for an already provisioned Hark Worker.
         live_b62_id = read_immutable_version_proof(opts.live_b62_version)
         live_engine_id = read_immutable_version_proof(opts.live_engine_version)
         candidate_b62_id = read_immutable_version_proof(opts.candidate_b62_version)
         candidate_engine_id = read_immutable_version_proof(opts.candidate_engine_version)
-        if live_b62_id == candidate_b62_id or live_engine_id == candidate_engine_id:
-            print("BLOCKED candidate must be a distinct immutable Worker version")
-            return 2
+        # A Worker ALREADY serving the exact Hark binding does not need a
+        # pointless code redeploy when only the other Worker is changing.
+        # Reusing the immutable id is allowed only for byte-identical
+        # resource descriptors, with the required binding already live.
+        for label, served_id, candidate_id, served_path, candidate_path, required, kind in (
+            (B62_APP, live_b62_id, candidate_b62_id,
+             opts.live_b62_version, opts.candidate_b62_version,
+             B62_ADDED_BINDING, "browser"),
+            (ENGINE_APP, live_engine_id, candidate_engine_id,
+             opts.live_engine_version, opts.candidate_engine_version,
+             ENGINE_ADDED_BINDING, "d1"),
+        ):
+            if served_id == candidate_id:
+                served_doc = json.loads(served_path.read_text(encoding="utf-8-sig"))
+                candidate_doc = json.loads(candidate_path.read_text(encoding="utf-8-sig"))
+                if (read_version_bindings(served_path).get(required) != kind
+                        or served_doc["resources"] != candidate_doc["resources"]):
+                    print("BLOCKED " + label
+                          + " same-version reuse requires unchanged resources "
+                          + "and previously installed Hark binding")
+                    return 2
         errors = audit_replacement(
             old_b62, old_engine, read_version_bindings(opts.candidate_b62_version),
             read_version_bindings(opts.candidate_engine_version))
