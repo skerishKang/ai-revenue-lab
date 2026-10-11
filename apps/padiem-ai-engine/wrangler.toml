@@ -89,11 +89,19 @@ binding = "ENGINE_EVIDENCE_STORE"
 database_name = "padiem-engine"
 database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"
 
+# #4194 Owner-approved dedicated D1 Agent/Skill run lease activation.
+# Additive schema 0011 is present on the exact Charliekant padiem-engine D1;
+# verified separate from code deployment, with empty new table.
+# No existing service/secret/D1 bindings are changed. Roll back to the
+# previous served Worker version to disable if acceptance checks fail.
+[vars]
+PADIEM_ENGINE_AGENT_DURABLE_ENABLED = "true"
+
 # #2786 Stage 11-C M3-2: preview-only Agent pilot lane.
 #
-# A dedicated worker with NO services, NO D1 and NO secrets. The production block
-# above is untouched: it carries no [vars] section at all, so the marker pair
-# below exists only inside this environment and can never leak into Production.
+# A dedicated worker with NO services, NO D1 and NO secrets. The Production
+# [vars] above enables ONLY the schema-gated Agent D1 lease; the preview-only
+# marker pair below remains isolated to this environment.
 # workers_dev stays false: the preview worker is reachable only by an internal /
 # service-binding caller, never from the public internet.
 [env.preview]
