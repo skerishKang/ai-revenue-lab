@@ -86,6 +86,22 @@ async def b66_admin_members(request: Request) -> JSONResponse:
                          "notification_delivery_configured": bool(getattr(getattr(request.app.state, "b66_signup_notifier", None), "channels", None))}, headers=_NO_STORE)
 
 
+async def b66_admin_member_detail(request: Request) -> JSONResponse:
+    store, _, err = await _admin(request)
+    if err is not None:
+        return err
+    user_id = request.path_params.get("user_id", "")
+    if not isinstance(user_id,str) or not _USER_ID.fullmatch(user_id):
+        return _error(404,"member_not_found")
+    try:
+        result = await store.member_detail(user_id)
+    except Exception:
+        return _error(503,"member_usage_unavailable")
+    if result is None:
+        return _error(404,"member_not_found")
+    return JSONResponse({"ok":True,**result},headers=_NO_STORE)
+
+
 async def b66_admin_member_access(request: Request) -> JSONResponse:
     store, actor_id, err = await _admin(request)
     if err is not None:
