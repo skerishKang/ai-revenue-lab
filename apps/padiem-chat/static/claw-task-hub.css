@@ -1,0 +1,145 @@
+/* B62/Hark WEB-FIRST task hierarchy; inherits Padiem theme tokens. */
+.claw-task-hub {
+  width: min(100%, 840px);
+  margin: 8px auto 22px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--card-bg);
+  color: var(--text);
+  box-sizing: border-box;
+}
+.app-shell:not([data-state="claw"]) .claw-task-hub,
+.app-shell[data-state="claw"] .claw-workspace:not([data-view="general"]) ~ .conversation .claw-task-hub {
+  display: none !important;
+}
+.claw-task-hub-heading h2 {
+  margin: 2px 0 8px;
+  font-size: clamp(20px, 3vw, 26px);
+  line-height: 1.3;
+  letter-spacing: -.03em;
+}
+.claw-task-hub-heading > p:last-child {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.claw-task-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.claw-task-option {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  min-height: 168px;
+  padding: 17px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface, var(--card-bg));
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  transition: border-color .15s ease, transform .15s ease;
+}
+.claw-task-option:hover { border-color: var(--accent); transform: translateY(-1px); }
+.claw-task-option:focus-visible,
+.claw-mobile-composer-toggle:focus-visible,
+#clawCompareCloseButton:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+.claw-task-option strong { font-size: 15px; line-height: 1.35; }
+.claw-task-option > span { color: var(--muted); font-size: 13px; line-height: 1.55; }
+.claw-task-option small { margin-top: auto; font-size: 12px; font-weight: 700; color: var(--text); }
+.claw-task-option-primary {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.claw-task-tag {
+  display: inline-block;
+  margin-left: 3px;
+  padding: 2px 6px;
+  border-radius: 5px;
+  font-size: 10px;
+  color: var(--text);
+  background: var(--card-bg);
+  vertical-align: middle;
+}
+.claw-quote-compare { scroll-margin-top: 80px; }
+#clawCompareCloseButton { flex: 0 0 auto; }
+.claw-web-office { scroll-margin-top: 80px; }
+.claw-mobile-composer-toggle { display: none; }
+
+@media (max-width: 920px) {
+  .claw-task-hub-grid { grid-template-columns: 1fr; }
+  .claw-task-option {
+    min-height: 0;
+    padding: 14px;
+    gap: 5px;
+  }
+  .claw-task-option small { margin-top: 2px; }
+}
+@media (max-width: 600px) {
+  .claw-task-hub { margin: 0 auto 14px; padding: 15px 13px; border-radius: 16px; }
+  .claw-task-hub-heading h2 { font-size: 21px; }
+  .claw-task-hub-heading > p:last-child { font-size: 13px; }
+  .claw-task-option { padding: 13px 14px; }
+  .app-shell[data-state="claw"] .claw-workspace:is([data-view="general"], [data-view="manual"]) ~ .composer-wrap .claw-mobile-composer-toggle {
+    display: flex;
+  }
+  html body .app-shell[data-state="claw"] .claw-workspace[data-view="manual"] ~ .composer-wrap {
+    max-height: min(72dvh, 560px) !important;
+    overflow-y: auto !important;
+    overscroll-behavior-y: contain;
+  }
+  .app-shell[data-state="claw"] .claw-mobile-composer-toggle {
+    width: 100%;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--card-bg);
+    color: var(--text);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  html body .app-shell[data-state="claw"] .conversation {
+    padding-bottom: calc(var(--claw-composer-clearance, 380px) + 24px) !important;
+    scroll-padding-bottom: calc(var(--claw-composer-clearance, 380px) + 24px);
+  }
+  html body .app-shell[data-state="claw"][data-claw-composer-collapsed="true"] .composer-wrap {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    padding: 6px 12px calc(7px + env(safe-area-inset-bottom)) !important;
+    background: var(--bg) !important;
+  }
+  /* Preserve the shared chat input and manual-entry affordance.
+   * Only the optional model/workflow panels collapse. */
+  html body .app-shell[data-state="claw"][data-claw-composer-collapsed="true"] .composer-wrap > :not(#clawMobileComposerToggle):not(#clawManualEntryBar):not(#composerForm) {
+    display: none !important;
+  }
+  html body .app-shell[data-state="claw"][data-claw-composer-collapsed="true"] #composerForm > .claw-model-choice,
+  html body .app-shell[data-state="claw"][data-claw-composer-collapsed="true"] #composerForm > .claw-model-advanced,
+  html body .app-shell[data-state="claw"][data-claw-composer-collapsed="true"] #composerForm > #ownerModelPreviewOpen {
+    display: none !important;
+  }
+  html body .app-shell[data-state="claw"][data-claw-composer-collapsed="true"] .conversation {
+    padding-bottom: calc(var(--claw-composer-clearance, 66px) + 24px) !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .claw-task-option { transition: none; }
+}
