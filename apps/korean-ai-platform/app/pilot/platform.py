@@ -297,6 +297,7 @@ async def call_platform_chat_completions(
     max_tokens: int | None = None,
     model_parameters: dict[str, Any] | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
+    session_id: str | None = None,
 ) -> dict[str, Any]:
     """Completed-JSON call to a fixed platform Provider.
 
@@ -316,6 +317,16 @@ async def call_platform_chat_completions(
         )
         return _mock_response(model_id, upstream_model, provider)
 
+    if platform_provider_id == "opencode-go":
+        from .opencode_go_wire import call_go_model
+        if model_parameters:
+            from .errors import InvalidRequest
+            raise InvalidRequest("Unverified model-native parameters for OpenCode Go.")
+        return await call_go_model(
+            model_id=model_id, upstream_model=upstream_model, messages=messages,
+            session_id=session_id, max_tokens=max_tokens, temperature=temperature,
+            transport=transport,
+        )
     _require_owner_allowed_live_model(
         model_id, upstream_model, platform_provider_id
     )
@@ -445,6 +456,7 @@ async def stream_platform_chat_completions(
     max_tokens: int | None = None,
     model_parameters: dict[str, Any] | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
+    session_id: str | None = None,
 ) -> Any:
     """Streaming call to a fixed platform Provider (OpenAI-compatible SSE).
 
@@ -475,6 +487,18 @@ async def stream_platform_chat_completions(
             yield event
         return
 
+    if platform_provider_id == "opencode-go":
+        from .opencode_go_wire import stream_go_model
+        if model_parameters:
+            from .errors import InvalidRequest
+            raise InvalidRequest("Unverified model-native parameters for OpenCode Go.")
+        async for event in stream_go_model(
+            model_id=model_id, upstream_model=upstream_model, messages=messages,
+            session_id=session_id, max_tokens=max_tokens, temperature=temperature,
+            transport=transport,
+        ):
+            yield event
+        return
     _require_owner_allowed_live_model(
         model_id, upstream_model, platform_provider_id
     )

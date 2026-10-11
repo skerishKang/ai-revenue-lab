@@ -19,7 +19,11 @@ from app.pilot import platform as adapter
 from app.pilot.platform_secrets import get_platform_provider
 
 
-CANONICAL = read_registry()["models"]
+registry = read_registry()
+# The historical wire-parity contract covers enabled Chat Completions routes;
+# disabled Go candidates have protocol-specific MockTransport tests instead.
+CANONICAL = [row for row in registry["models"] if row["enabled"]
+             and registry["providers"][row["provider_id"]]["enabled"]]
 assert CANONICAL
 
 
