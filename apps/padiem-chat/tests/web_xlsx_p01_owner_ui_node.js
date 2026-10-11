@@ -16,6 +16,17 @@ const COPY_ID = "doc_" + "d".repeat(32);
 const WORK_CHAT = "chat_" + "f".repeat(32);
 const REV_ID = "doc_" + "e".repeat(32);
 const REV_SHA = "d".repeat(64);
+// #3933: the NEW web source a completed revision is adopted into. Its own
+// identity and its own brand-new (never-yet-approved) selection.
+const ADOPTED = {
+  document_id: "doc_" + "9".repeat(32),
+  filename: "hark-revised-quote.xlsx",
+  size_bytes: 1856,
+  source_sha256: REV_SHA,
+  original_immutable: true,
+  processing_authorized: false,
+};
+const ADOPT_REF = "sel_" + "8".repeat(32);
 const SELECTION = {
   selection_ref: REF, document_id: SRC.document_id, filename: SRC.filename,
   size_bytes: SRC.size_bytes, source_sha256: SRC.source_sha256,
@@ -59,13 +70,48 @@ function response(body, status = 200) {
 async function settle() {
   for (let i = 0; i < 12; ++i) await new Promise(resolve => setImmediate(resolve));
 }
-function server({ initial = "waiting_p01", enabled = true, failPost = false, failStart = false, badSource = false, workcopy = false, forgedPreviewWrite = false, writeAvailable = false, pdfAvailable = false, followupAvailable = false, followupForged = false, readConversation = false, readConversationForged = false } = {}) {
+function server({ initial = "waiting_p01", enabled = true, failPost = false, failStart = false, badSource = false, workcopy = false, forgedPreviewWrite = false, writeAvailable = false, pdfAvailable = false, followupAvailable = false, followupForged = false, readConversation = false, readConversationForged = false, adoptAvailable = true, adoptForged = false } = {}) {
   let stage = initial, sent = [], starts = [], previews = [], commits = [],
-    writeDecisions = [], pdfPreviews = [], followupReads = [];
+    writeDecisions = [], pdfPreviews = [], followupReads = [], adopts = [],
+    selectionPosts = [], adoptedStatusReads = [];
+  let adopted = null;
   global.fetch = async (url, options = {}) => {
     assert.equal(options.credentials, "same-origin");
     assert.equal(options.cache, "no-store");
     const method = options.method || "GET";
+    if (url.endsWith("/artifact-followup/adopt") && method === "POST") {
+      assert.match(url, /^\/api\/claw\/conversations\/chat_[a-f0-9]{32}\/artifact-followup\/adopt$/);
+      const body = JSON.parse(options.body);
+      assert.deepEqual(Object.keys(body).sort(), ["artifact_id", "integrity_ref"]);
+      assert.equal(options.headers["Content-Type"], "application/json");
+      adopts.push(body);
+      if (!adoptAvailable) {
+        return response({ ok: false, error: { code: "artifact_not_available" } }, 404);
+      }
+      if (adoptForged) {
+        return response({
+          ok: true, contract_version: "claw-web-xlsx-source-adopt.v1",
+          file: ADOPTED, source: "previous_completed_result",
+          adopted_from_artifact_id: REV_ID,
+          p01_approval_started: false, processing_started: false,
+          p01_approved: false, drive_uploaded: false, workcopy_created: false,
+          previous_approval_reused: true,
+          read_grant_issued: false, source_material_loaded: false,
+          provider_write_authorized: false, memory_restored: false,
+        }, 201);
+      }
+      adopted = ADOPTED;
+      return response({
+        ok: true, contract_version: "claw-web-xlsx-source-adopt.v1",
+        file: ADOPTED, source: "previous_completed_result",
+        adopted_from_artifact_id: REV_ID,
+        p01_approval_started: false, processing_started: false,
+        p01_approved: false, drive_uploaded: false, workcopy_created: false,
+        previous_approval_reused: false,
+        read_grant_issued: false, source_material_loaded: false,
+        provider_write_authorized: false, memory_restored: false,
+      }, 201);
+    }
     if (url.includes("/artifact-followup?") && method === "GET") {
       followupReads.push(url);
       return response({ok: true, followup: {
@@ -90,8 +136,30 @@ function server({ initial = "waiting_p01", enabled = true, failPost = false, fai
       return response({
         ok: true, contract_version: "claw-web-xlsx-source.v1",
         source: "browser_upload", read_authorized_for_processing: false,
-        requires_p01_for_processing: true, files: [SRC],
+        requires_p01_for_processing: true,
+        files: adopted === null ? [SRC] : [SRC, adopted],
       });
+    }
+    if (url === "/api/claw/office/web-selections" && method === "POST") {
+      const body = JSON.parse(options.body);
+      assert.deepEqual(Object.keys(body), ["document_id"]);
+      // Only a source the server already stores can be selected, and the
+      // adopted identity always gets a BRAND NEW selection reference.
+      assert.equal(body.document_id, ADOPTED.document_id);
+      assert.ok(adopted !== null, "Selection requires a stored source");
+      selectionPosts.push(body.document_id);
+      return response({
+        ok: true, contract_version: "claw-web-xlsx-selection.v1",
+        selection: {
+          selection_ref: ADOPT_REF, document_id: ADOPTED.document_id,
+          filename: ADOPTED.filename, size_bytes: ADOPTED.size_bytes,
+          source_sha256: ADOPTED.source_sha256,
+          status: "source_selected_p01_not_started",
+          p01_approval_started: false, processing_started: false,
+        },
+        p01_approval_started: false, processing_started: false,
+        workcopy_created: false, drive_uploaded: false,
+      }, 201);
     }
     if (url === "/api/claw/office/web-selections" && method === "GET") {
       return response({
@@ -101,6 +169,21 @@ function server({ initial = "waiting_p01", enabled = true, failPost = false, fai
       });
     }
     if (url.endsWith("/p01-status") && method === "GET") {
+      if (url.includes(ADOPT_REF)) {
+        // An adopted source starts with NO approval history at all: a NEW
+        // owner READ request must be started before anything can process it.
+        adoptedStatusReads.push(url);
+        return response({
+          ok: true, contract_version: "claw-web-xlsx-p01-status.v1",
+          selection_ref: ADOPT_REF, document_id: ADOPTED.document_id,
+          filename: ADOPTED.filename, size_bytes: ADOPTED.size_bytes,
+          source_sha256: ADOPTED.source_sha256,
+          status: "not_requested", owner_decision_enabled: false,
+          owner_request_enabled: true,
+          processing_started: false, workcopy_created: false,
+          workcopy_document_id: null, work_conversation: null,
+        });
+      }
       return response({
         ok: true, contract_version: "claw-web-xlsx-p01-status.v1",
         selection_ref: REF, document_id: SRC.document_id,
@@ -236,7 +319,7 @@ function server({ initial = "waiting_p01", enabled = true, failPost = false, fai
     throw Error("UNEXPECTED_REQUEST " + method + " " + url);
   };
   return { sent, starts, previews, commits, writeDecisions, pdfPreviews,
-    followupReads,
+    followupReads, adopts, selectionPosts, adoptedStatusReads,
     get stage() { return stage; } };
 }
 async function prepare(config) {
@@ -553,6 +636,128 @@ async function prepare(config) {
         processing_started: true, workcopy_created: false }, SRC, REF,
     ), false,
   );
+  // #3933 existing-result reuse: a completed revision becomes a NEW web
+  // source through ONE owner-scoped adopt POST. The panel then selects that
+  // NEW identity, so the only available next step is a brand-new P01 READ
+  // request - never the previous approval, workcopy, WRITE receipt or PDF.
+  const reuse = await prepare({
+    workcopy: true, writeAvailable: true, pdfAvailable: true,
+  });
+  // A real previous READ approval exists in this page lifetime first, so a
+  // replay would be observable.
+  reuse.root.nodes.clawWebXlsxP01Approve.handlers.click();
+  await settle();
+  assert.deepEqual(reuse.network.sent, ["approve"]);
+  const adopted = await reuse.client.adoptFromArtifact(WORK_CHAT, REV_ID, REV_SHA);
+  await settle();
+  assert.equal(adopted, true, "A verified completed result must be adoptable");
+  assert.deepEqual(reuse.network.adopts, [{
+    artifact_id: REV_ID, integrity_ref: REV_SHA,
+  }], "The adopt POST carries only the two verified identifiers");
+  assert.deepEqual(reuse.network.selectionPosts, [ADOPTED.document_id],
+    "The adopted NEW identity is what gets selected");
+  assert.equal(reuse.network.adoptedStatusReads.length, 1);
+  assert.equal(reuse.client.getState().selectedDocumentId, ADOPTED.document_id);
+  assert.equal(reuse.client.getState().selectedSelectionRef, ADOPT_REF);
+  assert.equal(reuse.client.getState().ownerRequestReady, true,
+    "A NEW P01 READ request must be available for the adopted source");
+  assert.equal(reuse.client.getState().ownerDecisionReady, false,
+    "No prior owner decision may apply to the adopted source");
+  assert.equal(reuse.root.nodes.clawWebXlsxP01Start.hidden, false);
+  assert.equal(reuse.root.nodes.clawWebXlsxP01Start.disabled, false);
+  assert.equal(reuse.root.nodes.clawWebXlsxP01Approve.hidden, true,
+    "The previous READ approval is never offered again");
+  assert.equal(reuse.root.nodes.clawWebXlsxP01Deny.hidden, true);
+  assert.deepEqual(reuse.network.sent, ["approve"],
+    "Adopting must not replay or withdraw any P01 decision");
+  assert.equal(reuse.network.commits.length, 0, "No WRITE is replayed");
+  assert.equal(reuse.network.writeDecisions.length, 0);
+  assert.equal(reuse.network.pdfPreviews.length, 0, "No billable PDF re-render");
+  const adoptedCopy = reuse.root.nodes.clawWebXlsxP01Panel.children.find(
+    item => item.tag === "a" && /작업 사본/.test(item.textContent));
+  assert.ok(adoptedCopy);
+  assert.equal(adoptedCopy.hidden, true,
+    "The previous workcopy must not survive into the new source");
+  assert.equal(reuse.root.nodes.clawWebXlsxList.children.length, 2,
+    "Both the original upload and the adopted result are listed");
+  assert.match(reuse.root.nodes.clawWebXlsxNotice.textContent, /새 P01 읽기 승인/);
+
+  // Malformed identifiers are refused locally and never reach the server.
+  for (const args of [
+    ["not-a-chat", REV_ID, REV_SHA],
+    [WORK_CHAT, "artifact_1", REV_SHA],
+    [WORK_CHAT, REV_ID, "not-a-hash"],
+    [WORK_CHAT, REV_ID, undefined],
+  ]) {
+    assert.equal(await reuse.client.adoptFromArtifact(...args), false,
+      JSON.stringify(args));
+  }
+  assert.equal(reuse.network.adopts.length, 1,
+    "Only the well-formed adopt may reach the server");
+
+  // A refused adopt leaves the panel exactly as it was: nothing selected from
+  // the attempt, no half-verified source and an honest notice.
+  const refused = await prepare({adoptAvailable: false});
+  assert.equal(await refused.client.adoptFromArtifact(WORK_CHAT, REV_ID, REV_SHA),
+    false);
+  await settle();
+  assert.equal(refused.network.adopts.length, 1);
+  assert.deepEqual(refused.network.selectionPosts, []);
+  assert.equal(refused.client.getState().selectedDocumentId, SRC.document_id,
+    "A refused adopt must not disturb the existing selection");
+  assert.equal(refused.root.nodes.clawWebXlsxList.children.length, 1);
+  assert.equal(refused.client.getState().busy, false,
+    "The page latch is always released after a refusal");
+
+  // A forged "the previous approval was reused" receipt is never believed.
+  const forgedAdopt = await prepare({adoptForged: true});
+  assert.equal(
+    await forgedAdopt.client.adoptFromArtifact(WORK_CHAT, REV_ID, REV_SHA), false);
+  await settle();
+  assert.equal(forgedAdopt.network.adopts.length, 1);
+  assert.deepEqual(forgedAdopt.network.selectionPosts, [],
+    "A forged reuse claim must never become a new selection");
+  assert.equal(forgedAdopt.client.getState().selectedDocumentId, SRC.document_id);
+
+  const validAdopt = {
+    ok: true, contract_version: "claw-web-xlsx-source-adopt.v1",
+    source: "previous_completed_result", adopted_from_artifact_id: REV_ID,
+    file: ADOPTED,
+    p01_approval_started: false, processing_started: false,
+    p01_approved: false, drive_uploaded: false, workcopy_created: false,
+    previous_approval_reused: false, read_grant_issued: false,
+    source_material_loaded: false, provider_write_authorized: false,
+    memory_restored: false,
+  };
+  assert.equal(ui.validateAdopt(validAdopt), true);
+  for (const mutate of [
+    (b) => { b.previous_approval_reused = true; },
+    (b) => { b.p01_approval_started = true; },
+    (b) => { b.processing_started = true; },
+    (b) => { b.p01_approved = true; },
+    (b) => { b.workcopy_created = true; },
+    (b) => { b.drive_uploaded = true; },
+    (b) => { b.read_grant_issued = true; },
+    (b) => { b.source_material_loaded = true; },
+    (b) => { b.provider_write_authorized = true; },
+    (b) => { b.memory_restored = true; },
+    (b) => { b.source = "browser_upload"; },
+    (b) => { b.contract_version = "claw-web-xlsx-source-adopt.v2"; },
+    (b) => { b.ok = false; },
+    (b) => { delete b.adopted_from_artifact_id; },
+    (b) => { b.adopted_from_artifact_id = "artifact_1"; },
+    (b) => { b.file = {...ADOPTED, document_id: REV_ID}; },
+    (b) => { b.file = {...ADOPTED, processing_authorized: true}; },
+    (b) => { b.file = {...ADOPTED, original_immutable: false}; },
+    (b) => { b.file = {...ADOPTED, size_bytes: 0}; },
+    (b) => { b.file = {...ADOPTED, filename: "hark-revised-quote.pdf"}; },
+  ]) {
+    const body = structuredClone(validAdopt);
+    mutate(body);
+    assert.equal(ui.validateAdopt(body), false, JSON.stringify(body));
+  }
+  assert.equal(ui.validateAdopt(null), false);
+
   console.log("WEB_XLSX_PDF_INLINE_PREVIEW_EXPLICIT_OWNER_ONLY=PASS");
   console.log("WEB_XLSX_OWNER_ONLY_PDF_AFTER_WRITE_APPROVAL=PASS");
   console.log("WEB_XLSX_EXPLICIT_CORE_WRITE_TWO_PHASE_OWNER=PASS");
@@ -564,4 +769,5 @@ async function prepare(config) {
   console.log("WEB_XLSX_SERVER_STATUS_ONLY=PASS");
   console.log("WEB_XLSX_BROWSER_START_ONE_SHOT=PASS");
   console.log("WEB_XLSX_READ_WORKCOPY_CONVERSATION_HANDOFF=PASS");
+  console.log("WEB_XLSX_COMPLETED_RESULT_REUSE_NEW_APPROVAL=PASS");
 })().catch(error => { console.error(error); process.exitCode = 1; });

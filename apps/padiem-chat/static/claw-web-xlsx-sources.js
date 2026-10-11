@@ -4,6 +4,10 @@
  */
 (() => {
   "use strict";
+  // The last bound panel instance. #3933 lets the read-only conversation
+  // context module DELEGATE the one owner-scoped adopt call to the shipped
+  // panel instead of gaining a transport of its own.
+  let active = null;
   const MAX_BYTES = 1048576;
   const ID = /^doc_[0-9a-f]{32}$/;
   const HASH = /^[a-f0-9]{64}$/;
@@ -12,6 +16,12 @@
   const ENDPOINT = "/api/claw/office/web-sources";
   const SELECTIONS = "/api/claw/office/web-selections";
   const SELECTION_ID = /^sel_[a-f0-9]{32}$/;
+  // #3933: the ONE owner-scoped route that turns an already-completed result
+  // into a NEW web source. It is not a grant, not a download and not an
+  // approval; it only re-reads the recorded revision bytes the server itself
+  // wrote and mints a NEW unauthorized document identity.
+  const ADOPT = (conversationId) => "/api/claw/conversations/"
+    + encodeURIComponent(conversationId) + "/artifact-followup/adopt";
   const P01_STAGES = new Set([
     "not_requested", "request_unknown", "waiting_p01", "decision_unknown",
     "confirmed", "denied", "expired", "manual_review",
@@ -56,6 +66,29 @@
       && Object.keys(value).length === 1
       && CHAT_ID.test(value.conversation_id)
       && status === "confirmed" && workcopyCreated === true);
+  }
+
+  // #3933: adopting a previous completed result must yield a NEW source
+  // identity. Every "no grant / no reuse" flag is required to be explicitly
+  // false, and the adopted document must never be the artifact it came from,
+  // so a replayed P01 decision, workcopy or WRITE receipt cannot apply.
+  function validateAdopt(body) {
+    return Boolean(body && body.ok === true
+      && body.contract_version === "claw-web-xlsx-source-adopt.v1"
+      && body.source === "previous_completed_result"
+      && ID.test(body.adopted_from_artifact_id)
+      && body.p01_approval_started === false
+      && body.processing_started === false
+      && body.p01_approved === false
+      && body.drive_uploaded === false
+      && body.workcopy_created === false
+      && body.previous_approval_reused === false
+      && body.read_grant_issued === false
+      && body.source_material_loaded === false
+      && body.provider_write_authorized === false
+      && body.memory_restored === false
+      && validFile(body.file)
+      && body.file.document_id !== body.adopted_from_artifact_id);
   }
 
   function validateP01Status(body, selected, selectionRef) {
@@ -279,6 +312,7 @@
     let decisionAttempted = false;
     const attemptedRefs = new Set(); // never POST twice per selection in this page lifetime
     let loaded = false;
+    let lastFiles = [];
     let trustedPreview = null;
     let pendingWrite = null;
     let trustedFollowup = null;
@@ -939,8 +973,10 @@
       }
     }
 
-    async function selectSource(item) {
-      if (busy || !validFile(item)) return;
+    async function selectSource(item, force = false) {
+      // `force` is the internal re-entrant path used by adoptFromArtifact:
+      // the caller already holds the page latch and owns releasing it.
+      if ((busy && !force) || !validFile(item)) return;
       setBusy(true);
       report("원본의 소유권과 정확한 파일 지문을 확인하고 있습니다.");
       try {
@@ -957,12 +993,57 @@
       } catch (error) {
         report(error.message);
       } finally {
+        if (!force) setBusy(false);
+      }
+    }
+
+    // #3933: make an already-completed result the input of a NEW task.
+    // One owner-scoped POST re-reads the revision bytes the server itself
+    // recorded and mints a NEW document identity. The panel then reloads and
+    // selects that identity, which creates a NEW selection and therefore
+    // requires a NEW P01 READ approval. The previous decision, workcopy and
+    // WRITE receipt belong to a different document and are never replayed.
+    async function adoptFromArtifact(conversationId, artifactId, integrityRef) {
+      if (busy) return false;
+      if (typeof conversationId !== "string" || !CHAT_ID.test(conversationId)
+          || typeof artifactId !== "string" || !ID.test(artifactId)
+          || typeof integrityRef !== "string" || !HASH.test(integrityRef)) {
+        return false;
+      }
+      // Showing the panel is navigation only; it reads no bytes by itself.
+      panel.open = true;
+      setBusy(true);
+      report("이전 완료 파일을 새 원본으로 불러오고 있습니다. 이전 승인은 재사용되지 않습니다.");
+      try {
+        const body = await jsonRequest(ADOPT(conversationId), {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({
+            artifact_id: artifactId, integrity_ref: integrityRef,
+          }),
+        });
+        if (!validateAdopt(body)) {
+          throw new Error("이전 완료 파일을 새 원본으로 확인할 수 없습니다.");
+        }
+        await reload(true);
+        const item = lastFiles.find(
+          (file) => file.document_id === body.file.document_id);
+        if (!item) throw new Error("불러온 원본이 보관 목록에서 확인되지 않았습니다.");
+        await selectSource(item, true);
+        report("'" + item.filename + "' 파일을 새 원본으로 불러왔습니다. "
+          + "이전 승인은 재사용되지 않았으며, 처리를 시작하려면 새 P01 읽기 승인이 필요합니다.");
+        return true;
+      } catch (error) {
+        report(error.message);
+        return false;
+      } finally {
         setBusy(false);
       }
     }
 
-    async function reload() {
-      if (busy) return;
+    async function reload(force = false) {
+      // See selectSource: `force` keeps the caller-owned page latch held.
+      if (busy && !force) return;
       setBusy(true);
       try {
         const files = validateListing(await jsonRequest(ENDPOINT));
@@ -981,6 +1062,7 @@
           historyAvailable = false;
         }
         render(files, selections);
+        lastFiles = files;
         loaded = true;
         report(files.length
           ? files.length + "개 원본이 보관되어 있습니다. 처리에는 별도 P01 승인이 필요합니다."
@@ -988,10 +1070,11 @@
           : "보관된 Excel 원본이 없습니다. 파일을 직접 선택해 보관할 수 있습니다.");
       } catch (error) {
         list.replaceChildren();
+        lastFiles = [];
         loaded = false;
         report(error.message);
       } finally {
-        setBusy(false);
+        if (!force) setBusy(false);
       }
     }
 
@@ -1045,17 +1128,26 @@
     panel.addEventListener("toggle", () => {
       if (panel.open && !loaded) void reload();
     });
-    return { getState: () => ({
-      busy, loaded, selectedDocumentId, selectedSelectionRef,
-      p01Approved: false, ownerDecisionReady, ownerRequestReady,
-      requestAttempted, decisionAttempted,
-      workConversationReady: workConversationHandle !== null,
-    }) };
+    const instance = {
+      adoptFromArtifact,
+      getState: () => ({
+        busy, loaded, selectedDocumentId, selectedSelectionRef,
+        p01Approved: false, ownerDecisionReady, ownerRequestReady,
+        requestAttempted, decisionAttempted,
+        workConversationReady: workConversationHandle !== null,
+      }),
+    };
+    active = instance;
+    return instance;
   }
 
   const api = Object.freeze({
     validFile, validateListing, validateSelection, validateWorkConversation,
-    validateSelectionsListing, validateP01Status, validateP01Start, validateP01Decision, init,
+    validateAdopt, validateSelectionsListing, validateP01Status,
+    validateP01Start, validateP01Decision, init,
+    adoptFromArtifact: (conversationId, artifactId, integrityRef) => (
+      active === null ? Promise.resolve(false) : active.adoptFromArtifact(
+        conversationId, artifactId, integrityRef)),
   });
   if (typeof module === "object" && module.exports) module.exports = api;
   if (typeof window === "object") window.PadiemClawWebXlsxSources = api;

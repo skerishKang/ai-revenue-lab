@@ -115,6 +115,9 @@ from .claw_office_chooser_routes import (
     select_candidate as claw_office_select_candidate,
 )
 from .claw_artifact_preview_routes import claw_artifact_inline_preview
+from .claw_conversation_artifact_adopt_routes import (
+    claw_conversation_artifact_adopt,
+)
 from .claw_conversation_artifact_routes import claw_conversation_artifact_followup
 from .claw_durable_drive_output_pipeline import ClawDurableDriveOutputPipeline
 from .claw_office_drive_completion import ClawOfficeDriveCompletion
@@ -464,6 +467,12 @@ def create_app(
         Route("/api/claw/manual-intake/artifact/{document_id}/preview", claw_artifact_inline_preview, methods=["GET"]),
         Route("/api/claw/telegram/ingest/{binding_ref}", claw_telegram_ingest, methods=["POST"]),
         Route("/api/claw/conversations/{conversation_id}/artifact-followup", claw_conversation_artifact_followup, methods=["GET"]),
+        # #3933: making an already-completed result the input of a NEW task is
+        # a separate POST. It re-reads only the exact owner-indexed revision
+        # bytes and mints a NEW document identity, so no previous selection,
+        # P01 READ decision, workcopy or WRITE receipt can apply and a NEW
+        # owner READ approval is required before any processing.
+        Route("/api/claw/conversations/{conversation_id}/artifact-followup/adopt", claw_conversation_artifact_adopt, methods=["POST"]),
         Route("/api/claw/conversations/{conversation_id}/artifacts/{artifact_id}/download", claw_drive_artifact_download, methods=["GET"]),
         Route("/api/claw/conversations/{conversation_id}/artifacts/{artifact_id}/preview", claw_drive_artifact_preview, methods=["GET"]),
         # #3580: the one consumer of the trusted Telegram delivery adapter. It
