@@ -55,10 +55,25 @@ class AgentTerminalReason(str, Enum):
 
 @dataclass(frozen=True, slots=True)
 class AgentExecutionBudget:
+    """Bounded Agent/Task budget with no fixed total wall clock (#4194).
+
+    ``max_wall_seconds`` is the **inactivity window**, not a cumulative cap: a
+    run that keeps making verified progress may exceed it in total and is never
+    force-failed for that reason. The window only fails a run that produces no
+    locally observed progress (step decision, Tool result, durable checkpoint)
+    for that long, which is the ZCode-parity ``timeout: none`` + inactivity
+    watchdog contract. Step/Tool/Skill counts, durable lease fencing, approval
+    expiry, quota/cost limits and user cancellation remain the real limits.
+
+    ``max_total_seconds`` is an optional *host-opted* hard ceiling for callers
+    that still need one. ``None`` (default) means no fixed wall clock at all.
+    """
+
     max_steps: int = 12
     max_tool_calls: int = 12
     max_skill_calls: int = 8
-    max_wall_seconds: int = 900  # align agent default with Core's 15-minute run context
+    max_wall_seconds: int = 900  # inactivity window; NOT a cumulative wall cap
+    max_total_seconds: int | None = None  # opt-in explicit ceiling; None = no wall
 
     def __post_init__(self) -> None:
         limits = {
@@ -73,6 +88,14 @@ class AgentExecutionBudget:
             if value < minimum or value > maximum:
                 raise AgentDefinitionError(
                     f"{name} must be between {minimum} and {maximum}"
+                )
+        total = self.max_total_seconds
+        if total is not None:
+            if isinstance(total, bool) or not isinstance(total, int):
+                raise AgentDefinitionError("max_total_seconds must be an integer")
+            if not 1 <= total <= 86_400:
+                raise AgentDefinitionError(
+                    "max_total_seconds must be between 1 and 86400"
                 )
 
 

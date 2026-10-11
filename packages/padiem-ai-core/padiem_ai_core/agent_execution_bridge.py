@@ -22,6 +22,7 @@ from typing import Any
 from .agent_definition import AgentTerminalReason, BoundedAgentDefinition
 from .agent_planner import AgentPlan, AgentPlanStep, validate_agent_plan
 from .agent_profile_adapter import CompiledAgentProfile
+from .agent_progress import AgentProgressTracker
 from .agent_runtime import (
     AgentRunRequest,
     AgentRunResult,
@@ -121,6 +122,7 @@ class AgentPlanExecutor:
         plan_id: str | None = None,
         run_guard: Callable[[], bool | Awaitable[bool]] | None = None,
         checkpoint_hook: Callable[[int], bool | Awaitable[bool]] | None = None,
+        progress: AgentProgressTracker | None = None,
     ) -> AgentRunResult:
         # 1. Authoritative plan validation against compiled profile
         validated_plan = validate_agent_plan(
@@ -143,6 +145,7 @@ class AgentPlanExecutor:
             approval_pause_seconds=self._approval_pause_seconds,
             run_guard=run_guard,
             checkpoint_hook=checkpoint_hook,
+            progress=progress,
         )
 
         # 4. Execute bounded agent loop
