@@ -70,6 +70,7 @@ from app.dispatch_quota import (
 )
 from app.grounding import GroundedChatService
 from app.history import D1HistoryStore
+from app.b66_signup_notifications import B66SignupNotifier
 from app.claw_local_task_result_composition import (
     build_local_task_result_source_with_diagnostic,
 )
@@ -809,6 +810,9 @@ class Default(WorkerEntrypoint):
                     settings=settings,
                     history_store=history_store,
                     d1_binding=db_binding,
+                    b66_admin_google_email=(
+                        binding_value(self.env, "B66_ADMIN_GOOGLE_EMAIL") or ""
+                    ),
                     r2_binding=r2_binding,
                     web_transport=web_transport,
                     b66_pdf_renderer_client=b66_pdf_renderer_client,
@@ -821,6 +825,28 @@ class Default(WorkerEntrypoint):
                         claw_telegram_delivery_request_builder
                     ),
                 )
+                _worker_app.state.b66_membership_enforced = (
+                    binding_value(self.env, "B66_MEMBERSHIP_ENFORCED") == "enabled"
+                )
+                # Optional signup notification channels: configuration comes
+                # exclusively from trusted Worker bindings, never browser input.
+                def _b66_notice_value(key):
+                    value = binding_value(self.env, key)
+                    return value if isinstance(value, str) else ""
+                _b66_member_store = _worker_app.state.b66_member_admin_store
+                if _b66_member_store is not None:
+                    _b66_notifier = B66SignupNotifier(
+                        _b66_member_store,
+                        telegram_bot_token=_b66_notice_value("B66_ALERT_TELEGRAM_BOT_TOKEN"),
+                        telegram_chat_id=_b66_notice_value("B66_ALERT_TELEGRAM_CHAT_ID"),
+                        discord_webhook_url=_b66_notice_value("B66_ALERT_DISCORD_WEBHOOK_URL"),
+                        resend_api_key=_b66_notice_value("B66_ALERT_RESEND_API_KEY"),
+                        email_from=_b66_notice_value("B66_ALERT_EMAIL_FROM"),
+                        email_to=_b66_notice_value("B66_ALERT_EMAIL_TO"),
+                    )
+                    _worker_app.state.b66_signup_notifier = (
+                        _b66_notifier if _b66_notifier.channels else None
+                    )
                 _worker_app.state.control_plane_identity_authority = identity_authority
                 _worker_app.state.identity_shadow_store = identity_shadow_store
                 # #3257: the Worker's real runtime env is the execution-target

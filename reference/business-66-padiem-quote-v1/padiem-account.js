@@ -181,6 +181,8 @@
     if (settingsPanelOut) settingsPanelOut.hidden = true;
     const accountMenu = byId("b66AccountMenu");
     if (accountMenu) accountMenu.hidden = true;
+    const adminButton = byId("b66AccountMenuAdmin");
+    if (adminButton) adminButton.hidden = true;
     if (button) button.setAttribute("aria-expanded", "false");
     document.dispatchEvent(new CustomEvent("b66:auth-changed", { detail: { authenticated: false } }));
     document.dispatchEvent(new CustomEvent("b66:runtime-changed", { detail: runtimeReadiness() }));
@@ -417,6 +419,21 @@
     return detail;
   }
 
+  async function refreshAdminButton() {
+    const button = byId("b66AccountMenuAdmin");
+    if (!button) return;
+    button.hidden = true;
+    if (!state.authenticated) return;
+    try {
+      const result = await api("/b66/admin/me");
+      // No trust in the visible email or browser-stored identity.
+      button.hidden = !(state.authenticated &&
+        result.response.ok && result.data && result.data.admin === true);
+    } catch (_) {
+      button.hidden = true;
+    }
+  }
+
   async function refreshAuth() {
     let result;
     try {
@@ -444,7 +461,7 @@
     state.authenticated = true;
     state.user = owner;
     renderSignedIn();
-    await Promise.all([loadSkills(), loadCompanyProfile(), loadQuoteModels()]);
+    await Promise.all([loadSkills(), loadCompanyProfile(), loadQuoteModels(), refreshAdminButton()]);
     document.dispatchEvent(new CustomEvent("b66:runtime-changed", { detail: runtimeReadiness() }));
     return { authenticated: true };
   }

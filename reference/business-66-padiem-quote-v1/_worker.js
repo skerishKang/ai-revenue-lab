@@ -54,12 +54,39 @@ function padiemTarget(url, method) {
     ["/api/padiem/b66/company-profile", ["GET", "/api/b66/company-profile"]],
     ["/api/padiem/b66/quote/interpret", ["POST", "/api/b66/quote/interpret"]],
     ["/api/padiem/b66/quote/models", ["GET", "/api/b66/quote/models"]],
+    ["/api/padiem/b66/admin/me", ["GET", "/api/b66/admin/me"]],
     ["/api/padiem/b66/quote/preview-base", ["GET", "/api/b66/quote/preview-base"]],
     ["/api/padiem/b66/quote/pdf", ["POST", "/api/b66/quote/pdf"]]
   ]);
   if (exact.has(path)) {
     const [allowedMethod, upstreamPath] = exact.get(path);
     return method === allowedMethod ? upstreamPath : null;
+  }
+
+  if (path === "/api/padiem/b66/admin/members" && method === "GET") {
+    const limitRaw = url.searchParams.get("limit");
+    const offsetRaw = url.searchParams.get("offset");
+    if (limitRaw !== null && !/^[0-9]{1,3}$/.test(limitRaw)) return null;
+    if (offsetRaw !== null && !/^[0-9]{1,5}$/.test(offsetRaw)) return null;
+    const limit = limitRaw === null ? 50 : Number(limitRaw);
+    const offset = offsetRaw === null ? 0 : Number(offsetRaw);
+    if (limit < 1 || limit > 100 || offset > 10000) return null;
+    return "/api/b66/admin/members?limit=" + limit + "&offset=" + offset;
+  }
+
+  if (path === "/api/padiem/b66/admin/alerts/dispatch" && method === "POST") {
+    return "/api/b66/admin/alerts/dispatch";
+  }
+  if (path === "/api/padiem/b66/admin/model-policy" &&
+      (method === "GET" || method === "PUT")) {
+    return "/api/b66/admin/model-policy";
+  }
+
+  const memberPath = "/api/padiem/b66/admin/members/";
+  if (path.startsWith(memberPath) && method === "PATCH") {
+    const userId = path.slice(memberPath.length);
+    if (!/^usr_[a-f0-9]{32}$/.test(userId)) return null;
+    return "/api/b66/admin/members/" + userId;
   }
 
   if (path === "/api/padiem/b66/saved-skills" && method === "GET") {

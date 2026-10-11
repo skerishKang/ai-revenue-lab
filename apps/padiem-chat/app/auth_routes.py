@@ -22,6 +22,7 @@ from .auth import (
     verify_oauth_state,
 )
 from .auth_abuse import UNAVAILABLE_WINDOW, AuthAbuseWindow
+from .b66_signup_notifications import deliver_after_signup
 from .b54_canonical_session import (
     B54ServerAuthenticatedOwner,
     b54_canonical_session_producer,
@@ -320,6 +321,7 @@ async def google_callback(request: Request) -> Response:
         request, profile.id, identity
     )
 
+    await deliver_after_signup(request, profile.id)
     response = RedirectResponse("/", status_code=302)
     response.set_cookie(SESSION_COOKIE, session, **session_cookie_kwargs(settings))
     response.delete_cookie(OAUTH_STATE_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
@@ -510,10 +512,7 @@ async def password_register(request: Request) -> JSONResponse:
         expires_at=expires_at,
         ensure_personal_tenant=True,
     )
-    # Registration already signs in the new B62 owner. Re-read the persisted
-    # credential before creating the separate B54 product session, exactly as
-    # password_login does. Never trust a browser-supplied identity or mint a
-    # Claw session from the registration payload alone.
+    # Preserve B62's recently merged canonical-session registration fix.
     try:
         registered_credential = await store.find_password_credential(username)
         if (isinstance(registered_credential, PasswordCredential)
@@ -523,9 +522,9 @@ async def password_register(request: Request) -> JSONResponse:
                 request, registered_credential,
             )
     except Exception:
-        # B54's own resolver continues to fail closed if authority is
-        # unavailable; successful B62 registration is not rolled back.
+        # B54 fails closed independently; do not roll back B62 signup.
         pass
+    await deliver_after_signup(request, profile.id)
     return _session_response(settings, profile)
 
 

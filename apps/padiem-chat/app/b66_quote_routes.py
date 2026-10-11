@@ -243,6 +243,26 @@ def _owner(request: Request) -> str | None:
         return None
 
 
+async def _member_access(request: Request, user_id: str) -> tuple[dict | None, JSONResponse | None]:
+    """Only trusted Worker activation enables enforced membership/tier policies.
+
+    This gate is never based on a browser-supplied tier, an email field, or a
+    made-up B14 route. Missing D1 after activation fails closed.
+    """
+    if getattr(request.app.state, "b66_membership_enforced", False) is not True:
+        return None, None
+    store = getattr(request.app.state, "b66_member_admin_store", None)
+    try:
+        if store is None:
+            raise RuntimeError("membership store unavailable")
+        access = await store.runtime_access(user_id)
+    except Exception:
+        return None, _error(503, "membership_unavailable", "회원 이용 권한을 확인하지 못했습니다.")
+    if access is None or access["status"] != "approved":
+        return None, _error(403, "membership_approval_required", "관리자 승인 후 AI 모델을 사용할 수 있습니다.")
+    return access, None
+
+
 def _store(request: Request) -> Any | None:
     return getattr(request.app.state, "b66_saved_quote_skill_store", None)
 
@@ -344,8 +364,12 @@ async def b66_saved_skill_detail(request: Request) -> JSONResponse:
 
 async def b66_quote_models(request: Request) -> JSONResponse:
     """Authenticated, no-store registered model choices; never chooses one."""
-    if _owner(request) is None:
+    uid = _owner(request)
+    if uid is None:
         return _error(401, "unauthorized", "로그인이 필요합니다.")
+    access, denied = await _member_access(request, uid)
+    if denied is not None:
+        return denied
     resolver = getattr(request.app.state, "b66_quote_model_resolver", None)
     list_fn = getattr(resolver, "list_selectable_models", None)
     if not callable(list_fn):
@@ -354,9 +378,12 @@ async def b66_quote_models(request: Request) -> JSONResponse:
         models = await list_fn()
     except Exception:
         return _error(503, "quote_model_unavailable", "AI 모델 목록을 확인할 수 없습니다.")
-    # An optional OWNER-configured default may prefill the UI. It never
-    # silently selects a backend route and must be among currently permitted,
-    # credential-ready exact IDs. No default is configured by this change.
+    # Filter the trusted B14 catalog by the server-side tier grants. No
+    # browser tier or role value is ever accepted for this decision.
+    if access is not None and access["active_policy"]:
+        allowed_ids = set(access["model_ids"])
+        models = [row for row in models if row["model_id"] in allowed_ids]
+    # A configured default can only be offered if it remains permitted.
     proposed_default = getattr(request.app.state, "b66_quote_default_model_id", None)
     default = proposed_default if (
         isinstance(proposed_default, str)
@@ -388,6 +415,9 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
     uid = _owner(request)
     if uid is None:
         return _error(401, "unauthorized", "로그인이 필요합니다.")
+    access, denied = await _member_access(request, uid)
+    if denied is not None:
+        return denied
     data = await _json(request)
     if isinstance(data, JSONResponse):
         return data
@@ -401,6 +431,8 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
         return _error(400, "model_selection_required", "사용할 AI 모델을 선택해 주세요.")
     if model_id in {"b14/auto"} or model_id.startswith("padiem-profile/"):
         return _error(400, "model_selection_required", "사용할 AI 모델을 선택해 주세요.")
+    if access is not None and access["active_policy"] and model_id not in access["model_ids"]:
+        return _error(403, "model_tier_forbidden", "이용 등급에서 허용하지 않는 AI 모델입니다.")
     # Explicit reasoning level is validated against the SAME exact model the
     # user chose (#3906). An unsupported level is rejected with an explainable
     # 4xx and is never ignored, downgraded, or silently replaced by another
