@@ -138,7 +138,15 @@
   font-size: 20px;
 }
 .sidebar-collapse-button {
-  margin-left: auto;
+  /* DOM follows New Chat for expected keyboard order; visually it is beside it. */
+  position: absolute;
+  top: 84px;
+  right: 16px;
+}
+@media (min-width: 921px) {
+  .sidebar > .new-chat {
+    margin-right: 52px;
+  }
 }
 .sidebar-restore-button {
   display: none;
