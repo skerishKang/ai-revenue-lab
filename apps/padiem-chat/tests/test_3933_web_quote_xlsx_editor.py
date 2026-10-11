@@ -113,6 +113,17 @@ def test_genuine_zip_xlsx_edit_preserves_formula_style_merges_other_parts_and_or
     assert result.print_pdf_fidelity.startswith("UNSUPPORTED")
 
 
+def test_repeated_approved_edit_has_stable_byte_digest_and_archive_metadata():
+    original = quote_fixture()
+    first, second = revise(original), revise(original)
+    assert first.revised_xlsx == second.revised_xlsx
+    assert first.revised_sha256 == second.revised_sha256
+    with ZipFile(BytesIO(first.revised_xlsx)) as package:
+        assert all(info.date_time == (1980, 1, 1, 0, 0, 0)
+                   for info in package.infolist())
+
+
+
 @pytest.mark.parametrize("overrides,reason", [
     ({"original_sha256": "0" * 64}, "SHA_MISMATCH"),
     ({"school_name": "=HYPERLINK(1,1)"}, "SCHOOL_NAME_UNSAFE"),
