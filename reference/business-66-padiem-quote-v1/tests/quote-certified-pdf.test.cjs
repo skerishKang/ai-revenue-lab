@@ -223,6 +223,11 @@ async function verifyAppButton(model) {
   let downloads = 0;
   let taxFocused = 0;
   let printed = 0;
+  let removedStyles = 0;
+  let printMode = "cgi-v2";
+  let printedStyle = null;
+  let afterprint = null;
+  let cleanupDelay = 0;
   let release;
   const button = { disabled: false, addEventListener(type, fn) { handler = fn; } };
   const context = vm.createContext({
@@ -232,9 +237,23 @@ async function verifyAppButton(model) {
     focusTaxReview: () => { taxFocused++; }, focusReadinessTarget() {}, toast() {},
     activeSkillProfile: () => profile,
     TemplateRenderer: { buildCertifiedPdfRenderModel: () => model },
-    document: { getElementById: () => ({ getClientRects: () => [{}] }) },
+    document: {
+      getElementById: () => ({
+        getClientRects: () => [{}],
+        getAttribute: (name) => name === "data-layout-variant" ? printMode :
+          name === "data-certified-preview" ? "true" : null
+      }),
+      createElement: (tag) => {
+        assert.equal(tag, "style");
+        return { remove: () => { removedStyles++; } };
+      },
+      head: { appendChild: (el) => { printedStyle = el; } }
+    },
     window: {
       print: () => { printed++; },
+      addEventListener: (event, fn) => { if (event === "afterprint") afterprint = fn; },
+      removeEventListener: (event, fn) => { if (event === "afterprint" && afterprint === fn) afterprint = null; },
+      setTimeout: (_fn, delay) => { cleanupDelay = delay; },
       B66QuoteRuntimeBridge: {
         downloadPdf: () => { downloads++; return new Promise((resolve) => { release = resolve; }); },
         readiness: () => ({ ready: false })
@@ -258,6 +277,18 @@ async function verifyAppButton(model) {
   context.window.B66QuoteRuntimeBridge.readiness = () => ({ ready: true });
   assert.equal(context.window.B66QuotePrintPreview(), true);
   assert.equal(printed, 1, "approved current preview may be printed without bypassing PDF download");
+  assert.equal(printedStyle.id, "b66CertifiedPrintPage");
+  assert.match(printedStyle.textContent, /@page.*margin: 0/);
+  assert.equal(cleanupDelay, 300000);
+  assert.equal(typeof afterprint, "function");
+  afterprint();
+  assert.equal(removedStyles, 1, "the scoped print rule must be removed after printing");
+  assert.equal(afterprint, null);
+  printedStyle = null;
+  printMode = "generic";
+  assert.equal(context.window.B66QuotePrintPreview(), true);
+  assert.equal(printedStyle, null, "unrelated templates must not receive CGI page overrides");
+  assert.equal(printed, 2);
 }
 
 (async () => {

@@ -1404,6 +1404,27 @@
       toast("미리보기가 준비된 뒤 인쇄해 주세요.", 4200);
       return false;
     }
+    // The approved CGI preview occupies the complete 595pt x 841pt page.
+    // Legacy HTML print uses @page margin:10mm, which SHRINKS that page and
+    // moves the totals/lines relative to the certified downloadable PDF.
+    // Apply zero page margin only for this print action and certified CGI,
+    // keeping other template print rules and the PDF download path unchanged.
+    let printPageStyle = null;
+    if (paper.getAttribute("data-layout-variant") === "cgi-v2" &&
+        paper.getAttribute("data-certified-preview") === "true") {
+      printPageStyle = document.createElement("style");
+      printPageStyle.id = "b66CertifiedPrintPage";
+      printPageStyle.textContent = "@media print { @page { size: A4; margin: 0; } }";
+      document.head.appendChild(printPageStyle);
+    }
+    if (printPageStyle) {
+      const cleanupPrintPage = () => {
+        printPageStyle.remove();
+        window.removeEventListener("afterprint", cleanupPrintPage);
+      };
+      window.addEventListener("afterprint", cleanupPrintPage, { once: true });
+      window.setTimeout(cleanupPrintPage, 300000);
+    }
     window.print();
     return true;
   };
