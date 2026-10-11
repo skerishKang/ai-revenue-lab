@@ -25,8 +25,11 @@ from .contracts import (
     UsageMetadata,
 )
 
-MAX_EXECUTION_MESSAGES = 99
-MAX_EXECUTION_MESSAGE_CHARS = 32_000
+# Execution messages are provider-native; trusted injected system context
+# retains separate bounds for tool/instruction safety.
+# Deprecated legacy model-prompt constants stay importable, but do not gate AI text.
+MAX_EXECUTION_MESSAGES: int | None = None
+MAX_EXECUTION_MESSAGE_CHARS: int | None = None
 MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS = 16_000
 MAX_COMPOSED_SYSTEM_CHARS = 32_000
 
@@ -63,10 +66,8 @@ def _normalize_messages(
     if isinstance(messages, (str, bytes)):
         raise ValueError("messages must be a sequence of message objects")
     items = tuple(messages)
-    if not 1 <= len(items) <= MAX_EXECUTION_MESSAGES:
-        raise ValueError(
-            f"messages must contain 1 to {MAX_EXECUTION_MESSAGES} items"
-        )
+    if not items:
+        raise ValueError("messages must contain at least one item")
 
     normalized: list[Mapping[str, str]] = []
     for index, message in enumerate(items):
@@ -87,11 +88,6 @@ def _normalize_messages(
                 f"messages[{index}].content must be a non-empty string"
             )
         text = content.strip()
-        if len(text) > MAX_EXECUTION_MESSAGE_CHARS:
-            raise ValueError(
-                f"messages[{index}].content must not exceed "
-                f"{MAX_EXECUTION_MESSAGE_CHARS} characters"
-            )
         normalized.append(MappingProxyType({"role": role, "content": text}))
     return tuple(normalized)
 

@@ -5,7 +5,7 @@ import binascii
 from types import MappingProxyType
 from typing import Any, Mapping, Sequence
 
-from .b14_execution import B14ChatRequest, MAX_B14_MESSAGE_CHARS, MAX_B14_MESSAGES
+from .b14_execution import B14ChatRequest
 
 MAX_B14_IMAGE_BYTES = 4 * 1024 * 1024
 MAX_B14_MULTIMODAL_PARTS = 4
@@ -65,7 +65,6 @@ def _normalize_multimodal_content(role: str, content: Any) -> tuple[Mapping[str,
     normalized: list[Mapping[str, Any]] = []
     text_count = 0
     image_count = 0
-    total_text_chars = 0
     for part in parts:
         if not isinstance(part, Mapping):
             raise ValueError("multimodal parts must be objects")
@@ -77,11 +76,6 @@ def _normalize_multimodal_content(role: str, content: Any) -> tuple[Mapping[str,
             if not isinstance(text, str) or not text.strip():
                 raise ValueError("text part must contain non-empty text")
             text = text.strip()
-            total_text_chars += len(text)
-            if total_text_chars > MAX_B14_MESSAGE_CHARS:
-                raise ValueError(
-                    f"multimodal text must not exceed {MAX_B14_MESSAGE_CHARS} characters"
-                )
             text_count += 1
             normalized.append(MappingProxyType({"type": "text", "text": text}))
             continue
@@ -116,8 +110,8 @@ def _normalize_messages(messages: Sequence[Mapping[str, Any]]) -> tuple[tuple[Ma
     if isinstance(messages, (str, bytes)):
         raise ValueError("messages must be a sequence of message objects")
     items = tuple(messages)
-    if not 1 <= len(items) <= MAX_B14_MESSAGES:
-        raise ValueError(f"messages must contain 1 to {MAX_B14_MESSAGES} items")
+    if not items:
+        raise ValueError("messages must contain at least one item")
 
     normalized: list[Mapping[str, Any]] = []
     surrogates: list[Mapping[str, str]] = []
@@ -134,10 +128,6 @@ def _normalize_messages(messages: Sequence[Mapping[str, Any]]) -> tuple[tuple[Ma
             if not content.strip():
                 raise ValueError(f"messages[{index}].content must be non-empty")
             text = content.strip()
-            if len(text) > MAX_B14_MESSAGE_CHARS:
-                raise ValueError(
-                    f"messages[{index}].content must not exceed {MAX_B14_MESSAGE_CHARS} characters"
-                )
             normalized.append(MappingProxyType({"role": role, "content": text}))
             surrogates.append({"role": role, "content": text})
             continue

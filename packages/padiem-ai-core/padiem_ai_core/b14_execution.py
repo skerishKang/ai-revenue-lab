@@ -21,8 +21,11 @@ PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING: int | None = None
 
 MAX_B14_RESPONSE_BYTES = 1_048_576  # RUNTIME_HARD_SAFETY_CEILING (response bytes)
 MAX_CONFIGURED_B14_RESPONSE_BYTES = 8 * 1_048_576  # RUNTIME_HARD_SAFETY_CEILING (configured cap)
-MAX_B14_MESSAGES = 100
-MAX_B14_MESSAGE_CHARS = 32_000
+# Provider-native inference messages have no legacy pilot count/character ceiling.
+# API gateway/provider capabilities and HTTP transport memory guards remain separate.
+# Retain legacy symbols for import compatibility; None is no product-native cap.
+MAX_B14_MESSAGES: int | None = None
+MAX_B14_MESSAGE_CHARS: int | None = None
 MAX_B14_MODEL_CHARS = 200
 
 _TASK_TYPES = frozenset({"general", "korean", "coding", "document", "batch"})
@@ -96,8 +99,8 @@ def _normalize_messages(
     if isinstance(messages, (str, bytes)):
         raise ValueError("messages must be a sequence of message objects")
     items = tuple(messages)
-    if not 1 <= len(items) <= MAX_B14_MESSAGES:
-        raise ValueError(f"messages must contain 1 to {MAX_B14_MESSAGES} items")
+    if not items:
+        raise ValueError("messages must contain at least one item")
 
     out: list[Mapping[str, Any]] = []
     for index, message in enumerate(items):
@@ -112,10 +115,6 @@ def _normalize_messages(
         if not isinstance(content, str) or not content.strip():
             raise ValueError(f"messages[{index}].content must be a non-empty string")
         normalized_content = content.strip()
-        if len(normalized_content) > MAX_B14_MESSAGE_CHARS:
-            raise ValueError(
-                f"messages[{index}].content must not exceed {MAX_B14_MESSAGE_CHARS} characters"
-            )
         out.append(MappingProxyType({"role": role, "content": normalized_content}))
     return tuple(out)
 
