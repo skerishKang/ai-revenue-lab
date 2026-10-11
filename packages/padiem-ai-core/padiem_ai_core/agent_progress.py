@@ -129,28 +129,53 @@ async def await_with_agent_progress(
     Cancellation from the caller (user cancel, request abort, lease loss) is
     propagated to the inner awaitable, and the inner awaitable's own transport
     idle/connect timeouts remain authoritative for its network calls.
+
+    The awaited work runs **inline** in the caller's task (the same coroutine
+    scheduling as ``asyncio.wait_for``/``asyncio.timeout``); the watchdog is a
+    re-arming loop timer, so no extra task or scheduling boundary is injected
+    into a resume/continuation race that other contracts rely on.
     """
     if not isinstance(tracker, AgentProgressTracker):
         raise AgentProgressError("tracker must be AgentProgressTracker")
     window = _idle_window(idle_seconds)
     cadence = _idle_window(poll_interval)
-    task: asyncio.Future[Any] = asyncio.ensure_future(awaitable)
+    task = asyncio.current_task()
+    if task is None:
+        raise AgentProgressError("progress watchdog requires a running task")
+    loop = asyncio.get_running_loop()
+    state = {"stalled": False, "handle": None}
+
+    def _watch() -> None:
+        if state["stalled"] or task.cancelling() > 0:
+            return
+        remaining = tracker.remaining_idle_seconds(window)
+        if remaining <= 0.0:
+            state["stalled"] = True
+            task.cancel()
+            return
+        state["handle"] = loop.call_later(min(remaining, cadence), _watch)
+
+    _watch()
     try:
-        while True:
-            if task.done():
-                return task.result()
-            remaining = tracker.remaining_idle_seconds(window)
-            if remaining <= 0.0:
-                task.cancel()
-                await asyncio.gather(task, return_exceptions=True)
-                raise AgentIdleTimeoutError(
-                    "Agent run made no verified progress inside the idle window"
-                )
-            await asyncio.wait({task}, timeout=min(remaining, cadence))
+        result = await awaitable
     except asyncio.CancelledError:
-        task.cancel()
-        await asyncio.gather(task, return_exceptions=True)
+        if state["stalled"]:
+            task.uncancel()
+            raise AgentIdleTimeoutError(
+                "Agent run made no verified progress inside the idle window"
+            ) from None
         raise
+    finally:
+        handle = state["handle"]
+        if handle is not None:
+            handle.cancel()
+            state["handle"] = None
+    if state["stalled"]:
+        # The awaited work swallowed the watchdog cancellation and returned.
+        raise AgentIdleTimeoutError(
+            "Agent run made no verified progress inside the idle window"
+        )
+    return result
 
 
 AGENT_PROGRESS_IS_NOT_AUTHORIZATION = True
