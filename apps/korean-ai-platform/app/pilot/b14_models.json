@@ -96,7 +96,7 @@
       "base_origin": "https://opencode.ai/zen/go/v1",
       "allowed_hosts": ["opencode.ai"],
       "credential_source": "platform_secret",
-      "credential_binding_name": "PADIEM_OPENCODE_GO_API_KEY",
+      "credential_binding_name": "PADIEM_OPENCODE_API_KEY",
       "enabled": false
     },
     "zanslab": {

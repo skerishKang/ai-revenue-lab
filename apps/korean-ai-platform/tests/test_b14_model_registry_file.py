@@ -188,7 +188,7 @@ def test_opencodego_and_zanslab_are_registered_disabled_without_credentials():
     reg = read_registry()
     providers = reg["providers"]
     assert providers["opencode-go"]["base_origin"] == "https://opencode.ai/zen/go/v1"
-    assert providers["opencode-go"]["credential_binding_name"] == "PADIEM_OPENCODE_GO_API_KEY"
+    assert providers["opencode-go"]["credential_binding_name"] == "PADIEM_OPENCODE_API_KEY"
     assert providers["zanslab"]["base_origin"] == "https://zanslab.id/v1"
     assert providers["zanslab"]["credential_binding_name"] == "PADIEM_ZANSLAB_API_KEY"
     assert providers["opencode-go"]["enabled"] is False
@@ -202,5 +202,15 @@ def test_opencodego_and_zanslab_are_registered_disabled_without_credentials():
     from pathlib import Path
     root = Path(__file__).resolve().parents[1]
     wrangler = (root / "wrangler.toml").read_text(encoding="utf-8")
+    import tomllib
+    bindings = tomllib.loads(wrangler)["secrets_store_secrets"]
+    for name in ("PADIEM_OPENCODE_API_KEY", "PADIEM_ZANSLAB_API_KEY"):
+        matches = [x for x in bindings if x["binding"] == name]
+        assert len(matches) == 1
+        assert matches[0] == {
+            "binding": name,
+            "secret_name": name,
+            "store_id": "f0b09ca04a7b43248154c773704a5616",
+        }
+    assert len({x["binding"] for x in bindings}) == len(bindings)
     assert "PADIEM_OPENCODE_GO_API_KEY" not in wrangler
-    assert "PADIEM_ZANSLAB_API_KEY" not in wrangler
