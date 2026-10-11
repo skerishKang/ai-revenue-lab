@@ -27,6 +27,12 @@ check(shell.includes('b66:open-recent-quotes') && shell.includes('b66:open-file-
   "rail secondary navigation activates the canonical Easy view actions");
 check(shell.includes('id="shellNewQuote"') && shell.includes('clickExisting("newQuote")'),
   "rail exposes an explicit new-quote action");
+check(shell.includes('shellManualQuote') && shell.includes('새 견적서 만들기') &&
+  shell.includes('b66:open-manual-skill'),
+  "견적서 관리 하위에 새 견적서 만들기 → 직접 만들기 진입점이 있다");
+check(app.includes('b66:open-manual-skill') && app.includes('bindManualSection') &&
+  app.includes('MANUAL_DRAFT_STORAGE_KEY'),
+  "app 이 직접 만들기 화면과 계정 격리 키를 배선한다");
 check(shell.includes('account.appendChild(accountButton)'),
   "rail moves actual account button");
 check(shell.includes('host.appendChild(preview)'),
