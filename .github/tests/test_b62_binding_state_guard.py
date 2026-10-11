@@ -476,3 +476,50 @@ def test_hark_browser_binding_and_version_metadata_preserve_only_exact_same_iden
         mod.canonical_state(_version(
             *_engine_bindings(), {"type": "browser", "name": "FOREIGN"}, version_id="after",
         ))
+
+
+def test_only_approved_hark_browser_binding_may_be_added_to_live_worker():
+    before = _version(
+        *_engine_bindings(), {"type": "plain_text", "name": "FEATURE", "text": "false"},
+        version_id="before",
+    )
+    browser = {"type": "browser", "name": "BROWSER"}
+    after = _version(
+        *_engine_bindings(), {"type": "plain_text", "name": "FEATURE", "text": "false"},
+        browser, version_id="after",
+    )
+    mod.assert_hark_browser_added_only(before, after)
+    mod.assert_hark_browser_added_only(after, after)
+    with pytest.raises(mod.BindingStateError):
+        mod.assert_preserved(before, after)
+    with pytest.raises(mod.BindingStateError, match="one approved BROWSER"):
+        mod.assert_hark_browser_added_only(
+            before, _version(
+                *_engine_bindings(),
+                {"type": "plain_text", "name": "FEATURE", "text": "false"},
+                browser, {"type": "secret_text", "name": "EXTRA"}, version_id="after",
+            ),
+        )
+    with pytest.raises(mod.BindingStateError, match="one approved BROWSER"):
+        mod.assert_hark_browser_added_only(before, before)
+    with pytest.raises(mod.BindingStateError, match="unrelated authority drift"):
+        mod.assert_hark_browser_added_only(
+            after, _version(*_engine_bindings(), browser, version_id="after"),
+        )
+
+
+def test_hark_browser_additive_cli_mode_is_explicit_and_exclusive(tmp_path, capsys):
+    previous = tmp_path / "pre.json"
+    post = tmp_path / "post.json"
+    previous.write_text(json.dumps(_version(*_engine_bindings())), encoding="utf-8")
+    post.write_text(json.dumps(_version(
+        *_engine_bindings(), {"type": "browser", "name": "BROWSER"},
+        version_id="after",
+    )), encoding="utf-8")
+    args = ["--before", str(previous), "--after", str(post)]
+    assert mod.main(args) == 1
+    assert mod.main(args + ["--expected-add-hark-browser"]) == 0
+    assert "B62_BINDING_AUTHORITY_PRESERVED=PASS" in capsys.readouterr().out
+    assert mod.main(args + [
+        "--expected-add-hark-browser", "--expected-add-web-secrets-store",
+    ]) == 1
