@@ -126,6 +126,23 @@ check(shell.includes("function wireComposerVisualViewport()") &&
 check(refresh.includes("var(--b66-visual-height, 100dvh)") &&
   refresh.includes("height: max(185px"),
   "keyboard-aware composer keeps the pre-existing dvh fallback and bounded minimum");
+const paneFix = refresh.split("/* #4316 UI follow-up:")[1] || "";
+check(paneFix.includes("The 2px phantom scrollbar belonged to .easy-view") &&
+  paneFix.includes("overflow: hidden;") &&
+  paneFix.includes("min-height: 0;") &&
+  paneFix.includes("position: relative;") &&
+  paneFix.includes("margin-top: 0;") &&
+  paneFix.includes("flex: 0 0 auto;"),
+  "desktop pane and transcript share height without a premature outer scrollbar");
+check(paneFix.includes("one right-side card like the left rail") &&
+  paneFix.includes(".shell-preview-host .preview-toolbar") &&
+  paneFix.includes("background: #f8fbfd;") &&
+  paneFix.includes("border-bottom: 1px solid #e1eaf0;") &&
+  paneFix.includes("border-radius: 22px;"),
+  "right preview is one bounded light pane, not two stacked cards");
+check(html.includes('media="screen"') &&
+  !refresh.includes("@page"),
+  "presentation-only scroll/pane CSS cannot modify printed A4 paper");
 console.log("B66_THREE_PANE_SHELL=PASS");
 console.log("B66_PRIMARY_INPUT_AUTHORITY=EASY_COMPOSER");
 console.log("B66_CANONICAL_PREVIEW_COUNT=1");

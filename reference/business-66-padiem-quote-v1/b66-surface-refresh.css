@@ -1148,3 +1148,49 @@ body.b66-three-pane #easySend {
     flex: 0 0 38px;
   }
 }
+
+/* #4316 UI follow-up: one right-side card like the left rail, while A4 remains
+   a separate white paper inside; certified PDF and print CSS are unchanged. */
+@media screen {
+  body.b66-three-pane .shell-preview-host {
+    border: 1px solid #d7e3ec;
+    border-radius: 22px;
+    background: #f8fbfd;
+    box-shadow: 0 6px 22px rgba(38,63,81,.04);
+  }
+  body.b66-three-pane .shell-preview-host > .preview-wrap {
+    background: transparent;
+    border: 0;
+    border-radius: inherit;
+    box-shadow: none;
+  }
+  body.b66-three-pane .shell-preview-host .preview-toolbar {
+    background: rgba(248,251,253,.98);
+    border: 0;
+    border-bottom: 1px solid #e1eaf0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+/* The 2px phantom scrollbar belonged to .easy-view, not its inner transcript:
+   desktop legacy min-height:100% on the flex child overflowed the parent.
+   Give chat the available height and confine real dialogue scrolling to it. */
+@media screen and (min-width: 901px) {
+  body.b66-three-pane .easy-view {
+    overflow: hidden;
+  }
+  body.b66-three-pane .easy-view .easy-conversation {
+    min-height: 0;
+  }
+  body.b66-three-pane .easy-view .easy-composer-wrap {
+    position: relative;
+    bottom: auto;
+    margin-top: 0;
+    flex: 0 0 auto;
+  }
+}
+@media screen and (max-width: 900px) {
+  body.b66-three-pane .shell-preview-host {
+    border-radius: 18px;
+  }
+}
