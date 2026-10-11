@@ -25,6 +25,8 @@ def test_profile_reuses_existing_login_settings_contract():
     assert 'profileToggle.setAttribute("aria-controls", "accountProfilePanel")' in APP
     assert 'profileToggle.setAttribute("aria-expanded", "false")' in APP
     assert 'profileToggle.append(accountAvatar, accountName)' in APP
+    assert 'accountContainer?.prepend(profileToggle)' in APP
+    assert 'insertBefore(profileToggle, accountAvatar)' not in APP
     assert 'profilePanel.hidden = true' in APP
     assert 'profileSettingsAction.type = "button"' in APP
     assert 'settingsButton.click(); // keep the existing settings-dialog authority' in APP

@@ -68,7 +68,9 @@
   profileToggle.setAttribute("aria-expanded", "false");
   profileToggle.dataset.localeAriaLabel = "account-profile-toggle";
   profileToggle.setAttribute("aria-label", uiT("account-profile-toggle"));
-  accountContainer?.insertBefore(profileToggle, accountAvatar);
+  // Some auth fixtures mount account controls without the original avatar as a
+  // direct child; prepend never assumes a particular descendant relationship.
+  accountContainer?.prepend(profileToggle);
   if (accountAvatar && accountName) profileToggle.append(accountAvatar, accountName);
   const profilePanel = document.createElement("div");
   profilePanel.id = "accountProfilePanel";
