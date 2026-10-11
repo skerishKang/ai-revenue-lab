@@ -64,3 +64,65 @@ def test_real_config_and_pre_migration_workflow_are_guarded():
     assert workflow.index("Verify six live XLSX flags will be retained before deploy") < workflow.index("Pre-deploy canonical served-version rollback anchor")
     assert workflow.index("Verify six live XLSX flags will be retained before deploy") < workflow.index("Deploy engine to production")
     assert "POST_DEPLOY_SERVED_VERSION_GUARD=PASS" in workflow
+
+
+def test_transient_manifest_renders_all_six_from_immutable_served_values_only():
+    import tomllib
+    values = ["true", "false", 'a"b\\c', "운영설정", "0", "enable"]
+    live = flags()
+    for item, value in zip(live, values):
+        item["text"] = value
+    config = GOOD_TOML + '\n[vars]\nPADIEM_ENGINE_AGENT_DURABLE_ENABLED = "true"\n[env.preview]\nname = "preview"\n'
+    rendered = guard.render_exact_served_flags(config, served(live), "good-version")
+    parsed = tomllib.loads(rendered)
+    assert parsed["vars"] == {
+        "PADIEM_ENGINE_AGENT_DURABLE_ENABLED": "true",
+        **{entry["name"]: entry["text"] for entry in live},
+    }
+    assert parsed["env"]["preview"]["name"] == "preview"
+    assert "[env.preview]" in rendered
+    assert all(name not in config for name in guard.REQUIRED)
+
+
+def test_missing_plaintext_value_refuses_instead_of_guessing():
+    live = flags()
+    del live[0]["text"]
+    config = GOOD_TOML + '\n[vars]\nPADIEM_ENGINE_AGENT_DURABLE_ENABLED = "true"\n'
+    with pytest.raises(guard.PreserveError, match="value unavailable"):
+        guard.render_exact_served_flags(config, served(live), "good-version")
+
+
+def test_checked_in_protected_var_and_malformed_table_refuse_staging():
+    name = sorted(guard.REQUIRED)[0]
+    config = GOOD_TOML + f'\n[vars]\n{name} = "false"\n'
+    with pytest.raises(guard.PreserveError, match="must not be checked"):
+        guard.render_exact_served_flags(config, served(flags()), "good-version")
+    with pytest.raises(guard.PreserveError, match="canonical \\[vars\\]"):
+        guard.render_exact_served_flags(GOOD_TOML, served(flags()), "good-version")
+
+
+def test_staging_changes_only_runner_local_file_and_reuses_canonical_values(tmp_path):
+    import tomllib
+    config_path = tmp_path / "wrangler.toml"
+    config_path.write_text(GOOD_TOML + '\n[vars]\nPADIEM_ENGINE_AGENT_DURABLE_ENABLED = "true"\n', encoding="utf-8")
+    before = config_path.read_text(encoding="utf-8")
+    guard.stage_exact_served_vars(config_path, served(flags()), "good-version")
+    assert before != config_path.read_text(encoding="utf-8")
+    after = tomllib.loads(config_path.read_text(encoding="utf-8"))
+    assert all(after["vars"][name] == "operator-controlled-not-to-log" for name in guard.REQUIRED)
+    assert not (tmp_path / "wrangler.toml.b54-staged").exists()
+
+
+def test_deploy_gate_stages_immutable_vars_before_published_rollback_anchor():
+    workflow = (ROOT / ".github/workflows/b54-engine-production-deploy-gate.yml").read_text("utf-8")
+    guard_step = workflow.index("Verify six live XLSX flags will be retained before deploy")
+    stage_step = workflow.index("Stage exact served XLSX flags into transient Engine deploy config")
+    anchor_step = workflow.index("Pre-deploy canonical served-version rollback anchor")
+    deploy_step = workflow.index("Deploy engine to production")
+    assert guard_step < stage_step < anchor_step < deploy_step
+    assert "--stage-served-vars" in workflow
+    assert "ENGINE_PRODUCTION_MUTATION_BEFORE_ANCHOR=0" in workflow
+    assert "B54_ENGINE_FULL_BINDING_SET_PRESERVED=PASS" in workflow
+    assert 'if uv run pywrangler deploy --keep-vars >"${RUNNER_TEMP}/b54-engine-deploy.log" 2>&1; then' in workflow
+    assert 'tee "${RUNNER_TEMP}/b54-engine-deploy.log"' not in workflow
+    assert "umask 077" in workflow
