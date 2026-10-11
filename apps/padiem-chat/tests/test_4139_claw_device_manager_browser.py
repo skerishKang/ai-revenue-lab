@@ -5,14 +5,16 @@ the future GET and verify no pairing, command, work ticket or approval is sent.
 """
 from __future__ import annotations
 
-import functools
 import http.server
 import json
 import threading
 from pathlib import Path
 
 import pytest
-from playwright.sync_api import sync_playwright
+
+# Full B62 core runners intentionally do not install Playwright. Skip this
+# optional browser suite there instead of aborting pytest collection.
+sync_playwright = pytest.importorskip("playwright.sync_api").sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1] / "static"
 ENDPOINT = "/api/claw/local-access/devices"

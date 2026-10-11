@@ -7,7 +7,6 @@
 
   const ENDPOINT = "/api/claw/local-access/devices";
   const MAX_RESPONSE_BYTES = 32768;
-  const UI_VERSION = "claw-device-manager/1";
   const COPY = Object.freeze({
     ko: {
       toggle: "내 컴퓨터",
