@@ -54,6 +54,7 @@ function padiemTarget(url, method) {
     ["/api/padiem/b66/company-profile", ["GET", "/api/b66/company-profile"]],
     ["/api/padiem/b66/quote/interpret", ["POST", "/api/b66/quote/interpret"]],
     ["/api/padiem/b66/quote/models", ["GET", "/api/b66/quote/models"]],
+    ["/api/padiem/b66/inquiries", ["POST", "/api/b66/inquiries"]],
     ["/api/padiem/b66/admin/me", ["GET", "/api/b66/admin/me"]],
     ["/api/padiem/b66/quote/preview-base", ["GET", "/api/b66/quote/preview-base"]],
     ["/api/padiem/b66/quote/pdf", ["POST", "/api/b66/quote/pdf"]]
@@ -87,6 +88,19 @@ function padiemTarget(url, method) {
     return "/api/b66/admin/members?" + params.toString();
   }
 
+  if (path === "/api/padiem/b66/admin/inquiries" && method === "GET") {
+    if ([...url.searchParams.keys()].some(k => k !== "status")) return null;
+    const status = url.searchParams.get("status") || "all";
+    if (!["all", "open", "resolved"].includes(status)) return null;
+    return "/api/b66/admin/inquiries?status=" + status;
+  }
+  if (path === "/api/padiem/b66/admin/inquiries/dispatch" && method === "POST") {
+    return "/api/b66/admin/inquiries/dispatch";
+  }
+  const inquiryMatch = path.match(new RegExp("^/api/padiem/b66/admin/inquiries/(b66inq_[a-f0-9]{32})$"));
+  if (inquiryMatch && method === "PATCH") {
+    return "/api/b66/admin/inquiries/" + inquiryMatch[1];
+  }
   if (path === "/api/padiem/b66/admin/alerts/dispatch" && method === "POST") {
     return "/api/b66/admin/alerts/dispatch";
   }

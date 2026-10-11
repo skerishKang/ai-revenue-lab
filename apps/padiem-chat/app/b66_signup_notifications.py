@@ -50,8 +50,19 @@ class B66SignupNotifier:
                 {"Authorization":"Bearer " + resend_api_key},
             )
 
-    async def _send(self, channel: str) -> bool:
+    async def _send(self, channel: str, *, message: str | None = None,
+                    subject: str | None = None) -> bool:
         url, data, headers = self.channels[channel]
+        data = dict(data)
+        if message is not None:
+            if channel == "telegram":
+                data["text"] = message
+            elif channel == "discord":
+                data["content"] = message
+            elif channel == "email":
+                data["text"] = message
+                if subject is not None:
+                    data["subject"] = subject
         try:
             async with httpx.AsyncClient(
                 transport=self.http_transport,

@@ -15,6 +15,10 @@ from .b66_company_profile import CompanyProfileStore, D1CompanyProfileStore
 from .b66_company_profile_routes import b66_company_profile_get, b66_company_profile_put
 from .b66_quote_asset_routes import b66_quote_asset_detail
 from .b66_member_admin import D1B66MemberAdminStore
+from .b66_member_inquiries import (
+    D1B66InquiryStore, b66_inquiries, b66_admin_inquiries,
+    b66_admin_inquiry_status, b66_admin_inquiry_dispatch,
+)
 from .b66_admin_routes import b66_admin_me, b66_admin_members, b66_admin_member_access, b66_admin_member_detail, b66_admin_model_policy, b66_admin_dispatch_alerts
 from .b66_quote_history_routes import (
     b66_quote_history_delete,
@@ -399,6 +403,10 @@ def create_app(
         ),
         Route("/api/b66/quote/interpret", b66_quote_interpret, methods=["POST"]),
         Route("/api/b66/quote/models", b66_quote_models, methods=["GET"]),
+        Route("/api/b66/inquiries", b66_inquiries, methods=["GET", "POST"]),
+        Route("/api/b66/admin/inquiries", b66_admin_inquiries, methods=["GET"]),
+        Route("/api/b66/admin/inquiries/dispatch", b66_admin_inquiry_dispatch, methods=["POST"]),
+        Route("/api/b66/admin/inquiries/{inquiry_id}", b66_admin_inquiry_status, methods=["PATCH"]),
         Route("/api/b66/admin/me", b66_admin_me, methods=["GET"]),
         Route("/api/b66/admin/members", b66_admin_members, methods=["GET"]),
         Route("/api/b66/admin/model-policy", b66_admin_model_policy, methods=["GET", "PUT"]),
@@ -540,6 +548,9 @@ def create_app(
     # Pure ASGI fixtures without a D1 adapter keep their pre-existing behavior.
     app.state.b66_global_model_switch_enforced = False
     app.state.b66_signup_notifier = None
+    # Inquiry tables are introduced by migration 038; without D1 the route
+    # fails closed, and without the migration it cannot accept submissions.
+    app.state.b66_inquiry_store = D1B66InquiryStore(d1_binding) if d1_binding is not None else None
     # Canonical identity remains Control Plane authority. Product D1 stores only
     # a non-authoritative shadow pointer used to reach the current canonical session.
     app.state.control_plane_identity_authority = control_plane_identity_authority
