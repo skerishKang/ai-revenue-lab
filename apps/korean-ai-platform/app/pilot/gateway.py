@@ -775,11 +775,8 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
     ] if decision.fallback_allowed else []
 
     max_attempts = decision.max_attempts
-    # #3221/#3212 capability-proof control: preserve the normal #1982
-    # same-route retry default, but allow a bounded caller to explicitly lower
-    # the retry ceiling (including zero). This does not widen the maximum and
-    # does not affect auto-chain fallback semantics.
-    # Do not multiply provider traffic by default; retries require caller opt-in.
+    # B14 does not duplicate provider requests by default. Optional retries
+    # require explicit caller opt-in and never widen the configured maximum.
     same_route_retry_limit = b14_opts.get("max_retries", 0)
 
     start_time = time.monotonic()
