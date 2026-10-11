@@ -891,13 +891,13 @@
   <script src="./outputs.js"></script>
   <script src="./conversation-export.js"></script>
   <script src="./claw-quote-compare.js"></script>
-  <!-- #3094: the guarded handoff adapter. Loaded last so the #3084 projection
-       seam installed by app.js already exists when it resolves its source. -->
   <script src="./claw-local-connect.js" defer></script>
   <script src="./claw-office-chooser.js" defer></script>
   <script src="./claw-web-xlsx-sources.js" defer></script>
-  <script src="./claw-local-adapter.js"></script>
   <!-- #4139 read-only, opt-in multi-PC selection UI; unavailable until server is configured. -->
   <script src="./claw-device-manager.js"></script>
+  <!-- #3094: guarded handoff adapter MUST load last, after app.js installed
+       the #3084 projection seam. Never weaken the final-script contract. -->
+  <script src="./claw-local-adapter.js"></script>
 </body>
 </html>
