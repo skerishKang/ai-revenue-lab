@@ -97,17 +97,36 @@ def test_b62_live_binding_default_and_wrangler_source_are_600():
     # Explicit live plain-text overrides are authoritative, not covered by this test.
 
 
-def test_agent_wall_clock_still_distinct_and_not_silently_disabled():
-    # Existing Agent bounds MUST NOT be removed until a durable lease/checkpoint
-    # store, cancellation, fencing and progress watchdog are wired and tested.
+def test_agent_wall_clock_is_inactivity_watchdog_not_a_fixed_cap():
+    # The durable lease/checkpoint store, cancellation, fencing and progress
+    # watchdog are now wired and tested (test_4194_agent_no_fixed_wall.py), so the
+    # Agent window is an *inactivity* window: it never caps total elapsed time of
+    # a progressing run, and no run may silently lose its liveness bound.
     budget = "packages/padiem-ai-core/padiem_ai_core/agent_definition.py"
     context = "packages/padiem-ai-core/padiem_ai_core/execution_context.py"
     assert literal_default(budget, owner="AgentExecutionBudget", member="max_wall_seconds") == 900
+    assert literal_default(budget, owner="AgentExecutionBudget", member="max_total_seconds") is None
     assert literal_default(context, owner=None, member="MAX_TIMEOUT_SECONDS") == 3600.0
     agent = source("packages/padiem-ai-core/padiem_ai_core/agent_runtime.py")
     orch = source("packages/padiem-ai-core/padiem_ai_core/orchestration.py")
+    progress = source("packages/padiem-ai-core/padiem_ai_core/agent_progress.py")
+    # Agent/Task liveness stays bounded by an idle watchdog on verified progress.
     assert "asyncio.wait_for(" in agent
-    assert "asyncio.wait_for(" in orch
+    assert "_idle_remaining(" in agent
+    assert "_remaining_wall_seconds" not in agent  # no cumulative Agent wall cap
+    bridge_sites = list(
+        re.finditer(r"await_with_agent_progress\(\s*\n\s*executor\.execute\(", orch)
+    )
+    assert len(bridge_sites) == 2  # run + resume
+    assert "idle_seconds=request.context.timeout_seconds" in orch
+    assert "AgentIdleTimeoutError" in progress
+    # Single-shot model lane keeps the caller-declared bounded budget untouched:
+    # every fixed asyncio.wait_for in orchestration belongs to that lane only.
+    waits = [m.start() for m in re.finditer(r"asyncio\.wait_for\(", orch)]
+    assert len(waits) == 2
+    for start in waits:
+        assert "self._runtime.run(" in orch[start:start + 240]
+    assert "asyncio.timeout(45)" not in orch
 
 
 def test_non_inference_short_timeouts_are_not_rewritten():

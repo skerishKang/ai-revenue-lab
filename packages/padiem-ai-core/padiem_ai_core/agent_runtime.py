@@ -7,11 +7,17 @@ freezes that surface.
 
 The runtime is intentionally bounded:
 - no sub-agent delegation;
-- explicit step/tool/wall-time budgets;
+- explicit step/tool count budgets and an inactivity (idle) watchdog, never a
+  fixed total wall clock that force-fails a run for making progress (#4194);
 - tools execute only through ToolRuntime + trusted ToolAuthorizationContext;
 - approval-required ToolRuntime errors become a pause checkpoint;
 - raw pending tool arguments are server-state only and are omitted from the
   public result projection.
+
+The idle window is measured from the last *verified* progress event (a step
+decision returned by the driver, a completed Tool result, or a persisted
+durable checkpoint). A healthy long run therefore keeps its own budget while a
+stalled run still fails closed inside the window as ``MAX_WALL_TIME``.
 """
 
 from __future__ import annotations
@@ -30,6 +36,7 @@ import uuid
 from .agent_approval import ApprovalPause, approval_pause_from_tool_error
 from .agent_definition import AgentTerminalReason, BoundedAgentDefinition
 from .agent_profile_adapter import CompiledAgentProfile
+from .agent_progress import AgentProgressTracker
 from .contracts import RunStatus, ToolEvent
 from .tool_runtime import (
     ToolAuthorizationContext,
@@ -371,6 +378,7 @@ class BoundedAgentRuntime:
         approval_pause_seconds: int = 900,
         run_guard: Callable[[], bool | Awaitable[bool]] | None = None,
         checkpoint_hook: Callable[[int], bool | Awaitable[bool]] | None = None,
+        progress: AgentProgressTracker | None = None,
     ) -> None:
         next_step = getattr(step_driver, "next_step", None)
         if not callable(next_step):
@@ -401,8 +409,30 @@ class BoundedAgentRuntime:
         self._run_guard = run_guard
         if checkpoint_hook is not None and not callable(checkpoint_hook):
             raise ValueError("checkpoint_hook must be callable when configured")
+        if progress is not None and not isinstance(progress, AgentProgressTracker):
+            raise ValueError("progress must be AgentProgressTracker when configured")
         self._checkpoint_hook = checkpoint_hook
         self._approval_pause_seconds = approval_pause_seconds
+        # Shared with a trusted host (Engine/orchestration) so an outer
+        # inactivity watchdog observes the same real progress events.
+        self._progress = progress or AgentProgressTracker(clock=clock)
+
+    @property
+    def progress(self) -> AgentProgressTracker:
+        """Liveness tracker for this runtime; not an authorization signal."""
+        return self._progress
+
+    def _record_progress(self, phase: str) -> None:
+        self._progress.touch(phase)
+
+    def _idle_remaining(self, idle_seconds: float) -> float:
+        return self._progress.remaining_idle_seconds(idle_seconds)
+
+    def _total_cap_reached(self, *, started: float, total_cap: int | None) -> bool:
+        """Only an explicit host-opted ceiling stops a progressing run."""
+        if total_cap is None:
+            return False
+        return self._elapsed(started) >= float(total_cap)
 
     async def _ensure_run_active(self) -> None:
         """Fail closed before model/tool dispatch when durable lease is revoked.
@@ -453,14 +483,6 @@ class BoundedAgentRuntime:
     def _elapsed(self, started: float) -> float:
         return max(0.0, float(self._clock() - started))
 
-    def _remaining_wall_seconds(
-        self,
-        *,
-        started: float,
-        budget_seconds: int,
-    ) -> float:
-        return max(0.0, float(budget_seconds) - self._elapsed(started))
-
     def _terminal(
         self,
         *,
@@ -478,6 +500,23 @@ class BoundedAgentRuntime:
             tool_events=tuple(tool_events),
         )
 
+    def _total_cap_terminal(
+        self,
+        *,
+        run_id: str,
+        steps: int,
+        tool_calls: int,
+        tool_events: list[ToolEvent],
+    ) -> AgentRunResult:
+        """Only an explicit host-opted total ceiling reaches this path."""
+        return self._terminal(
+            run_id=run_id,
+            reason=AgentTerminalReason.MAX_WALL_TIME,
+            steps=steps,
+            tool_calls=tool_calls,
+            tool_events=tool_events,
+        )
+
     async def run(self, request: AgentRunRequest) -> AgentRunResult:
         if not isinstance(request, AgentRunRequest):
             raise ValueError("request must be AgentRunRequest")
@@ -485,6 +524,9 @@ class BoundedAgentRuntime:
         run_id = request.run_id or self._new_identifier("run")
         started = self._clock()
         budget = request.definition.execution_budget
+        idle_seconds = float(budget.max_wall_seconds)
+        total_cap = budget.max_total_seconds
+        self._record_progress("run_start")
         max_steps = min(
             budget.max_steps,
             request.compiled_profile.runtime_profile.max_steps,
@@ -495,10 +537,14 @@ class BoundedAgentRuntime:
 
         for step_index in range(request.initial_step_index, max_steps + 1):
             await self._ensure_run_active()
-            remaining = self._remaining_wall_seconds(
-                started=started,
-                budget_seconds=budget.max_wall_seconds,
-            )
+            if self._total_cap_reached(started=started, total_cap=total_cap):
+                return self._total_cap_terminal(
+                    run_id=run_id,
+                    steps=step_index - 1,
+                    tool_calls=tool_calls,
+                    tool_events=tool_events,
+                )
+            remaining = self._idle_remaining(idle_seconds)
             if remaining <= 0:
                 return self._terminal(
                     run_id=run_id,
@@ -546,13 +592,20 @@ class BoundedAgentRuntime:
                     "Agent step driver returned an invalid decision.",
                 )
 
-            if self._remaining_wall_seconds(
-                started=started,
-                budget_seconds=budget.max_wall_seconds,
-            ) <= 0:
+            # Fail closed on a decision that arrived after the idle window,
+            # then count it as verified progress and open a fresh window.
+            if self._idle_remaining(idle_seconds) <= 0.0:
                 return self._terminal(
                     run_id=run_id,
                     reason=AgentTerminalReason.MAX_WALL_TIME,
+                    steps=step_index,
+                    tool_calls=tool_calls,
+                    tool_events=tool_events,
+                )
+            self._record_progress("step_decision")
+            if self._total_cap_reached(started=started, total_cap=total_cap):
+                return self._total_cap_terminal(
+                    run_id=run_id,
                     steps=step_index,
                     tool_calls=tool_calls,
                     tool_events=tool_events,
@@ -582,10 +635,7 @@ class BoundedAgentRuntime:
                 )
             tool_calls += 1
 
-            remaining = self._remaining_wall_seconds(
-                started=started,
-                budget_seconds=budget.max_wall_seconds,
-            )
+            remaining = self._idle_remaining(idle_seconds)
             if remaining <= 0:
                 return self._terminal(
                     run_id=run_id,
@@ -685,17 +735,25 @@ class BoundedAgentRuntime:
                     tool_events=tool_events,
                 )
 
+            # A Tool result is verified progress, but a Tool call that ran past
+            # the idle window still fails closed before it is recorded.
+            if self._idle_remaining(idle_seconds) <= 0.0:
+                return self._terminal(
+                    run_id=run_id,
+                    reason=AgentTerminalReason.MAX_WALL_TIME,
+                    steps=step_index,
+                    tool_calls=tool_calls,
+                    tool_events=tool_events,
+                )
+            self._record_progress("tool_result")
             await self._ensure_run_active()
             tool_results.append(tool_result)
             tool_events.append(tool_result.event)
             await self._record_trusted_checkpoint(step_index)
-            if self._remaining_wall_seconds(
-                started=started,
-                budget_seconds=budget.max_wall_seconds,
-            ) <= 0:
-                return self._terminal(
+            self._record_progress("checkpoint")
+            if self._total_cap_reached(started=started, total_cap=total_cap):
+                return self._total_cap_terminal(
                     run_id=run_id,
-                    reason=AgentTerminalReason.MAX_WALL_TIME,
                     steps=step_index,
                     tool_calls=tool_calls,
                     tool_events=tool_events,
