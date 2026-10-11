@@ -8,11 +8,13 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 import inspect
+import re
 from typing import Any, Callable
 
 from padiem_ai_core.agent_durable_lease import AgentDurableLeaseError, AgentRunLease
 
 _TABLE = "padiem_engine_agent_runs_v1"
+_SERVER_RUN_ID = re.compile(r"arun_[0-9a-f]{32}\Z")
 
 
 async def _await(value: Any) -> Any:
@@ -190,6 +192,64 @@ class D1AgentRunLedger:
         if row is None or type(row.get("epoch")) is not int:
             raise AgentDurableLeaseError("D1 fencing readback unavailable")
         return AgentRunLease(run_id, owner_scope, request_fingerprint, worker_id, row["epoch"])
+
+    @staticmethod
+    def _server_run(run_id: str) -> str:
+        # This identifier must originate in the trusted initial Agent Worker,
+        # and may only be obtained from a server-persisted ApprovalPause.
+        if not isinstance(run_id, str) or not _SERVER_RUN_ID.fullmatch(run_id):
+            raise AgentDurableLeaseError("server-issued Agent run identity required")
+        return run_id
+
+    async def resume_approved_pause(
+        self, *, run_id: str, owner_scope: str, worker_id: str, completed_step: int,
+        lease_seconds: int = 120,
+    ) -> AgentRunLease:
+        """CAS an approved, already-fenced pause into one fresh executor epoch.
+
+        Continuation resolve + decision verification + claim must precede this.
+        This is not automatic recovery of uncertain Tool/provider effects.
+        """
+        run_id = self._server_run(run_id)
+        if type(completed_step) is not int or not 0 <= completed_step <= 63:
+            raise AgentDurableLeaseError("invalid approval checkpoint")
+        period = self._seconds(lease_seconds)
+        if not isinstance(owner_scope, str) or not re.fullmatch(r"scope_[0-9a-f]{64}", owner_scope):
+            raise AgentDurableLeaseError("invalid trusted owner scope")
+        if not isinstance(worker_id, str) or not re.fullmatch(r"eng_[0-9a-f]{24}", worker_id):
+            raise AgentDurableLeaseError("invalid trusted resume worker")
+        now = self._now()
+        ok = await self._run(
+            f"UPDATE {_TABLE} SET worker_id=?,epoch=epoch+1,status='running',"
+            "heartbeat_at=?,lease_until=? WHERE run_id=? AND owner_scope=? "
+            "AND status='awaiting_approval' AND checkpoint_step=?",
+            worker_id, now, now + period, run_id, owner_scope, completed_step,
+        )
+        if not ok:
+            raise AgentDurableLeaseError("Agent approval lease unavailable or already consumed")
+        row = await self._first(
+            f"SELECT owner_scope,request_fingerprint,epoch,worker_id,status,checkpoint_step "
+            f"FROM {_TABLE} WHERE run_id=?", run_id,
+        )
+        if (row is None or row.get("worker_id") != worker_id
+                or row.get("status") != "running"
+                or type(row.get("epoch")) is not int
+                or row.get("checkpoint_step") != completed_step):
+            raise AgentDurableLeaseError("Agent approval fencing readback unavailable")
+        return AgentRunLease(
+            run_id, row["owner_scope"], row["request_fingerprint"], worker_id, row["epoch"],
+        )
+
+    async def cancel_awaiting_approval(self, *, run_id: str, completed_step: int) -> bool:
+        """Revoke only the exact server-issued approval-pause lease, not other runs."""
+        run_id = self._server_run(run_id)
+        if type(completed_step) is not int or not 0 <= completed_step <= 63:
+            raise AgentDurableLeaseError("invalid approval checkpoint")
+        return await self._run(
+            f"UPDATE {_TABLE} SET status='cancelled',epoch=epoch+1 "
+            "WHERE run_id=? AND status='awaiting_approval' AND checkpoint_step=?",
+            run_id, completed_step,
+        )
 
     async def quarantine_expired(self) -> None:
         """Never auto-replay a run that might have reached a Tool/provider."""
