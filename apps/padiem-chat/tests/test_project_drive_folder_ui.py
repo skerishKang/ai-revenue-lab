@@ -152,6 +152,11 @@ def test_css_has_44px_targets_and_mobile_rule() -> None:
     assert "overflow-wrap: anywhere" in CSS
 
 
+def test_modified_time_slot_is_compact_and_nowrap() -> None:
+    assert ".project-drive-row-modified" in CSS
+    assert "white-space: nowrap" in CSS
+
+
 # --- 7. dialog lifecycle ---------------------------------------------------
 
 
