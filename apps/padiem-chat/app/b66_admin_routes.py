@@ -174,7 +174,8 @@ async def b66_admin_model_policy(request: Request) -> JSONResponse:
         except Exception:
             return _error(503, "membership_store_unavailable")
         return JSONResponse({"ok": True, "models": models, "policy": current,
-                             "enforcement_enabled": getattr(request.app.state, "b66_membership_enforced", False) is True}, headers=_NO_STORE)
+                             "enforcement_enabled": getattr(request.app.state, "b66_membership_enforced", False) is True,
+                             "global_off_enforcement_enabled": getattr(request.app.state, "b66_global_model_switch_enforced", False) is True}, headers=_NO_STORE)
 
     if request.headers.get("content-type", "").split(";", 1)[0].lower() != "application/json":
         return _error(415, "json_required")

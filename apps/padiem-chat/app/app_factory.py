@@ -536,6 +536,9 @@ def create_app(
     app.state.saved_output_store = saved_output_store
     # Separate deployment gate: migrate and audit the D1 schema before enabling.
     app.state.b66_membership_enforced = False
+    # Production host enables this independently of the membership rollout.
+    # Pure ASGI fixtures without a D1 adapter keep their pre-existing behavior.
+    app.state.b66_global_model_switch_enforced = False
     app.state.b66_signup_notifier = None
     # Canonical identity remains Control Plane authority. Product D1 stores only
     # a non-authoritative shadow pointer used to reach the current canonical session.

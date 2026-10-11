@@ -250,7 +250,19 @@ async def _member_access(request: Request, user_id: str) -> tuple[dict | None, J
     made-up B14 route. Missing D1 after activation fails closed.
     """
     if getattr(request.app.state, "b66_membership_enforced", False) is not True:
-        return None, None
+        # B66 global model OFF is an independent operator control, not a
+        # membership/tier rollout. Production enables this even when membership
+        # enforcement is inactive. Read D1 before exposing choices OR dispatch.
+        if getattr(request.app.state, "b66_global_model_switch_enforced", False) is not True:
+            return None, None  # offline/test app without the production composition
+        store = getattr(request.app.state, "b66_member_admin_store", None)
+        try:
+            if store is None:
+                raise RuntimeError("B66 model OFF policy store missing")
+            disabled_models = await store.globally_disabled_models()
+        except Exception:
+            return None, _error(503, "model_policy_unavailable", "모델 사용 정책을 확인하지 못했습니다.")
+        return {"disabled_models": disabled_models, "active_policy": False, "model_ids": None}, None
     store = getattr(request.app.state, "b66_member_admin_store", None)
     try:
         if store is None:

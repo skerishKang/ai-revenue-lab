@@ -829,6 +829,10 @@ class Default(WorkerEntrypoint):
                 _worker_app.state.b66_membership_enforced = (
                     binding_value(self.env, "B66_MEMBERSHIP_ENFORCED") == "enabled"
                 )
+                # Admin ON/OFF must deny production B66 model execution even
+                # when the separate membership/tier rollout is not enabled.
+                # D1 metadata errors fail closed before any provider dispatch.
+                _worker_app.state.b66_global_model_switch_enforced = True
                 # Optional signup notification channels: configuration comes
                 # exclusively from trusted Worker bindings, never browser input.
                 def _b66_notice_value(key):
