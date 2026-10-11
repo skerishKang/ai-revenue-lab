@@ -155,6 +155,9 @@ from .calendar_routes import (
 from .calendar_store import CalendarStore, D1CalendarStore, InMemoryCalendarStore
 from .claw_inbox_routes import claw_inbox_list, claw_inbox_status
 from .claw_local_task_result_routes import CLAW_LOCAL_TASK_RESULT_PATH, local_runner_result
+from .claw_device_directory_routes import (
+    CLAW_DEVICE_DIRECTORY_PATH, UnconfiguredDeviceDirectorySource, claw_device_directory,
+)
 from .claw_local_access_routes import (
     CLAW_LOCAL_ACCESS_PATH,
     UnconfiguredClawLocalAccessTruthSource,
@@ -294,6 +297,7 @@ def create_app(
     telemetry_emitter=None,
     claw_p01_continuation_client=None,
     claw_local_access_source=None,
+    claw_device_directory_source=None,
     claw_local_connect_port=None,
     claw_office_chooser_source=None,
     local_task_result_source=None,
@@ -500,6 +504,8 @@ def create_app(
         # #3094: the one real read-only source behind the "Connect this computer"
         # panel. Owner-scoped; it pairs nothing and approves nothing.
         Route(CLAW_LOCAL_ACCESS_PATH, claw_local_access, methods=["GET"]),
+        # #4139: read-only multi-PC list; owner + workspace derived from session.
+        Route(CLAW_DEVICE_DIRECTORY_PATH, claw_device_directory, methods=["GET"]),
         # #3650: the local/nonprod initiating leg. Fail-closed unless the run
         # composition explicitly installs a connect port; the central #3476
         # same-origin guard covers it like every cookie-authenticated POST.
@@ -679,6 +685,11 @@ def create_app(
     # The canonical pairing/broker authority (#3080) composes the real source in
     # from trusted bindings. The default is the fail-closed source: the panel is
     # told no projection exists rather than being shown a guessed device state.
+    app.state.claw_device_directory_source = (
+        claw_device_directory_source
+        if claw_device_directory_source is not None
+        else UnconfiguredDeviceDirectorySource()
+    )
     app.state.claw_local_access_source = (
         claw_local_access_source
         if claw_local_access_source is not None

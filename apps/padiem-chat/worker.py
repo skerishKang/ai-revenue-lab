@@ -34,6 +34,7 @@ from app.claw_automation_store import D1ClawAutomationStore
 from app.claw_local_access_composition import (
     build_claw_local_access_source_with_diagnostic,
 )
+from app.claw_device_directory_routes import build_broker_device_directory_source
 from app.desktop_conversation_authority import (
     build_desktop_device_session_authority_with_diagnostic,
 )
@@ -1071,6 +1072,11 @@ class Default(WorkerEntrypoint):
                 )
                 if claw_local_access_source is not None:
                     _worker_app.state.claw_local_access_source = claw_local_access_source
+                # #4139: second consumer of the SAME trusted broker service
+                # binding. Never infer a device list from local browser state.
+                device_directory_source = build_broker_device_directory_source(self.env)
+                if device_directory_source is not None:
+                    _worker_app.state.claw_device_directory_source = device_directory_source
                 # #3436 B2c: compose the canonical device-session authority for
                 # the GET-only Desktop conversation surface from the same
                 # trusted broker binding. When the trusted runtime is absent
