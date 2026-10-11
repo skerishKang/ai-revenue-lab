@@ -229,6 +229,12 @@ function harness(options) {
     assert.equal(ui.openDisabled(), true, "OPEN_DISABLED_WITHOUT_CONFIG");
     assert.ok(ui.statusText().indexOf("준비되지 않았습니다") !== -1, "설정 미준비 안내");
     assert.ok(ui.statusText().indexOf("PDF 다운로드") !== -1, "기존 기능 유지 안내");
+    const [accountNote, driveNote] = h.doc.container.children[1].children;
+    assert.equal(accountNote.dataset.kind, "b66", "B66_LOGIN_AUTHORITY_SEPARATE");
+    assert.ok(accountNote.textContent.includes("자동 연결되지 않습니다"),
+      "GOOGLE_DRIVE_NOT_MISREPRESENTED_AS_B66_LOGIN_LINK");
+    assert.equal(driveNote.dataset.kind, "drive", "DRIVE_DESTINATION_SEPARATE");
+    assert.ok(driveNote.textContent.includes("연결 안 됨"), "DRIVE_DISCONNECTED_TRUTHFUL");
     assert.equal(h.bridgeCalls.length, 0, "연결 없이 견적을 읽거나 바꾸지 않는다");
   }
 
@@ -611,6 +617,8 @@ function harness(options) {
     h.doc.dispatch("b66:auth-changed", { authenticated: false });
     await settle();
     assert.equal(ui.session().connected, false, "B66_LOGOUT_CLEARS_DRIVE_SESSION");
+    assert.ok(h.doc.container.children[1].children[1].textContent.includes("연결 안 됨"),
+      "DRIVE_DESTINATION_RESETS_AFTER_B66_LOGOUT");
     assert.equal(ui.retryVisible(), false, "B66_LOGOUT_CLEARS_PENDING_PAIR");
     assert.equal(ui.saveDisabled(), true, "B66_LOGOUT_DISABLES_SAVE");
     assert.equal(ui.openDisabled(), true, "B66_LOGOUT_DISABLES_OPEN");
@@ -810,6 +818,8 @@ function harness(options) {
     assert.equal(ui.session().connected, true, "VALID_CLIENT_CONNECTED");
     assert.equal(ui.saveDisabled(), false, "VALID_CLIENT_SAVE_ENABLED");
     assert.equal(ui.openDisabled(), false, "VALID_CLIENT_OPEN_ENABLED");
+    assert.ok(valid.doc.container.children[1].children[1].textContent.includes("동일한지는 확인되지 않았습니다"),
+      "DRIVE_CONNECTED_DOES_NOT_ASSERT_MATCHING_LOGIN_ACCOUNT");
     assert.equal(ui.statusText().indexOf("형식이 올바르지 않습니다"), -1, "VALID_CLIENT_NO_FORMAT_WARNING");
     assert.ok(ui.statusText().indexOf("연결되었습니다") !== -1, "VALID_CLIENT_CONNECTED_STATUS");
   }

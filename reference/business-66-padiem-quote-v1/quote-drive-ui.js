@@ -146,6 +146,15 @@
     var bridge = opts.bridge || resolveGlobal(BRIDGE_GLOBAL) || null;
     var Contract = opts.contract || resolveGlobal("B66QuoteDriveContract") || null;
 
+    /* The B66 signed-in owner and the Drive OAuth grant are separate authorities.
+       GIS gives this client a scoped Drive token, not a verified B66-to-Google account link. */
+    var accountNote = element(doc, "p",
+      "견적서 접근 권한은 파디엠(B66) 로그인 계정 기준입니다. Google Drive 연결은 별도의 저장 권한이며 B66 로그인과 자동 연결되지 않습니다.");
+    accountNote.className = "drive-authority-note";
+    accountNote.dataset.kind = "b66";
+    var destinationNote = element(doc, "p", "");
+    destinationNote.className = "drive-authority-note";
+    destinationNote.dataset.kind = "drive";
     var status = element(doc, "p", "");
     status.className = "drive-status";
     var connectButton = element(doc, "button", "내 Google Drive 연결");
@@ -175,6 +184,8 @@
 
     var actions = element(doc, "div", "");
     actions.className = "drive-actions";
+    actions.appendChild(accountNote);
+    actions.appendChild(destinationNote);
     actions.appendChild(connectButton);
     actions.appendChild(saveButton);
     actions.appendChild(openButton);
@@ -216,6 +227,9 @@
       /* 클라이언트가 형식까지 검증한 값만 연결 가능으로 본다. 빈 문자열이 아님만으로 열지 않는다. */
       var configured = client.isConfigured();
       var connected = session.connected === true;
+      destinationNote.textContent = connected
+        ? "Drive 저장 대상: 별도로 연결한 Google 계정입니다. B66 로그인 계정과 동일한지는 확인되지 않았습니다."
+        : "Drive 저장 대상: 연결 안 됨. 저장할 Google 계정은 Drive 연결 단계에서 별도로 선택합니다.";
       connectButton.textContent = connected ? "Google Drive 연결 해제" : "내 Google Drive 연결";
       saveButton.disabled = !configured || !connected;
       openButton.disabled = !configured || !connected;
