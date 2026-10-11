@@ -1,0 +1,58 @@
+name: B54 Engine Bindings Immutable Readonly Audit
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-engine-bindings-readonly-audit
+  cancel-in-progress: false
+
+jobs:
+  audit-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: production
+    steps:
+      - name: Checkout current main source, read only
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reject stale or non-main dispatch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)"
+          echo 'B54_READONLY_AUDIT_SOURCE=EXACT_MAIN'
+          echo 'PRODUCTION_MUTATION=0'
+
+      - name: GET-only immutable Worker versions and served deployment
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test "${CLOUDFLARE_ACCOUNT_ID}" = "9be14bb7b8974e65d0afba647ab16932"
+          readonly_dir="${RUNNER_TEMP}/b54-binding-audit"
+          mkdir -p "${readonly_dir}"
+          chmod 700 "${readonly_dir}"
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          curl --fail --silent --show-error --max-time 30 "${auth[@]}" "${base}/deployments" -o "${readonly_dir}/deployments.json"
+          curl --fail --silent --show-error --max-time 30 "${auth[@]}" "${base}/versions/4d90cf39-ca1b-48b4-977e-dce1ca576d7a" -o "${readonly_dir}/good.json"
+          curl --fail --silent --show-error --max-time 30 "${auth[@]}" "${base}/versions/87ae6263-724e-479a-868a-598fe9bf0d01" -o "${readonly_dir}/bad.json"
+          python3 .github/scripts/b54_engine_binding_readonly_diff_4383.py \
+            --deployments "${readonly_dir}/deployments.json" \
+            --good-version "${readonly_dir}/good.json" \
+            --bad-version "${readonly_dir}/bad.json"
+          echo 'B54_ENGINE_GET_ONLY=YES'
+          echo 'NO_DEPLOY_NO_ROLLBACK_NO_SECRET_MUTATION=YES'
