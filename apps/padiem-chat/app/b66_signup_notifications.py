@@ -17,6 +17,23 @@ _DISCORD = re.compile(r"^https://(?:discord\.com|discordapp\.com)/api/webhooks/[
 _EMAIL = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
 
 
+def _parse_email_recipients(value: str) -> list[str]:
+    """Comma-separated recipients for a single Resend delivery receipt.
+
+    Reject the entire configuration if any address is invalid. Do not
+    silently deliver to only one recipient when others are malformed.
+    """
+    if not isinstance(value, str) or not value or len(value) > 2000:
+        return []
+    addresses = [part.strip() for part in value.split(",")]
+    if len(addresses) > 10 or any(not _EMAIL.fullmatch(part) for part in addresses):
+        return []
+    unique: dict[str, str] = {}
+    for email in addresses:
+        unique.setdefault(email.casefold(), email)
+    return list(unique.values())
+
+
 class B66SignupNotifier:
     def __init__(
         self, store: Any, *,
@@ -41,11 +58,12 @@ class B66SignupNotifier:
                 {"content":message,"allowed_mentions":{"parse":[]}},
                 {},
             )
-        if (isinstance(resend_api_key,str) and resend_api_key.startswith("re_")
-            and _EMAIL.fullmatch(email_from or "") and _EMAIL.fullmatch(email_to or "")):
+        recipients = _parse_email_recipients(email_to)
+        if (isinstance(resend_api_key, str) and resend_api_key.startswith("re_")
+            and _EMAIL.fullmatch(email_from or "") and recipients):
             self.channels["email"] = (
                 "https://api.resend.com/emails",
-                {"from":email_from,"to":[email_to],
+                {"from":email_from, "to":recipients,
                  "subject":"[B66] 신규 회원가입 알림","text":message},
                 {"Authorization":"Bearer " + resend_api_key},
             )

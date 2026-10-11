@@ -153,3 +153,54 @@ async def test_inquiries_admin_only_and_status_updates(monkeypatch):
 
     req.query_params = {"status": "invalid"}
     assert (await mod.b66_admin_inquiries(req)).status_code == 400
+
+
+@pytest.mark.asyncio
+async def test_multi_recipient_resend_signup_and_inquiry_payloads():
+    import json
+    from app.b66_signup_notifications import _parse_email_recipients
+
+    recipients = ["first@example.org", "second@example.net"]
+    assert _parse_email_recipients(" first@example.org , second@example.net ") == recipients
+    assert _parse_email_recipients("first@example.org,first@EXAMPLE.org") == [
+        "first@example.org"
+    ]
+    assert _parse_email_recipients("first@example.org,") == []
+    assert _parse_email_recipients("first@example.org, invalid-address") == []
+    assert _parse_email_recipients("first@example.org\nBcc:evil@example.com") == []
+    assert _parse_email_recipients(",".join("u%d@example.org" % i for i in range(11))) == []
+    posts = []
+
+    def capture(request):
+        assert str(request.url) == "https://api.resend.com/emails"
+        payload = json.loads(request.content)
+        assert payload["to"] == recipients
+        assert payload["from"] == "no-reply@example.org"
+        posts.append(payload)
+        return httpx.Response(200, json={"id": "test-message-id"})
+
+    db, _, member, store = inquiry_store()
+    notifier = B66SignupNotifier(
+        None, resend_api_key="re_mock_example", email_from="no-reply@example.org",
+        email_to="first@example.org, second@example.net",
+        http_transport=httpx.MockTransport(capture),
+    )
+    assert set(notifier.channels) == {"email"}
+    assert await notifier._send("email")
+    entry = await store.submit(member, "general", "Private subject", "Private inquiry body")
+    assert await deliver_inquiry(store, notifier, entry) == {"sent": 1, "failed": 0}
+    assert len(posts) == 2
+    assert posts[0]["subject"] == "[B66] 신규 회원가입 알림"
+    assert posts[1]["subject"] == "[B66] 회원 문의 접수"
+    assert "Private inquiry body" not in posts[1]["text"]
+    assert await store.pending() == []
+    assert await deliver_inquiry(store, notifier, entry) == {"sent": 0, "failed": 0}
+    assert len(posts) == 2
+
+
+def test_invalid_multi_recipient_configuration_does_not_send_partially():
+    invalid_values = ["one@example.org,", "one@example.org,not-an-email", "one@example.org\nBcc:bad@example.org"]
+    for email_to in invalid_values:
+        notifier = B66SignupNotifier(None, resend_api_key="re_mock",
+                                      email_from="no-reply@example.org", email_to=email_to)
+        assert "email" not in notifier.channels
