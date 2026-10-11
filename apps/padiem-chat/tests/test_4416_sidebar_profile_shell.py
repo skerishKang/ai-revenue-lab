@@ -61,6 +61,9 @@ def test_auth_derived_avatar_is_safe_text_and_not_fake_account_status():
     assert "accountAvatar.textContent" in APP
     assert "innerHTML" not in APP.split('const firstCharacter = displayName',1)[1].split('loginButton.hidden',1)[0]
     assert 'accountContainer.hidden = sessionState === "unavailable"' in APP
+    account_button_css = CSS.rsplit(".sidebar-account .login-button {", 1)[1].split("}", 1)[0]
+    assert "min-height: 44px" in account_button_css
+    assert "flex: 0 0 auto" in account_button_css
 
 
 def test_locale_and_scoped_layout():
