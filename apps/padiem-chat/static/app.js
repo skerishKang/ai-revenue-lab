@@ -1193,10 +1193,38 @@
       });
       closeSidebar();
       input.focus();
+      return true;
     } catch (error) {
       setNote(error instanceof Error ? error.message : uiT("conversation-load-failed"), "error");
+      return false;
     }
   }
+
+  // Hark's private web XLSX intake creates a separate trusted owner-owned
+  // work conversation. This explicit navigation never guesses that it was the
+  // currently displayed chat or fabricates an assistant answer/file READ grant.
+  window.addEventListener("padiem:claw-web-work-conversation-open", async (event) => {
+    const detail = event?.detail;
+    if (!authState.authenticated || inFlight || !detail
+        || typeof detail.conversationId !== "string"
+        || !/^chat_[a-f0-9]{32}$/.test(detail.conversationId)
+        || typeof detail.artifactId !== "string"
+        || !/^doc_[a-f0-9]{32}$/.test(detail.artifactId)
+        || typeof detail.integrityRef !== "string"
+        || !/^[a-f0-9]{64}$/.test(detail.integrityRef)) return;
+    // The work conversation is loaded through the existing authenticated,
+    // owner-scoped /api/conversations/:id endpoint. The XLSX UI separately
+    // confirmed the exact owner-scoped artifact GET before raising this event.
+    const opened = await openSavedConversation(detail.conversationId);
+    if (!opened) return;
+    const notice = document.createElement("p");
+    notice.className = "reference-note";
+    notice.setAttribute("role", "status");
+    notice.textContent =
+      uiT("claw-web-work-conversation-opened");
+    messageList.prepend(notice);
+    setNote(uiT("claw-web-work-conversation-note"));
+  });
 
   async function requestCompletedAnswer(article, payload, outboundMessages, attachment, contextSnapshot, signal) {
     const data = await chatTransport.requestCompleted(payload, signal);
