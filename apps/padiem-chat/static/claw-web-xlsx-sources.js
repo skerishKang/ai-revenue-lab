@@ -166,6 +166,32 @@
     workcopyLink.textContent = "승인된 작업 사본 다운로드 (XLSX)";
     workcopyLink.setAttribute("download", "");
     approvalPanel?.appendChild(workcopyLink);
+    const editPreviewPanel = root.createElement("div");
+    editPreviewPanel.className = "claw-web-quote-edit-preview";
+    editPreviewPanel.hidden = true;
+    const schoolLabel = root.createElement("label");
+    schoolLabel.textContent = "학교명";
+    const schoolInput = root.createElement("input");
+    schoolInput.type = "text";
+    schoolInput.maxLength = 120;
+    schoolInput.placeholder = "예: 광주대학교";
+    schoolLabel.appendChild(schoolInput);
+    const priceLabel = root.createElement("label");
+    priceLabel.textContent = "공급가(원)";
+    const priceInput = root.createElement("input");
+    priceInput.type = "number";
+    priceInput.min = "1";
+    priceInput.max = "999999999999";
+    priceInput.step = "10";
+    priceLabel.appendChild(priceInput);
+    const editPreviewButton = root.createElement("button");
+    editPreviewButton.type = "button";
+    editPreviewButton.textContent = "수정 결과 미리보기 (저장되지 않음)";
+    const editPreviewResult = root.createElement("p");
+    editPreviewResult.setAttribute("aria-live", "polite");
+    editPreviewResult.textContent = "별도 P01 쓰기 승인과 PDF 변환은 아직 지원되지 않습니다.";
+    editPreviewPanel.append(schoolLabel, priceLabel, editPreviewButton, editPreviewResult);
+    approvalPanel?.appendChild(editPreviewPanel);
     if (![panel, input, upload, refresh, message, list, approvalPanel,
       approvalSelected, approvalStatus, approvalRefresh, requestStart, approve, deny].every(Boolean)) return null;
     // The legacy Project Files input stays text/PDF/DOCX-only. This separate
@@ -186,6 +212,8 @@
     const hideWorkcopy = () => {
       workcopyLink.hidden = true;
       workcopyLink.href = "";
+      editPreviewPanel.hidden = true;
+      editPreviewResult.textContent = "수정 파일을 저장하지 않았습니다. 별도 P01 쓰기 승인이 필요합니다.";
     };
     const showWorkcopy = (selectionRef, copyId) => {
       if (!SELECTION_ID.test(selectionRef) || !ID.test(copyId)) return hideWorkcopy();
@@ -193,7 +221,63 @@
       workcopyLink.href = SELECTIONS + "/" + encodeURIComponent(selectionRef)
         + "/workcopy/download";
       workcopyLink.hidden = false;
+      editPreviewPanel.hidden = false;
     };
+    async function previewQuoteEdit() {
+      if (busy || workcopyLink.hidden || !selectedSelectionRef
+          || editPreviewPanel.hidden) return;
+      const ref = selectedSelectionRef;
+      const schoolName = schoolInput.value.trim();
+      const supplyAmount = Number(priceInput.value);
+      if (!schoolName || !Number.isSafeInteger(supplyAmount)
+          || supplyAmount <= 0 || supplyAmount > 999999999999) {
+        editPreviewResult.textContent = "학교명과 올바른 공급가를 입력하세요.";
+        return;
+      }
+      setBusy(true);
+      editPreviewButton.disabled = true;
+      editPreviewResult.textContent = "원본과 계산 결과를 서버에서 확인하고 있습니다.";
+      try {
+        const data = await jsonRequest(
+          SELECTIONS + "/" + encodeURIComponent(ref) + "/quote-edit/preview",
+          { method: "POST", headers: {
+            "Content-Type": "application/json", "Accept": "application/json",
+          }, body: JSON.stringify({
+            school_name: schoolName, supply_amount: supplyAmount,
+          }) },
+        );
+        if (ref !== selectedSelectionRef || editPreviewPanel.hidden) return;
+        if (!(data.contract_version === "claw-web-xlsx-quote-edit-preview.v1"
+            && data.selection_ref === ref
+            && data.preview_only === true && data.write_approved === false
+            && data.revised_xlsx_created === false && data.pdf_exported === false
+            && data.requires_independent_p01_write === true
+            && data.pdf_unsupported === true
+            && HASH.test(data.original_workcopy_sha256)
+            && HASH.test(data.edit_sha256)
+            && HASH.test(data.revision_preview_sha256)
+            && data.school_name === schoolName
+            && data.supply_amount === supplyAmount
+            && Number.isSafeInteger(data.vat_amount)
+            && Number.isSafeInteger(data.total_amount)
+            && data.vat_amount + data.supply_amount === data.total_amount)) {
+          throw new Error("수정 미리보기 응답을 검증할 수 없습니다.");
+        }
+        editPreviewResult.textContent = "변경 예정: " + data.school_name
+          + " · 공급가 " + data.supply_amount.toLocaleString("ko-KR")
+          + "원 · 부가세 " + data.vat_amount.toLocaleString("ko-KR")
+          + "원 · 합계 " + data.total_amount.toLocaleString("ko-KR")
+          + "원. 아직 파일은 수정·저장되지 않았으며 PDF도 생성되지 않았습니다.";
+      } catch (_error) {
+        if (ref === selectedSelectionRef) {
+          editPreviewResult.textContent = "이 XLSX는 해당 견적서 수정 형식을 지원하지 않거나 승인·파일 검증에 실패했습니다. 변경 사항을 저장하지 않았습니다.";
+        }
+      } finally {
+        setBusy(false);
+        editPreviewButton.disabled = busy || editPreviewPanel.hidden;
+      }
+    }
+    editPreviewButton.addEventListener("click", () => void previewQuoteEdit());
     const report = (value) => { message.textContent = value; };
     const setBusy = (value) => {
       busy = value;
@@ -204,6 +288,7 @@
       requestStart.disabled = value || !ownerRequestReady || requestAttempted;
       approve.disabled = value || !ownerDecisionReady || decisionAttempted;
       deny.disabled = value || !ownerDecisionReady || decisionAttempted;
+      editPreviewButton.disabled = value || editPreviewPanel.hidden;
       panel.setAttribute("aria-busy", value ? "true" : "false");
     };
 
