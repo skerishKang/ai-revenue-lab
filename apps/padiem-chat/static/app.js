@@ -71,7 +71,9 @@
   // Some auth fixtures mount account controls without the original avatar as a
   // direct child; prepend never assumes a particular descendant relationship.
   accountContainer?.prepend(profileToggle);
-  if (accountAvatar && accountName) profileToggle.append(accountAvatar, accountName);
+  // Keep #accountAvatar and #accountName as direct accountContainer children:
+  // product-capabilities.js rehomes fallback avatars before the account name.
+  // A separate accessible button overlays those text/visual nodes instead.
   const profilePanel = document.createElement("div");
   profilePanel.id = "accountProfilePanel";
   profilePanel.className = "account-profile-panel";

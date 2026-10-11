@@ -258,7 +258,7 @@
  * and settings controls stay visible and keep all their original authority. */
 .sidebar-account {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
   column-gap: 8px;
 }
 .sidebar-account .account-profile-toggle {
@@ -286,13 +286,6 @@
   outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
-.sidebar-account .account-profile-toggle .account-name {
-  min-width: 0;
-  flex: 1 1 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
 .sidebar-account .account-profile-panel {
   grid-column: 1 / -1;
   min-width: 0;
@@ -312,4 +305,31 @@
   text-align: left;
   font: inherit;
   cursor: pointer;
+}
+
+/* Keep the original account DOM contract: capability projection may insert an
+ * avatar before accountName, so both remain direct accountContainer children.
+ * An accessible overlay covers the avatar/name, not the login/logout action. */
+.sidebar-account > .account-profile-toggle {
+  grid-column: 1 / 3;
+  grid-row: 1;
+  z-index: 1;
+}
+.sidebar-account > .account-avatar {
+  grid-column: 1;
+  grid-row: 1;
+  margin-left: 4px;
+  pointer-events: none;
+  z-index: 2;
+}
+.sidebar-account > .account-name {
+  grid-column: 2;
+  grid-row: 1;
+  pointer-events: none;
+  z-index: 2;
+}
+.sidebar-account > .login-button {
+  grid-column: 3;
+  grid-row: 1;
+  z-index: 3;
 }
