@@ -175,8 +175,15 @@ def test_workflow_has_protected_manual_only_mutation_and_rollback():
 
 def test_prepatch_cloudflare_module_authority_step_parses_with_actual_bash():
     """Catch malformed nested shell here-docs before *any* production run."""
-    if not shutil.which("bash"):
-        pytest.skip("Requires Bash for the GitHub Actions ubuntu job")
+    bash = shutil.which("bash")
+    if sys.platform == "win32":
+        # Windows may resolve 'bash' to WSL, not a Bash shell capable of
+        # parsing this workflow. Prefer Git-for-Windows installed with git.
+        git = shutil.which("git")
+        git_bash = Path(git).resolve().parent.parent / "bin" / "bash.exe" if git else None
+        bash = str(git_bash) if git_bash and git_bash.is_file() else None
+    if not bash:
+        pytest.skip("Requires Bash for GitHub Actions ubuntu shell parsing")
     workflow = (ROOT / "workflows/hark-web-first-runtime-activation.yml").read_text(
         encoding="utf-8"
     )
@@ -187,7 +194,8 @@ def test_prepatch_cloudflare_module_authority_step_parses_with_actual_bash():
     assert "<<'PY'" not in block
     script = textwrap.dedent(block.split("        run: |", 1)[1]).strip()
     completed = subprocess.run(
-        ["bash", "-n"], input=script, text=True,
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False,
+        [bash, "-n"], input=script, text=True, encoding="utf-8",
+        errors="replace", stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        check=False,
     )
     assert completed.returncode == 0, completed.stderr
