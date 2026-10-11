@@ -16,6 +16,8 @@ Engine, B14 or provider endpoint is ever contacted.
 from __future__ import annotations
 
 import json
+
+import pytest
 import shutil
 import subprocess
 import tempfile
@@ -123,6 +125,11 @@ const vm = require("vm");
 const APP = fs.readFileSync(process.argv[2], "utf8");
 const TRANSPORT = fs.readFileSync(process.argv[3], "utf8");
 const CASES = JSON.parse(fs.readFileSync(process.argv[4], "utf8"));
+
+// Compile the unchanged production scripts once; execute them in distinct
+// per-case vm contexts. No harness scenario shares DOM, timers or state.
+const APP_SCRIPT = new vm.Script(APP, { filename: "app.js" });
+const TRANSPORT_SCRIPT = new vm.Script(TRANSPORT, { filename: "chat-transport.js" });
 
 function makeEl(tag, id) {
   const el = {
@@ -422,8 +429,8 @@ function buildSandbox(sseCase) {
   vm.createContext(sandbox);
   // The REAL transport module first, then the REAL app: app.js must consume the
   // production PadiemChatTransport, not a stand-in.
-  vm.runInContext(TRANSPORT, sandbox, { filename: "chat-transport.js" });
-  vm.runInContext(APP, sandbox, { filename: "app.js" });
+  TRANSPORT_SCRIPT.runInContext(sandbox);
+  APP_SCRIPT.runInContext(sandbox);
   return { sandbox, byId, doc, requests, lifecycleSets, committed, conversationIds, advanceClock };
 }
 
@@ -534,9 +541,9 @@ def test_server_stream_really_carries_the_answer_and_terminal_frames() -> None:
     assert raw.count("event: delta") == 1, "the general lane projects one bounded terminal answer"
 
 
-def test_claw_answer_lands_in_the_answer_dom_and_commits() -> None:
+def test_claw_answer_lands_in_the_answer_dom_and_commits(_client_results_by_name: dict[str, dict]) -> None:
     case, _raw = _case("markup-answer", ANSWER_WITH_MARKUP)
-    result = _run_client([case])[0]
+    result = _client_results_by_name["markup-answer"]
     general_calls = [r for r in result["requests"] if r["url"] == GENERAL_ROUTE_PATH]
     stream_calls = [r for r in result["requests"] if r["url"] == "/api/chat/stream"]
 
@@ -556,9 +563,9 @@ def test_claw_answer_lands_in_the_answer_dom_and_commits() -> None:
     assert result["committed"] == [ANSWER_WITH_MARKUP], result["committed"]
 
 
-def test_markup_in_an_answer_is_rendered_as_text_not_markup() -> None:
+def test_markup_in_an_answer_is_rendered_as_text_not_markup(_client_results_by_name: dict[str, dict]) -> None:
     case, _raw = _case("markup-answer", ANSWER_WITH_MARKUP)
-    result = _run_client([case])[0]
+    result = _client_results_by_name["markup-answer"]
     dom = result["answerDom"]
     assert dom["childTags"] == ["P"], dom
     assert dom["paragraphText"] == ANSWER_WITH_MARKUP, dom
@@ -566,7 +573,7 @@ def test_markup_in_an_answer_is_rendered_as_text_not_markup() -> None:
     assert dom["childInnerHTML"] == [], dom
 
 
-def test_empty_answer_fails_closed_at_the_route_instead_of_rendering_blank_success() -> None:
+def test_empty_answer_fails_closed_at_the_route_instead_of_rendering_blank_success(_client_results_by_name: dict[str, dict]) -> None:
     """Measured, not assumed: the route refuses an empty Engine answer with 502.
 
     The Phase 1 audit guessed that a "200 + done with no answer text" hole existed.
@@ -576,7 +583,7 @@ def test_empty_answer_fails_closed_at_the_route_instead_of_rendering_blank_succe
     case, raw = _case("empty-answer", "", expect_stream=False)
     assert json.loads(raw)["error"]["code"] == "engine_execution_failed", raw
 
-    result = _run_client([case])[0]
+    result = _client_results_by_name["empty-answer"]
     assert [r for r in result["requests"] if r["url"] == "/api/chat/stream"] == [], result["requests"]
     assert result["committed"] == [], result["committed"]
     assert "completed" not in result["lifecycleSets"], result["lifecycleSets"]
@@ -609,6 +616,83 @@ def _general_posts(result: dict) -> list[dict]:
     return [r for r in result["requests"] if r["url"] == GENERAL_ROUTE_PATH]
 
 
+@pytest.fixture(scope="module")
+def _client_results_by_name() -> dict[str, dict]:
+    """Batch unchanged real-server + synthetic SSE cases in ONE Node process.
+
+    The original Node harness still creates a fresh independent vm/DOM/timer
+    context for EVERY scenario. All original Python test functions/assertions
+    remain separate and the route itself stays real and independently tested.
+    A harness failure or missing output fails the entire suite closed.
+    """
+    def route_case(name: str, *, answer=ANSWER_WITH_MARKUP, raises=None,
+                   model_id=None) -> dict:
+        status, content_type, raw = _capture_server(
+            answer=answer, raises=raises, model_id=model_id,
+        )
+        if status == 200:
+            assert content_type.startswith("text/event-stream"), (name, content_type)
+            return {"name": name, "mode": "stream", "raw": raw}
+        assert status == 502, (name, status, raw[:400])
+        return {"name": name, "mode": "json", "status": status, "body": json.loads(raw)}
+
+    cases = [
+        route_case("markup-answer"),
+        route_case("empty-answer", answer=""),
+        dict(route_case("selection", model_id=TEST_ONLY_MODEL_ID), modelId=TEST_ONLY_MODEL_ID),
+        route_case("no-selection"),
+        route_case(
+            "502",
+            raises=P01AdapterError(
+                "engine_execution_failed", "Engine 실행에 실패했습니다.",
+                dispatch_class=P01DispatchClass.DISPATCHED,
+            ),
+        ),
+        route_case(
+            "rate-limited",
+            raises=P01AdapterError(
+                "engine_execution_failed", "Engine 실행에 실패했습니다.",
+                dispatch_class=P01DispatchClass.DISPATCHED,
+                failure_detail=P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED,
+            ),
+        ),
+        {"name": "eof", "mode": "stream", "raw": _frames(
+            ("delta", json.dumps({"delta": "부분 응답"})),
+        )},
+        {"name": "error-frame", "mode": "stream", "raw": _frames(
+            ("delta", json.dumps({"delta": "일부 텍스트 "})),
+            ("error", json.dumps({"error": {"code": "engine_execution_failed", "message": "실패"}})),
+        )},
+        {"name": "dup-done", "mode": "stream", "raw": _frames(
+            ("delta", json.dumps({"delta": ANSWER_WITH_MARKUP})),
+            ("done", json.dumps({"done": True})),
+            ("done", json.dumps({"done": True})),
+        )},
+        route_case("no-handle"),
+        {"name": "handle", "mode": "stream", "raw": _frames(
+            ("delta", json.dumps({"delta": ANSWER_WITH_MARKUP})),
+            ("done", json.dumps({"done": True, "conversation_id": CONVERSATION_HANDLE})),
+        )},
+    ]
+    assert len(cases) == len({c["name"] for c in cases}) == 11
+    results = _run_client(cases)
+    assert len(results) == len(cases)
+    assert [r["name"] for r in results] == [c["name"] for c in cases]
+    return {result["name"]: result for result in results}
+
+
+def test_batched_node_harness_keeps_all_original_isolated_scenarios(
+    _client_results_by_name: dict[str, dict],
+) -> None:
+    assert set(_client_results_by_name) == {
+        "markup-answer", "empty-answer", "selection", "no-selection",
+        "502", "rate-limited", "eof", "error-frame", "dup-done",
+        "no-handle", "handle",
+    }
+    for result in _client_results_by_name.values():
+        assert len([r for r in result["requests"] if r["url"] == GENERAL_ROUTE_PATH]) == 1
+
+
 def test_a_syntactically_valid_user_selection_is_accepted_by_the_route() -> None:
     """UI-contract scope only: not registration, entitlement or provider readiness."""
     status, content_type, raw = _capture_server(answer=ANSWER_WITH_MARKUP, model_id=TEST_ONLY_MODEL_ID)
@@ -616,9 +700,9 @@ def test_a_syntactically_valid_user_selection_is_accepted_by_the_route() -> None
     assert ANSWER_WITH_MARKUP in raw
 
 
-def test_user_selected_model_id_reaches_the_wire_request_exactly_once() -> None:
+def test_user_selected_model_id_reaches_the_wire_request_exactly_once(_client_results_by_name: dict[str, dict]) -> None:
     _status, _ctype, raw = _capture_server(answer=ANSWER_WITH_MARKUP, model_id=TEST_ONLY_MODEL_ID)
-    result = _run_client([{"name": "selection", "mode": "stream", "raw": raw, "modelId": TEST_ONLY_MODEL_ID}])[0]
+    result = _client_results_by_name["selection"]
 
     general = _general_posts(result)
     assert len(general) == 1, result["requests"]
@@ -631,17 +715,17 @@ def test_user_selected_model_id_reaches_the_wire_request_exactly_once() -> None:
     assert result["answerDom"]["paragraphText"] == ANSWER_WITH_MARKUP, result["answerDom"]
 
 
-def test_no_selection_sends_no_model_id_field() -> None:
+def test_no_selection_sends_no_model_id_field(_client_results_by_name: dict[str, dict]) -> None:
     """The control that keeps the wire assertion above from being vacuous."""
     _status, _ctype, raw = _capture_server(answer=ANSWER_WITH_MARKUP)
-    result = _run_client([{"name": "no-selection", "mode": "stream", "raw": raw}])[0]
+    result = _client_results_by_name["no-selection"]
     general = _general_posts(result)
     assert len(general) == 1, result["requests"]
     assert "model_id" not in json.loads(general[0]["body"]), general[0]["body"]
     assert result["answerDom"]["paragraphText"] == ANSWER_WITH_MARKUP
 
 
-def test_502_engine_failure_shows_bounded_error_and_never_dispatches_again() -> None:
+def test_502_engine_failure_shows_bounded_error_and_never_dispatches_again(_client_results_by_name: dict[str, dict]) -> None:
     failure = P01AdapterError(
         "engine_execution_failed",
         "Engine 실행에 실패했습니다.",
@@ -652,7 +736,7 @@ def test_502_engine_failure_shows_bounded_error_and_never_dispatches_again() -> 
     body = json.loads(raw)
     assert body["error"]["code"] == "engine_execution_failed", body
 
-    result = _run_client([{"name": "502", "mode": "json", "status": status, "body": body}])[0]
+    result = _client_results_by_name["502"]
     assert len(_general_posts(result)) == 1, "an error must not cause a second dispatch"
     assert _lane_only(result) == [GENERAL_ROUTE_PATH], _lane_only(result)
     assert result["committed"] == [], result["committed"]
@@ -664,7 +748,7 @@ def test_502_engine_failure_shows_bounded_error_and_never_dispatches_again() -> 
     assert dom["buttons"] == ["claw-general-open-runs"], "Claw must expose only the read-only run-history action"
 
 
-def test_502_provider_rate_limit_gets_the_bounded_classification_copy() -> None:
+def test_502_provider_rate_limit_gets_the_bounded_classification_copy(_client_results_by_name: dict[str, dict]) -> None:
     failure = P01AdapterError(
         "engine_execution_failed",
         "Engine 실행에 실패했습니다.",
@@ -676,7 +760,7 @@ def test_502_provider_rate_limit_gets_the_bounded_classification_copy() -> None:
     body = json.loads(raw)
     assert body["error"]["detail"] == P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED, body
 
-    result = _run_client([{"name": "rate-limited", "mode": "json", "status": status, "body": body}])[0]
+    result = _client_results_by_name["rate-limited"]
     dom = result["answerDom"]
     assert "claw-general-provider-limit" in dom["texts"], dom
     assert "completed" not in result["lifecycleSets"], result["lifecycleSets"]
@@ -684,58 +768,58 @@ def test_502_provider_rate_limit_gets_the_bounded_classification_copy() -> None:
     assert len(_general_posts(result)) == 1
 
 
-def test_stream_that_ends_without_a_done_frame_never_completes() -> None:
+def test_stream_that_ends_without_a_done_frame_never_completes(_client_results_by_name: dict[str, dict]) -> None:
     """harness-authored: a partial stream must not be presented as a finished answer."""
     raw = _frames(("delta", json.dumps({"delta": "부분 응답"})))
-    result = _run_client([{"name": "eof", "mode": "stream", "raw": raw}])[0]
+    result = _client_results_by_name["eof"]
     assert result["committed"] == [], result["committed"]
     assert "completed" not in result["lifecycleSets"], result["lifecycleSets"]
     assert result["answerDom"]["label"] == "connection-error", result["answerDom"]
     assert len(_general_posts(result)) == 1
 
 
-def test_error_frame_after_a_real_delta_is_terminal_and_uncommitted() -> None:
+def test_error_frame_after_a_real_delta_is_terminal_and_uncommitted(_client_results_by_name: dict[str, dict]) -> None:
     """harness-authored error frame following a delivered delta."""
     raw = _frames(
         ("delta", json.dumps({"delta": "일부 텍스트 "})),
         ("error", json.dumps({"error": {"code": "engine_execution_failed", "message": "실패"}})),
     )
-    result = _run_client([{"name": "error-frame", "mode": "stream", "raw": raw}])[0]
+    result = _client_results_by_name["error-frame"]
     assert result["committed"] == [], result["committed"]
     assert "completed" not in result["lifecycleSets"], result["lifecycleSets"]
     assert len(_general_posts(result)) == 1
 
 
-def test_duplicate_done_frame_commits_the_answer_only_once() -> None:
+def test_duplicate_done_frame_commits_the_answer_only_once(_client_results_by_name: dict[str, dict]) -> None:
     """harness-authored second done frame; the reader must not double-commit."""
     raw = _frames(
         ("delta", json.dumps({"delta": ANSWER_WITH_MARKUP})),
         ("done", json.dumps({"done": True})),
         ("done", json.dumps({"done": True})),
     )
-    result = _run_client([{"name": "dup-done", "mode": "stream", "raw": raw}])[0]
+    result = _client_results_by_name["dup-done"]
     assert result["committed"] == [ANSWER_WITH_MARKUP], result["committed"]
 
 
-def test_real_done_frame_carries_no_conversation_handle_and_the_client_invents_none() -> None:
+def test_real_done_frame_carries_no_conversation_handle_and_the_client_invents_none(_client_results_by_name: dict[str, dict]) -> None:
     """Measured limitation of the general lane, recorded rather than papered over."""
     _status, _ctype, raw = _capture_server(answer=ANSWER_WITH_MARKUP)
     assert any(line.startswith("data: ") and '"done"' in line for line in raw.splitlines()), raw[:400]
     assert "conversation_id" not in raw, "the route does not return a handle today"
 
-    result = _run_client([{"name": "no-handle", "mode": "stream", "raw": raw}])[0]
+    result = _client_results_by_name["no-handle"]
     assert result["conversationIds"] == [], result["conversationIds"]
     assert result["committed"] == [ANSWER_WITH_MARKUP], result["committed"]
 
 
-def test_done_frame_conversation_handle_updates_canonical_state_exactly_once() -> None:
+def test_done_frame_conversation_handle_updates_canonical_state_exactly_once(_client_results_by_name: dict[str, dict]) -> None:
     """harness-authored done frame carrying a handle: the production reader and
     app.js must adopt it once and still commit the answer exactly once."""
     raw = _frames(
         ("delta", json.dumps({"delta": ANSWER_WITH_MARKUP})),
         ("done", json.dumps({"done": True, "conversation_id": CONVERSATION_HANDLE})),
     )
-    result = _run_client([{"name": "handle", "mode": "stream", "raw": raw}])[0]
+    result = _client_results_by_name["handle"]
     assert result["conversationIds"] == [CONVERSATION_HANDLE], result["conversationIds"]
     assert result["committed"] == [ANSWER_WITH_MARKUP], result["committed"]
     assert "completed" in result["lifecycleSets"], result["lifecycleSets"]
