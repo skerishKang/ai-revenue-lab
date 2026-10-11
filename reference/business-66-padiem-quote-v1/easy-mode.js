@@ -331,6 +331,18 @@
             : "답변을 적어 주세요");
           return;
         }
+        // Retain the user's quotation text when a model has not yet been selected.
+        if (result && result.code === "model_selection_required") {
+          const picker = document.querySelector('select[aria-label="사용할 AI 모델"]');
+          const unavailable = !picker || picker.disabled || picker.options.length <= 1;
+          addMessage("assistant", unavailable
+            ? "사용 가능한 AI 모델 목록을 불러오지 못했습니다. 새로고침 후 다시 확인해 주세요."
+            : "입력창 오른쪽에서 AI 모델을 선택한 뒤 다시 보내 주세요.");
+          setInput(submitFreeFormText, "견적 내용을 입력해 주세요");
+          composer.value = text;
+          if (picker && !picker.disabled) picker.focus();
+          return;
+        }
         const detail = result && bridge && typeof bridge.errorText === "function"
           ? bridge.errorText(result.code)
           : "견적 요청을 해석하지 못했습니다.";

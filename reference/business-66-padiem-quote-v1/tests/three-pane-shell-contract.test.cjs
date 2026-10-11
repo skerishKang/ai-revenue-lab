@@ -19,8 +19,11 @@ check(!html.includes('id="padiemQuoteRequest"') && !html.includes('id="padiemQuo
   "duplicate legacy quote input and send action are removed");
 check(shell.includes('skillHost.appendChild(skillSelect)'),
   "rail moves actual Saved Quote Skill selector");
-check(shell.includes('templateHost.appendChild(templateSelect)'),
-  "rail moves actual Quote Template selector");
+check(!shell.includes('templateHost.appendChild(templateSelect)') &&
+      html.includes('<details class="advanced-template">') &&
+      html.includes('id="templateSelect"') &&
+      app.includes('$("templateSelect").addEventListener("change"'),
+  "legacy output template selector remains functional in advanced management");
 check(shell.includes('modelHost.appendChild(modelSelect)'),
   "rail moves the one authoritative selected-model control, no hidden fallback");
 check(shell.includes('b66:open-recent-quotes') && shell.includes('b66:open-file-intake'),

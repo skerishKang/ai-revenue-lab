@@ -502,7 +502,7 @@
       case "incomplete_request": return "거래처와 품목·수량·단가를 조금 더 알려 주세요.";
       case "needs_clarification": return "입력 내용을 정확하게 이해하지 못했습니다. 거래처명·품목명·수량·단가를 확인해 다시 알려 주세요.";
       case "empty_request": return "견적 내용을 입력해 주세요.";
-      case "model_selection_required": return "좌측 견적서 관리에서 사용할 AI 모델을 먼저 선택해 주세요.";
+      case "model_selection_required": return "입력창 오른쪽에서 사용할 모델을 선택한 뒤 다시 전송해 주세요.";
       case "cgi_unsupported_rows": return "CGI 기본 견적서는 품목을 최대 3개까지 지원합니다. 품목을 3개 이하로 줄여 주세요.";
       case "cgi_unsupported_details": return "CGI 기본 견적서는 현재 요약 품목만 PDF로 만들 수 있습니다. 상세내역은 지원하지 않으므로 요약 품목의 수량과 단가를 알려 주세요.";
       case "cgi_scope_unavailable": return "CGI 견적서의 지원 범위를 확인하지 못했습니다. 새로고침 후 다시 시도해 주세요.";

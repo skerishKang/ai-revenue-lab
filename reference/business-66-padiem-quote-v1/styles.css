@@ -1,3 +1,27 @@
+/* B66 boot guard: prevent visible repaints as deferred scripts assemble the shell. */
+html.b66-shell-booting body > main.shell {
+  opacity: 0;
+  pointer-events: none;
+  animation: b66-boot-failopen 0s linear 8s forwards;
+}
+html.b66-shell-booting body::before {
+  content: "견적서를 준비하고 있습니다";
+  position: fixed;
+  z-index: 9999;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: #edf3f7;
+  color: #3c5c71;
+  font: 600 14px/1.5 system-ui, sans-serif;
+  animation: b66-boot-overlay-failopen 0s linear 8s forwards;
+}
+@keyframes b66-boot-failopen { to { opacity: 1; pointer-events: auto; } }
+@keyframes b66-boot-overlay-failopen { to { opacity: 0; pointer-events: none; } }
+@media print {
+  html.b66-shell-booting body > main.shell { opacity: 1 !important; pointer-events: auto; animation: none; }
+  html.b66-shell-booting body::before { display: none !important; }
+}
 /* B66 · Quote Beta — styles.css
    화면 스타일 + A4 인쇄(@page) 규격.
    인쇄는 visibility:hidden 방식이 아니라 display:none 으로 UI를 레이아웃에서

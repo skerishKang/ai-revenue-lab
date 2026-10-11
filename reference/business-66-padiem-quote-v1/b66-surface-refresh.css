@@ -719,3 +719,111 @@ body.b66-three-pane .b66-mic-button:disabled {
   cursor: not-allowed;
 }
 body.b66-three-pane .b66-mic-button svg { display: block; margin: auto; }
+
+
+/* B66 one-pane visual authority: the rail matches the light preview surface. */
+body.b66-three-pane .shell-rail {
+  position: relative;
+  background: #f8fbfd;
+  border: 1px solid #d7e3ec;
+  color: #25465b;
+  box-shadow: 0 14px 30px rgba(48,74,95,.09);
+  padding-top: 48px;
+}
+body.b66-three-pane .shell-rail-collapse {
+  position: absolute;
+  top: 9px;
+  right: 12px;
+  min-width: 62px;
+  min-height: 33px;
+  padding: 4px 9px;
+  border: 1px solid #cbdde9;
+  border-radius: 10px;
+  background: #fff;
+  color: #325973;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+body.b66-three-pane .shell-rail-collapse::before { content: "‹"; margin-right: 5px; font-size: 17px; vertical-align: -1px; }
+body.b66-three-pane .shell-rail-collapse:hover { background: #edf5fa; }
+body.b66-three-pane .shell-rail-section + .shell-rail-section { border-top-color: #d9e6ef; }
+body.b66-three-pane .shell-rail-feature-divider { background: #d9e6ef; }
+body.b66-three-pane .shell-rail-section .shell-picker-label { color: #426076; font-weight: 700; }
+body.b66-three-pane .shell-rail-section .shell-picker-label select { background: white; border-color: #ccdce8; color: #25465b; }
+body.b66-three-pane .shell-rail-item,
+body.b66-three-pane .shell-rail-section #shellManualQuote {
+  background: #f0f6fa;
+  border: 1px solid #d9e7f0;
+  color: #294e67;
+}
+body.b66-three-pane .shell-new-quote { background: #e3f0fa; border-color: #b8d4e5; }
+body.b66-three-pane .shell-rail-item:hover,
+body.b66-three-pane .shell-rail-section #shellManualQuote:hover { background: #e4eff7; border-color: #a8cbdf; }
+body.b66-three-pane .shell-rail-icon { color: #487a9b; }
+body.b66-three-pane .shell-rail-item small { color: #5c7486; }
+body.b66-three-pane .shell-account-row { border-top-color: #d4e2ec; }
+body.b66-three-pane .shell-account-row #padiemAccountButton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #eef5fa;
+  border: 1px solid #cfdeea;
+  color: #294e67;
+  min-height: 50px;
+  border-radius: 13px;
+  padding: 5px 10px;
+  font-weight: 750;
+}
+body.b66-three-pane .shell-account-row #padiemAccountButton::before {
+  content: "";
+  display: inline-block;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid #a7c8dc;
+  background: #dcecf6 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23294e67' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='3.5'/%3E%3Cpath d='M5 20c0-4 3-6 7-6s7 2 7 6'/%3E%3C/svg%3E") center / 19px 19px no-repeat;
+}
+body.b66-three-pane .shell-preview-pdf {
+  margin-left: auto;
+  border-color: #b9d2e1;
+  background: #e9f3fa;
+  color: #28536f;
+}
+body.b66-three-pane .shell-preview-pdf:hover { background: #d8ebf7; }
+body.b66-three-pane #padiemQuoteModelSelect,
+body.b66-three-pane #easyVoiceMic,
+body.b66-three-pane #easySend {
+  height: 42px;
+  min-height: 42px;
+  max-height: 42px;
+  box-sizing: border-box;
+  align-self: center;
+  border-radius: 12px;
+}
+body.b66-three-pane #padiemQuoteModelSelect { width: 159px; max-width: 159px; padding: 0 9px; }
+body.b66-three-pane #easyVoiceMic,
+body.b66-three-pane #easySend {
+  width: 42px;
+  min-width: 42px;
+  flex: 0 0 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (max-width: 700px) {
+  body.b66-three-pane #padiemQuoteModelSelect { width: 125px; max-width: 125px; }
+  body.b66-three-pane #easyVoiceMic,
+  body.b66-three-pane #easySend,
+  body.b66-three-pane #padiemQuoteModelSelect { height: 38px; min-height: 38px; max-height: 38px; }
+  body.b66-three-pane #easyVoiceMic,
+  body.b66-three-pane #easySend { width: 38px; min-width: 38px; flex-basis: 38px; }
+}
+@media screen and (max-width: 900px) {
+  body.b66-three-pane .shell-rail { position: fixed; }
+}
+@media print {
+  body.b66-three-pane .shell-rail-collapse,
+  body.b66-three-pane .shell-preview-pdf { display: none !important; }
+}
