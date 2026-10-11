@@ -86,6 +86,7 @@ from app.worker_config import (
 from app.worker_orchestration import build_orchestration_bridge
 from app.web_xlsx_p01_engine_client import build_web_xlsx_p01_engine_client
 from app.web_xlsx_quote_write_engine_client import build_web_quote_write_engine_client
+from app.claw_web_xlsx_quote_pdf import BrowserQuotePdfRenderer
 from kagent.claw_automation import ClawAutomationTickRuntime
 from kagent.claw_automation_trigger import ClawAutomationTriggerBoundary
 from workers import Request, Response, WorkerEntrypoint
@@ -933,6 +934,22 @@ class Default(WorkerEntrypoint):
                     and _worker_app.state.web_xlsx_quote_write_owner_decision_store
                         is not None
                 )
+                # Browser Rendering PDF is independent from WRITE ToolRuntime.
+                # Supported 1-sheet quote summary only; explicit operator opt-in.
+                _worker_app.state.web_xlsx_quote_pdf_renderer = None
+                _worker_app.state.web_xlsx_quote_pdf_enabled = False
+                if (_worker_app.state.web_xlsx_quote_write_enabled
+                        and binding_value(
+                            self.env, "PADIEM_WEB_XLSX_QUOTE_PDF_ENABLED"
+                        ) == "true"):
+                    try:
+                        browser = binding_value(self.env, "BROWSER")
+                        _worker_app.state.web_xlsx_quote_pdf_renderer = (
+                            BrowserQuotePdfRenderer(browser)
+                        )
+                        _worker_app.state.web_xlsx_quote_pdf_enabled = True
+                    except (TypeError, ValueError):
+                        _worker_app.state.web_xlsx_quote_pdf_renderer = None
                 _worker_app.state.claw_live_sse_enabled = (
                     settings.runtime_mode == "b14"
                     and getattr(self.env, "PADIEM_CLAW_P01_LIVE_SSE_ENABLED", None) == "true"
