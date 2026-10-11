@@ -17,7 +17,8 @@ The runtime is intentionally bounded:
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Callable
+import inspect
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from enum import Enum
@@ -368,7 +369,7 @@ class BoundedAgentRuntime:
         now: Callable[[], datetime] | None = None,
         id_factory: Callable[[], str] | None = None,
         approval_pause_seconds: int = 900,
-        run_guard: Callable[[], bool] | None = None,
+        run_guard: Callable[[], bool | Awaitable[bool]] | None = None,
     ) -> None:
         next_step = getattr(step_driver, "next_step", None)
         if not callable(next_step):
@@ -399,7 +400,7 @@ class BoundedAgentRuntime:
         self._run_guard = run_guard
         self._approval_pause_seconds = approval_pause_seconds
 
-    def _ensure_run_active(self) -> None:
+    async def _ensure_run_active(self) -> None:
         """Fail closed before model/tool dispatch when durable lease is revoked.
 
         Trusted hosts inject an owner/fingerprint-scoped ledger guard. This
@@ -409,6 +410,8 @@ class BoundedAgentRuntime:
             return
         try:
             active = self._run_guard()
+            if inspect.isawaitable(active):
+                active = await active
         except Exception:
             active = False
         if active is not True:
@@ -474,7 +477,7 @@ class BoundedAgentRuntime:
         tool_calls = len(tool_results)
 
         for step_index in range(request.initial_step_index, max_steps + 1):
-            self._ensure_run_active()
+            await self._ensure_run_active()
             remaining = self._remaining_wall_seconds(
                 started=started,
                 budget_seconds=budget.max_wall_seconds,
@@ -539,7 +542,7 @@ class BoundedAgentRuntime:
                 )
 
             if decision.kind is AgentStepKind.COMPLETE:
-                self._ensure_run_active()
+                await self._ensure_run_active()
                 return AgentRunResult(
                     run_id=run_id,
                     terminal_reason=AgentTerminalReason.COMPLETED,
@@ -575,7 +578,7 @@ class BoundedAgentRuntime:
                     tool_events=tool_events,
                 )
 
-            self._ensure_run_active()
+            await self._ensure_run_active()
             try:
                 tool_result = await asyncio.wait_for(
                     self._tool_runtime.execute(
@@ -665,7 +668,7 @@ class BoundedAgentRuntime:
                     tool_events=tool_events,
                 )
 
-            self._ensure_run_active()
+            await self._ensure_run_active()
             tool_results.append(tool_result)
             tool_events.append(tool_result.event)
             if self._remaining_wall_seconds(
