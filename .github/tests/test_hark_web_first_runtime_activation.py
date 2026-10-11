@@ -157,7 +157,12 @@ def test_workflow_has_protected_manual_only_mutation_and_rollback():
     assert "_version_module_manifest" in read_step
     assert "workers/workers/${WORKER}/versions/${active}" in verify_step
     assert "assert_exact_worker_code" in verify_step
-    assert "?include=modules" not in read_step + verify_step
+    # Cloudflare's versioned Worker API defaults to metadata-only. Explicit
+    # include=modules is required for the base64 source byte manifest.
+    # Check both preflight (before PATCH) and postflight (before success).
+    assert 'workers/workers/${worker}/versions/${active}?include=modules"' in read_step
+    assert 'workers/workers/${WORKER}/versions/${active}?include=modules"' in verify_step
+    assert (read_step + verify_step).count("?include=modules") == 2
 
     assert "PADIEM_WEB_XLSX_QUOTE_PDF_ENABLED" not in workflow  # flags owned by script
     # Previous production engine_read run 38118608721 failed at curl(2):
