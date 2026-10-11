@@ -52,11 +52,17 @@ class D1AgentRunLedger:
         return value
 
     async def _run(self, sql: str, *args: Any) -> bool:
-        result = await _await(self._db.prepare(sql).bind(*args).run())
+        try:
+            result = await _await(self._db.prepare(sql).bind(*args).run())
+        except Exception:
+            raise AgentDurableLeaseError("D1 Agent lease write unavailable") from None
         return _changes(result)
 
     async def _first(self, sql: str, *args: Any) -> dict[str, Any] | None:
-        value = await _await(self._db.prepare(sql).bind(*args).first())
+        try:
+            value = await _await(self._db.prepare(sql).bind(*args).first())
+        except Exception:
+            raise AgentDurableLeaseError("D1 Agent lease read unavailable") from None
         return dict(value) if isinstance(value, dict) else None
 
     async def start(
@@ -187,10 +193,11 @@ class D1AgentRunLedger:
 
     async def quarantine_expired(self) -> None:
         """Never auto-replay a run that might have reached a Tool/provider."""
-        await _await(self._db.prepare(
+        await self._run(
             f"UPDATE {_TABLE} SET status='needs_review',epoch=epoch+1 "
-            "WHERE status='running' AND lease_until<=?"
-        ).bind(self._now()).run())
+            "WHERE status='running' AND lease_until<=?",
+            self._now(),
+        )
 
     async def status(
         self, *, run_id: str, owner_scope: str, request_fingerprint: str,
