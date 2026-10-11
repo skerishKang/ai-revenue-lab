@@ -68,6 +68,12 @@ from .claw_web_xlsx_p01_owner_decision_routes import (
     WEB_XLSX_P01_OWNER_STATUS_PATH, web_xlsx_p01_owner_status,
     WEB_XLSX_P01_WORKCOPY_DOWNLOAD_PATH, web_xlsx_p01_workcopy_download,
 )
+from .claw_web_xlsx_quote_write_store import D1WebQuoteWriteReceiptStore
+from .claw_web_xlsx_quote_write_routes import (
+    WRITE_PATH, WRITE_STATUS_PATH, WRITE_DOWNLOAD_PATH,
+    web_xlsx_quote_edit_commit, web_xlsx_quote_edit_status,
+    web_xlsx_quote_edit_download,
+)
 from .claw_web_xlsx_quote_preview_routes import (
     WEB_XLSX_QUOTE_PREVIEW_PATH, web_xlsx_quote_edit_preview,
 )
@@ -367,6 +373,9 @@ def create_app(
         Route(WEB_XLSX_P01_OWNER_STATUS_PATH, web_xlsx_p01_owner_status, methods=["GET"]),
         Route(WEB_XLSX_P01_WORKCOPY_DOWNLOAD_PATH, web_xlsx_p01_workcopy_download, methods=["GET"]),
         Route(WEB_XLSX_QUOTE_PREVIEW_PATH, web_xlsx_quote_edit_preview, methods=["POST"]),
+        Route(WRITE_PATH, web_xlsx_quote_edit_commit, methods=["POST"]),
+        Route(WRITE_STATUS_PATH, web_xlsx_quote_edit_status, methods=["GET"]),
+        Route(WRITE_DOWNLOAD_PATH, web_xlsx_quote_edit_download, methods=["GET"]),
         Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"]),
         Route("/api/claw/manual-intake/execute", claw_manual_intake_execute, methods=["POST"]),
         # #3539: the generic Claw composer runs through the canonical #3382 P01
@@ -525,6 +534,13 @@ def create_app(
     # Explicit operator-only feature gate. The browser can never turn on
     # Engine-granted processing by posting its own approval status.
     app.state.web_xlsx_p01_workcopy_after_grant_enabled = False
+    app.state.web_xlsx_quote_write_store = (
+        D1WebQuoteWriteReceiptStore(d1_binding) if d1_binding is not None else None
+    )
+    # Separate Core/Engine EDIT/WRITE P01 is deliberately NOT active. A READ
+    # approval, preview hash or browser decision cannot enable actual writes.
+    app.state.web_xlsx_quote_write_enabled = False
+    app.state.web_xlsx_quote_write_client = None
     # Worker-native Claw P01/Engine adapter (#2229). Injected by the Worker
     # composition root from trusted bindings; None means unconfigured and the
     # execute route fails closed before any transport.

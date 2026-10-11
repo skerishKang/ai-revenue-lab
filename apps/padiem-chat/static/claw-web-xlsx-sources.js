@@ -187,10 +187,22 @@
     const editPreviewButton = root.createElement("button");
     editPreviewButton.type = "button";
     editPreviewButton.textContent = "수정 결과 미리보기 (저장되지 않음)";
+    const editCommitButton = root.createElement("button");
+    editCommitButton.type = "button";
+    editCommitButton.textContent = "별도 P01 쓰기 승인 후 XLSX 저장";
+    editCommitButton.hidden = true;
+    editCommitButton.disabled = true;
+    const editedLink = root.createElement("a");
+    editedLink.hidden = true;
+    editedLink.textContent = "수정된 XLSX 다운로드";
+    editedLink.setAttribute("download", "");
     const editPreviewResult = root.createElement("p");
     editPreviewResult.setAttribute("aria-live", "polite");
     editPreviewResult.textContent = "별도 P01 쓰기 승인과 PDF 변환은 아직 지원되지 않습니다.";
-    editPreviewPanel.append(schoolLabel, priceLabel, editPreviewButton, editPreviewResult);
+    editPreviewPanel.append(
+      schoolLabel, priceLabel, editPreviewButton, editCommitButton,
+      editedLink, editPreviewResult,
+    );
     approvalPanel?.appendChild(editPreviewPanel);
     if (![panel, input, upload, refresh, message, list, approvalPanel,
       approvalSelected, approvalStatus, approvalRefresh, requestStart, approve, deny].every(Boolean)) return null;
@@ -209,12 +221,48 @@
     let decisionAttempted = false;
     const attemptedRefs = new Set(); // never POST twice per selection in this page lifetime
     let loaded = false;
+    let trustedPreview = null;
+    const commitAttemptedRefs = new Set();
+    const hideRevision = () => {
+      trustedPreview = null;
+      editCommitButton.hidden = true;
+      editCommitButton.disabled = true;
+      editedLink.hidden = true;
+      editedLink.href = "";
+    };
+    schoolInput.addEventListener("input", hideRevision);
+    priceInput.addEventListener("input", hideRevision);
     const hideWorkcopy = () => {
       workcopyLink.hidden = true;
       workcopyLink.href = "";
       editPreviewPanel.hidden = true;
+      hideRevision();
       editPreviewResult.textContent = "수정 파일을 저장하지 않았습니다. 별도 P01 쓰기 승인이 필요합니다.";
     };
+    async function readRevisionStatus(selectionRef) {
+      try {
+        const receipt = await jsonRequest(
+          SELECTIONS + "/" + encodeURIComponent(selectionRef) + "/quote-edit/status",
+          {method: "GET", headers: {"Accept": "application/json"}},
+        );
+        if (selectedSelectionRef !== selectionRef || editPreviewPanel.hidden) return;
+        if (receipt.ok === true
+            && receipt.contract_version === "claw-web-xlsx-quote-write-status.v1"
+            && receipt.selection_ref === selectionRef
+            && receipt.state === "confirmed"
+            && receipt.revised_xlsx_created === true
+            && receipt.pdf_exported === false
+            && ID.test(receipt.revision_document_id)
+            && HASH.test(receipt.revision_sha256)) {
+          editedLink.href = SELECTIONS + "/" + encodeURIComponent(selectionRef)
+            + "/quote-edit/download";
+          editedLink.hidden = false;
+        }
+      } catch (_error) {
+        // No D1 receipt, unavailable gate or network fault is never evidence
+        // of an approved revision. Keep the revision hidden.
+      }
+    }
     const showWorkcopy = (selectionRef, copyId) => {
       if (!SELECTION_ID.test(selectionRef) || !ID.test(copyId)) return hideWorkcopy();
       // Selection-ref path, NOT an arbitrary R2 document_id URL.
@@ -222,8 +270,10 @@
         + "/workcopy/download";
       workcopyLink.hidden = false;
       editPreviewPanel.hidden = false;
+      void readRevisionStatus(selectionRef);
     };
     async function previewQuoteEdit() {
+      hideRevision();
       if (busy || workcopyLink.hidden || !selectedSelectionRef
           || editPreviewPanel.hidden) return;
       const ref = selectedSelectionRef;
@@ -253,6 +303,7 @@
             && data.revised_xlsx_created === false && data.pdf_exported === false
             && data.requires_independent_p01_write === true
             && data.pdf_unsupported === true
+            && typeof data.write_request_available === "boolean"
             && HASH.test(data.original_workcopy_sha256)
             && HASH.test(data.edit_sha256)
             && HASH.test(data.revision_preview_sha256)
@@ -262,6 +313,15 @@
             && Number.isSafeInteger(data.total_amount)
             && data.vat_amount + data.supply_amount === data.total_amount)) {
           throw new Error("수정 미리보기 응답을 검증할 수 없습니다.");
+        }
+        if (data.write_request_available === true
+            && !commitAttemptedRefs.has(ref)) {
+          trustedPreview = {
+            ref, editSHA: data.edit_sha256,
+            schoolName, supplyAmount,
+          };
+          editCommitButton.hidden = false;
+          editCommitButton.disabled = false;
         }
         editPreviewResult.textContent = "변경 예정: " + data.school_name
           + " · 공급가 " + data.supply_amount.toLocaleString("ko-KR")
@@ -278,6 +338,52 @@
       }
     }
     editPreviewButton.addEventListener("click", () => void previewQuoteEdit());
+    async function commitQuoteEdit() {
+      const plan = trustedPreview;
+      if (busy || !plan || plan.ref !== selectedSelectionRef
+          || editCommitButton.disabled || commitAttemptedRefs.has(plan.ref)
+          || schoolInput.value.trim() !== plan.schoolName
+          || Number(priceInput.value) !== plan.supplyAmount) return;
+      // One single explicit user click. Unknown network outcomes are never
+      // retried, since the Engine may already have consumed the WRITE P01.
+      commitAttemptedRefs.add(plan.ref);
+      hideRevision();
+      setBusy(true);
+      editPreviewResult.textContent = "별도 P01 쓰기 승인과 수정본 저장 결과를 확인하고 있습니다.";
+      try {
+        const result = await jsonRequest(
+          SELECTIONS + "/" + encodeURIComponent(plan.ref) + "/quote-edit/commit",
+          { method: "POST", headers: {
+            "Content-Type": "application/json", "Accept": "application/json",
+          }, body: JSON.stringify({
+            school_name: plan.schoolName, supply_amount: plan.supplyAmount,
+            edit_sha256: plan.editSHA,
+          }) },
+        );
+        if (plan.ref !== selectedSelectionRef || editPreviewPanel.hidden) return;
+        if (!(result.ok === true && result.state === "confirmed"
+            && result.contract_version === "claw-web-xlsx-quote-write.v1"
+            && result.selection_ref === plan.ref
+            && result.revised_xlsx_created === true && result.pdf_exported === false
+            && result.original_overwritten === false
+            && HASH.test(result.edit_sha256) && result.edit_sha256 === plan.editSHA
+            && HASH.test(result.revision_sha256)
+            && ID.test(result.revision_document_id))) {
+          throw new Error("수정본 저장 결과를 확인할 수 없습니다.");
+        }
+        editedLink.href = SELECTIONS + "/" + encodeURIComponent(plan.ref)
+          + "/quote-edit/download";
+        editedLink.hidden = false;
+        editPreviewResult.textContent = "별도 쓰기 승인이 확인되어 수정된 XLSX를 저장했습니다. PDF는 아직 생성되지 않았습니다.";
+      } catch (_error) {
+        if (plan.ref === selectedSelectionRef) {
+          editPreviewResult.textContent = "쓰기 승인 또는 저장 결과를 확정할 수 없습니다. 자동 재시도하지 마세요. 상태 확인이 필요합니다.";
+        }
+      } finally {
+        setBusy(false);
+      }
+    }
+    editCommitButton.addEventListener("click", () => void commitQuoteEdit());
     const report = (value) => { message.textContent = value; };
     const setBusy = (value) => {
       busy = value;
@@ -289,6 +395,7 @@
       approve.disabled = value || !ownerDecisionReady || decisionAttempted;
       deny.disabled = value || !ownerDecisionReady || decisionAttempted;
       editPreviewButton.disabled = value || editPreviewPanel.hidden;
+      editCommitButton.disabled = value || editCommitButton.hidden;
       panel.setAttribute("aria-busy", value ? "true" : "false");
     };
 

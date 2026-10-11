@@ -90,5 +90,14 @@ async def web_xlsx_quote_edit_preview(request: Request) -> Response:
         "pdf_exported": False,
         "pdf_unsupported": True,
         "requires_independent_p01_write": True,
+        "write_request_available": (
+            getattr(request.app.state, "web_xlsx_quote_write_enabled", False)
+            is True
+            and callable(getattr(
+                getattr(request.app.state, "web_xlsx_quote_write_client", None),
+                "confirm_exact_write", None))
+            and getattr(request.app.state, "web_xlsx_quote_write_store", None)
+            is not None
+        ),
     }, headers={**_NO_STORE, "Vary": "Cookie",
                 "Cross-Origin-Resource-Policy": "same-origin"})
