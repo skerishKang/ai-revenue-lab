@@ -342,6 +342,14 @@ async def pilot_auto_stream_preview(request: Request):
         except (ValueError, UnicodeDecodeError):
             return _invalid_json_response(gateway_request_id)
 
+        if isinstance(raw, dict) and raw.get("model") == "b14/auto":
+            from app.pilot.platform_secrets import ensure_route_secrets
+            options = raw.get("business14")
+            opts = options if isinstance(options, dict) else {}
+            await ensure_route_secrets(
+                "b14/auto",
+                allow_external_fallback=opts.get("allow_external_fallback", True),
+            )
         body, decision = _validate_auto_preview_body(raw)
 
         transport = getattr(request.app.state, "stream_transport", None)

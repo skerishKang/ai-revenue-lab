@@ -288,6 +288,10 @@ async def pilot_stream_preview(request: Request):
         except (ValueError, UnicodeDecodeError):
             return _invalid_json_response(request_id)
 
+        # Validate the exact manual ID before synchronous route admission.
+        if isinstance(raw, dict) and isinstance(raw.get("model"), str):
+            from app.pilot.platform_secrets import ensure_route_secrets
+            await ensure_route_secrets(raw["model"])
         body, decision = _validate_preview_body(raw)
 
         # Tests may inject MockTransport through app.state. Production has no
