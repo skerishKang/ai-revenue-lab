@@ -4361,6 +4361,25 @@
   }
 
   function renderClawRunCard(run) {
+    // L6: the meta line printed the raw ISO-8601 UTC instant the server stored
+    // ("2026-09-19T01:00:00Z") straight at the reader. Show the same instant in
+    // the page's own language and zone instead, and keep the exact stored value
+    // in the element's title so nothing is hidden. A value the browser cannot
+    // parse is shown exactly as the server sent it rather than as a guess.
+    const instantLanguage = typeof document?.documentElement?.lang === "string"
+      && document.documentElement.lang.toLowerCase().startsWith("en") ? "en" : "ko";
+    const readableClawInstant = (value) => {
+      if (typeof value !== "string" || !value) return "";
+      const parsed = new Date(value);
+      if (Number.isNaN(parsed.getTime())) return value;
+      try {
+        return new Intl.DateTimeFormat(instantLanguage, {
+          dateStyle: "medium", timeStyle: "short",
+        }).format(parsed);
+      } catch (_) {
+        return value;
+      }
+    };
     // L2 result-file card: the kind shown on a completed run's file is derived
     // ONLY from the server-verified media_type the owner-scoped run projection
     // already carries. A filename extension is never used to invent a type, and
@@ -4403,10 +4422,14 @@
 
     const meta = document.createElement("div");
     meta.className = "claw-run-card-meta";
-    meta.textContent = [run.channel, run.action, run.created_at]
+    const createdAt = typeof run.created_at === "string" ? run.created_at : "";
+    meta.textContent = [run.channel, run.action, readableClawInstant(createdAt)]
       .map((value) => (typeof value === "string" ? value : ""))
       .filter(Boolean)
       .join(" · ");
+    // The exact instant the server stored stays available even though the
+    // visible text is localized, so nothing about the record is lost.
+    if (createdAt) meta.setAttribute("title", createdAt);
 
     const summary = document.createElement("p");
     summary.className = "claw-run-card-summary";
