@@ -1,10 +1,22 @@
 # B66 원본 견적서 보존·편집형 출력 정책 (PDF / XLSX / HWPX)
 
-- 상태: **OWNER 제품 방향 기록 / 향후 로드맵** — 구현·운영 지원 완료 아님
+- 상태: **정책 수립 완료 / 구현·운영 지원은 향후 로드맵** — 문서 승인과 고객 기능 출시는 별개
 - 결정일: 2026-10-10 KST
-- 제품 전략 오픈 이슈: [#4106](https://github.com/skerishKang/ai-revenue-lab/issues/4106)
+- 제품 정책 완료 이슈: [#4106](https://github.com/skerishKang/ai-revenue-lab/issues/4106) — 정책 범위 종료, 실제 편집형 파일 기능 완료 아님
 - 제품 상위 이슈: [#3180](https://github.com/skerishKang/ai-revenue-lab/issues/3180)
 - 현재 CGI: 기존 **Sol 6.1 단일 템플릿 정책 불변**, #3839 및 #4076 인수 작업 별도
+
+## 정책 마감 및 구현 책임 분리 — 2026-10-11 KST
+
+[#4106](https://github.com/skerishKang/ai-revenue-lab/issues/4106)은 [PR #4108](https://github.com/skerishKang/ai-revenue-lab/pull/4108)으로 제품 계약·출력 형식별 충실도·인증·허용 오차·형식 지원 정책을 정했으므로 **정책 문서화 완료로 마감**한다. 이는 **고객 원본 보존형 편집 XLSX/HWPX 기능 출시를 의미하지 않는다**.
+
+- [#3180](https://github.com/skerishKang/ai-revenue-lab/issues/3180#issuecomment-6104367211) (OPEN): 향후 **고객 원본 구조를 보존한 XLSX 변형/편집 가능 결과 + 동일 견적 사실의 PDF 생성 및 웹 출력** 구현 후속 백로그 소유. 과거 [#3496](https://github.com/skerishKang/ai-revenue-lab/issues/3496) 완료된 **일반 native XLSX exporter**를 재사용·감사하되 원본 충실도 인증을 완료한 것으로 혼동하지 않는다.
+- [#3884](https://github.com/skerishKang/ai-revenue-lab/issues/3884#issuecomment-6104368543) (OPEN): 인증된 고객 원본의 실제 XLSX 업로드, SHA-256/R2 바이트 불변·권한 격리·재다운로드와 실제 운영 검증. 기존 Draft #3925 보안 게이트 미해결 시 Ready/병합·배포 금지.
+- [#3595](https://github.com/skerishKang/ai-revenue-lab/issues/3595#issuecomment-6104369488) (OPEN): 출력 형식별 원본 재현, PDF·XLSX 사실/시각 충실도, 실제 Office 열기·수정·저장·재열기와 오차 승인/인증. 최초 분석은 #3542, 사용자 등록 UX는 #3186에 남는다.
+- **HWPX 미래 형식:** 현재 XLSX 등록만 사전검사 허용 (#3586); HWPX 입력·편집형 출력은 출시·지원하지 않는다. 오너가 별도 지원 확대를 결정한 후 형식별 구현 및 한컴 열기/재편집/PDF 충실도 인증이 필요하다. #3708 외부 컴파일러 및 #3839/#4117 Sol 4~100품목은 이번 정책 마감으로 재개하지 않는다.
+
+**수락 상태:** `POLICY_DOC=COMPLETE` / `LIVE_SOURCE_PRESERVING_XLSX=NOT_VERIFIED` / `LIVE_EDITABLE_HWPX=NOT_SUPPORTED` / `SOURCE_CUSTODY_E2E=OPEN_3884` / `OUTPUT_CERTIFICATION=OPEN_3595` / `NEW_PRODUCTION_MUTATIONS=0`.
+
 
 ## 1. 제품이 지향하는 고객 경험
 
