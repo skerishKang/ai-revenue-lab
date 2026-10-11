@@ -30,7 +30,10 @@ from app.agent_preview_authority import (
 from app.agent_skill_service import (
     AGENT_SKILL_CANCEL_PATH,
     AGENT_SKILL_RESUME_PATH,
+    AGENT_SKILL_RUN_CANCEL_PATH,
     AGENT_SKILL_RUN_PATH,
+    AGENT_SKILL_RUN_RECOVERY_PATH,
+    AGENT_SKILL_RUN_STATUS_PATH,
     AgentSkillEngineService,
 )
 from app.capability_manifest import set_posture_overrides
@@ -528,6 +531,12 @@ class Default(WorkerEntrypoint):
             AGENT_SKILL_RUN_PATH,
             AGENT_SKILL_RESUME_PATH,
             AGENT_SKILL_CANCEL_PATH,
+            # #4194: owner-scoped control of an already-issued run and the
+            # deployment-gated expired-lease sweep. Same authenticated internal
+            # caller boundary; the routes fail closed without the durable gate.
+            AGENT_SKILL_RUN_STATUS_PATH,
+            AGENT_SKILL_RUN_CANCEL_PATH,
+            AGENT_SKILL_RUN_RECOVERY_PATH,
         }
         tool_paths = {
             TOOL_EXECUTE_PATH,

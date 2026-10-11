@@ -14,7 +14,10 @@ import re
 from .agent_skill_service import (
     AGENT_SKILL_CANCEL_PATH,
     AGENT_SKILL_RESUME_PATH,
+    AGENT_SKILL_RUN_CANCEL_PATH,
     AGENT_SKILL_RUN_PATH,
+    AGENT_SKILL_RUN_RECOVERY_PATH,
+    AGENT_SKILL_RUN_STATUS_PATH,
 )
 from .attachment_admission_service import ATTACHMENT_ADMISSION_PATH
 from .document_admission_service import DOCUMENT_ADMISSION_PATH
@@ -151,6 +154,13 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineEndpointContract(AGENT_SKILL_RUN_PATH, "POST", "application/json"),
             EngineEndpointContract(AGENT_SKILL_RESUME_PATH, "POST", "application/json"),
             EngineEndpointContract(AGENT_SKILL_CANCEL_PATH, "POST", "application/json"),
+            # #4194 A: owner-scoped control of an already-issued run. The caller
+            # names a server-issued run id; owner scope comes from the trusted
+            # binding. #4194 B declares the deployment-gated expired-lease sweep
+            # (no cron/scheduled trigger is activated by this declaration).
+            EngineEndpointContract(AGENT_SKILL_RUN_STATUS_PATH, "POST", "application/json"),
+            EngineEndpointContract(AGENT_SKILL_RUN_CANCEL_PATH, "POST", "application/json"),
+            EngineEndpointContract(AGENT_SKILL_RUN_RECOVERY_PATH, "POST", "application/json"),
             EngineEndpointContract(TOOL_EXECUTE_PATH, "POST", "application/json"),
             EngineEndpointContract(TOOL_RESUME_PATH, "POST", "application/json"),
             EngineEndpointContract(TOOL_CANCEL_PATH, "POST", "application/json"),
@@ -215,6 +225,10 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineFeatureContract("tool_runtime_projection", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("skill_runtime_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("agent_runtime_projection", EngineFeatureState.AVAILABLE),
+            # #4194: status/cancel of an issued run and the gated expired-lease
+            # sweep are source-complete. They fail closed 503 without the D1
+            # durable ledger and (for recovery) the explicit deployment gate.
+            EngineFeatureContract("agent_run_control", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("memory_rag_projection", EngineFeatureState.DEFERRED),
             # E5C (#2728): the admission route is source-complete. It remains
             # DEFERRED until the separately gated Production image-store and

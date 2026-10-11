@@ -41,7 +41,10 @@ from padiem_ai_core import (
 from app.agent_skill_service import (
     AGENT_SKILL_CANCEL_PATH,
     AGENT_SKILL_RESUME_PATH,
+    AGENT_SKILL_RUN_CANCEL_PATH,
     AGENT_SKILL_RUN_PATH,
+    AGENT_SKILL_RUN_RECOVERY_PATH,
+    AGENT_SKILL_RUN_STATUS_PATH,
     AgentSkillEngineService,
 )
 from app.capability_manifest import (
@@ -350,6 +353,9 @@ def test_manifest_routes_match_route_constants() -> None:
             AGENT_SKILL_RUN_PATH,
             AGENT_SKILL_RESUME_PATH,
             AGENT_SKILL_CANCEL_PATH,
+            AGENT_SKILL_RUN_STATUS_PATH,
+            AGENT_SKILL_RUN_CANCEL_PATH,
+            AGENT_SKILL_RUN_RECOVERY_PATH,
         ),
         "file_document_multimodal": (MULTIMODAL_EXECUTE_PATH, DOCUMENT_CONTEXT_PATH),
         "tenant_entitlement_usage_admission": (),

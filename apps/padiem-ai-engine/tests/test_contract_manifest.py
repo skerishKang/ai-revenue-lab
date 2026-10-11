@@ -3,7 +3,10 @@ import pytest
 from app.agent_skill_service import (
     AGENT_SKILL_CANCEL_PATH,
     AGENT_SKILL_RESUME_PATH,
+    AGENT_SKILL_RUN_CANCEL_PATH,
     AGENT_SKILL_RUN_PATH,
+    AGENT_SKILL_RUN_RECOVERY_PATH,
+    AGENT_SKILL_RUN_STATUS_PATH,
 )
 from app.attachment_admission_service import ATTACHMENT_ADMISSION_PATH
 from app.authority_diagnostic import AUTHORITY_DIAGNOSTIC_PATH
@@ -53,6 +56,9 @@ def test_manifest_matches_existing_internal_v1_routes() -> None:
         ("POST", AGENT_SKILL_RUN_PATH),
         ("POST", AGENT_SKILL_RESUME_PATH),
         ("POST", AGENT_SKILL_CANCEL_PATH),
+        ("POST", AGENT_SKILL_RUN_STATUS_PATH),
+        ("POST", AGENT_SKILL_RUN_CANCEL_PATH),
+        ("POST", AGENT_SKILL_RUN_RECOVERY_PATH),
         ("POST", TOOL_EXECUTE_PATH),
         ("POST", TOOL_RESUME_PATH),
         ("POST", TOOL_CANCEL_PATH),
@@ -132,9 +138,15 @@ def test_agent_skill_routes_are_declared_but_runtime_features_stay_deferred() ->
         AGENT_SKILL_RUN_PATH,
         AGENT_SKILL_RESUME_PATH,
         AGENT_SKILL_CANCEL_PATH,
+        AGENT_SKILL_RUN_STATUS_PATH,
+        AGENT_SKILL_RUN_CANCEL_PATH,
+        AGENT_SKILL_RUN_RECOVERY_PATH,
     ):
         assert ("POST", path) in endpoints
     assert manifest.feature_state("agent_runtime_projection") is EngineFeatureState.AVAILABLE
+    # #4194: issued-run control is declared and source-complete; without the D1
+    # durable ledger and the explicit recovery gate both routes fail closed.
+    assert manifest.feature_state("agent_run_control") is EngineFeatureState.AVAILABLE
     assert manifest.feature_state("skill_runtime_projection") is EngineFeatureState.DEFERRED
     assert manifest.feature_state("approval_continuation") is EngineFeatureState.DEFERRED
 
