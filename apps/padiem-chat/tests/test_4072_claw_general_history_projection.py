@@ -218,3 +218,110 @@ def test_explicit_foreign_or_malformed_conversation_denied_before_quota_p01():
     assert foreign.json()["error"]["code"] == "conversation_not_found"
     adapter.execute.assert_not_called()
     assert store.calls == []
+
+
+
+# #3936 Tabbit regression: a completed generic Claw reply becomes a real owner
+# conversation. Continuation MUST use server-stored turns, not forged browser
+# history, and saving may never turn a completed P01 into a retryable failure.
+
+class _ClawThreadStore(OwnerStore):
+    THREAD_ID = "chat_" + "b" * 32
+
+    def __init__(self, *, fail_write=False):
+        super().__init__()
+        self.fail_write = fail_write
+        self.saved = {}
+
+    async def append_exchange(self, user_id, conversation_id, user_text, answer, project_id=None):
+        if self.fail_write:
+            raise RuntimeError("synthetic history store unavailable")
+        assert user_id == base.SIGNED_IN_USER_ID
+        cid = conversation_id or self.THREAD_ID
+        assert cid == self.THREAD_ID
+        if cid not in self.saved:
+            self.saved[cid] = {"id": cid, "project_id": project_id, "messages": []}
+        thread = self.saved[cid]
+        thread["messages"].extend([
+            {"role": "user", "content": user_text},
+            {"role": "assistant", "content": answer},
+        ])
+        return cid
+
+    async def get_conversation(self, user_id, conversation_id):
+        if user_id != base.SIGNED_IN_USER_ID:
+            return None
+        return self.saved.get(conversation_id)
+
+
+def test_general_signup_claw_saved_thread_sse_done_id_is_real():
+    store = _ClawThreadStore()
+    adapter = base._make_adapter(outcome=base._make_outcome(answer="verified test answer"))
+    with owner_client(store, adapter) as client:
+        result = client.post(base.GENERAL_ROUTE_PATH, json=base._payload())
+        owned = client.get("/api/conversations/" + store.THREAD_ID)
+    assert result.status_code == 200
+    assert '"conversation_id":"' + store.THREAD_ID + '"' in result.text
+    assert owned.status_code == 200
+    assert len(owned.json()["conversation"]["messages"]) == 2
+    assert store.saved[store.THREAD_ID]["messages"][1]["content"] == "verified test answer"
+    adapter.execute.assert_awaited_once()
+
+
+def test_same_owner_claw_followup_uses_persisted_context_and_same_thread():
+    store = _ClawThreadStore()
+    store.saved[store.THREAD_ID] = {
+        "id": store.THREAD_ID, "project_id": None,
+        "messages": [
+            {"role": "user", "content": "previous-owner-unique-context"},
+            {"role": "assistant", "content": "previous-verified-answer"},
+        ],
+    }
+    adapter = base._make_adapter(outcome=base._make_outcome(answer="second answer"))
+    bridge = SimpleNamespace(auth_session=SimpleNamespace(
+        subject=SimpleNamespace(subject_id="owner-subject"), tenant_id="tenant_claw_test",
+    ))
+    adapter.subject_identity_lane = True
+    with patch(
+        "app.b54_canonical_session.resolve_current_b54_canonical_session",
+        new_callable=AsyncMock, return_value=bridge,
+    ):
+        with owner_client(store, adapter) as client:
+            result = client.post(
+                base.GENERAL_ROUTE_PATH,
+                json=base._payload(
+                    conversation_id=store.THREAD_ID,
+                    messages=[{"role": "user", "content": "current-followup-question"}],
+                ),
+            )
+    assert result.status_code == 200, result.text
+    assert '"conversation_id":"' + store.THREAD_ID + '"' in result.text
+    run = adapter.execute.await_args.args[0]
+    assert "previous-owner-unique-context" in run.intent.task
+    assert "previous-verified-answer" in run.intent.task
+    assert "current-followup-question" in run.intent.task
+    assert len(store.saved[store.THREAD_ID]["messages"]) == 4
+    assert store.saved[store.THREAD_ID]["messages"][-2]["content"] == "current-followup-question"
+    assert store.calls[0]["conversation_id"] == store.THREAD_ID
+    assert store.calls[0]["workspace_id"] == "tenant_claw_test"
+
+
+def test_history_write_failure_preserves_answer_without_forged_thread_receipt():
+    store = _ClawThreadStore(fail_write=True)
+    adapter = base._make_adapter(outcome=base._make_outcome(answer="still-completed"))
+    with owner_client(store, adapter) as client:
+        result = client.post(base.GENERAL_ROUTE_PATH, json=base._payload())
+    assert result.status_code == 200
+    assert "still-completed" in result.text
+    assert '"conversation_id"' not in result.text
+    adapter.execute.assert_awaited_once()
+
+
+def test_browser_history_bridge_requires_owner_run_link_not_title():
+    from pathlib import Path
+    app = (Path(__file__).resolve().parents[1] / "static/app.js").read_text(encoding="utf-8")
+    assert "const clawConversationIds = new Set();" in app
+    assert 'run?.action === "general"' in app
+    assert "run?.session?.conversation_id" in app
+    assert "openClawWorkspace();" in app
+    assert "showConversation({ preserveClaw: isVerifiedClawThread });" in app
