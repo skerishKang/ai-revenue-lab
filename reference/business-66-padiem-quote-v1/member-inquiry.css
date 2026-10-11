@@ -12,7 +12,7 @@
 .b66-inquiry-card button[type=submit] {margin-top:15px;background:#264d77;color:white;border:0;}
 #b66InquiryStatus {min-height:1.5em;white-space:pre-wrap;overflow-wrap:anywhere;}
 
-@media (max-width: 680px) {
+@media (max-width: 900px) {
   /* Keep the existing mobile chat composer height: do not make the
      topbar action row wrap after adding the explicit support button. */
   .topbar { position: relative; }
