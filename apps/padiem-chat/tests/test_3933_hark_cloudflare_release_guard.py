@@ -148,3 +148,129 @@ def test_live_resource_identifiers_cannot_be_rebound_even_with_same_name_type():
     assert any("REBIND PADIEM_WORKSPACE_FILES" in x for x in
         guard.audit_resource_identity(live_b62, live_engine,
                                       wrong_r2, updated_engine))
+
+
+def test_hark_release_blocks_unapproved_additions_even_when_expected_two_present():
+    old_b62 = {"ASSETS": "assets", "PADIEM_CHAT_DB": "d1"}
+    old_engine = {"ENGINE_CONTINUATION": "d1", "CP": "service"}
+    next_b62 = {**old_b62, "BROWSER": "browser"}
+    next_engine = {**old_engine, "WEB_XLSX_PRIVATE_B62_D1": "d1"}
+    assert guard.audit_replacement(old_b62, old_engine, next_b62, next_engine) == []
+
+    wrong_b62 = {**next_b62, "OTHER_TOKEN": "secret_text"}
+    errors = guard.audit_replacement(old_b62, old_engine, wrong_b62, next_engine)
+    assert any("padiem-chat would ADD unapproved" in item
+               and "OTHER_TOKEN" in item for item in errors)
+
+    wrong_engine = {**next_engine, "UNREVIEWED_SERVICE": "service"}
+    errors = guard.audit_replacement(old_b62, old_engine, next_b62, wrong_engine)
+    assert any("padiem-ai-engine would ADD unapproved" in item
+               and "UNREVIEWED_SERVICE" in item for item in errors)
+
+    # Already commissioned expected names are valid; adding an unrelated
+    # authority is not excused by an otherwise identical prior binding.
+    assert guard.audit_replacement(
+        next_b62, next_engine, next_b62,
+        {**next_engine, "UNREVIEWED": "r2_bucket"},
+    )
+
+
+def _version_export(version_id: str, bindings: list[dict]) -> dict:
+    return {
+        "id": version_id,
+        "resources": {
+            "script": {"etag": "script-proof"},
+            "script_runtime": {"compatibility_date": "2026-09-01"},
+            "bindings": bindings,
+        },
+    }
+
+
+def test_immutable_cloudflare_version_shape_required(tmp_path):
+    p = tmp_path / "version.json"
+    valid = _version_export(
+        "50cd1dc1-c0da-4963-abbe-b235a950c9b1",
+        [{"name": "PADIEM_CHAT_DB", "type": "d1"}],
+    )
+    p.write_text(json.dumps(valid), encoding="utf-8")
+    assert guard.read_immutable_version_proof(p) == valid["id"]
+    for bad in (
+        {"resources": valid["resources"]},
+        {"id": "fake", "resources": valid["resources"]},
+        {**valid, "resources": {"bindings": valid["resources"]["bindings"]}},
+        {**valid, "resources": {**valid["resources"], "script": {}}},
+        {**valid, "resources": {**valid["resources"], "bindings": {}}},
+    ):
+        p.write_text(json.dumps(bad), encoding="utf-8")
+        with pytest.raises(ValueError, match="immutable Cloudflare"):
+            guard.read_immutable_version_proof(p)
+
+
+def test_release_cli_only_accepts_distinct_real_shaped_candidates(tmp_path, capsys):
+    ids = {
+        "b62_old": "50cd1dc1-c0da-4963-abbe-b235a950c9b1",
+        "engine_old": "3c4cde93-195e-4e3d-a857-b2bb0575f9fd",
+        "b62_new": "5ac1c513-f3e8-43e0-aea6-95cb66889aad",
+        "engine_new": "28c53e10-b8cc-4bad-8107-469132a284e4",
+    }
+    chat_old = [
+        {"name": "PADIEM_CHAT_DB", "type": "d1",
+         "database_id": guard.ENGINE_PRIVATE_DB_ID},
+        {"name": "ASSETS", "type": "assets"},
+        {"name": "PADIEM_CHAT_SESSION_SECRET", "type": "secret_text"},
+    ]
+    engine_old = [
+        {"name": "ENGINE_CONTINUATION", "type": "d1",
+         "database_id": "6b77ad02-bc27-488f-bb97-6325f6750cba"},
+        {"name": "CP", "type": "service", "service": "padiem-control-plane-identity"},
+    ]
+    payloads = {
+        "b62_old": chat_old,
+        "engine_old": engine_old,
+        "b62_new": [*chat_old, {"name": "BROWSER", "type": "browser"}],
+        "engine_new": [*engine_old, {
+            "name": "WEB_XLSX_PRIVATE_B62_D1", "type": "d1",
+            "database_id": guard.ENGINE_PRIVATE_DB_ID,
+        }],
+    }
+    paths = {}
+    for key, bindings in payloads.items():
+        p = tmp_path / (key + ".json")
+        p.write_text(json.dumps(_version_export(ids[key], bindings)), encoding="utf-8")
+        paths[key] = p
+
+    args = [
+        "--chat-toml", str(CHAT), "--engine-toml", str(ENGINE),
+        "--live-b62-version", str(paths["b62_old"]),
+        "--live-engine-version", str(paths["engine_old"]),
+        "--candidate-b62-version", str(paths["b62_new"]),
+        "--candidate-engine-version", str(paths["engine_new"]),
+    ]
+    assert guard.main(args) == 0
+    assert "IMMUTABLE_VERSION_SHAPE_AND_DISTINCT_ID=PASS" in capsys.readouterr().out
+
+    # A fake version that simply reuses the served version is NOT a candidate.
+    ids["b62_new"] = ids["b62_old"]
+    paths["b62_new"].write_text(
+        json.dumps(_version_export(ids["b62_new"], payloads["b62_new"])),
+        encoding="utf-8",
+    )
+    assert guard.main(args) == 2
+    assert "distinct immutable" in capsys.readouterr().out
+
+    # Even with both exact desired bindings, an unrelated added service
+    # must never be approved for Hark release.
+    ids["b62_new"] = "5ac1c513-f3e8-43e0-aea6-95cb66889aad"
+    extra = payloads["engine_new"] + [
+        {"name": "FOREIGN", "type": "service", "service": "other-worker"},
+    ]
+    paths["b62_new"].write_text(
+        json.dumps(_version_export(ids["b62_new"], payloads["b62_new"])),
+        encoding="utf-8",
+    )
+    paths["engine_new"].write_text(
+        json.dumps(_version_export(ids["engine_new"], extra)),
+        encoding="utf-8",
+    )
+    assert guard.main(args) == 2
+    assert "ADD unapproved bindings" in capsys.readouterr().out
