@@ -1,0 +1,221 @@
+name: Hark WEB-FIRST Runtime Activation
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hark-web-first-runtime-activation.yml"
+      - ".github/scripts/hark_web_first_runtime_activation.py"
+      - ".github/tests/test_hark_web_first_runtime_activation.py"
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: "Enable only one owner-controlled Hark stage"
+        type: choice
+        required: true
+        options: [engine_read, chat_read, engine_write, chat_write, chat_pdf]
+      target_sha:
+        description: "Exact current main SHA"
+        type: string
+        required: true
+      confirmation:
+        description: "Type CONFIRM_HARK_WEB_FIRST_<UPPERCASE_STAGE>"
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hark-web-first-runtime-production
+  cancel-in-progress: false
+
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify explicit Hark stage guard (offline)
+        run: |
+          python -m pip install --quiet pytest
+          python -m pytest .github/tests/test_hark_web_first_runtime_activation.py -q
+          echo 'HARK_ACTIVATION_SOURCE_CONTRACT=PASS'
+          echo 'CLOUDFLARE_MUTATIONS=0'
+
+  activate:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    needs: contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    environment: production
+    env:
+      CLOUD_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUD_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      TARGET_SHA: ${{ inputs.target_sha }}
+      STAGE: ${{ inputs.stage }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Require exact protected main and exact stage confirmation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ github.ref }}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags origin main --quiet
+          test "$(git rev-parse FETCH_HEAD)" = "${TARGET_SHA}"
+          case "${STAGE}" in
+            engine_read|chat_read|engine_write|chat_write|chat_pdf) ;;
+            *) echo 'Unapproved stage' >&2; exit 1;;
+          esac
+          upper="$(printf '%s' "${STAGE}" | tr '[:lower:]' '[:upper:]')"
+          test "${CONFIRMATION}" = "CONFIRM_HARK_WEB_FIRST_${upper}"
+          if [[ "${STAGE}" == engine_* ]]; then
+            echo 'WORKER=padiem-ai-engine' >> "$GITHUB_ENV"
+            echo 'PEER_WORKER=padiem-chat' >> "$GITHUB_ENV"
+          else
+            echo 'WORKER=padiem-chat' >> "$GITHUB_ENV"
+            echo 'PEER_WORKER=padiem-ai-engine' >> "$GITHUB_ENV"
+          fi
+          echo 'EXACT_MAIN_AND_STAGE_AUTHORITY=PASS'
+          echo 'CLOUDFLARE_MUTATIONS=0'
+
+      - name: Read actual 100-percent served target and peer authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUD_API_TOKEN}"
+          test -n "${CLOUD_ACCOUNT_ID}"
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUD_ACCOUNT_ID}/workers/scripts"
+          auth=(-H "Authorization: Bearer ${CLOUD_API_TOKEN}")
+          for item in target peer; do
+            if [ "$item" = target ]; then worker="${WORKER}"; else worker="${PEER_WORKER}"; fi
+            base="${RUNNER_TEMP}/hark-${item}"
+            curl -fsS --retry 2 --retry-delay 2 "${auth[@]}" "${api}/${worker}/deployments" -o "${base}-deployments.json"
+            active="$(python .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${base}-deployments.json")"
+            test -n "${active}"
+            curl -fsS --retry 2 --retry-delay 2 "${auth[@]}" "${api}/${worker}/versions?page=1&per_page=1" -o "${base}-latest.json"
+            latest="$(jq -er '.result.items[0].id' "${base}-latest.json")"
+            test "${active}" = "${latest}"
+            curl -fsS --retry 2 --retry-delay 2 "${auth[@]}" "${api}/${worker}/versions/${active}" -o "${base}-version.json"
+            curl -fsS --retry 2 --retry-delay 2 "${auth[@]}" "${api}/${worker}/settings" -o "${base}-settings.json"
+            python .github/scripts/b62_binding_state_guard.py --before "${base}-version.json" --after "${base}-settings.json"
+            if [ "$item" = target ]; then
+              echo "HARK_ROLLBACK_VERSION_ID=${active}" >> "$GITHUB_ENV"
+            fi
+          done
+          echo 'HARK_SERVED_TARGET_AND_PEER=PASS'
+          echo 'CLOUDFLARE_MUTATIONS=0'
+
+      - name: Build additive exact-only patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/hark_web_first_runtime_activation.py plan \
+            --stage "${STAGE}" \
+            --before "${RUNNER_TEMP}/hark-target-settings.json" \
+            --peer "${RUNNER_TEMP}/hark-peer-settings.json" \
+            --output "${RUNNER_TEMP}/hark-stage-patch.json"
+          echo 'HARK_ONLY_OWNER_APPROVED_NEW_FLAGS=PASS'
+          echo 'CLOUDFLARE_MUTATIONS=0'
+
+      - name: Persist named pre-mutation rollback version
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - "${RUNNER_TEMP}/hark-rollback-anchor.json" \
+            "${STAGE}" "${WORKER}" "${HARK_ROLLBACK_VERSION_ID}" "${TARGET_SHA}" <<'PY'
+          import json, sys
+          from pathlib import Path
+          from uuid import UUID
+          out, stage, worker, vid, sha = sys.argv[1:]
+          assert str(UUID(vid)) == vid
+          Path(out).write_text(json.dumps({
+              "stage": stage, "worker": worker, "rollback_version_id": vid,
+              "target_main_sha": sha, "mutation_attempted": False,
+          }, separators=(",", ":")), encoding="utf-8")
+          PY
+          echo 'ROLLBACK_TARGET_NAMED_BEFORE_MUTATION=PASS'
+          echo 'CLOUDFLARE_MUTATIONS=0'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hark-premutation-anchor-${{ github.run_id }}
+          path: ${{ runner.temp }}/hark-rollback-anchor.json
+          retention-days: 90
+          if-no-files-found: error
+
+      - name: Apply only reviewed live-inherit and approved flag additions
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'HARK_MUTATION_ATTEMPTED=1' >> "$GITHUB_ENV"
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUD_ACCOUNT_ID}/workers/scripts/${WORKER}/settings"
+          status="$(curl -sS --connect-timeout 8 --max-time 70 -X PATCH \
+            -H "Authorization: Bearer ${CLOUD_API_TOKEN}" \
+            -F "settings=<${RUNNER_TEMP}/hark-stage-patch.json;type=application/json" \
+            -o "${RUNNER_TEMP}/hark-stage-response.json" -w '%{http_code}')"
+          test "$status" = "200"
+          jq -e '.success == true' "${RUNNER_TEMP}/hark-stage-response.json" >/dev/null
+          echo 'HARK_FLAG_MUTATION_APPLIED=PASS'
+
+      - name: Verify newly served immutable Worker and exact binding parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUD_ACCOUNT_ID}/workers/scripts/${WORKER}"
+          auth=(-H "Authorization: Bearer ${CLOUD_API_TOKEN}")
+          active=""
+          for attempt in $(seq 1 18); do
+            curl -fsS "${auth[@]}" "${api}/deployments" -o "${RUNNER_TEMP}/hark-after-deployments.json"
+            active="$(python .github/scripts/cloudflare_served_version_cli.py resolve-active \
+                --deployments "${RUNNER_TEMP}/hark-after-deployments.json" || true)"
+            if [ -n "$active" ] && [ "$active" != "${HARK_ROLLBACK_VERSION_ID}" ]; then break; fi
+            sleep 3
+          done
+          test -n "$active"
+          test "$active" != "${HARK_ROLLBACK_VERSION_ID}"
+          curl -fsS "${auth[@]}" "${api}/versions/${active}" -o "${RUNNER_TEMP}/hark-after-version.json"
+          curl -fsS "${auth[@]}" "${api}/settings" -o "${RUNNER_TEMP}/hark-after-settings.json"
+          python .github/scripts/hark_web_first_runtime_activation.py verify \
+            --stage "${STAGE}" \
+            --before "${RUNNER_TEMP}/hark-target-version.json" \
+            --after "${RUNNER_TEMP}/hark-after-version.json"
+          python .github/scripts/b62_binding_state_guard.py \
+            --before "${RUNNER_TEMP}/hark-after-version.json" \
+            --after "${RUNNER_TEMP}/hark-after-settings.json"
+          if [[ "${STAGE}" == chat_* ]]; then
+            test "$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 https://chat.padiem.net/health)" = "200"
+          fi
+          echo 'HARK_PRODUCTION_STAGE=PASS'
+          echo 'BROWSER_QUICK_ACTION_CALLS=0'
+
+      - name: Auto rollback to named prior immutable version on failure
+        if: ${{ failure() && env.HARK_MUTATION_ATTEMPTED == '1' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${HARK_ROLLBACK_VERSION_ID}"
+          python .github/scripts/b62_cloudflare_rollback_deployment_request.py \
+            --version-id "${HARK_ROLLBACK_VERSION_ID}" \
+            --output "${RUNNER_TEMP}/hark-rollback-request.json"
+          status="$(curl -sS --connect-timeout 8 --max-time 35 -X POST \
+            -H "Authorization: Bearer ${CLOUD_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data-binary "@${RUNNER_TEMP}/hark-rollback-request.json" \
+            -o "${RUNNER_TEMP}/hark-rollback-response.json" -w '%{http_code}' \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUD_ACCOUNT_ID}/workers/scripts/${WORKER}/deployments")"
+          test "$status" = "200"
+          jq -e '.success == true' "${RUNNER_TEMP}/hark-rollback-response.json" >/dev/null
+          echo 'HARK_ROLLBACK_REQUESTED=YES'
