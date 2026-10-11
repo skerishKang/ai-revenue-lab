@@ -130,6 +130,7 @@ class ToolExecutionEngineService:
         approval_decision_verifier: ApprovalDecisionVerifier | None = None,
         continuation_store: ContinuationStore | None = None,
         web_xlsx_owner_approval_grant: Callable[..., Any] | None = None,
+        web_quote_write_approval_grant: Callable[..., Any] | None = None,
     ) -> None:
         if tool_binding_resolver is not None and not callable(tool_binding_resolver):
             raise ValueError("tool_binding_resolver must be callable")
@@ -158,6 +159,13 @@ class ToolExecutionEngineService:
                     or not callable(getattr(continuation_store, 'load_tool_pending', None))):
                 raise ValueError('web XLSX grant requires first-party verifier and durable tool store')
         self._web_xlsx_owner_approval_grant = web_xlsx_owner_approval_grant
+        if web_quote_write_approval_grant is not None:
+            from app.approval_verifier import AuthenticatedFirstPartyApprovalDecisionVerifier
+            if (not callable(web_quote_write_approval_grant)
+                    or not isinstance(approval_decision_verifier, AuthenticatedFirstPartyApprovalDecisionVerifier)
+                    or not callable(getattr(continuation_store, 'load_tool_pending', None))):
+                raise ValueError('web quote WRITE grant requires independent first-party verification and durable tool store')
+        self._web_quote_write_approval_grant = web_quote_write_approval_grant
         self._pending: dict[str, _PendingToolContinuation] = {}
 
     # ------------------------------------------------------------------
@@ -654,6 +662,44 @@ class ToolExecutionEngineService:
                     "This XLSX decision does not match the authenticated owner.",
                     status_code=403,
                 )
+        if app_id == "padiem-web-xlsx-write-p01" and state.status in (
+            ContinuationStatus.DENIED, ContinuationStatus.RESUMABLE,
+        ):
+            # Different from original READ P01. No persistent, independent
+            # owner-confirmed WRITE proof = NO continuation and NO execution.
+            from app.web_xlsx_quote_write_tool_binding import (
+                AGENT_ID as WRITE_AGENT, CANONICAL_TOOL as WRITE_CANONICAL,
+                RUNTIME_TOOL as WRITE_TOOL,
+            )
+            guard = self._web_quote_write_approval_grant
+            if (guard is None or pending.canonical_agent_id != WRITE_AGENT
+                    or pending.canonical_tool_id != WRITE_CANONICAL
+                    or pending.invocation.tool_id != WRITE_TOOL
+                    or not callable(getattr(self._continuation_store, 'load_tool_pending', None))):
+                return _service_error(
+                    "web_xlsx_write_grant_unavailable",
+                    "Independent owner WRITE approval is unavailable.",
+                    status_code=403,
+                )
+            try:
+                permitted = guard(
+                    pause=record.pause, decision=decision,
+                    invocation=pending.invocation, continuation_ref=continuation_ref,
+                )
+                if inspect.isawaitable(permitted):
+                    permitted = await permitted
+            except Exception:
+                return _service_error(
+                    "web_xlsx_write_grant_unavailable",
+                    "Independent owner WRITE approval verification failed.",
+                    status_code=503,
+                )
+            if permitted is not True:
+                return _service_error(
+                    "web_xlsx_write_grant_denied",
+                    "Write decision does not match owner and exact edit plan.",
+                    status_code=403,
+                )
         if state.status is ContinuationStatus.DENIED:
             return await self._consume_denied(app_id, continuation_ref, record)
         if state.status is not ContinuationStatus.RESUMABLE:
@@ -697,6 +743,16 @@ class ToolExecutionEngineService:
                         agent_id=authority.compiled.runtime_profile.id,
                         granted_auth_scopes=authority.authorization.granted_auth_scopes,
                         user_confirmed_tools=("workspace.xlsx.confirm_original_read",),
+                    ),
+                )
+            if app_id == "padiem-web-xlsx-write-p01":
+                # A separate Core user confirmation; NEVER inherit READ.
+                authority = replace(
+                    authority, authorization=ToolAuthorizationContext(
+                        app_id=app_id,
+                        agent_id=authority.compiled.runtime_profile.id,
+                        granted_auth_scopes=authority.authorization.granted_auth_scopes,
+                        user_confirmed_tools=("workspace.xlsx.quote.revise_workcopy",),
                     ),
                 )
             response, result, runtime_error = await self._execute_via_core(
