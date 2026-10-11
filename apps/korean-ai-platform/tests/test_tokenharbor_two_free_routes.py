@@ -228,8 +228,9 @@ def test_free_route_rejects_external_fallback_to_other_paid_provider(mid, live_k
 
 @pytest.mark.parametrize("upstream_http_status", [401, 403])
 @pytest.mark.parametrize("credential_shape", ["expected", "unexpected"])
+@pytest.mark.parametrize("response_kind", ["edge_html", "origin_json"])
 def test_tokenharbor_auth_failure_logs_only_safe_classification(
-    monkeypatch, caplog, upstream_http_status, credential_shape,
+    monkeypatch, caplog, upstream_http_status, credential_shape, response_kind,
 ):
     from app.pilot.errors import UpstreamAuthFailed
 
@@ -241,8 +242,17 @@ def test_tokenharbor_auth_failure_logs_only_safe_classification(
 
     def fail_with_upstream_status(request):
         assert request.url.host == "tokenharbor.ai"
+        if response_kind == "edge_html":
+            return httpx.Response(
+                upstream_http_status,
+                headers={"content-type": "text/html", "server": "cloudflare",
+                         "cf-mitigated": "challenge", "cf-ray": "not_for_logs"},
+                text="<!doctype html><title>do_not_log_upstream_body</title>",
+            )
         return httpx.Response(
             upstream_http_status,
+            headers={"content-type": "application/json",
+                     "x-vercel-id": "not_for_logs"},
             json={"error": {"message": "do_not_log_upstream_body"}},
         )
 
@@ -264,3 +274,114 @@ def test_tokenharbor_auth_failure_logs_only_safe_classification(
     assert fake_key not in caplog.text
     assert "do_not_log_upstream_body" not in caplog.text
     assert "no_customer_data" not in caplog.text
+    assert "not_for_logs" not in caplog.text
+    if response_kind == "edge_html":
+        assert "response_format=html cf_challenge=True error_family=not_json" in caplog.text
+    else:
+        assert "response_format=json cf_challenge=False error_family=unclassified" in caplog.text
+
+
+@pytest.mark.parametrize("stream", [False, True])
+@pytest.mark.parametrize("upstream_status", [302, 401, 403, 429])
+@pytest.mark.parametrize("response_kind", ["plain_html", "invalid_key", "access_denied", "unknown_code"])
+def test_tokenharbor_rejection_diagnostic_shared_by_completed_and_stream(
+    monkeypatch, caplog, stream, upstream_status, response_kind,
+):
+    from app.pilot.errors import (
+        UpstreamAuthFailed, UpstreamClientError, UpstreamRateLimited,
+    )
+
+    synthetic = "thk_" + "a1b2c3d4e5f6g7h8" * 4
+    monkeypatch.setenv("B14_PROVIDER_MODE", "live")
+    monkeypatch.setenv(BINDING, synthetic)
+
+    def denied(req):
+        assert req.headers["authorization"] == "Bearer " + synthetic
+        if response_kind == "plain_html":
+            return httpx.Response(
+                upstream_status,
+                headers={"content-type": "text/html", "server": "cloudflare"},
+                text="<html>private_vendor_body_do_not_log</html>",
+            )
+        code = {
+            "invalid_key": "invalid_api_key",
+            "access_denied": "permission_denied",
+            "unknown_code": "vendor_freeform_private_do_not_log",
+        }[response_kind]
+        return httpx.Response(
+            upstream_status,
+            headers={"content-type": "application/json", "server": "cloudflare"},
+            json={"error": {"code": code, "message": "private_vendor_body_do_not_log"}},
+        )
+
+    kwargs = {
+        "model_id": "tokenharbor/claude-haiku-5.5:free",
+        "upstream_model": "claude-haiku-5.5:free",
+        "provider": "TokenHarbor",
+        "platform_provider_id": PROVIDER,
+        "messages": [{"role": "user", "content": "private_request_do_not_log"}],
+        "transport": httpx.MockTransport(denied),
+    }
+    exception_type = (
+        UpstreamClientError if upstream_status == 302
+        else UpstreamRateLimited if upstream_status == 429
+        else UpstreamAuthFailed
+    )
+    async def run():
+        if stream:
+            return [event async for event in stream_platform_chat_completions(**kwargs)]
+        return await call_platform_chat_completions(**kwargs)
+
+    with caplog.at_level("WARNING", logger="korean-ai-platform.pilot.platform"):
+        with pytest.raises(exception_type) as exc:
+            asyncio.run(run())
+
+    expected_family = {
+        "plain_html": "not_json",
+        "invalid_key": "invalid_key",
+        "access_denied": "access_denied",
+        "unknown_code": "unclassified",
+    }[response_kind]
+    assert (
+        f"tokenharbor_auth_diagnostic upstream_http_status={upstream_status} "
+        f"credential_shape=expected"
+    ) in caplog.text
+    assert f"error_family={expected_family}" in caplog.text
+    assert "cf_challenge=False" in caplog.text
+    assert synthetic not in caplog.text
+    assert "private_vendor_body_do_not_log" not in caplog.text
+    assert "private_request_do_not_log" not in caplog.text
+    assert "vendor_freeform_private_do_not_log" not in caplog.text
+    if upstream_status in (401, 403):
+        assert "X-Business14-Provider-Key" not in str(exc.value)
+        assert "B14 서버" in str(exc.value)
+
+
+def test_tokenharbor_streaming_non_auth_route_does_not_log_secrets(monkeypatch, caplog):
+    from app.pilot.errors import UpstreamAuthFailed
+    monkeypatch.setenv("B14_PROVIDER_MODE", "live")
+    monkeypatch.setenv(BINDING, "thk_" + "a1b2c3d4e5f6g7h8" * 4)
+
+    def denied(req):
+        return httpx.Response(
+            403,
+            headers={"content-type": "text/html", "cf-ray": "private_ray_do_not_log"},
+            text="private_vendor_body_do_not_log",
+        )
+
+    async def run():
+        return [event async for event in stream_platform_chat_completions(
+            model_id="tokenharbor/deepseek-v4.1-flash:free",
+            upstream_model="deepseek-v4.1-flash:free",
+            provider="TokenHarbor",
+            platform_provider_id=PROVIDER,
+            messages=[{"role": "user", "content": "safe_test"}],
+            transport=httpx.MockTransport(denied),
+        )]
+
+    with caplog.at_level("WARNING", logger="korean-ai-platform.pilot.platform"):
+        with pytest.raises(UpstreamAuthFailed):
+            asyncio.run(run())
+    assert "response_format=html cf_challenge=False error_family=not_json" in caplog.text
+    assert "private_ray_do_not_log" not in caplog.text
+    assert "private_vendor_body_do_not_log" not in caplog.text
