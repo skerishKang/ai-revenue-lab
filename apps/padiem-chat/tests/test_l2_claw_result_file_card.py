@@ -84,8 +84,9 @@ def test_kind_is_derived_only_from_the_server_verified_media_type() -> None:
     assert not re.search(r"artifactKindOf\(\s*artifact\.filename", fn)
     assert not re.search(r"\.endsWith\(\s*[\"']\.", fn)
     # An unrecognised or absent media type yields no chip, never a guess.
-    assert 'artifactKindMap[mediaType.trim().toLowerCase()] || ""' in fn
-    assert 'typeof mediaType === "string"' in fn
+    assert "Object.hasOwn(artifactKindMap, normalized)" in fn
+    assert 'typeof mediaType !== "string"' in fn
+
 
 
 def test_kind_map_is_closed_and_covers_the_shipped_formats() -> None:
@@ -287,6 +288,8 @@ for (const [media, name] of [
   ["", "mystery.xlsx"],
   [null, "mystery.xlsx"],
   ["application/octet-stream", "mystery.xlsx"],
+  ["constructor", "unknown.xlsx"],
+  ["__proto__", "unknown.pdf"],
   ["text/html; <script>alert(1)</script>", "mystery.xlsx"],
   ["APPLICATION/PDF<script>", "mystery.pdf"],
 ]) {

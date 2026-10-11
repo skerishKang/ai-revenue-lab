@@ -4380,8 +4380,13 @@
       "image/jpeg": "JPG",
       "image/webp": "WEBP",
     });
-    const artifactKindOf = (mediaType) => typeof mediaType === "string"
-      ? artifactKindMap[mediaType.trim().toLowerCase()] || "" : "";
+    const artifactKindOf = (mediaType) => {
+      if (typeof mediaType !== "string") return "";
+      const normalized = mediaType.trim().toLowerCase();
+      // Object prototype members such as "constructor" and "__proto__"
+      // are not registered media types and must never produce a file chip.
+      return Object.hasOwn(artifactKindMap, normalized) ? artifactKindMap[normalized] : "";
+    };
     const card = document.createElement("div");
     card.className = "claw-run-card";
     card.dataset.runId = typeof run.run_id === "string" ? run.run_id : "";
