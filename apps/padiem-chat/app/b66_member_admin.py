@@ -176,7 +176,18 @@ class D1B66MemberAdminStore:
             model_id = grant.get("model_id")
             if tier in tiers and isinstance(model_id, str):
                 tiers[tier].append(model_id)
-        return {"revision": int(row["revision"]), "active": int(row["active"]) == 1, "tiers": tiers}
+        disabled = await self._all(
+            "SELECT model_id FROM b66_disabled_models ORDER BY model_id"
+        )
+        return {
+            "revision": int(row["revision"]),
+            "active": int(row["active"]) == 1,
+            "tiers": tiers,
+            "disabled_models": sorted({
+                str(item["model_id"]) for item in disabled
+                if isinstance(item.get("model_id"), str)
+            }),
+        }
 
     async def runtime_access(self, user_id: str) -> dict[str, Any] | None:
         access = await self.access_for_user(user_id)
@@ -187,15 +198,20 @@ class D1B66MemberAdminStore:
         if status != "approved" or tier not in _TIERS:
             return {"status": status, "tier": tier, "active_policy": False, "model_ids": []}
         policy = await self.model_policy()
+        disabled = policy["disabled_models"]
         return {
             "status": status, "tier": tier,
             "active_policy": bool(policy["active"]),
-            "model_ids": policy["tiers"][tier] if policy["active"] else None,
+            "disabled_models": disabled,
+            "model_ids": [
+                model for model in policy["tiers"][tier] if model not in disabled
+            ] if policy["active"] else None,
         }
 
     async def set_model_policy(
         self, *, actor_id: str, expected_revision: int, active: bool,
-        tiers: dict[str, list[str]], registered_models: set[str]
+        tiers: dict[str, list[str]], registered_models: set[str],
+        disabled_models: list[str] | None = None
     ) -> dict[str, Any]:
         if (type(expected_revision) is not int or expected_revision < 0
             or type(active) is not bool
@@ -203,6 +219,16 @@ class D1B66MemberAdminStore:
             or not isinstance(registered_models, set)
             or not registered_models):
             raise ValueError("invalid model policy")
+        # A model can be switched OFF globally independently of each tier's
+        # checkbox. Only trusted B14-listed IDs may be persisted or disabled.
+        if disabled_models is None:
+            disabled_models = []
+        if (not isinstance(disabled_models, list) or len(disabled_models) > 100
+            or any(not isinstance(mid, str) or mid not in registered_models
+                   for mid in disabled_models)
+            or len(disabled_models) != len(set(disabled_models))):
+            raise ValueError("model switch contains unsupported IDs")
+        disabled = set(disabled_models)
         grants: list[tuple[str, str]] = []
         for tier, ids in tiers.items():
             if (not isinstance(ids, list) or len(ids) > 50
@@ -210,8 +236,8 @@ class D1B66MemberAdminStore:
                 or len(ids) != len(set(ids))):
                 raise ValueError("model ID is not registered/live-ready")
             grants.extend((tier, mid) for mid in ids)
-        if active and not tiers["FREE"]:
-            raise ValueError("FREE tier must have a valid model before activation")
+        if active and not any(mid not in disabled for mid in tiers["FREE"]):
+            raise ValueError("FREE tier must have an ON model before activation")
         previous = await self.model_policy()
         if previous["revision"] != expected_revision:
             raise MemberConflict()
@@ -229,8 +255,20 @@ class D1B66MemberAdminStore:
                 "DELETE FROM b66_tier_model_grants WHERE "
                 "(SELECT revision FROM b66_model_access_policy WHERE id='b66')=?",
                 rev
+            ),
+            self._statement(
+                "DELETE FROM b66_disabled_models WHERE "
+                "(SELECT revision FROM b66_model_access_policy WHERE id='b66')=?",
+                rev
             )
         ]
+        for model_id in sorted(disabled):
+            statements.append(self._statement(
+                "INSERT INTO b66_disabled_models(model_id) "
+                "SELECT ? WHERE "
+                "(SELECT revision FROM b66_model_access_policy WHERE id='b66')=?",
+                model_id, rev,
+            ))
         for tier, model_id in grants:
             statements.append(self._statement(
                 "INSERT INTO b66_tier_model_grants (tier,model_id) "
@@ -246,7 +284,7 @@ class D1B66MemberAdminStore:
         confirmed = await self.model_policy()
         if confirmed["revision"] != rev or confirmed["tiers"] != {
             k: sorted(v) for k,v in tiers.items()
-        } or confirmed["active"] != active:
+        } or confirmed["active"] != active or confirmed["disabled_models"] != sorted(disabled):
             raise MemberConflict()
         return confirmed
 

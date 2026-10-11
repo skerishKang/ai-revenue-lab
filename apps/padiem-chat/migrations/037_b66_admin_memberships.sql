@@ -67,6 +67,11 @@ CREATE TABLE IF NOT EXISTS b66_tier_model_grants (
   model_id TEXT NOT NULL CHECK (length(model_id) BETWEEN 1 AND 256),
   PRIMARY KEY (tier,model_id)
 );
+-- Global B66 model switch. An OFF model is unavailable to every tier,
+-- even where a prior tier grant still lists it.
+CREATE TABLE IF NOT EXISTS b66_disabled_models (
+  model_id TEXT PRIMARY KEY CHECK(length(model_id) BETWEEN 1 AND 256)
+);
 CREATE TABLE IF NOT EXISTS b66_model_policy_audit (
   audit_id TEXT PRIMARY KEY,
   actor_user_id TEXT NOT NULL REFERENCES users(id),

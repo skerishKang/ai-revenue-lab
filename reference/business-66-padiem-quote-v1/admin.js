@@ -122,7 +122,9 @@
   let canEnforce = false;
   async function loadModelPolicy() {
     const holder = id("modelTierColumns");
+    const switches = id("modelSwitchList");
     holder.replaceChildren();
+    switches.replaceChildren();
     id("savePolicy").disabled = true;
     try {
       const result = await request("/model-policy");
@@ -133,6 +135,34 @@
       id("enforcementNote").textContent = canEnforce
         ? (result.policy.active ? "현재 등급별 모델 사용 제한이 적용 중입니다." : "아직 모델 사용 제한은 적용되지 않았습니다.")
         : "서버 회원 권한 검증을 활성화하기 전입니다. 현재 모델 배정은 저장만 할 수 있습니다.";
+      // Every B14-registered model has its own global ON/OFF switch.
+      // Tier selections are preserved when OFF, but cannot grant access.
+      const disabledModels = new Set(result.policy.disabled_models || []);
+      const updateTierAvailability = () => {
+        const off = new Set([...switches.querySelectorAll('input[data-model-id]')]
+          .filter(box => !box.checked).map(box => box.dataset.modelId));
+        for (const box of holder.querySelectorAll('input[data-model-id]')) {
+          box.disabled = off.has(box.dataset.modelId);
+          box.closest("label")?.classList.toggle("model-is-off", box.disabled);
+        }
+      };
+      for (const model of result.models) {
+        const label = document.createElement("label");
+        label.className = "model-switch";
+        const title = document.createElement("span");
+        title.textContent = model.name;
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.dataset.modelId = model.model_id;
+        input.checked = !disabledModels.has(model.model_id);
+        input.setAttribute("aria-label", model.name + " 전체 사용");
+        const status = document.createElement("strong");
+        const syncStatus = () => { status.textContent = input.checked ? "ON" : "OFF"; };
+        input.addEventListener("change", () => { syncStatus();updateTierAvailability(); });
+        syncStatus();
+        label.append(title,input,status);
+        switches.append(label);
+      }
       const tiers = [["FREE","Free"],["PLUS","Plus"],["PRO","Pro"],["MAX","Max"]];
       for (const [tier,label] of tiers) {
         const box = document.createElement("div");
@@ -143,12 +173,14 @@
           const row = document.createElement("label"); row.className = "tier-model";
           const check = document.createElement("input");
           check.type = "checkbox"; check.value = model.model_id;
+          check.dataset.modelId = model.model_id;
           check.checked = result.policy.tiers[tier].includes(model.model_id);
           const text = document.createElement("span"); text.textContent = model.name;
           row.append(check, text);box.append(row);
         }
         holder.append(box);
       }
+      updateTierAvailability();
       id("savePolicy").disabled = false;
       id("policyStatus").textContent = "";
     } catch (error) {
@@ -164,9 +196,11 @@
         ? [...box.querySelectorAll('input[type="checkbox"]:checked')].map(x=>x.value)
         : [];
     }
+    const disabledModels = [...id("modelSwitchList").querySelectorAll('input[data-model-id]')]
+      .filter(box=>!box.checked).map(box=>box.dataset.modelId);
     const active = canEnforce && id("activatePolicy").checked;
-    if (active && tiers.FREE.length === 0) {
-      id("policyStatus").textContent = "Free 등급에 최소 1개의 모델을 선택해 주세요.";
+    if (active && !tiers.FREE.some(model=>!disabledModels.includes(model))) {
+        id("policyStatus").textContent = "Free 등급에 ON인 모델을 최소 1개 지정해 주세요.";
       return;
     }
     if (!window.confirm("등급별 모델 허용 목록을 저장하시겠습니까?")) return;
@@ -174,7 +208,8 @@
     try {
       await request("/model-policy", {
         method:"PUT", headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({expected_revision:policyRevision,active,tiers})
+        body:JSON.stringify({expected_revision:policyRevision,active,tiers,
+          disabled_models:disabledModels})
       });
       await loadModelPolicy();
       id("policyStatus").textContent = "모델 권한 설정이 저장됐습니다.";

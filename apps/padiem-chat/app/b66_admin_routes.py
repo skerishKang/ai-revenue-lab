@@ -154,7 +154,7 @@ async def b66_admin_model_policy(request: Request) -> JSONResponse:
     except Exception:
         return _error(400, "invalid_body")
     if not isinstance(data, dict) or set(data) != {
-        "expected_revision", "active", "tiers"
+        "expected_revision", "active", "tiers", "disabled_models"
     }:
         return _error(400, "invalid_policy_fields")
     if data["active"] is True and getattr(request.app.state, "b66_membership_enforced", False) is not True:
@@ -164,6 +164,7 @@ async def b66_admin_model_policy(request: Request) -> JSONResponse:
             actor_id=actor_id, expected_revision=data["expected_revision"],
             active=data["active"], tiers=data["tiers"],
             registered_models={m["model_id"] for m in models},
+            disabled_models=data["disabled_models"],
         )
     except ValueError:
         return _error(400, "invalid_model_policy")

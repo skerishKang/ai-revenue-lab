@@ -378,11 +378,14 @@ async def b66_quote_models(request: Request) -> JSONResponse:
         models = await list_fn()
     except Exception:
         return _error(503, "quote_model_unavailable", "AI 모델 목록을 확인할 수 없습니다.")
-    # Filter the trusted B14 catalog by the server-side tier grants. No
-    # browser tier or role value is ever accepted for this decision.
-    if access is not None and access["active_policy"]:
-        allowed_ids = set(access["model_ids"])
-        models = [row for row in models if row["model_id"] in allowed_ids]
+    # Enforce global OFF first, then the authenticated member's tier grants.
+    # Both switches are server-side, not merely hidden options in the browser.
+    if access is not None:
+        disabled = set(access["disabled_models"])
+        models = [row for row in models if row["model_id"] not in disabled]
+        if access["active_policy"]:
+            allowed_ids = set(access["model_ids"])
+            models = [row for row in models if row["model_id"] in allowed_ids]
     # A configured default can only be offered if it remains permitted.
     proposed_default = getattr(request.app.state, "b66_quote_default_model_id", None)
     default = proposed_default if (
@@ -431,6 +434,8 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
         return _error(400, "model_selection_required", "사용할 AI 모델을 선택해 주세요.")
     if model_id in {"b14/auto"} or model_id.startswith("padiem-profile/"):
         return _error(400, "model_selection_required", "사용할 AI 모델을 선택해 주세요.")
+    if access is not None and model_id in access["disabled_models"]:
+        return _error(403, "model_disabled", "관리자가 이 AI 모델을 사용 중지했습니다.")
     if access is not None and access["active_policy"] and model_id not in access["model_ids"]:
         return _error(403, "model_tier_forbidden", "이용 등급에서 허용하지 않는 AI 모델입니다.")
     # Explicit reasoning level is validated against the SAME exact model the

@@ -6,6 +6,7 @@ from starlette.routing import Route
 
 from app.auth import create_session_token
 from app.config import Settings
+from app.b66_quote_routes import b66_quote_models, b66_quote_interpret
 from app.b66_admin_routes import (
     b66_admin_me, b66_admin_members, b66_admin_member_access,
     b66_admin_model_policy, b66_admin_dispatch_alerts,
@@ -25,6 +26,8 @@ class FakeResolver:
 def tiny_admin_app(store, *, enforcement=False):
     settings=Settings(auth_mode="hybrid",session_secret="x"*48)
     app=Starlette(routes=[
+        Route("/api/b66/quote/models",b66_quote_models,methods=["GET"]),
+        Route("/api/b66/quote/interpret",b66_quote_interpret,methods=["POST"]),
         Route("/api/b66/admin/me",b66_admin_me,methods=["GET"]),
         Route("/api/b66/admin/members",b66_admin_members,methods=["GET"]),
         Route("/api/b66/admin/members/{user_id}",b66_admin_member_access,methods=["PATCH"]),
@@ -32,6 +35,7 @@ def tiny_admin_app(store, *, enforcement=False):
         Route("/api/b66/admin/alerts/dispatch",b66_admin_dispatch_alerts,methods=["POST"]),
     ])
     app.state.settings=settings
+    app.state.history_store=object()  # B66 auth_ready requires an initialized auth store
     app.state.b66_member_admin_store=store
     app.state.b66_quote_model_resolver=FakeResolver()
     app.state.b66_membership_enforced=enforcement
@@ -72,7 +76,9 @@ async def test_http_admin_authority_and_model_policy_rollout_guard():
         get_policy=await client.get("/api/b66/admin/model-policy",cookies=token(admin))
         assert get_policy.json()["enforcement_enabled"] is False
         policy={"expected_revision":0,"active":True,"tiers":{
-          "FREE":["google/gemini-3.5-flash-lite"],"PLUS":[],"PRO":[],"MAX":[]}}
+          "FREE":["google/gemini-3.5-flash-lite","deepseek/deepseek-chat"],
+          "PLUS":["google/gemini-3.5-flash-lite","deepseek/deepseek-chat"],
+          "PRO":[],"MAX":[]},"disabled_models":[]}
         blocked=await client.put("/api/b66/admin/model-policy",cookies=token(admin),json=policy)
         assert blocked.status_code==409
         policy["active"]=False
@@ -84,3 +90,23 @@ async def test_http_admin_authority_and_model_policy_rollout_guard():
         allowed=await client.put("/api/b66/admin/model-policy",cookies=token(admin),json=policy)
         assert allowed.status_code==200
         assert allowed.json()["policy"]["active"] is True
+        # Admin switches a model OFF globally while it remains checked for
+        # PLUS/FREE. Both the model picker and direct inference must deny it.
+        policy["expected_revision"]=2
+        policy["disabled_models"]=["deepseek/deepseek-chat"]
+        changed=await client.put("/api/b66/admin/model-policy",cookies=token(admin),json=policy)
+        assert changed.status_code == 200, changed.text
+        assert changed.json()["policy"]["disabled_models"] == ["deepseek/deepseek-chat"]
+        visible=await client.get("/api/b66/quote/models",cookies=token(legacy))
+        assert visible.status_code==200, visible.text
+        assert [m["model_id"] for m in visible.json()["models"]] == ["google/gemini-3.5-flash-lite"]
+        direct=await client.post("/api/b66/quote/interpret",cookies=token(legacy),json={
+            "model_id":"deepseek/deepseek-chat","saved_skill_id":"fake-saved-skill",
+            "message":"견적 만들어줘"
+        })
+        assert direct.status_code == 403
+        assert direct.json()["error"]["code"] == "model_disabled"
+        policy["expected_revision"] = 3
+        policy["disabled_models"] = ["unregistered/vendor-model"]
+        unknown=await client.put("/api/b66/admin/model-policy",cookies=token(admin),json=policy)
+        assert unknown.status_code == 400
