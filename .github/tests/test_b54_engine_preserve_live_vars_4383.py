@@ -123,3 +123,6 @@ def test_deploy_gate_stages_immutable_vars_before_published_rollback_anchor():
     assert "--stage-served-vars" in workflow
     assert "ENGINE_PRODUCTION_MUTATION_BEFORE_ANCHOR=0" in workflow
     assert "B54_ENGINE_FULL_BINDING_SET_PRESERVED=PASS" in workflow
+    assert 'if uv run pywrangler deploy --keep-vars >"${RUNNER_TEMP}/b54-engine-deploy.log" 2>&1; then' in workflow
+    assert 'tee "${RUNNER_TEMP}/b54-engine-deploy.log"' not in workflow
+    assert "umask 077" in workflow
