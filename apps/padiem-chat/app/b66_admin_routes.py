@@ -59,13 +59,29 @@ async def b66_admin_members(request: Request) -> JSONResponse:
     limit, offset = int(raw_limit), int(raw_offset)
     if limit < 1 or limit > 100 or offset > 10000:
         return _error(400, "invalid_pagination")
+    if any(key not in {"limit","offset","q","status","tier"}
+           for key in request.query_params):
+        return _error(400, "invalid_member_filter")
+    query = request.query_params.get("q", "")
+    status = request.query_params.get("status", "all")
+    tier = request.query_params.get("tier", "all")
+    if (len(query) > 80 or any(ord(c) < 32 for c in query)
+        or status not in {"all","pending","approved","suspended"}
+        or tier not in {"all","FREE","PLUS","PRO","MAX"}):
+        return _error(400, "invalid_member_filter")
     try:
-        members = await store.list_members(limit=limit, offset=offset)
+        members = await store.list_members(
+            limit=limit, offset=offset, query=query, status=status, tier=tier
+        )
+        matched_total = await store.count_filtered_members(
+            query=query, status=status, tier=tier
+        )
         counts = await store.count_members()
         notifications_pending = await store.undelivered_signups()
     except Exception:
         return _error(503, "membership_store_unavailable")
     return JSONResponse({"ok": True, "members": members, "counts": counts,
+                         "matched_total": matched_total,
                          "signup_events_pending": notifications_pending,
                          "notification_delivery_configured": bool(getattr(getattr(request.app.state, "b66_signup_notifier", None), "channels", None))}, headers=_NO_STORE)
 

@@ -192,3 +192,24 @@ async def test_missing_alert_config_does_not_claim_delivery():
     assert not notifier.channels
     assert await notifier.notify_one(newcomer) == {"sent":0,"failed":0}
     assert await store.undelivered_signups() == 1
+
+
+@pytest.mark.asyncio
+async def test_member_search_and_filters_only_return_matching_accounts():
+    db, admin, legacy, fake = seed_db()
+    store = D1B66MemberAdminStore(db, admin_email="admin@example.test")
+    # Search is literal, not an SQL LIKE wildcard; both name and email work.
+    assert len(await store.list_members(query="cgi1003")) == 1
+    assert await store.count_filtered_members(query="cgi1003") == 1
+    assert await store.count_filtered_members(query="%") == 0
+    assert await store.count_filtered_members(query="' OR 1=1 --") == 0
+    assert await store.count_filtered_members(tier="FREE", status="approved") == 3
+    await store.set_access(actor_id=admin, user_id=legacy, status="approved",
+                           tier="PRO", expected_revision=0)
+    assert await store.count_filtered_members(tier="PRO") == 1
+    assert [r["user_id"] for r in await store.list_members(tier="PRO")] == [legacy]
+    assert await store.count_filtered_members(tier="PRO", status="pending") == 0
+    assert await store.list_members(tier="PRO", status="pending") == []
+    for broken in ({"query":"a"*81}, {"status":"invalid"}, {"tier":"SUPER"}):
+        with pytest.raises(ValueError):
+            await store.list_members(**broken)

@@ -68,16 +68,44 @@ class D1B66MemberAdminStore:
             and _user_id(subject) == user_id
         )
 
-    async def list_members(self, *, limit: int = 50, offset: int = 0) -> list[dict[str, Any]]:
+    @staticmethod
+    def _member_filters(
+        query: str = "", status: str = "all", tier: str = "all"
+    ) -> tuple[str, tuple[str, ...]]:
+        if (not isinstance(query, str) or len(query) > 80
+            or any(ord(c) < 32 for c in query)
+            or status not in {"all", "pending", "approved", "suspended"}
+            or tier not in {"all", "FREE", "PLUS", "PRO", "MAX"}):
+            raise ValueError("invalid member filter")
+        clauses: list[str] = []
+        params: list[str] = []
+        if query.strip():
+            clauses.append("(instr(lower(u.email),lower(?)) > 0 "
+                           "OR instr(lower(u.display_name),lower(?)) > 0)")
+            params.extend((query.strip(), query.strip()))
+        if status != "all":
+            clauses.append("m.status=?")
+            params.append(status)
+        if tier != "all":
+            clauses.append("m.tier=?")
+            params.append(tier)
+        return (" WHERE " + " AND ".join(clauses)) if clauses else "", tuple(params)
+
+    async def list_members(
+        self, *, limit: int = 50, offset: int = 0,
+        query: str = "", status: str = "all", tier: str = "all"
+    ) -> list[dict[str, Any]]:
         limit = min(max(int(limit), 1), 100)
         offset = min(max(int(offset), 0), 10000)
+        where, params = self._member_filters(query=query, status=status, tier=tier)
         rows = await self._all(
             "SELECT u.id AS user_id, u.email, u.display_name, u.created_at, "
             "m.status, m.tier, m.revision, m.updated_at AS access_updated_at "
             "FROM users u JOIN b66_memberships m ON m.user_id=u.id "
-            "ORDER BY CASE m.status WHEN 'pending' THEN 0 ELSE 1 END, "
+            + where +
+            " ORDER BY CASE m.status WHEN 'pending' THEN 0 ELSE 1 END, "
             "u.created_at DESC LIMIT ? OFFSET ?",
-            limit, offset,
+            *params, limit, offset,
         )
         return [
             {
@@ -91,6 +119,17 @@ class D1B66MemberAdminStore:
             }
             for row in rows
         ]
+
+    async def count_filtered_members(
+        self, *, query: str = "", status: str = "all", tier: str = "all"
+    ) -> int:
+        where, params = self._member_filters(query=query, status=status, tier=tier)
+        row = await self._first(
+            "SELECT count(*) AS n FROM users u "
+            "JOIN b66_memberships m ON m.user_id=u.id" + where,
+            *params,
+        )
+        return int(row["n"]) if row else 0
 
     async def count_members(self) -> dict[str, int]:
         rows = await self._all(

@@ -40,6 +40,23 @@
             <div><h2>회원 관리</h2><p>회원의 가입 상태와 이용 등급을 변경할 수 있습니다.</p></div>
             <button type="button" id="refreshMembers" class="secondary">새로고침</button>
           </div>
+          <form id="memberFilterForm" class="member-filters" aria-label="회원 검색 및 등급 필터">
+            <input id="memberSearch" type="search" maxlength="80" placeholder="회원 이름 또는 이메일 검색" aria-label="회원 이름 또는 이메일 검색">
+            <select id="memberStatusFilter" aria-label="회원 상태 필터">
+              <option value="all">전체 상태</option>
+              <option value="pending">승인 대기</option>
+              <option value="approved">승인</option>
+              <option value="suspended">이용 정지</option>
+            </select>
+            <select id="memberTierFilter" aria-label="회원 등급 필터">
+              <option value="all">전체 등급</option>
+              <option value="FREE">Free</option>
+              <option value="PLUS">Plus</option>
+              <option value="PRO">Pro</option>
+              <option value="MAX">Max</option>
+            </select>
+            <button type="submit" class="secondary">검색</button>
+          </form>
           <div class="table-wrap">
             <table>
               <thead><tr><th>회원</th><th>가입일</th><th>상태</th><th>이용 등급</th><th>변경</th></tr></thead>
@@ -49,6 +66,7 @@
           <div class="pager">
             <button id="previousPage" type="button" class="secondary" disabled>이전</button>
             <span id="pageLabel">1페이지</span>
+            <span id="matchedMembers" aria-live="polite"></span>
             <button id="nextPage" type="button" class="secondary" disabled>다음</button>
           </div>
           <p id="memberStatus" role="status" aria-live="polite"></p>

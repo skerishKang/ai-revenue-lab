@@ -71,7 +71,20 @@ function padiemTarget(url, method) {
     const limit = limitRaw === null ? 50 : Number(limitRaw);
     const offset = offsetRaw === null ? 0 : Number(offsetRaw);
     if (limit < 1 || limit > 100 || offset > 10000) return null;
-    return "/api/b66/admin/members?limit=" + limit + "&offset=" + offset;
+    const allowed = new Set(["limit","offset","q","status","tier"]);
+    for (const key of url.searchParams.keys()) {
+      if (!allowed.has(key)) return null;
+    }
+    const q = url.searchParams.get("q") || "";
+    const status = url.searchParams.get("status") || "all";
+    const tier = url.searchParams.get("tier") || "all";
+    if (q.length > 80 || /[\u0000-\u001f]/.test(q) ||
+        !["all","pending","approved","suspended"].includes(status) ||
+        !["all","FREE","PLUS","PRO","MAX"].includes(tier)) return null;
+    const params = new URLSearchParams({
+      limit:String(limit),offset:String(offset),q,status,tier
+    });
+    return "/api/b66/admin/members?" + params.toString();
   }
 
   if (path === "/api/padiem/b66/admin/alerts/dispatch" && method === "POST") {

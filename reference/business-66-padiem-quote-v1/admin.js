@@ -1,7 +1,8 @@
 (() => {
   "use strict";
   const API = "/api/padiem/b66/admin";
-  const state = { offset: 0, limit: 50, loading: false, authorized: false };
+  const state = { offset: 0, limit: 50, loading: false, authorized: false,
+    query: "", statusFilter: "all", tierFilter: "all" };
   const id = (key) => document.getElementById(key);
   const ERROR_TEXT = Object.freeze({
     auth_required: "로그인 후 다시 접속해 주세요.",
@@ -93,7 +94,11 @@
     state.loading = true;
     id("refreshMembers").disabled = true;
     try {
-      const data = await request("/members?limit=" + state.limit + "&offset=" + state.offset);
+      const params = new URLSearchParams({
+        limit: String(state.limit), offset: String(state.offset),
+        q: state.query, status: state.statusFilter, tier: state.tierFilter
+      });
+      const data = await request("/members?" + params.toString());
       id("countPending").textContent = data.counts.pending;
       id("countApproved").textContent = data.counts.approved;
       id("countSuspended").textContent = data.counts.suspended;
@@ -111,8 +116,9 @@
         cell.colSpan = 5; empty.append(cell); body.append(empty);
       }
       id("previousPage").disabled = state.offset === 0;
-      id("nextPage").disabled = data.members.length < state.limit;
+      id("nextPage").disabled = state.offset + data.members.length >= data.matched_total;
       id("pageLabel").textContent = String(Math.floor(state.offset / state.limit) + 1) + "페이지";
+      id("matchedMembers").textContent = "검색 결과 " + data.matched_total + "명";
       message("");
     } catch (error) { message(error.message); }
     finally { state.loading = false; id("refreshMembers").disabled = false; }
@@ -235,6 +241,15 @@
     }
   }
   id("refreshMembers").addEventListener("click", loadMembers);
+  id("memberFilterForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (state.loading) return;
+    state.query = id("memberSearch").value.trim();
+    state.statusFilter = id("memberStatusFilter").value;
+    state.tierFilter = id("memberTierFilter").value;
+    state.offset = 0;
+    loadMembers();
+  });
   id("savePolicy").addEventListener("click", saveModelPolicy);
   id("retryNotices").addEventListener("click", async () => {
     if (!window.confirm("전송되지 않은 가입 알림을 다시 보내시겠습니까?")) return;

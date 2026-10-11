@@ -66,6 +66,15 @@ async def test_http_admin_authority_and_model_policy_rollout_guard():
         assert me.json()["admin"] is True
         listed=await client.get("/api/b66/admin/members",cookies=token(admin))
         assert listed.status_code==200 and len(listed.json()["members"])==3
+        filtered=await client.get("/api/b66/admin/members?q=cgi1003&tier=FREE&status=approved",cookies=token(admin))
+        assert filtered.status_code==200 and filtered.json()["matched_total"]==1
+        assert filtered.json()["members"][0]["user_id"]==legacy
+        no_results=await client.get("/api/b66/admin/members?q=%25",cookies=token(admin))
+        assert no_results.status_code==200 and no_results.json()["matched_total"]==0
+        invalid=await client.get("/api/b66/admin/members?status=nope",cookies=token(admin))
+        assert invalid.status_code==400
+        denied_search=await client.get("/api/b66/admin/members?q=cgi1003",cookies=token(password_impostor))
+        assert denied_search.status_code==403
         changes=await client.patch("/api/b66/admin/members/"+legacy,cookies=token(admin),
                           json={"status":"approved","tier":"PLUS","expected_revision":0})
         assert changes.status_code==200
