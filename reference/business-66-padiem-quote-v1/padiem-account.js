@@ -172,6 +172,9 @@
     if (settingsButton) settingsButton.hidden = true;
     const settingsPanelOut = byId("settingsPanel");
     if (settingsPanelOut) settingsPanelOut.hidden = true;
+    const accountMenu = byId("b66AccountMenu");
+    if (accountMenu) accountMenu.hidden = true;
+    if (button) button.setAttribute("aria-expanded", "false");
     document.dispatchEvent(new CustomEvent("b66:auth-changed", { detail: { authenticated: false } }));
     document.dispatchEvent(new CustomEvent("b66:runtime-changed", { detail: runtimeReadiness() }));
   }
@@ -1145,10 +1148,12 @@
 
     if (accountButton) accountButton.addEventListener("click", () => {
       if (state.authenticated) {
-        // The legacy account panel is not a visible destination in the 3-pane UI.
-        // Open the existing account/settings controls instead of scrolling to it.
-        const settings = byId("settingsButton");
-        if (settings) settings.click();
+        // The identity button opens a compact account menu, never the full CompanyProfile form.
+        const menu = byId("b66AccountMenu");
+        if (menu) {
+          menu.hidden = !menu.hidden;
+          accountButton.setAttribute("aria-expanded", String(!menu.hidden));
+        }
       } else {
         openAuthDialog();
       }

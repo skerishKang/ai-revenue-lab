@@ -59,7 +59,7 @@
       '<h2>견적서 관리</h2>' +
       '<label class="shell-picker-label">배정된 내 견적서<select-host id="shellSkillSelect"></select-host></label>' +
       '<label class="shell-picker-label">출력 양식<select-host id="shellQuoteTemplateSelect"></select-host></label>' +
-      '<label class="shell-picker-label" id="shellModelControl" hidden>견적 해석 AI 모델<select-host id="shellModelSelect"></select-host></label>';
+      '<label class="shell-picker-label" id="shellModelControl" hidden>AI 모델<select-host id="shellModelSelect"></select-host></label>';
     /* #4319 / #3186 경로 B: 견적서 관리 하위의 새 견적서 만들기 → 직접 만들기 진입점.
        입력·검토·승인 요청 화면 본체는 #skillSection 의 기존 Saved Skill 영역에 있다. */
     var createSubhead = document.createElement("h3");
@@ -93,21 +93,6 @@
     historySection.appendChild(recent);
     menu.appendChild(historySection);
 
-    var importSection = document.createElement("section");
-    importSection.className = "shell-rail-section";
-    importSection.innerHTML = '<h2>가져오기</h2>';
-    var file = makeButton(
-      "shellFileImport",
-      "＋",
-      "파일에서 불러오기",
-      "PDF·사진·문서를 선택합니다"
-    );
-    file.addEventListener("click", function () {
-      document.dispatchEvent(new CustomEvent("b66:open-file-intake"));
-    });
-    importSection.appendChild(file);
-    menu.appendChild(importSection);
-
     rail.appendChild(menu);
 
     var account = document.createElement("div");
@@ -124,6 +109,7 @@
     var skillHost = byId("shellSkillSelect");
     var templateHost = byId("shellQuoteTemplateSelect");
     var modelHost = byId("shellModelSelect");
+    var toolbar = byId("easyModelToolbar");
     if (skillSelect && skillHost) {
       skillHost.appendChild(skillSelect);
       function syncTemplateName() {
@@ -145,15 +131,24 @@
     if (templateSelect && templateHost) {
       templateHost.appendChild(templateSelect);
     }
-    if (modelSelect && modelHost) {
-      // Move the one authoritative B14 picker; never clone the select or choose a model.
-      modelHost.appendChild(modelSelect);
+    if (modelSelect && modelHost && toolbar) {
+      // Move the original registered model selector into the composer; no cloned authority.
       var modelControl = byId("shellModelControl");
+      toolbar.appendChild(modelControl);
+      modelHost.appendChild(modelSelect);
+      var reasoningSelect = byId("padiemQuoteReasoningSelect");
+      var reasoningControl = document.createElement("label");
+      reasoningControl.id = "shellReasoningControl";
+      reasoningControl.className = "shell-picker-label b66-composer-reasoning";
+      reasoningControl.textContent = "추론";
+      if (reasoningSelect) reasoningControl.appendChild(reasoningSelect);
+      toolbar.appendChild(reasoningControl);
       function syncModelControl(event) {
         var signedIn = event && event.detail
           ? event.detail.authenticated === true
-          : byId("padiemAccountPanel") && !byId("padiemAccountPanel").hidden;
-        if (modelControl) modelControl.hidden = !signedIn;
+          : !!(byId("padiemAccountPanel") && !byId("padiemAccountPanel").hidden);
+        modelControl.hidden = !signedIn;
+        reasoningControl.hidden = !signedIn || !reasoningSelect;
       }
       document.addEventListener("b66:auth-changed", syncModelControl);
       syncModelControl();
@@ -174,9 +169,47 @@
     if (accountButton) account.appendChild(accountButton);
     if (settingsButton) account.appendChild(settingsButton);
 
+    var accountMenu = document.createElement("div");
+    accountMenu.id = "b66AccountMenu";
+    accountMenu.className = "b66-account-menu";
+    accountMenu.hidden = true;
+    accountMenu.setAttribute("aria-label", "계정 메뉴");
+    accountMenu.innerHTML = '<button id="b66AccountMenuSettings" type="button">설정</button>' +
+      '<button id="b66AccountMenuLogout" type="button">로그아웃</button>';
+    account.appendChild(accountMenu);
+    if (accountButton) {
+      accountButton.setAttribute("aria-haspopup", "true");
+      accountButton.setAttribute("aria-expanded", "false");
+    }
+    byId("b66AccountMenuSettings").addEventListener("click", function () {
+      accountMenu.hidden = true;
+      if (accountButton) accountButton.setAttribute("aria-expanded", "false");
+      clickExisting("settingsButton");
+    });
+    byId("b66AccountMenuLogout").addEventListener("click", function () {
+      accountMenu.hidden = true;
+      if (accountButton) accountButton.setAttribute("aria-expanded", "false");
+      clickExisting("padiemLogout");
+    });
+    document.addEventListener("click", function (event) {
+      if (!account.contains(event.target)) {
+        accountMenu.hidden = true;
+        if (accountButton) accountButton.setAttribute("aria-expanded", "false");
+      }
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && !accountMenu.hidden) {
+        accountMenu.hidden = true;
+        if (accountButton) {
+          accountButton.setAttribute("aria-expanded", "false");
+          accountButton.focus();
+        }
+      }
+    });
+
     var logout = byId("padiemLogout");
-    var settingsPanel = byId("settingsPanel");
-    if (logout && settingsPanel) settingsPanel.appendChild(logout);
+    var privacyPanel = byId("privacySettingsView");
+    if (logout && privacyPanel) privacyPanel.appendChild(logout);
 
     return rail;
   }
@@ -504,6 +537,10 @@
 
     document.body.classList.add("b66-three-pane");
     buildRail(shell);
+    var attach = byId("easyAttach");
+    if (attach) attach.addEventListener("click", function () {
+      document.dispatchEvent(new CustomEvent("b66:open-file-intake"));
+    });
     buildPreviewHost(shell);
     buildTopbarToggle();
     syncDirectMode();

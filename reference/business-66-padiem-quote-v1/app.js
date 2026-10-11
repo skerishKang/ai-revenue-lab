@@ -1527,9 +1527,27 @@
   $("resetLocalData").addEventListener("click", resetBrowserLocalData);
 
   const settingsPanel = $("settingsPanel");
+  const privacyView = $("privacySettingsView");
+  const companyView = $("companySettingsView");
+  const privacyChoice = $("settingsPrivacyChoice");
+  const companyChoice = $("settingsCompanyChoice");
+  function chooseSettings(section) {
+    privacyView.hidden = section !== "privacy";
+    companyView.hidden = section !== "company";
+    privacyChoice.setAttribute("aria-expanded", String(section === "privacy"));
+    companyChoice.setAttribute("aria-expanded", String(section === "company"));
+    const accountSummary = $("b66AccountSummary");
+    const accountButton = document.querySelector("#shellAccountRow > button");
+    if (accountSummary && accountButton) accountSummary.textContent = accountButton.textContent || "로그인 계정";
+  }
+  chooseSettings(null);
   $("settingsButton").addEventListener("click", () => {
-    if (settingsPanel) settingsPanel.hidden = !settingsPanel.hidden;
+    if (!settingsPanel) return;
+    settingsPanel.hidden = !settingsPanel.hidden;
+    if (!settingsPanel.hidden) chooseSettings(null);
   });
+  privacyChoice.addEventListener("click", () => chooseSettings(privacyView.hidden ? "privacy" : null));
+  companyChoice.addEventListener("click", () => chooseSettings(companyView.hidden ? "company" : null));
   $("settingsClose").addEventListener("click", () => {
     if (settingsPanel) settingsPanel.hidden = true;
   });
@@ -1862,18 +1880,17 @@
     applyAccountScopeDetail(event.detail);
   });
 
-  /* #4076 first-customer MVP: a new signed-in Direct draft must not require
-     retyping the sender company already verified in CompanyProfile. Preserve
-     any existing nonblank sender and every customer-specific quote field.
-     The authenticated runtime remains the authority, never a demo default. */
-  document.addEventListener("b66:runtime-changed", (event) => {
-    if (!event.detail || event.detail.ready !== true || !serverHistorySignedIn ||
-        !draft || !draft.sender || String(draft.sender.company || "").trim()) return;
+  /* Company defaults are opt-in. Restoring an old quote must never silently
+     rewrite the sender when an account/profile readiness event arrives. */
+  $("importCompanyProfile").addEventListener("click", () => {
     const runtime = window.B66QuoteRuntimeBridge;
     const profile = runtime && typeof runtime.getCompanyProfile === "function"
       ? runtime.getCompanyProfile() : null;
-    if (!profile || typeof profile.company !== "string" || !profile.company.trim()) return;
-    const senderFields = {
+    if (!profile || typeof profile.company !== "string" || !profile.company.trim()) {
+      toast("불러올 회사정보가 없습니다. 설정 → 회사정보에서 먼저 등록해 주세요.");
+      return;
+    }
+    const fields = {
       company: profile.company.trim(),
       rep: typeof profile.representative === "string" ? profile.representative : "",
       contactPerson: typeof profile.contactPerson === "string" ? profile.contactPerson : "",
@@ -1882,13 +1899,17 @@
       phone: typeof profile.phone === "string" ? profile.phone : "",
       email: typeof profile.email === "string" ? profile.email : ""
     };
-    Object.keys(senderFields).forEach((key) => {
-      if (!String(draft.sender[key] || "").trim() && senderFields[key].trim()) {
-        draft.sender[key] = senderFields[key];
-      }
-    });
+    const different = Object.keys(fields).some((key) =>
+      String(draft.sender[key] || "").trim() &&
+      String(draft.sender[key] || "").trim() !== fields[key].trim()
+    );
+    if (different && !window.confirm("기존 보내는 사람 정보를 등록된 회사정보로 바꾸시겠습니까? 거래처·품목·금액은 변경되지 않습니다.")) return;
+    // Update the current draft sender only; do not change any saved quote, tax, items, or recipient.
+    Object.keys(fields).forEach((key) => { draft.sender[key] = fields[key]; });
+    draft.sender.presetId = "custom";
     fillInputsFromDraft();
     render();
+    toast("등록된 회사정보를 보내는 사람에 적용했습니다.");
   });
 
   window.B66QuoteExtractionBridge = Object.freeze({

@@ -1,0 +1,31 @@
+"use strict";
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const src = (name) => fs.readFileSync(path.join(__dirname, "..", name), "utf8");
+const html = src("index.html"), shell = src("shell-layout.js"),
+  app = src("app.js"), account = src("padiem-account.js"),
+  settings = src("company-profile-settings.js");
+const unique = (id) => {
+  const count = (html.match(new RegExp('id="' + id + '"', "g")) || []).length;
+  assert.equal(count, 1, id + " must appear exactly once");
+};
+for (const id of ["easyComposer", "easyAttach", "easyVoiceMic", "easySend",
+ "easyModelToolbar", "padiemQuoteModelSelect", "padiemQuoteReasoningSelect",
+ "settingsPrivacyChoice", "settingsCompanyChoice", "privacySettingsView",
+ "companySettingsView", "companyProfileHost", "importCompanyProfile"]) unique(id);
+assert.match(shell, /toolbar\.appendChild\(modelControl\)/, "model control must move to composer");
+assert.match(shell, /modelHost\.appendChild\(modelSelect\)/, "same model selector reused");
+assert.match(shell, /reasoningControl\.appendChild\(reasoningSelect\)/);
+assert.doesNotMatch(shell, /shellFileImport/, "no sidebar duplicate file import");
+assert.match(shell, /b66:open-file-intake/, "composer attachment reuses intake");
+assert.match(account, /const menu = byId\("b66AccountMenu"\)/);
+assert.doesNotMatch(account, /if \(settings\) settings\.click\(\)/, "account not directly settings");
+assert.match(app, /chooseSettings\(null\)/, "settings opens to a menu");
+assert.match(app, /"importCompanyProfile"\)\.addEventListener/);
+assert.match(app, /Object\.keys\(fields\)\.forEach\(\(key\) => \{ draft\.sender\[key\] = fields\[key\]; \}\)/);
+assert.match(app, /if \(different && !window\.confirm/);
+assert.doesNotMatch(app, /document\.addEventListener\("b66:runtime-changed", \(event\) => \{/, "profile must never auto-replace restored sender");
+assert.doesNotMatch(settings, /if \(authenticatedHint !== false\) maybeAutoOpenPanel\(\)/);
+assert.match(html, /id="easyVoiceMic"[^>]*disabled/, "mic is visibly staged, not fake STT");
+console.log("B66_COMPOSER_SETTINGS_CONTRACT=PASS");

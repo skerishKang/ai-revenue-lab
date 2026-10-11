@@ -65,8 +65,8 @@
         <label>배정된 내 견적서
           <select id="padiemSavedSkillSelect"></select>
         </label>
-        <!-- #3536: the sole free-form input and send action live at easyComposer/easySend.
-             The registered-model picker is moved to the left rail by shell-layout.js. -->
+        <!-- #3536: single free-form input and send action live at easyComposer/easySend.
+             Registered model and reasoning controls are reparented into the composer toolbar. -->
         <label>사용할 AI 모델
           <select id="padiemQuoteModelSelect" aria-label="사용할 AI 모델" required>
             <option value="">모델을 선택하세요</option>
@@ -87,14 +87,24 @@
         <strong>개인 설정</strong>
         <button id="settingsClose" type="button">닫기</button>
       </div>
-      <p class="settings-note">작성 중 견적은 이 브라우저에 저장됩니다. 기기를 바꾸거나 브라우저 데이터를 지우면 사라집니다. '내 회사' 정보는 로그인 계정에 저장되어 다른 기기에서도 사용됩니다.</p>
-      <div class="company-profile-section" id="companyProfileSection">
-        <h3 class="company-profile-heading">내 회사</h3>
-        <div id="companyProfileHost"></div>
+      <div class="b66-settings-menu" role="group" aria-label="설정 항목">
+        <button id="settingsPrivacyChoice" type="button" aria-controls="privacySettingsView" aria-expanded="false">개인정보 <span aria-hidden="true">›</span></button>
+        <button id="settingsCompanyChoice" type="button" aria-controls="companySettingsView" aria-expanded="false">회사정보 <span aria-hidden="true">›</span></button>
       </div>
-      <button class="settings-reset" id="resetLocalData" type="button">저장 데이터 초기화</button>
-      <div class="drive-storage" id="driveStoragePanel" aria-label="내 Google Drive 저장">
-        <!-- #3871 Slice D: 내용은 quote-drive-ui.js 가 채운다. 연결하지 않아도 기존 기능은 그대로다. -->
+      <div id="privacySettingsView" class="b66-settings-detail" hidden>
+        <h3>개인정보</h3>
+        <p id="b66AccountSummary" class="settings-note">로그인 계정 정보</p>
+        <p class="settings-note">작성 중 견적은 이 브라우저에 저장됩니다. '내 회사' 정보는 로그인 계정에 저장되어 다른 기기에서도 사용됩니다. 회사정보는 별도 메뉴에서 관리합니다.</p>
+        <button class="settings-reset" id="resetLocalData" type="button">저장 데이터 초기화</button>
+        <div class="drive-storage" id="driveStoragePanel" aria-label="내 Google Drive 저장">
+          <!-- 기존 Drive UI를 그대로 재사용 -->
+        </div>
+      </div>
+      <div id="companySettingsView" class="b66-settings-detail" hidden>
+        <div class="company-profile-section" id="companyProfileSection">
+          <h3 class="company-profile-heading">회사정보</h3>
+          <div id="companyProfileHost"></div>
+        </div>
       </div>
     </section>
 
@@ -153,7 +163,13 @@
         <div class="easy-chip-row" id="easyChipRow" aria-label="빠른 답변"></div>
         <div class="easy-composer">
           <textarea id="easyComposer" rows="1" placeholder="필요한 내용을 편하게 입력하세요" aria-label="견적서 대화 입력"></textarea>
-          <button class="easy-send" id="easySend" type="button" aria-label="보내기">↑</button>
+          <div class="easy-composer-actions">
+            <button class="b66-composer-icon b66-attach-button" id="easyAttach" type="button" aria-label="파일 첨부" title="파일 불러오기">+</button>
+            <span class="easy-composer-spacer" aria-hidden="true"></span>
+            <span id="easyModelToolbar" class="b66-composer-model-toolbar"></span>
+            <button class="b66-composer-icon b66-mic-button" id="easyVoiceMic" type="button" aria-label="음성 입력은 준비 중입니다" title="음성 입력 준비 중" disabled>🎙</button>
+            <button class="easy-send" id="easySend" type="button" aria-label="보내기">↑</button>
+          </div>
         </div>
         <p class="easy-composer-note" id="easyComposerNote">바로 입력해도 질문이 시작됩니다. 문장을 알아듣는 기능은 준비 중이라, 필요한 값은 하나씩 여쭤봅니다.</p>
       </div>
@@ -171,6 +187,10 @@
       <section class="panel" aria-label="견적 입력">
         <div class="section">
           <h2>1. 보내는 사람</h2>
+          <div class="button-row b66-sender-load">
+            <button class="btn soft" id="importCompanyProfile" type="button">회사정보 불러오기</button>
+            <small>설정에 저장한 회사정보만 적용하며 품목·거래처·금액은 유지합니다.</small>
+          </div>
           <div class="fields">
             <label>저장된 발신자
               <select id="senderPreset">

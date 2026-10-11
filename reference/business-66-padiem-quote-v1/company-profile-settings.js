@@ -313,7 +313,7 @@
         if (data.state === "missing" || !data.company_profile) {
           state.profile = null;
           renderForm("onboarding");
-          if (authenticatedHint !== false) maybeAutoOpenPanel();
+          // Company details are optional to open; the user enters through Settings → 회사정보.
           return;
         }
         state.profile = data.company_profile;

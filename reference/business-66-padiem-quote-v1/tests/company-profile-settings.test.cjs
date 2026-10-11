@@ -159,6 +159,7 @@ function bind(doc, session, fetchLog) {
   const reloads = [];
   const host = doc.getElementById("companyProfileHost");
   const panel = doc.getElementById("settingsPanel");
+  panel.hidden = true; // real settings panel starts hidden in index.html
   const controller = Settings.bindCompanyProfileSection({
     doc,
     host,
@@ -215,7 +216,7 @@ async function test_missing_profile_onboarding_and_save() {
   check(host.textContent.includes("내 회사 정보를 먼저 설정할까요?"), "onboarding offer copy");
   const form = host.querySelector("form.company-profile-form");
   check(form, "onboarding form rendered");
-  check(panel.hidden === false, "bounded onboarding opened the settings panel");
+  check(panel.hidden === true, "onboarding details remain optional behind the Settings menu");
 
   /* company required */
   controller.submit();
@@ -356,7 +357,7 @@ async function test_cross_account_dismissal_not_reused() {
   /* Account A: missing → auto-open → skip (dismiss 기록) */
   await controller.refresh();
   await flush();
-  check(panel.hidden === false, "A onboarding auto-opened");
+  check(panel.hidden === true, "A missing profile does not automatically open settings");
   host.querySelector("#cpSkip").click();
   check(session.getItem(Settings.ONBOARDING_DISMISS_KEY) === "dismissed", "A dismissal recorded");
 
@@ -376,7 +377,7 @@ async function test_cross_account_dismissal_not_reused() {
   doc.dispatchEvent({ type: "b66:auth-changed", detail: { authenticated: true } });
   await flush();
   check(host.textContent.includes("내 회사 정보를 먼저 설정할까요?"), "B onboarding offer visible");
-  check(panel.hidden === false, "B onboarding auto-opened again");
+  check(panel.hidden === true, "B missing profile does not automatically open settings");
   console.log("PASS cross-account dismissal reuse prevented");
 }
 
