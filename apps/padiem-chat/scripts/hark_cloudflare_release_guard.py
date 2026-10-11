@@ -12,6 +12,7 @@ import json
 import sys
 import tomllib
 from pathlib import Path
+from uuid import UUID
 
 ENGINE_PRIVATE_DB_ID = "702bb62b-36f5-41a0-973f-c4f663ee01e6"
 ENGINE_PRIVATE_DB_NAME = "padiem-chat-db"
@@ -153,7 +154,48 @@ def audit_replacement(b62_base: dict[str, str], engine_base: dict[str, str],
         errors.append("B62 requires BROWSER of type browser")
     if engine_next.get(ENGINE_ADDED_BINDING) != "d1":
         errors.append("Engine requires WEB_XLSX_PRIVATE_B62_D1 of type d1")
+    # Hark may introduce only the two explicitly authorized identities;
+    # unrelated new resource authority fails closed.
+    for worker, old, next_bindings, approved in (
+        (B62_APP, b62_base, b62_next, {B62_ADDED_BINDING: "browser"}),
+        (ENGINE_APP, engine_base, engine_next, {ENGINE_ADDED_BINDING: "d1"}),
+    ):
+        extras = sorted(name for name in set(next_bindings) - set(old)
+                        if approved.get(name) != next_bindings[name])
+        if extras:
+            errors.append(worker + " would ADD unapproved bindings: "
+                          + ", ".join(extras))
     return errors
+
+
+def read_immutable_version_proof(path: Path) -> str:
+    """Require Cloudflare versions-view shape and an immutable version ID.
+
+    Offline exports are NOT remote attestation. An operational release must
+    fetch these from the real account immediately before release.
+    """
+    doc = json.loads(path.read_text(encoding="utf-8-sig"))
+    version_id = doc.get("id")
+    try:
+        uuid = UUID(version_id)
+    except (TypeError, ValueError, AttributeError) as exc:
+        raise ValueError("immutable Cloudflare version id missing/invalid") from exc
+    if str(uuid) != version_id or uuid.int == 0:
+        raise ValueError("immutable Cloudflare version id missing/invalid")
+    resources = doc.get("resources")
+    if not isinstance(resources, dict):
+        raise ValueError("immutable Cloudflare resources missing")
+    script = resources.get("script")
+    runtime = resources.get("script_runtime")
+    if (not isinstance(script, dict)
+            or not isinstance(script.get("etag"), str)
+            or not script["etag"]
+            or not isinstance(runtime, dict)
+            or not isinstance(runtime.get("compatibility_date"), str)
+            or not runtime["compatibility_date"]
+            or not isinstance(resources.get("bindings"), list)):
+        raise ValueError("immutable Cloudflare script/runtime/binding proof incomplete")
+    return version_id
 
 
 def main(argv=None) -> int:
@@ -174,6 +216,15 @@ def main(argv=None) -> int:
         if not opts.candidate_b62_version or not opts.candidate_engine_version:
             print("PRODUCTION_DEPLOYMENT=BLOCKED candidate version manifests absent")
             return 2
+        # Candidate must be a distinct immutable Worker version, never
+        # a synthetic binding list or re-labeled copy of the served version.
+        live_b62_id = read_immutable_version_proof(opts.live_b62_version)
+        live_engine_id = read_immutable_version_proof(opts.live_engine_version)
+        candidate_b62_id = read_immutable_version_proof(opts.candidate_b62_version)
+        candidate_engine_id = read_immutable_version_proof(opts.candidate_engine_version)
+        if live_b62_id == candidate_b62_id or live_engine_id == candidate_engine_id:
+            print("BLOCKED candidate must be a distinct immutable Worker version")
+            return 2
         errors = audit_replacement(
             old_b62, old_engine, read_version_bindings(opts.candidate_b62_version),
             read_version_bindings(opts.candidate_engine_version))
@@ -187,6 +238,7 @@ def main(argv=None) -> int:
             for error in errors:
                 print("BLOCKED " + error)
             return 2
+        print("IMMUTABLE_VERSION_SHAPE_AND_DISTINCT_ID=PASS")
         print("BINDING_NAME_TYPE_RESOURCE_ID_PARITY=PASS")
         print("RELEASE=NOT_AUTHORIZED; this tool never deploys or enables flags")
         return 0
