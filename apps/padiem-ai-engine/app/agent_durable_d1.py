@@ -22,6 +22,8 @@ async def _await(value: Any) -> Any:
 def _changes(result: Any) -> bool:
     """Require exact D1 changes metadata; unknown result is fail-closed."""
     meta = result.get("meta") if isinstance(result, dict) else getattr(result, "meta", None)
+    if isinstance(result, dict) and result.get("success") is not True:
+        return False
     if meta is None:
         return False
     n = meta.get("changes") if isinstance(meta, dict) else getattr(meta, "changes", None)
