@@ -1724,7 +1724,9 @@ body.b66-three-pane #recentQuoteStarter { display: none !important; }
 
 /* #3871 — 선택 사항인 내 Google Drive 저장·불러오기 UI (연결하지 않아도 기존 기능 유지) */
 .drive-storage { margin-top: 14px; }
-.drive-status { margin: 0 0 8px; font-size: 13px; color: #475467; }
+.drive-authority-note { flex-basis: 100%; margin: 0 0 2px; font-size: 12px; line-height: 1.45; color: #475467; }
+.drive-authority-note[data-kind="b66"] { font-weight: 600; }
+.drive-status { margin: 6px 0 8px; font-size: 13px; color: #475467; }
 .drive-status[data-tone="ok"] { color: #067647; }
 .drive-status[data-tone="warn"] { color: #b54708; }
 .drive-status[data-tone="error"] { color: #b42318; }
