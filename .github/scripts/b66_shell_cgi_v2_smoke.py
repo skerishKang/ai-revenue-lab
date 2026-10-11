@@ -154,7 +154,11 @@ async def main() -> int:
             assert switch["initialLayout"] == "GENERIC"
             assert switch["cgiOptions"] == 1
 
-            await page.select_option("#templateSelect", "cgi-v2")
+            # Legacy output template is intentionally in the hidden advanced editor,
+            # not the chat rail. Exercise its existing change handler directly.
+            await page.locator("#templateSelect").evaluate(
+                "el => { el.value = 'cgi-v2'; el.dispatchEvent(new Event('change', {bubbles:true})); }"
+            )
             await page.wait_for_timeout(50)
             selected = await page.evaluate(
                 """() => ({
@@ -298,7 +302,7 @@ async def main() -> int:
         print("B66_CANONICAL_PREVIEW_COUNT=1")
         print("B66_CGI_IFRAME_COUNT=0")
         print("B66_SAVED_SKILL_SELECTOR_IN_RAIL=PASS")
-        print("B66_QUOTE_TEMPLATE_SELECTOR_IN_RAIL=PASS")
+        print("B66_QUOTE_TEMPLATE_SELECTOR_ADVANCED_ONLY=PASS")
         print("B66_CGI_TEMPLATE_SELECTION=PASS")
         print("B66_NEW_QUOTE_TEMPLATE_RESET=PASS")
         print("B66_CGI_V2_BROWSER_RENDER=PASS")
