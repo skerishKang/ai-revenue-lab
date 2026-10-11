@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import asyncio
 import json
-from typing import Any
+from typing import Any, Awaitable, Callable
 
 from starlette.responses import StreamingResponse
 from kagent.p01_adapter import P01AdapterError, P01DispatchClass
@@ -36,7 +36,11 @@ def _event_projection(event: OrchestrationEvent) -> dict[str, object]:
     return {**{key: public[key] for key in _ALLOWED_FIELDS}, "delivery": "live"}
 
 
-def live_claw_sse(adapter: Any, run: Any, dispatch_args: dict[str, Any]) -> StreamingResponse:
+def live_claw_sse(
+    adapter: Any, run: Any, dispatch_args: dict[str, Any],
+    *,
+    on_completed: Callable[[str], Awaitable[str | None]] | None = None,
+) -> StreamingResponse:
     """Queue backed SSE; upstream gets cancelled if the browser disconnects.
 
     This branch is strictly opt-in; the normal B54 endpoint is unchanged.
@@ -111,9 +115,23 @@ def live_claw_sse(adapter: Any, run: Any, dispatch_args: dict[str, Any]) -> Stre
                         "code": "engine_execution_failed", "message": "Engine 완료 상태를 확인할 수 없습니다.",
                     }})
                     return
+                # One post-completion owner-history projection. The signed
+                # route owns the callback; this SSE relay never mints threads
+                # or stores a failed/approval-paused result.
+                saved_conversation_id = None
+                if on_completed is not None:
+                    try:
+                        saved_conversation_id = await on_completed(payload.answer)
+                    except Exception:
+                        # A successful P01 execution cannot become a retryable
+                        # error solely because the optional D1 history failed.
+                        saved_conversation_id = None
+                terminal = {"done": True}
+                if isinstance(saved_conversation_id, str) and saved_conversation_id:
+                    terminal["conversation_id"] = saved_conversation_id
                 yield _frame("p01_event", verified_terminal)
                 yield _frame("delta", {"delta": payload.answer})
-                yield _frame("done", {"done": True})
+                yield _frame("done", terminal)
                 return
         finally:
             if not task.done():
