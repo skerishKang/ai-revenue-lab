@@ -90,8 +90,13 @@
   .claw-task-hub-heading h2 { font-size: 21px; }
   .claw-task-hub-heading > p:last-child { font-size: 13px; }
   .claw-task-option { padding: 13px 14px; }
-  .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .composer-wrap .claw-mobile-composer-toggle {
+  .app-shell[data-state="claw"] .claw-workspace:is([data-view="general"], [data-view="manual"]) ~ .composer-wrap .claw-mobile-composer-toggle {
     display: flex;
+  }
+  html body .app-shell[data-state="claw"] .claw-workspace[data-view="manual"] ~ .composer-wrap {
+    max-height: min(72dvh, 560px) !important;
+    overflow-y: auto !important;
+    overscroll-behavior-y: contain;
   }
   .app-shell[data-state="claw"] .claw-mobile-composer-toggle {
     width: 100%;
@@ -106,6 +111,9 @@
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
+    position: sticky;
+    top: 0;
+    z-index: 2;
   }
   html body .app-shell[data-state="claw"] .conversation {
     padding-bottom: calc(var(--claw-composer-clearance, 380px) + 24px) !important;
