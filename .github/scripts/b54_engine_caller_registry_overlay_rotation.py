@@ -23,11 +23,22 @@ deliberately distinct from every base V1 caller id (so the runtime
 ``duplicate_service_caller`` guard can never fire for it) bound to exactly the
 canonical Claw, Drive, Telegram-reader, and Calendar-reader applications
 (``b54-padiem-claw``, ``b54-padiem-claw-drive``, ``b54-padiem-claw-telegram``,
-and ``b54-padiem-claw-calendar``), the
+and ``b54-padiem-claw-calendar``) plus the Hark WEB-FIRST XLSX READ Engine tool
+application (``padiem-web-xlsx-p01``), the
 credential/app-authority rotation remains an
 OVERLAY concern, not a base V1 rewrite. This gate therefore requires BOTH the
 base V1 and the overlay to already be present as ``secret_text`` (NAME/TYPE
 only) before it will plan, and it PUTs only the overlay.
+
+The Hark READ entry exists because the Chat P01 engine client addresses the
+Engine ``/internal/v1/tools/execute`` boundary with
+``app_id=padiem-web-xlsx-p01`` (``apps/padiem-chat/app/web_xlsx_p01_engine_client.py``).
+The Engine authorizes the requested app from the caller registry BEFORE the tool
+service runs (``authenticate_engine_caller`` -> ``service_app_not_authorized``),
+so omitting this app id rejects the READ tool request before any approval pause
+can be created. This is an app-authorization entry only: it never enables the
+WRITE tool app (``padiem-web-xlsx-write-p01`` stays unregistered until its own
+activation) and never widens any approval, scope or source-verification gate.
 
 Canonical overlay payload (credential embedded UNHASHED; the Engine hashes it
 internally via ``caller_secret_digest``):
@@ -38,7 +49,8 @@ internally via ``caller_secret_digest``):
                 "allowed_app_ids": ["b54-padiem-claw",
                                     "b54-padiem-claw-drive",
                                     "b54-padiem-claw-telegram",
-                                    "b54-padiem-claw-calendar"]}}
+                                    "b54-padiem-claw-calendar",
+                                    "padiem-web-xlsx-p01"]}}
 
 Pre- and post-mutation readback is proven on the ACTUALLY SERVED Worker version
 (deployments API -> ``versions/{active}`` detail -> ``result.resources.bindings``),
@@ -116,6 +128,14 @@ ALLOWED_APP_IDS = (
     "b54-padiem-claw-drive",
     "b54-padiem-claw-telegram",
     "b54-padiem-claw-calendar",
+    # #3936 Hark WEB-FIRST XLSX READ Engine tool app. The Chat P01 engine
+    # client sends app_id=padiem-web-xlsx-p01 to /internal/v1/tools/execute and
+    # the Engine authorizes the requested app from this registry entry before
+    # the tool service runs. Without it the READ tool request is rejected with
+    # service_app_not_authorized and no P01 approval pause can be created.
+    # READ-only registration: the WRITE tool app (padiem-web-xlsx-write-p01) is
+    # deliberately absent until its own owner-approved activation.
+    "padiem-web-xlsx-p01",
 )
 OVERLAY_VERSION = 1
 

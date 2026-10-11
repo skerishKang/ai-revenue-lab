@@ -9,11 +9,13 @@ Proves statically and locally (no network) that:
      authority (case-insensitive scan), so the overlay no longer collides with
      the base V1 caller and the runtime ``duplicate_service_caller`` guard is
      never tripped by this pairing;
-  3. the overlay app authority is exactly the canonical quartet: ``allowed_app_ids``
+  3. the overlay app authority is exactly the canonical set: ``allowed_app_ids``
      is exactly ``["b54-padiem-claw", "b54-padiem-claw-drive",
-     "b54-padiem-claw-telegram", "b54-padiem-claw-calendar"]`` — the Claw app
+     "b54-padiem-claw-telegram", "b54-padiem-claw-calendar",
+     "padiem-web-xlsx-p01"]`` — the Claw app
      authority is preserved, the canonical Drive and Telegram reader apps remain,
-     and the Calendar reader app is added for #2952 READ activation, while
+     and the Calendar reader app is added for #2952 READ activation, and the Hark
+     WEB-FIRST XLSX READ Engine tool app is registered for #3936, while
      any further app id remains rejected by the Engine runtime;
   4. the credential authority is unchanged: the rotation still consumes ONLY
      ``B62_P01_ENGINE_CREDENTIAL`` and the Chat credential binding stays
@@ -74,6 +76,9 @@ SMOKE_ONLY_WORKFLOW = (
 DEPLOY_GATE_WORKFLOW = (
     ROOT / ".github/workflows/b54-engine-production-deploy-gate.yml"
 )
+# #3936: the Chat-side private Engine transport that addresses
+# /internal/v1/tools/execute for the Hark WEB-FIRST XLSX READ tool.
+CHAT_P01_ENGINE_CLIENT = ROOT / "apps/padiem-chat/app/web_xlsx_p01_engine_client.py"
 SMOKE_SCRIPTS = (
     ROOT / "apps/padiem-ai-engine/scripts/a9_production_smoke.py",
     ROOT / "apps/padiem-ai-engine/scripts/a10_continuation_production_smoke.py",
@@ -90,9 +95,13 @@ ALLOWED_APP = "b54-padiem-claw"
 DRIVE_APP = "b54-padiem-claw-drive"
 TELEGRAM_APP = "b54-padiem-claw-telegram"
 CALENDAR_APP = "b54-padiem-claw-calendar"
-# #2645 + connector READ extensions: the canonical overlay app authority is
-# exactly this quartet, in order.
-ALLOWED_APPS = (ALLOWED_APP, DRIVE_APP, TELEGRAM_APP, CALENDAR_APP)
+# #3936: Hark WEB-FIRST XLSX READ Engine tool app addressed by the Chat P01
+# engine client. Registered as caller app authority so the Engine authorizes the
+# READ tool request before the tool service runs.
+XLSX_READ_APP = "padiem-web-xlsx-p01"
+# #2645 + connector READ extensions + #3936: the canonical overlay app authority
+# is exactly this set, in order.
+ALLOWED_APPS = (ALLOWED_APP, DRIVE_APP, TELEGRAM_APP, CALENDAR_APP, XLSX_READ_APP)
 BASE_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1"
 OVERLAY_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY"
 
@@ -155,15 +164,17 @@ def test_canonical_app_and_credential_authority_pinned() -> None:
         DRIVE_APP,
         TELEGRAM_APP,
         CALENDAR_APP,
+        XLSX_READ_APP,
     )
-    assert len(rotation.ALLOWED_APP_IDS) == 4
-    assert len(set(rotation.ALLOWED_APP_IDS)) == 4
+    assert len(rotation.ALLOWED_APP_IDS) == 5
+    assert len(set(rotation.ALLOWED_APP_IDS)) == 5
     payload = rotation.build_overlay_payload(credential="n" * 40)
     assert payload["caller"]["allowed_app_ids"] == [
         ALLOWED_APP,
         DRIVE_APP,
         TELEGRAM_APP,
         CALENDAR_APP,
+        XLSX_READ_APP,
     ]
     assert payload["caller"]["caller_id"] == NEW_CALLER_ID
     # Credential authority names are unchanged (values are never touched here).
@@ -237,6 +248,110 @@ def test_2645_both_canonical_apps_authenticate_and_third_app_is_rejected() -> No
             assert exc.code == "service_app_not_authorized", (foreign, exc.code)
         else:
             raise AssertionError(f"third app must be rejected: {foreign!r}")
+
+
+def test_3936_web_xlsx_read_app_is_registered_and_authorized() -> None:
+    """#3936: the Hark XLSX READ Engine tool app must be caller-authorized.
+
+    Root cause of the live `web_xlsx_p01_pause_refused` 409: the Chat P01 engine
+    client addresses /internal/v1/tools/execute with app_id
+    ``padiem-web-xlsx-p01``, but the overlay caller registry did not list that
+    app. The Engine authorizes the requested app from the registry BEFORE the
+    tool service runs, so it answered ``service_app_not_authorized`` and no
+    approval pause/continuation could ever be created.
+
+    This pins the cross-component contract: the app id the Chat client actually
+    sends is present in the canonical overlay allowlist and authenticates against
+    the exact overlay payload the rotation gate PUTs. It is a READ-only
+    registration — the WRITE tool app stays unregistered.
+    """
+    rotation = _load_rotation()
+    identity = _load_engine_identity()
+
+    # The Chat client's app id is the single source of the requested app.
+    chat_text = CHAT_P01_ENGINE_CLIENT.read_text(encoding="utf-8")
+    assert f'_APP = "{XLSX_READ_APP}"' in chat_text, (
+        "Chat P01 engine client app id changed; re-pin the caller registry entry"
+    )
+    assert XLSX_READ_APP in rotation.ALLOWED_APP_IDS
+
+    credential = "n" * 40
+    overlay_text = rotation.build_overlay_put_body(
+        rotation.build_overlay_payload(credential=credential)
+    )["text"]
+    base_registry = {
+        "version": 1,
+        "callers": [
+            {
+                "caller_id": "storymemory-b61",
+                "credential": "b" * 40,
+                "allowed_app_ids": ["b61"],
+            }
+        ],
+    }
+    env = type(
+        "Env",
+        (),
+        {
+            identity.CALLER_REGISTRY_V1_ENV: json.dumps(base_registry),
+            identity.CALLER_REGISTRY_V1_OVERLAY_ENV: overlay_text,
+        },
+    )()
+
+    def _authenticate(app_id: str) -> None:
+        identity.authenticate_request(
+            env=env,
+            headers={
+                identity.CALLER_ID_HEADER: NEW_CALLER_ID,
+                identity.CALLER_CREDENTIAL_HEADER: credential,
+            },
+            requested_app_id=app_id,
+        )
+
+    # READ tool app now PASSES with the exact registered overlay payload.
+    _authenticate(XLSX_READ_APP)
+
+    # WRITE tool app is NOT registered: READ registration never enables WRITE.
+    for foreign in ("padiem-web-xlsx-write-p01", f"{XLSX_READ_APP}-write"):
+        try:
+            _authenticate(foreign)
+        except identity.ServiceIdentityError as exc:
+            assert exc.code == "service_app_not_authorized", (foreign, exc.code)
+        else:
+            raise AssertionError(f"WRITE tool app must stay unregistered: {foreign!r}")
+
+    # And the pre-fix shape is provably the failure: a registry WITHOUT the
+    # entry rejects the same app, which is the live 403 -> 409 mapping.
+    stale_env = type(
+        "Env",
+        (),
+        {
+            identity.CALLER_REGISTRY_V1_ENV: json.dumps(base_registry),
+            identity.CALLER_REGISTRY_V1_OVERLAY_ENV: json.dumps(
+                {
+                    "version": 1,
+                    "caller": {
+                        "caller_id": NEW_CALLER_ID,
+                        "credential": credential,
+                        "allowed_app_ids": list(ALLOWED_APPS[:-1]),
+                    },
+                }
+            ),
+        },
+    )()
+    try:
+        identity.authenticate_request(
+            env=stale_env,
+            headers={
+                identity.CALLER_ID_HEADER: NEW_CALLER_ID,
+                identity.CALLER_CREDENTIAL_HEADER: credential,
+            },
+            requested_app_id=XLSX_READ_APP,
+        )
+    except identity.ServiceIdentityError as exc:
+        assert exc.code == "service_app_not_authorized"
+    else:
+        raise AssertionError("missing registry app entry must fail closed")
 
 
 def test_2645_runtime_identity_modules_stay_app_agnostic() -> None:

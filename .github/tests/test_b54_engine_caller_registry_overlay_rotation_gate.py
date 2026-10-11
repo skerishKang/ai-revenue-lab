@@ -66,14 +66,22 @@ SERVICE_IDENTITY_MODULE = ENGINE_APP / "service_identity.py"
 SENTINEL = "sentinel-raw-value-must-never-appear"
 CREDENTIAL_ENV = "B54_TEST_OVERLAY_ROTATION_CREDENTIAL"
 CONFIRM_PHRASE = "ROTATE_B54_KAGENT_ENGINE_OVERLAY_FROM_EXACT_MAIN"
-# #2645 + #2721 (Telegram reader): the single overlay caller is authorized for
-# the Claw app, the canonical Drive app, and the canonical Telegram reader app,
-# and for nothing else.
+# #2645 + #2721 (Telegram reader) + #2952 (Calendar reader) + #3936 (Hark XLSX
+# READ): the single overlay caller is authorized for the Claw app, the canonical
+# Drive app, the canonical Telegram reader app, the canonical Calendar reader
+# app, and the Hark WEB-FIRST XLSX READ Engine tool app, and for nothing else.
 CLAW_APP_ID = "b54-padiem-claw"
 DRIVE_APP_ID = "b54-padiem-claw-drive"
 TELEGRAM_APP_ID = "b54-padiem-claw-telegram"
 CALENDAR_APP_ID = "b54-padiem-claw-calendar"
-CANONICAL_APP_IDS = (CLAW_APP_ID, DRIVE_APP_ID, TELEGRAM_APP_ID, CALENDAR_APP_ID)
+XLSX_READ_APP_ID = "padiem-web-xlsx-p01"
+CANONICAL_APP_IDS = (
+    CLAW_APP_ID,
+    DRIVE_APP_ID,
+    TELEGRAM_APP_ID,
+    CALENDAR_APP_ID,
+    XLSX_READ_APP_ID,
+)
 FOREIGN_APP_ID = "b62"
 BASE_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1"
 OVERLAY_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY"
@@ -224,9 +232,16 @@ def test_script_constants_exact() -> None:
     assert helper.REQUIRED_BINDING_TYPE == "secret_text"
     assert set(helper.LEGACY_TRIO_NAMES) == set(LEGACY_TRIO_NAMES)
     assert helper.CALLER_ID == "b54-p01-overlay-20260914-a1"
-    # Explicit bounded connector READ authority: Claw, Drive, Telegram, Calendar.
+    # Explicit bounded connector READ authority: Claw, Drive, Telegram, Calendar,
+    # and the Hark WEB-FIRST XLSX READ Engine tool app (#3936).
     assert helper.ALLOWED_APP_IDS == CANONICAL_APP_IDS
-    assert helper.ALLOWED_APP_IDS == (CLAW_APP_ID, DRIVE_APP_ID, TELEGRAM_APP_ID, CALENDAR_APP_ID)
+    assert helper.ALLOWED_APP_IDS == (
+        CLAW_APP_ID,
+        DRIVE_APP_ID,
+        TELEGRAM_APP_ID,
+        CALENDAR_APP_ID,
+        XLSX_READ_APP_ID,
+    )
     assert helper.ALLOWED_APP_IDS[0] == CLAW_APP_ID
     assert helper.OVERLAY_VERSION == 1
     assert helper.MIN_CREDENTIAL_BYTES == 32
@@ -333,7 +348,13 @@ def test_build_overlay_payload_is_canonical_single_caller() -> None:
         "caller": {
             "caller_id": "b54-p01-overlay-20260914-a1",
             "credential": credential,
-            "allowed_app_ids": [CLAW_APP_ID, DRIVE_APP_ID, TELEGRAM_APP_ID, CALENDAR_APP_ID],
+            "allowed_app_ids": [
+                CLAW_APP_ID,
+                DRIVE_APP_ID,
+                TELEGRAM_APP_ID,
+                CALENDAR_APP_ID,
+                XLSX_READ_APP_ID,
+            ],
         },
     }
     # Credential byte boundaries are enforced before any payload is returned.
@@ -551,13 +572,19 @@ def test_2645_canonical_app_authority_contract() -> None:
     payload = helper.build_overlay_payload(credential=credential)
     overlay_text = helper.build_overlay_put_body(payload)["text"]
 
-    # Caller id unchanged; exactly the canonical quartet, in order, no duplicates.
+    # Caller id unchanged; exactly the canonical set, in order, no duplicates.
     assert helper.CALLER_ID == "b54-p01-overlay-20260914-a1"
     parsed = identity.parse_caller_registry_v1_overlay(overlay_text)
     assert parsed.caller_id == helper.CALLER_ID
-    assert parsed.allowed_app_ids == (CLAW_APP_ID, DRIVE_APP_ID, TELEGRAM_APP_ID, CALENDAR_APP_ID)
-    assert len(parsed.allowed_app_ids) == 4
-    assert len(set(parsed.allowed_app_ids)) == 4
+    assert parsed.allowed_app_ids == (
+        CLAW_APP_ID,
+        DRIVE_APP_ID,
+        TELEGRAM_APP_ID,
+        CALENDAR_APP_ID,
+        XLSX_READ_APP_ID,
+    )
+    assert len(parsed.allowed_app_ids) == 5
+    assert len(set(parsed.allowed_app_ids)) == 5
 
     base_registry = {
         "version": 1,
