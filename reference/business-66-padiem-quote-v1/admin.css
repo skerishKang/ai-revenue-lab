@@ -36,3 +36,13 @@
   .save{min-width:82px}
   .rail nav a:last-child{display:none}
 }
+
+.member-detail-link{display:block;color:inherit;text-decoration:none;padding:2px;border-radius:7px}
+.member-detail-link:hover{color:#245f85;text-decoration:underline}
+.back-inline{display:inline-block;color:#416d8b;font-weight:650;font-size:12px;margin:0 0 16px;text-decoration:none}
+.member-metadata{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 22px}
+.member-metadata span{background:#eaf4fb;border:1px solid #d1e3ee;border-radius:8px;padding:8px 12px;font-size:12px}
+#memberDetail h3{font-size:15px;margin:25px 0 9px}
+#memberDetail h3 small{color:#698399;font-weight:500;font-size:11px}
+.detail-list{padding-left:19px;font-size:12px;color:#365d76;line-height:2}
+.detail-list li{overflow-wrap:anywhere}

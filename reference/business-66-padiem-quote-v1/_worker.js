@@ -95,6 +95,10 @@ function padiemTarget(url, method) {
     return "/api/b66/admin/model-policy";
   }
 
+  const memberDetailMatch = path.match(/^\/api\/padiem\/b66\/admin\/members\/(usr_[a-f0-9]{32})\/detail$/);
+  if (memberDetailMatch && method === "GET") {
+    return "/api/b66/admin/members/" + memberDetailMatch[1] + "/detail";
+  }
   const memberPath = "/api/padiem/b66/admin/members/";
   if (path.startsWith(memberPath) && method === "PATCH") {
     const userId = path.slice(memberPath.length);

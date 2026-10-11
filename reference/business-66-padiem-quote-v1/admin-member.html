@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>회원 상세 · 견적서 관리자</title>
+  <link rel="stylesheet" href="admin.css">
+  <script src="admin.js" defer></script>
+</head>
+<body>
+  <div class="layout">
+    <aside class="rail">
+      <div class="brand"><span class="brand-mark">견</span><span>견적서 만들기<small>회원 · 권한 관리</small></span></div>
+      <nav aria-label="관리자 메뉴">
+        <a class="nav-link" data-page="members" href="/admin.html">회원 관리</a>
+        <a class="nav-link" data-page="models" href="/admin-models.html">모델 권한</a>
+        <a class="nav-link" data-page="notices" href="/admin-notices.html">가입 알림</a>
+        <a class="nav-link" href="/">견적서로 돌아가기</a>
+      </nav>
+      <div class="rail-footer">관리자 전용 · 서버 권한 확인</div>
+    </aside>
+    <main class="main">
+      <header class="header">
+        <div>
+          <p class="eyebrow">PADIEM QUOTE</p>
+          <h1>회원 상세</h1>
+          <p class="subtitle">회원별 사용 현황과 등급 변경 기록을 조회합니다.</p>
+        </div>
+        <a class="back" href="/">견적서로 돌아가기</a>
+      </header>
+      <section id="access" class="access" role="status" aria-live="polite">관리자 권한을 확인하고 있습니다.</section>
+      <div id="adminContent" data-page="detail" hidden>
+        <section id="memberDetail" class="panel" aria-live="polite">
+          <div class="section-head"><div>
+            <a class="back-inline" href="/admin.html">← 회원 관리로 돌아가기</a>
+            <h2 id="detailName">회원 정보를 확인하는 중입니다.</h2>
+            <p id="detailEmail"></p>
+          </div></div>
+          <div id="detailBody" hidden>
+            <div class="member-metadata"><span id="detailTier"></span><span id="detailStatus"></span><span id="detailJoined"></span></div>
+            <h3>AI 요청 사용량 <small>전체 PADIEM Chat · 일별 요청 할당량 집계</small></h3>
+            <p class="note">실제 성공 응답 횟수나 B66 전용 모델 실행 횟수가 아닙니다. 기존 사용량 저장 데이터만 표시합니다.</p>
+            <div class="cards">
+              <article class="stat"><span>오늘</span><strong id="detailToday">–</strong></article>
+              <article class="stat"><span>최근 7일</span><strong id="detailWeek">–</strong></article>
+              <article class="stat"><span>최근 30일</span><strong id="detailMonth">–</strong></article>
+            </div>
+            <h3>모델별 사용량</h3><p class="note" id="detailModelInfo">모델별 실행 횟수는 아직 기록되지 않아 집계할 수 없습니다.</p>
+            <h3>견적서 저장 이력</h3>
+            <p class="note">저장된 견적 내용이나 고객 정보는 표시하지 않습니다.</p>
+            <p id="detailQuoteCount"></p><ul id="detailQuotes" class="detail-list"></ul>
+            <h3>회원 권한 변경 이력</h3>
+            <ul id="detailAudit" class="detail-list"></ul>
+          </div>
+          <p id="detailError" class="note" role="status"></p>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
