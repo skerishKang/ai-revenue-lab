@@ -381,7 +381,7 @@
       lastMobileView = activeView;
       const collapsed = shell.dataset.clawComposerCollapsed === "true";
       if (composerToggle) {
-        const label = activeView === "manual" ? "문서 입력·모델 설정" : "채팅·모델 설정";
+        const label = activeView === "manual" ? "문서 입력·모델 설정" : "모델·고급 설정";
         composerToggle.setAttribute("aria-expanded", String(!collapsed));
         composerToggle.textContent = label + (collapsed ? " 열기" : " 접기");
       }
