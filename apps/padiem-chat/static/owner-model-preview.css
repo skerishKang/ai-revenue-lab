@@ -67,3 +67,34 @@
   color: var(--muted, #666);
   font-size: .8rem;
 }
+
+.owner-model-preview-trigger {
+  display: inline-flex;
+  align-items: center;
+  max-width: calc(100% - 8px);
+  margin: 2px 4px 6px;
+  border: 1px solid var(--line, #dedee8);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted, #666);
+  font: inherit;
+  font-size: .78rem;
+  padding: 8px 11px;
+  cursor: pointer;
+}
+.owner-model-preview-trigger:hover,
+.owner-model-preview-trigger:focus-visible {
+  color: var(--text, #222);
+  border-color: currentColor;
+}
+.owner-model-preview-trigger:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* B62 #3790 mobile composer containment: optional web/deep tools wrap, never push send off-screen. */
+@media (max-width: 620px) {
+  .composer-actions { align-items: flex-end; min-width: 0; }
+  .composer-tools { flex: 1 1 0; min-width: 0; flex-wrap: wrap; }
+  .send-button { flex: 0 0 44px; align-self: flex-end; }
+}

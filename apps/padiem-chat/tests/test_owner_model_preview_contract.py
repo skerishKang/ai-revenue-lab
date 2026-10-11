@@ -86,3 +86,26 @@ def test_model_preview_does_not_promote_a_synthetic_tier_or_dispatch():
     assert payload["execution_enabled"] is False
     assert all(not item["customer_selectable"]
                for item in payload["model_names"])
+
+
+def test_model_status_button_cannot_hijack_existing_tier_picker():
+    html = (STATIC / "index.html").read_text(encoding="utf-8")
+    mode = (STATIC / "product-capabilities.js").read_text(encoding="utf-8")
+    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    assert 'class="model-pill composer-tier-trigger" type="button"' in html
+    assert 'class="owner-model-preview-trigger" id="ownerModelPreviewOpen"' in html
+    assert html.count('id="ownerModelPreviewOpen"') == 1
+    assert 'const modePill = document.querySelector(".model-pill")' in mode
+    assert '[".model-pill span:last-child", "mode"]' in locale
+    assert "model-pill:not(#ownerModelPreviewOpen)" not in locale
+
+
+def test_model_status_button_not_in_mobile_composer_tools_row():
+    html = (STATIC / "index.html").read_text(encoding="utf-8")
+    button_pos = html.index('id="ownerModelPreviewOpen"')
+    tools_start = html.index('class="composer-tools"')
+    tools_end = html.index('id="sendButton"', tools_start)
+    assert button_pos < tools_start
+    assert button_pos < html.index('for="messageInput"')
+    assert not (tools_start < button_pos < tools_end)
+    assert 'class="model-pill composer-tier-trigger"' in html

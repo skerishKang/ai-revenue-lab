@@ -720,11 +720,12 @@
             <input id="clawModelIdInput" type="text" value="google/gemini-3.5-flash-lite" maxlength="128" autocomplete="off" autocapitalize="off" spellcheck="false" data-locale-placeholder="claw-model-choice-placeholder" placeholder="등록된 모델 ID를 입력하세요" aria-describedby="clawModelChoiceHint" />
             <small id="clawModelChoiceHint" data-locale-key="claw-model-choice-hint">Claw Plus 기본: Gemini 3.5 Flash-Lite · 직접 변경 가능 · 자동 대체 없음</small>
           </label>
+          <button class="owner-model-preview-trigger" id="ownerModelPreviewOpen" type="button" aria-haspopup="dialog" aria-controls="ownerModelPreviewDialog" aria-expanded="false" data-locale-aria-label="owner-model-preview-open" aria-label="파디엠플러스 모델 현황"><span data-locale-key="owner-model-preview-open">파디엠플러스 모델 현황</span></button>
           <label for="messageInput" class="sr-only" data-locale-key="message-input-label">메시지 입력</label>
           <textarea id="messageInput" rows="1" data-locale-placeholder="input" placeholder="무엇이든 물어보세요" autocomplete="off" maxlength="8000"></textarea>
           <div class="composer-actions">
             <div class="composer-tools">
-              <button class="model-pill composer-tier-trigger" id="ownerModelPreviewOpen" type="button" aria-haspopup="dialog" aria-controls="ownerModelPreviewDialog" aria-expanded="false" data-locale-aria-label="owner-model-preview-open" aria-label="파디엠플러스 모델 현황"><span class="status-spark" aria-hidden="true">✦</span><span data-locale-key="owner-model-preview-open">파디엠플러스 모델 현황</span></button>
+              <button class="model-pill composer-tier-trigger" type="button" data-locale-aria-label="mode" aria-label="AI 등급"><span class="status-spark" aria-hidden="true">✦</span><span>Padiem Plus</span></button>
               <input id="attachmentFileInput" type="file" hidden />
               <button type="button" class="tool-button" id="attachmentButton" title="파일 첨부"><span aria-hidden="true">＋</span><span>파일</span></button>
               <button type="button" class="tool-button" disabled id="webSearchButton" aria-disabled="true" aria-pressed="false" title="웹 검색" hidden><span aria-hidden="true">⌕</span><span>웹 검색</span></button>
