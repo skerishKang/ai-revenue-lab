@@ -3,7 +3,10 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import shutil
+import subprocess
 import sys
+import textwrap
 from pathlib import Path
 
 import pytest
@@ -169,3 +172,22 @@ def test_workflow_has_protected_manual_only_mutation_and_rollback():
     assert """-w '%{http_code}' \\
             "${api}")""" in mutation
 
+
+def test_prepatch_cloudflare_module_authority_step_parses_with_actual_bash():
+    """Catch malformed nested shell here-docs before *any* production run."""
+    if not shutil.which("bash"):
+        pytest.skip("Requires Bash for the GitHub Actions ubuntu job")
+    workflow = (ROOT / "workflows/hark-web-first-runtime-activation.yml").read_text(
+        encoding="utf-8"
+    )
+    block = workflow.split(
+        "- name: Read actual 100-percent served target and peer authority", 1
+    )[1].split("- name: Build additive exact-only patch", 1)[0]
+    assert "python -c '" in block
+    assert "<<'PY'" not in block
+    script = textwrap.dedent(block.split("        run: |", 1)[1]).strip()
+    completed = subprocess.run(
+        ["bash", "-n"], input=script, text=True,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False,
+    )
+    assert completed.returncode == 0, completed.stderr
