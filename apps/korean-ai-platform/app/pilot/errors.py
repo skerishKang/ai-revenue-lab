@@ -75,10 +75,13 @@ class ToolsNotSupported(PilotError):
 
 
 class UpstreamAuthFailed(PilotError):
-    def __init__(self) -> None:
+    def __init__(self, message: str | None = None) -> None:
         super().__init__(
             code="upstream_auth_failed",
-            message="Provider 인증에 실패했습니다. X-Business14-Provider-Key 헤더의 API key를 확인하십시오.",
+            message=message or (
+                "Provider 인증에 실패했습니다. "
+                "X-Business14-Provider-Key 헤더의 API key를 확인하십시오."
+            ),
             status_code=401,
         )
 

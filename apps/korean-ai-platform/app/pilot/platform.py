@@ -152,10 +152,81 @@ def _request_headers(
     )
 
 
+def _tokenharbor_safe_error_family(
+    response: httpx.Response, error_body: bytes
+) -> str:
+    """Only classify allowlisted enum codes. Never log vendor-supplied strings."""
+    if "application/json" not in response.headers.get("content-type", "").casefold():
+        return "not_json"
+    if len(error_body) > 4096:
+        return "unclassified"
+    try:
+        payload = json.loads(error_body)
+    except (ValueError, UnicodeError):
+        return "unclassified"
+    if not isinstance(payload, dict):
+        return "unclassified"
+    error = payload.get("error")
+    code = error.get("code") if isinstance(error, dict) else payload.get("code")
+    if not isinstance(code, str):
+        return "unclassified"
+    return {
+        "invalid_api_key": "invalid_key",
+        "invalid_key": "invalid_key",
+        "permission_denied": "access_denied",
+        "forbidden": "access_denied",
+        "access_denied": "access_denied",
+        "rate_limit_exceeded": "rate_limited",
+        "too_many_failed_authentication_attempts": "rate_limited",
+    }.get(code.casefold(), "unclassified")
+
+
+def _log_tokenharbor_rejection(
+    response: httpx.Response, request_headers: dict[str, str], error_body: bytes
+) -> None:
+    """Safe diagnostic for BOTH completed and streaming TokenHarbor requests."""
+    if not (
+        300 <= response.status_code < 400
+        or response.status_code in (401, 403, 429)
+    ):
+        return
+    # Shape is not proof that the secret equals the locally verified credential.
+    credential_shape = (
+        "expected"
+        if re.fullmatch(
+            r"Bearer thk_[A-Za-z0-9_-]{20,160}",
+            request_headers.get("Authorization", ""),
+        )
+        else "unexpected"
+    )
+    media_type = response.headers.get("content-type", "").casefold()
+    response_format = (
+        "html" if "text/html" in media_type else
+        "json" if "application/json" in media_type else "other"
+    )
+    # An HTML 403 without a challenge header can be a WAF block;
+    # a JSON 403 also does not establish who originated the response.
+    logger.warning(
+        "tokenharbor_auth_diagnostic upstream_http_status=%d "
+        "credential_shape=%s response_format=%s cf_challenge=%s "
+        "error_family=%s",
+        response.status_code,
+        credential_shape,
+        response_format,
+        response.headers.get("cf-mitigated", "").casefold() == "challenge",
+        _tokenharbor_safe_error_family(response, error_body),
+    )
+
+
 def _raise_upstream_error(
     status: int, provider_id: str = "", body_text: str = ""
 ) -> None:
     if status in (401, 403):
+        if provider_id == "tokenharbor":
+            raise UpstreamAuthFailed(
+                "TokenHarbor 상위 요청이 거부되었습니다. "
+                "B14 서버 측 공급업체 인증 및 접근 정책을 확인하십시오."
+            )
         raise UpstreamAuthFailed()
     if status == 429:
         if provider_id == "kilo":
@@ -301,36 +372,8 @@ async def call_platform_chat_completions(
         raise UpstreamServerError()
 
     if response.status_code < 200 or response.status_code >= 300:
-        if platform_provider_id == "tokenharbor" and response.status_code in (401, 403):
-            # Only two non-sensitive classification fields. No keys, hashes,
-            # key lengths, HTTP headers, upstream bodies or request contents.
-            credential_shape = (
-                "expected"
-                if re.fullmatch(
-                    r"Bearer thk_[A-Za-z0-9_-]{20,160}",
-                    headers.get("Authorization", ""),
-                )
-                else "unexpected"
-            )
-            # Classify an edge HTML block versus an origin JSON denial using
-            # response metadata only. Never log header values, trace IDs,
-            # vendor response bodies, or any portion of the credential.
-            media_type = response.headers.get("content-type", "").casefold()
-            response_format = (
-                "html" if "text/html" in media_type else
-                "json" if "application/json" in media_type else "other"
-            )
-            logger.warning(
-                "tokenharbor_auth_diagnostic upstream_http_status=%d "
-                "credential_shape=%s response_format=%s cf_edge=%s "
-                "cf_challenge=%s vercel_origin=%s",
-                response.status_code,
-                credential_shape,
-                response_format,
-                response.headers.get("server", "").casefold() == "cloudflare",
-                response.headers.get("cf-mitigated", "").casefold() == "challenge",
-                bool(response.headers.get("x-vercel-id")),
-            )
+        if platform_provider_id == "tokenharbor":
+            _log_tokenharbor_rejection(response, headers, response.content)
         if platform_provider_id == "agnes-ai" and response.status_code == 429:
             log_agnes_429(
                 logger, platform_provider_id, response.status_code,
@@ -485,7 +528,10 @@ async def stream_platform_chat_completions(
                 if response.status_code < 200 or response.status_code >= 300:
                     # Read the small error body so provider-specific 429
                     # normalization (#2003) can inspect it.
-                    error_body = (await response.aread()).decode("utf-8", "replace")
+                    error_bytes = await response.aread()
+                    if platform_provider_id == "tokenharbor":
+                        _log_tokenharbor_rejection(response, headers, error_bytes)
+                    error_body = error_bytes.decode("utf-8", "replace")
                     if platform_provider_id == "agnes-ai" and response.status_code == 429:
                         log_agnes_429(
                             logger, platform_provider_id, response.status_code,
