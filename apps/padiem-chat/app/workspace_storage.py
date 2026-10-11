@@ -471,6 +471,50 @@ class WorkspaceDocumentStore:
             raise WorkspaceStorageError("web XLSX source digest mismatch")
         return projection, payload
 
+    async def find_approved_web_xlsx_workcopy(
+        self, *, tenant_id: str, owner_id: str, workspace_id: str,
+        run_id: str, source_document_id: str, expected_source_sha256: str,
+    ) -> dict[str, Any] | None:
+        """Read-only receipt lookup; only caller may decide the owner D1
+        P01 confirmation is authentic. Never projects private object keys."""
+        tenant = _safe_identifier("tenant_id", tenant_id)
+        owner = _safe_identifier("owner_id", owner_id)
+        workspace = _safe_identifier("workspace_id", workspace_id)
+        run = _safe_identifier("run_id", run_id)
+        doc = _safe_identifier("source_document_id", source_document_id)
+        if not isinstance(expected_source_sha256, str) or not re.fullmatch(
+            r"[0-9a-f]{64}", expected_source_sha256
+        ):
+            raise WorkspaceStorageAccessError("original fingerprint invalid")
+        prefix = (
+            f"workspaces/{tenant}/claw/web-office-workcopies/"
+            f"{owner}/{workspace}/{run}/{doc}/"
+        )
+        rows = await self.metadata_store.list_web_xlsx(
+            tenant_id=tenant, key_prefix=prefix, now=_utcnow(), limit=2,
+        )
+        if not rows:
+            return None
+        if len(rows) != 1:
+            raise WorkspaceStorageError("ambiguous approved workcopy receipt")
+        record = rows[0]
+        if (
+            record.tenant_id != tenant
+            or record.object_key != (
+                f"{prefix}{record.document_id}/{expected_source_sha256}"
+            )
+            or record.media_type != XLSX_MEDIA_TYPE
+            or not re.fullmatch(r"doc_[0-9a-f]{32}", record.document_id)
+            or record.byte_length <= 0
+        ):
+            raise WorkspaceStorageError("approved workcopy receipt mismatch")
+        return {
+            "workcopy_created": True,
+            "workcopy_document_id": record.document_id,
+            "source_document_id": doc,
+            "source_sha256": expected_source_sha256,
+        }
+
     async def create_approved_web_xlsx_workcopy(
         self, *, tenant_id: str, owner_id: str, workspace_id: str,
         source_document_id: str, expected_source_sha256: str,

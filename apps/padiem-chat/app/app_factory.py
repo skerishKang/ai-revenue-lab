@@ -516,6 +516,9 @@ def create_app(
         if _workspace_store is not None and d1_binding is not None else None
     )
     app.state.web_xlsx_p01_owner_decision_client = None
+    # Explicit operator-only feature gate. The browser can never turn on
+    # Engine-granted processing by posting its own approval status.
+    app.state.web_xlsx_p01_workcopy_after_grant_enabled = False
     # Worker-native Claw P01/Engine adapter (#2229). Injected by the Worker
     # composition root from trusted bindings; None means unconfigured and the
     # execute route fails closed before any transport.

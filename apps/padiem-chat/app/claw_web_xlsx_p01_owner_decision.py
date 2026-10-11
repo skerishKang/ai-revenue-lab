@@ -101,7 +101,9 @@ class D1WebXlsxP01OwnerDecisionStore:
             "filename": row["filename"],
             "size_bytes": row["size_bytes"],
             "status": stage,
-            "run_id": row.get("run_id") if stage == "waiting_p01" else None,
+            # Internal-only: the route never projects run_id to the
+            # browser. Required for owner/run-scoped workcopy readback.
+            "run_id": row.get("run_id") if stage in ("waiting_p01", "confirmed") else None,
         }
 
     async def load_waiting(self, *, owner_id: str, workspace_id: str,
@@ -175,8 +177,8 @@ class D1WebXlsxP01OwnerDecisionStore:
 
 async def dispatch_owner_decision(
     *, waiting: dict[str, Any], outcome: str, store: Any, client: Any,
-    submission_factory: Any,
-) -> str:
+    submission_factory: Any, approved_workcopy_handler: Any = None,
+) -> str | tuple[str, dict[str, Any]]:
     """Reserve before sending. Unknown Engine result is never auto-retried."""
     if (outcome not in _OUTCOMES or not callable(getattr(store, "reserve", None))
             or not callable(getattr(store, "commit", None))
@@ -202,9 +204,28 @@ async def dispatch_owner_decision(
         if result.get("status") != "confirmed":
             raise WebXlsxP01RequestError("Engine intent confirmation unavailable")
         verified = "confirmed"
+    # Do not persist a completed approval when an opt-in processing consumer
+    # cannot prove that the private Engine ToolRuntime output is for this
+    # exact original. Unknown results remain a one-shot dispatch reservation.
+    if verified == "confirmed" and approved_workcopy_handler is not None:
+        if (result.get("verified_source_sha256") != waiting["source_sha256"]
+                or not _SHA.fullmatch(waiting["source_sha256"])):
+            raise WebXlsxP01RequestError("Engine original read grant scope mismatch")
     committed = await _await(store.commit(
         waiting=waiting, outcome=outcome, verified=verified,
     ))
     if committed is not True:
         raise WebXlsxP01RequestError("durable owner decision receipt unavailable")
+    # A true Core/Engine confirmation is scope-bound to the immutable source
+    # before any processing read. The separate one-shot workcopy lane may
+    # consume it only AFTER the owner decision is durably confirmed.
+    if verified == "confirmed" and approved_workcopy_handler is not None:
+        if not callable(approved_workcopy_handler):
+            raise WebXlsxP01RequestError("trusted workcopy handler unavailable")
+        copy = await _await(approved_workcopy_handler(
+            waiting=waiting, verified_source_sha256=result["verified_source_sha256"],
+        ))
+        if not isinstance(copy, dict) or copy.get("workcopy_created") is not True:
+            raise WebXlsxP01RequestError("approved workcopy not durable")
+        return verified, copy
     return verified
