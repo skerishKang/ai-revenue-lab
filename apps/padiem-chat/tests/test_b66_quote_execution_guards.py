@@ -92,7 +92,7 @@ def test_exact_quote_off_guard_has_zero_dispatch_before_registry_and_refunds(run
     assert store.bucket_refund_calls == 3
 
 
-@pytest.mark.parametrize("failure", ["binding", "model", "messages", "context", "core_validation", "serialization"])
+@pytest.mark.parametrize("failure", ["binding", "model", "messages", "context", "invalid_shape", "serialization"])
 def test_exact_quote_local_failure_refunds_before_any_service_post(failure):
     binding = Binding()
     store = RefundableMemoryStore()
@@ -107,8 +107,8 @@ def test_exact_quote_local_failure_refunds_before_any_service_post(failure):
         kwargs["messages"] = [{"role": "assistant", "content": "invalid"}]
     elif failure == "context":
         kwargs["additional_system_context"] = "x" * 14_001
-    elif failure == "core_validation":
-        kwargs["messages"] = [{"role": "user", "content": "x" * 100_001}]
+    elif failure == "invalid_shape":
+        kwargs["messages"] = [{"role": "user", "content": "valid", "unsupported_field": "reject"}]
     elif failure == "serialization":
         kwargs["messages"] = [{"role": "user", "content": "\ud800"}]
 
@@ -166,7 +166,7 @@ def test_exact_quote_ambiguous_transport_failure_is_not_refunded():
     assert store.bucket_refund_calls == 0
 
 
-@pytest.mark.parametrize("failure", ["core_validation", "serialization", "transport_timeout"])
+@pytest.mark.parametrize("failure", ["invalid_shape", "serialization", "transport_timeout"])
 def test_direct_http_quote_receipt_is_consumed_only_after_serialization(failure):
     calls = []
     store = RefundableMemoryStore()
@@ -177,14 +177,14 @@ def test_direct_http_quote_receipt_is_consumed_only_after_serialization(failure)
 
     client = DispatchAwareB14Client(settings(), transport=httpx.MockTransport(transport))
     messages = MESSAGES
-    if failure == "core_validation":
-        messages = [{"role": "user", "content": "x" * 100_001}]
+    if failure == "invalid_shape":
+        messages = [{"role": "user", "content": "valid", "unsupported_field": "reject"}]
     elif failure == "serialization":
         messages = [{"role": "user", "content": "\ud800"}]
 
     async def run():
         await reserve(store)
-        expected_error = ValueError if failure == "core_validation" else ChatRuntimeError
+        expected_error = ChatRuntimeError
         with pytest.raises(expected_error):
             await client.complete_registered_quote_model(messages, model=MODEL)
         assert await _refund_active_reservation() is False
