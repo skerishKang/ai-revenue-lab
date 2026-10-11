@@ -472,6 +472,8 @@ function collectAnswerDom(byId) {
     byId.messageInput.value = sseCase.prompt || "견적 상태를 알려줘.";
     // The real Claw model field (index.html:677): a user selection has to be set
     // where the user sets it, or the wire assertion would only prove nothing.
+    // Mirror the visible index.html Claw Plus default; a user can clear or replace it.
+    byId.clawModelIdInput.value = "google/gemini-3.5-flash-lite";
     if (typeof sseCase.modelId === "string") byId.clawModelIdInput.value = sseCase.modelId;
     byId.composerForm.requestSubmit();
     // Preserve the FULL 400ms opportunity to catch delayed/duplicate POSTs
@@ -631,10 +633,21 @@ def test_user_selected_model_id_reaches_the_wire_request_exactly_once() -> None:
     assert result["answerDom"]["paragraphText"] == ANSWER_WITH_MARKUP, result["answerDom"]
 
 
-def test_no_selection_sends_no_model_id_field() -> None:
-    """The control that keeps the wire assertion above from being vacuous."""
+def test_visible_default_sends_one_exact_model_id() -> None:
+    """Default must appear as an explicit model selection on the canonical Claw wire."""
+    _status, _ctype, raw = _capture_server(answer=ANSWER_WITH_MARKUP, model_id="google/gemini-3.5-flash-lite")
+    result = _run_client([{"name": "default-selection", "mode": "stream", "raw": raw}])[0]
+    general = _general_posts(result)
+    assert len(general) == 1, result["requests"]
+    assert json.loads(general[0]["body"])["model_id"] == "google/gemini-3.5-flash-lite"
+    assert general[0]["body"].count("google/gemini-3.5-flash-lite") == 1
+    assert _lane_only(result) == [GENERAL_ROUTE_PATH]
+
+
+def test_user_cleared_model_sends_no_model_id_field() -> None:
+    """Explicitly clearing the default preserves the fail-closed missing-model request."""
     _status, _ctype, raw = _capture_server(answer=ANSWER_WITH_MARKUP)
-    result = _run_client([{"name": "no-selection", "mode": "stream", "raw": raw}])[0]
+    result = _run_client([{"name": "cleared-selection", "mode": "stream", "raw": raw, "modelId": ""}])[0]
     general = _general_posts(result)
     assert len(general) == 1, result["requests"]
     assert "model_id" not in json.loads(general[0]["body"]), general[0]["body"]
