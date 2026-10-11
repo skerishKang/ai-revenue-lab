@@ -293,6 +293,72 @@
   }
 
   // ---------------------------------------------------------------------------
+  // #4139 — multiple-PC selection is a *read-only Web projection*, not pairing
+  // or execution authority. Only a trusted owner-scoped server directory may
+  // be presented. No client-created ONLINE state, guessed default device, or
+  // implicit selection is permitted. This helper intentionally performs no
+  // network, persistence or deep-link navigation: S2 wires it to the canonical
+  // Broker/Control Plane after server-side account/workspace enforcement.
+  // ---------------------------------------------------------------------------
+
+  const DEVICE_DIRECTORY_LIMIT = 24;
+  const DEVICE_ID_PATTERN = /^[A-Za-z0-9_.:-]{1,128}$/;
+
+  function deriveDeviceDirectory(raw, selectedDeviceId) {
+    const empty = (reason) => Object.freeze({
+      available: false,
+      reason,
+      devices: Object.freeze([]),
+      selectedDeviceId: null,
+      selectedDevice: null,
+      canTarget: false,
+    });
+    if (!_isPlainObject(raw) || raw.available !== true || raw.ownerScoped !== true) {
+      return empty("unverified_directory");
+    }
+    if (!Array.isArray(raw.devices) || raw.devices.length > DEVICE_DIRECTORY_LIMIT) {
+      return empty("invalid_directory");
+    }
+
+    const seen = new Set();
+    const devices = [];
+    for (const item of raw.devices) {
+      if (!_isPlainObject(item) || typeof item.deviceId !== "string" ||
+          !DEVICE_ID_PATTERN.test(item.deviceId)) {
+        return empty("invalid_device_identity");
+      }
+      if (seen.has(item.deviceId)) return empty("duplicate_device_identity");
+      seen.add(item.deviceId);
+      const projection = normalizeDeviceProjection(item);
+      devices.push(Object.freeze({
+        deviceId: item.deviceId,
+        deviceName: projection.deviceName || null,
+        platform: projection.platform || null,
+        state: projection.state,
+        variant: projection.variant,
+        // Not an execution grant: only a server-confirmed canonical fact.
+        online: projection.usable && projection.state === "CONNECTED",
+        revoked: projection.revoked || projection.state === "REVOKED",
+      }));
+    }
+
+    // Even with exactly one online PC, never silently route a request to it.
+    // This also prevents selecting an old device after login/account changes.
+    const requested = typeof selectedDeviceId === "string" &&
+      DEVICE_ID_PATTERN.test(selectedDeviceId) ? selectedDeviceId : null;
+    const selected = requested ? devices.find((device) => device.deviceId === requested) : null;
+    const canTarget = Boolean(selected && selected.online);
+    return Object.freeze({
+      available: true,
+      reason: canTarget ? null : selected ? "device_not_online" : "device_selection_required",
+      devices: Object.freeze(devices),
+      selectedDeviceId: selected ? selected.deviceId : null,
+      selectedDevice: selected || null,
+      canTarget,
+    });
+  }
+
+  // ---------------------------------------------------------------------------
   // Korean IME guard (#3084 regression protection).
   //
   // Enter must submit only when it is a *real* Enter. During Hangul/IME
@@ -623,6 +689,7 @@
     FORBIDDEN_USER_JARGON,
     FIXTURES,
     normalizeDeviceProjection,
+    deriveDeviceDirectory,
     consumeHandoffEnvelope,
     deriveHandoffViewModel,
     shouldSubmitOnEnter,
