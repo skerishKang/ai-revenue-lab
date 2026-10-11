@@ -13,6 +13,9 @@ const SRC = {
 };
 const REF = "sel_" + "c".repeat(32);
 const COPY_ID = "doc_" + "d".repeat(32);
+const WORK_CHAT = "chat_" + "f".repeat(32);
+const REV_ID = "doc_" + "e".repeat(32);
+const REV_SHA = "d".repeat(64);
 const SELECTION = {
   selection_ref: REF, document_id: SRC.document_id, filename: SRC.filename,
   size_bytes: SRC.size_bytes, source_sha256: SRC.source_sha256,
@@ -56,13 +59,22 @@ function response(body, status = 200) {
 async function settle() {
   for (let i = 0; i < 12; ++i) await new Promise(resolve => setImmediate(resolve));
 }
-function server({ initial = "waiting_p01", enabled = true, failPost = false, failStart = false, badSource = false, workcopy = false, forgedPreviewWrite = false, writeAvailable = false, pdfAvailable = false } = {}) {
+function server({ initial = "waiting_p01", enabled = true, failPost = false, failStart = false, badSource = false, workcopy = false, forgedPreviewWrite = false, writeAvailable = false, pdfAvailable = false, followupAvailable = false, followupForged = false } = {}) {
   let stage = initial, sent = [], starts = [], previews = [], commits = [],
-    writeDecisions = [], pdfPreviews = [];
+    writeDecisions = [], pdfPreviews = [], followupReads = [];
   global.fetch = async (url, options = {}) => {
     assert.equal(options.credentials, "same-origin");
     assert.equal(options.cache, "no-store");
     const method = options.method || "GET";
+    if (url.includes("/artifact-followup?") && method === "GET") {
+      followupReads.push(url);
+      return response({ok: true, followup: {
+        contract_version: "claw-conversation-artifact-followup.v1",
+        status: followupForged ? "not_available" : "resolved",
+        source_artifact_id: REV_ID, source_integrity_ref: REV_SHA,
+        read_grant_issued: false, source_material_loaded: false,
+      }});
+    }
     if (url.endsWith("/quote-edit/pdf") && method === "GET") {
       pdfPreviews.push(url);
       assert.equal(options.headers.Accept, "application/pdf");
@@ -110,6 +122,10 @@ function server({ initial = "waiting_p01", enabled = true, failPost = false, fai
         revision_sha256: "d".repeat(64), revised_xlsx_created: true,
         pdf_exported: false,
         pdf_download_available: pdfAvailable,
+        followup: followupAvailable && writeDecisions.includes("approve")
+          ? {conversation_id: WORK_CHAT, artifact_id: REV_ID,
+            integrity_ref: followupForged ? "a".repeat(64) : REV_SHA}
+          : null,
       });
     }
     if (url.endsWith("/quote-edit/approval-status") && method === "GET") {
@@ -217,6 +233,7 @@ function server({ initial = "waiting_p01", enabled = true, failPost = false, fai
     throw Error("UNEXPECTED_REQUEST " + method + " " + url);
   };
   return { sent, starts, previews, commits, writeDecisions, pdfPreviews,
+    followupReads,
     get stage() { return stage; } };
 }
 async function prepare(config) {
@@ -299,7 +316,10 @@ async function prepare(config) {
   assert.ok(!/109,120,000/.test(forgedForm.children[5].textContent),
     "Browser must reject forged WRITE-approved preview response");
 
-  const writing = await prepare({workcopy: true, writeAvailable: true, pdfAvailable: true});
+  const writing = await prepare({
+    workcopy: true, writeAvailable: true, pdfAvailable: true,
+    followupAvailable: true,
+  });
   writing.root.nodes.clawWebXlsxP01Approve.handlers.click(); await settle();
   const form = writing.root.nodes.clawWebXlsxP01Panel.children.find(
     item => item.tag === "div" && item.children.some(x => x.tag === "button"));
@@ -353,6 +373,27 @@ async function prepare(config) {
   assert.equal(pdfPreviewRegion.hidden, true, "Status refresh never auto-renders PDF");
   assert.equal(writing.network.sent.length, 1,
     "WRITE cannot silently replay original READ consent");
+
+  const openConversation = form.children[11];
+  assert.match(openConversation.textContent, /작업 대화/);
+  assert.equal(openConversation.hidden, false,
+    "Only indexed owner revision can expose its work-conversation navigation");
+  const events = [];
+  global.window = {dispatchEvent(e) {events.push(e);}};
+  global.CustomEvent = class {constructor(name, options) {
+    this.type = name; this.detail = options.detail;
+  }};
+  await openConversation.click();
+  assert.equal(writing.network.followupReads.length, 1,
+    "Navigation must first re-check the exact owner-owned D1 artifact reference");
+  assert.match(writing.network.followupReads[0], /selector=exact/);
+  assert.equal(events.length, 1);
+  assert.equal(events[0].type, "padiem:claw-web-work-conversation-open");
+  assert.deepEqual(events[0].detail, {
+    conversationId: WORK_CHAT, artifactId: REV_ID, integrityRef: REV_SHA,
+  });
+  assert.equal(writing.network.writeDecisions.length, 1,
+    "Opening the work conversation never replays P01 WRITE or Browser PDF");
 
   const fresh = await prepare({initial: "not_requested"});
   assert.equal(fresh.root.nodes.clawWebXlsxP01Start.hidden, false);
