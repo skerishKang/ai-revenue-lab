@@ -41,6 +41,9 @@ from app.claw_p01_composition import (
     build_claw_p01_adapter,
     build_claw_p01_lanes_with_diagnostic,
 )
+from app.claw_drive_upload_host_composition import (
+    build_claw_drive_artifact_uploader,
+)
 from app.claw_task_alert_store import D1ClawTaskAlertStore
 from app.b66_quote_conversation import B66QuoteConversationInterpreter
 from app.b66_registered_model_boundary import (
@@ -764,6 +767,14 @@ class Default(WorkerEntrypoint):
                     if b66_pdf_binding is not None
                     else None
                 )
+                # #3580: the Claw Drive WRITE host injection boundary. No trusted
+                # input exists in this build — the Control Plane Drive grant is
+                # READ-only (#2010), and there is no run/workspace-scoped artifact
+                # material resolver, authorized folder-proof port or approval
+                # authority composed for the Worker — so this fails closed to
+                # None and the Drive routes stay unbound. Supplying the inputs in
+                # app.claw_drive_upload_host_composition is the whole change.
+                claw_drive_artifact_uploader = build_claw_drive_artifact_uploader()
                 _worker_app = create_app(
                     settings=settings,
                     history_store=history_store,
@@ -771,6 +782,7 @@ class Default(WorkerEntrypoint):
                     r2_binding=r2_binding,
                     web_transport=web_transport,
                     b66_pdf_renderer_client=b66_pdf_renderer_client,
+                    claw_drive_artifact_uploader=claw_drive_artifact_uploader,
                 )
                 _worker_app.state.control_plane_identity_authority = identity_authority
                 _worker_app.state.identity_shadow_store = identity_shadow_store
