@@ -57,6 +57,7 @@ from app.b66_registered_model_boundary import (
     B66RegisteredModelCompletion,
 )
 from app.b66_b14_free_first_resolver import B66ExplicitQuoteModelResolver
+from app.b66_kira_direct_pilot import B66KiraPilotExecutor
 from app.config import ConfigError
 from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from app.calendar_read_activation_engine import CloudflareCalendarReadActivationEngineClient
@@ -933,8 +934,12 @@ class Default(WorkerEntrypoint):
                 _worker_app.state.b66_quote_model_resolver = quote_model_resolver
                 # Claw/B66 consume the same B14 owner-allowed/live-ready catalog.
                 _worker_app.state.b14_model_choice_resolver = quote_model_resolver
-                b66_quote_executor = B14QuoteExactModelExecutor(
-                    _worker_app.state.b14_client
+                b66_quote_executor = B66KiraPilotExecutor(
+                    original_executor=B14QuoteExactModelExecutor(
+                        _worker_app.state.b14_client
+                    ),
+                    credential_binding=binding_value(self.env, "PADIEM_KIRAAI_API_KEY"),
+                    transport=web_transport,
                 )
                 # #3977: the selectable-level gate is the same measured capability
                 # the dispatch path uses, not a literal. With a Core build that
