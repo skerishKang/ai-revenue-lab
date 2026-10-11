@@ -4,6 +4,25 @@
 > **판정:** 완료된 B62/B66 소스 수정은 이미 운영 반영. **엔진은 기존 정상 버전으로 복구돼 있으나 새 Core 릴리스 미반영**. 전체 제한 정비 **진행 중**, 통합 이슈 [#4379](https://github.com/skerishKang/ai-revenue-lab/issues/4379) **OPEN**.
 > 이 문서는 시점 증적(스냅샷)이다. 이후 배포/PR이 일어나면 실제 served version을 다시 읽어 확인한다. 어떤 비밀값도 포함하지 않는다.
 
+## 최신 운영 갱신 — 2026-10-12 KST (이전 스냅샷의 P0/P1 상태를 대체)
+
+> 이 갱신은 아래 최초 인수인계 당시의 **미완료 목록**을 수정한 후속 증적입니다. 아래 3·4절의 과거 P0 shared Core / P1 B62 Chat 제한 상태는 이제 **완료된 이전 작업**이며, Claw·P01·B14·B54 작업은 계속 OPEN입니다. B54의 운영 롤백 버전을 덮어쓰지 않습니다.
+
+| 제품 및 릴리스 | 정확한 소스/CI 증적 | 실제 운영 검증 | 현재 판정 |
+| --- | --- | --- | --- |
+| shared Core — B14 text/multimodal 및 ExecutionRuntime 기존 100/99 메시지, 개당 32,000자 제거 | [PR #4386](https://github.com/skerishKang/ai-revenue-lab/pull/4386), exact HEAD `d8b7e23965bb26f5fb863cbaa3fb21c511cd30ac`; [Core CI](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38162877176), [B62 CI](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38162877225), [Engine CI](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38162877250) 등 필수 6개 성공; 179개 focused + B66 안전 회귀 17개 PASS | B62 배포 번들에 포함; **Engine에는 배포하지 않음** | **Core 병합 및 B62 운영 반영 완료** |
+| B62 독립 Chat 입력/히스토리 한도 20개, 8,000자/개, 총 32,000자 제거 | [PR #4388](https://github.com/skerishKang/ai-revenue-lab/pull/4388), exact HEAD `dee41e7383f704692e0a07739534c4250e98fbc0`; [B62 CI](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38163251626) + [브라우저 QA](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38163251707) 등 필수 7개 성공; focused 8개 PASS | [B62 읽기 전용 사전검사](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38163645648) 성공 및 [운영 배포](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38163713094) 성공 | **B62 운영 배포 완료** |
+| B62 제공 버전 및 바인딩 | 배포 소스 `bebe7fc17b86d480c615ad97ff8353f0c3a2eba3` | 제공 버전 `d4f97dbf-7c34-495f-8721-bb8913944322`; `B62_BINDING_AUTHORITY_PRESERVED=PASS`, `SERVED_VERSION_SECRET_SET_EQUALITY=PASS`, 보존된 secret binding 10개, `B62_PRODUCTION_SMOKE=PASS`; 롤백 불필요 | **배포 및 안전 검증 완료** |
+| B54 Engine | [#4383](https://github.com/skerishKang/ai-revenue-lab/issues/4383) | 지난 롤백 정상 버전 `4d90cf39-ca1b-48b4-977e-dce1ca576d7a` 유지. **이 갱신은 별도 신규 Engine served-version 재조회 증거는 아님** | **배포 금지 유지 / #4383 OPEN** |
+
+**의도적으로 유지한 다른 성격의 한도:** B62 Chat 전송/메모리 안전 6,000,000바이트, Core 응답 바이트 및 이미지 파일 크기 가드, 엄격한 역할·요청 검증과 모델 선택/인증/승인/권한 경계, 저장 대화 미리보기 8,000자(긴 내용은 `[저장 미리보기: 전체 내용 중 일부만 저장되었습니다.]`로 명시). 이 저장 미리보기 제한은 모델에 보내는 원본 입력 제한이 아닙니다. 공급사 실제 최대 컨텍스트는 공급사별로 상이하므로 추정하지 않습니다.
+
+**남은 범위:** Claw 일반 대화→P01 엔진 요청의 8,000자·64KiB / 수동 요청 4,000자와 40개 메시지 규칙, P01 모델 대기 300초와 승인/도구 실행 TTL 분리, Engine 모델 관련 HTTP 128KiB 요청 경계(단 #4383 해소 전 배포 금지), B14/동적 제공사의 streaming·응답 바이트·대기 정책, 파일·검색 문맥 요약/잘림. [통합 #4379](https://github.com/skerishKang/ai-revenue-lab/issues/4379)는 **OPEN**을 유지합니다.
+
+**변경 관리:** 본 운영 문서만 추가 수정한 docs-only PR은 재배포를 발생시키지 않습니다.
+
+---
+
 ## 1. 결정된 정책 — 모델 용량과 제품 권한을 혼동하지 않는다
 
 1. 모델 **원본 입력 길이·출력 토큰·원본 답변 길이**를 과거 파일럿 수치로 전역 제한하지 않는다. 요청 파라미터를 생략하면 공급사 기본값을 유지하며, 명시값은 유효한 형식으로 전달한다. 공급사/중개사의 모델별 실제 한도를 *확인할 수 있으면* 참조하되 미상 값은 추정하지 않는다.
