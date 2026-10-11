@@ -378,7 +378,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                 return _error(403, "workspace_scope_unavailable",
                               "Claw ???? ??? ??? ? ????.")
 
-    # #3790: in the production Worker both Claw and B66 share the same B14
+    # #3790: in the production Worker Claw uses the central model
     # ready/owner-allowed metadata resolver. Reject a forged advanced model ID
     # before quota/P01. Test-only deployments without this optional view still
     # rely on B14's final exact-ID execution authority.
