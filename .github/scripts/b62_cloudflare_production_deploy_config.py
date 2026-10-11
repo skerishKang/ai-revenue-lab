@@ -183,6 +183,9 @@ def build_production_config(
     flag_text = ", ".join(_toml_string(f) for f in flags)
     lines.append(f"compatibility_flags = [{flag_text}]")
     lines.append("workers_dev = true")
+    # Existing live Worker exposes version/preview URLs; match that remote
+    # state explicitly so --strict never attempts to disable them on upload.
+    lines.append("preview_urls = true")
     if base_dir is not None:
         lines.append(f"base_dir = {_toml_string(base_dir)}")
     # Preserve the already-attached canonical production Custom Domain. Without
