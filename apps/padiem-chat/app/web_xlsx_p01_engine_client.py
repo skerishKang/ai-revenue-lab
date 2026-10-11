@@ -178,8 +178,16 @@ class CloudflareWebXlsxP01EngineClient:
                 and isinstance(response["tool"].get("output"), dict)
                 and response["tool"]["output"].get("p01_intent_confirmed") is True
                 and response["tool"]["output"].get("read_executed") is False
-                and response["tool"]["output"].get("workcopy_created") is False):
-            return {"ok": True, "status": "confirmed"}
+                and response["tool"]["output"].get("workcopy_created") is False
+                and isinstance(response["tool"]["output"].get("source_sha256"), str)
+                and re.fullmatch(r"[0-9a-f]{64}", response["tool"]["output"]["source_sha256"])):
+            # B62 may consume this internal, authenticated Engine/Core receipt
+            # ONLY for the exact source hash held in the owner D1 request.
+            # It never reaches the public browser; it is not a reusable grant.
+            return {
+                "ok": True, "status": "confirmed",
+                "verified_source_sha256": response["tool"]["output"]["source_sha256"],
+            }
         raise WebXlsxP01RequestError("Engine did not verify owner P01 outcome")
 
 

@@ -27,7 +27,10 @@ class DecisionEngine:
         self.calls.append((continuation_ref, submission))
         if self.raise_:
             raise RuntimeError("unknown Engine outcome")
-        return {"ok": True, "status": self.status}
+        result = {"ok": True, "status": self.status}
+        if self.status == "confirmed" and getattr(self, "verified_source_sha256", None):
+            result["verified_source_sha256"] = self.verified_source_sha256
+        return result
 
 
 def ready():

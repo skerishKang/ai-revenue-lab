@@ -906,6 +906,14 @@ class Default(WorkerEntrypoint):
                         self.env, "PADIEM_WEB_XLSX_P01_OWNER_DECISION_ENABLED", None
                     ) == "true" else None
                 )
+                _worker_app.state.web_xlsx_p01_workcopy_after_grant_enabled = (
+                    settings.runtime_mode == "b14"
+                    and _worker_app.state.web_xlsx_p01_owner_decision_client is not None
+                    and _worker_app.state.workspace_document_store is not None
+                    and getattr(
+                        self.env, "PADIEM_WEB_XLSX_WORKCOPY_AFTER_P01_ENABLED", None
+                    ) == "true"
+                )
                 _worker_app.state.claw_live_sse_enabled = (
                     settings.runtime_mode == "b14"
                     and getattr(self.env, "PADIEM_CLAW_P01_LIVE_SSE_ENABLED", None) == "true"

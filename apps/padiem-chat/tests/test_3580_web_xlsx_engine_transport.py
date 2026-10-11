@@ -204,6 +204,7 @@ async def test_owner_decision_uses_only_fixed_private_tool_resume_route():
                 "output": {
                     "p01_intent_confirmed": True, "read_executed": False,
                     "workcopy_created": False,
+                    "source_sha256": scope().source_sha256,
                 },
             },
         }, status=200,
@@ -211,7 +212,8 @@ async def test_owner_decision_uses_only_fixed_private_tool_resume_route():
     result = await client(engine).resume_owner_decision(
         continuation_ref=cont, submission=submission,
     )
-    assert result == {"ok": True, "status": "confirmed"}
+    assert result == {"ok": True, "status": "confirmed",
+                      "verified_source_sha256": scope().source_sha256}
     assert len(engine.calls) == 1
     wire = engine.factories[0]
     assert wire["url"].endswith("/internal/v1/tools/resume")

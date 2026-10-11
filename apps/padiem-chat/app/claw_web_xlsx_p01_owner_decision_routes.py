@@ -104,23 +104,71 @@ async def web_xlsx_p01_owner_decision(request: Request) -> Response:
         live = False
     if not live:
         return _error(404, "owner_p01_source_or_run_not_found")
+    # The opt-in is set exclusively by the Worker composition root. A
+    # browser approval decision or a D1 "confirmed" row is never itself a
+    # processing grant; only the authenticated Engine ToolRuntime completion
+    # with its exact source SHA can enter this callback.
+    copy_enabled = (
+        getattr(request.app.state, "web_xlsx_p01_workcopy_after_grant_enabled", False)
+        is True and outcome == "approve"
+    )
+    if (copy_enabled
+            and not callable(getattr(original_store, "create_approved_web_xlsx_workcopy", None))):
+        return _error(503, "approved_workcopy_storage_unavailable")
+
+    async def _approved_workcopy(*, waiting, verified_source_sha256):
+        if (verified_source_sha256 != waiting["source_sha256"]
+                or waiting["user_id"] != owner
+                or waiting["workspace_id"] != workspace):
+            raise WebXlsxP01RequestError("approved workcopy scope mismatch")
+
+        async def _verified_grant(**scope):
+            # The one-shot trusted Engine response is scoped to this
+            # already-confirmed owner D1 run/source, not a bearer token.
+            return (
+                scope.get("owner_id") == owner
+                and scope.get("workspace_id") == workspace
+                and scope.get("run_id") == waiting["run_id"]
+                and scope.get("document_id") == waiting["document_id"]
+                and scope.get("source_sha256") == verified_source_sha256
+                and scope.get("operation") == "read_for_workcopy"
+                and set(scope) == {
+                    "owner_id", "workspace_id", "run_id", "document_id",
+                    "source_sha256", "operation",
+                }
+            )
+
+        return await original_store.create_approved_web_xlsx_workcopy(
+            tenant_id=workspace, owner_id=owner, workspace_id=workspace,
+            source_document_id=waiting["document_id"],
+            expected_source_sha256=verified_source_sha256,
+            run_id=waiting["run_id"], grant_verifier=_verified_grant,
+        )
+
     try:
-        verified = await dispatch_owner_decision(
+        decision_result = await dispatch_owner_decision(
             waiting=waiting, outcome=outcome, store=ledger, client=client,
             submission_factory=build_first_party_decision_submission,
+            approved_workcopy_handler=_approved_workcopy if copy_enabled else None,
         )
     except P01AdapterError:
         return _error(409, "owner_p01_decision_unusable")
     except WebXlsxP01RequestError:
-        return _error(409, "owner_p01_decision_unconfirmed")
+        return _error(409, "owner_p01_decision_or_workcopy_unconfirmed")
     except Exception:
         # Ambiguous Engine result: preserve one-shot D1 reservation. No retry.
         return _error(503, "owner_p01_decision_dispatch_unknown")
+    verified, copy = (
+        decision_result if isinstance(decision_result, tuple)
+        else (decision_result, None)
+    )
     return JSONResponse({
         "ok": True, "contract_version": "claw-web-xlsx-p01-owner-decision.v1",
         "selection_ref": selection_ref,
-        "status": verified, "processing_started": False,
-        "workcopy_created": False, "owner_intent_only": True,
+        "status": verified, "processing_started": copy is not None,
+        "workcopy_created": copy is not None,
+        "workcopy_document_id": copy["workcopy_document_id"] if copy else None,
+        "owner_intent_only": copy is None,
     }, status_code=200, headers=_NO_STORE)
 
 
@@ -224,6 +272,18 @@ async def web_xlsx_p01_owner_status(request: Request) -> Response:
                 )
             except Exception:
                 request_ready = False
+    copy = None
+    if state["status"] == "confirmed" and state.get("run_id"):
+        finder = getattr(original_store, "find_approved_web_xlsx_workcopy", None)
+        if callable(finder):
+            try:
+                copy = await finder(
+                    tenant_id=workspace, owner_id=owner, workspace_id=workspace,
+                    run_id=state["run_id"], source_document_id=state["document_id"],
+                    expected_source_sha256=state["source_sha256"],
+                )
+            except Exception:
+                return _error(503, "approved_workcopy_status_unavailable")
     return JSONResponse({
         "ok": True,
         "contract_version": "claw-web-xlsx-p01-status.v1",
@@ -235,6 +295,7 @@ async def web_xlsx_p01_owner_status(request: Request) -> Response:
         "status": state["status"],
         "owner_decision_enabled": ready,
         "owner_request_enabled": request_ready,
-        "processing_started": False,
-        "workcopy_created": False,
+        "processing_started": copy is not None,
+        "workcopy_created": copy is not None,
+        "workcopy_document_id": copy["workcopy_document_id"] if copy else None,
     }, headers=_NO_STORE)
