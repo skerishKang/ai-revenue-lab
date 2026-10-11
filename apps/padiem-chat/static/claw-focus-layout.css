@@ -316,3 +316,14 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-workspace[da
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > .composer-actions {
   justify-content: flex-end;
 }
+/* Medium touch/tablet viewport: the original Glass theme keeps a desktop
+ * 252px rail offset until 920px, while the actual navigation is an overlay.
+ * Center Claw's independent composer with its workbench, not that stale rail.
+ */
+@media (min-width: 761px) and (max-width: 920px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .composer-wrap {
+    left: 50% !important;
+    width: calc(100vw - 32px) !important;
+    transform: translateX(-50%) !important;
+  }
+}
