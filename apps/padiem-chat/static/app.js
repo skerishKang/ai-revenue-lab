@@ -121,6 +121,8 @@
   let conversationEpoch = 0;
   let selectedAttachment = null;
   let authState = { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
+  // Only the owner-scoped Claw run history can identify a Claw thread.
+  const clawConversationIds = new Set();
   let projects = [];
   let projectsReady = false;
   let activeProject = null;
@@ -443,6 +445,7 @@
   }
 
   function clearHistoryUI() {
+    clawConversationIds.clear();
     historyList.replaceChildren();
     historySection.hidden = true;
     historyEmpty.hidden = true;
@@ -1103,6 +1106,28 @@
       const response = await fetch("/api/conversations", { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || !Array.isArray(data.conversations)) throw new Error("history unavailable");
+      // Labels are presentation only; run history is owner-filtered by the server.
+      // Never infer a Claw execution authority from a title or browser storage.
+      const verifiedClawIds = new Set();
+      if (data.conversations.length) {
+        try {
+          const runsResponse = await fetch("/api/claw/runs?limit=30", {
+            headers: { "Accept": "application/json" }, cache: "no-store",
+          });
+          const runsData = await runsResponse.json().catch(() => null);
+          if (runsResponse.ok && runsData?.ok === true && Array.isArray(runsData.runs)) {
+            runsData.runs.forEach((run) => {
+              if (run?.channel === "web" && run?.action === "general"
+                  && run?.status === "completed"
+                  && /^chat_[a-f0-9]{32}$/.test(run?.session?.conversation_id || "")) {
+                verifiedClawIds.add(run.session.conversation_id);
+              }
+            });
+          }
+        } catch (_) { /* No Claw authority can be inferred from a failed read. */ }
+      }
+      clawConversationIds.clear();
+      verifiedClawIds.forEach((id) => clawConversationIds.add(id));
       historyList.replaceChildren();
       historySection.hidden = false;
       historyEmpty.hidden = data.conversations.length !== 0;
@@ -1113,7 +1138,8 @@
         const button = document.createElement("button");
         button.type = "button";
         button.className = "recent-item history-item";
-        button.textContent = conversation.title;
+        button.textContent = clawConversationIds.has(conversation.id)
+          ? `Claw · ${conversation.title}` : conversation.title;
         button.addEventListener("click", () => openSavedConversation(conversation.id));
         const remove = document.createElement("button");
         remove.type = "button";
@@ -1195,7 +1221,9 @@
       activeProjectFileCount = 0;
       renderProjectState();
       if (activeProject) refreshActiveProjectFileCount();
-      showConversation();
+      const isVerifiedClawThread = clawConversationIds.has(data.conversation.id);
+      if (isVerifiedClawThread) openClawWorkspace();
+      showConversation({ preserveClaw: isVerifiedClawThread });
       conversationArtifactContext?.show?.(data.conversation.id);
       data.conversation.messages.forEach((item) => {
         if (!item || typeof item.content !== "string") return;
