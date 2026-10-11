@@ -115,6 +115,12 @@ def test_folder_names_are_rendered_with_textcontent_only() -> None:
     for sink in (".innerHTML", "insertAdjacentHTML(", "document.write(", "outerHTML"):
         assert sink not in SCRIPT, sink
     assert "label.textContent = String(folder.name)" in SCRIPT
+    assert "modified.textContent = modifiedText" in SCRIPT
+
+
+def test_folder_row_has_a_modified_time_slot() -> None:
+    assert '"project-drive-row-modified"' in SCRIPT
+    assert "folder.modified_time" in SCRIPT
 
 
 # --- 5. routes contract ----------------------------------------------------
