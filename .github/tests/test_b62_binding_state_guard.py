@@ -523,3 +523,46 @@ def test_hark_browser_additive_cli_mode_is_explicit_and_exclusive(tmp_path, caps
     assert mod.main(args + [
         "--expected-add-hark-browser", "--expected-add-web-secrets-store",
     ]) == 1
+
+
+def test_b66_membership_secret_requires_explicit_exact_addition():
+    before = settings(*base_bindings())
+    candidate = settings(*base_bindings(), {"type": "secret_text", "name": "B66_MEMBERSHIP_ENFORCED"})
+    with pytest.raises(mod.BindingStateError):
+        mod.assert_preserved(before, candidate)
+    mod.assert_exact_b66_membership_secret_only(before, candidate)
+    # A subsequent code deploy from an already served B66 binding is strictly equal.
+    mod.assert_exact_b66_membership_secret_only(candidate, candidate)
+
+
+def test_b66_membership_exception_does_not_admit_other_changes():
+    original = base_bindings()
+    approved = {"type": "secret_text", "name": "B66_MEMBERSHIP_ENFORCED"}
+    before = settings(*original)
+    for after in (
+        settings(*original),  # no actual previously unserved membership addition
+        settings(*original, {"type": "plain_text", "name": "B66_MEMBERSHIP_ENFORCED", "text": "enabled"}),
+        settings(*original, approved, {"type": "secret_text", "name": "SURPRISE_EXTRA"}),
+        settings(*(original[1:] + [approved])),  # removal of existing ASSETS
+    ):
+        with pytest.raises(mod.BindingStateError):
+            mod.assert_exact_b66_membership_secret_only(before, after)
+    with pytest.raises(mod.BindingStateError):
+        mod.assert_exact_b66_membership_secret_only(
+            settings(*original, approved),
+            settings(*original, approved, {"type": "secret_text", "name": "SURPRISE_EXTRA"}),
+        )
+
+
+def test_b66_membership_gate_requires_explicit_cli_mode(tmp_path):
+    before = tmp_path / "before.json"
+    after = tmp_path / "after.json"
+    before.write_text(json.dumps(settings(*base_bindings())), encoding="utf-8")
+    after.write_text(json.dumps(settings(
+        *base_bindings(), {"type": "secret_text", "name": "B66_MEMBERSHIP_ENFORCED"},
+    )), encoding="utf-8")
+    assert mod.main(["--before", str(before), "--after", str(after)]) == 1
+    assert mod.main([
+        "--before", str(before), "--after", str(after),
+        "--expected-add-b66-membership-secret",
+    ]) == 0

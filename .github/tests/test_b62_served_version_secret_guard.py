@@ -477,3 +477,49 @@ def test_3748_b62_production_argv_two_independent_mutations_red_and_bytes_preser
             raise AssertionError("old CLI split argv mutation was accepted")
     assert caught == 2
     assert B62_DEPLOY_GATE.read_bytes() == original
+
+
+def test_b66_membership_secret_is_exact_one_addition_to_served_set():
+    before = mod.load_capture(expected_capture())
+    actual = base_bindings_map()
+    actual["B66_MEMBERSHIP_ENFORCED"] = secret("B66_MEMBERSHIP_ENFORCED")
+    with pytest.raises(mod.ServedVersionGuardError):
+        mod.verify_secret_set(before, _entries(actual))
+    mod.verify_secret_set(
+        before, _entries(actual), allow_b66_membership_secret=True,
+    )
+
+
+def test_b66_membership_secret_rejects_missing_wrong_type_or_unrelated_secret():
+    before = mod.load_capture(expected_capture())
+    for bindings in (
+        base_bindings_map(),
+        {**base_bindings_map(), "B66_MEMBERSHIP_ENFORCED": plain("enabled")},
+        {**base_bindings_map(),
+         "B66_MEMBERSHIP_ENFORCED": secret("B66_MEMBERSHIP_ENFORCED"),
+         "UNRELATED": secret("UNRELATED")},
+    ):
+        with pytest.raises(mod.ServedVersionGuardError):
+            mod.verify_secret_set(
+                before, _entries(bindings), allow_b66_membership_secret=True,
+            )
+
+
+def test_b66_membership_secret_refuses_simultaneous_other_additive_modes():
+    before = mod.load_capture(expected_capture())
+    with pytest.raises(mod.ServedVersionGuardError):
+        mod.verify_secret_set(
+            before, _entries(base_bindings_map()),
+            allow_web_store_additions=True,
+            allow_b66_membership_secret=True,
+        )
+
+
+def test_b66_membership_secret_preserves_already_served_exact_set():
+    existing = base_bindings_map()
+    existing["B66_MEMBERSHIP_ENFORCED"] = secret("B66_MEMBERSHIP_ENFORCED")
+    captured = mod.load_capture(expected_capture(bindings=_entries(existing)))
+    mod.verify_secret_set(captured, _entries(existing), allow_b66_membership_secret=True)
+    bad = {**existing, "UNEXPECTED": secret("UNEXPECTED")}
+    with pytest.raises(mod.ServedVersionGuardError):
+        mod.verify_secret_set(captured, _entries(bad), allow_b66_membership_secret=True)
