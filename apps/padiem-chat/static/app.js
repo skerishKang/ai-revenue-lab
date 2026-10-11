@@ -1507,7 +1507,7 @@
     // Neither UI state nor the selected model ID may authorize fallback.
     const clawGeneralRequest = clawGeneralRequestActive();
     contextSnapshot.selectedModelId =
-      clawGeneralRequest && typeof clawModelIdInput !== "undefined" && clawModelIdInput
+      clawGeneralRequest && selectedProductTier() === "plus" && typeof clawModelIdInput !== "undefined" && clawModelIdInput
         ? clawModelIdInput.value.trim() : "";
     showConversation({ preserveClaw: clawGeneralRequest });
     addUserMessage(prompt, attachmentSnapshot);
