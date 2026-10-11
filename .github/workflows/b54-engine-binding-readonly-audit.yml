@@ -50,9 +50,13 @@ jobs:
           curl --fail --silent --show-error --max-time 30 "${auth[@]}" "${base}/deployments" -o "${readonly_dir}/deployments.json"
           curl --fail --silent --show-error --max-time 30 "${auth[@]}" "${base}/versions/4d90cf39-ca1b-48b4-977e-dce1ca576d7a" -o "${readonly_dir}/good.json"
           curl --fail --silent --show-error --max-time 30 "${auth[@]}" "${base}/versions/87ae6263-724e-479a-868a-598fe9bf0d01" -o "${readonly_dir}/bad.json"
+          # Read existing mutable settings into RUNNER_TEMP only; never display raw
+          # JSON/plain_text values or publish it as an artifact.
+          curl --fail --silent --show-error --max-time 30 "${auth[@]}" "${base}/settings" -o "${readonly_dir}/settings.json"
           python3 .github/scripts/b54_engine_binding_readonly_diff_4383.py \
             --deployments "${readonly_dir}/deployments.json" \
             --good-version "${readonly_dir}/good.json" \
-            --bad-version "${readonly_dir}/bad.json"
+            --bad-version "${readonly_dir}/bad.json" \
+            --settings "${readonly_dir}/settings.json"
           echo 'B54_ENGINE_GET_ONLY=YES'
           echo 'NO_DEPLOY_NO_ROLLBACK_NO_SECRET_MUTATION=YES'
