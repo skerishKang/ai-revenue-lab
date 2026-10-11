@@ -23,7 +23,7 @@ if str(_SCRIPTS_DIR) not in sys.path:
 from b62_web_secrets_store_contract import expected_web_secret_bindings
 from uuid import UUID
 
-SUPPORTED_TYPES = {"assets", "service", "d1", "r2_bucket", "plain_text", "secret_text", "secrets_store_secret"}
+SUPPORTED_TYPES = {"assets", "service", "d1", "r2_bucket", "browser", "version_metadata", "plain_text", "secret_text", "secrets_store_secret"}
 OWNER_P01_D1_BINDING = "BROWSER_CONTROL_OWNER_P01_D1"
 
 
@@ -58,6 +58,12 @@ def canonical_binding(raw: object) -> tuple[object, ...]:
         raise BindingStateError("binding name must be a non-empty string")
 
     if kind == "assets":
+        return (kind, name)
+    if kind == "browser":
+        if name != "BROWSER":
+            raise BindingStateError("unexpected Browser Rendering binding name")
+        return (kind, name)
+    if kind == "version_metadata":
         return (kind, name)
     if kind == "service":
         return (
