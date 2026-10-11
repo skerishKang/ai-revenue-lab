@@ -33,14 +33,27 @@
     rail.className = "shell-rail";
     rail.id = "shellRail";
     rail.setAttribute("aria-label", "견적 메뉴");
+    var railCollapse = document.createElement("button");
+    railCollapse.id = "shellRailCollapse";
+    railCollapse.type = "button";
+    railCollapse.className = "shell-rail-collapse";
+    railCollapse.textContent = "접기";
+    railCollapse.setAttribute("aria-label", "왼쪽 메뉴 접기");
+    railCollapse.setAttribute("aria-controls", "shellRail");
+    railCollapse.addEventListener("click", function () {
+      document.body.classList.add("rail-collapsed");
+      var reopenButton = byId("shellRailToggle");
+      if (reopenButton) reopenButton.focus();
+    });
+    rail.appendChild(railCollapse);
 
     var menu = document.createElement("div");
     menu.className = "shell-rail-menu";
 
     var newSection = document.createElement("section");
     newSection.className = "shell-rail-section";
+    newSection.setAttribute("aria-label", "새 견적 시작");
     newSection.innerHTML =
-      '<h2>시작</h2>' +
       '<button type="button" class="shell-rail-item shell-new-quote" id="shellNewQuote">' +
       '<span class="shell-rail-icon" aria-hidden="true">＋</span>' +
       '<span><strong>새 견적 시작</strong><small>현재 내용을 비우고 새 견적을 작성합니다</small></span>' +
@@ -49,10 +62,9 @@
 
     var managementSection = document.createElement("section");
     managementSection.className = "shell-rail-section";
+    managementSection.setAttribute("aria-label", "견적서 양식 선택 및 새 양식 등록");
     managementSection.innerHTML =
-      '<h2>양식</h2>' +
-      '<label class="shell-picker-label">내 기본 양식<select-host id="shellSkillSelect"></select-host></label>' +
-      '<label class="shell-picker-label">출력 양식<select-host id="shellQuoteTemplateSelect"></select-host></label>' +
+      '<label class="shell-picker-label">견적서 양식<select-host id="shellSkillSelect"></select-host></label>' +
       '<p class="shell-runtime-status" id="shellRuntimeStatus" role="status" aria-live="polite"></p>' +
       '<label class="shell-picker-label" id="shellModelControl" hidden><select-host id="shellModelSelect"></select-host></label>';
     /* #4319 / #3186 경로 B: 양식 구획의 새 양식 만들기 진입점(기존 후보 생성 기능 재사용).
@@ -76,7 +88,7 @@
 
     var historySection = document.createElement("section");
     historySection.className = "shell-rail-section";
-    historySection.innerHTML = '<h2>최근 견적</h2>';
+    historySection.setAttribute("aria-label", "최근 견적 불러오기");
     var recent = makeButton(
       "shellRecentQuote",
       "↶",
@@ -99,20 +111,17 @@
     shell.appendChild(rail);
 
     var skillSelect = byId("padiemSavedSkillSelect");
-    var templateSelect = byId("templateSelect");
     var modelSelect = byId("padiemQuoteModelSelect");
     var skillStatus = byId("padiemQuoteStatus");
     var skillHost = byId("shellSkillSelect");
-    var templateHost = byId("shellQuoteTemplateSelect");
     var modelHost = byId("shellModelSelect");
     var toolbar = byId("easyModelToolbar");
     if (skillSelect && skillHost) {
       skillHost.appendChild(skillSelect);
       // The selector itself shows the current approved template; do not repeat it in a second card.
     }
-    if (templateSelect && templateHost) {
-      templateHost.appendChild(templateSelect);
-    }
+    // The secondary output-template selector remains within the existing
+    // advanced-template details; the rail has only the approved Saved Skill.
     if (modelSelect && modelHost && toolbar) {
       // Move the original registered model selector into the composer; no cloned authority.
       var modelControl = byId("shellModelControl");
@@ -230,7 +239,29 @@
       document.body.classList.add("preview-collapsed");
       if (window.matchMedia("(max-width:1250px)").matches) reopen.focus();
     });
-    if (toolbar) toolbar.appendChild(collapse);
+    var pdfShortcut = document.createElement("button");
+    pdfShortcut.id = "shellPreviewPdf";
+    pdfShortcut.type = "button";
+    pdfShortcut.className = "shell-pane-button shell-preview-pdf";
+    pdfShortcut.textContent = "PDF 저장";
+    pdfShortcut.title = "견적 내용을 확인한 뒤 PDF로 저장";
+    pdfShortcut.addEventListener("click", function () {
+      clickExisting("printPdf"); // reuse canonical readiness and PDF authority
+    });
+    var printShortcut = document.createElement("button");
+    printShortcut.id = "shellPreviewPrint";
+    printShortcut.type = "button";
+    printShortcut.className = "shell-pane-button shell-preview-print";
+    printShortcut.textContent = "인쇄";
+    printShortcut.title = "현재 견적서 미리보기를 그대로 인쇄";
+    printShortcut.addEventListener("click", function () {
+      if (typeof window.B66QuotePrintPreview === "function") window.B66QuotePrintPreview();
+    });
+    if (toolbar) {
+      toolbar.appendChild(pdfShortcut);
+      toolbar.appendChild(printShortcut);
+      toolbar.appendChild(collapse);
+    }
 
     var reopen = document.createElement("button");
     reopen.type = "button";
@@ -542,6 +573,10 @@
       topbarActions.classList.add("shell-empty-topbar-actions");
       if (!topbarActions.querySelector("button, a, input, select")) topbarActions.hidden = true;
     }
+    // Hide the uncomposed HTML during deferred script load, then reveal once.
+    window.requestAnimationFrame(function () {
+      document.documentElement.classList.remove("b66-shell-booting");
+    });
   }
 
   init();

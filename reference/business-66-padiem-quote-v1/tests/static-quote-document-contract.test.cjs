@@ -240,10 +240,13 @@ check(easy.includes('"b66:local-data-reset"') &&
 
 /* 결정론적 계산 잔여 계약 (원본에서 승계) */
 check(core.includes("Math.round(qty * price)"), "deterministic item amount");
-check(!app.includes("window.print()") && app.includes("bridge.downloadPdf(model, previewModel)") &&
+const pdfHandler = app.slice(app.indexOf('  $("printPdf").addEventListener("click"'),
+  app.indexOf('  window.B66QuotePrintPreview = function'));
+check(!pdfHandler.includes("window.print()") && app.includes("bridge.downloadPdf(model, previewModel)") &&
+      app.includes("window.B66QuotePrintPreview = function") &&
       html.includes('src="quote-browser-pdf.js"') &&
       account.includes("browserPdf.makePdf(renderModel, previewModel)"),
-  "certified PDF download replaces the final browser print action");
+  "certified PDF download remains independent of guarded browser preview printing");
 check(app.includes("localStorage"), "browser-local persistence");
 
 /* FILE_CHOOSER_LIVE=YES / UPLOAD_AI_LIVE=NO */
