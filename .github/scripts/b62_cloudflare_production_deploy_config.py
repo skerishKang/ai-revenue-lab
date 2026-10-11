@@ -142,6 +142,7 @@ def build_production_config(
     public_base_url: str,
     owner_d1_database_id: str | None = None,
     attach_web_secrets_store: bool = False,
+    commission_hark_browser: bool = False,
 ) -> str:
     try:
         repo = tomllib.loads(repo_config_path.read_text(encoding="utf-8"))
@@ -220,7 +221,7 @@ def build_production_config(
     # commission it; the live account/settings inventory remains authoritative.
     live_browser = live["browser"]
     repo_browser = repo.get("browser")
-    if live_browser is not None:
+    if live_browser is not None or commission_hark_browser:
         if (not isinstance(repo_browser, dict)
                 or repo_browser.get("binding") != HARK_BROWSER_BINDING):
             raise ProductionConfigError("live Browser Rendering binding lacks matching source declaration")
@@ -409,12 +410,30 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--owner-d1-database-id", help="candidate-only approved D1 UUID; never deploys")
     parser.add_argument("--attach-existing-web-secrets-store", action="store_true", help="add exactly two Owner-approved same-account web Secret Store bindings")
+    parser.add_argument("--commission-hark-browser", action="store_true", help="owner-authorized additive BROWSER binding, no PDF calls")
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
 
     try:
         payload = json.loads(args.settings.read_text(encoding="utf-8"))
         live = parse_live_bindings(payload)
-        config_text = build_production_config(live, args.repo_config, args.public_base_url, args.owner_d1_database_id, attach_web_secrets_store=args.attach_existing_web_secrets_store)
+        if args.commission_hark_browser and args.attach_existing_web_secrets_store:
+            raise ProductionConfigError("multiple additive authority modes prohibited")
+        if args.commission_hark_browser:
+            # No Hark write/PDF activation as a side effect of Browser install.
+            for flag in (
+                "PADIEM_WEB_XLSX_QUOTE_PDF_ENABLED",
+                "PADIEM_WEB_XLSX_QUOTE_WRITE_ENABLED",
+                "PADIEM_WEB_XLSX_QUOTE_WRITE_ENGINE_ENABLED",
+                "PADIEM_WEB_XLSX_QUOTE_WRITE_DURABLE_ENABLED",
+                "PADIEM_WEB_XLSX_QUOTE_WRITE_OWNER_DECISION_ENABLED",
+            ):
+                if live["vars"].get(flag, "false").lower() == "true":
+                    raise ProductionConfigError("active Hark flag blocks Browser install: " + flag)
+        config_text = build_production_config(
+            live, args.repo_config, args.public_base_url, args.owner_d1_database_id,
+            attach_web_secrets_store=args.attach_existing_web_secrets_store,
+            commission_hark_browser=args.commission_hark_browser,
+        )
         verify_mutation_zero(config_text, live)
     except (ProductionConfigError, OSError, json.JSONDecodeError) as exc:
         print(f"B62_PRODUCTION_CONFIG_GENERATED=FAIL\nREASON={exc}", file=sys.stderr)

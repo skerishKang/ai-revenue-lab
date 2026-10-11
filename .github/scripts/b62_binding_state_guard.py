@@ -187,6 +187,26 @@ def assert_engine_4194_exact_rollout(before: object, after: object) -> None:
         )
 
 
+def assert_hark_browser_added_only(before: object, after: object) -> None:
+    """Exactly one owner-approved BROWSER addition; no other authority change.
+
+    Idempotent when BROWSER is already present with its original type. Normal
+    code deployments still require exact equality unless this mode is explicit.
+    """
+    old = canonical_state(before)
+    new = canonical_state(after)
+    expected = ("browser", "BROWSER")
+    if any(item[1] == "BROWSER" and item != expected for item in old):
+        raise BindingStateError("pre-existing Browser alias/type collision")
+    if expected in old:
+        if old != new:
+            raise BindingStateError("Browser already present; unrelated authority drift")
+    else:
+        required = tuple(sorted((*old, expected), key=lambda item: (str(item[0]), str(item[1]))))
+        if new != required:
+            raise BindingStateError("expected exactly one approved BROWSER addition")
+
+
 def assert_web_secret_additions_only(before: object, after: object) -> None:
     """Only missing Owner-approved same-account Secret Store entries may appear."""
     original = canonical_state(before)
@@ -296,6 +316,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--expected-add-owner-d1", action="store_true")
     parser.add_argument("--expected-add-web-secrets-store", action="store_true")
     parser.add_argument("--expected-engine-4194-rollout", action="store_true")
+    parser.add_argument("--expected-add-hark-browser", action="store_true")
     parser.add_argument("--owner-d1-database-id")
     parser.add_argument("--require-served-resource-integrity", action="store_true")
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
@@ -304,12 +325,17 @@ def main(argv: list[str] | None = None) -> int:
             args.expected_add_owner_d1,
             args.expected_add_web_secrets_store,
             args.expected_engine_4194_rollout,
+            args.expected_add_hark_browser,
         )) > 1:
             raise BindingStateError("multiple additive authority modes prohibited")
         if args.expected_engine_4194_rollout:
             if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
                 raise BindingStateError("Engine #4194 mode refuses unrelated authorization arguments")
             assert_engine_4194_exact_rollout(_load(args.before), _load(args.after))
+        elif args.expected_add_hark_browser:
+            if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
+                raise BindingStateError("Hark Browser mode refuses unrelated authorization flags")
+            assert_hark_browser_added_only(_load(args.before), _load(args.after))
         elif args.expected_add_web_secrets_store:
             assert_web_secret_additions_only(_load(args.before), _load(args.after))
         elif args.expected_add_owner_d1:

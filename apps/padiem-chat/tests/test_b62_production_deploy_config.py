@@ -739,3 +739,54 @@ def test_unknown_browser_alias_and_duplicate_fail_closed():
                 {"type": "browser", "name": "BROWSER"},
             ],
         ))
+
+
+def test_hark_browser_explicit_commission_adds_one_and_preserves_live_authority(tmp_path):
+    import tomllib
+    module = _load_module()
+    live = module.parse_live_bindings(_settings_payload(_production_bindings()))
+    source = _write_repo_config_with_browser(tmp_path)
+    before = module.build_production_config(live, source, PUBLIC_URL)
+    assert "[browser]" not in before
+    commissioned = module.build_production_config(
+        live, source, PUBLIC_URL, commission_hark_browser=True,
+    )
+    old = tomllib.loads(before)
+    new = tomllib.loads(commissioned)
+    assert new.pop("browser") == {"binding": "BROWSER"}
+    assert old == new
+    module.verify_mutation_zero(commissioned, live)
+    assert "PADIEM_WEB_XLSX_QUOTE_PDF_ENABLED" not in commissioned
+    assert "PADIEM_WEB_XLSX_QUOTE_WRITE_ENABLED" not in commissioned
+
+
+def test_hark_browser_commission_refuses_live_write_pdf_and_secret_addition(tmp_path, capsys):
+    module = _load_module()
+    def prepare(extra):
+        path = tmp_path / "settings.json"
+        path.write_text(json.dumps(_settings_payload(_production_bindings() + extra)), encoding="utf-8")
+        return path
+    source = _write_repo_config_with_browser(tmp_path)
+    output = tmp_path / "generated.toml"
+    args = ["--repo-config", str(source), "--public-base-url", PUBLIC_URL,
+            "--output", str(output), "--commission-hark-browser"]
+    assert module.main(args + ["--settings", str(prepare([
+        {"name": "PADIEM_WEB_XLSX_QUOTE_PDF_ENABLED", "type": "plain_text", "text": "true"},
+    ]))]) == 1
+    assert not output.exists()
+    assert "active Hark flag" in capsys.readouterr().err
+    assert module.main(args + ["--attach-existing-web-secrets-store",
+                               "--settings", str(prepare([]))]) == 1
+    assert "multiple additive authority modes" in capsys.readouterr().err
+
+
+def test_hark_browser_workflow_requires_distinct_authorization_and_immutable_served_verification():
+    workflow = _read_workflow()
+    assert "commission_hark_browser:" in workflow
+    assert "DEPLOY_B62_HARK_BROWSER_FROM_EXACT_MAIN" in workflow
+    assert "--commission-hark-browser" in workflow
+    assert "--expected-add-hark-browser" in workflow
+    assert "HARK_BROWSER_SERVED_IMMUTABLE_BINDING=PASS" in workflow
+    assert "HARK_BROWSER_QUICK_ACTION_CALLS=0" in workflow
+    assert "B62_PRODUCTION_CODE_AUTO_ROLLBACK=EXECUTED" in workflow
+    assert "FULL_SECRET_SET_EQUALITY=PASS" in workflow
