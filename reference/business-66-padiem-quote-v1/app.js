@@ -2172,17 +2172,16 @@
     });
   }
   document.addEventListener("b66:open-skill-register", () => {
-    // Entry from the rail always opens the existing file-based Saved Skill
-    // wizard. This does not bypass approval or create an active template.
-    if (!skillUiApi || !skillUiApi.actions ||
-        typeof skillUiApi.actions.openWizard !== "function") return;
-    const directTab = $("directModeButton");
-    if (directTab) directTab.click();
-    skillUiApi.actions.openWizard($("shellManualQuote"));
-    const panel = $("skillWizardPanel");
-    if (panel && typeof panel.scrollIntoView === "function") {
-      panel.scrollIntoView({ block: "nearest" });
-    }
+    // New reusable forms are distinct from the line-item editing workspace.
+    // Both established workflows retain their existing approval and auth gates.
+    if (!skillUiApi?.actions?.openWizard || !manualSkillApi?.open ||
+        !window.B66SkillStartDialog) return;
+    window.B66SkillStartDialog.open({
+      fileOpen: () => skillUiApi.actions.openWizard($("shellManualQuote")),
+      fileCancel: () => $("skillWizardCancel").click(),
+      blankOpen: () => manualSkillApi.open($("shellManualQuote")),
+      blankCancel: () => manualSkillApi.close()
+    }, $("shellManualQuote"));
   });
   document.addEventListener("b66:account-scope-changed", () => {
     if (manualSkillApi) manualSkillApi.refresh();

@@ -1195,3 +1195,84 @@ body.b66-three-pane #easySend {
     border-radius: 18px;
   }
 }
+
+/* New reusable-form registration belongs in its own accessible workflow,
+   never underneath the line-item editor (B66). */
+.b66-skill-start-dialog {
+  width: min(760px, calc(100vw - 32px));
+  max-width: 760px;
+  max-height: min(88dvh, 900px);
+  margin: auto;
+  padding: clamp(16px, 3vw, 28px);
+  overflow: auto;
+  border: 1px solid #cbdce7;
+  border-radius: 18px;
+  background: #f9fcff;
+  color: #203f56;
+  box-shadow: 0 28px 75px #1f405c35;
+}
+.b66-skill-start-dialog::backdrop {
+  background: rgba(19, 39, 55, .52);
+}
+.b66-skill-start-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.b66-skill-start-heading h2 {
+  margin: 0;
+  font-size: 20px;
+}
+.b66-skill-start-heading button {
+  min-height: 36px;
+  padding: 7px 13px;
+  border: 1px solid #cbdce7;
+  border-radius: 10px;
+  background: #fff;
+  color: #203f56;
+  cursor: pointer;
+}
+.b66-skill-start-hint {
+  color: #536b7d;
+  line-height: 1.6;
+  margin: 0 0 20px;
+}
+.b66-skill-start-choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.b66-skill-start-choices button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-height: 118px;
+  padding: 20px;
+  border: 1px solid #bed4e2;
+  border-radius: 14px;
+  background: #fff;
+  color: #213e52;
+  text-align: left;
+  cursor: pointer;
+}
+.b66-skill-start-choices button:hover,
+.b66-skill-start-choices button:focus-visible {
+  border-color: #326181;
+  outline-offset: 3px;
+}
+.b66-skill-start-choices strong { font-size: 16px; }
+.b66-skill-start-choices span { font-size: 13px; line-height: 1.6; color: #62798a; }
+.b66-skill-start-dialog .skill-wizard,
+.b66-skill-start-dialog .skill-manual {
+  display: block;
+  margin-top: 8px;
+  max-width: 100%;
+}
+.b66-skill-start-dialog [hidden] { display: none !important; }
+@media (max-width: 520px) {
+  .b66-skill-start-choices { grid-template-columns: 1fr; }
+  .b66-skill-start-dialog { width: calc(100vw - 20px); max-height: 92dvh; padding: 15px; }
+}

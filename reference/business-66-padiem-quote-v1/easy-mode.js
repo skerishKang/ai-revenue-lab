@@ -292,7 +292,7 @@
       return "로그인 후 CGI 기본 견적서가 준비되면 바로 만들 수 있습니다. 먼저 로그인해 주세요.";
     }
     if (!readiness.skillReady) {
-      return "배정된 CGI 기본 견적서가 아직 준비되지 않았습니다. 로그인 상태를 확인해 주세요.";
+      return "AI 전용 견적서 양식이 아직 배정되지 않았습니다. 대신 질문에 답하며 기본 견적서 초안을 만들 수 있습니다.";
     }
     return "회사 정보(CompanyProfile)를 아직 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.";
   }
@@ -314,7 +314,17 @@
     const bridge = window.B66QuoteRuntimeBridge;
     const readiness = bridge && typeof bridge.readiness === "function" ? bridge.readiness() : null;
     if (!readiness || !readiness.ready) {
-      addMessage("assistant", runtimeNotReadyMessage(readiness));
+      // A Saved Skill is required for CGI/B14 rendering, not for collecting
+      // quotation facts in a deterministic conversation. Do not silently
+      // drop the user's typed message or pretend an LLM interpreted it.
+      if (readiness && readiness.authenticated) {
+        startGuidedIfReady(text);
+      } else {
+        addMessage("user", text);
+        addMessage("assistant", runtimeNotReadyMessage(readiness));
+        setChips([{ label: "질문받으며 작성", action: () => startGuided(text) }]);
+        composer.value = text;
+      }
       return;
     }
     const requestScopeRevision = accountScopeRevision;
@@ -424,17 +434,23 @@
   }
 
   let guidedStartInFlight = false;
-  async function startGuidedIfReady() {
+  async function startGuidedIfReady(referenceText) {
     if (guidedStartInFlight) return;
+    const reference = typeof referenceText === "string" ? referenceText : "";
     const bridge = window.B66QuoteRuntimeBridge;
     const readiness = bridge && typeof bridge.readiness === "function" ? bridge.readiness() : null;
-    if (!readiness || !readiness.ready) {
+    if (!readiness || !readiness.authenticated) {
       startConversation();
       addMessage("assistant", runtimeNotReadyMessage(readiness));
-      setChips([{ label: "처음으로", action: showHome }]);
-      disableInput("로그인과 CGI 기본 견적서 준비가 끝나면 시작할 수 있습니다.");
+      setChips([
+        { label: "로그인 전 질문형 초안", action: () => startGuided() },
+        { label: "처음으로", action: showHome }
+      ]);
+      setInput((text) => startGuided(text), "견적서에 필요한 내용을 적어 주세요");
       return;
     }
+    // Missing CGI assignment does not block the question-and-answer draft.
+    // Existing account-backed guided save protection remains in force.
     // #3396: never silently replace an unfinished account-backed quotation.
     // Check the canonical server slot, not a browser-local navigation snapshot.
     if (accountSignedIn && GuidedAPI) {
@@ -453,7 +469,7 @@
           "계정에 작성 중인 질문형 견적이 있습니다. 새 견적을 시작하면 기존 진행 상태가 덮어써집니다. 계속하시겠습니까?"
         )) return;
         if (scopeRevision !== accountScopeRevision || !accountSignedIn) return;
-        startGuided();
+        startGuided(reference);
       } catch (_) {
         if (scopeRevision === accountScopeRevision && accountSignedIn) {
           App.toast("기존 질문형 견적 상태를 확인하지 못해 새 견적을 시작하지 않았습니다.");
@@ -463,7 +479,7 @@
       }
       return;
     }
-    startGuided();
+    startGuided(reference);
   }
 
   function finishGuidedWithRuntime() {
@@ -471,7 +487,22 @@
     const bridge = window.B66QuoteRuntimeBridge;
     const readiness = bridge && typeof bridge.readiness === "function" ? bridge.readiness() : null;
     if (!readiness || !readiness.ready) {
-      addMessage("assistant", runtimeNotReadyMessage(readiness));
+      // Only a standard local quote can be prepared without the approved CGI
+      // Saved Skill. Never call CGI/B14 or assign an unapproved server skill.
+      const taxUnknown = guided.taxUnknown;
+      const result = App.replaceDraft(guided.draft, {
+        requireTaxReview: taxUnknown,
+        toast: "기본 견적서 초안을 만들었습니다. 출력 전에 내용을 확인해 주세요."
+      });
+      if (!result || !result.ok) {
+        addMessage("assistant", "기본 견적서 초안을 반영하지 못했습니다. 직접 입력에서 확인해 주세요.");
+        return;
+      }
+      addMessage("assistant", "승인된 전용 양식이 없어 기본 견적서로 작성했습니다. 금액과 회사정보를 확인한 뒤 PDF로 저장할 수 있습니다.");
+      addResultReview(result.draft, taxUnknown);
+      clearAccountGuidedState();
+      guided = null;
+      guidedSnapshot = null;
       return;
     }
     const taxUnknown = guided.taxUnknown;
@@ -1214,9 +1245,13 @@
     if (!options || options.history !== false) recordProductState("free-form");
     startConversation();
     snapshotGuidedConversation();
+    const bridge = window.B66QuoteRuntimeBridge;
+    const ready = bridge && typeof bridge.readiness === "function" ? bridge.readiness() : null;
     addMessage(
       "assistant",
-      "견적 내용을 한 문장으로 적어 주세요. CGI 기본 견적서 양식과 회사 정보가 자동으로 적용됩니다."
+      ready && ready.ready
+        ? "견적 내용을 한 문장으로 적어 주세요. 승인된 견적서와 회사 정보를 사용해 AI로 작성합니다."
+        : "견적 내용을 적어 주세요. 전용 양식이 준비되지 않았다면 필요한 내용을 하나씩 질문해 기본 견적서 초안을 만들겠습니다. AI 해석은 하지 않습니다."
     );
     setChips([
       { label: "질문받으며 만들기", action: startGuidedIfReady },
