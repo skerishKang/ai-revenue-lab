@@ -195,3 +195,36 @@ def test_claw_browser_keeps_explicit_id_in_submit_snapshot_only():
     # A Claw request with an attachment must not silently switch to direct B14.
     assert "if (clawGeneralRequest && attachments)" in FRONT
     assert "throw new Error" in FRONT
+
+class _B14ReadyChoices:
+    def __init__(self, choices=None, error=False):
+        self.choices = choices or []
+        self.error = error
+
+    async def list_selectable_models(self):
+        if self.error:
+            raise RuntimeError("simulated B14 registry unavailable")
+        return [{"model_id": model, "name": model} for model in self.choices]
+
+
+def test_claw_runtime_rejects_not_ready_model_before_engine_dispatch():
+    adapter = _adapter()
+    with _client(adapter) as client:
+        client.app.state.b14_model_choice_resolver = _B14ReadyChoices([MODELS[0]])
+        blocked = client.post("/api/claw/general", json=_payload(model_id=MODELS[1]))
+        allowed = client.post("/api/claw/general", json=_payload(model_id=MODELS[0]))
+    assert blocked.status_code == 422
+    assert blocked.json()["error"]["code"] == "model_not_available"
+    assert allowed.status_code == 200
+    adapter.execute.assert_awaited_once()
+    assert adapter.execute.await_args.kwargs["selected_model_id"] == MODELS[0]
+
+
+def test_claw_runtime_unavailable_b14_catalog_never_dispatches():
+    adapter = _adapter()
+    with _client(adapter) as client:
+        client.app.state.b14_model_choice_resolver = _B14ReadyChoices(error=True)
+        response = client.post("/api/claw/general", json=_payload(model_id=MODELS[0]))
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "model_catalog_unavailable"
+    adapter.execute.assert_not_called()

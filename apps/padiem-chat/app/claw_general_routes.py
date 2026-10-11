@@ -378,6 +378,26 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                 return _error(403, "workspace_scope_unavailable",
                               "Claw ???? ??? ??? ? ????.")
 
+    # #3790: in the production Worker both Claw and B66 share the same B14
+    # ready/owner-allowed metadata resolver. Reject a forged advanced model ID
+    # before quota/P01. Test-only deployments without this optional view still
+    # rely on B14's final exact-ID execution authority.
+    if selected_model_id is not None:
+        choice_authority = getattr(request.app.state, "b14_model_choice_resolver", None)
+        if choice_authority is not None:
+            list_fn = getattr(choice_authority, "list_selectable_models", None)
+            if not callable(list_fn):
+                return _error(503, "model_catalog_unavailable", "사용 가능한 모델 목록을 확인할 수 없습니다.")
+            try:
+                available = await list_fn()
+                if not isinstance(available, list):
+                    raise ValueError("invalid model roster")
+                eligible_ids = {row["model_id"] for row in available}
+            except (Exception,):
+                return _error(503, "model_catalog_unavailable", "사용 가능한 모델 목록을 확인할 수 없습니다.")
+            if selected_model_id not in eligible_ids:
+                return _error(422, "model_not_available", "현재 사용할 수 없는 모델입니다. 다른 모델을 선택해 주세요.")
+
     live_requested = (
         request.headers.get(CLAW_LIVE_REQUEST_HEADER, "").strip()
         == CLAW_LIVE_REQUEST_MARKER

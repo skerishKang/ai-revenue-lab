@@ -105,12 +105,12 @@ def exact_append_only(old: dict, new: dict) -> bool:
             pid = model["provider_id"]
             if mid in existing_ids or not mid.startswith(pid + "/"):
                 return False
-            if pid not in providers_new or model.get("enabled") is not True:
+            if pid not in providers_new or type(model.get("enabled")) is not bool:
                 return False
         for pid, spec in providers_new.items():
             if pid in providers_old:
                 continue
-            if spec.get("enabled") is not True or spec.get("credential_source") != "platform_secret":
+            if type(spec.get("enabled")) is not bool or spec.get("credential_source") != "platform_secret":
                 return False
             if not spec.get("credential_binding_name", "").startswith("PADIEM_"):
                 return False

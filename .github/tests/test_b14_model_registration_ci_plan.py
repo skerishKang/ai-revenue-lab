@@ -57,7 +57,7 @@ class TestRegistryChangeSet(unittest.TestCase):
         bad["providers"]["google"]["base_origin"]="https://evil.invalid"
         self.assertFalse(lane.exact_append_only(a,bad))
         bad=copy.deepcopy(b)
-        bad["providers"]["example-provider"]["enabled"]=False
+        bad["providers"]["example-provider"]["enabled"]="false"
         self.assertFalse(lane.exact_append_only(a,bad))
 
     def test_paths_only_and_credential_patch_safety(self):
@@ -172,6 +172,16 @@ class TestRegistryChangeSet(unittest.TestCase):
         b["models"][-1]["provider_id"]="google"
         b["models"][-1]["id"]="google/test-new-manual-model"
         self.assertTrue(lane.model_registration_only(files(lane.REGISTRY),a,b))
+
+    def test_staged_disabled_new_model_still_uses_fast_source_only_gate(self):
+        old, new = appended()
+        new["models"][-1]["enabled"] = False
+        self.assertTrue(lane.exact_append_only(old, new))
+        changed = files(lane.REGISTRY, lane.WRANGLER, lane.WORKER)
+        changed[-2]["patch"] = '@@ -1,0 +1,4 @@\n+[[secrets_store_secrets]]\n+binding = "PADIEM_EXAMPLE_API_KEY"\n+store_id = "f0b09ca04a7b43248154c773704a5616"\n+secret_name = "PADIEM_EXAMPLE_API_KEY"'
+        changed[-1]["patch"] = '@@ -1,0 +1,1 @@\n+    "PADIEM_EXAMPLE_API_KEY",'
+        self.assertTrue(lane.model_registration_only(changed, old, new))
+
 
 class TestAlphaStrictSuiteSinglePass(unittest.TestCase):
     def test_full_lane_retains_every_pytest_and_browser_gate_under_strict_warnings(self):

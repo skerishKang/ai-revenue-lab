@@ -856,6 +856,8 @@ class Default(WorkerEntrypoint):
                 # never synthesize b14/auto or a hidden retry/fallback.
                 quote_model_resolver = B66ExplicitQuoteModelResolver(service_transport)
                 _worker_app.state.b66_quote_model_resolver = quote_model_resolver
+                # Claw/B66 consume the same B14 owner-allowed/live-ready catalog.
+                _worker_app.state.b14_model_choice_resolver = quote_model_resolver
                 b66_quote_executor = B14QuoteExactModelExecutor(
                     _worker_app.state.b14_client
                 )

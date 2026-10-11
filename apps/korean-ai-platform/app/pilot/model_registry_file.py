@@ -39,7 +39,7 @@ def read_registry(path: Path = REGISTRY_PATH) -> dict:
         raise ModelRegistryError("groups must be plus/pro/max")
     for pid, entry in data["providers"].items():
         _strict_keys(entry,{"base_origin","allowed_hosts","credential_source","credential_binding_name","enabled"},"provider")
-        if not isinstance(pid,str) or not _ID.fullmatch(pid) or entry["enabled"] is not True:
+        if not isinstance(pid,str) or not _ID.fullmatch(pid) or type(entry["enabled"]) is not bool:
             raise ModelRegistryError("invalid or disabled provider")
         if not isinstance(entry["allowed_hosts"],list) or not entry["allowed_hosts"] or not all(isinstance(x,str) and x for x in entry["allowed_hosts"]):
             raise ModelRegistryError("invalid host allowlist")
@@ -69,7 +69,7 @@ def read_registry(path: Path = REGISTRY_PATH) -> dict:
         found.add(mid)
         if m["provider_id"] not in data["providers"] or not mid.startswith(m["provider_id"]+"/"):
             raise ModelRegistryError("model provider mismatch")
-        if m["enabled"] is not True or not isinstance(m["display_name"],str) or not m["display_name"].strip():
+        if type(m["enabled"]) is not bool or not isinstance(m["display_name"],str) or not m["display_name"].strip():
             raise ModelRegistryError("invalid model enabled/display")
         if not isinstance(m["provider_name"],str) or not m["provider_name"]:
             raise ModelRegistryError("invalid provider display")
@@ -117,7 +117,7 @@ def install_models(data:dict|None=None) -> None:
             credential_binding_name=raw["credential_binding_name"],
             base_origin=raw["base_origin"],
             allowed_hosts=tuple(raw["allowed_hosts"]),
-            enabled=True,
+            enabled=raw["enabled"],
         ))
     for index, raw in enumerate(data["models"]):
         parsed.append(CatalogModel(
@@ -130,7 +130,7 @@ def install_models(data:dict|None=None) -> None:
             capabilities=frozenset(raw["capabilities"]),
             platform_provider_id=raw["provider_id"],
             source=raw["source"],source_checked_at=raw["source_checked_at"],
-            sort_order=index,enabled=True,
+            sort_order=index,enabled=(raw["enabled"] and data["providers"][raw["provider_id"]]["enabled"]),
         ))
     CATALOG_BY_ID.clear()
     CATALOG_MODELS.clear()  # Existing b14/auto is not a user model.
