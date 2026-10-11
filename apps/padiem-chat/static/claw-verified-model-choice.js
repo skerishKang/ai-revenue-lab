@@ -41,6 +41,14 @@
  manual.addEventListener("input",()=>{const opt=Array.from(select.options).find(x=>!x.disabled&&x.value===manual.value);
   select.value=opt?.value||"";});
  select.addEventListener("focus",()=>void load());
+ window.addEventListener("padiem:auth-state", event => {
+   if(event.detail?.authenticated === true){void load();return;}
+   ++seq;
+   clear();
+   select.disabled=true;
+   manual.value=""; // session revoked: never reuse stale explicit model
+   status.textContent=tr("claw-verified-model-unavailable");
+ });
  window.addEventListener("padiem:localechange",()=>void load());
  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",load,{once:true});
  else void load();

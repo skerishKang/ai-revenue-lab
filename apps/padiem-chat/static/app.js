@@ -866,6 +866,8 @@
     authState = data && typeof data === "object" ? data : { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
     const ready = authState.ready === true;
     const authenticated = ready && authState.authenticated === true;
+    // #3790 signed-in change notification contains no identity or credentials.
+    window.dispatchEvent(new CustomEvent("padiem:auth-state", { detail: { authenticated } }));
     const inboxNavButtons = [
       document.getElementById("tasksNavButton"),
       document.getElementById("alertsNavButton"),

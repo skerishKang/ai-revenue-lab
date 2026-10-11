@@ -41,3 +41,12 @@ def test_no_default_and_advanced_exact_id_retained():
     assert 'if (clawGeneralRequest && !contextSnapshot.selectedModelId)' in app
     assert 'payload.model_id = contextSnapshot.selectedModelId' in app
     assert 'opt.disabled=!row.customer_selectable' in chooser
+
+
+def test_login_refresh_and_logout_clear_stale_model_choice():
+    base = Path(__file__).resolve().parents[1] / "static"
+    app = (base / "app.js").read_text(encoding="utf-8")
+    js = (base / "claw-verified-model-choice.js").read_text(encoding="utf-8")
+    assert 'new CustomEvent("padiem:auth-state"' in app
+    assert 'window.addEventListener("padiem:auth-state"' in js
+    assert 'manual.value=""; // session revoked' in js
