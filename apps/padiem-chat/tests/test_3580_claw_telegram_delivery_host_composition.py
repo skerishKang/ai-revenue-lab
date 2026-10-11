@@ -17,6 +17,7 @@ from app.claw_telegram_delivery_host_composition import (
     ClawTelegramDeliveryHostError, ClawTelegramDeliveryHostState,
     HOST_INJECTION_BOUNDARY_IMPLEMENTED, PRODUCTION_TELEGRAM_DELIVERY_INJECTED,
     READ_SCOPE_IS_NOT_SEND, SEND_DOCUMENT_CAPABILITY,
+    build_canonical_telegram_outbound_binding,
     build_claw_telegram_artifact_delivery, build_claw_telegram_delivery_host_state,
     telegram_send_grant_present,
 )
@@ -28,6 +29,9 @@ from kagent.telegram_contracts import (
 )
 from kagent.telegram_document_send_composition import (
     build_telegram_document_send_composition,
+)
+from kagent.telegram_outbound_binding import (
+    TelegramOutboundBindingError, TrustedTelegramOutboundBinding,
 )
 
 NOW = datetime(2026, 10, 11, 12, 0, tzinfo=timezone.utc)
@@ -227,3 +231,74 @@ class TestClawTelegramDeliveryHostBoundary:
         app = create_app(settings=settings(), claw_telegram_artifact_delivery=None)
         assert app.state.claw_telegram_artifact_delivery is None
         assert build_claw_telegram_artifact_delivery() is None
+
+
+# --- canonical outbound binding connection ---------------------------------
+
+OUTBOUND_TOKEN = b"123456789:AAhostBoundaryOutboundToken"
+
+
+class _OutboundSecretSource:
+    def __init__(self):
+        self.calls = []
+
+    def resolve_bot_token(self, *, binding_ref, bot_ref):
+        self.calls.append((binding_ref, bot_ref))
+        return OUTBOUND_TOKEN
+
+
+class _OutboundChatIdSource:
+    def __init__(self):
+        self.calls = []
+
+    def resolve_provider_chat_id(self, *, binding_ref, bot_ref, chat_ref):
+        self.calls.append((binding_ref, bot_ref, chat_ref))
+        return -100_987_654_321
+
+
+class TestCanonicalOutboundBindingConnection:
+    """The Telegram host boundary can now be completed with canonical components."""
+
+    def test_canonical_binding_requires_a_trusted_scope(self):
+        assert build_canonical_telegram_outbound_binding() is None
+        built = build_canonical_telegram_outbound_binding(scope=scope())
+        assert isinstance(built, TrustedTelegramOutboundBinding)
+
+    def test_boundary_builds_the_canonical_binding_from_trusted_sources(self):
+        secrets, chat_ids = _OutboundSecretSource(), _OutboundChatIdSource()
+        state = build_claw_telegram_delivery_host_state(
+            **full_inputs(trusted_binding=None, outbound_secrets=secrets,
+                          outbound_chat_ids=chat_ids)
+        )
+        assert isinstance(state.delivery, TelegramArtifactDeliveryAdapter)
+        assert isinstance(state.delivery._binding, TrustedTelegramOutboundBinding)
+        assert state.delivery._binding.resolve_bot_token(
+            binding_ref=BINDING, bot_ref=BOT_REF
+        ) == OUTBOUND_TOKEN
+        assert state.delivery._binding.provider_chat_id(
+            binding_ref=BINDING, bot_ref=BOT_REF, chat_ref=CHAT_REF
+        ) == -100_987_654_321
+
+    def test_boundary_reports_missing_outbound_sources_explicitly(self):
+        for overrides in (
+            {"trusted_binding": None},
+            {"trusted_binding": None, "outbound_secrets": _OutboundSecretSource()},
+            {"trusted_binding": None, "outbound_chat_ids": _OutboundChatIdSource()},
+        ):
+            state = build_claw_telegram_delivery_host_state(**full_inputs(**overrides))
+            assert state.delivery is None
+            assert any("trusted_binding authority" in reason
+                       for reason in state.blocked_reasons)
+
+    def test_boundary_built_binding_refuses_a_foreign_chat(self):
+        secrets, chat_ids = _OutboundSecretSource(), _OutboundChatIdSource()
+        state = build_claw_telegram_delivery_host_state(
+            **full_inputs(trusted_binding=None, outbound_secrets=secrets,
+                          outbound_chat_ids=chat_ids)
+        )
+        with pytest.raises(TelegramOutboundBindingError):
+            state.delivery._binding.provider_chat_id(
+                binding_ref=BINDING, bot_ref=BOT_REF, chat_ref="chat_unpaired"
+            )
+        assert secrets.calls == []
+        assert chat_ids.calls == []
