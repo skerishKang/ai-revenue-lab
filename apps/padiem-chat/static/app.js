@@ -1955,7 +1955,9 @@
       input.placeholder = localeOr("input", "Ask anything");
       input.removeAttribute("aria-describedby");
       input.removeAttribute("aria-invalid");
-      input.setAttribute("maxlength", "8000");
+      // General Claw retains its separate task-ingress guard until Claw is audited.
+      if (isClaw) input.setAttribute("maxlength", "8000");
+      else input.removeAttribute("maxlength");
     }
   }
 

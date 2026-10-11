@@ -11,9 +11,11 @@ from .tool_presentations import ToolPresentationDescriptor, get_tool_presentatio
 from .web_tools import MAX_QUERY_CHARS, normalize_public_url
 
 MAX_BROWSER_BODY_BYTES = 6_000_000
-MAX_MESSAGES = 20
-MAX_MESSAGE_CHARS = 8_000
-MAX_TOTAL_MESSAGE_CHARS = 32_000
+# Deprecated model-input caps remain importable for compatibility; no product
+# pilot count/character ceiling applies before B14. HTTP body safety is separate.
+MAX_MESSAGES: int | None = None
+MAX_MESSAGE_CHARS: int | None = None
+MAX_TOTAL_MESSAGE_CHARS: int | None = None
 _ALLOWED_ROLES = {"user", "assistant"}
 
 
@@ -81,10 +83,9 @@ def _validate_payload(
         raise BrowserRequestError(str(exc)) from exc
 
     messages = raw.get("messages")
-    if not isinstance(messages, list) or not 1 <= len(messages) <= MAX_MESSAGES:
-        raise BrowserRequestError("대화 내용은 1개 이상 20개 이하로 보내 주세요.")
+    if not isinstance(messages, list) or not messages:
+        raise BrowserRequestError("대화 내용은 1개 이상 보내 주세요.")
     out: list[dict[str, str]] = []
-    total = 0
     for item in messages:
         if not isinstance(item, dict) or set(item) != {"role", "content"}:
             raise BrowserRequestError("대화 항목 형식이 올바르지 않습니다.")
@@ -95,11 +96,6 @@ def _validate_payload(
         if not isinstance(content, str) or not content.strip():
             raise BrowserRequestError("빈 메시지는 보낼 수 없습니다.")
         text = content.strip()
-        if len(text) > MAX_MESSAGE_CHARS:
-            raise BrowserRequestError("한 메시지가 너무 깁니다.")
-        total += len(text)
-        if total > MAX_TOTAL_MESSAGE_CHARS:
-            raise BrowserRequestError("한 번에 보낸 대화가 너무 깁니다.")
         out.append({"role": role, "content": text})
     if not any(item["role"] == "user" for item in out):
         raise BrowserRequestError("사용자 질문이 필요합니다.")
