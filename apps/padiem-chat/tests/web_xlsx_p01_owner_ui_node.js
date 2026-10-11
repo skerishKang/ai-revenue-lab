@@ -58,11 +58,22 @@ async function settle() {
 }
 function server({ initial = "waiting_p01", enabled = true, failPost = false, failStart = false, badSource = false, workcopy = false, forgedPreviewWrite = false, writeAvailable = false, pdfAvailable = false } = {}) {
   let stage = initial, sent = [], starts = [], previews = [], commits = [],
-    writeDecisions = [];
+    writeDecisions = [], pdfPreviews = [];
   global.fetch = async (url, options = {}) => {
     assert.equal(options.credentials, "same-origin");
     assert.equal(options.cache, "no-store");
     const method = options.method || "GET";
+    if (url.endsWith("/quote-edit/pdf") && method === "GET") {
+      pdfPreviews.push(url);
+      assert.equal(options.headers.Accept, "application/pdf");
+      if (!pdfAvailable || !writeDecisions.includes("approve")) {
+        return response({ok: false}, 404);
+      }
+      const bytes = Buffer.from("%PDF-1.7\n" + "mock owner quote\n".repeat(15) + "%%EOF\n");
+      return {ok: true, status: 200,
+        headers: {get(name) {return name === "content-type" ? "application/pdf" : null;}},
+        async arrayBuffer() {return Uint8Array.from(bytes).buffer;}};
+    }
     if (url === "/api/claw/office/web-sources" && method === "GET") {
       return response({
         ok: true, contract_version: "claw-web-xlsx-source.v1",
@@ -205,7 +216,7 @@ function server({ initial = "waiting_p01", enabled = true, failPost = false, fai
     }
     throw Error("UNEXPECTED_REQUEST " + method + " " + url);
   };
-  return { sent, starts, previews, commits, writeDecisions,
+  return { sent, starts, previews, commits, writeDecisions, pdfPreviews,
     get stage() { return stage; } };
 }
 async function prepare(config) {
@@ -297,6 +308,11 @@ async function prepare(config) {
   form.children[2].handlers.click(); await settle();
   const commit = form.children[3], revisedLink = form.children[4];
   const pdfLink = form.children[8];
+  const pdfPreviewButton = form.children[9], pdfPreviewRegion = form.children[10];
+  assert.equal(pdfPreviewButton.hidden, true,
+    "Before separate WRITE consent PDF preview cannot run");
+  assert.equal(pdfPreviewRegion.hidden, true);
+  assert.deepEqual(writing.network.pdfPreviews, [], "No implicit billable render");
   assert.equal(pdfLink.hidden,true,"No PDF before independent WRITE consent");
   assert.equal(commit.hidden, false, "Separate Engine WRITE must be enabled");
   commit.handlers.click(); commit.handlers.click(); await settle();
@@ -313,6 +329,18 @@ async function prepare(config) {
   assert.equal(revisedLink.hidden, false);
   assert.equal(pdfLink.hidden, false);
   assert.match(pdfLink.textContent, /표준 견적 요약 PDF/);
+  assert.equal(pdfPreviewButton.hidden, false,
+    "Only confirmed independent WRITE creates PDF preview action");
+  assert.equal(pdfPreviewRegion.hidden, true, "No automatic PDF render");
+  pdfPreviewButton.handlers.click(); await settle();
+  assert.equal(writing.network.pdfPreviews.length, 1, "Only explicit owner preview GET");
+  assert.equal(pdfPreviewRegion.hidden, false);
+  assert.equal(pdfPreviewRegion.children[2].hidden, false, "Bounded PDF bytes are framed");
+  assert.match(pdfPreviewRegion.children[2].src, /^blob:/);
+  pdfPreviewRegion.children[0].handlers.click();
+  assert.equal(pdfPreviewRegion.hidden, true);
+  assert.equal(pdfPreviewRegion.children[2].src, "", "Closing revokes displayed PDF");
+  assert.equal(writing.network.pdfPreviews.length, 1, "Closing must not re-render");
   assert.equal(pdfLink.href, "/api/claw/office/web-selections/" + REF + "/quote-edit/pdf");
   assert.equal(revisedLink.href,
     "/api/claw/office/web-selections/" + REF + "/quote-edit/download");
@@ -321,6 +349,8 @@ async function prepare(config) {
   assert.equal(revisedLink.hidden, false,
     "Owner-only revised XLSX must survive D1 status refresh");
   assert.equal(pdfLink.hidden, false, "PDF link survives owner-only status refresh");
+  assert.equal(pdfPreviewButton.hidden, false, "Owner-only preview survives status refresh");
+  assert.equal(pdfPreviewRegion.hidden, true, "Status refresh never auto-renders PDF");
   assert.equal(writing.network.sent.length, 1,
     "WRITE cannot silently replay original READ consent");
 
@@ -379,6 +409,7 @@ async function prepare(config) {
         processing_started: true, workcopy_created: false }, SRC, REF,
     ), false,
   );
+  console.log("WEB_XLSX_PDF_INLINE_PREVIEW_EXPLICIT_OWNER_ONLY=PASS");
   console.log("WEB_XLSX_OWNER_ONLY_PDF_AFTER_WRITE_APPROVAL=PASS");
   console.log("WEB_XLSX_EXPLICIT_CORE_WRITE_TWO_PHASE_OWNER=PASS");
   console.log("WEB_XLSX_ONE_SHOT_WRITE_REVISION_DOWNLOAD=PASS");

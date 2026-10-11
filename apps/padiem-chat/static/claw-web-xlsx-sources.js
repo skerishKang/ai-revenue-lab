@@ -7,6 +7,7 @@
   const MAX_BYTES = 1048576;
   const ID = /^doc_[0-9a-f]{32}$/;
   const HASH = /^[a-f0-9]{64}$/;
+  const PDF_MAX_BYTES = 4_194_304;
   const ENDPOINT = "/api/claw/office/web-sources";
   const SELECTIONS = "/api/claw/office/web-selections";
   const SELECTION_ID = /^sel_[a-f0-9]{32}$/;
@@ -197,6 +198,26 @@
     revisedPdfLink.hidden = true;
     revisedPdfLink.textContent = "표준 견적 요약 PDF 다운로드 (Excel 인쇄본과 서식 다름)";
     revisedPdfLink.setAttribute("download", "");
+    const pdfPreviewButton = root.createElement("button");
+    pdfPreviewButton.type = "button";
+    pdfPreviewButton.textContent = "승인된 표준 견적 PDF 미리보기";
+    pdfPreviewButton.hidden = true;
+    const pdfPreviewRegion = root.createElement("section");
+    pdfPreviewRegion.hidden = true;
+    pdfPreviewRegion.setAttribute("role", "region");
+    pdfPreviewRegion.setAttribute("aria-label", "승인된 견적 PDF 미리보기");
+    const pdfPreviewClose = root.createElement("button");
+    pdfPreviewClose.type = "button";
+    pdfPreviewClose.textContent = "PDF 미리보기 닫기";
+    const pdfPreviewStatus = root.createElement("p");
+    pdfPreviewStatus.setAttribute("role", "status");
+    const pdfPreviewFrame = root.createElement("iframe");
+    pdfPreviewFrame.title = "수정된 표준 견적 PDF 내용";
+    pdfPreviewFrame.hidden = true;
+    pdfPreviewFrame.setAttribute("sandbox", "allow-scripts");
+    pdfPreviewFrame.setAttribute("referrerpolicy", "no-referrer");
+    pdfPreviewFrame.setAttribute("style", "width:100%;height:min(70vh,720px);border:1px solid currentColor;");
+    pdfPreviewRegion.append(pdfPreviewClose, pdfPreviewStatus, pdfPreviewFrame);
     editedLink.hidden = true;
     editedLink.textContent = "수정된 XLSX 다운로드";
     editedLink.setAttribute("download", "");
@@ -214,6 +235,7 @@
     editPreviewPanel.append(
       schoolLabel, priceLabel, editPreviewButton, editCommitButton,
       editedLink, editPreviewResult, writeApprove, writeDeny, revisedPdfLink,
+      pdfPreviewButton, pdfPreviewRegion,
     );
     approvalPanel?.appendChild(editPreviewPanel);
     if (![panel, input, upload, refresh, message, list, approvalPanel,
@@ -237,7 +259,83 @@
     let pendingWrite = null;
     const commitAttemptedRefs = new Set();
     const writeDecisionsAttempted = new Set();
+    let pdfPreviewToken = 0;
+    let pdfPreviewLoading = false;
+    let pdfPreviewObjectUrl = null;
+    const closePdfPreview = () => {
+      pdfPreviewToken += 1; // Ignore an in-flight response after selection/approval changes.
+      pdfPreviewRegion.hidden = true;
+      pdfPreviewFrame.hidden = true;
+      pdfPreviewFrame.src = "";
+      if (pdfPreviewObjectUrl) URL.revokeObjectURL(pdfPreviewObjectUrl);
+      pdfPreviewObjectUrl = null;
+      pdfPreviewLoading = false;
+      pdfPreviewButton.disabled = false;
+      pdfPreviewStatus.textContent = "";
+    };
+    pdfPreviewClose.addEventListener("click", () => {
+      closePdfPreview();
+      pdfPreviewButton.focus?.();
+    });
+    pdfPreviewRegion.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closePdfPreview();
+        pdfPreviewButton.focus?.();
+      }
+    });
+    async function showPdfPreview() {
+      if (busy || pdfPreviewLoading || pdfPreviewButton.hidden
+          || revisedPdfLink.hidden || !selectedSelectionRef) return;
+      const ref = selectedSelectionRef;
+      const token = ++pdfPreviewToken;
+      pdfPreviewLoading = true;
+      pdfPreviewButton.disabled = true;
+      pdfPreviewRegion.hidden = false;
+      pdfPreviewFrame.hidden = true;
+      pdfPreviewStatus.textContent = "승인된 PDF를 서버에서 확인하고 있습니다.";
+      try {
+        // No PDF or paid Browser Rendering call until the signed-in owner clicks.
+        const result = await fetch(SELECTIONS + "/" + encodeURIComponent(ref)
+          + "/quote-edit/pdf", {
+          method: "GET", credentials: "same-origin", cache: "no-store",
+          headers: {"Accept": "application/pdf"},
+        });
+        const mime = result.headers?.get("content-type")?.split(";", 1)[0]?.trim()?.toLowerCase();
+        const declaredSize = Number(result.headers?.get("content-length"));
+        if (!result.ok || mime !== "application/pdf"
+            || (Number.isFinite(declaredSize) && declaredSize > PDF_MAX_BYTES)) {
+          throw new Error("PDF response rejected");
+        }
+        const bytes = new Uint8Array(await result.arrayBuffer());
+        const tail = String.fromCharCode(...bytes.slice(-1024));
+        if (bytes.length < 128 || bytes.length > PDF_MAX_BYTES
+            || bytes[0] !== 37 || bytes[1] !== 80 || bytes[2] !== 68
+            || bytes[3] !== 70 || bytes[4] !== 45 || !tail.includes("%%EOF")) {
+          throw new Error("PDF bytes rejected");
+        }
+        if (token !== pdfPreviewToken || ref !== selectedSelectionRef
+            || revisedPdfLink.hidden || pdfPreviewButton.hidden) return;
+        if (pdfPreviewObjectUrl) URL.revokeObjectURL(pdfPreviewObjectUrl);
+        pdfPreviewObjectUrl = URL.createObjectURL(new Blob([bytes], {type: "application/pdf"}));
+        pdfPreviewFrame.src = pdfPreviewObjectUrl;
+        pdfPreviewFrame.hidden = false;
+        pdfPreviewStatus.textContent = "서버에서 확인한 PDF입니다. Excel 원본과 인쇄 서식이 다를 수 있습니다.";
+        pdfPreviewClose.focus?.();
+      } catch (_error) {
+        if (token === pdfPreviewToken && ref === selectedSelectionRef) {
+          pdfPreviewStatus.textContent = "PDF 미리보기를 표시할 수 없습니다. 승인 상태를 확인하거나 XLSX를 다운로드하세요.";
+        }
+      } finally {
+        if (token === pdfPreviewToken) {
+          pdfPreviewLoading = false;
+          pdfPreviewButton.disabled = busy || pdfPreviewButton.hidden;
+        }
+      }
+    }
+    pdfPreviewButton.addEventListener("click", () => void showPdfPreview());
     const hideRevision = () => {
+      closePdfPreview();
+      pdfPreviewButton.hidden = true;
       trustedPreview = null;
       pendingWrite = null;
       writeApprove.hidden = true;
@@ -310,6 +408,7 @@
             revisedPdfLink.href = SELECTIONS + "/" + encodeURIComponent(selectionRef)
               + "/quote-edit/pdf";
             revisedPdfLink.hidden = false;
+            pdfPreviewButton.hidden = false;
           }
         }
       } catch (_error) {
@@ -486,6 +585,7 @@
           revisedPdfLink.href = SELECTIONS + "/" + encodeURIComponent(plan.ref)
             + "/quote-edit/pdf";
           revisedPdfLink.hidden = false;
+          pdfPreviewButton.hidden = false;
         }
         editPreviewResult.textContent = result.pdf_download_available === true
           ? "수정 XLSX와 표준 견적 요약 PDF를 다운로드할 수 있습니다. PDF는 Excel 인쇄본과 서식이 다릅니다."
@@ -516,6 +616,7 @@
       editCommitButton.disabled = value || editCommitButton.hidden;
       writeApprove.disabled = value || writeApprove.hidden;
       writeDeny.disabled = value || writeDeny.hidden;
+      pdfPreviewButton.disabled = value || pdfPreviewButton.hidden || pdfPreviewLoading;
       panel.setAttribute("aria-busy", value ? "true" : "false");
     };
 
@@ -829,7 +930,6 @@
     upload.addEventListener("click", () => void save());
     refresh.addEventListener("click", () => void reload());
     approvalRefresh.addEventListener("click", () => void refreshSelectedStatus());
-    requestStart.addEventListener("click", () => void startP01());
     requestStart.addEventListener("click", () => void startP01());
     approve.addEventListener("click", () => void decideP01("approve"));
     deny.addEventListener("click", () => void decideP01("deny"));
