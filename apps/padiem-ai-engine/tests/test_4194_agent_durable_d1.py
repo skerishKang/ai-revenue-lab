@@ -166,24 +166,15 @@ async def test_engine_missing_schema_fails_before_tool_dispatch(sql):
     assert fx.provider.calls == 0
 
 
-def test_engine_identity_composition_gate_default_off_and_explicit_on(sql):
-    from worker_identity import _agent_skill_service_for_env
-    from app.service import ServiceContractError
-    db, _ = sql
-    fx = Fixture()
-    common = dict(
-        runtime_factory=lambda app_id: fx.provider,
-        binding_resolver=lambda app_id: fx.binding if app_id == APP_ID else None,
+def test_worker_identity_source_feature_gate_is_off_by_default():
+    # Pyodide worker_identity imports js/workers and cannot run under CPython.
+    # Check its fail-closed composition contract here; real Worker probes in CI.
+    source = (Path(__file__).resolve().parents[1] / "worker_identity.py").read_text(
+        encoding="utf-8"
     )
-    ordinary = _agent_skill_service_for_env({}, **common)
-    assert ordinary._agent_run_ledger is None
-    selected = _agent_skill_service_for_env(
-        {"PADIEM_ENGINE_AGENT_DURABLE_ENABLED": "true",
-         "ENGINE_CONTINUATION": SQLiteD1(db)},
-        **common,
-    )
-    assert isinstance(selected._agent_run_ledger, D1AgentRunLedger)
-    with pytest.raises(ServiceContractError):
-        _agent_skill_service_for_env(
-            {"PADIEM_ENGINE_AGENT_DURABLE_ENABLED": "true"}, **common
-        )
+    assert 'PADIEM_ENGINE_AGENT_DURABLE_ENABLED' in source
+    assert '== "true"' in source
+    assert "db = legacy_worker._binding_value(env, ENGINE_CONTINUATION_BINDING_NAME)" in source
+    assert "agent_run_ledger = D1AgentRunLedger(db)" in source
+    assert "agent_run_ledger=agent_run_ledger" in source
+    assert '"agent_run_lease_unavailable"' in source
