@@ -616,3 +616,40 @@ def test_4194_stream_model_timeout_readback_aligns_and_warns_without_leak(
     output = capsys.readouterr().out
     assert "B62_STREAM_MODEL_TIMEOUT_PARITY=UNVERIFIED" in output
     assert "synthetic_private_string_should_never_be_emitted" not in output
+
+def test_live_production_custom_domain_is_retained_in_generated_config(tmp_path):
+    """Strict B62 deploy must not silently unbind the existing public hostname."""
+    import tomllib
+
+    module = _load_module()
+    bindings = _production_bindings()
+    for item in bindings:
+        if item["name"] == "PADIEM_CHAT_PUBLIC_BASE_URL":
+            item["text"] = "https://chat.padiem.net"
+    live = module.parse_live_bindings(_settings_payload(bindings))
+    original = module.build_production_config(live, _write_repo_config(tmp_path), "https://chat.padiem.net")
+    parsed = tomllib.loads(original)
+    assert parsed["name"] == "padiem-chat"
+    assert parsed["base_dir"] == ".b66-worker-src"
+    assert parsed["routes"] == [{"pattern": "chat.padiem.net", "custom_domain": True}]
+    assert parsed["workers_dev"] is True
+    assert parsed["assets"]["binding"] == "ASSETS"
+    assert parsed["d1_databases"][0]["binding"] == "PADIEM_CHAT_DB"
+
+    # A non-canonical test origin must never invent a Production Custom Domain.
+    synthetic_live = module.parse_live_bindings(_settings_payload(_production_bindings()))
+    synthetic = module.build_production_config(synthetic_live, _write_repo_config(tmp_path), PUBLIC_URL)
+    assert "routes" not in tomllib.loads(synthetic)
+
+
+def test_b62_release_requires_real_custom_domain_readback_before_and_after():
+    workflow = _read_workflow()
+    readonly = workflow.split("\n  cloudflare-readonly:", 1)[1].split("\n  deploy-production-code:", 1)[0]
+    deploy = workflow.split("\n  deploy-production-code:", 1)[1]
+    assert "workers/domains?hostname=chat.padiem.net" in readonly
+    assert "B62_CANONICAL_CUSTOM_DOMAIN=ATTACHED_EXPECTED" in readonly
+    assert "workers/domains?hostname=chat.padiem.net" in deploy
+    assert "B62_CANONICAL_CUSTOM_DOMAIN_STILL_ATTACHED=PASS" in deploy
+    assert '.service == $service' in readonly
+    assert '.enabled == true' in readonly
+    assert "--strict" in deploy
