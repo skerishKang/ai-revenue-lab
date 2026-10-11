@@ -633,6 +633,7 @@ def test_live_production_custom_domain_is_retained_in_generated_config(tmp_path)
     assert parsed["base_dir"] == ".b66-worker-src"
     assert parsed["routes"] == [{"pattern": "chat.padiem.net", "custom_domain": True}]
     assert parsed["workers_dev"] is True
+    assert parsed["preview_urls"] is True  # Preserve current Production version/preview URLs.
     assert parsed["assets"]["binding"] == "ASSETS"
     assert parsed["d1_databases"][0]["binding"] == "PADIEM_CHAT_DB"
 
