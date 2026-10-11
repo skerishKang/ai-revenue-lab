@@ -245,7 +245,13 @@ def _bounded_text(value: str, label: str) -> str:
     text = value.strip()
     if not text:
         raise HistoryError(f"{label} is empty")
-    return text[:MAX_HISTORY_MESSAGE_CHARS]
+    # Persistence is a bounded display preview, never a model-input ceiling.
+    # Mark incomplete previews explicitly so users do not mistake saved history
+    # for a full transcript when a long request/answer reached the provider.
+    if len(text) <= MAX_HISTORY_MESSAGE_CHARS:
+        return text
+    suffix = "\n[저장 미리보기: 전체 내용 중 일부만 저장되었습니다.]"
+    return text[:MAX_HISTORY_MESSAGE_CHARS - len(suffix)] + suffix
 
 
 def _title_from_user_text(text: str) -> str:
