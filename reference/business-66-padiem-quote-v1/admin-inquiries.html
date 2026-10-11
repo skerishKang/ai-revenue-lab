@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>회원 문의 · 견적서 관리자</title>
+  <link rel="stylesheet" href="admin.css">
+  <script src="admin-inquiries.js" defer></script>
+</head>
+<body>
+  <div class="layout">
+    <aside class="rail">
+      <div class="brand"><span class="brand-mark">견</span><span>견적서 만들기<small>회원 · 문의 관리</small></span></div>
+      <nav aria-label="관리자 메뉴">
+        <a class="nav-link" href="/admin.html">회원 관리</a>
+        <a class="nav-link" href="/admin-models.html">모델 권한</a>
+        <a class="nav-link" href="/admin-notices.html">가입 알림</a>
+        <a class="nav-link active" aria-current="page" href="/admin-inquiries.html">회원 문의</a>
+        <a class="nav-link" href="/">견적서로 돌아가기</a>
+      </nav>
+    </aside>
+    <main class="main">
+      <header class="header"><div><p class="eyebrow">PADIEM QUOTE</p><h1>회원 문의</h1>
+        <p class="subtitle">회원이 명시적으로 접수한 문의만 표시합니다. AI 채팅 기록은 포함되지 않습니다.</p></div></header>
+      <section id="access" class="access" role="status" aria-live="polite">관리자 권한을 확인하고 있습니다.</section>
+      <div id="inquiryContent" hidden>
+        <section class="panel">
+          <label for="inquiryFilter">처리 상태</label>
+          <select id="inquiryFilter"><option value="all">전체</option><option value="open">미처리</option><option value="resolved">처리 완료</option></select>
+          <button id="inquiryReload" type="button">새로고침</button>
+          <button id="inquiryRetry" type="button">미발송 알림 다시 전송</button>
+          <p id="inquiryStatus" role="status" aria-live="polite"></p>
+          <div id="inquiryList" aria-live="polite"></div>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

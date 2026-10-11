@@ -6,6 +6,7 @@
   <title>견적서 만들기</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="padiem-account.css">
+  <link rel="stylesheet" href="member-inquiry.css">
   <link rel="stylesheet" href="b66-surface-refresh.css?v=20261011-4358" media="screen">
   <script src="quote-core.js" defer></script>
   <script src="quote-extraction.js" defer></script>
@@ -36,6 +37,7 @@
   <script src="company-profile-settings.js" defer></script>
   <script src="quote-browser-pdf.js" defer></script>
   <script src="padiem-account.js" defer></script>
+  <script src="member-inquiry.js" defer></script>
   <script src="drive-config.js" defer></script>
   <script src="quote-import-atomic.js" defer></script>
   <script src="quote-drive-contract.js" defer></script>
@@ -51,6 +53,7 @@
         <p>입력부터 PDF 저장까지 한 화면에서</p>
       </div>
       <div class="topbar-actions">
+        <button id="b66OpenInquiry" type="button">문의하기</button>
         <button class="padiem-account-button" id="padiemAccountButton" type="button">로그인</button>
         <button class="topbar-reset" id="settingsButton" type="button" hidden>설정</button>
       </div>
@@ -478,6 +481,24 @@
     </div>
     </section>
   </main>
+  <dialog id="b66InquiryDialog" aria-labelledby="b66InquiryTitle">
+    <section class="b66-inquiry-card">
+      <header><h2 id="b66InquiryTitle">운영자에게 문의하기</h2>
+        <button id="b66CloseInquiry" type="button" aria-label="문의창 닫기">닫기</button></header>
+      <p>로그인한 회원의 문의만 접수됩니다. AI 채팅 내용은 자동으로 관리자에게 전달되지 않습니다.</p>
+      <form id="b66InquiryForm">
+        <label for="b66InquiryCategory">문의 유형</label>
+        <select id="b66InquiryCategory" required><option value="general">일반 문의</option><option value="usage">사용 방법</option><option value="billing">요금·계정</option><option value="bug">오류 신고</option><option value="other">기타</option></select>
+        <label for="b66InquirySubject">제목</label>
+        <input id="b66InquirySubject" maxlength="120" required placeholder="문의 제목을 입력하세요">
+        <label for="b66InquiryBody">문의 내용</label>
+        <textarea id="b66InquiryBody" minlength="5" maxlength="3000" required placeholder="문의 내용을 입력하세요. 비밀번호나 API 키는 입력하지 마세요."></textarea>
+        <p>문의 원문은 관리자 화면에 저장됩니다. Telegram·Discord·이메일에는 문의번호와 유형만 알립니다.</p>
+        <button type="submit">문의 접수</button>
+        <p id="b66InquiryStatus" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+  </dialog>
   <dialog class="padiem-auth-dialog" id="padiemAuthDialog" aria-labelledby="padiemAuthTitle">
     <section class="padiem-auth-card">
       <button class="padiem-auth-close" id="padiemAuthClose" type="button" aria-label="로그인 창 닫기">×</button>
