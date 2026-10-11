@@ -51,7 +51,7 @@ check(refresh.includes('.shell-rail-collapse::before { content: none; }') &&
       refresh.includes('.shell-preview-host #quotePaper,') &&
       refresh.includes('box-shadow: 0 6px 22px rgba(38,63,81,.13);'),
   "only the A4 paper is white; the tall preview backing is transparent on screen");
-check(html.includes('href="b66-surface-refresh.css" media="screen"'),
+check(html.includes('href="b66-surface-refresh.css?v=20261011-4358" media="screen"'),
   "viewer presentation never changes print or certified A4 geometry");
 check(!shell.includes('createElement("iframe")') && !shell.includes("b66-cgi-form.html"),
   "production shell never embeds CGI prototype iframe");
@@ -67,7 +67,7 @@ check(css.includes("@media (max-width: 900px)"), "mobile shell has explicit boun
 check(html.match(/id="quotePaper"/g)?.length === 1, "exactly one canonical quote paper exists");
 check(html.match(/id="easyComposer"/g)?.length === 1, "exactly one chat composer exists");
 
-check(html.includes('<link rel="stylesheet" href="b66-surface-refresh.css" media="screen">'),
+check(html.includes('<link rel="stylesheet" href="b66-surface-refresh.css?v=20261011-4358" media="screen">'),
   "UI-only stylesheet is loaded for screen, never CGI PDF print geometry");
 const resetStart = app.indexOf('  $("newQuote").addEventListener("click", () => {');
 const resetConfirm = app.indexOf('if (!window.confirm(', resetStart);
@@ -137,7 +137,8 @@ check(paneFix.includes("The 2px phantom scrollbar belonged to .easy-view") &&
 check(paneFix.includes("one right-side card like the left rail") &&
   paneFix.includes(".shell-preview-host .preview-toolbar") &&
   paneFix.includes("background: #f8fbfd;") &&
-  paneFix.includes("border-bottom: 1px solid #e1eaf0;") &&
+  paneFix.includes("background: #f8fbfd;") &&
+  paneFix.includes("backdrop-filter: none;") &&
   paneFix.includes("border-radius: 22px;"),
   "right preview is one bounded light pane, not two stacked cards");
 check(html.includes('media="screen"') &&

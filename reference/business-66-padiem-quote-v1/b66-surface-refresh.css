@@ -1165,11 +1165,12 @@ body.b66-three-pane #easySend {
     box-shadow: none;
   }
   body.b66-three-pane .shell-preview-host .preview-toolbar {
-    background: rgba(248,251,253,.98);
+    /* A single outer card like the left rail. The A4 sheet remains distinct. */
+    background: #f8fbfd;
     border: 0;
-    border-bottom: 1px solid #e1eaf0;
     border-radius: 0;
     box-shadow: none;
+    backdrop-filter: none;
   }
 }
 /* The 2px phantom scrollbar belonged to .easy-view, not its inner transcript:
