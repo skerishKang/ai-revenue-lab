@@ -169,6 +169,7 @@
     accountMenu.setAttribute("aria-label", "계정 메뉴");
     accountMenu.innerHTML = '<button id="b66AccountMenuSettings" type="button">설정</button>' +
       '<button id="b66AccountMenuDrive" type="button">Google Drive 저장</button>' +
+      '<button id="b66AccountMenuAdmin" type="button" hidden>관리자 페이지</button>' +
       '<button id="b66AccountMenuLogout" type="button">로그아웃</button>';
     account.appendChild(accountMenu);
     if (accountButton) {
@@ -185,6 +186,11 @@
       if (accountButton) accountButton.setAttribute("aria-expanded", "false");
       clickExisting("settingsButton");
       clickExisting("settingsDriveChoice"); // existing settings and Drive UI; no new OAuth path
+    });
+    byId("b66AccountMenuAdmin").addEventListener("click", function () {
+      // Visibility is supplied by the server-attested admin/me response;
+      // admin.html still independently enforces the same server check.
+      window.location.assign("/admin.html");
     });
     byId("b66AccountMenuLogout").addEventListener("click", function () {
       accountMenu.hidden = true;

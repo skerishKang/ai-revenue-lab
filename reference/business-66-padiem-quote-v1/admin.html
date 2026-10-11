@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>관리자 · 견적서 만들기</title>
+  <link rel="stylesheet" href="admin.css">
+  <script src="admin.js" defer></script>
+</head>
+<body>
+  <div class="layout">
+    <aside class="rail">
+      <div class="brand"><span class="brand-mark">견</span><span>견적서 만들기<small>회원 · 권한 관리</small></span></div>
+      <nav aria-label="관리자 메뉴">
+        <a class="nav-link active" href="#members">회원 관리</a>
+        <a class="nav-link" href="#model-policy">모델 권한</a>
+        <a class="nav-link" href="#notices">가입 알림</a>
+        <a class="nav-link" href="/">견적서로 돌아가기</a>
+      </nav>
+      <div class="rail-footer">관리자 전용 · 서버 권한 확인</div>
+    </aside>
+    <main class="main">
+      <header class="header">
+        <div>
+          <p class="eyebrow">PADIEM QUOTE</p>
+          <h1>관리자 페이지</h1>
+          <p class="subtitle">가입 요청을 확인하고 회원별 이용 권한을 관리합니다.</p>
+        </div>
+        <a class="back" href="/">견적서로 돌아가기</a>
+      </header>
+      <section id="access" class="access" role="status" aria-live="polite">관리자 권한을 확인하고 있습니다.</section>
+      <div id="adminContent" hidden>
+        <section class="cards" aria-label="회원 현황">
+          <article class="stat"><span>승인 대기</span><strong id="countPending">–</strong></article>
+          <article class="stat"><span>승인 회원</span><strong id="countApproved">–</strong></article>
+          <article class="stat"><span>이용 정지</span><strong id="countSuspended">–</strong></article>
+        </section>
+        <section id="members" class="panel">
+          <div class="section-head">
+            <div><h2>회원 관리</h2><p>회원의 가입 상태와 이용 등급을 변경할 수 있습니다.</p></div>
+            <button type="button" id="refreshMembers" class="secondary">새로고침</button>
+          </div>
+          <form id="memberFilterForm" class="member-filters" aria-label="회원 검색 및 등급 필터">
+            <input id="memberSearch" type="search" maxlength="80" placeholder="회원 이름 또는 이메일 검색" aria-label="회원 이름 또는 이메일 검색">
+            <select id="memberStatusFilter" aria-label="회원 상태 필터">
+              <option value="all">전체 상태</option>
+              <option value="pending">승인 대기</option>
+              <option value="approved">승인</option>
+              <option value="suspended">이용 정지</option>
+            </select>
+            <select id="memberTierFilter" aria-label="회원 등급 필터">
+              <option value="all">전체 등급</option>
+              <option value="FREE">Free</option>
+              <option value="PLUS">Plus</option>
+              <option value="PRO">Pro</option>
+              <option value="MAX">Max</option>
+            </select>
+            <button type="submit" class="secondary">검색</button>
+          </form>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>회원</th><th>가입일</th><th>상태</th><th>이용 등급</th><th>변경</th></tr></thead>
+              <tbody id="memberRows"><tr><td colspan="5">목록을 불러오는 중입니다.</td></tr></tbody>
+            </table>
+          </div>
+          <div class="pager">
+            <button id="previousPage" type="button" class="secondary" disabled>이전</button>
+            <span id="pageLabel">1페이지</span>
+            <span id="matchedMembers" aria-live="polite"></span>
+            <button id="nextPage" type="button" class="secondary" disabled>다음</button>
+          </div>
+          <p id="memberStatus" role="status" aria-live="polite"></p>
+        </section>
+        <section id="model-policy" class="panel">
+          <div class="section-head"><div><h2>등급별 AI 모델 권한</h2><p>B14에 실제 등록된 모델만 선택할 수 있습니다.</p></div></div>
+          <p id="enforcementNote" class="note" role="status">모델 등록 정보를 불러오고 있습니다.</p>
+          <div class="model-switch-header"><h3>모델별 전체 ON / OFF</h3><p>OFF로 설정하면 모든 회원 등급에서 해당 모델을 사용할 수 없습니다.</p></div>
+          <div id="modelSwitchList" class="model-switch-grid"></div>
+          <div class="model-switch-header"><h3>등급별 허용 모델</h3><p>ON인 모델 중 각 회원 등급에 허용할 모델을 선택하세요.</p></div>
+          <div id="modelTierColumns" class="tier-grid"></div>
+          <div class="policy-actions">
+            <label><input id="activatePolicy" type="checkbox"> 등급별 모델 제한 정책 활성화</label>
+            <button id="savePolicy" type="button" class="save" disabled>모델 정책 저장</button>
+          </div>
+          <p id="policyStatus" class="note" role="status" aria-live="polite"></p>
+        </section>
+        <section id="notices" class="panel">
+          <div class="section-head"><div><h2>가입 알림</h2><p>새 회원가입 이벤트를 확인합니다.</p></div></div>
+          <p class="notice-count">발송 대기 기록 <strong id="noticePending">–</strong>건</p>
+          <button type="button" id="retryNotices" class="secondary" hidden>대기 알림 다시 보내기</button>
+          <p id="noticeStatus" class="note" role="status"></p>
+          <p id="noticeGuide" class="note">알림용 서버 계정이 연결되지 않았습니다. 설정 전에는 가입 이벤트만 기록합니다.</p>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
