@@ -21,6 +21,8 @@
   const newChatButton = document.getElementById("newChatButton");
   const mobileMenu = document.getElementById("mobileMenu");
   const mobileClose = document.getElementById("mobileClose");
+  const sidebarCollapseButton = document.getElementById("sidebarCollapseButton");
+  const sidebarRestoreButton = document.getElementById("sidebarRestoreButton");
   const sidebarScrim = document.getElementById("sidebarScrim");
   const settingsButton = document.getElementById("settingsButton");
   const settingsDialog = document.getElementById("settingsDialog");
@@ -54,6 +56,7 @@
   const passwordRegisterError = document.getElementById("passwordRegisterError");
   const passwordRegisterSubmit = document.getElementById("passwordRegisterSubmit");
   const accountName = document.getElementById("accountName");
+  const accountAvatar = document.getElementById("accountAvatar");
   const accountContainer = document.querySelector(".sidebar-account");
   const historySection = document.getElementById("historySection");
   const historyList = document.getElementById("historyList");
@@ -940,6 +943,14 @@
       accountContainer.dataset.accountState = sessionState;
       accountContainer.hidden = sessionState === "unavailable";
     }
+    if (accountAvatar) {
+      const displayName = sessionState === "signed_in" && typeof authState.user?.name === "string"
+        ? authState.user.name.trim() : "";
+      const firstCharacter = displayName ? Array.from(displayName)[0] : "";
+      accountAvatar.textContent = sessionState === "signed_in"
+        ? (firstCharacter ? firstCharacter.toLocaleUpperCase() : "●")
+        : sessionState === "expired" ? "!" : "●";
+    }
     loginButton.hidden = sessionState === "unavailable";
     loginButton.disabled = !ready;
     syncAuthDialogMethods();
@@ -1605,6 +1616,16 @@
     if (success && selectedAttachment === attachmentSnapshot) clearAttachment();
   }
 
+  // Desktop layout preference is ephemeral: never change mobile overlay behavior,
+  // authentication, or per-user server state to store a navigation choice.
+  function setSidebarCollapsed(collapsed) {
+    if (window.matchMedia("(max-width: 920px)").matches) return;
+    shell.classList.toggle("sidebar-collapsed", collapsed);
+    sidebarCollapseButton?.setAttribute("aria-expanded", collapsed ? "false" : "true");
+    sidebarRestoreButton?.setAttribute("aria-expanded", collapsed ? "false" : "true");
+    if (collapsed) sidebarRestoreButton?.focus();
+    else sidebarCollapseButton?.focus();
+  }
   function closeSidebar() {
     shell.classList.remove("sidebar-open");
     mobileMenu.setAttribute("aria-expanded", "false");
@@ -1735,6 +1756,8 @@
     closeSettings();
   });
   settingsCloseButton.addEventListener("click", closeSettings);
+  sidebarCollapseButton?.addEventListener("click", () => setSidebarCollapsed(true));
+  sidebarRestoreButton?.addEventListener("click", () => setSidebarCollapsed(false));
   mobileMenu.addEventListener("click", openSidebar);
   mobileClose.addEventListener("click", closeSidebar);
   sidebarScrim.addEventListener("click", closeSidebar);
