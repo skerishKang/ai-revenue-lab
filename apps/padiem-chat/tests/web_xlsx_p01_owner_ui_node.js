@@ -271,6 +271,22 @@ async function prepare(config) {
   ready.root.nodes.clawWebXlsxP01Approve.handlers.click(); await settle();
   assert.deepEqual(ready.network.sent, ["approve"]);
 
+  // #3936: restoring an already-approved selection right after a page refresh
+  // is the FIRST interaction in this scenario. Opening the panel runs reload(),
+  // whose setBusy(false) latches editPreviewButton.disabled = true because the
+  // edit panel is still hidden at that moment. The restore handler calls
+  // showSelection() without a setBusy() wrapper, so nothing recomputes the flag
+  // and the edit preview stays unreachable on a refreshed page.
+  const restored = await prepare({initial: "confirmed", workcopy: true});
+  assert.deepEqual(restored.network.sent, [],
+    "Restoring an approved selection must not re-submit a P01 decision");
+  const restoredForm = restored.root.nodes.clawWebXlsxP01Panel.children.find(
+    item => item.tag === "div" && item.children.some(x => x.tag === "button"));
+  assert.ok(restoredForm, "Refreshed approved workcopy must expose the edit panel");
+  assert.equal(restoredForm.hidden, false);
+  assert.equal(restoredForm.children[2].disabled, false,
+    "Restore-after-refresh must keep the edit preview reachable");
+
   // A genuine server-generated copy receipt must be accepted and expose ONLY
   // the owner-scoped selection download, never arbitrary R2/object references.
   const copied = await prepare({workcopy: true});
