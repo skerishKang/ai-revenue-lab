@@ -1580,8 +1580,8 @@ class TestStreamedResponseLimit:
         rcfg.provider_mode = "live"
         event = b"data: " + json.dumps({
             "choices": [{"delta": {"content": "x" * 11500}, "finish_reason": None}]
-        }).encode() + b"\\n\\n"
-        payload = event * 100 + b"data: [DONE]\\n\\n"
+        }).encode() + b"\n\n"
+        payload = event * 100 + b"data: [DONE]\n\n"
         assert len(payload) > plat.MAX_RESPONSE_BYTES
 
         def respond(request):
