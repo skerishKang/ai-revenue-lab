@@ -1,54 +1,50 @@
-/* #3790 verified owner-selected model UI, explicit only, no silent fallback. */
+/* #3790: Claw shares B14's owner-allowed, ready model list with B66. */
 (() => {
  "use strict";
  const select=document.getElementById("clawVerifiedModelSelect");
  const manual=document.getElementById("clawModelIdInput");
  const status=document.getElementById("clawVerifiedModelHint");
  if(!select||!manual||!status)return;
- const IDS=new Set(["google/gemini-3.1-flash-lite","google/gemini-3.5-flash-lite",
-   "google/gemma-4-26b-a4b-it","google/gemma-4-31b-it"]);
- const PROVEN="google/gemini-3.5-flash-lite";
  const tr=key=>window.__padiemLocale?.text?.(key)||key;
+ const EXACT_ID=/^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$/;
  let seq=0;
  function clear(){select.replaceChildren();const o=document.createElement("option");o.value="";
   o.textContent=tr("claw-verified-model-placeholder");select.appendChild(o);select.value="";}
- function valid(data){return data&&data.ok===true&&data.scope==="owner_confirmed_google_subset"
-  &&data.complete_inventory===false&&data.automatic_default===false
-  &&Array.isArray(data.model_choices)&&data.model_choices.length===4
-  &&new Set(data.model_choices.map(x=>x?.model_id)).size===4
-  &&data.model_choices.every(x=>x&&IDS.has(x.model_id)&&x.owner_selected===true
-    &&x.product_name_prefix==="파디엠플러스"&&typeof x.individual_model_name==="string"
-    &&x.individual_model_name.length>0&&x.individual_model_name.length<100
-    &&typeof x.customer_selectable==="boolean"
-    &&x.customer_selectable===x.product_e2e_verified
-    &&(!x.customer_selectable||x.model_id===PROVEN));}
+ function valid(data){return data&&data.ok===true&&data.scope==="b14_owner_allowed_live_ready"
+  &&data.complete_inventory===true&&data.automatic_default===false
+  &&Array.isArray(data.model_choices)&&data.model_choices.length<=256
+  &&new Set(data.model_choices.map(x=>x?.model_id)).size===data.model_choices.length
+  &&data.model_choices.every(x=>x&&typeof x.model_id==="string"&&EXACT_ID.test(x.model_id)
+    &&x.product_name_prefix==="파디엠플러스"
+    &&typeof x.individual_model_name==="string"
+    &&x.individual_model_name.length>0&&x.individual_model_name.length<=100
+    &&x.customer_selectable===true);}
  async function load(){const ticket=++seq;select.disabled=true;clear();status.textContent=tr("claw-verified-model-loading");
   try{const r=await fetch("/api/claw/verified-model-choices",{credentials:"same-origin",cache:"no-store"});
    if(!r.ok)throw Error("not_authenticated");const data=await r.json();
    if(!valid(data))throw Error("invalid_choices");if(ticket!==seq)return;
    for(const row of data.model_choices){const opt=document.createElement("option");opt.value=row.model_id;
-    opt.disabled=!row.customer_selectable;
-    opt.textContent=row.individual_model_name+(opt.disabled?" ("+tr("claw-verified-model-hold")+")":"");
+    opt.textContent=row.individual_model_name;
     select.appendChild(opt);}
-   select.disabled=false;
-   const previous=Array.from(select.options).find(x=>!x.disabled&&x.value===manual.value);
-   select.value=previous?.value||"";status.textContent=tr("claw-verified-model-ready");
-  }catch(_){if(ticket!==seq)return;clear();status.textContent=tr("claw-verified-model-unavailable");}
+   select.disabled=data.model_choices.length===0;
+   const previous=Array.from(select.options).find(x=>x.value&&x.value===manual.value);
+   select.value=previous?.value||"";
+   status.textContent=data.model_choices.length?tr("claw-verified-model-ready"):tr("claw-verified-model-unavailable");
+  }catch(_){if(ticket!==seq)return;clear();select.disabled=true;status.textContent=tr("claw-verified-model-unavailable");}
  }
- select.addEventListener("change",()=>{const opt=select.selectedOptions?.[0];
-  if(!opt||opt.disabled||select.value!==PROVEN)return;
-  manual.value=select.value;manual.dispatchEvent(new Event("input",{bubbles:true}));});
- manual.addEventListener("input",()=>{const opt=Array.from(select.options).find(x=>!x.disabled&&x.value===manual.value);
-  select.value=opt?.value||"";});
- // Loading occurs at boot and on auth/locale changes; do not disable the
- // select on focus while the user is trying to choose an option.
- window.addEventListener("padiem:auth-state", event => {
-   if(event.detail?.authenticated === true){void load();return;}
-   ++seq;
-   clear();
-   select.disabled=true;
-   manual.value=""; // session revoked: never reuse stale explicit model
-   status.textContent=tr("claw-verified-model-unavailable");
+ select.addEventListener("change",()=>{
+  if(!select.value||!Array.from(select.options).some(o=>o.value===select.value))return;
+  manual.value=select.value;manual.dispatchEvent(new Event("input",{bubbles:true}));
+ });
+ manual.addEventListener("input",()=>{
+  const opt=Array.from(select.options).find(x=>x.value&&x.value===manual.value);
+  select.value=opt?.value||"";
+ });
+ window.addEventListener("padiem:auth-state",event=>{
+  if(event.detail?.authenticated===true){void load();return;}
+  ++seq;clear();select.disabled=true;
+  manual.value=""; // session revoked: never reuse stale explicit model
+  status.textContent=tr("claw-verified-model-unavailable");
  });
  window.addEventListener("padiem:localechange",()=>void load());
  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",load,{once:true});

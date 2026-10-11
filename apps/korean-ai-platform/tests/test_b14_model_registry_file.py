@@ -70,7 +70,7 @@ def test_only_json_providers_are_registered():
     lambda d:d["providers"][next(iter(d["providers"]))].update({"base_origin":"http://127.0.0.1"}),
     lambda d:d["models"][0].update({"capabilities":["chat","free"]}),
     lambda d:d["models"][0].update({"id":"b14/auto"}),
-    lambda d:d["models"][0].update({"enabled":False}),
+    lambda d:d["models"][0].update({"enabled":"false"}),
     lambda d:d["models"][0].update({"secret":"value"}),
 ])
 def test_invalid_config_fails_closed(tmp_path,mutate):
@@ -148,3 +148,35 @@ def test_wrangler_config_declares_canonical_json_text_module(tmp_path):
     assert not (root / "app/pilot/_b14_models_embedded.py").exists()
     with pytest.raises(ModelRegistryError, match="invalid B14 JSON registry"):
         read_registry(tmp_path / "missing-b14_models.json")
+
+def test_disabled_model_is_registered_metadata_but_not_an_executable_route(tmp_path):
+    from app.pilot.model_registry_file import install_models
+    registry = copy.deepcopy(read_registry())
+    model_id = registry["models"][0]["id"]
+    registry["models"][0]["enabled"] = False
+    path = tmp_path / "b14_models.json"
+    path.write_text(json.dumps(registry), encoding="utf-8")
+    assert read_registry(path)["models"][0]["enabled"] is False
+    try:
+        install_models(read_registry(path))
+        item = get_catalog_by_id(model_id)
+        assert item is not None and item.enabled is False
+    finally:
+        install_models()  # restore the baseline for subsequent tests
+
+
+def test_disabled_provider_makes_its_registered_models_unavailable(tmp_path):
+    from app.pilot.model_registry_file import install_models
+    registry = copy.deepcopy(read_registry())
+    model_id = registry["models"][0]["id"]
+    pid = registry["models"][0]["provider_id"]
+    registry["providers"][pid]["enabled"] = False
+    path = tmp_path / "b14_models.json"
+    path.write_text(json.dumps(registry), encoding="utf-8")
+    assert read_registry(path)["providers"][pid]["enabled"] is False
+    try:
+        install_models(read_registry(path))
+        item = get_catalog_by_id(model_id)
+        assert item is not None and item.enabled is False
+    finally:
+        install_models()

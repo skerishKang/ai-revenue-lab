@@ -8,6 +8,18 @@
 
 # B14 중앙 모델 레지스트리 — 단일 원본 운영 계약
 
+## 2026-10-11 #3790 Owner 운영 정정 — 등록 / 실행 가능 / 품질 평가 분리
+
+- 중앙 원본은 `apps/korean-ai-platform/app/pilot/b14_models.json` 하나입니다. 2026-10-11 시점 현재 원본은 **12모델 / 9공급업체**입니다. 예전 9개·10개 수치는 역사적 기록입니다.
+- **REGISTERED**: 모델·공급업체의 ID, 메타데이터, API 계약을 등록한 상태입니다. 모델별 B66/Claw 실호출 또는 견적 성능 비교가 등록의 선행 조건이 아닙니다.
+- **ENABLED**: JSON `enabled` 불리언으로 개별 모델/공급업체 실행 허용 여부를 지정합니다. `false`는 등록 데이터를 유지하지만 실행을 막습니다. 비밀키 값이나 고객 기본 모델을 새로 생성하지 않습니다.
+- **AVAILABLE**: B14 운영 모드·사용 권한·Owner 제외 모델·필수 chat capability·공급업체 바인딩/경로 준비 조건을 통과한 exact ID만 포함합니다. B66과 Claw는 **같은 B14 모델/제공자 준비 상태 GET**을 통해 이 집합을 구성하며 제품별 고정 모델 목록을 관리하지 않습니다.
+- **QUALITY_EVALUATED**: 모델이 특정 견적/코딩/일반 대화 과제를 얼마나 잘 처리하는지 별도 실행 시 평가합니다. BEST/BAD 등의 미래 품질 메타데이터는 사용 가능 여부 및 등록 상태와 다릅니다. 아무 점수도 자동 계산하거나 자동 라우팅에 사용하지 않습니다.
+- 모델 추가 → B14 source+경량 계약 테스트 → 준비 상태에 따라 목록 반영이 기본 흐름입니다. 제품별 신규 모델 실호출, B66 견적 PDF E2E, Claw 업무 E2E, 장기 안정성 시험은 **해당 작업을 실제로 검증할 때만 별도 수행**합니다.
+- 선택은 사용자별 **exact `model_id`** 한 개로 유지합니다. 로그인·권한·사용량·Engine/B14 실행 게이트는 유지하고, 실행 불가 모델 거절 / 미선택 거절 / 자동 fallback 금지 정책도 유지합니다. Plus/Pro/Max 등급은 모델 등록과 별개의 제품 기능이며 B66 견적 UI에는 적용하지 않습니다.
+
+
+
 > **OWNER CORRECTION 2026-10-10:** `experiential/qwen3.8-flash-next-uncensored` is the tenth canonical B14 model (seven providers).
 > The Owner authorizes manually selected live evaluation during the ExLab free promotion. Data retention is not an Owner-imposed blocker.
 > Do not reintroduce `model_data_policy_pending` or the last-egress privacy refusal.
