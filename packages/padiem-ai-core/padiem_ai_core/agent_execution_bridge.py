@@ -119,6 +119,7 @@ class AgentPlanExecutor:
         initial_tool_events: tuple[ToolEvent, ...] = (),
         trace_id: str | None = None,
         plan_id: str | None = None,
+        run_guard: Callable[[], bool] | None = None,
     ) -> AgentRunResult:
         # 1. Authoritative plan validation against compiled profile
         validated_plan = validate_agent_plan(
@@ -139,6 +140,7 @@ class AgentPlanExecutor:
             tool_runtime=tool_runtime,
             clock=self._clock,
             approval_pause_seconds=self._approval_pause_seconds,
+            run_guard=run_guard,
         )
 
         # 4. Execute bounded agent loop
