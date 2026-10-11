@@ -65,7 +65,7 @@ from .claw_routes import (
 )
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 from .auth_routes import auth_ready, current_user_id
-from .history import MAX_HISTORY_MESSAGE_CHARS, validate_conversation_id
+from .history import MAX_HISTORY_MESSAGE_CHARS, _bounded_text, validate_conversation_id
 
 MAX_CLAW_GENERAL_BODY_BYTES = 64 * 1024  # 64 KiB
 MAX_CLAW_GENERAL_MESSAGE_CHARS = 8_000
@@ -261,9 +261,7 @@ async def _save_claw_exchange(
 ) -> str | None:
     """Exact completed exchange only; unavailable history does not replay P01."""
     if (not isinstance(answer, str) or not answer.strip()
-            or len(answer) > MAX_HISTORY_MESSAGE_CHARS
-            or not isinstance(user_text, str)
-            or len(user_text) > MAX_HISTORY_MESSAGE_CHARS):
+            or not isinstance(user_text, str) or not user_text.strip()):
         return None
     uid = current_user_id(request) if auth_ready(request) else None
     store = getattr(request.app.state, "history_store", None)
@@ -284,7 +282,11 @@ async def _save_claw_exchange(
             project_id = owned.get("project_id")
             if project_id is not None and not isinstance(project_id, str):
                 return None
-        saved = append(uid, conversation_id, user_text, answer, project_id)
+        # Only the bounded, visibly labeled stored preview is persisted. The
+        # complete P01 result was already delivered to the caller unchanged.
+        safe_user = _bounded_text(user_text, "user_text")
+        safe_answer = _bounded_text(answer, "assistant_text")
+        saved = append(uid, conversation_id, safe_user, safe_answer, project_id)
         if inspect.isawaitable(saved):
             saved = await saved
         if not isinstance(saved, str):
