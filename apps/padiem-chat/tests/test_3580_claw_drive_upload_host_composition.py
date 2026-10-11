@@ -16,19 +16,37 @@ import pytest
 from app.claw_drive_upload_host_composition import (
     ClawDriveUploadHostError, ClawDriveUploadHostState,
     HOST_INJECTION_BOUNDARY_IMPLEMENTED, PRODUCTION_DRIVE_UPLOADER_INJECTED,
-    READ_SCOPE_IS_NOT_WRITE, build_claw_drive_artifact_uploader,
-    build_claw_drive_upload_host_state, drive_write_grant_present,
+    READ_SCOPE_IS_NOT_WRITE, build_canonical_drive_write_approval_port,
+    build_claw_drive_artifact_uploader, build_claw_drive_upload_host_state,
+    drive_write_grant_present,
 )
 from app.app_factory import create_app
 from app.config import Settings
-from kagent.connector_trust import ConnectorBindingProjection, ConnectorBindingState
-from kagent.google_drive_artifact_upload import (
-    DRIVE_UPLOAD_CAPABILITY, GoogleDriveArtifactUploadAdapter,
+from padiem_ai_core.agent_approval import (
+    ApprovalOutcome, ApprovalPause, ApprovalRequirement, VerifiedApprovalDecision,
 )
-from kagent.google_drive_scope import DriveScopeProjection
+from kagent.artifact_lineage import LineageArtifactRef
+from kagent.artifact_registration import (
+    ArtifactLifecycle, register_canonical_artifact,
+)
+from kagent.connector_trust import (
+    ConnectorBindingProjection, ConnectorBindingState, ConnectorWriteIntent,
+)
+from kagent.google_drive_artifact_upload import (
+    DRIVE_UPLOAD_CAPABILITY, DRIVE_UPLOAD_TOOL, DriveArtifactMaterial,
+    GoogleDriveArtifactUploadAdapter, upload_payload_fingerprint,
+)
+from kagent.google_drive_scope import (
+    DriveFileMetadata, DriveResourceProof, DriveScopeProjection,
+)
 from kagent.google_drive_upload_composition import (
     GoogleDriveUploadComposition, build_google_drive_upload_composition,
 )
+from kagent.google_drive_write_approval import (
+    AuthorizedDriveWriteApprovalPort, DRIVE_WRITE_TOOL_ID,
+    DriveWriteApprovalEvidence, drive_write_approval_fingerprint,
+)
+from kagent.google_oauth_authority import GoogleProviderHttpResponse
 
 NOW = datetime(2026, 10, 11, 12, 0, tzinfo=timezone.utc)
 BINDING = "binding_host_boundary"
@@ -203,3 +221,179 @@ class TestClawDriveUploadHostBoundary:
         assert build_claw_drive_artifact_uploader() is None
         assert inspect.signature(create_app).parameters[
             "claw_drive_artifact_uploader"].default is None
+
+
+# --- canonical approval-port connection ------------------------------------
+
+DOC = b"%PDF-1.7\nhost boundary approval connection\n%%EOF"
+FOLDER_MIME = "application/vnd.google-apps.folder"
+
+
+def _record():
+    import hashlib
+
+    return register_canonical_artifact(
+        artifact_id="artifact_host_boundary", artifact_kind="claw.document",
+        filename="boundary.pdf", media_type="application/pdf",
+        size_bytes=len(DOC), integrity_ref=hashlib.sha256(DOC).hexdigest(),
+        workspace_ref=WORKSPACE, run_ref="run_host_boundary",
+    )
+
+
+def _intent(record):
+    return ConnectorWriteIntent(
+        connector_id="google-drive", binding_ref=BINDING, actor_ref=ACTOR,
+        tool_name=DRIVE_UPLOAD_TOOL, target_ref=FOLDER,
+        payload_fingerprint=upload_payload_fingerprint(
+            artifact=record, folder_ref=FOLDER
+        ),
+        idempotency_key="idem_host_boundary", approval_ref="approval_host_boundary",
+        evidence_ref="evidence_host_boundary", requested_at=NOW,
+    )
+
+
+class _MaterialPort2:
+    def __init__(self, record):
+        self.record = record
+
+    def resolve_artifact_material(self, artifact_ref, *, workspace_ref, run_ref):
+        return DriveArtifactMaterial(self.record, DOC)
+
+
+class _FolderPort2:
+    def resolve_folder_proof(self, *, binding_ref, actor_ref, folder_ref):
+        return DriveResourceProof(
+            binding_ref=BINDING,
+            metadata=DriveFileMetadata(
+                file_id=FOLDER, name="Output", mime_type=FOLDER_MIME,
+                version=2, trashed=False,
+            ),
+        )
+
+
+class _RespondingNetwork:
+    """Fake HTTPS transport returning one valid Drive files.create envelope."""
+
+    def __init__(self, record):
+        import hashlib
+        import json as _json
+
+        self.payload = _json.dumps({
+            "id": "file_host_boundary", "name": record.filename,
+            "mimeType": record.media_type, "parents": [FOLDER], "version": "1",
+            "size": str(len(DOC)),
+            "md5Checksum": hashlib.md5(DOC, usedforsecurity=False).hexdigest(),
+            "sha256Checksum": record.integrity_ref, "trashed": False,
+        }).encode("utf-8")
+        self.calls = []
+
+    def request(self, **kwargs):
+        self.calls.append(kwargs)
+        return GoogleProviderHttpResponse(200, self.payload)
+
+
+class _P01Evidence:
+    """Hermetic stand-in for the existing canonical P01 evidence boundary."""
+
+    def __init__(self, item):
+        self.item = item
+        self.calls = []
+
+    def resolve_drive_write_approval(self, *, request_fingerprint):
+        self.calls.append(request_fingerprint)
+        return self.item
+
+
+def _p01_evidence(*, intent, artifact_ref, run_ref):
+    fingerprint = drive_write_approval_fingerprint(
+        intent=intent, artifact_ref=artifact_ref,
+        workspace_ref=WORKSPACE, run_ref=run_ref,
+    )
+    pause = ApprovalPause(
+        pause_id="pause_host_boundary", run_id=run_ref,
+        agent_runtime_id="agent:claw-drive-write@1", tool_id=DRIVE_WRITE_TOOL_ID,
+        invocation_sha256=fingerprint,
+        requirement=ApprovalRequirement.USER_CONFIRMATION, step_index=1,
+        created_at=NOW - timedelta(minutes=5), expires_at=NOW + timedelta(minutes=15),
+        approval_scope=(DRIVE_UPLOAD_CAPABILITY,),
+    )
+    decision = VerifiedApprovalDecision(
+        decision_id="decision_host_boundary", pause_id=pause.pause_id,
+        outcome=ApprovalOutcome.APPROVED, authority_ref="authority_host_boundary",
+        evidence_ref="evidence_host_boundary", decided_at=NOW - timedelta(minutes=4),
+    )
+    return DriveWriteApprovalEvidence(
+        evidence_ref="evidence_host_boundary", request_fingerprint=fingerprint,
+        approval_pause=pause, approval_decision=decision,
+        expires_at=NOW + timedelta(minutes=10),
+    )
+
+
+class TestCanonicalApprovalPortConnection:
+    """The Drive host boundary can now be completed with canonical components."""
+
+    def test_canonical_approval_port_fails_closed_when_unconfigured(self):
+        port = build_canonical_drive_write_approval_port(clock=lambda: NOW)
+        assert isinstance(port, AuthorizedDriveWriteApprovalPort)
+        assert port.verify_write_approval(
+            intent=object(), artifact_ref=object(),
+            workspace_ref=WORKSPACE, run_ref="run_host_boundary",
+        ) is False
+
+    def test_boundary_builds_the_canonical_port_from_p01_evidence(self):
+        record = _record()
+        state = build_claw_drive_upload_host_state(
+            binding=binding(), scope=DriveScopeProjection(
+                binding_ref=BINDING, allowed_folder_ids=(FOLDER,),
+            ),
+            artifacts=_MaterialPort2(record), folders=_FolderPort2(),
+            approval_evidence=_P01Evidence(None), approval_clock=lambda: NOW,
+            composition=composition_with(_RespondingNetwork(record)),
+        )
+        assert isinstance(state.uploader, GoogleDriveArtifactUploadAdapter)
+        assert isinstance(state.uploader._approval, AuthorizedDriveWriteApprovalPort)
+
+    def test_full_canonical_stack_uploads_once_and_refuses_replay(self):
+        record = _record()
+        artifact_ref = LineageArtifactRef(record.artifact_id, record.integrity_ref)
+        intent = _intent(record)
+        run_ref = "run_host_boundary"
+        network = _RespondingNetwork(record)
+        source = _P01Evidence(_p01_evidence(
+            intent=intent, artifact_ref=artifact_ref, run_ref=run_ref
+        ))
+        state = build_claw_drive_upload_host_state(
+            binding=binding(), scope=DriveScopeProjection(
+                binding_ref=BINDING, allowed_folder_ids=(FOLDER,),
+            ),
+            artifacts=_MaterialPort2(record), folders=_FolderPort2(),
+            approval_evidence=source, approval_clock=lambda: NOW,
+            composition=composition_with(network),
+        )
+        result = state.uploader.create_output(
+            artifact_ref=artifact_ref, intent=intent,
+            workspace_ref=WORKSPACE, run_ref=run_ref, now=NOW,
+        )
+        assert result.artifact.lifecycle is ArtifactLifecycle.DURABLE
+        assert result.artifact.durable_location.location_ref == "file_host_boundary"
+        assert result.receipt.connector_id == "google-drive"
+        assert len(network.calls) == 1
+        assert len(source.calls) == 1
+
+    def test_boundary_reports_a_missing_approval_seam_explicitly(self):
+        record = _record()
+        state = build_claw_drive_upload_host_state(
+            binding=binding(), scope=DriveScopeProjection(
+                binding_ref=BINDING, allowed_folder_ids=(FOLDER,),
+            ),
+            artifacts=_MaterialPort2(record), folders=_FolderPort2(),
+            composition=composition_with(_RespondingNetwork(record)),
+        )
+        assert state.uploader is None
+        assert any("approval port" in reason for reason in state.blocked_reasons)
+
+
+def composition_with(network):
+    return build_google_drive_upload_composition(
+        authorization=_AuthorizedTokenPort(), network=network,
+    )
