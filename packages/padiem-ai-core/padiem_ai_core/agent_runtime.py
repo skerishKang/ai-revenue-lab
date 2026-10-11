@@ -370,6 +370,7 @@ class BoundedAgentRuntime:
         id_factory: Callable[[], str] | None = None,
         approval_pause_seconds: int = 900,
         run_guard: Callable[[], bool | Awaitable[bool]] | None = None,
+        checkpoint_hook: Callable[[int], bool | Awaitable[bool]] | None = None,
     ) -> None:
         next_step = getattr(step_driver, "next_step", None)
         if not callable(next_step):
@@ -398,6 +399,9 @@ class BoundedAgentRuntime:
         if run_guard is not None and not callable(run_guard):
             raise ValueError("run_guard must be callable when configured")
         self._run_guard = run_guard
+        if checkpoint_hook is not None and not callable(checkpoint_hook):
+            raise ValueError("checkpoint_hook must be callable when configured")
+        self._checkpoint_hook = checkpoint_hook
         self._approval_pause_seconds = approval_pause_seconds
 
     async def _ensure_run_active(self) -> None:
@@ -416,6 +420,19 @@ class BoundedAgentRuntime:
             active = False
         if active is not True:
             raise AgentRuntimeError("agent_run_fenced", "Agent run is no longer active.")
+
+    async def _record_trusted_checkpoint(self, step_index: int) -> None:
+        """Durable progress metadata only, NOT authorization for Tool replay."""
+        if self._checkpoint_hook is None:
+            return
+        try:
+            recorded = self._checkpoint_hook(step_index)
+            if inspect.isawaitable(recorded):
+                recorded = await recorded
+        except Exception:
+            recorded = False
+        if recorded is not True:
+            raise AgentRuntimeError("agent_checkpoint_unavailable", "Agent checkpoint was not persisted.")
 
     def _new_identifier(self, prefix: str) -> str:
         raw = self._id_factory()
@@ -671,6 +688,7 @@ class BoundedAgentRuntime:
             await self._ensure_run_active()
             tool_results.append(tool_result)
             tool_events.append(tool_result.event)
+            await self._record_trusted_checkpoint(step_index)
             if self._remaining_wall_seconds(
                 started=started,
                 budget_seconds=budget.max_wall_seconds,
