@@ -239,8 +239,8 @@
     writeDeny.hidden = true;
     editPreviewPanel.append(
       schoolLabel, priceLabel, editPreviewButton, editCommitButton,
-      editedLink, openWorkConversation, editPreviewResult, writeApprove, writeDeny, revisedPdfLink,
-      pdfPreviewButton, pdfPreviewRegion,
+      editedLink, editPreviewResult, writeApprove, writeDeny, revisedPdfLink,
+      pdfPreviewButton, pdfPreviewRegion, openWorkConversation,
     );
     approvalPanel?.appendChild(editPreviewPanel);
     if (![panel, input, upload, refresh, message, list, approvalPanel,
