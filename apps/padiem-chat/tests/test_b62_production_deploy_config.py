@@ -121,8 +121,8 @@ def test_dashboard_conflict_state_adoption_is_bounded_and_strict_rechecked():
     """Only an exact Wrangler Dashboard conflict gets one controlled adoption."""
     text = _read_workflow()
     step = text.split(
-        "- name: Deploy production code preserving the full binding set", 1
-    )[1].split("- name: Read back exact post-deploy binding and variable state", 1)[0]
+        "\n      - name: Deploy production code preserving the full binding set", 1
+    )[1].split("\n      - name: Read back exact post-deploy binding and variable state", 1)[0]
     assert 'grep -Fq "last updated via the script API"' in step
     assert 'grep -Fq "remote configuration of your Worker set via the Cloudflare Dashboard"' in step
     assert 'grep -Fq "Aborting the upload operation because of conflicts"' in step
