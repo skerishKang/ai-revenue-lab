@@ -183,6 +183,8 @@ def build_production_config(
     flag_text = ", ".join(_toml_string(f) for f in flags)
     lines.append(f"compatibility_flags = [{flag_text}]")
     lines.append("workers_dev = true")
+    if base_dir is not None:
+        lines.append(f"base_dir = {_toml_string(base_dir)}")
     # Production padiem-chat currently serves a Cloudflare Custom Domain. The
     # generated configuration must carry the SAME route; otherwise Wrangler
     # --strict correctly blocks the upload as potentially removing it.
@@ -193,8 +195,6 @@ def build_production_config(
         lines.append("[[routes]]")
         lines.append('pattern = "chat.padiem.net"')
         lines.append("custom_domain = true")
-    if base_dir is not None:
-        lines.append(f"base_dir = {_toml_string(base_dir)}")
     lines.append("")
     if build_command is not None:
         lines.append("[build]")
