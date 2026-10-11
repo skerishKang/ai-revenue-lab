@@ -307,3 +307,25 @@
 .claw-web-office-approval button[hidden] { display: none; }
 #clawWebXlsxP01Selected { font-weight: 600; overflow-wrap: anywhere; }
 #clawWebXlsxP01Status { min-height: 1.5em; }
+.claw-web-quote-edit-preview {
+  display: grid;
+  gap: 9px;
+  max-width: 520px;
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid var(--border, rgba(150,160,180,.35));
+  border-radius: 10px;
+}
+.claw-web-quote-edit-preview[hidden] { display: none; }
+.claw-web-quote-edit-preview label { display: grid; gap: 4px; }
+.claw-web-quote-edit-preview input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border, rgba(150,160,180,.45));
+  background: var(--surface, transparent);
+  color: inherit;
+}
+.claw-web-quote-edit-preview p { margin: 2px 0; overflow-wrap: anywhere; }

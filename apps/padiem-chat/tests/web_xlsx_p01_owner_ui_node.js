@@ -56,8 +56,8 @@ function response(body, status = 200) {
 async function settle() {
   for (let i = 0; i < 12; ++i) await new Promise(resolve => setImmediate(resolve));
 }
-function server({ initial = "waiting_p01", enabled = true, failPost = false, failStart = false, badSource = false, workcopy = false } = {}) {
-  let stage = initial, sent = [], starts = [];
+function server({ initial = "waiting_p01", enabled = true, failPost = false, failStart = false, badSource = false, workcopy = false, forgedPreviewWrite = false } = {}) {
+  let stage = initial, sent = [], starts = [], previews = [];
   global.fetch = async (url, options = {}) => {
     assert.equal(options.credentials, "same-origin");
     assert.equal(options.cache, "no-store");
@@ -87,6 +87,24 @@ function server({ initial = "waiting_p01", enabled = true, failPost = false, fai
         processing_started: workcopy && stage === "confirmed",
         workcopy_created: workcopy && stage === "confirmed",
         workcopy_document_id: workcopy && stage === "confirmed" ? COPY_ID : null,
+      });
+    }
+    if (url.endsWith("/quote-edit/preview") && method === "POST") {
+      assert.equal(workcopy && stage === "confirmed", true,
+        "Quote preview requires owner-approved existing workcopy");
+      const body = JSON.parse(options.body);
+      assert.deepEqual(Object.keys(body).sort(), ["school_name", "supply_amount"]);
+      previews.push(body);
+      const vat = body.supply_amount / 10;
+      return response({
+        ok: true, contract_version: "claw-web-xlsx-quote-edit-preview.v1",
+        selection_ref: REF, original_workcopy_sha256: "b".repeat(64),
+        edit_sha256: "a".repeat(64), revision_preview_sha256: "d".repeat(64),
+        school_name: body.school_name, supply_amount: body.supply_amount,
+        vat_amount: vat, total_amount: body.supply_amount + vat,
+        preview_only: true, write_approved: forgedPreviewWrite,
+        revised_xlsx_created: false, pdf_exported: false,
+        pdf_unsupported: true, requires_independent_p01_write: true,
       });
     }
     if (url.endsWith("/start-p01") && method === "POST") {
@@ -119,7 +137,7 @@ function server({ initial = "waiting_p01", enabled = true, failPost = false, fai
     }
     throw Error("UNEXPECTED_REQUEST " + method + " " + url);
   };
-  return { sent, starts, get stage() { return stage; } };
+  return { sent, starts, previews, get stage() { return stage; } };
 }
 async function prepare(config) {
   const network = server(config);
@@ -167,6 +185,39 @@ async function prepare(config) {
   assert.ok(!link.href.includes(COPY_ID));
   copied.existing.handlers.click(); await settle();
   assert.equal(link.hidden, false, "Owner-scoped server readback survives refresh");
+
+  const editForm = copied.root.nodes.clawWebXlsxP01Panel.children.find(
+    item => item.tag === "div" && item.children.some(x => x.tag === "button"));
+  assert.ok(editForm, "Visible edit preview requires server-approved original");
+  assert.equal(editForm.hidden, false);
+  const school = editForm.children[0].children[0];
+  const supply = editForm.children[1].children[0];
+  const previewButton = editForm.children[2];
+  const previewStatus = editForm.children[3];
+  school.value = "Gwangju University";
+  supply.value = "99200000";
+  previewButton.handlers.click(); await settle();
+  assert.deepEqual(copied.network.previews, [{
+    school_name: "Gwangju University", supply_amount: 99_200_000,
+  }]);
+  assert.match(previewStatus.textContent, /99,200,000/);
+  assert.match(previewStatus.textContent, /109,120,000/);
+  assert.match(previewStatus.textContent, /PDF/);
+  assert.equal(copied.network.sent.length, 1,
+    "Preview cannot re-submit the P01 READ approval");
+  copied.root.nodes.clawWebXlsxP01Panel.hidden = true;
+  copied.existing.handlers.click(); await settle();
+
+  const forged = await prepare({workcopy: true, forgedPreviewWrite: true});
+  forged.root.nodes.clawWebXlsxP01Approve.handlers.click(); await settle();
+  const forgedForm = forged.root.nodes.clawWebXlsxP01Panel.children.find(
+    item => item.tag === "div" && item.children.some(x => x.tag === "button"));
+  forgedForm.children[0].children[0].value = "Gwangju University";
+  forgedForm.children[1].children[0].value = "99200000";
+  forgedForm.children[2].handlers.click(); await settle();
+  assert.equal(forged.network.previews.length, 1);
+  assert.ok(!/109,120,000/.test(forgedForm.children[3].textContent),
+    "Browser must reject forged WRITE-approved preview response");
 
   const fresh = await prepare({initial: "not_requested"});
   assert.equal(fresh.root.nodes.clawWebXlsxP01Start.hidden, false);
@@ -223,6 +274,7 @@ async function prepare(config) {
         processing_started: true, workcopy_created: false }, SRC, REF,
     ), false,
   );
+  console.log("WEB_XLSX_QUOTE_EDIT_PREVIEW_NO_WRITE=PASS");
   console.log("WEB_XLSX_ACTUAL_WORKCOPY_DOWNLOAD_LINK=PASS");
   console.log("WEB_XLSX_REAL_BROWSER_OWNER_DECISION=PASS");
   console.log("WEB_XLSX_ONE_SHOT_UNKNOWN_OUTCOME=PASS");
