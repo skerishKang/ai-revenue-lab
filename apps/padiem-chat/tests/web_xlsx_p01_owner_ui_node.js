@@ -56,7 +56,7 @@ function response(body, status = 200) {
 async function settle() {
   for (let i = 0; i < 12; ++i) await new Promise(resolve => setImmediate(resolve));
 }
-function server({ initial = "waiting_p01", enabled = true, failPost = false, failStart = false, badSource = false, workcopy = false, forgedPreviewWrite = false, writeAvailable = false } = {}) {
+function server({ initial = "waiting_p01", enabled = true, failPost = false, failStart = false, badSource = false, workcopy = false, forgedPreviewWrite = false, writeAvailable = false, pdfAvailable = false } = {}) {
   let stage = initial, sent = [], starts = [], previews = [], commits = [],
     writeDecisions = [];
   global.fetch = async (url, options = {}) => {
@@ -98,6 +98,7 @@ function server({ initial = "waiting_p01", enabled = true, failPost = false, fai
         revision_document_id: "doc_" + "e".repeat(32),
         revision_sha256: "d".repeat(64), revised_xlsx_created: true,
         pdf_exported: false,
+        pdf_download_available: pdfAvailable,
       });
     }
     if (url.endsWith("/quote-edit/approval-status") && method === "GET") {
@@ -134,6 +135,7 @@ function server({ initial = "waiting_p01", enabled = true, failPost = false, fai
         revision_sha256: "d".repeat(64),
         edit_sha256: "a".repeat(64),
         revised_xlsx_created: true, pdf_exported: false,
+        pdf_download_available: pdfAvailable,
         original_overwritten: false,
       },201);
     }
@@ -286,7 +288,7 @@ async function prepare(config) {
   assert.ok(!/109,120,000/.test(forgedForm.children[5].textContent),
     "Browser must reject forged WRITE-approved preview response");
 
-  const writing = await prepare({workcopy: true, writeAvailable: true});
+  const writing = await prepare({workcopy: true, writeAvailable: true, pdfAvailable: true});
   writing.root.nodes.clawWebXlsxP01Approve.handlers.click(); await settle();
   const form = writing.root.nodes.clawWebXlsxP01Panel.children.find(
     item => item.tag === "div" && item.children.some(x => x.tag === "button"));
@@ -294,6 +296,8 @@ async function prepare(config) {
   form.children[1].children[0].value = "99200000";
   form.children[2].handlers.click(); await settle();
   const commit = form.children[3], revisedLink = form.children[4];
+  const pdfLink = form.children[8];
+  assert.equal(pdfLink.hidden,true,"No PDF before independent WRITE consent");
   assert.equal(commit.hidden, false, "Separate Engine WRITE must be enabled");
   commit.handlers.click(); commit.handlers.click(); await settle();
   assert.equal(writing.network.commits.length, 1,
@@ -307,12 +311,16 @@ async function prepare(config) {
   assert.deepEqual(writing.network.writeDecisions, ["approve"],
     "Owner must separately authorize Core WRITE, exactly once");
   assert.equal(revisedLink.hidden, false);
+  assert.equal(pdfLink.hidden, false);
+  assert.match(pdfLink.textContent, /표준 견적 요약 PDF/);
+  assert.equal(pdfLink.href, "/api/claw/office/web-selections/" + REF + "/quote-edit/pdf");
   assert.equal(revisedLink.href,
     "/api/claw/office/web-selections/" + REF + "/quote-edit/download");
   assert.ok(!revisedLink.href.includes("doc_"));
   writing.existing.handlers.click(); await settle();
   assert.equal(revisedLink.hidden, false,
     "Owner-only revised XLSX must survive D1 status refresh");
+  assert.equal(pdfLink.hidden, false, "PDF link survives owner-only status refresh");
   assert.equal(writing.network.sent.length, 1,
     "WRITE cannot silently replay original READ consent");
 
@@ -371,6 +379,7 @@ async function prepare(config) {
         processing_started: true, workcopy_created: false }, SRC, REF,
     ), false,
   );
+  console.log("WEB_XLSX_OWNER_ONLY_PDF_AFTER_WRITE_APPROVAL=PASS");
   console.log("WEB_XLSX_EXPLICIT_CORE_WRITE_TWO_PHASE_OWNER=PASS");
   console.log("WEB_XLSX_ONE_SHOT_WRITE_REVISION_DOWNLOAD=PASS");
   console.log("WEB_XLSX_QUOTE_EDIT_PREVIEW_NO_WRITE=PASS");

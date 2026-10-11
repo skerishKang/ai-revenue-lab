@@ -253,6 +253,10 @@ async def web_xlsx_quote_edit_status(request: Request) -> Response:
         "revision_document_id": row["revision_document_id"] if confirmed else None,
         "revision_sha256": row["revision_sha256"] if confirmed else None,
         "pdf_exported": False,
+        "pdf_download_available": (
+            request.app.state.web_xlsx_quote_pdf_enabled is True
+            and row["state"] == "confirmed"
+        ),
     }, headers=_NO_STORE)
 
 

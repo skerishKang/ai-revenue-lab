@@ -193,6 +193,10 @@
     editCommitButton.hidden = true;
     editCommitButton.disabled = true;
     const editedLink = root.createElement("a");
+    const revisedPdfLink = root.createElement("a");
+    revisedPdfLink.hidden = true;
+    revisedPdfLink.textContent = "표준 견적 요약 PDF 다운로드 (Excel 인쇄본과 서식 다름)";
+    revisedPdfLink.setAttribute("download", "");
     editedLink.hidden = true;
     editedLink.textContent = "수정된 XLSX 다운로드";
     editedLink.setAttribute("download", "");
@@ -209,7 +213,7 @@
     writeDeny.hidden = true;
     editPreviewPanel.append(
       schoolLabel, priceLabel, editPreviewButton, editCommitButton,
-      editedLink, editPreviewResult, writeApprove, writeDeny,
+      editedLink, editPreviewResult, writeApprove, writeDeny, revisedPdfLink,
     );
     approvalPanel?.appendChild(editPreviewPanel);
     if (![panel, input, upload, refresh, message, list, approvalPanel,
@@ -242,6 +246,8 @@
       editCommitButton.disabled = true;
       editedLink.hidden = true;
       editedLink.href = "";
+      revisedPdfLink.hidden = true;
+      revisedPdfLink.href = "";
     };
     schoolInput.addEventListener("input", hideRevision);
     priceInput.addEventListener("input", hideRevision);
@@ -300,6 +306,11 @@
           editedLink.href = SELECTIONS + "/" + encodeURIComponent(selectionRef)
             + "/quote-edit/download";
           editedLink.hidden = false;
+          if (receipt.pdf_download_available === true) {
+            revisedPdfLink.href = SELECTIONS + "/" + encodeURIComponent(selectionRef)
+              + "/quote-edit/pdf";
+            revisedPdfLink.hidden = false;
+          }
         }
       } catch (_error) {
         // No D1 receipt, unavailable gate or network fault is never evidence
@@ -471,8 +482,14 @@
         editedLink.href = SELECTIONS + "/" + encodeURIComponent(plan.ref)
           + "/quote-edit/download";
         editedLink.hidden = false;
-        editPreviewResult.textContent =
-          "승인된 수정 XLSX를 저장했습니다. 아래에서 다운로드하세요. PDF는 아직 미지원입니다.";
+        if (result.pdf_download_available === true) {
+          revisedPdfLink.href = SELECTIONS + "/" + encodeURIComponent(plan.ref)
+            + "/quote-edit/pdf";
+          revisedPdfLink.hidden = false;
+        }
+        editPreviewResult.textContent = result.pdf_download_available === true
+          ? "수정 XLSX와 표준 견적 요약 PDF를 다운로드할 수 있습니다. PDF는 Excel 인쇄본과 서식이 다릅니다."
+          : "수정 XLSX를 다운로드할 수 있습니다. PDF는 현재 활성화되지 않았습니다.";
       } catch (_error) {
         if (plan.ref === selectedSelectionRef) {
           editPreviewResult.textContent =

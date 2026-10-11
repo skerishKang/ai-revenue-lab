@@ -70,6 +70,9 @@ from .claw_web_xlsx_p01_owner_decision_routes import (
 )
 from .claw_web_xlsx_quote_write_store import D1WebQuoteWriteReceiptStore
 from .claw_web_xlsx_quote_write_owner_decision import D1WebQuoteWriteOwnerDecisionStore
+from .claw_web_xlsx_quote_pdf import (
+    PATH as WRITE_PDF_DOWNLOAD_PATH, web_xlsx_quote_pdf_download,
+)
 from .claw_web_xlsx_quote_write_pause_store import D1WebQuoteWritePauseStore
 from .claw_web_xlsx_quote_approval_routes import (
     REQUEST as WRITE_REQUEST_PATH, DECISION as WRITE_DECISION_PATH,
@@ -388,6 +391,7 @@ def create_app(
         Route(WRITE_APPROVAL_STATUS_PATH, quote_write_approval_status, methods=["GET"]),
         Route(WRITE_STATUS_PATH, web_xlsx_quote_edit_status, methods=["GET"]),
         Route(WRITE_DOWNLOAD_PATH, web_xlsx_quote_edit_download, methods=["GET"]),
+        Route(WRITE_PDF_DOWNLOAD_PATH, web_xlsx_quote_pdf_download, methods=["GET"]),
         Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"]),
         Route("/api/claw/manual-intake/execute", claw_manual_intake_execute, methods=["POST"]),
         # #3539: the generic Claw composer runs through the canonical #3382 P01
@@ -563,6 +567,8 @@ def create_app(
     # approval, preview hash or browser decision cannot enable actual writes.
     app.state.web_xlsx_quote_write_enabled = False
     app.state.web_xlsx_quote_write_client = None
+    app.state.web_xlsx_quote_pdf_renderer = None
+    app.state.web_xlsx_quote_pdf_enabled = False
     # Worker-native Claw P01/Engine adapter (#2229). Injected by the Worker
     # composition root from trusted bindings; None means unconfigured and the
     # execute route fails closed before any transport.

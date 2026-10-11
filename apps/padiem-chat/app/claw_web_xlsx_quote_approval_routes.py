@@ -229,6 +229,9 @@ async def decide_quote_write(request:Request)->Response:
         "revision_sha256":revision["revision_sha256"],
         "edit_sha256":row["edit_sha256"],
         "revised_xlsx_created":True,"pdf_exported":False,
+        "pdf_download_available": (
+            request.app.state.web_xlsx_quote_pdf_enabled is True
+        ),
         "original_overwritten":False,
     },status_code=201,headers=_NO_STORE)
 
