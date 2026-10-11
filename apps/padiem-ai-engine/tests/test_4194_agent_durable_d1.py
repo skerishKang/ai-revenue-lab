@@ -15,6 +15,7 @@ import pytest
 from app.agent_durable_d1 import D1AgentRunLedger
 from padiem_ai_core.agent_durable_lease import AgentDurableLeaseError
 from tests.test_agent_skill_service import Fixture, APP_ID, SUBJECT_ID
+from tests.test_agent_skill_continuation import ContinuationFixture, _pause, APP_ID as CONT_APP
 
 MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "0011_engine_agent_durable_runs.sql"
 FP = "a" * 64
@@ -178,3 +179,160 @@ def test_worker_identity_source_feature_gate_is_off_by_default():
     assert "agent_run_ledger = D1AgentRunLedger(db)" in source
     assert "agent_run_ledger=agent_run_ledger" in source
     assert '"agent_run_lease_unavailable"' in source
+
+async def test_live_agent_approval_resume_uses_fresh_d1_epoch_and_one_tool(sql):
+    db, _ = sql
+    fx = ContinuationFixture()
+    ledger = D1AgentRunLedger(SQLiteD1(db))
+    fx.service._agent_run_ledger = ledger
+    fx.service._continuation._agent_run_ledger = ledger
+
+    ref, pause_id = await _pause(fx)
+    first = db.execute(
+        "SELECT run_id,status,epoch,checkpoint_step FROM padiem_engine_agent_runs_v1"
+    ).fetchone()
+    assert first["run_id"].startswith("arun_")
+    assert (first["status"], first["epoch"], first["checkpoint_step"]) == ("awaiting_approval", 2, 0)
+    stored = fx.store.resolve(app_id=CONT_APP, continuation_ref=ref)
+    assert stored.pause.run_id == first["run_id"]
+
+    fx.approve_pause_tool()
+    response = await fx.service.resume_payload(
+        fx.payload(continuation_ref=ref, decision=fx.decision(pause_id))
+    )
+    assert response.status_code == 200, response.body
+    assert response.body["agent_skill"]["run_status"] == "completed"
+    assert fx.handler_calls == 1 and fx.provider.calls == 0
+    second = db.execute(
+        "SELECT status,epoch,checkpoint_step,side_effect_uncertain FROM padiem_engine_agent_runs_v1"
+    ).fetchone()
+    assert (second["status"], second["epoch"], second["checkpoint_step"],
+            second["side_effect_uncertain"]) == ("completed", 4, 1, 1)
+    replay = await fx.service.resume_payload(
+        fx.payload(continuation_ref=ref, decision=fx.decision(pause_id))
+    )
+    assert replay.status_code == 409
+    assert fx.handler_calls == 1
+
+
+async def test_live_agent_pause_cancel_revokes_d1_without_dispatch(sql):
+    db, _ = sql
+    fx = ContinuationFixture()
+    ledger = D1AgentRunLedger(SQLiteD1(db))
+    fx.service._agent_run_ledger = ledger
+    fx.service._continuation._agent_run_ledger = ledger
+    ref, pause_id = await _pause(fx)
+    run_id = fx.store.resolve(app_id=CONT_APP, continuation_ref=ref).pause.run_id
+
+    response = await fx.service.cancel_payload(
+        {"app_id": CONT_APP, "continuation_ref": ref, "reason": "user_cancelled"}
+    )
+    assert response.status_code == 200, response.body
+    row = db.execute(
+        "SELECT status,epoch,checkpoint_step FROM padiem_engine_agent_runs_v1 "
+        "WHERE run_id=?", (run_id,)
+    ).fetchone()
+    assert (row["status"], row["epoch"], row["checkpoint_step"]) == ("cancelled", 3, 0)
+    assert fx.handler_calls == 0 and fx.provider.calls == 0
+    fx.approve_pause_tool()
+    resumed = await fx.service.resume_payload(
+        fx.payload(continuation_ref=ref, decision=fx.decision(pause_id))
+    )
+    assert resumed.status_code == 409
+    assert fx.handler_calls == 0
+
+
+async def test_missing_d1_lease_cannot_falsely_finish_approval_cancel(sql):
+    db, _ = sql
+    fx = ContinuationFixture()
+    ledger = D1AgentRunLedger(SQLiteD1(db))
+    fx.service._agent_run_ledger = ledger
+    fx.service._continuation._agent_run_ledger = ledger
+    ref, _ = await _pause(fx)
+    db.execute("DELETE FROM padiem_engine_agent_runs_v1")
+
+    cancelled = await fx.service.cancel_payload(
+        {"app_id": CONT_APP, "continuation_ref": ref, "reason": "user_cancelled"}
+    )
+    assert cancelled.status_code == 503
+    assert cancelled.body["error"]["code"] == "agent_run_lease_unavailable"
+    assert fx.store.resolve(app_id=CONT_APP, continuation_ref=ref).state == "active"
+    assert fx.handler_calls == 0
+
+
+async def test_approved_resume_without_d1_record_fails_before_tool(sql):
+    db, _ = sql
+    fx = ContinuationFixture()
+    ledger = D1AgentRunLedger(SQLiteD1(db))
+    fx.service._agent_run_ledger = ledger
+    fx.service._continuation._agent_run_ledger = ledger
+    ref, pause_id = await _pause(fx)
+    fx.approve_pause_tool()
+    db.execute("DELETE FROM padiem_engine_agent_runs_v1")
+    response = await fx.service.resume_payload(
+        fx.payload(continuation_ref=ref, decision=fx.decision(pause_id))
+    )
+    assert response.status_code == 503
+    assert response.body["error"]["code"] == "agent_run_lease_unavailable"
+    assert fx.store.resolve(app_id=CONT_APP, continuation_ref=ref).state == "active"
+    assert fx.handler_calls == 0
+
+async def test_approved_resume_wrong_server_owner_fails_closed(sql):
+    db, _ = sql
+    fx = ContinuationFixture()
+    ledger = D1AgentRunLedger(SQLiteD1(db))
+    fx.service._agent_run_ledger = ledger
+    fx.service._continuation._agent_run_ledger = ledger
+    ref, _ = await _pause(fx)
+    run_id = fx.store.resolve(app_id=CONT_APP, continuation_ref=ref).pause.run_id
+
+    with pytest.raises(AgentDurableLeaseError):
+        await ledger.resume_approved_pause(
+            run_id=run_id, owner_scope="scope_" + "b" * 64,
+            worker_id="eng_" + "a" * 24, completed_step=0,
+        )
+    row = db.execute(
+        "SELECT status,epoch FROM padiem_engine_agent_runs_v1 WHERE run_id=?",
+        (run_id,),
+    ).fetchone()
+    assert (row["status"], row["epoch"]) == ("awaiting_approval", 2)
+    assert fx.handler_calls == 0
+
+
+async def test_denied_approval_revokes_d1_without_tool_dispatch(sql):
+    db, _ = sql
+    fx = ContinuationFixture()
+    ledger = D1AgentRunLedger(SQLiteD1(db))
+    fx.service._agent_run_ledger = ledger
+    fx.service._continuation._agent_run_ledger = ledger
+    ref, pause_id = await _pause(fx)
+    response = await fx.service.resume_payload(
+        fx.payload(continuation_ref=ref, decision=fx.decision(pause_id, outcome="denied"))
+    )
+    assert response.status_code == 409, response.body
+    assert response.body["error"]["code"] == "approval_denied"
+    row = db.execute(
+        "SELECT status,epoch FROM padiem_engine_agent_runs_v1"
+    ).fetchone()
+    assert (row["status"], row["epoch"]) == ("cancelled", 3)
+    assert fx.handler_calls == 0
+    assert fx.provider.calls == 0
+
+
+async def test_legacy_untracked_pause_is_not_falsely_resumable_in_durable_mode(sql):
+    db, _ = sql
+    fx = ContinuationFixture()
+    ref, pause_id = await _pause(fx)
+    assert db.execute(
+        "SELECT COUNT(*) FROM padiem_engine_agent_runs_v1"
+    ).fetchone()[0] == 0
+    ledger = D1AgentRunLedger(SQLiteD1(db))
+    fx.service._agent_run_ledger = ledger
+    fx.service._continuation._agent_run_ledger = ledger
+    fx.approve_pause_tool()
+    response = await fx.service.resume_payload(
+        fx.payload(continuation_ref=ref, decision=fx.decision(pause_id))
+    )
+    assert response.status_code == 503, response.body
+    assert response.body["error"]["code"] == "agent_run_lease_unavailable"
+    assert fx.handler_calls == 0

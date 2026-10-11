@@ -74,6 +74,7 @@ class AgentSkillEngineService:
             approval_decision_verifier=approval_decision_verifier,
             continuation_store=continuation_store,
             idempotency_adapter=idempotency_adapter,
+            agent_run_ledger=agent_run_ledger,
         )
 
     def _resolve_binding(self, app_id: str) -> EngineAgentSkillBinding:
