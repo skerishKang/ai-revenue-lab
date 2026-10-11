@@ -368,19 +368,22 @@
     const composerToggle = document.getElementById("clawMobileComposerToggle");
     const composerWrap = document.querySelector(".composer-wrap");
     const mobileMedia = window.matchMedia("(max-width: 600px)");
-    let wasMobileGeneral = false;
+    let lastMobileView = "";
 
     function syncComposerState() {
       if (!shell) return;
-      const mobileGeneral = mobileMedia.matches && shell.dataset.state === "claw"
-        && workspace?.dataset.view === "general";
-      if (mobileGeneral && !wasMobileGeneral) shell.dataset.clawComposerCollapsed = "true";
-      if (!mobileGeneral) delete shell.dataset.clawComposerCollapsed;
-      wasMobileGeneral = mobileGeneral;
+      const view = workspace?.dataset.view || "";
+      const activeView = mobileMedia.matches && shell.dataset.state === "claw"
+        && (view === "general" || view === "manual") ? view : "";
+      if (activeView && activeView !== lastMobileView)
+        shell.dataset.clawComposerCollapsed = activeView === "general" ? "true" : "false";
+      if (!activeView) delete shell.dataset.clawComposerCollapsed;
+      lastMobileView = activeView;
       const collapsed = shell.dataset.clawComposerCollapsed === "true";
       if (composerToggle) {
+        const label = activeView === "manual" ? "문서 입력·모델 설정" : "채팅·모델 설정";
         composerToggle.setAttribute("aria-expanded", String(!collapsed));
-        composerToggle.textContent = collapsed ? "채팅·모델 설정 열기" : "채팅·모델 설정 접기";
+        composerToggle.textContent = label + (collapsed ? " 열기" : " 접기");
       }
     }
 
@@ -419,7 +422,7 @@
       }
     });
     composerToggle?.addEventListener("click", () => {
-      if (!shell || !wasMobileGeneral) return;
+      if (!shell || !lastMobileView) return;
       shell.dataset.clawComposerCollapsed =
         shell.dataset.clawComposerCollapsed === "true" ? "false" : "true";
       syncComposerState();
