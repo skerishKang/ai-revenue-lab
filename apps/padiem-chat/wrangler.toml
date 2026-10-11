@@ -32,6 +32,13 @@ binding = "CF_VERSION_METADATA"
 binding = "B14_SERVICE"
 service = "ai-revenue-korean-ai-platform"
 
+# B66-only one-model direct execution pilot; account-managed secret reference.
+# Never pass the key to the browser, B62 chat or Claw.
+[[secrets_store_secrets]]
+binding = "PADIEM_KIRAAI_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_KIRAAI_API_KEY"
+
 [vars]
 PADIEM_CHAT_RUNTIME_MODE = "mock"
 PADIEM_CHAT_TIMEOUT_SECONDS = "600"
