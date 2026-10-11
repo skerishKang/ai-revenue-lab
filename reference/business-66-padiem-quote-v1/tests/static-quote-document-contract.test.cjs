@@ -221,9 +221,13 @@ check(app.includes("Core.DRAFT_STORAGE_KEY") &&
 check(app.includes("AccountScope.removePrivateKeys(storage, PRIVATE_STORAGE_KEYS)") &&
       !app.includes("localStorage.clear("),
   "BETA_POLISH_CONTRACT: reset removes only enumerated B66-owned keys, never the whole origin");
+// Settings now opens through the authenticated account menu only; the old
+// duplicate visible settings button must remain hidden but still triggerable.
 check(account.includes("settingsButton.hidden = true") &&
-      account.includes("settingsButton.hidden = false"),
-  "BETA_POLISH_CONTRACT: personal settings appears only after sign-in");
+      !account.includes("settingsButton.hidden = false") &&
+      read("shell-layout.js").includes('byId("b66AccountMenuSettings")') &&
+      read("shell-layout.js").includes('clickExisting("settingsButton")'),
+  "BETA_POLISH_CONTRACT: compact account settings menu with no duplicate button");
 check(easy.includes('addEventListener("b66:auth-changed"') &&
       account.includes('b66:auth-changed", { detail: { authenticated: true } }') &&
       easy.includes("로그인하면 견적을 이어서 진행할 수 있습니다.") &&

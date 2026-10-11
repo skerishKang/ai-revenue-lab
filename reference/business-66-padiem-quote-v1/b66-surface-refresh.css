@@ -680,3 +680,42 @@ body.b66-three-pane .b66-sender-load small { color: #62778a; font-size: 11px; }
   body.b66-three-pane #shellReasoningControl { display: none !important; }
   body.b66-three-pane .b66-composer-model-toolbar select { max-width: 108px; }
 }
+
+
+/* B66 2026-10-11: reduce duplicate navigation while preserving business authority. */
+body.b66-three-pane .shell-rail-section + .shell-rail-section {
+  border-top: 1px solid rgba(224,240,249,.35);
+  margin-top: 4px;
+  padding-top: 15px;
+}
+body.b66-three-pane .shell-rail-section h2 {
+  font-size: 11px;
+  letter-spacing: .03em;
+  padding-bottom: 7px;
+}
+body.b66-three-pane .shell-rail-feature-divider {
+  height: 1px;
+  background: rgba(224,240,249,.30);
+  margin: 12px 4px 5px;
+}
+body.b66-three-pane .shell-rail-section #shellManualQuote {
+  background: rgba(255,255,255,.045);
+  border-color: rgba(230,241,249,.15);
+}
+body.b66-three-pane .shell-rail-section #shellManualQuote:hover {
+  background: rgba(255,255,255,.16);
+}
+body.b66-three-pane .shell-runtime-status[data-state="ready"] { display: none; }
+body.b66-three-pane #settingsButton { display: none !important; }
+body.b66-three-pane .easy-composer-note { display: none !important; }
+body.b66-three-pane #shellReasoningControl { display: none !important; }
+body.b66-three-pane #shellModelControl { font-size: 0; }
+body.b66-three-pane #shellModelControl select { font-size: 12px; }
+body.b66-three-pane .b66-mic-button:disabled {
+  opacity: 1;
+  color: #305b78;
+  border-color: #9fbfd5;
+  background: #e7f2f9;
+  cursor: not-allowed;
+}
+body.b66-three-pane .b66-mic-button svg { display: block; margin: auto; }
