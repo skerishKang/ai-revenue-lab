@@ -67,20 +67,24 @@ SENTINEL = "sentinel-raw-value-must-never-appear"
 CREDENTIAL_ENV = "B54_TEST_OVERLAY_ROTATION_CREDENTIAL"
 CONFIRM_PHRASE = "ROTATE_B54_KAGENT_ENGINE_OVERLAY_FROM_EXACT_MAIN"
 # #2645 + #2721 (Telegram reader) + #2952 (Calendar reader) + #3936 (Hark XLSX
-# READ): the single overlay caller is authorized for the Claw app, the canonical
-# Drive app, the canonical Telegram reader app, the canonical Calendar reader
-# app, and the Hark WEB-FIRST XLSX READ Engine tool app, and for nothing else.
+# READ) + #3933 (Hark XLSX WRITE): the single overlay caller is authorized for
+# the Claw app, the canonical Drive app, the canonical Telegram reader app, the
+# canonical Calendar reader app, the Hark WEB-FIRST XLSX READ Engine tool app,
+# and the independent Hark WEB-FIRST XLSX WRITE Engine tool app, and for nothing
+# else. The WRITE entry is app authorization only; WRITE stays default OFF.
 CLAW_APP_ID = "b54-padiem-claw"
 DRIVE_APP_ID = "b54-padiem-claw-drive"
 TELEGRAM_APP_ID = "b54-padiem-claw-telegram"
 CALENDAR_APP_ID = "b54-padiem-claw-calendar"
 XLSX_READ_APP_ID = "padiem-web-xlsx-p01"
+XLSX_WRITE_APP_ID = "padiem-web-xlsx-write-p01"
 CANONICAL_APP_IDS = (
     CLAW_APP_ID,
     DRIVE_APP_ID,
     TELEGRAM_APP_ID,
     CALENDAR_APP_ID,
     XLSX_READ_APP_ID,
+    XLSX_WRITE_APP_ID,
 )
 FOREIGN_APP_ID = "b62"
 BASE_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1"
@@ -233,7 +237,8 @@ def test_script_constants_exact() -> None:
     assert set(helper.LEGACY_TRIO_NAMES) == set(LEGACY_TRIO_NAMES)
     assert helper.CALLER_ID == "b54-p01-overlay-20260914-a1"
     # Explicit bounded connector READ authority: Claw, Drive, Telegram, Calendar,
-    # and the Hark WEB-FIRST XLSX READ Engine tool app (#3936).
+    # the Hark WEB-FIRST XLSX READ Engine tool app (#3936), and the independent
+    # Hark WEB-FIRST XLSX WRITE Engine tool app (#3933).
     assert helper.ALLOWED_APP_IDS == CANONICAL_APP_IDS
     assert helper.ALLOWED_APP_IDS == (
         CLAW_APP_ID,
@@ -241,6 +246,7 @@ def test_script_constants_exact() -> None:
         TELEGRAM_APP_ID,
         CALENDAR_APP_ID,
         XLSX_READ_APP_ID,
+        XLSX_WRITE_APP_ID,
     )
     assert helper.ALLOWED_APP_IDS[0] == CLAW_APP_ID
     assert helper.OVERLAY_VERSION == 1
@@ -354,6 +360,7 @@ def test_build_overlay_payload_is_canonical_single_caller() -> None:
                 TELEGRAM_APP_ID,
                 CALENDAR_APP_ID,
                 XLSX_READ_APP_ID,
+                XLSX_WRITE_APP_ID,
             ],
         },
     }
@@ -582,9 +589,10 @@ def test_2645_canonical_app_authority_contract() -> None:
         TELEGRAM_APP_ID,
         CALENDAR_APP_ID,
         XLSX_READ_APP_ID,
+        XLSX_WRITE_APP_ID,
     )
-    assert len(parsed.allowed_app_ids) == 5
-    assert len(set(parsed.allowed_app_ids)) == 5
+    assert len(parsed.allowed_app_ids) == 6
+    assert len(set(parsed.allowed_app_ids)) == 6
 
     base_registry = {
         "version": 1,

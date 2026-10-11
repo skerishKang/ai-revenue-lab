@@ -135,6 +135,47 @@ async def test_only_owner_approved_revised_xlsx_yields_summary_pdf(monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_unsupported_print_layout_is_rejected_not_silently_rendered(monkeypatch):
+    """#3933: an uncertified print layout must be REFUSED, never approximated.
+
+    The standard summary PDF only certifies a single sheet whose values match
+    the approved revision exactly. If the certified print layout can no longer
+    be proven, the route must answer 422 and render nothing — it must never
+    emit a best-effort PDF, drop rows/drawings, or claim parity with the
+    original Excel workbook.
+    """
+    app,settings,metadata,r2,db,history,selection,src,before,preview=await prepared(
+        monkeypatch,enabled=True)
+    ref=selection["selection_ref"]
+    browser=Browser()
+    app.state.web_xlsx_quote_pdf_renderer=BrowserQuotePdfRenderer(browser)
+    app.state.web_xlsx_quote_pdf_enabled=True
+    done=await api(app,settings,ref,"commit",method="POST",
+                   data={**VALUES,"edit_sha256":preview["edit_sha256"]})
+    assert done.status_code==201,done.text
+    # Sanity: with the certified layout intact the summary PDF renders once.
+    assert (await api(app,settings,ref,"pdf")).status_code==200
+    assert len(browser.requests)==1
+    # Tamper the durable receipt so the stored print values no longer match the
+    # approved revised workbook -> the layout is no longer certifiable.
+    db.execute("UPDATE claw_web_xlsx_quote_edit_receipts SET school_name=? "
+               "WHERE selection_ref=?",("Foreign University",ref))
+    rejected=await api(app,settings,ref,"pdf")
+    assert rejected.status_code==422,rejected.text
+    assert rejected.json()["ok"] is False
+    assert rejected.json()["error"]["code"]=="web_xlsx_quote_pdf_unsupported_print_layout"
+    # No second Browser invocation and no partial/forged PDF bytes returned.
+    assert len(browser.requests)==1
+    assert b"%PDF" not in rejected.content
+    assert "no-store" in rejected.headers["cache-control"]
+    # The approved XLSX stays downloadable and unmodified: refusing the PDF
+    # never degrades the Excel deliverable.
+    excel=await api(app,settings,ref,"download")
+    assert excel.status_code==200 and excel.content.startswith(b"PK")
+    db.close()
+
+
+@pytest.mark.asyncio
 async def test_pdf_renderer_failure_does_not_expose_forged_bytes_or_modify_revision(monkeypatch):
     app,settings,metadata,r2,db,history,selection,src,before,preview=await prepared(
         monkeypatch,enabled=True)
