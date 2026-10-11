@@ -21,6 +21,7 @@ from .claw_web_xlsx_quote_editor import revise_single_sheet_quote,WebQuoteEditUn
 from .claw_web_xlsx_quote_write_pause_store import D1WebQuoteWritePauseStore
 from .claw_web_xlsx_quote_write_owner_decision import D1WebQuoteWriteOwnerDecisionStore
 from .claw_web_xlsx_p01_request import _utc
+from .claw_web_quote_artifact_publisher import register_completed_web_quote_revision
 
 REQUEST="/api/claw/office/web-selections/{selection_ref}/quote-edit/request"
 DECISION="/api/claw/office/web-selections/{selection_ref}/quote-edit/decision"
@@ -222,6 +223,16 @@ async def decide_quote_write(request:Request)->Response:
             return _error(503,"engine_write_completion_unknown")
     except Exception:
         return _error(503,"engine_write_completion_unknown")
+    # Separate owner-only follow-up indexing is not part of P01 WRITE
+    # authorization and MUST NOT cause another Engine resume or XLSX write.
+    # A failed/missing D1 index leaves the approved revised XLSX available by
+    # selection-scoped GET, but is truthfully reported as not indexed.
+    indexed = await register_completed_web_quote_revision(
+        history=getattr(request.app.state, "history_store", None),
+        documents=store, owner_id=owner, workspace_id=workspace,
+        run_id=row["run_id"], revision=revision,
+        trusted_revised_bytes=parsed.revised_xlsx,
+    )
     return JSONResponse({
         "ok":True,"contract_version":"claw-web-xlsx-quote-write.v1",
         "selection_ref":ref,"state":"confirmed",
@@ -233,6 +244,7 @@ async def decide_quote_write(request:Request)->Response:
             request.app.state.web_xlsx_quote_pdf_enabled is True
         ),
         "original_overwritten":False,
+        "conversation_artifact_indexed": indexed,
     },status_code=201,headers=_NO_STORE)
 
 
