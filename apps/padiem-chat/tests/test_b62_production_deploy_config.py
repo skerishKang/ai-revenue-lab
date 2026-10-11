@@ -117,6 +117,25 @@ def test_live_dump_is_authority_and_repo_mock_vars_do_not_leak(tmp_path):
     assert "compatibility_flags = [" in config
 
 
+def test_dashboard_conflict_state_adoption_is_bounded_and_strict_rechecked():
+    """Only an exact Wrangler Dashboard conflict gets one controlled adoption."""
+    text = _read_workflow()
+    step = text.split(
+        "\n      - name: Deploy production code preserving the full binding set", 1
+    )[1].split("\n      - name: Read back exact post-deploy binding and variable state", 1)[0]
+    assert 'grep -Fq "last updated via the script API"' in step
+    assert 'grep -Fq "remote configuration of your Worker set via the Cloudflare Dashboard"' in step
+    assert 'grep -Fq "Aborting the upload operation because of conflicts"' in step
+    assert "STATE_ADOPTION_UPLOADS=1" in step
+    assert step.count("pywrangler deploy") == 3  # initial strict, adoption, final strict
+    assert step.count("--strict") >= 2
+    assert "STATE_ADOPTION_PERFORMED=YES" in step
+    assert "cat \"${RUNNER_TEMP}/b62-deploy-attempt-1.log\" >&2" in step
+    assert "BINDINGS_PRESERVED_EXACTLY=PASS" in text
+    assert "FULL_SECRET_SET_EQUALITY=PASS" in text
+    assert "Auto-rollback to recorded version on any failed step" in text
+
+
 def test_secret_binding_values_are_never_emitted(tmp_path):
     module = _load_module()
     live = module.parse_live_bindings(_settings_payload(_production_bindings()))

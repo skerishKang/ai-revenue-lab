@@ -635,10 +635,18 @@ jobs:
             echo "STATE_ADOPTION_REQUIRED=NO"
             echo "STATE_ADOPTION_PERFORMED=NO"
             echo "STATE_ADOPTION_UPLOADS=0"
-          elif grep -q "last updated via the script API" \
-              "${RUNNER_TEMP}/b62-deploy-attempt-1.log" \
-            && grep -q "Aborting the upload operation because of conflicts" \
-              "${RUNNER_TEMP}/b62-deploy-attempt-1.log"; then
+          # Both Script-API and Dashboard ownership drift can yield Wrangler's
+          # same --strict conflict while *all* live bindings have already been
+          # snapshotted and preserved in the generated config. Authorize the
+          # existing one-time state-adoption upload for ONLY these exact warnings,
+          # immediately followed by a second strict deploy and the unchanged
+          # post-deploy binding/secret equality and rollback gates.
+          elif { grep -Fq "last updated via the script API" \
+                   "${RUNNER_TEMP}/b62-deploy-attempt-1.log" \
+                 || grep -Fq "remote configuration of your Worker set via the Cloudflare Dashboard" \
+                   "${RUNNER_TEMP}/b62-deploy-attempt-1.log"; } \
+            && grep -Fq "Aborting the upload operation because of conflicts" \
+                 "${RUNNER_TEMP}/b62-deploy-attempt-1.log"; then
             echo "STATE_ADOPTION_REQUIRED=YES"
             uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy \
               --config "${generated}" \
