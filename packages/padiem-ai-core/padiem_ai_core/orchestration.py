@@ -754,6 +754,7 @@ class OrchestrationRunner:
         idempotency: IdempotencyAdapter | None = None,
         event_sink: Callable[[OrchestrationEvent], Any] | None = None,
         agent_run_guard: Callable[[], bool | Awaitable[bool]] | None = None,
+        agent_checkpoint_hook: Callable[[int], bool | Awaitable[bool]] | None = None,
     ) -> None:
         if not hasattr(runtime, "run") or not callable(getattr(runtime, "run", None)):
             raise OrchestrationError("invalid_runtime", "runtime must provide a callable run method")
@@ -765,6 +766,9 @@ class OrchestrationRunner:
         if agent_run_guard is not None and not callable(agent_run_guard):
             raise OrchestrationError("invalid_agent_run_guard", "trusted Agent guard must be callable")
         self._agent_run_guard = agent_run_guard
+        if agent_checkpoint_hook is not None and not callable(agent_checkpoint_hook):
+            raise OrchestrationError("invalid_agent_checkpoint", "trusted checkpoint hook must be callable")
+        self._agent_checkpoint_hook = agent_checkpoint_hook
 
     def _deliver_event(self, evt: OrchestrationEvent) -> None:
         """Deliver one emitted event to the optional synchronous event sink.
@@ -987,6 +991,7 @@ class OrchestrationRunner:
                                 or f"bridge_run_{uuid.uuid4().hex[:12]}"),
                         tool_arguments=request.tool_arguments,
                         run_guard=self._agent_run_guard,
+                        checkpoint_hook=self._agent_checkpoint_hook,
                     ),
                     timeout=request.context.timeout_seconds,
                 )
@@ -1501,6 +1506,7 @@ class OrchestrationRunner:
                         trace_id=trace_id,
                         plan_id=request.agent_plan.agent_id,
                         run_guard=self._agent_run_guard,
+                        checkpoint_hook=self._agent_checkpoint_hook,
                     ),
                     timeout=request.context.timeout_seconds,
                 )
