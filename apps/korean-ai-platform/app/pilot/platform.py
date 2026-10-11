@@ -312,10 +312,24 @@ async def call_platform_chat_completions(
                 )
                 else "unexpected"
             )
+            # Classify an edge HTML block versus an origin JSON denial using
+            # response metadata only. Never log header values, trace IDs,
+            # vendor response bodies, or any portion of the credential.
+            media_type = response.headers.get("content-type", "").casefold()
+            response_format = (
+                "html" if "text/html" in media_type else
+                "json" if "application/json" in media_type else "other"
+            )
             logger.warning(
-                "tokenharbor_auth_diagnostic upstream_http_status=%d credential_shape=%s",
+                "tokenharbor_auth_diagnostic upstream_http_status=%d "
+                "credential_shape=%s response_format=%s cf_edge=%s "
+                "cf_challenge=%s vercel_origin=%s",
                 response.status_code,
                 credential_shape,
+                response_format,
+                response.headers.get("server", "").casefold() == "cloudflare",
+                response.headers.get("cf-mitigated", "").casefold() == "challenge",
+                bool(response.headers.get("x-vercel-id")),
             )
         if platform_provider_id == "agnes-ai" and response.status_code == 429:
             log_agnes_429(

@@ -228,8 +228,9 @@ def test_free_route_rejects_external_fallback_to_other_paid_provider(mid, live_k
 
 @pytest.mark.parametrize("upstream_http_status", [401, 403])
 @pytest.mark.parametrize("credential_shape", ["expected", "unexpected"])
+@pytest.mark.parametrize("response_kind", ["edge_html", "origin_json"])
 def test_tokenharbor_auth_failure_logs_only_safe_classification(
-    monkeypatch, caplog, upstream_http_status, credential_shape,
+    monkeypatch, caplog, upstream_http_status, credential_shape, response_kind,
 ):
     from app.pilot.errors import UpstreamAuthFailed
 
@@ -241,8 +242,17 @@ def test_tokenharbor_auth_failure_logs_only_safe_classification(
 
     def fail_with_upstream_status(request):
         assert request.url.host == "tokenharbor.ai"
+        if response_kind == "edge_html":
+            return httpx.Response(
+                upstream_http_status,
+                headers={"content-type": "text/html", "server": "cloudflare",
+                         "cf-mitigated": "challenge", "cf-ray": "not_for_logs"},
+                text="<!doctype html><title>do_not_log_upstream_body</title>",
+            )
         return httpx.Response(
             upstream_http_status,
+            headers={"content-type": "application/json",
+                     "x-vercel-id": "not_for_logs"},
             json={"error": {"message": "do_not_log_upstream_body"}},
         )
 
@@ -264,3 +274,8 @@ def test_tokenharbor_auth_failure_logs_only_safe_classification(
     assert fake_key not in caplog.text
     assert "do_not_log_upstream_body" not in caplog.text
     assert "no_customer_data" not in caplog.text
+    assert "not_for_logs" not in caplog.text
+    if response_kind == "edge_html":
+        assert "response_format=html cf_edge=True cf_challenge=True vercel_origin=False" in caplog.text
+    else:
+        assert "response_format=json cf_edge=False cf_challenge=False vercel_origin=True" in caplog.text
