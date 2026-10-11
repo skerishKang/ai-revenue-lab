@@ -37,7 +37,8 @@ _TICKET_KEYS = frozenset({"connect_ticket", "connector_id", "expires_at"})
 _CONNECTOR_WORKSPACE_KEYS_ABSENT = frozenset({"present"})
 _CONNECTOR_WORKSPACE_KEYS_PRESENT = frozenset({"present", "workspace_ref"})
 _TENANT_KEYS = frozenset({"tenant_id", "state", "created_at"})
-_MEMBERSHIP_KEYS = frozenset({"tenant_id", "canonical_subject_id", "state", "created_at"})
+_MEMBERSHIP_KEYS_LEGACY = frozenset({"tenant_id", "canonical_subject_id", "state", "created_at"})
+_MEMBERSHIP_KEYS = _MEMBERSHIP_KEYS_LEGACY | {"role"}
 _MEMBERSHIP_RESOLVE_KEYS = frozenset(
     {"tenant_id", "canonical_subject_id", "state", "created_at", "role"}
 )
@@ -478,7 +479,7 @@ class CloudflareControlPlaneIdentityAuthority:
         tenant_id: str,
         canonical_subject_id: str,
     ) -> None:
-        wire = _closed(
+        wire = _dict(
             await self._rpc(
                 "assign_tenant_membership",
                 {
@@ -486,10 +487,10 @@ class CloudflareControlPlaneIdentityAuthority:
                     "canonical_subject_id": canonical_subject_id,
                 },
                 "membership",
-            ),
-            _MEMBERSHIP_KEYS,
-            "canonical tenant membership",
+            )
         )
+        if wire is None or set(wire) not in (_MEMBERSHIP_KEYS_LEGACY, _MEMBERSHIP_KEYS):
+            raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical tenant membership is invalid.")
         try:
             membership = TenantMembership(
                 tenant_id=wire["tenant_id"],
@@ -500,6 +501,7 @@ class CloudflareControlPlaneIdentityAuthority:
                     if wire.get("created_at") is not None
                     else None
                 ),
+                role=TenantMembershipRole(wire["role"]) if wire.get("role") is not None else None,
             )
         except (KeyError, TypeError, ValueError) as exc:
             raise IdentityBridgeError(
