@@ -94,18 +94,36 @@ def live_claw_sse(
                     yield _frame("p01_event", payload)
                     continue
                 if kind == "error":
+                    # The trusted Core already verified the failed/cancelled
+                    # run. Forward its bounded terminal BEFORE the error so
+                    # Claw recovery can distinguish failed from cancelled.
+                    # A withheld run_completed must never be exposed here.
+                    if (verified_terminal is not None
+                            and verified_terminal["kind"] in ("run_failed", "run_cancelled")):
+                        yield _frame("p01_event", verified_terminal)
                     yield _frame("error", {
                         "error": {"code": payload, "message": "Engine 실행에 실패했습니다."}
                     })
                     return
                 status = payload.projection.status.value
                 if status == "waiting_approval":
+                    # This is observed P01 state, not browser approval power.
+                    # If the Core emitted no such event, keep error-only.
+                    if (verified_terminal is not None
+                            and verified_terminal["kind"] == "approval_paused"):
+                        yield _frame("p01_event", verified_terminal)
                     yield _frame("error", {"error": {
                         "code": "claw_general_approval_required",
                         "message": "승인이 필요한 요청입니다. Claw 업무 화면에서 진행해 주세요.",
                     }})
                     return
                 if status != "completed" or not isinstance(payload.answer, str) or not payload.answer:
+                    # A verified failure/cancellation is a real terminal
+                    # state even when the final answer is absent. Never turn
+                    # an invalid completed answer into a false run_completed.
+                    if (verified_terminal is not None
+                            and verified_terminal["kind"] in ("run_failed", "run_cancelled")):
+                        yield _frame("p01_event", verified_terminal)
                     yield _frame("error", {"error": {
                         "code": "engine_execution_failed", "message": "Engine 실행이 완료되지 않았습니다.",
                     }})
