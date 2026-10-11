@@ -122,11 +122,18 @@
   html body .app-shell[data-state="claw"][data-claw-composer-collapsed="true"] .composer-wrap {
     height: auto !important;
     min-height: 0 !important;
-    max-height: 86px !important;
+    max-height: none !important;
     padding: 6px 12px calc(7px + env(safe-area-inset-bottom)) !important;
     background: var(--bg) !important;
   }
-  html body .app-shell[data-state="claw"][data-claw-composer-collapsed="true"] .composer-wrap > :not(#clawMobileComposerToggle) {
+  /* Preserve the shared chat input and manual-entry affordance.
+   * Only the optional model/workflow panels collapse. */
+  html body .app-shell[data-state="claw"][data-claw-composer-collapsed="true"] .composer-wrap > :not(#clawMobileComposerToggle):not(#clawManualEntryBar):not(#composerForm) {
+    display: none !important;
+  }
+  html body .app-shell[data-state="claw"][data-claw-composer-collapsed="true"] #composerForm > .claw-model-choice,
+  html body .app-shell[data-state="claw"][data-claw-composer-collapsed="true"] #composerForm > .claw-model-advanced,
+  html body .app-shell[data-state="claw"][data-claw-composer-collapsed="true"] #composerForm > #ownerModelPreviewOpen {
     display: none !important;
   }
   html body .app-shell[data-state="claw"][data-claw-composer-collapsed="true"] .conversation {
