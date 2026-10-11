@@ -609,3 +609,145 @@ class WorkspaceDocumentStore:
             "workcopy_created": True,
             "processing_authorized_for_this_copy": True,
         }
+
+    async def create_authorized_web_quote_revision(
+        self, *, tenant_id: str, owner_id: str, workspace_id: str,
+        run_id: str, source_document_id: str, expected_source_sha256: str,
+        workcopy_document_id: str, school_name: str, supply_amount: int,
+        write_grant_verifier: Any,
+    ) -> dict[str, Any]:
+        """Host-only, P01 write-granted revision of exact private workcopy.
+
+        No public endpoint or automatic use of the original-read grant.
+        The host is responsible for separately verifying the Core write
+        operation for this source, copy, run and immutable edit digest.
+        """
+        import json as _json
+        from .claw_web_xlsx_quote_editor import (
+            revise_single_sheet_quote, WebQuoteEditUnsupported,
+        )
+
+        tenant = _safe_identifier("tenant_id", tenant_id)
+        owner = _safe_identifier("owner_id", owner_id)
+        workspace = _safe_identifier("workspace_id", workspace_id)
+        run = _safe_identifier("run_id", run_id)
+        source_id = _safe_identifier("source_document_id", source_document_id)
+        copy_id = _safe_identifier("workcopy_document_id", workcopy_document_id)
+        if (not isinstance(expected_source_sha256, str)
+                or not re.fullmatch(r"[0-9a-f]{64}", expected_source_sha256)
+                or not callable(write_grant_verifier)
+                or type(school_name) is not str
+                or type(supply_amount) is not int):
+            raise WorkspaceStorageAccessError("exact independent XLSX WRITE grant required")
+
+        original = await self.get_web_xlsx_metadata(
+            tenant_id=tenant, owner_id=owner, workspace_id=workspace,
+            document_id=source_id,
+        )
+        record = await self.metadata_store.get_active(copy_id)
+        prefix = (
+            f"workspaces/{tenant}/claw/web-office-workcopies/"
+            f"{owner}/{workspace}/{run}/{source_id}/{copy_id}/"
+        )
+        if (original is None or original["source_sha256"] != expected_source_sha256
+                or original["original_immutable"] is not True
+                or record is None or record.tenant_id != tenant
+                or record.object_key != prefix + expected_source_sha256
+                or record.media_type != XLSX_MEDIA_TYPE
+                or record.filename != original["filename"]
+                or record.byte_length != original["size_bytes"]
+                or record.expires_at <= _utcnow()):
+            raise WorkspaceStorageAccessError("approved workcopy scope changed")
+
+        edit_contract = _json.dumps(
+            {"school_name": school_name, "supply_amount": supply_amount,
+             "output_formats": ["xlsx"], "overwrite_original": False},
+            ensure_ascii=False, sort_keys=True, separators=(",", ":"),
+        )
+        edit_sha = hashlib.sha256(edit_contract.encode("utf-8")).hexdigest()
+        allowed = write_grant_verifier(
+            owner_id=owner, workspace_id=workspace, run_id=run,
+            source_document_id=source_id, source_sha256=expected_source_sha256,
+            workcopy_document_id=copy_id, workcopy_sha256=expected_source_sha256,
+            edit_sha256=edit_sha, operation="xlsx.quote.revise_workcopy",
+        )
+        if inspect.isawaitable(allowed):
+            allowed = await allowed
+        if allowed is not True:
+            raise WorkspaceStorageAccessError("separate P01 edit/write approval missing")
+
+        # Neither a browser confirmation nor read-only P01 intent is a write grant.
+        # The R2 copy bytes are not touched until the exact write authority passed.
+        try:
+            obj = self.r2_bucket.get(record.object_key)
+            if inspect.isawaitable(obj):
+                obj = await obj
+            if obj is None:
+                raise WorkspaceStorageError("workcopy bytes unavailable")
+            payload = await _read_r2_object_bytes(obj)
+        except WorkspaceStorageError:
+            raise
+        except Exception as exc:
+            raise WorkspaceStorageError("workcopy read unavailable") from exc
+        if (len(payload) != record.byte_length
+                or hashlib.sha256(payload).hexdigest() != expected_source_sha256):
+            raise WorkspaceStorageError("workcopy bytes changed")
+        try:
+            revision = revise_single_sheet_quote(
+                original=payload, original_sha256=expected_source_sha256,
+                school_name=school_name, supply_amount=supply_amount,
+            )
+        except WebQuoteEditUnsupported as exc:
+            raise WorkspaceStorageError(
+                "quote template or requested export unsupported: " + str(exc)
+            ) from exc
+
+        # Only the supplied Engine-granted one-shot write authority can make
+        # this safe under concurrency. No broader user-triggered public route.
+        revision_id = _document_id()
+        key = (
+            f"workspaces/{tenant}/claw/web-office-revisions/"
+            f"{owner}/{workspace}/{run}/{source_id}/{copy_id}/"
+            f"{revision_id}/{revision.revised_sha256}"
+        )
+        now = _utcnow()
+        metadata = ClawDocumentMetadata(
+            document_id=revision_id, tenant_id=tenant,
+            object_key=key, filename=record.filename,
+            media_type=XLSX_MEDIA_TYPE,
+            byte_length=len(revision.revised_xlsx), created_at=now,
+            expires_at=min(record.expires_at, now + WEB_XLSX_RETENTION),
+        )
+        if metadata.expires_at <= now:
+            raise WorkspaceStorageAccessError("approved workcopy expired")
+        try:
+            saved = self.r2_bucket.put(
+                key, revision.revised_xlsx,
+                httpMetadata={"contentType": XLSX_MEDIA_TYPE},
+            )
+            if inspect.isawaitable(saved):
+                await saved
+            await self.metadata_store.insert(metadata)
+        except Exception as exc:
+            try:
+                removed = self.r2_bucket.delete(key)
+                if inspect.isawaitable(removed):
+                    await removed
+            except Exception:
+                pass
+            raise WorkspaceStorageError("XLSX revision storage unavailable") from exc
+        return {
+            "source_document_id": source_id,
+            "source_sha256": expected_source_sha256,
+            "workcopy_document_id": copy_id,
+            "revision_document_id": revision_id,
+            "revision_sha256": revision.revised_sha256,
+            "edit_sha256": edit_sha,
+            "supply_amount": supply_amount,
+            "vat_amount": revision.vat_amount,
+            "total_amount": revision.total_amount,
+            "original_overwritten": False,
+            "revised_xlsx_created": True,
+            "pdf_exported": False,
+            "pdf_fidelity": revision.print_pdf_fidelity,
+        }
