@@ -10,8 +10,8 @@
     ko: {
       "claw-model-text-only-error": "Claw 모델 선택은 현재 텍스트 요청만 지원합니다.",
       "claw-model-choice-label": "실행 모델 ID (등록된 모델)",
-      "claw-model-choice-hint": "Claw Plus 전용 · 실행마다 하나만 선택 · 자동 fallback 없음",
-      "claw-model-choice-placeholder": "예: agnes-ai/agnes-3.0-flash",
+      "claw-model-choice-hint": "Claw Plus 기본: Gemini 3.5 Flash-Lite · 직접 변경 가능 · 자동 대체 없음",
+      "claw-model-choice-placeholder": "등록된 모델 ID를 입력하세요",
       "meta-description": "누구나 바로 사용할 수 있는 파디엠의 기본 AI 인터페이스", "new-chat": "새 채팅", "search": "검색", "projects": "프로젝트", "saved": "저장한 답변", "recent": "추천 질문",
       "easy": "AI를 쉽게 설명해줘", "trip": "제주도 여행 계획", "dinner": "저녁 메뉴 추천", "close-menu": "메뉴 닫기", "open-menu": "메뉴 열기",
       "mode": "기본 대화", "theme": "테마", "light": "Light", "dark": "Dark", "cinematic": "Cinematic", "home-theme": "Padiem Home", "glass-theme": "Padiem Glass",
@@ -178,8 +178,8 @@
     en: {
       "claw-model-text-only-error": "Claw model selection currently supports text requests only.",
       "claw-model-choice-label": "Model ID (available model)",
-      "claw-model-choice-hint": "Claw Plus only · one model per run · no automatic fallback",
-      "claw-model-choice-placeholder": "e.g. agnes-ai/agnes-3.0-flash",
+      "claw-model-choice-hint": "Claw Plus default: Gemini 3.5 Flash-Lite · editable · no automatic fallback",
+      "claw-model-choice-placeholder": "Enter a registered model ID",
       "meta-description": "Padiem’s general AI interface, ready for everyday work.", "new-chat": "New chat", "search": "Search", "projects": "Projects", "saved": "Saved answers", "recent": "Suggested questions",
       "easy": "Explain AI simply", "trip": "Plan a Jeju trip", "dinner": "Suggest dinner", "close-menu": "Close menu", "open-menu": "Open menu",
       "mode": "Standard chat", "theme": "Theme", "light": "Light", "dark": "Dark", "cinematic": "Cinematic", "home-theme": "Padiem Home", "glass-theme": "Padiem Glass",
