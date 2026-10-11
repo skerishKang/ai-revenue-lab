@@ -56,8 +56,8 @@ function response(body, status = 200) {
 async function settle() {
   for (let i = 0; i < 12; ++i) await new Promise(resolve => setImmediate(resolve));
 }
-function server({ initial = "waiting_p01", enabled = true, failPost = false, failStart = false, badSource = false, workcopy = false, forgedPreviewWrite = false } = {}) {
-  let stage = initial, sent = [], starts = [], previews = [];
+function server({ initial = "waiting_p01", enabled = true, failPost = false, failStart = false, badSource = false, workcopy = false, forgedPreviewWrite = false, writeAvailable = false } = {}) {
+  let stage = initial, sent = [], starts = [], previews = [], commits = [];
   global.fetch = async (url, options = {}) => {
     assert.equal(options.credentials, "same-origin");
     assert.equal(options.cache, "no-store");
@@ -89,6 +89,32 @@ function server({ initial = "waiting_p01", enabled = true, failPost = false, fai
         workcopy_document_id: workcopy && stage === "confirmed" ? COPY_ID : null,
       });
     }
+    if (url.endsWith("/quote-edit/status") && method === "GET") {
+      if (commits.length < 1) return response({ok: false}, 404);
+      return response({
+        ok: true, contract_version: "claw-web-xlsx-quote-write-status.v1",
+        selection_ref: REF, state: "confirmed",
+        revision_document_id: "doc_" + "e".repeat(32),
+        revision_sha256: "d".repeat(64), revised_xlsx_created: true,
+        pdf_exported: false,
+      });
+    }
+    if (url.endsWith("/quote-edit/commit") && method === "POST") {
+      assert.ok(writeAvailable && workcopy && stage === "confirmed");
+      const body = JSON.parse(options.body);
+      assert.deepEqual(Object.keys(body).sort(),
+        ["edit_sha256", "school_name", "supply_amount"]);
+      commits.push(body);
+      return response({
+        ok: true, contract_version: "claw-web-xlsx-quote-write.v1",
+        selection_ref: REF, state: "confirmed",
+        revision_document_id: "doc_" + "e".repeat(32),
+        revision_sha256: "d".repeat(64),
+        edit_sha256: "a".repeat(64),
+        revised_xlsx_created: true, pdf_exported: false,
+        original_overwritten: false,
+      }, 201);
+    }
     if (url.endsWith("/quote-edit/preview") && method === "POST") {
       assert.equal(workcopy && stage === "confirmed", true,
         "Quote preview requires owner-approved existing workcopy");
@@ -105,6 +131,7 @@ function server({ initial = "waiting_p01", enabled = true, failPost = false, fai
         preview_only: true, write_approved: forgedPreviewWrite,
         revised_xlsx_created: false, pdf_exported: false,
         pdf_unsupported: true, requires_independent_p01_write: true,
+        write_request_available: writeAvailable,
       });
     }
     if (url.endsWith("/start-p01") && method === "POST") {
@@ -137,7 +164,7 @@ function server({ initial = "waiting_p01", enabled = true, failPost = false, fai
     }
     throw Error("UNEXPECTED_REQUEST " + method + " " + url);
   };
-  return { sent, starts, previews, get stage() { return stage; } };
+  return { sent, starts, previews, commits, get stage() { return stage; } };
 }
 async function prepare(config) {
   const network = server(config);
@@ -193,7 +220,7 @@ async function prepare(config) {
   const school = editForm.children[0].children[0];
   const supply = editForm.children[1].children[0];
   const previewButton = editForm.children[2];
-  const previewStatus = editForm.children[3];
+  const previewStatus = editForm.children[5];
   school.value = "Gwangju University";
   supply.value = "99200000";
   previewButton.handlers.click(); await settle();
@@ -216,8 +243,31 @@ async function prepare(config) {
   forgedForm.children[1].children[0].value = "99200000";
   forgedForm.children[2].handlers.click(); await settle();
   assert.equal(forged.network.previews.length, 1);
-  assert.ok(!/109,120,000/.test(forgedForm.children[3].textContent),
+  assert.ok(!/109,120,000/.test(forgedForm.children[5].textContent),
     "Browser must reject forged WRITE-approved preview response");
+
+  const writing = await prepare({workcopy: true, writeAvailable: true});
+  writing.root.nodes.clawWebXlsxP01Approve.handlers.click(); await settle();
+  const form = writing.root.nodes.clawWebXlsxP01Panel.children.find(
+    item => item.tag === "div" && item.children.some(x => x.tag === "button"));
+  form.children[0].children[0].value = "Gwangju University";
+  form.children[1].children[0].value = "99200000";
+  form.children[2].handlers.click(); await settle();
+  const commit = form.children[3], revisedLink = form.children[4];
+  assert.equal(commit.hidden, false, "Separate Engine WRITE must be enabled");
+  commit.handlers.click(); commit.handlers.click(); await settle();
+  assert.equal(writing.network.commits.length, 1,
+    "Explicit WRITE is ONE-SHOT; never auto-repeat");
+  assert.equal(writing.network.commits[0].edit_sha256, "a".repeat(64));
+  assert.equal(revisedLink.hidden, false);
+  assert.equal(revisedLink.href,
+    "/api/claw/office/web-selections/" + REF + "/quote-edit/download");
+  assert.ok(!revisedLink.href.includes("doc_"));
+  writing.existing.handlers.click(); await settle();
+  assert.equal(revisedLink.hidden, false,
+    "Owner-only revised XLSX must survive D1 status refresh");
+  assert.equal(writing.network.sent.length, 1,
+    "WRITE cannot silently replay original READ consent");
 
   const fresh = await prepare({initial: "not_requested"});
   assert.equal(fresh.root.nodes.clawWebXlsxP01Start.hidden, false);
@@ -274,6 +324,7 @@ async function prepare(config) {
         processing_started: true, workcopy_created: false }, SRC, REF,
     ), false,
   );
+  console.log("WEB_XLSX_ONE_SHOT_WRITE_REVISION_DOWNLOAD=PASS");
   console.log("WEB_XLSX_QUOTE_EDIT_PREVIEW_NO_WRITE=PASS");
   console.log("WEB_XLSX_ACTUAL_WORKCOPY_DOWNLOAD_LINK=PASS");
   console.log("WEB_XLSX_REAL_BROWSER_OWNER_DECISION=PASS");
