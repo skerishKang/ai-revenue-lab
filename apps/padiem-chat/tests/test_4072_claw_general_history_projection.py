@@ -337,8 +337,10 @@ def test_real_d1_owner_conversation_created_only_after_completed_claw():
     adapter = base._make_adapter(outcome=base._make_outcome(answer="persisted on D1"))
     with owner_client(store, adapter) as client:
         completed = client.post(base.GENERAL_ROUTE_PATH, json=base._payload())
-        match = re.search(r'event: done\\ndata: (\\{[^\\n]+\\})', completed.text)
-        cid = json.loads(match.group(1)).get("conversation_id") if match else None
+        done_frames = [frame for frame in completed.text.split("\\n\\n")
+                       if frame.startswith("event: done\\n")]
+        cid = (json.loads(done_frames[0].split("data: ", 1)[1]).get("conversation_id")
+               if done_frames else None)
         listed = client.get("/api/conversations")
         detail = client.get("/api/conversations/" + cid) if cid else None
     assert completed.status_code == 200
