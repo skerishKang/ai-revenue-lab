@@ -214,7 +214,7 @@ def test_hark_flag_activation_and_b62_code_deploy_share_production_mutation_lock
     while concurrent #38153957703 uploaded B62 code from an earlier binding
     snapshot and removed that flag. The later chat_pdf correctly refused.
     """
-    root = ROOT.parent / "workflows"
+    root = ROOT / "workflows"
     hark = (root / "hark-web-first-runtime-activation.yml").read_text(
         encoding="utf-8",
     )
