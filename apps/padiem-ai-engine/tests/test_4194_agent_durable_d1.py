@@ -142,6 +142,7 @@ async def test_engine_real_agent_skill_with_d1_guard_stores_terminal_no_private_
     row = dict(rows[0])
     assert row["status"] == "completed"
     assert row["side_effect_uncertain"] == 1
+    assert row["checkpoint_step"] == 1  # post-tool monotonic D1 progress persisted
     assert row["epoch"] == 2
     assert row["owner_scope"] == "scope_" + hashlib.sha256(
         (APP_ID + ":" + SUBJECT_ID).encode("utf-8")
