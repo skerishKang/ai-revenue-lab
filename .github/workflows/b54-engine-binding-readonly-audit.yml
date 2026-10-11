@@ -58,5 +58,15 @@ jobs:
             --good-version "${readonly_dir}/good.json" \
             --bad-version "${readonly_dir}/bad.json" \
             --settings "${readonly_dir}/settings.json"
+          # Build an ephemeral candidate Wrangler config using exactly the
+          # safe-served six flag values, without ever uploading or printing them.
+          # This is diagnostic evidence, not authorization to deploy.
+          cp apps/padiem-ai-engine/wrangler.toml "${readonly_dir}/wrangler.toml"
+          python3 .github/scripts/b54_engine_preserve_live_vars_4383.py \
+            --wrangler "${readonly_dir}/wrangler.toml" \
+            --version-details "${readonly_dir}/good.json" \
+            --active-version "4d90cf39-ca1b-48b4-977e-dce1ca576d7a" \
+            --stage-served-vars
+          echo 'B54_SAFE_SERVED_FLAGS_RENDERABLE=PASS'
           echo 'B54_ENGINE_GET_ONLY=YES'
           echo 'NO_DEPLOY_NO_ROLLBACK_NO_SECRET_MUTATION=YES'
