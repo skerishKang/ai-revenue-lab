@@ -1457,7 +1457,7 @@ async def test_password_registration_establishes_b54_canonical_session_without_s
         status = await client.get("/api/auth/status")
     assert registered.status_code == 200
     assert status.json()["authenticated"] is True
-    assert calls == [(registered.json()["user"]["id"], "claw.signup")]
+    assert calls == [(next(iter(store.users)), "claw.signup")]
 
 
 @pytest.mark.asyncio
