@@ -65,11 +65,17 @@ from .claw_routes import (
 )
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 from .auth_routes import auth_ready, current_user_id
-from .history import MAX_HISTORY_MESSAGE_CHARS, _bounded_text, validate_conversation_id
+from .history import _bounded_text, validate_conversation_id
 
-MAX_CLAW_GENERAL_BODY_BYTES = 64 * 1024  # 64 KiB
-MAX_CLAW_GENERAL_MESSAGE_CHARS = 8_000
-MAX_CLAW_GENERAL_MESSAGES = 40
+# This is the existing Chat HTTP resource envelope, not a provider/model cap.
+# The separate P01 Engine ingress guard remains in force until #4383 is resolved.
+MAX_CLAW_GENERAL_BODY_BYTES = 6_000_000
+# Kept importable for older clients; None means no Claw-general pilot text cap.
+MAX_CLAW_GENERAL_MESSAGE_CHARS: int | None = None
+MAX_CLAW_GENERAL_MESSAGES: int | None = None
+# Model capability is not constrained by this number: the canonical Engine
+# still enforces its 128 KiB serialized HTTP request memory-safety envelope.
+P01_ENGINE_REQUEST_ENVELOPE_BYTES = 128 * 1024
 CLAW_LIVE_REQUEST_HEADER = "X-Padiem-Claw-Live"
 CLAW_LIVE_REQUEST_MARKER = "p01-events-v1"
 _CLAW_GENERAL_ROLES = frozenset({"user", "assistant"})
@@ -182,18 +188,14 @@ def _claw_general_sse(
 
 
 def _claw_general_user_text(data: dict[str, Any]) -> tuple[str | None, JSONResponse | None]:
-    """Extract the bounded latest user text from the shared chat message shape.
+    """Validate shared chat messages and preserve latest user text verbatim.
 
-    Reuses the same ``messages`` contract the standalone B62 chat composer
-    already sends, so the browser keeps one payload shape. Only the last user
-    turn becomes the P01 task text; a malformed, empty or over-bound message set
-    fails closed before any quota or dispatch.
+    P01 model-only Claw receives the latest user turn, not the browser-provided
+    previous turns. Malformed shapes fail before quota or provider dispatch.
     """
     messages = data.get("messages")
     if not isinstance(messages, list) or not messages:
         return None, _error(400, "invalid_messages", "메시지를 입력해 주세요.")
-    if len(messages) > MAX_CLAW_GENERAL_MESSAGES:
-        return None, _error(400, "too_many_messages", "메시지가 너무 많습니다.")
     last_user: str | None = None
     for item in messages:
         if not isinstance(item, dict):
@@ -202,12 +204,6 @@ def _claw_general_user_text(data: dict[str, Any]) -> tuple[str | None, JSONRespo
         content = item.get("content")
         if role not in _CLAW_GENERAL_ROLES or not isinstance(content, str):
             return None, _error(400, "invalid_messages", "메시지 형식이 올바르지 않습니다.")
-        if len(content) > MAX_CLAW_GENERAL_MESSAGE_CHARS:
-            return None, _error(
-                400,
-                "message_too_long",
-                f"메시지는 {MAX_CLAW_GENERAL_MESSAGE_CHARS}자 이하로 입력해 주세요.",
-            )
         if role == "user":
             last_user = content
     text = (last_user or "").strip()
@@ -234,19 +230,18 @@ async def _owner_claw_context(
     messages = prior.get("messages")
     if not isinstance(messages, list):
         return latest  # Empty Hark work conversations are valid.
-    budget = min(4000, max(0, MAX_HISTORY_MESSAGE_CHARS - len(latest) - 450))
+    # This list comes from verified owner-scoped *saved previews*, not browser
+    # supplied turns. Do not silently drop a fixed number of prior turns or
+    # truncate the model user text to a pilot-size character window.
     excerpts: list[str] = []
-    for row in reversed(messages[-12:]):
+    for row in messages:
         if not isinstance(row, dict) or row.get("role") not in ("user", "assistant"):
             continue
         content = row.get("content")
         if not isinstance(content, str) or not content.strip():
             continue
         item = ("사용자: " if row["role"] == "user" else "AI: ") + content.strip()
-        if len(item) > budget:
-            break
-        excerpts.insert(0, item)
-        budget -= len(item) + 1
+        excerpts.append(item)
     if not excerpts:
         return latest
     return (
@@ -441,6 +436,13 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         return _error(503, "conversation_authority_unavailable",
                       "대화 문맥을 안전하게 확인할 수 없습니다.")
 
+    # Explicit transport/resource failure before quota; do not silently
+    # truncate the owned prior context or present an Engine ingress guard as a
+    # provider model-token ceiling. Full serialized Engine checks stay active.
+    if len(model_user_text.encode("utf-8")) > P01_ENGINE_REQUEST_ENVELOPE_BYTES:
+        return _error(413, "engine_request_envelope_exceeded",
+                      "엔진 전송 안전 한도를 초과했습니다. 더 짧은 대화에서 다시 요청해 주세요.")
+
     # #3382/#3539: the canonical USER subject is resolved SERVER-SIDE before the
     # usage gate and before any P01/Engine dispatch, so a failed revalidation
     # never consumes quota and never reaches a provider.
@@ -536,7 +538,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             await _refund_active_reservation()
             return _error(503, "claw_live_stream_unavailable", "Claw 실시간 실행 상태를 사용할 수 없습니다.")
 
-    run = create_claw_run("padiem-chat", model_user_text)
+    run = create_claw_run("padiem-chat", model_user_text, model_only_text=True)
 
     # #3655: evidence mode is opt-in per request; normal callers see the exact
     # same response surface as before.

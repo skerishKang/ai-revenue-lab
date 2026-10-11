@@ -241,13 +241,18 @@ def p01_adapter_from_environment(
 
 
 def create_claw_run(
-    repository_ref: str, task: str, *, run_id: str | None = None
+    repository_ref: str, task: str, *, run_id: str | None = None,
+    model_only_text: bool = False
 ) -> ClawRun:
     provided = run_id.strip() if isinstance(run_id, str) else ""
     if provided and not provided.startswith("run_"):
         raise P01AdapterError(
             "p01_run_id_invalid", "Explicit run ids must start with 'run_'."
         )
+    if model_only_text is True and repository_ref != "padiem-chat":
+        raise P01AdapterError("invalid_model_only_scope", "Model-only text requires the canonical Padiem Chat product.")
+    if not isinstance(model_only_text, bool):
+        raise P01AdapterError("invalid_model_only_scope", "Model-only text must be a boolean.")
     generated = provided or f"run_{uuid.uuid4().hex[:24]}"
     suffix = generated[4:] if generated.startswith("run_") else generated
     intent = ClawTaskIntent(
@@ -255,7 +260,7 @@ def create_claw_run(
         task=task,
         repository_ref=repository_ref,
         execution_mode=ExecutionMode.LOCAL,
-        source_surface="cli",
+        source_surface=("padiem_claw_general_model_only" if model_only_text else "cli"),
     )
     return ClawRun.create(generated, intent)
 
