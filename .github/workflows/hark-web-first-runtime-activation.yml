@@ -118,19 +118,10 @@ jobs:
               curl -fsS --retry 2 --retry-delay 2 "${auth[@]}" \
                 "https://api.cloudflare.com/client/v4/accounts/${CLOUD_ACCOUNT_ID}/workers/workers/${worker}/versions/${active}" \
                 -o "${RUNNER_TEMP}/hark-target-modules.json"
-              python - "${RUNNER_TEMP}/hark-target-modules.json" "${active}" <<'PY'
-              import json, sys
-              from pathlib import Path
-              sys.path.insert(0, ".github/scripts")
-              from b62_owner_d1_release_transaction import _version_module_manifest
-              count = len(_version_module_manifest(
-                  json.loads(Path(sys.argv[1]).read_text(encoding="utf-8")),
-                  sys.argv[2],
-              ))
-              assert count >= 1
-              print("HARK_PREMUTATION_VERSION_MODULES=PASS")
-              print("HARK_SOURCE_MODULE_COUNT=" + str(count))
-              PY
+              # One-line Python command: avoids shell heredoc indentation drift
+              # inside the nested 'if target' in GitHub YAML run blocks.
+              python -c 'import json,sys; from pathlib import Path; sys.path.insert(0,".github/scripts"); from b62_owner_d1_release_transaction import _version_module_manifest; n=len(_version_module_manifest(json.loads(Path(sys.argv[1]).read_text(encoding="utf-8")),sys.argv[2])); assert n>=1; print("HARK_PREMUTATION_VERSION_MODULES=PASS"); print("HARK_SOURCE_MODULE_COUNT="+str(n))' \
+                "${RUNNER_TEMP}/hark-target-modules.json" "${active}"
             fi
             curl -fsS --retry 2 --retry-delay 2 "${auth[@]}" "${api}/${worker}/settings" -o "${base}-settings.json"
             python .github/scripts/b62_binding_state_guard.py --before "${base}-version.json" --after "${base}-settings.json"
