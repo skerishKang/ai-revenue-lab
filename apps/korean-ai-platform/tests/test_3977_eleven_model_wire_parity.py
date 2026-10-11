@@ -14,8 +14,11 @@ from app.pilot import platform
 from app.pilot.upstream_answer_contract import UpstreamEmptyAnswer
 
 
-REGISTERED = read_registry()["models"]
-assert len(REGISTERED) >= 11  # Iterate the canonical registry; future JSON additions are included.
+_REGISTRY = read_registry()
+# Historical Chat Completions parity applies to executable provider routes.
+# Disabled multi-protocol OpenCode candidates have dedicated wire fixtures.
+REGISTERED = [m for m in _REGISTRY["models"] if m["enabled"] and _REGISTRY["providers"][m["provider_id"]]["enabled"]]
+assert len(REGISTERED) >= 11
 
 
 @pytest.mark.asyncio
