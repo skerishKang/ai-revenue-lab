@@ -894,6 +894,12 @@ def _agent_skill_service_for_env(
                 status_code=503,
             )
         agent_run_ledger = D1AgentRunLedger(db)
+    # #4194 B: the expired-lease sweep is a maintenance call. It stays off
+    # unless the deployment explicitly enables it, so an unmarked isolate can
+    # never mutate run records through the recovery route.
+    recovery_enabled = (
+        legacy_worker._binding_value(env, "PADIEM_ENGINE_AGENT_RECOVERY_ENABLED") == "true"
+    )
     return AgentSkillEngineService(
         runtime_factory=runtime_factory,
         binding_resolver=binding_resolver,
@@ -901,6 +907,7 @@ def _agent_skill_service_for_env(
         approval_decision_verifier=approval_decision_verifier,
         continuation_store=continuation_store,
         agent_run_ledger=agent_run_ledger,
+        agent_run_recovery_enabled=recovery_enabled,
     )
 
 
