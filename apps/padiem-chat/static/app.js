@@ -867,7 +867,9 @@
     const ready = authState.ready === true;
     const authenticated = ready && authState.authenticated === true;
     // #3790 signed-in change notification contains no identity or credentials.
-    window.dispatchEvent(new CustomEvent("padiem:auth-state", { detail: { authenticated } }));
+    if (typeof window.dispatchEvent === "function" && typeof CustomEvent === "function") {
+      window.dispatchEvent(new CustomEvent("padiem:auth-state", { detail: { authenticated } }));
+    }
     const inboxNavButtons = [
       document.getElementById("tasksNavButton"),
       document.getElementById("alertsNavButton"),
