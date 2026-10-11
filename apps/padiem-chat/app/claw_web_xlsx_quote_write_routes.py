@@ -243,8 +243,51 @@ async def web_xlsx_quote_edit_status(request: Request) -> Response:
     context = await _confirmed(request)
     if isinstance(context, Response):
         return context
-    _store, row, _owner, _workspace, ref = context
+    _store, row, owner, workspace, ref = context
     confirmed = row["state"] == "confirmed"
+    # The browser receives the work-conversation handle ONLY after the
+    # existing D1 index has proved that this exact completed owner/run/workspace
+    # owns the revised XLSX+digest. A write receipt alone cannot imply that
+    # follow-up selection exists (indexing can independently fail).
+    followup = None
+    history = getattr(request.app.state, "history_store", None)
+    if (confirmed
+            and callable(getattr(history, "get_claw_run", None))
+            and callable(getattr(history, "get_owner_conversation_artifact", None))
+            and isinstance(row.get("revision_document_id"), str)
+            and _DOC.fullmatch(row["revision_document_id"])
+            and isinstance(row.get("revision_sha256"), str)
+            and _SHA.fullmatch(row["revision_sha256"])):
+        try:
+            run = await _wait(history.get_claw_run(owner, row["run_id"]))
+            if (isinstance(run, dict)
+                    and run.get("run_id") == row["run_id"]
+                    and run.get("workspace_id") == workspace
+                    and run.get("status") == "completed"
+                    and isinstance(run.get("conversation_id"), str)
+                    and re.fullmatch(r"chat_[a-f0-9]{32}", run["conversation_id"])):
+                record = await _wait(history.get_owner_conversation_artifact(
+                    user_id=owner, conversation_id=run["conversation_id"],
+                    workspace_ref=workspace,
+                    artifact_id=row["revision_document_id"],
+                ))
+                if (isinstance(record, dict)
+                        and record.get("artifact_id") == row["revision_document_id"]
+                        and record.get("integrity_ref") == row["revision_sha256"]
+                        and record.get("source_run_ref") == row["run_id"]
+                        and record.get("user_id") == owner
+                        and record.get("workspace_ref") == workspace
+                        and record.get("conversation_id") == run["conversation_id"]
+                        and record.get("media_type") == XLSX_MEDIA_TYPE):
+                    followup = {
+                        "conversation_id": run["conversation_id"],
+                        "artifact_id": row["revision_document_id"],
+                        "integrity_ref": row["revision_sha256"],
+                    }
+        except Exception:
+            # Missing schema or a stale/revoked record must not turn a
+            # completed revision into a forged conversation reference.
+            followup = None
     return JSONResponse({
         "ok": True, "contract_version": "claw-web-xlsx-quote-write-status.v1",
         "selection_ref": ref,
@@ -252,6 +295,7 @@ async def web_xlsx_quote_edit_status(request: Request) -> Response:
         "revised_xlsx_created": confirmed,
         "revision_document_id": row["revision_document_id"] if confirmed else None,
         "revision_sha256": row["revision_sha256"] if confirmed else None,
+        "followup": followup,
         "pdf_exported": False,
         "pdf_download_available": (
             request.app.state.web_xlsx_quote_pdf_enabled is True
