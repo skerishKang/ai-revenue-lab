@@ -673,3 +673,69 @@ def test_b62_release_requires_real_custom_domain_readback_before_and_after():
     assert '.service == $service' in readonly
     assert '.enabled == true' in readonly
     assert "--strict" in deploy
+
+
+# #3933 Hark WEB-FIRST Browser Rendering: existing authority only, default OFF.
+
+
+def _write_repo_config_with_browser(tmp_path: Path) -> Path:
+    config = _write_repo_config(tmp_path)
+    config.write_text(
+        config.read_text(encoding="utf-8") + '\n[browser]\nbinding = "BROWSER"\n',
+        encoding="utf-8",
+    )
+    return config
+
+
+def test_hark_declared_browser_never_silently_provisions_unbound_production(tmp_path):
+    module = _load_module()
+    live = module.parse_live_bindings(_settings_payload(_production_bindings()))
+    config = module.build_production_config(
+        live, _write_repo_config_with_browser(tmp_path), PUBLIC_URL,
+    )
+    assert "[browser]" not in config
+    assert 'PADIEM_CHAT_LIVE_ENABLED = "true"' in config
+    assert "PADIEM_WEB_XLSX_QUOTE_PDF_ENABLED" not in config
+    module.verify_mutation_zero(config, live)
+
+
+def test_preexisting_browser_binding_preserved_without_modifying_old_bindings(tmp_path):
+    import tomllib
+    module = _load_module()
+    old = _production_bindings()
+    with_browser = old + [{"type": "browser", "name": "BROWSER"}]
+    live = module.parse_live_bindings(_settings_payload(with_browser))
+    config = module.build_production_config(
+        live, _write_repo_config_with_browser(tmp_path), PUBLIC_URL,
+    )
+    parsed = tomllib.loads(config)
+    assert parsed["browser"] == {"binding": "BROWSER"}
+    assert parsed["d1_databases"][0]["database_id"] == "702bb62b-36f5-41a0-973f-c4f663ee01e6"
+    assert parsed["services"][0]["service"] == "ai-revenue-korean-ai-platform"
+    assert "PADIEM_CHAT_QUOTA_SALT" not in config
+    assert "PADIEM_WEB_XLSX_QUOTE_PDF_ENABLED" not in config
+    module.verify_mutation_zero(config, live)
+
+
+def test_existing_browser_without_explicit_repo_source_declaration_is_refused(tmp_path):
+    module = _load_module()
+    live = module.parse_live_bindings(_settings_payload(
+        _production_bindings() + [{"type": "browser", "name": "BROWSER"}],
+    ))
+    with pytest.raises(module.ProductionConfigError, match="matching source declaration"):
+        module.build_production_config(live, _write_repo_config(tmp_path), PUBLIC_URL)
+
+
+def test_unknown_browser_alias_and_duplicate_fail_closed():
+    module = _load_module()
+    with pytest.raises(module.ProductionConfigError, match="unexpected live Browser"):
+        module.parse_live_bindings(_settings_payload(
+            _production_bindings() + [{"type": "browser", "name": "UNEXPECTED"}],
+        ))
+    with pytest.raises(module.ProductionConfigError, match="duplicate binding"):
+        module.parse_live_bindings(_settings_payload(
+            _production_bindings() + [
+                {"type": "browser", "name": "BROWSER"},
+                {"type": "browser", "name": "BROWSER"},
+            ],
+        ))
