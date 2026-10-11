@@ -291,6 +291,34 @@ async def _save_claw_exchange(
         return None
 
 
+async def _record_completed_claw_result(
+    request: Request, *, run_id: str, conversation_id: str | None,
+    user_text: str, answer: str, authorized_workspace_id: str | None,
+) -> str | None:
+    """Persist only a verified completed Claw result; never replay Engine.
+
+    Conversation saving and completed-run history are both optional read-model
+    projections. Failure to save must not conceal an already-completed answer
+    or advertise a server conversation ID that was not actually stored.
+    """
+    saved_conversation_id = await _save_claw_exchange(
+        request, conversation_id=conversation_id,
+        user_text=user_text, answer=answer,
+    )
+    projected_conversation_id = saved_conversation_id or conversation_id
+    if projected_conversation_id is None:
+        await project_completed_general_run(
+            request, run_id=run_id, user_text=user_text, answer=answer,
+        )
+    else:
+        await project_completed_general_run(
+            request, run_id=run_id, user_text=user_text, answer=answer,
+            conversation_id=projected_conversation_id,
+            workspace_id=authorized_workspace_id,
+        )
+    return saved_conversation_id
+
+
 async def claw_general_capabilities(request: Request) -> JSONResponse:
     """Read-only session-specific SSE capability and opt-in pre-dispatch diagnostic.
 
@@ -554,7 +582,19 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         live_args = {"product_tier": product_tier, "subject_id": subject_id}
         if selected_model_id is not None:
             live_args["selected_model_id"] = selected_model_id
-        return live_claw_sse(adapter, run, live_args)
+        async def after_verified_live_completion(answer: str) -> str | None:
+            # Runs after validated terminal P01 completion, never on pause,
+            # failure, disconnect or an unverified/empty answer.
+            return await _record_completed_claw_result(
+                request, run_id=run.run_id, conversation_id=conversation_id,
+                user_text=user_text, answer=answer,
+                authorized_workspace_id=authorized_workspace_id,
+            )
+
+        return live_claw_sse(
+            adapter, run, live_args,
+            on_completed=after_verified_live_completion,
+        )
 
     try:
         dispatch_args = {"product_tier": product_tier, "subject_id": subject_id}
@@ -646,28 +686,13 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             headers=_NO_STORE_HEADERS,
         )
 
-    # Only a verified, durable owner conversation ID is returned to the browser.
-    # A failed history write never turns a completed model run into a retryable 5xx.
-    saved_conversation_id = await _save_claw_exchange(
-        request, conversation_id=conversation_id, user_text=user_text,
-        answer=outcome.answer,
+    # Preserve the existing completed-path persistence contract; the live
+    # callback above now uses the exact same authority and read-model logic.
+    saved_conversation_id = await _record_completed_claw_result(
+        request, run_id=run.run_id, conversation_id=conversation_id,
+        user_text=user_text, answer=outcome.answer,
+        authorized_workspace_id=authorized_workspace_id,
     )
-    projected_conversation_id = saved_conversation_id or conversation_id
-
-    # #4072/#3928: preserve successful P01 execution in the pre-existing
-    # owner-scoped read model when D1 supports it. This is NOT a same-thread
-    # or artifact lineage claim. A failed history write must never replay
-    # Engine/tool execution or suppress an already-completed answer.
-    if projected_conversation_id is None:
-        await project_completed_general_run(
-            request, run_id=run.run_id, user_text=user_text, answer=outcome.answer
-        )
-    else:
-        await project_completed_general_run(
-            request, run_id=run.run_id, user_text=user_text, answer=outcome.answer,
-            conversation_id=projected_conversation_id,
-            workspace_id=authorized_workspace_id,
-        )
     return _claw_general_sse(
         outcome.answer,
         _claw_evidence_response_headers(run.run_id, outcome) if evidence_requested else None,
