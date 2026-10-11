@@ -18,6 +18,10 @@ from .claw_web_xlsx_p01_request import (
 )
 from .claw_web_xlsx_selection_routes import _scope
 from .claw_web_xlsx_source_routes import _error, _NO_STORE
+from .web_xlsx_p01_refusal import (
+    STAGE_DISPATCH_UNKNOWN, STAGE_PAUSE_ISSUED, STAGE_RESERVATION_REFUSED,
+    emit_dispatch_event,
+)
 
 WEB_XLSX_START_P01_PATH = "/api/claw/office/web-selections/{selection_ref}/start-p01"
 
@@ -113,15 +117,40 @@ async def web_xlsx_start_p01(request: Request) -> Response:
         trusted = TrustedWebXlsxP01Request(**{**template, "run_id": run_id})
     except Exception:
         return _error(503, "web_xlsx_p01_start_run_unavailable")
+    # #3936: bounded, non-secret attribution for the private Engine dispatch
+    # boundary. Only fixed stage constants plus the allowlisted Engine status and
+    # error code are emitted; the public answer, the one-shot D1 reservation and
+    # every authorization rule stay exactly as they were.
+    refusal_emitter = getattr(
+        request.app.state, "web_xlsx_p01_refusal_emitter", None,
+    )
     try:
         pending = await dispatch_owner_web_xlsx_p01(
             request=trusted, store=ledger, client=client,
         )
-    except WebXlsxP01RequestError:
+    except WebXlsxP01RequestError as exc:
+        emit_dispatch_event(
+            stage=exc.stage or STAGE_DISPATCH_UNKNOWN,
+            engine_status=getattr(exc, "engine_status", None),
+            engine_code=getattr(exc, "engine_code", None),
+            pause_projected=False,
+            reservation=(
+                "none" if exc.stage == STAGE_RESERVATION_REFUSED else "retained"
+            ),
+            emitter=refusal_emitter,
+        )
         return _error(409, "web_xlsx_p01_pause_refused")
     except Exception:
         # Preserve uncertain reservation; browser must GET status, never retry POST.
+        emit_dispatch_event(
+            stage=STAGE_DISPATCH_UNKNOWN, pause_projected=False,
+            reservation="retained", emitter=refusal_emitter,
+        )
         return _error(503, "web_xlsx_p01_dispatch_unknown")
+    emit_dispatch_event(
+        stage=STAGE_PAUSE_ISSUED, pause_projected=True, reservation="retained",
+        emitter=refusal_emitter,
+    )
     return JSONResponse({
         "ok": True, "contract_version": "claw-web-xlsx-p01-start.v1",
         "selection_ref": selection_ref, "status": pending["status"],
