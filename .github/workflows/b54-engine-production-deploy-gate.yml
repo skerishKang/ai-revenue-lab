@@ -302,7 +302,11 @@ jobs:
           echo 'DEPLOY_ATTEMPTED=YES'
           # pywrangler deploy itself is unchanged and stays the single deploy
           # authority; only the evidence around it is recorded.
-          if uv run pywrangler deploy --keep-vars 2>&1 | tee "${RUNNER_TEMP}/b54-engine-deploy.log"; then
+          # The transient manifest contains live operator values. Wrangler may
+          # echo bindings to stdout/stderr; never stream that output to Actions
+          # logs or published artifacts. Only the bounded exit verdict is public.
+          umask 077
+          if uv run pywrangler deploy --keep-vars >"${RUNNER_TEMP}/b54-engine-deploy.log" 2>&1; then
             # Reached only on success, so DEPLOY_EXECUTED=YES can never be
             # recorded for a deploy that did not complete.
             printf 'DEPLOY_EXECUTED=YES\n' >> "${RUNNER_TEMP}/b54-engine-deploy-evidence.txt"
