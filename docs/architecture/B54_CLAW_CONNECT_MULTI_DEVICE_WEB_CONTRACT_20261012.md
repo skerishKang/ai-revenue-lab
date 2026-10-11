@@ -102,3 +102,65 @@ login; it does not change command authorization.
 - `deriveDeviceDirectory` returning `canTarget:true` means **only a currently
   online, explicitly selected device may be displayed as a possible target**;
   it does not authorize running a command and must not be treated as P01.
+
+## LOCAL1 server slice — canonical Broker `device_directory` RPC (2026-10-12)
+
+The server half of item 2 ("owner/workspace-scoped read-only multi-device
+directory to the canonical Broker") is implemented in the existing Canonical
+Local Agent Broker. No new DB, device table, endpoint or authority is created.
+
+**Source**
+
+- `packages/padiem-control-plane/local_agent_broker_durable_runtime.py`
+  — `LocalAgentBrokerDurableRuntime.device_directory` plus the shared
+  `_device_facts` projection and `select_current_bindings_by_device`.
+- `packages/padiem-control-plane/local_agent_broker_worker.py` — thin
+  passthrough on `LocalAgentBrokerDurableObject` and the `Default` gateway.
+
+**RPC contract**
+
+- Request key set is closed and identical to `device_truth`:
+  `{account_ref, workspace_ref?}`. A caller can narrow by workspace but can
+  never name a device, so a device id is an output, never an input.
+- Response: `{ok, available, owner_scoped, device_count, max_devices, devices[]}`
+  where each device row is the exact `device_truth` fact set
+  (`canonical_state` + `binding` + `session` + `heartbeat_last_seen_at`).
+- `canonical_state` reuses the `device_truth` vocabulary only —
+  `revoked` / `credential_expired` / `paired_offline`. The broker **never**
+  reports ONLINE; each row carries the binding + session + heartbeat facts the
+  existing `kagent.local_agent_server_projection` rule needs to decide ONLINE
+  downstream. A second ONLINE authority is not created.
+- Empty owner scope returns `{ok:true, available:false, reason:"no_device_binding"}`.
+  Malformed requests, a duplicated/forged device identity (two ACTIVE bindings
+  for one device id) and more than 24 devices each fail the **whole** directory
+  closed with a bounded error code; the list is never truncated.
+
+**Guarantees**
+
+```text
+DEVICE_DIRECTORY_VOCABULARY_HAS_ONLINE=False
+DEVICE_DIRECTORY_SECOND_ONLINE_AUTHORITY=False
+DEVICE_DIRECTORY_SECOND_DEVICE_AUTHORITY=False
+DEVICE_DIRECTORY_OWNER_SCOPED=True
+DEVICE_DIRECTORY_MUTATION=False
+DEVICE_DIRECTORY_MAX_DEVICES=24
+DEVICE_DIRECTORY_TRUNCATES=False
+DEVICE_DIRECTORY_STABLE_ORDER=device_id_ascending
+```
+
+**Evidence / limits**
+
+- New tests:
+  `packages/padiem-control-plane/tests/test_local_agent_broker_device_directory.py`
+  (owner/workspace scoping, 3-PC/1-PC/offline/revoked/expired/missing-heartbeat
+  states, re-pairing collapse, duplicate + >24 fail-closed, read-only, no
+  secret leakage, single-PC `device_truth` regression).
+- Integration test:
+  `apps/padiem-chat/tests/test_4139_claw_connect_multi_device_directory.py`
+  drives the real broker entrypoint and feeds each directory row through the
+  real B62 consumer seam and the existing ONLINE rule, proving CONNECTED/usable
+  is produced only by that rule.
+- This slice adds no Worker schema, secret, device enrollment, browser
+  permission, remote execution or production deploy change, and **no** Web
+  surface change: wiring the Web selector to this RPC remains item 3 (CENTRAL).
+
