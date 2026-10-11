@@ -134,6 +134,7 @@ def test_production_config_preserves_exact_padiem_custom_domain(tmp_path):
         {"pattern": "chat.padiem.net", "custom_domain": True}
     ]
     assert parsed["workers_dev"] is True
+    assert parsed["base_dir"] == ".b66-worker-src"  # Top-level, not nested under routes.
     assert parsed["vars"]["PADIEM_CHAT_TIMEOUT_SECONDS"] == "20"
     _load_module().verify_mutation_zero(rendered, live)
 
