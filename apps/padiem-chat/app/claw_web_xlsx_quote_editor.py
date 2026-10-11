@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 from io import BytesIO
 from xml.etree import ElementTree as ET
-from zipfile import BadZipFile, ZipFile, ZIP_DEFLATED
+from zipfile import BadZipFile, ZipFile, ZipInfo, ZIP_DEFLATED
 
 from padiem_ai_core.document_normalization import (
     DocumentNormalizationError, validate_ooxml_archive,
@@ -235,7 +235,12 @@ def revise_single_sheet_quote(
     buffer = BytesIO()
     with ZipFile(buffer, "w", compression=ZIP_DEFLATED, compresslevel=6) as package:
         for path, content in parts.items():
-            package.writestr(path, content)
+            # ZipFile.writestr(name, ...) silently timestamps each member with
+            # wall-clock local time. The same authorized edit then gets a
+            # different SHA-256 across minute boundaries, breaking P01's
+            # exact revision proof. Use a canonical DOS epoch for every part.
+            entry = ZipInfo(path, date_time=(1980, 1, 1, 0, 0, 0))
+            package.writestr(entry, content, compress_type=ZIP_DEFLATED, compresslevel=6)
     updated = buffer.getvalue()
     if len(updated) > _SOURCE_MAX:
         raise WebQuoteEditUnsupported("XLSX_RESULT_EXCEEDS_STORAGE_BOUND")
