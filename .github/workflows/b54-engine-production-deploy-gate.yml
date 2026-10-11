@@ -137,6 +137,23 @@ jobs:
           echo 'PROVIDER_CALLS=0'
           echo 'REAL_USER_DATA=0'
 
+      # #4383: --keep-vars cannot resurrect flags absent from mutable /settings.
+      # Stage exactly the six operator-owned values from the previous IMMUTABLE
+      # served version in a runner-only Wrangler config, then let existing
+      # post-deploy immutable binding parity attest no drift.
+      - name: Stage exact served XLSX flags into transient Engine deploy config
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${B54_ENGINE_ACTIVE_VERSION:-}"
+          python3 .github/scripts/b54_engine_preserve_live_vars_4383.py \
+            --wrangler apps/padiem-ai-engine/wrangler.toml \
+            --version-details "${RUNNER_TEMP}/version-pre.json" \
+            --active-version "${B54_ENGINE_ACTIVE_VERSION}" \
+            --stage-served-vars
+          echo 'B54_SERVED_VAR_VALUES_LOGGED=NO'
+          echo 'ENGINE_PRODUCTION_MUTATION_BEFORE_ANCHOR=0'
+
       # #3758: durable pre-mutation rollback anchor for the Engine deploy path.
       #
       # #3742 closed this gap for B14: the pre-deploy served version existed
