@@ -465,7 +465,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                 "인증된 Claw 실행 권한을 확인할 수 없습니다.",
             )
         subject_id = b54_session.auth_session.subject.subject_id
-        authorized_workspace_id = b54_session.auth_session.tenant_id
+        authorized_workspace_id = getattr(b54_session.auth_session, "tenant_id", None)
         if conversation_id is not None:
             if not isinstance(authorized_workspace_id, str) or not authorized_workspace_id:
                 return _error(403, "workspace_scope_unavailable",
