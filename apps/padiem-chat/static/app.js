@@ -1221,9 +1221,9 @@
     notice.className = "reference-note";
     notice.setAttribute("role", "status");
     notice.textContent =
-      "승인된 XLSX 작업 대화를 열었습니다. 수정본의 참조만 확인됐으며, 실제 파일을 다시 읽거나 수정하려면 별도 P01 승인이 필요합니다.";
+      uiT("claw-web-work-conversation-opened");
     messageList.prepend(notice);
-    setNote("웹 XLSX 작업 대화로 이동했습니다. 파일 읽기·추가 변경은 별도 승인됩니다.");
+    setNote(uiT("claw-web-work-conversation-note"));
   });
 
   async function requestCompletedAnswer(article, payload, outboundMessages, attachment, contextSnapshot, signal) {
