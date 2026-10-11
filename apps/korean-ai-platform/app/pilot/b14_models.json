@@ -297,23 +297,6 @@
       "enabled": true
     },
     {
-      "id": "tokenharbor/claude-haiku-5.5:free",
-      "provider_id": "tokenharbor",
-      "upstream_model": "claude-haiku-5.5:free",
-      "display_name": "TokenHarbor: Claude Haiku 5.5 Free",
-      "provider_name": "TokenHarbor",
-      "capabilities": [
-        "chat",
-        "free"
-      ],
-      "context_window": 1000000,
-      "input_price_usd_per_1m": 0.0,
-      "output_price_usd_per_1m": 0.0,
-      "source": "https://tokenharbor.ai/models/claude-haiku-5.5:free (free-route offer; availability/allowance subject to change)",
-      "source_checked_at": "2026-10-11",
-      "enabled": true
-    },
-    {
       "id": "tokenharbor/deepseek-v4.1-flash:free",
       "provider_id": "tokenharbor",
       "upstream_model": "deepseek-v4.1-flash:free",
