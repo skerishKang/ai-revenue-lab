@@ -404,6 +404,19 @@ jobs:
           echo "PADIEM_CHAT_PUBLIC_BASE_URL_STATE=${public_state}"
           test "${public_state}" = "expected"
 
+          # An absent Custom Domain in the generated wrangler config made
+          # strict upload protection must never silently detach chat.padiem.net.
+          domain_before="${RUNNER_TEMP}/b62-custom-domain-before.json"
+          bash .github/scripts/b62_cloudflare_504_readonly_get.sh \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains?hostname=chat.padiem.net" \
+            "${domain_before}"
+          jq -e --arg host "chat.padiem.net" --arg service "${B62_WORKER}" \
+            '.success == true and
+             ([.result[] | select(.hostname == $host)] | length == 1) and
+             ([.result[] | select(.hostname == $host and .service == $service and .zone_name == "padiem.net" and .enabled == true and .previews_enabled == false)] | length == 1)' \
+            "${domain_before}" >/dev/null
+          echo "B62_CANONICAL_CUSTOM_DOMAIN=ATTACHED_EXPECTED"
+
           subdomain="${RUNNER_TEMP}/b62-subdomain-readonly.json"
           subdomain_status="$(curl -sS "${auth[@]}" "${api}/subdomain" -o "${subdomain}" -w '%{http_code}' || true)"
           workers_health="${RUNNER_TEMP}/b62-workers-dev-health-readonly.json"
@@ -727,6 +740,17 @@ jobs:
           etag_after="$(jq -er '.result.resources.script.etag' "${detail}")"
           test "${etag_after}" != "${PREVIOUS_SCRIPT_ETAG}"
           echo "SCRIPT_ETAG_CHANGED=PASS"
+
+          domain_after="${RUNNER_TEMP}/b62-custom-domain-after.json"
+          bash .github/scripts/b62_cloudflare_504_readonly_get.sh \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains?hostname=chat.padiem.net" \
+            "${domain_after}"
+          jq -e --arg host "chat.padiem.net" --arg service "${B62_WORKER}" \
+            '.success == true and
+             ([.result[] | select(.hostname == $host)] | length == 1) and
+             ([.result[] | select(.hostname == $host and .service == $service and .zone_name == "padiem.net" and .enabled == true and .previews_enabled == false)] | length == 1)' \
+            "${domain_after}" >/dev/null
+          echo "B62_CANONICAL_CUSTOM_DOMAIN_STILL_ATTACHED=PASS"
 
           subdomain="${RUNNER_TEMP}/b62-subdomain-after.json"
           subdomain_status="$(curl -sS "${auth[@]}" "${api}/subdomain" -o "${subdomain}" -w '%{http_code}' || true)"

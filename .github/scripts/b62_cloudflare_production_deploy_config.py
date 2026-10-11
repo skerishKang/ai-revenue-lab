@@ -185,6 +185,14 @@ def build_production_config(
     lines.append("workers_dev = true")
     if base_dir is not None:
         lines.append(f"base_dir = {_toml_string(base_dir)}")
+    # Preserve the already-attached canonical production Custom Domain. Without
+    # this exact route, Wrangler --strict correctly rejects a deploy that would
+    # detach chat.padiem.net from the production Worker.
+    if public_base_url == "https://chat.padiem.net":
+        lines.append("")
+        lines.append("[[routes]]")
+        lines.append('pattern = "chat.padiem.net"')
+        lines.append("custom_domain = true")
     lines.append("")
     if build_command is not None:
         lines.append("[build]")
