@@ -259,6 +259,7 @@ def create_app(
     claw_drive_artifact_uploader=None,
     claw_drive_artifact_reader=None,
     claw_telegram_authority=None,
+    claw_telegram_artifact_delivery=None,
     approved_memory_store: ApprovedMemoryStore | None = None,
     b66_saved_quote_skill_store: SavedQuoteSkillStore | None = None,
     b66_saved_skill_candidate_store: SavedQuoteSkillCandidateStore | None = None,
@@ -672,6 +673,12 @@ def create_app(
     # Thin Telegram inbound consumer seam (#2315): the trusted binding
     # authority is injected server-side only; None keeps the route fail-closed.
     app.state.claw_telegram_authority = claw_telegram_authority
+    # #3580: outbound artifact delivery seam, separate from the inbound ingest
+    # authority above. None keeps it fail-closed; the CP-authorized host must
+    # inject the existing delivery adapter through
+    # app.claw_telegram_delivery_host_composition, and no token, chat id or
+    # destination is ever a request value.
+    app.state.claw_telegram_artifact_delivery = claw_telegram_artifact_delivery
     # Durable explicitly user-approved memory (#2331): reuse the existing
     # PADIEM_CHAT_DB D1 binding with no new database authority. An explicitly
     # injected store wins (network-free tests); otherwise derive from the
