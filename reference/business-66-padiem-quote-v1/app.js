@@ -21,6 +21,7 @@
   const SavedSkill = window.SavedQuoteSkill || null;
   const SkillStore = window.SavedQuoteSkillStore || null;
   const SkillUi = window.SavedQuoteSkillUi || null;
+  const ManualSkillUi = window.SavedQuoteSkillManual || null;
   const AccountScope = window.QuoteAccountScope || null;
   const ServerHistory = window.B66QuoteHistoryServer || null;
   const TAX_REVIEW_STORAGE_KEY = "quoteBeta.taxReview.v1";
@@ -72,7 +73,8 @@
         taxReviewKey: TAX_REVIEW_STORAGE_KEY,
         TemplateStore,
         TemplateSelection,
-        SkillStore
+        SkillStore,
+        manualDraftKey: ManualSkillUi && ManualSkillUi.MANUAL_DRAFT_STORAGE_KEY
       })
     : [
         Core.DRAFT_STORAGE_KEY,
@@ -82,7 +84,8 @@
         TAX_REVIEW_STORAGE_KEY,
         TemplateStore && TemplateStore.TEMPLATE_STORAGE_KEY,
         TemplateSelection && TemplateSelection.SELECTION_STORAGE_KEY,
-        SkillStore && SkillStore.STORAGE_KEY
+        SkillStore && SkillStore.STORAGE_KEY,
+        ManualSkillUi && ManualSkillUi.MANUAL_DRAFT_STORAGE_KEY
       ].filter(Boolean);
 
   function localStorageRef() {
@@ -2065,6 +2068,34 @@
       }
     });
   }
+  /* ── #4319 직접 만들기: 견적서 관리 → 새 견적서 만들기 → 직접 만들기 ──
+     초안 후보만 다룬다. 승인 서버가 없으므로 승인된 Saved Quote Skill 저장은 없다. */
+  let manualSkillApi = null;
+  if (ManualSkillUi && typeof ManualSkillUi.bindManualSection === "function" &&
+      typeof localStorage !== "undefined") {
+    manualSkillApi = ManualSkillUi.bindManualSection(document, {
+      storage: ownerGatedStorage(),
+      authState: () => ({
+        authenticated: serverHistorySignedIn === true,
+        privateStateReadable: privateStateReadable()
+      }),
+      toast
+    });
+  }
+  document.addEventListener("b66:open-manual-skill", () => {
+    if (!manualSkillApi) return;
+    const directTab = $("directModeButton");
+    if (directTab) directTab.click();
+    manualSkillApi.open(directTab || null);
+    const panel = $("skillManualPanel");
+    if (panel && typeof panel.scrollIntoView === "function") {
+      panel.scrollIntoView({ block: "nearest" });
+    }
+  });
+  document.addEventListener("b66:account-scope-changed", () => {
+    if (manualSkillApi) manualSkillApi.refresh();
+  });
+
   window.B66QuoteSkillBridge = Object.freeze({
     activeSkillId: () => skillUiState.activeSkillId,
     serverSkillId: () => (skillUiState.serverSkill ? skillUiState.serverSavedSkillId : null),

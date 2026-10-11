@@ -30,6 +30,7 @@
   <script src="quote-registration-session.js" defer></script>
   <script src="xlsx-export.js" defer></script>
   <script src="quote-skill-ui.js" defer></script>
+  <script src="quote-skill-manual.js" defer></script>
   <script src="app.js" defer></script>
   <script src="easy-mode.js" defer></script>
   <script src="company-profile-settings.js" defer></script>
@@ -299,6 +300,14 @@
             <div class="skill-wizard-body" id="skillWizardBody"></div>
             <div class="template-cloner-actions">
               <button class="btn soft" id="skillWizardCancel" type="button">등록 취소</button>
+            </div>
+          </div>
+          <div class="skill-manual" id="skillManualPanel" hidden>
+            <h3 id="skillManualTitle" tabindex="-1">새 견적서 만들기 · 직접 만들기</h3>
+            <p class="template-cloner-status" id="skillManualStatus" role="status" aria-live="polite"></p>
+            <div class="skill-manual-body" id="skillManualBody"></div>
+            <div class="skill-manual-actions">
+              <button class="btn soft" id="skillManualClose" type="button">닫기</button>
             </div>
           </div>
           <input

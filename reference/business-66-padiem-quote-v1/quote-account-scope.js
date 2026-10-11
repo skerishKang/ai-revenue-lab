@@ -153,7 +153,9 @@
       d.taxReviewKey,
       d.TemplateStore && d.TemplateStore.TEMPLATE_STORAGE_KEY,
       d.TemplateSelection && d.TemplateSelection.SELECTION_STORAGE_KEY,
-      d.SkillStore && d.SkillStore.STORAGE_KEY
+      d.SkillStore && d.SkillStore.STORAGE_KEY,
+      /* #4319 직접 만들기 초안 후보: 계정이 바뀌면 이전 계정 초안이 보이지 않아야 한다. */
+      d.manualDraftKey
     ]);
   }
 

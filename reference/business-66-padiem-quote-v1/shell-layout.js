@@ -60,6 +60,22 @@
       '<label class="shell-picker-label">배정된 내 견적서<select-host id="shellSkillSelect"></select-host></label>' +
       '<label class="shell-picker-label">출력 양식<select-host id="shellQuoteTemplateSelect"></select-host></label>' +
       '<label class="shell-picker-label" id="shellModelControl" hidden>견적 해석 AI 모델<select-host id="shellModelSelect"></select-host></label>';
+    /* #4319 / #3186 경로 B: 견적서 관리 하위의 새 견적서 만들기 → 직접 만들기 진입점.
+       입력·검토·승인 요청 화면 본체는 #skillSection 의 기존 Saved Skill 영역에 있다. */
+    var createSubhead = document.createElement("h3");
+    createSubhead.className = "shell-rail-subhead";
+    createSubhead.textContent = "새 견적서 만들기";
+    managementSection.appendChild(createSubhead);
+    var manual = makeButton(
+      "shellManualQuote",
+      "✎",
+      "직접 만들기",
+      "회사 기본값을 직접 입력해 후보를 만듭니다"
+    );
+    manual.addEventListener("click", function () {
+      document.dispatchEvent(new CustomEvent("b66:open-manual-skill"));
+    });
+    managementSection.appendChild(manual);
     menu.appendChild(managementSection);
 
     var historySection = document.createElement("section");
