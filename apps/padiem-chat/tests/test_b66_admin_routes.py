@@ -7,6 +7,7 @@ from starlette.routing import Route
 from app.auth import create_session_token
 from app.config import Settings
 from app.b66_quote_routes import b66_quote_models, b66_quote_interpret
+from app.b66_admin_routes import b66_admin_member_detail
 from app.b66_admin_routes import (
     b66_admin_me, b66_admin_members, b66_admin_member_access,
     b66_admin_model_policy, b66_admin_dispatch_alerts,
@@ -31,6 +32,7 @@ def tiny_admin_app(store, *, enforcement=False):
         Route("/api/b66/admin/me",b66_admin_me,methods=["GET"]),
         Route("/api/b66/admin/members",b66_admin_members,methods=["GET"]),
         Route("/api/b66/admin/members/{user_id}",b66_admin_member_access,methods=["PATCH"]),
+        Route("/api/b66/admin/members/{user_id}/detail",b66_admin_member_detail,methods=["GET"]),
         Route("/api/b66/admin/model-policy",b66_admin_model_policy,methods=["GET","PUT"]),
         Route("/api/b66/admin/alerts/dispatch",b66_admin_dispatch_alerts,methods=["POST"]),
     ])
@@ -119,3 +121,54 @@ async def test_http_admin_authority_and_model_policy_rollout_guard():
         policy["disabled_models"] = ["unregistered/vendor-model"]
         unknown=await client.put("/api/b66/admin/model-policy",cookies=token(admin),json=policy)
         assert unknown.status_code == 400
+
+@pytest.mark.asyncio
+async def test_member_detail_metadata_uses_authenticated_admin_not_browser_identity():
+    import json
+    from datetime import datetime, timezone
+    from app.b66_member_admin import D1B66MemberAdminStore
+
+    db, admin, legacy, impostor = seed_db()
+    db.conn.executescript("""
+      CREATE TABLE live_usage_buckets (
+        subject_type TEXT, subject_key TEXT, bucket_type TEXT,
+        bucket_start TEXT, request_count INTEGER, updated_at TEXT
+      );
+      CREATE TABLE b66_quote_history (
+        id TEXT PRIMARY KEY, user_id TEXT, workspace_id TEXT, quote_no TEXT,
+        issue_date TEXT, saved_skill_id TEXT, skill_fingerprint TEXT,
+        snapshot_json TEXT, sender_json TEXT, created_at TEXT, updated_at TEXT
+      );
+    """)
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT00:00:00Z")
+    db.conn.execute("INSERT INTO live_usage_buckets VALUES (?,?,?,?,?,?)",
+                    ("user", legacy, "day", now, 4, now))
+    db.conn.execute("INSERT INTO live_usage_buckets VALUES (?,?,?,?,?,?)",
+                    ("user", impostor, "day", now, 1000, now))
+    db.conn.execute(
+      "INSERT INTO b66_quote_history VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+      ("saved-1",legacy,"private","PRIVATE CUSTOMER NUMBER",
+       "2026-10-11",None,None,'{"customer_secret":"not for admin"}',None,now,now)
+    )
+    store = D1B66MemberAdminStore(db,admin_email="admin@example.test")
+    app,settings = tiny_admin_app(store)
+    def cookie(uid):
+        return {"padiem_session":create_session_token(settings,uid)}
+    url="/api/b66/admin/members/"+legacy+"/detail"
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app),
+                                 base_url="https://chat.padiem.net") as client:
+        assert (await client.get(url)).status_code == 401
+        assert (await client.get(url,cookies=cookie(impostor))).status_code == 403
+        ok = await client.get(url,cookies=cookie(admin))
+        assert ok.status_code == 200
+        body = ok.json()
+        assert body["member"]["user_id"] == legacy
+        assert body["usage"]["today"] == 4
+        assert body["usage"]["last_7_days"] == 4
+        assert body["quotes"]["saved_count"] == 1
+        assert body["usage"]["model_breakdown_available"] is False
+        assert body["usage"]["scope"] == "padiem_chat_all_ai_requests"
+        assert "PRIVATE CUSTOMER NUMBER" not in ok.text
+        assert "customer_secret" not in ok.text
+        assert (await client.get("/api/b66/admin/members/bad-id/detail",
+                                 cookies=cookie(admin))).status_code == 404

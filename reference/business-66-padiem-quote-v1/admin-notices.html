@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>가입 알림 · 견적서 관리자</title>
+  <link rel="stylesheet" href="admin.css">
+  <script src="admin.js" defer></script>
+</head>
+<body>
+  <div class="layout">
+    <aside class="rail">
+      <div class="brand"><span class="brand-mark">견</span><span>견적서 만들기<small>회원 · 권한 관리</small></span></div>
+      <nav aria-label="관리자 메뉴">
+        <a class="nav-link" data-page="members" href="/admin.html">회원 관리</a>
+        <a class="nav-link" data-page="models" href="/admin-models.html">모델 권한</a>
+        <a class="nav-link" data-page="notices" href="/admin-notices.html">가입 알림</a>
+        <a class="nav-link" href="/">견적서로 돌아가기</a>
+      </nav>
+      <div class="rail-footer">관리자 전용 · 서버 권한 확인</div>
+    </aside>
+    <main class="main">
+      <header class="header">
+        <div>
+          <p class="eyebrow">PADIEM QUOTE</p>
+          <h1>가입 알림</h1>
+          <p class="subtitle">신규 가입 알림과 미발송 기록을 확인합니다.</p>
+        </div>
+        <a class="back" href="/">견적서로 돌아가기</a>
+      </header>
+      <section id="access" class="access" role="status" aria-live="polite">관리자 권한을 확인하고 있습니다.</section>
+      <div id="adminContent" data-page="notices" hidden>
+        <section id="notices" class="panel">
+          <div class="section-head"><div><h2>가입 알림</h2><p>새 회원가입 이벤트를 확인합니다.</p></div></div>
+          <p class="notice-count">발송 대기 기록 <strong id="noticePending">–</strong>건</p>
+          <button type="button" id="retryNotices" class="secondary" hidden>대기 알림 다시 보내기</button>
+          <p id="noticeStatus" class="note" role="status"></p>
+          <p id="noticeGuide" class="note">알림용 서버 계정이 연결되지 않았습니다. 설정 전에는 가입 이벤트만 기록합니다.</p>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

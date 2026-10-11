@@ -15,7 +15,7 @@ from .b66_company_profile import CompanyProfileStore, D1CompanyProfileStore
 from .b66_company_profile_routes import b66_company_profile_get, b66_company_profile_put
 from .b66_quote_asset_routes import b66_quote_asset_detail
 from .b66_member_admin import D1B66MemberAdminStore
-from .b66_admin_routes import b66_admin_me, b66_admin_members, b66_admin_member_access, b66_admin_model_policy, b66_admin_dispatch_alerts
+from .b66_admin_routes import b66_admin_me, b66_admin_members, b66_admin_member_access, b66_admin_member_detail, b66_admin_model_policy, b66_admin_dispatch_alerts
 from .b66_quote_history_routes import (
     b66_quote_history_delete,
     b66_quote_history_detail,
@@ -404,6 +404,7 @@ def create_app(
         Route("/api/b66/admin/model-policy", b66_admin_model_policy, methods=["GET", "PUT"]),
         Route("/api/b66/admin/alerts/dispatch", b66_admin_dispatch_alerts, methods=["POST"]),
         Route("/api/b66/admin/members/{user_id}", b66_admin_member_access, methods=["PATCH"]),
+        Route("/api/b66/admin/members/{user_id}/detail", b66_admin_member_detail, methods=["GET"]),
         Route("/api/b66/quote/preview-base", b66_certified_preview_base, methods=["GET"]),
         Route("/api/b66/quote/pdf", b66_certified_pdf, methods=["POST"]),
         Route("/api/b66/quote/native-sol-pdf", b66_native_sol_pdf, methods=["POST"]),

@@ -202,8 +202,11 @@ def load_capture(payload: object) -> tuple[tuple[str, str], ...]:
 
 def verify_secret_set(
     expected: tuple[tuple[str, str], ...], post_bindings: list[dict], *,
-    allow_web_store_additions: bool = False
+    allow_web_store_additions: bool = False,
+    allow_b66_membership_secret: bool = False,
 ) -> None:
+    if allow_web_store_additions and allow_b66_membership_secret:
+        raise ServedVersionGuardError("multiple additive secret modes prohibited")
     require_required_secrets(post_bindings, stage="post-deploy")
     post = secret_name_type_set(post_bindings)
     if allow_web_store_additions:
@@ -217,6 +220,13 @@ def verify_secret_set(
             if item is None or any(item.get(k) != val for k, val in identity.items()):
                 raise ServedVersionGuardError("web Secrets Store served identity missing or drift")
         expected = tuple(sorted((*expected, *((name, "secrets_store_secret") for name in approved if name not in baseline_names))))
+    if allow_b66_membership_secret:
+        approved = ("B66_MEMBERSHIP_ENFORCED", "secret_text")
+        if approved[0] in {name for name, _ in expected}:
+            if approved not in expected:
+                raise ServedVersionGuardError("B66 membership original binding type drift")
+        else:
+            expected = tuple(sorted((*expected, approved)))
     post_types = _type_by_name(post_bindings)
     pre_names = {name for name, _ in expected}
     post_names = {name for name, _ in post}
@@ -272,11 +282,15 @@ def _run_verify(args: argparse.Namespace) -> int:
     detail = _load(args.version_detail)
     version_id = resolve_served_version_id(deployments)
     bindings = served_version_bindings(detail, expected_version_id=version_id)
-    verify_secret_set(expected, bindings, allow_web_store_additions=args.allow_add_existing_web_secrets_store)
+    verify_secret_set(
+        expected, bindings,
+        allow_web_store_additions=args.allow_add_existing_web_secrets_store,
+        allow_b66_membership_secret=args.allow_add_existing_b66_membership_secret,
+    )
     print(f"POSTDEPLOY_SERVED_VERSION_ID={version_id}")
     print(f"POSTDEPLOY_SERVED_SECRET_COUNT={len(secret_name_type_set(bindings))}")
     _emit_required_present(bindings)
-    if args.allow_add_existing_web_secrets_store:
+    if args.allow_add_existing_web_secrets_store or args.allow_add_existing_b66_membership_secret:
         print("SERVED_VERSION_SECRET_SET_APPROVED_ADDITIONS=PASS")
     else:
         print("SERVED_VERSION_SECRET_SET_EQUALITY=PASS")
@@ -297,6 +311,7 @@ def main(argv: list[str] | None = None) -> int:
     verify = commands.add_parser("verify", help="prove the post-deploy served version kept every secret")
     verify.add_argument("--expected", required=True, type=Path)
     verify.add_argument("--allow-add-existing-web-secrets-store", action="store_true")
+    verify.add_argument("--allow-add-existing-b66-membership-secret", action="store_true")
     verify.add_argument("--deployments", required=True, type=Path)
     verify.add_argument("--version-detail", required=True, type=Path)
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)

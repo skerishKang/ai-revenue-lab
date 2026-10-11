@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>모델 권한 · 견적서 관리자</title>
+  <link rel="stylesheet" href="admin.css">
+  <script src="admin.js" defer></script>
+</head>
+<body>
+  <div class="layout">
+    <aside class="rail">
+      <div class="brand"><span class="brand-mark">견</span><span>견적서 만들기<small>회원 · 권한 관리</small></span></div>
+      <nav aria-label="관리자 메뉴">
+        <a class="nav-link" data-page="members" href="/admin.html">회원 관리</a>
+        <a class="nav-link" data-page="models" href="/admin-models.html">모델 권한</a>
+        <a class="nav-link" data-page="notices" href="/admin-notices.html">가입 알림</a>
+        <a class="nav-link" href="/">견적서로 돌아가기</a>
+      </nav>
+      <div class="rail-footer">관리자 전용 · 서버 권한 확인</div>
+    </aside>
+    <main class="main">
+      <header class="header">
+        <div>
+          <p class="eyebrow">PADIEM QUOTE</p>
+          <h1>모델 권한</h1>
+          <p class="subtitle">AI 모델별 ON/OFF와 Free·Plus·Pro·Max 권한을 설정합니다.</p>
+        </div>
+        <a class="back" href="/">견적서로 돌아가기</a>
+      </header>
+      <section id="access" class="access" role="status" aria-live="polite">관리자 권한을 확인하고 있습니다.</section>
+      <div id="adminContent" data-page="models" hidden>
+        <section id="model-policy" class="panel">
+          <div class="section-head"><div><h2>등급별 AI 모델 권한</h2><p>B14에 실제 등록된 모델만 선택할 수 있습니다.</p></div></div>
+          <p id="enforcementNote" class="note" role="status">모델 등록 정보를 불러오고 있습니다.</p>
+          <div class="model-switch-header"><h3>모델별 전체 ON / OFF</h3><p>OFF로 설정하면 모든 회원 등급에서 해당 모델을 사용할 수 없습니다.</p></div>
+          <div id="modelSwitchList" class="model-switch-grid"></div>
+          <div class="model-switch-header"><h3>등급별 허용 모델</h3><p>ON인 모델 중 각 회원 등급에 허용할 모델을 선택하세요.</p></div>
+          <div id="modelTierColumns" class="tier-grid"></div>
+          <div class="policy-actions">
+            <label><input id="activatePolicy" type="checkbox"> 등급별 모델 제한 정책 활성화</label>
+            <button id="savePolicy" type="button" class="save" disabled>모델 정책 저장</button>
+          </div>
+          <p id="policyStatus" class="note" role="status" aria-live="polite"></p>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

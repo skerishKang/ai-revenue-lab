@@ -131,6 +131,84 @@ class D1B66MemberAdminStore:
         )
         return int(row["n"]) if row else 0
 
+    async def member_detail(self, user_id: str) -> dict[str, Any] | None:
+        """Admin-only usage metadata; no message, quote text or provider payload.
+
+        Global usage buckets cover all Padiem Chat AI requests, not B66-only
+        completed model requests. Never mislabel them as model-specific events.
+        """
+        if not isinstance(user_id,str) or not _UID.fullmatch(user_id):
+            return None
+        member = await self._first(
+            "SELECT u.id AS user_id,u.email,u.display_name,u.created_at,"
+            "m.status,m.tier,m.revision FROM users u "
+            "JOIN b66_memberships m ON m.user_id=u.id WHERE u.id=?",
+            user_id,
+        )
+        if member is None:
+            return None
+        import datetime
+        now = datetime.datetime.now(datetime.timezone.utc).date()
+        cutoff = (now - datetime.timedelta(days=29)).isoformat()
+        rows = await self._all(
+            "SELECT substr(bucket_start,1,10) AS day, SUM(request_count) AS n "
+            "FROM live_usage_buckets "
+            "WHERE subject_type='user' AND subject_key=? AND bucket_type='day' "
+            "AND substr(bucket_start,1,10)>=? "
+            "GROUP BY substr(bucket_start,1,10) ORDER BY day DESC",
+            user_id, cutoff,
+        )
+        by_day = {
+            str(row["day"]):int(row["n"]) for row in rows
+            if isinstance(row.get("day"),str) and row.get("n") is not None
+        }
+        def total(days: int) -> int:
+            return sum(count for day,count in by_day.items()
+                       if day >= (now-datetime.timedelta(days=days-1)).isoformat())
+        quote_row = await self._first(
+            "SELECT count(*) AS n, MAX(updated_at) AS latest "
+            "FROM b66_quote_history WHERE user_id=?",user_id,
+        )
+        quotes = await self._all(
+            "SELECT created_at,updated_at FROM b66_quote_history "
+            "WHERE user_id=? ORDER BY updated_at DESC LIMIT 12",user_id,
+        )
+        changes = await self._all(
+            "SELECT previous_status,previous_tier,current_status,current_tier,changed_at "
+            "FROM b66_membership_audit WHERE user_id=? "
+            "ORDER BY changed_at DESC LIMIT 20",user_id,
+        )
+        return {
+            "member":{
+                "user_id":str(member["user_id"]),
+                "email":str(member["email"]),
+                "name":str(member.get("display_name") or ""),
+                "created_at":str(member["created_at"]),
+                "status":str(member["status"]),
+                "tier":str(member["tier"]),
+                "revision":int(member["revision"]),
+            },
+            "usage":{
+                "scope":"padiem_chat_all_ai_requests",
+                "metric":"daily_quota_request_count",
+                "today":total(1),"last_7_days":total(7),
+                "last_30_days":total(30),
+                "daily":[{"date":day,"requests":n} for day,n in sorted(by_day.items())],
+                "model_breakdown_available":False,
+            },
+            "quotes":{
+                "saved_count":int(quote_row["n"]) if quote_row else 0,
+                "latest_saved_at":quote_row.get("latest") if quote_row else None,
+                "recent":[{"created_at":r["created_at"],"updated_at":r["updated_at"]}
+                          for r in quotes],
+            },
+            "changes":[{
+                "at":r["changed_at"],
+                "from_status":r["previous_status"],"from_tier":r["previous_tier"],
+                "to_status":r["current_status"],"to_tier":r["current_tier"],
+            } for r in changes],
+        }
+
     async def count_members(self) -> dict[str, int]:
         rows = await self._all(
             "SELECT status, COUNT(*) AS count FROM b66_memberships GROUP BY status"
