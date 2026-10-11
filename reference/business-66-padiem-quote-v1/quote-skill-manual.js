@@ -1,21 +1,17 @@
 /* B66 · Quote Beta — quote-skill-manual.js
    견적서 관리 → 새 견적서 만들기 → 직접 만들기 (#4319, 상위 #3186 경로 B)
+   + 인증된 서버 승인 요청 연결 (#3186)
 
    정직한 범위:
    - 로그인한 사용자가 직접 입력한 회사 기본값으로 Saved Quote Skill **후보(candidate)**
      를 준비한다. 후보는 검토 대상일 뿐이고, 승인된 Saved Quote Skill 이 아니다.
-   - 브라우저에 보존되는 것은 bounded 초안(entry)뿐이다. 승인 Skill 저장소
-     (SavedQuoteSkillStore)에는 절대 쓰지 않으므로, 미승인 후보가 승인 완료된
-     내 견적서처럼 목록에 나타나지 않는다.
-   - 고객용 승인 요청 서버 API 는 현재 존재하지 않는다(APPROVAL_ENDPOINT = null).
-     따라서 상태는 항상 "승인 요청 연결 전" 이고, 요청은 fail closed 로 실패한다.
-     가짜 성공 · 자동 승인 · 소유자(owner) 권한 자동 부여를 하지 않는다.
+   - 승인 요청은 서버 계약(POST /api/padiem/b66/saved-skill-candidates)으로 보낸다.
+     서버가 세션에서 owner/workspace 를 도출하고, 승인 주체는 권한 있는 운영자다.
+     브라우저는 스스로 승인할 수 없고 승인 상태를 만들 수 없다.
+   - 미승인 후보는 승인 Skill 저장소에 쓰지 않는다. 서버가 승인한 뒤에만 배정된다.
+   - 승인 요청이 실패하면 실제 오류를 표시한다. 성공한 것처럼 보이는 대체 동작은 없다.
    - 계산 authority 는 QuoteCore, 양식·렌더 authority 는 기존 QuoteTemplate /
      SavedQuoteSkill 계약을 재사용한다. 새 계산기·렌더러·승인 경로를 만들지 않는다.
-
-   필요한 백엔드 작업(미구현 · 후속): 승인 권한을 가진 서버가 후보 지문
-   (skillFingerprint)과 요청자 신원을 검증해 승인하는 endpoint. 이것이 없으면
-   어떤 화면 상태도 "승인됨"으로 표시할 수 없다.
 
    (DOM API만 사용 · innerHTML 미사용 · Node 스텁 DOM 으로 전부 테스트) */
 
@@ -46,7 +42,8 @@
   if (!Extraction) throw new Error("QuoteExtraction is required");
 
   var MANUAL_DRAFT_STORAGE_KEY = "quoteBeta.manualSkillDraft.v1";
-  var DRAFT_SCHEMA_VERSION = 1;
+  var DRAFT_SCHEMA_VERSION = 2;
+  var LEGACY_DRAFT_SCHEMA_VERSION = 1;
 
   /* Skill 수준 출처는 "manual". 추출 계약에는 "manual" kind 가 없으므로
      사용자가 직접 타이핑한 텍스트인 "text" 를 쓴다. 파일·스캔 원본이 아니다. */
@@ -55,17 +52,37 @@
   var MANUAL_SOURCE_REF = "manual-entry:b66-ui";
   var MANUAL_SOURCE_LABEL = "직접 입력";
 
-  /* 고객용 승인 요청 endpoint. 현재 없음 — null 이 곧 진실이다. */
-  var APPROVAL_ENDPOINT = null;
-  var APPROVAL_NOT_CONNECTED_MESSAGE =
-    "승인 요청 연결 전입니다. 저장된 것은 초안 후보이며, 아직 내 견적서로 사용할 수 없습니다.";
-  var BACKEND_PREREQUISITE =
-    "필요 백엔드: 후보 지문(skillFingerprint)과 요청자 신원을 검증하는 승인 권한 서버 endpoint";
+  /* #3186 승인 요청 endpoint. 승인 권한은 서버가 소유한다. */
+  var APPROVAL_ENDPOINT = "/api/padiem/b66/saved-skill-candidates";
+  var APPROVAL_ENDPOINT_PATTERN = /^\/api\/padiem\/b66\/saved-skill-candidates$/;
+  var CLIENT_REF_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{7,63}$/;
+  var FINGERPRINT_PATTERN = /^[0-9a-f]{64}$/;
+  var CANDIDATE_ID_PATTERN = /^b66cand_[0-9a-f]{32}$/;
+
+  var APPROVAL_PENDING_MESSAGE =
+    "승인 요청을 접수했습니다. 승인 전이므로 아직 내 견적서로 사용할 수 없습니다.";
+  var APPROVAL_APPROVED_MESSAGE =
+    "승인이 완료되어 이 계정의 내 견적서로 배정되었습니다.";
+  var APPROVAL_REJECTED_MESSAGE =
+    "승인 요청이 거부되었습니다. 내용을 수정해 다시 요청할 수 있습니다.";
+  var APPROVAL_FAILED_MESSAGE =
+    "승인 요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.";
+  var APPROVAL_UNAVAILABLE_MESSAGE =
+    "승인 요청 기능을 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.";
+
+  /* 서버가 내려주는 승인 상태(닫힌 어휘). */
+  var SERVER_STATUS_PENDING = "pending";
+  var SERVER_STATUS_APPROVED = "approved";
+  var SERVER_STATUS_REJECTED = "rejected";
 
   var STATUS = Object.freeze({
     DRAFT: "draft",
     REVIEW: "review",
-    APPROVAL_NOT_CONNECTED: "approval_not_connected"
+    APPROVAL_PENDING: "approval_pending",
+    APPROVAL_APPROVED: "approval_approved",
+    APPROVAL_REJECTED: "approval_rejected",
+    APPROVAL_FAILED: "approval_failed",
+    APPROVAL_UNAVAILABLE: "approval_unavailable"
   });
 
   var TAX_MODES = ["EXCLUSIVE", "INCLUSIVE", "EXEMPT"];
@@ -80,7 +97,7 @@
     memo: 400,
     validDaysMax: 3650
   });
-  var MAX_DRAFT_CHARS = 8000;
+  var MAX_DRAFT_CHARS = 12000;
 
   var IDS = {
     panel: "skillManualPanel",
@@ -98,8 +115,21 @@
     invalid_manual_tax_mode: "기본 세금 방식을 선택해 주세요.",
     invalid_manual_variable_flags: "견적마다 바뀌는 값 설정을 확인해 주세요.",
     invalid_skill_candidate: "후보를 만들지 못했습니다. 입력값을 확인해 주세요.",
-    approval_endpoint_unavailable: APPROVAL_NOT_CONNECTED_MESSAGE,
-    candidate_not_submittable: "검토할 후보가 없습니다. 먼저 입력 후 검토로 이동해 주세요."
+    invalid_candidate: "승인 요청 내용을 확인해 주세요.",
+    candidate_not_submittable: "검토할 후보가 없습니다. 먼저 입력 후 검토로 이동해 주세요.",
+    approval_endpoint_unavailable: APPROVAL_UNAVAILABLE_MESSAGE,
+    approval_transport_unavailable: APPROVAL_UNAVAILABLE_MESSAGE,
+    approval_unauthorized: "로그인이 만료되었습니다. 다시 로그인한 뒤 요청해 주세요.",
+    approval_request_failed: APPROVAL_FAILED_MESSAGE,
+    approval_response_invalid: APPROVAL_FAILED_MESSAGE,
+    candidate_store_unavailable: APPROVAL_UNAVAILABLE_MESSAGE,
+    candidate_write_failed: APPROVAL_FAILED_MESSAGE,
+    candidate_read_failed: APPROVAL_FAILED_MESSAGE,
+    request_too_large: "승인 요청 내용이 너무 큽니다. 입력값을 줄여 주세요.",
+    unsupported_media_type: APPROVAL_FAILED_MESSAGE,
+    invalid_json: APPROVAL_FAILED_MESSAGE,
+    forbidden_owner_field: "계정 범위는 서버가 결정합니다.",
+    unauthorized: "로그인이 필요합니다."
   };
 
   function isPlainObject(value) {
@@ -302,45 +332,205 @@
     };
   }
 
-  /* ── 승인 요청 계약 (현재 연결 없음 → 항상 fail closed) ── */
+  /* ── 승인 요청 계약 (#3186) ──
+     서버가 세션에서 owner/workspace 를 도출하고 승인 권한을 소유한다.
+     이 모듈은 요청만 보내며 승인 결과를 스스로 만들지 않는다. */
 
   function approvalRequestState() {
+    var configured = typeof APPROVAL_ENDPOINT === "string" &&
+      APPROVAL_ENDPOINT_PATTERN.test(APPROVAL_ENDPOINT);
     return {
-      connected: APPROVAL_ENDPOINT !== null,
-      endpoint: APPROVAL_ENDPOINT,
-      code: APPROVAL_ENDPOINT === null ? "approval_endpoint_unavailable" : "approval_endpoint_configured",
-      message: APPROVAL_NOT_CONNECTED_MESSAGE,
-      backendPrerequisite: BACKEND_PREREQUISITE
+      connected: configured,
+      endpoint: configured ? APPROVAL_ENDPOINT : null,
+      code: configured ? "approval_endpoint_configured" : "approval_endpoint_unavailable",
+      approvalAuthority: "server-operator",
+      customerCanApprove: false
     };
   }
 
-  function failRequest(code, state) {
-    return {
+  function failRequest(code, state, extra) {
+    return Object.assign({
       ok: false,
       code: code,
       approved: false,
-      skill: null,
-      status: STATUS.APPROVAL_NOT_CONNECTED,
+      candidateId: "",
+      status: null,
+      savedSkillId: "",
+      rejectionReason: "",
+      decidedAt: "",
+      duplicate: false,
       state: state,
-      message: MESSAGES[code] || null
+      message: MESSAGES[code] || APPROVAL_FAILED_MESSAGE
+    }, extra || {});
+  }
+
+  /* 같은 내용의 후보는 같은 요청 참조를 갖는다. 서버가 (owner, workspace, ref)로
+     멱등 처리하므로 중복 제출이 두 개의 요청을 만들지 않는다.
+
+     skillFingerprint 는 계산 기준(fixedDefaults/variableSchema/양식/출처)만 덮으므로
+     이름처럼 기준 밖 필드는 포함하지 않는다. 이름만 바꾼 재제출이 같은 요청으로
+     합쳐지지 않도록 이름도 함께 섞는다. 이 값은 멱등 키일 뿐 보안 다이제스트가 아니다. */
+  function fnv1a32Hex(text) {
+    var hash = 0x811c9dc5;
+    for (var i = 0; i < text.length; i += 1) {
+      var code = text.charCodeAt(i);
+      hash = Math.imul(hash ^ (code & 0xff), 0x01000193) >>> 0;
+      hash = Math.imul(hash ^ ((code >>> 8) & 0xff), 0x01000193) >>> 0;
+    }
+    return ("00000000" + hash.toString(16)).slice(-8);
+  }
+
+  function clientRefFor(candidate) {
+    if (!isPlainObject(candidate)) return null;
+    var fingerprint = candidate.skillFingerprint;
+    if (typeof fingerprint !== "string" || !FINGERPRINT_PATTERN.test(fingerprint)) return null;
+    var name = typeof candidate.name === "string" ? candidate.name : "";
+    var ref = "manual-" + fingerprint.slice(0, 24) + "-" + fnv1a32Hex(fingerprint + "\u0000" + name);
+    return CLIENT_REF_PATTERN.test(ref) ? ref : null;
+  }
+
+  function transportFromFetch(fetchFn) {
+    if (typeof fetchFn !== "function") return null;
+    return function (request) {
+      return Promise.resolve()
+        .then(function () {
+          return fetchFn(request.url, {
+            method: request.method,
+            cache: "no-store",
+            credentials: "same-origin",
+            headers: Object.assign({ "Accept": "application/json" }, request.headers || {}),
+            body: request.body === null || request.body === undefined
+              ? undefined
+              : JSON.stringify(request.body)
+          });
+        })
+        .then(function (response) {
+          var status = response && typeof response.status === "number" ? response.status : 0;
+          var ok = Boolean(response && response.ok);
+          var parsed = response && typeof response.json === "function"
+            ? Promise.resolve(response.json()).catch(function () { return null; })
+            : Promise.resolve(null);
+          return parsed.then(function (data) { return { status: status, ok: ok, data: data }; });
+        });
     };
   }
 
-  /* 승인은 서버 authority 전용이다. 미연결이면 어떤 성공도 만들지 않는다. */
-  function requestApproval(candidate, options) {
-    void options;
+  /* 서버 응답을 UI 상태로 옮긴다. 성공으로 보이게 만드는 보정은 하지 않는다. */
+  function readApprovalResponse(response, state) {
+    if (!isPlainObject(response)) return failRequest("approval_request_failed", state);
+    var status = typeof response.status === "number" ? response.status : 0;
+    var data = isPlainObject(response.data) ? response.data : null;
+    if (status === 401 || status === 403) return failRequest("approval_unauthorized", state);
+    if (response.ok !== true || !data || data.ok !== true) {
+      var code = isPlainObject(data) && isPlainObject(data.error) && typeof data.error.code === "string"
+        ? data.error.code
+        : "approval_request_failed";
+      return failRequest(code, state);
+    }
+    var candidate = isPlainObject(data.candidate) ? data.candidate : null;
+    if (!candidate || typeof candidate.candidate_id !== "string" ||
+        !CANDIDATE_ID_PATTERN.test(candidate.candidate_id)) {
+      return failRequest("approval_response_invalid", state);
+    }
+    var serverStatus = typeof candidate.status === "string" ? candidate.status : "";
+    if (serverStatus !== SERVER_STATUS_PENDING && serverStatus !== SERVER_STATUS_APPROVED &&
+        serverStatus !== SERVER_STATUS_REJECTED) {
+      return failRequest("approval_response_invalid", state);
+    }
+    var savedSkillId = typeof candidate.saved_skill_id === "string" ? candidate.saved_skill_id : "";
+    /* 승인으로 표시하려면 서버가 배정한 Saved Quote Skill id 가 있어야 한다.
+       없으면 승인으로 보여 주지 않는다. */
+    if (serverStatus === SERVER_STATUS_APPROVED && !savedSkillId) {
+      return failRequest("approval_response_invalid", state);
+    }
+    return {
+      ok: true,
+      code: "approval_request_accepted",
+      approved: serverStatus === SERVER_STATUS_APPROVED,
+      duplicate: data.duplicate === true,
+      candidateId: candidate.candidate_id,
+      status: serverStatus,
+      savedSkillId: savedSkillId,
+      rejectionReason: typeof candidate.rejection_reason === "string" ? candidate.rejection_reason : "",
+      decidedAt: typeof candidate.decided_at === "string" ? candidate.decided_at : "",
+      message: null,
+      state: state
+    };
+  }
+
+  function submitApprovalRequest(candidate, options) {
+    var opts = options || {};
     var state = approvalRequestState();
     if (!candidate || candidate.status !== SkillCandidate.STATUS_CANDIDATE) {
-      return failRequest("candidate_not_submittable", state);
+      return Promise.resolve(failRequest("candidate_not_submittable", state));
     }
-    if (state.connected !== true) {
-      return failRequest(state.code, state);
+    var ref = clientRefFor(candidate);
+    if (!ref) return Promise.resolve(failRequest("invalid_candidate", state));
+    var transport = typeof opts.transport === "function" ? opts.transport : null;
+    if (!transport || state.connected !== true) {
+      /* 전송 경로가 없으면 승인 요청은 성공할 수 없다. fail closed. */
+      return Promise.resolve(failRequest("approval_transport_unavailable", state));
     }
-    /* Endpoint 가 연결되는 날에도 이 모듈은 스스로 승인을 만들지 않는다. */
-    return failRequest("approval_request_not_implemented", state);
+    return Promise.resolve()
+      .then(function () {
+        return transport({
+          method: "POST",
+          url: state.endpoint,
+          headers: { "Content-Type": "application/json" },
+          body: { client_ref: ref, candidate: candidate }
+        });
+      })
+      .then(function (response) { return readApprovalResponse(response, state); })
+      .catch(function () { return failRequest("approval_request_failed", state); });
+  }
+
+  function fetchApprovalStatus(candidateId, options) {
+    var opts = options || {};
+    var state = approvalRequestState();
+    if (typeof candidateId !== "string" || !CANDIDATE_ID_PATTERN.test(candidateId)) {
+      return Promise.resolve(failRequest("invalid_candidate", state));
+    }
+    var transport = typeof opts.transport === "function" ? opts.transport : null;
+    if (!transport || state.connected !== true) {
+      return Promise.resolve(failRequest("approval_transport_unavailable", state));
+    }
+    return Promise.resolve()
+      .then(function () {
+        return transport({
+          method: "GET",
+          url: state.endpoint + "/" + candidateId,
+          headers: {},
+          body: null
+        });
+      })
+      .then(function (response) { return readApprovalResponse(response, state); })
+      .catch(function () { return failRequest("approval_request_failed", state); });
+  }
+
+  function uiStatusFromServer(serverStatus) {
+    if (serverStatus === SERVER_STATUS_PENDING) return STATUS.APPROVAL_PENDING;
+    if (serverStatus === SERVER_STATUS_APPROVED) return STATUS.APPROVAL_APPROVED;
+    if (serverStatus === SERVER_STATUS_REJECTED) return STATUS.APPROVAL_REJECTED;
+    return null;
   }
 
   /* ── 초안 보존 (bounded, 실패 시 폐쇄) ── */
+
+  function normalizeApprovalMemory(raw) {
+    var source = isPlainObject(raw) ? raw : {};
+    var serverStatus = source.serverStatus === SERVER_STATUS_PENDING ||
+      source.serverStatus === SERVER_STATUS_APPROVED ||
+      source.serverStatus === SERVER_STATUS_REJECTED ? source.serverStatus : "";
+    return {
+      candidateId: typeof source.candidateId === "string" && CANDIDATE_ID_PATTERN.test(source.candidateId)
+        ? source.candidateId : "",
+      serverStatus: serverStatus,
+      savedSkillId: typeof source.savedSkillId === "string" ? source.savedSkillId.slice(0, 64) : "",
+      rejectionReason: typeof source.rejectionReason === "string"
+        ? sanitizeText(source.rejectionReason, 200, false) : "",
+      decidedAt: typeof source.decidedAt === "string" ? source.decidedAt.slice(0, 40) : ""
+    };
+  }
 
   function readManualDraft(storage) {
     if (!storage || typeof storage.getItem !== "function") return null;
@@ -357,16 +547,25 @@
     } catch (err) {
       return null;
     }
-    if (!isPlainObject(parsed) || parsed.schemaVersion !== DRAFT_SCHEMA_VERSION) return null;
+    if (!isPlainObject(parsed)) return null;
+    if (parsed.schemaVersion !== DRAFT_SCHEMA_VERSION &&
+        parsed.schemaVersion !== LEGACY_DRAFT_SCHEMA_VERSION) return null;
     var normalized = normalizeManualEntry(parsed.entry);
     if (!normalized.ok) return null;
-    var status = parsed.status === STATUS.REVIEW || parsed.status === STATUS.APPROVAL_NOT_CONNECTED
-      ? parsed.status
-      : STATUS.DRAFT;
+    /* v1 초안은 승인 기억이 없다. 초안으로만 복원한다(승인 상태를 지어내지 않는다). */
+    var approval = parsed.schemaVersion === DRAFT_SCHEMA_VERSION
+      ? normalizeApprovalMemory(parsed.approval)
+      : normalizeApprovalMemory(null);
+    var status = parsed.status === STATUS.REVIEW ? STATUS.REVIEW : STATUS.DRAFT;
+    if (parsed.schemaVersion === DRAFT_SCHEMA_VERSION && approval.candidateId) {
+      var restored = uiStatusFromServer(approval.serverStatus);
+      if (restored) status = restored;
+    }
     return {
       schemaVersion: DRAFT_SCHEMA_VERSION,
       status: status,
       entry: normalized.entry,
+      approval: approval,
       updatedAt: typeof parsed.updatedAt === "string" ? parsed.updatedAt.slice(0, 40) : ""
     };
   }
@@ -481,13 +680,23 @@
     };
   }
 
+  function emptyApproval() {
+    return {
+      candidateId: "",
+      serverStatus: "",
+      savedSkillId: "",
+      rejectionReason: "",
+      decidedAt: ""
+    };
+  }
+
   function bindManualSection(doc, env) {
     var options = env || {};
     var root = {};
     Object.keys(IDS).forEach(function (key) { root[key] = doc.getElementById(IDS[key]); });
     if (!root.panel || !root.body) return null;
 
-    if (root.panel) root.panel.hidden = true;
+    root.panel.hidden = true;
 
     var ui = {
       open: false,
@@ -495,8 +704,10 @@
       entry: defaultEntry(),
       candidate: null,
       review: null,
+      approval: emptyApproval(),
       pending: false,
       approvalRequests: 0,
+      lastErrorCode: "",
       trigger: null
     };
 
@@ -519,7 +730,12 @@
     }
 
     function messageFor(code) {
-      return MESSAGES[code] || "처리하지 못했습니다. 다시 시도해 주세요.";
+      return MESSAGES[code] || APPROVAL_FAILED_MESSAGE;
+    }
+
+    function transport() {
+      if (typeof options.transport === "function") return options.transport;
+      return transportFromFetch(options.fetch);
     }
 
     function persist() {
@@ -529,6 +745,7 @@
         schemaVersion: DRAFT_SCHEMA_VERSION,
         status: ui.status,
         entry: ui.entry,
+        approval: ui.approval,
         updatedAt: isoNow()
       });
     }
@@ -554,16 +771,16 @@
         text: "항상 같은 회사 정보와 기본값을 입력합니다. 거래처·견적번호·작성일·품목은 견적마다 따로 입력하며 여기에 저장되지 않습니다."
       }, []));
       var form = h(doc, "div", { class: "fields" }, []);
-      [["msk-name", "내 견적서 이름", entry.name],
-       ["msk-company", "회사명", entry.sender.company],
-       ["msk-rep", "대표자", entry.sender.rep],
-       ["msk-bizno", "사업자번호", entry.sender.bizNo],
-       ["msk-address", "주소", entry.sender.address],
-       ["msk-phone", "연락처", entry.sender.phone],
-       ["msk-email", "이메일", entry.sender.email]
+      [["msk-name", "내 견적서 이름", entry.name, LIMITS.name],
+       ["msk-company", "회사명", entry.sender.company, LIMITS.company],
+       ["msk-rep", "대표자", entry.sender.rep, LIMITS.rep],
+       ["msk-bizno", "사업자번호", entry.sender.bizNo, LIMITS.bizNo],
+       ["msk-address", "주소", entry.sender.address, LIMITS.address],
+       ["msk-phone", "연락처", entry.sender.phone, LIMITS.phone],
+       ["msk-email", "이메일", entry.sender.email, LIMITS.email]
       ].forEach(function (spec) {
         var label = h(doc, "label", { htmlFor: spec[0] }, [spec[1] + " "]);
-        label.appendChild(textInput(doc, spec[0], spec[2], { maxlength: String(LIMITS.name) }));
+        label.appendChild(textInput(doc, spec[0], spec[2], { maxlength: String(spec[3]) }));
         form.appendChild(label);
       });
       var validLabel = h(doc, "label", { htmlFor: "msk-valid-days" }, ["기본 유효기간(일) "]);
@@ -603,7 +820,6 @@
         actionButton(doc, "msk-save", "초안 저장"),
         actionButton(doc, "msk-review", "다음: 검토", "primary")
       ]));
-      if (root.status && !root.status.textContent) announce("");
     }
 
     function renderReview() {
@@ -632,7 +848,7 @@
       })));
       body.appendChild(h(doc, "p", {
         class: "template-manage-note",
-        text: "출력 양식은 기본 견적서 양식을 사용합니다. 저장되는 것은 승인 전 후보이며, 아직 내 견적서로 사용할 수 없습니다."
+        text: "출력 양식은 기본 견적서 양식을 사용합니다. 승인 요청은 권한 있는 운영자가 검토하며, 승인 전에는 내 견적서로 사용할 수 없습니다."
       }, []));
       body.appendChild(h(doc, "div", { class: "button-row" }, [
         actionButton(doc, "msk-edit", "수정하러 가기", "soft"),
@@ -641,31 +857,68 @@
       announce("검토 내용을 확인한 뒤 승인 요청을 할 수 있습니다.");
     }
 
-    function renderApprovalResult(result) {
+    function renderApprovalOutcome() {
       clear(root.body);
       var body = root.body;
-      body.appendChild(h(doc, "p", { class: "template-manage-note", text: "승인 요청 연결 전" }, []));
-      body.appendChild(dl(doc, [
-        ["후보 이름", ui.review ? ui.review.name : ""],
-        ["현재 상태", "승인 전 후보 · 사용 불가"],
-        ["결과", result && result.code ? result.code : "approval_endpoint_unavailable"],
-        ["필요 작업", BACKEND_PREREQUISITE]
-      ]));
-      body.appendChild(h(doc, "p", {
-        class: "template-manage-note",
-        text: "초안은 이 브라우저에만 보관되며 승인된 내 견적서로 저장되지 않았습니다. 승인 서버가 연결되기 전에는 어떤 화면에서도 승인 완료로 표시되지 않습니다."
-      }, []));
-      body.appendChild(h(doc, "div", { class: "button-row" }, [
-        actionButton(doc, "msk-edit", "수정하러 가기", "soft"),
-        actionButton(doc, "msk-discard", "초안 삭제", "soft")
-      ]));
-      announce(APPROVAL_NOT_CONNECTED_MESSAGE);
+      var approval = ui.approval;
+      var title = "승인 요청";
+      var note = "";
+      var rows = [["후보 이름", ui.review ? ui.review.name : ""]];
+      var buttons = [];
+
+      if (ui.status === STATUS.APPROVAL_PENDING) {
+        title = "승인 대기";
+        note = "승인 전 후보입니다. 운영자 승인이 완료되어야 이 계정의 내 견적서로 배정됩니다.";
+        rows.push(["상태", "승인 대기 · 아직 사용할 수 없음"]);
+        if (approval.candidateId) rows.push(["승인 요청 ID", approval.candidateId]);
+        buttons.push(actionButton(doc, "msk-refresh-status", "상태 새로고침"));
+        buttons.push(actionButton(doc, "msk-edit", "수정하러 가기", "soft"));
+      } else if (ui.status === STATUS.APPROVAL_APPROVED) {
+        title = "승인 완료";
+        note = "승인된 내 견적서로 배정되었습니다. 이제 정식 견적서 생성에 사용할 수 있습니다.";
+        rows.push(["상태", "승인 완료 · 사용 가능"]);
+        if (approval.savedSkillId) rows.push(["배정된 내 견적서", approval.savedSkillId]);
+        if (approval.decidedAt) rows.push(["승인 시각", approval.decidedAt]);
+        buttons.push(actionButton(doc, "msk-refresh-skills", "내 견적서 목록 새로고침", "primary"));
+        buttons.push(actionButton(doc, "msk-edit", "내용 수정", "soft"));
+      } else if (ui.status === STATUS.APPROVAL_REJECTED) {
+        title = "승인 거부";
+        note = "거부된 후보는 내 견적서로 사용할 수 없습니다. 내용을 수정한 뒤 다시 요청할 수 있습니다.";
+        rows.push(["상태", "승인 거부 · 사용 불가"]);
+        rows.push(["거부 사유", approval.rejectionReason || "(사유 없음)"]);
+        if (approval.decidedAt) rows.push(["거부 시각", approval.decidedAt]);
+        buttons.push(actionButton(doc, "msk-edit", "수정하러 가기", "primary"));
+        buttons.push(actionButton(doc, "msk-discard", "초안 삭제", "soft"));
+      } else {
+        title = ui.status === STATUS.APPROVAL_UNAVAILABLE ? "승인 요청 사용 불가" : "승인 요청 실패";
+        note = messageFor(ui.lastErrorCode || "approval_request_failed");
+        rows.push(["상태", "요청이 접수되지 않았습니다"]);
+        if (ui.lastErrorCode) rows.push(["오류 코드", ui.lastErrorCode]);
+        buttons.push(actionButton(doc, "msk-request-approval", "다시 요청", "primary"));
+        buttons.push(actionButton(doc, "msk-edit", "수정하러 가기", "soft"));
+      }
+
+      body.appendChild(h(doc, "p", { class: "template-manage-note", text: title }, []));
+      body.appendChild(dl(doc, rows));
+      body.appendChild(h(doc, "p", { class: "template-manage-note", text: note }, []));
+      body.appendChild(h(doc, "div", { class: "button-row" }, buttons));
+      announce(
+        ui.status === STATUS.APPROVAL_PENDING ? APPROVAL_PENDING_MESSAGE
+          : ui.status === STATUS.APPROVAL_APPROVED ? APPROVAL_APPROVED_MESSAGE
+            : ui.status === STATUS.APPROVAL_REJECTED ? APPROVAL_REJECTED_MESSAGE
+              : messageFor(ui.lastErrorCode || "approval_request_failed")
+      );
     }
 
     function render() {
       if (!signedIn()) { renderGate(); return; }
       if (ui.status === STATUS.REVIEW && ui.review) { renderReview(); return; }
-      if (ui.status === STATUS.APPROVAL_NOT_CONNECTED) { renderApprovalResult(null); return; }
+      if (ui.status === STATUS.APPROVAL_PENDING || ui.status === STATUS.APPROVAL_APPROVED ||
+          ui.status === STATUS.APPROVAL_REJECTED || ui.status === STATUS.APPROVAL_FAILED ||
+          ui.status === STATUS.APPROVAL_UNAVAILABLE) {
+        renderApprovalOutcome();
+        return;
+      }
       renderForm();
     }
 
@@ -709,23 +962,80 @@
       }
       ui.candidate = built.candidate;
       ui.review = built.review;
+      ui.approval = emptyApproval();
       ui.status = STATUS.REVIEW;
       persist();
       render();
     }
 
-    function submitApprovalRequest() {
-      if (ui.pending) return;
-      ui.pending = true;
-      try {
-        ui.approvalRequests += 1;
-        var result = requestApproval(ui.candidate, { now: isoNow() });
-        ui.status = result.status;
-        persist();
-        renderApprovalResult(result);
-      } finally {
-        ui.pending = false;
+    function applyServerOutcome(result) {
+      ui.approval = {
+        candidateId: result.candidateId,
+        serverStatus: result.status,
+        savedSkillId: result.savedSkillId,
+        rejectionReason: result.rejectionReason,
+        decidedAt: result.decidedAt
+      };
+      var mapped = uiStatusFromServer(result.status);
+      ui.status = mapped || STATUS.APPROVAL_FAILED;
+      ui.lastErrorCode = "";
+      persist();
+      render();
+      if (ui.status === STATUS.APPROVAL_APPROVED && typeof options.refreshAssignedSkills === "function") {
+        options.refreshAssignedSkills();
       }
+      return true;
+    }
+
+    function applyRequestFailure(result) {
+      ui.lastErrorCode = result.code;
+      ui.status = result.code === "approval_transport_unavailable" ||
+        result.code === "approval_endpoint_unavailable" ||
+        result.code === "candidate_store_unavailable"
+        ? STATUS.APPROVAL_UNAVAILABLE
+        : STATUS.APPROVAL_FAILED;
+      persist();
+      render();
+      return true;
+    }
+
+    function submitApprovalRequestClicked() {
+      if (ui.pending) return false;
+      if (!ui.candidate) {
+        announce(messageFor("candidate_not_submittable"));
+        return false;
+      }
+      ui.pending = true;
+      ui.approvalRequests += 1;
+      return Promise.resolve(submitApprovalRequest(ui.candidate, { transport: transport() }))
+        .then(function (result) {
+          ui.pending = false;
+          if (result.ok) return applyServerOutcome(result);
+          return applyRequestFailure(result);
+        })
+        .catch(function () {
+          ui.pending = false;
+          return applyRequestFailure({ code: "approval_request_failed" });
+        });
+    }
+
+    function refreshApprovalStatus() {
+      if (ui.pending) return false;
+      if (!ui.approval.candidateId) {
+        announce(messageFor("candidate_not_submittable"));
+        return false;
+      }
+      ui.pending = true;
+      return Promise.resolve(fetchApprovalStatus(ui.approval.candidateId, { transport: transport() }))
+        .then(function (result) {
+          ui.pending = false;
+          if (result.ok) return applyServerOutcome(result);
+          return applyRequestFailure(result);
+        })
+        .catch(function () {
+          ui.pending = false;
+          return applyRequestFailure({ code: "approval_request_failed" });
+        });
     }
 
     function discardDraft() {
@@ -733,8 +1043,10 @@
       ui.status = STATUS.DRAFT;
       ui.candidate = null;
       ui.review = null;
+      ui.approval = emptyApproval();
+      ui.lastErrorCode = "";
       ui.entry = defaultEntry();
-      announce("초안을 삭제했습니다. 저장된 후보는 없습니다.");
+      announce("초안을 삭제했습니다. 이 브라우저에 저장된 승인 요청 기억도 지워졌습니다.");
       render();
     }
 
@@ -746,27 +1058,31 @@
     }
 
     function handleAction(action) {
-      if (action === "msk-signin") {
-        openSignIn();
-        return;
-      }
+      if (action === "msk-signin") { openSignIn(); return false; }
       if (action === "msk-save") {
         var normalized = normalizeManualEntry(readForm());
-        if (!normalized.ok) { announce(messageFor(normalized.code)); return; }
+        if (!normalized.ok) { announce(messageFor(normalized.code)); return false; }
         ui.entry = normalized.entry;
         ui.status = STATUS.DRAFT;
         if (persist()) announce("초안을 이 브라우저에 저장했습니다. 승인된 내 견적서는 아닙니다.");
         else announce("초안을 저장하지 못했습니다. 로그인 상태를 확인해 주세요.");
-        return;
+        return true;
       }
-      if (action === "msk-review") { goReview(); return; }
+      if (action === "msk-review") { goReview(); return true; }
       if (action === "msk-edit") {
         ui.status = STATUS.DRAFT;
         render();
-        return;
+        return true;
       }
-      if (action === "msk-request-approval") { submitApprovalRequest(); return; }
-      if (action === "msk-discard") { discardDraft(); return; }
+      if (action === "msk-request-approval") return submitApprovalRequestClicked();
+      if (action === "msk-refresh-status") return refreshApprovalStatus();
+      if (action === "msk-refresh-skills") {
+        if (typeof options.refreshAssignedSkills === "function") options.refreshAssignedSkills();
+        announce("내 견적서 목록을 새로 불러왔습니다.");
+        return true;
+      }
+      if (action === "msk-discard") { discardDraft(); return true; }
+      return false;
     }
 
     function onClick(event) {
@@ -789,11 +1105,20 @@
         ui.open = true;
         if (root.panel) root.panel.hidden = false;
         var stored = signedIn() ? readManualDraft(options.storage) : null;
+        ui.candidate = null;
+        ui.review = null;
+        ui.lastErrorCode = "";
         if (stored) {
           ui.entry = stored.entry;
+          ui.approval = stored.approval;
+          ui.status = stored.status;
+          /* 검토 화면은 후보 객체가 필요하므로 초안으로 복원한다. 승인 여부는
+             서버가 확정하므로 복원 시점에 "상태 새로고침"으로 확인한다. */
+          if (ui.status === STATUS.REVIEW) ui.status = STATUS.DRAFT;
+        } else {
           ui.status = STATUS.DRAFT;
-          ui.candidate = null;
-          ui.review = null;
+          ui.entry = defaultEntry();
+          ui.approval = emptyApproval();
         }
         render();
         if (root.title && typeof root.title.focus === "function") root.title.focus();
@@ -816,6 +1141,8 @@
           entry: ui.entry,
           candidate: ui.candidate,
           review: ui.review,
+          approval: ui.approval,
+          lastErrorCode: ui.lastErrorCode,
           approvalRequests: ui.approvalRequests,
           signedIn: signedIn()
         };
@@ -836,8 +1163,16 @@
     MANUAL_EXTRACTION_SOURCE_KIND: MANUAL_EXTRACTION_SOURCE_KIND,
     MANUAL_SOURCE_REF: MANUAL_SOURCE_REF,
     APPROVAL_ENDPOINT: APPROVAL_ENDPOINT,
-    APPROVAL_NOT_CONNECTED_MESSAGE: APPROVAL_NOT_CONNECTED_MESSAGE,
-    BACKEND_PREREQUISITE: BACKEND_PREREQUISITE,
+    APPROVAL_PENDING_MESSAGE: APPROVAL_PENDING_MESSAGE,
+    APPROVAL_APPROVED_MESSAGE: APPROVAL_APPROVED_MESSAGE,
+    APPROVAL_REJECTED_MESSAGE: APPROVAL_REJECTED_MESSAGE,
+    APPROVAL_FAILED_MESSAGE: APPROVAL_FAILED_MESSAGE,
+    APPROVAL_UNAVAILABLE_MESSAGE: APPROVAL_UNAVAILABLE_MESSAGE,
+    SERVER_STATUS: Object.freeze({
+      PENDING: SERVER_STATUS_PENDING,
+      APPROVED: SERVER_STATUS_APPROVED,
+      REJECTED: SERVER_STATUS_REJECTED
+    }),
     STATUS: STATUS,
     TAX_MODES: TAX_MODES.slice(),
     LIMITS: LIMITS,
@@ -848,7 +1183,12 @@
     normalizeManualEntry: normalizeManualEntry,
     buildManualCandidate: buildManualCandidate,
     approvalRequestState: approvalRequestState,
-    requestApproval: requestApproval,
+    clientRefFor: clientRefFor,
+    transportFromFetch: transportFromFetch,
+    readApprovalResponse: readApprovalResponse,
+    submitApprovalRequest: submitApprovalRequest,
+    fetchApprovalStatus: fetchApprovalStatus,
+    uiStatusFromServer: uiStatusFromServer,
     readManualDraft: readManualDraft,
     writeManualDraft: writeManualDraft,
     clearManualDraft: clearManualDraft,

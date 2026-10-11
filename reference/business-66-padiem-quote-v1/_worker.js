@@ -3,6 +3,7 @@ const INTAKE_PATH = "/api/v1/quote/intake";
 const PADIEM_PREFIX = "/api/padiem";
 const MAX_PADIEM_BODY_BYTES = 32 * 1024;
 const SAVED_SKILL_ROW = /^b66skill_[0-9a-f]{32}$/;
+const SKILL_CANDIDATE_ROW = /^b66cand_[0-9a-f]{32}$/;
 const B66_ASSET_ROW = /^b66asset_[0-9a-f]{32}$/;
 const B66_QUOTE_ROW = /^b66quote_[0-9a-f]{32}$/;
 const MAX_QUOTE_HISTORY_LIMIT = 50;
@@ -75,6 +76,26 @@ function padiemTarget(url, method) {
     const id = path.slice(prefix.length);
     if (!SAVED_SKILL_ROW.test(id)) return null;
     return "/api/b66/saved-skills/" + id;
+  }
+
+  /* #3186: 고객은 승인 *요청*만 할 수 있다. 승인/거부 경로는 브리지에 없다.
+     서버가 세션에서 owner/workspace 를 도출하므로 경로/limit/행 id 형태만 경계한다. */
+  if (path === "/api/padiem/b66/saved-skill-candidates" &&
+      (method === "GET" || method === "POST")) {
+    if (method === "POST") return "/api/b66/saved-skill-candidates";
+    const raw = url.searchParams.get("limit");
+    if (raw === null) return "/api/b66/saved-skill-candidates";
+    if (!/^\d{1,2}$/.test(raw)) return null;
+    const limit = Number(raw);
+    if (!Number.isInteger(limit) || limit < 1 || limit > 20) return null;
+    return "/api/b66/saved-skill-candidates?limit=" + String(limit);
+  }
+
+  const candidatePrefix = "/api/padiem/b66/saved-skill-candidates/";
+  if (path.startsWith(candidatePrefix) && method === "GET") {
+    const id = path.slice(candidatePrefix.length);
+    if (!SKILL_CANDIDATE_ROW.test(id)) return null;
+    return "/api/b66/saved-skill-candidates/" + id;
   }
 
   const assetPrefix = "/api/padiem/b66/assets/";

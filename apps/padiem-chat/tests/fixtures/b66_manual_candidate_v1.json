@@ -1,0 +1,163 @@
+{
+  "note": "Produced by reference/business-66-padiem-quote-v1/quote-skill-manual.js buildManualCandidate() (#4319/#3186). Do not hand-edit: regenerate with the B66 JS contract.",
+  "source": "quote-skill-manual.js",
+  "generatedFor": "2026-10-11T05:00:00.000Z",
+  "clientRef": "manual-59db9070318e989d5f4f7dc9-fd708b6f",
+  "candidate": {
+    "schemaVersion": 1,
+    "candidateId": "skill-candidate-20261011050000000",
+    "name": "우리회사 견적서",
+    "fixedDefaults": {
+      "sender": {
+        "company": "주식회사 파디엠",
+        "rep": "강혜림",
+        "bizNo": "123-45-67890",
+        "address": "광주광역시 남구",
+        "phone": "062-000-0000",
+        "email": "quote@example.com",
+        "presetId": "saved-skill"
+      },
+      "validDays": 30,
+      "taxMode": "EXCLUSIVE",
+      "memo": "기본 비고"
+    },
+    "variableSchema": {
+      "recipient": true,
+      "quoteNo": true,
+      "issueDate": true,
+      "items": true,
+      "memo": true,
+      "taxMode": true
+    },
+    "internalTemplate": {
+      "schemaVersion": 1,
+      "id": "builtin-default",
+      "name": "기본 견적서",
+      "builtin": true,
+      "isDefault": true,
+      "approval": null,
+      "createdAt": "",
+      "updatedAt": "",
+      "fingerprint": "d6a86c36d8ffcced36f7c1f48eabbf32d57704addfe27a4578aa925f7cbcf14e",
+      "content": {
+        "layoutVersion": 1,
+        "page": {
+          "size": "A4",
+          "margin": "10mm",
+          "orientation": "portrait"
+        },
+        "sections": [
+          "title",
+          "meta",
+          "parties",
+          "items",
+          "totals",
+          "memo",
+          "mark"
+        ],
+        "title": {
+          "text": "견 적 서"
+        },
+        "meta": {
+          "quoteNoPrefix": "견적번호  ",
+          "issueDatePrefix": "견적일  ",
+          "validityPrefix": "유효기간  ",
+          "validUntilPrefix": "유효일  ",
+          "taxPrefix": "세금  ",
+          "validityUnit": "일",
+          "taxReviewText": "세금  확인 필요"
+        },
+        "sender": {
+          "heading": "공급자",
+          "repPrefix": "대표자  ",
+          "bizNoPrefix": "사업자번호  ",
+          "contactSeparator": " · "
+        },
+        "recipient": {
+          "heading": "공급받는 자",
+          "personPrefix": "담당자  "
+        },
+        "items": {
+          "columns": [
+            {
+              "key": "name",
+              "label": "품목",
+              "width": "42%",
+              "align": "left"
+            },
+            {
+              "key": "qty",
+              "label": "수량",
+              "width": "",
+              "align": "right"
+            },
+            {
+              "key": "unitPrice",
+              "label": "단가",
+              "width": "",
+              "align": "right"
+            },
+            {
+              "key": "amount",
+              "label": "금액",
+              "width": "",
+              "align": "right"
+            }
+          ],
+          "emptyNameText": "품목을 입력하세요"
+        },
+        "totals": {
+          "supplyLabel": "공급가액",
+          "grandLabel": "합계",
+          "vatLabels": {
+            "EXCLUSIVE": "부가세",
+            "INCLUSIVE": "부가세 (포함가 분리)",
+            "EXEMPT": "부가세 (면세)"
+          },
+          "provisional": {
+            "subtotalLabel": "품목 합계(세금 확인 전)",
+            "vatLabel": "부가세",
+            "vatText": "확인 필요",
+            "grandLabel": "최종 합계",
+            "grandText": "확정 전"
+          }
+        },
+        "memo": {
+          "emptyText": "비고 없음"
+        },
+        "mark": {
+          "text": "견적서 베타"
+        },
+        "slots": {
+          "logo": "",
+          "stamp": ""
+        },
+        "style": {
+          "accent": "#17202a",
+          "titleRule": "2px solid #111827",
+          "tableHeaderRule": "1px solid #111827",
+          "tableRowRule": "1px solid #e4e7ec",
+          "partyRule": "1px solid #cfd5dd",
+          "memoRule": "1px solid #d0d5dd",
+          "headerAlignment": "space-between",
+          "metaAlignment": "right",
+          "numericAlignment": "right",
+          "textAlignment": "left",
+          "totalsWidth": "310px"
+        },
+        "fallbackText": "-"
+      }
+    },
+    "provenance": {
+      "sourceKind": "manual",
+      "sourceName": "직접 입력",
+      "sourceRef": "manual-entry:b66-ui",
+      "capturedAt": "2026-10-11T05:00:00.000Z",
+      "warnings": [],
+      "unknowns": [],
+      "evidence": []
+    },
+    "skillFingerprint": "59db9070318e989d5f4f7dc92e9099320469cebfc0e7e14e90efa6a6c4a85074",
+    "status": "candidate"
+  }
+}

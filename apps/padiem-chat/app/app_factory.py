@@ -38,6 +38,15 @@ from .b66_saved_quote_skill_store import (
     D1SavedQuoteSkillStore,
     SavedQuoteSkillStore,
 )
+from .b66_saved_skill_candidate_routes import (
+    b66_saved_skill_candidate_detail,
+    b66_saved_skill_candidate_list,
+    b66_saved_skill_candidate_submit,
+)
+from .b66_saved_skill_candidate_store import (
+    D1SavedQuoteSkillCandidateStore,
+    SavedQuoteSkillCandidateStore,
+)
 from .auth_routes import (
     auth_status,
     google_callback,
@@ -252,6 +261,7 @@ def create_app(
     claw_telegram_authority=None,
     approved_memory_store: ApprovedMemoryStore | None = None,
     b66_saved_quote_skill_store: SavedQuoteSkillStore | None = None,
+    b66_saved_skill_candidate_store: SavedQuoteSkillCandidateStore | None = None,
     b66_company_profile_store: CompanyProfileStore | None = None,
     b66_quote_history_store=None,
     b66_guided_draft_store=None,
@@ -350,6 +360,24 @@ def create_app(
         Route(
             "/api/b66/saved-skills/{saved_skill_id}",
             b66_saved_skill_detail,
+            methods=["GET"],
+        ),
+        # #3186: a customer may only *request* approval. Approve/reject has no
+        # browser route; it is a trusted operator command
+        # (b66_saved_skill_candidate_review) over the same durable store.
+        Route(
+            "/api/b66/saved-skill-candidates",
+            b66_saved_skill_candidate_submit,
+            methods=["POST"],
+        ),
+        Route(
+            "/api/b66/saved-skill-candidates",
+            b66_saved_skill_candidate_list,
+            methods=["GET"],
+        ),
+        Route(
+            "/api/b66/saved-skill-candidates/{candidate_id}",
+            b66_saved_skill_candidate_detail,
             methods=["GET"],
         ),
         Route(
@@ -665,6 +693,18 @@ def create_app(
         except Exception:
             _b66_saved_quote_skill_store = None
     app.state.b66_saved_quote_skill_store = _b66_saved_quote_skill_store
+
+    # B66 #3186: customer approval *requests* for a new Saved Quote Skill. Reuses
+    # the same PADIEM_CHAT_DB D1 and the same signed auth. Submission is
+    # owner-scoped and idempotent; approval remains a trusted operator action and
+    # is never reachable from the browser.
+    _b66_saved_skill_candidate_store = b66_saved_skill_candidate_store
+    if _b66_saved_skill_candidate_store is None and d1_binding is not None:
+        try:
+            _b66_saved_skill_candidate_store = D1SavedQuoteSkillCandidateStore(d1_binding)
+        except Exception:
+            _b66_saved_skill_candidate_store = None
+    app.state.b66_saved_skill_candidate_store = _b66_saved_skill_candidate_store
 
     # B66 #3406: canonical account/workspace company identity/defaults. This is
     # separate from Saved Quote Skill layout behavior and browser-local presets.

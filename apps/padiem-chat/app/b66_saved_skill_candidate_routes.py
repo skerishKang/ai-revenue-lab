@@ -1,0 +1,197 @@
+"""B66 #3186 — authenticated Saved Quote Skill *candidate* (approval request) routes.
+
+Normal customer runtime:
+signed-in Padiem owner -> direct-entry candidate -> bounded submission -> durable
+``pending`` approval request -> trusted operator review -> approved Saved Quote Skill.
+
+What this module deliberately does **not** provide:
+- no customer-facing approve/reject route. A customer can only *request* approval.
+  Any owner/approval status supplied by the browser is rejected, so a client
+  cannot self-approve or impersonate an operator.
+- no source quotation parsing, no server-side totals calculation, no template
+  mutation, no arbitrary tenant selection.
+
+Ownership is always derived from the server session; the workspace is resolved
+server-side exactly like the other account-scoped B66 routes.
+"""
+
+from __future__ import annotations
+
+import inspect
+import json
+from typing import Any
+
+from starlette.requests import Request
+from starlette.responses import JSONResponse
+
+from .auth_routes import auth_ready, current_user_id
+from .b66_saved_skill_candidate_store import (
+    MAX_CANDIDATES,
+    SavedQuoteSkillCandidateStoreError,
+    canonicalize_candidate_submission,
+)
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
+from .claw_memory_routes import _resolve_memory_workspace
+
+MAX_BODY_BYTES = 16 * 1024
+MAX_LIST_LIMIT = MAX_CANDIDATES
+_ALLOWED_SUBMIT_FIELDS = frozenset({"client_ref", "candidate"})
+_FORBIDDEN_OWNER_KEYS = frozenset(
+    {"user_id", "userId", "tenant_id", "tenantId", "workspace_id", "workspaceId", "owner"}
+)
+_NO_STORE = {"Cache-Control": "no-store, max-age=0", "Pragma": "no-cache"}
+
+
+def _error(status: int, code: str, message: str) -> JSONResponse:
+    return JSONResponse(
+        {"ok": False, "error": {"code": code, "message": message}},
+        status_code=status,
+        headers=_NO_STORE,
+    )
+
+
+def _store(request: Request) -> Any | None:
+    return getattr(request.app.state, "b66_saved_skill_candidate_store", None)
+
+
+async def _owner_and_workspace(request: Request) -> tuple[str, str] | None:
+    if not auth_ready(request):
+        return None
+    try:
+        uid = current_user_id(request)
+    except Exception:
+        return None
+    if not uid:
+        return None
+    workspace_id = await _resolve_memory_workspace(request, uid)
+    if not workspace_id:
+        return None
+    return uid, workspace_id
+
+
+async def _json(request: Request) -> dict[str, Any] | JSONResponse:
+    if request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/json":
+        return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
+    try:
+        body = await read_bounded_request_body(request, max_bytes=MAX_BODY_BYTES)
+    except RequestBodyTooLarge:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
+    if not body:
+        return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
+    try:
+        data = json.loads(body.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return _error(400, "invalid_json", "유효한 JSON 형식이 아닙니다.")
+    if not isinstance(data, dict):
+        return _error(400, "invalid_payload", "요청 데이터는 객체여야 합니다.")
+    if any(key in data for key in _FORBIDDEN_OWNER_KEYS):
+        return _error(400, "forbidden_owner_field", "계정 범위는 서버가 결정합니다.")
+    if set(data) - _ALLOWED_SUBMIT_FIELDS:
+        return _error(400, "unsupported_field", "지원되지 않는 요청 필드가 있습니다.")
+    return data
+
+
+async def b66_saved_skill_candidate_submit(request: Request) -> JSONResponse:
+    """Open one durable approval request for the signed-in owner."""
+
+    scope = await _owner_and_workspace(request)
+    if scope is None:
+        return _error(401, "unauthorized", "로그인이 필요합니다.")
+    uid, workspace_id = scope
+
+    store = _store(request)
+    submit_fn = getattr(store, "submit", None) if store is not None else None
+    if not callable(submit_fn):
+        return _error(503, "candidate_store_unavailable", "승인 요청을 접수할 수 없습니다.")
+
+    data = await _json(request)
+    if isinstance(data, JSONResponse):
+        return data
+
+    try:
+        submission = canonicalize_candidate_submission(
+            client_ref=data.get("client_ref"),
+            candidate=data.get("candidate"),
+        )
+    except SavedQuoteSkillCandidateStoreError:
+        return _error(400, "invalid_candidate", "승인 요청 내용을 확인해 주세요.")
+
+    try:
+        value = submit_fn(user_id=uid, workspace_id=workspace_id, submission=submission)
+        stored = await value if inspect.isawaitable(value) else value
+    except SavedQuoteSkillCandidateStoreError:
+        return _error(400, "invalid_candidate", "승인 요청 내용을 확인해 주세요.")
+    except Exception:
+        return _error(503, "candidate_write_failed", "승인 요청을 저장하지 못했습니다.")
+    if not isinstance(stored, dict) or not stored.get("candidate_id"):
+        return _error(503, "candidate_write_failed", "승인 요청을 저장하지 못했습니다.")
+
+    return JSONResponse(
+        {
+            "ok": True,
+            "candidate": stored,
+            "duplicate": stored.get("duplicate") is True,
+            # Truthful contract: this is an approval *request*. Approval authority
+            # is a trusted operator action and is never granted here.
+            "approval": {
+                "requested": True,
+                "status": stored.get("status", "pending"),
+                "approved": False,
+                "decided_by_customer": False,
+            },
+        },
+        headers=_NO_STORE,
+    )
+
+
+async def b66_saved_skill_candidate_list(request: Request) -> JSONResponse:
+    scope = await _owner_and_workspace(request)
+    if scope is None:
+        return _error(401, "unauthorized", "로그인이 필요합니다.")
+    uid, workspace_id = scope
+
+    store = _store(request)
+    list_fn = getattr(store, "list_candidates", None) if store is not None else None
+    if not callable(list_fn):
+        return _error(503, "candidate_store_unavailable", "승인 요청을 확인할 수 없습니다.")
+
+    raw_limit = request.query_params.get("limit")
+    try:
+        limit = MAX_LIST_LIMIT if raw_limit is None else int(raw_limit)
+    except (TypeError, ValueError):
+        return _error(400, "invalid_limit", "limit 형식이 올바르지 않습니다.")
+    if limit < 1:
+        return _error(400, "invalid_limit", "limit 형식이 올바르지 않습니다.")
+
+    try:
+        value = list_fn(user_id=uid, workspace_id=workspace_id, limit=min(limit, MAX_LIST_LIMIT))
+        candidates = await value if inspect.isawaitable(value) else value
+    except Exception:
+        return _error(503, "candidate_read_failed", "승인 요청을 불러오지 못했습니다.")
+    if not isinstance(candidates, list):
+        return _error(503, "candidate_read_failed", "승인 요청을 불러오지 못했습니다.")
+    return JSONResponse({"ok": True, "candidates": candidates}, headers=_NO_STORE)
+
+
+async def b66_saved_skill_candidate_detail(request: Request) -> JSONResponse:
+    scope = await _owner_and_workspace(request)
+    if scope is None:
+        return _error(401, "unauthorized", "로그인이 필요합니다.")
+    uid, workspace_id = scope
+
+    candidate_id = request.path_params.get("candidate_id", "")
+    store = _store(request)
+    get_fn = getattr(store, "get_candidate", None) if store is not None else None
+    if not callable(get_fn):
+        return _error(503, "candidate_store_unavailable", "승인 요청을 확인할 수 없습니다.")
+
+    try:
+        value = get_fn(user_id=uid, workspace_id=workspace_id, candidate_id=candidate_id)
+        candidate = await value if inspect.isawaitable(value) else value
+    except SavedQuoteSkillCandidateStoreError:
+        return _error(400, "invalid_candidate_id", "승인 요청 ID 형식이 올바르지 않습니다.")
+    except Exception:
+        return _error(503, "candidate_read_failed", "승인 요청을 불러오지 못했습니다.")
+    if candidate is None:
+        return _error(404, "candidate_not_found", "승인 요청을 찾을 수 없습니다.")
+    return JSONResponse({"ok": True, "candidate": candidate}, headers=_NO_STORE)
