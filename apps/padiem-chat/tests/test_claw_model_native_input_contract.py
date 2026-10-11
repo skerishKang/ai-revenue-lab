@@ -33,7 +33,7 @@ def test_general_claw_parser_does_not_reject_old_turn_or_character_caps():
     text, error = _claw_general_user_text({"messages": messages})
     assert error is None and text == LONG
     assert MAX_CLAW_GENERAL_BODY_BYTES == 6_000_000
-    assert P01_ENGINE_REQUEST_ENVELOPE_BYTES == 128 * 1024
+    assert P01_ENGINE_REQUEST_ENVELOPE_BYTES == 5_500_000
 
 
 @pytest.mark.parametrize("messages", [
