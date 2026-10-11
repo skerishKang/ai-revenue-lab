@@ -181,9 +181,10 @@ jobs:
             latest_seconds="$(date -u -d "${latest_created}" +%s)"
             age_seconds="$(( $(date -u +%s) - latest_seconds ))"
             test "${age_seconds}" -ge 0
-            # Conservative LOCAL guard, not a claimed Cloudflare-published cooldown.
-            if [ "${age_seconds}" -lt 3600 ]; then
-              echo 'B66_PAGES_PACING_BLOCKED=YES (last production deployment under conservative 60-minute gap)' >&2
+            # Local anti-burst guard: 5 minutes. Cloudflare does not mandate a 60-minute cooldown.
+            # Exact-main authorization, deployment concurrency, and same-hash dedup remain mandatory.
+            if [ "${age_seconds}" -lt 300 ]; then
+              echo 'B66_PAGES_PACING_BLOCKED=YES (last production deployment under 5-minute anti-burst gap)' >&2
               exit 1
             fi
           fi
