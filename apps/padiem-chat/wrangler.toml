@@ -39,6 +39,12 @@ binding = "PADIEM_KIRAAI_API_KEY"
 store_id = "f0b09ca04a7b43248154c773704a5616"
 secret_name = "PADIEM_KIRAAI_API_KEY"
 
+# B66-only Experiential model direct pilot, existing account secret reference.
+[[secrets_store_secrets]]
+binding = "PADIEM_EXLAB_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_EXLAB_API_KEY"
+
 [vars]
 PADIEM_CHAT_RUNTIME_MODE = "mock"
 PADIEM_CHAT_TIMEOUT_SECONDS = "600"
