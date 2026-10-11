@@ -1,5 +1,8 @@
 # PADIEM public web search priority — Owner decision (#3385)
 
+> **2026-10-12 KST 최신 운영 체크포인트 — 이 문서의 과거 "바인딩 없음 / #3523 OPEN" 문구보다 우선:** B62 TinyFish Search의 Cloudflare Fetch→HTTPX 이중 압축해제 오류는 [PR #4375](https://github.com/skerishKang/ai-revenue-lab/pull/4375)로 병합·보호 배포했다. 후속 B66 배포까지 포함한 실제 제공 버전 계보와 **공개 검색 7회 HTTP 502 미재현**, 별도 **HTTP 503 `model_profile_unassigned`** 및 향후 범위는 **[#4375 운영 종료 기록](./B62_TINYFISH_DECODE_FIX_4375_PRODUCTION_CLOSEOUT_20261012.md)**을 따른다. 검색 선택·근거 1회 이상 확인은 **최종 B62 모델 답변 E2E**를 증명하지 않는다. #3523은 Claw 특정 Golden Path로 **이미 CLOSED**, B62 일반 실사용 검증은 **#4317 OPEN**. 기존 TinyFish 우선·402/429 한정 Daum fallback·B14 수동 모델 선택 정책은 변함없다.
+
+
 **Decision date:** 2026-10-10  
 **Authority:** Owner; replaces all earlier "no automatic fallback", "TinyFish only", or "choose one web provider" directions **for the public-web search quota path only**.  
 **Scope:** B54/Padiem Chat/Claw live public-web Search and its existing Core-owned provider adapters. No change to AI model/B14 dispatch policy.
