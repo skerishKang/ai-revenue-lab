@@ -65,6 +65,11 @@ on:
         required: false
         type: boolean
         default: false
+      preserve_existing_b66_membership_secret:
+        description: "Explicitly admit only the already-existing B66_MEMBERSHIP_ENFORCED secret_text metadata when a concurrent B66 change is present; do not read/set value"
+        required: false
+        type: boolean
+        default: false
       previous_version_id:
         description: "Recorded previous production version id (rollback mode)"
         required: false
@@ -451,13 +456,19 @@ jobs:
       PUBLIC_BASE_URL_STATE: ${{ needs.cloudflare-readonly.outputs.public_base_url_state }}
       CONFIRMATION: ${{ inputs.confirmation }}
       ATTACH_WEB_SECRETS_STORE: ${{ inputs.attach_existing_web_secrets_store }}
+      PRESERVE_B66_MEMBERSHIP_SECRET: ${{ inputs.preserve_existing_b66_membership_secret }}
       COMMISSION_HARK_BROWSER: ${{ inputs.commission_hark_browser }}
     steps:
       - name: Require explicit production code deploy authorization
         shell: bash
         run: |
           set -euo pipefail
-          if [ "${COMMISSION_HARK_BROWSER}" = "true" ]; then
+          if [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ]; then
+            test "${CONFIRMATION}" = "DEPLOY_B62_WITH_EXACT_B66_MEMBERSHIP_SECRET"
+            test "${ATTACH_WEB_SECRETS_STORE}" = "false"
+            test "${COMMISSION_HARK_BROWSER}" = "false"
+            echo "B66_MEMBERSHIP_BINDING_METADATA_EXCEPTION=EXPLICIT_SINGLE_NAME_ONLY"
+          elif [ "${COMMISSION_HARK_BROWSER}" = "true" ]; then
             test "${CONFIRMATION}" = "DEPLOY_B62_HARK_BROWSER_FROM_EXACT_MAIN"
             test "${ATTACH_WEB_SECRETS_STORE}" != "true"
             echo "HARK_BROWSER_COMMISSION_OWNER_AUTHORIZED=PASS"
@@ -465,6 +476,7 @@ jobs:
             test "${CONFIRMATION}" = "DEPLOY_B62_PRODUCTION_CODE_FROM_EXACT_MAIN"
           fi
           test "${ATTACH_WEB_SECRETS_STORE}" = "true" || test "${ATTACH_WEB_SECRETS_STORE}" = "false"
+          test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" || test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "false"
           test -n "${READONLY_ACTIVE_VERSION}"
           if [ "${PUBLIC_BASE_URL_STATE}" != "expected" ]; then
             echo "Refusing deploy: PADIEM_CHAT_PUBLIC_BASE_URL must already be exactly expected (state=${PUBLIC_BASE_URL_STATE}). Live config activation owns any fix; deploy never injects it." >&2
@@ -735,11 +747,14 @@ jobs:
           if [ "${COMMISSION_HARK_BROWSER}" = "true" ]; then
             verify_args=(--expected-add-hark-browser)
           fi
+          if [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ]; then
+            verify_args=(--expected-add-b66-membership-secret)
+          fi
           python .github/scripts/b62_binding_state_guard.py \
             "${verify_args[@]}" \
             --before "${normalized_before}" \
             --after "${settings}"
-          if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ] || [ "${COMMISSION_HARK_BROWSER}" = "true" ]; then
+          if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ] || [ "${COMMISSION_HARK_BROWSER}" = "true" ] || [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ]; then
             echo "BINDINGS_PRESERVED_AND_APPROVED_ADDED=PASS"
           else
             echo "BINDINGS_PRESERVED_EXACTLY=PASS"
@@ -807,6 +822,9 @@ jobs:
           verify_args=()
           if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ]; then
             verify_args=(--allow-add-existing-web-secrets-store)
+          fi
+          if [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ]; then
+            verify_args=(--allow-add-existing-b66-membership-secret)
           fi
           python .github/scripts/b62_served_version_secret_guard.py verify \
             "${verify_args[@]}" \
