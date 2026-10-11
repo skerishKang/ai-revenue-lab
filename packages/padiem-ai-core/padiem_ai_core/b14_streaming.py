@@ -399,7 +399,7 @@ class B14StreamingClient:
                                 buffer + chunk[start:start + frame_cap]
                             )
                             if len(buffer) > frame_cap or any(
-                                len(frame) > frame_cap for frame in frames
+                                len(frame) + 2 > frame_cap for frame in frames
                             ):
                                 raise B14ExecutionError(
                                     "upstream_response_too_large",
