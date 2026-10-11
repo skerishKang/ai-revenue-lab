@@ -1910,6 +1910,11 @@
     "claw-runs-open-session": "Open session",
     "claw-runs-status-completed": "Completed",
     "claw-runs-status-waiting_approval": "Approval required",
+    "claw-runs-status-failed": "Failed",
+    "claw-runs-status-cancelled": "Cancelled",
+    "claw-runs-next-waiting_approval": "This run is waiting for your decision; it has not completed.",
+    "claw-runs-next-failed": "The run failed. A recorded file does not mean the task succeeded.",
+    "claw-runs-next-cancelled": "This run was cancelled; no completion is claimed.",
     "claw-runs-kind-aria": "File type {kind}",
     "claw-runs-download-only": "This format is download-only. Save the file to view its contents.",
     "claw-approval-actions-aria": "Approval decision",
@@ -4409,6 +4414,10 @@
     const card = document.createElement("div");
     card.className = "claw-run-card";
     card.dataset.runId = typeof run.run_id === "string" ? run.run_id : "";
+    // Visual emphasis follows only the canonical server status. Unknown states
+    // retain neutral styling and their raw label; they are never completed.
+    const knownRunStates = ["completed", "waiting_approval", "failed", "cancelled"];
+    if (knownRunStates.includes(run.status)) card.dataset.runState = run.status;
 
     const head = document.createElement("div");
     head.className = "claw-run-card-head";
@@ -4436,6 +4445,13 @@
     summary.textContent = typeof run.result_summary === "string" ? run.result_summary : "";
 
     card.append(head, meta, summary);
+    if (["waiting_approval", "failed", "cancelled"].includes(run.status)) {
+      const nextStep = document.createElement("p");
+      nextStep.className = "claw-run-card-nextstep";
+      nextStep.setAttribute("role", "note");
+      nextStep.textContent = clawT(`claw-runs-next-${run.status}`);
+      card.appendChild(nextStep);
+    }
 
     // Canonical session reopen (#2916): the action exists only when the server
     // projected a validated session handle. Created before the artifact block

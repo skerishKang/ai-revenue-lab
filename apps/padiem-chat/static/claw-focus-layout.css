@@ -327,3 +327,91 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > .c
     transform: translateX(-50%) !important;
   }
 }
+
+/* #3933 second UI slice: task outcomes read as a work result, not system logs.
+ * Owner-scoped history and run/approval authority remain in app.js.
+ * Only an exact server status may activate a corresponding state treatment. */
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-history-list {
+  gap: 12px;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card {
+  padding: 17px 18px;
+  gap: 9px;
+  background: #fff;
+  border: 1px solid #d6e2ed;
+  border-radius: 15px;
+  box-shadow: 0 4px 17px rgba(31, 67, 95, .045);
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-head {
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-title {
+  color: #203b50;
+  font-size: 15px;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-badge {
+  border: 1px solid #d4e0ec;
+  background: #edf3f9;
+  color: #315d7b;
+  white-space: nowrap;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card[data-run-state="completed"] .claw-run-card-badge {
+  border-color: #badfd2;
+  background: #e9f6f1;
+  color: #176347;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card[data-run-state="waiting_approval"] .claw-run-card-badge {
+  border-color: #eddbad;
+  background: #fff8e6;
+  color: #825a17;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card:is([data-run-state="failed"], [data-run-state="cancelled"]) .claw-run-card-badge {
+  border-color: #edc8c8;
+  background: #fff0f0;
+  color: #994444;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-summary {
+  line-height: 1.6;
+  color: #334b5c;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-nextstep {
+  margin: 0;
+  padding: 9px 11px;
+  border: 1px solid #e5d5ab;
+  border-radius: 9px;
+  background: #fffaf0;
+  color: #79561d;
+  font-size: 12px;
+  line-height: 1.55;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card:is([data-run-state="failed"], [data-run-state="cancelled"]) .claw-run-card-nextstep {
+  border-color: #ead2d2;
+  background: #fff6f6;
+  color: #8c4141;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-artifact {
+  border: 1px solid #dbe7f0;
+  border-radius: 11px;
+  background: #f5f9fc;
+  padding: 12px;
+  min-width: 0;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-filename {
+  color: #29485e;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-download {
+  border-color: #bfd4e3;
+  color: #255373;
+  background: #fff;
+  border-radius: 9px;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-download:hover {
+  background: #e8f3fa;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-download:focus-visible {
+  outline: 3px solid #72a3c5;
+  outline-offset: 2px;
+}
