@@ -26,3 +26,11 @@
     font-size: 12px;
   }
 }
+
+/* A collapsed preview reserves a fixed header control outside the mobile
+   layout. Keep both actions independently clickable at 901px and above. */
+@media (min-width: 901px) {
+  body.b66-three-pane.preview-collapsed .topbar-actions {
+    margin-right: 112px;
+  }
+}

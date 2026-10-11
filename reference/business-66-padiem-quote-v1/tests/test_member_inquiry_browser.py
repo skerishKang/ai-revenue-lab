@@ -31,7 +31,7 @@ def main() -> None:
         with sync_playwright() as playwright:
             browser = playwright.chromium.launch(headless=True)
             try:
-                for width, height in [(320, 640), (390, 844), (768, 900), (873, 1008), (1280, 850)]:
+                for width, height in [(320, 640), (390, 844), (768, 900), (873, 1008), (1009, 1008), (1100, 900), (1199, 900), (1280, 850)]:
                     context = browser.new_context(viewport={"width": width, "height": height})
                     page = context.new_page()
                     errors = []
