@@ -5,6 +5,15 @@ compatibility_flags = ["python_workers"]
 workers_dev = true
 base_dir = ".b66-worker-src"
 
+# #3933 WEB-FIRST opt-in Browser Run standard quote summary PDF.
+# A browser binding does not authorize XLSX READ/WRITE, trigger a PDF,
+# or enable the feature. Rendering requires a separate explicit flag
+# PADIEM_WEB_XLSX_QUOTE_PDF_ENABLED=true only after live owner E2E.
+# API: BROWSER.quickAction("pdf", {"html": ...}).
+# Compatibility date 2026-08-25 satisfies Quick Actions >=2026-03-24.
+[browser]
+binding = "BROWSER"
+
 [build]
 command = "uv run python scripts/build_b66_worker_dependencies.py"
 
