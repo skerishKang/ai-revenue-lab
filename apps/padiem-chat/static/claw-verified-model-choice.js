@@ -40,7 +40,8 @@
   manual.value=select.value;manual.dispatchEvent(new Event("input",{bubbles:true}));});
  manual.addEventListener("input",()=>{const opt=Array.from(select.options).find(x=>!x.disabled&&x.value===manual.value);
   select.value=opt?.value||"";});
- select.addEventListener("focus",()=>void load());
+ // Loading occurs at boot and on auth/locale changes; do not disable the
+ // select on focus while the user is trying to choose an option.
  window.addEventListener("padiem:auth-state", event => {
    if(event.detail?.authenticated === true){void load();return;}
    ++seq;
