@@ -204,3 +204,30 @@ def test_prepatch_cloudflare_module_authority_step_parses_with_actual_bash():
         check=False,
     )
     assert completed.returncode == 0, completed.stderr
+
+
+
+def test_hark_flag_activation_and_b62_code_deploy_share_production_mutation_lock():
+    """Prevent B62 code upload from clobbering a newly added chat_write flag.
+
+    Regression: in production #38154014358 successfully PATCHed chat_write,
+    while concurrent #38153957703 uploaded B62 code from an earlier binding
+    snapshot and removed that flag. The later chat_pdf correctly refused.
+    """
+    root = ROOT.parent / "workflows"
+    hark = (root / "hark-web-first-runtime-activation.yml").read_text(
+        encoding="utf-8",
+    )
+    deploy = (root / "b62-production-code-deploy-gate.yml").read_text(
+        encoding="utf-8",
+    )
+    lock = "group: b62-production-code-deploy-gate"
+    assert hark.count(lock) == 1
+    assert deploy.count(lock) == 1
+    assert "cancel-in-progress: false" in hark.split("concurrency:", 1)[1].split(
+        "jobs:", 1
+    )[0]
+    assert "cancel-in-progress: false" in deploy.split("concurrency:", 1)[1].split(
+        "env:", 1
+    )[0]
+    assert "group: hark-web-first-runtime-production" not in hark
