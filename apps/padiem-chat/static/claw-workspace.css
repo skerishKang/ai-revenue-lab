@@ -1157,6 +1157,37 @@
   color: var(--muted);
   overflow-wrap: anywhere;
 }
+/* L2 result-file card: the file's identity group carries the server-verified
+ * type chip and the truthful download-only note, so the row still reads as one
+ * identity plus one action and a long name shrinks instead of pushing it out. */
+.claw-run-card-file {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+}
+.claw-run-card-kind {
+  flex: 0 0 auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--accent-soft);
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.claw-run-card-download-only {
+  flex: 1 1 100%;
+  width: 100%;
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
 .claw-run-card-download {
   min-height: 44px;
   display: inline-flex;
