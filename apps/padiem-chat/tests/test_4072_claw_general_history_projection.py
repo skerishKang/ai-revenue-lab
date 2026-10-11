@@ -218,3 +218,172 @@ def test_explicit_foreign_or_malformed_conversation_denied_before_quota_p01():
     assert foreign.json()["error"]["code"] == "conversation_not_found"
     adapter.execute.assert_not_called()
     assert store.calls == []
+
+
+
+# #3936 Tabbit regression: a completed generic Claw reply becomes a real owner
+# conversation. Continuation MUST use server-stored turns, not forged browser
+# history, and saving may never turn a completed P01 into a retryable failure.
+
+class _ClawThreadStore(OwnerStore):
+    THREAD_ID = "chat_" + "b" * 32
+
+    def __init__(self, *, fail_write=False):
+        super().__init__()
+        self.fail_write = fail_write
+        self.saved = {}
+
+    async def append_exchange(self, user_id, conversation_id, user_text, answer, project_id=None):
+        if self.fail_write:
+            raise RuntimeError("synthetic history store unavailable")
+        assert user_id == base.SIGNED_IN_USER_ID
+        cid = conversation_id or self.THREAD_ID
+        assert cid == self.THREAD_ID
+        if cid not in self.saved:
+            self.saved[cid] = {"id": cid, "project_id": project_id, "messages": []}
+        thread = self.saved[cid]
+        thread["messages"].extend([
+            {"role": "user", "content": user_text},
+            {"role": "assistant", "content": answer},
+        ])
+        return cid
+
+    async def get_conversation(self, user_id, conversation_id):
+        if user_id != base.SIGNED_IN_USER_ID:
+            return None
+        return self.saved.get(conversation_id)
+
+
+def test_general_signup_claw_saved_thread_sse_done_id_is_real():
+    store = _ClawThreadStore()
+    adapter = base._make_adapter(outcome=base._make_outcome(answer="verified test answer"))
+    with owner_client(store, adapter) as client:
+        result = client.post(base.GENERAL_ROUTE_PATH, json=base._payload())
+        owned = client.get("/api/conversations/" + store.THREAD_ID)
+    assert result.status_code == 200
+    assert '"conversation_id":"' + store.THREAD_ID + '"' in result.text
+    assert owned.status_code == 200
+    assert len(owned.json()["conversation"]["messages"]) == 2
+    assert store.saved[store.THREAD_ID]["messages"][1]["content"] == "verified test answer"
+    adapter.execute.assert_awaited_once()
+
+
+def test_same_owner_claw_followup_uses_persisted_context_and_same_thread():
+    store = _ClawThreadStore()
+    store.saved[store.THREAD_ID] = {
+        "id": store.THREAD_ID, "project_id": None,
+        "messages": [
+            {"role": "user", "content": "previous-owner-unique-context"},
+            {"role": "assistant", "content": "previous-verified-answer"},
+        ],
+    }
+    adapter = base._make_adapter(outcome=base._make_outcome(answer="second answer"))
+    bridge = SimpleNamespace(auth_session=SimpleNamespace(
+        subject=SimpleNamespace(subject_id="owner-subject"), tenant_id="tenant_claw_test",
+    ))
+    adapter.subject_identity_lane = True
+    with patch(
+        "app.b54_canonical_session.resolve_current_b54_canonical_session",
+        new_callable=AsyncMock, return_value=bridge,
+    ):
+        with owner_client(store, adapter) as client:
+            result = client.post(
+                base.GENERAL_ROUTE_PATH,
+                json=base._payload(
+                    conversation_id=store.THREAD_ID,
+                    messages=[{"role": "user", "content": "current-followup-question"}],
+                ),
+            )
+    assert result.status_code == 200, result.text
+    assert '"conversation_id":"' + store.THREAD_ID + '"' in result.text
+    run = adapter.execute.await_args.args[0]
+    assert "previous-owner-unique-context" in run.intent.task
+    assert "previous-verified-answer" in run.intent.task
+    assert "current-followup-question" in run.intent.task
+    assert len(store.saved[store.THREAD_ID]["messages"]) == 4
+    assert store.saved[store.THREAD_ID]["messages"][-2]["content"] == "current-followup-question"
+    assert store.calls[0]["conversation_id"] == store.THREAD_ID
+    assert store.calls[0]["workspace_id"] == "tenant_claw_test"
+
+
+def test_history_write_failure_preserves_answer_without_forged_thread_receipt():
+    store = _ClawThreadStore(fail_write=True)
+    adapter = base._make_adapter(outcome=base._make_outcome(answer="still-completed"))
+    with owner_client(store, adapter) as client:
+        result = client.post(base.GENERAL_ROUTE_PATH, json=base._payload())
+    assert result.status_code == 200
+    assert "still-completed" in result.text
+    assert '"conversation_id"' not in result.text
+    adapter.execute.assert_awaited_once()
+
+
+def test_browser_history_bridge_requires_owner_run_link_not_title():
+    from pathlib import Path
+    app = (Path(__file__).resolve().parents[1] / "static/app.js").read_text(encoding="utf-8")
+    assert "const clawConversationIds = new Set();" in app
+    assert 'run?.action === "general"' in app
+    assert "run?.session?.conversation_id" in app
+    assert "openClawWorkspace();" in app
+    assert "showConversation({ preserveClaw: isVerifiedClawThread });" in app
+
+
+def test_real_d1_owner_conversation_created_only_after_completed_claw():
+    """SQLite executes the same owner-scoped D1 SQL as Production history."""
+    import json
+    import sqlite3
+    from app.history import D1HistoryStore
+
+    db = sqlite3.connect(":memory:", check_same_thread=False)
+    db.row_factory = sqlite3.Row
+    db.executescript(
+        "CREATE TABLE conversations (id TEXT PRIMARY KEY, user_id TEXT, "
+        "project_id TEXT, title TEXT, created_at TEXT, updated_at TEXT);"
+        "CREATE TABLE messages (id TEXT PRIMARY KEY, conversation_id TEXT, "
+        "sequence_number INTEGER, role TEXT, content TEXT, created_at TEXT);"
+    )
+
+    class Statement:
+        def __init__(self, sql):
+            self.sql = sql
+            self.values = ()
+
+        def bind(self, *values):
+            self.values = values
+            return self
+
+        async def run(self):
+            cursor = db.execute(self.sql, self.values)
+            if self.sql.lstrip().upper().startswith("SELECT"):
+                return {"success": True, "results": [dict(row) for row in cursor.fetchall()]}
+            db.commit()
+            return {"success": True}
+
+        async def first(self):
+            found = db.execute(self.sql, self.values).fetchone()
+            return dict(found) if found else None
+
+        async def all(self):
+            return [dict(row) for row in db.execute(self.sql, self.values).fetchall()]
+
+    class SQLiteD1:
+        def prepare(self, sql):
+            return Statement(sql)
+
+    store = D1HistoryStore(SQLiteD1())
+    adapter = base._make_adapter(outcome=base._make_outcome(answer="persisted on D1"))
+    with owner_client(store, adapter) as client:
+        completed = client.post(base.GENERAL_ROUTE_PATH, json=base._payload())
+        done_payload = json.loads(completed.text.rsplit("data: ", 1)[1].strip())
+        cid = done_payload.get("conversation_id")
+        listed = client.get("/api/conversations")
+        detail = client.get("/api/conversations/" + cid) if cid else None
+    assert completed.status_code == 200
+    assert isinstance(cid, str) and cid.startswith("chat_")
+    assert listed.status_code == 200
+    assert any(row["id"] == cid for row in listed.json()["conversations"])
+    assert detail is not None and detail.status_code == 200
+    assert detail.json()["conversation"]["messages"] == [
+        {"role": "user", "content": base._payload()["messages"][-1]["content"]},
+        {"role": "assistant", "content": "persisted on D1"},
+    ]
+    db.close()

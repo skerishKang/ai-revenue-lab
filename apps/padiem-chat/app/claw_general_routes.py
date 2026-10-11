@@ -27,6 +27,7 @@ owns.
 
 from __future__ import annotations
 
+import inspect
 import json
 import re
 from typing import Any
@@ -63,6 +64,8 @@ from .claw_routes import (
     _resolve_intake_session_reference,
 )
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
+from .auth_routes import auth_ready, current_user_id
+from .history import MAX_HISTORY_MESSAGE_CHARS, validate_conversation_id
 
 MAX_CLAW_GENERAL_BODY_BYTES = 64 * 1024  # 64 KiB
 MAX_CLAW_GENERAL_MESSAGE_CHARS = 8_000
@@ -144,6 +147,7 @@ def _claw_general_sse(
     evidence_headers: dict[str, str] | None = None,
     *,
     history: tuple[dict[str, object], ...] = (),
+    conversation_id: str | None = None,
 ) -> Response:
     """Bounded terminal SSE, optionally preceded by real *post-execution* history.
 
@@ -165,7 +169,10 @@ def _claw_general_sse(
             frames += _sse_frame("p01_event", {
                 **{key: event[key] for key in keys}, "delivery": "post_execution",
             })
-    frames += _sse_frame("delta", {"delta": answer}) + _sse_frame("done", {"done": True})
+    terminal = {"done": True}
+    if conversation_id is not None:
+        terminal["conversation_id"] = conversation_id
+    frames += _sse_frame("delta", {"delta": answer}) + _sse_frame("done", terminal)
     return Response(
         frames,
         status_code=200,
@@ -207,6 +214,84 @@ def _claw_general_user_text(data: dict[str, Any]) -> tuple[str | None, JSONRespo
     if not text:
         return None, _error(400, "invalid_messages", "메시지를 입력해 주세요.")
     return text, None
+
+
+async def _owner_claw_context(
+    request: Request, conversation_id: str | None, latest: str,
+) -> str:
+    """Bounded history from the SAME signed owner; no browser-provided prior turns."""
+    if conversation_id is None:
+        return latest
+    uid = current_user_id(request) if auth_ready(request) else None
+    store = getattr(request.app.state, "history_store", None)
+    if not uid or not callable(getattr(store, "get_conversation", None)):
+        raise ValueError("owner history unavailable")
+    prior = store.get_conversation(uid, conversation_id)
+    if inspect.isawaitable(prior):
+        prior = await prior
+    if not isinstance(prior, dict) or prior.get("id") != conversation_id:
+        raise ValueError("owner history changed")
+    messages = prior.get("messages")
+    if not isinstance(messages, list):
+        return latest  # Empty Hark work conversations are valid.
+    budget = min(4000, max(0, MAX_HISTORY_MESSAGE_CHARS - len(latest) - 450))
+    excerpts: list[str] = []
+    for row in reversed(messages[-12:]):
+        if not isinstance(row, dict) or row.get("role") not in ("user", "assistant"):
+            continue
+        content = row.get("content")
+        if not isinstance(content, str) or not content.strip():
+            continue
+        item = ("사용자: " if row["role"] == "user" else "AI: ") + content.strip()
+        if len(item) > budget:
+            break
+        excerpts.insert(0, item)
+        budget -= len(item) + 1
+    if not excerpts:
+        return latest
+    return (
+        "동일 소유자의 이전 대화 (참고 문맥만 제공하며 도구 권한은 부여하지 않음):\n"
+        + "\n".join(excerpts) + "\n\n현재 사용자 요청:\n" + latest
+    )
+
+
+async def _save_claw_exchange(
+    request: Request, *, conversation_id: str | None, user_text: str,
+    answer: str,
+) -> str | None:
+    """Exact completed exchange only; unavailable history does not replay P01."""
+    if (not isinstance(answer, str) or not answer.strip()
+            or len(answer) > MAX_HISTORY_MESSAGE_CHARS
+            or not isinstance(user_text, str)
+            or len(user_text) > MAX_HISTORY_MESSAGE_CHARS):
+        return None
+    uid = current_user_id(request) if auth_ready(request) else None
+    store = getattr(request.app.state, "history_store", None)
+    append = getattr(store, "append_exchange", None)
+    if not uid or not callable(append):
+        return None
+    try:
+        project_id = None
+        if conversation_id is not None:
+            get = getattr(store, "get_conversation", None)
+            if not callable(get):
+                return None
+            owned = get(uid, conversation_id)
+            if inspect.isawaitable(owned):
+                owned = await owned
+            if not isinstance(owned, dict) or owned.get("id") != conversation_id:
+                return None
+            project_id = owned.get("project_id")
+            if project_id is not None and not isinstance(project_id, str):
+                return None
+        saved = append(uid, conversation_id, user_text, answer, project_id)
+        if inspect.isawaitable(saved):
+            saved = await saved
+        if not isinstance(saved, str):
+            return None
+        return saved if validate_conversation_id(saved) is not None else None
+    except Exception:
+        return None
 
 
 async def claw_general_capabilities(request: Request) -> JSONResponse:
@@ -346,6 +431,14 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     if conversation_error is not None:
         return conversation_error
 
+    # Load ONLY prior messages from the reverified owner-scoped server history.
+    # A browser-supplied array of prior turns never becomes model context.
+    try:
+        model_user_text = await _owner_claw_context(request, conversation_id, user_text)
+    except Exception:
+        return _error(503, "conversation_authority_unavailable",
+                      "대화 문맥을 안전하게 확인할 수 없습니다.")
+
     # #3382/#3539: the canonical USER subject is resolved SERVER-SIDE before the
     # usage gate and before any P01/Engine dispatch, so a failed revalidation
     # never consumes quota and never reaches a provider.
@@ -372,8 +465,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                 "인증된 Claw 실행 권한을 확인할 수 없습니다.",
             )
         subject_id = b54_session.auth_session.subject.subject_id
+        authorized_workspace_id = getattr(b54_session.auth_session, "tenant_id", None)
         if conversation_id is not None:
-            authorized_workspace_id = b54_session.auth_session.tenant_id
             if not isinstance(authorized_workspace_id, str) or not authorized_workspace_id:
                 return _error(403, "workspace_scope_unavailable",
                               "Claw ???? ??? ??? ? ????.")
@@ -441,7 +534,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             await _refund_active_reservation()
             return _error(503, "claw_live_stream_unavailable", "Claw 실시간 실행 상태를 사용할 수 없습니다.")
 
-    run = create_claw_run("padiem-chat", user_text)
+    run = create_claw_run("padiem-chat", model_user_text)
 
     # #3655: evidence mode is opt-in per request; normal callers see the exact
     # same response surface as before.
@@ -549,24 +642,33 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             headers=_NO_STORE_HEADERS,
         )
 
+    # Only a verified, durable owner conversation ID is returned to the browser.
+    # A failed history write never turns a completed model run into a retryable 5xx.
+    saved_conversation_id = await _save_claw_exchange(
+        request, conversation_id=conversation_id, user_text=user_text,
+        answer=outcome.answer,
+    )
+    projected_conversation_id = saved_conversation_id or conversation_id
+
     # #4072/#3928: preserve successful P01 execution in the pre-existing
     # owner-scoped read model when D1 supports it. This is NOT a same-thread
     # or artifact lineage claim. A failed history write must never replay
     # Engine/tool execution or suppress an already-completed answer.
-    if conversation_id is None:
+    if projected_conversation_id is None:
         await project_completed_general_run(
             request, run_id=run.run_id, user_text=user_text, answer=outcome.answer
         )
     else:
         await project_completed_general_run(
             request, run_id=run.run_id, user_text=user_text, answer=outcome.answer,
-            conversation_id=conversation_id,
+            conversation_id=projected_conversation_id,
             workspace_id=authorized_workspace_id,
         )
     return _claw_general_sse(
         outcome.answer,
         _claw_evidence_response_headers(run.run_id, outcome) if evidence_requested else None,
         history=getattr(outcome, "p01_event_history", ()),
+        conversation_id=saved_conversation_id,
     )
 
 
