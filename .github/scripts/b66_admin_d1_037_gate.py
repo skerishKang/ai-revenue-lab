@@ -14,7 +14,11 @@ import tempfile
 import urllib.error
 import urllib.request
 
-PADIEM_ACCOUNT = "5a305a04650f4ad419062f8d4a96a41d"
+# The production padiem-chat Worker and its bound padiem-chat-db currently
+# reside in the Charliekant Cloudflare account, NOT the empty Padiem account.
+# Verify BOTH that exact account and exact live Worker binding before writes.
+PADIEM_ACCOUNT = "9be14bb7b8974e65d0afba647ab16932"
+PRODUCTION_DB_NAME = "padiem-chat-db"
 BASE = "https://api.cloudflare.com/client/v4"
 EXPECTED = {
     "b66_memberships", "b66_membership_audit",
@@ -58,8 +62,8 @@ def bound_database():
         raise RuntimeError("D1_BINDING_ID_INVALID")
     metadata = request("GET", f"/accounts/{account}/d1/database/{dbid}")
     db_name = metadata.get("name", "")
-    if not isinstance(db_name, str) or not re.fullmatch(r"[A-Za-z0-9_.-]{1,100}", db_name):
-        raise RuntimeError("D1_NAME_INVALID")
+    if db_name != PRODUCTION_DB_NAME:
+        raise RuntimeError("LIVE_WORKER_BOUND_DB_IS_NOT_PRODUCTION_CHAT_DB")
     return dbid, db_name
 
 
