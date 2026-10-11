@@ -170,7 +170,8 @@ jobs:
           status="$(curl -sS --connect-timeout 8 --max-time 70 -X PATCH \
             -H "Authorization: Bearer ${CLOUD_API_TOKEN}" \
             -F "settings=<${RUNNER_TEMP}/hark-stage-patch.json;type=application/json" \
-            -o "${RUNNER_TEMP}/hark-stage-response.json" -w '%{http_code}')"
+            -o "${RUNNER_TEMP}/hark-stage-response.json" -w '%{http_code}' \
+            "${api}")"
           test "$status" = "200"
           jq -e '.success == true' "${RUNNER_TEMP}/hark-stage-response.json" >/dev/null
           echo 'HARK_FLAG_MUTATION_APPLIED=PASS'
