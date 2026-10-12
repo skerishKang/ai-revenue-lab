@@ -78,14 +78,14 @@ def pc(device_id, name, *, online=True, revoked=False):
     }
 
 
-def ready_page(browser, server, width=1280):
+def ready_page(browser, server, width=1280, pc_enabled=True):
     page = browser.new_page(viewport={"width": width, "height": 800})
     errors = []
     page.on("pageerror", lambda e: errors.append(str(e)))
     page.route("**/api/b66/runtime-config", lambda route: route.fulfill(
         status=200, content_type="application/json",
         body=json.dumps({
-            "ok": True, "enabled": True, "pc_device_list_enabled": True,
+            "ok": True, "enabled": True, "pc_device_list_enabled": pc_enabled,
             "embed_url": "https://quote.example.test/embed.html",
             "origin": "https://quote.example.test",
             # Simulated future server-approved B66 device.list product grant.
@@ -117,7 +117,10 @@ def ready_page(browser, server, width=1280):
         page.locator("#b66QuoteNavButton").evaluate("(node) => node.click()")
     else:
         page.locator("#b66QuoteNavButton").click()
-    page.locator("#b66QuotePcToggle").wait_for(state="visible")
+    if pc_enabled:
+        page.locator("#b66QuotePcToggle").wait_for(state="visible")
+    else:
+        assert page.locator(".b66-quote-connect").is_hidden()
     return page, errors
 
 
@@ -187,5 +190,16 @@ def test_b66_fail_closed_logout_and_injection(browser, server):
     assert page.locator("#b66QuotePcPanel").is_hidden()
     assert page.locator("#b66QuotePcToggle").get_attribute("aria-expanded") == "false"
     assert all(x == "GET" for x in requests)
+    assert not errors, errors
+    page.close()
+
+
+def test_b66_pc_panel_default_off_without_product_grant(browser, server):
+    page, errors = ready_page(browser, server, pc_enabled=False)
+    observed = []
+    page.route("**" + DEVICE_ENDPOINT, lambda route: observed.append(route.request.method))
+    assert page.locator(".b66-quote-connect").is_hidden()
+    assert page.locator("#b66QuotePcPanel").is_hidden()
+    assert observed == []
     assert not errors, errors
     page.close()
