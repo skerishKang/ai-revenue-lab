@@ -81,6 +81,25 @@ def _dt(value: Any) -> datetime:
     return parsed.astimezone(timezone.utc)
 
 
+def install_canonical_broker_pairing_schema(
+    *, storage: Any, migration_id: str, operator_gate: bool
+) -> None:
+    """Explicitly install additive pairing tables in existing Broker DO SQLite."""
+    if operator_gate is not True or migration_id != "canonical-broker-pairing-v1":
+        raise _err("durable_pairing_schema_install_disabled", "explicit reviewed Broker schema gate is off")
+    sql = getattr(storage, "sql", None)
+    transaction = getattr(storage, "transactionSync", None)
+    if not callable(getattr(sql, "exec", None)) or not callable(transaction):
+        raise _err("durable_pairing_store_unavailable", "canonical Broker DO storage is unavailable")
+    def apply() -> None:
+        sql.exec(_CHALLENGE_TABLE)
+        sql.exec(_RATE_TABLE)
+    try:
+        transaction(apply)
+    except Exception as exc:
+        raise _err("durable_pairing_store_unavailable", "Broker pairing schema install failed") from exc
+
+
 def _rows(cursor: Any) -> list[dict[str, Any]]:
     reader = getattr(cursor, "toArray", None)
     if not callable(reader):
@@ -138,15 +157,11 @@ class DurableBrokerPairingAuthority:
         self._credential_factory = credential_factory
 
     def install_schema(self, *, migration_id: str) -> None:
-        if not self._migration or migration_id != "canonical-broker-pairing-v1":
+        if not self._migration:
             raise _err("durable_pairing_schema_install_disabled", "explicit reviewed Broker schema gate is off")
-        def apply() -> None:
-            self._sql.exec(_CHALLENGE_TABLE)
-            self._sql.exec(_RATE_TABLE)
-        try:
-            self._storage.transactionSync(apply)
-        except Exception as exc:
-            raise _err("durable_pairing_store_unavailable", "Broker pairing schema install failed") from exc
+        install_canonical_broker_pairing_schema(
+            storage=self._storage, migration_id=migration_id, operator_gate=True,
+        )
 
     def _new_ephemeral(self) -> InMemoryBrokerPairingAuthority:
         # The ephemeral contract object performs the established HMAC,
