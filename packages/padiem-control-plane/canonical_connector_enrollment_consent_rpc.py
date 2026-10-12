@@ -13,6 +13,7 @@ from typing import Any
 
 from canonical_connector_enrollment_durable import IdentityDurableConnectorEnrollmentRecords
 from canonical_connector_scope_readonly import ReadOnlyExistingConnectorScope
+from padiem_control_plane.auth_sessions import AuthSessionSnapshot
 from padiem_control_plane.contracts import ControlPlaneContractError, SubjectType
 from padiem_control_plane.padiem_connector_enrollment import ConnectorEnrollmentConsent
 
@@ -28,7 +29,19 @@ _CONNECTOR_REDEEM_AUTHORIZE_KEYS = frozenset({
 })
 
 
-def _enrollment_enrollment_safe_error(exc: ControlPlaneContractError) -> dict[str, Any]:
+def _dt(value: Any) -> datetime:
+    if not isinstance(value, str) or not value:
+        raise ControlPlaneContractError("invalid_connector_enrollment_time", "server timestamp is invalid")
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except (TypeError, ValueError) as exc:
+        raise ControlPlaneContractError("invalid_connector_enrollment_time", "server timestamp is invalid") from exc
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        raise ControlPlaneContractError("invalid_connector_enrollment_time", "server timestamp requires timezone")
+    return parsed.astimezone(timezone.utc)
+
+
+def _enrollment_safe_error(exc: ControlPlaneContractError) -> dict[str, Any]:
     return {"ok": False, "error": {"code": exc.code, "message": "Canonical identity request was rejected"}}
 
 
@@ -162,7 +175,7 @@ class CanonicalIdentityEnrollmentConsentRPC:
             self._connector_enrollment_records.install_schema()
             return {"ok": True, "schema": _CONNECTOR_ENROLLMENT_SCHEMA_VERSION, "installed_by_default": False}
         except ControlPlaneContractError as exc:
-            return _enrollment_enrollment_safe_error(exc)
+            return _enrollment_safe_error(exc)
 
     async def grant_connector_enrollment_consent(self, payload: dict) -> dict:
         """Private RPC called only after explicit owner UI action + CSRF verification."""
@@ -193,7 +206,7 @@ class CanonicalIdentityEnrollmentConsentRPC:
                 "dispatch_authorized": False, "grants_read": False, "grants_write": False,
             }}
         except ControlPlaneContractError as exc:
-            return _enrollment_enrollment_safe_error(exc)
+            return _enrollment_safe_error(exc)
         except (TypeError, ValueError) as exc:
             return _enrollment_safe_error(ControlPlaneContractError("invalid_connector_enrollment_consent", "consent request was refused"))
 
@@ -221,6 +234,6 @@ class CanonicalIdentityEnrollmentConsentRPC:
                 "dispatch_authorized": False, "grants_read": False, "grants_write": False,
             }}
         except ControlPlaneContractError as exc:
-            return _enrollment_enrollment_safe_error(exc)
+            return _enrollment_safe_error(exc)
 
 
