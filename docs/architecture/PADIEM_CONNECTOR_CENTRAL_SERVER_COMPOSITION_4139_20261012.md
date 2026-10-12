@@ -222,3 +222,26 @@ READY=NO
 MERGED=NO
 WINDOWS_LIVE_E2E=NOT_PROVEN
 ```
+
+## 2026-10-12 CENTRAL sixth implementation — OWNER role and consent issue/redeem race hardening
+
+- Canonical Identity private grant/revoke/current-consent/session-bind/redeem-authorization RPC now verifies the resolved canonical tenant membership role is **exactly `TenantMembershipRole.OWNER`** before approving or withdrawing shared PC consent, and repeats that check for redeem-time authorization. An active tenant member with `operator`, `approver` or `viewer` is not sufficient. This is a control-plane OWNER role, not a client-supplied role or product plan.
+- The issue host now re-reads current consent **after** the Broker DO has issued its challenge and **before** the code is returned or the challenge is bound to the original canonical session. If consent was revoked/swapped in the Identity↔Broker race, the host refuses without releasing the code; the remaining Broker challenge has no persisted original session bind and cannot pass the redeem authority.
+- Additional tests prove non-OWNER cannot grant or revoke, and issuance fails closed when consent is changed between the first read and post-challenge read.
+
+### Exact local source verification (updated after OWNER hardening)
+
+```text
+HEAD=6e5df6d2f1fc017b7f65a87bdb0dcb8603ff2dfd
+CONTROL_PLANE_ENROLLMENT_AND_RPC_TESTS=60_PASSED
+B54_ASYNC_HOST_ROUTE_AND_CLIENT_TESTS=60_PASSED
+TESTS=LOCAL_WINDOWS_CENTRAL_WORKSPACE_SYNTHETIC_FIXTURES
+PRODUCTION_SCHEMA_APPLIED=NO
+LIVE_ROUTES_MOUNTED=NO
+WINDOWS_CREDENTIAL_HANDOFF=NOT_WIRED
+WINDOWS_E2E=NOT_PROVEN
+```
+
+At this HEAD, GitHub exact-head P01 Deployment Boundary, Operations Policy Guard, B54 public-ingress gate, B54 public-ingress activation gate, B54 Google OAuth gate, B62 Control Plane Identity Binding gate and Cloudflare **mock** deploy have succeeded. Control Plane CI and B62 Unified Browser QA are **still in progress** at the time of this update; do not call the required set all-green yet.
+
+The shared scope still requires security-owner approval because it reads the pre-existing legacy B62 connector context as the product-neutral PC scope. Both consent and Broker schemas remain private, explicit opt-in migrations only. No route is mounted, no production binding or secret is changed, no Ready/merge/deploy occurs in this step.
