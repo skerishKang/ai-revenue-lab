@@ -41,7 +41,7 @@ from .request_contract import MAX_BROWSER_BODY_BYTES
 def _valid_turns(value: Any) -> bool:
     return (
         isinstance(value, list)
-        and 1 <= len(value) <= 32
+        and bool(value)
         and len(value) % 2 == 1
         and all(
             isinstance(item, dict)
