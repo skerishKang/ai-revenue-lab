@@ -10,6 +10,8 @@
   // Below this width the right A4 preview cannot coexist with a usable chat.
   var COMPACT_PREVIEW_BREAKPOINT = 1480;
   var previewAutoCollapsed = false;
+  // Track only a viewport-triggered rail close, never a customer toggle.
+  var railAutoCollapsed = false;
   var wasCompact = null;
   var wasMobile = null;
 
@@ -46,6 +48,7 @@
     railCollapse.setAttribute("aria-label", "왼쪽 메뉴 접기");
     railCollapse.setAttribute("aria-controls", "shellRail");
     railCollapse.addEventListener("click", function () {
+      railAutoCollapsed = false; // Explicit desktop collapse survives resize.
       document.body.classList.add("rail-collapsed");
       var reopenButton = byId("shellRailToggle");
       if (reopenButton) reopenButton.focus();
@@ -472,6 +475,7 @@
     toggle.title = "메뉴 접기/열기";
     toggle.setAttribute("aria-controls", "shellRail");
     toggle.addEventListener("click", function () {
+      railAutoCollapsed = false; // User opening/closing a drawer overrides auto state.
       document.body.classList.toggle("rail-collapsed");
       if (window.matchMedia("(max-width:900px)").matches) {
         if (!document.body.classList.contains("rail-collapsed")) {
@@ -546,7 +550,17 @@
     // leaving an A4 preview in place when a wide browser became a narrow one.
     var mobile = window.matchMedia("(max-width:" + MOBILE_BREAKPOINT + "px)").matches;
     var compact = window.matchMedia("(max-width:" + COMPACT_PREVIEW_BREAKPOINT + "px)").matches;
-    if (mobile && wasMobile !== true) document.body.classList.add("rail-collapsed");
+    if (mobile && wasMobile !== true) {
+      if (!document.body.classList.contains("rail-collapsed")) {
+        document.body.classList.add("rail-collapsed");
+        railAutoCollapsed = true;
+      }
+    } else if (!mobile && wasMobile === true && railAutoCollapsed) {
+      // DevTools/viewport expanded: restore only a SYSTEM-hidden rail.
+      // A customer-hidden desktop rail remains collapsed.
+      document.body.classList.remove("rail-collapsed");
+      railAutoCollapsed = false;
+    }
     if (compact && wasCompact !== true) {
       if (!document.body.classList.contains("preview-collapsed")) {
         document.body.classList.add("preview-collapsed");
