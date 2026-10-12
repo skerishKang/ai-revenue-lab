@@ -311,6 +311,26 @@
     // Never truncate a provider-bound quote request in the browser.
     const text = String(rawText == null ? "" : rawText).trim();
     if (!text) return;
+    // #B66 first-use UX: a greeting is not an instruction to replace the
+    // account's in-progress quotation. Do not start Guided, clear a draft,
+    // call B14, or ask permission to overwrite a saved quote for "hi".
+    if (/^(?:hi|hey|hello|하이|안녕(?:하세요)?|반가워요|반갑습니다)[\s.!?~]*$/iu.test(text)) {
+      if (lastEasyView === "home") {
+        lastEasyView = "free-form";
+        recordProductState("free-form");
+        startConversation();
+      }
+      addMessage("user", text);
+      addMessage("assistant",
+        "안녕하세요! 견적 내용을 편하게 알려주세요. 기존에 작성하던 견적이 있다면 '지난 견적 이어서 하기'로 불러올 수 있습니다.");
+      setChips([
+        { label: "지난 견적 이어서 하기", action: resumeAccountGuidedOrLocal },
+        { label: "질문받으며 새 견적", action: () => startGuidedIfReady() },
+        { label: "처음으로", action: showHome }
+      ]);
+      setInput(submitFreeFormText, "예: 대한건설에 배관 100미터 견적 만들어 줘");
+      return;
+    }
     const bridge = window.B66QuoteRuntimeBridge;
     const readiness = bridge && typeof bridge.readiness === "function" ? bridge.readiness() : null;
     if (!readiness || !readiness.ready) {
