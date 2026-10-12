@@ -41,6 +41,7 @@ def test_completed_file_context_runs_the_shipped_module_network_free():
         "CONVERSATION_ARTIFACT_CONTEXT_REFERENCE_NOT_GRANT=PASS",
         "CONVERSATION_ARTIFACT_CONTEXT_NEW_APPROVAL_REQUIRED=PASS",
         "CONVERSATION_ARTIFACT_CONTEXT_STALE_SWITCH_SAFE=PASS",
+        "CONVERSATION_ARTIFACT_CONTEXT_DELEGATED_ADOPT_NO_SINK=PASS",
     ):
         assert marker in result.stdout
 
@@ -57,6 +58,14 @@ def test_context_module_is_get_only_and_uses_no_dom_sink():
     assert 'createElement("a")' not in module
     assert "read_grant_issued !== false" in module
     assert "source_material_loaded !== false" in module
+    # #3933: continuing from a completed result is delegated to the shipped
+    # panel module. This read-only module never owns the adopt route, the
+    # adopted document identity or a transport of its own.
+    assert "adoptFromArtifact" in module
+    assert "artifact-followup/adopt" not in module
+    assert "adopted_from_artifact_id" not in module
+    assert "base64" not in module
+    assert "arrayBuffer" not in module
 
 
 def test_app_shell_mounts_and_clears_the_context_for_the_open_conversation():

@@ -351,8 +351,10 @@ async function settle() {
       "A slower earlier conversation must not repaint after a switch");
   }
 
-  // 8. The only follow-up action opens the existing web Excel panel and never
-  //    performs any additional network request or file operation.
+  // 8. #3933: the follow-up action delegates the ALREADY VERIFIED identifiers
+  //    to the shipped web Excel panel module. This module performs no network
+  //    request, no byte read and no grant; with no such module it degrades to
+  //    opening the existing panel only.
   {
     const panel = new FakeNode("details");
     const calls = [];
@@ -367,11 +369,14 @@ async function settle() {
     await settle();
     const action = host.children.find((node) => node.tag === "button");
     assert.ok(action, "Verified context must offer the existing approval panel");
-    assert.match(action.textContent, /새 승인 시작/);
+    assert.match(action.textContent, /이어서 작업/);
+    assert.match(action.textContent, /새 읽기 승인 필요/);
     action.handlers.click();
     assert.equal(panel.open, true);
     assert.equal(panel.scrolled, true);
     assert.equal(calls.length, 1, "Opening the panel is not an approval call");
+    assert.equal(action.disabled, false,
+      "A missing panel module never leaves the action stuck disabled");
     client.clear();
     restore();
     assert.equal(host.hidden, true);
@@ -379,9 +384,83 @@ async function settle() {
     assert.equal(client.getState().status, "idle");
   }
 
+  // 9. With the shipped panel module present the click is DELEGATED with the
+  //    exact conversation + artifact identity and no additional call here.
+  {
+    const panel = new FakeNode("details");
+    const calls = [];
+    const doc = fakeDocument({ panel });
+    const host = fakeHost(doc);
+    const client = moduleApi.init(host);
+    const delegated = [];
+    let settleAdopt = null;
+    global.window = {
+      PadiemClawWebXlsxSources: {
+        adoptFromArtifact(conversationId, artifactId, integrityRef) {
+          delegated.push({ conversationId, artifactId, integrityRef });
+          return new Promise((resolve) => { settleAdopt = resolve; });
+        },
+      },
+    };
+    const restore = installFetch(async (url, options) => {
+      calls.push({ url, options });
+      return response(resolvedBody());
+    });
+    try {
+      await client.show(CHAT);
+      await settle();
+      const action = host.children.find((node) => node.tag === "button");
+      action.handlers.click();
+      await settle();
+      assert.deepEqual(delegated, [{
+        conversationId: CHAT, artifactId: DOC, integrityRef: SHA,
+      }], "The panel receives only the already-verified identifiers");
+      assert.equal(calls.length, 1,
+        "Delegation adds no request to this read-only module");
+      assert.equal(action.disabled, true,
+        "The action stays disabled while the panel owns the transaction");
+      settleAdopt(false);
+      await settle();
+      assert.equal(action.disabled, false,
+        "A refused adopt must let the user retry honestly");
+      assert.equal(panel.open, false, "A refused adopt opens nothing by itself");
+    } finally {
+      delete global.window;
+      restore();
+    }
+  }
+
+  // 10. A panel module without the adopt entry point is never assumed.
+  {
+    const panel = new FakeNode("details");
+    const host = fakeHost(fakeDocument({ panel }));
+    const client = moduleApi.init(host);
+    const calls = [];
+    global.window = { PadiemClawWebXlsxSources: Object.freeze({}) };
+    const restore = installFetch(async (url, options) => {
+      calls.push({ url, options });
+      return response(resolvedBody());
+    });
+    try {
+      await client.show(CHAT);
+      await settle();
+      const action = host.children.find((node) => node.tag === "button");
+      action.handlers.click();
+      await settle();
+      assert.equal(panel.open, true,
+        "An older panel build still opens instead of failing silently");
+      assert.equal(calls.length, 1);
+      assert.equal(action.disabled, false);
+    } finally {
+      delete global.window;
+      restore();
+    }
+  }
+
   console.log("CONVERSATION_ARTIFACT_CONTEXT_OWNER_ONLY_GET=PASS");
   console.log("CONVERSATION_ARTIFACT_CONTEXT_NO_GUESS_AMBIGUOUS=PASS");
   console.log("CONVERSATION_ARTIFACT_CONTEXT_REFERENCE_NOT_GRANT=PASS");
   console.log("CONVERSATION_ARTIFACT_CONTEXT_NEW_APPROVAL_REQUIRED=PASS");
   console.log("CONVERSATION_ARTIFACT_CONTEXT_STALE_SWITCH_SAFE=PASS");
+  console.log("CONVERSATION_ARTIFACT_CONTEXT_DELEGATED_ADOPT_NO_SINK=PASS");
 })().catch((error) => { console.error(error); process.exitCode = 1; });
