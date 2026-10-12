@@ -77,10 +77,6 @@ def test_issue_route_uses_async_host_only_after_b54_login_and_csrf(monkeypatch):
         del request
         return SimpleNamespace(product_user_id="product-user.1", auth_session=active_b54())
     monkeypatch.setattr(routes, "resolve_current_b54_canonical_session", bridge)
-    status, body, headers = asyncio.run(routes.connector_enrollment_issue(
-        Request({"device_id":"device.1"}, make_state(host))
-    )).status_code, None, None
-    # Re-run to inspect JSON response body without assuming any live route mount.
     response = asyncio.run(routes.connector_enrollment_issue(Request({"device_id":"device.1"}, make_state(host))))
     assert response.status_code == 200
     result = json.loads(response.body)
@@ -90,12 +86,6 @@ def test_issue_route_uses_async_host_only_after_b54_login_and_csrf(monkeypatch):
 
 def test_redeem_route_never_projects_raw_device_credential(monkeypatch):
     host = AsyncHost()
-    status, response = asyncio.run(routes.connector_enrollment_redeem(
-        Request({
-            "challenge_id":"pairing.challenge.1", "device_id":"device.1",
-            "proof_ref":"pairing-proof:"+"a"*64,
-        }, make_state(host))
-    )).status_code, None
     result = asyncio.run(routes.connector_enrollment_redeem(Request({
         "challenge_id":"pairing.challenge.1", "device_id":"device.1",
         "proof_ref":"pairing-proof:"+"a"*64,
