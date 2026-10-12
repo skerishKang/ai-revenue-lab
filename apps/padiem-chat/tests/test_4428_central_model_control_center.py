@@ -283,18 +283,17 @@ def test_content_type_and_size_bounded():
     ).status_code == 400
 
 
-def test_only_get_and_preview_post_no_apply_endpoints():
+def test_s3_write_routes_are_registered_but_default_off_without_signer():
     app, _ = built_app()
-    paths = {(r.path, tuple(sorted(r.methods))) for r in app.routes if r.path.startswith("/api/admin/models/")}
-    assert paths == {
-        ("/api/admin/models/me", ("GET", "HEAD")),
-        ("/api/admin/models/snapshot", ("GET", "HEAD")),
-        ("/api/admin/models/preview", ("POST",)),
-    } or paths == {
-        ("/api/admin/models/me", ("GET",)),
-        ("/api/admin/models/snapshot", ("GET",)),
-        ("/api/admin/models/preview", ("POST",)),
+    paths = {r.path: set(r.methods) for r in app.routes if r.path.startswith("/api/admin/models/")}
+    assert set(paths) == {
+        "/api/admin/models/me", "/api/admin/models/snapshot",
+        "/api/admin/models/preview", "/api/admin/models/change-preview",
+        "/api/admin/models/change-apply", "/api/admin/models/rollback-preview",
+        "/api/admin/models/audit",
     }
+    assert paths["/api/admin/models/change-apply"] == {"POST"}
+    assert app.state.central_model_policy_write_key is None
 
 
 def test_ui_is_independent_and_does_not_hide_a_mutating_submit():

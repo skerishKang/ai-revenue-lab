@@ -26,6 +26,10 @@ from .central_model_control_routes import (
     central_model_admin_me, central_model_admin_snapshot,
     central_model_admin_preview,
 )
+from .central_model_policy_write_routes import (
+    central_model_change_preview, central_model_change_apply,
+    central_model_rollback_preview, central_model_change_audit,
+)
 from .b66_admin_routes import b66_admin_me, b66_admin_members, b66_admin_member_access, b66_admin_member_detail, b66_admin_model_policy, b66_admin_dispatch_alerts
 from .b66_quote_history_routes import (
     b66_quote_history_delete,
@@ -191,7 +195,7 @@ from .config import Settings
 from .connector_status_projection import connectors_status
 from .connector_ticket_routes import google_connector_ticket
 from .calendar_read_activation_routes import activate_google_calendar_read
-from .conversation_routes import api_conversation_detail, api_conversations
+from .conversation_routes import api_conversation_detail, api_conversation_search, api_conversations
 from .desktop_conversation_authority import UnconfiguredDesktopDeviceSessionAuthority
 from .desktop_conversation_routes import (
     DESKTOP_CONVERSATION_DETAIL_PATH,
@@ -306,6 +310,7 @@ def create_app(
     central_model_admin_authorizer=None,
     central_model_admin_google_email: str = "",
     central_model_policy_store=None,
+    central_model_policy_signing_key: str = "",
     claw_task_alert_store=None,
     calendar_store: CalendarStore | None = None,
     claw_automation_store=None,
@@ -326,6 +331,10 @@ def create_app(
         Route("/api/admin/models/me", central_model_admin_me, methods=["GET"]),
         Route("/api/admin/models/snapshot", central_model_admin_snapshot, methods=["GET"]),
         Route("/api/admin/models/preview", central_model_admin_preview, methods=["POST"]),
+        Route("/api/admin/models/change-preview", central_model_change_preview, methods=["POST"]),
+        Route("/api/admin/models/change-apply", central_model_change_apply, methods=["POST"]),
+        Route("/api/admin/models/rollback-preview", central_model_rollback_preview, methods=["POST"]),
+        Route("/api/admin/models/audit", central_model_change_audit, methods=["GET"]),
         Route("/api/models/owner-name-preview", owner_model_name_preview, methods=["GET"]),
         Route("/api/claw/verified-model-choices", claw_verified_model_choices, methods=["GET"]),
         Route("/api/auth/status", auth_status, methods=["GET"]),
@@ -379,6 +388,7 @@ def create_app(
         Route("/api/outputs", outputs_collection, methods=["GET", "POST"]),
         Route("/api/outputs/{output_id}", output_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/conversations", api_conversations, methods=["GET"]),
+        Route("/api/conversations/search", api_conversation_search, methods=["GET"]),
         Route("/api/conversations/{conversation_id}", api_conversation_detail, methods=["GET", "DELETE"]),
         # #3436 B2c: the GET-only canonical conversation surface for the paired
         # Desktop. Identity is the canonical broker device session, derived
@@ -595,6 +605,14 @@ def create_app(
         else D1CentralModelPolicyStore(d1_binding)
         if d1_binding is not None and callable(getattr(d1_binding, "batch", None))
         and callable(getattr(d1_binding, "prepare", None)) else None
+    )
+    # Independent, server-only signer. Missing or malformed => all central writes OFF.
+    import re as _model_re
+    app.state.central_model_policy_write_key = (
+        bytes.fromhex(central_model_policy_signing_key)
+        if isinstance(central_model_policy_signing_key, str)
+        and _model_re.fullmatch(r"[a-fA-F0-9]{64}", central_model_policy_signing_key)
+        else None
     )
     app.state.b66_membership_enforced = False
     # Production host enables this independently of the membership rollout.

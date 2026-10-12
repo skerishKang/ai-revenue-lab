@@ -4,7 +4,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
-from .history import HistoryStore, validate_conversation_id
+from .history import MAX_CONVERSATION_SEARCH_QUERY_CHARS, HistoryStore, validate_conversation_id
 
 
 def _history_unavailable() -> JSONResponse:
@@ -23,6 +23,33 @@ async def api_conversations(request: Request) -> JSONResponse:
     except Exception:
         return _history_unavailable()
     return JSONResponse({"conversations": conversations})
+
+
+async def api_conversation_search(request: Request) -> JSONResponse:
+    """#4471: owner-scoped search over the signed-in user's own conversations.
+
+    Read-only. Same auth and history-availability contract as the list route.
+    The query is bounded and bound as a parameter by the store.
+    """
+    if not auth_ready(request):
+        return _history_unavailable()
+    uid = current_user_id(request)
+    if uid is None:
+        return JSONResponse({"error": {"code": "unauthorized", "message": "로그인이 필요합니다."}}, status_code=401)
+    query = request.query_params.get("q", "")
+    if not isinstance(query, str) or not query.strip():
+        return JSONResponse({"conversations": [], "query": ""})
+    if len(query) > MAX_CONVERSATION_SEARCH_QUERY_CHARS * 4:
+        return JSONResponse(
+            {"error": {"code": "query_too_long", "message": "검색어가 너무 깁니다."}},
+            status_code=400,
+        )
+    store: HistoryStore = request.app.state.history_store
+    try:
+        conversations = await store.search_conversations(uid, query)
+    except Exception:
+        return _history_unavailable()
+    return JSONResponse({"conversations": conversations, "query": query.strip()[:MAX_CONVERSATION_SEARCH_QUERY_CHARS]})
 
 
 async def api_conversation_detail(request: Request) -> JSONResponse:

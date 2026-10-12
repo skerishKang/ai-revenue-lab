@@ -218,6 +218,8 @@
     const clawNav = document.getElementById("clawNavButton");
     const tasksNav = document.getElementById("tasksNavButton");
     const alertsNav = document.getElementById("alertsNavButton");
+    const tasksEntry = document.getElementById("clawTasksButton");
+    const alertsEntry = document.getElementById("automationAlertsButton");
     const inboxKind = workspace && workspace.dataset.view === "inbox" ? workspace.dataset.inboxKind : "";
     // New Chat no longer shows a mode hint: the redundant label was removed
     // when the sidebar actions row was rearranged (B62 split-search task).
@@ -226,6 +228,8 @@
     if (clawNav) clawNav.setAttribute("aria-current", state === "claw" && !inboxKind ? "page" : "false");
     if (tasksNav) tasksNav.setAttribute("aria-current", state === "claw" && inboxKind === "tasks" ? "page" : "false");
     if (alertsNav) alertsNav.setAttribute("aria-current", state === "claw" && inboxKind === "alerts" ? "page" : "false");
+    if (tasksEntry) tasksEntry.setAttribute("aria-current", state === "claw" && inboxKind === "tasks" ? "page" : "false");
+    if (alertsEntry) alertsEntry.setAttribute("aria-current", state === "claw" && inboxKind === "alerts" ? "page" : "false");
   }
   function showConversation({ preserveClaw = false } = {}) {
     emptyState.hidden = true;
@@ -512,10 +516,12 @@
     projectsList.replaceChildren();
     projectsSection.hidden = true;
     projectsEmpty.hidden = true;
-    projectsNavButton.disabled = true;
-    projectsNavButton.setAttribute("aria-disabled", "true");
+    if (projectsNavButton) {
+      projectsNavButton.disabled = true;
+      projectsNavButton.setAttribute("aria-disabled", "true");
+    }
     syncFilesNav();
-    projectsBadge.textContent = authState.authenticated ? uiT("setup-needed") : uiT("login-after");
+    if (projectsBadge) projectsBadge.textContent = authState.authenticated ? uiT("setup-needed") : uiT("login-after");
     renderProjectState();
   }
   function renderProjectState() {
@@ -551,24 +557,28 @@
       row.append(button, manage);
       projectsList.appendChild(row);
     });
-    projectsBadge.textContent = projects.length ? String(projects.length) : uiT("create-new");
+    if (projectsBadge) projectsBadge.textContent = projects.length ? String(projects.length) : uiT("create-new");
   }
   async function loadProjects() {
     if (!authState.authenticated || !authState.history_ready) {
       clearProjectsUI();
       return false;
     }
-    projectsNavButton.disabled = true;
-    projectsNavButton.setAttribute("aria-disabled", "true");
-    projectsBadge.textContent = uiT("checking");
+    if (projectsNavButton) {
+      projectsNavButton.disabled = true;
+      projectsNavButton.setAttribute("aria-disabled", "true");
+    }
+    if (projectsBadge) projectsBadge.textContent = uiT("checking");
     try {
       const response = await fetch("/api/projects", { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || !Array.isArray(data.projects)) throw new Error("projects unavailable");
       projects = data.projects.filter((item) => item && typeof item.id === "string" && typeof item.name === "string");
       projectsReady = true;
-      projectsNavButton.disabled = false;
-      projectsNavButton.setAttribute("aria-disabled", "false");
+      if (projectsNavButton) {
+        projectsNavButton.disabled = false;
+        projectsNavButton.setAttribute("aria-disabled", "false");
+      }
       syncFilesNav();
       if (activeProject) activeProject = projects.find((item) => item.id === activeProject.id) || activeProject;
       renderProjects();
@@ -926,6 +936,10 @@
     const inboxNavButtons = [
       document.getElementById("tasksNavButton"),
       document.getElementById("alertsNavButton"),
+      // #4462: the sidebar entries are gone; the general-view task entry
+      // and the automation-view alerts entry reuse the same signed-in gate.
+      document.getElementById("clawTasksButton"),
+      document.getElementById("automationAlertsButton"),
       // #3237: Automation reuses the same signed-in gate. The server still
       // owns the canonical tenant, so an enabled button never implies the
       // caller may read any particular workspace.
@@ -1010,7 +1024,7 @@
       accountName.textContent = name || uiT("signed-in");
       accountName.hidden = false;
       historySection.hidden = false;
-      projectsBadge.textContent = uiT("checking");
+      if (projectsBadge) projectsBadge.textContent = uiT("checking");
       return;
     }
 
@@ -1288,6 +1302,14 @@
       return false;
     }
   }
+
+  // #4471: the sidebar conversation search opens a hit through this loader
+  // instead of a recent-list DOM row, so a hit outside the recent page still
+  // restores with the same auth guard, inFlight lock, project restore and the
+  // server-verified Claw set. Read-only handle: it grants no new authority.
+  window.PadiemChatConversationOpener = Object.freeze({
+    open: (conversationId) => openSavedConversation(conversationId),
+  });
 
   // Hark's private web XLSX intake creates a separate trusted owner-owned
   // work conversation. This explicit navigation never guesses that it was the
@@ -1725,7 +1747,7 @@
     selectAttachment(file);
   });
   removeAttachment.addEventListener("click", clearAttachment);
-  projectsNavButton.addEventListener("click", () => {
+  if (projectsNavButton) projectsNavButton.addEventListener("click", () => {
     if (!projectsReady) return;
     if (projects.length === 0) openProjectDialog();
     else projectsSection.scrollIntoView({ block: "nearest", behavior: "smooth" });
@@ -3094,6 +3116,10 @@
   }
 
   if (automationNavButton) automationNavButton.addEventListener("click", openClawAutomation);
+  // #4462: automation-related run/completion/failure alerts stay reachable
+  // from the automation view after the standalone sidebar Alerts entry is gone.
+  const automationAlertsButton = document.getElementById("automationAlertsButton");
+  if (automationAlertsButton) automationAlertsButton.addEventListener("click", () => openClawInbox("alerts"));
   if (clawAutomationRetry) clawAutomationRetry.addEventListener("click", () => void loadClawAutomationRules());
 
   function openClawWorkspace() {
@@ -3695,6 +3721,14 @@
   if (clawManualEntryButton) clawManualEntryButton.addEventListener("click", openClawManual);
   if (tasksNavButton) tasksNavButton.addEventListener("click", () => openClawInbox("tasks"));
   if (alertsNavButton) alertsNavButton.addEventListener("click", () => openClawInbox("alerts"));
+  // #4462: background task history stays reachable from the general Claw
+  // entry bar (#3531 keeps the workspace canvas hidden in general/manual
+  // views, so the entry lives beside the manual-entry control instead).
+  // In-conversation run status/results are unchanged; this only preserves
+  // the out-of-conversation task list path (the calendar task links keep
+  // working as before).
+  const clawTasksButton = document.getElementById("clawTasksButton");
+  if (clawTasksButton) clawTasksButton.addEventListener("click", () => openClawInbox("tasks"));
   if (clawInboxRetry) clawInboxRetry.addEventListener("click", () => {
     const kind = clawWorkspace?.dataset.inboxKind;
     if (kind === "tasks" || kind === "alerts") loadClawInbox(kind);

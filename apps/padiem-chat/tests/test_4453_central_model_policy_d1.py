@@ -266,3 +266,144 @@ def test_audit_metadata_is_content_blind_no_credentials_or_prompts():
     assert "api_key" not in audit and "prompt" not in audit
     assert "password" not in audit and "Bearer" not in audit
     assert "google/test-model" in audit
+
+
+# S3: signed global-admin write gateway; no model-dispatch activation.
+def test_s3_preview_confirm_d1_audit_rollback_and_replay():
+    from app.central_model_policy_write_routes import WORKSPACE
+    from app.auth import SESSION_COOKIE, create_session_token
+    from app.config import Settings
+    from app.main import create_app
+    import httpx
+
+    class Admin:
+        async def is_global_model_admin(self, *, user_id):
+            return True
+
+    class Models:
+        async def list_selectable_models(self):
+            return [{"model_id": GOOD, "name": "Test model"}]
+
+        async def list_registered_models(self):
+            return [
+                {"model_id": GOOD, "name": "Test model", "provider_id": "google",
+                 "b14_enabled": True, "owner_excluded": False, "capabilities": ["chat"]},
+                {"model_id": BAD, "name": "Blocked test", "provider_id": "google",
+                 "b14_enabled": False, "owner_excluded": True, "capabilities": ["chat"]},
+            ]
+
+    settings = Settings.from_values(
+        runtime_mode="mock", auth_mode="password",
+        public_base_url="https://chat.test",
+        session_secret="s3-admin-test-cookie-secret-longer-than-32",
+        session_max_age_seconds=3600,
+    )
+    store = D1CentralModelPolicyStore(FakeD1())
+    app = create_app(
+        settings=settings, history_store=SimpleNamespace(),
+        central_model_admin_authorizer=Admin(),
+        central_model_policy_store=store,
+        central_model_policy_signing_key="ab" * 32,
+    )
+    app.state.b14_model_choice_resolver = Models()
+
+    async def req(method, path, *, body=None, user=USER, origin="https://chat.test"):
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="https://chat.test"
+        ) as client:
+            if user is not None:
+                client.cookies.set(SESSION_COOKIE, create_session_token(settings, user))
+            headers = {"Origin": origin} if origin is not None else {}
+            return await client.request(method, path, json=body, headers=headers)
+
+    payload = {"model_id": GOOD, "targets": [
+        {"product_id": "central", "tier": "PLUS", "action": "allow"},
+        {"product_id": "chat", "tier": "PLUS", "action": "allow"},
+    ]}
+
+    async def case():
+        assert (await req("GET", "/api/admin/models/me")).json()["write_enabled"] is True
+        assert (await req("POST", "/api/admin/models/change-preview",
+                          body=payload, user=None)).status_code == 401
+        assert (await req("POST", "/api/admin/models/change-preview",
+                          body=payload, origin="https://evil.test")).status_code == 403
+        preview = await req("POST", "/api/admin/models/change-preview", body=payload)
+        assert preview.status_code == 200, preview.text
+        data = preview.json()
+        assert data["persisted"] is False and data["runtime_enforced"] is False
+        assert len(data["diff"]) == 2 and (await store.snapshot(WORKSPACE)).revision == 0
+        receipt = data["confirmation_receipt"]
+        tampered = receipt[:-1] + ("0" if receipt[-1] != "0" else "1")
+        assert (await req("POST", "/api/admin/models/change-apply",
+                          body={"confirmation_receipt": tampered})).status_code == 422
+        assert (await req("POST", "/api/admin/models/change-apply",
+                          body={"confirmation_receipt": receipt},
+                          user="usr_" + "b" * 32)).status_code == 422
+        applied = await req("POST", "/api/admin/models/change-apply",
+                            body={"confirmation_receipt": receipt})
+        assert applied.status_code == 200, applied.text
+        assert applied.json()["revision"] == 1
+        assert applied.json()["runtime_enforced"] is False
+        assert len((await store.snapshot(WORKSPACE)).rules) == 2
+        assert (await req("POST", "/api/admin/models/change-apply",
+                          body={"confirmation_receipt": receipt})).status_code == 409
+        audit = await req("GET", "/api/admin/models/audit")
+        assert audit.status_code == 200 and len(audit.json()["events"]) == 1
+        assert audit.json()["events"][0]["operation"] == "apply"
+        bad = {"model_id": BAD, "targets": [
+            {"product_id": "chat", "tier": "FREE", "action": "allow"},
+        ]}
+        assert (await req("POST", "/api/admin/models/change-preview",
+                          body=bad)).status_code == 422
+        assert (await store.snapshot(WORKSPACE)).revision == 1
+        rollback = await req("POST", "/api/admin/models/rollback-preview",
+                             body={"target_revision": 0})
+        assert rollback.status_code == 200, rollback.text
+        done = await req("POST", "/api/admin/models/change-apply", body={
+            "confirmation_receipt": rollback.json()["confirmation_receipt"]
+        })
+        assert done.status_code == 200, done.text
+        final = await store.snapshot(WORKSPACE)
+        assert final.revision == 2 and not final.rules
+        audit = (await req("GET", "/api/admin/models/audit")).json()
+        assert [e["operation"] for e in audit["events"]] == ["rollback", "apply"]
+        assert (await req("POST", "/api/admin/models/change-apply", body={
+            "confirmation_receipt": rollback.json()["confirmation_receipt"]
+        })).status_code == 409
+
+    asyncio.run(case())
+
+
+def test_s3_missing_signer_remains_off():
+    from app.auth import SESSION_COOKIE, create_session_token
+    from app.config import Settings
+    from app.main import create_app
+    import httpx
+
+    class Admin:
+        async def is_global_model_admin(self, *, user_id):
+            return True
+
+    settings = Settings.from_values(
+        runtime_mode="mock", auth_mode="password",
+        public_base_url="https://chat.test",
+        session_secret="s3-admin-test-cookie-secret-longer-than-32",
+        session_max_age_seconds=3600,
+    )
+    app = create_app(
+        settings=settings, history_store=SimpleNamespace(),
+        central_model_admin_authorizer=Admin(),
+        central_model_policy_store=D1CentralModelPolicyStore(FakeD1()),
+    )
+
+    async def check():
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="https://chat.test"
+        ) as client:
+            client.cookies.set(SESSION_COOKIE, create_session_token(settings, USER))
+            assert (await client.get("/api/admin/models/me")).json()["write_enabled"] is False
+            res = await client.post("/api/admin/models/change-preview",
+                                    headers={"Origin": "https://chat.test"},
+                                    json={"model_id": GOOD, "targets": []})
+            assert res.status_code == 503
+    asyncio.run(check())

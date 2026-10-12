@@ -307,7 +307,7 @@ def test_central_d1_rules_visible_as_stored_only_not_executing():
             seen = _mock(page, snapshot=view)
             page.goto("https://chat.test/admin-models.html")
             page.locator("#flowCentral").get_by_text("원장 연결 · 미적용").wait_for()
-            page.locator("details.advanced summary").click()
+            page.locator("details.advanced").last.locator("summary").click()
             assert "저장 원장만 연결" in page.locator("#sourceList").inner_text()
             assert "실제 실행 미적용" in page.locator("#sourceList").inner_text()
             assert not page.locator("#previewResult").is_visible()
