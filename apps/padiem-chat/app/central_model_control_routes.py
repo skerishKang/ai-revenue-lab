@@ -189,7 +189,7 @@ async def central_model_admin_preview(request: Request) -> JSONResponse:
     for target in targets:
         if not isinstance(target, dict) or set(target) != {"product_id", "tier", "action"}:
             return _error(400, "invalid_preview_target")
-        product, tier, action = target.values() if False else (
+        product, tier, action = (
             target["product_id"], target["tier"], target["action"]
         )
         if (
