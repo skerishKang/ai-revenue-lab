@@ -54,7 +54,10 @@ def built_app(*, admin=None, resolver=None, store=None):
         session_secret="4428-central-model-center-test-session-secret",
         session_max_age_seconds=3600,
     )
-    app = create_app(settings=settings, central_model_admin_authorizer=admin)
+    app = create_app(
+        settings=settings, history_store=SimpleNamespace(),
+        central_model_admin_authorizer=admin,
+    )
     app.state.b14_model_choice_resolver = resolver if resolver is not None else Catalog()
     app.state.b66_member_admin_store = store
     return app, settings
