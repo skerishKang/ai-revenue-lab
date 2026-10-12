@@ -230,3 +230,70 @@ def test_schema_install_rpc_is_separate_and_disabled_by_default():
     tables = {row[0] for row in storage.sql.db.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
     assert "canonical_connector_enrollment_consent" in tables
     assert "canonical_connector_enrollment_session_binding" in tables
+
+def test_current_consent_challenge_binding_and_redeem_authorization_are_connected():
+    fake, records, canonical, _ = harness()
+    grant = call("grant_connector_enrollment_consent", fake, grant_payload())
+    assert grant["ok"] is True
+    consent_id = grant["consent"]["consent_id"]
+
+    current = call("resolve_connector_enrollment_consent_for_device", fake, {
+        "session_id": SESSION_ID, "device_id": DEVICE,
+    })
+    assert current["ok"] is True
+    assert current["consent"]["consent_id"] == consent_id
+    assert current["consent"]["owner_subject_id"] == SUBJECT
+
+    expiry = (datetime.now(timezone.utc) + timedelta(minutes=5)).isoformat()
+    challenge_id = "pairing." + "f"*32
+    bound = call("bind_connector_enrollment_challenge", fake, {
+        "session_id": SESSION_ID, "challenge_id": challenge_id, "expires_at": expiry,
+    })
+    assert bound["ok"] is True
+    assert bound["binding"]["session_id_bound"] is True
+    assert bound["binding"]["raw_session_id_returned"] is False
+
+    authorized = call("authorize_connector_enrollment_redeem", fake, {
+        "challenge_id": challenge_id, "consent_id": consent_id,
+        "device_id": DEVICE, "owner_ref": SUBJECT,
+        "account_ref": "account.shared.test", "workspace_ref": "workspace.shared.test",
+    })
+    assert authorized["ok"] is True
+    assert authorized["authorization"]["dispatch_authorized"] is False
+    assert authorized["authorization"]["grants_read"] is False
+    assert authorized["authorization"]["grants_write"] is False
+
+    records.withdraw_preverified_consent(
+        consent_id=consent_id, owner_subject_id=SUBJECT, now=datetime.now(timezone.utc),
+    )
+    refused = call("authorize_connector_enrollment_redeem", fake, {
+        "challenge_id": challenge_id, "consent_id": consent_id,
+        "device_id": DEVICE, "owner_ref": SUBJECT,
+        "account_ref": "account.shared.test", "workspace_ref": "workspace.shared.test",
+    })
+    assert refused["ok"] is False
+    assert refused["error"]["code"] == "enrollment_consent_withdrawn"
+
+
+def test_current_consent_and_authorization_rpc_reject_extra_or_cross_owner_fields():
+    fake, _, _, _ = harness()
+    grant = call("grant_connector_enrollment_consent", fake, grant_payload())
+    assert grant["ok"] is True
+    consent_id = grant["consent"]["consent_id"]
+    wrong = call("resolve_connector_enrollment_consent_for_device", fake, {
+        "session_id": SESSION_ID, "device_id": DEVICE, "owner_subject_id": SUBJECT,
+    })
+    assert wrong["ok"] is False and wrong["error"]["code"] == "invalid_identity_authority_rpc"
+    expires = (datetime.now(timezone.utc)+timedelta(minutes=5)).isoformat()
+    challenge_id = "pairing."+"e"*32
+    assert call("bind_connector_enrollment_challenge", fake, {
+        "session_id": SESSION_ID, "challenge_id": challenge_id, "expires_at": expires,
+    })["ok"] is True
+    denied = call("authorize_connector_enrollment_redeem", fake, {
+        "challenge_id": challenge_id, "consent_id": consent_id, "device_id": DEVICE,
+        "owner_ref": "sub.other", "account_ref": "account.shared.test",
+        "workspace_ref": "workspace.shared.test",
+    })
+    assert denied["ok"] is False
+    assert denied["error"]["code"] == "enrollment_consent_withdrawn"
+
