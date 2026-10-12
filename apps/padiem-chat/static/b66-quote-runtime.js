@@ -72,7 +72,7 @@
   let currentRequestId = null;
   let frameLoadedUrl = "";
   let pcQuerySequence = 0;
-  const PC_DIRECTORY_PATH = "/api/claw/local-access/devices";
+  const PC_DIRECTORY_PATH = "/api/b66/connect/devices";
   const MAX_PC_DIRECTORY_BYTES = 32768;
   const B66_ASSET_ID = /^b66asset_[0-9a-f]{32}$/;
   const PRIVATE_ASSET_MEDIA = new Set(["image/png", "image/jpeg", "image/webp"]);
