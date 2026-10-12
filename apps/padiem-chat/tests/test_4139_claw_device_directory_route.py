@@ -239,6 +239,10 @@ def test_http_contradictory_connected_or_malformed_source_cannot_claim_success()
         {"deviceId": "a", "state": "CONNECTED", "usable": False, "revoked": False, "expired": False},
         {"deviceId": "a", "state": "CONNECTED", "usable": True, "revoked": True, "expired": False},
         {"deviceId": "a", "state": "MAGIC", "usable": False, "revoked": False, "expired": False},
+        # Malformed nested JSON values must return a bounded unavailable envelope,
+        # not throw TypeError (HTTP 500) inside the server projection.
+        {"deviceId": "a", "state": ["CONNECTED"], "usable": True, "revoked": False, "expired": False},
+        {"deviceId": "a", "state": {"value": "CONNECTED"}, "usable": True, "revoked": False, "expired": False},
     ):
         app, settings = make_app()
         app.state.claw_device_directory_source = Malformed(row)

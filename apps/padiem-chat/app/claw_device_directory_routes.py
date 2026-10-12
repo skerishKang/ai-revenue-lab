@@ -168,7 +168,7 @@ async def claw_device_directory(request: Request) -> JSONResponse:
         usable, revoked, expired = row.get("usable"), row.get("revoked"), row.get("expired")
         if not isinstance(ident, str) or not _DEVICE_ID_PATTERN.fullmatch(ident) or ident in seen:
             return _response({"ok": True, "available": False, "reason": "device_directory_read_failed"})
-        if state not in {"CONNECTED", "OFFLINE", "REVOKED"} or any(
+        if state not in ("CONNECTED", "OFFLINE", "REVOKED") or any(
             type(value) is not bool for value in (usable, revoked, expired)
         ):
             return _response({"ok": True, "available": False, "reason": "device_directory_read_failed"})
