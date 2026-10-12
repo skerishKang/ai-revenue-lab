@@ -11,7 +11,7 @@ import pytest
 sync_playwright = pytest.importorskip("playwright.sync_api").sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1] / "static"
-DEVICE_ENDPOINT = "/api/claw/local-access/devices"
+DEVICE_ENDPOINT = "/api/b66/connect/devices"
 
 
 class StaticHandler(http.server.SimpleHTTPRequestHandler):
