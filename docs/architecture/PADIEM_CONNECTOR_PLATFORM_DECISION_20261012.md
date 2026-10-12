@@ -10,7 +10,7 @@
 
 PADIEM 웹(B66/Claw/Chat/Engine/향후 제품)은 **업무 요청·승인·상태·미리보기·최종 산출물**을 제공한다. 사용자는 별도의 Browser Use 앱, Desktop Commander형 UI, RDP, CLI, 수동 업·다운로드 또는 제품별 페어링 절차를 배울 필요가 없도록 설계한다. Windows Connector에는 경량 트레이/상태·일시정지·연결해제·계정·권한 안내만 기본 제공한다.
 
-**잠정 대외 제품명: PADIEM Connector.** 기존 `apps/claw-connect/**`, Claw Connect, 내부 브랜치명은 진행 중인 #4420이 안정화되기 전까지 함부로 대량 변경하지 않는다.
+**잠정 대외 제품명: PADIEM Connector.** 기존 S1 경로/내부 명칭은 `apps/claw-connect/**` / Claw Connect로 유지한다. 향후 제품명 전환은 계정 등록·기기 identity와 호환성을 검증한 별도 변경에서 진행하며, 이름만 바꾼 것으로 one-click 연동 완료를 선언하지 않는다.
 
 ## 2. 실제 고객 경험: 설치 한 번 + 확인된 동일 계정 로그인
 
@@ -36,7 +36,7 @@ PADIEM 웹(B66/Claw/Chat/Engine/향후 제품)은 **업무 요청·승인·상�
 
 **이미 병합:** canonical Broker device directory PR #4418, B62 인증된 Claw 기기 조회 #4424, 기기 목록 UI #4419, 공통 제품별 PC 접근 계약 [#4429](https://github.com/skerishKang/ai-revenue-lab/pull/4429) (2026-10-12, squash SHA `dbf8d658b2a8cd03c64ee4e3b86899136fe2bb40`), B66 embedded quote 화면의 제품 승인 조건 기본 OFF PC 정보 패널 [#4430](https://github.com/skerishKang/ai-revenue-lab/pull/4430). **이것들이 설치 후 자동 접속·파일 전송·실행 성공을 뜻하지 않는다.** #4429의 `PcPreflightDecision.dispatch_authorized`는 언제나 `False`이다.
 
-**아직 Draft / 미검증:** Windows tray/installer #4420, browser.control #3783. 실제 2-PC 인증 등록·명령 전달·Office 실행·웹 결과 도착 E2E #3099는 열려 있다. **제품 실행 OFF.**
+**2026-10-12 S1 Windows 소스 병합:** 트레이·사용자별 설치·종료 복구 #4420 (main `9047933dc3a5f5c573375f5da16b2a5d52c180ef`), 정확한 PR HEAD에서 Windows pytest 57/57, Node 5/5, LOCAL2 실제 Windows 종료 하네스 7/7. 트레이 `웹 열기`는 운영 `https://chat.padiem.net/`으로 수정. **단, 아직 placeholder Resident(`python -c pass`)와 기본 disconnected probe를 사용하므로 검증된 PADIEM 계정 등록·온라인 presence·실제 파일/명령 실행이나 배포된 고객 설치 프로그램은 아니다.** Browser Use #3783은 Draft이며 2-PC 등록·Office 실행·파일 왕복 운영 E2E #3099는 미증명. **제품 실행 OFF.**
 
 ## 4. 실행 환경 선택 전략 — '항상 로컬 Excel이 더 빠르다'고 가정 금지
 
@@ -108,7 +108,7 @@ PADIEM 웹: 수정 XLSX/PDF 미리보기·다운로드·실행/오류 이력
 | 단계 | 실제 산출물 | 출하/활성화 필수 조건 |
 |---|---|---|
 | S0 **현존** | Broker 기기 조회, Claw 조회 UI, 기본 OFF 제품 권한 계약, B66 embedded 숨김 PC 패널 | CI·코드 존재는 출하 증거 아님 |
-| S1 **우선** | Windows Installer/트레이의 안정화, 최초 검증된 PADIEM 인증·기기 등록·재연결 | Windows 실제 PC 2대, 로그아웃/재설치/철회/오프라인, owner/workspace 분리 |
+| S1 **부분 구현** | Windows 설치/트레이·종료 안정화 #4420 병합. 동일 계정 최초 검증된 인증·PC 등록·재연결은 미배선 | 실제 PC 2대, 인증·동의·재설치·철회/오프라인, owner/workspace 분리. **현재 제품 온라인/실행 OFF** |
 | S2 **부분 구현** | B66 전용 서버 PC 목록 권한 #4439 병합, Claw API 존재. Chat/Engine 제품별 연결 및 운영 정책 공급원은 후속 | **기본 OFF 유지**, 운영 grant·실제 인증 PC·배포 E2E 미완료 |
 | S3 | **웹 XLSX→Connector 제한된 Pull→결과 웹 반환** | Scoped artifact ticket, 해시·크기, READ/WRITE 승인 별도, 실패·취소·중복 처리, Windows Excel 실작업 증거 |
 | S4 | Connector 전용 Browser Use/profile + 사람 로그인·MFA 인계 | 기존 browser.control + P01 안전 게이트, 다른 크롬 개인세션 비접근, 실제 사이트 허용 범위 QA |
