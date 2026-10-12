@@ -836,6 +836,9 @@ class Default(WorkerEntrypoint):
                     central_model_admin_google_email=(
                         binding_value(self.env, "PADIEM_CENTRAL_MODEL_ADMIN_GOOGLE_EMAIL") or ""
                     ),
+                    central_model_policy_signing_key=(
+                        binding_value(self.env, "PADIEM_CENTRAL_MODEL_POLICY_SIGNING_KEY") or ""
+                    ),
                     r2_binding=r2_binding,
                     web_transport=web_transport,
                     b66_pdf_renderer_client=b66_pdf_renderer_client,

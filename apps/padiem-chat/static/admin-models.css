@@ -503,3 +503,8 @@ footer{color:#526574}
 }
 .model-item.model-inactive .model-dot{color:#8b99a6}
 .model-item.model-inactive .model-words small{color:#677884}
+
+/* S3: keep dormant write/rollback controls out of the read-only UI. */
+#applyBtn[hidden], #policyHistory[hidden] { display:none !important; }
+#policyHistory { margin-top:12px; }
+#policyHistory input[type="number"] { max-width:110px; margin:8px; padding:8px; border-radius:8px; }
