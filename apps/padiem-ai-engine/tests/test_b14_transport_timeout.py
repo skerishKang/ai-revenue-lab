@@ -167,4 +167,4 @@ def test_transport_receives_configured_timeout(worker: Any) -> None:
     assert transport.captured is not None
     # model read is an idle budget; connect/write/pool remain bounded phases.
     assert transport.captured["read"] == 600.0
-    assert transport.captured["connect"] == 30.0
+    assert transport.captured["connect"] == 600.0

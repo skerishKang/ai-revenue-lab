@@ -21,35 +21,32 @@ from __future__ import annotations
 
 import httpx
 
-CONNECT_SECONDS = 30.0
-# Exact Gemini-compatible Gemma 31B route: a verified healthy completed model
-# response took 31.8 seconds, while another request failed at ~30.5 seconds.
-# Workers' Fetch-backed HTTPX connect phase can cover first-response waiting;
-# the phase name is not proof of a native TCP/TLS handshake bottleneck.
-# Scope the extra room to this ID only, below Engine's 60-second ceiling.
-GEMMA_31B_MODEL_ID = "google/gemma-4-31b-it"
-GEMMA_31B_CONNECT_SECONDS = 55.0
-READ_SECONDS = 600.0  # ZCode-style per-chunk model idle watchdog
+READ_SECONDS = 600.0  # model first response / per-chunk inactivity ceiling
+# Workers' Fetch-backed HTTPX connect phase can include waiting for response
+# headers, not just a native TCP handshake. It must not silently impose a
+# second 30/55s wall on otherwise healthy 600s model inference.
+CONNECT_SECONDS = READ_SECONDS  # Fetch first-response watchdog (not 30s)
 WRITE_SECONDS = 20.0
 POOL_SECONDS = 10.0
 GATEWAY_WALL_SECONDS = 45.0
 ENGINE_MAX_WALL_SECONDS = 60.0  # Core ceiling, NOT its 20s default
 
-assert 0 < POOL_SECONDS <= WRITE_SECONDS <= CONNECT_SECONDS < GATEWAY_WALL_SECONDS
+assert 0 < POOL_SECONDS <= WRITE_SECONDS < CONNECT_SECONDS
 assert 0 < GATEWAY_WALL_SECONDS < ENGINE_MAX_WALL_SECONDS
-assert CONNECT_SECONDS < GEMMA_31B_CONNECT_SECONDS < ENGINE_MAX_WALL_SECONDS
-assert READ_SECONDS >= GATEWAY_WALL_SECONDS  # independent model idle budget
+assert CONNECT_SECONDS == READ_SECONDS  # same first-response/stream idle budget
 
 
 def build_provider_http_timeout(model_id: str | None = None) -> httpx.Timeout:
-    """Fresh timeout for completed/SSE; one exact Gemma route gets extra TTFB room.
+    """Uniform first-response/stream-idle budget for exact-model inference.
 
-    This does not authorize retries or widen any other provider's connection
-    window. The initial inference attempt has no separate 45s wall ceiling.
+    Retain an optional model identifier for existing adapter callers; no
+    provider-specific 30/55s early cap is permitted. Tool and OAuth transport
+    deadlines belong to their separate, short-bound transport policies.
     """
+    del model_id
     return httpx.Timeout(
         None,
-        connect=GEMMA_31B_CONNECT_SECONDS if model_id == GEMMA_31B_MODEL_ID else CONNECT_SECONDS,
+        connect=CONNECT_SECONDS,
         read=READ_SECONDS,
         write=WRITE_SECONDS,
         pool=POOL_SECONDS,

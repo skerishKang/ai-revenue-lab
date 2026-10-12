@@ -347,7 +347,7 @@ class B14StreamingClient:
         payload = request.to_payload()
         payload["stream"] = True
         timeout = httpx.Timeout(
-            connect=min(self._config.timeout_seconds, 30.0),
+            connect=self._config.timeout_seconds,
             read=self._config.timeout_seconds,
             write=min(self._config.timeout_seconds, 20.0),
             pool=min(self._config.timeout_seconds, 10.0),

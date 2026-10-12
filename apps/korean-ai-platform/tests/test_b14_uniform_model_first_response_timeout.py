@@ -1,4 +1,8 @@
-"""Exact-model Gemma31 Fetch/HTTPX connect-window regression (offline only)."""
+"""B14 model first-response wait matches the 600s model idle policy (offline).
+
+The Workers Fetch HTTPX 'connect' phase can encompass waiting for the first
+response headers. No 30/55-second model-specific early cut is allowed.
+"""
 from __future__ import annotations
 
 import httpx
@@ -6,49 +10,49 @@ import pytest
 
 from app.pilot import platform as plat
 from app.pilot.b14_timeout_policy import (
-    CONNECT_SECONDS,
-    GEMMA_31B_CONNECT_SECONDS,
-    GEMMA_31B_MODEL_ID,
-    ENGINE_MAX_WALL_SECONDS,
-    READ_SECONDS,
+    CONNECT_SECONDS, READ_SECONDS, WRITE_SECONDS, POOL_SECONDS,
     build_provider_http_timeout,
 )
 
 
-def test_exact_model_only_gets_extended_connect_window():
-    assert CONNECT_SECONDS == 30.0
-    assert 31.8 < GEMMA_31B_CONNECT_SECONDS < ENGINE_MAX_WALL_SECONDS
-    assert build_provider_http_timeout().connect == CONNECT_SECONDS
-    for other in ("google/gemma-4-26b-a4b-it",
-                  "google/gemini-3.5-flash-lite",
-                  "agnes-ai/agnes-3.0-flash",
-                  "opencode-go/step-5-preview-free",
-                  "google/gemma-4-31b-it-extra"):
-        assert build_provider_http_timeout(other).connect == CONNECT_SECONDS
-    scope = build_provider_http_timeout(GEMMA_31B_MODEL_ID)
-    assert scope.connect == GEMMA_31B_CONNECT_SECONDS
-    assert scope.read == READ_SECONDS
-    assert scope.write == build_provider_http_timeout().write
-    assert scope.pool == build_provider_http_timeout().pool
+@pytest.mark.parametrize("model_id", [
+    None,
+    "google/gemma-4-31b-it",
+    "google/gemma-4-26b-a4b-it",
+    "google/gemini-3.5-flash-lite",
+    "agnes-ai/agnes-3.0-flash",
+    "poolside/laguna-s-2.1",
+    "opencode-go/step-5-preview-free",
+])
+def test_uniform_wait_all_model_ids(model_id):
+    assert CONNECT_SECONDS == READ_SECONDS == 600.0
+    timeout = build_provider_http_timeout(model_id)
+    assert (timeout.connect, timeout.read, timeout.write, timeout.pool) == (
+        600.0, 600.0, WRITE_SECONDS, POOL_SECONDS
+    )
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("stream", (False, True))
-@pytest.mark.parametrize("model_id,upstream,provider_id,expected_connect", (
-    (GEMMA_31B_MODEL_ID, "gemma-4-31b-it", "google", GEMMA_31B_CONNECT_SECONDS),
-    ("google/gemma-4-26b-a4b-it", "gemma-4-26b-a4b-it", "google", CONNECT_SECONDS),
-    ("agnes-ai/agnes-3.0-flash", "agnes-3.0-flash", "agnes-ai", CONNECT_SECONDS),
+@pytest.mark.parametrize("model_id,upstream,provider_id", (
+    ("google/gemma-4-31b-it", "gemma-4-31b-it", "google"),
+    ("google/gemma-4-26b-a4b-it", "gemma-4-26b-a4b-it", "google"),
+    ("agnes-ai/agnes-3.0-flash", "agnes-3.0-flash", "agnes-ai"),
+    ("poolside/laguna-s-2.1", "laguna-s-2.1", "poolside"),
 ))
-async def test_real_adapter_carries_exact_timeout_without_live_provider(
-    monkeypatch, stream, model_id, upstream, provider_id, expected_connect,
+async def test_completed_and_stream_adapter_transport_no_early_cut(
+    monkeypatch, stream, model_id, upstream, provider_id,
 ):
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
-    monkeypatch.setattr(plat, "_request_headers",
-                        lambda spec, model_id="": {"Content-Type": "application/json"})
+    monkeypatch.setattr(
+        plat, "_request_headers",
+        lambda spec, model_id="": {"Content-Type": "application/json"},
+    )
     observed = []
 
     def respond(request):
-        observed.append((request.extensions["timeout"]["connect"], request.url.host))
+        observed.append((request.extensions["timeout"]["connect"],
+                         request.extensions["timeout"]["read"]))
         if stream:
             return httpx.Response(
                 200, content=(
@@ -75,5 +79,4 @@ async def test_real_adapter_carries_exact_timeout_without_live_provider(
     else:
         result = await plat.call_platform_chat_completions(**arguments)
         assert result["choices"][0]["message"]["content"] == "OK"
-    assert len(observed) == 1
-    assert observed[0][0] == expected_connect
+    assert observed == [(600.0, 600.0)]

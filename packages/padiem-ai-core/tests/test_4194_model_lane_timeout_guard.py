@@ -78,6 +78,20 @@ def test_b14_provider_chunk_idle_clock_is_not_45s_retry_budget():
     assert "the initial attempt" in s
     assert "read=READ_SECONDS" in s
     assert "connect=CONNECT_SECONDS" in s
+    assert "CONNECT_SECONDS = READ_SECONDS" in s
+    assert "GEMMA_31B_CONNECT_SECONDS" not in s
+    # Every first model-response boundary must honor its own 600s (or caller-
+    # specified) model idle budget. The old min(..., 30) cut remains forbidden.
+    for rel_path in (
+        "packages/padiem-ai-core/padiem_ai_core/b14_execution.py",
+        "packages/padiem-ai-core/padiem_ai_core/b14_streaming.py",
+    ):
+        core_source = source(rel_path)
+        assert "connect=self._config.timeout_seconds" in core_source
+        assert "connect=min(self._config.timeout_seconds, 30" not in core_source
+    legacy = source("apps/korean-ai-platform/app/pilot/provider.py")
+    assert "connect=resolved_timeout" in legacy
+    assert "connect=min(resolved_timeout, 30)" not in legacy
 
 
 def test_core_sse_per_event_idle_timeout_resets_each_chunk():

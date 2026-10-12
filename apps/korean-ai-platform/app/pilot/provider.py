@@ -163,7 +163,7 @@ async def call_chat_completions(
     }
 
     client_kwargs: dict[str, Any] = {
-        "timeout": httpx.Timeout(None, connect=min(resolved_timeout, 30), read=resolved_timeout,
+        "timeout": httpx.Timeout(None, connect=resolved_timeout, read=resolved_timeout,
                                  write=min(resolved_timeout, 20), pool=min(resolved_timeout, 10)),
     }
     if transport:
