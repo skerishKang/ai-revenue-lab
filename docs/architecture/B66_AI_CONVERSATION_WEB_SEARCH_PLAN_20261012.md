@@ -2,10 +2,28 @@
 **CENTRAL CTO · 2026-10-12 KST · DESIGN ONLY / IMPLEMENTATION HOLD**
 
 - Repository: skerishKang/ai-revenue-lab
-- Inspected main: 5b4ffd6b0f0af37714d9e1c4cf5523d11cb3df9a (2026-10-12; refresh before coding)
-- Work-items: #4467 general chat; #4412 quote intent/free+guided; #4468 per-call KST; #4469 shared public web search; #4316 single B66 E2E queue.
-- Related authorities: #4453 central model policy, #4428 central dashboard, #3385 Core provider Owner selection, #4317 B62 own E2E, #3186 new quote skill, #3916 approximate quantity guard.
+- Original inspected main: 5b4ffd6b0f0af37714d9e1c4cf5523d11cb3df9a; **re-audited latest main**: 548ab4346380540ba93f16d5741f0b848f08a4f7 (2026-10-12 KST). Git compare: 2 commits ahead, only admin/model-related files changed; reviewed B66 greeting/quote path has not changed. Refresh again before coding.
+- **Canonical owner tickets:** #4466 B66 general model dialogue + semantic intent; #4412 quote intent/free+guided authoring; #4465 cross-product Core/Engine pre-instruction/search-freshness policy; #4468 narrow shared per-dispatch KST acceptance subtask of #4465; #4469 B66-only WebProvider tool/evidence adapter under #4465; #4316 one operational B66 E2E ledger. #4467 was closed as duplicate of #4466 after transferring its distinctive acceptance criteria (NOT code completion).
+- Related authorities: #4453 central model policy (source S1 #4454 **merged**; S2 durable APPLY/effective product dispatch not verified), #4428 central dashboard, #4473 B14 full registered model inventory including OFF states **merged**, #3385 existing TinyFish/Daum owner provider policy, #4317 B62 own E2E, #3186 new quote skill, #3916 approximate quantity guard.
 - NO product code, production binding, migrations, key, external API dispatch, deployment, Ready, or merge from this document.
+
+
+## 0. Central canonicalization and fresh-review ledger (2026-10-12 KST)
+
+**Do not confuse issue count with distinct work.** A prior Owner ticket #4466 already defined general B66 model-led conversation; later #4467 overlapped it. The unique engineering checks in #4467 have been preserved under #4466 and #4467 was **closed as duplicate**, not as implementation done. #4465 existed as the Core/Engine pre-instruction parent before #4468 was created; #4468 is limited to source-census and trustworthy per-dispatch KST/timezone verification, not a new shared injection authority. #4469 is a B66 tool adapter and does not own Core provider selection.
+
+| Responsibility | Single owning GitHub item | Distinct boundary |
+| --- | --- | --- |
+| Shared server-known date/time, important-current-fact handling and web-research policy | #4465 OPEN/HOLD | One Core/Engine-owned pre-instruction, model context and research policy; other product services reuse, do not fork |
+| Per-B14-dispatch KST engineering verification | #4468 OPEN/HOLD | Acceptance/QA of #4465's actual shared last-hop injection, not a second implementation |
+| B66 ordinary model-led dialogue and semantic switching | #4466 OPEN/HOLD | Canonical owner after #4467 duplicate closure; greeting, context, errors, exact model |
+| B66 quote creation from free text or guided follow-up | #4412 OPEN/HOLD | Validated facts to existing QuoteCore, standard renderer, approval boundary; not standalone general chatbot |
+| B66 actual public Search/Fetch and source evidence wiring | #4469 OPEN/HOLD | Existing #3385 TinyFish/Daum reuse; real tool execution rather than just prompting model to research |
+| B66 served-product acceptance | #4316 OPEN | ONLY live E2E ledger; all new AI/chat/search/time tests NOT YET PROVEN |
+
+**Re-audit trace:** main `548ab4346380540ba93f16d5741f0b848f08a4f7`, two commits after initial planning main. Main changes are central model/admin routes and UI, not reviewed B66 quote source. The real `easy-mode.js` greeting regex/canned branch is still present, as is `b66_quote_routes.py` mandatory `saved_skill_id` check. #4454 and #4473 are **merged**; they cannot be treated as S2 product enforcement or authenticated B66 E2E. #4438 LOCAL1 and #4463 LOCAL2 remain Draft/unmerged; their Connector scopes are distinct but do not prove that B66/Chat integration surfaces are conflict-free. Fresh-read every relevant PR before any code assignment.
+
+**Draft PR #4470 is the single architecture-document carrier.** A GitHub Pages branch-preview status associated with this docs PR is **not** B66 product AI deployment or real-model/search acceptance. No product code touched by the planning document.
 
 ## 1. Verified source baseline; source != operating truth
 
@@ -15,7 +33,7 @@
 | B66 quote extraction | apps/padiem-chat/app/b66_quote_routes.py b66_quote_interpret requires saved_skill_id + model_id, checks user/server memberships; apps/padiem-chat/app/b66_quote_conversation.py B66QuoteConversationInterpreter makes one completion with quote-contract context and returns normalized variable facts. | Genuine constrained extraction exists for assigned Skill, but ordinary talk and skill-less multi-turn quote authoring do not |
 | B66 rendering and state | reference/business-66-padiem-quote-v1/app.js and quote-core.js manage draft; QuoteCore and existing renderer handle totals/PDF. PR #4410 provided deterministic no-CGI guided draft. | Keep calculation/save/renderer authority; no model WRITE |
 | B14 model execution | apps/padiem-chat/app/b14_client.py B14Client uses Core execution/streaming and locked exact model; B66 b66_quote_models returns registered approved model subset after global OFF/member tier checks. | Do not invent separate model router or bypass central policy |
-| Central policy | docs/architecture/PADIEM_CENTRAL_MODEL_CONTROL_CENTER_S0_20261012.md, #4453, draft PR #4454: S0 read/preview only, S1 policy CAS/audit draft; S2 durable APPLY and product enforcement pending. | No assumption central global grants are live/enforced |
+| Central policy | #4450 S0 read/preview merged; #4454 central S1 policy CAS/audit source merged; #4473 full B14 inventory including OFF/owner-excluded registered routes merged. #4453 S2 durable APPLY, real admin authority, and product/B66 request-time grant enforcement not evidenced as live. | Catalog visibility and merged S1 source are NOT proof of B66 effective dispatch grant |
 | Shared public Search/Fetch | packages/padiem-ai-core/padiem_ai_core/web_runtime.py + apps/padiem-chat/app/web_tools.py create_web_provider and TinyFishDaumWebProvider; Chat grounding paths chat_routes.py, auto_grounding.py, grounding.py. | Reuse provider protocol, Evidence, URL normalization and error classes |
 | Search selection | docs/operations/PADIEM_WEB_SEARCH_PROVIDER_POLICY_3385.md (Owner policy, #3385 CLOSED). TinyFish first; ONLY 402/429 one Daum retry; 200 empty or 500 no provider switch; TinyFish-only Fetch. Firecrawl excluded for cost. | Search provider fallback is not AI-model substitution. Keep provider provenance |
 | Web live checkpoint | docs/operations/B62_TINYFISH_DECODE_FIX_4375_PRODUCTION_CLOSEOUT_20261012.md: B62 #4375 source + protected deploy; seven bounded public search calls no former 502; separately 503 model_profile_unassigned and no complete B62 model answer E2E. | B62 evidence is NOT B66 search connected evidence |
@@ -58,13 +76,13 @@ Response: message_id, revision, reply_text, intent (general_chat | quote_start |
 
 Reuse B62 history/context conventions only where trust boundary is compatible. Conversation_id, revision and idempotency must be bound to authenticated owner/workspace; no client-picked tenant. Cap turns/tokens using model/provider limits without artificial server input/output clipping unrelated to transport safety (#4379, #4442). Preserve customer-provided values and only the exact user-confirmed quantities. Avoid exposing customer conversation in logs or public evidence. Session switch invalidates stale client callbacks/results.
 
-## 3. Clock injection contract (#4468)
+## 3. Clock injection contract (#4465 authoritative; #4468 acceptance subtask)
 
 Implement once at the proven shared last-hop model request assembly layer. Every completed and streaming B14 dispatch should receive fresh server timezone-aware date/time, e.g. 2026-10-12T16:45:00+09:00 and time zone Asia/Seoul, generated at actual dispatch. A constant for one entire chat session or injected only on first reply is insufficient. Do not accept client/browser date/time as authority. Ensure request system-context precedence and no duplication; don't rewrite customer quotes or source evidence. Clock does NOT validate laws/prices/currencies: research is separate.
 
 Acceptance: freeze clock; two turns across midnight; resumed conversation; completed/stream parity; mixed B66/Chat/Claw/Engine callers where supported; model context shows correct date; repeated injection no duplication; source-unavailable clock errors fail visibly. Full source census before choosing injection files: B14Client, Core ExecutionRequest/system context, Engine/Claw route composition and current LOCAL work.
 
-## 4. Existing public Search/Fetch integration contract (#4469)
+## 4. Existing public Search/Fetch integration contract (#4465 policy; #4469 B66 adapter)
 
 **No new TinyFish integration or reissued API keys.** Reuse Core WebRuntimeConfig / Chat create_web_provider, Evidence projection and safety classes, explicit production server-owned bindings. Search decision: model proposes freshness-sensitive lookup based on semantics, e.g. latest wage, law, material market price, subsidies, FX, or other recent facts. Server validates that a public, minimal and safe query is allowed. A greeting doesn't call Search. An estimated price cannot become contract-approved unit price automatically.
 
@@ -85,7 +103,7 @@ Integration should be a small B66-specific orchestration adapter using the exist
 | apps/padiem-chat/app/b66_quote_routes.py and b66_quote_conversation.py | legacy open PRs #3549, #3522; B66 model/quote evolution | Reconcile open PR intent and exact file diff; protect existing extract/normalizer and approval checks |
 | apps/padiem-chat/app/app_factory.py / worker.py | PR #3925 touches B66 source custody, #4375 recently changed Worker web adapter, current admin wiring | Do not alter in planning; defer route composition until ownership approved |
 | packages/padiem-ai-core/padiem_ai_core/web_runtime.py / apps/padiem-chat/app/web_tools.py | open source-history #3386, #4022 and merged #4375; current TinyFish priority | Reuse unchanged, do not fork, provider edits only for demonstrated missing contract |
-| packages/padiem-control-plane and admin models UI | PR #4454 S1 draft; #4453 global S2 not live; LOCAL1/LOCAL2 connector auth/tray activity #4438/#4463 | Do not implement central effective grants here; wait S2 and owner approval |
+| packages/padiem-control-plane and admin models UI | #4454 S1 **merged**; #4473 registered B14 inventory **merged**; #4453 durable S2 effective enforcement still NOT VERIFIED live. LOCAL1 #4438 and LOCAL2 #4463 connector PRs are both currently Draft and unmerged. | Do not implement central effective grants in B66; require actual product grant enforcement, recheck current PRs and owner approvals |
 | Engine/P01, Claw, B14 global model runtime | Existing #4318/#4194/#4379, other LOCAL work, shared exact-model policy | No cross-product migration or endpoint changes until exact file census |
 
 LOCAL1/LOCAL2 currently not proven idle. Do not assume that disjoint high-level product names imply disjoint app_factory/worker/shared files. Before a later coding assignment, enumerate open PR file paths, LOCAL branch scopes and protected gates; record explicit file ownership in the selected issue. Prefer isolated modules and avoid monolithic refactor.
@@ -94,10 +112,10 @@ LOCAL1/LOCAL2 currently not proven idle. Do not assume that disjoint high-level 
 
 | Workstream | Issue | Entry | Implementation acceptance |
 | --- | --- | --- | --- |
-| Ordinary AI chat and intent boundary | #4467 NEW | Approved exact-model server route + independent auth; LOCAL collision clear | True model greeting, coherent follow-up, no CGI required, no canned AI impersonation or cross-owner context |
-| Quote intent and two input styles | #4412 EXISTING UPDATED | #4467 conversation route, B14 model/central entitlements | AI offers both methods; no redundant questions; QuoteCore standard draft, CGI approval & WRITE gates intact |
-| Fresh date/time context | #4468 NEW | Proven common dispatch layer ownership and multi-product inventory | Every call actual KST timestamp; stream/completed parity and rollover tests |
-| Shared public web search B66 adapter | #4469 NEW | #4467 chat, existing #3385 Core provider, production server bindings | Evidence links/as-of/failure, TinyFish→Daum only on 402/429; private egress zero |
+| Ordinary AI chat and semantic intent boundary | #4466 EXISTING CANONICAL (#4467 CLOSED duplicate) | Approved exact-model server route + independent auth; in-flight product collision clear | Real selected-model greeting/follow-up, no CGI, server-scoped revision/idempotency and failure honesty; no cross-owner context |
+| Quote intent and two input styles | #4412 EXISTING | #4466 general conversation route, B14 model/B66 member and eventual central effective entitlements | AI offers both methods; no redundant questions; QuoteCore standard draft, CGI approval & WRITE gates intact |
+| Fresh date/time context | #4465 shared pre-instruction authority; #4468 focused engineering subtask | Proven single common dispatch layer and cross-product inventory | Every call actual KST timestamp; stream/completed parity and rollover tests, no duplicate date pipelines |
+| Shared public web search B66 adapter | #4469 EXISTING HOLD, under #4465 and #3385 | #4466 authenticated chat, shared #4465 tool/policy decision, existing #3385 provider, real production server bindings | Genuine tool call & URL/as-of/failure evidence; TinyFish→Daum only on 402/429; private egress zero |
 | One customer-production E2E ledger | #4316 EXISTING UPDATED | Above source merged through required exact-head safety and release gates | General greeting → quote ask → draft → preview → save/PDF plus web and date tests; attached real Tabbit evidence |
 
 Each implementation issue stays OPEN/HOLD until source owner and exact file boundaries are resolved. No code is considered complete based on design or historical B62 successes. CI/release/privileged API gates cannot be replaced by light UI QA.
@@ -115,7 +133,7 @@ Each implementation issue stays OPEN/HOLD until source owner and exact file boun
 - Has another product already injected KST date at a shared last-hop? Full census pending; do not claim absent.
 - Exact B66 served Worker public web provider binding/readiness and genuine B66 Search E2E? Unverified. Read runtime after code is ready, never infer from B62.
 - LOCAL1/LOCAL2 completion and current branch/file ownership, legacy open PR disposition? Re-check just before implementation.
-- Exact model central Control Plane S1/S2 durable applies and B66 product policy enforcement not production proof yet (#4453).
+- Central Control Plane policy #4454 S1 has merged and #4473 B14 full inventory has merged; **S2 durable APPLY and B66 request-time effective enforcement remain unverified** (#4453).
 - B66 conversation persistence technology, rate quota policy for chat vs quote interpretation, user model ID selection UI wiring: final contract review is prerequisite to implementation.
 
-**Next:** Finish LOCAL work → refresh main/PR/branch census → designate per-issue owner and file boundaries → implement in small independent PRs → source/auth/exact-head CI → protected merge/deploy → #4316 verified E2E. **Current disposition: planning documents/issues only.**
+**Next:** Resolve in-flight B66/B62/LOCAL file ownership and #4453 S2 grant gate → refresh exact main/PR/branch census → implement #4465 shared pre-instruction once, #4466 B66 dialogue/intent, #4412 quote handoff and #4469 product search adapter in conflict-free isolated PRs → source/auth/exact-head CI → protected merge/deploy → #4316 verified E2E. **Current disposition: issues/docs only; no B66 code, model tool live invocation, production feature deploy, Ready or merge.**
