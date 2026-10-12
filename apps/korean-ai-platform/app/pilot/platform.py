@@ -286,6 +286,30 @@ def _require_owner_allowed_live_model(
         )
 
 
+async def _read_bounded_body(response: httpx.Response, *, cap: int = MAX_RESPONSE_BYTES) -> bytes:
+    """Collect a completed response body with a pre-decode byte cap (#4379).
+
+    Byte resource guard, not a model output ceiling: healthy answers under the
+    cap decode exactly as before. A declared Content-Length over the cap is
+    rejected before any body byte is pulled; otherwise bytes accumulate until
+    the cap trips, so an oversized or lying upstream never fully buffers into
+    worker RAM. Raises UpstreamResponseTooLarge (callers must not retry it).
+    """
+    declared = response.headers.get("content-length")
+    if declared is not None:
+        try:
+            if int(declared.strip()) > cap:
+                raise UpstreamResponseTooLarge(cap)
+        except ValueError:
+            pass  # untrusted header; enforce on actual bytes instead
+    buf = bytearray()
+    async for chunk in response.aiter_bytes():
+        buf += chunk
+        if len(buf) > cap:
+            raise UpstreamResponseTooLarge(cap)
+    return bytes(buf)
+
+
 async def call_platform_chat_completions(
     *,
     model_id: str,
@@ -365,12 +389,32 @@ async def call_platform_chat_completions(
     start = time.monotonic()
     try:
         async with httpx.AsyncClient(**client_kwargs) as client:
-            response = await client.post(
+            async with client.stream(
+                "POST",
                 chat_url,
                 headers=headers,
                 json=body,
                 follow_redirects=False,
-            )
+            ) as response:
+                if response.status_code < 200 or response.status_code >= 300:
+                    error_bytes = await _read_bounded_body(response)
+                    if platform_provider_id == "tokenharbor":
+                        _log_tokenharbor_rejection(response, headers, error_bytes)
+                    error_body = error_bytes.decode("utf-8", "replace")
+                    if platform_provider_id == "agnes-ai" and response.status_code == 429:
+                        log_agnes_429(
+                            logger, platform_provider_id, response.status_code,
+                            response.headers, error_body,
+                        )
+                    if platform_provider_id == "experiential" and response.status_code == 429:
+                        log_exlab_429(
+                            logger, platform_provider_id, response.status_code,
+                            response.headers, error_body,
+                        )
+                    _raise_upstream_error(
+                        response.status_code, platform_provider_id, error_body
+                    )
+                body_bytes = await _read_bounded_body(response)
     except httpx.TimeoutException as exc:
         log_provider_timeout(logger, platform_provider_id, exc, "completed")
         raise UpstreamTimeout() from exc
@@ -382,25 +426,8 @@ async def call_platform_chat_completions(
         )
         raise UpstreamServerError()
 
-    if response.status_code < 200 or response.status_code >= 300:
-        if platform_provider_id == "tokenharbor":
-            _log_tokenharbor_rejection(response, headers, response.content)
-        if platform_provider_id == "agnes-ai" and response.status_code == 429:
-            log_agnes_429(
-                logger, platform_provider_id, response.status_code,
-                response.headers, response.text,
-            )
-        if platform_provider_id == "experiential" and response.status_code == 429:
-            log_exlab_429(
-                logger, platform_provider_id, response.status_code,
-                response.headers, response.text,
-            )
-        _raise_upstream_error(
-            response.status_code, platform_provider_id, response.text
-        )
-
     try:
-        response_data = response.json()
+        response_data = json.loads(body_bytes)
     except (json.JSONDecodeError, ValueError):
         raise MalformedUpstreamResponse()
 
