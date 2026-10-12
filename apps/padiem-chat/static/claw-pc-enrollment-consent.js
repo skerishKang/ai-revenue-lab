@@ -67,7 +67,7 @@
       ready: "동의하려면 아래 확인란을 직접 선택해 주세요.",
       targetRequired: "먼저 등록할 PC를 선택해 주세요. 대상이 확인되지 않으면 진행할 수 없습니다.",
       productUnknown: "연결 대상 제품을 확인할 수 없어 진행할 수 없습니다.",
-      productSeparate: "이 계정은 다른 제품(B66 견적)에 속합니다. PC 연결 권한은 별도로 부여됩니다.",
+      productSeparate: "이 서비스의 PC 등록 대상으로 확인되지 않았습니다. 다른 서비스의 PC 등록 권한은 여기에서 사용할 수 없습니다.",
       notReady: "PC 등록 서비스가 아직 준비되지 않았습니다. 지금은 동의를 저장할 수 없습니다.",
       submitting: "동의를 저장하는 중입니다.",
       granted: "동의가 저장되었습니다. 연결 상태는 서버 확인 후 별도로 표시됩니다.",
@@ -98,7 +98,7 @@
       ready: "Select the checkbox below yourself to continue.",
       targetRequired: "Select the computer to enroll first. Progress is blocked while the target is unconfirmed.",
       productUnknown: "The connecting product could not be confirmed, so progress is blocked.",
-      productSeparate: "This account belongs to another product (B66 quotes). PC connection authority is granted separately.",
+      productSeparate: "This service cannot confirm the selected PC enrollment. PC permissions for other services cannot be used here.",
       notReady: "PC enrollment service is not ready yet. Consent cannot be stored right now.",
       submitting: "Saving your consent.",
       granted: "Consent stored. Connection state is shown separately after server confirmation.",
@@ -196,6 +196,10 @@
     }
     const consentId = typeof consent.consent_id === "string" &&
       CONSENT_ID_PATTERN.test(consent.consent_id) ? consent.consent_id : null;
+    if (consentId === null) {
+      // Without a canonical ID the user cannot safely identify/revoke the consent.
+      return Object.freeze({ accepted: false, reason: "consent_receipt_invalid" });
+    }
     // Consent recorded is NOT "PC online". online stays false by construction.
     return Object.freeze({
       accepted: true,
