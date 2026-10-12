@@ -19,6 +19,7 @@ from .b66_member_inquiries import (
     D1B66InquiryStore, b66_inquiries, b66_admin_inquiries,
     b66_admin_inquiry_status, b66_admin_inquiry_dispatch,
 )
+from .central_model_admin_identity import D1CentralModelAdminAuthorizer
 from .central_model_control_routes import (
     central_model_admin_me, central_model_admin_snapshot,
     central_model_admin_preview,
@@ -301,6 +302,7 @@ def create_app(
     b66_member_admin_store=None,
     b66_admin_google_email: str = "",
     central_model_admin_authorizer=None,
+    central_model_admin_google_email: str = "",
     claw_task_alert_store=None,
     calendar_store: CalendarStore | None = None,
     claw_automation_store=None,
@@ -573,7 +575,15 @@ def create_app(
     # A B66-scoped Google administrator is NOT a global model administrator.
     # Only a separately verified host-supplied central RBAC authority may
     # activate the cross-product model snapshot/preview APIs.
-    app.state.central_model_admin_authorizer = central_model_admin_authorizer
+    global_model_admin = central_model_admin_authorizer
+    if global_model_admin is None and central_model_admin_google_email and d1_binding is not None:
+        try:
+            global_model_admin = D1CentralModelAdminAuthorizer(
+                d1_binding, verified_owner_email=central_model_admin_google_email,
+            )
+        except ValueError:
+            global_model_admin = None
+    app.state.central_model_admin_authorizer = global_model_admin
     app.state.b66_membership_enforced = False
     # Production host enables this independently of the membership rollout.
     # Pure ASGI fixtures without a D1 adapter keep their pre-existing behavior.
