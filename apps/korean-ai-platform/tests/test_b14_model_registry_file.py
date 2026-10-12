@@ -194,15 +194,24 @@ def test_opencodego_and_zanslab_are_registered_disabled_without_credentials():
     assert providers["zanslab"]["credential_binding_name"] == "PADIEM_ZANSLAB_API_KEY"
     assert providers["opencode-go"]["enabled"] is False
     assert providers["zanslab"]["enabled"] is False
-    # Five owner-selected Go IDs are registered as inactive candidates;
-    # ZansLab awaits proof of the exact account-specific Luna ID.
+    # Five Go models remain inactive. A verified account-scoped ZansLab ID
+    # is now also registered but no generation/SSE proof or activation exists.
     rows = [row for row in reg["models"] if row["provider_id"] == "opencode-go"]
     assert {row["upstream_model"] for row in rows} == {
         "longcat-2.5-preview-free", "step-5-preview-free",
         "muse-spark-1.3-contributor", "gpt-6-luna", "claude-haiku-5-5",
     }
     assert all(row["enabled"] is False for row in rows)
-    assert not any(row["provider_id"] == "zanslab" for row in reg["models"])
+    zans_rows = [row for row in reg["models"] if row["provider_id"] == "zanslab"]
+    assert len(zans_rows) == 1
+    assert zans_rows[0]["id"] == "zanslab/gpt-6-luna"
+    assert zans_rows[0]["upstream_model"] == "op/gpt-6-luna"
+    assert zans_rows[0]["enabled"] is False
+    assert zans_rows[0]["context_window"] == 0
+    assert zans_rows[0]["input_price_usd_per_1m"] is None
+    assert zans_rows[0]["output_price_usd_per_1m"] is None
+    assert "free" not in zans_rows[0]["capabilities"]
+    assert get_catalog_by_id("zanslab/gpt-6-luna").enabled is False
     assert not any(model_id.startswith(("opencode-go/", "zanslab/"))
                    for tier in ("plus", "pro", "max") for model_id in reg["groups"][tier])
     from pathlib import Path
