@@ -73,7 +73,7 @@ class Canonical:
         return SimpleNamespace(role="owner")
 
 
-def harness(*, enabled=True, scope_approved=True, schema_installed=True):
+def harness(*, enabled=True, scope_approved=True, schema_installed=True, schema_created=True):
     storage = Storage()
     canonical = Canonical()
     # Existing canonical Identity DO store creates its pre-existing schema.
@@ -95,22 +95,26 @@ def harness(*, enabled=True, scope_approved=True, schema_installed=True):
     )
     # The code under test reads the same established legacy context row.
     records = IdentityDurableConnectorEnrollmentRecords(storage=storage, session_reader=canonical)
-    records.install_schema()
+    if schema_created:
+        records.install_schema()
     env = SimpleNamespace(
         CONTROL_PLANE_CONNECTOR_ENROLLMENT_RPC_ENABLED="true" if enabled else "false",
         CONTROL_PLANE_CONNECTOR_ENROLLMENT_SCOPE_APPROVED="true" if scope_approved else "false",
         CONTROL_PLANE_CONNECTOR_ENROLLMENT_SCHEMA_INSTALLED="true" if schema_installed else "false",
         CONTROL_PLANE_CONNECTOR_ENROLLMENT_SCHEMA_INSTALL_ENABLED="false",
     )
-    fake = SimpleNamespace(
-        env=env, _store=canonical, _storage=storage,
-        _connector_enrollment_records=records,
-    )
+    class Harness(CanonicalIdentityDurableObject):
+        def __init__(self):
+            self.env = env
+            self._store = canonical
+            self._storage = storage
+            self._connector_enrollment_records = records
+    fake = Harness()
     return fake, records, canonical, storage
 
 
 def call(method, fake, payload):
-    return asyncio.run(getattr(CanonicalIdentityDurableObject, method)(fake, payload))
+    return asyncio.run(getattr(fake, method)(payload))
 
 
 def grant_payload(**changes):
@@ -213,10 +217,15 @@ def test_no_shared_scope_row_never_mints_a_scope_or_consent():
 
 
 def test_schema_install_rpc_is_separate_and_disabled_by_default():
-    fake, _, _, storage = harness(schema_installed=False)
+    fake, _, _, storage = harness(schema_installed=False, schema_created=False)
     fake.env.CONTROL_PLANE_CONNECTOR_ENROLLMENT_SCHEMA_INSTALL_ENABLED = "false"
     result = call("install_connector_enrollment_schema", fake, {"migration_id": "connector-enrollment-v1"})
     assert result["ok"] is False and result["error"]["code"] == "connector_enrollment_schema_install_disabled"
     fake.env.CONTROL_PLANE_CONNECTOR_ENROLLMENT_SCHEMA_INSTALL_ENABLED = "true"
     result = call("install_connector_enrollment_schema", fake, {"migration_id": "wrong"})
     assert result["ok"] is False
+    result = call("install_connector_enrollment_schema", fake, {"migration_id": "connector-enrollment-v1"})
+    assert result["ok"] is True
+    tables = {row[0] for row in storage.sql.db.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+    assert "canonical_connector_enrollment_consent" in tables
+    assert "canonical_connector_enrollment_session_binding" in tables
