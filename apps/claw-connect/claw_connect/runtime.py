@@ -25,14 +25,17 @@ from . import (
 )
 from .autostart import Autostart
 from .connection import ConnectionController, ConnectionState
+from .enrollment import ConnectorEnrollment
 from .menu_model import (
     ACTION_DISCONNECT,
+    ACTION_LOGIN,
     ACTION_OPEN_WEB,
     ACTION_QUIT,
     ACTION_RECONNECT,
     ACTION_TOGGLE_PAUSE,
 )
-from .resident_supervisor import ResidentSupervisor
+from .resident_supervisor import ResidentSupervisor, default_resident_command
+from .resident_path import resident_src_root
 from .single_instance import AlreadyRunning, SingleInstance
 
 #: Local named event a second process uses to ask a running tray to quit.
@@ -100,16 +103,30 @@ class ConnectApp:
         probe: Callable[[], bool] | None = None,
         supervisor: ResidentSupervisor | None = None,
         autostart: Autostart | None = None,
+        enrollment: ConnectorEnrollment | None = None,
     ) -> None:
         self._autostart = autostart or Autostart(AUTOSTART_RUN_VALUE_NAME, autostart_store)
         self._controller = ConnectionController(probe)
+        self._enrollment = enrollment or ConnectorEnrollment()
+        self._state_dir = self._enrollment.state_dir
+        # S2: the supervised process is the one existing kagent Resident, never a
+        # placeholder. The deployment pins the source root (installer file or
+        # CLAW_RESIDENT_SRC); when it does not, the canonical module name is used
+        # as-is so the interpreter resolves it rather than this code guessing.
         self._supervisor = supervisor or ResidentSupervisor(
-            resident_command or ["python", "-c", "pass"]
+            resident_command
+            or default_resident_command(
+                src_root=resident_src_root(state_dir=self._state_dir)
+            )
         )
         self._single = SingleInstance(SINGLE_INSTANCE_MUTEX)
         self._quit_signal = QuitSignal(QUIT_EVENT_NAME)
         self._tray: Any = None
         self._quit = threading.Event()
+
+    @property
+    def enrollment(self) -> ConnectorEnrollment:
+        return self._enrollment
 
     @property
     def controller(self) -> ConnectionController:
@@ -132,11 +149,24 @@ class ConnectApp:
         return {
             "product": CONNECT_PRODUCT,
             "version": CONNECT_VERSION,
-            "state": self._controller.state.value,
+            "state": self.connector_status().value,
             "resident_running": self._supervisor.is_running(),
             "autostart_enabled": self._autostart.is_enabled(),
             "single_instance": self._single.held,
+            "enrollment": self._enrollment.status_snapshot(),
         }
+
+    def connector_status(self) -> ConnectionState:
+        """Operator-visible Connector state, projected from device facts only.
+
+        ``CONNECTED`` requires both a server-projected ``online`` lifecycle and
+        an observed live session; a locally resumed controller alone is only
+        reported as connecting or offline.
+        """
+        return self._enrollment.project_state(
+            paused=self._controller.state is ConnectionState.PAUSED,
+            connected=self._controller.state is ConnectionState.CONNECTED,
+        )
 
     def status_json(self) -> str:
         return json.dumps(self.status(), ensure_ascii=False, sort_keys=True)
@@ -146,6 +176,23 @@ class ConnectApp:
         import webbrowser  # noqa: PLC0415
 
         webbrowser.open(WEB_URL)
+
+    def login(self) -> None:
+        """Start the reviewed PADIEM login / PC-registration consent flow.
+
+        Opens the official PADIEM authentication surface and returns the URL.
+        The Connector never renders a credential form, never stores a password
+        and never reads a browser cookie: the reviewed session issues the
+        pairing code this device redeems with its own Broker device id.
+        """
+        url = self._enrollment.begin_login()
+        try:
+            import webbrowser  # noqa: PLC0415
+
+            webbrowser.open(url)
+        except Exception:
+            pass
+        return url  # type: ignore[return-value]
 
     def toggle_pause(self) -> None:
         if self._controller.state is ConnectionState.CONNECTED:
@@ -202,7 +249,7 @@ class ConnectApp:
                 from .tray import ConnectTray  # noqa: PLC0415
 
                 self._tray = ConnectTray(
-                    state_source=lambda: self._controller.state,
+                    state_source=lambda: self.connector_status(),
                     actions=self.actions(),
                     web_url=WEB_URL,
                 )
@@ -226,6 +273,7 @@ class ConnectApp:
     def actions(self) -> dict[str, Callable[[], None]]:
         return {
             ACTION_OPEN_WEB: self.open_web,
+            ACTION_LOGIN: self.login,
             ACTION_TOGGLE_PAUSE: self.toggle_pause,
             ACTION_RECONNECT: self.reconnect,
             ACTION_DISCONNECT: self.disconnect,

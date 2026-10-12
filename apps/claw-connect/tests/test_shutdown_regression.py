@@ -33,6 +33,7 @@ from types import SimpleNamespace
 import pytest
 
 from claw_connect.connection import ConnectionState
+from claw_connect.enrollment import ConnectorEnrollment
 from claw_connect.runtime import ConnectApp
 from claw_connect.tray import ConnectTray, NIM_ADD, NIM_DELETE, WM_TRAY
 
@@ -53,9 +54,12 @@ class _ExplodingTray:
         raise RuntimeError("tray already gone")
 
 
-def _app() -> ConnectApp:
+def _app(tmp_dir: str) -> ConnectApp:
     # A benign supervised command; we never actually run it in these tests.
-    app = ConnectApp(resident_command=["python", "-c", "pass"])
+    app = ConnectApp(
+        resident_command=["python", "-c", "pass"],
+        enrollment=ConnectorEnrollment(state_dir=tmp_dir),
+    )
     # Swap collaborators for fakes so quit() is observed in isolation.
     app._controller = SimpleNamespace(disconnect=lambda: None)
     app._supervisor = SimpleNamespace(stop=lambda: None)
@@ -63,29 +67,28 @@ def _app() -> ConnectApp:
     return app
 
 
+@pytest.fixture
+def app(tmp_path) -> ConnectApp:
+    return _app(str(tmp_path / "state"))
 # --- defect 1: external stop reaches the tray message loop -----------------
-def test_quit_signals_the_tray_so_the_message_loop_can_exit():
-    app = _app()
+def test_quit_signals_the_tray_so_the_message_loop_can_exit(app):
     app.quit()
     # The crux of #4420: without this call PumpMessages() hangs forever.
     assert app._tray.quit_calls == 1
 
 
-def test_quit_sets_the_local_quit_event_and_tears_down_children():
-    app = _app()
+def test_quit_sets_the_local_quit_event_and_tears_down_children(app):
     app.quit()
     assert app._quit.is_set()
 
 
-def test_quit_is_idempotent_and_does_not_raise_on_repeat():
-    app = _app()
+def test_quit_is_idempotent_and_does_not_raise_on_repeat(app):
     app.quit()
     app.quit()  # a double external stop / menu+CLI race must be safe
     assert app._tray.quit_calls == 2
 
 
-def test_quit_still_cleans_up_when_tray_quit_raises():
-    app = _app()
+def test_quit_still_cleans_up_when_tray_quit_raises(app):
     app._tray = _ExplodingTray()
     # A tray that is already destroyed must not leak the supervised Resident or
     # the single-instance lock: cleanup must happen and the error swallowed.

@@ -38,6 +38,8 @@ PADIEM 웹(B66/Claw/Chat/Engine/향후 제품)은 **업무 요청·승인·상�
 
 **2026-10-12 S1 Windows 소스 병합:** 트레이·사용자별 설치·종료 복구 #4420 (main `9047933dc3a5f5c573375f5da16b2a5d52c180ef`), 정확한 PR HEAD에서 Windows pytest 57/57, Node 5/5, LOCAL2 실제 Windows 종료 하네스 7/7. 트레이 `웹 열기`는 운영 `https://chat.padiem.net/`으로 수정. **단, 아직 placeholder Resident(`python -c pass`)와 기본 disconnected probe를 사용하므로 검증된 PADIEM 계정 등록·온라인 presence·실제 파일/명령 실행이나 배포된 고객 설치 프로그램은 아니다.** Browser Use #3783은 Draft이며 2-PC 등록·Office 실행·파일 왕복 운영 E2E #3099는 미증명. **제품 실행 OFF.**
 
+**2026-10-12 S2 Connector 등록 클라이언트 (LOCAL2, Draft):** `apps/claw-connect/**`에 동일 계정 최초 로그인·기기 등록·디바이스 ID 보존·6단계 표시 상태(등록 안 됨/연결 중/연결됨/일시정지/오프라인/철회됨)와 실제 `kagent.local_agent_resident_process` Resident 배선이 추가됐다. 자격증명·페어링·세션·heartbeat·ONLINE 판정은 기존 LOCAL1 계약에 **위임**하고 중복 권한기관을 만들지 않는다(새 로그인 인증기관 0, 새 쿠키/비밀번호 저장소 0, 공개 인바운드 포트 0, 등록만으로 P01 READ/WRITE 승인 없음). **핵심 차단:** LOCAL1 서버 결제 계약이 미배포돼 등록·heartbeat·웹 가시성·2-PC E2E는 **미검증**이다(`local_agent_pairing_activation_3102`의 `PRODUCTION_ACTIVATION=NO`, `LIVE_PRODUCTION_PAIRING_CALL=0`). 미완성 서버 계약을 합성 인증으로 운영 성공처럼 보이지 않으며, 미설성 엔드포인트에서는 enrollment가 **항상 실패-차단(fail closed)**한다. 실제 사전 조건은 ① 기기 조회를 수행할 수 있는 `padiem_control_plane.local_agent_pairing` 배포 + ② (A)에서 다뤘던 HTTP 라우트의 운영 활성화(명시 동의 화면, babel-service 세션, 보관된 Pepper/LunaBinSecret과 TLS, 검증 가능한 기기/세선 상태 뷰)다. 이건 후속 #4139 후보다.
+
 ## 4. 실행 환경 선택 전략 — '항상 로컬 Excel이 더 빠르다'고 가정 금지
 
 실행 유형을 제품과 사용자에게 감추되 근거와 상태를 남기는 **Capability Router**를 공통 Engine/Control Plane에서 구성한다. 새 모델 엔진을 만들지 않는다.

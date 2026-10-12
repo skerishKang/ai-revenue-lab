@@ -32,6 +32,9 @@ _STATE_SUFFIX: dict[ConnectionState, str] = {
     ConnectionState.CONNECTING: "connecting...",
     ConnectionState.CONNECTED: "connected",
     ConnectionState.PAUSED: "paused",
+    ConnectionState.UNREGISTERED: "not registered",
+    ConnectionState.OFFLINE: "offline",
+    ConnectionState.REVOKED: "revoked",
 }
 
 
