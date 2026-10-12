@@ -245,3 +245,21 @@ WINDOWS_E2E=NOT_PROVEN
 At this HEAD, GitHub exact-head P01 Deployment Boundary, Operations Policy Guard, B54 public-ingress gate, B54 public-ingress activation gate, B54 Google OAuth gate, B62 Control Plane Identity Binding gate and Cloudflare **mock** deploy have succeeded. Control Plane CI and B62 Unified Browser QA are **still in progress** at the time of this update; do not call the required set all-green yet.
 
 The shared scope still requires security-owner approval because it reads the pre-existing legacy B62 connector context as the product-neutral PC scope. Both consent and Broker schemas remain private, explicit opt-in migrations only. No route is mounted, no production binding or secret is changed, no Ready/merge/deploy occurs in this step.
+
+## 2026-10-12 CENTRAL seventh implementation — pairing key separation and retest
+
+- Existing Broker binding/session authentication continues to use the canonical `LOCAL_AGENT_BROKER_PEPPER`. The durable pairing-code proof protocol now derives a **separate domain-specific HMAC pepper** using a fixed `PADIEM\0CONNECTOR-PAIRING\0V1\0` context; the raw Broker authentication key is no longer reused directly for pairing-code proof HMAC. A bounded minimum source-key length is enforced before the private RPC constructs either authority. The durable pairing adapter is also pinned to the existing runtime's canonical `authority_ref()` instead of reading a second, independently interpreted reference.
+- Regression tests assert the pairing pepper differs from the Broker auth secret while still using the existing canonical Broker authority reference.
+
+```text
+LATEST_CODE_HEAD=31beef7f50b030fe1948174cbcb2a62733a37032
+CONTROL_PLANE_TESTS=61_PASSED
+B54_CLAW_PRODUCT_TESTS=60_PASSED
+EXACT_HEAD_CI=P01_SUCCESS; B54_PUBLIC_INGRESS_SUCCESS; B54_INGRESS_ACTIVATION_GATE_SUCCESS; B62_MOCK_DEPLOY_SUCCESS; REMAINING_WORKFLOWS_IN_PROGRESS
+PRODUCTION_SCHEMA=NOT_APPLIED
+PUBLIC_ROUTE=NOT_MOUNTED
+WINDOWS_CREDENTIAL_HANDOFF=NOT_WIRED
+PRODUCTION=OFF
+```
+
+Cloudflare mock deploy and ingress **gates** are source-checks; they are not permission to expose this registration route. In particular, this change does not configure an actual credentialed public device ingress. Keep the private Service Binding methods and both explicit schema install flags OFF until the product-security owner reviews consent UX, shared scope, TLS/pinned device ingress and Windows credential install.
