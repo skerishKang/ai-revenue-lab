@@ -215,6 +215,9 @@ def test_chat_body_pins_exact_manual_model_never_auto(model_id: str) -> None:
     assert body["model"] != "b14/auto"
     assert body["max_tokens"] == oneshot.SYNTHETIC_MAX_TOKENS
     assert body["max_tokens"] <= 16
+    assert body["business14"] == {
+        "allow_external_fallback": False, "max_attempts": 1, "max_retries": 0,
+    }
     # Synthetic prompt only: no customer payload markers.
     prompt = body["messages"][0]["content"]
     assert isinstance(prompt, str)
@@ -531,3 +534,15 @@ def test_no_product_route_files_are_touched() -> None:
     ]
     for name in forbidden:
         assert name not in SCRIPT.read_text(encoding="utf-8")
+
+def test_real_b14_request_options_fail_closed_when_invalid() -> None:
+    """Pin the actual B14 gateway source's explicit routing knobs.
+
+    A one-shot acceptance request must not rely solely on a server default
+    which could change independently of this workflow.
+    """
+    for model in oneshot.GEMINI_MODEL_IDS:
+        body = oneshot.canonical_chat_body(oneshot.resolve_gemini(model))
+        assert body["business14"]["max_attempts"] == 1
+        assert body["business14"]["max_retries"] == 0
+        assert body["business14"]["allow_external_fallback"] is False
