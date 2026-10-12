@@ -47,16 +47,30 @@
 - `ok=False`는 그대로 호출자에 전달 → bounded reason으로 보고, 바인딩 기록 없음.
 - `ok=True`는 다음을 모두 만족해야 기록된다: 영수증 device_id == 본 기기 ID (불일치 시
   `enrollment_device_swap_denied`), credential 만료 > now, generation ≥ 1, scope ref 정형.
-- **이미 등록된 PC의 계정·스코프 변경은 채택하지 않는다 (fail-closed).** 로컬 바인딩이 존재하고
-  `account_ref`가 기록되어 있는데 영수증의 `account_ref`가 다르면
-  `enrollment_binding_owner_mismatch`로, `workspace_ref`가 다르면
-  `enrollment_binding_scope_mismatch`로 거부하고 **기존 바인딩을 그대로 둔다**(레코드 무변경,
-  revoked 아님, project_state는 계속 OFFLINE). 기기 신원은 이전 계정으로 등록된 제품 세션이
-  참조하므로, 제자리에서 다른 계정으로 재지정하면 그 세션이 새 계정으로 넘어간다. 의도적 계정
-  전환은 `clear_enrollment()`(명시적 로그아웃) 후에만 가능하며, 로그아웃은 바인딩을 먼저 버리므로
-  가드가 걸리지 않는다. 두 사유 모두 기존 bounded 어휘의 구성원이고 서버 텍스트를 echo하지 않는다.
-  서버 호출 *이후*에 검사하는 이유는 계정이 영수증에서만 알 수 있기 때문이며, 서버는 여전히
+- **이미 등록된 PC의 계정·스코프 변경은 채택하지 않는다 (fail-closed).** 로컬에 바인딩이 존재하면
+  (CENTRAL 리뷰 C: **기록된 owner/scope가 비어 있어도**, 즉 `account_ref=None`·`workspace_ref=None`
+  상태도 포함) 영수증의 `account_ref`가 기록값과 정확히 다르면 `enrollment_binding_owner_mismatch`로,
+  `workspace_ref`가 정확히 다르면 `enrollment_binding_scope_mismatch`로 거부하고 **기존 바인딩을 그대로
+  둔다**(레코드 무변경, revoked 아님, project_state는 계속 OFFLINE). owner/scope가 비어 있는 레코드는
+  "미등록 기기"가 아니라 **손상된 레코드**로 취급하여 거부·복구하지 않는다(제자리 고쳐 쓰기 금지).
+  기기 신원은 이전 계정으로 등록된 제품 세션이 참조하므로, 제자리에서 다른 계정으로 재지정하면 그
+  세션이 새 계정으로 넘어간다. 두 사유 모두 기존 bounded 어휘의 구성원이고 서버 텍스트를 echo하지
+  않는다. 서버 호출 *이후*에 검사하는 이유는 계정이 영수증에서만 알 수기 때문이며, 서버는 여전히
   영수증을 발행하는 권위이고 기기는 그것을 **채택하지 않을** 뿐이다.
+- **이 거부는 로컬 조치이며 서버 상태를 주장하지 않는다 (CENTRAL 리뷰 B).** 검사가 redemption 호출
+  이후에 실행되므로, 거부 시점에는 이미 서버에 요청이 전달된 상태다. 따라서 거부가 증명하는 것은
+  "이 PC가 그 영수증을 채택하지 않았다"는 점뿐이며, 업스트림 챌린지가 소비되지 않았거나 Broker
+  바인딩이 생성되지 않았거나 전달된 자격증명이 보상되지 않았다는 증거가 아니다. Connector는 보상·
+  revocation·롤백 호출을 전혀 만들지 않는다. 서버 상태와 로컬 상태가 다르면 그건 CENTRAL #4476의
+  서버 정합성/보안 사안이지, 일상적인 계정 전환이 아니다.
+- **`clear_enrollment()`(로그아웃)는 로컬 뷰만 비우며 소유권 이전이 아니다 (CENTRAL 리뷰 A).**
+  로그아웃은 보호된 자격증명 저장소를 지우지 않고, canonical Broker 바인딩을 revoke하지 않으며, 활성
+  Broker 세션을 종료하지 않고, device ID의 연결도 끊지 않는다. canonical Broker는 이미 활성 바인딩이
+  있는 기기의 두 번째 바인딩을 거부하므로(`duplicate_device_binding`), 로컬 로그아웃만으로는 이 PC를
+  다른 소유자에게 줄 수 없다. 실제 이전에는 소유자 인증하의 서버 확인 revocation/세션 무효화 + 검토된
+  자격증명 저장소 정리 + 새 등록이 별도로 필요하며, 이 셋은 Connector가 수행하지도 주장하지도
+  않는다. 기기 ID 정책(1 PC 1 ID)은 유지된다. 따라서 "로그아웃 후 다른 계정으로 등록 가능"은
+  **로컬 레코드 기준 사실**일 뿐이며, 계정 마이그레이션이 지원된다는 의미로 보고하면 안 된다.
 - 성공은 `paired_offline`으로만 기록된다. `online`/CONNECTED는 이후 서버 projection(`mark_online`) +
   실제 live session이 있어야 하며, 영수증 자체는 lifecycle을 주장하지 않는다.
 
@@ -119,11 +133,25 @@
 
 ## 9. 검증 상태 (#4490 HEAD에서 실측)
 
-> **LOCAL2 후속 증분 (계정·스코프 격리, 2026-10-13):** 위 §3의 계정/스코프 채택 가드를 추가했다.
+> **LOCAL2 후속 증분 2차 (CENTRAL #4542 리뷰 보완, 2026-10-13):** CENTRAL CTO 리뷰 지적 3건을
+> 반영했다. **C(코드 결손):** 가드 조건을 `record.account_ref is not None`에서
+> `record.is_enrolled()`로 변경 — 기록된 owner/scope가 비어 있는(손상된) 레코드도 거부한다.
+> **A(정확성):** "의도적 계정 전환은 clear_enrollment() 후 가능" 문구를 제거하고, 로그아웃은
+> **로컬 뷰만 비우는** 것으로 못박았다(자격증명 저장소·Broker 바인딩·활성 세션·device ID 연결
+> 불변). **B(정확성):** 사후 거부가 서버 롤백을 의미하지 않음을 명시했다. 테스트는
+> `apps/claw-connect/tests/` 전체 **300 passed, 4 skipped**, `test_enrollment_contract.py`
+> **76 passed + 4 skipped** (+3 신규), Node wrapper 5 passed / 0 failed. 음성 대조: C 수정을
+> 원래 조건으로 되돌리면 owner 결손 테스트 1건이 실패(인과 입증); workspace 결손 테스트는
+> 양쪽 모두 거부하므로 비회귀 고정 역할만 한다. `enrollment.py`만 변경했고 `enrollment_http.py`
+> (와이어 계약)와 CENTRAL/LOCAL1 파일은 건드리지 않았다.
+
+> **LOCAL2 후속 증분 1차 (계정·스코프 격리, 2026-10-13):** 위 §3의 계정/스코프 채택 가드를 추가했다.
 > `apps/claw-connect/tests/` 전체 **297 passed, 4 skipped**, `test_enrollment_contract.py`
 > **73 passed + 4 skipped** (+6 신규), Node wrapper 5 passed / 0 failed. 신규 테스트 4건은 가드를
 > 제거하면 실패함을 음성 대조로 확인했다. `enrollment.py`만 변경했고 `enrollment_http.py`(와이어
 > 계약)와 CENTRAL/LOCAL1 파일은 건드리지 않았다.
+> ⚠️ 1차 증분 중 "의도적 계정 전환은 `clear_enrollment()` 후에만 가능" 문구는 CENTRAL 리뷰 A에서
+> **부정확**하다고 지적되어 2차 증분에서 철회·수정되었다. 위 2차 묶음을 기준으로 읽을 것.
 
 - `apps/claw-connect/tests/` 전체: **291 passed, 4 skipped** (로컬 Windows Python 3.11, 실제 DPAPI 포함; CI는 3.12에서 재실행)
   - skip 3건: `CENTRAL-CONTRACT-CONFLICT` — central `dbbd1633`가 `claw_connect.resident_path`와

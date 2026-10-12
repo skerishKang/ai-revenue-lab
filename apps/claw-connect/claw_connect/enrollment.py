@@ -822,24 +822,46 @@ class ConnectorEnrollment:
         # account that enrolled it. Re-pointing the same device identity at a
         # different account would hand the product sessions that were enrolled
         # against the previous account over to the new one, so the receipt is
-        # refused here and the existing binding is left exactly as it was. A
-        # deliberate account switch requires an explicit logout
-        # (``clear_enrollment``) first, which drops the binding before another
-        # account can enroll. Both reasons are members of the bounded S1/S2
-        # refusal vocabulary, so nothing new is invented and no server text is
-        # echoed. This runs *after* the server call because the account is only
-        # known from the server receipt; the server remains the authority that
-        # issues it, and the device simply declines to adopt it.
+        # refused here and the existing binding is left exactly as it was.
+        #
+        # This is a *local* fail-closed action and nothing more. It runs after
+        # the server call because the account is only knowable from the
+        # receipt, so by the time it refuses the request has already left the
+        # device: the refusal proves that *this PC* did not adopt the receipt,
+        # and never that the upstream challenge, the Broker binding or the
+        # delivered credential were left untouched or compensated. Server-side
+        # duplicate-binding, revoke and compensation authority stays with the
+        # canonical Broker and the enrollment server; the connector neither
+        # performs nor claims one. A divergence between what the server did and
+        # what this device recorded is a server reconciliation/security matter,
+        # not a routine user account switch.
+        #
+        # ``clear_enrollment`` is likewise *not* an ownership transfer. It
+        # clears only the local view of the binding and deliberately leaves the
+        # protected credential store, the Broker binding and any active Broker
+        # session alone, so another owner still cannot adopt this device after a
+        # local logout. An owner-authorized, server-confirmed
+        # revocation/session invalidation, a reviewed credential-store cleanup
+        # and a new enrollment are separately required first. The stable device
+        # id is preserved throughout.
+        #
+        # A binding with no recorded owner or scope is a damaged local record,
+        # not an unpaired device. It is refused with the same bounded reasons
+        # rather than repaired or overwritten in place: silently re-pointing a
+        # damaged enrollment would hide exactly the condition this guard
+        # exists to surface. Both reasons are members of the bounded S1/S2
+        # refusal vocabulary, so nothing new is invented and no server text or
+        # identifier is echoed.
         #
         # Flipping this guard is not a local decision. Account switching is not
         # a valid relaxation: a PC's device identity must never silently change
         # owner. Any future relaxation needs a reviewed justification that
         # answers how the previous account's product sessions stop referring to
         # this device identity.
-        if record.is_enrolled() and record.account_ref is not None:
-            if result.account_ref != record.account_ref:
+        if record.is_enrolled():
+            if record.account_ref is None or result.account_ref != record.account_ref:
                 raise EnrollmentContractError("enrollment_binding_owner_mismatch")
-            if result.workspace_ref != record.workspace_ref:
+            if record.workspace_ref is None or result.workspace_ref != record.workspace_ref:
                 raise EnrollmentContractError("enrollment_binding_scope_mismatch")
 
         record.binding_ref = result.binding_ref
@@ -971,11 +993,18 @@ class ConnectorEnrollment:
         self.flush()
 
     def clear_enrollment(self) -> None:
-        """Log out: forget the binding, keep the device id and the credential store.
+        """Log out: forget the *local* view of the binding. Not a revocation.
 
-        The protected credential is deliberately *not* deleted here — revocation
-        and credential deletion are owned by the canonical credential store, and
-        a rollback is a disable rather than a delete.
+        The device id is preserved, and the protected credential is
+        deliberately *not* deleted here — revocation and credential deletion
+        are owned by the canonical credential store, and a rollback is a
+        disable rather than a delete. The canonical Broker binding and any
+        active Broker session are untouched too, and the canonical Broker
+        refuses a second binding for a device that already has an active one.
+        This call therefore cannot hand the device to another owner: an
+        owner-authorized, server-confirmed revocation/session invalidation, a
+        reviewed credential-store cleanup and a new enrollment are separately
+        required first. The connector never performs or claims any of those.
         """
         record = self.record()
         record.binding_ref = None
