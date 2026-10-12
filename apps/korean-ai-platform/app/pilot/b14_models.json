@@ -325,8 +325,8 @@
         "free"
       ],
       "context_window": 1000000,
-      "input_price_usd_per_1m": 0.0,
-      "output_price_usd_per_1m": 0.0,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
       "source": "https://tokenharbor.ai/models/claude-haiku-5.5:free (free-route offer; availability/allowance subject to change)",
       "source_checked_at": "2026-10-11",
       "enabled": true
@@ -342,8 +342,8 @@
         "free"
       ],
       "context_window": 1000000,
-      "input_price_usd_per_1m": 0.0,
-      "output_price_usd_per_1m": 0.0,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
       "source": "https://tokenharbor.ai/models/deepseek-v4.1-flash:free (free-route offer; availability/allowance subject to change)",
       "source_checked_at": "2026-10-11",
       "enabled": true
@@ -360,8 +360,8 @@
         "free"
       ],
       "context_window": 0,
-      "input_price_usd_per_1m": 0.0,
-      "output_price_usd_per_1m": 0.0,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
       "source": "https://docs.opencode.ai/docs/go/ (exact model/endpoint; chat_completions; owner-selected, Go coding-agent terms; not yet wire-verified)",
       "source_checked_at": "2026-10-12",
       "enabled": false
@@ -378,8 +378,8 @@
         "free"
       ],
       "context_window": 0,
-      "input_price_usd_per_1m": 0.0,
-      "output_price_usd_per_1m": 0.0,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
       "source": "https://docs.opencode.ai/docs/go/ (exact model/endpoint; chat_completions; owner-selected, Go coding-agent terms; not yet wire-verified)",
       "source_checked_at": "2026-10-12",
       "enabled": false
@@ -432,6 +432,22 @@
       "input_price_usd_per_1m": null,
       "output_price_usd_per_1m": null,
       "source": "https://docs.opencode.ai/docs/go/ (exact model/endpoint; messages; owner-selected, Go coding-agent terms; not yet wire-verified)",
+      "source_checked_at": "2026-10-12",
+      "enabled": false
+    },
+    {
+      "id": "zanslab/gpt-6-luna",
+      "provider_id": "zanslab",
+      "upstream_model": "op/gpt-6-luna",
+      "display_name": "ZansLab: GPT 6 Luna",
+      "provider_name": "ZansLab",
+      "capabilities": [
+        "chat"
+      ],
+      "context_window": 0,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "Account-authenticated GET https://zanslab.id/v1/models (200; exact id op/gpt-6-luna) on 2026-10-12; https://zanslab.id/documentation; completion/SSE unverified",
       "source_checked_at": "2026-10-12",
       "enabled": false
     }
