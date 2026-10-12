@@ -7,6 +7,7 @@
 
   const ENDPOINT = "/api/claw/local-access/devices";
   const MAX_RESPONSE_BYTES = 32768;
+  const READ_TIMEOUT_MS = 12000;
   const COPY = Object.freeze({
     ko: {
       toggle: "내 컴퓨터",
@@ -107,6 +108,7 @@
     workspace.insertBefore(root, workspace.querySelector(".claw-workspace-tagline") || workspace.firstChild);
 
     let sequence = 0;
+    let pendingController = null;
     let selectedId = null;
     let lastDirectory = null;
     let opened = false;
@@ -166,6 +168,9 @@
 
     let lastEnvelope = null;
     function reset() {
+      if (pendingController) pendingController.abort();
+      pendingController = null;
+      panel.removeAttribute("aria-busy");
       sequence += 1; // invalidate any in-flight response or previous owner snapshot
       selectedId = null;
       lastEnvelope = null;
@@ -176,44 +181,44 @@
 
     async function load() {
       if (!opened || !isClaw()) return;
+      // Refreshing also invalidates the previous request. A late response can
+      // never repopulate an account-switched or dismissed directory.
+      if (pendingController) pendingController.abort();
+      const controller = new AbortController();
+      pendingController = controller;
       const request = ++sequence;
       lastEnvelope = null;
       lastDirectory = null;
       list.replaceChildren();
       list.hidden = true;
+      panel.setAttribute("aria-busy", "true");
       setStatus("loading");
-      let response;
+      // Cover both HTTP dispatch and response body reads, not only fetch().
+      const timer = window.setTimeout(() => controller.abort(), READ_TIMEOUT_MS);
       try {
-        response = await fetch(ENDPOINT, {
+        const response = await fetch(ENDPOINT, {
           method: "GET",
           credentials: "same-origin",
           cache: "no-store",
           headers: { Accept: "application/json" },
+          signal: controller.signal,
         });
-      } catch {
-        if (sequence === request && opened && isClaw()) {
+        if (request !== sequence || !opened || !isClaw()) return;
+        if (response.status === 401 || response.status === 403) {
+          selectedId = null;
+          setStatus("login");
+          return;
+        }
+        if (response.status === 404 || response.status === 501 || response.status === 503) {
+          selectedId = null;
+          setStatus("unavailable");
+          return;
+        }
+        if (!response.ok) {
           selectedId = null;
           setStatus("failed");
+          return;
         }
-        return;
-      }
-      if (request !== sequence || !opened || !isClaw()) return;
-      if (response.status === 401 || response.status === 403) {
-        selectedId = null;
-        setStatus("login");
-        return;
-      }
-      if (response.status === 404 || response.status === 501 || response.status === 503) {
-        selectedId = null;
-        setStatus("unavailable");
-        return;
-      }
-      if (!response.ok) {
-        selectedId = null;
-        setStatus("failed");
-        return;
-      }
-      try {
         const rawText = await response.text();
         if (request !== sequence || !opened || !isClaw()) return;
         if (rawText.length > MAX_RESPONSE_BYTES) throw Error("oversize");
@@ -230,8 +235,7 @@
           setStatus("failed");
           return;
         }
-        // Retain only fields explicitly sanitized by the existing projection.
-        // Drop raw response objects immediately (including any extra secrets).
+        // Keep only the verified, non-secret directory projection.
         lastEnvelope = {
           available: true, ownerScoped: true,
           devices: directory.devices.map((d) => ({
@@ -254,6 +258,10 @@
           lastDirectory = null;
           setStatus("failed");
         }
+      } finally {
+        window.clearTimeout(timer);
+        if (pendingController === controller) pendingController = null;
+        if (request === sequence) panel.removeAttribute("aria-busy");
       }
     }
 
