@@ -23,7 +23,7 @@
 | Windows transport·DPAPI·설치 ACK | [Draft PR #4490](https://github.com/skerishKang/ai-revenue-lab/pull/4490), HEAD `ba326acd86977ba892dfe1a2ffe7acfe35d81d34`. Windows CI Python **291 passed / 4 skipped**, Node **5/5**; DPAPI 저장·읽기 **11 passed** | **Draft/미병합/운영 OFF**. 실제 gateway/credential handoff·ACK 송신·로그인 실기기 E2E 미배선. 성공한 테스트는 배포/연결 성공과 다름 |
 | 이전 LOCAL2 S2 | [Draft PR #4463](https://github.com/skerishKang/ai-revenue-lab/pull/4463) | #4490의 근거/상위 선행 소스. 독립 병합·중복 Windows 전구간 테스트 금지; head/파일 lineage를 확인한 후 정리 |
 | 기존 중앙 S1 선행 | [Draft PR #4438](https://github.com/skerishKang/ai-revenue-lab/pull/4438) | #4476이 이 브랜치에 적층되어 있어 **main 대상 단독 병합으로 우회 금지**, 계층별 검증 필요 |
-| Claw LIVE SSE (별도 레인) | [LOCAL1 Draft PR #4493](https://github.com/skerishKang/ai-revenue-lab/pull/4493) / [이슈 #3936](https://github.com/skerishKang/ai-revenue-lab/issues/3936) | 모델 HOLD 오류 표시 범위. Connector 승인/장치 통합과 파일 소유권이 다르므로 별도 리뷰 |
+| Claw LIVE SSE (별도 레인) | [PR #4493](https://github.com/skerishKang/ai-revenue-lab/pull/4493) 및 [#4512](https://github.com/skerishKang/ai-revenue-lab/pull/4512) **병합 완료**, [#3936](https://github.com/skerishKang/ai-revenue-lab/issues/3936) E2E OPEN | 모델 HOLD 오류는 source-fixed이나 실사용 SSE/복구 별도 증거 필요. Connector 승인/장치 통합과 별개 |
 | 실제 Alpha Windows 검증 | [이슈 #3099](https://github.com/skerishKang/ai-revenue-lab/issues/3099) OPEN | 서명 설치→검증된 로그인/동의→단회 등록→서버 ONLINE→P01 작업/회수·재시작·롤백 실제 PC 통합 수용 **미증명** |
 
 **현재 판정:** `CENTRAL_PROD=OFF / LOCAL2_SOURCE_TEST=GREEN / #4476_CURRENT_GITGUARDIAN=PASS / TRUSTED_GATEWAY_WIRED=NOT_PROVEN / PC_INSTALL_E2E=NOT_PROVEN / ALPHA_GATE=#3099_OPEN`.
