@@ -1,11 +1,24 @@
-"""Test-only proof: no trusted B54→B14 session bridge exists (#4416).
+"""Test-only proof: B14 authenticated propagation does NOT exist (#4416).
 
-Source-only boundary evidence for the CENTRAL slice: the OpenCode Go wire
-requires an owner-revalidated stable B54 ``chat_<32hex>`` session id, but no
-gateway path (completed JSON nor SSE preview) can supply one from a trusted
-server-side provenance. Therefore production code is NOT changed here: any
-``session_id`` taken from user JSON or an ``x-opencode-session`` header would
-be untrusted input, and grammar alone is not ownership proof.
+Source-only boundary evidence for the CENTRAL slice. B54 trusted identity
+and owner-scoped conversation authority EXIST on current main:
+
+* ``apps/padiem-chat/app/history.py::_chat_id`` mints ``chat_``+uuid4 hex,
+  with ``validate_conversation_id`` as the shape check;
+* ``apps/padiem-chat/app/claw_routes.py::_resolve_intake_session_reference``
+  verifies ``current_user_id`` + owner-scoped
+  ``HistoryStore.get_conversation(uid, candidate)``;
+* ``apps/padiem-chat/app/b54_canonical_session.py::
+  resolve_current_b54_canonical_session`` validates B54 product identity
+  against the Control Plane from the signed session cookie only.
+
+These are distinct identity and conversation authorities, not a working Go
+bridge. The missing edge remains: no trusted product/owner/workspace/
+conversation assertion is propagated across P01/Engine→B14 completed and
+SSE to the internal ``session_id`` argument. Therefore production code is
+NOT changed here: any ``session_id`` taken from user JSON or an
+``x-opencode-session`` header would be untrusted input, and grammar alone
+is not ownership proof.
 
 All tests are network-free. No registry, provider, tier, or routing change.
 """
@@ -17,8 +30,9 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.factory import create_app
+from app.pilot import opencode_go_wire as go_wire
 from app.pilot import platform as plat
-from app.pilot.errors import PilotNotConfigured
+from app.pilot.errors import InvalidRequest, PilotNotConfigured
 from app.pilot.gateway import _validate_body, _InvalidBody
 
 GO_MODELS = (
@@ -64,12 +78,14 @@ def test_completed_body_rejects_business14_session_field(model_id: str) -> None:
 
 
 def test_stream_preview_body_rejects_session_id_field() -> None:
+    """The SSE preview shares the canonical validator, so a session field
+    is rejected with the exact same field-rejection semantic."""
     from app.pilot.stream_gateway import _validate_preview_body
 
     raw = _go_body(GO_MODELS[0])
     raw["stream"] = True
     raw["session_id"] = FORGED_SESSION
-    with pytest.raises((_InvalidBody, Exception)):
+    with pytest.raises(_InvalidBody, match="Unexpected top-level fields"):
         _validate_preview_body(raw)
 
 
@@ -121,15 +137,33 @@ def _tripwire_transport(seen: list) -> httpx.MockTransport:
     return httpx.MockTransport(responder)
 
 
+@pytest.mark.parametrize("model_id,upstream", [
+    ("opencode-go/longcat-2.5-preview-free", "longcat-2.5-preview-free"),
+    ("opencode-go/step-5-preview-free", "step-5-preview-free"),
+])
+def test_go_wire_missing_session_is_invalid_request(model_id, upstream) -> None:
+    """Missing session fails at the wire helper with the session semantic,
+    independent of the registry OFF gate."""
+    with pytest.raises(InvalidRequest, match="trusted stable conversation"):
+        go_wire.prepare_go_request(
+            model_id=model_id,
+            upstream_model=upstream,
+            messages=[{"role": "user", "content": "합성 세션 경계 점검"}],
+            session_id=None,
+        )
+
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize("model_id,upstream", [
     ("opencode-go/longcat-2.5-preview-free", "longcat-2.5-preview-free"),
     ("opencode-go/step-5-preview-free", "step-5-preview-free"),
 ])
 async def test_go_adapter_without_session_never_posts(model_id, upstream, monkeypatch) -> None:
+    """End-to-end adapter path: missing session raises InvalidRequest
+    before the OFF gate is even reached, with zero transport POSTs."""
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     seen: list = []
-    with pytest.raises(Exception):
+    with pytest.raises(InvalidRequest):
         await plat.call_platform_chat_completions(
             model_id=model_id,
             upstream_model=upstream,
@@ -212,7 +246,48 @@ def test_go_provider_and_five_models_stay_off() -> None:
 
 
 # --------------------------------------------------------------------------
-# 6. SSE preview path carries no session either (same canonical validator).
+# 6. Grammar is not ownership: a forged grammar-valid chat_ id passes the
+#    wire helper, so only the missing trusted bridge + OFF gate protect.
+#    B54 authorities exist but are not interchangeable with a Go session.
+# --------------------------------------------------------------------------
+
+
+def test_forged_grammar_valid_session_passes_helper_but_proves_nothing() -> None:
+    """The helper accepts any grammar-valid id — including a forged one —
+    so grammar acceptance must never be read as owner proof."""
+    wire, _body, headers = go_wire.prepare_go_request(
+        model_id=GO_MODELS[0],
+        upstream_model="longcat-2.5-preview-free",
+        messages=[{"role": "user", "content": "합성 세션 경계 점검"}],
+        session_id=FORGED_SESSION,
+    )
+    assert wire == "chat/completions"
+    assert headers["x-opencode-session"] == FORGED_SESSION
+
+
+def test_b54_authorities_exist_but_are_distinct_from_go_session() -> None:
+    """Read-only pins: B54 minting, owner-scoped lookup, and canonical
+    Control Plane session authority exist; none of them is a B14 Go bridge."""
+    from pathlib import Path
+
+    chat_app = Path(__file__).resolve().parents[2] / "padiem-chat" / "app"
+    history = (chat_app / "history.py").read_text(encoding="utf-8")
+    assert "def _chat_id" in history
+    assert "def validate_conversation_id" in history
+    claw_routes = (chat_app / "claw_routes.py").read_text(encoding="utf-8")
+    assert "_resolve_intake_session_reference" in claw_routes
+    assert "get_conversation" in claw_routes
+    canonical = (chat_app / "b54_canonical_session.py").read_text(encoding="utf-8")
+    assert "def resolve_current_b54_canonical_session" in canonical
+    # The canonical B54 session reads only the signed-cookie user id;
+    # body/header values cannot select a session, user, or product.
+    assert "Nothing else is read from the request" in canonical
+
+
+# --------------------------------------------------------------------------
+# 7. SSE preview path carries no session either (same canonical validator).
+#    The substring pin below is supporting evidence only; the positive
+#    _InvalidBody rejection above is the authoritative SSE boundary check.
 # --------------------------------------------------------------------------
 
 
