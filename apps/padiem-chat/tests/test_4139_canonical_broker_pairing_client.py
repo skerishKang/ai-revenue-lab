@@ -96,7 +96,10 @@ def test_issue_challenge_returns_code_once_with_server_correlated_scope():
 def test_enrollment_binding_is_closed_and_challenge_correlated():
     binding = Binding()
     client = CloudflareCanonicalBrokerPairingClient(binding)
-    result = asyncio.run(client.get_enrollment_binding(challenge_id=CHALLENGE_ID))
+    result = asyncio.run(client.get_enrollment_binding(
+        challenge_id=CHALLENGE_ID, consent_ref=CONSENT, owner_ref=OWNER,
+        account_ref=ACCOUNT, workspace_ref=WORKSPACE, device_id=DEVICE,
+    ))
     assert result["consent_ref"] == CONSENT
     assert binding.calls == [("binding", {"challenge_id": CHALLENGE_ID})]
 
@@ -148,6 +151,10 @@ def test_issue_refuses_bad_scope_or_secret_projection(override):
     ("device_id", "device.other"),
     ("server_owned_binding", False),
     ("client_supplied_receipt_trusted", True),
+    ("consent_ref", "consent.other"),
+    ("owner_ref", "subject.other"),
+    ("account_ref", "account.other"),
+    ("workspace_ref", "workspace.other"),
 ])
 def test_binding_refuses_mismatched_device_or_untrusted_receipt(change):
     binding = Binding()
@@ -162,7 +169,10 @@ def test_binding_refuses_mismatched_device_or_untrusted_receipt(change):
     response["binding"][change[0]] = change[1]
     binding.results["binding"] = response
     with pytest.raises(IdentityBridgeError):
-        asyncio.run(CloudflareCanonicalBrokerPairingClient(binding).get_enrollment_binding(challenge_id=CHALLENGE_ID))
+        asyncio.run(CloudflareCanonicalBrokerPairingClient(binding).get_enrollment_binding(
+            challenge_id=CHALLENGE_ID, consent_ref=CONSENT, owner_ref=OWNER,
+            account_ref=ACCOUNT, workspace_ref=WORKSPACE, device_id=DEVICE,
+        ))
 
 
 @pytest.mark.parametrize("mutate", [
