@@ -104,3 +104,58 @@
     min-height: 60vh;
   }
 }
+
+
+/* #4428: B66 uses the existing canonical device directory READ-ONLY.
+   This is onboarding/status, not a PC pairing or task execution UI. */
+.b66-quote-connect {
+  border: 1px solid var(--border, rgba(127,127,127,.28));
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: var(--surface, rgba(255,255,255,.04));
+}
+.b66-quote-connect-toggle,
+.b66-quote-connect-refresh {
+  border: 1px solid var(--border, rgba(127,127,127,.3));
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  font-size: .86rem;
+  border-radius: 9px;
+  padding: 8px 12px;
+  min-height: 40px;
+  cursor: pointer;
+}
+.b66-quote-connect-toggle { font-weight: 650; }
+.b66-quote-connect-panel { margin-top: 10px; }
+.b66-quote-connect-panel[hidden] { display: none !important; }
+.b66-quote-connect-help, .b66-quote-connect-status {
+  font-size: .83rem;
+  line-height: 1.6;
+  color: var(--text-dim, inherit);
+  margin: 6px 0 10px;
+}
+.b66-quote-connect-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 7px;
+}
+.b66-quote-connect-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  border: 1px solid var(--border, rgba(127,127,127,.22));
+  border-radius: 9px;
+  padding: 9px 11px;
+}
+.b66-quote-connect-item strong { overflow-wrap: anywhere; }
+.b66-quote-connect-state { font-size: .8rem; opacity: .8; }
+.b66-quote-connect-state[data-state="online"] { color: var(--success, #137969); opacity: 1; }
+.b66-quote-connect :focus-visible { outline: 3px solid var(--focus, #2a7db4); outline-offset: 2px; }
+@media (max-width: 640px) {
+  .b66-quote-connect-item { align-items: flex-start; flex-direction: column; }
+}
