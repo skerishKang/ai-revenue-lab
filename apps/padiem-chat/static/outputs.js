@@ -96,11 +96,13 @@
   }
 
   function updateSaveButtons() {
+    // #4462: the saved-answers list surface is removed, so the per-answer
+    // save entry stays hidden — saving would be write-only with no retrieval
+    // path. Copy/download stay visible; saved data, the dialog and the
+    // /api/outputs contract are preserved untouched.
     document.querySelectorAll(".answer-save").forEach((button) => {
-      const article = button.closest(".assistant-message");
-      const eligible = lifecycleApi().isCompleted(article);
-      button.hidden = !outputsReady || !eligible;
-      button.disabled = !outputsReady || !eligible || button.dataset.saved === "true";
+      button.hidden = true;
+      button.disabled = true;
     });
   }
 
@@ -220,8 +222,8 @@
     save.type = "button";
     save.className = "answer-action answer-save";
     save.textContent = "저장";
-    save.hidden = !outputsReady;
-    save.disabled = !outputsReady;
+    save.hidden = true;
+    save.disabled = true;
     save.addEventListener("click", async () => {
       if (!lifecycleApi().isCompleted(article) || !outputsReady || save.dataset.saved === "true") return;
       save.disabled = true;

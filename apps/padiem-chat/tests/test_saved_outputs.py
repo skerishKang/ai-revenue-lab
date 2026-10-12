@@ -364,15 +364,18 @@ def test_saved_outputs_ui_is_additive_and_truthful():
     assert '<link rel="stylesheet" href="./outputs.css" />' in html
     assert '<script src="./outputs.js"></script>' in html
     # #4462: the sidebar saved-answers button/section leave the visible IA,
-    # while the saved-answer data, dialog, per-answer save buttons and
+    # and the per-answer save entry stays hidden with them (write-only saving
+    # has no retrieval path). Saved data, the dialog, copy/download and the
     # /api/outputs contract are preserved untouched.
     assert 'id="outputsNavButton"' not in html
     assert 'id="outputsSection"' not in html
     assert 'id="savedOutputDialog"' in html
     assert 'fetch("/api/outputs"' in js
+    assert 'save.hidden = true' in js
+    assert '"answer-action answer-copy"' in js and '"answer-action answer-download"' in js
     assert "navigator.clipboard" in js and "document.execCommand" in js
     assert "new Blob([text]" in js and "URL.createObjectURL" in js and "URL.revokeObjectURL" in js
-    assert 'save.hidden = !outputsReady' in js
+    assert 'save.hidden = !outputsReady' not in js
     assert "window.confirm(" not in js
     assert "PadiemConfirmDialog.confirm" in js
     assert 'dialog.id = "confirmDialog"' in a11y

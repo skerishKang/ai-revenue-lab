@@ -21,6 +21,8 @@ def test_inbox_entries_are_reached_without_standalone_sidebar_buttons():
     assert 'id="alertsNavButton"' not in INDEX
     assert 'id="clawTasksButton"' in INDEX
     assert 'id="automationAlertsButton"' in INDEX
+    assert 'getElementById("clawTasksButton")' in APP
+    assert 'getElementById("automationAlertsButton")' in APP
     assert 'openClawInbox("tasks")' in APP
     assert 'openClawInbox("alerts")' in APP
 

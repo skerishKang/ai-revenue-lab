@@ -936,7 +936,7 @@
     const inboxNavButtons = [
       document.getElementById("tasksNavButton"),
       document.getElementById("alertsNavButton"),
-      // #4462: the sidebar entries are gone; the Claw workspace task entry
+      // #4462: the sidebar entries are gone; the general-view task entry
       // and the automation-view alerts entry reuse the same signed-in gate.
       document.getElementById("clawTasksButton"),
       document.getElementById("automationAlertsButton"),
@@ -3713,10 +3713,12 @@
   if (clawManualEntryButton) clawManualEntryButton.addEventListener("click", openClawManual);
   if (tasksNavButton) tasksNavButton.addEventListener("click", () => openClawInbox("tasks"));
   if (alertsNavButton) alertsNavButton.addEventListener("click", () => openClawInbox("alerts"));
-  // #4462: background task history stays reachable from the Claw workspace
-  // after the standalone sidebar Tasks entry is gone. In-conversation run
-  // status/results are unchanged; this only preserves the out-of-conversation
-  // task list path (the calendar task links keep working as before).
+  // #4462: background task history stays reachable from the general Claw
+  // entry bar (#3531 keeps the workspace canvas hidden in general/manual
+  // views, so the entry lives beside the manual-entry control instead).
+  // In-conversation run status/results are unchanged; this only preserves
+  // the out-of-conversation task list path (the calendar task links keep
+  // working as before).
   const clawTasksButton = document.getElementById("clawTasksButton");
   if (clawTasksButton) clawTasksButton.addEventListener("click", () => openClawInbox("tasks"));
   if (clawInboxRetry) clawInboxRetry.addEventListener("click", () => {
