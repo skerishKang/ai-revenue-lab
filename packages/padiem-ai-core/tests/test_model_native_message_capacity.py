@@ -113,7 +113,7 @@ def test_security_guards_and_invalid_shapes_remain():
         B14ChatRequest(messages=({"role": "tool", "content": "x"},), model="test/route")
     with pytest.raises(ValueError):
         B14ExecutionConfig(base_url="https://test.example", max_response_bytes=MAX_CONFIGURED_B14_RESPONSE_BYTES + 1)
-    with pytest.raises(ValueError, match="bounded context"):
+    with pytest.raises(ValueError, match="transport safety envelope"):
         ExecutionRequest(
             agent=_agent(), messages=({"role": "user", "content": "ok"},),
             additional_system_context="x" * (MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS + 1),

@@ -65,7 +65,7 @@ from .claw_routes import (
 )
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 from .auth_routes import auth_ready, current_user_id
-from .history import _bounded_text, validate_conversation_id
+from .history import HISTORY_PREVIEW_SUFFIX, HistoryContextIncomplete, validate_conversation_id
 
 # This is the existing Chat HTTP resource envelope, not a provider/model cap.
 # The separate P01 Engine ingress guard remains in force until #4383 is resolved.
@@ -223,7 +223,9 @@ async def _owner_claw_context(
     store = getattr(request.app.state, "history_store", None)
     if not uid or not callable(getattr(store, "get_conversation", None)):
         raise ValueError("owner history unavailable")
-    prior = store.get_conversation(uid, conversation_id)
+    get_full = getattr(store, "get_conversation_model_context", None)
+    load = get_full if callable(get_full) else store.get_conversation
+    prior = load(uid, conversation_id)
     if inspect.isawaitable(prior):
         prior = await prior
     if not isinstance(prior, dict) or prior.get("id") != conversation_id:
@@ -241,6 +243,9 @@ async def _owner_claw_context(
         content = row.get("content")
         if not isinstance(content, str) or not content.strip():
             continue
+        if len(content) == 8000 and content.endswith(HISTORY_PREVIEW_SUFFIX):
+            # Legacy/partial history cannot become silently incomplete AI context.
+            raise HistoryContextIncomplete("full owner conversation history not available")
         item = ("사용자: " if row["role"] == "user" else "AI: ") + content.strip()
         excerpts.append(item)
     if not excerpts:
@@ -280,9 +285,7 @@ async def _save_claw_exchange(
                 return None
         # Only the bounded, visibly labeled stored preview is persisted. The
         # complete P01 result was already delivered to the caller unchanged.
-        safe_user = _bounded_text(user_text, "user_text")
-        safe_answer = _bounded_text(answer, "assistant_text")
-        saved = append(uid, conversation_id, safe_user, safe_answer, project_id)
+        saved = append(uid, conversation_id, user_text, answer, project_id)
         if inspect.isawaitable(saved):
             saved = await saved
         if not isinstance(saved, str):
@@ -461,6 +464,9 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # A browser-supplied array of prior turns never becomes model context.
     try:
         model_user_text = await _owner_claw_context(request, conversation_id, user_text)
+    except HistoryContextIncomplete:
+        return _error(409, "conversation_context_incomplete",
+                      "이전 대화 원문을 복원할 수 없습니다. 새 대화를 시작하거나 원문을 다시 입력해 주세요.")
     except Exception:
         return _error(503, "conversation_authority_unavailable",
                       "대화 문맥을 안전하게 확인할 수 없습니다.")

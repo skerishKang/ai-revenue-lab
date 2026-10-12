@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import hashlib
+import inspect
+import re
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -9,6 +11,7 @@ from typing import Any, Protocol
 from .workspace_storage import _safe_identifier
 
 MAX_HISTORY_MESSAGE_CHARS = 8000
+MAX_MODEL_CONTEXT_BYTES = 5_500_000  # bounded transport, not model token budget
 MAX_HISTORY_TITLE_CHARS = 80
 MAX_RECENT_CONVERSATIONS = 30
 MAX_PROJECT_NAME_CHARS = 80
@@ -34,6 +37,11 @@ _CLAW_HANDOFF_TRUSTED_REQUEST_KEYS = frozenset(
 
 
 class HistoryError(RuntimeError):
+    pass
+
+
+class HistoryContextIncomplete(HistoryError):
+    """A legacy or missing full-text projection cannot be used as model truth."""
     pass
 
 
@@ -241,6 +249,9 @@ def build_project_context(project: ProjectProfile) -> str:
     )
 
 
+HISTORY_PREVIEW_SUFFIX = "\n[저장 미리보기: 전체 내용 중 일부만 저장되었습니다.]"
+
+
 def _bounded_text(value: str, label: str) -> str:
     text = value.strip()
     if not text:
@@ -250,7 +261,7 @@ def _bounded_text(value: str, label: str) -> str:
     # for a full transcript when a long request/answer reached the provider.
     if len(text) <= MAX_HISTORY_MESSAGE_CHARS:
         return text
-    suffix = "\n[저장 미리보기: 전체 내용 중 일부만 저장되었습니다.]"
+    suffix = HISTORY_PREVIEW_SUFFIX
     return text[:MAX_HISTORY_MESSAGE_CHARS - len(suffix)] + suffix
 
 
@@ -384,10 +395,99 @@ def _run_history_public(row: dict[str, Any]) -> dict[str, Any]:
 class D1HistoryStore:
     """Cloudflare D1 adapter. All dynamic values use prepared statement binds."""
 
-    def __init__(self, db: Any):
+    def __init__(self, db: Any, *, full_context_bucket: Any = None):
         if db is None:
             raise ValueError("D1 binding is required")
         self.db = db
+        # Existing private workspace R2 binding, never an incoming browser key.
+        self.full_context_bucket = full_context_bucket
+
+    @staticmethod
+    def _context_key(conversation_id: str, message_id: str) -> str:
+        if validate_conversation_id(conversation_id) is None or not (
+            isinstance(message_id, str) and re.fullmatch(r"msg_[0-9a-f]{32}", message_id)
+        ):
+            raise HistoryError("invalid canonical history object identity")
+        return f"claw-model-context/v1/{conversation_id}/{message_id}.utf8"
+
+    async def _put_full_message(self, conversation_id: str, message_id: str, raw: str) -> str | None:
+        if len(raw) <= MAX_HISTORY_MESSAGE_CHARS:
+            return None
+        data = raw.encode("utf-8")
+        if len(data) > MAX_MODEL_CONTEXT_BYTES:
+            raise HistoryError("model context exceeds the bounded 5.5MB transport envelope")
+        bucket = self.full_context_bucket
+        if bucket is None or not callable(getattr(bucket, "put", None)):
+            raise HistoryError("private full model-context storage is unavailable")
+        key = self._context_key(conversation_id, message_id)
+        result = bucket.put(key, data, httpMetadata={"contentType": "text/plain; charset=utf-8"})
+        if inspect.isawaitable(result):
+            await result
+        return key
+
+    async def _delete_full_keys(self, keys: list[str]) -> None:
+        bucket = self.full_context_bucket
+        if bucket is None:
+            return
+        for key in keys:
+            try:
+                result = bucket.delete(key)
+                if inspect.isawaitable(result):
+                    await result
+            except Exception:
+                # DB owner/row authority remains independent of R2 cleanup.
+                pass
+
+    async def _read_full_message(self, conversation_id: str, row: dict[str, Any]) -> str:
+        preview = str(row.get("content", ""))
+        if len(preview) != MAX_HISTORY_MESSAGE_CHARS or not preview.endswith(HISTORY_PREVIEW_SUFFIX):
+            return preview
+        bucket = self.full_context_bucket
+        if bucket is None or not callable(getattr(bucket, "get", None)):
+            raise HistoryContextIncomplete("full model-context storage is unavailable")
+        key = self._context_key(conversation_id, row.get("id"))
+        obj = bucket.get(key)
+        if inspect.isawaitable(obj):
+            obj = await obj
+        if obj is None:
+            # Never pass a truncated preview to a model as the full history.
+            raise HistoryContextIncomplete("saved full model context is unavailable")
+        if getattr(obj, "size", 0) > MAX_MODEL_CONTEXT_BYTES:
+            raise HistoryError("saved model context exceeds transport envelope")
+        from .workspace_storage import _read_r2_object_bytes
+        data = await _read_r2_object_bytes(obj)
+        if len(data) > MAX_MODEL_CONTEXT_BYTES:
+            raise HistoryError("saved model context exceeds transport envelope")
+        try:
+            full = data.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise HistoryError("saved model context is not UTF-8") from exc
+        if _bounded_text(full, "saved_model_context") != preview:
+            raise HistoryContextIncomplete("saved model context preview does not match")
+        return full
+
+    async def get_conversation_model_context(
+        self, user_id: str, conversation_id: str,
+    ) -> dict[str, Any] | None:
+        """Owner-scoped full messages for model only. Browser APIs keep previews."""
+        owned = await self.get_conversation(user_id, conversation_id)
+        if owned is None:
+            return None
+        rows = await self._all(
+            "SELECT id, role, content, sequence_number FROM messages "
+            "WHERE conversation_id=? ORDER BY sequence_number ASC", conversation_id,
+        )
+        full_messages: list[dict[str, str]] = []
+        byte_total = 0
+        for row in rows:
+            if row.get("role") not in ("user", "assistant"):
+                continue
+            content = await self._read_full_message(conversation_id, row)
+            byte_total += len(content.encode("utf-8"))
+            if byte_total > MAX_MODEL_CONTEXT_BYTES:
+                raise HistoryError("conversation context exceeds transport envelope")
+            full_messages.append({"role": row["role"], "content": content})
+        return {**owned, "messages": full_messages}
 
     async def _first(self, sql: str, *values: Any) -> dict[str, Any] | None:
         statement = self.db.prepare(sql)
@@ -584,10 +684,18 @@ class D1HistoryStore:
         )
         if not owned:
             return False
+        full_rows = await self._all(
+            "SELECT id, content FROM messages WHERE conversation_id=?", conversation_id,
+        )
         await self._run(
             "DELETE FROM conversations WHERE id=? AND user_id=?",
             conversation_id, user_id,
         )
+        await self._delete_full_keys([
+            self._context_key(conversation_id, row["id"])
+            for row in full_rows if len(str(row.get("content", ""))) == MAX_HISTORY_MESSAGE_CHARS
+            and str(row.get("content", "")).endswith(HISTORY_PREVIEW_SUFFIX)
+        ])
         return True
 
     async def list_projects(self, user_id: str) -> list[ProjectProfile]:
@@ -641,14 +749,11 @@ class D1HistoryStore:
         assistant_content = _bounded_text(assistant_text, "assistant_text")
         now = _now_iso()
         cid = conversation_id
-        if cid is None:
+        creating = cid is None
+        if creating:
             if project_id is not None and await self.get_project(user_id, project_id) is None:
                 raise HistoryForbidden("project is not owned by current user")
             cid = _chat_id()
-            await self._run(
-                "INSERT INTO conversations (id, user_id, project_id, title, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
-                cid, user_id, project_id, _title_from_user_text(user_content), now, now,
-            )
             sequence = 0
         else:
             owned = await self._first("SELECT id, project_id FROM conversations WHERE id=? AND user_id=?", cid, user_id)
@@ -661,14 +766,31 @@ class D1HistoryStore:
             raw_seq = None if row is None else row.get("max_sequence")
             sequence = int(raw_seq) + 1 if raw_seq is not None else 0
 
-        await self._run(
-            "INSERT INTO messages (id, conversation_id, sequence_number, role, content, created_at) VALUES (?, ?, ?, 'user', ?, ?)",
-            _message_id(), cid, sequence, user_content, now,
-        )
-        await self._run(
-            "INSERT INTO messages (id, conversation_id, sequence_number, role, content, created_at) VALUES (?, ?, ?, 'assistant', ?, ?)",
-            _message_id(), cid, sequence + 1, assistant_content, now,
-        )
+        user_msg_id, answer_msg_id = _message_id(), _message_id()
+        r2_keys: list[str] = []
+        try:
+            for msg_id, raw in ((user_msg_id, user_text.strip()), (answer_msg_id, assistant_text.strip())):
+                key = await self._put_full_message(cid, msg_id, raw)
+                if key is not None:
+                    r2_keys.append(key)
+            if creating:
+                # Store private full text first; unavailable R2 must not leave
+                # a misleading, empty D1 conversation for the first turn.
+                await self._run(
+                    "INSERT INTO conversations (id, user_id, project_id, title, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+                    cid, user_id, project_id, _title_from_user_text(user_content), now, now,
+                )
+            await self._run(
+                "INSERT INTO messages (id, conversation_id, sequence_number, role, content, created_at) VALUES (?, ?, ?, 'user', ?, ?)",
+                user_msg_id, cid, sequence, user_content, now,
+            )
+            await self._run(
+                "INSERT INTO messages (id, conversation_id, sequence_number, role, content, created_at) VALUES (?, ?, ?, 'assistant', ?, ?)",
+                answer_msg_id, cid, sequence + 1, assistant_content, now,
+            )
+        except Exception:
+            await self._delete_full_keys(r2_keys)
+            raise
         await self._run("UPDATE conversations SET updated_at=? WHERE id=? AND user_id=?", now, cid, user_id)
         if project_id is not None:
             await self._run("UPDATE projects SET updated_at=? WHERE id=? AND user_id=?", now, project_id, user_id)

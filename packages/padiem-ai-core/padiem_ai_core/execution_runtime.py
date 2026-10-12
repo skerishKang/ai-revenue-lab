@@ -30,8 +30,11 @@ from .contracts import (
 # Deprecated legacy model-prompt constants stay importable, but do not gate AI text.
 MAX_EXECUTION_MESSAGES: int | None = None
 MAX_EXECUTION_MESSAGE_CHARS: int | None = None
-MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS = 16_000
-MAX_COMPOSED_SYSTEM_CHARS = 32_000
+# Model/reference context is provider-native within the existing Engine 6MB
+# request transport. These are byte memory guards, not model token caps.
+MAX_SYSTEM_CONTEXT_BYTES = 5_500_000
+MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS = MAX_SYSTEM_CONTEXT_BYTES  # import compatibility
+MAX_COMPOSED_SYSTEM_CHARS = MAX_SYSTEM_CONTEXT_BYTES  # import compatibility
 
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _MESSAGE_ROLES = frozenset({"user", "assistant"})
@@ -100,9 +103,9 @@ def _normalize_additional_system_context(value: str | None) -> str | None:
     text = value.strip()
     if not text:
         return None
-    if len(text) > MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS:
+    if len(text.encode("utf-8")) > MAX_SYSTEM_CONTEXT_BYTES:
         raise ValueError(
-            "additional_system_context exceeds the bounded context limit"
+            "additional_system_context exceeds transport safety envelope"
         )
     return text
 
@@ -116,8 +119,8 @@ def _compose_system_instruction(request: "ExecutionRequest") -> str | None:
     if not parts:
         return None
     content = "\n\n".join(parts)
-    if len(content) > MAX_COMPOSED_SYSTEM_CHARS:
-        raise ValueError("composed system instruction exceeds B14 message limit")
+    if len(content.encode("utf-8")) > MAX_SYSTEM_CONTEXT_BYTES:
+        raise ValueError("composed system instruction exceeds transport safety envelope")
     return content
 
 
