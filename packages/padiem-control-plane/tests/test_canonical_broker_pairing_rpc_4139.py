@@ -98,7 +98,7 @@ def test_pairing_hmac_is_domain_separated_from_canonical_broker_authenticator():
     raw_broker_secret = h.env.LOCAL_AGENT_BROKER_PEPPER.encode("utf-8")
     assert pairing._pepper != raw_broker_secret
     assert len(pairing._pepper) == 32
-    assert pairing._broker._authority_ref == AUTHORITY_REF
+    assert h._runtime.authority_ref() == AUTHORITY_REF
 
 
 def test_schema_and_pairing_rpc_are_separately_gated_off_by_default():
