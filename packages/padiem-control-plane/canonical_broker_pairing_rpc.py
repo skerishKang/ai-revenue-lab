@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import base64
+import hashlib
 from datetime import datetime, timezone
 
 from padiem_control_plane.contracts import ControlPlaneContractError
@@ -36,12 +37,18 @@ class CanonicalBrokerPairingRPC:
                 "durable_pairing_rate_limit_unconfigured", "bounded canonical Broker issuance limit is required"
             ) from exc
         pepper = str(getattr(self.env, "LOCAL_AGENT_BROKER_PEPPER", "")).encode("utf-8")
-        authority_ref = str(getattr(self.env, "LOCAL_AGENT_BROKER_AUTHORITY_REF", ""))
+        if len(pepper) < 16:
+            raise ControlPlaneContractError(
+                "durable_pairing_secret_unconfigured", "canonical Broker secret is unavailable"
+            )
+        # Domain-separate pairing-code HMAC from the Broker binding authenticator.
+        pairing_pepper = hashlib.sha256(b"PADIEM\x00CONNECTOR-PAIRING\x00V1\x00" + pepper).digest()
+        authority_ref = self._runtime.authority_ref()
         broker = StateBackedLocalAgentBrokerAuthority(
             pepper=pepper, authority_ref=authority_ref, state_port=self._runtime.state_port,
         )
         return DurableBrokerPairingAuthority(
-            storage=self._storage, broker=broker, pepper=pepper, issuance_rate_limit=limit,
+            storage=self._storage, broker=broker, pepper=pairing_pepper, issuance_rate_limit=limit,
         )
 
     async def install_pairing_schema(self, payload: dict) -> dict:
