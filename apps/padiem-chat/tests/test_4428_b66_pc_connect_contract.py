@@ -46,3 +46,16 @@ def test_no_eager_request_and_logout_discards_stale_pc_results():
     assert 'pcUnavailable: "PC 연결 서비스가 아직 준비되지 않았습니다.' in js
     assert "PADIEM Connect installation and same-account sign-in are not ready yet" in js
     assert "https://github.com/" not in js.split("async function loadPcDirectory()", 1)[1].split("function closeDialog()", 1)[0]
+
+
+def test_b66_pc_directory_is_default_off_without_product_entitlement():
+    """No B66 product permission adapter is live yet; do not leak Claw devices."""
+    source = (STATIC / "b66-quote-runtime.js").read_text(encoding="utf-8")
+    server = (STATIC.parent / "app" / "b66_quote_routes.py").read_text(encoding="utf-8")
+    assert "pcDirectoryEnabled: data.pc_device_list_enabled === true" in source
+    assert "pcSection.hidden = true;" in source
+    assert "runtime?.pcDirectoryEnabled === true" in source
+    assert "if (pcSection) pcSection.hidden = !pcEnabled;" in source
+    # Future permission may only come from a reviewed authenticated server
+    # product-policy adapter, never from B66 product data or a browser flag.
+    assert "pc_device_list_enabled" not in server
