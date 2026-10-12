@@ -72,9 +72,12 @@ and no server text or identifier is echoed.
 
 ### Two boundaries CENTRAL's review forced to be stated explicitly
 
-**The refusal is local. It is not a server rollback.** The equality checks run *after* the redemption call,
-because the account is only knowable from the receipt, so the request has already left the device by the time
-the guard fires. The refusal therefore proves only that *this PC* did not adopt the receipt. It is **not**
+**The refusal is local. It is not a server rollback.** Missing persisted owner/workspace on an
+already-bound PC can be detected locally, so such a damaged record is now rejected **before remote
+redemption** (two parameterized tests prove zero additional port calls). A complete local record with a
+*foreign account/workspace success receipt* cannot be compared until that receipt exists; those comparisons
+still run **after** the redemption call, so the request has already left the device. In that latter case
+the refusal proves only that *this PC* did not adopt the receipt. It is **not**
 evidence that the upstream challenge was left unconsumed, that the Broker binding was left uncreated, or that
 the delivered credential was compensated — and the Connector performs no compensating call at all (no
 revocation, no rollback, no challenge re-read; pinned by test). Duplicate-binding, revoke and compensation
