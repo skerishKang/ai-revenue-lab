@@ -22,7 +22,10 @@ from app.pilot.errors import (
     MalformedUpstreamResponse,
     UpstreamAuthFailed,
     UpstreamResponseTooLarge,
+    UpstreamTimeout,
 )
+
+import tracemalloc
 
 CAP = plat.MAX_RESPONSE_BYTES  # 1MiB byte resource guard (not a token ceiling)
 CHUNK = 64 * 1024
@@ -439,3 +442,191 @@ async def test_byok_401_with_huge_body_fails_auth_without_decode():
             response_model=BYOK_MODEL,
         )
     assert len(seen) == 1
+
+
+# --- single-chunk pre-append boundary (#4379 post-#4547 follow-up) ---------
+# Merged #4547 capped the TOTAL body before JSON decode, but the collector
+# appended each incoming chunk BEFORE checking the cap, so one huge chunk
+# could peak worker RAM beyond it. These tests pin pre-append semantics.
+
+
+class _StubResponse:
+    """Minimal duck-typed response: only .headers + .aiter_bytes()."""
+
+    def __init__(self, chunks, headers=None):
+        self._chunks = list(chunks)
+        self.headers = dict(headers or {})
+
+    async def aiter_bytes(self):
+        for chunk in self._chunks:
+            yield chunk
+
+
+@pytest.mark.asyncio
+async def test_helper_single_huge_chunk_rejected_without_accumulator_peak():
+    # One 2MiB decoded chunk (small finite fixture, no gigabyte alloc).
+    # Pre-append fix: the whole chunk lands in the accumulator first, so the
+    # traced peak reaches ~2MiB. Fixed helper must raise before copying it.
+    big = b"Z" * (CAP + 1024 * 1024)
+    stub = _StubResponse([big])
+    resumed = tracemalloc.is_tracing()
+    if resumed:
+        tracemalloc.stop()
+    tracemalloc.start()
+    try:
+        with pytest.raises(UpstreamResponseTooLarge):
+            await plat._read_bounded_body(stub)
+        _, peak = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+        if resumed:
+            tracemalloc.start()
+    assert peak < CAP
+
+
+@pytest.mark.asyncio
+async def test_helper_exact_cap_boundary_returned_verbatim():
+    body = b"Q" * CAP
+    got = await plat._read_bounded_body(_StubResponse([body]))
+    assert got == body  # no truncation at the exact boundary
+
+
+@pytest.mark.asyncio
+async def test_helper_cap_plus_one_single_chunk_rejects():
+    with pytest.raises(UpstreamResponseTooLarge):
+        await plat._read_bounded_body(_StubResponse([b"Q" * (CAP + 1)]))
+
+
+@pytest.mark.asyncio
+async def test_helper_missing_content_length_enforced_on_bytes():
+    stub = _StubResponse([b"Z" * (CAP // 2), b"Z" * (CAP // 2 + 1)])
+    with pytest.raises(UpstreamResponseTooLarge):
+        await plat._read_bounded_body(stub)
+
+
+@pytest.mark.asyncio
+async def test_helper_invalid_content_length_falls_back_to_bytes():
+    body = b'{"ok": true}'
+    got = await plat._read_bounded_body(
+        _StubResponse([body], headers={"content-length": "not-a-number"})
+    )
+    assert got == body  # untrusted header never causes a false reject
+
+
+@pytest.mark.asyncio
+async def test_helper_lying_small_declaration_enforced_on_bytes():
+    stub = _StubResponse(
+        [b"Z" * (CAP + 8)], headers={"content-length": "10"}
+    )
+    with pytest.raises(UpstreamResponseTooLarge):
+        await plat._read_bounded_body(stub)
+
+
+@pytest.mark.asyncio
+async def test_helper_tiny_chunk_sequence_roundtrips():
+    body = b'{"ok": true}'
+    got = await plat._read_bounded_body(
+        _StubResponse([bytes([b]) for b in body])
+    )
+    assert got == body
+
+
+@pytest.mark.asyncio
+async def test_helper_timeout_propagates_not_swallowed():
+    async def stalled():
+        yield b"prefix"
+        raise httpx.ReadTimeout("synthetic stall")
+
+    class _Stalled:
+        headers = {}
+        aiter_bytes = lambda self: stalled()  # noqa: E731
+
+    with pytest.raises(httpx.TimeoutException):
+        await plat._read_bounded_body(_Stalled())
+
+
+@pytest.mark.asyncio
+async def test_generic_mid_body_timeout_maps_to_upstream_timeout(live_keyless_route):
+    calls = []
+
+    class _StallTransport(httpx.AsyncBaseTransport):
+        async def handle_async_request(self, request):
+            calls.append(1)
+
+            async def gen():
+                yield b'{"choices": ['
+                raise httpx.ReadTimeout("synthetic stall")
+
+            return httpx.Response(
+                200, headers={"content-type": "application/json"}, content=gen()
+            )
+
+    with pytest.raises(UpstreamTimeout):
+        await plat.call_platform_chat_completions(
+            model_id=MOCK_ID,
+            upstream_model=MOCK_UPSTREAM,
+            provider="Synthetic test-only gateway",
+            platform_provider_id=MOCK_PROVIDER,
+            messages=[{"role": "user", "content": "hi"}],
+            max_tokens=32,
+            transport=_StallTransport(),
+        )
+    assert calls == [1]
+
+
+@pytest.mark.asyncio
+async def test_go_and_byok_single_huge_chunk_rejected(go_auth_stub):
+    # Parity pin: both lanes reuse the shared collector, so one 2MiB chunk
+    # raises the resource error on each path with a single attempt.
+    big = b"Z" * (CAP + 1024 * 1024)
+    seen_go: list = []
+    seen_byok: list = []
+
+    def go_handle(req):
+        seen_go.append(req)
+        return httpx.Response(
+            200, content=big, headers={"content-type": "application/json"}
+        )
+
+    def byok_handle(req):
+        seen_byok.append(req)
+        return httpx.Response(
+            200, content=big, headers={"content-type": "application/json"}
+        )
+
+    with pytest.raises(UpstreamResponseTooLarge):
+        await go.call_go_model(
+            model_id=GO_MODEL,
+            upstream_model=GO_UPSTREAM,
+            messages=GO_TURNS,
+            session_id=GO_SESSION,
+            max_tokens=32,
+            transport=httpx.MockTransport(go_handle),
+        )
+    with pytest.raises(UpstreamResponseTooLarge):
+        await byok.call_chat_completions(
+            "sk-test-byok-0123456789abcdef",
+            [{"role": "user", "content": "hi"}],
+            max_tokens=32,
+            transport=httpx.MockTransport(byok_handle),
+            base_url=BYOK_URL,
+            upstream_model=BYOK_MODEL,
+            timeout_seconds=30,
+            response_model=BYOK_MODEL,
+        )
+    assert len(seen_go) == 1
+    assert len(seen_byok) == 1
+
+
+@pytest.mark.asyncio
+async def test_runtime_config_max_response_bytes_is_not_wired(monkeypatch):
+    # Policy truth (#4379): the 1MiB operator default in b14_runtime_config is
+    # dead metadata for completed paths. Widening it must NOT move the guard;
+    # the effective cap stays platform.MAX_RESPONSE_BYTES, unchanged here.
+    from app.pilot.b14_runtime_config import runtime_config
+
+    assert plat.MAX_RESPONSE_BYTES == 1024 * 1024
+    assert runtime_config.max_response_bytes == 1024 * 1024
+    monkeypatch.setattr(runtime_config, "max_response_bytes", 64 * 1024 * 1024)
+    with pytest.raises(UpstreamResponseTooLarge):
+        await plat._read_bounded_body(_StubResponse([b"Z" * (CAP + 1)]))
