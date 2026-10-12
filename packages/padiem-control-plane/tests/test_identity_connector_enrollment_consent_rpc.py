@@ -78,11 +78,22 @@ def harness(*, enabled=True, scope_approved=True, schema_installed=True):
     canonical = Canonical()
     # Existing canonical Identity DO store creates its pre-existing schema.
     # Test-only local SQLite harness: NOT production migration.
-    context_store = __import__("identity_connector_ticket").CanonicalConnectorContextStore(
-        storage, random_hex=lambda n: "a"*(n*2)
+    # Seed only the already-existing shared context row; the test must not
+    # create a B54 product-local context or alter the canonical owner identity.
+    storage.sql.exec(
+        "CREATE TABLE canonical_connector_context (product_id TEXT NOT NULL, "
+        "subject_id TEXT NOT NULL, actor_ref TEXT NOT NULL UNIQUE, "
+        "account_ref TEXT NOT NULL UNIQUE, workspace_ref TEXT NOT NULL UNIQUE, "
+        "created_at TEXT NOT NULL, PRIMARY KEY(product_id, subject_id))"
     )
-    context_store.resolve_or_create(auth_session=canonical.session, now=NOW)
-    # The code under test reads the same legacy subject's connector context.
+    storage.sql.exec(
+        "INSERT INTO canonical_connector_context "
+        "(product_id,subject_id,actor_ref,account_ref,workspace_ref,created_at) "
+        "VALUES (?,?,?,?,?,?)",
+        "b62", SUBJECT, "actor.shared.test", "account.shared.test",
+        "workspace.shared.test", NOW.isoformat(),
+    )
+    # The code under test reads the same established legacy context row.
     records = IdentityDurableConnectorEnrollmentRecords(storage=storage, session_reader=canonical)
     records.install_schema()
     env = SimpleNamespace(
