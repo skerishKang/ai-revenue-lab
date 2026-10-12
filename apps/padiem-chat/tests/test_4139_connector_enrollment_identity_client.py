@@ -29,6 +29,18 @@ class Binding:
         self.calls.append(("schema", payload))
         return self.response
 
+    async def resolve_connector_enrollment_consent_for_device(self, payload):
+        self.calls.append(("resolve_consent", payload))
+        return self.response
+
+    async def bind_connector_enrollment_challenge(self, payload):
+        self.calls.append(("bind_challenge", payload))
+        return self.response
+
+    async def authorize_connector_enrollment_redeem(self, payload):
+        self.calls.append(("authorize_redeem", payload))
+        return self.response
+
 
 def good_consent(*, revoked=False):
     return {
@@ -134,3 +146,61 @@ def test_invalid_private_rpc_shape_is_not_trusted():
         asyncio.run(client.grant_connector_enrollment_consent(
             session_id="session.canonical.1", device_id="device.windows.1", confirmed=True
         ))
+
+def test_current_consent_read_uses_canonical_session_and_returns_no_permission():
+    binding = Binding()
+    binding.response = envelope("consent", {
+        "consent_id": "consent.test.1", "device_id": "device.windows.1",
+        "owner_subject_id": "sub.canonical.1", "account_ref": "account.1",
+        "workspace_ref": "workspace.1", "granted_at": NOW, "withdrawn_at": None,
+    })
+    result = asyncio.run(CloudflareControlPlaneIdentityAuthority(binding).resolve_connector_enrollment_consent_for_device(
+        session_id="session.canonical.1", device_id="device.windows.1",
+    ))
+    assert result["consent_id"] == "consent.test.1"
+    assert binding.calls == [("resolve_consent", {
+        "session_id": "session.canonical.1", "device_id": "device.windows.1",
+    })]
+
+
+def test_bind_challenge_confirms_server_stored_session_without_echoing_session_id():
+    binding = Binding()
+    binding.response = envelope("binding", {
+        "challenge_id": "pairing.challenge.1", "session_id_bound": True,
+        "expires_at": NOW, "raw_session_id_returned": False,
+    })
+    result = asyncio.run(CloudflareControlPlaneIdentityAuthority(binding).bind_connector_enrollment_challenge(
+        session_id="session.canonical.1", challenge_id="pairing.challenge.1", expires_at=NOW,
+    ))
+    assert result["session_id_bound"] is True and result["raw_session_id_returned"] is False
+    assert binding.calls == [("bind_challenge", {
+        "session_id": "session.canonical.1", "challenge_id": "pairing.challenge.1", "expires_at": NOW,
+    })]
+
+
+def test_redeem_authorization_requires_exact_owner_scope_and_no_permission():
+    binding = Binding()
+    binding.response = envelope("authorization", {
+        "challenge_id": "pairing.challenge.1", "consent_id": "consent.1",
+        "device_id": "device.1", "owner_subject_id": "sub.1",
+        "account_ref": "account.1", "workspace_ref": "workspace.1",
+        "authorized_at": NOW, "dispatch_authorized": False, "grants_read": False, "grants_write": False,
+    })
+    result = asyncio.run(CloudflareControlPlaneIdentityAuthority(binding).authorize_connector_enrollment_redeem(
+        challenge_id="pairing.challenge.1", consent_id="consent.1", device_id="device.1",
+        owner_ref="sub.1", account_ref="account.1", workspace_ref="workspace.1",
+    ))
+    assert result["consent_id"] == "consent.1"
+    assert binding.calls[0][0] == "authorize_redeem"
+    binding.response = envelope("authorization", {
+        "challenge_id": "pairing.challenge.1", "consent_id": "consent.other",
+        "device_id": "device.1", "owner_subject_id": "sub.1",
+        "account_ref": "account.1", "workspace_ref": "workspace.1",
+        "authorized_at": NOW, "dispatch_authorized": False, "grants_read": False, "grants_write": False,
+    })
+    with pytest.raises(IdentityBridgeError):
+        asyncio.run(CloudflareControlPlaneIdentityAuthority(binding).authorize_connector_enrollment_redeem(
+            challenge_id="pairing.challenge.1", consent_id="consent.1", device_id="device.1",
+            owner_ref="sub.1", account_ref="account.1", workspace_ref="workspace.1",
+        ))
+
