@@ -234,7 +234,7 @@ def test_ui_is_independent_and_does_not_hide_a_mutating_submit():
     html = (root / "admin-models.html").read_text(encoding="utf-8")
     js = (root / "admin-models.js").read_text(encoding="utf-8")
     css = (root / "admin-models.css").read_text(encoding="utf-8")
-    assert "모델 흐름을 한 곳에서 관리" in html
+    assert "모델과 사용 위치" in html
     assert 'id="targetGrid"' in html and 'id="tierSelect"' in html
     assert 'id="previewBtn"' in html
     assert "/api/admin/models/snapshot" in js

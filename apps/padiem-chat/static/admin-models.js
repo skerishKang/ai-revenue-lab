@@ -1,112 +1,87 @@
-/* #4428 PADIEM Model Control Center: live read-only data + scoped preview.
- * No storage writes, local credential access, auto fallback or model dispatch.
- */
+/* #4428 S0 compact operator UI; strictly READ-ONLY + server-validated preview. */
 (() => {
   "use strict";
-
-  const PRODUCT_NAMES = Object.freeze({
-    "central": "중앙 등급 정책",
-    "chat": "Padiem Chat",
-    "claw": "Claw",
-    "b66": "B66 견적서",
-    "b14-router": "B14 API Router",
-  });
-  const SOURCE_NAMES = Object.freeze({
-    "central": "Control Plane",
-    "chat": "Chat 등급 라우팅",
-    "claw": "B14 선택 목록",
-    "b66": "B66 회원 D1",
-    "b14-router": "B14 외부 API",
-  });
-  const ACTION_NAMES = Object.freeze({
-    allow: "허용 제안", block: "차단 제안", inherit: "상위 정책 따르기",
-  });
   const $ = (id) => document.getElementById(id);
+  const PRODUCTS = Object.freeze({
+    central: {name: "중앙 정책", icon: "◎"},
+    chat: {name: "Padiem Chat", icon: "◉"},
+    claw: {name: "Claw", icon: "⌘"},
+    b66: {name: "B66 견적", icon: "▤"},
+    "b14-router": {name: "B14 Router", icon: "◇"},
+  });
+  const SOURCES = Object.freeze({
+    central: "Control Plane", chat: "Chat 등급 라우팅", claw: "B14 선택 목록",
+    b66: "B66 회원 D1", "b14-router": "B14 외부 API",
+  });
+  const ACTIONS = Object.freeze({allow: "허용", block: "차단", inherit: "상속"});
   const state = {
-    catalog: [], products: null, selected: null, authorized: false,
-    pendingRequest: 0, loaded: false,
+    catalog: [], products: null, selected: null,
+    authorized: false, pendingRequest: 0,
   };
 
-  function node(tag, text, className) {
-    const element = document.createElement(tag);
-    if (text !== undefined && text !== null) element.textContent = String(text);
-    if (className) element.className = className;
-    return element;
+  function node(tag, value, className) {
+    const el = document.createElement(tag);
+    if (value !== undefined && value !== null) el.textContent = String(value);
+    if (className) el.className = className;
+    return el;
   }
 
-  function message(text, variant = "") {
-    const item = $("accessNotice");
-    item.textContent = text;
-    item.className = "notice" + (variant ? " " + variant : "");
+  function alertMessage(value, variant = "error") {
+    const notice = $("accessNotice");
+    notice.hidden = !value;
+    notice.className = "notice " + variant;
+    notice.textContent = value || "";
   }
 
-  function setMode(text) {
-    $("modeBadge").textContent = text;
-  }
-
-  async function getJSON(path, options = {}) {
-    const response = await fetch(path, {
-      credentials: "same-origin", cache: "no-store",
-      headers: {"Accept": "application/json", ...(options.headers || {})},
-      ...options,
-    });
-    let body;
-    try { body = await response.json(); } catch { body = null; }
-    if (!response.ok || !body || body.ok !== true) {
-      const code = body && body.error && typeof body.error.code === "string"
-        ? body.error.code : "http_" + response.status;
-      throw new Error(code);
-    }
-    return body;
-  }
-
-  function refreshPreviewText() {
-    $("previewResult").replaceChildren(node("span",
-      "선택한 대상은 아직 적용되지 않았습니다. '정책 검증 · 미리보기'에서 검토할 수 있습니다.",
-      "muted"));
-    $("previewResult").className = "preview";
+  function chosenAction() {
+    return document.querySelector('input[name="action"]:checked')?.value || "allow";
   }
 
   function chosenTargets() {
     return Array.from($("targetGrid").querySelectorAll('input[type="checkbox"]:checked'))
       .map((input) => ({
-        product_id: input.value,
-        tier: $("tierSelect").value,
-        action: $("actionSelect").value,
+        product_id: input.value, tier: $("tierSelect").value, action: chosenAction(),
       }));
   }
 
+  function clearPreview() {
+    $("previewResult").hidden = true;
+    $("previewResult").replaceChildren();
+    $("previewResult").className = "preview";
+  }
+
   function updateSelection() {
-    // Invalidate a preview HTTP response if the model/targets/tier changed.
     state.pendingRequest += 1;
-    $("targetCount").textContent = String(chosenTargets().length);
-    $("previewBtn").disabled = !(state.authorized && state.selected && chosenTargets().length > 0);
-    refreshPreviewText();
+    const selected = chosenTargets().length;
+    $("targetCount").textContent = String(selected);
+    $("previewBtn").disabled = !(state.authorized && state.selected && selected);
+    clearPreview();
   }
 
   function renderTargets() {
     const root = $("targetGrid");
     root.replaceChildren();
-    Object.entries(PRODUCT_NAMES).forEach(([key, label]) => {
-      const item = node("label", null, "target");
-      const input = document.createElement("input");
-      input.type = "checkbox";
-      input.value = key;
-      input.setAttribute("aria-label", label + " 변경 대상");
-      input.addEventListener("change", updateSelection);
-      const words = node("span");
-      words.append(node("span", label));
-      words.append(node("small", SOURCE_NAMES[key]));
-      item.append(input, words);
-      root.append(item);
-    });
+    for (const [key, product] of Object.entries(PRODUCTS)) {
+      const label = node("label", null, "target");
+      const name = node("span", null, "target-title");
+      name.append(node("span", product.icon, "product-icon"), node("span", product.name));
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.value = key;
+      checkbox.setAttribute("aria-label", product.name + " 변경 대상");
+      const slider = node("span", null, "switch-track");
+      slider.setAttribute("aria-hidden", "true");
+      checkbox.addEventListener("change", updateSelection);
+      label.append(name, checkbox, slider);
+      root.append(label);
+    }
   }
 
   function chooseModel(modelId) {
-    state.selected = state.catalog.find((row) => row.model_id === modelId) || null;
-    $("selectedModel").textContent = state.selected ? state.selected.name : "모델 미선택";
-    $("selectedId").textContent = state.selected ? state.selected.model_id : "미선택";
-    $("editorForm").disabled = !state.authorized || !state.selected;
+    state.selected = state.catalog.find((m) => m.model_id === modelId) || null;
+    $("selectedModel").textContent = state.selected?.name || "왼쪽에서 모델을 선택하세요";
+    $("selectedId").textContent = state.selected?.model_id || "미선택";
+    $("editorForm").disabled = !(state.authorized && state.selected);
     renderCatalog();
     renderPlacement();
     updateSelection();
@@ -115,166 +90,147 @@
   function renderCatalog() {
     const root = $("modelList");
     root.replaceChildren();
-    const search = $("modelSearch").value.trim().toLowerCase();
-    const models = state.catalog.filter((item) =>
-      item.model_id.toLowerCase().includes(search) || item.name.toLowerCase().includes(search));
+    const query = $("modelSearch").value.trim().toLowerCase();
+    const models = state.catalog.filter((m) =>
+      m.model_id.toLowerCase().includes(query) || m.name.toLowerCase().includes(query));
     if (!models.length) {
-      root.append(node("p", state.catalog.length ? "일치하는 모델이 없습니다." :
-        "B14에서 확인된 선택 가능 모델이 없습니다.", "placeholder"));
+      root.append(node("p", state.catalog.length ? "검색 결과가 없습니다." :
+        "선택 가능한 모델이 없습니다.", "placeholder"));
       return;
     }
-    models.forEach((model) => {
+    for (const model of models) {
       const row = node("button", null, "model-item");
       row.type = "button";
-      row.setAttribute("aria-pressed", String(state.selected?.model_id === model.model_id));
-      const title = node("span");
-      title.append(node("strong", model.name), node("small", model.model_id));
-      row.append(title, node("span", "B14 허용·준비", "ready-tag"));
+      const selected = state.selected?.model_id === model.model_id;
+      row.setAttribute("aria-pressed", String(selected));
+      const words = node("span", null, "model-words");
+      words.append(node("strong", model.name), node("small", model.model_id));
+      row.append(node("span", "●", "model-dot"), words,
+        node("span", selected ? "✓" : "›", "model-chevron"));
       row.addEventListener("click", () => chooseModel(model.model_id));
       root.append(row);
-    });
+    }
+  }
+
+  function positions() {
+    const modelId = state.selected?.model_id;
+    if (!modelId) return [];
+    const result = [
+      {name: "B14 공통", status: "조회됨", detail: "선택 가능한 B14 모델", kind: "ready"},
+      {name: "중앙 정책", status: "미연결", detail: "등급별 정책 조회 전", kind: "unknown"},
+      {name: "Padiem Chat", status: "미연결", detail: "실제 배정 여부 미확인", kind: "unknown"},
+      {name: "Claw", status: "미연결", detail: "제품별 최종 실행 허용 미확인", kind: "unknown"},
+    ];
+    const b66 = state.products?.b66;
+    if (b66?.status !== "connected") {
+      result.push({name: "B66 견적", status: "조회 불가", detail: "D1 정책 조회 불가", kind: "unknown"});
+    } else if (b66.disabled_models?.includes(modelId)) {
+      result.push({name: "B66 견적", status: "차단됨", detail: "B66 정책의 모델 OFF", kind: "blocked"});
+    } else if (b66.active === false) {
+      result.push({name: "B66 견적", status: "정책 비활성", detail: "정책 active=false", kind: "unknown"});
+    } else {
+      const tiers = Object.entries(b66.tiers || {})
+        .filter(([, ids]) => Array.isArray(ids) && ids.includes(modelId))
+        .map(([tier]) => tier);
+      result.push({
+        name: "B66 견적", status: tiers.length ? tiers.join(" · ") : "미배정",
+        detail: tiers.length ? "B66 정책의 등급 배정; 최종 실행은 별도 검증" : "해당 모델의 등급 배정 없음",
+        kind: tiers.length ? "ready" : "blocked",
+      });
+    }
+    result.push({name: "B14 Router", status: "미연결", detail: "외부 API 상품 정책 조회 전", kind: "unknown"});
+    return result;
   }
 
   function renderPlacement() {
     const root = $("modelPlacement");
     root.replaceChildren();
     if (!state.authorized || !state.selected) {
-      root.append(node("p", "모델을 선택하면 B14·중앙·제품별 실제 배정 위치가 표시됩니다.", "placeholder"));
+      root.append(node("p", "모델을 선택해 주세요.", "placeholder"));
       return;
     }
-    const id = state.selected.model_id;
-    const b66 = state.products?.b66;
-    const positions = [
-      {
-        name: "B14 공통 실행",
-        status: "B14 허용·준비",
-        detail: "owner-allowed/live-ready 선택 목록에 포함 · 전체 등록 카탈로그 아님",
-        kind: "ready",
-      },
-      {
-        name: "중앙 등급 정책",
-        status: "정책 미연결",
-        detail: "Free/Plus/Pro/Max 공통 권한 소스 연동 전",
-        kind: "unknown",
-      },
-      {
-        name: "Padiem Chat",
-        status: "모델별 배정 미확인",
-        detail: "Chat 제품 등급 라우트와 이 모델의 정확한 연결 미검증",
-        kind: "unknown",
-      },
-      {
-        name: "Claw",
-        status: "모델별 정책 미확인",
-        detail: "B14 선택 목록은 공유하지만 최종 Claw 권한 상태는 별도",
-        kind: "unknown",
-      },
-    ];
-    if (b66?.status !== "connected") {
-      positions.push({
-        name: "B66 견적서",
-        status: "정책 조회 불가", detail: "B66 D1 모델 정책을 확인하지 못했습니다",
-        kind: "unknown",
-      });
-    } else if (Array.isArray(b66.disabled_models) && b66.disabled_models.includes(id)) {
-      positions.push({
-        name: "B66 견적서",
-        status: "B66 전역 OFF", detail: "B66 관리자 제품 정책에서 해당 모델 차단",
-        kind: "blocked",
-      });
-    } else if (b66.active === true) {
-      const assigned = Object.entries(b66.tiers || {})
-        .filter(([, models]) => Array.isArray(models) && models.includes(id))
-        .map(([tier]) => tier);
-      positions.push({
-        name: "B66 견적서",
-        status: assigned.length ? "배정: " + assigned.join(" · ") : "등급 배정 없음",
-        detail: "B66의 저장된 D1 제품 정책 · 실제 사용에는 별도 사용자/실행 검증 필요",
-        kind: assigned.length ? "ready" : "blocked",
-      });
-    } else {
-      positions.push({
-        name: "B66 견적서",
-        status: "등급 정책 비활성",
-        detail: "정규 B66 D1 정책이 active=false · 전역 모델 OFF와는 별개",
-        kind: "unknown",
-      });
+    for (const p of positions()) {
+      const tile = node("div", null, "placement-item " + p.kind);
+      const title = node("strong", p.name);
+      const status = node("span", p.status, "position-status");
+      status.title = p.detail;
+      tile.append(title, status);
+      root.append(tile);
     }
-    positions.push({
-      name: "B14 Router 상품",
-      status: "외부 API 상품 정책 미연결",
-      detail: "B14 공통 실행 가용성과 Router 상품 구독 권한은 서로 다릅니다",
-      kind: "unknown",
-    });
-    positions.forEach((position) => {
-      const row = node("div", null, "placement-item");
-      row.append(node("strong", position.name));
-      const status = node("span", position.status, "position-status " + position.kind);
-      row.append(status);
-      row.append(node("small", position.detail));
-      root.append(row);
-    });
   }
 
-  function renderSources(products) {
+  function renderSources() {
     const root = $("sourceList");
     root.replaceChildren();
     let connected = 0;
-    Object.entries(PRODUCT_NAMES).forEach(([id, name]) => {
-      const data = products?.[id] || {status: "unavailable"};
+    for (const [id, product] of Object.entries(PRODUCTS)) {
+      const data = state.products?.[id] || {status: "unavailable"};
       const isConnected = data.status === "connected";
-      if (isConnected) connected += 1;
+      if (isConnected) connected++;
       const card = node("div", null, "source-card");
-      card.append(node("strong", name));
-      card.append(node("span", isConnected ? "연결된 정책 조회" :
-        data.status === "not_wired" ? "중앙 정책 연결 예정" : "정책 데이터 확인 불가",
-        isConnected ? "connected" : "disabled"));
-      card.append(node("small", SOURCE_NAMES[id]));
-      if (id === "b66" && isConnected) {
-        card.append(node("small", "정책 revision " + data.revision + (data.active ? " · 활성" : " · 비활성")));
-      }
+      card.append(node("strong", product.name));
+      card.append(node("span", isConnected ? "● 정책 조회됨" :
+        data.status === "not_wired" ? "◌ 아직 미연결" : "◌ 조회 불가",
+        isConnected ? "connected" : "unknown"));
+      card.append(node("small", SOURCES[id]));
+      if (id === "b66" && isConnected) card.append(
+        node("small", "Revision " + data.revision + (data.active ? " · 활성" : " · 비활성")));
       root.append(card);
-    });
-    $("sourceCount").textContent = String(connected) + " / 5";
-    $("flowCentral").textContent = "실제 중앙 설정은 아직 미연결";
-    $("flowProducts").textContent = connected + "개 제품 정책 소스 확인";
+    }
+    $("sourceCount").textContent = connected + " / 5 연결";
+    $("flowCentral").textContent = "미연결";
+    $("flowProducts").textContent = connected + "/5 정책 조회";
   }
 
   function renderPreview(result) {
     const root = $("previewResult");
     root.replaceChildren();
     root.className = "preview";
-    root.append(node("strong", "검증 통과 · 운영 반영 없음"));
-    root.append(node("span", result.model_id + " · " + result.targets.length + "개 변경 영역"));
-    const lines = node("ol");
-    result.targets.forEach(({product_id, tier, action}) => {
-      lines.append(node("li", PRODUCT_NAMES[product_id] + " / " + tier + " → " + ACTION_NAMES[action]));
+    root.hidden = false;
+    root.append(node("strong", "✓ 변경안 검증 완료"), node("small", "저장 및 운영 반영 없음"));
+    const list = node("ul");
+    for (const item of result.targets) {
+      list.append(node("li", PRODUCTS[item.product_id].name + " · " +
+        item.tier + " · " + ACTIONS[item.action]));
+    }
+    root.append(list);
+  }
+
+  async function getJSON(path, options = {}) {
+    const response = await fetch(path, {
+      credentials: "same-origin", cache: "no-store",
+      headers: {"Accept": "application/json", ...(options.headers || {})}, ...options,
     });
-    root.append(lines, node("span",
-      "변경안은 서버에서 실제 B14 모델 ID와 대상 형식만 검증했습니다. 저장·배포·실행 권한은 변경되지 않았습니다.",
-      "muted"));
+    let data;
+    try { data = await response.json(); } catch { data = null; }
+    if (!response.ok || data?.ok !== true) {
+      throw new Error(typeof data?.error?.code === "string" ? data.error.code : "http_" + response.status);
+    }
+    return data;
   }
 
   async function preview() {
     const targets = chosenTargets();
     if (!state.authorized || !state.selected || !targets.length) return;
-    $("previewBtn").disabled = true;
     const seq = ++state.pendingRequest;
+    $("previewBtn").disabled = true;
+    clearPreview();
     try {
       const result = await getJSON("/api/admin/models/preview", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
+        method: "POST", headers: {"Content-Type": "application/json"},
         body: JSON.stringify({model_id: state.selected.model_id, targets}),
       });
-      if (seq === state.pendingRequest) {
-        if (result.applied !== false || result.persisted !== false) throw new Error("invalid_preview_receipt");
-        renderPreview(result);
+      if (seq !== state.pendingRequest) return;
+      if (result.applied !== false || result.persisted !== false ||
+          result.dispatch_authorized === true || !Array.isArray(result.targets)) {
+        throw new Error("invalid_preview_receipt");
       }
+      renderPreview(result);
     } catch (err) {
-      if (seq === state.pendingRequest) {
-        $("previewResult").replaceChildren(node("strong", "검증 불가 · " + String(err.message), ""));
-        $("previewResult").className = "preview error";
-      }
+      if (seq !== state.pendingRequest) return;
+      $("previewResult").hidden = false;
+      $("previewResult").className = "preview error";
+      $("previewResult").replaceChildren(node("strong", "미리보기 실패"), node("small", String(err.message)));
     } finally {
       if (seq === state.pendingRequest) {
         $("previewBtn").disabled = !state.authorized || !state.selected || !chosenTargets().length;
@@ -285,7 +241,6 @@
   async function load() {
     const seq = ++state.pendingRequest;
     state.authorized = false;
-    state.loaded = false;
     state.catalog = [];
     state.products = null;
     state.selected = null;
@@ -294,56 +249,78 @@
     $("targetCount").textContent = "0";
     $("selectedModel").textContent = "왼쪽에서 모델을 선택하세요";
     $("selectedId").textContent = "미선택";
-    $("modelList").replaceChildren(node("p", "중앙 관리자 권한을 확인하고 있습니다.", "placeholder"));
-    $("sourceList").replaceChildren(node("p", "권한 확인 중", "placeholder"));
-    $("modelPlacement").replaceChildren(node("p", "중앙 관리자 권한 확인 중", "placeholder"));
+    $("modelList").replaceChildren(node("p", "모델 목록을 확인하고 있습니다.", "placeholder"));
+    $("sourceList").replaceChildren(node("p", "연결 상태 확인 중", "placeholder"));
+    $("modelPlacement").replaceChildren(node("p", "모델을 선택해 주세요.", "placeholder"));
     $("editorForm").disabled = true;
     $("previewBtn").disabled = true;
-    setMode("권한 확인 중");
-    message("중앙 관리자 인증과 실제 B14 모델 목록을 확인하고 있습니다.");
+    $("modeBadge").textContent = "접속 확인 중";
+    $("catalogStatus").textContent = "확인 중";
+    $("flowB14").textContent = "조회 대기";
+    $("flowCentral").textContent = "확인 중";
+    $("flowProducts").textContent = "확인 중";
+    clearPreview();
+    alertMessage("");
     try {
       await getJSON("/api/admin/models/me");
       if (seq !== state.pendingRequest) return;
       const result = await getJSON("/api/admin/models/snapshot");
       if (seq !== state.pendingRequest) return;
-      if (result.write_enabled !== false || result.mode !== "read_only"
-          || !Array.isArray(result.b14?.models)) throw new Error("invalid_snapshot");
+      if (result.mode !== "read_only" || result.write_enabled !== false ||
+          !Array.isArray(result.b14?.models)) throw new Error("invalid_snapshot");
       state.catalog = result.b14.models;
       state.products = result.products;
       state.authorized = true;
-      state.loaded = true;
       $("modelCount").textContent = String(state.catalog.length);
-      $("catalogStatus").textContent = "B14 확인된 모델";
-      $("flowB14").textContent = state.catalog.length + "개 선택 가능 (전체 등록 수 아님)";
-      setMode("관리자 조회 허용 · READ ONLY");
-      message("실제 B14 모델과 기존 제품 정책의 연결 상태를 불러왔습니다. 체크한 변경안은 미리보기만 가능합니다.", "good");
+      $("flowB14").textContent = state.catalog.length + "개 조회";
+      $("catalogStatus").textContent = "B14 조회";
+      $("modeBadge").textContent = "미리보기 전용";
       renderCatalog();
-      renderSources(state.products);
+      renderSources();
       renderPlacement();
     } catch (err) {
       if (seq !== state.pendingRequest) return;
       const code = String(err.message);
-      setMode("중앙 관리자 접근 제한");
-      $("catalogStatus").textContent = "조회 차단";
-      $("flowB14").textContent = "권한 있는 조회 대기";
-      $("modelList").replaceChildren(node("p", "모델 목록을 표시하지 않습니다. 중앙 관리자 권한 확인이 필요합니다.", "placeholder"));
-      $("sourceList").replaceChildren(node("p", "권한 확인 전 정책 정보 비공개", "placeholder"));
-      $("modelPlacement").replaceChildren(node("p", "계층별 모델 배정 정보에 접근할 수 없습니다.", "placeholder"));
-      message(code === "central_admin_not_configured"
-        ? "중앙 관리자 권한기관이 아직 연결되지 않았습니다. B66 관리자 권한으로 자동 승격되지 않습니다."
-        : code === "authentication_required"
-          ? "로그인 후 중앙 관리자 자격을 확인할 수 있습니다. 먼저 PADIEM 계정으로 로그인하세요."
-          : code === "global_model_admin_forbidden"
-            ? "이 계정에는 중앙 모델 관리자 권한이 없습니다."
-            : "모델 관리 데이터를 조회할 수 없습니다 (" + code + ").", "error");
+      $("modeBadge").textContent = "접근 제한";
+      $("catalogStatus").textContent = "조회 불가";
+      $("flowB14").textContent = "조회 불가";
+      $("flowCentral").textContent = "확인 불가";
+      $("flowProducts").textContent = "확인 불가";
+      $("modelList").replaceChildren(node("p", "조회 가능한 모델이 없습니다.", "placeholder"));
+      $("modelPlacement").replaceChildren(node("p", "상태를 확인할 수 없습니다.", "placeholder"));
+      $("sourceList").replaceChildren(node("p", "접근할 수 없습니다.", "placeholder"));
+      alertMessage(code === "authentication_required" ? "로그인 후 이용할 수 있습니다." :
+        code === "global_model_admin_forbidden" ? "중앙 관리자 권한이 없습니다." :
+        code === "central_admin_not_configured" ? "중앙 관리자 권한이 아직 설정되지 않았습니다." :
+        "관리 데이터를 불러오지 못했습니다. (" + code + ")");
     }
+  }
+
+  function help(section) {
+    const dialog = $("helpDialog");
+    const content = $("helpContent");
+    for (const item of content.querySelectorAll("h3")) item.hidden = false;
+    for (const item of content.querySelectorAll("p")) item.hidden = false;
+    // The same accessible help can be opened from any contextual affordance.
+    $("helpTitle").textContent = section || "모델 관리자 안내";
+    if (!dialog.open) dialog.showModal();
   }
 
   $("modelSearch").addEventListener("input", renderCatalog);
   $("tierSelect").addEventListener("change", updateSelection);
-  $("actionSelect").addEventListener("change", updateSelection);
+  for (const input of document.querySelectorAll('input[name="action"]')) {
+    input.addEventListener("change", updateSelection);
+  }
   $("previewBtn").addEventListener("click", preview);
   $("refreshBtn").addEventListener("click", load);
+  $("helpBtn").addEventListener("click", () => help("모델 관리자 안내"));
+  $("flowInfoBtn").addEventListener("click", () => help("전체 흐름 안내"));
+  $("catalogInfoBtn").addEventListener("click", () => help("모델 목록 안내"));
+  $("previewInfoBtn").addEventListener("click", () => help("미리보기 안내"));
+  $("closeHelpBtn").addEventListener("click", () => $("helpDialog").close());
+  $("helpDialog").addEventListener("click", (event) => {
+    if (event.target === $("helpDialog")) $("helpDialog").close();
+  });
   renderTargets();
   load();
 })();
