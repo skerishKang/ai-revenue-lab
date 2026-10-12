@@ -13,6 +13,7 @@ from app.canonical_connector_credential_handoff import (
     PROTECTED_INSTALL_PRODUCTION_ENABLED,
     UnconfiguredProtectedDeviceHandoff,
     installation_proof,
+    parse_install_ack,
     verify_install_ack,
 )
 
@@ -144,3 +145,28 @@ def test_bad_credential_never_becomes_a_valid_proof():
                 device_id=DEVICE, binding_ref=BINDING,
                 credential_generation=1,
             )
+
+
+def test_authenticated_gateway_wire_decoder_allows_exact_ack_only():
+    original = make_ack()
+    decoded = parse_install_ack(original.safe_dict())
+    assert decoded == original
+    assert verified(decoded) is True
+
+
+@pytest.mark.parametrize("change", [
+    {"extra": "unsafe"},
+    {"credential": "secret-must-not-appear"},
+    {"device_id": "device.other"},
+    {"local_store_confirmed": "true"},
+    {"proof_kind": "unreviewed"},
+    {"credential_generation": True},
+])
+def test_untrusted_wire_ack_never_bypasses_closed_schema_and_binding(change):
+    data = make_ack().safe_dict()
+    data.update(change)
+    try:
+        parsed = parse_install_ack(data)
+    except ValueError:
+        return
+    assert verified(parsed) is False
