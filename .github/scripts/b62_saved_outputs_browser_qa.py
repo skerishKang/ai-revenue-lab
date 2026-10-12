@@ -32,6 +32,7 @@ class FixtureState:
     output_posts: list[dict[str, Any]] = field(default_factory=list)
     output_patches: list[dict[str, Any]] = field(default_factory=list)
     output_deletes: int = 0
+    output_gets: int = 0
     stream_posts: list[dict[str, Any]] = field(default_factory=list)
 
     def listing(self) -> list[dict[str, Any]]:
@@ -126,6 +127,7 @@ async def _install_api(page: Page, state: FixtureState) -> None:
 
     async def outputs_root(route: Route) -> None:
         if route.request.method == "GET":
+            state.output_gets += 1
             await _reply_json(route, {"outputs": state.listing()})
             return
         if route.request.method != "POST":
@@ -261,42 +263,28 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
     await page.locator("#messageInput").fill(QUESTION)
     await page.locator("#sendButton").click()
     await _wait_text(page, "#messageList", ANSWER)
-    for selector in (".answer-copy", ".answer-download", ".answer-save"):
+    # #4462 CTO follow-up: copy/download stay on completed answers; the
+    # per-answer save entry stays hidden (no retrieval path by design).
+    for selector in (".answer-copy", ".answer-download"):
         await page.locator(f"#messageList {selector}").wait_for(state="visible")
+    save = page.locator("#messageList .answer-save")
+    if await save.count() != 1 or await save.is_visible():
+        raise AssertionError("per-answer save entry must exist hidden, never visible")
 
     await page.locator("#messageList .answer-copy").click()
     await page.wait_for_function("expected => window.__qaClipboardWrites?.at(-1) === expected", arg=ANSWER)
     answer_download = await _download(page, "#messageList .answer-download")
 
-    await page.locator("#messageList .answer-save").click()
-    await page.wait_for_function(
-        "() => document.querySelector('#messageList .answer-save')?.dataset.saved === 'true' && document.querySelector('#messageList .answer-save')?.textContent.trim() === '저장됨'",
-        timeout=5_000,
-    )
-    if len(state.output_posts) != 1:
-        raise AssertionError(f"expected one save POST, saw {len(state.output_posts)}")
-
     await _open_sidebar(page, mobile)
     for gone in ("#outputsNavButton", "#outputsSection", "#outputsList", "#outputsBadge"):
         if await page.locator(gone).count() != 0:
             raise AssertionError(f"simplified IA must not render {gone}")
-    # The save POST above must be readable back through the preserved API.
-    # (The listing carries id/title only; content fidelity was already
-    # enforced by the save-POST stub contract asserting body.content == ANSWER.)
-    listed = await page.evaluate(
-        """async () => {
-          const response = await fetch('/api/outputs', {headers: {'Accept': 'application/json'}});
-          const data = await response.json().catch(() => null);
-          return data && Array.isArray(data.outputs) ? data.outputs : null;
-        }"""
-    )
-    if not listed or len(listed) != 1 or listed[0].get("id") != OUTPUT_ID:
-        raise AssertionError(f"saved answer was not preserved via /api/outputs: {listed!r}")
-    saved_title = listed[0].get("title")
-    if not isinstance(saved_title, str) or not saved_title:
-        raise AssertionError("saved answer title missing from /api/outputs listing")
+    # The preserved read path still executes on sign-in: the app must have
+    # loaded saved outputs via GET /api/outputs without rendering UI for it.
+    if state.output_gets < 1:
+        raise AssertionError("expected the preserved /api/outputs read path to run on sign-in")
     if ANSWER not in await page.locator("#messageList").inner_text():
-        raise AssertionError("saving removed the source chat answer")
+        raise AssertionError("saved-outputs QA lost the source chat answer")
     await _no_overflow(page, f"{label}-saved-preserved")
     await page.screenshot(path=str(OUT_DIR / f"{label}-outputs-simplified.png"), full_page=True)
 
@@ -309,8 +297,7 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
     return {
         "stream_requests": len(state.stream_posts),
         "save_posts": len(state.output_posts),
-        "saved_title": saved_title,
-        "saved_outputs_listed": len(listed),
+        "saved_outputs_reads": state.output_gets,
         "clipboard_writes": len(clipboard),
         "answer_download": answer_download,
         "native_dialogs": native_dialogs,
