@@ -3,7 +3,7 @@
 **Decision:** PADIEM Connector belongs to the **PADIEM canonical Identity / Control Plane**, NOT PADIEM Claw.  
 **Scope:** PADIEM Chat (B62), Quote (B66), Claw (B54), Engine, and future explicitly onboarded products.  
 **Status:** Control Plane source boundary refactored; registration UI/transport/live feature OFF.  
-**Existing baseline:** `PADIEM_CONNECTOR_PLATFORM_DECISION_20261012.md` and merged product access contract #4429.
+**Existing baseline:** `PADIEM_CONNECTOR_PLATFORM_DECISION_20261012.md` and merged product access contract #4429. **Customer-brand correction (2026-10-13):** PADIEM and B66 Quote MUST have separate customer-facing accounts, navigation and PC management experiences. See `PADIEM_CONNECTOR_BRAND_SEPARATION_4139_20261013.md`. Internal infrastructure sharing does not imply linked customers, a unified login or automatic cross-brand PC visibility.
 
 ## Target architecture
 
