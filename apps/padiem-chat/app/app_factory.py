@@ -19,6 +19,10 @@ from .b66_member_inquiries import (
     D1B66InquiryStore, b66_inquiries, b66_admin_inquiries,
     b66_admin_inquiry_status, b66_admin_inquiry_dispatch,
 )
+from .central_model_control_routes import (
+    central_model_admin_me, central_model_admin_snapshot,
+    central_model_admin_preview,
+)
 from .b66_admin_routes import b66_admin_me, b66_admin_members, b66_admin_member_access, b66_admin_member_detail, b66_admin_model_policy, b66_admin_dispatch_alerts
 from .b66_quote_history_routes import (
     b66_quote_history_delete,
@@ -296,6 +300,7 @@ def create_app(
     b66_quote_interpreter=None,
     b66_member_admin_store=None,
     b66_admin_google_email: str = "",
+    central_model_admin_authorizer=None,
     claw_task_alert_store=None,
     calendar_store: CalendarStore | None = None,
     claw_automation_store=None,
@@ -313,6 +318,9 @@ def create_app(
     resolved = settings or Settings.from_env()
     routes = [
         Route("/health", health, methods=["GET"]),
+        Route("/api/admin/models/me", central_model_admin_me, methods=["GET"]),
+        Route("/api/admin/models/snapshot", central_model_admin_snapshot, methods=["GET"]),
+        Route("/api/admin/models/preview", central_model_admin_preview, methods=["POST"]),
         Route("/api/models/owner-name-preview", owner_model_name_preview, methods=["GET"]),
         Route("/api/claw/verified-model-choices", claw_verified_model_choices, methods=["GET"]),
         Route("/api/auth/status", auth_status, methods=["GET"]),
@@ -562,6 +570,10 @@ def create_app(
     app.state.project_file_store = project_file_store
     app.state.saved_output_store = saved_output_store
     # Separate deployment gate: migrate and audit the D1 schema before enabling.
+    # A B66-scoped Google administrator is NOT a global model administrator.
+    # Only a separately verified host-supplied central RBAC authority may
+    # activate the cross-product model snapshot/preview APIs.
+    app.state.central_model_admin_authorizer = central_model_admin_authorizer
     app.state.b66_membership_enforced = False
     # Production host enables this independently of the membership rollout.
     # Pure ASGI fixtures without a D1 adapter keep their pre-existing behavior.
