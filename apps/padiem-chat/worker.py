@@ -831,6 +831,11 @@ class Default(WorkerEntrypoint):
                     b66_admin_google_email=(
                         binding_value(self.env, "B66_ADMIN_GOOGLE_EMAIL") or ""
                     ),
+                    # Distinct global RBAC bootstrap; B66 admins never inherit it.
+                    # Absent means central model read/preview is default OFF.
+                    central_model_admin_google_email=(
+                        binding_value(self.env, "PADIEM_CENTRAL_MODEL_ADMIN_GOOGLE_EMAIL") or ""
+                    ),
                     r2_binding=r2_binding,
                     web_transport=web_transport,
                     b66_pdf_renderer_client=b66_pdf_renderer_client,
