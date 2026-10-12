@@ -43,6 +43,12 @@ _MEMBERSHIP_RESOLVE_KEYS = frozenset(
     {"tenant_id", "canonical_subject_id", "state", "created_at", "role"}
 )
 _REVIEWED_CONNECTORS = frozenset({"gmail", "google-drive", "google-calendar"})
+_CONNECTOR_CONSENT_RPC_KEYS = frozenset({
+    "consent_id", "device_id", "granted_at", "withdrawn_at",
+    "dispatch_authorized", "grants_read", "grants_write",
+})
+_CONNECTOR_SCHEMA_RPC_KEYS = frozenset({"schema", "installed_by_default"})
+_CONNECTOR_CONSENT_CONFIRMATION_VERSION = "pc-enrollment-consent-v1"
 
 
 async def _maybe_await(value: Any) -> Any:
@@ -519,6 +525,79 @@ class CloudflareControlPlaneIdentityAuthority:
                 "control_plane_rpc_invalid",
                 "Canonical tenant membership does not match the request.",
             )
+
+    async def install_connector_enrollment_schema(self, *, migration_id: str) -> dict[str, Any]:
+        wire = _closed(
+            await self._rpc(
+                "install_connector_enrollment_schema",
+                {"migration_id": migration_id},
+                "schema",
+            ),
+            _CONNECTOR_SCHEMA_RPC_KEYS,
+            "connector enrollment schema receipt",
+        )
+        if wire.get("schema") != migration_id or wire.get("installed_by_default") is not False:
+            raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Connector enrollment schema receipt is invalid.")
+        return wire
+
+    async def grant_connector_enrollment_consent(
+        self, *, session_id: str, device_id: str, confirmed: bool,
+        confirmation_version: str = _CONNECTOR_CONSENT_CONFIRMATION_VERSION,
+    ) -> dict[str, Any]:
+        if confirmed is not True or confirmation_version != _CONNECTOR_CONSENT_CONFIRMATION_VERSION:
+            raise IdentityBridgeError(403, "connector_enrollment_explicit_consent_required", "Explicit owner consent is required.")
+        wire = _closed(
+            await self._rpc(
+                "grant_connector_enrollment_consent",
+                {"session_id": session_id, "device_id": device_id,
+                 "confirmed": True, "confirmation_version": confirmation_version},
+                "consent",
+            ),
+            _CONNECTOR_CONSENT_RPC_KEYS,
+            "connector enrollment consent receipt",
+        )
+        if (
+            wire.get("device_id") != device_id
+            or not isinstance(wire.get("consent_id"), str)
+            or not isinstance(wire.get("granted_at"), str)
+            or wire.get("withdrawn_at") is not None
+            or wire.get("dispatch_authorized") is not False
+            or wire.get("grants_read") is not False
+            or wire.get("grants_write") is not False
+        ):
+            raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Connector enrollment consent receipt is invalid.")
+        _time(wire["granted_at"], "connector consent grant time")
+        return wire
+
+    async def revoke_connector_enrollment_consent(
+        self, *, session_id: str, consent_id: str, confirmed: bool,
+        confirmation_version: str = _CONNECTOR_CONSENT_CONFIRMATION_VERSION,
+    ) -> dict[str, Any]:
+        if confirmed is not True or confirmation_version != _CONNECTOR_CONSENT_CONFIRMATION_VERSION:
+            raise IdentityBridgeError(403, "connector_enrollment_explicit_consent_required", "Explicit owner revocation is required.")
+        wire = _closed(
+            await self._rpc(
+                "revoke_connector_enrollment_consent",
+                {"session_id": session_id, "consent_id": consent_id,
+                 "confirmed": True, "confirmation_version": confirmation_version},
+                "consent",
+            ),
+            _CONNECTOR_CONSENT_RPC_KEYS,
+            "connector enrollment revocation receipt",
+        )
+        if (
+            wire.get("consent_id") != consent_id
+            or not isinstance(wire.get("device_id"), str)
+            or not isinstance(wire.get("granted_at"), str)
+            or not isinstance(wire.get("withdrawn_at"), str)
+            or wire.get("dispatch_authorized") is not False
+            or wire.get("grants_read") is not False
+            or wire.get("grants_write") is not False
+        ):
+            raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Connector enrollment revocation receipt is invalid.")
+        _time(wire["granted_at"], "connector consent grant time")
+        _time(wire["withdrawn_at"], "connector consent withdrawal time")
+        return wire
 
     async def issue_google_connect_ticket(
         self,
