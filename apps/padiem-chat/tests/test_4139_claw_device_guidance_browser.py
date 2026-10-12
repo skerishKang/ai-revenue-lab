@@ -235,3 +235,67 @@ def test_escape_closes_and_leaving_claw_hides_guidance(browser, server):
     page.locator("#clawDeviceGuidance").wait_for(state="hidden")
     assert not errors, errors
     page.close()
+
+
+def test_korean_copy_never_implies_execution_authority(browser, server):
+    """'Connected' must not read as 'work can run now'."""
+    page, errors = open_claw(browser, server)
+    route_directory(page, {"body": json.dumps(payload([]))})
+    open_guidance(page)
+    guide = page.locator("#clawDeviceGuidancePanel").inner_text()
+    # The removed claim must be gone.
+    assert "지금 작업을 진행할 수 있는" not in guide
+    # Connection status and execution authority are stated as separate things.
+    assert "실행 권한이 아닙니다" in guide
+    assert "제품별 권한" in guide
+    assert "별도의 승인" in guide
+    assert "실행 권한을 부여하지 않습니다" in guide
+    # The desktop install/registration path is not advertised as available now.
+    assert "정식 공개 전" in guide
+    assert not errors, errors
+    page.close()
+
+
+def test_english_copy_never_implies_execution_authority(browser, server):
+    """The English guide carries the same separation."""
+    page, errors = open_claw(browser, server)
+    route_directory(page, {"body": json.dumps(payload([]))})
+    open_guidance(page)
+    # Language switching re-renders the guide from the same contract.
+    page.evaluate("() => { document.documentElement.lang = 'en'; }")
+    page.wait_for_function(
+        "() => document.querySelector('#clawDeviceGuidancePanel')"
+        ".innerText.includes('not execution authority')"
+    )
+    guide = page.locator("#clawDeviceGuidancePanel").inner_text()
+    assert "can run work now" not in guide
+    assert "not execution authority" in guide
+    assert "product-specific permission" in guide
+    assert "separate approval" in guide
+    assert "not publicly available yet" in guide
+    assert not errors, errors
+    page.close()
+
+
+def test_language_switch_keeps_zero_network_and_no_authority(browser, server):
+    """Re-rendering for a language change must not add a read or any grant."""
+    page, errors = open_claw(browser, server)
+    requests = route_directory(page, {"body": json.dumps(payload([
+        device("home", "집 컴퓨터", "CONNECTED"),
+    ]))})
+    open_directory(page)
+    open_guidance(page)
+    page.locator("#clawDeviceGuidanceSummary").wait_for(state="visible")
+    assert requests == ["GET"]
+    page.evaluate("() => { document.documentElement.lang = 'en'; }")
+    page.evaluate("() => { document.documentElement.lang = 'ko'; }")
+    page.wait_for_function(
+        "() => document.querySelector('#clawDeviceGuidancePanel')"
+        ".innerText.includes('실행 권한이 아닙니다')"
+    )
+    # Still exactly the one directory read, no selection, nothing persisted.
+    assert requests == ["GET"]
+    assert page.locator('#clawDeviceManagerList [aria-pressed="true"]').count() == 0
+    assert page.evaluate("() => localStorage.length + sessionStorage.length") == 0
+    assert not errors, errors
+    page.close()
