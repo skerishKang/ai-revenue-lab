@@ -87,6 +87,9 @@ def ready_page(browser, server, width=1280):
         body=json.dumps({
             "ok": True, "enabled": True, "embed_url": "https://quote.example.test/embed.html",
             "origin": "https://quote.example.test",
+            # Simulated future server-approved B66 device.list product grant.
+            # Current Production B66 runtime-config omits this; default OFF.
+            "pc_device_list_enabled": True,
         }),
     ))
     page.route("**/api/b66/saved-skills?limit=20", lambda route: route.fulfill(
