@@ -61,6 +61,15 @@ async def _await(value: Any) -> Any:
     return await value if inspect.isawaitable(value) else value
 
 
+def _safe_owner(value: Any, label: str) -> str:
+    if (
+        not isinstance(value, str) or not value.strip() or len(value) > 256
+        or any(ord(char) < 32 or ord(char) == 127 for char in value)
+    ):
+        raise IdentityBridgeError(503, "broker_rpc_invalid", f"{label} is invalid.")
+    return value
+
+
 def _time(value: Any, name: str) -> datetime:
     if not isinstance(value, str) or not value:
         raise IdentityBridgeError(503, "broker_rpc_invalid", f"{name} is invalid.")
@@ -122,7 +131,7 @@ class CloudflareCanonicalBrokerPairingClient:
             "account_ref": _safe_ref(account_ref, "account_ref"),
             "workspace_ref": _safe_ref(workspace_ref, "workspace_ref"),
             "consent_ref": _safe_ref(consent_ref, "consent_ref"),
-            "owner_ref": _safe_ref(owner_ref, "owner_ref"),
+            "owner_ref": _safe_owner(owner_ref, "owner_ref"),
             "device_id": _safe_ref(device_id, "device_id"),
         }
         result = await self._invoke("issue_enrollment_challenge", values)
@@ -146,14 +155,24 @@ class CloudflareCanonicalBrokerPairingClient:
             raise IdentityBridgeError(503, "broker_rpc_invalid", "Pairing challenge lifetime is invalid.")
         return challenge, code
 
-    async def get_enrollment_binding(self, *, challenge_id: str) -> dict[str, Any]:
-        challenge_id = _safe_ref(challenge_id, "challenge_id")
+    async def get_enrollment_binding(
+        self, *, challenge_id: str, consent_ref: str, owner_ref: str,
+        account_ref: str, workspace_ref: str, device_id: str,
+    ) -> dict[str, Any]:
+        expected = {
+            "challenge_id": _safe_ref(challenge_id, "challenge_id"),
+            "consent_ref": _safe_ref(consent_ref, "consent_ref"),
+            "owner_ref": _safe_owner(owner_ref, "owner_ref"),
+            "account_ref": _safe_ref(account_ref, "account_ref"),
+            "workspace_ref": _safe_ref(workspace_ref, "workspace_ref"),
+            "device_id": _safe_ref(device_id, "device_id"),
+        }
         result = await self._invoke("get_enrollment_binding", {"challenge_id": challenge_id})
         if set(result) != {"ok", "binding"}:
             raise IdentityBridgeError(503, "broker_rpc_invalid", "Enrollment binding response shape is invalid.")
         binding = _closed(result.get("binding"), _BINDING_KEYS, "enrollment binding")
         if (
-            binding.get("challenge_id") != challenge_id
+            any(binding.get(key) != value for key, value in expected.items())
             or binding.get("server_owned_binding") is not True
             or binding.get("client_supplied_receipt_trusted") is not False
             or binding.get("raw_pairing_secret") is not False
@@ -173,7 +192,7 @@ class CloudflareCanonicalBrokerPairingClient:
             "device_id": _safe_ref(device_id, "device_id"),
             "proof_ref": proof_ref,
             "consent_ref": _safe_ref(consent_ref, "consent_ref"),
-            "owner_ref": _safe_ref(owner_ref, "owner_ref"),
+            "owner_ref": _safe_owner(owner_ref, "owner_ref"),
             "account_ref": _safe_ref(account_ref, "account_ref"),
             "workspace_ref": _safe_ref(workspace_ref, "workspace_ref"),
         }
