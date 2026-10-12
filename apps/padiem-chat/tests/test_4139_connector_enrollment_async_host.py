@@ -44,6 +44,7 @@ class Identity:
         self.calls = []
         self.authorization_count = 0
         self.fail_reauthorization = False
+        self.withdraw_after_install = False
         self.fail_bind = False
         self.withdraw_during_issue = False
 
@@ -64,7 +65,10 @@ class Identity:
     async def authorize_connector_enrollment_redeem(self, **kwargs):
         self.calls.append(("authorize", kwargs))
         self.authorization_count += 1
-        if self.fail_reauthorization and self.authorization_count >= 2:
+        if (
+            (self.fail_reauthorization and self.authorization_count >= 2)
+            or (self.withdraw_after_install and self.authorization_count >= 3)
+        ):
             raise IdentityBridgeError(403, "enrollment_consent_withdrawn", "withdrawn")
         return {
             "challenge_id": kwargs["challenge_id"], "consent_id": CONSENT["consent_id"],
@@ -191,7 +195,7 @@ def test_success_rechecks_current_consent_and_never_returns_raw_credential():
         challenge_id=CHALLENGE["challenge_id"], device_id="device.1",
         proof_ref="pairing-proof:"+"a"*64,
     ))
-    assert [x[0] for x in identity.calls] == ["authorize", "authorize"]
+    assert [x[0] for x in identity.calls] == ["authorize", "authorize", "authorize"]
     assert [x[0] for x in broker.calls] == ["binding", "redeem"]
     assert [x[0] for x in handoff.calls] == ["ready", "deliver", "verify"]
     assert result["lifecycle"] == "paired_offline"
@@ -304,3 +308,30 @@ def test_missing_authenticated_ack_verifier_blocks_before_challenge_consumption(
         ))
     assert exc.value.code == "credential_handoff_unavailable"
     assert [x[0] for x in broker.calls] == []
+
+
+def test_consent_loss_after_authenticated_store_ack_revokes_canonical_binding():
+    identity, broker, handoff = Identity(), Broker(), Handoff()
+    identity.withdraw_after_install = True
+    with pytest.raises(IdentityBridgeError) as exc:
+        asyncio.run(issue_host(identity, broker, handoff).redeem(
+            challenge_id=CHALLENGE["challenge_id"], device_id="device.1",
+            proof_ref="pairing-proof:"+"a"*64,
+        ))
+    assert exc.value.code == "enrollment_consent_changed_during_redeem"
+    assert identity.authorization_count == 3
+    assert [x[0] for x in handoff.calls] == ["ready", "deliver", "verify"]
+    assert broker.calls[-1] == ("revoke", "pairing-binding.1")
+
+
+def test_unconfirmed_revoke_after_completed_install_remains_security_hold():
+    identity, broker, handoff = Identity(), Broker(), Handoff()
+    identity.withdraw_after_install = True
+    broker.fail_revoke = True
+    with pytest.raises(IdentityBridgeError) as exc:
+        asyncio.run(issue_host(identity, broker, handoff).redeem(
+            challenge_id=CHALLENGE["challenge_id"], device_id="device.1",
+            proof_ref="pairing-proof:"+"a"*64,
+        ))
+    assert exc.value.code == "enrollment_consent_race_revoke_unconfirmed"
+    assert broker.calls[-1] == ("revoke", "pairing-binding.1")
