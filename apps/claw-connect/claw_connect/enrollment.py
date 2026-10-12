@@ -814,6 +814,16 @@ class ConnectorEnrollment:
                 "this device binding was revoked; a fresh login is required"
             )
 
+        # A recorded binding without its canonical owner/scope is corrupted.
+        # These missing fields are already observable locally: refuse BEFORE
+        # sending the one-time redemption proof to the server. Do not create a
+        # fresh upstream binding/credential delivery only to reject it later.
+        if record.is_enrolled():
+            if record.account_ref is None:
+                raise EnrollmentContractError("enrollment_binding_owner_mismatch")
+            if record.workspace_ref is None:
+                raise EnrollmentContractError("enrollment_binding_scope_mismatch")
+
         result = self._redeem_via_enrollment_server(
             challenge_id=challenge, pairing_code=code, device_id=record.device_id, now=moment
         )
@@ -845,13 +855,12 @@ class ConnectorEnrollment:
         # and a new enrollment are separately required first. The stable device
         # id is preserved throughout.
         #
-        # A binding with no recorded owner or scope is a damaged local record,
-        # not an unpaired device. It is refused with the same bounded reasons
-        # rather than repaired or overwritten in place: silently re-pointing a
-        # damaged enrollment would hide exactly the condition this guard
-        # exists to surface. Both reasons are members of the bounded S1/S2
-        # refusal vocabulary, so nothing new is invented and no server text or
-        # identifier is echoed.
+        # The preflight above already refuses a binding missing a canonical
+        # owner or workspace BEFORE contacting the server. The checks below
+        # also defend against mismatched success receipts AFTER redemption:
+        # that late refusal preserves local state but does not prove upstream
+        # rollback. Both reasons remain in the bounded S1/S2 vocabulary and
+        # no server text or identifier is echoed.
         #
         # Flipping this guard is not a local decision. Account switching is not
         # a valid relaxation: a PC's device identity must never silently change
