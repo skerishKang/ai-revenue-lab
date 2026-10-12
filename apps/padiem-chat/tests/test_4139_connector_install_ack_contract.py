@@ -170,3 +170,29 @@ def test_untrusted_wire_ack_never_bypasses_closed_schema_and_binding(change):
     except ValueError:
         return
     assert verified(parsed) is False
+
+
+def test_install_ack_credential_ceiling_is_canonical_pairing_4096_not_store_16384():
+    from padiem_control_plane.local_agent_broker_pairing import (
+        MAX_PAIRING_CREDENTIAL_BYTES,
+    )
+
+    assert MAX_PAIRING_CREDENTIAL_BYTES == 4096
+    # kagent's 16 KiB *storage capacity* is not permission to issue oversized
+    # canonical pairing credentials. The actual canonical factory emits 32B.
+    valid = installation_proof(
+        credential=b"x" * MAX_PAIRING_CREDENTIAL_BYTES,
+        challenge_id=CHALLENGE,
+        device_id=DEVICE,
+        binding_ref=BINDING,
+        credential_generation=1,
+    )
+    assert len(valid) == 64
+    with pytest.raises(ValueError):
+        installation_proof(
+            credential=b"x" * (MAX_PAIRING_CREDENTIAL_BYTES + 1),
+            challenge_id=CHALLENGE,
+            device_id=DEVICE,
+            binding_ref=BINDING,
+            credential_generation=1,
+        )

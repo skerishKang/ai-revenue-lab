@@ -17,6 +17,8 @@ import hmac
 import re
 from typing import Any
 
+from padiem_control_plane.local_agent_broker_pairing import MAX_PAIRING_CREDENTIAL_BYTES
+
 INSTALL_ACK_TRANSCRIPT_VERSION = "padiem.connector-device-install-ack.v1"
 PROTECTED_INSTALL_TRANSPORT_WIRED = False
 PROTECTED_INSTALL_PRODUCTION_ENABLED = False
@@ -101,7 +103,7 @@ def installation_proof(
     binding_ref: str, credential_generation: int,
 ) -> str:
     """Versioned HMAC transcript shared only with the reviewed LOCAL2 receiver."""
-    if not isinstance(credential, bytes) or not 16 <= len(credential) <= 4096:
+    if not isinstance(credential, bytes) or not 16 <= len(credential) <= MAX_PAIRING_CREDENTIAL_BYTES:
         raise ValueError("missing canonical Broker credential")
     for name, value in (
         ("challenge_id", challenge_id), ("device_id", device_id),
