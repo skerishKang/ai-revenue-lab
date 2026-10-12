@@ -171,3 +171,35 @@ def test_issue_preserves_internal_identity_denial_instead_of_masking_as_generic_
     body = json.loads(result.body)
     assert body == {"ok": False, "error": {"code": "enrollment_consent_required"}}
     assert "sensitive" not in result.body.decode()
+
+
+@pytest.mark.parametrize("unsafe_fields", [
+    {"credential_b64": "c2VjcmV0"},              # raw credential projection
+    {"consent_id": None},                    # missing canonical consent proof
+    {"credential_installed_by_canonical_handoff": False},
+    {"raw_device_credential": True},
+    {"credential_generation": True},        # JSON boolean is not a generation
+    {"credential_expires_at": "2000-01-01T00:00:00+00:00"},
+    {"grants_read": True},                   # enrollment is NOT a READ approval
+    {"grants_write": True},
+    {"lifecycle": "online"},                 # receipt is never online evidence
+])
+def test_redeem_route_rejects_forged_incomplete_or_secret_bearing_success_receipt(unsafe_fields):
+    class UnsafeHost(AsyncHost):
+        async def redeem(self, *, challenge_id, device_id, proof_ref):
+            result = await super().redeem(
+                challenge_id=challenge_id, device_id=device_id, proof_ref=proof_ref,
+            )
+            return {**result, **unsafe_fields}
+
+    response = asyncio.run(routes.connector_enrollment_redeem(Request({
+        "challenge_id": "pairing.challenge.1", "device_id": "device.1",
+        "proof_ref": "pairing-proof:" + "a" * 64,
+    }, make_state(UnsafeHost()))))
+    body = json.loads(response.body)
+    assert response.status_code == 503
+    assert body["ok"] is False
+    assert body["reason"] == "enrollment_dependency_unavailable"
+    assert "enrollment" not in body
+    assert "credential_b64" not in response.body.decode()
+    assert response.headers["cache-control"].startswith("no-store")
