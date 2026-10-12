@@ -83,6 +83,9 @@ def ready_page(browser, server, width=1280):
     page.evaluate("""() => window.dispatchEvent(
       new CustomEvent("padiem:capabilitychange", {detail:{auth:{authenticated:true}}})
     )""")
+    if width < 641:
+        # Mobile sidebar is off-canvas; open it via the real hamburger.
+        page.locator("#mobileMenu").click()
     page.locator("#b66QuoteNavButton").wait_for(state="visible")
     page.locator("#b66QuoteNavButton").click()
     page.locator("#b66QuotePcToggle").wait_for(state="visible")
