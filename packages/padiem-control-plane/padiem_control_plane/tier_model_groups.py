@@ -2,6 +2,8 @@
 
 S0 contract ONLY: no D1 writes, no B14/provider dispatch, no user entitlement
 grant, no implicit fallback. B14 remains the canonical model/credential source.
+Central tiers are recommendations only; site tier rosters are independent.
+Changing a global recommendation MUST NOT change Chat, Claw, or B66 rosters.
 A later separately-reviewed store/runtime integration must verify D1 policy,
 the authenticated member tier, current catalog, product gates and audit.
 """
@@ -46,7 +48,7 @@ def _model_id(value: str) -> str:
 
 @dataclass(frozen=True, slots=True)
 class TierModelGroup:
-    """A centrally proposed roster, NOT the customer's subscription tier."""
+    """Central tier suggestions only; never a binding site entitlement."""
     tier: str
     model_ids: tuple[str, ...]
 
@@ -62,8 +64,33 @@ class TierModelGroup:
 
 
 @dataclass(frozen=True, slots=True)
+class SiteTierModelGroup:
+    """Site-owned model roster; independent of central suggested tier labels.
+
+    The exact same B14 model can be Chat Max, Claw Pro, and B66 Plus.
+    Altering a central TierModelGroup cannot change this group's members.
+    """
+
+    product: str
+    tier: str
+    model_ids: tuple[str, ...]
+
+    def __post_init__(self) -> None:
+        if self.product not in SITE_PRODUCTS or self.tier not in TIERS:
+            _reject("invalid_site_tier_group_target")
+        if not isinstance(self.model_ids, tuple):
+            _reject("invalid_site_tier_group")
+        if len(self.model_ids) > MAX_GROUP_MODELS:
+            _reject("site_tier_group_too_large")
+        for model_id in self.model_ids:
+            _model_id(model_id)
+        if len(set(self.model_ids)) != len(self.model_ids):
+            _reject("duplicate_site_tier_group_model")
+
+
+@dataclass(frozen=True, slots=True)
 class ProductModelPreference:
-    """Different sites can choose different priorities inside one tier group."""
+    """Each site chooses its own primary and ordered backups within its site tier."""
     product: str
     tier: str
     primary_model_id: str
@@ -89,17 +116,20 @@ class StagedTierGroupSnapshot:
     revision: int
     groups: tuple[TierModelGroup, ...]
     preferences: tuple[ProductModelPreference, ...]
+    site_groups: tuple[SiteTierModelGroup, ...] = ()
 
     def __post_init__(self) -> None:
         # Revision is a proposed CAS version; this contract does not persist it.
         if (not isinstance(self.workspace_id, str) or not self.workspace_id
                 or len(self.workspace_id) > 128 or type(self.revision) is not int
                 or self.revision < 0 or not isinstance(self.groups, tuple)
-                or not isinstance(self.preferences, tuple)):
+                or not isinstance(self.preferences, tuple)
+                or not isinstance(self.site_groups, tuple)):
             _reject("invalid_tier_group_snapshot")
         if any(not isinstance(group, TierModelGroup) for group in self.groups):
             _reject("invalid_tier_group_snapshot")
-        if any(not isinstance(p, ProductModelPreference) for p in self.preferences):
+        if (any(not isinstance(p, ProductModelPreference) for p in self.preferences)
+                or any(not isinstance(g, SiteTierModelGroup) for g in self.site_groups)):
             _reject("invalid_tier_group_snapshot")
         by_tier = {group.tier: group for group in self.groups}
         if len(by_tier) != len(self.groups):
@@ -107,10 +137,15 @@ class StagedTierGroupSnapshot:
         keys = {(p.product, p.tier) for p in self.preferences}
         if len(keys) != len(self.preferences):
             _reject("duplicate_product_group_route")
+        by_site = {(g.product, g.tier): g for g in self.site_groups}
+        if len(by_site) != len(self.site_groups):
+            _reject("duplicate_site_tier_group")
         for p in self.preferences:
-            group = by_tier.get(p.tier)
+            # Site primary/fallback must belong to the SITE roster, never the
+            # central suggestions. Central edits must not cascade to sites.
+            group = by_site.get((p.product, p.tier))
             if group is None or not set((p.primary_model_id, *p.fallback_model_ids)) <= set(group.model_ids):
-                _reject("product_route_outside_tier_group")
+                _reject("product_route_outside_site_tier_group")
 
 
 @dataclass(frozen=True, slots=True)
@@ -134,7 +169,7 @@ def preview_product_group(
     capability_ready: Mapping[str, bool],
     trusted_policy_fresh: bool,
 ) -> ProductGroupPreview:
-    """Read-only intersection of staged group and actual central + site D1 grants.
+    """Read-only intersection of site-owned choices and exact D1 grants.
 
     Trusted host must provide catalog, policy, entitlement/capability readiness.
     Missing or stale policy fails closed. Nothing here authorizes a call.

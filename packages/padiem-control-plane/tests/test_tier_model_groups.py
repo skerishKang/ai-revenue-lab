@@ -9,7 +9,7 @@ from padiem_control_plane.model_assignment_policy import (
 )
 from padiem_control_plane.product_tier_routes import PLUS_HOLD_MODEL_ID
 from padiem_control_plane.tier_model_groups import (
-    TierModelGroup, ProductModelPreference, StagedTierGroupSnapshot,
+    TierModelGroup, SiteTierModelGroup, ProductModelPreference, StagedTierGroupSnapshot,
     preview_product_group, suggest_explicit_fallback,
 )
 
@@ -20,9 +20,17 @@ CAT = {
 }
 
 
-def staged(*prefs):
+def staged(*preferences):
+    seen = set()
+    site_groups = []
+    for p in preferences:
+        key = (p.product, p.tier)
+        if key not in seen:
+            seen.add(key)
+            site_groups.append(SiteTierModelGroup(p.product, p.tier, (A, B, C)))
     return StagedTierGroupSnapshot(
-        "padiem-global", 0, (TierModelGroup("PLUS", (A, B, C)),), tuple(prefs),
+        "padiem-global", 0, (TierModelGroup("PLUS", (A, B, C)),),
+        tuple(preferences), tuple(site_groups),
     )
 
 
@@ -139,7 +147,7 @@ def test_group_duplicate_unknown_auto_retired_and_hold_models_denied():
     code("invalid_tier_group_model", lambda: TierModelGroup("PLUS", (PLUS_HOLD_MODEL_ID,)))
     code("invalid_tier_group_model", lambda: TierModelGroup("PLUS", ("b14/auto",)))
     code("invalid_tier_group_model", lambda: TierModelGroup("PLUS", ("kilo/tencent-hy3-free",)))
-    code("product_route_outside_tier_group", lambda: staged(prefs(primary="other/not-member", backups=())))
+    code("product_route_outside_site_tier_group", lambda: staged(prefs(primary="other/not-member", backups=())))
     code("invalid_product_group_fallbacks", lambda: prefs(backups=(B, B)))
     code("invalid_product_group_target", lambda: ProductModelPreference("central", "PLUS", A))
 
@@ -159,3 +167,100 @@ def test_unassigned_product_not_assumed_from_same_tier_global_group():
     assert v.primary_model_id is None
     assert v.eligible_fallback_model_ids == ()
     assert v.model_reasons == ()
+
+
+def test_central_max_and_claw_pro_can_use_same_exact_model_without_mutation():
+    # User requirement: global MAX suggestion does not force Claw's tier.
+    from padiem_control_plane.tier_model_groups import SiteTierModelGroup
+    site_groups = (
+        SiteTierModelGroup("chat", "MAX", (A, B)),
+        SiteTierModelGroup("claw", "PRO", (A, C)),
+        SiteTierModelGroup("b66", "PLUS", (A, B)),
+    )
+    preferences = (
+        ProductModelPreference("chat", "MAX", A, (B,), False),
+        ProductModelPreference("claw", "PRO", A, (C,), False),
+        ProductModelPreference("b66", "PLUS", A, (B,), False),
+    )
+    # A is recommended under global MAX, but chosen independently under
+    # Claw PRO and B66 PLUS after separate central AND product grants.
+    conf = StagedTierGroupSnapshot(
+        "padiem-global", 3, (TierModelGroup("MAX", (A,)),),
+        preferences, site_groups,
+    )
+    rules = tuple(
+        ModelChange(product, tier, A, "allow")
+        for product, tier in (
+            ("central", "MAX"), ("chat", "MAX"),
+            ("central", "PRO"), ("claw", "PRO"),
+            ("central", "PLUS"), ("b66", "PLUS"),
+        )
+    )
+    policy = ModelPolicySnapshot("padiem-global", 4, rules)
+    results = {
+        product: preview_product_group(
+            conf, workspace_id="padiem-global", product=product, tier=tier,
+            policy=policy, catalog=CAT,
+            capability_ready={A: True}, trusted_policy_fresh=True,
+        )
+        for product, tier in (("chat", "MAX"), ("claw", "PRO"), ("b66", "PLUS"))
+    }
+    assert all(result.primary_model_id == A for result in results.values())
+    assert all(result.dispatch_authorized is False for result in results.values())
+    # Reclassifying or removing central recommendations has no side effects on
+    # existing per-site rosters or primary/fallback selections.
+    revised = StagedTierGroupSnapshot(
+        conf.workspace_id, conf.revision + 1,
+        (TierModelGroup("MAX", (C,)),), conf.preferences, conf.site_groups,
+    )
+    assert revised.site_groups == conf.site_groups
+    assert revised.preferences == conf.preferences
+    for product, tier in (("chat", "MAX"), ("claw", "PRO"), ("b66", "PLUS")):
+        after = preview_product_group(
+            revised, workspace_id="padiem-global", product=product, tier=tier,
+            policy=policy, catalog=CAT, capability_ready={A: True},
+            trusted_policy_fresh=True,
+        )
+        assert after.primary_model_id == results[product].primary_model_id
+
+
+def test_site_assignment_must_be_in_own_site_group_not_global_suggestion():
+    # Global Plus recommendation alone grants nothing to a missing site group.
+    code("product_route_outside_site_tier_group", lambda: StagedTierGroupSnapshot(
+        "padiem-global", 0, (TierModelGroup("PLUS", (A, B)),),
+        (ProductModelPreference("claw", "PLUS", A),), (),
+    ))
+    code("product_route_outside_site_tier_group", lambda: StagedTierGroupSnapshot(
+        "padiem-global", 0, (TierModelGroup("PLUS", (A, B)),),
+        (ProductModelPreference("claw", "PLUS", A),),
+        (SiteTierModelGroup("claw", "PLUS", (B,)),),
+    ))
+    code("duplicate_site_tier_group", lambda: StagedTierGroupSnapshot(
+        "padiem-global", 0, (), (),
+        (SiteTierModelGroup("chat", "MAX", (A,)),
+         SiteTierModelGroup("chat", "MAX", (B,))),
+    ))
+    code("invalid_site_tier_group_target", lambda: SiteTierModelGroup("central", "PRO", (A,)))
+    code("duplicate_site_tier_group_model", lambda: SiteTierModelGroup("claw", "PRO", (A, A)))
+
+
+def test_site_tier_reclassification_isolated_from_other_products():
+    groups = (
+        SiteTierModelGroup("chat", "MAX", (A,)),
+        SiteTierModelGroup("claw", "PRO", (A,)),
+    )
+    original = StagedTierGroupSnapshot(
+        "padiem-global", 0, (TierModelGroup("MAX", (A,)),),
+        (ProductModelPreference("chat", "MAX", A),
+         ProductModelPreference("claw", "PRO", A)), groups,
+    )
+    updated = StagedTierGroupSnapshot(
+        original.workspace_id, 1, original.groups,
+        original.preferences, (
+            SiteTierModelGroup("chat", "MAX", (A, B)),
+            original.site_groups[1],
+        ),
+    )
+    assert updated.site_groups[1] == original.site_groups[1]
+    assert updated.preferences[1] == original.preferences[1]
+    assert updated.groups == original.groups
