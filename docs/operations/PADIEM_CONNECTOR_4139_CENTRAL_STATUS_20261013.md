@@ -4,6 +4,8 @@
 > **시점:** `main` `9c41885711ff9239203b0d9010c252f6b3cf0f5f` 기준. GitHub 상태는 변경 가능하므로 실제 작업·병합 전 해당 PR의 최신 HEAD/검사를 재조회한다.  
 > **권위 구분:** 기존 Identity / canonical Broker / P01 / 원본 제품 정책은 이 문서보다 우선한다. 이 파일은 **단일 상태·업무 분배 인덱스**이며 새로운 인증/정책 엔진을 만드는 문서가 아니다.
 
+> **2026-10-13 latest independent checks audit (after this document's original PR #4503):** CENTRAL server [Draft #4476](https://github.com/skerishKang/ai-revenue-lab/pull/4476) HEAD `74875c35aa2669c3d00f34b94aa95f0765d0e468` has **13 GitHub Actions workflow families SUCCESS**, **but the separate GitGuardian Security Checks check-run still has `conclusion=failure`**. Do not conflate Actions green with the required SECURITY gate; **READY/MERGE/DEPLOY=NO** pending security-owner review/disposition, exact-head fresh checks and authentic Windows E2E. [#4139](https://github.com/skerishKang/ai-revenue-lab/issues/4139) contains the current action/blocker. This note supersedes the earlier snapshot's old HEAD and CI counts, not its brand and authority boundaries.
+
 ## 1. 최신 고객·브랜드 결정 (기존 문서 표현 보정)
 
 - **PADIEM Claw/Chat/Engine과 B66 견적은 고객에게 서로 독립적인 서비스**다. 별도 회원 화면, 로그인, PC 관리, 구독/등급, 내비게이션, 운영 문구를 사용한다. B66 고객에게 PADIEM 통합 메뉴를 표시하거나 PADIEM 고객에게 B66 회원·PC 정보를 자동 노출하지 않는다.
