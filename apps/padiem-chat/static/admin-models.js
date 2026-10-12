@@ -77,6 +77,8 @@
   }
 
   function updateSelection() {
+    // Invalidate a preview HTTP response if the model/targets/tier changed.
+    state.pendingRequest += 1;
     $("targetCount").textContent = String(chosenTargets().length);
     $("previewBtn").disabled = !(state.authorized && state.selected && chosenTargets().length > 0);
     refreshPreviewText();
