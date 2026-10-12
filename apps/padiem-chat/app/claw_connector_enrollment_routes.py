@@ -25,6 +25,7 @@ from padiem_control_plane.padiem_connector_enrollment_server import CanonicalCon
 
 from .auth_routes import auth_ready, current_user_id
 from .b54_canonical_session import resolve_current_b54_canonical_session
+from .control_plane_identity import IdentityBridgeError
 
 CONNECTOR_ENROLLMENT_ISSUE_PATH = "/api/claw/connector/enrollments/issue"
 CONNECTOR_ENROLLMENT_REDEEM_PATH = "/api/claw/connector/enrollments/redeem"
@@ -53,6 +54,46 @@ def _json(body: dict[str, Any], status: int) -> JSONResponse:
 
 def _error(status: int, code: str) -> JSONResponse:
     return _json({"ok": False, "error": {"code": code}}, status)
+
+
+# The canonical server error code is retained for operator diagnosis.
+# LOCAL2 receives only a bounded S1-compatible refusal reason; no arbitrary
+# upstream error string is exposed to a device. Unknown failures fail closed.
+_S2_REDEEM_REFUSALS = frozenset({
+    "canonical_session_required", "canonical_session_inactive",
+    "enrollment_consent_required", "enrollment_consent_withdrawn",
+    "enrollment_consent_scope_mismatch", "enrollment_binding_absent",
+    "enrollment_consent_swap_denied", "enrollment_device_swap_denied",
+    "enrollment_binding_owner_mismatch", "enrollment_binding_scope_mismatch",
+    "enrollment_challenge_not_found", "enrollment_challenge_expired",
+    "enrollment_duplicate_redeem_denied", "enrollment_rate_limited",
+    "enrollment_duplicate_device_denied", "enrollment_binding_revoked_denied",
+    "enrollment_dependency_unavailable", "enrollment_dependency_refused",
+})
+_S2_REDEEM_REFUSAL_ALIASES = {
+    "enrollment_consent_changed_during_redeem": "enrollment_consent_withdrawn",
+    "enrollment_consent_race_revoke_unconfirmed": "enrollment_dependency_unavailable",
+    "credential_handoff_unavailable": "enrollment_dependency_unavailable",
+    "enrollment_credential_handoff_failed": "enrollment_dependency_refused",
+    "enrollment_handoff_revoke_unconfirmed": "enrollment_dependency_unavailable",
+    "enrollment_server_dependency_unavailable": "enrollment_dependency_unavailable",
+    "connector_enrollment_device_gateway_denied": "enrollment_dependency_refused",
+    "connector_enrollment_invalid_request": "enrollment_dependency_refused",
+    "invalid_pairing_proof": "enrollment_proof_invalid",
+    "pairing_challenge_already_redeemed": "enrollment_duplicate_redeem_denied",
+}
+
+
+def _redeem_error(status: int, code: str) -> JSONResponse:
+    # S2's typed EnrollmentRedemptionResponse consumes reason/retryable while
+    # diagnostics may retain the canonical code. No raw error text or credential.
+    reason = _S2_REDEEM_REFUSAL_ALIASES.get(
+        code, code if code in _S2_REDEEM_REFUSALS else "enrollment_dependency_refused"
+    )
+    return _json({
+        "ok": False, "error": {"code": code},
+        "reason": reason, "retryable": False,
+    }, status)
 
 
 async def _payload(request: Request, keys: frozenset[str]) -> dict[str, str] | None:
@@ -229,6 +270,9 @@ async def connector_enrollment_issue(request: Request) -> JSONResponse:
         return _json({"ok": True, "enrollment": public}, 200)
     except ControlPlaneContractError as exc:
         return _error(503 if exc.code == "enrollment_server_dependency_unavailable" else 403, exc.code)
+    except IdentityBridgeError as exc:
+        status = exc.status_code if exc.status_code in (400, 401, 403, 404, 409, 429, 503) else 503
+        return _error(status, exc.code if _SAFE_VALUE.fullmatch(exc.code) else "enrollment_server_dependency_unavailable")
     except Exception:
         return _error(503, "enrollment_server_dependency_unavailable")
 
@@ -243,15 +287,15 @@ async def connector_enrollment_redeem(request: Request) -> JSONResponse:
     async_host = getattr(request.app.state, "connector_enrollment_async_host", None)
     gateway = getattr(request.app.state, "connector_enrollment_device_gateway", None)
     if (service is None and not callable(getattr(async_host, "redeem", None))) or not callable(getattr(gateway, "verify", None)):
-        return _error(503, "enrollment_server_dependency_unavailable")
+        return _redeem_error(503, "enrollment_server_dependency_unavailable")
     try:
         if gateway.verify(request) is not True:
-            return _error(403, "connector_enrollment_device_gateway_denied")
+            return _redeem_error(403, "connector_enrollment_device_gateway_denied")
         fields = await _payload(
             request, frozenset({"challenge_id", "device_id", "proof_ref"})
         )
         if fields is None or _SAFE_PROOF.fullmatch(fields["proof_ref"]) is None:
-            return _error(400, "connector_enrollment_invalid_request")
+            return _redeem_error(400, "connector_enrollment_invalid_request")
         if callable(getattr(async_host, "redeem", None)):
             # Async path performs live Identity consent/session recheck, durable
             # Broker redemption and protected OS-credential handoff. Raw device
@@ -267,8 +311,15 @@ async def connector_enrollment_redeem(request: Request) -> JSONResponse:
         )
         return _json(result.safe_dict(), 200)
     except ControlPlaneContractError as exc:
-        return _error(503 if exc.code in {
+        status = 503 if exc.code in {
             "enrollment_server_dependency_unavailable", "enrollment_credential_handoff_failed"
-        } else 403, exc.code)
+        } else 403
+        return _redeem_error(status, exc.code)
+    except IdentityBridgeError as exc:
+        # Preserve reviewed fail-closed error categories: consent loss is
+        # forbidden, handoff failure is unavailable, replay is a conflict.
+        status = exc.status_code if exc.status_code in (400, 401, 403, 404, 409, 429, 503) else 503
+        code = exc.code if isinstance(exc.code, str) and _SAFE_VALUE.fullmatch(exc.code) else "enrollment_server_dependency_unavailable"
+        return _redeem_error(status, code)
     except Exception:
-        return _error(503, "enrollment_server_dependency_unavailable")
+        return _redeem_error(503, "enrollment_server_dependency_unavailable")
