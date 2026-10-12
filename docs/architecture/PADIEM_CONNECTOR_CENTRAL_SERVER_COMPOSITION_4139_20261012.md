@@ -158,3 +158,13 @@ continuity composition into real S1 product HTTP and same canonical Broker.
 Cross-Durable-Object consent-vs-pairing race and credential-handoff atomic
 recovery require dedicated integration tests. A Source-only store is NOT
 production enrollment. Keep `PRODUCTION=OFF`, `READY=NO`, `MERGED=NO`.
+
+## 2026-10-12 CENTRAL third implementation — B54 browser identity and candidate shared scope
+
+1. `apps/padiem-chat/app/claw_connector_enrollment_routes.py` now resolves the *CURRENT* canonical B54 session via the existing `resolve_current_b54_canonical_session(request)` bridge. The browser's signed product-user ID is NOT assumed equal to the canonical subject ID. The B54 product, active session, bound product user and canonical tenant are all verified before issuing a one-time code. A forged session from `app.state.connector_enrollment_browser_session` no longer supplies authority. Test cases cover absent, swapped product user, cross-product session, revoked session and missing canonical tenant. The route is still UNMOUNTED.
+2. `packages/padiem-control-plane/canonical_connector_scope_readonly.py` is a read-only **CANDIDATE** for the existing shared PC owner scope: rechecks existing canonical ACTIVE tenant membership and reads the already-established `canonical_connector_context` row keyed by the SAME canonical subject and legacy `b62` product ID. It does **not** create context rows or infer new account/workspace aliases. It fails closed if missing, ambiguous or invalid. `SCOPE_BRIDGE_WIRED=False`; `SHARED_SCOPE_AUTHORITY_APPROVED=False`. The product-neutral meaning of the old B62 connector context must be confirmed through owner review before composing this adapter into S1.
+3. Related tests exercise canonical-vs-product user identity distinction and subject/tenant/context scope mismatch. They are source-level tests, NOT proof of live authentication.
+
+**Remaining authority decisions, do not skip:** actual reviewed explicit owner consent action (UI, CSRF and current session) → private canonical Identity DO grant/revoke RPC and guarded schema installation; canonical same-tenant scope ownership approval; production trusted gateway and exact HTTPS response encoding; durable Broker pairing/replay with concurrent revocation; existing protected Windows credential installation; LOCAL2 transport and #3099 live Windows E2E. No current PR grants product READ/WRITE or turns on enrollment.
+
+**Status:** `B54_BROWSER_SESSION_SOURCE=VERIFIED_IMPLEMENTATION`; `SHARED_SCOPE_CANDIDATE=READ_ONLY_UNCOMPOSED`; `OWNER_CONSENT_RPC=NOT_WIRED`; `PRODUCTION_HTTP_ROUTE=UNMOUNTED`; `PRODUCTION=OFF`.
