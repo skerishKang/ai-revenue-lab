@@ -110,6 +110,57 @@ async def test_retry_safe_engine_rejection_releases_one_shot_reservation(code):
 
 
 @pytest.mark.asyncio
+async def test_retry_safe_code_in_http_503_cannot_release_reservation():
+    """A 5xx body spelling a retry-safe code is still an ambiguous dispatch."""
+    app, settings, meta, r2, db, history, _ = ready()
+    _original, selection = await setup_pause(app, settings)
+    binding = EngineBinding(
+        503, {"ok": False, "error": {"code": "invalid_decision"}},
+    )
+    app.state.web_xlsx_p01_owner_decision_client = real_client(binding)
+    result = await decide(app, settings, selection, decision="approve")
+    assert result.status_code == 409, result.text
+    assert result.json()["error"]["code"] == "owner_p01_decision_or_workcopy_unconfirmed"
+    receipt = db.execute(
+        "SELECT state, released_at FROM claw_web_xlsx_p01_decision_receipts"
+    ).fetchone()
+    assert receipt["state"] == "dispatching"
+    assert receipt["released_at"] is None
+    retry = await decide(app, settings, selection, decision="approve")
+    assert retry.status_code in (409, 503)
+    assert len(binding.calls) == 1, "a 5xx ambiguity must not allow a second dispatch"
+    db.close()
+
+
+@pytest.mark.asyncio
+async def test_retry_safe_release_is_atomic_not_idempotent():
+    """A preexisting released row cannot impersonate a new successful release."""
+    app, settings, meta, r2, db, history, _ = ready()
+    _original, selection = await setup_pause(app, settings)
+    binding = EngineBinding(
+        409, {"ok": False, "error": {"code": "invalid_decision"}},
+    )
+    app.state.web_xlsx_p01_owner_decision_client = real_client(binding)
+    first = await decide(app, settings, selection, decision="approve")
+    assert first.status_code == 409
+    assert first.json()["error"]["code"] == "owner_p01_decision_retryable"
+    store = app.state.web_xlsx_p01_owner_decision_store
+    waiting = await store.load_waiting(
+        owner_id=OWNER, workspace_id=selection["workspace_id"],
+        selection_ref=selection["selection_ref"],
+    )
+    assert waiting is not None
+    assert await store.release_retry_safe(waiting=waiting) is False, (
+        "an already released receipt must not be marked released by a new action"
+    )
+    assert await store.release_retry_safe(
+        waiting={**waiting, "user_id": "other-owner"}
+    ) is False, "foreign owner may never release an unrelated receipt"
+    assert len(binding.calls) == 1
+    db.close()
+
+
+@pytest.mark.asyncio
 async def test_ambiguous_engine_transport_result_stays_armed():
     """A genuinely unknown resume outcome must NOT be retried or released."""
     app, settings, meta, r2, db, history, _ = ready()
