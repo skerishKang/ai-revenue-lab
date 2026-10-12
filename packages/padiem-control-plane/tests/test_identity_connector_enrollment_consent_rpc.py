@@ -13,6 +13,7 @@ from canonical_connector_enrollment_durable import IdentityDurableConnectorEnrol
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
 from padiem_control_plane.contracts import CanonicalSubjectRef, ControlPlaneContractError, SubjectType
 from padiem_control_plane.padiem_connector_enrollment import ConnectorEnrollmentConsent
+from padiem_control_plane.tenants import TenantMembershipRole
 
 NOW = datetime(2026, 10, 12, 10, tzinfo=timezone.utc)
 PRODUCT = "b54-padiem-claw"
@@ -56,6 +57,7 @@ class Storage:
 
 class Canonical:
     def __init__(self):
+        self.role = "owner"
         self.session = AuthSessionSnapshot(
             session_id=SESSION_ID, product_id=PRODUCT,
             subject=CanonicalSubjectRef(subject_type=SubjectType.USER, subject_id=SUBJECT),
@@ -69,7 +71,7 @@ class Canonical:
     def resolve_active_tenant_membership(self, *, tenant_id, canonical_subject_id, now):
         if tenant_id != TENANT or canonical_subject_id != SUBJECT or not self.session.is_active(now=now):
             raise ControlPlaneContractError("canonical_tenant_membership_inactive", "no active membership")
-        return SimpleNamespace(role="owner")
+        return SimpleNamespace(role=TenantMembershipRole(self.role))
 
 
 def harness(*, enabled=True, scope_approved=True, schema_installed=True, schema_created=True):
@@ -296,4 +298,24 @@ def test_current_consent_and_authorization_rpc_reject_extra_or_cross_owner_field
     })
     assert denied["ok"] is False
     assert denied["error"]["code"] == "enrollment_consent_withdrawn"
+
+
+def test_non_owner_tenant_member_cannot_grant_or_revoke_pc_consent():
+    fake, records, canonical, _ = harness()
+    canonical.role = "operator"
+    result = call("grant_connector_enrollment_consent", fake, grant_payload())
+    assert result["ok"] is False
+    assert result["error"]["code"] == "connector_enrollment_owner_required"
+    assert records.current_for_device(owner_subject_id=SUBJECT, device_id=DEVICE, now=datetime.now(timezone.utc)) is None
+
+    canonical.role = "owner"
+    grant = call("grant_connector_enrollment_consent", fake, grant_payload())
+    assert grant["ok"] is True
+    canonical.role = "approver"
+    denied = call("revoke_connector_enrollment_consent", fake, revoke_payload(grant["consent"]["consent_id"]))
+    assert denied["ok"] is False
+    assert records.current_consent(
+        consent_id=grant["consent"]["consent_id"], now=datetime.now(timezone.utc)
+    ).withdrawn_at is None
+
 
