@@ -95,6 +95,7 @@
   const historyList = document.getElementById("historyList");
   const historyEmpty = document.getElementById("historyEmpty");
   const projectsNavButton = document.getElementById("projectsNavButton");
+  const filesNavButton = document.getElementById("filesNavButton");
   const projectsBadge = document.getElementById("projectsBadge");
   const projectsSection = document.getElementById("projectsSection");
   const projectsList = document.getElementById("projectsList");
@@ -297,7 +298,27 @@
     article.querySelector("[data-runtime-label]").textContent = skillTitle ? `${runtimeLabel} · ${skillTitle}` : runtimeLabel;
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
   }
-  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, actionLabel = uiT("retry")) {
+  // #3936: a model HOLD is a bounded refusal raised BEFORE dispatch, so it must
+  // not wear the generic "this run may already have started" state. Closed
+  // code→copy map only: a raw server, Engine or provider string is never shown.
+  const CLAW_BOUNDED_REFUSAL_COPY = Object.freeze({
+    tier_unavailable: Object.freeze({
+      message: "claw-general-model-unavailable",
+      hint: "claw-general-model-unavailable-note",
+    }),
+  });
+  function clawGeneralFailure(code) {
+    const entry = typeof code === "string" && Object.hasOwn(CLAW_BOUNDED_REFUSAL_COPY, code)
+      ? CLAW_BOUNDED_REFUSAL_COPY[code]
+      : null;
+    if (entry) return Object.freeze({ message: uiT(entry.message), hint: uiT(entry.hint) });
+    return Object.freeze({
+      message: window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang)
+        || uiT("claw-general-check-runs"),
+      hint: uiT("claw-general-check-runs"),
+    });
+  }
+  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, actionLabel = uiT("retry"), clawFailure = null) {
     const box = document.createElement("div");
     box.className = "error-box";
     const strong = document.createElement("strong");
@@ -315,6 +336,9 @@
     if (clawGeneralRequest) {
       const hint = document.createElement("p");
       hint.textContent = uiT("claw-general-check-runs");
+      // A provable pre-dispatch refusal has no run to check, so its next step is
+      // a different model rather than the existing run-history guidance.
+      if (clawFailure && clawFailure.hint) hint.textContent = clawFailure.hint;
       // #3935: navigation only. This button opens the existing owner-scoped
       // GET /api/claw/runs history and never replays the failed P01 POST.
       const openRuns = document.createElement("button");
@@ -347,20 +371,20 @@
   function revealErrorState(article) {
     article.scrollIntoView({ block: "center", behavior: "auto" });
   }
-  function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED) {
+  function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED, clawFailure = null) {
     const content = article.querySelector(".assistant-content");
     content.replaceChildren();
     article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
-    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest));
+    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest, undefined, clawFailure));
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
   }
-  function renderStreamError(article, message, retryMessages, retrySkill, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED) {
+  function renderStreamError(article, message, retryMessages, retrySkill, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED, clawFailure = null) {
     const content = article.querySelector(".assistant-content");
     const typing = content.querySelector(".typing");
     if (typing) typing.remove();
     article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
-    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest));
+    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, undefined, clawFailure));
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
   }
@@ -492,10 +516,21 @@
     historySection.hidden = true;
     historyEmpty.hidden = true;
   }
-  // #4489: the Library entry is owned by static/library.js. The old
-  // filesNavAvailable()/syncFilesNav() gate that also required project-file
-  // storage was removed, because Library navigation must work for a signed-in
-  // owner even when that storage is not provisioned.
+  // #3232: the Web Claw sidebar Files entry reuses the existing project-scoped
+  // Files authority. It mirrors the Projects readiness (authenticated +
+  // projectsReady) AND the existing project-files flag consumed by
+  // fetchProjectFiles/loadProjectFilesForDialog/addProjectFile/deleteProjectFile
+  // and the projectFilesPanel visibility, and never introduces its own
+  // storage, routes, or parsers.
+  function filesNavAvailable() {
+    return Boolean(authState.authenticated && projectsReady && authState.project_files_ready);
+  }
+  function syncFilesNav() {
+    if (!filesNavButton) return;
+    const enabled = filesNavAvailable();
+    filesNavButton.disabled = !enabled;
+    filesNavButton.setAttribute("aria-disabled", enabled ? "false" : "true");
+  }
   function clearProjectsUI() {
     projects = [];
     projectsReady = false;
@@ -508,6 +543,7 @@
       projectsNavButton.disabled = true;
       projectsNavButton.setAttribute("aria-disabled", "true");
     }
+    syncFilesNav();
     if (projectsBadge) projectsBadge.textContent = authState.authenticated ? uiT("setup-needed") : uiT("login-after");
     renderProjectState();
   }
@@ -566,6 +602,7 @@
         projectsNavButton.disabled = false;
         projectsNavButton.setAttribute("aria-disabled", "false");
       }
+      syncFilesNav();
       if (activeProject) activeProject = projects.find((item) => item.id === activeProject.id) || activeProject;
       renderProjects();
       return true;
@@ -1297,21 +1334,6 @@
     open: (conversationId) => openSavedConversation(conversationId),
   });
 
-  // #4489: the Library opens a stored project file through that file's owning
-  // project in the existing Project dialog, so project-file permission, the
-  // files panel and every edit guard stay on the one canonical path. The project
-  // resolves only from the already-loaded owner list, so a foreign or stale id
-  // opens nothing. Read-only handle: it grants no new authority.
-  window.PadiemChatProjectOpener = Object.freeze({
-    open: (projectId) => {
-      if (!projectsReady || !authState.authenticated || inFlight) return false;
-      const project = projects.find((item) => item && item.id === projectId);
-      if (!project) return false;
-      openProjectDialog(project);
-      return true;
-    },
-  });
-
   // Hark's private web XLSX intake creates a separate trusted owner-owned
   // work conversation. This explicit navigation never guesses that it was the
   // currently displayed chat or fabricates an assistant answer/file READ grant.
@@ -1483,13 +1505,16 @@
             showVerifiedClawRecovery(verifiedClawRecovery.state());
             return true;
           }
+          const clawFailure = clawGeneralRequest
+            ? clawGeneralFailure(data && data.error ? data.error.code : "")
+            : null;
           const message = clawGeneralRequest
-            ? (window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang) || uiT("claw-general-check-runs"))
+            ? clawFailure.message
             : data && data.error && typeof data.error.message === "string"
               ? data.error.message : uiT("stream-continue-failed");
           if (!paragraph) throw chatTransport.errorFor(data, message);
           terminalError = true;
-          renderStreamError(article, message, outboundMessages, skill, contextSnapshot, clawGeneralRequest, lifecycleForError(chatTransport.errorFor(data, message)));
+          renderStreamError(article, message, outboundMessages, skill, contextSnapshot, clawGeneralRequest, lifecycleForError(chatTransport.errorFor(data, message)), clawFailure);
           return true;
         }
         if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) {
@@ -1534,9 +1559,9 @@
       }
       if (paragraph) {
         if (clawGeneralRequest) {
-          renderStreamError(article,
-            (window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang) || uiT("claw-general-check-runs")),
-            outboundMessages, skill, contextSnapshot, true);
+          const clawFailure = clawGeneralFailure(error && error.code);
+          renderStreamError(article, clawFailure.message,
+            outboundMessages, skill, contextSnapshot, true, MESSAGE_LIFECYCLE.FAILED, clawFailure);
         } else {
           // Preserve the original standalone Chat catch path and its existing
           // rich-stream/browser contract. Only Claw uses bounded safe copy.
@@ -1617,12 +1642,13 @@
         return false;
       }
       if (requestEpoch !== conversationEpoch) return false;
+      const clawFailure = clawGeneralRequest ? clawGeneralFailure(error && error.code) : null;
       renderError(
         article,
         clawGeneralRequest && error?.clawFailureDetail === "engine_provider_rate_limited"
           ? uiT("claw-general-provider-limit")
           : clawGeneralRequest
-            ? (window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang) || uiT("claw-general-check-runs"))
+            ? clawFailure.message
             : (error instanceof Error ? error.message : uiT("try-again")),
         outboundMessages,
         skill,
@@ -1630,6 +1656,7 @@
         contextSnapshot,
         clawGeneralRequest,
         lifecycleForError(error),
+        clawFailure,
       );
       return false;
     } finally {
@@ -1751,6 +1778,17 @@
   if (projectsNavButton) projectsNavButton.addEventListener("click", () => {
     if (!projectsReady) return;
     if (projects.length === 0) openProjectDialog();
+    else projectsSection.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  });
+  // #3232: Files routes into the existing Project UI. With an active project it
+  // reopens that project's dialog (with its existing files panel); otherwise it
+  // reuses the existing Projects flow (create dialog when empty, section scroll
+  // when projects exist). No global file store is introduced: the handler stays
+  // fail-closed unless the project authority is ready.
+  if (filesNavButton) filesNavButton.addEventListener("click", () => {
+    if (!filesNavAvailable()) return;
+    if (activeProject) openProjectDialog(activeProject);
+    else if (projects.length === 0) openProjectDialog();
     else projectsSection.scrollIntoView({ block: "nearest", behavior: "smooth" });
   });
   projectCreateButton.addEventListener("click", () => openProjectDialog());
