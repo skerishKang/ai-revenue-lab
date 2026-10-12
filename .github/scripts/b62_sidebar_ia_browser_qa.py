@@ -64,10 +64,16 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
         raise AssertionError(f"central empty-state starters were not preserved: visible={visible_starters}")
 
     home = page.locator("#sidebar .sidebar-bottom .home-link")
-    settings = page.locator("#sidebar .sidebar-bottom #settingsButton")
+    legacy_settings = page.locator("#sidebar .sidebar-bottom #settingsButton")
     account = page.locator("#sidebar .sidebar-bottom .sidebar-account")
-    if await home.count() != 1 or await settings.count() != 1 or await account.count() != 1:
-        raise AssertionError("bottom utility group must contain Padiem Home, settings and account exactly once")
+    if await home.count() != 1 or await legacy_settings.count() != 1 or await account.count() != 1:
+        raise AssertionError("bottom utility group must preserve Padiem Home and canonical account")
+    if await legacy_settings.is_visible():
+        raise AssertionError("the old duplicate Settings row must stay hidden")
+    # Offline mock auth hides account chrome. Expose the signed-in presentation
+    # only for the focus-order QA; no credentials or permissions are bypassed.
+    await account.evaluate("(el) => { el.hidden = false; el.style.display = 'grid'; }")
+    settings = page.locator("#accountProfileButton")
     if await home.get_attribute("href") != "https://padiem.net/":
         raise AssertionError("Padiem Home destination changed")
 
@@ -133,17 +139,20 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
         await _assert_focus(page, "#newChatButton", "desktop new chat")
 
     focus_order = await _visible_sidebar_focus_order(page)
-    required = ("newChatButton", "settingsButton", "home-link")
+    required = ("newChatButton", "accountProfileButton", "home-link")
     if any(item not in focus_order for item in required):
         raise AssertionError(f"required sidebar focus targets missing: {focus_order}")
-    if not (focus_order.index("newChatButton") < focus_order.index("settingsButton") < focus_order.index("home-link")):
+    if not (focus_order.index("newChatButton") < focus_order.index("accountProfileButton") < focus_order.index("home-link")):
         raise AssertionError(
             f"sidebar focus order must keep navigation before settings/account and Padiem Home final: {focus_order}"
         )
 
     await settings.focus()
     await page.keyboard.press("Tab")
-    await _assert_focus(page, ".home-link", "settings to bottom-most Padiem Home")
+    if await page.locator("#loginButton").is_visible():
+        await _assert_focus(page, "#loginButton", "profile to login/logout")
+        await page.keyboard.press("Tab")
+    await _assert_focus(page, ".home-link", "profile to bottom-most Padiem Home")
 
     screenshot = "sidebar-ia-mobile.png" if mobile else "sidebar-ia-desktop.png"
     await page.screenshot(path=str(OUT_DIR / screenshot), full_page=True)

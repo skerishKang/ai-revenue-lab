@@ -145,7 +145,7 @@ async def _open_settings(page: Page, *, mobile: bool) -> None:
     if mobile:
         await page.locator("#mobileMenu").click()
         await page.locator("#sidebar").wait_for(state="visible")
-    await page.locator("#settingsButton").click()
+    await page.locator("#accountProfileButton").click()
     await page.locator("#settingsDialog").wait_for(state="visible")
 
 
@@ -155,6 +155,11 @@ async def _audit_view(page: Page, *, theme: str, background_hex: str, mobile: bo
     await page.goto(_theme_url(theme), wait_until="domcontentloaded", timeout=30_000)
     await page.locator("#messageInput").wait_for(state="visible")
     await page.wait_for_timeout(350)
+    # Model a signed-in account summary on the offline mock page so that its
+    # user-visible Settings entry is assessed (not the hidden legacy button).
+    await page.locator(".sidebar-account").evaluate(
+        "(el) => { el.hidden = false; el.style.display = 'grid'; }"
+    )
 
     actual_theme = await page.locator("html").get_attribute("data-theme")
     if actual_theme != theme:
@@ -174,7 +179,7 @@ async def _audit_view(page: Page, *, theme: str, background_hex: str, mobile: bo
 
     target_min = 40.0
     targets = []
-    for selector in ("#newChatButton", ".sidebar-bottom .home-link", "#settingsButton"):
+    for selector in ("#newChatButton", ".sidebar-bottom .home-link", "#accountProfileButton"):
         targets.append(await _target_size(page, selector, minimum=target_min))
 
     if theme == "padiem-glass":
