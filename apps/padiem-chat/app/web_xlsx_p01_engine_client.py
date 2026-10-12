@@ -13,6 +13,7 @@ from padiem_ai_engine_client import ENGINE_INTERNAL_ORIGIN
 
 from .claw_web_xlsx_p01_request import (
     TrustedWebXlsxP01Request, WebXlsxP01RequestError,
+    WebXlsxP01RetrySafeDecisionError,
 )
 from .service_binding_response import (
     ServiceBindingResponseError, ServiceBindingResponseTooLarge,
@@ -188,6 +189,18 @@ class CloudflareWebXlsxP01EngineClient:
                 "ok": True, "status": "confirmed",
                 "verified_source_sha256": response["tool"]["output"]["source_sha256"],
             }
+        # A canonical retry-safe rejection proves the Engine did NOT consume the
+        # continuation, so the owner may decide again. Classifying it as an
+        # opaque failure left the B62 one-shot receipt armed at 'dispatching'
+        # forever (#3936). The vocabulary is owned by the canonical lane and is
+        # never duplicated here.
+        from kagent.p01_approval_continuation import RETRY_SAFE_RESUME_CODES
+        if (isinstance(response, dict) and response.get("ok") is False
+                and isinstance(response.get("error"), dict)
+                and response["error"].get("code") in RETRY_SAFE_RESUME_CODES):
+            raise WebXlsxP01RetrySafeDecisionError(
+                "Engine refused the decision without consuming the continuation"
+            )
         raise WebXlsxP01RequestError("Engine did not verify owner P01 outcome")
 
 

@@ -38,6 +38,11 @@ def ready():
     db.executescript((
         Path(__file__).resolve().parents[1] / "migrations" /
         "031_claw_web_xlsx_p01_decision_receipts.sql").read_text(encoding="utf-8"))
+    # #3936 release column: a retry-safe Engine rejection must be able to
+    # release the one-shot reservation (additive only).
+    db.executescript((
+        Path(__file__).resolve().parents[1] / "migrations" /
+        "039_claw_web_xlsx_p01_decision_release.sql").read_text(encoding="utf-8"))
     app.state.web_xlsx_p01_owner_decision_store = D1WebXlsxP01OwnerDecisionStore(RealSQLiteD1(db))
     decision_engine = DecisionEngine()
     app.state.web_xlsx_p01_owner_decision_client = decision_engine
