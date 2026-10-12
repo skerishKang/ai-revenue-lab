@@ -46,6 +46,12 @@
 .starter-grid .starter strong { font-size: 13px; }
 .starter-grid .starter small { font-size: 12px; line-height: 1.45; }
 
+/* Keep the fourth fallback starter only while Web Search is genuinely disabled.
+ * Never surface an unavailable Web Search control or a fifth active starter. */
+.starter-grid:has(#webSearchStarterButton:not([hidden]):not(:disabled)) #writingStarterButton {
+  display: none !important;
+}
+
 /* Give the composer slightly stronger first-use hierarchy without changing hooks. */
 .app-shell[data-state="home"] .composer {
   border-color: rgba(255, 255, 255, .22);
