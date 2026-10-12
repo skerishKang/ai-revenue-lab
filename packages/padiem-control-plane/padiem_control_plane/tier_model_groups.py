@@ -23,7 +23,7 @@ from .product_tier_routes import (
 
 SITE_PRODUCTS = frozenset({"chat", "claw", "b66"})
 MAX_GROUP_MODELS = 32
-MAX_BACKUPS = 2
+MAX_BACKUPS = 1
 NON_EXECUTABLE_IDS = RETIRED_PRODUCT_MODEL_IDS | frozenset({
     PLUS_HOLD_MODEL_ID, PRO_HOLD_MODEL_ID, MAX_HOLD_MODEL_ID,
 })
@@ -90,10 +90,12 @@ class SiteTierModelGroup:
 
 @dataclass(frozen=True, slots=True)
 class ProductModelPreference:
-    """Each site chooses its own primary and ordered backups within its site tier."""
+    """Each site chooses one primary and at most one explicit fallback per tier."""
     product: str
     tier: str
     primary_model_id: str
+    # Empty = no backup selected; at most one exact B14 ID may be nominated.
+    # This is advisory and never enables silent routing or a second provider call.
     fallback_model_ids: tuple[str, ...] = ()
     fallback_enabled: bool = False
 
@@ -207,7 +209,7 @@ def suggest_explicit_fallback(
     preview: ProductGroupPreview, *, failure_code: str,
     attempted_model_ids: tuple[str, ...], user_notice_possible: bool,
 ) -> str | None:
-    """Return an ADVISORY next exact ID, not a dispatch/fallback side effect.
+    """Return one ADVISORY fallback exact ID, not a dispatch side effect.
 
     Integration must still recheck the actual trusted policy and owner grant,
     emit a user-visible route-change notice, preserve full conversation context,
