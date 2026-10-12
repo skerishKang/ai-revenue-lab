@@ -105,6 +105,18 @@ def test_connect_app_status_never_claims_an_unobserved_state():
     json.dumps(status)  # must stay JSON serialisable
 
 
+def test_tray_web_entry_uses_verified_padiem_chat_production_origin(monkeypatch):
+    from claw_connect import WEB_URL
+    from claw_connect.runtime import ConnectApp
+
+    assert WEB_URL == "https://chat.padiem.net/"
+    opened = []
+    monkeypatch.setattr("webbrowser.open", lambda url: opened.append(url))
+    app = ConnectApp(resident_command=[sys.executable, "-c", "pass"])
+    app.open_web()
+    assert opened == ["https://chat.padiem.net/"]
+
+
 # --- packaging contract (#4139 item 9) ------------------------------------
 def test_npx_entry_point_and_package_manifest_exist():
     manifest = json.loads((ROOT / "package.json").read_text(encoding="utf-8"))
