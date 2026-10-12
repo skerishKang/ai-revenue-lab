@@ -85,7 +85,8 @@ def ready_page(browser, server, width=1280):
     page.route("**/api/b66/runtime-config", lambda route: route.fulfill(
         status=200, content_type="application/json",
         body=json.dumps({
-            "ok": True, "enabled": True, "embed_url": "https://quote.example.test/embed.html",
+            "ok": True, "enabled": True, "pc_device_list_enabled": True,
+            "embed_url": "https://quote.example.test/embed.html",
             "origin": "https://quote.example.test",
             # Simulated future server-approved B66 device.list product grant.
             # Current Production B66 runtime-config omits this; default OFF.
