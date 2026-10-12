@@ -36,6 +36,20 @@ class Catalog:
         return self.rows
 
 
+class FullCatalog(Catalog):
+    async def list_registered_models(self):
+        return [
+            {"model_id": "google/gemini-safe", "name": "Gemini test", "provider_id": "google",
+             "b14_enabled": True, "owner_excluded": False, "capabilities": ["chat"]},
+            {"model_id": "google/gemma-safe", "name": "Gemma test", "provider_id": "google",
+             "b14_enabled": True, "owner_excluded": False, "capabilities": ["chat"]},
+            {"model_id": "google/off-model", "name": "off-model", "provider_id": "google",
+             "b14_enabled": False, "owner_excluded": False, "capabilities": ["chat"]},
+            {"model_id": "google/excluded", "name": "excluded", "provider_id": "google",
+             "b14_enabled": True, "owner_excluded": True, "capabilities": ["chat"]},
+        ]
+
+
 class B66Store:
     async def model_policy(self):
         return {
@@ -122,6 +136,59 @@ def test_authorized_model_snapshot_uses_actual_b14_subset_and_b66_d1_policy():
     assert data["products"]["central"]["status"] == "not_wired"
     assert data["products"]["chat"]["status"] == "not_wired"
     assert "model_api_key" not in result.text
+
+
+def test_authenticated_full_inventory_is_separate_from_live_ready_subset():
+    app, settings = built_app(admin=GlobalAdmin(), resolver=FullCatalog())
+    response = request(app, settings, "/api/admin/models/snapshot")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["b14"]["complete_registration_inventory"] is True
+    assert data["b14"]["registered_count_known"] is True
+    assert data["b14"]["registered_count"] == 4
+    assert data["b14"]["enabled_count"] == 3
+    assert len(data["b14"]["models"]) == 2
+    assert len(data["b14"]["registered_models"]) == 4
+    disabled = next(row for row in data["b14"]["registered_models"]
+                    if row["model_id"] == "google/off-model")
+    assert disabled["b14_enabled"] is False
+    assert "secret" not in response.text.lower()
+    assert response.headers["cache-control"].startswith("private, no-store")
+
+
+def test_full_inventory_is_not_available_to_anonymous_or_product_only_admin():
+    app, settings = built_app(admin=GlobalAdmin(), resolver=FullCatalog())
+    assert request(app, settings, "/api/admin/models/snapshot", owner=None).status_code == 401
+    app, settings = built_app(admin=GlobalAdmin(False), resolver=FullCatalog())
+    assert request(app, settings, "/api/admin/models/snapshot").status_code == 403
+
+
+def test_offline_or_excluded_inventory_model_may_be_inspected_but_never_previewed():
+    app, settings = built_app(admin=GlobalAdmin(), resolver=FullCatalog())
+    for mid in ("google/off-model", "google/excluded"):
+        result = request(app, settings, "/api/admin/models/preview", method="POST", body={
+            "model_id": mid,
+            "targets": [{"product_id": "central", "tier": "PLUS", "action": "allow"}],
+        })
+        assert result.status_code == 422
+        assert result.json()["error"]["code"] == "model_not_live_ready"
+
+
+def test_malformed_full_inventory_is_marked_unavailable_without_fake_count():
+    class Broken(FullCatalog):
+        async def list_registered_models(self):
+            data = await super().list_registered_models()
+            data.append(dict(data[0]))
+            return data
+
+    app, settings = built_app(admin=GlobalAdmin(), resolver=Broken())
+    result = request(app, settings, "/api/admin/models/snapshot")
+    assert result.status_code == 200
+    b14 = result.json()["b14"]
+    assert b14["complete_registration_inventory"] is False
+    assert b14["registered_count"] is None
+    assert b14["registered_models"] is None
+    assert len(b14["models"]) == 2
 
 
 def test_missing_b66_store_is_not_misreported_as_connected():

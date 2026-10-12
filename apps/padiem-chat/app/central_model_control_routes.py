@@ -87,6 +87,47 @@ async def _catalog(request: Request) -> list[dict[str, str]] | None:
         return None
 
 
+async def _registered_catalog(request: Request) -> list[dict[str, Any]] | None:
+    """Trusted B14 complete registration metadata; unavailable is never zero."""
+    resolver = getattr(request.app.state, "b14_model_choice_resolver", None)
+    read = getattr(resolver, "list_registered_models", None)
+    if not callable(read):
+        return None
+    try:
+        result = read()
+        rows = await result if inspect.isawaitable(result) else result
+        if not isinstance(rows, list) or len(rows) > MAX_MODELS:
+            return None
+        safe: list[dict[str, Any]] = []
+        seen: set[str] = set()
+        for row in rows:
+            if not isinstance(row, dict):
+                return None
+            mid, name, pid = row.get("model_id"), row.get("name"), row.get("provider_id")
+            enabled, excluded = row.get("b14_enabled"), row.get("owner_excluded")
+            tags = row.get("capabilities")
+            if (
+                not isinstance(mid, str) or _MODEL_ID.fullmatch(mid) is None
+                or mid in seen or not isinstance(pid, str) or _MODEL_ID.fullmatch(pid) is None
+                or not mid.startswith(pid + "/")
+                or not isinstance(name, str) or not (0 < len(name) <= 100)
+                or any(ord(c) < 32 or ord(c) == 127 for c in name)
+                or type(enabled) is not bool or type(excluded) is not bool
+                or not isinstance(tags, list) or len(tags) > 32
+                or any(not isinstance(t, str) or _MODEL_ID.fullmatch(t) is None for t in tags)
+            ):
+                return None
+            seen.add(mid)
+            safe.append({
+                "model_id": mid, "name": name, "provider_id": pid,
+                "b14_enabled": enabled, "owner_excluded": excluded,
+                "capabilities": sorted(set(tags)),
+            })
+        return sorted(safe, key=lambda row: row["model_id"])
+    except Exception:
+        return None
+
+
 async def central_model_admin_me(request: Request) -> JSONResponse:
     denied = await _central_admin(request)
     if denied is not None:
@@ -107,6 +148,19 @@ async def central_model_admin_snapshot(request: Request) -> JSONResponse:
     models = await _catalog(request)
     if models is None:
         return _error(503, "b14_catalog_unavailable")
+    registered_models = await _registered_catalog(request)
+    # A B14 inventory read is independent from B66's customer-selectable
+    # subset; if unavailable, report UNKNOWN, never invent 0 registrations.
+    if registered_models is not None:
+        registered_ids = {row["model_id"] for row in registered_models}
+        registered_by_id = {row["model_id"]: row for row in registered_models}
+        if any(
+            row["model_id"] not in registered_ids
+            or not registered_by_id[row["model_id"]]["b14_enabled"]
+            or registered_by_id[row["model_id"]]["owner_excluded"]
+            for row in models
+        ):
+            registered_models = None
 
     # This is B14's owner-allowed/live-ready *selectable subset*, not the
     # complete B14 registration inventory. Report provenance honestly.
@@ -154,9 +208,13 @@ async def central_model_admin_snapshot(request: Request) -> JSONResponse:
         "ok": True, "mode": "read_only",
         "write_enabled": False, "policy_apply_enabled": False,
         "b14": {
-            "scope": "owner_allowed_live_ready",
-            "complete_registration_inventory": False,
-            "registered_count_known": False,
+            "scope": "registered_b14_and_owner_allowed_live_subset" if registered_models is not None else "owner_allowed_live_ready",
+            "complete_registration_inventory": registered_models is not None,
+            "registered_count_known": registered_models is not None,
+            "registered_models": registered_models,
+            "registered_count": len(registered_models) if registered_models is not None else None,
+            "enabled_count": sum(1 for row in registered_models if row["b14_enabled"]) if registered_models is not None else None,
+            "inventory_status": "connected" if registered_models is not None else "unavailable",
             "models": models,
         },
         "products": products,
