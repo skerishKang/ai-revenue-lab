@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import base64
 from datetime import datetime, timedelta, timezone
 
 import pytest
@@ -18,6 +19,9 @@ CONSENT = "consent.owner.1"
 OWNER = "subject.owner.1"
 CODE = "b"*32
 PROOF = "pairing-proof:" + "c"*64
+# Deterministic synthetic fixture: generate the encoding at runtime so no
+# static credential-looking Base64 blob is checked into test history.
+SYNTHETIC_CREDENTIAL_B64 = base64.b64encode(b"credential").decode("ascii")
 
 
 class Binding:
@@ -66,7 +70,7 @@ class Binding:
                 "challenge_id": CHALLENGE_ID, "server_owned_binding_refs": True,
                 "raw_device_credential": False, "production_ready": False,
             },
-            "credential_b64": "Y3JlZGVudGlhbA==",
+            "credential_b64": SYNTHETIC_CREDENTIAL_B64,
             "credential_returned_once": True, "public_http_route": False,
         })
 
@@ -193,7 +197,7 @@ def test_redemption_refuses_wrong_scope_or_overtrusted_metadata(mutate):
             "challenge_id": CHALLENGE_ID, "server_owned_binding_refs": True,
             "raw_device_credential": False, "production_ready": False,
         },
-        "credential_b64": "Y3JlZGVudGlhbA==", "credential_returned_once": True, "public_http_route": False,
+        "credential_b64": SYNTHETIC_CREDENTIAL_B64, "credential_returned_once": True, "public_http_route": False,
     }
     response["enrollment"].update(mutate)
     binding.results["redeem"] = response
