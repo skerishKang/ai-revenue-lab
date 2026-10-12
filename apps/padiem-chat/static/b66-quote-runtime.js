@@ -18,7 +18,19 @@
       companyIdentityMissing: "견적서에 넣을 회사명을 확인해 주세요.",
       companyDefaultsMissing: "회사 기본 유효기간을 확인해 주세요.",
       ready: "견적서가 준비되었습니다. 아래에서 확인하거나 PDF로 저장하세요.",
-      failed: "견적서를 만들지 못했습니다. 입력 내용을 확인해 주세요."
+      failed: "견적서를 만들지 못했습니다. 입력 내용을 확인해 주세요.",
+      pcToggle: "내 컴퓨터 · 연결 상태",
+      pcHelp: "PADIEM Connect 설치와 같은 계정 로그인 기능은 준비 중입니다. 파일 작업은 별도 승인이 필요합니다.",
+      pcRefresh: "상태 새로고침",
+      pcLoading: "서버에서 연결 상태를 확인하고 있습니다.",
+      pcAuth: "PADIEM 계정에 로그인한 뒤 확인해 주세요.",
+      pcUnavailable: "PC 연결 서비스가 아직 준비되지 않았습니다. 연결이 완료됐다고 표시하지 않습니다.",
+      pcFailed: "PC 연결 상태를 확인하지 못했습니다.",
+      pcEmpty: "현재 계정에 등록된 컴퓨터가 없습니다.",
+      pcReady: "확인된 컴퓨터 목록입니다. 이 화면에서는 파일에 접근하거나 작업을 실행하지 않습니다.",
+      pcOnline: "온라인 · 작업 승인 필요",
+      pcOffline: "오프라인",
+      pcRevoked: "연결 해제"
     },
     en: {
       launcher: "My quote",
@@ -35,7 +47,19 @@
       companyIdentityMissing: "Please confirm the company name to use on the quote.",
       companyDefaultsMissing: "Please confirm your company's default quote validity period.",
       ready: "Your quote is ready. Review it below or save it as PDF.",
-      failed: "The quote could not be created. Check your request and try again."
+      failed: "The quote could not be created. Check your request and try again.",
+      pcToggle: "My computers · connection status",
+      pcHelp: "PADIEM Connect installation and same-account sign-in are not ready yet. File operations require separate approval.",
+      pcRefresh: "Refresh status",
+      pcLoading: "Checking connection status with the server.",
+      pcAuth: "Sign in to your PADIEM account first.",
+      pcUnavailable: "The PC connection service is not ready. No connection is claimed.",
+      pcFailed: "Could not verify PC connection status.",
+      pcEmpty: "No computers are registered for this account.",
+      pcReady: "Server-confirmed computers. This view cannot read files or execute tasks.",
+      pcOnline: "Online · approval required",
+      pcOffline: "Offline",
+      pcRevoked: "Disconnected"
     }
   };
 
@@ -47,6 +71,9 @@
   let refreshPromise = null;
   let currentRequestId = null;
   let frameLoadedUrl = "";
+  let pcQuerySequence = 0;
+  const PC_DIRECTORY_PATH = "/api/claw/local-access/devices";
+  const MAX_PC_DIRECTORY_BYTES = 32768;
   const B66_ASSET_ID = /^b66asset_[0-9a-f]{32}$/;
   const PRIVATE_ASSET_MEDIA = new Set(["image/png", "image/jpeg", "image/webp"]);
   const MAX_PRIVATE_ASSET_BYTES = 256 * 1024;
@@ -159,6 +186,32 @@
     close.setAttribute("aria-label", copy().close);
     header.append(headingWrap, close);
 
+    // #4428: opt-in READ-ONLY cross-product PC presence. The server's existing
+    // owner/workspace-scoped Broker projection is the only source of ONLINE.
+    // No installer URL, pairing challenge, PC action or execution authority.
+    const pcSection = el("section", "b66-quote-connect");
+    const pcToggle = el("button", "b66-quote-connect-toggle", copy().pcToggle);
+    pcToggle.id = "b66QuotePcToggle";
+    pcToggle.type = "button";
+    pcToggle.setAttribute("aria-controls", "b66QuotePcPanel");
+    pcToggle.setAttribute("aria-expanded", "false");
+    const pcPanel = el("div", "b66-quote-connect-panel");
+    pcPanel.id = "b66QuotePcPanel";
+    pcPanel.hidden = true;
+    const pcHelp = el("p", "b66-quote-connect-help", copy().pcHelp);
+    pcHelp.id = "b66QuotePcHelp";
+    const pcRefresh = el("button", "b66-quote-connect-refresh", copy().pcRefresh);
+    pcRefresh.id = "b66QuotePcRefresh";
+    pcRefresh.type = "button";
+    const pcStatus = el("p", "b66-quote-connect-status", "");
+    pcStatus.id = "b66QuotePcStatus";
+    pcStatus.setAttribute("role", "status");
+    pcStatus.setAttribute("aria-live", "polite");
+    const pcList = el("ul", "b66-quote-connect-list");
+    pcList.id = "b66QuotePcList";
+    pcPanel.append(pcHelp, pcRefresh, pcStatus, pcList);
+    pcSection.append(pcToggle, pcPanel);
+
     const form = el("form", "b66-quote-form");
     form.id = "b66QuoteForm";
     const selectLabel = el("label", "b66-quote-field");
@@ -215,7 +268,7 @@
     frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-modals");
 
     form.append(selectLabel, modelLabel, reasoningLabel, messageLabel, submit, status);
-    panel.append(header, form, frame);
+    panel.append(header, pcSection, form, frame);
     dialog.append(panel);
     document.body.append(dialog);
 
@@ -227,16 +280,114 @@
       message.focus();
     });
     close.addEventListener("click", () => closeDialog());
-    dialog.addEventListener("close", () => launcher.setAttribute("aria-expanded", "false"));
-    dialog.addEventListener("cancel", () => launcher.setAttribute("aria-expanded", "false"));
+    pcToggle.addEventListener("click", () => {
+      if (!pcPanel.hidden) {
+        resetPcDirectory();
+        return;
+      }
+      pcPanel.hidden = false;
+      pcToggle.setAttribute("aria-expanded", "true");
+      void loadPcDirectory();
+    });
+    pcRefresh.addEventListener("click", () => { void loadPcDirectory(); });
+    dialog.addEventListener("close", () => {
+      launcher.setAttribute("aria-expanded", "false");
+      resetPcDirectory();
+    });
+    dialog.addEventListener("cancel", () => {
+      launcher.setAttribute("aria-expanded", "false");
+      resetPcDirectory();
+    });
     form.addEventListener("submit", generate);
     window.addEventListener("message", receiveEmbedMessage);
+  }
+
+
+  function resetPcDirectory() {
+    pcQuerySequence += 1; // discard all in-flight responses after account/visibility changes
+    const section = document.getElementById("b66QuotePcPanel");
+    const toggle = document.getElementById("b66QuotePcToggle");
+    const list = document.getElementById("b66QuotePcList");
+    const status = document.getElementById("b66QuotePcStatus");
+    if (section) section.hidden = true;
+    if (toggle) toggle.setAttribute("aria-expanded", "false");
+    if (list) list.replaceChildren();
+    if (status) status.textContent = "";
+  }
+
+  async function loadPcDirectory() {
+    const section = document.getElementById("b66QuotePcPanel");
+    const list = document.getElementById("b66QuotePcList");
+    const status = document.getElementById("b66QuotePcStatus");
+    if (!section || section.hidden || !list || !status) return;
+    const current = ++pcQuerySequence;
+    const isCurrent = () => current === pcQuerySequence && !section.hidden;
+    const c = copy();
+    list.replaceChildren();
+    status.textContent = c.pcLoading;
+    const derive = window.PadiemClawLocalHandoff?.deriveDeviceDirectory;
+    if (typeof derive !== "function") {
+      status.textContent = c.pcUnavailable;
+      return;
+    }
+    try {
+      const response = await nativeFetch(PC_DIRECTORY_PATH, {
+        method: "GET", credentials: "same-origin", cache: "no-store",
+        headers: { "Accept": "application/json" }
+      });
+      if (!isCurrent()) return;
+      if (response.status === 401 || response.status === 403) {
+        status.textContent = c.pcAuth;
+        return;
+      }
+      if (response.status === 404 || response.status === 501 ||
+          response.status === 503) {
+        status.textContent = c.pcUnavailable;
+        return;
+      }
+      if (!response.ok) {
+        status.textContent = c.pcFailed;
+        return;
+      }
+      // Bound raw response and reuse the existing closed, read-only Claw
+      // projection, never render raw server HTML/credentials or invent ONLINE.
+      const raw = await response.text();
+      if (!isCurrent()) return;
+      if (raw.length > MAX_PC_DIRECTORY_BYTES) throw new Error("pc_directory_oversize");
+      const payload = JSON.parse(raw);
+      if (!payload || payload.ok !== true || payload.available !== true ||
+          payload.ownerScoped !== true) {
+        status.textContent = c.pcUnavailable;
+        return;
+      }
+      const directory = derive(payload, null);
+      if (!directory || directory.available !== true) {
+        status.textContent = c.pcFailed;
+        return;
+      }
+      status.textContent = directory.devices.length ? c.pcReady : c.pcEmpty;
+      for (const device of directory.devices) {
+        const item = el("li", "b66-quote-connect-item");
+        const name = el("strong", "", device.deviceName || device.deviceId);
+        const stateKey = device.revoked ? "pcRevoked" :
+          device.online ? "pcOnline" : "pcOffline";
+        const state = el("span", "b66-quote-connect-state", c[stateKey]);
+        state.dataset.state = device.online ? "online" : "offline";
+        item.append(name, state);
+        list.append(item);
+      }
+    } catch (_) {
+      if (!isCurrent()) return;
+      list.replaceChildren();
+      status.textContent = c.pcFailed;
+    }
   }
 
   function closeDialog() {
     const dialog = document.getElementById("b66QuoteDialog");
     const launcher = document.getElementById("b66QuoteNavButton");
     if (!dialog) return;
+    resetPcDirectory();
     if (typeof dialog.close === "function" && dialog.open) dialog.close();
     else dialog.removeAttribute("open");
     if (launcher) launcher.setAttribute("aria-expanded", "false");
@@ -263,6 +414,12 @@
     if (submit) submit.textContent = c.generate;
     if (close) close.setAttribute("aria-label", c.close);
     if (frame) frame.title = c.title;
+    const pcToggle = document.getElementById("b66QuotePcToggle");
+    const pcHelp = document.getElementById("b66QuotePcHelp");
+    const pcRefresh = document.getElementById("b66QuotePcRefresh");
+    if (pcToggle) pcToggle.textContent = c.pcToggle;
+    if (pcHelp) pcHelp.textContent = c.pcHelp;
+    if (pcRefresh) pcRefresh.textContent = c.pcRefresh;
   }
 
   function setStatus(text, state) {
@@ -587,12 +744,16 @@
     const auth = event && event.detail && event.detail.auth;
     if (auth && auth.authenticated === true) refresh();
     else {
+      resetPcDirectory();
       runtime = null;
       skills = [];
       ensureUi();
       populateSkills();
     }
   });
+  for (const eventName of ["padiem:auth-state", "padiem:auth-changed", "padiem:account-changed"]) {
+    window.addEventListener(eventName, resetPcDirectory);
+  }
   window.addEventListener("padiem:localechange", syncCopy);
 
   if (document.readyState === "loading") {
