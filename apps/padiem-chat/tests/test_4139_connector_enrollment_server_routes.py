@@ -71,10 +71,13 @@ class Server(CanonicalConnectorEnrollmentServer):
     def redeem(self, *, challenge_id, device_id, proof_ref, now):
         self.redeem_calls.append((challenge_id, device_id, proof_ref, now))
         return SimpleNamespace(safe_dict=lambda: {
-            "ok": True, "binding_ref": "binding.1",
+            "ok": True, "binding_ref": "binding.1", "device_id": device_id,
+            "account_ref": "account.1", "workspace_ref": "workspace.1",
+            "consent_id": "consent.canonical.1", "credential_generation": 1,
+            "credential_expires_at": (datetime.now(timezone.utc) + timedelta(days=30)).isoformat(),
             "credential_installed_by_canonical_handoff": True,
-            "raw_device_credential": False,
-            "lifecycle": "paired_offline",
+            "raw_device_credential": False, "lifecycle": "paired_offline",
+            "dispatch_authorized": False,
         })
 
 
@@ -178,6 +181,10 @@ def test_device_redeem_requires_attested_gateway_and_forbids_scope_claim():
     )
     assert status == 400 and not server.redeem_calls
     status, body, _ = response(routes.connector_enrollment_redeem, Request(fields, state=state))
-    assert status == 200 and body["raw_device_credential"] is False
-    assert body["lifecycle"] == "paired_offline"
+    assert status == 200 and body["ok"] is True
+    assert body["enrollment"]["raw_device_credential"] is False
+    assert body["enrollment"]["lifecycle"] == "paired_offline"
+    assert body["enrollment"]["consent_id"] == "consent.canonical.1"
+    assert body["enrollment"]["grants_read"] is False
+    assert body["enrollment"]["grants_write"] is False
     assert len(server.redeem_calls) == 1
