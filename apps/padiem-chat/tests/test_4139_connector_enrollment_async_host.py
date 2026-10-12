@@ -3,10 +3,16 @@ from __future__ import annotations
 
 import asyncio
 from datetime import datetime, timedelta, timezone
+from dataclasses import replace
 
 import pytest
 
 from app.canonical_connector_enrollment_async_host import CanonicalConnectorEnrollmentAsyncHost
+from app.canonical_connector_credential_handoff import (
+    DeviceCredentialInstallAck,
+    INSTALL_ACK_TRANSCRIPT_VERSION,
+    installation_proof,
+)
 from app.control_plane_identity import IdentityBridgeError
 
 NOW = datetime.now(timezone.utc)
@@ -71,7 +77,7 @@ class Broker:
     def __init__(self):
         self.calls = []
         self.fail_revoke = False
-        self.credential = b"one-time-secret"
+        self.credential = b"one-time-secret-with-length"
     async def issue_enrollment_challenge(self, **kwargs):
         self.calls.append(("issue", kwargs))
         return dict(CHALLENGE), "f"*32
@@ -89,17 +95,41 @@ class Broker:
 
 
 class Handoff:
-    def __init__(self, *, ready=True, delivered=True):
+    def __init__(self, *, ready=True, delivered=True, authenticated=True, tamper=None):
         self._ready = ready
         self.delivered = delivered
+        self.authenticated = authenticated
+        self.tamper = tamper
         self.calls = []
     async def ready(self, *, challenge_id, device_id):
         self.calls.append(("ready", challenge_id, device_id))
         return self._ready
     async def deliver_once(self, *, challenge_id, device_id, credential, enrollment, now):
         self.calls.append(("deliver", challenge_id, device_id, credential, enrollment, now))
-        assert credential == b"one-time-secret"
-        return self.delivered
+        assert credential == b"one-time-secret-with-length"
+        if not self.delivered:
+            return False  # a transport bool must not attest installation
+        ack = DeviceCredentialInstallAck(
+            challenge_id=challenge_id, device_id=device_id,
+            binding_ref=enrollment["binding_ref"],
+            credential_generation=enrollment["credential_generation"],
+            proof_kind="protected_store_save_readback",
+            transcript_version=INSTALL_ACK_TRANSCRIPT_VERSION,
+            local_store_confirmed=True,
+            proof_hex=installation_proof(
+                credential=credential, challenge_id=challenge_id, device_id=device_id,
+                binding_ref=enrollment["binding_ref"],
+                credential_generation=enrollment["credential_generation"],
+            ),
+        )
+        return replace(ack, **self.tamper) if self.tamper else ack
+
+    async def verify_authenticated_ack(self, *, challenge_id, device_id, ack):
+        self.calls.append(("verify", challenge_id, device_id))
+        # Test double models a reviewed existing device-gateway identity check,
+        # NOT evidence of a live Windows credential store.
+        assert ack.challenge_id == challenge_id and ack.device_id == device_id
+        return self.authenticated
 
 
 def issue_host(identity=None, broker=None, handoff=None):
@@ -163,7 +193,7 @@ def test_success_rechecks_current_consent_and_never_returns_raw_credential():
     ))
     assert [x[0] for x in identity.calls] == ["authorize", "authorize"]
     assert [x[0] for x in broker.calls] == ["binding", "redeem"]
-    assert [x[0] for x in handoff.calls] == ["ready", "deliver"]
+    assert [x[0] for x in handoff.calls] == ["ready", "deliver", "verify"]
     assert result["lifecycle"] == "paired_offline"
     assert result["consent_id"] == CONSENT["consent_id"]
     assert result["raw_device_credential"] is False
@@ -219,3 +249,58 @@ def test_server_binding_device_must_match_connectors_requested_device():
 
 async def async_mismatch(*, challenge_id):
     return {**BINDING, "device_id": "device.1"}
+
+
+def test_server_never_treats_untrusted_channel_bool_as_windows_installation():
+    identity, broker, handoff = Identity(), Broker(), Handoff(delivered=False)
+    with pytest.raises(IdentityBridgeError) as exc:
+        asyncio.run(issue_host(identity, broker, handoff).redeem(
+            challenge_id=CHALLENGE["challenge_id"], device_id="device.1",
+            proof_ref="pairing-proof:"+"a"*64,
+        ))
+    assert exc.value.code == "enrollment_credential_handoff_failed"
+    assert [x[0] for x in handoff.calls] == ["ready", "deliver"]
+    assert broker.calls[-1] == ("revoke", "pairing-binding.1")
+
+
+def test_server_refuses_proof_from_untrusted_gateway_and_revokes_binding():
+    identity, broker, handoff = Identity(), Broker(), Handoff(authenticated=False)
+    with pytest.raises(IdentityBridgeError) as exc:
+        asyncio.run(issue_host(identity, broker, handoff).redeem(
+            challenge_id=CHALLENGE["challenge_id"], device_id="device.1",
+            proof_ref="pairing-proof:"+"a"*64,
+        ))
+    assert exc.value.code == "enrollment_credential_handoff_failed"
+    assert [x[0] for x in handoff.calls] == ["ready", "deliver", "verify"]
+    assert broker.calls[-1] == ("revoke", "pairing-binding.1")
+
+
+@pytest.mark.parametrize("tamper", [
+    {"challenge_id": "pairing.another"},
+    {"device_id": "device.other"},
+    {"binding_ref": "pairing-binding.other"},
+    {"credential_generation": 2},
+    {"proof_hex": "f" * 64},
+])
+def test_mismatched_or_forged_install_ack_revokes_without_reporting_paired(tamper):
+    identity, broker, handoff = Identity(), Broker(), Handoff(tamper=tamper)
+    with pytest.raises(IdentityBridgeError) as exc:
+        asyncio.run(issue_host(identity, broker, handoff).redeem(
+            challenge_id=CHALLENGE["challenge_id"], device_id="device.1",
+            proof_ref="pairing-proof:"+"a"*64,
+        ))
+    assert exc.value.code == "enrollment_credential_handoff_failed"
+    assert broker.calls[-1] == ("revoke", "pairing-binding.1")
+
+
+def test_missing_authenticated_ack_verifier_blocks_before_challenge_consumption():
+    handoff = Handoff()
+    handoff.verify_authenticated_ack = None
+    identity, broker = Identity(), Broker()
+    with pytest.raises(IdentityBridgeError) as exc:
+        asyncio.run(issue_host(identity, broker, handoff).redeem(
+            challenge_id=CHALLENGE["challenge_id"], device_id="device.1",
+            proof_ref="pairing-proof:"+"a"*64,
+        ))
+    assert exc.value.code == "credential_handoff_unavailable"
+    assert [x[0] for x in broker.calls] == []
