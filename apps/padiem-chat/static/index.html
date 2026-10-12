@@ -30,6 +30,8 @@
   <link rel="stylesheet" href="./claw-local-handoff.css" />
   <link rel="stylesheet" href="./claw-device-manager.css" />
   <link rel="stylesheet" href="./claw-device-guidance.css" />
+  <!-- #4139 PC enrollment consent surface (LOCAL1). Inert until a verified server port is published. -->
+  <link rel="stylesheet" href="./claw-pc-enrollment-consent.css" />
   <link rel="stylesheet" href="./padiem-chat-ui-polish.css" />
   <link rel="stylesheet" href="./calendar.css" />
   <link rel="stylesheet" href="./library.css" />
@@ -941,6 +943,10 @@
   <!-- #4139 pre-connection guidance, state legend and recovery UX. Zero-network,
        presentation-only: never reads the directory endpoint or a raw payload. -->
   <script src="./claw-device-guidance.js"></script>
+  <!-- #4139 PC enrollment consent surface (LOCAL1): explicit opt-in, default OFF.
+       Reaches the network only through a verified server port; the ready state
+       never sends a request and this is not an execution-approval surface. -->
+  <script src="./claw-pc-enrollment-consent.js"></script>
   <!-- #3094: guarded handoff adapter MUST load last, after app.js installed
        the #3084 projection seam. Never weaken the final-script contract. -->
   <script src="./claw-local-adapter.js"></script>
