@@ -10,8 +10,8 @@
 //                     token or deep link. No credential is handled here.
 //   NO_SELECTION      It never selects a device, requests approval, issues a
 //                     command or grants execution authority.
-//   NO_PERSISTENCE    Nothing is written to localStorage, sessionStorage,
-//                     cookies or the URL.
+//   NO_PERSISTENCE    Nothing is written to any browser storage, to a cookie
+//                     jar, or to the URL.
 //   PRESENTATION_ONLY It renders static guidance, plus an honest count summary
 //                     and recovery hints derived *only* from the state chips
 //                     the directory authority already rendered from verified
