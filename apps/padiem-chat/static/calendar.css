@@ -101,6 +101,14 @@ html[data-theme="padiem-glass"] .sidebar {
   line-height: 1;
   padding: 8px 12px;
   cursor: pointer;
+  /* #4515: the ↻ glyph is 15px, so the shipped box measured 33px tall and 38px
+     wide — below the 44x44 CSS px touch-target minimum. Grow the hit area only;
+     the glyph keeps its size and the box stays centred on it. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
 }
 
 .calendar-refresh-button:hover {
@@ -131,6 +139,15 @@ html[data-theme="padiem-glass"] .sidebar {
   padding: 8px 14px;
   cursor: pointer;
   opacity: 0.7;
+  /* #4515: the tab measured 40.4px tall, and a one-character label (일/주/월)
+     collapsed to 32.25px wide. The 44px floor is a hit-area floor, not a type
+     change: the label keeps its 14px size and stays centred, and the 2px
+     selected underline still sits on the tablist's own bottom border. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
 }
 
 .calendar-tab[aria-selected="true"] {
@@ -448,6 +465,16 @@ html[data-theme="padiem-glass"] .sidebar {
   padding: 7px 10px;
   width: 100%;
   box-sizing: border-box;
+  /* #4515: the date/text fields measured 36.8-38.8px tall. The textarea already
+     exceeds 44px on its own; the floor only lifts the single-line fields. */
+  min-height: 44px;
+}
+
+/* #4515: the appointment <select> controls are UA-styled and rendered at 19px —
+   the smallest target in the surface. Raise the box only; the native select
+   look is left untouched so this stays a geometry change, not a restyle. */
+.calendar-record-field select {
+  min-height: 44px;
 }
 
 .calendar-record-field textarea {
