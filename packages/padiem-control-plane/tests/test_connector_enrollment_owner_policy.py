@@ -53,7 +53,7 @@ def test_existing_verified_b54_bridge_preserves_canonical_owner_admission():
     "b62", "b66", "b66-padiem-quote", "padiem-chat", "padiem-engine",
     "B14", "claw", "unknown-product",
 ])
-def test_new_product_id_never_autorizes_shared_pc_enrollment(product):
+def test_new_product_id_never_authorizes_shared_pc_enrollment(product):
     with pytest.raises(ControlPlaneContractError) as caught:
         admitted(canonical(product))
     assert caught.value.code == "connector_enrollment_consent_session_denied"
@@ -83,7 +83,7 @@ def test_revoked_or_expired_canonical_session_denies_pc_registration():
 def test_no_tenant_and_nonhuman_subject_cannot_register_shared_pc():
     no_tenant = replace(canonical(), tenant_id=None)
     service_subject = replace(canonical(), subject=CanonicalSubjectRef(
-        subject_type=SubjectType.SERVICE, subject_id="svc.automated",
+        subject_type=SubjectType.ACCOUNT, subject_id="account.automated",
     ))
     for session in (no_tenant, service_subject):
         with pytest.raises(ControlPlaneContractError) as caught:
