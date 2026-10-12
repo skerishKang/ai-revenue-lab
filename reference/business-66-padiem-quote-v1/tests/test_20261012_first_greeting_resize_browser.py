@@ -71,13 +71,13 @@ def main():
                     else:
                         route.continue_()
                 page.route("**/api/padiem/b66/guided-draft", intercept)
-                page.add_init_script("""() => {
+                page.add_init_script("""(() => {
                     window.__qaConfirmCalls = [];
                     window.confirm = (text) => {
                         window.__qaConfirmCalls.push(text);
                         return false;
                     };
-                }""")
+                })()""")
                 page.goto(url, wait_until="domcontentloaded")
                 page.wait_for_function("Boolean(window.B66ShellLayout && window.B66QuoteAppBridge)")
                 page.evaluate("""() => {
