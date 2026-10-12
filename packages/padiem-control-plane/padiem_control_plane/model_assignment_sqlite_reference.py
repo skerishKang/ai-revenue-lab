@@ -142,7 +142,8 @@ class SQLiteModelPolicyStore:
             self._db.execute("COMMIT")
             return updated
         except BaseException:
-            self._db.execute("ROLLBACK")
+            if self._db.in_transaction:
+                self._db.execute("ROLLBACK")
             raise
 
     def safe_audit(self, workspace_id: str) -> list[dict[str, object]]:

@@ -293,6 +293,19 @@ def test_owner_excluded_catalog_cannot_be_granted_or_dispatched():
     store.close()
 
 
+def test_malformed_batch_rejected_before_authorization_lookup():
+    svc, store = service()
+    assert_error("invalid_model_policy_batch",
+                 lambda: svc.preview(grant=admin(), workspace_id="ws-1",
+                                     changes=({"product": "central"},),
+                                     catalog=CATALOG, now=NOW))
+    assert_error("invalid_model_policy_batch",
+                 lambda: svc.preview(grant=admin(), workspace_id="ws-1",
+                                     changes=[], catalog=CATALOG, now=NOW))
+    assert store.snapshot("ws-1").revision == 0
+    store.close()
+
+
 def test_unconfigured_signing_key_denied():
     s = ModelAssignmentService(store=SQLiteModelPolicyStore(), signing_key=None, enabled=True)
     assert_error("model_policy_apply_not_configured",

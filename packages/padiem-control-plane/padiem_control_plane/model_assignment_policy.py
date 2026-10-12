@@ -285,6 +285,10 @@ class ModelAssignmentService:
                 changes: tuple[ModelChange, ...], catalog: dict[str, CatalogModel],
                 now: datetime) -> dict[str, Any]:
         store = self._ready()
+        if not isinstance(changes, tuple) or not 1 <= len(changes) <= MAX_CHANGES or any(
+            not isinstance(row, ModelChange) for row in changes
+        ):
+            raise _err("invalid_model_policy_batch")
         grant.authorize("preview", workspace_id, {r.product for r in changes}, now)
         _check_changes(changes, catalog)
         current = store.snapshot(workspace_id)
