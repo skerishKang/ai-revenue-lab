@@ -1,7 +1,7 @@
 # PADIEM Connector — 플랫폼 제품 결정 및 구현 로드맵 (2026-10-12)
 
 **상태:** 사용자 비전/구조 결정 + 검증된 기존 코드 목록. **전체 제품 구현·출시 선언 아님.**  
-**기준:** \`skerishKang/ai-revenue-lab\`, 2026-10-12 KST.  
+**기준:** `skerishKang/ai-revenue-lab`, 2026-10-12 KST.  
 **통합 구현:** [#4139](https://github.com/skerishKang/ai-revenue-lab/issues/4139) / **Windows 실사용 수용:** [#3099](https://github.com/skerishKang/ai-revenue-lab/issues/3099) / **통합 홈·관리자:** [#4428](https://github.com/skerishKang/ai-revenue-lab/issues/4428) / **Browser Use:** [#3782](https://github.com/skerishKang/ai-revenue-lab/issues/3782), [#3783](https://github.com/skerishKang/ai-revenue-lab/pull/3783) / **Hark E2E:** [#3936](https://github.com/skerishKang/ai-revenue-lab/issues/3936).
 
 ## 1. 한 문장으로 정의
@@ -10,7 +10,7 @@
 
 PADIEM 웹(B66/Claw/Chat/Engine/향후 제품)은 **업무 요청·승인·상태·미리보기·최종 산출물**을 제공한다. 사용자는 별도의 Browser Use 앱, Desktop Commander형 UI, RDP, CLI, 수동 업·다운로드 또는 제품별 페어링 절차를 배울 필요가 없도록 설계한다. Windows Connector에는 경량 트레이/상태·일시정지·연결해제·계정·권한 안내만 기본 제공한다.
 
-**잠정 대외 제품명: PADIEM Connector.** 기존 \`apps/claw-connect/**\`, Claw Connect, 내부 브랜치명은 진행 중인 #4420이 안정화되기 전까지 함부로 대량 변경하지 않는다.
+**잠정 대외 제품명: PADIEM Connector.** 기존 `apps/claw-connect/**`, Claw Connect, 내부 브랜치명은 진행 중인 #4420이 안정화되기 전까지 함부로 대량 변경하지 않는다.
 
 ## 2. 실제 고객 경험: 설치 한 번 + 확인된 동일 계정 로그인
 
@@ -34,7 +34,7 @@ PADIEM 웹(B66/Claw/Chat/Engine/향후 제품)은 **업무 요청·승인·상�
 | **PADIEM Connector** | outbound Resident, 원격 작업의 제한된 로컬 실행, 결과/영수증 전송 | 제2 Broker, 제2 P01 서버, 무제한 화면·파일·쉘 권한 |
 | **각 제품** | 실제 업무·UX·고객 산출물·제품별 정책 | 글로벌 관리자·공통 기기 소유권 자체 발급 |
 
-**이미 병합:** canonical Broker device directory PR #4418, B62 인증된 Claw 기기 조회 #4424, 기기 목록 UI #4419, 공통 제품별 PC 접근 계약 [#4429](https://github.com/skerishKang/ai-revenue-lab/pull/4429) (2026-10-12, squash SHA \`dbf8d658b2a8cd03c64ee4e3b86899136fe2bb40\`), B66 embedded quote 화면의 제품 승인 조건 기본 OFF PC 정보 패널 [#4430](https://github.com/skerishKang/ai-revenue-lab/pull/4430). **이것들이 설치 후 자동 접속·파일 전송·실행 성공을 뜻하지 않는다.** #4429의 \`PcPreflightDecision.dispatch_authorized\`는 언제나 \`False\`이다.
+**이미 병합:** canonical Broker device directory PR #4418, B62 인증된 Claw 기기 조회 #4424, 기기 목록 UI #4419, 공통 제품별 PC 접근 계약 [#4429](https://github.com/skerishKang/ai-revenue-lab/pull/4429) (2026-10-12, squash SHA `dbf8d658b2a8cd03c64ee4e3b86899136fe2bb40`), B66 embedded quote 화면의 제품 승인 조건 기본 OFF PC 정보 패널 [#4430](https://github.com/skerishKang/ai-revenue-lab/pull/4430). **이것들이 설치 후 자동 접속·파일 전송·실행 성공을 뜻하지 않는다.** #4429의 `PcPreflightDecision.dispatch_authorized`는 언제나 `False`이다.
 
 **아직 Draft / 미검증:** Windows tray/installer #4420, browser.control #3783. 실제 2-PC 인증 등록·명령 전달·Office 실행·웹 결과 도착 E2E #3099는 열려 있다. **제품 실행 OFF.**
 
@@ -69,7 +69,7 @@ PADIEM 웹(B66/Claw/Chat/Engine/향후 제품)은 **업무 요청·승인·상�
 
 사용자는 웹에 XLSX **한 번만** 올린다. Connector가 기존의 작업 사본을 안전하게 자동 수신한 다음 처리하고 결과를 웹으로 반송하는 UX가 목표다.
 
-\`\`\`text
+```text
 B66/Claw/Chat 웹: XLSX 업로드
     ↓ (인증된 owner/workspace private store; immutable source SHA256)
 PADIEM 서버: 저장/작업 대기 + 정확한 대상/작업 승인
@@ -81,14 +81,14 @@ PADIEM Connector: 작업 티켓 수신 → scoped TLS 파일 다운로드
 PADIEM Connector: 검증된 결과·receipt 업로드
     ↓
 PADIEM 웹: 수정 XLSX/PDF 미리보기·다운로드·실행/오류 이력
-\`\`\`
+```
 
 **전송 주체는 권한 있는 Connector의 Pull 방식(outbound HTTPS)**으로 설계한다. 서버에서 집 PC로 직접 inbound 포트를 열거나 사용자가 IP·RDP를 설정하게 하지 않는다.
 
 **현존 재사용 자산:**
-- \`apps/padiem-chat/app/claw_web_xlsx_source_routes.py\`: owner/workspace 범위로 업로드·목록·다운로드 (현재는 업로드 자체로 P01 처리 승인이 생기지 않음).
-- \`apps/padiem-chat/app/claw_web_xlsx_p01_owner_decision_routes.py\`: 승인된 원본의 해시 검증 및 workcopy 다운로드 (현재 **브라우저 사용자 세션 기준**; Connector의 M2M artifact delivery는 **별도 개발 필요**).
-- \`apps/korean-ai-code-agent/src/kagent/local_xlsx_artifact_handoff.py\`, \`local_office_chunk_publisher.py\`: 로컬→서버 방향 전달 계약 일부 (Resident 운영 전체 배선/역방향 웹→로컬 자동 전달 증거 아님).
+- `apps/padiem-chat/app/claw_web_xlsx_source_routes.py`: owner/workspace 범위로 업로드·목록·다운로드 (현재는 업로드 자체로 P01 처리 승인이 생기지 않음).
+- `apps/padiem-chat/app/claw_web_xlsx_p01_owner_decision_routes.py`: 승인된 원본의 해시 검증 및 workcopy 다운로드 (현재 **브라우저 사용자 세션 기준**; Connector의 M2M artifact delivery는 **별도 개발 필요**).
+- `apps/korean-ai-code-agent/src/kagent/local_xlsx_artifact_handoff.py`, `local_office_chunk_publisher.py`: 로컬→서버 방향 전달 계약 일부 (Resident 운영 전체 배선/역방향 웹→로컬 자동 전달 증거 아님).
 - 파일을 직접 R2/D1 키로 받아가도록 개방하거나, 브라우저 쿠키를 Connector에 넘기지 않는다. 정확한 owner/workspace/product/device/run/artifact/hash/TTL과 1회용 전달 권한을 기존 authority로 검증한다.
 - 사용자의 Documents 폴더를 임의로 덮어쓰지 않는다. 임시 사본, sha256·크기 검증, 안전한 저장·정리 정책 및 실패 시 재처리/중복 처리 방지 적용.
 
@@ -121,15 +121,15 @@ GUI 자동화/VM 전체를 최초 출시 선행 조건으로 만들지 않는다
 
 - **CENTRAL:** 제품 통합 홈·관리자, B66/Chat/Engine 제품 API/UI, 전체 이슈·PR·CI·배포 및 실제 사용자 흐름 수용.
 - **LOCAL1:** canonical Control Plane/Broker 제품별 grant 및 PC 실행 전제의 안전한 단일 계약. #4429 **병합**. 후속은 새 명확한 브랜치/PR에서 독립적으로 수행.
-- **LOCAL2(Windows):** \`apps/claw-connect/**\` #4420의 설치·트레이·Resident 검증. Browser Use 앱 전체를 무리하게 같은 PR에 넣지 않음.
+- **LOCAL2(Windows):** `apps/claw-connect/**` #4420의 설치·트레이·Resident 검증. Browser Use 앱 전체를 무리하게 같은 PR에 넣지 않음.
 - **Browser Use 담당:** #3782/#3783의 기존 Broker/P01/browser.control. LOCAL2 또는 다른 에이전트의 별도 브라우저 명령 권위기관 구축 금지.
 - **LOCAL2(Hark QA, 별도 레인):** #3936의 adopt 실사용 차단은 **소유자 인증 세션·완료 XLSX 데이터가 없어 BLOCKED**. Connector 완료 보고와 혼동 금지.
 
 ## 10. Hark adopt QA — 확인된 범위와 차단 (2026-10-12)
 
-LOCAL2 보고에 따르면 \`D:\padiem-hark-xlsxadopt-3936-261012-7\evidence\hark_3936_adopt_live_authboundary_20261012.txt\`에 운영 익명/합성 QA 인증 경계 검증을 저장했다(파일 자체의 중앙 독립 검토는 별도). reported: adopt UI JS 2개 운영 응답과 당시 main \`acd31e29e...\` 바이트 패리티, 테스트 31 PASS, 익명 adopt/followup 401, 합성 QA 인증 세션에서 잘못된 cid 400·무산출물 404, web-sources 200. **이 결과는 사용자의 진짜 완료 XLSX adopt 성공/새 P01 READ 실행 증거가 아니다.** 합성 QA 계정 1개가 생성되었고, WRITE/P01/XLSX 생성은 하지 않았다고 보고됐다.
+LOCAL2 보고에 따르면 `D:\padiem-hark-xlsxadopt-3936-261012-7\evidence\hark_3936_adopt_live_authboundary_20261012.txt`에 운영 익명/합성 QA 인증 경계 검증을 저장했다(파일 자체의 중앙 독립 검토는 별도). reported: adopt UI JS 2개 운영 응답과 당시 main `acd31e29e...` 바이트 패리티, 테스트 31 PASS, 익명 adopt/followup 401, 합성 QA 인증 세션에서 잘못된 cid 400·무산출물 404, web-sources 200. **이 결과는 사용자의 진짜 완료 XLSX adopt 성공/새 P01 READ 실행 증거가 아니다.** 합성 QA 계정 1개가 생성되었고, WRITE/P01/XLSX 생성은 하지 않았다고 보고됐다.
 
-반면 현재 최신 main은 이후 변경되어 \`acd31e29e...\`가 아니다. '현재 main과 동일'이라는 진술은 그때 검사한 커밋에만 유효하다. QA 소유자 세션 없음(브라우저 게스트), 이전 일회용 계정에 재사용 가능한 완료 XLSX 없음, wrangler token 9109. **owner가 브라우저에 직접 로그인하기 전에는 그 계정의 사적 XLSX 존재 여부를 '없음'으로 확정하면 안 된다.** 승인 버튼은 owner가 누르고, QA는 그 경계까지 준비/증빙만 한다.
+반면 현재 최신 main은 이후 변경되어 `acd31e29e...`가 아니다. '현재 main과 동일'이라는 진술은 그때 검사한 커밋에만 유효하다. QA 소유자 세션 없음(브라우저 게스트), 이전 일회용 계정에 재사용 가능한 완료 XLSX 없음, wrangler token 9109. **owner가 브라우저에 직접 로그인하기 전에는 그 계정의 사적 XLSX 존재 여부를 '없음'으로 확정하면 안 된다.** 승인 버튼은 owner가 누르고, QA는 그 경계까지 준비/증빙만 한다.
 
 이 사안은 [#3936](https://github.com/skerishKang/ai-revenue-lab/issues/3936)에서만 별도로 추적한다. PADIEM Connector Windows #4420의 완료와 연결해 보고하지 않는다.
 
