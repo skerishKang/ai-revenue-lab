@@ -51,11 +51,13 @@ authority. Only a positive delivery acknowledgement returns a secret-free
 `paired_offline` result; ONLINE must be verified later by canonical Broker
 session and server projection. No P01 READ/WRITE permission is created.
 
-A final handoff failure AFTER S1 mutation may strand a binding. The caller is
-denied a success claim and **must reconcile/revoke** the canonical Broker
-binding before a new enrollment. For live rollout this path needs a tested
-compensation/recovery and atomicity policy; neither success nor rollback is
-proven by unit tests alone. Do not route raw credentials to JSON response,
+A final handoff failure AFTER S1 mutation invokes the **same canonical
+Broker's `revoke_binding`** as compensation, then refuses success. A focused
+test verifies the failed-handoff binding is REVOKED. If revocation itself
+cannot be confirmed the error is `enrollment_handoff_revoke_unconfirmed`,
+must be treated as a security incident, and all production activation remains
+blocked. This test is synthetic, not proof of durable cross-instance
+compensation/atomicity. Do not route raw credentials to JSON response,
 `enrollment.json`, frontend, logs, or support evidence.
 
 ## Named missing live dependencies
@@ -66,13 +68,13 @@ proven by unit tests alone. Do not route raw credentials to JSON response,
 | Original browser-session continuity through device redeem | `CanonicalSessionContinuityAuthority.bind_challenge/current_session` backed by existing session source of truth | **NOT WIRED**; no client cookie or fabricated principal |
 | Trusted browser session and same-origin/CSRF | `app.state.connector_enrollment_browser_session` and `connector_enrollment_browser_csrf` | **NOT WIRED** |
 | TLS/device entry attestation and rate guard | `app.state.connector_enrollment_device_gateway` | **NOT WIRED** |
-| One-time credential delivery to EXISTING protected Windows credential store | `ProtectedDeviceCredentialHandoff.ready/deliver_once` | **NOT WIRED**; recovery/revoke on partial failure pending |
+| One-time credential delivery to EXISTING protected Windows credential store | `ProtectedDeviceCredentialHandoff.ready/deliver_once` | **NOT WIRED**; tested synthetic failure denial |\n| Failed-delivery compensation against the SAME canonical Broker | `CanonicalBrokerBindingRevoker.revoke_binding` | **NOT WIRED**; synthetic REVOKED path tested, durable rollback still unproven |
 | Product route mounting/host composition | Existing app/Worker authority; no app_factory edit during PR #3925 overlap | **NOT MOUNTED** |
 | LOCAL2 real client network transport and secure install | PR #4463 S2 owner; one-way follow-up on agreed route contract | **NOT WIRED** |
 | Real stored Broker/session across Worker instances | Canonical durable Broker/pairing authority (#3099 gate) | **NOT PROVEN** |
 
-The new `padiem_connector_enrollment_server.py` service requires ALL five
-canonical dependencies even for issuance. It does not default to an in-memory
+The new `padiem_connector_enrollment_server.py` service requires ALL six
+canonical dependencies (including the SAME Broker revocation port) even for issuance. It does not default to an in-memory
 consent reader and cannot accidentally convert a demo/test service into a live
 grant authority. This code is NOT a durable consent implementation: the
 repository-wide schema/owner decision is a separate security prerequisite.
