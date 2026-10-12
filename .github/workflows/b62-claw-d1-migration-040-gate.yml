@@ -185,6 +185,37 @@ jobs:
           echo 'ROW_DATA_READ=0'
           echo 'PRODUCTION_MUTATION=0'
 
+      # #4522 CENTRAL step 1: prove a recovery point exists BEFORE the mutation
+      # is authorized. This is read-only: it only asks Cloudflare D1 Time Travel
+      # for the current bookmark of the same Worker-bound database. The apply job
+      # re-reads it immediately before the ALTER for the freshest handle.
+      - name: Read only D1 Time Travel recovery availability
+        id: recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          response="${RUNNER_TEMP}/b62-d1-040-time-travel-readonly.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/time_travel/bookmark" \
+            -o "${response}"
+          mark="$(python - "${response}" <<'PY'
+          import json, re, sys
+          payload = json.load(open(sys.argv[1], encoding='utf-8'))
+          result = payload.get('result') if payload.get('success') is True else None
+          mark = result.get('bookmark') if isinstance(result, dict) else None
+          if not isinstance(mark, str) or re.fullmatch(r'[A-Za-z0-9_-]{12,130}', mark) is None:
+              raise SystemExit('D1_RECOVERY_BOOKMARK_UNAVAILABLE')
+          print(mark)
+          PY
+          )"
+          test -n "${mark}"
+          echo 'D1_RECOVERY_AVAILABLE=PASS'
+          echo 'D1_RECOVERY_BOOKMARK_PRESENT=PASS'
+          echo 'D1_SCHEMA_QUERY=READ_ONLY'
+          echo 'D1_IDENTIFIER_OUTPUT=0'
+          echo 'PRODUCTION_MUTATION=0'
+
   apply-migration-040:
     needs: [source-contract, cloudflare-readonly]
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'apply_migration_040' }}
@@ -310,6 +341,39 @@ jobs:
           echo "PREMUTATION_SCHEMA_STATE=${now}" >> "${GITHUB_ENV}"
           echo 'D1_SCHEMA_PREMUTATION_RECHECK=PASS'
           echo 'APPLICATION_ROW_READ=0'
+          echo 'D1_IDENTIFIER_OUTPUT=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+      # #4522 CENTRAL step 1: even an additive ALTER needs a recorded recovery
+      # point for the canonical bound D1. Reuse the reviewed 037 D1 Time Travel
+      # bookmark pattern (b66-admin-d1-migration-037-gate) and fail closed when
+      # it is unavailable, so a production schema write can never proceed
+      # without a recoverable reference. The bookmark is a recovery handle, not
+      # a secret and not a database identifier; it is never auto-restored here
+      # because Time Travel restores the whole database.
+      - name: Record D1 Time Travel recovery bookmark immediately before SQL mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${DB_ID}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          response="${RUNNER_TEMP}/b62-d1-040-time-travel.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/time_travel/bookmark" \
+            -o "${response}"
+          mark="$(python - "${response}" <<'PY'
+          import json, re, sys
+          payload = json.load(open(sys.argv[1], encoding='utf-8'))
+          result = payload.get('result') if payload.get('success') is True else None
+          mark = result.get('bookmark') if isinstance(result, dict) else None
+          if not isinstance(mark, str) or re.fullmatch(r'[A-Za-z0-9_-]{12,130}', mark) is None:
+              raise SystemExit('D1_RECOVERY_BOOKMARK_UNAVAILABLE')
+          print(mark)
+          PY
+          )"
+          test -n "${mark}"
+          echo "B62_D1_MIGRATION_040_PREAPPLY_RECOVERY_BOOKMARK=${mark}"
+          echo 'D1_RECOVERY_BOOKMARK_PRESENT=PASS'
           echo 'D1_IDENTIFIER_OUTPUT=0'
           echo 'PRODUCTION_MUTATION=0'
       - name: Apply only the additive migration 040 when absent
