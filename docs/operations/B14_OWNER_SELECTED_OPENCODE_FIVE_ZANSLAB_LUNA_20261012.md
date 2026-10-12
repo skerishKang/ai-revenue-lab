@@ -1,3 +1,5 @@
+> **2026-10-13 CURRENT-GRADE OVERRIDE / historical intake:** This file preserves the 2026-10-12 **model IDs, upstream API protocol and intake history**, but its **tier column is not the current owner choice**. The latest first-round owner Free/Plus/Pro/Max draft is [PADIEM_OWNER_TIER_EVALUATION_20261013.md](../models/PADIEM_OWNER_TIER_EVALUATION_20261013.md): LongCat/Step 5 became **conditional Free candidates**, Muse Spark 1.3 became **Max**, Muse Spark 1.2 (not 1.3) became a **Pro candidate pending exact upstream ID**, and other old nominations are not confirmed current slots. Current B14 JSON includes `zanslab/gpt-6-luna` as **registered but disabled**; the historical “not yet registered” line below was true at document authorship only. No runtime/member activation is implied.
+
 # B14 owner-selected OpenCode Go five-model roster and ZansLab Luna — 2026-10-12 KST
 
 ## Owner's exact model choices
