@@ -189,11 +189,9 @@ class CloudflareCanonicalBrokerPairingClient:
             or enrollment.get("device_id") != device_id
             or enrollment.get("account_ref") != account_ref
             or enrollment.get("workspace_ref") != workspace_ref
+            or enrollment.get("server_owned_binding_refs") is not True
             or enrollment.get("raw_device_credential") is not False
-            or enrollment.get("receipt_is_authority") is not False
-            or enrollment.get("dispatch_authorized") is not False
-            or enrollment.get("grants_read") is not False
-            or enrollment.get("grants_write") is not False
+            or enrollment.get("production_ready") is not False
             or result.get("credential_returned_once") is not True
             or result.get("public_http_route") is not False
         ):
