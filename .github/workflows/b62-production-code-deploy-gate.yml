@@ -22,6 +22,9 @@ on:
       - ".github/tests/test_b62_code_deploy_served_preflight.py"
       - ".github/scripts/b62_claw_live_config_activation.py"
       - ".github/scripts/b62_d1_migration_008_schema.py"
+      - ".github/scripts/b62_d1_migration_040_schema.py"
+      - ".github/tests/test_b62_d1_migration_040_gate.py"
+      - "apps/padiem-chat/migrations/040_claw_web_xlsx_p01_decision_release.sql"
       - ".github/tests/test_b62_binding_state_guard.py"
       - ".github/scripts/b62_owner_d1_release_preflight.py"
       - ".github/tests/test_b62_owner_d1_release_preflight.py"
@@ -170,6 +173,18 @@ jobs:
           echo "NEW_MAIN_DEPLOY_PREFLIGHT_TESTS=PASS"
           echo "PRODUCTION_MUTATION=0"
 
+      # #4522: the merged B62 P01 code reads the additive receipt `released_at`
+      # column, so the live D1 schema probe below is a hard predeploy
+      # prerequisite. This contract tests the schema classifier and the exact
+      # probe ordering; it never reads production credentials.
+      - name: Validate migration 040 predeploy schema guard contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pytest .github/tests/test_b62_d1_migration_040_gate.py -q
+          echo "MIGRATION_040_PREDEPLOY_GUARD_TESTS=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
       # PR-only CI: this contract tests the separate manual Owner D1 release.
       # It NEVER dispatches apply/rollback or reads production credentials.
       - name: Owner D1 protected release contract regressions
@@ -221,6 +236,14 @@ jobs:
           assert "B62_DEPLOY_LIVE_PREREQ=VERIFIED" in workflow
           assert "deploy-prereq" in workflow
           assert "B62_D1_MIGRATION_008_SCHEMA=EXACT" in workflow
+          # #4522: the additive receipt `released_at` column is a hard predeploy
+          # prerequisite for the merged P01 code, probed schema-only before the
+          # upload/activate mutation.
+          assert "B62_D1_MIGRATION_040_SCHEMA=EXACT" in workflow
+          assert "MIGRATION_040_PREDEPLOY=EXACT" in workflow
+          assert "RELEASED_AT_PRESENT=PASS" in workflow
+          assert "b62_d1_migration_040_schema.py" in workflow
+          assert "PRAGMA table_info(claw_web_xlsx_p01_decision_receipts)" in workflow
           assert "APPLICATION_ROW_READ=0" in workflow
           assert "STATE_ADOPTION_REQUIRED" in workflow
           assert "STATE_ADOPTION_PERFORMED" in workflow
@@ -605,6 +628,55 @@ jobs:
           python .github/scripts/b62_d1_migration_008_schema.py "${response}" | tee "${RUNNER_TEMP}/b62-d1-008-predeploy-evidence.txt"
           grep -q '^B62_D1_MIGRATION_008_SCHEMA=EXACT$' "${RUNNER_TEMP}/b62-d1-008-predeploy-evidence.txt"
           echo "MIGRATION_008_PREDEPLOY=EXACT"
+          echo "D1_SCHEMA_QUERY=READ_ONLY"
+          echo "APPLICATION_ROW_READ=0"
+          echo "D1_IDENTIFIER_OUTPUT=0"
+          echo "PRODUCTION_MUTATION=0"
+
+      # #4522: the merged B62 P01 decision code reads the additive
+      # claw_web_xlsx_p01_decision_receipts.released_at column. Uploading or
+      # activating that code against a D1 without the column would fail the
+      # authenticated p01-status query, so this probe is a hard gate: absent,
+      # drifted or still pre-040 schema refuses the deploy. It reads schema
+      # metadata only and never touches application rows.
+      - name: Prove migration 040 receipt schema live state before deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          db_id="$(python - "${RUNNER_TEMP}/b62-settings-before.json" "${D1_BINDING}" <<'PY'
+          import json, re, sys
+          payload = json.load(open(sys.argv[1], encoding='utf-8'))
+          if payload.get('success') is not True:
+              raise SystemExit('worker settings read failed')
+          bindings = payload.get('result', {}).get('bindings', [])
+          hits = [b for b in bindings if b.get('type') == 'd1' and b.get('name') == sys.argv[2]]
+          if len(hits) != 1:
+              raise SystemExit('expected exactly one live PADIEM_CHAT_DB binding')
+          database_id = hits[0].get('id')
+          if not isinstance(database_id, str) or not re.fullmatch(r'[0-9a-fA-F-]{32,36}', database_id):
+              raise SystemExit('live PADIEM_CHAT_DB binding has invalid database id')
+          print(database_id)
+          PY
+          )"
+          test -n "${db_id}"
+          echo "::add-mask::${db_id}"
+          query="${RUNNER_TEMP}/b62-d1-040-predeploy-query.json"
+          python - "${query}" <<'PY'
+          import json, sys
+          sql = """SELECT name, type, sql FROM sqlite_master WHERE name='claw_web_xlsx_p01_decision_receipts';
+          PRAGMA table_info(claw_web_xlsx_p01_decision_receipts);"""
+          with open(sys.argv[1], 'w', encoding='utf-8') as handle:
+              json.dump({'sql': sql}, handle)
+          PY
+          response="${RUNNER_TEMP}/b62-d1-040-predeploy-response.json"
+          curl -fsS -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${db_id}/query" \
+            --data-binary "@${query}" -o "${response}"
+          python .github/scripts/b62_d1_migration_040_schema.py "${response}" | tee "${RUNNER_TEMP}/b62-d1-040-predeploy-evidence.txt"
+          grep -q '^B62_D1_MIGRATION_040_SCHEMA=EXACT$' "${RUNNER_TEMP}/b62-d1-040-predeploy-evidence.txt"
+          echo "MIGRATION_040_PREDEPLOY=EXACT"
+          echo "RELEASED_AT_PRESENT=PASS"
           echo "D1_SCHEMA_QUERY=READ_ONLY"
           echo "APPLICATION_ROW_READ=0"
           echo "D1_IDENTIFIER_OUTPUT=0"
