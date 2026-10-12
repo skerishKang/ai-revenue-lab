@@ -186,8 +186,9 @@ async def connector_enrollment_issue(request: Request) -> JSONResponse:
     if not auth_ready(request) or not current_user_id(request):
         return _error(401, "canonical_session_required")
     service = _service(request)
+    async_host = getattr(request.app.state, "connector_enrollment_async_host", None)
     csrf_port = getattr(request.app.state, "connector_enrollment_browser_csrf", None)
-    if service is None or not callable(getattr(csrf_port, "verify", None)):
+    if (service is None and not callable(getattr(async_host, "issue", None))) or not callable(getattr(csrf_port, "verify", None)):
         return _error(503, "enrollment_server_dependency_unavailable")
     try:
         if csrf_port.verify(request) is not True:
@@ -212,13 +213,19 @@ async def connector_enrollment_issue(request: Request) -> JSONResponse:
         fields = await _payload(request, frozenset({"device_id"}))
         if fields is None:
             return _error(400, "connector_enrollment_invalid_request")
-        receipt = service.issue(
-            verified_session=session, device_id=fields["device_id"], now=moment,
-        )
-        # Secret is returned ONLY once to the authenticated, origin-verified
-        # browser. Neither support projection nor logs can contain the code.
-        public = receipt.safe_dict()
-        public["pairing_code"] = receipt.pairing_code
+        if callable(getattr(async_host, "issue", None)):
+            # Network-capable path: consent is re-read through Identity DO,
+            # challenge is issued through Broker DO, then original session is
+            # durably bound before the one-time pairing code is released.
+            public = await async_host.issue(
+                canonical_session_id=session.session_id, device_id=fields["device_id"],
+            )
+        else:
+            receipt = service.issue(
+                verified_session=session, device_id=fields["device_id"], now=moment,
+            )
+            public = receipt.safe_dict()
+            public["pairing_code"] = receipt.pairing_code
         return _json({"ok": True, "enrollment": public}, 200)
     except ControlPlaneContractError as exc:
         return _error(503 if exc.code == "enrollment_server_dependency_unavailable" else 403, exc.code)
@@ -233,8 +240,9 @@ async def connector_enrollment_redeem(request: Request) -> JSONResponse:
     a server-owned attestation. Client headers alone MUST NOT set trust.
     """
     service = _service(request)
+    async_host = getattr(request.app.state, "connector_enrollment_async_host", None)
     gateway = getattr(request.app.state, "connector_enrollment_device_gateway", None)
-    if service is None or not callable(getattr(gateway, "verify", None)):
+    if (service is None and not callable(getattr(async_host, "redeem", None))) or not callable(getattr(gateway, "verify", None)):
         return _error(503, "enrollment_server_dependency_unavailable")
     try:
         if gateway.verify(request) is not True:
@@ -244,12 +252,19 @@ async def connector_enrollment_redeem(request: Request) -> JSONResponse:
         )
         if fields is None or _SAFE_PROOF.fullmatch(fields["proof_ref"]) is None:
             return _error(400, "connector_enrollment_invalid_request")
+        if callable(getattr(async_host, "redeem", None)):
+            # Async path performs live Identity consent/session recheck, durable
+            # Broker redemption and protected OS-credential handoff. Raw device
+            # credential is never put in this JSON response.
+            result = await async_host.redeem(
+                challenge_id=fields["challenge_id"], device_id=fields["device_id"],
+                proof_ref=fields["proof_ref"],
+            )
+            return _json({"ok": True, "enrollment": result}, 200)
         result = service.redeem(
             challenge_id=fields["challenge_id"], device_id=fields["device_id"],
             proof_ref=fields["proof_ref"], now=datetime.now(timezone.utc),
         )
-        # Only after a trustworthy credential handoff has succeeded does the
-        # service permit this secret-free paired_offline projection.
         return _json(result.safe_dict(), 200)
     except ControlPlaneContractError as exc:
         return _error(503 if exc.code in {
