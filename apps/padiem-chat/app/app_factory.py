@@ -194,7 +194,7 @@ from .config import Settings
 from .connector_status_projection import connectors_status
 from .connector_ticket_routes import google_connector_ticket
 from .calendar_read_activation_routes import activate_google_calendar_read
-from .conversation_routes import api_conversation_detail, api_conversations
+from .conversation_routes import api_conversation_detail, api_conversation_search, api_conversations
 from .desktop_conversation_authority import UnconfiguredDesktopDeviceSessionAuthority
 from .desktop_conversation_routes import (
     DESKTOP_CONVERSATION_DETAIL_PATH,
@@ -387,6 +387,7 @@ def create_app(
         Route("/api/outputs", outputs_collection, methods=["GET", "POST"]),
         Route("/api/outputs/{output_id}", output_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/conversations", api_conversations, methods=["GET"]),
+        Route("/api/conversations/search", api_conversation_search, methods=["GET"]),
         Route("/api/conversations/{conversation_id}", api_conversation_detail, methods=["GET", "DELETE"]),
         # #3436 B2c: the GET-only canonical conversation surface for the paired
         # Desktop. Identity is the canonical broker device session, derived

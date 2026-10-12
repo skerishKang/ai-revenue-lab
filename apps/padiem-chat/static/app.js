@@ -1303,6 +1303,14 @@
     }
   }
 
+  // #4471: the sidebar conversation search opens a hit through this loader
+  // instead of a recent-list DOM row, so a hit outside the recent page still
+  // restores with the same auth guard, inFlight lock, project restore and the
+  // server-verified Claw set. Read-only handle: it grants no new authority.
+  window.PadiemChatConversationOpener = Object.freeze({
+    open: (conversationId) => openSavedConversation(conversationId),
+  });
+
   // Hark's private web XLSX intake creates a separate trusted owner-owned
   // work conversation. This explicit navigation never guesses that it was the
   // currently displayed chat or fabricates an assistant answer/file READ grant.

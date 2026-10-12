@@ -14,6 +14,13 @@ MAX_HISTORY_MESSAGE_CHARS = 8000
 MAX_MODEL_CONTEXT_BYTES = 5_500_000  # bounded transport, not model token budget
 MAX_HISTORY_TITLE_CHARS = 80
 MAX_RECENT_CONVERSATIONS = 30
+# #4471 conversation search bounds: query text, result rows, and how many
+# message rows a single search may scan. These cap cost; they never truncate
+# a stored conversation.
+MAX_CONVERSATION_SEARCH_QUERY_CHARS = 80
+MAX_CONVERSATION_SEARCH_RESULTS = 20
+MAX_CONVERSATION_SEARCH_SCAN_ROWS = 2000
+MAX_CONVERSATION_SEARCH_SNIPPET_CHARS = 120
 MAX_PROJECT_NAME_CHARS = 80
 MAX_PROJECT_INSTRUCTIONS_CHARS = 1800
 MAX_PROJECTS = 50
@@ -99,6 +106,7 @@ class HistoryStore(Protocol):
     async def reset_password_failures(self, user_id: str) -> None: ...
     async def get_user(self, user_id: str) -> UserProfile | None: ...
     async def list_conversations(self, user_id: str, limit: int = MAX_RECENT_CONVERSATIONS) -> list[dict[str, Any]]: ...
+    async def search_conversations(self, user_id: str, query: str, limit: int = MAX_CONVERSATION_SEARCH_RESULTS) -> list[dict[str, Any]]: ...
     async def get_conversation(self, user_id: str, conversation_id: str) -> dict[str, Any] | None: ...
     async def delete_conversation(self, user_id: str, conversation_id: str) -> bool: ...
     async def append_exchange(self, user_id: str, conversation_id: str | None, user_text: str, assistant_text: str, project_id: str | None = None) -> str: ...
@@ -114,6 +122,40 @@ class HistoryStore(Protocol):
     async def record_claw_approval_handoff(self, user_id: str, run_id: str, continuation_ref: str, pause_id: str, pause_expires_at: str, trusted_request: dict[str, Any], workspace_id: str | None = None, conversation_id: str | None = None, p01_run_id: str | None = None) -> None: ...
     async def load_claw_approval_handoff(self, user_id: str, run_id: str, workspace_id: str | None = None) -> dict[str, Any] | None: ...
     async def consume_claw_approval_handoff(self, user_id: str, run_id: str, workspace_id: str | None = None) -> bool: ...
+
+
+def _normalize_search_query(query: object) -> str:
+    """Trim, collapse whitespace and bound the query. Returns '' when unusable."""
+    if not isinstance(query, str):
+        return ""
+    collapsed = " ".join(query.split())
+    return collapsed[:MAX_CONVERSATION_SEARCH_QUERY_CHARS]
+
+
+def _escape_like(query: object) -> str:
+    """Make a user query a literal LIKE substring under ESCAPE '\\'.
+
+    The escape character is escaped first, then the LIKE wildcards.
+    """
+    normalized = _normalize_search_query(query)
+    return normalized.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
+def _search_snippet(hit: object, query: object) -> str:
+    """Short excerpt around the first literal match. '' when there is no body hit."""
+    if not isinstance(hit, str) or not hit:
+        return ""
+    literal = _normalize_search_query(query)
+    index = hit.casefold().find(literal.casefold()) if literal else -1
+    if index < 0:
+        index = 0
+    width = MAX_CONVERSATION_SEARCH_SNIPPET_CHARS
+    start = max(0, index - width // 3)
+    end = min(len(hit), start + width)
+    excerpt = hit[start:end].replace("\n", " ")
+    prefix = "…" if start > 0 else ""
+    suffix = "…" if end < len(hit) else ""
+    return prefix + excerpt + suffix
 
 
 def _now_iso() -> str:
@@ -645,6 +687,41 @@ class D1HistoryStore:
             "id": str(row.get("id", "")), "title": str(row.get("title", "")),
             "project_id": str(row.get("project_id")) if row.get("project_id") is not None else None,
             "created_at": str(row.get("created_at", "")), "updated_at": str(row.get("updated_at", "")),
+        } for row in rows]
+
+    async def search_conversations(
+        self, user_id: str, query: str, limit: int = MAX_CONVERSATION_SEARCH_RESULTS,
+    ) -> list[dict[str, Any]]:
+        """Owner-scoped search over the signed-in user's own conversations.
+
+        Matches conversation titles and recent message text. Every value is a
+        bound parameter; LIKE wildcards in the query are escaped so it is always
+        a literal substring. Results and scanned rows are bounded. Stored
+        conversations are never truncated.
+        """
+        needle = _escape_like(query)
+        if not needle:
+            return []
+        bounded = max(1, min(int(limit), MAX_CONVERSATION_SEARCH_RESULTS))
+        pattern = f"%{needle}%"
+        rows = await self._all(
+            "SELECT c.id, c.title, c.project_id, c.created_at, c.updated_at, "
+            "(SELECT m.content FROM messages m WHERE m.conversation_id = c.id "
+            " AND m.content LIKE ? ESCAPE '\\' ORDER BY m.sequence_number ASC LIMIT 1) AS hit "
+            "FROM conversations c "
+            "WHERE c.user_id=? AND (c.title LIKE ? ESCAPE '\\' OR EXISTS ("
+            "  SELECT 1 FROM (SELECT m.content FROM messages m WHERE m.conversation_id = c.id "
+            "  ORDER BY m.sequence_number DESC LIMIT ?) scan WHERE scan.content LIKE ? ESCAPE '\\')) "
+            "ORDER BY c.updated_at DESC LIMIT ?",
+            pattern, user_id, pattern, MAX_CONVERSATION_SEARCH_SCAN_ROWS, pattern, bounded,
+        )
+        return [{
+            "id": str(row.get("id", "")),
+            "title": str(row.get("title", "")),
+            "project_id": str(row.get("project_id")) if row.get("project_id") is not None else None,
+            "created_at": str(row.get("created_at", "")),
+            "updated_at": str(row.get("updated_at", "")),
+            "snippet": _search_snippet(row.get("hit"), query),
         } for row in rows]
 
     async def list_project_conversations(self, user_id: str, project_id: str, limit: int = MAX_RECENT_CONVERSATIONS) -> list[dict[str, Any]]:
