@@ -33,12 +33,6 @@ _ENROLLMENT_KEYS = frozenset({
     "binding_ref", "device_id", "account_ref", "workspace_ref", "credential_ref",
     "credential_generation", "issued_at", "credential_expires_at", "challenge_id",
     "server_owned_binding_refs", "raw_device_credential", "production_ready",
-    "credential_returned_once", "grants_read", "grants_write", "dispatch_authorized",
-    "execution_approval_minted", "owner_subject_ref", "server_bound_consent_ref",
-    "server_bound_device_id", "server_bound_at", "server_bound_binding_verified_before_mutation",
-    "server_bound_owner_bound", "receipt_is_authority", "product_scoped_enrollment",
-    "shared_device_identity", "device_lifecycle_authority", "online_proof_authority",
-    "rotation_authority", "revocation_authority", "execution_approval_owner",
 })
 
 
@@ -113,13 +107,12 @@ class CloudflareCanonicalBrokerPairingClient:
         return result
 
     async def install_schema(self, *, migration_id: str) -> dict[str, Any]:
-        wire = _closed(
-            (await self._invoke("install_pairing_schema", {"migration_id": migration_id})).get("schema"),
-            frozenset({"schema", "installed_by_default"}), "pairing schema receipt",
-        )
-        if wire.get("schema") != migration_id or wire.get("installed_by_default") is not False:
+        result = await self._invoke("install_pairing_schema", {"migration_id": migration_id})
+        if set(result) != {"ok", "schema", "installed_by_default"}:
+            raise IdentityBridgeError(503, "broker_rpc_invalid", "Pairing schema response shape is invalid.")
+        if result.get("schema") != migration_id or result.get("installed_by_default") is not False:
             raise IdentityBridgeError(503, "broker_rpc_invalid", "Pairing schema receipt is invalid.")
-        return wire
+        return {"schema": result["schema"], "installed_by_default": False}
 
     async def issue_enrollment_challenge(
         self, *, account_ref: str, workspace_ref: str, consent_ref: str,
