@@ -11,7 +11,14 @@ LOCALE = (ROOT / "locale.js").read_text(encoding="utf-8")
 
 def test_four_cards_fit_one_desktop_row_and_mobile_keeps_two_or_one():
     home = HTML.split('id="emptyState"', 1)[1].split('id="clawTaskHub"', 1)[0]
-    assert home.count('class="starter"') == 4
+    # Four working starters are visible while the unavailable Web Search hook stays hidden.
+    assert home.count('class="starter"') == 5
+    assert 'id="writingStarterButton" data-prompt=' in home
+    assert 'id="webSearchStarterButton" disabled aria-disabled="true" aria-pressed="false" hidden' in home
+    assert 'grid-template-columns: repeat(4, minmax(0, 1fr));' in FIRST_USE
+    assert ':has(#webSearchStarterButton:not([hidden]):not(:disabled)) #writingStarterButton' in FIRST_USE
+    assert 'setPrompt("#writingStarterButton", "starterWriting", lang);' in LOCALE
+    assert 'starterWriting:' in LOCALE
     assert 'grid-template-columns: repeat(4, minmax(0, 1fr));' in FIRST_USE
     assert 'grid-template-columns: repeat(2, minmax(0, 1fr));' in FIRST_USE
     assert 'grid-template-columns: 1fr;' in FIRST_USE
