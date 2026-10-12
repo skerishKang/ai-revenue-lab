@@ -8,8 +8,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from identity_authority_durable import CloudflareCanonicalIdentityAuthorityStore, decode_identity_lookup_key
-from identity_authority_worker import CanonicalIdentityDurableObject
+from canonical_connector_enrollment_consent_rpc import CanonicalIdentityEnrollmentConsentRPC
 from canonical_connector_enrollment_durable import IdentityDurableConnectorEnrollmentRecords
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
 from padiem_control_plane.contracts import CanonicalSubjectRef, ControlPlaneContractError, SubjectType
@@ -103,7 +102,7 @@ def harness(*, enabled=True, scope_approved=True, schema_installed=True, schema_
         CONTROL_PLANE_CONNECTOR_ENROLLMENT_SCHEMA_INSTALLED="true" if schema_installed else "false",
         CONTROL_PLANE_CONNECTOR_ENROLLMENT_SCHEMA_INSTALL_ENABLED="false",
     )
-    class Harness(CanonicalIdentityDurableObject):
+    class Harness(CanonicalIdentityEnrollmentConsentRPC):
         def __init__(self):
             self.env = env
             self._store = canonical
