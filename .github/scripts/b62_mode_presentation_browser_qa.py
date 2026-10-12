@@ -47,21 +47,21 @@ async def _exercise(page: Page, *, name: str) -> dict[str, Any]:
     await panel.wait_for(state="visible")
 
     options = panel.locator("[data-mode-value]")
-    if await options.count() != 1:
-        raise AssertionError(f"expected exactly one product tier row at {name}")
+    if await options.count() != 4:
+        raise AssertionError(f"expected four tier rows (free/plus/pro/max) at {name}")
 
     plus = panel.locator('[data-mode-value="plus"]')
     if await plus.is_disabled():
         raise AssertionError(f"Plus must be selectable at {name}")
     if await plus.get_attribute("aria-pressed") != "true":
         raise AssertionError(f"Plus must be the default selected tier at {name}")
-    if await panel.locator('[data-mode-value="pro"]').count() != 0:
-        raise AssertionError(f"Pro must remain browser-hidden at {name}")
-    if await panel.locator('[data-mode-value="max"]').count() != 0:
-        raise AssertionError(f"Max must remain browser-hidden at {name}")
+    for locked in ("pro", "max"):
+        row = panel.locator(f'[data-mode-value="{locked}"]')
+        if not await row.is_disabled():
+            raise AssertionError(f"{locked} must be disabled (사용 불가) at {name}")
 
     truth = (await panel.locator("[data-mode-truth]").inner_text()).strip()
-    if "모델·제공자 선택은 파디엠 서버가 관리" not in truth:
+    if "더 높은 등급의 모델을 사용하려면 업그레이드가 필요합니다." not in truth:
         raise AssertionError(f"server-authority truth copy missing at {name}: {truth!r}")
 
     plus_box = await plus.bounding_box()
@@ -91,8 +91,8 @@ async def _exercise(page: Page, *, name: str) -> dict[str, Any]:
         "default_tier": "plus",
         "selected_tier": "plus",
         "plus": "available",
-        "pro": "browser_hidden",
-        "max": "browser_hidden",
+        "pro": "unavailable",
+        "max": "unavailable",
         "server_authority_copy": True,
         "escape_focus_return": True,
         "horizontal_overflow": False,
@@ -146,12 +146,12 @@ async def _english_probe() -> dict[str, Any]:
             await page.locator(".model-pill").click()
             panel = page.locator("#modePresentationPanel")
             await panel.wait_for(state="visible")
-            if await panel.locator("[data-mode-value]").count() != 1:
-                raise AssertionError("English tier panel must expose exactly Plus")
-            if await panel.locator('[data-mode-value="pro"]').count() != 0:
-                raise AssertionError("English tier panel must keep Pro browser-hidden")
+            if await panel.locator("[data-mode-value]").count() != 4:
+                raise AssertionError("English tier panel must expose four tier rows")
+            if not await panel.locator('[data-mode-value="pro"]').is_disabled():
+                raise AssertionError("English tier panel must keep Pro disabled")
             truth = (await panel.locator("[data-mode-truth]").inner_text()).strip()
-            if "Provider and model routing stays server-managed" not in truth:
+            if "Upgrade is required to use higher-tier models." not in truth:
                 raise AssertionError(f"English tier truth copy missing: {truth!r}")
             return {"locale": "en", "default_tier": "plus", "status": "PASS"}
         finally:
