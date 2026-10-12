@@ -34,7 +34,7 @@ def staged(*preferences):
     )
 
 
-def prefs(product="chat", *, enabled=True, primary=A, backups=(B, C)):
+def prefs(product="chat", *, enabled=True, primary=A, backups=(B,)):
     return ProductModelPreference(product, "PLUS", primary, backups, enabled)
 
 
@@ -88,13 +88,13 @@ def test_missing_policy_freshness_or_product_grant_never_makes_any_route_ready()
 
 
 def test_disabled_or_blocked_backup_never_selected():
-    group = staged(prefs(backups=(B, C)))
+    group = staged(prefs(backups=(B,)))
     v = preview(group, policy=grants("chat", block=("chat", B)))
     assert v.primary_model_id == A
-    assert v.eligible_fallback_model_ids == (C,)
+    assert v.eligible_fallback_model_ids == ()
     assert dict(v.model_reasons)[B] == "product_blocked"
     assert suggest_explicit_fallback(v, failure_code="upstream_timeout",
-                                      attempted_model_ids=(A,), user_notice_possible=True) == C
+                                     attempted_model_ids=(A,), user_notice_possible=True) is None
 
 
 def test_primary_b14_offline_does_not_promote_backup():
@@ -114,7 +114,7 @@ def test_fallback_only_on_explicit_enable_transient_error_and_notice():
                                          attempted_model_ids=attempted,
                                          user_notice_possible=notice)
     assert pick(active, "upstream_timeout") == B
-    assert pick(active, "upstream_server_error", (A, B)) == C
+    assert pick(active, "upstream_server_error", (A, B)) is None
     assert pick(active, "upstream_timeout", (A, B, C)) is None
     assert pick(inactive, "upstream_timeout") is None
     assert pick(active, "upstream_timeout", notice=False) is None
@@ -149,6 +149,7 @@ def test_group_duplicate_unknown_auto_retired_and_hold_models_denied():
     code("invalid_tier_group_model", lambda: TierModelGroup("PLUS", ("kilo/tencent-hy3-free",)))
     code("product_route_outside_site_tier_group", lambda: staged(prefs(primary="other/not-member", backups=())))
     code("invalid_product_group_fallbacks", lambda: prefs(backups=(B, B)))
+    code("invalid_product_group_fallbacks", lambda: prefs(backups=(B, C)))
     code("invalid_product_group_target", lambda: ProductModelPreference("central", "PLUS", A))
 
 
@@ -264,3 +265,20 @@ def test_site_tier_reclassification_isolated_from_other_products():
     assert updated.site_groups[1] == original.site_groups[1]
     assert updated.preferences[1] == original.preferences[1]
     assert updated.groups == original.groups
+
+def test_single_fallback_limit_is_per_site_and_tier_not_global_cascade():
+    chat = prefs("chat", primary=A, backups=(B,))
+    claw = prefs("claw", primary=C, backups=(A,))
+    quote = prefs("b66", primary=B, backups=())
+    group = staged(chat, claw, quote)
+    assert group.preferences == (chat, claw, quote)
+    assert all(len(preference.fallback_model_ids) <= 1 for preference in group.preferences)
+    assert all(not preference.fallback_enabled or preference.fallback_model_ids
+               for preference in (ProductModelPreference("chat", "PLUS", A),))
+    assert ProductModelPreference("chat", "PLUS", A).fallback_enabled is False
+    # Even a permitted backup cannot dispatch itself; only an advisory is returned.
+    for product in ("chat", "claw", "b66"):
+        result = preview(group, product=product, policy=grants("chat", "claw", "b66"))
+        assert result.dispatch_authorized is False
+        assert result.runtime_enforced is False
+        assert len(result.eligible_fallback_model_ids) <= 1
