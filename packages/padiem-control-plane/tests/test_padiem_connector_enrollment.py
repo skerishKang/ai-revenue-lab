@@ -53,6 +53,20 @@ CENTRAL security review follow-up (BLOCKED_CONSENT_CHALLENGE_BINDING):
   S1-43  the new refusals and declarations stay parity-checked with the canonical sources
   S1-44  no new authority/store is introduced by the follow-up either
   S1-45  neither the one-time code nor the credential ever appears in a projection
+
+CENTRAL second security review (BLOCKED_LEGACY_REDEEM_BYPASS):
+
+  S1-46  the generic redeem route cannot consume an enrollment challenge
+         (`enrollment_bound_challenge_requires_scoped_redemption`, 0 bindings,
+         challenge unconsumed; the scoped route then redeems it)
+  S1-47  an ordinary pairing challenge still redeems on the legacy route
+  S1-48  legacy-route refusals stay bounded (proof/unknown/expired)
+  S1-49  a consent withdrawn after issuance cannot release the challenge, and
+         re-granting it in the durable record restores redemption
+  S1-50  a durable record that does not match the presented consent refuses
+  S1-51  the liveness authority is consulted at issuance AND at redemption
+  S1-52  no public entry point accepts a liveness boolean
+  S1-53  an unreachable / misbehaving liveness authority fails closed
 """
 
 from __future__ import annotations
@@ -60,6 +74,7 @@ from __future__ import annotations
 import inspect
 from pathlib import Path
 import re
+from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 
 import pytest
@@ -120,6 +135,7 @@ from padiem_control_plane.padiem_connector_enrollment import (
     UNSIGNED_CHALLENGE_RECEIPT_TRUSTED,
     ConnectorEnrollmentConsent,
     ConnectorEnrollmentScope,
+    UnconfiguredCanonicalConsentLivenessPort,
     UnconfiguredCanonicalEnrollmentScopePort,
     connector_enrollment_boundary,
     connector_enrollment_dependencies,
@@ -204,6 +220,45 @@ def _resolver(scope: ConnectorEnrollmentScope | Exception | None = None) -> _Sta
     return _StaticScopeResolver(_scope() if scope is None else scope)
 
 
+class _DurableConsentStore:
+    """Test double for the server-trusted durable consent record reader.
+
+    It models what production wiring must supply: a durable, server-owned store
+    of the **current** consent record (the record an owner grants and can
+    withdraw). ``withdraw`` simulates a revocation landing between issuance and
+    redemption — exactly the case the in-memory presented record cannot see.
+    """
+
+    def __init__(self, records: dict[str, ConnectorEnrollmentConsent] | None = None) -> None:
+        self.records: dict[str, ConnectorEnrollmentConsent] = dict(records or {})
+        self.lookups: list[dict] = []
+
+    def store(self, consent: ConnectorEnrollmentConsent) -> None:
+        self.records[consent.consent_id] = consent
+
+    def withdraw(self, consent_id: str, *, now: datetime) -> None:
+        current = self.records[consent_id]
+        self.records[consent_id] = replace(current, withdrawn_at=now)
+
+    def current_consent(
+        self, *, consent_id: str, now: datetime
+    ) -> ConnectorEnrollmentConsent | None:
+        self.lookups.append({"consent_id": consent_id, "now": now})
+        return self.records.get(consent_id)
+
+
+def _liveness(records: dict[str, ConnectorEnrollmentConsent] | None = None) -> _DurableConsentStore:
+    """The happy-path default: a durable store holding the standard consent."""
+
+    store = _DurableConsentStore(records)
+    store.store(_consent())
+    return store
+
+
+def _unconfigured_liveness() -> UnconfiguredCanonicalConsentLivenessPort:
+    return UnconfiguredCanonicalConsentLivenessPort()
+
+
 def _consent(
     *,
     consent_id: str = CONSENT_1,
@@ -259,7 +314,7 @@ def _issue(*, pairing_authority=None, **overrides):
         consent=_consent(),
         device_id=OFFICE_PC,
         pairing_authority=pairing_authority,
-        consent_liveness_reverified_by_existing_path=True,
+        consent_liveness_authority=_liveness(),
         now=NOW,
     )
     kwargs.update(overrides)
@@ -284,7 +339,7 @@ def _redeem(receipt, *, pairing_authority, proof_ref: str | None = None, **overr
         challenge_id=receipt.challenge.challenge_id,
         device_id=receipt.device_id,
         proof_ref=_proof(receipt) if proof_ref is None else proof_ref,
-        consent_liveness_reverified_by_existing_path=True,
+        consent_liveness_authority=_liveness(),
         now=NOW + timedelta(seconds=1),
     )
     kwargs.update(overrides)
@@ -529,17 +584,24 @@ def test_s1_18_a_second_product_cannot_enroll_the_same_pc():
 
 def test_s1_19_the_same_owner_may_enroll_a_genuinely_different_pc():
     broker, pairing = _broker_and_pairing()
+    liveness = _DurableConsentStore()
     bindings = []
     for index, device_id in enumerate((OFFICE_PC, LAPTOP)):
+        consent = _consent(
+            consent_id=f"consent_connector_{index + 1}", device_id=device_id
+        )
+        liveness.store(consent)
         _, receipt = _issue(
             pairing_authority=pairing,
-            consent=_consent(consent_id=f"consent_connector_{index + 1}", device_id=device_id),
+            consent=consent,
             device_id=device_id,
+            consent_liveness_authority=liveness,
         )
         redeemed = _redeem(
             receipt,
             pairing_authority=pairing,
-            consent=_consent(consent_id=f"consent_connector_{index + 1}", device_id=device_id),
+            consent=consent,
+            consent_liveness_authority=liveness,
         )
         bindings.append(redeemed.binding_ref)
     assert len(set(bindings)) == 2
@@ -681,8 +743,11 @@ def test_s1_25_no_second_login_device_db_or_pairing_authority_exists():
         "ConnectorEnrollmentReceipt",
         "CanonicalEnrollmentScopePort",
         "UnconfiguredCanonicalEnrollmentScopePort",
+        "CanonicalConsentLivenessPort",
+        "UnconfiguredCanonicalConsentLivenessPort",
     }
     assert not any(name.endswith("Authority") for name in definitions)
+    assert not any(name.endswith("Store") for name in definitions)
     assert "from .auth_sessions import" in source
     assert "from .local_agent_broker_pairing import" in source
     assert "from .local_agent_pc_access import" in source
@@ -798,15 +863,21 @@ def test_s1_32_a_different_consent_cannot_redeem_this_challenge():
 
 def test_s1_33_a_withdrawn_consent_cannot_be_replaced_by_a_new_one():
     broker, pairing = _broker_and_pairing()
+    liveness = _DurableConsentStore()
+    liveness.store(_consent(consent_id=CONSENT_1))
     _, old_receipt = _issue(
         pairing_authority=pairing,
         consent=_consent(consent_id=CONSENT_1),
+        consent_liveness_authority=liveness,
     )
     # Consent A is withdrawn, and consent B is granted for the same computer.
     withdrawn = _consent(consent_id=CONSENT_1, withdrawn_at=NOW + timedelta(seconds=1))
+    liveness.withdraw(CONSENT_1, now=NOW + timedelta(seconds=1))
+    liveness.store(_consent(consent_id=CONSENT_2))
     _, new_receipt = _issue(
         pairing_authority=pairing,
         consent=_consent(consent_id=CONSENT_2),
+        consent_liveness_authority=liveness,
         now=NOW + timedelta(seconds=2),
     )
     assert new_receipt.consent_id == CONSENT_2
@@ -816,6 +887,7 @@ def test_s1_33_a_withdrawn_consent_cannot_be_replaced_by_a_new_one():
             old_receipt,
             pairing_authority=pairing,
             consent=_consent(consent_id=CONSENT_2),
+            consent_liveness_authority=liveness,
             now=NOW + timedelta(seconds=3),
         )
     assert swapped.value.code == ENROLLMENT_REASON_CONSENT_SWAP_DENIED
@@ -825,6 +897,7 @@ def test_s1_33_a_withdrawn_consent_cannot_be_replaced_by_a_new_one():
             old_receipt,
             pairing_authority=pairing,
             consent=withdrawn,
+            consent_liveness_authority=liveness,
             now=NOW + timedelta(seconds=3),
         )
     assert withdrawn_consent.value.code == ENROLLMENT_REASON_CONSENT_WITHDRAWN
@@ -835,6 +908,7 @@ def test_s1_33_a_withdrawn_consent_cannot_be_replaced_by_a_new_one():
         new_receipt,
         pairing_authority=pairing,
         consent=_consent(consent_id=CONSENT_2),
+        consent_liveness_authority=liveness,
         now=NOW + timedelta(seconds=4),
     )
     assert redeemed.consent_id == CONSENT_2
@@ -886,12 +960,16 @@ def test_s1_34_one_consent_cannot_enroll_a_second_computer():
 
 def test_s1_35_two_computers_each_need_their_own_consent():
     broker, pairing = _broker_and_pairing()
+    liveness = _DurableConsentStore()
+    liveness.store(_consent(consent_id=CONSENT_1, device_id=OFFICE_PC))
     _, office = _issue(
         pairing_authority=pairing,
         consent=_consent(consent_id=CONSENT_1, device_id=OFFICE_PC),
         device_id=OFFICE_PC,
+        consent_liveness_authority=liveness,
     )
     laptop_consent = _consent(consent_id=CONSENT_2, device_id=LAPTOP)
+    liveness.store(laptop_consent)
 
     # Without its own consent the second computer is refused outright.
     with pytest.raises(ControlPlaneContractError) as no_own_consent:
@@ -899,6 +977,7 @@ def test_s1_35_two_computers_each_need_their_own_consent():
             pairing_authority=pairing,
             consent=_consent(consent_id=CONSENT_1, device_id=OFFICE_PC),
             device_id=LAPTOP,
+            consent_liveness_authority=liveness,
         )
     assert no_own_consent.value.code == ENROLLMENT_REASON_CONSENT_DEVICE_MISMATCH
 
@@ -906,6 +985,7 @@ def test_s1_35_two_computers_each_need_their_own_consent():
         pairing_authority=pairing,
         consent=laptop_consent,
         device_id=LAPTOP,
+        consent_liveness_authority=liveness,
         now=NOW + timedelta(seconds=1),
     )
     # And the second computer's challenge cannot ride on the first consent.
@@ -915,15 +995,22 @@ def test_s1_35_two_computers_each_need_their_own_consent():
             pairing_authority=pairing,
             consent=_consent(consent_id=CONSENT_1, device_id=OFFICE_PC),
             device_id=LAPTOP,
+            consent_liveness_authority=liveness,
             now=NOW + timedelta(seconds=2),
         )
     assert swap.value.code == ENROLLMENT_REASON_CONSENT_DEVICE_MISMATCH
 
-    _redeem(office, pairing_authority=pairing, now=NOW + timedelta(seconds=2))
+    _redeem(
+        office,
+        pairing_authority=pairing,
+        consent_liveness_authority=liveness,
+        now=NOW + timedelta(seconds=2),
+    )
     _redeem(
         laptop,
         pairing_authority=pairing,
         consent=laptop_consent,
+        consent_liveness_authority=liveness,
         now=NOW + timedelta(seconds=3),
     )
     assert {b.device_id for b in broker._bindings.values()} == {OFFICE_PC, LAPTOP}
@@ -963,12 +1050,15 @@ def test_s1_36_a_fabricated_challenge_receipt_is_never_accepted_as_proof():
         "scope_resolver",
         "consent",
         "pairing_authority",
+        "consent_liveness_authority",
         "challenge_id",
         "device_id",
         "proof_ref",
-        "consent_liveness_reverified_by_existing_path",
         "now",
     }
+    assert not any(
+        parameter.default is True for parameter in signature.parameters.values()
+    ), "no redemption parameter may default to a trusted True boolean"
     with pytest.raises(TypeError):
         redeem_connector_enrollment(receipt=forged)  # type: ignore[call-arg]
 
@@ -1015,7 +1105,7 @@ def test_s1_38_consent_liveness_is_default_deny_until_its_authority_is_wired():
     with pytest.raises(ControlPlaneContractError) as at_issue:
         _issue(
             pairing_authority=pairing,
-            consent_liveness_reverified_by_existing_path=False,
+            consent_liveness_authority=_unconfigured_liveness(),
         )
     assert at_issue.value.code == ENROLLMENT_REASON_CONSENT_LIVENESS_DEPENDENCY_UNMET
     assert pairing.pending_challenge_count == 0
@@ -1025,18 +1115,31 @@ def test_s1_38_consent_liveness_is_default_deny_until_its_authority_is_wired():
         _redeem(
             receipt,
             pairing_authority=pairing,
-            consent_liveness_reverified_by_existing_path=False,
+            consent_liveness_authority=_unconfigured_liveness(),
         )
     assert at_redeem.value.code == ENROLLMENT_REASON_CONSENT_LIVENESS_DEPENDENCY_UNMET
     assert _binding_count(broker) == 0
 
+    # A reader that is configured but cannot find the record proves nothing.
+    with pytest.raises(ControlPlaneContractError) as no_record:
+        _redeem(
+            receipt,
+            pairing_authority=pairing,
+            consent_liveness_authority=_DurableConsentStore(),
+        )
+    assert no_record.value.code == ENROLLMENT_REASON_CONSENT_LIVENESS_DEPENDENCY_UNMET
+    assert _binding_count(broker) == 0
+    assert pairing.pending_challenge_count == 1
+
     dependencies = connector_enrollment_dependencies()
     assert dependencies["consent_liveness_authority_implemented"] is False
+    assert dependencies["consent_liveness_port_required"] is True
+    assert dependencies["consent_liveness_boolean_override_removed"] is True
     assert dependencies["consent_liveness_default_deny"] is True
-    assert dependencies["consent_liveness_reverified_is_an_input"] is True
     assert dependencies["self_asserted_consent_liveness_trusted"] is False
     boundary = connector_enrollment_boundary()
     assert boundary["consent_liveness_default_deny"] is True
+    assert boundary["consent_liveness_port_required"] is True
     assert boundary["server_bound_challenge_required"] is True
     assert boundary["challenge_receipt_is_not_authority"] is True
     assert boundary["unsigned_challenge_receipt_trusted"] is False
@@ -1095,10 +1198,10 @@ def test_s1_40_a_challenge_without_an_enrollment_binding_cannot_be_redeemed_as_o
             scope_resolver=_resolver(),
             consent=_consent(),
             pairing_authority=pairing,
+            consent_liveness_authority=_liveness(),
             challenge_id=challenge.challenge_id,
             device_id=OFFICE_PC,
             proof_ref=proof,
-            consent_liveness_reverified_by_existing_path=True,
             now=NOW + timedelta(seconds=1),
         )
     assert raised.value.code == ENROLLMENT_REASON_BINDING_ABSENT
@@ -1244,3 +1347,243 @@ def test_s1_45_no_projection_carries_the_code_or_the_credential():
         assert redeemed.credential.hex() not in rendered
     denied = enrollment_refusal_reason("enrollment_consent_swap_denied")
     assert denied == ENROLLMENT_REASON_CONSENT_SWAP_DENIED
+
+
+# --- CENTRAL second review (BLOCKED_LEGACY_REDEEM_BYPASS) --------------------
+
+
+def test_s1_46_the_generic_redeem_route_cannot_consume_an_enrollment_challenge():
+    broker, pairing = _broker_and_pairing()
+    liveness = _liveness()
+    _, issued = _issue(pairing_authority=pairing, consent_liveness_authority=liveness)
+    pending_before = pairing.pending_challenge_count
+
+    # The legacy generic route must REFUSE an enrollment-bound challenge, with
+    # a valid possession proof, before any Broker mutation or consumption.
+    with pytest.raises(ControlPlaneContractError) as legacy:
+        pairing.redeem(
+            challenge_id=issued.challenge.challenge_id,
+            device_id=issued.device_id,
+            proof_ref=_proof(issued),
+            now=NOW + timedelta(seconds=1),
+        )
+    assert legacy.value.code == "enrollment_bound_challenge_requires_scoped_redemption"
+    assert enrollment_refusal_reason(legacy.value.code) == "enrollment_scoped_redemption_required"
+    assert _binding_count(broker) == 0
+    assert pairing.pending_challenge_count == pending_before
+
+    # The scoped enrollment route still redeems the same challenge.
+    redeemed = _redeem(
+        issued, pairing_authority=pairing, consent_liveness_authority=liveness
+    )
+    assert redeemed.enrollment.device_id == OFFICE_PC
+    assert _binding_count(broker) == 1
+
+
+def test_s1_47_an_ordinary_pairing_challenge_still_redeems_on_the_legacy_route():
+    broker, pairing = _broker_and_pairing()
+    challenge, code = pairing.issue_challenge(
+        account_ref=ACCOUNT_REF,
+        workspace_ref=WORKSPACE_REF,
+        now=NOW,
+        ttl_seconds=300,
+    )
+    proof = pairing_proof_ref(
+        challenge_id=challenge.challenge_id,
+        device_id=OFFICE_PC,
+        pairing_code=code,
+    )
+    enrollment, credential = pairing.redeem(
+        challenge_id=challenge.challenge_id,
+        device_id=OFFICE_PC,
+        proof_ref=proof,
+        now=NOW + timedelta(seconds=1),
+    )
+    assert enrollment.device_id == OFFICE_PC
+    assert enrollment.challenge_id == challenge.challenge_id
+    assert credential
+    assert _binding_count(broker) == 1
+    # Single-use still holds on the legacy route.
+    with pytest.raises(ControlPlaneContractError) as replay:
+        pairing.redeem(
+            challenge_id=challenge.challenge_id,
+            device_id=OFFICE_PC,
+            proof_ref=proof,
+            now=NOW + timedelta(seconds=2),
+        )
+    assert replay.value.code == "pairing_challenge_already_redeemed"
+
+
+def test_s1_48_legacy_route_refusals_stay_bounded_and_uninformative():
+    broker, pairing = _broker_and_pairing()
+    challenge, code = pairing.issue_challenge(
+        account_ref=ACCOUNT_REF,
+        workspace_ref=WORKSPACE_REF,
+        now=NOW,
+        ttl_seconds=30,
+    )
+    proof = pairing_proof_ref(
+        challenge_id=challenge.challenge_id,
+        device_id=OFFICE_PC,
+        pairing_code=code,
+    )
+    # A wrong device proof is a proof failure, not an authorization bypass.
+    with pytest.raises(ControlPlaneContractError) as wrong_device:
+        pairing.redeem(
+            challenge_id=challenge.challenge_id,
+            device_id=LAPTOP,
+            proof_ref=proof,
+            now=NOW + timedelta(seconds=1),
+        )
+    assert wrong_device.value.code == "invalid_pairing_proof"
+
+    # An unknown challenge id refuses without disclosing the challenge set.
+    with pytest.raises(ControlPlaneContractError) as unknown:
+        pairing.redeem(
+            challenge_id="pairing." + "f" * 32,
+            device_id=OFFICE_PC,
+            proof_ref=proof,
+            now=NOW + timedelta(seconds=1),
+        )
+    assert unknown.value.code == "pairing_challenge_not_found"
+
+    # An expired challenge refuses.
+    with pytest.raises(ControlPlaneContractError) as expired:
+        pairing.redeem(
+            challenge_id=challenge.challenge_id,
+            device_id=OFFICE_PC,
+            proof_ref=proof,
+            now=NOW + timedelta(seconds=31),
+        )
+    assert expired.value.code == "pairing_challenge_expired"
+    assert _binding_count(broker) == 0
+
+
+def test_s1_49_a_consent_withdrawn_after_issuance_cannot_release_the_challenge():
+    broker, pairing = _broker_and_pairing()
+    liveness = _liveness()
+    _, receipt = _issue(pairing_authority=pairing, consent_liveness_authority=liveness)
+    pending_before = pairing.pending_challenge_count
+
+    # The durable record is withdrawn AFTER issuance; the presented (stale)
+    # consent object still looks active, so only the liveness re-read sees it.
+    liveness.withdraw(CONSENT_1, now=NOW + timedelta(seconds=2))
+    with pytest.raises(ControlPlaneContractError) as withdrawn:
+        _redeem(
+            receipt,
+            pairing_authority=pairing,
+            consent_liveness_authority=liveness,
+            now=NOW + timedelta(seconds=3),
+        )
+    assert withdrawn.value.code == ENROLLMENT_REASON_CONSENT_WITHDRAWN
+    assert _binding_count(broker) == 0
+    assert pairing.pending_challenge_count == pending_before
+
+    # Re-granting the consent in the durable record makes the same challenge
+    # redeemable again, proving the refusal above was the withdrawal.
+    liveness.store(_consent(withdrawn_at=None, granted_at=NOW - timedelta(minutes=1)))
+    redeemed = _redeem(
+        receipt,
+        pairing_authority=pairing,
+        consent_liveness_authority=liveness,
+        now=NOW + timedelta(seconds=4),
+    )
+    assert redeemed.consent_id == CONSENT_1
+    assert _binding_count(broker) == 1
+
+
+def test_s1_50_a_durable_record_that_does_not_match_the_presented_consent_refuses():
+    broker, pairing = _broker_and_pairing()
+    liveness = _liveness()
+    _, receipt = _issue(pairing_authority=pairing, consent_liveness_authority=liveness)
+
+    # The durable record for this consent id names ANOTHER computer: the
+    # presented consent is not the server record, so nothing is released.
+    liveness.records[CONSENT_1] = _consent(device_id=LAPTOP)
+    with pytest.raises(ControlPlaneContractError) as mismatch:
+        _redeem(
+            receipt,
+            pairing_authority=pairing,
+            consent_liveness_authority=liveness,
+        )
+    assert mismatch.value.code == ENROLLMENT_REASON_CONSENT_SCOPE_MISMATCH
+    assert _binding_count(broker) == 0
+    assert pairing.pending_challenge_count == 1
+
+
+def test_s1_51_the_liveness_authority_is_consulted_at_issuance_and_at_redemption():
+    broker, pairing = _broker_and_pairing()
+    liveness = _liveness()
+    _, receipt = _issue(pairing_authority=pairing, consent_liveness_authority=liveness)
+    assert [entry["consent_id"] for entry in liveness.lookups] == [CONSENT_1]
+    _redeem(receipt, pairing_authority=pairing, consent_liveness_authority=liveness)
+    assert [entry["consent_id"] for entry in liveness.lookups] == [CONSENT_1, CONSENT_1]
+
+
+def test_s1_52_no_public_entry_point_accepts_a_liveness_boolean():
+    for entry_point in (issue_connector_enrollment_challenge, redeem_connector_enrollment):
+        parameters = inspect.signature(entry_point).parameters
+        assert "consent_liveness_authority" in parameters, entry_point.__name__
+        assert not any(
+            "liveness" in name and name != "consent_liveness_authority"
+            for name in parameters
+        ), entry_point.__name__
+        assert not any(
+            parameter.annotation is bool or parameter.default is True
+            for parameter in parameters.values()
+        ), entry_point.__name__
+    # The only permitted mention of the removed boolean is the comment that
+    # documents its removal; it can never be a live parameter.
+    issue_signature = inspect.signature(issue_connector_enrollment_challenge)
+    redeem_signature = inspect.signature(redeem_connector_enrollment)
+    assert "consent_liveness_reverified_by_existing_path" not in issue_signature.parameters
+    assert "consent_liveness_reverified_by_existing_path" not in redeem_signature.parameters
+    assert "self_asserted_consent_liveness_trusted" in inspect.getsource(enrollment_module)
+
+
+class _OfflineConsentStore:
+    """A wired authority whose durable store is unreachable (offline/timeout)."""
+
+    def __init__(self) -> None:
+        self.calls = 0
+
+    def current_consent(self, *, consent_id: str, now: datetime):
+        del consent_id, now
+        self.calls += 1
+        raise RuntimeError("durable consent store is unreachable")
+
+
+def test_s1_53_an_unreachable_liveness_authority_fails_closed():
+    broker, pairing = _broker_and_pairing()
+    offline = _OfflineConsentStore()
+
+    with pytest.raises(ControlPlaneContractError) as at_issue:
+        _issue(pairing_authority=pairing, consent_liveness_authority=offline)
+    assert at_issue.value.code == ENROLLMENT_REASON_CONSENT_LIVENESS_DEPENDENCY_UNMET
+    assert offline.calls == 1
+    assert pairing.pending_challenge_count == 0
+
+    # The same authority failing at redemption refuses before any mutation.
+    _, receipt = _issue(pairing_authority=pairing)
+    with pytest.raises(ControlPlaneContractError) as at_redeem:
+        _redeem(receipt, pairing_authority=pairing, consent_liveness_authority=offline)
+    assert at_redeem.value.code == ENROLLMENT_REASON_CONSENT_LIVENESS_DEPENDENCY_UNMET
+    assert _binding_count(broker) == 0
+    assert pairing.pending_challenge_count == 1
+
+    # A misbehaving reader that returns a non-consent object is refused too.
+    class _GarbageStore:
+        def current_consent(self, *, consent_id: str, now: datetime):
+            del consent_id, now
+            return {"consent_id": CONSENT_1}
+
+    with pytest.raises(ControlPlaneContractError) as garbage:
+        _redeem(receipt, pairing_authority=pairing, consent_liveness_authority=_GarbageStore())
+    assert garbage.value.code == ENROLLMENT_REASON_CONSENT_LIVENESS_DEPENDENCY_UNMET
+    assert _binding_count(broker) == 0
+    assert pairing.pending_challenge_count == 1
+
+    # The untouched challenge still redeems once the authority is healthy.
+    redeemed = _redeem(receipt, pairing_authority=pairing)
+    assert redeemed.consent_id == CONSENT_1
+    assert _binding_count(broker) == 1

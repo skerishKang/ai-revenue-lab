@@ -132,14 +132,20 @@ UNLIMITED_PCS_PER_ENROLLMENT_CONSENT = False
 # --- consent liveness is a declared dependency (default deny) ----------------
 #: A consent that has been withdrawn must not be able to release an outstanding
 #: challenge. Re-checking that against the *current* consent record is owned by a
-#: server-trusted consent authority, which does not exist yet; this contract can
-#: only enforce the consent's identity/scope/device binding. Until that authority
-#: is wired, redemption and issuance stay **default deny** behind an explicit
-#: caller attestation, and the gap is declared rather than papered over.
+#: server-trusted consent authority; this contract consumes it through an
+#: injected dependency port (``CanonicalConsentLivenessPort``) that re-reads the
+#: durable record at issuance time and again at redemption time. There is **no
+#: boolean override**: a caller assertion such as
+#: ``consent_liveness_reverified_by_existing_path=True`` was removed because a
+#: public handler could then relax a refusal with an input it cannot verify.
+#: Until a durable server-owned consent reader is wired, the unconfigured port
+#: refuses everything, and the gap is declared rather than papered over.
 CONSENT_LIVENESS_AUTHORITY = "server_trusted_enrollment_consent_authority"
-CONSENT_LIVENESS_REVERIFIED_IS_AN_INPUT = True
+CONSENT_LIVENESS_PORT_REQUIRED = True
+CONSENT_LIVENESS_BOOLEAN_OVERRIDE_REMOVED = True
 SELF_ASSERTED_CONSENT_LIVENESS_TRUSTED = False
 CONSENT_LIVENESS_DEFAULT_DENY = True
+CONSENT_LIVENESS_AUTHORITY_IMPLEMENTED = False
 
 # --- enrollment consent is NOT execution approval -----------------------------
 #: Initial device enrollment consent and READ/WRITE execution approval are two
@@ -227,6 +233,9 @@ ENROLLMENT_REFUSAL_BY_CANONICAL_CODE: dict[str, str] = {
     "enrollment_device_swap_denied": "enrollment_device_swap_denied",
     "enrollment_binding_owner_mismatch": "enrollment_binding_owner_mismatch",
     "enrollment_binding_scope_mismatch": "enrollment_binding_scope_mismatch",
+    "enrollment_bound_challenge_requires_scoped_redemption": (
+        "enrollment_scoped_redemption_required"
+    ),
     "duplicate_device_binding": "enrollment_duplicate_device_denied",
     "device_binding_revoked": "enrollment_binding_revoked_denied",
     "device_credential_expired": "enrollment_credential_expired_denied",
@@ -379,6 +388,47 @@ class UnconfiguredCanonicalEnrollmentScopePort:
     ) -> ConnectorEnrollmentScope:
         del subject_id, tenant_ref, now
         raise RuntimeError("canonical PADIEM connector enrollment scope authority is not configured")
+
+
+class CanonicalConsentLivenessPort(Protocol):
+    """The server-trusted reader of the **current** enrollment-consent record.
+
+    A deployment implements this over the durable, server-owned Control Plane
+    authority that records and revokes enrollment consents. The contract
+    re-reads the consent record through this port at issuance time and again at
+    redemption time and then compares it with the presented record, so a
+    consent withdrawn in between can never release an outstanding challenge.
+
+    The port is a **dependency injected by server wiring** — never a browser or
+    Connector input. A production handler must not be able to relax a refusal
+    by passing a value it cannot verify, which is why the previous
+    ``consent_liveness_reverified_by_existing_path`` boolean is gone: it is
+    replaced by this typed, default-deny dependency. The port can only *read*
+    a record; it can never mint, widen or re-grant a consent.
+    """
+
+    def current_consent(
+        self,
+        *,
+        consent_id: str,
+        now: datetime,
+    ) -> ConnectorEnrollmentConsent | None:
+        ...
+
+
+class UnconfiguredCanonicalConsentLivenessPort:
+    """Fail-closed default: no server-trusted consent reader, no enrollment."""
+
+    def current_consent(
+        self,
+        *,
+        consent_id: str,
+        now: datetime,
+    ) -> ConnectorEnrollmentConsent | None:
+        del consent_id, now
+        raise RuntimeError(
+            "canonical PADIEM connector enrollment consent liveness authority is not configured"
+        )
 
 
 @dataclass(frozen=True, slots=True)
@@ -623,21 +673,69 @@ def _require_eligible(decision: ConnectorEnrollmentDecision) -> ConnectorEnrollm
     return decision.scope
 
 
-def _require_consent_liveness(reverified_by_existing_path: Any) -> None:
-    """Consent liveness is a declared dependency and stays default deny.
+def _reverify_consent_liveness(
+    consent_liveness_authority: Any,
+    *,
+    consent: ConnectorEnrollmentConsent,
+    now: datetime,
+) -> None:
+    """Re-read the CURRENT server-owned consent record, then compare it.
 
-    Re-checking a consent against its current record (was it withdrawn after
-    issuance?) is owned by a server-trusted consent authority that does not exist
-    yet. Until a trusted caller attests that it re-verified the consent there,
-    both issuance and redemption refuse. The attestation is an *input* produced by
-    that check, never proof: it can only relax a refusal, it can never mint the
-    consent, widen its scope, or change which computer it names.
+    Liveness is enforced by re-reading the durable record through the injected
+    authority — never by a caller-supplied boolean and never by the presented
+    record alone. The comparison covers every consent field this contract
+    binds: an unconfigured or unusable authority proves nothing, a missing
+    record means no active consent exists, a record that does not match the
+    presented consent means the caller's record is not the server's, and an
+    inactive record means the consent was withdrawn (or has not started).
     """
 
-    if reverified_by_existing_path is not True:
+    reader = getattr(consent_liveness_authority, "current_consent", None)
+    if not callable(reader):
         raise ControlPlaneContractError(
             ENROLLMENT_REASON_CONSENT_LIVENESS_DEPENDENCY_UNMET,
-            "enrollment consent liveness must be re-verified by the server-trusted consent authority",
+            "enrollment consent liveness authority is not configured",
+        )
+    try:
+        current = reader(consent_id=consent.consent_id, now=now)
+    except ControlPlaneContractError as exc:
+        raise ControlPlaneContractError(
+            ENROLLMENT_REASON_CONSENT_LIVENESS_DEPENDENCY_UNMET,
+            "enrollment consent liveness authority refused the consent lookup",
+        ) from exc
+    except RuntimeError as exc:
+        raise ControlPlaneContractError(
+            ENROLLMENT_REASON_CONSENT_LIVENESS_DEPENDENCY_UNMET,
+            "enrollment consent liveness authority is unavailable",
+        ) from exc
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ControlPlaneContractError(
+            ENROLLMENT_REASON_CONSENT_LIVENESS_DEPENDENCY_UNMET,
+            "enrollment consent liveness authority returned an unusable record",
+        ) from exc
+
+    if not isinstance(current, ConnectorEnrollmentConsent):
+        # No durable record for this consent id: the server cannot prove the
+        # consent is currently active, so nothing may be issued or redeemed.
+        raise ControlPlaneContractError(
+            ENROLLMENT_REASON_CONSENT_LIVENESS_DEPENDENCY_UNMET,
+            "enrollment consent liveness authority has no current record for this consent",
+        )
+    if (
+        current.consent_id != consent.consent_id
+        or current.owner_subject_id != consent.owner_subject_id
+        or current.account_ref != consent.account_ref
+        or current.workspace_ref != consent.workspace_ref
+        or current.device_id != consent.device_id
+    ):
+        raise ControlPlaneContractError(
+            ENROLLMENT_REASON_CONSENT_SCOPE_MISMATCH,
+            "the server-owned consent record does not match the presented consent",
+        )
+    if not current.is_active(now=now):
+        raise ControlPlaneContractError(
+            ENROLLMENT_REASON_CONSENT_WITHDRAWN,
+            "the enrollment consent is not currently active",
         )
 
 
@@ -733,7 +831,7 @@ def issue_connector_enrollment_challenge(
     consent: ConnectorEnrollmentConsent | None,
     device_id: Any,
     pairing_authority: BrokerPairingAuthorityPort,
-    consent_liveness_reverified_by_existing_path: bool = False,
+    consent_liveness_authority: CanonicalConsentLivenessPort,
     now: datetime,
     ttl_seconds: int = MAX_PAIRING_TTL_SECONDS,
 ) -> ConnectorEnrollmentChallengeReceipt:
@@ -752,6 +850,10 @@ def issue_connector_enrollment_challenge(
     challenge belongs to. Nothing about that binding is taken from a client, and
     ``device_id`` must be the computer the consent names: one consent enrolls one
     computer, and a second computer needs its own explicit consent.
+
+    Consent liveness is re-verified here against the server-owned record
+    through the injected ``consent_liveness_authority``; the previous
+    caller-asserted boolean is gone, so a handler cannot relax this refusal.
     """
 
     observed_at = _aware(now, "now")
@@ -766,7 +868,9 @@ def issue_connector_enrollment_challenge(
     assert decision.consent_id is not None
     assert isinstance(consent, ConnectorEnrollmentConsent)
 
-    _require_consent_liveness(consent_liveness_reverified_by_existing_path)
+    _reverify_consent_liveness(
+        consent_liveness_authority, consent=consent, now=observed_at
+    )
 
     requested_device = _safe_ref(device_id, "device_id")
     if not consent.enrolls_device(requested_device):
@@ -782,7 +886,11 @@ def issue_connector_enrollment_challenge(
         maximum=MAX_PAIRING_TTL_SECONDS,
     )
 
-    for method_name in ("issue_enrollment_challenge", "enrollment_binding", "redeem_enrollment"):
+    for method_name in (
+        "issue_enrollment_challenge",
+        "enrollment_binding",
+        "redeem_enrollment",
+    ):
         if not callable(getattr(pairing_authority, method_name, None)):
             raise ControlPlaneContractError(
                 ENROLLMENT_REASON_DEPENDENCY_UNAVAILABLE,
@@ -971,10 +1079,10 @@ def redeem_connector_enrollment(
     scope_resolver: CanonicalEnrollmentScopePort,
     consent: ConnectorEnrollmentConsent | None,
     pairing_authority: BrokerPairingAuthorityPort,
+    consent_liveness_authority: CanonicalConsentLivenessPort,
     challenge_id: Any,
     device_id: Any,
     proof_ref: Any,
-    consent_liveness_reverified_by_existing_path: bool = False,
     now: datetime,
 ) -> ConnectorEnrollmentReceipt:
     """Redeem one enrollment challenge into a canonical Broker binding.
@@ -992,6 +1100,11 @@ def redeem_connector_enrollment(
     read back with a non-mutating probe, and are checked **before** the mutating
     redemption; the authority re-verifies them itself before it registers
     anything. A client-supplied challenge receipt is never accepted as proof.
+
+    Consent liveness is re-verified here — at redemption time, not only at
+    issuance — against the server-owned record through the injected
+    ``consent_liveness_authority``; there is no boolean a caller could pass to
+    relax it.
     """
 
     observed_at = _aware(now, "now")
@@ -1013,8 +1126,6 @@ def redeem_connector_enrollment(
     scope = _require_eligible(decision)
     assert decision.consent_id is not None
     assert isinstance(consent, ConnectorEnrollmentConsent)
-
-    _require_consent_liveness(consent_liveness_reverified_by_existing_path)
 
     if not consent.enrolls_device(device_id):
         raise ControlPlaneContractError(
@@ -1057,6 +1168,13 @@ def redeem_connector_enrollment(
             "canonical pairing authority returned an invalid enrollment binding",
         )
     _verify_server_binding(binding, consent=consent, scope=scope, device_id=device_id)
+
+    # The server-owned binding matched, so re-verify the consent's CURRENT
+    # liveness against the durable record before the single mutating call: a
+    # consent withdrawn after issuance can no longer release this challenge.
+    _reverify_consent_liveness(
+        consent_liveness_authority, consent=consent, now=observed_at
+    )
 
     try:
         enrollment, credential = pairing_authority.redeem_enrollment(
@@ -1153,9 +1271,12 @@ def connector_enrollment_dependencies() -> dict[str, Any]:
         "challenge_consent_binding": "canonical pairing authority pending-challenge record",
         "challenge_binding_durability": "same as the canonical pairing challenge; no second store",
         "consent_liveness_authority": CONSENT_LIVENESS_AUTHORITY,
-        "consent_liveness_authority_implemented": False,
+        "consent_liveness_authority_implemented": CONSENT_LIVENESS_AUTHORITY_IMPLEMENTED,
+        "consent_liveness_port_required": CONSENT_LIVENESS_PORT_REQUIRED,
+        "consent_liveness_boolean_override_removed": (
+            CONSENT_LIVENESS_BOOLEAN_OVERRIDE_REMOVED
+        ),
         "consent_liveness_default_deny": True,
-        "consent_liveness_reverified_is_an_input": True,
         "self_asserted_consent_liveness_trusted": False,
         "server_bound_challenge_required": True,
         "challenge_receipt_is_not_authority": True,
@@ -1200,6 +1321,7 @@ def connector_enrollment_boundary() -> dict[str, Any]:
             ENROLLMENT_BINDING_VERIFIED_BEFORE_BROKER_MUTATION
         ),
         "consent_liveness_authority": CONSENT_LIVENESS_AUTHORITY,
+        "consent_liveness_port_required": CONSENT_LIVENESS_PORT_REQUIRED,
         "consent_liveness_default_deny": CONSENT_LIVENESS_DEFAULT_DENY,
         "self_asserted_consent_liveness_trusted": SELF_ASSERTED_CONSENT_LIVENESS_TRUSTED,
         "execution_approval_owner": EXECUTION_APPROVAL_OWNER,
@@ -1234,12 +1356,15 @@ __all__ = [
     "CANONICAL_SCOPE_AUTHORITY",
     "CONNECTOR_ENROLLMENT_CONSENT_VERSION",
     "CONNECTOR_ENROLLMENT_CONTRACT_VERSION",
+    "CanonicalConsentLivenessPort",
     "CanonicalEnrollmentScopePort",
     "ConnectorEnrollmentChallengeReceipt",
     "ConnectorEnrollmentConsent",
     "ConnectorEnrollmentDecision",
     "ConnectorEnrollmentReceipt",
     "ConnectorEnrollmentScope",
+    "UnconfiguredCanonicalConsentLivenessPort",
+    "UnconfiguredCanonicalEnrollmentScopePort",
     "DEVICE_LIFECYCLE_AUTHORITY",
     "ENROLLMENT_REASON_BINDING_ABSENT",
     "ENROLLMENT_REASON_BINDING_OWNER_MISMATCH",
@@ -1266,7 +1391,6 @@ __all__ = [
     "ENROLLMENT_REFUSAL_FALLBACK",
     "ONLINE_PROOF_AUTHORITY",
     "UNSUPPORTED_AUTH_METHODS",
-    "UnconfiguredCanonicalEnrollmentScopePort",
     "BrokerPairingEnrollmentBinding",
     "connector_enrollment_boundary",
     "connector_enrollment_dependencies",

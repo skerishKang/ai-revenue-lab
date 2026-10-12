@@ -626,6 +626,19 @@ class InMemoryBrokerPairingAuthority:
         proof_ref = _proof_ref(proof_ref)
         now = _aware(now, "now")
         pending = self._pending_challenge(challenge_id)
+        # #4139 S1 (CENTRAL second review): an enrollment-bound challenge may be
+        # consumed only through the scoped `redeem_enrollment` route, which
+        # re-verifies the server-owned consent/owner/scope/device binding.
+        # The generic route refuses it **before** any mutation: a possession
+        # proof alone is not the current enrollment consent authorization, so
+        # a valid one-time code must never register a Broker binding while
+        # bypassing those checks. Ordinary (unbound) pairing challenges keep
+        # their exact previous behaviour.
+        if pending.enrollment_binding is not None:
+            raise ControlPlaneContractError(
+                "enrollment_bound_challenge_requires_scoped_redemption",
+                "an enrollment-bound challenge must be redeemed through the scoped enrollment route",
+            )
         return self._redeem_pending(
             challenge_id=challenge_id,
             device_id=device_id,
@@ -894,6 +907,9 @@ class InMemoryBrokerPairingAuthority:
             "enrollment_consent_binding_supported": True,
             "enrollment_binding_binds_consent_owner_scope_device": True,
             "enrollment_binding_verified_before_mutation": True,
+            # CENTRAL second review: a challenge carrying an enrollment binding
+            # is refused on the generic route before any mutation.
+            "enrollment_bound_challenge_rejected_on_generic_route": True,
             "client_supplied_enrollment_receipt_trusted": False,
             "second_enrollment_store": False,
             "production_ready": False,

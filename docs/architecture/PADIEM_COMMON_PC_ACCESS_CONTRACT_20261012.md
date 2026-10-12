@@ -467,18 +467,44 @@ ENROLLMENT_BINDING_VERIFIED_BEFORE_BROKER_MUTATION = True
 | another account/workspace scope | `enrollment_binding_scope_mismatch` |
 | consent names another computer | `enrollment_consent_device_mismatch` |
 | no enrollment binding on the challenge | `enrollment_binding_absent` |
-| consent liveness not re-verified | `enrollment_consent_liveness_dependency_unmet` |
+| consent liveness authority not configured / no record / not active | `enrollment_consent_liveness_dependency_unmet` (no record / unreadable) or `enrollment_consent_withdrawn` (record not active) |
+| durable consent record does not match the presented consent | `enrollment_consent_scope_mismatch` |
+| enrollment-bound challenge presented to the generic pairing route | `enrollment_bound_challenge_requires_scoped_redemption` |
 
-**Declared dependency, default deny.** Re-checking a consent against its current
-record (was it withdrawn *after* issuance?) belongs to a server-trusted consent
-authority that does not exist yet. `CONSENT_LIVENESS_AUTHORITY` names it,
+**Declared dependency, default deny — as a port, not a boolean.** Re-checking a
+consent against its current record (was it withdrawn *after* issuance?) belongs
+to a server-trusted consent authority. `CONSENT_LIVENESS_AUTHORITY` names it,
 `consent_liveness_authority_implemented=False`, and both issuance and redemption
-refuse until a trusted caller attests that it re-verified the consent there
-(`consent_liveness_reverified_by_existing_path` is an **input**, like
-`p01_verified_by_existing_path` — never proof, and it can only relax a refusal).
-A *signed* enrollment receipt is likewise declared `not implemented`: this
-contract accepts **no** client-supplied receipt at all, so there is nothing for a
-Connector or browser to forge.
+refuse until that authority is wired as the injected
+`CanonicalConsentLivenessPort` (`current_consent(consent_id, now)`), which
+re-reads the durable record and is compared field-by-field with the presented
+consent. The previous `consent_liveness_reverified_by_existing_path` **boolean
+was removed**: a public handler must never be able to relax a refusal with an
+input it cannot verify. The unconfigured port fails closed and the port is a
+server wiring dependency — never a browser or Connector value. A *signed*
+enrollment receipt is likewise declared `not implemented`: this contract accepts
+**no** client-supplied receipt at all, so there is nothing for a Connector or
+browser to forge.
+
+### CENTRAL second review — legacy `redeem` bypass closed (same PR)
+
+**Blocker:** `InMemoryBrokerPairingAuthority.redeem` (the generic, legacy pairing
+route) called the shared redemption primitive without checking whether the
+pending challenge carried an enrollment binding, so a caller holding a valid
+one-time enrollment code could consume it on the generic route and register a
+Broker binding while bypassing every consent/scope/liveness check.
+
+**Fix:** the generic `redeem` now fails closed **before** any mutation when
+`pending.enrollment_binding is not None`, with the bounded reason
+`enrollment_bound_challenge_requires_scoped_redemption`. Only the scoped
+`redeem_enrollment` route may consume an enrollment-bound challenge, and it
+still re-verifies every binding field first. Ordinary (unbound) pairing
+challenges keep their exact previous behaviour, codes and messages.
+
+```text
+ENROLLMENT_BOUND_CHALLENGE_GENERIC_ROUTE_REFUSAL = enrollment_bound_challenge_requires_scoped_redemption
+LEGACY_UNBOUND_CHALLENGE_PATH                   = unchanged
+```
 
 ### Evidence / limits (S1 follow-up)
 
@@ -490,6 +516,17 @@ Connector or browser to forge.
   refused, a challenge minted without an enrollment binding cannot be redeemed as
   an enrollment, another owner or workspace refuses, and every one of those
   asserts **0 Broker bindings** and an unconsumed challenge.
+- CENTRAL second review tests: S1-46 … S1-53 — the generic route refuses an
+  enrollment-bound challenge (0 bindings, challenge unconsumed, then the scoped
+  route redeems it), an ordinary pairing challenge still redeems on the legacy
+  route, legacy-route refusals stay bounded, a consent withdrawn after issuance
+  cannot release the challenge (re-granting it restores redemption), a durable
+  record that does not match the presented consent refuses, the liveness
+  authority is consulted at issuance and at redemption, no public entry point
+  accepts a liveness boolean, and an unreachable or misbehaving liveness
+  authority fails closed.
+- Authority-level tests in `tests/test_local_agent_broker_pairing.py` cover the
+  same guard from the canonical pairing authority itself.
 - The secure end-to-end path is unchanged and still green: verified session +
   consent → issue → redeem → the credential authenticates against the canonical
   Broker.
