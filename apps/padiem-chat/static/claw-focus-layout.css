@@ -511,6 +511,16 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .c
   color: var(--claw-focus-accent);
   font-size: 13px;
 }
+/* #4545: the create disclosure measured 20.8px tall in every theme — the
+   smallest target on the automation surface, and the entry point to the whole
+   create form. Only the box is floored: the 13px label, the native disclosure
+   marker and the glass styling above keep their exact values. Scoped to the
+   Automation panel, so the Calendar/Claw summaries elsewhere are untouched. */
+.app-shell[data-state="claw"] #clawAutomation .calendar-record-summary {
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 11px 2px;
+}
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .calendar-record-hint {
   color: var(--claw-focus-muted);
   opacity: 1;
@@ -519,7 +529,10 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .c
   color: #44515d;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .calendar-record-field :is(input, textarea, select) {
-  min-height: 40px;
+  /* #4545: measured 40px under glass while the shared calendar.css floor is
+     44px, so the identical control rendered 44px in light/dark. Align the
+     floor only; the 13px label, padding and glass surface are unchanged. */
+  min-height: 44px;
   padding: 8px 11px;
   border: 1px solid rgba(255, 255, 255, .60);
   border-radius: 11px;
@@ -589,7 +602,9 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .c
   color: #8c4141;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :is(.claw-automation-rule-toggle, .claw-automation-rule-edit) {
-  min-height: 40px;
+  /* #4545: measured 40px under glass against the shared 44px min-height /
+     44px min-width floor in claw-workspace.css. Floor the box only. */
+  min-height: 44px;
   padding: 0 14px;
   border: 1px solid rgba(255, 255, 255, .54);
   border-radius: 11px;
