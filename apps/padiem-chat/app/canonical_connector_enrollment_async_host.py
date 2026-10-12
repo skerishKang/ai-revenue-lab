@@ -208,6 +208,30 @@ class CanonicalConnectorEnrollmentAsyncHost:
                 503, "enrollment_credential_handoff_failed",
                 "Device credential handoff failed; canonical Broker binding was revoked.",
             ) from handoff_error
+        # The PC might have finished storing its credential just as the
+        # canonical OWNER withdrew consent. Recheck the original session and
+        # grant one final time after authenticated installation acknowledgement,
+        # and revoke the already-created Broker binding on any change. This is
+        # compensating recovery, not a cross-DO atomic transaction.
+        try:
+            await self._identity.authorize_connector_enrollment_redeem(
+                challenge_id=challenge, consent_id=authorization["consent_id"],
+                device_id=device, owner_ref=authorization["owner_subject_id"],
+                account_ref=authorization["account_ref"],
+                workspace_ref=authorization["workspace_ref"],
+            )
+        except Exception as exc:
+            try:
+                await self._broker.revoke_binding(binding_ref=enrollment["binding_ref"])
+            except Exception as revoke_exc:
+                raise IdentityBridgeError(
+                    503, "enrollment_consent_race_revoke_unconfirmed",
+                    "Consent changed after installation; canonical Broker revocation was not confirmed.",
+                ) from revoke_exc
+            raise IdentityBridgeError(
+                403, "enrollment_consent_changed_during_redeem",
+                "Current owner consent changed after protected device installation.",
+            ) from exc
         # Crucially, no raw credential is returned to the caller or a browser.
         return {
             "binding_ref": enrollment["binding_ref"],
