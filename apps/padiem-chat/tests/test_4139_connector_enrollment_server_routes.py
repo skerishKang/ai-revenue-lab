@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+from dataclasses import replace
 import json
 from types import SimpleNamespace
 
@@ -92,7 +93,7 @@ class BrowserSession:
         now = datetime(2026, 10, 12, 9, 0, tzinfo=timezone.utc)
         return AuthSessionSnapshot(
             session_id="session.test", product_id="b54-padiem-claw",
-            subject=CanonicalSubjectRef(subject_type=SubjectType.USER, subject_id="usr.test"),
+            subject=CanonicalSubjectRef(subject_type=SubjectType.USER, subject_id="sub.canonical.test"),
             issued_at=now - timedelta(hours=1), expires_at=now + timedelta(days=1),
             state=AuthSessionState.ACTIVE, tenant_id="tenant.test",
         )
@@ -102,9 +103,12 @@ def test_authenticated_issue_requires_csrf_and_closed_request_shape(monkeypatch)
     monkeypatch.setattr(routes, "auth_ready", lambda r: True)
     monkeypatch.setattr(routes, "current_user_id", lambda r: "usr.test")
     server = Server()
+    async def current_b54(request):
+        del request
+        return SimpleNamespace(product_user_id="usr.test", auth_session=BrowserSession().resolve(None))
+    monkeypatch.setattr(routes, "resolve_current_b54_canonical_session", current_b54)
     state = SimpleNamespace(
         connector_enrollment_server=server,
-        connector_enrollment_browser_session=BrowserSession(),
         connector_enrollment_browser_csrf=Verify(False),
     )
     status, body, _ = response(routes.connector_enrollment_issue, Request({"device_id": "device.1"}, state=state))
@@ -121,7 +125,33 @@ def test_authenticated_issue_requires_csrf_and_closed_request_shape(monkeypatch)
     assert status == 200
     assert body["enrollment"]["pairing_code"] == "a" * 32
     assert len(server.issue_calls) == 1
+    # Signed browser's product user and canonical subject IDs are different.
+    assert server.issue_calls[0][0].subject.subject_id == "sub.canonical.test"
     assert headers["cache-control"].startswith("no-store")
+
+
+@pytest.mark.parametrize("case", ["missing", "user_swap", "cross_product", "revoked", "no_tenant"])
+def test_browser_issue_refuses_invalid_server_canonical_session(monkeypatch, case):
+    monkeypatch.setattr(routes, "auth_ready", lambda r: True)
+    monkeypatch.setattr(routes, "current_user_id", lambda r: "usr.test")
+    source = BrowserSession().resolve(None)
+    async def current_b54(request):
+        del request
+        if case == "missing":
+            return None
+        if case == "user_swap":
+            return SimpleNamespace(product_user_id="usr.other", auth_session=source)
+        if case == "cross_product":
+            return SimpleNamespace(product_user_id="usr.test", auth_session=replace(source, product_id="b62"))
+        if case == "revoked":
+            return SimpleNamespace(product_user_id="usr.test", auth_session=replace(source, state=AuthSessionState.REVOKED))
+        return SimpleNamespace(product_user_id="usr.test", auth_session=replace(source, tenant_id=None))
+    monkeypatch.setattr(routes, "resolve_current_b54_canonical_session", current_b54)
+    server = Server()
+    state = SimpleNamespace(connector_enrollment_server=server, connector_enrollment_browser_csrf=Verify(True))
+    status, body, _ = response(routes.connector_enrollment_issue, Request({"device_id": "device.1"}, state=state))
+    assert status == 401 and body["error"]["code"] == "canonical_session_required"
+    assert not server.issue_calls
 
 
 def test_device_redeem_requires_attested_gateway_and_forbids_scope_claim():
