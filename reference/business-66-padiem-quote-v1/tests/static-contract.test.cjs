@@ -271,14 +271,17 @@ check(easy.includes("Core.computeDraftTotals(guided.draft)") &&
 check(css.includes(".easy-chip {") && css.includes("min-height: 44px;"),
   "EASY_MODE_CONTRACT: quick chips meet 44px touch target");
 check(!easy.includes("fetch(") && !easy.includes("XMLHttpRequest") &&
-      !intake.includes("fetch(") && !intake.includes("XMLHttpRequest"),
-  "EASY_MODE_CONTRACT: no network/model call in Easy/file intake mode");
+      !intake.includes("fetch(") && !intake.includes("XMLHttpRequest") &&
+      account.includes('chat: chatMessages') && account.includes('api("/b66/ai/chat"'),
+  "EASY_MODE_CONTRACT: no direct fetch in Easy/file intake; chat uses authenticated account bridge");
 check(!easy.includes("아직 자동 해석 모델은 연결 전") &&
-      easy.includes("ready && ready.ready") &&
-      easy.includes("승인된 견적서와 회사 정보를 사용해 AI로 작성합니다.") &&
+      easy.includes("runModelDialogue(text, bridge)") &&
+      easy.includes("bridge.chat(history)") &&
+      easy.includes("!readiness.ready || lastEasyView") &&
+      easy.includes("return bridge.interpret(text)") &&
       easy.includes("startGuidedIfReady(text)") &&
-      easy.includes("return bridge.interpret(text)"),
-  "EASY_MODE_CONTRACT: approved CGI routes to the model; missing CGI starts an honest guided draft");
+      !easy.includes("안녕하세요! 견적 내용을 편하게 알려주세요."),
+  "EASY_MODE_CONTRACT: signed-in no-CGI model chat works; approved one-shot CGI stays available");
 check(easy.includes("자동 분석 서버는 아직 활성화 전") &&
       easy.includes("이 파일은 외부로 전송되지 않습니다."),
   "EASY_MODE_CONTRACT: selected file is truthful about non-live analysis");
