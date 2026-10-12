@@ -82,7 +82,7 @@ def test_no_evidence_is_reported_as_empty_not_as_a_successful_search():
     result = outcome(StubProvider([]), "최신 철근 시세 알려줘")
     assert result.status == "empty"
     assert result.sources == ()
-    assert " usable 근거를 얻지 못했습니다" in _envelope(result)
+    assert "쓸 만한 근거를 얻지 못했습니다" in _envelope(result)
     assert "검색했다고 말하거나" not in _envelope(result)
 
 

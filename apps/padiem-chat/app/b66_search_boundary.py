@@ -86,7 +86,7 @@ def _envelope(outcome: B66SearchOutcome) -> str:
         )
     elif outcome.status == "empty":
         head = (
-            "서버가 공개 웹 검색을 수행했지만 usable 근거를 얻지 못했습니다. 검색에 성공한 것처럼 "
+            "서버가 공개 웹 검색을 수행했지만 쓸 만한 근거를 얻지 못했습니다. 검색에 성공한 것처럼 "
             "말하지 말고, 현재 확인이 불가능하다고 알리세요."
         )
     elif outcome.status == "failed":
