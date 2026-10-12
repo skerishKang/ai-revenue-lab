@@ -706,7 +706,7 @@ class B14Client:
             raise ChatRuntimeError(422, "model_route_unavailable", "AI 모델 경로를 확인할 수 없습니다.")
         if (
             not isinstance(messages, list)
-            or not 1 <= len(messages) <= 32
+            or not messages
             or any(
                 not isinstance(m, dict)
                 or set(m) != {"role", "content"}
