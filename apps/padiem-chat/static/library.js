@@ -40,6 +40,7 @@
   let signedIn = false;
   let projectFilesReady = false;
   let authSignature = "";
+  let lastAuthProjection = null;
   let activeTab = "files";
   let generation = 0;
   let loading = false;
@@ -80,6 +81,10 @@
     empty: () => copy(
       "아직 저장된 파일이 없습니다. 프로젝트에 파일을 추가하면 여기에 표시됩니다.",
       "No saved files yet. Files added to a project will appear here.",
+    ),
+    incompleteEmpty: () => copy(
+      "확인한 프로젝트에서 파일을 찾지 못했습니다. 전체 목록을 확인한 것은 아닙니다.",
+      "No files found among the checked projects. This is not a complete listing.",
     ),
     truncated: () => copy(
       `저장된 프로젝트가 많아 최근 ${MAX_PROJECTS_READ}개까지만 확인했습니다.`,
@@ -188,7 +193,11 @@
       return;
     }
     if (!rows.length) {
-      setNote(TEXT.empty());
+      // A 20-project cap or a failed file read is NOT a truthful empty account.
+      setNote((truncated || partialFailure)
+        ? [TEXT.incompleteEmpty(), partialFailure ? TEXT.partial() : "",
+           truncated ? TEXT.truncated() : ""].filter(Boolean).join(" · ")
+        : TEXT.empty());
       return;
     }
     setNote([
@@ -349,6 +358,14 @@
   function applyAuthState(auth) {
     const nextSignedIn = Boolean(auth && auth.loaded === true && auth.authenticated === true);
     const nextProjectFilesReady = Boolean(auth && auth.projectFilesReady === true);
+    // The public capability projection intentionally omits the user ID. A
+    // refreshed auth snapshot is a NEW frozen object even when signed-in and
+    // storage-ready booleans (and the visible account name) stay identical.
+    // Treat every new auth projection as a session boundary to avoid showing
+    // another owner's previously rendered filenames after a direct switch.
+    const nextProjection = auth && typeof auth === "object" ? auth : null;
+    const projectionChanged = nextProjection !== lastAuthProjection;
+    lastAuthProjection = nextProjection;
     signedIn = nextSignedIn;
     projectFilesReady = nextProjectFilesReady;
     const signature = `${nextSignedIn}/${nextProjectFilesReady}`;
@@ -356,10 +373,15 @@
     authSignature = signature;
     // Login as well as logout crosses here, so a new account can never inherit
     // the previous owner's rendered rows.
-    if (changed) invalidate();
+    if (changed || projectionChanged) invalidate();
     applyAvailability();
     if (!signedIn && isOpen()) leaveLibrary();
-    if (isOpen()) render();
+    if (isOpen()) {
+      render();
+      // If the same signed-in state was refreshed while Library is open,
+      // show fresh owner-scoped data instead of retaining an older DOM.
+      if (projectionChanged && signedIn && activeTab === "files") loadFiles();
+    }
   }
 
   function readCapabilityAuth() {
