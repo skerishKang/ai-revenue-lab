@@ -483,3 +483,23 @@ footer{color:#526574}
 @media(prefers-reduced-motion:reduce){
   .nav-link{transition:none}
 }
+
+
+/* S1 B14 full inventory: badges describe B14 source state, never product access. */
+.model-state{
+  flex:none;
+  font-size:10px;
+  font-weight:750;
+  color:#276e54;
+  background:rgba(55,160,107,.12);
+  border:1px solid rgba(38,132,93,.20);
+  padding:4px 7px;
+  border-radius:8px;
+}
+.model-item.model-inactive .model-state{
+  background:rgba(123,135,148,.15);
+  border-color:rgba(105,117,129,.25);
+  color:#52626e;
+}
+.model-item.model-inactive .model-dot{color:#8b99a6}
+.model-item.model-inactive .model-words small{color:#677884}

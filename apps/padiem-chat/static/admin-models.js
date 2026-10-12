@@ -16,6 +16,7 @@
   const ACTIONS = Object.freeze({allow: "허용", block: "차단", inherit: "상속"});
   const state = {
     catalog: [], products: null, selected: null,
+    selectableIds: new Set(), fullInventory: false,
     authorized: false, pendingRequest: 0,
   };
 
@@ -85,11 +86,17 @@
     $("previewResult").className = "preview";
   }
 
+  function canPreview() {
+    return state.authorized && state.selected &&
+      state.selectableIds.has(state.selected.model_id) &&
+      state.selected.owner_excluded !== true && state.selected.b14_enabled !== false;
+  }
+
   function updateSelection() {
     state.pendingRequest += 1;
     const selected = chosenTargets().length;
     $("targetCount").textContent = String(selected);
-    $("previewBtn").disabled = !(state.authorized && state.selected && selected);
+    $("previewBtn").disabled = !(canPreview() && selected);
     clearPreview();
   }
 
@@ -116,7 +123,7 @@
     state.selected = state.catalog.find((m) => m.model_id === modelId) || null;
     $("selectedModel").textContent = state.selected?.name || "왼쪽에서 모델을 선택하세요";
     $("selectedId").textContent = state.selected?.model_id || "미선택";
-    $("editorForm").disabled = !(state.authorized && state.selected);
+    $("editorForm").disabled = !canPreview();
     renderCatalog();
     renderPlacement();
     updateSelection();
@@ -138,10 +145,14 @@
       row.type = "button";
       const selected = state.selected?.model_id === model.model_id;
       row.setAttribute("aria-pressed", String(selected));
+      row.classList.toggle("model-inactive", model.b14_enabled === false || model.owner_excluded === true);
       const words = node("span", null, "model-words");
       words.append(node("strong", model.name), node("small", model.model_id));
-      row.append(node("span", "●", "model-dot"), words,
-        node("span", selected ? "✓" : "›", "model-chevron"));
+      const status = model.owner_excluded === true ? "제외" :
+        model.b14_enabled === false ? "OFF" : state.fullInventory ? "ON" : "";
+      row.append(node("span", "●", "model-dot"), words);
+      if (status) row.append(node("span", status, "model-state"));
+      row.append(node("span", selected ? "✓" : "›", "model-chevron"));
       row.addEventListener("click", () => chooseModel(model.model_id));
       root.append(row);
     }
@@ -150,8 +161,15 @@
   function positions() {
     const modelId = state.selected?.model_id;
     if (!modelId) return [];
+    const b14 = state.selected?.owner_excluded === true ?
+      {name: "B14 공통", status: "선택 제외", detail: "B14 소유자 정책상 제외된 모델", kind: "blocked"} :
+      state.selected?.b14_enabled === false ?
+      {name: "B14 공통", status: "OFF", detail: "B14 등록은 됐지만 활성 목록에서 제외됨", kind: "blocked"} :
+      state.selectableIds.has(modelId) ?
+      {name: "B14 공통", status: "조회됨", detail: "B14 선택 가능 목록에 있음; 실제 실행 성공과 별개", kind: "ready"} :
+      {name: "B14 공통", status: "미확인", detail: "제품 선택 가능 여부 확인 필요", kind: "unknown"};
     const result = [
-      {name: "B14 공통", status: "조회됨", detail: "선택 가능한 B14 모델", kind: "ready"},
+      b14,
       {name: "중앙 정책", status: "미연결", detail: "등급별 정책 조회 전", kind: "unknown"},
       {name: "Padiem Chat", status: "미연결", detail: "실제 배정 여부 미확인", kind: "unknown"},
       {name: "Claw", status: "미연결", detail: "제품별 최종 실행 허용 미확인", kind: "unknown"},
@@ -246,7 +264,7 @@
 
   async function preview() {
     const targets = chosenTargets();
-    if (!state.authorized || !state.selected || !targets.length) return;
+    if (!canPreview() || !targets.length) return;
     const seq = ++state.pendingRequest;
     $("previewBtn").disabled = true;
     clearPreview();
@@ -268,7 +286,7 @@
       $("previewResult").replaceChildren(node("strong", "미리보기 실패"), node("small", String(err.message)));
     } finally {
       if (seq === state.pendingRequest) {
-        $("previewBtn").disabled = !state.authorized || !state.selected || !chosenTargets().length;
+        $("previewBtn").disabled = !canPreview() || !chosenTargets().length;
       }
     }
   }
@@ -277,6 +295,8 @@
     const seq = ++state.pendingRequest;
     state.authorized = false;
     state.catalog = [];
+    state.selectableIds = new Set();
+    state.fullInventory = false;
     state.products = null;
     state.selected = null;
     $("modelCount").textContent = "—";
@@ -303,12 +323,24 @@
       if (seq !== state.pendingRequest) return;
       if (result.mode !== "read_only" || result.write_enabled !== false ||
           !Array.isArray(result.b14?.models)) throw new Error("invalid_snapshot");
-      state.catalog = result.b14.models;
+      const complete = result.b14.complete_registration_inventory === true &&
+        Array.isArray(result.b14.registered_models);
+      state.selectableIds = new Set(result.b14.models.map((m) => m.model_id));
+      state.fullInventory = complete;
+      state.catalog = complete ? result.b14.registered_models : result.b14.models;
+      if (!state.catalog.every((m) => typeof m.model_id === "string" &&
+            typeof m.name === "string" &&
+            (!complete || (typeof m.b14_enabled === "boolean" &&
+             typeof m.owner_excluded === "boolean")))) {
+        throw new Error("invalid_snapshot");
+      }
       state.products = result.products;
       state.authorized = true;
       $("modelCount").textContent = String(state.catalog.length);
-      $("flowB14").textContent = state.catalog.length + "개 조회";
-      $("catalogStatus").textContent = "B14 조회";
+      $("flowB14").textContent = state.catalog.length + (complete ? "개 등록" : "개 선택 가능");
+      $("catalogStatus").textContent = complete ?
+        "ON " + state.catalog.filter((m) => m.b14_enabled && !m.owner_excluded).length +
+        " · OFF " + state.catalog.filter((m) => !m.b14_enabled).length : "일부 목록";
       $("modeBadge").textContent = "미리보기 전용";
       renderCatalog();
       renderSources();
