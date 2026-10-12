@@ -400,7 +400,7 @@
         }
         addMessage("user", text);
         addMessage("assistant", "AI 대화가 아직 연결되지 않았습니다. 선택한 모델과 로그인 상태를 확인해 주세요.");
-        setInput(submitFreeFormText, "다시 질문해 주세요");
+        setInput((reply) => runPrimaryInterpretation(reply, { cgi: true }), "다시 질문해 주세요");
       }
       return;
     }
@@ -424,7 +424,7 @@
           { label: "질문받으며 새 견적", action: () => startGuidedIfReady(text) },
           { label: "처음으로", action: showHome }
         ]);
-        setInput(submitFreeFormText, "견적 내용을 입력하거나 아래 작업을 선택해 주세요");
+        setInput((reply) => runPrimaryInterpretation(reply, { cgi: true }), "견적 내용을 입력하거나 아래 작업을 선택해 주세요");
       } else {
         addMessage("user", text);
         addMessage("assistant", runtimeNotReadyMessage(readiness));
@@ -452,7 +452,7 @@
           addMessage("assistant", typeof result.question === "string" && result.question.trim()
             ? result.question
             : "견적에 필요한 값을 조금 더 알려 주세요.");
-          setInput(submitFreeFormText, result.code === "needs_clarification"
+          setInput((reply) => runPrimaryInterpretation(reply, { cgi: true }), result.code === "needs_clarification"
             ? "견적 내용을 다시 적어 주세요"
             : "답변을 적어 주세요");
           return;
@@ -464,7 +464,7 @@
           addMessage("assistant", unavailable
             ? "사용 가능한 AI 모델 목록을 불러오지 못했습니다. 새로고침 후 다시 확인해 주세요."
             : "입력창 오른쪽에서 AI 모델을 선택한 뒤 다시 보내 주세요.");
-          setInput(submitFreeFormText, "견적 내용을 입력해 주세요");
+          setInput((reply) => runPrimaryInterpretation(reply, { cgi: true }), "견적 내용을 입력해 주세요");
           composer.value = text;
           if (picker && !picker.disabled) picker.focus();
           return;
@@ -481,7 +481,7 @@
         // pending quote. Don't tell the customer to retype their whole request.
         const pending = bridge && typeof bridge.pendingQuote === "function"
           ? bridge.pendingQuote() : null;
-        setInput(submitFreeFormText, pending
+        setInput((reply) => runPrimaryInterpretation(reply, { cgi: true }), pending
           ? "방금 답변을 다시 적어 주세요"
           : "다시 한 문장으로 적어 주세요");
         return;
@@ -489,14 +489,14 @@
       const replace = App.replaceDraft(result.draft, {});
       if (!replace || replace.ok !== true) {
         addMessage("assistant", "생성된 견적을 화면에 반영하지 못했습니다. 다시 시도해 주세요.");
-        setInput(submitFreeFormText, "다시 한 문장으로 적어 주세요");
+        setInput((reply) => runPrimaryInterpretation(reply, { cgi: true }), "다시 한 문장으로 적어 주세요");
         return;
       }
       addResultReview(result.draft, false);
     }).catch(() => {
       if (requestScopeRevision !== accountScopeRevision) return;
       addMessage("assistant", "해석 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.");
-      setInput(submitFreeFormText, "다시 한 문장으로 적어 주세요");
+      setInput((reply) => runPrimaryInterpretation(reply, { cgi: true }), "다시 한 문장으로 적어 주세요");
     }).finally(() => {
       // Keep only the completed result, the missing-field question, or the
       // failure notice. A stale "작성하고 있습니다" misleads customers.
