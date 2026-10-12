@@ -173,3 +173,201 @@ footer{color:#b7c3d1;font-size:10px;padding:21px 0 2px}
  .settings-bottom{grid-template-columns:1fr}
 }
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important}}
+
+
+/* #4428 Glass tone parity — mirrors the active PADIEM Chat Glass palette.
+ * Presentation only: no theme switch, model policy, auth or runtime behavior.
+ * Admin remains a clear operator dashboard, without chat portrait/background art.
+ */
+:root {
+  --bg:#aeb6bf;
+  --surface:rgba(239,243,246,.79);
+  --ink:#17202a;
+  --sub:#53606c;
+  --line:rgba(255,255,255,.54);
+  --brand:#2f6f99;
+  --brand-soft:rgba(121,188,231,.23);
+  --muted:#63717e;
+  --good:#177357;
+  --warn:#936020;
+  --bad:#a7444b;
+}
+body {
+  background-color:var(--bg);
+  background-image:
+    linear-gradient(180deg,rgba(26,34,42,.20),rgba(255,255,255,.05) 38%,rgba(29,38,47,.18)),
+    radial-gradient(circle at 20% 22%,rgba(255,255,255,.35),transparent 35%),
+    radial-gradient(circle at 76% 62%,rgba(105,156,189,.21),transparent 40%),
+    linear-gradient(135deg,#88939d 0%,#b8c1c8 36%,#d5d9dc 58%,#909aa4 100%);
+  background-attachment:fixed;
+}
+.side {
+  background:linear-gradient(180deg,rgba(43,51,60,.92),rgba(43,54,65,.90));
+  color:#f6f8fa;
+  border-color:rgba(255,255,255,.22);
+  box-shadow:inset -1px 0 rgba(255,255,255,.09);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+}
+.brand{color:#f6f8fa}
+.brand-symbol{background:linear-gradient(145deg,#568dc4,#3668a1);color:#fff}
+.nav-link{color:#d6dfe7}
+.nav-link:hover{background:rgba(244,247,249,.13);color:#fff}
+.nav-link.selected{background:rgba(121,188,231,.24);color:#fff}
+.nav-link.selected .nav-icon{color:#bce5ff}
+.side-bottom{border-color:rgba(255,255,255,.22);color:#d0d9e0}
+.side-caption{color:#a7b4c0}
+.header{
+  background:rgba(47,56,65,.63);
+  border-color:rgba(255,255,255,.22);
+  color:#f7f9fb;
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+.preview-pill{
+  background:rgba(247,250,252,.15);
+  border:1px solid rgba(255,255,255,.26);
+  color:#f1f5f8;
+}
+.icon-button{
+  background:rgba(244,247,249,.14);
+  border-color:rgba(255,255,255,.26);
+  color:#f7f9fb;
+}
+.icon-button:hover{background:rgba(121,188,231,.27);color:#fff}
+.intro h1{color:#17202a}
+.intro p{color:#52606c}
+.small-count{
+  background:rgba(244,247,249,.68);
+  border-color:rgba(255,255,255,.52);
+  color:#586a79;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.36);
+}
+.small-count strong{color:#1b2a35}
+.route-panel,.panel,.advanced{
+  background:linear-gradient(155deg,rgba(244,247,249,.86),rgba(228,234,238,.77));
+  border:1px solid rgba(255,255,255,.61);
+  box-shadow:0 18px 48px rgba(28,38,49,.12),inset 0 1px 0 rgba(255,255,255,.65);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+.section-head h2{color:#1a2832}
+.muted{color:#60707c}
+.text-button,.inline-help{color:#2e688e}
+.route-step{
+  background:rgba(249,251,252,.47);
+  border-color:rgba(255,255,255,.57);
+}
+.route-icon,.product-icon{
+  background:rgba(121,188,231,.22);
+  color:#37769a;
+}
+.route-step small{color:#637481}
+.route-arrow{color:#59778a}
+.tiny-status,.mode-label{
+  background:rgba(219,230,236,.80);
+  color:#526879;
+}
+.search{
+  background:rgba(248,250,251,.55);
+  border-color:rgba(255,255,255,.70);
+  color:#647888;
+}
+.search:focus-within{
+  border-color:#73b5d8;
+  box-shadow:0 0 0 3px rgba(121,188,231,.27);
+}
+.search input{color:#17202a}
+.search input::placeholder{color:#687a87;opacity:1}
+.model-item{
+  background:rgba(247,250,252,.47);
+  border-color:rgba(255,255,255,.60);
+  color:#1b2b36;
+}
+.model-item:hover{
+  background:rgba(234,243,249,.82);
+  border-color:rgba(121,188,231,.58);
+}
+.model-item[aria-pressed=true]{
+  background:rgba(188,215,230,.67);
+  border-color:rgba(79,135,171,.75);
+}
+.model-words small{color:#607586}
+.model-dot{color:#21806a}
+.model-chevron{color:#587184}
+.model-item[aria-pressed=true] .model-chevron{color:#276c97}
+.chosen,.source-card,.placement-item{
+  background:rgba(246,249,250,.53);
+  border-color:rgba(255,255,255,.65);
+}
+.chosen strong,.placement-item strong,.source-card strong{color:#1c2c37}
+.chosen small{color:#647887}
+.target{
+  background:rgba(247,250,252,.49);
+  border-color:rgba(255,255,255,.63);
+  color:#1b2b36;
+}
+.target:hover{
+  background:rgba(225,239,246,.72);
+  border-color:rgba(121,188,231,.55);
+}
+.target:has(input:checked){
+  background:rgba(180,214,232,.65);
+  border-color:rgba(76,140,174,.73);
+}
+.switch-track{background:#aab6c1}
+.target input:checked + .switch-track{background:#397da7}
+.setting-item label,.setting-label{color:#536a79}
+.setting-item select{
+  background:rgba(250,252,253,.70);
+  color:#20333f;
+  border-color:rgba(255,255,255,.76);
+}
+.segmented{
+  background:rgba(190,202,212,.36);
+  border-color:rgba(255,255,255,.60);
+}
+.segmented span{color:#53697a}
+.segmented input:checked + span{
+  background:rgba(247,250,252,.89);
+  color:#205e85;
+  box-shadow:0 2px 7px rgba(25,45,59,.12);
+}
+.btn.primary{background:#376e93;color:#fff}
+.btn.primary:not(:disabled):hover{background:#2a5d80}
+.btn.primary:disabled{background:#92b4cb;color:#f9fcff;opacity:.75}
+.caption-note{color:#556978}
+.preview{background:rgba(227,244,235,.82);border-color:rgba(67,140,108,.35)}
+.preview.error{background:rgba(254,239,241,.86)}
+.position-status{color:#695f4a}
+.placement-item.ready .position-status{color:#176e54}
+.placement-item.blocked .position-status{color:#9d343b}
+.advanced summary{color:#486b83}
+.source-card .connected{color:#176e54}
+.source-card .unknown{color:#7c715a}
+.source-card small{color:#627687}
+footer{color:#526574}
+.notice{
+  background:rgba(252,236,238,.85);
+  border-color:rgba(172,69,78,.37);
+  color:#90313b;
+}
+.help-dialog{
+  background:rgba(237,242,245,.97);
+  border-color:rgba(255,255,255,.72);
+  box-shadow:0 24px 80px rgba(17,35,47,.32);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+}
+.help-head{border-color:rgba(255,255,255,.72)}
+.help-head .icon-button{
+  background:rgba(64,82,96,.10);
+  border-color:rgba(62,82,99,.20);
+  color:#213a4d;
+}
+.help-body p{color:#485e6d}
+@media(max-width:650px){
+  .side{background:rgba(43,53,63,.94);border-color:rgba(255,255,255,.20)}
+  .nav-link.selected{background:rgba(121,188,231,.27);color:#fff}
+  .header{background:rgba(47,56,65,.70)}
+}
