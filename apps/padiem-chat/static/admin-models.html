@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0c1221">
+  <meta name="referrer" content="no-referrer">
+  <title>모델 관리 · PADIEM Control Center</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./admin-models.css">
+  <script src="./admin-models.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <aside class="side">
+      <a class="brand" href="./"><span class="brand-symbol">P</span><span><strong>PADIEM</strong><small>CONTROL CENTER</small></span></a>
+      <div class="side-section">워크스페이스</div>
+      <nav aria-label="관리 메뉴">
+        <a class="nav-link" href="./"><span>⌂</span> 서비스로 돌아가기</a>
+        <a class="nav-link selected" href="./admin-models.html" aria-current="page"><span>◈</span> 모델 관리 <span class="nav-pill">S0</span></a>
+        <div class="nav-inactive"><span>▦</span> 회원 및 권한 <small>준비 중</small></div>
+        <div class="nav-inactive"><span>▤</span> 요청·사용량 <small>준비 중</small></div>
+        <div class="nav-inactive"><span>⌘</span> Connector <small>준비 중</small></div>
+      </nav>
+      <div class="side-bottom">
+        <div class="side-guard">권한 보호</div>
+        <p>관리 데이터는 별도 중앙 관리자 인증 이후에만 조회됩니다.</p>
+        <a href="./" class="side-back">← PADIEM Chat</a>
+      </div>
+    </aside>
+    <main class="main">
+      <header class="header">
+        <div class="crumb">관리자 <span>/</span> 모델 관리</div>
+        <div class="header-actions">
+          <span id="modeBadge" class="mode-badge">접속 확인 중</span>
+          <button type="button" id="refreshBtn" class="btn ghost">↻ 상태 새로고침</button>
+        </div>
+      </header>
+      <div class="content">
+        <div class="intro">
+          <div>
+            <p class="eyebrow">MODEL CONTROL CENTER</p>
+            <h1>모델 흐름을 한 곳에서 관리</h1>
+            <p class="subtitle">B14 실행 상태, 중앙 등급 정책, 제품별 모델 배정을 한 화면에서 확인하고 필요한 대상만 선택합니다.</p>
+          </div>
+          <span class="scope-label">정책 변경 · 미리보기 전용</span>
+        </div>
+        <div class="notice" role="status" id="accessNotice" aria-live="polite">검증된 중앙 관리자 권한과 B14 모델 목록을 확인하고 있습니다.</div>
+        <section class="stats" aria-label="현재 상태">
+          <div class="stat"><span>선택 가능한 B14 모델</span><strong id="modelCount">—</strong><small>등록 전체 수와 다를 수 있음</small></div>
+          <div class="stat"><span>정책 데이터 연결</span><strong id="sourceCount">—</strong><small>제품 5개 영역 중</small></div>
+          <div class="stat"><span>선택된 적용 대상</span><strong id="targetCount">0</strong><small>변경 전 검증 대상</small></div>
+          <div class="stat"><span>실제 운영 변경</span><strong class="warn">OFF</strong><small>저장·실행 경로 미배선</small></div>
+        </section>
+        <section class="flow-panel" aria-label="모델 실행 흐름">
+          <div class="section-head"><div><p class="eyebrow">MODEL ROUTING</p><h2>모델의 세 위치</h2></div><span class="muted">실행 가능 여부는 모든 권한 경계를 통과해야 합니다</span></div>
+          <div class="flow-grid">
+            <div class="flow-step"><div class="flow-dot">01</div><strong>중앙 Control Plane</strong><p>Free · Plus · Pro · Max 및 제품 접근 정책</p><span id="flowCentral">정책 소스 확인 필요</span></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><div class="flow-dot">02</div><strong>제품별 선택</strong><p>Chat · Claw · B66 · B14 Router</p><span id="flowProducts">서로 다른 정책 유지</span></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><div class="flow-dot">03</div><strong>B14 실행 엔진</strong><p>정확한 모델 ID · 공급사 호출 · 최종 가용성</p><span id="flowB14">선택 가능 모델 조회 대기</span></div>
+          </div>
+        </section>
+        <div class="work-grid">
+          <section class="panel catalog" aria-labelledby="catalogHeading">
+            <div class="section-head"><div><p class="eyebrow">B14 MODEL ROSTER</p><h2 id="catalogHeading">모델 카탈로그</h2></div><span id="catalogStatus" class="mini-status">불러오는 중</span></div>
+            <label class="search"><span aria-hidden="true">⌕</span><input id="modelSearch" placeholder="모델 이름·ID 검색" type="search" autocomplete="off" aria-label="모델 검색"></label>
+            <p class="helper">실제 B14의 허용·가용 상태인 모델만 표시합니다. B14 전체 등록 목록이나 비밀키는 제공하지 않습니다.</p>
+            <div id="modelList" class="model-list" aria-label="실제 B14 모델 목록"><p class="placeholder">관리자 권한을 확인하고 있습니다.</p></div>
+          </section>
+          <section class="panel editor" aria-labelledby="editorHeading">
+            <div class="section-head"><div><p class="eyebrow">SCOPED POLICY PLAN</p><h2 id="editorHeading">선택 영역별 정책 편집</h2></div><span class="mini-status">실제 적용 없음</span></div>
+            <div class="chosen"><span>선택한 모델</span><strong id="selectedModel">왼쪽에서 모델을 선택하세요</strong><small id="selectedId">미선택</small></div>
+            <fieldset id="editorForm" disabled>
+              <legend>변경할 영역 선택 <small>중복 선택 가능</small></legend>
+              <div id="targetGrid" class="target-grid"></div>
+              <div class="edit-grid">
+                <label>대상 회원 등급
+                  <select id="tierSelect"><option>FREE</option><option selected>PLUS</option><option>PRO</option><option>MAX</option></select>
+                </label>
+                <label>변경 제안
+                  <select id="actionSelect"><option value="allow">허용 제안</option><option value="block">차단 제안</option><option value="inherit">상위 정책 따르기</option></select>
+                </label>
+              </div>
+            </fieldset>
+            <button type="button" class="btn primary" id="previewBtn" disabled>선택 정책 검증 · 미리보기</button>
+            <div id="previewResult" class="preview" aria-live="polite"><span class="muted">모델과 영역을 선택하면 B14의 실제 목록에 대해 서버가 변경안을 검증합니다.</span></div>
+            <div class="editor-foot"><span class="foot-mark">!</span> 승인된 변경안을 서버에 저장하거나 제품 실행에 반영하는 기능은 중앙 RBAC·감사 연동 후 개방합니다.</div>
+          </section>
+        </div>
+        <section class="panel source-panel" aria-labelledby="sourceHeading">
+          <div class="section-head"><div><p class="eyebrow">POLICY PROVENANCE</p><h2 id="sourceHeading">제품별 정책 소스</h2></div><span class="muted">확인되지 않은 등급은 임의로 채우지 않습니다</span></div>
+          <div id="sourceList" class="source-list"><p class="placeholder">소스 연결 상태를 확인하고 있습니다.</p></div>
+        </section>
+        <footer>© PADIEM AI · 관리 권한 확인 전까지 데이터가 표시되지 않습니다 · 작성된 변경안은 적용되지 않습니다</footer>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
