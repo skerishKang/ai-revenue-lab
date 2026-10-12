@@ -187,22 +187,20 @@ class D1WebXlsxP01OwnerDecisionStore:
         if not isinstance(waiting, dict):
             return False
         now = datetime.now(timezone.utc).isoformat()
-        await _await(self.db.prepare(
+        # Single atomic CAS: only THIS exact armed reservation can be released.
+        # UPDATE...RETURNING is the durable proof; a later SELECT could otherwise
+        # mistake an already released/stale receipt for this call's own success.
+        row = _row_to_dict(await _await(self.db.prepare(
             "UPDATE claw_web_xlsx_p01_decision_receipts "
             "SET released_at=?,updated_at=? "
             "WHERE request_ref=? AND user_id=? AND workspace_id=? AND run_id=? "
             "AND selection_ref=? AND source_sha256=? AND pause_id=? "
-            "AND state='dispatching' AND released_at IS NULL"
+            "AND state='dispatching' AND released_at IS NULL "
+            "RETURNING request_ref"
         ).bind(now, now, waiting["request_ref"], waiting["user_id"],
                waiting["workspace_id"], waiting["run_id"], waiting["selection_ref"],
-               waiting["source_sha256"], waiting["pause_id"]).run())
-        row = _row_to_dict(await _await(self.db.prepare(
-            "SELECT released_at,state FROM claw_web_xlsx_p01_decision_receipts "
-            "WHERE request_ref=? AND user_id=? AND workspace_id=? AND pause_id=?"
-        ).bind(waiting["request_ref"], waiting["user_id"],
-               waiting["workspace_id"], waiting["pause_id"]).first()))
-        return bool(row and row.get("state") == "dispatching"
-                    and row.get("released_at") is not None)
+               waiting["source_sha256"], waiting["pause_id"]).first()))
+        return bool(row and row.get("request_ref") == waiting["request_ref"])
 
     async def commit(self, *, waiting: dict[str, Any], outcome: str,
                      verified: str) -> bool:
