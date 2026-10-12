@@ -150,3 +150,24 @@ def test_pages_relay_and_easy_chat_never_forge_a_saved_skill():
     assert '"/b66/ai/chat"' in account
     assert '"/api/padiem/b66/ai/chat"' in worker
     assert "안녕하세요! 견적 내용을 편하게 알려주세요." not in easy
+
+
+def test_usage_admission_is_checked_before_model_registry_or_provider():
+    from types import SimpleNamespace
+
+    settings, client, resolver, model = setup()
+    sign_in(settings, client)
+
+    class RefusingGate:
+        async def authorize(self, **kwargs):
+            return SimpleNamespace(
+                allowed=False, status_code=429, code="rate_limited",
+                user_message="잠시 후 다시 이용해 주세요.", retry_after_seconds=60,
+            )
+
+    client.app.state.usage_gate_enforced = True
+    client.app.state.usage_gate = RefusingGate()
+    result = client.post("/api/b66/ai/chat", json=payload())
+    assert result.status_code == 429
+    assert result.json()["error"]["code"] == "rate_limited"
+    assert resolver.calls == model.calls == []
