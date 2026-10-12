@@ -13,6 +13,7 @@ from starlette.responses import StreamingResponse
 from kagent.p01_adapter import P01AdapterError, P01DispatchClass
 from padiem_ai_core.orchestration_events import OrchestrationEvent
 
+from .claw_general_routes import _MODEL_HOLD_ERROR_CODES, _MODEL_HOLD_USER_MESSAGE
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 
 MAX_RELAY_EVENTS = 128
@@ -34,6 +35,20 @@ def _event_projection(event: OrchestrationEvent) -> dict[str, object]:
         raise ValueError("untrusted P01 event")
     public = event.to_public_dict()
     return {**{key: public[key] for key in _ALLOWED_FIELDS}, "delivery": "live"}
+
+
+def _bounded_engine_failure() -> dict[str, str]:
+    return {"code": "engine_execution_failed", "message": "Engine 실행에 실패했습니다."}
+
+
+def _public_failure(exc: P01AdapterError) -> dict[str, str]:
+    # A #3568 model HOLD never reached Engine/B14 and already refunded quota, so
+    # it is the general route's bounded `tier_unavailable` product state. The
+    # live relay has sent SSE headers and cannot return that 503, so the same
+    # public code has to survive here instead of an engine-failure claim.
+    if exc.code in _MODEL_HOLD_ERROR_CODES:
+        return {"code": "tier_unavailable", "message": _MODEL_HOLD_USER_MESSAGE}
+    return _bounded_engine_failure()
 
 
 def live_claw_sse(
@@ -76,13 +91,13 @@ def live_claw_sse(
                     await _refund_active_reservation()
                 else:
                     _clear_reservation()
-                await queue.put(("error", "engine_execution_failed"))
+                await queue.put(("error", _public_failure(exc)))
             except asyncio.CancelledError:
                 _clear_reservation()
                 raise
             except Exception:
                 _clear_reservation()
-                await queue.put(("error", "engine_execution_failed"))
+                await queue.put(("error", _bounded_engine_failure()))
             finally:
                 _clear_reservation()
 
@@ -101,9 +116,7 @@ def live_claw_sse(
                     if (verified_terminal is not None
                             and verified_terminal["kind"] in ("run_failed", "run_cancelled")):
                         yield _frame("p01_event", verified_terminal)
-                    yield _frame("error", {
-                        "error": {"code": payload, "message": "Engine 실행에 실패했습니다."}
-                    })
+                    yield _frame("error", {"error": payload})
                     return
                 status = payload.projection.status.value
                 if status == "waiting_approval":
