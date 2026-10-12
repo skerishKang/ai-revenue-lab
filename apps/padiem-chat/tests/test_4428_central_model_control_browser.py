@@ -148,3 +148,45 @@ def test_non_global_user_denied_without_private_catalog_or_mutation():
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
         finally:
             browser.close()
+
+
+@pytest.mark.parametrize("width", [1440, 768, 390])
+def test_glass_tone_matches_chat_palette_without_changing_admin_behavior(width):
+    """Glass background/charcoal rail/soft translucent surfaces, no overflow."""
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch(headless=True)
+        try:
+            page = browser.new_page(viewport={"width": width, "height": 850})
+            seen = _mock(page)
+            page.goto("https://chat.test/admin-models.html")
+            page.get_by_role("heading", name="모델과 사용 위치").wait_for()
+            values = page.evaluate("""() => {
+              const root = getComputedStyle(document.documentElement);
+              const side = getComputedStyle(document.querySelector('.side'));
+              const panel = getComputedStyle(document.querySelector('.panel'));
+              const header = getComputedStyle(document.querySelector('.header'));
+              return {
+                glassBg: root.getPropertyValue('--bg').trim(),
+                mutedAccent: root.getPropertyValue('--brand').trim(),
+                side: side.backgroundImage,
+                sideColor: side.backgroundColor,
+                panel: panel.backgroundImage,
+                backdrop: panel.backdropFilter,
+                header: header.backgroundColor,
+                overflow: document.documentElement.scrollWidth > innerWidth
+              };
+            }""")
+            assert values["glassBg"] == "#aeb6bf"
+            assert values["mutedAccent"] == "#2f6f99"
+            if width <= 650:
+                assert "rgba(43, 53, 63" in values["sideColor"]
+            else:
+                assert "rgba(43, 51, 60" in values["side"]
+            assert "rgba(244, 247, 249" in values["panel"]
+            assert "blur(" in values["backdrop"]
+            assert "rgba(47, 56, 65" in values["header"]
+            assert values["overflow"] is False
+            assert [request["method"] for request in seen] == ["GET", "GET"]
+            assert not page.locator("#previewResult").is_visible()
+        finally:
+            browser.close()
