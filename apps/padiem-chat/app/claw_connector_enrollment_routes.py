@@ -149,6 +149,59 @@ def _redeem_success(receipt: dict[str, Any]) -> JSONResponse:
     return _json({"ok": True, "enrollment": public}, 200)
 
 
+# Public consent responses must never echo arbitrary private Identity DO data.
+# The private typed RPC validates a known schema today, but route-level closed
+# projection is a separate defense against future adapter drift, fake ports,
+# or accidentally wired service bindings. Neither owner/tenant/session nor
+# credential fields may cross the customer HTTP boundary.
+_PUBLIC_CONSENT_FIELDS = frozenset({
+    "consent_id", "device_id", "granted_at", "withdrawn_at",
+    "dispatch_authorized", "grants_read", "grants_write",
+})
+
+
+def _public_consent_success(
+    receipt: Any, *, expected_device_id: str | None = None,
+    expected_consent_id: str | None = None, revoked: bool = False,
+) -> JSONResponse:
+    if type(receipt) is not dict or set(receipt) != _PUBLIC_CONSENT_FIELDS:
+        return _error(503, "connector_enrollment_receipt_invalid")
+    for name in ("consent_id", "device_id"):
+        value = receipt[name]
+        if not isinstance(value, str) or _SAFE_VALUE.fullmatch(value) is None:
+            return _error(503, "connector_enrollment_receipt_invalid")
+    if (
+        (expected_device_id is not None and receipt["device_id"] != expected_device_id)
+        or (expected_consent_id is not None and receipt["consent_id"] != expected_consent_id)
+        or receipt["dispatch_authorized"] is not False
+        or receipt["grants_read"] is not False
+        or receipt["grants_write"] is not False
+    ):
+        return _error(503, "connector_enrollment_receipt_invalid")
+    try:
+        granted = datetime.fromisoformat(receipt["granted_at"].replace("Z", "+00:00"))
+        if granted.tzinfo is None or granted.utcoffset() is None:
+            raise ValueError("missing timezone")
+        withdrawn = receipt["withdrawn_at"]
+        if revoked:
+            withdrawn = datetime.fromisoformat(withdrawn.replace("Z", "+00:00"))
+            if withdrawn.tzinfo is None or withdrawn.utcoffset() is None or withdrawn < granted:
+                raise ValueError("invalid revocation timestamp")
+        elif withdrawn is not None:
+            raise ValueError("grant must still be active")
+    except (KeyError, AttributeError, TypeError, ValueError, OverflowError):
+        return _error(503, "connector_enrollment_receipt_invalid")
+    return _json({"ok": True, "consent": {
+        "consent_id": receipt["consent_id"],
+        "device_id": receipt["device_id"],
+        "granted_at": granted.isoformat(),
+        "withdrawn_at": withdrawn.isoformat() if revoked else None,
+        "dispatch_authorized": False,
+        "grants_read": False,
+        "grants_write": False,
+    }}, 200)
+
+
 async def _payload(request: Request, keys: frozenset[str]) -> dict[str, str] | None:
     try:
         declared = request.headers.get("content-length")
@@ -241,9 +294,7 @@ async def connector_enrollment_consent_grant(request: Request) -> JSONResponse:
             session_id=session.session_id, device_id=wire["device_id"], confirmed=True,
             confirmation_version=wire["confirmation_version"],
         )
-        if not isinstance(receipt, dict) or receipt.get("device_id") != wire["device_id"] or receipt.get("dispatch_authorized") is not False:
-            return _error(503, "connector_enrollment_receipt_invalid")
-        return _json({"ok": True, "consent": receipt}, 200)
+        return _public_consent_success(receipt, expected_device_id=wire["device_id"])
     except Exception as exc:
         code = getattr(exc, "code", "")
         return _error(403 if code in {"connector_enrollment_explicit_consent_required", "enrollment_consent_required", "canonical_tenant_membership_inactive"} else 503,
@@ -266,9 +317,7 @@ async def connector_enrollment_consent_revoke(request: Request) -> JSONResponse:
             session_id=session.session_id, consent_id=wire["consent_id"], confirmed=True,
             confirmation_version=wire["confirmation_version"],
         )
-        if not isinstance(receipt, dict) or receipt.get("consent_id") != wire["consent_id"] or receipt.get("dispatch_authorized") is not False:
-            return _error(503, "connector_enrollment_receipt_invalid")
-        return _json({"ok": True, "consent": receipt}, 200)
+        return _public_consent_success(receipt, expected_consent_id=wire["consent_id"], revoked=True)
     except Exception as exc:
         code = getattr(exc, "code", "")
         return _error(403 if code in {"connector_enrollment_explicit_consent_required", "enrollment_consent_required", "enrollment_consent_withdrawn"} else 503,
