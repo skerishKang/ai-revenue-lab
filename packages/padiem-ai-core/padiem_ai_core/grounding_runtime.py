@@ -14,7 +14,9 @@ from .web_runtime import (
     normalize_public_url,
 )
 
-MAX_GROUNDED_EVIDENCE_CONTEXT_CHARS = 12_000
+# Evidence context is no longer arbitrarily capped at 12k characters.
+# 5.5MB is the downstream transport resource envelope, NOT model capacity.
+MAX_GROUNDED_EVIDENCE_CONTEXT_CHARS = 5_500_000
 MAX_GROUNDED_SOURCES = MAX_RESULTS
 MAX_RESEARCH_QUERIES = 3
 MAX_RESEARCH_SOURCES = 10

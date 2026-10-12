@@ -756,7 +756,7 @@ class Default(WorkerEntrypoint):
                 # which case WorkspaceDocumentStore stays None (fail closed).
                 r2_binding = binding_value(self.env, WORKSPACE_R2_BINDING_NAME)
 
-                history_store = D1HistoryStore(db_binding) if db_binding is not None else None
+                history_store = D1HistoryStore(db_binding, full_context_bucket=r2_binding) if db_binding is not None else None
                 project_file_store = D1ProjectFileStore(db_binding) if db_binding is not None else None
                 saved_output_store = D1SavedOutputStore(db_binding) if db_binding is not None else None
                 identity_shadow_store = D1IdentityShadowStore(db_binding) if db_binding is not None else None

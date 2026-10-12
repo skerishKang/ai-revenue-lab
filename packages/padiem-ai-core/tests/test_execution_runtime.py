@@ -95,7 +95,7 @@ def test_caller_system_role_is_rejected_before_b14() -> None:
 
 
 def test_additional_system_context_is_bounded_and_stays_one_role() -> None:
-    with pytest.raises(ValueError, match="bounded context limit"):
+    with pytest.raises(ValueError, match="transport safety envelope"):
         request(additional_system_context="x" * (MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS + 1))
 
     executor = FakeExecutor()

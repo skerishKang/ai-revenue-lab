@@ -10,7 +10,7 @@ import sys
 import httpx
 import pytest
 
-from app.b14_client import B14Client, ChatRuntimeError
+from app.b14_client import B14Client, ChatRuntimeError, MAX_ADDITIONAL_SYSTEM_CONTEXT_BYTES
 from app.b66_registered_model_boundary import (
     B14QuoteExactModelExecutor,
     B66ModelRouteError,
@@ -106,7 +106,7 @@ def test_exact_quote_local_failure_refunds_before_any_service_post(failure):
     elif failure == "messages":
         kwargs["messages"] = [{"role": "assistant", "content": "invalid"}]
     elif failure == "context":
-        kwargs["additional_system_context"] = "x" * 14_001
+        kwargs["additional_system_context"] = "x" * (MAX_ADDITIONAL_SYSTEM_CONTEXT_BYTES + 1)
     elif failure == "invalid_shape":
         kwargs["messages"] = [{"role": "user", "content": "valid", "unsupported_field": "reject"}]
     elif failure == "serialization":

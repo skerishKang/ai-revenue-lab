@@ -26,7 +26,7 @@ def request_with_store(store):
     return SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(history_store=store)))
 
 
-def test_claw_long_completed_answer_keeps_bounded_explicit_preview(monkeypatch):
+def test_claw_long_completed_answer_passes_full_text_to_owner_history_store(monkeypatch):
     store = CaptureHistory()
     req = request_with_store(store)
     monkeypatch.setattr(routes, "auth_ready", lambda _request: True)
@@ -42,11 +42,13 @@ def test_claw_long_completed_answer_keeps_bounded_explicit_preview(monkeypatch):
     uid, prior, user_preview, answer_preview, project_id = store.exchanges[0]
     assert uid == "canonical-user"
     assert prior is None and project_id is None
-    for source, preview in ((long_request, user_preview), (long_answer, answer_preview)):
-        assert len(preview) <= MAX_HISTORY_MESSAGE_CHARS
-        assert preview.startswith(source[:100])
-        assert "\n[저장 미리보기:" in preview
-        assert preview != source
+    # The route must not pre-truncate: the real D1HistoryStore saves a labeled
+    # preview and the exact long bytes into private R2 for later model turns.
+    assert len(user_preview) > MAX_HISTORY_MESSAGE_CHARS
+    assert len(answer_preview) > MAX_HISTORY_MESSAGE_CHARS
+    assert user_preview == long_request
+    assert answer_preview == long_answer
+
 
 
 def test_claw_short_completed_answer_preserves_text_exactly(monkeypatch):

@@ -312,7 +312,12 @@ def test_reference_context_has_hard_bounded_budget():
     attachment = DocumentAttachment("big.txt", "text/plain", "x" * MAX_DOCUMENT_CHARS, MAX_DOCUMENT_CHARS)
     context = combine_reference_context("p" * 2200, "f" * 2600, build_document_context(attachment))
     assert context is not None
-    assert len(context) <= MAX_REFERENCE_CONTEXT_CHARS
+    # Default model context preserves the complete provider-bound references.
+    assert len(context) > MAX_REFERENCE_CONTEXT_CHARS
+    # An explicitly requested presentation excerpt retains its old bounded contract.
+    bounded = combine_reference_context("p" * 15000, "x" * 15000, "y" * 15000,
+                                        max_chars=MAX_REFERENCE_CONTEXT_CHARS)
+    assert len(bounded) <= MAX_REFERENCE_CONTEXT_CHARS
 
 
 def test_frontend_contract_distinguishes_binary_composer_from_text_only_project_files_and_keeps_phase1_css():
