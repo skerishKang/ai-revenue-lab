@@ -314,7 +314,7 @@
     // #B66 first-use UX: a greeting is not an instruction to replace the
     // account's in-progress quotation. Do not start Guided, clear a draft,
     // call B14, or ask permission to overwrite a saved quote for "hi".
-    if (/^(?:hi|hey|hello|하이|안녕(?:하세요)?|반가워요|반갑습니다)[\\s.!?~]*$/iu.test(text)) {
+    if (/^(?:hi|hey|hello|하이|안녕(?:하세요)?|반가워요|반갑습니다)[\s.!?~]*$/iu.test(text)) {
       if (lastEasyView === "home") {
         lastEasyView = "free-form";
         recordProductState("free-form");
