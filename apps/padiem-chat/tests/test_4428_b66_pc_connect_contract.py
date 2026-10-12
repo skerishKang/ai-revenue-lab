@@ -12,7 +12,7 @@ def test_b66_pc_view_reuses_canonical_claw_projection_without_execution():
     assert '"b66QuotePcStatus"' in js
     assert '"b66QuotePcList"' in js
     assert '"b66QuotePcRefresh"' in js
-    assert 'PC_DIRECTORY_PATH = "/api/claw/local-access/devices"' in js
+    assert 'PC_DIRECTORY_PATH = "/api/b66/connect/devices"' in js
     assert "window.PadiemClawLocalHandoff?.deriveDeviceDirectory" in js
     assert html.index('./claw-local-handoff.js') < html.index('./b66-quote-runtime.js')
     assert 'credentials: "same-origin"' in js
