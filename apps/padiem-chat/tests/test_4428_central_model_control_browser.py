@@ -288,3 +288,31 @@ def test_full_b14_inventory_shows_off_but_never_enables_preview(width):
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
         finally:
             browser.close()
+
+
+def test_central_d1_rules_visible_as_stored_only_not_executing():
+    import copy
+    view = copy.deepcopy(CATALOG)
+    view["products"]["central"] = {
+        "status": "stored_only", "source": "central_model_policy_d1",
+        "revision": 4, "rule_count": 1,
+        "rules": [{"product": "chat", "tier": "PRO", "model_id": "google/gemini-safe",
+                   "action": "allow"}],
+        "runtime_enforced": False, "write_enabled": False,
+    }
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch(headless=True)
+        try:
+            page = browser.new_page(viewport={"width": 390, "height": 850})
+            seen = _mock(page, snapshot=view)
+            page.goto("https://chat.test/admin-models.html")
+            page.locator("#flowCentral").get_by_text("원장 연결 · 미적용").wait_for()
+            page.locator("details.advanced summary").click()
+            assert "저장 원장만 연결" in page.locator("#sourceList").inner_text()
+            assert "실제 실행 미적용" in page.locator("#sourceList").inner_text()
+            assert not page.locator("#previewResult").is_visible()
+            assert page.get_by_text("미리보기 전용", exact=True).count() >= 1
+            assert [call["method"] for call in seen] == ["GET", "GET"]
+            assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+        finally:
+            browser.close()

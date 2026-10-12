@@ -171,6 +171,27 @@ async def central_model_admin_snapshot(request: Request) -> JSONResponse:
         "b14-router": {"status": "not_wired", "source": "b14_external_router"},
         "b66": {"status": "unavailable", "source": "b66_membership_d1"},
     }
+    central_store = getattr(request.app.state, "central_model_policy_store", None)
+    central_snapshot_fn = getattr(central_store, "snapshot", None)
+    if callable(central_snapshot_fn):
+        try:
+            central_snapshot = central_snapshot_fn("padiem-global")
+            policy = (await central_snapshot if inspect.isawaitable(central_snapshot)
+                      else central_snapshot)
+            from padiem_control_plane.model_assignment_policy import ModelPolicySnapshot
+            if isinstance(policy, ModelPolicySnapshot) and policy.workspace_id == "padiem-global":
+                products["central"] = {
+                    "status": "stored_only", "source": "central_model_policy_d1",
+                    "revision": policy.revision, "rule_count": len(policy.rules),
+                    "runtime_enforced": False, "write_enabled": False,
+                    "rules": [rule.public() for rule in policy.rules],
+                }
+        except Exception:
+            products["central"] = {
+                "status": "unavailable", "source": "central_model_policy_d1",
+                "runtime_enforced": False, "write_enabled": False,
+            }
+
     store = getattr(request.app.state, "b66_member_admin_store", None)
     read_policy = getattr(store, "model_policy", None)
     if callable(read_policy):

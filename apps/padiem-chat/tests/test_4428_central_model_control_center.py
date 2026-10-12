@@ -62,7 +62,7 @@ class B66Store:
         }
 
 
-def built_app(*, admin=None, resolver=None, store=None):
+def built_app(*, admin=None, resolver=None, store=None, central_store=None):
     settings = Settings.from_values(
         runtime_mode="mock", auth_mode="password", public_base_url=BASE,
         session_secret="4428-central-model-center-test-session-secret",
@@ -71,6 +71,7 @@ def built_app(*, admin=None, resolver=None, store=None):
     app = create_app(
         settings=settings, history_store=SimpleNamespace(),
         central_model_admin_authorizer=admin,
+        central_model_policy_store=central_store,
     )
     app.state.b14_model_choice_resolver = resolver if resolver is not None else Catalog()
     app.state.b66_member_admin_store = store
@@ -361,3 +362,57 @@ def test_global_role_requires_independent_trusted_email_and_canonical_d1():
             D1CentralModelAdminAuthorizer(DB(), verified_owner_email=configured)
     with pytest.raises(ValueError):
         D1CentralModelAdminAuthorizer(None, verified_owner_email="owner@example.com")
+
+
+def test_central_policy_d1_snapshot_is_stored_only_not_live_access():
+    from padiem_control_plane.model_assignment_policy import ModelChange, ModelPolicySnapshot
+
+    class CentralStore:
+        calls = []
+        async def snapshot(self, workspace_id):
+            self.calls.append(workspace_id)
+            return ModelPolicySnapshot(workspace_id, 7, (
+                ModelChange("central", "PRO", "google/gemini-safe", "allow"),
+                ModelChange("chat", "PRO", "google/gemini-safe", "block"),
+            ))
+
+    store = CentralStore()
+    app, settings = built_app(admin=GlobalAdmin(), central_store=store)
+    response = request(app, settings, "/api/admin/models/snapshot")
+    assert response.status_code == 200
+    raw = response.json()
+    assert raw["write_enabled"] is False
+    assert raw["policy_apply_enabled"] is False
+    central = raw["products"]["central"]
+    assert central["status"] == "stored_only"
+    assert central["runtime_enforced"] is False and central["write_enabled"] is False
+    assert central["revision"] == 7 and central["rule_count"] == 2
+    assert {"action": "block", "tier": "PRO", "model_id": "google/gemini-safe",
+            "product": "chat"} in central["rules"]
+    assert store.calls == ["padiem-global"]
+
+
+def test_central_policy_schema_unavailable_is_not_faked_as_zero():
+    class BrokenD1:
+        async def snapshot(self, workspace_id):
+            raise RuntimeError("no such table central_model_policy_state")
+
+    app, settings = built_app(admin=GlobalAdmin(), central_store=BrokenD1())
+    response = request(app, settings, "/api/admin/models/snapshot")
+    assert response.status_code == 200
+    central = response.json()["products"]["central"]
+    assert central["status"] == "unavailable"
+    assert central["runtime_enforced"] is False
+    assert "revision" not in central
+    assert "rules" not in central
+
+
+def test_anonymous_cannot_query_central_d1_even_if_store_is_wired():
+    class NeverRead:
+        async def snapshot(self, workspace_id):
+            raise AssertionError("unauthorized actor caused policy DB read")
+
+    app, settings = built_app(admin=GlobalAdmin(), central_store=NeverRead())
+    assert request(app, settings, "/api/admin/models/snapshot", owner=None).status_code == 401
+    app, settings = built_app(admin=GlobalAdmin(False), central_store=NeverRead())
+    assert request(app, settings, "/api/admin/models/snapshot").status_code == 403
