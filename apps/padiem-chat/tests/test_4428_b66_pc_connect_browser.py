@@ -87,6 +87,8 @@ def ready_page(browser, server, width=1280):
         # Mobile sidebar is off-canvas; open it via the real hamburger.
         page.locator("#mobileMenu").click()
     page.locator("#b66QuoteNavButton").wait_for(state="visible")
+    if width <= 640:
+        page.locator("#mobileMenu").click()
     page.locator("#b66QuoteNavButton").click()
     page.locator("#b66QuotePcToggle").wait_for(state="visible")
     return page, errors
