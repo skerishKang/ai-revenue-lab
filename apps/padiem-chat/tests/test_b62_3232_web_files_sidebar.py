@@ -455,6 +455,32 @@ const PROJECT_B = { id: "pb", name: "PB", instructions: "", created_at: "2026-09
     if (!s.dialogOpen) fail("MUST_OPEN_PROJECT_DIALOG");
     if (s.dialogTitle !== "project-edit-title") fail("MUST_REUSE_EDIT_FLOW:" + s.dialogTitle);
     if (s.projectFilesPanelHidden) fail("MUST_SHOW_EXISTING_FILES_PANEL");
+  } else if (mode === "account_switch_same_flags") {
+    dispatchAuth({ loaded: true, authenticated: true, historyReady: true, projectFilesReady: true });
+    await tick(30);
+    clickEntry();
+    await tick(60);
+    let s = snapshot();
+    if (s.rows.length !== 1 || s.rows[0] !== "A 소유 문서") fail("FIRST_OWNER_MISSING");
+    // Account B replaces A without a signed-out capability event. The two
+    // accounts project exactly the same authenticated/storage booleans.
+    FIXTURE.activeSession = "b";
+    dispatchAuth({ loaded: true, authenticated: true, historyReady: true, projectFilesReady: true });
+    await tick(60);
+    s = snapshot();
+    if (s.rows.some((name) => name.includes("A 소유"))) fail("STALE_OWNER_A_RENDERED:" + JSON.stringify(s.rows));
+    if (s.rows.length !== 1 || s.rows[0] !== "B 소유 문서") fail("NEW_OWNER_B_MISSING:" + JSON.stringify(s.rows));
+  } else if (mode === "truncated_empty") {
+    dispatchAuth({ loaded: true, authenticated: true, historyReady: true, projectFilesReady: true });
+    await tick(30);
+    clickEntry();
+    await tick(80);
+    const s = snapshot();
+    if (!s.truncated) fail("PROJECT_LIMIT_NOT_REPORTED");
+    if (s.rows.length !== 0) fail("EXPECTED_NO_FILES");
+    if (!/최근 20개/.test(s.note) || !/전체 목록을 확인한 것은 아닙니다/.test(s.note)) {
+      fail("INCOMPLETE_SCOPE_HIDDEN:" + s.note);
+    }
   } else if (mode === "account_switch") {
     dispatchAuth({ loaded: true, authenticated: true, historyReady: true, projectFilesReady: true });
     await tick(30);
@@ -566,3 +592,20 @@ def test_signed_in_library_lists_real_files_and_opens_the_canonical_project() ->
 
 def test_account_switch_drops_the_previous_owner_rows() -> None:
     _run_harness("account_switch", _SIGNED_IN_AUTH, _SESSIONS)
+
+def test_same_flag_account_switch_drops_stale_owner_rows_without_logout_event() -> None:
+    _run_harness("account_switch_same_flags", _SIGNED_IN_AUTH, _SESSIONS)
+
+
+def test_no_files_from_first_twenty_projects_never_claims_complete_empty_library() -> None:
+    sessions = {
+        "a": {
+            "projects": [
+                {"id": f"project_{index}", "name": f"Project {index}"}
+                for index in range(21)
+            ],
+            "filesByProject": {},
+        },
+        "b": _SESSIONS["b"],
+    }
+    _run_harness("truncated_empty", _SIGNED_IN_AUTH, sessions)
