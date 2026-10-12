@@ -151,6 +151,92 @@ def test_revoke_is_separate_explicit_owner_action_and_never_claims_device_offlin
     })
 
 
+def test_public_consent_success_projects_only_closed_fields(monkeypatch):
+    """Customer responses never receive private Identity-owned attributes."""
+    authority = ConsentAuthority()
+    setup_auth(monkeypatch)
+    status, result, headers = run(
+        routes.connector_enrollment_consent_grant,
+        Request(body(), app_state(authority=authority)),
+    )
+    assert status == 200 and headers["cache-control"].startswith("no-store")
+    assert set(result) == {"ok", "consent"}
+    assert set(result["consent"]) == {
+        "consent_id", "device_id", "granted_at", "withdrawn_at",
+        "dispatch_authorized", "grants_read", "grants_write",
+    }
+    assert result["consent"]["grants_read"] is False
+    assert result["consent"]["grants_write"] is False
+    assert result["consent"]["withdrawn_at"] is None
+
+
+@pytest.mark.parametrize("mutation", [
+    {"raw_device_credential": "NEVER_ECHO_CREDENTIAL"},
+    {"owner_subject_id": "NEVER_ECHO_OWNER"},
+    {"session_id": "NEVER_ECHO_SESSION"},
+    {"account_ref": "NEVER_ECHO_ACCOUNT"},
+    {"consent_id": None},
+    {"consent_id": "invalid consent id"},
+    {"device_id": "different-pc"},
+    {"dispatch_authorized": True},
+    {"grants_read": True},
+    {"grants_write": True},
+    {"withdrawn_at": NOW.isoformat()},
+    {"granted_at": "not-a-time"},
+    {"granted_at": "2026-10-12T10:00:00"},
+])
+def test_grant_rejects_untrusted_identity_receipt_without_echo(monkeypatch, mutation):
+    """Route-level validation must not rely on the private typed adapter."""
+    class Tampered(ConsentAuthority):
+        async def grant_connector_enrollment_consent(self, **kwargs):
+            value = await super().grant_connector_enrollment_consent(**kwargs)
+            return {**value, **mutation}
+
+    setup_auth(monkeypatch)
+    authority = Tampered()
+    status, result, headers = run(
+        routes.connector_enrollment_consent_grant,
+        Request(body(), app_state(authority=authority)),
+    )
+    assert status == 503
+    assert result == {"ok": False, "error": {"code": "connector_enrollment_receipt_invalid"}}
+    assert headers["cache-control"].startswith("no-store")
+    assert "NEVER_ECHO" not in json.dumps(result)
+    assert len(authority.calls) == 1
+
+
+@pytest.mark.parametrize("mutation", [
+    {"credential_b64": "NEVER_ECHO_CREDENTIAL"},
+    {"tenant_id": "NEVER_ECHO_TENANT"},
+    {"consent_id": "different-consent"},
+    {"grants_read": True},
+    {"dispatch_authorized": True},
+    {"withdrawn_at": None},
+    {"withdrawn_at": "2026-10-12T10:00:00"},
+    {"withdrawn_at": "2026-10-12T09:00:00+00:00"},
+])
+def test_revoke_rejects_untrusted_identity_receipt_without_echo(monkeypatch, mutation):
+    class Tampered(ConsentAuthority):
+        async def revoke_connector_enrollment_consent(self, **kwargs):
+            value = await super().revoke_connector_enrollment_consent(**kwargs)
+            return {**value, **mutation}
+
+    setup_auth(monkeypatch)
+    authority = Tampered()
+    status, result, _ = run(
+        routes.connector_enrollment_consent_revoke,
+        Request({
+            "consent_id": "consent.owner.1", "confirmed": True,
+            "confirmation_version": "pc-enrollment-consent-v1",
+        }, app_state(authority=authority)),
+    )
+    assert status == 503
+    assert result == {"ok": False, "error": {"code": "connector_enrollment_receipt_invalid"}}
+    assert "NEVER_ECHO" not in json.dumps(result)
+
+
+
+
 def test_consent_endpoint_not_mounted_and_default_activation_stays_off():
     assert routes.ENROLLMENT_PRODUCT_HTTP_MOUNTED is False
     assert routes.ENROLLMENT_PRODUCT_AUTHENTICATION_WIRED is False
