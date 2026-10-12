@@ -174,6 +174,13 @@ class ConnectApp:
         self._quit.set()
         self._controller.disconnect()
         self._supervisor.stop()
+        # LOCAL2 fix #4420: external stop must also end the Win32 tray
+        # message loop, otherwise PumpMessages() blocks forever. Posting
+        # WM_DESTROY is thread-safe, so calling from the watcher thread is safe.
+        try:
+            self._tray.quit()
+        except Exception:
+            pass
 
     # -- process lifecycle --------------------------------------------------
     def _watch_quit_event(self) -> None:

@@ -62,16 +62,30 @@ def check_single_instance() -> None:
            f"exit={second.returncode} stdout={second.stdout.strip()[:120]}")
 
     # Graceful stop through the quit event, then verify nothing is left.
+    # Defect-2 hardening: a forced kill()/taskkill must NEVER be masked as a
+    # normal-shutdown PASS. Track whether the graceful wait timed out and we had
+    # to force-kill; if so the check FAILS even though the process is gone.
     stop = connect("stop", timeout=20.0)
+    forced_kill = False
     try:
         first.wait(timeout=15.0)
     except subprocess.TimeoutExpired:
+        forced_kill = True
         first.kill()
         first.wait(timeout=5.0)
     time.sleep(2.0)
     remaining = find_connect_processes()
-    record("quit_stops_cleanly", first.returncode is not None and not remaining,
-           f"exit={first.returncode} remaining={remaining} stop={stop.stdout.strip()[:120]}")
+    graceful = first.returncode is not None and not remaining and not forced_kill
+    detail = (
+        f"exit={first.returncode} remaining={remaining} "
+        f"forced_kill={forced_kill} stop={stop.stdout.strip()[:120]}"
+    )
+    if forced_kill:
+        detail += (
+            " (FAIL: external stop did not terminate the Win32 message loop; "
+            "force-kill was required)"
+        )
+    record("quit_stops_cleanly", graceful, detail)
 
 
 def check_autostart() -> None:

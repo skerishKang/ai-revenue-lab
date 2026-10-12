@@ -63,19 +63,36 @@ class ConnectTray:
         window_class = win32gui.WNDCLASS()
         window_class.hInstance = instance
         window_class.lpszClassName = class_name
+        # pywin32 dispatches every message in this map to a bound method with the
+        # full Win32 WndProc tuple ``(hwnd, msg, wparam, lparam)`` — four
+        # positional arguments, not three. A handler that declares fewer raises
+        # ``TypeError`` *inside* ``PumpMessages()``; the exception is swallowed by
+        # the C dispatcher, so the loop keeps running and the process can only be
+        # stopped by a forced kill. Every handler below therefore takes exactly
+        # these four parameters.
         window_class.lpfnWndProc = {
             win32con.WM_CREATE: self._on_create,
             WM_TRAY: self._on_tray,
             win32con.WM_COMMAND: self._on_command,
             win32con.WM_DESTROY: self._on_destroy,
         }
-        atom = win32gui.RegisterClass(window_class)
-        self._hwnd = win32gui.CreateWindow(
-            atom, class_name, win32con.WS_OVERLAPPED, 0, 0, 0, 0, 0, 0, instance, None
+        win32gui.RegisterClass(window_class)
+        # CreateWindowEx is the canonical creation call; the hidden message
+        # window needs no extended style.
+        self._hwnd = win32gui.CreateWindowEx(
+            0, class_name, class_name, win32con.WS_OVERLAPPED,
+            0, 0, 0, 0, 0, 0, instance, None,
         )
+        # Add the icon here rather than waiting for WM_CREATE: pywin32 does not
+        # reliably deliver WM_CREATE to the message map, and an icon that was
+        # never added makes the NIM_DELETE in ``_on_destroy`` raise — which is
+        # what left the external-stop message loop hung. ``_on_create`` stays
+        # wired, so a delivered WM_CREATE just refreshes the same icon
+        # (Shell_NotifyIcon NIM_ADD with the same id is idempotent).
+        self._apply_icon(self._hwnd)
         return self._hwnd
 
-    def _on_create(self, hwnd: int, _wparam: int, _lparam: int) -> int:
+    def _on_create(self, hwnd: int, _msg: int, _wparam: int, _lparam: int) -> int:
         self._apply_icon(hwnd)
         return 0
 
@@ -100,7 +117,7 @@ class ConnectTray:
         win32api.PostMessage(self._hwnd, WM_TRAY_TOOLTIP, 0, 0)
 
     # -- interaction --------------------------------------------------------
-    def _on_tray(self, hwnd: int, wparam: int, lparam: int) -> int:
+    def _on_tray(self, hwnd: int, _msg: int, wparam: int, lparam: int) -> int:
         import win32con  # noqa: PLC0415
 
         if wparam != self._notify_id:
@@ -150,13 +167,22 @@ class ConnectTray:
         if callback is not None:
             callback()
 
-    def _on_command(self, _hwnd: int, _wparam: int, _lparam: int) -> int:
+    def _on_command(
+        self, _hwnd: int, _msg: int, _wparam: int, _lparam: int
+    ) -> int:
         return 0
 
-    def _on_destroy(self, hwnd: int) -> int:
+    def _on_destroy(self, hwnd: int, _msg: int, _wparam: int, _lparam: int) -> int:
         import win32gui  # noqa: PLC0415
 
-        win32gui.Shell_NotifyIcon(NIM_DELETE, (hwnd, self._notify_id, 0, 0, 0, ""))
+        # Removing the icon is best-effort cleanup. Shell_NotifyIcon raises
+        # E_FAIL when the icon is already gone, and a raise here would skip
+        # PostQuitMessage — leaving PumpMessages() blocked forever, which is the
+        # #4420 external-stop hang. The quit message must always be posted.
+        try:
+            win32gui.Shell_NotifyIcon(NIM_DELETE, (hwnd, self._notify_id, 0, 0, 0, ""))
+        except Exception:
+            pass
         win32gui.PostQuitMessage(0)
         return 0
 
