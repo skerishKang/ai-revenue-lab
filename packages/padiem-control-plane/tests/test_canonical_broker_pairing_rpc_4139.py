@@ -60,7 +60,7 @@ class Harness(CanonicalBrokerPairingRPC):
         self._storage = Storage()
         self._backend = CloudflareDurableObjectSerializedStateBackend(self._storage)
         self._port = SerializedLocalAgentBrokerStatePort(backend=self._backend)
-        self._runtime = SimpleNamespace(state_port=self._port)
+        self._runtime = SimpleNamespace(state_port=self._port, authority_ref=lambda: AUTHORITY_REF)
         self.env = SimpleNamespace(
             LOCAL_AGENT_BROKER_PAIRING_RPC_ENABLED="true" if rpc else "false",
             LOCAL_AGENT_BROKER_PAIRING_SCHEMA_INSTALLED="true" if schema_installed else "false",
@@ -129,7 +129,7 @@ def test_install_issue_reconstruct_binding_and_redeem_using_persisted_challenge(
     again._storage = h._storage
     again._backend = CloudflareDurableObjectSerializedStateBackend(again._storage)
     again._port = SerializedLocalAgentBrokerStatePort(backend=again._backend)
-    again._runtime = SimpleNamespace(state_port=again._port)
+    again._runtime = SimpleNamespace(state_port=again._port, authority_ref=lambda: AUTHORITY_REF)
     again.env = h.env
     binding = again.binding(challenge_id)
     assert binding["ok"] is True
@@ -176,7 +176,7 @@ def test_issuance_rate_limit_is_enforced_by_private_durable_rpc():
     h2._storage = h._storage
     h2._backend = CloudflareDurableObjectSerializedStateBackend(h2._storage)
     h2._port = SerializedLocalAgentBrokerStatePort(backend=h2._backend)
-    h2._runtime = SimpleNamespace(state_port=h2._port)
+    h2._runtime = SimpleNamespace(state_port=h2._port, authority_ref=lambda: AUTHORITY_REF)
     h2.env = h.env
     response = h2.issue("device.office.2")
     assert response["ok"] is False
