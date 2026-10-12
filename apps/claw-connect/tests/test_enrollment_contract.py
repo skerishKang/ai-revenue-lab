@@ -7,6 +7,7 @@ and the security posture, never a live success.
 
 from __future__ import annotations
 
+import dataclasses
 import hashlib
 import hmac
 import json
@@ -24,6 +25,7 @@ from claw_connect.enrollment import EnrollmentDisplayState
 from claw_connect.enrollment import (
     ENROLLMENT_PROOF_REF_PREFIX,
     ENROLLMENT_PROOF_TRANSCRIPT,
+    ENROLLMENT_REFUSAL_REASONS,
     ENROLLMENT_SCOPED_REDEMPTION_REQUIRED,
     LIFECYCLE_CREDENTIAL_EXPIRED,
     LIFECYCLE_ONLINE,
@@ -68,6 +70,8 @@ class _FakeEnrollmentServer:
         refusal: str = "enrollment_consent_withdrawn",
         response_device_id: str | None = None,
         expires_in_hours: float = 12,
+        account_ref: str = "acct-canonical-1",
+        workspace_ref: str = "ws-canonical-1",
     ) -> None:
         self._broker_base_url = broker_base_url
         self._device_id = device_id
@@ -75,6 +79,8 @@ class _FakeEnrollmentServer:
         self._refusal = refusal
         self._response_device_id = response_device_id
         self._expires_in_hours = expires_in_hours
+        self._account_ref = account_ref
+        self._workspace_ref = workspace_ref
         self.calls: list = []
 
     def redeem_enrollment(self, request, *, now):  # noqa: ANN001
@@ -94,8 +100,8 @@ class _FakeEnrollmentServer:
             ok=True,
             binding_ref=f"binding-{device[:8]}",
             device_id=device,
-            account_ref="acct-canonical-1",
-            workspace_ref="ws-canonical-1",
+            account_ref=self._account_ref,
+            workspace_ref=self._workspace_ref,
             credential_generation=1,
             credential_expires_at=now + timedelta(hours=self._expires_in_hours),
             consent_id="consent-1",
@@ -107,6 +113,38 @@ def _server_factory(behavior: str = "success", **kwargs):
         return _FakeEnrollmentServer(**kw, behavior=behavior, **kwargs)
 
     return build
+
+
+def _tracked_server_factory(calls, behavior: str = "success", **kwargs):
+    """A server factory that records every redemption it was asked to perform.
+
+    Item: a device-side refusal that runs *after* the redemption call cannot be
+    evidence that the server-side redemption was undone. The only honest way to
+    show the difference is to observe how many times the client actually talked
+    to the port: if a compensating call existed, this list would grow past the
+    redemptions themselves.
+    """
+
+    def build(**kw):
+        server = _FakeEnrollmentServer(**kw, behavior=behavior, **kwargs)
+        innermost = server.redeem_enrollment
+
+        def redeem_enrollment(request, *, now):  # noqa: ANN001
+            calls.append(request)
+            return innermost(request, now=now)
+
+        server.redeem_enrollment = redeem_enrollment  # type: ignore[method-assign]
+        return server
+
+    return build
+
+
+def _seed_record(service, **overrides):
+    """Rewrite the persisted record, as a damaged/foreign state file would."""
+    data = json.loads(service.state_file.read_text(encoding="utf-8"))
+    data.update(overrides)
+    service.state_file.write_text(json.dumps(data, sort_keys=True, indent=2), encoding="utf-8")
+    service._record = None
 
 
 def _factory():
@@ -835,3 +873,283 @@ def test_s1_contract_drift_guard():
     assert s1_pairing.PAIRING_PROOF_REF_PREFIX == ENROLLMENT_PROOF_REF_PREFIX
     assert s1_enrollment.CONSENT_LIVENESS_AUTHORITY_IMPLEMENTED is False
     assert s1_enrollment.PRODUCTION_ACTIVATION is False
+
+
+# --- account / scope isolation on an already-enrolled PC (#4139 S2) ----------
+def test_account_change_on_an_enrolled_pc_is_refused_and_keeps_the_original_binding(
+    tmp_path,
+):
+    """A different account must never silently take over an existing PC binding.
+
+    The device identity is referenced by the product sessions that were enrolled
+    against the previous account, so re-pointing it in place would hand those
+    sessions to another account. The refusal leaves the record byte-identical.
+    """
+    service = _service(tmp_path, broker_url=BROKER_URL, server_factory=_server_factory())
+    first = _redeem(service)
+    snapshot = service.record().to_dict()
+
+    service._enrollment_server_factory = _server_factory(account_ref="acct-other-2")
+    with pytest.raises(
+        EnrollmentContractError, match="enrollment_binding_owner_mismatch"
+    ):
+        _redeem(service)
+
+    after = service.record()
+    assert after.to_dict() == snapshot
+    assert after.binding_ref == first.binding_ref
+    assert after.account_ref == "acct-canonical-1"
+    # Still an enrolled, unblocked binding: refusing is not a revocation.
+    assert after.revoked is False
+    assert service.project_state() is EnrollmentDisplayState.OFFLINE
+
+
+def test_account_change_refusal_reports_only_the_bounded_reason(tmp_path):
+    service = _service(tmp_path, broker_url=BROKER_URL, server_factory=_server_factory())
+    _redeem(service)
+    service._enrollment_server_factory = _server_factory(account_ref="acct-other-2")
+
+    with pytest.raises(EnrollmentContractError) as excinfo:
+        _redeem(service)
+
+    message = str(excinfo.value)
+    assert message == "enrollment_binding_owner_mismatch"
+    assert message in ENROLLMENT_REFUSAL_REASONS
+    # Neither the refused nor the held account identifier is echoed anywhere.
+    assert "acct-other-2" not in message
+    assert "acct-canonical-1" not in message
+
+
+def test_workspace_scope_change_on_an_enrolled_pc_is_refused(tmp_path):
+    service = _service(tmp_path, broker_url=BROKER_URL, server_factory=_server_factory())
+    _redeem(service)
+
+    service._enrollment_server_factory = _server_factory(workspace_ref="ws-other-2")
+    with pytest.raises(
+        EnrollmentContractError, match="enrollment_binding_scope_mismatch"
+    ):
+        _redeem(service)
+
+    record = service.record()
+    assert record.workspace_ref == "ws-canonical-1"
+    assert record.account_ref == "acct-canonical-1"
+
+
+def test_same_account_and_scope_re_enrollment_is_still_adopted(tmp_path):
+    """The guard must not block a legitimate same-account refresh."""
+    service = _service(tmp_path, broker_url=BROKER_URL, server_factory=_server_factory())
+    first = _redeem(service)
+    second = _redeem(service)
+
+    assert second.account_ref == first.account_ref
+    assert second.workspace_ref == first.workspace_ref
+    assert second.binding_ref == first.binding_ref
+    assert service.record().is_enrolled() is True
+
+
+def test_a_local_logout_only_clears_the_local_view_of_the_binding(tmp_path):
+    """``clear_enrollment`` is not an ownership transfer (CENTRAL review A).
+
+    Logout clears only this PC's local view of the binding. It does not revoke
+    the canonical Broker binding, does not end an active Broker session, does
+    not delete the protected credential and does not disassociate the device
+    id — the canonical Broker refuses a second binding for a device that still
+    holds an active one. So the *local* record can be un-paired without the
+    *canonical* device being made available to another owner; that requires an
+    owner-authorized, server-confirmed revocation plus reviewed
+    credential-store cleanup and a new enrollment, none of which the Connector
+    performs or claims. This test pins the local half only, and pins the
+    negative half (no server interaction, no other file touched) so the
+    stronger claim can never creep back in.
+    """
+    calls: list = []
+    service = _service(
+        tmp_path,
+        broker_url=BROKER_URL,
+        server_factory=_tracked_server_factory(calls),
+    )
+    first = _redeem(service)
+    service._enrollment_server_factory = _tracked_server_factory(
+        calls, account_ref="acct-other-2"
+    )
+    with pytest.raises(EnrollmentContractError):
+        _redeem(service)
+    assert len(calls) == 2  # the foreign redemption was asked for, then refused locally
+
+    before = service.state_file.read_text(encoding="utf-8")
+    state_files = {
+        path.name: path.read_bytes() for path in service.state_dir.iterdir()
+    }
+
+    service.clear_enrollment()
+
+    # (1) Local view cleared, and the device id survives — the stable
+    # one-identity-per-PC policy is untouched.
+    after = service.record()
+    assert after.is_enrolled() is False
+    assert after.binding_ref is None
+    assert after.device_id == first.device_id
+    assert service.project_state() is EnrollmentDisplayState.UNREGISTERED
+
+    # (2) Logging out performs no canonical action: the port is not consulted
+    # again, and no other file in the state directory is created, rewritten or
+    # deleted — in particular not the protected credential store. The only
+    # rewrite here is the record itself.
+    assert len(calls) == 2
+    after_files = {
+        path.name: path.read_bytes() for path in service.state_dir.iterdir()
+    }
+    assert set(after_files) == set(state_files)
+    assert after_files["enrollment.json"] != before
+    assert len(after_files) == 1  # only the record exists in this fixture
+
+    # (3) The device is *locally* unpaired, so a following login from a
+    # different account is accepted locally. This is a statement about the
+    # local record only — it is not a completed account migration and must
+    # never be reported as one.
+    switched = _redeem(service)
+    assert switched.account_ref == "acct-other-2"
+    assert service.record().account_ref == "acct-other-2"
+    assert service.record().device_id == first.device_id
+
+
+def test_a_refusal_after_a_successful_receipt_is_not_a_server_rollback(tmp_path):
+    """The device-side guard cannot claim the upstream redemption was undone (B).
+
+    The equality checks run after the redemption call, so the server has already
+    done its work when the device refuses. Refusing therefore proves only that
+    *this PC* did not adopt the receipt. It is not evidence that the upstream
+    challenge was left unconsumed, that the Broker binding was left uncreated,
+    or that the delivered credential was compensated — and the Connector makes
+    no compensating call at all. If server and client state disagree, that is a
+    CENTRAL-side reconciliation/security matter, not a routine account switch.
+    """
+    calls: list = []
+    service = _service(
+        tmp_path,
+        broker_url=BROKER_URL,
+        server_factory=_tracked_server_factory(calls),
+    )
+    _redeem(service)
+    assert len(calls) == 1
+
+    # An account the local record does not own. The fake port would still answer
+    # with a success receipt, exactly as a real server already having redeemed
+    # would.
+    service._enrollment_server_factory = _tracked_server_factory(
+        calls, account_ref="acct-other-2"
+    )
+    snapshot = service.record().to_dict()
+    with pytest.raises(EnrollmentContractError) as excinfo:
+        _redeem(service)
+
+    assert excinfo.value.args[0] in ENROLLMENT_REFUSAL_REASONS
+    # The local record is untouched — that is the whole of what is proven.
+    assert service.record().to_dict() == snapshot
+    assert service.project_state() is EnrollmentDisplayState.OFFLINE
+    # The client asked the port exactly once for this account and then stopped.
+    # No compensation, revocation, rollback or challenge re-read was attempted.
+    assert len(calls) == 2
+    assert calls[-1].device_id == snapshot["device_id"]
+
+
+@pytest.mark.parametrize(
+    "missing_field, reason",
+    [
+        ("account_ref", "enrollment_binding_owner_mismatch"),
+        ("workspace_ref", "enrollment_binding_scope_mismatch"),
+    ],
+)
+def test_damaged_existing_binding_never_contacts_enrollment_server(
+    tmp_path, missing_field, reason,
+):
+    """Known-invalid local owner/scope must fail before one-time remote redeem."""
+    calls: list = []
+    service = _service(
+        tmp_path,
+        broker_url=BROKER_URL,
+        server_factory=_tracked_server_factory(calls),
+    )
+    _redeem(service)
+    assert len(calls) == 1
+    _seed_record(service, **{missing_field: None})
+    persisted_before = service.state_file.read_bytes()
+    projection_before = service.record().to_dict()
+
+    service._enrollment_server_factory = _tracked_server_factory(
+        calls, account_ref="acct-other-2", workspace_ref="ws-other-2",
+    )
+    with pytest.raises(EnrollmentContractError, match=reason):
+        _redeem(service)
+
+    # No second redeem: no server-side challenge consumption, new binding
+    # or protected credential handoff initiated by this damaged local record.
+    assert len(calls) == 1
+    assert service.record().to_dict() == projection_before
+    assert service.state_file.read_bytes() == persisted_before
+
+
+def test_an_enrolled_record_without_a_recorded_owner_is_refused(tmp_path):
+    """A persisted binding missing its owner must fail closed (CENTRAL review C).
+
+    ``from_dict`` accepts a persisted binding whose ``account_ref`` is null. A
+    refusal conditional on a recorded owner would let that record be re-pointed
+    at whatever account the next receipt names, which is the silent takeover
+    the guard exists to prevent. The record is refused, not repaired.
+    """
+    service = _service(tmp_path, broker_url=BROKER_URL, server_factory=_server_factory())
+    _redeem(service)
+    _seed_record(service, account_ref=None)
+    damaged = service.record().to_dict()
+
+    service._enrollment_server_factory = _server_factory(account_ref="acct-other-2")
+    with pytest.raises(
+        EnrollmentContractError, match="enrollment_binding_owner_mismatch"
+    ):
+        _redeem(service)
+
+    assert service.record().to_dict() == damaged
+    assert service.record().is_enrolled() is True  # the binding is still there
+
+
+def test_an_enrolled_record_without_a_recorded_scope_is_refused(tmp_path):
+    """The same fail-closed rule when the workspace scope is missing (review C)."""
+    service = _service(tmp_path, broker_url=BROKER_URL, server_factory=_server_factory())
+    _redeem(service)
+    _seed_record(service, workspace_ref=None)
+    damaged = service.record().to_dict()
+
+    service._enrollment_server_factory = _server_factory(workspace_ref="ws-other-2")
+    with pytest.raises(
+        EnrollmentContractError, match="enrollment_binding_scope_mismatch"
+    ):
+        _redeem(service)
+
+    assert service.record().to_dict() == damaged
+    assert service.record().is_enrolled() is True
+
+
+def test_the_connector_carries_no_product_scoped_authority_dimension():
+    """#4139 platform ownership: one canonical PC registration, no per-product fork.
+
+    The device authority must stay product-neutral. If a product/brand dimension
+    ever entered the connector, one PC would begin carrying more than one
+    registration — the per-product fork the CENTRAL brand-separation decision
+    forbids. This pins the shipped source and both closed key sets, so the
+    documented claim is enforced rather than asserted in prose.
+    """
+    source = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in sorted((ROOT / "claw_connect").glob("*.py"))
+    )
+    for forbidden in ("product_id", "b54", "b62", "b66", "brand"):
+        assert forbidden not in source, forbidden
+
+    request_keys = {field.name for field in dataclasses.fields(EnrollmentRedemptionRequest)}
+    assert request_keys == {"challenge_id", "device_id", "proof_ref"}
+    assert not request_keys & {
+        "product", "product_id", "brand", "owner", "workspace", "consent", "session",
+    }
+
+    record_keys = {field.name for field in dataclasses.fields(EnrollmentRecord)}
+    assert not record_keys & {"product", "product_id", "brand"}
