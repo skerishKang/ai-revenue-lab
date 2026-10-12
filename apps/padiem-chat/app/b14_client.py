@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import AsyncIterator, Awaitable, Callable, Mapping
 from dataclasses import dataclass
+from datetime import datetime
 from functools import lru_cache
 from typing import Any, Protocol
 
@@ -25,6 +26,10 @@ from padiem_ai_core import (
     MultimodalExecutionRuntime,
     StreamingExecutionRuntime,
     MAX_B14_RESPONSE_BYTES,
+)
+from padiem_ai_core.dispatch_preinstruction import (
+    render_dispatch_preinstruction,
+    server_wall_clock,
 )
 
 from .attachments import ImageAttachment
@@ -278,6 +283,25 @@ def _bounded_context(value: str | None) -> str | None:
     return extra or None
 
 
+def _trusted_dispatch_context(
+    additional_system_context: str | None, sample: datetime | None = None
+) -> str | None:
+    """Place the server-sampled clock ahead of product and retrieved context.
+
+    #4465 owns this text in Core so no product rewrites the date/freshness
+    rule. It travels in ``additional_system_context``, which Core appends after
+    the platform identity and task instruction, so a product prompt or a
+    retrieved document that states another date cannot displace the sample.
+    An omitted sample is read from the server rather than skipped, so a caller
+    that forgets to pass one is still clocked.
+    """
+    trusted = render_dispatch_preinstruction(
+        server_wall_clock() if sample is None else sample
+    )
+    product = _bounded_context(additional_system_context)
+    return f"{trusted}\n\n{product}" if product else trusted
+
+
 def _agent_profile(
     *,
     skill: TaskMode,
@@ -328,6 +352,7 @@ def _execution_request(
     model: str,
     required_capabilities: tuple[str, ...],
     additional_system_context: str | None,
+    dispatch_sample: datetime | None = None,
     max_retries: int | None = None,
     model_parameters: Mapping[str, Any] | None = None,
 ) -> ExecutionRequest:
@@ -340,7 +365,9 @@ def _execution_request(
             model_parameters=model_parameters,
         ),
         messages=tuple(dict(message) for message in messages),
-        additional_system_context=_bounded_context(additional_system_context),
+        additional_system_context=_trusted_dispatch_context(
+            additional_system_context, dispatch_sample
+        ),
     )
 
 
@@ -350,6 +377,7 @@ def _multimodal_execution_request(
     skill: TaskMode,
     model: str,
     additional_system_context: str | None,
+    dispatch_sample: datetime | None = None,
 ) -> MultimodalExecutionRequest:
     return MultimodalExecutionRequest(
         agent=_agent_profile(
@@ -358,7 +386,9 @@ def _multimodal_execution_request(
             required_capabilities=("chat", "image"),
         ),
         messages=tuple(messages),
-        additional_system_context=_bounded_context(additional_system_context),
+        additional_system_context=_trusted_dispatch_context(
+            additional_system_context, dispatch_sample
+        ),
     )
 
 
@@ -371,12 +401,15 @@ class B14Client:
         service_transport: B14ServiceTransport | None = None,
         stream_transport: httpx.AsyncBaseTransport | None = None,
         require_service_binding: bool = False,
+        dispatch_wall_clock: Callable[[], datetime] = server_wall_clock,
     ):
         self.settings = settings
         self.transport = transport
         self.service_transport = service_transport
         self.stream_transport = stream_transport
         self.require_service_binding = require_service_binding
+        # #4468: one sampled instant per dispatch, never a session-cached date.
+        self._dispatch_wall_clock = dispatch_wall_clock
 
     def _config(self, timeout_seconds: float | None = None) -> B14ExecutionConfig:
         assert self.settings.b14_base_url is not None
@@ -483,6 +516,7 @@ class B14Client:
             model=resolved_model,
             required_capabilities=("free",),
             additional_system_context=bounded_context,
+            dispatch_sample=self._dispatch_wall_clock(),
         )
         inner_stream = self._stream_core(request)
         try:
@@ -542,6 +576,7 @@ class B14Client:
             model=policy.model_id,
             required_capabilities=("chat",),
             additional_system_context=bounded_context,
+            dispatch_sample=self._dispatch_wall_clock(),
         )
         inner_stream = self._stream_core(request)
         try:
@@ -570,6 +605,7 @@ class B14Client:
             model=model,
             required_capabilities=("chat",),
             additional_system_context=additional_system_context,
+            dispatch_sample=self._dispatch_wall_clock(),
             max_retries=max_retries,
             model_parameters=model_parameters,
         )
@@ -622,6 +658,7 @@ class B14Client:
             skill=skill,
             model=model,
             additional_system_context=additional_system_context,
+            dispatch_sample=self._dispatch_wall_clock(),
         )
         core_client = B14ExecutionClient(
             self._completion_config(),
