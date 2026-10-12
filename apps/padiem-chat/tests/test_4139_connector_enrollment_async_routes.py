@@ -89,7 +89,7 @@ def test_redeem_route_never_projects_raw_device_credential(monkeypatch):
     result = asyncio.run(routes.connector_enrollment_redeem(Request({
         "challenge_id":"pairing.challenge.1", "device_id":"device.1",
         "proof_ref":"pairing-proof:"+"a"*64,
-    }, make_state(host)))
+    }, make_state(host))))
     assert result.status_code == 200
     body = json.loads(result.body)
     assert body["enrollment"]["lifecycle"] == "paired_offline"
