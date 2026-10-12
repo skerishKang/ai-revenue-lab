@@ -98,6 +98,9 @@ def test_model_list_selection_and_multi_product_preview_no_writes(width):
                 assert page.locator("#sourceCount").inner_text() == "1 / 5"
                 page.locator(".model-item").first.click()
                 assert page.locator("#selectedId").inner_text() == "google/gemini-safe"
+                assert page.locator("#modelPlacement .placement-item").count() == 6
+                assert "등급 배정 없음" in page.locator("#modelPlacement").inner_text()
+                assert "B14 공통 실행" in page.locator("#modelPlacement").inner_text()
                 page.get_by_role("checkbox", name="중앙 등급 정책 변경 대상").check()
                 page.get_by_role("checkbox", name="Claw 변경 대상").check()
                 assert page.locator("#targetCount").inner_text() == "2"
