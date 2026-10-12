@@ -22,7 +22,8 @@ def test_mode_hints_reuse_canonical_buttons_and_routes():
 
 def test_profile_reuses_existing_login_settings_contract():
     assert 'profileToggle.id = "accountProfileButton"' in APP
-    assert 'profileToggle.setAttribute("aria-controls", "accountProfilePanel")' in APP
+    assert 'profileToggle.setAttribute("aria-controls", "settingsDialog")' in APP
+    assert 'profileToggle.setAttribute("aria-haspopup", "dialog")' in APP
     assert 'profileToggle.setAttribute("aria-expanded", "false")' in APP
     assert 'profileToggle.append(accountAvatar, accountName)' not in APP
     assert '.sidebar-account > .account-avatar' in CSS
@@ -35,6 +36,7 @@ def test_profile_reuses_existing_login_settings_contract():
     assert 'profilePanel.hidden = true' in APP
     assert 'profileSettingsAction.type = "button"' in APP
     assert 'settingsButton.click(); // keep the existing settings-dialog authority' in APP
+    assert '    settingsButton.click();\n  });' in APP  # direct profile click
     assert 'loginButton.addEventListener("click", async () => {' in APP
     assert 'profileSettingsAction.addEventListener("click"' in APP
     assert 'if (accountContainer?.hidden) return;' in APP

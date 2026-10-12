@@ -64,7 +64,8 @@
   profileToggle.type = "button";
   profileToggle.id = "accountProfileButton";
   profileToggle.className = "account-profile-toggle";
-  profileToggle.setAttribute("aria-controls", "accountProfilePanel");
+  profileToggle.setAttribute("aria-controls", "settingsDialog");
+  profileToggle.setAttribute("aria-haspopup", "dialog");
   profileToggle.setAttribute("aria-expanded", "false");
   profileToggle.dataset.localeAriaLabel = "account-profile-toggle";
   profileToggle.setAttribute("aria-label", uiT("account-profile-toggle"));
@@ -1677,11 +1678,13 @@
     if (typeof settingsDialog.showModal === "function") settingsDialog.showModal();
     else settingsDialog.setAttribute("open", "");
     settingsButton.setAttribute("aria-expanded", "true");
+    profileToggle.setAttribute("aria-expanded", "true");
   }
   function closeSettings() {
     if (settingsDialog.open && typeof settingsDialog.close === "function") settingsDialog.close();
     else settingsDialog.removeAttribute("open");
     settingsButton.setAttribute("aria-expanded", "false");
+    profileToggle.setAttribute("aria-expanded", "false");
   }
 
   input.addEventListener("input", updateComposer);
@@ -1785,12 +1788,12 @@
     closeSidebar();
   }));
   newChatButton.addEventListener("click", () => resetConversation(true));
+  // The visible account name/avatar is the one-step Settings entry.
+  // Reuse the existing settings action; do not create a second settings flow.
   profileToggle.addEventListener("click", () => {
     if (accountContainer?.hidden) return;
-    const opening = profilePanel.hidden;
-    profilePanel.hidden = !opening;
-    profileToggle.setAttribute("aria-expanded", opening ? "true" : "false");
-    if (opening) profileSettingsAction.focus();
+    closeProfilePanel();
+    settingsButton.click();
   });
   profileSettingsAction.addEventListener("click", () => {
     closeProfilePanel();
@@ -1800,7 +1803,10 @@
     if (!profilePanel.hidden && !accountContainer?.contains(event.target)) closeProfilePanel();
   });
   settingsButton.addEventListener("click", () => { closeProfilePanel(); openSettings(); });
-  settingsDialog.addEventListener("close", () => settingsButton.setAttribute("aria-expanded", "false"));
+  settingsDialog.addEventListener("close", () => {
+    settingsButton.setAttribute("aria-expanded", "false");
+    profileToggle.setAttribute("aria-expanded", "false");
+  });
   settingsDialog.addEventListener("cancel", (event) => {
     event.preventDefault();
     closeSettings();

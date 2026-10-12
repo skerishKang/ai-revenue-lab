@@ -30,11 +30,21 @@
   display: none;
 }
 
-/* Three useful starters are enough; the composer remains the primary action. */
+/* Four entry cards fit a single row inside the same reading width as the composer.
+ * At smaller viewports, the existing 2-column / 1-column breakpoints still apply. */
 .starter-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  max-width: 780px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: 100%;
+  max-width: 728px; /* align with the desktop composer instead of the portrait */
+  gap: 8px;
 }
+.starter-grid .starter {
+  min-width: 0;
+  padding: 12px;
+  gap: 9px;
+}
+.starter-grid .starter strong { font-size: 13px; }
+.starter-grid .starter small { font-size: 11px; line-height: 1.4; }
 
 /* Give the composer slightly stronger first-use hierarchy without changing hooks. */
 .app-shell[data-state="home"] .composer {
@@ -49,7 +59,7 @@
   font-size: 17px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1279px) {
   .starter-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     max-width: none;

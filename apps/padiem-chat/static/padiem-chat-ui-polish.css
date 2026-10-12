@@ -343,3 +343,23 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message
     width: 100%;
   }
 }
+
+/* Owner first-screen cleanup: one visible account/settings row. Keep the
+ * canonical settingsButton in DOM for existing auth/dialog actions. */
+.sidebar-bottom > #settingsButton { display: none !important; }
+
+/* Excel source management remains in Claw. Its real file/P01 controls must
+ * not appear as a tutorial or action panel on ordinary Chat home. */
+.app-shell:not([data-state="claw"]) #clawWebOffice { display: none !important; }
+
+.settings-help .settings-guide {
+  margin-top: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--text);
+  background: rgba(255, 255, 255, .2);
+}
+.settings-guide summary { cursor: pointer; font-weight: 650; }
+.settings-guide p, .settings-guide li { font-size: 13px; line-height: 1.65; }
+.settings-guide ol { margin: 8px 0 0; padding-left: 22px; }
