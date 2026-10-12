@@ -287,6 +287,41 @@ def test_sign_out_clears_identity_before_the_request_completes(browser, server):
     page.close()
 
 
+def test_pending_sign_out_blocks_visibility_and_auth_event_refresh(browser, server):
+    """An old cookie must not repaint the prior owner while logout is pending."""
+    page, errors, calls = open_home(browser, server, dict(SIGNED_IN))
+    wait_services(page)
+    reads_before = len(calls)
+    page.evaluate("""() => {
+      const original = window.fetch.bind(window);
+      window.__pendingLogoutCalls = 0;
+      window.fetch = (url, options = {}) => {
+        if (String(url).includes("/api/auth/logout")) {
+          window.__pendingLogoutCalls += 1;
+          return new Promise(() => {});
+        }
+        return original(url, options);
+      };
+    }""")
+    page.locator("#padiemHomeSignOut").click()
+    page.wait_for_function("window.__pendingLogoutCalls === 1")
+    page.evaluate("""() => {
+      // Every existing refresh route must stay inert until the logout settles.
+      window.dispatchEvent(new Event("padiem:auth-changed"));
+      window.dispatchEvent(new Event("padiem:account-changed"));
+      window.dispatchEvent(new PageTransitionEvent("pageshow", {persisted: true}));
+      document.dispatchEvent(new Event("visibilitychange"));
+    }""")
+    page.wait_for_timeout(120)
+    assert len(calls) == reads_before
+    assert page.locator("#padiemHomeAccount").is_hidden()
+    assert page.locator("#padiemHomeGrid li").count() == 0
+    assert "김파디" not in page.locator("body").inner_text()
+    assert page.locator("#padiemHomeStatus").inner_text() == "로그아웃하는 중입니다."
+    assert not errors, errors
+    page.close()
+
+
 def test_refused_sign_out_is_not_misreported_as_signed_out(browser, server):
     """A failed logout must not claim the session was revoked."""
     page, errors, _ = open_home(browser, server, dict(SIGNED_IN), logout_status=500)
