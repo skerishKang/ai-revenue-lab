@@ -15,6 +15,29 @@ DEVICE_ENDPOINT = "/api/claw/local-access/devices"
 
 
 class StaticHandler(http.server.SimpleHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == "/__b66_pc_fixture.html":
+            # Isolated B66 component test: production index/load order is
+            # independently pinned by the static contract test. Running
+            # unrelated Chat auth bootstrap races here is not B66 coverage.
+            body = (
+                '<!doctype html><html lang="ko"><head>'
+                '<meta charset="utf-8">'
+                '<link rel="stylesheet" href="/b66-quote-runtime.css">'
+                '</head><body>'
+                '<nav class="side-nav"><button id="clawNavButton">Claw</button></nav>'
+                '<script src="/claw-local-handoff.js"></script>'
+                '<script src="/b66-quote-runtime.js"></script>'
+                '</body></html>'
+            ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        super().do_GET()
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(ROOT), **kwargs)
 
@@ -31,7 +54,7 @@ def server():
     with Server(("127.0.0.1", 0), StaticHandler) as web:
         thread = threading.Thread(target=web.serve_forever, daemon=True)
         thread.start()
-        yield f"http://127.0.0.1:{web.server_address[1]}/index.html"
+        yield f"http://127.0.0.1:{web.server_address[1]}/__b66_pc_fixture.html"
         web.shutdown()
 
 
@@ -83,9 +106,6 @@ def ready_page(browser, server, width=1280):
     page.evaluate("""() => window.dispatchEvent(
       new CustomEvent("padiem:capabilitychange", {detail:{auth:{authenticated:true}}})
     )""")
-    if width < 641:
-        # Mobile sidebar is off-canvas; open it via the real hamburger.
-        page.locator("#mobileMenu").click()
     page.locator("#b66QuoteNavButton").wait_for(state="visible")
     if width <= 640:
         # Isolate dialog behavior at mobile width from the separately tested
