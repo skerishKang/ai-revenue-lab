@@ -28,6 +28,8 @@ from .b54_canonical_session import resolve_current_b54_canonical_session
 
 CONNECTOR_ENROLLMENT_ISSUE_PATH = "/api/claw/connector/enrollments/issue"
 CONNECTOR_ENROLLMENT_REDEEM_PATH = "/api/claw/connector/enrollments/redeem"
+CONNECTOR_ENROLLMENT_CONSENT_GRANT_PATH = "/api/claw/connector/enrollments/consent/grant"
+CONNECTOR_ENROLLMENT_CONSENT_REVOKE_PATH = "/api/claw/connector/enrollments/consent/revoke"
 MAX_CONNECTOR_ENROLLMENT_BODY_BYTES = 4096
 ENROLLMENT_PRODUCT_HTTP_MOUNTED = False
 ENROLLMENT_PRODUCT_AUTHENTICATION_WIRED = False
