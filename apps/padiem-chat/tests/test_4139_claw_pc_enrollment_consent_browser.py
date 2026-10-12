@@ -309,11 +309,15 @@ def test_stored_consent_is_never_online_or_execution_approval(browser, server):
     page.locator("#clawPcConsentConfirm").click()
     page.wait_for_function("document.querySelector('#clawPcConsentStatus').textContent.includes('동의가 저장되었습니다')")
     text = page.locator("#clawPcConsentPanel").inner_text()
-    assert "온라인" not in text
+    # The honest disclaimer is present and no positive connection claim is made.
+    assert "온라인 상태를 뜻하지 않습니다" in text
+    assert "연결되었습니다" not in text
     assert "승인되었습니다" not in text
     # A receipt claiming execution authority is refused, not displayed as success.
+    # A fresh panel session is required: the stored consent seals the current one.
+    page.locator("#clawPcConsentCancel").click()
     install_port(page, grant_result={"ok": True, "consent": {"device_id": "pc1", "dispatch_authorized": True}})
-    page.locator("#clawPcConsentAck").uncheck()
+    open_panel(page)
     page.locator("#clawPcConsentAck").check()
     page.locator("#clawPcConsentConfirm").click()
     page.wait_for_function("document.querySelector('#clawPcConsentStatus').textContent.includes('저장하지 못했습니다')")
@@ -350,5 +354,137 @@ def test_locale_switch_and_mobile_touch_targets(browser, server):
     assert page.locator("#clawPcConsentPanel").get_attribute("aria-labelledby") == "clawPcConsentTitle"
     assert page.locator("#clawPcConsentToggle").get_attribute("aria-expanded") == "true"
     assert page.locator("#clawPcConsentStatus").get_attribute("aria-live") == "polite"
+    assert not errors, errors
+    page.close()
+
+
+# --- 6b. revoke copy matches the reviewed #4476 contract --------------------
+
+
+def test_revoke_copy_matches_the_reviewed_contract(browser, server):
+    """#4476: withdrawal prevents outstanding/new enrollment but does NOT itself
+    imply the bound device is offline/unpaired or that a live session ended."""
+    page, errors = open_claw(browser, server)
+    install_port(page)
+    open_panel(page)
+    page.locator(".claw-pc-consent-details-summary").click()
+    ko = page.locator(".claw-pc-consent-revoke").inner_text()
+    assert "별도의 검토된 해제 절차" in ko
+    assert "즉시 끊기지는 않습니다" in ko
+    # The old overclaim must be gone.
+    assert "즉시 중단" not in ko
+    assert "새 작업이 즉시" not in ko
+    page.evaluate("document.documentElement.lang = 'en'")
+    page.wait_for_function(
+        "document.querySelector('.claw-pc-consent-revoke').textContent.includes('separate reviewed release path')"
+    )
+    en = page.locator(".claw-pc-consent-revoke").inner_text()
+    assert "does not disconnect it immediately" in en
+    assert "immediately stops" not in en
+    assert not errors, errors
+    page.close()
+
+
+# --- 10. stale-response generation guard ------------------------------------
+
+
+def test_stale_response_after_close_and_reopen_cannot_change_screen(browser, server):
+    """A response from before a close/reopen must not settle the new panel."""
+    page, errors = open_claw(browser, server)
+    install_port(page, defer=True)
+    open_panel(page)
+    page.locator("#clawPcConsentAck").check()
+    page.locator("#clawPcConsentConfirm").click()
+    page.wait_for_function("window.__consentCalls.length === 1")
+    page.locator("#clawPcConsentCancel").click()
+    open_panel(page)
+    assert page.locator("#clawPcConsentAck").is_checked() is False
+    page.evaluate("window.__resolveGrant({ok:true,consent:{device_id:'pc1',dispatch_authorized:false}})")
+    page.wait_for_timeout(80)
+    assert "저장되었습니다" not in page.locator("#clawPcConsentStatus").inner_text()
+    assert page.locator("#clawPcConsentAck").is_checked() is False
+    assert page.locator("#clawPcConsentConfirm").is_disabled()
+    assert page.locator("#clawPcConsentPanel").get_attribute("aria-busy") is None
+    assert not errors, errors
+    page.close()
+
+
+def test_stale_response_after_escape_cannot_change_screen(browser, server):
+    page, errors = open_claw(browser, server)
+    install_port(page, defer=True)
+    open_panel(page)
+    page.locator("#clawPcConsentAck").check()
+    page.locator("#clawPcConsentConfirm").click()
+    page.wait_for_function("window.__consentCalls.length === 1")
+    page.locator("#clawPcConsentToggle").press("Escape")
+    assert page.locator("#clawPcConsentPanel").is_hidden()
+    page.evaluate("window.__resolveGrant({ok:true,consent:{device_id:'pc1',dispatch_authorized:false}})")
+    page.wait_for_timeout(80)
+    assert page.locator("#clawPcConsentPanel").is_hidden()
+    open_panel(page)
+    assert page.locator("#clawPcConsentAck").is_checked() is False
+    assert page.locator("#clawPcConsentConfirm").is_disabled()
+    assert not errors, errors
+    page.close()
+
+
+def test_stale_response_after_account_change_cannot_change_screen(browser, server):
+    page, errors = open_claw(browser, server)
+    install_port(page, defer=True)
+    open_panel(page)
+    page.locator("#clawPcConsentAck").check()
+    page.locator("#clawPcConsentConfirm").click()
+    page.wait_for_function("window.__consentCalls.length === 1")
+    page.evaluate('window.dispatchEvent(new CustomEvent("padiem:account-changed"))')
+    page.evaluate("window.__resolveGrant({ok:true,consent:{device_id:'pc1',dispatch_authorized:false}})")
+    page.wait_for_timeout(80)
+    assert "저장되었습니다" not in page.locator("#clawPcConsentStatus").inner_text()
+    assert page.locator("#clawPcConsentAck").is_checked() is False
+    assert page.locator("#clawPcConsentConfirm").is_disabled()
+    assert not errors, errors
+    page.close()
+
+
+def test_stale_response_after_leaving_claw_cannot_change_screen(browser, server):
+    page, errors = open_claw(browser, server)
+    install_port(page, defer=True)
+    open_panel(page)
+    page.locator("#clawPcConsentAck").check()
+    page.locator("#clawPcConsentConfirm").click()
+    page.wait_for_function("window.__consentCalls.length === 1")
+    page.evaluate("document.querySelector('.app-shell').setAttribute('data-state', 'chat')")
+    page.locator("#clawPcEnrollmentConsent").wait_for(state="hidden")
+    page.evaluate("window.__resolveGrant({ok:true,consent:{device_id:'pc1',dispatch_authorized:false}})")
+    page.wait_for_timeout(80)
+    assert page.locator("#clawPcConsentPanel").is_hidden()
+    # Returning to Claw shows a clean default-OFF panel, never a stored consent.
+    page.evaluate("document.querySelector('.app-shell').setAttribute('data-state', 'claw')")
+    page.locator("#clawPcConsentToggle").wait_for(state="visible")
+    open_panel(page)
+    assert page.locator("#clawPcConsentAck").is_checked() is False
+    assert page.locator("#clawPcConsentConfirm").is_disabled()
+    assert "저장되었습니다" not in page.locator("#clawPcConsentStatus").inner_text()
+    assert not errors, errors
+    page.close()
+
+
+def test_stored_consent_is_terminal_across_locale_change(browser, server):
+    """A settled consent must not be re-armed (or re-sent) by a locale change."""
+    page, errors = open_claw(browser, server)
+    install_port(page, grant_result=grant_ok())
+    open_panel(page)
+    page.locator("#clawPcConsentAck").check()
+    page.locator("#clawPcConsentConfirm").click()
+    page.wait_for_function("document.querySelector('#clawPcConsentStatus').textContent.includes('동의가 저장되었습니다')")
+    assert page.locator("#clawPcConsentConfirm").is_disabled()
+    page.evaluate("document.documentElement.lang = 'en'")
+    page.wait_for_function("document.querySelector('#clawPcConsentStatus').textContent.includes('Consent stored')")
+    # The stored-consent status is re-rendered in the new locale, not replaced by
+    # a readiness prompt, and the confirm stays disabled.
+    assert "does not mean the PC is connected" in page.locator("#clawPcConsentStatus").inner_text()
+    assert page.locator("#clawPcConsentConfirm").is_disabled()
+    page.locator("#clawPcConsentConfirm").click(force=True)
+    page.wait_for_timeout(80)
+    assert len(calls(page)) == 1
     assert not errors, errors
     page.close()

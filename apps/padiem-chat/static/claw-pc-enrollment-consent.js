@@ -60,7 +60,7 @@
       deniedTitle: "연결해도 허용되지 않는 것",
       deniedBody: "파일 읽기·수정, 프로그램 실행, 화면 제어는 이 동의만으로는 허용되지 않습니다.",
       approvalNote: "파일 읽기·쓰기와 실제 PC 작업 실행에는 작업마다 별도의 P01 승인이 필요합니다.",
-      revokeNote: "동의를 철회하면 이 PC로 전달되는 새 작업이 즉시 중단됩니다. 이미 실행된 작업의 결과는 남을 수 있습니다.",
+      revokeNote: "동의를 철회하면 새 등록과 아직 사용되지 않은 등록 코드가 중단됩니다. 이미 연결된 PC의 연결 해제나 실행 중인 작업의 종료는 별도의 검토된 해제 절차로 처리되며, 이 철회만으로 즉시 끊기지는 않습니다.",
       ackLabel: "위 내용을 확인했고, 이 PC를 Padiem Claw에 연결하는 데 동의합니다.",
       confirm: "동의하고 등록",
       cancel: "취소",
@@ -91,7 +91,7 @@
       deniedTitle: "Not allowed by connecting",
       deniedBody: "Reading or editing files, running programs and controlling the screen are not permitted by this consent alone.",
       approvalNote: "Reading or writing files and running real PC work each require a separate P01 approval.",
-      revokeNote: "Revoking consent immediately stops new work delivered to this computer. Results of work already run may remain.",
+      revokeNote: "Revoking consent stops new enrollment and any outstanding enrollment code. Disconnecting an already connected PC or ending running work is handled by a separate reviewed release path, so this withdrawal alone does not disconnect it immediately.",
       ackLabel: "I have read the above and agree to connect this computer to Padiem Claw.",
       confirm: "Agree and enroll",
       cancel: "Cancel",
@@ -359,16 +359,32 @@
 
     let opened = false;
     let submitting = false;
-    let lastState = "READY";
+    // A stored consent is terminal for this panel session: the confirm control
+    // must never become clickable again for the same acknowledgement.
+    let granted = false;
+    // Last rendered status key(s), re-rendered on a locale change.
+    let lastKeys = ["ready"];
+    // Monotonic request generation. Every action that invalidates the current
+    // panel state — close, Escape, re-open, account change, leaving Claw —
+    // bumps it, so a late async response can never mutate the current screen.
+    let generation = 0;
 
     function isClaw() {
       return shell.getAttribute("data-state") === "claw";
     }
 
-    function setStatus(key) {
-      lastState = key;
+    function invalidate() {
+      generation += 1;
+    }
+
+    function renderStatus() {
       const t = locale();
-      status.textContent = t[key] || t.failed;
+      status.textContent = lastKeys.map((key) => t[key] || t.failed).join(" ");
+    }
+
+    function setStatus(key, extraKey) {
+      lastKeys = extraKey ? [key, extraKey] : [key];
+      renderStatus();
     }
 
     function currentReadiness() {
@@ -399,6 +415,12 @@
         ? descriptor.deviceName
         : (descriptor && typeof descriptor.deviceId === "string" ? descriptor.deviceId : t.targetUnknown);
       const readiness = currentReadiness();
+      if (granted) {
+        // Terminal for this panel session: keep the stored-consent status and
+        // the confirm disabled so a later locale change cannot re-arm a grant.
+        confirm.disabled = true;
+        return;
+      }
       confirm.disabled = submitting || readiness.ready !== true;
       if (!submitting) setStatus(blockedKey(readiness.blocked));
     }
@@ -422,14 +444,18 @@
       ackLabel.textContent = t.ackLabel;
       confirm.textContent = t.confirm;
       cancel.textContent = t.cancel;
-      if (opened && !submitting) syncControls();
+      renderStatus();
+      if (opened && !submitting && !granted) syncControls();
     }
 
     function reset() {
       ack.checked = false; // cancel always returns to DEFAULT_OFF
       submitting = false;
+      granted = false;
+      lastKeys = ["ready"];
       panel.removeAttribute("aria-busy");
-      lastState = "READY";
+      // Any response still in flight is now stale for this panel session.
+      invalidate();
     }
 
     function closePanel() {
@@ -441,9 +467,10 @@
     }
 
     // One explicit click performs at most one submission. A second click while a
-    // submission is in flight is ignored rather than re-sent.
+    // submission is in flight, or after this panel session already stored a
+    // consent, is ignored rather than re-sent.
     async function submitConsent() {
-      if (submitting) return;
+      if (submitting || granted) return;
       const readiness = currentReadiness();
       if (readiness.ready !== true) return;
       const descriptor = describeTarget();
@@ -455,6 +482,9 @@
         setStatus("notReady");
         return;
       }
+      // Claim the current generation. A close/reopen, Escape, account switch or
+      // Claw exit during the await bumps it, making this response stale.
+      const request = generation;
       submitting = true;
       confirm.disabled = true;
       panel.setAttribute("aria-busy", "true");
@@ -465,12 +495,16 @@
       } catch {
         result = null;
       }
+      // A response from a superseded generation (or a closed panel) must not
+      // change the current screen in any way.
+      if (request !== generation || !opened) return;
       submitting = false;
       panel.removeAttribute("aria-busy");
       const projection = projectGrantReceipt(result, descriptor.deviceId);
       if (projection.accepted) {
         // Consent stored — explicitly NOT online and NOT an execution approval.
-        setStatus("granted");
+        granted = true;
+        setStatus("granted", "grantedNotOnline");
         confirm.disabled = true;
         return;
       }
@@ -495,6 +529,8 @@
       opened = true;
       panel.hidden = false;
       toggle.setAttribute("aria-expanded", "true");
+      // A re-open supersedes any response from a previous panel session.
+      invalidate();
       // Opening is a pure read of the local descriptor; no network is issued.
       syncControls();
     });

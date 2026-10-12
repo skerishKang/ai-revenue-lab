@@ -160,3 +160,20 @@ def test_no_read_write_or_execution_grant_is_ever_asserted():
     # Consent is explicitly documented as distinct from execution approval.
     assert "CONSENT_AUTHORITY=NO" in SOURCE
     assert "NETWORK_WHEN_READY=NO" in SOURCE
+
+
+def test_revoke_copy_does_not_claim_immediate_disconnection():
+    """#4476: revoke does NOT itself imply the bound device is offline/unpaired.
+
+    Withdrawal prevents outstanding/new enrollment; ending an existing Broker
+    binding or live session is a separate reviewed release path.
+    """
+    # The earlier overclaim is gone in both locales.
+    assert "이 PC로 전달되는 새 작업이 즉시 중단됩니다" not in SOURCE
+    assert "immediately stops new work delivered" not in SOURCE
+    # The corrected copy names the separate reviewed release path in both locales.
+    assert "별도의 검토된 해제 절차" in SOURCE
+    assert "separate reviewed release path" in SOURCE
+    # It still states what withdrawal does do: block new/outstanding enrollment.
+    assert "아직 사용되지 않은 등록 코드가 중단됩니다" in SOURCE
+    assert "any outstanding enrollment code" in SOURCE
