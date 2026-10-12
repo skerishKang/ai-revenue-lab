@@ -64,7 +64,7 @@
   });
 
   // Display-only tier list. Free and Plus are shown as available; Pro/Max are
-  // shown as unavailable until the admin page decides entitlements.
+  // shown as unavailable until the admin console sets access rules.
   const TIER_LIST = Object.freeze(["free", "plus", "pro", "max"]);
 
   let selectedTier = "plus";
