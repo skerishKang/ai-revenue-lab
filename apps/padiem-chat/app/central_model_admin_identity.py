@@ -11,7 +11,11 @@ from typing import Any
 from .history import _row_to_dict, _user_id
 
 _UID = re.compile(r"usr_[0-9a-f]{32}\Z")
-_EMAIL = re.compile(r"[^\s@]+@[^\s@]+\.[^\s@]+\Z")
+_EMAIL = re.compile(
+    r"[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@"
+    r"[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?"
+    r"(?:\\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)+\\Z"
+)
 
 
 class D1CentralModelAdminAuthorizer:
