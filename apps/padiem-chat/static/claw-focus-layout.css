@@ -1,37 +1,46 @@
 /* Claw Focus UI (2026-10): a workbench rather than a cinematic landing page.
  * Strict Claw data-state scoping preserves Chat, B66 and theme choices.
  * No executable action, model selection, approval or run state is changed.
+ *
+ * #4488 Chat/Claw visual unification: Claw now reuses the shared Chat glass
+ * tokens (surface, border, radius, composer, sidebar) instead of a private
+ * blue/white palette. Layout, scoping and every Claw-only capability stay.
  */
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] {
-  --claw-focus-accent: #315d7b;
-  --claw-focus-border: #d6e2ed;
-  --claw-focus-muted: #596c7b;
-  --claw-focus-surface: #f4f8fb;
+  /* Re-point the Claw accent/border/surface onto the shared Chat glass tokens. */
+  --claw-focus-accent: var(--accent-strong, #2f6f99);
+  --claw-focus-border: var(--glass-chat-border, rgba(255, 255, 255, .58));
+  --claw-focus-muted: var(--muted, #53606c);
+  --claw-focus-surface: var(--glass-card-surface, rgba(244, 247, 249, .72));
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .main-panel {
-  background: linear-gradient(180deg, #e6f0f7 0, #f1f6fa 340px, #f4f7fa 100%);
+  /* Chat keeps the atmospheric body field; drop Claw's private blue wash so
+   * both products sit on the same background. */
+  background: none;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .main-panel::before {
   /* Portrait art belongs to the cinematic chat landing view, not the workbench. */
   content: none;
   display: none;
 }
-html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation,
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation {
   width: min(1000px, calc(100% - 48px));
   margin: 14px auto 0;
-  padding: 24px 28px calc(var(--claw-composer-clearance, 174px) + 42px);
-  border: 1px solid var(--claw-focus-border);
-  border-radius: 18px;
-  background: rgba(255, 255, 255, .95);
-  box-shadow: 0 10px 34px rgba(32, 67, 96, .06);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+  padding: 24px clamp(18px, 2.4vw, 34px) calc(var(--claw-composer-clearance, 174px) + 42px);
+  /* Same panel language as Chat: translucent glass, soft white border, 30px. */
+  border: 1px solid var(--glass-chat-border, rgba(255, 255, 255, .58));
+  border-radius: 30px;
+  background: linear-gradient(155deg, rgba(248, 250, 251, .88), var(--glass-chat-surface, rgba(238, 242, 245, .82)));
+  box-shadow: 0 24px 70px rgba(28, 36, 44, .16), inset 0 1px 0 rgba(255, 255, 255, .72);
+  backdrop-filter: blur(30px) saturate(106%);
+  -webkit-backdrop-filter: blur(30px) saturate(106%);
   max-height: calc(100dvh - 92px);
   scroll-padding-bottom: calc(var(--claw-composer-clearance, 174px) + 18px);
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .topbar {
-  background: rgba(234, 243, 249, .95);
+  /* Chat's dark translucent topbar; its light icon buttons need this contrast. */
+  background: linear-gradient(180deg, rgba(49, 58, 67, .46), rgba(58, 67, 76, .24));
+  border-bottom: 1px solid rgba(255, 255, 255, .22);
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #workspaceNav .side-item:disabled {
   /* Hide only unavailable navigation in Claw; never conceal enabled features. */
@@ -41,14 +50,16 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-hub {
   width: 100%;
   margin: 0 auto 18px;
   padding: 16px 18px;
-  border: 1px solid var(--claw-focus-border);
-  border-radius: 14px;
-  background: var(--claw-focus-surface);
-  box-shadow: none;
+  border: 1px solid rgba(255, 255, 255, .52);
+  border-radius: 20px;
+  background: linear-gradient(155deg, rgba(248, 250, 251, .56), rgba(228, 234, 238, .32));
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(24px) saturate(108%);
+  -webkit-backdrop-filter: blur(24px) saturate(108%);
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-hub-heading h2 {
   margin: 1px 0 6px;
-  color: #1d3549;
+  color: #16212a;
   font-size: clamp(20px, 2.5vw, 25px);
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-hub-heading > p:last-child {
@@ -56,6 +67,14 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-hub-hea
   color: var(--claw-focus-muted);
   font-size: 13px;
   line-height: 1.5;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-agent-badge {
+  color: var(--claw-focus-accent);
+  background: rgba(255, 255, 255, .34);
+  border-color: rgba(255, 255, 255, .54);
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-agent-line {
+  color: #44515d;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-hub-grid {
   gap: 9px;
@@ -65,23 +84,25 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option-
   min-height: 105px;
   gap: 5px;
   padding: 12px 13px;
-  border: 1px solid var(--claw-focus-border);
-  border-radius: 11px;
-  background: #fff;
-  box-shadow: none;
+  /* Match the Chat starter card: soft glass, white hairline, card shadow. */
+  border: 1px solid rgba(255, 255, 255, .52);
+  border-radius: 14px;
+  background: linear-gradient(155deg, rgba(248, 250, 251, .56), rgba(228, 234, 238, .32));
+  box-shadow: var(--card-shadow);
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:hover,
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:focus-visible {
-  border-color: #5b8dae;
-  background: #edf5fb;
+  border-color: rgba(255, 255, 255, .72);
+  background: linear-gradient(155deg, rgba(255, 255, 255, .68), rgba(234, 239, 242, .42));
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option strong {
   font-size: 14px;
-  color: #213f56;
+  color: #17212a;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option > span {
   font-size: 12px;
   line-height: 1.4;
+  color: var(--claw-focus-muted);
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option small {
   margin-top: auto;
@@ -89,7 +110,8 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option 
   color: var(--claw-focus-accent);
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-tag {
-  background: #eaf2f8;
+  background: rgba(255, 255, 255, .42);
+  color: #334a5b;
   font-size: 9px;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation:has(#messageList:not([hidden]) .message) #clawTaskHub,
@@ -97,27 +119,27 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation:has(
   /* After work begins, results and conversation take priority over examples. */
   display: none;
 }
-html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .composer-wrap,
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .composer-wrap {
   left: calc(264px + (100vw - 264px) / 2);
   transform: translateX(-50%);
   width: min(920px, calc(100vw - 264px - 64px));
   padding: 8px 0 14px;
-  background: linear-gradient(to bottom, transparent, rgba(240, 246, 250, .98) 28%, #f0f6fa 100%) !important;
+  /* Chat removes the bottom wash; match it instead of a Claw-only blue fade. */
+  background: transparent !important;
 }
-html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm,
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 3px 12px;
   padding: 10px 13px;
-  border: 1px solid var(--claw-focus-border);
-  border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 8px 28px rgba(35, 68, 92, .12);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+  /* Same composer surface as Chat. */
+  border: 1px solid rgba(255, 255, 255, .76);
+  border-radius: 17px;
+  background: linear-gradient(165deg, rgba(255, 255, 255, .94), var(--glass-composer-surface, rgba(248, 250, 251, .90)));
+  box-shadow: 0 24px 70px rgba(28, 36, 44, .20), inset 0 1px 0 rgba(255, 255, 255, .88);
+  backdrop-filter: blur(32px) saturate(104%);
+  -webkit-backdrop-filter: blur(32px) saturate(104%);
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > .attachment-tray {
   flex: 1 1 100%;
@@ -132,9 +154,9 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > .c
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawVerifiedModelSelect {
   min-height: 36px;
-  border-color: var(--claw-focus-border);
-  background: #f3f7fa;
-  color: #24394b;
+  border-color: rgba(255, 255, 255, .54);
+  background: rgba(255, 255, 255, .34);
+  color: #17212a;
   border-radius: 8px;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawVerifiedModelHint {
@@ -156,7 +178,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-model-advanc
   cursor: pointer;
   color: var(--claw-focus-accent);
   padding: 0 10px;
-  border: 1px solid var(--claw-focus-border);
+  border: 1px solid rgba(255, 255, 255, .54);
   border-radius: 8px;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-model-advanced[open] {
@@ -173,9 +195,9 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > #o
   min-height: 36px;
   margin: 0;
   padding: 0 10px;
-  border: 1px solid var(--claw-focus-border);
+  border: 1px solid rgba(255, 255, 255, .54);
   border-radius: 8px;
-  background: #f3f7fa;
+  background: rgba(255, 255, 255, .34);
   color: var(--claw-focus-accent);
   font-size: 11px;
 }
@@ -187,14 +209,16 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > #m
   margin: 2px 0 0;
   padding: 8px 5px 2px;
   font-size: 16px;
-  color: #21394f;
+  color: #17212a;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > .composer-actions {
   flex: 1 1 100%;
   min-height: 39px;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm .send-button {
-  background: var(--claw-focus-accent);
+  /* Match the shared Chat send affordance instead of a Claw-only accent fill. */
+  background: rgba(255, 255, 255, .92);
+  color: #08090b;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm :is(select, input, button, summary):focus-visible,
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:focus-visible {
@@ -202,17 +226,23 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:
   outline-offset: 2px;
 }
 @media (max-width: 1100px) {
-  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation,
   html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation {
     width: calc(100% - 32px);
     padding: 18px 18px calc(var(--claw-composer-clearance, 174px) + 26px);
   }
-  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .composer-wrap,
   html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .composer-wrap {
     width: calc(100vw - 264px - 32px);
   }
 }
 @media (max-width: 920px) {
+  /* Same mobile ladder as Chat: opaque panel, 24px corners, solid composer. */
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation {
+    background: rgba(242, 245, 247, .90);
+    border-radius: 24px;
+  }
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm {
+    background: rgba(249, 251, 252, .94);
+  }
   html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-hub-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -234,22 +264,25 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:
   html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option small {
     margin-top: 0;
   }
-  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .composer-wrap,
   html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .composer-wrap {
     left: 50%;
     width: calc(100vw - 24px);
   }
-  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation,
   html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation {
     width: calc(100% - 20px);
     padding: 14px 12px calc(var(--claw-composer-clearance, 132px) + 20px);
-    border-radius: 14px;
   }
   html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-hub {
     padding: 13px;
   }
   html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > .claw-model-choice {
     max-width: none;
+  }
+}
+@media (max-width: 620px) {
+  /* Chat tightens the panel to 20px corners on the smallest screens. */
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation {
+    border-radius: 20px;
   }
 }
 @media (max-width: 600px) {
@@ -337,23 +370,26 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-history-
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card {
   padding: 17px 18px;
   gap: 9px;
-  background: #fff;
-  border: 1px solid #d6e2ed;
+  /* Same glass card surface as Chat cards. */
+  background: var(--glass-card-surface, rgba(244, 247, 249, .72));
+  border: 1px solid rgba(255, 255, 255, .52);
   border-radius: 15px;
-  box-shadow: 0 4px 17px rgba(31, 67, 95, .045);
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(24px) saturate(108%);
+  -webkit-backdrop-filter: blur(24px) saturate(108%);
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-head {
   flex-wrap: wrap;
   justify-content: space-between;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-title {
-  color: #203b50;
+  color: #17212a;
   font-size: 15px;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-badge {
-  border: 1px solid #d4e0ec;
-  background: #edf3f9;
-  color: #315d7b;
+  border: 1px solid rgba(255, 255, 255, .42);
+  background: rgba(255, 255, 255, .32);
+  color: var(--claw-focus-accent);
   white-space: nowrap;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card[data-run-state="completed"] .claw-run-card-badge {
@@ -373,7 +409,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card:is(
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-summary {
   line-height: 1.6;
-  color: #334b5c;
+  color: #17212a;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-nextstep {
   margin: 0;
@@ -391,25 +427,25 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card:is(
   color: #8c4141;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-artifact {
-  border: 1px solid #dbe7f0;
+  border: 1px solid rgba(255, 255, 255, .42);
   border-radius: 11px;
-  background: #f5f9fc;
+  background: rgba(244, 247, 249, .52);
   padding: 12px;
   min-width: 0;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-filename {
-  color: #29485e;
+  color: #17212a;
   font-weight: 650;
   overflow-wrap: anywhere;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-download {
-  border-color: #bfd4e3;
-  color: #255373;
-  background: #fff;
+  border-color: rgba(255, 255, 255, .54);
+  color: var(--claw-focus-accent);
+  background: rgba(255, 255, 255, .34);
   border-radius: 9px;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-download:hover {
-  background: #e8f3fa;
+  background: rgba(255, 255, 255, .60);
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-download:focus-visible {
   outline: 3px solid #72a3c5;

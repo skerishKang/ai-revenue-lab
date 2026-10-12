@@ -259,3 +259,101 @@ def test_authoritative_empty_directory_and_logged_out_are_distinct(browser, serv
     assert page.locator("#clawDeviceManagerList li").count() == 0
     assert not errors
     page.close()
+
+
+def test_pending_device_read_is_aborted_on_close(browser, server):
+    """Closing the view must cancel a pending owner GET, not just hide its rows."""
+    page, errors = open_claw(browser, server)
+    page.evaluate("""() => {
+      const original = window.fetch.bind(window);
+      window.__deviceReads = 0;
+      window.__deviceAborts = 0;
+      window.fetch = (url, options = {}) => {
+        if (!String(url).includes("/api/claw/local-access/devices"))
+          return original(url, options);
+        window.__deviceReads += 1;
+        return new Promise((_resolve, reject) => {
+          options.signal.addEventListener("abort", () => {
+            window.__deviceAborts += 1;
+            reject(new DOMException("aborted", "AbortError"));
+          }, {once: true});
+        });
+      };
+    }""")
+    page.locator("#clawDeviceManagerToggle").click()
+    page.wait_for_function("window.__deviceReads === 1")
+    assert page.locator("#clawDeviceManagerPanel").get_attribute("aria-busy") == "true"
+    page.locator(".claw-device-manager-close").click()
+    page.wait_for_function("window.__deviceAborts === 1")
+    assert page.locator("#clawDeviceManagerPanel").get_attribute("aria-busy") is None
+    assert page.locator("#clawDeviceManagerPanel").is_hidden()
+    assert page.locator("#clawDeviceManagerList li").count() == 0
+    assert not errors, errors
+    page.close()
+
+
+def test_hung_device_read_recovers_without_false_online(browser, server):
+    """A stalled directory cannot leave a permanent busy indicator or PC row."""
+    page, errors = open_claw(browser, server)
+    page.evaluate("""() => {
+      const originalFetch = window.fetch.bind(window);
+      const originalTimer = window.setTimeout.bind(window);
+      window.__deviceAborts = 0;
+      window.fetch = (url, options = {}) => {
+        if (!String(url).includes("/api/claw/local-access/devices"))
+          return originalFetch(url, options);
+        return new Promise((_resolve, reject) => {
+          options.signal.addEventListener("abort", () => {
+            window.__deviceAborts += 1;
+            reject(new DOMException("aborted", "AbortError"));
+          }, {once: true});
+        });
+      };
+      // Run the actual 12-second timeout branch without slowing the test.
+      window.setTimeout = (fn, ms, ...args) =>
+        originalTimer(fn, ms === 12000 ? 25 : ms, ...args);
+    }""")
+    page.locator("#clawDeviceManagerToggle").click()
+    page.wait_for_function("window.__deviceAborts === 1")
+    assert page.locator("#clawDeviceManagerPanel").get_attribute("aria-busy") is None
+    assert page.locator("#clawDeviceManagerList li").count() == 0
+    assert page.locator("#clawDeviceManagerList").is_hidden()
+    assert "\uB2E4\uC2DC \uC2DC\uB3C4" in page.locator("#clawDeviceManagerStatus").inner_text()
+    assert not errors, errors
+    page.close()
+
+
+def test_owner_change_cancels_old_read_before_new_owner_status(browser, server):
+    """Owner-change events cancel outstanding requests and never show old PCs."""
+    page, errors = open_claw(browser, server)
+    page.evaluate("""() => {
+      const original = window.fetch.bind(window);
+      window.__calls = 0;
+      window.__aborts = 0;
+      window.fetch = (url, options = {}) => {
+        if (!String(url).includes("/api/claw/local-access/devices"))
+          return original(url, options);
+        window.__calls++;
+        if (window.__calls === 1) return new Promise((_resolve, reject) => {
+          options.signal.addEventListener("abort", () => {
+            window.__aborts++;
+            reject(new DOMException("aborted", "AbortError"));
+          }, {once: true});
+        });
+        return Promise.resolve(new Response(
+          JSON.stringify({ok:true, available:true, ownerScoped:true,
+            devices:[{deviceId:"new-owner",deviceName:"Account B",
+              platform:"Windows",state:"OFFLINE",usable:false}]}),
+          {status:200,headers:{"Content-Type":"application/json"}}));
+      };
+    }""")
+    page.locator("#clawDeviceManagerToggle").click()
+    page.wait_for_function("window.__calls === 1")
+    page.evaluate('window.dispatchEvent(new Event("padiem:account-changed"))')
+    page.wait_for_function("window.__calls === 2 && window.__aborts === 1")
+    page.get_by_text("Account B", exact=True).wait_for()
+    assert page.locator("#clawDeviceManagerList li").count() == 1
+    assert page.locator("#clawDeviceManagerList li button").is_disabled()
+    assert page.locator("#clawDeviceManagerPanel").get_attribute("aria-busy") is None
+    assert not errors, errors
+    page.close()
