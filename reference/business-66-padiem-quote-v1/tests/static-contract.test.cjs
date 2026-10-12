@@ -289,6 +289,14 @@ check(html.includes('id="freeChatStarter"') &&
       easy.includes("bridge.chat(history)") &&
       easy.includes("return bridge.interpret(text)"),
   "B66_CHAT_ENTRY: explicit general AI dialogue CTA routes to real model and preserves approved CGI quote flow");
+check(easy.includes("const explicitCgi = options && options.cgi === true;") &&
+      easy.includes("if (readiness && readiness.authenticated && !explicitCgi)") &&
+      easy.includes("function startCgiQuoteEntry()") &&
+      easy.includes('runPrimaryInterpretation(text, { cgi: true })') &&
+      easy.includes('runPrimaryInterpretation(reply, { cgi: true })') &&
+      easy.includes("CGI 견적서 바로 작성") &&
+      !easy.includes("const isGreeting ="),
+  "B66_MODEL_FIRST_CONTRACT: all signed-in chat turns are model-led; CGI requires explicit user entry");
 check(easy.includes("자동 분석 서버는 아직 활성화 전") &&
       easy.includes("이 파일은 외부로 전송되지 않습니다."),
   "EASY_MODE_CONTRACT: selected file is truthful about non-live analysis");
