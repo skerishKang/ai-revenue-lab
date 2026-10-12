@@ -14,6 +14,10 @@ import re
 from typing import Any, Protocol
 
 from .control_plane_identity import IdentityBridgeError
+from .canonical_connector_credential_handoff import (
+    DeviceCredentialInstallAck,
+    verify_install_ack,
+)
 
 _SAFE_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
 _PROOF = re.compile(r"^pairing-proof:[0-9a-f]{64}$")
@@ -27,6 +31,11 @@ class ProtectedDeviceCredentialHandoff(Protocol):
     async def deliver_once(
         self, *, challenge_id: str, device_id: str, credential: bytes,
         enrollment: dict[str, Any], now: datetime,
+    ) -> DeviceCredentialInstallAck: ...
+
+    async def verify_authenticated_ack(
+        self, *, challenge_id: str, device_id: str,
+        ack: DeviceCredentialInstallAck,
     ) -> bool: ...
 
 
@@ -112,7 +121,12 @@ class CanonicalConnectorEnrollmentAsyncHost:
         device = _ref(device_id, "device_id")
         if not isinstance(proof_ref, str) or _PROOF.fullmatch(proof_ref) is None:
             raise IdentityBridgeError(400, "invalid_pairing_proof", "Device possession proof is invalid.")
-        if self._handoff is None or not callable(getattr(self._handoff, "ready", None)) or not callable(getattr(self._handoff, "deliver_once", None)):
+        if (
+            self._handoff is None
+            or not callable(getattr(self._handoff, "ready", None))
+            or not callable(getattr(self._handoff, "deliver_once", None))
+            or not callable(getattr(self._handoff, "verify_authenticated_ack", None))
+        ):
             raise IdentityBridgeError(503, "credential_handoff_unavailable", "Protected device credential installation is unavailable.")
         binding = await self._broker.get_enrollment_binding(challenge_id=challenge)
         if binding.get("device_id") != device:
@@ -157,11 +171,26 @@ class CanonicalConnectorEnrollmentAsyncHost:
                 "Current owner consent changed while the PC was being enrolled.",
             ) from exc
         now = datetime.now(timezone.utc)
+        # A transport bool, untrusted device JSON or mere server-side send
+        # confirmation MUST NOT become proof of local Windows DPAPI install.
+        # Accept only a versioned possession transcript plus independently
+        # authenticated device-gateway acknowledgement for this exact PC.
         try:
-            delivered = await self._handoff.deliver_once(
+            ack = await self._handoff.deliver_once(
                 challenge_id=challenge, device_id=device, credential=raw_credential,
                 enrollment=enrollment, now=now,
             )
+            transcript_valid = verify_install_ack(
+                ack=ack, credential=raw_credential, challenge_id=challenge,
+                device_id=device, enrollment=enrollment,
+            )
+            verified_channel = (
+                await self._handoff.verify_authenticated_ack(
+                    challenge_id=challenge, device_id=device, ack=ack,
+                )
+                if transcript_valid else False
+            )
+            delivered = transcript_valid and verified_channel is True
         except Exception as exc:
             delivered = False
             handoff_error = exc
