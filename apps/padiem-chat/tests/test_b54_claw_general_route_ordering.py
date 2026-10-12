@@ -50,7 +50,15 @@ def _js_function(source: str, name: str) -> str:
 
 
 def _harness() -> str:
-    extracted = "\n\n".join(_js_function(SOURCE, name) for name in ROUTING_FUNCTIONS)
+    # #3936 gave the real renderer a module-scope failure-copy selector. Evaluate
+    # the closed map and that function exactly as app.js declares them, ahead of
+    # the routed functions, so this harness keeps the browser's scope chain.
+    map_start = SOURCE.index("  const CLAW_BOUNDED_REFUSAL_COPY")
+    map_end = SOURCE.index("\n  function buildRetryBox(", map_start)
+    extracted = "\n\n".join(
+        [SOURCE[map_start:map_end]]
+        + [_js_function(SOURCE, name) for name in ROUTING_FUNCTIONS]
+    )
     return r"""
 // Minimal stub environment: exercises the real routing functions, no DOM needed.
 const trace = [];
