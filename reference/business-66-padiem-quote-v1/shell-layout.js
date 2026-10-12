@@ -7,6 +7,11 @@
   var PREVIEW_MIN = 300;
   var PREVIEW_MAX = 1000;
   var MOBILE_BREAKPOINT = 900;
+  // Below this width the right A4 preview cannot coexist with a usable chat.
+  var COMPACT_PREVIEW_BREAKPOINT = 1480;
+  var previewAutoCollapsed = false;
+  var wasCompact = null;
+  var wasMobile = null;
 
   function byId(id) { return document.getElementById(id); }
 
@@ -252,8 +257,10 @@
     collapse.textContent = "접기 »";
     collapse.setAttribute("aria-controls", "shellPreviewHost");
     collapse.addEventListener("click", function () {
+      // A user-controlled collapse must not be reversed on the next resize.
+      previewAutoCollapsed = false;
       document.body.classList.add("preview-collapsed");
-      if (window.matchMedia("(max-width:1250px)").matches) reopen.focus();
+      if (window.matchMedia("(max-width:" + COMPACT_PREVIEW_BREAKPOINT + "px)").matches) reopen.focus();
     });
     var pdfShortcut = document.createElement("button");
     pdfShortcut.id = "shellPreviewPdf";
@@ -315,11 +322,12 @@
     reopen.setAttribute("aria-label", "견적서 미리보기 열기");
     reopen.setAttribute("aria-controls", "shellPreviewHost");
     reopen.addEventListener("click", function () {
+      previewAutoCollapsed = false;
       if (window.matchMedia("(max-width:900px)").matches) {
         document.body.classList.add("rail-collapsed");
       }
       document.body.classList.remove("preview-collapsed");
-      if (window.matchMedia("(max-width:1250px)").matches) collapse.focus();
+      if (window.matchMedia("(max-width:" + COMPACT_PREVIEW_BREAKPOINT + "px)").matches) collapse.focus();
     });
     shell.appendChild(reopen);
 
@@ -534,15 +542,23 @@
   }
 
   function syncMobileDefault() {
-    if (window.matchMedia("(max-width:" + MOBILE_BREAKPOINT + "px)").matches) {
-      document.body.classList.add("rail-collapsed");
+    // Run on load AND on window resizing. Earlier code ran only at startup,
+    // leaving an A4 preview in place when a wide browser became a narrow one.
+    var mobile = window.matchMedia("(max-width:" + MOBILE_BREAKPOINT + "px)").matches;
+    var compact = window.matchMedia("(max-width:" + COMPACT_PREVIEW_BREAKPOINT + "px)").matches;
+    if (mobile && wasMobile !== true) document.body.classList.add("rail-collapsed");
+    if (compact && wasCompact !== true) {
+      if (!document.body.classList.contains("preview-collapsed")) {
+        document.body.classList.add("preview-collapsed");
+        previewAutoCollapsed = true;
+      }
+    } else if (!compact && wasCompact === true && previewAutoCollapsed) {
+      document.body.classList.remove("preview-collapsed");
+      previewAutoCollapsed = false;
     }
-    // Medium laptop widths must retain sufficient room for the primary editor.
-    if (window.matchMedia("(max-width:1250px)").matches) {
-      document.body.classList.add("preview-collapsed");
-    }
+    wasMobile = mobile;
+    wasCompact = compact;
   }
-
 
   function wireOverlayKeyboard() {
     var rail = byId("shellRail");
@@ -556,7 +572,7 @@
         !document.body.classList.contains("rail-collapsed");
     }
     function isPreviewModal() {
-      return window.matchMedia("(max-width:1250px)").matches &&
+      return window.matchMedia("(max-width:" + COMPACT_PREVIEW_BREAKPOINT + "px)").matches &&
         !document.body.classList.contains("preview-collapsed");
     }
     function syncSemantics() {
@@ -671,6 +687,9 @@
     buildTopbarToggle();
     syncDirectMode();
     syncMobileDefault();
+    // Resizing a desktop window must reflow immediately, with no horizontal
+    // scrolling or need to reload. The user may explicitly reopen the preview.
+    window.addEventListener("resize", syncMobileDefault);
     wireOverlayKeyboard();
     wireComposerVisualViewport();
 
