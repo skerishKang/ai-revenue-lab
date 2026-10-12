@@ -20,6 +20,7 @@ from .b66_member_inquiries import (
     b66_admin_inquiry_status, b66_admin_inquiry_dispatch,
 )
 from .central_model_admin_identity import D1CentralModelAdminAuthorizer
+from .central_model_policy_d1 import D1CentralModelPolicyStore
 from .central_model_control_routes import (
     central_model_admin_me, central_model_admin_snapshot,
     central_model_admin_preview,
@@ -303,6 +304,7 @@ def create_app(
     b66_admin_google_email: str = "",
     central_model_admin_authorizer=None,
     central_model_admin_google_email: str = "",
+    central_model_policy_store=None,
     claw_task_alert_store=None,
     calendar_store: CalendarStore | None = None,
     claw_automation_store=None,
@@ -584,6 +586,14 @@ def create_app(
         except ValueError:
             global_model_admin = None
     app.state.central_model_admin_authorizer = global_model_admin
+    # S2 read-only D1 policy inventory. Migration 039 and verified global
+    # administrator remain separately gated. DO NOT wire apply or dispatch.
+    app.state.central_model_policy_store = (
+        central_model_policy_store if central_model_policy_store is not None
+        else D1CentralModelPolicyStore(d1_binding)
+        if d1_binding is not None and callable(getattr(d1_binding, "batch", None))
+        and callable(getattr(d1_binding, "prepare", None)) else None
+    )
     app.state.b66_membership_enforced = False
     # Production host enables this independently of the membership rollout.
     # Pure ASGI fixtures without a D1 adapter keep their pre-existing behavior.

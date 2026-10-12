@@ -218,20 +218,24 @@
     let connected = 0;
     for (const [id, product] of Object.entries(PRODUCTS)) {
       const data = state.products?.[id] || {status: "unavailable"};
-      const isConnected = data.status === "connected";
+      const isConnected = data.status === "connected" || data.status === "stored_only";
       if (isConnected) connected++;
       const card = node("div", null, "source-card");
       card.append(node("strong", product.name));
-      card.append(node("span", isConnected ? "● 정책 조회됨" :
+      card.append(node("span", data.status === "stored_only" ? "◌ 저장 원장만 연결" :
+        isConnected ? "● 정책 조회됨" :
         data.status === "not_wired" ? "◌ 아직 미연결" : "◌ 조회 불가",
         isConnected ? "connected" : "unknown"));
       card.append(node("small", SOURCES[id]));
+      if (id === "central" && data.status === "stored_only") card.append(
+        node("small", "Revision " + data.revision + " · 실제 실행 미적용"));
       if (id === "b66" && isConnected) card.append(
         node("small", "Revision " + data.revision + (data.active ? " · 활성" : " · 비활성")));
       root.append(card);
     }
     $("sourceCount").textContent = connected + " / 5 연결";
-    $("flowCentral").textContent = "미연결";
+    $("flowCentral").textContent = state.products?.central?.status === "stored_only" ?
+      "원장 연결 · 미적용" : "미연결";
     $("flowProducts").textContent = connected + "/5 정책 조회";
   }
 
