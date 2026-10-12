@@ -171,3 +171,15 @@ def test_usage_admission_is_checked_before_model_registry_or_provider():
     assert result.status_code == 429
     assert result.json()["error"]["code"] == "rate_limited"
     assert resolver.calls == model.calls == []
+
+
+def test_dialogue_does_not_clip_earlier_turns_at_an_arbitrary_app_limit():
+    settings, client, resolver, model = setup()
+    sign_in(settings, client)
+    turns = [
+        {"role": "user" if i % 2 == 0 else "assistant", "content": f"turn {i}"}
+        for i in range(65)
+    ]
+    res = client.post("/api/b66/ai/chat", json=payload(messages=turns))
+    assert res.status_code == 200, res.text
+    assert model.calls[0][0] == turns
