@@ -24,6 +24,7 @@ from padiem_control_plane.contracts import ControlPlaneContractError
 from padiem_control_plane.padiem_connector_enrollment_server import CanonicalConnectorEnrollmentServer
 
 from .auth_routes import auth_ready, current_user_id
+from .b54_canonical_session import resolve_current_b54_canonical_session
 
 CONNECTOR_ENROLLMENT_ISSUE_PATH = "/api/claw/connector/enrollments/issue"
 CONNECTOR_ENROLLMENT_REDEEM_PATH = "/api/claw/connector/enrollments/redeem"
@@ -82,22 +83,34 @@ async def connector_enrollment_issue(request: Request) -> JSONResponse:
     if not auth_ready(request) or not current_user_id(request):
         return _error(401, "canonical_session_required")
     service = _service(request)
-    session_port = getattr(request.app.state, "connector_enrollment_browser_session", None)
     csrf_port = getattr(request.app.state, "connector_enrollment_browser_csrf", None)
-    if service is None or not callable(getattr(session_port, "resolve", None)) or not callable(getattr(csrf_port, "verify", None)):
+    if service is None or not callable(getattr(csrf_port, "verify", None)):
         return _error(503, "enrollment_server_dependency_unavailable")
     try:
         if csrf_port.verify(request) is not True:
             return _error(403, "connector_enrollment_csrf_denied")
-        session = session_port.resolve(request)
-        if not isinstance(session, AuthSessionSnapshot) or session.subject.subject_id != current_user_id(request):
+        # The signed product-user ID is NOT the Control Plane subject ID.
+        # Resolve the ACTIVE B54 canonical session through the already-reviewed
+        # private identity binding. Do not accept a client/current-user string,
+        # caller-chosen session ID, or a product-local session-port assertion.
+        bridged = await resolve_current_b54_canonical_session(request)
+        moment = datetime.now(timezone.utc)
+        uid = current_user_id(request)
+        session = getattr(bridged, "auth_session", None)
+        if (
+            bridged is None
+            or getattr(bridged, "product_user_id", None) != uid
+            or not isinstance(session, AuthSessionSnapshot)
+            or session.product_id != "b54-padiem-claw"
+            or not session.is_active(now=moment)
+            or not session.tenant_id
+        ):
             return _error(401, "canonical_session_required")
         fields = await _payload(request, frozenset({"device_id"}))
         if fields is None:
             return _error(400, "connector_enrollment_invalid_request")
         receipt = service.issue(
-            verified_session=session, device_id=fields["device_id"],
-            now=datetime.now(timezone.utc),
+            verified_session=session, device_id=fields["device_id"], now=moment,
         )
         # Secret is returned ONLY once to the authenticated, origin-verified
         # browser. Neither support projection nor logs can contain the code.
