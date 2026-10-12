@@ -314,7 +314,7 @@
       startConversation();
     }
     const requestScopeRevision = accountScopeRevision;
-    const history = modelChatTurns.concat([{ role: "user", content: text }]).slice(-31);
+    const history = modelChatTurns.concat([{ role: "user", content: text }]);
     interpretationInFlight = true;
     addMessage("user", text);
     const pending = addMessage("assistant", "AI가 답변을 작성하고 있습니다…");
