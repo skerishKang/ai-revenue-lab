@@ -117,7 +117,7 @@ def test_grant_requires_csrf_and_explicit_exact_confirmation(monkeypatch):
 
 
 @pytest.mark.parametrize("bridge", [
-    None,
+    SimpleNamespace(product_user_id=None, auth_session=None),
     SimpleNamespace(product_user_id="another-product-user", auth_session=canonical_session()),
     SimpleNamespace(product_user_id="product-user-1", auth_session=canonical_session(product="b62")),
     SimpleNamespace(product_user_id="product-user-1", auth_session=canonical_session(state=AuthSessionState.REVOKED)),
