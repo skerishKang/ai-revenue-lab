@@ -17,7 +17,7 @@
 | Plus | Gemma 4 — exact choice **PENDING**: `google/gemma-4-26b-a4b-it` or `google/gemma-4-31b-it` | Owner said “Gemma 4”, did **not** choose between 26B/31B | Both ON | No variant selected or live acceptance |
 | Plus | ExLab (exact identity **PENDING**) | Owner said “ExLab” without exact Plus target; do not infer same Qwen as Pro | UNKNOWN until selected | No Plus model assignment |
 | **Pro** | OpenCode Go Muse Spark **1.2** — **EXACT ID UNKNOWN / NOT REGISTERED** | **Add only after official catalog/account/model-ID/wire/license proof** | NOT REGISTERED | No real test; do not alias to Muse 1.3 |
-| Pro | ExLab Qwen — `experiential/qwen3.8-flash-next-uncensored` | Clearly nominated | ON | Historical direct HTTP 200 vs B14 429/504 [#4220](https://github.com/skerishKang/ai-revenue-lab/issues/4220), intermittent capacity [#4252](https://github.com/skerishKang/ai-revenue-lab/issues/4252); dedicated safe gateway [#4516](https://github.com/skerishKang/ai-revenue-lab/issues/4516) pending. No broad reliability claim |
+| Pro | ExLab Qwen — `experiential/qwen3.8-flash-next-uncensored` | Clearly nominated | ON | Historical direct HTTP 200 vs B14 429/504 [#4220](https://github.com/skerishKang/ai-revenue-lab/issues/4220), intermittent capacity [#4252](https://github.com/skerishKang/ai-revenue-lab/issues/4252). Exact one-shot source gate [#4517](https://github.com/skerishKang/ai-revenue-lab/pull/4517) **MERGED**, but real dispatch **tool-blocked before transmission**: live HTTP NOT_RUN, POST=0, no success/reliability claim [#4516](https://github.com/skerishKang/ai-revenue-lab/issues/4516) |
 | **Max** | OpenCode Go Muse Spark **1.3 Contributor** — `opencode-go/muse-spark-1.3-contributor` | Owner moved this from historical Pro to **Max** | **OFF**, Go provider OFF | Response protocol/account & contributor terms review still needed |
 
 ### Unassigned, preserved existing intake
@@ -39,7 +39,7 @@
 | B14 exact registered ID + model/provider enabled | 14 ON / 6 OFF; `groups.plus/pro/max` empty | B14 JSON and registry loader |
 | Gemini contract/mock | LOCAL3 73 prior tests; #4504 merged 40+ new guard tests, exact PR CI green | [#4499](https://github.com/skerishKang/ai-revenue-lab/issues/4499), [#4504](https://github.com/skerishKang/ai-revenue-lab/pull/4504) |
 | Gemini actual provider response | **3.1 PASS** 11,039ms; **3.5 PASS** 1,861ms, both exact model matched, one actual POST each, no network retry or fallback. Sample size one each; not sustained speed/stability | [#4499](https://github.com/skerishKang/ai-revenue-lab/issues/4499), [3.1 success](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38288787901), [3.5 success](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38292210671) |
-| LongCat and Step 5 Go Free acceptance | **HOLD / test pending**; source provider/models OFF; `context_window=0` = unknown bound, not zero effective context | [#4505](https://github.com/skerishKang/ai-revenue-lab/issues/4505), #4416 |
+| LongCat and Step 5 Go Free acceptance | **HOLD / real provider test pending**; source #4508 tests/report merged, provider/models OFF; `context_window=0` = unknown bound, not zero effective context. #4416 real gateway currently lacks authenticated stable coding session propagation; Draft #4524 test-only | [#4505](https://github.com/skerishKang/ai-revenue-lab/issues/4505), #4416 |
 | OpenCode Go paid/contributor and Muse 1.2 | Exact route/terms/account permission unknown; no speculative registration or customer traffic | #4416; official serving provider's dated terms |
 | Product-specific primary/fallback persistence and runtime enforcement | **NOT ACTIVE**; S0 groups only, no site write fanout | #4453, #4480, #4483, #4428 |
 
@@ -47,8 +47,8 @@
 
 1. Preserve current first-round membership **as an owner evaluation table only**; do not set B14 `groups` or product tier DB.
 2. **Both Gemini 3.1 and 3.5 have PASSED one bounded real API run each**; no extra connection smoke needed. Do not enable member tiers, auto-fallback or customer-wide model selection from a single sample; streaming, sustained latency/uptime and site entitlements require separate acceptance.
-3. LOCAL3 [#4516](https://github.com/skerishKang/ai-revenue-lab/issues/4516) owns a **separate** ExLab Qwen B14 one-shot source gate with 429/504 fail-closed and no actual ExLab provider POST in the source phase; do not alter Gemini allowlists.
-4. Investigate Go LongCat input ceiling and StepFun overload **without enabling OFF routes**; compare provider-specific evidence.
+3. ExLab #4517 separate gate is **already source-merged**, but actual one-shot dispatch was tool-level blocked before transmission; #4516 stays OPEN (POST=0). No retry, bypass, or false live success claims. Do not change Gemini allowlists.
+4. LongCat/StepFun evaluation report source #4508 is merged; #4505 real provider suitability remains HOLD. LOCAL3 #4416 / Draft #4524 investigates missing authenticated stable coding-agent session bridge; no model enabling or untrusted session header shortcut.
 5. Request exact **Gemma 4 variant**, exact **Plus ExLab model**, verified **Muse 1.2 upstream ID**, and actual **fallback ID(s)** only when the owner revisits the decisions. Do not silently fill these gaps.
 
 **Historical documents remain evidence of when a decision was made, not current approval.** If historical grade examples conflict with this date's user decision, use this newer provisional decision while retaining official model-exclusion/security gates.
