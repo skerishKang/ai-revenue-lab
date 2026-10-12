@@ -184,6 +184,12 @@ def product_device_view_for_owner(
         session=session, membership_role=membership_role, scope=scope, now=now,
     ):
         return _denied("canonical_owner_scope_required")
+    # One shared backend does not mean cross-brand customer awareness.
+    # A Claw login must never project Quote devices just because a server
+    # policy includes Quote; the independently authenticated product session
+    # must match the product whose PC list is requested.
+    if not isinstance(product_id, str) or session.product_id != product_id:
+        return _denied("product_login_context_mismatch")
     if not isinstance(policy, ProductPcAccessPolicy):
         return _denied("product_pc_policy_required")
     if not _directory_matches_scope(directory_result, scope):
