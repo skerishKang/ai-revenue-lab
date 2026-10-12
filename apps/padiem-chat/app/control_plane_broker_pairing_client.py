@@ -228,3 +228,20 @@ class CloudflareCanonicalBrokerPairingClient:
         _time(enrollment.get("issued_at"), "enrollment issue time")
         _time(enrollment.get("credential_expires_at"), "device credential expiry")
         return enrollment, credential
+
+    async def revoke_binding(self, *, binding_ref: str) -> dict[str, Any]:
+        """Compensate a failed secure credential handoff through the same Broker."""
+        binding_ref = _safe_ref(binding_ref, "binding_ref")
+        result = await self._invoke("revoke_binding", {
+            "binding_ref": binding_ref,
+            "now": datetime.now(timezone.utc).isoformat(),
+        })
+        if set(result) != {"ok", "binding"}:
+            raise IdentityBridgeError(503, "broker_rpc_invalid", "Canonical binding revocation shape is invalid.")
+        wire = _dict(result.get("binding"))
+        if (
+            wire is None or wire.get("binding_ref") != binding_ref
+            or wire.get("state") != "revoked"
+        ):
+            raise IdentityBridgeError(503, "broker_rpc_invalid", "Canonical binding revocation was not confirmed.")
+        return {"binding_ref": binding_ref, "state": "revoked"}
