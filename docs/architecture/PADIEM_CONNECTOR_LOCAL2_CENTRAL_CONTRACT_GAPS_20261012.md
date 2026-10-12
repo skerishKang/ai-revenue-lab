@@ -1,7 +1,7 @@
 # LOCAL2 ↔ CENTRAL contract status — #4139 Connector enrollment
 
 **Previously:** `BASE_CENTRAL_SHA=dbbd1633dcf3509c96d7a1a996c9b851248dd938` reported three open contract
-gaps. **This revision** merge-forwards CENTRAL `26443796172f22cb7b221729db0afd9f87b98ce1` into
+gaps. **This revision** merge-forwards CENTRAL `24a1ae5b0fe9d431cce2f1400b3ca46be416876c` into
 `local2/4139-windows-connector-integration`, so the gaps below are restated against the code that is
 actually in this tree, not against the older base.
 **S2 source:** `ca8c8c23ef293f1451f7829831cbc4a483694940` (PR #4463) · **Role:** LOCAL2 Windows Connector.
@@ -34,7 +34,17 @@ Status/body disagreement is refused in both directions.
 `binding_ref`, `device_id` and `credential_generation` as the binding handed to `save`, plus a protected
 `load` readback of the identical bytes under that binding context. Only
 `protected_store_save_readback` — the proof kind CENTRAL's install ack accepts — is citable, a store without
-readback capability is unusable, and a redeemed challenge is consumed locally on every attempt.
+readback capability is unusable, and a redeemed challenge is consumed locally on every attempt. After that
+readback the device computes CENTRAL's versioned possession proof (HMAC-SHA256 over
+`padiem.connector-device-install-ack.v1`, keyed by the new credential) and carries it on the confirmation;
+proof vectors pinned in `tests/test_credential_install_confirmation.py` were generated against CENTRAL's own
+`installation_proof`, so the transcript is byte-identical. Nothing transmits it — no sender is wired.
+
+`installation_proof`'s accepted credential window is 16–4096 bytes while
+`kagent.ProtectedFileDeviceCredentialStore` accepts any non-empty credential up to 16384. A credential in
+4097–16384 bytes would therefore persist locally yet be impossible for CENTRAL to acknowledge. LOCAL2 fails
+closed to the intersection (refused before any store write); **CENTRAL should confirm which bound is
+authoritative** so the store and the ack do not describe different credential sets.
 
 `plan_install_failure_recovery` encodes CENTRAL's recovery decision: confirmed canonical revocation →
 `new_challenge_required`; unconfirmed or refused revocation → `security_hold_reconciliation_required`. Both
@@ -53,20 +63,24 @@ never claims a revocation result.
    `UnconfiguredProtectedCredentialReceiver` are the only wired implementations. The PC-side installer must
    reuse `kagent.WindowsDpapiProtectedDataPort` + `ProtectedFileDeviceCredentialStore` through the structural
    port here — no second store, and no raw credential in the HTTP redeem response.
-3. **Install-ack transport.** The keyed transcript exists, but the gateway that authenticates the ack sender
-   and the Broker path that consumes it are unbuilt. `WINDOWS_LIVE_E2E=NOT_PROVEN`.
+3. **Install-ack transport.** The device now computes the keyed proof after a confirmed readback, but the
+   gateway that authenticates the ack *sender* and the Broker path that consumes it are unbuilt
+   (`PROTECTED_INSTALL_TRANSPORT_WIRED=False`). Nothing in `claw_connect` sends an ack.
+   `WINDOWS_LIVE_E2E=NOT_PROVEN`.
 4. **Revoke compensation call path.** Which canonical operator the device or operator invokes after a failed
    install, and how its confirmation is authenticated, is a CENTRAL decision. Until then the security hold is
    the only honest LOCAL2 outcome for an ambiguous install.
-5. **S1 authority merge** (LOCAL1 #4438) and the owner-consent UI/CSRF surface remain outside LOCAL2 scope;
+5. **Credential bound divergence** (paragraph above): store window vs ack key window needs one authority.
+6. **S1 authority merge** (LOCAL1 #4438) and the owner-consent UI/CSRF surface remain outside LOCAL2 scope;
    the S1 drift guard stays skipped until then.
 
 ## Flags
 
 ```
-HTTP_TRANSPORT=ALIGNED_WITH_CENTRAL_264437961_AND_FAIL_CLOSED
+HTTP_TRANSPORT=ALIGNED_WITH_CENTRAL_24A1AE5B0_AND_FAIL_CLOSED
 SERVER_CONTRACT_MATCH=ENVELOPE_AND_RECEIPT_PINNED
 LOCAL_INSTALL_PROOF=SAVE_PLUS_READBACK_CORRELATED
+INSTALL_ACK_PROOF=COMPUTED_AFTER_READBACK_NOT_TRANSMITTED
 REDEEMED_CHALLENGE=single_use_local_and_server_side
 INSTALL_FAILURE_RECOVERY=CONTRACT_AND_TESTS_ONLY
 CREDENTIAL_HANDOFF=NOT_WIRED

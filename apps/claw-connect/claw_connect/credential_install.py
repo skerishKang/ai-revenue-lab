@@ -27,11 +27,18 @@ Authority boundaries:
   either a new challenge (canonical revocation confirmed) or a security hold for
   authority-side reconciliation — never a replay of the challenge or the
   credential.
+* The versioned install-ack possession proof (CENTRAL transcript
+  ``padiem.connector-device-install-ack.v1``) is computed only after that
+  readback, and nothing here transmits it: the authenticated device transport is
+  still unselected, so ``CREDENTIAL_HANDOFF_WIRED`` stays False and no sender
+  exists.
 """
 
 from __future__ import annotations
 
+import hashlib
 import hmac
+import re
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Protocol
@@ -49,6 +56,20 @@ CREDENTIAL_HANDOFF_WIRED = False
 #: acknowledged as installed.
 _STORE_READBACK_PROOF = "protected_store_save_readback"
 _LOCAL_PROOF_KINDS = frozenset({_STORE_READBACK_PROOF})
+
+#: Versioned install-ack transcript pinned to CENTRAL's
+#: ``INSTALL_ACK_TRANSCRIPT_VERSION``. Byte-identical by contract: the proof is
+#: only comparable against the canonical Broker's own computation.
+INSTALL_ACK_TRANSCRIPT_VERSION = "padiem.connector-device-install-ack.v1"
+
+#: The credential window CENTRAL will accept as an HMAC key for the ack
+#: (``installation_proof`` in the same central module). A credential outside this
+#: window can be stored but never acknowledged, so it is refused locally before
+#: anything is written.
+_MIN_ACK_KEY_BYTES = 16
+_MAX_ACK_KEY_BYTES = 4096
+_PROOF_HEX_RE = re.compile(r"^[0-9a-f]{64}$")
+_REFERENCE_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
 
 #: The one message a repeated local install attempt may produce. A redeemed
 #: challenge is already spent server-side, so this is a terminal refusal.
@@ -71,7 +92,11 @@ class ProtectedCredentialInstallConfirmation:
     """Non-secret proof that the canonical store persisted a credential.
 
     Carries no raw credential material and no store path. ``installed`` is True
-    only when the store returned a projection for this exact binding.
+    only when the store returned a projection for this exact binding *and* the
+    same bytes read back through it. ``proof_hex`` is CENTRAL's versioned
+    possession proof over this binding, computed only after that readback; it is
+    not a local success claim and nothing sends it until a reviewed authenticated
+    transport exists.
     """
 
     installed: bool
@@ -79,6 +104,9 @@ class ProtectedCredentialInstallConfirmation:
     device_id: str
     credential_generation: int
     proof_kind: str
+    challenge_id: str | None = None
+    transcript_version: str | None = None
+    proof_hex: str | None = None
     raw_credential_persisted: bool = False
     confirmed_by_local_store: bool = False
 
@@ -92,16 +120,38 @@ class ProtectedCredentialInstallConfirmation:
                 raise CredentialInstallError(
                     "installed=True requires confirmation by the local store"
                 )
+            if self.transcript_version != INSTALL_ACK_TRANSCRIPT_VERSION:
+                raise CredentialInstallError("install ack transcript is unreviewed")
+            for name, value in (
+                ("challenge_id", self.challenge_id),
+                ("device_id", self.device_id),
+                ("binding_ref", self.binding_ref),
+            ):
+                if not isinstance(value, str) or _REFERENCE_RE.fullmatch(value) is None:
+                    raise CredentialInstallError(f"install ack {name} invalid")
+            generation = self.credential_generation
+            if (
+                type(generation) is not int
+                or not 1 <= generation <= 1_000_000
+            ):
+                raise CredentialInstallError("install ack generation invalid")
+            if not isinstance(self.proof_hex, str) or _PROOF_HEX_RE.fullmatch(
+                self.proof_hex
+            ) is None:
+                raise CredentialInstallError("install ack proof must be 64 hex chars")
 
     def safe_dict(self) -> dict[str, Any]:
         return {
             "installed": self.installed,
-            "binding_ref": self.binding_ref,
+            "challenge_id": self.challenge_id,
             "device_id": self.device_id,
+            "binding_ref": self.binding_ref,
             "credential_generation": self.credential_generation,
             "proof_kind": self.proof_kind,
+            "transcript_version": self.transcript_version,
+            "local_store_confirmed": self.confirmed_by_local_store,
+            "proof_hex": self.proof_hex,
             "raw_credential_persisted": False,
-            "confirmed_by_local_store": self.confirmed_by_local_store,
         }
 
 
@@ -131,6 +181,62 @@ class UnconfiguredProtectedCredentialReceiver:
             "(BLOCKED_DEPENDENCY: central ProtectedDeviceCredentialHandoff "
             "contract + device installation acknowledgement)"
         )
+
+
+def installation_ack_transcript(
+    *, challenge_id: str, device_id: str, binding_ref: str, credential_generation: int
+) -> bytes:
+    """CENTRAL's exact transcript: versioned, newline-separated, no trailing newline."""
+    return "\n".join(
+        (
+            INSTALL_ACK_TRANSCRIPT_VERSION,
+            challenge_id,
+            device_id,
+            binding_ref,
+            str(credential_generation),
+        )
+    ).encode("utf-8")
+
+
+def install_ack_proof(
+    *,
+    credential: bytes,
+    challenge_id: str,
+    device_id: str,
+    binding_ref: str,
+    credential_generation: int,
+) -> str:
+    """HMAC-SHA256 over the versioned transcript, keyed by the new credential.
+
+    This proves *possession* of the canonical Broker credential bound to this
+    transcript. It does not prove DPAPI installation and does not authenticate the
+    PC — CENTRAL's device gateway must do both before any success. Nothing here
+    opens a channel: the value is only computed after a protected save and readback.
+    """
+    if (
+        not isinstance(credential, bytes)
+        or not _MIN_ACK_KEY_BYTES <= len(credential) <= _MAX_ACK_KEY_BYTES
+    ):
+        raise CredentialInstallError("credential is outside the acknowledged key window")
+    for name, value in (
+        ("challenge_id", challenge_id),
+        ("device_id", device_id),
+        ("binding_ref", binding_ref),
+    ):
+        if not isinstance(value, str) or _REFERENCE_RE.fullmatch(value) is None:
+            raise CredentialInstallError(f"install ack {name} invalid")
+    if type(credential_generation) is not int or not 1 <= credential_generation <= 1_000_000:
+        raise CredentialInstallError("install ack generation invalid")
+    return hmac.new(
+        credential,
+        installation_ack_transcript(
+            challenge_id=challenge_id,
+            device_id=device_id,
+            binding_ref=binding_ref,
+            credential_generation=credential_generation,
+        ),
+        hashlib.sha256,
+    ).hexdigest()
 
 
 def _binding_fact(binding: Any, name: str) -> str:
@@ -185,6 +291,10 @@ class LocalStoreCredentialReceiver:
         self._consume_challenge(challenge_id)
         if not isinstance(credential, (bytes, bytearray)) or not credential:
             raise CredentialInstallError("credential must be non-empty bytes")
+        if not _MIN_ACK_KEY_BYTES <= len(bytes(credential)) <= _MAX_ACK_KEY_BYTES:
+            # Refuse before any store write: a credential CENTRAL could not key an
+            # acknowledgement with can never become an installed binding.
+            raise CredentialInstallError("credential is outside the acknowledged key window")
         save = getattr(self._store, "save", None)
         if not callable(save):
             raise CredentialInstallError("protected store is not available")
@@ -227,12 +337,24 @@ class LocalStoreCredentialReceiver:
             bytes(stored), bytes(credential)
         ):
             raise CredentialInstallError("protected store readback mismatch")
+        # Only after a confirmed save *and* matching readback may this device
+        # compute the possession proof CENTRAL's install acknowledgement requires.
+        proof_hex = install_ack_proof(
+            credential=bytes(credential),
+            challenge_id=challenge_id,
+            device_id=expected_device,
+            binding_ref=expected_ref,
+            credential_generation=generation,
+        )
         return ProtectedCredentialInstallConfirmation(
             installed=True,
             binding_ref=expected_ref,
             device_id=expected_device,
             credential_generation=generation,
             proof_kind=_STORE_READBACK_PROOF,
+            challenge_id=challenge_id,
+            transcript_version=INSTALL_ACK_TRANSCRIPT_VERSION,
+            proof_hex=proof_hex,
             confirmed_by_local_store=True,
         )
 

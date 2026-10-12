@@ -109,12 +109,12 @@
 
 ## 9. 검증 상태 (#4490 HEAD에서 실측)
 
-- `apps/claw-connect/tests/` 전체: **260 passed, 4 skipped**
+- `apps/claw-connect/tests/` 전체: **277 passed, 4 skipped** (로컬 Windows Python 3.11; CI는 3.12에서 재실행)
   - skip 3건: `CENTRAL-CONTRACT-CONFLICT` — central `dbbd1633`가 `claw_connect.resident_path`와
     `runtime.ConnectApp(enrollment=...)` 배선을 제거해 재현 불가 (Resident 경로는 #4139 범위 밖, CENTRAL 결정 대기)
   - skip 1건: S1 authority 미병합 drift guard (`BLOCKED_DEPENDENCY`)
 - `test_enrollment_contract.py`: 67 passed + 4 skipped
-- `test_enrollment_http_transport.py` + `test_credential_install_confirmation.py` + `test_enrollment_install_gate.py`: 136 passed
+- `test_enrollment_http_transport.py` + `test_credential_install_confirmation.py` + `test_enrollment_install_gate.py`: 153 passed
 - Node wrapper (`npm test`): **5 passed / 0 failed** (이전 문서의 6/6은 오기재였고 실측은 5건)
 - GitHub Windows 게이트(`claw-connect-contract-tests.yml`, PR #4490 head에서 실행): §11에 exact SHA로 보고
 - Windows live harness (`verify_windows_live.py`): 기존 blocked-기대 항목 유지, live E2E 미수행 (`WINDOWS_LIVE_E2E=NOT_PROVEN`)
@@ -140,6 +140,11 @@
   가져야 하고(비정상/오래된 binding의 projection은 절대 `installed=True`가 되지 않음), 같은 binding 컨텍스트로
   `load` readback한 바이트가 원본과 일치해야 한다. readback 능력이 없는 저장소는 사용 불가로 처리한다.
 - proof kind는 CENTRAL 설치 ack가 요구하는 `protected_store_save_readback` 하나만 인정한다.
+- save와 readback이 모두 확인된 뒤에만 CENTRAL의 versioned transcript
+  (`padiem.connector-device-install-ack.v1`, 개행 구분, trailing newline 없음)에 새 자격증명을 키로
+  HMAC-SHA256 proof를 계산해 confirmation에 담는다. 이 proof는 자격증명 *소유*만 증명하며 DPAPI 설치나
+  Windows 기기 신원을 증명하지 않는다. 전송 채널이 미선정이라 어떤 sender도 배선하지 않았고,
+  CENTRAL이 검증할 수 없는 길이(16–4096 bytes 창 밖)의 자격증명은 저장 전에 거부한다.
 - redeemed 챌린지는 로컬에서도 single-use: 시도(성공·실패 무관)마다 소비된다.
 - 설치 실패 복구는 `plan_install_failure_recovery(revocation_confirmed=…)`가 두 가지로만 매핑한다 —
   canonical 회수 확인 → `new_challenge_required`, 미확인/모호 → `security_hold_reconciliation_required`.

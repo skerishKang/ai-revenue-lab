@@ -30,6 +30,9 @@ from claw_connect.credential_install import (  # noqa: E402
 
 NOW = datetime(2026, 10, 12, 12, 0, tzinfo=timezone.utc)
 NEW_MODULES = ("claw_connect/enrollment_http.py", "claw_connect/credential_install.py")
+# Inside CENTRAL's acknowledged key window so the failure under test is the store,
+# not the pre-write credential bound.
+CREDENTIAL = b"synthetic-device-credential-bytes"
 
 
 class _Binding:
@@ -46,7 +49,7 @@ def test_server_receipt_alone_never_confirms_installation():
         receiver.install_once(
             challenge_id="c1",
             device_id="pc_abc123",
-            credential=b"raw",
+            credential=CREDENTIAL,
             binding=_Binding(),
         )
 
@@ -60,13 +63,14 @@ def test_unconfirmed_install_raises_rather_than_soft_failing():
             raise AssertionError("readback must not run after a failed save")
 
     receiver = LocalStoreCredentialReceiver(store=_BrokenStore(), now_factory=lambda: NOW)
-    with pytest.raises(CredentialInstallError):
+    with pytest.raises(CredentialInstallError) as exc:
         receiver.install_once(
             challenge_id="c1",
             device_id="pc_abc123",
-            credential=b"raw",
+            credential=CREDENTIAL,
             binding=_Binding(),
         )
+    assert str(exc.value) == "protected store save failed"
 
 
 def test_failed_install_without_confirmed_revocation_is_a_security_hold():

@@ -9,6 +9,9 @@ central delivery channel stays undefined, so the wired receiver stays disabled.
 
 from __future__ import annotations
 
+import hashlib
+import hmac
+import re
 import sys
 from dataclasses import dataclass, replace
 from datetime import datetime, timezone
@@ -21,6 +24,7 @@ sys.path.insert(0, str(ROOT))
 
 from claw_connect.credential_install import (  # noqa: E402
     CREDENTIAL_HANDOFF_WIRED,
+    INSTALL_ACK_TRANSCRIPT_VERSION,
     RECOVERY_ACTIONS,
     RECOVERY_NEW_CHALLENGE,
     RECOVERY_SECURITY_HOLD,
@@ -31,12 +35,15 @@ from claw_connect.credential_install import (  # noqa: E402
     LocalStoreCredentialReceiver,
     ProtectedCredentialInstallConfirmation,
     UnconfiguredProtectedCredentialReceiver,
+    install_ack_proof,
+    installation_ack_transcript,
     plan_install_failure_recovery,
 )
 
 NOW = datetime(2026, 10, 12, 12, 0, tzinfo=timezone.utc)
 CREDENTIAL = b"raw-device-credential-bytes"
 READBACK_PROOF = "protected_store_save_readback"
+PROOF_HEX_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
 @dataclass(frozen=True)
@@ -159,6 +166,17 @@ def test_install_is_confirmed_by_save_plus_readback():
     # The credential reached the store exactly once and was read back once.
     assert store.saved == [CREDENTIAL]
     assert store.load_calls == 1
+    # The ack proof exists only for this exact binding, over the pinned
+    # transcript, and is re-derived here from literal bytes rather than the
+    # implementation, so a transcript edit cannot pass silently.
+    assert confirmation.challenge_id == "c1"
+    assert confirmation.transcript_version == INSTALL_ACK_TRANSCRIPT_VERSION
+    assert confirmation.proof_hex == hmac.new(
+        CREDENTIAL,
+        b"padiem.connector-device-install-ack.v1"
+        b"\nc1\npc_abc123\nbinding-1\n2",
+        hashlib.sha256,
+    ).hexdigest()
     payload = confirmation.safe_dict()
     assert "credential" not in set(payload)
     assert CREDENTIAL not in repr(payload).encode("utf-8", "ignore")
@@ -349,3 +367,122 @@ def test_recovery_disposition_projection_carries_no_retry_or_credential():
     assert payload["retry_same_challenge"] is False
     assert payload["retransmit_credential"] is False
     assert CREDENTIAL not in repr(payload).encode("utf-8", "ignore")
+
+
+# --- versioned install-ack proof (LOCAL2 half of CENTRAL's transcript) -------
+ACK_KEY = b"synthetic-broker-credential-key-32by"
+
+
+@pytest.mark.parametrize(
+    "credential,fields,expected",
+    [
+        (
+            ACK_KEY,
+            {
+                "challenge_id": "challenge-1",
+                "device_id": "pc_abc123",
+                "binding_ref": "binding-1",
+                "credential_generation": 1,
+            },
+            "d8eb1bd8dc1e35456d78f7313ec5d10590929a081ba15eee63f324d082b329f8",
+        ),
+        (
+            ACK_KEY + ACK_KEY,
+            {
+                "challenge_id": "chal.9:AZ",
+                "device_id": "pc_2",
+                "binding_ref": "bind_@x",
+                "credential_generation": 1000000,
+            },
+            "e33494c4601776776a6ea02b997da649d831d8332ae0e176fff7e1198051cd61",
+        ),
+    ],
+)
+def test_install_ack_proof_matches_the_pinned_central_vectors(credential, fields, expected):
+    # Both vectors were computed from CENTRAL's own ``installation_proof`` in
+    # ``canonical_connector_credential_handoff.py``; they pin device↔server
+    # transcript interop, which a shared implementation detail cannot drift past.
+    assert install_ack_proof(credential=credential, **fields) == expected
+
+
+def test_install_ack_transcript_is_versioned_without_trailing_newline():
+    assert INSTALL_ACK_TRANSCRIPT_VERSION == "padiem.connector-device-install-ack.v1"
+    transcript = installation_ack_transcript(
+        challenge_id="challenge-1",
+        device_id="pc_abc123",
+        binding_ref="binding-1",
+        credential_generation=7,
+    )
+    assert transcript == (
+        b"padiem.connector-device-install-ack.v1"
+        b"\nchallenge-1\npc_abc123\nbinding-1\n7"
+    )
+    assert not transcript.endswith(b"\n")
+
+
+@pytest.mark.parametrize("size", [1, 15, 4097, 16384])
+def test_credential_outside_the_acknowledged_window_is_refused_before_any_write(size):
+    # CENTRAL keys the ack HMAC with this credential, so a credential it cannot
+    # verify must never reach the protected store as an installed binding.
+    store = _FakeCanonicalStore()
+    with pytest.raises(CredentialInstallError) as exc:
+        _install(_receiver(store), credential=b"k" * size)
+    assert str(exc.value) == "credential is outside the acknowledged key window"
+    assert store.saved == []
+
+
+@pytest.mark.parametrize("size", [16, 4096])
+def test_credentials_at_both_central_window_bounds_are_accepted(size):
+    confirmation = _install(_receiver(), credential=b"k" * size)
+    assert confirmation.installed is True
+    assert PROOF_HEX_RE.fullmatch(confirmation.proof_hex)
+
+
+@pytest.mark.parametrize(
+    "fields",
+    [
+        {"challenge_id": "", "device_id": "pc_abc123", "binding_ref": "b-1",
+         "credential_generation": 1},
+        {"challenge_id": "c 1", "device_id": "pc_abc123", "binding_ref": "b-1",
+         "credential_generation": 1},
+        {"challenge_id": "c1", "device_id": "pc/1", "binding_ref": "b-1",
+         "credential_generation": 1},
+        {"challenge_id": "c1", "device_id": "pc_1", "binding_ref": "b 1",
+         "credential_generation": 1},
+        {"challenge_id": "c1", "device_id": "pc_1", "binding_ref": "b-1",
+         "credential_generation": 0},
+        {"challenge_id": "c1", "device_id": "pc_1", "binding_ref": "b-1",
+         "credential_generation": 1000001},
+        {"challenge_id": "c1", "device_id": "pc_1", "binding_ref": "b-1",
+         "credential_generation": True},
+    ],
+)
+def test_install_ack_proof_rejects_material_central_could_not_verify(fields):
+    with pytest.raises(CredentialInstallError):
+        install_ack_proof(credential=ACK_KEY, **fields)
+
+
+def test_installed_confirmation_without_a_valid_proof_is_unconstructible():
+    base = {
+        "installed": True,
+        "binding_ref": "binding-1",
+        "device_id": "pc_abc123",
+        "credential_generation": 2,
+        "proof_kind": READBACK_PROOF,
+        "challenge_id": "c1",
+        "transcript_version": INSTALL_ACK_TRANSCRIPT_VERSION,
+        "proof_hex": "a" * 64,
+        "confirmed_by_local_store": True,
+    }
+    ProtectedCredentialInstallConfirmation(**base)
+    for broken in (
+        {"proof_hex": "Z" * 64},
+        {"proof_hex": "a" * 63},
+        {"proof_hex": None},
+        {"transcript_version": "padiem.connector-device-install-ack.v2"},
+        {"transcript_version": None},
+        {"challenge_id": ""},
+        {"credential_generation": 0},
+    ):
+        with pytest.raises(CredentialInstallError):
+            ProtectedCredentialInstallConfirmation(**{**base, **broken})
