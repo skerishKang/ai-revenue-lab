@@ -195,7 +195,11 @@ class CloudflareWebXlsxP01EngineClient:
         # forever (#3936). The vocabulary is owned by the canonical lane and is
         # never duplicated here.
         from kagent.p01_approval_continuation import RETRY_SAFE_RESUME_CODES
-        if (isinstance(response, dict) and response.get("ok") is False
+        # A safe-code string without the canonical HTTP 409 rejection shape
+        # is not proof of non-consumption: malformed/5xx/2xx envelopes remain
+        # ambiguous and therefore keep the owner one-shot armed.
+        if (status == 409 and isinstance(response, dict)
+                and response.get("ok") is False
                 and isinstance(response.get("error"), dict)
                 and response["error"].get("code") in RETRY_SAFE_RESUME_CODES):
             raise WebXlsxP01RetrySafeDecisionError(
