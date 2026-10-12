@@ -319,15 +319,19 @@ async def b66_runtime_config(request: Request) -> JSONResponse:
             {"ok": True, "enabled": False, "embed_url": None, "origin": None},
             headers=_NO_STORE,
         )
-    return JSONResponse(
-        {
-            "ok": True,
-            "enabled": True,
-            "embed_url": base.rstrip("/") + "/embed.html",
-            "origin": base.rstrip("/"),
-        },
-        headers=_NO_STORE,
-    )
+    from .b66_pc_directory_routes import b66_pc_directory_available
+    # This response is only a UI hint; /api/b66/connect/devices repeats the
+    # full product/workspace/membership grant on every GET, default OFF.
+    pc_list_ready = await b66_pc_directory_available(request, uid)
+    config = {
+        "ok": True,
+        "enabled": True,
+        "embed_url": base.rstrip("/") + "/embed.html",
+        "origin": base.rstrip("/"),
+    }
+    if pc_list_ready:
+        config["pc_device_list_enabled"] = True
+    return JSONResponse(config, headers=_NO_STORE)
 
 
 async def b66_saved_skills(request: Request) -> JSONResponse:
