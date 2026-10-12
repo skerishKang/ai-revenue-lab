@@ -96,6 +96,59 @@ def _redeem_error(status: int, code: str) -> JSONResponse:
     }, status)
 
 
+_PUBLIC_REDEEM_FIELDS = frozenset({
+    "binding_ref", "device_id", "account_ref", "workspace_ref", "consent_id",
+    "credential_generation", "credential_expires_at",
+    "credential_installed_by_canonical_handoff", "raw_device_credential",
+    "lifecycle", "dispatch_authorized", "grants_read", "grants_write",
+})
+
+
+def _redeem_success(receipt: dict[str, Any]) -> JSONResponse:
+    """One strict, secret-free HTTP envelope for BOTH canonical host paths."""
+    if not isinstance(receipt, dict) or set(receipt) - _PUBLIC_REDEEM_FIELDS:
+        return _redeem_error(503, "enrollment_server_dependency_unavailable")
+    for field in ("binding_ref", "device_id", "account_ref", "workspace_ref", "consent_id"):
+        if not isinstance(receipt.get(field), str) or _SAFE_VALUE.fullmatch(receipt[field]) is None:
+            return _redeem_error(503, "enrollment_server_dependency_unavailable")
+    generation = receipt.get("credential_generation")
+    if type(generation) is not int or generation < 1:
+        return _redeem_error(503, "enrollment_server_dependency_unavailable")
+    try:
+        expires = receipt["credential_expires_at"]
+        if isinstance(expires, str):
+            expires = datetime.fromisoformat(expires.replace("Z", "+00:00"))
+        if (not isinstance(expires, datetime) or expires.tzinfo is None
+                or expires.utcoffset() is None
+                or expires.astimezone(timezone.utc) <= datetime.now(timezone.utc)):
+            raise ValueError("expired or untrusted credential timestamp")
+    except (KeyError, TypeError, ValueError, OverflowError):
+        return _redeem_error(503, "enrollment_server_dependency_unavailable")
+    if (
+        receipt.get("credential_installed_by_canonical_handoff") is not True
+        or receipt.get("raw_device_credential") is not False
+        or receipt.get("lifecycle") != "paired_offline"
+        or receipt.get("dispatch_authorized") is not False
+        or receipt.get("grants_read", False) is not False
+        or receipt.get("grants_write", False) is not False
+    ):
+        return _redeem_error(503, "enrollment_server_dependency_unavailable")
+    public = {field: receipt[field] for field in (
+        "binding_ref", "device_id", "account_ref", "workspace_ref",
+        "consent_id", "credential_generation",
+    )}
+    public.update({
+        "credential_expires_at": expires.isoformat(),
+        "credential_installed_by_canonical_handoff": True,
+        "raw_device_credential": False,
+        "lifecycle": "paired_offline",
+        "dispatch_authorized": False,
+        "grants_read": False,
+        "grants_write": False,
+    })
+    return _json({"ok": True, "enrollment": public}, 200)
+
+
 async def _payload(request: Request, keys: frozenset[str]) -> dict[str, str] | None:
     try:
         declared = request.headers.get("content-length")
@@ -304,12 +357,15 @@ async def connector_enrollment_redeem(request: Request) -> JSONResponse:
                 challenge_id=fields["challenge_id"], device_id=fields["device_id"],
                 proof_ref=fields["proof_ref"],
             )
-            return _json({"ok": True, "enrollment": result}, 200)
+            return _redeem_success(result)
         result = service.redeem(
             challenge_id=fields["challenge_id"], device_id=fields["device_id"],
             proof_ref=fields["proof_ref"], now=datetime.now(timezone.utc),
         )
-        return _json(result.safe_dict(), 200)
+        safe = result.safe_dict()
+        if not isinstance(safe, dict) or safe.get("ok") is not True:
+            return _redeem_error(503, "enrollment_server_dependency_unavailable")
+        return _redeem_success({key: value for key, value in safe.items() if key != "ok"})
     except ControlPlaneContractError as exc:
         status = 503 if exc.code in {
             "enrollment_server_dependency_unavailable", "enrollment_credential_handoff_failed"
