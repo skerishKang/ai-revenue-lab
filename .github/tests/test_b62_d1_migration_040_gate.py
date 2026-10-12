@@ -162,6 +162,22 @@ def test_workflow_is_exact_main_and_migration_specific() -> None:
     assert "PADIEM_CHAT_DB" in workflow
     assert "apps/padiem-chat/migrations/040_claw_web_xlsx_p01_decision_release.sql" in workflow
     assert "B62_D1_MIGRATION_040_POST_READBACK=PASS" in workflow
+    # Race-hardening: readonly DB identity is compared at the mutation boundary.
+    assert 'db_fingerprint: ${{ steps.binding.outputs.db_fingerprint }}' in workflow
+    assert 'READONLY_DB_FINGERPRINT: ${{ needs.cloudflare-readonly.outputs.db_fingerprint }}' in workflow
+    assert 'D1_BINDING_CHANGED_AFTER_READONLY=STOP' in workflow
+    assert 'D1_BINDING_IDENTITY_STABLE=PASS' in workflow
+    assert 'D1_PREMUTATION_SCHEMA_DRIFT=STOP' in workflow
+    assert 'D1_SCHEMA_PREMUTATION_RECHECK=PASS' in workflow
+    assert "PREMUTATION_SCHEMA_STATE=${now}" in workflow
+    assert "if: ${{ env.PREMUTATION_SCHEMA_STATE == 'pre_040' }}" in workflow
+    assert "if: ${{ env.PREMUTATION_SCHEMA_STATE == 'exact' }}" in workflow
+    # The runtime application payload must be the single reviewed SQL statement.
+    assert 'if statements != [statement]:' in workflow
+    assert 'migration 040 is not exactly one reviewed additive statement' in workflow
+    recheck = workflow.index('      - name: Recheck identical D1 and schema immediately before SQL mutation')
+    application = workflow.index('      - name: Apply only the additive migration 040 when absent')
+    assert recheck < application
     assert "SKIPPED_ALREADY_APPLIED" in workflow
     assert "MIGRATION_031_NOT_APPLIED" in workflow
     assert "D1_IDENTIFIER_OUTPUT=0" in workflow
