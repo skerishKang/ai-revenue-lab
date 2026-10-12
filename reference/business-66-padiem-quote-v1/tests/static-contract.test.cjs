@@ -277,7 +277,7 @@ check(!easy.includes("fetch(") && !easy.includes("XMLHttpRequest") &&
 check(!easy.includes("아직 자동 해석 모델은 연결 전") &&
       easy.includes("runModelDialogue(text, bridge)") &&
       easy.includes("bridge.chat(history)") &&
-      easy.includes("!readiness.ready || lastEasyView") &&
+      easy.includes("if (readiness && readiness.authenticated && !explicitCgi)") &&
       easy.includes("return bridge.interpret(text)") &&
       easy.includes("startGuidedIfReady(text)") &&
       !easy.includes("안녕하세요! 견적 내용을 편하게 알려주세요."),
