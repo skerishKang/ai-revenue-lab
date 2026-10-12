@@ -1,0 +1,203 @@
+"""Async cross-DO host tests; no live API or credential store is fabricated."""
+from __future__ import annotations
+
+import asyncio
+from datetime import datetime, timedelta, timezone
+
+import pytest
+
+from app.canonical_connector_enrollment_async_host import CanonicalConnectorEnrollmentAsyncHost
+from app.control_plane_identity import IdentityBridgeError
+
+NOW = datetime.now(timezone.utc)
+CHALLENGE = {
+    "challenge_id": "pairing."+"a"*32, "account_ref": "account.1",
+    "workspace_ref": "workspace.1", "issued_at": NOW.isoformat(),
+    "expires_at": (NOW+timedelta(minutes=5)).isoformat(),
+}
+CONSENT = {
+    "consent_id": "consent.1", "device_id": "device.1",
+    "owner_subject_id": "subject.1", "account_ref": "account.1",
+    "workspace_ref": "workspace.1", "granted_at": NOW.isoformat(), "withdrawn_at": None,
+}
+BINDING = {
+    "challenge_id": CHALLENGE["challenge_id"], "consent_ref": "consent.1",
+    "owner_ref": "subject.1", "account_ref": "account.1",
+    "workspace_ref": "workspace.1", "device_id": "device.1",
+    "bound_at": NOW.isoformat(),
+}
+ENROLLMENT = {
+    "binding_ref": "pairing-binding.1", "device_id": "device.1",
+    "account_ref": "account.1", "workspace_ref": "workspace.1",
+    "credential_generation": 1, "credential_expires_at": (NOW+timedelta(days=30)).isoformat(),
+}
+
+
+class Identity:
+    def __init__(self):
+        self.calls = []
+        self.authorization_count = 0
+        self.fail_reauthorization = False
+        self.fail_bind = False
+
+    async def resolve_connector_enrollment_consent_for_device(self, *, session_id, device_id):
+        self.calls.append(("consent", session_id, device_id))
+        assert device_id == CONSENT["device_id"]
+        return dict(CONSENT)
+
+    async def bind_connector_enrollment_challenge(self, *, session_id, challenge_id, expires_at):
+        self.calls.append(("bind", session_id, challenge_id, expires_at))
+        if self.fail_bind:
+            raise IdentityBridgeError(503, "store_unavailable", "offline")
+        return {"challenge_id": challenge_id}
+
+    async def authorize_connector_enrollment_redeem(self, **kwargs):
+        self.calls.append(("authorize", kwargs))
+        self.authorization_count += 1
+        if self.fail_reauthorization and self.authorization_count >= 2:
+            raise IdentityBridgeError(403, "enrollment_consent_withdrawn", "withdrawn")
+        return {
+            "challenge_id": kwargs["challenge_id"], "consent_id": CONSENT["consent_id"],
+            "device_id": kwargs["device_id"], "owner_subject_id": kwargs["owner_ref"],
+            "account_ref": kwargs["account_ref"], "workspace_ref": kwargs["workspace_ref"],
+        }
+
+
+class Broker:
+    def __init__(self):
+        self.calls = []
+        self.fail_revoke = False
+        self.credential = b"one-time-secret"
+    async def issue_enrollment_challenge(self, **kwargs):
+        self.calls.append(("issue", kwargs))
+        return dict(CHALLENGE), "f"*32
+    async def get_enrollment_binding(self, *, challenge_id):
+        self.calls.append(("binding", challenge_id))
+        return dict(BINDING)
+    async def redeem_enrollment(self, **kwargs):
+        self.calls.append(("redeem", kwargs))
+        return dict(ENROLLMENT), self.credential
+    async def revoke_binding(self, *, binding_ref):
+        self.calls.append(("revoke", binding_ref))
+        if self.fail_revoke:
+            raise IdentityBridgeError(503, "broker_revoke_unavailable", "offline")
+        return {"binding_ref": binding_ref, "state": "revoked"}
+
+
+class Handoff:
+    def __init__(self, *, ready=True, delivered=True):
+        self._ready = ready
+        self.delivered = delivered
+        self.calls = []
+    async def ready(self, *, challenge_id, device_id):
+        self.calls.append(("ready", challenge_id, device_id))
+        return self._ready
+    async def deliver_once(self, *, challenge_id, device_id, credential, enrollment, now):
+        self.calls.append(("deliver", challenge_id, device_id, credential, enrollment, now))
+        assert credential == b"one-time-secret"
+        return self.delivered
+
+
+def issue_host(identity=None, broker=None, handoff=None):
+    return CanonicalConnectorEnrollmentAsyncHost(
+        identity=identity or Identity(), broker=broker or Broker(),
+        credential_handoff=handoff,
+    )
+
+
+def test_issue_binds_challenge_to_original_session_before_releasing_code():
+    identity, broker = Identity(), Broker()
+    result = asyncio.run(issue_host(identity, broker).issue(
+        canonical_session_id="session.original.1", device_id="device.1"
+    ))
+    assert result["pairing_code"] == "f"*32
+    assert result["challenge"]["challenge_id"] == CHALLENGE["challenge_id"]
+    assert result["dispatch_authorized"] is False
+    assert [x[0] for x in identity.calls] == ["consent", "bind"]
+    assert [x[0] for x in broker.calls] == ["issue"]
+
+
+def test_issue_fails_without_releasing_code_if_session_binding_cannot_persist():
+    identity, broker = Identity(), Broker()
+    identity.fail_bind = True
+    with pytest.raises(IdentityBridgeError):
+        asyncio.run(issue_host(identity, broker).issue(
+            canonical_session_id="session.original.1", device_id="device.1"
+        ))
+    assert len(broker.calls) == 1  # an orphan challenge exists but no code is returned
+
+
+def test_redeem_does_not_consume_challenge_without_protected_handoff_ready():
+    identity, broker, handoff = Identity(), Broker(), Handoff(ready=False)
+    with pytest.raises(IdentityBridgeError) as exc:
+        asyncio.run(issue_host(identity, broker, handoff).redeem(
+            challenge_id=CHALLENGE["challenge_id"], device_id="device.1",
+            proof_ref="pairing-proof:"+"a"*64,
+        ))
+    assert exc.value.code == "credential_handoff_unavailable"
+    assert [x[0] for x in broker.calls] == ["binding"]
+    assert [x[0] for x in handoff.calls] == ["ready"]
+
+
+def test_success_rechecks_current_consent_and_never_returns_raw_credential():
+    identity, broker, handoff = Identity(), Broker(), Handoff()
+    result = asyncio.run(issue_host(identity, broker, handoff).redeem(
+        challenge_id=CHALLENGE["challenge_id"], device_id="device.1",
+        proof_ref="pairing-proof:"+"a"*64,
+    ))
+    assert [x[0] for x in identity.calls] == ["authorize", "authorize"]
+    assert [x[0] for x in broker.calls] == ["binding", "redeem"]
+    assert [x[0] for x in handoff.calls] == ["ready", "deliver"]
+    assert result["lifecycle"] == "paired_offline"
+    assert result["raw_device_credential"] is False
+    assert "credential" not in result and b"one-time-secret" not in repr(result).encode()
+
+
+def test_consent_withdrawal_between_broker_redemption_and_handoff_revokes_binding():
+    identity, broker, handoff = Identity(), Broker(), Handoff()
+    identity.fail_reauthorization = True
+    with pytest.raises(IdentityBridgeError) as exc:
+        asyncio.run(issue_host(identity, broker, handoff).redeem(
+            challenge_id=CHALLENGE["challenge_id"], device_id="device.1",
+            proof_ref="pairing-proof:"+"a"*64,
+        ))
+    assert exc.value.code == "enrollment_consent_changed_during_redeem"
+    assert [x[0] for x in broker.calls] == ["binding", "redeem", "revoke"]
+    assert [x[0] for x in handoff.calls] == ["ready"]
+
+
+def test_failed_handoff_revokes_canonical_binding_before_reporting_failure():
+    identity, broker, handoff = Identity(), Broker(), Handoff(delivered=False)
+    with pytest.raises(IdentityBridgeError) as exc:
+        asyncio.run(issue_host(identity, broker, handoff).redeem(
+            challenge_id=CHALLENGE["challenge_id"], device_id="device.1",
+            proof_ref="pairing-proof:"+"a"*64,
+        ))
+    assert exc.value.code == "enrollment_credential_handoff_failed"
+    assert broker.calls[-1] == ("revoke", "pairing-binding.1")
+
+
+def test_failed_handoff_and_failed_revoke_is_a_distinct_security_blocker():
+    identity, broker, handoff = Identity(), Broker(), Handoff(delivered=False)
+    broker.fail_revoke = True
+    with pytest.raises(IdentityBridgeError) as exc:
+        asyncio.run(issue_host(identity, broker, handoff).redeem(
+            challenge_id=CHALLENGE["challenge_id"], device_id="device.1",
+            proof_ref="pairing-proof:"+"a"*64,
+        ))
+    assert exc.value.code == "enrollment_handoff_revoke_unconfirmed"
+
+
+def test_server_binding_device_must_match_connectors_requested_device():
+    identity, broker, handoff = Identity(), Broker(), Handoff()
+    broker.get_enrollment_binding = async_mismatch
+    with pytest.raises(IdentityBridgeError) as exc:
+        asyncio.run(issue_host(identity, broker, handoff).redeem(
+            challenge_id=CHALLENGE["challenge_id"], device_id="device.other",
+            proof_ref="pairing-proof:"+"a"*64,
+        ))
+    assert exc.value.code == "enrollment_device_swap_denied"
+
+
+async def async_mismatch(*, challenge_id):
+    return {**BINDING, "device_id": "device.1"}
