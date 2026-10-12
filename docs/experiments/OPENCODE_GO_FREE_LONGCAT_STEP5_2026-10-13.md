@@ -23,13 +23,15 @@ wire map `app/pilot/opencode_go_wire.py:26-27`.
 
 | Boundary | Rule | Applies to provider request? |
 |---|---|---|
-| Chat UI composer | `maxlength=4000` ONLY in Claw manual-workflow view (`apps/padiem-chat/static/app.js:2057-2068`); general Chat/Claw inputs carry NO maxlength | No — UI-only, and only one view |
-| B14 gateway | No request-size cap in `app/pilot/*`; only `MAX_RESPONSE_BYTES = 1 MiB` (`app/pilot/platform.py:61`) | No input cap |
+| Chat UI composer | `maxlength=4000` ONLY in Claw manual-workflow view (`apps/padiem-chat/static/app.js:2057-2068`); the same composer removes that attribute for general Chat/Claw | No — this one documented UI guard does not establish all clients' limits |
+| Inspected B14 gateway/provider source | No explicit prompt-character/token cap found in the inspected route and Go adapter; `MAX_RESPONSE_BYTES = 1 MiB` (`app/pilot/platform.py`) is **a response cap**, not an input guarantee | Other upstream, hosting, HTTP and consumer limits remain unverified |
 | Upstream Go free model | Context / max-input / concurrency all UNSTATED in official docs (checked 2026-10-13) | Unknown — most likely rejection point |
 
-Hypothesis (ordered): **upstream undisclosed input cap > Claw-manual 4k UI guard
-(view-specific) > B14 gateway (no cap found)**. The 4k guard cannot explain a
-general-Free-chat symptom because general inputs are uncapped.
+Possible causes (not measured or ranked): **upstream undisclosed input cap**,
+**view-specific Claw-manual 4k UI guard**, and **other uninspected client,
+transport or hosting request limits**. No provider or full-path limit was
+measured; a source-inspection result must not be reported as an unlimited
+B14 or general-Free-chat guarantee.
 
 Caveat: `https://docs.opencode.ai/docs/go/` (cited as registry source)
 returned 404 on 2026-10-13; evidence below comes from the accessible
@@ -72,14 +74,19 @@ any 429/5xx must be recorded with phase, never retried or fallen back.
 ## Test case matrix (all mock, serial, concurrency 1)
 
 Harness: `apps/korean-ai-platform/tests/test_opencode_go_free_longcat_step5_eval.py`
-(17 tests, all passing):
+(source mock/contract tests; current PR CI is the acceptance authority):
 
-- Input under (500 chars) → accepted both views; near (4,001) → `local_ui`
-  only in Claw manual, `upstream_unknown` in general chat; over (200k,
-  inside 300k synthetic bound) → `upstream_unknown`.
+- Input under (500 chars) → **no observed view-local reject**, but Go and
+  full-path acceptance remain `upstream_unknown`; near (4,001) →
+  `local_ui` only in Claw manual, `upstream_unknown` in general chat;
+  over (200k, inside 300k synthetic bound) → `upstream_unknown`.
+  No 200k body was sent: wire-shape test uses a 2k synthetic slice.
 - Step 5 classes: 200 / 401 / 403 / 429 / 502 / 503 / 504 / timeout → closed
-  vocabulary above; Kilo-429 vs Go-429 class separation; single-transport-hit
-  assertion; concurrency>1 rejected.
+  vocabulary above; Kilo-429 vs Go-429 class separation; OFF-route mock proves
+  **zero** network dispatch and separately isolated mock authorization with
+  `httpx.MockTransport` proves **exactly one** POST on 429, with no retry.
+  All test-local monkeypatches restore automatically; registry/provider OFF
+  in source and actual production are unchanged; concurrency>1 rejected.
 - Verdict mapping: `FREE_CANDIDATE` only with live evidence, else `HOLD`;
   registry OFF re-pinned.
 
@@ -90,7 +97,8 @@ Harness: `apps/korean-ai-platform/tests/test_opencode_go_free_longcat_step5_eval
 1. No live evidence: 0 real Go provider calls (`LIVE_TEST=NOT_RUN`).
 2. LongCat usable input is undocumented upstream; owner symptom is
    consistent with an undisclosed free-model input cap, but unmeasured.
-3. Step 5 busy/overload reports (owner + Kilo-history, not Go-measured) plus
+3. Step 5 busy/overload reports (owner observation; separately recorded Kilo
+   history is NOT OpenCode Go measured evidence) plus
    "limited time / Unlimited" promo wording give no capacity assurance.
 4. Safe user-facing error copy (no secrets, no raw body):
    - 429: "현재 무료 모델 사용량이 많습니다. 잠시 후 다시 시도해 주세요."
