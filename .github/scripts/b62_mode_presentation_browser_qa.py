@@ -61,7 +61,7 @@ async def _exercise(page: Page, *, name: str) -> dict[str, Any]:
             raise AssertionError(f"{locked} must be disabled (사용 불가) at {name}")
 
     truth = (await panel.locator("[data-mode-truth]").inner_text()).strip()
-    if "모델·제공자 선택은 파디엠 서버가 관리" not in truth:
+    if "더 높은 등급의 모델을 사용하려면 업그레이드가 필요합니다." not in truth:
         raise AssertionError(f"server-authority truth copy missing at {name}: {truth!r}")
 
     plus_box = await plus.bounding_box()
@@ -151,7 +151,7 @@ async def _english_probe() -> dict[str, Any]:
             if not await panel.locator('[data-mode-value="pro"]').is_disabled():
                 raise AssertionError("English tier panel must keep Pro disabled")
             truth = (await panel.locator("[data-mode-truth]").inner_text()).strip()
-            if "Provider and model routing stays server-managed" not in truth:
+            if "Upgrade is required to use higher-tier models." not in truth:
                 raise AssertionError(f"English tier truth copy missing: {truth!r}")
             return {"locale": "en", "default_tier": "plus", "status": "PASS"}
         finally:

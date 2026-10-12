@@ -359,7 +359,7 @@ async def _english_probe(browser) -> dict[str, Any]:
             raise AssertionError(f"English account truth missing: {account_text!r}")
         await page.locator(".model-pill").click()
         truth = (await page.locator("[data-mode-truth]").inner_text()).strip()
-        if "Provider and model routing stays server-managed" not in truth:
+        if "Upgrade is required to use higher-tier models." not in truth:
             raise AssertionError(f"English tier truth boundary missing: {truth!r}")
         return {
             "status": "PASS",
