@@ -73,6 +73,22 @@ class CanonicalConnectorEnrollmentAsyncHost:
             account_ref=consent["account_ref"], workspace_ref=consent["workspace_ref"],
             consent_ref=consent["consent_id"], owner_ref=consent["owner_subject_id"], device_id=device,
         )
+        # Identity and Broker are separate DOs. Re-read current consent after
+        # challenge creation to narrow the withdrawal race before binding the
+        # original session or releasing the code. A refused challenge remains
+        # unbound and therefore cannot redeem.
+        latest = await self._identity.resolve_connector_enrollment_consent_for_device(
+            session_id=session_id, device_id=device,
+        )
+        if (
+            latest.get("consent_id") != consent["consent_id"]
+            or latest.get("device_id") != device
+            or latest.get("owner_subject_id") != consent["owner_subject_id"]
+            or latest.get("account_ref") != consent["account_ref"]
+            or latest.get("workspace_ref") != consent["workspace_ref"]
+            or latest.get("withdrawn_at") is not None
+        ):
+            raise IdentityBridgeError(403, "enrollment_consent_changed_during_issue", "Current PC consent changed during challenge creation.")
         # The one-time code is never released to the browser until the existing
         # Identity DO has durably bound the broker challenge to the original
         # canonical login session. If this fails, the orphan challenge cannot redeem.
