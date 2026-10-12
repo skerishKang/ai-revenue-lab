@@ -30,6 +30,21 @@ from app.web_xlsx_p01_engine_client import CloudflareWebXlsxP01EngineClient
 STATUS = "/api/claw/office/web-selections/{}/p01-status"
 
 
+def test_p01_release_migration_number_has_no_collision():
+    """#3936 schema is version 040, NOT the existing central-policy 039."""
+    directory = Path(__file__).resolve().parents[1] / "migrations"
+    migration_files = sorted(directory.glob("[0-9][0-9][0-9]_*.sql"))
+    prefixes = [p.name[:3] for p in migration_files]
+    assert len(prefixes) == len(set(prefixes)), (
+        "duplicate D1 migration ordinal would make ordered apply ambiguous"
+    )
+    assert (directory / "039_central_model_policy.sql").exists()
+    assert (directory / "040_claw_web_xlsx_p01_decision_release.sql").exists()
+    assert "released_at TEXT" in (
+        directory / "040_claw_web_xlsx_p01_decision_release.sql"
+    ).read_text(encoding="utf-8")
+
+
 class FakeResponse:
     def __init__(self, status, body):
         self.status = status
