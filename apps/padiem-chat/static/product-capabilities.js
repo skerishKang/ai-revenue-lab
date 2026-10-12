@@ -2,7 +2,8 @@
   "use strict";
 
   const nativeFetch = window.fetch.bind(window);
-  const sidebarSearchButton = document.getElementById("sidebarSearchButton");
+  // #sidebarSearchButton (conversation search) intentionally has no script
+  // wiring here: it must never toggle web-search mode or the center web card.
   const webSearchButton = document.getElementById("webSearchButton");
   const webSearchStarter = document.getElementById("webSearchStarterButton");
   const deepResearchButton = document.getElementById("deepResearchButton");
@@ -10,8 +11,6 @@
   const accountName = document.getElementById("accountName");
   const accountContainer = document.querySelector(".sidebar-account");
   const projectsNavButton = document.getElementById("projectsNavButton");
-  const messageInput = document.getElementById("messageInput");
-  const mobileClose = document.getElementById("mobileClose");
   const modePill = document.querySelector(".model-pill");
   const modeHost = document.querySelector(".composer-tools");
 
@@ -149,32 +148,12 @@
     if (element) element.hidden = Boolean(hidden);
   }
 
-  function syncSidebarSearch() {
-    if (!sidebarSearchButton || !webSearchButton) return;
-    const available = deployment.loaded && deployment.webSearch;
-    sidebarSearchButton.hidden = !available;
-    if (!available) {
-      sidebarSearchButton.disabled = true;
-      sidebarSearchButton.setAttribute("aria-disabled", "true");
-      sidebarSearchButton.setAttribute("aria-pressed", "false");
-      sidebarSearchButton.classList.remove("is-active");
-      return;
-    }
-    const busy = webSearchButton.disabled;
-    sidebarSearchButton.disabled = busy;
-    sidebarSearchButton.setAttribute("aria-disabled", busy ? "true" : "false");
-    const pressed = webSearchButton.getAttribute("aria-pressed") === "true";
-    sidebarSearchButton.setAttribute("aria-pressed", pressed ? "true" : "false");
-    sidebarSearchButton.classList.toggle("is-active", pressed);
-  }
-
   function syncDeploymentVisibility() {
     const webAvailable = deployment.loaded && deployment.webSearch;
     const researchAvailable = deployment.loaded && deployment.deepResearch;
     setHidden(webSearchButton, !webAvailable);
     setHidden(webSearchStarter, !webAvailable);
     setHidden(deepResearchButton, !researchAvailable);
-    syncSidebarSearch();
   }
 
   function currentAccountCopy() {
@@ -485,20 +464,6 @@
       authRefreshQueued = false;
       refreshAuth();
     }, 0);
-  }
-
-  if (webSearchButton && sidebarSearchButton) {
-    const webStateObserver = new MutationObserver(syncSidebarSearch);
-    webStateObserver.observe(webSearchButton, {
-      attributes: true,
-      attributeFilter: ["disabled", "aria-pressed", "hidden"],
-    });
-    sidebarSearchButton.addEventListener("click", () => {
-      if (sidebarSearchButton.disabled || webSearchButton.hidden) return;
-      webSearchButton.click();
-      if (messageInput) messageInput.focus();
-      if (mobileClose) mobileClose.click();
-    });
   }
 
   if (loginButton) {

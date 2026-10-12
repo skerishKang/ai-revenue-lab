@@ -32,7 +32,9 @@ def test_desktop_controls_exist_and_are_keyboard_accessible():
         assert attrs["data-locale-aria-label"].startswith("sidebar-")
     assert p.elements["sidebarCollapseButton"][1]["aria-expanded"] == "true"
     assert p.elements["sidebarRestoreButton"][1]["aria-expanded"] == "false"
-    assert HTML.index('id="newChatButton"') < HTML.index('id="sidebarCollapseButton"') < HTML.index('id="clawNavButton"')
+    # The collapse control now opens the brand row, ahead of New Chat; the
+    # actions row keeps New Chat ahead of the side navigation.
+    assert HTML.index('id="sidebarCollapseButton"') < HTML.index('id="newChatButton"') < HTML.index('id="clawNavButton"')
     assert "setSidebarCollapsed(true)" in APP
     assert "setSidebarCollapsed(false)" in APP
     assert "sidebarRestoreButton?.focus()" in APP

@@ -109,6 +109,10 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
         """
         () => {
           const sidebar = document.querySelector('#sidebar');
+          // Document order within the sidebar, so the check stays valid when a
+          // control is grouped inside a row wrapper (e.g. the New Chat/Search
+          // actions row) instead of being a direct sidebar child.
+          const all = [...sidebar.querySelectorAll('*')];
           const nodes = [
             sidebar.querySelector('#newChatButton'),
             sidebar.querySelector('.side-nav'),
@@ -118,7 +122,7 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
             sidebar.querySelector('.sidebar-footer'),
             sidebar.querySelector('.sidebar-bottom'),
           ];
-          return nodes.map(node => node ? [...sidebar.children].indexOf(node) : -1);
+          return nodes.map(node => node ? all.indexOf(node) : -1);
         }
         """
     )
@@ -135,6 +139,10 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
         await _assert_focus(page, "#newChatButton", "mobile new chat")
     else:
         await page.locator(".brand").focus()
+        # The collapse control now opens the brand row, so it precedes New Chat
+        # in the desktop keyboard order.
+        await page.keyboard.press("Tab")
+        await _assert_focus(page, "#sidebarCollapseButton", "desktop sidebar collapse")
         await page.keyboard.press("Tab")
         await _assert_focus(page, "#newChatButton", "desktop new chat")
 
