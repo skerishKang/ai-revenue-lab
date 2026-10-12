@@ -16,6 +16,7 @@ from canonical_connector_scope_readonly import ReadOnlyExistingConnectorScope
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot
 from padiem_control_plane.contracts import ControlPlaneContractError, SubjectType
 from padiem_control_plane.padiem_connector_enrollment import ConnectorEnrollmentConsent
+from padiem_control_plane.tenants import TenantMembershipRole
 
 _CONNECTOR_ENROLLMENT_GRANT_KEYS = frozenset({"session_id", "device_id", "confirmed", "confirmation_version"})
 _CONNECTOR_ENROLLMENT_REVOKE_KEYS = frozenset({"session_id", "consent_id", "confirmed", "confirmation_version"})
@@ -72,11 +73,18 @@ class CanonicalIdentityEnrollmentConsentRPC:
                 "an active canonical Padiem Claw owner session is required",
             )
         # Membership validation is server-only and shares the canonical Identity DO.
-        self._store.resolve_active_tenant_membership(
+        membership = self._store.resolve_active_tenant_membership(
             tenant_id=session.tenant_id,
             canonical_subject_id=session.subject.subject_id,
             now=now,
         )
+        # Only a canonical tenant OWNER may bind a computer to the shared
+        # product-neutral PC scope; viewer/operator/approver cannot grant it.
+        if getattr(membership, "role", None) is not TenantMembershipRole.OWNER:
+            raise ControlPlaneContractError(
+                "connector_enrollment_owner_required",
+                "canonical tenant owner is required for PC enrollment consent",
+            )
         return session
 
     async def resolve_connector_enrollment_consent_for_device(self, payload: dict) -> dict:
@@ -135,9 +143,7 @@ class CanonicalIdentityEnrollmentConsentRPC:
             )
             if not isinstance(session, AuthSessionSnapshot) or not session.is_active(now=now):
                 raise ControlPlaneContractError("canonical_session_required", "original canonical session is no longer active")
-            self._store.resolve_active_tenant_membership(
-                tenant_id=session.tenant_id, canonical_subject_id=session.subject.subject_id, now=now,
-            )
+            session = self._connector_session_for_consent(session_id=session.session_id, now=now)
             scope = ReadOnlyExistingConnectorScope(
                 identity_do_storage=self._storage, membership_authority=self._store
             ).resolve_scope(subject_id=session.subject.subject_id, tenant_ref=session.tenant_id, now=now)
