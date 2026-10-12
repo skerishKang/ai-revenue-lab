@@ -1201,6 +1201,8 @@
         const button = document.createElement("button");
         button.type = "button";
         button.className = "recent-item history-item";
+        // #4471: lets the sidebar conversation search open a hit through this exact row.
+        button.setAttribute("data-conversation-id", conversation.id);
         button.textContent = clawConversationIds.has(conversation.id)
           ? `Claw · ${conversation.title}` : conversation.title;
         button.addEventListener("click", () => openSavedConversation(conversation.id));

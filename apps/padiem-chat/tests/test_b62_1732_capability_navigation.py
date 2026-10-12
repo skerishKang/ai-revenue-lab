@@ -99,26 +99,43 @@ def test_search_and_research_visibility_separates_deployment_unavailable_from_bu
     assert 'window.addEventListener("padiem:capabilitychange"' in source
 
 
-def test_sidebar_search_is_an_independent_disabled_conversation_search_entry() -> None:
+def test_sidebar_search_is_an_independent_fail_closed_conversation_search_entry() -> None:
     html = INDEX.read_text(encoding="utf-8")
     buttons = _buttons()
     search = buttons["sidebarSearchButton"]
-    # Visible on the second sidebar line beside New Chat, but not implemented.
+    # Visible on the second sidebar line beside New Chat. #4471: it now opens
+    # real conversation search, but it is still rendered disabled in markup and
+    # only enabled by conversation-search.js when the owner's history is ready
+    # (fail-closed by default).
     assert "hidden" not in search
     assert "disabled" in search
     assert search.get("aria-disabled") == "true"
-    assert search.get("data-locale-title") == "search-conversation-hold"
-    assert search.get("data-locale-aria-label") == "search-conversation-hold"
     assert html.index('id="newChatButton"') < html.index('id="sidebarSearchButton"') < html.index('class="side-nav"')
+    assert 'script src="./conversation-search.js" defer' in html
 
 
 def test_sidebar_search_never_touches_web_search_state_or_center_card() -> None:
     source = CAPABILITIES.read_text(encoding="utf-8")
-    # No capability wiring reads the sidebar search entry at all.
+    # The web-search capability projection never reads the sidebar search entry.
     assert 'getElementById("sidebarSearchButton")' not in source
     assert "syncSidebarSearch" not in source
     assert "webSearchButton.click" not in source
     assert 'attributeFilter: ["disabled", "aria-pressed", "hidden"]' not in source
+
+    # #4471: the conversation-search module owns the sidebar entry and must
+    # never touch web-search controls or the center web card.
+    conversation_search_raw = (STATIC / "conversation-search.js").read_text(encoding="utf-8")
+    # Guard executable code, not the documentation comments that name these
+    # controls to explain the boundary. Strip full-line // comments first.
+    conversation_search = "\n".join(
+        line for line in conversation_search_raw.splitlines() if not line.lstrip().startswith("//")
+    )
+    assert 'getElementById("sidebarSearchButton")' in conversation_search
+    for forbidden in ("webSearchButton", "webSearchStarterButton", "deepResearchButton", "웹에서 찾아줘"):
+        assert forbidden not in conversation_search, forbidden
+    assert "localStorage" not in conversation_search
+    assert "sessionStorage" not in conversation_search
+    assert "document.cookie" not in conversation_search
 
     # The center web card's status text is only driven by the composer's own
     # web-search control — never by the sidebar search entry.
