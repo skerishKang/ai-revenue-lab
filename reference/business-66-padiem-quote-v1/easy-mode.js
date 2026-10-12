@@ -1315,9 +1315,9 @@
     const ready = bridge && typeof bridge.readiness === "function" ? bridge.readiness() : null;
     addMessage(
       "assistant",
-      ready && ready.ready
-        ? "견적 내용을 한 문장으로 적어 주세요. 승인된 견적서와 회사 정보를 사용해 AI로 작성합니다."
-        : "견적 내용을 적어 주세요. 전용 양식이 준비되지 않았다면 필요한 내용을 하나씩 질문해 기본 견적서 초안을 만들겠습니다. AI 해석은 하지 않습니다."
+      ready && ready.authenticated
+        ? "편하게 질문하거나 견적을 상담해 주세요. 선택하신 AI 모델과 대화할 수 있습니다. 견적서 저장과 발급은 별도의 확인 단계에서 진행합니다."
+        : "로그인하면 AI와 일반 대화 및 견적 상담을 할 수 있습니다. 로그인 전에도 질문형 견적 작성은 이용할 수 있습니다."
     );
     setChips([
       { label: "질문받으며 만들기", action: startGuidedIfReady },
