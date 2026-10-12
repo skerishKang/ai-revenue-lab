@@ -80,13 +80,14 @@ def route_status(page, fixture):
     return calls
 
 
-def open_home(browser, server, fixture, width=1280):
+def open_home(browser, server, fixture, width=1280, logout_status=200):
     page = browser.new_page(viewport={"width": width, "height": 900})
     errors = []
     page.on("pageerror", lambda error: errors.append(str(error)))
     calls = route_status(page, fixture)
     page.route("**" + LOGOUT_ENDPOINT, lambda route: route.fulfill(
-        status=200, content_type="application/json", body='{"ok": true}',
+        status=logout_status, content_type="application/json",
+        body='{"ok": true}' if logout_status == 200 else "{}",
     ))
     page.goto(server, wait_until="domcontentloaded")
     return page, errors, calls
@@ -109,6 +110,9 @@ def test_anonymous_user_cannot_see_the_private_home(browser, server):
     page, errors, calls = open_home(browser, server, dict(ANONYMOUS))
     wait_gate(page)
     assert page.locator("#padiemHomeGateTitle").inner_text() == "로그인이 필요합니다"
+    # The sign-in control is honest about where authentication happens.
+    assert page.locator("#padiemHomeGateAction").inner_text() == "PADIEM Chat에서 로그인"
+    assert page.locator("#padiemHomeGateAction").get_attribute("href") == "./"
     # No service catalog, no account identity, no product links at all.
     assert page.locator("#padiemHomeServices").is_hidden()
     assert page.locator("#padiemHomeGrid li").count() == 0
@@ -132,8 +136,34 @@ def test_expired_and_unavailable_sessions_fail_closed(browser, server, state):
     page.close()
 
 
+@pytest.mark.parametrize("payload", [
+    # ready is not true: the real auth_status only sets it with a live store.
+    {"ready": False, "authenticated": True, "session_state": "signed_in", "user": {"name": "A"}},
+    # ready missing entirely.
+    {"authenticated": True, "session_state": "signed_in", "user": {"name": "A"}},
+    # Contradictory: authenticated but not a signed_in state.
+    {"ready": True, "authenticated": True, "session_state": "guest", "user": {"name": "A"}},
+    {"ready": True, "authenticated": True, "session_state": "expired", "user": {"name": "A"}},
+    # Missing / malformed owner identity.
+    {"ready": True, "authenticated": True, "session_state": "signed_in", "user": None},
+    {"ready": True, "authenticated": True, "session_state": "signed_in"},
+    {"ready": True, "authenticated": True, "session_state": "signed_in", "user": []},
+    {"ready": True, "authenticated": True, "session_state": "signed_in", "user": {"name": 123}},
+    {"ready": True, "authenticated": True, "session_state": "signed_in", "user": {"name": "   "}},
+])
+def test_contradictory_session_envelopes_fail_closed(browser, server, payload):
+    """A signed-in claim needs ready + signed_in + a usable owner identity."""
+    page, errors, _ = open_home(browser, server, {"body": json.dumps(payload)})
+    wait_gate(page)
+    assert page.locator("#padiemHomeServices").is_hidden()
+    assert page.locator("#padiemHomeGrid li").count() == 0
+    assert page.locator("#padiemHomeAccount").is_hidden()
+    assert not errors, errors
+    page.close()
+
+
 def test_unverifiable_server_response_fails_closed(browser, server):
-    """A 500, bad JSON or a contradiction must never render the catalog."""
+    """A 500 or malformed body must never render the catalog."""
     page, errors, _ = open_home(browser, server, {"status": 500, "body": "boom"})
     wait_gate(page)
     assert page.locator("#padiemHomeServices").is_hidden()
@@ -142,14 +172,6 @@ def test_unverifiable_server_response_fails_closed(browser, server):
     page, errors, _ = open_home(browser, server, {"body": "not-json"})
     wait_gate(page)
     assert page.locator("#padiemHomeServices").is_hidden()
-    page.close()
-
-    # authenticated:true with a non-signed_in state is contradictory -> closed.
-    page, errors, _ = open_home(browser, server, {"body": json.dumps(
-        status_body(True, "expired", name="모순"))})
-    wait_gate(page)
-    assert page.locator("#padiemHomeServices").is_hidden()
-    assert "모순" not in page.locator("body").inner_text()
     assert not errors, errors
     page.close()
 
@@ -170,10 +192,6 @@ def test_signed_in_user_sees_allowlisted_services_with_honest_status(browser, se
     assert "사용 가능" not in home
     assert "이용 가능" not in home
     assert "권한 없음" not in home
-    # Engine has no customer screen, so it must not offer a launch action.
-    engine = page.locator('#padiemHomeGrid li[data-service="engine"]')
-    assert engine.locator("a").count() == 0
-    assert engine.get_attribute("data-service") == "engine"
     # The account identity is shown, but not the email.
     assert page.locator("#padiemHomeAccountName").inner_text() == "김파디"
     assert "private@example.com" not in home
@@ -182,15 +200,47 @@ def test_signed_in_user_sees_allowlisted_services_with_honest_status(browser, se
     page.close()
 
 
-def test_b66_brand_is_absent_from_the_home(browser, server):
+def test_only_a_supported_destination_is_linked(browser, server):
+    """Claw has no supported deep link, so it must not fake a launch action."""
     page, errors, _ = open_home(browser, server, dict(SIGNED_IN))
     wait_services(page)
-    home = page.locator("body").inner_text()
-    assert "B66" not in home
-    assert "견적" not in home
-    assert "회원" not in home
+    chat = page.locator('#padiemHomeGrid li[data-service="chat"]')
+    assert chat.locator("a").count() == 1
+    assert chat.locator("a").get_attribute("href") == "./"
+    assert chat.locator("a").inner_text() == "PADIEM Chat 열기"
+    for sid, label in (("claw", "진입 경로 미연결"), ("engine", "별도 화면 없음")):
+        card = page.locator(f'#padiemHomeGrid li[data-service="{sid}"]')
+        assert card.locator("a").count() == 0, sid
+        assert card.locator(".padiem-home-card-noaction").inner_text() == label
+    # The Claw card explains why there is no action.
+    assert "이동하는 경로가 아직 연결되지 않았습니다" in page.locator(
+        '#padiemHomeGrid li[data-service="claw"]').inner_text()
+    assert not errors, errors
+    page.close()
+
+
+def test_b66_brand_is_absent_from_the_home_and_from_help(browser, server):
+    """B66 must not appear even once the expandable Help is open."""
+    page, errors, _ = open_home(browser, server, dict(SIGNED_IN))
+    wait_services(page)
+    # Open the Help so its text becomes user-visible.
+    page.locator("#padiemHomeHelp summary").click()
+    page.wait_for_function("() => document.querySelector('#padiemHomeHelp').open === true")
+    for marker in ("B66", "견적", "회원"):
+        assert marker not in page.locator("body").inner_text(), marker
+        assert marker not in page.evaluate("() => document.body.textContent"), marker
     hrefs = page.eval_on_selector_all("a", "els => els.map(e => e.getAttribute('href'))")
     assert all("b66" not in (h or "").lower() for h in hrefs)
+    # English Help too.
+    page.evaluate("() => { document.documentElement.lang = 'en'; }")
+    page.wait_for_function(
+        "() => document.querySelector('#padiemHomeHelpSummary')"
+        ".textContent.includes('Why access status')"
+    )
+    english = page.locator("body").inner_text()
+    assert "B66" not in english
+    assert "quote" not in english.lower()
+    assert "member" not in english.lower()
     assert not errors, errors
     page.close()
 
@@ -208,6 +258,48 @@ def test_account_switch_removes_previous_identity(browser, server):
         "() => document.querySelector('#padiemHomeAccountName').textContent === '계정 B'"
     )
     assert "계정 A" not in page.locator("body").inner_text()
+    assert not errors, errors
+    page.close()
+
+
+def test_sign_out_clears_identity_before_the_request_completes(browser, server):
+    """A slow logout must not leave the previous account on screen."""
+    page, errors, _ = open_home(browser, server, dict(SIGNED_IN))
+    wait_services(page)
+    page.evaluate("""() => {
+      const original = window.fetch.bind(window);
+      window.__logoutStarted = 0;
+      window.fetch = (url, options = {}) => {
+        if (String(url).includes("/api/auth/logout")) {
+          window.__logoutStarted += 1;
+          return new Promise(() => {});   // held open on purpose
+        }
+        return original(url, options);
+      };
+    }""")
+    page.locator("#padiemHomeSignOut").click()
+    page.wait_for_function("window.__logoutStarted === 1")
+    assert page.locator("#padiemHomeAccount").is_hidden()
+    assert page.locator("#padiemHomeGrid li").count() == 0
+    assert "김파디" not in page.locator("body").inner_text()
+    assert page.locator("#padiemHomeStatus").inner_text() == "로그아웃하는 중입니다."
+    assert not errors, errors
+    page.close()
+
+
+def test_refused_sign_out_is_not_misreported_as_signed_out(browser, server):
+    """A failed logout must not claim the session was revoked."""
+    page, errors, _ = open_home(browser, server, dict(SIGNED_IN), logout_status=500)
+    wait_services(page)
+    page.locator("#padiemHomeSignOut").click()
+    # The server still reports signed-in on the re-read, so the account returns
+    # honestly rather than pretending the session ended.
+    wait_services(page)
+    page.wait_for_function(
+        "() => document.querySelector('#padiemHomeStatus')"
+        ".textContent.includes('로그아웃을 확인하지 못했습니다')"
+    )
+    assert page.locator("#padiemHomeAccountName").inner_text() == "김파디"
     assert not errors, errors
     page.close()
 
@@ -271,7 +363,7 @@ def test_keyboard_and_language_accessibility(browser, server):
     # The skip link is the first focusable control.
     page.keyboard.press("Tab")
     assert page.evaluate("() => document.activeElement.className") == "padiem-home-skip"
-    # Product links are reachable and named.
+    # The product link is reachable and named.
     link = page.locator('#padiemHomeGrid li[data-service="chat"] a')
     link.focus()
     assert page.evaluate("() => document.activeElement.tagName") == "A"
@@ -282,5 +374,6 @@ def test_keyboard_and_language_accessibility(browser, server):
         "() => document.querySelector('#padiemHomeNotice').textContent.includes('not a permission result')"
     )
     assert "Unverified" in page.locator("body").inner_text()
+    assert "Entry not linked" in page.locator("body").inner_text()
     assert not errors, errors
     page.close()
