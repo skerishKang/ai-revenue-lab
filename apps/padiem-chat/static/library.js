@@ -408,7 +408,10 @@
     if (isOpen() && activeTab === "files") render();
     try {
       if (!(await readPage(cursor, seq)) || seq !== generation) return;
-      complete = !hasMore && !partialFailure;
+      // A successful retry covers the previously failed page; do not retain an
+      // obsolete partial-warning after the walk recovers.
+      partialFailure = false;
+      complete = !hasMore;
     } catch (_) {
       if (seq === generation) {
         partialFailure = true;
