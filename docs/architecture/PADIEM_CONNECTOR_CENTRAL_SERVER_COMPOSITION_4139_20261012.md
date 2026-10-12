@@ -178,3 +178,47 @@ production enrollment. Keep `PRODUCTION=OFF`, `READY=NO`, `MERGED=NO`.
 - New test file `packages/padiem-control-plane/tests/test_identity_connector_enrollment_consent_rpc.py` exercises disabled-by-default, exact closed fields, grant/revoke owner/session scope, explicit confirmation version and schema-install gate. New `apps/padiem-chat/tests/test_4139_connector_enrollment_identity_client.py` validates typed private service-binding replies, no-overgrant and confirmation requirements; `apps/padiem-chat/tests/test_4139_connector_enrollment_consent_routes.py` covers B54 current session, CSRF, explicit owner action and fail-closed identity mismatch.
 
 **Remaining before any live grant:** Security review and operator approval to set feature flags + run the explicit schema-install RPC in the existing Identity DO; final confirmation the old `b62` canonical connector context is approved as the shared owner scope; mount routes only with reviewed rate/CORS/CSRF/host constraints; add owner-facing clear consent prompt and confirmation UI; coordinate LOCAL2's authenticated TLS redemption transport and protected Windows credential installation; resolve withdrawal-vs-Broker-binding race/compensating revoke and run #3099 true Windows E2E. All new consent actions remain inert/disabled until flags and product mounting are separately approved.
+
+## 2026-10-12 CENTRAL fifth implementation — existing Broker DO durable pairing and async host
+
+**New source paths now present in this Draft PR:**
+
+- `packages/padiem-control-plane/local_agent_broker_pairing_durable.py`
+  — `DurableBrokerPairingAuthority` stores the *existing* pairing contract's pending/consumed challenge, consent/owner/scope/device binding, redeemed binding ref, and bounded per-scope issuance counters in the same `ctx.storage.sql` as the canonical Local Agent Broker Durable Object. It uses the existing `StateBackedLocalAgentBrokerAuthority` under that same `transactionSync` boundary so one successful redemption writes Broker binding state + challenge-consumed state together. The constructor never installs schema. The one-time pairing code and raw Broker credential are never stored in pairing rows; only the challenge nonce and the existing broker credential digest/state are persisted.
+- `packages/padiem-control-plane/canonical_broker_pairing_rpc.py` and the existing `local_agent_broker_worker.py`
+  — new private Service Binding methods: explicit gated schema install, enrollment challenge issue, server-time binding lookup, scoped redemption. There is no public fetch route. RPC calls require both `LOCAL_AGENT_BROKER_PAIRING_RPC_ENABLED=true` and `LOCAL_AGENT_BROKER_PAIRING_SCHEMA_INSTALLED=true`; installation additionally requires `LOCAL_AGENT_BROKER_PAIRING_SCHEMA_INSTALL_ENABLED=true`, a bounded explicit `LOCAL_AGENT_BROKER_PAIRING_ISSUANCE_RATE_LIMIT`, and the exact migration ID. No schema is automatically applied on startup.
+- `apps/padiem-chat/app/control_plane_broker_pairing_client.py`
+  — typed async private Broker Service Binding client; closed success/error envelope, exact challenge/binding/device/consent/scope correlation, proof shape, credential metadata and base64 validation. The raw device credential is returned to its **trusted server-side caller only**, outside any public response; host must install it securely and never log/serialize to a browser.
+- `apps/padiem-chat/app/canonical_connector_enrollment_async_host.py`
+  — asynchronous composition for existing Identity/Broker service bindings. Issue: refresh explicit device consent → create durable Broker challenge → durably bind challenge to original canonical B54 session → only then return one-time code. Redeem: read Broker-owned binding → refresh canonical session/active membership/current consent and exact owner/scope/device at Identity DO → preflight protected credential handoff → atomically redeem against the durable Broker → recheck consent/session immediately after cross-DO mutation → deliver credential once → return secret-free `paired_offline` metadata. Consent changes in the cross-DO window or a failed handoff trigger canonical Broker revoke compensation. If revoke cannot be confirmed, a distinct security failure is raised.
+- Existing `claw_connector_enrollment_routes.py` uses the async host **only when a server operator explicitly injects it into app state**. The route constants and handler functions are still NOT mounted in `app_factory.py` or Worker. The existing `#3925` app-factory ownership conflict remains a separate reason not to wire routes in this branch.
+
+### Focused local test evidence at this branch
+
+- Control Plane new/related source tests: **59 passed** on the isolated Windows central workspace.
+- B54/Claw product-side async orchestration + typed service-binding client + route tests: **59 passed**.
+- Prior CI on an earlier head had 1,253 Control Plane tests and B62 regressions passing; those counts do NOT replace the currently running exact-head workflows.
+- Current latest HEAD CI must be re-read and reported separately (Control Plane/B62 CI still running at update time).
+
+### Remaining release blockers (explicit, not hidden)
+
+1. **Operator-approved existing Identity DO schema installation** for per-PC consent/session rows and **existing Broker DO schema installation** for pairing challenge/rate-limit rows. Both have private migration methods but both schema-install feature flags remain OFF; no production schema has been installed by this PR.
+2. **Owner-facing consent UX:** there are source handler functions and strict `confirmed=true` version gates but no UI checkbox/affirmative consent prompt or mounted routes yet. An API client cannot manufacture user consent simply by sending a boolean while the route/RPC flags remain disabled.
+3. **Cross-product owner scope:** current read-only candidate reuses legacy `canonical_connector_context` row keyed `b62`. It does no writes and fails closed if missing; a designated security/identity owner must approve this legacy context as the one product-neutral PC scope before setting `CONTROL_PLANE_CONNECTOR_ENROLLMENT_SCOPE_APPROVED=true`.
+4. **OS credential handoff:** the async host port is deliberately injectable and absent by default. LOCAL2 #4463 currently does not install a raw Broker credential in its existing protected Windows credential store or complete a second authenticated Broker challenge/session to prove the credential works. No handoff adapter is configured; the host therefore cannot redeem in live service and returns an unavailable refusal before consuming a challenge.
+5. **Existing Broker revocation and lifecycle:** pairing code uses the current Broker's canonical persisted binding/session authority. The consent store and Broker are separate Durable Objects; post-redemption consent recheck and revoke compensation reduce the race but cannot give atomic cross-DO transaction semantics. Active binding consent withdrawal and ONLINE teardown must use a reviewed canonical revoke/lifecycle path; a withdrawn consent response does not itself imply device OFFLINE.
+6. **Exact-host wiring:** private Broker/Identity Service Bindings, TLS device ingress attestation/rate limits, B54 CSRF owner routes, and app-state async-host factory/mount are not deployed. #3925 and other open local PR paths must be resolved before modifying `app_factory.py`.
+7. **Operational acceptance:** LOCAL1 #4438 and LOCAL2 #4463 both remain Draft/unmerged. `#3099` remains the only signed Windows one-shot E2E acceptance ledger. Production stays OFF and no P01 READ/WRITE permission is granted.
+
+```makefile
+DURABLE_BROKER_PAIRING_SOURCE=IMPLEMENTED
+BROKER_PAIRING_SCHEMA_AUTO_INSTALL=NO
+BROKER_PAIRING_PRIVATE_RPC=SOURCE_IMPLEMENTED_GATED
+ASYNC_IDENTITY_BROKER_HOST=SOURCE_IMPLEMENTED
+DEVICE_CREDENTIAL_HANDOFF=UNWIRED
+APP_FACTORY_ROUTE_MOUNT=NO
+PRODUCTION=OFF
+READY=NO
+MERGED=NO
+WINDOWS_LIVE_E2E=NOT_PROVEN
+```
