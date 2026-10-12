@@ -31,6 +31,10 @@ def test_b66_pc_view_reuses_canonical_claw_projection_without_execution():
         assert forbidden not in loader
     assert "device.online" in loader
     assert "device.revoked" in loader
+    assert "pcDirectoryEnabled: data.pc_device_list_enabled === true" in js
+    assert "pcSection.hidden = true" in js
+    assert "runtime?.pcDirectoryEnabled === true" in js
+    assert "if (!pcEnabled) resetPcDirectory();" in js
 
 
 def test_no_eager_request_and_logout_discards_stale_pc_results():
