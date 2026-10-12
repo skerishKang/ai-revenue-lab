@@ -23,7 +23,7 @@ _CONNECTOR_ENROLLMENT_CONFIRMATION_VERSION = "pc-enrollment-consent-v1"
 _CONNECTOR_ENROLLMENT_SCHEMA_VERSION = "connector-enrollment-v1"
 
 
-def _enrollment_safe_error(exc: ControlPlaneContractError) -> dict[str, Any]:
+def _enrollment_enrollment_safe_error(exc: ControlPlaneContractError) -> dict[str, Any]:
     return {"ok": False, "error": {"code": exc.code, "message": "Canonical identity request was rejected"}}
 
 
@@ -72,7 +72,7 @@ class CanonicalIdentityEnrollmentConsentRPC:
             self._connector_enrollment_records.install_schema()
             return {"ok": True, "schema": _CONNECTOR_ENROLLMENT_SCHEMA_VERSION, "installed_by_default": False}
         except ControlPlaneContractError as exc:
-            return _enrollment_safe_error(exc)
+            return _enrollment_enrollment_safe_error(exc)
 
     async def grant_connector_enrollment_consent(self, payload: dict) -> dict:
         """Private RPC called only after explicit owner UI action + CSRF verification."""
@@ -103,9 +103,9 @@ class CanonicalIdentityEnrollmentConsentRPC:
                 "dispatch_authorized": False, "grants_read": False, "grants_write": False,
             }}
         except ControlPlaneContractError as exc:
-            return _enrollment_safe_error(exc)
+            return _enrollment_enrollment_safe_error(exc)
         except (TypeError, ValueError) as exc:
-            return _safe_error(ControlPlaneContractError("invalid_connector_enrollment_consent", "consent request was refused"))
+            return _enrollment_safe_error(ControlPlaneContractError("invalid_connector_enrollment_consent", "consent request was refused"))
 
     async def revoke_connector_enrollment_consent(self, payload: dict) -> dict:
         """Private RPC; only the currently authenticated canonical owner may revoke."""
@@ -131,6 +131,6 @@ class CanonicalIdentityEnrollmentConsentRPC:
                 "dispatch_authorized": False, "grants_read": False, "grants_write": False,
             }}
         except ControlPlaneContractError as exc:
-            return _enrollment_safe_error(exc)
+            return _enrollment_enrollment_safe_error(exc)
 
 
