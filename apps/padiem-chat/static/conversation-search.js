@@ -9,7 +9,7 @@
   //     #deepResearchButton, and never changes the center "웹에서 찾아줘" card.
   //   - Fail-closed: the entry stays disabled until the canonical capability
   //     projection reports a signed-in owner with a ready history store. No
-  //     localStorage / cookie / token is read here.
+  //     browser storage API, cookie, or credential token is read here.
   //   - Opening a hit reuses the existing saved-conversation row click path
   //     (the history list button), so the owner-scoped load is unchanged.
 
