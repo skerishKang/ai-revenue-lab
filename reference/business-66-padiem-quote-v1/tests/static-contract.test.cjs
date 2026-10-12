@@ -282,6 +282,13 @@ check(!easy.includes("아직 자동 해석 모델은 연결 전") &&
       easy.includes("startGuidedIfReady(text)") &&
       !easy.includes("안녕하세요! 견적 내용을 편하게 알려주세요."),
   "EASY_MODE_CONTRACT: signed-in no-CGI model chat works; approved one-shot CGI stays available");
+check(html.includes('id="freeChatStarter"') &&
+      html.includes("<strong>AI와 대화하기</strong>") &&
+      html.includes("<small>일반 질문부터 견적 상담까지</small>") &&
+      easy.includes('$("freeChatStarter").addEventListener("click", startFreeChat);') &&
+      easy.includes("bridge.chat(history)") &&
+      easy.includes("return bridge.interpret(text)"),
+  "B66_CHAT_ENTRY: explicit general AI dialogue CTA routes to real model and preserves approved CGI quote flow");
 check(easy.includes("자동 분석 서버는 아직 활성화 전") &&
       easy.includes("이 파일은 외부로 전송되지 않습니다."),
   "EASY_MODE_CONTRACT: selected file is truthful about non-live analysis");
