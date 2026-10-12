@@ -60,7 +60,7 @@ def canonical_session(*, product="b54-padiem-claw", state=AuthSessionState.ACTIV
     return AuthSessionSnapshot(
         session_id="session.canonical.owner.1", product_id=product,
         subject=CanonicalSubjectRef(subject_type=SubjectType.USER, subject_id="subject.canonical.owner.1"),
-        issued_at=NOW-timedelta(minutes=1), expires_at=NOW+timedelta(hours=1),
+        issued_at=NOW-timedelta(days=1), expires_at=NOW+timedelta(days=30),
         state=state, tenant_id=tenant,
     )
 
