@@ -451,3 +451,175 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-dow
   outline: 3px solid #72a3c5;
   outline-offset: 2px;
 }
+
+/* #4488 second UI slice: the Automation view joins the same Chat/Claw glass
+ * design system. Scope is the Automation section only (#clawAutomation inside
+ * the Claw state), so Chat and Calendar surfaces stay untouched. Scheduling
+ * (daypart/interval/cron/timezone), owner-scoped create/edit/list and the
+ * stored pause/resume setting are unchanged; only presentation moves. A saved
+ * rule is never presented as live automatic execution — the copy stays. */
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation {
+  margin-top: 16px;
+  padding: 20px clamp(16px, 2.2vw, 22px);
+  border: 1px solid rgba(255, 255, 255, .52);
+  border-radius: 20px;
+  background: linear-gradient(155deg, rgba(248, 250, 251, .56), rgba(228, 234, 238, .32));
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(24px) saturate(108%);
+  -webkit-backdrop-filter: blur(24px) saturate(108%);
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .claw-inbox-header {
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .claw-inbox-header h3 {
+  margin: 1px 0 0;
+  color: #16212a;
+  font-size: clamp(19px, 2.4vw, 23px);
+  letter-spacing: -0.02em;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation > .claw-inbox-help {
+  margin: 10px 0 0;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :is(.claw-inbox-help, .claw-inbox-status, .claw-inbox-empty) {
+  color: var(--claw-focus-muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :is(.claw-inbox-retry, .claw-inbox-status-action) {
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, .54);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .34);
+  color: var(--claw-focus-accent);
+  font-size: 12px;
+  font-weight: 650;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :is(.claw-inbox-retry, .claw-inbox-status-action):hover {
+  background: rgba(255, 255, 255, .58);
+}
+/* Create / edit disclosures reuse the shared calendar-record form system. */
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .calendar-record {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, .52);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .30);
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .calendar-record-summary {
+  color: var(--claw-focus-accent);
+  font-size: 13px;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .calendar-record-hint {
+  color: var(--claw-focus-muted);
+  opacity: 1;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .calendar-record-field > span {
+  color: #44515d;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .calendar-record-field :is(input, textarea, select) {
+  min-height: 40px;
+  padding: 8px 11px;
+  border: 1px solid rgba(255, 255, 255, .60);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, .56);
+  color: #17212a;
+  font-size: 13px;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .calendar-record-field textarea {
+  resize: vertical;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .calendar-record-actions {
+  gap: 8px;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .calendar-record-submit {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid rgba(255, 255, 255, .76);
+  border-radius: 12px;
+  background: linear-gradient(165deg, rgba(255, 255, 255, .94), rgba(248, 250, 251, .90));
+  color: #08090b;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: var(--card-shadow);
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .calendar-record-cancel {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, .54);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .30);
+  color: var(--claw-focus-accent);
+  font-size: 13px;
+  font-weight: 650;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .calendar-record-status {
+  margin-top: 10px;
+  color: var(--claw-focus-muted);
+  font-size: 12px;
+}
+/* Rule rows had no card treatment at all; give them the shared Chat surface. */
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .claw-inbox-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  padding: 14px 15px;
+  border: 1px solid rgba(255, 255, 255, .52);
+  border-radius: 15px;
+  background: var(--glass-card-surface, rgba(244, 247, 249, .72));
+  box-shadow: var(--card-shadow);
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .claw-inbox-card > :is(strong, small) {
+  flex: 1 1 100%;
+  min-width: 0;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .claw-inbox-card strong {
+  color: #17212a;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .claw-inbox-card small {
+  color: var(--claw-focus-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .claw-automation-quarantine {
+  color: #8c4141;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :is(.claw-automation-rule-toggle, .claw-automation-rule-edit) {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, .54);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, .34);
+  color: var(--claw-focus-accent);
+  font-size: 12px;
+  font-weight: 650;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :is(.claw-automation-rule-toggle, .claw-automation-rule-edit):hover {
+  background: rgba(255, 255, 255, .58);
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :is(.calendar-record-summary, input, textarea, select, button):focus-visible {
+  outline: 3px solid #72a3c5;
+  outline-offset: 2px;
+}
+@media (max-width: 920px) {
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation {
+    padding: 16px;
+  }
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .claw-inbox-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :is(.claw-inbox-retry, .claw-inbox-status-action) {
+    width: 100%;
+  }
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .calendar-record-actions {
+    flex-direction: column;
+  }
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .calendar-record-actions button {
+    width: 100%;
+  }
+}
