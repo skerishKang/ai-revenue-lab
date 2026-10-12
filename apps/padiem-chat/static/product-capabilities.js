@@ -34,26 +34,38 @@
     displayName: "",
   });
 
-  const AVAILABLE_TIERS = Object.freeze(["plus"]);
+  const AVAILABLE_TIERS = Object.freeze(["free", "plus"]);
 
   const TIER_COPY = Object.freeze({
     ko: Object.freeze({
       label: "AI 등급",
       title: "Padiem AI",
-      description: "Chat과 Claw에서 함께 사용할 AI 등급을 선택합니다.",
-      truth: "모델·제공자 선택은 파디엠 서버가 관리하며 브라우저에는 노출하지 않습니다.",
+      description: "등급이 높을수록 더 고급 모델을 사용할 수 있습니다.",
+      truth: "더 높은 등급의 모델을 사용하려면 업그레이드가 필요합니다.",
       available: "사용 가능",
-      plus: ["Padiem Plus", "일상 대화와 일반 작업"],
+      unavailable: "사용 불가",
+      free: ["Padiem Free", ""],
+      plus: ["Padiem Plus", ""],
+      pro: ["Padiem Pro", ""],
+      max: ["Padiem Max", ""],
     }),
     en: Object.freeze({
       label: "AI tier",
       title: "Padiem AI",
-      description: "Choose the AI tier shared by Chat and Claw.",
-      truth: "Provider and model routing stays server-managed and is not browser-selectable.",
+      description: "Higher tiers unlock more advanced models.",
+      truth: "Upgrade is required to use higher-tier models.",
       available: "Available",
-      plus: ["Padiem Plus", "Everyday chat and general tasks"],
+      unavailable: "Unavailable",
+      free: ["Padiem Free", ""],
+      plus: ["Padiem Plus", ""],
+      pro: ["Padiem Pro", ""],
+      max: ["Padiem Max", ""],
     }),
   });
+
+  // Display-only tier list. Free and Plus are shown as available; Pro/Max are
+  // shown as unavailable until the admin page decides entitlements.
+  const TIER_LIST = Object.freeze(["free", "plus", "pro", "max"]);
 
   let selectedTier = "plus";
 
@@ -287,29 +299,27 @@
 
   function createModeOption(tier) {
     const copy = currentModeCopy();
+    const available = AVAILABLE_TIERS.includes(tier);
     const button = document.createElement("button");
     button.type = "button";
     button.className = "mode-option";
     button.dataset.modeValue = tier;
-    button.disabled = false;
-    button.setAttribute("aria-disabled", "false");
+    button.disabled = !available;
+    button.setAttribute("aria-disabled", available ? "false" : "true");
     button.setAttribute("aria-pressed", tier === selectedTier ? "true" : "false");
 
-    const textContainer = document.createElement("span");
     const title = document.createElement("strong");
-    const detail = document.createElement("small");
     title.textContent = copy[tier][0];
-    detail.textContent = copy[tier][1];
-    textContainer.append(title, detail);
-
     const state = document.createElement("span");
     state.className = "mode-option-state";
-    state.textContent = copy.available;
-    button.append(textContainer, state);
-    button.addEventListener("click", () => {
-      if (!selectTier(tier)) return;
-      closeModePanel({ restoreFocus: true });
-    });
+    state.textContent = available ? copy.available : copy.unavailable;
+    button.append(title, state);
+    if (available) {
+      button.addEventListener("click", () => {
+        if (!selectTier(tier)) return;
+        closeModePanel({ restoreFocus: true });
+      });
+    }
     return button;
   }
 
@@ -328,12 +338,11 @@
     modePanel.querySelectorAll("[data-mode-value]").forEach((button) => {
       const tier = button.dataset.modeValue;
       if (!copy[tier]) return;
+      const available = AVAILABLE_TIERS.includes(tier);
       const optionTitle = button.querySelector("strong");
-      const optionDetail = button.querySelector("small");
       const state = button.querySelector(".mode-option-state");
       if (optionTitle) optionTitle.textContent = copy[tier][0];
-      if (optionDetail) optionDetail.textContent = copy[tier][1];
-      if (state) state.textContent = copy.available;
+      if (state) state.textContent = available ? copy.available : copy.unavailable;
       button.setAttribute("aria-pressed", tier === selectedTier ? "true" : "false");
     });
   }
@@ -387,9 +396,7 @@
     const list = document.createElement("div");
     list.className = "mode-option-list";
     list.setAttribute("role", "group");
-    list.append(
-      createModeOption("plus"),
-    );
+    list.append(...TIER_LIST.map((tier) => createModeOption(tier)));
 
     const truth = document.createElement("p");
     truth.className = "mode-presentation-truth";
