@@ -79,6 +79,23 @@ class DeviceCredentialInstallAck:
         }
 
 
+_ACK_WIRE_FIELDS = frozenset({
+    "challenge_id", "device_id", "binding_ref", "credential_generation",
+    "proof_kind", "transcript_version", "local_store_confirmed", "proof_hex",
+})
+
+
+def parse_install_ack(payload: Any) -> DeviceCredentialInstallAck:
+    """Decode exact JSON fields ONLY after a reviewed authenticated gateway.
+
+    This parser is NOT an authentication or Windows-store authority. Fail
+    closed on unknown/extra keys, coercions, and self-asserted bool receipts.
+    """
+    if type(payload) is not dict or set(payload) != _ACK_WIRE_FIELDS:
+        raise ValueError("invalid protected install ACK shape")
+    return DeviceCredentialInstallAck(**payload)
+
+
 def installation_proof(
     *, credential: bytes, challenge_id: str, device_id: str,
     binding_ref: str, credential_generation: int,
