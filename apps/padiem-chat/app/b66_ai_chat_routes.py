@@ -34,6 +34,7 @@ from .b66_registered_model_boundary import (
     B66QuoteTaskRequirements,
     validate_authorized_route,
 )
+from .b66_search_boundary import _envelope, plan_b66_search
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 from .request_contract import MAX_BROWSER_BODY_BYTES
 
@@ -124,10 +125,14 @@ async def b66_ai_chat(request: Request) -> JSONResponse:
         await _refund_active_reservation()
         return _error(503, "ai_chat_unavailable", "AI 모델을 사용할 수 없습니다.")
 
+    outcome = await plan_b66_search(
+        getattr(request.app.state, "auto_grounding", None), messages[-1]["content"]
+    )
     try:
         result = await complete(
             [dict(m) for m in messages],
             model=route.model_id,
+            additional_system_context=_envelope(outcome),
             model_parameters=parameters,
         )
     except ChatRuntimeError as exc:
@@ -147,7 +152,8 @@ async def b66_ai_chat(request: Request) -> JSONResponse:
         return _error(502, "ai_chat_invalid_answer", "AI 응답을 확인할 수 없습니다.")
     return JSONResponse(
         {"ok": True, "answer": result["answer"], "model_id": route.model_id,
-         "saved_quote": False, "model_origin": "registered_model_completion"},
+         "saved_quote": False, "model_origin": "registered_model_completion",
+         "search": outcome.public_dict()},
         headers=_NO_STORE,
     )
 

@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import asyncio
 import json
+from padiem_ai_core import Evidence
+from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 import pytest
@@ -40,8 +42,10 @@ class FakeDialogueClient:
     def ensure_registered_quote_runtime_available(self):
         return None
 
-    async def complete_registered_b66_chat_model(self, messages, *, model, model_parameters=None):
-        self.calls.append((messages, model, model_parameters))
+    async def complete_registered_b66_chat_model(
+        self, messages, *, model, additional_system_context=None, model_parameters=None
+    ):
+        self.calls.append((messages, model, additional_system_context, model_parameters))
         return {
             "answer": "AI 대화 응답", "route": {"mode": "manual", "model": model},
         }
@@ -93,6 +97,8 @@ def test_genuine_dialogue_without_saved_skill_does_not_mutate_quote():
     assert res.json() == {
         "ok": True, "answer": "AI 대화 응답", "model_id": MODEL,
         "saved_quote": False, "model_origin": "registered_model_completion",
+        "search": {"status": "not_needed", "reason": "no_external_evidence_trigger",
+                   "sources": []},
     }
     assert res.headers["Cache-Control"] == "no-store, max-age=0"
     assert len(resolver.calls) == 1
@@ -157,8 +163,6 @@ def test_pages_relay_and_easy_chat_never_forge_a_saved_skill():
 
 
 def test_usage_admission_is_checked_before_model_registry_or_provider():
-    from types import SimpleNamespace
-
     settings, client, resolver, model = setup()
     sign_in(settings, client)
 
@@ -236,6 +240,63 @@ def dialogue_request(binding):
     )
     assert len(binding.calls) == 1
     return binding.calls[0][1]
+
+
+def test_a_public_freshness_turn_reaches_the_model_with_the_server_search_envelope():
+    """#4469: evidence the server retrieved is what the model is told, not browser text."""
+    settings, client, resolver, model = setup()
+    sign_in(settings, client)
+
+    class Grounding:
+        def __init__(self):
+            self.seen = []
+
+        async def prepare(self, messages, *, skill, additional_system_context):
+            self.seen.append(messages[0]["content"])
+            return SimpleNamespace(
+                decision=SimpleNamespace(reason="freshness_sensitive"),
+                prepared=SimpleNamespace(
+                    context="[1] {\"title\":\"철근 시세\"}",
+                    evidence=(Evidence(
+                        id="ev-1", title="철근 시세", snippet="철근 톤당 가격",
+                        retrieved_at="2026-10-13T02:00:00Z", provider="tinyfish",
+                        source_type="web", url="https://steel.example.co.kr/price",
+                    ),),
+                ),
+            )
+
+    client.app.state.auto_grounding = Grounding()
+    res = client.post("/api/b66/ai/chat", json=payload(messages=[
+        {"role": "user", "content": "최신 철근 시세 알려줘"},
+    ]))
+    assert res.status_code == 200, res.text
+    envelope = model.calls[0][2]
+    assert "공개 웹 검색" in envelope and "[1]" in envelope
+    assert res.json()["search"]["status"] == "sourced"
+    assert res.json()["search"]["sources"] == [{
+        "title": "철근 시세", "url": "https://steel.example.co.kr/price",
+        "retrieved_at": "2026-10-13T02:00:00Z", "source_type": "web",
+        "provider": "tinyfish",
+    }]
+
+
+def test_a_withheld_private_turn_sends_no_query_and_tells_the_model_it_did_not_search():
+    settings, client, resolver, model = setup()
+    sign_in(settings, client)
+
+    class RefusingGrounding:
+        async def prepare(self, messages, *, skill, additional_system_context):
+            raise AssertionError("a withheld turn must never reach the provider")
+
+    client.app.state.auto_grounding = RefusingGrounding()
+    res = client.post("/api/b66/ai/chat", json=payload(messages=[
+        {"role": "user", "content": "대한건설 주식회사 최신 철근 시세 알려줘"},
+    ]))
+    assert res.status_code == 200, res.text
+    assert res.json()["search"] == {
+        "status": "withheld_private", "reason": "corporation", "sources": []
+    }
+    assert "검색을 실행하지 않았습니다" in model.calls[0][2]
 
 
 def test_dialogue_reaches_b14_with_prior_turns_exact_model_and_zero_fallback():
