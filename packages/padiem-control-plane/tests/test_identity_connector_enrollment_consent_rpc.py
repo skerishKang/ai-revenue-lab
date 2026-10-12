@@ -172,7 +172,7 @@ def test_grant_and_withdraw_are_canonical_owner_scoped_and_idempotently_refused(
     canonical.session = AuthSessionSnapshot(
         session_id=SESSION_ID, product_id=PRODUCT,
         subject=CanonicalSubjectRef(subject_type=SubjectType.USER, subject_id="sub.other"),
-        issued_at=NOW-timedelta(minutes=2), expires_at=NOW+timedelta(hours=1),
+        issued_at=NOW-timedelta(days=1), expires_at=NOW+timedelta(days=30),
         state=AuthSessionState.ACTIVE, tenant_id=TENANT,
     )
     denied = call("revoke_connector_enrollment_consent", fake, revoke_payload(consent["consent_id"]))
@@ -182,7 +182,7 @@ def test_grant_and_withdraw_are_canonical_owner_scoped_and_idempotently_refused(
     canonical.session = AuthSessionSnapshot(
         session_id=SESSION_ID, product_id=PRODUCT,
         subject=CanonicalSubjectRef(subject_type=SubjectType.USER, subject_id=SUBJECT),
-        issued_at=NOW-timedelta(minutes=2), expires_at=NOW+timedelta(hours=1),
+        issued_at=NOW-timedelta(days=1), expires_at=NOW+timedelta(days=30),
         state=AuthSessionState.ACTIVE, tenant_id=TENANT,
     )
     revoked = call("revoke_connector_enrollment_consent", fake, revoke_payload(consent["consent_id"]))
@@ -199,7 +199,7 @@ def test_invalid_or_inactive_canonical_session_never_grants():
     canonical.session = AuthSessionSnapshot(
         session_id=SESSION_ID, product_id=PRODUCT,
         subject=CanonicalSubjectRef(subject_type=SubjectType.USER, subject_id=SUBJECT),
-        issued_at=NOW-timedelta(minutes=2), expires_at=NOW+timedelta(hours=1),
+        issued_at=NOW-timedelta(days=1), expires_at=NOW+timedelta(days=30),
         state=AuthSessionState.REVOKED, tenant_id=TENANT,
     )
     result = call("grant_connector_enrollment_consent", fake, grant_payload())
