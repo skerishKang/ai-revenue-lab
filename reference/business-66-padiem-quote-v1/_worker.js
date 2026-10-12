@@ -53,6 +53,7 @@ function padiemTarget(url, method) {
     ["/api/padiem/auth/logout", ["POST", "/api/auth/logout"]],
     ["/api/padiem/b66/company-profile", ["GET", "/api/b66/company-profile"]],
     ["/api/padiem/b66/quote/interpret", ["POST", "/api/b66/quote/interpret"]],
+    ["/api/padiem/b66/ai/chat", ["POST", "/api/b66/ai/chat"]],
     ["/api/padiem/b66/quote/models", ["GET", "/api/b66/quote/models"]],
     ["/api/padiem/b66/inquiries", ["POST", "/api/b66/inquiries"]],
     ["/api/padiem/b66/admin/me", ["GET", "/api/b66/admin/me"]],
