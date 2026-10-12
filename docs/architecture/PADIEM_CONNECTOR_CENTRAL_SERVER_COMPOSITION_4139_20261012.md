@@ -112,3 +112,49 @@ session authority, and coordinate protected credential handoff with LOCAL2.
 Then add real host composition (separate, conflict-free PR), validate auth/CSRF,
 persistent cross-instance pairing, revoke/rotation and actual Broker device
 authentication, and only then authorize #3099 E2E and live deployment.
+
+## 2026-10-12 CENTRAL second implementation — Canonical Identity DO durable records
+
+The repository-wide file inventory was audited, not guessed. The reviewed
+source already has ONE canonical Identity Durable Object:
+`packages/padiem-control-plane/identity_authority_durable.py`,
+`identity_authority_worker.py`, storing canonical product links,
+auth sessions, and tenant membership in `ctx.storage.sql` with
+`ctx.storage.transactionSync`. It had NO dedicated durable Connector
+per-device consent record or challenge-to-original-session table.
+
+New SOURCE-ONLY files in THIS stacked PR:
+
+- `packages/padiem-control-plane/canonical_connector_enrollment_durable.py`
+  — `IdentityDurableConnectorEnrollmentRecords`: same Identity DO SQLite
+  storage, exact per-PC current-grant/withdrawal lookup and **original**
+  challenge→canonical session ID binding. At redemption it calls the
+  EXISTING identity authority's `resolve_auth_session(session_id)` again;
+  revoked/expired/missing/changed owner/product/tenant cannot redeem.
+  Persisted data includes only consent metadata and session reference:
+  **no browser token, password, proof, pairing code or device credential**.
+  Concurrent active consent for same owner+device is prevented with a
+  partial unique index; revoked consent cannot be resurrected and replacement
+  requires a fresh consent ID. Mutation is `transactionSync` guarded.
+- `packages/padiem-control-plane/tests/test_canonical_connector_enrollment_durable.py`
+  — SQLite-backed synthetic DO adapter tests for explicit schema gate,
+  owner/device isolation, denial/duplicate, revoke/regrant, expiry and
+  refresh through the existing canonical current-session reader.
+
+**Security gate:** `install_schema()` is explicit, and **is not called by
+constructor, Worker startup, any API handler or migration pipeline**.
+`SCHEMA_INSTALLED_BY_DEFAULT=False`; `PRODUCTION_CONSENT_RPC_EXPOSED=False`.
+The existing Identity DO service, storage and authentication are not modified.
+No real production D1/DO schema change was applied. A reviewed canonical OWNER
+consent-grant/withdraw command is still needed; do not mistake persistence
+for user approval. The existing Identity DO is the only permissible host:
+a product-local D1 shadow or newly invented global consent service must not
+be treated as authority.
+
+**Still pending:** explicit operator approval and schema installation in the
+canonical Identity Durable Object, private authenticated owner consent RPC,
+binding to actual reviewed browser CSRF grant/revoke flow, and session
+continuity composition into real S1 product HTTP and same canonical Broker.
+Cross-Durable-Object consent-vs-pairing race and credential-handoff atomic
+recovery require dedicated integration tests. A Source-only store is NOT
+production enrollment. Keep `PRODUCTION=OFF`, `READY=NO`, `MERGED=NO`.
