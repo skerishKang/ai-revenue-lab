@@ -338,7 +338,22 @@
       // quotation facts in a deterministic conversation. Do not silently
       // drop the user's typed message or pretend an LLM interpreted it.
       if (readiness && readiness.authenticated) {
-        startGuidedIfReady(text);
+        // Free-form chat is not consent to replace an unfinished saved quote.
+        // Only the explicit "new quote" chip invokes the guarded Guided flow.
+        if (lastEasyView === "home") {
+          lastEasyView = "free-form";
+          recordProductState("free-form");
+          startConversation();
+        }
+        addMessage("user", text);
+        addMessage("assistant",
+          "현재 AI 전용 견적 양식이 준비되지 않았습니다. 기존 견적을 이어서 작업하거나 새 질문형 견적을 시작할 수 있습니다. 새 견적을 선택해야만 기존 진행 상태 변경 여부를 확인합니다.");
+        setChips([
+          { label: "지난 견적 이어서 하기", action: resumeAccountGuidedOrLocal },
+          { label: "질문받으며 새 견적", action: () => startGuidedIfReady(text) },
+          { label: "처음으로", action: showHome }
+        ]);
+        setInput(submitFreeFormText, "견적 내용을 입력하거나 아래 작업을 선택해 주세요");
       } else {
         addMessage("user", text);
         addMessage("assistant", runtimeNotReadyMessage(readiness));
