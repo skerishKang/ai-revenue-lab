@@ -118,7 +118,7 @@ def test_challenge_and_one_time_code_work_after_reconstructing_adapter_and_broke
     install(h)
     challenge, code = issue(h)
     persisted = h.storage.sql.exec(
-        "SELECT challenge_id,code_nonce,consent_ref,owner_ref,device_id FROM canonical_local_agent_pairing_challenge"
+        "SELECT challenge_id,code_nonce,consent_ref,owner_ref,enrollment_device_id AS device_id FROM canonical_local_agent_pairing_challenge"
     ).toArray()
     assert len(persisted) == 1
     assert persisted[0]["challenge_id"] == challenge.challenge_id
