@@ -3,11 +3,11 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const PRODUCTS = Object.freeze({
-    central: {name: "중앙 정책", icon: "◎"},
-    chat: {name: "Padiem Chat", icon: "◉"},
-    claw: {name: "Claw", icon: "⌘"},
-    b66: {name: "B66 견적", icon: "▤"},
-    "b14-router": {name: "B14 Router", icon: "◇"},
+    central: {name: "중앙 정책", icon: "target"},
+    chat: {name: "Padiem Chat", icon: "message"},
+    claw: {name: "Claw", icon: "terminal"},
+    b66: {name: "B66 견적", icon: "file"},
+    "b14-router": {name: "B14 Router", icon: "route"},
   });
   const SOURCES = Object.freeze({
     central: "Control Plane", chat: "Chat 등급 라우팅", claw: "B14 선택 목록",
@@ -24,6 +24,41 @@
     if (value !== undefined && value !== null) el.textContent = String(value);
     if (className) el.className = className;
     return el;
+  }
+
+  const ICON_STROKES = Object.freeze({
+    target: ["circle|12,12,9", "circle|12,12,4"],
+    message: ["path|M21 11.5a8.5 8.5 0 0 1-8.5 8.5 9.3 9.3 0 0 1-4-.9L3 21l1.9-5.5a9.3 9.3 0 0 1-.9-4A8.5 8.5 0 0 1 12.5 3a8.5 8.5 0 0 1 8.5 8.5Z"],
+    terminal: ["rect|3,4,18,16,2", "path|m7 9 3 3-3 3", "path|M12 15h5"],
+    file: ["path|M8 3h8l4 4v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h3", "path|M15 3v5h5M8 12h8M8 16h8"],
+    route: ["circle|6,17,2", "circle|18,6,2", "path|M8 17h6a4 4 0 0 0 4-4V8"],
+  });
+
+  function productIcon(name) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("class", "product-icon");
+    svg.setAttribute("aria-hidden", "true");
+    for (const spec of ICON_STROKES[name] || []) {
+      const [kind, coords] = spec.split("|");
+      const child = document.createElementNS("http://www.w3.org/2000/svg", kind);
+      if (kind === "path") {
+        child.setAttribute("d", coords);
+      } else if (kind === "circle") {
+        const [cx, cy, r] = coords.split(",");
+        child.setAttribute("cx", cx);
+        child.setAttribute("cy", cy);
+        child.setAttribute("r", r);
+      } else if (kind === "rect") {
+        const [x, y, width, height, rx] = coords.split(",");
+        for (const [key, value] of Object.entries({x, y, width, height, rx})) {
+          child.setAttribute(key, value);
+        }
+      }
+      svg.append(child);
+    }
+    return svg;
   }
 
   function alertMessage(value, variant = "error") {
@@ -64,7 +99,7 @@
     for (const [key, product] of Object.entries(PRODUCTS)) {
       const label = node("label", null, "target");
       const name = node("span", null, "target-title");
-      name.append(node("span", product.icon, "product-icon"), node("span", product.name));
+      name.append(productIcon(product.icon), node("span", product.name));
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
       checkbox.value = key;

@@ -190,3 +190,48 @@ def test_glass_tone_matches_chat_palette_without_changing_admin_behavior(width):
             assert not page.locator("#previewResult").is_visible()
         finally:
             browser.close()
+
+
+@pytest.mark.parametrize("width", [1440, 768, 390])
+def test_admin_brand_and_icons_match_chat_glass_without_ui_regressions(width):
+    """Brand P-mark, nav, utility controls, and scope cards use consistent line icons."""
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch(headless=True)
+        try:
+            page = browser.new_page(viewport={"width": width, "height": 850})
+            seen = _mock(page)
+            page.goto("https://chat.test/admin-models.html")
+            page.get_by_role("heading", name="모델과 사용 위치").wait_for()
+            page.locator("#modelCount").get_attribute("id")
+            assert page.locator(".brand-symbol").inner_text() == "P"
+            assert page.locator(".nav-link .nav-icon svg").count() == 2
+            assert page.locator(".route-icon svg").count() == 3
+            assert page.locator(".target-grid .product-icon").count() == 5
+            assert page.locator("#helpBtn svg, #refreshBtn svg").count() == 2
+            assert page.locator('.nav-link[aria-current="page"]').count() == 1
+            design = page.evaluate("""() => {
+              const logo = getComputedStyle(document.querySelector('.brand-symbol'));
+              const menu = getComputedStyle(document.querySelector('.nav-link'));
+              const selected = getComputedStyle(document.querySelector('.nav-link.selected'));
+              const productIcon = getComputedStyle(document.querySelector('.product-icon'));
+              return {
+                logoBorder: logo.borderTopColor,
+                logoShadow: logo.boxShadow,
+                selectedBorder: selected.borderTopColor,
+                menuBackground: menu.backgroundColor,
+                iconStroke: productIcon.strokeWidth,
+                overflow: document.documentElement.scrollWidth > innerWidth,
+              };
+            }""")
+            assert design["logoShadow"] != "none"
+            assert design["logoBorder"] != "rgba(0, 0, 0, 0)"
+            assert design["selectedBorder"] != "rgba(0, 0, 0, 0)"
+            assert design["menuBackground"] != "rgba(0, 0, 0, 0)"
+            assert design["iconStroke"] == "1.8px"
+            assert design["overflow"] is False
+            page.get_by_role("button", name="모델 관리자 도움말").click()
+            assert page.get_by_role("dialog").is_visible()
+            page.get_by_role("button", name="도움말 닫기").click()
+            assert [entry["method"] for entry in seen] == ["GET", "GET"]
+        finally:
+            browser.close()
