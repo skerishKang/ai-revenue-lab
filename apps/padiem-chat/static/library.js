@@ -7,15 +7,20 @@
   //   - Owns #filesNavButton behavior and the Library view only.
   //   - Navigable for any signed-in owner, whether or not project-file storage is
   //     provisioned. Protected actions stay unavailable with an accurate reason.
-  //   - Reads only the canonical owner-scoped project and project-file routes, and
-  //     opens a file only through the project seam app.js publishes. It never
-  //     fetches file bytes, builds a second reader, or indexes Drive, local PC,
-  //     provider or Claw workspace data.
+  //   - Reads only the canonical owner-scoped project-file pages this service
+  //     publishes (`/api/project-files`), and opens a file only through the project
+  //     seam app.js owns. It never fetches file bytes, builds a second reader, walks
+  //     projects one by one, or indexes Drive, local PC, provider or Claw workspace
+  //     data.
+  //   - Pages are walked with the server's keyset cursor until the caller reaches the
+  //     oldest stored file. Nothing here claims a complete listing unless the server
+  //     reported no further page and every read succeeded.
   //   - This service does not persist chat images, so the image collection reports
   //     that truthfully instead of showing a fabricated list.
   //   - No browser storage primitive is read or written here.
 
-  const MAX_PROJECTS_READ = 20;
+  const OWNER_FILES_ENDPOINT = "/api/project-files";
+  const OWNER_FILES_PAGE = 50;
 
   const shell = document.querySelector(".app-shell");
   const navButton = document.getElementById("filesNavButton");
@@ -44,10 +49,13 @@
   let activeTab = "files";
   let generation = 0;
   let loading = false;
+  let loadingMore = false;
   let outcome = "idle";
   let rows = [];
-  let truncated = false;
+  let cursor = null;
+  let hasMore = false;
   let partialFailure = false;
+  let complete = false;
 
   function copy(ko, en) {
     return document.documentElement.lang.toLowerCase().startsWith("en") ? en : ko;
@@ -83,16 +91,18 @@
       "No saved files yet. Files added to a project will appear here.",
     ),
     incompleteEmpty: () => copy(
-      "확인한 프로젝트에서 파일을 찾지 못했습니다. 전체 목록을 확인한 것은 아닙니다.",
-      "No files found among the checked projects. This is not a complete listing.",
-    ),
-    truncated: () => copy(
-      `저장된 프로젝트가 많아 최근 ${MAX_PROJECTS_READ}개까지만 확인했습니다.`,
-      `Only the ${MAX_PROJECTS_READ} most recent projects were checked.`,
+      "확인한 페이지에서 파일을 찾지 못했습니다. 전체 목록을 확인한 것은 아닙니다.",
+      "No files found in the pages read so far. This is not a complete listing.",
     ),
     partial: () => copy(
-      "일부 프로젝트의 파일은 확인하지 못했습니다. 아래 목록은 전체가 아닙니다.",
-      "Some projects could not be read, so this list may be incomplete.",
+      "일부 페이지를 불러오지 못했습니다. 아래 목록은 전체가 아닙니다.",
+      "Some pages could not be read, so this list may be incomplete.",
+    ),
+    loadMore: () => copy("이전 파일 더 보기", "Load earlier files"),
+    loadingMore: () => copy("이전 파일 불러오는 중…", "Loading earlier files…"),
+    reachedEnd: () => copy(
+      "가장 오래된 파일까지 확인했습니다.",
+      "Reached the oldest stored file.",
     ),
     imagesTitle: () => copy("이미지는 저장되지 않습니다", "Images are not stored"),
     imagesBody: () => copy(
@@ -100,6 +110,11 @@
       "PADIEM Chat does not keep chat image uploads as a library. An image is used only for the request it was sent with, so earlier attachments cannot be reopened here. Stored document files appear in the Files tab.",
     ),
     project: (name) => copy(`프로젝트 ${name}`, `Project ${name}`),
+    unnamedProject: () => copy("프로젝트 이름 확인 불가", "project name unavailable"),
+    moreAvailable: () => copy(
+      "이보다 오래된 저장 파일이 있습니다.",
+      "Older stored files are available.",
+    ),
     meta: (chars, mediaType) => copy(
       `${mediaType} · ${chars.toLocaleString()}자`,
       `${mediaType} · ${chars.toLocaleString()} characters`,
@@ -112,6 +127,12 @@
     count: (total) => copy(
       `저장된 파일 ${total}개`,
       `${total} stored file${total === 1 ? "" : "s"}`,
+    ),
+    // The plain total is only truthful once the server reported no further page and
+    // every read succeeded; anything else says how much was actually confirmed.
+    countSoFar: (total) => copy(
+      `지금까지 확인한 파일 ${total}개`,
+      `${total} file${total === 1 ? "" : "s"} read so far`,
     ),
   };
 
@@ -126,10 +147,13 @@
   function invalidate() {
     generation += 1;
     loading = false;
+    loadingMore = false;
     outcome = "idle";
     rows = [];
-    truncated = false;
+    cursor = null;
+    hasMore = false;
     partialFailure = false;
+    complete = false;
     fileList.replaceChildren();
     imageList.replaceChildren();
     setNote("");
@@ -193,26 +217,40 @@
       return;
     }
     if (!rows.length) {
-      // A 20-project cap or a failed file read is NOT a truthful empty account.
-      setNote((truncated || partialFailure)
-        ? [TEXT.incompleteEmpty(), partialFailure ? TEXT.partial() : "",
-           truncated ? TEXT.truncated() : ""].filter(Boolean).join(" · ")
+      // An unfinished walk or a failed page read is NOT a truthful empty account.
+      setNote((!complete || partialFailure)
+        ? [TEXT.incompleteEmpty(), partialFailure ? TEXT.partial() : ""].filter(Boolean).join(" · ")
         : TEXT.empty());
+      if (hasMore) appendLoadMore();
       return;
     }
     setNote([
-      TEXT.count(rows.length),
+      complete ? TEXT.count(rows.length) : TEXT.countSoFar(rows.length),
       partialFailure ? TEXT.partial() : "",
-      truncated ? TEXT.truncated() : "",
+      complete ? TEXT.reachedEnd() : "",
     ].filter(Boolean).join(" · "));
     for (const file of rows) {
+      const label = typeof file.project_name === "string" && file.project_name
+        ? file.project_name
+        : TEXT.unnamedProject();
       fileList.appendChild(buildRow({
         title: file.name,
-        meta: TEXT.project(file.projectName),
+        meta: TEXT.project(label),
         detail: TEXT.meta(Number(file.content_chars) || 0, String(file.media_type || "")),
         action: { label: TEXT.open(), run: () => openProject(file.project_id) },
       }));
     }
+    if (hasMore) appendLoadMore();
+  }
+
+  function appendLoadMore() {
+    fileList.appendChild(buildRow({
+      title: TEXT.moreAvailable(),
+      action: {
+        label: loadingMore ? TEXT.loadingMore() : TEXT.loadMore(),
+        run: () => loadMore(),
+      },
+    }));
   }
 
   function renderImages() {
@@ -294,7 +332,9 @@
     }
   }
 
-  async function fetchList(url, key, seq) {
+  // Exactly one fetch site for this whole surface: every read is a bounded, owner-scoped
+  // page of the canonical project-file route.
+  async function fetchPage(url, seq) {
     const response = await fetch(url, {
       headers: { "Accept": "application/json" },
       credentials: "same-origin",
@@ -302,8 +342,29 @@
     });
     if (seq !== generation) return null;
     const data = await response.json().catch(() => null);
-    if (!response.ok || !data || !Array.isArray(data[key])) throw new Error("unavailable");
-    return data[key];
+    if (!response.ok || !data || !Array.isArray(data.files)) throw new Error("unavailable");
+    return data;
+  }
+
+  // Appends one page in the server's keyset order. A row already shown is never shown
+  // twice; a row the server did not send is never implied. Returning false means this
+  // generation was superseded, so no state moves at all.
+  async function readPage(after, seq) {
+    const query = after === null
+      ? `${OWNER_FILES_ENDPOINT}?limit=${OWNER_FILES_PAGE}`
+      : `${OWNER_FILES_ENDPOINT}?limit=${OWNER_FILES_PAGE}&cursor=${encodeURIComponent(after)}`;
+    const data = await fetchPage(query, seq);
+    if (data === null) return false;
+    const seen = new Set(rows.map((file) => file.id));
+    for (const item of data.files) {
+      if (!item || typeof item.id !== "string" || seen.has(item.id)) continue;
+      if (typeof item.name !== "string" || typeof item.project_id !== "string") continue;
+      seen.add(item.id);
+      rows.push(item);
+    }
+    hasMore = data.has_more === true;
+    cursor = typeof data.next_cursor === "string" ? data.next_cursor : null;
+    return true;
   }
 
   async function loadFiles() {
@@ -312,36 +373,19 @@
     loading = true;
     outcome = "idle";
     rows = [];
-    truncated = false;
+    cursor = null;
+    hasMore = false;
     partialFailure = false;
+    complete = false;
     render();
     try {
       if (!projectFilesReady) {
         outcome = "storage-off";
         return;
       }
-      const projects = await fetchList("/api/projects", "projects", seq);
-      if (projects === null) return;
-      truncated = projects.length > MAX_PROJECTS_READ;
-      const owned = projects.filter((item) => item && typeof item.id === "string");
-      const readable = owned.slice(0, MAX_PROJECTS_READ);
-      const names = new Map(readable.map((item) => [item.id, typeof item.name === "string" ? item.name : ""]));
-      const listings = await Promise.all([...names].map(async ([projectId, projectName]) => {
-        try {
-          const files = await fetchList(`/api/projects/${encodeURIComponent(projectId)}/files`, "files", seq);
-          if (files === null) return null;
-          return files
-            .filter((file) => file && typeof file.id === "string" && typeof file.name === "string")
-            .map((file) => ({ ...file, project_id: projectId, projectName }));
-        } catch (_) {
-          partialFailure = true;
-          return [];
-        }
-      }));
-      if (seq !== generation) return;
-      rows = listings.filter((listing) => Array.isArray(listing)).flat();
-      rows.sort((a, b) => String(b.updated_at || "").localeCompare(String(a.updated_at || "")));
+      if (!(await readPage(null, seq))) return;
       outcome = "ready";
+      complete = !hasMore && !partialFailure;
     } catch (_) {
       if (seq !== generation) return;
       outcome = "error";
@@ -350,6 +394,29 @@
         loading = false;
         if (isOpen() && activeTab === "files") render();
       }
+    }
+  }
+
+  // Walking back through the same keyset is a continuation of one read, not a new
+  // intent: it keeps the current generation, so a session flip mid-page still discards
+  // the result instead of appending another account's rows. A failed page keeps what is
+  // already shown and marks the listing not complete — never "all files loaded".
+  async function loadMore() {
+    if (!signedIn || loading || loadingMore || !hasMore || typeof cursor !== "string") return;
+    const seq = generation;
+    loadingMore = true;
+    if (isOpen() && activeTab === "files") render();
+    try {
+      if (!(await readPage(cursor, seq)) || seq !== generation) return;
+      complete = !hasMore && !partialFailure;
+    } catch (_) {
+      if (seq === generation) {
+        partialFailure = true;
+        complete = false;
+      }
+    } finally {
+      loadingMore = false;
+      if (seq === generation && isOpen() && activeTab === "files") render();
     }
   }
 
@@ -433,7 +500,9 @@
     isOpen,
     getOutcome: () => outcome,
     getRowCount: () => rows.length,
-    isTruncated: () => truncated,
+    hasMore: () => hasMore,
+    isComplete: () => complete,
     hasPartialFailure: () => partialFailure,
+    isLoadingMore: () => loadingMore,
   });
 })();

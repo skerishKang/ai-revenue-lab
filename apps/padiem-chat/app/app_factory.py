@@ -204,7 +204,11 @@ from .desktop_conversation_routes import (
 )
 from .grounding import GroundedChatService
 from .history import HistoryStore
-from .project_file_routes import project_file_detail, project_files_collection
+from .project_file_routes import (
+    owner_files_collection,
+    project_file_detail,
+    project_files_collection,
+)
 from .drive_case_folder_routes import (
     drive_case_folder_delete,
     drive_case_folder_put,
@@ -346,6 +350,9 @@ def create_app(
         Route("/api/connectors/google/calendar/activate-read", activate_google_calendar_read, methods=["POST"]),
         Route("/api/connectors/status", connectors_status, methods=["GET"]),
         Route("/api/projects", projects_collection, methods=["GET", "POST"]),
+        # #4489: one owner-scoped keyset-paginated read over every stored project file,
+        # so the Library can walk a full history without per-project fan-out.
+        Route("/api/project-files", owner_files_collection, methods=["GET"]),
         Route("/api/projects/{project_id}", project_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/projects/{project_id}/files", project_files_collection, methods=["GET", "POST"]),
         Route("/api/projects/{project_id}/files/{file_id}", project_file_detail, methods=["GET", "DELETE"]),

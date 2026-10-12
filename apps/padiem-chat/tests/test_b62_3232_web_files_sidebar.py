@@ -115,13 +115,25 @@ def test_library_entry_moves_out_of_app_js_into_the_module() -> None:
     assert "if (!projectsReady || !authState.authenticated || inFlight) return false;" in seam
 
 
-def test_library_reads_only_canonical_owner_scoped_lists() -> None:
+def test_library_reads_only_canonical_owner_scoped_pages() -> None:
     source = LIBRARY_JS.read_text(encoding="utf-8")
     code = "\n".join(
         line for line in source.splitlines() if not line.lstrip().startswith("//")
     )
-    assert 'fetch("/api/projects"' in code or '"/api/projects"' in code
-    assert "/api/projects/${encodeURIComponent(projectId)}/files" in code
+    # One bounded, owner-scoped keyset read and nothing else.
+    assert 'const OWNER_FILES_ENDPOINT = "/api/project-files";' in code
+    assert "limit=${OWNER_FILES_PAGE}" in code
+    assert "cursor=${encodeURIComponent(after)}" in code
+    # The per-project fan-out is gone: the Library no longer walks projects one by one,
+    # and an account's older history cannot be hidden behind a project cap again.
+    for removed in (
+        'fetch("/api/projects"',
+        "/api/projects/${",
+        "Promise.all",
+        "MAX_PROJECTS_READ",
+        "truncated",
+    ):
+        assert removed not in code, removed
     # No file detail, no bytes, no upload, no delete, no second authority.
     for forbidden in (
         "/files/${",
@@ -132,10 +144,7 @@ def test_library_reads_only_canonical_owner_scoped_lists() -> None:
         "createObjectURL",
     ):
         assert forbidden not in code, forbidden
-    assert code.count("await fetch(") == 1  # one shared list reader
-    # The fan-out is bounded, so a large account cannot issue an unbounded read.
-    assert "MAX_PROJECTS_READ" in code
-    assert "projects.length > MAX_PROJECTS_READ" in code
+    assert code.count("await fetch(") == 1  # one shared page reader
 
 
 def test_library_module_keeps_the_privacy_and_sink_boundaries() -> None:
@@ -298,13 +307,71 @@ async function tick(ms) {
 
 const requests = [];
 function jsonResponse(status, obj) { return { ok: status >= 200 && status < 300, status, json: async () => obj }; }
+function queryValue(u, name) {
+  const q = u.indexOf("?");
+  if (q < 0) return "";
+  for (const part of u.slice(q + 1).split("&")) {
+    const eq = part.indexOf("=");
+    if (eq > 0 && part.slice(0, eq) === name) return decodeURIComponent(part.slice(eq + 1));
+  }
+  return "";
+}
+function ownerFilesOf(session) {
+  let all = [];
+  if (session && Array.isArray(session.files)) all = session.files.slice();
+  else {
+    const table = (session && session.filesByProject) || {};
+    for (const pid of Object.keys(table)) all = all.concat(table[pid] || []);
+  }
+  // Newest first with an id tie-break: the same keyset order the server promises.
+  return all.sort((a, b) => (a.updated_at === b.updated_at
+    ? (a.id < b.id ? 1 : -1)
+    : (a.updated_at < b.updated_at ? 1 : -1)));
+}
+// Page tokens are handed out by this stub only. A client that invented its own position
+// is refused, which is what keeps the walk server-driven instead of client-guessed.
+const issuedTokens = new Map();
+let tokenSeq = 0;
+function pageOf(files, limit, cursor) {
+  let start = 0;
+  if (cursor) {
+    if (!issuedTokens.has(cursor)) return { rejected: true };
+    start = issuedTokens.get(cursor);
+  }
+  const cap = FIXTURE.pageCap ? Math.min(limit, FIXTURE.pageCap) : limit;
+  if (FIXTURE.emptyFirstPage && start === 0) {
+    if (!files.length) return { files: [], has_more: false, next_cursor: null };
+    const token = "tok-" + (++tokenSeq);
+    issuedTokens.set(token, 0);
+    return { files: [], has_more: true, next_cursor: token };
+  }
+  const page = files.slice(start, start + cap);
+  const next = start + cap;
+  let token = null;
+  if (next < files.length) {
+    token = "tok-" + (++tokenSeq);
+    issuedTokens.set(token, next);
+  }
+  return { files: page, has_more: next < files.length, next_cursor: token };
+}
 async function fetchImpl(url, opts) {
   opts = opts || {};
   const method = (opts.method || "GET").toUpperCase();
   const u = String(url);
   requests.push({ url: u, method });
   if (u.startsWith("/api/auth/status")) return jsonResponse(200, FIXTURE.auth);
+  if (method === "GET" && u.startsWith("/api/project-files")) {
+    const pages = requests.filter((r) => r.url.startsWith("/api/project-files")).length;
+    if (FIXTURE.failAfterPages && pages > FIXTURE.failAfterPages) {
+      return jsonResponse(503, { error: { code: "project_files_unavailable" } });
+    }
+    const limit = Number(queryValue(u, "limit") || "50");
+    const result = pageOf(ownerFilesOf(FIXTURE.sessions[FIXTURE.activeSession]), limit, queryValue(u, "cursor"));
+    if (result.rejected) return jsonResponse(400, { error: { code: "invalid_cursor" } });
+    return jsonResponse(200, result);
+  }
   if (method === "GET" && /\/api\/projects\/[^/]+\/files$/.test(u)) {
+    // Still served for the project dialog itself; the Library must not use it.
     const pid = decodeURIComponent(u.split("/")[3]);
     const table = FIXTURE.sessions[FIXTURE.activeSession].filesByProject || {};
     return jsonResponse(200, { files: table[pid] || [] });
@@ -343,6 +410,8 @@ function dispatchAuth(auth) {
 }
 function projectRequests() { return requests.filter((r) => r.url.startsWith("/api/projects")); }
 function fileRequests() { return requests.filter((r) => /\/api\/projects\/[^/]+\/files/.test(r.url)); }
+function ownerFileRequests() { return requests.filter((r) => r.url.startsWith("/api/project-files")); }
+function cursorRequests() { return ownerFileRequests().filter((r) => r.url.indexOf("cursor=") >= 0); }
 function clickEntry() { (byId.filesNavButton.listeners.click || []).forEach((fn) => fn({ preventDefault() {} })); }
 function clickTab(id) { (byId[id].listeners.click || []).forEach((fn) => fn({ preventDefault() {} })); }
 function rowButtons() {
@@ -363,6 +432,8 @@ function collect(root, needle) {
   walk(root);
   return out;
 }
+// The continuation affordance the module appends while the server reports more pages.
+const MORE_TITLE = "이보다 오래된 저장 파일이 있습니다.";
 function snapshot() {
   return {
     state: shell.dataset.state,
@@ -373,14 +444,19 @@ function snapshot() {
     note: byId.libraryNote.textContent,
     noteHidden: byId.libraryNote.hidden === true,
     rows: rowText(),
+    fileRows: rowText().filter((text) => text !== MORE_TITLE),
+    hasMoreRow: rowText().includes(MORE_TITLE),
     filesPanelShown: byId.libraryFilesPanel.hidden !== true,
     imagesPanelShown: byId.libraryImagesPanel.hidden !== true,
     imagesRows: collect(byId.libraryImageList, "library-item-title").length,
     imagesText: collect(byId.libraryImageList, "library-item-title").concat(collect(byId.libraryImageList, "library-item-detail")).map((el) => el.textContent).join("|"),
     imagesHasAction: collect(byId.libraryImageList, "library-item-action").length > 0,
     outcome: sandbox.PadiemChatLibrary.getOutcome(),
-    truncated: sandbox.PadiemChatLibrary.isTruncated(),
+    hasMore: sandbox.PadiemChatLibrary.hasMore(),
+    complete: sandbox.PadiemChatLibrary.isComplete(),
     partial: sandbox.PadiemChatLibrary.hasPartialFailure(),
+    ownerFileApiCalls: ownerFileRequests().length,
+    cursorCalls: cursorRequests().length,
     dialogOpen: byId.projectDialog.open === true,
     dialogTitle: byId.projectDialogTitle.textContent,
     projectFilesPanelHidden: byId.projectFilesPanel.hidden === true,
@@ -410,7 +486,9 @@ const PROJECT_B = { id: "pb", name: "PB", instructions: "", created_at: "2026-09
     s = snapshot();
     if (!s.viewHidden) fail("SIGNED_OUT_MUST_NOT_OPEN_VIEW");
     if (s.state === "library") fail("SIGNED_OUT_MUST_NOT_CHANGE_SURFACE");
-    if (s.projectApiCalls !== 0 || s.fileApiCalls !== 0) fail("SIGNED_OUT_MUST_ISSUE_NO_PROJECT_REQUESTS");
+    if (s.projectApiCalls !== 0 || s.fileApiCalls !== 0 || s.ownerFileApiCalls !== 0) {
+      fail("SIGNED_OUT_MUST_ISSUE_NO_PROJECT_REQUESTS");
+    }
   } else if (mode === "storage_off") {
     dispatchAuth({ loaded: true, authenticated: true, historyReady: true, projectFilesReady: false });
     await tick(30);
@@ -427,7 +505,7 @@ const PROJECT_B = { id: "pb", name: "PB", instructions: "", created_at: "2026-09
     if (s.outcome !== "storage-off") fail("OUTCOME_NOT_STORAGE_OFF:" + s.outcome);
     if (!/켜지지 않았습니다/.test(s.note)) fail("NOTE_MUST_EXPLAIN:" + s.note);
     // Honest unavailable must not be manufactured into a successful empty read.
-    if (s.fileApiCalls !== 0) fail("STORAGE_OFF_MUST_ISSUE_NO_FILE_REQUESTS");
+    if (s.fileApiCalls !== 0 || s.ownerFileApiCalls !== 0) fail("STORAGE_OFF_MUST_ISSUE_NO_FILE_REQUESTS");
     clickTab("libraryImagesTab");
     await tick(20);
     s = snapshot();
@@ -443,9 +521,15 @@ const PROJECT_B = { id: "pb", name: "PB", instructions: "", created_at: "2026-09
     await tick(60);
     let s = snapshot();
     if (s.outcome !== "ready") fail("OUTCOME_NOT_READY:" + s.outcome);
-    if (s.rows.length !== 1 || s.rows[0] !== "A 소유 문서") fail("ROWS:" + JSON.stringify(s.rows));
-    if (s.projectApiCalls < 1 || s.fileApiCalls < 1) fail("MUST_READ_CANONICAL_LISTS");
-    if (!/PA/.test(s.note) && !/1/.test(s.note)) fail("NOTE_MUST_COUNT:" + s.note);
+    if (s.fileRows.length !== 1 || s.fileRows[0] !== "A 소유 문서") fail("ROWS:" + JSON.stringify(s.fileRows));
+    if (s.ownerFileApiCalls !== 1) fail("MUST_READ_OWNER_FILE_PAGE_ONCE:" + s.ownerFileApiCalls);
+    // The per-project fan-out is gone: opening the Library must not read project files
+    // one project at a time any more.
+    if (s.fileApiCalls !== 0) fail("LIBRARY_MUST_NOT_FAN_OUT_PER_PROJECT:" + s.fileApiCalls);
+    if (s.hasMore || !s.complete) fail("SINGLE_PAGE_MUST_BE_COMPLETE");
+    if (s.hasMoreRow) fail("NO_CONTINUATION_ROW_WHEN_COMPLETE");
+    if (!/저장된 파일 1개/.test(s.note)) fail("NOTE_MUST_COUNT_TRUTHFULLY:" + s.note);
+    if (!/가장 오래된 파일까지/.test(s.note)) fail("NOTE_MUST_MARK_THE_END:" + s.note);
     const buttons = rowButtons();
     if (buttons.length !== 1) fail("ACTION_MISSING");
     buttons[0].click();
@@ -470,17 +554,59 @@ const PROJECT_B = { id: "pb", name: "PB", instructions: "", created_at: "2026-09
     s = snapshot();
     if (s.rows.some((name) => name.includes("A 소유"))) fail("STALE_OWNER_A_RENDERED:" + JSON.stringify(s.rows));
     if (s.rows.length !== 1 || s.rows[0] !== "B 소유 문서") fail("NEW_OWNER_B_MISSING:" + JSON.stringify(s.rows));
-  } else if (mode === "truncated_empty") {
+  } else if (mode === "incomplete_empty") {
+    // The server reported another page while this page carried no rows. That is not an
+    // empty account and must never be presented as one.
     dispatchAuth({ loaded: true, authenticated: true, historyReady: true, projectFilesReady: true });
     await tick(30);
     clickEntry();
     await tick(80);
     const s = snapshot();
-    if (!s.truncated) fail("PROJECT_LIMIT_NOT_REPORTED");
-    if (s.rows.length !== 0) fail("EXPECTED_NO_FILES");
-    if (!/최근 20개/.test(s.note) || !/전체 목록을 확인한 것은 아닙니다/.test(s.note)) {
-      fail("INCOMPLETE_SCOPE_HIDDEN:" + s.note);
+    if (s.fileRows.length !== 0) fail("EXPECTED_NO_ROWS_ON_FIRST_PAGE");
+    if (s.hasMore !== true || s.complete !== false) fail("INCOMPLETE_PAGE_STATE:" + JSON.stringify([s.hasMore, s.complete]));
+    if (!/전체 목록을 확인한 것은 아닙니다/.test(s.note)) fail("INCOMPLETE_SCOPE_HIDDEN:" + s.note);
+    if (/저장된 파일 0개/.test(s.note)) fail("MUST_NOT_COUNT_AS_A_TOTAL:" + s.note);
+    if (!s.hasMoreRow) fail("CONTINUATION_AFFORDANCE_MISSING");
+  } else if (mode === "walk_to_end") {
+    dispatchAuth({ loaded: true, authenticated: true, historyReady: true, projectFilesReady: true });
+    await tick(30);
+    clickEntry();
+    await tick(80);
+    let s = snapshot();
+    if (s.fileRows.length !== 1 || !s.hasMore || s.complete) fail("FIRST_PAGE:" + JSON.stringify(s.fileRows));
+    if (!/지금까지 확인한 파일 1개/.test(s.note)) fail("PARTIAL_COUNT_MUST_NOT_CLAIM_TOTAL:" + s.note);
+    for (let step = 0; step < 4; step += 1) {
+      if (!s.hasMore) break;
+      const actions = rowButtons();
+      if (!actions.length) fail("CONTINUATION_LOST_AT_STEP:" + step);
+      actions[actions.length - 1].click();
+      await tick(80);
+      s = snapshot();
     }
+    if (s.fileRows.length !== 3) fail("WALK_ROWS:" + JSON.stringify(s.fileRows));
+    if (new Set(s.fileRows).size !== 3) fail("WALK_DUPLICATED_ROWS:" + JSON.stringify(s.fileRows));
+    if (s.hasMore || !s.complete) fail("WALK_NOT_FINISHED");
+    if (s.cursorCalls !== 2) fail("WALK_MUST_ECHO_SERVER_CURSORS:" + s.cursorCalls);
+    if (s.ownerFileApiCalls !== 3) fail("WALK_PAGE_COUNT:" + s.ownerFileApiCalls);
+    if (!/저장된 파일 3개/.test(s.note) || !/가장 오래된 파일까지/.test(s.note)) fail("FINAL_NOTE:" + s.note);
+    if (s.hasMoreRow) fail("CONTINUATION_ROW_MUST_LEAVE_AT_THE_END");
+  } else if (mode === "page_failure") {
+    dispatchAuth({ loaded: true, authenticated: true, historyReady: true, projectFilesReady: true });
+    await tick(30);
+    clickEntry();
+    await tick(80);
+    let s = snapshot();
+    if (s.fileRows.length !== 1 || !s.hasMore) fail("FIRST_PAGE:" + JSON.stringify(s.fileRows));
+    const actions = rowButtons();
+    actions[actions.length - 1].click();
+    await tick(80);
+    s = snapshot();
+    // A failed page keeps what was already confirmed, but the listing is no longer
+    // allowed to read as complete, and the retry path must stay reachable.
+    if (s.fileRows.length !== 1) fail("FAILED_PAGE_MUST_KEEP_ROWS:" + JSON.stringify(s.fileRows));
+    if (s.partial !== true || s.complete !== false) fail("FAILED_PAGE_STATE:" + JSON.stringify([s.partial, s.complete]));
+    if (!/전체가 아닙니다/.test(s.note)) fail("FAILED_PAGE_NOTE:" + s.note);
+    if (!s.hasMoreRow) fail("RETRY_PATH_LOST");
   } else if (mode === "account_switch") {
     dispatchAuth({ loaded: true, authenticated: true, historyReady: true, projectFilesReady: true });
     await tick(30);
@@ -519,12 +645,18 @@ const PROJECT_B = { id: "pb", name: "PB", instructions: "", created_at: "2026-09
 """
 
 
-def _run_harness(mode: str, auth: dict, sessions: dict) -> dict:
+def _run_harness(mode: str, auth: dict, sessions: dict, options: dict | None = None) -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required for the behavioral harness"
     harness_path = ROOT / "tests" / f"_b62_4489_behavior_harness_{mode}.js"
     harness_path.write_text(_HARNESS, encoding="utf-8")
-    fixture = json.dumps({"mode": mode, "auth": auth, "activeSession": "a", "sessions": sessions})
+    fixture = json.dumps({
+        "mode": mode,
+        "auth": auth,
+        "activeSession": "a",
+        "sessions": sessions,
+        **(options or {}),
+    })
     try:
         proc = subprocess.run(
             [node, str(harness_path), str(APP_JS), str(LIBRARY_JS), str(CAPABILITIES_JS), str(DOCUMENT_BINARY_JS), fixture],
@@ -597,15 +729,65 @@ def test_same_flag_account_switch_drops_stale_owner_rows_without_logout_event() 
     _run_harness("account_switch_same_flags", _SIGNED_IN_AUTH, _SESSIONS)
 
 
-def test_no_files_from_first_twenty_projects_never_claims_complete_empty_library() -> None:
-    sessions = {
-        "a": {
-            "projects": [
-                {"id": f"project_{index}", "name": f"Project {index}"}
-                for index in range(21)
-            ],
-            "filesByProject": {},
-        },
-        "b": _SESSIONS["b"],
-    }
-    _run_harness("truncated_empty", _SIGNED_IN_AUTH, sessions)
+_FILE_A1 = {
+    "id": "file_a1",
+    "project_id": "pa",
+    "name": "A 문서 최신",
+    "media_type": "text/plain",
+    "content_chars": 5,
+    "created_at": "2026-09-03T00:00:00Z",
+    "updated_at": "2026-09-03T00:00:00Z",
+}
+_FILE_A2 = {
+    "id": "file_a2",
+    "project_id": "pa",
+    "name": "A 문서 중간",
+    "media_type": "text/plain",
+    "content_chars": 6,
+    "created_at": "2026-09-02T00:00:00Z",
+    "updated_at": "2026-09-02T00:00:00Z",
+}
+_FILE_A3 = {
+    "id": "file_a3",
+    "project_id": "pa",
+    "name": "A 문서 이전",
+    "media_type": "text/plain",
+    "content_chars": 7,
+    "created_at": "2026-09-01T00:00:00Z",
+    "updated_at": "2026-09-01T00:00:00Z",
+}
+_PAGE_SESSIONS = {
+    "a": {
+        "projects": [_PROJECT_A],
+        "files": [_FILE_A1, _FILE_A2, _FILE_A3],
+        "filesByProject": {"pa": [_FILE_A1, _FILE_A2, _FILE_A3]},
+    },
+    "b": _SESSIONS["b"],
+}
+
+
+def test_empty_first_page_with_more_pending_is_never_an_empty_library() -> None:
+    result = _run_harness(
+        "incomplete_empty", _SIGNED_IN_AUTH, _PAGE_SESSIONS, {"emptyFirstPage": True}
+    )
+    assert result["snapshot"]["hasMore"] is True
+    assert result["snapshot"]["complete"] is False
+
+
+def test_cursor_walk_reaches_the_oldest_file_exactly_once() -> None:
+    result = _run_harness("walk_to_end", _SIGNED_IN_AUTH, _PAGE_SESSIONS, {"pageCap": 1})
+    snapshot = result["snapshot"]
+    assert snapshot["complete"] is True
+    assert snapshot["hasMore"] is False
+    assert len(snapshot["fileRows"]) == 3
+    assert len(set(snapshot["fileRows"])) == 3
+
+
+def test_a_failed_page_never_reports_the_walk_as_finished() -> None:
+    result = _run_harness(
+        "page_failure", _SIGNED_IN_AUTH, _PAGE_SESSIONS, {"pageCap": 1, "failAfterPages": 1}
+    )
+    snapshot = result["snapshot"]
+    assert snapshot["complete"] is False
+    assert snapshot["partial"] is True
+    assert len(snapshot["fileRows"]) == 1
