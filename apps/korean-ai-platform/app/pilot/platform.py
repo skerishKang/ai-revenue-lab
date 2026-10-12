@@ -291,9 +291,10 @@ async def _read_bounded_body(response: httpx.Response, *, cap: int = MAX_RESPONS
 
     Byte resource guard, not a model output ceiling: healthy answers under the
     cap decode exactly as before. A declared Content-Length over the cap is
-    rejected before any body byte is pulled; otherwise bytes accumulate until
-    the cap trips, so an oversized or lying upstream never fully buffers into
-    worker RAM. Raises UpstreamResponseTooLarge (callers must not retry it).
+    rejected before any body byte is pulled; otherwise each chunk is checked
+    BEFORE appending, so an oversized chunk is not copied into this helper's
+    accumulator. Upstream decoding and total Worker memory are outside this
+    bound. Raises UpstreamResponseTooLarge (callers must not retry it).
     """
     declared = response.headers.get("content-length")
     if declared is not None:
@@ -304,9 +305,9 @@ async def _read_bounded_body(response: httpx.Response, *, cap: int = MAX_RESPONS
             pass  # untrusted header; enforce on actual bytes instead
     buf = bytearray()
     async for chunk in response.aiter_bytes():
-        buf += chunk
-        if len(buf) > cap:
+        if len(chunk) > cap - len(buf):
             raise UpstreamResponseTooLarge(cap)
+        buf += chunk
     return bytes(buf)
 
 
