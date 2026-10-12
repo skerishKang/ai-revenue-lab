@@ -39,11 +39,15 @@ class Identity:
         self.authorization_count = 0
         self.fail_reauthorization = False
         self.fail_bind = False
+        self.withdraw_during_issue = False
 
     async def resolve_connector_enrollment_consent_for_device(self, *, session_id, device_id):
         self.calls.append(("consent", session_id, device_id))
         assert device_id == CONSENT["device_id"]
-        return dict(CONSENT)
+        current = dict(CONSENT)
+        if self.withdraw_during_issue and sum(call[0] == "consent" for call in self.calls) >= 2:
+            current["withdrawn_at"] = NOW.isoformat()
+        return current
 
     async def bind_connector_enrollment_challenge(self, *, session_id, challenge_id, expires_at):
         self.calls.append(("bind", session_id, challenge_id, expires_at))
@@ -113,7 +117,7 @@ def test_issue_binds_challenge_to_original_session_before_releasing_code():
     assert result["pairing_code"] == "f"*32
     assert result["challenge"]["challenge_id"] == CHALLENGE["challenge_id"]
     assert result["dispatch_authorized"] is False
-    assert [x[0] for x in identity.calls] == ["consent", "bind"]
+    assert [x[0] for x in identity.calls] == ["consent", "consent", "bind"]
     assert [x[0] for x in broker.calls] == ["issue"]
 
 
@@ -125,6 +129,18 @@ def test_issue_fails_without_releasing_code_if_session_binding_cannot_persist():
             canonical_session_id="session.original.1", device_id="device.1"
         ))
     assert len(broker.calls) == 1  # an orphan challenge exists but no code is returned
+
+
+def test_issue_does_not_release_code_if_consent_is_withdrawn_after_challenge_creation():
+    identity, broker = Identity(), Broker()
+    identity.withdraw_during_issue = True
+    with pytest.raises(IdentityBridgeError) as exc:
+        asyncio.run(issue_host(identity, broker).issue(
+            canonical_session_id="session.original.1", device_id="device.1"
+        ))
+    assert exc.value.code == "enrollment_consent_changed_during_issue"
+    assert [x[0] for x in broker.calls] == ["issue"]  # challenge is left unbound and unusable
+    assert [x[0] for x in identity.calls] == ["consent", "consent"]
 
 
 def test_redeem_does_not_consume_challenge_without_protected_handoff_ready():
