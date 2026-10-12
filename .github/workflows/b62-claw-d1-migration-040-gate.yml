@@ -101,6 +101,7 @@ jobs:
       contents: read
     outputs:
       schema_state: ${{ steps.schema.outputs.schema_state }}
+      db_fingerprint: ${{ steps.binding.outputs.db_fingerprint }}
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -122,6 +123,7 @@ jobs:
           echo 'READONLY_EXACT_MAIN_SHA=PASS'
 
       - name: Resolve live PADIEM_CHAT_DB binding without emitting identifiers
+        id: binding
         shell: bash
         run: |
           set -euo pipefail
@@ -150,6 +152,9 @@ jobs:
           test -n "${DB_ID}"
           echo "::add-mask::${DB_ID}"
           echo "DB_ID=${DB_ID}" >> "${GITHUB_ENV}"
+          fingerprint="$(printf %s "${DB_ID}" | sha256sum | cut -d' ' -f1)"
+          test -n "${fingerprint}"
+          echo "db_fingerprint=${fingerprint}" >> "${GITHUB_OUTPUT}"
           echo 'LIVE_PADIEM_CHAT_DB_DERIVED=PASS'
           echo 'D1_IDENTIFIER_OUTPUT=0'
 
@@ -193,6 +198,7 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       CONFIRMATION: ${{ inputs.confirmation }}
       READONLY_SCHEMA_STATE: ${{ needs.cloudflare-readonly.outputs.schema_state }}
+      READONLY_DB_FINGERPRINT: ${{ needs.cloudflare-readonly.outputs.db_fingerprint }}
     steps:
       - name: Require explicit migration authorization
         shell: bash
@@ -262,9 +268,52 @@ jobs:
           echo "DB_ID=${DB_ID}" >> "${GITHUB_ENV}"
           echo 'PREMUTATION_LIVE_PADIEM_CHAT_DB_DERIVED=PASS'
           echo 'D1_IDENTIFIER_OUTPUT=0'
+          fingerprint="$(printf %s "${DB_ID}" | sha256sum | cut -d' ' -f1)"
+          test -n "${READONLY_DB_FINGERPRINT}"
+          if [ "${fingerprint}" != "${READONLY_DB_FINGERPRINT}" ]; then
+            echo 'D1_BINDING_CHANGED_AFTER_READONLY=STOP' >&2
+            exit 1
+          fi
+          echo 'D1_BINDING_IDENTITY_STABLE=PASS'
 
+      # #4522 CENTRAL review: environment approval or concurrent changes may
+      # invalidate the original read-only pre_040 proof. Re-read from the
+      # exact same Worker-bound D1 immediately before a single mutation.
+      - name: Recheck identical D1 and schema immediately before SQL mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${DB_ID}"
+          test -n "${READONLY_DB_FINGERPRINT}"
+          fingerprint="$(printf %s "${DB_ID}" | sha256sum | cut -d' ' -f1)"
+          test "${fingerprint}" = "${READONLY_DB_FINGERPRINT}"
+          query="${RUNNER_TEMP}/b62-d1-040-premutation-schema-query.json"
+          python - "${query}" <<'PY'
+          import json, sys
+          sql = """SELECT name, type, sql FROM sqlite_master WHERE name='claw_web_xlsx_p01_decision_receipts';
+          PRAGMA table_info(claw_web_xlsx_p01_decision_receipts);"""
+          with open(sys.argv[1], 'w', encoding='utf-8') as handle:
+              json.dump({'sql': sql}, handle)
+          PY
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          response="${RUNNER_TEMP}/b62-d1-040-premutation-schema-result.json"
+          curl -fsS -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${query}" -o "${response}"
+          evidence="$(python .github/scripts/b62_d1_migration_040_schema.py "${response}")"
+          case "${READONLY_SCHEMA_STATE}:${evidence}" in
+            'pre_040:B62_D1_MIGRATION_040_SCHEMA=PRE_040') now=pre_040 ;;
+            'pre_040:B62_D1_MIGRATION_040_SCHEMA=EXACT') now=exact ;;
+            'exact:B62_D1_MIGRATION_040_SCHEMA=EXACT') now=exact ;;
+            *) echo 'D1_PREMUTATION_SCHEMA_DRIFT=STOP' >&2; exit 1 ;;
+          esac
+          echo "PREMUTATION_SCHEMA_STATE=${now}" >> "${GITHUB_ENV}"
+          echo 'D1_SCHEMA_PREMUTATION_RECHECK=PASS'
+          echo 'APPLICATION_ROW_READ=0'
+          echo 'D1_IDENTIFIER_OUTPUT=0'
+          echo 'PRODUCTION_MUTATION=0'
       - name: Apply only the additive migration 040 when absent
-        if: ${{ env.READONLY_SCHEMA_STATE == 'pre_040' }}
+        if: ${{ env.PREMUTATION_SCHEMA_STATE == 'pre_040' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -275,12 +324,10 @@ jobs:
           import json, sys
           sql = open(sys.argv[1], encoding='utf-8').read()
           statement = 'ALTER TABLE claw_web_xlsx_p01_decision_receipts ADD COLUMN released_at TEXT;'
-          if statement not in sql:
-              raise SystemExit('migration 040 additive column contract missing')
-          upper = sql.upper()
-          for keyword in ('DROP', 'DELETE', 'UPDATE', 'INSERT'):
-              if keyword in upper:
-                  raise SystemExit('migration 040 is not additive-only')
+          statements = [line.strip() for line in sql.splitlines()
+                        if line.strip() and not line.lstrip().startswith('--')]
+          if statements != [statement]:
+              raise SystemExit('migration 040 is not exactly one reviewed additive statement')
           with open(sys.argv[2], 'w', encoding='utf-8') as handle:
               json.dump({'sql': sql}, handle)
           PY
@@ -294,7 +341,7 @@ jobs:
           echo 'PRODUCTION_MUTATION=1'
 
       - name: Record no-op when migration 040 is already exact
-        if: ${{ env.READONLY_SCHEMA_STATE == 'exact' }}
+        if: ${{ env.PREMUTATION_SCHEMA_STATE == 'exact' }}
         run: |
           echo 'B62_D1_MIGRATION_040=SKIPPED_ALREADY_APPLIED'
           echo 'PRODUCTION_MUTATION=0'
