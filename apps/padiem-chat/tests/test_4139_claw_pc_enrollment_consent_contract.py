@@ -98,6 +98,11 @@ eq(okGrant.state, "GRANTED", "grant state");
 eq(okGrant.dispatchAuthorized, false, "never dispatch authorized");
 eq(okGrant.online, false, "consent is never ONLINE");
 eq(okGrant.consentId, "consent-1", "consent id projected");
+// A success without a canonical consent ID cannot be safely revoked or correlated.
+eq(api.projectGrantReceipt({ ok: true, consent: { device_id: "pc-1", dispatch_authorized: false } }, "pc-1"),
+   { accepted: false, reason: "consent_receipt_invalid" }, "missing consent id refused");
+eq(api.projectGrantReceipt({ ok: true, consent: { device_id: "pc-1", consent_id: "invalid id", dispatch_authorized: false } }, "pc-1"),
+   { accepted: false, reason: "consent_receipt_invalid" }, "invalid consent id refused");
 
 // --- revoke receipt ---------------------------------------------------------
 eq(api.projectRevokeReceipt({ ok: true, consent: { consent_id: "c1", dispatch_authorized: false } }, "c1").state,
