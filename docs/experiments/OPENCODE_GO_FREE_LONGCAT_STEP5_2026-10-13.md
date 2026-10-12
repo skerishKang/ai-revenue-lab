@@ -33,10 +33,23 @@ transport or hosting request limits**. No provider or full-path limit was
 measured; a source-inspection result must not be reported as an unlimited
 B14 or general-Free-chat guarantee.
 
-Caveat: `https://docs.opencode.ai/docs/go/` (cited as registry source)
-returned 404 on 2026-10-13; evidence below comes from the accessible
-`https://dev.opencode.ai/v2/docs/console/go/` and
-`https://opencode.ai/inference/go/v1/models`.
+Official-document cross-check (2026-10-13, CENTRAL review):
+- `https://docs.opencode.ai/docs/go/` is currently accessible and advertises
+  LongCat 2.5 Preview Free, but its visible current roster **does not list**
+  Step 5. Earlier LOCAL3's 404 observation is retained as a per-client
+  observation, **not** a current claim that the document universally 404s.
+- `https://dev.opencode.ai/v2/docs/console/go/` currently lists **both**
+  LongCat 2.5 Preview Free and Step 5 Preview Free as limited-time free.
+  The two public pages are not identical; **do not infer current account-level
+  Step 5 API entitlement or live availability** from either static list.
+- OpenCode Go explicitly says the service is designed for OpenCode or **other
+  coding agents making comparable requests**. That constraint is distinct
+  from the zero-dollar token price: **do not assign either model to unrestricted
+  PADIEM general-purpose Free Chat**, even with a successful coding-agent
+  technical probe, until the provider permits that intended use in writing.
+- Official model pricing/usage statements do not document maximum accepted
+  prompt tokens, per-minute concurrency, or server overload isolation.
+  Those remain UNKNOWN in this evaluation.
 
 ## Official trial-period caveats (dated 2026-10-13)
 
@@ -100,7 +113,10 @@ Harness: `apps/korean-ai-platform/tests/test_opencode_go_free_longcat_step5_eval
 3. Step 5 busy/overload reports (owner observation; separately recorded Kilo
    history is NOT OpenCode Go measured evidence) plus
    "limited time / Unlimited" promo wording give no capacity assurance.
-4. Safe user-facing error copy (no secrets, no raw body):
+4. Usage-policy gate: Go coding-agent traffic only unless provider explicitly
+   authorizes general consumer chat; *model registration and Free labeling do
+   not grant unrestricted PADIEM Chat access*.
+5. Safe user-facing error copy (no secrets, no raw body):
    - 429: "현재 무료 모델 사용량이 많습니다. 잠시 후 다시 시도해 주세요."
    - 5xx/timeout: "모델 서버가 일시적으로 응답하지 않습니다. 잠시 후 다시 시도해 주세요."
    - 403: "이 모델을 사용할 권한이 없습니다. 관리자에게 문의해 주세요."
