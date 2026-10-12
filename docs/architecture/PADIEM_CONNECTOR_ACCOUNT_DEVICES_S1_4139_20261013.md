@@ -1,6 +1,6 @@
 # PADIEM account-wide My Devices — CENTRAL #4139 / draft #4476
 
-**Stage:** Source-only S1, unmounted. **Primary user objective:** one enrolled
+**Stage:** Source-only S1, unmounted. **Brand-separation correction:** PADIEM and B66 Quote remain distinct visible customer services; shared backend does not imply shared customer account or device visibility. `PADIEM_CONNECTOR_BRAND_SEPARATION_4139_20261013.md` supersedes any earlier wording suggesting one unified customer-facing portal. **Primary infrastructure objective:** one enrolled
 Windows PC available from PADIEM Quote B66, Claw B54, Chat B62, Engine and future
 products **only where independently authorized**. Registration is an account
 capability; using a PC is a separate product+P01 capability.
