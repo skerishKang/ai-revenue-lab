@@ -109,7 +109,7 @@ PADIEM 웹: 수정 XLSX/PDF 미리보기·다운로드·실행/오류 이력
 |---|---|---|
 | S0 **현존** | Broker 기기 조회, Claw 조회 UI, 기본 OFF 제품 권한 계약, B66 embedded 숨김 PC 패널 | CI·코드 존재는 출하 증거 아님 |
 | S1 **우선** | Windows Installer/트레이의 안정화, 최초 검증된 PADIEM 인증·기기 등록·재연결 | Windows 실제 PC 2대, 로그아웃/재설치/철회/오프라인, owner/workspace 분리 |
-| S2 | 서버에서 제품별 목록/권한 API, B66/Claw/Chat에서 동일 PC 보기 | 기본 OFF 유지, 사용자가 타 PC 조회 못함, 배포된 인증 GET/브라우저 E2E |
+| S2 **부분 구현** | B66 전용 서버 PC 목록 권한 #4439 병합, Claw API 존재. Chat/Engine 제품별 연결 및 운영 정책 공급원은 후속 | **기본 OFF 유지**, 운영 grant·실제 인증 PC·배포 E2E 미완료 |
 | S3 | **웹 XLSX→Connector 제한된 Pull→결과 웹 반환** | Scoped artifact ticket, 해시·크기, READ/WRITE 승인 별도, 실패·취소·중복 처리, Windows Excel 실작업 증거 |
 | S4 | Connector 전용 Browser Use/profile + 사람 로그인·MFA 인계 | 기존 browser.control + P01 안전 게이트, 다른 크롬 개인세션 비접근, 실제 사이트 허용 범위 QA |
 | S5 | Native GUI(HWP/ERP/Excel UI), 선택 VM/Cloud PC | 동시 사용 간섭 방지, 라이선스·비용 검증, 안전한 중단/관찰 및 승인 |
@@ -148,7 +148,7 @@ LOCAL2 보고에 따르면 `D:\padiem-hark-xlsxadopt-3936-261012-7\evidence\hark
 - Browser Use 전용 프로필·신뢰되는 작업 명령: #3782, #3783.
 - 고객 홈·전 제품 관리자·제품별 UI: #4428.
 - 제품/로컬 공통 권한 계약: #4429 (기본 OFF, preflight only, 병합).
-- B66 embedded UI: #4430 (병합, 제품별 서버 grant 구현 전 기본 숨김).
+- B66 embedded UI: #4430 (병합). B66 전용 서버 API·워크스페이스별 제품 권한 검증 #4439 (2026-10-12 병합, `5db28a4ef6b0706b761623e187a0510eebc42ffc`). `/api/b66/connect/devices`를 사용하며 canonical Claw/Broker read projection을 재사용한다. 운영 Worker는 아직 신뢰된 B66 grant를 주입하지 않아 **기본 OFF/패널 숨김**. 인증된 실제 PC 등록과 운영 grant 활성화 및 E2E는 아직 미증명.
 - Hark adopt 실사용 차단: #3936.
 
 추가로 웹→PC 자동 Pull·로컬 XLSX 처리·웹 결과 반환의 구체적인 독립 수용 과제는 [#4434](https://github.com/skerishKang/ai-revenue-lab/issues/4434)에서 추적한다. 기존 #3580의 로컬→클라우드 파일 경로와 중복 구현하지 않는다.
