@@ -163,9 +163,10 @@ def test_grant_and_withdraw_are_canonical_owner_scoped_and_idempotently_refused(
     grant = call("grant_connector_enrollment_consent", fake, grant_payload())
     assert grant["ok"] is True
     consent = grant["consent"]
+    observed = datetime.now(timezone.utc) + timedelta(seconds=1)
     assert consent["device_id"] == DEVICE
     assert consent["dispatch_authorized"] is False and consent["grants_write"] is False
-    assert records.current_for_device(owner_subject_id=SUBJECT, device_id=DEVICE, now=NOW) is not None
+    assert records.current_for_device(owner_subject_id=SUBJECT, device_id=DEVICE, now=observed) is not None
 
     # A different user/session cannot grant or revoke this owner's consent.
     canonical.session = AuthSessionSnapshot(
@@ -187,7 +188,8 @@ def test_grant_and_withdraw_are_canonical_owner_scoped_and_idempotently_refused(
     revoked = call("revoke_connector_enrollment_consent", fake, revoke_payload(consent["consent_id"]))
     assert revoked["ok"] is True
     assert revoked["consent"]["dispatch_authorized"] is False
-    assert records.current_for_device(owner_subject_id=SUBJECT, device_id=DEVICE, now=NOW) is None
+    observed = datetime.now(timezone.utc) + timedelta(seconds=1)
+    assert records.current_for_device(owner_subject_id=SUBJECT, device_id=DEVICE, now=observed) is None
     again = call("revoke_connector_enrollment_consent", fake, revoke_payload(consent["consent_id"]))
     assert again["ok"] is False
 
