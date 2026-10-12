@@ -143,6 +143,10 @@
 
   let sequence = 0;
   let pending = null;
+  // Suppress every incidental status refresh while the explicit logout POST
+  // is unresolved: the previous server cookie may still be valid, but its
+  // owner must never reappear during this transition.
+  let signingOut = false;
   let signedInName = null;
   // What the page currently shows. A language change repaints from this, so a
   // translated page can never mix two languages.
@@ -209,7 +213,10 @@
     refs.account.hidden = true;
     refs.accountName.textContent = signedInName === null ? "" : signedInName;
     refs.status.textContent = "";
-    if (!view) return;
+    if (!view) {
+      if (signingOut) refs.status.textContent = t.signingOut;
+      return;
+    }
 
     if (view.kind === "gate") {
       refs.gateTitle.textContent = t.gateTitle;
@@ -276,6 +283,7 @@
   }
 
   async function load() {
+    if (signingOut) return;
     invalidatePending();
     const controller = new AbortController();
     pending = controller;
@@ -309,6 +317,8 @@
   }
 
   async function signOut() {
+    if (signingOut) return;
+    signingOut = true;
     // Clear the previous owner's identity and catalog BEFORE the request, so a
     // slow or unresolved logout cannot leave stale data on screen.
     invalidatePending();
@@ -327,6 +337,7 @@
     } catch {
       unconfirmed = true;
     } finally {
+      signingOut = false;
       refs.signOut.disabled = false;
     }
     // Never claim the session was revoked: re-read the real server state and
