@@ -125,16 +125,12 @@ class Default(WorkerEntrypoint):
 
     async def register_binding(self, payload: dict) -> dict:
         return await self._stub().register_binding(payload)
-
     async def rotate_credential(self, payload: dict) -> dict:
         return await self._stub().rotate_credential(payload)
-
     async def revoke_binding(self, payload: dict) -> dict:
         return await self._stub().revoke_binding(payload)
-
     async def open_session(self, payload: dict) -> dict:
         return await self._stub().open_session(payload)
-
     # #3127: only atomic enqueue+material is public through this gateway.
     async def enqueue_command_with_material(self, payload: dict, material: dict) -> dict:
         return await self._stub().enqueue_command_with_material(payload, material)
@@ -172,15 +168,13 @@ class Default(WorkerEntrypoint):
     async def read_office_artifact_part(self, payload: dict) -> dict:
         return await self._stub().read_office_artifact_part(payload)
 
+    # #4139: private canonical Broker DO enrollment passthroughs only.
     async def install_pairing_schema(self, payload: dict) -> dict:
         return await self._stub().install_pairing_schema(payload)
-
     async def issue_enrollment_challenge(self, payload: dict) -> dict:
         return await self._stub().issue_enrollment_challenge(payload)
-
     async def get_enrollment_binding(self, payload: dict) -> dict:
         return await self._stub().get_enrollment_binding(payload)
-
     async def redeem_enrollment(self, payload: dict) -> dict:
         return await self._stub().redeem_enrollment(payload)
 
@@ -236,25 +230,18 @@ PRIVATE_DEVICE_HTTP_SERVICE = True
 SELF_ASSERTED_ACCOUNT_WORKSPACE_AUTHORITY = False
 ADMIN_BROKER_RPC_PUBLIC = False
 PUBLIC_ENDPOINT_ADDED = False
-# #3094 narrow read-only device-fact projection (see the durable runtime for
-# the fact vocabulary; ONLINE is derived by the B62 consumer's canonical rule).
+# #3094 device-truth facts; ONLINE is derived only by the B62 consumer.
 NARROW_DEVICE_TRUTH_PROJECTION = True
 DEVICE_TRUTH_VOCABULARY_HAS_ONLINE = False
 DEVICE_TRUTH_SECOND_ONLINE_AUTHORITY = False
 DEVICE_TRUTH_MUTATION = False
-# #4139 adds the read-only owner-scoped multi-device directory passthrough per
-# entrypoint class, exactly like #3094's device_truth: thin forwarding only.
-# Its contract markers live in the durable runtime module. No public route is
-# added; the directory is a private Service Binding RPC like every other read.
+# #4139 owner-scoped directory: private read-only Service Binding; no public route.
 NARROW_DEVICE_DIRECTORY_PROJECTION = True
 DEVICE_DIRECTORY_VOCABULARY_HAS_ONLINE = False
 DEVICE_DIRECTORY_SECOND_ONLINE_AUTHORITY = False
 DEVICE_DIRECTORY_SECOND_DEVICE_AUTHORITY = False
 DEVICE_DIRECTORY_MUTATION = False
-# #3436 B2c adds the read-only device-session authentication passthrough per
-# entrypoint class, exactly like #3094's device_truth and #3139's terminal
-# result: thin forwarding only. Its contract markers live in the durable
-# runtime module.
+# #3436 B2c device-session auth: existing private read-only RPC.
 PRODUCTION_DEPLOYMENT = False
 PRODUCTION_ROUTE_CONFIGURED = False
 PRODUCTION_SECRET_BOUND = False
