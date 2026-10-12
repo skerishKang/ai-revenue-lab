@@ -297,17 +297,19 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     await page.set_viewport_size({"width": width, "height": height})
     await page.goto(BASE_URL, wait_until="domcontentloaded", timeout=30_000)
 
+    # #4462: the duplicate sidebar Projects button is removed; the lower
+    # projects section + create button are the single project surface.
     await page.wait_for_function(
-        "expected => document.getElementById('loginButton')?.textContent.trim() === '로그아웃' && document.getElementById('accountName')?.textContent.trim() === expected && document.getElementById('projectsNavButton')?.disabled === false",
+        "expected => document.getElementById('loginButton')?.textContent.trim() === '로그아웃' && document.getElementById('accountName')?.textContent.trim() === expected && document.getElementById('projectsNavButton') === null && document.getElementById('projectsSection')?.hidden === false",
         arg=USER_NAME,
         timeout=5_000,
     )
     await _open_sidebar_if_mobile(page, mobile)
-    await _wait_text(page, "#projectsBadge", "새로 만들기")
+    await _wait_text(page, "#projectsEmpty", "아직 프로젝트가 없습니다")
     await _assert_no_overflow(page, f"{name}-empty-projects")
     await page.screenshot(path=str(OUT_DIR / f"{name}-projects-empty.png"), full_page=True)
 
-    await page.locator("#projectsNavButton").click()
+    await page.locator("#projectCreateButton").click()
     await page.locator("#projectDialog").wait_for(state="visible")
     await page.locator("#projectNameInput").fill(PROJECT_NAME)
     await page.locator("#projectInstructionsInput").fill(PROJECT_INSTRUCTIONS)
