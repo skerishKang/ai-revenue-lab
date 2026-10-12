@@ -29,6 +29,7 @@
   <link rel="stylesheet" href="./b66-quote-runtime.css" />
   <link rel="stylesheet" href="./claw-local-handoff.css" />
   <link rel="stylesheet" href="./claw-device-manager.css" />
+  <link rel="stylesheet" href="./claw-device-guidance.css" />
   <link rel="stylesheet" href="./padiem-chat-ui-polish.css" />
   <link rel="stylesheet" href="./calendar.css" />
   <link rel="stylesheet" href="./library.css" />
@@ -936,6 +937,9 @@
   <script src="./claw-web-xlsx-sources.js" defer></script>
   <!-- #4139 read-only, opt-in multi-PC selection UI; unavailable until server is configured. -->
   <script src="./claw-device-manager.js"></script>
+  <!-- #4139 pre-connection guidance, state legend and recovery UX. Zero-network,
+       presentation-only: never reads the directory endpoint or a raw payload. -->
+  <script src="./claw-device-guidance.js"></script>
   <!-- #3094: guarded handoff adapter MUST load last, after app.js installed
        the #3084 projection seam. Never weaken the final-script contract. -->
   <script src="./claw-local-adapter.js"></script>
