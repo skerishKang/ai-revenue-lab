@@ -156,17 +156,17 @@ class CloudflareCanonicalBrokerPairingClient:
         return challenge, code
 
     async def get_enrollment_binding(
-        self, *, challenge_id: str, consent_ref: str, owner_ref: str,
-        account_ref: str, workspace_ref: str, device_id: str,
+        self, *, challenge_id: str, consent_ref: str | None = None,
+        owner_ref: str | None = None, account_ref: str | None = None,
+        workspace_ref: str | None = None, device_id: str | None = None,
     ) -> dict[str, Any]:
-        expected = {
-            "challenge_id": _safe_ref(challenge_id, "challenge_id"),
-            "consent_ref": _safe_ref(consent_ref, "consent_ref"),
-            "owner_ref": _safe_owner(owner_ref, "owner_ref"),
-            "account_ref": _safe_ref(account_ref, "account_ref"),
-            "workspace_ref": _safe_ref(workspace_ref, "workspace_ref"),
-            "device_id": _safe_ref(device_id, "device_id"),
-        }
+        expected = {"challenge_id": _safe_ref(challenge_id, "challenge_id")}
+        for name, value in (
+            ("consent_ref", consent_ref), ("owner_ref", owner_ref),
+            ("account_ref", account_ref), ("workspace_ref", workspace_ref), ("device_id", device_id),
+        ):
+            if value is not None:
+                expected[name] = _safe_owner(value, name) if name == "owner_ref" else _safe_ref(value, name)
         result = await self._invoke("get_enrollment_binding", {"challenge_id": challenge_id})
         if set(result) != {"ok", "binding"}:
             raise IdentityBridgeError(503, "broker_rpc_invalid", "Enrollment binding response shape is invalid.")
@@ -179,8 +179,9 @@ class CloudflareCanonicalBrokerPairingClient:
         ):
             raise IdentityBridgeError(503, "broker_rpc_invalid", "Enrollment binding failed correlation.")
         _time(binding.get("bound_at"), "enrollment binding time")
-        for name in ("consent_ref", "owner_ref", "account_ref", "workspace_ref", "device_id"):
+        for name in ("consent_ref", "account_ref", "workspace_ref", "device_id"):
             _safe_ref(binding.get(name), name)
+        _safe_owner(binding.get("owner_ref"), "owner_ref")
         return binding
 
     async def redeem_enrollment(
