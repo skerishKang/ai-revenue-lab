@@ -22,6 +22,7 @@ import pytest
 from app.pilot import opencode_go_wire as go
 from app.pilot.errors import (
     KiloFreeRateLimited,
+    PilotNotConfigured,
     UpstreamAuthFailed,
     UpstreamRateLimited,
     UpstreamServerError,
@@ -50,25 +51,29 @@ VALID_SESSION = "chat_" + "a" * 32
 
 
 def classify_input_layer(*, num_chars: int, view: str) -> str:
-    """Return which boundary would reject an input first, or 'accepted'.
+    """Classify the observed UI guard; never assert upstream acceptance.
 
-    ``view`` is 'claw_manual' or 'general_chat'. 'upstream_unknown' means no
-    B14-side boundary applies and the upstream Go limit is undocumented, so
-    only a live measurement could classify further. Never invents a number.
+    A view-local 'local_ui' rejection is measurable from source. Otherwise
+    'upstream_unknown' also covers undiscovered transit/provider constraints;
+    it does NOT assert that B14 or Go accepts a given character count.
     """
 
     if view == "claw_manual" and num_chars > CLAW_MANUAL_COMPOSER_MAX_CHARS:
         return "local_ui"
+    # The UI guard is the only documented local character bound at this
+    # view. Even a short prompt may still fail at the unverified provider.
     if num_chars <= CLAW_MANUAL_COMPOSER_MAX_CHARS:
-        return "accepted"
+        return "upstream_unknown"
     # B14 gateway: no request-size cap exists server-side.
     # Upstream: context_window == 0 (unknown) for both free models.
     return "upstream_unknown"
 
 
 def test_claw_manual_composer_cap_is_local_only() -> None:
-    assert classify_input_layer(num_chars=500, view="claw_manual") == "accepted"
-    assert classify_input_layer(num_chars=500, view="general_chat") == "accepted"
+    # Under the UI limit means only that this local UI guard would allow it;
+    # provider acceptance cannot be concluded from source or mock tests.
+    assert classify_input_layer(num_chars=500, view="claw_manual") == "upstream_unknown"
+    assert classify_input_layer(num_chars=500, view="general_chat") == "upstream_unknown"
     # Near the documented 4k guard: manual view rejects locally, while general
     # chat has no local rule so only the undocumented upstream could reject.
     assert classify_input_layer(num_chars=4_001, view="claw_manual") == "local_ui"
@@ -167,37 +172,71 @@ def test_go_429_is_not_kilo_429() -> None:
         _raise_upstream_error(429, "opencode-go")
 
 
-def test_go_wire_performs_no_retry_loop() -> None:
-    """One transport failure surfaces exactly once; the wire never retries."""
+def test_off_go_model_fails_before_any_network_dispatch() -> None:
+    """OFF registry/provider MUST deny, not exercise a provider via the test."""
 
     import asyncio
 
     import httpx
 
-    calls: list = []
+    calls: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        return httpx.Response(200, json={"model": "step-5-preview-free"})
+
+    async def run() -> None:
+        with pytest.raises(PilotNotConfigured):
+            await go.call_go_model(
+                model_id=STEP5_MODEL_ID,
+                upstream_model="step-5-preview-free",
+                messages=[{"role": "user", "content": "합성 차단 점검"}],
+                session_id=VALID_SESSION,
+                transport=httpx.MockTransport(handler),
+            )
+
+    asyncio.run(run())
+    assert calls == []
+
+
+def test_mock_only_go_429_dispatch_is_exactly_once_no_retry(monkeypatch) -> None:
+    """Isolated mock transport: prove one 429 POST causes exactly one attempt.
+
+    The two authorization dependencies are temporarily substituted ONLY
+    inside this Python test; the canonical OFF registry and production Go
+    adapter source are never modified, and no real network is reachable.
+    """
+    import asyncio
+
+    import httpx
+
+    calls: list[httpx.Request] = []
 
     def handler(request: httpx.Request) -> httpx.Response:
         calls.append(request)
         return httpx.Response(429, json={"error": {"code": "rate_limit_error"}})
 
+    async def synthetic_headers(session_headers: dict[str, str], wire: str) -> dict[str, str]:
+        assert wire == "chat/completions"
+        return {"User-Agent": "padiem-eval-mock", **session_headers}
+
+    monkeypatch.setattr(go, "_authorization_gate", lambda _model, _upstream: None)
+    monkeypatch.setattr(go, "_authenticated_headers", synthetic_headers)
+
     async def run() -> None:
-        transport = httpx.MockTransport(handler)
         with pytest.raises(UpstreamRateLimited):
             await go.call_go_model(
                 model_id=STEP5_MODEL_ID,
                 upstream_model="step-5-preview-free",
                 messages=[{"role": "user", "content": "합성 혼잡 점검"}],
                 session_id=VALID_SESSION,
-                transport=transport,
+                transport=httpx.MockTransport(handler),
             )
 
-    # Registry is OFF so the authorization gate fires first; either way the
-    # transport must never be hit more than once (here: zero times).
-    try:
-        asyncio.run(run())
-    except Exception:
-        pass
-    assert len(calls) <= 1
+    asyncio.run(run())
+    assert len(calls) == 1, "exactly one mock POST: no retry or fallback"
+    assert calls[0].method == "POST"
+    assert calls[0].url.path.endswith("/chat/completions")
 
 
 def test_serial_runner_rejects_concurrency() -> None:
