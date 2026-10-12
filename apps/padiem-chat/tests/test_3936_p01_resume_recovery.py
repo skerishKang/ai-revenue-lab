@@ -146,7 +146,7 @@ async def test_retry_safe_release_is_atomic_not_idempotent():
     assert first.json()["error"]["code"] == "owner_p01_decision_retryable"
     store = app.state.web_xlsx_p01_owner_decision_store
     waiting = await store.load_waiting(
-        owner_id=OWNER, workspace_id=selection["workspace_id"],
+        owner_id=OWNER, workspace_id="owner:" + OWNER,
         selection_ref=selection["selection_ref"],
     )
     assert waiting is not None
