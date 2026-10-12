@@ -67,6 +67,7 @@ from .local_agent_broker_pairing import (
     BrokerPairingAuthorityPort,
     BrokerPairingChallenge,
     BrokerPairingEnrollment,
+    BrokerPairingEnrollmentBinding,
 )
 from .local_agent_pc_access import P01_APPROVAL_OWNER, PRODUCT_PC_ACCESS_DEFAULT
 
@@ -113,6 +114,32 @@ SECOND_ROTATION_AUTHORITY = False
 SECOND_REVOCATION_AUTHORITY = False
 NEW_AUTHORITY_CREATED = False
 NEW_AUTH_METHOD_INVENTED = False
+
+# --- the challenge is bound to its consent, owner, scope and device ----------
+#: #4139 S1 follow-up. An enrollment challenge carries a **server-owned** binding of
+#: the consent it was issued under, the canonical owner, the account/workspace
+#: scope and the computer that consent names. The binding is verified **before**
+#: any mutating redemption, is never accepted from a client as authority, and
+#: lives in the canonical pairing authority's own trusted record.
+SERVER_BOUND_CHALLENGE_REQUIRED = True
+CHALLENGE_RECEIPT_IS_NOT_AUTHORITY = True
+UNSIGNED_CHALLENGE_RECEIPT_TRUSTED = False
+ENROLLMENT_BINDING_VERIFIED_BEFORE_BROKER_MUTATION = True
+CONSENT_BOUND_TO_DEVICE = True
+ONE_CONSENT_PER_DEVICE = True
+UNLIMITED_PCS_PER_ENROLLMENT_CONSENT = False
+
+# --- consent liveness is a declared dependency (default deny) ----------------
+#: A consent that has been withdrawn must not be able to release an outstanding
+#: challenge. Re-checking that against the *current* consent record is owned by a
+#: server-trusted consent authority, which does not exist yet; this contract can
+#: only enforce the consent's identity/scope/device binding. Until that authority
+#: is wired, redemption and issuance stay **default deny** behind an explicit
+#: caller attestation, and the gap is declared rather than papered over.
+CONSENT_LIVENESS_AUTHORITY = "server_trusted_enrollment_consent_authority"
+CONSENT_LIVENESS_REVERIFIED_IS_AN_INPUT = True
+SELF_ASSERTED_CONSENT_LIVENESS_TRUSTED = False
+CONSENT_LIVENESS_DEFAULT_DENY = True
 
 # --- enrollment consent is NOT execution approval -----------------------------
 #: Initial device enrollment consent and READ/WRITE execution approval are two
@@ -169,6 +196,15 @@ ENROLLMENT_REASON_PRODUCT_SCOPED_SCOPE = "enrollment_scope_product_scoped_denied
 ENROLLMENT_REASON_CONSENT_REQUIRED = "enrollment_consent_required"
 ENROLLMENT_REASON_CONSENT_WITHDRAWN = "enrollment_consent_withdrawn"
 ENROLLMENT_REASON_CONSENT_SCOPE_MISMATCH = "enrollment_consent_scope_mismatch"
+ENROLLMENT_REASON_CONSENT_DEVICE_MISMATCH = "enrollment_consent_device_mismatch"
+ENROLLMENT_REASON_BINDING_ABSENT = "enrollment_binding_absent"
+ENROLLMENT_REASON_CONSENT_SWAP_DENIED = "enrollment_consent_swap_denied"
+ENROLLMENT_REASON_DEVICE_SWAP_DENIED = "enrollment_device_swap_denied"
+ENROLLMENT_REASON_BINDING_OWNER_MISMATCH = "enrollment_binding_owner_mismatch"
+ENROLLMENT_REASON_BINDING_SCOPE_MISMATCH = "enrollment_binding_scope_mismatch"
+ENROLLMENT_REASON_CONSENT_LIVENESS_DEPENDENCY_UNMET = (
+    "enrollment_consent_liveness_dependency_unmet"
+)
 #: A canonical dependency refused/unavailable (e.g. an unconfigured pairing
 #: authority).  Reported as its own bounded reason instead of a raw RuntimeError.
 ENROLLMENT_REASON_DEPENDENCY_UNAVAILABLE = "enrollment_dependency_unavailable"
@@ -186,6 +222,11 @@ ENROLLMENT_REFUSAL_BY_CANONICAL_CODE: dict[str, str] = {
     "pairing_issuance_rate_limited": "enrollment_rate_limited",
     "pairing_issuance_scope_capacity_exhausted": "enrollment_rate_limited",
     "pairing_capacity_exhausted": "enrollment_capacity_exhausted",
+    "enrollment_binding_absent": "enrollment_binding_absent",
+    "enrollment_consent_swap_denied": "enrollment_consent_swap_denied",
+    "enrollment_device_swap_denied": "enrollment_device_swap_denied",
+    "enrollment_binding_owner_mismatch": "enrollment_binding_owner_mismatch",
+    "enrollment_binding_scope_mismatch": "enrollment_binding_scope_mismatch",
     "duplicate_device_binding": "enrollment_duplicate_device_denied",
     "device_binding_revoked": "enrollment_binding_revoked_denied",
     "device_credential_expired": "enrollment_credential_expired_denied",
@@ -342,19 +383,21 @@ class UnconfiguredCanonicalEnrollmentScopePort:
 
 @dataclass(frozen=True, slots=True)
 class ConnectorEnrollmentConsent:
-    """Explicit, revocable consent to enroll **one** computer.
+    """Explicit, revocable consent to enroll **one named computer**.
 
-    This record is the first-registration consent only.  It is not a file
+    This record is the first-registration consent only. It is not a file
     permission and not an execution approval: see the module-level
-    ``ENROLLMENT_CONSENT_*`` constants.  Consent is scoped to the exact
-    server-owned scope, so a consent granted for one account/workspace cannot be
-    reused by another user or another workspace.
+    ``ENROLLMENT_CONSENT_*`` constants. Consent is scoped to the exact
+    server-owned scope *and* to one ``device_id``, so a consent granted for one
+    account/workspace/computer can never be reused by another user, another
+    workspace, or to enroll a second computer without its own explicit consent.
     """
 
     consent_id: str
     owner_subject_id: str
     account_ref: str
     workspace_ref: str
+    device_id: str
     granted_at: datetime
     withdrawn_at: datetime | None = None
     contract_version: str = CONNECTOR_ENROLLMENT_CONSENT_VERSION
@@ -372,6 +415,7 @@ class ConnectorEnrollmentConsent:
             )
         object.__setattr__(self, "account_ref", _safe_ref(self.account_ref, "account_ref"))
         object.__setattr__(self, "workspace_ref", _safe_ref(self.workspace_ref, "workspace_ref"))
+        object.__setattr__(self, "device_id", _safe_ref(self.device_id, "device_id"))
         granted = _aware(self.granted_at, "granted_at")
         object.__setattr__(self, "granted_at", granted)
         if self.withdrawn_at is not None:
@@ -402,16 +446,24 @@ class ConnectorEnrollmentConsent:
             and self.workspace_ref == scope.workspace_ref
         )
 
+    def enrolls_device(self, device_id: str) -> bool:
+        """Whether this consent was granted for exactly that computer."""
+
+        return self.device_id == device_id
+
     def safe_dict(self, *, now: datetime | None = None) -> dict[str, Any]:
         payload: dict[str, Any] = {
             "consent_id": self.consent_id,
             "owner_subject_ref": _owner_ref(self.owner_subject_id),
             "account_ref": self.account_ref,
             "workspace_ref": self.workspace_ref,
+            "device_id": self.device_id,
             "granted_at": _iso(self.granted_at),
             "withdrawn_at": _iso(self.withdrawn_at) if self.withdrawn_at is not None else None,
             "contract_version": self.contract_version,
             "enrollment_consent": True,
+            "bound_to_one_device": True,
+            "per_device_consent": True,
             "execution_approval": False,
             "grants_read": False,
             "grants_write": False,
@@ -571,6 +623,24 @@ def _require_eligible(decision: ConnectorEnrollmentDecision) -> ConnectorEnrollm
     return decision.scope
 
 
+def _require_consent_liveness(reverified_by_existing_path: Any) -> None:
+    """Consent liveness is a declared dependency and stays default deny.
+
+    Re-checking a consent against its current record (was it withdrawn after
+    issuance?) is owned by a server-trusted consent authority that does not exist
+    yet. Until a trusted caller attests that it re-verified the consent there,
+    both issuance and redemption refuse. The attestation is an *input* produced by
+    that check, never proof: it can only relax a refusal, it can never mint the
+    consent, widen its scope, or change which computer it names.
+    """
+
+    if reverified_by_existing_path is not True:
+        raise ControlPlaneContractError(
+            ENROLLMENT_REASON_CONSENT_LIVENESS_DEPENDENCY_UNMET,
+            "enrollment consent liveness must be re-verified by the server-trusted consent authority",
+        )
+
+
 def _refusal_code(canonical_code: Any) -> str:
     """Map one canonical pairing/Broker refusal code to this contract's reason.
 
@@ -602,8 +672,10 @@ class ConnectorEnrollmentChallengeReceipt:
     scope: ConnectorEnrollmentScope
     consent_id: str
     owner_subject_id: str
+    device_id: str
 
     def __post_init__(self) -> None:
+        object.__setattr__(self, "device_id", _safe_ref(self.device_id, "device_id"))
         if not isinstance(self.challenge, BrokerPairingChallenge):
             raise ControlPlaneContractError(
                 "invalid_connector_enrollment_challenge",
@@ -639,12 +711,15 @@ class ConnectorEnrollmentChallengeReceipt:
             "scope": self.scope.safe_dict(),
             "consent_id": self.consent_id,
             "owner_subject_ref": _owner_ref(self.owner_subject_id),
+            "device_id": self.device_id,
             "expires_at": _iso(self.challenge.expires_at),
             "pairing_code": None,
             "pairing_code_returned_once": True,
             "pairing_code_is_a_credential": True,
             "proof_transcript": PROOF_TRANSCRIPT,
             "device_possession_proof_required": True,
+            "server_bound_to_consent_owner_scope_device": True,
+            "receipt_is_authority": False,
             "execution_approval_minted": False,
             "dispatch_authorized": False,
         }
@@ -656,7 +731,9 @@ def issue_connector_enrollment_challenge(
     allowed_product_ids: Any,
     scope_resolver: CanonicalEnrollmentScopePort,
     consent: ConnectorEnrollmentConsent | None,
+    device_id: Any,
     pairing_authority: BrokerPairingAuthorityPort,
+    consent_liveness_reverified_by_existing_path: bool = False,
     now: datetime,
     ttl_seconds: int = MAX_PAIRING_TTL_SECONDS,
 ) -> ConnectorEnrollmentChallengeReceipt:
@@ -665,9 +742,16 @@ def issue_connector_enrollment_challenge(
     This is the integration path CENTRAL wires: the Connector asks the Control
     Plane for an enrollment, and this contract turns the *verified canonical
     session* into the (account, workspace) scope the canonical pairing authority
-    requires.  A Connector, a browser or a product route can never supply that
+    requires. A Connector, a browser or a product route can never supply that
     scope, so a signed-in account cannot enroll another account's or another
     workspace's computer.
+
+    The challenge is issued through the canonical authority's *enrollment*
+    primitive, so the authority records — server-side, beside the pending
+    challenge — the exact consent, canonical owner, scope and computer the
+    challenge belongs to. Nothing about that binding is taken from a client, and
+    ``device_id`` must be the computer the consent names: one consent enrolls one
+    computer, and a second computer needs its own explicit consent.
     """
 
     observed_at = _aware(now, "now")
@@ -680,6 +764,17 @@ def issue_connector_enrollment_challenge(
     )
     scope = _require_eligible(decision)
     assert decision.consent_id is not None
+    assert isinstance(consent, ConnectorEnrollmentConsent)
+
+    _require_consent_liveness(consent_liveness_reverified_by_existing_path)
+
+    requested_device = _safe_ref(device_id, "device_id")
+    if not consent.enrolls_device(requested_device):
+        raise ControlPlaneContractError(
+            ENROLLMENT_REASON_CONSENT_DEVICE_MISMATCH,
+            "the enrollment consent names another computer",
+        )
+
     ttl = _positive_int(
         ttl_seconds,
         "ttl_seconds",
@@ -687,17 +782,20 @@ def issue_connector_enrollment_challenge(
         maximum=MAX_PAIRING_TTL_SECONDS,
     )
 
-    for method_name in ("issue_challenge", "redeem"):
+    for method_name in ("issue_enrollment_challenge", "enrollment_binding", "redeem_enrollment"):
         if not callable(getattr(pairing_authority, method_name, None)):
             raise ControlPlaneContractError(
-                "invalid_connector_enrollment_authority",
-                "pairing authority must implement issue_challenge and redeem",
+                ENROLLMENT_REASON_DEPENDENCY_UNAVAILABLE,
+                "canonical pairing authority does not support server-bound enrollment challenges",
             )
 
     try:
-        challenge, pairing_code = pairing_authority.issue_challenge(
+        challenge, pairing_code = pairing_authority.issue_enrollment_challenge(
             account_ref=scope.account_ref,
             workspace_ref=scope.workspace_ref,
+            consent_ref=consent.consent_id,
+            owner_ref=scope.owner_subject_id,
+            device_id=requested_device,
             now=observed_at,
             ttl_seconds=ttl,
         )
@@ -723,6 +821,7 @@ def issue_connector_enrollment_challenge(
         scope=scope,
         consent_id=decision.consent_id,
         owner_subject_id=auth_session.subject.subject_id,
+        device_id=requested_device,
     )
 
 
@@ -741,12 +840,23 @@ class ConnectorEnrollmentReceipt:
     scope: ConnectorEnrollmentScope
     consent_id: str
     owner_subject_id: str
+    binding: BrokerPairingEnrollmentBinding
 
     def __post_init__(self) -> None:
         if not isinstance(self.enrollment, BrokerPairingEnrollment):
             raise ControlPlaneContractError(
                 "invalid_connector_enrollment_receipt",
                 "enrollment must be BrokerPairingEnrollment",
+            )
+        if not isinstance(self.binding, BrokerPairingEnrollmentBinding):
+            raise ControlPlaneContractError(
+                "invalid_connector_enrollment_receipt",
+                "binding must be BrokerPairingEnrollmentBinding",
+            )
+        if self.binding.consent_ref != self.consent_id:
+            raise ControlPlaneContractError(
+                "invalid_connector_enrollment_receipt",
+                "the server binding belongs to another consent",
             )
         if not isinstance(self.credential, bytes) or not self.credential:
             raise ControlPlaneContractError(
@@ -796,6 +906,12 @@ class ConnectorEnrollmentReceipt:
             "credential_expires_at": _iso(self.enrollment.credential_expires_at),
             "credential_returned_once": True,
             "raw_device_credential": False,
+            "server_bound_consent_ref": self.binding.consent_ref,
+            "server_bound_device_id": self.binding.device_id,
+            "server_bound_at": _iso(self.binding.bound_at),
+            "server_bound_binding_verified_before_mutation": True,
+            "server_bound_owner_bound": self.binding.owner_ref == self.owner_subject_id,
+            "receipt_is_authority": False,
             "product_scoped_enrollment": False,
             "shared_device_identity": True,
             "device_lifecycle_authority": DEVICE_LIFECYCLE_AUTHORITY,
@@ -810,6 +926,44 @@ class ConnectorEnrollmentReceipt:
         }
 
 
+def _verify_server_binding(
+    binding: BrokerPairingEnrollmentBinding,
+    *,
+    consent: ConnectorEnrollmentConsent,
+    scope: ConnectorEnrollmentScope,
+    device_id: str,
+) -> None:
+    """Check a presented enrollment against the **server-owned** binding.
+
+    Every input here is compared against the authority's own record; none of them
+    is consumed as authority. A swapped consent, a swapped computer, another
+    canonical owner or another scope refuses here — before any mutating
+    redemption call, so no Broker binding and no challenge consumption can have
+    happened yet.
+    """
+
+    if binding.consent_ref != consent.consent_id:
+        raise ControlPlaneContractError(
+            ENROLLMENT_REASON_CONSENT_SWAP_DENIED,
+            "the enrollment challenge was issued under a different consent",
+        )
+    if binding.device_id != device_id:
+        raise ControlPlaneContractError(
+            ENROLLMENT_REASON_DEVICE_SWAP_DENIED,
+            "the enrollment challenge was issued for a different computer",
+        )
+    if binding.owner_ref != scope.owner_subject_id:
+        raise ControlPlaneContractError(
+            ENROLLMENT_REASON_BINDING_OWNER_MISMATCH,
+            "the enrollment challenge was issued for a different canonical owner",
+        )
+    if binding.account_ref != scope.account_ref or binding.workspace_ref != scope.workspace_ref:
+        raise ControlPlaneContractError(
+            ENROLLMENT_REASON_BINDING_SCOPE_MISMATCH,
+            "the enrollment challenge was issued in another account/workspace scope",
+        )
+
+
 def redeem_connector_enrollment(
     *,
     auth_session: Any,
@@ -820,6 +974,7 @@ def redeem_connector_enrollment(
     challenge_id: Any,
     device_id: Any,
     proof_ref: Any,
+    consent_liveness_reverified_by_existing_path: bool = False,
     now: datetime,
 ) -> ConnectorEnrollmentReceipt:
     """Redeem one enrollment challenge into a canonical Broker binding.
@@ -829,6 +984,14 @@ def redeem_connector_enrollment(
     withdrawn in between refuses the redemption.  The device id is proven by the
     canonical one-time code proof (``proof_ref``) and is never trusted as a
     self-asserted ownership claim.
+
+    Beyond that, the presented consent must be *exactly* the consent the
+    challenge was issued under, for exactly the computer that consent names, in
+    exactly the same canonical owner/account/workspace scope. The authoritative
+    values come from the canonical pairing authority's own binding record, are
+    read back with a non-mutating probe, and are checked **before** the mutating
+    redemption; the authority re-verifies them itself before it registers
+    anything. A client-supplied challenge receipt is never accepted as proof.
     """
 
     observed_at = _aware(now, "now")
@@ -849,12 +1012,61 @@ def redeem_connector_enrollment(
     )
     scope = _require_eligible(decision)
     assert decision.consent_id is not None
+    assert isinstance(consent, ConnectorEnrollmentConsent)
+
+    _require_consent_liveness(consent_liveness_reverified_by_existing_path)
+
+    if not consent.enrolls_device(device_id):
+        raise ControlPlaneContractError(
+            ENROLLMENT_REASON_CONSENT_DEVICE_MISMATCH,
+            "the enrollment consent names another computer",
+        )
+
+    for method_name in ("enrollment_binding", "redeem_enrollment"):
+        if not callable(getattr(pairing_authority, method_name, None)):
+            raise ControlPlaneContractError(
+                ENROLLMENT_REASON_DEPENDENCY_UNAVAILABLE,
+                "canonical pairing authority does not support server-bound enrollment challenges",
+            )
+
+    # Non-mutating read of the server-owned binding. Everything below this point
+    # that refuses refuses *before* the mutating redemption call.
+    try:
+        binding = pairing_authority.enrollment_binding(
+            challenge_id=challenge_id,
+            now=observed_at,
+        )
+    except ControlPlaneContractError as exc:
+        raise ControlPlaneContractError(
+            _refusal_code(exc.code),
+            "canonical pairing authority refused the enrollment binding check",
+        ) from exc
+    except RuntimeError as exc:
+        raise ControlPlaneContractError(
+            ENROLLMENT_REASON_DEPENDENCY_UNAVAILABLE,
+            "canonical pairing authority is unavailable",
+        ) from exc
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ControlPlaneContractError(
+            ENROLLMENT_REFUSAL_FALLBACK,
+            "canonical pairing authority refused the enrollment binding check",
+        ) from exc
+    if not isinstance(binding, BrokerPairingEnrollmentBinding):
+        raise ControlPlaneContractError(
+            ENROLLMENT_REASON_BINDING_ABSENT,
+            "canonical pairing authority returned an invalid enrollment binding",
+        )
+    _verify_server_binding(binding, consent=consent, scope=scope, device_id=device_id)
 
     try:
-        enrollment, credential = pairing_authority.redeem(
+        enrollment, credential = pairing_authority.redeem_enrollment(
             challenge_id=challenge_id,
             device_id=device_id,
             proof_ref=proof_ref,
+            consent_ref=consent.consent_id,
+            owner_ref=scope.owner_subject_id,
+            account_ref=scope.account_ref,
+            workspace_ref=scope.workspace_ref,
             now=observed_at,
         )
     except ControlPlaneContractError as exc:
@@ -903,6 +1115,7 @@ def redeem_connector_enrollment(
         scope=scope,
         consent_id=decision.consent_id,
         owner_subject_id=auth_session.subject.subject_id,
+        binding=binding,
     )
 
 
@@ -933,8 +1146,24 @@ def connector_enrollment_dependencies() -> dict[str, Any]:
         "second_credential_store": False,
         "second_rotation_authority": False,
         "second_revocation_authority": False,
+        "second_enrollment_store": False,
         "new_authority_created": False,
         "new_auth_method_invented": False,
+        # --- declared dependencies -------------------------------------------
+        "challenge_consent_binding": "canonical pairing authority pending-challenge record",
+        "challenge_binding_durability": "same as the canonical pairing challenge; no second store",
+        "consent_liveness_authority": CONSENT_LIVENESS_AUTHORITY,
+        "consent_liveness_authority_implemented": False,
+        "consent_liveness_default_deny": True,
+        "consent_liveness_reverified_is_an_input": True,
+        "self_asserted_consent_liveness_trusted": False,
+        "server_bound_challenge_required": True,
+        "challenge_receipt_is_not_authority": True,
+        "unsigned_challenge_receipt_trusted": False,
+        "signed_enrollment_receipt": "not implemented; the server-owned binding is the authority",
+        "consent_bound_to_device": True,
+        "one_consent_per_device": True,
+        "unlimited_pcs_per_enrollment_consent": False,
         "unsupported_auth_methods": [
             {"method": method, "dependency": reason} for method, reason in UNSUPPORTED_AUTH_METHODS
         ],
@@ -961,6 +1190,18 @@ def connector_enrollment_boundary() -> dict[str, Any]:
         "enrollment_consent_grants_read": ENROLLMENT_CONSENT_GRANTS_READ,
         "enrollment_consent_grants_write": ENROLLMENT_CONSENT_GRANTS_WRITE,
         "enrollment_consent_grants_dispatch": ENROLLMENT_CONSENT_GRANTS_DISPATCH,
+        "consent_bound_to_device": CONSENT_BOUND_TO_DEVICE,
+        "one_consent_per_device": ONE_CONSENT_PER_DEVICE,
+        "unlimited_pcs_per_enrollment_consent": UNLIMITED_PCS_PER_ENROLLMENT_CONSENT,
+        "server_bound_challenge_required": SERVER_BOUND_CHALLENGE_REQUIRED,
+        "challenge_receipt_is_not_authority": CHALLENGE_RECEIPT_IS_NOT_AUTHORITY,
+        "unsigned_challenge_receipt_trusted": UNSIGNED_CHALLENGE_RECEIPT_TRUSTED,
+        "enrollment_binding_verified_before_broker_mutation": (
+            ENROLLMENT_BINDING_VERIFIED_BEFORE_BROKER_MUTATION
+        ),
+        "consent_liveness_authority": CONSENT_LIVENESS_AUTHORITY,
+        "consent_liveness_default_deny": CONSENT_LIVENESS_DEFAULT_DENY,
+        "self_asserted_consent_liveness_trusted": SELF_ASSERTED_CONSENT_LIVENESS_TRUSTED,
         "execution_approval_owner": EXECUTION_APPROVAL_OWNER,
         "execution_approval_minted_here": EXECUTION_APPROVAL_MINTED_HERE,
         "device_possession_proof_required": DEVICE_POSSESSION_PROOF_REQUIRED,
@@ -1000,9 +1241,16 @@ __all__ = [
     "ConnectorEnrollmentReceipt",
     "ConnectorEnrollmentScope",
     "DEVICE_LIFECYCLE_AUTHORITY",
+    "ENROLLMENT_REASON_BINDING_ABSENT",
+    "ENROLLMENT_REASON_BINDING_OWNER_MISMATCH",
+    "ENROLLMENT_REASON_BINDING_SCOPE_MISMATCH",
+    "ENROLLMENT_REASON_CONSENT_DEVICE_MISMATCH",
+    "ENROLLMENT_REASON_CONSENT_LIVENESS_DEPENDENCY_UNMET",
     "ENROLLMENT_REASON_CONSENT_REQUIRED",
     "ENROLLMENT_REASON_CONSENT_SCOPE_MISMATCH",
+    "ENROLLMENT_REASON_CONSENT_SWAP_DENIED",
     "ENROLLMENT_REASON_CONSENT_WITHDRAWN",
+    "ENROLLMENT_REASON_DEVICE_SWAP_DENIED",
     "ENROLLMENT_REASON_DEPENDENCY_UNAVAILABLE",
     "ENROLLMENT_REASON_ELIGIBLE",
     "ENROLLMENT_REASON_PRODUCT_NOT_REVIEWED",
@@ -1019,6 +1267,7 @@ __all__ = [
     "ONLINE_PROOF_AUTHORITY",
     "UNSUPPORTED_AUTH_METHODS",
     "UnconfiguredCanonicalEnrollmentScopePort",
+    "BrokerPairingEnrollmentBinding",
     "connector_enrollment_boundary",
     "connector_enrollment_dependencies",
     "enrollment_refusal_reason",

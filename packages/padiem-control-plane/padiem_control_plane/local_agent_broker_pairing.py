@@ -15,6 +15,10 @@ _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
 _CODE_NONCE_RE = re.compile(r"^[0-9a-f]{32}$")
 _PAIRING_CODE_RE = re.compile(r"^[0-9a-f]{32}$")
 PROOF_REF_RE = re.compile(r"^pairing-proof:[0-9a-f]{64}$")
+#: Bounded opaque server-side identifier length. Canonical subject ids may be
+#: Unicode, so the enrollment owner binding uses opaque-id semantics rather
+#: than the ASCII connector safe-ref grammar.
+MAX_OPAQUE_REF_CHARS = 256
 
 PAIRING_PROOF_TRANSCRIPT = "claw-local-agent-pairing-proof.v1"
 PAIRING_CODE_TRANSCRIPT = "claw-local-agent-pairing-code.v1"
@@ -67,6 +71,42 @@ def _positive_int(value: Any, field_name: str, *, minimum: int, maximum: int) ->
         raise ControlPlaneContractError(
             "invalid_pairing_value",
             f"{field_name} must be an integer between {minimum} and {maximum} without coercion",
+        )
+    return value
+
+
+def _opaque_ref(value: Any, field_name: str) -> str:
+    """Bounded opaque server-side identifier.
+
+    Canonical subject ids are opaque and may legitimately contain Unicode or
+    spaces, so tightening them to the ASCII safe-ref grammar would create a
+    second, incompatible identity authority at this boundary. A non-empty,
+    bounded, control-character-free string is required instead.
+    """
+
+    if not isinstance(value, str):
+        raise ControlPlaneContractError(
+            "invalid_pairing_reference",
+            f"{field_name} must be a string",
+        )
+    normalized = value.strip()
+    if (
+        not normalized
+        or len(normalized) > MAX_OPAQUE_REF_CHARS
+        or any(ord(char) < 32 or ord(char) == 127 for char in normalized)
+    ):
+        raise ControlPlaneContractError(
+            "invalid_pairing_reference",
+            f"{field_name} must be a bounded non-empty opaque identifier",
+        )
+    return normalized
+
+
+def _proof_ref(value: Any) -> str:
+    if not isinstance(value, str) or not PROOF_REF_RE.fullmatch(value):
+        raise ControlPlaneContractError(
+            "invalid_pairing_proof",
+            "pairing proof must be a canonical HMAC-SHA256 proof reference",
         )
     return value
 
@@ -146,6 +186,59 @@ class BrokerPairingChallenge:
             "expires_at": self.expires_at.isoformat(),
             "single_use": True,
             "client_time_authority": False,
+            "raw_pairing_secret": False,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class BrokerPairingEnrollmentBinding:
+    """#4139 S1 — server-owned binding of one challenge to its consent/device/scope.
+
+    An enrollment challenge issued for a signed-in PADIEM account must be
+    redeemable **only** under the enrollment consent it was issued for, for the
+    computer that consent names, and inside the canonical
+    owner/account/workspace scope it was issued in.
+
+    The binding lives beside the pending challenge inside the canonical pairing
+    authority's own trusted record — never in a receipt handed to a Connector or
+    a browser — and creates no second store or enrollment authority.
+
+    ``consent_ref`` is an opaque server-side consent reference, ``owner_ref`` is
+    the canonical subject the consent belongs to, and ``device_id`` is the
+    computer that consent was granted for.
+    """
+
+    challenge_id: str
+    consent_ref: str
+    owner_ref: str
+    account_ref: str
+    workspace_ref: str
+    device_id: str
+    bound_at: datetime
+
+    def __post_init__(self) -> None:
+        for field_name in (
+            "challenge_id",
+            "consent_ref",
+            "account_ref",
+            "workspace_ref",
+            "device_id",
+        ):
+            object.__setattr__(self, field_name, _ref(getattr(self, field_name), field_name))
+        object.__setattr__(self, "owner_ref", _opaque_ref(self.owner_ref, "owner_ref"))
+        object.__setattr__(self, "bound_at", _aware(self.bound_at, "bound_at"))
+
+    def safe_dict(self) -> dict[str, Any]:
+        return {
+            "challenge_id": self.challenge_id,
+            "consent_ref": self.consent_ref,
+            "owner_ref": self.owner_ref,
+            "account_ref": self.account_ref,
+            "workspace_ref": self.workspace_ref,
+            "device_id": self.device_id,
+            "bound_at": self.bound_at.isoformat(),
+            "server_owned_binding": True,
+            "client_supplied_receipt_trusted": False,
             "raw_pairing_secret": False,
         }
 
@@ -232,12 +325,53 @@ class BrokerPairingAuthorityPort(Protocol):
     ) -> tuple[BrokerPairingEnrollment, bytes]:
         ...
 
+    def issue_enrollment_challenge(
+        self,
+        *,
+        account_ref: str,
+        workspace_ref: str,
+        consent_ref: str,
+        owner_ref: str,
+        device_id: str,
+        now: datetime,
+        ttl_seconds: int = 300,
+    ) -> tuple[BrokerPairingChallenge, str]:
+        ...
+
+    def enrollment_binding(
+        self, *, challenge_id: str, now: datetime
+    ) -> BrokerPairingEnrollmentBinding:
+        ...
+
+    def redeem_enrollment(
+        self,
+        *,
+        challenge_id: str,
+        device_id: str,
+        proof_ref: str,
+        consent_ref: str,
+        owner_ref: str,
+        account_ref: str,
+        workspace_ref: str,
+        now: datetime,
+    ) -> tuple[BrokerPairingEnrollment, bytes]:
+        ...
+
 
 class UnconfiguredBrokerPairingAuthority:
     def issue_challenge(self, **_: Any) -> tuple[BrokerPairingChallenge, str]:
         raise RuntimeError("Local Agent broker pairing authority is not configured")
 
     def redeem(self, **_: Any) -> tuple[BrokerPairingEnrollment, bytes]:
+        raise RuntimeError("Local Agent broker pairing authority is not configured")
+
+    def issue_enrollment_challenge(self, **_: Any) -> tuple[BrokerPairingChallenge, str]:
+        raise RuntimeError("Local Agent broker pairing authority is not configured")
+
+    def enrollment_binding(self, **_: Any) -> BrokerPairingEnrollmentBinding:
+        raise RuntimeError("Local Agent broker pairing authority is not configured")
+
+    def redeem_enrollment(self, **_: Any) -> tuple[BrokerPairingEnrollment, bytes]:
         raise RuntimeError("Local Agent broker pairing authority is not configured")
 
 
@@ -248,6 +382,9 @@ class _PendingBrokerPairingChallenge:
     redeemed_at: datetime | None = None
     redeemed_device_id: str | None = None
     redeemed_binding_ref: str | None = None
+    #: #4139 S1 — the server-owned consent/device/scope binding, present only for
+    #: enrollment-issued challenges.
+    enrollment_binding: BrokerPairingEnrollmentBinding | None = None
 
 
 class InMemoryBrokerPairingAuthority:
@@ -486,19 +623,42 @@ class InMemoryBrokerPairingAuthority:
     ) -> tuple[BrokerPairingEnrollment, bytes]:
         challenge_id = _ref(challenge_id, "challenge_id")
         device_id = _ref(device_id, "device_id")
-        if not isinstance(proof_ref, str) or not PROOF_REF_RE.fullmatch(proof_ref):
-            raise ControlPlaneContractError(
-                "invalid_pairing_proof",
-                "pairing proof must be a canonical HMAC-SHA256 proof reference",
-            )
+        proof_ref = _proof_ref(proof_ref)
         now = _aware(now, "now")
+        pending = self._pending_challenge(challenge_id)
+        return self._redeem_pending(
+            challenge_id=challenge_id,
+            device_id=device_id,
+            proof_ref=proof_ref,
+            pending=pending,
+            now=now,
+        )
+
+    def _pending_challenge(self, challenge_id: str) -> _PendingBrokerPairingChallenge:
         try:
-            pending = self._pending[challenge_id]
+            return self._pending[challenge_id]
         except KeyError as exc:
             raise ControlPlaneContractError(
                 "pairing_challenge_not_found",
                 "broker pairing challenge was not found",
             ) from exc
+
+    def _redeem_pending(
+        self,
+        *,
+        challenge_id: str,
+        device_id: str,
+        proof_ref: str,
+        pending: _PendingBrokerPairingChallenge,
+        now: datetime,
+    ) -> tuple[BrokerPairingEnrollment, bytes]:
+        """The canonical redemption primitive: consume, then register.
+
+        Every caller-side authorization decision is made *before* this method
+        runs, so this stays the single place that mutates the pending record and
+        the canonical device binding.
+        """
+
         if pending.redeemed_at is not None:
             raise ControlPlaneContractError(
                 "pairing_challenge_already_redeemed",
@@ -565,6 +725,140 @@ class InMemoryBrokerPairingAuthority:
         )
         return enrollment, credential
 
+    def issue_enrollment_challenge(
+        self,
+        *,
+        account_ref: str,
+        workspace_ref: str,
+        consent_ref: str,
+        owner_ref: str,
+        device_id: str,
+        now: datetime,
+        ttl_seconds: int = 300,
+    ) -> tuple[BrokerPairingChallenge, str]:
+        """#4139 S1 — issue a challenge bound to the consent and computer it is for.
+
+        Every binding input is validated **before** the challenge is minted, so an
+        invalid enrollment request can never leave an unbound challenge behind.
+        The binding is then written beside the pending challenge inside this
+        authority's own trusted record: nothing about it is returned to a client
+        as authority, and no second store is created.
+        """
+
+        consent_ref = _ref(consent_ref, "consent_ref")
+        owner_ref = _opaque_ref(owner_ref, "owner_ref")
+        device_id = _ref(device_id, "device_id")
+
+        challenge, pairing_code = self.issue_challenge(
+            account_ref=account_ref,
+            workspace_ref=workspace_ref,
+            now=now,
+            ttl_seconds=ttl_seconds,
+        )
+        binding = BrokerPairingEnrollmentBinding(
+            challenge_id=challenge.challenge_id,
+            consent_ref=consent_ref,
+            owner_ref=owner_ref,
+            account_ref=challenge.account_ref,
+            workspace_ref=challenge.workspace_ref,
+            device_id=device_id,
+            bound_at=challenge.issued_at,
+        )
+        self._pending[challenge.challenge_id] = replace(
+            self._pending[challenge.challenge_id],
+            enrollment_binding=binding,
+        )
+        return challenge, pairing_code
+
+    def enrollment_binding(
+        self, *, challenge_id: str, now: datetime
+    ) -> BrokerPairingEnrollmentBinding:
+        """Read-only projection of the server-owned enrollment binding.
+
+        This is the pre-mutation check #4139 S1 requires: an unknown challenge
+        refuses, an expired unused challenge refuses, a challenge with no
+        enrollment binding refuses, and a consumed challenge still returns its
+        binding so that the canonical single-use refusal is what a caller sees
+        next. Nothing here mutates state.
+        """
+
+        challenge_id = _ref(challenge_id, "challenge_id")
+        now = _aware(now, "now")
+        pending = self._pending_challenge(challenge_id)
+        if pending.enrollment_binding is None:
+            raise ControlPlaneContractError(
+                "enrollment_binding_absent",
+                "broker pairing challenge carries no enrollment binding",
+            )
+        if pending.redeemed_at is None and now >= pending.challenge.expires_at:
+            raise ControlPlaneContractError(
+                "pairing_challenge_expired",
+                "broker pairing challenge has expired",
+            )
+        return pending.enrollment_binding
+
+    def redeem_enrollment(
+        self,
+        *,
+        challenge_id: str,
+        device_id: str,
+        proof_ref: str,
+        consent_ref: str,
+        owner_ref: str,
+        account_ref: str,
+        workspace_ref: str,
+        now: datetime,
+    ) -> tuple[BrokerPairingEnrollment, bytes]:
+        """#4139 S1 — redeem an enrollment challenge under its exact binding.
+
+        Every binding check runs **before** the canonical redemption and therefore
+        before any broker binding mutation or challenge consumption: the presented
+        consent, canonical owner, account/workspace scope and device must be
+        exactly the ones the challenge was issued under. A swapped consent, a
+        swapped device, another owner or another scope refuses without consuming
+        the challenge or registering anything.
+        """
+
+        challenge_id = _ref(challenge_id, "challenge_id")
+        device_id = _ref(device_id, "device_id")
+        proof_ref = _proof_ref(proof_ref)
+        consent_ref = _ref(consent_ref, "consent_ref")
+        owner_ref = _opaque_ref(owner_ref, "owner_ref")
+        account_ref = _ref(account_ref, "account_ref")
+        workspace_ref = _ref(workspace_ref, "workspace_ref")
+        now = _aware(now, "now")
+
+        binding = self.enrollment_binding(challenge_id=challenge_id, now=now)
+        if binding.consent_ref != consent_ref:
+            raise ControlPlaneContractError(
+                "enrollment_consent_swap_denied",
+                "the enrollment challenge was issued under a different consent",
+            )
+        if binding.device_id != device_id:
+            raise ControlPlaneContractError(
+                "enrollment_device_swap_denied",
+                "the enrollment challenge was issued for a different device",
+            )
+        if binding.owner_ref != owner_ref:
+            raise ControlPlaneContractError(
+                "enrollment_binding_owner_mismatch",
+                "the enrollment challenge was issued for a different canonical owner",
+            )
+        if binding.account_ref != account_ref or binding.workspace_ref != workspace_ref:
+            raise ControlPlaneContractError(
+                "enrollment_binding_scope_mismatch",
+                "the enrollment challenge was issued in another scope",
+            )
+
+        pending = self._pending_challenge(challenge_id)
+        return self._redeem_pending(
+            challenge_id=challenge_id,
+            device_id=device_id,
+            proof_ref=proof_ref,
+            pending=pending,
+            now=now,
+        )
+
     def safe_dict(self) -> dict[str, Any]:
         return {
             "pairing_proof_algorithm": PAIRING_PROOF_ALGORITHM,
@@ -596,6 +890,12 @@ class InMemoryBrokerPairingAuthority:
             "raw_device_credential_persisted": False,
             "raw_device_credential_returned_once": True,
             "durable_pairing_store_configured": False,
+            # --- #4139 S1: server-trusted enrollment consent binding ---------
+            "enrollment_consent_binding_supported": True,
+            "enrollment_binding_binds_consent_owner_scope_device": True,
+            "enrollment_binding_verified_before_mutation": True,
+            "client_supplied_enrollment_receipt_trusted": False,
+            "second_enrollment_store": False,
             "production_ready": False,
         }
 
@@ -613,5 +913,18 @@ SECOND_CREDENTIAL_VERIFIER = False
 PUBLIC_INBOUND_PORT_REQUIRED = False
 DURABLE_PAIRING_STORE_CONFIGURED = False
 IN_MEMORY_COUNTS_AS_DURABLE = False
+# --- #4139 S1: server-trusted enrollment consent binding ---------------------
+#: An enrollment-issued challenge carries a server-owned binding of
+#: (consent, canonical owner, account/workspace, device). The binding is
+#: verified before any mutating redemption, it is never returned as authority
+#: to a Connector or a browser, and it needs no second store: it lives in the
+#: same trusted record as the challenge itself.
+ENROLLMENT_CONSENT_BINDING_SUPPORTED = True
+ENROLLMENT_BINDING_REQUIRES_EXACT_CONSENT = True
+ENROLLMENT_BINDING_REQUIRES_EXACT_DEVICE = True
+ENROLLMENT_BINDING_REQUIRES_EXACT_OWNER_SCOPE = True
+ENROLLMENT_BINDING_VERIFIED_BEFORE_MUTATION = True
+CLIENT_SUPPLIED_ENROLLMENT_RECEIPT_TRUSTED = False
+SECOND_ENROLLMENT_STORE = False
 PRODUCTION_MUTATION = False
 PRODUCTION_READY = False

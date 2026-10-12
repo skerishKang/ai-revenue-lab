@@ -412,6 +412,88 @@ PRODUCTION_ACTIVATION                 = False
 PRODUCTION_READY                      = False
 ```
 
+### S1 follow-up — server-trusted challenge/consent binding (CENTRAL security review)
+
+CENTRAL security review (`#4438` comment 6116650198,
+`SECURITY_REVIEW=BLOCKED_CONSENT_CHALLENGE_BINDING`) reproduced that a challenge
+issued under consent 1 could be redeemed with consent 2: the consent was only
+recorded in the *returned receipt*, so the pairing record carried no enrollment
+binding and a withdrawn consent's outstanding code stayed redeemable under any
+new consent.
+
+**Fix — the binding is server-owned, and it is checked before anything mutates:**
+
+```text
+issue_enrollment_challenge -> canonical pairing authority records, beside the
+                              pending challenge: consent_ref, canonical owner_ref,
+                              account_ref, workspace_ref, device_id, bound_at
+enrollment_binding(...)    -> non-mutating read of that record (probe)
+redeem_enrollment(...)     -> re-verifies every binding field, and only then calls
+                              the ONE shared redemption primitive that consumes the
+                              challenge and registers the Broker binding
+```
+
+`local_agent_broker_pairing.py` was extended (additively) rather than replaced:
+`BrokerPairingEnrollmentBinding`, `issue_enrollment_challenge`,
+`enrollment_binding` and `redeem_enrollment`, with the previous `redeem` body
+extracted verbatim into the shared `_redeem_pending` primitive. `issue_challenge`
+and `redeem` keep their exact previous behaviour, codes and messages, so no
+existing pairing or activation contract changed. No second store, DB or authority
+was added: the binding's durability is exactly the canonical pairing challenge's.
+
+**Enrollment consent is per computer.** `ConnectorEnrollmentConsent` now names
+`device_id`, and `issue_connector_enrollment_challenge` requires the requested
+computer to be the one the consent names (`enrollment_consent_device_mismatch`).
+One consent therefore enrolls exactly one PC; a second computer needs its own
+explicit consent.
+
+```text
+CONSENT_BOUND_TO_DEVICE                       = True
+ONE_CONSENT_PER_DEVICE                        = True
+UNLIMITED_PCS_PER_ENROLLMENT_CONSENT          = False
+SERVER_BOUND_CHALLENGE_REQUIRED               = True
+CHALLENGE_RECEIPT_IS_NOT_AUTHORITY            = True
+UNSIGNED_CHALLENGE_RECEIPT_TRUSTED            = False
+ENROLLMENT_BINDING_VERIFIED_BEFORE_BROKER_MUTATION = True
+```
+
+**New bounded refusals** (all raised before any mutating redemption call):
+
+| situation | bounded reason |
+| --- | --- |
+| presented consent is not the issuing consent | `enrollment_consent_swap_denied` |
+| presented computer is not the issued one | `enrollment_device_swap_denied` |
+| another canonical owner | `enrollment_binding_owner_mismatch` |
+| another account/workspace scope | `enrollment_binding_scope_mismatch` |
+| consent names another computer | `enrollment_consent_device_mismatch` |
+| no enrollment binding on the challenge | `enrollment_binding_absent` |
+| consent liveness not re-verified | `enrollment_consent_liveness_dependency_unmet` |
+
+**Declared dependency, default deny.** Re-checking a consent against its current
+record (was it withdrawn *after* issuance?) belongs to a server-trusted consent
+authority that does not exist yet. `CONSENT_LIVENESS_AUTHORITY` names it,
+`consent_liveness_authority_implemented=False`, and both issuance and redemption
+refuse until a trusted caller attests that it re-verified the consent there
+(`consent_liveness_reverified_by_existing_path` is an **input**, like
+`p01_verified_by_existing_path` — never proof, and it can only relax a refusal).
+A *signed* enrollment receipt is likewise declared `not implemented`: this
+contract accepts **no** client-supplied receipt at all, so there is nothing for a
+Connector or browser to forge.
+
+### Evidence / limits (S1 follow-up)
+
+- New negative tests in the same suite: S1-32 … S1-45 — a different consent cannot
+  redeem (and the original still can, with the challenge unconsumed), a withdrawn
+  consent's outstanding challenge refuses with both the old and a replacement
+  consent, one consent cannot enroll a second computer, two computers each need
+  their own consent, a fabricated/foreign challenge id and a forged proof are
+  refused, a challenge minted without an enrollment binding cannot be redeemed as
+  an enrollment, another owner or workspace refuses, and every one of those
+  asserts **0 Broker bindings** and an unconsumed challenge.
+- The secure end-to-end path is unchanged and still green: verified session +
+  consent → issue → redeem → the credential authenticates against the canonical
+  Broker.
+
 ### Evidence / limits (S1)
 
 - Tests: `packages/padiem-control-plane/tests/test_padiem_connector_enrollment.py`
