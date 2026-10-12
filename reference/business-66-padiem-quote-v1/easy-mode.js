@@ -334,16 +334,11 @@
       }
       modelChatTurns = history.concat([{ role: "assistant", content: result.answer }]);
       addMessage("assistant", result.answer);
-      const choices = [
+      setChips([
         { label: "질문받으며 견적 작성", action: () => startGuidedIfReady() },
-        { label: "기존 견적 이어서 하기", action: resumeAccountGuidedOrLocal }
-      ];
-      const currentReadiness = bridge && typeof bridge.readiness === "function" ? bridge.readiness() : null;
-      if (currentReadiness && currentReadiness.ready) {
-        choices.push({ label: "CGI 견적서 바로 작성", action: startCgiQuoteEntry });
-      }
-      choices.push({ label: "처음으로", action: showHome });
-      setChips(choices);
+        { label: "기존 견적 이어서 하기", action: resumeAccountGuidedOrLocal },
+        { label: "처음으로", action: showHome }
+      ]);
       setInput(submitFreeFormText, "이어서 질문하거나 견적에 대해 이야기해 주세요");
     }).catch(() => {
       if (requestScopeRevision !== accountScopeRevision) return;
@@ -355,28 +350,7 @@
     });
   }
 
-  function startCgiQuoteEntry() {
-    const bridge = window.B66QuoteRuntimeBridge;
-    const readiness = bridge && typeof bridge.readiness === "function" ? bridge.readiness() : null;
-    if (!readiness || !readiness.authenticated || !readiness.ready ||
-        typeof bridge.interpret !== "function") {
-      App.toast("인증된 CGI 견적 양식과 회사 정보가 준비된 뒤 이용할 수 있습니다.");
-      return;
-    }
-    // A dedicated explicit user action, not message-keyword inference.
-    setChips([
-      { label: "AI 대화로 돌아가기", action: () => {
-        setInput(submitFreeFormText, "AI에게 계속 질문해 주세요");
-        setChips([{ label: "CGI 견적서 바로 작성", action: startCgiQuoteEntry },
-                  { label: "처음으로", action: showHome }]);
-      }},
-      { label: "처음으로", action: showHome }
-    ]);
-    setInput((text) => runPrimaryInterpretation(text, { cgi: true }),
-      "CGI 양식으로 작성할 견적 내용을 한 번에 적어 주세요");
-  }
-
-  function runPrimaryInterpretation(rawText, options) {
+  function runPrimaryInterpretation(rawText) {
     // A second click/Enter must not launch a second B14 interpretation attempt.
     if (interpretationInFlight) return;
     // Never truncate a provider-bound quote request in the browser.
@@ -384,24 +358,14 @@
     if (!text) return;
     const bridge = window.B66QuoteRuntimeBridge;
     const readiness = bridge && typeof bridge.readiness === "function" ? bridge.readiness() : null;
-    // Any signed-in Chat composer input is model-first, irrespective of
-    // approved CGI assignment or message keywords. Only an explicit
-    // "CGI 견적서 바로 작성" action may invoke quote interpretation.
-    // Never fall back to the quote parser when AI chat is unavailable.
-    const explicitCgi = options && options.cgi === true;
-    if (readiness && readiness.authenticated && !explicitCgi) {
-      if (bridge && typeof bridge.chat === "function") {
-        runModelDialogue(text, bridge);
-      } else {
-        if (lastEasyView === "home") {
-          lastEasyView = "free-form";
-          recordProductState("free-form");
-          startConversation();
-        }
-        addMessage("user", text);
-        addMessage("assistant", "AI 대화가 아직 연결되지 않았습니다. 선택한 모델과 로그인 상태를 확인해 주세요.");
-        setInput((reply) => runPrimaryInterpretation(reply, { cgi: true }), "다시 질문해 주세요");
-      }
+    // Real signed-in conversation is model-driven, independent of CGI assignment.
+    // Quote creation/approval remains on the explicit Guided/Direct/CGI flow.
+    const isGreeting = /^(?:hi|hey|hello|하이|안녕(?:하세요)?|반가워요|반갑습니다)[ .!?~]*$/iu.test(text);
+    // Preserve the approved one-shot CGI quote interpretation from Home.
+    // Explicit Chat, greetings and no-CGI accounts use real model conversation.
+    if (readiness && readiness.authenticated && bridge && typeof bridge.chat === "function" &&
+        (!readiness.ready || lastEasyView === "free-form" || isGreeting)) {
+      runModelDialogue(text, bridge);
       return;
     }
     if (!readiness || !readiness.ready) {
@@ -424,7 +388,7 @@
           { label: "질문받으며 새 견적", action: () => startGuidedIfReady(text) },
           { label: "처음으로", action: showHome }
         ]);
-        setInput((reply) => runPrimaryInterpretation(reply, { cgi: true }), "견적 내용을 입력하거나 아래 작업을 선택해 주세요");
+        setInput(submitFreeFormText, "견적 내용을 입력하거나 아래 작업을 선택해 주세요");
       } else {
         addMessage("user", text);
         addMessage("assistant", runtimeNotReadyMessage(readiness));
@@ -452,7 +416,7 @@
           addMessage("assistant", typeof result.question === "string" && result.question.trim()
             ? result.question
             : "견적에 필요한 값을 조금 더 알려 주세요.");
-          setInput((reply) => runPrimaryInterpretation(reply, { cgi: true }), result.code === "needs_clarification"
+          setInput(submitFreeFormText, result.code === "needs_clarification"
             ? "견적 내용을 다시 적어 주세요"
             : "답변을 적어 주세요");
           return;
@@ -464,7 +428,7 @@
           addMessage("assistant", unavailable
             ? "사용 가능한 AI 모델 목록을 불러오지 못했습니다. 새로고침 후 다시 확인해 주세요."
             : "입력창 오른쪽에서 AI 모델을 선택한 뒤 다시 보내 주세요.");
-          setInput((reply) => runPrimaryInterpretation(reply, { cgi: true }), "견적 내용을 입력해 주세요");
+          setInput(submitFreeFormText, "견적 내용을 입력해 주세요");
           composer.value = text;
           if (picker && !picker.disabled) picker.focus();
           return;
@@ -481,7 +445,7 @@
         // pending quote. Don't tell the customer to retype their whole request.
         const pending = bridge && typeof bridge.pendingQuote === "function"
           ? bridge.pendingQuote() : null;
-        setInput((reply) => runPrimaryInterpretation(reply, { cgi: true }), pending
+        setInput(submitFreeFormText, pending
           ? "방금 답변을 다시 적어 주세요"
           : "다시 한 문장으로 적어 주세요");
         return;
@@ -489,14 +453,14 @@
       const replace = App.replaceDraft(result.draft, {});
       if (!replace || replace.ok !== true) {
         addMessage("assistant", "생성된 견적을 화면에 반영하지 못했습니다. 다시 시도해 주세요.");
-        setInput((reply) => runPrimaryInterpretation(reply, { cgi: true }), "다시 한 문장으로 적어 주세요");
+        setInput(submitFreeFormText, "다시 한 문장으로 적어 주세요");
         return;
       }
       addResultReview(result.draft, false);
     }).catch(() => {
       if (requestScopeRevision !== accountScopeRevision) return;
       addMessage("assistant", "해석 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.");
-      setInput((reply) => runPrimaryInterpretation(reply, { cgi: true }), "다시 한 문장으로 적어 주세요");
+      setInput(submitFreeFormText, "다시 한 문장으로 적어 주세요");
     }).finally(() => {
       // Keep only the completed result, the missing-field question, or the
       // failure notice. A stale "작성하고 있습니다" misleads customers.
@@ -1359,13 +1323,11 @@
         ? "편하게 질문하거나 견적을 상담해 주세요. 선택하신 AI 모델과 대화할 수 있습니다. 견적서 저장과 발급은 별도의 확인 단계에서 진행합니다."
         : "로그인하면 AI와 일반 대화 및 견적 상담을 할 수 있습니다. 로그인 전에도 질문형 견적 작성은 이용할 수 있습니다."
     );
-    const actions = [{ label: "질문받으며 만들기", action: startGuidedIfReady }];
-    if (ready && ready.ready) {
-      actions.push({ label: "CGI 견적서 바로 작성", action: startCgiQuoteEntry });
-    }
-    actions.push({ label: "처음으로", action: showHome });
-    setChips(actions);
-    setInput(submitFreeFormText, "질문하거나 견적에 대해 편하게 말씀해 주세요");
+    setChips([
+      { label: "질문받으며 만들기", action: startGuidedIfReady },
+      { label: "처음으로", action: showHome }
+    ]);
+    setInput(submitFreeFormText, "예: 대한건설에 배관 100미터, 미터당 18000원, 부가세 별도");
     $("easyComposerNote").textContent = "";
   }
 
