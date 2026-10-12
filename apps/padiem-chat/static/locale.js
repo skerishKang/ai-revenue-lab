@@ -190,7 +190,7 @@
       "coming-soon": "준비 중", "login-after": "로그인 후", "checking": "확인 중", "setup-needed": "설정 필요", "empty": "비어 있음", "create-new": "새로 만들기",
       "projects-empty": "아직 프로젝트가 없습니다.", "history-title": "최근 대화", "history-empty": "저장된 대화가 없습니다.", "outputs-empty": "저장한 답변이 없습니다.",
       "create-project-aria": "새 프로젝트 만들기", "login-unavailable-title": "로그인 기능이 설정되지 않았습니다", "login-title": "Google 또는 아이디로 로그인합니다", "logout-title": "현재 계정에서 로그아웃합니다", "expired-title": "세션이 만료되었습니다. 다시 로그인합니다",
-      "settings-close": "설정 닫기", "theme-picker": "테마 선택", "language-picker": "언어 선택", "starter-grid": "추천 질문", "web-starter-title": "웹에서 찾아줘", "web-starter-copy": "웹 검색 · 준비 중",
+      "settings-close": "설정 닫기", "theme-picker": "테마 선택", "language-picker": "언어 선택", "starter-grid": "추천 질문", "writing-starter-title": "글쓰기 도움", "writing-starter-copy": "메일 · 문장 · 초안", "web-starter-title": "웹에서 찾아줘", "web-starter-copy": "웹 검색 · 준비 중",
       "composer": "메시지 작성", "project-banner": "프로젝트", "project-edit": "지침·파일", "project-exit": "나가기", "attachment-preview-alt": "선택한 사진 미리보기", "attachment-remove": "첨부 파일 제거",
       "message-input-label": "메시지 입력", "web-unavailable-title": "웹 검색은 준비 중입니다", "research-unavailable-title": "심층 리서치는 현재 사용할 수 없습니다", "cancel": "취소", "cancel-answer": "답변 생성 취소", "send": "메시지 보내기",
       "project-new": "새 프로젝트", "project-edit-title": "프로젝트 지침·파일", "project-close": "프로젝트 창 닫기", "project-name": "프로젝트 이름", "project-name-placeholder": "예: 제주 가족여행",
@@ -389,7 +389,7 @@
       "coming-soon": "Coming soon", "login-after": "Log in first", "checking": "Checking", "setup-needed": "Setup needed", "empty": "Empty", "create-new": "Create new",
       "projects-empty": "No projects yet.", "history-title": "Recent conversations", "history-empty": "No saved conversations.", "outputs-empty": "No saved answers.",
       "create-project-aria": "Create a new project", "login-unavailable-title": "Login is not configured", "login-title": "Log in with Google or your ID", "logout-title": "Log out of the current account", "expired-title": "Your session expired. Sign in again",
-      "settings-close": "Close settings", "theme-picker": "Theme selection", "language-picker": "Language selection", "starter-grid": "Suggested prompts", "web-starter-title": "Search the web", "web-starter-copy": "Web search · coming soon",
+      "settings-close": "Close settings", "theme-picker": "Theme selection", "language-picker": "Language selection", "starter-grid": "Suggested prompts", "writing-starter-title": "Writing help", "writing-starter-copy": "Emails · sentences · drafts", "web-starter-title": "Search the web", "web-starter-copy": "Web search · coming soon",
       "composer": "Message composer", "project-banner": "Project", "project-edit": "Instructions & files", "project-exit": "Exit", "attachment-preview-alt": "Selected image preview", "attachment-remove": "Remove attachment",
       "message-input-label": "Message input", "web-unavailable-title": "Web search is coming soon", "research-unavailable-title": "Deep research is currently unavailable", "cancel": "Cancel", "cancel-answer": "Cancel answer generation", "send": "Send message",
       "project-new": "New project", "project-edit-title": "Project instructions & files", "project-close": "Close project dialog", "project-name": "Project name", "project-name-placeholder": "e.g. Jeju family trip",
@@ -410,11 +410,11 @@
   const promptCopy = {
     ko: {
       explain: "AI를 아주 쉽게 설명해줘", trip: "3박 4일 제주도 가족 여행 계획을 짜줘", dinner: "오늘 저녁 메뉴를 세 가지 추천해줘",
-      starterExplain: "AI를 처음 쓰는 사람에게 AI가 뭔지 아주 쉽게 설명해줘", starterLife: "이번 주말 가족과 집 근처에서 할 만한 일을 추천해줘"
+      starterExplain: "AI를 처음 쓰는 사람에게 AI가 뭔지 아주 쉽게 설명해줘", starterLife: "이번 주말 가족과 집 근처에서 할 만한 일을 추천해줘", starterWriting: "목적과 읽는 사람에 맞는 이메일이나 문장 초안을 작성해줘"
     },
     en: {
       explain: "Explain AI in very simple terms.", trip: "Plan a four-day family trip to Jeju.", dinner: "Suggest three dinner ideas for tonight.",
-      starterExplain: "Explain what AI is in very simple terms for someone using it for the first time.", starterLife: "Suggest things my family can do near home this weekend."
+      starterExplain: "Explain what AI is in very simple terms for someone using it for the first time.", starterLife: "Suggest things my family can do near home this weekend.", starterWriting: "Draft an email or short piece of writing for the intended audience and purpose."
     }
   };
 
@@ -531,7 +531,7 @@
       [".empty-copy", "copy"], [".starter:nth-child(1) strong", "easy-title"], [".starter:nth-child(1) small", "easy-copy"], [".starter:nth-child(2) strong", "life-title"], [".starter:nth-child(2) small", "life-copy"],
       [".starter:nth-child(3) strong", "document-title"], ["#attachmentButton span:last-child", "file"], ["#webSearchButton span:last-child", "web"], ["#deepResearchButton span:last-child", "research"], [".sidebar-footer span:last-child", "footer"], [".side-item:nth-child(1) .mini-badge", "coming-soon"],
       ["#projectsTitle", "projects"], ["#projectsEmpty", "projects-empty"], ["#historyTitle", "history-title"], ["#historyEmpty", "history-empty"], ["#outputsTitle", "saved"], ["#outputsEmpty", "outputs-empty"],
-      [".starter:nth-child(4) strong", "web-starter-title"], [".starter:nth-child(4) small", "web-starter-copy"], [".project-banner-copy > span", "project-banner"], ["#editProjectButton", "project-edit"], ["#exitProjectButton", "project-exit"],
+      ["#writingStarterButton strong", "writing-starter-title"], ["#writingStarterButton small", "writing-starter-copy"], ["#webSearchStarterButton strong", "web-starter-title"], ["#webSearchStarterButton small", "web-starter-copy"], [".project-banner-copy > span", "project-banner"], ["#editProjectButton", "project-edit"], ["#exitProjectButton", "project-exit"],
       ["#projectDialogTitle", "project-new"], ["label[for='projectNameInput']", "project-name"], ["#projectFilesTitle", "project-files"], [".project-files-heading small", "project-files-limit"], [".project-file-add", "project-file-add"],
       ["#projectFilesEmpty", "project-files-empty"], [".project-files-note", "project-files-note"], ["#projectDialogCancel", "cancel"], ["#projectSaveButton", "save"],
       ["#savedOutputDialogTitle", "saved-output-title"], ["label[for='savedOutputTitleInput']", "title"], ["#savedOutputCopy", "copy-action"], ["#savedOutputDownload", "download"], ["#savedOutputRename", "save-title"], ["#savedOutputDelete", "delete"], ["#cancelStreamButton", "cancel"]
@@ -590,6 +590,7 @@
     setPrompt(".recent-item:nth-of-type(3)", "dinner", lang);
     setPrompt(".starter:nth-child(1)", "starterExplain", lang);
     setPrompt(".starter:nth-child(2)", "starterLife", lang);
+    setPrompt("#writingStarterButton", "starterWriting", lang);
   }
 
   function syncAttachmentCapabilityCopy(lang) {
