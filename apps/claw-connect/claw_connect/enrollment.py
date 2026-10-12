@@ -1,31 +1,45 @@
 """PADIEM Connector enrollment — one reviewed login, then one canonical binding.
 
-Authority boundaries (see ``docs/architecture/PADIEM_CONNECTOR_PLATFORM_DECISION_20261012.md``):
+Authority boundaries (see ``docs/architecture/PADIEM_CONNECTOR_PLATFORM_DECISION_20261012.md``
+and ``docs/architecture/PADIEM_CONNECTOR_S2_ENROLLMENT_CLIENT_CONTRACT_20261012.md``):
 
 * The **browser is never authoritative** for account or workspace identity. This
   module only carries the proofs the reviewed user supplies from the official
   PADIEM authentication surface; it never collects a password, a browser cookie
   or a private browser profile.
+* Enrollment challenges are redeemed **only** through the authenticated S1
+  enrollment server route (``redeem_connector_enrollment`` semantics: canonical
+  session check → server-derived scope → explicit consent → durable liveness
+  re-read → binding probe → scoped redemption → server receipt). The generic
+  pairing ``redeem()`` path is **closed** for enrollment — S1 refuses
+  enrollment-bound challenges on it with
+  ``enrollment_bound_challenge_requires_scoped_redemption`` — so this module
+  never calls it for enrollment.
 * Device pairing, credential custody and the ONLINE transition are **delegated**
   to the canonical Local Agent Broker surfaces in ``kagent``
   (``local_agent_broker_pairing_client``, ``local_agent_secure_transport``,
   ``local_agent_server_projection``). This file adds **no** second pairing,
   device-lifecycle, session or credential authority.
 * The raw device credential is never read, logged, projected or written here. It
-  is persisted only by the canonical protected credential store.
+  is persisted only by the canonical protected credential store. The one-time
+  pairing code is used once to compute the HMAC possession proof and is never
+  persisted, logged or sent beyond that single redemption call.
 * Enrollment is **outbound-only**. No inbound socket is opened, no public inbound
   port is required and no UPnP/port mapping is attempted.
 * Registration is **not** a P01 READ/WRITE approval. Nothing here grants one.
 
 Because the LOCAL1 server side is not deployed yet
 (``PRODUCTION_ACTIVATION=NO`` / ``LIVE_PRODUCTION_PAIRING_CALL=0`` in
-``local_agent_pairing_activation_3102``), every live call fails closed until a
-pinned broker endpoint is explicitly configured. A missing or partial
-configuration is reported as blocked, never as a success.
+``local_agent_pairing_activation_3102``, no authenticated enrollment HTTP
+endpoint, durable consent authority unwired), every live call fails closed
+until a pinned enrollment server route is explicitly wired. A missing or
+partial configuration is reported as blocked, never as a success.
 """
 
 from __future__ import annotations
 
+import hashlib
+import hmac
 import json
 import os
 import re
@@ -34,7 +48,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Protocol
 
 from . import CONNECT_PRODUCT, WEB_URL
 from .connection import ConnectionState
@@ -83,6 +97,80 @@ RECORD_KEYS = frozenset(
         "blocked_reason",
     }
 )
+
+#: S1 server contract this client aligns with (LOCAL1 PR #4438, read-only
+#: mirror of ``padiem.connector-enrollment.v1``). The Connector never mints,
+#: stores or modifies that contract; it only speaks the client side of it.
+S1_ENROLLMENT_CONTRACT_VERSION = "padiem.connector-enrollment.v1"
+
+#: Canonical pairing-proof transcript and prefix. Byte-identical to S1
+#: ``local_agent_broker_pairing.PAIRING_PROOF_TRANSCRIPT`` /
+#: ``PAIRING_PROOF_REF_PREFIX``; the proof-vector test pins the values so a
+#: silent divergence can never ship.
+ENROLLMENT_PROOF_TRANSCRIPT = "claw-local-agent-pairing-proof.v1"
+ENROLLMENT_PROOF_REF_PREFIX = "pairing-proof:"
+_PROOF_REF_RE = re.compile(r"^pairing-proof:[0-9a-f]{64}$")
+
+#: The generic pairing route refuses enrollment-bound challenges with this S1
+#: reason before any mutation. The Connector therefore never calls generic
+#: ``redeem()`` for enrollment; attempting the legacy path raises with the
+#: client-side reason below instead of registering anything.
+ENROLLMENT_BOUND_CHALLENGE_GENERIC_REASON = (
+    "enrollment_bound_challenge_requires_scoped_redemption"
+)
+ENROLLMENT_SCOPED_REDEMPTION_REQUIRED = "enrollment_scoped_redemption_required"
+
+#: Bounded refusal vocabulary the enrollment server may return. Mirrors the S1
+#: ``enrollment_*`` / ``canonical_*`` reasons. Unknown text is never echoed,
+#: only mapped to the fallback.
+ENROLLMENT_REFUSAL_REASONS = frozenset(
+    {
+        "canonical_session_required",
+        "canonical_session_inactive",
+        "canonical_subject_not_user",
+        "canonical_tenant_required",
+        "canonical_session_product_not_reviewed",
+        "enrollment_scope_unavailable",
+        "enrollment_scope_unverified",
+        "enrollment_scope_owner_mismatch",
+        "enrollment_scope_product_scoped_denied",
+        "enrollment_consent_required",
+        "enrollment_consent_withdrawn",
+        "enrollment_consent_scope_mismatch",
+        "enrollment_consent_device_mismatch",
+        "enrollment_binding_absent",
+        "enrollment_consent_swap_denied",
+        "enrollment_device_swap_denied",
+        "enrollment_binding_owner_mismatch",
+        "enrollment_binding_scope_mismatch",
+        "enrollment_consent_liveness_dependency_unmet",
+        "enrollment_dependency_unavailable",
+        "enrollment_challenge_not_found",
+        "enrollment_challenge_expired",
+        "enrollment_duplicate_redeem_denied",
+        "enrollment_proof_invalid",
+        "enrollment_rate_limited",
+        "enrollment_capacity_exhausted",
+        "enrollment_scoped_redemption_required",
+        "enrollment_duplicate_device_denied",
+        "enrollment_binding_revoked_denied",
+        "enrollment_credential_expired_denied",
+        "enrollment_dependency_refused",
+    }
+)
+ENROLLMENT_REFUSAL_FALLBACK = "enrollment_dependency_refused"
+
+#: No authenticated enrollment HTTP endpoint exists yet: S1 exposes library
+#: functions only (``issue_connector_enrollment_challenge`` /
+#: ``redeem_connector_enrollment``) and the pairing HTTP bridge serves the
+#: generic route. Until CENTRAL wires a product route, every live redemption
+#: fails closed through ``UnconfiguredEnrollmentServerPort``.
+SERVER_ENROLLMENT_ENDPOINT_EXISTS = False
+ENROLLMENT_SERVER_WIRED = False
+#: Durable consent authority is server-side and unwired
+#: (``CONSENT_LIVENESS_AUTHORITY_IMPLEMENTED=False`` in S1). The Connector
+#: never substitutes its own liveness verdict.
+DURABLE_CONSENT_AUTHORITY_WIRED = False
 
 
 class BrokerNotConfiguredError(RuntimeError):
@@ -343,13 +431,219 @@ def _parse_iso(value: str, field_name: str) -> datetime:
     return _aware(parsed, field_name)
 
 
+def build_enrollment_proof_ref(
+    *, challenge_id: str, device_id: str, pairing_code: str
+) -> str:
+    """HMAC-SHA256 possession proof over the canonical pairing transcript.
+
+    Byte-identical to S1 ``pairing_proof_ref``: key is the one-time pairing
+    code (UTF-8), message is
+    ``"<transcript>\\n<challenge_id>\\n<device_id>"`` (UTF-8). The Connector
+    sends only this proof — the raw code is never persisted, logged or sent
+    beyond the single redemption call that computes it.
+    """
+    challenge = _safe_ref(challenge_id, "challenge_id")
+    device = _safe_ref(device_id, "device_id")
+    code = _pairing_code(pairing_code)
+    message = f"{ENROLLMENT_PROOF_TRANSCRIPT}\n{challenge}\n{device}".encode("utf-8")
+    digest = hmac.new(code.encode("utf-8"), message, hashlib.sha256).hexdigest()
+    return f"{ENROLLMENT_PROOF_REF_PREFIX}{digest}"
+
+
+def _proof_ref(value: Any, field_name: str = "proof_ref") -> str:
+    if not isinstance(value, str) or not _PROOF_REF_RE.fullmatch(value.strip()):
+        raise EnrollmentContractError(
+            f"{field_name} must be a canonical HMAC-SHA256 proof reference"
+        )
+    return value.strip()
+
+
+@dataclass(frozen=True, slots=True)
+class EnrollmentRedemptionRequest:
+    """The only thing the Connector ever sends to the enrollment server.
+
+    Possession proof only: ``challenge_id`` + ``device_id`` + ``proof_ref``.
+    There are deliberately NO owner / workspace / consent / password / cookie /
+    session fields — the server derives scope from its own canonical session
+    and reads consent from its own durable record. A request carrying any such
+    field must be rejected by the server and is never built here.
+    """
+
+    challenge_id: str
+    device_id: str
+    proof_ref: str
+
+    def __post_init__(self) -> None:
+        object.__setattr__(
+            self, "challenge_id", _safe_ref(self.challenge_id, "challenge_id")
+        )
+        object.__setattr__(self, "device_id", _safe_ref(self.device_id, "device_id"))
+        object.__setattr__(self, "proof_ref", _proof_ref(self.proof_ref))
+
+    def safe_dict(self) -> dict[str, Any]:
+        return {
+            "challenge_id": self.challenge_id,
+            "device_id": self.device_id,
+            "proof_ref": self.proof_ref,
+            "client_asserted_owner": False,
+            "client_asserted_scope": False,
+            "client_asserted_consent": False,
+            "password_transmitted": False,
+            "cookie_transmitted": False,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class EnrollmentRedemptionResponse:
+    """Authenticated server verdict for one redemption request.
+
+    Success carries the server-owned binding facts (scope included — the
+    Connector accepts the server's account/workspace as authoritative and never
+    supplies its own). Refusal carries one bounded ``reason`` only; upstream
+    text is never echoed. Either shape is verified by
+    :func:`verify_enrollment_receipt` before anything is persisted.
+    """
+
+    ok: bool
+    binding_ref: str | None = None
+    device_id: str | None = None
+    account_ref: str | None = None
+    workspace_ref: str | None = None
+    credential_generation: int | None = None
+    credential_expires_at: datetime | None = None
+    consent_id: str | None = None
+    reason: str | None = None
+    retryable: bool = False
+
+    def __post_init__(self) -> None:
+        if self.ok is not True and self.ok is not False:
+            raise EnrollmentContractError("enrollment response ok must be a boolean")
+        if self.ok:
+            if self.reason is not None:
+                raise EnrollmentContractError(
+                    "a successful enrollment response carries no refusal reason"
+                )
+            for field_name in (
+                "binding_ref",
+                "device_id",
+                "account_ref",
+                "workspace_ref",
+                "consent_id",
+            ):
+                _safe_ref(getattr(self, field_name), field_name)
+            generation = self.credential_generation
+            if (
+                not isinstance(generation, int)
+                or isinstance(generation, bool)
+                or generation < 1
+            ):
+                raise EnrollmentContractError(
+                    "credential_generation must be a positive integer"
+                )
+            _aware(self.credential_expires_at, "credential_expires_at")
+        else:
+            if (
+                not isinstance(self.reason, str)
+                or self.reason not in ENROLLMENT_REFUSAL_REASONS
+            ):
+                raise EnrollmentContractError(
+                    f"enrollment refusal must carry a bounded reason, "
+                    f"got {self.reason!r}"
+                )
+            if self.retryable is not True and self.retryable is not False:
+                raise EnrollmentContractError("retryable must be a boolean")
+
+    def safe_dict(self) -> dict[str, Any]:
+        payload: dict[str, Any] = {"ok": self.ok}
+        if self.ok:
+            payload.update(
+                {
+                    "binding_ref": self.binding_ref,
+                    "device_id": self.device_id,
+                    "account_ref": self.account_ref,
+                    "workspace_ref": self.workspace_ref,
+                    "credential_generation": self.credential_generation,
+                    "credential_expires_at": _iso(self.credential_expires_at),
+                    "consent_id": self.consent_id,
+                    "raw_device_credential": False,
+                }
+            )
+        else:
+            payload.update({"reason": self.reason, "retryable": self.retryable})
+        return payload
+
+
+class EnrollmentServerPort(Protocol):
+    """Authenticated S1 enrollment redemption endpoint (server side).
+
+    Deployment contract for the future product route wrapping S1
+    ``redeem_connector_enrollment``: the transport must present the canonical
+    session server-side (never accept one from the Connector), resolve
+    owner/workspace itself, re-read the durable consent record, probe the
+    server-owned binding, call the scoped ``redeem_enrollment`` and return the
+    receipt. Until such a route exists, deployments wire
+    :class:`UnconfiguredEnrollmentServerPort` and every redemption fails
+    closed — never as a synthetic success.
+    """
+
+    def redeem_enrollment(
+        self, request: EnrollmentRedemptionRequest, *, now: datetime
+    ) -> EnrollmentRedemptionResponse:
+        ...
+
+
+class UnconfiguredEnrollmentServerPort:
+    """Fail-closed default: no enrollment server route, no enrollment."""
+
+    def redeem_enrollment(
+        self, request: EnrollmentRedemptionRequest, *, now: datetime
+    ) -> EnrollmentRedemptionResponse:
+        del request, now
+        raise BrokerNotConfiguredError(
+            "authenticated enrollment server route is not wired "
+            "(BLOCKED_DEPENDENCY: S1 product route + durable consent authority); "
+            "enrollment cannot be completed"
+        )
+
+
+def verify_enrollment_receipt(
+    response: EnrollmentRedemptionResponse,
+    *,
+    expected_device_id: str,
+    now: datetime,
+) -> EnrollmentRedemptionResponse:
+    """Verify an authenticated server success receipt before persisting anything.
+
+    Refusals (``ok=False``) pass through for the caller to map to a bounded
+    error. A success receipt is accepted only when it names this exact device,
+    carries a live credential generation/expiry and well-formed scope refs.
+    Anything else raises — an unauthenticated or mismatched receipt can never
+    produce a binding record or a CONNECTED display.
+    """
+    if not isinstance(response, EnrollmentRedemptionResponse):
+        raise EnrollmentContractError(
+            "enrollment server returned an unauthenticated receipt shape"
+        )
+    if not response.ok:
+        return response
+    if response.device_id != expected_device_id:
+        raise EnrollmentContractError("enrollment_device_swap_denied")
+    observed_at = _aware(now, "now")
+    expires_at = _aware(response.credential_expires_at, "credential_expires_at")
+    if expires_at <= observed_at:
+        raise EnrollmentContractError("enrollment_credential_expired_denied")
+    return response
+
+
 class ConnectorEnrollment:
     """The Connector's enrollment service.
 
     It answers three questions and nothing more: *is this PC registered?*,
     *what is its Broker device identity?*, and *what should the UI show?*.
-    Every live network operation is delegated to the canonical Local Agent
-    Broker client so no second authority is created here.
+    Every live redemption goes through the authenticated S1 enrollment server
+    route (``EnrollmentServerPort``) so no second authority is created here.
+    The Connector is never an authentication or approval authority: it proves
+    possession of the one-time code and accepts the server's verdict.
     """
 
     def __init__(
@@ -360,6 +654,7 @@ class ConnectorEnrollment:
         broker_base_url: str = "",
         clock: Callable[[], datetime] | None = None,
         pairing_client_factory: Callable[..., Any] | None = None,
+        enrollment_server_factory: Callable[..., EnrollmentServerPort] | None = None,
     ) -> None:
         self._state_dir = (
             Path(state_dir).expanduser() if state_dir is not None else default_state_dir()
@@ -367,7 +662,12 @@ class ConnectorEnrollment:
         self._web_url = web_url
         self._broker_base_url = (broker_base_url or "").strip()
         self._clock = clock or _now_default
+        # Legacy seam, retained only to fail closed with a migration signal:
+        # the generic pairing client path is closed for enrollment (S1 refuses
+        # enrollment-bound challenges on it before any mutation), so it is
+        # never called from the enrollment flow.
         self._pairing_client_factory = pairing_client_factory
+        self._enrollment_server_factory = enrollment_server_factory
         self._record: EnrollmentRecord | None = None
 
     # -- configuration ------------------------------------------------------
@@ -478,7 +778,10 @@ class ConnectorEnrollment:
     ) -> EnrollmentResult:
         """Redeem a reviewed pairing code into a canonical device binding.
 
-        Fails closed unless a pinned broker endpoint is configured.
+        The code is proven through the authenticated S1 enrollment server
+        route only (scoped redemption). Fails closed unless a pinned endpoint
+        and a wired enrollment server port are both configured; every refusal
+        leaves zero bindings and consumes nothing locally.
         """
         moment = _aware(now, "now") if now is not None else self._clock()
         challenge = _safe_ref(challenge_id, "challenge_id")
@@ -495,7 +798,7 @@ class ConnectorEnrollment:
                 "this device binding was revoked; a fresh login is required"
             )
 
-        result = self._redeem_with_canonical_client(
+        result = self._redeem_via_enrollment_server(
             challenge_id=challenge, pairing_code=code, device_id=record.device_id, now=moment
         )
 
@@ -511,7 +814,7 @@ class ConnectorEnrollment:
         self.flush()
         return result
 
-    def _redeem_with_canonical_client(
+    def _redeem_via_enrollment_server(
         self,
         *,
         challenge_id: str,
@@ -519,39 +822,74 @@ class ConnectorEnrollment:
         device_id: str,
         now: datetime,
     ) -> EnrollmentResult:
-        """Delegate redemption to the canonical Local Agent Broker pairing client.
+        """Redeem through the authenticated S1 enrollment server route only.
 
-        The seam is the request port so the offline tests never open a socket
-        and so a deployment supplies the pinned production transport without
-        this module growing a second contract.
+        The generic pairing-client redeem path is never used here: S1 refuses
+        enrollment-bound challenges on it with
+        ``enrollment_bound_challenge_requires_scoped_redemption`` before any
+        mutation, so calling it could never succeed. The seam is the server
+        port so the offline tests never open a socket and so a deployment
+        supplies the pinned production transport without this module growing
+        a second contract. The one-time code is consumed into the possession
+        proof and never persisted.
         """
-        if self._pairing_client_factory is None:
+        if self._enrollment_server_factory is None:
+            if self._pairing_client_factory is not None:
+                raise EnrollmentContractError(
+                    f"{ENROLLMENT_SCOPED_REDEMPTION_REQUIRED}: this enrollment "
+                    "challenge must be redeemed through the authenticated "
+                    "enrollment server route; the generic pairing client path "
+                    "is closed for enrollment"
+                )
             raise BrokerNotConfiguredError(
-                "canonical Local Agent Broker pairing client is not wired; "
-                "enrollment cannot be completed"
+                "authenticated enrollment server route is not wired "
+                "(BLOCKED_DEPENDENCY: S1 product route + durable consent "
+                "authority); enrollment cannot be completed"
             )
-        client = self._pairing_client_factory(
-            broker_base_url=self._broker_base_url, device_id=device_id
+        try:
+            server = self._enrollment_server_factory(
+                broker_base_url=self._broker_base_url, device_id=device_id
+            )
+        except (BrokerNotConfiguredError, EnrollmentContractError):
+            raise
+        except Exception as exc:
+            raise BrokerNotConfiguredError(
+                "enrollment server port failed to initialise; failing closed"
+            ) from exc
+        proof_ref = build_enrollment_proof_ref(
+            challenge_id=challenge_id, device_id=device_id, pairing_code=pairing_code
         )
-        enrollment = client.redeem(
-            challenge_id=challenge_id, pairing_code=pairing_code, device_id=device_id, now=now
+        request = EnrollmentRedemptionRequest(
+            challenge_id=challenge_id, device_id=device_id, proof_ref=proof_ref
         )
-        binding = enrollment.binding
-        if binding.state is not None and getattr(binding.state, "value", None) not in (
-            None,
-            LIFECYCLE_PAIRED_OFFLINE,
-        ):
+        try:
+            response = server.redeem_enrollment(request, now=now)
+        except (BrokerNotConfiguredError, EnrollmentContractError):
+            raise
+        except Exception as exc:
+            raise BrokerNotConfiguredError(
+                "enrollment server unreachable; failing closed without "
+                "claiming any registration"
+            ) from exc
+        verified = verify_enrollment_receipt(
+            response, expected_device_id=device_id, now=now
+        )
+        if not verified.ok:
             raise EnrollmentContractError(
-                "canonical pairing client returned a non-offline binding; "
-                "ONLINE may only come from the server projection"
+                verified.reason or ENROLLMENT_REFUSAL_FALLBACK
             )
+        # Success lands as paired_offline. ONLINE may only come later from the
+        # server projection via mark_online(); the server receipt itself never
+        # carries a lifecycle claim.
         return EnrollmentResult(
-            device_id=binding.device_id,
-            binding_ref=binding.binding_ref,
-            account_ref=binding.account_ref,
-            workspace_ref=binding.workspace_ref,
-            credential_generation=int(binding.credential_generation),
-            credential_expires_at=_aware(binding.credential_expires_at, "credential_expires_at"),
+            device_id=device_id,
+            binding_ref=_safe_ref(verified.binding_ref, "binding_ref"),
+            account_ref=_safe_ref(verified.account_ref, "account_ref"),
+            workspace_ref=_safe_ref(verified.workspace_ref, "workspace_ref"),
+            credential_generation=int(verified.credential_generation),
+            credential_expires_at=_aware(
+                verified.credential_expires_at, "credential_expires_at"
+            ),
             enrolled_at=now,
             lifecycle=LIFECYCLE_PAIRED_OFFLINE,
         )
@@ -671,10 +1009,25 @@ class ConnectorEnrollment:
 __all__ = [
     "BrokerNotConfiguredError",
     "ConnectorEnrollment",
+    "DURABLE_CONSENT_AUTHORITY_WIRED",
+    "ENROLLMENT_CONTRACT_VERSION",
+    "ENROLLMENT_PROOF_REF_PREFIX",
+    "ENROLLMENT_PROOF_TRANSCRIPT",
+    "ENROLLMENT_REFUSAL_FALLBACK",
+    "ENROLLMENT_REFUSAL_REASONS",
+    "ENROLLMENT_SCOPED_REDEMPTION_REQUIRED",
+    "ENROLLMENT_SERVER_WIRED",
     "EnrollmentContractError",
     "EnrollmentRecord",
+    "EnrollmentRedemptionRequest",
+    "EnrollmentRedemptionResponse",
     "EnrollmentResult",
-    "ENROLLMENT_CONTRACT_VERSION",
+    "EnrollmentServerPort",
+    "S1_ENROLLMENT_CONTRACT_VERSION",
+    "SERVER_ENROLLMENT_ENDPOINT_EXISTS",
+    "UnconfiguredEnrollmentServerPort",
+    "build_enrollment_proof_ref",
+    "verify_enrollment_receipt",
     "LIFECYCLE_ONLINE",
     "LIFECYCLE_PAIRED_OFFLINE",
     "LIFECYCLE_REVOKED",
