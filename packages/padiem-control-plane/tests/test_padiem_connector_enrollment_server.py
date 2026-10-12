@@ -88,6 +88,7 @@ class Sessions:
 class Handoff:
     def __init__(self):
         self.enabled = True
+        self.fail_delivery = False
         self.delivered = []
 
     def ready(self, *, challenge_id, device_id, now):
@@ -97,6 +98,8 @@ class Handoff:
     def deliver_once(self, *, challenge_id, device_id, credential, receipt, now):
         del now
         assert credential and isinstance(credential, bytes)
+        if self.fail_delivery:
+            return False
         assert receipt.device_id == device_id
         assert receipt.enrollment.challenge_id == challenge_id
         self.delivered.append((device_id, credential))
@@ -128,7 +131,7 @@ def make_server(*, missing=None):
         allowed_product_ids=frozenset({PRODUCT}),
         scope_resolver=Scope(), pairing_authority=pairing,
         consent_authority=consents, session_authority=sessions,
-        credential_handoff=handoff,
+        credential_handoff=handoff, binding_revoker=broker,
     )
     if missing:
         ports[missing] = None
@@ -146,7 +149,7 @@ def issue_and_proof(srv):
 
 @pytest.mark.parametrize("missing", [
     "scope_resolver", "pairing_authority", "consent_authority",
-    "session_authority", "credential_handoff",
+    "session_authority", "credential_handoff", "binding_revoker",
 ])
 def test_no_server_authority_means_no_challenge_minted(missing):
     srv, broker, pairing, *_ = make_server(missing=missing)
@@ -208,6 +211,21 @@ def test_handoff_unready_refuses_before_consuming_challenge_or_binding():
     assert exc.value.code == "enrollment_server_dependency_unavailable"
     assert not broker._bindings
     assert pairing.pending_challenge_count == 1
+
+
+def test_failed_credential_delivery_revokes_the_canonical_binding():
+    srv, broker, pairing, _, _, sink = make_server()
+    issued, proof = issue_and_proof(srv)
+    sink.fail_delivery = True
+    with pytest.raises(ControlPlaneContractError) as exc:
+        srv.redeem(
+            challenge_id=issued.challenge.challenge_id, device_id=DEVICE,
+            proof_ref=proof, now=NOW + timedelta(seconds=1),
+        )
+    assert exc.value.code == "enrollment_credential_handoff_failed"
+    assert not sink.delivered
+    assert len(broker._bindings) == 1
+    assert all(b.state.value == "revoked" for b in broker._bindings.values())
 
 
 def test_withdrawal_after_issue_fails_closed_without_binding():
