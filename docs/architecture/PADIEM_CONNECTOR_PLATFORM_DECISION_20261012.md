@@ -151,4 +151,6 @@ LOCAL2 보고에 따르면 `D:\padiem-hark-xlsxadopt-3936-261012-7\evidence\hark
 - B66 embedded UI: #4430 (병합, 제품별 서버 grant 구현 전 기본 숨김).
 - Hark adopt 실사용 차단: #3936.
 
-다음 실제 개발 우선순위: **S1 Windows 실제 자동 등록 → S2 서버 검증된 제품별 PC 목록 → S3 파일 왕복·XLSX 로컬 편집 E2E**. 원격 UI/VM은 검증 가능한 후순위 R&D로 유지.
+추가로 웹→PC 자동 Pull·로컬 XLSX 처리·웹 결과 반환의 구체적인 독립 수용 과제는 [#4434](https://github.com/skerishKang/ai-revenue-lab/issues/4434)에서 추적한다. 기존 #3580의 로컬→클라우드 파일 경로와 중복 구현하지 않는다.
+
+다음 실제 개발 우선순위: **S1 Windows 실제 자동 등록 → S2 서버 검증된 제품별 PC 목록 → S3 #4434 파일 왕복·XLSX 로컬 편집 E2E**. 원격 UI/VM은 검증 가능한 후순위 R&D로 유지.
