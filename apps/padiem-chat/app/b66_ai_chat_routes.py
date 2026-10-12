@@ -106,21 +106,24 @@ async def b66_ai_chat(request: Request) -> JSONResponse:
     complete = getattr(client, "complete_registered_b66_chat_model", None)
     if not callable(resolve) or not callable(complete):
         return _error(503, "ai_chat_unavailable", "AI 대화 실행 경로가 준비되지 않았습니다.")
+    denied = await _authorize_quote_usage(request, uid)
+    if denied is not None:
+        return denied
     requirements = B66QuoteTaskRequirements(selected_model_id=model_id)
     try:
         ready = getattr(client, "ensure_registered_quote_runtime_available", None)
         if not callable(ready):
+            await _refund_active_reservation()
             return _error(503, "ai_chat_unavailable", "AI 대화 실행 경로가 준비되지 않았습니다.")
         ready()
         route = validate_authorized_route(await resolve(requirements), requirements)
     except B66ModelRouteError as exc:
+        await _refund_active_reservation()
         return _model_route_error_response(exc)
     except Exception:
+        await _refund_active_reservation()
         return _error(503, "ai_chat_unavailable", "AI 모델을 사용할 수 없습니다.")
 
-    denied = await _authorize_quote_usage(request, uid)
-    if denied is not None:
-        return denied
     try:
         result = await complete(
             [dict(m) for m in messages],
