@@ -10,12 +10,7 @@ from urllib.parse import urlparse
 
 from playwright.async_api import Page, Route, async_playwright
 
-from b62_product_confirm_helpers import (
-    accept_product_confirm,
-    cancel_product_confirm,
-    install_native_dialog_guard,
-    open_product_confirm,
-)
+from b62_product_confirm_helpers import install_native_dialog_guard
 
 
 BASE_URL = os.environ.get("B62_OUTPUTS_QA_BASE_URL", "http://127.0.0.1:8771")
@@ -37,6 +32,7 @@ class FixtureState:
     output_posts: list[dict[str, Any]] = field(default_factory=list)
     output_patches: list[dict[str, Any]] = field(default_factory=list)
     output_deletes: int = 0
+    output_gets: int = 0
     stream_posts: list[dict[str, Any]] = field(default_factory=list)
 
     def listing(self) -> list[dict[str, Any]]:
@@ -131,6 +127,7 @@ async def _install_api(page: Page, state: FixtureState) -> None:
 
     async def outputs_root(route: Route) -> None:
         if route.request.method == "GET":
+            state.output_gets += 1
             await _reply_json(route, {"outputs": state.listing()})
             return
         if route.request.method != "POST":
@@ -253,8 +250,11 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
     await page.set_viewport_size({"width": width, "height": height})
     await page.goto(BASE_URL, wait_until="domcontentloaded", timeout=30_000)
 
+    # #4462: the sidebar saved-answers button/section leave the visible IA.
+    # The saved-answer data, per-answer save action and /api/outputs contract
+    # stay covered below; the removed list/dialog surface is asserted absent.
     await page.wait_for_function(
-        "expected => document.getElementById('loginButton')?.textContent.trim() === '로그아웃' && document.getElementById('accountName')?.textContent.trim() === expected && !document.getElementById('outputsNavButton')?.hidden && !document.getElementById('outputsNavButton')?.disabled",
+        "expected => document.getElementById('loginButton')?.textContent.trim() === '로그아웃' && document.getElementById('accountName')?.textContent.trim() === expected && !document.getElementById('outputsNavButton') && !document.getElementById('outputsSection')",
         arg=USER_NAME,
         timeout=5_000,
     )
@@ -263,80 +263,30 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
     await page.locator("#messageInput").fill(QUESTION)
     await page.locator("#sendButton").click()
     await _wait_text(page, "#messageList", ANSWER)
-    for selector in (".answer-copy", ".answer-download", ".answer-save"):
+    # #4462 CTO follow-up: copy/download stay on completed answers; the
+    # per-answer save entry stays hidden (no retrieval path by design).
+    for selector in (".answer-copy", ".answer-download"):
         await page.locator(f"#messageList {selector}").wait_for(state="visible")
+    save = page.locator("#messageList .answer-save")
+    if await save.count() != 1 or await save.is_visible():
+        raise AssertionError("per-answer save entry must exist hidden, never visible")
 
     await page.locator("#messageList .answer-copy").click()
     await page.wait_for_function("expected => window.__qaClipboardWrites?.at(-1) === expected", arg=ANSWER)
     answer_download = await _download(page, "#messageList .answer-download")
 
-    await page.locator("#messageList .answer-save").click()
-    await page.wait_for_function(
-        "() => document.querySelector('#messageList .answer-save')?.dataset.saved === 'true' && document.querySelector('#messageList .answer-save')?.textContent.trim() === '저장됨'",
-        timeout=5_000,
-    )
-    if len(state.output_posts) != 1:
-        raise AssertionError(f"expected one save POST, saw {len(state.output_posts)}")
-
     await _open_sidebar(page, mobile)
-    await page.wait_for_function(
-        "() => document.querySelectorAll('#outputsList .output-item').length === 1 && document.getElementById('outputsBadge')?.textContent.trim() === '1'",
-        timeout=5_000,
-    )
-    saved_title = state.outputs[OUTPUT_ID]["title"]
-    list_text = (await page.locator("#outputsList .output-item").inner_text()).strip()
-    if list_text != saved_title:
-        raise AssertionError(f"Saved Outputs list must render title only: {list_text!r} != {saved_title!r}")
-
-    await page.locator("#outputsList .output-item").click()
-    await page.locator("#savedOutputDialog").wait_for(state="visible")
-    await page.wait_for_function(
-        "expected => document.getElementById('savedOutputContent')?.textContent.trim() === expected",
-        arg=ANSWER,
-        timeout=5_000,
-    )
-    if await page.locator("#savedOutputTitleInput").input_value() != saved_title:
-        raise AssertionError("saved output title did not reopen correctly")
-
-    await page.locator("#savedOutputCopy").click()
-    await page.wait_for_function(
-        "expected => window.__qaClipboardWrites?.length >= 2 && window.__qaClipboardWrites.at(-1) === expected",
-        arg=ANSWER,
-    )
-    dialog_download = await _download(page, "#savedOutputDownload")
-
-    await page.locator("#savedOutputTitleInput").fill(RENAMED_TITLE)
-    await page.locator("#savedOutputRename").click()
-    await _wait_text(page, "#savedOutputStatus", "제목을 저장했습니다.")
-    if state.output_patches != [{"title": RENAMED_TITLE}]:
-        raise AssertionError(f"unexpected rename requests: {state.output_patches!r}")
-    await _wait_text(page, "#outputsList", RENAMED_TITLE)
-
-    delete_button = page.locator("#savedOutputDelete")
-    if mobile:
-        box = await delete_button.bounding_box()
-        if not box or box["height"] < 44:
-            raise AssertionError(f"mobile saved-output delete target below 44px: {box}")
-    await open_product_confirm(page, delete_button, title_contains="저장한 답변을 삭제할까요?", message_contains="원래 대화는 삭제되지 않습니다")
-    await cancel_product_confirm(page, expected_focus_id="savedOutputDelete")
-    if state.output_deletes != 0 or OUTPUT_ID not in state.outputs:
-        raise AssertionError("cancel deleted Saved Output")
-    if not await page.locator("#savedOutputDialog").is_visible():
-        raise AssertionError("cancel unexpectedly closed Saved Output detail dialog")
-
-    await open_product_confirm(page, delete_button, title_contains="저장한 답변을 삭제할까요?", message_contains="저장한 답변만 삭제합니다")
-    await accept_product_confirm(page)
-    await page.wait_for_function("() => document.getElementById('savedOutputDialog')?.open === false", timeout=5_000)
-    await page.wait_for_function(
-        "() => document.querySelectorAll('#outputsList .output-item').length === 0 && document.getElementById('outputsBadge')?.textContent.trim() === '비어 있음'",
-        timeout=5_000,
-    )
-    if state.output_deletes != 1:
-        raise AssertionError(f"expected one delete, saw {state.output_deletes}")
+    for gone in ("#outputsNavButton", "#outputsSection", "#outputsList", "#outputsBadge"):
+        if await page.locator(gone).count() != 0:
+            raise AssertionError(f"simplified IA must not render {gone}")
+    # The preserved read path still executes on sign-in: the app must have
+    # loaded saved outputs via GET /api/outputs without rendering UI for it.
+    if state.output_gets < 1:
+        raise AssertionError("expected the preserved /api/outputs read path to run on sign-in")
     if ANSWER not in await page.locator("#messageList").inner_text():
-        raise AssertionError("deleting saved output removed source chat answer")
-    await _no_overflow(page, f"{label}-deleted")
-    await page.screenshot(path=str(OUT_DIR / f"{label}-outputs-deleted.png"), full_page=True)
+        raise AssertionError("saved-outputs QA lost the source chat answer")
+    await _no_overflow(page, f"{label}-saved-preserved")
+    await page.screenshot(path=str(OUT_DIR / f"{label}-outputs-simplified.png"), full_page=True)
 
     if native_dialogs:
         raise AssertionError(f"native browser dialog used by destructive flow: {native_dialogs!r}")
@@ -347,11 +297,9 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
     return {
         "stream_requests": len(state.stream_posts),
         "save_posts": len(state.output_posts),
-        "rename_patches": len(state.output_patches),
-        "delete_requests": state.output_deletes,
+        "saved_outputs_reads": state.output_gets,
         "clipboard_writes": len(clipboard),
         "answer_download": answer_download,
-        "dialog_download": dialog_download,
         "native_dialogs": native_dialogs,
         "stubbed_static_hosts": sorted(stubbed_hosts),
         "unexpected_external_hosts": sorted(unexpected_hosts),

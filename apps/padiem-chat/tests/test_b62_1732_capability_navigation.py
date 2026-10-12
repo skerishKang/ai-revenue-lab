@@ -35,7 +35,6 @@ def _buttons() -> dict[str, dict[str, str | None]]:
 def test_deployment_conditional_primary_controls_fail_closed_hidden() -> None:
     buttons = _buttons()
     conditional = {
-        "projectsNavButton",
         "loginButton",
         "webSearchStarterButton",
         "webSearchButton",
@@ -46,6 +45,9 @@ def test_deployment_conditional_primary_controls_fail_closed_hidden() -> None:
         assert "hidden" in buttons[identifier], identifier
         assert "disabled" in buttons[identifier], identifier
         assert buttons[identifier].get("aria-disabled") == "true", identifier
+    # #4462: the duplicate sidebar Projects button is removed; the project
+    # surface is the lower projects section + create button only.
+    assert "projectsNavButton" not in buttons
 
     html = INDEX.read_text(encoding="utf-8")
     assert "<span class=\"mini-badge\">준비 중</span>" not in html

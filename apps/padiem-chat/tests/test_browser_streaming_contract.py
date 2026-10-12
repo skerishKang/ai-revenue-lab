@@ -234,7 +234,10 @@ def test_answer_lifecycle_is_explicit_and_success_actions_are_completed_only() -
     outputs = (APP_PATH.parent / "outputs.js").read_text(encoding="utf-8")
     export = (APP_PATH.parent / "conversation-export.js").read_text(encoding="utf-8")
     assert 'if (!lifecycleApi().isCompleted(article))' in outputs
-    assert 'button.hidden = !outputsReady || !eligible' in outputs
+    # #4462 CTO follow-up: copy/download stay completed-only while the
+    # per-answer save entry stays hidden with the removed saved-answers list.
+    assert 'button.hidden = !outputsReady || !eligible' not in outputs
+    assert 'save.hidden = true' in outputs
     assert 'if (hasIncompleteAssistant()) return [];' in export
     assert 'messageList.addEventListener("padiem:message-lifecycle"' in outputs
     assert 'messageList.addEventListener("padiem:message-lifecycle"' in export
