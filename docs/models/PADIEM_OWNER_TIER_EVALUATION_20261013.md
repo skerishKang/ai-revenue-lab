@@ -13,7 +13,7 @@
 | Free | SenseNova 6.8 Flash Lite — `sensenova/sensenova-6.8-flash-lite` | Included | ON | Real serving/Free membership not inferred |
 | Free conditional | LongCat 2.5 Preview Free — `opencode-go/longcat-2.5-preview-free` | Owner reports input feels small; **test then retain/remove** | **OFF**, Go provider OFF | #4505 input boundary / user experience pending |
 | Free conditional | StepFun Step 5 Preview Free — `opencode-go/step-5-preview-free` | Owner reports busy/server overload; **test then retain/remove** | **OFF**, Go provider OFF | #4505 Go evidence pending; do not equate Kilo-route 429 with Go |
-| **Plus** | **Gemini 3.5 Flash Lite** — `google/gemini-3.5-flash-lite` | **2nd priority** | ON | **LIVE NOT RUN**: [run 38291355344](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38291355344) blocked by exact-main SHA race before any provider POST. No inference of model success/failure; no automatic rerun |
+| **Plus** | **Gemini 3.5 Flash Lite** — `google/gemini-3.5-flash-lite` | **2nd priority** | ON | **LIVE PASS**: [Gemini 3.5 live run 38292210671](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38292210671), HTTP 2xx, exact provider+model match, **1,861ms**. Earlier [run 38291355344](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38291355344) stopped before POST due main drift. Actual provider POST **1 total**, retries/fallback 0 |
 | Plus | Gemma 4 — exact choice **PENDING**: `google/gemma-4-26b-a4b-it` or `google/gemma-4-31b-it` | Owner said “Gemma 4”, did **not** choose between 26B/31B | Both ON | No variant selected or live acceptance |
 | Plus | ExLab (exact identity **PENDING**) | Owner said “ExLab” without exact Plus target; do not infer same Qwen as Pro | UNKNOWN until selected | No Plus model assignment |
 | **Pro** | OpenCode Go Muse Spark **1.2** — **EXACT ID UNKNOWN / NOT REGISTERED** | **Add only after official catalog/account/model-ID/wire/license proof** | NOT REGISTERED | No real test; do not alias to Muse 1.3 |
@@ -38,7 +38,7 @@
 | --- | --- | --- |
 | B14 exact registered ID + model/provider enabled | 14 ON / 6 OFF; `groups.plus/pro/max` empty | B14 JSON and registry loader |
 | Gemini contract/mock | LOCAL3 73 prior tests; #4504 merged 40+ new guard tests, exact PR CI green | [#4499](https://github.com/skerishKang/ai-revenue-lab/issues/4499), [#4504](https://github.com/skerishKang/ai-revenue-lab/pull/4504) |
-| Gemini actual provider response | **3.1 PASS** (real once, 11,039ms); **3.5 NOT RUN** (exact-main guard blocked at workflow preflight, 0 POST). Do not repeat 3.1 | [#4499](https://github.com/skerishKang/ai-revenue-lab/issues/4499), [3.1 run 38288787901](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38288787901), [3.5 blocked run 38291355344](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38291355344) |
+| Gemini actual provider response | **3.1 PASS** 11,039ms; **3.5 PASS** 1,861ms, both exact model matched, one actual POST each, no network retry or fallback. Sample size one each; not sustained speed/stability | [#4499](https://github.com/skerishKang/ai-revenue-lab/issues/4499), [3.1 success](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38288787901), [3.5 success](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38292210671) |
 | LongCat and Step 5 Go Free acceptance | **HOLD / test pending**; source provider/models OFF; `context_window=0` = unknown bound, not zero effective context | [#4505](https://github.com/skerishKang/ai-revenue-lab/issues/4505), #4416 |
 | OpenCode Go paid/contributor and Muse 1.2 | Exact route/terms/account permission unknown; no speculative registration or customer traffic | #4416; official serving provider's dated terms |
 | Product-specific primary/fallback persistence and runtime enforcement | **NOT ACTIVE**; S0 groups only, no site write fanout | #4453, #4480, #4483, #4428 |
@@ -46,7 +46,7 @@
 ## 4. Decision and testing order
 
 1. Preserve current first-round membership **as an owner evaluation table only**; do not set B14 `groups` or product tier DB.
-2. **Do not re-run Gemini 3.1** (single synthetic live success recorded). For Gemini 3.5, last workflow was stopped **before any provider call** by a concurrent main update; only a distinct exact-main/version checked execution after current release coordination, never an automatic retry or fallback.
+2. **Both Gemini 3.1 and 3.5 have PASSED one bounded real API run each**; no extra connection smoke needed. Do not enable member tiers, auto-fallback or customer-wide model selection from a single sample; streaming, sustained latency/uptime and site entitlements require separate acceptance.
 3. LOCAL3 [#4516](https://github.com/skerishKang/ai-revenue-lab/issues/4516) owns a **separate** ExLab Qwen B14 one-shot source gate with 429/504 fail-closed and no actual ExLab provider POST in the source phase; do not alter Gemini allowlists.
 4. Investigate Go LongCat input ceiling and StepFun overload **without enabling OFF routes**; compare provider-specific evidence.
 5. Request exact **Gemma 4 variant**, exact **Plus ExLab model**, verified **Muse 1.2 upstream ID**, and actual **fallback ID(s)** only when the owner revisits the decisions. Do not silently fill these gaps.
