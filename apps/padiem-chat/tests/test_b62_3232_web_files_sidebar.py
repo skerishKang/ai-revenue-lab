@@ -365,6 +365,10 @@ async function fetchImpl(url, opts) {
     if (FIXTURE.failAfterPages && pages > FIXTURE.failAfterPages) {
       return jsonResponse(503, { error: { code: "project_files_unavailable" } });
     }
+    // One transient page failure, followed by a genuinely successful retry.
+    if (FIXTURE.failPageOnce && pages === 2) {
+      return jsonResponse(503, { error: { code: "project_files_unavailable" } });
+    }
     const limit = Number(queryValue(u, "limit") || "50");
     const result = pageOf(ownerFilesOf(FIXTURE.sessions[FIXTURE.activeSession]), limit, queryValue(u, "cursor"));
     if (result.rejected) return jsonResponse(400, { error: { code: "invalid_cursor" } });
@@ -607,6 +611,33 @@ const PROJECT_B = { id: "pb", name: "PB", instructions: "", created_at: "2026-09
     if (s.partial !== true || s.complete !== false) fail("FAILED_PAGE_STATE:" + JSON.stringify([s.partial, s.complete]));
     if (!/전체가 아닙니다/.test(s.note)) fail("FAILED_PAGE_NOTE:" + s.note);
     if (!s.hasMoreRow) fail("RETRY_PATH_LOST");
+  } else if (mode === "page_failure_recovery") {
+    dispatchAuth({ loaded: true, authenticated: true, historyReady: true, projectFilesReady: true });
+    await tick(30);
+    clickEntry();
+    await tick(80);
+    let s = snapshot();
+    if (s.fileRows.length !== 1 || !s.hasMore || s.partial) fail("RECOVERY_FIRST_PAGE");
+    rowButtons()[rowButtons().length - 1].click();
+    await tick(80);
+    s = snapshot();
+    if (!s.partial || s.fileRows.length !== 1 || !s.hasMore) fail("RECOVERY_FAILURE_NOT_SEEN");
+    // Retry exactly the failed cursor. The prior error warning must disappear.
+    rowButtons()[rowButtons().length - 1].click();
+    await tick(80);
+    s = snapshot();
+    if (s.partial || s.complete || s.fileRows.length !== 2 || !s.hasMore) {
+      fail("RECOVERY_WARNING_STALE_AFTER_SUCCESS:" + JSON.stringify(s));
+    }
+    rowButtons()[rowButtons().length - 1].click();
+    await tick(80);
+    s = snapshot();
+    if (s.partial || !s.complete || s.hasMore || s.fileRows.length !== 3) {
+      fail("RECOVERY_FINAL_STATE_WRONG:" + JSON.stringify(s));
+    }
+    if (!/저장된 파일 3개/.test(s.note) || /전체가 아닙니다/.test(s.note)) {
+      fail("RECOVERY_FINAL_COPY_WRONG:" + s.note);
+    }
   } else if (mode === "account_switch") {
     dispatchAuth({ loaded: true, authenticated: true, historyReady: true, projectFilesReady: true });
     await tick(30);
@@ -791,3 +822,16 @@ def test_a_failed_page_never_reports_the_walk_as_finished() -> None:
     assert snapshot["complete"] is False
     assert snapshot["partial"] is True
     assert len(snapshot["fileRows"]) == 1
+
+
+def test_successful_page_retry_clears_partial_warning_and_can_finish() -> None:
+    result = _run_harness(
+        "page_failure_recovery", _SIGNED_IN_AUTH, _PAGE_SESSIONS,
+        {"pageCap": 1, "failPageOnce": True},
+    )
+    snapshot = result["snapshot"]
+    assert snapshot["complete"] is True
+    assert snapshot["partial"] is False
+    assert snapshot["hasMore"] is False
+    assert len(snapshot["fileRows"]) == 3
+    assert snapshot["ownerFileApiCalls"] == 4
