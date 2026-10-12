@@ -465,8 +465,8 @@ class _StubResponse:
 @pytest.mark.asyncio
 async def test_helper_single_huge_chunk_rejected_without_accumulator_peak():
     # One 2MiB decoded chunk (small finite fixture, no gigabyte alloc).
-    # Pre-append fix: the whole chunk lands in the accumulator first, so the
-    # traced peak reaches ~2MiB. Fixed helper must raise before copying it.
+    # Before the fix, the whole chunk was copied into the accumulator first,
+    # causing ~2MiB traced extra allocation. The fixed helper rejects that copy.
     big = b"Z" * (CAP + 1024 * 1024)
     stub = _StubResponse([big])
     resumed = tracemalloc.is_tracing()
