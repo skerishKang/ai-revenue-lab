@@ -9,6 +9,8 @@ DOC_STATUS = CANONICAL
 SCOPE = NAVIGATION_ONLY
 ~~~
 
+> **2026-10-13 owner first-round tiers / runtime truth:** [Free·Plus·Pro·Max 혜택 고려 후보 및 실검증 상태](PADIEM_OWNER_TIER_EVALUATION_20261013.md) · [현재 포트폴리오 이슈·문서 통합 현황](../operations/PADIEM_PORTFOLIO_ISSUE_DOC_RECONCILIATION_20261013.md). 이 링크들은 승인 후보와 실행 가능성의 차이를 명시하며 B14 JSON의 ID 권위를 대체하지 않습니다.
+
 모델 목록·모델 가격·실행 가능 상태는 수시로 바뀝니다. 이 파일은 모델 정보를 복사하는 또 하나의 원장이 아니라 **각 사실의 소유자를 연결하는 단일 진입점**입니다.
 
 | 확인할 사실 | 공식 근거 |
