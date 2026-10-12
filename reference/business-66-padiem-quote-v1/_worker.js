@@ -2,6 +2,11 @@ const PADIEM_CHAT_ORIGIN = "https://chat.padiem.net";
 const INTAKE_PATH = "/api/v1/quote/intake";
 const PADIEM_PREFIX = "/api/padiem";
 const MAX_PADIEM_BODY_BYTES = 32 * 1024;
+/* The authenticated dialogue route forwards the bounded same-view transcript,
+   not a single quote sentence. Its budget equals the Worker's browser transport
+   guard (6MB) so this relay can never reject a conversation the application
+   itself accepts. Every other bridge route keeps the 32KiB ceiling. */
+const MAX_RELAY_BODY_BYTES = new Map([["/api/b66/ai/chat", 6 * 1024 * 1024]]);
 const SAVED_SKILL_ROW = /^b66skill_[0-9a-f]{32}$/;
 const SKILL_CANDIDATE_ROW = /^b66cand_[0-9a-f]{32}$/;
 const B66_ASSET_ROW = /^b66asset_[0-9a-f]{32}$/;
@@ -302,12 +307,13 @@ async function handlePadiemBridge(request, url, env) {
 
   let body;
   if (request.method !== "GET" && request.method !== "HEAD") {
+    const maxBodyBytes = MAX_RELAY_BODY_BYTES.get(upstreamPath) || MAX_PADIEM_BODY_BYTES;
     const length = Number(request.headers.get("content-length") || "0");
-    if (Number.isFinite(length) && length > MAX_PADIEM_BODY_BYTES) {
+    if (Number.isFinite(length) && length > maxBodyBytes) {
       return jsonError("request_too_large", 413);
     }
     body = await request.arrayBuffer();
-    if (body.byteLength > MAX_PADIEM_BODY_BYTES) {
+    if (body.byteLength > maxBodyBytes) {
       return jsonError("request_too_large", 413);
     }
   }
