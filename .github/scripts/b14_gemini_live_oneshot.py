@@ -226,6 +226,13 @@ def canonical_chat_body(spec: GeminiSpec) -> dict[str, Any]:
         ],
         "temperature": 0,
         "max_tokens": SYNTHETIC_MAX_TOKENS,
+        # Explicitly pin the CURRENT B14 gateway's real routing knobs.
+        # We may not rely on default values remaining one-shot in the future.
+        "business14": {
+            "allow_external_fallback": False,
+            "max_attempts": 1,
+            "max_retries": 0,
+        },
     }
 
 
