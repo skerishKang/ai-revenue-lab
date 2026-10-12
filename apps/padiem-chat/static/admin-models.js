@@ -17,7 +17,7 @@
   const state = {
     catalog: [], products: null, selected: null,
     selectableIds: new Set(), fullInventory: false,
-    authorized: false, pendingRequest: 0,
+    authorized: false, writeEnabled: false, pendingReceipt: null, pendingRequest: 0,
   };
 
   function node(tag, value, className) {
@@ -81,6 +81,8 @@
   }
 
   function clearPreview() {
+    state.pendingReceipt = null;
+    $("applyBtn").hidden = true;
     $("previewResult").hidden = true;
     $("previewResult").replaceChildren();
     $("previewResult").className = "preview";
@@ -244,13 +246,21 @@
     root.replaceChildren();
     root.className = "preview";
     root.hidden = false;
-    root.append(node("strong", "✓ 변경안 검증 완료"), node("small", "저장 및 운영 반영 없음"));
+    root.append(node("strong", "✓ 변경안 검증 완료"),
+      node("small", state.writeEnabled ? "아직 저장되지 않았습니다 · 제품 실행 경로 미적용" : "저장 및 운영 반영 없음"));
     const list = node("ul");
-    for (const item of result.targets) {
-      list.append(node("li", PRODUCTS[item.product_id].name + " · " +
-        item.tier + " · " + ACTIONS[item.action]));
+    for (const item of (result.diff || result.targets || [])) {
+      const product = item.product || item.product_id;
+      const before = item.previous ? " (" + ACTIONS[item.previous] + " →)" : "";
+      list.append(node("li", (PRODUCTS[product]?.name || product) + " · " +
+        item.tier + " · " + before + " " + ACTIONS[item.action]));
     }
     root.append(list);
+    if (state.writeEnabled && typeof result.confirmation_receipt === "string" &&
+        result.confirmation_receipt.length > 40) {
+      state.pendingReceipt = result.confirmation_receipt;
+      $("applyBtn").hidden = false;
+    }
   }
 
   async function getJSON(path, options = {}) {
@@ -273,13 +283,15 @@
     $("previewBtn").disabled = true;
     clearPreview();
     try {
-      const result = await getJSON("/api/admin/models/preview", {
+      const result = await getJSON(state.writeEnabled ?
+        "/api/admin/models/change-preview" : "/api/admin/models/preview", {
         method: "POST", headers: {"Content-Type": "application/json"},
         body: JSON.stringify({model_id: state.selected.model_id, targets}),
       });
       if (seq !== state.pendingRequest) return;
       if (result.applied !== false || result.persisted !== false ||
-          result.dispatch_authorized === true || !Array.isArray(result.targets)) {
+          result.runtime_enforced === true ||
+          !(Array.isArray(result.targets) || Array.isArray(result.diff))) {
         throw new Error("invalid_preview_receipt");
       }
       renderPreview(result);
@@ -298,6 +310,8 @@
   async function load() {
     const seq = ++state.pendingRequest;
     state.authorized = false;
+    state.writeEnabled = false;
+    $("policyHistory").hidden = true;
     state.catalog = [];
     state.selectableIds = new Set();
     state.fullInventory = false;
@@ -321,12 +335,14 @@
     clearPreview();
     alertMessage("");
     try {
-      await getJSON("/api/admin/models/me");
+      const me = await getJSON("/api/admin/models/me");
       if (seq !== state.pendingRequest) return;
       const result = await getJSON("/api/admin/models/snapshot");
       if (seq !== state.pendingRequest) return;
-      if (result.mode !== "read_only" || result.write_enabled !== false ||
+      if (!["read_only", "stored_only"].includes(result.mode) ||
           !Array.isArray(result.b14?.models)) throw new Error("invalid_snapshot");
+      state.writeEnabled = me.write_enabled === true && result.write_enabled === true &&
+        result.products?.central?.status === "stored_only";
       const complete = result.b14.complete_registration_inventory === true &&
         Array.isArray(result.b14.registered_models);
       state.selectableIds = new Set(result.b14.models.map((m) => m.model_id));
@@ -345,10 +361,15 @@
       $("catalogStatus").textContent = complete ?
         "ON " + state.catalog.filter((m) => m.b14_enabled && !m.owner_excluded).length +
         " · OFF " + state.catalog.filter((m) => !m.b14_enabled).length : "일부 목록";
-      $("modeBadge").textContent = "미리보기 전용";
+      $("modeBadge").textContent = state.writeEnabled ? "정책 저장 가능" : "미리보기 전용";
+      $("policyHistory").hidden = !state.writeEnabled;
+      $("writeNote").firstChild.textContent = state.writeEnabled ?
+        "저장된 정책도 제품 실행에는 아직 적용되지 않습니다. " :
+        "미리보기 단계에서는 설정이 바뀌지 않습니다. ";
       renderCatalog();
       renderSources();
       renderPlacement();
+      if (state.writeEnabled) await loadAudit();
     } catch (err) {
       if (seq !== state.pendingRequest) return;
       const code = String(err.message);
@@ -364,6 +385,68 @@
         code === "global_model_admin_forbidden" ? "중앙 관리자 권한이 없습니다." :
         code === "central_admin_not_configured" ? "중앙 관리자 권한이 아직 설정되지 않았습니다." :
         "관리 데이터를 불러오지 못했습니다. (" + code + ")");
+    }
+  }
+
+  async function loadAudit() {
+    const root = $("policyAudit");
+    root.replaceChildren(node("small", "이력 확인 중"));
+    try {
+      const data = await getJSON("/api/admin/models/audit");
+      if (!Array.isArray(data.events)) throw new Error("invalid_audit");
+      root.replaceChildren();
+      if (!data.events.length) root.append(node("p", "저장된 변경 이력이 없습니다.", "placeholder"));
+      for (const entry of data.events.slice(0, 12)) {
+        const row = node("div", null, "source-card");
+        row.append(node("strong", "리비전 " + entry.revision + " · " +
+          (entry.operation === "rollback" ? "롤백" : "저장")));
+        row.append(node("small", String(entry.at || "")));
+        root.append(row);
+      }
+    } catch (err) {
+      root.replaceChildren(node("small", "이력 조회 불가: " + String(err.message)));
+    }
+  }
+
+  async function applyChange() {
+    if (!state.writeEnabled || !state.pendingReceipt) return;
+    if (!window.confirm("선택한 중앙 정책을 D1에 저장하시겠습니까? 제품의 실제 모델 실행 정책은 변경되지 않습니다.")) return;
+    const receipt = state.pendingReceipt;
+    $("applyBtn").disabled = true;
+    try {
+      const data = await getJSON("/api/admin/models/change-apply", {
+        method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({confirmation_receipt: receipt}),
+      });
+      if (data.persisted !== true || data.runtime_enforced !== false) {
+        throw new Error("invalid_commit");
+      }
+      await load();
+      alertMessage("정책 리비전 " + data.revision + " 저장 완료 · 실제 제품 실행은 미적용", "success");
+    } catch (err) {
+      clearPreview();
+      alertMessage("정책 저장 실패: " + String(err.message));
+    } finally {
+      $("applyBtn").disabled = false;
+    }
+  }
+
+  async function rollbackPreview() {
+    if (!state.writeEnabled) return;
+    const revision = Number($("rollbackRevision").value);
+    if (!Number.isSafeInteger(revision) || revision < 0) {
+      alertMessage("유효한 롤백 리비전을 입력해 주세요."); return;
+    }
+    clearPreview();
+    try {
+      const result = await getJSON("/api/admin/models/rollback-preview", {
+        method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({target_revision: revision}),
+      });
+      renderPreview(result);
+      alertMessage("");
+    } catch (err) {
+      alertMessage("롤백 미리보기 실패: " + String(err.message));
     }
   }
 
@@ -383,6 +466,8 @@
     input.addEventListener("change", updateSelection);
   }
   $("previewBtn").addEventListener("click", preview);
+  $("applyBtn").addEventListener("click", applyChange);
+  $("rollbackPreviewBtn").addEventListener("click", rollbackPreview);
   $("refreshBtn").addEventListener("click", load);
   $("helpBtn").addEventListener("click", () => help("모델 관리자 안내"));
   $("flowInfoBtn").addEventListener("click", () => help("전체 흐름 안내"));

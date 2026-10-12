@@ -132,8 +132,10 @@ async def central_model_admin_me(request: Request) -> JSONResponse:
     denied = await _central_admin(request)
     if denied is not None:
         return denied
+    write_ready = (isinstance(getattr(request.app.state, "central_model_policy_write_key", None), bytes)
+                   and callable(getattr(getattr(request.app.state, "central_model_policy_store", None), "commit", None)))
     return JSONResponse(
-        {"ok": True, "admin": True, "write_enabled": False,
+        {"ok": True, "admin": True, "write_enabled": write_ready,
          "authority": "global_model_admin_only"},
         headers=_NO_STORE,
     )
@@ -225,9 +227,13 @@ async def central_model_admin_snapshot(request: Request) -> JSONResponse:
         except Exception:
             pass
 
+    write_ready = (isinstance(getattr(request.app.state, "central_model_policy_write_key", None), bytes)
+                   and products["central"]["status"] == "stored_only"
+                   and callable(getattr(central_store, "commit", None)))
+    products["central"]["write_enabled"] = write_ready
     return JSONResponse({
-        "ok": True, "mode": "read_only",
-        "write_enabled": False, "policy_apply_enabled": False,
+        "ok": True, "mode": "stored_only" if write_ready else "read_only",
+        "write_enabled": write_ready, "policy_apply_enabled": False,
         "b14": {
             "scope": "registered_b14_and_owner_allowed_live_subset" if registered_models is not None else "owner_allowed_live_ready",
             "complete_registration_inventory": registered_models is not None,

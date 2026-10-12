@@ -80,7 +80,14 @@
             </fieldset>
             <button type="button" id="previewBtn" class="btn primary" disabled>변경안 미리보기 <span aria-hidden="true">→</span></button>
             <div id="previewResult" class="preview" aria-live="polite" hidden></div>
-            <p class="caption-note">실제 설정은 바뀌지 않습니다. <button type="button" class="inline-help" id="previewInfoBtn">왜 그런가요?</button></p>
+            <button type="button" id="applyBtn" class="btn primary" hidden>확인 후 정책 저장</button>
+            <details id="policyHistory" class="advanced" hidden><summary>변경 이력 · 롤백</summary>
+              <div id="policyAudit" aria-live="polite"></div>
+              <label for="rollbackRevision">되돌릴 리비전</label>
+              <input type="number" id="rollbackRevision" min="0" step="1" value="0">
+              <button type="button" id="rollbackPreviewBtn" class="btn">롤백 미리보기</button>
+            </details>
+            <p class="caption-note" id="writeNote">미리보기 단계에서는 설정이 바뀌지 않습니다. <button type="button" class="inline-help" id="previewInfoBtn">왜 그런가요?</button></p>
           </section>
         </div>
 
@@ -105,7 +112,7 @@
       <h3>화면 사용법</h3>
       <p>B14에서 조회 가능한 모델을 선택하고, 변경할 제품·회원 등급·허용 방식을 고른 뒤 변경안을 검토합니다.</p>
       <h3>미리보기와 실제 적용</h3>
-      <p>현재는 서버가 선택한 모델과 변경 대상의 형식만 확인합니다. 저장·모델 ON/OFF·사용 제한·실행 경로는 바뀌지 않습니다.</p>
+      <p>변경안은 확인 뒤 중앙 D1 정책 원장에 저장할 수 있습니다. 단, 제품 실행 경로에 연결되지 않은 정책은 실제 모델 호출에 영향을 주지 않습니다.</p>
       <h3>상태 아이콘</h3>
       <p>● 조회됨: 해당 정책을 확인함. ◌ 미연결: 아직 정보 소스가 연결되지 않음. ⊘ 차단: 실제 조회된 정책이 해당 모델을 차단함.</p>
       <h3>모델 목록 기준</h3>
