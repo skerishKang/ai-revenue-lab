@@ -219,7 +219,8 @@
     const tasksNav = document.getElementById("tasksNavButton");
     const alertsNav = document.getElementById("alertsNavButton");
     const inboxKind = workspace && workspace.dataset.view === "inbox" ? workspace.dataset.inboxKind : "";
-    if (chatNav) chatNav.dataset.modeHint = uiT("nav-chat-hint");
+    // New Chat no longer shows a mode hint: the redundant label was removed
+    // when the sidebar actions row was rearranged (B62 split-search task).
     if (clawNav) clawNav.dataset.modeHint = uiT("nav-claw-hint");
     if (chatNav) chatNav.setAttribute("aria-current", state === "claw" ? "false" : "page");
     if (clawNav) clawNav.setAttribute("aria-current", state === "claw" && !inboxKind ? "page" : "false");

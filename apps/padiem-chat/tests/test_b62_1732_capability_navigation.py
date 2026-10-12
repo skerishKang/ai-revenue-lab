@@ -35,7 +35,6 @@ def _buttons() -> dict[str, dict[str, str | None]]:
 def test_deployment_conditional_primary_controls_fail_closed_hidden() -> None:
     buttons = _buttons()
     conditional = {
-        "sidebarSearchButton",
         "projectsNavButton",
         "loginButton",
         "webSearchStarterButton",
@@ -98,16 +97,32 @@ def test_search_and_research_visibility_separates_deployment_unavailable_from_bu
     assert 'window.addEventListener("padiem:capabilitychange"' in source
 
 
-def test_sidebar_search_is_real_capability_backed_navigation_and_mirrors_busy_state() -> None:
+def test_sidebar_search_is_an_independent_disabled_conversation_search_entry() -> None:
+    html = INDEX.read_text(encoding="utf-8")
+    buttons = _buttons()
+    search = buttons["sidebarSearchButton"]
+    # Visible on the second sidebar line beside New Chat, but not implemented.
+    assert "hidden" not in search
+    assert "disabled" in search
+    assert search.get("aria-disabled") == "true"
+    assert search.get("data-locale-title") == "search-conversation-hold"
+    assert search.get("data-locale-aria-label") == "search-conversation-hold"
+    assert html.index('id="newChatButton"') < html.index('id="sidebarSearchButton"') < html.index('class="side-nav"')
+
+
+def test_sidebar_search_never_touches_web_search_state_or_center_card() -> None:
     source = CAPABILITIES.read_text(encoding="utf-8")
-    assert 'document.getElementById("sidebarSearchButton")' in source
-    assert 'document.getElementById("webSearchButton")' in source
-    assert "sidebarSearchButton.hidden = !available;" in source
-    assert "const busy = webSearchButton.disabled;" in source
-    assert "sidebarSearchButton.disabled = busy;" in source
-    assert "webSearchButton.click();" in source
-    assert "messageInput.focus();" in source
-    assert "mobileClose.click();" in source
+    # No capability wiring reads the sidebar search entry at all.
+    assert 'getElementById("sidebarSearchButton")' not in source
+    assert "syncSidebarSearch" not in source
+    assert "webSearchButton.click" not in source
+    assert 'attributeFilter: ["disabled", "aria-pressed", "hidden"]' not in source
+
+    # The center web card's status text is only driven by the composer's own
+    # web-search control — never by the sidebar search entry.
+    search_js = SEARCH.read_text(encoding="utf-8")
+    assert "sidebarSearchButton" not in search_js
+    assert 'starterStatus.textContent = webActive ? "다음 질문에서 사용" : "최신 정보 · 출처와 함께"' in search_js
 
 
 def test_auth_status_controls_account_session_visibility_while_health_controls_code_capability() -> None:

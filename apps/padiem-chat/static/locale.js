@@ -39,7 +39,7 @@
       "easy": "AI를 쉽게 설명해줘", "trip": "제주도 여행 계획", "dinner": "저녁 메뉴 추천", "close-menu": "메뉴 닫기", "open-menu": "메뉴 열기", "sidebar-collapse": "사이드바 접기", "sidebar-expand": "사이드바 펼치기",
       "mode": "기본 대화", "theme": "테마", "light": "Light", "dark": "Dark", "cinematic": "Cinematic", "home-theme": "Padiem Home", "glass-theme": "Padiem Glass",
       "home-link": "Padiem Home", "settings": "설정", "settings-kicker": "Padiem Chat", "appearance": "APPEARANCE", "language": "LANGUAGE", "language-choice": "언어", "done": "완료",
-      "nav-chat-hint": "일반 대화", "nav-claw-hint": "업무·파일", "account-profile-toggle": "계정 및 설정 열기", "account-profile-settings": "설정 열기",
+      "nav-claw-hint": "업무·파일", "search-conversation-hold": "대화 검색 준비 중", "account-profile-toggle": "계정 및 설정 열기", "account-profile-settings": "설정 열기",
       "settings-help-title": "문서·사용 안내", "settings-help-excel": "Excel 원본 보관 방법",
       "settings-help-excel-description": "Claw에서 XLSX를 선택해 원본을 24시간 보관할 수 있습니다. 읽기·수정에는 별도 승인이 필요합니다.",
       "settings-help-excel-step1": "Claw 메뉴에서 Excel 파일 작업을 엽니다.",
@@ -238,7 +238,7 @@
       "easy": "Explain AI simply", "trip": "Plan a Jeju trip", "dinner": "Suggest dinner", "close-menu": "Close menu", "open-menu": "Open menu", "sidebar-collapse": "Collapse sidebar", "sidebar-expand": "Expand sidebar",
       "mode": "Standard chat", "theme": "Theme", "light": "Light", "dark": "Dark", "cinematic": "Cinematic", "home-theme": "Padiem Home", "glass-theme": "Padiem Glass",
       "home-link": "Padiem Home", "settings": "Settings", "settings-kicker": "Padiem Chat", "appearance": "APPEARANCE", "language": "LANGUAGE", "language-choice": "Language", "done": "Done",
-      "nav-chat-hint": "Chat", "nav-claw-hint": "Work & files", "account-profile-toggle": "Open account settings", "account-profile-settings": "Open settings",
+      "nav-claw-hint": "Work & files", "search-conversation-hold": "Conversation search coming soon", "account-profile-toggle": "Open account settings", "account-profile-settings": "Open settings",
       "settings-help-title": "Guides & tutorials", "settings-help-excel": "How to preserve an Excel original",
       "settings-help-excel-description": "Keep an XLSX original for 24 hours in Claw. Reading or editing requires separate approval.",
       "settings-help-excel-step1": "Open Claw and choose Excel file work.",
@@ -526,10 +526,10 @@
 
   function applyStaticBindings(lang) {
     const textBindings = [
-      ["#newChatButton span:last-child", "new-chat"], [".side-item:nth-child(1) span:nth-child(2)", "search"], ["#projectsNavButton span:nth-child(2)", "projects"], ["#outputsNavButton span:nth-child(2)", "saved"],
+      ["#newChatButton span:last-child", "new-chat"], ["#sidebarSearchButton span:last-child", "search"], ["#projectsNavButton span:nth-child(2)", "projects"], ["#outputsNavButton span:nth-child(2)", "saved"],
       ["#recentTitle", "recent"], [".recent-item:nth-of-type(1)", "easy"], [".recent-item:nth-of-type(2)", "trip"], [".recent-item:nth-of-type(3)", "dinner"], [".model-pill span:last-child", "mode"],
       [".empty-copy", "copy"], [".starter:nth-child(1) strong", "easy-title"], [".starter:nth-child(1) small", "easy-copy"], [".starter:nth-child(2) strong", "life-title"], [".starter:nth-child(2) small", "life-copy"],
-      [".starter:nth-child(3) strong", "document-title"], ["#attachmentButton span:last-child", "file"], ["#webSearchButton span:last-child", "web"], ["#deepResearchButton span:last-child", "research"], [".sidebar-footer span:last-child", "footer"], [".side-item:nth-child(1) .mini-badge", "coming-soon"],
+      [".starter:nth-child(3) strong", "document-title"], ["#attachmentButton span:last-child", "file"], ["#webSearchButton span:last-child", "web"], ["#deepResearchButton span:last-child", "research"], [".sidebar-footer span:last-child", "footer"],
       ["#projectsTitle", "projects"], ["#projectsEmpty", "projects-empty"], ["#historyTitle", "history-title"], ["#historyEmpty", "history-empty"], ["#outputsTitle", "saved"], ["#outputsEmpty", "outputs-empty"],
       ["#writingStarterButton strong", "writing-starter-title"], ["#writingStarterButton small", "writing-starter-copy"], ["#webSearchStarterButton strong", "web-starter-title"], ["#webSearchStarterButton small", "web-starter-copy"], [".project-banner-copy > span", "project-banner"], ["#editProjectButton", "project-edit"], ["#exitProjectButton", "project-exit"],
       ["#projectDialogTitle", "project-new"], ["label[for='projectNameInput']", "project-name"], ["#projectFilesTitle", "project-files"], [".project-files-heading small", "project-files-limit"], [".project-file-add", "project-file-add"],
