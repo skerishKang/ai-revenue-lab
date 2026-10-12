@@ -1,0 +1,252 @@
+/* #4489 — Padiem Chat Library surface (Files / Images).
+ *
+ * State gating mirrors calendar.css and claw-workspace.css: the view is owned by
+ * .app-shell[data-state="library"] and hidden everywhere else, so any other path
+ * that changes the shared surface state closes this destination without importing
+ * this module. The sidebar stays available for navigation. Only files that are
+ * genuinely stored for the signed-in owner are rendered; the image collection
+ * states plainly that this service does not persist chat images.
+ */
+
+.library-view {
+  display: none;
+  /* The glass theme paints a fixed decorative portrait at z-index 1 over the
+     right of the content column with pointer-events disabled, so a destination
+     that stays unpositioned renders its own controls underneath it. Stacking
+     this view above it keeps a file row and its action visible at every width. */
+  position: relative;
+  z-index: 2;
+  flex-direction: column;
+  gap: 14px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 28px clamp(18px, 4vw, 44px) 40px;
+}
+
+.app-shell[data-state="library"] .library-view {
+  display: flex;
+}
+
+.app-shell:not([data-state="library"]) .library-view {
+  display: none !important;
+}
+
+.app-shell[data-state="library"] .conversation,
+.app-shell[data-state="library"] .composer-wrap {
+  display: none !important;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────── */
+
+.library-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.library-kicker {
+  margin: 0 0 2px;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--muted, #8a8f98);
+}
+
+.library-view h2 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.25;
+}
+
+.library-subtitle {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--muted, #8a8f98);
+}
+
+.library-close {
+  flex: 0 0 44px;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  border: 1px solid rgba(127, 127, 127, 0.26);
+  border-radius: 12px;
+  background: rgba(127, 127, 127, 0.08);
+  color: inherit;
+  font: inherit;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.library-close:hover {
+  background: rgba(127, 127, 127, 0.16);
+}
+
+/* ── Tabs ────────────────────────────────────────────────────────────── */
+
+.library-tabs {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid rgba(127, 127, 127, 0.22);
+}
+
+.library-tab {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--muted, #8a8f98);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.library-tab[aria-selected="true"] {
+  color: inherit;
+  border-bottom-color: var(--accent-strong, #2f6f99);
+}
+
+html[data-theme="padiem-glass"] .library-tab[aria-selected="true"] {
+  border-bottom-color: var(--accent, #79bce7);
+}
+
+/* ── Status note ─────────────────────────────────────────────────────── */
+
+.library-note {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--muted, #8a8f98);
+}
+
+/* ── Listing ─────────────────────────────────────────────────────────── */
+
+.library-panel {
+  min-width: 0;
+}
+
+.library-list {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.library-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(127, 127, 127, 0.22);
+  border-radius: 14px;
+  background: var(--panel, rgba(127, 127, 127, 0.06));
+}
+
+html[data-theme="padiem-glass"] .library-item {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.library-item-text {
+  min-width: 0;
+}
+
+.library-item-title {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.library-item-meta {
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: var(--muted, #8a8f98);
+}
+
+.library-item-detail {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--muted, #8a8f98);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.library-item-action {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid rgba(127, 127, 127, 0.28);
+  border-radius: 12px;
+  background: rgba(127, 127, 127, 0.08);
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.library-item-action:hover {
+  background: rgba(127, 127, 127, 0.16);
+}
+
+/* ── Sidebar entry ───────────────────────────────────────────────────── */
+
+#filesNavButton {
+  position: relative;
+  min-height: 40px;
+}
+
+#filesNavButton[aria-current="page"] {
+  border-color: var(--accent-strong, #2f6f99);
+  background: rgba(121, 188, 231, 0.22);
+}
+
+html[data-theme="padiem-glass"] #filesNavButton[aria-current="page"] {
+  color: rgba(255, 255, 255, 0.96);
+  border-color: rgba(121, 188, 231, 0.38);
+  background: rgba(121, 188, 231, 0.3);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 720px) {
+  .library-view {
+    padding: 20px 16px 32px;
+  }
+
+  .library-view h2 {
+    font-size: 21px;
+  }
+
+  .library-tabs {
+    overflow-x: auto;
+  }
+
+  .library-tab {
+    flex: 0 0 auto;
+    padding-inline: 10px;
+  }
+
+  .library-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .library-item-action {
+    width: 100%;
+  }
+}
