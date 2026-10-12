@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 import sqlite3
 from types import SimpleNamespace
@@ -298,6 +299,20 @@ def test_current_consent_and_authorization_rpc_reject_extra_or_cross_owner_field
     })
     assert denied["ok"] is False
     assert denied["error"]["code"] == "enrollment_consent_withdrawn"
+
+
+@pytest.mark.parametrize("source_product", [
+    "b62", "b66", "b66-padiem-quote", "padiem-engine",
+])
+def test_product_session_cannot_bypass_canonical_shared_pc_owner_guard(source_product):
+    fake, records, canonical, _ = harness()
+    canonical.session = replace(canonical.session, product_id=source_product)
+    response = call("grant_connector_enrollment_consent", fake, grant_payload())
+    assert response["ok"] is False
+    assert response["error"]["code"] == "connector_enrollment_consent_session_denied"
+    assert records.current_for_device(
+        owner_subject_id=SUBJECT, device_id=DEVICE, now=datetime.now(timezone.utc),
+    ) is None
 
 
 def test_non_owner_tenant_member_cannot_grant_or_revoke_pc_consent():
