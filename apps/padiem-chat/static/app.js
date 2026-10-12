@@ -1201,8 +1201,6 @@
         const button = document.createElement("button");
         button.type = "button";
         button.className = "recent-item history-item";
-        // #4471: lets the sidebar conversation search open a hit through this exact row.
-        button.setAttribute("data-conversation-id", conversation.id);
         button.textContent = clawConversationIds.has(conversation.id)
           ? `Claw · ${conversation.title}` : conversation.title;
         button.addEventListener("click", () => openSavedConversation(conversation.id));
@@ -1304,6 +1302,14 @@
       return false;
     }
   }
+
+  // #4471: the sidebar conversation search opens a hit through this loader
+  // instead of a recent-list DOM row, so a hit outside the recent page still
+  // restores with the same auth guard, inFlight lock, project restore and the
+  // server-verified Claw set. Read-only handle: it grants no new authority.
+  window.PadiemChatConversationOpener = Object.freeze({
+    open: (conversationId) => openSavedConversation(conversationId),
+  });
 
   // Hark's private web XLSX intake creates a separate trusted owner-owned
   // work conversation. This explicit navigation never guesses that it was the

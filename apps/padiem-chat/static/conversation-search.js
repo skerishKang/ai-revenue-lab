@@ -10,8 +10,9 @@
   //   - Fail-closed: the entry stays disabled until the canonical capability
   //     projection reports a signed-in owner with a ready history store. No
   //     browser storage API, cookie, or credential token is read here.
-  //   - Opening a hit reuses the existing saved-conversation row click path
-  //     (the history list button), so the owner-scoped load is unchanged.
+  //   - Opening a hit calls the canonical saved-conversation loader published by
+  //     app.js, so a hit outside the recent-list page still opens. This module
+  //     never fetches a conversation itself and never infers Claw authority.
 
   const SEARCH_ENDPOINT = "/api/conversations/search";
   const MAX_QUERY_CHARS = 80;
@@ -24,7 +25,8 @@
 
   let available = false;
   let searchOpen = false;
-  let requestSeq = 0;
+  let generation = 0;
+  let authSignature = "";
   let debounceTimer = null;
 
   // This module owns the entry's title/aria-label in both states (hold and
@@ -36,8 +38,8 @@
     return document.documentElement.lang.toLowerCase().startsWith("en") ? en : ko;
   }
 
-  // Search panel lives inside the existing recent-history section so the open
-  // path is the same row button the app already wires for saved conversations.
+  // The panel lives inside the existing recent-history section, so a hit lands
+  // in the same visual column the owner already reads history from.
   const panel = document.createElement("div");
   panel.id = "conversationSearchPanel";
   panel.className = "conversation-search-panel";
@@ -80,6 +82,19 @@
     setStatus("");
   }
 
+  // One monotonic generation per user-visible intent. Any in-flight response
+  // carrying an older generation is dropped before it can touch the DOM, so a
+  // superseded query can never paint over a newer one or survive a session flip.
+  function invalidate() {
+    generation += 1;
+    if (debounceTimer !== null) {
+      clearTimeout(debounceTimer);
+      debounceTimer = null;
+    }
+    results.replaceChildren();
+    clearStatus();
+  }
+
   function renderStaticCopy() {
     const label = copy("대화 검색", "Search conversations");
     input.placeholder = label;
@@ -103,11 +118,7 @@
     sidebarSearchButton.disabled = !available;
     sidebarSearchButton.setAttribute("aria-disabled", available ? "false" : "true");
     renderButtonChrome();
-    if (!available) {
-      searchOpen = false;
-      panel.hidden = true;
-      setPressed(false);
-    }
+    if (!available) closeSearch();
   }
 
   // Availability: signed in AND server history ready — read from the canonical
@@ -117,6 +128,17 @@
     available = Boolean(
       auth && auth.loaded === true && auth.authenticated === true && auth.historyReady === true,
     );
+    // The projection re-dispatches on every window focus with the same values,
+    // so only a real transition may wipe the panel; otherwise live results would
+    // vanish while the owner is still reading them.
+    const signature = auth
+      ? `${auth.loaded === true}/${auth.authenticated === true}/${auth.historyReady === true}`
+      : "";
+    const changed = signature !== authSignature;
+    authSignature = signature;
+    // Login as well as logout crosses here, so a new session can never inherit
+    // the previous owner's rendered hits.
+    if (changed) invalidate();
     applyAvailability();
   }
 
@@ -154,36 +176,31 @@
         snippet.textContent = conversation.snippet;
         row.appendChild(snippet);
       }
-      // Delegate open to the existing history row for the same conversation so
-      // the saved-conversation load path stays the single owner-scoped route.
-      row.addEventListener("click", () => openThroughHistory(conversation.id));
+      row.addEventListener("click", () => openHit(conversation.id));
       results.appendChild(row);
     });
   }
 
-  function openThroughHistory(conversationId) {
-    const match = Array.from(historyList.querySelectorAll(".history-item")).find(
-      (item) => item.getAttribute("data-conversation-id") === conversationId,
-    );
-    if (match) match.click();
+  // The canonical loader already owns the auth guard, the inFlight lock, project
+  // restore and the server-verified Claw set, so an older hit outside the recent
+  // page opens exactly like a listed one. No conversation fetch happens here.
+  function openHit(conversationId) {
+    if (!/^chat_[a-f0-9]{32}$/.test(conversationId)) return;
+    const opener = window.PadiemChatConversationOpener;
+    if (!opener || typeof opener.open !== "function") return;
+    opener.open(conversationId);
   }
 
-  async function runSearch(rawQuery) {
+  async function runSearch(rawQuery, seq) {
     const query = rawQuery.replace(/\s+/g, " ").trim().slice(0, MAX_QUERY_CHARS);
-    if (!query) {
-      results.replaceChildren();
-      clearStatus();
-      return;
-    }
-    const seq = ++requestSeq;
-    showStatus("검색 중…", "Searching…");
+    if (!query || seq !== generation) return;
     try {
       const response = await fetch(`${SEARCH_ENDPOINT}?q=${encodeURIComponent(query)}`, {
         headers: { "Accept": "application/json" },
         cache: "no-store",
       });
       const data = await response.json().catch(() => null);
-      if (seq !== requestSeq) return; // a newer query superseded this one
+      if (seq !== generation) return; // superseded by a newer query, a close or a session flip
       if (!response.ok || !data || !Array.isArray(data.conversations)) {
         results.replaceChildren();
         showStatus("검색을 사용할 수 없습니다.", "Search is unavailable.");
@@ -191,24 +208,35 @@
       }
       renderResults(data.conversations, query);
     } catch (_) {
-      if (seq !== requestSeq) return;
+      if (seq !== generation) return;
       results.replaceChildren();
       showStatus("검색을 사용할 수 없습니다.", "Search is unavailable.");
     }
   }
 
   input.addEventListener("input", () => {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => runSearch(input.value), DEBOUNCE_MS);
+    // Supersede at the keystroke, not when the debounced call finally starts,
+    // so a response to the previous query cannot land over the new intent.
+    const seq = ++generation;
+    if (debounceTimer !== null) {
+      clearTimeout(debounceTimer);
+      debounceTimer = null;
+    }
+    const rawQuery = input.value;
+    results.replaceChildren();
+    if (!rawQuery.trim()) {
+      clearStatus();
+      return;
+    }
+    showStatus("검색 중…", "Searching…");
+    debounceTimer = setTimeout(() => {
+      debounceTimer = null;
+      runSearch(rawQuery, seq);
+    }, DEBOUNCE_MS);
   });
 
   input.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      input.value = "";
-      results.replaceChildren();
-      clearStatus();
-      closeSearch();
-    }
+    if (event.key === "Escape") closeSearch();
   });
 
   function openSearch() {
@@ -220,6 +248,8 @@
   }
 
   function closeSearch() {
+    invalidate();
+    input.value = "";
     searchOpen = false;
     panel.hidden = true;
     setPressed(false);
