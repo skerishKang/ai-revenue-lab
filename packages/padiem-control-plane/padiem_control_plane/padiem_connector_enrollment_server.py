@@ -93,6 +93,12 @@ class CanonicalSessionContinuityAuthority(Protocol):
     ) -> AuthSessionSnapshot | None: ...
 
 
+class CanonicalBrokerBindingRevoker(Protocol):
+    """Reuse the SAME canonical Broker authority to revoke failed handoffs."""
+
+    def revoke_binding(self, binding_ref: str, *, now: datetime) -> Any: ...
+
+
 class ProtectedDeviceCredentialHandoff(Protocol):
     """Existing canonical device credential authority / trusted transport only.
 
@@ -159,6 +165,7 @@ class CanonicalConnectorEnrollmentServer:
         consent_authority: DurableEnrollmentConsentAuthority | None = None,
         session_authority: CanonicalSessionContinuityAuthority | None = None,
         credential_handoff: ProtectedDeviceCredentialHandoff | None = None,
+        binding_revoker: CanonicalBrokerBindingRevoker | None = None,
     ) -> None:
         self._products = allowed_product_ids
         self._scope = scope_resolver
@@ -166,6 +173,7 @@ class CanonicalConnectorEnrollmentServer:
         self._consent = consent_authority
         self._session = session_authority
         self._handoff = credential_handoff
+        self._revoker = binding_revoker
 
     def _dependencies(self) -> None:
         if not isinstance(self._products, frozenset) or not self._products:
@@ -176,9 +184,34 @@ class CanonicalConnectorEnrollmentServer:
             (self._consent, ("current_for_device", "current_consent")),
             (self._session, ("bind_challenge", "current_session")),
             (self._handoff, ("ready", "deliver_once")),
+            (self._revoker, ("revoke_binding",)),
         ):
             if port is None or any(not callable(getattr(port, name, None)) for name in methods):
                 raise _missing()
+
+    def _revoke_failed_handoff(
+        self, *, receipt: ConnectorEnrollmentReceipt, now: datetime
+    ) -> None:
+        """Fail closed and compensate irreversible Broker mint on delivery loss.
+
+        A failed or ambiguous delivery must not leave a usable ACTIVE binding.
+        If even canonical revocation cannot be confirmed, an operator incident
+        remains and production must remain blocked; no user success is returned.
+        """
+        try:
+            result = self._revoker.revoke_binding(receipt.binding_ref, now=now)
+            state = getattr(getattr(result, "state", None), "value", None)
+            if state != "revoked":
+                raise RuntimeError("broker did not confirm canonical revocation")
+        except Exception as exc:
+            raise ControlPlaneContractError(
+                "enrollment_handoff_revoke_unconfirmed",
+                "canonical credential delivery and binding compensation unconfirmed",
+            ) from exc
+        raise ControlPlaneContractError(
+            "enrollment_credential_handoff_failed",
+            "credential delivery failed; canonical Broker binding revoked",
+        )
 
     def issue(
         self, *, verified_session: AuthSessionSnapshot, device_id: str,
@@ -274,16 +307,10 @@ class CanonicalConnectorEnrollmentServer:
                 receipt=receipt,
                 now=moment,
             )
-        except Exception as exc:
-            # The canonical Broker binding may already have been minted. Never
-            # claim success. Owner must reconcile/revoke before another attempt.
-            raise ControlPlaneContractError(
-                "enrollment_credential_handoff_failed", "canonical credential delivery failed"
-            ) from exc
+        except Exception:
+            self._revoke_failed_handoff(receipt=receipt, now=moment)
         if delivered is not True:
-            raise ControlPlaneContractError(
-                "enrollment_credential_handoff_failed", "canonical credential delivery was not confirmed"
-            )
+            self._revoke_failed_handoff(receipt=receipt, now=moment)
         return CanonicalServerEnrollmentResult(
             binding_ref=receipt.binding_ref,
             device_id=receipt.device_id,
