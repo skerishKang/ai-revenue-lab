@@ -165,7 +165,9 @@ def test_success_rechecks_current_consent_and_never_returns_raw_credential():
     assert [x[0] for x in broker.calls] == ["binding", "redeem"]
     assert [x[0] for x in handoff.calls] == ["ready", "deliver"]
     assert result["lifecycle"] == "paired_offline"
+    assert result["consent_id"] == CONSENT["consent_id"]
     assert result["raw_device_credential"] is False
+    assert result["credential_installed_by_canonical_handoff"] is True
     assert "credential" not in result and b"one-time-secret" not in repr(result).encode()
 
 
