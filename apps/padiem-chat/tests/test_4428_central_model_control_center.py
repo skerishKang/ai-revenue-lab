@@ -114,7 +114,7 @@ def test_authorized_model_snapshot_uses_actual_b14_subset_and_b66_d1_policy():
     assert data["write_enabled"] is False and data["mode"] == "read_only"
     assert data["b14"]["complete_registration_inventory"] is False
     assert [m["model_id"] for m in data["b14"]["models"]] == [
-        "google/gemma-safe", "google/gemini-safe",
+        "google/gemini-safe", "google/gemma-safe",
     ]
     assert data["products"]["b66"]["status"] == "connected"
     assert data["products"]["b66"]["revision"] == 7
