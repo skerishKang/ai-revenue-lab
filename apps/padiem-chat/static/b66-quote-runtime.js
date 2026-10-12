@@ -91,7 +91,13 @@
       if (embed.protocol !== "https:" || origin.protocol !== "https:") return null;
       if (embed.origin !== origin.origin || data.origin !== origin.origin) return null;
       if (!embed.pathname.endsWith("/embed.html")) return null;
-      return Object.freeze({ embedUrl: embed.href, origin: origin.origin });
+      // The canonical product permission gate must set this explicitly.
+      // Existing B66 runtime-config does not issue it: default stays OFF.
+      return Object.freeze({
+        embedUrl: embed.href,
+        origin: origin.origin,
+        pcDirectoryEnabled: data.pc_device_list_enabled === true
+      });
     } catch (_) {
       return null;
     }
@@ -190,6 +196,7 @@
     // owner/workspace-scoped Broker projection is the only source of ONLINE.
     // No installer URL, pairing challenge, PC action or execution authority.
     const pcSection = el("section", "b66-quote-connect");
+    pcSection.hidden = true; // No cross-product exposure until server grant exists.
     const pcToggle = el("button", "b66-quote-connect-toggle", copy().pcToggle);
     pcToggle.id = "b66QuotePcToggle";
     pcToggle.type = "button";
@@ -507,6 +514,7 @@
   function populateSkills() {
     const select = document.getElementById("b66QuoteSkillSelect");
     const launcher = document.getElementById("b66QuoteNavButton");
+    const pcSection = document.querySelector(".b66-quote-connect");
     if (!select || !launcher) return;
     select.replaceChildren();
     skills.forEach((skill) => {
@@ -518,6 +526,9 @@
     launcher.hidden = !(runtime && skills.length > 0);
     launcher.disabled = launcher.hidden;
     launcher.setAttribute("aria-disabled", launcher.hidden ? "true" : "false");
+    const pcEnabled = !launcher.hidden && runtime?.pcDirectoryEnabled === true;
+    if (pcSection) pcSection.hidden = !pcEnabled;
+    if (!pcEnabled) resetPcDirectory();
     if (launcher.hidden) closeDialog();
   }
 
