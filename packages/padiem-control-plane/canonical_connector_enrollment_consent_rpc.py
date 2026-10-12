@@ -16,7 +16,7 @@ from canonical_connector_scope_readonly import ReadOnlyExistingConnectorScope
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot
 from padiem_control_plane.contracts import ControlPlaneContractError, SubjectType
 from padiem_control_plane.padiem_connector_enrollment import ConnectorEnrollmentConsent
-from padiem_control_plane.tenants import TenantMembershipRole
+from padiem_control_plane.connector_enrollment_owner_policy import require_canonical_connector_owner_session
 
 _CONNECTOR_ENROLLMENT_GRANT_KEYS = frozenset({"session_id", "device_id", "confirmed", "confirmation_version"})
 _CONNECTOR_ENROLLMENT_REVOKE_KEYS = frozenset({"session_id", "consent_id", "confirmed", "confirmation_version"})
@@ -63,29 +63,26 @@ class CanonicalIdentityEnrollmentConsentRPC:
     def _connector_session_for_consent(self, session_id: str, now: datetime):
         session = self._store.resolve_auth_session(session_id=session_id)
         if (
-            session.product_id != "b54-padiem-claw"
+            not isinstance(session, AuthSessionSnapshot)
             or session.effective_state(now=now).value != "active"
             or session.subject.subject_type is not SubjectType.USER
             or not session.tenant_id
         ):
             raise ControlPlaneContractError(
                 "connector_enrollment_consent_session_denied",
-                "an active canonical Padiem Claw owner session is required",
+                "an active canonical owner session is required",
             )
-        # Membership validation is server-only and shares the canonical Identity DO.
+        # Product-neutral PC registration policy belongs to the common Control
+        # Plane, never to Claw/B66/Chat routes. The Identity DO alone resolves
+        # the live canonical tenant membership; no asserted product grant.
         membership = self._store.resolve_active_tenant_membership(
             tenant_id=session.tenant_id,
             canonical_subject_id=session.subject.subject_id,
             now=now,
         )
-        # Only a canonical tenant OWNER may bind a computer to the shared
-        # product-neutral PC scope; viewer/operator/approver cannot grant it.
-        if getattr(membership, "role", None) is not TenantMembershipRole.OWNER:
-            raise ControlPlaneContractError(
-                "connector_enrollment_owner_required",
-                "canonical tenant owner is required for PC enrollment consent",
-            )
-        return session
+        return require_canonical_connector_owner_session(
+            session=session, membership_role=getattr(membership, "role", None), now=now,
+        )
 
     async def resolve_connector_enrollment_consent_for_device(self, payload: dict) -> dict:
         """Private current-consent lookup; input identity comes only from the active session."""
