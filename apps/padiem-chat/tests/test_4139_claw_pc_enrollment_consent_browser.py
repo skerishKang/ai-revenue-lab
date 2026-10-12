@@ -113,7 +113,7 @@ def install_port(page, *, device_id="pc1", device_name="집 컴퓨터",
 
 
 def grant_ok(device_id="pc1"):
-    return {"ok": True, "consent": {"device_id": device_id, "dispatch_authorized": False}}
+    return {"ok": True, "consent": {"device_id": device_id, "consent_id": "consent-1", "dispatch_authorized": False}}
 
 
 def open_panel(page):
@@ -213,7 +213,8 @@ def test_unknown_target_or_product_blocks_progress(browser, server):
     page.locator("#clawPcConsentAck").uncheck()
     page.locator("#clawPcConsentAck").check()
     assert page.locator("#clawPcConsentConfirm").is_disabled()
-    assert "다른 제품" in page.locator("#clawPcConsentStatus").inner_text()
+    assert "다른 서비스" in page.locator("#clawPcConsentStatus").inner_text()
+    assert "B66" not in page.locator("#clawPcConsentStatus").inner_text()
     # An unknown product is also blocked.
     install_port(page, product_id="")
     page.locator("#clawPcConsentAck").uncheck()
@@ -240,7 +241,7 @@ def test_double_click_sends_exactly_one_request(browser, server):
     assert len(calls(page)) == 1
     body = calls(page)[0]["body"]
     assert body == {"device_id": "pc1", "confirmed": True, "confirmation_version": CONSENT_VERSION}
-    page.evaluate("window.__resolveGrant({ok:true,consent:{device_id:'pc1',dispatch_authorized:false}})")
+    page.evaluate("window.__resolveGrant({ok:true,consent:{device_id:'pc1',consent_id:'consent-1',dispatch_authorized:false}})")
     page.wait_for_function("document.querySelector('#clawPcConsentStatus').textContent.includes('동의가 저장되었습니다')")
     assert not errors, errors
     page.close()
@@ -287,7 +288,7 @@ def test_server_markup_and_secrets_are_never_rendered(browser, server):
     page.evaluate("""() => {
       window.__consentCalls = [];
       window.__padiemPcEnrollmentConsentPort.grantConsent = (body) =>
-        Promise.resolve({ok:true, consent:{device_id:"pc1", dispatch_authorized:false,
+        Promise.resolve({ok:true, consent:{device_id:"pc1", consent_id:"consent-1", dispatch_authorized:false,
           token: arguments0, credential: arguments0}});
     }""".replace("arguments0", json.dumps(secret)))
     page.locator("#clawPcConsentAck").check()
@@ -321,6 +322,24 @@ def test_stored_consent_is_never_online_or_execution_approval(browser, server):
     page.locator("#clawPcConsentAck").check()
     page.locator("#clawPcConsentConfirm").click()
     page.wait_for_function("document.querySelector('#clawPcConsentStatus').textContent.includes('저장하지 못했습니다')")
+    assert not errors, errors
+    page.close()
+
+
+def test_grant_without_canonical_consent_id_fails_closed(browser, server):
+    """A receipt that cannot be correlated or revoked is not a stored consent."""
+    page, errors = open_claw(browser, server)
+    install_port(page, grant_result={"ok": True, "consent": {
+        "device_id": "pc1", "dispatch_authorized": False,
+    }})
+    open_panel(page)
+    page.locator("#clawPcConsentAck").check()
+    page.locator("#clawPcConsentConfirm").click()
+    page.wait_for_function(
+        "document.querySelector('#clawPcConsentStatus').textContent.includes('저장하지 못했습니다')"
+    )
+    assert "저장되었습니다" not in page.locator("#clawPcConsentStatus").inner_text()
+    assert len(calls(page)) == 1
     assert not errors, errors
     page.close()
 
@@ -399,7 +418,7 @@ def test_stale_response_after_close_and_reopen_cannot_change_screen(browser, ser
     page.locator("#clawPcConsentCancel").click()
     open_panel(page)
     assert page.locator("#clawPcConsentAck").is_checked() is False
-    page.evaluate("window.__resolveGrant({ok:true,consent:{device_id:'pc1',dispatch_authorized:false}})")
+    page.evaluate("window.__resolveGrant({ok:true,consent:{device_id:'pc1',consent_id:'consent-1',dispatch_authorized:false}})")
     page.wait_for_timeout(80)
     assert "저장되었습니다" not in page.locator("#clawPcConsentStatus").inner_text()
     assert page.locator("#clawPcConsentAck").is_checked() is False
@@ -418,7 +437,7 @@ def test_stale_response_after_escape_cannot_change_screen(browser, server):
     page.wait_for_function("window.__consentCalls.length === 1")
     page.locator("#clawPcConsentToggle").press("Escape")
     assert page.locator("#clawPcConsentPanel").is_hidden()
-    page.evaluate("window.__resolveGrant({ok:true,consent:{device_id:'pc1',dispatch_authorized:false}})")
+    page.evaluate("window.__resolveGrant({ok:true,consent:{device_id:'pc1',consent_id:'consent-1',dispatch_authorized:false}})")
     page.wait_for_timeout(80)
     assert page.locator("#clawPcConsentPanel").is_hidden()
     open_panel(page)
@@ -436,7 +455,7 @@ def test_stale_response_after_account_change_cannot_change_screen(browser, serve
     page.locator("#clawPcConsentConfirm").click()
     page.wait_for_function("window.__consentCalls.length === 1")
     page.evaluate('window.dispatchEvent(new CustomEvent("padiem:account-changed"))')
-    page.evaluate("window.__resolveGrant({ok:true,consent:{device_id:'pc1',dispatch_authorized:false}})")
+    page.evaluate("window.__resolveGrant({ok:true,consent:{device_id:'pc1',consent_id:'consent-1',dispatch_authorized:false}})")
     page.wait_for_timeout(80)
     assert "저장되었습니다" not in page.locator("#clawPcConsentStatus").inner_text()
     assert page.locator("#clawPcConsentAck").is_checked() is False
@@ -454,7 +473,7 @@ def test_stale_response_after_leaving_claw_cannot_change_screen(browser, server)
     page.wait_for_function("window.__consentCalls.length === 1")
     page.evaluate("document.querySelector('.app-shell').setAttribute('data-state', 'chat')")
     page.locator("#clawPcEnrollmentConsent").wait_for(state="hidden")
-    page.evaluate("window.__resolveGrant({ok:true,consent:{device_id:'pc1',dispatch_authorized:false}})")
+    page.evaluate("window.__resolveGrant({ok:true,consent:{device_id:'pc1',consent_id:'consent-1',dispatch_authorized:false}})")
     page.wait_for_timeout(80)
     assert page.locator("#clawPcConsentPanel").is_hidden()
     # Returning to Claw shows a clean default-OFF panel, never a stored consent.
