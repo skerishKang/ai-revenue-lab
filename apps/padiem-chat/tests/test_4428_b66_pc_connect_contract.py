@@ -60,6 +60,13 @@ def test_b66_pc_directory_is_default_off_without_product_entitlement():
     assert "pcSection.hidden = true;" in source
     assert "runtime?.pcDirectoryEnabled === true" in source
     assert "if (pcSection) pcSection.hidden = !pcEnabled;" in source
-    # Future permission may only come from a reviewed authenticated server
-    # product-policy adapter, never from B66 product data or a browser flag.
-    assert "pc_device_list_enabled" not in server
+    # The new server permission is allowed only when the canonical
+    # default-off workspace-scoped adapter approves the B66 product.
+    gate = (STATIC.parent / "app" / "b66_pc_directory_routes.py").read_text(encoding="utf-8")
+    assert "pc_device_list_enabled" in server
+    assert "b66_pc_directory_available(request, uid)" in server
+    assert "evaluate_pc_access(" in gate
+    assert "ProductPcAccessPolicy" in gate
+    assert 'B66_PC_DIRECTORY_PATH = "/api/b66/connect/devices"' in gate
+    assert "grant.workspace_ref != workspace" in gate
+    assert "return await claw_device_directory(request)" in gate
