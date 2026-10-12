@@ -88,8 +88,13 @@ check(refresh.includes('position: fixed;') && refresh.includes('shell-preview-ho
 check(css.includes("body.b66-three-pane .shell-edit-heading { display: none !important; }"),
   "screen-only edit explanation must never appear in printed CGI PDF");
 
-check(shell.includes('max-width:1250px') && refresh.includes('min-width: 901px'),
-  "mid-width notebooks default to a wide quote editor with optional overlay preview");
+check(shell.includes('COMPACT_PREVIEW_BREAKPOINT = 1480') &&
+  shell.includes('window.addEventListener("resize", syncMobileDefault)') &&
+  shell.includes('previewAutoCollapsed') &&
+  refresh.includes('min-width: 901px') &&
+  refresh.includes('max-width: 1480px') &&
+  refresh.includes('grid-template-columns: 260px minmax(0, 1fr)'),
+  "resized mid-width windows automatically center the editor with a reopenable preview");
 check(refresh.includes('height: max(185px, calc(var(--b66-visual-height, 100dvh) - 165px))'),
   "mobile conversation responds to compact keyboard viewport height");
 check(refresh.includes('body.b66-three-pane .shell-preview-reopen::after'),
