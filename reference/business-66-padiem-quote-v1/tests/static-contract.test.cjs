@@ -258,7 +258,7 @@ check(extraction.includes("normalizeDetailGroups(") &&
 check(html.includes('id="easyModeButton"') && html.includes('id="directModeButton"') &&
       html.includes(">채팅</button>") && html.includes("직접 입력"),
   "EASY_MODE_CONTRACT: top-level chat/direct switch");
-check(html.includes("질문받으며 새로 만들기") && html.includes("내용을 한번에 말하기"),
+check(html.includes("질문받으며 새로 만들기") && html.includes("AI와 대화하기"),
   "EASY_MODE_CONTRACT: easy entry choices");
 check(easy.includes('App.createFreshDraft("guided")') &&
       app.includes('fresh.meta.source = source || "manual"'),
