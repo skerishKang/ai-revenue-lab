@@ -115,11 +115,16 @@
   - skip 1건: S1 authority 미병합 drift guard (`BLOCKED_DEPENDENCY`)
 - `test_enrollment_contract.py`: 67 passed + 4 skipped
 - `test_enrollment_http_transport.py` + `test_credential_install_confirmation.py` + `test_enrollment_install_gate.py`: 156 passed
-  - credential ceiling/floor와 pairing transcript의 authority cross-check는 자식 인터프리터로 읽어,
-    위 drift guard의 in-process skip 결정을 조용 바꾸지 않는다 (`sys.path`/`sys.modules` 비결합)
+  - credential ceiling/floor와 pairing transcript의 authority cross-check는 canonical authority **소스에서
+    literal을 읽어** 고정한다(import 하지 않는다). Connector CI 게이트는 pytest만 설치하는데
+    `padiem_control_plane`은 `padiem_ai_core`까지 도달해서, import 방식은 개발 PC(무관한 editable install이
+    존재)에서만 통과하고 Windows CI에서 실패했다 — 그 차이가 실제 CI 신호로 관측돼 수정된 것이다.
+    literal 읽기는 `sys.path`/`sys.modules`를 건드리지 않아 위 S1 drift guard의 in-process skip 결정을
+    조용히 바꾸지 않는다
 - `test_credential_install_windows_dpapi_store.py`: **11 passed** — 실제 `kagent.ProtectedFileDeviceCredentialStore`
   + 실제 current-user DPAPI로 save·readback 확인, 디스크에 plaintext 없음, binding 컨텍스트 바인딩,
-  revoked/expired binding 거부, 삭제 후 미확인과 single-use까지 검증
+  revoked/expired binding 거부, save 이후 기록이 손상되면 readback에서 거부, delete 후 비밀 제거,
+  single-use까지 검증
 - Node wrapper (`npm test`): **5 passed / 0 failed** (이전 문서의 6/6은 오기재였고 실측은 5건)
 - GitHub Windows 게이트(`claw-connect-contract-tests.yml`, PR #4490 head에서 실행): §11에 exact SHA로 보고
 - Windows live harness (`verify_windows_live.py`): 기존 blocked-기대 항목 유지, live E2E 미수행 (`WINDOWS_LIVE_E2E=NOT_PROVEN`)

@@ -9,11 +9,10 @@ central delivery channel stays undefined, so the wired receiver stays disabled.
 
 from __future__ import annotations
 
+import ast
 import hashlib
 import hmac
-import json
 import re
-import subprocess
 import sys
 from dataclasses import dataclass, replace
 from datetime import datetime, timezone
@@ -372,73 +371,79 @@ def test_recovery_disposition_projection_carries_no_retry_or_credential():
     assert CREDENTIAL not in repr(payload).encode("utf-8", "ignore")
 
 
-# --- cross-authority pins (read in a child interpreter, on purpose) ---------
-#: #4139 Decision A: 4096 is the *pairing protocol* ceiling, and 16 is the current
+# --- cross-authority pins (read as literals, never imported) ----------------
+#: #4139 Decision A: 4096 is the *pairing protocol* ceiling and 16 is the current
 #: install-ACK security floor. The generic DPAPI store capacity (16384) is not permission
-#: to exceed the pairing bound. The connector cannot import those packages at runtime
-#: (stdlib-only Windows app), so it mirrors the constant — and these pins keep the mirror
-#: honest against the canonical authorities in this same tree.
+#: to exceed the pairing bound. The connector mirrors these constants because it is a
+#: stdlib-only Windows app; these pins keep the mirror honest against the canonical
+#: authorities in the same tree.
 #:
-#: The probe runs in a child interpreter because mutating ``sys.path``/``sys.modules``
-#: here would silently change the in-process skip decision of the S1 drift guard in
-#: ``test_enrollment_contract.py``, which owns its own environment.
-_AUTHORITIES = {
-    "control_plane": Path(__file__).resolve().parents[3] / "packages" / "padiem-control-plane",
-    "kagent": Path(__file__).resolve().parents[3] / "apps" / "korean-ai-code-agent" / "src",
-}
+#: The values are read from the authority source files, not imported. The connector CI
+#: gate installs only pytest, while ``padiem_control_plane`` reaches
+#: ``packages/padiem-ai-core`` — present on a developer PC through unrelated editable
+#: installs and absent on the runner, so an import-based pin passes locally and fails in
+#: CI without proving anything about the contract. Reading literals also keeps this file
+#: from mutating ``sys.path``/``sys.modules``, which would silently flip the in-process S1
+#: drift guard in ``test_enrollment_contract.py``.
 _REPO_ROOT = Path(__file__).resolve().parents[3]
-_AUTHORITY_PROBE = """
-import json, sys
-sys.path.insert(0, sys.argv[1]); sys.path.insert(0, sys.argv[2])
-from padiem_control_plane import local_agent_broker_pairing as pairing
-from kagent import local_agent_broker_pairing_client as client
-print(json.dumps({
-    "max_pairing": pairing.MAX_PAIRING_CREDENTIAL_BYTES,
-    "max_enrollment": client.MAX_ENROLLMENT_CREDENTIAL_BYTES,
-    "default_len": len(pairing._default_credential_factory()),
-    "transcript": pairing.PAIRING_PROOF_TRANSCRIPT,
-    "prefix": pairing.PAIRING_PROOF_REF_PREFIX,
-    "pairing_module": pairing.__file__,
-    "client_module": client.__file__,
-}))
-"""
+_PAIRING_AUTHORITY = (
+    _REPO_ROOT
+    / "packages"
+    / "padiem-control-plane"
+    / "padiem_control_plane"
+    / "local_agent_broker_pairing.py"
+)
+_BROKER_CLIENT_AUTHORITY = (
+    _REPO_ROOT
+    / "apps"
+    / "korean-ai-code-agent"
+    / "src"
+    / "kagent"
+    / "local_agent_broker_pairing_client.py"
+)
 
 
-def _authorities():
-    for name, path in _AUTHORITIES.items():
-        assert path.is_dir(), f"{name} canonical authority root missing: {path}"
-    probe = subprocess.run(
-        [
-            sys.executable,
-            "-c",
-            _AUTHORITY_PROBE,
-            str(_AUTHORITIES["control_plane"]),
-            str(_AUTHORITIES["kagent"]),
-        ],
-        capture_output=True,
-        text=True,
+def _module_literal(path: Path, name: str):
+    """Return the single module-level literal bound to ``name`` in ``path``."""
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    values = [
+        ast.literal_eval(node.value)
+        for node in tree.body
+        if isinstance(node, ast.Assign)
+        and any(isinstance(target, ast.Name) and target.id == name for target in node.targets)
+    ]
+    assert len(values) == 1, (
+        f"{name} in {path.name}: expected exactly one module-level literal, found {len(values)}"
     )
-    assert probe.returncode == 0, f"authority probe failed: {probe.stderr[-400:]}"
-    values = json.loads(probe.stdout)
-    # A stale editable install of either package elsewhere on the machine must not
-    # masquerade as this revision's authority.
-    for key in ("pairing_module", "client_module"):
-        assert str(Path(values[key]).resolve()).startswith(str(_REPO_ROOT)), values[key]
-    return values
+    return values[0]
+
+
+def _factory_token_length(path: Path, function_name: str) -> int:
+    """Read the byte length the canonical credential factory actually requests."""
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    for node in tree.body:
+        if isinstance(node, ast.FunctionDef) and node.name == function_name:
+            for call in ast.walk(node):
+                if isinstance(call, ast.Call) and call.args:
+                    return ast.literal_eval(call.args[0])
+    raise AssertionError(f"{function_name} requesting a literal byte length not found")
 
 
 def test_local_ack_key_window_equals_the_canonical_pairing_bound():
-    values = _authorities()
-    assert values["max_pairing"] == values["max_enrollment"]
-    assert values["max_pairing"] == credential_install._MAX_ACK_KEY_BYTES
+    ceiling = _module_literal(_PAIRING_AUTHORITY, "MAX_PAIRING_CREDENTIAL_BYTES")
+    client_ceiling = _module_literal(
+        _BROKER_CLIENT_AUTHORITY, "MAX_ENROLLMENT_CREDENTIAL_BYTES"
+    )
+    assert ceiling == client_ceiling
+    assert ceiling == credential_install._MAX_ACK_KEY_BYTES
     assert credential_install._MIN_ACK_KEY_BYTES == 16
-    assert credential_install._MAX_ACK_KEY_BYTES < 16384
+    assert credential_install._MAX_ACK_KEY_BYTES < 16_384  # generic DPAPI capacity
 
 
 def test_default_pairing_credential_fits_the_local_window():
-    values = _authorities()
-    assert credential_install._MIN_ACK_KEY_BYTES <= values["default_len"]
-    assert values["default_len"] <= credential_install._MAX_ACK_KEY_BYTES
+    issued = _factory_token_length(_PAIRING_AUTHORITY, "_default_credential_factory")
+    assert issued >= credential_install._MIN_ACK_KEY_BYTES
+    assert issued <= credential_install._MAX_ACK_KEY_BYTES
 
 
 def test_connector_pairing_transcript_mirror_equals_the_s1_authority():
@@ -447,9 +452,14 @@ def test_connector_pairing_transcript_mirror_equals_the_s1_authority():
         ENROLLMENT_PROOF_TRANSCRIPT,
     )
 
-    values = _authorities()
-    assert values["transcript"] == ENROLLMENT_PROOF_TRANSCRIPT
-    assert values["prefix"] == ENROLLMENT_PROOF_REF_PREFIX
+    assert (
+        _module_literal(_PAIRING_AUTHORITY, "PAIRING_PROOF_TRANSCRIPT")
+        == ENROLLMENT_PROOF_TRANSCRIPT
+    )
+    assert (
+        _module_literal(_PAIRING_AUTHORITY, "PAIRING_PROOF_REF_PREFIX")
+        == ENROLLMENT_PROOF_REF_PREFIX
+    )
 
 
 # --- versioned install-ack proof (LOCAL2 half of CENTRAL's transcript) -------

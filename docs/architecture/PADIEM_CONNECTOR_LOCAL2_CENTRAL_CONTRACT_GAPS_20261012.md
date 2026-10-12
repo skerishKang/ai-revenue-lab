@@ -48,9 +48,12 @@ proof vectors pinned in `tests/test_credential_install_confirmation.py` were gen
 bytes; `kagent.local_agent_broker_pairing_client.MAX_ENROLLMENT_CREDENTIAL_BYTES = 4096`), and that the
 generic DPAPI capacity is storage headroom, not permission to exceed the pairing bound. LOCAL2's pre-store
 rejection is therefore kept as-is, its comment now cites the canonical source, and
-`tests/test_credential_install_confirmation.py` reads both authority values plus the default factory length
-from a child interpreter to pin the mirrored constants — deliberately not by mutating `sys.path`, which would
-otherwise flip the in-process S1 drift guard's skip decision.
+`tests/test_credential_install_confirmation.py` pins the mirrored constants by reading those literals out of
+the authority source files. It must not import them: the connector CI gate installs only pytest, while
+`padiem_control_plane` reaches `packages/padiem-ai-core` — an import-based pin passed on a developer PC
+(stray editable installs) and failed on the Windows runner, which is exactly the local/CI divergence the
+`claw-connect` gate exists to catch. Reading source literals also leaves `sys.path`/`sys.modules` untouched,
+so the in-process S1 drift guard keeps deciding its own skip.
 
 ## Platform-ownership verification (LOCAL2 read of the 2026-10-13 decision)
 
