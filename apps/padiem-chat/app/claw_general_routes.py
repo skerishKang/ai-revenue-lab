@@ -490,7 +490,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         adapter is None or getattr(adapter, "subject_identity_lane", False) is not True
     ):
         return _error(403, "canonical_b54_session_unavailable",
-                      "??? Claw ?? ?? ??? ??? ? ????.")
+                      "인증된 Claw 실행 권한을 확인할 수 없습니다.")
     if adapter is not None and getattr(
         adapter, "subject_identity_lane", False
     ) is True:
@@ -508,7 +508,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         if conversation_id is not None:
             if not isinstance(authorized_workspace_id, str) or not authorized_workspace_id:
                 return _error(403, "workspace_scope_unavailable",
-                              "Claw ???? ??? ??? ? ????.")
+                              "대화 작업 공간을 확인할 수 없습니다.")
 
     # #3790: in the production Worker Claw uses the central model
     # ready/owner-allowed metadata resolver. Reject a forged advanced model ID
