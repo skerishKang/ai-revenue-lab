@@ -21,9 +21,11 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from claw_connect.credential_install import (  # noqa: E402
+    RECOVERY_SECURITY_HOLD,
     CredentialInstallError,
     LocalStoreCredentialReceiver,
     UnconfiguredProtectedCredentialReceiver,
+    plan_install_failure_recovery,
 )
 
 NOW = datetime(2026, 10, 12, 12, 0, tzinfo=timezone.utc)
@@ -33,6 +35,7 @@ NEW_MODULES = ("claw_connect/enrollment_http.py", "claw_connect/credential_insta
 class _Binding:
     binding_ref = "binding-1"
     device_id = "pc_abc123"
+    credential_generation = 2
 
 
 def test_server_receipt_alone_never_confirms_installation():
@@ -53,6 +56,9 @@ def test_unconfirmed_install_raises_rather_than_soft_failing():
         def save(self, *, binding, credential, now):
             raise RuntimeError("boom")
 
+        def load(self, *, binding, now):
+            raise AssertionError("readback must not run after a failed save")
+
     receiver = LocalStoreCredentialReceiver(store=_BrokenStore(), now_factory=lambda: NOW)
     with pytest.raises(CredentialInstallError):
         receiver.install_once(
@@ -61,6 +67,15 @@ def test_unconfirmed_install_raises_rather_than_soft_failing():
             credential=b"raw",
             binding=_Binding(),
         )
+
+
+def test_failed_install_without_confirmed_revocation_is_a_security_hold():
+    # Composition rule for the gate above: an install that could not be
+    # confirmed never turns into a retry of the same redeemed challenge.
+    disposition = plan_install_failure_recovery(revocation_confirmed=None)
+    assert disposition.action == RECOVERY_SECURITY_HOLD
+    assert disposition.report_enrolled is False
+    assert disposition.retry_same_challenge is False
 
 
 def test_receiver_never_returns_a_negative_confirmation():

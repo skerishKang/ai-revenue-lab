@@ -1,7 +1,8 @@
 # PADIEM Connector S2 — 클라이언트 등록 계약 (LOCAL2 → CENTRAL 핸드오프)
 
-**Issues:** #4139 (구현) · **PR:** #4463 (Draft, 미병합) · 상위 서버 계약: LOCAL1 PR #4438
+**Issues:** #4139 (구현) · **PR:** #4463 (Draft, 미병합) · Windows 통합 PR #4490 (Draft) · 상위 서버 계약: LOCAL1 PR #4438 · 서버 wire 계약: CENTRAL PR #4476
 **Client module:** `apps/claw-connect/claw_connect/enrollment.py`
+**HTTP adapter / install gate:** `apps/claw-connect/claw_connect/enrollment_http.py`, `apps/claw-connect/claw_connect/credential_install.py`
 **Server contract (read-only mirror):** `padiem.connector-enrollment.v1` (`padiem_connector_enrollment.py`, LOCAL1 소유 — 본 PR에서 수정하지 않음)
 **Status:** 클라이언트 구현 완료 · **실제 등록 성공 주장 안 함** · Draft 유지 · Windows live E2E 미수행
 
@@ -11,7 +12,9 @@
 
 - 본 문서는 Connector(클라이언트)가 S1 서버 계약과 어떻게 일치하는지만 정의한다.
 - 인증·승인·동의 검증·owner/workspace 결정은 전적으로 서버 권한이다. Connector는 인증·승인 기관이 아니다.
-- 실제 서버 등록 HTTP 엔드포인트는 아직 존재하지 않는다 (아래 §5 BLOCKED 참조). 그 전까지 모든 live 등록은 fail-closed.
+- CENTRAL의 등록 핸들러는 소스에 존재하지만 제품 라우트에 **마운트되지 않았다**
+  (`ENROLLMENT_PRODUCT_HTTP_MOUNTED=False`)이고 기기 게이트웨이가 미배선이라, 실제로 도달 가능한 등록
+  엔드포인트는 없다 (아래 §5·§8 BLOCKED 참조). 그 전까지 모든 live 등록은 fail-closed다.
 
 ## 1. 등록 경로 (scoped redemption only)
 
@@ -80,20 +83,23 @@
 `enrollment_consent_liveness_dependency_unmet`, `enrollment_scoped_redemption_required`,
 `enrollment_duplicate_device_denied`, `enrollment_binding_revoked_denied`,
 `enrollment_credential_expired_denied`, 그 외 → `enrollment_dependency_refused`.
-상위 텍스트를 echo하지 않는다. `retryable`은 표시용 힌트이며 자동 재시도를 발생시키지 않는다.
+상위 텍스트를 echo하지 않는다. CENTRAL은 redeem 거부에서 항상 `retryable=false`를 보내고, 어댑터는 그 값이 아닌
+주장을 계약 위반으로 거부한다. 재시도는 항상 새 챌린지 + 새로운 OWNER 동의이며 동일 챌린지 재사용이 아니다.
 
 ## 7. 서버 연결 미완성 시의 정직한 표시
 
 - `broker_endpoint_configured=false` 또는 서버 포트 미배선 → `UNREGISTERED` + `blocked` 보고, 성공 위장 없음.
 - 서버 도달 불가 → `BrokerNotConfiguredError` (blocked JSON, exit 1), CONNECTED 표시 금지.
-- 서버 거부 → bounded reason 보고 (exit 2), 바인딩 0건, 동일 챌린지 재시도 가능 (로컬 소비 없음).
+- 서버 거부 → bounded reason 보고 (exit 2), 바인딩 0건. CENTRAL은 redeem 이후 거부에서도 `retryable=false`를
+  보내므로 클라이언트는 같은 챌린지를 재시도하지 않는다. 재시도는 새 챌린지 발급 요구로 처리된다.
 
 ## 8. BLOCKED 의존성 (CENTRAL CTO 작업, LOCAL2 범위 밖)
 
-1. **인증된 서버 등록 HTTP 엔드포인트 없음** (`SERVER_ENROLLMENT_ENDPOINT_EXISTS=False`):
-   S1은 라이브러리 함수(`issue/redeem_connector_enrollment_challenge`)만 제공하며, pairing HTTP 브릿지는
-   일반 경로만 서빙한다. 세션→issue/redeem을 노출하는 제품 라우트(서버 핸들러) 구현이 필요하다.
-   불리언 오버라이드 노출 금지.
+1. **등록 라우트가 운영에 마운트되지 않음** (`SERVER_ENROLLMENT_ENDPOINT_EXISTS=False`):
+   CENTRAL #4476이 `issue/redeem/consent` 핸들러와 strict wire 계약
+   (`PADIEM_CONNECTOR_S2_CENTRAL_HTTP_WIRE_CONTRACT_4139_20261012.md`)을 소스에 확보했지만
+   `ENROLLMENT_PRODUCT_HTTP_MOUNTED=False`이고 trusted TLS 기기 게이트웨이가 미배선이다. 마운트·게이트웨이
+   배선은 CENTRAL 승인 항목이며, 불리언 오버라이드 노출은 계속 금지된다.
 2. **durable consent authority 미배선** (`DURABLE_CONSENT_AUTHORITY_WIRED=False`,
    S1 `CONSENT_LIVENESS_AUTHORITY_IMPLEMENTED=False`): `CanonicalConsentLivenessPort`의 서버 구현 배선 전까지
    등록은 기본 거부다.
@@ -101,10 +107,42 @@
    S1 병합 후 해당 테스트가 실제 authority와의 drift를 감시한다.
 4. 위 1–3 해결 후: 신규 synthetic PC로 one-shot live E2E (LOCAL2 Connector + 실제 로그인 세션) → CENTRAL 승인.
 
-## 9. 검증 상태 (본 PR HEAD 기준)
+## 9. 검증 상태 (#4490 HEAD에서 실측)
 
-- `apps/claw-connect/tests/test_enrollment_contract.py`: 70 passed + 1 skipped (S1 drift guard, BLOCKED)
-- `apps/claw-connect/tests/` 전체: 135 passed + 1 skipped
-- Node wrapper: 6/6 passed
+- `apps/claw-connect/tests/` 전체: **260 passed, 4 skipped**
+  - skip 3건: `CENTRAL-CONTRACT-CONFLICT` — central `dbbd1633`가 `claw_connect.resident_path`와
+    `runtime.ConnectApp(enrollment=...)` 배선을 제거해 재현 불가 (Resident 경로는 #4139 범위 밖, CENTRAL 결정 대기)
+  - skip 1건: S1 authority 미병합 drift guard (`BLOCKED_DEPENDENCY`)
+- `test_enrollment_contract.py`: 67 passed + 4 skipped
+- `test_enrollment_http_transport.py` + `test_credential_install_confirmation.py` + `test_enrollment_install_gate.py`: 136 passed
+- Node wrapper (`npm test`): **5 passed / 0 failed** (이전 문서의 6/6은 오기재였고 실측은 5건)
+- GitHub Windows 게이트(`claw-connect-contract-tests.yml`, PR #4490 head에서 실행): §11에 exact SHA로 보고
 - Windows live harness (`verify_windows_live.py`): 기존 blocked-기대 항목 유지, live E2E 미수행 (`WINDOWS_LIVE_E2E=NOT_PROVEN`)
 - Production: OFF · Ready: NO · Merge: NO
+
+## 10. HTTP 어댑터와 로컬 설치 게이트 (#4490 추가분)
+
+`enrollment_http.py` — CENTRAL redeem wire의 유일한 클라이언트 측 경계:
+
+- 요청은 3키(`challenge_id`,`device_id`,`proof_ref`)만 전송. 쿠키·토큰·session·owner·consent는 절대 실지 않는다.
+- 성공 응답은 top-level이 정확히 `{ok, enrollment}`이고 receipt가 게시된 13키와 **정확히** 일치해야 한다.
+  추가키(`credential_b64`, 토큰, owner 주장, fingerprint 등)는 즉시 거부 — 시크릿 투기와 forge를 이 경계에서 자른다.
+- `consent_id`는 CENTRAL이 발행한다(CENTRAL #4476 이후 전송됨). 어댑터는 필수 필드로 검증하며 **절대 합성하지 않는다**.
+- `credential_installed_by_canonical_handoff=true`, `lifecycle=paired_offline`, 모든 권한 booleans=false,
+  만료 > now, device_id 일치, ref 형상(`_SAFE_VALUE` 미러)까지 통과해야 `EnrollmentRedemptionResponse` 성공이 된다.
+- 거부 응답은 `{ok,error:{code},reason,retryable:false}` 폐형상만 허용. `reason`은 S2 어휘 소속이어야 하고,
+  `error.code`는 shape 검증 후 **폐기**(UI·로그·보관 불가). `retryable=true` 주장은 계약 위반으로 거부.
+- status와 본문 불일치는 양방향 거부(200+`ok:false`, non-2xx+`ok:true` 모두 raise).
+
+`credential_install.py` — 로컬 설치 확인은 서버 플래그가 아니라 canonical 보호 저장소로 만든다:
+
+- `save`가 돌려준 projection이 **넘겨받은 binding과 동일한** `binding_ref`·`device_id`·`credential_generation`을
+  가져야 하고(비정상/오래된 binding의 projection은 절대 `installed=True`가 되지 않음), 같은 binding 컨텍스트로
+  `load` readback한 바이트가 원본과 일치해야 한다. readback 능력이 없는 저장소는 사용 불가로 처리한다.
+- proof kind는 CENTRAL 설치 ack가 요구하는 `protected_store_save_readback` 하나만 인정한다.
+- redeemed 챌린지는 로컬에서도 single-use: 시도(성공·실패 무관)마다 소비된다.
+- 설치 실패 복구는 `plan_install_failure_recovery(revocation_confirmed=…)`가 두 가지로만 매핑한다 —
+  canonical 회수 확인 → `new_challenge_required`, 미확인/모호 → `security_hold_reconciliation_required`.
+  두 경로 모두 `report_enrolled=false`, `retry_same_challenge=false`, `retransmit_credential=false`이며
+  OWNER 재동의 없이는 재발급되지 않는다. Connector는 스스로 Broker binding을 회수하지 않고 회수 결과를 주장하지 않는다.
+- CENTRAL→PC 자격증명 전달 채널은 여전히 미정의 (`CREDENTIAL_HANDOFF_WIRED=False`), live OS 배선 없음.

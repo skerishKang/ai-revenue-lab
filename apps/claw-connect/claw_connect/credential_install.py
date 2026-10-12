@@ -18,12 +18,20 @@ Authority boundaries:
   channel and the device-installation acknowledgement are defined, the receiver
   is **disabled**: :class:`UnconfiguredProtectedCredentialReceiver` raises and
   nothing is installed. ``CREDENTIAL_HANDOFF_WIRED = False``.
-* A server "installed" flag alone is never trusted. The confirmation is only
-  produced by a store ``save`` that returned a projection.
+* A server "installed" flag alone is never trusted. A local confirmation is
+  produced only when the canonical store returns a projection naming this exact
+  binding reference, device and credential generation **and** the same bytes read
+  back through that binding's protected context.
+* A redeemed challenge is single-use locally too: one install attempt per
+  challenge. :func:`plan_install_failure_recovery` maps a failed attempt onto
+  either a new challenge (canonical revocation confirmed) or a security hold for
+  authority-side reconciliation — never a replay of the challenge or the
+  credential.
 """
 
 from __future__ import annotations
 
+import hmac
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Protocol
@@ -34,7 +42,20 @@ from typing import Any, Protocol
 CREDENTIAL_HANDOFF_WIRED = False
 
 #: Evidence kinds a confirmation may cite. Anything else is not a local proof.
-_LOCAL_PROOF_KINDS = frozenset({"protected_store_save_projection"})
+#: ``protected_store_save_readback`` is the exact kind CENTRAL's installation
+#: acknowledgement requires (``_STORE_PROOF_KIND`` in
+#: ``apps/padiem-chat/app/canonical_connector_credential_handoff.py``), so a
+#: write that was never read back through the protected store can never be
+#: acknowledged as installed.
+_STORE_READBACK_PROOF = "protected_store_save_readback"
+_LOCAL_PROOF_KINDS = frozenset({_STORE_READBACK_PROOF})
+
+#: The one message a repeated local install attempt may produce. A redeemed
+#: challenge is already spent server-side, so this is a terminal refusal.
+REDEEMED_CHALLENGE_SINGLE_USE = (
+    "redeemed challenge is single-use; a new challenge and fresh OWNER consent "
+    "are required"
+)
 
 
 class CredentialInstallNotWiredError(RuntimeError):
@@ -112,37 +133,75 @@ class UnconfiguredProtectedCredentialReceiver:
         )
 
 
+def _binding_fact(binding: Any, name: str) -> str:
+    value = getattr(binding, name, None)
+    if not isinstance(value, str) or not value:
+        raise CredentialInstallError(f"install binding {name} invalid")
+    return value
+
+
 class LocalStoreCredentialReceiver:
-    """Install through the canonical protected store, then confirm locally.
+    """Install through the canonical protected store, then confirm by reading back.
 
     ``store`` is any object matching the canonical ``DeviceCredentialStore``
-    contract (``save(*, binding, credential, now) -> projection``). This keeps
-    ``kagent`` out of ``claw_connect`` while reusing its implementation.
+    contract (``save(*, binding, credential, now) -> projection`` **and**
+    ``load(*, binding, now) -> bytes``). This keeps ``kagent`` out of
+    ``claw_connect`` while reusing its implementation.
 
     The credential is forwarded to the store exactly once and is never retained.
-    A store exception or a missing projection fails closed: no confirmation, so
-    the caller must not report the PC as enrolled.
+    A confirmation requires all three of: the store's own projection, that
+    projection naming *this exact* binding reference, device and credential
+    generation, and a protected readback of the same bytes under the same binding
+    context. A projection for an unrelated or stale binding therefore fails
+    closed, and so does a store that cannot read back. There is no falsy
+    confirmation a caller could misread as success.
     """
 
     def __init__(self, *, store: Any, now_factory: Any | None = None) -> None:
         self._store = store
         self._now_factory = now_factory
+        # The challenge reaching this receiver was already redeemed server-side,
+        # so its single use is spent here whether the local install succeeds or
+        # not. Retrying requires a new challenge and a fresh OWNER consent.
+        self._consumed_challenges: set[str] = set()
 
     def ready(self, *, challenge_id: str, device_id: str) -> bool:
         del challenge_id, device_id
-        return callable(getattr(self._store, "save", None))
+        store = self._store
+        return callable(getattr(store, "save", None)) and callable(
+            getattr(store, "load", None)
+        )
+
+    def _consume_challenge(self, challenge_id: Any) -> None:
+        if not isinstance(challenge_id, str) or not challenge_id:
+            raise CredentialInstallError(REDEEMED_CHALLENGE_SINGLE_USE)
+        if challenge_id in self._consumed_challenges:
+            raise CredentialInstallError(REDEEMED_CHALLENGE_SINGLE_USE)
+        self._consumed_challenges.add(challenge_id)
 
     def install_once(
         self, *, challenge_id: str, device_id: str, credential: bytes, binding: Any
     ) -> ProtectedCredentialInstallConfirmation:
-        del challenge_id
+        self._consume_challenge(challenge_id)
         if not isinstance(credential, (bytes, bytearray)) or not credential:
             raise CredentialInstallError("credential must be non-empty bytes")
         save = getattr(self._store, "save", None)
         if not callable(save):
             raise CredentialInstallError("protected store is not available")
-        now = self._now_factory() if callable(self._now_factory) else datetime.now(
-            tz=timezone.utc
+        load = getattr(self._store, "load", None)
+        if not callable(load):
+            raise CredentialInstallError("protected store readback is unavailable")
+        expected_ref = _binding_fact(binding, "binding_ref")
+        expected_device = _binding_fact(binding, "device_id")
+        expected_generation = getattr(binding, "credential_generation", None)
+        if type(expected_generation) is not int or expected_generation < 1:
+            raise CredentialInstallError("install binding generation invalid")
+        if expected_device != device_id:
+            raise CredentialInstallError("install binding device mismatch")
+        now = (
+            self._now_factory()
+            if callable(self._now_factory)
+            else datetime.now(tz=timezone.utc)
         )
         try:
             projection = save(binding=binding, credential=bytes(credential), now=now)
@@ -150,20 +209,122 @@ class LocalStoreCredentialReceiver:
             raise CredentialInstallError("protected store save failed") from exc
         if projection is None:
             raise CredentialInstallError("protected store returned no projection")
-        binding_ref = getattr(projection, "binding_ref", None)
-        device_id_value = getattr(projection, "device_id", None)
-        generation = getattr(projection, "credential_generation", None)
-        if not isinstance(binding_ref, str) or not binding_ref:
-            raise CredentialInstallError("store projection missing binding_ref")
-        if device_id_value != device_id:
+        # The store must describe the binding it was handed, not merely return
+        # something non-empty: a stale or unrelated projection would otherwise
+        # confirm a credential that belongs to another PC or generation.
+        if getattr(projection, "binding_ref", None) != expected_ref:
+            raise CredentialInstallError("store projection binding mismatch")
+        if getattr(projection, "device_id", None) != expected_device:
             raise CredentialInstallError("store projection device mismatch")
-        if type(generation) is not int or generation < 1:
-            raise CredentialInstallError("store projection generation invalid")
+        generation = getattr(projection, "credential_generation", None)
+        if type(generation) is not int or generation != expected_generation:
+            raise CredentialInstallError("store projection generation mismatch")
+        try:
+            stored = load(binding=binding, now=now)
+        except Exception as exc:
+            raise CredentialInstallError("protected store readback failed") from exc
+        if not isinstance(stored, (bytes, bytearray)) or not hmac.compare_digest(
+            bytes(stored), bytes(credential)
+        ):
+            raise CredentialInstallError("protected store readback mismatch")
         return ProtectedCredentialInstallConfirmation(
             installed=True,
-            binding_ref=binding_ref,
-            device_id=device_id_value,
+            binding_ref=expected_ref,
+            device_id=expected_device,
             credential_generation=generation,
-            proof_kind="protected_store_save_projection",
+            proof_kind=_STORE_READBACK_PROOF,
             confirmed_by_local_store=True,
         )
+
+
+# -- single-use redemption recovery (CENTRAL #4476 decision, contract only) ---
+
+#: The canonical Broker binding was revoked: a new challenge + fresh OWNER
+#: consent may be issued. This is the only non-hold outcome.
+RECOVERY_NEW_CHALLENGE = "new_challenge_required"
+#: Revocation is unconfirmed or refused. The PC stays on a security hold for
+#: authority-side reconciliation; it is never reported CONNECTED and never retried.
+RECOVERY_SECURITY_HOLD = "security_hold_reconciliation_required"
+RECOVERY_ACTIONS = frozenset({RECOVERY_NEW_CHALLENGE, RECOVERY_SECURITY_HOLD})
+
+
+@dataclass(frozen=True, slots=True)
+class InstallFailureRecovery:
+    """The only dispositions available after a redeemed credential failed to install.
+
+    Every unsafe retry is unrepresentable by construction: ``report_enrolled``,
+    ``retry_same_challenge`` and ``retransmit_credential`` are pinned false, and
+    any retry path requires a fresh OWNER consent.
+    """
+
+    action: str
+    report_enrolled: bool
+    retry_same_challenge: bool
+    retransmit_credential: bool
+    requires_new_challenge: bool
+    requires_fresh_owner_consent: bool
+    reconciliation_required: bool
+
+    def __post_init__(self) -> None:
+        if self.action not in RECOVERY_ACTIONS:
+            raise CredentialInstallError("unknown install failure recovery action")
+        if self.report_enrolled is not False:
+            raise CredentialInstallError(
+                "a failed installation never reports the PC as enrolled"
+            )
+        if self.retry_same_challenge is not False:
+            raise CredentialInstallError("a redeemed challenge is never replayed")
+        if self.retransmit_credential is not False:
+            raise CredentialInstallError("a redeemed credential is never retransmitted")
+        if self.requires_fresh_owner_consent is not True:
+            raise CredentialInstallError("recovery always needs a current OWNER consent")
+        if self.requires_new_challenge is not (self.action == RECOVERY_NEW_CHALLENGE):
+            raise CredentialInstallError(
+                "only a confirmed-revoked binding may take a new challenge"
+            )
+        if self.reconciliation_required is not (self.action == RECOVERY_SECURITY_HOLD):
+            raise CredentialInstallError(
+                "unconfirmed revocation must remain on security hold"
+            )
+
+    def safe_dict(self) -> dict[str, Any]:
+        return {
+            "action": self.action,
+            "report_enrolled": False,
+            "retry_same_challenge": False,
+            "retransmit_credential": False,
+            "requires_new_challenge": self.requires_new_challenge,
+            "requires_fresh_owner_consent": True,
+            "reconciliation_required": self.reconciliation_required,
+        }
+
+
+def plan_install_failure_recovery(*, revocation_confirmed: Any) -> InstallFailureRecovery:
+    """Map one post-redemption installation failure onto its recovery action.
+
+    ``revocation_confirmed`` is the canonical Broker's own answer about the newly
+    created binding, read through the reviewed server path — the Connector never
+    revokes a binding and never infers revocation from a local success. Anything
+    other than an explicit ``True`` (including ``None`` / no answer / a transport
+    error) fails closed into the reconciliation hold, because a live binding with
+    an undelivered credential is a security finding, not a retryable failure.
+    """
+    if revocation_confirmed is True:
+        return InstallFailureRecovery(
+            action=RECOVERY_NEW_CHALLENGE,
+            report_enrolled=False,
+            retry_same_challenge=False,
+            retransmit_credential=False,
+            requires_new_challenge=True,
+            requires_fresh_owner_consent=True,
+            reconciliation_required=False,
+        )
+    return InstallFailureRecovery(
+        action=RECOVERY_SECURITY_HOLD,
+        report_enrolled=False,
+        retry_same_challenge=False,
+        retransmit_credential=False,
+        requires_new_challenge=False,
+        requires_fresh_owner_consent=True,
+        reconciliation_required=True,
+    )

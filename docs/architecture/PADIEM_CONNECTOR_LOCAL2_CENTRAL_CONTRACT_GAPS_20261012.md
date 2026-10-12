@@ -1,106 +1,75 @@
-# LOCAL2 → CENTRAL contract gaps — #4139 Connector enrollment
+# LOCAL2 ↔ CENTRAL contract status — #4139 Connector enrollment
 
-**BASE_CENTRAL_SHA:** `dbbd1633dcf3509c96d7a1a996c9b851248dd938` (PR #4476)
-**S2_SOURCE_SHA:** `ca8c8c23ef293f1451f7829831cbc4a483694940` (PR #4463)
-**Role:** LOCAL2 Windows Connector integration. This document reports gaps only;
-no central file was modified.
+**Previously:** `BASE_CENTRAL_SHA=dbbd1633dcf3509c96d7a1a996c9b851248dd938` reported three open contract
+gaps. **This revision** merge-forwards CENTRAL `26443796172f22cb7b221729db0afd9f87b98ce1` into
+`local2/4139-windows-connector-integration`, so the gaps below are restated against the code that is
+actually in this tree, not against the older base.
+**S2 source:** `ca8c8c23ef293f1451f7829831cbc4a483694940` (PR #4463) · **Role:** LOCAL2 Windows Connector.
+No CENTRAL or LOCAL1 file was modified by LOCAL2 in this revision.
 
-## Summary
+## Resolved by CENTRAL (verified in this tree, no LOCAL2 duplication)
 
-The LOCAL2 HTTP transport adapter is implemented against the central redeem
-route and fails closed on every mismatch. Three contract gaps remain and need a
-central CTO decision. Until then `CREDENTIAL_HANDOFF=NOT_WIRED` and production
-enrollment is refused.
+| Former gap | Now | Evidence in this merge |
+|---|---|---|
+| Success receipt carried no `consent_id`; S2 required one | Server-owned `consent_id` is published in the redeem receipt | `_PUBLIC_REDEEM_FIELDS` / `_redeem_success` in `apps/padiem-chat/app/claw_connector_enrollment_routes.py` |
+| Refusals exposed only `error.code`; S2 needed a bounded reason | `{ok:false,error:{code},reason,retryable:false}` with a pinned alias table (`_S2_REDEEM_REFUSALS`, `_S2_REDEEM_REFUSAL_ALIASES`) | same file; every emittable reason is pinned as a member of `ENROLLMENT_REFUSAL_REASONS` by `tests/test_enrollment_http_transport.py` |
+| Sync service and async host could project different bodies | One strict secret-free envelope for both paths, 503 on any forged/extra/expired/ONLINE claim | `_redeem_success` is the single success builder used by both branches |
+| No device installation acknowledgement definition | Closed keyed install-ack contract, default OFF | `apps/padiem-chat/app/canonical_connector_credential_handoff.py` (`DeviceCredentialInstallAck`, `installation_proof`, `verify_install_ack`, `PROTECTED_INSTALL_TRANSPORT_WIRED=False`) |
+| claw-connect had no CI job | `windows-latest` pytest + Node gate inherited from `main` | `.github/workflows/claw-connect-contract-tests.yml` |
 
-## Gap 1 — redeem HTTP envelope and field differences
+The stale constant `CENTRAL_SUCCESS_CONSENT_ID_PRESENT=False`, the central-code→fallback collapse table, and
+this document's earlier "central omits consent_id" report are all removed: `enrollment_http.py` now *requires*
+the field and never synthesizes it.
 
-Central success body
-(`apps/padiem-chat/app/claw_connector_enrollment_routes.py:263`):
-`{"ok": true, "enrollment": {...}}`, where the inner object is built in
-`apps/padiem-chat/app/canonical_connector_enrollment_async_host.py:186-198`:
+## LOCAL2 side now enforced at the device boundary
 
-`binding_ref, device_id, account_ref, workspace_ref, credential_generation,
-credential_expires_at, lifecycle, credential_installed_by_canonical_handoff,
-raw_device_credential, dispatch_authorized, grants_read, grants_write`
+`claw_connect/enrollment_http.py`: closed top-level shapes, receipt key set that must match the thirteen
+published fields exactly (extra keys such as `credential_b64`, tokens, owner claims or a store fingerprint are
+refused), `credential_installed_by_canonical_handoff is True`, `lifecycle == paired_offline`, all permission
+booleans false, positive non-bool generation, timezone-aware future expiry, exact `device_id` correlation,
+central-shaped refs, `retryable` accepted only as `false`, and `error.code` shape-checked then discarded.
+Status/body disagreement is refused in both directions.
 
-LOCAL2 receipt (`apps/claw-connect/claw_connect/enrollment.py:513`,
-`EnrollmentRedemptionResponse`) is **flat** and requires, on success,
-`binding_ref, device_id, account_ref, workspace_ref, consent_id`
-(`enrollment.py:542-549`).
+`claw_connect/credential_install.py`: a confirmation requires the store's projection to name the *same*
+`binding_ref`, `device_id` and `credential_generation` as the binding handed to `save`, plus a protected
+`load` readback of the identical bytes under that binding context. Only
+`protected_store_save_readback` — the proof kind CENTRAL's install ack accepts — is citable, a store without
+readback capability is unusable, and a redeemed challenge is consumed locally on every attempt.
 
-| Difference | Central | LOCAL2 | Adapter behaviour |
-|---|---|---|---|
-| Envelope | `{ok, enrollment:{...}}` | flat `ok + fields` | unwrapped |
-| `consent_id` | **not sent** | **required** | fail closed: `enrollment_response_consent_id_missing` |
-| Error shape | `{ok:false, error:{code}}` | bounded `reason` | mapped, see below |
-| Request keys | exactly `challenge_id, device_id, proof_ref` (`routes.py:242`) | `safe_dict()` emits 8 keys (`enrollment.py:499`) | adapter sends only the 3 central keys |
+`plan_install_failure_recovery` encodes CENTRAL's recovery decision: confirmed canonical revocation →
+`new_challenge_required`; unconfirmed or refused revocation → `security_hold_reconciliation_required`. Both
+carry `report_enrolled=false`, `retry_same_challenge=false`, `retransmit_credential=false` and require a fresh
+OWNER consent, and the unsafe variants are unconstructible. LOCAL2 never revokes a Broker binding itself and
+never claims a revocation result.
 
-**Request needed:** add `consent_id` to the central success body, or confirm the
-S2 receipt should not require it.
+## Remaining gaps (CENTRAL / owner authority, not closable by LOCAL2 source)
 
-Central refusal codes **not present** in the S2 vocabulary
-(`ENROLLMENT_REFUSAL_REASONS`), so the adapter drops them to
-`enrollment_dependency_refused`:
-`connector_enrollment_csrf_denied`, `connector_enrollment_explicit_consent_required`,
-`connector_enrollment_receipt_invalid`, `connector_enrollment_invalid_request`,
-`connector_enrollment_device_gateway_denied`, `enrollment_credential_handoff_failed`,
-`credential_handoff_unavailable`, `enrollment_server_dependency_unavailable`,
-`invalid_enrollment_request`, `invalid_pairing_proof`.
-
-**Request needed:** decide whether to widen the S2 refusal vocabulary or accept
-the fallback collapse (which also makes those refusals non-retryable).
-
-Also noted: the route is not mounted (`ENROLLMENT_PRODUCT_HTTP_MOUNTED = False`,
-`routes.py:34`) and requires a device gateway (`gateway.verify(request)`) that is
-not wired, so live calls 503 today.
-
-## Gap 2 — `deliver_once()` ↔ Windows receiver
-
-Central contract
-(`apps/padiem-chat/app/canonical_connector_enrollment_async_host.py:22-29`):
-
-```
-class ProtectedDeviceCredentialHandoff(Protocol):
-    async def ready(*, challenge_id, device_id) -> bool
-    async def deliver_once(*, challenge_id, device_id, credential: bytes, enrollment, now) -> bool
-```
-
-Called at `async_host.py:116-133` (ready) and `:162` (deliver_once). No transport
-channel, device identity/attestation, or acknowledgement semantics are defined,
-and `ENROLLMENT_PRODUCT_CREDENTIAL_HANDOFF_WIRED = False` (`routes.py:37`).
-
-LOCAL2 side: no receiver existed. This PR adds
-`apps/claw-connect/claw_connect/credential_install.py` with a structural port and
-a **disabled** default (`CREDENTIAL_HANDOFF_WIRED = False`). The canonical store
-(`kagent.WindowsDpapiProtectedDataPort` + `ProtectedFileDeviceCredentialStore`) is
-reused through a structural protocol; no second store is created.
-
-**Request needed:** define the authenticated delivery channel, the device
-identity the PC must present, and how the server confirms the PC actually
-installed the credential (server flag alone is not accepted).
-
-## Gap 3 — redeemed credential: install failure, duplicate delivery, revoke recovery
-
-Central behaviour today
-(`canonical_connector_enrollment_async_host.py:170-182`):
-handoff failure → revoke Broker binding → `enrollment_credential_handoff_failed`
-(503); unconfirmed revoke → `enrollment_handoff_revoke_unconfirmed` (503).
-Consent race → revoke → `enrollment_consent_changed_during_redeem` (403).
-
-LOCAL2 side: the adapter keeps refusals bounded and non-retryable (the central
-dependency codes are not in the S2 vocabulary, so `retryable` is always False).
-
-**Request needed:** define recovery for a credential that was redeemed but not
-installed — is a new challenge issued, or is there an idempotent replay window?
-And confirm the canonical revoke path LOCAL2 should call when its local store
-fails after a successful server redeem.
+1. **Route still unmounted, gateway still unwired.** `ENROLLMENT_PRODUCT_HTTP_MOUNTED`,
+   `ENROLLMENT_PRODUCT_AUTHENTICATION_WIRED`, `ENROLLMENT_PRODUCT_DURABLE_CONSENT_WIRED`,
+   `ENROLLMENT_PRODUCT_CREDENTIAL_HANDOFF_WIRED` and `ENROLLMENT_PRODUCT_PRODUCTION_ACTIVE` are all `False`
+   in this tree, so `HttpsEnrollmentServerPort` refuses before any socket opens
+   (`CENTRAL_DEVICE_GATEWAY_WIRED=False`).
+2. **No authenticated delivery channel for the credential.** `UnconfiguredProtectedDeviceHandoff` and
+   `UnconfiguredProtectedCredentialReceiver` are the only wired implementations. The PC-side installer must
+   reuse `kagent.WindowsDpapiProtectedDataPort` + `ProtectedFileDeviceCredentialStore` through the structural
+   port here — no second store, and no raw credential in the HTTP redeem response.
+3. **Install-ack transport.** The keyed transcript exists, but the gateway that authenticates the ack sender
+   and the Broker path that consumes it are unbuilt. `WINDOWS_LIVE_E2E=NOT_PROVEN`.
+4. **Revoke compensation call path.** Which canonical operator the device or operator invokes after a failed
+   install, and how its confirmation is authenticated, is a CENTRAL decision. Until then the security hold is
+   the only honest LOCAL2 outcome for an ambiguous install.
+5. **S1 authority merge** (LOCAL1 #4438) and the owner-consent UI/CSRF surface remain outside LOCAL2 scope;
+   the S1 drift guard stays skipped until then.
 
 ## Flags
 
 ```
-HTTP_TRANSPORT=IMPLEMENTED_FAIL_CLOSED
-SERVER_CONTRACT_MATCH=PARTIAL
+HTTP_TRANSPORT=ALIGNED_WITH_CENTRAL_264437961_AND_FAIL_CLOSED
+SERVER_CONTRACT_MATCH=ENVELOPE_AND_RECEIPT_PINNED
+LOCAL_INSTALL_PROOF=SAVE_PLUS_READBACK_CORRELATED
+REDEEMED_CHALLENGE=single_use_local_and_server_side
+INSTALL_FAILURE_RECOVERY=CONTRACT_AND_TESTS_ONLY
 CREDENTIAL_HANDOFF=NOT_WIRED
-CENTRAL_CONTRACT_GAPS=3
+WINDOWS_LIVE_E2E=NOT_PROVEN
 PRODUCTION=OFF
 ```
