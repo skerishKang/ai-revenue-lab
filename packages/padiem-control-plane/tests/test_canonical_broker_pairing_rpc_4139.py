@@ -90,6 +90,17 @@ class Harness(CanonicalBrokerPairingRPC):
         }))
 
 
+def test_pairing_hmac_is_domain_separated_from_canonical_broker_authenticator():
+    h = Harness()
+    h.install()
+    h.env.LOCAL_AGENT_BROKER_PAIRING_SCHEMA_INSTALLED = "true"
+    pairing = h._durable_pairing()
+    raw_broker_secret = h.env.LOCAL_AGENT_BROKER_PEPPER.encode("utf-8")
+    assert pairing._pepper != raw_broker_secret
+    assert len(pairing._pepper) == 32
+    assert pairing._broker.authority_ref() == AUTHORITY_REF
+
+
 def test_schema_and_pairing_rpc_are_separately_gated_off_by_default():
     h = Harness(rpc=False, migration=False)
     assert h.install()["ok"] is False
