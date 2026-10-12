@@ -762,6 +762,39 @@
     return pending;
   }
 
+  /* #4466: real general conversation through B66's authenticated B14 route.
+     This does not require an assigned CGI Skill and cannot mutate QuoteCore. */
+  async function chatMessages(messages) {
+    if (!state.authenticated) return { ok: false, code: "unauthorized" };
+    const select = byId("padiemQuoteModelSelect");
+    const modelId = select && select.value;
+    if (!modelId || !state.quoteModels.includes(modelId)) {
+      return { ok: false, code: "model_selection_required" };
+    }
+    if (!Array.isArray(messages) || !messages.length) {
+      return { ok: false, code: "invalid_messages" };
+    }
+    const payload = { model_id: modelId, messages };
+    const reasoningLevel = selectedReasoningLevel(modelId);
+    if (reasoningLevel) payload.reasoning_level = reasoningLevel;
+    try {
+      const result = await api("/b66/ai/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = result.data;
+      if (!result.response.ok || !data || data.ok !== true ||
+          typeof data.answer !== "string" || !data.answer.trim() ||
+          data.model_id !== modelId || data.model_origin !== "registered_model_completion") {
+        return { ok: false, code: data && data.error && data.error.code || "ai_chat_unavailable" };
+      }
+      return { ok: true, answer: data.answer, model_id: modelId };
+    } catch (_) {
+      return { ok: false, code: "ai_chat_unavailable" };
+    }
+  }
+
   async function interpretRequest(requestText) {
     const text = typeof requestText === "string" ? requestText.trim() : "";
     if (!text) return { ok: false, code: "empty_request" };
@@ -1038,6 +1071,7 @@
   window.B66QuoteRuntimeBridge = Object.freeze({
     readiness: runtimeReadiness,
     interpret: interpretRequest,
+    chat: chatMessages,
     buildFromFacts: buildQuoteFromFacts,
     downloadPdf,
     certifiedPreviewBaseUrl,
