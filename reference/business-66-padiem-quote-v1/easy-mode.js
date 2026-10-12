@@ -360,7 +360,11 @@
     const readiness = bridge && typeof bridge.readiness === "function" ? bridge.readiness() : null;
     // Real signed-in conversation is model-driven, independent of CGI assignment.
     // Quote creation/approval remains on the explicit Guided/Direct/CGI flow.
-    if (readiness && readiness.authenticated && bridge && typeof bridge.chat === "function") {
+    const isGreeting = /^(?:hi|hey|hello|하이|안녕(?:하세요)?|반가워요|반갑습니다)[\\s.!?~]*$/iu.test(text);
+    // Preserve the approved one-shot CGI quote interpretation from Home.
+    // Explicit Chat, greetings and no-CGI accounts use real model conversation.
+    if (readiness && readiness.authenticated && bridge && typeof bridge.chat === "function" &&
+        (!readiness.ready || lastEasyView === "free-form" || isGreeting)) {
       runModelDialogue(text, bridge);
       return;
     }
