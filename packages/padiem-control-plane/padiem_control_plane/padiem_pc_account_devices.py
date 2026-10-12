@@ -57,7 +57,7 @@ def _denied(reason: str) -> dict[str, Any]:
     }
 
 
-def _verified_owner_scope(
+def verified_owner_scope(
     *, session: Any, membership_role: Any, scope: Any, now: datetime,
 ) -> bool:
     # The injection site MUST retrieve all three from the canonical Identity
@@ -122,7 +122,7 @@ def account_device_view(
     The private policy is never stored in ProductPcAccessPolicy configuration,
     never passed to a product, and grants nothing beyond this projection.
     """
-    if not _verified_owner_scope(
+    if not verified_owner_scope(
         session=session, membership_role=membership_role, scope=scope, now=now,
     ):
         return _denied("canonical_owner_scope_required")
@@ -180,7 +180,7 @@ def product_device_view_for_owner(
     linkage before passing session and product ID to this source contract.
     Until those login bridges are reviewed, only B54 owner eligibility exists.
     """
-    if not _verified_owner_scope(
+    if not verified_owner_scope(
         session=session, membership_role=membership_role, scope=scope, now=now,
     ):
         return _denied("canonical_owner_scope_required")
