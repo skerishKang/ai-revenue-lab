@@ -127,3 +127,10 @@ READY=NO
 MERGED=NO
 WINDOWS_LIVE_E2E=NOT_PROVEN
 ```
+
+## 2026-10-13 — Synthetic credential security scan disposition (source audit)
+
+- GitGuardian incident [#37629511](https://dashboard.gitguardian.com/workspace/795790/incidents/37629511) grouped 11 historic occurrences of a **synthetic test fixture** (the Base64 encoding of the literal word `credential`, not a provider/API/device production key); two historical occurrences in `apps/padiem-chat/tests/test_4139_canonical_broker_pairing_client.py` on commit `5686c51` were reported on this PR. Prior test files in the same incident contain the same value.
+- At CENTRAL PR #4476 commit `74875c35aa2669c3d00f34b94aa95f0765d0e468`, the two current-file occurrences were replaced by runtime encoding of a plainly labeled synthetic fixture, preserving the test double behavior. GitGuardian incident details show **zero files requiring code fix** and record those two lines as removed on that commit. This does **not erase historic git occurrences**.
+- Authorized owner session on PC1 reviewed the incident and selected GitGuardian **Ignore → This is a test credential**. This is a scoped test-fixture disposition only; it is **not** a policy to ignore other secret incidents or a license to publish actual credentials. No real secret was rotated because this particular evidence contains no actual credential.
+- GitHub's existing GitGuardian check on the prior PR HEAD remains a historic completed failure until the provider publishes a **fresh passing check**. Do not infer a PASS merely from the dashboard label; check the exact current HEAD and do not mark Ready/merge or enable Connector while either provider check or the unrelated enrollment security gates are pending.
