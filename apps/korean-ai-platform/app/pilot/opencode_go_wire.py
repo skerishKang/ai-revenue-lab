@@ -273,6 +273,8 @@ def _decode_stream_event(wire: str, event: str, payload: Any, upstream_model: st
             return None, None, _go_usage(msg.get("usage", {}) if isinstance(msg, dict) else {}, "input_tokens", "output_tokens"), False
         if kind == "message_delta":
             d = payload.get("delta", {})
+            if not isinstance(d, dict):
+                raise MalformedUpstreamResponse()
             return None, d.get("stop_reason"), _go_usage(payload.get("usage", {}), "input_tokens", "output_tokens"), False
         if kind == "message_stop":
             return None, None, None, True
@@ -285,11 +287,16 @@ def _decode_stream_event(wire: str, event: str, payload: Any, upstream_model: st
                 raise MalformedUpstreamResponse()
             if choices:
                 choice = choices[0]
-                delta = choice.get("delta", {}) if isinstance(choice, dict) else {}
+                if not isinstance(choice, dict):
+                    raise MalformedUpstreamResponse()
+                delta = choice.get("delta", {})
+                if delta is not None and not isinstance(delta, dict):
+                    raise MalformedUpstreamResponse()
                 t = delta.get("content") if isinstance(delta, dict) else None
                 if t is not None and not isinstance(t, str):
                     raise MalformedUpstreamResponse()
-                return t, choice.get("finish_reason"), None, False
+                finish = choice.get("finish_reason")
+                return t, finish, None, False
         if payload.get("usage") is not None:
             return None, None, _go_usage(payload["usage"], "prompt_tokens", "completion_tokens"), False
     return None, None, None, False
