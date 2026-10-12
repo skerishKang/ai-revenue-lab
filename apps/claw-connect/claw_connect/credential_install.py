@@ -62,12 +62,15 @@ _LOCAL_PROOF_KINDS = frozenset({_STORE_READBACK_PROOF})
 #: only comparable against the canonical Broker's own computation.
 INSTALL_ACK_TRANSCRIPT_VERSION = "padiem.connector-device-install-ack.v1"
 
-#: The credential window CENTRAL will accept as an HMAC key for the ack
-#: (``installation_proof`` in the same central module). A credential outside this
-#: window can be stored but never acknowledged, so it is refused locally before
-#: anything is written.
+#: #4139 Decision A: the ceiling is the canonical pairing bound
+#: ``padiem_control_plane.local_agent_broker_pairing.MAX_PAIRING_CREDENTIAL_BYTES``,
+#: mirrored here because the Connector stays stdlib-only, and 16 is the current
+#: install-ACK security floor. The generic DPAPI store capacity (16384) is **not**
+#: permission to exceed the pairing bound. A credential outside this window could be
+#: stored yet never acknowledged, so it is refused locally before anything is written;
+#: the tests pin both numbers against the canonical authorities in the same tree.
 _MIN_ACK_KEY_BYTES = 16
-_MAX_ACK_KEY_BYTES = 4096
+_MAX_ACK_KEY_BYTES = 4_096
 _PROOF_HEX_RE = re.compile(r"^[0-9a-f]{64}$")
 _REFERENCE_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
 

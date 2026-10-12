@@ -11,7 +11,9 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import json
 import re
+import subprocess
 import sys
 from dataclasses import dataclass, replace
 from datetime import datetime, timezone
@@ -39,6 +41,7 @@ from claw_connect.credential_install import (  # noqa: E402
     installation_ack_transcript,
     plan_install_failure_recovery,
 )
+from claw_connect import credential_install  # noqa: E402
 
 NOW = datetime(2026, 10, 12, 12, 0, tzinfo=timezone.utc)
 CREDENTIAL = b"raw-device-credential-bytes"
@@ -367,6 +370,86 @@ def test_recovery_disposition_projection_carries_no_retry_or_credential():
     assert payload["retry_same_challenge"] is False
     assert payload["retransmit_credential"] is False
     assert CREDENTIAL not in repr(payload).encode("utf-8", "ignore")
+
+
+# --- cross-authority pins (read in a child interpreter, on purpose) ---------
+#: #4139 Decision A: 4096 is the *pairing protocol* ceiling, and 16 is the current
+#: install-ACK security floor. The generic DPAPI store capacity (16384) is not permission
+#: to exceed the pairing bound. The connector cannot import those packages at runtime
+#: (stdlib-only Windows app), so it mirrors the constant — and these pins keep the mirror
+#: honest against the canonical authorities in this same tree.
+#:
+#: The probe runs in a child interpreter because mutating ``sys.path``/``sys.modules``
+#: here would silently change the in-process skip decision of the S1 drift guard in
+#: ``test_enrollment_contract.py``, which owns its own environment.
+_AUTHORITIES = {
+    "control_plane": Path(__file__).resolve().parents[3] / "packages" / "padiem-control-plane",
+    "kagent": Path(__file__).resolve().parents[3] / "apps" / "korean-ai-code-agent" / "src",
+}
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+_AUTHORITY_PROBE = """
+import json, sys
+sys.path.insert(0, sys.argv[1]); sys.path.insert(0, sys.argv[2])
+from padiem_control_plane import local_agent_broker_pairing as pairing
+from kagent import local_agent_broker_pairing_client as client
+print(json.dumps({
+    "max_pairing": pairing.MAX_PAIRING_CREDENTIAL_BYTES,
+    "max_enrollment": client.MAX_ENROLLMENT_CREDENTIAL_BYTES,
+    "default_len": len(pairing._default_credential_factory()),
+    "transcript": pairing.PAIRING_PROOF_TRANSCRIPT,
+    "prefix": pairing.PAIRING_PROOF_REF_PREFIX,
+    "pairing_module": pairing.__file__,
+    "client_module": client.__file__,
+}))
+"""
+
+
+def _authorities():
+    for name, path in _AUTHORITIES.items():
+        assert path.is_dir(), f"{name} canonical authority root missing: {path}"
+    probe = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            _AUTHORITY_PROBE,
+            str(_AUTHORITIES["control_plane"]),
+            str(_AUTHORITIES["kagent"]),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    assert probe.returncode == 0, f"authority probe failed: {probe.stderr[-400:]}"
+    values = json.loads(probe.stdout)
+    # A stale editable install of either package elsewhere on the machine must not
+    # masquerade as this revision's authority.
+    for key in ("pairing_module", "client_module"):
+        assert str(Path(values[key]).resolve()).startswith(str(_REPO_ROOT)), values[key]
+    return values
+
+
+def test_local_ack_key_window_equals_the_canonical_pairing_bound():
+    values = _authorities()
+    assert values["max_pairing"] == values["max_enrollment"]
+    assert values["max_pairing"] == credential_install._MAX_ACK_KEY_BYTES
+    assert credential_install._MIN_ACK_KEY_BYTES == 16
+    assert credential_install._MAX_ACK_KEY_BYTES < 16384
+
+
+def test_default_pairing_credential_fits_the_local_window():
+    values = _authorities()
+    assert credential_install._MIN_ACK_KEY_BYTES <= values["default_len"]
+    assert values["default_len"] <= credential_install._MAX_ACK_KEY_BYTES
+
+
+def test_connector_pairing_transcript_mirror_equals_the_s1_authority():
+    from claw_connect.enrollment import (
+        ENROLLMENT_PROOF_REF_PREFIX,
+        ENROLLMENT_PROOF_TRANSCRIPT,
+    )
+
+    values = _authorities()
+    assert values["transcript"] == ENROLLMENT_PROOF_TRANSCRIPT
+    assert values["prefix"] == ENROLLMENT_PROOF_REF_PREFIX
 
 
 # --- versioned install-ack proof (LOCAL2 half of CENTRAL's transcript) -------

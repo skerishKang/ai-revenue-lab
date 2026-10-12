@@ -109,12 +109,17 @@
 
 ## 9. 검증 상태 (#4490 HEAD에서 실측)
 
-- `apps/claw-connect/tests/` 전체: **277 passed, 4 skipped** (로컬 Windows Python 3.11; CI는 3.12에서 재실행)
+- `apps/claw-connect/tests/` 전체: **291 passed, 4 skipped** (로컬 Windows Python 3.11, 실제 DPAPI 포함; CI는 3.12에서 재실행)
   - skip 3건: `CENTRAL-CONTRACT-CONFLICT` — central `dbbd1633`가 `claw_connect.resident_path`와
     `runtime.ConnectApp(enrollment=...)` 배선을 제거해 재현 불가 (Resident 경로는 #4139 범위 밖, CENTRAL 결정 대기)
   - skip 1건: S1 authority 미병합 drift guard (`BLOCKED_DEPENDENCY`)
 - `test_enrollment_contract.py`: 67 passed + 4 skipped
-- `test_enrollment_http_transport.py` + `test_credential_install_confirmation.py` + `test_enrollment_install_gate.py`: 153 passed
+- `test_enrollment_http_transport.py` + `test_credential_install_confirmation.py` + `test_enrollment_install_gate.py`: 156 passed
+  - credential ceiling/floor와 pairing transcript의 authority cross-check는 자식 인터프리터로 읽어,
+    위 drift guard의 in-process skip 결정을 조용 바꾸지 않는다 (`sys.path`/`sys.modules` 비결합)
+- `test_credential_install_windows_dpapi_store.py`: **11 passed** — 실제 `kagent.ProtectedFileDeviceCredentialStore`
+  + 실제 current-user DPAPI로 save·readback 확인, 디스크에 plaintext 없음, binding 컨텍스트 바인딩,
+  revoked/expired binding 거부, 삭제 후 미확인과 single-use까지 검증
 - Node wrapper (`npm test`): **5 passed / 0 failed** (이전 문서의 6/6은 오기재였고 실측은 5건)
 - GitHub Windows 게이트(`claw-connect-contract-tests.yml`, PR #4490 head에서 실행): §11에 exact SHA로 보고
 - Windows live harness (`verify_windows_live.py`): 기존 blocked-기대 항목 유지, live E2E 미수행 (`WINDOWS_LIVE_E2E=NOT_PROVEN`)
@@ -145,6 +150,10 @@
   HMAC-SHA256 proof를 계산해 confirmation에 담는다. 이 proof는 자격증명 *소유*만 증명하며 DPAPI 설치나
   Windows 기기 신원을 증명하지 않는다. 전송 채널이 미선정이라 어떤 sender도 배선하지 않았고,
   CENTRAL이 검증할 수 없는 길이(16–4096 bytes 창 밖)의 자격증명은 저장 전에 거부한다.
+  이 창은 #4139 Decision A의 규범값이다 — ceiling은
+  `padiem_control_plane.local_agent_broker_pairing.MAX_PAIRING_CREDENTIAL_BYTES`(4096, 기본 발급은 32 bytes)이고,
+  generic DPAPI 저장 용량(16384)을 초과할 근거가 아니다. 테스트가 두 canonical authority에서 실제 값을 읽어
+  미러 상수를 고정한다.
 - redeemed 챌린지는 로컬에서도 single-use: 시도(성공·실패 무관)마다 소비된다.
 - 설치 실패 복구는 `plan_install_failure_recovery(revocation_confirmed=…)`가 두 가지로만 매핑한다 —
   canonical 회수 확인 → `new_challenge_required`, 미확인/모호 → `security_hold_reconciliation_required`.
