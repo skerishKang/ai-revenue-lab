@@ -7,6 +7,7 @@ and the security posture, never a live success.
 
 from __future__ import annotations
 
+import dataclasses
 import hashlib
 import hmac
 import json
@@ -24,6 +25,7 @@ from claw_connect.enrollment import EnrollmentDisplayState
 from claw_connect.enrollment import (
     ENROLLMENT_PROOF_REF_PREFIX,
     ENROLLMENT_PROOF_TRANSCRIPT,
+    ENROLLMENT_REFUSAL_REASONS,
     ENROLLMENT_SCOPED_REDEMPTION_REQUIRED,
     LIFECYCLE_CREDENTIAL_EXPIRED,
     LIFECYCLE_ONLINE,
@@ -68,6 +70,8 @@ class _FakeEnrollmentServer:
         refusal: str = "enrollment_consent_withdrawn",
         response_device_id: str | None = None,
         expires_in_hours: float = 12,
+        account_ref: str = "acct-canonical-1",
+        workspace_ref: str = "ws-canonical-1",
     ) -> None:
         self._broker_base_url = broker_base_url
         self._device_id = device_id
@@ -75,6 +79,8 @@ class _FakeEnrollmentServer:
         self._refusal = refusal
         self._response_device_id = response_device_id
         self._expires_in_hours = expires_in_hours
+        self._account_ref = account_ref
+        self._workspace_ref = workspace_ref
         self.calls: list = []
 
     def redeem_enrollment(self, request, *, now):  # noqa: ANN001
@@ -94,8 +100,8 @@ class _FakeEnrollmentServer:
             ok=True,
             binding_ref=f"binding-{device[:8]}",
             device_id=device,
-            account_ref="acct-canonical-1",
-            workspace_ref="ws-canonical-1",
+            account_ref=self._account_ref,
+            workspace_ref=self._workspace_ref,
             credential_generation=1,
             credential_expires_at=now + timedelta(hours=self._expires_in_hours),
             consent_id="consent-1",
@@ -835,3 +841,118 @@ def test_s1_contract_drift_guard():
     assert s1_pairing.PAIRING_PROOF_REF_PREFIX == ENROLLMENT_PROOF_REF_PREFIX
     assert s1_enrollment.CONSENT_LIVENESS_AUTHORITY_IMPLEMENTED is False
     assert s1_enrollment.PRODUCTION_ACTIVATION is False
+
+
+# --- account / scope isolation on an already-enrolled PC (#4139 S2) ----------
+def test_account_change_on_an_enrolled_pc_is_refused_and_keeps_the_original_binding(
+    tmp_path,
+):
+    """A different account must never silently take over an existing PC binding.
+
+    The device identity is referenced by the product sessions that were enrolled
+    against the previous account, so re-pointing it in place would hand those
+    sessions to another account. The refusal leaves the record byte-identical.
+    """
+    service = _service(tmp_path, broker_url=BROKER_URL, server_factory=_server_factory())
+    first = _redeem(service)
+    snapshot = service.record().to_dict()
+
+    service._enrollment_server_factory = _server_factory(account_ref="acct-other-2")
+    with pytest.raises(
+        EnrollmentContractError, match="enrollment_binding_owner_mismatch"
+    ):
+        _redeem(service)
+
+    after = service.record()
+    assert after.to_dict() == snapshot
+    assert after.binding_ref == first.binding_ref
+    assert after.account_ref == "acct-canonical-1"
+    # Still an enrolled, unblocked binding: refusing is not a revocation.
+    assert after.revoked is False
+    assert service.project_state() is EnrollmentDisplayState.OFFLINE
+
+
+def test_account_change_refusal_reports_only_the_bounded_reason(tmp_path):
+    service = _service(tmp_path, broker_url=BROKER_URL, server_factory=_server_factory())
+    _redeem(service)
+    service._enrollment_server_factory = _server_factory(account_ref="acct-other-2")
+
+    with pytest.raises(EnrollmentContractError) as excinfo:
+        _redeem(service)
+
+    message = str(excinfo.value)
+    assert message == "enrollment_binding_owner_mismatch"
+    assert message in ENROLLMENT_REFUSAL_REASONS
+    # Neither the refused nor the held account identifier is echoed anywhere.
+    assert "acct-other-2" not in message
+    assert "acct-canonical-1" not in message
+
+
+def test_workspace_scope_change_on_an_enrolled_pc_is_refused(tmp_path):
+    service = _service(tmp_path, broker_url=BROKER_URL, server_factory=_server_factory())
+    _redeem(service)
+
+    service._enrollment_server_factory = _server_factory(workspace_ref="ws-other-2")
+    with pytest.raises(
+        EnrollmentContractError, match="enrollment_binding_scope_mismatch"
+    ):
+        _redeem(service)
+
+    record = service.record()
+    assert record.workspace_ref == "ws-canonical-1"
+    assert record.account_ref == "acct-canonical-1"
+
+
+def test_same_account_and_scope_re_enrollment_is_still_adopted(tmp_path):
+    """The guard must not block a legitimate same-account refresh."""
+    service = _service(tmp_path, broker_url=BROKER_URL, server_factory=_server_factory())
+    first = _redeem(service)
+    second = _redeem(service)
+
+    assert second.account_ref == first.account_ref
+    assert second.workspace_ref == first.workspace_ref
+    assert second.binding_ref == first.binding_ref
+    assert service.record().is_enrolled() is True
+
+
+def test_account_change_succeeds_only_after_an_explicit_logout(tmp_path):
+    service = _service(tmp_path, broker_url=BROKER_URL, server_factory=_server_factory())
+    first = _redeem(service)
+    service._enrollment_server_factory = _server_factory(account_ref="acct-other-2")
+    with pytest.raises(EnrollmentContractError):
+        _redeem(service)
+
+    # The explicit logout is what makes a deliberate account switch honest.
+    service.clear_enrollment()
+    switched = _redeem(service)
+
+    assert switched.account_ref == "acct-other-2"
+    assert service.record().account_ref == "acct-other-2"
+    # One PC, one registration: the Broker device identity survives the switch.
+    assert service.record().device_id == first.device_id
+
+
+def test_the_connector_carries_no_product_scoped_authority_dimension():
+    """#4139 platform ownership: one canonical PC registration, no per-product fork.
+
+    The device authority must stay product-neutral. If a product/brand dimension
+    ever entered the connector, one PC would begin carrying more than one
+    registration — the per-product fork the CENTRAL brand-separation decision
+    forbids. This pins the shipped source and both closed key sets, so the
+    documented claim is enforced rather than asserted in prose.
+    """
+    source = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in sorted((ROOT / "claw_connect").glob("*.py"))
+    )
+    for forbidden in ("product_id", "b54", "b62", "b66", "brand"):
+        assert forbidden not in source, forbidden
+
+    request_keys = {field.name for field in dataclasses.fields(EnrollmentRedemptionRequest)}
+    assert request_keys == {"challenge_id", "device_id", "proof_ref"}
+    assert not request_keys & {
+        "product", "product_id", "brand", "owner", "workspace", "consent", "session",
+    }
+
+    record_keys = {field.name for field in dataclasses.fields(EnrollmentRecord)}
+    assert not record_keys & {"product", "product_id", "brand"}

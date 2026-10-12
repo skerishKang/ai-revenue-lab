@@ -818,6 +818,30 @@ class ConnectorEnrollment:
             challenge_id=challenge, pairing_code=code, device_id=record.device_id, now=moment
         )
 
+        # #4139 S2 account isolation: an existing PC registration belongs to the
+        # account that enrolled it. Re-pointing the same device identity at a
+        # different account would hand the product sessions that were enrolled
+        # against the previous account over to the new one, so the receipt is
+        # refused here and the existing binding is left exactly as it was. A
+        # deliberate account switch requires an explicit logout
+        # (``clear_enrollment``) first, which drops the binding before another
+        # account can enroll. Both reasons are members of the bounded S1/S2
+        # refusal vocabulary, so nothing new is invented and no server text is
+        # echoed. This runs *after* the server call because the account is only
+        # known from the server receipt; the server remains the authority that
+        # issues it, and the device simply declines to adopt it.
+        #
+        # Flipping this guard is not a local decision. Account switching is not
+        # a valid relaxation: a PC's device identity must never silently change
+        # owner. Any future relaxation needs a reviewed justification that
+        # answers how the previous account's product sessions stop referring to
+        # this device identity.
+        if record.is_enrolled() and record.account_ref is not None:
+            if result.account_ref != record.account_ref:
+                raise EnrollmentContractError("enrollment_binding_owner_mismatch")
+            if result.workspace_ref != record.workspace_ref:
+                raise EnrollmentContractError("enrollment_binding_scope_mismatch")
+
         record.binding_ref = result.binding_ref
         record.account_ref = result.account_ref
         record.workspace_ref = result.workspace_ref

@@ -47,6 +47,16 @@
 - `ok=False`는 그대로 호출자에 전달 → bounded reason으로 보고, 바인딩 기록 없음.
 - `ok=True`는 다음을 모두 만족해야 기록된다: 영수증 device_id == 본 기기 ID (불일치 시
   `enrollment_device_swap_denied`), credential 만료 > now, generation ≥ 1, scope ref 정형.
+- **이미 등록된 PC의 계정·스코프 변경은 채택하지 않는다 (fail-closed).** 로컬 바인딩이 존재하고
+  `account_ref`가 기록되어 있는데 영수증의 `account_ref`가 다르면
+  `enrollment_binding_owner_mismatch`로, `workspace_ref`가 다르면
+  `enrollment_binding_scope_mismatch`로 거부하고 **기존 바인딩을 그대로 둔다**(레코드 무변경,
+  revoked 아님, project_state는 계속 OFFLINE). 기기 신원은 이전 계정으로 등록된 제품 세션이
+  참조하므로, 제자리에서 다른 계정으로 재지정하면 그 세션이 새 계정으로 넘어간다. 의도적 계정
+  전환은 `clear_enrollment()`(명시적 로그아웃) 후에만 가능하며, 로그아웃은 바인딩을 먼저 버리므로
+  가드가 걸리지 않는다. 두 사유 모두 기존 bounded 어휘의 구성원이고 서버 텍스트를 echo하지 않는다.
+  서버 호출 *이후*에 검사하는 이유는 계정이 영수증에서만 알 수 있기 때문이며, 서버는 여전히
+  영수증을 발행하는 권위이고 기기는 그것을 **채택하지 않을** 뿐이다.
 - 성공은 `paired_offline`으로만 기록된다. `online`/CONNECTED는 이후 서버 projection(`mark_online`) +
   실제 live session이 있어야 하며, 영수증 자체는 lifecycle을 주장하지 않는다.
 
@@ -108,6 +118,12 @@
 4. 위 1–3 해결 후: 신규 synthetic PC로 one-shot live E2E (LOCAL2 Connector + 실제 로그인 세션) → CENTRAL 승인.
 
 ## 9. 검증 상태 (#4490 HEAD에서 실측)
+
+> **LOCAL2 후속 증분 (계정·스코프 격리, 2026-10-13):** 위 §3의 계정/스코프 채택 가드를 추가했다.
+> `apps/claw-connect/tests/` 전체 **297 passed, 4 skipped**, `test_enrollment_contract.py`
+> **73 passed + 4 skipped** (+6 신규), Node wrapper 5 passed / 0 failed. 신규 테스트 4건은 가드를
+> 제거하면 실패함을 음성 대조로 확인했다. `enrollment.py`만 변경했고 `enrollment_http.py`(와이어
+> 계약)와 CENTRAL/LOCAL1 파일은 건드리지 않았다.
 
 - `apps/claw-connect/tests/` 전체: **291 passed, 4 skipped** (로컬 Windows Python 3.11, 실제 DPAPI 포함; CI는 3.12에서 재실행)
   - skip 3건: `CENTRAL-CONTRACT-CONFLICT` — central `dbbd1633`가 `claw_connect.resident_path`와
