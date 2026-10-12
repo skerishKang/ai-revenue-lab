@@ -357,7 +357,7 @@ async def call_platform_chat_completions(
             raise InvalidRequest(str(exc)) from exc
 
     client_kwargs: dict[str, Any] = {
-        "timeout": build_provider_http_timeout(),
+        "timeout": build_provider_http_timeout(model_id),
     }
     if transport is not None:
         client_kwargs["transport"] = transport
@@ -530,7 +530,7 @@ async def stream_platform_chat_completions(
             raise InvalidRequest(str(exc)) from exc
 
     client_kwargs: dict[str, Any] = {
-        "timeout": build_provider_http_timeout(),
+        "timeout": build_provider_http_timeout(model_id),
     }
     if transport is not None:
         client_kwargs["transport"] = transport
