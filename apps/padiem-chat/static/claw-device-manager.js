@@ -17,6 +17,8 @@
       help: "연결된 컴퓨터를 확인합니다. PC 작업은 별도의 승인이 필요합니다.",
       loading: "서버에서 컴퓨터 연결 상태를 확인하고 있습니다.",
       unavailable: "컴퓨터 연결 서비스가 아직 준비되지 않았습니다. 연결된 PC를 확인할 수 없습니다.",
+      unconfigured: "컴퓨터 연결 서비스가 아직 설정되지 않았습니다. 연결 서비스가 설정되면 이 목록을 확인할 수 있습니다.",
+      readFailed: "연결 서비스 조회 중 문제가 발생했습니다. 잠시 후 ‘연결 상태 새로고침’으로 다시 확인해 주세요.",
       login: "로그인한 뒤 내 컴퓨터 목록을 확인할 수 있습니다.",
       failed: "연결 상태를 확인하지 못했습니다. 다시 시도해 주세요.",
       empty: "현재 계정에서 확인된 컴퓨터가 없습니다. Claw Connect 설치·연결을 먼저 완료해 주세요.",
@@ -36,6 +38,8 @@
       help: "Review connected devices. Running local tasks requires separate approval.",
       loading: "Checking your devices with the server.",
       unavailable: "Computer connection service is not ready yet. Device status cannot be confirmed.",
+      unconfigured: "The computer connection service is not configured yet. Once it is set up, this list can be shown.",
+      readFailed: "Something went wrong while reading the connection service. Please check again shortly with ‘Refresh connection status’.",
       login: "Sign in to view your computers.",
       failed: "Could not verify device status. Please retry.",
       empty: "No computers confirmed for this account. Install and pair Claw Connect first.",
@@ -223,6 +227,21 @@
         if (request !== sequence || !opened || !isClaw()) return;
         if (rawText.length > MAX_RESPONSE_BYTES) throw Error("oversize");
         const payload = JSON.parse(rawText);
+        // The reviewed unavailable envelope distinguishes "not configured yet"
+        // from "the read failed and should be retried". Only these two reason
+        // codes are interpreted; every other value keeps the existing safe
+        // refusal, and no server-supplied text is ever rendered.
+        if (payload && payload.ok === true && payload.available === false) {
+          selectedId = null;
+          if (payload.reason === "device_directory_unconfigured") {
+            setStatus("unconfigured");
+          } else if (payload.reason === "device_directory_read_failed") {
+            setStatus("readFailed");
+          } else {
+            setStatus("unavailable");
+          }
+          return;
+        }
         if (!payload || payload.ok !== true || payload.available !== true ||
             payload.ownerScoped !== true) {
           selectedId = null;
