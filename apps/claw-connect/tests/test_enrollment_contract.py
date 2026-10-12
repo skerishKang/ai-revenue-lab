@@ -1053,6 +1053,42 @@ def test_a_refusal_after_a_successful_receipt_is_not_a_server_rollback(tmp_path)
     assert calls[-1].device_id == snapshot["device_id"]
 
 
+@pytest.mark.parametrize(
+    "missing_field, reason",
+    [
+        ("account_ref", "enrollment_binding_owner_mismatch"),
+        ("workspace_ref", "enrollment_binding_scope_mismatch"),
+    ],
+)
+def test_damaged_existing_binding_never_contacts_enrollment_server(
+    tmp_path, missing_field, reason,
+):
+    """Known-invalid local owner/scope must fail before one-time remote redeem."""
+    calls: list = []
+    service = _service(
+        tmp_path,
+        broker_url=BROKER_URL,
+        server_factory=_tracked_server_factory(calls),
+    )
+    _redeem(service)
+    assert len(calls) == 1
+    _seed_record(service, **{missing_field: None})
+    persisted_before = service.state_file.read_bytes()
+    projection_before = service.record().to_dict()
+
+    service._enrollment_server_factory = _tracked_server_factory(
+        calls, account_ref="acct-other-2", workspace_ref="ws-other-2",
+    )
+    with pytest.raises(EnrollmentContractError, match=reason):
+        _redeem(service)
+
+    # No second redeem: no server-side challenge consumption, new binding
+    # or protected credential handoff initiated by this damaged local record.
+    assert len(calls) == 1
+    assert service.record().to_dict() == projection_before
+    assert service.state_file.read_bytes() == persisted_before
+
+
 def test_an_enrolled_record_without_a_recorded_owner_is_refused(tmp_path):
     """A persisted binding missing its owner must fail closed (CENTRAL review C).
 
