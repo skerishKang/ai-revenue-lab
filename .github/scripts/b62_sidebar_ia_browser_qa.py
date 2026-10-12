@@ -58,6 +58,20 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
         raise AssertionError("sidebar suggested-question heading must be removed")
     if await page.locator("#sidebar [data-prompt]").count() != 0:
         raise AssertionError("sidebar must not own prompt-discovery controls")
+    # #4462 simplified IA: duplicate Projects / saved answers / standalone
+    # Tasks+Alerts leave the sidebar; Files is labelled Library.
+    for removed in (
+        "#projectsNavButton",
+        "#outputsNavButton",
+        "#outputsSection",
+        "#alertsNavButton",
+        "#tasksNavButton",
+    ):
+        if await page.locator(removed).count() != 0:
+            raise AssertionError(f"sidebar simplified IA must not contain {removed}")
+    for kept in ("#filesNavButton", "#automationNavButton", "#clawAutomation", "#clawWorkspace"):
+        if await page.locator(kept).count() != 1:
+            raise AssertionError(f"simplified IA must preserve {kept}")
 
     visible_starters = await _visible_count(page, "#emptyState .starter-grid .starter")
     if visible_starters < 3:
@@ -118,7 +132,6 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
             sidebar.querySelector('.side-nav'),
             sidebar.querySelector('#projectsSection'),
             sidebar.querySelector('#historySection'),
-            sidebar.querySelector('#outputsSection'),
             sidebar.querySelector('.sidebar-footer'),
             sidebar.querySelector('.sidebar-bottom'),
           ];

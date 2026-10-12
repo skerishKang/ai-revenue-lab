@@ -18,7 +18,11 @@
   const messageList = document.getElementById("messageList");
   const loginButton = document.getElementById("loginButton");
 
-  if (!outputsNavButton || !outputsSection || !outputsList || !outputDialog || !messageList) return;
+  if (!outputDialog || !messageList) return;
+  // #4462: the sidebar saved-answers button/section are removed from the
+  // visible IA. Every sidebar touch below is optional so the saved-answer
+  // data, dialog, per-answer save buttons and /api/outputs contract keep
+  // working without a sidebar list surface.
 
   let outputsReady = false;
   let outputs = [];
@@ -103,22 +107,28 @@
   function disableOutputs() {
     outputsReady = false;
     outputs = [];
-    outputsNavButton.hidden = true;
-    outputsNavButton.disabled = true;
-    outputsNavButton.setAttribute("aria-disabled", "true");
-    outputsBadge.textContent = "로그인 후";
-    outputsSection.hidden = true;
-    outputsList.replaceChildren();
-    outputsEmpty.hidden = true;
+    if (outputsNavButton) {
+      outputsNavButton.hidden = true;
+      outputsNavButton.disabled = true;
+      outputsNavButton.setAttribute("aria-disabled", "true");
+    }
+    if (outputsBadge) outputsBadge.textContent = "로그인 후";
+    if (outputsSection) outputsSection.hidden = true;
+    if (outputsList) outputsList.replaceChildren();
+    if (outputsEmpty) outputsEmpty.hidden = true;
     updateSaveButtons();
     if (outputDialog.open) outputDialog.close();
     activeOutput = null;
   }
 
   function renderOutputs() {
-    outputsList.replaceChildren();
-    outputsSection.hidden = false;
-    outputsEmpty.hidden = outputs.length !== 0;
+    if (outputsList) outputsList.replaceChildren();
+    if (outputsSection) outputsSection.hidden = false;
+    if (outputsEmpty) outputsEmpty.hidden = outputs.length !== 0;
+    if (!outputsList) {
+      if (outputsBadge) outputsBadge.textContent = outputs.length ? String(outputs.length) : "비어 있음";
+      return;
+    }
     outputs.forEach((item) => {
       if (!item || typeof item.id !== "string" || typeof item.title !== "string") return;
       const button = document.createElement("button");
@@ -130,7 +140,7 @@
       button.addEventListener("click", () => openOutput(item.id));
       outputsList.appendChild(button);
     });
-    outputsBadge.textContent = outputs.length ? String(outputs.length) : "비어 있음";
+    if (outputsBadge) outputsBadge.textContent = outputs.length ? String(outputs.length) : "비어 있음";
   }
 
   async function loadOutputs() {
@@ -142,9 +152,11 @@
       if (!response.ok || !data || !Array.isArray(data.outputs)) throw new Error("saved outputs unavailable");
       outputs = data.outputs.filter((item) => item && typeof item.id === "string" && typeof item.title === "string");
       outputsReady = true;
-      outputsNavButton.hidden = false;
-      outputsNavButton.disabled = false;
-      outputsNavButton.setAttribute("aria-disabled", "false");
+      if (outputsNavButton) {
+        outputsNavButton.hidden = false;
+        outputsNavButton.disabled = false;
+        outputsNavButton.setAttribute("aria-disabled", "false");
+      }
       renderOutputs();
       updateSaveButtons();
       return true;
@@ -318,8 +330,8 @@
     }
   }
 
-  outputsNavButton.addEventListener("click", () => {
-    if (outputsReady) outputsSection.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  if (outputsNavButton) outputsNavButton.addEventListener("click", () => {
+    if (outputsReady && outputsSection) outputsSection.scrollIntoView({ block: "nearest", behavior: "smooth" });
   });
   outputDialogClose.addEventListener("click", closeOutput);
   outputDialog.addEventListener("cancel", (event) => { event.preventDefault(); closeOutput(); });

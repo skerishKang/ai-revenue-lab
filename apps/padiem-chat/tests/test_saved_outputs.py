@@ -363,8 +363,11 @@ def test_saved_outputs_ui_is_additive_and_truthful():
 
     assert '<link rel="stylesheet" href="./outputs.css" />' in html
     assert '<script src="./outputs.js"></script>' in html
-    assert 'id="outputsNavButton"' in html and "hidden" in html
-    assert "저장한 답변" in html
+    # #4462: the sidebar saved-answers button/section leave the visible IA,
+    # while the saved-answer data, dialog, per-answer save buttons and
+    # /api/outputs contract are preserved untouched.
+    assert 'id="outputsNavButton"' not in html
+    assert 'id="outputsSection"' not in html
     assert 'id="savedOutputDialog"' in html
     assert 'fetch("/api/outputs"' in js
     assert "navigator.clipboard" in js and "document.execCommand" in js

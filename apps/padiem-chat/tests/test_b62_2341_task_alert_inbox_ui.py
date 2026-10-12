@@ -12,11 +12,15 @@ ROUTES = (ROOT / "app" / "claw_inbox_routes.py").read_text(encoding="utf-8")
 FACTORY = (ROOT / "app" / "app_factory.py").read_text(encoding="utf-8")
 
 
-def test_existing_nav_buttons_are_consumed_not_orphaned():
-    assert 'id="tasksNavButton"' in INDEX
-    assert 'id="alertsNavButton"' in INDEX
-    assert 'getElementById("tasksNavButton")' in APP
-    assert 'getElementById("alertsNavButton")' in APP
+def test_inbox_entries_are_reached_without_standalone_sidebar_buttons():
+    # #4462: the standalone sidebar Tasks/Alerts entries are removed. The
+    # task/alert stores, routes and inbox views are preserved; entry points
+    # are the Claw workspace task button, the automation-view alerts button
+    # and the existing calendar detail links.
+    assert 'id="tasksNavButton"' not in INDEX
+    assert 'id="alertsNavButton"' not in INDEX
+    assert 'id="clawTasksButton"' in INDEX
+    assert 'id="automationAlertsButton"' in INDEX
     assert 'openClawInbox("tasks")' in APP
     assert 'openClawInbox("alerts")' in APP
 

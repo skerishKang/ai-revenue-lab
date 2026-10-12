@@ -457,7 +457,9 @@ def test_project_frontend_and_migration_contract_keep_phase1_css_unchanged():
     html = (root / "static/index.html").read_text(encoding="utf-8")
     js = (root / "static/app.js").read_text(encoding="utf-8")
     migration = (root / "migrations/002_projects.sql").read_text(encoding="utf-8")
-    assert 'id="projectsNavButton"' in html
+    # #4462: the duplicate sidebar Projects button is removed; the lower
+    # projects section + create button remain the single project surface.
+    assert 'id="projectsNavButton"' not in html
     assert 'id="projectsSection"' in html
     assert 'id="projectDialog"' in html
     assert 'id="projectBanner"' in html
