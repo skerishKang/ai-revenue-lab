@@ -22,7 +22,7 @@ SINGLE_INSTANCE_MUTEX = "PadiemClawConnect.SingleInstance.v1"
 #: Opt-in autostart is registered under HKCU (never HKLM) so no administrator
 #: right is ever requested. The value is absent unless the user asks for it.
 AUTOSTART_RUN_VALUE_NAME = "PadiemClawConnect"
-WEB_URL = "https://chat.padiem.ai/"
+WEB_URL = "https://chat.padiem.net/"
 
 __all__ = [
     "AUTOSTART_RUN_VALUE_NAME",
