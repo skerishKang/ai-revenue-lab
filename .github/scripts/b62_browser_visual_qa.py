@@ -410,7 +410,13 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     await page.mouse.move(70, 80)
 
     # APPEARANCE controls must expose the approved 3-mode mask and speed bar.
-    await page.locator("#settingsButton").click()
+    # The legacy separate settings button is intentionally hidden. For this
+    # offline mock screenshot, expose the signed-in profile chrome only; do not
+    # mock auth permissions or touch a customer session.
+    await page.locator(".sidebar-account").evaluate(
+        "(el) => { el.hidden = false; el.style.display = 'grid'; }"
+    )
+    await page.locator("#accountProfileButton").click()
     control = page.locator(".glass-shell-control")
     await control.wait_for(state="visible", timeout=5_000)
     mask_values = await control.locator("[data-glass-mask-value]").evaluate_all(

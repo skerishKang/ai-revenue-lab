@@ -44,7 +44,7 @@
   gap: 9px;
 }
 .starter-grid .starter strong { font-size: 13px; }
-.starter-grid .starter small { font-size: 11px; line-height: 1.4; }
+.starter-grid .starter small { font-size: 12px; line-height: 1.45; }
 
 /* Give the composer slightly stronger first-use hierarchy without changing hooks. */
 .app-shell[data-state="home"] .composer {

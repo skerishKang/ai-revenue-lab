@@ -16,6 +16,7 @@ def test_four_cards_fit_one_desktop_row_and_mobile_keeps_two_or_one():
     assert 'grid-template-columns: repeat(2, minmax(0, 1fr));' in FIRST_USE
     assert 'grid-template-columns: 1fr;' in FIRST_USE
     assert 'width: 100%;' in FIRST_USE
+    assert ".starter-grid .starter small { font-size: 12px;" in FIRST_USE
 
 
 def test_excel_workflow_stays_intact_in_claw_but_not_home():
