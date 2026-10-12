@@ -243,3 +243,54 @@ def test_ui_is_independent_and_does_not_hide_a_mutating_submit():
     assert "/api/b66/admin/model-policy" not in js
     assert "localStorage" not in js
     assert "model_api_key" not in html + js + css
+
+
+def test_independent_global_google_admin_verifies_server_side_subject_not_display_email():
+    from app.central_model_admin_identity import D1CentralModelAdminAuthorizer
+    from app.history import _user_id
+
+    google_sub = "google-verified-central-operator"
+    owner = _user_id(google_sub)
+
+    class Query:
+        def __init__(self, db, sql): self.db, self.sql = db, sql
+        def bind(self, uid, mail):
+            self.db.inputs.append((uid, mail))
+            return self
+        async def first(self):
+            return {"provider_subject": self.db.subject}
+
+    class AuthDB:
+        def __init__(self, subject):
+            self.subject = subject
+            self.inputs = []
+        def prepare(self, sql):
+            assert "u.auth_provider='google'" in sql
+            assert "pc.user_id IS NULL" in sql
+            return Query(self, sql)
+
+    db = AuthDB(google_sub)
+    global_role = D1CentralModelAdminAuthorizer(
+        db, verified_owner_email="  Owner@Padiem.Net "
+    )
+    assert asyncio.run(global_role.is_global_model_admin(user_id=owner)) is True
+    assert db.inputs == [(owner, "owner@padiem.net")]
+
+    db.subject = "password:fake-email-compat"
+    assert asyncio.run(global_role.is_global_model_admin(user_id=owner)) is False
+    db.subject = "another-google-subject"
+    assert asyncio.run(global_role.is_global_model_admin(user_id=owner)) is False
+    assert asyncio.run(global_role.is_global_model_admin(user_id="client-email@padiem.net")) is False
+
+
+def test_global_role_requires_independent_trusted_email_and_canonical_d1():
+    from app.central_model_admin_identity import D1CentralModelAdminAuthorizer
+
+    class DB:
+        def prepare(self, sql): return object()
+
+    for configured in ("", "owner", "owner@no spaces@example", "owner@example.com\\nrole=admin"):
+        with pytest.raises(ValueError):
+            D1CentralModelAdminAuthorizer(DB(), verified_owner_email=configured)
+    with pytest.raises(ValueError):
+        D1CentralModelAdminAuthorizer(None, verified_owner_email="owner@example.com")
