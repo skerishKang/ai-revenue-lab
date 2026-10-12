@@ -7,7 +7,7 @@ import pytest
 from app.pilot import opencode_go_wire as go
 from app.pilot.errors import InvalidRequest, PilotNotConfigured, MalformedUpstreamResponse, UpstreamAuthFailed
 
-SESSION = "conv_padiem_mock_00001"
+SESSION = "chat_0123456789abcdef0123456789abcdef"
 TURNS = [{"role": "system", "content": "Code only"}, {"role": "user", "content": "Write a Python function."}]
 GO_IDS = ["longcat-2.5-preview-free", "step-5-preview-free", "muse-spark-1.3-contributor", "gpt-6-luna", "claude-haiku-5-5"]
 
@@ -143,3 +143,44 @@ async def test_upstream_auth_error_does_not_echo_body(monkeypatch):
         await go.call_go_model(model_id="opencode-go/gpt-6-luna", upstream_model="gpt-6-luna", messages=TURNS, session_id=SESSION, max_tokens=32,
                                transport=httpx.MockTransport(lambda r: httpx.Response(401, text="private-provider-token-debug")))
     assert "private-provider-token-debug" not in str(exc.value)
+
+
+@pytest.mark.parametrize("untrusted", [
+    "run_0123456789abcdef0123456789abcdef",
+    "b14req_0123456789ab",
+    "conv_padiem_mock_00001",
+    "chat_not_a_real_uuid",
+    "chat_0123456789ABCDEF0123456789ABCDEF",
+    "chat_0123456789abcdef0123456789abcdef-extra",
+])
+def test_never_promote_execution_ids_or_noncanonical_values_to_go_sessions(untrusted):
+    with pytest.raises(InvalidRequest, match="trusted stable conversation"):
+        go.prepare_go_request(
+            model_id="opencode-go/longcat-2.5-preview-free",
+            upstream_model="longcat-2.5-preview-free",
+            messages=TURNS, session_id=untrusted,
+        )
+
+
+def test_canonical_conversation_remains_stable_across_turns_but_not_across_chats():
+    second = "chat_ffffffffffffffffffffffffffffffff"
+    a = go.prepare_go_request(
+        model_id="opencode-go/step-5-preview-free",
+        upstream_model="step-5-preview-free",
+        messages=TURNS, session_id=SESSION,
+    )
+    a_followup = go.prepare_go_request(
+        model_id="opencode-go/step-5-preview-free",
+        upstream_model="step-5-preview-free",
+        messages=TURNS + [{"role": "assistant", "content": "Here is the function."},
+                          {"role": "user", "content": "Add a test."}],
+        session_id=SESSION,
+    )
+    b = go.prepare_go_request(
+        model_id="opencode-go/step-5-preview-free",
+        upstream_model="step-5-preview-free",
+        messages=TURNS, session_id=second,
+    )
+    assert a[2]["x-opencode-session"] == a_followup[2]["x-opencode-session"] == SESSION
+    assert b[2]["x-opencode-session"] == second
+    assert b[2]["x-opencode-session"] != SESSION

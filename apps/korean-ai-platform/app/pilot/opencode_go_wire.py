@@ -30,7 +30,11 @@ _WIRE = {
     "claude-haiku-5-5": "messages",
 }
 _UA = "padiem-claw-coding-agent/1.0"
-_SESSION = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$")
+# B54 conversation history mints chat_ + uuid4().hex after owner-scoped D1
+# readback. This grammar excludes request IDs (b14req_), P01 Claw run IDs,
+# and arbitrary user-provided session tokens. Grammar is NOT ownership proof:
+# the caller must still authenticate and revalidate the conversation in B54.
+_SESSION = re.compile(r"^chat_[0-9a-f]{32}$")
 
 
 def prepare_go_request(
@@ -38,7 +42,7 @@ def prepare_go_request(
     session_id: str | None, max_tokens: int | None = None,
     temperature: float | None = None, streaming: bool = False,
 ) -> tuple[str, dict[str, Any], dict[str, str]]:
-    """Non-secret request shape. session_id must come from trusted B54 context.
+    """Non-secret request shape. session_id must be an owner-revalidated B54 chat_ conversation ID.
 
     A B14 request ID is *not* a valid replacement for a stable conversation ID.
     Refuse the request rather than make an apparently working but noncompliant
