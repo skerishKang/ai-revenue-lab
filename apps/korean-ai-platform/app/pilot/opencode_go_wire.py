@@ -212,24 +212,25 @@ async def call_go_model(*, model_id: str, upstream_model: str,
     start = time.monotonic()
     try:
         async with httpx.AsyncClient(timeout=build_provider_http_timeout(), transport=transport) as client:
-            resp = await client.post(_go_url(wire), headers=headers, json=body, follow_redirects=False)
+            async with client.stream("POST", _go_url(wire), headers=headers, json=body, follow_redirects=False) as resp:
+                if not 200 <= resp.status_code < 300:
+                    from .platform import _raise_upstream_error
+                    _raise_upstream_error(resp.status_code, "opencode-go")  # never forward vendor body
+                # Pre-decode byte cap (#4379): the post-buffer len() check could
+                # only fire after the whole body was already in RAM.
+                from .platform import _read_bounded_body
+                raw = await _read_bounded_body(resp)
     except httpx.TimeoutException as e:
         raise UpstreamTimeout() from e
     except httpx.RequestError as e:
         raise UpstreamServerError() from e
-    if not 200 <= resp.status_code < 300:
-        from .platform import _raise_upstream_error
-        _raise_upstream_error(resp.status_code, "opencode-go")  # never forward vendor body
-    from .platform import MAX_RESPONSE_BYTES
-    if len(resp.content) > MAX_RESPONSE_BYTES:
-        raise UpstreamResponseTooLarge(MAX_RESPONSE_BYTES)
     try:
-        parsed = resp.json()
+        parsed = json.loads(raw)
     except (ValueError, UnicodeError) as e:
         raise MalformedUpstreamResponse() from e
     return _normalize_go_answer(wire, upstream_model, parsed,
                                 latency_ms=int((time.monotonic() - start) * 1000),
-                                response_bytes=len(resp.content))
+                                response_bytes=len(raw))
 
 
 def _decode_stream_event(wire: str, event: str, payload: Any, upstream_model: str) -> tuple[str | None, str | None, StreamUsage | None, bool]:
