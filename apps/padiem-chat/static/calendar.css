@@ -9,6 +9,17 @@
 
 .calendar-view {
   display: none;
+  /* #4501: the theme decoration `.main-panel::before` is a fixed, pointer-events
+     disabled layer (z-index 1 under padiem-glass, auto but still positioned
+     under the unthemed editorial wash). Readable surfaces are lifted above it by
+     the existing convention in padiem-glass-portrait.css, which lists .topbar,
+     .conversation and .claw-workspace at `position: relative; z-index: 2`.
+     Calendar was never added to that list, so its help text, tabs, record form
+     and cards painted underneath the decoration. Same convention, scoped here.
+     2 stays far below the topbar (10), the mobile scrim (18) and the sidebar
+     (20), so drawer and dialog ownership are unchanged. */
+  position: relative;
+  z-index: 2;
   flex-direction: column;
   gap: 14px;
   padding: 28px clamp(18px, 4vw, 44px) 40px;
