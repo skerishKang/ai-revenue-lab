@@ -106,6 +106,7 @@
     $("selectedId").textContent = state.selected ? state.selected.model_id : "미선택";
     $("editorForm").disabled = !state.authorized || !state.selected;
     renderCatalog();
+    renderPlacement();
     updateSelection();
   }
 
@@ -128,6 +129,87 @@
       title.append(node("strong", model.name), node("small", model.model_id));
       row.append(title, node("span", "B14 허용·준비", "ready-tag"));
       row.addEventListener("click", () => chooseModel(model.model_id));
+      root.append(row);
+    });
+  }
+
+  function renderPlacement() {
+    const root = $("modelPlacement");
+    root.replaceChildren();
+    if (!state.authorized || !state.selected) {
+      root.append(node("p", "모델을 선택하면 B14·중앙·제품별 실제 배정 위치가 표시됩니다.", "placeholder"));
+      return;
+    }
+    const id = state.selected.model_id;
+    const b66 = state.products?.b66;
+    const positions = [
+      {
+        name: "B14 공통 실행",
+        status: "B14 허용·준비",
+        detail: "owner-allowed/live-ready 선택 목록에 포함 · 전체 등록 카탈로그 아님",
+        kind: "ready",
+      },
+      {
+        name: "중앙 등급 정책",
+        status: "정책 미연결",
+        detail: "Free/Plus/Pro/Max 공통 권한 소스 연동 전",
+        kind: "unknown",
+      },
+      {
+        name: "Padiem Chat",
+        status: "모델별 배정 미확인",
+        detail: "Chat 제품 등급 라우트와 이 모델의 정확한 연결 미검증",
+        kind: "unknown",
+      },
+      {
+        name: "Claw",
+        status: "모델별 정책 미확인",
+        detail: "B14 선택 목록은 공유하지만 최종 Claw 권한 상태는 별도",
+        kind: "unknown",
+      },
+    ];
+    if (b66?.status !== "connected") {
+      positions.push({
+        name: "B66 견적서",
+        status: "정책 조회 불가", detail: "B66 D1 모델 정책을 확인하지 못했습니다",
+        kind: "unknown",
+      });
+    } else if (Array.isArray(b66.disabled_models) && b66.disabled_models.includes(id)) {
+      positions.push({
+        name: "B66 견적서",
+        status: "B66 전역 OFF", detail: "B66 관리자 제품 정책에서 해당 모델 차단",
+        kind: "blocked",
+      });
+    } else if (b66.active === true) {
+      const assigned = Object.entries(b66.tiers || {})
+        .filter(([, models]) => Array.isArray(models) && models.includes(id))
+        .map(([tier]) => tier);
+      positions.push({
+        name: "B66 견적서",
+        status: assigned.length ? "배정: " + assigned.join(" · ") : "등급 배정 없음",
+        detail: "B66의 저장된 D1 제품 정책 · 실제 사용에는 별도 사용자/실행 검증 필요",
+        kind: assigned.length ? "ready" : "blocked",
+      });
+    } else {
+      positions.push({
+        name: "B66 견적서",
+        status: "등급 정책 비활성",
+        detail: "정규 B66 D1 정책이 active=false · 전역 모델 OFF와는 별개",
+        kind: "unknown",
+      });
+    }
+    positions.push({
+      name: "B14 Router 상품",
+      status: "외부 API 상품 정책 미연결",
+      detail: "B14 공통 실행 가용성과 Router 상품 구독 권한은 서로 다릅니다",
+      kind: "unknown",
+    });
+    positions.forEach((position) => {
+      const row = node("div", null, "placement-item");
+      row.append(node("strong", position.name));
+      const status = node("span", position.status, "position-status " + position.kind);
+      row.append(status);
+      row.append(node("small", position.detail));
       root.append(row);
     });
   }
@@ -212,6 +294,7 @@
     $("selectedId").textContent = "미선택";
     $("modelList").replaceChildren(node("p", "중앙 관리자 권한을 확인하고 있습니다.", "placeholder"));
     $("sourceList").replaceChildren(node("p", "권한 확인 중", "placeholder"));
+    $("modelPlacement").replaceChildren(node("p", "중앙 관리자 권한 확인 중", "placeholder"));
     $("editorForm").disabled = true;
     $("previewBtn").disabled = true;
     setMode("권한 확인 중");
@@ -234,6 +317,7 @@
       message("실제 B14 모델과 기존 제품 정책의 연결 상태를 불러왔습니다. 체크한 변경안은 미리보기만 가능합니다.", "good");
       renderCatalog();
       renderSources(state.products);
+      renderPlacement();
     } catch (err) {
       if (seq !== state.pendingRequest) return;
       const code = String(err.message);
@@ -242,6 +326,7 @@
       $("flowB14").textContent = "권한 있는 조회 대기";
       $("modelList").replaceChildren(node("p", "모델 목록을 표시하지 않습니다. 중앙 관리자 권한 확인이 필요합니다.", "placeholder"));
       $("sourceList").replaceChildren(node("p", "권한 확인 전 정책 정보 비공개", "placeholder"));
+      $("modelPlacement").replaceChildren(node("p", "계층별 모델 배정 정보에 접근할 수 없습니다.", "placeholder"));
       message(code === "central_admin_not_configured"
         ? "중앙 관리자 권한기관이 아직 연결되지 않았습니다. B66 관리자 권한으로 자동 승격되지 않습니다."
         : code === "authentication_required"
