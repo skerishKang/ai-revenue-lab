@@ -297,8 +297,8 @@
     article.querySelector("[data-runtime-label]").textContent = skillTitle ? `${runtimeLabel} · ${skillTitle}` : runtimeLabel;
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
   }
-  // #3936: a model HOLD is a bounded refusal raised BEFORE dispatch, so it must
-  // not wear the generic "this run may already have started" state. Closed
+  // #3936/#3933: a model HOLD is a bounded refusal raised BEFORE dispatch, so it
+  // must not wear the generic "this run may already have started" state. Closed
   // code→copy map only: a raw server, Engine or provider string is never shown.
   const CLAW_BOUNDED_REFUSAL_COPY = Object.freeze({
     tier_unavailable: Object.freeze({
@@ -306,11 +306,22 @@
       hint: "claw-general-model-unavailable-note",
     }),
   });
-  function clawGeneralFailure(code) {
+  // #3933: ONE lookup for every Claw failure surface. The composer lane, the live
+  // SSE lane and the manual-intake lane all resolve the same server code through
+  // this function, so a bounded refusal can never render two different sentences
+  // or drift into a second invented copy. `Object.hasOwn` only: an inherited or
+  // spoofed key never selects copy, and an unlisted code returns null so each
+  // caller keeps its own existing fallback.
+  function clawBoundedRefusalCopy(code) {
     const entry = typeof code === "string" && Object.hasOwn(CLAW_BOUNDED_REFUSAL_COPY, code)
       ? CLAW_BOUNDED_REFUSAL_COPY[code]
       : null;
-    if (entry) return Object.freeze({ message: uiT(entry.message), hint: uiT(entry.hint) });
+    if (!entry) return null;
+    return Object.freeze({ message: uiT(entry.message), hint: uiT(entry.hint) });
+  }
+  function clawGeneralFailure(code) {
+    const bounded = clawBoundedRefusalCopy(code);
+    if (bounded) return bounded;
     return Object.freeze({
       message: window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang)
         || uiT("claw-general-check-runs"),
@@ -2471,6 +2482,14 @@
   function safeClawErrorMessage(data, response) {
     const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
     const status = response ? response.status : 0;
+    // #3933: a bounded pre-dispatch refusal is a product state, not a run that
+    // started and then failed. The manual-intake route returns this same
+    // `tier_unavailable` code before it ever dispatches, so resolving it through
+    // the shared bounded-refusal authority keeps this lane's wording identical to
+    // the composer and live SSE lanes instead of the generic "the run failed"
+    // sentence. An unlisted code falls through to the existing bounded copy.
+    const bounded = clawBoundedRefusalCopy(code);
+    if (bounded) return bounded.message;
     if (code === "invalid_content" || code === "content_too_short") return clawT("claw-error-empty");
     if (code === "content_too_long" || code === "body_too_large" || status === 413) return clawT("claw-error-too-large");
     if (code === "invalid_channel" || code === "invalid_action" || code === "unsupported_media_type" || code === "invalid_sender_hint") return clawT("claw-error-invalid");
@@ -4111,17 +4130,28 @@
         return;
       }
       const safeMsg = safeClawErrorMessage(data, response);
+      // #3933: a bounded pre-dispatch refusal also states, in the result area,
+      // that the request was never executed — the distinction the status line
+      // alone cannot carry. Resolved from the same authority as safeMsg.
+      const boundedFailure = clawBoundedRefusalCopy(
+        data && data.error && typeof data.error.code === "string" ? data.error.code : "",
+      );
       if (clawResultEmpty) {
         clawResultEmpty.hidden = false;
-        clawResultEmpty.textContent = safeMsg;
+        clawResultEmpty.textContent = boundedFailure
+          ? `${boundedFailure.message} ${boundedFailure.hint}`
+          : safeMsg;
       }
       setClawStatus(safeMsg, "error");
       setClawAreaState("error");
       // A 429 usage denial happens before dispatch, so its Retry-After may be
       // honored as a cooldown. Anything ambiguous gets guidance, never a retry.
+      // #3933: a bounded pre-dispatch refusal provably never dispatched, so it is
+      // excluded here as well as in the classifier — widening the ambiguous set
+      // later must not be able to latch a HOLD as an uncertain run.
       const retryAfter = response.status === 429 ? clawRetryAfterFromResponse(response) : null;
       if (retryAfter !== null) beginClawRetryCooldown(retryAfter);
-      else if (isAmbiguousClawFailure(data, response)) showClawAmbiguousRecoveryHint();
+      else if (!boundedFailure && isAmbiguousClawFailure(data, response)) showClawAmbiguousRecoveryHint();
     } catch {
       const fallback = clawT("claw-error-generic");
       if (clawResultEmpty) {
