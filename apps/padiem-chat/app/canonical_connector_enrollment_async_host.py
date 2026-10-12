@@ -185,6 +185,9 @@ class CanonicalConnectorEnrollmentAsyncHost:
             "device_id": enrollment["device_id"],
             "account_ref": enrollment["account_ref"],
             "workspace_ref": enrollment["workspace_ref"],
+            # The consent ID comes only from the canonical Identity DO's
+            # freshly revalidated authorization, never from the device body.
+            "consent_id": authorization["consent_id"],
             "credential_generation": enrollment["credential_generation"],
             "credential_expires_at": enrollment["credential_expires_at"],
             "lifecycle": "paired_offline",
