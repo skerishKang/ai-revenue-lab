@@ -30,7 +30,9 @@ def response(handler, request):
     return result.status_code, json.loads(result.body), result.headers
 
 
-def test_no_live_product_route_auth_or_server_grant():
+def test_no_live_product_route_auth_or_server_grant(monkeypatch):
+    monkeypatch.setattr(routes, "auth_ready", lambda request: False)
+    monkeypatch.setattr(routes, "current_user_id", lambda request: None)
     status, body, headers = response(
         routes.connector_enrollment_issue, Request({"device_id": "device.1"})
     )
