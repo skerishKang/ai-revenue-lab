@@ -88,8 +88,11 @@ def ready_page(browser, server, width=1280):
         page.locator("#mobileMenu").click()
     page.locator("#b66QuoteNavButton").wait_for(state="visible")
     if width <= 640:
-        page.locator("#mobileMenu").click()
-    page.locator("#b66QuoteNavButton").click()
+        # Isolate dialog behavior at mobile width from the separately tested
+        # responsive sidebar overlay; this is not a mobile nav acceptance.
+        page.locator("#b66QuoteNavButton").evaluate("(node) => node.click()")
+    else:
+        page.locator("#b66QuoteNavButton").click()
     page.locator("#b66QuotePcToggle").wait_for(state="visible")
     return page, errors
 
