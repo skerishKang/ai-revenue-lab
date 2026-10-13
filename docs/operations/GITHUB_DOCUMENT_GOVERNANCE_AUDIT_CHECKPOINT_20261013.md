@@ -157,6 +157,15 @@ Immutable original 835-document cursor: **525 with text viewed at least partly**
 - B51 listing/reference validation does not install or charge workflows; B55 fleet plan does not execute Claw tasks; B57 original vs modern translation/editorial edition rights require independent clearance; B52 schedule concept not running.
 - No source modification, live deployment, real customer/provider data, off-Git Governance access or new model/business policy.
 
+## 1R. Batch 18 — 25 source reads: B14/B62/B66/P01 activation and operator controls (2026-10-13)
+
+Original 835-document cursor: **550 with text viewed at least partly** (125 initially sampled + 25 each B02–B18), **266 INDEXED_ONLY** text unread, **19 BINARY_PENDING** PDF/DOCX unread. Initial 125 samples still need independently complete classification.
+
+- [Batch 18 SHA-pinned per-source audit and owner/technical split](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH18_20261013.md).
+- Dated B14 provider/tier experiments, Atria/Agnes error diagnostics and one-off provider comparisons are not current model availability, membership or charged-call authority. Distinguish B62 search-transport proof from actual reply E2E.
+- Corporate Dothome account backup/deletion requires Owner review; P01 capability promotions, Source and Preview do not grant new customer Agent permissions; Tabbit UI QuickCheck is not a substitute for contract/security CI.
+- No original source/Git history, private off-Git Governance, customer material, provider account, subscription or deployment changed.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
