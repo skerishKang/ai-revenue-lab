@@ -104,7 +104,7 @@ def test_rejected_peer_cannot_reach_private_broker_or_identity():
     assert len(app.routes) == 1 and app.routes[0].path == CONNECTOR_GATEWAY_WSS_PATH
     with TestClient(app) as client:
         with pytest.raises(WebSocketDisconnect) as error:
-            with client.websocket_connect(CONNECTOR_GATEWAY_WSS_PATH):
+            with client.websocket_connect("wss://testserver" + CONNECTOR_GATEWAY_WSS_PATH):
                 pass
     assert error.value.code == 1008
     assert ingress.calls == 1 and broker.calls == []
@@ -119,7 +119,7 @@ def test_fake_header_never_replaces_actual_trusted_tls_verifier():
     )
     with TestClient(app) as client:
         with pytest.raises(WebSocketDisconnect):
-            with client.websocket_connect(CONNECTOR_GATEWAY_WSS_PATH, headers={
+            with client.websocket_connect("wss://testserver" + CONNECTOR_GATEWAY_WSS_PATH, headers={
                 "X-Forwarded-Proto": "wss",
                 "Cf-Tls-Client-Auth": "SUCCESS",
                 "X-Padiem-Device-Id": "device.forged",
@@ -142,7 +142,7 @@ def test_valid_ingress_still_cannot_issue_a_credential_when_broker_refuses():
         "proof_ref": "pairing-proof:" + "b" * 64,
     }
     with TestClient(app) as client:
-        with client.websocket_connect(CONNECTOR_GATEWAY_WSS_PATH) as ws:
+        with client.websocket_connect("wss://testserver" + CONNECTOR_GATEWAY_WSS_PATH) as ws:
             ws.send_json(begin)
             with pytest.raises(WebSocketDisconnect):
                 ws.receive_json()
