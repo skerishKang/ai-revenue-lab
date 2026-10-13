@@ -22,9 +22,9 @@ from cloudflare_served_version import resolve_served_version_id
 
 # Exact incident pins; this emergency recovery route is NOT reusable for new
 # release/flag changes without explicit source review.
-PREMUTATION_VERSION_ID = "181d637c-de84-4919-9d45-8e966a07f181"
-BAD_LATEST_VERSION_ID = "18ee50a1-ab64-4cc0-8fc2-2ed3234f63a5"
-PREMUTATION_RUN_ID = 38431252763
+PREMUTATION_VERSION_ID = "d62bef73-f9d3-4559-88f9-cecbba785bb9"
+BAD_LATEST_VERSION_ID = "00d38813-df7b-4b73-b00a-5c7b26ed3b7a"
+PREMUTATION_RUN_ID = 38444728738
 
 
 class RecoveryRefused(ValueError):
