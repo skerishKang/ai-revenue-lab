@@ -170,10 +170,8 @@ def _request(*, enabled=True, store=None):
     )
 
 
-def _reserve_now(store, **over):
-    with patch(
-        "app.claw_first_turn_authority._utcnow", return_value=FIXED_NOW
-    ):
+def _reserve_now(store, _now=FIXED_NOW, **over):
+    with patch("app.claw_first_turn_authority._utcnow", return_value=_now):
         return asyncio.run(
             reserve_first_turn_grant(_request(store=store), **_inputs(**over))
         )
@@ -468,6 +466,22 @@ class TestD1GrantStore(unittest.TestCase):
         assert _count_file_rows(path) == 1
         assert outcomes[0].grant_id == outcomes[1].grant_id
 
+    def test_expired_active_grant_releases_key_for_next_turn(self):
+        from unittest.mock import patch as _patch
+
+        from datetime import timedelta as _timedelta
+
+        with _patch(
+            "app.claw_first_turn_authority._utcnow", return_value=FIXED_NOW
+        ):
+            first = _reserve_now(self.store)
+            assert asyncio.run(claim_first_turn_grant(self.store, first)) is True
+        later = FIXED_NOW + _timedelta(seconds=GRANT_TTL_SECONDS + 600)
+        second = _reserve_now(self.store, _now=later)
+        assert second.grant_id != first.grant_id
+        assert self._row(first.grant_id)["state"] == STATE_FAILED
+        assert self._row(second.grant_id)["state"] == STATE_RESERVED
+
     def test_concurrent_claim_elects_exactly_one_winner(self):
         path = _grant_file_db_path()
         self.addCleanup(lambda: os.path.exists(path) and os.remove(path))
@@ -659,6 +673,10 @@ class TestFirstTurnGateRoute(unittest.TestCase):
         assert row["tenant_id"] == TENANT
         assert row["run_ref"].startswith("run_")
         assert row["saved_conversation_id"] == "chat_" + "9" * 32
+        # Reserved ref is the server-minted candidate; the stored id is the
+        # history-confirmed authority the client always sees.
+        assert validate_conversation_id(row["conversation_ref"]) is not None
+        assert row["conversation_ref"] != row["saved_conversation_id"]
         assert '"conversation_id":"chat_' in response.text
 
     def test_preclaimed_grant_yields_status_only_409_without_redispatch(self):
@@ -805,6 +823,84 @@ class TestFirstTurnGateRoute(unittest.TestCase):
         assert response.status_code == 200, response.text
         adapter.execute.assert_awaited_once()
         assert store._rows == {}
+
+    def test_evidence_422_after_claim_fails_grant_and_next_turn_proceeds(self):
+        from test_3930_b54_live_sse_relay import HEADERS as LIVE_HEADERS
+        from test_3930_b54_live_sse_relay import _streaming_adapter
+
+        store = InMemoryFirstTurnGrantStore()
+        adapter = _streaming_adapter()
+        with patch(
+            "app.claw_first_turn_authority._utcnow", return_value=FIXED_NOW
+        ):
+            with _s1_client(store=store, adapter=adapter, flag=True) as client:
+                client.app.state.claw_live_sse_enabled = True
+                denied = client.post(
+                    base.GENERAL_ROUTE_PATH,
+                    json=base._payload(
+                        messages=[{"role": "user", "content": "증거모드"}]
+                    ),
+                    headers={
+                        **LIVE_HEADERS,
+                        "X-Padiem-Claw-Evidence": "one-shot",
+                    },
+                )
+                assert denied.status_code == 422, denied.text
+                rows = list(store._rows.values())
+                assert len(rows) == 1 and rows[0]["state"] == STATE_FAILED
+                adapter.execute = AsyncMock(return_value=base._make_outcome())
+                client.app.state.claw_p01_adapter = adapter
+                retried = _first_turn_post(client)
+                assert retried.status_code == 200, retried.text
+        states = sorted(row["state"] for row in store._rows.values())
+        assert states == [STATE_COMPLETED, STATE_FAILED]
+
+    def test_expired_active_grant_unblocks_next_turn_after_ttl(self):
+        from datetime import timedelta as _timedelta
+
+        from kagent.p01_adapter import P01AdapterError
+
+        store = InMemoryFirstTurnGrantStore()
+        adapter = base._make_adapter(subject_lane=True)
+        adapter.execute = AsyncMock(
+            side_effect=P01AdapterError("probe_transport_timeout", "…")
+        )
+        with patch(
+            "app.claw_first_turn_authority._utcnow", return_value=FIXED_NOW
+        ):
+            with _s1_client(store=store, adapter=adapter, flag=True) as client:
+                first = _first_turn_post(client)
+                assert first.status_code == 502
+        later = FIXED_NOW + _timedelta(seconds=GRANT_TTL_SECONDS + 600)
+        adapter.execute = AsyncMock(return_value=base._make_outcome())
+        with patch("app.claw_first_turn_authority._utcnow", return_value=later):
+            with _s1_client(store=store, adapter=adapter, flag=True) as client:
+                second = _first_turn_post(client)
+                assert second.status_code == 200, second.text
+        states = sorted(row["state"] for row in store._rows.values())
+        assert states == [STATE_COMPLETED, STATE_FAILED]
+
+    def test_complete_with_forged_saved_id_fails_grant_instead(self):
+        from app.claw_first_turn_authority import complete_first_turn_grant
+
+        store = InMemoryFirstTurnGrantStore()
+        with patch(
+            "app.claw_first_turn_authority._utcnow", return_value=FIXED_NOW
+        ):
+            context = _reserve_now(store)
+            assert asyncio.run(claim_first_turn_grant(store, context)) is True
+            asyncio.run(
+                complete_first_turn_grant(
+                    _request(store=store),
+                    context,
+                    run_ref="run_" + "1" * 24,
+                    saved_conversation_id="garbage-not-a-chat-id",
+                )
+            )
+        rows = list(store._rows.values())
+        assert len(rows) == 1
+        assert rows[0]["state"] == STATE_FAILED
+        assert rows[0]["saved_conversation_id"] is None
 
     def test_live_sse_and_completed_share_the_same_gate(self):
         from test_3930_b54_live_sse_relay import HEADERS as LIVE_HEADERS

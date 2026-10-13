@@ -27,6 +27,11 @@ Authority model (all server-derived, never browser-supplied):
 * ``cleanup_abandoned`` deletes only ``reserved`` + expired rows, only for
   the calling owner, bounded by LIMIT. Expiry itself already blocks reuse;
   cleanup is hygiene, not authority.
+* ``release_expired`` terminally fails the owner's ``active`` + expired rows
+  (bounded). The partial unique index has no clock, so without this an
+  ``active`` grant whose dispatch never settled would hold its correlation
+  key forever and every later first turn would 503. The reserve path runs
+  both hygiene steps best-effort before inserting.
 * ``B54VerifiedCodingContextV1`` is a private server-side projection. It is
   never serialized to the browser and never forwarded to P01/Engine/B14 in
   this slice (their admission contracts stay exactly as they are).
@@ -209,6 +214,9 @@ class FirstTurnGrantStore(Protocol):
     async def cleanup_abandoned(
         self, user_id: str, now_iso: str, limit: int
     ) -> int: ...
+    async def release_expired(
+        self, user_id: str, now_iso: str, limit: int
+    ) -> int: ...
 
 
 _GRANT_COLUMNS = (
@@ -370,6 +378,34 @@ class D1FirstTurnGrantStore:
         }
         return len(ids) - len(leftover_ids & set(ids))
 
+    async def release_expired(
+        self, user_id: str, now_iso: str, limit: int
+    ) -> int:
+        # Time-based key release: an active grant past its TTL can never
+        # complete (claim already enforces expiry), so failing it terminally
+        # frees the partial-unique correlation key for the next turn.
+        # Owner-scoped and bounded like cleanup_abandoned.
+        if not isinstance(limit, int) or isinstance(limit, bool) or limit < 1:
+            raise ValueError("release limit must be a positive bound")
+        statement = self.db.prepare(
+            "SELECT id FROM claw_coding_conversation_grant "
+            "WHERE user_id=? AND state='active' AND expires_at<=? "
+            "ORDER BY expires_at ASC LIMIT ?"
+        ).bind(user_id, now_iso, limit)
+        rows = await statement.run()
+        ids = [row["id"] for row in (rows.results or [])]
+        if not ids:
+            return 0
+        placeholders = ",".join("?" for _ in ids)
+        await self._run(
+            "UPDATE claw_coding_conversation_grant "
+            "SET state='failed', completed_at=? "
+            f"WHERE id IN ({placeholders}) AND state='active'",
+            now_iso,
+            *ids,
+        )
+        return len(ids)
+
 
 class InMemoryFirstTurnGrantStore:
     """Network-free store for bounded deployments and conformance tests.
@@ -505,6 +541,28 @@ class InMemoryFirstTurnGrantStore:
             del self._rows[grant_id]
         return len(doomed)
 
+    async def release_expired(
+        self, user_id: str, now_iso: str, limit: int
+    ) -> int:
+        if not isinstance(limit, int) or isinstance(limit, bool) or limit < 1:
+            raise ValueError("release limit must be a positive bound")
+        stale = [
+            grant_id
+            for grant_id, record in sorted(
+                self._rows.items(), key=lambda item: item[1]["expires_at"]
+            )
+            if record["user_id"] == user_id
+            and record["state"] == STATE_ACTIVE
+            and not record["expires_at"] > now_iso
+        ][:limit]
+        for grant_id in stale:
+            record = self._rows[grant_id]
+            if record["state"] != STATE_ACTIVE:
+                continue
+            record["state"] = STATE_FAILED
+            record["completed_at"] = now_iso
+        return len(stale)
+
 
 def first_turn_gate_enabled(app_state: Any) -> bool:
     """True only when the host explicitly enabled the S1 gate."""
@@ -578,10 +636,14 @@ async def reserve_first_turn_grant(
         user_id, subject_id, tenant_id, B54_PRODUCT_ID, route_scope
     )
     # Bounded orphan hygiene on the reserve path; never blocks the reserve.
-    try:
-        await store.cleanup_abandoned(user_id, issued, GRANT_CLEANUP_LIMIT)
-    except Exception:
-        pass
+    # release_expired must run here: the partial unique index has no clock,
+    # so an active grant past its TTL would otherwise hold the correlation
+    # key forever and every later first turn would 503.
+    for _hygiene in ("cleanup_abandoned", "release_expired"):
+        try:
+            await getattr(store, _hygiene)(user_id, issued, GRANT_CLEANUP_LIMIT)
+        except Exception:
+            pass
     grant_id = _GRANT_ID_PREFIX + uuid.uuid4().hex
     conversation_ref = "chat_" + uuid.uuid4().hex
     if validate_conversation_id(conversation_ref) is None:
@@ -688,11 +750,37 @@ async def complete_first_turn_grant(
     run_ref: str | None,
     saved_conversation_id: str | None,
 ) -> None:
-    """Link the grant to its verified outcome. Best-effort provenance only."""
+    """Link the grant to its verified outcome. Best-effort provenance only.
+
+    ID relation: ``context.conversation_ref`` is the server-minted first-turn
+    candidate bound at reserve time; ``saved_conversation_id`` is the
+    history-confirmed stored id the client always sees. A present-but-invalid
+    saved id means storage diverged from the grant, so the grant fails
+    instead of certifying a conversation id that was never stored. ``None``
+    stays honest incompleteness (save itself failed) and still completes.
+    """
     if context is None:
         return
     store = getattr(request.app.state, "claw_first_turn_grant_store", None)
     if store is None:
+        return
+    # validate_conversation_id raises on malformed strings (None only for
+    # None), so a forged/diverged id must be caught here, never propagated:
+    # complete is best-effort provenance and must not raise.
+    try:
+        saved_ok = (
+            saved_conversation_id is None
+            or validate_conversation_id(saved_conversation_id) is not None
+        )
+    except ValueError:
+        saved_ok = False
+    if not saved_ok:
+        try:
+            await store.settle(
+                context.grant_id, context.user_id, STATE_FAILED, _iso(_utcnow())
+            )
+        except Exception:
+            pass
         return
     try:
         await store.settle(
