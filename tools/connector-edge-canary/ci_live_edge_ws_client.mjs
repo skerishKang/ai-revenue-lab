@@ -1,13 +1,18 @@
 // #4139: dedicated, short-lived Cloudflare Python edge WSS probe only.
 // No owner, device, session or customer data. Must never target production.
 const name = process.env.PADIEM_EDGE_CANARY_NAME;
+const subdomain = process.env.PADIEM_EDGE_CANARY_SUBDOMAIN;
 if (typeof name !== "string" ||
     !/^padiem-conn-py-e-[0-9]{8,14}-[0-9]{1,3}$/.test(name) ||
+    typeof subdomain !== "string" ||
+    !/^[a-z0-9][a-z0-9-]{0,62}$/.test(subdomain) ||
     typeof WebSocket !== "function") {
   console.error("CONNECTOR_CANARY_WSS_INPUT=FAIL");
   process.exit(2);
 }
-const url = `wss://${name}.padiem.workers.dev/__padiem_canary/wss`;
+// Subdomain is parsed from the actual Wrangler deployment output, not
+// invented from the local operator account or user-controlled requests.
+const url = `wss://${name}.${subdomain}.workers.dev/__padiem_canary/wss`;
 const outcome = await new Promise((resolve) => {
   let settled = false;
   let stage = 0;
