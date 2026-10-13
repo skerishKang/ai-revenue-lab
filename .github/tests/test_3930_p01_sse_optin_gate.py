@@ -201,6 +201,69 @@ def test_real_cloudflare_postpatch_last_deployed_from_is_provenance_not_code():
               "SERVED_BINDING_INVENTORY_DRIFT")
 
 
+
+
+def _as_named_immutable_binding_map(evidence):
+    current = copy.deepcopy(evidence)
+    raw = current[2]["resources"]["bindings"]
+    current[2]["resources"]["bindings"] = {entry["name"]: entry for entry in raw}
+    return current
+
+
+def test_immutable_named_binding_map_preserves_exact_canonical_inventory():
+    # Cloudflare may represent resources.bindings as a name-keyed object.
+    # A valid map must still receive the same full inventory check as a list.
+    before = _as_named_immutable_binding_map(fixtures())
+    assert gate.plan(*before, SHA)["no_op"] is False
+    after = post_from(fixtures())
+    after = _as_named_immutable_binding_map(after)
+    gate.verify(*before, *after, SHA)
+    changed = copy.deepcopy(after)
+    changed[2]["resources"]["bindings"]["UNAUTHORIZED_BINDING"] = b(
+        "UNAUTHORIZED_BINDING", "secret_text", value=PRIVATE)
+    must_fail(lambda: gate.verify(*before, *changed, SHA),
+              "SERVED_BINDING_INVENTORY_DRIFT")
+
+
+def test_immutable_binding_map_refuses_all_malformed_entries_without_filtering():
+    # Prior code silently discarded every malformed map entry and accepted a
+    # matching valid subset, masking hidden extra Secret bindings.
+    baseline = _as_named_immutable_binding_map(fixtures())
+    bad_entries = (
+        ("UNAUTHORIZED_EXTRA", b("OTHER_NAME", "secret_text", value=PRIVATE)),
+        ("UNAUTHORIZED_EXTRA", PRIVATE),
+        ("", b("", "secret_text", value=PRIVATE)),
+        ("P01_ENGINE_CREDENTIAL", b("WRONG_NAME", "secret_text", value=PRIVATE)),
+    )
+    for name, entry in bad_entries:
+        corrupted = copy.deepcopy(baseline)
+        corrupted[2]["resources"]["bindings"][name] = entry
+        must_fail(lambda corrupted=corrupted: gate.plan(*corrupted, SHA),
+                  "VERSION_BINDING_SHAPE")
+
+    # Finite CLI refusal evidence must never echo malformed binding content.
+    corrupted = copy.deepcopy(baseline)
+    corrupted[2]["resources"]["bindings"]["UNAUTHORIZED_EXTRA"] = {
+        "name": "OTHER_NAME", "type": "secret_text", "value": PRIVATE}
+    with TemporaryDirectory() as td:
+        root = Path(td)
+        for name, data in zip(("settings", "deployments", "version"), corrupted):
+            (root / (name + ".json")).write_text(json.dumps(data), encoding="utf-8")
+        output = StringIO()
+        with redirect_stdout(output):
+            rc = gate.main([
+                "plan", "--settings", str(root / "settings.json"),
+                "--deployments", str(root / "deployments.json"),
+                "--version", str(root / "version.json"),
+                "--target-sha", SHA, "--output", str(root / "patch.json")
+            ])
+        assert rc == 1
+        assert not (root / "patch.json").exists()
+        assert "P01_SSE_OPTIN_GATE_REASON=VERSION_BINDING_SHAPE" in output.getvalue()
+        assert "SECRET_VALUES_EMITTED=0" in output.getvalue()
+        assert PRIVATE not in output.getvalue()
+
+
 def test_rollback_restores_or_removes_only_the_authorized_flag():
     rollback = gate.load("b62_rollback_authority", ROOT / ".github/scripts/b62_claw_live_config_activation.py")
     before = fixtures()[0]
