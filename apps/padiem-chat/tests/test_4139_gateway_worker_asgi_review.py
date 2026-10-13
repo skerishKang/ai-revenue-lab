@@ -102,6 +102,21 @@ def test_source_bridge_refuses_browser_and_credential_headers(headers):
         run(req=request(headers=headers))
 
 
+@pytest.mark.parametrize("method", ["POST", "HEAD", "PUT", "DELETE", "OPTIONS", "", None])
+def test_source_worker_refuses_non_get_upgrade_before_sdk_or_binding(method, monkeypatch):
+    calls = []
+    workers = ModuleType("workers")
+
+    async def never_called(*args, **kwargs):
+        calls.append("untrusted_method_reached_sdk")
+    workers.asgi = SimpleNamespace(websocket=never_called)
+    monkeypatch.setitem(sys.modules, "workers", workers)
+
+    with pytest.raises(ValueError, match="Unreviewed WebSocket upgrade"):
+        run(req=request(method=method))
+    assert calls == []
+
+
 def test_worker_bridge_refuses_missing_private_broker_or_trust_port():
     with pytest.raises(ValueError, match="private bindings unavailable"):
         run(worker_env={IDENTITY_AUTHORITY_SERVICE_BINDING_NAME: PrivateBinding(_IDENTITY_METHODS)})
