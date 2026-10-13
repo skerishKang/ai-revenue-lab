@@ -65,4 +65,12 @@ if (result.scheme !== "http") {
 } else {
   console.log("CONNECTOR_CANARY_LOCAL_ASGI_HTTP_SCHEME=PASS");
 }
+// Pin the exact Cloudflare Python SDK scope invariants consumed by the
+// unmounted canonical Connector bridge. No request strings are serialized.
+if (result.rawPath !== "EXACT" || result.query !== "EMPTY_BYTES") {
+  console.error("CONNECTOR_CANARY_ASGI_PATH_QUERY_SHAPE=FAIL");
+  process.exitCode = 1;
+} else {
+  console.log("CONNECTOR_CANARY_ASGI_PATH_QUERY_SHAPE=PASS");
+}
 if (!result.ok) process.exitCode = 1;
