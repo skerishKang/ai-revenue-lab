@@ -168,10 +168,10 @@ def test_browser_issue_refuses_invalid_server_canonical_session(monkeypatch, cas
         ("swap", "device_id"),
     ],
 )
-def test_sync_host_redeem_refuses_partial_or_other_device_receipt(
+def test_legacy_sync_host_redeem_is_unavailable_regardless_of_receipt(
     mutation,
 ):
-    """Even a trusted injected host cannot omit denial flags or swap the PC."""
+    """Legacy bool-only installation cannot redeem or attest a PC over HTTP."""
     operation, field = mutation
 
     class TamperedServer(Server):
@@ -210,6 +210,7 @@ def test_sync_host_redeem_refuses_partial_or_other_device_receipt(
     assert "enrollment" not in payload
     assert "NEVER_ECHO_SECRET" not in json.dumps(payload)
     assert headers["cache-control"].startswith("no-store")
+    assert not state.connector_enrollment_server.redeem_calls
 
 
 def test_device_redeem_requires_attested_gateway_and_forbids_scope_claim():
@@ -236,10 +237,10 @@ def test_device_redeem_requires_attested_gateway_and_forbids_scope_claim():
     )
     assert status == 400 and not server.redeem_calls
     status, body, _ = response(routes.connector_enrollment_redeem, Request(fields, state=state))
-    assert status == 200 and body["ok"] is True
-    assert body["enrollment"]["raw_device_credential"] is False
-    assert body["enrollment"]["lifecycle"] == "paired_offline"
-    assert body["enrollment"]["consent_id"] == "consent.canonical.1"
-    assert body["enrollment"]["grants_read"] is False
-    assert body["enrollment"]["grants_write"] is False
-    assert len(server.redeem_calls) == 1
+    # An inbound gateway verification does not authenticate the separate
+    # Windows DPAPI installation acknowledgement. Legacy sync redemption must
+    # remain unavailable even with valid scope, possession proof and gateway.
+    assert status == 503 and body["ok"] is False
+    assert body["error"]["code"] == "enrollment_server_dependency_unavailable"
+    assert body["retryable"] is False
+    assert not server.redeem_calls
