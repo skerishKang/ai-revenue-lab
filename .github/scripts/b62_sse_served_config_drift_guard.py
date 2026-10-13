@@ -29,7 +29,7 @@ def verify(settings: object, served: object) -> str:
     try:
         script_flag = _flag(bindings(settings).get(FLAG))
         served_flag = _flag(version_bindings(version_result(served)).get(FLAG))
-    except (ValueError, KeyError, TypeError, AttributeError) as exc:
+    except Exception as exc:  # Canonical ProductionConfigError is a custom Exception
         raise ServedSSEStateDrift("UNVERIFIED_SSE_SETTINGS") from exc
     if script_flag != served_flag:
         raise ServedSSEStateDrift("SSE_FLAG_LATEST_VS_ACTIVE_DRIFT")
