@@ -182,6 +182,13 @@ jobs:
         shell: bash
         run: python .github/tests/test_b62_sse_served_config_drift_guard.py
 
+      - name: Reject unsafe one-incident SSE snapshot recovery mutations
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pytest .github/tests/test_b62_p01_sse_snapshot_off_recovery.py -q
+          echo 'P01_SSE_SNAPSHOT_RECOVERY_TESTS=PASS'
+          echo 'PRODUCTION_MUTATION=0'
       # #4522: the merged B62 P01 code reads the additive receipt `released_at`
       # column, so the live D1 schema probe below is a hard predeploy
       # prerequisite. This contract tests the schema classifier and the exact
