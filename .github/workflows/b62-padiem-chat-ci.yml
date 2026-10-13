@@ -95,7 +95,7 @@ jobs:
   b62-static-ui:
     name: B62 static UI fast checks
     needs: registry-ci-plan
-    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && (needs.registry-ci-plan.outputs.scope == 'static_only' || needs.registry-ci-plan.outputs.scope == 'static_touch_only') }}
+    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope == 'static_only' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -119,17 +119,6 @@ jobs:
           python .github/scripts/b62_static_origin_audit.py
           python .github/scripts/b62_browser_persistence_audit.py
           echo 'B62_STATIC_UI_SECURITY=PASS'
-      # #4551 is an audited CSS + static-assertion-test pair; do not drop the
-      # changed test merely to avoid unrelated Chat/Core/Worker execution.
-      - uses: actions/setup-python@v5
-        if: ${{ needs.registry-ci-plan.outputs.scope == 'static_touch_only' }}
-        with:
-          python-version: '3.12'
-      - name: Exact Claw automation touch assertions
-        if: ${{ needs.registry-ci-plan.outputs.scope == 'static_touch_only' }}
-        run: |
-          python -m pip install --disable-pip-version-check -q 'pytest>=8,<10'
-          python -m pytest -q apps/padiem-chat/tests/test_4488_claw_automation_touch_accessibility.py
 
   b62-registry-contract:
     name: B62 B14 registry-only contract
@@ -192,7 +181,7 @@ jobs:
             test "$WORKER_RESULT" = skipped
             test "$QUICK_RESULT" = skipped
             echo 'B62_CI_MODE=B14_TESTS_ONLY'
-          elif [ "$SCOPE" = static_only ] || [ "$SCOPE" = static_touch_only ]; then
+          elif [ "$SCOPE" = static_only ]; then
             # The UI suite is required; all unchanged runtimes must be skipped.
             test "$UI_RESULT" = success
             test "$FULL_RESULT" = skipped
@@ -212,7 +201,7 @@ jobs:
   b62-full-suite:
     name: B62 full regression
     needs: registry-ci-plan
-    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'static_touch_only' && needs.registry-ci-plan.outputs.scope != 'b14_tests_only' }}
+    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'b14_tests_only' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     defaults:
@@ -254,7 +243,7 @@ jobs:
   b62-worker-suite:
     name: B62 Worker/Pyodide contract
     needs: registry-ci-plan
-    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'static_touch_only' && needs.registry-ci-plan.outputs.scope != 'b14_tests_only' }}
+    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'b14_tests_only' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     defaults:
@@ -301,7 +290,7 @@ jobs:
         # All B62 source/Worker/mixed/CI/unknown changes run all four real
         # probes, now sharing one isolated Workerd to avoid four cold Pyodide
         # startups. Original checks, pinned runtime and fail-closed coverage stay.
-        if: ${{ needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'static_touch_only' && needs.registry-ci-plan.outputs.scope != 'tests_only' && needs.registry-ci-plan.outputs.scope != 'b14_only' }}
+        if: ${{ needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'tests_only' && needs.registry-ci-plan.outputs.scope != 'b14_only' }}
         run: bash ../../.github/scripts/b62_worker_probe_parallel.sh
       - name: Prove Core vendored for Python Worker
         run: |
@@ -319,7 +308,7 @@ jobs:
     needs: registry-ci-plan
     # Only the proven static-only B62 surface can omit the source-invariant B14 pilot runner.
     # All Python, shared-Core, B14, registry-mixed and uncertain changes keep B14 coverage.
-    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'static_touch_only' }}
+    if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     defaults:
