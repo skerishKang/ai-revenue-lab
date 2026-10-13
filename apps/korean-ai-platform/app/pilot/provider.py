@@ -188,8 +188,8 @@ async def call_chat_completions(
                     raise UpstreamServerError()
                 # Pre-decode byte cap (#4379): never fully buffer an
                 # unbounded upstream body into worker RAM before checking it.
-                from app.pilot.platform import _read_bounded_body
-                body_bytes = await _read_bounded_body(response)
+                from app.pilot.platform import MAX_COMPLETED_RESPONSE_BYTES, _read_bounded_body
+                body_bytes = await _read_bounded_body(response, cap=MAX_COMPLETED_RESPONSE_BYTES)
         except httpx.TimeoutException:
             raise UpstreamTimeout()
         except httpx.RequestError as e:

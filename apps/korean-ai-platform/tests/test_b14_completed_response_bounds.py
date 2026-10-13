@@ -27,7 +27,8 @@ from app.pilot.errors import (
 
 import tracemalloc
 
-CAP = plat.MAX_RESPONSE_BYTES  # 1MiB byte resource guard (not a token ceiling)
+CAP = plat.MAX_RESPONSE_BYTES  # 1MiB error/SSE frame guard (not a token ceiling)
+COMPLETED_CAP = plat.MAX_COMPLETED_RESPONSE_BYTES  # finite Worker JSON resource budget
 CHUNK = 64 * 1024
 OVER_TAIL = 16 * 1024
 FLOOD_OVER = 16 * CHUNK  # 1MiB over cap: full buffering is measurably unbounded
@@ -150,8 +151,8 @@ def _go_doc(answer: str) -> dict:
 
 @pytest.mark.asyncio
 async def test_generic_oversize_completed_is_resource_error_not_success(live_keyless_route):
-    payload = json.dumps(_completed_doc("A" * (CAP + OVER_TAIL))).encode()
-    assert len(payload) > CAP
+    payload = json.dumps(_completed_doc("A" * (COMPLETED_CAP + OVER_TAIL))).encode()
+    assert len(payload) > COMPLETED_CAP
     seen: list = []
 
     def handle(req):
@@ -174,7 +175,7 @@ async def test_generic_oversize_completed_is_resource_error_not_success(live_key
 
 @pytest.mark.asyncio
 async def test_generic_completed_read_stops_at_cap(live_keyless_route):
-    payload = json.dumps(_completed_doc("A" * (CAP + FLOOD_OVER))).encode()
+    payload = json.dumps(_completed_doc("A" * (COMPLETED_CAP + FLOOD_OVER))).encode()
     transport = ChunkCountingTransport(payload)
     with pytest.raises(UpstreamResponseTooLarge):
         await plat.call_platform_chat_completions(
@@ -188,7 +189,7 @@ async def test_generic_completed_read_stops_at_cap(live_keyless_route):
         )
     assert transport.calls == 1
     assert transport.last_request_body_model == MOCK_UPSTREAM
-    assert transport.served_bytes <= CAP + CHUNK  # never pulls the whole body into RAM
+    assert transport.served_bytes <= COMPLETED_CAP + CHUNK  # never pulls the whole body into RAM
 
 
 @pytest.mark.asyncio
@@ -214,7 +215,7 @@ async def test_generic_healthy_long_answer_accepted_verbatim(live_keyless_route)
 async def test_generic_declared_content_length_over_cap_rejected(live_keyless_route):
     small = json.dumps(_completed_doc("tiny")).encode()
     transport = ChunkCountingTransport(
-        small, headers={"content-type": "application/json", "content-length": str(CAP + 1)}
+        small, headers={"content-type": "application/json", "content-length": str(COMPLETED_CAP + 1)}
     )
     with pytest.raises(UpstreamResponseTooLarge):
         await plat.call_platform_chat_completions(
@@ -292,8 +293,8 @@ async def test_generic_oversize_error_body_is_resource_error(live_keyless_route)
 
 @pytest.mark.asyncio
 async def test_go_oversize_completed_is_resource_error(go_auth_stub):
-    payload = json.dumps(_go_doc("A" * (CAP + OVER_TAIL))).encode()
-    assert len(payload) > CAP
+    payload = json.dumps(_go_doc("A" * (COMPLETED_CAP + OVER_TAIL))).encode()
+    assert len(payload) > COMPLETED_CAP
     seen: list = []
 
     def handle(req):
@@ -315,7 +316,7 @@ async def test_go_oversize_completed_is_resource_error(go_auth_stub):
 
 @pytest.mark.asyncio
 async def test_go_completed_read_stops_at_cap(go_auth_stub):
-    payload = json.dumps(_go_doc("A" * (CAP + FLOOD_OVER))).encode()
+    payload = json.dumps(_go_doc("A" * (COMPLETED_CAP + FLOOD_OVER))).encode()
     transport = ChunkCountingTransport(payload)
     with pytest.raises(UpstreamResponseTooLarge):
         await go.call_go_model(
@@ -328,7 +329,7 @@ async def test_go_completed_read_stops_at_cap(go_auth_stub):
         )
     assert transport.calls == 1
     assert transport.last_request_body_model == GO_UPSTREAM
-    assert transport.served_bytes <= CAP + CHUNK
+    assert transport.served_bytes <= COMPLETED_CAP + CHUNK
 
 
 @pytest.mark.asyncio
@@ -357,8 +358,8 @@ BYOK_MODEL = "byok-synthetic-model"
 
 @pytest.mark.asyncio
 async def test_byok_oversize_completed_is_resource_error():
-    payload = json.dumps(_completed_doc("A" * (CAP + OVER_TAIL), model=BYOK_MODEL)).encode()
-    assert len(payload) > CAP
+    payload = json.dumps(_completed_doc("A" * (COMPLETED_CAP + OVER_TAIL), model=BYOK_MODEL)).encode()
+    assert len(payload) > COMPLETED_CAP
     seen: list = []
 
     def handle(req):
@@ -383,7 +384,7 @@ async def test_byok_oversize_completed_is_resource_error():
 
 @pytest.mark.asyncio
 async def test_byok_completed_read_stops_at_cap():
-    payload = json.dumps(_completed_doc("A" * (CAP + FLOOD_OVER), model=BYOK_MODEL)).encode()
+    payload = json.dumps(_completed_doc("A" * (COMPLETED_CAP + FLOOD_OVER), model=BYOK_MODEL)).encode()
     transport = ChunkCountingTransport(payload)
     with pytest.raises(UpstreamResponseTooLarge):
         await byok.call_chat_completions(
@@ -398,7 +399,7 @@ async def test_byok_completed_read_stops_at_cap():
         )
     assert transport.calls == 1
     assert transport.last_request_body_model == BYOK_MODEL
-    assert transport.served_bytes <= CAP + CHUNK
+    assert transport.served_bytes <= COMPLETED_CAP + CHUNK
 
 
 @pytest.mark.asyncio
@@ -576,9 +577,9 @@ async def test_generic_mid_body_timeout_maps_to_upstream_timeout(live_keyless_ro
 
 @pytest.mark.asyncio
 async def test_go_and_byok_single_huge_chunk_rejected(go_auth_stub):
-    # Parity pin: both lanes reuse the shared collector, so one 2MiB chunk
+    # Parity pin: both lanes reuse the shared collector, so one >8MiB chunk
     # raises the resource error on each path with a single attempt.
-    big = b"Z" * (CAP + 1024 * 1024)
+    big = b"Z" * (COMPLETED_CAP + 1)
     seen_go: list = []
     seen_byok: list = []
 
@@ -620,9 +621,9 @@ async def test_go_and_byok_single_huge_chunk_rejected(go_auth_stub):
 
 @pytest.mark.asyncio
 async def test_runtime_config_max_response_bytes_is_not_wired(monkeypatch):
-    # Policy truth (#4379): the 1MiB operator default in b14_runtime_config is
-    # dead metadata for completed paths. Widening it must NOT move the guard;
-    # the effective cap stays platform.MAX_RESPONSE_BYTES, unchanged here.
+    # Policy truth (#4379): the legacy 1MiB config field is declared-only.
+    # It does not change the error/SSE guard OR completed JSON memory budget;
+    # widening it must not become a backdoor to unbounded Worker allocations.
     from app.pilot.b14_runtime_config import runtime_config
 
     assert plat.MAX_RESPONSE_BYTES == 1024 * 1024
@@ -630,3 +631,106 @@ async def test_runtime_config_max_response_bytes_is_not_wired(monkeypatch):
     monkeypatch.setattr(runtime_config, "max_response_bytes", 64 * 1024 * 1024)
     with pytest.raises(UpstreamResponseTooLarge):
         await plat._read_bounded_body(_StubResponse([b"Z" * (CAP + 1)]))
+
+
+# --- #4379 owner: valid completed JSON must not hit old artificial 1MiB -----
+# Bounded JSON allocation still needs a finite Worker memory safety budget.
+
+
+@pytest.mark.asyncio
+async def test_generic_valid_2mib_json_must_not_hit_old_1mib_guard(live_keyless_route):
+    answer = "G" * (2 * CAP)
+    payload = json.dumps(_completed_doc(answer)).encode("utf-8")
+    transport = ChunkCountingTransport(payload)
+    got = await plat.call_platform_chat_completions(
+        model_id=MOCK_ID, upstream_model=MOCK_UPSTREAM,
+        provider="Synthetic test-only gateway", platform_provider_id=MOCK_PROVIDER,
+        messages=[{"role": "user", "content": "long"}], transport=transport,
+    )
+    assert got["choices"][0]["message"]["content"] == answer
+    assert got["_response_bytes"] == len(payload)
+    assert transport.calls == 1 and transport.served_bytes == len(payload)
+
+
+@pytest.mark.asyncio
+async def test_go_valid_2mib_json_must_not_hit_old_1mib_guard(go_auth_stub):
+    answer = "G" * (2 * CAP)
+    payload = json.dumps(_go_doc(answer)).encode("utf-8")
+    transport = ChunkCountingTransport(payload)
+    got = await go.call_go_model(
+        model_id=GO_MODEL, upstream_model=GO_UPSTREAM,
+        messages=GO_TURNS, session_id=GO_SESSION,
+        transport=transport,
+    )
+    assert got["choices"][0]["message"]["content"] == answer
+    assert transport.calls == 1 and transport.served_bytes == len(payload)
+
+
+@pytest.mark.asyncio
+async def test_byok_valid_2mib_json_must_not_hit_old_1mib_guard():
+    answer = "Y" * (2 * CAP)
+    payload = json.dumps(_completed_doc(answer, model=BYOK_MODEL)).encode("utf-8")
+    transport = ChunkCountingTransport(payload)
+    got = await byok.call_chat_completions(
+        "sk-test-byok-0123456789abcdef",
+        [{"role": "user", "content": "long"}],
+        transport=transport, base_url=BYOK_URL,
+        upstream_model=BYOK_MODEL, timeout_seconds=30, response_model=BYOK_MODEL,
+    )
+    assert got["choices"][0]["message"]["content"] == answer
+    assert transport.calls == 1 and transport.served_bytes == len(payload)
+
+
+
+@pytest.mark.asyncio
+async def test_generic_exact_8mib_completed_json_is_valid_verbatim(live_keyless_route):
+    # Verify actual adapter+parser boundary, not just the byte collector.
+    empty = json.dumps(_completed_doc("")).encode()
+    answer = "Q" * (COMPLETED_CAP - len(empty))
+    payload = json.dumps(_completed_doc(answer)).encode()
+    assert len(payload) == COMPLETED_CAP
+    transport = ChunkCountingTransport(payload)
+    got = await plat.call_platform_chat_completions(
+        model_id=MOCK_ID, upstream_model=MOCK_UPSTREAM,
+        provider="Synthetic test-only gateway", platform_provider_id=MOCK_PROVIDER,
+        messages=[{"role": "user", "content": "long"}], transport=transport,
+    )
+    assert got["choices"][0]["message"]["content"] == answer
+    assert got["_response_bytes"] == COMPLETED_CAP and transport.calls == 1
+
+
+@pytest.mark.asyncio
+async def test_generic_completed_cap_plus_one_rejects_as_worker_resource(live_keyless_route):
+    payload = json.dumps(_completed_doc("Q" * (COMPLETED_CAP + 1))).encode()
+    transport = ChunkCountingTransport(payload)
+    with pytest.raises(UpstreamResponseTooLarge) as exc:
+        await plat.call_platform_chat_completions(
+            model_id=MOCK_ID, upstream_model=MOCK_UPSTREAM,
+            provider="Synthetic test-only gateway", platform_provider_id=MOCK_PROVIDER,
+            messages=[{"role": "user", "content": "long"}], transport=transport,
+        )
+    assert exc.value.max_bytes == COMPLETED_CAP
+    assert transport.calls == 1
+    assert transport.served_bytes <= COMPLETED_CAP + CHUNK
+
+
+@pytest.mark.asyncio
+async def test_generic_error_body_still_enforces_separate_1mib_guard(live_keyless_route):
+    # A vendor error is not a model's healthy answer, so it remains 1MiB.
+    payload = b"X" * (CAP + 1)
+    transport = ChunkCountingTransport(payload, status=500)
+    with pytest.raises(UpstreamResponseTooLarge) as exc:
+        await plat.call_platform_chat_completions(
+            model_id=MOCK_ID, upstream_model=MOCK_UPSTREAM,
+            provider="Synthetic test-only gateway", platform_provider_id=MOCK_PROVIDER,
+            messages=[{"role": "user", "content": "long"}], transport=transport,
+        )
+    assert exc.value.max_bytes == CAP
+    assert transport.calls == 1
+
+def test_operator_summary_exposes_effective_completed_memory_guard():
+    from app.pilot.b14_runtime_config import runtime_config
+    summary = runtime_config.redacted_summary()
+    assert "max_response_bytes_effect=no" in summary
+    assert f"completed_json_memory_budget_bytes={COMPLETED_CAP}" in summary
+    assert f"sse_frame_and_error_resource_bytes={CAP}" in summary

@@ -58,7 +58,15 @@ from app.pilot.upstream_answer_contract import UpstreamEmptyAnswer, require_comp
 
 logger = logging.getLogger("korean-ai-platform.pilot.platform")
 
+# Resource guards, never provider/model generation-token limits.
+# Error bodies and individual SSE frames remain tightly bounded at 1MiB.
 MAX_RESPONSE_BYTES = 1024 * 1024
+# A completed JSON response must be materialized as one dict for existing
+# callers. Use the existing conservative 8MiB maximum as a separate raw-body
+# memory budget (1/16 of the Workers 128MiB isolate), not a 1MiB output cutoff.
+# Parsed JSON / response serialization can amplify memory; prefer SSE for
+# genuinely unbounded free-form model text.
+MAX_COMPLETED_RESPONSE_BYTES = 8 * 1024 * 1024
 MAX_ERROR_BODY_CHARS = 500
 
 # All Providers share one phase policy. A Pyodide/Fetch ConnectTimeout
@@ -415,7 +423,7 @@ async def call_platform_chat_completions(
                     _raise_upstream_error(
                         response.status_code, platform_provider_id, error_body
                     )
-                body_bytes = await _read_bounded_body(response)
+                body_bytes = await _read_bounded_body(response, cap=MAX_COMPLETED_RESPONSE_BYTES)
     except httpx.TimeoutException as exc:
         log_provider_timeout(logger, platform_provider_id, exc, "completed")
         raise UpstreamTimeout() from exc
