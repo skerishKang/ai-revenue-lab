@@ -291,6 +291,40 @@ class CloudflareCanonicalBrokerPairingClient:
         _time(enrollment.get("credential_expires_at"), "device credential expiry")
         return enrollment, credential
 
+    async def owner_device_directory(
+        self, *, account_ref: str, workspace_ref: str,
+    ) -> dict[str, Any]:
+        """Read existing Broker owner-scoped device facts, never credentials.
+
+        This private Service Binding operation is only callable by an OWNER
+        session verified at the upper application layer. The account/workspace
+        passed here MUST originate from canonical Identity consent, never the PC.
+        """
+        result = await self._invoke("device_directory", {
+            "account_ref": _safe_ref(account_ref, "account_ref"),
+            "workspace_ref": _safe_ref(workspace_ref, "workspace_ref"),
+        })
+        if result.get("available") is False:
+            if set(result) != {"ok", "available", "reason"} or result.get("reason") != "no_device_binding":
+                raise IdentityBridgeError(503, "broker_rpc_invalid", "Canonical directory unavailable.")
+            return {"available": False, "devices": []}
+        if (
+            set(result) != {"ok", "available", "owner_scoped", "device_count", "max_devices", "devices"}
+            or result.get("available") is not True
+            or result.get("owner_scoped") is not True
+            or type(result.get("devices")) is not list
+            or type(result.get("device_count")) is not int
+            or type(result.get("max_devices")) is not int
+            or not 0 < result["max_devices"] <= 256
+            or result["device_count"] != len(result["devices"])
+            or result["device_count"] > result["max_devices"]
+        ):
+            raise IdentityBridgeError(503, "broker_rpc_invalid", "Canonical directory response is invalid.")
+        # Do not reinterpret its state, suppress revoked bindings, or invent
+        # a server ONLINE fact; the authenticated recovery contract owns the
+        # final tightly-scoped projection.
+        return {"available": True, "devices": result["devices"]}
+
     async def revoke_binding(self, *, binding_ref: str) -> dict[str, Any]:
         """Compensate a failed secure credential handoff through the same Broker."""
         binding_ref = _safe_ref(binding_ref, "binding_ref")

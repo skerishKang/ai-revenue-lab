@@ -179,3 +179,25 @@ Synthetic fault injection covers absent pre-redemption PC frame, delayed TLS
 verifier, unresponsive private Broker, lost ACK and blocked credential send.
 It is not live Windows DPAPI or Cloudflare WSS evidence. No production
 routing, secret, Worker schema, feature flag or deployment was enabled.
+
+
+## CENTRAL owner-session recovery projection — 2026-10-13
+
+`canonical_connector_owner_recovery.py` implements a **source-only, read-only,
+owner-authenticated** post-restart reconciliation port. Given a fresh,
+server-verified canonical OWNER session, it checks the original challenge's
+owner/consent/account/workspace/device binding against current per-PC consent,
+then reads the **existing** canonical Broker `device_directory` (private
+Service Binding, scoped entirely from Identity). It selects the exact
+canonical pairing challenge + device-derived binding reference and accepts
+`canonical_state=revoked` ONLY for that exact original binding.
+Any missing, still-active, expired, malformed, cross-owner or duplicated
+evidence gives `security_hold` or hard denial; it never claims ONLINE,
+recovers a credential or retries the redeemed challenge.
+
+**This does not solve unattended Windows-only post-restart reconciliation.**
+The local PC cannot impersonate a newly authenticated owner session; there is
+no device-only recovery HTTP route, signed delivery verdict to a reconnected
+Windows receiver or production composition yet. `OWNER_RECOVERY_ROUTE_MOUNTED`
+and `OWNER_RECOVERY_PRODUCTION_ENABLED` remain False. No Cloudflare
+migration, secret change, cross-product projection or user-facing exposure.
