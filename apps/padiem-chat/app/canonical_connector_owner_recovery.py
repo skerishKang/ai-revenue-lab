@@ -64,7 +64,7 @@ class CanonicalConnectorOwnerRecovery:
         if not callable(getattr(identity, "resolve_connector_enrollment_consent_for_device", None)):
             raise ValueError("existing canonical Identity session/consent verifier required")
         if any(not callable(getattr(broker, x, None))
-               for x in ("get_enrollment_binding", "owner_device_directory")):
+               for x in ("get_enrollment_binding", "owner_device_directory", "recovery_verdict")):
             raise ValueError("existing canonical Broker binding and directory required")
         self._identity = identity
         self._broker = broker
@@ -155,6 +155,40 @@ class CanonicalConnectorOwnerRecovery:
             raise IdentityBridgeError(503, "recovery_binding_mismatch",
                                       "Canonical Broker binding correlation invalid.")
         if fact["canonical_state"] != "revoked":
+            return _hold(challenge_id=challenge, device_id=device)
+        # A directory row is only an owner-scoped index, NOT proof that
+        # this challenge was consumed or that generation 1 was revoked.
+        # Require an independent, same-DO atomic pairing+binding verdict.
+        verdict = await self._broker.recovery_verdict(
+            challenge_id=challenge, device_id=device,
+            consent_ref=consent["consent_id"],
+            owner_ref=consent["owner_subject_id"],
+            account_ref=consent["account_ref"],
+            workspace_ref=consent["workspace_ref"],
+            binding_ref=expected_ref, credential_generation=1,
+        )
+        if (
+            type(verdict) is not dict
+            or set(verdict) != {
+                "challenge_id", "device_id", "binding_ref",
+                "credential_generation", "disposition",
+                "canonical_revocation_confirmed",
+                "can_retry_challenge", "raw_device_credential",
+            }
+            or verdict.get("challenge_id") != challenge
+            or verdict.get("device_id") != device
+            or verdict.get("binding_ref") != expected_ref
+            or type(verdict.get("credential_generation")) is not int
+            or verdict["credential_generation"] != 1
+            or verdict.get("can_retry_challenge") is not False
+            or verdict.get("raw_device_credential") is not False
+            or verdict.get("disposition") not in {"revoked", "security_hold"}
+            or type(verdict.get("canonical_revocation_confirmed")) is not bool
+            or (verdict["disposition"] == "revoked") != verdict["canonical_revocation_confirmed"]
+        ):
+            raise IdentityBridgeError(503, "recovery_verdict_invalid",
+                                      "Canonical Broker recovery verdict invalid.")
+        if verdict["disposition"] != "revoked":
             return _hold(challenge_id=challenge, device_id=device)
         return {
             "challenge_id": challenge, "device_id": device,

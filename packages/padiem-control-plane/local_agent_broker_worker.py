@@ -174,6 +174,8 @@ class Default(WorkerEntrypoint):
         return await self._stub().issue_enrollment_challenge(payload)
     async def get_enrollment_binding(self, payload: dict) -> dict:
         return await self._stub().get_enrollment_binding(payload)
+    async def recovery_verdict(self, payload: dict) -> dict:
+        return await self._stub().recovery_verdict(payload)
     async def verify_enrollment_bootstrap(self, payload: dict) -> dict:
         return await self._stub().verify_enrollment_bootstrap(payload)
     async def gateway_bootstrap_rpc(self, payload: dict) -> dict:

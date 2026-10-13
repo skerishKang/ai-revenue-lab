@@ -48,11 +48,28 @@ class Broker:
         self.owner_ref = OWNER
         self.binding_ref = REF
         self.raw = False
+        self.consumed = True
+        self.generation = 1
     async def get_enrollment_binding(self, *, challenge_id):
         self.calls.append("original")
         return {"challenge_id": challenge_id, "consent_ref": CONSENT,
                 "owner_ref": self.owner_ref, "account_ref": ACCOUNT,
                 "workspace_ref": WORKSPACE, "device_id": DEVICE}
+    async def recovery_verdict(self, **kwargs):
+        self.calls.append("recovery")
+        assert kwargs == {
+            "challenge_id": CID, "device_id": DEVICE,
+            "consent_ref": CONSENT, "owner_ref": OWNER,
+            "account_ref": ACCOUNT, "workspace_ref": WORKSPACE,
+            "binding_ref": REF, "credential_generation": 1,
+        }
+        confirmed = self.consumed and self.state == "revoked" and self.generation == 1
+        return {
+            "challenge_id": CID, "device_id": DEVICE, "binding_ref": REF,
+            "credential_generation": 1, "disposition": "revoked" if confirmed else "security_hold",
+            "canonical_revocation_confirmed": confirmed,
+            "can_retry_challenge": False, "raw_device_credential": False,
+        }
     async def owner_device_directory(self, *, account_ref, workspace_ref):
         assert (account_ref, workspace_ref) == (ACCOUNT, WORKSPACE)
         self.calls.append("directory")
@@ -88,7 +105,7 @@ def test_no_route_or_production_activation_and_canonical_confirmed_revoke_only()
         "can_retry_challenge": False, "raw_device_credential": False,
         "dispatch_authorized": False,
     }
-    assert i.calls == 1 and b.calls == ["original", "directory"]
+    assert i.calls == 1 and b.calls == ["original", "directory", "recovery"]
 
 
 @pytest.mark.parametrize("state", ["paired_offline", "credential_expired"])
@@ -179,3 +196,35 @@ def test_fake_scoped_directory_with_unexpected_data_rejected():
         asyncio.run(client.owner_device_directory(
             account_ref=ACCOUNT, workspace_ref=WORKSPACE,
         ))
+
+
+def test_revoked_directory_without_consumed_challenge_never_confirms():
+    b = Broker()
+    b.consumed = False
+    result, _, _ = check(broker=b)
+    assert result["disposition"] == "security_hold"
+    assert b.calls == ["original", "directory", "recovery"]
+
+
+def test_broker_generation_rotation_cannot_prove_original_revoke():
+    b = Broker()
+    b.generation = 2
+    result, _, _ = check(broker=b)
+    assert result["disposition"] == "security_hold"
+
+
+def test_recovery_rpc_timeout_retains_unconfirmed_state():
+    class Timeout(Broker):
+        async def recovery_verdict(self, **kwargs):
+            raise TimeoutError("Broker unavailable")
+    with pytest.raises(TimeoutError):
+        check(broker=Timeout())
+
+
+def test_fake_broker_recovery_claims_are_rejected():
+    class Bogus(Broker):
+        async def recovery_verdict(self, **kwargs):
+            return {"disposition": "revoked", "canonical_revocation_confirmed": True}
+    with pytest.raises(IdentityBridgeError) as exc:
+        check(broker=Bogus())
+    assert exc.value.code == "recovery_verdict_invalid"

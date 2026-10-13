@@ -13,10 +13,11 @@ operation in the canonical Broker DO transaction and authorizes the private RPC.
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import hashlib
 from typing import Any, Callable
 
 from padiem_control_plane.contracts import ControlPlaneContractError
-from padiem_control_plane.local_agent_broker import InMemoryLocalAgentBrokerAuthority
+from padiem_control_plane.local_agent_broker import BrokerBindingState, InMemoryLocalAgentBrokerAuthority
 from padiem_control_plane.local_agent_broker_pairing import (
     MAX_PAIRING_ISSUANCE_RATE_LIMIT,
     MIN_PAIRING_ISSUANCE_RATE_LIMIT,
@@ -247,6 +248,76 @@ class DurableBrokerPairingAuthority:
                 "(account_ref,workspace_ref,window_started_at,issued_count) VALUES (?,?,?,?)",
                 account_ref, workspace_ref, _iso(window_started), issued,
             )
+
+    def recovery_verdict(
+        self, *, challenge_id: str, device_id: str, consent_ref: str,
+        owner_ref: str, account_ref: str, workspace_ref: str,
+        binding_ref: str, credential_generation: int,
+    ) -> dict[str, Any]:
+        """Read ONE consumed challenge and ONE canonical Broker binding atomically.
+
+        The caller MUST first verify a current canonical OWNER session and
+        consent. The requested refs are correlation constraints, never grants.
+        Original issuance mints generation 1; a subsequent rotation is not
+        evidence that the original credential was installed or compensated.
+        No retry, issuance, revoke, or credential delivery occurs here.
+        """
+        def read() -> dict[str, Any]:
+            pending = self._new_ephemeral()._pending.get(challenge_id)
+            if pending is None or pending.enrollment_binding is None:
+                raise _err("recovery_challenge_unavailable")
+            original = pending.enrollment_binding
+            checks = (
+                (original.challenge_id, challenge_id),
+                (original.device_id, device_id),
+                (original.consent_ref, consent_ref),
+                (original.owner_ref, owner_ref),
+                (original.account_ref, account_ref),
+                (original.workspace_ref, workspace_ref),
+            )
+            if any(type(a) is not str or type(b) is not str or a != b for a, b in checks):
+                raise _err("recovery_scope_mismatch")
+            derived = "pairing-binding." + hashlib.sha256(
+                f"{challenge_id}:{device_id}".encode("utf-8")
+            ).hexdigest()[:32]
+            if type(binding_ref) is not str or binding_ref != derived:
+                raise _err("recovery_binding_mismatch")
+            confirmed = False
+            if (
+                type(credential_generation) is int and credential_generation == 1
+                and pending.redeemed_at is not None
+                and pending.redeemed_device_id == device_id
+                and pending.redeemed_binding_ref == binding_ref
+            ):
+                # The same DO SQLite transaction encloses the consumed
+                # challenge and the existing canonical Broker CAS snapshot.
+                _, broker = self._broker._loaded()
+                fact = broker._bindings.get(binding_ref)
+                confirmed = (
+                    fact is not None
+                    and fact.binding_ref == binding_ref
+                    and fact.device_id == device_id
+                    and fact.account_ref == account_ref
+                    and fact.workspace_ref == workspace_ref
+                    and type(fact.credential_generation) is int
+                    and fact.credential_generation == credential_generation
+                    and fact.state is BrokerBindingState.REVOKED
+                )
+            return {
+                "challenge_id": challenge_id, "device_id": device_id,
+                "binding_ref": binding_ref,
+                "credential_generation": credential_generation,
+                "disposition": "revoked" if confirmed else "security_hold",
+                "canonical_revocation_confirmed": confirmed,
+                "can_retry_challenge": False, "raw_device_credential": False,
+            }
+
+        try:
+            return self._storage.transactionSync(read)
+        except ControlPlaneContractError:
+            raise
+        except Exception as exc:
+            raise _err("durable_pairing_store_unavailable", "recovery authority unavailable") from exc
 
     def _call(self, name: str, **kwargs: Any) -> Any:
         def operation():

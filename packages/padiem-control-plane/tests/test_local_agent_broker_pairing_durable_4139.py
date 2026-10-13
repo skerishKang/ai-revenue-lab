@@ -480,3 +480,84 @@ def test_gateway_expiry_cross_device_and_schema_install_refuse_before_auth():
         )
     with pytest.raises(ControlPlaneContractError):
         gateway.begin(challenge_id=challenge.challenge_id, device_id=DEVICE, proof_ref=proof(challenge, code), now=NOW)
+
+
+def test_recovery_verdict_requires_consumed_challenge_and_canonical_revocation():
+    h = Harness()
+    install(h)
+    challenge, code = issue(h)
+    cid = challenge.challenge_id
+    ref = "pairing-binding." + __import__("hashlib").sha256(
+        f"{cid}:{DEVICE}".encode()
+    ).hexdigest()[:32]
+    values = dict(
+        challenge_id=cid, device_id=DEVICE, consent_ref=CONSENT,
+        owner_ref=OWNER, account_ref=ACCOUNT, workspace_ref=WORKSPACE,
+        binding_ref=ref, credential_generation=1,
+    )
+    # Pending challenge is never a confirmed revocation.
+    assert h.pairing.recovery_verdict(**values)["disposition"] == "security_hold"
+    enrolled, credential = h.pairing.redeem_enrollment(
+        challenge_id=cid, device_id=DEVICE, proof_ref=proof(challenge, code),
+        consent_ref=CONSENT, owner_ref=OWNER, account_ref=ACCOUNT,
+        workspace_ref=WORKSPACE, now=NOW + timedelta(seconds=1),
+    )
+    assert enrolled.binding_ref == ref and enrolled.credential_generation == 1
+    assert h.pairing.recovery_verdict(**values)["disposition"] == "security_hold"
+    h.broker.revoke_binding(ref, now=NOW + timedelta(seconds=2))
+    # Recreate wrapper and memory: verdict must survive DO restart.
+    reopened = Harness(storage=h.storage)
+    verdict = reopened.pairing.recovery_verdict(**values)
+    assert verdict == {
+        "challenge_id": cid, "device_id": DEVICE, "binding_ref": ref,
+        "credential_generation": 1, "disposition": "revoked",
+        "canonical_revocation_confirmed": True,
+        "can_retry_challenge": False, "raw_device_credential": False,
+    }
+    for bad in (
+        {"owner_ref": "owner.attacker"},
+        {"account_ref": "account.attacker"},
+        {"workspace_ref": "workspace.attacker"},
+        {"device_id": "device.attacker"},
+        {"consent_ref": "consent.attacker"},
+        {"binding_ref": "binding.attacker"},
+    ):
+        with pytest.raises(ControlPlaneContractError):
+            reopened.pairing.recovery_verdict(**{**values, **bad})
+    for gen in (0, 2, True):
+        assert reopened.pairing.recovery_verdict(
+            **{**values, "credential_generation": gen}
+        )["disposition"] == "security_hold"
+    with pytest.raises(ControlPlaneContractError) as replay:
+        reopened.pairing.redeem_enrollment(
+            challenge_id=cid, device_id=DEVICE, proof_ref=proof(challenge, code),
+            consent_ref=CONSENT, owner_ref=OWNER, account_ref=ACCOUNT,
+            workspace_ref=WORKSPACE, now=NOW + timedelta(seconds=3),
+        )
+    assert replay.value.code == "pairing_challenge_already_redeemed"
+
+
+def test_recovery_binding_read_failure_never_claims_revocation():
+    h = Harness()
+    install(h)
+    challenge, code = issue(h)
+    ref = "pairing-binding." + __import__("hashlib").sha256(
+        f"{challenge.challenge_id}:{DEVICE}".encode()
+    ).hexdigest()[:32]
+    values = dict(challenge_id=challenge.challenge_id, device_id=DEVICE,
+                  consent_ref=CONSENT, owner_ref=OWNER, account_ref=ACCOUNT,
+                  workspace_ref=WORKSPACE, binding_ref=ref,
+                  credential_generation=1)
+    h.pairing.redeem_enrollment(
+        challenge_id=challenge.challenge_id, device_id=DEVICE,
+        proof_ref=proof(challenge, code), consent_ref=CONSENT,
+        owner_ref=OWNER, account_ref=ACCOUNT, workspace_ref=WORKSPACE,
+        now=NOW + timedelta(seconds=1),
+    )
+    h.broker.revoke_binding(ref, now=NOW + timedelta(seconds=2))
+    def unavailable():
+        raise RuntimeError("simulated broker storage outage")
+    h.broker._loaded = unavailable
+    with pytest.raises(ControlPlaneContractError) as exc:
+        h.pairing.recovery_verdict(**values)
+    assert exc.value.code == "durable_pairing_store_unavailable"

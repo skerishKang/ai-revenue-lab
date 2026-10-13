@@ -291,6 +291,45 @@ class CloudflareCanonicalBrokerPairingClient:
         _time(enrollment.get("credential_expires_at"), "device credential expiry")
         return enrollment, credential
 
+    async def recovery_verdict(
+        self, *, challenge_id: str, device_id: str, consent_ref: str,
+        owner_ref: str, account_ref: str, workspace_ref: str,
+        binding_ref: str, credential_generation: int,
+    ) -> dict[str, Any]:
+        """Strictly project a one-shot READ from the existing canonical Broker."""
+        if type(credential_generation) is not int or credential_generation != 1:
+            raise IdentityBridgeError(400, "invalid_recovery_generation", "Recovery generation is invalid.")
+        values = {
+            "challenge_id": _safe_ref(challenge_id, "challenge_id"),
+            "device_id": _safe_ref(device_id, "device_id"),
+            "consent_ref": _safe_ref(consent_ref, "consent_ref"),
+            "owner_ref": _safe_owner(owner_ref, "owner_ref"),
+            "account_ref": _safe_ref(account_ref, "account_ref"),
+            "workspace_ref": _safe_ref(workspace_ref, "workspace_ref"),
+            "binding_ref": _safe_ref(binding_ref, "binding_ref"),
+            "credential_generation": credential_generation,
+        }
+        result = await self._invoke("recovery_verdict", values)
+        if set(result) != {"ok", "recovery"}:
+            raise IdentityBridgeError(503, "broker_rpc_invalid", "Recovery envelope invalid.")
+        answer = _closed(result["recovery"], frozenset({
+            "challenge_id", "device_id", "binding_ref", "credential_generation",
+            "disposition", "canonical_revocation_confirmed",
+            "can_retry_challenge", "raw_device_credential",
+        }), "recovery verdict")
+        if (
+            any(answer.get(k) != values[k] for k in (
+                "challenge_id", "device_id", "binding_ref", "credential_generation"
+            ))
+            or answer.get("disposition") not in ("revoked", "security_hold")
+            or type(answer.get("canonical_revocation_confirmed")) is not bool
+            or (answer["disposition"] == "revoked") != answer["canonical_revocation_confirmed"]
+            or answer.get("can_retry_challenge") is not False
+            or answer.get("raw_device_credential") is not False
+        ):
+            raise IdentityBridgeError(503, "broker_rpc_invalid", "Recovery authority mismatch.")
+        return answer
+
     async def owner_device_directory(
         self, *, account_ref: str, workspace_ref: str,
     ) -> dict[str, Any]:

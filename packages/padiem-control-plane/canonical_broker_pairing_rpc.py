@@ -226,6 +226,30 @@ class CanonicalBrokerPairingRPC:
                 "message": "Canonical gateway request refused",
             }}
 
+    async def recovery_verdict(self, payload: dict) -> dict:
+        """Private OWNER-authorized host ONLY; returns no credentials or retry grant."""
+        try:
+            expected = {
+                "challenge_id", "device_id", "consent_ref", "owner_ref",
+                "account_ref", "workspace_ref", "binding_ref",
+                "credential_generation",
+            }
+            if type(payload) is not dict or set(payload) != expected:
+                raise ControlPlaneContractError(
+                    "invalid_durable_pairing_rpc", "recovery fields invalid"
+                )
+            recovery = self._durable_pairing().recovery_verdict(**payload)
+            return {"ok": True, "recovery": recovery}
+        except ControlPlaneContractError as exc:
+            return {"ok": False, "error": {
+                "code": exc.code, "message": "Canonical recovery request refused",
+            }}
+        except Exception:
+            return {"ok": False, "error": {
+                "code": "durable_pairing_store_unavailable",
+                "message": "Canonical recovery request refused",
+            }}
+
     async def redeem_enrollment(self, payload: dict) -> dict:
         """Private caller only; raw credential is returned to the private host once."""
         try:
