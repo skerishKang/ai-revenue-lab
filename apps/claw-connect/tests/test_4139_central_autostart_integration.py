@@ -112,8 +112,9 @@ def test_foreign_nonsecret_run_entry_cannot_be_deleted_on_off_or_unpair():
     runs.values["PadiemClawConnect"] = foreign
     assert app.autostart.classify() == REGISTRATION_CORRUPT
     assert not app.autostart.is_enabled()
-    with pytest.raises(AutostartRefused):
-        app.reconcile_autostart()
+    # Startup exposes a bounded unavailable result rather than surfacing an
+    # exception to the tray; the Run value remains byte-identical.
+    assert app.reconcile_autostart() is None
     with pytest.raises(AutostartRefused):
         app.autostart.disable()
     assert prefs.values["Autostart"] == PREFERENCE_OFF
