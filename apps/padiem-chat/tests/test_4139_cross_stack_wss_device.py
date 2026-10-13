@@ -240,6 +240,7 @@ def _run_once(enrollment, *, trusted=True, first_pairing_tls_version=None):
             inbound = CloudflareFirstPairingTlsTransportReview(
                 incoming_worker_request=SimpleNamespace(
                     url="https://chat.padiem.net" + CONNECTOR_GATEWAY_WSS_PATH,
+                    method="GET",
                     headers={"upgrade": "websocket"},
                     cf={"tlsVersion": first_pairing_tls_version, "tlsClientAuth": None},
                 ),
