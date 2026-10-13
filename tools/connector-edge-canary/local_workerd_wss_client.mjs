@@ -1,0 +1,41 @@
+// #4139 CI-only local Workerd Python ASGI transport exercise.
+// Never contact any public URL or send device/owner data.
+const target = "ws://127.0.0.1:8800/__padiem_canary/wss";
+if (process.argv.length !== 2 || typeof WebSocket !== "function") {
+  console.error("CONNECTOR_CANARY_LOCAL_WSS_INVALID_INPUT");
+  process.exit(2);
+}
+const result = await new Promise((resolve) => {
+  let stage = 0;
+  let complete = false;
+  const socket = new WebSocket(target);
+  const timeout = setTimeout(() => done(false, "timeout"), 9000);
+  function done(ok, reason) {
+    if (complete) return;
+    complete = true;
+    clearTimeout(timeout);
+    try { socket.close(); } catch {}
+    resolve({ok, reason});
+  }
+  socket.addEventListener("error", () => done(false, "transport_error"));
+  socket.addEventListener("close", () => {
+    if (!complete) done(false, "early_close");
+  });
+  socket.addEventListener("message", ({data}) => {
+    if (stage === 0 && data === "PADIEM_CANARY_OPEN") {
+      stage = 1;
+      socket.send("PADIEM_CANARY_NO_SECRET_PING");
+    } else if (stage === 1 && data === "PADIEM_CANARY_PONG") {
+      done(true, "asgi_101_text_roundtrip");
+    } else {
+      done(false, "unexpected_frame");
+    }
+  });
+});
+console.log(JSON.stringify({
+  contract:"padiem.canary.local-python-sdk-wss.v1",
+  real_workerd_asgi_roundtrip:result.ok,
+  scope:"local_only_no_edge_tls_no_device_auth",
+  reason:result.reason
+}));
+if (!result.ok) process.exitCode = 1;
