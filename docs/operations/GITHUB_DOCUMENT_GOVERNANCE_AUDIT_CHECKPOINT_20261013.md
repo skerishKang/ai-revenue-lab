@@ -54,6 +54,14 @@ Latest frozen-manifest cursor: **200 text-inspected at least partly** (125 initi
 - No current pricing, customer promise, model entitlement, connector activation, data-retention period or business direction approved.
 - No local Governance changes, source document relocation, customer data copy, redaction/history rewrite, or production mutation.
 
+## 1E. Batch 06 — 25 additional full-source reads plus B35 sampled-source spot review (2026-10-13)
+
+**Current cumulative frozen-manifest cursor:** **250** documents text-inspected at least in part (125 original `TEXT_SAMPLED` + 25 each B02/B03/B04/B05/B06); **566** indexed-only documents still unread; **19** original PDF/DOCX bodies pending. The five already sampled B35 commercial sources additionally spot-reviewed in Batch 06 are **not counted a second time**.
+
+- [Batch 06 pinned file-by-file classifications and B35 non-counted sampled-source reconciliation](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH06_20261013.md)
+- Core findings: B35 internal commercial drafts and unapproved contract assumptions must not be promoted into binding price/business policy; B35 design/QA remains separable public technical evidence. B05 historical resident priority; B21/B51 synthetic research/product references; B60 dated editorial directions; cross-product tier preferences are owner evaluation, not customer activation.
+- No private commercial clauses, customer identifying data or pricing figures were reproduced in the public audit. No source docs, Governance, CI/code, cloud runtime, secrets, Git history or product policy were mutated.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
