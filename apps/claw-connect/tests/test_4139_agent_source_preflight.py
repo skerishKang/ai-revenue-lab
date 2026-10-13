@@ -161,7 +161,7 @@ def test_utf8_bom_historical_agent_config_is_supported(tmp_path, monkeypatch):
     state = tmp_path / "state"
     state.mkdir()
     (state / "resident.json").write_bytes(
-        b"\\xef\\xbb\\xbf" + json.dumps({"src_root": str(root)}).encode("utf-8")
+        bytes((0xEF, 0xBB, 0xBF)) + json.dumps({"src_root": str(root)}).encode("utf-8")
     )
     monkeypatch.delenv("PADIEM_AGENT_SRC", raising=False)
     monkeypatch.delenv("CLAW_RESIDENT_SRC", raising=False)
