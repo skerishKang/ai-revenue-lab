@@ -103,3 +103,50 @@ class DeployedBindingAuditTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+
+class BrokerSourceWorkerAuditTest(unittest.TestCase):
+    def test_broker_worker_candidates_match_checked_in_control_plane_jsonc(self):
+        import json
+        root = Path(__file__).resolve().parents[2] / "packages" / "padiem-control-plane"
+        for candidate, filename in (
+            ("padiem-local-agent-broker-state", "wrangler.local-agent-broker.jsonc"),
+            ("padiem-local-agent-broker-edge", "wrangler.local-agent-broker-edge.jsonc"),
+        ):
+            config = json.loads((root / filename).read_text(encoding="utf-8"))
+            self.assertEqual(config["name"], candidate)
+
+    def test_broker_source_absence_is_not_interpreted_as_deployed(self):
+        urls = []
+        def request(url):
+            urls.append(url)
+            return 404, {}
+        rows = module.inspect_deployed_broker_workers(
+            account_id="testaccount1234", token="fixture", requester=request)
+        self.assertEqual(len(urls), 2)
+        self.assertEqual([x["settings_readable"] for x in rows], [False, False])
+        self.assertFalse(any(x.get("broker_state_do_binding_present", False) for x in rows))
+        self.assertFalse(any(x.get("private_state_worker_binding_present", False) for x in rows))
+
+    def test_existing_broker_workers_require_exact_private_shape(self):
+        def request(url):
+            if url.endswith("/padiem-local-agent-broker-state/settings"):
+                return 200, {"success": True, "result": {"bindings": [
+                    {"name": "LOCAL_AGENT_BROKER_STATE", "type": "durable_object_namespace"},
+                    {"name": "LOCAL_AGENT_BROKER_PEPPER", "type": "secret_text", "text": "DO_NOT_REPORT"},
+                ]}}
+            if url.endswith("/padiem-local-agent-broker-edge/settings"):
+                return 200, {"success": True, "result": {"bindings": [
+                    {"name": "LOCAL_AGENT_BROKER_SERVICE", "type": "service",
+                     "service": "padiem-local-agent-broker-state"},
+                ]}}
+            raise AssertionError("Unapproved metadata path")
+        rows = module.inspect_deployed_broker_workers(
+            account_id="testaccount1234", token="fixture", requester=request)
+        self.assertEqual([x["settings_readable"] for x in rows], [True, True])
+        self.assertTrue(rows[0]["broker_state_do_binding_present"])
+        self.assertTrue(rows[0]["broker_pepper_binding_present"])
+        self.assertTrue(rows[1]["private_state_worker_binding_present"])
+        self.assertNotIn("DO_NOT_REPORT", str(rows))
+

@@ -28,6 +28,8 @@ REQUIRED = (
 _BINDING_NAME = re.compile(r"[A-Za-z][A-Za-z0-9_]{0,79}\Z")
 _WORKER_NAME = re.compile(r"[a-z0-9][a-z0-9-]{0,62}\Z")
 VERSION = "padiem.connector-live-worker-bindings.readonly.v1"
+# These are declared by the checked-in canonical Control Plane Wrangler files.
+BROKER_SOURCE_WORKERS = ("padiem-local-agent-broker-state", "padiem-local-agent-broker-edge")
 
 
 @dataclass(frozen=True)
@@ -139,6 +141,52 @@ def inspect_deployed_gateway_bindings(
     return tuple(evidence)
 
 
+def inspect_deployed_broker_workers(
+    *, account_id: str, token: str,
+    requester: Callable[[str], tuple[int, object]],
+) -> tuple[dict[str, object], ...]:
+    """Read settings for the two source-declared Broker workers only.
+
+    A settings GET verifies a Worker can be inspected, NOT that its secret,
+    Durable Object, RPC methods, deployment revision, authority or identity
+    is trustworthy. The live Padiem Chat binding remains a separate check.
+    """
+    if not account_id or not token or not re.fullmatch(r"[a-zA-Z0-9_-]{8,64}", account_id):
+        raise ValueError("Cloudflare audit credentials unavailable")
+    base = f"{API}/accounts/{quote(account_id, safe='')}/workers/scripts/"
+    evidence = []
+    for name in BROKER_SOURCE_WORKERS:
+        code, payload = requester(base + name + "/settings")
+        verified = code == 200 and type(payload) is dict and payload.get("success") is True
+        if verified and type(payload.get("result")) is dict:
+            rows = payload["result"].get("bindings")
+            kinds = {
+                row.get("name"): row.get("type")
+                for row in rows if type(row) is dict
+                and type(row.get("name")) is str
+            } if type(rows) is list else {}
+        else:
+            kinds = {}
+        report: dict[str, object] = {
+            "worker": name,
+            "settings_readable": verified,
+        }
+        if name.endswith("-state"):
+            report["broker_state_do_binding_present"] = (
+                "LOCAL_AGENT_BROKER_STATE" in kinds
+                and kinds["LOCAL_AGENT_BROKER_STATE"] == "durable_object_namespace"
+            )
+            report["broker_pepper_binding_present"] = (
+                kinds.get("LOCAL_AGENT_BROKER_PEPPER") in ("secret_text", "secret")
+            )
+        else:
+            report["private_state_worker_binding_present"] = (
+                kinds.get("LOCAL_AGENT_BROKER_SERVICE") == "service"
+            )
+        evidence.append(report)
+    return tuple(evidence)
+
+
 def main() -> int:
     token = os.getenv("CLOUDFLARE_API_TOKEN", "")
     account_id = os.getenv("CLOUDFLARE_ACCOUNT_ID", "")
@@ -150,6 +198,9 @@ def main() -> int:
         evidence = inspect_deployed_gateway_bindings(
             account_id=account_id, token=token, requester=requester,
         )
+        broker_worker_evidence = inspect_deployed_broker_workers(
+            account_id=account_id, token=token, requester=requester,
+        )
     except ValueError:
         print("CONNECTOR_LIVE_BINDING_AUDIT=UNAVAILABLE")
         print("PRODUCTION_MUTATION=0")
@@ -158,6 +209,7 @@ def main() -> int:
         "version": VERSION,
         "worker": HOST,
         "binding_evidence": [item.safe() for item in evidence],
+        "source_declared_broker_workers": list(broker_worker_evidence),
         "connector_live_authorized": False,
         "tls_edge_attested": False,
         "deployed_websocket_upgrade_proven": False,
