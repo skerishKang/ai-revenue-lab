@@ -21,6 +21,14 @@ from padiem_control_plane.local_agent_broker_pairing import pairing_proof_ref
 from padiem_control_plane.local_agent_broker_state import StateBackedLocalAgentBrokerAuthority
 from padiem_control_plane.local_agent_broker_state_wire import SerializedLocalAgentBrokerStatePort
 from local_agent_broker_sql_state import CloudflareDurableObjectSerializedStateBackend
+from canonical_broker_gateway_bootstrap import (
+    DurableBrokerGatewayBootstrap,
+    install_gateway_bootstrap_schema,
+    bootstrap_mac,
+    session_mac,
+    BOOTSTRAP_PRODUCTION_ENABLED,
+    BOOTSTRAP_HTTP_ROUTE_MOUNTED,
+)
 
 NOW = datetime(2026, 10, 12, 10, tzinfo=timezone.utc)
 AUTHORITY_REF = "control-plane.local-agent-broker.test.v1"
@@ -301,3 +309,145 @@ def test_nonconsuming_bootstrap_proof_is_read_only_across_durable_adapter_reopen
     with pytest.raises(ControlPlaneContractError) as error:
         reopened.pairing.verify_enrollment_bootstrap(**kwargs)
     assert error.value.code == "pairing_challenge_already_redeemed"
+
+
+def gateway_lease(h):
+    install_gateway_bootstrap_schema(
+        storage=h.storage, migration_id="canonical-broker-gateway-bootstrap-v1",
+        operator_gate=True,
+    )
+    return DurableBrokerGatewayBootstrap(
+        storage=h.storage, pairing=h.pairing,
+        nonce_factory=lambda: "a" * 64,
+        lease_factory=lambda: "gateway." + "b" * 32,
+    )
+
+
+def test_gateway_nonce_is_canonical_broker_do_durable_and_nonconsuming():
+    h = Harness()
+    install(h)
+    challenge, code = issue(h)
+    gateway = gateway_lease(h)
+    assert BOOTSTRAP_PRODUCTION_ENABLED is False
+    assert BOOTSTRAP_HTTP_ROUTE_MOUNTED is False
+    started = gateway.begin(
+        challenge_id=challenge.challenge_id, device_id=DEVICE, now=NOW,
+    )
+    assert started["nonce_hex"] == "a" * 64
+    assert started["lease_ref"] == "gateway." + "b" * 32
+    assert started["credential"] is False and started["challenge_consumed"] is False
+    assert not active_bindings(h)
+    assert len(h.storage.sql.exec(
+        "SELECT * FROM canonical_local_agent_gateway_bootstrap"
+    ).toArray()) == 1
+    with pytest.raises(ControlPlaneContractError):
+        gateway.begin(challenge_id=challenge.challenge_id, device_id=DEVICE, now=NOW)
+    reopened = Harness(storage=h.storage)
+    gateway2 = DurableBrokerGatewayBootstrap(storage=h.storage, pairing=reopened.pairing)
+    signed = bootstrap_mac(
+        pairing_code=code, challenge_id=challenge.challenge_id, device_id=DEVICE,
+        nonce_hex=started["nonce_hex"], lease_ref=started["lease_ref"],
+    )
+    ok = gateway2.finish(
+        challenge_id=challenge.challenge_id, device_id=DEVICE,
+        lease_ref=started["lease_ref"], proof_hex=signed, now=NOW + timedelta(seconds=1),
+    )
+    assert ok["verified"] is True and ok["challenge_consumed"] is False
+    assert not active_bindings(h)
+
+    body1 = b'{"intent":"credential_fetch"}'
+    kwargs = dict(
+        pairing_code=code, challenge_id=challenge.challenge_id, device_id=DEVICE,
+        nonce_hex=started["nonce_hex"], lease_ref=started["lease_ref"],
+    )
+    import hashlib
+    def signed_action(action, counter, body):
+        return session_mac(**kwargs, action=action, counter=counter,
+                           payload_sha256=hashlib.sha256(body).hexdigest())
+    for step, action, body in [
+        (1, "credential_fetch", body1),
+        (2, "install_ack", b'{"ack":true}'),
+        (3, "revoke_verdict", b'{"request":"status"}'),
+    ]:
+        signed_mac = signed_action(action, step, body)
+        x = gateway2.authorize_action(
+            challenge_id=challenge.challenge_id, device_id=DEVICE,
+            lease_ref=started["lease_ref"], action=action, counter=step,
+            body=body, proof_hex=signed_mac, now=NOW + timedelta(seconds=step+1),
+        )
+        assert x["authenticated"] is True and x["counter"] == step
+        with pytest.raises(ControlPlaneContractError):
+            gateway2.authorize_action(
+                challenge_id=challenge.challenge_id, device_id=DEVICE,
+                lease_ref=started["lease_ref"], action=action, counter=step,
+                body=body, proof_hex=signed_mac, now=NOW + timedelta(seconds=step+1),
+            )
+    persisted = h.storage.sql.exec(
+        "SELECT next_counter,terminal_action FROM canonical_local_agent_gateway_bootstrap"
+    ).toArray()
+    assert persisted == [{"next_counter": 4, "terminal_action": "revoke_verdict"}]
+    assert not active_bindings(h)
+    assert h.storage.sql.exec(
+        "SELECT redeemed_at FROM canonical_local_agent_pairing_challenge"
+    ).toArray()[0]["redeemed_at"] is None
+
+
+def test_gateway_invalid_proof_attempts_are_persisted_across_reopens():
+    h = Harness()
+    install(h)
+    challenge, code = issue(h)
+    gateway = gateway_lease(h)
+    started = gateway.begin(challenge_id=challenge.challenge_id, device_id=DEVICE, now=NOW)
+    invalid = "f" * 64
+    for count in range(1, 4):
+        reopened = Harness(storage=h.storage)
+        checker = DurableBrokerGatewayBootstrap(storage=h.storage, pairing=reopened.pairing)
+        with pytest.raises(ControlPlaneContractError) as err:
+            checker.finish(
+                challenge_id=challenge.challenge_id, device_id=DEVICE,
+                lease_ref=started["lease_ref"], proof_hex=invalid,
+                now=NOW + timedelta(seconds=count),
+            )
+        assert err.value.code == "gateway_bootstrap_proof_invalid"
+        assert h.storage.sql.exec(
+            "SELECT failed_proofs FROM canonical_local_agent_gateway_bootstrap"
+        ).toArray()[0]["failed_proofs"] == count
+    valid = bootstrap_mac(
+        pairing_code=code, challenge_id=challenge.challenge_id, device_id=DEVICE,
+        nonce_hex=started["nonce_hex"], lease_ref=started["lease_ref"],
+    )
+    with pytest.raises(ControlPlaneContractError) as err:
+        checker.finish(
+            challenge_id=challenge.challenge_id, device_id=DEVICE,
+            lease_ref=started["lease_ref"], proof_hex=valid, now=NOW + timedelta(seconds=4),
+        )
+    assert err.value.code == "gateway_bootstrap_lease_unavailable"
+
+
+def test_gateway_expiry_cross_device_and_schema_install_refuse_before_auth():
+    h = Harness()
+    install(h)
+    challenge, code = issue(h)
+    with pytest.raises(ControlPlaneContractError) as disabled:
+        install_gateway_bootstrap_schema(
+            storage=h.storage, migration_id="canonical-broker-gateway-bootstrap-v1",
+            operator_gate=False,
+        )
+    assert disabled.value.code == "gateway_bootstrap_schema_disabled"
+    gateway = gateway_lease(h)
+    for swapped in ["device.attacker", "device.other"]:
+        with pytest.raises(ControlPlaneContractError):
+            gateway.begin(challenge_id=challenge.challenge_id, device_id=swapped, now=NOW)
+    started = gateway.begin(challenge_id=challenge.challenge_id, device_id=DEVICE, now=NOW)
+    valid = bootstrap_mac(
+        pairing_code=code, challenge_id=challenge.challenge_id, device_id=DEVICE,
+        nonce_hex=started["nonce_hex"], lease_ref=started["lease_ref"],
+    )
+    with pytest.raises(ControlPlaneContractError):
+        gateway.finish(
+            challenge_id=challenge.challenge_id, device_id=DEVICE,
+            lease_ref=started["lease_ref"], proof_hex=valid,
+            now=NOW + timedelta(seconds=61),
+        )
+    with pytest.raises(ControlPlaneContractError):
+        gateway.begin(challenge_id=challenge.challenge_id, device_id=DEVICE, now=NOW)

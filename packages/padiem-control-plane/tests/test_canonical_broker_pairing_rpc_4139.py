@@ -9,6 +9,9 @@ from types import SimpleNamespace
 import pytest
 
 from canonical_broker_pairing_rpc import CanonicalBrokerPairingRPC
+from canonical_broker_gateway_bootstrap import bootstrap_mac, session_mac
+import base64
+import hashlib
 from local_agent_broker_sql_state import CloudflareDurableObjectSerializedStateBackend
 from padiem_control_plane.local_agent_broker_state import StateBackedLocalAgentBrokerAuthority
 from padiem_control_plane.local_agent_broker_state_wire import SerializedLocalAgentBrokerStatePort
@@ -230,3 +233,65 @@ def test_private_bootstrap_preflight_refuses_wrong_proof_and_has_no_write_side_e
     consumed = asyncio.run(h.verify_enrollment_bootstrap(body))
     assert consumed["ok"] is False
     assert consumed["error"]["code"] == "pairing_challenge_already_redeemed"
+
+
+def test_private_gateway_rpc_requires_separate_explicit_gates_and_closed_shapes():
+    h = Harness()
+    assert h.install()["ok"] is True
+    h.env.LOCAL_AGENT_BROKER_PAIRING_SCHEMA_INSTALLED = "true"
+    issued = h.issue()
+    cid, code = issued["challenge"]["challenge_id"], issued["pairing_code"]
+    h.env.LOCAL_AGENT_BROKER_GATEWAY_BOOTSTRAP_SCHEMA_INSTALL_ENABLED = "true"
+    h.env.LOCAL_AGENT_BROKER_GATEWAY_BOOTSTRAP_SCHEMA_INSTALLED = ""
+    h.env.LOCAL_AGENT_BROKER_GATEWAY_BOOTSTRAP_ENABLED = ""
+    async def rpc(operation, args):
+        return await h.gateway_bootstrap_rpc({"operation": operation, "args": args})
+    async def begin():
+        return await rpc("begin", {"challenge_id": cid, "device_id": DEVICE})
+    assert asyncio.run(begin())["ok"] is False
+    installed = asyncio.run(rpc(
+        "install", {"migration_id": "canonical-broker-gateway-bootstrap-v1"}
+    ))
+    assert installed == {"ok": True, "schema": "canonical-broker-gateway-bootstrap-v1",
+                         "installed_by_default": False}
+    assert asyncio.run(begin())["ok"] is False
+    h.env.LOCAL_AGENT_BROKER_GATEWAY_BOOTSTRAP_SCHEMA_INSTALLED = "true"
+    h.env.LOCAL_AGENT_BROKER_GATEWAY_BOOTSTRAP_ENABLED = "true"
+    started = asyncio.run(begin())
+    assert started["ok"] is True
+    context = started["gateway"]
+    assert context["credential"] is False
+    mac = bootstrap_mac(
+        pairing_code=code, challenge_id=cid, device_id=DEVICE,
+        nonce_hex=context["nonce_hex"], lease_ref=context["lease_ref"],
+    )
+    finished = asyncio.run(rpc("finish", {
+        "challenge_id": cid, "device_id": DEVICE,
+        "lease_ref": context["lease_ref"], "proof_hex": mac,
+    }))
+    assert finished["ok"] is True
+    body = b'{"action":"credential_fetch"}'
+    authorization = session_mac(
+        pairing_code=code, challenge_id=cid, device_id=DEVICE,
+        nonce_hex=context["nonce_hex"], lease_ref=context["lease_ref"],
+        action="credential_fetch", counter=1,
+        payload_sha256=hashlib.sha256(body).hexdigest(),
+    )
+    good = {
+        "challenge_id": cid, "device_id": DEVICE,
+        "lease_ref": context["lease_ref"], "action": "credential_fetch",
+        "counter": 1, "body_b64": base64.b64encode(body).decode("ascii"),
+        "proof_hex": authorization,
+    }
+    assert asyncio.run(rpc("authorize", good))["ok"] is True
+    replay = asyncio.run(rpc("authorize", good))
+    assert replay["ok"] is False
+    assert replay["error"]["code"] == "gateway_bootstrap_action_refused"
+    for bad in [
+        {"operation": "authorize", "args": {**good, "unexpected": True}},
+        {"operation": "authorize", "args": {**good, "body_b64": "???invalid"}},
+        {"operation": "unknown", "args": {}},
+        {"operation": "begin", "args": {"device_id": DEVICE}},
+    ]:
+        refusal = asyncio.run(h.gateway_bootstrap_rpc(bad))
+        assert refusal["ok"] is False and set(refusal) == {"ok", "error"}
