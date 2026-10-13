@@ -71,7 +71,9 @@ def _verify_installer_contract() -> bool:
     code = (APP_ROOT / "install.ps1").read_text(encoding="utf-8")
     return (
         "& $PythonExePath -m padiem_connector autostart on" in code
-        and "& $PythonExePath -m padiem_connector autostart off" in code
+        and "& $PythonExePath -m $UninstallModule autostart off" in code
+        and "if (Test-Path (Join-Path $InstallRoot 'padiem_connector'))" in code
+        and "'claw_connect'" in code
         and "Set-ItemProperty -Path $RunKey" not in code
         and "Remove-ItemProperty -Path $RunKey" not in code
     )
