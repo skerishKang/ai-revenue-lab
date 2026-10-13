@@ -50,6 +50,8 @@ The registry is reached through seams: ``WindowsRunKeyStore`` /
 from __future__ import annotations
 
 import os
+import base64
+from pathlib import Path
 import re
 import sys
 from enum import Enum
@@ -96,6 +98,19 @@ _SECRET_IN_COMMAND = re.compile(
     r"\s*[:=]",
     re.IGNORECASE,
 )
+
+
+def start_command() -> str:
+    """Bound to the installed package root even at logon with a foreign cwd."""
+    root = Path(__file__).resolve().parent.parent
+    encoded = base64.b64encode(str(root).encode("utf-8")).decode("ascii")
+    code = (
+        "import base64,sys,runpy;"
+        f"sys.path.insert(0,base64.b64decode('{encoded}').decode('utf-8'));"
+        "sys.argv=['claw-connect','start'];"
+        "runpy.run_module('claw_connect',run_name='__main__')"
+    )
+    return f'"{sys.executable}" -c "{code}"'
 
 
 class AutostartRefused(RuntimeError):

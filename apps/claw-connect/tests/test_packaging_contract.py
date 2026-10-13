@@ -12,8 +12,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from claw_connect.connection import ConnectionState
+from claw_connect.enrollment import ConnectorEnrollment
 from claw_connect.menu_model import (
     ACTION_DISCONNECT,
+    ACTION_LOGIN,
     ACTION_OPEN_WEB,
     ACTION_QUIT,
     ACTION_RECONNECT,
@@ -65,11 +67,23 @@ def test_quit_is_always_selectable_and_disconnect_only_when_busy():
 
 def test_every_selectable_action_is_one_of_the_known_callbacks():
     known = {
-        ACTION_OPEN_WEB, ACTION_TOGGLE_PAUSE, ACTION_RECONNECT,
+        ACTION_OPEN_WEB, ACTION_LOGIN, ACTION_TOGGLE_PAUSE, ACTION_RECONNECT,
         ACTION_DISCONNECT, ACTION_QUIT,
     }
     for state in ALL_STATES:
         assert set(selectable_ids(state)) <= known
+
+
+def test_login_is_offered_only_when_the_device_is_not_registered():
+    # The reviewed login must never compete with normal operation on a PC that
+    # already holds a usable enrollment.
+    for state in (ConnectionState.UNREGISTERED, ConnectionState.REVOKED):
+        assert ACTION_LOGIN in selectable_ids(state)
+    for state in (
+        ConnectionState.DISCONNECTED, ConnectionState.CONNECTING,
+        ConnectionState.CONNECTED, ConnectionState.PAUSED, ConnectionState.OFFLINE,
+    ):
+        assert ACTION_LOGIN not in selectable_ids(state)
 
 
 # --- CLI contract (#4139 item 9) ------------------------------------------
@@ -83,29 +97,41 @@ def test_cli_defaults_to_start_and_exposes_the_required_commands():
     assert parser.parse_args(["autostart", "show"]).autostart_mode == "show"
 
 
-def test_status_command_prints_machine_readable_state():
-    from claw_connect.runtime import ConnectApp
+def test_status_command_prints_machine_readable_state(monkeypatch, tmp_path):
+    monkeypatch.setenv("CLAW_CONNECT_STATE_DIR", str(tmp_path / "state"))
+    from claw_connect.runtime import ConnectApp  # noqa: F401
 
     code = cli.main(["status"])
     assert code == 0
 
 
-def test_connect_app_status_never_claims_an_unobserved_state():
+def test_connect_app_status_never_claims_an_unobserved_state(tmp_path):
     from claw_connect.runtime import ConnectApp
 
-    app = ConnectApp(resident_command=[sys.executable, "-c", "pass"])
+    app = ConnectApp(
+        resident_command=[sys.executable, "-c", "pass"],
+        enrollment=ConnectorEnrollment(state_dir=tmp_path / "state"),
+    )
     status = app.status()
-    assert status["state"] == ConnectionState.DISCONNECTED.value
+    # A device that was never enrolled is UNREGISTERED, not "disconnected": the
+    # Connector must never imply a connection it does not have.
+    assert status["state"] == ConnectionState.UNREGISTERED.value
     assert status["resident_running"] is False
     assert status["autostart_enabled"] is False
     assert set(status) == {
         "product", "version", "state", "resident_running",
-        "autostart_enabled", "single_instance",
+        "autostart_enabled", "single_instance", "enrollment",
     }
+    enrollment = status["enrollment"]
+    assert enrollment["enrolled"] is False
+    assert enrollment["broker_endpoint_configured"] is False
+    assert enrollment["raw_device_credential"] is False
+    assert enrollment["pairing_code_persisted"] is False
     json.dumps(status)  # must stay JSON serialisable
 
 
-def test_tray_web_entry_uses_verified_padiem_chat_production_origin(monkeypatch):
+def test_tray_web_entry_uses_verified_padiem_chat_production_origin(monkeypatch, tmp_path):
+    monkeypatch.setenv("CLAW_CONNECT_STATE_DIR", str(tmp_path / "state"))
     from claw_connect import WEB_URL
     from claw_connect.runtime import ConnectApp
 
@@ -115,6 +141,24 @@ def test_tray_web_entry_uses_verified_padiem_chat_production_origin(monkeypatch)
     app = ConnectApp(resident_command=[sys.executable, "-c", "pass"])
     app.open_web()
     assert opened == ["https://chat.padiem.net/"]
+
+
+def test_login_opens_only_the_official_padiem_authentication_surface(monkeypatch, tmp_path):
+    # The Connector must never render its own credential form and must never
+    # collect a password or a browser cookie: it only hands the user to the
+    # official authentication page.
+    monkeypatch.setenv("CLAW_CONNECT_STATE_DIR", str(tmp_path / "state"))
+    from claw_connect.runtime import ConnectApp
+
+    opened = []
+    monkeypatch.setattr("webbrowser.open", lambda url: opened.append(url))
+    app = ConnectApp(resident_command=[sys.executable, "-c", "pass"])
+    url = app.login()
+    assert url == "https://chat.padiem.net/"
+    assert opened == ["https://chat.padiem.net/"]
+    snapshot = app.enrollment.status_snapshot()
+    assert snapshot["pairing_code_persisted"] is False
+    assert snapshot["raw_device_credential"] is False
 
 
 # --- packaging contract (#4139 item 9) ------------------------------------

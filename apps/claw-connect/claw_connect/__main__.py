@@ -1,18 +1,21 @@
-"""``python -m claw_connect`` / ``claw-connect`` command line (#4139 S1).
+"""``python -m claw_connect`` / ``claw-connect`` command line (#4139 S1, S2).
 
     claw-connect                start the tray (single instance)
     claw-connect status         machine-readable state, no tray
     claw-connect stop           ask a running tray to quit
-    claw-connect autostart on   register "run at Windows logon" (needs a durable credential)
-    claw-connect autostart off  remove it, and record the durable opt-out
+    claw-connect login          open the reviewed PADIEM login / consent page
+    claw-connect enroll <challenge_id> <pairing_code>
+                                redeem a reviewed pairing code into a device binding
+    claw-connect logout         forget this device binding (keeps the device id)
+    claw-connect autostart on   register only with a durable valid credential
+    claw-connect autostart off  remove it
     claw-connect autostart show whether it is registered
     claw-connect --version      product and version
 
 No subcommand needs administrator rights. ``autostart`` writes only to the
-current user's ``Run`` key and the current user's preference key. It is
-registered by default after a successful install; ``on``/``off`` only express
-the owner's explicit choice, and ``on`` is refused unless this PC already holds
-a durable, valid device binding.
+current user's ``Run`` key. ``login``/``enroll`` never accept a password or a
+browser cookie: the reviewed PADIEM session issues the one-time pairing code
+that ``enroll`` redeems with this device's Broker device id.
 """
 
 from __future__ import annotations
@@ -22,26 +25,24 @@ import json
 import sys
 
 from . import AUTOSTART_RUN_VALUE_NAME, CONNECT_PRODUCT, CONNECT_VERSION, SINGLE_INSTANCE_MUTEX
-from .autostart import Autostart, AutostartRefused
+from .autostart import Autostart, AutostartRefused, start_command
+from .enrollment import (
+    BrokerNotConfiguredError,
+    EnrollmentContractError,
+)
 from .runtime import CONNECT_APP_EXIT_ALREADY_RUNNING, ConnectApp
 
-USAGE = "%(prog)s [start|status|stop|autostart on|off|show]"
+USAGE = "%(prog)s [start|status|stop|login|enroll|logout|autostart on|off|show]"
 
 
 def _autostart_command() -> str:
     """The exact command line registered for logon autostart."""
-    return f'"{sys.executable}" -m claw_connect start'
+    return start_command()
 
 
-def _committed_enrollment() -> object | None:
-    """The durable local record, for the credential gate.
-
-    ``autostart on`` must present the same evidence the programmatic install
-    path does, so the owner CLI is not a way around the gate. Read-only: it
-    never mints a first-launch identity, so a refused command creates nothing.
-    """
-    from .enrollment import ConnectorEnrollment  # noqa: PLC0415
-
+def _committed_enrollment():
+    """Read-only credential gate; never mint an identity on a refused request."""
+    from .enrollment import ConnectorEnrollment
     return ConnectorEnrollment().committed_record()
 
 
@@ -51,19 +52,26 @@ def build_parser() -> argparse.ArgumentParser:
         description=f"{CONNECT_PRODUCT} — the lightweight Windows tray connector.",
         usage=USAGE,
     )
-    parser.add_argument(
-        "command",
-        nargs="?",
-        default="start",
-        choices=["start", "status", "stop", "autostart"],
-        help="default: start",
+    # Subcommands, so `enroll <challenge_id> <pairing_code>` can never be
+    # confused with `autostart <on|off|show>`.
+    sub = parser.add_subparsers(dest="command")
+    parser.set_defaults(command="start")
+
+    sub.add_parser("start", help="start the tray (single instance) — default")
+    sub.add_parser("status", help="machine-readable state, no tray")
+    sub.add_parser("stop", help="ask a running tray to quit")
+    sub.add_parser("login", help="open the reviewed PADIEM login / consent page")
+    sub.add_parser("logout", help="forget this device binding (keeps the device id)")
+
+    enroll = sub.add_parser(
+        "enroll", help="redeem a reviewed pairing code into a device binding"
     )
-    parser.add_argument(
-        "autostart_mode",
-        nargs="?",
-        choices=["on", "off", "show"],
-        help="required only when command is 'autostart'",
-    )
+    enroll.add_argument("enroll_challenge", help="pairing challenge id")
+    enroll.add_argument("enroll_code", help="one-time pairing code")
+
+    autostart = sub.add_parser("autostart", help="credential-gated Windows logon")
+    autostart.add_argument("autostart_mode", choices=["on", "off", "show"])
+
     parser.add_argument(
         "--version", action="version",
         version=f"{CONNECT_PRODUCT} {CONNECT_VERSION}",
@@ -92,23 +100,82 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 0 if delivered else 1
 
+    if args.command == "login":
+        url = app.login()
+        print(
+            json.dumps(
+                {"ok": True, "detail": "reviewed PADIEM login page opened",
+                 "login_url": url},
+                ensure_ascii=False,
+            )
+        )
+        return 0
+
+    if args.command == "enroll":
+        if not getattr(args, "enroll_challenge", None) or not getattr(args, "enroll_code", None):
+            print(
+                json.dumps(
+                    {"ok": False,
+                     "detail": "enroll requires <challenge_id> <pairing_code>"}
+                )
+            )
+            return 2
+        try:
+            result = app.enrollment.complete_login(
+                challenge_id=args.enroll_challenge, pairing_code=args.enroll_code
+            )
+        except BrokerNotConfiguredError:
+            # The LOCAL1 pairing route is not activated. Report the honest
+            # blocked state instead of claiming a successful enrollment.
+            print(
+                json.dumps(
+                    {"ok": False, "blocked": True,
+                     "detail": "broker pairing route is not configured; enrollment "
+                               "cannot be completed",
+                     "state": app.connector_status().value},
+                    ensure_ascii=False,
+                )
+            )
+            return 1
+        except EnrollmentContractError as exc:
+            print(json.dumps({"ok": False, "detail": str(exc)}, ensure_ascii=False))
+            return 2
+        auto_outcome = app.reconcile_autostart()
+        print(
+            json.dumps(
+                {"ok": True, "enrollment": result.safe_dict(),
+                 "autostart": auto_outcome.value if auto_outcome else "unavailable",
+                 "state": app.connector_status().value},
+                ensure_ascii=False,
+            )
+        )
+        return 0
+
+    if args.command == "logout":
+        app.enrollment.clear_enrollment()
+        app.autostart.apply_lifecycle("unpair")
+        print(
+            json.dumps(
+                {"ok": True, "detail": "device binding cleared",
+                 "state": app.connector_status().value},
+                ensure_ascii=False,
+            )
+        )
+        return 0
+
     if args.command == "autostart":
-        if args.autostart_mode is None:
+        if getattr(args, "autostart_mode", None) is None:
             print(json.dumps({"ok": False, "detail": "autostart on|off|show required"}))
             return 2
         autostart = Autostart(AUTOSTART_RUN_VALUE_NAME)
         if args.autostart_mode == "on":
-            # Fail closed, exactly like the programmatic install default: the
-            # CLI presents the durable record and never trusts a flag.
             try:
                 autostart.enable(_autostart_command(), _committed_enrollment())
             except AutostartRefused as exc:
-                print(
-                    json.dumps(
-                        {"ok": False, "mode": "on", "detail": str(exc)},
-                        ensure_ascii=False,
-                    )
-                )
+                print(json.dumps(
+                    {"ok": False, "mode": "on", "detail": str(exc)},
+                    ensure_ascii=False,
+                ))
                 return 1
         elif args.autostart_mode == "off":
             autostart.disable()
@@ -117,8 +184,6 @@ def main(argv: list[str] | None = None) -> int:
                 {"ok": True, "mode": args.autostart_mode,
                  "enabled": autostart.is_enabled(),
                  "command": autostart.current_command(),
-                 # The durable owner choice, so "off" is distinguishable from
-                 # "never installed" across processes.
                  "preference": autostart.preference()},
                 ensure_ascii=False,
             )
