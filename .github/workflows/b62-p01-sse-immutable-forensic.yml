@@ -80,6 +80,12 @@ jobs:
               bash .github/scripts/b62_cloudflare_504_readonly_get.sh \
                 "${base}/versions/00d38813-df7b-4b73-b00a-5c7b26ed3b7a" \
                 "${RUNNER_TEMP}/sse-failed-patch-immutable.json"
+              # Query only the bounded first historical deployment page.
+              # Deployment annotations and immutable version annotations are
+              # distinct: their mismatch is a candidate explanation only.
+              bash .github/scripts/b62_cloudflare_504_readonly_get.sh \
+                "${base}/deployments?page=1&per_page=100" \
+                "${RUNNER_TEMP}/sse-deployment-history.json"
               ;;
             workflow_dispatch)
               # Original #38431252763 evidence remains reproducible.
@@ -93,9 +99,13 @@ jobs:
               ;;
             *) echo 'P01_SSE_FORENSIC_EVENT=REFUSED' >&2; exit 2 ;;
           esac
+          deployment_args=()
+          if [ "${incident}" = second ]; then
+            deployment_args=(--deployment-history "${RUNNER_TEMP}/sse-deployment-history.json")
+          fi
           python .github/scripts/b62_p01_postpatch_immutable_forensic.py \
             --before "${RUNNER_TEMP}/sse-before-immutable.json" \
             --after "${RUNNER_TEMP}/sse-failed-patch-immutable.json" \
-            --incident "${incident}"
+            --incident "${incident}" "${deployment_args[@]}"
           echo 'P01_SSE_FORENSIC_READONLY=PASS'
           echo 'PRODUCTION_MUTATION=0'

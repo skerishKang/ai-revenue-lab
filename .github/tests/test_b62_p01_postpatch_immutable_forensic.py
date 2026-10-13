@@ -149,3 +149,55 @@ def test_protected_push_second_incident_forensics_is_get_only_and_once():
         assert forbidden not in job
     assert job.count("b62_p01_postpatch_immutable_forensic.py") == 1
 
+
+def _historical_deployment_page(message, *, include=True):
+    deployment = {
+        "versions": [{"version_id": f.SECOND_FAILED_PATCH, "percentage": 100}],
+        "annotations": {"workers/message": message},
+    }
+    return {"success": True, "result": {"deployments": [deployment] if include else []}}
+
+
+def test_second_deployment_annotation_disagreement_is_reported_without_leaking():
+    _, after = version(f.SECOND_BEFORE, False), version(f.SECOND_FAILED_PATCH, True)
+    after["result"]["annotations"] = {
+        "workers/message": f"B62 production code {f.SECOND_SOURCE_SHA}"}
+    other_message = "private-deployment-text-sentinel"
+    result = f.second_incident_lineage(
+        after, _historical_deployment_page(other_message))
+    assert result["second_version_message_lineage"] == "EXACT"
+    assert result["second_historical_deployment_found"] is True
+    assert result["second_deployment_message_lineage"] == "OTHER"
+    assert result["second_historical_deployment_count_on_page"] == 1
+    assert other_message not in str(result)
+
+
+def test_second_deployment_lineage_exact_absent_and_rejected_shapes():
+    _, after = version(f.SECOND_BEFORE, False), version(f.SECOND_FAILED_PATCH, True)
+    exact = f"B62 production code {f.SECOND_SOURCE_SHA}"
+    assert f.second_incident_lineage(
+        after, _historical_deployment_page(exact))["second_deployment_message_lineage"] == "EXACT"
+    absent = f.second_incident_lineage(after, _historical_deployment_page(None, include=False))
+    assert absent["second_historical_deployment_found"] is False
+    assert absent["second_deployment_message_lineage"] == "NOT_IN_PAGE"
+    assert absent["second_version_message_lineage"] == "MISSING"
+    with pytest.raises(f.ForensicRefused, match="DEPLOYMENT_HISTORY_UNTRUSTED"):
+        f.second_incident_lineage(after, {"success": False, "result": {"deployments": []}})
+    wrong = _historical_deployment_page(exact)
+    wrong["result"]["deployments"][0]["versions"][0]["percentage"] = 10
+    with pytest.raises(f.ForensicRefused, match="HISTORICAL_DEPLOYMENT_NOT_100_PERCENT"):
+        f.second_incident_lineage(after, wrong)
+
+
+def test_lineage_workflow_gets_only_bounded_historical_deployment_page():
+    y = WORKFLOW.read_text(encoding="utf-8")
+    job = y.split("\n  immutable-forensic:", 1)[1]
+    helper = (ROOT / ".github/scripts/b62_cloudflare_504_readonly_get.sh").read_text(encoding="utf-8")
+    assert "deployments?page=1&per_page=100" in job
+    assert '"${base}/deployments?page=1&per_page=100"' in helper
+    assert 'deployment_args=(--deployment-history "${RUNNER_TEMP}/sse-deployment-history.json")' in job
+    assert ' "${deployment_args[@]}"' in job
+    assert "PRODUCTION_MUTATION=0" in job
+    assert "environment: production" not in job
+    for forbidden in ("-X POST", "-X PATCH", "-X PUT", "-X DELETE", "wrangler deploy"):
+        assert forbidden not in job

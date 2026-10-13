@@ -17,6 +17,7 @@ FAILED_PATCH = "18ee50a1-ab64-4cc0-8fc2-2ed3234f63a5"
 SECOND_BEFORE = "d62bef73-f9d3-4559-88f9-cecbba785bb9"
 SECOND_FAILED_PATCH = "00d38813-df7b-4b73-b00a-5c7b26ed3b7a"
 FLAG = "PADIEM_CLAW_P01_LIVE_SSE_ENABLED"
+SECOND_SOURCE_SHA = "2b4f11d28125d861eef52859381f179ea6eb5125"
 
 
 class ForensicRefused(ValueError):
@@ -115,16 +116,75 @@ def compare(before: object, after: object, *, incident: str = "first") -> dict[s
     }
 
 
+
+def _lineage_marker(message: object) -> str:
+    # Do not echo arbitrary provider-supplied message strings.
+    if message == f"B62 production code {SECOND_SOURCE_SHA}":
+        return "EXACT"
+    if message is None:
+        return "MISSING"
+    return "OTHER"
+
+
+def second_incident_lineage(after: object, deployment_history: object) -> dict[str, object]:
+    """Read-only bounded source-origin evidence for the pinned failed SSE version.
+
+    Version annotations and deployment annotations have separate Cloudflare API
+    contracts. A mismatch here may explain a verifier rejection, but never
+    constitutes proof that SSE was accepted or safely rolled out.
+    """
+    new = _result(after, SECOND_FAILED_PATCH)
+    annotation = new.get("annotations")
+    if annotation is not None and not isinstance(annotation, dict):
+        raise ForensicRefused("VERSION_ANNOTATIONS_SHAPE")
+    if not isinstance(deployment_history, dict) or deployment_history.get("success") is not True:
+        raise ForensicRefused("DEPLOYMENT_HISTORY_UNTRUSTED")
+    result = deployment_history.get("result")
+    if not isinstance(result, dict) or not isinstance(result.get("deployments"), list):
+        raise ForensicRefused("DEPLOYMENT_HISTORY_SHAPE")
+    matched = []
+    for deployment in result["deployments"]:
+        if not isinstance(deployment, dict) or not isinstance(deployment.get("versions"), list):
+            raise ForensicRefused("DEPLOYMENT_HISTORY_ENTRY_SHAPE")
+        versions = deployment["versions"]
+        if any(isinstance(v, dict) and v.get("version_id") == SECOND_FAILED_PATCH
+               for v in versions):
+            if len(versions) != 1 or versions[0].get("percentage") != 100:
+                raise ForensicRefused("HISTORICAL_DEPLOYMENT_NOT_100_PERCENT")
+            annotations = deployment.get("annotations")
+            if annotations is not None and not isinstance(annotations, dict):
+                raise ForensicRefused("DEPLOYMENT_ANNOTATIONS_SHAPE")
+            matched.append(annotations or {})
+    if len(matched) > 1:
+        raise ForensicRefused("HISTORICAL_DEPLOYMENT_AMBIGUOUS")
+    message = matched[0].get("workers/message") if matched else None
+    return {
+        "second_version_message_lineage": _lineage_marker(
+            (annotation or {}).get("workers/message")),
+        "second_historical_deployment_found": bool(matched),
+        "second_deployment_message_lineage": (
+            _lineage_marker(message) if matched else "NOT_IN_PAGE"),
+        "second_historical_deployment_count_on_page": len(result["deployments"]),
+    }
+
+
 def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--before", type=Path, required=True)
     p.add_argument("--after", type=Path, required=True)
     p.add_argument("--incident", choices=("first", "second"), default="first")
+    p.add_argument("--deployment-history", type=Path)
     a = p.parse_args()
     try:
         result = compare(
             json.loads(a.before.read_text(encoding="utf-8")),
             json.loads(a.after.read_text(encoding="utf-8")), incident=a.incident)
+        if a.incident == "second":
+            if a.deployment_history is None:
+                raise ForensicRefused("DEPLOYMENT_HISTORY_REQUIRED")
+            result.update(second_incident_lineage(
+                json.loads(a.after.read_text(encoding="utf-8")),
+                json.loads(a.deployment_history.read_text(encoding="utf-8"))))
     except (ForensicRefused, OSError, ValueError, TypeError, KeyError) as exc:
         print("P01_IMMUTABLE_FORENSIC=BLOCKED")
         print("P01_IMMUTABLE_FORENSIC_REASON=" + (
