@@ -1,5 +1,20 @@
 # B66 AI 일반대화 → 견적작성 → QuoteCore 인계: 기술 현황 (2026-10-14 KST)
 
+
+<!-- CENTRAL_POST_REVIEW_9588A22_20261014 -->
+## 최신 후속 커밋 반영 — `9588a22` (2026-10-14 KST)
+
+**아래 `85e8ea8` 검토/잔여 결함 표는 최초 CENTRAL 검토 시점의 정확한 발견 기록이며, 후속 HEAD의 현재 미수정 결함 목록이 아니다.** LOCAL4가 동일 [Draft #4658](https://github.com/skerishKang/ai-revenue-lab/pull/4658)에 새 HEAD **`9588a22c176c5619c4f5a391fd1157d2c84992a5`**를 푸시했고, CENTRAL은 다음 보완 코드를 GitHub 소스로 확인했다.
+
+- **P0-A 소스 수정 제출:** 견적 작성 모드 밖에서 모델 제안 delta를 직접 병합하지 않음. 재진입 `quote_create`도 기존 사실을 교체하지 못하도록 하고, 일반 모드·모드 전환·신규 사실 수집 회귀 테스트 추가.
+- **P0-B 소스 수정 제출:** D1 슬롯에 `revision INTEGER` 컬럼을 둔 추가형 migration 041, 사용자/워크스페이스 + 예상 revision에 대한 단일 SQL CAS 조건부 UPSERT와 `meta.changes` 검사, 경쟁 패자 `revision_conflict` 409. 두 스레드/별도 SQLite 연결의 동일 슬롯 경쟁과 테넌트별 분리 회귀 추가.
+- **P1 소스 수정 제출:** 모델 delta의 정확한 빈 `taxMode:""`는 미입력으로 무시하고, 이미 알려진 세금 유형을 변경·삭제하지 않는다. 그 외 유효하지 않은 값/타입은 거부하도록 테스트 추가.
+- **검증 단계:** 후속 HEAD의 GitGuardian, B62 full regression, 운영정책 CI 등은 GitHub에서 SUCCESS로 관측. 마지막 조회 시 상위 `browser-qa`는 **IN_PROGRESS**라 전체 CI 최종 판정은 보류. 해당 웹 브라우저 검사는 B66 참조 제품 화면의 새 대화 API 실사용 E2E를 대체하지 않는다.
+- **상태:** `P0_FIXES=SOURCE_SUBMITTED_AND_CODE_INSPECTED`; `CENTRAL_FINAL_ACCEPTANCE=PENDING`; `PR4658=OPEN_DRAFT_UNMERGED`; `MIGRATION_041_PRODUCTION=NOT_APPLIED`; `B66_UI_E2E=NOT_EXECUTED`. 후속 HEAD의 개발자 테스트 정확한 개수와 최종 CI는 LOCAL4 보고/추가 검증 후 확정한다. 최신 main에 문서 커밋이 별도로 반영되었으므로 PR의 merge-forward도 병합 전 확인한다.
+
+원 이슈의 이전 'P0 미수정' 표현은 **`85e8ea8`을 대상으로 한 역사 기록**으로 읽어야 한다. 실제 병합 여부와 운영 인수는 #4658 / #4316 최신 상태에 따른다.
+<!-- /CENTRAL_POST_REVIEW_9588A22_20261014 -->
+
 > **성격:** 시점별 중앙 CTO 소스·검증 기록. 새로운 사업방침, 사용 권한, 운영 출시 승인이 아니다. 최신 변경 상태는 아래 이슈/PR 및 GitHub main을 우선한다. 로컬 비공개 사업·운영 정책 원문은 이 문서에 기록하지 않는다.
 
 ```text
