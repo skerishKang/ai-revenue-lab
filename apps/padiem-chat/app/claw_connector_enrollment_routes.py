@@ -207,6 +207,22 @@ def _public_consent_success(
     }}, 200)
 
 
+def _reject_duplicate_json_fields(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    """Reject ambiguous owner-consent, challenge and device identifiers.
+
+    Python's default JSON parser keeps the last duplicate field. An explicit
+    consent can never be inferred from a body with multiple conflicting values
+    (e.g. `"confirmed": false, "confirmed": true`). Nested duplicates also
+    fail closed. Callers return their existing bounded 400 without echoing input.
+    """
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate connector enrollment JSON field")
+        result[key] = value
+    return result
+
+
 async def _payload(request: Request, keys: frozenset[str]) -> dict[str, str] | None:
     try:
         declared = request.headers.get("content-length")
@@ -217,7 +233,7 @@ async def _payload(request: Request, keys: frozenset[str]) -> dict[str, str] | N
         raw = await request.body()
         if len(raw) > MAX_CONNECTOR_ENROLLMENT_BODY_BYTES:
             return None
-        value = json.loads(raw)
+        value = json.loads(raw, object_pairs_hook=_reject_duplicate_json_fields)
         if type(value) is not dict or set(value) != keys:
             return None
         if not all(isinstance(v, str) and _SAFE_VALUE.fullmatch(v) is not None for v in value.values()):
@@ -244,7 +260,7 @@ async def _consent_payload(request: Request, expected: frozenset[str]) -> dict[s
         raw = await request.body()
         if len(raw) > MAX_CONNECTOR_ENROLLMENT_BODY_BYTES:
             return None
-        value = json.loads(raw)
+        value = json.loads(raw, object_pairs_hook=_reject_duplicate_json_fields)
         if type(value) is not dict or set(value) != expected:
             return None
         if any(k != "confirmed" and (not isinstance(v, str) or _SAFE_VALUE.fullmatch(v) is None) for k, v in value.items()):
