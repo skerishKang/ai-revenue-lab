@@ -106,11 +106,31 @@ def changed_files(event: dict, event_name: str, repository: str, token: str):
     })
     with urllib.request.urlopen(request, timeout=15) as response:
         result = json.load(response)
-    if not isinstance(result, dict) or result.get("status") not in {"ahead", "identical"}:
+    if not isinstance(result, dict):
+        return None
+    status = result.get("status")
+    if status not in {"ahead", "identical", "diverged"}:
         return None
     files = result.get("files")
     if not isinstance(files, list) or len(files) > MAX_FILES:
         return None
+    # A PR branch can legitimately be behind main: GitHub compare returns
+    # 'diverged' even when its merge-base..head diff touches only one CSS file.
+    # Accept this PR-only case only with an exact changed-file count, so
+    # truncated/uncertain API responses never turn into a reduced CI lane.
+    if status == "diverged":
+        if event_name != "pull_request":
+            return None
+        count = pr.get("changed_files")
+        ahead = result.get("ahead_by")
+        if (type(count) is not int or not 0 < count <= MAX_FILES
+                or type(ahead) is not int or ahead < 1
+                or len(files) != count):
+            return None
+    elif event_name == "pull_request":
+        count = pr.get("changed_files")
+        if type(count) is int and count != len(files):
+            return None
     return files
 
 
