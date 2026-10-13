@@ -193,6 +193,15 @@ At fixed **835** originals: **625 texts partly or completely viewed** (125 origi
 - Keep MIT/OFL license notices; pypdf decoder disabled pending provenance; B61 Bible mapping demands exact source rights/verse provenance. B66 synthetic quote fixture and approved PDF template are not current customer acceptance.
 - No original source history, local private Governance, commercial membership, customer data, live Provider or Production changes.
 
+## 1V. Batch 22 — 25 complete text reads: CI economy / CTO accountability / historical HWPX (2026-10-13)
+
+Frozen original 835-document cursor: **650 sources viewed partly or completely** (125 initial `TEXT_SAMPLED`, 25 each B02–B22); **166 INDEXED_ONLY** original text bodies unread, **19 BINARY_PENDING** PDF/DOCX unread. First sampled 125 need exhaustive later review.
+
+- [Batch22 SHA-pinned 25-record public-safe engineering-vs-business classification](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH22_20261013.md)
+- GitHub Actions concurrency/skip/prewarm changes are technical CI optimization, not waiver of security, true runtime probes, exact-head merge checks or Owner approval. Cancelled, skipped and historic results must not be equated with current PASS.
+- CTO/developer/independent validator forms define separation of duties; old HWPX Draft and September ownership snapshots are not current product or company business authority.
+- No CI source, original Git documents, local Governance, customer data, commercial policy, paid provider or Cloudflare Production changed.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
