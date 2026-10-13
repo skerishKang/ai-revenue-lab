@@ -1015,6 +1015,7 @@ jobs:
             --triggering-actor "${TRIGGERING_ACTOR}" \
             --run-attempt "${RUN_ATTEMPT}"
           rm -f "${review_file}"
+          echo "P01_SSE_INDEPENDENT_REVIEW=PASS"
           echo 'P01_SSE_EXPLICIT_PRODUCTION_AUTHORIZATION=PASS'
           echo "PRODUCTION_REVIEW_SOURCE=GITHUB_RUN_SPECIFIC"
 
