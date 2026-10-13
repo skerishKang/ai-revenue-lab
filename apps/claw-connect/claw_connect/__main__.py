@@ -91,7 +91,9 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(snapshot, ensure_ascii=False, sort_keys=True))
         return 0 if snapshot["agent_ready"] else 1
 
-    app = ConnectApp()
+    # STOP and autostart OFF/SHOW must remain usable even if the Agent source
+    # pin is corrupt. Neither action needs to start or resolve the Resident.
+    app = None if args.command in ("stop", "autostart") else ConnectApp()
 
     if args.command == "status":
         print(app.status_json())

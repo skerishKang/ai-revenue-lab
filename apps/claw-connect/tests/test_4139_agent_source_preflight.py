@@ -225,3 +225,28 @@ def test_windows_powershell_encoding_constructor_writes_bomless_json(tmp_path):
     raw = target.read_bytes()
     assert not raw.startswith(bytes((0xEF, 0xBB, 0xBF)))
     assert json.loads(raw.decode("utf-8"))["src_root"] == "C:/safe"
+
+
+def test_stop_and_autostart_show_never_initialise_broken_agent(monkeypatch, capsys):
+    from types import SimpleNamespace
+    from claw_connect import __main__ as cli
+    from claw_connect.runtime import QuitSignal
+
+    def unexpected(*args, **kwargs):
+        raise AssertionError("stop and autostart controls MUST NOT construct ConnectApp")
+
+    monkeypatch.setattr(cli, "ConnectApp", unexpected)
+    # Never signal a real user tray or touch a real HKCU Run key.
+    monkeypatch.setattr(QuitSignal, "signal", lambda self: False)
+    monkeypatch.setattr(
+        cli, "Autostart",
+        lambda name: SimpleNamespace(
+            is_enabled=lambda: False,
+            preference=lambda: "off",
+            current_command=lambda: None,
+        ),
+    )
+    assert cli.main(["stop"]) == 1  # no running instance observed
+    assert cli.main(["autostart", "show"]) == 0
+    output = capsys.readouterr().out.splitlines()
+    assert json.loads(output[-1])["enabled"] is False
