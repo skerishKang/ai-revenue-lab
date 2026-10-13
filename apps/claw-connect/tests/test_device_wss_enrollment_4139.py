@@ -259,6 +259,7 @@ def test_failed_stage_yields_exact_existing_security_hold_and_no_enrollment(tmp_
             enrollment=enrollment, socket=Socket(), trusted_tls=Trusted(),
             receiver=LocalStoreCredentialReceiver(store=Store(), now_factory=lambda: NOW),
             challenge_id=CID, pairing_code=CODE, now=NOW,
+            binding_factory=_fake_binding,
         ))
     assert exc.value.recovery.action == "security_hold_reconciliation_required"
     assert exc.value.recovery.retry_same_challenge is False
@@ -276,6 +277,7 @@ def test_failed_stage_yields_exact_existing_security_hold_and_no_enrollment(tmp_
             enrollment=enrollment, socket=socket, trusted_tls=Trusted(),
             receiver=LocalStoreCredentialReceiver(store=Store()),
             challenge_id=CID, pairing_code=CODE, now=NOW,
+            binding_factory=_fake_binding,
         ))
     assert socket.sent == []
 
