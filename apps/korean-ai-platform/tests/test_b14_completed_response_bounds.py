@@ -630,3 +630,294 @@ async def test_runtime_config_max_response_bytes_is_not_wired(monkeypatch):
     monkeypatch.setattr(runtime_config, "max_response_bytes", 64 * 1024 * 1024)
     with pytest.raises(UpstreamResponseTooLarge):
         await plat._read_bounded_body(_StubResponse([b"Z" * (CAP + 1)]))
+
+
+# --- #4552: the same 1MiB authority on every axis, config field inert -------
+# CENTRAL gate: an operator must not be able to read b14_runtime_config as a
+# model-output knob. These pins are provider-free (synthetic transports only).
+
+
+def _chunked_stream(chunks: list[bytes]) -> httpx.MockTransport:
+    """Serve exactly these read blocks, so frame-boundary behavior is pinned."""
+
+    class _Stream(httpx.AsyncByteStream):
+        def __init__(self, parts):
+            self.parts = list(parts)
+
+        async def __aiter__(self):
+            for part in self.parts:
+                yield part
+
+    return httpx.MockTransport(
+        lambda req: httpx.Response(
+            200, stream=_Stream(chunks), headers={"content-type": "text/event-stream"}
+        )
+    )
+
+
+def _sse_delta(char: str, size: int) -> bytes:
+    return (
+        b'data: {"choices":[{"delta":{"content":"'
+        + char.encode() * size
+        + b'"},"finish_reason":null}]}\n\n'
+    )
+
+
+def _doc_of_exact_size(size: int) -> tuple[bytes, str]:
+    """Pad a completed JSON document to exactly ``size`` bytes (ASCII answer)."""
+    base = json.dumps(_completed_doc("")).encode()
+    pad = size - len(base)
+    assert pad > 0
+    answer = "A" * pad
+    payload = json.dumps(_completed_doc(answer)).encode()
+    assert len(payload) == size  # one pad char is exactly one byte here
+    return payload, answer
+
+
+def _collect_stream(agen):
+    async def run():
+        return [event async for event in agen]
+
+    return run()
+
+
+@pytest.mark.asyncio
+async def test_generic_completed_streamed_body_metadata_defect_is_pinned(
+    live_keyless_route,
+):
+    # F-1 finding for #4552, recorded not fixed. #4547 replaced the
+    # auto-reading ``client.post`` with ``client.stream`` + a manual collector,
+    # but the returned metadata still calls ``response.content``, which httpx
+    # only populates through ``aread()``. The body is collected intact and the
+    # byte guard behaves; only the metadata line raises, and every fixture that
+    # handed httpx a concrete ``content=`` body hid it. Repairing it changes a
+    # live completed response, so it needs CENTRAL approval first.
+    payload, _answer = _doc_of_exact_size(4096)
+    transport = ChunkCountingTransport(payload)
+    with pytest.raises(httpx.ResponseNotRead):
+        await plat.call_platform_chat_completions(
+            model_id=MOCK_ID,
+            upstream_model=MOCK_UPSTREAM,
+            provider="Synthetic test-only gateway",
+            platform_provider_id=MOCK_PROVIDER,
+            messages=[{"role": "user", "content": "hi"}],
+            max_tokens=32,
+            transport=transport,
+        )
+    assert transport.served_bytes == len(payload)  # collected before the raise
+
+
+@pytest.mark.asyncio
+async def test_generic_completed_body_cap_plus_one_fails_explicitly(
+    live_keyless_route,
+):
+    # Boundary stays inclusive-then-fail at exactly 1MiB: cap+1 is an explicit
+    # resource error on one attempt, never a truncated success.
+    payload, _ = _doc_of_exact_size(CAP + 1)
+    transport = ChunkCountingTransport(payload)
+    with pytest.raises(UpstreamResponseTooLarge) as exc_info:
+        await plat.call_platform_chat_completions(
+            model_id=MOCK_ID,
+            upstream_model=MOCK_UPSTREAM,
+            provider="Synthetic test-only gateway",
+            platform_provider_id=MOCK_PROVIDER,
+            messages=[{"role": "user", "content": "hi"}],
+            max_tokens=32,
+            transport=transport,
+        )
+    assert exc_info.value.max_bytes == CAP
+    assert exc_info.value.code == "upstream_response_too_large"
+    assert transport.calls == 1  # no retry, no fallback
+
+
+@pytest.mark.asyncio
+async def test_generic_sse_complete_frame_over_cap_fails_on_the_frame_guard(
+    live_keyless_route,
+):
+    # platform.py pops finished frames first, so the leftover-buffer guard
+    # cannot see one oversized complete event. This pins the per-frame guard.
+    oversized_frame = b"data: " + b"y" * CAP
+    transport = _chunked_stream([oversized_frame + b"\n\n"])
+    with pytest.raises(UpstreamResponseTooLarge) as exc_info:
+        await _collect_stream(
+            plat.stream_platform_chat_completions(
+                model_id=MOCK_ID,
+                upstream_model=MOCK_UPSTREAM,
+                provider="Synthetic test-only gateway",
+                platform_provider_id=MOCK_PROVIDER,
+                messages=[{"role": "user", "content": "hi"}],
+                transport=transport,
+            )
+        )
+    assert exc_info.value.max_bytes == CAP
+
+
+@pytest.mark.asyncio
+async def test_generic_sse_many_small_frames_are_not_denied_by_their_total(
+    live_keyless_route,
+):
+    # Byte guard bounds one unfinished event, not a provider's total output:
+    # >1MiB of individually healthy frames must stream through unharmed.
+    frame = _sse_delta("k", 900)
+    n = (CAP // len(frame)) + 3
+    transport = _chunked_stream([frame] * n + [b"data: [DONE]\n\n"])
+    events = await _collect_stream(
+        plat.stream_platform_chat_completions(
+            model_id=MOCK_ID,
+            upstream_model=MOCK_UPSTREAM,
+            provider="Synthetic test-only gateway",
+            platform_provider_id=MOCK_PROVIDER,
+            messages=[{"role": "user", "content": "hi"}],
+            transport=transport,
+        )
+    )
+    total_bytes = len(frame) * n + len(b"data: [DONE]\n\n")
+    assert total_bytes > CAP
+    assert len([e for e in events if e.delta_content]) == n
+    assert events[-1].done is True
+
+
+@pytest.mark.asyncio
+async def test_go_sse_many_small_frames_are_not_denied_by_their_total(go_auth_stub):
+    frame = _sse_delta("m", 900)
+    n = (CAP // len(frame)) + 3
+    transport = _chunked_stream([frame] * n + [b"data: [DONE]\n\n"])
+    events = await _collect_stream(
+        go.stream_go_model(
+            model_id=GO_MODEL,
+            upstream_model=GO_UPSTREAM,
+            messages=GO_TURNS,
+            session_id=GO_SESSION,
+            max_tokens=32,
+            transport=transport,
+        )
+    )
+    assert len(frame) * n + len(b"data: [DONE]\n\n") > CAP
+    assert len([e for e in events if e.delta_content]) == n
+    assert events[-1].done is True
+
+
+@pytest.mark.asyncio
+async def test_go_sse_denies_a_coalesced_block_the_generic_adapter_accepts(
+    go_auth_stub, live_keyless_route
+):
+    # Characterization pin, not an approved policy: the Go guard checks the
+    # pre-pop buffer, so the identical small frames packed into one >1MiB read
+    # block are denied there while the generic adapter accepts them. Changing
+    # either guard needs CENTRAL approval (#4552 bounded-cap proposal).
+    frame = _sse_delta("s", 900)
+    n = (CAP // len(frame)) + 3
+    packed = [frame * n + b"data: [DONE]\n\n"]
+    assert len(packed[0]) > CAP
+
+    with pytest.raises(UpstreamResponseTooLarge) as exc_info:
+        await _collect_stream(
+            go.stream_go_model(
+                model_id=GO_MODEL,
+                upstream_model=GO_UPSTREAM,
+                messages=GO_TURNS,
+                session_id=GO_SESSION,
+                max_tokens=32,
+                transport=_chunked_stream(packed),
+            )
+        )
+    assert exc_info.value.max_bytes == CAP
+
+    generic_events = await _collect_stream(
+        plat.stream_platform_chat_completions(
+            model_id=MOCK_ID,
+            upstream_model=MOCK_UPSTREAM,
+            provider="Synthetic test-only gateway",
+            platform_provider_id=MOCK_PROVIDER,
+            messages=[{"role": "user", "content": "hi"}],
+            transport=_chunked_stream(packed),
+        )
+    )
+    assert len([e for e in generic_events if e.delta_content]) == n
+
+
+@pytest.mark.asyncio
+async def test_runtime_config_widening_leaves_completed_and_stream_caps_at_1mib(
+    monkeypatch, live_keyless_route, go_auth_stub
+):
+    # All three live axes must keep the same unaltered 1MiB cap while the
+    # config field claims 64MiB: the field is not an effective knob anywhere.
+    # The completed leg goes through the adapter, so a future call-site wiring
+    # of this field would fail here rather than pass unnoticed.
+    monkeypatch.setattr(rcfg, "max_response_bytes", 64 * 1024 * 1024)
+    assert plat.MAX_RESPONSE_BYTES == CAP == 1024 * 1024
+
+    payload, _ = _doc_of_exact_size(CAP + 1)
+    transport = ChunkCountingTransport(payload)
+    with pytest.raises(UpstreamResponseTooLarge) as completed:
+        await plat.call_platform_chat_completions(
+            model_id=MOCK_ID,
+            upstream_model=MOCK_UPSTREAM,
+            provider="Synthetic test-only gateway",
+            platform_provider_id=MOCK_PROVIDER,
+            messages=[{"role": "user", "content": "hi"}],
+            max_tokens=32,
+            transport=transport,
+        )
+    assert completed.value.max_bytes == CAP
+
+    junk = b"z" * (CAP + 1)  # never terminated, so it stays in the tail buffer
+    with pytest.raises(UpstreamResponseTooLarge) as generic_sse:
+        await _collect_stream(
+            plat.stream_platform_chat_completions(
+                model_id=MOCK_ID,
+                upstream_model=MOCK_UPSTREAM,
+                provider="Synthetic test-only gateway",
+                platform_provider_id=MOCK_PROVIDER,
+                messages=[{"role": "user", "content": "hi"}],
+                transport=_chunked_stream([junk]),
+            )
+        )
+    assert generic_sse.value.max_bytes == CAP
+
+    with pytest.raises(UpstreamResponseTooLarge) as go_sse:
+        await _collect_stream(
+            go.stream_go_model(
+                model_id=GO_MODEL,
+                upstream_model=GO_UPSTREAM,
+                messages=GO_TURNS,
+                session_id=GO_SESSION,
+                max_tokens=32,
+                transport=_chunked_stream([junk]),
+            )
+        )
+    assert go_sse.value.max_bytes == CAP
+
+
+@pytest.mark.asyncio
+async def test_completed_cap_does_not_follow_runtime_mutation_of_the_constant(
+    monkeypatch, live_keyless_route
+):
+    # Why a wired knob is not a one-line change: ``cap`` binds at import time,
+    # so runtime edits move the streamed guard but NOT the completed guard.
+    body = b"Q" * 4096
+    monkeypatch.setattr(plat, "MAX_RESPONSE_BYTES", 48)
+    assert await plat._read_bounded_body(_StubResponse([body])) == body
+
+    with pytest.raises(UpstreamResponseTooLarge) as streamed:
+        await _collect_stream(
+            plat.stream_platform_chat_completions(
+                model_id=MOCK_ID,
+                upstream_model=MOCK_UPSTREAM,
+                provider="Synthetic test-only gateway",
+                platform_provider_id=MOCK_PROVIDER,
+                messages=[{"role": "user", "content": "hi"}],
+                transport=_chunked_stream([b"z" * 96]),
+            )
+        )
+    assert streamed.value.max_bytes == 48
+
+
+
+def test_redacted_summary_marks_the_field_as_declared_only():
+    # The operator-facing line must keep showing the value AND deny that it is
+    # an effective limit, so a log reader cannot conclude model output is
+    # adjustable from b14_runtime_config (#4552).
+    summary = rcfg.redacted_summary()
+    assert f"max_response_bytes={rcfg.max_response_bytes}" in summary
+    assert "max_response_bytes_effect=no" in summary
