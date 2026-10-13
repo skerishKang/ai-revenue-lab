@@ -12,9 +12,9 @@ This repository contains **public development and engineering policy**, not the 
 - **Decision order:** latest explicit Owner instruction → local non-public business policy for business/product decisions → GitHub development/technical operating policies → dated issue history. Do not publish the business documents or reproduce their substantive contents in GitHub Issues, PRs or code.
 - If this folder cannot be accessed, or the Owner's decision conflicts with an existing technical gate and the resolution is not specified, explain the exact uncertainty and **ask the Owner**. Do not independently create new business exclusions, customer-facing required approval steps, or permissions grants. Actual runtime/code/OS behavior must still be reported truthfully.
 
-## Current owner operating mode: solo developer / internal test (2026-10-13)
+## Public engineering context (business stage: local governance source)
 
-**Owner-declared present reality:** this is an actively developing portfolio run by **one owner/developer**, with **no external production customers at present**. Existing live domains, owner accounts, secrets and D1 records still require real protection; do not assume Production is a disposable test database. This stage remains in force until the Owner explicitly changes it.
+**Public engineering reality:** this repository is maintained with limited development capacity. The business/customer deployment stage is decided in the **local private Governance source linked above**, not inferred from this public paragraph. Existing live domains, owner accounts, secrets, D1 records, configured approvals and technical boundaries still require truthful handling.
 
 **CTO default is finish working features, not accumulate validation gates.** For a normal bounded task: implement or reuse the smallest working change -> run the focused regression and already required relevant CI -> perform **one** representative actual B14/Worker/browser integration check when the claimed behavior needs a live check -> fix a reproduced failure -> decide merge/close. Do not transform an ordinary one-model test, one-field fix or internal demo into a multi-phase certification project.
 
