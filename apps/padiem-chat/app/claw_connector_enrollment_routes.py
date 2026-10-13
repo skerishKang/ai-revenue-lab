@@ -104,13 +104,18 @@ _PUBLIC_REDEEM_FIELDS = frozenset({
 })
 
 
-def _redeem_success(receipt: dict[str, Any]) -> JSONResponse:
+def _redeem_success(receipt: dict[str, Any], *, expected_device_id: str) -> JSONResponse:
     """One strict, secret-free HTTP envelope for BOTH canonical host paths."""
-    if not isinstance(receipt, dict) or set(receipt) - _PUBLIC_REDEEM_FIELDS:
+    if type(receipt) is not dict or set(receipt) != _PUBLIC_REDEEM_FIELDS:
         return _redeem_error(503, "enrollment_server_dependency_unavailable")
     for field in ("binding_ref", "device_id", "account_ref", "workspace_ref", "consent_id"):
         if not isinstance(receipt.get(field), str) or _SAFE_VALUE.fullmatch(receipt[field]) is None:
             return _redeem_error(503, "enrollment_server_dependency_unavailable")
+    # Correlate the response to the exact authenticated request at this
+    # server-owned HTTP boundary; never delegate a device-swap check solely
+    # to a downstream client.
+    if receipt["device_id"] != expected_device_id:
+        return _redeem_error(503, "enrollment_server_dependency_unavailable")
     generation = receipt.get("credential_generation")
     if type(generation) is not int or generation < 1:
         return _redeem_error(503, "enrollment_server_dependency_unavailable")
@@ -129,8 +134,8 @@ def _redeem_success(receipt: dict[str, Any]) -> JSONResponse:
         or receipt.get("raw_device_credential") is not False
         or receipt.get("lifecycle") != "paired_offline"
         or receipt.get("dispatch_authorized") is not False
-        or receipt.get("grants_read", False) is not False
-        or receipt.get("grants_write", False) is not False
+        or receipt.get("grants_read") is not False
+        or receipt.get("grants_write") is not False
     ):
         return _redeem_error(503, "enrollment_server_dependency_unavailable")
     public = {field: receipt[field] for field in (
@@ -406,7 +411,7 @@ async def connector_enrollment_redeem(request: Request) -> JSONResponse:
                 challenge_id=fields["challenge_id"], device_id=fields["device_id"],
                 proof_ref=fields["proof_ref"],
             )
-            return _redeem_success(result)
+            return _redeem_success(result, expected_device_id=fields["device_id"])
         result = service.redeem(
             challenge_id=fields["challenge_id"], device_id=fields["device_id"],
             proof_ref=fields["proof_ref"], now=datetime.now(timezone.utc),
@@ -414,7 +419,10 @@ async def connector_enrollment_redeem(request: Request) -> JSONResponse:
         safe = result.safe_dict()
         if not isinstance(safe, dict) or safe.get("ok") is not True:
             return _redeem_error(503, "enrollment_server_dependency_unavailable")
-        return _redeem_success({key: value for key, value in safe.items() if key != "ok"})
+        return _redeem_success(
+            {key: value for key, value in safe.items() if key != "ok"},
+            expected_device_id=fields["device_id"],
+        )
     except ControlPlaneContractError as exc:
         status = 503 if exc.code in {
             "enrollment_server_dependency_unavailable", "enrollment_credential_handoff_failed"
