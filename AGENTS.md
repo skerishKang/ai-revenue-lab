@@ -2,6 +2,21 @@
 
 This file is the repository-wide entry point for AI-assisted work. A more specific `AGENTS.md` may add constraints for a subtree but may not weaken these repository-wide safety and evidence rules.
 
+## Current owner operating mode: solo developer / internal test (2026-10-13)
+
+**Owner-declared present reality:** this is an actively developing portfolio run by **one owner/developer**, with **no external production customers at present**. Existing live domains, owner accounts, secrets and D1 records still require real protection; do not assume Production is a disposable test database. This stage remains in force until the Owner explicitly changes it.
+
+**CTO default is finish working features, not accumulate validation gates.** For a normal bounded task: implement or reuse the smallest working change -> run the focused regression and already required relevant CI -> perform **one** representative actual B14/Worker/browser integration check when the claimed behavior needs a live check -> fix a reproduced failure -> decide merge/close. Do not transform an ordinary one-model test, one-field fix or internal demo into a multi-phase certification project.
+
+- **Batch small commits before pushing.** A single PR push can fan out into many Actions workflows; prefer one coherent push after local focused checks instead of pushing every tiny edit and cancelling the same 10+ checks repeatedly. For urgent fixes, push when ready; never postpone a safety repair solely to save CI minutes.
+- **No test-on-test spiral.** Before adding a test or making it a blocker, state the new failure it can detect, why current evidence cannot detect it, and whether that failure prevents today's functional goal. If no concrete new risk exists, reuse existing passing evidence and move forward. More green tests, repeated unchanged CI, extra validators, new policy files and extra open issues are not progress by themselves.
+- **Right-size a model experiment.** For an owner-authorized, already registered B14 candidate, prefer one small synthetic request through the existing approved route, one HTTP/provider/model/error verdict, no auto-retry or fallback. A real 429/504 is a useful test outcome; don't require proving future provider availability before trying once. If a real platform/tool authorization denial occurs, stop there and report that exact restriction; never bypass it with another credential, client or path.
+- **Solo-owner governance.** The CTO executes delegated ordinary review/merge/deployment decisions using the configured protection and release workflow. Do not invent a second independent human reviewer, a second owner login or repeated ceremonial approvals. Real access restrictions, branch protection, security, auth/tenant isolation, destructive writes, secret leakage, billing and release-specific manual gates remain binding.
+- **Close completed work.** Distinguish implementation acceptance from consolidated end-to-end acceptance: close a bounded implementation/evaluation issue when its approved deliverable is satisfied (including a documented no-go). Keep genuinely unproven runtime acceptance in the existing product integration issue; do not open a fresh verification issue for each source PR.
+- **Priority when instructions seem to conflict:** apply the current Owner's explicit project stage and the canonical operating policy below to choose **the minimum sufficient evidence**, while retaining actual platform protections and the non-negotiable safety boundaries. An older checklist does not silently raise the required validation level.
+- **Every fresh repository-aware CTO/agent session:** read this section and the current main + canonical stage policy before planning work; treat older issue text as dated evidence, not a fresh order. An unrelated ChatGPT thread does **not** automatically ingest this repository file; mirror these principles in the ChatGPT Project Instructions for cross-thread continuity.
+
+Details and stage-transition rules: `docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md` §0 and `docs/operations/TEST_SCOPE_AND_DELIVERY_POLICY.md`.
 Canonical operating documents:
 
 - `docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md`
