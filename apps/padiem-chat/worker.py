@@ -61,6 +61,7 @@ from app.b66_b14_free_first_resolver import B66ExplicitQuoteModelResolver
 from app.b66_kira_direct_pilot import B66KiraPilotExecutor
 from app.b66_experiential_direct_pilot import B66ExperientialPilotExecutor
 from app.config import ConfigError
+from app.connector_gateway_runtime_mount import maybe_dispatch_connector_gateway
 from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from app.calendar_read_activation_engine import CloudflareCalendarReadActivationEngineClient
 from app.calendar_read_state_engine import CloudflareCalendarReadStateEngineClient
@@ -736,6 +737,16 @@ class Default(WorkerEntrypoint):
 
         global _worker_app
         path = urlparse(request.url).path
+
+        # #4139: connect the real Worker fetch entrypoint to the canonical WSS
+        # device session ONLY under server-owned opt-in and private bindings.
+        # The production Wrangler manifest declares neither the release flag
+        # nor the Broker Service Binding, so deployed behavior stays OFF.
+        connector_wss_response = await maybe_dispatch_connector_gateway(
+            request=request, worker_env=self.env, response_factory=Response,
+        )
+        if connector_wss_response is not None:
+            return connector_wss_response
 
         if _worker_app is None:
             try:
