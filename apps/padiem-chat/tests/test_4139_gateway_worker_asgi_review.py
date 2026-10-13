@@ -286,3 +286,23 @@ def test_first_pairing_worker_denies_non_get_upgrade_before_sdk(method):
         asyncio.run(dispatch_review_only_worker_first_pairing_upgrade(
             request=req, worker_env=env(), source_test_authorized=True,
         ))
+
+
+def test_real_ubuntu_workerd_fixture_uses_official_two_argument_websocket_sdk():
+    """Keep the actual Workerd probe equivalent to CENTRAL's ASGI bridge."""
+    import ast
+    from pathlib import Path
+
+    fixture = Path(__file__).resolve().parents[1] / "worker_runtime_combined_probe.py"
+    module = ast.parse(fixture.read_text(encoding="utf-8"))
+    calls = [
+        node for node in ast.walk(module)
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Attribute)
+        and isinstance(node.func.value, ast.Name)
+        and node.func.value.id == "asgi"
+        and node.func.attr == "websocket"
+    ]
+    assert len(calls) == 1
+    assert len(calls[0].args) == 2
+    assert calls[0].keywords == []
