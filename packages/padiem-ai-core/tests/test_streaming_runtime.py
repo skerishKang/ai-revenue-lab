@@ -10,6 +10,7 @@ import padiem_ai_core
 from padiem_ai_core.b14_execution import B14ExecutionError, B14RouteMetadata
 from padiem_ai_core.b14_streaming import B14StreamEvent
 from padiem_ai_core.contracts import AgentProfile, ErrorClass, RunStatus, UsageMetadata
+from padiem_ai_core.dispatch_preinstruction import PREINSTRUCTION_VERSION
 from padiem_ai_core.execution_runtime import ExecutionRequest, ExecutionRuntimeError
 from padiem_ai_core.streaming_runtime import (
     StreamingExecutionEvent,
@@ -159,13 +160,17 @@ def test_manual_stream_uses_explicit_model_and_reuses_completed_request_policy()
     assert payload["model"] == "openrouter/free"
     assert payload["temperature"] == 0.4
     assert payload["max_tokens"] == 700
-    assert payload["messages"] == [
-        {
-            "role": "system",
-            "content": "Answer carefully.\n\nTrusted product context.",
-        },
-        {"role": "user", "content": "안녕하세요"},
-    ]
+    # #4465/#4468: the streaming path shares the Core composition point, so the
+    # mandatory per-dispatch context leads the product's own text.
+    assert payload["messages"][0]["role"] == "system"
+    assert payload["messages"][0]["content"].startswith(
+        f"[PADIEM 공통 사전지침 {PREINSTRUCTION_VERSION}]"
+    )
+    assert payload["messages"][0]["content"].endswith(
+        "Answer carefully.\n\nTrusted product context."
+    )
+    assert payload["messages"][1] == {"role": "user", "content": "안녕하세요"}
+    assert sum(item["role"] == "system" for item in payload["messages"]) == 1
     assert payload["business14"] == {
         "task_type": "general",
         "required_capabilities": ["free"],
