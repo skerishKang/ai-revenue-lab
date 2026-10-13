@@ -280,3 +280,24 @@ Portfolio Console operation must:
 UI, UX, and backend gates define what work is authorized. This policy defines how an authorized merge reaches Production through the existing Git integration and how failures are recovered.
 
 A phase document must not imply that Preview, staging, or manual deployment is available unless it links to a new explicit owner decision or an already approved Business-specific exception.
+
+## 15. PADIEM B62 Worker — single-owner protected manual release (owner decision 2026-10-13)
+
+**Scope:** `skerishKang/ai-revenue-lab` / B62 `padiem-chat` production **Worker code deployment**, tracked in [#4522](https://github.com/skerishKang/ai-revenue-lab/issues/4522) and [#4549](https://github.com/skerishKang/ai-revenue-lab/issues/4549). This is a **product-specific, existing GitHub Actions manual deployment contract**, not a change to §1–14's Git-connected **Pages** automatic deployment policy, nor authorization to deploy B14, B54, Engine or any other Worker.
+
+The owner has confirmed that this repository is operated predominantly by one person. **A second account owned and controlled by that same person is not an independent human reviewer.** An unconfigured GitHub `production` Required Reviewer rule (`required_reviewers=0`) is **not, by itself, a release blocker** and the owner must not be asked to invent a second GitHub identity. Older #4522 commentary stating independent required reviewers are mandatory for this specific rollout is superseded by this dated owner decision. **Do not delete the `production` environment, disable or bypass an actual existing protection, add collaborators, change repo settings, or claim a review gate was satisfied.** If GitHub enforces a protection at execution, satisfy it legitimately or stop; this policy is not a technical bypass.
+
+### Mandatory substitute controls — fail closed
+
+1. **Authority and scope:** Record named owner permission, scope and release window; CENTRAL owns exact-head review and execution; local agents do not deploy, and source PR merge alone is not production approval. Preserve all existing authentication, model, D1 and customer-entitlement feature holds.
+2. **Revision and checks:** Require reviewed source merged to current `main`, relevant required exact-HEAD CI and GitGuardian success, plus no conflicting deployment; re-check exact `main` SHA before any write. Do not infer readiness from historical CI or source green alone.
+3. **Nonmutating preflight first:** Use existing `.github/workflows/b62-production-code-deploy-gate.yml` `repository_preflight` and `cloudflare_readonly` modes on exact current `main`, with the existing canonical Worker, hostname, binding and secret authority checks. Require D1 migration **008 and 040 both EXACT**, same Worker-bound `PADIEM_CHAT_DB`, recovery capability, current served/version topology, valid scoped credentials, and no unverified identity/config drift. **Migration 040 was already applied/read back EXACT; do not apply it again.**
+4. **Rollback and configuration:** Record the latest verified 100%-served old Worker version and available rollback path; preserve actual D1, R2, service, environment-variable and secret bindings. Do not log token/secret values or create a replacement credentials workflow. Unknown/ambiguous responses block mutation.
+5. **Single controlled deployment:** Only if all checks pass, use the existing explicit, bounded `workflow_dispatch` `deploy_production_code` path with exact `target_sha` and its established confirmation string. Keep the existing GitHub `production` environment reference; do not weaken its technical safeguards. No implicit deploy on arbitrary merge, parallel deployment, fallback upload, or ad-hoc `wrangler` command.
+6. **Independent evidence from the running service:** Require exact newly served version readback, health and previous-binding parity, and authenticated owner P01 status/approval/SSE journey with bounded Chat/Claw/Calendar acceptance where relevant. A successful workflow/merge is not equal to a verified live customer session; on failure use the existing bounded rollback/recovery contract, no blind retries.
+
+`RELEASE_AUTHORITY=SINGLE_OWNER` · `SECOND_PERSONAL_ACCOUNT_REQUIRED=NO` · `EXISTING_GITHUB_PROTECTIONS_BYPASSED=NO` · `D1_040_REAPPLY=NO` · `PRODUCTION_MUTATION_BEFORE_PREFLIGHT=NO`.
+
+**Technical exception:** The file `b62-current-main-production-deploy-trigger.yml` has a separate path-scoped `push` trigger when **that workflow file itself** is changed. Do not edit/merge it as a casual documentation change; review its deployment-dispatch effect separately. This policy amendment does not modify either deployment workflow.
+
+**Evidence state at adoption:** D1 040 exact was independently proven via #4522's prior runs; **new B62 Worker serving status and authenticated owner P01 E2E remain unverified**. This governance decision changes who approves, not what has been deployed.
