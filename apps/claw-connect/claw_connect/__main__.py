@@ -1,16 +1,16 @@
-"""``python -m claw_connect`` / ``claw-connect`` command line (#4139 S1, S2).
+"""``python -m padiem_connector`` / ``claw-connect`` command line (#4139 S1, S2).
 
-    claw-connect                start the tray (single instance)
-    claw-connect status         machine-readable state, no tray
-    claw-connect stop           ask a running tray to quit
-    claw-connect login          open the reviewed PADIEM login / consent page
-    claw-connect enroll <challenge_id> <pairing_code>
+    padiem-connector                start the tray (single instance)
+    padiem-connector status         machine-readable state, no tray
+    padiem-connector stop           ask a running tray to quit
+    padiem-connector login          open the reviewed PADIEM login / consent page
+    padiem-connector enroll <challenge_id> <pairing_code>
                                 redeem a reviewed pairing code into a device binding
-    claw-connect logout         forget this device binding (keeps the device id)
-    claw-connect autostart on   register only with a durable valid credential
-    claw-connect autostart off  remove it
-    claw-connect autostart show whether it is registered
-    claw-connect --version      product and version
+    padiem-connector logout         forget this device binding (keeps the device id)
+    padiem-connector autostart on   register only with a durable valid credential
+    padiem-connector autostart off  remove it
+    padiem-connector autostart show whether it is registered
+    padiem-connector --version      product and version
 
 No subcommand needs administrator rights. ``autostart`` writes only to the
 current user's ``Run`` key. ``login``/``enroll`` never accept a password or a
@@ -48,7 +48,7 @@ def _committed_enrollment():
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="claw-connect",
+        prog="padiem-connector",
         description=f"{CONNECT_PRODUCT} — the lightweight Windows tray connector.",
         usage=USAGE,
     )

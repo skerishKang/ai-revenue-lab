@@ -67,7 +67,7 @@ def build_menu(state: ConnectionState) -> tuple[MenuItem, ...]:
         MenuItem(ITEM_STATUS, f"{CONNECT_PRODUCT} v{CONNECT_VERSION}", enabled=False),
         MenuItem(ITEM_STATUS, STATE_LABELS[state], enabled=False),
         MenuItem("sep1", "", separator=True),
-        MenuItem(ACTION_OPEN_WEB, "Claw Web 열기"),
+        MenuItem(ACTION_OPEN_WEB, "PADIEM Chat 열기"),
         MenuItem("sep2", "", separator=True),
         # The reviewed login is only offered when it is actually required.
         MenuItem(
