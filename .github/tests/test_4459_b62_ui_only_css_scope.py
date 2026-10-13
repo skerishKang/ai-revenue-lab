@@ -120,6 +120,20 @@ class UiOnlyCssScopeContract(unittest.TestCase):
         )
         self.assertEqual(len(lanes(mixed)), 16)
 
+    def test_exact_claw_automation_css_and_source_assertions_reuse_ui_smoke(self):
+        css = "apps/padiem-chat/static/claw-focus-layout.css"
+        assertions = "apps/padiem-chat/tests/test_4488_claw_automation_touch_accessibility.py"
+        pair = {css, assertions}
+        self.assertEqual(lanes(pair, {p: "modified" for p in pair}, 2), SMOKE)
+        self.assertEqual(lanes(pair, {css: "modified", assertions: "added"}, 2), SMOKE)
+        full = set(planner.load_paths())
+        self.assertEqual(lanes(pair, {p: "modified" for p in pair}, 3), full)
+        self.assertEqual(lanes(pair, {css: "modified", assertions: "removed"}, 2), full)
+        self.assertEqual(lanes(pair, {css: "modified"}, 2), full)
+        self.assertEqual(lanes({CSS_A, assertions}, {CSS_A: "modified", assertions: "modified"}, 2), full)
+        self.assertEqual(lanes(pair | {"apps/padiem-chat/worker.py"},
+                               {p: "modified" for p in pair | {"apps/padiem-chat/worker.py"}}, 3), full)
+
     def test_html_js_python_and_mixed_changes_keep_every_lane(self):
         hazards = (
             "apps/padiem-chat/static/index.html",
