@@ -207,6 +207,10 @@ def test_rollback_restores_or_removes_only_the_authorized_flag():
     assert not plan["no_op"]
     assert f"CONFIG_REMOVE_{gate.FLAG}" in plan["changes"]
     assert gate.FLAG not in [q["name"] for q in plan["payload"]["bindings"]]
+    assert plan["payload"]["annotations"] == {
+        "workers/message": f"B62 Claw config rollback from pre-activation snapshot {SHA}"
+    }
+    assert "workers/triggered_by" not in json.dumps(plan["payload"])
     assert all(q["type"] == "inherit" for q in plan["payload"]["bindings"])
     before_false = fixtures("false")[0]
     plan_false = rollback.build_rollback_plan(
