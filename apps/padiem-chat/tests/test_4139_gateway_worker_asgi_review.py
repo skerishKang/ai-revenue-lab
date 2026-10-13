@@ -53,8 +53,8 @@ def env():
     }
 
 
-def request(url=REVIEW_WORKER_WSS_URL, headers=None):
-    return SimpleNamespace(url=url, headers={"upgrade": "websocket"} if headers is None else headers)
+def request(url=REVIEW_WORKER_WSS_URL, headers=None, method="GET"):
+    return SimpleNamespace(url=url, method=method, headers={"upgrade": "websocket"} if headers is None else headers)
 
 
 def run(*, req=None, worker_env=None, trusted=None, allowed=True):
