@@ -88,7 +88,9 @@ permissions:
   contents: read
 
 concurrency:
-  group: b62-production-code-deploy-gate
+  # PR source-contract checks must not evict a queued protected Production
+  # workflow_dispatch. Production runs retain one shared serial group.
+  group: b62-production-code-deploy-gate-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'production' }}
   cancel-in-progress: false
 
 env:
