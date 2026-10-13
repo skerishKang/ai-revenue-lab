@@ -66,7 +66,12 @@ def agent_preflight(*, state_dir: str | os.PathLike[str] | None = None) -> dict[
             try:
                 spec = importlib.util.find_spec("kagent")
                 if spec is not None and spec.submodule_search_locations:
-                    ready = any(_canonical_source(root) for root in spec.submodule_search_locations)
+                    # Python's module search locations point at /src/kagent,
+                    # whereas canonical source validation expects /src.
+                    ready = any(
+                        _canonical_source(Path(package_dir).parent)
+                        for package_dir in spec.submodule_search_locations
+                    )
             except (ImportError, ValueError, OSError, AttributeError):
                 ready = False
             reason = "ok" if ready else "agent_source_not_configured"

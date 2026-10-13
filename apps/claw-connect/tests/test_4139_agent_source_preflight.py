@@ -187,3 +187,20 @@ def test_installer_writes_agent_pin_without_powershell_utf8_bom():
     script = (ROOT / "install.ps1").read_text(encoding="utf-8")
     assert "New-Object System.Text.UTF8Encoding($false)" in script
     assert "WriteAllText(" in script
+
+
+def test_unpinned_installed_kagent_uses_package_parent_as_source_root(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    import claw_connect.agent_preflight as preflight_module
+    source = tmp_path / "source"
+    _fake_agent_source(source)
+    monkeypatch.delenv("PADIEM_AGENT_SRC", raising=False)
+    monkeypatch.delenv("CLAW_RESIDENT_SRC", raising=False)
+    monkeypatch.setattr(
+        preflight_module.importlib.util, "find_spec",
+        lambda module: SimpleNamespace(submodule_search_locations=[str(source / "kagent")]),
+    )
+    answer = agent_preflight(state_dir=tmp_path / "missing_state")
+    assert answer["agent_ready"] is True
+    assert answer["source_kind"] == "interpreter"
+    assert not (tmp_path / "missing_state").exists()
