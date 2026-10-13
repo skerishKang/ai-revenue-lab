@@ -47,7 +47,13 @@ class CloudflareFirstPairingTlsTransportReview:
             raise RuntimeError("Connector first-pairing TLS review not activated")
         self._request = incoming_worker_request
 
-    async def verify(self, websocket: Any) -> bool:
+    def permits_worker_upgrade(self) -> bool:
+        """Preflight before Cloudflare creates or returns a WebSocketPair.
+
+        This proves only eligible incoming edge *transport* metadata, not a
+        physical device. All existing Broker/Identity/ACK checks are required
+        after WebSocket acceptance. Never authorize a pairing from TLS alone.
+        """
         try:
             request = self._request
             if (
@@ -56,11 +62,18 @@ class CloudflareFirstPairingTlsTransportReview:
                 or not _headers_clean(request.headers)
             ):
                 return False
-            # Only the actual runtime-injected Cloudflare request.cf supplies
-            # edge TLS metadata; header/query/browser assertions are ignored.
             cf = _property(request, "cf")
-            if _property(cf, "tlsVersion") not in _ALLOWED_TLS:
-                return False
+            # Cloudflare runtime metadata, NOT a caller-provided header.
+            return type(_property(cf, "tlsVersion")) is str and (
+                _property(cf, "tlsVersion") in _ALLOWED_TLS
+            )
+        except Exception:
+            return False
+
+    async def verify(self, websocket: Any) -> bool:
+        if not self.permits_worker_upgrade():
+            return False
+        try:
             scope = websocket.scope
             if (
                 type(scope) is not dict
