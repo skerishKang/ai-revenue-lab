@@ -45,13 +45,15 @@ jobs:
         run: python -m pip install -r apps/b66-sol61-multipage/requirements-test.txt
       - name: Guard absence of legacy public CGI artifacts (#4117)
         run: python -B -m pytest -q -p no:cacheprovider apps/b66-sol61-multipage/tests/test_native_server_adapter_4117.py::test_4117_public_manifest_cannot_inherit_historical_private_certificate
-      - name: Verify native frame ownership and rendered boundaries without host fonts
+      # The former raster/oracle suite needs the customer-owned CGI PDF and
+      # compiled slots. It cannot run on public GitHub checkout after withdrawal.
+      # This does NOT mark those private-fidelity cases PASS; run them in an
+      # authorized private fixture environment before a new renderer release.
+      - name: Verify public checkout cannot load private fixture but renderer code parses
         env:
           PYTHONDONTWRITEBYTECODE: '1'
-          B66_SOL61_FRAME_RASTER: '1'
-        run: >-
-          python -B -m pytest -q -p no:cacheprovider
-          apps/b66-sol61-multipage/tests/test_multipage_frame_regression.py
-          apps/b66-sol61-multipage/tests/test_multipage_composition_polish.py
-          apps/b66-sol61-multipage/tests/test_multipage_image_regression.py::test_t1_operands_precede_their_operator
-          -k 'not windows_real_pdf_smoke and not frozen_pre_fix_pdf and not top_occlusion_is_identical_to_the_certified_source'
+        run: |
+          python -B -m py_compile apps/b66-sol61-multipage/sol61_multipage.py
+          python -B -m py_compile apps/b66-sol61-multipage/native_server_adapter.py
+          python -B -m pytest -q -p no:cacheprovider apps/b66-sol61-multipage/tests/test_native_server_adapter_4117.py::test_4117_public_manifest_cannot_inherit_historical_private_certificate
+          python3 reference/b66-public-standard-templates/cgi/v1/tests/test_public_bundle_contract.py
