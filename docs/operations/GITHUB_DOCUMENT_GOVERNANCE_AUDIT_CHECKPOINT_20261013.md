@@ -290,6 +290,18 @@ Immutable **835-source** cursor: **816 text originals seen at least partly** (12
 
 **Next:** 100 original `TEXT_SAMPLED` require full-source re-review (four further 25-file batches). The B66 already-public reference quotation identified in Batch30 needs separate Owner/security/privacy evaluation; audit status does not itself authorize redistribution or removal.
 
+## 1AF. Batch 32 — 25 further complete re-reviews of early text samples (2026-10-13)
+
+**Immutable 835-original current cursor:** 691 fully fetched B02–B29 + 25 full early-text re-reviews B31 + **25 B32 full early-text re-reviews** + **75** remaining `TEXT_SAMPLED` + 19 B30 binary bodies inspected = **835/835 viewed at least in part**. **0 INDEXED_ONLY / 0 BINARY_PENDING.** Current deep/whole-body completion bookkeeping is **741 text + 19 binary**; 75 first-pass samples await full-source re-review. Review status is not customer-data publication approval.
+
+- [Batch32 exact original path/blob-SHA 25-file complete text review and public-safe provisional classifications](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH32_20261013.md).
+- Provisional classes: `MIXED_REVIEW=9`, `BUSINESS_REVIEW=1`, `TECH_PUBLIC=8`, `TECH_OWNER_RECORD=7`.
+- September search-provider W3/W4 vendor-terms assessment and prewritten outreach are **historical contractual evaluation**, not sent correspondence, current privacy agreement, paid offer, model/provider choice or Production activation. B35 internal commercial closeout artifacts and externally submitted customer-specific agreements require separate Owner/legal clearance.
+- Repository agent/AI workflow, document authority, source/portal isolation, model technical approval and deployment policies remain **public technical/CTO records**; off-Git company Governance content was not read or copied. Dated provider/catalog, B62 rollout, B66 inquiry/notification and issue snapshots cannot establish a current active customer flow by themselves.
+- Fixed original paths/hashes/byte sizes, customer data, real provider credentials, original source/binary files, local company Governance, code, Cloudflare Production and Git history left unchanged.
+
+**Next:** complete 75 remaining `TEXT_SAMPLED` in three 25-file rounds (B33–B35); then draft Owner-private candidate decisions, keeping B66 public reference PDF disclosure assessment separately prioritized.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
