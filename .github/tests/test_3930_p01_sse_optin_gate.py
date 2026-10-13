@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import importlib.util
 import json
+import subprocess
 from contextlib import redirect_stdout
 from io import StringIO
 from tempfile import TemporaryDirectory
@@ -401,6 +402,55 @@ def test_postpatch_workflow_prints_only_bounded_reason_after_failed_verification
     assert verifier.index("grep -E '^P01_SSE_OPTIN_GATE_REASON=") < verifier.index(
         "P01_SSE_POST_SERVED_INTEGRITY=BLOCKED"
     )
+
+
+def test_rollback_http_500_10013_is_bounded_and_stays_fail_closed():
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    rollback = workflow.split("\n  rollback-config:\n", 1)[1].split(
+        "\n  # #3930 SSE-only opt-in.", 1)[0]
+    apply = rollback.split(
+        "- name: Apply the snapshot-bounded config restore through the settings API", 1
+    )[1].split("\n      - name: Read back the restored config", 1)[0]
+    assert apply.count("-X PATCH") == 1
+    assert "--connect-timeout 8 --max-time 40 -X PATCH" in apply
+    assert "-D \"${headers}\" -o \"${response}\"" in apply
+    assert "CONFIG_ROLLBACK_PATCH_CLOUDFLARE_ERROR_CODES=" in apply
+    assert "CONFIG_ROLLBACK_PATCH_CF_RAY=" in apply
+    assert "CONFIG_ROLLBACK_PATCH_AUTOMATIC_RETRY=NO" in apply
+    assert "CONFIG_ROLLBACK_POSTERROR_SINGLE_READ=SNAPSHOT_EXACT" in apply
+    assert "CONFIG_ROLLBACK_POSTERROR_SINGLE_READ=NOT_EXACT_OR_UNAVAILABLE" in apply
+    assert "--connect-timeout 8 --max-time 20" in apply
+    assert "b62_binding_state_guard.py" in apply
+    assert "CONFIG_ROLLBACK_POSTERROR_ACCEPTANCE=NO" in apply
+    assert "FULL_CONFIG_ROLLBACK_CLAIM=NO" in apply
+    assert "CONFIG_ROLLBACK=FAIL" in apply
+    assert "exit 1" in apply
+    assert "| {code, message}" not in apply
+    # The follow-up GET is observation only; never jump to code rollback
+    # after a rejected PATCH or claim full configuration restoration.
+    assert apply.index("CONFIG_ROLLBACK_POSTERROR_ACCEPTANCE=NO") < apply.index("exit 1")
+    assert rollback.index("Apply the snapshot-bounded config restore") < rollback.index(
+        "Restore the recorded pre-activation code version")
+
+
+def test_cloudflare_error_code_filter_ignores_secret_bearing_error_messages():
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    apply = workflow.split(
+        "- name: Apply the snapshot-bounded config restore through the settings API", 1
+    )[1].split("\n      - name: Read back the restored config", 1)[0]
+    expression = '[.errors[]? | objects | .code | select(type=="number") | tostring] | unique | join(",")'
+    assert expression in apply
+    payload = {"success": False, "errors": [
+        {"code": 10013, "message": PRIVATE},
+        {"code": 10013, "message": "unknown error"},
+        {"code": "10057", "message": "must not print"},
+    ]}
+    result = subprocess.run(["jq", "-r", expression],
+                            input=json.dumps(payload), text=True, capture_output=True,
+                            check=True)
+    assert result.stdout.strip() == "10013"
+    assert PRIVATE not in result.stdout
+
 
 if __name__ == "__main__":
     for name, func in sorted(globals().copy().items()):
