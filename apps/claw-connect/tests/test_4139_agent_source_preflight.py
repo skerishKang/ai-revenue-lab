@@ -204,3 +204,24 @@ def test_unpinned_installed_kagent_uses_package_parent_as_source_root(tmp_path, 
     assert answer["agent_ready"] is True
     assert answer["source_kind"] == "interpreter"
     assert not (tmp_path / "missing_state").exists()
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="Windows PowerShell 5.1 only")
+def test_windows_powershell_encoding_constructor_writes_bomless_json(tmp_path):
+    # Execute the SAME encoding expression as install.ps1 but only in a unique
+    # pytest scratch file. Do not run the installer or touch the user profile.
+    target = tmp_path / "resident.json"
+    env = dict(os.environ, PADIEM_AGENT_TEST_JSON=str(target))
+    expression = (
+        '$encoding=(New-Object System.Text.UTF8Encoding($false)); '
+        '[System.IO.File]::WriteAllText('
+        '$env:PADIEM_AGENT_TEST_JSON, \'{"src_root":"C:/safe"}\', $encoding)'
+    )
+    out = subprocess.run(
+        ["powershell", "-NoProfile", "-NonInteractive", "-Command", expression],
+        env=env, capture_output=True, text=True, check=False, timeout=20,
+    )
+    assert out.returncode == 0, out.stdout + out.stderr
+    raw = target.read_bytes()
+    assert not raw.startswith(bytes((0xEF, 0xBB, 0xBF)))
+    assert json.loads(raw.decode("utf-8"))["src_root"] == "C:/safe"
