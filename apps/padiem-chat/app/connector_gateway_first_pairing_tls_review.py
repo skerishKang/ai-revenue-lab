@@ -22,7 +22,27 @@ from __future__ import annotations
 from typing import Any
 
 from .canonical_connector_gateway_source_composition import CONNECTOR_GATEWAY_WSS_PATH
-from .connector_gateway_tls_ingress_source_review import _headers_clean, _property
+from .connector_gateway_tls_ingress_source_review import _property
+
+# Cloudflare may add CF-Visitor and X-Forwarded-Proto to incoming requests.
+# Neither header supplies trusted TLS evidence and neither is consulted.
+# Do not reject legitimate edge traffic solely because they are present.
+# Refuse credential-bearing/browser-asserted metadata instead.
+_FORBIDDEN_FIRST_PAIR_HEADERS = (
+    "origin", "cookie", "authorization", "sec-websocket-protocol",
+    "client-cert", "client-cert-chain", "cf-client-cert-sha256",
+    "cf-tls-client-auth",
+)
+
+
+def _first_pair_headers_clean(headers: Any) -> bool:
+    if not callable(getattr(headers, "get", None)):
+        return False
+    try:
+        return all(headers.get(name) is None for name in _FORBIDDEN_FIRST_PAIR_HEADERS)
+    except Exception:
+        return False
+
 
 FIRST_PAIRING_TLS_ONLY_PRODUCTION_WIRED = False
 FIRST_PAIRING_WSS_PUBLIC_MOUNTED = False
@@ -59,7 +79,7 @@ class CloudflareFirstPairingTlsTransportReview:
             if (
                 type(getattr(request, "url", None)) is not str
                 or request.url != _CANONICAL_URL
-                or not _headers_clean(request.headers)
+                or not _first_pair_headers_clean(request.headers)
             ):
                 return False
             cf = _property(request, "cf")
@@ -82,7 +102,7 @@ class CloudflareFirstPairingTlsTransportReview:
                 or scope.get("path") != CONNECTOR_GATEWAY_WSS_PATH
                 or scope.get("raw_path") != _CANONICAL_PATH
                 or scope.get("query_string") != b""
-                or not _headers_clean(websocket.headers)
+                or not _first_pair_headers_clean(websocket.headers)
             ):
                 return False
             return True
