@@ -361,6 +361,10 @@
         openClawWorkspace(); // refresh is handled by existing owner-scoped history UI
         const history = document.getElementById("clawRunHistory");
         if (!history || history.hidden) return;
+        // #4488 Phase A: the panel is progressive disclosure; open it so the
+        // navigation target is actually visible and focusable.
+        const historyDisclosure = document.getElementById("clawRunHistoryDisclosure");
+        if (historyDisclosure) historyDisclosure.open = true;
         history.scrollIntoView?.({ block: "start", behavior: "smooth" });
         history.querySelector?.("#clawRunHistoryRefresh")?.focus?.();
       });
@@ -984,6 +988,26 @@
       if (automation) automation.hidden = true;
       if (automationList) automationList.replaceChildren();
       if (runHistory) runHistory.hidden = true;
+      // #4488 Phase A follow-up: the approved-memory disclosure wrapper must
+      // not outlive the session either (run-history parity).
+      const approvedMemory = document.getElementById("clawApprovedMemory");
+      const approvedDisclosure = document.getElementById("clawApprovedDisclosure");
+      const approvedList = document.getElementById("clawApprovedList");
+      const approvedError = document.getElementById("clawApprovedError");
+      if (approvedMemory) approvedMemory.hidden = true;
+      if (approvedDisclosure) {
+        approvedDisclosure.hidden = true;
+        approvedDisclosure.open = false;
+      }
+      if (approvedList) approvedList.replaceChildren();
+      if (approvedError) {
+        approvedError.hidden = true;
+        approvedError.textContent = "";
+        approvedError.removeAttribute("data-state");
+      }
+      // #4488 Phase A: the disclosure wrapper must not outlive the session.
+      const runHistoryDisclosure = document.getElementById("clawRunHistoryDisclosure");
+      if (runHistoryDisclosure) runHistoryDisclosure.hidden = true;
       if (runHistoryList) runHistoryList.replaceChildren();
       if (runHistoryError) {
         runHistoryError.hidden = true;
@@ -4180,6 +4204,9 @@
   });
   // Approved-memory review UI (#2340)
   const clawApprovedMemory = document.getElementById("clawApprovedMemory");
+  // #4488 Phase A: the approved-memory panel is progressive disclosure on the
+  // Claw entry; its <details> wrapper is hidden whenever the panel is.
+  const clawApprovedDisclosure = document.getElementById("clawApprovedDisclosure");
   const clawApprovedRefresh = document.getElementById("clawApprovedRefresh");
   const clawApprovedLoading = document.getElementById("clawApprovedLoading");
   const clawApprovedError = document.getElementById("clawApprovedError");
@@ -4449,6 +4476,9 @@
       if (clawApprovedLoading) clawApprovedLoading.hidden = true;
       if (clawApprovedList) clawApprovedList.hidden = false;
       renderApprovedMemoryDetail(data.memory);
+      // #4488 Phase A follow-up: a detail opened from inside the panel must be
+      // visible (run-history focus parity — open the disclosure first).
+      if (clawApprovedDisclosure) clawApprovedDisclosure.open = true;
     } catch (error) {
       if (clawApprovedLoading) clawApprovedLoading.hidden = true;
       setApprovedMemoryStatus(error instanceof Error ? error.message : clawT("claw-memory-error-generic"), "error");
@@ -4464,6 +4494,7 @@
       && shell.dataset.state === "claw"
       && clawWorkspace?.dataset.view !== "inbox";
     clawApprovedMemory.hidden = !show;
+    if (clawApprovedDisclosure) clawApprovedDisclosure.hidden = !show;
     if (show) loadApprovedMemoryList();
   }
 
@@ -4475,6 +4506,8 @@
   // Presentation only: the browser renders what GET /api/claw/runs already
   // exposes to the signed-in owner and never mints its own run/history truth.
   const clawRunHistory = document.getElementById("clawRunHistory");
+  // #4488 Phase A: recent runs are progressive disclosure on the Claw entry.
+  const clawRunHistoryDisclosure = document.getElementById("clawRunHistoryDisclosure");
   const clawRunHistoryRefresh = document.getElementById("clawRunHistoryRefresh");
   const clawRunHistoryExpand = document.getElementById("clawRunHistoryExpand");
   const clawRunHistoryLoading = document.getElementById("clawRunHistoryLoading");
@@ -4750,6 +4783,8 @@
       if (focusRunId && clawRunHistoryList) {
         const target = Array.from(clawRunHistoryList.children).find((card) => card.dataset && card.dataset.runId === focusRunId);
         if (target) {
+          // #4488 Phase A: open the disclosure before focusing a specific run.
+          if (clawRunHistoryDisclosure) clawRunHistoryDisclosure.open = true;
           target.setAttribute("tabindex", "-1");
           target.focus?.();
           target.scrollIntoView?.();
@@ -4781,6 +4816,7 @@
       && shell.dataset.state === "claw"
       && clawWorkspace?.dataset.view !== "inbox";
     clawRunHistory.hidden = !show;
+    if (clawRunHistoryDisclosure) clawRunHistoryDisclosure.hidden = !show;
     if (show) loadClawRunHistory();
     else {
       clawRunHistoryVisibilityEpoch += 1;

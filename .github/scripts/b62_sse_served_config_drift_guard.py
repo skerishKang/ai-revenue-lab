@@ -42,7 +42,7 @@ def main() -> int:
     parser.add_argument("--served-version", type=Path, required=True)
     args = parser.parse_args()
     try:
-        verify(
+        flag_state = verify(
             json.loads(args.settings.read_text(encoding="utf-8")),
             json.loads(args.served_version.read_text(encoding="utf-8")),
         )
@@ -50,7 +50,10 @@ def main() -> int:
         print("B62_SSE_SERVED_CONFIG_PARITY=BLOCKED")
         print("B62_DEPLOY_MUTATION=0")
         return 2
+    # A parity PASS says both layers agree, *not* that SSE is OFF.
+    # Expose only the finite flag state; never log settings or Secret values.
     print("B62_SSE_SERVED_CONFIG_PARITY=PASS")
+    print("B62_SSE_SERVED_FLAG_STATE=" + flag_state.upper())
     print("B62_DEPLOY_MUTATION=0")
     return 0
 
