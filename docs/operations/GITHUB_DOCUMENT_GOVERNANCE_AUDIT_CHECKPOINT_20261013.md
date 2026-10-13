@@ -344,6 +344,20 @@ Immutable **835-source** cursor: **816 text originals seen at least partly** (12
 
 **Next governance phase (separate):** reconcile the full 835-original cross-batch provisional classes into a single source-anchored classification register, distinguish business policy vs public technical work, and prepare a separate **private Owner-only** disclosure/migration decision shortlist. No unapproved publication, original rewriting, file deletions or local Governance copying. Audit coverage is pinned historical tree only; current/future `main` changes require an independent delta audit.
 
+## 1AJ. Batch 36 — 835-original cross-batch classification register and Owner-disposition queues (2026-10-14 KST)
+
+**The original whole-body reading was completed in B35.** B36 has now reconciled **all 835 original file paths 1:1** from B02–B35 per-source batch tables, with **no original path/blob SHA/byte count/read-state drift, duplicate, missing or unmatched row**. B06's 5 extra reinspection notes were already part of the early sampled inventory; these do not inflate the original count.
+
+- [**Complete 835-source per-path/source-SHA/class/follow-up register**](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_CLASSIFICATION_REGISTER_20261014.tsv)
+- [**Batch36 consolidated governance findings, exact totals and sanitized Owner decision index**](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_CONSOLIDATED_20261014.md)
+- Provisional class totals: `TECH_PUBLIC=376`, `PRODUCT_PUBLIC=166`, `TECH_OWNER_RECORD=137`, `MIXED_REVIEW=126`, `BUSINESS_REVIEW=30`. Total 835.
+- Follow-up queues (single assignment per original): `PRIVACY_CRITICAL_OWNER=2`, `IDENTITY_CONSENT_OWNER=6`, `CUSTOMER_COMMERCIAL_OWNER=20`, `PROVIDER_OFFER_OWNER=4`, `COPYRIGHT_CHECK=3`, `BUSINESS_OWNER=17`, `MIXED_OWNER_REVIEW=111`, `TECH_PRODUCT_CONTRACT_ONLY=672`. Total 835.
+- **Owner/security/legal priority:** B66 original CGI PDFs in a publicly distributed reference tree have potentially real-looking individual/contact/financial details; public values are not copied, and disclosure/remediation or history rewrite was **not** undertaken. Real-person/community reference consent and B35 customer-commercial proposal rights also remain Owner decisions.
+- Business/mixed baseline 156 is a classification population; specialized follow-up 163 is a separately prioritized queue, **not an additive count**.
+- No private local Governance policy was read/moved/reproduced. No original source, company policy, user/private/customer data, code, provider/model rights, secrets, deployment or original Git history changed. The frozen-original register covers only `5476d1038993d647bf8ba241ce6a4307cccf291f`; changed/new `main` sources need later delta audit.
+
+**Next:** Owner-only business/identifiable-content disposition and *separately scoped* post-freeze GitHub document delta review, without assuming publishing rights or moving entire files wholesale.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
