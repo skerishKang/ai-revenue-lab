@@ -56,7 +56,22 @@ def plan(provider):
 
 
 def outcome(provider, text):
-    return asyncio.run(plan_b66_search(plan(provider), text))
+    return asyncio.run(plan_b66_search(plan(provider), text, allow_provider=True))
+
+
+def test_unapproved_live_fact_search_stays_off_even_with_a_configured_provider():
+    # #4465 approval is a separate trusted server-side release gate. A provider
+    # being configured, even with credentials, is not permission to call it.
+    provider = StubProvider([evidence()])
+    result = asyncio.run(plan_b66_search(plan(provider), "최신 철근 시세 알려줘"))
+    assert result.status == "unavailable"
+    assert result.reason == "fact_search_authorization_required"
+    assert result.sources == ()
+    assert provider.queries == []
+    # Non-search turns remain natural and cost no calls without authorization.
+    greeting = asyncio.run(plan_b66_search(plan(provider), "안녕"))
+    assert greeting.status == "not_needed"
+    assert provider.queries == []
 
 
 def test_a_greeting_and_quote_intent_cost_no_provider_call():
@@ -102,7 +117,7 @@ def test_an_unexpected_transport_fault_still_becomes_a_disclosed_failure():
         async def prepare(self, *a, **k):
             raise RuntimeError("PRIVATE PROVIDER TRACE")
 
-    result = asyncio.run(plan_b66_search(Exploding(), "최신 철근 시세 알려줘"))
+    result = asyncio.run(plan_b66_search(Exploding(), "최신 철근 시세 알려줘", allow_provider=True))
     assert result.status == "failed" and result.reason == "web_transport_error"
 
 
