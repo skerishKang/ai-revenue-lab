@@ -16,7 +16,7 @@ from urllib.parse import urlparse
 # Service-Binding transport must use that same httpx Request/Response/stream
 # type family; app.httpx_compat is only for app-owned JS-fetch clients.
 import httpx
-from padiem_ai_core.b14_execution import MAX_B14_RESPONSE_BYTES
+from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
 from app.padiem_super_admin_bootstrap import resolve_super_admin_bootstrap
 from app.service_binding_response import (
     ServiceBindingResponseError,
@@ -271,14 +271,18 @@ class CloudflareB14ServiceTransport:
         try:
             body = await read_bounded_service_binding_body(
                 response,
-                max_bytes=MAX_B14_RESPONSE_BYTES,
+                # Use the same existing finite completed-JSON Worker safety
+                # budget as B14/Core; the obsolete 1MiB Service Binding read
+                # ceiling used to reject healthy answers before Core saw them.
+                # This is NOT a model token/output limit. Streaming remains
+                # incremental and is not affected.
+                max_bytes=MAX_CONFIGURED_B14_RESPONSE_BYTES,
             )
         except ServiceBindingResponseTooLarge:
-            # Core owns the public "response too large" classification. Return
-            # one bounded sentinel byte beyond its configured ceiling so that
-            # classification remains unchanged without consuming the rest of
-            # the Service Binding stream.
-            return status, bytes(MAX_B14_RESPONSE_BYTES + 1)
+            # Core owns the public resource-error classification. Return one
+            # bounded sentinel byte beyond its configured maximum; the reader
+            # has cancelled upstream without buffering an unbounded response.
+            return status, bytes(MAX_CONFIGURED_B14_RESPONSE_BYTES + 1)
         except ServiceBindingResponseError as exc:
             raise RuntimeError(
                 "Business 14 Service Binding response could not be read."
