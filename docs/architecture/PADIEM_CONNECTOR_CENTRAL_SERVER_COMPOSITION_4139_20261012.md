@@ -297,3 +297,31 @@ approves the actual *same-origin browser grant*, *original canonical session
 continuity*, *trusted outbound Windows gateway*, *post-DPAPI authenticated
 install ACK*, *canonical Broker revoke compensation*, and *one physical Windows
 E2E* gates. #4139 remains OPEN; #3099 owns the one real acceptance journey.
+
+
+## 2026-10-13 CENTRAL redeemer HTTP success-correlation hardening
+
+Both server-side redemption compositions (the async canonical Identity/Broker host
+and the older bounded canonical S1 service) must pass an **exactly thirteen-field**
+receipt through the same product HTTP gate. Presence of
+`grants_read=false` and `grants_write=false` is mandatory; an omitted
+negative claim must **never** be silently filled in by a fallback default.
+The returned `device_id` must exactly equal the device ID from the bounded
+request already accepted by the trusted device gateway, even when an injected
+host incorrectly supplies a valid-looking success for another device.
+
+`_redeem_success(..., expected_device_id=...)` now enforces strict receipt
+key equality, correlated device identity, false execution flags, a signed
+future credential-expiry timestamp, and a normalized secret-free public
+projection. The same guard applies to async and sync routes; regressions
+inject missing consent/installation/permission proofs, unexpected raw
+credential material and wrong-device receipts through **both host paths**.
+A failed projection returns only the closed 503 dependency refusal; it never
+echoes the returned owner/workspace/device secret or a partial success.
+
+This guards the HTTP response **only**, not the irreversible Broker redemption
+that a downstream fake/incorrect service may have already performed. Any
+unexpected post-redemption response mismatch still requires canonical Broker
+reconciliation/revocation before claiming complete security recovery. It
+does not mean the TLS-attested device gateway or protected Windows DPAPI
+credential delivery/ACK is wired. All production flags remain OFF.
