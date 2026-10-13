@@ -7,6 +7,7 @@ if (process.argv.length !== 2 || typeof WebSocket !== "function") {
 }
 const result = await new Promise((resolve) => {
   let stage = 0;
+  let scheme = null;
   let complete = false;
   const socket = new WebSocket(target);
   const timeout = setTimeout(() => done(false, "timeout"), 9000);
@@ -15,17 +16,21 @@ const result = await new Promise((resolve) => {
     complete = true;
     clearTimeout(timeout);
     try { socket.close(); } catch {}
-    resolve({ok, reason});
+    resolve({ok, reason, scheme});
   }
   socket.addEventListener("error", () => done(false, "transport_error"));
   socket.addEventListener("close", () => {
     if (!complete) done(false, "early_close");
   });
   socket.addEventListener("message", ({data}) => {
-    if (stage === 0 && data === "PADIEM_CANARY_OPEN") {
+    if (stage === 0 && typeof data === "string"
+        && data.startsWith("PADIEM_CANARY_SCHEME_")) {
+      scheme = data.slice("PADIEM_CANARY_SCHEME_".length);
       stage = 1;
+    } else if (stage === 1 && data === "PADIEM_CANARY_OPEN") {
+      stage = 2;
       socket.send("PADIEM_CANARY_NO_SECRET_PING");
-    } else if (stage === 1 && data === "PADIEM_CANARY_PONG") {
+    } else if (stage === 2 && data === "PADIEM_CANARY_PONG") {
       done(true, "asgi_101_text_roundtrip");
     } else {
       done(false, "unexpected_frame");
@@ -36,6 +41,7 @@ console.log(JSON.stringify({
   contract:"padiem.canary.local-python-sdk-wss.v1",
   real_workerd_asgi_roundtrip:result.ok,
   scope:"local_only_no_edge_tls_no_device_auth",
-  reason:result.reason
+  reason:result.reason,
+  asgi_scope_scheme:result.scheme
 }));
 if (!result.ok) process.exitCode = 1;
