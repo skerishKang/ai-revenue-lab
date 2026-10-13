@@ -69,6 +69,9 @@ jobs:
           test -f python_modules/workers/__init__.py
           echo "CONNECTOR_CANARY_EXTERNAL_SDK_VENDOR=PASS"
 
+      - name: Boot actual Ubuntu Workerd with the external Python SDK
+        run: bash ci_local_workerd_probe.sh
+
       - name: Bundle Python Worker with official SDK without a deployment
         run: |
           uv run pywrangler deploy --dry-run --outdir "$RUNNER_TEMP/connector-python-canary"
