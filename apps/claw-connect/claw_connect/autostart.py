@@ -115,7 +115,7 @@ def start_command() -> str:
 
 # The value name alone does not establish ownership of a Windows Run command.
 _LEGACY_MODULE_START = re.compile(
-    r'^"[^"]*[\\/](?:python(?:[0-9]+(?:\\.[0-9]+)?)?|py)(?:\\.exe)?"'
+    r'^"[^"]*[\\/](?:python(?:[0-9]+(?:\.[0-9]+)?)?|py)(?:\.exe)?"'
     r' -m claw_connect start$', re.IGNORECASE,
 )
 
