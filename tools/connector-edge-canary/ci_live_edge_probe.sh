@@ -7,8 +7,8 @@ cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
 
 if [[ "${GITHUB_ACTIONS:-}" != "true"
    || "${GITHUB_REPOSITORY:-}" != "skerishKang/ai-revenue-lab"
-   || "${GITHUB_EVENT_NAME:-}" != "pull_request"
-   || "${GITHUB_HEAD_REF:-}" != "central/4139-claw-connect-integration-261013"
+   || "${GITHUB_EVENT_NAME:-}" != "workflow_dispatch"
+   || "${GITHUB_REF:-}" != "refs/heads/central/4139-claw-connect-integration-261013"
    || "${PADIEM_CONNECTOR_TEMP_CANARY_ENABLED:-}" != "explicitly-scoped" ]]; then
   echo 'CONNECTOR_CANARY_CI_SCOPE=REFUSED' >&2
   exit 2
