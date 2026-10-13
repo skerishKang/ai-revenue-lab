@@ -72,6 +72,9 @@ jobs:
       - name: Boot actual Ubuntu Workerd with the external Python SDK
         run: bash ci_local_workerd_probe.sh
 
+      - name: Prove real local Workerd Python ASGI 101 and bidirectional frames
+        run: bash ci_local_wss_probe.sh
+
       - name: Bundle Python Worker with official SDK without a deployment
         run: |
           uv run pywrangler deploy --dry-run --outdir "$RUNNER_TEMP/connector-python-canary"
