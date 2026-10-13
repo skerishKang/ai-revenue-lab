@@ -810,6 +810,64 @@ class InMemoryBrokerPairingAuthority:
             )
         return pending.enrollment_binding
 
+    def verify_enrollment_bootstrap(
+        self, *, challenge_id: str, device_id: str, proof_ref: str,
+        consent_ref: str, owner_ref: str, account_ref: str,
+        workspace_ref: str, now: datetime,
+    ) -> dict[str, Any]:
+        """Nonconsuming Broker preflight for an already OWNER-bound challenge.
+
+        This verifies pairing-code possession, NOT physical PC authentication.
+        A trusted outbound gateway must authenticate the device session
+        separately and the eventual atomic redeem rechecks the same proof.
+        """
+        challenge_id = _ref(challenge_id, "challenge_id")
+        device_id = _ref(device_id, "device_id")
+        proof_ref = _proof_ref(proof_ref)
+        consent_ref = _ref(consent_ref, "consent_ref")
+        owner_ref = _opaque_ref(owner_ref, "owner_ref")
+        account_ref = _ref(account_ref, "account_ref")
+        workspace_ref = _ref(workspace_ref, "workspace_ref")
+        now = _aware(now, "now")
+        pending = self._pending_challenge(challenge_id)
+        binding = pending.enrollment_binding
+        if binding is None:
+            raise ControlPlaneContractError(
+                "enrollment_binding_absent", "challenge lacks canonical consent"
+            )
+        if pending.redeemed_at is not None:
+            raise ControlPlaneContractError(
+                "pairing_challenge_already_redeemed", "challenge already consumed"
+            )
+        if now >= pending.challenge.expires_at:
+            raise ControlPlaneContractError(
+                "pairing_challenge_expired", "challenge expired"
+            )
+        if (
+            binding.device_id != device_id
+            or binding.consent_ref != consent_ref
+            or binding.owner_ref != owner_ref
+            or binding.account_ref != account_ref
+            or binding.workspace_ref != workspace_ref
+        ):
+            raise ControlPlaneContractError(
+                "enrollment_bootstrap_scope_mismatch", "bound owner/device/scope mismatch"
+            )
+        expected = pairing_proof_ref(
+            challenge_id=challenge_id, device_id=device_id,
+            pairing_code=self._pairing_code(
+                challenge_id=challenge_id, code_nonce=pending.code_nonce,
+            ),
+        )
+        if not hmac.compare_digest(expected, proof_ref):
+            raise ControlPlaneContractError(
+                "invalid_pairing_proof", "canonical pairing proof does not match"
+            )
+        return {
+            "challenge_id": challenge_id, "device_id": device_id,
+            "proof_valid": True, "challenge_consumed": False,
+        }
+
     def redeem_enrollment(
         self,
         *,
