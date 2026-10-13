@@ -83,7 +83,22 @@ if ! uv run pywrangler deploy --config "$CONFIG" >"$LOG" 2>&1; then
 fi
 echo 'CONNECTOR_CANARY_EDGE_DEPLOY=EPHEMERAL_PASS'
 
-BASE="https://${NAME}.padiem.workers.dev"
+# GitHub's Cloudflare API token may target a different Workers subdomain
+# from the Windows Wrangler login. The ONLY approved target is the exact
+# deployment URL emitted by this Wrangler invocation, constrained to
+# https://<our-ephemeral-name>.<one-subdomain>.workers.dev.
+BASE="$(grep -oE "https://${NAME}\\.[a-z0-9][a-z0-9-]{0,62}\\.workers\\.dev" "$LOG" | head -n 1 || true)"
+if [[ -z "$BASE" ]]; then
+  echo 'CONNECTOR_CANARY_EDGE_ENDPOINT=NOT_RETURNED_BY_WRANGLER' >&2
+  exit 1
+fi
+SUBDOMAIN="${BASE#https://${NAME}.}"
+SUBDOMAIN="${SUBDOMAIN%.workers.dev}"
+if [[ ! "$SUBDOMAIN" =~ ^[a-z0-9][a-z0-9-]{0,62}$ ]]; then
+  echo 'CONNECTOR_CANARY_EDGE_ENDPOINT=INVALID' >&2
+  exit 1
+fi
+echo 'CONNECTOR_CANARY_EDGE_ENDPOINT=VERIFIED_DEPLOY_OUTPUT'
 status=""
 health=""
 for attempt in $(seq 1 12); do
@@ -122,6 +137,7 @@ if [[ "$nonupgrade" != 426 ]]; then
 fi
 echo 'CONNECTOR_CANARY_EDGE_NONUPGRADE_426=PASS'
 
-PADIEM_EDGE_CANARY_NAME="$NAME" node ci_live_edge_ws_client.mjs
+PADIEM_EDGE_CANARY_NAME="$NAME" PADIEM_EDGE_CANARY_SUBDOMAIN="$SUBDOMAIN" \
+  node ci_live_edge_ws_client.mjs
 echo 'CONNECTOR_CANARY_PYTHON_EDGE_WSS_101_AND_FRAMES=PASS'
 echo 'CONNECTOR_CANARY_REAL_DEVICE_AUTH=NOT_TESTED'
