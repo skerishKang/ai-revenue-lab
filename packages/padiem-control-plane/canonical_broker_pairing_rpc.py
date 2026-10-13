@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import base64
+import binascii
 import hashlib
 from datetime import datetime, timezone
 
@@ -10,6 +11,10 @@ from padiem_control_plane.local_agent_broker_state import StateBackedLocalAgentB
 from local_agent_broker_pairing_durable import (
     DurableBrokerPairingAuthority,
     install_canonical_broker_pairing_schema,
+)
+from canonical_broker_gateway_bootstrap import (
+    DurableBrokerGatewayBootstrap,
+    install_gateway_bootstrap_schema,
 )
 
 
@@ -124,6 +129,101 @@ class CanonicalBrokerPairingRPC:
             return {"ok": False, "error": {
                 "code": "durable_pairing_store_unavailable",
                 "message": "Canonical broker request was rejected",
+            }}
+
+    def _gateway_bootstrap(self) -> DurableBrokerGatewayBootstrap:
+        """Explicit two-gate private channel. Neither flag has a live default."""
+        if (
+            str(getattr(self.env, "LOCAL_AGENT_BROKER_GATEWAY_BOOTSTRAP_ENABLED", "")).lower() != "true"
+            or str(getattr(self.env, "LOCAL_AGENT_BROKER_GATEWAY_BOOTSTRAP_SCHEMA_INSTALLED", "")).lower() != "true"
+        ):
+            raise ControlPlaneContractError(
+                "gateway_bootstrap_disabled", "canonical Broker gateway channel disabled"
+            )
+        return DurableBrokerGatewayBootstrap(
+            storage=self._storage, pairing=self._durable_pairing(),
+        )
+
+    async def gateway_bootstrap_rpc(self, payload: dict) -> dict:
+        """One private Service Binding RPC. Never expose as public HTTP JSON."""
+        try:
+            if type(payload) is not dict or set(payload) != {"operation", "args"}:
+                raise ControlPlaneContractError(
+                    "invalid_gateway_bootstrap_rpc", "private payload shape invalid"
+                )
+            operation, args = payload["operation"], payload["args"]
+            if type(args) is not dict:
+                raise ControlPlaneContractError(
+                    "invalid_gateway_bootstrap_rpc", "private args shape invalid"
+                )
+            if operation == "install":
+                if set(args) != {"migration_id"} or str(getattr(
+                    self.env, "LOCAL_AGENT_BROKER_GATEWAY_BOOTSTRAP_SCHEMA_INSTALL_ENABLED", ""
+                )).lower() != "true":
+                    raise ControlPlaneContractError(
+                        "gateway_bootstrap_schema_disabled", "schema install gate disabled"
+                    )
+                # Pairing schema must already be separately installed. Never
+                # create Broker pairing/identity tables by this operation.
+                self._durable_pairing()
+                install_gateway_bootstrap_schema(
+                    storage=self._storage, migration_id=args["migration_id"],
+                    operator_gate=True,
+                )
+                return {"ok": True, "schema": args["migration_id"],
+                        "installed_by_default": False}
+            gateway = self._gateway_bootstrap()
+            now = datetime.now(timezone.utc)
+            if operation == "begin":
+                if set(args) != {"challenge_id", "device_id"}:
+                    raise ControlPlaneContractError(
+                        "invalid_gateway_bootstrap_rpc", "begin fields invalid"
+                    )
+                result = gateway.begin(**args, now=now)
+            elif operation == "finish":
+                if set(args) != {"challenge_id", "device_id", "lease_ref", "proof_hex"}:
+                    raise ControlPlaneContractError(
+                        "invalid_gateway_bootstrap_rpc", "finish fields invalid"
+                    )
+                result = gateway.finish(**args, now=now)
+            elif operation == "authorize":
+                if set(args) != {
+                    "challenge_id", "device_id", "lease_ref", "action",
+                    "counter", "body_b64", "proof_hex",
+                }:
+                    raise ControlPlaneContractError(
+                        "invalid_gateway_bootstrap_rpc", "action fields invalid"
+                    )
+                encoded = args["body_b64"]
+                if type(encoded) is not str or len(encoded) > 10924:
+                    raise ControlPlaneContractError(
+                        "invalid_gateway_bootstrap_rpc", "body is oversized"
+                    )
+                try:
+                    raw = base64.b64decode(encoded, validate=True)
+                    if base64.b64encode(raw).decode("ascii") != encoded:
+                        raise ValueError("noncanonical Base64")
+                except (ValueError, binascii.Error) as exc:
+                    raise ControlPlaneContractError(
+                        "invalid_gateway_bootstrap_rpc", "body encoding invalid"
+                    ) from exc
+                result = gateway.authorize_action(
+                    **{k: v for k, v in args.items() if k != "body_b64"},
+                    body=raw, now=now,
+                )
+            else:
+                raise ControlPlaneContractError(
+                    "invalid_gateway_bootstrap_rpc", "unknown private operation"
+                )
+            return {"ok": True, "gateway": result}
+        except ControlPlaneContractError as exc:
+            return {"ok": False, "error": {
+                "code": exc.code, "message": "Canonical gateway request refused",
+            }}
+        except Exception:
+            return {"ok": False, "error": {
+                "code": "gateway_bootstrap_unavailable",
+                "message": "Canonical gateway request refused",
             }}
 
     async def redeem_enrollment(self, payload: dict) -> dict:
