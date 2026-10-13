@@ -19,10 +19,23 @@ BROKER_ACCEPTANCE = (
 )
 
 
-def _version_view(bindings: list[tuple[str, str]]) -> dict:
-    return {"resources": {"bindings": [
-        {"name": name, "type": kind} for name, kind in bindings
-    ]}}
+_STAGE_SERVICE = {
+    "IDENTITY_AUTHORITY_SERVICE": "padiem-control-plane-identity-acceptance-4139",
+    "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE": "padiem-local-agent-broker-state-acceptance-4139",
+}
+
+
+def _version_view(bindings: list[tuple]) -> dict:
+    resources = []
+    for item in bindings:
+        name, kind = item[:2]
+        resource = {"name": name, "type": kind}
+        if kind == "service":
+            resource["service"] = (
+                item[2] if len(item) == 3 else _STAGE_SERVICE.get(name)
+            )
+        resources.append(resource)
+    return {"resources": {"bindings": resources}}
 
 
 def _stub_wrangler(monkeypatch, view: dict) -> None:
@@ -156,7 +169,7 @@ def test_owner_local_manifest_reports_only_bounded_booleans(monkeypatch, tmp_pat
 
     overlay.write_text(
         'name = "padiem-chat-connector-acceptance-4139"\n'
-        'workers_dev = false\n\n'
+        'workers_dev = false\npreview_urls = false\n\n'
         '[vars]\nPADIEM_CHAT_AUTH_MODE = "password"\n\n'
         '[[d1_databases]]\nbinding = "PADIEM_CHAT_DB"\n'
         'database_name = "padiem-connector-acceptance-4139"\n'
@@ -198,6 +211,39 @@ def test_source_acceptance_profiles_still_publish_no_route():
     for path in (IDENTITY_ACCEPTANCE, BROKER_ACCEPTANCE):
         stage = json.loads(path.read_text(encoding="utf-8"))
         assert "routes" not in stage
+
+def test_stage_service_binding_to_production_worker_is_never_accepted(monkeypatch):
+    report = _facts(monkeypatch, [
+        ("IDENTITY_AUTHORITY_SERVICE", "service", "padiem-control-plane-identity"),
+        ("LOCAL_AGENT_BROKER_AUTHORITY_SERVICE", "service", "padiem-local-agent-broker-state"),
+        ("PADIEM_CHAT_DB", "d1"),
+        ("PADIEM_CHAT_AUTH_MODE", "plain_text"),
+        ("PADIEM_CHAT_SESSION_SECRET", "secret_text"),
+    ])
+    assert report["workers"]["acceptance_chat"]["acceptance_private_services"] == {
+        "IDENTITY_AUTHORITY_SERVICE": False,
+        "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE": False,
+    }
+    assert report["acceptance_private_stack_ready"] is False
+
+
+def test_stage_manifest_with_production_database_is_never_accepted(monkeypatch, tmp_path):
+    overlay = tmp_path / "stage.local.toml"
+    monkeypatch.setattr(readiness, "OWNER_OVERLAY", overlay)
+    overlay.write_text(
+        'name = "padiem-chat-connector-acceptance-4139"\n'
+        'workers_dev = false\npreview_urls = false\n\n'
+        '[vars]\nPADIEM_CHAT_AUTH_MODE = "password"\n\n'
+        '[[d1_databases]]\nbinding = "PADIEM_CHAT_DB"\n'
+        'database_name = "padiem-chat-db"\n'
+        'database_id = "fedcba98-7654-3210-acde-1234567890ab"\n',
+        encoding="utf-8",
+    )
+    result = readiness._owner_local_overlay()
+    assert result["exactly_one_d1_bound"] is False
+    assert result["password_auth_selected"] is True
+    assert result["public_route_published"] is False
+
 def test_isolated_stage_ready_does_not_require_production_release(monkeypatch):
     """The stage must be assessed independently of intentionally OFF prod."""
     def fake_readonly(*, config, args, **_kwargs):
