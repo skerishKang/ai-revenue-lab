@@ -621,17 +621,17 @@ jobs:
             echo "PREVIOUS_SCRIPT_ETAG=${etag_before}"
           } >> "${GITHUB_ENV}"
 
-      - name: Download the exact 38431252763 pre-SSE immutable settings snapshot
+      - name: Download the exact 38444728738 pre-SSE immutable settings snapshot
         if: ${{ inputs.mode == 'recover_p01_sse_off' }}
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          test "$(gh run view 38431252763 --repo "${GITHUB_REPOSITORY}" --json workflowName -q .workflowName)" = "B62 Claw Live Config Activation Gate"
-          test "$(gh run view 38431252763 --repo "${GITHUB_REPOSITORY}" --json headSha -q .headSha)" = "537dde1e2c897c36ad02cc7c43c51e20e9e73cf2"
+          test "$(gh run view 38444728738 --repo "${GITHUB_REPOSITORY}" --json workflowName -q .workflowName)" = "B62 Claw Live Config Activation Gate"
+          test "$(gh run view 38444728738 --repo "${GITHUB_REPOSITORY}" --json headSha -q .headSha)" = "2b4f11d28125d861eef52859381f179ea6eb5125"
           mkdir -p "${RUNNER_TEMP}/p01-sse-recovery-snapshot"
-          gh run download 38431252763 --repo "${GITHUB_REPOSITORY}" --name b62-claw-config-premutation-settings --dir "${RUNNER_TEMP}/p01-sse-recovery-snapshot"
+          gh run download 38444728738 --repo "${GITHUB_REPOSITORY}" --name b62-claw-config-premutation-settings --dir "${RUNNER_TEMP}/p01-sse-recovery-snapshot"
           recovery_snapshot="${RUNNER_TEMP}/p01-sse-recovery-snapshot/b62-settings-premutation.json"
           test -s "${recovery_snapshot}"
           echo "RECOVERY_SNAPSHOT=${recovery_snapshot}" >> "${GITHUB_ENV}"
