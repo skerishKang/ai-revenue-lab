@@ -60,4 +60,7 @@ async def dispatch_review_only_worker_wss_upgrade(
     # Lazy official Cloudflare Workers Python ASGI adapter, NEVER loaded from
     # user CLI or a deployed Worker entrypoint by this PR.
     from workers import asgi
-    return await asgi.fetch(app, request, worker_env)
+    # The SDK's asgi.fetch() is HTTP-only. A WS upgrade must invoke
+    # asgi.websocket() to construct a real WebSocketPair and status 101.
+    # Never route the pairing channel through HTTP request processing.
+    return await asgi.websocket(app, request, worker_env)

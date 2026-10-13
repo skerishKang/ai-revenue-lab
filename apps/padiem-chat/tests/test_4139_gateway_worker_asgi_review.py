@@ -107,15 +107,17 @@ def test_worker_bridge_refuses_missing_private_broker_or_trust_port():
         run(trusted=SimpleNamespace(headers={"cf-tls-client-auth": "SUCCESS"}))
 
 
-def test_bridge_delegates_to_official_asgi_fetch_only_after_all_guards(monkeypatch):
+def test_bridge_delegates_to_real_asgi_websocket_only_after_all_guards(monkeypatch):
     captured = {}
-    async def fake_fetch(app, req, worker_env):
+    async def fake_websocket(app, req, worker_env):
         captured["app"] = app
         captured["request"] = req
         captured["env"] = worker_env
         return "source-review-asgi-receipt"
     workers = ModuleType("workers")
-    workers.asgi = SimpleNamespace(fetch=fake_fetch)
+    async def reject_http_fetch(*args):
+        raise AssertionError("WSS upgrade must NEVER be dispatched via asgi.fetch()")
+    workers.asgi = SimpleNamespace(websocket=fake_websocket, fetch=reject_http_fetch)
     monkeypatch.setitem(sys.modules, "workers", workers)
     req, bindings = request(), env()
     assert run(req=req, worker_env=bindings) == "source-review-asgi-receipt"

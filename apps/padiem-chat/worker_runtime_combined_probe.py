@@ -60,7 +60,7 @@ class Default(WorkerEntrypoint):
             if request.headers.get("upgrade") != "websocket":
                 return Response("Upgrade Required", status=426)
             from workers import asgi
-            return await asgi.fetch(connector_asgi_websocket_runtime_probe, request, self.env)
+            return await asgi.websocket(connector_asgi_websocket_runtime_probe, request, self.env)
         if url.path == "/ready" and not url.query:
             return Response("ok", status=200)
         if url.path != "/probe":
