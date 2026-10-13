@@ -40,6 +40,7 @@ def test_exact_flag_only_does_not_report_false_drift():
     assert result["new_bindings"] == 4
     assert result["other_binding_diff_count"] == 0
     assert result["nonbinding_changed_resource_keys"] == []
+    assert result["script_changed_field_names"] == []
     assert result["script_etag_same"] is True
 
 
@@ -50,6 +51,7 @@ def test_script_assets_runtime_and_binding_changes_are_not_normalized_away():
     after["result"]["resources"]["script_runtime"]["compatibility_date"] = "changed"
     after["result"]["resources"]["bindings"][2]["text"] = "unapproved-secret-token"
     result = f.compare(before, after)
+    assert result["script_changed_field_names"] == ["etag"]
     assert result["script_etag_same"] is False
     assert result["assets_same"] is False
     assert result["script_runtime_same"] is False
