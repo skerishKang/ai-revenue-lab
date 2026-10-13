@@ -12,6 +12,38 @@
 - The gateway may receive only the seven canonical install-binding fields `binding_ref`, `device_id`, `account_ref`, `workspace_ref`, `credential_ref`, `credential_generation`, `credential_expires_at` **plus a separate one-time raw credential over the trusted private channel**. No owner session, product privilege, OAuth token, email, private quote material, P01 grant or device runtime permission.
 - Synthetic fake-gateway tests exercise wrong-PC lease, expiry, untrusted bootstrap, wrong/false ACK, absence of authenticated sender, metadata swaps/invalid expiry and repeat local delivery. These tests **do not attest** to actual Windows DPAPI or trust in a real gateway.
 
+## 2026-10-13 incremental security step — nonconsuming Broker pairing HMAC preflight
+
+CENTRAL added an internal, source-only **pre-redemption proof check** spanning
+`InMemoryBrokerPairingAuthority.verify_enrollment_bootstrap` →
+`DurableBrokerPairingAuthority.verify_enrollment_bootstrap` (same existing Broker DO SQLite, read-only transaction) →
+`CanonicalBrokerPairingRPC.verify_enrollment_bootstrap` (private Service Binding only) →
+`CloudflareCanonicalBrokerPairingClient.verify_enrollment_bootstrap` →
+`CanonicalConnectorEnrollmentAsyncHost.redeem`. The Host now requires the
+exact closed `{challenge_id,device_id,proof_valid:true,challenge_consumed:false}`
+Broker response **before the Gateway lease is requested and before the final
+Broker redemption can consume the challenge**. It checks the original issued
+HMAC proof against the existing code nonce, current pending/expiry state, and
+the original canonical OWNER, consent, account/workspace and device binding.
+Final Broker redemption still atomically rechecks it.
+
+Wrong pairing proof, cross-device/scope/consent/OWNER, expired or previously
+consumed challenges must fail closed without new credential, device binding or
+Gateway delivery. New durable SQLite, private RPC, product client, and host
+negative tests pin this sequence. No new public route, pairing secret, second
+broker, store or activation flag. The existing Cloudflare Worker thin entrypoint
+limit remains in force.
+
+**Critical:** possession of the pairing-code proof is **not** physical PC
+identity, DPAPI installation attestation, or a durable Gateway session. A
+malicious party that steals a pairing code could otherwise impersonate the
+first PC. The actual outbound Gateway still must authenticate the same
+proof-presenting peer on a nonce-bound live session, atomically/durably claim
+its one-time lease, authenticate ACK sender and protect the one-use credential
+on verified TLS. This preflight only eliminates the previous gap where an
+arbitrary syntactically valid proof could reach Gateway reservation. It does
+NOT clear production or #3099 holds.
+
 ## Exact integration port (CENTRAL owns gateway implementation/review)
 
 ```python
