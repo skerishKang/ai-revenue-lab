@@ -22,10 +22,15 @@ Precedence is deliberate:
 * a successful install registers autostart **by default** — but only once the
   canonical credential is durably committed and valid, which in this codebase
   is exactly a record returned by ``ConnectorEnrollment.record()`` after its
-  stage-then-publish commit. Nothing is written before that check passes;
+  stage-then-publish commit. Nothing is written before that check passes, and
+  the owner-facing CLI presents the same evidence, so ``autostart on`` is not a
+  way around the gate;
 * an explicit ``off`` always wins over the default, so an owner who turned
   autostart off is never silently re-enabled by a later reconnect, disconnect,
-  in-process failure, restart or re-install;
+  in-process failure, restart or re-install. Because the ``off`` is recorded
+  before the value is removed, a process killed in between leaves an orphaned
+  entry that the next reconcile removes — but only if it is an entry this
+  module recognises as its own;
 * a transient offline/disconnect is a *connection* event and changes nothing
   here, so a flaky network can never erase the owner's decision;
 * a revoke/unpair *suspends* the registration (the value is removed) without
@@ -98,11 +103,17 @@ class AutostartRefused(RuntimeError):
 
 
 class AutostartOutcome(str, Enum):
-    """The closed set of results ``register_after_install`` may return."""
+    """The closed set of results a gated registration path may return."""
 
     REGISTERED = "registered"
     ALREADY_REGISTERED = "already_registered"
+    #: The owner opted out and there was nothing left to remove.
     SUPPRESSED_BY_OWNER = "suppressed_by_owner"
+    #: The owner opted out and an orphaned owned entry was removed. This is the
+    #: crash-in-the-middle recovery: ``disable()`` records ``off`` before it
+    #: removes the value, so a process killed in between leaves a registration
+    #: Windows would still execute at the next logon.
+    OPT_OUT_RECONCILED = "opt_out_reconciled"
 
 
 class DurableEnrollment(Protocol):
@@ -327,19 +338,30 @@ class Autostart:
             raise ValueError("autostart preference must be 'on', 'off' or None")
 
     # -- owner actions ------------------------------------------------------
-    def enable(self, command: str) -> None:
-        """The owner turned autostart on. Records the choice, then registers."""
-        self._validate_command(command)
+    def enable(self, command: str, enrollment: DurableEnrollment) -> AutostartOutcome:
+        """The owner explicitly turned autostart on.
+
+        Gated on a durable, valid credential exactly like the install default:
+        the owner-facing CLI is **not** a bypass around ``register_after_install``.
+        The caller must present the real committed record — this module never
+        mints one and never trusts a flag.
+
+        Records the choice, then registers. A recognised existing value is
+        replaced with the current command; a corrupt one is never silently
+        overwritten.
+        """
+        self._gate(command, enrollment)
         self.set_preference(PREFERENCE_ON)
-        self.store.write(self._name, command)
+        return self._register(command)
 
     def disable(self) -> None:
         """The owner turned autostart off. Durable across restart and logon.
 
         The choice is recorded *before* the value is removed: if the process
         dies in between, the recorded opt-out is already durable and the next
-        reconcile removes the value again. The opposite order could leave no
-        record of the opt-out and let a later install silently re-enable it.
+        reconcile removes the value again (see
+        ``AutostartOutcome.OPT_OUT_RECONCILED``). The opposite order could leave
+        no record of the opt-out and let a later install silently re-enable it.
         """
         self.set_preference(PREFERENCE_OFF)
         self.store.delete(self._name)
@@ -348,29 +370,35 @@ class Autostart:
     def register_after_install(
         self, command: str, enrollment: DurableEnrollment
     ) -> AutostartOutcome:
-        """Default-ON: register logon autostart for a durably installed PC.
+        """Default-ON: reconcile the logon registration with the contract.
 
-        Refuses unless ``enrollment`` is a committed, enrolled, live record —
-        so no ``Run`` value is ever written before the canonical credential is
+        Refuses unless ``enrollment`` is a committed, enrolled, live record — so
+        no ``Run`` value is ever written before the canonical credential is
         durable (the LOCAL2 D1 stage-then-publish invariant), and a redeem
         receipt alone can never register the PC. Idempotent: a second call for
         the same command reports ``ALREADY_REGISTERED`` and writes nothing.
+
+        It is also the recovery path for an interrupted ``disable()``. The
+        owner's ``off`` is durable, so it is honoured here without needing a
+        credential; if a recognised owned entry survived the interruption it is
+        removed (``OPT_OUT_RECONCILED``). Only an entry this module recognises
+        as its own is ever removed — a corrupt or foreign value is refused and
+        left untouched.
         """
         self._validate_command(command)
+        state = self.classify()
+        if state == REGISTRATION_CORRUPT:
+            raise AutostartRefused("existing autostart registration is corrupt")
+        if self.preference() == PREFERENCE_OFF:
+            if state == REGISTRATION_REGISTERED:
+                self.store.delete(self._name)
+                return AutostartOutcome.OPT_OUT_RECONCILED
+            return AutostartOutcome.SUPPRESSED_BY_OWNER
         if not _is_live_enrollment(enrollment):
             raise AutostartRefused(
                 "no durable, valid canonical credential for this PC"
             )
-        if self.classify() == REGISTRATION_CORRUPT:
-            # Never silently overwrite a registration we do not recognise, and
-            # never report it as enabled. The owner must repair it explicitly.
-            raise AutostartRefused("existing autostart registration is corrupt")
-        if self.preference() == PREFERENCE_OFF:
-            return AutostartOutcome.SUPPRESSED_BY_OWNER
-        if self.store.read(self._name) == command:
-            return AutostartOutcome.ALREADY_REGISTERED
-        self.store.write(self._name, command)
-        return AutostartOutcome.REGISTERED
+        return self._register(command)
 
     # -- lifecycle ----------------------------------------------------------
     def apply_lifecycle(self, event: str) -> str:
@@ -396,6 +424,26 @@ class Autostart:
         raise ValueError(f"unknown autostart lifecycle event: {event!r}")
 
     # -- internals ----------------------------------------------------------
+    def _gate(self, command: str, enrollment: object) -> None:
+        """The fail-closed precondition shared by every registration path.
+
+        Both the install default and the owner CLI come through here, so the
+        credential invariant cannot hold on one entrypoint and not the other.
+        """
+        self._validate_command(command)
+        if self.classify() == REGISTRATION_CORRUPT:
+            raise AutostartRefused("existing autostart registration is corrupt")
+        if not _is_live_enrollment(enrollment):
+            raise AutostartRefused(
+                "no durable, valid canonical credential for this PC"
+            )
+
+    def _register(self, command: str) -> AutostartOutcome:
+        if self.store.read(self._name) == command:
+            return AutostartOutcome.ALREADY_REGISTERED
+        self.store.write(self._name, command)
+        return AutostartOutcome.REGISTERED
+
     def _validate_command(self, command: str) -> None:
         if not isinstance(command, str) or not command.strip():
             raise ValueError("autostart command must not be empty")

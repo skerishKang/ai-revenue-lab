@@ -20,6 +20,7 @@ corrections=A_local_logout_is_not_transfer__B_local_refusal_is_not_server_rollba
 d1_followup=CENTRAL_2026_10_13_PARTIAL_PASS_NEEDS_ALIAS_SAFE_STAGING__CORRECTED_IN_SECTION_12
 post_redemption_hold=LOCAL2_SIDE_BOUNDED_HOLD_ONLY__SECTION_13 (remote reconciliation stays CENTRAL)
 autostart=CENTRAL_2026_10_13_09_24_ASSIGNMENT__DEFAULT_ON_WITH_DURABLE_OPT_OUT__SECTION_14
+autostart_followup=CENTRAL_2026_10_13_ACCEPTANCE__2_FOCUSED_FIXES__CLOSED_IN_SECTION_15
 status=awaiting_central_re_review
 ```
 
@@ -371,6 +372,12 @@ AUTOSTART_CORRUPT_REGISTRATION=REFUSED_AND_LEFT_UNTOUCHED
 AUTOSTART_SECRET_IN_COMMAND=REFUSED
 AUTOSTART_ELEVATION=NONE (HKCU only, never HKLM, no service, no scheduled task)
 AUTOSTART_CALL_SITES=NOT_WIRED_YET (register_after_install / apply_lifecycle are the seam)
+AUTOSTART_CLI_GATE=SHARED_WITH_THE_INSTALL_DEFAULT (Autostart._gate) — the owner CLI is not a bypass
+AUTOSTART_CLI_EVIDENCE=ConnectorEnrollment.committed_record() (read-only; never a flag, never minted)
+AUTOSTART_REFUSED_COMMAND_CREATES_NO_STATE=YES
+AUTOSTART_OPT_OUT_RECOVERY=REMOVES_ONLY_THE_RECOGNISED_OWNED_ENTRY__OPT_OUT_RECONCILED
+AUTOSTART_OPT_OUT_RECOVERY_NEEDS_NO_CREDENTIAL=YES
+INSTALL_PS1_AUTOSTART=SAME_CLASS_OF_BYPASS_AS_FIX_1__REPORTED_NOT_CHANGED (#4463 edit list)
 TEST_PROFILE_POLLUTION_FOUND_AND_FIXED=YES (wrapper test left a durable opt-out; scratch-key overrides added)
 CREDENTIAL_HANDOFF=NOT_WIRED
 WINDOWS_LIVE_E2E=NOT_PROVEN
@@ -637,6 +644,104 @@ No READY, no MERGE, no PRODUCTION enablement follows from any of this. `WINDOWS_
 Changed files for this increment: `apps/claw-connect/claw_connect/autostart.py`,
 `apps/claw-connect/claw_connect/__init__.py`, `apps/claw-connect/claw_connect/__main__.py`,
 `apps/claw-connect/tests/test_autostart_default_on_windows.py` (new),
+`apps/claw-connect/tests/test_connect_lifecycle.py`,
+`apps/claw-connect/tests/claw-connect-wrapper.test.mjs`, and this document. No CENTRAL and no LOCAL1 file
+was modified.
+
+## 15. Two follow-up fixes from the CENTRAL acceptance review (2026-10-13 KST)
+
+CENTRAL accepted §14 as a source increment (`AUTOSTART_SOURCE_INCREMENT=ACCEPTED_WITH_2_FOCUSED_FIXES`) and
+found two concrete gaps independently. Both are closed here, in the same Draft PR, with narrowly focused
+tests.
+
+### Fix 1 — the owner CLI was a credential bypass
+
+`__main__.py` called `Autostart.enable(_autostart_command())` directly, so `claw-connect autostart on`
+wrote a `Run` entry with no durable enrollment at all. The strict gate on `register_after_install` therefore
+did not cover the exposed CLI route.
+
+**Closed by making the evidence a required argument, not a flag.** `enable(command, enrollment)` and
+`register_after_install(command, enrollment)` now share one fail-closed precondition, `Autostart._gate`,
+so the invariant cannot hold on one entrypoint and not the other. The CLI presents the real committed
+record via `ConnectorEnrollment.committed_record()` — it never fabricates a `DurableEnrollment` and never
+reads an `enrolled` boolean from an argument.
+
+`committed_record()` is deliberately **read-only**: unlike `record()` it never mints a first-launch
+identity, so a command that ends in a refusal creates no state. A damaged record still raises, because the
+gate must fail closed rather than treat it as absent. A refused `on` also records no choice, so `on` is
+never written for a registration that did not happen.
+
+The wrapper test no longer expects `autostart on` to succeed with no enrollment. It now asserts the
+refusal end-to-end through the real wrapper, under a test-owned registry root and a scratch state
+directory — so the test is deterministic on a machine that happens to hold a real enrollment, and leaves
+nothing behind.
+
+### Fix 2 — a crash between recording `off` and removing the value
+
+`disable()` records the durable `off` **before** it removes the `Run` value (that order is what makes the
+opt-out survive a crash). If the process terminates in between, Windows still executes the orphaned entry
+at the next logon, and `register_after_install` previously returned `SUPPRESSED_BY_OWNER` without clearing
+it — the docstring claimed a reconciliation that was not implemented.
+
+**Closed by implementing the reconciliation.** When the owner's durable choice is `off`,
+`register_after_install` now removes a surviving registration and reports
+`AutostartOutcome.OPT_OUT_RECONCILED` (a new, distinct outcome, so "recovered" is distinguishable from
+"nothing to do"). It needs no credential to finish an opt-out, and it is idempotent: the second pass
+reports `SUPPRESSED_BY_OWNER`.
+
+**It removes only what it recognises as its own.** The corrupt check runs first, so an entry that is empty
+or carries secret material is refused and left byte-identical — never silently overwritten, never deleted,
+and never reported as enabled. A value this module recognises (non-empty, secret-free, under its own value
+name) is the only thing removed.
+
+### Behaviour additions to the §14 matrix
+
+| Situation | Registration | Owner's recorded choice | Pin |
+|---|---|---|---|
+| `autostart on` with no committed record | **never written**; CLI exits 1 with a bounded, secret-free refusal | unchanged (`None`) | `test_the_owner_cli_route_is_not_a_credential_bypass`, `test_the_cli_autostart_on_is_fail_closed_without_a_durable_credential` |
+| `autostart on` with a committed enrolled record | registered, choice recorded `on` | `on` | `test_the_cli_autostart_on_registers_once_a_durable_credential_exists` |
+| a refused CLI command | nothing written, and **no state created** (no first-launch identity minted) | unchanged | `test_a_refused_cli_autostart_on_creates_no_state` |
+| killed between recording `off` and removing the value | the orphaned owned entry is **removed** on the next reconcile | `off` | `test_a_crash_between_recording_off_and_removing_the_entry_is_reconciled` |
+| the same crash, but the surviving entry is corrupt | refused and left untouched — the recovery never adopts or deletes it | `off` | `test_the_opt_out_recovery_never_touches_a_corrupt_or_foreign_entry` |
+
+### Evidence
+
+| Check | Result |
+|---|---|
+| whole connector suite (local Windows Python 3.11) | **343 passed, 4 skipped** (was 337/4 — same 4 pre-existing skips, none new) |
+| `node --test tests/*.test.mjs` | **5 pass / 0 fail** |
+| real HKCU check, both fixes (test-owned keys, cleaned up) | `enable` with no credential refused and the registry untouched; register with a credential works; a simulated crash left the orphan in HKCU and a fresh instance reconciled it to `opt_out_reconciled`; the second pass was `suppressed_by_owner`; a corrupt value was refused and preserved verbatim |
+| registry residue after a full pytest + node run | `HKCU\Software\Padiem` and the test-owned root both **absent** |
+| mutation G (CLI bypass restored — `enable` ungated) | 3 failed, exactly the three CLI-gate tests |
+| mutation H (credential predicate always true) | 4 failed — exactly the tests that pass a non-record (`None`/`object()`) |
+| mutation I (opt-out recovery removed) | 1 failed, exactly the crash-recovery test |
+| mutation J (recovery runs before the corrupt check) | 2 failed — the corrupt-registration and corrupt-recovery tests |
+| mutation K (`committed_record` mints state) | 1 failed, exactly the no-state-on-refusal test |
+| restoration | `autostart.py` `f67366e847af96ca1c4b1b250d4f032c1a9cfab4`, `enrollment.py` `ac3e7ada65e7ca2b8a2bf028fb6a1f708712b5a1`, both byte-identical |
+
+### #4463 file-conflict coordination
+
+CENTRAL asked for coordination rather than racing edits on `__main__.py`. Measured before editing:
+`local2/claw-connect-s2-261012` (`ca8c8c23`) rewrites `__main__.py`'s **parser** (subparsers, and new
+`login` / `enroll` / `logout` subcommands) and adds a module-level `from .enrollment import ...`, but it
+does **not** touch the `autostart` block body — that block is byte-identical to `main` apart from the
+`preference` key added in §14. So the overlap is a text-level conflict in one file, not a semantic one, and
+the change to re-apply is the two lines that pass the committed record into `enable` plus the
+`AutostartRefused` handler. `autostart.py`, the core of both fixes, is **not** on #4463's list at all.
+No other LOCAL2 agent's file was edited.
+
+### Boundary, unchanged
+
+Still not wired: the tray/Resident install and revoke paths do not call `register_after_install` /
+`apply_lifecycle` yet, and `install.ps1 -Autostart` still writes the `Run` key on its own older path — which
+is the **same class of bypass as Fix 1** and is reported rather than changed, because that file is on
+#4463's edit list. CENTRAL #4476 WSS/TLS and canonical Broker compensation stay source-only; post-restart
+server recovery and real #3099 Windows E2E remain unproven. `AUTOSTART_PRODUCTION=OFF`, `READY=NO`,
+`MERGE=NO`.
+
+Changed files for this increment: `apps/claw-connect/claw_connect/autostart.py`,
+`apps/claw-connect/claw_connect/__main__.py`, `apps/claw-connect/claw_connect/enrollment.py`,
+`apps/claw-connect/tests/test_autostart_default_on_windows.py`,
 `apps/claw-connect/tests/test_connect_lifecycle.py`,
 `apps/claw-connect/tests/claw-connect-wrapper.test.mjs`, and this document. No CENTRAL and no LOCAL1 file
 was modified.

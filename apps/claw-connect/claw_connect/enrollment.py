@@ -808,6 +808,22 @@ class ConnectorEnrollment:
             self._record = self._load_or_create()
         return self._record
 
+    def committed_record(self) -> EnrollmentRecord | None:
+        """The already-committed record, or ``None`` when none was ever written.
+
+        Read-only on purpose: unlike ``record()`` it never mints a first-launch
+        identity, so a caller that is going to *refuse* cannot create state as a
+        side effect. It answers exactly the question a credential gate asks —
+        "is there a durable local record to judge?" — and a damaged record still
+        raises, because the caller must fail closed rather than treat it as
+        absent.
+        """
+        if self._record is not None:
+            return self._record
+        if not self.state_file.exists():
+            return None
+        return self._load_or_create()
+
     def _load_or_create(self) -> EnrollmentRecord:
         path = self.state_file
         if not path.exists():

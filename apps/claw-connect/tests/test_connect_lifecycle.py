@@ -29,7 +29,15 @@ from claw_connect.connection import (
     InvalidTransition,
     MAX_BACKOFF_SECONDS,
 )
+from claw_connect.enrollment import LIFECYCLE_PAIRED_OFFLINE, EnrollmentRecord
 from claw_connect.single_instance import AlreadyRunning, FileLockBackend, SingleInstance
+
+#: A committed, live record: what the stage-then-publish commit publishes.
+ENROLLED = EnrollmentRecord(
+    device_id="pc_test",
+    binding_ref="binding-1",
+    device_lifecycle=LIFECYCLE_PAIRED_OFFLINE,
+)
 
 
 # --- single instance (#4139 item 7) ---------------------------------------
@@ -81,7 +89,7 @@ def test_autostart_can_be_enabled_and_disabled_by_the_user():
     autostart, store, preferences = _autostart()
     command = r'"C:\Python311\python.exe" -m claw_connect start'
 
-    autostart.enable(command)
+    autostart.enable(command, ENROLLED)
     assert autostart.is_enabled() is True
     assert autostart.current_command() == command
     assert autostart.preference() == PREFERENCE_ON
@@ -98,7 +106,7 @@ def test_autostart_can_be_enabled_and_disabled_by_the_user():
 def test_autostart_refuses_an_empty_command():
     autostart, _, _ = _autostart()
     with pytest.raises(ValueError):
-        autostart.enable("   ")
+        autostart.enable("   ", ENROLLED)
 
 
 # --- connection state machine (#4139 item 8) ------------------------------

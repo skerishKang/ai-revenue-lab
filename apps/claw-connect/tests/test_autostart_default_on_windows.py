@@ -15,6 +15,7 @@ Nothing here claims a live gateway, a signed install or a real PC E2E.
 from __future__ import annotations
 
 import inspect
+import json
 import sys
 import tokenize
 from pathlib import Path
@@ -125,7 +126,7 @@ def test_the_owners_opt_out_survives_a_simulated_restart_and_logon():
 
     # An explicit re-enable is still allowed — the opt-out is a preference, not
     # a lock.
-    restarted.enable(COMMAND)
+    restarted.enable(COMMAND, _enrolled_record())
     assert restarted.is_enabled() is True
 
 
@@ -230,7 +231,7 @@ def test_a_registry_command_never_carries_credential_material():
         'python -m claw_connect start --api_key:zzz',
     ):
         with pytest.raises(AutostartRefused):
-            autostart.enable(command)
+            autostart.enable(command, _enrolled_record())
         with pytest.raises(AutostartRefused):
             autostart.register_after_install(command, _enrolled_record())
     assert store.values == {}
@@ -286,7 +287,7 @@ def test_pause_keeps_the_registration_while_revoke_suspends_it():
     # Revoke/unpair suspends the registration but keeps the owner's choice, so
     # a later re-enrollment falls back to the contract default.
     for event in (EVENT_UNPAIR, EVENT_REVOKE):
-        autostart.enable(COMMAND)
+        autostart.enable(COMMAND, _enrolled_record())
         assert autostart.apply_lifecycle(event) == ACTION_SUSPEND
         assert store.values == {}
         assert autostart.preference() == PREFERENCE_ON
@@ -312,6 +313,7 @@ def test_no_per_task_approval_is_invented():
         "registered",
         "already_registered",
         "suppressed_by_owner",
+        "opt_out_reconciled",
     }
 
 
@@ -333,3 +335,171 @@ def test_the_windows_stores_honour_the_scratch_key_overrides(monkeypatch):
     monkeypatch.delenv("CLAW_CONNECT_AUTOSTART_PREF_KEY")
     assert WindowsRunKeyStore()._key == RUN_KEY  # noqa: SLF001
     assert WindowsPreferenceStore()._key == PREFERENCE_KEY  # noqa: SLF001
+
+
+# -- 13. the owner CLI is not a credential bypass -------------------------
+def test_the_owner_cli_route_is_not_a_credential_bypass():
+    autostart, store, preferences = _autostart()
+
+    for evidence in (None, object()):
+        with pytest.raises(AutostartRefused):
+            autostart.enable(COMMAND, evidence)  # type: ignore[arg-type]
+
+    assert store.values == {}
+    assert store.writes == []
+    # A refused enable records no choice either: "on" is never written for a
+    # registration that did not happen.
+    assert preferences.values == {}
+    assert autostart.preference() is None
+
+
+# -- 14. crash between recording `off` and removing the value -------------
+class _CrashingRunKeyStore(MemoryRunKeyStore):
+    """Kills the process at the moment ``disable()`` removes the value."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.crash_on_delete = False
+
+    def delete(self, name: str) -> None:
+        if self.crash_on_delete:
+            raise OSError("process terminated before the value was removed")
+        super().delete(name)
+
+
+def test_a_crash_between_recording_off_and_removing_the_entry_is_reconciled():
+    store = _CrashingRunKeyStore()
+    preferences = MemoryPreferenceStore()
+    autostart = Autostart(NAME, store, preference_store=preferences)
+    autostart.register_after_install(COMMAND, _enrolled_record())
+
+    # `disable()` records the durable choice first and removes the value second.
+    # Terminate it at the removal.
+    store.crash_on_delete = True
+    with pytest.raises(OSError):
+        autostart.disable()
+    assert preferences.values == {"Autostart": PREFERENCE_OFF}
+    # The orphan: Windows would still execute this at the next logon.
+    assert store.values == {NAME: COMMAND}
+
+    # A fresh process over the same durable stores reconciles it — and needs no
+    # credential to finish an opt-out. The fault was the dying process, not the
+    # store, so it is cleared here.
+    store.crash_on_delete = False
+    restarted = Autostart(NAME, store, preference_store=preferences)
+    assert (
+        restarted.register_after_install(COMMAND, _enrolled_record())
+        is AutostartOutcome.OPT_OUT_RECONCILED
+    )
+    assert store.values == {}
+    # Idempotent: there is nothing left to reconcile.
+    assert (
+        restarted.register_after_install(COMMAND, None)  # type: ignore[arg-type]
+        is AutostartOutcome.SUPPRESSED_BY_OWNER
+    )
+    assert store.values == {}
+
+
+def test_the_opt_out_recovery_never_touches_a_corrupt_or_foreign_entry():
+    autostart, store, preferences = _autostart()
+    preferences.values["Autostart"] = PREFERENCE_OFF
+    store.values[NAME] = "   "
+
+    with pytest.raises(AutostartRefused):
+        autostart.register_after_install(COMMAND, _enrolled_record())
+
+    assert store.values == {NAME: "   "}
+    assert store.writes == []
+
+
+# -- 15. the CLI route, driven for real ------------------------------------
+def _seed_state_dir(tmp_path: Path, record: EnrollmentRecord) -> Path:
+    state = tmp_path / "state"
+    state.mkdir(parents=True, exist_ok=True)
+    (state / "enrollment.json").write_text(
+        json.dumps(record.to_dict(), ensure_ascii=False, sort_keys=True, indent=2),
+        encoding="utf-8",
+    )
+    return state
+
+
+#: A test-owned registry root, so the CLI test never creates a product key.
+SCRATCH_ROOT = r"Software\PadiemClawConnectSelftest"
+SCRATCH_RUN_KEY = rf"{SCRATCH_ROOT}\Run"
+SCRATCH_PREF_KEY = rf"{SCRATCH_ROOT}\Pref"
+
+
+def _isolate_cli(monkeypatch, state_dir: Path) -> None:
+    monkeypatch.setenv("CLAW_CONNECT_STATE_DIR", str(state_dir))
+    monkeypatch.setenv("CLAW_CONNECT_AUTOSTART_RUN_KEY", SCRATCH_RUN_KEY)
+    monkeypatch.setenv("CLAW_CONNECT_AUTOSTART_PREF_KEY", SCRATCH_PREF_KEY)
+
+
+def _drop_scratch_keys() -> None:
+    if sys.platform != "win32":
+        return
+    import winreg  # noqa: PLC0415
+
+    for key in (SCRATCH_RUN_KEY, SCRATCH_PREF_KEY, SCRATCH_ROOT):
+        try:
+            winreg.DeleteKey(winreg.HKEY_CURRENT_USER, key)
+        except FileNotFoundError:
+            pass
+
+
+def test_the_cli_autostart_on_is_fail_closed_without_a_durable_credential(
+    tmp_path, monkeypatch, capsys
+):
+    _isolate_cli(monkeypatch, tmp_path / "state")
+    try:
+        code = cli.main(["autostart", "on"])
+        payload = capsys.readouterr().out
+        assert code == 1
+        out = json.loads(payload)
+        assert out["ok"] is False
+        assert out["detail"] == "no durable, valid canonical credential for this PC"
+        # The refusal is bounded and secret-free.
+        assert "pairing" not in payload.lower()
+        if sys.platform == "win32":
+            import winreg  # noqa: PLC0415
+
+            with pytest.raises(FileNotFoundError):
+                winreg.OpenKey(winreg.HKEY_CURRENT_USER, SCRATCH_RUN_KEY)
+    finally:
+        _drop_scratch_keys()
+
+
+def test_a_refused_cli_autostart_on_creates_no_state(tmp_path, monkeypatch, capsys):
+    """The gate reads the committed record read-only: a refusal is not a mutation."""
+    state = tmp_path / "state"
+    _isolate_cli(monkeypatch, state)
+    try:
+        assert cli.main(["autostart", "on"]) == 1
+        capsys.readouterr()
+        # `record()` would mint a first-launch identity as a side effect; the
+        # gate must not do that on a path that ends in a refusal.
+        assert not (state / "enrollment.json").exists()
+    finally:
+        _drop_scratch_keys()
+
+
+def test_the_cli_autostart_on_registers_once_a_durable_credential_exists(
+    tmp_path, monkeypatch, capsys
+):
+    _isolate_cli(monkeypatch, _seed_state_dir(tmp_path, _enrolled_record()))
+    try:
+        code = cli.main(["autostart", "on"])
+        out = json.loads(capsys.readouterr().out)
+        assert code == 0
+        assert out["ok"] is True
+        assert out["enabled"] is True
+        assert out["preference"] == "on"
+        assert out["command"] == cli._autostart_command()  # noqa: SLF001
+        if sys.platform == "win32":
+            import winreg  # noqa: PLC0415
+
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, SCRATCH_RUN_KEY) as key:
+                value, _ = winreg.QueryValueEx(key, NAME)
+            assert value == out["command"]
+    finally:
+        _drop_scratch_keys()
