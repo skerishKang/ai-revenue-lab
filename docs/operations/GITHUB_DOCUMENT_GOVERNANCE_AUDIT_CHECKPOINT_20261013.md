@@ -258,6 +258,15 @@ Frozen **835 original** cursor: **800 original texts viewed partly or fully** (1
 - B52 scheduling, B53 SDK, B58 writing-voice and B62 early chat visual motion/QA are demonstrations, not live deployment/consent/Owner approval.
 - No original docs, confidential local Governance/private vault, customer contents, account/provider, Production status, business contracts or protected PR changed.
 
+## 1AC. Batch 29 — final 16 unread original text bodies: source/package/test metadata and bounded QA (2026-10-13)
+
+Immutable **835-source** cursor: **816 text originals seen at least partly** (125 initially `TEXT_SAMPLED` + 691 fully fetched in B02–B29); **0 INDEXED_ONLY** original texts unread; **19 BINARY_PENDING** original PDF/DOCX unread. Initial 125 partly sampled texts are **not** independently exhaustively reviewed.
+
+- [Batch29 last 16 original path/blob-SHA pinned public-safe classifications](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH29_20261013.md).
+- All 16 are `TECH_PUBLIC`: pinned requirements and B54 package metadata, B02/B04 robots previews, B06/B10 historical source-only browser/test commands, B38/B58 local test commands, bounded Web–Control–Desktop non-model E2E, B35 independent QA tooling and B66 generic certified-template development tools.
+- Robots Disallow is not authentication; historical source self-check is not live Owner permission; B35 overall acceptance remains exact-revision gated and B66 private real-document certification is not repeated by public synthetic tests.
+- No original body/path/hash/size or local corporate Governance, customer data, executable code, model/Provider, product permission, commercial policy or live deployment changed.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |

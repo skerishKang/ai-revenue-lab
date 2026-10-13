@@ -1,6 +1,6 @@
 # Complete public GitHub document path manifest — audit checkpoint 2026-10-13
 # Baseline main SHA: 5476d1038993d647bf8ba241ce6a4307cccf291f
-# Content states: INDEXED_ONLY=original path/hash indexed but body unread; TEXT_SAMPLED=early partial/full read not independently certified exhaustive; TEXT_FULL_FETCHED_B02/B03/B04/B05/B06/B07/B08/B09/B10/B11/B12/B13/B14/B15/B16/B17/B18/B19/B20/B21/B22/B23/B24/B25/B26/B27/B28=original full body retrieved and provisionally triaged, not legal/business/owner/production clearance; BINARY_PENDING=PDF/DOCX bodies unread.
+# Content states: INDEXED_ONLY=original source path/blob indexed, body unread; TEXT_SAMPLED=early partial/full source sampling not independently certified exhaustive; TEXT_FULL_FETCHED_B02/B03/B04/B05/B06/B07/B08/B09/B10/B11/B12/B13/B14/B15/B16/B17/B18/B19/B20/B21/B22/B23/B24/B25/B26/B27/B28/B29=original full text retrieved and provisionally classified, not Owner/legal/commercial or production clearance; BINARY_PENDING=PDF/DOCX original body unread.
 # This file has all 835 recognized document-format blobs from a GitHub recursive tree with truncated=false. Existing source content was not copied here.
 # Full-status classification must not be inferred from filename keywords or the TEXT_SAMPLED flag.
 PATH	BLOB_SHA	BYTES	READ_STATE
@@ -14,7 +14,7 @@ apps/ai-reward-router/PRODUCT_CONTRACT.md	cd7d2724558a81813c63a80293d03c11d4772e
 apps/ai-reward-router/README.md	05a04b73c3a394b7914c6e58d8e5293ddaeea864	1517	TEXT_FULL_FETCHED_B02
 apps/b66-quote-adapter/README.md	d149ffeaaf7869cb905806262dcdf538c1782105	7488	TEXT_FULL_FETCHED_B23
 apps/b66-sol61-multipage/README.md	a7a0b392562a790771127f9c8f6d06bbff7a2f76	9513	TEXT_FULL_FETCHED_B21
-apps/b66-sol61-multipage/requirements-test.txt	3f46dd34276c8f70778a2c10f099c0ca525d12c8	90	INDEXED_ONLY
+apps/b66-sol61-multipage/requirements-test.txt	3f46dd34276c8f70778a2c10f099c0ca525d12c8	90	TEXT_FULL_FETCHED_B29
 apps/b66-sol61-multipage/WORK_ORDER_3839_RIGHT_BORDER.md	31a01e7beb7593f27801786307a166618d6e7735	1906	TEXT_FULL_FETCHED_B28
 apps/korean-ai-code-agent/docs/00_SOURCE_OF_TRUTH.md	df8c616feba1ea9388deafb58aae213cccbdafb5	1335	TEXT_FULL_FETCHED_B02
 apps/korean-ai-code-agent/docs/01_PRODUCT_CHARTER_AND_PRD.md	39b44c09715c7dcbcb2a4165539ee54e1e58aab0	1509	TEXT_SAMPLED
@@ -71,10 +71,10 @@ apps/korean-ai-code-agent/docs/TELEGRAM_BUSINESS_MVP_RUNTIME.md	0e38febbbe5ed915
 apps/korean-ai-code-agent/docs/TELEGRAM_CONNECTOR_SAFETY.md	28c3a12368d0b9cd9386e38df3402a07375859ca	5941	TEXT_FULL_FETCHED_B07
 apps/korean-ai-code-agent/docs/TRUSTED_P01_WINDOWS_EXECUTION_EVIDENCE_M1B.md	f1d5d13c2447f86f8cd005fbab7f1321530fe88c	6052	TEXT_FULL_FETCHED_B10
 apps/korean-ai-code-agent/README.md	7417c2d956a6fdf742b293e8997101218c296536	5925	TEXT_FULL_FETCHED_B02
-apps/korean-ai-code-agent/src/korean_ai_code_agent.egg-info/dependency_links.txt	8b137891791fe96927ad78e64b0aad7bded08bdc	1	INDEXED_ONLY
-apps/korean-ai-code-agent/src/korean_ai_code_agent.egg-info/entry_points.txt	dffd1a93044de06e4ab6d8d5461e1618efaf54d1	43	INDEXED_ONLY
-apps/korean-ai-code-agent/src/korean_ai_code_agent.egg-info/SOURCES.txt	5af893c01132dde1e3ae5f8c94f210b0defcb56a	13709	INDEXED_ONLY
-apps/korean-ai-code-agent/src/korean_ai_code_agent.egg-info/top_level.txt	37d0596e4ddc3adcd455d1a710d4f8f4b3199f79	7	INDEXED_ONLY
+apps/korean-ai-code-agent/src/korean_ai_code_agent.egg-info/dependency_links.txt	8b137891791fe96927ad78e64b0aad7bded08bdc	1	TEXT_FULL_FETCHED_B29
+apps/korean-ai-code-agent/src/korean_ai_code_agent.egg-info/entry_points.txt	dffd1a93044de06e4ab6d8d5461e1618efaf54d1	43	TEXT_FULL_FETCHED_B29
+apps/korean-ai-code-agent/src/korean_ai_code_agent.egg-info/SOURCES.txt	5af893c01132dde1e3ae5f8c94f210b0defcb56a	13709	TEXT_FULL_FETCHED_B29
+apps/korean-ai-code-agent/src/korean_ai_code_agent.egg-info/top_level.txt	37d0596e4ddc3adcd455d1a710d4f8f4b3199f79	7	TEXT_FULL_FETCHED_B29
 apps/korean-ai-code-agent/THIRD_PARTY_NOTICES.md	15d31e596aebb8ea4db0f055cef4703650992388	1729	TEXT_FULL_FETCHED_B21
 apps/korean-ai-platform/docs/API_PROVIDER_PHASE0_CHARTER.md	60ff78e6a157fad0f206803373bde6efdfed688e	9594	TEXT_SAMPLED
 apps/korean-ai-platform/docs/B14_11_MODEL_SERVING_AND_WIRE_AUDIT_2026-10-10.md	e08070ab44d4166da610bb37f84323ce88f320fd	5991	TEXT_FULL_FETCHED_B05
@@ -106,11 +106,11 @@ apps/living-fiction/NARRATIVE_CONTRACT.md	dd27c7e5683245fa9b85ef26dbabb4f3adf7ad
 apps/living-fiction/PRODUCT_CONTRACT.md	a9311a6700e31f7e878273bdfef68a65b67a8730	7852	TEXT_FULL_FETCHED_B03
 apps/living-fiction/PRODUCTION_PORTABILITY_AUDIT.md	3e0caf26225dbb0d62adf2ac2e0904b8c7182bd8	9271	TEXT_FULL_FETCHED_B15
 apps/living-fiction/README.md	e3c7bde9b96b2ccf467a0a71a14a4e848cf023c3	4915	TEXT_FULL_FETCHED_B02
-apps/living-learning/pages-preview/robots.txt	1f53798bb4fe33c86020be7f10c44f29486fd190	26	INDEXED_ONLY
+apps/living-learning/pages-preview/robots.txt	1f53798bb4fe33c86020be7f10c44f29486fd190	26	TEXT_FULL_FETCHED_B29
 apps/living-learning/PORTAL_INTEGRATION.md	d48b020f6bf62e8840cc26a3eb991583fdad8309	6985	TEXT_FULL_FETCHED_B23
 apps/living-learning/PRODUCT_CONTRACT.md	fed2ce8b21feeeb35db9ae3e4b846abf3d0a238c	1970	TEXT_FULL_FETCHED_B03
 apps/living-learning/README.md	8631baec3e500280bb4d26bbc1f82747effe0796	1057	TEXT_FULL_FETCHED_B02
-apps/living-learning/requirements-padiem-core.txt	7644932b2c8d4d561ad45b5edf19adeaebaedf1a	193	INDEXED_ONLY
+apps/living-learning/requirements-padiem-core.txt	7644932b2c8d4d561ad45b5edf19adeaebaedf1a	193	TEXT_FULL_FETCHED_B29
 apps/living-travel/docs/ai-provider-guidance.md	6799a0e89e1264953a34ff041b468ad569b46dce	3922	TEXT_FULL_FETCHED_B14
 apps/living-travel/docs/B2_V2_457_CHANGED_SURFACES.md	fcda1e25b410801297af4a4c4a0ad814e3cae0d7	807	TEXT_FULL_FETCHED_B24
 apps/living-travel/docs/B2_V2_457_PR_BODY.md	216f742f58c32861bb013fac201e1a82f81e2539	1667	TEXT_FULL_FETCHED_B24
@@ -121,7 +121,7 @@ apps/living-travel/docs/IMAGE_SOURCES.md	78feceebd5ca8037aec013a0d9a92b06709adc8
 apps/living-travel/docs/staging-evidence/issue-74/REPORT.md	fa0915f11b809ed4abee3658a070f4f68c94b91b	6743	TEXT_FULL_FETCHED_B24
 apps/living-travel/docs/STAGING.md	1f932b1c1ecf7c4d58d33c4022661a2073bdb4fd	4624	TEXT_FULL_FETCHED_B14
 apps/living-travel/pages-preview/README.md	dc3100d3f0843fb53627fb7784118a19af183e41	5161	TEXT_FULL_FETCHED_B24
-apps/living-travel/pages-preview/site/robots.txt	1f53798bb4fe33c86020be7f10c44f29486fd190	26	INDEXED_ONLY
+apps/living-travel/pages-preview/site/robots.txt	1f53798bb4fe33c86020be7f10c44f29486fd190	26	TEXT_FULL_FETCHED_B29
 apps/living-travel/PRODUCT_CONTRACT.md	b1e9c38b526b2440f6f14269c8fc458f932a152c	6109	TEXT_FULL_FETCHED_B03
 apps/living-travel/README.md	ec7b975072b812992d0ce6da268d88f9301508bc	2208	TEXT_FULL_FETCHED_B02
 apps/padiem-ai-engine/README.md	f781a29a50122e7bb2a3fcb9c4259bdd944034ed	4074	TEXT_FULL_FETCHED_B21
@@ -593,8 +593,8 @@ reference/business-05-neighbor-market-v2/README.md	f3272d7103b86f111aa6b179a5d40
 reference/business-05-neighbor-market-v2/SCREENSHOT_MATRIX.md	6f82aefe0b39d4336802d28f202c648b52aa213d	5955	TEXT_FULL_FETCHED_B06
 reference/business-05-neighbor-market-v2/UI_REFINEMENT_V3.md	308245491994240fd19e1ffa686b8673a5b6d411	8186	TEXT_FULL_FETCHED_B06
 reference/business-06-world-feed-v1/evidence/focused-correction-commands.txt	261f51af390c5e0835ea96baae228450e6dc7772	771	TEXT_FULL_FETCHED_B25
-reference/business-06-world-feed-v1/evidence/ux-slice1-commands.txt	7ef4d0517088fd8eea2e69bcc6542990fd077ba2	1130	INDEXED_ONLY
-reference/business-06-world-feed-v1/evidence/ux-slice2-commands.txt	ada7f9e097387fdbd96528f382a696836e64099e	2244	INDEXED_ONLY
+reference/business-06-world-feed-v1/evidence/ux-slice1-commands.txt	7ef4d0517088fd8eea2e69bcc6542990fd077ba2	1130	TEXT_FULL_FETCHED_B29
+reference/business-06-world-feed-v1/evidence/ux-slice2-commands.txt	ada7f9e097387fdbd96528f382a696836e64099e	2244	TEXT_FULL_FETCHED_B29
 reference/business-06-world-feed-v1/IMAGE_SOURCES.md	aad6f978eac10682eae767fd6be3844dff147782	2643	TEXT_FULL_FETCHED_B25
 reference/business-06-world-feed-v1/MOTION_SPEC.md	1e9fe8cce1fd221f3120b85aa2dcb0b1ef17fac5	2015	TEXT_FULL_FETCHED_B25
 reference/business-06-world-feed-v1/README.md	1cea4fe07aded9ec36c2fabab9ae28280408528f	2400	TEXT_SAMPLED
@@ -615,7 +615,7 @@ reference/business-09-personalized-childrens-story-v1/MOTION_SPEC.md	ae7cacc4499
 reference/business-09-personalized-childrens-story-v1/README.md	1557c79ddd61eb95e7a0b90e346b2ab50d3c49d2	2920	TEXT_SAMPLED
 reference/business-09-personalized-childrens-story-v1/REFERENCE_NOTES.md	25bb618d193115fe352a67a110cfcb89722b7a7b	5439	TEXT_FULL_FETCHED_B15
 reference/business-10-fan-magazine-v1/evidence/binary-evidence-manifest.md	d6e7f6518e9cb0464ca7ed4106321bc37609f6e5	4029	TEXT_FULL_FETCHED_B25
-reference/business-10-fan-magazine-v1/evidence/commands.txt	f90ea4866cefe99542c5d4a3e07a1b2c99147c85	2009	INDEXED_ONLY
+reference/business-10-fan-magazine-v1/evidence/commands.txt	f90ea4866cefe99542c5d4a3e07a1b2c99147c85	2009	TEXT_FULL_FETCHED_B29
 reference/business-10-fan-magazine-v1/IMAGE_SOURCES.md	cf5cc5d8d998accf1099d0033c024e42de34c4c9	1863	TEXT_FULL_FETCHED_B25
 reference/business-10-fan-magazine-v1/MOTION_SPEC.md	374909700899fa2c2d98d188909ee0d7e374939e	2377	TEXT_FULL_FETCHED_B25
 reference/business-10-fan-magazine-v1/README.md	a9abb7e6957f1918a32c8202f61c2894b3cbbded	3642	TEXT_SAMPLED
@@ -724,7 +724,7 @@ reference/business-38-ai-exercise-coach-v1/IMAGE_SOURCES.md	538743775b2385e57f05
 reference/business-38-ai-exercise-coach-v1/MOTION_SPEC.md	c4659b1b5abf13a50a3823e93c7da65f1e4c7c25	1851	TEXT_FULL_FETCHED_B26
 reference/business-38-ai-exercise-coach-v1/README.md	1b0ba85133b290f2750876a7bb6013a4f0ed0e6b	1615	TEXT_SAMPLED
 reference/business-38-ai-exercise-coach-v1/REFERENCE_NOTES.md	4d5c68510a5a04c50c615c6ae05c207f80d7eaaf	3285	TEXT_FULL_FETCHED_B26
-reference/business-38-ai-exercise-coach-v1/tests/README.md	61ac1dbee33c0daa7d9bf976618c95d2ba63e24f	152	INDEXED_ONLY
+reference/business-38-ai-exercise-coach-v1/tests/README.md	61ac1dbee33c0daa7d9bf976618c95d2ba63e24f	152	TEXT_FULL_FETCHED_B29
 reference/business-39-112-real-time-interpretation-v1/evidence/SELF_CHECK.md	ba6114d97728e4aa840a2283aca1effb9e07c6b3	388	TEXT_FULL_FETCHED_B27
 reference/business-39-112-real-time-interpretation-v1/IMAGE_SOURCES.md	9b3f0693645debe76ff4ca5fbba4372f52527074	1178	TEXT_FULL_FETCHED_B27
 reference/business-39-112-real-time-interpretation-v1/MOTION_SPEC.md	e284b0fbb15674f2d46569ebb4f5e7868461932c	769	TEXT_FULL_FETCHED_B27
@@ -806,7 +806,7 @@ reference/business-57-classic-literature-translation-studio-v1/MOTION_SPEC.md	a0
 reference/business-57-classic-literature-translation-studio-v1/README.md	eb102e183a720e3b222903a48f842a9597191553	3396	TEXT_SAMPLED
 reference/business-57-classic-literature-translation-studio-v1/REFERENCE_NOTES.md	c52da47ed8c10b18e48c81f5c50d5c099df06101	6032	TEXT_FULL_FETCHED_B17
 reference/business-57-classic-literature-translation-studio-v1/RIGHTS_AND_SOURCES.md	ce8f354b8cc78666061851e15ca3ce232dccc506	5433	TEXT_FULL_FETCHED_B07
-reference/business-58-personal-writing-voice-studio-v1/evidence/run-commands.md	f758ca6070768a774c818ab13241d2ef84a0d9fc	96	INDEXED_ONLY
+reference/business-58-personal-writing-voice-studio-v1/evidence/run-commands.md	f758ca6070768a774c818ab13241d2ef84a0d9fc	96	TEXT_FULL_FETCHED_B29
 reference/business-58-personal-writing-voice-studio-v1/IMAGE_SOURCES.md	607242cece99d58e3aa66258c238f1107abf54bb	780	TEXT_FULL_FETCHED_B28
 reference/business-58-personal-writing-voice-studio-v1/MOTION_SPEC.md	86c2d3426fc32236af09dee921f199c4e6ee42e9	610	TEXT_FULL_FETCHED_B28
 reference/business-58-personal-writing-voice-studio-v1/README.md	c02d3e1d58120f282e48983d453e47fc5a46627f	700	TEXT_SAMPLED
@@ -833,9 +833,9 @@ reference/business-62-padiem-chat-v1/RENDERED_QA.md	3b815bde8bb7598f2bece3279b5e
 reference/business-66-padiem-quote-v1/README.md	a1fb4a1639c9cfed1a8a2de763046d407e0435ec	10207	TEXT_SAMPLED
 reference/business-67-padiem-legal-v1/pdf/README.md	4f863b9be5d04e0a9bf0a1336188904711f81f85	984	TEXT_FULL_FETCHED_B21
 reference/business-67-padiem-legal-v1/README.md	e8499b7fa26071e2832c7f7ad84e52d8fdf47c0f	25025	TEXT_SAMPLED
-tests/e2e/README.md	7f800fe411bb9e67613fbd067637a702c84a1273	3337	INDEXED_ONLY
+tests/e2e/README.md	7f800fe411bb9e67613fbd067637a702c84a1273	3337	TEXT_FULL_FETCHED_B29
 tools/b35-independent-qa/evidence/qa_report_with_legacy_package.md	90fc04ed66bf99d98a468283d1b94970b5147d48	4056	TEXT_FULL_FETCHED_B28
 tools/b35-independent-qa/evidence/qa_report.md	69981e9b7b91ac7a8ce04f4ab09c1fce2c55c7c1	6033	TEXT_FULL_FETCHED_B28
-tools/b35-independent-qa/README.md	39aa7b5699a8644d027c5dfcc1fed07ce546a10e	3005	INDEXED_ONLY
-tools/b66_generic/README.md	8ab8d89cefa02612149daf7e480605e1bd5f61f7	5396	INDEXED_ONLY
+tools/b35-independent-qa/README.md	39aa7b5699a8644d027c5dfcc1fed07ce546a10e	3005	TEXT_FULL_FETCHED_B29
+tools/b66_generic/README.md	8ab8d89cefa02612149daf7e480605e1bd5f61f7	5396	TEXT_FULL_FETCHED_B29
 tools/b66_generic/tests/fixtures/reference.pdf	33a04ba97bd9ad2dc5cb3c9d418e8885039bd67a	3376	BINARY_PENDING
