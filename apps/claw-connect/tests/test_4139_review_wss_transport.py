@@ -167,9 +167,9 @@ def test_verified_text_frame_bounds_binary_refusal_and_tls_recheck(monkeypatch):
 def test_ordinary_cli_and_installer_do_not_enable_wss():
     from pathlib import Path
     root=Path(__file__).resolve().parents[1]
-    assert "review_wss_transport" not in (root/"claw_connect"/"__main__.py").read_text()
-    assert "review_wss_transport" not in (root/"claw_connect"/"runtime.py").read_text()
-    assert "websockets" not in (root/"install.ps1").read_text()
+    assert "review_wss_transport" not in (root/"claw_connect"/"__main__.py").read_text(encoding="utf-8")
+    assert "review_wss_transport" not in (root/"claw_connect"/"runtime.py").read_text(encoding="utf-8")
+    assert "websockets" not in (root/"install.ps1").read_text(encoding="utf-8")
 
 
 
