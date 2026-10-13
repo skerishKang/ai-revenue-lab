@@ -1,6 +1,6 @@
 # Complete public GitHub document path manifest — audit checkpoint 2026-10-13
 # Baseline main SHA: 5476d1038993d647bf8ba241ce6a4307cccf291f
-# Content states: INDEXED_ONLY=original path/blob indexed, body unread; TEXT_SAMPLED=early partial/full inspection not independently exhaustive; TEXT_FULL_FETCHED_B02/B03/B04/B05/B06/B07/B08/B09/B10/B11/B12/B13/B14/B15/B16/B17/B18/B19/B20/B21/B22/B23/B24=original full source body read and provisionally classified, not owner/legal/commercial/Production approval; BINARY_PENDING=PDF/DOCX bodies unread.
+# Content states: INDEXED_ONLY=original path/blob indexed, body unread; TEXT_SAMPLED=early some text seen, not independently certified full; TEXT_FULL_FETCHED_B02/B03/B04/B05/B06/B07/B08/B09/B10/B11/B12/B13/B14/B15/B16/B17/B18/B19/B20/B21/B22/B23/B24/B25=original full source text fetched and provisionally triaged, not owner legal/business or live launch approval; BINARY_PENDING=original PDF/DOCX body unread.
 # This file has all 835 recognized document-format blobs from a GitHub recursive tree with truncated=false. Existing source content was not copied here.
 # Full-status classification must not be inferred from filename keywords or the TEXT_SAMPLED flag.
 PATH	BLOB_SHA	BYTES	READ_STATE
@@ -592,18 +592,18 @@ reference/business-05-neighbor-market-v2/PRODUCT_DECISION.md	dcd04ed9a0815450a14
 reference/business-05-neighbor-market-v2/README.md	f3272d7103b86f111aa6b179a5d404be4aa98175	4825	TEXT_SAMPLED
 reference/business-05-neighbor-market-v2/SCREENSHOT_MATRIX.md	6f82aefe0b39d4336802d28f202c648b52aa213d	5955	TEXT_FULL_FETCHED_B06
 reference/business-05-neighbor-market-v2/UI_REFINEMENT_V3.md	308245491994240fd19e1ffa686b8673a5b6d411	8186	TEXT_FULL_FETCHED_B06
-reference/business-06-world-feed-v1/evidence/focused-correction-commands.txt	261f51af390c5e0835ea96baae228450e6dc7772	771	INDEXED_ONLY
+reference/business-06-world-feed-v1/evidence/focused-correction-commands.txt	261f51af390c5e0835ea96baae228450e6dc7772	771	TEXT_FULL_FETCHED_B25
 reference/business-06-world-feed-v1/evidence/ux-slice1-commands.txt	7ef4d0517088fd8eea2e69bcc6542990fd077ba2	1130	INDEXED_ONLY
 reference/business-06-world-feed-v1/evidence/ux-slice2-commands.txt	ada7f9e097387fdbd96528f382a696836e64099e	2244	INDEXED_ONLY
-reference/business-06-world-feed-v1/IMAGE_SOURCES.md	aad6f978eac10682eae767fd6be3844dff147782	2643	INDEXED_ONLY
-reference/business-06-world-feed-v1/MOTION_SPEC.md	1e9fe8cce1fd221f3120b85aa2dcb0b1ef17fac5	2015	INDEXED_ONLY
+reference/business-06-world-feed-v1/IMAGE_SOURCES.md	aad6f978eac10682eae767fd6be3844dff147782	2643	TEXT_FULL_FETCHED_B25
+reference/business-06-world-feed-v1/MOTION_SPEC.md	1e9fe8cce1fd221f3120b85aa2dcb0b1ef17fac5	2015	TEXT_FULL_FETCHED_B25
 reference/business-06-world-feed-v1/README.md	1cea4fe07aded9ec36c2fabab9ae28280408528f	2400	TEXT_SAMPLED
-reference/business-06-world-feed-v1/REFERENCE_NOTES.md	71113c52c7b52835d5f3bc575723c6c942717c2f	6846	INDEXED_ONLY
-reference/business-07-personal-meaning-map-v1/evidence/run-commands.txt	7242213de7274f0fa1eef6668b559636de02893f	1366	INDEXED_ONLY
-reference/business-07-personal-meaning-map-v1/IMAGE_SOURCES.md	18fed30e2908c467f47369e2904be38d7d8933ff	1862	INDEXED_ONLY
-reference/business-07-personal-meaning-map-v1/MOTION_SPEC.md	23464bfc35d2d450fb7770fd0a7a0ab045fa4dd5	1322	INDEXED_ONLY
+reference/business-06-world-feed-v1/REFERENCE_NOTES.md	71113c52c7b52835d5f3bc575723c6c942717c2f	6846	TEXT_FULL_FETCHED_B25
+reference/business-07-personal-meaning-map-v1/evidence/run-commands.txt	7242213de7274f0fa1eef6668b559636de02893f	1366	TEXT_FULL_FETCHED_B25
+reference/business-07-personal-meaning-map-v1/IMAGE_SOURCES.md	18fed30e2908c467f47369e2904be38d7d8933ff	1862	TEXT_FULL_FETCHED_B25
+reference/business-07-personal-meaning-map-v1/MOTION_SPEC.md	23464bfc35d2d450fb7770fd0a7a0ab045fa4dd5	1322	TEXT_FULL_FETCHED_B25
 reference/business-07-personal-meaning-map-v1/README.md	ea293f125b768d3c82a8645fe344628c64663aa5	1802	TEXT_SAMPLED
-reference/business-07-personal-meaning-map-v1/REFERENCE_NOTES.md	935df67aa207282e31432c0ae831296030ee8ff7	4325	INDEXED_ONLY
+reference/business-07-personal-meaning-map-v1/REFERENCE_NOTES.md	935df67aa207282e31432c0ae831296030ee8ff7	4325	TEXT_FULL_FETCHED_B25
 reference/business-08-family-newspaper-v1/evidence/commands.md	d1d5d26e37b594244cf4ee4f56e9473b215ca47d	2114	TEXT_FULL_FETCHED_B15
 reference/business-08-family-newspaper-v1/IMAGE_SOURCES.md	95203f864329474177714f4cb0a47423c468096c	1810	TEXT_FULL_FETCHED_B15
 reference/business-08-family-newspaper-v1/MOTION_SPEC.md	e0837a39fe897cceefb3657bb9e0117078981f2a	1523	TEXT_FULL_FETCHED_B15
@@ -614,28 +614,28 @@ reference/business-09-personalized-childrens-story-v1/IMAGE_SOURCES.md	08a0e514b
 reference/business-09-personalized-childrens-story-v1/MOTION_SPEC.md	ae7cacc44994f420467b8843af85735d6e7ea9a5	1807	TEXT_FULL_FETCHED_B15
 reference/business-09-personalized-childrens-story-v1/README.md	1557c79ddd61eb95e7a0b90e346b2ab50d3c49d2	2920	TEXT_SAMPLED
 reference/business-09-personalized-childrens-story-v1/REFERENCE_NOTES.md	25bb618d193115fe352a67a110cfcb89722b7a7b	5439	TEXT_FULL_FETCHED_B15
-reference/business-10-fan-magazine-v1/evidence/binary-evidence-manifest.md	d6e7f6518e9cb0464ca7ed4106321bc37609f6e5	4029	INDEXED_ONLY
+reference/business-10-fan-magazine-v1/evidence/binary-evidence-manifest.md	d6e7f6518e9cb0464ca7ed4106321bc37609f6e5	4029	TEXT_FULL_FETCHED_B25
 reference/business-10-fan-magazine-v1/evidence/commands.txt	f90ea4866cefe99542c5d4a3e07a1b2c99147c85	2009	INDEXED_ONLY
-reference/business-10-fan-magazine-v1/IMAGE_SOURCES.md	cf5cc5d8d998accf1099d0033c024e42de34c4c9	1863	INDEXED_ONLY
-reference/business-10-fan-magazine-v1/MOTION_SPEC.md	374909700899fa2c2d98d188909ee0d7e374939e	2377	INDEXED_ONLY
+reference/business-10-fan-magazine-v1/IMAGE_SOURCES.md	cf5cc5d8d998accf1099d0033c024e42de34c4c9	1863	TEXT_FULL_FETCHED_B25
+reference/business-10-fan-magazine-v1/MOTION_SPEC.md	374909700899fa2c2d98d188909ee0d7e374939e	2377	TEXT_FULL_FETCHED_B25
 reference/business-10-fan-magazine-v1/README.md	a9abb7e6957f1918a32c8202f61c2894b3cbbded	3642	TEXT_SAMPLED
-reference/business-10-fan-magazine-v1/REFERENCE_NOTES.md	2b4551c17de8cc5d75edb1aabb9ad2551bea595a	5966	INDEXED_ONLY
-reference/business-11-language-learning-magazine-v1/evidence/BROWSER_VALIDATION.md	2fc73b09f4dd6863d638ceb04afab56980ea781c	1796	INDEXED_ONLY
-reference/business-11-language-learning-magazine-v1/evidence/commands.txt	4fcadbf0f28db90975972486e5556122c7241cc3	1270	INDEXED_ONLY
-reference/business-11-language-learning-magazine-v1/IMAGE_SOURCES.md	3caee01badd44653d304dce37358577162ccc588	1842	INDEXED_ONLY
-reference/business-11-language-learning-magazine-v1/MOTION_SPEC.md	90ed7d60a1236b188f98f829079b1d9fa68cd7c3	2159	INDEXED_ONLY
+reference/business-10-fan-magazine-v1/REFERENCE_NOTES.md	2b4551c17de8cc5d75edb1aabb9ad2551bea595a	5966	TEXT_FULL_FETCHED_B25
+reference/business-11-language-learning-magazine-v1/evidence/BROWSER_VALIDATION.md	2fc73b09f4dd6863d638ceb04afab56980ea781c	1796	TEXT_FULL_FETCHED_B25
+reference/business-11-language-learning-magazine-v1/evidence/commands.txt	4fcadbf0f28db90975972486e5556122c7241cc3	1270	TEXT_FULL_FETCHED_B25
+reference/business-11-language-learning-magazine-v1/IMAGE_SOURCES.md	3caee01badd44653d304dce37358577162ccc588	1842	TEXT_FULL_FETCHED_B25
+reference/business-11-language-learning-magazine-v1/MOTION_SPEC.md	90ed7d60a1236b188f98f829079b1d9fa68cd7c3	2159	TEXT_FULL_FETCHED_B25
 reference/business-11-language-learning-magazine-v1/README.md	b841747d779c23d87be9d7cdcaf6861d742b4090	3161	TEXT_SAMPLED
-reference/business-11-language-learning-magazine-v1/REFERENCE_NOTES.md	bf87f665081ce2cbb4019a6e076a94b4eb8131a4	6020	INDEXED_ONLY
-reference/business-12-creator-mini-media-v1/evidence/browser-check-commands.md	99d8accedee5489e7fff1e7866d701f1657827dc	560	INDEXED_ONLY
-reference/business-12-creator-mini-media-v1/IMAGE_SOURCES.md	ff89bd946d23bca9b923284e76def3b9ccad950a	1740	INDEXED_ONLY
-reference/business-12-creator-mini-media-v1/MOTION_SPEC.md	ec879218d71bbb0f4295a12b76b83c486e5a1df4	1370	INDEXED_ONLY
+reference/business-11-language-learning-magazine-v1/REFERENCE_NOTES.md	bf87f665081ce2cbb4019a6e076a94b4eb8131a4	6020	TEXT_FULL_FETCHED_B25
+reference/business-12-creator-mini-media-v1/evidence/browser-check-commands.md	99d8accedee5489e7fff1e7866d701f1657827dc	560	TEXT_FULL_FETCHED_B25
+reference/business-12-creator-mini-media-v1/IMAGE_SOURCES.md	ff89bd946d23bca9b923284e76def3b9ccad950a	1740	TEXT_FULL_FETCHED_B25
+reference/business-12-creator-mini-media-v1/MOTION_SPEC.md	ec879218d71bbb0f4295a12b76b83c486e5a1df4	1370	TEXT_FULL_FETCHED_B25
 reference/business-12-creator-mini-media-v1/README.md	8f3e02a340d7fb69b3b0d409e7602f500bfad88c	1372	TEXT_SAMPLED
-reference/business-12-creator-mini-media-v1/REFERENCE_NOTES.md	2d37dfaf687fda7cf2c400b9679d7ecb0c88303a	4789	INDEXED_ONLY
-reference/business-15-global-ai-newsroom-v1/evidence/browser-check-commands.md	00c0132c358d7d074d9b7760e80345fe1cf84935	430	INDEXED_ONLY
-reference/business-15-global-ai-newsroom-v1/IMAGE_SOURCES.md	b9df9aa0433c04a569996786b266781dfacc5854	1547	INDEXED_ONLY
-reference/business-15-global-ai-newsroom-v1/MOTION_SPEC.md	46a86e6807a9ec4e7221d400ff0f3552c5c4dcc9	1300	INDEXED_ONLY
+reference/business-12-creator-mini-media-v1/REFERENCE_NOTES.md	2d37dfaf687fda7cf2c400b9679d7ecb0c88303a	4789	TEXT_FULL_FETCHED_B25
+reference/business-15-global-ai-newsroom-v1/evidence/browser-check-commands.md	00c0132c358d7d074d9b7760e80345fe1cf84935	430	TEXT_FULL_FETCHED_B25
+reference/business-15-global-ai-newsroom-v1/IMAGE_SOURCES.md	b9df9aa0433c04a569996786b266781dfacc5854	1547	TEXT_FULL_FETCHED_B25
+reference/business-15-global-ai-newsroom-v1/MOTION_SPEC.md	46a86e6807a9ec4e7221d400ff0f3552c5c4dcc9	1300	TEXT_FULL_FETCHED_B25
 reference/business-15-global-ai-newsroom-v1/README.md	e23d07090b04ed91028a929db9ce8af3748862f8	1398	TEXT_SAMPLED
-reference/business-15-global-ai-newsroom-v1/REFERENCE_NOTES.md	fc536483145f7c6dc2452f3e4bd0cb26880d22a8	5648	INDEXED_ONLY
+reference/business-15-global-ai-newsroom-v1/REFERENCE_NOTES.md	fc536483145f7c6dc2452f3e4bd0cb26880d22a8	5648	TEXT_FULL_FETCHED_B25
 reference/business-16-personal-sports-v1/docs/B16_V2_CHANGED_SURFACES.md	3a8331352a973e79e66885363eebd36098e9f5ce	212	INDEXED_ONLY
 reference/business-16-personal-sports-v1/docs/B16_V2_OWNER_GATE.md	646eb57f9c3e2f48723207b5b8b9d76b0ac371fb	203	INDEXED_ONLY
 reference/business-16-personal-sports-v1/docs/B16_V2_PR_BODY.md	7472a62dc2744dcb82986bb68cbea88dcc4426e1	150	INDEXED_ONLY
