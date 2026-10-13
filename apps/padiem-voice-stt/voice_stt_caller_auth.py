@@ -59,6 +59,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Any, Protocol
+from uuid import uuid4
 
 import voice_stt_contract as contract
 
@@ -450,9 +451,8 @@ class CallerAuthority:
             estimated_units=estimated_units,
             now=granted_at,
         )
-        observed_at = self._now()
         reservation_ref = await self._admit_reservation(
-            reservation, estimated_units=estimated_units, now=observed_at
+            reservation, estimated_units=estimated_units
         )
 
         authorization = contract.CallerAuthorization(
@@ -540,9 +540,15 @@ class CallerAuthority:
         estimated_units: int,
         now: datetime,
     ) -> dict[str, Any]:
+        # Control Plane deliberately reuses a prior reservation for an identical
+        # idempotency key. This nonce is generated once per paid HTTP dispatch:
+        # two independent utterances or live-token requests of the same size
+        # MUST have distinct reservations. The browser supplies no nonce/cost.
+        request_nonce = uuid4().hex
         material = "|".join(
             (
                 "voice-stt-reserve-v1",
+                request_nonce,
                 identity.product_id,
                 identity.tenant_id,
                 identity.subject_id,
@@ -564,9 +570,13 @@ class CallerAuthority:
         }
 
     async def _admit_reservation(
-        self, reservation: dict[str, Any], *, estimated_units: int, now: datetime
+        self, reservation: dict[str, Any], *, estimated_units: int
     ) -> str:
         payload = await self._admission.reserve_usage(reservation=reservation)
+        # Control Plane stamps reserved_at DURING this await. Observe the clock
+        # after the authority RPC, not before, or a valid reservation appears to
+        # come from the future and is spuriously rejected.
+        observed_at = self._now()
         decision = _closed(payload, _RESERVATION_KEYS, "usage reservation")
         reservation_ref = _opaque(decision["reservation_ref"], "reservation_ref")
         admitted = decision["admitted"]
@@ -576,9 +586,9 @@ class CallerAuthority:
         expires_at = _timestamp(decision["expires_at"], "expires_at")
         if expires_at <= reserved_at:
             raise _authority_unavailable()
-        if reserved_at > now:
+        if reserved_at > observed_at:
             raise _authority_unavailable()
-        if not admitted or expires_at <= now:
+        if not admitted or expires_at <= observed_at:
             raise _cost_denied()
         if estimated_units < 1 or estimated_units > contract.MAX_RESERVATION_UNITS:
             raise _cost_denied()
