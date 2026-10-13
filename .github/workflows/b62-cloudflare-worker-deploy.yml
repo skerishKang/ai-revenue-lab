@@ -91,6 +91,13 @@ jobs:
         run: |
           python -m unittest discover -s .github/tests -p test_b62_cloudflare_connector_binding_readonly.py -q
           python .github/scripts/b62_cloudflare_connector_binding_readonly.py
+      - name: Read-only no-loss candidate for Connector Broker binding
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          python -m unittest discover -s .github/tests -p test_b62_connector_broker_additive_preflight.py -q
+          python .github/scripts/b62_connector_broker_additive_preflight.py
       - name: Read-only deployed progressive-SSE chain parity
         env:
           B62_BASE_URL: https://padiem-chat.${{ steps.preflight.outputs.subdomain }}.workers.dev
