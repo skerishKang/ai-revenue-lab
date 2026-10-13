@@ -191,9 +191,16 @@ then reads the **existing** canonical Broker `device_directory` (private
 Service Binding, scoped entirely from Identity). It selects the exact
 canonical pairing challenge + device-derived binding reference and accepts
 `canonical_state=revoked` ONLY for that exact original binding.
-Any missing, still-active, expired, malformed, cross-owner or duplicated
-evidence gives `security_hold` or hard denial; it never claims ONLINE,
-recovers a credential or retries the redeemed challenge.
+The private `recovery_verdict` RPC now separately checks the **consumed**
+challenge ledger and exact `redeemed_device_id/redeemed_binding_ref` against
+the canonical Broker binding snapshot within the same DO SQLite read
+transaction. The freshly minted credential is generation 1; rotated/mismatched
+generations cannot confirm original installation or revocation. Both the
+private client and OWNER projection reject inconsistent, unexpected or
+credential-bearing replies. A Broker lookup timeout returns `security_hold`.
+Any missing, unconsumed, still-active, expired, malformed, cross-owner,
+generation-mismatched or duplicated evidence holds or hard-denies; no ONLINE
+claim, credential recovery, replay or reissue is permitted.
 
 **This does not solve unattended Windows-only post-restart reconciliation.**
 The local PC cannot impersonate a newly authenticated owner session; there is
@@ -201,3 +208,17 @@ no device-only recovery HTTP route, signed delivery verdict to a reconnected
 Windows receiver or production composition yet. `OWNER_RECOVERY_ROUTE_MOUNTED`
 and `OWNER_RECOVERY_PRODUCTION_ENABLED` remain False. No Cloudflare
 migration, secret change, cross-product projection or user-facing exposure.
+
+
+### 2026-10-13 trusted recovery completion boundary
+
+The new `DurableBrokerPairingAuthority.recovery_verdict` reuses canonical
+pairing challenge SQLite and the existing canonical serialized Broker binding
+state. The sole success is a current OWNER-authorized, immutable observation
+that the EXACT once-consumed challenge's generation-1 binding is now REVOKED.
+It is NOT proof the Windows credential was never installed, nor a permission
+to replay the consumed challenge or silently pair another PC. A missing
+original challenge, an outage, rotated generation, absent Broker binding or
+unconfirmed compensation remains `security_hold`. The route and PC-facing
+signed recovery message are still unmounted and unimplemented. This is
+source-only; no production schema install, flag activation or deployed E2E.

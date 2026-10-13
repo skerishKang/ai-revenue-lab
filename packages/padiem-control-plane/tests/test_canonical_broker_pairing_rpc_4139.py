@@ -303,3 +303,38 @@ def test_private_gateway_rpc_requires_separate_explicit_gates_and_closed_shapes(
     ]:
         refusal = asyncio.run(h.gateway_bootstrap_rpc(bad))
         assert refusal["ok"] is False and set(refusal) == {"ok", "error"}
+
+
+def test_private_recovery_rpc_is_read_only_exactly_scoped_and_never_reissues():
+    h = Harness()
+    assert h.install()["ok"] is True
+    h.env.LOCAL_AGENT_BROKER_PAIRING_SCHEMA_INSTALLED = "true"
+    issued = h.issue()
+    cid = issued["challenge"]["challenge_id"]
+    ref = "pairing-binding." + hashlib.sha256(f"{cid}:{DEVICE}".encode()).hexdigest()[:32]
+    body = {
+        "challenge_id": cid, "device_id": DEVICE, "consent_ref": CONSENT,
+        "owner_ref": OWNER, "account_ref": ACCOUNT, "workspace_ref": WORKSPACE,
+        "binding_ref": ref, "credential_generation": 1,
+    }
+    async def read(payload):
+        return await h.recovery_verdict(payload)
+    assert asyncio.run(read(body))["recovery"]["disposition"] == "security_hold"
+    valid = pairing_proof_ref(
+        challenge_id=cid, device_id=DEVICE, pairing_code=issued["pairing_code"],
+    )
+    redeemed = h.redeem(cid, DEVICE, valid)
+    assert redeemed["ok"] is True
+    assert asyncio.run(read(body))["recovery"]["disposition"] == "security_hold"
+    pairing = h._durable_pairing()
+    pairing._broker.revoke_binding(ref, now=datetime.now(timezone.utc))
+    confirmed = asyncio.run(read(body))
+    assert confirmed["recovery"]["disposition"] == "revoked"
+    assert confirmed["recovery"]["can_retry_challenge"] is False
+    for malformed in ({**body, "owner_ref": "owner.other"},
+                      {**body, "credential_generation": 2},
+                      {**body, "credential_b64": "secret"}):
+        result = asyncio.run(read(malformed))
+        assert (result["ok"] is False or
+                result["recovery"]["disposition"] == "security_hold")
+    assert h.redeem(cid, DEVICE, valid)["ok"] is False

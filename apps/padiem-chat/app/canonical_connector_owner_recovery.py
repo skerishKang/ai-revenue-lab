@@ -92,9 +92,14 @@ class CanonicalConnectorOwnerRecovery:
         # The Broker challenge is durable after redemption and carries the
         # ORIGINAL owner/grant/device/account/workspace. A new consent cannot
         # grant a different owner visibility into this historical challenge.
-        original = await self._broker.get_enrollment_binding(
-            challenge_id=challenge,
-        )
+        try:
+            original = await self._broker.get_enrollment_binding(
+                challenge_id=challenge,
+            )
+        except Exception:
+            # Owner has been verified; an unreachable canonical Broker cannot
+            # prove either non-redemption or revocation. Preserve the hold.
+            return _hold(challenge_id=challenge, device_id=device)
         expected = {
             "challenge_id": challenge,
             "device_id": device,
@@ -111,10 +116,13 @@ class CanonicalConnectorOwnerRecovery:
         # challenge/device (see InMemoryBrokerPairingAuthority._redeem_pending).
         digest = hashlib.sha256(f"{challenge}:{device}".encode("utf-8")).hexdigest()[:32]
         expected_ref = f"pairing-binding.{digest}"
-        directory = await self._broker.owner_device_directory(
-            account_ref=consent["account_ref"],
-            workspace_ref=consent["workspace_ref"],
-        )
+        try:
+            directory = await self._broker.owner_device_directory(
+                account_ref=consent["account_ref"],
+                workspace_ref=consent["workspace_ref"],
+            )
+        except Exception:
+            return _hold(challenge_id=challenge, device_id=device)
         if type(directory) is not dict or set(directory) != {"available", "devices"}:
             raise IdentityBridgeError(503, "recovery_directory_invalid",
                                       "Canonical Broker directory not verified.")
@@ -159,14 +167,17 @@ class CanonicalConnectorOwnerRecovery:
         # A directory row is only an owner-scoped index, NOT proof that
         # this challenge was consumed or that generation 1 was revoked.
         # Require an independent, same-DO atomic pairing+binding verdict.
-        verdict = await self._broker.recovery_verdict(
-            challenge_id=challenge, device_id=device,
-            consent_ref=consent["consent_id"],
-            owner_ref=consent["owner_subject_id"],
-            account_ref=consent["account_ref"],
-            workspace_ref=consent["workspace_ref"],
-            binding_ref=expected_ref, credential_generation=1,
-        )
+        try:
+            verdict = await self._broker.recovery_verdict(
+                challenge_id=challenge, device_id=device,
+                consent_ref=consent["consent_id"],
+                owner_ref=consent["owner_subject_id"],
+                account_ref=consent["account_ref"],
+                workspace_ref=consent["workspace_ref"],
+                binding_ref=expected_ref, credential_generation=1,
+            )
+        except Exception:
+            return _hold(challenge_id=challenge, device_id=device)
         if (
             type(verdict) is not dict
             or set(verdict) != {

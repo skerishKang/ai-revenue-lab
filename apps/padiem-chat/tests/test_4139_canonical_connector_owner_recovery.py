@@ -217,8 +217,10 @@ def test_recovery_rpc_timeout_retains_unconfirmed_state():
     class Timeout(Broker):
         async def recovery_verdict(self, **kwargs):
             raise TimeoutError("Broker unavailable")
-    with pytest.raises(TimeoutError):
-        check(broker=Timeout())
+    result, _, _ = check(broker=Timeout())
+    assert result["disposition"] == "security_hold"
+    assert result["canonical_revocation_confirmed"] is False
+    assert result["can_retry_challenge"] is False
 
 
 def test_fake_broker_recovery_claims_are_rejected():
@@ -228,3 +230,31 @@ def test_fake_broker_recovery_claims_are_rejected():
     with pytest.raises(IdentityBridgeError) as exc:
         check(broker=Bogus())
     assert exc.value.code == "recovery_verdict_invalid"
+
+
+def test_corrupt_private_broker_recovery_rpc_never_grants_confirmation():
+    class Binding:
+        def __init__(self, *, corrupt=False):
+            self.corrupt = corrupt
+        async def recovery_verdict(self, payload):
+            reply = {
+                "challenge_id": CID, "device_id": DEVICE,
+                "binding_ref": REF, "credential_generation": 1,
+                "disposition": "revoked",
+                "canonical_revocation_confirmed": True,
+                "can_retry_challenge": False, "raw_device_credential": False,
+            }
+            if self.corrupt:
+                reply["credential_b64"] = "forbidden"
+            return {"ok": True, "recovery": reply}
+    client = CloudflareCanonicalBrokerPairingClient(Binding())
+    args = dict(
+        challenge_id=CID, device_id=DEVICE, consent_ref=CONSENT,
+        owner_ref=OWNER, account_ref=ACCOUNT, workspace_ref=WORKSPACE,
+        binding_ref=REF, credential_generation=1,
+    )
+    assert asyncio.run(client.recovery_verdict(**args))["canonical_revocation_confirmed"]
+    with pytest.raises(IdentityBridgeError):
+        asyncio.run(CloudflareCanonicalBrokerPairingClient(
+            Binding(corrupt=True),
+        ).recovery_verdict(**args))
