@@ -15,6 +15,21 @@
 원 이슈의 이전 'P0 미수정' 표현은 **`85e8ea8`을 대상으로 한 역사 기록**으로 읽어야 한다. 실제 병합 여부와 운영 인수는 #4658 / #4316 최신 상태에 따른다.
 <!-- /CENTRAL_POST_REVIEW_9588A22_20261014 -->
 
+
+<!-- CENTRAL_FINAL_MERGE_4658_20261014 -->
+## CENTRAL 최종 소스 병합 판정 — 2026-10-14 KST
+
+**SOURCE_STATUS = MERGED_TO_MAIN** — [PR #4658](https://github.com/skerishKang/ai-revenue-lab/pull/4658) reviewed exact-head `9588a22c176c5619c4f5a391fd1157d2c84992a5` was squash merged as **main `c620f5ce54b01a4b876c651aaff35a59183e17fa`**. GitHub main and PR merged states verified by CENTRAL. All 7 B66 source files are in main; no unrelated product source edits.
+
+- P0-A: `MODE_GENERAL` quote fact authority bypass corrected; retain existing quote facts, require server-owned authoring scope and explicit modification confirmation.
+- P0-B: D1 revision column plus guarded single-statement CAS, count verification and 409 conflict path; real overlapping two-connection SQLite regression included.
+- P1: exact empty model `taxMode:""` treated as omitted; unknown/incorrect types still fail closed.
+- Exact PR-head checks: **26 successful, 4 skipped, 0 failed**, including **GitGuardian Security Checks, B62 full regression, B62 Worker/Pyodide contract, Operating policy consistency**. LOCAL4 separately reports focused **201 PASS**, full **4806 PASS / 4 preexisting environment FAIL**, with baseline comparison; CENTRAL did not independently rerun the entire app suite.
+
+**NOT PROVEN / NOT DONE:** New production D1 migration 041, B66 signed-in customer UI wiring, browser/live provider E2E, QuoteCore production save or PDF issuance. Main-merge of B62 Worker backend is *not* a protected manual B62 Worker Production deployment; unrelated `ai-revenue-world-feed` preview/check is not B66 deployment evidence. Source validation is complete, Production activation is not. **[#4316](https://github.com/skerishKang/ai-revenue-lab/issues/4316)** remains the single E2E/operational acceptance queue. #4466/#4412 implementation is source-merged, not customer-ready. The historical `DRAFT`, `P0 outstanding`, or `pending final review` sections below describe the **earlier** HEAD review and must not be interpreted as current source status. No new independent reviewer or duplicate issue added.
+
+<!-- /CENTRAL_FINAL_MERGE_4658_20261014 -->
+
 > **성격:** 시점별 중앙 CTO 소스·검증 기록. 새로운 사업방침, 사용 권한, 운영 출시 승인이 아니다. 최신 변경 상태는 아래 이슈/PR 및 GitHub main을 우선한다. 로컬 비공개 사업·운영 정책 원문은 이 문서에 기록하지 않는다.
 
 ```text
