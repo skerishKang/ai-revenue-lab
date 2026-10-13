@@ -63,6 +63,23 @@ class CanonicalConnectorEnrollmentAsyncHost:
         self._broker = broker
         self._handoff = credential_handoff
 
+    async def _revoke_confirmed(self, *, binding_ref: str) -> None:
+        """Require the exact canonical Broker post-mutation revocation receipt.
+
+        A successful RPC transport / a truthy value / no exception is not a
+        durable revoke acknowledgement. An ambiguous result enters the same
+        security HOLD as an RPC failure; never claim a compensated enrollment.
+        The typed Broker Service Binding already returns precisely this shape.
+        """
+        result = await self._broker.revoke_binding(binding_ref=binding_ref)
+        if (
+            type(result) is not dict
+            or set(result) != {"binding_ref", "state"}
+            or result.get("binding_ref") != binding_ref
+            or result.get("state") != "revoked"
+        ):
+            raise ValueError("canonical Broker revocation was not confirmed")
+
     async def issue(self, *, canonical_session_id: str, device_id: str) -> dict[str, Any]:
         """Issue only after current canonical session and explicit per-PC consent pass."""
         session_id = _ref(canonical_session_id, "canonical session")
@@ -160,7 +177,7 @@ class CanonicalConnectorEnrollmentAsyncHost:
             )
         except Exception as exc:
             try:
-                await self._broker.revoke_binding(binding_ref=enrollment["binding_ref"])
+                await self._revoke_confirmed(binding_ref=enrollment["binding_ref"])
             except Exception as revoke_exc:
                 raise IdentityBridgeError(
                     503, "enrollment_consent_race_revoke_unconfirmed",
@@ -198,7 +215,7 @@ class CanonicalConnectorEnrollmentAsyncHost:
             handoff_error = None
         if delivered is not True:
             try:
-                await self._broker.revoke_binding(binding_ref=enrollment["binding_ref"])
+                await self._revoke_confirmed(binding_ref=enrollment["binding_ref"])
             except Exception as revoke_exc:
                 raise IdentityBridgeError(
                     503, "enrollment_handoff_revoke_unconfirmed",
@@ -222,7 +239,7 @@ class CanonicalConnectorEnrollmentAsyncHost:
             )
         except Exception as exc:
             try:
-                await self._broker.revoke_binding(binding_ref=enrollment["binding_ref"])
+                await self._revoke_confirmed(binding_ref=enrollment["binding_ref"])
             except Exception as revoke_exc:
                 raise IdentityBridgeError(
                     503, "enrollment_consent_race_revoke_unconfirmed",
