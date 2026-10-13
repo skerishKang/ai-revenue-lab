@@ -45,6 +45,15 @@ Latest frozen-manifest cursor: **200 text-inspected at least partly** (125 initi
 - **No current business pricing, operating mode, customer entitlement, retention, or policy authority was adopted**; proposal dates must be reconciled against latest Owner decisions. No local Governance inspection or source relocation.
 - All 25 paths have unchanged baseline blob SHA, and all 25 new statuses are `TEXT_FULL_FETCHED_B04` only.
 
+## 1D. Batch 05 — another 25 exact-source full-text inspections (2026-10-13)
+
+**Latest status:** 225 documents with at least some inspected text: 125 initial samples + 25 each B02/B03/B04/B05; 591 still path-only/unread, and 19 original PDF/DOCX binaries still pending.
+
+- [Batch 05 per-file review with pinned path/blob SHAs](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH05_20261013.md).
+- B66 Google Drive/customer-storage evidence versus unactivated certified native Sol PDF; B54 Claw PC read-only access versus real command/user approval; B14 historical 11-model/provider API/dated free quota and early BYOK pilot runbooks.
+- No current pricing, customer promise, model entitlement, connector activation, data-retention period or business direction approved.
+- No local Governance changes, source document relocation, customer data copy, redaction/history rewrite, or production mutation.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
