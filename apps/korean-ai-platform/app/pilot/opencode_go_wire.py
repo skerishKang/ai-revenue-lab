@@ -219,8 +219,8 @@ async def call_go_model(*, model_id: str, upstream_model: str,
                     _raise_upstream_error(resp.status_code, "opencode-go")  # never forward vendor body
                 # Pre-decode byte cap (#4379): the post-buffer len() check could
                 # only fire after the whole body was already in RAM.
-                from .platform import _read_bounded_body
-                raw = await _read_bounded_body(resp)
+                from .platform import MAX_COMPLETED_RESPONSE_BYTES, _read_bounded_body
+                raw = await _read_bounded_body(resp, cap=MAX_COMPLETED_RESPONSE_BYTES)
     except httpx.TimeoutException as e:
         raise UpstreamTimeout() from e
     except httpx.RequestError as e:
