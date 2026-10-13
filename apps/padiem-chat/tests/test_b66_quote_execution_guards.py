@@ -279,3 +279,53 @@ def test_other_product_core_request_keeps_existing_b14_retry_default():
         required_capabilities=("chat",), additional_system_context=None,
     )
     assert "max_retries" not in request.agent.model_policy
+
+
+
+def test_valid_large_b66_quote_completion_crosses_legacy_core_one_mib():
+    """One exact-model B66 completed quote must not hit Core's legacy 1MiB default.
+
+    This is a completed structured JSON memory budget, NOT a provider output
+    token cap. The general Chat/Core paths must retain their own bounds.
+    """
+    from padiem_ai_core.b14_execution import (
+        MAX_B14_RESPONSE_BYTES,
+        MAX_CONFIGURED_B14_RESPONSE_BYTES,
+    )
+
+    answer = "synthetic-long-quote-" + ("?" * (1_100_000))
+    payload = json.dumps({
+        "choices": [{"message": {"role": "assistant", "content": answer}}],
+        "business14": {"route_mode": "manual", "selected_model": MODEL},
+    }).encode()
+    assert MAX_B14_RESPONSE_BYTES < len(payload) < MAX_CONFIGURED_B14_RESPONSE_BYTES
+
+    class LongBinding:
+        def __init__(self):
+            self.calls = []
+        async def post_json(self, url, request):
+            self.calls.append((url, request))
+            return 200, payload
+
+    binding = LongBinding()
+    client = B14Client(settings(), service_transport=binding)
+    result = asyncio.run(client.complete_registered_quote_model(MESSAGES, model=MODEL))
+    assert result["answer"] == answer
+    assert len(binding.calls) == 1
+    assert binding.calls[0][1]["business14"]["max_retries"] == 0
+    assert client._completion_config().max_response_bytes == MAX_B14_RESPONSE_BYTES
+
+
+def test_b66_quote_core_bound_stays_finite_for_oversize_completed_json():
+    from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
+
+    class OversizeBinding:
+        async def post_json(self, url, request):
+            return 200, b"z" * (MAX_CONFIGURED_B14_RESPONSE_BYTES + 1)
+
+    with pytest.raises(ChatRuntimeError) as caught:
+        asyncio.run(
+            B14Client(settings(), service_transport=OversizeBinding())
+            .complete_registered_quote_model(MESSAGES, model=MODEL)
+        )
+    assert caught.value.code == "upstream_response_too_large"
