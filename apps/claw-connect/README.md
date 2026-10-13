@@ -40,3 +40,22 @@ claim that the Agent or production Broker is connected.
 
 Upgrade/uninstall retains the legacy `claw_connect` command when removing an
 old installation that has no `padiem_connector` Python entrypoint yet.
+
+
+## Source-only WSS socket implementation (#4139)
+
+Review code: claw_connect.review_wss_transport. It constructs a genuine
+websockets 17.2 asyncio client with verified OS CA and DNS hostname (TLS >=
+1.2), fixed outbound wss://chat.padiem.net/api/claw/connector/gateway/session,
+no auto-redirects (even same host), no ambient proxy or browser headers, no
+frame logging, no automatic replay and bounded message sizes. Its isolated
+test dependency is in requirements-wss-review.txt. The hosted Windows
+contract CI installs that pinned review dependency and tests the hardening
+without opening any real socket.
+
+Normal user installation intentionally does NOT bundle a networking library
+or activate this adapter. The default CLI, login, enrollment, tray and
+autostart continue to fail closed and are NOT made production-live by this
+source-only change. The Cloudflare Worker must independently prove trusted
+ingress and the PADIEM operator must verify identity/Broker consent and
+two-PC restart tests before production release.

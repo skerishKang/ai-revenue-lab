@@ -170,3 +170,15 @@ def test_ordinary_cli_and_installer_do_not_enable_wss():
     assert "review_wss_transport" not in (root/"claw_connect"/"__main__.py").read_text()
     assert "review_wss_transport" not in (root/"claw_connect"/"runtime.py").read_text()
     assert "websockets" not in (root/"install.ps1").read_text()
+
+
+
+def test_installed_exact_websockets_library_matches_reviewed_asyncio_api():
+    """CI installs pinned library; inspect actual API without making a socket."""
+    import importlib.metadata
+    from websockets.asyncio.client import connect
+    assert importlib.metadata.version("websockets") == "17.2"
+    assert isinstance(connect, type)
+    assert callable(connect.process_redirect)
+    assert hasattr(connect, "__aenter__")
+    assert hasattr(connect, "__aexit__")
