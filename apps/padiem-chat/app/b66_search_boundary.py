@@ -45,6 +45,55 @@ _PRIVATE_PARTICULARS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("credential", re.compile("계좌|통장|카드번호|비밀번호|api\\s*키|토큰|시크릿")),
 )
 
+
+# Public retrieval is a positive allowlist, not a "strip PII" blacklist. The
+# browser's free-form question NEVER travels to TinyFish/Daum, even when a
+# person's or counterparty's bare name evades the private-token heuristics.
+# A future topic must be security-reviewed and added explicitly. Unknown
+# locations, proper nouns, sites, quoted text and arbitrary tails all fail
+# closed; no LLM rewrite or heuristic substring extraction is permitted.
+_PUBLIC_INTENT_PREFIX = r"(?:(?:오늘|현재|최신|최근|지금|요즘|실시간|이번\\s*주|이번\\s*달)\\s*)?"
+_PUBLIC_INTENT_SUFFIX = (
+    r"(?:\\s*(?:은|는|이|가|을|를))?\\s*"
+    r"(?:(?:검색|조회)(?:해\\s*(?:줘|주세요))?"
+    r"|(?:알려|찾아|확인해)\\s*(?:줘|주세요)"
+    r"|어때|뭐야|얼마야)?\\s*[?？!.]*"
+)
+_PUBLIC_TOPIC_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = tuple(
+    (
+        re.compile(
+            _PUBLIC_INTENT_PREFIX + topic + _PUBLIC_INTENT_SUFFIX,
+            flags=re.IGNORECASE,
+        ),
+        approved_query,
+    )
+    for topic, approved_query in (
+        (r"철근\\s*(?:시세|가격)", "철근 시세"),
+        (r"(?:원\\s*달러\\s*환율|달러\\s*환율|환율)", "원달러 환율"),
+        (r"(?:한국은행\\s*)?기준금리", "한국은행 기준금리"),
+        (r"금\\s*(?:시세|가격)", "금 시세"),
+        (r"날씨", "날씨"),
+    )
+)
+
+
+def approved_public_query(question: str) -> str | None:
+    """Return a constant, reviewed topic; never return any user text.
+
+    Do not truncate/repair an unsafe question into an apparently safe query:
+    that could silently change intent or ship an unknown bare proper noun.
+    """
+    if not isinstance(question, str) or not question:
+        return None
+    normalized = re.sub(r"\\s+", " ", question.strip())
+    if len(normalized) > MAX_B66_QUERY_CHARS:
+        return None
+    for pattern, approved in _PUBLIC_TOPIC_PATTERNS:
+        if pattern.fullmatch(normalized):
+            return approved
+    return None
+
+
 _DIALOGUE_SKILL = TaskMode(
     id=B66_DIALOGUE_TASK_ID,
     title="B66 AI conversation",
@@ -135,8 +184,12 @@ async def plan_b66_search(
     if private is not None:
         return B66SearchOutcome("withheld_private", private)
 
-    # The provider must not receive a tail the member never meant as a query.
-    public_query = question[:MAX_B66_QUERY_CHARS]
+    # Never send customer-authored words (even a 200-char prefix) to a
+    # public provider. This positive allowlist closes the bare-name gap the
+    # private-pattern blacklist cannot reliably recognize.
+    public_query = approved_public_query(question)
+    if public_query is None:
+        return B66SearchOutcome("withheld_private", "public_query_not_approved")
 
     try:
         plan = await grounding.prepare(
@@ -177,6 +230,7 @@ __all__ = [
     "B66SearchOutcome",
     "B66_DIALOGUE_TASK_ID",
     "MAX_B66_QUERY_CHARS",
+    "approved_public_query",
     "_envelope",
     "plan_b66_search",
     "withheld_private_class",
