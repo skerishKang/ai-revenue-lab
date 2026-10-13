@@ -248,6 +248,16 @@ Frozen **835 originals**: **775 text-viewed at least partly** (125 initial TEXT_
 - B47 excludes feedback monitoring and automatic user scoring; B49 public-data schema/lineage does not establish actual connected API, government endorsement, dataset licences or current values.
 - No original files/paths/SHAs, off-Git corporate Governance, emergency/personal records, external provider, product permissions, production service or Git history modified.
 
+## 1AB. Batch 28 — 25 full text reads: B66, public Lab, old Core/Claw, B06 and B35 QA (2026-10-13)
+
+Frozen **835 original** cursor: **800 original texts viewed partly or fully** (125 initial `TEXT_SAMPLED` + 25 each B02–B28), **16 INDEXED_ONLY** original text bodies unread, **19 BINARY_PENDING** PDF/DOCX bodies unread. Earlier 125 partial samples are not independently exhaustively cleared.
+
+- [Batch28 exact-source SHA and business/technical/Owner classification](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH28_20261013.md).
+- Specific public-approved B66 standard template must not be confused with private uploaded customer quotes, fonts/licensed assets or live product provisioning. Historic B66 demos, dev-model heuristics and HWPX source-only scan do not create present-day live authority.
+- Public Padiem Lab must remain isolated from private Portfolio Console. B06 news benchmark is a dated research/economics hypothesis. B35 independent QA reports are overall FAIL due to revision lineage and/or missing files, despite narrower successful checks.
+- B52 scheduling, B53 SDK, B58 writing-voice and B62 early chat visual motion/QA are demonstrations, not live deployment/consent/Owner approval.
+- No original docs, confidential local Governance/private vault, customer contents, account/provider, Production status, business contracts or protected PR changed.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
