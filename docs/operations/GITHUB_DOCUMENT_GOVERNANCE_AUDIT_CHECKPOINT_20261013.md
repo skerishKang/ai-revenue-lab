@@ -95,6 +95,15 @@ Latest frozen 835-item cursor: **350 source documents with text read at least pa
 - Dated ModelScope 504, Kira limited promotion/subscription and partial Sol PDF trials are not current model eligibility, plan pricing or certified customer E2E. Cloud hosting vendor comparisons and OSS licensing must be separated from technical threat models and actual paid/contractual commitments.
 - No original public source editing, company-Governance migration, credential/provider API calls, local machine access, business-policy activation or Cloudflare mutation.
 
+## 1J. Batch 11 — 25 additional complete-source reads (2026-10-13)
+
+Latest immutable **835**-source cursor: **375 documents whose text was seen at least partly** (125 original samples + 25 each B02/B03/B04/B05/B06/B07/B08/B09/B10/B11), **441 `INDEXED_ONLY` unread**, **19 PDF/DOCX binary bodies pending**. The 125 initial `TEXT_SAMPLED` records still require complete classification.
+
+- [Batch 11 pinned #3580 Hark Office, Drive, Telegram, WEB-FIRST P01 and local transport audit](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH11_20261013.md).
+- Product priority: owner-dated WEB-FIRST intake vs explicitly chosen Windows fallback; do not conflate product roadmap with a new shared architecture.
+- Drive READ != WRITE; Telegram READ != SEND; metadata/source selection != P01 approval != exact-run Resident execution != artifact delivery; code/source and synthetic E2E must not be described as current live authority.
+- No original docs/credentials/customer files/local Governance/product policies changed. No production or live provider mutations.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
