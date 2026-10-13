@@ -184,6 +184,15 @@ Frozen original **835** document cursor: **600 source documents with some text i
 - B44 Cloudflare security challenge is not product screenshot proof. B46 real profiling, B57 translation copyrights and B58 writing voice permissions require separate Owner/legal decisions. B51/52/53/55/59 concepts are not live installs, automations, SDKs, fleet or OCR/PDF production.
 - No original source modification, off-Git Governance access, customer/provider data, business authorization, protected branch merge or live deployment.
 
+## 1U. Batch 21 — 25 source reads: Model evidence and core platform/product contracts (2026-10-13)
+
+At fixed **835** originals: **625 texts partly or completely viewed** (125 original sampled, 25 each B02–B21), **191 INDEXED_ONLY text unread**, **19 BINARY_PENDING PDF/DOCX unread**. The 125 early sampled documents still need independent exhaustive review.
+
+- [Batch21 SHA-pinned original model, Core/Engine/Control, copyright and B61/B67 triage](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH21_20261013.md).
+- One historical model provider error/free quota does not set current Free/Plus/Pro/Max or authorize charged calls; Core/Engine/Control/B14 retain distinct technical authority and source-vs-live obligations.
+- Keep MIT/OFL license notices; pypdf decoder disabled pending provenance; B61 Bible mapping demands exact source rights/verse provenance. B66 synthetic quote fixture and approved PDF template are not current customer acceptance.
+- No original source history, local private Governance, commercial membership, customer data, live Provider or Production changes.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
