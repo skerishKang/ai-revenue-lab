@@ -390,6 +390,16 @@ def _resolve_with_source(
     now: datetime,
 ) -> ProductAccessEntry:
     authority = _source_authority(source)
+    # "none" is the reserved no-authority sentinel, not an attestable
+    # source. An absent/malformed source.authority must NEVER be sufficient
+    # to project an explicit allow or denial, even if its finding also says
+    # authority="none". Refuse before reading an unidentifiable source.
+    if authority == NO_AUTHORITY:
+        return _unavailable(
+            product_id,
+            authority=NO_AUTHORITY,
+            reason="authority_response_invalid",
+        )
     try:
         finding = source.read_product_access(
             product_id=product_id,
