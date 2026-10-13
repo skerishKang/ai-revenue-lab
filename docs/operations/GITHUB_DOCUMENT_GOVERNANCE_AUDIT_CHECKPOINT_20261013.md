@@ -166,6 +166,15 @@ Original 835-document cursor: **550 with text viewed at least partly** (125 init
 - Corporate Dothome account backup/deletion requires Owner review; P01 capability promotions, Source and Preview do not grant new customer Agent permissions; Tabbit UI QuickCheck is not a substitute for contract/security CI.
 - No original source/Git history, private off-Git Governance, customer material, provider account, subscription or deployment changed.
 
+## 1S. Batch 19 — 25 UI/UX portfolio source reads (2026-10-13)
+
+Frozen 835-document cursor: **575** source texts at least partly inspected (125 early `TEXT_SAMPLED` + B02–B19 25 each); **241** INDEXED_ONLY bodies not read; **19** original PDF/DOCX BINARY_PENDING. Initial 125 samples still require exhaustive classification.
+
+- [Batch19 SHA-pinned visual owner/process and B02–B32 product direction audit](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH19_20261013.md).
+- Historical `OWNER_UI_APPROVED=false`, frozen `KEEP`/redo directions and automated screenshot references are not current owner approval; B06 method is reusable, not one dark palette for every Business.
+- B09 minors, B13 media rights and B17 merchant voice/scene materials require independent owner/rights/privacy decisions. B29 Apartment Governance and B32 Skill Studio retain protected product-specific review authority, not off-Git corporate Governance.
+- Original sources and SHA/size, business decisions, customer files, live products, local private Governance and deployment remain untouched.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
