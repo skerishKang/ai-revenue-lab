@@ -1138,6 +1138,26 @@ jobs:
           test -n "${PREVIOUS_VERSION_ID}"
           echo "B62_PRODUCTION_CODE_ROLLBACK_AUTHORIZATION=PASS"
 
+      - name: Checkout exact rollback workflow source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main before a recorded-version rollback
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          test -s .github/scripts/b62_cloudflare_504_readonly_get.sh
+          test -s .github/scripts/b62_cloudflare_rollback_deployment_request.py
+          test -s .github/scripts/cloudflare_served_version_cli.py
+          echo 'B62_ROLLBACK_EXACT_MAIN_SOURCE=PASS'
+          echo 'PRODUCTION_MUTATION=0'
+
       - name: Locate recorded version in history
         shell: bash
         run: |
