@@ -229,6 +229,15 @@ Frozen **835 original** cursor: **725 documents seen at least in part** (125 ini
 - B11 annotated source reading doesn't own genuine copyrighted lessons and isn't B04 adaptive teaching; B12 editorial relay isn't live CMS/content generation. B15 newsroom mock doesn't fact-check or publish real claims without external source/legal and human editorial authority.
 - No original files, off-Git corporate Governance, customer records, third-party proof ZIP, model providers, business rights, live deployments or existing CI modified.
 
+## 1Z. Batch 26 — 25 full-body reads: B16 sports, B17 local shops, B18 audio, B19 memories, B21 fictional strategy, B29 apartment and B38 exercise (2026-10-13)
+
+Frozen 835-original document cursor: **750 partly/fully text-viewed** (125 initial `TEXT_SAMPLED` plus B02–B26 each 25), **66 INDEXED_ONLY** text bodies unread, **19 BINARY_PENDING** original PDF/DOCX unread. Initial 125 samples are not exhaustively reclassified.
+
+- [Batch26 exact-source SHA-pinned public-safe technology, product, owner and rights triage](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH26_20261013.md).
+- B16 past draft Owner design hold, B17 real-merchant editorial rights, B18/B19 missing binary screenshot bytes, and B21 synthetic founder/finance and approval imagery are different evidence classes; B21 is not current PADIEM company strategy.
+- B29 separate apartment product image-source notes refer to real identity and confidential legal/audit material **not** included in demo; do not reproduce it in public source audit. B38 synthetic motion exercise plan lacks clinical/real safety or independently approved customer effect.
+- No original path/blob/hash/size, private Governance/drive content, protected UI product PR, user files, business permission or live deployment changed.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
