@@ -51,6 +51,7 @@ from pathlib import Path
 from typing import Any, Callable, Protocol
 
 from . import CONNECT_PRODUCT, WEB_URL
+from .credential_install import InstallFailureRecovery, plan_install_failure_recovery
 
 
 class EnrollmentDisplayState(str, Enum):
@@ -200,6 +201,92 @@ class BrokerNotConfiguredError(RuntimeError):
 
 class EnrollmentContractError(RuntimeError):
     """Raised when caller-supplied enrollment material violates the contract."""
+
+
+#: Closed shape of the post-redemption reconciliation hold. It names only the
+#: bounded recovery disposition plus the secret-free refs the server already
+#: returned, so it can be shown to an operator without exposing credential
+#: material, a pairing code or a proof.
+RECONCILIATION_HOLD_KEYS = frozenset(
+    {
+        "action",
+        "reconciliation_required",
+        "report_enrolled",
+        "retry_same_challenge",
+        "retransmit_credential",
+        "requires_new_challenge",
+        "requires_fresh_owner_consent",
+        "challenge_id",
+        "device_id",
+        "binding_ref",
+        "account_ref",
+        "workspace_ref",
+        "credential_generation",
+    }
+)
+
+
+class EnrollmentPersistenceError(OSError):
+    """The server accepted the redemption but this PC could not record it.
+
+    Deliberately **not** an ``EnrollmentContractError``: the S1/S2 wire contract
+    was satisfied, so nothing here is a refusal. It subclasses ``OSError`` so a
+    caller that already handles a failed state-directory write keeps working
+    unchanged, and the underlying failure is chained as ``__cause__``.
+
+    It is also **not** a resolution. The server may already hold a live binding
+    for this device, no local record exists for it, and the Connector performs no
+    compensating call, so the only permitted disposition is the existing
+    security hold — ``plan_install_failure_recovery(revocation_confirmed=None)``
+    from ``credential_install`` — which pins ``report_enrolled``,
+    ``retry_same_challenge`` and ``retransmit_credential`` false. Reusing that
+    contract rather than minting a second recovery vocabulary is deliberate: the
+    disposition question is identical (a redeemed challenge whose completion did
+    not land, with no authenticated revocation verdict), and no revocation is
+    inferred from a local write failure.
+
+    ``recovery`` is that bounded disposition. The correlation refs are carried
+    only so an operator can reconcile this device against the server's binding;
+    they are not an enrollment and not a credential.
+    """
+
+    def __init__(
+        self,
+        *,
+        recovery: InstallFailureRecovery,
+        challenge_id: str,
+        device_id: str,
+        binding_ref: str,
+        account_ref: str | None,
+        workspace_ref: str | None,
+        credential_generation: int,
+    ) -> None:
+        super().__init__(
+            "enrollment receipt could not be persisted; the server may already hold "
+            f"this binding, so the PC stays on a security hold pending server "
+            f"reconciliation ({recovery.action})"
+        )
+        self.recovery = recovery
+        self.challenge_id = challenge_id
+        self.device_id = device_id
+        self.binding_ref = binding_ref
+        self.account_ref = account_ref
+        self.workspace_ref = workspace_ref
+        self.credential_generation = credential_generation
+        if set(self.safe_dict()) != RECONCILIATION_HOLD_KEYS:
+            raise EnrollmentContractError("reconciliation hold shape is closed")
+
+    def safe_dict(self) -> dict[str, Any]:
+        """Bounded, secret-free projection of the hold for operator surfaces."""
+        return {
+            **self.recovery.safe_dict(),
+            "challenge_id": self.challenge_id,
+            "device_id": self.device_id,
+            "binding_ref": self.binding_ref,
+            "account_ref": self.account_ref,
+            "workspace_ref": self.workspace_ref,
+            "credential_generation": self.credential_generation,
+        }
 
 
 def _aware(value: datetime, field_name: str) -> datetime:
@@ -685,6 +772,9 @@ class ConnectorEnrollment:
         self._pairing_client_factory = pairing_client_factory
         self._enrollment_server_factory = enrollment_server_factory
         self._record: EnrollmentRecord | None = None
+        #: This process's memory that a redemption succeeded while the local
+        #: record could not be written. Never durable, never an enrollment.
+        self._reconciliation_hold: dict[str, Any] | None = None
 
     # -- configuration ------------------------------------------------------
     @property
@@ -750,6 +840,28 @@ class ConnectorEnrollment:
     def flush(self) -> None:
         """Persist the record. Never contains a credential, code or challenge."""
         self._write(self.record())
+
+    def reconciliation_hold(self) -> dict[str, Any] | None:
+        """The bounded, secret-free post-redemption hold, or ``None``.
+
+        This is *this process's* memory that a redemption succeeded while the
+        local record could not be written — the state
+        ``EnrollmentPersistenceError`` describes. It is deliberately in-memory
+        only: the failure mode it reports is an unwritable state directory, so a
+        durable hold is impossible in exactly the window it covers, and claiming
+        one would be false. It never survives a restart, and nothing here writes
+        it to disk.
+
+        It is never an enrollment, never a credential and never a revocation
+        verdict — the Connector does not revoke a binding and does not infer one
+        from a local write failure. It exists so an operator surface cannot
+        report a clean "never enrolled" PC while the server may already hold a
+        binding for it. A later *successful* commit clears it; a refusal, a
+        retry attempt or a restart does not resolve it, and reconciliation
+        remains CENTRAL's authenticated step.
+        """
+        hold = self._reconciliation_hold
+        return None if hold is None else dict(hold)
 
     @staticmethod
     def _new_device_id() -> str:
@@ -898,8 +1010,29 @@ class ConnectorEnrollment:
         candidate.enrolled_at = moment
         candidate.revoked = False
         candidate.blocked_reason = None
-        self._write(candidate)
+        try:
+            self._write(candidate)
+        except Exception as exc:
+            # The redemption already succeeded; only the local commit failed. The
+            # server may hold a live binding this PC never recorded, so this is
+            # neither a rollback nor a retryable local error. Fail closed onto the
+            # existing security hold (no authenticated revocation verdict exists,
+            # so `revocation_confirmed=None` is the only honest input) and keep the
+            # bounded, secret-free hold visible to operator surfaces.
+            hold = EnrollmentPersistenceError(
+                recovery=plan_install_failure_recovery(revocation_confirmed=None),
+                challenge_id=challenge,
+                device_id=record.device_id,
+                binding_ref=result.binding_ref,
+                account_ref=result.account_ref,
+                workspace_ref=result.workspace_ref,
+                credential_generation=result.credential_generation,
+            )
+            self._reconciliation_hold = hold.safe_dict()
+            raise hold from exc
         self._record = candidate
+        # A durable, adopted record supersedes any earlier un-persisted receipt.
+        self._reconciliation_hold = None
         return result
 
     def _redeem_via_enrollment_server(
@@ -1093,6 +1226,12 @@ class ConnectorEnrollment:
             "workspace_ref": record.workspace_ref,
             "blocked": blocked,
             "blocked_reason": record.blocked_reason,
+            # A redemption that succeeded while the local commit failed leaves a
+            # server-side binding this PC has no record of. Reporting it here
+            # keeps the hold visible instead of letting the snapshot read as a
+            # clean "never enrolled" device. It is never an enrollment claim.
+            "reconciliation_required": self._reconciliation_hold is not None,
+            "reconciliation_hold": self.reconciliation_hold(),
             "broker_endpoint_configured": self.broker_configured(),
             "credential_expires_at": _iso(record.credential_expires_at),
             "pairing_code_persisted": False,
@@ -1113,6 +1252,7 @@ __all__ = [
     "ENROLLMENT_SCOPED_REDEMPTION_REQUIRED",
     "ENROLLMENT_SERVER_WIRED",
     "EnrollmentContractError",
+    "EnrollmentPersistenceError",
     "EnrollmentRecord",
     "EnrollmentRedemptionRequest",
     "EnrollmentRedemptionResponse",
@@ -1127,5 +1267,6 @@ __all__ = [
     "LIFECYCLE_PAIRED_OFFLINE",
     "LIFECYCLE_REVOKED",
     "LIFECYCLE_UNPAIRED",
+    "RECONCILIATION_HOLD_KEYS",
     "project_connector_status",
 ]

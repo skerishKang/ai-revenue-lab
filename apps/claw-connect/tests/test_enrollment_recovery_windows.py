@@ -27,12 +27,15 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from claw_connect.credential_install import (  # noqa: E402
+    RECOVERY_SECURITY_HOLD,
     CredentialInstallError,
     LocalStoreCredentialReceiver,
 )
 from claw_connect.enrollment import (  # noqa: E402
+    RECONCILIATION_HOLD_KEYS,
     ConnectorEnrollment,
     EnrollmentContractError,
+    EnrollmentPersistenceError,
     EnrollmentRedemptionResponse,
 )
 
@@ -58,6 +61,27 @@ class RedeemedOnceThenRefused:
             return EnrollmentRedemptionResponse(
                 ok=False, reason="enrollment_duplicate_redeem_denied", retryable=False
             )
+        return EnrollmentRedemptionResponse(
+            ok=True,
+            binding_ref=BINDING,
+            device_id=request.device_id,
+            account_ref=self.scope["account_ref"],
+            workspace_ref=self.scope["workspace_ref"],
+            credential_generation=1,
+            credential_expires_at=EXPIRES,
+            consent_id="consent-win-1",
+        )
+
+
+class AlwaysRedeems:
+    """A port that keeps accepting, so a later attempt can commit durably."""
+
+    def __init__(self, **scope):
+        self.calls = 0
+        self.scope = {"account_ref": ACCOUNT, "workspace_ref": WORKSPACE, **scope}
+
+    def redeem_enrollment(self, request, *, now):
+        self.calls += 1
         return EnrollmentRedemptionResponse(
             ok=True,
             binding_ref=BINDING,
@@ -275,6 +299,142 @@ def test_a_successful_write_publishes_the_new_record_and_leaves_the_old_view_int
     assert old.is_enrolled() is False
     assert connector.status_snapshot()["enrolled"] is True
     assert connector.device_identity()["binding_ref"] == BINDING
+    assert _durable(tmp_path)["binding_ref"] == BINDING
+
+
+# -- window 1, after the write failed: the bounded hold that must stay visible ----
+# The redemption succeeded and only the local commit failed, so the server may hold a
+# live binding this PC has no record of. LOCAL2 cannot reconcile that (no authenticated
+# revocation verdict exists, and the remote step is CENTRAL's), but it must not let the
+# failure read as a clean "never enrolled" device either. These tests pin the bounded,
+# secret-free hold that reuses the *existing* recovery contract: it is reported, it is
+# never an enrollment, it is never durable, and only a later durable commit resolves it.
+def _fail_the_commit(monkeypatch, connector, *, challenge_id=CHALLENGE):
+    """Redeem, then fail the local commit, leaving the hold open."""
+    _unwritable_state_dir(monkeypatch, connector)
+    with pytest.raises(EnrollmentPersistenceError):
+        connector.complete_login(
+            challenge_id=challenge_id, pairing_code=PAIRING_CODE, now=NOW
+        )
+    monkeypatch.undo()
+
+
+def test_a_post_redemption_persistence_failure_raises_the_bounded_security_hold(
+    tmp_path, monkeypatch
+):
+    port = RedeemedOnceThenRefused()
+    connector = _connector(tmp_path, port)
+    _fail_the_commit(monkeypatch, connector)
+    assert port.calls == 1
+
+    hold = connector.reconciliation_hold()
+    assert set(hold) == RECONCILIATION_HOLD_KEYS
+    # The disposition is the existing install-failure hold, not a new vocabulary: no
+    # authenticated revocation verdict exists, so it must not guess one.
+    assert hold["action"] == RECOVERY_SECURITY_HOLD
+    assert hold["reconciliation_required"] is True
+    assert hold["report_enrolled"] is False
+    assert hold["retry_same_challenge"] is False
+    assert hold["retransmit_credential"] is False
+    assert hold["requires_new_challenge"] is False
+    assert hold["requires_fresh_owner_consent"] is True
+    # Only the secret-free refs the server already returned are carried.
+    assert hold["challenge_id"] == CHALLENGE
+    assert hold["device_id"] == connector.record().device_id
+    assert hold["binding_ref"] == BINDING
+    assert hold["account_ref"] == ACCOUNT
+    assert hold["workspace_ref"] == WORKSPACE
+    assert hold["credential_generation"] == 1
+    assert PAIRING_CODE not in json.dumps(hold)
+
+
+def test_the_hold_is_reported_but_never_becomes_an_enrollment(tmp_path, monkeypatch):
+    port = RedeemedOnceThenRefused()
+    connector = _connector(tmp_path, port)
+    _fail_the_commit(monkeypatch, connector)
+
+    snapshot = connector.status_snapshot()
+    assert snapshot["reconciliation_required"] is True
+    assert snapshot["reconciliation_hold"]["action"] == RECOVERY_SECURITY_HOLD
+    json.dumps(snapshot)                     # still a plain, secret-free payload
+    assert PAIRING_CODE not in json.dumps(snapshot)
+    # ...and the hold claims nothing: not enrolled, no binding, no lifecycle.
+    assert snapshot["enrolled"] is False
+    assert snapshot["binding_ref"] is None
+    assert snapshot["device_lifecycle"] is None
+    assert connector.device_identity()["binding_ref"] is None
+    assert connector.record().is_enrolled() is False
+
+
+def test_reading_the_hold_never_replays_the_redeemed_challenge(tmp_path, monkeypatch):
+    """Reading the hold is not a recovery attempt and must contact nobody."""
+    port = RedeemedOnceThenRefused()
+    connector = _connector(tmp_path, port)
+    _fail_the_commit(monkeypatch, connector)
+    assert port.calls == 1
+
+    connector.reconciliation_hold()
+    connector.status_snapshot()
+    connector.device_identity()
+    connector.record()
+    assert port.calls == 1                  # no second redemption, ever
+
+
+def test_the_hold_is_never_persisted_and_does_not_survive_a_restart(
+    tmp_path, monkeypatch
+):
+    """The failure mode *is* an unwritable state directory, so this is the honest limit.
+
+    A durable hold is impossible in exactly the window it would describe. The
+    consequence is that a restart loses it — which is precisely why the reconciliation
+    stays a server-side obligation and no LOCAL2 message may claim the hold resolved
+    anything.
+    """
+    port = RedeemedOnceThenRefused()
+    connector = _connector(tmp_path, port)
+    connector.record()
+    stable = _durable(tmp_path)
+    _fail_the_commit(monkeypatch, connector)
+    assert connector.reconciliation_hold() is not None
+
+    # Nothing about the hold reached the disk.
+    assert _durable(tmp_path) == stable
+
+    restarted = _connector(tmp_path, RedeemedOnceThenRefused())
+    assert restarted.reconciliation_hold() is None
+    assert restarted.status_snapshot()["reconciliation_required"] is False
+    assert restarted.record().is_enrolled() is False
+
+
+def test_a_later_refusal_does_not_clear_the_hold(tmp_path, monkeypatch):
+    port = RedeemedOnceThenRefused()
+    connector = _connector(tmp_path, port)
+    _fail_the_commit(monkeypatch, connector)
+
+    # The same challenge is already spent upstream. A refusal is a refusal: it
+    # resolves nothing about the binding the server may still hold.
+    with pytest.raises(EnrollmentContractError):
+        connector.complete_login(challenge_id=CHALLENGE, pairing_code=PAIRING_CODE, now=NOW)
+    assert port.calls == 2
+    assert connector.reconciliation_hold() is not None
+    assert connector.status_snapshot()["reconciliation_required"] is True
+
+
+def test_a_later_successful_commit_clears_the_hold(tmp_path, monkeypatch):
+    """Only a durable, adopted record supersedes an un-persisted receipt."""
+    port = AlwaysRedeems()
+    connector = _connector(tmp_path, port)
+    _fail_the_commit(monkeypatch, connector)
+    assert connector.reconciliation_hold() is not None
+
+    result = connector.complete_login(
+        challenge_id="challenge-win-2", pairing_code=PAIRING_CODE, now=NOW
+    )
+
+    assert result.binding_ref == BINDING
+    assert connector.reconciliation_hold() is None
+    assert connector.status_snapshot()["reconciliation_required"] is False
+    assert connector.record().is_enrolled() is True
     assert _durable(tmp_path)["binding_ref"] == BINDING
 
 

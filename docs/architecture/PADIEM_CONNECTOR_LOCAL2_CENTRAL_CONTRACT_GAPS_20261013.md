@@ -18,6 +18,7 @@ original_file_committed_at=e67ce1957
 central_review=PASS_WITH_3_CORRECTIONS_2026_10_13
 corrections=A_local_logout_is_not_transfer__B_local_refusal_is_not_server_rollback__C_damaged_binding_must_fail_closed
 d1_followup=CENTRAL_2026_10_13_PARTIAL_PASS_NEEDS_ALIAS_SAFE_STAGING__CORRECTED_IN_SECTION_12
+post_redemption_hold=LOCAL2_SIDE_BOUNDED_HOLD_ONLY__SECTION_13 (remote reconciliation stays CENTRAL)
 status=awaiting_central_re_review
 ```
 
@@ -153,8 +154,10 @@ no test asserts a real PC pairing. A green suite here means *the contract holds*
 | `node --test tests/*.test.mjs` (tray/CLI wrapper) | **5 pass, 0 fail** |
 | interruption/restart audit (2nd increment) | **13 passed** in `tests/test_enrollment_recovery_windows.py`; whole connector suite **315 passed, 4 skipped** after the two fixes |
 | D1 alias-safe staging (3rd increment, CENTRAL review 2026-10-13) | `tests/test_enrollment_recovery_windows.py` **17 passed**; whole connector suite **319 passed, 4 skipped**; `npm test` **5 pass / 0 fail** |
+| post-redemption hold (4th increment, §13) | `tests/test_enrollment_recovery_windows.py` **23 passed**; whole connector suite **325 passed, 4 skipped**; `npm test` **5 pass / 0 fail** |
 | mutation proof for the two fixes | reverting D1 → 2 failed; removing the owner-scope correlation → 3 failed; both files restored byte-identically |
 | mutation proof for the D1 staging correction | reverting stage-then-publish to in-place mutation + `self._record = previous` → **exactly the 4 new tests failed**, 315 passed, 4 skipped; `enrollment.py` restored to `d385b35c1127c7f9e86fcfe7628837fa70f789ed` |
+| mutation proof for the post-redemption hold (§13) | removing the hold mechanism (raw `OSError`, no hold) → **exactly the 6 new tests failed**, 319 passed, 4 skipped; keeping the error but never recording the hold → **5 failed**, 320 passed; `enrollment.py` restored to `8bb1bb80067ba4bbd7e559d7f53c533f7fdeb9c1` |
 | `claw-connect-contract-tests.yml` (CI, `windows-latest`, Python 3.12) | runs on `apps/claw-connect/**`; see the PR checks |
 
 The 4 skips are the pre-existing `CENTRAL-CONTRACT-CONFLICT` set (the Resident/enrollment wiring CENTRAL
@@ -337,6 +340,11 @@ SERVER_CONTRACT_MATCH=ENVELOPE_AND_RECEIPT_PINNED
 LOCAL_INSTALL_PROOF=SAVE_PLUS_READBACK_AND_OWNER_SCOPE_CORRELATED
 INSTALLED_STATE_COMMITTED_ONLY_AFTER_DURABLE_WRITE=YES
 PUBLISHED_RECORD_OBJECT_NEVER_MUTATED_IN_PLACE=YES
+POST_REDEMPTION_PERSISTENCE_FAILURE=EnrollmentPersistenceError (OSError subclass, original chained as __cause__)
+RECONCILIATION_DISPOSITION=REUSES_plan_install_failure_recovery(revocation_confirmed=None)
+RECONCILIATION_HOLD=IN_PROCESS_ONLY_SECRET_FREE_NEVER_AN_ENROLLMENT
+RECONCILIATION_HOLD_SURVIVES_RESTART=NO (the failure mode is an unwritable state directory)
+RECONCILIATION_HOLD_CLEARED_BY=ONLY_A_LATER_DURABLE_COMMIT (not by a refusal, a retry or a restart)
 WINDOWS_DPAPI_INTEGRATION=CANONICAL_STORE_CONTRACT_PASSED
 INSTALL_ACK_PROOF=COMPUTED_AFTER_READBACK_NOT_TRANSMITTED
 CREDENTIAL_BOUND=PAIRING_PROTOCOL_4096_RESOLVED_BY_DECISION_A
@@ -426,5 +434,87 @@ No READY, no MERGE, no PRODUCTION enablement follows from these green contract c
 `WINDOWS_LIVE_E2E=NOT_PROVEN` (#3099) is unchanged.
 
 Changed files for this correction: `apps/claw-connect/claw_connect/enrollment.py`,
+`apps/claw-connect/tests/test_enrollment_recovery_windows.py`, and this document. No CENTRAL and no LOCAL1
+file was modified.
+
+## 13. Post-redemption hold — what LOCAL2 can do about the compensation risk (§12 open item)
+
+§12 left one thing explicitly unresolved: server redemption can succeed before the local record is
+persisted, and a local rollback is **not** an authenticated canonical Broker revocation. CENTRAL owns the
+remote reconciliation and the authenticated recovery-verdict field, so this section does not attempt
+either. It closes the part of the risk that is genuinely LOCAL2's: the failure must not be
+indistinguishable from "the server was never reached", and the PC must not read as a clean
+"never enrolled" device while the server may already hold a binding for it.
+
+### Reuse decision (recorded per `AGENTS.md` §"Reassess / repair / reuse before creating")
+
+The disposition question here is *identical* to the one `credential_install.plan_install_failure_recovery`
+already answers: a redeemed challenge whose completion did not land, with **no authenticated revocation
+verdict**. So LOCAL2 **reuses** that contract instead of minting a second recovery vocabulary:
+
+```text
+DISPOSITION = REUSE_INTERNAL   # credential_install.plan_install_failure_recovery
+called with  revocation_confirmed=None   # no authenticated verdict exists; the honest input
+→ action = RECOVERY_SECURITY_HOLD, reconciliation_required=True,
+  report_enrolled=False, retry_same_challenge=False, retransmit_credential=False
+```
+
+`credential_install.py` is **not modified** — the existing pure function is called, nothing more. No new
+store, identity, route, transport, credential path, refusal reason or product dimension is introduced, and
+no revocation is inferred from a local write failure.
+
+### The two changes
+
+1. **The failure gets its own type.** `EnrollmentPersistenceError(OSError)` is raised when the redemption
+   succeeded but the commit did not. It is deliberately *not* an `EnrollmentContractError` (the S1/S2 wire
+   contract was satisfied, so nothing here is a refusal) and it subclasses `OSError` so a caller that
+   already handles a failed state-directory write keeps working unchanged; the original failure is chained
+   as `__cause__`. Its message is bounded — it does not echo the OS error text.
+2. **The hold becomes visible, bounded and secret-free.** The error carries the recovery disposition plus
+   the secret-free refs the server already returned (`challenge_id`, `device_id`, `binding_ref`,
+   `account_ref`, `workspace_ref`, `credential_generation`) in a **closed** shape
+   (`RECONCILIATION_HOLD_KEYS`, enforced in `__init__`). `ConnectorEnrollment.reconciliation_hold()`
+   returns it, and `status_snapshot()` gains `reconciliation_required` / `reconciliation_hold`.
+
+### What the hold is not, stated as tests rather than prose
+
+| Property | Pinning test |
+|---|---|
+| Never an enrollment: `enrolled`/`binding_ref`/`device_lifecycle` stay un-enrolled, `device_identity()["binding_ref"]` stays `None` | `test_the_hold_is_reported_but_never_becomes_an_enrollment` |
+| Never a credential, code or proof: the bounded shape is closed and the pairing code appears nowhere in the payload | `test_a_post_redemption_persistence_failure_raises_the_bounded_security_hold` |
+| Never a recovery attempt: reading the hold contacts nobody and replays nothing | `test_reading_the_hold_never_replays_the_redeemed_challenge` |
+| Never durable, and honestly not restart-surviving: nothing about it reaches the disk | `test_the_hold_is_never_persisted_and_does_not_survive_a_restart` |
+| Not resolved by a refusal: a spent challenge's refusal leaves the hold open | `test_a_later_refusal_does_not_clear_the_hold` |
+| Resolved only by a durable, adopted record | `test_a_later_successful_commit_clears_the_hold` |
+
+**The honest limit, and why it is the honest one.** The failure mode this hold describes *is* an
+unwritable state directory, so a durable hold is impossible in exactly the window it would cover. LOCAL2
+therefore reports it in-process only and states that a restart loses it, rather than pretending to a
+durable marker it cannot write. That is also why the reconciliation stays a server-side obligation: the
+device cannot be its own authority on whether a remote binding exists.
+
+### Evidence
+
+| Check | Result |
+|---|---|
+| `tests/test_enrollment_recovery_windows.py` | **23 passed** (was 17; +6) |
+| whole connector suite (local Windows Python 3.11, real DPAPI in-process) | **325 passed, 4 skipped** (was 319/4 — same 4 pre-existing skips, none new) |
+| `node --test tests/*.test.mjs` | **5 pass / 0 fail** |
+| mutation proof A (hold mechanism removed → raw `OSError`) | **exactly the 6 new tests failed**, 319 passed / 4 skipped |
+| mutation proof B (error kept, hold never recorded) | **5 failed**, 320 passed / 4 skipped — the 6th test only counts port calls, so it is a non-regression pin for "no replay", **not** claimed as causal for the hold |
+| restoration | `enrollment.py` restored byte-identically (`8bb1bb80067ba4bbd7e559d7f53c533f7fdeb9c1`) |
+
+### Boundary kept
+
+This is a local, additive projection of one failure path inside LOCAL2-owned paths. It does **not**
+implement remote reconciliation, does **not** implement or guess CENTRAL's authenticated
+recovery-verdict field, does **not** revoke or compensate anything, does **not** enable a retry, and
+does **not** transfer the PC. It is offered for CENTRAL review as a LOCAL2-side proposal, not as an
+approved contract; if CENTRAL's eventual verdict field changes the disposition input, this call site is
+the single place that adapts.
+
+No READY, no MERGE, no PRODUCTION enablement follows. `WINDOWS_LIVE_E2E=NOT_PROVEN` (#3099) is unchanged.
+
+Changed files for this increment: `apps/claw-connect/claw_connect/enrollment.py`,
 `apps/claw-connect/tests/test_enrollment_recovery_windows.py`, and this document. No CENTRAL and no LOCAL1
 file was modified.
