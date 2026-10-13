@@ -1093,6 +1093,23 @@ async def pilot_chat_completions(
         x_business14_provider_key = request.headers.get("x-business14-provider-key")
         raw_body = await _read_json_body(request)
 
+        # Explicit stream=true on a registered, manual B14 model reuses the
+        # independently validated SSE preview path. The original raw request
+        # body stays cached on Request; preview performs the canonical
+        # schema/route/secret checks, including no-fallback single-attempt.
+        # No automatic stream=false upgrade or BYOK/b14-auto promotion.
+        # This is a streaming wire opt-in, never an in-memory JSON cap bypass.
+        if (
+            isinstance(raw_body, dict)
+            and raw_body.get("stream") is True
+            and isinstance(raw_body.get("model"), str)
+            and raw_body["model"] != "b14/auto"
+            and _is_alpha_model(raw_body["model"])
+        ):
+            from .stream_gateway import pilot_stream_preview
+
+            return await pilot_stream_preview(request, parsed_body=raw_body)
+
         body = _validate_body(raw_body)
 
         # Alpha mode: catalog model or b14/auto

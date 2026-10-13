@@ -1,6 +1,6 @@
 """OpenCode Go fixed-model protocol boundary (coding-agent traffic only).
 
-The five exact owner-approved model IDs are routed by their *documented*
+The six exact owner-approved model IDs are routed by their *documented*
 protocol; no attempt is made to send Responses or Anthropic Messages models
 through a generic chat-completions endpoint. Activation is independently gated
 by the canonical model/provider enabled flags. Never log secret values.
@@ -21,11 +21,12 @@ from .errors import InvalidRequest, MalformedUpstreamResponse, PilotNotConfigure
 from .stream_types import StreamEvent, StreamUsage
 from .upstream_answer_contract import UpstreamEmptyAnswer
 
-# Exact five, fixed at the owner-approved October 12, 2026 roster.
+# Owner-approved Go models; additions must keep their official wire protocol.
 _WIRE = {
     "longcat-2.5-preview-free": "chat/completions",
     "step-5-preview-free": "chat/completions",
     "muse-spark-1.3-contributor": "responses",
+    "muse-spark-1.2-contributor": "responses",
     "gpt-6-luna": "responses",
     "claude-haiku-5-5": "messages",
 }
@@ -49,7 +50,7 @@ def prepare_go_request(
     per-request session header or fake conversation.
     """
     if _WIRE.get(upstream_model) is None or model_id != "opencode-go/" + upstream_model:
-        raise InvalidRequest("OpenCode Go model is not in the owner five-model allowlist.")
+        raise InvalidRequest("OpenCode Go model is not in the owner allowlist.")
     if not isinstance(session_id, str) or not _SESSION.fullmatch(session_id):
         raise InvalidRequest("OpenCode Go requires a trusted stable conversation session ID.")
     if not isinstance(messages, list) or not messages:
@@ -212,24 +213,25 @@ async def call_go_model(*, model_id: str, upstream_model: str,
     start = time.monotonic()
     try:
         async with httpx.AsyncClient(timeout=build_provider_http_timeout(), transport=transport) as client:
-            resp = await client.post(_go_url(wire), headers=headers, json=body, follow_redirects=False)
+            async with client.stream("POST", _go_url(wire), headers=headers, json=body, follow_redirects=False) as resp:
+                if not 200 <= resp.status_code < 300:
+                    from .platform import _raise_upstream_error
+                    _raise_upstream_error(resp.status_code, "opencode-go")  # never forward vendor body
+                # Pre-decode byte cap (#4379): the post-buffer len() check could
+                # only fire after the whole body was already in RAM.
+                from .platform import MAX_COMPLETED_RESPONSE_BYTES, _read_bounded_body
+                raw = await _read_bounded_body(resp, cap=MAX_COMPLETED_RESPONSE_BYTES)
     except httpx.TimeoutException as e:
         raise UpstreamTimeout() from e
     except httpx.RequestError as e:
         raise UpstreamServerError() from e
-    if not 200 <= resp.status_code < 300:
-        from .platform import _raise_upstream_error
-        _raise_upstream_error(resp.status_code, "opencode-go")  # never forward vendor body
-    from .platform import MAX_RESPONSE_BYTES
-    if len(resp.content) > MAX_RESPONSE_BYTES:
-        raise UpstreamResponseTooLarge(MAX_RESPONSE_BYTES)
     try:
-        parsed = resp.json()
+        parsed = json.loads(raw)
     except (ValueError, UnicodeError) as e:
         raise MalformedUpstreamResponse() from e
     return _normalize_go_answer(wire, upstream_model, parsed,
                                 latency_ms=int((time.monotonic() - start) * 1000),
-                                response_bytes=len(resp.content))
+                                response_bytes=len(raw))
 
 
 def _decode_stream_event(wire: str, event: str, payload: Any, upstream_model: str) -> tuple[str | None, str | None, StreamUsage | None, bool]:
@@ -273,6 +275,8 @@ def _decode_stream_event(wire: str, event: str, payload: Any, upstream_model: st
             return None, None, _go_usage(msg.get("usage", {}) if isinstance(msg, dict) else {}, "input_tokens", "output_tokens"), False
         if kind == "message_delta":
             d = payload.get("delta", {})
+            if not isinstance(d, dict):
+                raise MalformedUpstreamResponse()
             return None, d.get("stop_reason"), _go_usage(payload.get("usage", {}), "input_tokens", "output_tokens"), False
         if kind == "message_stop":
             return None, None, None, True
@@ -285,11 +289,16 @@ def _decode_stream_event(wire: str, event: str, payload: Any, upstream_model: st
                 raise MalformedUpstreamResponse()
             if choices:
                 choice = choices[0]
-                delta = choice.get("delta", {}) if isinstance(choice, dict) else {}
+                if not isinstance(choice, dict):
+                    raise MalformedUpstreamResponse()
+                delta = choice.get("delta", {})
+                if delta is not None and not isinstance(delta, dict):
+                    raise MalformedUpstreamResponse()
                 t = delta.get("content") if isinstance(delta, dict) else None
                 if t is not None and not isinstance(t, str):
                     raise MalformedUpstreamResponse()
-                return t, choice.get("finish_reason"), None, False
+                finish = choice.get("finish_reason")
+                return t, finish, None, False
         if payload.get("usage") is not None:
             return None, None, _go_usage(payload["usage"], "prompt_tokens", "completion_tokens"), False
     return None, None, None, False
@@ -314,7 +323,7 @@ async def stream_go_model(*, model_id: str, upstream_model: str,
                                        temperature=temperature, streaming=True)
     _authorization_gate(model_id, upstream_model)
     headers = await _authenticated_headers(h, wire)
-    from .platform import MAX_RESPONSE_BYTES, _pop_sse_frames, _raise_upstream_error
+    from .platform import MAX_RESPONSE_BYTES, _iter_sse_bounded_slices, _pop_sse_frames, _raise_upstream_error
     buffer = b""
     saw_text = False
     saw_end = False
@@ -324,12 +333,17 @@ async def stream_go_model(*, model_id: str, upstream_model: str,
             async with client.stream("POST", _go_url(wire), headers=headers, json=body, follow_redirects=False) as resp:
                 if not 200 <= resp.status_code < 300:
                     _raise_upstream_error(resp.status_code, "opencode-go")
-                async for block in resp.aiter_bytes():
+                # One HTTP block may contain many valid events. Slice each
+                # incoming block immediately (no read-ahead) and bound only
+                # incomplete/individual SSE frames, never cumulative output.
+                async for block in _iter_sse_bounded_slices(resp):
                     buffer += block
+                    frames, buffer = _pop_sse_frames(buffer)
                     if len(buffer) > MAX_RESPONSE_BYTES:
                         raise UpstreamResponseTooLarge(MAX_RESPONSE_BYTES)
-                    frames, buffer = _pop_sse_frames(buffer)
                     for frame in frames:
+                        if len(frame) > MAX_RESPONSE_BYTES:
+                            raise UpstreamResponseTooLarge(MAX_RESPONSE_BYTES)
                         event_type = ""
                         lines: list[str] = []
                         for line in frame.decode("utf-8").splitlines():

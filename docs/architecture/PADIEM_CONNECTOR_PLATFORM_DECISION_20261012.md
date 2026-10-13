@@ -10,6 +10,8 @@
 
 **진행 상태:** S1 Windows tray #4420과 제품별 PC 사전 정책 #4429는 **병합된 소스**다. 그러나 CENTRAL [Draft #4476](https://github.com/skerishKang/ai-revenue-lab/pull/4476)·LOCAL2 [Draft #4490](https://github.com/skerishKang/ai-revenue-lab/pull/4490)는 **미병합·운영 OFF**, 실제 PC 등록/신뢰된 전송/ACK/ONLINE/권한 있는 업무 실행의 성공 증거가 아니다. 중앙 Draft에는 해결 전 GitGuardian 탐지가 존재한다. 제품 실기기 출시 수용은 여전히 #3099 OPEN이다. **단일 최신 점검 인덱스:** [#4139 중앙 상태·이슈 통합](../operations/PADIEM_CONNECTOR_4139_CENTRAL_STATUS_20261013.md) (소스/문서 스냅샷, 기능 승인 아님).
 
+> **Internal business-policy authority:** local governance reference and read-first/ask-owner rules are in the root [AGENTS.md](../../AGENTS.md). This public document is an engineering/technical history, not a replacement for the internal business policy.
+
 ## 1. 한 문장으로 정의
 
 **PADIEM Connector = 하나의 PC 설치 프로그램으로 웹 기반 PADIEM AI 제품이, 사용자 허가 범위 안에서, 해당 PC의 파일·프로그램·전용 브라우저·격리 실행 환경을 공유해 쓰는 공통 로컬 실행 기반.**

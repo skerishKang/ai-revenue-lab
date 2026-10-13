@@ -70,3 +70,22 @@ REQUIRED_CI_AND_DEPLOY=PASS|BLOCKED|PENDING, ELAPSED=...초
 **운영 규율:** UI 화면 2개를 고치기 위해 별도 증거 패킷 10개와 반복 테스트를 만드는 것은 금지. 다만 잘못된 견적 삭제·권한 상승·과금·파일 변경을 **스크린샷 한 장만으로 안전하다고 단정하는 것 역시 금지**.
 
 이 문서를 읽었다는 이유만으로 자동화 CLI를 구현했다고 주장하지 않는다. 재사용 가능한 최소 스크립트/프로필이 필요하면 #4458에서 짧게 구현하되, 현재 UI 작업의 병목으로 만들지 않는다.
+
+## 부록 — 재사용 런처 `scripts/ops/tabbit_quickcheck.py` (#4458 launcher slice)
+
+이 문서의 1~3장 규칙을 매번 손으로 반복하지 않도록, **opt-in 로컬** 실행기 하나를 둔다. 필수 CI·보안 게이트·배포 절차를 대체하지 않으며, 대체할 수 있다고 보고하지 않는다.
+
+```powershell
+# PC 기본 화면 1장
+python scripts/ops/tabbit_quickcheck.py --url "https://<preview>/" --action open
+# 실제 창을 한 번 좁혀 390px 확인 1장
+python scripts/ops/tabbit_quickcheck.py --url "https://<preview>/" --action narrow --width 390
+# 접근성 이름이 같은 버튼 1회 클릭 후 1장
+python scripts/ops/tabbit_quickcheck.py --url "https://<preview>/" --action click --role button --name "검색"
+```
+
+- 종료 코드 `0=PASS / 1=FAIL / 2=BLOCKED`. 증거는 `.tmp/tabbit-quickcheck/<시각>/`에 `quickcheck.json` + PNG 1장으로 남는다.
+- 요청한 CSS 너비가 실제로 렌더됐는지 프로그램이 자체 검증한다(`viewport_honored`). 연결된 브라우저는 줌·창 제약으로 요청값과 다른 `innerWidth`를 보고할 수 있고, 내비게이션이 되돌리기도 한다. 너비를 지키지 못하면 **PASS로 처리하지 않는다**.
+- 이 도구는 `claim`/`resume`과 `--tab`/`--group`을 쓰지 않는다. 자기 태스크가 만든 페이지만 사용하므로 기존 로그인 고객 탭을 이동시키지 않는다. `http(s)`가 아니거나 URL에 자격 증명이 포함된 경우는 거부한다.
+- 로그·증거에는 URL·너비·리비전·액션·소요시간·결과만 남긴다. 비밀번호·쿠키·어떤 인증 헤더·계정 내용·페이지 본문 텍스트도 기록하지 않는다.
+- CLI가 없거나 컨트롤러가 떠 있지 않으면 추측 실행 없이 `BLOCKED`로 끝낸다.

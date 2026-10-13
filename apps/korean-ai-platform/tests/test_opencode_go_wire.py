@@ -9,13 +9,14 @@ from app.pilot.errors import InvalidRequest, PilotNotConfigured, MalformedUpstre
 
 SESSION = "chat_0123456789abcdef0123456789abcdef"
 TURNS = [{"role": "system", "content": "Code only"}, {"role": "user", "content": "Write a Python function."}]
-GO_IDS = ["longcat-2.5-preview-free", "step-5-preview-free", "muse-spark-1.3-contributor", "gpt-6-luna", "claude-haiku-5-5"]
+GO_IDS = ["longcat-2.5-preview-free", "step-5-preview-free", "muse-spark-1.3-contributor", "muse-spark-1.2-contributor", "gpt-6-luna", "claude-haiku-5-5"]
 
 
 @pytest.mark.parametrize("name,wire", [
     ("longcat-2.5-preview-free", "chat/completions"),
     ("step-5-preview-free", "chat/completions"),
     ("muse-spark-1.3-contributor", "responses"),
+    ("muse-spark-1.2-contributor", "responses"),
     ("gpt-6-luna", "responses"),
     ("claude-haiku-5-5", "messages"),
 ])
@@ -51,6 +52,7 @@ def test_claude_budget_is_required_not_invented():
 @pytest.mark.parametrize("name,reply,expected", [
     ("longcat-2.5-preview-free", {"model": "longcat-2.5-preview-free", "choices": [{"message": {"content": "Hello"}, "finish_reason": "stop"}], "usage": {"prompt_tokens": 2, "completion_tokens": 1}}, "Hello"),
     ("gpt-6-luna", {"model": "gpt-6-luna", "status": "completed", "output": [{"type": "message", "content": [{"type": "output_text", "text": "Hello"}]}], "usage": {"input_tokens": 2, "output_tokens": 1}}, "Hello"),
+    ("muse-spark-1.2-contributor", {"model": "muse-spark-1.2-contributor", "status": "completed", "output": [{"type": "message", "content": [{"type": "output_text", "text": "Hello"}]}], "usage": {"input_tokens": 2, "output_tokens": 1}}, "Hello"),
     ("claude-haiku-5-5", {"model": "claude-haiku-5-5", "type": "message", "role": "assistant", "content": [{"type": "text", "text": "Hello"}], "usage": {"input_tokens": 2, "output_tokens": 1}}, "Hello"),
 ])
 @pytest.mark.asyncio
@@ -70,7 +72,7 @@ async def test_completed_protocols_with_synthetic_headers(monkeypatch, name, rep
             assert req.url.path.endswith("/messages")
             assert req.headers["x-api-key"] == "synthetic-test-credential"
             assert "authorization" not in req.headers
-        elif name.startswith("gpt"):
+        elif name.startswith(("gpt", "muse")):
             assert req.url.path.endswith("/responses")
         else:
             assert req.url.path.endswith("/chat/completions")
@@ -82,7 +84,8 @@ async def test_completed_protocols_with_synthetic_headers(monkeypatch, name, rep
 
 
 @pytest.mark.asyncio
-async def test_disabled_registry_never_sends_live_request():
+@pytest.mark.parametrize("name", ["gpt-6-luna", "muse-spark-1.2-contributor"])
+async def test_disabled_registry_never_sends_live_request(name):
     calls = []
     async def fail_if_called(h, wire):
         calls.append(1)
@@ -91,7 +94,7 @@ async def test_disabled_registry_never_sends_live_request():
     go._authenticated_headers = fail_if_called
     try:
         with pytest.raises(PilotNotConfigured):
-            await go.call_go_model(model_id="opencode-go/gpt-6-luna", upstream_model="gpt-6-luna", messages=TURNS, session_id=SESSION, max_tokens=32, transport=httpx.MockTransport(lambda req: httpx.Response(200)))
+            await go.call_go_model(model_id="opencode-go/"+name, upstream_model=name, messages=TURNS, session_id=SESSION, max_tokens=32, transport=httpx.MockTransport(lambda req: httpx.Response(200)))
     finally:
         go._authenticated_headers = original
     assert calls == []
@@ -116,6 +119,7 @@ def _frame(event, data):
 @pytest.mark.parametrize("name,sse", [
     ("step-5-preview-free", 'data: {"choices":[{"delta":{"content":"Hi"},"finish_reason":null}]}\n\ndata: [DONE]\n\n'),
     ("muse-spark-1.3-contributor", _frame("response.output_text.delta", {"type":"response.output_text.delta","delta":"Hi"})+_frame("response.completed", {"type":"response.completed","response":{"status":"completed","usage":{"input_tokens":2,"output_tokens":1}}})),
+    ("muse-spark-1.2-contributor", _frame("response.output_text.delta", {"type":"response.output_text.delta","delta":"Hi"})+_frame("response.completed", {"type":"response.completed","response":{"status":"completed","usage":{"input_tokens":2,"output_tokens":1}}})),
     ("claude-haiku-5-5", _frame("content_block_delta", {"type":"content_block_delta","delta":{"type":"text_delta","text":"Hi"}})+_frame("message_stop", {"type":"message_stop"})),
 ])
 @pytest.mark.asyncio

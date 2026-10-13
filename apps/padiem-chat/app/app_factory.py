@@ -11,6 +11,7 @@ from starlette.staticfiles import StaticFiles
 from .auth import GoogleOAuthClient
 from .auth_abuse import AuthAbuseGate, AuthAbuseStore, D1AuthAbuseStore
 from .b66_quote_conversation import B66QuoteConversationInterpreter
+from .b66_ai_chat_routes import b66_ai_chat
 from .b66_company_profile import CompanyProfileStore, D1CompanyProfileStore
 from .b66_company_profile_routes import b66_company_profile_get, b66_company_profile_put
 from .b66_quote_asset_routes import b66_quote_asset_detail
@@ -442,6 +443,7 @@ def create_app(
             methods=["GET"],
         ),
         Route("/api/b66/quote/interpret", b66_quote_interpret, methods=["POST"]),
+        Route("/api/b66/ai/chat", b66_ai_chat, methods=["POST"]),
         Route("/api/b66/quote/models", b66_quote_models, methods=["GET"]),
         Route("/api/b66/inquiries", b66_inquiries, methods=["GET", "POST"]),
         Route("/api/b66/admin/inquiries", b66_admin_inquiries, methods=["GET"]),

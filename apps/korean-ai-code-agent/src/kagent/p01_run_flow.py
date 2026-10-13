@@ -23,10 +23,15 @@ import uuid
 
 from padiem_ai_engine_client import (
     ENGINE_INTERNAL_ORIGIN,
+    ENGINE_EXECUTE_PATH,
+    ENGINE_ORCHESTRATE_PATH,
+    ENGINE_ORCHESTRATE_RESUME_PATH,
     EngineTransportResponse,
     PadiemAiEngineClient,
     PadiemAiEngineClientError,
 )
+
+from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
 
 from .contracts import ClawRunStatus, ClawTaskIntent, ExecutionMode
 from .core import redact_secrets
@@ -47,10 +52,15 @@ ENV_ENGINE_CREDENTIAL = "P01_ENGINE_CREDENTIAL"
 # watchdog separate from model stream idle and user cancellation.
 TRANSPORT_TIMEOUT_SECONDS = 3600.0  # long-running P01 sync compatibility; async job follow-up
 
-# Bounded response read. Matches the ingress worker's own response ceiling so
-# the direct engine path never accepts a larger body than the canonical
-# server-to-server path.
+# Non-model Engine health/approval/control-plane result budgets remain small.
+# Completed model replies can legitimately exceed this pilot-era 1MiB limit.
+# Reuse the existing B14/Engine Worker finite completed-JSON RAM budget;
+# this is not a provider response-token cap or approval/tool output limit.
 MAX_ENGINE_RESPONSE_BYTES = 1024 * 1024
+MAX_MODEL_ENGINE_RESPONSE_BYTES = MAX_CONFIGURED_B14_RESPONSE_BYTES
+_MODEL_RESULT_PATHS = frozenset({
+    ENGINE_EXECUTE_PATH, ENGINE_ORCHESTRATE_PATH, ENGINE_ORCHESTRATE_RESUME_PATH,
+})
 
 # Cloudflare edge bot protection blocks the default Python-urllib signature
 # (error 1010) before the Engine's own caller authentication ever runs. A
@@ -148,12 +158,26 @@ class UrllibEngineTransport:
         if not any(str(name).lower() == "user-agent" for name in headers):
             headers = {**headers, "User-Agent": TRANSPORT_USER_AGENT}
         request = urllib.request.Request(url, data=body, headers=headers, method=method)
+        # Route-scoped model results may use the existing 8MiB completed
+        # envelope; unexpected paths, HTTP errors, approval/control and
+        # streaming endpoints retain the old small bound. The transport
+        # timeout is a socket/connect/idle resource watchdog, independent
+        # from Engine's agent/tool progress and upstream model idle.
+        result_budget = (
+            MAX_MODEL_ENGINE_RESPONSE_BYTES
+            if method.upper() == "POST"
+            and urllib.parse.urlsplit(url).path in _MODEL_RESULT_PATHS
+            else MAX_ENGINE_RESPONSE_BYTES
+        )
         try:
             with urllib.request.urlopen(request, timeout=self._timeout) as response:
+                status = int(response.status)
+                limit = result_budget if 200 <= status < 300 else MAX_ENGINE_RESPONSE_BYTES
                 return self._bounded_response(
-                    int(response.status),
-                    response.read(MAX_ENGINE_RESPONSE_BYTES + 1),
+                    status,
+                    response.read(limit + 1),
                     dict(response.headers),
+                    max_bytes=limit,
                 )
         except urllib.error.HTTPError as exc:
             return self._bounded_response(
@@ -169,9 +193,10 @@ class UrllibEngineTransport:
 
     @staticmethod
     def _bounded_response(
-        status: int, body: bytes, headers: dict[str, str]
+        status: int, body: bytes, headers: dict[str, str],
+        *, max_bytes: int = MAX_ENGINE_RESPONSE_BYTES,
     ) -> EngineTransportResponse:
-        if len(body) > MAX_ENGINE_RESPONSE_BYTES:
+        if len(body) > max_bytes:
             raise P01AdapterError(
                 "p01_engine_response_too_large",
                 "P01 Engine response exceeds the bounded read size.",

@@ -75,7 +75,9 @@ permissions:
   contents: read
 
 concurrency:
-  group: b62-claw-live-config-activation-gate
+  # PR source-contract checks must not evict a queued protected Production
+  # workflow_dispatch. Production runs retain one shared serial group.
+  group: b62-claw-live-config-activation-gate-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'production' }}
   cancel-in-progress: false
 
 env:
@@ -761,81 +763,24 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Restore the recorded pre-activation code version (CODE_VERSION_ROLLBACK)
+      - name: Guard Cloudflare 10214 before configuration restoration
         shell: bash
         run: |
           set -euo pipefail
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
-          deployments="${RUNNER_TEMP}/b62-deployments-before-rollback.json"
-          curl -fsS "${auth[@]}" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" \
-            -o "${deployments}"
-          current="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
-          if [ "${current}" = "${ROLLBACK_VERSION_ID}" ]; then
-            echo 'CODE_VERSION_ROLLBACK=SKIPPED_ALREADY_RESTORED'
-            echo 'PRODUCTION_MUTATION=0'
-            exit 0
-          fi
-          payload="${RUNNER_TEMP}/b62-rollback-deployment.json"
-          python - "${payload}" "${ROLLBACK_VERSION_ID}" "${TARGET_SHA}" <<'PY'
-          import json, sys
-          body = {
-              "strategy": "percentage",
-              "versions": [{"percentage": 100, "version_id": sys.argv[2]}],
-              "annotations": {
-                  "workers/message": f"B62 Claw live config rollback to {sys.argv[2]} at {sys.argv[3]}",
-                  "workers/triggered_by": "b62-claw-live-config-activation-gate",
-              },
-          }
-          with open(sys.argv[1], "w", encoding="utf-8") as handle:
-              json.dump(body, handle, separators=(",", ":"))
-          PY
-          response="${RUNNER_TEMP}/b62-rollback-response.json"
-          http_status="$(
-            curl -sS -X POST "${auth[@]}" \
-              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" \
-              --data-binary "@${payload}" \
-              -o "${response}" \
-              -w '%{http_code}'
-          )"
-          echo "B62_CLAW_CONFIG_ROLLBACK_HTTP_STATUS=${http_status}"
-          if [ "${http_status}" -lt 200 ] || [ "${http_status}" -ge 300 ]; then
-            echo 'B62_CLAW_LIVE_CONFIG_ROLLBACK=FAIL'
-            if jq -e . "${response}" >/dev/null 2>&1; then
-              jq -c '{success, errors: [(.errors // [])[] | {code, message}]}' "${response}"
-            else
-              echo 'CLOUDFLARE_ERROR_BODY_JSON=NO'
-            fi
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${RUNNER_TEMP}/rollback-current-deployments.json"
+          active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${RUNNER_TEMP}/rollback-current-deployments.json")"
+          curl -fsS "${auth[@]}" "${base}/versions?page=1&per_page=1" -o "${RUNNER_TEMP}/rollback-current-latest.json"
+          latest="$(jq -er '.result.items[0].id' "${RUNNER_TEMP}/rollback-current-latest.json")"
+          if [ "${active}" != "${latest}" ]; then
+            echo 'CONFIG_ROLLBACK_BLOCKED_LATEST_NOT_SERVED_CLOUDFLARE_10214=YES' >&2
+            echo 'CONFIG_ROLLBACK_MUTATION=0' >&2
+            echo 'DO_NOT_REDEPLOY_UNACCEPTED_SSE_TO_FORCE_REPAIR=YES' >&2
             exit 1
           fi
-          jq -e '.success == true' "${response}" >/dev/null
-          echo 'CODE_VERSION_ROLLBACK=SUBMITTED'
-          echo 'PRODUCTION_MUTATION=1'
-          echo 'CODE_VERSION_ROLLBACK_IS_NOT_CONFIG_ROLLBACK=YES'
-
-      - name: Read back the restored active code version
-        shell: bash
-        run: |
-          set -euo pipefail
-          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
-          restored=no
-          for _ in $(seq 1 30); do
-            deployments="${RUNNER_TEMP}/b62-deployments-after-rollback.json"
-            curl -fsS "${auth[@]}" \
-              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" \
-              -o "${deployments}"
-            if active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")" \
-              && [ "${active}" = "${ROLLBACK_VERSION_ID}" ]; then
-              restored=yes
-              break
-            fi
-            sleep 2
-          done
-          test "${restored}" = yes
-          echo 'CODE_VERSION_ROLLBACK_READBACK=PASS'
-          echo 'CODE_VERSION_ROLLBACK_MECHANISM=VERSION_TARGET_RESTORED'
-          echo 'CONFIG_ROLLBACK=PENDING_SNAPSHOT_BOUNDED_RESTORE'
-
+          echo 'CONFIG_ROLLBACK_LATEST_EQUALS_ACTIVE=PASS'
+          echo 'CONFIG_ROLLBACK_PREMUTATION=0'
       - name: Download the bounded pre-mutation settings snapshot
         shell: bash
         env:
@@ -908,25 +853,54 @@ jobs:
         run: |
           set -euo pipefail
           response="${RUNNER_TEMP}/b62-config-rollback-patch-response.json"
+          headers="${RUNNER_TEMP}/b62-config-rollback-patch-response.headers"
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings"
+          set +e
           http_status="$(
-            curl -sS -X PATCH \
+            curl -sS --connect-timeout 8 --max-time 40 -X PATCH \
               -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
               -F "settings=<${RUNNER_TEMP}/b62-config-rollback-patch.json;type=application/json" \
-              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
-              -o "${response}" \
+              "${api}" \
+              -D "${headers}" -o "${response}" \
               -w '%{http_code}'
           )"
+          transport_rc=$?
+          set -e
+          if ! [[ "${http_status}" =~ ^[0-9]{3}$ ]]; then http_status=UNKNOWN; fi
           echo "B62_CLAW_CONFIG_ROLLBACK_PATCH_HTTP_STATUS=${http_status}"
-          if [ "${http_status}" -lt 200 ] || [ "${http_status}" -ge 300 ]; then
-            echo 'CONFIG_ROLLBACK=FAIL'
-            if jq -e . "${response}" >/dev/null 2>&1; then
-              jq -c '{success, errors: [(.errors // [])[] | {code, message}]}' "${response}"
+          # HTTP 2xx does not establish transaction success: Cloudflare can
+          # return success=false or a malformed settings envelope. Both must
+          # use the same bounded, non-retrying, GET-only fail-closed path as 5xx.
+          if [ "${transport_rc}" -ne 0 ] || [ "${http_status}" = UNKNOWN ] || \
+             [ "${http_status}" -lt 200 ] || [ "${http_status}" -ge 300 ] || \
+             ! jq -e '.success == true and (.result.bindings | type == "array")' \
+               "${response}" >/dev/null 2>&1; then
+            # Never dump untrusted API messages, response bodies or headers.
+            codes="$(jq -r '[.errors[]? | objects | .code | select(type=="number") | tostring] | unique | join(",")' "${response}" 2>/dev/null || true)"
+            if ! [[ "${codes}" =~ ^[0-9]{1,8}(,[0-9]{1,8}){0,7}$ ]]; then codes=UNAVAILABLE; fi
+            echo "CONFIG_ROLLBACK_PATCH_CLOUDFLARE_ERROR_CODES=${codes}"
+            ray="$(awk 'tolower($1)=="cf-ray:" {gsub(/\r/,"",$2); print $2; exit}' "${headers}" 2>/dev/null || true)"
+            if ! [[ "${ray}" =~ ^[A-Za-z0-9-]{8,64}$ ]]; then ray=UNAVAILABLE; fi
+            echo "CONFIG_ROLLBACK_PATCH_CF_RAY=${ray}"
+            echo 'CONFIG_ROLLBACK_PATCH_AUTOMATIC_RETRY=NO'
+            # A rejected or invalid 2xx response cannot prove no mutation;
+            # observe exactly once, without authorizing acceptance.
+            # Never roll back code based on this uncertain response.
+            posterror="${RUNNER_TEMP}/b62-config-rollback-posterror-readonly.json"
+            get_status="$(curl -sS --connect-timeout 8 --max-time 20 \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              "${api}" -o "${posterror}" -w '%{http_code}' || true)"
+            if [ "${get_status}" = 200 ] && python3 .github/scripts/b62_binding_state_guard.py \
+                --before "${CONFIG_SNAPSHOT_PATH}" --after "${posterror}" >/dev/null 2>&1; then
+              echo 'CONFIG_ROLLBACK_POSTERROR_SINGLE_READ=SNAPSHOT_EXACT'
             else
-              echo 'CLOUDFLARE_ERROR_BODY_JSON=NO'
+              echo 'CONFIG_ROLLBACK_POSTERROR_SINGLE_READ=NOT_EXACT_OR_UNAVAILABLE'
             fi
+            echo 'CONFIG_ROLLBACK_POSTERROR_ACCEPTANCE=NO'
+            echo 'FULL_CONFIG_ROLLBACK_CLAIM=NO'
+            echo 'CONFIG_ROLLBACK=FAIL'
             exit 1
           fi
-          jq -e '.success == true and (.result.bindings | type == "array")' "${response}" >/dev/null
           echo 'CONFIG_ROLLBACK=SUBMITTED'
           echo 'PRODUCTION_MUTATION=1'
           echo 'WORKER_CODE_REDEPLOY=0'
@@ -959,6 +933,89 @@ jobs:
           echo 'UNRELATED_CONFIG_MUTATED=0'
 
 
+      - name: Restore the recorded pre-activation code version (CODE_VERSION_ROLLBACK)
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          deployments="${RUNNER_TEMP}/b62-deployments-before-rollback.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" \
+            -o "${deployments}"
+          current="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
+          if [ "${current}" = "${ROLLBACK_VERSION_ID}" ]; then
+            echo 'CODE_VERSION_ROLLBACK=SKIPPED_ALREADY_RESTORED'
+            echo 'PRODUCTION_MUTATION=0'
+            exit 0
+          fi
+          payload="${RUNNER_TEMP}/b62-rollback-deployment.json"
+          python - "${payload}" "${ROLLBACK_VERSION_ID}" "${TARGET_SHA}" <<'PY'
+          import json, sys
+          body = {
+              "strategy": "percentage",
+              "versions": [{"percentage": 100, "version_id": sys.argv[2]}],
+              "annotations": {
+                  "workers/message": f"B62 Claw live config rollback to {sys.argv[2]} at {sys.argv[3]}",
+              },
+          }
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump(body, handle, separators=(",", ":"))
+          PY
+          response="${RUNNER_TEMP}/b62-rollback-response.json"
+          http_status="$(
+            curl -sS -X POST "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" \
+              --data-binary "@${payload}" \
+              -o "${response}" \
+              -w '%{http_code}'
+          )"
+          echo "B62_CLAW_CONFIG_ROLLBACK_HTTP_STATUS=${http_status}"
+          if [ "${http_status}" -lt 200 ] || [ "${http_status}" -ge 300 ]; then
+            echo 'B62_CLAW_LIVE_CONFIG_ROLLBACK=FAIL'
+            if jq -e . "${response}" >/dev/null 2>&1; then
+              jq -c '{success, errors: [(.errors // [])[] | {code, message}]}' "${response}"
+            else
+              echo 'CLOUDFLARE_ERROR_BODY_JSON=NO'
+            fi
+            exit 1
+          fi
+          jq -e '.success == true' "${response}" >/dev/null
+          echo 'CODE_VERSION_ROLLBACK=SUBMITTED'
+          echo 'PRODUCTION_MUTATION=1'
+          echo 'CODE_VERSION_ROLLBACK_IS_NOT_CONFIG_ROLLBACK=YES'
+
+      - name: Read back the restored active code version
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          restored=no
+          for _ in $(seq 1 30); do
+            deployments="${RUNNER_TEMP}/b62-deployments-after-rollback.json"
+            curl -fsS "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" \
+              -o "${deployments}"
+            if active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")" \
+              && [ "${active}" = "${ROLLBACK_VERSION_ID}" ]; then
+              restored=yes
+              break
+            fi
+            sleep 2
+          done
+          test "${restored}" = yes
+          echo 'CODE_VERSION_ROLLBACK_READBACK=PASS'
+          echo 'CODE_VERSION_ROLLBACK_MECHANISM=VERSION_TARGET_RESTORED'
+          echo 'CONFIG_ROLLBACK=SNAPSHOT_VERIFIED_BEFORE_CODE_ROLLBACK'
+
+      - name: Final config parity after restoring the pre-activation code version
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" -o "${RUNNER_TEMP}/b62-final-config-after-code-rollback.json"
+          python .github/scripts/b62_binding_state_guard.py --before "${CONFIG_SNAPSHOT_PATH}" --after "${RUNNER_TEMP}/b62-final-config-after-code-rollback.json"
+          echo 'CONFIG_ROLLBACK_AFTER_CODE_VERSION=EXACT'
+          echo 'SECRET_VALUES_READ=0'
   # #3930 SSE-only opt-in. Reuses this existing B62 production environment,
   # exact-main authority, pre-mutation snapshot and rollback-config workflow.
   # Does not redeploy code, mint a canary subject or write any credential.
@@ -1062,11 +1119,39 @@ jobs:
         run: |
           set -euo pipefail
           base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
-          status="$(curl -sS -X PATCH -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+          # #38442601251 returned a non-successful PATCH but the old release
+          # contract suppressed HTTP status + Cloudflare error *codes*. Keep all
+          # responses private: print ONLY a bounded numeric status/code summary,
+          # never raw error messages, names, tokens, payloads or Secret values.
+          set +e
+          status="$(curl -sS --connect-timeout 8 --max-time 90 -X PATCH \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
             -F "settings=<${RUNNER_TEMP}/sse-patch.json;type=application/json" \
             "${base}/settings" -o "${RUNNER_TEMP}/sse-patch-response.json" -w '%{http_code}')"
-          case "${status}" in 200|201) ;; *) echo 'P01_SSE_PATCH=BLOCKED' >&2; exit 1;; esac
-          jq -e '.success == true' "${RUNNER_TEMP}/sse-patch-response.json" >/dev/null
+          transport_rc=$?
+          set -e
+          if ! [[ "${status}" =~ ^[0-9]{3}$ ]]; then status=UNKNOWN; fi
+          echo "P01_SSE_PATCH_HTTP_STATUS=${status}"
+          accepted=no
+          case "${status}" in
+            200|201)
+              if [ "${transport_rc}" -eq 0 ] && jq -e '.success == true' \
+                "${RUNNER_TEMP}/sse-patch-response.json" >/dev/null 2>&1; then
+                accepted=yes
+              fi
+              ;;
+          esac
+          if [ "${accepted}" != yes ]; then
+            codes="$(jq -r '[.errors[]? | objects | .code | select(type=="number") | tostring] | unique | join(",")' \
+              "${RUNNER_TEMP}/sse-patch-response.json" 2>/dev/null || true)"
+            if ! [[ "${codes}" =~ ^[0-9]+(,[0-9]+)*$ ]]; then codes=UNAVAILABLE; fi
+            echo "P01_SSE_PATCH_CLOUDFLARE_ERROR_CODES=${codes}" >&2
+            if [ "${transport_rc}" -ne 0 ]; then echo 'P01_SSE_PATCH_TRANSPORT=FAILED' >&2; fi
+            echo 'P01_SSE_PATCH=BLOCKED' >&2
+            echo 'P01_SSE_PATCH_AUTOMATIC_RETRY=NO' >&2
+            echo 'SECRET_RESPONSE_DUMP=NO' >&2
+            exit 1
+          fi
           echo 'P01_SSE_PATCH=SUBMITTED'
           echo 'PRODUCTION_MUTATION=1'
           echo 'SECRET_VALUE_READ_OR_REWRITTEN=NO'
@@ -1103,6 +1188,11 @@ jobs:
             sleep 2
           done
           if [ "${ready}" != yes ]; then
+            # Emit only a reason-code marker, never the raw verifier log.
+            if [ -s "${RUNNER_TEMP}/sse-verify.log" ]; then
+              grep -E '^P01_SSE_OPTIN_GATE_REASON=[A-Z0-9_]{1,64}$' \
+                "${RUNNER_TEMP}/sse-verify.log" | tail -n 1 || true
+            fi
             echo 'P01_SSE_POST_SERVED_INTEGRITY=BLOCKED' >&2
             echo 'RECOVERY=EXISTING_ROLLBACK_CONFIG_REQUIRES_EXPLICIT_PRODUCTION_APPROVAL' >&2
             echo 'CUSTOMER_CANARY_ACCEPTANCE=NO' >&2
