@@ -988,6 +988,23 @@
       if (automation) automation.hidden = true;
       if (automationList) automationList.replaceChildren();
       if (runHistory) runHistory.hidden = true;
+      // #4488 Phase A follow-up: the approved-memory disclosure wrapper must
+      // not outlive the session either (run-history parity).
+      const approvedMemory = document.getElementById("clawApprovedMemory");
+      const approvedDisclosure = document.getElementById("clawApprovedDisclosure");
+      const approvedList = document.getElementById("clawApprovedList");
+      const approvedError = document.getElementById("clawApprovedError");
+      if (approvedMemory) approvedMemory.hidden = true;
+      if (approvedDisclosure) {
+        approvedDisclosure.hidden = true;
+        approvedDisclosure.open = false;
+      }
+      if (approvedList) approvedList.replaceChildren();
+      if (approvedError) {
+        approvedError.hidden = true;
+        approvedError.textContent = "";
+        approvedError.removeAttribute("data-state");
+      }
       // #4488 Phase A: the disclosure wrapper must not outlive the session.
       const runHistoryDisclosure = document.getElementById("clawRunHistoryDisclosure");
       if (runHistoryDisclosure) runHistoryDisclosure.hidden = true;
@@ -4459,6 +4476,9 @@
       if (clawApprovedLoading) clawApprovedLoading.hidden = true;
       if (clawApprovedList) clawApprovedList.hidden = false;
       renderApprovedMemoryDetail(data.memory);
+      // #4488 Phase A follow-up: a detail opened from inside the panel must be
+      // visible (run-history focus parity — open the disclosure first).
+      if (clawApprovedDisclosure) clawApprovedDisclosure.open = true;
     } catch (error) {
       if (clawApprovedLoading) clawApprovedLoading.hidden = true;
       setApprovedMemoryStatus(error instanceof Error ? error.message : clawT("claw-memory-error-generic"), "error");
