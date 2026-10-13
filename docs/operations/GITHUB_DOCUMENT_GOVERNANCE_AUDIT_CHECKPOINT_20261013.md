@@ -372,6 +372,19 @@ Immutable **835-source** cursor: **816 text originals seen at least partly** (12
 
 **No original document content, binaries, local private Governance, product code, provider configuration, business strategy, customer data, or Production was changed by Batch37.**
 
+## 1AL. Batch 38 — post-B37 delta & B66 private-custody documentation consistency (2026-10-14 KST)
+
+**Bounded source comparison:** `4bf9056459c2f500f6a069a4a8301ad21386cd12` (B37 review snapshot) to `05463d3c2fce6c0dc66b00f4fc921cf86b946546` (B38 review snapshot). Git diff **39 paths** total; **10 changed document artifacts** = 3 B37 self-generated audit records, 4 substantive modified public technical Markdown files, and 3 now-removed customer-specific CGI source/compiled PDFs. Zero new business-policy source asserted. **Original 835 frozen sources remain unchanged as the historical inventory baseline**, not conflated with the 10-document delta.
+
+- [B38 bounded document review, CGI ownership and remaining exposure safeguards](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH38_POST_B66_20261014.md)
+- Fixed `docs/products/b66/TEMPLATE_CUSTODY_POLICY.md`: removed operative contradiction that still said CGI customer PDF/XLSX could be publicly published, preserved historical approval as dated history, made private R2/D1 the current CGI source authority, updated D1 read-only account ownership verification status (no identifier exposed) and corrected machine-readable status formatting.
+- Replaced real-looking CGI personal/business identifiers in a public B66 synthetic test with non-routable fictional fixtures, preserving its QuoteCore/render contract.
+- **P0 current Git HEAD exposure contained by PR #4619:** customer-specific CGI original/derived release files are absent from current public tree. **History, forks, caches/CDNs and prior downloaded copies remain separate open review**; do not claim erasure.
+- The existing CGI Saved Quote Skill belongs to the verified actual registered B66 login (D1 read-only evidence), with **no** ownership change. Still requires served-account positive/negative access tests and customer library E2E (#4316); no Production or R2/D1 mutation occurred here.
+- **Review discipline:** No confidential local Governance text or actual customer account/contact/bank details copied into public GitHub. The owner-controlled business policy stays in local separate `사업방침/`; CTO technical operation in local `운영방침/`. No new public company Governance folder or redundant technical rule.
+
+**Next:** product acceptance in existing B66 issue #4316 and proportionate historical-publication/privacy remediation planning, not an endless repeat of fixed 835-source reading.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
