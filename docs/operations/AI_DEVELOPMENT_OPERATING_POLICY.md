@@ -16,7 +16,7 @@
 
 ### Confidential business-governance source
 
-The repository's business decision authority is stored **outside Git**, on the authorized PC at `G:\Ddrive\BatangD\task\workdiary\ai-revenue-lab-governance\사업방침`. Read both Markdown policy documents there when a business/product decision is involved. The public technical procedures below explain **how** to implement and validate, but do not replace the local business decision. If the source is inaccessible or apparently contradictory, **ask the Owner**; do not infer a new customer permission policy. Never quote or copy private policy substance back into this public repository.
+The repository's business decision authority is stored **outside Git**, on the authorized PC under `G:\Ddrive\BatangD\task\workdiary\ai-revenue-lab-governance`. Read the local `README.md` index and the applicable documents in `사업방침/`, then `운영방침/`, when a business/product decision or its technical implementation is involved. The former `사업방침/01_CTO_에이전트_운영규칙.md` is a relocation notice; the active CTO rules are in `운영방침/01_CTO_에이전트_운영규칙.md`. The public technical procedures below explain **how** to implement and validate, but do not replace the local business decision. If the source is inaccessible or apparently contradictory, **ask the Owner**; do not infer a new customer permission policy. Never quote or copy private policy substance back into this public repository.
 
 ### 0A. CTO outcome order — one useful result before extra evidence
 
