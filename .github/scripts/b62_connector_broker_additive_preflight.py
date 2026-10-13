@@ -30,6 +30,7 @@ from b62_cloudflare_production_deploy_config import (
     ProductionConfigError,
     CONNECTOR_BROKER_BINDING,
     CONNECTOR_BROKER_TARGET,
+    CONNECTOR_IDENTITY_TARGET,
     build_production_config,
     parse_live_bindings,
     verify_mutation_zero,
@@ -143,10 +144,6 @@ def verify_identity_source_rpc_contract(
                and node.name == "_connector_enrollment_enabled"]
     if len(control) != 1:
         raise ProductionConfigError("Canonical Identity consent activation gate missing")
-    gates = {
-        node.attr for node in ast.walk(control[0])
-        if isinstance(node, ast.Attribute)
-    }
     required = {
         "CONTROL_PLANE_CONNECTOR_ENROLLMENT_RPC_ENABLED",
         "CONTROL_PLANE_CONNECTOR_ENROLLMENT_SCOPE_APPROVED",
