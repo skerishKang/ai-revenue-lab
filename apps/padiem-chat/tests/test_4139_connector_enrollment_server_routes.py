@@ -77,7 +77,7 @@ class Server(CanonicalConnectorEnrollmentServer):
             "credential_expires_at": (datetime.now(timezone.utc) + timedelta(days=30)).isoformat(),
             "credential_installed_by_canonical_handoff": True,
             "raw_device_credential": False, "lifecycle": "paired_offline",
-            "dispatch_authorized": False,
+            "dispatch_authorized": False, "grants_read": False, "grants_write": False,
         })
 
 
@@ -93,7 +93,9 @@ class Verify:
 class BrowserSession:
     def resolve(self, request):
         del request
-        now = datetime(2026, 10, 12, 9, 0, tzinfo=timezone.utc)
+        # Live session tests must not expire merely because CI runs after
+        # 2026-10-13 09:00 UTC; preserve the same relative validity window.
+        now = datetime.now(timezone.utc)
         return AuthSessionSnapshot(
             session_id="session.test", product_id="b54-padiem-claw",
             subject=CanonicalSubjectRef(subject_type=SubjectType.USER, subject_id="sub.canonical.test"),
@@ -157,6 +159,62 @@ def test_browser_issue_refuses_invalid_server_canonical_session(monkeypatch, cas
     assert not server.issue_calls
 
 
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        ("remove", "grants_read"),
+        ("remove", "grants_write"),
+        ("remove", "consent_id"),
+        ("remove", "credential_installed_by_canonical_handoff"),
+        ("add", "credential_b64"),
+        ("swap", "device_id"),
+    ],
+)
+def test_legacy_sync_host_redeem_is_unavailable_regardless_of_receipt(
+    mutation,
+):
+    """Legacy bool-only installation cannot redeem or attest a PC over HTTP."""
+    operation, field = mutation
+
+    class TamperedServer(Server):
+        def redeem(self, *, challenge_id, device_id, proof_ref, now):
+            normal = super().redeem(
+                challenge_id=challenge_id, device_id=device_id,
+                proof_ref=proof_ref, now=now,
+            )
+            original = normal.safe_dict()
+            if operation == "remove":
+                original.pop(field)
+            elif operation == "add":
+                original[field] = "NEVER_ECHO_SECRET"
+            else:
+                original[field] = "device.someone_else"
+            return SimpleNamespace(safe_dict=lambda: original)
+
+    state = SimpleNamespace(
+        connector_enrollment_server=TamperedServer(),
+        connector_enrollment_device_gateway=Verify(True),
+    )
+    status, payload, headers = response(
+        routes.connector_enrollment_redeem,
+        Request({
+            "challenge_id": "pairing.test", "device_id": "device.1",
+            "proof_ref": "pairing-proof:" + "b" * 64,
+        }, state=state),
+    )
+    assert status == 503
+    assert payload == {
+        "ok": False,
+        "error": {"code": "enrollment_server_dependency_unavailable"},
+        "reason": "enrollment_dependency_unavailable",
+        "retryable": False,
+    }
+    assert "enrollment" not in payload
+    assert "NEVER_ECHO_SECRET" not in json.dumps(payload)
+    assert headers["cache-control"].startswith("no-store")
+    assert not state.connector_enrollment_server.redeem_calls
+
+
 def test_device_redeem_requires_attested_gateway_and_forbids_scope_claim():
     server = Server()
     state = SimpleNamespace(
@@ -181,10 +239,10 @@ def test_device_redeem_requires_attested_gateway_and_forbids_scope_claim():
     )
     assert status == 400 and not server.redeem_calls
     status, body, _ = response(routes.connector_enrollment_redeem, Request(fields, state=state))
-    assert status == 200 and body["ok"] is True
-    assert body["enrollment"]["raw_device_credential"] is False
-    assert body["enrollment"]["lifecycle"] == "paired_offline"
-    assert body["enrollment"]["consent_id"] == "consent.canonical.1"
-    assert body["enrollment"]["grants_read"] is False
-    assert body["enrollment"]["grants_write"] is False
-    assert len(server.redeem_calls) == 1
+    # An inbound gateway verification does not authenticate the separate
+    # Windows DPAPI installation acknowledgement. Legacy sync redemption must
+    # remain unavailable even with valid scope, possession proof and gateway.
+    assert status == 503 and body["ok"] is False
+    assert body["error"]["code"] == "enrollment_server_dependency_unavailable"
+    assert body["retryable"] is False
+    assert not server.redeem_calls

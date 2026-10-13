@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import Callable, TypeVar
-
 from workers import DurableObject, Response, WorkerEntrypoint
 from canonical_broker_pairing_rpc import CanonicalBrokerPairingRPC
 from padiem_control_plane.local_agent_broker_http import DurableLocalAgentSessionRecord, LocalAgentMaterialResolutionRequest
@@ -15,7 +14,6 @@ from local_agent_broker_sql_state import (
 )
 
 _T = TypeVar("_T")
-
 
 class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, DurableObject):
     """Thin platform entrypoint over the durable broker runtime composition."""
@@ -167,7 +165,6 @@ class Default(WorkerEntrypoint):
 
     async def read_office_artifact_part(self, payload: dict) -> dict:
         return await self._stub().read_office_artifact_part(payload)
-
     # #4139: private canonical Broker DO enrollment passthroughs only.
     async def install_pairing_schema(self, payload: dict) -> dict:
         return await self._stub().install_pairing_schema(payload)
@@ -175,13 +172,17 @@ class Default(WorkerEntrypoint):
         return await self._stub().issue_enrollment_challenge(payload)
     async def get_enrollment_binding(self, payload: dict) -> dict:
         return await self._stub().get_enrollment_binding(payload)
+    async def recovery_verdict(self, payload: dict) -> dict:
+        return await self._stub().recovery_verdict(payload)
+    async def verify_enrollment_bootstrap(self, payload: dict) -> dict:
+        return await self._stub().verify_enrollment_bootstrap(payload)
+    async def gateway_bootstrap_rpc(self, payload: dict) -> dict:
+        return await self._stub().gateway_bootstrap_rpc(payload)
     async def redeem_enrollment(self, payload: dict) -> dict:
         return await self._stub().redeem_enrollment(payload)
 
     async def fetch(self, request):
         return await handle_private_device_fetch(request, self._stub)
-
-
 CLOUDFLARE_DO_ADAPTER = True
 FOUNDATION_PACKAGE_SIDE_EFFECT_FREE = True
 SQLITE_BACKED_DURABLE_OBJECT = True

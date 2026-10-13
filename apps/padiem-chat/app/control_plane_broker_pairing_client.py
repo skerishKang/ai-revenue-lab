@@ -115,6 +115,36 @@ class CloudflareCanonicalBrokerPairingClient:
             raise IdentityBridgeError(409, err["code"], "Canonical Broker request was refused.")
         return result
 
+    async def gateway_bootstrap_rpc(self, payload: dict[str, Any]) -> dict[str, Any]:
+        """Same PRIVATE canonical Broker DO; no public HTTP or alternate owner.
+
+        Accept only the three source-reviewed authenticated device actions.
+        Schema installation is an independent, operator-guarded migration and
+        must never be reachable through a connected PC WebSocket.
+        """
+        if type(payload) is not dict or set(payload) != {"operation", "args"}:
+            raise IdentityBridgeError(503, "broker_rpc_invalid", "Gateway RPC shape invalid.")
+        operation, args = payload["operation"], payload["args"]
+        required = {
+            "begin": {"challenge_id", "device_id", "proof_ref"},
+            "finish": {"challenge_id", "device_id", "lease_ref", "proof_hex"},
+            "authorize": {
+                "challenge_id", "device_id", "lease_ref", "action",
+                "counter", "body_b64", "proof_hex",
+            },
+        }
+        if (
+            type(operation) is not str or operation not in required
+            or type(args) is not dict or set(args) != required[operation]
+        ):
+            raise IdentityBridgeError(503, "broker_rpc_invalid", "Gateway operation is not allowed.")
+        result = await self._invoke("gateway_bootstrap_rpc", payload)
+        if set(result) != {"ok", "gateway"} or type(result["gateway"]) is not dict:
+            raise IdentityBridgeError(503, "broker_rpc_invalid", "Gateway receipt shape invalid.")
+        # The full strict receipt, correlation, no-credential and proof checks
+        # happen in the one-socket orchestrator before any transfer is begun.
+        return result
+
     async def install_schema(self, *, migration_id: str) -> dict[str, Any]:
         result = await self._invoke("install_pairing_schema", {"migration_id": migration_id})
         if set(result) != {"ok", "schema", "installed_by_default"}:
@@ -184,6 +214,38 @@ class CloudflareCanonicalBrokerPairingClient:
         _safe_owner(binding.get("owner_ref"), "owner_ref")
         return binding
 
+    async def verify_enrollment_bootstrap(
+        self, *, challenge_id: str, device_id: str, proof_ref: str,
+        consent_ref: str, owner_ref: str, account_ref: str, workspace_ref: str,
+    ) -> dict[str, Any]:
+        """Canonical PRIVATE Broker proof check; never attests the PC by itself."""
+        payload = {
+            "challenge_id": _safe_ref(challenge_id, "challenge_id"),
+            "device_id": _safe_ref(device_id, "device_id"),
+            "proof_ref": proof_ref,
+            "consent_ref": _safe_ref(consent_ref, "consent_ref"),
+            "owner_ref": _safe_owner(owner_ref, "owner_ref"),
+            "account_ref": _safe_ref(account_ref, "account_ref"),
+            "workspace_ref": _safe_ref(workspace_ref, "workspace_ref"),
+        }
+        if not isinstance(proof_ref, str) or _PROOF.fullmatch(proof_ref) is None:
+            raise IdentityBridgeError(400, "invalid_pairing_proof", "Pairing proof is invalid.")
+        result = await self._invoke("verify_enrollment_bootstrap", payload)
+        if set(result) != {"ok", "bootstrap"}:
+            raise IdentityBridgeError(503, "broker_rpc_invalid", "Bootstrap receipt shape invalid.")
+        receipt = _closed(
+            result.get("bootstrap"),
+            frozenset({"challenge_id", "device_id", "proof_valid", "challenge_consumed"}),
+            "bootstrap preflight",
+        )
+        if (
+            receipt["challenge_id"] != challenge_id or receipt["device_id"] != device_id
+            or receipt["proof_valid"] is not True
+            or receipt["challenge_consumed"] is not False
+        ):
+            raise IdentityBridgeError(503, "broker_rpc_invalid", "Bootstrap proof correlation failed.")
+        return receipt
+
     async def redeem_enrollment(
         self, *, challenge_id: str, device_id: str, proof_ref: str,
         consent_ref: str, owner_ref: str, account_ref: str, workspace_ref: str,
@@ -228,6 +290,79 @@ class CloudflareCanonicalBrokerPairingClient:
         _time(enrollment.get("issued_at"), "enrollment issue time")
         _time(enrollment.get("credential_expires_at"), "device credential expiry")
         return enrollment, credential
+
+    async def recovery_verdict(
+        self, *, challenge_id: str, device_id: str, consent_ref: str,
+        owner_ref: str, account_ref: str, workspace_ref: str,
+        binding_ref: str, credential_generation: int,
+    ) -> dict[str, Any]:
+        """Strictly project a one-shot READ from the existing canonical Broker."""
+        if type(credential_generation) is not int or credential_generation != 1:
+            raise IdentityBridgeError(400, "invalid_recovery_generation", "Recovery generation is invalid.")
+        values = {
+            "challenge_id": _safe_ref(challenge_id, "challenge_id"),
+            "device_id": _safe_ref(device_id, "device_id"),
+            "consent_ref": _safe_ref(consent_ref, "consent_ref"),
+            "owner_ref": _safe_owner(owner_ref, "owner_ref"),
+            "account_ref": _safe_ref(account_ref, "account_ref"),
+            "workspace_ref": _safe_ref(workspace_ref, "workspace_ref"),
+            "binding_ref": _safe_ref(binding_ref, "binding_ref"),
+            "credential_generation": credential_generation,
+        }
+        result = await self._invoke("recovery_verdict", values)
+        if set(result) != {"ok", "recovery"}:
+            raise IdentityBridgeError(503, "broker_rpc_invalid", "Recovery envelope invalid.")
+        answer = _closed(result["recovery"], frozenset({
+            "challenge_id", "device_id", "binding_ref", "credential_generation",
+            "disposition", "canonical_revocation_confirmed",
+            "can_retry_challenge", "raw_device_credential",
+        }), "recovery verdict")
+        if (
+            any(answer.get(k) != values[k] for k in (
+                "challenge_id", "device_id", "binding_ref", "credential_generation"
+            ))
+            or answer.get("disposition") not in ("revoked", "security_hold")
+            or type(answer.get("canonical_revocation_confirmed")) is not bool
+            or (answer["disposition"] == "revoked") != answer["canonical_revocation_confirmed"]
+            or answer.get("can_retry_challenge") is not False
+            or answer.get("raw_device_credential") is not False
+        ):
+            raise IdentityBridgeError(503, "broker_rpc_invalid", "Recovery authority mismatch.")
+        return answer
+
+    async def owner_device_directory(
+        self, *, account_ref: str, workspace_ref: str,
+    ) -> dict[str, Any]:
+        """Read existing Broker owner-scoped device facts, never credentials.
+
+        This private Service Binding operation is only callable by an OWNER
+        session verified at the upper application layer. The account/workspace
+        passed here MUST originate from canonical Identity consent, never the PC.
+        """
+        result = await self._invoke("device_directory", {
+            "account_ref": _safe_ref(account_ref, "account_ref"),
+            "workspace_ref": _safe_ref(workspace_ref, "workspace_ref"),
+        })
+        if result.get("available") is False:
+            if set(result) != {"ok", "available", "reason"} or result.get("reason") != "no_device_binding":
+                raise IdentityBridgeError(503, "broker_rpc_invalid", "Canonical directory unavailable.")
+            return {"available": False, "devices": []}
+        if (
+            set(result) != {"ok", "available", "owner_scoped", "device_count", "max_devices", "devices"}
+            or result.get("available") is not True
+            or result.get("owner_scoped") is not True
+            or type(result.get("devices")) is not list
+            or type(result.get("device_count")) is not int
+            or type(result.get("max_devices")) is not int
+            or not 0 < result["max_devices"] <= 256
+            or result["device_count"] != len(result["devices"])
+            or result["device_count"] > result["max_devices"]
+        ):
+            raise IdentityBridgeError(503, "broker_rpc_invalid", "Canonical directory response is invalid.")
+        # Do not reinterpret its state, suppress revoked bindings, or invent
+        # a server ONLINE fact; the authenticated recovery contract owns the
+        # final tightly-scoped projection.
+        return {"available": True, "devices": result["devices"]}
 
     async def revoke_binding(self, *, binding_ref: str) -> dict[str, Any]:
         """Compensate a failed secure credential handoff through the same Broker."""

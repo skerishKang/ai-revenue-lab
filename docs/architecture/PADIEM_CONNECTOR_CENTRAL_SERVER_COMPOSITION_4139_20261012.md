@@ -297,3 +297,72 @@ approves the actual *same-origin browser grant*, *original canonical session
 continuity*, *trusted outbound Windows gateway*, *post-DPAPI authenticated
 install ACK*, *canonical Broker revoke compensation*, and *one physical Windows
 E2E* gates. #4139 remains OPEN; #3099 owns the one real acceptance journey.
+
+
+## 2026-10-13 CENTRAL redeemer HTTP success-correlation hardening
+
+Both server-side redemption compositions (the async canonical Identity/Broker host
+and the older bounded canonical S1 service) must pass an **exactly thirteen-field**
+receipt through the same product HTTP gate. Presence of
+`grants_read=false` and `grants_write=false` is mandatory; an omitted
+negative claim must **never** be silently filled in by a fallback default.
+The returned `device_id` must exactly equal the device ID from the bounded
+request already accepted by the trusted device gateway, even when an injected
+host incorrectly supplies a valid-looking success for another device.
+
+`_redeem_success(..., expected_device_id=...)` now enforces strict receipt
+key equality, correlated device identity, false execution flags, a signed
+future credential-expiry timestamp, and a normalized secret-free public
+projection. The same guard applies to async and sync routes; regressions
+inject missing consent/installation/permission proofs, unexpected raw
+credential material and wrong-device receipts through **both host paths**.
+A failed projection returns only the closed 503 dependency refusal; it never
+echoes the returned owner/workspace/device secret or a partial success.
+
+This guards the HTTP response **only**, not the irreversible Broker redemption
+that a downstream fake/incorrect service may have already performed. Any
+unexpected post-redemption response mismatch still requires canonical Broker
+reconciliation/revocation before claiming complete security recovery. It
+does not mean the TLS-attested device gateway or protected Windows DPAPI
+credential delivery/ACK is wired. All production flags remain OFF.
+
+
+## 2026-10-13 CENTRAL security correction — legacy synchronous HTTP redemption disabled
+
+The source-only HTTP redemption handler previously accepted either an async
+canonical Identity/Broker host or the older synchronous S1 host. The older
+`CanonicalConnectorEnrollmentServer.redeem()` treats a synchronous
+`credential_handoff.deliver_once() -> True` as installation success. That
+boolean does **not** carry the new challenge-bound HMAC proof, independent
+trusted-gateway sender verification, or confirmed Windows DPAPI readback.
+Thus an inbound device gateway `verify(request)=True` is insufficient to
+attest the **separate** credential installation event.
+
+At the `connector_enrollment_redeem` HTTP boundary the legacy synchronous
+fallback has now been removed: without an injected async host supporting
+`redeem`, a structurally valid request returns the bounded non-retryable
+503 dependency refusal **before invoking any Broker redemption**. Existing
+upstream gateway and strict request-shape refusals are preserved. The
+synthetic synchronous S1 service remains a separate non-HTTP library; it is
+**not an approved production redemption owner**. The only candidate for an
+HTTP redemption path is the async composition that verifies the transcript
+and authenticated ACK, and even that path remains unmounted, default-OFF,
+and blocked pending actual reviewed transport and live proof.
+
+Regression coverage asserts a valid legacy host and passing inbound gateway
+cannot trigger its redemption method, even when the forged legacy receipt
+would otherwise look complete. The previous section's sync/async equivalence
+is superseded for HTTP **execution** (both retain the same receipt-shape
+projection tests at the helper boundary, but the synchronous redeem call is
+not reachable from this handler).
+
+```text
+LEGACY_SYNC_HTTP_REDEEM=DISABLED
+ASYNC_DEVICE_GATEWAY=NOT_WIRED
+AUTHENTICATED_WINDOWS_INSTALL_ACK=NOT_WIRED
+REDEMPTION_OWNER_PRODUCTION_APPROVAL=PENDING
+REAL_WINDOWS_E2E=NOT_PROVEN
+READY=NO
+MERGE=NO
+PRODUCTION=OFF
+```
