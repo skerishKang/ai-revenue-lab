@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
- * `npx @padiem/claw-connect` entry point (#4139 S1).
+ * Legacy `claw-connect` alias for PADIEM Connector (#4139 S1).
  *
- * Claw Connect is a Python program; this wrapper only locates a usable Python
+ * PADIEM Connector is a Python program; this wrapper only locates a usable Python
  * interpreter on the user's PC and forwards every argument to
  * `python -m claw_connect`. It adds no server, no runner and no authority of
  * its own — the .exe installer path and this npx path execute the same module
@@ -78,7 +78,7 @@ async function main() {
     }
   }
   console.error(
-    "Padiem Claw Connect: Python 3.11+ 를 찾지 못했습니다. " +
+    "PADIEM Connector: Python 3.11+ 를 찾지 못했습니다. " +
       "Python 설치 후 다시 시도하거나 PADIEM_PYTHON 환경변수를 지정하세요."
   );
   process.exit(69); // EX_UNAVAILABLE
