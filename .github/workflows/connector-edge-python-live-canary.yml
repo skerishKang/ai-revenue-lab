@@ -1,11 +1,16 @@
 name: Connector Python External Edge Canary (Ephemeral)
 
+# Live account writes are intentionally never triggered by PR/push.
+# A verified 2026-10-14 real edge TLS/101/frame proof is already on #4572.
+# Additional disposable deployments require a fresh explicit operator dispatch.
 on:
-  pull_request:
-    paths:
-      - "tools/connector-edge-canary/ci_live_edge_probe.sh"
-      - "tools/connector-edge-canary/ci_live_edge_ws_client.mjs"
-      - ".github/workflows/connector-edge-python-live-canary.yml"
+  workflow_dispatch:
+    inputs:
+      authorize_one_ephemeral_edge_canary:
+        description: "Explicitly allow one no-binding Python test Worker and verified deletion"
+        type: boolean
+        required: true
+        default: false
 
 permissions:
   contents: read
@@ -19,10 +24,10 @@ concurrency:
 jobs:
   exact-pr-scoped-ephemeral-python-edge:
     if: >-
-      github.event_name == 'pull_request' &&
+      github.event_name == 'workflow_dispatch' &&
+      inputs.authorize_one_ephemeral_edge_canary == true &&
       github.repository == 'skerishKang/ai-revenue-lab' &&
-      github.event.pull_request.head.repo.full_name == github.repository &&
-      github.head_ref == 'central/4139-claw-connect-integration-261013'
+      github.ref == 'refs/heads/central/4139-claw-connect-integration-261013'
     runs-on: ubuntu-24.04
     timeout-minutes: 14
     defaults:
