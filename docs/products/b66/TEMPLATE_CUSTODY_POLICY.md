@@ -70,6 +70,14 @@ AUTOMATIC_PROVIDER_MODEL_FOR_PDF=NO
 
 **기존 B66 R2/D1 로고·도장 저장과 Approved Saved Quote Skill 구조를 우선 재사용**합니다. 별도의 병렬 사용자/계정 권위 시스템을 만들지 않습니다.
 
+## 2026-10-14 CGI 원본 전용 공개 철회 및 계정 접근 제한
+
+- **CGI 실물 원본·원본 유래 PDF/XLSX·이미지·컴파일된 패키지는 더 이상 Git 공개 표준 양식 예외가 아니다.** 공개 소스에는 식별 정보 없는 범용 렌더링 코드·기술 계약만 남기고, CGI 전용 원본과 출력 패키지는 기존 비공개 R2 및 로컬 원본 Vault가 권위다.
+- 기존 2026-10-09 공개 승인 이력은 보존하되, 2026-10-14 새 소유자 지시에 따라 **CGI 전용 파일 공개 권한을 철회**한다. 이전 커밋·캐시·포크의 노출 여부는 별도 이력/배포 대응이 필요하다.
+- CGI 고객 접근은 **로그인한 사용자/워크스페이스에 서버에서 발급·승인한 정확한 Saved Quote Skill 소유권**으로 검사한다. 이메일 문자열, 사람 이름, 로컬 UI 저장값 또는 클라이언트 CGI 스킬 ID만으로 계정을 지정하거나 확대하지 않는다.
+- 현행 CGI 전용 R2 미리보기 이미지와 PDF 번들이 존재하고 비공개 SHA 검증이 가능하더라도, **실제 고객 로그인 ID 검증과 운영 E2E 완료 전에는 고객 계정 변경, 권한 이관, R2 삭제 및 배포 완료를 선언하지 않는다**.
+- 고객이 스스로 업로드·보관·복원하는 일반 **내 라이브러리(#4316; 이전 #3884)** 기능과 CGI 전용 **인증된 렌더 번들**은 같은 R2/D1 보관 인프라를 재사용할 수 있지만 서로 다른 권한/객체 유형이다.
+
 ## 5. 실제 고객 반환 요구사항 (#3884)
 
 1. 고객이 기존 양식을 한 번 올리면 **원본 그대로 비공개 보관**(원본 SHA-256, 크기, 소유자, 버전).
@@ -90,8 +98,8 @@ AUTOMATIC_PROVIDER_MODEL_FOR_PDF=NO
 ```text
 D1_REPLACE_WITH_R2=NO
 D1_AS_RAW_FILE_STORE=NO
-PUBLIC_STANDARD_TEMPLATES_GIT=YES
-PRIVATE_CUSTOMER_TEMPLATE_SOURCE=R2_PLANNED
+PUBLIC_GENERIC_TECHNICAL_TEMPLATES_GIT=YES\nCGI_ORIGINAL_AND_COMPILED_ARTIFACTS_IN_PUBLIC_GIT=NO
+PRIVATE_CUSTOMER_TEMPLATE_SOURCE=R2_CUSTOMER_UPLOAD_PENDING_E2E\nCGI_CERTIFIED_RUNTIME_BUNDLE=PRIVATE_R2_EXISTENCE_VERIFIED
 PRIVATE_CUSTOMER_DOWNLOAD=REQUIRES_IMPLEMENTATION_AND_E2E
 CROSS_TENANT_LEAK=DENY
 KEYS_IN_GIT=NO
