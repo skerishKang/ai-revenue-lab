@@ -76,7 +76,9 @@ async def dispatch_review_only_worker_wss_upgrade(
         raise RuntimeError("PADIEM Connector public Worker WSS is not activated")
     if type(getattr(request, "url", None)) is not str:
         raise ValueError("Worker request URL unavailable")
-    if request.url != REVIEW_WORKER_WSS_URL or _untrusted_headers(request):
+    if (getattr(request, "method", None) != "GET"
+            or request.url != REVIEW_WORKER_WSS_URL
+            or _untrusted_headers(request)):
         raise ValueError("Unreviewed WebSocket upgrade request")
     parsed = urlsplit(request.url)
     if (parsed.scheme != "https" or parsed.netloc != "chat.padiem.net"
