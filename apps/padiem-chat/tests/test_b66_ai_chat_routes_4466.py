@@ -292,6 +292,7 @@ def test_a_public_freshness_turn_reaches_the_model_with_the_server_search_envelo
         {"role": "user", "content": "최신 철근 시세 알려줘"},
     ]))
     assert res.status_code == 200, res.text
+    assert client.app.state.auto_grounding.seen == ["철근 시세"]
     envelope = model.calls[0][2]
     assert "공개 웹 검색" in envelope and "[1]" in envelope
     assert res.json()["search"]["status"] == "sourced"
@@ -300,6 +301,28 @@ def test_a_public_freshness_turn_reaches_the_model_with_the_server_search_envelo
         "retrieved_at": "2026-10-13T02:00:00Z", "source_type": "web",
         "provider": "tinyfish",
     }]
+
+
+def test_bare_counterparty_name_is_not_exfiltrated_even_with_server_search_approved():
+    settings, client, resolver, model = setup()
+    sign_in(settings, client)
+
+    class NoProviderIO:
+        async def prepare(self, *args, **kwargs):
+            raise AssertionError("bare counterparty name must not enter public search")
+
+    client.app.state.auto_grounding = NoProviderIO()
+    client.app.state.b66_public_fact_search_authorized = True  # test-only seam
+    res = client.post("/api/b66/ai/chat", json=payload(messages=[
+        {"role": "user", "content": "최신 철근 시세 한울 알려줘"},
+    ]))
+    assert res.status_code == 200, res.text
+    assert res.json()["search"] == {
+        "status": "withheld_private",
+        "reason": "public_query_not_approved",
+        "sources": [],
+    }
+    assert "검색을 실행하지 않았습니다" in model.calls[0][2]
 
 
 def test_a_withheld_private_turn_sends_no_query_and_tells_the_model_it_did_not_search():
