@@ -11,6 +11,7 @@ from app.canonical_connector_gateway_source_composition import CONNECTOR_GATEWAY
 from app.connector_gateway_worker_asgi_review import (
     REVIEW_WORKER_WSS_URL, WORKER_GATEWAY_ASGI_FETCH_PRODUCTION_WIRED,
     dispatch_review_only_worker_wss_upgrade,
+    dispatch_review_only_worker_first_pairing_upgrade,
     strict_source_only_websocket_scope,
 )
 from app.worker_config import (
@@ -110,10 +111,9 @@ def test_worker_bridge_refuses_missing_private_broker_or_trust_port():
 
 def test_bridge_delegates_to_real_asgi_websocket_only_after_all_guards(monkeypatch):
     captured = {}
-    async def fake_websocket(app, req, worker_env):
+    async def fake_websocket(app, req):
         captured["app"] = app
         captured["request"] = req
-        captured["env"] = worker_env
         return "source-review-asgi-receipt"
     workers = ModuleType("workers")
     async def reject_http_fetch(*args):
@@ -123,7 +123,6 @@ def test_bridge_delegates_to_real_asgi_websocket_only_after_all_guards(monkeypat
     req, bindings = request(), env()
     assert run(req=req, worker_env=bindings) == "source-review-asgi-receipt"
     assert captured["request"] is req
-    assert captured["env"] is bindings
     assert callable(captured["app"])  # one strict ASGI protocol adapter
 
 
@@ -189,3 +188,91 @@ def test_non_https_or_ambiguous_ws_scopes_are_denied_before_host_invocation(chan
     adapter = strict_source_only_websocket_scope(never_enter)
     asyncio.run(adapter(values, None, send))
     assert calls == [{"type": "websocket.close", "code": 1008}]
+
+
+def test_first_pairing_dispatch_default_blocked_without_loading_sdk():
+    req = request()
+    req.cf = {"tlsVersion": "TLSv1.3"}
+    with pytest.raises(RuntimeError, match="not activated"):
+        asyncio.run(dispatch_review_only_worker_first_pairing_upgrade(
+            request=req, worker_env=env(),
+        ))
+    with pytest.raises(RuntimeError, match="not activated"):
+        asyncio.run(dispatch_review_only_worker_first_pairing_upgrade(
+            request=req, worker_env=env(), source_test_authorized=1,
+        ))
+
+
+@pytest.mark.parametrize("cf", [
+    None, {}, {"tlsVersion": "TLSv1.0"}, {"tlsVersion": "TLSv1.1"},
+    {"tlsVersion": False}, {"tlsVersion": ["TLSv1.3"]},
+    {"tlsVersion": "TLSv1.3,TLSv1.2"},
+])
+def test_first_pairing_dispatch_refuses_ineligible_tls_before_websocket_sdk(cf):
+    req = request()
+    req.cf = cf
+    with pytest.raises(ValueError, match="Untrusted Cloudflare first-pair"):
+        asyncio.run(dispatch_review_only_worker_first_pairing_upgrade(
+            request=req, worker_env=env(), source_test_authorized=True,
+        ))
+
+
+def test_first_pairing_dispatch_uses_correct_two_argument_cloudflare_asgi_api(monkeypatch):
+    called = {}
+    async def official_signature(app, req):
+        called["app"] = app
+        called["request"] = req
+        return "preflight-pass-not-live-credential"
+    worker_module = ModuleType("workers")
+    async def reject_http_fetch(*args, **kwargs):
+        raise AssertionError("bootstrap WSS may not use HTTP asgi.fetch")
+    worker_module.asgi = SimpleNamespace(
+        websocket=official_signature, fetch=reject_http_fetch,
+    )
+    monkeypatch.setitem(sys.modules, "workers", worker_module)
+    req = request()
+    req.cf = {"tlsVersion": "TLSv1.3", "tlsClientAuth": None}
+    bindings = env()
+    result = asyncio.run(dispatch_review_only_worker_first_pairing_upgrade(
+        request=req, worker_env=bindings, source_test_authorized=True,
+    ))
+    assert result == "preflight-pass-not-live-credential"
+    assert called["request"] is req
+    assert callable(called["app"])
+
+
+def test_first_pairing_dispatch_does_not_construct_gateway_if_bindings_absent(monkeypatch):
+    async def uncalled(*args):
+        raise AssertionError("socket cannot upgrade without private Broker")
+    workers = ModuleType("workers")
+    workers.asgi = SimpleNamespace(websocket=uncalled)
+    monkeypatch.setitem(sys.modules, "workers", workers)
+    req = request()
+    req.cf = {"tlsVersion": "TLSv1.3"}
+    with pytest.raises(ValueError, match="private bindings unavailable"):
+        asyncio.run(dispatch_review_only_worker_first_pairing_upgrade(
+            request=req, worker_env={},
+            source_test_authorized=True,
+        ))
+
+
+@pytest.mark.parametrize("headers", [
+    {"upgrade": "websocket", "cookie": "forged"},
+    {"upgrade": "websocket", "origin": "https://attacker.test"},
+    {"upgrade": "websocket", "authorization": "Bearer stolen"},
+    {"upgrade": "websocket", "x-forwarded-proto": "https"},
+])
+def test_first_pairing_dispatch_refuses_client_assertions_before_socket(headers):
+    req = request(headers=headers)
+    req.cf = {"tlsVersion": "TLSv1.3"}
+    with pytest.raises(ValueError):
+        asyncio.run(dispatch_review_only_worker_first_pairing_upgrade(
+            request=req, worker_env=env(), source_test_authorized=True,
+        ))
+
+
+def test_first_pairing_review_bridge_remains_unmounted_in_public_worker():
+    from pathlib import Path
+    worker = (Path(__file__).resolve().parents[1] / "worker.py").read_text(encoding="utf-8")
+    assert "dispatch_review_only_worker_first_pairing_upgrade" not in worker
+    assert "connector_gateway_first_pairing_tls_review" not in worker
