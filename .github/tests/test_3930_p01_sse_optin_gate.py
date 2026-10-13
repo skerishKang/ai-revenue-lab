@@ -186,7 +186,7 @@ def test_owner_single_approval_does_not_require_independent_reviewer():
     # Owner-delegated release: no second GitHub user or deployment-review gate.
     # Exact SHA, confirmation, rollback snapshot and served integrity remain.
     workflow = WORKFLOW.read_text(encoding="utf-8")
-    block = workflow.split("\\n  activate-p01-sse:\\n", 1)[1]
+    block = workflow.split("\n  activate-p01-sse:\n", 1)[1]
     assert "b62_p01_sse_independent_review.py" not in block
     assert "/actions/runs/\u0024{GITHUB_RUN_ID}/approvals" not in block
     assert "Verify independent production deployment review" not in block
