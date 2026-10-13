@@ -429,7 +429,7 @@ class B14Client:
         )
 
     def _completion_config(
-        self, *, max_response_bytes: int = MAX_B14_RESPONSE_BYTES,
+        self, *, max_response_bytes: int = MAX_CONFIGURED_B14_RESPONSE_BYTES,
     ) -> B14ExecutionConfig:
         return self._config(
             self.settings.completed_timeout_seconds,
@@ -608,7 +608,7 @@ class B14Client:
         max_retries: int | None = None,
         before_dispatch: Callable[[], Awaitable[None]] | None = None,
         model_parameters: Mapping[str, Any] | None = None,
-        completed_response_budget_bytes: int = MAX_B14_RESPONSE_BYTES,
+        completed_response_budget_bytes: int = MAX_CONFIGURED_B14_RESPONSE_BYTES,
     ) -> dict[str, Any]:
         request = _execution_request(
             messages,
