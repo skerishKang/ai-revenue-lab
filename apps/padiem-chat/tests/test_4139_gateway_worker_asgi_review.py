@@ -276,3 +276,13 @@ def test_first_pairing_review_bridge_remains_unmounted_in_public_worker():
     worker = (Path(__file__).resolve().parents[1] / "worker.py").read_text(encoding="utf-8")
     assert "dispatch_review_only_worker_first_pairing_upgrade" not in worker
     assert "connector_gateway_first_pairing_tls_review" not in worker
+
+
+@pytest.mark.parametrize("method", ["POST", "HEAD", "PUT"])
+def test_first_pairing_worker_denies_non_get_upgrade_before_sdk(method):
+    req = request(method=method)
+    req.cf = {"tlsVersion": "TLSv1.3"}
+    with pytest.raises(ValueError, match="Untrusted Cloudflare first-pair"):
+        asyncio.run(dispatch_review_only_worker_first_pairing_upgrade(
+            request=req, worker_env=env(), source_test_authorized=True,
+        ))
