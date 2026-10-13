@@ -784,7 +784,6 @@ jobs:
               "versions": [{"percentage": 100, "version_id": sys.argv[2]}],
               "annotations": {
                   "workers/message": f"B62 Claw live config rollback to {sys.argv[2]} at {sys.argv[3]}",
-                  "workers/triggered_by": "b62-claw-live-config-activation-gate",
               },
           }
           with open(sys.argv[1], "w", encoding="utf-8") as handle:

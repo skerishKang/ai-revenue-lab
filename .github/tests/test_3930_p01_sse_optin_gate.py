@@ -196,6 +196,22 @@ def test_owner_single_approval_does_not_require_independent_reviewer():
     assert "b62_p01_sse_optin_gate.py verify" in block
     assert "b62-claw-config-premutation-settings" in block
 
+def test_cloudflare_10210_rollback_deployment_omits_unsupported_trigger_annotation():
+    # Production #38432026154: Cloudflare POST /deployments returned 400/10210
+    # because workers/triggered_by is not a supported deployment annotation.
+    text = WORKFLOW.read_text(encoding="utf-8")
+    start = "      - name: Restore the recorded pre-activation code version (CODE_VERSION_ROLLBACK)"
+    end = "      - name: Read back the restored active code version"
+    assert text.count(start) == 1 and text.count(end) == 1
+    block = text.split(start, 1)[1].split(end, 1)[0]
+    assert '"strategy": "percentage"' in block
+    assert '"percentage": 100' in block
+    assert '"workers/message"' in block
+    assert '"workers/triggered_by"' not in block
+    assert 'B62_CLAW_CONFIG_ROLLBACK_HTTP_STATUS=' in block
+    assert 'jq -e' in block and '.success == true' in block
+
+
 if __name__ == "__main__":
     for name, func in sorted(globals().copy().items()):
         if name.startswith("test_") and callable(func):
