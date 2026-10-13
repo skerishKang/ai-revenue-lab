@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import Callable, TypeVar
-
 from workers import DurableObject, Response, WorkerEntrypoint
 from canonical_broker_pairing_rpc import CanonicalBrokerPairingRPC
 from padiem_control_plane.local_agent_broker_http import DurableLocalAgentSessionRecord, LocalAgentMaterialResolutionRequest
@@ -15,7 +14,6 @@ from local_agent_broker_sql_state import (
 )
 
 _T = TypeVar("_T")
-
 
 class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, DurableObject):
     """Thin platform entrypoint over the durable broker runtime composition."""
