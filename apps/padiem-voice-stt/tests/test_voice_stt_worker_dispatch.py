@@ -169,7 +169,7 @@ async def test_missing_enabled_var_fails_closed(runtime):
     assert body == {"ok": False, "error": {"code": "voice_stt_disabled"}}
 
 
-@pytest.mark.parametrize("flag", ["", "1", "yes", "on", "false", "null", "0"])
+@pytest.mark.parametrize("flag", ["", "1", "yes", "on", "false", "null", "0", "TRUE", " True ", "\ttrue\n", True, 1])
 async def test_non_true_flag_fails_closed(runtime, flag):
     env = fw.enabled_env(PADIEM_VOICE_STT_ENABLED=flag)
     budget = fw.FetchBudget()
@@ -177,7 +177,7 @@ async def test_non_true_flag_fails_closed(runtime, flag):
     assert body == {"ok": False, "error": {"code": "voice_stt_disabled"}}
 
 
-@pytest.mark.parametrize("flag", ["true", "TRUE", " True ", "\ttrue\n"])
+@pytest.mark.parametrize("flag", ["true"])
 async def test_true_flag_still_requires_the_caller_guard(runtime, flag):
     """Operator-friendly ``true`` is only the first of two gates."""
     env = fw.enabled_env(PADIEM_VOICE_STT_ENABLED=flag, VOICE_STT_CALLER_GUARD=None)
@@ -805,6 +805,56 @@ async def test_oversized_upstream_body_is_rejected(runtime):
     budget.response = fw.FakeUpstream(200, raw="x" * (c.MAX_UPSTREAM_RESPONSE_BYTES + 1))
     body = await _run_paid(runtime, env, budget, _transcribe_request(audio=b"x"), TRANSCRIBE_ROUTE)
     assert body == {"ok": False, "error": {"code": "stt_unavailable"}}
+
+
+async def test_upstream_stream_stops_at_first_chunk_over_ceiling(runtime):
+    """A provider body is rejected without reading its remaining megabytes."""
+    env = fw.enabled_env()
+    budget = fw.FetchBudget()
+    budget.response = fw.FakeUpstream(
+        200, raw="x" * (c.MAX_UPSTREAM_RESPONSE_BYTES + (1024 * 1024))
+    )
+    body = await _run_paid(
+        runtime, env, budget, _transcribe_request(audio=b"x"), TRANSCRIBE_ROUTE
+    )
+    assert body == {"ok": False, "error": {"code": "stt_unavailable"}}
+    assert budget.response.body_reads <= (c.MAX_UPSTREAM_RESPONSE_BYTES // 4096) + 1
+
+
+@pytest.mark.parametrize("extra", [0, 1])
+async def test_upstream_stream_exact_boundary_and_plus_one(runtime, extra):
+    """256 KiB is accepted and 256 KiB + 1 is rejected during stream reading."""
+    prefix = '{"text":"'
+    suffix = '"}'
+    size = c.MAX_UPSTREAM_RESPONSE_BYTES + extra
+    raw = prefix + ("x" * (size - len(prefix) - len(suffix))) + suffix
+    upstream = fw.FakeUpstream(200, raw=raw)
+    if extra == 0:
+        assert (await runtime._read_upstream_json(upstream, 1)) == {"text": "x" * (size - len(prefix) - len(suffix))}
+    else:
+        with pytest.raises(c.VoiceSttError) as exc:
+            await runtime._read_upstream_json(upstream, 1)
+        assert exc.value.code == "stt_unavailable"
+    assert upstream.body_reads > 0
+
+
+async def test_upstream_stream_never_calls_text(runtime):
+    """The streaming path must not call a materialising Response.text()."""
+    upstream = fw.FakeUpstream(200, {"text": "ok"})
+
+    async def forbidden_text():
+        raise AssertionError("Response.text() would buffer without a memory bound")
+
+    upstream.text = forbidden_text
+    assert await runtime._read_upstream_json(upstream, 1) == {"text": "ok"}
+
+
+async def test_missing_upstream_body_fails_closed_without_text_fallback(runtime):
+    upstream = fw.FakeUpstream(200, {"text": "ok"})
+    upstream.body = None
+    with pytest.raises(c.VoiceSttError) as exc:
+        await runtime._read_upstream_json(upstream, 1)
+    assert exc.value.code == "stt_unavailable"
 
 
 async def test_unparseable_upstream_body_fails_closed_without_leaking_text(runtime):

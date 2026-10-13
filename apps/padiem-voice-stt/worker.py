@@ -268,13 +268,10 @@ async def _require_caller_authorization(env, *, route: str) -> contract.CallerAu
 async def _require_enabled(env) -> None:
     """Gate every route. Order matters: no Secret read or provider call if OFF."""
     flag = getattr(env, contract.VOICE_STT_ENABLED_BINDING, None)
-    if isinstance(flag, str):
-        enabled = flag.strip().lower() == "true"
-    elif flag is None:
-        enabled = False
-    else:
-        enabled = flag is True
-    if not enabled:
+    # Wrangler deploy configuration is a literal string. Do not accept
+    # whitespace, alternate casing or a Python boolean as an activation.
+    # Any unexpected binding shape must leave this paid feature disabled.
+    if flag != "true" or not isinstance(flag, str):
         raise contract.VoiceSttError("voice_stt_disabled", 503)
 
     # ON is not reachable without the caller-identity / cost-authorization
@@ -380,23 +377,23 @@ async def _read_upstream_json(response, timeout_seconds: float) -> object:
     if math.isnan(timeout_seconds) or timeout_seconds <= 0:
         raise contract.VoiceSttError("stt_unavailable", 503)
 
-    async def _body_text() -> str:
-        # Wrapped in a real coroutine so ``wait_for`` can cancel it on every
-        # runtime, including one where ``Response.text()`` hands back a JS
-        # awaitable rather than a Python coroutine.
-        return await response.text()
+    async def _body_bytes() -> bytes:
+        # Read the same JS ReadableStream API as incoming requests. The
+        # limit+1 probe rejects an oversized provider chunk *before* bytes()
+        # can copy it into Python memory. Response.text()/json() would
+        # materialise unbounded provider data before the size check.
+        return await contract.read_bounded_body(
+            _chunk_reader(response, 8192), contract.MAX_UPSTREAM_RESPONSE_BYTES
+        )
 
     try:
-        raw = await asyncio.wait_for(_body_text(), timeout=timeout_seconds)
-    except asyncio.TimeoutError as exc:
+        raw = await asyncio.wait_for(_body_bytes(), timeout=timeout_seconds)
+    except (asyncio.TimeoutError, contract.VoiceSttError) as exc:
         raise contract.VoiceSttError("stt_unavailable", 503) from exc
     except Exception as exc:
         raise contract.VoiceSttError("stt_unavailable", 503) from exc
-    text = raw if isinstance(raw, str) else str(raw)
-    if len(text.encode("utf-8", "replace")) > contract.MAX_UPSTREAM_RESPONSE_BYTES:
-        raise contract.VoiceSttError("stt_unavailable", 503)
     try:
-        return json.loads(text)
+        return json.loads(raw.decode("utf-8"))
     except Exception:
         return None
 

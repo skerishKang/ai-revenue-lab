@@ -91,7 +91,11 @@ body read only gets what is left of it, and the body is additionally capped at
 `MAX_UPSTREAM_RESPONSE_BYTES` (256 KiB). A provider that answers with headers and
 then trickles the body is cut off like any other stall. Both the `AbortSignal`
 path and the fallback path (a runtime without `AbortSignal.timeout`) are bounded
-by `asyncio.wait_for`, so the ceiling holds on every runtime.
+by `asyncio.wait_for`, so the ceiling holds on every runtime. The provider
+body is read incrementally via `Response.body.getReader()` and refused at
+256 KiB + 1 **before** accumulating further bytes; it never uses
+`Response.text()` or `Response.json()` (which would materialise an unbounded
+response before checking its length).
 
 ## Files
 
