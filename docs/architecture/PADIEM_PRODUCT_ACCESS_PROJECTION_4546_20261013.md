@@ -64,6 +64,7 @@ No existing file is modified. In particular this change does **not** touch `app_
 | No source registered for the product (**current production state**) | `unavailable` / `no_registered_authority`, `authority="none"` |
 | Source raises any exception | `unavailable` / `authority_read_failed` |
 | Source returns a non-`ProductAccessFinding` | `unavailable` / `authority_response_invalid` |
+| Source has missing/empty/invalid authority ID or reserved `authority="none"` | `unavailable` / `authority_response_invalid`; source not called |
 | Finding product id ≠ requested product | `unavailable` / `authority_product_mismatch` |
 | Finding subject ≠ caller subject | `unavailable` / `authority_subject_mismatch` |
 | Finding authority ≠ registered source authority | `unavailable` / `authority_response_invalid` |
