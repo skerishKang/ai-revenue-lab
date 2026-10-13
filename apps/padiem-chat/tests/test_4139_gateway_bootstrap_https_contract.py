@@ -20,6 +20,7 @@ CID = "pairing." + "a" * 32
 DEVICE = "device.office.1"
 LEASE = "gateway." + "b" * 32
 NONCE = "c" * 64
+PROOF_REF = "pairing-proof:" + "d" * 64
 
 
 class FakeReviewedIngress:
@@ -68,7 +69,7 @@ def test_no_production_mount_or_credential_delivery_exists():
     assert CONNECTOR_GATEWAY_CREDENTIAL_TRANSFER_WIRED is False
     c, gate, broker = fixture(enabled=False)
     response = c.post(CONNECTOR_GATEWAY_BEGIN_PATH, json={
-        "challenge_id": CID, "device_id": DEVICE,
+        "challenge_id": CID, "device_id": DEVICE, "proof_ref": PROOF_REF,
     })
     assert response.status_code == 503
     assert broker.calls == [] and gate.calls == 0
@@ -82,7 +83,7 @@ def test_no_production_mount_or_credential_delivery_exists():
 def test_tls_or_server_gate_missing_means_no_private_broker_call(enabled, trusted, scheme):
     c, guard, broker = fixture(enabled=enabled, trusted=trusted, scheme=scheme)
     response = c.post(CONNECTOR_GATEWAY_BEGIN_PATH, json={
-        "challenge_id": CID, "device_id": DEVICE,
+        "challenge_id": CID, "device_id": DEVICE, "proof_ref": PROOF_REF,
     })
     assert response.status_code in {403, 503}
     assert broker.calls == []
@@ -91,7 +92,7 @@ def test_tls_or_server_gate_missing_means_no_private_broker_call(enabled, truste
 def test_bounded_pairing_bootstrap_proof_receipt_never_returns_secrets():
     c, guard, broker = fixture()
     first = c.post(CONNECTOR_GATEWAY_BEGIN_PATH, json={
-        "challenge_id": CID, "device_id": DEVICE,
+        "challenge_id": CID, "device_id": DEVICE, "proof_ref": PROOF_REF,
     })
     assert first.status_code == 200, first.text
     assert first.headers["cache-control"].startswith("no-store")
@@ -111,6 +112,7 @@ def test_bounded_pairing_bootstrap_proof_receipt_never_returns_secrets():
     assert "raw_device_credential" not in complete.text
     assert "enrolled" not in complete.text and "online" not in complete.text
     assert [x["operation"] for x in broker.calls] == ["begin", "finish"]
+    assert broker.calls[0]["args"]["proof_ref"] == PROOF_REF
     assert guard.calls == 2
 
 
@@ -151,7 +153,7 @@ def test_broker_failure_or_malformed_receipt_does_not_create_success():
         }}
     broker.gateway_bootstrap_rpc = invalid
     response = c.post(CONNECTOR_GATEWAY_BEGIN_PATH, json={
-        "challenge_id": CID, "device_id": DEVICE,
+        "challenge_id": CID, "device_id": DEVICE, "proof_ref": PROOF_REF,
     })
     assert response.status_code == 503
     assert "forbidden" not in response.text
@@ -161,6 +163,6 @@ def test_unconfigured_tls_verifier_is_a_hard_stop():
     c, guard, broker = fixture()
     c.app.state.connector_gateway_trusted_tls = None
     assert c.post(CONNECTOR_GATEWAY_BEGIN_PATH, json={
-        "challenge_id": CID, "device_id": DEVICE,
+        "challenge_id": CID, "device_id": DEVICE, "proof_ref": PROOF_REF,
     }).status_code == 503
     assert broker.calls == []

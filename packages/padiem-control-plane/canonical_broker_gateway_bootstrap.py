@@ -162,12 +162,22 @@ class DurableBrokerGatewayBootstrap:
             raise _err("gateway_bootstrap_challenge_not_pending")
         return pairing, p
 
-    def begin(self, *, challenge_id: str, device_id: str, now: datetime) -> dict[str, Any]:
+    def begin(self, *, challenge_id: str, device_id: str, proof_ref: str, now: datetime) -> dict[str, Any]:
         challenge_id, device_id, now = _ref(challenge_id, "challenge_id"), _ref(device_id, "device_id"), _now(now)
         nonce_hex = _nonce(self._nonce_factory())
         lease_ref = _lease(self._lease_factory())
         def tx():
-            _, p = self._pending(challenge_id=challenge_id, device_id=device_id, now=now)
+            pairing, p = self._pending(challenge_id=challenge_id, device_id=device_id, now=now)
+            binding = p.enrollment_binding
+            # Do NOT reserve a one-time lease for a caller who merely knows
+            # public challenge/device identifiers. Require the canonical
+            # one-time code HMAC *before* the INSERT, with no new secret store.
+            pairing.verify_enrollment_bootstrap(
+                challenge_id=challenge_id, device_id=device_id,
+                proof_ref=proof_ref, consent_ref=binding.consent_ref,
+                owner_ref=binding.owner_ref, account_ref=binding.account_ref,
+                workspace_ref=binding.workspace_ref, now=now,
+            )
             # Only expired canonical challenges are purged; a live challenge
             # never receives a second nonce or a second authenticated lease.
             self._storage.sql.exec(

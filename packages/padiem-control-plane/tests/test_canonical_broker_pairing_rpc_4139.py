@@ -247,7 +247,7 @@ def test_private_gateway_rpc_requires_separate_explicit_gates_and_closed_shapes(
     async def rpc(operation, args):
         return await h.gateway_bootstrap_rpc({"operation": operation, "args": args})
     async def begin():
-        return await rpc("begin", {"challenge_id": cid, "device_id": DEVICE})
+        return await rpc("begin", {"challenge_id": cid, "device_id": DEVICE, "proof_ref": pairing_proof_ref(challenge_id=cid, device_id=DEVICE, pairing_code=code)})
     assert asyncio.run(begin())["ok"] is False
     installed = asyncio.run(rpc(
         "install", {"migration_id": "canonical-broker-gateway-bootstrap-v1"}
@@ -257,6 +257,14 @@ def test_private_gateway_rpc_requires_separate_explicit_gates_and_closed_shapes(
     assert asyncio.run(begin())["ok"] is False
     h.env.LOCAL_AGENT_BROKER_GATEWAY_BOOTSTRAP_SCHEMA_INSTALLED = "true"
     h.env.LOCAL_AGENT_BROKER_GATEWAY_BOOTSTRAP_ENABLED = "true"
+    invalid_admission = asyncio.run(rpc("begin", {
+        "challenge_id": cid, "device_id": DEVICE,
+        "proof_ref": "pairing-proof:" + "f" * 64,
+    }))
+    assert invalid_admission["ok"] is False
+    assert h._storage.sql.exec(
+        "SELECT * FROM canonical_local_agent_gateway_bootstrap"
+    ).toArray() == []
     started = asyncio.run(begin())
     assert started["ok"] is True
     context = started["gateway"]

@@ -330,8 +330,18 @@ def test_gateway_nonce_is_canonical_broker_do_durable_and_nonconsuming():
     gateway = gateway_lease(h)
     assert BOOTSTRAP_PRODUCTION_ENABLED is False
     assert BOOTSTRAP_HTTP_ROUTE_MOUNTED is False
+    # A challenge ID and device ID are public correlation, not permission to
+    # reserve the one-use nonce. An invalid proof must create zero SQL rows.
+    with pytest.raises(ControlPlaneContractError) as denied:
+        gateway.begin(challenge_id=challenge.challenge_id, device_id=DEVICE,
+                      proof_ref="pairing-proof:" + "f" * 64, now=NOW)
+    assert denied.value.code == "invalid_pairing_proof"
+    assert h.storage.sql.exec(
+        "SELECT * FROM canonical_local_agent_gateway_bootstrap"
+    ).toArray() == []
     started = gateway.begin(
-        challenge_id=challenge.challenge_id, device_id=DEVICE, now=NOW,
+        challenge_id=challenge.challenge_id, device_id=DEVICE,
+        proof_ref=proof(challenge, code), now=NOW,
     )
     assert started["nonce_hex"] == "a" * 64
     assert started["lease_ref"] == "gateway." + "b" * 32
@@ -341,7 +351,7 @@ def test_gateway_nonce_is_canonical_broker_do_durable_and_nonconsuming():
         "SELECT * FROM canonical_local_agent_gateway_bootstrap"
     ).toArray()) == 1
     with pytest.raises(ControlPlaneContractError):
-        gateway.begin(challenge_id=challenge.challenge_id, device_id=DEVICE, now=NOW)
+        gateway.begin(challenge_id=challenge.challenge_id, device_id=DEVICE, proof_ref=proof(challenge, code), now=NOW)
     reopened = Harness(storage=h.storage)
     gateway2 = DurableBrokerGatewayBootstrap(storage=h.storage, pairing=reopened.pairing)
     signed = bootstrap_mac(
@@ -416,7 +426,7 @@ def test_gateway_invalid_proof_attempts_are_persisted_across_reopens():
     install(h)
     challenge, code = issue(h)
     gateway = gateway_lease(h)
-    started = gateway.begin(challenge_id=challenge.challenge_id, device_id=DEVICE, now=NOW)
+    started = gateway.begin(challenge_id=challenge.challenge_id, device_id=DEVICE, proof_ref=proof(challenge, code), now=NOW)
     invalid = "f" * 64
     for count in range(1, 4):
         reopened = Harness(storage=h.storage)
@@ -456,8 +466,8 @@ def test_gateway_expiry_cross_device_and_schema_install_refuse_before_auth():
     gateway = gateway_lease(h)
     for swapped in ["device.attacker", "device.other"]:
         with pytest.raises(ControlPlaneContractError):
-            gateway.begin(challenge_id=challenge.challenge_id, device_id=swapped, now=NOW)
-    started = gateway.begin(challenge_id=challenge.challenge_id, device_id=DEVICE, now=NOW)
+            gateway.begin(challenge_id=challenge.challenge_id, device_id=swapped, proof_ref=proof(challenge, code), now=NOW)
+    started = gateway.begin(challenge_id=challenge.challenge_id, device_id=DEVICE, proof_ref=proof(challenge, code), now=NOW)
     valid = bootstrap_mac(
         pairing_code=code, challenge_id=challenge.challenge_id, device_id=DEVICE,
         nonce_hex=started["nonce_hex"], lease_ref=started["lease_ref"],
@@ -469,4 +479,4 @@ def test_gateway_expiry_cross_device_and_schema_install_refuse_before_auth():
             now=NOW + timedelta(seconds=61),
         )
     with pytest.raises(ControlPlaneContractError):
-        gateway.begin(challenge_id=challenge.challenge_id, device_id=DEVICE, now=NOW)
+        gateway.begin(challenge_id=challenge.challenge_id, device_id=DEVICE, proof_ref=proof(challenge, code), now=NOW)

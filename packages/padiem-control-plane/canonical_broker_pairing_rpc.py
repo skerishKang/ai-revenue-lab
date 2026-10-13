@@ -175,7 +175,7 @@ class CanonicalBrokerPairingRPC:
             gateway = self._gateway_bootstrap()
             now = datetime.now(timezone.utc)
             if operation == "begin":
-                if set(args) != {"challenge_id", "device_id"}:
+                if set(args) != {"challenge_id", "device_id", "proof_ref"}:
                     raise ControlPlaneContractError(
                         "invalid_gateway_bootstrap_rpc", "begin fields invalid"
                     )

@@ -29,7 +29,7 @@ _MAX_BYTES = 1024
 _SAFE_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+-]{0,255}$")
 _LEASE_REF = re.compile(r"^gateway\.[0-9a-f]{32}$")
 _PROOF = re.compile(r"^[0-9a-f]{64}$")
-_BEGIN_FIELDS = frozenset({"challenge_id", "device_id"})
+_BEGIN_FIELDS = frozenset({"challenge_id", "device_id", "proof_ref"})
 _FINISH_FIELDS = frozenset({"challenge_id", "device_id", "lease_ref", "proof_hex"})
 _BEGIN_RESULT_FIELDS = frozenset({
     "challenge_id", "device_id", "lease_ref", "nonce_hex",
@@ -78,6 +78,11 @@ def _valid(values: dict[str, Any], *, begin: bool) -> bool:
         return False
     if any(type(values.get(key)) is not str or _SAFE_REF.fullmatch(values[key]) is None
            for key in ("challenge_id", "device_id")):
+        return False
+    if begin and (
+        type(values["proof_ref"]) is not str
+        or re.fullmatch(r"pairing-proof:[0-9a-f]{64}", values["proof_ref"]) is None
+    ):
         return False
     if not begin and (
         type(values["lease_ref"]) is not str
