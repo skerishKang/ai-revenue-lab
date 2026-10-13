@@ -25,7 +25,13 @@ const outcome = await new Promise((resolve) => {
     try { ws.close(); } catch {}
     resolve({ok, reason});
   }
-  ws.addEventListener("error", () => done(false, "wss_transport_error"));
+  ws.addEventListener("error", (event) => {
+    // Emit only HTTP status class/code from a failed handshake. Never echo
+    // raw URL, headers, tokens, exception messages or stack traces.
+    const detail = String(event?.error?.message ?? event?.message ?? "");
+    const match = detail.match(/(?:status|response|unexpected server)[^0-9]*(4[0-9]{2}|5[0-9]{2})/i);
+    done(false, match ? "handshake_http_" + match[1] : "wss_transport_error");
+  });
   ws.addEventListener("close", () => {
     if (!settled) done(false, "early_close");
   });
