@@ -167,7 +167,6 @@ class Default(WorkerEntrypoint):
 
     async def read_office_artifact_part(self, payload: dict) -> dict:
         return await self._stub().read_office_artifact_part(payload)
-
     # #4139: private canonical Broker DO enrollment passthroughs only.
     async def install_pairing_schema(self, payload: dict) -> dict:
         return await self._stub().install_pairing_schema(payload)
@@ -177,7 +176,6 @@ class Default(WorkerEntrypoint):
         return await self._stub().get_enrollment_binding(payload)
     async def verify_enrollment_bootstrap(self, payload: dict) -> dict:
         return await self._stub().verify_enrollment_bootstrap(payload)
-
     async def redeem_enrollment(self, payload: dict) -> dict:
         return await self._stub().redeem_enrollment(payload)
 
