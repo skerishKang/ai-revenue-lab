@@ -11,6 +11,7 @@ from app.canonical_connector_gateway_source_composition import CONNECTOR_GATEWAY
 from app.connector_gateway_worker_asgi_review import (
     REVIEW_WORKER_WSS_URL, WORKER_GATEWAY_ASGI_FETCH_PRODUCTION_WIRED,
     dispatch_review_only_worker_wss_upgrade,
+    strict_source_only_websocket_scope,
 )
 from app.worker_config import (
     IDENTITY_AUTHORITY_SERVICE_BINDING_NAME,
@@ -123,8 +124,7 @@ def test_bridge_delegates_to_real_asgi_websocket_only_after_all_guards(monkeypat
     assert run(req=req, worker_env=bindings) == "source-review-asgi-receipt"
     assert captured["request"] is req
     assert captured["env"] is bindings
-    assert len(captured["app"].routes) == 1
-    assert captured["app"].routes[0].path == CONNECTOR_GATEWAY_WSS_PATH
+    assert callable(captured["app"])  # one strict ASGI protocol adapter
 
 
 def test_public_worker_does_not_mount_or_import_source_review_asgi_bridge():
@@ -132,3 +132,60 @@ def test_public_worker_does_not_mount_or_import_source_review_asgi_bridge():
     worker = (Path(__file__).resolve().parents[1] / "worker.py").read_text(encoding="utf-8")
     assert "dispatch_review_only_worker_wss_upgrade" not in worker
     assert "connector_gateway_worker_asgi_review" not in worker
+
+
+
+def test_cloudflare_https_ws_scope_is_normalized_not_used_as_tls_authority():
+    events = []
+    async def simulated_source_app(scope, receive, send):
+        events.append(("child", scope))
+    adapter = strict_source_only_websocket_scope(simulated_source_app)
+    expected = {
+        "type": "websocket",
+        "scheme": "https",
+        "path": CONNECTOR_GATEWAY_WSS_PATH,
+        "raw_path": CONNECTOR_GATEWAY_WSS_PATH.encode("ascii"),
+        "query_string": b"",
+        "headers": [(b"upgrade", b"websocket")],
+    }
+    async def fake_send(event):
+        events.append(("send", event))
+    async def read():
+        return {"type": "websocket.connect"}
+    asyncio.run(adapter(expected, read, fake_send))
+    assert len(events) == 1
+    assert events[0][0] == "child"
+    assert events[0][1]["scheme"] == "wss"
+    assert expected["scheme"] == "https"
+    assert events[0][1]["headers"] is expected["headers"]
+    # Trust still belongs to canonical trusted_tls_ingress.verify(websocket),
+    # never to the scheme, headers, or presence of this adapter.
+
+
+@pytest.mark.parametrize("changes", [
+    {"scheme": "http"},
+    {"scheme": "ws"},
+    {"scheme": "wss"},
+    {"type": "http"},
+    {"path": "/api/claw/connector/gateway/other"},
+    {"raw_path": b"/api/claw/connector/gateway/%73ession"},
+    {"query_string": b"token=secret"},
+    {"raw_path": None},
+])
+def test_non_https_or_ambiguous_ws_scopes_are_denied_before_host_invocation(changes):
+    calls = []
+    async def never_enter(scope, receive, send):
+        calls.append("untrusted_scope_reached_host")
+    async def send(event):
+        calls.append(event)
+    values = {
+        "type": "websocket",
+        "scheme": "https",
+        "path": CONNECTOR_GATEWAY_WSS_PATH,
+        "raw_path": CONNECTOR_GATEWAY_WSS_PATH.encode("ascii"),
+        "query_string": b"",
+    }
+    values.update(changes)
+    adapter = strict_source_only_websocket_scope(never_enter)
+    asyncio.run(adapter(values, None, send))
+    assert calls == [{"type": "websocket.close", "code": 1008}]

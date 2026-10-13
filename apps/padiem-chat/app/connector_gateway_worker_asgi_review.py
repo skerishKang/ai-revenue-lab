@@ -32,6 +32,35 @@ def _untrusted_headers(request: Any) -> bool:
         return True
 
 
+
+def strict_source_only_websocket_scope(app: Any) -> Any:
+    """Translate Cloudflare ASGI HTTPS transport scheme to ASGI WebSocket WSS.
+
+    Cloudflare's request_to_scope(ws=True) preserves request.url.protocol
+    ("https"), whereas Starlette WebSocket.url.scheme is expected to be "wss"
+    by the canonical #4139 host. This is ONLY protocol representation, not a
+    TLS or client certificate attestation: trusted_tls_ingress.verify() still
+    owns that proof and may not accept untrusted request headers.
+    """
+    async def guarded(scope: Any, receive: Any, send: Any) -> None:
+        valid = (
+            type(scope) is dict
+            and scope.get("type") == "websocket"
+            and scope.get("scheme") == "https"
+            and scope.get("path") == CONNECTOR_GATEWAY_WSS_PATH
+            and scope.get("raw_path") == CONNECTOR_GATEWAY_WSS_PATH.encode("ascii")
+            and scope.get("query_string") == b""
+        )
+        if not valid:
+            await send({"type": "websocket.close", "code": 1008})
+            return
+        corrected = dict(scope)
+        corrected["scheme"] = "wss"
+        await app(corrected, receive, send)
+
+    return guarded
+
+
 async def dispatch_review_only_worker_wss_upgrade(
     *, request: Any = None, worker_env: Any = None,
     trusted_tls_ingress: Any = None, source_test_authorized: bool = False,
@@ -63,4 +92,4 @@ async def dispatch_review_only_worker_wss_upgrade(
     # The SDK's asgi.fetch() is HTTP-only. A WS upgrade must invoke
     # asgi.websocket() to construct a real WebSocketPair and status 101.
     # Never route the pairing channel through HTTP request processing.
-    return await asgi.websocket(app, request, worker_env)
+    return await asgi.websocket(strict_source_only_websocket_scope(app), request, worker_env)
