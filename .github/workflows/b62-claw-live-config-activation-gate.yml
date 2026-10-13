@@ -866,9 +866,15 @@ jobs:
           )"
           transport_rc=$?
           set -e
+          if ! [[ "${http_status}" =~ ^[0-9]{3}$ ]]; then http_status=UNKNOWN; fi
           echo "B62_CLAW_CONFIG_ROLLBACK_PATCH_HTTP_STATUS=${http_status}"
-          if [ "${transport_rc}" -ne 0 ] || ! [[ "${http_status}" =~ ^[0-9]{3}$ ]] || \
-             [ "${http_status}" -lt 200 ] || [ "${http_status}" -ge 300 ]; then
+          # HTTP 2xx does not establish transaction success: Cloudflare can
+          # return success=false or a malformed settings envelope. Both must
+          # use the same bounded, non-retrying, GET-only fail-closed path as 5xx.
+          if [ "${transport_rc}" -ne 0 ] || [ "${http_status}" = UNKNOWN ] || \
+             [ "${http_status}" -lt 200 ] || [ "${http_status}" -ge 300 ] || \
+             ! jq -e '.success == true and (.result.bindings | type == "array")' \
+               "${response}" >/dev/null 2>&1; then
             # Never dump untrusted API messages, response bodies or headers.
             codes="$(jq -r '[.errors[]? | objects | .code | select(type=="number") | tostring] | unique | join(",")' "${response}" 2>/dev/null || true)"
             if ! [[ "${codes}" =~ ^[0-9]{1,8}(,[0-9]{1,8}){0,7}$ ]]; then codes=UNAVAILABLE; fi
@@ -877,8 +883,9 @@ jobs:
             if ! [[ "${ray}" =~ ^[A-Za-z0-9-]{8,64}$ ]]; then ray=UNAVAILABLE; fi
             echo "CONFIG_ROLLBACK_PATCH_CF_RAY=${ray}"
             echo 'CONFIG_ROLLBACK_PATCH_AUTOMATIC_RETRY=NO'
-            # Non-2xx does not prove a zero-mutation outcome: observe once,
-            # but never accept the transaction or roll back code on this basis.
+            # A rejected or invalid 2xx response cannot prove no mutation;
+            # observe exactly once, without authorizing acceptance.
+            # Never roll back code based on this uncertain response.
             posterror="${RUNNER_TEMP}/b62-config-rollback-posterror-readonly.json"
             get_status="$(curl -sS --connect-timeout 8 --max-time 20 \
               -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
@@ -894,7 +901,6 @@ jobs:
             echo 'CONFIG_ROLLBACK=FAIL'
             exit 1
           fi
-          jq -e '.success == true and (.result.bindings | type == "array")' "${response}" >/dev/null
           echo 'CONFIG_ROLLBACK=SUBMITTED'
           echo 'PRODUCTION_MUTATION=1'
           echo 'WORKER_CODE_REDEPLOY=0'

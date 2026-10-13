@@ -3,7 +3,9 @@ from __future__ import annotations
 import copy
 import importlib.util
 import json
+import os
 import subprocess
+import textwrap
 from contextlib import redirect_stdout
 from io import StringIO
 from tempfile import TemporaryDirectory
@@ -527,6 +529,94 @@ def test_postpatch_source_reason_is_finite_without_exposing_secret():
     assert "P01_SSE_OPTIN_GATE_REASON=POST_VERSION_LINEAGE_UNVERIFIED" in result
     assert PRIVATE not in result
     assert "SECRET_VALUES_EMITTED=0" in result
+
+
+def _rollback_patch_step_script() -> str:
+    # Run the exact workflow step in an isolated shell with a fake curl
+    # executable. This is intentionally NOT a production Cloudflare request.
+    source = WORKFLOW.read_text(encoding="utf-8")
+    start = "- name: Apply the snapshot-bounded config restore through the settings API"
+    end = "\n      - name: Read back the restored config"
+    block = source.split(start, 1)[1].split("shell: bash\n        run: |\n", 1)[1]
+    return textwrap.dedent(block.split(end, 1)[0])
+
+
+def _exercise_mocked_rollback_response(response_kind: str):
+    with TemporaryDirectory() as td:
+        root = Path(td)
+        (root / "bin").mkdir()
+        snapshot = root / "safe-snapshot.json"
+        snapshot.write_text(json.dumps({"success": True, "result": {"bindings": []}}))
+        mock = root / "bin" / "curl"
+        mock.write_text(textwrap.dedent("""\
+            #!/usr/bin/env python3
+            import json
+            import os
+            import pathlib
+            import sys
+
+            args = sys.argv[1:]
+            op = "PATCH" if "-X" in args and args[args.index("-X") + 1] == "PATCH" else "GET"
+            with open(os.environ["FAKE_CURL_TRACE"], "a") as trace:
+                trace.write(op + "\\n")
+            output = pathlib.Path(args[args.index("-o") + 1])
+            if "-D" in args:
+                pathlib.Path(args[args.index("-D") + 1]).write_text("CF-Ray: 1234567890abcdef-KOR\\r\\n")
+            mode = os.environ["FAKE_PATCH_MODE"]
+            if op == "GET":
+                output.write_text(json.dumps({"success": False, "result": {}}))
+            elif mode == "invalid_body":
+                output.write_text("this-is-not-json")
+            elif mode == "success_false":
+                output.write_text(json.dumps({"success": False, "errors": [
+                    {"code": 10013, "message": os.environ["FAKE_PRIVATE"]}]}))
+            else:
+                output.write_text(json.dumps({"success": True, "result": {"bindings": []}}))
+            sys.stdout.write("200")
+            """))
+        mock.chmod(0o755)
+        trace = root / "curl-trace.log"
+        env = dict(os.environ)
+        env.update({
+            "PATH": str(root / "bin") + os.pathsep + env["PATH"],
+            "RUNNER_TEMP": str(root),
+            "CLOUDFLARE_ACCOUNT_ID": "mock-account",
+            "CLOUDFLARE_API_TOKEN": "fake-inert-test-token",
+            "B62_WORKER": "padiem-chat",
+            "CONFIG_SNAPSHOT_PATH": str(snapshot),
+            "FAKE_CURL_TRACE": str(trace),
+            "FAKE_PATCH_MODE": response_kind,
+            "FAKE_PRIVATE": PRIVATE,
+        })
+        result = subprocess.run(
+            ["bash", "-c", _rollback_patch_step_script()],
+            env=env, capture_output=True, text=True, check=False)
+        return result, trace.read_text().splitlines()
+
+
+def test_rollback_http_200_success_false_and_invalid_json_fail_closed_with_single_get():
+    for kind in ("success_false", "invalid_body"):
+        result, methods = _exercise_mocked_rollback_response(kind)
+        assert result.returncode != 0
+        assert methods == ["PATCH", "GET"], methods
+        assert "B62_CLAW_CONFIG_ROLLBACK_PATCH_HTTP_STATUS=200" in result.stdout
+        assert "CONFIG_ROLLBACK_POSTERROR_SINGLE_READ=NOT_EXACT_OR_UNAVAILABLE" in result.stdout
+        assert "CONFIG_ROLLBACK_POSTERROR_ACCEPTANCE=NO" in result.stdout
+        assert "FULL_CONFIG_ROLLBACK_CLAIM=NO" in result.stdout
+        assert "CONFIG_ROLLBACK_PATCH_AUTOMATIC_RETRY=NO" in result.stdout
+        assert "CONFIG_ROLLBACK=SUBMITTED" not in result.stdout
+        assert "PRODUCTION_MUTATION=1" not in result.stdout
+        assert PRIVATE not in result.stdout + result.stderr
+
+
+def test_rollback_http_200_valid_envelope_is_not_false_negative():
+    result, methods = _exercise_mocked_rollback_response("accepted")
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    assert methods == ["PATCH"], methods
+    assert "CONFIG_ROLLBACK=SUBMITTED" in result.stdout
+    assert "PRODUCTION_MUTATION=1" in result.stdout
+    assert "CONFIG_ROLLBACK_POSTERROR_SINGLE_READ=" not in result.stdout
+
 
 if __name__ == "__main__":
     for name, func in sorted(globals().copy().items()):
