@@ -28,6 +28,11 @@ EXPECTED_WORKER = "padiem-chat"
 OWNER_P01_D1_BINDING = "BROWSER_CONTROL_OWNER_P01_D1"
 SUPPORTED_BINDING_TYPES = {"assets", "service", "d1", "r2_bucket", "browser", "plain_text", "secret_text", "version_metadata", "secrets_store_secret"}
 HARK_BROWSER_BINDING = "BROWSER"
+# #4139 opt-in candidate builder only: never activated via production CLI.
+CONNECTOR_BROKER_BINDING = "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE"
+CONNECTOR_BROKER_TARGET = "padiem-local-agent-broker-state"
+CONNECTOR_IDENTITY_BINDING = "IDENTITY_AUTHORITY_SERVICE"
+CONNECTOR_IDENTITY_TARGET = "padiem-control-plane-identity"
 REQUIRED_VARS = ("PADIEM_CHAT_RUNTIME_MODE", "PADIEM_CHAT_LIVE_ENABLED")
 PUBLIC_BASE_URL_VAR = "PADIEM_CHAT_PUBLIC_BASE_URL"
 # #3252: a live version_metadata binding is runtime provenance. Exactly one may
@@ -143,6 +148,7 @@ def build_production_config(
     owner_d1_database_id: str | None = None,
     attach_web_secrets_store: bool = False,
     commission_hark_browser: bool = False,
+    attach_connector_broker_service: bool = False,
 ) -> str:
     try:
         repo = tomllib.loads(repo_config_path.read_text(encoding="utf-8"))
@@ -249,7 +255,32 @@ def build_production_config(
         lines.append(f"binding = {_toml_string(str(live_name))}")
         lines.append("")
 
-    for service in live["services"]:
+    # Source-only candidate. This function cannot write Cloudflare metadata.
+    # Exactly ONE new service is allowed and the existing canonical Identity
+    # target must be present. No implicit new Broker, Edge or account authority.
+    services_for_output = list(live["services"])
+    if attach_connector_broker_service:
+        if (owner_d1_database_id is not None or attach_web_secrets_store
+                or commission_hark_browser):
+            raise ProductionConfigError("multiple additive authority modes prohibited")
+        live_names = (
+            {item["name"] for key in ("assets", "services", "d1", "r2") for item in live[key]}
+            | set(live["vars"]) | set(live["secret_names"])
+            | {item["name"] for item in live["secrets_store"]}
+        )
+        if live["browser"] is not None:
+            live_names.add(live["browser"]["name"])
+        if live["version_metadata"] is not None:
+            live_names.add(live["version_metadata"]["name"])
+        if CONNECTOR_BROKER_BINDING in live_names:
+            raise ProductionConfigError("Connector Broker binding already assigned; no additive change")
+        identity = [item for item in live["services"] if item["name"] == CONNECTOR_IDENTITY_BINDING]
+        if len(identity) != 1 or identity[0].get("service") != CONNECTOR_IDENTITY_TARGET:
+            raise ProductionConfigError("Canonical Identity binding is not proven at expected target")
+        services_for_output.append({"type": "service", "name": CONNECTOR_BROKER_BINDING,
+                                    "service": CONNECTOR_BROKER_TARGET})
+
+    for service in services_for_output:
         target = service.get("service")
         if not isinstance(target, str) or not target:
             raise ProductionConfigError(
