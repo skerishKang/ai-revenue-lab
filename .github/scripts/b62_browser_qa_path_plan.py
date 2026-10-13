@@ -361,22 +361,6 @@ def choose_lanes(
         return {job: True for job in patterns_by_job}
     if changed_paths & PLAN_FILES:
         return {job: True for job in patterns_by_job}
-    # #4551: exact Automation CSS + its audited static-source assertion test
-    # cannot alter shipped JS/Python flows. Keep all six existing UI smoke
-    # lanes; the B62 static-touch CI lane separately executes that very test.
-    # No generic CSS + arbitrary pytest shortcut is permitted.
-    if (
-        changed_paths == {
-            "apps/padiem-chat/static/claw-focus-layout.css",
-            "apps/padiem-chat/tests/test_4488_claw_automation_touch_accessibility.py",
-        }
-        and statuses is not None
-        and set(statuses) == changed_paths
-        and type(expected_files) is int
-        and expected_files == 2
-        and all(statuses[p] in ("added", "modified") for p in changed_paths)
-    ):
-        return {job: (job in UI_ONLY_CSS_SMOKE_LANES) for job in patterns_by_job}
     # #4459: proven CSS-only UI changes keep the presentation smoke set and
     # skip the flow-functional lanes whose logic CSS cannot change. Missing
     # statuses keep the historical path-only routing (fail-closed).
