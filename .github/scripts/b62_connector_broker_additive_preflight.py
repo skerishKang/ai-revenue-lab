@@ -53,6 +53,111 @@ BROKER_REQUIRED_PRIVATE_RPCS = (
     "gateway_bootstrap_rpc",
 )
 
+IDENTITY_CONFIG = REPO_ROOT / "packages" / "padiem-control-plane" / "wrangler.identity-authority.jsonc"
+IDENTITY_WORKER_MODULE = REPO_ROOT / "packages" / "padiem-control-plane" / "identity_authority_worker.py"
+IDENTITY_RPC_MODULE = REPO_ROOT / "packages" / "padiem-control-plane" / "canonical_connector_enrollment_consent_rpc.py"
+IDENTITY_REQUIRED_PRIVATE_RPCS = (
+    "resolve_connector_enrollment_consent_for_device",
+    "bind_connector_enrollment_challenge",
+    "authorize_connector_enrollment_redeem",
+)
+
+
+
+def verify_identity_source_rpc_contract(
+    identity_config: Path = IDENTITY_CONFIG,
+    identity_worker: Path = IDENTITY_WORKER_MODULE,
+    identity_rpc: Path = IDENTITY_RPC_MODULE,
+) -> None:
+    """Pin canonical Identity service and three owner-consent private RPC paths.
+
+    No synthetic client-supplied device, forwarded header or visible Worker
+    name is interpreted as authorization. This is source-only; no live RPC.
+    """
+    try:
+        config = json.loads(identity_config.read_text(encoding="utf-8"))
+        worker = ast.parse(identity_worker.read_text(encoding="utf-8"))
+        rpc = ast.parse(identity_rpc.read_text(encoding="utf-8"))
+    except (OSError, ValueError, SyntaxError) as exc:
+        raise ProductionConfigError("Canonical Identity source cannot be verified") from exc
+    if (
+        type(config) is not dict
+        or config.get("name") != CONNECTOR_IDENTITY_TARGET
+        or config.get("main") != identity_worker.name
+        or config.get("workers_dev") is not False
+        or config.get("preview_urls") is not False
+    ):
+        raise ProductionConfigError("Canonical Identity Worker target drift")
+
+    def klass(tree: ast.Module, name: str) -> ast.ClassDef:
+        found = [node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == name]
+        if len(found) != 1:
+            raise ProductionConfigError("Canonical Identity class missing or duplicated")
+        return found[0]
+
+    durable = klass(worker, "CanonicalIdentityDurableObject")
+    default = klass(worker, "Default")
+    source_mixin = klass(rpc, "CanonicalIdentityEnrollmentConsentRPC")
+    if not any(isinstance(base, ast.Name) and base.id == "CanonicalIdentityEnrollmentConsentRPC"
+               for base in durable.bases):
+        raise ProductionConfigError("Canonical Identity consent DO inheritance drift")
+    if not any(isinstance(base, ast.Name) and base.id == "WorkerEntrypoint"
+               for base in default.bases):
+        raise ProductionConfigError("Canonical Identity private entrypoint drift")
+
+    for name in IDENTITY_REQUIRED_PRIVATE_RPCS:
+        handlers = [node for node in source_mixin.body
+                    if isinstance(node, ast.AsyncFunctionDef) and node.name == name]
+        forwarders = [node for node in default.body
+                      if isinstance(node, ast.AsyncFunctionDef) and node.name == name]
+        if len(handlers) != 1 or len(forwarders) != 1:
+            raise ProductionConfigError("Canonical Identity private consent RPC absent or duplicated")
+        # Require the reviewed one-payload direct DO invocation, not a method
+        # declaration that quietly forwards to a different authority.
+        expected = False
+        for node in ast.walk(forwarders[0]):
+            if not isinstance(node, ast.Await) or not isinstance(node.value, ast.Call):
+                continue
+            call = node.value
+            attr = call.func
+            if not isinstance(attr, ast.Attribute) or attr.attr != name:
+                continue
+            target = attr.value
+            if not isinstance(target, ast.Call) or target.args or target.keywords:
+                continue
+            stub = target.func
+            if (
+                isinstance(stub, ast.Attribute) and stub.attr == "_stub"
+                and isinstance(stub.value, ast.Name) and stub.value.id == "self"
+                and len(call.args) == 1 and isinstance(call.args[0], ast.Name)
+                and call.args[0].id == "payload" and not call.keywords
+            ):
+                expected = True
+                break
+        if not expected:
+            raise ProductionConfigError("Canonical Identity private consent forwarding drift")
+    # The private consent mixin MUST still require all three independent
+    # server-owned activation gates; this does not turn any of them ON.
+    control = [node for node in source_mixin.body
+               if isinstance(node, ast.FunctionDef)
+               and node.name == "_connector_enrollment_enabled"]
+    if len(control) != 1:
+        raise ProductionConfigError("Canonical Identity consent activation gate missing")
+    gates = {
+        node.attr for node in ast.walk(control[0])
+        if isinstance(node, ast.Attribute)
+    }
+    required = {
+        "CONTROL_PLANE_CONNECTOR_ENROLLMENT_RPC_ENABLED",
+        "CONTROL_PLANE_CONNECTOR_ENROLLMENT_SCOPE_APPROVED",
+        "CONTROL_PLANE_CONNECTOR_ENROLLMENT_SCHEMA_INSTALLED",
+    }
+    if not required.issubset({
+        node.value for node in ast.walk(control[0])
+        if isinstance(node, ast.Constant) and type(node.value) is str
+    }):
+        raise ProductionConfigError("Canonical Identity consent activation gate drift")
+
 
 def verify_broker_source_rpc_contract(
     state_config: Path = BROKER_STATE_CONFIG,
@@ -135,6 +240,7 @@ def candidate_preservation(
     release config. Never use the source mock wrangler.toml as live authority.
     """
     verify_broker_source_rpc_contract()
+    verify_identity_source_rpc_contract()
     live = parse_live_bindings(live_settings)
     baseline = build_production_config(
         live, repo_config, PUBLIC_ORIGIN,
@@ -177,6 +283,7 @@ def candidate_preservation(
         "additional_service_bindings_count": 1,
         "target_worker": CONNECTOR_BROKER_TARGET,
         "broker_private_rpc_source_contract_proven": True,
+        "identity_consent_rpc_source_contract_proven": True,
         "deployed_rpc_revision_proven": False,
         "existing_secret_values_read": False,
         "secret_survival_requires_deployment_readback": True,
