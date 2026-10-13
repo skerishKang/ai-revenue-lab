@@ -315,6 +315,19 @@ Immutable **835-source** cursor: **816 text originals seen at least partly** (12
 
 **Next:** 50 initial `TEXT_SAMPLED` originals in two further 25-file batches B34–B35; then aggregate the Owner-only confidentiality/business-review decision list.
 
+## 1AH. Batch 34 — full-body re-review of 25 original reference product documents (2026-10-14 KST)
+
+**Immutable 835-source progress:** 691 fully fetched original text B02–B29 + 25 each B31/B32/B33/B34 = **791 fully inspected original text files** + 19 PDF/DOCX B30 inspected + **25 remaining `TEXT_SAMPLED`** = 835 original files, with no `INDEXED_ONLY` or `BINARY_PENDING`. Initial partial examination of all files is complete; full-body re-review remains on the final 25.
+
+- [Batch34 original source SHA/25-item full-body classification and safe cross-document findings](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH34_20261013.md).
+- Batch34 provisional classes: `PRODUCT_PUBLIC=21`, `MIXED_REVIEW=3`, `BUSINESS_REVIEW=1`. Most are explicitly synthetic UI reference descriptions, not Production, live AI, actual customer materials or current product approval.
+- B05 original neighbor-market idea/ranking and business-monetization hypotheses are not instructions to recreate the superseded internal product workspace; current DanjiOn external successor source authority remains separate.
+- B29 real-world community reference includes an identifiable operating-person reference and a historical permission statement. Verify any public-name/disclosure consent with Owner/privacy review; no personal identity or location data is reproduced in the audit.
+- B35 V3 prospective institutional pilot/workshop commercial product contract is distinct from its static demo and from any approved customer-specific SOW/price. B21 founder strategy letter refers to a **fictional synthetic product demo**, not the company's private business policy.
+- Original path/blob SHA/byte sizes and all original source, customer records, local company Governance, source code, Production/deploy, model and credentials remain unchanged. The sole changed files are this checkpoint, the Batch34 report and 25 read-state manifest cells.
+
+**Next:** B35 final 25 `TEXT_SAMPLED` complete-text reviews, then sanitized aggregate register + Owner-private review/disclosure queue, with no unapproved publication changes.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
