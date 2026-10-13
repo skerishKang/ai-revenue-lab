@@ -1,5 +1,43 @@
 # #3930 Public P01 live SSE activation — Owner decision 2026-10-10
 
+
+## Current operational evidence — 2026-10-14 KST (read first)
+
+```text
+DOC_STATUS = RUNBOOK_WITH_DATED_INCIDENT_EVIDENCE
+FEATURE = P01 authenticated-user live SSE (B62/Claw)
+IMPLEMENTATION_ISSUE = #3930 CLOSED (consolidated)
+PRODUCTION_ACCEPTANCE_ISSUES = #3936, #4318 OPEN
+SOURCE_REPAIR = MERGED, NOT PRODUCTION_DEPLOYED
+LAST_CONFIRMED_PRODUCTION_SSE_FLAG = OFF
+LATEST_CLOUDFLARE_STATE = PENDING_NEW_GET_ONLY_PREFLIGHT
+AUTHENTICATED_TERMINAL_E2E = NOT_EXECUTED
+GLOBAL_SSE_RELEASE_ACCEPTED = NO
+```
+
+**What is done, and what is not:** Source diagnostics and guarded verifier fixes are merged through [#4639](https://github.com/skerishKang/ai-revenue-lab/pull/4639) at main SHA `02cd7551b7f27586789717168b57ba4a66770000` at this snapshot. **A merged PR is not a B62 Worker deployment**. Last confirmed safe Production SSE-OFF snapshot/code recovery was protected [Actions #38447431275](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38447431275), 100%-served Worker `428d9bd6-fef1-45bc-9e4f-3252708fdc93`. No newer B62 code-deployment / P01 activation `workflow_dispatch` was observed during this documentation update; the next fresh local/operator GET-only preflight is **pending**, so do not present the historical OFF readback as a current-time Cloudflare query.
+
+**Root mechanism now corroborated:** Following rejected global SSE post-PATCH verification [#38444728738](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38444728738), immutable historical GET-only forensic [#38453923288](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38453923288) confirmed 43→44 bindings with **only** `PADIEM_CLAW_P01_LIVE_SSE_ENABLED=true` added; no other binding/Secret reference, code ETag, runtime or asset drift. A later historical GET-only [#38454872275](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38454872275) confirmed the new immutable Worker version's source lineage was **EXACT**, while the corresponding 100%-served **deployment annotation was OTHER**. The old verifier demanded exact source SHA from that deployment annotation, explaining a proven **rejection mechanism**. The original 30-attempt run discarded its exact failure reason, so that specific historical attempt's reason is **not** recoverable from the published log; no retrospective certainty is claimed.
+
+**Source corrections and their boundaries:**
+
+| Item | Merged evidence | Current claim |
+| --- | --- | --- |
+| Allowlisted post-verification failure reason | [#4634](https://github.com/skerishKang/ai-revenue-lab/pull/4634) | New future failure logs stay bounded; old missing reason not restored |
+| Config rollback HTTP 500 / Cloudflare code 10013 observability | [#4635](https://github.com/skerishKang/ai-revenue-lab/pull/4635) | Fail-closed numeric-code / bounded CF-Ray + single GET-only observation; **10013 cause remains unknown** |
+| Second incident immutable parity | [#4636](https://github.com/skerishKang/ai-revenue-lab/pull/4636) | Code/runtime/assets/bindings preserved in exact historical pair |
+| Historical version vs deployment annotation | [#4638](https://github.com/skerishKang/ai-revenue-lab/pull/4638) | Source lineage in immutable version EXACT; deployment lineage OTHER |
+| Guarded post-PATCH lineage fix | [#4639](https://github.com/skerishKang/ai-revenue-lab/pull/4639) | Pre-PATCH and no-op guards stay strict; **new flag-only post-PATCH** may rely on exact SHA in served immutable version, without weakening other resource checks |
+
+**Who owns the remainder:** [#3936](https://github.com/skerishKang/ai-revenue-lab/issues/3936) owns actual authenticated Claw/Browser SSE event order, approval/deny/cancel, one terminal event, reconnection and user-facing E2E; [#4318](https://github.com/skerishKang/ai-revenue-lab/issues/4318) owns P01/Engine/Control Plane/B14 shared runtime and integrity. General B62 Chat user journeys remain with [#4317](https://github.com/skerishKang/ai-revenue-lab/issues/4317). Old closed #3930 is the *implementation origin*, not the place to claim operational completion.
+
+**Next safe execution order:** LOCAL GET-only fresh Worker/served/latest/SSE flag/43 binding-types/Secret names and types/D1 source/rollback-readiness report → CENTRAL verifies exact current main and clean, unexpired snapshot/rollback authority → existing protected B62 Worker deployment (if preconditions pass) → one protected SSE flag-only activation, followed by exact served-version/immutable-source/binding confirmation → authenticated real-user stream/event/negative-path E2E. Failed post-PATCH checks imply **STOP_AND_REPORT and existing bounded recovery**, not automatic retries or a success claim. Do not use a single-user Canary/allowlist; the Owner's agreed target remains **all canonical authenticated users**. No independent human reviewer or new second-person approval is required by this runbook.
+
+**History handling:** Dated incident sections below describe *their historical exact versions*. Their earlier `SSE OFF`, `HOLD`, `PATCH blocked`, or rollback statements are not current-time Cloudflare proof and do not override this evidence chronology or the canonical protected deployment code.
+
+---
+
+
 ## 2026-10-14 additional PATCH schema mismatch (Cloudflare read-only annotation)
 
 After the `last_deployed_from` source-verification repair, a protected [SSE opt-in #38442601251](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38442601251) passed exact-main, snapshot and pre-PATCH concurrency but Cloudflare **rejected the PATCH itself**. Its old transport step discarded the numeric HTTP/error code, so that specific rejection is not proven to be 10210 or any other code. GET-only [#38442829658](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38442829658) and [#38442834240](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38442834240) immediately confirmed unchanged active/latest `a544a3e9-e857-4e37-9ee9-2ca77b558089`, no SSE binding, R2 OK, settings/served parity and zero mutation. [PR #4627](https://github.com/skerishKang/ai-revenue-lab/pull/4627) now reports only bounded HTTP/numeric Cloudflare error codes for future failures, never raw response payloads or secret values.
