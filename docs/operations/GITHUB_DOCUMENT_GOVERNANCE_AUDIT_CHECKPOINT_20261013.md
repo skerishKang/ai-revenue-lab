@@ -122,6 +122,15 @@ Frozen 835-original-document cursor: **425 documents with text viewed at least p
 - B16 sports, B18 audio, B19 family memory and B53 embedded SDK are synthetic/static editorial/product research, not current real customer data, media rights, SaaS pricing, released SDK or live provider activation.
 - No original file/Git history, local Governance, customer data, secrets, connector, Cloudflare or production configuration changed.
 
+## 1M. Batch 14 — 25 source reads: operations rules and B14/B13/B02/Portfolio (2026-10-13)
+
+**Fixed original 835 inventory:** **450 documents with some text read** (125 original sampled + 25 each B02–B14); **366 index-only unread**, **19 original PDF/DOCX pending**. Initial `TEXT_SAMPLED` 125 still require independent complete reading/classification.
+
+- [Batch14 exact-source SHA catalog and provisional Governance-vs-technical findings](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH14_20261013.md).
+- Canonical code quality, CI, minimum relevant checks, operator rollback and UI proofs are engineering controls; owner machine/Docker preferences are operational owner records, not company commercial policy.
+- B14 earlier BYOK 30-second limitations are historical, later native model caps preserve security resource limits; B13 media rights, B02 live provider/PII and owner-only Portfolio Console business metrics require separate commercial/privacy decisions.
+- Source SHA preservation only, no original file changes, off-Git Governance, secrets, live service changes or customer data.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
