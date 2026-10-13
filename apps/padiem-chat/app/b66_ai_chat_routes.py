@@ -126,7 +126,12 @@ async def b66_ai_chat(request: Request) -> JSONResponse:
         return _error(503, "ai_chat_unavailable", "AI 모델을 사용할 수 없습니다.")
 
     outcome = await plan_b66_search(
-        getattr(request.app.state, "auto_grounding", None), messages[-1]["content"]
+        getattr(request.app.state, "auto_grounding", None),
+        messages[-1]["content"],
+        # Server state only; a browser field can never authorize paid retrieval.
+        # No production bootstrap sets this flag until the #4465 fact-search
+        # approval and privacy review have been recorded.
+        allow_provider=getattr(request.app.state, "b66_public_fact_search_authorized", False) is True,
     )
     try:
         result = await complete(
