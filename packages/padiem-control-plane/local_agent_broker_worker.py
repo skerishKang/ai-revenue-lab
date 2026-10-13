@@ -176,13 +176,13 @@ class Default(WorkerEntrypoint):
         return await self._stub().get_enrollment_binding(payload)
     async def verify_enrollment_bootstrap(self, payload: dict) -> dict:
         return await self._stub().verify_enrollment_bootstrap(payload)
+    async def gateway_bootstrap_rpc(self, payload: dict) -> dict:
+        return await self._stub().gateway_bootstrap_rpc(payload)
     async def redeem_enrollment(self, payload: dict) -> dict:
         return await self._stub().redeem_enrollment(payload)
 
     async def fetch(self, request):
         return await handle_private_device_fetch(request, self._stub)
-
-
 CLOUDFLARE_DO_ADAPTER = True
 FOUNDATION_PACKAGE_SIDE_EFFECT_FREE = True
 SQLITE_BACKED_DURABLE_OBJECT = True
