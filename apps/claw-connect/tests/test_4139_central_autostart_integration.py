@@ -89,9 +89,10 @@ def test_logon_command_is_importable_without_assuming_current_working_directory(
     command = start_command()
     assert command == cli._autostart_command()
     assert command.startswith(f'"{sys.executable}" -c "')
-    m = re.search(r"base64\\.b64decode\\('([A-Za-z0-9+/=]+)'\\)", command)
-    assert m is not None
-    path = base64.b64decode(m.group(1)).decode("utf-8")
+    marker = "base64.b64decode('"
+    assert marker in command
+    encoded = command.split(marker, 1)[1].split("'", 1)[0]
+    path = base64.b64decode(encoded).decode("utf-8")
     assert Path(path).resolve() == ROOT.resolve()
     assert "runpy.run_module('claw_connect',run_name='__main__')" in command
 
