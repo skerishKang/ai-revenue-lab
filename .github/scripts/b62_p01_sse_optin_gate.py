@@ -130,9 +130,13 @@ def plan(settings: object, deployments: object, version: object, target_sha: str
         patch["bindings"].append({"name": FLAG, "type": "inherit", "version_id": "latest"})
     else:
         patch["bindings"].append({"name": FLAG, "type": "plain_text", "text": "true"})
+    # Cloudflare /script-and-version-settings PATCH documents
+    # workers/triggered_by as server-owned/read-only. Sending it violates the
+    # API contract and may fail the entire SSE settings PATCH. Preserve only
+    # the exact-main worker source lineage (workers/message); do not weaken
+    # any binding, Secret, script-etag or served-version verification.
     patch["annotations"] = {
         "workers/message": f"B62 production code {target_sha}",
-        "workers/triggered_by": "b62-claw-live-config-activation-gate",
     }
     return {"payload": patch, "no_op": no_op, "preserved_count": len(state) - (FLAG in state)}
 
