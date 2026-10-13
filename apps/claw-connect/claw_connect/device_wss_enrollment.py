@@ -20,8 +20,7 @@ import hashlib
 import hmac
 import json
 import re
-from types import SimpleNamespace
-from typing import Any, Protocol
+from typing import Any, Callable, Protocol
 
 from .credential_install import ProtectedCredentialReceiverPort
 from .enrollment import (
@@ -146,6 +145,35 @@ def _action_mac(
     )
 
 
+def canonical_kagent_binding_factory(
+    fields: dict[str, Any], *, now: datetime, expires_at: datetime,
+) -> Any:
+    """Construct the ONE existing kagent DeviceBinding, not a lookalike.
+
+    The actual DPAPI ProtectedFileDeviceCredentialStore requires its canonical
+    DeviceBinding type, complete with issued_at and lifecycle. A generic object
+    falsely passes a synthetic fake store but fails on the real Windows store.
+    Missing kagent fails closed before any credential is written or ACK sent.
+    """
+    try:
+        from kagent.local_agent_pairing import DeviceBinding, DeviceLifecycle
+    except ImportError as exc:
+        raise DeviceSessionRefused("canonical_kagent_binding_not_installed") from exc
+    try:
+        return DeviceBinding(
+            device_id=fields["device_id"],
+            binding_ref=fields["binding_ref"],
+            account_ref=fields["account_ref"],
+            workspace_ref=fields["workspace_ref"],
+            credential_ref=fields["credential_ref"],
+            credential_generation=fields["credential_generation"],
+            issued_at=now, credential_expires_at=expires_at,
+            state=DeviceLifecycle.PAIRED_OFFLINE,
+        )
+    except Exception as exc:
+        raise DeviceSessionRefused("canonical_device_binding_invalid") from exc
+
+
 async def _send(socket: DeviceTextSocket, content: dict[str, Any]) -> None:
     await asyncio.wait_for(socket.send_text(_wire(content)), timeout=FRAME_TIMEOUT_SECONDS)
 
@@ -161,6 +189,7 @@ async def run_review_only_device_session(
     *, socket: DeviceTextSocket, trusted_tls: TrustedDeviceTls,
     receiver: ProtectedCredentialReceiverPort, challenge_id: str,
     device_id: str, pairing_code: str, now: datetime | None = None,
+    binding_factory: Callable[..., Any] = canonical_kagent_binding_factory,
 ) -> DeviceSessionResult:
     """Exercise the exact server WSS contract; no production transport supplied.
 
@@ -250,9 +279,12 @@ async def run_review_only_device_session(
             raise DeviceSessionRefused("device_credential_encoding_invalid")
         # This is the ONLY place the raw credential enters protected storage.
         # The receiver checks binding scope and reads back bytes from its store.
+        if not callable(binding_factory):
+            raise DeviceSessionRefused("canonical_binding_factory_missing")
+        canonical_binding = binding_factory(binding, now=clock, expires_at=expiry)
         confirmation = receiver.install_once(
             challenge_id=challenge_id, device_id=device_id,
-            credential=credential, binding=SimpleNamespace(**binding),
+            credential=credential, binding=canonical_binding,
         )
         if (confirmation.installed is not True
             or confirmation.confirmed_by_local_store is not True
@@ -305,6 +337,7 @@ async def run_and_stage_review_only_device_enrollment(
     *, enrollment: ConnectorEnrollment, socket: DeviceTextSocket,
     trusted_tls: TrustedDeviceTls, receiver: ProtectedCredentialReceiverPort,
     challenge_id: str, pairing_code: str, now: datetime | None = None,
+    binding_factory: Callable[..., Any] = canonical_kagent_binding_factory,
 ) -> EnrollmentResult:
     """Preserve the existing stage-then-publish contract after WSS terminal.
 
@@ -329,7 +362,7 @@ async def run_and_stage_review_only_device_enrollment(
     delivery = await run_review_only_device_session(
         socket=socket, trusted_tls=trusted_tls, receiver=receiver,
         challenge_id=challenge_id, pairing_code=pairing_code,
-        device_id=current.device_id, now=moment,
+        device_id=current.device_id, now=moment, binding_factory=binding_factory,
     )
     # Nothing from an unsigned JSON receipt can manufacture a new owner here:
     # the result is usable only after the *same socket* confirmed the keyed

@@ -98,11 +98,16 @@ class Trusted:
     async def verify(self, socket): return self.ok
 
 
+def _fake_binding(fields, *, now, expires_at):
+    return SimpleNamespace(**fields)
+
+
 def run(sock, store=None, trusted=None):
     return asyncio.run(run_review_only_device_session(
         socket=sock, trusted_tls=trusted or Trusted(),
         receiver=LocalStoreCredentialReceiver(store=store or Store(), now_factory=lambda: NOW),
         challenge_id=CID, device_id=DEVICE, pairing_code=CODE, now=NOW,
+        binding_factory=_fake_binding,
     ))
 
 
@@ -168,6 +173,7 @@ def test_bad_store_readback_never_acks_and_cannot_retry_same_challenge():
         return await run_review_only_device_session(
             socket=s, trusted_tls=Trusted(), receiver=receiver,
             challenge_id=CID, device_id=DEVICE, pairing_code=CODE, now=NOW,
+            binding_factory=_fake_binding,
         )
     with pytest.raises(DeviceSessionRefused):
         asyncio.run(drive(sock))
@@ -218,6 +224,7 @@ def test_terminal_success_is_durably_staged_without_claiming_online(tmp_path):
         enrollment=enrollment, socket=sock, trusted_tls=Trusted(),
         receiver=LocalStoreCredentialReceiver(store=Store(), now_factory=lambda: NOW),
         challenge_id=CID, pairing_code=CODE, now=NOW,
+        binding_factory=_fake_binding,
     ))
     assert result.binding_ref == BINDING["binding_ref"]
     assert enrollment.record().binding_ref == result.binding_ref
@@ -236,6 +243,7 @@ def test_terminal_success_is_durably_staged_without_claiming_online(tmp_path):
             enrollment=enrollment, socket=repeat, trusted_tls=Trusted(),
             receiver=LocalStoreCredentialReceiver(store=Store()),
             challenge_id=CID, pairing_code=CODE, now=NOW,
+            binding_factory=_fake_binding,
         ))
     assert repeat.sent == []
 
@@ -270,3 +278,21 @@ def test_failed_stage_yields_exact_existing_security_hold_and_no_enrollment(tmp_
             challenge_id=CID, pairing_code=CODE, now=NOW,
         ))
     assert socket.sent == []
+
+
+
+def test_actual_kagent_binding_factory_constructs_canonical_type_when_source_available():
+    repo = Path(__file__).resolve().parents[3]
+    kagent_src = repo / "apps" / "korean-ai-code-agent" / "src"
+    assert kagent_src.is_dir(), "canonical kagent tree must be present in monorepo"
+    sys.path.insert(0, str(kagent_src))
+    from kagent.local_agent_pairing import DeviceBinding, DeviceLifecycle
+    from claw_connect.device_wss_enrollment import canonical_kagent_binding_factory
+    instance = canonical_kagent_binding_factory(
+        BINDING, now=NOW,
+        expires_at=datetime(2030, 1, 1, tzinfo=timezone.utc),
+    )
+    assert type(instance) is DeviceBinding
+    assert instance.state is DeviceLifecycle.PAIRED_OFFLINE
+    assert instance.credential_ref == BINDING["credential_ref"]
+    assert instance.issued_at == NOW
