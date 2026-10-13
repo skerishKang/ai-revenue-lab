@@ -1,4 +1,4 @@
-name: B66 Public Standard Template Contract
+name: B66 Private Customer Template Boundary
 
 on:
   pull_request:
@@ -27,8 +27,8 @@ permissions:
   contents: read
 
 jobs:
-  owner-public-standard-template-contract:
-    name: owner-public-standard-template-contract
+  owner-private-template-source-contract:
+    name: owner-private-template-source-contract
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -39,11 +39,11 @@ jobs:
         run: |
           node reference/business-66-padiem-quote-v1/tests/quote-sol-pdf-outputs.test.cjs
           node reference/business-66-padiem-quote-v1/tests/quote-sol-pdf-runtime-bridge.test.cjs
-      - name: Verify immutable public template release hashes and no private fonts
+      - name: Verify revoked public release cannot expose customer source
         run: python3 reference/b66-public-standard-templates/cgi/v1/tests/test_public_bundle_contract.py
       - name: Install pinned native PDF test dependencies
         run: python -m pip install -r apps/b66-sol61-multipage/requirements-test.txt
-      - name: Guard public Sol manifest versus historical private certificate (#4117)
+      - name: Guard absence of legacy public CGI artifacts (#4117)
         run: python -B -m pytest -q -p no:cacheprovider apps/b66-sol61-multipage/tests/test_native_server_adapter_4117.py::test_4117_public_manifest_cannot_inherit_historical_private_certificate
       - name: Verify native frame ownership and rendered boundaries without host fonts
         env:
