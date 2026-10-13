@@ -135,7 +135,7 @@ class B66FileIntakeTests(unittest.TestCase):
         # The dormant extraction routing module retains a historical 32k
         # constant. It is NOT a native document intake/model-input ceiling.
         # A future successor lane must not silently reintroduce that cap.
-        extracted_text = "첫 페이지\\n" + ("견적 항목 12345\\n" * 2300) + "마지막 페이지"
+        extracted_text = "첫 페이지\n" + ("견적 항목 12345\n" * 2300) + "마지막 페이지"
         self.assertGreater(len(extracted_text), 32_000)
         self.assertLess(len(extracted_text), 40_000)
 
@@ -152,7 +152,7 @@ class B66FileIntakeTests(unittest.TestCase):
             {
                 "name": "long-quote.pdf",
                 "media_type": "application/pdf",
-                "base64": b64(b"%PDF-1.4\\nsynthetic"),
+                "base64": b64(b"%PDF-1.4\nsynthetic"),
             },
             parser=parser,
         )
