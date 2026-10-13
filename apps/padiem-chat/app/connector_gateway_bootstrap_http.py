@@ -26,8 +26,8 @@ CONNECTOR_GATEWAY_BOOTSTRAP_ROUTES_MOUNTED = False
 CONNECTOR_GATEWAY_CREDENTIAL_TRANSFER_WIRED = False
 
 _MAX_BYTES = 1024
-_SAFE_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\\-]{0,255}$")
-_LEASE_REF = re.compile(r"^gateway\\.[0-9a-f]{32}$")
+_SAFE_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+-]{0,255}$")
+_LEASE_REF = re.compile(r"^gateway\.[0-9a-f]{32}$")
 _PROOF = re.compile(r"^[0-9a-f]{64}$")
 _BEGIN_FIELDS = frozenset({"challenge_id", "device_id"})
 _FINISH_FIELDS = frozenset({"challenge_id", "device_id", "lease_ref", "proof_hex"})
