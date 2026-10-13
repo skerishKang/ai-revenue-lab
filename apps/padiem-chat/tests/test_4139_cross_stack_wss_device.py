@@ -362,5 +362,11 @@ def test_first_enrollment_legacy_edge_tls_denied_before_broker_rpc(tmp_path):
     assert wire.server_accepted is False
     assert wire.server_closed == 1008
     assert store.record is None
-    assert enrollment.committed_record() is None
+    # The stable unpaired PC ID was written *before* network admission.
+    # Failed TLS must preserve that identity but never commit a Broker binding.
+    remaining = enrollment.committed_record()
+    assert remaining is not None
+    assert remaining.device_lifecycle == "unpaired"
+    assert remaining.binding_ref is None
+    assert remaining.account_ref is None and remaining.workspace_ref is None
     assert events == []
