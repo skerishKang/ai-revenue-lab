@@ -20,8 +20,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from claw_connect.credential_install import LocalStoreCredentialReceiver
 from claw_connect.enrollment import build_enrollment_proof_ref
 from claw_connect.device_wss_enrollment import (
-    DeviceSessionRefused, run_review_only_device_session, _action_mac,
+    DeviceSessionRefused, run_review_only_device_session, 
+    run_and_stage_review_only_device_enrollment, _action_mac,
 )
+from claw_connect.enrollment import ConnectorEnrollment, EnrollmentPersistenceError
 
 CODE = "d" * 32
 CID = "pairing." + "a" * 32
@@ -199,3 +201,72 @@ def test_no_production_transport_or_secret_logger_is_added():
     assert "websockets.connect" not in source
     assert "import logging" not in source
     assert "print(" not in source
+
+
+
+def test_terminal_success_is_durably_staged_without_claiming_online(tmp_path):
+    from claw_connect.enrollment import EnrollmentRecord
+    enrollment = ConnectorEnrollment(state_dir=tmp_path / "state")
+    original = enrollment.record()
+    # Server's synthetic WSS lease must correlate the client's own device id.
+    # This test uses the same synthetic device id as the fake Broker fixture.
+    original.device_id = DEVICE
+    enrollment.flush()
+    prior_shared = enrollment.record()
+    sock = Socket()
+    result = asyncio.run(run_and_stage_review_only_device_enrollment(
+        enrollment=enrollment, socket=sock, trusted_tls=Trusted(),
+        receiver=LocalStoreCredentialReceiver(store=Store(), now_factory=lambda: NOW),
+        challenge_id=CID, pairing_code=CODE, now=NOW,
+    ))
+    assert result.binding_ref == BINDING["binding_ref"]
+    assert enrollment.record().binding_ref == result.binding_ref
+    assert enrollment.record().device_lifecycle == "paired_offline"
+    assert enrollment.record().is_enrolled() is True
+    assert prior_shared.binding_ref is None  # original object not mutated
+    reread = ConnectorEnrollment(state_dir=tmp_path / "state").committed_record()
+    assert reread is not None and reread.binding_ref == result.binding_ref
+    assert reread.account_ref == BINDING["account_ref"]
+    assert reread.device_lifecycle == "paired_offline"
+    assert sock.closed
+    # A second pairing attempt is preflight refused: no new socket frame.
+    repeat = Socket()
+    with pytest.raises(DeviceSessionRefused, match="device_existing_binding"):
+        asyncio.run(run_and_stage_review_only_device_enrollment(
+            enrollment=enrollment, socket=repeat, trusted_tls=Trusted(),
+            receiver=LocalStoreCredentialReceiver(store=Store()),
+            challenge_id=CID, pairing_code=CODE, now=NOW,
+        ))
+    assert repeat.sent == []
+
+
+def test_failed_stage_yields_exact_existing_security_hold_and_no_enrollment(tmp_path, monkeypatch):
+    enrollment = ConnectorEnrollment(state_dir=tmp_path / "state")
+    enrollment.record().device_id = DEVICE
+    enrollment.flush()
+    shared = enrollment.record()
+    monkeypatch.setattr(enrollment, "_write", lambda record: (_ for _ in ()).throw(OSError("disk")))
+    with pytest.raises(EnrollmentPersistenceError) as exc:
+        asyncio.run(run_and_stage_review_only_device_enrollment(
+            enrollment=enrollment, socket=Socket(), trusted_tls=Trusted(),
+            receiver=LocalStoreCredentialReceiver(store=Store(), now_factory=lambda: NOW),
+            challenge_id=CID, pairing_code=CODE, now=NOW,
+        ))
+    assert exc.value.recovery.action == "security_hold_reconciliation_required"
+    assert exc.value.recovery.retry_same_challenge is False
+    assert enrollment.record() is shared
+    assert shared.binding_ref is None
+    hold = enrollment.reconciliation_hold()
+    assert hold is not None
+    assert hold["binding_ref"] == BINDING["binding_ref"]
+    assert ConnectorEnrollment(state_dir=tmp_path / "state").record().binding_ref is None
+    # Even with a fresh pairing code, the unresolved local hold blocks new
+    # redemption before any new Broker call.
+    socket = Socket()
+    with pytest.raises(DeviceSessionRefused, match="existing_security_hold"):
+        asyncio.run(run_and_stage_review_only_device_enrollment(
+            enrollment=enrollment, socket=socket, trusted_tls=Trusted(),
+            receiver=LocalStoreCredentialReceiver(store=Store()),
+            challenge_id=CID, pairing_code=CODE, now=NOW,
+        ))
+    assert socket.sent == []

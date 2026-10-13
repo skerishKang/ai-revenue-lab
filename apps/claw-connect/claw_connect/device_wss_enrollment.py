@@ -24,7 +24,12 @@ from types import SimpleNamespace
 from typing import Any, Protocol
 
 from .credential_install import ProtectedCredentialReceiverPort
-from .enrollment import build_enrollment_proof_ref
+from .enrollment import (
+    ConnectorEnrollment, EnrollmentContractError, EnrollmentPersistenceError,
+    EnrollmentResult, LIFECYCLE_PAIRED_OFFLINE, build_enrollment_proof_ref,
+)
+from .credential_install import plan_install_failure_recovery
+from dataclasses import replace
 
 WSS_DEVICE_TRANSPORT_PRODUCTION_WIRED = False
 WSS_DEVICE_ENROLLMENT_PRODUCTION_ENABLED = False
@@ -293,3 +298,75 @@ async def run_review_only_device_session(
             await asyncio.wait_for(socket.close(), timeout=2.0)
         except Exception:
             pass
+
+
+
+async def run_and_stage_review_only_device_enrollment(
+    *, enrollment: ConnectorEnrollment, socket: DeviceTextSocket,
+    trusted_tls: TrustedDeviceTls, receiver: ProtectedCredentialReceiverPort,
+    challenge_id: str, pairing_code: str, now: datetime | None = None,
+) -> EnrollmentResult:
+    """Preserve the existing stage-then-publish contract after WSS terminal.
+
+    An existing binding or unresolved post-redeem hold cannot be overwritten.
+    The stable first-launch device identity is minted BEFORE the WSS begins.
+    A local write failure leaves the prior shared record unchanged and reports
+    the existing same-Broker-owner security_hold; no same-code retry occurs.
+
+    This is only a composition seam for later independently reviewed trusted
+    PC WSS transport. It cannot mount a socket or turn on production.
+    """
+    if type(enrollment) is not ConnectorEnrollment:
+        raise DeviceSessionRefused("device_enrollment_authority_invalid")
+    if enrollment.reconciliation_hold() is not None:
+        raise DeviceSessionRefused("device_existing_security_hold")
+    current = enrollment.record()
+    if current.revoked or current.is_enrolled():
+        raise DeviceSessionRefused("device_existing_binding_requires_owner_revoke")
+    moment = now or datetime.now(timezone.utc)
+    if moment.tzinfo is None or moment.utcoffset() is None:
+        raise DeviceSessionRefused("device_clock_invalid")
+    delivery = await run_review_only_device_session(
+        socket=socket, trusted_tls=trusted_tls, receiver=receiver,
+        challenge_id=challenge_id, pairing_code=pairing_code,
+        device_id=current.device_id, now=moment,
+    )
+    # Nothing from an unsigned JSON receipt can manufacture a new owner here:
+    # the result is usable only after the *same socket* confirmed the keyed
+    # readback ACK and the canonical Host's exact offline terminal response.
+    if (delivery.device_id != current.device_id or delivery.online
+        or delivery.local_record_committed or delivery.lifecycle != LIFECYCLE_PAIRED_OFFLINE):
+        raise DeviceSessionRefused("device_terminal_receipt_invalid")
+    candidate = replace(current)
+    candidate.binding_ref = delivery.binding_ref
+    candidate.account_ref = delivery.account_ref
+    candidate.workspace_ref = delivery.workspace_ref
+    candidate.credential_generation = delivery.credential_generation
+    candidate.credential_expires_at = delivery.credential_expires_at
+    candidate.enrolled_at = moment
+    candidate.device_lifecycle = LIFECYCLE_PAIRED_OFFLINE
+    candidate.revoked = False
+    candidate.blocked_reason = None
+    try:
+        enrollment._write(candidate)
+    except Exception as exc:
+        # Revocation cannot be guessed from a local filesystem error; this is
+        # precisely the existing #4476 source-only OWNER reconciliation hold.
+        hold = EnrollmentPersistenceError(
+            recovery=plan_install_failure_recovery(revocation_confirmed=None),
+            challenge_id=challenge_id, device_id=current.device_id,
+            binding_ref=delivery.binding_ref, account_ref=delivery.account_ref,
+            workspace_ref=delivery.workspace_ref,
+            credential_generation=delivery.credential_generation,
+        )
+        enrollment._reconciliation_hold = hold.safe_dict()
+        raise hold from exc
+    enrollment._record = candidate
+    enrollment._reconciliation_hold = None
+    return EnrollmentResult(
+        device_id=current.device_id, binding_ref=delivery.binding_ref,
+        account_ref=delivery.account_ref, workspace_ref=delivery.workspace_ref,
+        credential_generation=delivery.credential_generation,
+        credential_expires_at=delivery.credential_expires_at,
+        enrolled_at=moment, lifecycle=LIFECYCLE_PAIRED_OFFLINE,
+    )
