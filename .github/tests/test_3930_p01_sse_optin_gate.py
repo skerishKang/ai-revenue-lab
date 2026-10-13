@@ -142,6 +142,44 @@ def test_refuses_races_code_assets_type_drift_and_invalid_version():
     must_fail(lambda: gate.verify(*before,*after,SHA), "ACTIVE_VERSION_NOT_UNIQUE")
 
 
+def test_real_cloudflare_postpatch_last_deployed_from_is_provenance_not_code():
+    # Cloudflare GET-only #38440681029: old (43) -> failed PATCH version (44)
+    # changed only P01 SSE flag + resources.script.last_deployed_from.
+    # Script etag, runtime, assets and all existing bindings were identical.
+    before = fixtures()
+    before[2]["resources"]["script"]["last_deployed_from"] = "wrangler"
+    after = post_from(before)
+    after[2]["resources"]["script"]["last_deployed_from"] = "api"
+    gate.verify(*before, *after, SHA)
+
+    # The exception cannot hide an actual script update or other metadata.
+    mutated = copy.deepcopy(after)
+    mutated[2]["resources"]["script"]["etag"] = "changed-source"
+    must_fail(lambda: gate.verify(*before, *mutated, SHA),
+              "WORKER_CODE_OR_RUNTIME_DRIFT")
+
+    mutated = copy.deepcopy(after)
+    mutated[2]["resources"]["script"]["unexpected"] = "changed-source-field"
+    must_fail(lambda: gate.verify(*before, *mutated, SHA),
+              "WORKER_CODE_OR_RUNTIME_DRIFT")
+
+    mutated = copy.deepcopy(after)
+    mutated[2]["resources"]["script_runtime"]["compatibility_date"] = "different"
+    must_fail(lambda: gate.verify(*before, *mutated, SHA),
+              "WORKER_CODE_OR_RUNTIME_DRIFT")
+
+    mutated = copy.deepcopy(after)
+    mutated[2]["resources"]["assets"]["etag"] = "different"
+    must_fail(lambda: gate.verify(*before, *mutated, SHA),
+              "WORKER_CODE_OR_RUNTIME_DRIFT")
+
+    mutated = copy.deepcopy(after)
+    mutated[2]["resources"]["bindings"].append(
+        b("UNAUTHORIZED_BINDING", "plain_text", text="new"))
+    must_fail(lambda: gate.verify(*before, *mutated, SHA),
+              "POST_SERVED_BINDING_DRIFT")
+
+
 def test_rollback_restores_or_removes_only_the_authorized_flag():
     rollback = gate.load("b62_rollback_authority", ROOT / ".github/scripts/b62_claw_live_config_activation.py")
     before = fixtures()[0]
