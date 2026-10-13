@@ -38,14 +38,16 @@
 - 구 상태 원장: [2026-10-13 기술 현황 문서 (main)](https://github.com/skerishKang/ai-revenue-lab/blob/main/docs/operations/PADIEM_CONNECTOR_4139_CENTRAL_STATUS_20261013.md). 현재 배포 실측에 관한 결론은 이 2026-10-14 파일을 우선한다.
 - 직접 확인된 Cloudflare 배포/D1 작업은 [PR #4572의 실배포 보고](https://github.com/skerishKang/ai-revenue-lab/pull/4572#issuecomment-6156763348)에, 이번 GitHub 코드 정리는 [복구 보고](https://github.com/skerishKang/ai-revenue-lab/pull/4572#issuecomment-6156892991)에 기록되어 있다.
 
-## 4. Desktop Commander Remote 장애 (Connector 제품 장애와 별개)
+## 4. Desktop Commander Remote 장애 및 읽기 전용 복구 확인 (Connector 제품 장애와 별개)
 
 사용자 PC의 실행 로그는 **Local Desktop Commander MCP 접속 성공 → Remote MCP 서버 접속 성공 → 기존 장치 세션 복구 성공 → 실시간 채널 연결 실패** 순서였다.
 
 - 대표 오류: channel error: transport failure / socket=connecting, 반복되는 Channel closed/Recreating channel. 'Channel subscribed'가 나오기 전에는 원격 명령이 PC에 전달되지 않는다고 보았다.
-- 등록된 Padiem-Command-Center 장치는 관찰 시점에 Online/Offline이 번갈아 표시됐다. **장치 Online은 실제 명령 왕복 성공을 보장하지 않음**. 복구 판정은 작은 READ-ONLY 원격 실행의 실제 결과로 한다.
+- 등록된 Padiem-Command-Center 장치는 관찰 시점에 Online/Offline이 번갈아 표시됐다. **2026-10-14 KST 재확인 시 실제 Remote ping/pong과 PowerShell READ-ONLY 명령 수신·출력까지 성공했다.** 원격 명령 왕복은 회복된 것으로 확인했으나 채널 장시간 안정성·LOCAL6의 워크트리 정합은 아직 검증 중이다. 이는 제품 Connector의 사용자 PC 등록 성공과는 별개다.
 - 기존 CENTRAL Windows 격리 워크트리: E:\central-4139-runtime-261014. 원격 장애 당시 이 폴더에 미커밋 파일, 시험 helper/test, Python .venv-connector 및 gitignored staging TOML이 있었다.
 - 장애 중 CENTRAL은 GitHub Contents API로 동일 기능의 prepare_connector_acceptance.py / 관련 테스트 / .gitignore 를 별도 커밋해 PR #4572에 반영했다. **LOCAL6은 로컬에 남은 동일 파일을 중복 git add/push 하거나 중앙 워크트리를 reset/clean 하지 않는다.**
+
+**실제 Windows read-only 명령 확인:** 복구 직후 원격 PowerShell이 REMOTE_READ_ONLY_COMMAND=RECEIVED 를 출력했고, CENTRAL 워크트리는 Git HEAD ebdfe2ddaf6549b6356a61196838f0a340cc1267 (최신 GitHub 문서 커밋 이전)인 것을 확인했다. git status: 수정 apps/padiem-chat/scripts/connector_cloudflare_runtime_readiness.py 1개, 미추적 .check-4139-private-chat.py / .provision-4139-stage-secrets.py / .venv-connector/ / apps/padiem-chat/python_modules/. **실제 PC 파일을 읽기만 했으며 삭제·커밋·리셋하지 않았다.** 최신 GitHub HEAD와 충돌 정합 없이 이 로컬 파일들을 자동으로 push하면 안 된다.
 
 ## 5. LOCAL6 현장 작업 인계 — 실행 순서
 
@@ -66,7 +68,7 @@ LOCAL6은 Windows 로컬 현장 담당, CENTRAL은 PR/CI·Cloudflare 상태·범
 - [x] 전용 비밀키 등록·비공개 시험 Identity/Broker/Chat 3개 Worker 배포
 - [x] 승인된 시험 도메인 문자열과 운영 주소를 구별하는 WSS 코드 가드 작성
 - [x] GitHub PR #4572에 전용 DB guard 스크립트·테스트·gitignore 커밋
-- [ ] Desktop Commander REAL read-only command 왕복과 LOCAL6 워크트리 정합 완료
+- [x] Desktop Commander 실제 READ-ONLY 원격 명령 왕복 성공. LOCAL6 워크트리 정합·채널 재연결 안정성은 별도 미완료
 - [ ] 실제 배포본의 stage private RPC 바인딩 권한/DO 검증
 - [ ] 허용된 사용자만 접근 가능한 시험 HTTPS route 및 실제 브라우저 로그인
 - [ ] 진짜 사용자 동의→challenge→Windows PC WSS/DPAPI ACK와 서버 상태 확인
