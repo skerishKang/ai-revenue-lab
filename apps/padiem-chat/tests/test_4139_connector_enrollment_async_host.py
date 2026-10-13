@@ -335,3 +335,62 @@ def test_unconfirmed_revoke_after_completed_install_remains_security_hold():
         ))
     assert exc.value.code == "enrollment_consent_race_revoke_unconfirmed"
     assert broker.calls[-1] == ("revoke", "pairing-binding.1")
+
+
+@pytest.mark.parametrize(("revoke_receipt", "label"), [
+    (None, "missing_receipt"),
+    (True, "boolean_transport_ack"),
+    ({}, "empty_object"),
+    ({"binding_ref": "pairing-binding.1"}, "missing_state"),
+    ({"binding_ref": "pairing-binding.other", "state": "revoked"}, "wrong_binding"),
+    ({"binding_ref": "pairing-binding.1", "state": "active"}, "not_revoked"),
+    (
+        {"binding_ref": "pairing-binding.1", "state": "revoked", "credential_b64": "forbidden"},
+        "unreviewed_extra_field",
+    ),
+])
+@pytest.mark.parametrize("failure_phase", [
+    "consent_before_install", "handoff", "consent_after_install",
+])
+def test_ambiguous_broker_revoke_receipts_are_security_hold_on_every_failure_phase(
+    revoke_receipt, label, failure_phase,
+):
+    """No exception is NOT a canonical Broker revoke confirmation.
+
+    Broker redemption is already consumed. Even a truthy/foreign/malformed
+    revoke receipt cannot make the server report a safe compensated failure,
+    unlock a repeat of this challenge, or claim paired/online state.
+    """
+    identity, broker, handoff = Identity(), Broker(), Handoff()
+    if failure_phase == "consent_before_install":
+        identity.fail_reauthorization = True
+    elif failure_phase == "handoff":
+        handoff.delivered = False
+    else:
+        identity.withdraw_after_install = True
+
+    async def forged_revoke(*, binding_ref):
+        broker.calls.append(("revoke", binding_ref))
+        return revoke_receipt
+
+    broker.revoke_binding = forged_revoke
+    with pytest.raises(IdentityBridgeError) as caught:
+        asyncio.run(issue_host(identity, broker, handoff).redeem(
+            challenge_id=CHALLENGE["challenge_id"],
+            device_id="device.1",
+            proof_ref="pairing-proof:" + "a" * 64,
+        ))
+
+    expected = (
+        "enrollment_handoff_revoke_unconfirmed"
+        if failure_phase == "handoff"
+        else "enrollment_consent_race_revoke_unconfirmed"
+    )
+    assert caught.value.code == expected, label
+    assert [name for name, *_ in broker.calls].count("redeem") == 1
+    assert [name for name, *_ in broker.calls].count("revoke") == 1
+    assert broker.calls[-1] == ("revoke", "pairing-binding.1")
+    assert [name for name, *_ in handoff.calls].count("deliver") == (
+        0 if failure_phase == "consent_before_install" else 1
+    )
+    assert "credential" not in caught.value.code
