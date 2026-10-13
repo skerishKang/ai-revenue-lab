@@ -137,6 +137,24 @@ if [[ "$nonupgrade" != 426 ]]; then
 fi
 echo 'CONNECTOR_CANARY_EDGE_NONUPGRADE_426=PASS'
 
+# Distinguish an HTTP 403/500 Python upgrade failure from a Node client error.
+# All headers are fixed RFC6455 protocol markers; no user/cookie credentials.
+upgrade_status="$(curl --silent --max-time 5 --http1.1 --output /dev/null \
+    --write-out '%{http_code}' \
+    --header 'Connection: Upgrade' --header 'Upgrade: websocket' \
+    --header 'Sec-WebSocket-Version: 13' \
+    --header 'Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==' \
+    "$BASE/__padiem_canary/wss" 2>/dev/null || true)"
+if [[ "$upgrade_status" != 101 ]]; then
+  if [[ "$upgrade_status" =~ ^[0-9]{3}$ ]]; then
+    echo "CONNECTOR_CANARY_PYTHON_ASGI_UPGRADE_HTTP=$upgrade_status" >&2
+  else
+    echo 'CONNECTOR_CANARY_PYTHON_ASGI_UPGRADE_HTTP=TRANSPORT_ERROR' >&2
+  fi
+  exit 1
+fi
+echo 'CONNECTOR_CANARY_PYTHON_ASGI_UPGRADE_101=PASS'
+
 PADIEM_EDGE_CANARY_NAME="$NAME" PADIEM_EDGE_CANARY_SUBDOMAIN="$SUBDOMAIN" \
   node ci_live_edge_ws_client.mjs
 echo 'CONNECTOR_CANARY_PYTHON_EDGE_WSS_101_AND_FRAMES=PASS'
