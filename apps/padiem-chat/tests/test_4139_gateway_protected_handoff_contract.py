@@ -174,24 +174,24 @@ def test_copied_ack_and_wrong_pc_are_not_gateway_authenticated():
 
 
 @pytest.mark.parametrize("tamper", [
-    {"binding_ref": "pairing-binding.other"},
+    {"binding_ref": None},
     {"device_id": "device.other"},
-    {"account_ref": "account.other"},
-    {"workspace_ref": "workspace.other"},
+    {"account_ref": None},
+    {"workspace_ref": ""},
     {"credential_generation": True},
     {"credential_ref": None},
+    {"credential_expires_at": "2020-01-01T00:00:00+00:00"},
+    {"credential_expires_at": "2099-01-01T00:00:00"},
+    {"credential_expires_at": "invalid"},
 ])
 def test_mismatched_or_invalid_delivery_metadata_never_reaches_gateway(tamper):
     g = FakeReviewedGateway()
     h = adapter(g)
     assert asyncio.run(h.ready(challenge_id=CHALLENGE, device_id=DEVICE))
     bad = {**BINDING, **tamper}
-    # Only fields which affect expected PC/credential type are locally
-    # verifiable here. Account/workspace substitution is a broker authority
-    # violation that the server-side broker client verifies against Identity
-    # before constructing this adapter, not a LOCAL2 public claim.
-    if tamper.get("account_ref") or tamper.get("workspace_ref"):
-        pytest.skip("scope data must be correlated by the canonical Broker private client")
+    # Canonical account/workspace cross-owner correlation belongs to the
+    # private Broker/Identity client. This seam still refuses structurally
+    # missing/invalid scope, device, generation and credential expiry.
     with pytest.raises(ValueError):
         asyncio.run(h.deliver_once(
             challenge_id=CHALLENGE, device_id=DEVICE,
