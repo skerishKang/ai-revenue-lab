@@ -192,3 +192,41 @@ def test_private_binding_rpc_rejects_unreviewed_fields(payload):
     h.install()
     h.env.LOCAL_AGENT_BROKER_PAIRING_SCHEMA_INSTALLED = "true"
     assert asyncio.run(h.get_enrollment_binding(payload))["ok"] is False
+
+
+def test_private_bootstrap_preflight_refuses_wrong_proof_and_has_no_write_side_effect():
+    h = Harness()
+    assert h.install()["ok"] is True
+    h.env.LOCAL_AGENT_BROKER_PAIRING_SCHEMA_INSTALLED = "true"
+    issued = h.issue()
+    cid = issued["challenge"]["challenge_id"]
+    valid = pairing_proof_ref(
+        challenge_id=cid, device_id=DEVICE, pairing_code=issued["pairing_code"],
+    )
+    body = {
+        "challenge_id": cid, "device_id": DEVICE, "proof_ref": valid,
+        "consent_ref": CONSENT, "owner_ref": OWNER,
+        "account_ref": ACCOUNT, "workspace_ref": WORKSPACE,
+    }
+    before = h._storage.sql.exec(
+        "SELECT * FROM canonical_local_agent_pairing_challenge"
+    ).toArray()
+    got = asyncio.run(h.verify_enrollment_bootstrap(body))
+    assert got == {"ok": True, "bootstrap": {
+        "challenge_id": cid, "device_id": DEVICE,
+        "proof_valid": True, "challenge_consumed": False,
+    }}
+    assert h._storage.sql.exec(
+        "SELECT * FROM canonical_local_agent_pairing_challenge"
+    ).toArray() == before
+    for changed in (
+        {**body, "proof_ref": "pairing-proof:" + "f" * 64},
+        {**body, "account_ref": "account.other"},
+        {**body, "credential_b64": "unexpected"},
+    ):
+        refused = asyncio.run(h.verify_enrollment_bootstrap(changed))
+        assert refused["ok"] is False and set(refused) == {"ok", "error"}
+    assert h.redeem(cid, DEVICE, valid)["ok"] is True
+    consumed = asyncio.run(h.verify_enrollment_bootstrap(body))
+    assert consumed["ok"] is False
+    assert consumed["error"]["code"] == "pairing_challenge_already_redeemed"
