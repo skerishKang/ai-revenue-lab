@@ -156,3 +156,26 @@ credential. No silent new customer login or repetitive approval UI.
 `connector_gateway_source_composition` remains explicitly offline until
 that runtime attestation, rate/frame/timeout guard, authenticated recovery
 verdict and real Windows PC-side WSS client are demonstrated under #3099.
+
+
+## 2026-10-13 CENTRAL WSS deadline/compensation hardening
+
+Source-only bounded waits now apply to trusted TLS verification (5s), PC
+bootstrap/fetch frames (10s each), private canonical Broker gateway RPC (8s),
+WSS send (8s), and Windows protected-install ACK receive (25s).
+A silent client no longer holds the source session without a deadline.
+Actual Cloudflare ingress MUST independently enforce pre-read frame-size,
+connection concurrency, rate limiting, and trusted TLS provenance.
+
+The gateway intentionally does **not** apply a single outer cancellation
+deadline to `CanonicalConnectorEnrollmentAsyncHost.redeem`. A cancellation
+after a Broker challenge is consumed can otherwise leave a live device
+binding without confirmed compensation. The existing Host catches per-send
+or per-ACK exceptions and requires exact canonical Broker revoke receipts.
+A timeout is NEVER a claim of revoke or permission to replay the challenge.
+A post-disconnect/restart authenticated reconciliation port is still missing.
+
+Synthetic fault injection covers absent pre-redemption PC frame, delayed TLS
+verifier, unresponsive private Broker, lost ACK and blocked credential send.
+It is not live Windows DPAPI or Cloudflare WSS evidence. No production
+routing, secret, Worker schema, feature flag or deployment was enabled.

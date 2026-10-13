@@ -7,6 +7,8 @@ from __future__ import annotations
 
 import asyncio
 import base64
+
+import app.connector_gateway_websocket_session as gateway_session
 from datetime import datetime, timedelta, timezone
 import hashlib
 import hmac
@@ -99,7 +101,12 @@ def device_frames(*, body=None, ack_mac=None, lease=LEASE, finish_proof=None):
 
 
 class FakeSocket:
-    def __init__(self, frames=None, *, scheme="wss", origin=None):
+    def __init__(self, frames=None, *, scheme="wss", origin=None,
+                 stalled_receive=None, stalled_send=None):
+        self.stalled_receive = stalled_receive
+        self.stalled_send = stalled_send
+        self.receive_count = 0
+        self.send_count = 0
         self.url = SimpleNamespace(scheme=scheme)
         self.headers = {"origin": origin} if origin else {}
         self.pending = list(frames if frames is not None else device_frames())
@@ -114,11 +121,17 @@ class FakeSocket:
         self.closed = code
 
     async def receive_text(self):
+        self.receive_count += 1
+        if self.receive_count == self.stalled_receive:
+            await asyncio.Event().wait()
         if not self.pending:
             raise RuntimeError("device disconnected")
         return self.pending.pop(0)
 
     async def send_text(self, text):
+        self.send_count += 1
+        if self.send_count == self.stalled_send:
+            await asyncio.Event().wait()
         self.sent.append(json.loads(text))
 
 
@@ -208,8 +221,12 @@ class FakeCanonicalHost:
 
 
 def run(frames=None, *, scheme="wss", trusted=True,
-        broker=None, host_type=FakeCanonicalHost):
-    sock = FakeSocket(frames, scheme=scheme)
+        broker=None, host_type=FakeCanonicalHost,
+        stalled_receive=None, stalled_send=None):
+    sock = FakeSocket(
+        frames, scheme=scheme,
+        stalled_receive=stalled_receive, stalled_send=stalled_send,
+    )
     auth = FakeIngress(trusted)
     control = broker or FakeBroker()
     instantiated = []
@@ -301,3 +318,64 @@ def test_duplicate_frame_json_and_unknown_extra_keys_fail_closed():
                              "owner_ref":"attacker"})
     sock, _, broker, hosts = run(frames)
     assert sock.closed == 1011 and broker.calls == [] and hosts == []
+
+
+def test_silent_pc_cannot_hold_pre_redeem_socket_forever(monkeypatch):
+    monkeypatch.setattr(gateway_session, "MAX_BOOTSTRAP_FRAME_SECONDS", 0.01)
+    sock, _, broker, hosts = run(stalled_receive=1)
+    assert sock.closed == 1011
+    assert broker.calls == [] and hosts == []
+    assert not any("credential_b64" in msg for msg in sock.sent)
+
+
+def test_windows_ack_timeout_triggers_existing_broker_compensation(monkeypatch):
+    monkeypatch.setattr(gateway_session, "MAX_WINDOWS_ACK_SECONDS", 0.01)
+    sock, _, broker, hosts = run(stalled_receive=4)
+    assert len(hosts) == 1 and hosts[0].redeemed
+    assert hosts[0].revoked is True
+    assert broker.calls == ["begin", "finish", "authorize"]
+    assert sock.closed == 1000
+    assert sock.sent[-1] == {
+        "type": "terminal", "status": "revoked",
+        "can_retry_challenge": False,
+    }
+    assert not any(m.get("status") == "paired_offline" for m in sock.sent)
+
+
+def test_credential_frame_send_timeout_never_reports_paired(monkeypatch):
+    monkeypatch.setattr(gateway_session, "MAX_SOCKET_SEND_SECONDS", 0.01)
+    sock, _, broker, hosts = run(stalled_send=3)
+    assert len(hosts) == 1 and hosts[0].redeemed
+    assert hosts[0].revoked is True
+    assert sock.closed == 1000
+    assert sock.sent[-1]["status"] == "revoked"
+    assert not any(m.get("status") == "paired_offline" for m in sock.sent)
+
+
+def test_trusted_tls_gate_timeout_prevents_private_broker_call(monkeypatch):
+    monkeypatch.setattr(gateway_session, "MAX_TLS_VERIFY_SECONDS", 0.01)
+    sock = FakeSocket()
+    broker = FakeBroker()
+    class StalledVerifier:
+        async def verify(self, _):
+            await asyncio.Event().wait()
+    constructed = []
+    asyncio.run(run_device_initiated_enrollment(
+        sock, trusted_tls=StalledVerifier(), broker=broker,
+        host_factory=lambda *, handoff: constructed.append(handoff),
+    ))
+    assert sock.closed == 1011 and not sock.accepted
+    assert broker.calls == [] and constructed == []
+
+
+def test_private_gateway_rpc_timeout_before_redeem_fails_closed(monkeypatch):
+    monkeypatch.setattr(gateway_session, "MAX_GATEWAY_BROKER_RPC_SECONDS", 0.01)
+    class StalledBroker(FakeBroker):
+        async def gateway_bootstrap_rpc(self, payload):
+            self.calls.append(payload["operation"])
+            await asyncio.Event().wait()
+    broker = StalledBroker()
+    sock, _, _, hosts = run(broker=broker)
+    assert sock.closed == 1011 and hosts == []
+    assert broker.calls == ["begin"]
+    assert not any("credential_b64" in m for m in sock.sent)

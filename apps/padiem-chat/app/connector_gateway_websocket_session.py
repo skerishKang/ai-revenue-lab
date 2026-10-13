@@ -13,6 +13,7 @@ operator consent, anti-replay and PC security review remain release gates.
 """
 from __future__ import annotations
 
+import asyncio
 import base64
 import binascii
 from datetime import datetime, timezone
@@ -31,6 +32,24 @@ PRODUCTION_WEBSOCKET_ROUTE_MOUNTED = False
 PRODUCTION_WEBSOCKET_CREDENTIAL_DELIVERY_ENABLED = False
 MAX_DEVICE_FRAME_CHARS = 8192
 MAX_INSTALL_ACK_BODY_BYTES = 3072
+
+# Keep socket operations bounded but NEVER cancel an entire canonical Host
+# redemption after the Broker has issued the one-time device credential.
+MAX_TLS_VERIFY_SECONDS = 5.0
+MAX_BOOTSTRAP_FRAME_SECONDS = 10.0
+MAX_GATEWAY_BROKER_RPC_SECONDS = 8.0
+MAX_SOCKET_SEND_SECONDS = 8.0
+MAX_WINDOWS_ACK_SECONDS = 25.0
+
+
+async def _recv_frame(socket: Any, *, timeout: float) -> str:
+    return await asyncio.wait_for(socket.receive_text(), timeout=timeout)
+
+
+async def _send_frame(socket: Any, message: str) -> None:
+    await asyncio.wait_for(
+        socket.send_text(message), timeout=MAX_SOCKET_SEND_SECONDS,
+    )
 
 
 class TrustedIngressPort(Protocol):
@@ -81,8 +100,9 @@ def _closed_receipt(reply: Any, expected: frozenset[str]) -> dict[str, Any]:
 async def _rpc(broker: CanonicalPrivateGatewayBroker,
                operation: str, args: dict[str, Any],
                shape: frozenset[str]) -> dict[str, Any]:
-    receipt = await broker.gateway_bootstrap_rpc(
-        {"operation": operation, "args": args},
+    receipt = await asyncio.wait_for(
+        broker.gateway_bootstrap_rpc({"operation": operation, "args": args}),
+        timeout=MAX_GATEWAY_BROKER_RPC_SECONDS,
     )
     return _closed_receipt(receipt, shape)
 
@@ -149,7 +169,7 @@ class SingleSocketAuthenticatedGateway:
         # A transport error after attempted send is never retryable: the
         # canonical Broker has already consumed the challenge.
         self._sent = True
-        await self._socket.send_text(json.dumps({
+        await _send_frame(self._socket, json.dumps({
             "type": "credential_once", "challenge_id": lease.challenge_id,
             "device_id": lease.device_id, "lease_ref": lease.lease_ref,
             "binding": binding,
@@ -160,7 +180,7 @@ class SingleSocketAuthenticatedGateway:
                                                   lease: GatewayBootstrapLease) -> dict[str, Any]:
         if not self._sent or self._acked or lease is not self._lease:
             raise ValueError("ACK not expected on this PC connection")
-        message = _decode(await self._socket.receive_text(), keys=_ACK)
+        message = _decode(await _recv_frame(self._socket, timeout=MAX_WINDOWS_ACK_SECONDS), keys=_ACK)
         if (message["type"] != "install_ack" or type(message["counter"]) is not int
             or message["counter"] != 2 or not _proof(message["proof_hex"])):
             raise ValueError("unexpected ACK frame")
@@ -218,7 +238,7 @@ async def run_device_initiated_enrollment(
         await socket.close(code=1008)
         return
     try:
-        if await trusted_tls.verify(socket) is not True:
+        if await asyncio.wait_for(trusted_tls.verify(socket), timeout=MAX_TLS_VERIFY_SECONDS) is not True:
             await socket.close(code=1008)
             return
     except Exception:
@@ -226,7 +246,7 @@ async def run_device_initiated_enrollment(
         return
     await socket.accept()
     try:
-        begin = _decode(await socket.receive_text(), keys=_BEGIN)
+        begin = _decode(await _recv_frame(socket, timeout=MAX_BOOTSTRAP_FRAME_SECONDS), keys=_BEGIN)
         if (begin["type"] != "begin" or not _ref(begin["challenge_id"])
             or not _ref(begin["device_id"])
             or type(begin["proof_ref"]) is not str
@@ -253,12 +273,12 @@ async def run_device_initiated_enrollment(
             lease_ref=started["lease_ref"], challenge_id=challenge,
             device_id=device, expires_at=expiry,
         )
-        await socket.send_text(json.dumps({"type": "nonce",
+        await _send_frame(socket, json.dumps({"type": "nonce",
             "challenge_id": challenge, "device_id": device,
             "lease_ref": lease.lease_ref, "nonce_hex": started["nonce_hex"],
             "expires_at": started["expires_at"],
         }, separators=(",", ":")))
-        finish = _decode(await socket.receive_text(), keys=_FINISH)
+        finish = _decode(await _recv_frame(socket, timeout=MAX_BOOTSTRAP_FRAME_SECONDS), keys=_FINISH)
         if (finish["type"] != "finish" or finish["lease_ref"] != lease.lease_ref
             or not _proof(finish["proof_hex"])):
             raise ValueError("bootstrap finish invalid")
@@ -270,11 +290,11 @@ async def run_device_initiated_enrollment(
             or proof["lease_ref"] != lease.lease_ref or proof["verified"] is not True
             or proof["credential"] is not False or proof["challenge_consumed"] is not False):
             raise ValueError("bootstrap proof denied")
-        await socket.send_text(json.dumps({
+        await _send_frame(socket, json.dumps({
             "type": "bootstrap_verified", "lease_ref": lease.lease_ref,
             "credential": False,
         }, separators=(",", ":")))
-        fetch = _decode(await socket.receive_text(), keys=_FETCH)
+        fetch = _decode(await _recv_frame(socket, timeout=MAX_BOOTSTRAP_FRAME_SECONDS), keys=_FETCH)
         if (fetch["type"] != "credential_fetch" or type(fetch["counter"]) is not int
             or fetch["counter"] != 1 or not _proof(fetch["proof_hex"])):
             raise ValueError("credential request invalid")
@@ -309,7 +329,7 @@ async def run_device_initiated_enrollment(
                     "enrollment_consent_changed_during_redeem",
                 } and gateway._sent else "security_hold"
             )
-            await socket.send_text(json.dumps({"type": "terminal",
+            await _send_frame(socket, json.dumps({"type": "terminal",
                 "status": status, "can_retry_challenge": False,
             }, separators=(",", ":")))
             await socket.close(code=1000)
@@ -321,7 +341,7 @@ async def run_device_initiated_enrollment(
             or result.get("dispatch_authorized") is not False
             or gateway._acked is not True):
             raise ValueError("canonical host enrollment receipt invalid")
-        await socket.send_text(json.dumps({"type": "terminal",
+        await _send_frame(socket, json.dumps({"type": "terminal",
             "status": "paired_offline", "can_retry_challenge": False,
         }, separators=(",", ":")))
     except Exception:
