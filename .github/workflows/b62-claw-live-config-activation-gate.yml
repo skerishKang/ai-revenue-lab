@@ -853,22 +853,45 @@ jobs:
         run: |
           set -euo pipefail
           response="${RUNNER_TEMP}/b62-config-rollback-patch-response.json"
+          headers="${RUNNER_TEMP}/b62-config-rollback-patch-response.headers"
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings"
+          set +e
           http_status="$(
-            curl -sS -X PATCH \
+            curl -sS --connect-timeout 8 --max-time 40 -X PATCH \
               -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
               -F "settings=<${RUNNER_TEMP}/b62-config-rollback-patch.json;type=application/json" \
-              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
-              -o "${response}" \
+              "${api}" \
+              -D "${headers}" -o "${response}" \
               -w '%{http_code}'
           )"
+          transport_rc=$?
+          set -e
           echo "B62_CLAW_CONFIG_ROLLBACK_PATCH_HTTP_STATUS=${http_status}"
-          if [ "${http_status}" -lt 200 ] || [ "${http_status}" -ge 300 ]; then
-            echo 'CONFIG_ROLLBACK=FAIL'
-            if jq -e . "${response}" >/dev/null 2>&1; then
-              jq -c '{success, errors: [(.errors // [])[] | {code, message}]}' "${response}"
+          if [ "${transport_rc}" -ne 0 ] || ! [[ "${http_status}" =~ ^[0-9]{3}$ ]] || \
+             [ "${http_status}" -lt 200 ] || [ "${http_status}" -ge 300 ]; then
+            # Never dump untrusted API messages, response bodies or headers.
+            codes="$(jq -r '[.errors[]? | objects | .code | select(type=="number") | tostring] | unique | join(",")' "${response}" 2>/dev/null || true)"
+            if ! [[ "${codes}" =~ ^[0-9]{1,8}(,[0-9]{1,8}){0,7}$ ]]; then codes=UNAVAILABLE; fi
+            echo "CONFIG_ROLLBACK_PATCH_CLOUDFLARE_ERROR_CODES=${codes}"
+            ray="$(awk 'tolower($1)=="cf-ray:" {gsub(/\r/,"",$2); print $2; exit}' "${headers}" 2>/dev/null || true)"
+            if ! [[ "${ray}" =~ ^[A-Za-z0-9-]{8,64}$ ]]; then ray=UNAVAILABLE; fi
+            echo "CONFIG_ROLLBACK_PATCH_CF_RAY=${ray}"
+            echo 'CONFIG_ROLLBACK_PATCH_AUTOMATIC_RETRY=NO'
+            # Non-2xx does not prove a zero-mutation outcome: observe once,
+            # but never accept the transaction or roll back code on this basis.
+            posterror="${RUNNER_TEMP}/b62-config-rollback-posterror-readonly.json"
+            get_status="$(curl -sS --connect-timeout 8 --max-time 20 \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              "${api}" -o "${posterror}" -w '%{http_code}' || true)"
+            if [ "${get_status}" = 200 ] && python3 .github/scripts/b62_binding_state_guard.py \
+                --before "${CONFIG_SNAPSHOT_PATH}" --after "${posterror}" >/dev/null 2>&1; then
+              echo 'CONFIG_ROLLBACK_POSTERROR_SINGLE_READ=SNAPSHOT_EXACT'
             else
-              echo 'CLOUDFLARE_ERROR_BODY_JSON=NO'
+              echo 'CONFIG_ROLLBACK_POSTERROR_SINGLE_READ=NOT_EXACT_OR_UNAVAILABLE'
             fi
+            echo 'CONFIG_ROLLBACK_POSTERROR_ACCEPTANCE=NO'
+            echo 'FULL_CONFIG_ROLLBACK_CLAIM=NO'
+            echo 'CONFIG_ROLLBACK=FAIL'
             exit 1
           fi
           jq -e '.success == true and (.result.bindings | type == "array")' "${response}" >/dev/null
