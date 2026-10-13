@@ -19,6 +19,7 @@ MAX_FILES = 100
 FULL = "full"
 CHAT_ONLY = "chat_only"
 STATIC_ONLY = "static_only"
+STATIC_TOUCH_ONLY = "static_touch_only"
 TESTS_ONLY = "tests_only"
 B14_ONLY = "b14_only"
 B14_TESTS_ONLY = "b14_tests_only"
@@ -60,6 +61,14 @@ def impact_scope(files: object) -> str:
         for p in paths
     ):
         return B14_ONLY
+    # Exactly the #4551 Claw touch CSS and its static-assertion test.
+    # The test reads CSS/HTML only; it cannot alter shipped Python/Worker.
+    # The fast UI job MUST execute this one test when this scope is chosen.
+    if set(paths) == {
+        "apps/padiem-chat/static/claw-focus-layout.css",
+        "apps/padiem-chat/tests/test_4488_claw_automation_touch_accessibility.py",
+    }:
+        return STATIC_TOUCH_ONLY
     if all(p.startswith("apps/padiem-chat/static/") for p in paths):
         return STATIC_ONLY
     # #3989: strict test-module-only modifications cannot change the bundled
