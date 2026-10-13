@@ -30,6 +30,20 @@
 - 설정 파일 apps/padiem-chat/wrangler.connector-acceptance-4139.local.toml 은 per-PC Git 무시 오버레이이다. 새 D1에만 연결되며 password auth + mock runtime + 두 비공개 시험 Service Binding 선언을 담는다. 저장소 템플릿 wrangler.connector-acceptance-4139.toml 은 여전히 공개 route 없음, 기본 로그인 OFF.
 - 스크립트 apps/padiem-chat/scripts/prepare_connector_acceptance.py 는 기존 Wrangler OAuth로 D1 목록을 **읽기만** 하고 해당 이름의 전용 D1만 허용한다. --render도 로컬 파일 작성만 하며 D1 생성·마이그레이션·Worker 배포·라우트 공개는 하지 않는다. 연관 테스트 test_4139_prepare_acceptance_d1.py, 정확한 .gitignore가 PR에 커밋되어 있다.
 
+## 2A. CENTRAL 비공개 Cloudflare 서버 실배포 바인딩 정밀 감사 — 2026-10-14 KST
+
+**검증 방법:** 유효한 Windows Wrangler OAuth 인증을 사용하되 오래된 환경의 Cloudflare Bearer 토큰은 각 읽기 전용 명령 자식 프로세스에서만 제외. `wrangler deployments list --json` → **100% 활성** 최신 배포 버전 → `wrangler versions view --json`의 배포 리소스(바인딩의 종류·이름·서버 대상/문자열만 비교). **운영 Worker 배포, D1 SQL 쓰기, secrets 조회, DNS, 공개 URL, 계정/PC 등록 변경 없음.**
+
+**19개 조건 모두 TRUE 확인:**
+- Chat의 `IDENTITY_AUTHORITY_SERVICE`, `LOCAL_AGENT_BROKER_AUTHORITY_SERVICE`: **두 바인딩이 service 타입이며 각각 정확히 격리된 acceptance Identity·Broker Worker를 가리킴**.
+- Chat `PADIEM_CHAT_DB`: 실제 배포본 D1 ID가 gitignored 로컬 staging manifest의 전용 D1 UUID와 **정확히 일치**, DB 이름은 `padiem-connector-acceptance-4139`.
+- Chat Auth/WSS/안전 설정 8개: `PADIEM_CHAT_AUTH_MODE=password`, `PADIEM_CHAT_RUNTIME_MODE=mock`, `PADIEM_CHAT_LIVE_ENABLED=false`, stage base URL/origin exact fixed pin, owner enrollment and WSS feature flags `enabled`, release scope isolated acceptance. 검증은 **일치 여부만 출력**, 실값 로그·비밀키 원문 노출 없음.
+- Chat session secret은 `secret_text` 타입으로 배포됨.
+- Identity와 Broker는 각각 필요한 **durable_object_namespace 타입**과 필수 secrets(`secret_text`)가 배포본에 존재.
+- **Identity DO 및 Broker DO의 실제 namespace ID가 각각 운영의 대응 DO namespace와 서로 다름**. namespace ID 자체는 출력/문서 저장 안 함.
+
+**증명 범위:** 이것은 `CLOUDFLARE_PRIVATE_BINDING_METADATA=PASS`다. **RPC를 실제로 호출·인가/거부·1회 challenge 소비한 증거는 아님**. 또한 `connector-acceptance.padiem.net`의 DNS, HTTPS, Cloudflare Access 설정이나 owner 브라우저 로그인·실기기 PC 등록 성공을 의미하지 않는다.
+
 ## 3. GitHub 구현 및 근거
 
 - 현재 CENTRAL 통합 작업은 [Draft PR #4572](https://github.com/skerishKang/ai-revenue-lab/pull/4572)이며 이 문서 직전 최신 GitHub HEAD는 **ebdfe2ddaf6549b6356a61196838f0a340cc1267**. 이 문서 커밋 이후에는 PR HEAD를 다시 조회한다.
@@ -56,7 +70,7 @@ LOCAL6은 Windows 로컬 현장 담당, CENTRAL은 PR/CI·Cloudflare 상태·범
 1. **장치 연결 회복:** Remote 프로세스의 중복 여부, WebSocket channel·네트워크·프록시·방화벽을 확인한다. 다른 모델의 Node 프로세스·브라우저를 종료하지 않는다. Channel subscribed 로그뿐 아니라 실제 READ-ONLY 왕복 한 건으로 복구를 확인한다.
 2. **파일·버전 정합:** 중앙 워크트리 E:\central-4139-runtime-261014 를 먼저 READ-ONLY 검사한다. git status --short, git rev-parse HEAD, 실제 #4572 head_sha 를 대조한다. LOCAL6은 별도 새 worktree를 우선 사용한다. 기존 .venv-connector, 비공개 staging TOML, 미커밋 파일은 지우거나 덮지 않는다. 강제 reset/clean/rebase 금지.
 3. **로컬 코드 정리:** 원격 최신 prepare_connector_acceptance.py, 테스트, .gitignore 와 중앙 워크트리의 과거 미커밋 동등 파일을 비교한다. 이미 원격 반영된 변경을 재커밋하지 않는다.
-4. **실사용 사전 조회:** Wrangler OAuth 기반 실배포 버전의 시험 D1, Identity/Broker 바인딩, secrets 존재, 구성한 password auth 모드를 비밀값 없이 읽기 전용 검증한다. 운영 계정/DB/Worker를 배포하거나 고치지 않는다.
+4. **실사용 사전 조회:** CENTRAL은 Wrangler OAuth로 이미 배포본의 D1 UUID·Identity/Broker 서비스 대상·secrets 종류·암호 모드 및 Durable Object의 운영/시험 분리까지 실제 읽기 전용으로 확인했다(19/19 PASS). LOCAL6은 이 검증을 무의미하게 재작업하지 말고 실제 사용자 동의·Windows WSS/DPAPI 경로에서 미증명 부분만 담당한다. 운영 계정/DB/Worker를 배포하거나 고치지 않는다.
 5. **접속 허가와 인증:** 시험용 공개 HTTPS 주소는 현재 미개설이다. 대상 사용자/접근 통제·공개 여부에 대한 적법한 소유자 판단 없이는 DNS/route/Access를 열지 않는다. 실제 owner 로그인과 명시적 동의가 가능한 경로가 준비되면 그 세션으로 등록 테스트한다.
 6. **실제 E2E:** 사용자 로그인 → B54 owner-bound challenge → PC pairing code 단회 검증 → pinned WSS / TLS → Windows DPAPI 저장·readback 및 ACK → 서버 연결 상태 확인. 시간 초과·거부·철회·재연결을 #3099에서 검증한다. 테스트 PASS만으로 PC 등록 성공을 선언하지 않는다.
 
@@ -69,7 +83,8 @@ LOCAL6은 Windows 로컬 현장 담당, CENTRAL은 PR/CI·Cloudflare 상태·범
 - [x] 승인된 시험 도메인 문자열과 운영 주소를 구별하는 WSS 코드 가드 작성
 - [x] GitHub PR #4572에 전용 DB guard 스크립트·테스트·gitignore 커밋
 - [x] Desktop Commander 실제 READ-ONLY 원격 명령 왕복 성공. LOCAL6 워크트리 정합·채널 재연결 안정성은 별도 미완료
-- [ ] 실제 배포본의 stage private RPC 바인딩 권한/DO 검증
+- [x] CENTRAL이 시험용 3 Worker의 **실제 Cloudflare 배포버전**에서 Service Binding 대상명, 전용 D1 실제 ID, owner 인증·게이트 설정값, secrets 바인딩 유형, Identity/Broker의 Durable Object 분리 ID를 **비밀값 출력 없이 19개 조건으로 직접 검증 PASS**
+- [ ] 실제 owner 인증을 거치는 **private RPC 발급·소진 성공** 증명 및 접근 범위 검증 (위 메타데이터 검증과 구별)
 - [ ] 허용된 사용자만 접근 가능한 시험 HTTPS route 및 실제 브라우저 로그인
 - [ ] 진짜 사용자 동의→challenge→Windows PC WSS/DPAPI ACK와 서버 상태 확인
 - [ ] #3099에 실기기 Alpha 수용 근거 기록; 운영 배포/출시는 별도 소유자 결정
