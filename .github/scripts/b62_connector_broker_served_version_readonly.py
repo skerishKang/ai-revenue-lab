@@ -16,6 +16,9 @@ from typing import Any
 from uuid import UUID
 
 from b62_cloudflare_connector_binding_readonly import API, get_json
+from cloudflare_served_version import (
+    ServedVersionResolutionError, resolve_served_version_id,
+)
 
 VERSION = "padiem.connector-broker-served-version.readonly.v1"
 WORKERS = ("padiem-local-agent-broker-state", "padiem-local-agent-broker-edge")
@@ -32,23 +35,17 @@ def _uuid(value: Any) -> bool:
 
 
 def parse_served_version(payload: object) -> str:
-    """Demand one 100% served version on the latest active deployment."""
-    if type(payload) is not dict or payload.get("success") is not True:
-        raise ValueError("Cloudflare deployments cannot be verified")
-    result = payload.get("result")
-    if type(result) is not dict or type(result.get("deployments")) is not list:
-        raise ValueError("Cloudflare deployments shape unsupported")
-    deployments = result["deployments"]
-    if not deployments or type(deployments[0]) is not dict:
-        raise ValueError("No active Broker deployment")
-    versions = deployments[0].get("versions")
-    if (type(versions) is not list or len(versions) != 1
-        or type(versions[0]) is not dict
-        or type(versions[0].get("percentage")) not in (int, float)
-        or versions[0]["percentage"] != 100
-        or not _uuid(versions[0].get("version_id"))):
-        raise ValueError("Active Broker deployment is split or ambiguous")
-    return versions[0]["version_id"]
+    """Reuse the single canonical active-deployment resolver; require UUID.
+
+    Never add a second, weaker interpretation of Cloudflare deployments.
+    """
+    try:
+        candidate = resolve_served_version_id(payload)
+    except ServedVersionResolutionError as exc:
+        raise ValueError("Canonical Broker served-version resolution unavailable") from exc
+    if not _uuid(candidate):
+        raise ValueError("Broker served-version identifier invalid")
+    return candidate
 
 
 def validate_served_version_detail(payload: object, pinned_id: str) -> dict[str, bool]:
@@ -88,7 +85,16 @@ def audit(*, account_id: str, token: str, requester=get_json) -> dict[str, objec
         if code != 200:
             raise ValueError("Canonical Broker version not readable")
         evidence = validate_served_version_detail(detail, pinned_id)
-        results.append({"worker": worker, **evidence})
+        # Deployment may advance between separate GET requests. Refuse a
+        # point-in-time claim until the same served id survives a second GET.
+        # This does not prove source parity or guarantee future immutability.
+        confirm_code, confirm_deployments = requester(base + "/deployments", token=token)
+        if confirm_code != 200 or parse_served_version(confirm_deployments) != pinned_id:
+            raise ValueError("Broker served deployment drifted during readback")
+        results.append({
+            "worker": worker, **evidence,
+            "served_version_stable_during_readback": True,
+        })
     return {
         "contract": VERSION,
         "served_worker_count": len(results),
