@@ -278,6 +278,15 @@ class FakeCanonicalBroker:
             "workspace_ref": BINDING["workspace_ref"],
         }
 
+    async def verify_enrollment_bootstrap(self, **kwargs):
+        self.preflight_count = getattr(self, "preflight_count", 0) + 1
+        return {
+            "challenge_id": kwargs["challenge_id"],
+            "device_id": kwargs["device_id"],
+            "proof_valid": True,
+            "challenge_consumed": False,
+        }
+
     async def redeem_enrollment(self, **kwargs):
         self.redeemed += 1
         return dict(BINDING), KEY
@@ -312,6 +321,7 @@ def test_synthetic_host_through_gateway_handoff_returns_only_paired_offline():
     h, identity, broker = host(gateway)
     result = redeem(h)
     assert broker.redeemed == 1 and broker.revoke_calls == 0
+    assert broker.preflight_count == 1
     assert identity.authorization_reads == 3
     assert result["credential_installed_by_canonical_handoff"] is True
     assert result["lifecycle"] == "paired_offline"
