@@ -128,7 +128,7 @@ class BrokerVersionReadbackTest(unittest.TestCase):
             self.assertEqual(result["served_default_entrypoint_shape"], "worker")
             self.assertEqual(result["served_canonical_do_shape"],
                              "sqlite" if do_name else "not_applicable")
-            exports["default"]["type"] = "durable-object"
+            exports["default"]["type"] = "unexpected-worker-type"
             # Python implicit WorkerEntrypoint is not guaranteed to appear
             # in version declarative exports; never treat that omission alone
             # as a concrete deployed source mismatch.
