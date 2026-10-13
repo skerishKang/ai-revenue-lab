@@ -259,3 +259,45 @@ def test_duplicate_active_binding_from_one_device_is_not_minted_by_replay():
         )
     assert exc.value.code == "pairing_challenge_already_redeemed"
     assert len(active_bindings(h)) == 1
+
+
+def test_nonconsuming_bootstrap_proof_is_read_only_across_durable_adapter_reopen():
+    h = Harness()
+    install(h)
+    challenge, code = issue(h)
+    verified_proof = proof(challenge, code)
+    reopened = Harness(storage=h.storage)
+    kwargs = {
+        "challenge_id": challenge.challenge_id, "device_id": DEVICE,
+        "proof_ref": verified_proof, "consent_ref": CONSENT,
+        "owner_ref": OWNER, "account_ref": ACCOUNT,
+        "workspace_ref": WORKSPACE, "now": NOW + timedelta(seconds=1),
+    }
+    before = h.storage.sql.exec(
+        "SELECT * FROM canonical_local_agent_pairing_challenge"
+    ).toArray()
+    assert reopened.pairing.verify_enrollment_bootstrap(**kwargs) == {
+        "challenge_id": challenge.challenge_id,
+        "device_id": DEVICE, "proof_valid": True, "challenge_consumed": False,
+    }
+    after = h.storage.sql.exec(
+        "SELECT * FROM canonical_local_agent_pairing_challenge"
+    ).toArray()
+    assert before == after
+    assert active_bindings(h) == []
+    for swap, reason in [
+        ({"proof_ref": "pairing-proof:" + "f" * 64}, "invalid_pairing_proof"),
+        ({"device_id": "device.attacker"}, "enrollment_bootstrap_scope_mismatch"),
+        ({"consent_ref": "consent.other"}, "enrollment_bootstrap_scope_mismatch"),
+        ({"account_ref": "account.other"}, "enrollment_bootstrap_scope_mismatch"),
+        ({"owner_ref": "subject.other"}, "enrollment_bootstrap_scope_mismatch"),
+        ({"now": NOW + timedelta(hours=1)}, "pairing_challenge_expired"),
+    ]:
+        with pytest.raises(ControlPlaneContractError) as error:
+            reopened.pairing.verify_enrollment_bootstrap(**{**kwargs, **swap})
+        assert error.value.code == reason
+    enrollment, key = reopened.pairing.redeem_enrollment(**kwargs)
+    assert key and enrollment.binding_ref
+    with pytest.raises(ControlPlaneContractError) as error:
+        reopened.pairing.verify_enrollment_bootstrap(**kwargs)
+    assert error.value.code == "pairing_challenge_already_redeemed"
