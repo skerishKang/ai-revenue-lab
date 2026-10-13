@@ -15,6 +15,23 @@ from worker import _WSS, _socket_app
 _FORBIDDEN = ("origin", "cookie", "authorization", "sec-websocket-protocol")
 
 
+async def _observed_scope_app(scope, receive, send):
+    """Emit the SDK-generated ASGI scheme as a bounded nonsecret test marker.
+
+    This is fixture-only: production source never logs or exports scope.
+    """
+    scheme = scope.get("scheme")
+    if scheme not in ("https", "wss", "http", "ws"):
+        scheme = "UNKNOWN"
+
+    async def audited_send(message):
+        await send(message)
+        if message.get("type") == "websocket.accept":
+            await send({"type": "websocket.send", "text": "PADIEM_CANARY_SCHEME_" + scheme})
+
+    await _socket_app(scope, receive, audited_send)
+
+
 class Default(WorkerEntrypoint):
     async def fetch(self, request):
         target = urlsplit(str(request.url))
@@ -26,4 +43,4 @@ class Default(WorkerEntrypoint):
         if any(request.headers.get(h) is not None for h in _FORBIDDEN):
             return Response("UNTRUSTED_REQUEST", status=403)
         from workers import asgi
-        return await asgi.websocket(_socket_app, request)
+        return await asgi.websocket(_observed_scope_app, request)
