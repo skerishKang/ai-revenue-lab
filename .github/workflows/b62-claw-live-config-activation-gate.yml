@@ -974,7 +974,7 @@ jobs:
           test "${restored}" = yes
           echo 'CODE_VERSION_ROLLBACK_READBACK=PASS'
           echo 'CODE_VERSION_ROLLBACK_MECHANISM=VERSION_TARGET_RESTORED'
-          echo 'CONFIG_ROLLBACK=PENDING_SNAPSHOT_BOUNDED_RESTORE'
+          echo 'CONFIG_ROLLBACK=SNAPSHOT_VERIFIED_BEFORE_CODE_ROLLBACK'
 
       - name: Final config parity after restoring the pre-activation code version
         shell: bash
