@@ -10,13 +10,7 @@
 
 **진행 상태:** S1 Windows tray #4420과 제품별 PC 사전 정책 #4429는 **병합된 소스**다. 그러나 CENTRAL [Draft #4476](https://github.com/skerishKang/ai-revenue-lab/pull/4476)·LOCAL2 [Draft #4490](https://github.com/skerishKang/ai-revenue-lab/pull/4490)는 **미병합·운영 OFF**, 실제 PC 등록/신뢰된 전송/ACK/ONLINE/권한 있는 업무 실행의 성공 증거가 아니다. 중앙 Draft에는 해결 전 GitGuardian 탐지가 존재한다. 제품 실기기 출시 수용은 여전히 #3099 OPEN이다. **단일 최신 점검 인덱스:** [#4139 중앙 상태·이슈 통합](../operations/PADIEM_CONNECTOR_4139_CENTRAL_STATUS_20261013.md) (소스/문서 스냅샷, 기능 승인 아님).
 
-## 2026-10-13 대표 직접 운영 AX 파일럿 결정 — 기존 일반 사용자 가정 정정
-
-**상위 사업 현실:** 파디엠은 대표 혼자 개발·구축하며, 현재 5명 미만의 50~60대 기업 경영자와 **직접 대면하여 회사 전체 AX·온톨로지·업무 자동화를 수행**한다. 회사 정보·컴퓨터 운용을 대표에게 위임받는 것이 주 사업 방식이다. Claw는 여러 수단 중 하나. 고객은 AI나 계정 연결 기술을 배워야 하는 사람이 아니다.
-
-**고객 기본 동작:** 파디엠 사이트 로그인 → 웹 Claw의 로컬-PC 업무 필요 시 Connector 설치·실행(대표 현장 지원) → **곧바로 연결** → 이후 **부팅 시 자동 실행·재연결 ON(사용자가 설정으로 OFF 가능)**. 기존 기록의 ‘고객이 autostart를 켜야 한다’, ‘폴더마다/작업마다 기본 반복 승인 UI’, ‘선택형 로컬 후순위’는 **새 기본 UX와 충돌하므로 현재 대표 제품 결정으로 사용하지 않는다**. 기존 identity/Broker/P01/OS 권한은 별도 구현 사실이다. 불명확한 구체 권한 처리 방법은 대표에게 물으며, 임의 금지·허용을 결정하지 않는다. [상위 결정 문서](../operations/PADIEM_AX_FOUNDER_LED_PILOT_OPERATING_CONTRACT_20261013.md).
-
-**현재 실효 동작과 구분:** `apps/claw-connect/claw_connect/autostart.py`는 여전히 opt-in OFF이며, #4476/#4490/#3099 실운영 연결은 미완료다. 신규 제품 결정에 맞춘 구현이 필요하고, 기존 보호 경계는 문서 수정만으로 변경되지 않는다. B66와 PADIEM의 고객 브랜드·회원 화면 분리 결정은 유지한다.
+> **Internal business-policy authority:** local governance reference and read-first/ask-owner rules are in the root [AGENTS.md](../../AGENTS.md). This public document is an engineering/technical history, not a replacement for the internal business policy.
 
 ## 1. 한 문장으로 정의
 
@@ -26,17 +20,16 @@ PADIEM 웹(Claw/Chat/Engine/향후 승인 제품) 및 독립 브랜드 B66 Quote
 
 **잠정 대외 제품명: PADIEM Connector.** 기존 S1 경로/내부 명칭은 `apps/claw-connect/**` / Claw Connect로 유지한다. 향후 제품명 전환은 계정 등록·기기 identity와 호환성을 검증한 별도 변경에서 진행하며, 이름만 바꾼 것으로 one-click 연동 완료를 선언하지 않는다.
 
-## 2. 실제 고객 경험: 대표 현장 설치 → 실행 즉시 연결 → 자동 재연결
+## 2. 실제 고객 경험: 설치 한 번 + 확인된 동일 계정 로그인
 
-1. 대표가 고객 기업과 직접 AX/온톨로지 업무 및 회사 PC 운영 위임을 협의·확인한다.
-2. 고객이 해당 파디엠 제품 계정에 로그인한다. B66와 PADIEM 고객 화면의 브랜드 구분은 유지한다.
-3. Claw에서 회사 PC 접근이 필요해지면 Connector를 내려받아 설치·실행한다. **대표가 고객 현장에서 직접 안내·설치한다**는 것이 현재 초기 파일럿 전제다.
-4. **첫 실행 후 추가적인 QR/페어링 코드/동의 버튼을 반복 입력하지 않고 연결**되는 경험을 구현한다. 내부 인증·등록은 서버/Connector 설계 과제이고 실제 연결 검증 전까지 연결됨을 거짓 표시하지 않는다.
-5. 자동 실행/연결 유지/부팅 후 재연결 **기본 ON**; 사용자가 설정에서 끌 수 있다. 고객이 중단하거나 기기가 오프라인이면 실행하지 않고 정확히 표시한다.
-6. **대표가 받은 위임에 따라 고객 업무를 자동 실행**하는 사용성을 목표로 한다. 기존 제품별 P01/WorkTicket/브랜드 권한 계약과 충돌하는 세부사항은 임의로 고객 확인 의무를 제정하지 말고 대표에게 질문한다.
-7. ChatGPT/Claude 등 개인 공급사 구독이나 고객 API 키 연결은 기본 접속 조건이 아니다.
+1. 고객은 이용 중인 서비스(PADIEM 또는 B66 견적)의 **별도 승인된 설치 진입점**에서 Connector를 내려받아 PC에 설치한다. 서비스 사이의 계정·기기는 기본적으로 연결되지 않는다.
+2. **최초 1회(명시적으로 승인된 계정·브랜드 범위)** 해당 제품의 검증된 계정으로 안전하게 로그인하고, **이 PC 등록/활성화에 명시적으로 동의**한다. 동일 이메일 표기만으로 동일 계정이라고 판단하지 않는다.
+3. 서버는 기존 검증된 identity + workspace + 기기 소유 증명을 사용하여 **Canonical Broker**의 단일 device authority에 등록한다. 내부 canonical Broker는 단일 device ID를 재사용할 수 있으나, **제품·브랜드마다 검증된 인증과 명시적 연결 승인 없이는 같은 PC를 노출하지 않는다**. 별도의 웹 '연결 버튼'/QR/코드/서드파티 MCP 커넥터 설정을 기본 요구하지 않는다.
+4. 안전하게 저장된 자격증명·짧은 세션·회전/철회 정책과 outbound 연결/heartbeat로 재연결한다. 재부팅 자동 시작은 사용자 선택이다. 잠자기·오프라인·계정 철회 때는 즉시 unavailable.
+5. **등록 != 파일 접근/터미널/브라우저 실행 허가.** 각 제품 capability grant는 기본 OFF이며 작업별 대상·범위·기기·승인(P01 READ vs 별도 WRITE), WorkTicket, 만료/재생 방지, 감사가 별도로 필요하다.
+6. 외부 ChatGPT/Claude 연계는 향후 명시적으로 동의받는 별도 커넥터 경로다. PADIEM 자체 제품 사용에 필요하지 않다.
 
-**검증 필요:** 이 일곱 항목은 제품 목표이며 신규 권한·실제 Windows 등록·서명·자동 시작·최종 PC 작업이 운영 준비됐다는 뜻이 아니다. 소스 실효차이 및 E2E는 #4139/#3099에서만 진행한다.
+기업 공용 PC는 정책에 따라 관리자의 기기 승인도 요구할 수 있다. 가입/로그아웃/계정 전환 시 다른 사용자 기기 목록과 작업 결과가 노출되면 안 된다.
 
 ## 3. Authority 및 모듈 경계 — 절대 중복 생성 금지
 
