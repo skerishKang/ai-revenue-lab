@@ -54,6 +54,7 @@ import base64
 from pathlib import Path
 import re
 import sys
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Protocol
 
@@ -517,7 +518,20 @@ def _is_live_enrollment(enrollment: object) -> bool:
         LIFECYCLE_REVOKED,
     )
 
-    return lifecycle is not None and lifecycle not in (
+    if lifecycle is None or lifecycle in (
         LIFECYCLE_REVOKED,
         LIFECYCLE_CREDENTIAL_EXPIRED,
-    )
+    ):
+        return False
+    # Device lifecycle can be stale while offline. Never register logon
+    # startup against an explicitly expired canonical credential.
+    expires_at = getattr(enrollment, "credential_expires_at", None)
+    if expires_at is not None:
+        if not isinstance(expires_at, datetime) or expires_at.tzinfo is None:
+            return False
+        try:
+            if expires_at <= datetime.now(timezone.utc):
+                return False
+        except (TypeError, ValueError):
+            return False
+    return True

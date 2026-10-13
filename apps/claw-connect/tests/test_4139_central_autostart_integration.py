@@ -7,6 +7,7 @@ from __future__ import annotations
 import base64
 import re
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -147,3 +148,28 @@ def test_cli_show_never_echoes_a_foreign_secret_bearing_registry_command(
     parsed = json.loads(output)
     assert parsed["enabled"] is False
     assert parsed["command"] is None
+
+
+def test_expired_committed_credential_refuses_autostart():
+    from claw_connect.autostart import AutostartRefused
+    record = EnrollmentRecord(
+        device_id="device.synthetic", binding_ref="binding.synthetic",
+        device_lifecycle=LIFECYCLE_PAIRED_OFFLINE,
+        credential_expires_at=datetime(2000, 1, 1, tzinfo=timezone.utc),
+    )
+    app, runs, prefs = _harness(record)
+    assert app.reconcile_autostart() is None
+    with pytest.raises(AutostartRefused):
+        app.autostart.enable(start_command(), record)
+    assert runs.values == {} and prefs.values == {}
+
+
+def test_future_committed_credential_can_register_autostart():
+    record = EnrollmentRecord(
+        device_id="device.synthetic", binding_ref="binding.synthetic",
+        device_lifecycle=LIFECYCLE_PAIRED_OFFLINE,
+        credential_expires_at=datetime(2099, 1, 1, tzinfo=timezone.utc),
+    )
+    app, runs, _ = _harness(record)
+    assert app.reconcile_autostart() is AutostartOutcome.REGISTERED
+    assert len(runs.writes) == 1
