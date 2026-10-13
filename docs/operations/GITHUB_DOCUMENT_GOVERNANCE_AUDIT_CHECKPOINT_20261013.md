@@ -267,6 +267,17 @@ Immutable **835-source** cursor: **816 text originals seen at least partly** (12
 - Robots Disallow is not authentication; historical source self-check is not live Owner permission; B35 overall acceptance remains exact-revision gated and B66 private real-document certification is not repeated by public synthetic tests.
 - No original body/path/hash/size or local corporate Governance, customer data, executable code, model/Provider, product permission, commercial policy or live deployment changed.
 
+## 1AD. Batch 30 — 19 original PDF/DOCX blob content reviews (2026-10-13)
+
+**835/835 frozen originals have been inspected at least in part:** 691 full-text B02–B29 + 125 early partial samples + **19 BINARY_BODY_INSPECTED_B30**, **0 INDEXED_ONLY**, **0 BINARY_PENDING**. Initial 125 sampled text sources still require full review; no final legal/publication clearance implied.
+
+- [Batch30 PDF/DOCX SHA-pinned source/content triage — publication-safe](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH30_20261013.md).
+- **HIGH PRIORITY Owner/privacy review:** the owner-approved-public reference B66 PDF has two source paths with identical Git bytes and appears to include identifiable businesses/individuals, account identifiers and finance/quotation data. Public audit has deliberately excluded actual identifying values. Confirm rights/sanitization with Owner separately from technical readiness.
+- B35: blank three-page/DOCX intake format vs commercial 10-page master DRAFT and one-page offer; unapproved price/contract hypotheses are Owner business materials. B66 Core 11 synthetic fixtures are noncustomer; standalone Sol resource PDF is text-free and renders blank; generic quotation reference is fictional.
+- Git blob bytes and sizes checked on authorized desktop; in-memory PDF/OOXML read, representative page render checked, all temporary PNGs removed. No external cloud OCR, local corporate Governance, customer files, production or original source changed.
+
+**Next:** fully reread and classify the original 125 `TEXT_SAMPLED` sources; then owner-only company Governance decision, and separate high-priority B66 source disclosure remediation if required.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
