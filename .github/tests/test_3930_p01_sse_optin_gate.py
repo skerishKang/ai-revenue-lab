@@ -398,7 +398,7 @@ def test_postpatch_workflow_prints_only_bounded_reason_after_failed_verification
     verifier = workflow.split(
         "- name: Prove post-PATCH served version and exactly one allowed configuration change",
         1
-    )[1].split("\\n      - name:", 1)[0]
+    )[1].split("\n      - name:", 1)[0]
     assert "P01_SSE_OPTIN_GATE_REASON=[A-Z0-9_]{1,64}" in verifier
     assert 'sse-verify.log" | tail -n 1 || true' in verifier
     assert "P01_SSE_POST_SERVED_INTEGRITY=BLOCKED" in verifier
