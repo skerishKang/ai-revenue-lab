@@ -69,6 +69,8 @@ class FakeUpstream:
         self.hang_body = hang_body
         self._raw = raw
         self.body_reads = 0
+        # Model the production Response.body stream, not a body.text() shortcut.
+        self.body = types.SimpleNamespace(getReader=lambda: _ResponseReader(self))
 
     async def text(self):
         self.body_reads += 1
@@ -85,6 +87,26 @@ class FakeUpstream:
         if self.hang_body:
             await asyncio.sleep(3600)
         return self._payload
+
+
+class _ResponseReader:
+    """Provider stream: count each actual read and support a hanging body."""
+
+    def __init__(self, upstream):
+        import json
+
+        self._upstream = upstream
+        content = upstream._raw if upstream._raw is not None else json.dumps(upstream._payload)
+        self._reader = _Stream(content.encode("utf-8"), chunk=4096).getReader()
+
+    async def read(self):
+        self._upstream.body_reads += 1
+        if self._upstream.hang_body:
+            await asyncio.sleep(3600)
+        return await self._reader.read()
+
+    def releaseLock(self):
+        self._reader.releaseLock()
 
 
 class _Stream:
