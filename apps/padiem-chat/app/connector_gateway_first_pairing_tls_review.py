@@ -62,10 +62,17 @@ class CloudflareFirstPairingTlsTransportReview:
     def __init__(
         self, *, incoming_worker_request: Any = None,
         source_review_authorized: bool = False,
+        expected_url: str = _CANONICAL_URL,
     ) -> None:
         if source_review_authorized is not True:
             raise RuntimeError("Connector first-pairing TLS review not activated")
         self._request = incoming_worker_request
+        if expected_url not in (
+            _CANONICAL_URL,
+            "https://connector-acceptance.padiem.net" + CONNECTOR_GATEWAY_WSS_PATH,
+        ):
+            raise ValueError("unreviewed first pairing origin")
+        self._expected_url = expected_url
 
     def permits_worker_upgrade(self) -> bool:
         """Preflight before Cloudflare creates or returns a WebSocketPair.
@@ -78,7 +85,7 @@ class CloudflareFirstPairingTlsTransportReview:
             request = self._request
             if (
                 type(getattr(request, "url", None)) is not str
-                or request.url != _CANONICAL_URL
+                or request.url != self._expected_url
                 or getattr(request, "method", None) != "GET"
                 or not _first_pair_headers_clean(request.headers)
             ):

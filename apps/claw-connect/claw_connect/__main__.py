@@ -144,7 +144,9 @@ def main(argv: list[str] | None = None) -> int:
             # Device identity is nonsecret, and is never placed in a URL or
             # attached to a browser cookie. The user enters it on the page.
             device_id = app.enrollment.record().device_id
-            url = "https://chat.padiem.net/api/claw/connector/enrollments/setup"
+            from .operator_wss_enrollment import operator_review_target_host
+            host = operator_review_target_host()
+            url = "https://" + host + "/api/claw/connector/enrollments/setup"
             webbrowser.open(url)
             print(json.dumps({"ok": True, "device_id": device_id,
                               "login_url": url, "device_connected": False},

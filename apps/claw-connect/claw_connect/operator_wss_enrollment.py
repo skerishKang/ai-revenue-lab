@@ -18,6 +18,18 @@ from .device_wss_enrollment import DeviceSessionRefused
 _REVIEW_OPERATOR_ENV = "PADIEM_CONNECTOR_OPERATOR_WSS_ACCEPTANCE"
 _REVIEW_OPERATOR_VALUE = "isolated-operator-acceptance-4139"
 _CANONICAL_CREDENTIAL_DIR_ENV = "PADIEM_AGENT_CREDENTIAL_DIR"
+_TARGET_ENV = "PADIEM_CONNECTOR_OPERATOR_WSS_TARGET"
+_ACCEPTANCE_HOST = "connector-acceptance.padiem.net"
+_NORMAL_HOST = "chat.padiem.net"
+
+
+def operator_review_target_host() -> str:
+    """Host is an explicit fixed policy pin, never an arbitrary CLI URL."""
+    selected = os.environ.get(_TARGET_ENV, _NORMAL_HOST)
+    if selected not in (_NORMAL_HOST, _ACCEPTANCE_HOST):
+        raise DeviceSessionRefused("unreviewed_operator_wss_host")
+    return selected
+
 
 
 def operator_review_admitted() -> bool:
@@ -84,6 +96,7 @@ async def enroll_via_operator_wss_review(
     # installed resident.json determines the sole Agent package. The same
     # PADIEM_AGENT_CREDENTIAL_DIR is already the canonical Resident's
     # credential-store directory; do not mint an alternative storage root.
+    target_host = operator_review_target_host()
     _admit_existing_agent_package(state_dir=enrollment.state_dir)
     try:
         from kagent.local_agent_secure_transport import (
@@ -106,4 +119,5 @@ async def enroll_via_operator_wss_review(
         challenge_id=challenge_id,
         pairing_code=pairing_code,
         source_test_authorized=True,
+        acceptance=(target_host == _ACCEPTANCE_HOST),
     )

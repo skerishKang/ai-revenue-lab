@@ -28,6 +28,10 @@ def test_nonproduction_owner_gateway_has_only_isolated_private_services():
     assert isolated["vars"]["PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE"] == "isolated-operator-acceptance-4139"
     assert isolated["vars"]["PADIEM_CONNECTOR_OWNER_ENROLLMENT_ENABLED"] == "enabled"
     assert isolated["vars"]["PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED"] == "enabled"
+    assert isolated["vars"]["PADIEM_CONNECTOR_ACCEPTANCE_PUBLIC_ORIGIN"] == "https://connector-acceptance.padiem.net"
+    assert isolated["vars"]["PADIEM_CHAT_PUBLIC_BASE_URL"] == "https://connector-acceptance.padiem.net"
+    assert "d1_databases" not in isolated
+    assert isolated["vars"].get("PADIEM_CHAT_AUTH_MODE", "off") == "off"
     assert {item["binding"] for item in isolated["services"]} == {
         "IDENTITY_AUTHORITY_SERVICE", "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE"
     }

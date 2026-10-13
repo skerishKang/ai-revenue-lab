@@ -20,7 +20,8 @@ from .device_wss_enrollment import (
     run_and_stage_review_only_device_enrollment,
 )
 from .wss_target import (
-    REVIEW_WSS_HOST, REVIEW_WSS_URL, WSS_PRODUCTION_DIALER_ENABLED,
+    REVIEW_WSS_HOST, REVIEW_WSS_URL, ACCEPTANCE_WSS_HOST, ACCEPTANCE_WSS_URL,
+    WSS_PRODUCTION_DIALER_ENABLED,
     review_only_pinned_wss_target,
 )
 
@@ -44,14 +45,15 @@ def strict_server_tls_context() -> ssl.SSLContext:
     return context
 
 
-def _secure_peer(connection: Any, expected_context: ssl.SSLContext) -> bool:
+def _secure_peer(connection: Any, expected_context: ssl.SSLContext,
+                 expected_host: str = REVIEW_WSS_HOST) -> bool:
     """Check established SSLObject; handshake enforced real CA/hostname trust."""
     try:
         tls = connection.transport.get_extra_info("ssl_object")
         return (
             isinstance(tls, ssl.SSLObject)
             and tls.context is expected_context
-            and tls.server_hostname == REVIEW_WSS_HOST
+            and tls.server_hostname == expected_host
             and tls.context.verify_mode == ssl.CERT_REQUIRED
             and tls.context.check_hostname is True
             and tls.version() in ("TLSv1.2", "TLSv1.3")
@@ -64,13 +66,15 @@ def _secure_peer(connection: Any, expected_context: ssl.SSLContext) -> bool:
 class VerifiedReviewSocket:
     """Existing PC DeviceTextSocket interface backed by verified WebSocket."""
 
-    def __init__(self, connection: Any, tls_context: ssl.SSLContext):
+    def __init__(self, connection: Any, tls_context: ssl.SSLContext,
+                 expected_host: str = REVIEW_WSS_HOST):
         self._connection = connection
+        self._expected_host = expected_host
         self._context = tls_context
         self._closed = False
 
     def tls_verified(self) -> bool:
-        return not self._closed and _secure_peer(self._connection, self._context)
+        return not self._closed and _secure_peer(self._connection, self._context, self._expected_host)
 
     async def send_text(self, message: str) -> None:
         if (not self.tls_verified() or type(message) is not str
@@ -101,7 +105,7 @@ class VerifiedReviewTls:
 
 @asynccontextmanager
 async def open_review_only_wss_socket(
-    *, source_test_authorized: bool = False,
+    *, source_test_authorized: bool = False, acceptance: bool = False,
 ) -> AsyncIterator[VerifiedReviewSocket]:
     """Open genuine outbound TLS WebSocket; never automatically called by UI.
 
@@ -110,7 +114,9 @@ async def open_review_only_wss_socket(
     """
     if source_test_authorized is not True:
         raise DeviceSessionRefused("review_wss_transport_not_authorized")
-    review_only_pinned_wss_target(REVIEW_WSS_URL)
+    target_url = ACCEPTANCE_WSS_URL if acceptance is True else REVIEW_WSS_URL
+    target_host = ACCEPTANCE_WSS_HOST if acceptance is True else REVIEW_WSS_HOST
+    review_only_pinned_wss_target(target_url, acceptance=acceptance)
     context = strict_server_tls_context()
     try:
         from websockets.asyncio.client import connect
@@ -125,9 +131,9 @@ async def open_review_only_wss_socket(
 
     try:
         async with NoRedirectConnect(
-            REVIEW_WSS_URL,
+            target_url,
             ssl=context,
-            server_hostname=REVIEW_WSS_HOST,
+            server_hostname=target_host,
             proxy=None,
             origin=None,
             compression=None,
@@ -140,7 +146,7 @@ async def open_review_only_wss_socket(
             max_queue=MAX_QUEUE_FRAMES,
             logger=_FRAME_LOG,
         ) as connection:
-            socket = VerifiedReviewSocket(connection, context)
+            socket = VerifiedReviewSocket(connection, context, expected_host=target_host)
             if not socket.tls_verified():
                 await socket.close()
                 raise DeviceSessionRefused("review_wss_peer_not_verified")
@@ -158,13 +164,14 @@ async def open_review_only_wss_socket(
 async def run_review_only_wss_pairing(
     *, enrollment: Any, receiver: Any, challenge_id: str,
     pairing_code: str, source_test_authorized: bool = False,
+    acceptance: bool = False,
 ) -> Any:
     """Drive the existing canonical pairing only in operator review harness."""
     if source_test_authorized is not True:
         raise DeviceSessionRefused("review_wss_transport_not_authorized")
     if WSS_PRODUCTION_DIALER_ENABLED is not False:
         raise DeviceSessionRefused("review_wss_production_gate_changed")
-    async with open_review_only_wss_socket(source_test_authorized=True) as socket:
+    async with open_review_only_wss_socket(source_test_authorized=True, acceptance=acceptance) as socket:
         return await run_and_stage_review_only_device_enrollment(
             enrollment=enrollment, socket=socket, trusted_tls=VerifiedReviewTls(),
             receiver=receiver, challenge_id=challenge_id, pairing_code=pairing_code,

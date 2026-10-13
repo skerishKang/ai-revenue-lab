@@ -35,3 +35,6 @@ PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"
 PADIEM_CONNECTOR_OWNER_ENROLLMENT_ENABLED = "enabled"
 PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED = "enabled"
 PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE = "isolated-operator-acceptance-4139"
+# Reserved approval target only. No DNS, public route, D1 or login is created.
+PADIEM_CONNECTOR_ACCEPTANCE_PUBLIC_ORIGIN = "https://connector-acceptance.padiem.net"
+PADIEM_CHAT_PUBLIC_BASE_URL = "https://connector-acceptance.padiem.net"

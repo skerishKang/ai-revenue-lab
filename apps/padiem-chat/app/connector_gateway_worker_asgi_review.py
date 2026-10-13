@@ -6,8 +6,11 @@ trusted Cloudflare ingress. Binding authority is exclusively server-owned.
 """
 from __future__ import annotations
 
+import re
 from typing import Any
 from urllib.parse import urlsplit
+
+from .worker_config import binding_value
 
 from .canonical_connector_gateway_source_composition import CONNECTOR_GATEWAY_WSS_PATH
 from .connector_gateway_worker_binding_composition import build_review_only_gateway_from_worker_env
@@ -15,6 +18,30 @@ from .connector_gateway_first_pairing_tls_review import CloudflareFirstPairingTl
 
 REVIEW_WORKER_WSS_URL = "https://chat.padiem.net" + CONNECTOR_GATEWAY_WSS_PATH
 WORKER_GATEWAY_ASGI_FETCH_PRODUCTION_WIRED = False
+
+_ACCEPTANCE_HOST = "connector-acceptance.padiem.net"
+_ACCEPTANCE_ORIGIN = "https://" + _ACCEPTANCE_HOST
+_ACCEPTANCE_ENV = "PADIEM_CONNECTOR_ACCEPTANCE_PUBLIC_ORIGIN"
+
+
+def exact_review_worker_wss_url(worker_env: Any) -> str:
+    """Select only the production review pin or the one isolated, explicit pin.
+
+    Client-controlled Host, Origin, X-Forwarded-* and URL never select it.
+    The isolated hostname is a *planned* origin, not a DNS/public route claim.
+    """
+    configured = binding_value(worker_env, _ACCEPTANCE_ENV)
+    if configured is None:
+        return REVIEW_WORKER_WSS_URL
+    if (
+        type(configured) is not str
+        or configured != _ACCEPTANCE_ORIGIN
+        or binding_value(worker_env, "PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE")
+        != "isolated-operator-acceptance-4139"
+        or binding_value(worker_env, "PADIEM_CHAT_PUBLIC_BASE_URL") != configured
+    ):
+        raise ValueError("unreviewed connector acceptance origin")
+    return configured + CONNECTOR_GATEWAY_WSS_PATH
 
 
 def _untrusted_headers(request: Any) -> bool:
@@ -76,12 +103,13 @@ async def dispatch_review_only_worker_wss_upgrade(
         raise RuntimeError("PADIEM Connector public Worker WSS is not activated")
     if type(getattr(request, "url", None)) is not str:
         raise ValueError("Worker request URL unavailable")
+    target = exact_review_worker_wss_url(worker_env)
     if (getattr(request, "method", None) != "GET"
-            or request.url != REVIEW_WORKER_WSS_URL
+            or request.url != target
             or _untrusted_headers(request)):
         raise ValueError("Unreviewed WebSocket upgrade request")
     parsed = urlsplit(request.url)
-    if (parsed.scheme != "https" or parsed.netloc != "chat.padiem.net"
+    if (parsed.scheme != "https" or parsed.netloc != urlsplit(target).netloc
         or parsed.path != CONNECTOR_GATEWAY_WSS_PATH
         or parsed.query or parsed.fragment):
         raise ValueError("Unreviewed WebSocket request origin")
@@ -114,8 +142,10 @@ async def dispatch_review_only_worker_first_pairing_upgrade(
     """
     if source_test_authorized is not True:
         raise RuntimeError("Connector first-pairing Worker WSS not activated")
+    target = exact_review_worker_wss_url(worker_env)
     tls = CloudflareFirstPairingTlsTransportReview(
         incoming_worker_request=request, source_review_authorized=True,
+        expected_url=target,
     )
     if not tls.permits_worker_upgrade():
         raise ValueError("Untrusted Cloudflare first-pair TLS transport")
