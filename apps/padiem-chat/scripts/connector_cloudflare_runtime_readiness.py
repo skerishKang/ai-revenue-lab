@@ -44,6 +44,10 @@ _ACCEPTANCE_FLAGS = (
     "PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED",
     "PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE",
 )
+# The per-PC staging overlay is gitignored and holds this machine's dedicated
+# D1 UUID. Only bounded booleans are ever read back from it; the identifier
+# itself, and every other provider answer, stay on disk.
+OWNER_OVERLAY = CHAT / "wrangler.connector-acceptance-4139.local.toml"
 
 
 def _run_readonly(*, wrangler: str, config: Path, args: list[str]) -> Any:
@@ -138,6 +142,32 @@ def _latest_live_version(wrangler: str, config: Path) -> dict[str, Any]:
         result["connector_runtime_flags_present"] = {
             name: name in safe for name in _ACCEPTANCE_FLAGS
         }
+    elif config.name == "wrangler.connector-acceptance-4139.toml":
+        # Bounded names/types from the actual deployed private Worker only.
+        result["acceptance_private_services"] = {
+            name: safe.get(name) == "service" for name in _PRIVATE_CHAT_BINDINGS
+        }
+        result["acceptance_d1_bound"] = safe.get("PADIEM_CHAT_DB") == "d1"
+        result["acceptance_session_secret_bound"] = (
+            safe.get("PADIEM_CHAT_SESSION_SECRET") == "secret_text"
+        )
+        result["acceptance_password_auth_setting_present"] = (
+            safe.get("PADIEM_CHAT_AUTH_MODE") == "plain_text"
+        )
+    elif config.name in (
+        "wrangler.identity-authority-acceptance-4139.jsonc",
+        "wrangler.local-agent-broker-acceptance-4139.jsonc",
+    ):
+        identity = config.name.startswith("wrangler.identity")
+        state = "CONTROL_PLANE_IDENTITY" if identity else "LOCAL_AGENT_BROKER_STATE"
+        secrets = (
+            ("CONTROL_PLANE_IDENTITY_LOOKUP_KEY", "GOOGLE_CONNECT_TICKET_KEY")
+            if identity else ("LOCAL_AGENT_BROKER_PEPPER",)
+        )
+        result["acceptance_canonical_durable_state_bound"] = state in safe
+        result["acceptance_secrets_bound"] = all(
+            safe.get(name) == "secret_text" for name in secrets
+        )
     else:
         result["canonical_state_binding_present"] = (
             "LOCAL_AGENT_BROKER_STATE" in safe
@@ -147,6 +177,27 @@ def _latest_live_version(wrangler: str, config: Path) -> dict[str, Any]:
             else None
         )
     return result
+
+
+def _owner_local_overlay() -> dict[str, Any]:
+    """Bounded, read-only facts about the gitignored per-PC staging overlay."""
+    if not OWNER_OVERLAY.exists():
+        return {"present": False}
+    try:
+        with OWNER_OVERLAY.open("rb") as src:
+            config = tomllib.load(src)
+    except (OSError, tomllib.TOMLDecodeError):
+        return {"present": True, "readable": False}
+    routes = config.get("route") or config.get("routes") or []
+    return {
+        "present": True,
+        "readable": True,
+        "password_auth_selected":
+            config.get("vars", {}).get("PADIEM_CHAT_AUTH_MODE") == "password",
+        "exactly_one_d1_bound": len(config.get("d1_databases") or []) == 1,
+        # A published HTTPS route would need its own explicit authorization.
+        "public_route_published": bool(routes),
+    }
 
 
 def inventory() -> dict[str, Any]:
@@ -185,17 +236,44 @@ def inventory() -> dict[str, Any]:
         blockers.append("chat_broker_service_binding_not_confirmed")
     if not all(flags.get(x) for x in _ACCEPTANCE_FLAGS):
         blockers.append("chat_connector_operator_release_not_enabled")
+    acceptance_chat = findings["acceptance_chat"]
+    acceptance_identity = findings["acceptance_identity"]
+    acceptance_broker = findings["acceptance_broker"]
+    owner_overlay = _owner_local_overlay()
+    owner_auth_prepared = (
+        owner_overlay.get("readable") is True
+        and owner_overlay.get("password_auth_selected") is True
+        and owner_overlay.get("exactly_one_d1_bound") is True
+        and owner_overlay.get("public_route_published") is False
+    )
+    acceptance_private_stack_ready = (
+        all(findings[x].get("deployed") is True
+            and findings[x].get("active_version_readable") is True
+            for x in ("acceptance_chat", "acceptance_identity", "acceptance_broker"))
+        and all(acceptance_chat.get("acceptance_private_services", {}).get(x) is True
+                for x in _PRIVATE_CHAT_BINDINGS)
+        and acceptance_chat.get("acceptance_d1_bound") is True
+        and acceptance_chat.get("acceptance_session_secret_bound") is True
+        and acceptance_chat.get("acceptance_password_auth_setting_present") is True
+        and acceptance_identity.get("acceptance_canonical_durable_state_bound") is True
+        and acceptance_identity.get("acceptance_secrets_bound") is True
+        and acceptance_broker.get("acceptance_canonical_durable_state_bound") is True
+        and acceptance_broker.get("acceptance_secrets_bound") is True
+        and owner_auth_prepared
+    )
+    if not acceptance_private_stack_ready:
+        blockers.append("isolated_acceptance_runtime_bindings_not_ready")
+    if owner_overlay.get("public_route_published") is True:
+        blockers.append("acceptance_https_route_published_without_authorization")
     if not acceptance_login_ready:
-        blockers.append("acceptance_owner_login_d1_origin_route_not_configured")
-    if not all(findings[x].get("deployed") is True
-               for x in ("acceptance_chat", "acceptance_identity", "acceptance_broker")):
-        blockers.append("isolated_acceptance_services_not_all_deployed")
+        blockers.append("acceptance_browser_login_not_yet_proven")
     return {
         "readiness": "runtime_wired_only_not_owner_pairing_proven"
         if live_ready else "blocked",
         "checked_via": "wrangler_oauth_read_only",
         "workers": findings,
         "acceptance_browser_login_ready": acceptance_login_ready,
+        "acceptance_owner_local_manifest": owner_overlay,
         "blocking_facts": blockers,
         "actual_owner_windows_pairing_proven": False,
         "changes_made": False,
