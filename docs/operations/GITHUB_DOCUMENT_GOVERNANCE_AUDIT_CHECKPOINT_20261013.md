@@ -14,6 +14,16 @@
 - The 46 `reference/business-*/README.md` files in the sampled set demonstrate broad Business coverage, **not** full inspection of their sibling docs.
 - A path may belong to a historical, proposed, externally succeeded, or technical-only product. **Never infer active business status from a directory label.**
 
+## 1A. Batch 02 — 25 additional full-document reads (2026-10-13)
+
+**Latest inspection progress (same frozen 835-document baseline):**
+- Original checkpoint: 125 text-sampled, 691 indexed-only, 19 PDF/DOCX pending.
+- After Batch 02: **150 documents have at least some text inspection** (125 prior samples + **25 additional full-document fetches and content triages**); **666 remain indexed-only**; **19 binaries remain text-uninspected**.
+- Batch 02 is recorded in [the exact-source 25-file audit report](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH02_20261013.md) with per-file business ID, historical/current-evidence marker and public/mixed/business-review triage.
+- The [835-file manifest](GITHUB_DOCUMENT_AUDIT_MANIFEST_20261013.tsv) now marks each of these 25 as `TEXT_FULL_FETCHED_B02`; their original blob hashes remain unchanged.
+- **Not a completion claim:** old 125 text samples were not upgraded to full reviews; the 25 newly examined documents remain *provisional* classifications pending any actual migration judgment. No PDF/DOCX, GitHub Issues/PRs, local business policy, local document inventory, production, or customer file was modified.
+- **Important review distinction:** business-content candidates inside B35 and B05 are not a reason to relocate adjacent technical render/QA/architecture files automatically.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
