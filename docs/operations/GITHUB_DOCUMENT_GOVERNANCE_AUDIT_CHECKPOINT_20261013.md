@@ -202,6 +202,15 @@ Frozen original 835-document cursor: **650 sources viewed partly or completely**
 - CTO/developer/independent validator forms define separation of duties; old HWPX Draft and September ownership snapshots are not current product or company business authority.
 - No CI source, original Git documents, local Governance, customer data, commercial policy, paid provider or Cloudflare Production changed.
 
+## 1W. Batch 23 — 25 source reads: signup/rewards/B66, OSS image/PDF, desktop and platform integration (2026-10-13)
+
+Frozen 835-original cursor: **675 at least partly text-reviewed** (125 initial `TEXT_SAMPLED` + 25 each B02–B23); **141 INDEXED_ONLY** unread text originals and **19 BINARY_PENDING** original PDF/DOCX unread. The initial 125 sampled files still require full review.
+
+- [Batch23 exact-source SHA audit and business/engineering separations](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH23_20261013.md).
+- Shared OTP, DanjiOn/customer contact, B64 reward providers, B14 shared-free terms, B66 product administrator access, Living Learning membership and B60 asset rights retain separate commercial/customer decisions.
+- Pillow/pypdf supply chain, desktop withdrawal, third-party license notices, Sidecar and CI optimizations are bounded technical controls; none prove live service or permission to bypass security.
+- No original file, source/hash/size, local corporate Governance, customer data, vendor/provider account, actual product policy or deployment changed.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
