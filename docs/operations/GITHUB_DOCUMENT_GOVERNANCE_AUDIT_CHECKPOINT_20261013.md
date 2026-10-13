@@ -220,6 +220,15 @@ Frozen original 835-document cursor: **700 source documents with text viewed at 
 - Third-party Pexels derivatives, real YouTube IDs/thumbnails and personal video journal need separate content rights/consumer privacy decisions; static previews and localhost screenshot locators cannot certify Production availability.
 - No original source modifications, commercial Owner-policy adoption, local corporate Governance access, real provider/customer data, rejected product PR merge, or production deployment.
 
+## 1Y. Batch 25 — 25 full original source reviews: B06/B07/B10/B11/B12/B15 rights, image, motion and test evidence (2026-10-13)
+
+Frozen **835 original** cursor: **725 documents seen at least in part** (125 initial `TEXT_SAMPLED` + 25 each B02–B25); **91 INDEXED_ONLY** original text unread and **19 BINARY_PENDING** original PDF/DOCX unread. Original sampled 125 still require exhaustive category review.
+
+- [Batch25 SHA-pinned original public-safe classifications](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH25_20261013.md).
+- B06 World Feed and B07 meaning atlas use synthetic assets and animation, not actual current stories, private memories or user tracking. B10 fictional fan magazine is no real-person likeness grant and an external binary evidence manifest is not the binary itself.
+- B11 annotated source reading doesn't own genuine copyrighted lessons and isn't B04 adaptive teaching; B12 editorial relay isn't live CMS/content generation. B15 newsroom mock doesn't fact-check or publish real claims without external source/legal and human editorial authority.
+- No original files, off-Git corporate Governance, customer records, third-party proof ZIP, model providers, business rights, live deployments or existing CI modified.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
