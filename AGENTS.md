@@ -6,8 +6,9 @@ This file is the repository-wide entry point for AI-assisted work. A more specif
 
 This repository contains **public development and engineering policy**, not the authoritative text of PADIEM's internal business policy. Business instructions are local-only on the authorized **Padiem-Command-Center** PC:
 
-- Local directory: `G:\Ddrive\BatangD\task\workdiary\ai-revenue-lab-governance\사업방침`
-- Required local documents: `00_사업방침_원칙.md` and `01_CTO_에이전트_운영규칙.md` (also consult the sibling governance `README.md`)
+- Local Governance root: `G:\Ddrive\BatangD\task\workdiary\ai-revenue-lab-governance` (consult its `README.md` for the current document index).
+- Business policy: read the applicable documents under `사업방침/`, including `00_사업방침_원칙.md` and `02_고객경험_사전위임_자동화_대표결정.md`.
+- Technical/CTO operating policy: then read the applicable documents under `운영방침/`, including `00_고객경험_사전위임_자동실행_운영기준.md` and `01_CTO_에이전트_운영규칙.md`. The former `사업방침/01_CTO_에이전트_운영규칙.md` is only a compatibility relocation notice.
 - Web CTO: read through the connected **Desktop Commander**. Local models: read through their authorized computer filesystem.
 - **Decision order:** latest explicit Owner instruction → local non-public business policy for business/product decisions → GitHub development/technical operating policies → dated issue history. Do not publish the business documents or reproduce their substantive contents in GitHub Issues, PRs or code.
 - If this folder cannot be accessed, or the Owner's decision conflicts with an existing technical gate and the resolution is not specified, explain the exact uncertainty and **ask the Owner**. Do not independently create new business exclusions, customer-facing required approval steps, or permissions grants. Actual runtime/code/OS behavior must still be reported truthfully.
