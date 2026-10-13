@@ -17,9 +17,9 @@ Defect 1b — every ``WNDCLASS.lpfnWndProc`` handler must accept the four
           (``_repro.log``: ``_on_destroy() takes 2 positional arguments but 5
           were given``).
 
-Defect 2 — the live verify harness must never mask a forced kill() as a normal
-          shutdown PASS. This is pinned as a source contract because the real
-          path spawns a genuine Windows process.
+Defect 2 — shared-process kill verification is NOT run by the automated
+          or workstation verifier. It is a separate explicitly isolated E2E
+          task, so a false graceful-stop PASS cannot be produced by default.
 """
 
 from __future__ import annotations
@@ -102,7 +102,7 @@ def test_quit_source_calls_tray_quit():
     assert "self._tray.quit()" in src
 
 
-# --- defect 2: forced kill is never masked as a normal shutdown PASS -------
+# --- defect 2: no forced kill or shared tray manipulation by the verifier ----
 def _load_verify_module():
     spec = importlib.util.spec_from_file_location(
         "vw_shutdown", APP_ROOT / "verify_windows_live.py"
@@ -112,22 +112,24 @@ def _load_verify_module():
     return module
 
 
-def test_verify_harness_tracks_forced_kill_and_fails_the_check():
+def test_verifier_cannot_report_a_synthetic_graceful_shutdown_pass():
     module = _load_verify_module()
-    src = inspect.getsource(module.check_single_instance)
-    # The harness must record whether a force kill happened...
-    assert "forced_kill" in src
-    # ...and a forced kill must exclude the case from a PASS verdict.
-    assert "not forced_kill" in src
-    # ...and the recorded check must be gated on that verdict, not just liveness.
-    assert "graceful" in src
+    code = inspect.getsource(module)
+    assert not hasattr(module, "check_single_instance")
+    assert "quit_stops_cleanly" not in code
+    assert "subprocess.Popen(" not in code
+    assert ".kill(" not in code
+    assert "Get-CimInstance" not in code
 
 
-def test_verify_harness_still_calls_kill_only_after_graceful_wait():
+def test_shared_singleton_must_not_be_started_or_stopped_by_scratch_verifier():
     module = _load_verify_module()
-    src = inspect.getsource(module.check_single_instance)
-    # The graceful wait must precede any force kill (timeout -> kill ordering).
-    assert src.index("first.wait(") < src.index("first.kill()")
+    code = inspect.getsource(module.main)
+    assert "check_single_instance" not in code
+    assert "_delete_owned_scratch(root)" in code
+    assert "TemporaryDirectory" in code
+    assert "CLAW_CONNECT_AUTOSTART_RUN_KEY" in code
+    assert "CLAW_CONNECT_AUTOSTART_PREF_KEY" in code
 
 
 # --- defect 1b: pywin32 passes the full 4-tuple to every WNDPROC handler ----
