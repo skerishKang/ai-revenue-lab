@@ -238,6 +238,26 @@ def test_pr_source_ci_cannot_evict_queued_protected_b62_dispatch():
         assert "independent_review" not in block
 
 
+def test_cloudflare_patch_http_refusal_is_code_only_and_never_retried():
+    # #38442601251: PATCH was rejected but HTTP/error codes were not logged.
+    # Keep the existing single mutation, fail closed and sanitize evidence.
+    text = WORKFLOW.read_text(encoding="utf-8")
+    start = "      - name: Apply one explicit SSE plain-text binding through existing Worker settings API"
+    end = "      - name: Prove post-PATCH served version and exactly one allowed configuration change"
+    block = text.split(start, 1)[1].split(end, 1)[0]
+    assert "P01_SSE_PATCH_HTTP_STATUS=" in block
+    assert "P01_SSE_PATCH_CLOUDFLARE_ERROR_CODES=" in block
+    assert "P01_SSE_PATCH_AUTOMATIC_RETRY=NO" in block
+    assert "SECRET_RESPONSE_DUMP=NO" in block
+    assert "[0-9]+(,[0-9]+)*" in block
+    assert 'select(type=="number")' in block
+    assert "P01_SSE_PATCH=BLOCKED" in block
+    assert "if [ " in block and "accepted" in block
+    assert block.count("-X PATCH") == 1
+    assert ".message" not in block
+    assert "B62_P01_ENGINE_CREDENTIAL" not in block
+
+
 def test_owner_single_approval_does_not_require_independent_reviewer():
     # Owner-delegated release: no second GitHub user or deployment-review gate.
     # Exact SHA, confirmation, rollback snapshot and served integrity remain.

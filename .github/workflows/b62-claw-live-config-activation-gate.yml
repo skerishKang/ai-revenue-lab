@@ -1090,11 +1090,39 @@ jobs:
         run: |
           set -euo pipefail
           base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
-          status="$(curl -sS -X PATCH -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+          # #38442601251 returned a non-successful PATCH but the old release
+          # contract suppressed HTTP status + Cloudflare error *codes*. Keep all
+          # responses private: print ONLY a bounded numeric status/code summary,
+          # never raw error messages, names, tokens, payloads or Secret values.
+          set +e
+          status="$(curl -sS --connect-timeout 8 --max-time 90 -X PATCH \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
             -F "settings=<${RUNNER_TEMP}/sse-patch.json;type=application/json" \
             "${base}/settings" -o "${RUNNER_TEMP}/sse-patch-response.json" -w '%{http_code}')"
-          case "${status}" in 200|201) ;; *) echo 'P01_SSE_PATCH=BLOCKED' >&2; exit 1;; esac
-          jq -e '.success == true' "${RUNNER_TEMP}/sse-patch-response.json" >/dev/null
+          transport_rc=$?
+          set -e
+          if ! [[ "${status}" =~ ^[0-9]{3}$ ]]; then status=UNKNOWN; fi
+          echo "P01_SSE_PATCH_HTTP_STATUS=${status}"
+          accepted=no
+          case "${status}" in
+            200|201)
+              if [ "${transport_rc}" -eq 0 ] && jq -e '.success == true' \
+                "${RUNNER_TEMP}/sse-patch-response.json" >/dev/null 2>&1; then
+                accepted=yes
+              fi
+              ;;
+          esac
+          if [ "${accepted}" != yes ]; then
+            codes="$(jq -r '[.errors[]? | objects | .code | select(type=="number") | tostring] | unique | join(",")' \
+              "${RUNNER_TEMP}/sse-patch-response.json" 2>/dev/null || true)"
+            if ! [[ "${codes}" =~ ^[0-9]+(,[0-9]+)*$ ]]; then codes=UNAVAILABLE; fi
+            echo "P01_SSE_PATCH_CLOUDFLARE_ERROR_CODES=${codes}" >&2
+            if [ "${transport_rc}" -ne 0 ]; then echo 'P01_SSE_PATCH_TRANSPORT=FAILED' >&2; fi
+            echo 'P01_SSE_PATCH=BLOCKED' >&2
+            echo 'P01_SSE_PATCH_AUTOMATIC_RETRY=NO' >&2
+            echo 'SECRET_RESPONSE_DUMP=NO' >&2
+            exit 1
+          fi
           echo 'P01_SSE_PATCH=SUBMITTED'
           echo 'PRODUCTION_MUTATION=1'
           echo 'SECRET_VALUE_READ_OR_REWRITTEN=NO'
