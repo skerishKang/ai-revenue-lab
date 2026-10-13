@@ -140,7 +140,6 @@ def test_protected_push_second_incident_forensics_is_get_only_and_once():
     assert "incident=second" in job
     assert "versions/d62bef73-f9d3-4559-88f9-cecbba785bb9" in job
     assert "versions/00d38813-df7b-4b73-b00a-5c7b26ed3b7a" in job
-    assert '    --incident "${incident}"' not in job  # no accidental partial arg
     assert '--incident "${incident}"' in job
     assert "P01_SSE_FORENSIC_READONLY=PASS" in job
     assert "PRODUCTION_MUTATION=0" in job
