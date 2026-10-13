@@ -139,6 +139,15 @@ Frozen original inventory: 835. **475** documents have text viewed at least part
 - Editorial/hosting hypotheses, proposed institutional validation, provider benchmark rights and pricing require independent current owner/legal review. Synthetic family and story reference art has no customer data rights.
 - Shared Chat/Claw copy does not prove actual service activation; no original files, local private Governance, provider routes or production state changed.
 
+## 1P. Batch 16 — 25 source reads: B20/B22/B33/B34/B36/B37 and B58 rights (2026-10-13)
+
+Frozen original 835-document cursor: **500** documents with some text inspected (125 early `TEXT_SAMPLED` + 25 each B02–B16), **316** index-only unread, and **19** PDF/DOCX binary unread. Initial 125 require full reading and category decisions.
+
+- [Batch 16 25 source SHA-pinned business/technical/reference classifications](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH16_20261013.md)
+- Keep memory facts separate from fiction, media source from synthetic derivative, research annotations from verified citations, actual voice/translation rights from simulated studio UI.
+- B36 safety coordination and B37 route visual references cannot be described as emergency dispatch, real navigation, crime scoring or guaranteed protection; substantive safety service and personal data policy decisions remain separate.
+- Only audit records updated; no original docs, private Governance files, customer information, live service or provider/Cloudflare settings changed.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |

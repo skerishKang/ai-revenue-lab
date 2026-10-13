@@ -1,6 +1,6 @@
 # Complete public GitHub document path manifest — audit checkpoint 2026-10-13
 # Baseline main SHA: 5476d1038993d647bf8ba241ce6a4307cccf291f
-# Content states: INDEXED_ONLY=path/hash only; TEXT_SAMPLED=early partial/full source not certified exhaustive; TEXT_FULL_FETCHED_B02/B03/B04/B05/B06/B07/B08/B09/B10/B11/B12/B13/B14/B15=full original body read and provisionally triaged in that batch; BINARY_PENDING=PDF/DOCX unread. Original path/blob/bytes unchanged.
+# Content states: INDEXED_ONLY=source path/blob known only; TEXT_SAMPLED=initial partial/full text not certified exhaustive; TEXT_FULL_FETCHED_B02/B03/B04/B05/B06/B07/B08/B09/B10/B11/B12/B13/B14/B15/B16=complete source fetched and provisionally reviewed in named batch, not corporate policy or publication clearance; BINARY_PENDING=PDF/DOCX unread.
 # This file has all 835 recognized document-format blobs from a GitHub recursive tree with truncated=false. Existing source content was not copied here.
 # Full-status classification must not be inferred from filename keywords or the TEXT_SAMPLED flag.
 PATH	BLOB_SHA	BYTES	READ_STATE
@@ -666,21 +666,21 @@ reference/business-19-personal-memory-book-v1/MOTION_SPEC.md	d7fa21269aab8af0056
 reference/business-19-personal-memory-book-v1/README.md	dcc67a4c9d760c59bbe815ed056bcf872626cbf2	1333	TEXT_SAMPLED
 reference/business-19-personal-memory-book-v1/REFERENCE_NOTES.md	95968ecff1ec45279b8a2e28a60071352baadbfe	3018	TEXT_FULL_FETCHED_B13
 reference/business-19-personal-memory-book-v1/VALIDATION.md	e496189dedc20665b79b8d0c0c54ed6fa2cacfaa	1062	TEXT_FULL_FETCHED_B13
-reference/business-20-personal-memory-novel-v1/evidence/browser-check-commands.md	8537b12adb1c1b3e8282d21ff15d08489739a657	726	INDEXED_ONLY
-reference/business-20-personal-memory-novel-v1/IMAGE_SOURCES.md	2857518a0f33d6f89999df634fb1b5072fc7c1b8	1593	INDEXED_ONLY
-reference/business-20-personal-memory-novel-v1/MOTION_SPEC.md	3754386a7f7687661cded2161ef9da91ae77268f	1238	INDEXED_ONLY
+reference/business-20-personal-memory-novel-v1/evidence/browser-check-commands.md	8537b12adb1c1b3e8282d21ff15d08489739a657	726	TEXT_FULL_FETCHED_B16
+reference/business-20-personal-memory-novel-v1/IMAGE_SOURCES.md	2857518a0f33d6f89999df634fb1b5072fc7c1b8	1593	TEXT_FULL_FETCHED_B16
+reference/business-20-personal-memory-novel-v1/MOTION_SPEC.md	3754386a7f7687661cded2161ef9da91ae77268f	1238	TEXT_FULL_FETCHED_B16
 reference/business-20-personal-memory-novel-v1/README.md	c27861db478e568f31c8635a918424eefc984b65	1382	TEXT_SAMPLED
-reference/business-20-personal-memory-novel-v1/REFERENCE_NOTES.md	58426be2ea81985fed4f658d2b052129f661778c	4203	INDEXED_ONLY
+reference/business-20-personal-memory-novel-v1/REFERENCE_NOTES.md	58426be2ea81985fed4f658d2b052129f661778c	4203	TEXT_FULL_FETCHED_B16
 reference/business-21-founder-strategy-letter-v1/IMAGE_SOURCES.md	2ac6e8f504d870c7589fecf57ca2573dab0fce66	1878	INDEXED_ONLY
 reference/business-21-founder-strategy-letter-v1/MOTION_SPEC.md	0abe176c0f77e8f700dc0478339e84d3f2b56722	884	INDEXED_ONLY
 reference/business-21-founder-strategy-letter-v1/README.md	34a2abc93dedef6516ae16b5791b98497508b37a	1401	TEXT_SAMPLED
 reference/business-21-founder-strategy-letter-v1/REFERENCE_NOTES.md	98f48ca5e2c4f6b49d556be9704cb3c82b7bdf85	4768	TEXT_FULL_FETCHED_B06
 reference/business-21-founder-strategy-letter-v1/VALIDATION.md	3c5413177c2a9fbb518e637769b9ac0429feb192	1463	INDEXED_ONLY
-reference/business-22-personal-media-studio-v1/IMAGE_SOURCES.md	c2a485f0ceb0e0598d9d6beafdb92957fe163f92	2109	INDEXED_ONLY
-reference/business-22-personal-media-studio-v1/MOTION_SPEC.md	f047cf814e2334c51b210a4ca362c1d3d60178d1	2394	INDEXED_ONLY
+reference/business-22-personal-media-studio-v1/IMAGE_SOURCES.md	c2a485f0ceb0e0598d9d6beafdb92957fe163f92	2109	TEXT_FULL_FETCHED_B16
+reference/business-22-personal-media-studio-v1/MOTION_SPEC.md	f047cf814e2334c51b210a4ca362c1d3d60178d1	2394	TEXT_FULL_FETCHED_B16
 reference/business-22-personal-media-studio-v1/README.md	ecaa38a54a37e35e130c94460b86317dcf034a3e	2835	TEXT_SAMPLED
-reference/business-22-personal-media-studio-v1/REFERENCE_NOTES.md	c015aa210ea037b891d1040e76e002d3c066c1af	7087	INDEXED_ONLY
-reference/business-22-personal-media-studio-v1/VALIDATION.md	d1cae9dc00fc147869cbe0a7cfb1b5d70b18e695	4220	INDEXED_ONLY
+reference/business-22-personal-media-studio-v1/REFERENCE_NOTES.md	c015aa210ea037b891d1040e76e002d3c066c1af	7087	TEXT_FULL_FETCHED_B16
+reference/business-22-personal-media-studio-v1/VALIDATION.md	d1cae9dc00fc147869cbe0a7cfb1b5d70b18e695	4220	TEXT_FULL_FETCHED_B16
 reference/business-29-apartment-governance-v1/evidence/SELF_CHECK.md	b388b1369b7c2ce0d6c49d76cff136655ceb37b1	698	INDEXED_ONLY
 reference/business-29-apartment-governance-v1/IMAGE_SOURCES.md	8fd17a890d09dc643e268c5c444d279da50c3695	3958	INDEXED_ONLY
 reference/business-29-apartment-governance-v1/MOTION_SPEC.md	0280d0b40a0f6445fd071f33ee3fa931ee990aa1	1121	INDEXED_ONLY
@@ -688,16 +688,16 @@ reference/business-29-apartment-governance-v1/README.md	baceb5b6ad782e9ef889f03a
 reference/business-29-apartment-governance-v1/REFERENCE_NOTES.md	cb8d690281773d784daac2829fb33a5244dde33c	2809	TEXT_FULL_FETCHED_B07
 reference/business-29-apartment-governance-v1/ux/README.md	9901d5be6f532e5b1b58af662197b0cf6962aa1b	4827	TEXT_FULL_FETCHED_B07
 reference/business-32-ai-skill-studio-ux/README.md	d19ac60be2def6c049e36c05fb2743270e18c4ad	7522	TEXT_SAMPLED
-reference/business-33-research-memory-v1/evidence/SELF_CHECK.md	061f7c9d572facad2c61ee92a7a9eac46282806b	208	INDEXED_ONLY
-reference/business-33-research-memory-v1/IMAGE_SOURCES.md	48f1406739a2594060b766ddb5460f776b34c901	1371	INDEXED_ONLY
-reference/business-33-research-memory-v1/MOTION_SPEC.md	c040085a8f0e4292f5f35ec795853ebf75e49a68	594	INDEXED_ONLY
+reference/business-33-research-memory-v1/evidence/SELF_CHECK.md	061f7c9d572facad2c61ee92a7a9eac46282806b	208	TEXT_FULL_FETCHED_B16
+reference/business-33-research-memory-v1/IMAGE_SOURCES.md	48f1406739a2594060b766ddb5460f776b34c901	1371	TEXT_FULL_FETCHED_B16
+reference/business-33-research-memory-v1/MOTION_SPEC.md	c040085a8f0e4292f5f35ec795853ebf75e49a68	594	TEXT_FULL_FETCHED_B16
 reference/business-33-research-memory-v1/README.md	74c3d13db54f8ce681c4f794c4be8997ebaede28	495	TEXT_SAMPLED
-reference/business-33-research-memory-v1/REFERENCE_NOTES.md	28d9421d50391cc0495a2b852fa673ba5e29513c	1891	INDEXED_ONLY
-reference/business-34-ai-dubbing-studio-v1/evidence/README.md	74f677a6d5a31fdb3978ee7e7b904c86e04f915e	498	INDEXED_ONLY
-reference/business-34-ai-dubbing-studio-v1/IMAGE_SOURCES.md	a54f8cbfe7a1800cdfead6dec185fea85578b62f	1856	INDEXED_ONLY
-reference/business-34-ai-dubbing-studio-v1/MOTION_SPEC.md	fbea9673f4d7448b451e15150f5bd05e7d1fd3e4	885	INDEXED_ONLY
+reference/business-33-research-memory-v1/REFERENCE_NOTES.md	28d9421d50391cc0495a2b852fa673ba5e29513c	1891	TEXT_FULL_FETCHED_B16
+reference/business-34-ai-dubbing-studio-v1/evidence/README.md	74f677a6d5a31fdb3978ee7e7b904c86e04f915e	498	TEXT_FULL_FETCHED_B16
+reference/business-34-ai-dubbing-studio-v1/IMAGE_SOURCES.md	a54f8cbfe7a1800cdfead6dec185fea85578b62f	1856	TEXT_FULL_FETCHED_B16
+reference/business-34-ai-dubbing-studio-v1/MOTION_SPEC.md	fbea9673f4d7448b451e15150f5bd05e7d1fd3e4	885	TEXT_FULL_FETCHED_B16
 reference/business-34-ai-dubbing-studio-v1/README.md	1cdc5c2949089673d91aec6793d62779c92e53a9	566	TEXT_SAMPLED
-reference/business-34-ai-dubbing-studio-v1/REFERENCE_NOTES.md	644aca71b6f21a61f91b88fdab2fe9ac9578c984	1980	INDEXED_ONLY
+reference/business-34-ai-dubbing-studio-v1/REFERENCE_NOTES.md	644aca71b6f21a61f91b88fdab2fe9ac9578c984	1980	TEXT_FULL_FETCHED_B16
 reference/business-35-ai-media-education-dx-v1/evidence/SELF_CHECK.md	0a8d56f02ee76ee91f9e670823eac958cc357f72	412	TEXT_FULL_FETCHED_B06
 reference/business-35-ai-media-education-dx-v1/IMAGE_SOURCES.md	90d45dfaa0f166e67570605ad69bd8c3655efdb3	1394	TEXT_FULL_FETCHED_B06
 reference/business-35-ai-media-education-dx-v1/MOTION_SPEC.md	9674365c987578f77e948a8a015f18a5b2816538	930	TEXT_FULL_FETCHED_B06
@@ -709,16 +709,16 @@ reference/business-35-ai-media-education-dx-v3/MARKET_REFERENCE_MAP.md	73ad91188
 reference/business-35-ai-media-education-dx-v3/PRODUCT_CONTRACT.md	961ff2ae5390f6c6fc99f6969d5ef3b7665ea82f	1945	TEXT_SAMPLED
 reference/business-35-ai-media-education-dx-v3/README.md	9495d18e1b5b8d695ba05bc80c54b5e6a3973e0b	638	TEXT_SAMPLED
 reference/business-35-ai-media-education-dx-v3/VISUAL_SYSTEM.md	5dc41da882846f1941387a8facd8b419536808ec	1031	TEXT_FULL_FETCHED_B06
-reference/business-36-ai-women-safety-v1/evidence/SELF_CHECK.md	f4b13ef52a870b2af157a56093ee2139c7c8ab51	1291	INDEXED_ONLY
-reference/business-36-ai-women-safety-v1/IMAGE_SOURCES.md	72c7159393951320ed1f1b16ecb642aca33023ea	2165	INDEXED_ONLY
-reference/business-36-ai-women-safety-v1/MOTION_SPEC.md	ad9c78179116b8163c7fb56fd942d09e1bfeac2c	1377	INDEXED_ONLY
+reference/business-36-ai-women-safety-v1/evidence/SELF_CHECK.md	f4b13ef52a870b2af157a56093ee2139c7c8ab51	1291	TEXT_FULL_FETCHED_B16
+reference/business-36-ai-women-safety-v1/IMAGE_SOURCES.md	72c7159393951320ed1f1b16ecb642aca33023ea	2165	TEXT_FULL_FETCHED_B16
+reference/business-36-ai-women-safety-v1/MOTION_SPEC.md	ad9c78179116b8163c7fb56fd942d09e1bfeac2c	1377	TEXT_FULL_FETCHED_B16
 reference/business-36-ai-women-safety-v1/README.md	8dfecd31c9b515f41ed2b29814d6832f0db366bf	1617	TEXT_SAMPLED
-reference/business-36-ai-women-safety-v1/REFERENCE_NOTES.md	ebd0eb38c1610cfa60d7f5a34e15993f31f9b12e	4521	INDEXED_ONLY
-reference/business-37-ai-safe-route-v1/evidence/SELF_CHECK.md	ba6114d97728e4aa840a2283aca1effb9e07c6b3	388	INDEXED_ONLY
-reference/business-37-ai-safe-route-v1/IMAGE_SOURCES.md	26770ad750e010761f5612cc4d4737d0f2ac40de	1137	INDEXED_ONLY
-reference/business-37-ai-safe-route-v1/MOTION_SPEC.md	043b053a4f90a7f332af0ddc3672073511ba6a0e	768	INDEXED_ONLY
+reference/business-36-ai-women-safety-v1/REFERENCE_NOTES.md	ebd0eb38c1610cfa60d7f5a34e15993f31f9b12e	4521	TEXT_FULL_FETCHED_B16
+reference/business-37-ai-safe-route-v1/evidence/SELF_CHECK.md	ba6114d97728e4aa840a2283aca1effb9e07c6b3	388	TEXT_FULL_FETCHED_B16
+reference/business-37-ai-safe-route-v1/IMAGE_SOURCES.md	26770ad750e010761f5612cc4d4737d0f2ac40de	1137	TEXT_FULL_FETCHED_B16
+reference/business-37-ai-safe-route-v1/MOTION_SPEC.md	043b053a4f90a7f332af0ddc3672073511ba6a0e	768	TEXT_FULL_FETCHED_B16
 reference/business-37-ai-safe-route-v1/README.md	4a00796296ce09d6d64cda8aeb73a995c73858da	500	TEXT_SAMPLED
-reference/business-37-ai-safe-route-v1/REFERENCE_NOTES.md	e00b43a45601b490ef1719038800c5e06b11bc75	1327	INDEXED_ONLY
+reference/business-37-ai-safe-route-v1/REFERENCE_NOTES.md	e00b43a45601b490ef1719038800c5e06b11bc75	1327	TEXT_FULL_FETCHED_B16
 reference/business-38-ai-exercise-coach-v1/evidence/SELF_VALIDATION.md	c7a8d725f990ae81c7e53dde7f6a803aee665597	2591	INDEXED_ONLY
 reference/business-38-ai-exercise-coach-v1/IMAGE_SOURCES.md	538743775b2385e57f05a9b94f66c47f2859011e	2554	INDEXED_ONLY
 reference/business-38-ai-exercise-coach-v1/MOTION_SPEC.md	c4659b1b5abf13a50a3823e93c7da65f1e4c7c25	1851	INDEXED_ONLY
@@ -810,7 +810,7 @@ reference/business-58-personal-writing-voice-studio-v1/evidence/run-commands.md	
 reference/business-58-personal-writing-voice-studio-v1/IMAGE_SOURCES.md	607242cece99d58e3aa66258c238f1107abf54bb	780	INDEXED_ONLY
 reference/business-58-personal-writing-voice-studio-v1/MOTION_SPEC.md	86c2d3426fc32236af09dee921f199c4e6ee42e9	610	INDEXED_ONLY
 reference/business-58-personal-writing-voice-studio-v1/README.md	c02d3e1d58120f282e48983d453e47fc5a46627f	700	TEXT_SAMPLED
-reference/business-58-personal-writing-voice-studio-v1/REFERENCE_NOTES.md	379d9a52f2417825d7471be13b00ee401292f5c1	1652	INDEXED_ONLY
+reference/business-58-personal-writing-voice-studio-v1/REFERENCE_NOTES.md	379d9a52f2417825d7471be13b00ee401292f5c1	1652	TEXT_FULL_FETCHED_B16
 reference/business-58-personal-writing-voice-studio-v1/RIGHTS_AND_CONSENT_SPEC.md	0f41e01d9fafa324e2814afb97d31fedbde63839	885	TEXT_FULL_FETCHED_B07
 reference/business-58-personal-writing-voice-studio-v1/VOICE_PROFILE_SPEC.md	6e795338da4c4983c0904e6a2205390467f34e6a	424	TEXT_FULL_FETCHED_B07
 reference/business-59-living-archive-v1/evidence/README.md	6419cf51a01fbf3fb7b097499c8074ada78ab1ae	730	INDEXED_ONLY
