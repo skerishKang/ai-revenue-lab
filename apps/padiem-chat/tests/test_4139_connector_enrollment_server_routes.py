@@ -93,7 +93,9 @@ class Verify:
 class BrowserSession:
     def resolve(self, request):
         del request
-        now = datetime(2026, 10, 12, 9, 0, tzinfo=timezone.utc)
+        # Live session tests must not expire merely because CI runs after
+        # 2026-10-13 09:00 UTC; preserve the same relative validity window.
+        now = datetime.now(timezone.utc)
         return AuthSessionSnapshot(
             session_id="session.test", product_id="b54-padiem-claw",
             subject=CanonicalSubjectRef(subject_type=SubjectType.USER, subject_id="sub.canonical.test"),
