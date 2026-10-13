@@ -10,9 +10,9 @@
 - Model/provider decision authority: `MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`
 - Dated B14 owner decision/evidence ledger: `B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md` (historical issue and implementation status; not a second approval gate)
 
-## 0. Active Owner stage: one-person internal development, not customer launch certification
+## 0. Public technical development context — consult local business-governance stage
 
-**Effective 2026-10-13; Owner-reported facts:** the repository is operated by one developer/Owner and its Padiem products are still in active build-and-test, with no external production customers at present. This is the default portfolio operating stage until the Owner explicitly declares a real pilot/customer handoff or commercial release. A Production URL may still host valuable owner data and sensitive authority. 'Internal test' is not permission to bypass GitHub/Cloudflare access controls, cross-tenant checks, approval controls, production mutation protection, or secret/billing safety.
+**Public engineering context:** the repository is maintained with limited development capacity. Actual business stage, customer-facing defaults and deployment priorities must be read from the non-public local Governance directory referenced below. Production URLs and actual operator/customer data require evidence, regardless of engineering stage. Technical access controls and configured platform protections remain facts to verify; an unresolved conflict with the business policy is referred to the Owner for a decision.
 
 ### Confidential business-governance source
 
