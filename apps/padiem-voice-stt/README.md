@@ -48,40 +48,74 @@ Service Binding; the browser never calls it directly.
 Every route is closed by default. `Default.fetch` resolves
 `PADIEM_VOICE_STT_ENABLED` **before** it reads a Secret, builds an upstream
 request or performs any paid call. While the flag is not exactly `"true"`, the
-whole Worker answers `voice_stt_disabled`.
+whole Worker answers `voice_stt_disabled`. The committed `wrangler.toml` keeps
+that flag OFF and `workers_dev = false`, so this Worker cannot serve a browser
+today. `workers_dev = false` alone does **not** provide caller authentication,
+identity, tenant scope or cost limiting.
 
-`ON` is additionally gated on the `VOICE_STT_CALLER_GUARD` Service Binding, which
-does not exist yet, so this Worker cannot be switched on today. That binding is
-what must supply an authenticated caller identity and a bounded per-account cost
-authorization. `workers_dev = false` alone does **not** provide caller
-authentication, identity or rate limiting.
+### Caller identity, tenant scope and cost approval
 
-Binding **presence alone only opens the key-free `capabilities` route.** The two
-paid routes are then **unconditionally fail-closed** with
-`caller_authorization_unimplemented` (503):
-`worker._require_caller_authorization` never returns and never calls the binding.
+A paid route additionally requires a real caller authority, implemented in
+`voice_stt_caller_auth.py`. It **reuses the canonical Control Plane** — the same
+private Service Bindings `apps/padiem-ai-engine` already uses — so voice spending
+is admitted by the same authority as Engine spending instead of a second,
+voice-local entitlement system:
 
-Why it never returns: there is no production service-binding authorization
-contract, so nothing a binding says can be verified as caller identity or cost
-reservation. A previous revision consulted the binding and accepted a bare
-`True`, an `{"allowed": True, ...}` verdict or an unscoped positive — which let a
-request reach a Secret and a paid provider without an identified caller. That is
-exactly what is now refused by not asking at all:
+| Binding | RPC | What it decides |
+|---|---|---|
+| `CONTROL_PLANE_IDENTITY` | `resolve_auth_session` | The authenticated subject, whether the session is active/unexpired, and its canonical `tenant_id`. |
+| `CONTROL_PLANE_ENGINE_ADMISSION` | `fetch_entitlement_snapshot` | Whether this tenant's product grant includes the voice capability, within its unit limit. |
+| `CONTROL_PLANE_ENGINE_ADMISSION` | `reserve_usage` | The per-request cost reservation that admits (or refuses) the call. |
 
-| Guard shape | Result |
+A calling product Worker sends two **opaque clues** — the product it acts for
+(`X-Padiem-Product-Id`) and the end user's canonical auth-session id
+(`X-Padiem-Auth-Session-Id`). Neither is an identity: they only select which
+Control Plane session to resolve. The subject, tenant, entitlement and cost
+reservation all come back from the Control Plane. This is the canonical
+"opaque server-resolved clue" pattern (#2157/#2158) the Engine already uses.
+
+The order of one paid request is fixed, and each step can only deny:
+
+```text
+deployment flag  ->  caller clues  ->  bounded body + audio validation
+                 ->  session / tenant  ->  entitlement grant
+                 ->  cost reservation  ->  Secret read  ->  provider call
+```
+
+The **cost quantity is never client-supplied**: `estimated_units` is computed by
+the Worker from the audio length it already validated
+(`voice_stt_contract.cost_units_for_audio`, one unit per 256 KiB). There is no
+request field for a cap, plan, entitlement or account, and the retired
+`VOICE_STT_CALLER_GUARD` binding is no longer read at all — a bound object that
+answers `True` or `{"allowed": True, ...}` cannot open a route.
+
+### Activation state: still fail-closed in practice
+
+Neither Control Plane binding is attached to any deployed environment, and the
+Control Plane entitlement producer does not yet issue a `voice.stt.*` grant, so
+every paid route still fails. What this slice removed is the *absence* of an
+implemented gate, not the fail-closed posture:
+
+| Condition | Result |
 |---|---|
-| binding absent | `caller_guard_unavailable` (503) |
-| binding present, any shape (empty, approving, denying, `True`, `{}`, blank/zero scope, self-declared account) | `caller_authorization_unimplemented` (503) — the binding is never invoked |
+| flag not exactly `"true"` | `voice_stt_disabled` (503) |
+| a Control Plane binding absent, or present without the reviewed RPCs | `caller_guard_unavailable` (503) |
+| no clues, blank/malformed clue, unknown or inactive/expired session | `voice_stt_unauthenticated` (401) |
+| session or snapshot belonging to another product/subject, non-user subject | `voice_stt_forbidden` (403) |
+| session with no `tenant_id`, or one aliased to the product/subject | `voice_stt_tenant_unavailable` (503) |
+| no voice grant, grant denied, units over the grant limit, refused or expired reservation | `voice_stt_cost_denied` (403) |
+| authority unreachable or answering an unusable shape | `voice_stt_authority_unavailable` (503) |
 
-No client-supplied header, no method-name fallback and no dummy account permit
-can change this. A paid route becomes reachable only when a real caller
-authority is implemented in its own integration slice and hands the Worker a
-`voice_stt_contract.CallerAuthorization` (authenticated actor + tenant + exact
-route + per-request cost reservation). Until then: **keep the flag OFF.**
+**Residual boundary, stated rather than hidden.** A Service Binding carries no
+built-in caller identity, so the *product* label still comes from the attached
+caller. That is acceptable only because the binding is deployment-owned and
+because a caller claiming another product can at most spend **its own** Control
+Plane tenant's reservation. Deployment therefore requires CENTRAL to review which
+Workers hold the binding; the source contract cannot enforce it.
 
-The paid pipeline behind the gate (request shape, budgets, provider masking) is
-covered by tests that build that authorization object by hand; the Worker itself
-can never obtain one.
+Activation needs, in order: the Control Plane issuing a `voice.stt.transcribe` /
+`voice.stt.live_token` grant, the two bindings attached, then the flag. Each is a
+CENTRAL decision; none is done here. **Keep the flag OFF.**
 
 ### Upstream budget
 
@@ -102,10 +136,11 @@ response before checking its length).
 | File | Role |
 |---|---|
 | `voice_stt_contract.py` | The shared contract. Zero dependencies, no `workers` import, unit-testable on CPython. |
+| `voice_stt_caller_auth.py` | The canonical Control Plane caller identity / tenant / cost authority for the paid routes. |
 | `worker.py` | Thin Cloudflare `workers` adapter over the contract. |
 | `wrangler.toml` | Worker config and Secrets Store binding declarations (names only). The sole source of the store resource id. |
 | `scripts/build_worker_dependencies.py` | Assembles `.worker-src`; proves the runtime is dependency-free. |
-| `tests/fake_workers.py` | In-process stand-in for the Workers runtime, so the real dispatch path is testable on CPython. |
+| `tests/fake_workers.py` | In-process stand-in for the Workers runtime and for the two Control Plane bindings. |
 | `tests/` | Contract, transport, #87 regression, per-product binding-name, mocked dispatch and adapter-source suites. |
 
 ## Secret bindings (names only — never values)
@@ -150,23 +185,27 @@ reproduce it:
 
 ```bash
 cd apps/padiem-voice-stt
-python -m pytest -q          # 196 tests, no Cloudflare runtime required
+python -m pytest -q          # 254 tests, no Cloudflare runtime required
 ```
 
 `tests/test_voice_stt_worker_dispatch.py` drives the real `Default.fetch`
-through a fake Workers runtime, so the OFF gate, the paid-route closure, body
-bounds, missing keys and malformed inputs are exercised as behaviour rather than
-as static string checks. The size boundary is tested at the **real 5 MiB**
-`MAX_REQUEST_BYTES` (exact, +1 byte, single undivided chunk, declared-length
-lie), not at a small stand-in size.
+through a fake Workers runtime and fake Control Plane bindings, so the OFF gate,
+the caller-authority denials, body bounds, missing keys and malformed inputs are
+exercised as behaviour rather than as static string checks. The size boundary is
+tested at the **real 5 MiB** `MAX_REQUEST_BYTES` (exact, +1 byte, single
+undivided chunk, declared-length lie), not at a small stand-in size.
 
 ## Not implemented in this slice
 
 - Chat/Claw microphone UI wiring (blocked by the active `#4488` UI work).
 - B66 `#easyVoiceMic` activation.
-- The `VOICE_STT_SERVICE` and `VOICE_STT_CALLER_GUARD` bindings (the caller guard
-  is what makes paid routes reachable and does not exist yet). Both paid routes
-  are unconditionally fail-closed with `caller_authorization_unimplemented`,
-  whatever the binding says, until a real caller authority supplies a verified
-  `CallerAuthorization`.
+- The `VOICE_STT_SERVICE` product-side binding (the Service Binding each product
+  gains to reach this Worker; not declared because the Worker is not deployed).
+- Control Plane issuance of the `voice.stt.transcribe` / `voice.stt.live_token`
+  entitlement grant, attachment of the two Control Plane bindings, and flipping
+  `PADIEM_VOICE_STT_ENABLED`. All three are CENTRAL activation steps; until they
+  happen every paid route answers `voice_stt_cost_denied` or
+  `caller_guard_unavailable`.
+- B66 is not a Control Plane allowed product (`b62`, `b54-padiem-claw`), so its
+  #3404 voice integration has no canonical tenant scope yet and fails closed.
 - Deployment, live provider calls and any Secret mutation.

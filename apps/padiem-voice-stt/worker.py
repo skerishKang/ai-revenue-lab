@@ -26,19 +26,28 @@ Deployment gate
 Every route is closed by default. ``Default.fetch`` resolves
 ``PADIEM_VOICE_STT_ENABLED`` **before** it reads a Secret, constructs an upstream
 request, or performs any paid call. When the flag is not exactly ``"true"`` the
-whole Worker answers ``voice_stt_disabled``. Even the ``ON`` state requires the
-``VOICE_STT_CALLER_GUARD`` Service Binding, whose presence alone only opens the
-key-free capabilities route.
+whole Worker answers ``voice_stt_disabled``. The committed ``wrangler.toml`` keeps
+that flag OFF and ``workers_dev = false``, so this Worker cannot serve a browser
+today.
 
-Paid routes are then **unconditionally fail-closed**. ``_require_caller_authorization``
-always raises ``caller_authorization_unimplemented``: there is no production
-service-binding authorization contract, so nothing the binding says — attached,
-approving, denying, empty, ``True`` or a self-declared account — can identify a
-caller or reserve cost. The gate does not call the binding at all. The paid
-pipeline behind it is reachable only with a genuine
-``contract.CallerAuthorization`` (authenticated actor + tenant + route + cost
-reservation), which no request can supply today. See ``voice_stt_contract`` for
-why, and keep the flag OFF.
+A paid route additionally requires a real caller authority, implemented in
+``voice_stt_caller_auth``. It reuses the canonical Control Plane private Service
+Bindings the Engine already uses — ``CONTROL_PLANE_IDENTITY`` for the
+authenticated session and tenant, ``CONTROL_PLANE_ENGINE_ADMISSION`` for the
+entitlement grant and the per-request cost reservation — and it produces the one
+value a paid route consumes, ``contract.CallerAuthorization``. The metering unit
+count is computed here from the validated audio length, so a caller cannot
+understate its own cost, and there is no client-supplied plan, cap or entitlement
+field anywhere on the path.
+
+Neither binding is attached to any deployed environment, and the Control Plane
+does not yet issue a ``voice.stt.*`` entitlement grant, so every paid route still
+fails closed in practice. What the authority contract removed is the *absence* of
+an implemented gate, not the fail-closed posture: an absent binding still answers
+``caller_guard_unavailable``, an unverifiable session still answers
+``voice_stt_unauthenticated``, a session belonging to another product or tenant
+still answers ``voice_stt_forbidden``, and a missing grant or refused reservation
+still answers ``voice_stt_cost_denied``.
 
 All validation, provider order, chunk/turn/dedup rules and payload construction
 live in ``voice_stt_contract``; this module is the thin Workers adapter so the
@@ -55,6 +64,7 @@ import uuid
 
 from workers import Response, WorkerEntrypoint, fetch
 
+import voice_stt_caller_auth as caller_auth
 import voice_stt_contract as contract
 
 TRANSCRIBE_PATH = "/internal/v1/voice/transcribe"
@@ -231,55 +241,61 @@ def _require_json_content_type(request) -> None:
 # ---------------------------------------------------------------------------
 
 
-def _binding_present(env, name: str) -> bool:
-    value = getattr(env, name, None)
-    return value is not None
+def _require_caller_clues(request) -> caller_auth.CallerClues:
+    """Read the caller's opaque identity clues before any body is buffered.
 
-
-async def _require_caller_authorization(env, *, route: str) -> contract.CallerAuthorization:
-    """Gate every paid route. **It always fails closed — no exception.**
-
-    A paid provider call needs a caller authority that can prove an
-    authenticated actor, its tenant, the exact route it was admitted for and a
-    per-request cost reservation. No such authority exists: ``VOICE_STT_CALLER_GUARD``
-    is not attached in production and no service-binding authorization contract
-    is implemented to verify a verdict against.
-
-    Therefore this function **never returns**. It deliberately does *not* call
-    any method on the attached binding, because calling ``authorize`` (or any
-    duck-typed alias) on an object of unknown provenance proves nothing: a
-    binding that answers ``True``, ``{"allowed": True, ...}`` or an empty object
-    would spend money on behalf of an unidentified caller. Earlier revisions
-    accepted exactly those shapes; the review finding (P0-A) was that a positive
-    but unscoped verdict reached a Secret and a provider. Presence, method-name
-    fallbacks, bare truthy results, blank/zero cost scopes and self-declared
-    identities are all refused by never consulting them at all.
-
-    The capabilities route carries no Secret, token, account identity or paid
-    call, so it stays on the presence-only gate in :func:`_require_enabled`.
-
-    The paid pipeline below is reachable only when a caller hands this function
-    a genuine :class:`contract.CallerAuthorization` — which no request can do
-    while the flag is OFF and this gate raises.
+    Clues are not an authorization: they only say which Control Plane session to
+    resolve. Running this first means a request that presents no identity never
+    gets its payload read, while the full verification still happens after the
+    payload is validated (the cost units depend on the validated audio length).
     """
-    raise contract.VoiceSttError("caller_authorization_unimplemented", 503)
+    return caller_auth.parse_caller_clues(getattr(request, "headers", None))
+
+
+async def _require_caller_authorization(
+    env,
+    *,
+    route: str,
+    clues: caller_auth.CallerClues,
+    capability: str,
+    estimated_units: int,
+) -> contract.CallerAuthorization:
+    """Gate every paid route against the canonical Control Plane authority.
+
+    Fails closed when the two reviewed private Service Bindings are absent
+    (``caller_guard_unavailable``), when the Control Plane cannot authenticate the
+    session (``voice_stt_unauthenticated``), when the session belongs to another
+    product or subject (``voice_stt_forbidden``), when the tenant fact is missing
+    (``voice_stt_tenant_unavailable``), and when the voice entitlement grant or
+    the cost reservation is absent or refused (``voice_stt_cost_denied``).
+
+    Nothing here is decided from request content beyond those two opaque clues,
+    and no verdict is trusted because none is invented here: the subject, tenant,
+    entitlement and reservation all come from the Control Plane.
+    """
+    authority = caller_auth.caller_authority_for_env(env)
+    return await authority.authorize(
+        clues=clues,
+        capability=capability,
+        route=route,
+        estimated_units=estimated_units,
+    )
 
 
 async def _require_enabled(env) -> None:
-    """Gate every route. Order matters: no Secret read or provider call if OFF."""
+    """Gate every route. Order matters: no Secret read or provider call if OFF.
+
+    This is the deployment flag only. Caller identity, tenant scope and cost
+    approval are a separate gate (:func:`_require_caller_authorization`) applied
+    per paid route, so the key-free capabilities route stays reachable without
+    attaching any authority binding.
+    """
     flag = getattr(env, contract.VOICE_STT_ENABLED_BINDING, None)
     # Wrangler deploy configuration is a literal string. Do not accept
     # whitespace, alternate casing or a Python boolean as an activation.
     # Any unexpected binding shape must leave this paid feature disabled.
     if flag != "true" or not isinstance(flag, str):
         raise contract.VoiceSttError("voice_stt_disabled", 503)
-
-    # ON is not reachable without the caller-identity / cost-authorization
-    # Service Binding. Presence alone only opens the key-free capabilities
-    # route; the two paid routes are then closed again unconditionally by
-    # ``_require_caller_authorization``. Do not relax this to make tests pass.
-    if not _binding_present(env, contract.VOICE_STT_CALLER_GUARD_BINDING):
-        raise contract.VoiceSttError("caller_guard_unavailable", 503)
 
 
 # ---------------------------------------------------------------------------
@@ -423,24 +439,26 @@ async def _upstream_json(url, *, method, headers, body, timeout_ms) -> tuple[int
 
 
 def _require_authorization(authorization: object, route: str) -> None:
-    """Re-check the authorization a caller claims for one paid route.
+    """Re-check the authorization a paid route was dispatched with.
 
-    Defence in depth: the route gate never produces an authorization today, so
-    this only runs when a caller (the test harness) hands one in explicitly. It
-    still insists on the documented shape and on the exact route, so a
-    mislabelled or zero-value authorization cannot be reused across routes.
+    Defence in depth: the route gate already produced a verified authorization,
+    but the handler still insists on the documented shape and on the **exact**
+    route and capability it names, so an authorization minted for the live-token
+    route can never be replayed against transcription (or the reverse).
     """
     if not isinstance(authorization, contract.CallerAuthorization):
-        raise contract.VoiceSttError("caller_authorization_unimplemented", 503)
+        raise contract.VoiceSttError("voice_stt_authority_unavailable", 503)
     if not authorization.admits(route):
-        raise contract.VoiceSttError("caller_authorization_unimplemented", 503)
+        raise contract.VoiceSttError("voice_stt_authority_unavailable", 503)
 
 
-async def _handle_transcribe(env, request, authorization: contract.CallerAuthorization) -> Response:
+async def _handle_transcribe(
+    env,
+    authorization: contract.CallerAuthorization,
+    language: str,
+    audio: contract.AudioPayload,
+) -> Response:
     _require_authorization(authorization, TRANSCRIBE_PATH)
-    _require_json_content_type(request)
-    payload = await _read_json(request, contract.MAX_REQUEST_BYTES)
-    language, audio = contract.validate_transcribe_request(payload)
 
     api_key = await _resolve_secret(env, contract.GROQ_API_KEY_BINDING)
     if not api_key:
@@ -469,12 +487,10 @@ async def _handle_transcribe(env, request, authorization: contract.CallerAuthori
     return _error(last_code)
 
 
-async def _handle_live_token(env, request, authorization: contract.CallerAuthorization) -> Response:
+async def _handle_live_token(
+    env, authorization: contract.CallerAuthorization
+) -> Response:
     _require_authorization(authorization, LIVE_TOKEN_PATH)
-    _require_json_content_type(request)
-    payload = await _read_json(request, LIVE_TOKEN_MAX_BYTES)
-    if not isinstance(payload, dict) or set(payload) - {"sessionId"}:
-        raise contract.VoiceSttError("unsupported_field", 400)
 
     api_key = await _resolve_secret(env, contract.GEMINI_API_KEY_BINDING)
     if not api_key:
@@ -508,13 +524,11 @@ def _handle_capabilities() -> Response:
     return _ok(
         {
             "contract_version": contract.CONTRACT_VERSION,
-            # Presence of the guard binding opens only this key-free route. Both
-            # paid routes are unconditionally fail-closed: no caller authority
-            # exists that could identify an actor or reserve cost, so no paid
-            # route is reachable whatever the binding says.
-            # Deliberately not echoed here: the paid route names themselves are
-            # not published to the browser.
-            "enabled_route_contract": "paid_fail_closed_no_authority",
+            # A paid route is served only after a canonical Control Plane
+            # session, tenant and entitlement grant were resolved and a per-request
+            # cost reservation was admitted for it. Nothing else opens one, and
+            # the route names themselves are not published to the browser.
+            "enabled_route_contract": "canonical_caller_tenant_cost_authority",
             "provider_order": [provider.value for provider in contract.STT_PROVIDER_ORDER],
             "session": contract.LiveSessionConfig().to_public_dict(),
             "groq_models": list(contract.groq_model_sequence()),
@@ -542,14 +556,38 @@ class Default(WorkerEntrypoint):
             if route == TRANSCRIBE_PATH:
                 if method != "POST":
                     return _error("method_not_allowed")
-                # Always raises today: no paid route is reachable.
-                authorization = await _require_caller_authorization(self.env, route=TRANSCRIBE_PATH)
-                return await _handle_transcribe(self.env, request, authorization)
+                # Identity clues first (no body buffered for an anonymous caller),
+                # then the bounded body, then the Control Plane authority — whose
+                # cost units are computed from the audio length validated here.
+                # Nothing below reads a Secret or calls a provider before that.
+                clues = _require_caller_clues(request)
+                _require_json_content_type(request)
+                payload = await _read_json(request, contract.MAX_REQUEST_BYTES)
+                language, audio = contract.validate_transcribe_request(payload)
+                authorization = await _require_caller_authorization(
+                    self.env,
+                    route=TRANSCRIBE_PATH,
+                    clues=clues,
+                    capability=contract.CAPABILITY_TRANSCRIBE,
+                    estimated_units=contract.cost_units_for_audio(audio.size),
+                )
+                return await _handle_transcribe(self.env, authorization, language, audio)
             if route == LIVE_TOKEN_PATH:
                 if method != "POST":
                     return _error("method_not_allowed")
-                authorization = await _require_caller_authorization(self.env, route=LIVE_TOKEN_PATH)
-                return await _handle_live_token(self.env, request, authorization)
+                clues = _require_caller_clues(request)
+                _require_json_content_type(request)
+                payload = await _read_json(request, LIVE_TOKEN_MAX_BYTES)
+                if not isinstance(payload, dict) or set(payload) - {"sessionId"}:
+                    raise contract.VoiceSttError("unsupported_field", 400)
+                authorization = await _require_caller_authorization(
+                    self.env,
+                    route=LIVE_TOKEN_PATH,
+                    clues=clues,
+                    capability=contract.CAPABILITY_LIVE_TOKEN,
+                    estimated_units=contract.LIVE_TOKEN_COST_UNITS,
+                )
+                return await _handle_live_token(self.env, authorization)
             return _error("not_found")
         except contract.VoiceSttError as exc:
             return _error(exc.code)

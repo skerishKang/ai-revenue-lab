@@ -1,10 +1,12 @@
 """Assemble the Cloudflare Python Worker source tree for padiem-voice-stt.
 
 This Worker has no third-party runtime dependencies: it uses only the Python
-standard library, the Cloudflare ``workers`` runtime module, and the local
-``voice_stt_contract`` module. The build therefore only needs to copy the
-reviewed runtime files into ``.worker-src`` (wrangler's ``base_dir``) and prove
-the copy is byte-identical and dependency-free.
+standard library, the Cloudflare ``workers`` runtime module, and the two local
+modules ``voice_stt_contract`` (the shared contract) and
+``voice_stt_caller_auth`` (the canonical Control Plane caller/tenant/cost
+authority). The build therefore only needs to copy the reviewed runtime files
+into ``.worker-src`` (wrangler's ``base_dir``) and prove the copy is
+byte-identical and dependency-free.
 
 Run with: ``uv run python scripts/build_worker_dependencies.py``
 """
@@ -18,11 +20,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNTIME = ROOT / ".worker-src"
-RUNTIME_FILES = ("worker.py", "voice_stt_contract.py")
+RUNTIME_FILES = ("worker.py", "voice_stt_contract.py", "voice_stt_caller_auth.py")
 
 #: The only non-stdlib imports the runtime files may use. ``js`` is the Pyodide
 #: runtime module used behind a guarded ``import js`` for the abort signal.
-ALLOWED_THIRD_PARTY = frozenset({"workers", "voice_stt_contract", "js"})
+ALLOWED_THIRD_PARTY = frozenset(
+    {"workers", "voice_stt_contract", "voice_stt_caller_auth", "js"}
+)
 
 STDLIB = frozenset(getattr(__import__("sys"), "stdlib_module_names", ()))
 

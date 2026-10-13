@@ -45,6 +45,7 @@ def test_worker_imports_only_stdlib_and_the_shared_contract():
     allowed = {
         "workers",
         "voice_stt_contract",
+        "voice_stt_caller_auth",
         "json",
         "uuid",
         "urllib",
@@ -114,8 +115,13 @@ def test_worker_uses_the_bounded_error_envelope():
 
 def test_build_script_allowlist_matches_worker_imports():
     build = BUILD.read_text(encoding="utf-8")
-    assert 'ALLOWED_THIRD_PARTY = frozenset({"workers", "voice_stt_contract", "js"})' in build
-    assert 'RUNTIME_FILES = ("worker.py", "voice_stt_contract.py")' in build
+    assert (
+        'ALLOWED_THIRD_PARTY = frozenset(\n    {"workers", "voice_stt_contract", "voice_stt_caller_auth", "js"}\n)'
+        in build
+    )
+    assert (
+        'RUNTIME_FILES = ("worker.py", "voice_stt_contract.py", "voice_stt_caller_auth.py")' in build
+    )
     # The vendored runtime must not pull any third-party dependency.
     assert c.CONTRACT_VERSION.startswith("padiem.voice.stt.")
 
@@ -174,19 +180,43 @@ def test_upstream_body_read_is_bounded_not_raw_json():
     assert "contract.MAX_UPSTREAM_RESPONSE_BYTES" in source
 
 
-def test_paid_routes_fail_closed_unconditionally():
-    """P0-A: no guard verdict, header or binding shape can authorize a call."""
+def test_paid_routes_are_authorized_only_by_the_canonical_control_plane():
+    """The P0-A property, restated for the implemented authority.
+
+    No guard verdict, header or binding shape may authorize a paid call. The
+    Worker now asks the canonical Control Plane instead of consulting a decoy
+    binding, so the checks are: it delegates to the authority module, it never
+    trusts a bare verdict, it never reads a client cost scope, and the pipeline
+    additionally insists on the documented authorization object.
+    """
     source = _source()
-    # The gate raises before it ever returns an authorization.
-    assert "raise contract.VoiceSttError(\"caller_authorization_unimplemented\", 503)" in source
-    # It does not consult the binding at all: no duck-typed method fallback,
-    # no truthiness test on a verdict.
-    for forbidden in ("authorize_caller", "getattr(guard", "decision is True", "decision.get"):
+    assert "caller_auth.caller_authority_for_env(env)" in source
+    assert "caller_auth.parse_caller_clues" in source
+    # No duck-typed verdict acceptance and no retired guard binding anywhere.
+    for forbidden in (
+        "authorize_caller",
+        "decision is True",
+        "decision.get",
+        "VOICE_STT_CALLER_GUARD",
+        "cost_scope",
+        "daily_usd_cap",
+    ):
         assert forbidden not in source, forbidden
-    # Nothing client-supplied is treated as identity.
-    assert "request.headers.get(\"x-padiem" not in source
+    # Nothing client-supplied is treated as identity: only the two opaque clues.
+    assert 'request.headers.get("x-padiem' not in source
     # The pipeline additionally insists on the documented authorization object.
     assert "isinstance(authorization, contract.CallerAuthorization)" in source
+
+
+def test_authority_module_holds_no_client_cost_authority():
+    """The cost quantity and the identity are Worker/Control-Plane owned only."""
+    source = (APP_ROOT / "voice_stt_caller_auth.py").read_text(encoding="utf-8")
+    for forbidden in ("cost_scope", "daily_usd_cap", "amount_usd", "headers.get(\"x-padiem-product-id\")"):
+        assert forbidden not in source, forbidden
+    # It reuses the two canonical Control Plane bindings by name.
+    assert "contract.VOICE_STT_IDENTITY_BINDING" in source
+    assert "contract.VOICE_STT_ADMISSION_BINDING" in source
+    assert "reserve_usage" in source and "fetch_entitlement_snapshot" in source
 
 
 def test_route_dispatch_asks_the_gate_before_the_pipeline():

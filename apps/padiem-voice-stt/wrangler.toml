@@ -7,8 +7,9 @@ compatibility_flags = ["python_workers"]
 # from the browser.
 #
 # NOTE: `workers_dev = false` only keeps the Worker off the public internet. It
-# does NOT supply application-level caller authentication, identity or rate
-# limiting. That is what the gate below requires, and it is not attached yet.
+# does NOT supply application-level caller authentication, identity, tenant scope
+# or cost limiting. Those are the paid-route gate below, and the bindings it
+# needs are not attached yet.
 workers_dev = false
 base_dir = ".worker-src"
 
@@ -40,15 +41,29 @@ secret_name = "PADIEM_GROQ_API_KEY"
 # live voice lane, and the Worker reads no Secret and performs no provider call
 # while this is not exactly "true".
 #
-# ON additionally requires the VOICE_STT_CALLER_GUARD Service Binding, which
-# must supply an authenticated caller identity and a bounded per-account cost
-# authorization. It is deliberately NOT declared here: it does not exist, and
-# declaring a non-existent Service Binding would break this Worker's deploy.
-# Binding presence alone only opens the key-free capabilities route. The paid
-# transcribe / live-token routes are then UNCONDITIONALLY fail-closed with
-# `caller_authorization_unimplemented` because no service-binding authorization
-# contract exists to verify a verdict against: the Worker does not call the
-# binding at all, so no guard shape can authorize a paid call.
+# ON additionally requires BOTH canonical Control Plane private Service Bindings
+# below, which together supply an authenticated caller identity, its canonical
+# tenant and a per-request cost reservation:
+#
+#   CONTROL_PLANE_IDENTITY          resolve_auth_session
+#   CONTROL_PLANE_ENGINE_ADMISSION  fetch_entitlement_snapshot / reserve_usage
+#
+# They are the same bindings apps/padiem-ai-engine uses, deliberately: voice
+# spending is admitted by the same control-plane authority as Engine spending
+# rather than by a second, voice-local ledger.
+#
+# They are deliberately NOT declared here: the Worker is not deployed and the
+# Control Plane does not yet issue a `voice.stt.*` entitlement grant, so
+# declaring them would break this Worker's deploy without making any paid route
+# reachable. Activation is a CENTRAL decision in its own slice, and it must also
+# review which product Workers are granted this binding.
+#
+# Until then every paid route answers one bounded failure instead of spending:
+#   caller_guard_unavailable          a required binding is absent or unusable
+#   voice_stt_unauthenticated         no resolvable authenticated session
+#   voice_stt_forbidden               session/snapshot belong elsewhere
+#   voice_stt_tenant_unavailable      the session carries no canonical tenant
+#   voice_stt_cost_denied             no voice grant, or a refused reservation
 # Do not switch this flag on to make tests pass.
 [vars]
 PADIEM_VOICE_STT_ENABLED = "false"
