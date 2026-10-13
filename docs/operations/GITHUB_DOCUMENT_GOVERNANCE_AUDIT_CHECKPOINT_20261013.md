@@ -113,6 +113,15 @@ Frozen 835 original document cursor after B12: **400 source texts viewed at leas
 - Historical Engine caller app allowlist HTTP 409 and source remedy are *dated evidence*, not a current Production readiness conclusion; read-only Cloudflare binding snapshots likewise dated.
 - No original documents moved/edited, no local Governance touched, no customer file/provider writes/model or production modifications.
 
+## 1L. Batch 13 — 25 B54 activation / B16 B18 B19 B53 product reference documents (2026-10-13)
+
+Frozen 835-original-document cursor: **425 documents with text viewed at least partly** (125 `TEXT_SAMPLED` + 25 each B02–B13), **391 `INDEXED_ONLY`** unread text, **19 BINARY_PENDING** unread PDF/DOCX. Initial 125 need separate deeper whole-document classification.
+
+- [Batch 13 SHA-pinned 25-document governance audit](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH13_20261013.md)
+- B54 public ingress/Owner P01 SSE direction and independent PADIEM-vs-B66 customer policies remain distinct from actual deployed/runtime permissions.
+- B16 sports, B18 audio, B19 family memory and B53 embedded SDK are synthetic/static editorial/product research, not current real customer data, media rights, SaaS pricing, released SDK or live provider activation.
+- No original file/Git history, local Governance, customer data, secrets, connector, Cloudflare or production configuration changed.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
