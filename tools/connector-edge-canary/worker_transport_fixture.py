@@ -23,11 +23,28 @@ async def _observed_scope_app(scope, receive, send):
     scheme = scope.get("scheme")
     if scheme not in ("https", "wss", "http", "ws"):
         scheme = "UNKNOWN"
+    # Classification ONLY: no path, hostname, query, headers, secrets or
+    # client-controlled strings are echoed. Probe exact SDK scope shape.
+    raw = scope.get("raw_path")
+    raw_status = (
+        "EXACT" if type(raw) is bytes and raw == _WSS.encode("ascii")
+        else "ABSENT" if raw is None else "OTHER"
+    )
+    query = scope.get("query_string")
+    query_status = (
+        "EMPTY_BYTES" if type(query) is bytes and query == b""
+        else "ABSENT" if query is None else "OTHER"
+    )
 
     async def audited_send(message):
         await send(message)
         if message.get("type") == "websocket.accept":
-            await send({"type": "websocket.send", "text": "PADIEM_CANARY_SCHEME_" + scheme})
+            for value in (
+                "PADIEM_CANARY_SCHEME_" + scheme,
+                "PADIEM_CANARY_RAW_" + raw_status,
+                "PADIEM_CANARY_QUERY_" + query_status,
+            ):
+                await send({"type": "websocket.send", "text": value})
 
     await _socket_app(scope, receive, audited_send)
 
