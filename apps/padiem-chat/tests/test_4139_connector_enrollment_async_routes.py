@@ -173,6 +173,54 @@ def test_issue_preserves_internal_identity_denial_instead_of_masking_as_generic_
     assert "sensitive" not in result.body.decode()
 
 
+
+@pytest.mark.parametrize("missing_field", [
+    "grants_read",
+    "grants_write",
+    "credential_installed_by_canonical_handoff",
+    "consent_id",
+])
+def test_async_redeem_rejects_missing_explicit_safety_field(missing_field):
+    """Missing proof or negative permission flags must not silently default."""
+    class MissingFieldHost(AsyncHost):
+        async def redeem(self, *, challenge_id, device_id, proof_ref):
+            result = await super().redeem(
+                challenge_id=challenge_id, device_id=device_id, proof_ref=proof_ref,
+            )
+            del result[missing_field]
+            return result
+
+    response = asyncio.run(routes.connector_enrollment_redeem(Request({
+        "challenge_id": "pairing.challenge.1", "device_id": "device.1",
+        "proof_ref": "pairing-proof:" + "a" * 64,
+    }, make_state(MissingFieldHost()))))
+    result = json.loads(response.body)
+    assert response.status_code == 503
+    assert result["ok"] is False
+    assert result["reason"] == "enrollment_dependency_unavailable"
+    assert "enrollment" not in result
+
+
+def test_async_redeem_refuses_other_device_success_receipt():
+    """The authenticated device cannot receive somebody else's receipt."""
+    class SwappedReceiptHost(AsyncHost):
+        async def redeem(self, *, challenge_id, device_id, proof_ref):
+            result = await super().redeem(
+                challenge_id=challenge_id, device_id=device_id, proof_ref=proof_ref,
+            )
+            return {**result, "device_id": "device.other"}
+
+    response = asyncio.run(routes.connector_enrollment_redeem(Request({
+        "challenge_id": "pairing.challenge.1", "device_id": "device.1",
+        "proof_ref": "pairing-proof:" + "a" * 64,
+    }, make_state(SwappedReceiptHost()))))
+    result = json.loads(response.body)
+    assert response.status_code == 503
+    assert result["ok"] is False
+    assert result["reason"] == "enrollment_dependency_unavailable"
+    assert "enrollment" not in result
+
+
 @pytest.mark.parametrize("unsafe_fields", [
     {"credential_b64": "c2VjcmV0"},              # raw credential projection
     {"consent_id": None},                    # missing canonical consent proof
@@ -185,6 +233,7 @@ def test_issue_preserves_internal_identity_denial_instead_of_masking_as_generic_
     {"lifecycle": "online"},                 # receipt is never online evidence
 ])
 def test_redeem_route_rejects_forged_incomplete_or_secret_bearing_success_receipt(unsafe_fields):
+
     class UnsafeHost(AsyncHost):
         async def redeem(self, *, challenge_id, device_id, proof_ref):
             result = await super().redeem(
