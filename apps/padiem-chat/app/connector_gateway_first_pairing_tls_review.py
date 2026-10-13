@@ -79,6 +79,7 @@ class CloudflareFirstPairingTlsTransportReview:
             if (
                 type(getattr(request, "url", None)) is not str
                 or request.url != _CANONICAL_URL
+                or getattr(request, "method", None) != "GET"
                 or not _first_pair_headers_clean(request.headers)
             ):
                 return False
