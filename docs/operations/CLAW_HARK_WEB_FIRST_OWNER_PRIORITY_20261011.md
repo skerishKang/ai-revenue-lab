@@ -6,7 +6,7 @@
 
 **Applies to:** #3928 (web UX epic), #3580 (files/artifacts), #3933 (Office editing), #3936 (browser E2E), related B62/B54/P01 work.
 
-> **2026-10-13 OWNER PRIORITY CLARIFICATION (supersedes generic optional-local-product interpretation):** “WEB-FIRST” here means **deliver the authenticated browser chat/Office path before unnecessary alternative execution work**; it does **not** mean local company-PC automation is low-priority in PADIEM's business. The Owner is personally implementing AX/ontology automation at fewer than five directly instructed businesses, with broad delegated company-PC operating scope. Claw is one tool among the AX engagement's tools. When Claw needs the local PC, show Connector install, run and **connect immediately**. First-install assistance is face-to-face; subsequent autostart/reconnect **ON by default**, with user-adjustable settings. Do not invent recurring approval-click UX or require users to set up external model accounts. The former W0–W4 web implementation history and F1 later-stage label describe **implementation sequence only**, not new customer authorization policy. Any conflict with existing backend P01/WorkTicket must be surfaced as an Owner decision question rather than independently “disallowing” a delegated workflow. [Canonical Owner decision](PADIEM_AX_FOUNDER_LED_PILOT_OPERATING_CONTRACT_20261013.md). Current implementation/prod claim unchanged.
+> **Business-governance reference:** consult local non-public business policies via the root [AGENTS.md](../../AGENTS.md) when interpreting business priorities. This document records a dated technical delivery order only.
 
 ## Binding owner decision
 

@@ -7,7 +7,7 @@
 
 ---
 
-> **OWNER PRODUCT REINTERPRETATION 2026-10-13 — supersedes historical MVP UX assumptions**: PADIEM is a **founder-operated enterprise AX/ontology/automation engagement for fewer than five in-person onboarded firms**. Claw is an instrument within that delivery, not a general consumer subscription sold before AX. The owner receives company/PC operating delegation in person; customers use PADIEM login and receive founder-assisted connector installation. Connector run should connect without further customer technical steps, and auto-start/reconnect default ON with a customer setting to turn it off. Do **not** introduce new recurring customer approval-click requirements or unilaterally decide the business/permission scope. When current legacy P01 approval-gated source conflicts with the founder's default automation UX, ASK for the precise implementation decision rather than fabricating consent, disabling a technical check, or forbidding the workload. This dated legacy product pack remains a historical MVP/technical inventory; current owner UX authority: [AX pilot operating contract](../operations/PADIEM_AX_FOUNDER_LED_PILOT_OPERATING_CONTRACT_20261013.md). Source implementation and Production acceptance not asserted.
+> **Private Owner business policy:** see root [AGENTS.md](../../AGENTS.md) for the local governance location and precedence. Historical technical implementation/evidence stays public; company business decisions do not.
 
 ## 1. Executive Summary & Product Objective
 

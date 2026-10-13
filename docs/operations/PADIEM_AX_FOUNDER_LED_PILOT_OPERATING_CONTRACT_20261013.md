@@ -1,53 +1,14 @@
-# PADIEM 대표 직접 수행 AX·온톨로지 기업 파일럿 — 최상위 사업/UX 운영 전제 (Owner decision, 2026-10-13)
+# Internal PADIEM Governance — Public Reference Only
 
-> **상태: 2026-10-13 대표가 직접 확정한 현재 사업 운영 사실 및 제품 목표.**
-> CTO·LOCAL 에이전트·새 대화·제품 담당자는 작업 시작 전에 루트 `AGENTS.md`와 함께 이 문서를 먼저 읽는다.
-> 이 문서는 **사업/UX 결정의 권위 있는 해석 기준**이며, 기존 구현이 이미 동작한다는 증거, 회사별 실제 위임계약 사본, 서버 인가 토큰 또는 운영 배포 명령이 아니다.
+> **This is a public technical pointer, not PADIEM's private business policy.** The company operating decisions previously written here were moved to the authorized local-only Governance workspace. Do not restate their contents in any GitHub file, issue or PR.
 
-## 1. 사업 자체를 정확하게 이해할 것
+## Local source of authority
 
-- 파디엠은 불특정 다수의 온라인 AI 구독자를 모집하는 범용 SaaS 출시를 우선하는 회사가 아니다. **현재 대표 혼자 개발·사업을 운영**하며, 초기 대상은 **5명 미만의 대표가 직접 아는 기업 고객**, 특히 IT에 익숙하지 않은 **50~60대 경영자**다.
-- 대표가 고객을 **직접 만나** 구두로 설명하거나 문서를 보여 주고, 필요하면 설치 및 초기 설정까지 현장에서 진행한다. 사용자에게 새로운 AI 개념·모델 공급사·API 키·추가 로그인·복잡한 승인 설정을 배우도록 전가하지 않는다.
-- 고객사의 목표는 **자사 업무 전체의 AI 전환(AX), 업무 자동화, 기업 지식/관계의 온톨로지 구축**이다. 고객 기업의 정보 및 컴퓨터 운용에 관하여 대표가 고객으로부터 **폭넓은 위임을 받아 직접 일하는 것**이 현재 사업 모델이다. Claw가 제품 전략의 출발점이 아니라 **그 AX 사업을 구현하는 여러 실행 도구 중 하나**다.
-- 위임받은 회사·업무·PC 범위의 구체적 사실은 대표가 고객별로 오프라인에서 확인·관리한다. 에이전트는 이를 모른다는 이유로 “승인 없음/고객에게 매번 승인 요구”를 새 정책으로 창작하지 않으며, 반대로 채팅 문장만으로 현장 위임의 세부 범위나 서버 권한 발급이 이미 완료되었다고 꾸며서도 안 된다.
+The [root AGENTS.md](../../AGENTS.md) is the authoritative **public lookup instruction**, including the designated Windows computer, absolute local Governance path, and required documents in its `사업방침` directory.
 
-## 2. 고객에게 보여 줄 경험 — 최초 설치 후 자동 운영이 기본
+- CTO with connected Desktop Commander: **read the files directly** from the authorized computer.
+- Local coding agents: read the same files through their authorized local filesystem.
+- Agents without access: report that the private policy could not be read and ask the Owner when its contents materially affect a decision.
+- Company business decisions take precedence over public development process guidance where the Owner has explicitly decided the business matter. Actual code/authorization, OS permissions and release status must still be verified and reported accurately.
 
-1. 고객은 **자신이 사용하는 파디엠 서비스에 로그인**한다. 공급사 ChatGPT/Claude/Gemini 구독 로그인·BYOK/API 키·B14 용어 노출은 기본 이용의 전제조건이 아니다.
-2. Claw 웹 에이전트에서 로컬 회사 PC 작업이 필요해지면, **커넥터를 다운로드·설치·실행**하도록 안내한다. 이 첫 설치는 대표가 직접 현장에서 진행·지원하는 고객 여정이다.
-3. **첫 실행 후 가능한 한 별도의 QR·페어링 코드·연속 확인창·기술적 단계 없이 곧바로 연결**되는 것이 제품 목표다. 내부적으로 필요한 서버 신원 확인/기기 등록은 제품이 처리해야 할 구현 과제이며 이를 고객의 반복 클릭으로 전가하지 않는다.
-4. **초기 기본값: 커넥터 활성·연결 유지·Windows 부팅/로그온 시 자동 실행·자동 재연결 ON.** 고객은 원할 때 설정에서 자동 실행, 연결, 일시중지/중단을 바꿀 수 있다. 초기 사용자가 직접 ON을 찾아 켜게 만드는 흐름은 대표 결정과 충돌한다.
-5. 고객이 오프라인에서 업무·PC 운영 권한을 위임했음을 전제로, **그 위임 범위 안의 자동화 작업에 매번 새 고객 확인창/승인 버튼을 반복해 띄우는 UX를 기본 규칙으로 삼지 않는다.** AI 자동화를 위해 사장님이 매 단계 클릭하도록 만드는 것은 사업 목표를 훼손한다.
-6. 화면은 단순한 자연어 요청과 현재 연결 상태만 보여 준다. 실제 연결 전에는 '연결됨'이라고 표시하지 않고, 고객이 중단/설정 변경한 의사는 존중한다.
-
-**중요한 구현 차이:** 기존 P01·Broker·WorkTicket·제품별 권한·Windows OS 권한과 현재 운영 연결은 별도 기술 계약이며, 이 문서 한 장으로 자동 허용 또는 해제되지 않는다. 대표가 요구한 기본 자동 실행/사전 위임 UX와 기존 코드의 '작업마다 새 승인' 가정이 충돌하면 **개발자가 임의로 고객 클릭 의무를 확정하거나 보호장치를 몰래 제거하지 않는다.** 기존 사전 위임·회수·감사·세션을 활용해 클릭을 최소화하는 선택지를 조사하여 **대표에게 “충돌 지점 + 정확한 대안 + 결정 질문”을 짧게 제시**한다. 실제 제공 권한 범위를 대표 대신 좁히거나 넓혀 결정하지 않는다.
-
-## 3. 브랜드와 기술을 구분
-
-- **PADIEM Chat/Claw/Engine**과 **B66 견적**은 고객에게 서로 다른 브랜드·제품·회원 화면으로 보여 준다는 기존 대표 결정을 유지한다. 기술 내부의 모델 B14, Control Plane, Broker 및 Windows Connector를 재사용할 수 있지만 **같은 이메일/PC라는 이유만으로 자동으로 제품별 회원 권한을 전파한다고 결정하지 않는다.**
-- 대표가 기업별 AX 전체를 총괄하고 여러 제품을 구성하는 내부 운영 방식은 고객에게 복잡한 제품 간 계정 설정을 떠넘긴다는 뜻이 아니다. 연결 경험이 혼란스러울 때는 담당자가 임의의 교차 브랜드 정책을 정하지 말고 대표에게 묻는다.
-- **B14 외부 API Router 판매 사업은 아직 시작하지 않았다.** 현재 가장 시급한 목표는 파디엠 Claw와 B66의 초기 고객/현장 실사용이다. 별도 요청 없이 B14 재판매 계약, BYOK, 공급사 구독 OAuth, 광범위한 파트너 계약을 출시 조건으로 확대하지 않는다.
-- 모델 공급사 검토가 필요할 때는 대표가 요청한 범위대로 **(1) 일반 대화 허용 여부, (2) 파디엠 자체 고객 서비스 제공 허용 여부, (3) 회사 단일 서버 API 계정의 다수 고객 이용 허용 여부**를 중심으로 보고한다. 대표가 이번 판단에서 제외한 개인정보 고지·요금·속도·안정성 평가를 임의로 다시 의사결정 체크리스트에 넣지 않는다. 명시적 기존 계약/플랫폼 금지는 사실과 별개로 구분한다.
-
-## 4. 에이전트/CTO 의사결정 규칙 — 임의 제한·월권 금지
-
-- **사실을 먼저 확인:** 대표의 최근 명시적 결정 > 현 저장소의 고객/운영 실제 상태 > 이전 이슈/문서의 일반론 및 역사 기록. “일반 온라인 SaaS는 보통…”은 파디엠 AX 사업의 기본 가정이 아니다.
-- **모르면 묻는다:** 사업 위임 범위, 고객 경험, 기본 설정, 승인 주체, 상충된 사용 시나리오 등 중요한 결정이 애매하면 **“현재 자료는 A인데 대표님 말씀은 B입니다. 무엇을 우선할까요?”**처럼 한 가지 정확한 질문을 한다. 개발자가 임의로 “이 경우는 하지 않겠습니다/제외하겠습니다/허용하겠습니다”라고 정책을 만들지 않는다.
-- **기존 일반 실행 위임은 유지:** 대표가 이미 위임한 통상적인 코드 리뷰·관련 CI·PR·병합·배포는 기존 승인/플랫폼 게이트 내에서 수행한다. 다만 **새로운 사업 정책·기본 허용/차단·고객 권한·브랜드 간 공유·제품 기능 범위를 에이전트 스스로 제정하지 않는다.** 물리적으로 실행이 막혔거나 계약/OS/보안 충돌이 확인되면 정확한 사실을 알리고 대표에게 처리 방향을 묻는다. 금지를 새로운 사업 결정처럼 포장하지 않는다.
-- **최소한의 작업:** 1인 개발·소수 현장 파일럿에 맞게 작은 영향 범위만 수정하고, 테스트 폭증·새 관리자 시스템·복제 권한 DB·새 이슈 남발·과잉 인증 의식화를 금한다. 기존 이슈/PR/문서를 먼저 찾아 재사용한다.
-- **고객 안내는 대표 주도:** 이미 직접 설명하고 위임받는다는 사실을 임의로 무시하거나, 설명 서류를 본 적이 없다고 고객에게 다시 모든 동의를 온라인에서 받도록 제안하지 않는다.
-- **실행 사실은 정직하게:** 소스 변경, CI GREEN, 문서 결정, 실제 Windows 연결/부팅 복구, 실제 고객 운영은 각각 다른 상태다. 설계 목표를 이미 구현됐다고 말하지 않는다.
-
-## 5. 이미 찾은 불일치 — 해당 제품 이슈에서 좁게 수정
-
-- 루트 `AGENTS.md`·`AI_DEVELOPMENT_OPERATING_POLICY.md`의 일반 ‘내부 개발’ 관점만으로 **대표가 직접 인솔하는 5명 미만 기업 AX 파일럿**을 지우지 않는다. 아직 실제 대외 고객 출시가 증명된 것은 아님.
-- `docs/product/B54_CLAW_CONNECT_DESKTOP_DUAL_SURFACE_PRODUCT_PLAN_20261010.md`의 ‘처음부터 폴더 선택/매 작업 승인’, ‘자동 시작은 사용자 선택’은 현재 기본 UX 결정으로서 **대체된다**. 역사적 구현 기록은 유지.
-- `apps/claw-connect/claw_connect/autostart.py`는 현재 **opt-in 기본 OFF**로 코딩돼 있다. 신규 대표 결정과의 실제 코드 차이이며, 이 문서 업데이트만으로 코드가 바뀐 것이 아니다. 기존 진행 중인 Windows PR과 충돌 여부를 확인한 뒤 **#4139 / #3099에서 실제 구현·수용**한다.
-- `docs/operations/CLAW_HARK_WEB_FIRST_OWNER_PRIORITY_20261011.md`의 **웹 기능 우선 개발 순서**는 유지한다. 그러나 이 원칙을 ‘고객 PC 연결은 본 사업의 비핵심/후순위’ 또는 ‘반복적인 승인창을 고객이 반드시 누른다’로 오해하지 않는다.
-- `#4546`의 제품 접근 projection 및 `#4483` 모델 권한은 부분적으로 소스 준비만 되었고 실제 고객 권한 연결은 아직 미검증이다. 제품의 현재 미구현 상태와 대표의 목표를 혼동하지 않는다.
-
-## 6. 문서 효력 및 변경
-
-이 문서는 **대표가 이 대화에서 직접 명확하게 확정한 사항**을 기록한다. 추가되지 않은 계약 조항·고객별 PC 권한 세부·위험별 승인 정책·운영 출시일·판매 계획은 여기서 임의로 결정하지 않는다. 대표가 나중에 다르게 지시하면 그 결정을 반영하여 이 파일 및 관련 활성 이슈를 동기화한다.
-
-참조: `AGENTS.md`, `docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md`, [#4139](https://github.com/skerishKang/ai-revenue-lab/issues/4139), [#3099](https://github.com/skerishKang/ai-revenue-lab/issues/3099), [#4428](https://github.com/skerishKang/ai-revenue-lab/issues/4428), [#3936](https://github.com/skerishKang/ai-revenue-lab/issues/3936), [#4316](https://github.com/skerishKang/ai-revenue-lab/issues/4316).
+**Do not copy the private policy text to GitHub.**
