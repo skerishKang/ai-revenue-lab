@@ -62,6 +62,26 @@ class IdentityVersionAuditTest(unittest.TestCase):
         self.assertNotIn("synthetic-secret-token", json.dumps(p))
         self.assertNotIn("syntheticaccount123", json.dumps(p))
 
+    def test_served_runtime_config_is_only_narrow_metadata_parity(self):
+        d = detail()
+        runtime = {
+            "compatibility_date": "2026-09-04",
+            "compatibility_flags": ["python_workers", "disable_python_external_sdk"],
+        }
+        d["result"]["resources"]["script_runtime"] = runtime
+        result = proof.inspect_identity_version_detail(d, ACTIVE)
+        self.assertTrue(result["served_runtime_metadata_complete"])
+        self.assertTrue(result["served_runtime_configuration_matches_reviewed_source"])
+        self.assertFalse(result["exact_git_commit_or_bundle_digest_attested"])
+        self.assertFalse(result["deployed_identity_consent_rpc_proven"])
+        runtime["compatibility_date"] = "2025-01-01"
+        self.assertFalse(proof.inspect_identity_version_detail(
+            d, ACTIVE)["served_runtime_configuration_matches_reviewed_source"])
+        del d["result"]["resources"]["script_runtime"]
+        result = proof.inspect_identity_version_detail(d, ACTIVE)
+        self.assertFalse(result["served_runtime_metadata_complete"])
+        self.assertFalse(result["served_runtime_configuration_matches_reviewed_source"])
+
     def test_deployment_race_is_not_a_consistent_snapshot(self):
         num = 0
         def requester(url, *, token):

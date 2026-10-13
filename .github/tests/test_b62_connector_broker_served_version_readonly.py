@@ -82,6 +82,35 @@ class BrokerVersionReadbackTest(unittest.TestCase):
         self.assertNotIn(EDGE, json.dumps(proof))
         self.assertNotIn("private-synthetic-token", json.dumps(proof))
 
+    def test_served_runtime_metadata_compared_to_pinned_source_configs(self):
+        # Cloudflare script_runtime is metadata, never deployed code proof.
+        for worker in audit.WORKERS:
+            detail = version_detail()
+            detail["result"]["resources"]["script_runtime"] = {
+                "compatibility_date": "2026-09-04",
+                "compatibility_flags": ["disable_python_external_sdk", "python_workers"],
+            }
+            result = audit.compare_served_runtime_config(detail, worker)
+            self.assertTrue(result["served_runtime_metadata_complete"])
+            self.assertTrue(result["served_runtime_configuration_matches_reviewed_source"])
+            detail["result"]["resources"]["script_runtime"]["compatibility_flags"] = [
+                "python_workers", "unexpected_flag",
+            ]
+            result = audit.compare_served_runtime_config(detail, worker)
+            self.assertTrue(result["served_runtime_metadata_complete"])
+            self.assertFalse(result["served_runtime_configuration_matches_reviewed_source"])
+            detail["result"]["resources"]["script_runtime"]["compatibility_flags"] = [
+                "python_workers", "python_workers",
+            ]
+            self.assertFalse(audit.compare_served_runtime_config(
+                detail, worker)["served_runtime_configuration_matches_reviewed_source"])
+            del detail["result"]["resources"]["script_runtime"]
+            result = audit.compare_served_runtime_config(detail, worker)
+            self.assertFalse(result["served_runtime_metadata_complete"])
+            self.assertFalse(result["served_runtime_configuration_matches_reviewed_source"])
+        with self.assertRaises(ValueError):
+            audit.compare_served_runtime_config(version_detail(), "unreviewed-worker")
+
     def test_deployment_changed_between_two_reads_fails_closed(self):
         calls = {}
         def requester(url, *, token):

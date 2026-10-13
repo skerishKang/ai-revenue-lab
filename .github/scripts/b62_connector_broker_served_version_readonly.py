@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import os
 import re
+from pathlib import Path
 from typing import Any
 from uuid import UUID
 
@@ -46,6 +47,66 @@ def parse_served_version(payload: object) -> str:
     if not _uuid(candidate):
         raise ValueError("Broker served-version identifier invalid")
     return candidate
+
+
+_RUNTIME_CONFIGS = {
+    "padiem-control-plane-identity": "wrangler.identity-authority.jsonc",
+    "padiem-local-agent-broker-state": "wrangler.local-agent-broker.jsonc",
+    "padiem-local-agent-broker-edge": "wrangler.local-agent-broker-edge.jsonc",
+}
+
+
+def compare_served_runtime_config(
+    payload: object, worker: str, *,
+    config_dir: Path | None = None,
+) -> dict[str, bool]:
+    """Compare *served* version runtime metadata with reviewed wrangler config.
+
+    This establishes at most compatibility-date/flags agreement. It DOES NOT
+    establish deployed Python module identity, RPC callability, consent or a
+    trustworthy Git commit. Absent/incomplete version metadata returns UNKNOWN
+    (all false); mismatched metadata can never become a release authorization.
+    """
+    filename = _RUNTIME_CONFIGS.get(worker)
+    if filename is None:
+        raise ValueError("Unknown canonical Connector authority Worker")
+    root = config_dir if config_dir is not None else (
+        Path(__file__).resolve().parents[2] / "packages" / "padiem-control-plane"
+    )
+    try:
+        source = json.loads((root / filename).read_text(encoding="utf-8"))
+    except (OSError, ValueError, UnicodeError) as exc:
+        raise ValueError("Reviewed runtime source config unavailable") from exc
+    if (type(source) is not dict or source.get("name") != worker
+        or type(source.get("compatibility_date")) is not str
+        or type(source.get("compatibility_flags")) is not list
+        or not all(type(flag) is str for flag in source["compatibility_flags"])):
+        raise ValueError("Reviewed runtime config structurally invalid")
+    result = payload.get("result") if type(payload) is dict else None
+    resources = result.get("resources") if type(result) is dict else None
+    runtime = resources.get("script_runtime") if type(resources) is dict else None
+    empty = {
+        "served_runtime_metadata_complete": False,
+        "served_runtime_configuration_matches_reviewed_source": False,
+    }
+    if type(runtime) is not dict:
+        return empty
+    date = runtime.get("compatibility_date")
+    flags = runtime.get("compatibility_flags")
+    if (type(date) is not str or type(flags) is not list
+        or not all(type(flag) is str for flag in flags)):
+        return empty
+    expected_flags = source["compatibility_flags"]
+    exact = (
+        date == source["compatibility_date"]
+        and len(flags) == len(set(flags))
+        and len(expected_flags) == len(set(expected_flags))
+        and set(flags) == set(expected_flags)
+    )
+    return {
+        "served_runtime_metadata_complete": True,
+        "served_runtime_configuration_matches_reviewed_source": exact,
+    }
 
 
 def validate_served_version_detail(payload: object, pinned_id: str) -> dict[str, bool]:
@@ -85,6 +146,7 @@ def audit(*, account_id: str, token: str, requester=get_json) -> dict[str, objec
         if code != 200:
             raise ValueError("Canonical Broker version not readable")
         evidence = validate_served_version_detail(detail, pinned_id)
+        runtime = compare_served_runtime_config(detail, worker)
         # Deployment may advance between separate GET requests. Refuse a
         # point-in-time claim until the same served id survives a second GET.
         # This does not prove source parity or guarantee future immutability.
@@ -92,7 +154,7 @@ def audit(*, account_id: str, token: str, requester=get_json) -> dict[str, objec
         if confirm_code != 200 or parse_served_version(confirm_deployments) != pinned_id:
             raise ValueError("Broker served deployment drifted during readback")
         results.append({
-            "worker": worker, **evidence,
+            "worker": worker, **evidence, **runtime,
             "served_version_stable_during_readback": True,
         })
     return {
