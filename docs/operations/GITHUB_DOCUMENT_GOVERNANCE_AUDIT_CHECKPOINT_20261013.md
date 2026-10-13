@@ -148,6 +148,15 @@ Frozen original 835-document cursor: **500** documents with some text inspected 
 - B36 safety coordination and B37 route visual references cannot be described as emergency dispatch, real navigation, crime scoring or guaranteed protection; substantive safety service and personal data policy decisions remain separate.
 - Only audit records updated; no original docs, private Governance files, customer information, live service or provider/Cloudflare settings changed.
 
+## 1Q. Batch 17 — 25 additional exact-source reads (2026-10-13)
+
+Immutable original 835-document cursor: **525 with text viewed at least partly** (125 original samples + 25 each B02–B17); **291 INDEXED_ONLY unread** text; **19 BINARY_PENDING** PDF/DOCX. The original 125 sampled sources remain pending complete classification.
+
+- [Batch17 public-safe SHA-pinned review of B45/B46/B48/B51/B55/B57 and B52](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH17_20261013.md).
+- B45 content source-rights and human review do not authorize publication; B46 actual personalization requires consent; B48 exact version independent proof is not a generic release grant.
+- B51 listing/reference validation does not install or charge workflows; B55 fleet plan does not execute Claw tasks; B57 original vs modern translation/editorial edition rights require independent clearance; B52 schedule concept not running.
+- No source modification, live deployment, real customer/provider data, off-Git Governance access or new model/business policy.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
