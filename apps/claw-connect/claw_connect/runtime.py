@@ -23,7 +23,7 @@ from . import (
     SINGLE_INSTANCE_MUTEX,
     WEB_URL,
 )
-from .autostart import Autostart, AutostartOutcome, AutostartRefused, start_command
+from .autostart import Autostart, AutostartOutcome, AutostartRefused, _is_live_enrollment, start_command
 from .connection import ConnectionController, ConnectionState
 from .enrollment import ConnectorEnrollment
 from .menu_model import (
@@ -212,11 +212,27 @@ class ConnectApp:
             self._controller.pause()
             self._supervisor.stop()
         elif self._controller.state is ConnectionState.PAUSED:
+            if not self._can_start_resident():
+                self._refresh_tray()
+                return
             self._controller.resume()
             self._supervisor.start()
         self._refresh_tray()
 
+    def _can_start_resident(self) -> bool:
+        # Reuse the credential validity contract from guarded logon startup.
+        # A tray action is not an alternative enrollment/consent authority.
+        try:
+            return _is_live_enrollment(self._enrollment.committed_record())
+        except Exception:
+            return False
+
     def reconnect(self) -> None:
+        # No manually triggered Resident without valid committed enrollment.
+        # A user who disabled boot autostart can still reconnect on demand.
+        if not self._can_start_resident():
+            self._refresh_tray()
+            return
         if self._controller.state is ConnectionState.PAUSED:
             self._controller.resume()
         elif self._controller.state is ConnectionState.DISCONNECTED:

@@ -173,3 +173,85 @@ def test_future_committed_credential_can_register_autostart():
     app, runs, _ = _harness(record)
     assert app.reconcile_autostart() is AutostartOutcome.REGISTERED
     assert len(runs.writes) == 1
+
+class _ResidentSpy:
+    def __init__(self):
+        self.restarts = 0
+        self.starts = 0
+    def restart(self):
+        self.restarts += 1
+    def start(self):
+        self.starts += 1
+    def stop(self):
+        pass
+    def is_running(self):
+        return False
+
+
+@pytest.mark.parametrize("record", [
+    None,
+    EnrollmentRecord(
+        device_id="synthetic.revoke", binding_ref="binding.revoke",
+        device_lifecycle="revoked",
+    ),
+    EnrollmentRecord(
+        device_id="synthetic.expired", binding_ref="binding.expired",
+        device_lifecycle=LIFECYCLE_PAIRED_OFFLINE,
+        credential_expires_at=datetime(2000, 1, 1, tzinfo=timezone.utc),
+    ),
+])
+def test_manual_reconnect_refuses_missing_or_blocked_credential(record):
+    from claw_connect.connection import ConnectionState
+    spy = _ResidentSpy()
+    auto = Autostart("PadiemClawConnect", MemoryRunKeyStore(),
+                     preference_store=MemoryPreferenceStore())
+    app = ConnectApp(supervisor=spy, autostart=auto, enrollment=Committed(record))
+    app.reconnect()
+    assert spy.restarts == 0
+    assert app.controller.state is ConnectionState.DISCONNECTED
+
+
+def test_manual_reconnect_uses_existing_committed_credential_only():
+    from claw_connect.connection import ConnectionState
+    spy = _ResidentSpy()
+    record = EnrollmentRecord(
+        device_id="synthetic.active", binding_ref="binding.active",
+        device_lifecycle=LIFECYCLE_PAIRED_OFFLINE,
+        credential_expires_at=datetime(2099, 1, 1, tzinfo=timezone.utc),
+    )
+    app = ConnectApp(supervisor=spy, enrollment=Committed(record),
+                     autostart=Autostart("PadiemClawConnect", MemoryRunKeyStore(),
+                              preference_store=MemoryPreferenceStore()))
+    app.reconnect()
+    assert spy.restarts == 1
+    assert app.controller.state is ConnectionState.CONNECTING
+
+def test_paused_resume_refuses_missing_credential():
+    from claw_connect.connection import ConnectionState
+    spy = _ResidentSpy()
+    app = ConnectApp(supervisor=spy, enrollment=Committed(None),
+                     autostart=Autostart("PadiemClawConnect", MemoryRunKeyStore(),
+                              preference_store=MemoryPreferenceStore()))
+    app.controller.connect()
+    app.controller.succeed()
+    app.controller.pause()
+    assert app.controller.state is ConnectionState.PAUSED
+    app.toggle_pause()
+    assert app.controller.state is ConnectionState.PAUSED
+    assert spy.starts == 0
+
+
+def test_paused_resume_allows_valid_committed_credential():
+    from claw_connect.connection import ConnectionState
+    spy = _ResidentSpy()
+    record = EnrollmentRecord(device_id="synthetic.valid", binding_ref="binding.valid",
+                              device_lifecycle=LIFECYCLE_PAIRED_OFFLINE)
+    app = ConnectApp(supervisor=spy, enrollment=Committed(record),
+                     autostart=Autostart("PadiemClawConnect", MemoryRunKeyStore(),
+                              preference_store=MemoryPreferenceStore()))
+    app.controller.connect()
+    app.controller.succeed()
+    app.controller.pause()
+    app.toggle_pause()
+    assert app.controller.state is ConnectionState.CONNECTING
+    assert spy.starts == 1
