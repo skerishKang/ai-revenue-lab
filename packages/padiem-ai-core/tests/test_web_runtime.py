@@ -238,7 +238,8 @@ def test_firecrawl_scrape_uses_fixed_v2_endpoint_and_bounded_evidence() -> None:
     }
     assert evidence.url == "https://example.com/final"
     assert len(evidence.title) <= 301
-    assert len(evidence.snippet) <= 2001
+    assert evidence.snippet == long_markdown
+    assert len(evidence.snippet) > 2_000
     assert evidence.source_type == "fetch"
 
 
@@ -739,3 +740,46 @@ def test_tinyfish_factory_returns_provider() -> None:
         WebRuntimeConfig(provider="tinyfish", tinyfish_api_key="tf-secret"),
     )
     assert isinstance(provider, TinyFishWebProvider)
+
+def test_tinyfish_fetch_preserves_long_page_into_grounding_context() -> None:
+    from padiem_ai_core.grounding_runtime import prepare_grounding_context
+    tail_marker = "COMPLETE_VERIFIABLE_SOURCE_TAIL"
+    source_body = "# Full text\\n" + "T" * 15_000 + tail_marker
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        assert str(request.url) == TINYFISH_FETCH_ORIGIN
+        return httpx.Response(200, json={
+            "results": [{
+                "url": "https://example.com/long-source",
+                "title": "Full retrieved source",
+                "text": source_body,
+            }],
+            "errors": [],
+        })
+
+    provider = TinyFishWebProvider(
+        WebRuntimeConfig(provider="tinyfish", tinyfish_api_key="tf-secret"),
+        httpx.MockTransport(handler),
+    )
+    evidence = run(provider.fetch("https://example.com/long-source"))
+    assert evidence.source_type == "fetch"
+    assert len(evidence.snippet) > 2_000
+    assert evidence.snippet.endswith(tail_marker)
+    prepared = prepare_grounding_context([evidence])
+    assert tail_marker in prepared.context
+    assert len(prepared.evidence) == 1
+    assert "tf-secret" not in prepared.context
+
+
+def test_fetch_keeps_provider_transport_byte_ceiling() -> None:
+    async def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, content=b'{"data":{"markdown":"' +
+                              b"A" * (MAX_PROVIDER_RESPONSE_BYTES + 1) + b'"}}')
+
+    provider = FirecrawlWebProvider(
+        WebRuntimeConfig(provider="firecrawl", firecrawl_api_key="fc-secret"),
+        httpx.MockTransport(handler),
+    )
+    with pytest.raises(WebRuntimeError) as exc:
+        run(provider.fetch("https://example.com/oversize"))
+    assert exc.value.code == "web_response_too_large"
