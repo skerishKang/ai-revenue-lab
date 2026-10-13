@@ -5,6 +5,11 @@ on:
     paths:
       - ".github/workflows/b62-production-code-deploy-gate.yml"
       - ".github/scripts/b62_cloudflare_production_deploy_config.py"
+      - ".github/scripts/b62_connector_broker_additive_preflight.py"
+      - ".github/tests/test_b62_connector_broker_additive_preflight.py"
+      - "packages/padiem-control-plane/local_agent_broker_worker.py"
+      - "packages/padiem-control-plane/canonical_broker_pairing_rpc.py"
+      - "packages/padiem-control-plane/wrangler.local-agent-broker.jsonc"
       - ".github/scripts/b62_web_secrets_store_contract.py"
       - ".github/tests/test_b62_atomic_web_secrets_3523.py"
       - ".github/scripts/b62_cloudflare_rollback_deployment_request.py"
@@ -182,6 +187,14 @@ jobs:
             .github/tests/test_b62_owner_d1_release_preflight.py \
             .github/tests/test_b62_binding_state_guard.py -q
           echo "OWNER_D1_PROTECTED_RELEASE_SOURCE_CI=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Enforce Connector Broker state RPC and additive preservation regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s .github/tests -p test_b62_connector_broker_additive_preflight.py -q
+          echo "CONNECTOR_BROKER_PRESERVATION_SOURCE=PASS"
           echo "PRODUCTION_MUTATION=0"
 
       - name: Gate source contract
