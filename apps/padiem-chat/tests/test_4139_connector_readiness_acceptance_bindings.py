@@ -198,3 +198,69 @@ def test_source_acceptance_profiles_still_publish_no_route():
     for path in (IDENTITY_ACCEPTANCE, BROKER_ACCEPTANCE):
         stage = json.loads(path.read_text(encoding="utf-8"))
         assert "routes" not in stage
+def test_isolated_stage_ready_does_not_require_production_release(monkeypatch):
+    """The stage must be assessed independently of intentionally OFF prod."""
+    def fake_readonly(*, config, args, **_kwargs):
+        if args[0] == "deployments":
+            return [{"created_on": "2026-10-14T01:00:00Z",
+                     "versions": [{"version_id": "stage", "percentage": 100}]}]
+        if args[0] != "versions":
+            return None
+        if config == readiness.CHAT / "wrangler.toml":
+            # Exactly the currently observed production posture.
+            return _version_view([("IDENTITY_AUTHORITY_SERVICE", "service")])
+        return _version_view([
+            ("IDENTITY_AUTHORITY_SERVICE", "service"),
+            ("LOCAL_AGENT_BROKER_AUTHORITY_SERVICE", "service"),
+            ("PADIEM_CHAT_DB", "d1"),
+            ("PADIEM_CHAT_SESSION_SECRET", "secret_text"),
+            ("PADIEM_CHAT_AUTH_MODE", "plain_text"),
+            ("CONTROL_PLANE_IDENTITY", "durable_object_namespace"),
+            ("CONTROL_PLANE_IDENTITY_LOOKUP_KEY", "secret_text"),
+            ("GOOGLE_CONNECT_TICKET_KEY", "secret_text"),
+            ("LOCAL_AGENT_BROKER_STATE", "durable_object_namespace"),
+            ("LOCAL_AGENT_BROKER_PEPPER", "secret_text"),
+        ])
+
+    monkeypatch.setattr(readiness.shutil, "which", lambda _: "wrangler")
+    monkeypatch.setattr(readiness, "_run_readonly", fake_readonly)
+    monkeypatch.setattr(readiness, "_owner_local_overlay", lambda: {
+        "present": True, "readable": True, "password_auth_selected": True,
+        "exactly_one_d1_bound": True, "public_route_published": False,
+    })
+
+    report = readiness.inventory()
+    assert report["acceptance_private_stack_ready"] is True
+    assert report["acceptance_runtime_state"] == (
+        "private_bindings_verified_login_not_proven"
+    )
+    assert report["production_connector_wiring_present"] is False
+    assert report["production_blockers"] == [
+        "chat_broker_service_binding_not_confirmed",
+        "chat_connector_operator_release_not_enabled",
+    ]
+    # Production OFF is not a prerequisite for isolated stage testing.
+    assert report["acceptance_blockers"] == [
+        "acceptance_browser_login_not_yet_proven",
+    ]
+    assert report["blocking_facts"] == report["acceptance_blockers"]
+    assert report["acceptance_browser_login_ready"] is False
+    assert report["actual_owner_windows_pairing_proven"] is False
+    assert report["readiness"] == "blocked"
+    assert report["changes_made"] is False
+
+
+def test_isolated_private_failure_stays_blocked_independently_of_prod(monkeypatch):
+    report = _facts(monkeypatch, [])
+    assert report["acceptance_private_stack_ready"] is False
+    assert report["acceptance_runtime_state"] == "private_bindings_not_ready"
+    assert "isolated_acceptance_runtime_bindings_not_ready" in (
+        report["acceptance_blockers"]
+    )
+    assert "chat_broker_service_binding_not_confirmed" in (
+        report["production_blockers"]
+    )
+    assert "chat_broker_service_binding_not_confirmed" not in (
+        report["blocking_facts"]
+    )
+    assert report["actual_owner_windows_pairing_proven"] is False
