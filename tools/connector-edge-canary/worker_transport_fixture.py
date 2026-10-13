@@ -51,7 +51,11 @@ async def _observed_scope_app(scope, receive, send):
 
 class Default(WorkerEntrypoint):
     async def fetch(self, request):
-        target = urlsplit(str(request.url))
+        # Canonical #4139 Worker guards require native Python string URL.
+        # Fail this source contract under real Workers SDK type drift.
+        if type(getattr(request, "url", None)) is not str:
+            return Response("URL_TYPE_UNSUPPORTED", status=503)
+        target = urlsplit(request.url)
         if (request.method != "GET" or target.path != _WSS
                 or target.query or target.fragment):
             return Response("NOT_FOUND", status=404)
