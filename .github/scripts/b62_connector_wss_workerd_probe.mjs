@@ -18,7 +18,13 @@ const outcome = await new Promise((resolve) => {
     resolve({ ok, reason });
   };
   const timeout = setTimeout(() => done(false, "bounded_timeout"), 9000);
-  socket.addEventListener("error", () => done(false, "websocket_handshake_error"));
+  socket.addEventListener("error", (event) => {
+    // Expose only a bounded status code from the synthetic local Workerd.
+    // Do NOT print URL, user headers, response bodies or credential material.
+    const detail = String(event?.error?.message ?? event?.message ?? "");
+    const status = detail.match(/(?:status|response)[^0-9]*(4[0-9]{2}|5[0-9]{2})/i);
+    done(false, status ? `handshake_http_${status[1]}` : "websocket_handshake_error");
+  });
   socket.addEventListener("close", () => {
     if (!settled) done(false, "premature_close");
   });
