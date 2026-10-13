@@ -87,6 +87,14 @@ Latest fixed 835-item cursor: **300 documents with text viewed at least partly**
 - B54 canonical pairing and resident execution/security contracts stay in public technical sources. Connection Center M0 and historic source integration status do not prove actual remote control, SaaS commercial promise or live production authority.
 - Original business docs remain untouched; no local Governance migration, product policy, Cloudflare state or Git history mutation.
 
+## 1I. Batch 10 — 25 more complete-source reads (2026-10-13)
+
+Latest frozen 835-item cursor: **350 source documents with text read at least partly** (125 original `TEXT_SAMPLED` plus 25 each B02–B10); **466 `INDEXED_ONLY`** full text bodies not read; **19 PDF/DOCX original binary bodies pending**. The first 125 remain only sampled, not certified fully audited.
+
+- [Batch 10 pinned B14/ModelScope/Kira and B54 Cloud/OSS/Neon/Windows connector findings](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH10_20261013.md).
+- Dated ModelScope 504, Kira limited promotion/subscription and partial Sol PDF trials are not current model eligibility, plan pricing or certified customer E2E. Cloud hosting vendor comparisons and OSS licensing must be separated from technical threat models and actual paid/contractual commitments.
+- No original public source editing, company-Governance migration, credential/provider API calls, local machine access, business-policy activation or Cloudflare mutation.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
