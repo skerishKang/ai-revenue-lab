@@ -14,6 +14,8 @@ on:
       - ".github/tests/test_b62_cloudflare_504_readonly_get.py"
       - ".github/tests/test_b62_public_origin_504_gate.py"
       - ".github/scripts/b62_binding_state_guard.py"
+      - ".github/scripts/b62_p01_sse_snapshot_off_recovery.py"
+      - ".github/tests/test_b62_p01_sse_snapshot_off_recovery.py"
       - ".github/scripts/b62_served_version_secret_guard.py"
       - ".github/scripts/cloudflare_served_version_cli.py"
       - ".github/scripts/cloudflare_served_version_lineage.py"
@@ -50,6 +52,7 @@ on:
           - cloudflare_readonly
           - owner_d1_release_preflight
           - deploy_production_code
+          - recover_p01_sse_off
           - rollback_production_code
       target_sha:
         description: "Exact current main SHA"
@@ -404,6 +407,10 @@ jobs:
             python3 .github/scripts/b62_code_deploy_served_preflight.py \
               --active-version="$active" \
               --latest-version="$latest"
+          elif [ "${{ inputs.mode }}" = "recover_p01_sse_off" ]; then
+            python3 .github/scripts/b62_code_deploy_served_preflight.py \
+              --active-version="$active" \
+              --latest-version="$latest"
           else
             # Preserve canonical strict lineage for all normal read-only modes.
             python3 .github/scripts/cloudflare_served_version_lineage.py \
@@ -418,8 +425,13 @@ jobs:
           # SSE=true while the active served Worker is the earlier SSE-OFF version.
           served_detail="${RUNNER_TEMP}/b62-active-served-settings-preflight.json"
           bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions/${active}" "${served_detail}"
-          python .github/scripts/b62_sse_served_config_drift_guard.py \
-            --settings "${settings}" --served-version "${served_detail}"
+          if [ "${{ inputs.mode }}" = "recover_p01_sse_off" ]; then
+            python .github/scripts/b62_p01_sse_snapshot_off_recovery.py candidate \
+              --settings "${settings}" --served-version "${served_detail}"
+          else
+            python .github/scripts/b62_sse_served_config_drift_guard.py \
+              --settings "${settings}" --served-version "${served_detail}"
+          fi
 
           jq -e --arg name "${IDENTITY_BINDING}" --arg service "${IDENTITY_WORKER}" \
             '[.result.bindings[] | select(.name == $name)] as $b |
@@ -480,11 +492,15 @@ jobs:
 
   deploy-production-code:
     needs: [source-contract, cloudflare-readonly]
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'deploy_production_code' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && (inputs.mode == 'deploy_production_code' || inputs.mode == 'recover_p01_sse_off') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     environment: production
+    permissions:
+      contents: read
+      actions: read
     env:
+      P01_SSE_RECOVERY_OFF: ${{ inputs.mode == 'recover_p01_sse_off' }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       READONLY_ACTIVE_VERSION: ${{ needs.cloudflare-readonly.outputs.active_version }}
@@ -499,7 +515,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ]; then
+          if [ "${P01_SSE_RECOVERY_OFF}" = "true" ]; then
+            test "${CONFIRMATION}" = "RECOVER_B62_P01_SSE_OFF_FROM_PINNED_SNAPSHOT"
+            test "${ATTACH_WEB_SECRETS_STORE}" = "false"
+            test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "false"
+            test "${COMMISSION_HARK_BROWSER}" = "false"
+            echo "SSE_RECOVERY_OFF_OWNER_AUTHORIZED=PASS"
+          elif [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ]; then
             test "${CONFIRMATION}" = "DEPLOY_B62_WITH_EXACT_B66_MEMBERSHIP_SECRET"
             test "${ATTACH_WEB_SECRETS_STORE}" = "false"
             test "${COMMISSION_HARK_BROWSER}" = "false"
@@ -520,7 +542,11 @@ jobs:
           fi
           echo "PADIEM_CHAT_PUBLIC_BASE_URL_PRESTATE=EXPECTED_REQUIRED"
           echo "PUBLIC_BASE_URL_INJECTED_BY_DEPLOY=NO"
-          echo "DEPLOY_MUTATES_LIVE_CONFIG=NO"
+          if [ "${P01_SSE_RECOVERY_OFF}" = "true" ]; then
+            echo "RECOVERY_MUTATES_ONLY_UNACCEPTED_SSE_FLAG=REMOVE"
+          else
+            echo "DEPLOY_MUTATES_LIVE_CONFIG=NO"
+          fi
           echo "B62_PRODUCTION_CODE_DEPLOY_AUTHORIZATION=PASS"
 
       - name: Checkout exact approved main SHA
@@ -573,14 +599,49 @@ jobs:
           bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions/${active}" "${detail}"
           etag_before="$(jq -er '.result.resources.script.etag' "${detail}")"
           # Repeat at the mutation boundary to rule out changed SSE settings.
-          python .github/scripts/b62_sse_served_config_drift_guard.py \
-            --settings "${settings}" --served-version "${detail}"
+          if [ "${P01_SSE_RECOVERY_OFF}" = "true" ]; then
+            python .github/scripts/b62_p01_sse_snapshot_off_recovery.py candidate \
+              --settings "${settings}" --served-version "${detail}"
+          else
+            python .github/scripts/b62_sse_served_config_drift_guard.py \
+              --settings "${settings}" --served-version "${detail}"
+          fi
           {
 
             echo "PREVIOUS_VERSION_ID=${active}"
             echo "PREVIOUS_SCRIPT_ETAG=${etag_before}"
           } >> "${GITHUB_ENV}"
 
+      - name: Download the exact 38431252763 pre-SSE immutable settings snapshot
+        if: ${{ inputs.mode == 'recover_p01_sse_off' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(gh run view 38431252763 --repo "${GITHUB_REPOSITORY}" --json workflowName -q .workflowName)" = "B62 Claw Live Config Activation Gate"
+          test "$(gh run view 38431252763 --repo "${GITHUB_REPOSITORY}" --json headSha -q .headSha)" = "537dde1e2c897c36ad02cc7c43c51e20e9e73cf2"
+          mkdir -p "${RUNNER_TEMP}/p01-sse-recovery-snapshot"
+          gh run download 38431252763 --repo "${GITHUB_REPOSITORY}" --name b62-claw-config-premutation-settings --dir "${RUNNER_TEMP}/p01-sse-recovery-snapshot"
+          recovery_snapshot="${RUNNER_TEMP}/p01-sse-recovery-snapshot/b62-settings-premutation.json"
+          test -s "${recovery_snapshot}"
+          echo "RECOVERY_SNAPSHOT=${recovery_snapshot}" >> "${GITHUB_ENV}"
+          echo 'P01_SSE_RECOVERY_IMMUTABLE_SNAPSHOT=AVAILABLE'
+          echo 'SECRET_VALUES_READ=0'
+
+      - name: Prove sole SSE drift, exact snapshot and pinned active/latest versions
+        if: ${{ inputs.mode == 'recover_p01_sse_off' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s "${RECOVERY_SNAPSHOT}"
+          python .github/scripts/b62_p01_sse_snapshot_off_recovery.py validate \
+            --settings "${RUNNER_TEMP}/b62-settings-before.json" \
+            --served-version "${RUNNER_TEMP}/b62-version-before.json" \
+            --deployments "${RUNNER_TEMP}/b62-deployments-before.json" \
+            --latest "${RUNNER_TEMP}/b62-versions-before.json" \
+            --snapshot "${RECOVERY_SNAPSHOT}"
+          echo 'P01_SSE_RECOVERY_PREMUTATION=PASS'
       - name: Capture the pre-deploy served version secret set
         shell: bash
         run: |
@@ -713,9 +774,14 @@ jobs:
             test "${ATTACH_WEB_SECRETS_STORE}" != "true"
             extra_args=(--commission-hark-browser)
           fi
+          config_settings="${RUNNER_TEMP}/b62-settings-before.json"
+          if [ "${P01_SSE_RECOVERY_OFF}" = "true" ]; then
+            test -s "${RECOVERY_SNAPSHOT}"
+            config_settings="${RECOVERY_SNAPSHOT}"
+          fi
           python .github/scripts/b62_cloudflare_production_deploy_config.py \
             "${extra_args[@]}" \
-            --settings "${RUNNER_TEMP}/b62-settings-before.json" \
+            --settings "${config_settings}" \
             --repo-config apps/padiem-chat/wrangler.toml \
             --public-base-url "${B62_PUBLIC_BASE_URL}" \
             --output "${generated}"
@@ -813,7 +879,9 @@ jobs:
           jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
 
           normalized_before="${RUNNER_TEMP}/b62-settings-before-normalized.json"
-          python - "${RUNNER_TEMP}/b62-settings-before.json" "${normalized_before}" "${B62_PUBLIC_BASE_URL}" <<'PY'
+          before_comparison="${RUNNER_TEMP}/b62-settings-before.json"
+          if [ "${P01_SSE_RECOVERY_OFF}" = "true" ]; then before_comparison="${RECOVERY_SNAPSHOT}"; fi
+          python - "${before_comparison}" "${normalized_before}" "${B62_PUBLIC_BASE_URL}" <<'PY'
           import json
           import sys
 
