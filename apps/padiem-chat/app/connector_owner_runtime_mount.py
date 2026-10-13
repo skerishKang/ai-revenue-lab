@@ -23,6 +23,9 @@ from .claw_connector_enrollment_routes import (
     connector_enrollment_consent_revoke,
     connector_enrollment_issue,
 )
+from .connector_owner_setup_page import (
+    SETUP_PATH, SCRIPT_PATH, owner_setup_page, owner_setup_script,
+)
 from .control_plane_broker_pairing_client import CloudflareCanonicalBrokerPairingClient
 from .control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
 from .same_origin_guard import expected_browser_origin
@@ -121,6 +124,8 @@ def reviewed_owner_enrollment_routes(ports: OwnerEnrollmentPorts) -> tuple[Route
     ):
         raise ValueError("canonical connector owner registration authority invalid")
     return (
+        Route(SETUP_PATH, owner_setup_page, methods=["GET"]),
+        Route(SCRIPT_PATH, owner_setup_script, methods=["GET"]),
         Route(CONNECTOR_ENROLLMENT_CONSENT_GRANT_PATH,
               connector_enrollment_consent_grant, methods=["POST"]),
         Route(CONNECTOR_ENROLLMENT_CONSENT_REVOKE_PATH,

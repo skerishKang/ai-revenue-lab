@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import getpass
 import json
 import os
 import sys
@@ -63,14 +64,18 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("status", help="machine-readable state, no tray")
     sub.add_parser("doctor", help="read-only Agent installation preflight, no Broker traffic")
     sub.add_parser("stop", help="ask a running tray to quit")
-    sub.add_parser("login", help="open the reviewed PADIEM login / consent page")
+    login = sub.add_parser("login", help="open the reviewed PADIEM login / consent page")
+    login.add_argument(
+        "--operator-wss-review", action="store_true",
+        help="open the operator-only PC registration screen and show this PC ID",
+    )
     sub.add_parser("logout", help="forget this device binding (keeps the device id)")
 
     enroll = sub.add_parser(
         "enroll", help="redeem a reviewed pairing code into a device binding"
     )
     enroll.add_argument("enroll_challenge", help="pairing challenge id")
-    enroll.add_argument("enroll_code", help="one-time pairing code")
+    enroll.add_argument("enroll_code", nargs="?", help="legacy one-time pairing code (never accepted on operator WSS argv)")
     enroll.add_argument(
         "--operator-wss-review", action="store_true",
         help="one-shot Windows DPAPI/WSS acceptance only; explicit operator gates required",
@@ -129,18 +134,31 @@ def main(argv: list[str] | None = None) -> int:
         return 0 if delivered else 1
 
     if args.command == "login":
+        if getattr(args, "operator_wss_review", False):
+            from .operator_wss_enrollment import operator_review_admitted
+            if not operator_review_admitted():
+                print(json.dumps({"ok": False, "blocked": True,
+                                  "detail": "operator WSS/DPAPI acceptance is not configured"}))
+                return 1
+            import webbrowser
+            # Device identity is nonsecret, and is never placed in a URL or
+            # attached to a browser cookie. The user enters it on the page.
+            device_id = app.enrollment.record().device_id
+            url = "https://chat.padiem.net/api/claw/connector/enrollments/setup"
+            webbrowser.open(url)
+            print(json.dumps({"ok": True, "device_id": device_id,
+                              "login_url": url, "device_connected": False},
+                             ensure_ascii=False))
+            return 0
         url = app.login()
-        print(
-            json.dumps(
-                {"ok": True, "detail": "reviewed PADIEM login page opened",
-                 "login_url": url},
-                ensure_ascii=False,
-            )
-        )
+        print(json.dumps({"ok": True, "detail": "reviewed PADIEM login page opened",
+                          "login_url": url}, ensure_ascii=False))
         return 0
 
     if args.command == "enroll":
-        if not getattr(args, "enroll_challenge", None) or not getattr(args, "enroll_code", None):
+        if not getattr(args, "enroll_challenge", None) or (
+            not getattr(args, "operator_wss_review", False) and not getattr(args, "enroll_code", None)
+        ):
             print(
                 json.dumps(
                     {"ok": False,
@@ -150,11 +168,27 @@ def main(argv: list[str] | None = None) -> int:
             return 2
         try:
             if getattr(args, "operator_wss_review", False):
+                # Pairing proof is a one-time secret: Windows command-line
+                # arguments are visible to process listings and shell history.
+                # Never accept it as argv for a real WSS device operation.
+                if args.enroll_code is not None:
+                    print(json.dumps({"ok": False, "blocked": True,
+                                      "detail": "Enter WSS pairing code at hidden prompt, not in command arguments."}))
+                    return 2
+                if not sys.stdin.isatty():
+                    print(json.dumps({"ok": False, "blocked": True,
+                                      "detail": "Secure interactive terminal required for WSS pairing."}))
+                    return 1
+                code = getpass.getpass("PADIEM 일회용 등록코드 (입력 숨김): ")
+                if not code or len(code) > 256:
+                    print(json.dumps({"ok": False, "blocked": True,
+                                      "detail": "Pairing code invalid."}))
+                    return 2
                 from .operator_wss_enrollment import enroll_via_operator_wss_review
                 result = asyncio.run(enroll_via_operator_wss_review(
                     enrollment=app.enrollment,
                     challenge_id=args.enroll_challenge,
-                    pairing_code=args.enroll_code,
+                    pairing_code=code,
                 ))
             else:
                 result = app.enrollment.complete_login(
