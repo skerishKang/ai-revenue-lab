@@ -21,7 +21,9 @@ that ``enroll`` redeems with this device's Broker device id.
 from __future__ import annotations
 
 import argparse
+import asyncio
 import json
+import os
 import sys
 
 from . import AUTOSTART_RUN_VALUE_NAME, CONNECT_PRODUCT, CONNECT_VERSION, SINGLE_INSTANCE_MUTEX
@@ -69,6 +71,10 @@ def build_parser() -> argparse.ArgumentParser:
     )
     enroll.add_argument("enroll_challenge", help="pairing challenge id")
     enroll.add_argument("enroll_code", help="one-time pairing code")
+    enroll.add_argument(
+        "--operator-wss-review", action="store_true",
+        help="one-shot Windows DPAPI/WSS acceptance only; explicit operator gates required",
+    )
 
     autostart = sub.add_parser("autostart", help="credential-gated Windows logon")
     autostart.add_argument("autostart_mode", choices=["on", "off", "show"])
@@ -82,6 +88,16 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    # Never initialise device state or call any network for a refused review
+    # command. Both flags are server/operator controlled, never user input.
+    if args.command == "enroll" and getattr(args, "operator_wss_review", False):
+        from .operator_wss_enrollment import operator_review_admitted
+        if not operator_review_admitted():
+            print(json.dumps({
+                "ok": False, "blocked": True,
+                "detail": "operator WSS/DPAPI acceptance is not configured",
+            }, ensure_ascii=False))
+            return 1
     # The doctor must never initialise ConnectorEnrollment or mint device state.
     # No tray, autostart, account, Broker or Resident process is started.
     if args.command == "doctor":
@@ -133,9 +149,17 @@ def main(argv: list[str] | None = None) -> int:
             )
             return 2
         try:
-            result = app.enrollment.complete_login(
-                challenge_id=args.enroll_challenge, pairing_code=args.enroll_code
-            )
+            if getattr(args, "operator_wss_review", False):
+                from .operator_wss_enrollment import enroll_via_operator_wss_review
+                result = asyncio.run(enroll_via_operator_wss_review(
+                    enrollment=app.enrollment,
+                    challenge_id=args.enroll_challenge,
+                    pairing_code=args.enroll_code,
+                ))
+            else:
+                result = app.enrollment.complete_login(
+                    challenge_id=args.enroll_challenge, pairing_code=args.enroll_code
+                )
         except BrokerNotConfiguredError:
             # The LOCAL1 pairing route is not activated. Report the honest
             # blocked state instead of claiming a successful enrollment.
@@ -152,7 +176,19 @@ def main(argv: list[str] | None = None) -> int:
         except EnrollmentContractError as exc:
             print(json.dumps({"ok": False, "detail": str(exc)}, ensure_ascii=False))
             return 2
-        auto_outcome = app.reconcile_autostart()
+        except Exception as exc:
+            # WebSocket/DPAPI may reveal file paths or credentials through
+            # third-party exceptions. Do not project the raw error.
+            if not getattr(args, "operator_wss_review", False):
+                raise
+            print(json.dumps({"ok": False, "blocked": True,
+                              "detail": "operator WSS pairing security hold"}))
+            return 1
+        # Explicit review must never register Windows logon autostart.
+        auto_outcome = (
+            None if getattr(args, "operator_wss_review", False)
+            else app.reconcile_autostart()
+        )
         print(
             json.dumps(
                 {"ok": True, "enrollment": result.safe_dict(),
