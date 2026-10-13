@@ -220,6 +220,24 @@ def test_workflow_authority():
 
 
 
+def test_pr_source_ci_cannot_evict_queued_protected_b62_dispatch():
+    # #38441362836 was cancelled before jobs while burst PR checks competed
+    # for the original static concurrency group. Keep all protected Production
+    # workflow_dispatch modes in ONE serialized group; isolate PR source CI.
+    for name in ("b62-production-code-deploy-gate.yml",
+                 "b62-claw-live-config-activation-gate.yml"):
+        workflow = (ROOT / ".github/workflows" / name).read_text(encoding="utf-8")
+        block = workflow.split("\nconcurrency:\n", 1)[1].split("\nenv:\n", 1)[0]
+        assert "github.event_name == 'pull_request'" in block
+        assert "github.event.pull_request.number" in block
+        assert "|| 'production'" in block
+        assert "cancel-in-progress: false" in block
+        assert "cancel-in-progress: true" not in block
+        assert "environment: production" in workflow
+        # No additional human reviewer is ever required by this queue fix.
+        assert "independent_review" not in block
+
+
 def test_owner_single_approval_does_not_require_independent_reviewer():
     # Owner-delegated release: no second GitHub user or deployment-review gate.
     # Exact SHA, confirmation, rollback snapshot and served integrity remain.
