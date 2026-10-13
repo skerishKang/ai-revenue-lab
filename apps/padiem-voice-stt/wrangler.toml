@@ -44,9 +44,11 @@ secret_name = "PADIEM_GROQ_API_KEY"
 # must supply an authenticated caller identity and a bounded per-account cost
 # authorization. It is deliberately NOT declared here: it does not exist, and
 # declaring a non-existent Service Binding would break this Worker's deploy.
-# Binding presence alone only opens the key-free capabilities route; the paid
-# transcribe / live-token routes additionally require the guard's per-request
-# authorize approval, which is not implemented yet, so they stay closed.
+# Binding presence alone only opens the key-free capabilities route. The paid
+# transcribe / live-token routes are then UNCONDITIONALLY fail-closed with
+# `caller_authorization_unimplemented` because no service-binding authorization
+# contract exists to verify a verdict against: the Worker does not call the
+# binding at all, so no guard shape can authorize a paid call.
 # Do not switch this flag on to make tests pass.
 [vars]
 PADIEM_VOICE_STT_ENABLED = "false"

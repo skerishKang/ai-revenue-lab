@@ -147,8 +147,52 @@ GROQ_API_KEY_BINDING_VERIFIED = False
 VOICE_STT_ENABLED_BINDING = "PADIEM_VOICE_STT_ENABLED"
 #: Service Binding that must supply an authenticated caller identity and a cost
 #: authorization. It does not exist yet and must not be switched on to pass tests.
+#:
+#: Attaching *any* object under this name proves nothing on its own: there is no
+#: production service-binding authorization contract implemented against which a
+#: verdict could be verified, so a binding — approving, denying or empty — is
+#: never treated as authorization. Paid routes stay unreachable until the real
+#: caller authority is implemented in its own integration slice.
 VOICE_STT_CALLER_GUARD_BINDING = "VOICE_STT_CALLER_GUARD"
 VOICE_STT_SERVICE_BINDING = "VOICE_STT_SERVICE"
+
+
+@dataclass(frozen=True)
+class CallerAuthorization:
+    """The only value that may unlock a paid route — never produced today.
+
+    This records what a *real* caller authority must hand to the Worker before a
+    paid provider request: an authenticated server-owned actor, the tenant it
+    acts for, the exact route it was admitted for, and a per-request cost
+    reservation identity with a positive authorized amount.
+
+    It is constructed **nowhere in the Worker**. The route gate
+    (``worker._require_caller_authorization``) always raises, so no request — and
+    no attached binding — can obtain one. The test suite builds instances
+    explicitly to exercise the paid pipeline in isolation, and those instances
+    never originate from ``env`` or from request input.
+    """
+
+    actor: str
+    tenant: str
+    route: str
+    reservation_id: str
+    amount_usd: float
+
+    def admits(self, route: str) -> bool:
+        """True only for the exact route this authorization was admitted for."""
+        return (
+            isinstance(self.actor, str)
+            and bool(self.actor.strip())
+            and isinstance(self.tenant, str)
+            and bool(self.tenant.strip())
+            and isinstance(self.reservation_id, str)
+            and bool(self.reservation_id.strip())
+            and isinstance(self.amount_usd, (int, float))
+            and not isinstance(self.amount_usd, bool)
+            and self.amount_usd > 0
+            and self.route == route
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -187,6 +231,9 @@ VOICE_STT_CODES: frozenset[str] = frozenset(
         # Deployment gates: fail closed before any Secret read or provider call.
         "voice_stt_disabled",
         "caller_guard_unavailable",
+        # No verified caller-identity / cost-reservation authority exists, so a
+        # paid route is unreachable regardless of what the guard binding says.
+        "caller_authorization_unimplemented",
     }
 )
 
@@ -208,6 +255,7 @@ STATUS_BY_CODE: dict[str, int] = {
     "live_token_unavailable": 503,
     "voice_stt_disabled": 503,
     "caller_guard_unavailable": 503,
+    "caller_authorization_unimplemented": 503,
 }
 
 
@@ -619,6 +667,12 @@ MAX_REQUEST_BYTES = 5 * 1024 * 1024
 #: request forever, and a browser must not wait on a socket that never answers.
 GROQ_REQUEST_TIMEOUT_MS = 25_000
 LIVE_TOKEN_REQUEST_TIMEOUT_MS = 8_000
+
+#: Ceiling for an upstream *response body*. Both upstreams answer with a tiny
+#: JSON document (a transcript, or one ephemeral-token object), so anything
+#: approaching this size is a malfunctioning or hostile provider, not data.
+#: The ceiling applies to the body read that runs *inside* the request budget.
+MAX_UPSTREAM_RESPONSE_BYTES = 256 * 1024
 
 
 def parse_declared_content_length(raw: object) -> int | None:

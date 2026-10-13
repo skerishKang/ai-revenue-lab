@@ -55,11 +55,35 @@ class FakeRequest:
 
 
 class FakeUpstream:
-    def __init__(self, status=200, payload=None):
+    """Upstream response stand-in.
+
+    ``payload`` may be a dict (serialised as JSON) or a raw string. ``hang_body``
+    mimics the failure the end-to-end deadline must catch: headers are already
+    "answered", then the body never finishes, which is exactly what a
+    header-only timeout would miss.
+    """
+
+    def __init__(self, status=200, payload=None, hang_body=False, raw=None):
         self.status = status
         self._payload = payload if payload is not None else {}
+        self.hang_body = hang_body
+        self._raw = raw
+        self.body_reads = 0
+
+    async def text(self):
+        self.body_reads += 1
+        if self.hang_body:
+            await asyncio.sleep(3600)
+        if self._raw is not None:
+            return self._raw
+        import json
+
+        return json.dumps(self._payload)
 
     async def json(self):
+        self.body_reads += 1
+        if self.hang_body:
+            await asyncio.sleep(3600)
         return self._payload
 
 
@@ -153,28 +177,39 @@ class FakeSecretsBinding:
         return self._value
 
 
-#: Sentinel so ``decision=None`` means an explicit "no decision" rather than
-#: "use the approving default".
+#: Sentinel so ``decision=None`` means an explicit "no verdict" rather than
+#: "fall back to the approving decoy default".
 _NO_DECISION = object()
 
 
 class FakeCallerGuard:
-    """A caller-identity / cost-authorization guard binding.
+    """A **decoy** caller-guard binding: it would approve anything it is asked.
 
-    Mirrors the verified ``authorize`` contract the Worker now requires: the
-    guard must approve each paid request with a caller identity *and* a bounded
-    per-account cost scope. ``calls`` records every approval attempt so tests can
-    prove the guard is actually consulted (not merely present). Pass any
-    non-approving value (including ``None``) to exercise the fail-closed path.
+    This exists to prove the opposite of what it offers. The Worker must never
+    consult it, because no production service-binding authorization contract
+    exists to verify a verdict against — an object that simply answers
+    ``{"allowed": True, ...}`` is not caller identity and not cost
+    authorization. ``calls`` therefore stays empty on every paid route, and the
+    tests assert exactly that.
     """
 
     def __init__(self, decision=_NO_DECISION):
-        if decision is _NO_DECISION:
-            decision = {"allowed": True, "caller": "acct-fixture", "cost_scope": {"daily_usd_cap": 5}}
-        self.decision = decision
+        self.decision = (
+            decision
+            if decision is not _NO_DECISION
+            else {"allowed": True, "caller": "acct-fixture", "cost_scope": {"daily_usd_cap": 5}}
+        )
         self.calls: list[dict] = []
 
     async def authorize(self, request_context):
+        self.calls.append(dict(request_context or {}))
+        return self.decision
+
+    def authorize_caller(self, request_context):  # pragma: no cover - must never be reached
+        self.calls.append(dict(request_context or {}))
+        return self.decision
+
+    async def verify(self, request_context):  # pragma: no cover - must never be reached
         self.calls.append(dict(request_context or {}))
         return self.decision
 
@@ -201,11 +236,11 @@ def install_workers_module():
 
 
 def enabled_env(**overrides):
-    """An env that passes the deployment gate (only reachable with a caller guard).
+    """An env that passes the deployment gate (only reachable with a guard binding).
 
-    The default guard is a real approving ``FakeCallerGuard`` so the paid
-    dispatch path is exercised end-to-end. Pass ``VOICE_STT_CALLER_GUARD`` to
-    substitute a non-approving guard and prove the fail-closed path.
+    The attached ``FakeCallerGuard`` is a **decoy**: the gate is open but the
+    paid routes stay closed, so the presence/approval of this binding is what
+    the tests prove *does not* authorize anything.
     """
     env = types.SimpleNamespace(
         PADIEM_VOICE_STT_ENABLED="true",

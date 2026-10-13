@@ -28,11 +28,17 @@ Every route is closed by default. ``Default.fetch`` resolves
 request, or performs any paid call. When the flag is not exactly ``"true"`` the
 whole Worker answers ``voice_stt_disabled``. Even the ``ON`` state requires the
 ``VOICE_STT_CALLER_GUARD`` Service Binding, whose presence alone only opens the
-key-free capabilities route. Paid routes (transcribe, live-token) additionally
-require the guard to approve the request through its verified ``authorize``
-contract (``_require_caller_authorization``): caller identity plus a bounded
-per-account cost scope. No approval exists yet, so this Worker cannot serve a
-paid route today. See ``voice_stt_contract`` for why.
+key-free capabilities route.
+
+Paid routes are then **unconditionally fail-closed**. ``_require_caller_authorization``
+always raises ``caller_authorization_unimplemented``: there is no production
+service-binding authorization contract, so nothing the binding says — attached,
+approving, denying, empty, ``True`` or a self-declared account — can identify a
+caller or reserve cost. The gate does not call the binding at all. The paid
+pipeline behind it is reachable only with a genuine
+``contract.CallerAuthorization`` (authenticated actor + tenant + route + cost
+reservation), which no request can supply today. See ``voice_stt_contract`` for
+why, and keep the flag OFF.
 
 All validation, provider order, chunk/turn/dedup rules and payload construction
 live in ``voice_stt_contract``; this module is the thin Workers adapter so the
@@ -43,6 +49,8 @@ from __future__ import annotations
 
 import asyncio
 import json
+import math
+import time
 import uuid
 
 from workers import Response, WorkerEntrypoint, fetch
@@ -228,62 +236,33 @@ def _binding_present(env, name: str) -> bool:
     return value is not None
 
 
-def _caller_guard(env):
-    """Return the caller-guard binding, or ``None`` when it is not attached."""
-    return getattr(env, contract.VOICE_STT_CALLER_GUARD_BINDING, None)
+async def _require_caller_authorization(env, *, route: str) -> contract.CallerAuthorization:
+    """Gate every paid route. **It always fails closed — no exception.**
 
+    A paid provider call needs a caller authority that can prove an
+    authenticated actor, its tenant, the exact route it was admitted for and a
+    per-request cost reservation. No such authority exists: ``VOICE_STT_CALLER_GUARD``
+    is not attached in production and no service-binding authorization contract
+    is implemented to verify a verdict against.
 
-async def _require_caller_authorization(env, *, route: str) -> None:
-    """Require a real caller-identity / cost authorization for paid routes.
-
-    Presence of the ``VOICE_STT_CALLER_GUARD`` binding only proves the binding
-    is attached. A paid upstream call additionally requires the guard to
-    approve this request through its verified ``authorize`` contract
-    (``authorize_caller`` / ``authorize`` / ``verify``): it must return a
-    truthy approval — synchronously or as an awaitable. Anything else
-    (missing method, exception, falsy/ambiguous result, missing identity or
-    missing cost scope) fails closed with ``caller_guard_unavailable`` before
-    any Secret is read or any provider is called.
+    Therefore this function **never returns**. It deliberately does *not* call
+    any method on the attached binding, because calling ``authorize`` (or any
+    duck-typed alias) on an object of unknown provenance proves nothing: a
+    binding that answers ``True``, ``{"allowed": True, ...}`` or an empty object
+    would spend money on behalf of an unidentified caller. Earlier revisions
+    accepted exactly those shapes; the review finding (P0-A) was that a positive
+    but unscoped verdict reached a Secret and a provider. Presence, method-name
+    fallbacks, bare truthy results, blank/zero cost scopes and self-declared
+    identities are all refused by never consulting them at all.
 
     The capabilities route carries no Secret, token, account identity or paid
-    call, so it stays on the presence-only gate.
+    call, so it stays on the presence-only gate in :func:`_require_enabled`.
+
+    The paid pipeline below is reachable only when a caller hands this function
+    a genuine :class:`contract.CallerAuthorization` — which no request can do
+    while the flag is OFF and this gate raises.
     """
-    guard = _caller_guard(env)
-    if guard is None:
-        raise contract.VoiceSttError("caller_guard_unavailable", 503)
-    candidate = None
-    for method_name in ("authorize_caller", "authorize", "verify"):
-        method = getattr(guard, method_name, None)
-        if callable(method):
-            candidate = method
-            break
-    if candidate is None:
-        raise contract.VoiceSttError("caller_guard_unavailable", 503)
-    try:
-        decision = candidate({"route": route})
-    except TypeError:
-        try:
-            decision = candidate(route)
-        except Exception:
-            raise contract.VoiceSttError("caller_guard_unavailable", 503)
-    except Exception:
-        raise contract.VoiceSttError("caller_guard_unavailable", 503)
-    try:
-        # Duck-typed awaitable detection (no ``inspect`` import): a coroutine
-        # or any thenable carries ``__await__``.
-        if hasattr(decision, "__await__"):
-            decision = await decision
-    except Exception:
-        raise contract.VoiceSttError("caller_guard_unavailable", 503)
-    if decision is True:
-        return
-    if isinstance(decision, dict):
-        allowed = decision.get("allowed", decision.get("authorized", False))
-        identity = decision.get("caller", decision.get("identity", decision.get("account_id")))
-        scope = decision.get("cost_scope", decision.get("scope", decision.get("budget")))
-        if allowed is True and isinstance(identity, str) and identity.strip() and scope is not None:
-            return
-    raise contract.VoiceSttError("caller_guard_unavailable", 503)
+    raise contract.VoiceSttError("caller_authorization_unimplemented", 503)
 
 
 async def _require_enabled(env) -> None:
@@ -300,8 +279,8 @@ async def _require_enabled(env) -> None:
 
     # ON is not reachable without the caller-identity / cost-authorization
     # Service Binding. Presence alone only opens the key-free capabilities
-    # route; paid routes re-verify the guard per request. Do not relax this
-    # to make tests pass.
+    # route; the two paid routes are then closed again unconditionally by
+    # ``_require_caller_authorization``. Do not relax this to make tests pass.
     if not _binding_present(env, contract.VOICE_STT_CALLER_GUARD_BINDING):
         raise contract.VoiceSttError("caller_guard_unavailable", 503)
 
@@ -381,14 +360,88 @@ async def _upstream_fetch(url, *, method, headers, body, timeout_ms):
         raise contract.VoiceSttError("stt_unavailable", 503) from exc
 
 
+async def _read_upstream_json(response, timeout_seconds: float) -> object:
+    """Read and parse the upstream body inside a strict wall-time budget.
+
+    The request budget covers the response body too: a provider that answers
+    with headers and then trickles (or never finishes) the body must not hold
+    the Worker past its stated ceiling. The read is bounded by
+    ``asyncio.wait_for`` on *every* runtime (with or without ``AbortSignal``)
+    and by ``contract.MAX_UPSTREAM_RESPONSE_BYTES``.
+
+    ``None`` is returned for a body that is not parseable JSON so the caller can
+    apply its normal bounded status handling. A timeout, an oversized body or a
+    transport read failure all fail closed with ``stt_unavailable``; provider
+    text is never echoed to the caller or to a log.
+    """
+    if not isinstance(timeout_seconds, (int, float)) or isinstance(timeout_seconds, bool):
+        raise contract.VoiceSttError("stt_unavailable", 503)
+    # NaN reads as "no finite budget" and fails closed rather than waiting forever.
+    if math.isnan(timeout_seconds) or timeout_seconds <= 0:
+        raise contract.VoiceSttError("stt_unavailable", 503)
+
+    async def _body_text() -> str:
+        # Wrapped in a real coroutine so ``wait_for`` can cancel it on every
+        # runtime, including one where ``Response.text()`` hands back a JS
+        # awaitable rather than a Python coroutine.
+        return await response.text()
+
+    try:
+        raw = await asyncio.wait_for(_body_text(), timeout=timeout_seconds)
+    except asyncio.TimeoutError as exc:
+        raise contract.VoiceSttError("stt_unavailable", 503) from exc
+    except Exception as exc:
+        raise contract.VoiceSttError("stt_unavailable", 503) from exc
+    text = raw if isinstance(raw, str) else str(raw)
+    if len(text.encode("utf-8", "replace")) > contract.MAX_UPSTREAM_RESPONSE_BYTES:
+        raise contract.VoiceSttError("stt_unavailable", 503)
+    try:
+        return json.loads(text)
+    except Exception:
+        return None
+
+
+async def _upstream_json(url, *, method, headers, body, timeout_ms) -> tuple[int, object]:
+    """One upstream call whose *whole* round trip — headers **and** body — is bounded.
+
+    Returns ``(status, parsed)``. The deadline is captured once and the body
+    read only gets what is left of it, so the 25s / 8s ceilings are end-to-end
+    budgets rather than connect-and-header budgets.
+    """
+    budget = _timeout_seconds(timeout_ms)
+    started = time.monotonic()
+    response = await _upstream_fetch(
+        url, method=method, headers=headers, body=body, timeout_ms=timeout_ms
+    )
+    remaining = budget - (time.monotonic() - started)
+    if remaining <= 0:
+        raise contract.VoiceSttError("stt_unavailable", 503)
+    parsed = await _read_upstream_json(response, remaining)
+    return int(getattr(response, "status", 0) or 0), parsed
+
+
 # ---------------------------------------------------------------------------
 # Handlers
 # ---------------------------------------------------------------------------
 
 
-async def _handle_transcribe(env, request) -> Response:
+def _require_authorization(authorization: object, route: str) -> None:
+    """Re-check the authorization a caller claims for one paid route.
+
+    Defence in depth: the route gate never produces an authorization today, so
+    this only runs when a caller (the test harness) hands one in explicitly. It
+    still insists on the documented shape and on the exact route, so a
+    mislabelled or zero-value authorization cannot be reused across routes.
+    """
+    if not isinstance(authorization, contract.CallerAuthorization):
+        raise contract.VoiceSttError("caller_authorization_unimplemented", 503)
+    if not authorization.admits(route):
+        raise contract.VoiceSttError("caller_authorization_unimplemented", 503)
+
+
+async def _handle_transcribe(env, request, authorization: contract.CallerAuthorization) -> Response:
+    _require_authorization(authorization, TRANSCRIBE_PATH)
     _require_json_content_type(request)
-    await _require_caller_authorization(env, route=TRANSCRIBE_PATH)
     payload = await _read_json(request, contract.MAX_REQUEST_BYTES)
     language, audio = contract.validate_transcribe_request(payload)
 
@@ -403,18 +456,13 @@ async def _handle_transcribe(env, request) -> Response:
         content_type, body = contract.build_groq_multipart_body(
             model=model, audio=audio, language=language, boundary=boundary
         )
-        upstream = await _upstream_fetch(
+        status, parsed = await _upstream_json(
             contract.GROQ_STT_ENDPOINT,
             method="POST",
             headers={"Authorization": f"Bearer {api_key}", "Content-Type": content_type},
             body=body,
             timeout_ms=contract.GROQ_REQUEST_TIMEOUT_MS,
         )
-        status = int(getattr(upstream, "status", 0) or 0)
-        try:
-            parsed = await upstream.json()
-        except Exception:
-            parsed = None
 
         ok, text, code = contract.parse_groq_transcription_response(status, parsed)
         if ok:
@@ -424,9 +472,9 @@ async def _handle_transcribe(env, request) -> Response:
     return _error(last_code)
 
 
-async def _handle_live_token(env, request) -> Response:
+async def _handle_live_token(env, request, authorization: contract.CallerAuthorization) -> Response:
+    _require_authorization(authorization, LIVE_TOKEN_PATH)
     _require_json_content_type(request)
-    await _require_caller_authorization(env, route=LIVE_TOKEN_PATH)
     payload = await _read_json(request, LIVE_TOKEN_MAX_BYTES)
     if not isinstance(payload, dict) or set(payload) - {"sessionId"}:
         raise contract.VoiceSttError("unsupported_field", 400)
@@ -436,18 +484,13 @@ async def _handle_live_token(env, request) -> Response:
         return _error("live_token_unavailable")
 
     body = contract.build_live_token_request_body()
-    upstream = await _upstream_fetch(
+    status, parsed = await _upstream_json(
         contract.GEMINI_LIVE_TOKEN_ENDPOINT,
         method="POST",
         headers={"x-goog-api-key": api_key, "Content-Type": "application/json"},
         body=json.dumps(body),
         timeout_ms=contract.LIVE_TOKEN_REQUEST_TIMEOUT_MS,
     )
-    status = int(getattr(upstream, "status", 0) or 0)
-    try:
-        parsed = await upstream.json()
-    except Exception:
-        parsed = None
 
     token = contract.extract_live_token(parsed) if 200 <= status < 300 else None
     if not token:
@@ -468,11 +511,13 @@ def _handle_capabilities() -> Response:
     return _ok(
         {
             "contract_version": contract.CONTRACT_VERSION,
-            # Presence of the guard binding opens only this key-free route. Paid
-            # routes additionally require the guard's per-request ``authorize``
-            # approval (caller identity + bounded cost scope); until such a
-            # guard exists no paid route is reachable.
-            "enabled_route_contract": "fail_closed_paid_needs_authorize",
+            # Presence of the guard binding opens only this key-free route. Both
+            # paid routes are unconditionally fail-closed: no caller authority
+            # exists that could identify an actor or reserve cost, so no paid
+            # route is reachable whatever the binding says.
+            # Deliberately not echoed here: the paid route names themselves are
+            # not published to the browser.
+            "enabled_route_contract": "paid_fail_closed_no_authority",
             "provider_order": [provider.value for provider in contract.STT_PROVIDER_ORDER],
             "session": contract.LiveSessionConfig().to_public_dict(),
             "groq_models": list(contract.groq_model_sequence()),
@@ -500,11 +545,14 @@ class Default(WorkerEntrypoint):
             if route == TRANSCRIBE_PATH:
                 if method != "POST":
                     return _error("method_not_allowed")
-                return await _handle_transcribe(self.env, request)
+                # Always raises today: no paid route is reachable.
+                authorization = await _require_caller_authorization(self.env, route=TRANSCRIBE_PATH)
+                return await _handle_transcribe(self.env, request, authorization)
             if route == LIVE_TOKEN_PATH:
                 if method != "POST":
                     return _error("method_not_allowed")
-                return await _handle_live_token(self.env, request)
+                authorization = await _require_caller_authorization(self.env, route=LIVE_TOKEN_PATH)
+                return await _handle_live_token(self.env, request, authorization)
             return _error("not_found")
         except contract.VoiceSttError as exc:
             return _error(exc.code)

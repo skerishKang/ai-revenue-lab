@@ -53,6 +53,10 @@ def test_worker_imports_only_stdlib_and_the_shared_contract():
         # stdlib: wall-clock fail-closed timeout for the upstream fetch even
         # when the runtime has no AbortSignal.
         "asyncio",
+        # stdlib: one monotonic deadline across fetch + response-body read.
+        "time",
+        # stdlib: NaN-safe check that a remaining budget is still a real budget.
+        "math",
     }
     assert _imports() - allowed == set()
 
@@ -152,6 +156,56 @@ def test_worker_declares_timeout_budgets_for_both_upstreams():
     source = _source()
     assert "contract.GROQ_REQUEST_TIMEOUT_MS" in source
     assert "contract.LIVE_TOKEN_REQUEST_TIMEOUT_MS" in source
+
+
+def test_upstream_body_read_is_bounded_not_raw_json():
+    """P0-C: the deadline covers the response body, not just the headers."""
+    source = _source()
+    # The old unbounded read is gone.
+    assert "await upstream.json()" not in source
+    assert "await response.json()" not in source
+    # Both upstreams go through the one end-to-end bounded helper.
+    assert source.count("_upstream_json(") >= 3  # definition + 2 call sites
+    assert "_read_upstream_json" in source
+    assert "asyncio.wait_for(_body_text()" in source
+    assert "await response.text()" in source
+    assert "contract.MAX_UPSTREAM_RESPONSE_BYTES" in source
+
+
+def test_paid_routes_fail_closed_unconditionally():
+    """P0-A: no guard verdict, header or binding shape can authorize a call."""
+    source = _source()
+    # The gate raises before it ever returns an authorization.
+    assert "raise contract.VoiceSttError(\"caller_authorization_unimplemented\", 503)" in source
+    # It does not consult the binding at all: no duck-typed method fallback,
+    # no truthiness test on a verdict.
+    for forbidden in ("authorize_caller", "getattr(guard", "decision is True", "decision.get"):
+        assert forbidden not in source, forbidden
+    # Nothing client-supplied is treated as identity.
+    assert "request.headers.get(\"x-padiem" not in source
+    # The pipeline additionally insists on the documented authorization object.
+    assert "isinstance(authorization, contract.CallerAuthorization)" in source
+
+
+def test_route_dispatch_asks_the_gate_before_the_pipeline():
+    """Both paid routes obtain an authorization before the handler runs."""
+    import ast
+
+    tree = ast.parse(_source(), filename=str(WORKER))
+    fetch = next(
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, (ast.AsyncFunctionDef, ast.FunctionDef)) and node.name == "fetch"
+    )
+    called = []
+    for node in ast.walk(fetch):
+        if not isinstance(node, ast.Call):
+            continue
+        name = node.func.attr if isinstance(node.func, ast.Attribute) else getattr(node.func, "id", "")
+        called.append(name)
+    for handler in ("_handle_transcribe", "_handle_live_token"):
+        assert handler in called
+        assert "_require_caller_authorization" in called[: called.index(handler)]
 
 
 def test_contract_holds_no_secrets_store_resource_locator():
