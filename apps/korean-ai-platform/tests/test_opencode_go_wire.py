@@ -9,17 +9,18 @@ from app.pilot.errors import InvalidRequest, PilotNotConfigured, MalformedUpstre
 
 SESSION = "chat_0123456789abcdef0123456789abcdef"
 TURNS = [{"role": "system", "content": "Code only"}, {"role": "user", "content": "Write a Python function."}]
-GO_IDS = ["longcat-2.5-preview-free", "step-5-preview-free", "muse-spark-1.3-contributor", "gpt-6-luna", "claude-haiku-5-5"]
+GO_IDS = ["longcat-2.5-preview-free", "step-5-preview-free", "muse-spark-1.2-contributor", "muse-spark-1.3-contributor", "gpt-6-luna", "claude-haiku-5-5"]
 
 
 @pytest.mark.parametrize("name,wire", [
     ("longcat-2.5-preview-free", "chat/completions"),
     ("step-5-preview-free", "chat/completions"),
+    ("muse-spark-1.2-contributor", "responses"),
     ("muse-spark-1.3-contributor", "responses"),
     ("gpt-6-luna", "responses"),
     ("claude-haiku-5-5", "messages"),
 ])
-def test_five_exact_wire_shapes(name, wire):
+def test_six_exact_wire_shapes(name, wire):
     url, body, h = go.prepare_go_request(
         model_id="opencode-go/" + name, upstream_model=name, messages=TURNS,
         session_id=SESSION, max_tokens=32, streaming=True,
