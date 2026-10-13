@@ -1,6 +1,6 @@
 # Complete public GitHub document path manifest — audit checkpoint 2026-10-13
 # Baseline main SHA: 5476d1038993d647bf8ba241ce6a4307cccf291f
-# Content states: INDEXED_ONLY=original source path/blob indexed, body unread; TEXT_SAMPLED=early partial/full source sampling not independently certified exhaustive; TEXT_FULL_FETCHED_B02/B03/B04/B05/B06/B07/B08/B09/B10/B11/B12/B13/B14/B15/B16/B17/B18/B19/B20/B21/B22/B23/B24/B25/B26/B27/B28/B29=original full text retrieved and provisionally classified, not Owner/legal/commercial or production clearance; BINARY_PENDING=PDF/DOCX original body unread.
+# Content states: INDEXED_ONLY=original text indexed only; TEXT_SAMPLED=early partial/full original text seen but not exhaustively certified; TEXT_FULL_FETCHED_B02/B03/B04/B05/B06/B07/B08/B09/B10/B11/B12/B13/B14/B15/B16/B17/B18/B19/B20/B21/B22/B23/B24/B25/B26/B27/B28/B29=full original text read and provisionally classified; BINARY_BODY_INSPECTED_B30=original PDF/DOCX read via Git blob, content/page structure extracted and selected rendered pages visually reviewed, not exhaustive legal publication clearance; BINARY_PENDING=original body unread.
 # This file has all 835 recognized document-format blobs from a GitHub recursive tree with truncated=false. Existing source content was not copied here.
 # Full-status classification must not be inferred from filename keywords or the TEXT_SAMPLED flag.
 PATH	BLOB_SHA	BYTES	READ_STATE
@@ -199,11 +199,11 @@ docs/commercial/business-35-ai-media-education-dx/07-kpi-measurement-framework.m
 docs/commercial/business-35-ai-media-education-dx/08-customer-qualification-scorecard.md	6adbe91d3f7ff1e22da371fbc478de04c5773cb7	3397	TEXT_SAMPLED
 docs/commercial/business-35-ai-media-education-dx/CURRENT_PRODUCT_AUTHORITY.md	b9208ba08a6bd8fc4c6492a2b99b2a791f04884c	2948	TEXT_SAMPLED
 docs/commercial/business-35-ai-media-education-dx/customer-package/Business35_Customer_Meeting_Script.md	a13725327f1cbc84638f5370af997052f1b44068	3373	TEXT_SAMPLED
-docs/commercial/business-35-ai-media-education-dx/customer-package/Business35_Diagnostic_Questionnaire.docx	452b4d3aca9861e25c71fc2357cf41afd8bf518d	38812	BINARY_PENDING
-docs/commercial/business-35-ai-media-education-dx/customer-package/Business35_Diagnostic_Questionnaire.pdf	e059884c5dde84a2ce59633a84235f3e3ed02d06	275883	BINARY_PENDING
+docs/commercial/business-35-ai-media-education-dx/customer-package/Business35_Diagnostic_Questionnaire.docx	452b4d3aca9861e25c71fc2357cf41afd8bf518d	38812	BINARY_BODY_INSPECTED_B30
+docs/commercial/business-35-ai-media-education-dx/customer-package/Business35_Diagnostic_Questionnaire.pdf	e059884c5dde84a2ce59633a84235f3e3ed02d06	275883	BINARY_BODY_INSPECTED_B30
 docs/commercial/business-35-ai-media-education-dx/customer-package/Business35_Followup_Email_Templates.md	a3acad10a56652a7be4c4a957e5e0062151cd2b3	3306	TEXT_SAMPLED
-docs/commercial/business-35-ai-media-education-dx/customer-package/Business35_Master_Proposal_10p.pdf	17ae3494c309c56a4a402f8992ff5737d8ca56f3	244026	BINARY_PENDING
-docs/commercial/business-35-ai-media-education-dx/customer-package/Business35_OnePage_Offer.pdf	be3143396d69d5a46905565842edd50160a9520f	88209	BINARY_PENDING
+docs/commercial/business-35-ai-media-education-dx/customer-package/Business35_Master_Proposal_10p.pdf	17ae3494c309c56a4a402f8992ff5737d8ca56f3	244026	BINARY_BODY_INSPECTED_B30
+docs/commercial/business-35-ai-media-education-dx/customer-package/Business35_OnePage_Offer.pdf	be3143396d69d5a46905565842edd50160a9520f	88209	BINARY_BODY_INSPECTED_B30
 docs/commercial/business-35-ai-media-education-dx/customer-package/CUSTOMIZATION_CHECKLIST.md	770adcaac174dd3905f0d8b36f26c07261334089	2638	TEXT_SAMPLED
 docs/commercial/business-35-ai-media-education-dx/customer-package/GENERATION_MANIFEST.md	c70485155fc9d24cc95fcc6c232d6eefe1831bdf	5037	TEXT_FULL_FETCHED_B02
 docs/commercial/business-35-ai-media-education-dx/customer-package/README.md	8de6e726100bc19375b9e715f7d1b6dc3a9862a0	5317	TEXT_FULL_FETCHED_B02
@@ -561,17 +561,17 @@ infra/ci-runner-3990/README.md	7fabe08b8163fdd38b43d8d353e1464e4859abc3	5973	TEX
 packages/padiem-ai-core/BOUNDARY.md	22354f3c771889442f1f7ee3cf181594730a81d4	6116	TEXT_FULL_FETCHED_B21
 packages/padiem-ai-core/PUBLIC_API_GOVERNANCE.md	74bee9a29544cd697295fab9a61b4138c86583ea	7319	TEXT_FULL_FETCHED_B21
 packages/padiem-ai-core/README.md	81863a2596b33c2aecc7825c16aca7aee8b27ecf	5582	TEXT_FULL_FETCHED_B21
-packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/f01-native-quotation.pdf	7831098d08426d2989e0aa1b1bfad2da5b3d3f54	3544	BINARY_PENDING
-packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/f02-scanned-quotation.source.pdf	127ca9f8077d56c404abfed0dff62929bc2bfbfd	3546	BINARY_PENDING
-packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/f03-quotation.docx	e0bbfe826f288b56973b55948d5f6015d14c652c	1427	BINARY_PENDING
-packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/f05-column-order-variant.pdf	abcfb31d08f38f41f419c3b41921b2d719faa947	3546	BINARY_PENDING
-packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/f06-vat-separate.pdf	c2e749ea4693ed4618030193192c384b9264743c	3536	BINARY_PENDING
-packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/f07-vat-inclusive.pdf	79e7af73db58fa477df01c7c944bfcb87c9c42d9	3521	BINARY_PENDING
-packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/f08-vat-exempt.pdf	c103709f39075bdd1aac6f047131cff74d2d3266	3522	BINARY_PENDING
-packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/f09-missing-fields.pdf	261f0a070e785f58063c5caad666b59e92649363	3257	BINARY_PENDING
-packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/f10-fixed-memo-terms.pdf	d4666ec932a623afabb4d7af263634c7450df3a2	3640	BINARY_PENDING
-packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/f12-multipage-quotation.pdf	3b73bbd5f9da4e159cc3604ee8084b8e8bb798dc	5822	BINARY_PENDING
-packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/f13-degraded-scan.source.pdf	b726260aa3fa312affb26890c35b605c8f7e37e6	3546	BINARY_PENDING
+packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/f01-native-quotation.pdf	7831098d08426d2989e0aa1b1bfad2da5b3d3f54	3544	BINARY_BODY_INSPECTED_B30
+packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/f02-scanned-quotation.source.pdf	127ca9f8077d56c404abfed0dff62929bc2bfbfd	3546	BINARY_BODY_INSPECTED_B30
+packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/f03-quotation.docx	e0bbfe826f288b56973b55948d5f6015d14c652c	1427	BINARY_BODY_INSPECTED_B30
+packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/f05-column-order-variant.pdf	abcfb31d08f38f41f419c3b41921b2d719faa947	3546	BINARY_BODY_INSPECTED_B30
+packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/f06-vat-separate.pdf	c2e749ea4693ed4618030193192c384b9264743c	3536	BINARY_BODY_INSPECTED_B30
+packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/f07-vat-inclusive.pdf	79e7af73db58fa477df01c7c944bfcb87c9c42d9	3521	BINARY_BODY_INSPECTED_B30
+packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/f08-vat-exempt.pdf	c103709f39075bdd1aac6f047131cff74d2d3266	3522	BINARY_BODY_INSPECTED_B30
+packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/f09-missing-fields.pdf	261f0a070e785f58063c5caad666b59e92649363	3257	BINARY_BODY_INSPECTED_B30
+packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/f10-fixed-memo-terms.pdf	d4666ec932a623afabb4d7af263634c7450df3a2	3640	BINARY_BODY_INSPECTED_B30
+packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/f12-multipage-quotation.pdf	3b73bbd5f9da4e159cc3604ee8084b8e8bb798dc	5822	BINARY_BODY_INSPECTED_B30
+packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/f13-degraded-scan.source.pdf	b726260aa3fa312affb26890c35b605c8f7e37e6	3546	BINARY_BODY_INSPECTED_B30
 packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/README.md	ebdd29300e80b9a3a4a7035ccc23f1cba9d160d2	5288	TEXT_FULL_FETCHED_B21
 packages/padiem-ai-core/tests/fixtures/pdf_authoring/OFL.txt	79a917be1f4b42e688a75c35f372b83a0f4ba11c	4387	TEXT_FULL_FETCHED_B21
 packages/padiem-control-plane/LOCAL_AGENT_BROKER_AUTHORITY_M2C.md	0075ec54b214aaeebaa34b3a1b12d9c45e148ddb	12090	TEXT_FULL_FETCHED_B21
@@ -580,10 +580,10 @@ packages/padiem-embedded-runtime/README.md	ee15badf865eaad2edeb01f4c2a2d093a7ec0
 PADIEM_UI_HANDOFF.md	39d172956ca235f33924d921bc8d2027ec72da04	902	TEXT_FULL_FETCHED_B28
 padiem-reports/2026-09-25/CLAW3/2825-hwpx-image-insertion-adoption.md	0829709345f894936d8830f0f1c7122cc916d4be	10894	TEXT_FULL_FETCHED_B28
 README.md	06300fe0516a421644a96d214e4aca4c6817319c	11957	TEXT_SAMPLED
-reference/b66-public-standard-templates/cgi/v1/glm53/template/base_document.pdf	b34420a509b92f85de42796c5b35ac55fe0a16a2	120668	BINARY_PENDING
+reference/b66-public-standard-templates/cgi/v1/glm53/template/base_document.pdf	b34420a509b92f85de42796c5b35ac55fe0a16a2	120668	BINARY_BODY_INSPECTED_B30
 reference/b66-public-standard-templates/cgi/v1/README.md	ca7b00bcb66f3dc767c8abbce98b491a40a15acf	4480	TEXT_FULL_FETCHED_B28
-reference/b66-public-standard-templates/cgi/v1/sol61/template/resources.pdf	744102570ac7fe2c3e480b56b3933840831d0afb	91266	BINARY_PENDING
-reference/b66-public-standard-templates/cgi/v1/source/original.pdf	b34420a509b92f85de42796c5b35ac55fe0a16a2	120668	BINARY_PENDING
+reference/b66-public-standard-templates/cgi/v1/sol61/template/resources.pdf	744102570ac7fe2c3e480b56b3933840831d0afb	91266	BINARY_BODY_INSPECTED_B30
+reference/b66-public-standard-templates/cgi/v1/source/original.pdf	b34420a509b92f85de42796c5b35ac55fe0a16a2	120668	BINARY_BODY_INSPECTED_B30
 reference/business-05-neighbor-market-v2/COMMUNITY_PRIORITY_MODEL.md	31cf405bcb8cfe9cb51eddc6aa9315520db59fc0	5984	TEXT_FULL_FETCHED_B02
 reference/business-05-neighbor-market-v2/DESIGN_SPEC.md	843bfbca3f76e3fa665241decf0ad299574d8ffc	10825	TEXT_FULL_FETCHED_B06
 reference/business-05-neighbor-market-v2/IMAGE_SOURCES.md	66fa4cf0d20ec2eb57ed4ce45c1689520b230e9d	3929	TEXT_FULL_FETCHED_B06
@@ -838,4 +838,4 @@ tools/b35-independent-qa/evidence/qa_report_with_legacy_package.md	90fc04ed66bf9
 tools/b35-independent-qa/evidence/qa_report.md	69981e9b7b91ac7a8ce04f4ab09c1fce2c55c7c1	6033	TEXT_FULL_FETCHED_B28
 tools/b35-independent-qa/README.md	39aa7b5699a8644d027c5dfcc1fed07ce546a10e	3005	TEXT_FULL_FETCHED_B29
 tools/b66_generic/README.md	8ab8d89cefa02612149daf7e480605e1bd5f61f7	5396	TEXT_FULL_FETCHED_B29
-tools/b66_generic/tests/fixtures/reference.pdf	33a04ba97bd9ad2dc5cb3c9d418e8885039bd67a	3376	BINARY_PENDING
+tools/b66_generic/tests/fixtures/reference.pdf	33a04ba97bd9ad2dc5cb3c9d418e8885039bd67a	3376	BINARY_BODY_INSPECTED_B30
