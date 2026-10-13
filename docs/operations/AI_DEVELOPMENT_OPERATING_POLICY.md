@@ -10,13 +10,13 @@
 - Model/provider decision authority: `MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`
 - Dated B14 owner decision/evidence ledger: `B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md` (historical issue and implementation status; not a second approval gate)
 
-## 0. Active Owner stage: one-person development + imminent founder-led on-site enterprise AX pilot
+## 0. Active Owner stage: one-person internal development, not customer launch certification
 
-**Effective 2026-10-13; Owner-reported facts:** the repository is operated by one developer/Owner while preparing an imminent, in-person enterprise pilot for fewer than five personally instructed customers. The core business is delegated enterprise AI transformation (AX), ontology and automation; Claw and Connector are its tools, not anonymous SaaS onboarding products. A live external release remains unproven until served-version/customer evidence exists. The Owner has explicitly specified immediate first-run Connector connection and auto-start/reconnect ON by default, user-configurable afterwards. See [canonical Owner AX pilot decisions](PADIEM_AX_FOUNDER_LED_PILOT_OPERATING_CONTRACT_20261013.md). A Production URL may still host valuable owner data and sensitive authority. 'Internal test' is not permission to bypass GitHub/Cloudflare access controls, cross-tenant checks, approval controls, production mutation protection, or secret/billing safety.
+**Effective 2026-10-13; Owner-reported facts:** the repository is operated by one developer/Owner and its Padiem products are still in active build-and-test, with no external production customers at present. This is the default portfolio operating stage until the Owner explicitly declares a real pilot/customer handoff or commercial release. A Production URL may still host valuable owner data and sensitive authority. 'Internal test' is not permission to bypass GitHub/Cloudflare access controls, cross-tenant checks, approval controls, production mutation protection, or secret/billing safety.
 
-### 0.0 Owner interpretation / non-overreach rule (2026-10-13)
+### Confidential business-governance source
 
-Before escalating the file/PC work of a personally onboarded company to a generic internet-customer consent/onboarding project, read [Owner AX pilot decisions](PADIEM_AX_FOUNDER_LED_PILOT_OPERATING_CONTRACT_20261013.md). Do not require every customer to repeatedly operate new approval dialogs, supply vendor API tokens, or enable Windows autorun manually as a product default. Do not autonomously grant or disable underlying execution authority either. **When the desired zero-friction, delegated-authority UX conflicts with existing P01/OS/backend requirements, show the specific tension and ask the Owner which design to implement; do not unilaterally invent or remove a business restriction.** Preserve existing configured platform protections until a reviewed implementation resolves the conflict. Do not expand the pilot into mass-scale SaaS certification. No new blanket model/provider customer policy without the Owner's decision.
+The repository's business decision authority is stored **outside Git**, on the authorized PC at `G:\Ddrive\BatangD\task\workdiary\ai-revenue-lab-governance\사업방침`. Read both Markdown policy documents there when a business/product decision is involved. The public technical procedures below explain **how** to implement and validate, but do not replace the local business decision. If the source is inaccessible or apparently contradictory, **ask the Owner**; do not infer a new customer permission policy. Never quote or copy private policy substance back into this public repository.
 
 ### 0A. CTO outcome order — one useful result before extra evidence
 
@@ -36,7 +36,7 @@ Before escalating the file/PC work of a personally onboarded company to a generi
 
 ### 0C. Stage escalation: when to harden
 
-The Owner has now identified a **personally supervised small-company pilot** (not an anonymous public signup campaign); apply scoped pilot/customer acceptance only to the actual promised behavior and affected technical boundary. Move to commercial release assurance for a separate paid/public rollout or concrete contract-specific need. Historical instruction: Move to **pilot/customer acceptance** when the Owner names actual external test users, customer data or a handoff; move to **commercial release assurance** when paid customers, billing, commitments, higher-risk persistence/identity integrations or external compliance require it. Use §3A, §3C and the test/deployment policies to tighten only the affected claims. An issue label, GitHub environment name or the presence of a Production hostname does **not** alone change the declared product stage.
+Move to **pilot/customer acceptance** when the Owner names actual external test users, customer data or a handoff; move to **commercial release assurance** when paid customers, billing, commitments, higher-risk persistence/identity integrations or external compliance require it. Use §3A, §3C and the test/deployment policies to tighten only the affected claims. An issue label, GitHub environment name or the presence of a Production hostname does **not** alone change the declared product stage.
 
 ### 0D. New ChatGPT/agent conversation continuity
 
