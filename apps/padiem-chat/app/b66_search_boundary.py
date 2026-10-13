@@ -108,6 +108,8 @@ def _envelope(outcome: B66SearchOutcome) -> str:
 async def plan_b66_search(
     grounding: AutoGroundingService | None,
     text: str,
+    *,
+    allow_provider: bool = False,
 ) -> B66SearchOutcome:
     """Decide, minimize and retrieve at most one bounded public query per turn."""
 
@@ -121,6 +123,11 @@ async def plan_b66_search(
     # name, so stage one retrieves only must-search freshness/volatile turns.
     if decision.disposition is not SearchDisposition.MUST_SEARCH:
         return B66SearchOutcome("not_needed", decision.reason)
+    # #4465: a configured shared provider is not authority to send customer
+    # free text to a paid public search service. This server-only permission
+    # stays OFF until an audited release explicitly enables fact retrieval.
+    if allow_provider is not True:
+        return B66SearchOutcome("unavailable", "fact_search_authorization_required")
     if grounding is None:
         return B66SearchOutcome("unavailable", "web_route_not_configured")
 
