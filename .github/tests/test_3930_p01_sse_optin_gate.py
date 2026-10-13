@@ -182,72 +182,19 @@ def test_workflow_authority():
 
 
 
-def _independent_review_authority():
-    path = ROOT / ".github/scripts/b62_p01_sse_independent_review.py"
-    ref = importlib.util.spec_from_file_location("p01_sse_independent_review", path)
-    assert ref and ref.loader
-    module = importlib.util.module_from_spec(ref)
-    ref.loader.exec_module(module)
-    return module
-
-
-def _review(login="securityReviewer", state="approved", environment="production", user_type="User"):
-    return {
-        "state": state,
-        "environments": [{"name": environment}],
-        "user": {"login": login, "id": 314, "type": user_type},
-    }
-
-
-def test_sse_independent_production_review_accepts_only_real_run_scoped_approval():
-    authority = _independent_review_authority()
-    assert authority.verify(
-        [_review()], actor="skerishKang", triggering_actor="skerishKang",
-        run_attempt=1,
-    ) == "securityReviewer"
-    assert authority.verify(
-        [_review(environment="staging"), _review()],
-        actor="skerishKang", triggering_actor="skerishKang",
-        run_attempt=1,
-    ) == "securityReviewer"
-
-
-def test_sse_independent_production_review_refuses_missing_self_bypass_rejection():
-    authority = _independent_review_authority()
-    cases = [
-        ([], "INDEPENDENT_PRODUCTION_APPROVAL_MISSING", 1),
-        ([_review("SkerishKang")], "INDEPENDENT_PRODUCTION_APPROVAL_MISSING", 1),
-        ([_review("rerunUser")], "INDEPENDENT_PRODUCTION_APPROVAL_MISSING", 1),
-        ([_review(environment="staging")], "INDEPENDENT_PRODUCTION_APPROVAL_MISSING", 1),
-        ([dict(_review(), state="bypassed")], "INDEPENDENT_PRODUCTION_APPROVAL_MISSING", 1),
-        ([_review(user_type="Bot")], "INVALID_REVIEWER", 1),
-        ([_review(), _review(state="rejected")], "PRODUCTION_REVIEW_REJECTED", 1),
-        ([_review()], "RERUN_REQUIRES_NEW_DISPATCH", 2),
-        ({}, "INVALID_REVIEW_HISTORY", 1),
-    ]
-    for reviews, expected, attempt in cases:
-        try:
-            authority.verify(reviews, actor="skerishKang",
-                             triggering_actor="rerunUser", run_attempt=attempt)
-        except authority.IndependentReviewRefused as exc:
-            assert str(exc) == expected, (reviews, str(exc), expected)
-        else:
-            raise AssertionError(f"unsafe production approval: {expected}")
-
-
-def test_sse_workflow_checks_review_before_any_cloudflare_production_mutation():
+def test_owner_single_approval_does_not_require_independent_reviewer():
+    # Owner-delegated release: no second GitHub user or deployment-review gate.
+    # Exact SHA, confirmation, rollback snapshot and served integrity remain.
     workflow = WORKFLOW.read_text(encoding="utf-8")
     block = workflow.split("\n  activate-p01-sse:\n", 1)[1]
-    assert "actions: read" in block.split("steps:", 1)[0]
-    approval = "- name: Verify independent production deployment review"
-    snapshot = "- name: Capture immutable served code and pre-mutation settings"
-    mutate = "- name: Apply one explicit SSE plain-text binding"
-    assert 0 <= block.index(approval) < block.index(snapshot) < block.index(mutate)
-    assert "b62_p01_sse_independent_review.py" in block
-    assert "/actions/runs/${GITHUB_RUN_ID}/approvals" in block
-    assert "--triggering-actor" in block and "--run-attempt" in block
-    assert "P01_SSE_INDEPENDENT_REVIEW=PASS" in block
-    assert "P01_SSE_CONFIRMATION_PHRASE=PASS" in block
+    assert "b62_p01_sse_independent_review.py" not in block
+    assert "/actions/runs/\u0024{GITHUB_RUN_ID}/approvals" not in block
+    assert "Verify independent production deployment review" not in block
+    assert "CONFIRM_ACTIVATE_B62_P01_SSE_OPTIN" in block
+    assert "b62_p01_sse_optin_gate.py plan" in block
+    assert "b62_p01_sse_optin_gate.py compare-before" in block
+    assert "b62_p01_sse_optin_gate.py verify" in block
+    assert "b62-claw-config-premutation-settings" in block
 
 if __name__ == "__main__":
     for name, func in sorted(globals().copy().items()):

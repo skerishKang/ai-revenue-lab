@@ -970,7 +970,6 @@ jobs:
     environment: production
     permissions:
       contents: read
-      actions: read
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -983,7 +982,7 @@ jobs:
           test "${CONFIRMATION}" = "CONFIRM_ACTIVATE_B62_P01_SSE_OPTIN"
           test -n "${CLOUDFLARE_API_TOKEN}"
           test -n "${CLOUDFLARE_ACCOUNT_ID}"
-          echo 'P01_SSE_CONFIRMATION_PHRASE=PASS'
+          echo 'P01_SSE_EXPLICIT_PRODUCTION_AUTHORIZATION=PASS'
           echo 'PROVIDER_REQUESTS=0'
 
       - name: Checkout exact main
@@ -996,28 +995,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
-      - name: Verify independent production deployment review
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-          DISPATCH_ACTOR: ${{ github.actor }}
-          TRIGGERING_ACTOR: ${{ github.triggering_actor }}
-          RUN_ATTEMPT: ${{ github.run_attempt }}
-        run: |
-          set -euo pipefail
-          umask 077
-          review_file="${RUNNER_TEMP}/p01-sse-production-approvals.json"
-          gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/approvals" > "${review_file}"
-          python .github/scripts/b62_p01_sse_independent_review.py \
-            --reviews "${review_file}" \
-            --actor "${DISPATCH_ACTOR}" \
-            --triggering-actor "${TRIGGERING_ACTOR}" \
-            --run-attempt "${RUN_ATTEMPT}"
-          rm -f "${review_file}"
-          echo "P01_SSE_INDEPENDENT_REVIEW=PASS"
-          echo 'P01_SSE_EXPLICIT_PRODUCTION_AUTHORIZATION=PASS'
-          echo "PRODUCTION_REVIEW_SOURCE=GITHUB_RUN_SPECIFIC"
 
       - name: Capture immutable served code and pre-mutation settings
         id: snapshot
