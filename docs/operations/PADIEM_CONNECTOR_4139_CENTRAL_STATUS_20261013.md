@@ -1,5 +1,8 @@
 # PADIEM Connector #4139 — 중앙 상태·의사결정·이슈 통합 인덱스 (2026-10-13 KST)
 
+> **OWNER SUPERSEDING BUSINESS/UX DECISION (2026-10-13, later than the historical S1 snapshot):** This product is a **founder-installed connector for fewer than five directly managed enterprise AX/ontology clients**, not anonymous self-service SaaS. The Owner has their broad delegated business/PC operating role explained on site. Customer journey: PADIEM web Claw requests local PC → representative assists download/install → **launch and connect immediately** → **autostart and auto-reconnect ON by default** at PC login → customer may pause/disable in settings. No invented mandatory QR, repeated per-task consent dialogs or vendor subscription/API-key login as ordinary onboarding. These are **target requirements, not currently live implementation**; `apps/claw-connect/claw_connect/autostart.py` still implements opt-in OFF, #4476/#4490 remain unfinished, #3099 real-PC acceptance pending. Existing P01/Broker limitations should be reconciled to founder-delegated setup by asking the Owner about unresolved UX/authorization design, rather than mandating extra customer clicks. See [Owner canonical decision](PADIEM_AX_FOUNDER_LED_PILOT_OPERATING_CONTRACT_20261013.md). The current source/production status matrix below remains truthful; superseded **policy assumptions** below are not a new Owner default.
+
+
 > **분류:** Source/issue/document audit snapshot (문서만). **운영 활성화·보안 승인·병합·실기기 E2E의 증거가 아님.**  
 > **시점:** `main` `9c41885711ff9239203b0d9010c252f6b3cf0f5f` 기준. GitHub 상태는 변경 가능하므로 실제 작업·병합 전 해당 PR의 최신 HEAD/검사를 재조회한다.  
 > **권위 구분:** 기존 Identity / canonical Broker / P01 / 원본 제품 정책은 이 문서보다 우선한다. 이 파일은 **단일 상태·업무 분배 인덱스**이며 새로운 인증/정책 엔진을 만드는 문서가 아니다.

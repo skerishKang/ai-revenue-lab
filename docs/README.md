@@ -1,5 +1,10 @@
 # Padiem / AI Revenue Lab Documentation
 
+## Current Owner enterprise AX pilot directive (2026-10-13)
+
+Before planning Claw, Connector, PADIEM customer accounts, B66 initial clients, or provider access, read **[PADIEM founder-led on-site enterprise AX pilot — canonical owner decision](operations/PADIEM_AX_FOUNDER_LED_PILOT_OPERATING_CONTRACT_20261013.md)** and the root [AGENTS.md](../AGENTS.md). This replaces generic mass SaaS assumptions with a one-person, fewer-than-five directly instructed corporate-customer AX/ontology automation service. Connector first-run immediate connection and Windows autostart/reconnect default ON are **owner product goals**, not deployed features. Underlying grant/work-ticket details unresolved? Ask owner; do not invent mandatory repeated customer consent or unrestricted technical authority.
+
+
 ```text
 DOC_STATUS = CANONICAL_ENTRYPOINT
 OWNER = repository documentation governance

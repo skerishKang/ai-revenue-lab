@@ -4,6 +4,8 @@
 >
 > **상위 전략:** [#3074](https://github.com/skerishKang/ai-revenue-lab/issues/3074) · **Cross-surface 대형 실행 EPIC:** [#4139](https://github.com/skerishKang/ai-revenue-lab/issues/4139) · **기술 계약:** [공통 로컬 실행 아키텍처](../architecture/B54_CLAW_CONNECT_DESKTOP_SHARED_LOCAL_RUNTIME_ARCHITECTURE_20261010.md)
 
+> **2026-10-13 OWNER OVERRIDE — founder-led on-site enterprise AX rollout:** This is **not** a broad SaaS self-serve plan. Under the Owner's directly explained and delegated company-PC engagement (fewer than five business leaders), first run should auto-connect and Windows startup/reconnect **default ON**. Customer may change it in settings; no invented mandatory per-file/per-task approval clicks as initial UX. Older “opt-in autostart”, “all PC access default denied” and “every action manual approval” onboarding details below are **superseded UX decisions**, not proof that code is changed. Existing Broker/P01 grants and authenticated runtime must be reconciled through a specific Owner question where conflicting, not silently bypassed. [Canonical decision](../operations/PADIEM_AX_FOUNDER_LED_PILOT_OPERATING_CONTRACT_20261013.md).
+
 ## 1. 결정: 두 앱 경험, 하나의 Claw
 
 | 구분 | Padiem Claw 웹 | **Padiem Claw Connect** | **Padiem Claw Desktop** |
@@ -19,20 +21,17 @@
 
 **정책:** 웹 사용자를 데스크톱 워크벤치로 강제 이동시키지 않는다. Full Desktop 사용자를 브라우저 화면으로 강제 이동시키지 않는다. 다만 사용자 계정과 작업/기기/승인 권위는 **한 벌**이다.
 
-## 2. 일반 사용자 여정: 다운로드 → 로그인/연결 → 트레이 온라인
+## 2. 대표 현장 설치 고객 여정 — 실제 제품 목표 (2026-10-13)
 
-1. 사용자가 웹 Claw에서 평범하게 업무를 요청한다. 클라우드에서 가능한 일은 **설치 없이 처리**한다.
-2. 내 PC가 필요한 작업에만 **“내 컴퓨터 연결”**을 보여준다. 지원 OS와 실제 접근 권한을 간단히 설명한다.
-3. **설치되지 않은 경우:** 공식 출처의 서명된 Connect 설치기를 내려받는다. 설치 후 처음 실행한다. 명령 프롬프트·PowerShell·MCP 설정·localhost 주소를 보여주지 않는다.
-4. **설치된 경우:** 웹의 연결 버튼이 서버에서 받은 유효한 `padiem://` handoff를 OS 등록 앱에 넘긴다. 사용자의 명시적 행위를 전제로 한다.
-5. 사용자는 **같은 Padiem 계정/워크스페이스**, 짧게 유효한 1회용 페어링으로 현재 PC를 등록한다. 연결 상태는 서버 권위가 검증할 때만 “온라인”.
-6. 첫 사용 시 **허용할 폴더와 작업 기능**을 선택한다. 초기값 전체 PC/관리자 권한은 거부. 정책에 따라 읽기, 쓰기, 명령 실행이 별도로 드러난다.
-7. 사용자 화면에는 **“연결됨 / 승인 필요 / 연결 끊김 / 업데이트 필요”** 같은 자연스러운 상태를 보여준다.
-8. 이후 사용자는 웹에서 작업을 요청하고 필요한 때 승인한다. Resident가 실행한 결과가 **기존 같은 Claw 대화**로 돌아온다.
-9. 트레이 아이콘으로 **일시중지·권한 보기·연결 해제·종료**할 수 있다. 사용자가 중단한 경우 서버·실행기 모두 더 이상 새 작업을 실행하지 않아야 한다.
-10. 자동 시작은 사용자가 켜고 끌 수 있어야 한다. 프로그램을 닫거나 PC가 꺼지면 정직하게 OFFLINE으로 표시한다.
+1. 대표가 소수 고객기업의 AX/온톨로지·업무 자동화 목표와 회사/PC 운용 위임을 오프라인에서 설명·확인한다. 불특정 인터넷 가입자에게 스스로 모든 기술 설정을 시키는 서비스가 아니다.
+2. 고객이 기존 PADIEM 계정에 로그인하여 Claw 웹 에이전트를 이용한다. 외부 AI 제공사 로그인/API 키 등록은 필요하지 않다.
+3. Claw가 고객 PC를 이용해야 할 때만 웹에서 **커넥터 다운로드·설치·실행**을 안내한다. 대표가 현장 설치를 직접 지원한다.
+4. 커넥터를 실행하면 **이후 별도 고객 조작을 요구하지 않고 즉시 연결**되는 경험이 목표다. 안전한 기존 계정·기기 확인/등록은 내부 구현으로 해소한다. 아직 운영 연결 성공으로 입증된 상태는 아니다.
+5. **기본 설정은 사용 가능/연결 유지/Windows 로그인 시 자동 실행/자동 재연결 ON**. 사용자는 트레이/설정에서 이를 끄거나 일시중지·연결해제할 수 있다.
+6. 대표가 기업에서 위임받은 회사/PC 작업 범위를 기준으로 자동화하며 **매 작업마다 반복 확인을 요구하는 고객 UX를 기본값으로 설계하지 않는다**. 현재 코드의 P01·Broker·WorkTicket 기술 승인은 사전 위임과 어떻게 호환할지 별도로 검토해 대표에게 질문한다. 임의로 광범위 권한을 발급하거나 기술적 검사를 생략하지 않는다.
+7. 연결 상태는 실제 서버/기기 증거에 맞춰 보여 준다. 컴퓨터가 꺼져 있거나 중지됐다면 정직하게 표시하며, 자동 재연결은 가능한 시점에 동작한다.
 
-**목표 사용감:** 메신저처럼 익숙한 트레이 프로그램. 평소 방해가 없는 작은 아이콘을 제공하되, 실행 중인 원격 작업/승인/연결 상태를 **사용자에게 숨기지 않는다**.
+**구현 상태:** 현재 Windows `autostart.py`는 opt-in/OFF이며 새 기본 UX에 맞지 않는다. 기존 Windows #4490 및 중앙 #4476 작업과 충돌 없이 #4139 구현, #3099 실제 PC 검증에서 맞춘다. 문서 변경만으로 동작/배포를 주장하지 않는다.
 
 ## 3. 고급 사용자 여정: Full Desktop
 
