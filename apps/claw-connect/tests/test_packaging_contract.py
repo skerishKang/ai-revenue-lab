@@ -33,7 +33,7 @@ ALL_STATES = tuple(ConnectionState)
 @pytest.mark.parametrize("state", ALL_STATES)
 def test_every_state_shows_the_six_required_tray_items(state):
     labels = [item.label for item in build_menu(state)]
-    assert "Claw Web 열기" in labels
+    assert "PADIEM Chat 열기" in labels
     assert "일시중지" in labels or "다시 시작" in labels
     assert "다시 연결" in labels
     assert "연결 해제" in labels
@@ -164,8 +164,12 @@ def test_login_opens_only_the_official_padiem_authentication_surface(monkeypatch
 # --- packaging contract (#4139 item 9) ------------------------------------
 def test_npx_entry_point_and_package_manifest_exist():
     manifest = json.loads((ROOT / "package.json").read_text(encoding="utf-8"))
+    assert manifest["name"] == "@padiem/connector"
+    assert manifest["bin"]["padiem-connector"] == "bin/padiem-connector.mjs"
     assert manifest["bin"]["claw-connect"] == "bin/claw-connect.mjs"
+    assert "padiem_connector/" in manifest["files"]
     assert "claw_connect/" in manifest["files"]
+    assert (ROOT / "bin" / "padiem-connector.mjs").exists()
     assert (ROOT / "bin" / "claw-connect.mjs").exists()
 
 
@@ -190,7 +194,8 @@ def test_installer_copies_the_same_module_the_npx_path_runs():
     script = (ROOT / "install.ps1").read_text(encoding="utf-8")
     wrapper = (ROOT / "bin" / "claw-connect.mjs").read_text(encoding="utf-8")
     # Both installation paths must execute the same Python module.
-    assert "claw_connect" in script
+    assert "claw_connect" in script  # stable old implementation
+    assert "padiem_connector" in script
     assert "run_module('claw_connect'" in wrapper or "run_module('claw_connect" in wrapper
 
 
