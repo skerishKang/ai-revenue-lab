@@ -19,6 +19,8 @@ on:
       - ".github/scripts/cloudflare_served_version_lineage.py"
       - ".github/tests/test_cloudflare_served_version_lineage.py"
       - ".github/scripts/b62_code_deploy_served_preflight.py"
+      - ".github/scripts/b62_sse_served_config_drift_guard.py"
+      - ".github/tests/test_b62_sse_served_config_drift_guard.py"
       - ".github/tests/test_b62_code_deploy_served_preflight.py"
       - ".github/scripts/b62_claw_live_config_activation.py"
       - ".github/scripts/b62_d1_migration_008_schema.py"
@@ -172,6 +174,10 @@ jobs:
           python -m pytest .github/tests/test_b62_code_deploy_served_preflight.py -q
           echo "NEW_MAIN_DEPLOY_PREFLIGHT_TESTS=PASS"
           echo "PRODUCTION_MUTATION=0"
+
+      - name: Block unaccepted SSE setting drift before B62 code deploy
+        shell: bash
+        run: python .github/tests/test_b62_sse_served_config_drift_guard.py
 
       # #4522: the merged B62 P01 code reads the additive receipt `released_at`
       # column, so the live D1 schema probe below is a hard predeploy
@@ -408,6 +414,13 @@ jobs:
           echo "active_version=${active}" >> "${GITHUB_OUTPUT}"
           echo "ACTIVE_VERSION=${active}"
 
+          # #3936 partial-rollback safety: script-level settings may inherit
+          # SSE=true while the active served Worker is the earlier SSE-OFF version.
+          served_detail="${RUNNER_TEMP}/b62-active-served-settings-preflight.json"
+          bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions/${active}" "${served_detail}"
+          python .github/scripts/b62_sse_served_config_drift_guard.py \
+            --settings "${settings}" --served-version "${served_detail}"
+
           jq -e --arg name "${IDENTITY_BINDING}" --arg service "${IDENTITY_WORKER}" \
             '[.result.bindings[] | select(.name == $name)] as $b |
              ($b | length) == 1 and $b[0].type == "service" and $b[0].service == $service' "${settings}" >/dev/null
@@ -559,7 +572,11 @@ jobs:
           detail="${RUNNER_TEMP}/b62-version-before.json"
           bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions/${active}" "${detail}"
           etag_before="$(jq -er '.result.resources.script.etag' "${detail}")"
+          # Repeat at the mutation boundary to rule out changed SSE settings.
+          python .github/scripts/b62_sse_served_config_drift_guard.py \
+            --settings "${settings}" --served-version "${detail}"
           {
+
             echo "PREVIOUS_VERSION_ID=${active}"
             echo "PREVIOUS_SCRIPT_ETAG=${etag_before}"
           } >> "${GITHUB_ENV}"
