@@ -323,7 +323,7 @@ async def stream_go_model(*, model_id: str, upstream_model: str,
                                        temperature=temperature, streaming=True)
     _authorization_gate(model_id, upstream_model)
     headers = await _authenticated_headers(h, wire)
-    from .platform import MAX_RESPONSE_BYTES, _pop_sse_frames, _raise_upstream_error
+    from .platform import MAX_RESPONSE_BYTES, _iter_sse_bounded_slices, _pop_sse_frames, _raise_upstream_error
     buffer = b""
     saw_text = False
     saw_end = False
@@ -333,12 +333,17 @@ async def stream_go_model(*, model_id: str, upstream_model: str,
             async with client.stream("POST", _go_url(wire), headers=headers, json=body, follow_redirects=False) as resp:
                 if not 200 <= resp.status_code < 300:
                     _raise_upstream_error(resp.status_code, "opencode-go")
-                async for block in resp.aiter_bytes():
+                # One HTTP block may contain many valid events. Slice each
+                # incoming block immediately (no read-ahead) and bound only
+                # incomplete/individual SSE frames, never cumulative output.
+                async for block in _iter_sse_bounded_slices(resp):
                     buffer += block
+                    frames, buffer = _pop_sse_frames(buffer)
                     if len(buffer) > MAX_RESPONSE_BYTES:
                         raise UpstreamResponseTooLarge(MAX_RESPONSE_BYTES)
-                    frames, buffer = _pop_sse_frames(buffer)
                     for frame in frames:
+                        if len(frame) > MAX_RESPONSE_BYTES:
+                            raise UpstreamResponseTooLarge(MAX_RESPONSE_BYTES)
                         event_type = ""
                         lines: list[str] = []
                         for line in frame.decode("utf-8").splitlines():

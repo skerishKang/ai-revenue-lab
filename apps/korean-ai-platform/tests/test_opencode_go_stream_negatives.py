@@ -267,11 +267,11 @@ async def test_stream_client_cancellation_is_not_converted_to_done(
 
 
 @pytest.mark.asyncio
-async def test_stream_response_length_cap_is_enforced(live_wire) -> None:
+async def test_stream_single_frame_resource_cap_is_enforced(live_wire) -> None:
     from app.pilot import platform as plat
 
-    chunk = b"data: " + b"x" * 4096 + b"\n\n"
-    body = chunk * ((plat.MAX_RESPONSE_BYTES // len(chunk)) + 2)
+    # Resource guard is per unfinished/individual event, not total model text.
+    body = b"data: " + b"x" * (plat.MAX_RESPONSE_BYTES + 1) + b"\n\n"
     with pytest.raises(UpstreamResponseTooLarge):
         await _collect(
             go.stream_go_model(
@@ -279,6 +279,60 @@ async def test_stream_response_length_cap_is_enforced(live_wire) -> None:
                 transport=_sse_transport(body),
             )
         )
+
+
+
+@pytest.mark.asyncio
+async def test_coalesced_healthy_chat_events_over_1mib_are_not_rejected(live_wire) -> None:
+    """One HTTP block can contain >1MiB of *valid* small events."""
+    from app.pilot import platform as plat
+
+    frame = _chat_delta("G" * 900)
+    count = plat.MAX_RESPONSE_BYTES // len(frame) + 5
+    body = frame * count + b"data: [DONE]\n\n"
+    assert len(body) > plat.MAX_RESPONSE_BYTES
+    seen = []
+    def handle(request):
+        seen.append(request)
+        return httpx.Response(200, content=body, headers={"Content-Type": "text/event-stream"})
+    events = await _collect(go.stream_go_model(
+        **_stream_kwargs("longcat-2.5-preview-free"),
+        transport=httpx.MockTransport(handle),
+    ))
+    assert len(seen) == 1
+    assert len([event for event in events if event.delta_content]) == count
+    assert events[-1].done is True
+
+
+@pytest.mark.asyncio
+async def test_responses_healthy_coalesced_events_over_1mib_are_not_rejected(live_wire) -> None:
+    from app.pilot import platform as plat
+
+    frame = _frame("response.output_text.delta",
+                   {"type": "response.output_text.delta", "delta": "R" * 900})
+    count = plat.MAX_RESPONSE_BYTES // len(frame) + 4
+    done = _frame("response.completed",
+                  {"type": "response.completed",
+                   "response": {"status": "completed", "model": "muse-spark-1.2-contributor"}})
+    body = frame * count + done
+    assert len(body) > plat.MAX_RESPONSE_BYTES
+    events = await _collect(go.stream_go_model(
+        **_stream_kwargs("muse-spark-1.2-contributor"),
+        transport=_sse_transport(body),
+    ))
+    assert len([event for event in events if event.delta_content]) == count
+    assert events[-1].done is True
+
+
+@pytest.mark.asyncio
+async def test_long_single_valid_sse_frame_under_resource_cap_crosses_chunks(live_wire) -> None:
+    body = _chat_delta("Z" * (70 * 1024)) + b"data: [DONE]\n\n"
+    events = await _collect(go.stream_go_model(
+        **_stream_kwargs("step-5-preview-free"),
+        transport=_sse_transport(body),
+    ))
+    assert events[0].delta_content == "Z" * (70 * 1024)
+    assert events[-1].done is True
 
 
 # --------------------------------------------------------------------------
