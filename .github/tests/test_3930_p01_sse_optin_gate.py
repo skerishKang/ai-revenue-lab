@@ -452,6 +452,82 @@ def test_cloudflare_error_code_filter_ignores_secret_bearing_error_messages():
     assert PRIVATE not in result.stdout
 
 
+
+def _settings_generated_post(before):
+    post = post_from(before)
+    post[1]["result"]["deployments"][0]["annotations"]["workers/message"] = (
+        "Cloudflare settings update; no source SHA")
+    post[2]["annotations"] = {"workers/message": f"B62 production code {SHA}"}
+    return post
+
+
+def test_actual_second_incident_provider_deployment_note_uses_immutable_version_sha():
+    # GET-only Actions #38454872275 proved deployment note OTHER while the
+    # newly served immutable version message is exactly the original source SHA.
+    before = fixtures()
+    post = _settings_generated_post(before)
+    gate.verify(*before, *post, SHA)
+    # PRE-PATCH readiness and concurrent-mutation guards remain strict.
+    must_fail(lambda: gate.plan(*post, SHA), "SOURCE_LINEAGE_UNVERIFIED")
+    must_fail(lambda: gate.compare_before(*before, *post, SHA),
+              "SOURCE_LINEAGE_UNVERIFIED")
+
+
+def test_postpatch_version_lineage_must_be_exact_and_noop_cannot_use_fallback():
+    before = fixtures()
+    post = _settings_generated_post(before)
+    post[2].pop("annotations")
+    must_fail(lambda: gate.verify(*before, *post, SHA),
+              "POST_VERSION_LINEAGE_UNVERIFIED")
+    post = _settings_generated_post(before)
+    post[2]["annotations"]["workers/message"] = PRIVATE
+    must_fail(lambda: gate.verify(*before, *post, SHA),
+              "POST_VERSION_LINEAGE_UNVERIFIED")
+    post = _settings_generated_post(before)
+    post[1]["result"]["deployments"][0]["annotations"]["workers/message"] = (
+        f"B62 production code {'b'*40}")
+    must_fail(lambda: gate.verify(*before, *post, SHA),
+              "SOURCE_SHA_MISMATCH")
+    noop = fixtures("true")
+    noop[1]["result"]["deployments"][0]["annotations"]["workers/message"] = (
+        "provider settings change")
+    noop[2]["annotations"] = {"workers/message": f"B62 production code {SHA}"}
+    must_fail(lambda: gate.verify(*fixtures("true"), *noop, SHA, no_op=True),
+              "SOURCE_LINEAGE_UNVERIFIED")
+
+
+def test_postpatch_lineage_fallback_never_weakens_code_binding_or_flag_guards():
+    before = fixtures()
+    altered = _settings_generated_post(before)
+    altered[2]["resources"]["script"]["etag"] = "injected-other-code"
+    must_fail(lambda: gate.verify(*before, *altered, SHA),
+              "WORKER_CODE_OR_RUNTIME_DRIFT")
+    altered = _settings_generated_post(before)
+    altered[2]["resources"]["bindings"][-1]["text"] = "false"
+    must_fail(lambda: gate.verify(*before, *altered, SHA), "SERVED_FLAG_DRIFT")
+    altered = _settings_generated_post(before)
+    altered[0]["result"]["bindings"].append(b("UNAPPROVED", "plain_text", text=PRIVATE))
+    altered[2]["resources"]["bindings"].append(b("UNAPPROVED", "plain_text", text=PRIVATE))
+    must_fail(lambda: gate.verify(*before, *altered, SHA), "POST_SETTINGS_DRIFT")
+    altered = _settings_generated_post(before)
+    altered[1]["result"]["deployments"][0]["versions"][0]["percentage"] = 50
+    must_fail(lambda: gate.verify(*before, *altered, SHA), "ACTIVE_VERSION_NOT_UNIQUE")
+
+
+def test_postpatch_source_reason_is_finite_without_exposing_secret():
+    before = fixtures()
+    post = _settings_generated_post(before)
+    post[2]["annotations"]["workers/message"] = PRIVATE
+    with TemporaryDirectory() as td:
+        argv = _cli_evidence_paths(Path(td), before, post)
+        output = StringIO()
+        with redirect_stdout(output):
+            assert gate.main(argv) == 1
+    result = output.getvalue()
+    assert "P01_SSE_OPTIN_GATE_REASON=POST_VERSION_LINEAGE_UNVERIFIED" in result
+    assert PRIVATE not in result
+    assert "SECRET_VALUES_EMITTED=0" in result
+
 if __name__ == "__main__":
     for name, func in sorted(globals().copy().items()):
         if name.startswith("test_") and callable(func):

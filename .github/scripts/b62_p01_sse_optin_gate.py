@@ -30,6 +30,7 @@ SAFE_REFUSAL_CODES = frozenset({
     "OUTPUT_PATH_UNAVAILABLE",
     "POST_SERVED_BINDING_DRIFT",
     "POST_SETTINGS_DRIFT",
+    "POST_VERSION_LINEAGE_UNVERIFIED",
     "PREMUTATION_STATE_CHANGED",
     "REQUIRED_BINDING_MISSING_OR_RETYPED",
     "RUNTIME_IDENTITY_MISSING",
@@ -87,18 +88,27 @@ def version_result(version: object) -> dict:
     return result
 
 
-def active(deployments: object) -> tuple[str, str]:
+def active(deployments: object, *, allow_settings_generated_lineage: bool = False
+           ) -> tuple[str, str | None]:
+    # A settings PATCH can create a 100%-served new version whose deployment
+    # annotation is provider-generated rather than the code-deploy source SHA.
+    # This exception is allowed ONLY in post-PATCH verification; immutable
+    # version annotations must then independently prove the exact source SHA.
     try:
         served = readiness._served.resolve_served_version_id(deployments)
     except readiness._served.ServedVersionResolutionError as exc:
         raise OptInRefused("ACTIVE_VERSION_NOT_UNIQUE") from exc
     d = deployments["result"]["deployments"][0]
-    msg = d.get("annotations", {}).get("workers/message")
-    match = SOURCE.fullmatch(msg) if isinstance(msg, str) else None
-    if not match:
+    annotations = d.get("annotations")
+    msg = annotations.get("workers/message") if isinstance(annotations, dict) else None
+    if not isinstance(msg, str) or not msg:
         raise OptInRefused("SOURCE_LINEAGE_UNVERIFIED")
-    return served, match.group(1)
-
+    match = SOURCE.fullmatch(msg)
+    if match:
+        return served, match.group(1)
+    if not allow_settings_generated_lineage:
+        raise OptInRefused("SOURCE_LINEAGE_UNVERIFIED")
+    return served, None
 
 def version_bindings(version: dict) -> dict[str, dict]:
     raw = version["resources"].get("bindings")
@@ -117,15 +127,27 @@ def version_bindings(version: dict) -> dict[str, dict]:
 
 
 def inspect(settings: object, deployments: object, version: object, target_sha: str,
-            *, require_optin: bool = False) -> tuple[dict, dict, dict, str]:
+            *, require_optin: bool = False,
+            allow_settings_generated_lineage: bool = False) -> tuple[dict, dict, dict, str]:
     if not SHA.fullmatch(target_sha):
         raise OptInRefused("INVALID_TARGET_SHA")
-    served, source = active(deployments)
-    if source != target_sha:
+    served, source = active(
+        deployments, allow_settings_generated_lineage=allow_settings_generated_lineage)
+    if source is not None and source != target_sha:
         raise OptInRefused("SOURCE_SHA_MISMATCH")
     v = version_result(version)
     if served != v["id"]:
         raise OptInRefused("VERSION_MISMATCH")
+    if source is None:
+        # A provider-generated *deployment* note is not source authority.
+        # The exact immutable *version* must contain the code-deploy SHA.
+        # Remaining verify() gates still require flag-only changes, equal
+        # script ETag/runtime/assets, no other binding or Secret drift.
+        annotation = v.get("annotations")
+        if not isinstance(annotation, dict) or (
+            annotation.get("workers/message") != f"B62 production code {target_sha}"
+        ):
+            raise OptInRefused("POST_VERSION_LINEAGE_UNVERIFIED")
     s = bindings(settings)
     vb = version_bindings(v)
     if set(s) != set(vb) or any(s[n]["type"] != vb[n]["type"] for n in s):
@@ -181,7 +203,8 @@ def compare_before(s0, d0, v0, s1, d1, v1, sha: str) -> None:
 
 def verify(s0, d0, v0, s1, d1, v1, sha: str, *, no_op: bool = False) -> None:
     a, av, ab, aid = inspect(s0, d0, v0, sha)
-    b, bv, bb, bid = inspect(s1, d1, v1, sha, require_optin=True)
+    b, bv, bb, bid = inspect(s1, d1, v1, sha, require_optin=True,
+                              allow_settings_generated_lineage=not no_op)
     if no_op:
         if aid != bid or a != b or av != bv:
             raise OptInRefused("NO_OP_STATE_CHANGED")
