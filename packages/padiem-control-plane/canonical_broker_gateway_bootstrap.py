@@ -283,6 +283,15 @@ class DurableBrokerGatewayBootstrap:
                 or pending.enrollment_binding.device_id != device_id
                 or now >= pending.challenge.expires_at):
                 raise _err("gateway_bootstrap_scope_mismatch")
+            # Fetch authorizes an outbound request that may trigger the sole
+            # canonical redemption. Only the already-consumed Broker challenge
+            # can authorize later DPAPI ACK or remote compensation-verdict reads.
+            if counter >= 2 and (
+                pending.redeemed_at is None
+                or pending.redeemed_device_id != device_id
+                or pending.redeemed_binding_ref is None
+            ):
+                raise _err("gateway_bootstrap_unredeemed")
             code = pairing._pairing_code(
                 challenge_id=challenge_id, code_nonce=pending.code_nonce,
             )
