@@ -156,6 +156,44 @@ class CandidatePlanTest(unittest.TestCase):
                 planner.verify_broker_source_rpc_contract(rpc_module=altered_rpc)
 
 
+    def test_identity_consent_private_rpc_source_contract(self):
+        planner.verify_identity_source_rpc_contract()
+        plan = planner.candidate_preservation(live())
+        self.assertTrue(plan["identity_consent_rpc_source_contract_proven"])
+        self.assertFalse(plan["deployed_rpc_revision_proven"])
+        self.assertFalse(plan["deploy_authorized"])
+
+    def test_identity_private_consent_rpc_misrouting_and_gate_drift_rejected(self):
+        worker = planner.IDENTITY_WORKER_MODULE.read_text(encoding="utf-8")
+        rpc = planner.IDENTITY_RPC_MODULE.read_text(encoding="utf-8")
+        config = json.loads(planner.IDENTITY_CONFIG.read_text(encoding="utf-8"))
+        original = "return await self._stub().authorize_connector_enrollment_redeem(payload)"
+        self.assertIn(original, worker)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            worker_copy = root / "identity_authority_worker.py"
+            worker_copy.write_text(worker.replace(
+                original,
+                "return await self._stub().bind_connector_enrollment_challenge(payload)",
+                1,
+            ), encoding="utf-8")
+            with self.assertRaises(ProductionConfigError):
+                planner.verify_identity_source_rpc_contract(identity_worker=worker_copy)
+            config["name"] = "padiem-local-agent-broker-edge"
+            cfg_copy = root / "wrangler.identity-authority.jsonc"
+            cfg_copy.write_text(json.dumps(config), encoding="utf-8")
+            with self.assertRaises(ProductionConfigError):
+                planner.verify_identity_source_rpc_contract(identity_config=cfg_copy)
+            # Dropping the schema-installed authority MUST be caught.
+            rpc_copy = root / "canonical_connector_enrollment_consent_rpc.py"
+            self.assertIn('"CONTROL_PLANE_CONNECTOR_ENROLLMENT_SCHEMA_INSTALLED"', rpc)
+            rpc_copy.write_text(rpc.replace(
+                '"CONTROL_PLANE_CONNECTOR_ENROLLMENT_SCHEMA_INSTALLED"',
+                '"CONTROL_PLANE_CONNECTOR_ENROLLMENT_SCHEMA_BYPASS"',
+            ), encoding="utf-8")
+            with self.assertRaises(ProductionConfigError):
+                planner.verify_identity_source_rpc_contract(identity_rpc=rpc_copy)
+
     def test_failed_live_preservation_is_not_a_green_ci(self):
         # A well-formed HTTP 200 with an incomplete live inventory is HOLD.
         # No token, settings JSON or secret should appear in stdout.
