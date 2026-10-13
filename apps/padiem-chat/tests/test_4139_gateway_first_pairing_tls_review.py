@@ -98,8 +98,7 @@ def test_no_runtime_edge_cf_metadata_refused(cf):
     {"cookie": "session=fake"},
     {"authorization": "Bearer fake"},
     {"client-cert": "bogus"},
-    {"x-forwarded-proto": "https"},
-    {"cf-visitor": '{"scheme":"https"}'},
+    {"cf-client-cert-sha256": "a" * 64},
     {"sec-websocket-protocol": "credential"},
     {"cf-tls-client-auth": "SUCCESS"},
 ])
@@ -144,3 +143,19 @@ def test_request_and_websocket_properties_fail_closed():
     assert _verify(SimpleNamespace()) is False
     assert _verify(ws=SimpleNamespace()) is False
     assert _verify(ws=_ws(scope="websocket")) is False
+
+
+@pytest.mark.parametrize("edge_headers", [
+    {"cf-visitor": '{"scheme":"https"}'},
+    {"x-forwarded-proto": "https"},
+    {"cf-visitor": '{"scheme":"https"}', "x-forwarded-proto": "https"},
+    {"cf-ray": "synthetic-ray", "cf-connecting-ip": "192.0.2.1"},
+])
+def test_cloudflare_added_headers_are_ignored_not_identity(edge_headers):
+    """Edge-generated HTTP headers must not deny valid TLS or establish trust."""
+    assert _verify(_request(headers=edge_headers)) is True
+    assert _verify(ws=_ws(headers=edge_headers)) is True
+    missing_cf = _request(headers=edge_headers, cf={})
+    assert _verify(missing_cf) is False
+    downgraded_cf = _request(headers=edge_headers, tls="TLSv1.0")
+    assert _verify(downgraded_cf) is False
