@@ -26,11 +26,14 @@ SCOPE = {
 }
 
 
-def _request(*, tls="TLSv1.3", url=URL, headers=None, cf=None):
+_CF_UNSET = object()
+
+
+def _request(*, tls="TLSv1.3", url=URL, headers=None, cf=_CF_UNSET):
     return SimpleNamespace(
         url=url,
         headers={} if headers is None else headers,
-        cf={"tlsVersion": tls} if cf is None else cf,
+        cf={"tlsVersion": tls} if cf is _CF_UNSET else cf,
     )
 
 
