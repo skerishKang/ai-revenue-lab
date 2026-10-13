@@ -9,6 +9,8 @@ on:
       - '.github/workflows/b54-local-agent-ingress-remediation-redeploy.yml'
       - '.github/workflows/b54-local-agent-public-ingress-activation.yml'
       - '.github/scripts/control_plane_ci_overlap_3989.sh'
+      - '.github/scripts/connector_bundle_fingerprint.py'
+      - '.github/tests/test_connector_bundle_fingerprint.py'
       - '.github/tests/test_3989_control_plane_ci_overlap.py'
   workflow_dispatch:
 
@@ -26,6 +28,9 @@ jobs:
     steps:
       - name: Checkout exact head
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -80,6 +85,24 @@ jobs:
       - name: Verify full-suite and six Worker dry-run ownership contract
         run: python .github/tests/test_3989_control_plane_ci_overlap.py
 
+      - name: Verify source-only Connector bundle fingerprint tests
+        shell: bash
+        run: python -m unittest discover -s .github/tests -p test_connector_bundle_fingerprint.py -q
+
       - name: Overlap full Control Plane tests and six isolated Worker package dry-runs
         shell: bash
-        run: bash .github/scripts/control_plane_ci_overlap_3989.sh
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          bash .github/scripts/control_plane_ci_overlap_3989.sh
+
+      - name: Retain three redacted private Worker dry-run fingerprints
+        uses: actions/upload-artifact@v4
+        with:
+          name: connector-private-workers-bundle-fingerprints
+          path: |
+            ${{ runner.temp }}/connector-ci-broker-state-fingerprint.json
+            ${{ runner.temp }}/connector-ci-broker-edge-fingerprint.json
+            ${{ runner.temp }}/connector-ci-identity-fingerprint.json
+          if-no-files-found: error
+          retention-days: 30
