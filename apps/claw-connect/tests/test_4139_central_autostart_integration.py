@@ -127,3 +127,21 @@ def test_installer_uninstall_uses_shared_ownership_gate_instead_of_raw_delete():
     assert "& $PythonExePath -m claw_connect autostart off" in src
     assert "Remove-ItemProperty -Path $RunKey" not in src
     assert "Could not be safely disabled" not in src or "Autostart could not be safely disabled" in src
+
+
+def test_cli_show_never_echoes_a_foreign_secret_bearing_registry_command(
+    monkeypatch, capsys,
+):
+    app, runs, _ = _harness(None)
+    secret = 'python.exe --token=do-not-log'
+    runs.values["PadiemClawConnect"] = secret
+    monkeypatch.setattr(cli, "Autostart", lambda _name: app.autostart)
+    monkeypatch.setattr(cli, "ConnectApp", lambda: object())
+    assert cli.main(["autostart", "show"]) == 0
+    output = capsys.readouterr().out
+    assert secret not in output
+    assert "--token" not in output
+    import json
+    parsed = json.loads(output)
+    assert parsed["enabled"] is False
+    assert parsed["command"] is None

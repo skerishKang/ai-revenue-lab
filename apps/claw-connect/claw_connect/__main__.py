@@ -183,7 +183,11 @@ def main(argv: list[str] | None = None) -> int:
             json.dumps(
                 {"ok": True, "mode": args.autostart_mode,
                  "enabled": autostart.is_enabled(),
-                 "command": autostart.current_command(),
+                 # A corrupt or foreign Run value may carry secrets. Never
+                 # reflect it to JSON even when a user asks for 'show'.
+                 "command": (
+                     autostart.current_command() if autostart.is_enabled() else None
+                 ),
                  "preference": autostart.preference()},
                 ensure_ascii=False,
             )
