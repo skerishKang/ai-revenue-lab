@@ -266,6 +266,43 @@ def test_explicit_denial_is_projected_as_denied_only_with_authority() -> None:
     assert entry.authority == "cp-product-access-v1"
 
 
+@pytest.mark.parametrize(
+    "source_authority",
+    ["none", "", None, "invalid authority"],
+)
+def test_unidentifiable_source_cannot_claim_available_or_denied(
+    source_authority: object,
+) -> None:
+    """An explicit registered source is not enough without real provenance."""
+    for state in (ProductAccessState.AVAILABLE, ProductAccessState.DENIED):
+        source = _Source(
+            authority=source_authority,  # type: ignore[arg-type]
+            finding=_finding(authority="none", state=state),
+        )
+        projection = build_product_access_projection(
+            _subject(),
+            sources={PADIEM_CHAT_PRODUCT_ID: source},
+            now=NOW,
+        )
+        entry = projection.entry_for(PADIEM_CHAT_PRODUCT_ID)
+        assert entry.access is ProductAccessState.UNAVAILABLE
+        assert entry.reason == "authority_response_invalid"
+        assert entry.authority == NO_AUTHORITY
+        assert source.calls == []
+
+
+def test_source_missing_authority_attribute_fails_closed_without_read() -> None:
+    source = _Source(finding=_finding(authority="none"))
+    del source.authority
+    projection = build_product_access_projection(
+        _subject(),
+        sources={PADIEM_CHAT_PRODUCT_ID: source},
+        now=NOW,
+    )
+    assert projection.entry_for(PADIEM_CHAT_PRODUCT_ID).access is ProductAccessState.UNAVAILABLE
+    assert source.calls == []
+
+
 def test_unset_product_authority_is_unavailable_not_denied() -> None:
     projection = build_product_access_projection(
         _subject(),
