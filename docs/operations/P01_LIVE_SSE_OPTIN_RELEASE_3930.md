@@ -1,6 +1,32 @@
 # #3930 Public P01 live SSE activation — Owner decision 2026-10-10
 
 
+## GET-only production status checkpoint — 2026-10-14 KST (latest verified readback)
+
+**[Actions #38463011839](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38463011839) — SUCCESS, `mode=cloudflare_readonly`, `target_sha=93cb82422f254bdd2a85ce76143d8dc69b5d19ae`.** Both source-contract and Cloudflare read-only jobs PASS; **`PRODUCTION_MUTATION=0`**. Actual runner output (not inferred from source or earlier incident):
+
+```text
+B62_SSE_SERVED_CONFIG_PARITY=PASS
+B62_SSE_SERVED_FLAG_STATE=ABSENT
+LATEST_VERSION_EQUALS_ACTIVE_VERSION=PASS
+SERVED_VERSION_LINEAGE_OUTCOME=PASS
+ACTIVE_VERSION=428d9bd6-fef1-45bc-9e4f-3252708fdc93
+B62_CODE_DEPLOY_READONLY=PASS
+B62_PUBLIC_ORIGIN_PROOF=PASS
+SECRET_VALUES_OUTPUT=0
+PRODUCTION_MUTATION=0
+```
+
+**Conclusion: SSE OFF is newly proven**, and script-level SSE state agrees with active served immutable version. The old one-incident `recover_p01_sse_off` run [#38460991417](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38460991417) was correctly **refused** because its special `script=true, served=absent` accident predicate was **not present**; its `BLOCKED` output is **not** evidence that the normal `cloudflare_readonly` parity failed. Do **not** rerun that emergency recovery on the healthy equal state.
+
+**What is not proven by this read-only run:** full live binding/Secret name-and-type set equality with the historical 43-binding snapshot, current served Worker code equal to the current GitHub main, or D1 008/040 *fresh* readback. The historical protected SSE-OFF recovery [#38447431275](https://github.com/skerishKang/ai-revenue-lab/actions/runs/38447431275) proved the original preservation and schemas **at that execution time**. Do not reapply 040.
+
+**Required next stage:** protected exact-current-main `B62 Production Code Deploy Gate` with `mode=deploy_production_code` (not `recover_p01_sse_off`) runs predeploy live binding/Secret inventory capture and schema 008/040 EXACT checks, then source code deployment and strict postdeploy served/Secret/binding readback and smoke. **STOP_AND_REPORT on any unmet invariant; do not claim PASS from source checks or disable guards.** Only after accepted code deployment, run protected `B62 Claw Live Config Activation Gate` `activate_p01_sse` once; source/binding preservation and 100% serving proof are required for activation acceptance. Only after activation can an actual authenticated real-client P01 SSE terminal E2E be verified under [#3936](https://github.com/skerishKang/ai-revenue-lab/issues/3936). **E2E is a post-activation acceptance test**, not a prerequisite that can be completed while flag ABSENT. Until that evidence, GLOBAL_SSE_RELEASE_ACCEPTED=NO. Activation cannot be presumed successful from HTTP 2xx alone.
+
+`DOC_STATUS=DATED_PRODUCTION_READBACK_EVIDENCE`; this section supersedes the previous `PENDING_NEW_GET_ONLY_PREFLIGHT` snapshot statement immediately below. When main moves or a protected deployment occurs, refresh the exact-target evidence; this section is not a live dashboard.
+
+---
+
 ## Current operational evidence — 2026-10-14 KST (read first)
 
 ```text
