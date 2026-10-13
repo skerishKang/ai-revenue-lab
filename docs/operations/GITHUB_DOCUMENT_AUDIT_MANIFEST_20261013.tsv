@@ -1,6 +1,6 @@
 # Complete public GitHub document path manifest — audit checkpoint 2026-10-13
 # Baseline main SHA: 5476d1038993d647bf8ba241ce6a4307cccf291f
-# Content states: INDEXED_ONLY=original path/hash only; TEXT_SAMPLED=initial partial/full text not independently exhaustively classified; TEXT_FULL_FETCHED_B02/B03/B04/B05/B06/B07/B08/B09/B10/B11/B12/B13/B14/B15/B16/B17/B18/B19=full original body fetched and provisionally reviewed in named batch, not corporate policy or owner product approval; BINARY_PENDING=PDF/DOCX original body unread.
+# Content states: INDEXED_ONLY=source path/blob indexed, original text unread; TEXT_SAMPLED=initial partial/uncertified full-text sample; TEXT_FULL_FETCHED_B02/B03/B04/B05/B06/B07/B08/B09/B10/B11/B12/B13/B14/B15/B16/B17/B18/B19/B20=original full text retrieved and provisionally triaged, not legal/business or release clearance; BINARY_PENDING=PDF/DOCX original bodies unread.
 # This file has all 835 recognized document-format blobs from a GitHub recursive tree with truncated=false. Existing source content was not copied here.
 # Full-status classification must not be inferred from filename keywords or the TEXT_SAMPLED flag.
 PATH	BLOB_SHA	BYTES	READ_STATE
@@ -466,30 +466,30 @@ docs/operations/ui-ux/businesses/B21_VISUAL_DIRECTION.md	5248d8f246d7fbe7fb3a8ed
 docs/operations/ui-ux/businesses/B22_VISUAL_DIRECTION.md	da31500218f85ce39385677b681587d8387f0646	2107	TEXT_FULL_FETCHED_B19
 docs/operations/ui-ux/businesses/B29_VISUAL_DIRECTION.md	2d2143c205dcdd8d4421c1d44457f0c286747a8a	1955	TEXT_FULL_FETCHED_B19
 docs/operations/ui-ux/businesses/B32_VISUAL_DIRECTION.md	e16144bc94c0c48864c1ce45b446ace24fad9380	2278	TEXT_FULL_FETCHED_B19
-docs/operations/ui-ux/businesses/B33_VISUAL_DIRECTION.md	02d532b58fe6fdb0b95b550d0cb92d4b1af19452	2300	INDEXED_ONLY
-docs/operations/ui-ux/businesses/B34_VISUAL_DIRECTION.md	7767bf53b54d2cc8248a39060b867e4d3782295a	2258	INDEXED_ONLY
+docs/operations/ui-ux/businesses/B33_VISUAL_DIRECTION.md	02d532b58fe6fdb0b95b550d0cb92d4b1af19452	2300	TEXT_FULL_FETCHED_B20
+docs/operations/ui-ux/businesses/B34_VISUAL_DIRECTION.md	7767bf53b54d2cc8248a39060b867e4d3782295a	2258	TEXT_FULL_FETCHED_B20
 docs/operations/ui-ux/businesses/B35_VISUAL_DIRECTION.md	d1b4a581c7feb3824dd6427fcf6dd80e4bb90b7a	2107	TEXT_SAMPLED
-docs/operations/ui-ux/businesses/B36_VISUAL_DIRECTION.md	7af98c74bd1cc2757c45e42358c2c4a460934838	1367	INDEXED_ONLY
-docs/operations/ui-ux/businesses/B37_VISUAL_DIRECTION.md	fe08e8ae5fa3625b9778cadcc73f2c34b67b76fc	1327	INDEXED_ONLY
-docs/operations/ui-ux/businesses/B38_VISUAL_DIRECTION.md	795483d334390aed086cb8753e4b08dff7940f2d	1470	INDEXED_ONLY
-docs/operations/ui-ux/businesses/B39_VISUAL_DIRECTION.md	67ff4cbd6f4b06a5e5f0d1bab7c8f37da11457ad	1464	INDEXED_ONLY
-docs/operations/ui-ux/businesses/B40_VISUAL_DIRECTION.md	5d844ec8104b7bca766022e409b113fa6ad12aa2	1379	INDEXED_ONLY
-docs/operations/ui-ux/businesses/B41_VISUAL_DIRECTION.md	2519d6ca053c8ecb36f6c85ae515d88f145b52fa	1536	INDEXED_ONLY
-docs/operations/ui-ux/businesses/B42_VISUAL_DIRECTION.md	65a944b40f571e49048ccc9947011ee82a0d27c0	1606	INDEXED_ONLY
-docs/operations/ui-ux/businesses/B43_VISUAL_DIRECTION.md	0fe5cab4d7b37b0906e80abb96ec07880c22cd2a	1667	INDEXED_ONLY
-docs/operations/ui-ux/businesses/B44_VISUAL_DIRECTION.md	4cc274e3cab4b497f12892ba5c0c8bede540253d	2532	INDEXED_ONLY
-docs/operations/ui-ux/businesses/B45_VISUAL_DIRECTION.md	706339f70ec4cb8f82c798744c15ef338ead5aed	1546	INDEXED_ONLY
-docs/operations/ui-ux/businesses/B46_VISUAL_DIRECTION.md	94ca7148de381532feed6a446a22428ad838bc28	1383	INDEXED_ONLY
-docs/operations/ui-ux/businesses/B47_VISUAL_DIRECTION.md	f9ece1ca1f9a5dbb3a467dcef6faa038d7f96467	1439	INDEXED_ONLY
-docs/operations/ui-ux/businesses/B48_VISUAL_DIRECTION.md	fb0d13a84d8a6178f140321bcd8d59443b02fbe3	1512	INDEXED_ONLY
-docs/operations/ui-ux/businesses/B49_VISUAL_DIRECTION.md	20bd4e9269adc0d5903238b906cbde7201d39d50	1468	INDEXED_ONLY
-docs/operations/ui-ux/businesses/B51_VISUAL_DIRECTION.md	a66c3aaa32d3e725c4d74a2eb93c26a5883f292d	1521	INDEXED_ONLY
-docs/operations/ui-ux/businesses/B52_VISUAL_DIRECTION.md	7ee9d5d2b39c90b5d9fd5c1e1fdcf008173aa1a4	1505	INDEXED_ONLY
-docs/operations/ui-ux/businesses/B53_VISUAL_DIRECTION.md	2f62477447aa2aee48335c09a5afa72cdff26b93	1443	INDEXED_ONLY
-docs/operations/ui-ux/businesses/B55_VISUAL_DIRECTION.md	f9ff4542eb78be47531beb8db2a2be1f377978ba	1665	INDEXED_ONLY
-docs/operations/ui-ux/businesses/B57_VISUAL_DIRECTION.md	ff5bc9d4d72cc4067b8c4f1ab7e4e1d21eaa785f	2585	INDEXED_ONLY
-docs/operations/ui-ux/businesses/B58_VISUAL_DIRECTION.md	15fac29125d7889847ba931aea452a0282747b44	2966	INDEXED_ONLY
-docs/operations/ui-ux/businesses/B59_VISUAL_DIRECTION.md	84085d14c60fb9a2acf1a26d86a055e9fb57e6bc	2881	INDEXED_ONLY
+docs/operations/ui-ux/businesses/B36_VISUAL_DIRECTION.md	7af98c74bd1cc2757c45e42358c2c4a460934838	1367	TEXT_FULL_FETCHED_B20
+docs/operations/ui-ux/businesses/B37_VISUAL_DIRECTION.md	fe08e8ae5fa3625b9778cadcc73f2c34b67b76fc	1327	TEXT_FULL_FETCHED_B20
+docs/operations/ui-ux/businesses/B38_VISUAL_DIRECTION.md	795483d334390aed086cb8753e4b08dff7940f2d	1470	TEXT_FULL_FETCHED_B20
+docs/operations/ui-ux/businesses/B39_VISUAL_DIRECTION.md	67ff4cbd6f4b06a5e5f0d1bab7c8f37da11457ad	1464	TEXT_FULL_FETCHED_B20
+docs/operations/ui-ux/businesses/B40_VISUAL_DIRECTION.md	5d844ec8104b7bca766022e409b113fa6ad12aa2	1379	TEXT_FULL_FETCHED_B20
+docs/operations/ui-ux/businesses/B41_VISUAL_DIRECTION.md	2519d6ca053c8ecb36f6c85ae515d88f145b52fa	1536	TEXT_FULL_FETCHED_B20
+docs/operations/ui-ux/businesses/B42_VISUAL_DIRECTION.md	65a944b40f571e49048ccc9947011ee82a0d27c0	1606	TEXT_FULL_FETCHED_B20
+docs/operations/ui-ux/businesses/B43_VISUAL_DIRECTION.md	0fe5cab4d7b37b0906e80abb96ec07880c22cd2a	1667	TEXT_FULL_FETCHED_B20
+docs/operations/ui-ux/businesses/B44_VISUAL_DIRECTION.md	4cc274e3cab4b497f12892ba5c0c8bede540253d	2532	TEXT_FULL_FETCHED_B20
+docs/operations/ui-ux/businesses/B45_VISUAL_DIRECTION.md	706339f70ec4cb8f82c798744c15ef338ead5aed	1546	TEXT_FULL_FETCHED_B20
+docs/operations/ui-ux/businesses/B46_VISUAL_DIRECTION.md	94ca7148de381532feed6a446a22428ad838bc28	1383	TEXT_FULL_FETCHED_B20
+docs/operations/ui-ux/businesses/B47_VISUAL_DIRECTION.md	f9ece1ca1f9a5dbb3a467dcef6faa038d7f96467	1439	TEXT_FULL_FETCHED_B20
+docs/operations/ui-ux/businesses/B48_VISUAL_DIRECTION.md	fb0d13a84d8a6178f140321bcd8d59443b02fbe3	1512	TEXT_FULL_FETCHED_B20
+docs/operations/ui-ux/businesses/B49_VISUAL_DIRECTION.md	20bd4e9269adc0d5903238b906cbde7201d39d50	1468	TEXT_FULL_FETCHED_B20
+docs/operations/ui-ux/businesses/B51_VISUAL_DIRECTION.md	a66c3aaa32d3e725c4d74a2eb93c26a5883f292d	1521	TEXT_FULL_FETCHED_B20
+docs/operations/ui-ux/businesses/B52_VISUAL_DIRECTION.md	7ee9d5d2b39c90b5d9fd5c1e1fdcf008173aa1a4	1505	TEXT_FULL_FETCHED_B20
+docs/operations/ui-ux/businesses/B53_VISUAL_DIRECTION.md	2f62477447aa2aee48335c09a5afa72cdff26b93	1443	TEXT_FULL_FETCHED_B20
+docs/operations/ui-ux/businesses/B55_VISUAL_DIRECTION.md	f9ff4542eb78be47531beb8db2a2be1f377978ba	1665	TEXT_FULL_FETCHED_B20
+docs/operations/ui-ux/businesses/B57_VISUAL_DIRECTION.md	ff5bc9d4d72cc4067b8c4f1ab7e4e1d21eaa785f	2585	TEXT_FULL_FETCHED_B20
+docs/operations/ui-ux/businesses/B58_VISUAL_DIRECTION.md	15fac29125d7889847ba931aea452a0282747b44	2966	TEXT_FULL_FETCHED_B20
+docs/operations/ui-ux/businesses/B59_VISUAL_DIRECTION.md	84085d14c60fb9a2acf1a26d86a055e9fb57e6bc	2881	TEXT_FULL_FETCHED_B20
 docs/operations/ui-ux/CASE_STUDY_B01_PERSONAL_EDITION_V3_FAILURE.md	44ced55a7a7013ceab81476f49c11fd4b61ad3c6	7413	TEXT_FULL_FETCHED_B19
 docs/operations/ui-ux/CASE_STUDY_B01_V7_ANCHOR_SYSTEM_FAILURE.md	b393d8ec890c9d87114d46f099525596e886f1cf	5073	TEXT_FULL_FETCHED_B19
 docs/operations/ui-ux/CASE_STUDY_B06_WORLD_FEED.md	c4bdc2e469c2135a7ae5890c716d78501a59a359	5908	TEXT_FULL_FETCHED_B19
@@ -765,7 +765,7 @@ reference/business-47-real-time-feedback-engine-v1/evidence/SELF_VALIDATION.md	9
 reference/business-47-real-time-feedback-engine-v1/IMAGE_SOURCES.md	cbf9e6073042ab08ce75f6b9c79771be4d5cdf05	1284	INDEXED_ONLY
 reference/business-47-real-time-feedback-engine-v1/MOTION_SPEC.md	c2d15106759e6c50be8a27dee11c6420fcbf158f	843	INDEXED_ONLY
 reference/business-47-real-time-feedback-engine-v1/README.md	f3b63a34da7cb5711e749359f3b63e976cf84c03	648	TEXT_SAMPLED
-reference/business-47-real-time-feedback-engine-v1/REFERENCE_NOTES.md	693497e95f1e988ebf11ac68aaa9959906bea94b	913	INDEXED_ONLY
+reference/business-47-real-time-feedback-engine-v1/REFERENCE_NOTES.md	693497e95f1e988ebf11ac68aaa9959906bea94b	913	TEXT_FULL_FETCHED_B20
 reference/business-47-real-time-feedback-engine-v1/tests/browser-validation.md	f592ddbbcced5210673de865c30733676179fe96	485	INDEXED_ONLY
 reference/business-48-ai-verification-engine-v1/evidence/SELF_CHECK.md	eabea15b42c3297e5164c7df71511d35e0235e02	1481	TEXT_FULL_FETCHED_B17
 reference/business-48-ai-verification-engine-v1/IMAGE_SOURCES.md	0a4a6f6cc0ad515775d8d0e909a4262d40b46cd5	3638	TEXT_FULL_FETCHED_B17
@@ -813,7 +813,7 @@ reference/business-58-personal-writing-voice-studio-v1/README.md	c02d3e1d58120f2
 reference/business-58-personal-writing-voice-studio-v1/REFERENCE_NOTES.md	379d9a52f2417825d7471be13b00ee401292f5c1	1652	TEXT_FULL_FETCHED_B16
 reference/business-58-personal-writing-voice-studio-v1/RIGHTS_AND_CONSENT_SPEC.md	0f41e01d9fafa324e2814afb97d31fedbde63839	885	TEXT_FULL_FETCHED_B07
 reference/business-58-personal-writing-voice-studio-v1/VOICE_PROFILE_SPEC.md	6e795338da4c4983c0904e6a2205390467f34e6a	424	TEXT_FULL_FETCHED_B07
-reference/business-59-living-archive-v1/evidence/README.md	6419cf51a01fbf3fb7b097499c8074ada78ab1ae	730	INDEXED_ONLY
+reference/business-59-living-archive-v1/evidence/README.md	6419cf51a01fbf3fb7b097499c8074ada78ab1ae	730	TEXT_FULL_FETCHED_B20
 reference/business-59-living-archive-v1/HYBRID_READER_SPEC.md	bdc6afc90b59ae1489455f40bab7c8060e766177	1431	TEXT_FULL_FETCHED_B07
 reference/business-59-living-archive-v1/PRODUCT_CONTRACT.md	0e41d757941306da9aae463344ab76717d135186	1447	TEXT_SAMPLED
 reference/business-59-living-archive-v1/README.md	935be2ba39bdc726c481e3a17f7c259806887b7c	1631	TEXT_SAMPLED

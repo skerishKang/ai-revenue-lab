@@ -175,6 +175,15 @@ Frozen 835-document cursor: **575** source texts at least partly inspected (125 
 - B09 minors, B13 media rights and B17 merchant voice/scene materials require independent owner/rights/privacy decisions. B29 Apartment Governance and B32 Skill Studio retain protected product-specific review authority, not off-Git corporate Governance.
 - Original sources and SHA/size, business decisions, customer files, live products, local private Governance and deployment remain untouched.
 
+## 1T. Batch 20 — 25 complete-source reads: B33–B59 visual direction / B47 and B59 reference evidence (2026-10-13)
+
+Frozen original **835** document cursor: **600 source documents with some text inspected** (125 early `TEXT_SAMPLED` + 25 each B02–B20), **216 INDEXED_ONLY** unread text bodies and **19 BINARY_PENDING** unread PDF/DOCX original bodies. Initial 125 sampled originals remain pending exhaustive classification.
+
+- [Batch20 SHA-pinned source and provisional public-safe governance classification](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH20_20261013.md).
+- B33/B34 review authorities must not be overwritten by portfolio visual redesign. B36–B41 prototypes do not connect to real emergency, medical or navigation services and human decisions remain final.
+- B44 Cloudflare security challenge is not product screenshot proof. B46 real profiling, B57 translation copyrights and B58 writing voice permissions require separate Owner/legal decisions. B51/52/53/55/59 concepts are not live installs, automations, SDKs, fleet or OCR/PDF production.
+- No original source modification, off-Git Governance access, customer/provider data, business authorization, protected branch merge or live deployment.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
