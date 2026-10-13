@@ -1159,6 +1159,22 @@ jobs:
             sleep 2
           done
           if [ "${ready}" != yes ]; then
+            # The gate emits a finite set of non-sensitive refusal codes. The
+            # verified grep envelope blocks arbitrary output and secret leaks.
+            if [ -s "${RUNNER_TEMP}/sse-verify.log" ]; then
+              grep -E '^P01_SSE_OPTIN_GATE_REASON=[A-Z0-9_]{1,64}
+            echo 'RECOVERY=EXISTING_ROLLBACK_CONFIG_REQUIRES_EXPLICIT_PRODUCTION_APPROVAL' >&2
+            echo 'CUSTOMER_CANARY_ACCEPTANCE=NO' >&2
+            exit 1
+          fi
+          echo 'P01_SSE_POST_SERVED_INTEGRITY=PASS'
+          echo 'B62_P01_SSE_CANARY_PREFLIGHT_ONLY=YES'
+          echo 'AUTHENTICATED_USER_E2E=NOT_EXECUTED'
+          echo 'MODEL_REQUESTS=0'
+          echo 'SECRET_VALUES_READ=0'
+ \
+                "${RUNNER_TEMP}/sse-verify.log" | tail -n 1 || true
+            fi
             echo 'P01_SSE_POST_SERVED_INTEGRITY=BLOCKED' >&2
             echo 'RECOVERY=EXISTING_ROLLBACK_CONFIG_REQUIRES_EXPLICIT_PRODUCTION_APPROVAL' >&2
             echo 'CUSTOMER_CANARY_ACCEPTANCE=NO' >&2
