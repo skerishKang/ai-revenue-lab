@@ -1,0 +1,37 @@
+# #4139: isolated, UNROUTED connector operator-acceptance Worker.
+# Must NEVER deploy as padiem-chat, share production Identity/Broker DO,
+# or register any public URL. Operator must separately authorize secrets,
+# actual device consent and a preview route before a live acceptance run.
+name = "padiem-chat-connector-acceptance-4139"
+main = "worker.py"
+compatibility_date = "2026-08-25"
+compatibility_flags = ["python_workers"]
+workers_dev = false
+preview_urls = false
+base_dir = ".b66-worker-src"
+
+[build]
+command = "uv run python scripts/build_b66_worker_dependencies.py"
+
+[assets]
+directory = "static"
+binding = "ASSETS"
+
+[version_metadata]
+binding = "CF_VERSION_METADATA"
+
+[[services]]
+binding = "IDENTITY_AUTHORITY_SERVICE"
+service = "padiem-control-plane-identity-acceptance-4139"
+
+[[services]]
+binding = "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE"
+service = "padiem-local-agent-broker-state-acceptance-4139"
+
+[vars]
+PADIEM_CHAT_RUNTIME_MODE = "mock"
+PADIEM_CHAT_LIVE_ENABLED = "false"
+PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"
+PADIEM_CONNECTOR_OWNER_ENROLLMENT_ENABLED = "enabled"
+PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED = "enabled"
+PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE = "isolated-operator-acceptance-4139"
