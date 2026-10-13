@@ -27,6 +27,8 @@ from claw_connect.device_wss_enrollment import (
     WSS_DEVICE_ENROLLMENT_PRODUCTION_ENABLED,
 )
 from claw_connect.enrollment import ConnectorEnrollment, build_enrollment_proof_ref
+from claw_connect.wss_target import REVIEW_WSS_PATH, REVIEW_WSS_HOST, WSS_PRODUCTION_DIALER_ENABLED
+from app.canonical_connector_gateway_source_composition import CONNECTOR_GATEWAY_WSS_PATH
 from app.connector_gateway_websocket_session import (
     PRODUCTION_WEBSOCKET_ROUTE_MOUNTED, run_device_initiated_enrollment,
 )
@@ -101,7 +103,7 @@ class Duplex:
         self.pc = Pc()
 
 
-class TestIngress:
+class SyntheticIngress:
     def __init__(self, allow=True):
         self.allow = allow
         self.calls = 0
@@ -110,7 +112,7 @@ class TestIngress:
         return self.allow
 
 
-class TestBroker:
+class SyntheticBroker:
     def __init__(self, device):
         self.device = device
         self.operations = []
@@ -172,7 +174,7 @@ class FakeProtectedStore:
         return self.record[1]
 
 
-class TestHost:
+class SyntheticCanonicalHost:
     def __init__(self, *, handoff, device, events):
         self.handoff = handoff
         self.device = device
@@ -223,15 +225,15 @@ def _run_once(enrollment, *, trusted=True):
     async def start():
         wire = Duplex()
         device = enrollment.record().device_id
-        broker = TestBroker(device)
-        inbound = TestIngress(trusted)
-        outbound = TestIngress(trusted)
+        broker = SyntheticBroker(device)
+        inbound = SyntheticIngress(trusted)
+        outbound = SyntheticIngress(trusted)
         state = FakeProtectedStore()
         events = []
         async def server():
             await run_device_initiated_enrollment(
                 wire.server, trusted_tls=inbound, broker=broker,
-                host_factory=lambda *, handoff: TestHost(
+                host_factory=lambda *, handoff: SyntheticCanonicalHost(
                     handoff=handoff, device=device, events=events,
                 ),
             )
@@ -252,6 +254,9 @@ def _run_once(enrollment, *, trusted=True):
 
 def test_real_server_and_real_device_frames_complete_one_synthetic_session(tmp_path):
     assert PRODUCTION_WEBSOCKET_ROUTE_MOUNTED is False
+    assert WSS_PRODUCTION_DIALER_ENABLED is False
+    assert REVIEW_WSS_PATH == CONNECTOR_GATEWAY_WSS_PATH
+    assert REVIEW_WSS_HOST == "chat.padiem.net"
     assert WSS_DEVICE_ENROLLMENT_PRODUCTION_ENABLED is False
     record = ConnectorEnrollment(state_dir=tmp_path / "state")
     old = record.record()
@@ -301,7 +306,7 @@ def test_same_device_may_not_redeem_again_after_terminal(tmp_path):
     replay = Duplex()
     async def retry():
         return await run_and_stage_review_only_device_enrollment(
-            enrollment=enrollment, socket=replay.pc, trusted_tls=TestIngress(),
+            enrollment=enrollment, socket=replay.pc, trusted_tls=SyntheticIngress(),
             receiver=LocalStoreCredentialReceiver(store=FakeProtectedStore()),
             challenge_id=CHALLENGE, pairing_code=CODE, binding_factory=_fake_binding,
         )
