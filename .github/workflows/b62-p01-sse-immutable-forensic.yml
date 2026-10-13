@@ -1,6 +1,12 @@
 name: B62 P01 SSE Immutable Forensics
 
 on:
+  # One-time release of this workflow on main runs GET-only second-incident
+  # comparison. Later unrelated pushes cannot retrigger this forensic job.
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/b62-p01-sse-immutable-forensic.yml'
   pull_request:
     paths:
       - '.github/workflows/b62-p01-sse-immutable-forensic.yml'
@@ -36,7 +42,7 @@ jobs:
 
   immutable-forensic:
     needs: source-contract
-    if: ${{ github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 12
     env:
@@ -64,14 +70,32 @@ jobs:
         run: |
           set -euo pipefail
           base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
-          bash .github/scripts/b62_cloudflare_504_readonly_get.sh \
-            "${base}/versions/181d637c-de84-4919-9d45-8e966a07f181" \
-            "${RUNNER_TEMP}/sse-before-immutable.json"
-          bash .github/scripts/b62_cloudflare_504_readonly_get.sh \
-            "${base}/versions/18ee50a1-ab64-4cc0-8fc2-2ed3234f63a5" \
-            "${RUNNER_TEMP}/sse-failed-patch-immutable.json"
+          case "${GITHUB_EVENT_NAME}" in
+            push)
+              # #38444728738: 2026-10-14 second global opt-in incident.
+              incident=second
+              bash .github/scripts/b62_cloudflare_504_readonly_get.sh \
+                "${base}/versions/d62bef73-f9d3-4559-88f9-cecbba785bb9" \
+                "${RUNNER_TEMP}/sse-before-immutable.json"
+              bash .github/scripts/b62_cloudflare_504_readonly_get.sh \
+                "${base}/versions/00d38813-df7b-4b73-b00a-5c7b26ed3b7a" \
+                "${RUNNER_TEMP}/sse-failed-patch-immutable.json"
+              ;;
+            workflow_dispatch)
+              # Original #38431252763 evidence remains reproducible.
+              incident=first
+              bash .github/scripts/b62_cloudflare_504_readonly_get.sh \
+                "${base}/versions/181d637c-de84-4919-9d45-8e966a07f181" \
+                "${RUNNER_TEMP}/sse-before-immutable.json"
+              bash .github/scripts/b62_cloudflare_504_readonly_get.sh \
+                "${base}/versions/18ee50a1-ab64-4cc0-8fc2-2ed3234f63a5" \
+                "${RUNNER_TEMP}/sse-failed-patch-immutable.json"
+              ;;
+            *) echo 'P01_SSE_FORENSIC_EVENT=REFUSED' >&2; exit 2 ;;
+          esac
           python .github/scripts/b62_p01_postpatch_immutable_forensic.py \
             --before "${RUNNER_TEMP}/sse-before-immutable.json" \
-            --after "${RUNNER_TEMP}/sse-failed-patch-immutable.json"
+            --after "${RUNNER_TEMP}/sse-failed-patch-immutable.json" \
+            --incident "${incident}"
           echo 'P01_SSE_FORENSIC_READONLY=PASS'
           echo 'PRODUCTION_MUTATION=0'
