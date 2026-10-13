@@ -1,10 +1,13 @@
 """#4139 candidate-only Broker Service Binding preservation and refusal tests."""
 from __future__ import annotations
 from pathlib import Path
+import io
 import json
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stdout
+from unittest.mock import patch
 
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
@@ -151,6 +154,26 @@ class CandidatePlanTest(unittest.TestCase):
             )
             with self.assertRaises(ProductionConfigError):
                 planner.verify_broker_source_rpc_contract(rpc_module=altered_rpc)
+
+
+    def test_failed_live_preservation_is_not_a_green_ci(self):
+        # A well-formed HTTP 200 with an incomplete live inventory is HOLD.
+        # No token, settings JSON or secret should appear in stdout.
+        with patch.dict("os.environ", {
+            "CLOUDFLARE_API_TOKEN": "test-token-secret-never-print",
+            "CLOUDFLARE_ACCOUNT_ID": "syntheticaccount123",
+        }):
+            with patch.object(planner, "get_json", return_value=(200, {
+                "success": True, "result": {"bindings": []},
+            })):
+                output = io.StringIO()
+                with redirect_stdout(output):
+                    rc = planner.main()
+        self.assertEqual(rc, 1)
+        self.assertIn("CONNECTOR_BROKER_PRESERVATION=HOLD", output.getvalue())
+        self.assertIn("PRODUCTION_MUTATION=0", output.getvalue())
+        self.assertNotIn("test-token-secret-never-print", output.getvalue())
+        self.assertNotIn("syntheticaccount123", output.getvalue())
 
     def test_no_mutating_cloudflare_or_public_worker_path_is_reachable(self):
         script = (SCRIPTS / "b62_connector_broker_additive_preflight.py").read_text(encoding="utf-8")
