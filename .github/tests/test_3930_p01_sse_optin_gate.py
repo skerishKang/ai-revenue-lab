@@ -80,8 +80,22 @@ def test_absent_flag_preserves_every_binding_and_sets_only_true():
         b(gate.FLAG, "plain_text", text="true")
     ]
     assert PRIVATE not in repr(plan)
-    assert patch["annotations"]["workers/message"] == f"B62 production code {SHA}"
+    assert patch["annotations"] == {"workers/message": f"B62 production code {SHA}"}
+    assert "workers/triggered_by" not in patch["annotations"]
     gate.verify(*baseline, *post_from(baseline), SHA)
+
+
+def test_sse_patch_never_sends_cloudflare_server_owned_annotation():
+    # Cloudflare official PATCH /workers/scripts/{name}/settings contract:
+    # workers/triggered_by is READ-ONLY and is set by Cloudflare.
+    # The 10210 rollback incident already demonstrated this incompatibility.
+    for flag in (None, "false", "true"):
+        planned = gate.plan(*fixtures(flag), SHA)
+        annotations = planned["payload"]["annotations"]
+        assert set(annotations) == {"workers/message"}
+        assert annotations["workers/message"] == "B62 production code " + SHA
+        assert "workers/triggered_by" not in json.dumps(planned["payload"])
+        assert len(planned["payload"]["bindings"]) == len(fixtures(flag)[0]["result"]["bindings"]) + (flag is None)
 
 
 def test_false_flag_replaced_once_without_other_mutations():
