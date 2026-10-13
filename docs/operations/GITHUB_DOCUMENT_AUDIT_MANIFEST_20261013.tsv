@@ -1,6 +1,6 @@
 # Complete public GitHub document path manifest — audit checkpoint 2026-10-13
 # Baseline main SHA: 5476d1038993d647bf8ba241ce6a4307cccf291f
-# Content states: INDEXED_ONLY=source path/blob indexed, body unread; TEXT_SAMPLED=early partial/full inspection not independently exhaustive; TEXT_FULL_FETCHED_B02/B03/B04/B05/B06/B07/B08/B09/B10/B11/B12/B13/B14/B15/B16/B17/B18/B19/B20/B21/B22/B23/B24/B25/B26=original full text read and provisionally classified, not owner/legal/commercial/Production approval; BINARY_PENDING=original PDF/DOCX body unread.
+# Content states: INDEXED_ONLY=original path/blob indexed, body unread; TEXT_SAMPLED=initial partly/full-text inspection not independently exhaustive; TEXT_FULL_FETCHED_B02/B03/B04/B05/B06/B07/B08/B09/B10/B11/B12/B13/B14/B15/B16/B17/B18/B19/B20/B21/B22/B23/B24/B25/B26/B27=complete original body fetched and provisionally classified, not legal/commercial/Owner or production clearance; BINARY_PENDING=original PDF/DOCX body unread.
 # This file has all 835 recognized document-format blobs from a GitHub recursive tree with truncated=false. Existing source content was not copied here.
 # Full-status classification must not be inferred from filename keywords or the TEXT_SAMPLED flag.
 PATH	BLOB_SHA	BYTES	READ_STATE
@@ -725,32 +725,32 @@ reference/business-38-ai-exercise-coach-v1/MOTION_SPEC.md	c4659b1b5abf13a50a3823
 reference/business-38-ai-exercise-coach-v1/README.md	1b0ba85133b290f2750876a7bb6013a4f0ed0e6b	1615	TEXT_SAMPLED
 reference/business-38-ai-exercise-coach-v1/REFERENCE_NOTES.md	4d5c68510a5a04c50c615c6ae05c207f80d7eaaf	3285	TEXT_FULL_FETCHED_B26
 reference/business-38-ai-exercise-coach-v1/tests/README.md	61ac1dbee33c0daa7d9bf976618c95d2ba63e24f	152	INDEXED_ONLY
-reference/business-39-112-real-time-interpretation-v1/evidence/SELF_CHECK.md	ba6114d97728e4aa840a2283aca1effb9e07c6b3	388	INDEXED_ONLY
-reference/business-39-112-real-time-interpretation-v1/IMAGE_SOURCES.md	9b3f0693645debe76ff4ca5fbba4372f52527074	1178	INDEXED_ONLY
-reference/business-39-112-real-time-interpretation-v1/MOTION_SPEC.md	e284b0fbb15674f2d46569ebb4f5e7868461932c	769	INDEXED_ONLY
+reference/business-39-112-real-time-interpretation-v1/evidence/SELF_CHECK.md	ba6114d97728e4aa840a2283aca1effb9e07c6b3	388	TEXT_FULL_FETCHED_B27
+reference/business-39-112-real-time-interpretation-v1/IMAGE_SOURCES.md	9b3f0693645debe76ff4ca5fbba4372f52527074	1178	TEXT_FULL_FETCHED_B27
+reference/business-39-112-real-time-interpretation-v1/MOTION_SPEC.md	e284b0fbb15674f2d46569ebb4f5e7868461932c	769	TEXT_FULL_FETCHED_B27
 reference/business-39-112-real-time-interpretation-v1/README.md	bc416cd6a974e6c5c46031c56276e7374d7f57a2	512	TEXT_SAMPLED
 reference/business-39-112-real-time-interpretation-v1/REFERENCE_NOTES.md	3591a3c619479661f6beb4f43854c515eb30dd41	1424	TEXT_FULL_FETCHED_B07
-reference/business-40-emergency-urgency-ai-v1/evidence/CAPTURE_MANIFEST.md	a80351cdd01cf2c8e48a06477ab4ffc88d10f3ad	1044	INDEXED_ONLY
-reference/business-40-emergency-urgency-ai-v1/evidence/SELF_VALIDATION.md	e9217eeb48e796c0221853c49215f3dcf4068ff6	2661	INDEXED_ONLY
-reference/business-40-emergency-urgency-ai-v1/IMAGE_SOURCES.md	93146fc8b6273682d9c9465aff52a688462f380b	1413	INDEXED_ONLY
-reference/business-40-emergency-urgency-ai-v1/MOTION_SPEC.md	9af8e36b4be0e6cf5b5dbcadbfe863e9a3c049b8	1835	INDEXED_ONLY
+reference/business-40-emergency-urgency-ai-v1/evidence/CAPTURE_MANIFEST.md	a80351cdd01cf2c8e48a06477ab4ffc88d10f3ad	1044	TEXT_FULL_FETCHED_B27
+reference/business-40-emergency-urgency-ai-v1/evidence/SELF_VALIDATION.md	e9217eeb48e796c0221853c49215f3dcf4068ff6	2661	TEXT_FULL_FETCHED_B27
+reference/business-40-emergency-urgency-ai-v1/IMAGE_SOURCES.md	93146fc8b6273682d9c9465aff52a688462f380b	1413	TEXT_FULL_FETCHED_B27
+reference/business-40-emergency-urgency-ai-v1/MOTION_SPEC.md	9af8e36b4be0e6cf5b5dbcadbfe863e9a3c049b8	1835	TEXT_FULL_FETCHED_B27
 reference/business-40-emergency-urgency-ai-v1/README.md	5408f9bf4cae9e982b720d55846d3ed5965d0779	1818	TEXT_SAMPLED
 reference/business-40-emergency-urgency-ai-v1/REFERENCE_NOTES.md	00ccf28629a7e830cc3bf02345fbacb3fc62eace	5009	TEXT_FULL_FETCHED_B07
-reference/business-41-foreign-emergency-assistant-v1/evidence/SELF_CHECK.md	bd8a6307db4f4d48dd3fcdb1291cab34106b12bd	1479	INDEXED_ONLY
-reference/business-41-foreign-emergency-assistant-v1/IMAGE_SOURCES.md	a319e376aba9c4ef80371a931a902aa61103ce2e	1626	INDEXED_ONLY
-reference/business-41-foreign-emergency-assistant-v1/MOTION_SPEC.md	3bad8e48e1189b81b1c2699b87c7f3b12fee27c8	1439	INDEXED_ONLY
+reference/business-41-foreign-emergency-assistant-v1/evidence/SELF_CHECK.md	bd8a6307db4f4d48dd3fcdb1291cab34106b12bd	1479	TEXT_FULL_FETCHED_B27
+reference/business-41-foreign-emergency-assistant-v1/IMAGE_SOURCES.md	a319e376aba9c4ef80371a931a902aa61103ce2e	1626	TEXT_FULL_FETCHED_B27
+reference/business-41-foreign-emergency-assistant-v1/MOTION_SPEC.md	3bad8e48e1189b81b1c2699b87c7f3b12fee27c8	1439	TEXT_FULL_FETCHED_B27
 reference/business-41-foreign-emergency-assistant-v1/README.md	c6b83282ce7a25a00d553c8477bf8c5c61abf7b3	1471	TEXT_SAMPLED
 reference/business-41-foreign-emergency-assistant-v1/REFERENCE_NOTES.md	2a7a25c38da701f935b4ad86e8b98a4d82c1caa0	4532	TEXT_FULL_FETCHED_B07
-reference/business-42-ai-development-control-tower-v1/evidence/README.md	7eed134239325c1f7d0017100cabea794587eea5	697	INDEXED_ONLY
-reference/business-42-ai-development-control-tower-v1/IMAGE_SOURCES.md	5367707732ca858a4e2bb005b141523d3c62e31c	2017	INDEXED_ONLY
-reference/business-42-ai-development-control-tower-v1/MOTION_SPEC.md	948604b4cb205f084616bdc63559a9d5b1fa64f4	1354	INDEXED_ONLY
+reference/business-42-ai-development-control-tower-v1/evidence/README.md	7eed134239325c1f7d0017100cabea794587eea5	697	TEXT_FULL_FETCHED_B27
+reference/business-42-ai-development-control-tower-v1/IMAGE_SOURCES.md	5367707732ca858a4e2bb005b141523d3c62e31c	2017	TEXT_FULL_FETCHED_B27
+reference/business-42-ai-development-control-tower-v1/MOTION_SPEC.md	948604b4cb205f084616bdc63559a9d5b1fa64f4	1354	TEXT_FULL_FETCHED_B27
 reference/business-42-ai-development-control-tower-v1/README.md	9ad57cf9da1dd6d5b2baa8211b2fb1f3b169d517	859	TEXT_SAMPLED
-reference/business-42-ai-development-control-tower-v1/REFERENCE_NOTES.md	1521f142a55a84a01914e30c02d6cf531a1f65e1	4403	INDEXED_ONLY
-reference/business-43-ai-software-factory-v1/evidence/SELF_CHECK.md	cb04a1acb145274351e0f59060b1d0e111885ea0	2234	INDEXED_ONLY
-reference/business-43-ai-software-factory-v1/IMAGE_SOURCES.md	0d7e732368736e825693f4cbb2b41e31a7316228	2481	INDEXED_ONLY
-reference/business-43-ai-software-factory-v1/MOTION_SPEC.md	61d14be9d648492bdc985fb6c677faf0b1aff1ff	1060	INDEXED_ONLY
+reference/business-42-ai-development-control-tower-v1/REFERENCE_NOTES.md	1521f142a55a84a01914e30c02d6cf531a1f65e1	4403	TEXT_FULL_FETCHED_B27
+reference/business-43-ai-software-factory-v1/evidence/SELF_CHECK.md	cb04a1acb145274351e0f59060b1d0e111885ea0	2234	TEXT_FULL_FETCHED_B27
+reference/business-43-ai-software-factory-v1/IMAGE_SOURCES.md	0d7e732368736e825693f4cbb2b41e31a7316228	2481	TEXT_FULL_FETCHED_B27
+reference/business-43-ai-software-factory-v1/MOTION_SPEC.md	61d14be9d648492bdc985fb6c677faf0b1aff1ff	1060	TEXT_FULL_FETCHED_B27
 reference/business-43-ai-software-factory-v1/README.md	8b2296787a73740ac0ffdf5f85416692970ee470	1051	TEXT_SAMPLED
-reference/business-43-ai-software-factory-v1/REFERENCE_NOTES.md	adf8f83901a1716c6384d7f5f1263bb375328793	3755	INDEXED_ONLY
+reference/business-43-ai-software-factory-v1/REFERENCE_NOTES.md	adf8f83901a1716c6384d7f5f1263bb375328793	3755	TEXT_FULL_FETCHED_B27
 reference/business-45-ai-content-engine-v1/evidence/SELF_CHECK.md	1f12c4a8780cb4036bcc69020b9a09b4ff6ebaf5	1626	TEXT_FULL_FETCHED_B17
 reference/business-45-ai-content-engine-v1/IMAGE_SOURCES.md	4afbffeafc3ccda0f8afba4949555a715b0407e4	3662	TEXT_FULL_FETCHED_B17
 reference/business-45-ai-content-engine-v1/MOTION_SPEC.md	493120ab08728fb171cca49c58c0270ea68d0451	1911	TEXT_FULL_FETCHED_B17
@@ -761,20 +761,20 @@ reference/business-46-ai-personalization-engine-v1/IMAGE_SOURCES.md	1efb67bf6e5e
 reference/business-46-ai-personalization-engine-v1/MOTION_SPEC.md	2d2a5b5041979c84ef7aeeeb4bbfb8bf87f23eb9	451	TEXT_FULL_FETCHED_B17
 reference/business-46-ai-personalization-engine-v1/README.md	beded877ab9fdb88be40713f5298c8dc35e9f1b4	220	TEXT_SAMPLED
 reference/business-46-ai-personalization-engine-v1/REFERENCE_NOTES.md	5474df3d78153021c78021b0070e728ad48d1597	668	TEXT_FULL_FETCHED_B17
-reference/business-47-real-time-feedback-engine-v1/evidence/SELF_VALIDATION.md	98726f532599cc0bf0ee47566c4cfa74d698a1cd	914	INDEXED_ONLY
-reference/business-47-real-time-feedback-engine-v1/IMAGE_SOURCES.md	cbf9e6073042ab08ce75f6b9c79771be4d5cdf05	1284	INDEXED_ONLY
-reference/business-47-real-time-feedback-engine-v1/MOTION_SPEC.md	c2d15106759e6c50be8a27dee11c6420fcbf158f	843	INDEXED_ONLY
+reference/business-47-real-time-feedback-engine-v1/evidence/SELF_VALIDATION.md	98726f532599cc0bf0ee47566c4cfa74d698a1cd	914	TEXT_FULL_FETCHED_B27
+reference/business-47-real-time-feedback-engine-v1/IMAGE_SOURCES.md	cbf9e6073042ab08ce75f6b9c79771be4d5cdf05	1284	TEXT_FULL_FETCHED_B27
+reference/business-47-real-time-feedback-engine-v1/MOTION_SPEC.md	c2d15106759e6c50be8a27dee11c6420fcbf158f	843	TEXT_FULL_FETCHED_B27
 reference/business-47-real-time-feedback-engine-v1/README.md	f3b63a34da7cb5711e749359f3b63e976cf84c03	648	TEXT_SAMPLED
 reference/business-47-real-time-feedback-engine-v1/REFERENCE_NOTES.md	693497e95f1e988ebf11ac68aaa9959906bea94b	913	TEXT_FULL_FETCHED_B20
-reference/business-47-real-time-feedback-engine-v1/tests/browser-validation.md	f592ddbbcced5210673de865c30733676179fe96	485	INDEXED_ONLY
+reference/business-47-real-time-feedback-engine-v1/tests/browser-validation.md	f592ddbbcced5210673de865c30733676179fe96	485	TEXT_FULL_FETCHED_B27
 reference/business-48-ai-verification-engine-v1/evidence/SELF_CHECK.md	eabea15b42c3297e5164c7df71511d35e0235e02	1481	TEXT_FULL_FETCHED_B17
 reference/business-48-ai-verification-engine-v1/IMAGE_SOURCES.md	0a4a6f6cc0ad515775d8d0e909a4262d40b46cd5	3638	TEXT_FULL_FETCHED_B17
 reference/business-48-ai-verification-engine-v1/MOTION_SPEC.md	b6c9acd2f7118679b78ae0747911434fa55ec56a	1812	TEXT_FULL_FETCHED_B17
 reference/business-48-ai-verification-engine-v1/README.md	455556c43df84ad2ea507b7150c0cf75554d6a2e	1069	TEXT_SAMPLED
 reference/business-48-ai-verification-engine-v1/REFERENCE_NOTES.md	73225446317efae8237357390516cf091ce80c6a	4402	TEXT_FULL_FETCHED_B17
-reference/business-49-public-data-connector-hub-v1/evidence/SELF_CHECK.md	9e8e1d1652b71ca8d47a31cf5714fd54203c754a	1167	INDEXED_ONLY
-reference/business-49-public-data-connector-hub-v1/IMAGE_SOURCES.md	13527b7a12a0953ba379c21f039fd4bac49edeb9	1866	INDEXED_ONLY
-reference/business-49-public-data-connector-hub-v1/MOTION_SPEC.md	1a94fddc756be3f99e5ca66b0d5d2d177502b8fd	1044	INDEXED_ONLY
+reference/business-49-public-data-connector-hub-v1/evidence/SELF_CHECK.md	9e8e1d1652b71ca8d47a31cf5714fd54203c754a	1167	TEXT_FULL_FETCHED_B27
+reference/business-49-public-data-connector-hub-v1/IMAGE_SOURCES.md	13527b7a12a0953ba379c21f039fd4bac49edeb9	1866	TEXT_FULL_FETCHED_B27
+reference/business-49-public-data-connector-hub-v1/MOTION_SPEC.md	1a94fddc756be3f99e5ca66b0d5d2d177502b8fd	1044	TEXT_FULL_FETCHED_B27
 reference/business-49-public-data-connector-hub-v1/README.md	cc03a02715cb5786fbcab2fadaa9e112ecd480fc	934	TEXT_SAMPLED
 reference/business-49-public-data-connector-hub-v1/REFERENCE_NOTES.md	222a08f9d42b38a0790b30e9360b6adab5693455	3091	TEXT_FULL_FETCHED_B07
 reference/business-51-ai-workflow-marketplace-v1/evidence/LOCAL_VALIDATION.md	d51163916ccdeef96d5eba84bd18b40c642d4847	1384	TEXT_FULL_FETCHED_B17

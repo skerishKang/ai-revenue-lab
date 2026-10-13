@@ -238,6 +238,16 @@ Frozen 835-original document cursor: **750 partly/fully text-viewed** (125 initi
 - B29 separate apartment product image-source notes refer to real identity and confidential legal/audit material **not** included in demo; do not reproduce it in public source audit. B38 synthetic motion exercise plan lacks clinical/real safety or independently approved customer effect.
 - No original path/blob/hash/size, private Governance/drive content, protected UI product PR, user files, business permission or live deployment changed.
 
+## 1AA. Batch 27 — 25 source reads: B39–B43 emergency, development control, B47 feedback and B49 public data (2026-10-13)
+
+Frozen **835 originals**: **775 text-viewed at least partly** (125 initial TEXT_SAMPLED + 25 each B02–B27), **41 INDEXED_ONLY** text originals unread and **19 BINARY_PENDING** PDF/DOCX originals unread. Original 125 samples still need exhaustive classification.
+
+- [Batch27 exact-source Git-SHA-pinned public-safe classifications](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH27_20261013.md).
+- B39/40/41 are synthetic human-reviewed emergency communication/urgency UI, not live 112, certified translation, autonomous dispatch or actual human approval.
+- B42 software change-control authority versus B43 one-work-item software delivery are distinct technical products; labels like MERGEABLE or HUMAN-VERIFIED cannot substitute exact-head independent proof, real merge or deployment.
+- B47 excludes feedback monitoring and automatic user scoring; B49 public-data schema/lineage does not establish actual connected API, government endorsement, dataset licences or current values.
+- No original files/paths/SHAs, off-Git corporate Governance, emergency/personal records, external provider, product permissions, production service or Git history modified.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
