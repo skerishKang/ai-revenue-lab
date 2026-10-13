@@ -43,6 +43,8 @@ CREATE TABLE IF NOT EXISTS canonical_local_agent_gateway_bootstrap (
  expires_at TEXT NOT NULL,
  verified_at TEXT NULL,
  next_counter INTEGER NOT NULL CHECK (next_counter >= 1 AND next_counter <= 4),
+ failed_proofs INTEGER NOT NULL DEFAULT 0 CHECK (failed_proofs BETWEEN 0 AND 3),
+ failed_actions INTEGER NOT NULL DEFAULT 0 CHECK (failed_actions BETWEEN 0 AND 3),
  terminal_action TEXT NULL
 )
 """
@@ -209,7 +211,8 @@ class DurableBrokerGatewayBootstrap:
             pairing, p = self._pending(challenge_id=challenge_id, device_id=device_id, now=now)
             row = self._row(challenge_id)
             if (row["lease_ref"] != lease_ref or row["device_id"] != device_id
-                or row["verified_at"] is not None or now >= datetime.fromisoformat(
+                or row["verified_at"] is not None or row["failed_proofs"] >= 3
+                or now >= datetime.fromisoformat(
                     row["expires_at"].replace("Z", "+00:00")
                 )):
                 raise _err("gateway_bootstrap_lease_unavailable")
@@ -221,7 +224,14 @@ class DurableBrokerGatewayBootstrap:
                 device_id=device_id, nonce_hex=row["nonce_hex"], lease_ref=lease_ref,
             )
             if not hmac.compare_digest(expected, proof_hex):
-                raise _err("gateway_bootstrap_proof_invalid")
+                # Commit the refusal count rather than raising inside a tx,
+                # which would roll back the security counter as well.
+                self._storage.sql.exec(
+                    "UPDATE canonical_local_agent_gateway_bootstrap "
+                    "SET failed_proofs=failed_proofs+1 WHERE challenge_id=?",
+                    challenge_id,
+                )
+                return None
             self._storage.sql.exec(
                 "UPDATE canonical_local_agent_gateway_bootstrap SET verified_at=? "
                 "WHERE challenge_id=? AND verified_at IS NULL", _iso(now), challenge_id,
@@ -232,11 +242,14 @@ class DurableBrokerGatewayBootstrap:
                 "credential": False, "challenge_consumed": False,
             }
         try:
-            return self._storage.transactionSync(tx)
+            result = self._storage.transactionSync(tx)
         except ControlPlaneContractError:
             raise
         except Exception as exc:
             raise _err("gateway_bootstrap_unavailable") from exc
+        if result is None:
+            raise _err("gateway_bootstrap_proof_invalid")
+        return result
 
     def authorize_action(self, *, challenge_id: str, device_id: str,
                          lease_ref: str, action: str, counter: int,
@@ -257,6 +270,7 @@ class DurableBrokerGatewayBootstrap:
             row = self._row(challenge_id)
             if (row["lease_ref"] != lease_ref or row["device_id"] != device_id
                 or row["verified_at"] is None or row["terminal_action"] is not None
+                or row["failed_actions"] >= 3
                 or now >= datetime.fromisoformat(row["expires_at"].replace("Z", "+00:00"))
                 or row["next_counter"] != counter):
                 raise _err("gateway_bootstrap_action_refused")
@@ -279,7 +293,12 @@ class DurableBrokerGatewayBootstrap:
                 payload_sha256=hashlib.sha256(body).hexdigest(),
             )
             if not hmac.compare_digest(expected, proof_hex):
-                raise _err("gateway_bootstrap_session_proof_denied")
+                self._storage.sql.exec(
+                    "UPDATE canonical_local_agent_gateway_bootstrap "
+                    "SET failed_actions=failed_actions+1 WHERE challenge_id=?",
+                    challenge_id,
+                )
+                return None
             self._storage.sql.exec(
                 "UPDATE canonical_local_agent_gateway_bootstrap "
                 "SET next_counter=?,terminal_action=? WHERE challenge_id=?",
@@ -291,11 +310,14 @@ class DurableBrokerGatewayBootstrap:
                 "counter": counter, "authenticated": True,
             }
         try:
-            return self._storage.transactionSync(tx)
+            result = self._storage.transactionSync(tx)
         except ControlPlaneContractError:
             raise
         except Exception as exc:
             raise _err("gateway_bootstrap_unavailable") from exc
+        if result is None:
+            raise _err("gateway_bootstrap_session_proof_denied")
+        return result
 
 
 __all__ = [
