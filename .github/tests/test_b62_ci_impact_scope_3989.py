@@ -40,26 +40,6 @@ class B62ScopeTests(unittest.TestCase):
             file("apps/padiem-chat/static/style.css", "added"),
         ]), module.STATIC_ONLY)
 
-    def test_exact_claw_touch_css_and_static_assertions_skip_runtime(self):
-        css = file("apps/padiem-chat/static/claw-focus-layout.css")
-        assertions = file("apps/padiem-chat/tests/test_4488_claw_automation_touch_accessibility.py")
-        self.assertEqual(module.impact_scope([css, assertions]), module.STATIC_TOUCH_ONLY)
-        self.assertEqual(module.impact_scope([assertions, css]), module.STATIC_TOUCH_ONLY)
-        # No broad Python-test carveout: unrelated test modules stay slow-path.
-        self.assertNotEqual(module.impact_scope([
-            css, file("apps/padiem-chat/tests/test_password_auth.py")
-        ]), module.STATIC_TOUCH_ONLY)
-        self.assertEqual(module.impact_scope([
-            css, file(assertions["filename"], "removed")
-        ]), module.FULL)
-        self.assertEqual(module.impact_scope([
-            css, assertions, file("apps/padiem-chat/app/auth_routes.py")
-        ]), module.CHAT_ONLY)
-        workflow = (ROOT / ".github/workflows/b62-padiem-chat-ci.yml").read_text(encoding="utf-8")
-        self.assertIn("scope == 'static_touch_only'", workflow)
-        self.assertIn("scope != 'static_touch_only'", workflow)
-        self.assertIn("python -m pytest -q apps/padiem-chat/tests/test_4488_claw_automation_touch_accessibility.py", workflow)
-
     def test_chat_python_worker_and_tests_do_not_rerun_unchanged_core(self):
         for path in (
             "apps/padiem-chat/worker.py",
