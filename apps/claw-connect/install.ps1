@@ -7,6 +7,8 @@
 #   .\install.ps1 -ResidentSrc <path> legacy spelling of -AgentSrc
 #                             pin the kagent Resident source root that this PC
 #                             supervises (the one existing local runner)
+#   .\install.ps1 -OperatorWssAcceptance -AgentSrc <path>
+#                             prepare isolated pinned websockets 17.2 (does NOT enable WSS)
 #   .\install.ps1 -Uninstall  remove the shortcut, autostart value and files
 #
 # Scope: a Start Menu shortcut plus the guarded autostart CLI. Nothing is
@@ -19,7 +21,8 @@ param(
     [switch]$Autostart,
     [switch]$Uninstall,
     [string]$ResidentSrc,
-    [string]$AgentSrc
+    [string]$AgentSrc,
+    [switch]$OperatorWssAcceptance
 )
 
 $ErrorActionPreference = 'Stop'
@@ -112,6 +115,12 @@ if ($SelectedAgentSrc) {
         }
     }
 }
+if ($OperatorWssAcceptance -and -not $ValidatedAgentSrc) {
+    throw 'Operator WSS acceptance requires explicit -AgentSrc for the existing canonical Agent.'
+}
+if ($OperatorWssAcceptance -and -not (Test-Path -LiteralPath (Join-Path $SourceRoot 'requirements-wss-review.txt') -PathType Leaf)) {
+    throw 'The reviewed WSS dependency pin is unavailable.'
+}
 
 # Install: copy the bundled Python package, then create the per-user shortcut.
 New-Item -ItemType Directory -Path $InstallRoot -Force | Out-Null
@@ -135,6 +144,26 @@ if ($ValidatedAgentSrc) {
     )
 }
 
+# Optional, isolated dependency setup for the exact operator acceptance mode.
+# Never install/upgrade the shared Python interpreter or enable WSS globally.
+# A normal user installation follows the original path and stays default-OFF.
+$ReviewWssPrepared = $false
+if ($OperatorWssAcceptance) {
+    $ReviewVenv = Join-Path $InstallRoot '.venv-wss-review'
+    $ReviewPython = Join-Path $ReviewVenv 'Scripts\python.exe'
+    if (-not (Test-Path -LiteralPath $ReviewPython -PathType Leaf)) {
+        & $PythonExePath -m venv $ReviewVenv
+        if ($LASTEXITCODE -ne 0) { throw 'Isolated WSS Python environment failed to create.' }
+    }
+    & $ReviewPython -m pip install --disable-pip-version-check --no-input `
+        -r (Join-Path $SourceRoot 'requirements-wss-review.txt')
+    if ($LASTEXITCODE -ne 0) { throw 'Isolated WSS client dependency install failed.' }
+    & $ReviewPython -c 'from websockets.asyncio.client import connect; import websockets; assert websockets.__version__ == "17.2"'
+    if ($LASTEXITCODE -ne 0) { throw 'Pinned WSS version does not match the reviewed interface.' }
+    $PythonExePath = $ReviewPython
+    $ReviewWssPrepared = $true
+}
+
 New-Item -ItemType Directory -Path $StartMenu -Force | Out-Null
 $shell = New-Object -ComObject WScript.Shell
 $shortcut = $shell.CreateShortcut($ShortcutPath)
@@ -153,6 +182,8 @@ $result = [ordered]@{
     autostart = $false
     agent_ready = $false
     agent_status = 'not_checked'
+    review_wss_dependencies_prepared = $ReviewWssPrepared
+    review_wss_server_activated = $false
 }
 
 # A diagnostic is read-only and truthful. Do not declare the agent usable

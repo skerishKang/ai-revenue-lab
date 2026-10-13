@@ -169,7 +169,16 @@ def test_ordinary_cli_and_installer_do_not_enable_wss():
     root=Path(__file__).resolve().parents[1]
     assert "review_wss_transport" not in (root/"claw_connect"/"__main__.py").read_text(encoding="utf-8")
     assert "review_wss_transport" not in (root/"claw_connect"/"runtime.py").read_text(encoding="utf-8")
-    assert "websockets" not in (root/"install.ps1").read_text(encoding="utf-8")
+    installer = (root/"install.ps1").read_text(encoding="utf-8")
+    # Explicit isolated operator-preparation may provision the pinned client,
+    # but must not turn on either server WSS or the normal Connector enrollment.
+    assert "[switch]$OperatorWssAcceptance" in installer
+    assert "if ($OperatorWssAcceptance) {" in installer
+    assert "review_wss_server_activated = $false" in installer
+    assert "requirements-wss-review.txt" in installer
+    assert installer.index("if ($OperatorWssAcceptance) {") < installer.index(
+        "from websockets.asyncio.client import connect"
+    )
 
 
 

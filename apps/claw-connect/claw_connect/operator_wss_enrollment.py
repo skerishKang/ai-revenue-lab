@@ -1,13 +1,16 @@
-"""#4139 explicit operator-only Windows WSS pairing adapter.
+"""#4139 Windows operator-only WSS enrollment against the existing Agent.
 
-Wires existing REAL WSS client to existing canonical Windows DPAPI store.
-No second credential authority, no passwords, no browser cookies, no HTTP
-credential fallback, no new Broker. Production CLI stays blocked by default.
+The installed Connector pins the existing kagent source in resident.json. Its
+normal Python interpreter is not guaranteed to have kagent on sys.path, so
+explicitly resolve this ONE pinned Agent before opening any WSS socket or DPAPI
+store. This is not an Agent installer, credential authority or production gate.
 """
 from __future__ import annotations
 
+import importlib.util
 import os
 from pathlib import Path
+import sys
 from typing import Any
 
 from .device_wss_enrollment import DeviceSessionRefused
@@ -18,7 +21,7 @@ _CANONICAL_CREDENTIAL_DIR_ENV = "PADIEM_AGENT_CREDENTIAL_DIR"
 
 
 def operator_review_admitted() -> bool:
-    """No file state, remote network or arbitrary client-supplied URL."""
+    """Only explicit one-shot Windows operator acceptance can open real WSS."""
     return (
         os.name == "nt"
         and os.environ.get(_REVIEW_OPERATOR_ENV) == _REVIEW_OPERATOR_VALUE
@@ -26,20 +29,62 @@ def operator_review_admitted() -> bool:
     )
 
 
+def _admit_existing_agent_package(*, state_dir: Path) -> None:
+    """Admit the sole installer-pinned kagent package, never guess a checkout."""
+    from .agent_preflight import _canonical_source, agent_preflight
+    from .resident_path import resident_src_root
+
+    try:
+        selected = resident_src_root(state_dir=state_dir)
+        if selected is None:
+            if agent_preflight(state_dir=state_dir)["agent_ready"] is not True:
+                raise ValueError("canonical Agent not installed")
+            return
+
+        source = Path(selected).expanduser()
+        if not source.is_absolute() or not _canonical_source(source):
+            raise ValueError("canonical Agent source invalid")
+        root = source.resolve(strict=True)
+        intended = (root / "kagent").resolve(strict=True)
+        found = importlib.util.find_spec("kagent")
+        if found is not None:
+            locations = found.submodule_search_locations
+            if not locations or not any(
+                Path(location).resolve() == intended for location in locations
+            ):
+                raise ValueError("existing interpreter kagent conflicts with pinned Agent")
+        else:
+            # The exact checked installer pin, not a synthetic second Agent.
+            if str(root) not in sys.path:
+                sys.path.insert(0, str(root))
+            found = importlib.util.find_spec("kagent")
+            if found is None or not found.submodule_search_locations:
+                raise ValueError("pinned canonical Agent could not be loaded")
+            if not any(
+                Path(location).resolve() == intended
+                for location in found.submodule_search_locations
+            ):
+                raise ValueError("pinned canonical Agent resolved to another package")
+    except (OSError, ValueError, ImportError, RuntimeError, TypeError) as exc:
+        raise DeviceSessionRefused("canonical_agent_source_unavailable") from exc
+
+
 async def enroll_via_operator_wss_review(
     *, enrollment: Any, challenge_id: str, pairing_code: str,
 ) -> Any:
-    """One-shot verified WSS -> canonical DPAPI -> source-shared device record.
-
-    The canonical kagent credential dir MUST be selected by the existing Agent
-    deployment. Never guess a second credential storage path.
-    """
+    """Verified WSS → existing Windows DPAPI store → one local device record."""
     if not operator_review_admitted():
         raise DeviceSessionRefused("operator_wss_acceptance_not_configured")
+
     configured = os.environ.get(_CANONICAL_CREDENTIAL_DIR_ENV, "")
     root = Path(configured).expanduser()
     if not root.is_absolute() or root.is_symlink():
         raise DeviceSessionRefused("canonical_protected_store_unavailable")
+
+    # installed resident.json determines the sole Agent package. The same
+    # PADIEM_AGENT_CREDENTIAL_DIR is already the canonical Resident's
+    # credential-store directory; do not mint an alternative storage root.
+    _admit_existing_agent_package(state_dir=enrollment.state_dir)
     try:
         from kagent.local_agent_secure_transport import (
             ProtectedFileDeviceCredentialStore,
@@ -47,15 +92,18 @@ async def enroll_via_operator_wss_review(
         )
         from .credential_install import LocalStoreCredentialReceiver
         from .review_wss_transport import run_review_only_wss_pairing
-        # Reuse the *same* existing protected store as the kagent Resident.
+
         store = ProtectedFileDeviceCredentialStore(
             base_dir=root, protected_data=WindowsDpapiProtectedDataPort(),
         )
         receiver = LocalStoreCredentialReceiver(store=store)
     except (ImportError, RuntimeError, ValueError, OSError) as exc:
         raise DeviceSessionRefused("canonical_protected_store_unavailable") from exc
+
     return await run_review_only_wss_pairing(
-        enrollment=enrollment, receiver=receiver,
-        challenge_id=challenge_id, pairing_code=pairing_code,
+        enrollment=enrollment,
+        receiver=receiver,
+        challenge_id=challenge_id,
+        pairing_code=pairing_code,
         source_test_authorized=True,
     )
