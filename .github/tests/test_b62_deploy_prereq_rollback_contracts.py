@@ -654,6 +654,30 @@ def test_deploy_prereq_cli_exit_codes() -> None:
         assert "FULL_CONFIG_ROLLBACK_CLAIM=NO" in err
 
 
+def test_protected_code_rollback_checks_out_exact_main_before_scripts():
+    # Incident #38445968250: no checkout -> bash helper not found (exit 127).
+    w = DEPLOY_WORKFLOW.read_text(encoding="utf-8")
+    rollback = w.split("\n  rollback-production-code:\n", 1)[1].split(
+        "\n  # #3782:", 1
+    )[0]
+    authorize = rollback.index("Require explicit rollback authorization")
+    checkout = rollback.index("Checkout exact rollback workflow source")
+    confirm = rollback.index("Reconfirm exact main before a recorded-version rollback")
+    locate = rollback.index("Locate recorded version in history")
+    mutation = rollback.index("Roll out recorded version")
+    assert authorize < checkout < confirm < locate < mutation
+    assert "uses: actions/checkout@v4" in rollback
+    assert "persist-credentials: false" in rollback
+    assert "ref: \${{ env.TARGET_SHA }}" in rollback
+    assert "test \"$(git rev-parse origin/main)\" = \"\${TARGET_SHA}\"" in rollback
+    for path in ("b62_cloudflare_504_readonly_get.sh",
+                 "b62_cloudflare_rollback_deployment_request.py",
+                 "cloudflare_served_version_cli.py"):
+        assert "test -s .github/scripts/" + path in rollback
+    assert "environment: production" in rollback
+    assert "ROLLBACK_B62_PRODUCTION_CODE_TO_RECORDED_VERSION" in rollback
+
+
 if __name__ == "__main__":
     import traceback
 
