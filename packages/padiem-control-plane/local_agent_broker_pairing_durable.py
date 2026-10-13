@@ -273,5 +273,16 @@ class DurableBrokerPairingAuthority:
     def enrollment_binding(self, **kwargs: Any):
         return self._call("enrollment_binding", **kwargs)
 
+    def verify_enrollment_bootstrap(self, **kwargs: Any) -> dict[str, Any]:
+        """Read persisted challenge without rewriting pairing or device rows."""
+        def read():
+            return self._new_ephemeral().verify_enrollment_bootstrap(**kwargs)
+        try:
+            return self._storage.transactionSync(read)
+        except ControlPlaneContractError:
+            raise
+        except Exception as exc:
+            raise _err("durable_pairing_store_unavailable", "bootstrap verification failed") from exc
+
     def redeem_enrollment(self, **kwargs: Any):
         return self._call("redeem_enrollment", **kwargs)
