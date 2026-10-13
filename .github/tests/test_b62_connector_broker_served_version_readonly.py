@@ -72,7 +72,8 @@ class BrokerVersionReadbackTest(unittest.TestCase):
             raise AssertionError("unexpected Cloudflare request")
         proof = audit.audit(account_id="syntheticacct42", token="private-synthetic-token",
                             requester=requester)
-        self.assertEqual(len(calls), 4)
+        self.assertEqual(len(calls), 6)
+        self.assertEqual(sum(url.endswith("/deployments") for url in calls), 4)
         self.assertTrue(all(url.startswith("https://api.cloudflare.com/client/v4/") for url in calls))
         self.assertEqual(proof["served_worker_count"], 2)
         self.assertFalse(proof["deployed_source_parity_proven"])
@@ -80,6 +81,44 @@ class BrokerVersionReadbackTest(unittest.TestCase):
         self.assertNotIn(STATE, json.dumps(proof))
         self.assertNotIn(EDGE, json.dumps(proof))
         self.assertNotIn("private-synthetic-token", json.dumps(proof))
+
+    def test_deployment_changed_between_two_reads_fails_closed(self):
+        calls = {}
+        def requester(url, *, token):
+            if url.endswith("/deployments"):
+                n = calls.get(url, 0) + 1
+                calls[url] = n
+                if url.endswith("/padiem-local-agent-broker-state/deployments"):
+                    return 200, deployments(STATE if n == 1 else EDGE)
+                return 200, deployments(EDGE)
+            if url.endswith("/versions/" + STATE):
+                return 200, version_detail(STATE)
+            if url.endswith("/versions/" + EDGE):
+                return 200, version_detail(EDGE)
+            raise AssertionError("unexpected GET")
+        with self.assertRaisesRegex(ValueError, "drifted during readback"):
+            audit.audit(account_id="syntheticacct42", token="private", requester=requester)
+        self.assertEqual(calls.get(next(k for k in calls if "broker-state" in k)), 2)
+
+    def test_invalid_canonical_envelope_fails_without_guessing_a_version(self):
+        # The canonical resolver accepts only the documented Cloudflare
+        # deployment envelope, never a raw list or an invented shortcut.
+        for payload in (
+            [{"versions": [{"percentage": 100, "version_id": STATE}]}],
+            {"success": True, "result": {"versions": [
+                {"percentage": 100, "version_id": STATE},
+            ]}},
+            {"success": True, "result": {"deployments": [
+                {"versions": [{"percentage": 100.0, "version_id": STATE}]},
+            ]}},
+        ):
+            if isinstance(payload, dict) and payload.get("result", {}).get("deployments"):
+                # Canonical resolver intentionally accepts 100.0 == 100; it
+                # is still a single full-traffic version, not a split.
+                self.assertEqual(audit.parse_served_version(payload), STATE)
+            else:
+                with self.assertRaises(ValueError):
+                    audit.parse_served_version(payload)
 
     def test_missing_or_unavailable_version_response_fails_readback(self):
         with self.assertRaises(ValueError):
