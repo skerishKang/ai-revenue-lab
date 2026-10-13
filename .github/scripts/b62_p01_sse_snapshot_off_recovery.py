@@ -18,7 +18,7 @@ if SCRIPTS not in sys.path:
 
 import b62_sse_served_config_drift_guard as drift
 from b62_p01_sse_optin_gate import FLAG, bindings, version_bindings, version_result
-from cloudflare_served_version_cli import resolve_active_version_id
+from cloudflare_served_version import resolve_served_version_id
 
 # Exact incident pins; this emergency recovery route is NOT reusable for new
 # release/flag changes without explicit source review.
@@ -71,7 +71,7 @@ def validate(
     if imm["id"] != PREMUTATION_VERSION_ID:
         raise RecoveryRefused("SERVED_CODE_VERSION_NOT_PREMUTATION")
     try:
-        active_id = resolve_active_version_id(deployments)
+        active_id = resolve_served_version_id(deployments)
     except Exception as exc:
         raise RecoveryRefused("NONCANONICAL_DEPLOYMENT") from exc
     if active_id != PREMUTATION_VERSION_ID:
