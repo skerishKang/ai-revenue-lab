@@ -278,6 +278,18 @@ Immutable **835-source** cursor: **816 text originals seen at least partly** (12
 
 **Next:** fully reread and classify the original 125 `TEXT_SAMPLED` sources; then owner-only company Governance decision, and separate high-priority B66 source disclosure remediation if required.
 
+## 1AE. Batch 31 — first 25 exact-source full re-reviews of the initial 125 partial text samples (2026-10-13)
+
+**Frozen 835-original latest cursor:** 691 B02–B29 originally complete text fetches + **25 fully re-reviewed early samples** (`TEXT_FULL_REVIEWED_B31`) + **100** still `TEXT_SAMPLED` + 19 B30 PDF/DOCX body inspections = **835**. No index-only or binary pending remains. These counts are read-state bookkeeping, **not** legal or corporate publication clearance.
+
+- [Batch31 SHA-pinned 25-file full original text review and public-safe provisional classifications](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH31_20261013.md).
+- Provisional class totals: **BUSINESS_REVIEW 11**, **MIXED_REVIEW 10**, **TECH_PUBLIC 2**, **PRODUCT_PUBLIC 1**, **TECH_OWNER_RECORD 1**.
+- B35 proposal, customer-outreach templates, commercial qualification, legal/data contract drafts and source-verified market arguments require Owner-controlled evaluation and legal review before customer send or any private/public migration. No real customer responses or executed contracts were found in these source files; no draft rates or clause text copied into this report.
+- Historical B14 provider direction/model route changes, Claw Ops incubation and July Personal Edition first-revenue experiment are not current live permissions, executable model lists or automatic company business policy.
+- No source files, source blob SHA, original byte sizes, PDF/DOCX, local Governance, CI/code, customer information, product rights, Cloudflare Production or Git history mutated.
+
+**Next:** 100 original `TEXT_SAMPLED` require full-source re-review (four further 25-file batches). The B66 already-public reference quotation identified in Batch30 needs separate Owner/security/privacy evaluation; audit status does not itself authorize redistribution or removal.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |

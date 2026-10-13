@@ -1,6 +1,6 @@
 # Complete public GitHub document path manifest — audit checkpoint 2026-10-13
 # Baseline main SHA: 5476d1038993d647bf8ba241ce6a4307cccf291f
-# Content states: INDEXED_ONLY=original text indexed only; TEXT_SAMPLED=early partial/full original text seen but not exhaustively certified; TEXT_FULL_FETCHED_B02/B03/B04/B05/B06/B07/B08/B09/B10/B11/B12/B13/B14/B15/B16/B17/B18/B19/B20/B21/B22/B23/B24/B25/B26/B27/B28/B29=full original text read and provisionally classified; BINARY_BODY_INSPECTED_B30=original PDF/DOCX read via Git blob, content/page structure extracted and selected rendered pages visually reviewed, not exhaustive legal publication clearance; BINARY_PENDING=original body unread.
+# Content states: INDEXED_ONLY=original text indexed only; TEXT_SAMPLED=early partial/full original text seen but not exhaustively certified; TEXT_FULL_FETCHED_B02/B03/B04/B05/B06/B07/B08/B09/B10/B11/B12/B13/B14/B15/B16/B17/B18/B19/B20/B21/B22/B23/B24/B25/B26/B27/B28/B29=full original text read and provisionally classified; BINARY_BODY_INSPECTED_B30=original PDF/DOCX read via Git blob, content/page structure extracted and selected rendered pages visually reviewed, not exhaustive legal publication clearance; BINARY_PENDING=original body unread. TEXT_FULL_REVIEWED_B31=one of the 25 original TEXT_SAMPLED Markdown documents fully refetched by pinned Git SHA and provisionally classified; no publication/legal approval.
 # This file has all 835 recognized document-format blobs from a GitHub recursive tree with truncated=false. Existing source content was not copied here.
 # Full-status classification must not be inferred from filename keywords or the TEXT_SAMPLED flag.
 PATH	BLOB_SHA	BYTES	READ_STATE
@@ -17,14 +17,14 @@ apps/b66-sol61-multipage/README.md	a7a0b392562a790771127f9c8f6d06bbff7a2f76	9513
 apps/b66-sol61-multipage/requirements-test.txt	3f46dd34276c8f70778a2c10f099c0ca525d12c8	90	TEXT_FULL_FETCHED_B29
 apps/b66-sol61-multipage/WORK_ORDER_3839_RIGHT_BORDER.md	31a01e7beb7593f27801786307a166618d6e7735	1906	TEXT_FULL_FETCHED_B28
 apps/korean-ai-code-agent/docs/00_SOURCE_OF_TRUTH.md	df8c616feba1ea9388deafb58aae213cccbdafb5	1335	TEXT_FULL_FETCHED_B02
-apps/korean-ai-code-agent/docs/01_PRODUCT_CHARTER_AND_PRD.md	39b44c09715c7dcbcb2a4165539ee54e1e58aab0	1509	TEXT_SAMPLED
+apps/korean-ai-code-agent/docs/01_PRODUCT_CHARTER_AND_PRD.md	39b44c09715c7dcbcb2a4165539ee54e1e58aab0	1509	TEXT_FULL_REVIEWED_B31
 apps/korean-ai-code-agent/docs/02_SYSTEM_ARCHITECTURE.md	25fc8502c0e09023d12c2178a94a9e025f0652f6	1610	TEXT_FULL_FETCHED_B09
 apps/korean-ai-code-agent/docs/03_SECURITY_TRUST_MODEL.md	31344c2a8fdf85c40bb6f5d4350004f9d156faeb	1673	TEXT_FULL_FETCHED_B09
 apps/korean-ai-code-agent/docs/04_OPERATIONS_RUNBOOK.md	bb25eb79436f059d1442dac0fb7802d992ff5776	1469	TEXT_FULL_FETCHED_B02
 apps/korean-ai-code-agent/docs/05_RELEASE_ROLLBACK_POLICY.md	d118f4f63a05e0a39e459c91b1c1e5a36a467801	1162	TEXT_FULL_FETCHED_B09
 apps/korean-ai-code-agent/docs/06_RELIABILITY_INCIDENT_RESPONSE.md	fabc8db03f9eb79eee89f77dd50dba16b4e688de	1161	TEXT_FULL_FETCHED_B09
-apps/korean-ai-code-agent/docs/07_BUSINESS_PRICING.md	12d927eaf4ff2e4110cbd4137a27642fa3ed51ff	963	TEXT_SAMPLED
-apps/korean-ai-code-agent/docs/08_ROADMAP.md	07da98629926e82bacb40ef841214d839577f5c2	1003	TEXT_SAMPLED
+apps/korean-ai-code-agent/docs/07_BUSINESS_PRICING.md	12d927eaf4ff2e4110cbd4137a27642fa3ed51ff	963	TEXT_FULL_REVIEWED_B31
+apps/korean-ai-code-agent/docs/08_ROADMAP.md	07da98629926e82bacb40ef841214d839577f5c2	1003	TEXT_FULL_REVIEWED_B31
 apps/korean-ai-code-agent/docs/09_IMPLEMENTATION_STATUS.md	e2bec2b2bbdef880cf12e5a73202ca1b279a2a1b	3051	TEXT_FULL_FETCHED_B09
 apps/korean-ai-code-agent/docs/CALENDAR_MUTATION_SAFETY.md	d4ffc5b6d166bb7c6d0b66d8d55af58a4bcf422e	8470	TEXT_FULL_FETCHED_B07
 apps/korean-ai-code-agent/docs/cloud-m1/SANDBOX_LIVE_PROBE_RUNBOOK.md	7b6c45eb9eb279dae3f7b23bf98a0a76fc50cdb9	10144	TEXT_FULL_FETCHED_B10
@@ -52,7 +52,7 @@ apps/korean-ai-code-agent/docs/ops/DATA_APPROVAL_EVIDENCE_MODEL.md	261ee5eb21f29
 apps/korean-ai-code-agent/docs/ops/DISCOVERY_CALL_REDACTED.md	f2feb176ed0ad9c1e50613e360fddf4adc7b24fd	5105	TEXT_FULL_FETCHED_B04
 apps/korean-ai-code-agent/docs/ops/MANAGED_CLOUD_AND_MODES.md	c44354197f7dd80cd3a52507c02ccf50c5aca134	2850	TEXT_FULL_FETCHED_B04
 apps/korean-ai-code-agent/docs/ops/PILOT_AND_COMMERCIALIZATION.md	d6f48586ea093265f481f3632e29451da4b77aa0	3649	TEXT_FULL_FETCHED_B03
-apps/korean-ai-code-agent/docs/ops/PRODUCT_CHARTER.md	130ec0bcb50530e62dd14c3d3cc9dfae79798dd5	3820	TEXT_SAMPLED
+apps/korean-ai-code-agent/docs/ops/PRODUCT_CHARTER.md	130ec0bcb50530e62dd14c3d3cc9dfae79798dd5	3820	TEXT_FULL_REVIEWED_B31
 apps/korean-ai-code-agent/docs/ops/QUOTE_TO_ORDER_MVP.md	cc1a28f2bd29b3a0a8a5bb4e68b262bb326ad187	3832	TEXT_FULL_FETCHED_B03
 apps/korean-ai-code-agent/docs/ops/README.md	5ea47fbfbcdffbb63f4bcd26caf9303233533c1c	2880	TEXT_FULL_FETCHED_B06
 apps/korean-ai-code-agent/docs/OSS_CANDIDATE_INTAKE_MATRIX_2925.md	d07802610f93d5325b106136e8fb54d6f6d10453	14560	TEXT_FULL_FETCHED_B10
@@ -76,15 +76,15 @@ apps/korean-ai-code-agent/src/korean_ai_code_agent.egg-info/entry_points.txt	dff
 apps/korean-ai-code-agent/src/korean_ai_code_agent.egg-info/SOURCES.txt	5af893c01132dde1e3ae5f8c94f210b0defcb56a	13709	TEXT_FULL_FETCHED_B29
 apps/korean-ai-code-agent/src/korean_ai_code_agent.egg-info/top_level.txt	37d0596e4ddc3adcd455d1a710d4f8f4b3199f79	7	TEXT_FULL_FETCHED_B29
 apps/korean-ai-code-agent/THIRD_PARTY_NOTICES.md	15d31e596aebb8ea4db0f055cef4703650992388	1729	TEXT_FULL_FETCHED_B21
-apps/korean-ai-platform/docs/API_PROVIDER_PHASE0_CHARTER.md	60ff78e6a157fad0f206803373bde6efdfed688e	9594	TEXT_SAMPLED
+apps/korean-ai-platform/docs/API_PROVIDER_PHASE0_CHARTER.md	60ff78e6a157fad0f206803373bde6efdfed688e	9594	TEXT_FULL_REVIEWED_B31
 apps/korean-ai-platform/docs/B14_11_MODEL_SERVING_AND_WIRE_AUDIT_2026-10-10.md	e08070ab44d4166da610bb37f84323ce88f320fd	5991	TEXT_FULL_FETCHED_B05
 apps/korean-ai-platform/docs/B14_OFFICIAL_EXACT_SERVING_API_SOURCES_2026-10-10.md	9f61837abfecb3a9c749aac0a5c7fc873018ca54	5442	TEXT_FULL_FETCHED_B05
 apps/korean-ai-platform/docs/B14_ROUTER_PLATFORM_AND_PADIEM_PROFILE.md	8396916cc009d098c782837fe8f45d4a57bb414f	9778	TEXT_FULL_FETCHED_B02
-apps/korean-ai-platform/docs/BUSINESS14_DECISION_LOG.md	646119c59beb2531e008f25fa902653259598177	15538	TEXT_SAMPLED
+apps/korean-ai-platform/docs/BUSINESS14_DECISION_LOG.md	646119c59beb2531e008f25fa902653259598177	15538	TEXT_FULL_REVIEWED_B31
 apps/korean-ai-platform/docs/BUSINESS14_LANGUAGE_POLICY.md	d993b1fd3c1e94c711323fba90acf311b78f5fef	3819	TEXT_FULL_FETCHED_B03
 apps/korean-ai-platform/docs/CLOUDFLARE_WORKER_DEPLOYMENT.md	18de348fb6d59cc2bc18c11915f5bd8472992176	6358	TEXT_FULL_FETCHED_B05
 apps/korean-ai-platform/docs/GOOGLE_AI_STUDIO_FREE_TIER_RATE_LIMIT_SNAPSHOT_2026-10-09.md	7841e08a065526a473f898b06dbaf8b64994ea0a	2821	TEXT_FULL_FETCHED_B05
-apps/korean-ai-platform/docs/PHASE1_BYOK_GATEWAY_CHARTER.md	2cdc31250fb6f7d370a142753ead5b80dccedb60	2284	TEXT_SAMPLED
+apps/korean-ai-platform/docs/PHASE1_BYOK_GATEWAY_CHARTER.md	2cdc31250fb6f7d370a142753ead5b80dccedb60	2284	TEXT_FULL_REVIEWED_B31
 apps/korean-ai-platform/docs/PHASE1_PILOT_RUNBOOK.md	041bcbbfc2059ee86d432ca241330308fe176c39	3003	TEXT_FULL_FETCHED_B05
 apps/korean-ai-platform/docs/PHASE1_SECURITY_BOUNDARY.md	021f91548df9175edc82e14ac1ad47d2b4837ad5	2614	TEXT_FULL_FETCHED_B05
 apps/korean-ai-platform/docs/PHASE2_MULTI_PROVIDER_CHARTER.md	f90d8b61879726e33a8364e448b3e04d3e74fb20	3061	TEXT_FULL_FETCHED_B02
@@ -187,33 +187,33 @@ docs/architecture/PADIEM_PRODUCT_ACCESS_PROJECTION_4546_20261013.md	6172b7b818e6
 docs/architecture/PADIEM_TECHNOLOGY_COMPONENT_REGISTRY_v1.md	7de30c546d74cd06b6640aac9ffa290a1c2644f5	13092	TEXT_FULL_FETCHED_B08
 docs/architecture/PERSONAL_EDITION_MVP_ARCHITECTURE.md	fff2d6290cb92a28f101478bb87c60b5a24dd1e9	16391	TEXT_FULL_FETCHED_B08
 docs/architecture/PORTAL_PRODUCT_INTEGRATION_CONTRACT.md	8d7d7a42686e49b7999c7e4544baebbf0e50a3e5	13782	TEXT_FULL_FETCHED_B06
-docs/businesses/README.md	a2ffe74f0174cb485c1c02610a7d8cc4db0ca747	1168	TEXT_SAMPLED
+docs/businesses/README.md	a2ffe74f0174cb485c1c02610a7d8cc4db0ca747	1168	TEXT_FULL_REVIEWED_B31
 docs/CI-ACTIONS-QUEUE-AND-CACHE-2026-10-10.md	5325dddd12b3640dcc8ab4febb53b15370880c1f	7528	TEXT_FULL_FETCHED_B23
-docs/commercial/business-35-ai-media-education-dx/01-one-page-offer.md	575fba7b93734ba0ab0411fdeb289d0ee28af16e	3349	TEXT_SAMPLED
-docs/commercial/business-35-ai-media-education-dx/02-ten-page-proposal.md	0b56382c7ea3ae80929891de37c56bbad9a60414	9481	TEXT_SAMPLED
-docs/commercial/business-35-ai-media-education-dx/03-diagnostic-questionnaire.md	f18c41ca3c1250a387b66c6c510cdc35ca2135b4	8358	TEXT_SAMPLED
-docs/commercial/business-35-ai-media-education-dx/04-six-week-pilot-plan.md	cf8c99fe0c38a9cd7d0e14c5ff3bd7db68f09577	6453	TEXT_SAMPLED
-docs/commercial/business-35-ai-media-education-dx/05-statement-of-work-draft.md	c4ba125a3c0ee8bdd9627257d907a291888d139b	7249	TEXT_SAMPLED
-docs/commercial/business-35-ai-media-education-dx/06-risk-and-data-annex.md	7b1d057f5c21fca70d3bb48804ee6b8e0de1f814	5224	TEXT_SAMPLED
-docs/commercial/business-35-ai-media-education-dx/07-kpi-measurement-framework.md	cab6c15f191ce0172cfa7baaeb0c82549b72101b	6348	TEXT_SAMPLED
-docs/commercial/business-35-ai-media-education-dx/08-customer-qualification-scorecard.md	6adbe91d3f7ff1e22da371fbc478de04c5773cb7	3397	TEXT_SAMPLED
-docs/commercial/business-35-ai-media-education-dx/CURRENT_PRODUCT_AUTHORITY.md	b9208ba08a6bd8fc4c6492a2b99b2a791f04884c	2948	TEXT_SAMPLED
-docs/commercial/business-35-ai-media-education-dx/customer-package/Business35_Customer_Meeting_Script.md	a13725327f1cbc84638f5370af997052f1b44068	3373	TEXT_SAMPLED
+docs/commercial/business-35-ai-media-education-dx/01-one-page-offer.md	575fba7b93734ba0ab0411fdeb289d0ee28af16e	3349	TEXT_FULL_REVIEWED_B31
+docs/commercial/business-35-ai-media-education-dx/02-ten-page-proposal.md	0b56382c7ea3ae80929891de37c56bbad9a60414	9481	TEXT_FULL_REVIEWED_B31
+docs/commercial/business-35-ai-media-education-dx/03-diagnostic-questionnaire.md	f18c41ca3c1250a387b66c6c510cdc35ca2135b4	8358	TEXT_FULL_REVIEWED_B31
+docs/commercial/business-35-ai-media-education-dx/04-six-week-pilot-plan.md	cf8c99fe0c38a9cd7d0e14c5ff3bd7db68f09577	6453	TEXT_FULL_REVIEWED_B31
+docs/commercial/business-35-ai-media-education-dx/05-statement-of-work-draft.md	c4ba125a3c0ee8bdd9627257d907a291888d139b	7249	TEXT_FULL_REVIEWED_B31
+docs/commercial/business-35-ai-media-education-dx/06-risk-and-data-annex.md	7b1d057f5c21fca70d3bb48804ee6b8e0de1f814	5224	TEXT_FULL_REVIEWED_B31
+docs/commercial/business-35-ai-media-education-dx/07-kpi-measurement-framework.md	cab6c15f191ce0172cfa7baaeb0c82549b72101b	6348	TEXT_FULL_REVIEWED_B31
+docs/commercial/business-35-ai-media-education-dx/08-customer-qualification-scorecard.md	6adbe91d3f7ff1e22da371fbc478de04c5773cb7	3397	TEXT_FULL_REVIEWED_B31
+docs/commercial/business-35-ai-media-education-dx/CURRENT_PRODUCT_AUTHORITY.md	b9208ba08a6bd8fc4c6492a2b99b2a791f04884c	2948	TEXT_FULL_REVIEWED_B31
+docs/commercial/business-35-ai-media-education-dx/customer-package/Business35_Customer_Meeting_Script.md	a13725327f1cbc84638f5370af997052f1b44068	3373	TEXT_FULL_REVIEWED_B31
 docs/commercial/business-35-ai-media-education-dx/customer-package/Business35_Diagnostic_Questionnaire.docx	452b4d3aca9861e25c71fc2357cf41afd8bf518d	38812	BINARY_BODY_INSPECTED_B30
 docs/commercial/business-35-ai-media-education-dx/customer-package/Business35_Diagnostic_Questionnaire.pdf	e059884c5dde84a2ce59633a84235f3e3ed02d06	275883	BINARY_BODY_INSPECTED_B30
-docs/commercial/business-35-ai-media-education-dx/customer-package/Business35_Followup_Email_Templates.md	a3acad10a56652a7be4c4a957e5e0062151cd2b3	3306	TEXT_SAMPLED
+docs/commercial/business-35-ai-media-education-dx/customer-package/Business35_Followup_Email_Templates.md	a3acad10a56652a7be4c4a957e5e0062151cd2b3	3306	TEXT_FULL_REVIEWED_B31
 docs/commercial/business-35-ai-media-education-dx/customer-package/Business35_Master_Proposal_10p.pdf	17ae3494c309c56a4a402f8992ff5737d8ca56f3	244026	BINARY_BODY_INSPECTED_B30
 docs/commercial/business-35-ai-media-education-dx/customer-package/Business35_OnePage_Offer.pdf	be3143396d69d5a46905565842edd50160a9520f	88209	BINARY_BODY_INSPECTED_B30
-docs/commercial/business-35-ai-media-education-dx/customer-package/CUSTOMIZATION_CHECKLIST.md	770adcaac174dd3905f0d8b36f26c07261334089	2638	TEXT_SAMPLED
+docs/commercial/business-35-ai-media-education-dx/customer-package/CUSTOMIZATION_CHECKLIST.md	770adcaac174dd3905f0d8b36f26c07261334089	2638	TEXT_FULL_REVIEWED_B31
 docs/commercial/business-35-ai-media-education-dx/customer-package/GENERATION_MANIFEST.md	c70485155fc9d24cc95fcc6c232d6eefe1831bdf	5037	TEXT_FULL_FETCHED_B02
 docs/commercial/business-35-ai-media-education-dx/customer-package/README.md	8de6e726100bc19375b9e715f7d1b6dc3a9862a0	5317	TEXT_FULL_FETCHED_B02
-docs/commercial/business-35-ai-media-education-dx/customer-package/SOURCE_MAPPING.md	b9d3da76961ebc2873a30c18c641615542b2dc9e	6772	TEXT_SAMPLED
+docs/commercial/business-35-ai-media-education-dx/customer-package/SOURCE_MAPPING.md	b9d3da76961ebc2873a30c18c641615542b2dc9e	6772	TEXT_FULL_REVIEWED_B31
 docs/commercial/business-35-ai-media-education-dx/customer-package/VISUAL_QA.md	ed387efb737ee626fc6c03641bfdbac83909ee32	3869	TEXT_FULL_FETCHED_B02
-docs/commercial/business-35-ai-media-education-dx/README.md	5db51d8730a3444dcc378dae0120ac25172703c7	5652	TEXT_SAMPLED
-docs/commercial/business-35-ai-media-education-dx/SOURCES.md	80cd9dcaf99d4eaabc8681c313cd62dc0d9068f5	10795	TEXT_SAMPLED
-docs/common/README.md	d5fe00336b78b1ecf3e44f08991a4689a6faceb6	1328	TEXT_SAMPLED
+docs/commercial/business-35-ai-media-education-dx/README.md	5db51d8730a3444dcc378dae0120ac25172703c7	5652	TEXT_FULL_REVIEWED_B31
+docs/commercial/business-35-ai-media-education-dx/SOURCES.md	80cd9dcaf99d4eaabc8681c313cd62dc0d9068f5	10795	TEXT_FULL_REVIEWED_B31
+docs/common/README.md	d5fe00336b78b1ecf3e44f08991a4689a6faceb6	1328	TEXT_FULL_REVIEWED_B31
 docs/DANJION_SIGNUP_INTEGRATION_HANDOFF.md	458420334cbb0d4085529fb41dbf6d078f72c1ef	5700	TEXT_FULL_FETCHED_B23
-docs/decisions/ADR-0001-first-revenue-experiment.md	3aa22a36f425fdd9bd3c6f0bc5e132035e9a0d55	11515	TEXT_SAMPLED
+docs/decisions/ADR-0001-first-revenue-experiment.md	3aa22a36f425fdd9bd3c6f0bc5e132035e9a0d55	11515	TEXT_FULL_REVIEWED_B31
 docs/decisions/ADR-0002-product-workspaces.md	0a1f7739d47703bb01100443e07a577bd0fbd5dd	3771	TEXT_SAMPLED
 docs/decisions/ADR-0003-shared-portal-isolated-products.md	5475a204fe1a46573aeed90d7b6c9b9cff2249ec	10069	TEXT_SAMPLED
 docs/DOCUMENTATION_AUDIT_20260908.md	dd636cf905da5079b3b87661f9f0b2e19eaa03d1	7494	TEXT_FULL_FETCHED_B23
