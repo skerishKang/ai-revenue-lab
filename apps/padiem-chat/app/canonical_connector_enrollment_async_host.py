@@ -55,7 +55,7 @@ class CanonicalConnectorEnrollmentAsyncHost:
                 "bind_connector_enrollment_challenge",
                 "authorize_connector_enrollment_redeem",
             )),
-            (broker, ("issue_enrollment_challenge", "get_enrollment_binding", "redeem_enrollment", "revoke_binding")),
+            (broker, ("issue_enrollment_challenge", "get_enrollment_binding", "verify_enrollment_bootstrap", "redeem_enrollment", "revoke_binding")),
         ):
             if target is None or any(not callable(getattr(target, name, None)) for name in methods):
                 raise ValueError("canonical Identity and Broker private Service Binding clients are required")
@@ -153,6 +153,30 @@ class CanonicalConnectorEnrollmentAsyncHost:
             owner_ref=binding["owner_ref"], account_ref=binding["account_ref"],
             workspace_ref=binding["workspace_ref"],
         )
+        # The bounded HMAC-shaped input is not proof. Require a nonconsuming
+        # read of the canonical Broker's original OWNER/device-bound pairing
+        # code before attempting gateway reservation or consuming the challenge.
+        # The gateway must still authenticate the physical outbound PC/session.
+        proof = await self._broker.verify_enrollment_bootstrap(
+            challenge_id=challenge, device_id=device, proof_ref=proof_ref,
+            consent_ref=authorization["consent_id"],
+            owner_ref=authorization["owner_subject_id"],
+            account_ref=authorization["account_ref"],
+            workspace_ref=authorization["workspace_ref"],
+        )
+        if (
+            type(proof) is not dict
+            or set(proof) != {
+                "challenge_id", "device_id", "proof_valid", "challenge_consumed",
+            }
+            or proof["challenge_id"] != challenge or proof["device_id"] != device
+            or proof["proof_valid"] is not True
+            or proof["challenge_consumed"] is not False
+        ):
+            raise IdentityBridgeError(
+                503, "broker_bootstrap_proof_unconfirmed",
+                "Canonical pairing proof could not be verified.",
+            )
         # Never consume the one-time challenge until the existing secure local
         # credential destination proves ready.
         try:
