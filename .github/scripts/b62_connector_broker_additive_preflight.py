@@ -214,7 +214,9 @@ def main() -> int:
         }, sort_keys=True))
         print("CONNECTOR_BROKER_PRESERVATION=HOLD")
         print("PRODUCTION_MUTATION=0")
-        return 0
+        # A HOLD is safe but must not produce a green preservation CI gate.
+        # The earlier silent zero status could mask live inventory drift.
+        return 1
     print(json.dumps({
         "version": VERSION,
         "candidate_status": projection["status"],
