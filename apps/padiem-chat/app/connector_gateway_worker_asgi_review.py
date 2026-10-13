@@ -11,6 +11,7 @@ from urllib.parse import urlsplit
 
 from .canonical_connector_gateway_source_composition import CONNECTOR_GATEWAY_WSS_PATH
 from .connector_gateway_worker_binding_composition import build_review_only_gateway_from_worker_env
+from .connector_gateway_first_pairing_tls_review import CloudflareFirstPairingTlsTransportReview
 
 REVIEW_WORKER_WSS_URL = "https://chat.padiem.net" + CONNECTOR_GATEWAY_WSS_PATH
 WORKER_GATEWAY_ASGI_FETCH_PRODUCTION_WIRED = False
@@ -92,4 +93,31 @@ async def dispatch_review_only_worker_wss_upgrade(
     # The SDK's asgi.fetch() is HTTP-only. A WS upgrade must invoke
     # asgi.websocket() to construct a real WebSocketPair and status 101.
     # Never route the pairing channel through HTTP request processing.
-    return await asgi.websocket(strict_source_only_websocket_scope(app), request, worker_env)
+    # The official Cloudflare Python SDK signature is websocket(app, request).
+    # Private bindings are already captured when constructing `app`;
+    # a third `worker_env` positional argument breaks the actual adapter.
+    return await asgi.websocket(strict_source_only_websocket_scope(app), request)
+
+
+async def dispatch_review_only_worker_first_pairing_upgrade(
+    *, request: Any = None, worker_env: Any = None,
+    source_test_authorized: bool = False,
+) -> Any:
+    """Nonproduction first-PC bridge using only Cloudflare edge TLS metadata.
+
+    Reject insecure/missing request.cf *before* asgi.websocket() creates a
+    WebSocketPair or returns HTTP 101. TLS is never PC identity: the existing
+    canonical challenge-bound Broker proof, Identity consent, and device
+    credential install acknowledgement remain mandatory inside the socket.
+    """
+    if source_test_authorized is not True:
+        raise RuntimeError("Connector first-pairing Worker WSS not activated")
+    tls = CloudflareFirstPairingTlsTransportReview(
+        incoming_worker_request=request, source_review_authorized=True,
+    )
+    if not tls.permits_worker_upgrade():
+        raise ValueError("Untrusted Cloudflare first-pair TLS transport")
+    return await dispatch_review_only_worker_wss_upgrade(
+        request=request, worker_env=worker_env,
+        trusted_tls_ingress=tls, source_test_authorized=True,
+    )
