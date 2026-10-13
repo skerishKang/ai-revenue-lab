@@ -1,0 +1,54 @@
+name = "padiem-voice-stt"
+main = "worker.py"
+compatibility_date = "2026-08-25"
+compatibility_flags = ["python_workers"]
+# Private Worker: reachable only by an internal / Service-Binding caller, never
+# from the public internet. Products (Chat/Claw/B66) must not call it directly
+# from the browser.
+#
+# NOTE: `workers_dev = false` only keeps the Worker off the public internet. It
+# does NOT supply application-level caller authentication, identity or rate
+# limiting. That is what the gate below requires, and it is not attached yet.
+workers_dev = false
+base_dir = ".worker-src"
+
+[build]
+command = "uv run python scripts/build_worker_dependencies.py"
+
+# Existing Cloudflare Secrets Store (same store id every PADIEM provider key
+# uses; this file is the only source of that resource locator). The value is
+# never read, printed or returned by this Worker; only the binding name is
+# declared here.
+#
+# #4643: the Owner reports a Gemini key and a Groq key already exist in this
+# store. Reuse only — no new key is created or requested.
+[[secrets_store_secrets]]
+binding = "PADIEM_GEMINI_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_GEMINI_API_KEY"
+
+# NOT RUNTIME-VERIFIED. The Groq secret_name is absent from every repository
+# wrangler.toml, so the name below follows the PADIEM_<PROVIDER>_API_KEY
+# convention and MUST be confirmed against the live store before this Worker is
+# deployed. Until then the transcribe route fails closed with `stt_key_missing`.
+[[secrets_store_secrets]]
+binding = "PADIEM_GROQ_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_GROQ_API_KEY"
+
+# Deployment gate. OFF by default: declaring this Worker does not activate any
+# live voice lane, and the Worker reads no Secret and performs no provider call
+# while this is not exactly "true".
+#
+# ON additionally requires the VOICE_STT_CALLER_GUARD Service Binding, which
+# must supply an authenticated caller identity and a bounded per-account cost
+# authorization. It is deliberately NOT declared here: it does not exist, and
+# declaring a non-existent Service Binding would break this Worker's deploy.
+# Binding presence alone only opens the key-free capabilities route. The paid
+# transcribe / live-token routes are then UNCONDITIONALLY fail-closed with
+# `caller_authorization_unimplemented` because no service-binding authorization
+# contract exists to verify a verdict against: the Worker does not call the
+# binding at all, so no guard shape can authorize a paid call.
+# Do not switch this flag on to make tests pass.
+[vars]
+PADIEM_VOICE_STT_ENABLED = "false"

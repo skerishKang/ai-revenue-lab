@@ -289,6 +289,13 @@ check(html.includes('id="freeChatStarter"') &&
       easy.includes("bridge.chat(history)") &&
       easy.includes("return bridge.interpret(text)"),
   "B66_CHAT_ENTRY: explicit general AI dialogue CTA routes to real model and preserves approved CGI quote flow");
+check(easy.includes("renderSourcedEvidence(addMessage(\"assistant\", result.answer), result.search)") &&
+      easy.includes('search.status !== "sourced"') &&
+      easy.includes('stamp.textContent = "서버 수집 "') &&
+      easy.includes('rel = "noopener noreferrer nofollow"') &&
+      account.includes('typeof data.search.status === "string"') &&
+      css.includes(".easy-evidence-list {"),
+  "B66_SEARCH_EVIDENCE: only a server-reported sourced turn renders sources, each labelled with the server collection time and a nofollow link");
 check(easy.includes("자동 분석 서버는 아직 활성화 전") &&
       easy.includes("이 파일은 외부로 전송되지 않습니다."),
   "EASY_MODE_CONTRACT: selected file is truthful about non-live analysis");
