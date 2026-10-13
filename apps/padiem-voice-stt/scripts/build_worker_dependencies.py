@@ -20,8 +20,9 @@ ROOT = Path(__file__).resolve().parents[1]
 RUNTIME = ROOT / ".worker-src"
 RUNTIME_FILES = ("worker.py", "voice_stt_contract.py")
 
-#: The only non-stdlib imports the runtime files may use.
-ALLOWED_THIRD_PARTY = frozenset({"workers", "voice_stt_contract"})
+#: The only non-stdlib imports the runtime files may use. ``js`` is the Pyodide
+#: runtime module used behind a guarded ``import js`` for the abort signal.
+ALLOWED_THIRD_PARTY = frozenset({"workers", "voice_stt_contract", "js"})
 
 STDLIB = frozenset(getattr(__import__("sys"), "stdlib_module_names", ()))
 

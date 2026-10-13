@@ -9,6 +9,8 @@ Cloudflare Workers runtime.
 from __future__ import annotations
 
 import base64
+import datetime
+import re
 
 import pytest
 
@@ -141,11 +143,51 @@ def test_groq_response_parsing():
     assert (ok, text, code) == (False, "", "stt_failed")
 
 
-def test_live_token_contract_returns_only_an_ephemeral_token():
-    body = c.build_live_token_request_body()
-    assert body["model"] == c.GEMINI_LIVE_STT_MODEL
+def test_live_token_request_uses_rfc3339_absolute_timestamps():
+    """#4644 P0-1: a duration string is not a timestamp the API accepts."""
+    body = c.build_live_token_request_body(now_epoch_ms=1_800_000_000_000)
+    rfc3339 = r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z$"
+    assert re.fullmatch(rfc3339, body["expireTime"]), body["expireTime"]
+    assert re.fullmatch(rfc3339, body["newSessionExpireTime"]), body["newSessionExpireTime"]
+    for value in body.values():
+        assert not (isinstance(value, str) and re.fullmatch(r"\d+s", value))
+    assert body["expireTime"] == "2027-01-15T08:30:00Z"
+    assert body["newSessionExpireTime"] == "2027-01-15T08:01:00Z"
     assert body["uses"] == 1
-    assert isinstance(body["expireTime"], str)
+
+
+def test_live_token_locks_the_stt_model_via_live_connect_constraints():
+    """The model is bound to ``liveConnectConstraints``, never sent top-level."""
+    body = c.build_live_token_request_body(model="gemini-3.5-transcribe-live", now_epoch_ms=1_800_000_000_000)
+    assert body["liveConnectConstraints"] == {"model": "gemini-3.5-transcribe-live"}
+    assert "model" not in body
+    assert set(body) == {"uses", "expireTime", "newSessionExpireTime", "liveConnectConstraints"}
+
+
+def test_token_lifetimes_match_documented_defaults():
+    assert c.GEMINI_LIVE_TOKEN_EXPIRE_MINUTES == 30
+    assert c.GEMINI_LIVE_TOKEN_NEW_SESSION_EXPIRE_MINUTES == 1
+    body = c.build_live_token_request_body(now_epoch_ms=1_800_000_000_000)
+    expire = datetime.datetime.strptime(body["expireTime"], "%Y-%m-%dT%H:%M:%SZ")
+    session = datetime.datetime.strptime(body["newSessionExpireTime"], "%Y-%m-%dT%H:%M:%SZ")
+    assert expire.replace(tzinfo=datetime.timezone.utc) - session.replace(tzinfo=datetime.timezone.utc) == datetime.timedelta(minutes=29)
+
+
+def test_live_token_endpoint_is_v1beta_per_official_documentation():
+    assert c.GEMINI_LIVE_TOKEN_ENDPOINT.endswith("/v1beta/auth_tokens")
+    assert "v1alpha" not in c.GEMINI_LIVE_TOKEN_ENDPOINT
+
+
+def test_format_rfc3339_utc_renders_absolute_instants():
+    assert c.format_rfc3339_utc(1_800_000_000_000) == "2027-01-15T08:00:00Z"
+    assert c.format_rfc3339_utc(1_800_000_000_123) == "2027-01-15T08:00:00.123Z"
+    for bad in (0, -1, None, True, 1.5):
+        with pytest.raises(ValueError):
+            c.format_rfc3339_utc(bad)
+
+
+def test_live_token_contract_returns_only_an_ephemeral_token():
+    assert c.build_live_token_request_body()["uses"] == 1
     assert c.extract_live_token({"name": "auth_tokens/abc"}) == "auth_tokens/abc"
     assert c.extract_live_token({"name": ""}) is None
     assert c.extract_live_token(None) is None
@@ -170,8 +212,19 @@ def test_binding_names_are_declared_and_groq_is_marked_unverified():
     assert c.GEMINI_API_KEY_BINDING == "PADIEM_GEMINI_API_KEY"
     assert c.GROQ_API_KEY_BINDING == "PADIEM_GROQ_API_KEY"
     # Owner-reported only: the exact Groq secret_name is not in any repo config.
+    # Declared != runtime verified.
     assert c.GROQ_API_KEY_BINDING_VERIFIED is False
-    assert c.PADIEM_SECRETS_STORE_ID == "f0b09ca04a7b43248154c773704a5616"
+    assert c.VOICE_STT_SERVICE_BINDING == "VOICE_STT_SERVICE"
+    assert c.VOICE_STT_CALLER_GUARD_BINDING == "VOICE_STT_CALLER_GUARD"
+    assert c.VOICE_STT_ENABLED_BINDING == "PADIEM_VOICE_STT_ENABLED"
+    # P0-4: the Secrets Store resource id is NOT duplicated in this module.
+    assert not [name for name in vars(c) if "STORE_ID" in name.upper()]
+
+
+def test_upstream_timeouts_are_finite_and_ordered():
+    assert 0 < c.LIVE_TOKEN_REQUEST_TIMEOUT_MS < c.GROQ_REQUEST_TIMEOUT_MS
+    assert c.GROQ_REQUEST_TIMEOUT_MS == 25_000
+    assert c.LIVE_TOKEN_REQUEST_TIMEOUT_MS == 8_000
 
 
 def test_every_error_code_has_a_status():
@@ -184,6 +237,116 @@ def test_voice_stt_error_rejects_unregistered_code():
         c.VoiceSttError("definitely_not_registered")
 
 
+# ---------------------------------------------------------------------------
+# P0-3: declared Content-Length and incremental body reading
+# ---------------------------------------------------------------------------
+
+
+def test_parse_declared_content_length():
+    assert c.parse_declared_content_length(None) is None
+    assert c.parse_declared_content_length("0") == 0
+    assert c.parse_declared_content_length("1024") == 1024
+    assert c.parse_declared_content_length(1024) == 1024
+    assert c.parse_declared_content_length("  1024  ") == 1024
+
+
+@pytest.mark.parametrize("declared", ["-1", "-4096", "abc", "", "1.5", "0x10", "12,3", "1 024"])
+def test_parse_declared_content_length_rejects_malformed(declared):
+    with pytest.raises(c.VoiceSttError) as exc:
+        c.parse_declared_content_length(declared)
+    assert exc.value.code in ("invalid_content_length",)
+
+
+def test_parse_declared_content_length_rejects_bool():
+    # True == 1 must not slip through as a byte count.
+    with pytest.raises(c.VoiceSttError):
+        c.parse_declared_content_length(True)
+
+
+async def _chunk_gen(chunks):
+    async def read(limit):
+        if not chunks:
+            return None
+        data = chunks.pop(0)
+        return data[:limit]
+
+    return read
+
+
+async def test_read_bounded_body_concatenates_every_chunk():
+    read = await _chunk_gen([b"ab", b"cd", b"ef"])
+    assert await c.read_bounded_body(read, 6) == b"abcdef"
+
+
+async def test_read_bounded_body_rejects_as_soon_as_the_cap_is_exceeded():
+    read = await _chunk_gen([b"a" * 4, b"b" * 4])
+    with pytest.raises(c.VoiceSttError) as exc:
+        await c.read_bounded_body(read, 6)
+    assert exc.value.code == "request_too_large"
+
+
+async def test_read_bounded_body_accepts_a_body_exactly_at_the_cap():
+    delivered = [b"z" * 6, None]
+
+    async def read(_limit):
+        return delivered.pop(0) if delivered else None
+
+    assert await c.read_bounded_body(read, 6) == b"zzzzzz"
+
+
+async def test_read_bounded_body_rejects_one_byte_over_the_cap():
+    async def read(limit):
+        return b"z" * (limit + 1) if limit else b"z" * 7
+
+    with pytest.raises(c.VoiceSttError) as exc:
+        await c.read_bounded_body(read, 6)
+    assert exc.value.code == "request_too_large"
+
+
+async def test_read_bounded_body_accepts_no_content_length_stream():
+    """A chunked request with no declared length is still bounded by the cap."""
+    chunks = [b"0123", b"4567"]
+    async def read(limit):
+        if not chunks:
+            return None
+        return chunks.pop(0)[:limit]
+    assert await c.read_bounded_body(read, 8) == b"01234567"
+    with pytest.raises(c.VoiceSttError):
+        await c.read_bounded_body(await _chunk_gen([b"0123", b"4567"]), 7)
+
+
+async def test_read_bounded_body_rejects_a_non_bytes_chunk():
+    async def read(_limit):
+        return 12345
+    with pytest.raises(c.VoiceSttError) as exc:
+        await c.read_bounded_body(read, 64)
+    assert exc.value.code == "invalid_json"
+
+
+async def test_read_bounded_body_accepts_str_and_memoryview_chunks():
+    delivered = ["hello", None]
+
+    async def read1(_limit):
+        return delivered.pop(0) if delivered else None
+
+    assert await c.read_bounded_body(read1, 64) == b"hello"
+
+    delivered = [memoryview(b"world"), None]
+
+    async def read2(_limit):
+        return delivered.pop(0) if delivered else None
+
+    assert await c.read_bounded_body(read2, 64) == b"world"
+
+
+def test_read_bounded_body_uses_the_plus_one_limit_probe():
+    """The contract must ask for one byte over budget, never the whole body."""
+    import inspect
+
+    source = inspect.getsource(c.read_bounded_body)
+    assert "max_bytes - total + 1" in source
+
+
 def test_normalize_http_method_handles_enum_and_string():
     from http import HTTPMethod
 
@@ -191,3 +354,12 @@ def test_normalize_http_method_handles_enum_and_string():
     assert c.normalize_http_method(HTTPMethod.GET) == "GET"
     assert c.normalize_http_method("post") == "POST"
     assert c.normalize_http_method(None) == "NONE"
+
+
+def test_route_path_extracts_the_path_component():
+    assert c.route_path("https://voice.internal/internal/v1/voice/transcribe") == "/internal/v1/voice/transcribe"
+    assert c.route_path("https://voice.internal/internal/v1/voice/transcribe?x=1") == "/internal/v1/voice/transcribe"
+    assert c.route_path("https://voice.internal/") == "/"
+    assert c.route_path("") == ""
+    assert c.route_path(None) == "None"
+    assert c.route_path("not a url at all") == "not a url at all"

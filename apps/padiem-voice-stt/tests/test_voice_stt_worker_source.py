@@ -40,7 +40,17 @@ def test_worker_uses_the_cloudflare_runtime():
 
 
 def test_worker_imports_only_stdlib_and_the_shared_contract():
-    allowed = {"workers", "voice_stt_contract", "json", "uuid", "urllib", "__future__"}
+    # ``js`` is the Pyodide runtime module used behind a guarded ``import js``
+    # for the abort signal; it is runtime-provided, not a vendored dependency.
+    allowed = {
+        "workers",
+        "voice_stt_contract",
+        "json",
+        "uuid",
+        "urllib",
+        "__future__",
+        "js",
+    }
     assert _imports() - allowed == set()
 
 
@@ -97,7 +107,58 @@ def test_worker_uses_the_bounded_error_envelope():
 
 def test_build_script_allowlist_matches_worker_imports():
     build = BUILD.read_text(encoding="utf-8")
-    assert 'ALLOWED_THIRD_PARTY = frozenset({"workers", "voice_stt_contract"})' in build
+    assert 'ALLOWED_THIRD_PARTY = frozenset({"workers", "voice_stt_contract", "js"})' in build
     assert 'RUNTIME_FILES = ("worker.py", "voice_stt_contract.py")' in build
     # The vendored runtime must not pull any third-party dependency.
     assert c.CONTRACT_VERSION.startswith("padiem.voice.stt.")
+
+
+def test_worker_reads_the_enabled_flag_before_any_secret():
+    """P0-2: the gate must run before any secret read or provider path."""
+    import ast
+
+    tree = ast.parse(_source(), filename=str(WORKER))
+    fetch = next(
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, (ast.AsyncFunctionDef, ast.FunctionDef)) and node.name == "fetch"
+    )
+    called = []
+    for node in ast.walk(fetch):
+        if not isinstance(node, ast.Call):
+            continue
+        name = node.func.attr if isinstance(node.func, ast.Attribute) else getattr(node.func, "id", "")
+        called.append(name)
+    assert "_require_enabled" in called
+    gate = called.index("_require_enabled")
+    # Nothing that can read a Secret or reach a provider may precede the gate.
+    for forbidden in ("_handle_transcribe", "_handle_live_token", "_handle_capabilities"):
+        assert forbidden not in called[:gate], called[:gate]
+
+
+def test_worker_uses_bounded_body_reading():
+    """P0-3: no whole-body materialisation before the size check."""
+    source = _source()
+    assert "await request.text()" not in source
+    assert "contract.read_bounded_body" in source
+    assert "contract.parse_declared_content_length" in source
+    assert "body.getReader()" in source
+
+
+def test_worker_declares_timeout_budgets_for_both_upstreams():
+    source = _source()
+    assert "contract.GROQ_REQUEST_TIMEOUT_MS" in source
+    assert "contract.LIVE_TOKEN_REQUEST_TIMEOUT_MS" in source
+
+
+def test_contract_holds_no_secrets_store_resource_locator():
+    """P0-4: the store id must not be duplicated in Python or in the tests."""
+    marker = "f0b09ca" + "04a7b4324" + "8154c7737" + "045a5616"
+    contract_source = (APP_ROOT / "voice_stt_contract.py").read_text(encoding="utf-8")
+    assert marker not in contract_source
+    for path in sorted((APP_ROOT / "tests").glob("*.py")):
+        if path.name == Path(__file__).name:
+            continue  # this assertion names the marker by construction
+        assert marker not in path.read_text(encoding="utf-8"), path.name
+    for path in sorted((APP_ROOT / "worker.py").rglob("*.py")):
+        assert marker not in path.read_text(encoding="utf-8"), path

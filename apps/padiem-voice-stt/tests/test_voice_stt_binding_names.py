@@ -20,7 +20,9 @@ VOICE_WRANGLER = REPO_ROOT / "apps" / "padiem-voice-stt" / "wrangler.toml"
 CHAT_WRANGLER = REPO_ROOT / "apps" / "padiem-chat" / "wrangler.toml"
 B66_BRIDGE = REPO_ROOT / "reference" / "business-66-padiem-quote-v1" / "_worker.js"
 
-EXPECTED_STORE_ID = "f0b09ca04a7b43248154c773704a5616"
+#: The Cloudflare Secrets Store resource id is NOT hardcoded here on purpose
+#: (#4644 P0-4): ``wrangler.toml`` is the only source of it. The test below only
+#: checks that the voice Worker reuses *one* store for both bindings.
 
 #: The Service Binding each product must gain before it can reach the shared
 #: voice Worker. Declared here as the required name; it is deliberately NOT
@@ -54,8 +56,10 @@ def _service_bindings(config: dict) -> set[str]:
 def test_voice_worker_declares_both_provider_secret_bindings():
     secrets = _secret_bindings(_load(VOICE_WRANGLER))
     assert set(secrets) == {"PADIEM_GEMINI_API_KEY", "PADIEM_GROQ_API_KEY"}
-    # Reuses the existing store; no new store is introduced.
-    assert set(secrets.values()) == {EXPECTED_STORE_ID}
+    # Reuses one existing store for both bindings; no second store is introduced.
+    store_ids = set(secrets.values())
+    assert len(store_ids) == 1 and store_ids != {""}
+    assert not [name for name in vars() if "STORE_ID" == name]
 
 
 def test_voice_worker_is_private():

@@ -33,6 +33,8 @@ Security invariants
 
 from __future__ import annotations
 
+import datetime
+import time
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Callable, Iterable, Sequence
@@ -90,7 +92,8 @@ def normalize_http_method(value: object) -> str:
     """Normalise a request method to an upper-case string.
 
     The ``workers`` runtime exposes ``http.HTTPMethod``; ``.name`` is explicit
-    and stable, whereas ``str()`` semantics for enums differ across versions.
+    and stable, whereas ``str()`` semantics for enum members differ across
+    Python versions (IntEnum silently renders the integer).
     """
     name = getattr(value, "name", None)
     if isinstance(name, str):
@@ -98,22 +101,54 @@ def normalize_http_method(value: object) -> str:
     return str(value).upper()
 
 
+def route_path(url: object) -> str:
+    """Return the path component of an absolute request URL.
+
+    ``str(request.url)`` is an absolute URL, so ``urlsplit`` rather than treating
+    the whole string as a path. Returns ``""`` for anything unparseable, which
+    routes to the bounded ``not_found`` mismatch branch.
+    """
+    if not isinstance(url, str):
+        url = str(url)
+    try:
+        from urllib.parse import urlsplit
+
+        return urlsplit(url).path
+    except Exception:
+        return ""
+
+
 # ---------------------------------------------------------------------------
 # Secret binding names (names only — never values)
 # ---------------------------------------------------------------------------
 
-#: Cloudflare Secrets Store id already used by every PADIEM provider key.
-PADIEM_SECRETS_STORE_ID = "f0b09ca04a7b43248154c773704a5616"
+#: The Cloudflare Secrets Store resource id is intentionally NOT stored here.
+#: It is a non-secret resource locator, and ``wrangler.toml`` is the only source
+#: of it in this repository. Duplicating it in Python only creates a second copy
+#: that secret scanners flag for entropy without adding any behaviour.
 
-#: Verified existing binding name (declared in apps/korean-ai-platform/wrangler.toml).
+#: Existing binding name, already declared in
+#: ``apps/korean-ai-platform/wrangler.toml``. Declaring a binding in repository
+#: config is NOT runtime verification — it only proves the reference exists in
+#: the manifest.
 GEMINI_API_KEY_BINDING = "PADIEM_GEMINI_API_KEY"
 
-#: Owner reports a Groq key already exists in the same store (2026-10-14).
-#: The exact secret_name is NOT present in any repository wrangler.toml, so this
-#: name follows the ``PADIEM_<PROVIDER>_API_KEY`` convention and MUST be
-#: confirmed against the live store before activation. No key is created here.
+#: Owner-reported only. A repository manifest entry for Groq is absent from every
+#: PADIEM ``wrangler.toml``, so this exact secret_name is *inferred* from the
+#: ``PADIEM_<PROVIDER>_API_KEY`` convention. It is not proven to exist, no live
+#: binding is attached, and no provider availability is implied. It must be
+#: confirmed against the live store before the transcribe route can succeed. No
+#: key is created, requested or read here.
 GROQ_API_KEY_BINDING = "PADIEM_GROQ_API_KEY"
 GROQ_API_KEY_BINDING_VERIFIED = False
+
+#: Deployment gate names for this shared service. Both are read from trusted
+#: Worker bindings only, never from request input.
+VOICE_STT_ENABLED_BINDING = "PADIEM_VOICE_STT_ENABLED"
+#: Service Binding that must supply an authenticated caller identity and a cost
+#: authorization. It does not exist yet and must not be switched on to pass tests.
+VOICE_STT_CALLER_GUARD_BINDING = "VOICE_STT_CALLER_GUARD"
+VOICE_STT_SERVICE_BINDING = "VOICE_STT_SERVICE"
 
 
 # ---------------------------------------------------------------------------
@@ -149,6 +184,9 @@ VOICE_STT_CODES: frozenset[str] = frozenset(
         "stt_unavailable",
         "stt_failed",
         "live_token_unavailable",
+        # Deployment gates: fail closed before any Secret read or provider call.
+        "voice_stt_disabled",
+        "caller_guard_unavailable",
     }
 )
 
@@ -168,7 +206,16 @@ STATUS_BY_CODE: dict[str, int] = {
     "stt_unavailable": 503,
     "stt_failed": 502,
     "live_token_unavailable": 503,
+    "voice_stt_disabled": 503,
+    "caller_guard_unavailable": 503,
 }
+
+
+def status_for_code(code: str) -> int:
+    """Bounded HTTP status for a registered code, or 400 when unregistered."""
+    if code not in VOICE_STT_CODES:
+        raise ValueError(f"unregistered voice STT code: {code}")
+    return STATUS_BY_CODE[code]
 
 
 # ---------------------------------------------------------------------------
@@ -568,6 +615,65 @@ MAX_AUDIO_BYTES = 3 * 1024 * 1024
 #: Base64 inflates by ~4/3, so the JSON envelope gets a little headroom.
 MAX_REQUEST_BYTES = 5 * 1024 * 1024
 
+#: Upstream budget in milliseconds. A stalled provider must not pin a Worker
+#: request forever, and a browser must not wait on a socket that never answers.
+GROQ_REQUEST_TIMEOUT_MS = 25_000
+LIVE_TOKEN_REQUEST_TIMEOUT_MS = 8_000
+
+
+def parse_declared_content_length(raw: object) -> int | None:
+    """Validate a declared ``Content-Length`` header.
+
+    Returns the byte count, or ``None`` when the header is absent (chunked
+    transfer). A negative, non-integer or otherwise malformed declared length is
+    an error, not a value to fall back on — a negative length reads as "no limit"
+    to a naive check.
+    """
+    if raw is None:
+        return None
+    if isinstance(raw, bool):
+        raise VoiceSttError("invalid_content_length", 400)
+    try:
+        value = int(str(raw).strip())
+    except (TypeError, ValueError):
+        raise VoiceSttError("invalid_content_length", 400)
+    if value < 0:
+        raise VoiceSttError("invalid_content_length", 400)
+    return value
+
+
+async def read_bounded_body(
+    read_chunk: Callable[[int], object],
+    max_bytes: int,
+) -> bytes:
+    """Accumulate a body incrementally, never holding more than ``max_bytes``.
+
+    ``read_chunk(limit)`` must return up to ``limit`` bytes, or ``None`` for end
+    of body. The caller always asks for one byte more than the remaining budget,
+    so an oversized body is rejected the moment it proves to be oversized
+    instead of after it has been fully materialised in memory. Without a declared
+    ``Content-Length`` (chunked request) this is the only bound available.
+    """
+    parts: list[bytes] = []
+    total = 0
+    while True:
+        chunk = read_chunk(max_bytes - total + 1)
+        if hasattr(chunk, "__await__"):
+            chunk = await chunk
+        if chunk is None or chunk == b"" or chunk == "":
+            break
+        if isinstance(chunk, str):
+            chunk = chunk.encode("utf-8")
+        elif isinstance(chunk, (bytearray, memoryview)):
+            chunk = bytes(chunk)
+        if not isinstance(chunk, bytes):
+            raise VoiceSttError("invalid_json", 400)
+        total += len(chunk)
+        if total > max_bytes:
+            raise VoiceSttError("request_too_large", 413)
+        parts.append(chunk)
+    return b"".join(parts)
+
 SUPPORTED_LANGUAGES: tuple[str, ...] = ("ko", "en", "auto")
 DEFAULT_LANGUAGE = "auto"
 
@@ -735,7 +841,12 @@ def groq_model_sequence() -> tuple[str, ...]:
 # ---------------------------------------------------------------------------
 
 GEMINI_LIVE_STT_MODEL = "gemini-3.5-transcribe-live"
-GEMINI_LIVE_TOKEN_ENDPOINT = "https://generativelanguage.googleapis.com/v1alpha/auth_tokens"
+#: Official REST endpoint for minting ephemeral tokens. Google's current
+#: documentation and the curl example both use ``/v1beta/auth_tokens``, and
+#: ephemeral tokens are documented as working only with the ``v1beta`` API
+#: version. The ``v1alpha`` spelling used by the reference SDK call is a
+#: *session connect* version, not the token endpoint version.
+GEMINI_LIVE_TOKEN_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/auth_tokens"
 GEMINI_LIVE_ALLOWED_HOST = "generativelanguage.googleapis.com"
 
 #: How much silence ends a turn. Gemini's automatic activity detection defaults
@@ -747,9 +858,6 @@ GEMINI_LIVE_VAD_SILENCE_MS = 1_300
 #: Live sessions have a vendor-documented ~10 minute limit. Rotate before it
 #: instead of letting the session end and permanently dropping to fallback.
 GEMINI_LIVE_SESSION_ROTATE_MS = 9 * 60_000 + 20_000
-
-#: Ephemeral token lifetime; the browser holds this only.
-GEMINI_LIVE_TOKEN_TTL_SECONDS = 30 * 60
 
 
 def live_turn_boundary_reached(
@@ -799,18 +907,63 @@ class LiveSessionConfig:
         }
 
 
-def build_live_token_request_body(model: str = GEMINI_LIVE_STT_MODEL) -> dict[str, object]:
-    """Body for minting a short-lived Gemini Live auth token.
+#: Ephemeral token lifetime. The total token is valid for 30 minutes; the
+#: window in which the holder may *start* a new Live session is 1 minute.
+#: These match the documented defaults, not a duration string sent to Google.
+GEMINI_LIVE_TOKEN_EXPIRE_MINUTES = 30
+GEMINI_LIVE_TOKEN_NEW_SESSION_EXPIRE_MINUTES = 1
 
-    Mirrors the ``/api/live-token`` contract used by Global Classroom, minus the
+
+def format_rfc3339_utc(epoch_ms: int) -> str:
+    """Render epoch milliseconds as an absolute RFC3339 UTC timestamp.
+
+    ``2026-10-14T05:00:00Z`` — exactly the shape Google's ``auth_tokens`` REST
+    example uses for ``expireTime`` / ``newSessionExpireTime``. A relative
+    duration such as ``"1800s"`` is rejected by the API, which is what the first
+    ### CENTRAL defect was.
+    """
+    if not isinstance(epoch_ms, int) or isinstance(epoch_ms, bool) or epoch_ms <= 0:
+        raise ValueError("epoch_ms must be a positive integer")
+    seconds, millis = divmod(epoch_ms, 1000)
+    stamp = datetime.datetime.fromtimestamp(seconds, tz=datetime.timezone.utc)
+    return stamp.strftime("%Y-%m-%dT%H:%M:%S") + (f".{millis:03d}" if millis else "") + "Z"
+
+
+def _now_epoch_ms() -> int:
+    """Current wall clock in epoch milliseconds.
+
+    A single indirection so tests can substitute a fixed clock instead of
+    asserting against a value that moves between two calls.
+    """
+    return int(time.time() * 1000)
+
+
+def build_live_token_request_body(
+    model: str = GEMINI_LIVE_STT_MODEL,
+    now_epoch_ms: int | None = None,
+) -> dict[str, object]:
+    """Body for minting a short-lived, model-locked Gemini Live auth token.
+
+    Shape matches Google's current REST reference and the proven Global
+    Classroom implementation (``netlify/functions/live-token.ts``), minus the
     Netlify runtime: the server owns the long-lived key and returns only the
     ephemeral token.
+
+    - ``expireTime`` / ``newSessionExpireTime`` are **absolute RFC3339
+      timestamps**, not durations.
+    - the model is bound through ``liveConnectConstraints.model`` so the client
+      cannot open a Live session against any other model.
+    - ``uses`` stays 1 so a token starts at most one session.
     """
+    if now_epoch_ms is None:
+        now_epoch_ms = _now_epoch_ms()
+    expire = now_epoch_ms + GEMINI_LIVE_TOKEN_EXPIRE_MINUTES * 60_000
+    new_session = now_epoch_ms + GEMINI_LIVE_TOKEN_NEW_SESSION_EXPIRE_MINUTES * 60_000
     return {
         "uses": 1,
-        "expireTime": f"{GEMINI_LIVE_TOKEN_TTL_SECONDS}s",
-        "newSessionExpireTime": f"{GEMINI_LIVE_TOKEN_TTL_SECONDS}s",
-        "model": model,
+        "expireTime": format_rfc3339_utc(expire),
+        "newSessionExpireTime": format_rfc3339_utc(new_session),
+        "liveConnectConstraints": {"model": model},
     }
 
 
