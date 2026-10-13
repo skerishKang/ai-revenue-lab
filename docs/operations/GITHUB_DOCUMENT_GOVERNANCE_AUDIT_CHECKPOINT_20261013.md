@@ -131,6 +131,14 @@ Frozen 835-original-document cursor: **425 documents with text viewed at least p
 - B14 earlier BYOK 30-second limitations are historical, later native model caps preserve security resource limits; B13 media rights, B02 live provider/PII and owner-only Portfolio Console business metrics require separate commercial/privacy decisions.
 - Source SHA preservation only, no original file changes, off-Git Governance, secrets, live service changes or customer data.
 
+## 1O. Batch 15 — 25 full-source reads (2026-10-13)
+
+Frozen original inventory: 835. **475** documents have text viewed at least partly (125 initial samples + 25 each B02–B15), **341** remain INDEXED_ONLY and **19** PDF/DOCX are BINARY_PENDING. Initial 125 sampled entries still require deep review.
+
+- [Batch 15 original-SHA-indexed classification](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH15_20261013.md).
+- Editorial/hosting hypotheses, proposed institutional validation, provider benchmark rights and pricing require independent current owner/legal review. Synthetic family and story reference art has no customer data rights.
+- Shared Chat/Claw copy does not prove actual service activation; no original files, local private Governance, provider routes or production state changed.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
