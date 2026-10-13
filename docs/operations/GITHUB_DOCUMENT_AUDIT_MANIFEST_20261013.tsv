@@ -1,6 +1,6 @@
 # Complete public GitHub document path manifest — audit checkpoint 2026-10-13
 # Baseline main SHA: 5476d1038993d647bf8ba241ce6a4307cccf291f
-# Content states: INDEXED_ONLY=only path/hash known; TEXT_SAMPLED=initial partial/full read but not completely classified; TEXT_FULL_FETCHED_B02/B03/B04/B05=complete source retrieved and provisionally triaged in named batch (no relocation authority); BINARY_PENDING=PDF/DOCX bodies unread.
+# Content states: INDEXED_ONLY=path/hash only; TEXT_SAMPLED=initial partial/full text not fully classified; TEXT_FULL_FETCHED_B02/B03/B04/B05/B06=complete source retrieved and provisionally triaged in named batch without policy or relocation approval; BINARY_PENDING=PDF/DOCX content unread.
 # This file has all 835 recognized document-format blobs from a GitHub recursive tree with truncated=false. Existing source content was not copied here.
 # Full-status classification must not be inferred from filename keywords or the TEXT_SAMPLED flag.
 PATH	BLOB_SHA	BYTES	READ_STATE
@@ -54,7 +54,7 @@ apps/korean-ai-code-agent/docs/ops/MANAGED_CLOUD_AND_MODES.md	c44354197f7dd80cd3
 apps/korean-ai-code-agent/docs/ops/PILOT_AND_COMMERCIALIZATION.md	d6f48586ea093265f481f3632e29451da4b77aa0	3649	TEXT_FULL_FETCHED_B03
 apps/korean-ai-code-agent/docs/ops/PRODUCT_CHARTER.md	130ec0bcb50530e62dd14c3d3cc9dfae79798dd5	3820	TEXT_SAMPLED
 apps/korean-ai-code-agent/docs/ops/QUOTE_TO_ORDER_MVP.md	cc1a28f2bd29b3a0a8a5bb4e68b262bb326ad187	3832	TEXT_FULL_FETCHED_B03
-apps/korean-ai-code-agent/docs/ops/README.md	5ea47fbfbcdffbb63f4bcd26caf9303233533c1c	2880	INDEXED_ONLY
+apps/korean-ai-code-agent/docs/ops/README.md	5ea47fbfbcdffbb63f4bcd26caf9303233533c1c	2880	TEXT_FULL_FETCHED_B06
 apps/korean-ai-code-agent/docs/OSS_CANDIDATE_INTAKE_MATRIX_2925.md	d07802610f93d5325b106136e8fb54d6f6d10453	14560	INDEXED_ONLY
 apps/korean-ai-code-agent/docs/OSS_INTAKE_RECONCILIATION_2990.md	0650562e2c8cc1a7166d2be76ff74bb1b447307e	11932	INDEXED_ONLY
 apps/korean-ai-code-agent/docs/PILLOW_12_3_0_NATIVE_WHEEL_PROVENANCE_3016.md	3033812afec0803b136b959baf705348ad7c1aae	7833	INDEXED_ONLY
@@ -186,7 +186,7 @@ docs/architecture/PADIEM_MODEL_CONTROL_CENTER_S1_POLICY_20261012.md	fbae6c315d5c
 docs/architecture/PADIEM_PRODUCT_ACCESS_PROJECTION_4546_20261013.md	6172b7b818e645bc6737b2fe6d5cec3b03559d6d	12265	TEXT_FULL_FETCHED_B03
 docs/architecture/PADIEM_TECHNOLOGY_COMPONENT_REGISTRY_v1.md	7de30c546d74cd06b6640aac9ffa290a1c2644f5	13092	INDEXED_ONLY
 docs/architecture/PERSONAL_EDITION_MVP_ARCHITECTURE.md	fff2d6290cb92a28f101478bb87c60b5a24dd1e9	16391	INDEXED_ONLY
-docs/architecture/PORTAL_PRODUCT_INTEGRATION_CONTRACT.md	8d7d7a42686e49b7999c7e4544baebbf0e50a3e5	13782	INDEXED_ONLY
+docs/architecture/PORTAL_PRODUCT_INTEGRATION_CONTRACT.md	8d7d7a42686e49b7999c7e4544baebbf0e50a3e5	13782	TEXT_FULL_FETCHED_B06
 docs/businesses/README.md	a2ffe74f0174cb485c1c02610a7d8cc4db0ca747	1168	TEXT_SAMPLED
 docs/CI-ACTIONS-QUEUE-AND-CACHE-2026-10-10.md	5325dddd12b3640dcc8ab4febb53b15370880c1f	7528	INDEXED_ONLY
 docs/commercial/business-35-ai-media-education-dx/01-one-page-offer.md	575fba7b93734ba0ab0411fdeb289d0ee28af16e	3349	TEXT_SAMPLED
@@ -289,7 +289,7 @@ docs/models/final-evaluation/B14_SAME_CASE_MODEL_COMPARISON_2026-10-09.md	b97122
 docs/models/final-evaluation/B14_STEPFUN_STEP5_PREVIEW_FREE_2026-10-09.md	b612dede74ffc835188dae0a29b9941473124651	7221	INDEXED_ONLY
 docs/models/final-evaluation/GOOGLE_AI_STUDIO_FREE_TIER_QUOTAS_2026-10-09.md	2b0e896da54de3124e4f8e051dbcd52dc8117945	6129	INDEXED_ONLY
 docs/models/MODEL_TIMEOUT_AGENT_PARITY_AUDIT_2026-10-10.md	c02911f26e644d0e274511b444dbbf35f214adff	12572	INDEXED_ONLY
-docs/models/PADIEM_OWNER_TIER_EVALUATION_20261013.md	6636bae508b7902f9e91a48e733a5d3d26b04ad4	9221	INDEXED_ONLY
+docs/models/PADIEM_OWNER_TIER_EVALUATION_20261013.md	6636bae508b7902f9e91a48e733a5d3d26b04ad4	9221	TEXT_FULL_FETCHED_B06
 docs/models/README.md	dc5c8698ea9fc27811b6da724fcbd0d533339eba	5461	TEXT_SAMPLED
 docs/operations/4445_PADIEM_ALL_TIMEOUTS_STATIC_AUDIT_2026-10-12.md	190400b22d01af51fc6e5cda083b4290ff980c5e	12836	INDEXED_ONLY
 docs/operations/4448_MODEL_RUNTIME_LIMIT_RESOURCE_BASED_POLICY_2026-10-12.md	60e54552733bb893ecab26046ed8cd478d2b4551	7517	TEXT_FULL_FETCHED_B04
@@ -399,7 +399,7 @@ docs/operations/CLAW_HARK_3933_WEB_XLSX_SAFE_REVISIONS_20261011.md	19ece70fd5660
 docs/operations/CLAW_HARK_3933_WRITE_OWNER_DECISION_D1_20261011.md	20fc0a2c8d92306adfbb2a44b80b5f994ef4e120	3165	INDEXED_ONLY
 docs/operations/CLAW_HARK_3933_XLSX_REVISION_PDF_SOURCE.md	716668d5dd48a0673da834bdb243f393cd5973b9	4359	INDEXED_ONLY
 docs/operations/CLAW_HARK_3936_E2E_ACCEPTANCE.md	df88829abec00d429a7a7d818fdb58628349983f	5804	INDEXED_ONLY
-docs/operations/CLAW_HARK_WEB_FIRST_OWNER_PRIORITY_20261011.md	e8eadef41bec4d620d4860427916d259589b2a01	7198	INDEXED_ONLY
+docs/operations/CLAW_HARK_WEB_FIRST_OWNER_PRIORITY_20261011.md	e8eadef41bec4d620d4860427916d259589b2a01	7198	TEXT_FULL_FETCHED_B06
 docs/operations/CLOUDFLARE_CREDENTIAL_OPERATIONS.md	6aa13339be655ca226766634c0c9f69c3941c674	2018	INDEXED_ONLY
 docs/operations/CODE_STRUCTURE_AND_ASSET_VERSIONING_POLICY.md	1ba7fded522ebbbb6a1ce6210125824f13655715	6328	INDEXED_ONLY
 docs/operations/CTO_LOCAL_DEVELOPER_OPERATING_AUDIT_20260905.md	74fbc91525132d2899fb115815fc0f3e34f4e735	18067	INDEXED_ONLY
@@ -495,19 +495,19 @@ docs/operations/ui-ux/CASE_STUDY_B01_V7_ANCHOR_SYSTEM_FAILURE.md	b393d8ec890c9d8
 docs/operations/ui-ux/CASE_STUDY_B06_WORLD_FEED.md	c4bdc2e469c2135a7ae5890c716d78501a59a359	5908	INDEXED_ONLY
 docs/operations/ui-ux/PORTFOLIO_IMPLEMENTATION_BOUNDARIES.md	f147a8453a858635aa765d9dde0ab2319c58d127	3255	TEXT_SAMPLED
 docs/operations/ui-ux/PORTFOLIO_VISUAL_AUDIT_TRACKER.md	887b00dbeda213aeb6e8b3538bc44361c40eedd9	4849	TEXT_SAMPLED
-docs/operations/ui-ux/PORTFOLIO_VISUAL_DIFFERENTIATION_MATRIX.md	92ef621b76bcbcf31da15e1a86b16fd19ff67e0b	7273	INDEXED_ONLY
+docs/operations/ui-ux/PORTFOLIO_VISUAL_DIFFERENTIATION_MATRIX.md	92ef621b76bcbcf31da15e1a86b16fd19ff67e0b	7273	TEXT_FULL_FETCHED_B06
 docs/operations/ui-ux/README.md	d44b480e7f037bf3469caa59556adddf585465bb	4355	INDEXED_ONLY
 docs/operations/ui-ux/UI_UX_VISUAL_DIRECTION_STANDARD.md	d183121f01e0b963c5d9fe3f9d3f1a828ce77524	10781	TEXT_SAMPLED
 docs/operations/ui-ux/VISUAL_AUDIT_AND_IMPLEMENTATION_PROTOCOL.md	9a090d3c81c9851722bf0ec2afcf0efb12493dc2	6674	INDEXED_ONLY
 docs/operations/WORKFLOW_STATUS_MODEL.md	78d2cab398b258405f84f458923e13b54b174f24	6929	INDEXED_ONLY
 docs/ops/b66-admin-multipage-20261012.md	9bb10a6e82ad499ac3d48a636c3205258f9ef018	2538	INDEXED_ONLY
-docs/ops/b66-admin-rollout-20261011.md	dc786320024f7b95cddc8ff5e88e90301181fe9b	4924	INDEXED_ONLY
+docs/ops/b66-admin-rollout-20261011.md	dc786320024f7b95cddc8ff5e88e90301181fe9b	4924	TEXT_FULL_FETCHED_B06
 docs/PADIEM_KAKAO_OTP_SIGNUP_CONTRACT.md	bde6c6aaa69da5f0eeb26f74e7f7b8af9651d431	7292	INDEXED_ONLY
 docs/padiem/PADIEM_CHAT_CLAW_ALIGNMENT_AUDIT_V1.md	72bbc5188fddeaa926a08c970ee2241d1ec48683	5519	INDEXED_ONLY
 docs/padiem/PADIEM_CHAT_CLAW_COPY_GLOSSARY_V1.md	aaee5603ea777c4722bda612889ce982fa39673a	4743	INDEXED_ONLY
 docs/padiem/PADIEM_CHAT_CLAW_USER_GUIDE_EN.md	dbec959ffedfe9236a794390f5380e1f30295b53	2101	INDEXED_ONLY
 docs/padiem/PADIEM_CHAT_CLAW_USER_GUIDE_KO.md	8f8d8d6ab9cfa1a7aa1ecd16eef4cce30f9f58f3	2492	INDEXED_ONLY
-docs/padiem/PADIEM_PRODUCT_LANGUAGE_VISUAL_SYSTEM_V1.md	9143e5e32c2ed1244e51721ff6d1c71319167a05	6788	INDEXED_ONLY
+docs/padiem/PADIEM_PRODUCT_LANGUAGE_VISUAL_SYSTEM_V1.md	9143e5e32c2ed1244e51721ff6d1c71319167a05	6788	TEXT_FULL_FETCHED_B06
 docs/portfolio/AI_REVENUE_LAB_OPERATING_INTENT.md	a9a60b1b246534ca7849230966f7064b1078661b	10133	TEXT_SAMPLED
 docs/portfolio/B61_KRV1961_CANONICAL_MAPPING_SPEC.md	3d25bbe05cc980eed1885bd8a67fbdf46ed3a5fd	2204	INDEXED_ONLY
 docs/portfolio/BUSINESS_60_AI_API_PROPOSAL.md	559f76e792c6232be8e31c1c0f6a098a0e3ac200	4628	TEXT_SAMPLED
@@ -585,13 +585,13 @@ reference/b66-public-standard-templates/cgi/v1/README.md	ca7b00bcb66f3dc767c8abb
 reference/b66-public-standard-templates/cgi/v1/sol61/template/resources.pdf	744102570ac7fe2c3e480b56b3933840831d0afb	91266	BINARY_PENDING
 reference/b66-public-standard-templates/cgi/v1/source/original.pdf	b34420a509b92f85de42796c5b35ac55fe0a16a2	120668	BINARY_PENDING
 reference/business-05-neighbor-market-v2/COMMUNITY_PRIORITY_MODEL.md	31cf405bcb8cfe9cb51eddc6aa9315520db59fc0	5984	TEXT_FULL_FETCHED_B02
-reference/business-05-neighbor-market-v2/DESIGN_SPEC.md	843bfbca3f76e3fa665241decf0ad299574d8ffc	10825	INDEXED_ONLY
-reference/business-05-neighbor-market-v2/IMAGE_SOURCES.md	66fa4cf0d20ec2eb57ed4ce45c1689520b230e9d	3929	INDEXED_ONLY
-reference/business-05-neighbor-market-v2/LOCAL_HANDOFF_PROMPT.md	b435d53c8a3bc5626800dd3fc86ec44bf301dc0d	8169	INDEXED_ONLY
+reference/business-05-neighbor-market-v2/DESIGN_SPEC.md	843bfbca3f76e3fa665241decf0ad299574d8ffc	10825	TEXT_FULL_FETCHED_B06
+reference/business-05-neighbor-market-v2/IMAGE_SOURCES.md	66fa4cf0d20ec2eb57ed4ce45c1689520b230e9d	3929	TEXT_FULL_FETCHED_B06
+reference/business-05-neighbor-market-v2/LOCAL_HANDOFF_PROMPT.md	b435d53c8a3bc5626800dd3fc86ec44bf301dc0d	8169	TEXT_FULL_FETCHED_B06
 reference/business-05-neighbor-market-v2/PRODUCT_DECISION.md	dcd04ed9a0815450a145d7a724c302bfdb3b6f8d	4893	TEXT_SAMPLED
 reference/business-05-neighbor-market-v2/README.md	f3272d7103b86f111aa6b179a5d404be4aa98175	4825	TEXT_SAMPLED
-reference/business-05-neighbor-market-v2/SCREENSHOT_MATRIX.md	6f82aefe0b39d4336802d28f202c648b52aa213d	5955	INDEXED_ONLY
-reference/business-05-neighbor-market-v2/UI_REFINEMENT_V3.md	308245491994240fd19e1ffa686b8673a5b6d411	8186	INDEXED_ONLY
+reference/business-05-neighbor-market-v2/SCREENSHOT_MATRIX.md	6f82aefe0b39d4336802d28f202c648b52aa213d	5955	TEXT_FULL_FETCHED_B06
+reference/business-05-neighbor-market-v2/UI_REFINEMENT_V3.md	308245491994240fd19e1ffa686b8673a5b6d411	8186	TEXT_FULL_FETCHED_B06
 reference/business-06-world-feed-v1/evidence/focused-correction-commands.txt	261f51af390c5e0835ea96baae228450e6dc7772	771	INDEXED_ONLY
 reference/business-06-world-feed-v1/evidence/ux-slice1-commands.txt	7ef4d0517088fd8eea2e69bcc6542990fd077ba2	1130	INDEXED_ONLY
 reference/business-06-world-feed-v1/evidence/ux-slice2-commands.txt	ada7f9e097387fdbd96528f382a696836e64099e	2244	INDEXED_ONLY
@@ -674,7 +674,7 @@ reference/business-20-personal-memory-novel-v1/REFERENCE_NOTES.md	58426be2ea8198
 reference/business-21-founder-strategy-letter-v1/IMAGE_SOURCES.md	2ac6e8f504d870c7589fecf57ca2573dab0fce66	1878	INDEXED_ONLY
 reference/business-21-founder-strategy-letter-v1/MOTION_SPEC.md	0abe176c0f77e8f700dc0478339e84d3f2b56722	884	INDEXED_ONLY
 reference/business-21-founder-strategy-letter-v1/README.md	34a2abc93dedef6516ae16b5791b98497508b37a	1401	TEXT_SAMPLED
-reference/business-21-founder-strategy-letter-v1/REFERENCE_NOTES.md	98f48ca5e2c4f6b49d556be9704cb3c82b7bdf85	4768	INDEXED_ONLY
+reference/business-21-founder-strategy-letter-v1/REFERENCE_NOTES.md	98f48ca5e2c4f6b49d556be9704cb3c82b7bdf85	4768	TEXT_FULL_FETCHED_B06
 reference/business-21-founder-strategy-letter-v1/VALIDATION.md	3c5413177c2a9fbb518e637769b9ac0429feb192	1463	INDEXED_ONLY
 reference/business-22-personal-media-studio-v1/IMAGE_SOURCES.md	c2a485f0ceb0e0598d9d6beafdb92957fe163f92	2109	INDEXED_ONLY
 reference/business-22-personal-media-studio-v1/MOTION_SPEC.md	f047cf814e2334c51b210a4ca362c1d3d60178d1	2394	INDEXED_ONLY
@@ -698,17 +698,17 @@ reference/business-34-ai-dubbing-studio-v1/IMAGE_SOURCES.md	a54f8cbfe7a1800cdfea
 reference/business-34-ai-dubbing-studio-v1/MOTION_SPEC.md	fbea9673f4d7448b451e15150f5bd05e7d1fd3e4	885	INDEXED_ONLY
 reference/business-34-ai-dubbing-studio-v1/README.md	1cdc5c2949089673d91aec6793d62779c92e53a9	566	TEXT_SAMPLED
 reference/business-34-ai-dubbing-studio-v1/REFERENCE_NOTES.md	644aca71b6f21a61f91b88fdab2fe9ac9578c984	1980	INDEXED_ONLY
-reference/business-35-ai-media-education-dx-v1/evidence/SELF_CHECK.md	0a8d56f02ee76ee91f9e670823eac958cc357f72	412	INDEXED_ONLY
-reference/business-35-ai-media-education-dx-v1/IMAGE_SOURCES.md	90d45dfaa0f166e67570605ad69bd8c3655efdb3	1394	INDEXED_ONLY
-reference/business-35-ai-media-education-dx-v1/MOTION_SPEC.md	9674365c987578f77e948a8a015f18a5b2816538	930	INDEXED_ONLY
+reference/business-35-ai-media-education-dx-v1/evidence/SELF_CHECK.md	0a8d56f02ee76ee91f9e670823eac958cc357f72	412	TEXT_FULL_FETCHED_B06
+reference/business-35-ai-media-education-dx-v1/IMAGE_SOURCES.md	90d45dfaa0f166e67570605ad69bd8c3655efdb3	1394	TEXT_FULL_FETCHED_B06
+reference/business-35-ai-media-education-dx-v1/MOTION_SPEC.md	9674365c987578f77e948a8a015f18a5b2816538	930	TEXT_FULL_FETCHED_B06
 reference/business-35-ai-media-education-dx-v1/README.md	2043fb80fe76c9f218f8a407d4350a0c70c090c0	546	TEXT_SAMPLED
-reference/business-35-ai-media-education-dx-v1/REFERENCE_NOTES.md	a24a2ecd7b3acda2967d9a0b6817b3539177a1f5	2960	INDEXED_ONLY
-reference/business-35-ai-media-education-dx-v3/EXPERIENCE_ARCHITECTURE.md	54aeb77852053b86239c6281cdee3acce0f44370	1068	INDEXED_ONLY
-reference/business-35-ai-media-education-dx-v3/IMAGE_SOURCES.md	9f05ca0e8daa41adffc380c5b24d370c4a5e604c	1562	INDEXED_ONLY
+reference/business-35-ai-media-education-dx-v1/REFERENCE_NOTES.md	a24a2ecd7b3acda2967d9a0b6817b3539177a1f5	2960	TEXT_FULL_FETCHED_B06
+reference/business-35-ai-media-education-dx-v3/EXPERIENCE_ARCHITECTURE.md	54aeb77852053b86239c6281cdee3acce0f44370	1068	TEXT_FULL_FETCHED_B06
+reference/business-35-ai-media-education-dx-v3/IMAGE_SOURCES.md	9f05ca0e8daa41adffc380c5b24d370c4a5e604c	1562	TEXT_FULL_FETCHED_B06
 reference/business-35-ai-media-education-dx-v3/MARKET_REFERENCE_MAP.md	73ad911880d944b8e49291eaff5ee54e1cfd9ae7	1138	TEXT_FULL_FETCHED_B02
 reference/business-35-ai-media-education-dx-v3/PRODUCT_CONTRACT.md	961ff2ae5390f6c6fc99f6969d5ef3b7665ea82f	1945	TEXT_SAMPLED
 reference/business-35-ai-media-education-dx-v3/README.md	9495d18e1b5b8d695ba05bc80c54b5e6a3973e0b	638	TEXT_SAMPLED
-reference/business-35-ai-media-education-dx-v3/VISUAL_SYSTEM.md	5dc41da882846f1941387a8facd8b419536808ec	1031	INDEXED_ONLY
+reference/business-35-ai-media-education-dx-v3/VISUAL_SYSTEM.md	5dc41da882846f1941387a8facd8b419536808ec	1031	TEXT_FULL_FETCHED_B06
 reference/business-36-ai-women-safety-v1/evidence/SELF_CHECK.md	f4b13ef52a870b2af157a56093ee2139c7c8ab51	1291	INDEXED_ONLY
 reference/business-36-ai-women-safety-v1/IMAGE_SOURCES.md	72c7159393951320ed1f1b16ecb642aca33023ea	2165	INDEXED_ONLY
 reference/business-36-ai-women-safety-v1/MOTION_SPEC.md	ad9c78179116b8163c7fb56fd942d09e1bfeac2c	1377	INDEXED_ONLY
@@ -780,11 +780,11 @@ reference/business-49-public-data-connector-hub-v1/REFERENCE_NOTES.md	222a08f9d4
 reference/business-51-ai-workflow-marketplace-v1/evidence/LOCAL_VALIDATION.md	d51163916ccdeef96d5eba84bd18b40c642d4847	1384	INDEXED_ONLY
 reference/business-51-ai-workflow-marketplace-v1/evidence/SELF_VALIDATION.md	0e712fd2a41cf97664811c81c10548f441707fe2	425	INDEXED_ONLY
 reference/business-51-ai-workflow-marketplace-v1/evidence/SOURCE_INTEGRITY.md	929cade69bcd32ab3da3c8563ea897053cd9bef4	536	INDEXED_ONLY
-reference/business-51-ai-workflow-marketplace-v1/evidence/VISION_REVIEW.md	90b4f16484062bf18e0083dd7f0805e726b8fd24	1356	INDEXED_ONLY
+reference/business-51-ai-workflow-marketplace-v1/evidence/VISION_REVIEW.md	90b4f16484062bf18e0083dd7f0805e726b8fd24	1356	TEXT_FULL_FETCHED_B06
 reference/business-51-ai-workflow-marketplace-v1/IMAGE_SOURCES.md	520ba93fb0c2761ca834f9e7b004c293593f1de6	2366	INDEXED_ONLY
-reference/business-51-ai-workflow-marketplace-v1/MOTION_SPEC.md	d5a3e7ae0b4993f4cbf9525d1cad513ba0ebdeb5	1783	INDEXED_ONLY
+reference/business-51-ai-workflow-marketplace-v1/MOTION_SPEC.md	d5a3e7ae0b4993f4cbf9525d1cad513ba0ebdeb5	1783	TEXT_FULL_FETCHED_B06
 reference/business-51-ai-workflow-marketplace-v1/README.md	9e374469967f4c85d07617029aceaf393b3ca7e4	1990	TEXT_SAMPLED
-reference/business-51-ai-workflow-marketplace-v1/REFERENCE_NOTES.md	8034d71ba6fa550cfde37ae2d714b89b26466e76	3513	INDEXED_ONLY
+reference/business-51-ai-workflow-marketplace-v1/REFERENCE_NOTES.md	8034d71ba6fa550cfde37ae2d714b89b26466e76	3513	TEXT_FULL_FETCHED_B06
 reference/business-52-scheduled-agent-operations-v1/IMAGE_SOURCES.md	d0e7dd7b954bac6b62241dabf51867fe63db3e78	2572	INDEXED_ONLY
 reference/business-52-scheduled-agent-operations-v1/MOTION_SPEC.md	e937f8fd8d84f3c81fba6528e8c0d64cbf2008e7	1091	INDEXED_ONLY
 reference/business-52-scheduled-agent-operations-v1/README.md	9121efa0b922daaac496cc748f7cf08d234ecf51	1242	TEXT_SAMPLED
@@ -823,8 +823,8 @@ reference/business-60-ai-api-v1/collector/README.md	976329af3af40c1642b8d9d89129
 reference/business-60-ai-api-v1/KOREAN_UI_COPY_V1.md	e41d6853f8c9318a46935b2299374249701a44e9	2285	INDEXED_ONLY
 reference/business-60-ai-api-v1/operations/B60_EDITORIAL_OPERATIONS.md	59c495b2c0fab110897abdc338ac2241fec2c938	8425	TEXT_SAMPLED
 reference/business-60-ai-api-v1/operations/B60_PRODUCT_CANON.md	1877fa4df464792e72c08f4916efd31ce8743be5	8144	TEXT_FULL_FETCHED_B03
-reference/business-60-ai-api-v1/operations/B60_SESSION_START.md	738f5ebfdd65e1c4894ede2ccdad1ac831f361f2	4367	INDEXED_ONLY
-reference/business-60-ai-api-v1/operations/B60_VISUAL_RULES.md	698b137cadd5662cbc6ed34dff3d178ea24550d2	4776	INDEXED_ONLY
+reference/business-60-ai-api-v1/operations/B60_SESSION_START.md	738f5ebfdd65e1c4894ede2ccdad1ac831f361f2	4367	TEXT_FULL_FETCHED_B06
+reference/business-60-ai-api-v1/operations/B60_VISUAL_RULES.md	698b137cadd5662cbc6ed34dff3d178ea24550d2	4776	TEXT_FULL_FETCHED_B06
 reference/business-60-ai-api-v1/README.md	2593e38df83e7d709f5e6e8f05a633408fe4e53d	11243	TEXT_SAMPLED
 reference/business-60-ai-api-v1/reviews/2026-08-24/PUBLISH_RECORD.md	d2a3c9eb8bface1f1bbc392a334ab4821957d32f	1493	INDEXED_ONLY
 reference/business-62-padiem-chat-v1/README.md	8d6684fd076a1c4a142a05aa5508c6f31d760b51	2357	TEXT_SAMPLED
