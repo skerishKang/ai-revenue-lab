@@ -328,6 +328,22 @@ Immutable **835-source** cursor: **816 text originals seen at least partly** (12
 
 **Next:** B35 final 25 `TEXT_SAMPLED` complete-text reviews, then sanitized aggregate register + Owner-private review/disclosure queue, with no unapproved publication changes.
 
+## 1AI. Batch 35 — LAST 25 original samples fully inspected; frozen 835-source full-body reading complete (2026-10-14 KST)
+
+**FROZEN SOURCE TREE:** `5476d1038993d647bf8ba241ce6a4307cccf291f`. All **835 original recognized GitHub documents** now carry whole-body inspection state:
+- 691 `TEXT_FULL_FETCHED_B02`–`TEXT_FULL_FETCHED_B29`
+- 125 `TEXT_FULL_REVIEWED_B31`–`TEXT_FULL_REVIEWED_B35` (25 each)
+- 19 `BINARY_BODY_INSPECTED_B30` (17 PDF, 2 DOCX)
+- **Zero** `TEXT_SAMPLED`, `INDEXED_ONLY`, `BINARY_PENDING`
+
+[Batch35 public-safe 25-item original Git blob SHA review, final reading certificate and forward privacy/business disposition](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH35_20261014.md).
+
+**Batch35 classifications:** `PRODUCT_PUBLIC=21`, `TECH_OWNER_RECORD=2`, `MIXED_REVIEW=1`, `BUSINESS_REVIEW=1`. Synthetic public safety/emergency, local model, personal archive, SDK and workflow UI reference source only. B60 dated commercial editorial selection/offer prioritization remains an Owner company-business review candidate; model offers, prices and copyrights are not freshly validated. B66 current technical source and B67 static legal research UX must not be treated as current Production/customer verification.
+
+**Not an Owner/publication approval:** All original 835 paths, byte sizes, blob SHA and original source content remain fixed, and no original PDF, customer record, active product, cloud runtime, local company Governance or business strategy was moved/edited. B30 flagged identical CGI original/source PDF blobs containing apparent contact/financial/individual information, B29 named community/representative publicity and B35 customer proposals remain **separate Owner/privacy/legal review priorities**.
+
+**Next governance phase (separate):** reconcile the full 835-original cross-batch provisional classes into a single source-anchored classification register, distinguish business policy vs public technical work, and prepare a separate **private Owner-only** disclosure/migration decision shortlist. No unapproved publication, original rewriting, file deletions or local Governance copying. Audit coverage is pinned historical tree only; current/future `main` changes require an independent delta audit.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
