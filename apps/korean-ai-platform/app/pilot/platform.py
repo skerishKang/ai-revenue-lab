@@ -597,7 +597,9 @@ async def stream_platform_chat_completions(
                         response.status_code, platform_provider_id, error_body
                     )
 
-                async for chunk in response.aiter_bytes():
+                # Bound our accumulator per frame without delaying first-token
+                # delivery by reading ahead to fill a fixed-size HTTP chunk.
+                async for chunk in _iter_sse_bounded_slices(response):
                     buffer += chunk
                     frames, buffer = _pop_sse_frames(buffer)
                     # Bound a single unfinished event for Worker memory safety,
@@ -648,6 +650,20 @@ async def stream_platform_chat_completions(
     if not saw_done:
         raise MalformedUpstreamResponse()
 
+
+
+async def _iter_sse_bounded_slices(response: httpx.Response):
+    """Yield pieces of each received HTTP block immediately, without read-ahead.
+
+    aiter_bytes(chunk_size=N) waits to fill N bytes, delaying first tokens
+    and hiding a yielded token when the upstream fails after its first chunk.
+    Instead, use the upstream natural stream boundaries, slicing within
+    each received block to keep our incomplete-frame accumulator bounded.
+    This cannot constrain allocations inside HTTPX network decoder itself.
+    """
+    async for block in response.aiter_bytes():
+        for offset in range(0, len(block), 64 * 1024):
+            yield block[offset:offset + 64 * 1024]
 
 def _pop_sse_frames(buffer: bytes) -> tuple[list[bytes], bytes]:
     frames: list[bytes] = []
