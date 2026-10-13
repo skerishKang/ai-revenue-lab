@@ -60,6 +60,9 @@ BASE_PATTERNS = (
     "packages/padiem-control-plane/local_agent_broker_worker.py",
     "packages/padiem-control-plane/canonical_broker_pairing_rpc.py",
     "packages/padiem-control-plane/wrangler.local-agent-broker.jsonc",
+    "packages/padiem-control-plane/identity_authority_worker.py",
+    "packages/padiem-control-plane/canonical_connector_enrollment_consent_rpc.py",
+    "packages/padiem-control-plane/wrangler.identity-authority.jsonc",
     ".github/workflows/b62-cloudflare-worker-deploy.yml",
 )
 
@@ -85,6 +88,9 @@ DEPENDENCY_PATHS = (
     "packages/padiem-control-plane/local_agent_broker_worker.py",
     "packages/padiem-control-plane/canonical_broker_pairing_rpc.py",
     "packages/padiem-control-plane/wrangler.local-agent-broker.jsonc",
+    "packages/padiem-control-plane/identity_authority_worker.py",
+    "packages/padiem-control-plane/canonical_connector_enrollment_consent_rpc.py",
+    "packages/padiem-control-plane/wrangler.identity-authority.jsonc",
     ".github/workflows/b62-cloudflare-worker-deploy.yml",
 )
 
