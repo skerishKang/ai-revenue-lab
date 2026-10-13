@@ -209,17 +209,10 @@ def inventory() -> dict[str, Any]:
         name: _latest_live_version(wrangler, config)
         for name, config in _TARGETS
     }
-    with (CHAT / "wrangler.connector-acceptance-4139.toml").open("rb") as src:
-        isolated = tomllib.load(src)
-    # The source-only acceptance profile intentionally provides NO public
-    # route nor login/DB/OAuth, even though its private RPC wiring compiles.
-    acceptance_login_ready = (
-        isolated.get("vars", {}).get("PADIEM_CHAT_AUTH_MODE") in
-        {"google", "password", "hybrid"}
-        and bool(isolated.get("d1_databases"))
-        and bool(isolated.get("vars", {}).get("PADIEM_CHAT_PUBLIC_BASE_URL"))
-        and bool(isolated.get("routes"))
-    )
+    # A deployed password auth binding or a configured HTTPS route is NOT
+    # evidence of a successful authenticated owner browser login. Until an
+    # authorized real login trace is observed, this stays false.
+    acceptance_login_ready = False
     chat = findings["chat"]
     broker = findings["broker"]
     identity = findings["identity"]
@@ -231,11 +224,15 @@ def inventory() -> dict[str, Any]:
         and all(bindings.get(x) is True for x in _PRIVATE_CHAT_BINDINGS)
         and all(flags.get(x) is True for x in _ACCEPTANCE_FLAGS)
     )
-    blockers: list[str] = []
+    # Production connector release is a separate, intentionally OFF track.
+    # Its absent flags/binding must not be represented as prerequisites for
+    # the independent isolated-acceptance owner-PC test.
+    production_blockers: list[str] = []
     if not bindings.get("LOCAL_AGENT_BROKER_AUTHORITY_SERVICE"):
-        blockers.append("chat_broker_service_binding_not_confirmed")
+        production_blockers.append("chat_broker_service_binding_not_confirmed")
     if not all(flags.get(x) for x in _ACCEPTANCE_FLAGS):
-        blockers.append("chat_connector_operator_release_not_enabled")
+        production_blockers.append("chat_connector_operator_release_not_enabled")
+    acceptance_blockers: list[str] = []
     acceptance_chat = findings["acceptance_chat"]
     acceptance_identity = findings["acceptance_identity"]
     acceptance_broker = findings["acceptance_broker"]
@@ -262,19 +259,30 @@ def inventory() -> dict[str, Any]:
         and owner_auth_prepared
     )
     if not acceptance_private_stack_ready:
-        blockers.append("isolated_acceptance_runtime_bindings_not_ready")
+        acceptance_blockers.append("isolated_acceptance_runtime_bindings_not_ready")
     if owner_overlay.get("public_route_published") is True:
-        blockers.append("acceptance_https_route_published_without_authorization")
+        acceptance_blockers.append(
+            "acceptance_https_route_published_without_authorization"
+        )
     if not acceptance_login_ready:
-        blockers.append("acceptance_browser_login_not_yet_proven")
+        acceptance_blockers.append("acceptance_browser_login_not_yet_proven")
     return {
-        "readiness": "runtime_wired_only_not_owner_pairing_proven"
-        if live_ready else "blocked",
+        # Full authenticated pairing is not proven by this read-only audit.
+        "readiness": "blocked",
+        "production_connector_wiring_present": live_ready,
+        "production_blockers": production_blockers,
+        "acceptance_private_stack_ready": acceptance_private_stack_ready,
+        "acceptance_runtime_state": (
+            "private_bindings_verified_login_not_proven"
+            if acceptance_private_stack_ready else "private_bindings_not_ready"
+        ),
+        "acceptance_blockers": acceptance_blockers,
         "checked_via": "wrangler_oauth_read_only",
         "workers": findings,
         "acceptance_browser_login_ready": acceptance_login_ready,
         "acceptance_owner_local_manifest": owner_overlay,
-        "blocking_facts": blockers,
+        # For #4139 isolated testing, never include production release gates.
+        "blocking_facts": acceptance_blockers,
         "actual_owner_windows_pairing_proven": False,
         "changes_made": False,
     }
