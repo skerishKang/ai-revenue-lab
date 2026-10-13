@@ -548,7 +548,7 @@ def _exercise_mocked_rollback_response(response_kind: str):
         snapshot = root / "safe-snapshot.json"
         snapshot.write_text(json.dumps({"success": True, "result": {"bindings": []}}))
         mock = root / "bin" / "curl"
-        mock.write_text(textwrap.dedent("""\\
+        mock.write_text(textwrap.dedent("""\
             #!/usr/bin/env python3
             import json
             import os
