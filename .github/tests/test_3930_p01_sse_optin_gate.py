@@ -177,7 +177,7 @@ def test_real_cloudflare_postpatch_last_deployed_from_is_provenance_not_code():
     mutated[2]["resources"]["bindings"].append(
         b("UNAUTHORIZED_BINDING", "plain_text", text="new"))
     must_fail(lambda: gate.verify(*before, *mutated, SHA),
-              "POST_SERVED_BINDING_DRIFT")
+              "SERVED_BINDING_INVENTORY_DRIFT")
 
 
 def test_rollback_restores_or_removes_only_the_authorized_flag():
