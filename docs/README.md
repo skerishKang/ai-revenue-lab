@@ -5,7 +5,7 @@
 ```text
 DOC_STATUS = CANONICAL_ENTRYPOINT
 OWNER = repository documentation governance
-LAST_VERIFIED = 2026-10-09
+LAST_VERIFIED = 2026-10-14
 ```
 
 `docs/` is the entrypoint for **current documentation authority**. Dated audits, issue-specific designs, phase documents and Git history remain evidence; file existence alone does not make them current architecture or runtime truth.
@@ -29,8 +29,8 @@ LAST_VERIFIED = 2026-10-09
 
 | 확인할 문제 | 실시간 실행/보안 권위 |
 |---|---|
-| Padiem Golden Path FINISH-FIRST, LOCAL별 현재 소유권 | [#3523](https://github.com/skerishKang/ai-revenue-lab/issues/3523) |
-| Claw 실제 답변·SSE/DOM 검증 및 남은 모델 응답 오류 | [#3382](https://github.com/skerishKang/ai-revenue-lab/issues/3382), [#3566](https://github.com/skerishKang/ai-revenue-lab/issues/3566) |
+| Claw 첫 실사용 텍스트 Golden Path 완료 증거 (과거 종료 이슈) | [#3523 DONE](https://github.com/skerishKang/ai-revenue-lab/issues/3523), [#3382 DONE](https://github.com/skerishKang/ai-revenue-lab/issues/3382) |
+| Claw 과거 502 예외 원인조사 기록 (종료 이슈·현재 SSE 수용 근거 아님) | [#3566 CLOSED](https://github.com/skerishKang/ai-revenue-lab/issues/3566) |
 | P01 인증 사용자용 Live SSE 활성화·회복 절차, 현재 미수용 상태 | [P01 SSE 운영 런북](operations/P01_LIVE_SSE_OPTIN_RELEASE_3930.md), [Claw 사용자 수용 #3936](https://github.com/skerishKang/ai-revenue-lab/issues/3936), [플랫폼 수용 #4318](https://github.com/skerishKang/ai-revenue-lab/issues/4318) |
 | Owner 모델 승인과 B14 실행 계약 | [Owner 정책](operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md) — 모델 탐색은 위의 공식 모델 인덱스를 사용 |
 | Calendar 사용자별 READ 격리 설계 | [#2010](https://github.com/skerishKang/ai-revenue-lab/issues/2010) |
