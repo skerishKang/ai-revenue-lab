@@ -20,6 +20,11 @@ on:
       - "apps/padiem-chat/**"
       - "!apps/padiem-chat/tests/**"
       - ".github/scripts/b62_cloudflare_*.py"
+      - ".github/scripts/b62_connector_broker_additive_preflight.py"
+      - ".github/tests/test_b62_connector_broker_additive_preflight.py"
+      - "packages/padiem-control-plane/local_agent_broker_worker.py"
+      - "packages/padiem-control-plane/canonical_broker_pairing_rpc.py"
+      - "packages/padiem-control-plane/wrangler.local-agent-broker.jsonc"
       - ".github/workflows/b62-cloudflare-worker-deploy.yml"
   push:
     branches: [main]
@@ -27,6 +32,11 @@ on:
       - "apps/padiem-chat/**"
       - "!apps/padiem-chat/tests/**"
       - ".github/scripts/b62_cloudflare_*.py"
+      - ".github/scripts/b62_connector_broker_additive_preflight.py"
+      - ".github/tests/test_b62_connector_broker_additive_preflight.py"
+      - "packages/padiem-control-plane/local_agent_broker_worker.py"
+      - "packages/padiem-control-plane/canonical_broker_pairing_rpc.py"
+      - "packages/padiem-control-plane/wrangler.local-agent-broker.jsonc"
       - ".github/workflows/b62-cloudflare-worker-deploy.yml"
   workflow_dispatch:
     inputs:
