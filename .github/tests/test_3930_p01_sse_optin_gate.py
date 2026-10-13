@@ -3,6 +3,13 @@ from __future__ import annotations
 import copy
 import importlib.util
 import json
+import os
+import subprocess
+import textwrap
+from contextlib import redirect_stdout
+from io import StringIO
+from tempfile import TemporaryDirectory
+from unittest.mock import patch
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -80,8 +87,22 @@ def test_absent_flag_preserves_every_binding_and_sets_only_true():
         b(gate.FLAG, "plain_text", text="true")
     ]
     assert PRIVATE not in repr(plan)
-    assert patch["annotations"]["workers/message"] == f"B62 production code {SHA}"
+    assert patch["annotations"] == {"workers/message": f"B62 production code {SHA}"}
+    assert "workers/triggered_by" not in patch["annotations"]
     gate.verify(*baseline, *post_from(baseline), SHA)
+
+
+def test_sse_patch_never_sends_cloudflare_server_owned_annotation():
+    # Cloudflare official PATCH /workers/scripts/{name}/settings contract:
+    # workers/triggered_by is READ-ONLY and is set by Cloudflare.
+    # The 10210 rollback incident already demonstrated this incompatibility.
+    for flag in (None, "false", "true"):
+        planned = gate.plan(*fixtures(flag), SHA)
+        annotations = planned["payload"]["annotations"]
+        assert set(annotations) == {"workers/message"}
+        assert annotations["workers/message"] == "B62 production code " + SHA
+        assert "workers/triggered_by" not in json.dumps(planned["payload"])
+        assert len(planned["payload"]["bindings"]) == len(fixtures(flag)[0]["result"]["bindings"]) + (flag is None)
 
 
 def test_false_flag_replaced_once_without_other_mutations():
@@ -142,6 +163,107 @@ def test_refuses_races_code_assets_type_drift_and_invalid_version():
     must_fail(lambda: gate.verify(*before,*after,SHA), "ACTIVE_VERSION_NOT_UNIQUE")
 
 
+def test_real_cloudflare_postpatch_last_deployed_from_is_provenance_not_code():
+    # Cloudflare GET-only #38440681029: old (43) -> failed PATCH version (44)
+    # changed only P01 SSE flag + resources.script.last_deployed_from.
+    # Script etag, runtime, assets and all existing bindings were identical.
+    before = fixtures()
+    before[2]["resources"]["script"]["last_deployed_from"] = "wrangler"
+    after = post_from(before)
+    after[2]["resources"]["script"]["last_deployed_from"] = "api"
+    gate.verify(*before, *after, SHA)
+
+    # The exception cannot hide an actual script update or other metadata.
+    mutated = copy.deepcopy(after)
+    mutated[2]["resources"]["script"]["etag"] = "changed-source"
+    must_fail(lambda: gate.verify(*before, *mutated, SHA),
+              "WORKER_CODE_OR_RUNTIME_DRIFT")
+
+    mutated = copy.deepcopy(after)
+    mutated[2]["resources"]["script"]["unexpected"] = "changed-source-field"
+    must_fail(lambda: gate.verify(*before, *mutated, SHA),
+              "WORKER_CODE_OR_RUNTIME_DRIFT")
+
+    mutated = copy.deepcopy(after)
+    mutated[2]["resources"]["script_runtime"]["compatibility_date"] = "different"
+    must_fail(lambda: gate.verify(*before, *mutated, SHA),
+              "WORKER_CODE_OR_RUNTIME_DRIFT")
+
+    mutated = copy.deepcopy(after)
+    mutated[2]["resources"]["assets"]["etag"] = "different"
+    must_fail(lambda: gate.verify(*before, *mutated, SHA),
+              "WORKER_CODE_OR_RUNTIME_DRIFT")
+
+    mutated = copy.deepcopy(after)
+    mutated[2]["resources"]["bindings"].append(
+        b("UNAUTHORIZED_BINDING", "plain_text", text="new"))
+    must_fail(lambda: gate.verify(*before, *mutated, SHA),
+              "SERVED_BINDING_INVENTORY_DRIFT")
+
+
+
+
+def _as_named_immutable_binding_map(evidence):
+    current = copy.deepcopy(evidence)
+    raw = current[2]["resources"]["bindings"]
+    current[2]["resources"]["bindings"] = {entry["name"]: entry for entry in raw}
+    return current
+
+
+def test_immutable_named_binding_map_preserves_exact_canonical_inventory():
+    # Cloudflare may represent resources.bindings as a name-keyed object.
+    # A valid map must still receive the same full inventory check as a list.
+    before = _as_named_immutable_binding_map(fixtures())
+    assert gate.plan(*before, SHA)["no_op"] is False
+    after = post_from(fixtures())
+    after = _as_named_immutable_binding_map(after)
+    gate.verify(*before, *after, SHA)
+    changed = copy.deepcopy(after)
+    changed[2]["resources"]["bindings"]["UNAUTHORIZED_BINDING"] = b(
+        "UNAUTHORIZED_BINDING", "secret_text", value=PRIVATE)
+    must_fail(lambda: gate.verify(*before, *changed, SHA),
+              "SERVED_BINDING_INVENTORY_DRIFT")
+
+
+def test_immutable_binding_map_refuses_all_malformed_entries_without_filtering():
+    # Prior code silently discarded every malformed map entry and accepted a
+    # matching valid subset, masking hidden extra Secret bindings.
+    baseline = _as_named_immutable_binding_map(fixtures())
+    bad_entries = (
+        ("UNAUTHORIZED_EXTRA", b("OTHER_NAME", "secret_text", value=PRIVATE)),
+        ("UNAUTHORIZED_EXTRA", PRIVATE),
+        ("", b("", "secret_text", value=PRIVATE)),
+        ("P01_ENGINE_CREDENTIAL", b("WRONG_NAME", "secret_text", value=PRIVATE)),
+    )
+    for name, entry in bad_entries:
+        corrupted = copy.deepcopy(baseline)
+        corrupted[2]["resources"]["bindings"][name] = entry
+        must_fail(lambda corrupted=corrupted: gate.plan(*corrupted, SHA),
+                  "VERSION_BINDING_SHAPE")
+
+    # Finite CLI refusal evidence must never echo malformed binding content.
+    corrupted = copy.deepcopy(baseline)
+    corrupted[2]["resources"]["bindings"]["UNAUTHORIZED_EXTRA"] = {
+        "name": "OTHER_NAME", "type": "secret_text", "value": PRIVATE}
+    with TemporaryDirectory() as td:
+        root = Path(td)
+        for name, data in zip(("settings", "deployments", "version"), corrupted):
+            (root / (name + ".json")).write_text(json.dumps(data), encoding="utf-8")
+        output = StringIO()
+        with redirect_stdout(output):
+            rc = gate.main([
+                "plan", "--settings", str(root / "settings.json"),
+                "--deployments", str(root / "deployments.json"),
+                "--version", str(root / "version.json"),
+                "--target-sha", SHA, "--output", str(root / "patch.json")
+            ])
+        assert rc == 1
+        assert not (root / "patch.json").exists()
+        assert "P01_SSE_OPTIN_GATE_REASON=VERSION_BINDING_SHAPE" in output.getvalue()
+        assert "SECRET_VALUES_EMITTED=0" in output.getvalue()
+        assert PRIVATE not in output.getvalue()
+
+
 def test_rollback_restores_or_removes_only_the_authorized_flag():
     rollback = gate.load("b62_rollback_authority", ROOT / ".github/scripts/b62_claw_live_config_activation.py")
     before = fixtures()[0]
@@ -155,6 +277,10 @@ def test_rollback_restores_or_removes_only_the_authorized_flag():
     assert not plan["no_op"]
     assert f"CONFIG_REMOVE_{gate.FLAG}" in plan["changes"]
     assert gate.FLAG not in [q["name"] for q in plan["payload"]["bindings"]]
+    assert plan["payload"]["annotations"] == {
+        "workers/message": f"B62 Claw config rollback from pre-activation snapshot {SHA}"
+    }
+    assert "workers/triggered_by" not in json.dumps(plan["payload"])
     assert all(q["type"] == "inherit" for q in plan["payload"]["bindings"])
     before_false = fixtures("false")[0]
     plan_false = rollback.build_rollback_plan(
@@ -180,8 +306,384 @@ def test_workflow_authority():
     assert "P01_SSE_OPTIN_NO_OP" in workflow
     assert "P01_SSE_POST_SERVED_INTEGRITY" in workflow
 
+
+
+def test_pr_source_ci_cannot_evict_queued_protected_b62_dispatch():
+    # #38441362836 was cancelled before jobs while burst PR checks competed
+    # for the original static concurrency group. Keep all protected Production
+    # workflow_dispatch modes in ONE serialized group; isolate PR source CI.
+    for name in ("b62-production-code-deploy-gate.yml",
+                 "b62-claw-live-config-activation-gate.yml"):
+        workflow = (ROOT / ".github/workflows" / name).read_text(encoding="utf-8")
+        block = workflow.split("\nconcurrency:\n", 1)[1].split("\nenv:\n", 1)[0]
+        assert "github.event_name == 'pull_request'" in block
+        assert "github.event.pull_request.number" in block
+        assert "|| 'production'" in block
+        assert "cancel-in-progress: false" in block
+        assert "cancel-in-progress: true" not in block
+        assert "environment: production" in workflow
+        # No additional human reviewer is ever required by this queue fix.
+        assert "independent_review" not in block
+
+
+def test_cloudflare_patch_http_refusal_is_code_only_and_never_retried():
+    # #38442601251: PATCH was rejected but HTTP/error codes were not logged.
+    # Keep the existing single mutation, fail closed and sanitize evidence.
+    text = WORKFLOW.read_text(encoding="utf-8")
+    start = "      - name: Apply one explicit SSE plain-text binding through existing Worker settings API"
+    end = "      - name: Prove post-PATCH served version and exactly one allowed configuration change"
+    block = text.split(start, 1)[1].split(end, 1)[0]
+    assert "P01_SSE_PATCH_HTTP_STATUS=" in block
+    assert "P01_SSE_PATCH_CLOUDFLARE_ERROR_CODES=" in block
+    assert "P01_SSE_PATCH_AUTOMATIC_RETRY=NO" in block
+    assert "SECRET_RESPONSE_DUMP=NO" in block
+    assert "[0-9]+(,[0-9]+)*" in block
+    assert 'select(type=="number")' in block
+    assert "P01_SSE_PATCH=BLOCKED" in block
+    assert "if [ " in block and "accepted" in block
+    assert block.count("-X PATCH") == 1
+    assert ".message" not in block
+    assert "B62_P01_ENGINE_CREDENTIAL" not in block
+
+
+def test_owner_single_approval_does_not_require_independent_reviewer():
+    # Owner-delegated release: no second GitHub user or deployment-review gate.
+    # Exact SHA, confirmation, rollback snapshot and served integrity remain.
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    block = workflow.split("\n  activate-p01-sse:\n", 1)[1]
+    assert "b62_p01_sse_independent_review.py" not in block
+    assert "/actions/runs/\u0024{GITHUB_RUN_ID}/approvals" not in block
+    assert "Verify independent production deployment review" not in block
+    assert "CONFIRM_ACTIVATE_B62_P01_SSE_OPTIN" in block
+    assert "b62_p01_sse_optin_gate.py plan" in block
+    assert "b62_p01_sse_optin_gate.py compare-before" in block
+    assert "b62_p01_sse_optin_gate.py verify" in block
+    assert "b62-claw-config-premutation-settings" in block
+
+def test_cloudflare_10210_rollback_deployment_omits_unsupported_trigger_annotation():
+    # Production #38432026154: Cloudflare POST /deployments returned 400/10210
+    # because workers/triggered_by is not a supported deployment annotation.
+    text = WORKFLOW.read_text(encoding="utf-8")
+    start = "      - name: Restore the recorded pre-activation code version (CODE_VERSION_ROLLBACK)"
+    end = "      - name: Read back the restored active code version"
+    assert text.count(start) == 1 and text.count(end) == 1
+    block = text.split(start, 1)[1].split(end, 1)[0]
+    assert '"strategy": "percentage"' in block
+    assert '"percentage": 100' in block
+    assert '"workers/message"' in block
+    assert '"workers/triggered_by"' not in block
+    assert 'B62_CLAW_CONFIG_ROLLBACK_HTTP_STATUS=' in block
+    assert 'jq -e' in block and '.success == true' in block
+
+
+def test_cloudflare_10214_requires_snapshot_before_code_version_rollback():
+    # Live #38432624306: code-first rollback left latest != active, and
+    # subsequent settings PATCH was rejected HTTP 400 / 10214.
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    block = workflow.split("\n  rollback-config:\n", 1)[1].split(
+        "\n  # #3930 SSE-only opt-in.", 1
+    )[0]
+    stages = [
+        "Guard Cloudflare 10214 before configuration restoration",
+        "Download the bounded pre-mutation settings snapshot",
+        "Read current live settings for the config rollback plan",
+        "Plan the snapshot-bounded config restore (CONFIG_ROLLBACK)",
+        "Apply the snapshot-bounded config restore through the settings API",
+        "Read back the restored config against the pre-mutation snapshot",
+        "Restore the recorded pre-activation code version (CODE_VERSION_ROLLBACK)",
+        "Read back the restored active code version",
+        "Final config parity after restoring the pre-activation code version",
+    ]
+    positions = [block.index(name) for name in stages]
+    assert positions == sorted(positions)
+    assert "CONFIG_ROLLBACK_BLOCKED_LATEST_NOT_SERVED_CLOUDFLARE_10214=YES" in block
+    assert "DO_NOT_REDEPLOY_UNACCEPTED_SSE_TO_FORCE_REPAIR=YES" in block
+    assert "CONFIG_ROLLBACK_AFTER_CODE_VERSION=EXACT" in block
+    assert "b62_binding_state_guard.py" in block
+
+
+
+
+def _cli_evidence_paths(folder, before, after):
+    paths = {}
+    for prefix, triplet in (("before", before), ("after", after)):
+        for key, value in zip(("settings", "deployments", "version"), triplet):
+            path = folder / f"{prefix}-{key}.json"
+            path.write_text(json.dumps(value), encoding="utf-8")
+            paths[f"{prefix}-{key}"] = str(path)
+    return [
+        "verify",
+        "--before-settings", paths["before-settings"],
+        "--before-deployments", paths["before-deployments"],
+        "--before-version", paths["before-version"],
+        "--settings", paths["after-settings"],
+        "--deployments", paths["after-deployments"],
+        "--version", paths["after-version"],
+        "--target-sha", SHA,
+    ]
+
+
+def test_cli_postverify_reports_only_allowlisted_safe_reason():
+    before = fixtures()
+    after = post_from(before)
+    extra = b("UNAPPROVED_EXTRA", "plain_text", text=PRIVATE)
+    after[0]["result"]["bindings"].append(copy.deepcopy(extra))
+    after[2]["resources"]["bindings"].append(copy.deepcopy(extra))
+    with TemporaryDirectory() as td:
+        argv = _cli_evidence_paths(Path(td), before, after)
+        output = StringIO()
+        with redirect_stdout(output):
+            assert gate.main(argv) == 1
+    result = output.getvalue()
+    assert "P01_SSE_OPTIN_GATE_REASON=POST_SETTINGS_DRIFT" in result
+    assert "P01_SSE_OPTIN_GATE=BLOCKED" in result
+    assert "SECRET_VALUES_EMITTED=0" in result
+    assert PRIVATE not in result
+
+
+def test_cli_unknown_exception_never_exposes_sensitive_text():
+    before = fixtures()
+    with TemporaryDirectory() as td:
+        argv = _cli_evidence_paths(Path(td), before, before)
+        output = StringIO()
+        with patch.object(gate, "verify", side_effect=gate.OptInRefused(PRIVATE)):
+            with redirect_stdout(output):
+                assert gate.main(argv) == 1
+    result = output.getvalue()
+    assert "P01_SSE_OPTIN_GATE_REASON=UNCLASSIFIED" in result
+    assert PRIVATE not in result
+
+
+def test_postpatch_workflow_prints_only_bounded_reason_after_failed_verification():
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    verifier = workflow.split(
+        "- name: Prove post-PATCH served version and exactly one allowed configuration change",
+        1
+    )[1].split("\n      - name:", 1)[0]
+    assert "P01_SSE_OPTIN_GATE_REASON=[A-Z0-9_]{1,64}" in verifier
+    assert 'sse-verify.log" | tail -n 1 || true' in verifier
+    assert "P01_SSE_POST_SERVED_INTEGRITY=BLOCKED" in verifier
+    assert "cat \"${RUNNER_TEMP}/sse-verify.log\"" in verifier  # only on success
+    assert verifier.index("grep -E '^P01_SSE_OPTIN_GATE_REASON=") < verifier.index(
+        "P01_SSE_POST_SERVED_INTEGRITY=BLOCKED"
+    )
+
+
+def test_rollback_http_500_10013_is_bounded_and_stays_fail_closed():
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    rollback = workflow.split("\n  rollback-config:\n", 1)[1].split(
+        "\n  # #3930 SSE-only opt-in.", 1)[0]
+    apply = rollback.split(
+        "- name: Apply the snapshot-bounded config restore through the settings API", 1
+    )[1].split("\n      - name: Read back the restored config", 1)[0]
+    assert apply.count("-X PATCH") == 1
+    assert "--connect-timeout 8 --max-time 40 -X PATCH" in apply
+    assert "-D \"${headers}\" -o \"${response}\"" in apply
+    assert "CONFIG_ROLLBACK_PATCH_CLOUDFLARE_ERROR_CODES=" in apply
+    assert "CONFIG_ROLLBACK_PATCH_CF_RAY=" in apply
+    assert "CONFIG_ROLLBACK_PATCH_AUTOMATIC_RETRY=NO" in apply
+    assert "CONFIG_ROLLBACK_POSTERROR_SINGLE_READ=SNAPSHOT_EXACT" in apply
+    assert "CONFIG_ROLLBACK_POSTERROR_SINGLE_READ=NOT_EXACT_OR_UNAVAILABLE" in apply
+    assert "--connect-timeout 8 --max-time 20" in apply
+    assert "b62_binding_state_guard.py" in apply
+    assert "CONFIG_ROLLBACK_POSTERROR_ACCEPTANCE=NO" in apply
+    assert "FULL_CONFIG_ROLLBACK_CLAIM=NO" in apply
+    assert "CONFIG_ROLLBACK=FAIL" in apply
+    assert "exit 1" in apply
+    assert "| {code, message}" not in apply
+    # The follow-up GET is observation only; never jump to code rollback
+    # after a rejected PATCH or claim full configuration restoration.
+    assert apply.index("CONFIG_ROLLBACK_POSTERROR_ACCEPTANCE=NO") < apply.index("exit 1")
+    assert rollback.index("Apply the snapshot-bounded config restore") < rollback.index(
+        "Restore the recorded pre-activation code version")
+
+
+def test_cloudflare_error_code_filter_ignores_secret_bearing_error_messages():
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    apply = workflow.split(
+        "- name: Apply the snapshot-bounded config restore through the settings API", 1
+    )[1].split("\n      - name: Read back the restored config", 1)[0]
+    expression = '[.errors[]? | objects | .code | select(type=="number") | tostring] | unique | join(",")'
+    assert expression in apply
+    payload = {"success": False, "errors": [
+        {"code": 10013, "message": PRIVATE},
+        {"code": 10013, "message": "unknown error"},
+        {"code": "10057", "message": "must not print"},
+    ]}
+    result = subprocess.run(["jq", "-r", expression],
+                            input=json.dumps(payload), text=True, capture_output=True,
+                            check=True)
+    assert result.stdout.strip() == "10013"
+    assert PRIVATE not in result.stdout
+
+
+
+def _settings_generated_post(before):
+    post = post_from(before)
+    post[1]["result"]["deployments"][0]["annotations"]["workers/message"] = (
+        "Cloudflare settings update; no source SHA")
+    post[2]["annotations"] = {"workers/message": f"B62 production code {SHA}"}
+    return post
+
+
+def test_actual_second_incident_provider_deployment_note_uses_immutable_version_sha():
+    # GET-only Actions #38454872275 proved deployment note OTHER while the
+    # newly served immutable version message is exactly the original source SHA.
+    before = fixtures()
+    post = _settings_generated_post(before)
+    gate.verify(*before, *post, SHA)
+    # PRE-PATCH readiness and concurrent-mutation guards remain strict.
+    must_fail(lambda: gate.plan(*post, SHA), "SOURCE_LINEAGE_UNVERIFIED")
+    must_fail(lambda: gate.compare_before(*before, *post, SHA),
+              "SOURCE_LINEAGE_UNVERIFIED")
+
+
+def test_postpatch_version_lineage_must_be_exact_and_noop_cannot_use_fallback():
+    before = fixtures()
+    post = _settings_generated_post(before)
+    post[2].pop("annotations")
+    must_fail(lambda: gate.verify(*before, *post, SHA),
+              "POST_VERSION_LINEAGE_UNVERIFIED")
+    post = _settings_generated_post(before)
+    post[2]["annotations"]["workers/message"] = PRIVATE
+    must_fail(lambda: gate.verify(*before, *post, SHA),
+              "POST_VERSION_LINEAGE_UNVERIFIED")
+    post = _settings_generated_post(before)
+    post[1]["result"]["deployments"][0]["annotations"]["workers/message"] = (
+        f"B62 production code {'b'*40}")
+    must_fail(lambda: gate.verify(*before, *post, SHA),
+              "SOURCE_SHA_MISMATCH")
+    noop = fixtures("true")
+    noop[1]["result"]["deployments"][0]["annotations"]["workers/message"] = (
+        "provider settings change")
+    noop[2]["annotations"] = {"workers/message": f"B62 production code {SHA}"}
+    must_fail(lambda: gate.verify(*fixtures("true"), *noop, SHA, no_op=True),
+              "SOURCE_LINEAGE_UNVERIFIED")
+
+
+def test_postpatch_lineage_fallback_never_weakens_code_binding_or_flag_guards():
+    before = fixtures()
+    altered = _settings_generated_post(before)
+    altered[2]["resources"]["script"]["etag"] = "injected-other-code"
+    must_fail(lambda: gate.verify(*before, *altered, SHA),
+              "WORKER_CODE_OR_RUNTIME_DRIFT")
+    altered = _settings_generated_post(before)
+    altered[2]["resources"]["bindings"][-1]["text"] = "false"
+    must_fail(lambda: gate.verify(*before, *altered, SHA), "SERVED_FLAG_DRIFT")
+    altered = _settings_generated_post(before)
+    altered[0]["result"]["bindings"].append(b("UNAPPROVED", "plain_text", text=PRIVATE))
+    altered[2]["resources"]["bindings"].append(b("UNAPPROVED", "plain_text", text=PRIVATE))
+    must_fail(lambda: gate.verify(*before, *altered, SHA), "POST_SETTINGS_DRIFT")
+    altered = _settings_generated_post(before)
+    altered[1]["result"]["deployments"][0]["versions"][0]["percentage"] = 50
+    must_fail(lambda: gate.verify(*before, *altered, SHA), "ACTIVE_VERSION_NOT_UNIQUE")
+
+
+def test_postpatch_source_reason_is_finite_without_exposing_secret():
+    before = fixtures()
+    post = _settings_generated_post(before)
+    post[2]["annotations"]["workers/message"] = PRIVATE
+    with TemporaryDirectory() as td:
+        argv = _cli_evidence_paths(Path(td), before, post)
+        output = StringIO()
+        with redirect_stdout(output):
+            assert gate.main(argv) == 1
+    result = output.getvalue()
+    assert "P01_SSE_OPTIN_GATE_REASON=POST_VERSION_LINEAGE_UNVERIFIED" in result
+    assert PRIVATE not in result
+    assert "SECRET_VALUES_EMITTED=0" in result
+
+
+def _rollback_patch_step_script() -> str:
+    # Run the exact workflow step in an isolated shell with a fake curl
+    # executable. This is intentionally NOT a production Cloudflare request.
+    source = WORKFLOW.read_text(encoding="utf-8")
+    start = "- name: Apply the snapshot-bounded config restore through the settings API"
+    end = "\n      - name: Read back the restored config"
+    block = source.split(start, 1)[1].split("shell: bash\n        run: |\n", 1)[1]
+    return textwrap.dedent(block.split(end, 1)[0])
+
+
+def _exercise_mocked_rollback_response(response_kind: str):
+    with TemporaryDirectory() as td:
+        root = Path(td)
+        (root / "bin").mkdir()
+        snapshot = root / "safe-snapshot.json"
+        snapshot.write_text(json.dumps({"success": True, "result": {"bindings": []}}))
+        mock = root / "bin" / "curl"
+        mock.write_text(textwrap.dedent("""\
+            #!/usr/bin/env python3
+            import json
+            import os
+            import pathlib
+            import sys
+
+            args = sys.argv[1:]
+            op = "PATCH" if "-X" in args and args[args.index("-X") + 1] == "PATCH" else "GET"
+            with open(os.environ["FAKE_CURL_TRACE"], "a") as trace:
+                trace.write(op + "\\n")
+            output = pathlib.Path(args[args.index("-o") + 1])
+            if "-D" in args:
+                pathlib.Path(args[args.index("-D") + 1]).write_text("CF-Ray: 1234567890abcdef-KOR\\r\\n")
+            mode = os.environ["FAKE_PATCH_MODE"]
+            if op == "GET":
+                output.write_text(json.dumps({"success": False, "result": {}}))
+            elif mode == "invalid_body":
+                output.write_text("this-is-not-json")
+            elif mode == "success_false":
+                output.write_text(json.dumps({"success": False, "errors": [
+                    {"code": 10013, "message": os.environ["FAKE_PRIVATE"]}]}))
+            else:
+                output.write_text(json.dumps({"success": True, "result": {"bindings": []}}))
+            sys.stdout.write("200")
+            """))
+        mock.chmod(0o755)
+        trace = root / "curl-trace.log"
+        env = dict(os.environ)
+        env.update({
+            "PATH": str(root / "bin") + os.pathsep + env["PATH"],
+            "RUNNER_TEMP": str(root),
+            "CLOUDFLARE_ACCOUNT_ID": "mock-account",
+            "CLOUDFLARE_API_TOKEN": "fake-inert-test-token",
+            "B62_WORKER": "padiem-chat",
+            "CONFIG_SNAPSHOT_PATH": str(snapshot),
+            "FAKE_CURL_TRACE": str(trace),
+            "FAKE_PATCH_MODE": response_kind,
+            "FAKE_PRIVATE": PRIVATE,
+        })
+        result = subprocess.run(
+            ["bash", "-c", _rollback_patch_step_script()],
+            env=env, capture_output=True, text=True, check=False)
+        return result, trace.read_text().splitlines()
+
+
+def test_rollback_http_200_success_false_and_invalid_json_fail_closed_with_single_get():
+    for kind in ("success_false", "invalid_body"):
+        result, methods = _exercise_mocked_rollback_response(kind)
+        assert result.returncode != 0
+        assert methods == ["PATCH", "GET"], methods
+        assert "B62_CLAW_CONFIG_ROLLBACK_PATCH_HTTP_STATUS=200" in result.stdout
+        assert "CONFIG_ROLLBACK_POSTERROR_SINGLE_READ=NOT_EXACT_OR_UNAVAILABLE" in result.stdout
+        assert "CONFIG_ROLLBACK_POSTERROR_ACCEPTANCE=NO" in result.stdout
+        assert "FULL_CONFIG_ROLLBACK_CLAIM=NO" in result.stdout
+        assert "CONFIG_ROLLBACK_PATCH_AUTOMATIC_RETRY=NO" in result.stdout
+        assert "CONFIG_ROLLBACK=SUBMITTED" not in result.stdout
+        assert "PRODUCTION_MUTATION=1" not in result.stdout
+        assert PRIVATE not in result.stdout + result.stderr
+
+
+def test_rollback_http_200_valid_envelope_is_not_false_negative():
+    result, methods = _exercise_mocked_rollback_response("accepted")
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    assert methods == ["PATCH"], methods
+    assert "CONFIG_ROLLBACK=SUBMITTED" in result.stdout
+    assert "PRODUCTION_MUTATION=1" in result.stdout
+    assert "CONFIG_ROLLBACK_POSTERROR_SINGLE_READ=" not in result.stdout
+
+
 if __name__ == "__main__":
     for name, func in sorted(globals().copy().items()):
         if name.startswith("test_") and callable(func):
             func()
             print(name + "=PASS")
+

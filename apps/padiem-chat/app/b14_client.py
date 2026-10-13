@@ -27,6 +27,8 @@ from padiem_ai_core import (
     StreamingExecutionRuntime,
     MAX_B14_RESPONSE_BYTES,
 )
+from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
+
 from padiem_ai_core.dispatch_preinstruction import (
     render_dispatch_preinstruction,
     server_wall_clock,
@@ -411,7 +413,10 @@ class B14Client:
         # #4468: one sampled instant per dispatch, never a session-cached date.
         self._dispatch_wall_clock = dispatch_wall_clock
 
-    def _config(self, timeout_seconds: float | None = None) -> B14ExecutionConfig:
+    def _config(
+        self, timeout_seconds: float | None = None, *,
+        max_response_bytes: int = MAX_B14_RESPONSE_BYTES,
+    ) -> B14ExecutionConfig:
         assert self.settings.b14_base_url is not None
         return B14ExecutionConfig(
             base_url=self.settings.b14_base_url,
@@ -420,11 +425,16 @@ class B14Client:
                 if timeout_seconds is None
                 else timeout_seconds
             ),
-            max_response_bytes=MAX_B14_RESPONSE_BYTES,
+            max_response_bytes=max_response_bytes,
         )
 
-    def _completion_config(self) -> B14ExecutionConfig:
-        return self._config(self.settings.completed_timeout_seconds)
+    def _completion_config(
+        self, *, max_response_bytes: int = MAX_CONFIGURED_B14_RESPONSE_BYTES,
+    ) -> B14ExecutionConfig:
+        return self._config(
+            self.settings.completed_timeout_seconds,
+            max_response_bytes=max_response_bytes,
+        )
 
     def _completion_transport(
         self, *, before_dispatch: Callable[[], Awaitable[None]] | None = None
@@ -598,6 +608,7 @@ class B14Client:
         max_retries: int | None = None,
         before_dispatch: Callable[[], Awaitable[None]] | None = None,
         model_parameters: Mapping[str, Any] | None = None,
+        completed_response_budget_bytes: int = MAX_CONFIGURED_B14_RESPONSE_BYTES,
     ) -> dict[str, Any]:
         request = _execution_request(
             messages,
@@ -610,7 +621,9 @@ class B14Client:
             model_parameters=model_parameters,
         )
         core_client = B14ExecutionClient(
-            self._completion_config(),
+            self._completion_config(
+                max_response_bytes=completed_response_budget_bytes,
+            ),
             transport=self._completion_transport(before_dispatch=before_dispatch),
         )
         runtime = ExecutionRuntime(
@@ -857,6 +870,13 @@ class B14Client:
             additional_system_context=bounded_context,
             max_retries=0,
             before_dispatch=self._prepare_registered_quote_dispatch,
+            # B66's completed quotation adapter no longer applies Core's
+            # legacy 1MiB pilot default to a valid model response. Use the
+            # EXISTING finite Worker memory safety maximum (same as B14),
+            # not a model-native output token/character ceiling. Other
+            # Chat/Claw callers retain their original independent resource
+            # budgets. No automatic retry/fallback or wire-format change.
+            completed_response_budget_bytes=MAX_CONFIGURED_B14_RESPONSE_BYTES,
             **native_kwargs,
         )
 

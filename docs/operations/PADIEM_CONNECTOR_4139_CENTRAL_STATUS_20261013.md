@@ -6,6 +6,8 @@
 
 > **CURRENT GATE UPDATE — 2026-10-13, main `b6b2f1a`:** PR [#4476](https://github.com/skerishKang/ai-revenue-lab/pull/4476) latest HEAD `355a635a9c82fd86937f4284231558662094fd93` has **GitGuardian SUCCESS** in the independent Check Runs API (58 checks in the observed set; no failed/pending checks). Its earlier `74875c3` high-entropy test-fixture scan failure is historical, **not the latest blocker**. However the PR remains **Draft/stacked**; source security success alone does not approve token enrollment authority, authenticated gateway, signed PC installation, or customer E2E. [#4523](https://github.com/skerishKang/ai-revenue-lab/pull/4523) stale-device-list read cancellation is **merged** as `b6b2f1a`; [#4525](https://github.com/skerishKang/ai-revenue-lab/pull/4525) pre-connection/help/recovery UX advanced to `11d09f7`, remains **Draft** (GitGuardian SUCCESS; some tests were still running at last observation). Windows [#4490](https://github.com/skerishKang/ai-revenue-lab/pull/4490) remains stacked Draft; [#3099](https://github.com/skerishKang/ai-revenue-lab/issues/3099) is the only actual Windows Alpha E2E acceptance. **Do not merge stacked PRs or deploy based only on green CI.**
 
+> **Authority separation:** Business/customer operating policy is private and must be read from the local path in root [AGENTS.md](../../AGENTS.md); the technical evidence matrix below is public development information, not permission to make new business policy.
+
 ## 1. 최신 고객·브랜드 결정 (기존 문서 표현 보정)
 
 - **PADIEM Claw/Chat/Engine과 B66 견적은 고객에게 서로 독립적인 서비스**다. 별도 회원 화면, 로그인, PC 관리, 구독/등급, 내비게이션, 운영 문구를 사용한다. B66 고객에게 PADIEM 통합 메뉴를 표시하거나 PADIEM 고객에게 B66 회원·PC 정보를 자동 노출하지 않는다.
