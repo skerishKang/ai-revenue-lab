@@ -313,7 +313,10 @@ def test_valid_large_b66_quote_completion_crosses_legacy_core_one_mib():
     assert result["answer"] == answer
     assert len(binding.calls) == 1
     assert binding.calls[0][1]["business14"]["max_retries"] == 0
-    assert client._completion_config().max_response_bytes == MAX_B14_RESPONSE_BYTES
+    # B66 and B62 completed clients now share B14's finite safe JSON budget;
+    # the old 1MiB default remains for non-completed/legacy Core compatibility.
+    assert client._completion_config().max_response_bytes == MAX_CONFIGURED_B14_RESPONSE_BYTES
+    assert client._config().max_response_bytes == MAX_B14_RESPONSE_BYTES
 
 
 def test_b66_quote_core_bound_stays_finite_for_oversize_completed_json():
