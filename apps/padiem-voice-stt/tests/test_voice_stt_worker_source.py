@@ -167,8 +167,10 @@ def test_upstream_body_read_is_bounded_not_raw_json():
     # Both upstreams go through the one end-to-end bounded helper.
     assert source.count("_upstream_json(") >= 3  # definition + 2 call sites
     assert "_read_upstream_json" in source
-    assert "asyncio.wait_for(_body_text()" in source
-    assert "await response.text()" in source
+    assert "asyncio.wait_for(_body_bytes()" in source
+    assert "await response.text()" not in source
+    assert "await response.json()" not in source
+    assert "_chunk_reader(response, 8192)" in source
     assert "contract.MAX_UPSTREAM_RESPONSE_BYTES" in source
 
 
