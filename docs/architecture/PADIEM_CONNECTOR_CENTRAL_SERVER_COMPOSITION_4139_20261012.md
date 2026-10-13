@@ -263,3 +263,37 @@ PRODUCTION=OFF
 ```
 
 Cloudflare mock deploy and ingress **gates** are source-checks; they are not permission to expose this registration route. In particular, this change does not configure an actual credentialed public device ingress. Keep the private Service Binding methods and both explicit schema install flags OFF until the product-security owner reviews consent UX, shared scope, TLS/pinned device ingress and Windows credential install.
+
+
+
+## 2026-10-13 CENTRAL HTTP consent projection boundary (additional source hardening)
+
+The source-only browser consent grant and revoke handlers now **revalidate the
+private Identity service's receipt at the HTTP boundary**, even though the typed
+private Identity RPC client already performs its own checks. The product route
+accepts only the seven reviewed public fields:
+
+`consent_id`, `device_id`, `granted_at`, `withdrawn_at`,
+`dispatch_authorized`, `grants_read`, `grants_write`.
+
+The route validates exact keys, bounded safe identifiers, correlation to the
+original browser device ID or consent ID, timezone-aware grant/withdrawal
+timestamps, grant-vs-revoke lifecycle, and strict false on **all** execution/
+file permission booleans. It constructs a fresh explicit public dictionary,
+rather than returning an arbitrary service-binding response. A missing
+`consent_id`, wrong device, unexpected owner/tenant/session/credential fields,
+fake permission flags or malformed timestamps produce only
+`503 connector_enrollment_receipt_invalid` with no untrusted data echoed.
+
+Added focused HTTP handler negative tests which inject tampered private ports
+rather than trusting the typed client: 13 grant-side and 8 revoke-side
+mutations, and an exact-seven-field positive projection assertion. This
+controls an inadvertent privacy leak during future gateway composition but
+**does not prove the real private RPC, owner login, CSRF, or device gateway are
+deployed or authenticated in production**.
+
+Keep route mounting and credential delivery OFF until security ownership
+approves the actual *same-origin browser grant*, *original canonical session
+continuity*, *trusted outbound Windows gateway*, *post-DPAPI authenticated
+install ACK*, *canonical Broker revoke compensation*, and *one physical Windows
+E2E* gates. #4139 remains OPEN; #3099 owns the one real acceptance journey.

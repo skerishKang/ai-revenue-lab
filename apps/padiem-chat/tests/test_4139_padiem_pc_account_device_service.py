@@ -174,8 +174,25 @@ def test_default_off_product_cannot_see_device_visible_in_my_devices():
     assert result["devices"] == []
 
 
-def test_server_configured_product_list_grant_never_grants_read_write():
+def test_server_configured_same_product_list_grant_never_grants_read_write():
     service, _, _ = execute()
+    policy = ProductPcAccessPolicy(grants=(
+        ProductPcAccessGrant(
+            product_id=CLAW, workspace_ref="workspace.owner",
+            operations=frozenset({PcAccessOperation.DEVICE_LIST}),
+        ),
+    ))
+    result = asyncio.run(service.list_product_devices(
+        canonical_session_id="session.owner", product_id=CLAW,
+        server_policy=policy,
+    ))
+    assert result["available"] is True
+    assert result["devices"][0]["device_id"] == "pc.one"
+    assert result["dispatch_authorized"] is False
+
+
+def test_quote_grant_never_converts_a_claw_login_into_quote_pc_visibility():
+    service, identity, broker = execute()
     policy = ProductPcAccessPolicy(grants=(
         ProductPcAccessGrant(
             product_id=QUOTE, workspace_ref="workspace.owner",
@@ -186,9 +203,10 @@ def test_server_configured_product_list_grant_never_grants_read_write():
         canonical_session_id="session.owner", product_id=QUOTE,
         server_policy=policy,
     ))
-    assert result["available"] is True
-    assert result["devices"][0]["device_id"] == "pc.one"
-    assert result["dispatch_authorized"] is False
+    assert result["ok"] is False
+    assert result["devices"] == []
+    assert identity.calls == ["session.owner"]
+    assert broker.calls == []
 
 
 def test_broker_binding_reader_uses_private_closed_scoped_rpc_only():

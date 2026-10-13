@@ -101,9 +101,9 @@ class PadiemPcAccountDeviceService:
         self._broker = broker
         self._read_enabled = read_enabled is True
 
-    async def _trusted_directory(self, session_id: str) -> tuple[
-        VerifiedPcOwnerContext, dict[str, Any], datetime
-    ] | None:
+    async def _trusted_directory(
+        self, session_id: str, *, product_context: str | None = None,
+    ) -> tuple[VerifiedPcOwnerContext, dict[str, Any], datetime] | None:
         if not self._read_enabled or not isinstance(session_id, str) or not session_id:
             return None
         now = datetime.now(timezone.utc)
@@ -118,6 +118,11 @@ class PadiemPcAccountDeviceService:
                     scope=ctx.scope, now=now,
                 )
             ):
+                return None
+            # Before touching the private Broker, the caller's product
+            # context must match the independently verified login product.
+            # No silent Claw->Quote, Quote->Claw or brand account linking.
+            if product_context is not None and ctx.session.product_id != product_context:
                 return None
             directory = await _await(self._broker.device_directory(
                 account_ref=ctx.scope.account_ref,
@@ -146,7 +151,9 @@ class PadiemPcAccountDeviceService:
     ) -> dict[str, Any]:
         if not isinstance(server_policy, ProductPcAccessPolicy):
             return _refused()
-        resolved = await self._trusted_directory(canonical_session_id)
+        resolved = await self._trusted_directory(
+            canonical_session_id, product_context=product_id,
+        )
         if resolved is None:
             return _refused()
         context, directory, now = resolved

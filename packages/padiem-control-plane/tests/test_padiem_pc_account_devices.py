@@ -240,20 +240,24 @@ def test_product_default_off_even_if_owner_sees_pc():
         assert result["dispatch_authorized"] is False
 
 
-def test_two_products_use_same_pc_id_only_when_each_explicitly_granted():
+def test_cross_brand_device_not_exposed_even_if_both_products_have_grant():
     policy = ProductPcAccessPolicy(grants=(grant(CLAW), grant(QUOTE)))
-    first = product_view(CLAW, policy)
-    second = product_view(QUOTE, policy)
-    assert first["available"] is True and second["available"] is True
-    assert first["devices"][0]["device_id"] == second["devices"][0]["device_id"] == "pc_one"
-    assert first["dispatch_authorized"] is False
-    assert second["dispatch_authorized"] is False
+    claw = product_view(CLAW, policy)
+    quote = product_view(QUOTE, policy)
+    assert claw["available"] is True
+    assert claw["devices"][0]["device_id"] == "pc_one"
+    # This caller only proved its Claw login; a Quote policy does NOT
+    # transform it into a Quote login or silently link customer brands.
+    assert quote["ok"] is False
+    assert quote["reason"] == "product_login_context_mismatch"
+    assert quote["devices"] == []
+    assert claw["dispatch_authorized"] is False
     assert product_view(CHAT, policy)["devices"] == []
 
 
 def test_cross_workspace_product_grant_cannot_expose_device():
-    policy = ProductPcAccessPolicy(grants=(grant(QUOTE, workspace="ws_other"),))
-    result = product_view(QUOTE, policy)
+    policy = ProductPcAccessPolicy(grants=(grant(CLAW, workspace="ws_other"),))
+    result = product_view(CLAW, policy)
     assert result["available"] is False
     assert result["devices"] == []
 
