@@ -248,6 +248,8 @@ Do not insert Excel, Google Sheets, HanCell or another office engine into every 
 
 ## Canonical documentation
 
+- [2026-10-14 Chat·Claw·B66 UI/Voice handoff](../../operations/PADIEM_CHAT_CLAW_B66_UI_VOICE_HANDOFF_20261014.md) — 기존 [B66 음성 이슈 #3404](https://github.com/skerishKang/ai-revenue-lab/issues/3404)의 Global Classroom STT 재사용, Cloudflare 기존 Gemini/Groq Secret 재사용(Worker/Pages 실바인딩 별도 검증), '한번에 말하기' 내부 `easyVoiceMic` 활성화 순서 및 Chat/Claw #4488 UI 충돌 방지. **음성 구현/운영 검증 완료를 의미하지 않음.**
+
 - [TEMPLATE_CUSTODY_POLICY.md](TEMPLATE_CUSTODY_POLICY.md) — generic public standard templates versus private CGI/customer source, compiled templates and quote data; D1 + R2 authority, customer download and encryption design, #3883/#3884.
 - [QUOTE_STORAGE_STRATEGY.md](QUOTE_STORAGE_STRATEGY.md) — Owner-approved B66 storage decision: keep browser cache and current account-bound D1 quote history; add optional customer-owned Google Drive JSON+PDF save/reopen separately (#3871); do not change #3405, QuoteCore, the approved renderer, model selection or present billing rules.
 - [GOOGLE_DRIVE_SAVE_OPEN.md](GOOGLE_DRIVE_SAVE_OPEN.md) — #3871 implementation contract: versioned editable quote JSON + certified PDF pair in the customer's own Google Drive, lossless QuoteDraft schema, explicit rejection policy, partial-failure reporting, and what is still NOT_TESTED (live OAuth, cross-browser, real phone).
