@@ -60,7 +60,10 @@ class Default(WorkerEntrypoint):
             if request.headers.get("upgrade") != "websocket":
                 return Response("Upgrade Required", status=426)
             from workers import asgi
-            return await asgi.websocket(connector_asgi_websocket_runtime_probe, request, self.env)
+            # Worker Python SDK: asgi.websocket(app, request) accepts two args.
+            # The synthetic transport probe must exercise the same signature
+            # as CENTRAL's review-only production candidate.
+            return await asgi.websocket(connector_asgi_websocket_runtime_probe, request)
         if url.path == "/ready" and not url.query:
             return Response("ok", status=200)
         if url.path != "/probe":
