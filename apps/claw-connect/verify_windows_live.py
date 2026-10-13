@@ -70,8 +70,8 @@ def _verify_installer_contract() -> bool:
     """Static review only; actual install/uninstall requires isolated E2E."""
     code = (APP_ROOT / "install.ps1").read_text(encoding="utf-8")
     return (
-        "& $PythonExePath -m claw_connect autostart on" in code
-        and "& $PythonExePath -m claw_connect autostart off" in code
+        "& $PythonExePath -m padiem_connector autostart on" in code
+        and "& $PythonExePath -m padiem_connector autostart off" in code
         and "Set-ItemProperty -Path $RunKey" not in code
         and "Remove-ItemProperty -Path $RunKey" not in code
     )

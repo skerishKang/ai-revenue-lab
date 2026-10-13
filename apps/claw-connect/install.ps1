@@ -1,4 +1,4 @@
-# Claw Connect — no-Node, no-terminal Windows installer (#4139 S1 item 9, S2).
+# PADIEM Connector — no-Node, no-terminal Windows installer (#4139 S1 item 9, S2).
 #
 #   .\install.ps1             install (per user, no administrator right)
 #   .\install.ps1 -Autostart  request guarded logon registration (needs durable credential)
@@ -20,13 +20,24 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$ProductName = 'Padiem Claw Connect'
+$ProductName = 'PADIEM Connector'
 $RunValueName = 'PadiemClawConnect'
 $StartMenu = Join-Path $env:APPDATA 'Microsoft\Windows\Start Menu\Programs\Padiem'
-$ShortcutPath = Join-Path $StartMenu 'Padiem Claw Connect.lnk'
+$ShortcutPath = Join-Path $StartMenu 'PADIEM Connector.lnk'
+$LegacyShortcutPath = Join-Path $StartMenu 'Padiem Claw Connect.lnk'
 $InstallRoot = Join-Path $env:LOCALAPPDATA 'Padiem\ClawConnect'
 $RunKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run'
 $SourceRoot = $PSScriptRoot
+
+function Remove-OwnedLegacyShortcut {
+    # Migrate only a provably owned shortcut; preserve any unrelated link.
+    if (-not (Test-Path $LegacyShortcutPath)) { return }
+    $link = (New-Object -ComObject WScript.Shell).CreateShortcut($LegacyShortcutPath)
+    if (($link.WorkingDirectory -eq $InstallRoot) -and
+        ($link.Arguments -eq '-m claw_connect start')) {
+        Remove-Item -Path $LegacyShortcutPath -Force
+    }
+}
 
 function Find-Python {
     if ($env:PADIEM_PYTHON) { return @($env:PADIEM_PYTHON) }
@@ -55,7 +66,7 @@ if ($Uninstall) {
     if (Test-Path (Join-Path $InstallRoot 'claw_connect')) {
         Push-Location $InstallRoot
         try {
-            $UnregisterReceipt = & $PythonExePath -m claw_connect autostart off
+            $UnregisterReceipt = & $PythonExePath -m padiem_connector autostart off
             if ($LASTEXITCODE -ne 0) {
                 throw 'Autostart could not be safely disabled; installation preserved.'
             }
@@ -66,6 +77,7 @@ if ($Uninstall) {
         throw 'Cannot prove the Run entry is owned without the installed Connector.'
     }
     if (Test-Path $ShortcutPath) { Remove-Item $ShortcutPath -Force }
+    Remove-OwnedLegacyShortcut
     if (Test-Path $InstallRoot) { Remove-Item $InstallRoot -Recurse -Force }
     Write-Output '{"ok":true,"action":"uninstall"}'
     exit 0
@@ -74,6 +86,8 @@ if ($Uninstall) {
 # Install: copy the bundled Python package, then create the per-user shortcut.
 New-Item -ItemType Directory -Path $InstallRoot -Force | Out-Null
 Copy-Item -Path (Join-Path $SourceRoot 'claw_connect') -Destination $InstallRoot `
+    -Recurse -Force
+Copy-Item -Path (Join-Path $SourceRoot 'padiem_connector') -Destination $InstallRoot `
     -Recurse -Force
 
 # S2: pin the one existing kagent Resident this PC supervises. The Connector
@@ -91,10 +105,11 @@ New-Item -ItemType Directory -Path $StartMenu -Force | Out-Null
 $shell = New-Object -ComObject WScript.Shell
 $shortcut = $shell.CreateShortcut($ShortcutPath)
 $shortcut.TargetPath = $PythonExePath
-$shortcut.Arguments = '-m claw_connect start'
+$shortcut.Arguments = '-m padiem_connector start'
 $shortcut.WorkingDirectory = $InstallRoot
 $shortcut.Description = $ProductName
 $shortcut.Save()
+Remove-OwnedLegacyShortcut
 
 $result = [ordered]@{
     ok = $true
@@ -109,7 +124,7 @@ if ($Autostart) {
     # credential AND the owner's explicit opt-out before touching HKCU Run.
     Push-Location $InstallRoot
     try {
-        $AutostartReceipt = & $PythonExePath -m claw_connect autostart on
+        $AutostartReceipt = & $PythonExePath -m padiem_connector autostart on
         if ($LASTEXITCODE -ne 0) {
             throw 'Autostart refused: a durable canonical credential is required.'
         }

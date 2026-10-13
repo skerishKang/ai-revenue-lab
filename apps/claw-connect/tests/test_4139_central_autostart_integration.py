@@ -45,7 +45,7 @@ def _harness(record):
 def test_install_script_has_no_direct_run_write_bypass():
     code = (ROOT / "install.ps1").read_text(encoding="utf-8")
     assert "Set-ItemProperty -Path $RunKey" not in code
-    assert "& $PythonExePath -m claw_connect autostart on" in code
+    assert "& $PythonExePath -m padiem_connector autostart on" in code
     assert "if ($LASTEXITCODE -ne 0)" in code
     assert "Push-Location $InstallRoot" in code
     assert "Pop-Location" in code
@@ -125,7 +125,7 @@ def test_foreign_nonsecret_run_entry_cannot_be_deleted_on_off_or_unpair():
 
 def test_installer_uninstall_uses_shared_ownership_gate_instead_of_raw_delete():
     src = (ROOT / "install.ps1").read_text(encoding="utf-8")
-    assert "& $PythonExePath -m claw_connect autostart off" in src
+    assert "& $PythonExePath -m padiem_connector autostart off" in src
     assert "Remove-ItemProperty -Path $RunKey" not in src
     assert "Could not be safely disabled" not in src or "Autostart could not be safely disabled" in src
 
