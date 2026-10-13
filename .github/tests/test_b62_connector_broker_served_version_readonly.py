@@ -129,8 +129,12 @@ class BrokerVersionReadbackTest(unittest.TestCase):
             self.assertEqual(result["served_canonical_do_shape"],
                              "sqlite" if do_name else "not_applicable")
             exports["default"]["type"] = "durable-object"
-            self.assertFalse(audit.compare_served_worker_exports(
-                d, worker)["served_export_types_match_reviewed_source"])
+            # Python implicit WorkerEntrypoint is not guaranteed to appear
+            # in version declarative exports; never treat that omission alone
+            # as a concrete deployed source mismatch.
+            diagnostic = audit.compare_served_worker_exports(d, worker)
+            self.assertEqual(diagnostic["served_default_entrypoint_shape"], "other")
+            self.assertTrue(diagnostic["served_export_types_match_reviewed_source"])
             exports["default"]["type"] = "worker"
             exports["UnexpectedDO"] = {"type": "durable-object", "storage": "sqlite"}
             self.assertFalse(audit.compare_served_worker_exports(
@@ -145,6 +149,16 @@ class BrokerVersionReadbackTest(unittest.TestCase):
         }
         self.assertFalse(audit.compare_served_worker_exports(
             d, "padiem-local-agent-broker-state")["served_export_types_match_reviewed_source"])
+        # The production Python API can omit the implicit default entrypoint
+        # while still reporting the reviewed DO export precisely.
+        d["result"]["resources"]["script_runtime"]["exports"] = {
+            "LocalAgentBrokerDurableObject": {
+                "type": "durable-object", "storage": "sqlite"
+            }
+        }
+        no_default = audit.compare_served_worker_exports(d, "padiem-local-agent-broker-state")
+        self.assertTrue(no_default["served_export_types_match_reviewed_source"])
+        self.assertEqual(no_default["served_default_entrypoint_shape"], "absent")
         with self.assertRaises(ValueError):
             audit.compare_served_worker_exports(d, "unknown-target")
 

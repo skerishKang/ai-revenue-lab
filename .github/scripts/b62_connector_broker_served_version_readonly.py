@@ -113,7 +113,7 @@ def compare_served_worker_exports(
     payload: object, worker: str, *,
     config_dir: Path | None = None,
 ) -> dict[str, bool]:
-    """Compare the Cloudflare served version's entrypoint/DO metadata.
+    """Compare explicit canonical Durable Object export declarations.
 
     Metadata establishes class names, export kinds and SQLite storage ONLY.
     It does not attest to source bytes, Python RPC methods, customer consent,
@@ -181,12 +181,12 @@ def compare_served_worker_exports(
         type(item) is dict and item.get("type") == "durable-object"
         for item in exports.values()
     )
-    default = exports.get("default")
+    # Cloudflare does not necessarily list Python's implicit Default
+    # WorkerEntrypoint in script_runtime.exports. The Wrangler 'exports'
+    # config explicitly declares Durable Object classes only; compare just
+    # those and keep default entrypoint observations as non-gating diagnostics.
     matched = (
-        type(default) is dict
-        and default.get("type") == "worker"
-        and default.get("state", "created") == "created"
-        and all(
+        all(
             type(exports.get(name)) is dict
             and exports[name].get("type") == "durable-object"
             and exports[name].get("storage") == "sqlite"

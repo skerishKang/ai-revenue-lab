@@ -96,6 +96,10 @@ class IdentityVersionAuditTest(unittest.TestCase):
         self.assertEqual(result["served_canonical_do_shape"], "sqlite")
         self.assertFalse(result["exact_git_commit_or_bundle_digest_attested"])
         self.assertFalse(result["deployed_identity_consent_rpc_proven"])
+        del exports["default"]
+        unlisted_implicit_default = proof.inspect_identity_version_detail(d, ACTIVE)
+        self.assertTrue(unlisted_implicit_default["served_export_types_match_reviewed_source"])
+        self.assertEqual(unlisted_implicit_default["served_default_entrypoint_shape"], "absent")
         exports["CanonicalIdentityDurableObject"]["storage"] = "legacy-kv"
         self.assertFalse(proof.inspect_identity_version_detail(
             d, ACTIVE)["served_export_types_match_reviewed_source"])
