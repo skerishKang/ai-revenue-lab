@@ -90,7 +90,10 @@ def main(argv: list[str] | None = None) -> int:
             json.dumps(
                 {"ok": True, "mode": args.autostart_mode,
                  "enabled": autostart.is_enabled(),
-                 "command": autostart.current_command()},
+                 "command": autostart.current_command(),
+                 # The durable owner choice, so "off" is distinguishable from
+                 # "never installed" across processes.
+                 "preference": autostart.preference()},
                 ensure_ascii=False,
             )
         )

@@ -19,6 +19,7 @@ central_review=PASS_WITH_3_CORRECTIONS_2026_10_13
 corrections=A_local_logout_is_not_transfer__B_local_refusal_is_not_server_rollback__C_damaged_binding_must_fail_closed
 d1_followup=CENTRAL_2026_10_13_PARTIAL_PASS_NEEDS_ALIAS_SAFE_STAGING__CORRECTED_IN_SECTION_12
 post_redemption_hold=LOCAL2_SIDE_BOUNDED_HOLD_ONLY__SECTION_13 (remote reconciliation stays CENTRAL)
+autostart=CENTRAL_2026_10_13_09_24_ASSIGNMENT__DEFAULT_ON_WITH_DURABLE_OPT_OUT__SECTION_14
 status=awaiting_central_re_review
 ```
 
@@ -359,6 +360,18 @@ REDEEMED_CHALLENGE=durable_single_use_is_the_broker__local_guard_is_per_process_
 INTERRUPTION_WINDOWS_AUDITED=6_of_6_with_layered_authority
 CENTRAL_HANDOVER=PUBLISHED_IN_SECTION_10
 INSTALL_FAILURE_RECOVERY=CONTRACT_AND_TESTS_ONLY
+AUTOSTART_DEFAULT=ON_AFTER_DURABLE_VALID_CREDENTIAL (was opt-in/OFF — source defect, corrected)
+AUTOSTART_OWNER_OPT_OUT=DURABLE_ACROSS_RESTART_AND_LOGON__NEVER_SILENTLY_RE_ENABLED
+AUTOSTART_PREFERENCE_STORE=SEPARATE_HKCU_KEY (never a value under Run — Windows executes every value there)
+AUTOSTART_GATE=REFUSES_WITHOUT_A_COMMITTED_ENROLLED_LIVE_RECORD (reads the §12 D1 invariant)
+AUTOSTART_TRANSIENT_OFFLINE=KEEPS_REGISTRATION_AND_CHOICE
+AUTOSTART_USER_PAUSE=NON_DURABLE_CONNECTION_SCOPE__DECISION_SURFACED_FOR_CENTRAL
+AUTOSTART_REVOKE_OR_UNPAIR=SUSPENDS_REGISTRATION__KEEPS_THE_OWNER_CHOICE
+AUTOSTART_CORRUPT_REGISTRATION=REFUSED_AND_LEFT_UNTOUCHED
+AUTOSTART_SECRET_IN_COMMAND=REFUSED
+AUTOSTART_ELEVATION=NONE (HKCU only, never HKLM, no service, no scheduled task)
+AUTOSTART_CALL_SITES=NOT_WIRED_YET (register_after_install / apply_lifecycle are the seam)
+TEST_PROFILE_POLLUTION_FOUND_AND_FIXED=YES (wrapper test left a durable opt-out; scratch-key overrides added)
 CREDENTIAL_HANDOFF=NOT_WIRED
 WINDOWS_LIVE_E2E=NOT_PROVEN
 PRODUCTION=OFF
@@ -518,3 +531,113 @@ No READY, no MERGE, no PRODUCTION enablement follows. `WINDOWS_LIVE_E2E=NOT_PROV
 Changed files for this increment: `apps/claw-connect/claw_connect/enrollment.py`,
 `apps/claw-connect/tests/test_enrollment_recovery_windows.py`, and this document. No CENTRAL and no LOCAL1
 file was modified.
+
+## 14. Logon autostart — default-ON with a durable owner opt-out (CENTRAL assignment 2026-10-13 09:24)
+
+CENTRAL's bounded assignment in #4490 (following the merged founder-led AX pilot contract) named the
+defect directly: *"Existing autostart module says opt-in/default OFF, which is a source defect relative to
+the contract."* This section is that correction, confined to `claw_connect/autostart.py` plus the tests and
+this document.
+
+### The two facts the old module conflated
+
+| Fact | Where it lives | Why |
+|---|---|---|
+| **effective registration** — will Windows start Connect at logon | presence of a value under `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` | this is what Windows acts on |
+| **the owner's explicit choice** — `on` / `off` / never chosen | a separate per-user key, `HKCU\Software\Padiem\ClawConnect` | it must survive restart and logon, and it **cannot** live in the `Run` key: Windows executes *every* value it finds there, so a preference marker written beside the command would be launched as a command |
+
+### Behaviour matrix
+
+| Situation | Registration | Owner's recorded choice | Pin |
+|---|---|---|---|
+| successful install, owner never chose | **registered** (contract default ON) — but only after the canonical credential is durably committed and valid | unchanged (`None`) | `test_first_successful_enrolled_install_writes_the_run_entry_once` |
+| second reconcile with the same command | untouched — `ALREADY_REGISTERED`, no extra write | unchanged | same test (asserts exactly one write) |
+| owner turns it off in settings | removed | `off`, **durable across restart and logon** | `test_the_owners_opt_out_survives_a_simulated_restart_and_logon` |
+| install/reconcile while the owner has opted out | **never written** (`SUPPRESSED_BY_OWNER`) | unchanged | same test |
+| transient offline / network loss | untouched | untouched | `test_default_on_reconnect_after_a_transient_disconnect` |
+| user pause (`일시중지`) | untouched — connection-scoped, non-durable | untouched | `test_pause_keeps_the_registration_while_revoke_suspends_it` |
+| revoke / unpair | **suspended** (value removed) | **kept**, so a later re-enrollment falls back to the contract default | same test |
+| no enrollment / no durable credential | never written; `AutostartRefused` | unchanged | `test_no_durable_credential_means_no_autostart`, `test_a_failed_persist_leaves_no_premature_autostart` |
+| revoked or expired credential | never written; `AutostartRefused` | unchanged | `test_a_revoked_or_expired_credential_is_never_registered` |
+| existing registration is corrupt (empty, or carrying secret material) | **refused and left untouched** — never silently overwritten, never reported as enabled | unchanged | `test_a_corrupt_run_command_refuses_and_is_left_untouched` |
+
+### Why the credential gate is where it is
+
+`register_after_install(command, enrollment)` accepts only an object answering `is_enrolled()` /
+`lifecycle()`. In this codebase the only such object that exists is the record
+`ConnectorEnrollment.record()` publishes **after** its stage-then-publish commit (§12) — a failed or
+in-progress write publishes nothing, so the gate reads the D1 invariant rather than re-implementing it.
+The blocked lifecycle set (`revoked`, `credential_expired`) is imported from the enrollment contract
+rather than copied, so a new blocked lifecycle cannot drift out of this gate. Nothing is written before
+that check passes.
+
+### Pause vs revoke vs disable — the distinction, surfaced for review
+
+* **pause** is a *connection* event (`connection.py`: "no automatic reconnect until the user resumes"). It
+  is deliberately **non-durable**: it does not remove the logon registration, so the PC still comes up at
+  the next logon.
+* **disable** is the owner's *autostart* decision. It is durable and is never silently overridden.
+* **revoke/unpair** is the *device lifecycle* speaking: the registration is suspended without erasing the
+  owner's choice.
+
+`Autostart.apply_lifecycle(event)` is the single decision point for all of these, so if CENTRAL intends
+`pause` to also remove the logon registration it is a one-line change there and nowhere else.
+
+### Defect found while doing this, and fixed
+
+The wrapper test `tests/claw-connect-wrapper.test.mjs` drives the **real** HKCU stores (it exercises the
+real CLI). With a durable preference marker that round trip would have left
+`HKCU\Software\Padiem\ClawConnect\Autostart=off` behind on every Windows dev/CI machine — i.e. a test run
+would have permanently opted the developer out of autostart. The stores now honour
+`CLAW_CONNECT_AUTOSTART_RUN_KEY` / `CLAW_CONNECT_AUTOSTART_PREF_KEY` (mirroring the existing
+`CLAW_CONNECT_STATE_DIR` diagnostics pattern, both HKCU-only), the wrapper test runs under scratch keys and
+removes them in a `finally`, and `test_the_windows_stores_honour_the_scratch_key_overrides` pins the
+mechanism. The residue this run had already created was removed from the local registry.
+
+### Evidence
+
+| Check | Result |
+|---|---|
+| `tests/test_autostart_default_on_windows.py` (new) | **12 passed** |
+| `tests/test_connect_lifecycle.py` autostart block | 3 tests, rewritten to the new contract |
+| whole connector suite (local Windows Python 3.11) | **337 passed, 4 skipped** (was 325/4 — same 4 pre-existing skips, none new) |
+| `node --test tests/*.test.mjs` | **5 pass / 0 fail** |
+| real HKCU check (scratch keys, cleaned up) | register → value read back verbatim; `disable` → value gone, `off` durable in the real registry; re-install honoured the opt-out; revoke suspended and kept the choice |
+| mutation A (opt-out not recorded) | 2 failed — exactly the durability tests |
+| mutation B (credential gate removed) | 3 failed — exactly the three no-credential tests |
+| mutation C (corrupt value silently overwritten) | 1 failed — exactly the corrupt-registration test |
+| mutation D (transient offline suspends) | 2 failed — exactly the lifecycle tests |
+| mutation E (secret guard removed) | 1 failed — exactly the secret-command test |
+| mutation F (old default-OFF contract restored) | 5 failed — the contract change itself is pinned, not just its parts |
+| restoration | `autostart.py` restored byte-identically (`5c962daec2ea34338c780285eee4dfb2658863df`) |
+
+### Boundary, stated rather than papered over
+
+* **The call sites are not wired in this increment.** `register_after_install` and `apply_lifecycle` are the
+  seam; nothing in the tree calls them yet, because the enrollment service is still not wired into the
+  tray/Resident paths (unchanged from §6 of the 20261012 document) and the composition root
+  (`runtime.py`, `__main__.py`, `tray.py`) currently carries another LOCAL2 agent's in-flight edits on
+  Draft #4463. The wiring is two call sites: after the durable commit, and on revoke/unpair.
+* **Source file overlap with #4463**, checked before editing as CENTRAL required: `runtime.py`,
+  `__main__.py`, `install.ps1`, `enrollment.py`, `menu_model.py`, `connection.py`, `tray.py` and
+  `test_packaging_contract.py` are all touched by #4463 as well. `autostart.py` — the core of this
+  change — is **not**, and is conflict-free. `__main__.py` was touched only to surface the durable
+  `preference` in `autostart show`; `claw-connect-wrapper.test.mjs` only for the scratch-key isolation.
+* **`install.ps1 -Autostart` is untouched.** Under the new contract the installer's job is to record a
+  preference, not to write the `Run` key at install time; that path is a preference-setter change on a file
+  #4463 is actively editing, so it is reported rather than done.
+* **One pre-existing test name is now stale.** `test_enrollment_contract.py::test_autostart_remains_opt_in_and_unaffected_by_enrollment`
+  still passes and still pins the right invariant (a redeem receipt alone never writes the `Run` key — the
+  credential install has not been confirmed at that point), but the phrase "opt in" predates this contract.
+  The file is on #4463's edit list, so the rename is left to that cleanup.
+
+No READY, no MERGE, no PRODUCTION enablement follows from any of this. `WINDOWS_LIVE_E2E=NOT_PROVEN`
+(#3099) is unchanged, and no real socket, DPAPI or gateway result is claimed here.
+
+Changed files for this increment: `apps/claw-connect/claw_connect/autostart.py`,
+`apps/claw-connect/claw_connect/__init__.py`, `apps/claw-connect/claw_connect/__main__.py`,
+`apps/claw-connect/tests/test_autostart_default_on_windows.py` (new),
+`apps/claw-connect/tests/test_connect_lifecycle.py`,
+`apps/claw-connect/tests/claw-connect-wrapper.test.mjs`, and this document. No CENTRAL and no LOCAL1 file
+was modified.
+

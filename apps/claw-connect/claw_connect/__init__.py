@@ -19,8 +19,10 @@ CONNECT_VERSION = "0.1.0"
 #: One mutex name shared by the tray and every other Connect entry point so a
 #: double click, an npx run and an autostart run all collapse to one process.
 SINGLE_INSTANCE_MUTEX = "PadiemClawConnect.SingleInstance.v1"
-#: Opt-in autostart is registered under HKCU (never HKLM) so no administrator
-#: right is ever requested. The value is absent unless the user asks for it.
+#: Logon autostart is registered under HKCU (never HKLM) so no administrator
+#: right is ever requested. Per the 2026-10-13 contract it is registered by
+#: default once a durable, valid credential exists, and the owner's explicit
+#: opt-out is kept in a separate per-user key so it survives restart and logon.
 AUTOSTART_RUN_VALUE_NAME = "PadiemClawConnect"
 WEB_URL = "https://chat.padiem.net/"
 

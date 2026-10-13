@@ -14,7 +14,14 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from claw_connect.autostart import Autostart, MemoryRunKeyStore
+from claw_connect.autostart import (
+    PREFERENCE_OFF,
+    PREFERENCE_ON,
+    REGISTRATION_ABSENT,
+    Autostart,
+    MemoryPreferenceStore,
+    MemoryRunKeyStore,
+)
 from claw_connect.connection import (
     BACKOFF_SECONDS,
     ConnectionController,
@@ -51,30 +58,45 @@ def test_lock_is_released_after_release_so_a_restart_can_take_it(tmp_path):
     successor.release()
 
 
-# --- autostart (#4139 item 6) ---------------------------------------------
-def test_autostart_is_off_until_the_user_enables_it():
-    autostart = Autostart("PadiemClawConnect", MemoryRunKeyStore())
+# --- autostart (#4139 item 6; default-ON since the 2026-10-13 contract) ---
+def _autostart() -> tuple[Autostart, MemoryRunKeyStore, MemoryPreferenceStore]:
+    store = MemoryRunKeyStore()
+    preferences = MemoryPreferenceStore()
+    return (
+        Autostart("PadiemClawConnect", store, preference_store=preferences),
+        store,
+        preferences,
+    )
+
+
+def test_a_fresh_pc_is_not_registered_and_has_no_recorded_choice():
+    autostart, _, _ = _autostart()
+    assert autostart.classify() == REGISTRATION_ABSENT
     assert autostart.is_enabled() is False
     assert autostart.current_command() is None
+    assert autostart.preference() is None
 
 
 def test_autostart_can_be_enabled_and_disabled_by_the_user():
-    store = MemoryRunKeyStore()
-    autostart = Autostart("PadiemClawConnect", store)
+    autostart, store, preferences = _autostart()
     command = r'"C:\Python311\python.exe" -m claw_connect start'
 
     autostart.enable(command)
     assert autostart.is_enabled() is True
     assert autostart.current_command() == command
+    assert autostart.preference() == PREFERENCE_ON
 
     autostart.disable()
     assert autostart.is_enabled() is False
     assert autostart.current_command() is None
     assert "PadiemClawConnect" not in store.values
+    # The opt-out is durable, which is what makes it survive restart/logon.
+    assert preferences.values == {"Autostart": PREFERENCE_OFF}
+    assert autostart.preference() == PREFERENCE_OFF
 
 
 def test_autostart_refuses_an_empty_command():
-    autostart = Autostart("PadiemClawConnect", MemoryRunKeyStore())
+    autostart, _, _ = _autostart()
     with pytest.raises(ValueError):
         autostart.enable("   ")
 

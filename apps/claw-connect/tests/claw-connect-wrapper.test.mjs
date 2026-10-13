@@ -47,14 +47,39 @@ test("a missing interpreter is reported instead of hanging", () => {
 });
 
 test("autostart on/off round trip through the wrapper", () => {
-  const on = runWrapper(["autostart", "on"]);
-  assert.equal(on.status, 0, on.stderr);
-  const enabled = JSON.parse(on.stdout);
-  assert.equal(enabled.ok, true);
-  assert.equal(enabled.enabled, true);
+  // The real HKCU stores are exercised here, but under scratch keys: a test run
+  // must never leave a durable autostart opt-out in the developer's own
+  // profile. On non-Windows hosts the CLI uses the in-memory stores and these
+  // overrides are inert.
+  const runKey = "Software\\Padiem\\ClawConnect.Test.Run";
+  const prefKey = "Software\\Padiem\\ClawConnect.Test.Pref";
+  const isolated = {
+    CLAW_CONNECT_AUTOSTART_RUN_KEY: runKey,
+    CLAW_CONNECT_AUTOSTART_PREF_KEY: prefKey,
+  };
 
-  const off = runWrapper(["autostart", "off"]);
-  assert.equal(off.status, 0, off.stderr);
-  const disabled = JSON.parse(off.stdout);
-  assert.equal(disabled.enabled, false);
+  try {
+    const on = runWrapper(["autostart", "on"], isolated);
+    assert.equal(on.status, 0, on.stderr);
+    const enabled = JSON.parse(on.stdout);
+    assert.equal(enabled.ok, true);
+    assert.equal(enabled.enabled, true);
+
+    const off = runWrapper(["autostart", "off"], isolated);
+    assert.equal(off.status, 0, off.stderr);
+    const disabled = JSON.parse(off.stdout);
+    assert.equal(disabled.enabled, false);
+
+    // A fresh process still reads the owner's opt-out: the choice is durable,
+    // not just an in-memory flag of the process that wrote it.
+    const show = JSON.parse(runWrapper(["autostart", "show"], isolated).stdout);
+    assert.equal(show.enabled, false);
+    assert.equal(show.preference, "off");
+  } finally {
+    if (process.platform === "win32") {
+      for (const key of [runKey, prefKey]) {
+        spawnSync("reg", ["delete", `HKCU\\${key}`, "/f"]);
+      }
+    }
+  }
 });
