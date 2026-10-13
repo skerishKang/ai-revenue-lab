@@ -260,7 +260,7 @@ def test_first_pairing_dispatch_does_not_construct_gateway_if_bindings_absent(mo
     {"upgrade": "websocket", "cookie": "forged"},
     {"upgrade": "websocket", "origin": "https://attacker.test"},
     {"upgrade": "websocket", "authorization": "Bearer stolen"},
-    {"upgrade": "websocket", "x-forwarded-proto": "https"},
+    {"upgrade": "websocket", "client-cert": "untrusted"},
 ])
 def test_first_pairing_dispatch_refuses_client_assertions_before_socket(headers):
     req = request(headers=headers)
