@@ -131,6 +131,39 @@ class B66FileIntakeTests(unittest.TestCase):
         self.assertEqual(body["next"], "text_extraction_model_pending")
         self.assertFalse(body["model_called"])
 
+    def test_extracted_text_above_legacy_32000_is_not_truncated(self) -> None:
+        # The dormant extraction routing module retains a historical 32k
+        # constant. It is NOT a native document intake/model-input ceiling.
+        # A future successor lane must not silently reintroduce that cap.
+        extracted_text = "첫 페이지\\n" + ("견적 항목 12345\\n" * 2300) + "마지막 페이지"
+        self.assertGreater(len(extracted_text), 32_000)
+        self.assertLess(len(extracted_text), 40_000)
+
+        def parser(*, name: str, media_type: str, payload: bytes) -> NormalizedDocument:
+            return NormalizedDocument(
+                name=name,
+                media_type=media_type,
+                text=extracted_text,
+                byte_size=len(payload),
+                source_kind="binary",
+            )
+
+        result = handle_intake_payload(
+            {
+                "name": "long-quote.pdf",
+                "media_type": "application/pdf",
+                "base64": b64(b"%PDF-1.4\\nsynthetic"),
+            },
+            parser=parser,
+        )
+        self.assertTrue(result["ok"], result)
+        body = result["result"]
+        self.assertEqual(body["kind"], "native_document")
+        self.assertEqual(body["text"], extracted_text)
+        self.assertEqual(body["text_chars"], len(extracted_text))
+        self.assertEqual(body["next"], "text_extraction_model_pending")
+        self.assertFalse(body["model_called"])
+
     def test_supported_ooxml_and_hwpx_flow_through_same_parser_port(self) -> None:
         media = {
             "quote.docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
