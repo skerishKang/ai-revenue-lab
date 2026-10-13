@@ -17,7 +17,7 @@ import json
 import re
 from typing import Any
 
-from fastapi import Request
+from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 CONNECTOR_GATEWAY_BEGIN_PATH = "/api/claw/connector/gateway/bootstrap/begin"

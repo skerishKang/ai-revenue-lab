@@ -4,8 +4,8 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 
 import pytest
-from fastapi import FastAPI
-from fastapi.testclient import TestClient
+from starlette.applications import Starlette
+from starlette.testclient import TestClient
 
 from app.connector_gateway_bootstrap_http import (
     CONNECTOR_GATEWAY_BEGIN_PATH,
@@ -51,10 +51,10 @@ class FakePrivateBroker:
 
 
 def fixture(*, enabled=True, trusted=True, scheme="https"):
-    app = FastAPI()
+    app = Starlette()
     # Test-only explicit mounts: app_factory NEVER mounts either route.
-    app.add_api_route(CONNECTOR_GATEWAY_BEGIN_PATH, connector_gateway_bootstrap_begin, methods=["POST"])
-    app.add_api_route(CONNECTOR_GATEWAY_FINISH_PATH, connector_gateway_bootstrap_finish, methods=["POST"])
+    app.add_route(CONNECTOR_GATEWAY_BEGIN_PATH, connector_gateway_bootstrap_begin, methods=["POST"])
+    app.add_route(CONNECTOR_GATEWAY_FINISH_PATH, connector_gateway_bootstrap_finish, methods=["POST"])
     app.state.connector_gateway_bootstrap_enabled = enabled
     guard, broker = FakeReviewedIngress(), FakePrivateBroker()
     guard.permit = trusted
