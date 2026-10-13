@@ -13,6 +13,7 @@ Strictly negative release boundary: a structurally safe candidate alone does
 not authorize a B62 Worker deploy or PADIEM Connector gateway activation.
 """
 from __future__ import annotations
+import ast
 import json
 import os
 from pathlib import Path
@@ -36,7 +37,93 @@ from b62_cloudflare_production_deploy_config import (
 
 VERSION = "padiem.connector-broker-additive-preservation.readonly.v1"
 PUBLIC_ORIGIN = "https://chat.padiem.net"
-REPO_CONFIG = _HERE.parents[1] / "apps" / "padiem-chat" / "wrangler.toml"
+REPO_ROOT = _HERE.parents[1]
+REPO_CONFIG = REPO_ROOT / "apps" / "padiem-chat" / "wrangler.toml"
+BROKER_STATE_CONFIG = REPO_ROOT / "packages" / "padiem-control-plane" / "wrangler.local-agent-broker.jsonc"
+BROKER_WORKER_MODULE = REPO_ROOT / "packages" / "padiem-control-plane" / "local_agent_broker_worker.py"
+BROKER_RPC_MODULE = REPO_ROOT / "packages" / "padiem-control-plane" / "canonical_broker_pairing_rpc.py"
+
+# Only the private RPCs actually required by PADIEM Connector enrollment/WSS.
+BROKER_REQUIRED_PRIVATE_RPCS = (
+    "issue_enrollment_challenge",
+    "get_enrollment_binding",
+    "verify_enrollment_bootstrap",
+    "redeem_enrollment",
+    "recovery_verdict",
+    "gateway_bootstrap_rpc",
+)
+
+
+def verify_broker_source_rpc_contract(
+    state_config: Path = BROKER_STATE_CONFIG,
+    worker_module: Path = BROKER_WORKER_MODULE,
+    rpc_module: Path = BROKER_RPC_MODULE,
+) -> None:
+    """Pin the Broker *state* Worker and its private RPC delegation at source.
+
+    This checks the repository source, NOT the exact version deployed at
+    Cloudflare. A live binding GET cannot establish deployed RPC behavior.
+    """
+    try:
+        config = json.loads(state_config.read_text(encoding="utf-8"))
+        worker = ast.parse(worker_module.read_text(encoding="utf-8"))
+        pairing = ast.parse(rpc_module.read_text(encoding="utf-8"))
+    except (OSError, ValueError, SyntaxError) as exc:
+        raise ProductionConfigError("Canonical Broker source cannot be verified") from exc
+
+    if (
+        type(config) is not dict
+        or config.get("name") != CONNECTOR_BROKER_TARGET
+        or config.get("main") != worker_module.name
+        or config.get("workers_dev") is not False
+    ):
+        raise ProductionConfigError("Broker state Worker source target drift")
+
+    def klass(tree: ast.Module, name: str) -> ast.ClassDef:
+        matches = [item for item in tree.body if isinstance(item, ast.ClassDef) and item.name == name]
+        if len(matches) != 1:
+            raise ProductionConfigError("Canonical Broker RPC class absent or duplicated")
+        return matches[0]
+
+    durable = klass(worker, "LocalAgentBrokerDurableObject")
+    entry = klass(worker, "Default")
+    impl = klass(pairing, "CanonicalBrokerPairingRPC")
+    if not any(isinstance(base, ast.Name) and base.id == "CanonicalBrokerPairingRPC" for base in durable.bases):
+        raise ProductionConfigError("Broker DO canonical RPC inheritance lost")
+    if not any(isinstance(base, ast.Name) and base.id == "WorkerEntrypoint" for base in entry.bases):
+        raise ProductionConfigError("Broker state WorkerEntrypoint missing")
+
+    def method(cls: ast.ClassDef, name: str) -> ast.AsyncFunctionDef:
+        found = [item for item in cls.body if isinstance(item, ast.AsyncFunctionDef) and item.name == name]
+        if len(found) != 1:
+            raise ProductionConfigError("Canonical private Broker method missing or duplicated")
+        return found[0]
+
+    for name in BROKER_REQUIRED_PRIVATE_RPCS:
+        method(impl, name)
+        forwarding = method(entry, name)
+        # Require an actual await self._stub().method(payload) call; declaration
+        # alone cannot prove the Worker Entrypoint reaches the durable state.
+        matched = False
+        for node in ast.walk(forwarding):
+            if not isinstance(node, ast.Await) or not isinstance(node.value, ast.Call):
+                continue
+            call = node.value
+            receiver = call.func
+            if not isinstance(receiver, ast.Attribute) or receiver.attr != name:
+                continue
+            stub_call = receiver.value
+            if not isinstance(stub_call, ast.Call) or stub_call.args or stub_call.keywords:
+                continue
+            stub_attr = stub_call.func
+            if (isinstance(stub_attr, ast.Attribute) and stub_attr.attr == "_stub"
+                and isinstance(stub_attr.value, ast.Name) and stub_attr.value.id == "self"
+                and len(call.args) == 1 and isinstance(call.args[0], ast.Name)
+                and call.args[0].id == "payload" and not call.keywords):
+                matched = True
+                break
+        if not matched:
+            raise ProductionConfigError("Canonical private Broker RPC forwarding is not proven")
 
 
 def candidate_preservation(
@@ -47,6 +134,7 @@ def candidate_preservation(
     Assumes existing B62 production generator is the only source of the
     release config. Never use the source mock wrangler.toml as live authority.
     """
+    verify_broker_source_rpc_contract()
     live = parse_live_bindings(live_settings)
     baseline = build_production_config(
         live, repo_config, PUBLIC_ORIGIN,
@@ -88,6 +176,8 @@ def candidate_preservation(
         "preserved_existing_binding_types_count": binding_types,
         "additional_service_bindings_count": 1,
         "target_worker": CONNECTOR_BROKER_TARGET,
+        "broker_private_rpc_source_contract_proven": True,
+        "deployed_rpc_revision_proven": False,
         "existing_secret_values_read": False,
         "secret_survival_requires_deployment_readback": True,
         "deploy_authorized": False,
