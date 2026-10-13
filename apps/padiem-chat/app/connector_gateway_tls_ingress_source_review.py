@@ -25,6 +25,7 @@ _EXPECTED_URL = "https://chat.padiem.net" + CONNECTOR_GATEWAY_WSS_PATH
 _DENIED_HEADERS = (
     "origin", "cookie", "authorization", "sec-websocket-protocol",
     "client-cert", "client-cert-chain", "cf-client-cert-sha256",
+    "cf-tls-client-auth", "cf-visitor", "x-forwarded-proto",
 )
 
 
