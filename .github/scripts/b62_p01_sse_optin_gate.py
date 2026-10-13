@@ -161,9 +161,23 @@ def verify(s0, d0, v0, s1, d1, v1, sha: str, *, no_op: bool = False) -> None:
     expected_v[FLAG] = {"name": FLAG, "type": "plain_text", "text": "true"}
     if bb != expected_v:
         raise OptInRefused("POST_SERVED_BINDING_DRIFT")
-    if {k: v for k, v in av["resources"].items() if k != "bindings"} != {
-        k: v for k, v in bv["resources"].items() if k != "bindings"
-    }:
+    # Cloudflare PATCH /settings legitimately changes one deployment-origin
+    # annotation (resources.script.last_deployed_from) even when script ETag,
+    # runtime, assets and every other immutable source resource stay identical.
+    # Proven by GET-only immutable old/failed versions in #38440681029. Do NOT
+    # permit any other script field or runtime/asset difference.
+    def code_resources(version):
+        resources = {k: v for k, v in version["resources"].items()
+                     if k != "bindings"}
+        script = resources.get("script")
+        if not isinstance(script, dict) or not isinstance(script.get("etag"), str) \
+                or not script["etag"]:
+            raise OptInRefused("CODE_IDENTITY_MISSING")
+        resources["script"] = {k: v for k, v in script.items()
+                               if k != "last_deployed_from"}
+        return resources
+
+    if code_resources(av) != code_resources(bv):
         raise OptInRefused("WORKER_CODE_OR_RUNTIME_DRIFT")
 
 
