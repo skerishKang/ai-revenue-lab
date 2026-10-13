@@ -97,9 +97,18 @@ for attempt in $(seq 1 12); do
 done
 if [[ "$status" != 200 || "$health" != TLS_OK ]]; then
   echo 'CONNECTOR_CANARY_EDGE_TLS=NOT_PROVEN' >&2
+  if [[ "$status" =~ ^[0-9]{3}$ ]]; then
+    echo "CONNECTOR_CANARY_EDGE_HTTP_STATUS=$status" >&2
+  else
+    echo "CONNECTOR_CANARY_EDGE_HTTP_STATUS=TRANSPORT_ERROR" >&2
+  fi
+  # The only accepted detailed diagnostics are synthetic constant markers
+  # emitted by OUR canary; never print an arbitrary upstream response body.
   case "$health" in
     CF_UNAVAILABLE|TLS_VERSION_UNAVAILABLE|TLS_UNACCEPTED|TLS_METADATA_ERROR)
       echo "CONNECTOR_CANARY_EDGE_TLS_BOUNDED_REASON=$health" >&2 ;;
+    *)
+      echo 'CONNECTOR_CANARY_EDGE_TLS_BOUNDED_REASON=UNRECOGNIZED_RESPONSE' >&2 ;;
   esac
   exit 1
 fi
