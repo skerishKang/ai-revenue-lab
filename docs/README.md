@@ -31,6 +31,7 @@ LAST_VERIFIED = 2026-10-09
 |---|---|
 | Padiem Golden Path FINISH-FIRST, LOCAL별 현재 소유권 | [#3523](https://github.com/skerishKang/ai-revenue-lab/issues/3523) |
 | Claw 실제 답변·SSE/DOM 검증 및 남은 모델 응답 오류 | [#3382](https://github.com/skerishKang/ai-revenue-lab/issues/3382), [#3566](https://github.com/skerishKang/ai-revenue-lab/issues/3566) |
+| P01 인증 사용자용 Live SSE 활성화·회복 절차, 현재 미수용 상태 | [P01 SSE 운영 런북](operations/P01_LIVE_SSE_OPTIN_RELEASE_3930.md), [Claw 사용자 수용 #3936](https://github.com/skerishKang/ai-revenue-lab/issues/3936), [플랫폼 수용 #4318](https://github.com/skerishKang/ai-revenue-lab/issues/4318) |
 | Owner 모델 승인과 B14 실행 계약 | [Owner 정책](operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md) — 모델 탐색은 위의 공식 모델 인덱스를 사용 |
 | Calendar 사용자별 READ 격리 설계 | [#2010](https://github.com/skerishKang/ai-revenue-lab/issues/2010) |
 | Calendar READ 운영 활성화 보안 게이트 | [#2952 HARD HOLD](https://github.com/skerishKang/ai-revenue-lab/issues/2952) |
