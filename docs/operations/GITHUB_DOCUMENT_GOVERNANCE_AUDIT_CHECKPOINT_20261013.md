@@ -36,6 +36,15 @@
 
 The original `## 1. Exact audit accounting` numbers remain **the 2026-10-13 initial snapshot**, not an updated final count; this section and the manifest supply the most recent cursor.
 
+## 1C. Batch 04 — complete-source review of 25 further documents (2026-10-13)
+
+Latest frozen-manifest cursor: **200 text-inspected at least partly** (125 initial samples + 25 each in B02, B03 and B04); **616 unread index-only**; **19 PDF/DOCX binaries pending**.
+
+- [Batch 04 exact-source document classification](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH04_20261013.md).
+- B53 shared-runtime/host technical boundary; B54 redacted pilot discovery versus customer technical controls; B14 dated provider-resource limits; central model S0/S1/S2/S3 chronology; canonical four shared Internal Platform components.
+- **No current business pricing, operating mode, customer entitlement, retention, or policy authority was adopted**; proposal dates must be reconciled against latest Owner decisions. No local Governance inspection or source relocation.
+- All 25 paths have unchanged baseline blob SHA, and all 25 new statuses are `TEXT_FULL_FETCHED_B04` only.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
