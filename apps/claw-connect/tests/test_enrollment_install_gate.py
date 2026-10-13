@@ -38,6 +38,8 @@ CREDENTIAL = b"synthetic-device-credential-bytes"
 class _Binding:
     binding_ref = "binding-1"
     device_id = "pc_abc123"
+    account_ref = "acct-1"
+    workspace_ref = "ws-1"
     credential_generation = 2
 
 

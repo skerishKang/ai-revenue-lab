@@ -73,6 +73,10 @@
   **로컬 레코드 기준 사실**일 뿐이며, 계정 마이그레이션이 지원된다는 의미로 보고하면 안 된다.
 - 성공은 `paired_offline`으로만 기록된다. `online`/CONNECTED는 이후 서버 projection(`mark_online`) +
   실제 live session이 있어야 하며, 영수증 자체는 lifecycle을 주장하지 않는다.
+- 서버 성공 영수증은 **로컬에 영속화된 뒤에야** 등록 상태로 채택된다. 기록 저장(`flush`)이 실패하면
+  메모리 상태도 저장 전 상태로 되돌려 `status_snapshot`·`device_identity`·트레이가 디스크에 존재하지
+  않는 binding을 enrolled로 보고하지 못하게 한다. 이 실패는 서버side 보상·취소와 무관하며(로컬 실패는
+  서버 rollback이 아니다), 이후 같은 challenge 재시도는 canonical Broker의 거부에 맡겨진다.
 
 ## 4. 금지 사항 (테스트로 고정)
 
@@ -190,9 +194,10 @@
 
 `credential_install.py` — 로컬 설치 확인은 서버 플래그가 아니라 canonical 보호 저장소로 만든다:
 
-- `save`가 돌려준 projection이 **넘겨받은 binding과 동일한** `binding_ref`·`device_id`·`credential_generation`을
-  가져야 하고(비정상/오래된 binding의 projection은 절대 `installed=True`가 되지 않음), 같은 binding 컨텍스트로
-  `load` readback한 바이트가 원본과 일치해야 한다. readback 능력이 없는 저장소는 사용 불가로 처리한다.
+- `save`가 돌려준 projection이 **넘겨받은 binding과 동일한**
+  `binding_ref`·`device_id`·`account_ref`·`workspace_ref`·`credential_generation`을
+  가져야 하고(비정상·타 계정/워크스페이스·오래된 binding의 projection은 절대 `installed=True`가 되지 않음), 같은 binding 컨텍스트로
+  `load` readback한 바이트가 원본과 일치해야 한다. readback 능력이 없거나 scope 필드를 생략하는 저장소는 사용 불가로 처리한다.
 - proof kind는 CENTRAL 설치 ack가 요구하는 `protected_store_save_readback` 하나만 인정한다.
 - save와 readback이 모두 확인된 뒤에만 CENTRAL의 versioned transcript
   (`padiem.connector-device-install-ack.v1`, 개행 구분, trailing newline 없음)에 새 자격증명을 키로
@@ -203,7 +208,11 @@
   `padiem_control_plane.local_agent_broker_pairing.MAX_PAIRING_CREDENTIAL_BYTES`(4096, 기본 발급은 32 bytes)이고,
   generic DPAPI 저장 용량(16384)을 초과할 근거가 아니다. 테스트가 두 canonical authority에서 실제 값을 읽어
   미러 상수를 고정한다.
-- redeemed 챌린지는 로컬에서도 single-use: 시도(성공·실패 무관)마다 소비된다.
+- redeemed 챌린지의 영속적 단회 사용은 **canonical Broker**이 소유한다. 로컬 `_consumed_challenges`는
+  프로세스(수신기 인스턴스) 생명주기의 방어일 뿐이며 Windows 재시작을 넘지 않는다 — 재시작 후 같은
+  챌린지가 설치 경로에 다시 들어올 수 있다는 사실을 테스트로 명시하고, 로컬 기록이 단회 사용을
+  보장한다고 주장하지 않는다. 재시도는 항상 새 챌린지 + 새 OWNER 동의이며, 로컬 실패/거부는 서버
+  보상·회수의 증거가 아니다.
 - 설치 실패 복구는 `plan_install_failure_recovery(revocation_confirmed=…)`가 두 가지로만 매핑한다 —
   canonical 회수 확인 → `new_challenge_required`, 미확인/모호 → `security_hold_reconciliation_required`.
   두 경로 모두 `report_enrolled=false`, `retry_same_challenge=false`, `retransmit_credential=false`이며

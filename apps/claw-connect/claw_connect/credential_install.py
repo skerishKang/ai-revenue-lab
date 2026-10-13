@@ -20,13 +20,16 @@ Authority boundaries:
   nothing is installed. ``CREDENTIAL_HANDOFF_WIRED = False``.
 * A server "installed" flag alone is never trusted. A local confirmation is
   produced only when the canonical store returns a projection naming this exact
-  binding reference, device and credential generation **and** the same bytes read
-  back through that binding's protected context.
-* A redeemed challenge is single-use locally too: one install attempt per
-  challenge. :func:`plan_install_failure_recovery` maps a failed attempt onto
-  either a new challenge (canonical revocation confirmed) or a security hold for
-  authority-side reconciliation — never a replay of the challenge or the
-  credential.
+  binding reference, device, account, workspace and credential generation **and**
+  the same bytes read back through that binding's protected context.
+* A redeemed challenge gets one install attempt per process: the set below is
+  in-memory only and cannot survive a Windows restart. Durable single use is the
+  canonical Broker's consumed-challenge state plus the protected store's binding
+  context, which is why a restart re-attempt must be refused by the server, not
+  assumed harmless here. :func:`plan_install_failure_recovery` maps a failed
+  attempt onto either a new challenge (canonical revocation confirmed) or a
+  security hold for authority-side reconciliation — never a replay of the
+  challenge or the credential.
 * The versioned install-ack possession proof (CENTRAL transcript
   ``padiem.connector-device-install-ack.v1``) is computed only after that
   readback, and nothing here transmits it: the authenticated device transport is
@@ -258,20 +261,23 @@ class LocalStoreCredentialReceiver:
     ``claw_connect`` while reusing its implementation.
 
     The credential is forwarded to the store exactly once and is never retained.
-    A confirmation requires all three of: the store's own projection, that
-    projection naming *this exact* binding reference, device and credential
-    generation, and a protected readback of the same bytes under the same binding
-    context. A projection for an unrelated or stale binding therefore fails
-    closed, and so does a store that cannot read back. There is no falsy
-    confirmation a caller could misread as success.
+    A confirmation requires the store's own projection to name *this exact*
+    binding reference, device, account, workspace and credential generation as the
+    binding it was handed, **and** a protected readback of the identical bytes
+    under that binding context. A projection for an unrelated, out-of-scope or
+    stale binding therefore fails closed, and so does a store that cannot read
+    back or that omits those fields. There is no falsy confirmation a caller could
+    misread as success.
     """
 
     def __init__(self, *, store: Any, now_factory: Any | None = None) -> None:
         self._store = store
         self._now_factory = now_factory
-        # The challenge reaching this receiver was already redeemed server-side,
-        # so its single use is spent here whether the local install succeeds or
-        # not. Retrying requires a new challenge and a fresh OWNER consent.
+        # Per-process only: the challenge reaching this receiver was already
+        # redeemed server-side, so its single use is spent here whether the local
+        # install succeeds or not, but a restarted process holds no memory of it.
+        # Retrying always requires a new challenge and a fresh OWNER consent, and
+        # the durable refusal is the canonical Broker's job.
         self._consumed_challenges: set[str] = set()
 
     def ready(self, *, challenge_id: str, device_id: str) -> bool:
@@ -306,6 +312,8 @@ class LocalStoreCredentialReceiver:
             raise CredentialInstallError("protected store readback is unavailable")
         expected_ref = _binding_fact(binding, "binding_ref")
         expected_device = _binding_fact(binding, "device_id")
+        expected_account = _binding_fact(binding, "account_ref")
+        expected_workspace = _binding_fact(binding, "workspace_ref")
         expected_generation = getattr(binding, "credential_generation", None)
         if type(expected_generation) is not int or expected_generation < 1:
             raise CredentialInstallError("install binding generation invalid")
@@ -329,6 +337,15 @@ class LocalStoreCredentialReceiver:
             raise CredentialInstallError("store projection binding mismatch")
         if getattr(projection, "device_id", None) != expected_device:
             raise CredentialInstallError("store projection device mismatch")
+        # The canonical DPAPI context already binds the owner scope, but a
+        # confirmation may not assume that: a store whose projection names a
+        # different account or workspace would otherwise install one tenant's
+        # credential under another tenant's enrollment. A projection that omits
+        # these fields fails the same way.
+        if getattr(projection, "account_ref", None) != expected_account:
+            raise CredentialInstallError("store projection account mismatch")
+        if getattr(projection, "workspace_ref", None) != expected_workspace:
+            raise CredentialInstallError("store projection workspace mismatch")
         generation = getattr(projection, "credential_generation", None)
         if type(generation) is not int or generation != expected_generation:
             raise CredentialInstallError("store projection generation mismatch")

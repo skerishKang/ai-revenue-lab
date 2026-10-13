@@ -150,6 +150,8 @@ no test asserts a real PC pairing. A green suite here means *the contract holds*
 | `apps/claw-connect/tests/` (pytest, all) | **300 passed, 4 skipped** (1st pass was 297/4) |
 | `tests/test_enrollment_contract.py` (focused) | **76 passed, 4 skipped** (was 73 + 4; +3 new) |
 | `node --test tests/*.test.mjs` (tray/CLI wrapper) | **5 pass, 0 fail** |
+| interruption/restart audit (2nd increment) | **13 passed** in `tests/test_enrollment_recovery_windows.py`; whole connector suite **315 passed, 4 skipped** after the two fixes |
+| mutation proof for the two fixes | reverting D1 → 2 failed; removing the owner-scope correlation → 3 failed; both files restored byte-identically |
 | `claw-connect-contract-tests.yml` (CI, `windows-latest`, Python 3.12) | runs on `apps/claw-connect/**`; see the PR checks |
 
 The 4 skips are the pre-existing `CENTRAL-CONTRACT-CONFLICT` set (the Resident/enrollment wiring CENTRAL
@@ -237,13 +239,92 @@ gateway, the authenticated credential delivery channel, the install-ack sender/v
 compensation operator, the single redemption owner, and the real-Windows E2E (#3099). See
 `PADIEM_CONNECTOR_LOCAL2_CENTRAL_CONTRACT_GAPS_20261012.md` items 1–7.
 
-## 9. Flags
+## 9. Interruption and restart audit — which layer actually blocks each window
+
+Reproduced in `apps/claw-connect/tests/test_enrollment_recovery_windows.py` (13 tests, local Windows
+Python 3.11). Each row names the authority that really closes the window, because they are three
+different authorities and only one of them is local and durable.
+
+| Window | What blocks it | Evidence in this tree |
+| --- | --- | --- |
+| 1. Server accepted, PC could not persist | **Fixed here (D1).** The record is committed only after the durable write succeeds, so an unwritable state directory can no longer leave `status_snapshot`/`device_identity`/tray reporting an enrolled PC | `test_a_success_that_cannot_be_persisted_leaves_no_enrolled_state`, `test_retrying_the_consumed_challenge_after_a_persistence_failure_stays_refused` |
+| 2. DPAPI save succeeded, readback failed | Protected store contract: a save projection alone never confirms; a record damaged after `save` is refused even though its projection looked correct | `test_readback_of_a_damaged_record_refuses_confirmation` (real DPAPI), `test_stale_or_unrelated_binding_context_never_confirms_install` |
+| 3. Save + readback succeeded, no ACK reached the server | No local completion claim and no local cleanup: nothing deletes the residue (safe removal needs canonical revocation), nothing reports recovery, the disposition stays the security hold | `test_an_unacknowledged_install_leaves_its_record_and_claims_nothing` |
+| 4. Server success, local account/workspace mismatch | LOCAL2 record guard (added by `#4542`, re-verified here): damaged local binding is refused *before* contacting the server; a post-redeem mismatch leaves the existing binding untouched and is explicitly **not** a server rollback | `test_damaged_existing_binding_never_contacts_enrollment_server`, `test_a_refusal_after_a_successful_receipt_is_not_a_server_rollback` |
+| 5. Windows process killed and restarted | Persistence is atomic (`tmp` + `os.replace`) and the reader is closed-schema: a torn, truncated, non-mapping or unknown-key record raises, the unreadable file is preserved, and **no fresh device identity is minted behind it**; a `.json.tmp` residue is ignored and cannot fork the PC identity | `test_a_damaged_or_torn_state_file_blocks_and_is_never_forged_over`, `test_a_tmp_residue_from_a_killed_write_leaves_the_durable_record_alone` |
+| 6. A consumed challenge presented again | **Canonical Broker only.** The local `_consumed_challenges` set is per-process: a restarted Connector can present the same challenge to the install path again, and the test asserts that rather than hiding it. Durable single use is the Broker's consumed state plus the protected store's binding context | `test_the_local_challenge_guard_does_not_survive_a_process_restart`, `test_redeemed_challenge_is_single_use_even_after_a_failed_attempt` |
+
+### Two real LOCAL2 defects fixed in this increment (nothing else was rewritten)
+
+1. **D1 — an enrollment was adopted in memory even when it could not be persisted.**
+   `ConnectorEnrollment.complete_login` mutated the shared record and then called `flush()`, so a write
+   failure left the process reporting `enrolled=True` with a `binding_ref` that existed on no disk and
+   that a restart would drop; a later refusal did not clear it either. The fix snapshots the durable
+   record, writes first, and restores in memory if the write fails.
+2. **D2 — the install confirmation did not correlate the owner scope.**
+   `LocalStoreCredentialReceiver.install_once` compared `binding_ref`, `device_id` and
+   `credential_generation` but not `account_ref` / `workspace_ref`, so a store whose projection named a
+   different account or workspace (or omitted those fields) could produce `installed=True` for a
+   cross-scope record. The canonical DPAPI context already binds them, so this closes the general
+   contract rather than a proven live path; a projection missing the fields now fails closed.
+
+Both fixes were written test-first: reverting either one turns exactly the corresponding tests red
+(2 failures for D1, 3 for D2), verified and restored byte-identically.
+
+## 10. CENTRAL handover — the exact interface still missing before any Windows ACK can be wired
+
+LOCAL2 deliberately did not invent any of this. Nothing below is implemented, chosen or activated here;
+device authentication and delivery direction are CENTRAL's decisions
+(`REDEMPTION_OWNER=NOT_YET_SECURITY_APPROVED`, `PROTECTED_INSTALL_TRANSPORT_WIRED=False`).
+
+1. **How the raw credential reaches the PC at all.** The HTTP redeem receipt is secret-free by contract
+   and stays that way, so the credential must arrive either over a new authenticated device channel or
+   through the PC-initiated canonical Broker HTTPS `REDEEM` (`kagent.local_agent_broker_pairing_client.LocalAgentBrokerPairingClient`,
+   `BrokerPairingHttpsOperation.REDEEM`), which already returns a one-time credential to the PC. Those
+   two owners must never both consume one challenge; exactly one has to be named.
+2. **The host-side handoff object to implement.**
+   `canonical_connector_enrollment_async_host.ProtectedDeviceCredentialHandoff` requires
+   `ready(challenge_id, device_id) -> bool`,
+   `deliver_once(challenge_id, device_id, credential, enrollment, now) -> DeviceCredentialInstallAck`,
+   and `verify_authenticated_ack(challenge_id, device_id, ack, …) -> bool`. Today the only implementation
+   is `UnconfiguredProtectedDeviceHandoff`, which raises. Note the direction problem: this protocol
+   assumes a **server-side** object that can reach the PC, while LOCAL2's shipped adapter is
+   **PC→server** — the handover therefore needs either a PC-side installer plus an authenticated
+   response path, or an explicit statement that the Broker client path is the device channel.
+3. **The ack wire shape the device must produce** — exactly
+   `_ACK_WIRE_FIELDS = {challenge_id, device_id, binding_ref, credential_generation, proof_kind,
+   transcript_version, local_store_confirmed, proof_hex}`, decoded by `parse_install_ack` (closed keys,
+   no coercion) and checked by `verify_install_ack` against `installation_proof`
+   (transcript `padiem.connector-device-install-ack.v1`, HMAC-SHA256 keyed by the new credential,
+   16–4096-byte key window). LOCAL2 already produces every one of those eight values:
+   `ProtectedCredentialInstallConfirmation` carries `challenge_id`, `device_id`, `binding_ref`,
+   `credential_generation`, `proof_kind="protected_store_save_readback"`, `transcript_version` and a
+   `proof_hex` byte-identical to CENTRAL's own `installation_proof` (pinned vectors), with
+   `local_store_confirmed` = the store readback. What is missing is only the authenticated channel that
+   would carry it, so no sender exists.
+4. **The gateway that authenticates the ack sender.** `verify_authenticated_ack` must be satisfied by the
+   canonical device gateway binding `challenge_id` + `device_id` to a verified PC/session; the ack's own
+   fields and the HMAC prove possession only. LOCAL2 cannot mint or infer that identity, and `
+   CENTRAL_DEVICE_GATEWAY_WIRED=False` stays until CENTRAL wires and reviews it.
+5. **Revocation / compensation result.** LOCAL2's mapping is
+   `plan_install_failure_recovery(revocation_confirmed=…)`: an explicit `True` releases a new challenge,
+   anything else is `security_hold_reconciliation_required`. There is currently **no authenticated
+   response field** by which the device could learn that verdict — the connector neither revokes nor
+   claims revocation. CENTRAL owns the operator, its authentication and the field name that carries it.
+6. **Cross-brand scope.** The brand-separation rule (distinct PADIEM/Quote customer PC accounts,
+   cross-product reads refused before Broker) is enforced server-side. The connector keeps no product
+   dimension and adopts only the receipt's `account_ref`/`workspace_ref` under the `#4542` guard, so no
+   LOCAL2 change is needed; if a future account-wide enrollment API changes those fields' authority,
+   LOCAL2 adapts to it rather than deciding anything here.
+
+## 11. Flags
 
 ```
 ROLE=LOCAL2_WINDOWS_CONNECTOR
-HTTP_TRANSPORT=ALIGNED_WITH_CENTRAL_355A635A9_AND_FAIL_CLOSED
+HTTP_TRANSPORT=ALIGNED_WITH_CENTRAL_5FE55F274_AND_FAIL_CLOSED
 SERVER_CONTRACT_MATCH=ENVELOPE_AND_RECEIPT_PINNED
-LOCAL_INSTALL_PROOF=SAVE_PLUS_READBACK_CORRELATED
+LOCAL_INSTALL_PROOF=SAVE_PLUS_READBACK_AND_OWNER_SCOPE_CORRELATED
+INSTALLED_STATE_COMMITTED_ONLY_AFTER_DURABLE_WRITE=YES
 WINDOWS_DPAPI_INTEGRATION=CANONICAL_STORE_CONTRACT_PASSED
 INSTALL_ACK_PROOF=COMPUTED_AFTER_READBACK_NOT_TRANSMITTED
 CREDENTIAL_BOUND=PAIRING_PROTOCOL_4096_RESOLVED_BY_DECISION_A
@@ -254,7 +335,9 @@ CLEAR_ENROLLMENT=LOCAL_VIEW_ONLY_NOT_OWNERSHIP_TRANSFER
 PC_REGISTRATION_SURFACE=PRODUCT_NEUTRAL
 INSTANCED_IDENTITY=CLAW_BRANDED_PENDING_OWNER_DECISION
 GENERIC_REDEEM_PATH=closed_no_double_redeem
-REDEEMED_CHALLENGE=single_use_local_and_server_side
+REDEEMED_CHALLENGE=durable_single_use_is_the_broker__local_guard_is_per_process_only
+INTERRUPTION_WINDOWS_AUDITED=6_of_6_with_layered_authority
+CENTRAL_HANDOVER=PUBLISHED_IN_SECTION_10
 INSTALL_FAILURE_RECOVERY=CONTRACT_AND_TESTS_ONLY
 CREDENTIAL_HANDOFF=NOT_WIRED
 WINDOWS_LIVE_E2E=NOT_PROVEN

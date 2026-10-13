@@ -53,6 +53,8 @@ class _FakeBinding:
     binding_ref: str
     device_id: str
     credential_generation: int
+    account_ref: str = "acct-1"
+    workspace_ref: str = "ws-1"
 
 
 @dataclass(frozen=True)
@@ -60,6 +62,8 @@ class _FakeProjection:
     binding_ref: str
     device_id: str
     credential_generation: int
+    account_ref: str = "acct-1"
+    workspace_ref: str = "ws-1"
 
 
 def _binding(**overrides) -> _FakeBinding:
@@ -106,6 +110,8 @@ class _FakeCanonicalStore:
         return _FakeProjection(
             binding_ref="binding-other" if self._wrong_binding else binding.binding_ref,
             device_id="pc_other" if self._wrong_device else binding.device_id,
+            account_ref=binding.account_ref,
+            workspace_ref=binding.workspace_ref,
             credential_generation=(
                 binding.credential_generation + 1
                 if self._wrong_generation

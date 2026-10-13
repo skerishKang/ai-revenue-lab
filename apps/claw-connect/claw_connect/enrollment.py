@@ -44,7 +44,7 @@ import json
 import os
 import re
 import secrets
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
@@ -873,6 +873,12 @@ class ConnectorEnrollment:
             if record.workspace_ref is None or result.workspace_ref != record.workspace_ref:
                 raise EnrollmentContractError("enrollment_binding_scope_mismatch")
 
+        # Nothing is adopted until it is durable. Committing the receipt into the
+        # shared in-memory record first would leave `status_snapshot`,
+        # `device_identity` and the tray reporting an enrolled PC after the write
+        # failed — a state that exists on no disk and, for the server, was never
+        # installed; a later refusal would not clear it either.
+        previous = replace(record)
         record.binding_ref = result.binding_ref
         record.account_ref = result.account_ref
         record.workspace_ref = result.workspace_ref
@@ -882,7 +888,11 @@ class ConnectorEnrollment:
         record.enrolled_at = moment
         record.revoked = False
         record.blocked_reason = None
-        self.flush()
+        try:
+            self.flush()
+        except Exception:
+            self._record = previous
+            raise
         return result
 
     def _redeem_via_enrollment_server(
