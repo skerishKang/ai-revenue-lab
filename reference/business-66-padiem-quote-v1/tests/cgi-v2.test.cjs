@@ -1,4 +1,6 @@
-// The CGI layout fixture must never contain a real customer's identity,\n// account, contact, or business-registration values.\nconst assert = require("node:assert");
+// The CGI layout fixture must never contain a real customer's identity,
+// account, contact, or business-registration values.
+const assert = require("node:assert");
 const Core = require("../quote-core.js");
 const Template = require("../quote-template.js");
 const Renderer = require("../quote-template-renderer.js");
