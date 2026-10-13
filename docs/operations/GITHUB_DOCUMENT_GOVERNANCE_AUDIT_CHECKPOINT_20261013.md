@@ -62,6 +62,14 @@ Latest frozen-manifest cursor: **200 text-inspected at least partly** (125 initi
 - Core findings: B35 internal commercial drafts and unapproved contract assumptions must not be promoted into binding price/business policy; B35 design/QA remains separable public technical evidence. B05 historical resident priority; B21/B51 synthetic research/product references; B60 dated editorial directions; cross-product tier preferences are owner evaluation, not customer activation.
 - No private commercial clauses, customer identifying data or pricing figures were reproduced in the public audit. No source docs, Governance, CI/code, cloud runtime, secrets, Git history or product policy were mutated.
 
+## 1F. Batch 07 — 25 additional full-document reads (2026-10-13)
+
+Latest frozen 835-source cursor: **275 documents with at least some text viewed** (125 initial samples + 25 each B02/B03/B04/B05/B06/B07), **541 indexed-only text bodies unread**, **19 PDF/DOCX bodies pending**. Existing 125 text samples are not asserted fully reviewed.
+
+- [Batch 07 source-pinned 25-file report and classification](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH07_20261013.md).
+- B54 external connector source contracts and SMS/Kakao commercial/provider-selection seams; B60 field-level official-source review/publication; B57/B58 rights and synthetic consent; B59 immutable source reader; B29 apartment product-not-company Governance; B39/40/41 nonlive emergency references; B49 public-data provenance.
+- No current legal/commercial customer rights, subscription pricing, live connector activation, emergency-service affiliation, model use or company-wide governance decided. Original content and local Governance unchanged.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |

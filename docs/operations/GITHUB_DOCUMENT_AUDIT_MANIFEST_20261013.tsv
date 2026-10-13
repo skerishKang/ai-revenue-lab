@@ -1,6 +1,6 @@
 # Complete public GitHub document path manifest — audit checkpoint 2026-10-13
 # Baseline main SHA: 5476d1038993d647bf8ba241ce6a4307cccf291f
-# Content states: INDEXED_ONLY=path/hash only; TEXT_SAMPLED=initial partial/full text not fully classified; TEXT_FULL_FETCHED_B02/B03/B04/B05/B06=complete source retrieved and provisionally triaged in named batch without policy or relocation approval; BINARY_PENDING=PDF/DOCX content unread.
+# Content states: INDEXED_ONLY=path/hash only; TEXT_SAMPLED=initial partial/full text not fully classified; TEXT_FULL_FETCHED_B02/B03/B04/B05/B06/B07=complete source retrieved and provisionally triaged in named batch (no business-policy or relocation authority); BINARY_PENDING=PDF/DOCX content unread.
 # This file has all 835 recognized document-format blobs from a GitHub recursive tree with truncated=false. Existing source content was not copied here.
 # Full-status classification must not be inferred from filename keywords or the TEXT_SAMPLED flag.
 PATH	BLOB_SHA	BYTES	READ_STATE
@@ -26,17 +26,17 @@ apps/korean-ai-code-agent/docs/06_RELIABILITY_INCIDENT_RESPONSE.md	fabc8db03f9eb
 apps/korean-ai-code-agent/docs/07_BUSINESS_PRICING.md	12d927eaf4ff2e4110cbd4137a27642fa3ed51ff	963	TEXT_SAMPLED
 apps/korean-ai-code-agent/docs/08_ROADMAP.md	07da98629926e82bacb40ef841214d839577f5c2	1003	TEXT_SAMPLED
 apps/korean-ai-code-agent/docs/09_IMPLEMENTATION_STATUS.md	e2bec2b2bbdef880cf12e5a73202ca1b279a2a1b	3051	INDEXED_ONLY
-apps/korean-ai-code-agent/docs/CALENDAR_MUTATION_SAFETY.md	d4ffc5b6d166bb7c6d0b66d8d55af58a4bcf422e	8470	INDEXED_ONLY
+apps/korean-ai-code-agent/docs/CALENDAR_MUTATION_SAFETY.md	d4ffc5b6d166bb7c6d0b66d8d55af58a4bcf422e	8470	TEXT_FULL_FETCHED_B07
 apps/korean-ai-code-agent/docs/cloud-m1/SANDBOX_LIVE_PROBE_RUNBOOK.md	7b6c45eb9eb279dae3f7b23bf98a0a76fc50cdb9	10144	INDEXED_ONLY
 apps/korean-ai-code-agent/docs/cloud-m1/SANDBOX_PROVIDER_REVIEW_20260903.md	b2301171ed6776baab7089e979039b814e092c49	11352	INDEXED_ONLY
 apps/korean-ai-code-agent/docs/CLOUDFLARE_CONNECTOR_M0_RUNBOOK.md	eb17c56bd3653dd2cd285c2342071ba2267cdcdc	6509	INDEXED_ONLY
 apps/korean-ai-code-agent/docs/CONNECTIONS_DEVICES_CENTER_M0.md	fb4ac9776b2d1e1a1693c3413618a07c1bf231e1	5401	INDEXED_ONLY
 apps/korean-ai-code-agent/docs/CONNECTOR_M0_TRUST_BOUNDARIES.md	a305bc220ca523b002eff407956c43f056089c3c	4361	INDEXED_ONLY
-apps/korean-ai-code-agent/docs/DROPBOX_CONNECTOR_SAFETY.md	854dc6fcb902323660e7ce227d41b51a4f0b37af	5073	INDEXED_ONLY
-apps/korean-ai-code-agent/docs/GMAIL_BOUNDED_APPROVAL.md	d6ec9e0eee5ecbde7cd042f5d5a261c14225c790	7132	INDEXED_ONLY
-apps/korean-ai-code-agent/docs/GOOGLE_DRIVE_SCOPE_WRITE_SAFETY.md	735b505a903d8e8cdad34326f9b58e9014aab1c7	5460	INDEXED_ONLY
+apps/korean-ai-code-agent/docs/DROPBOX_CONNECTOR_SAFETY.md	854dc6fcb902323660e7ce227d41b51a4f0b37af	5073	TEXT_FULL_FETCHED_B07
+apps/korean-ai-code-agent/docs/GMAIL_BOUNDED_APPROVAL.md	d6ec9e0eee5ecbde7cd042f5d5a261c14225c790	7132	TEXT_FULL_FETCHED_B07
+apps/korean-ai-code-agent/docs/GOOGLE_DRIVE_SCOPE_WRITE_SAFETY.md	735b505a903d8e8cdad34326f9b58e9014aab1c7	5460	TEXT_FULL_FETCHED_B07
 apps/korean-ai-code-agent/docs/INTEGRATION_READINESS.md	0039bb516c896d6787ae563b3c1a99eb53a8f80e	6262	INDEXED_ONLY
-apps/korean-ai-code-agent/docs/KAKAO_BUSINESS_CONNECTOR_SAFETY.md	11bf7a3158c13d6b216afd28d263cf4a8b979ebd	7713	INDEXED_ONLY
+apps/korean-ai-code-agent/docs/KAKAO_BUSINESS_CONNECTOR_SAFETY.md	11bf7a3158c13d6b216afd28d263cf4a8b979ebd	7713	TEXT_FULL_FETCHED_B07
 apps/korean-ai-code-agent/docs/LOCAL_AGENT_BROKER_PAIRING_3080.md	f4efef0f3c86fea935e174f835e6fbae9ab443fa	5037	INDEXED_ONLY
 apps/korean-ai-code-agent/docs/LOCAL_AGENT_COMMAND_ADMISSION_M2B.md	6862e2455ab27f8f4daf22be404bf29280dcea60	7608	INDEXED_ONLY
 apps/korean-ai-code-agent/docs/LOCAL_AGENT_RUNTIME_ASSEMBLY_M1A.md	eb77dc83adec9848a28c18762d89515944a4c40b	7725	INDEXED_ONLY
@@ -44,8 +44,8 @@ apps/korean-ai-code-agent/docs/LOCAL_AGENT_SECURE_TRANSPORT_M2A_ACCEPTANCE.md	35
 apps/korean-ai-code-agent/docs/LOCAL_AGENT_SECURE_TRANSPORT_M2A_PR_NOTE.md	07e430342f3c9189887a93688632879ed1717757	519	INDEXED_ONLY
 apps/korean-ai-code-agent/docs/LOCAL_AGENT_SECURE_TRANSPORT_M2A.md	ada5ae484b65da3d56b5b4369aa96106b1f9821e	6616	INDEXED_ONLY
 apps/korean-ai-code-agent/docs/LOCAL_TEST_ENVIRONMENT_3108.md	7e3b079e6acecf4f0616fc3898235d06e6407f28	6741	INDEXED_ONLY
-apps/korean-ai-code-agent/docs/NOTION_CONNECTOR_SAFETY.md	864d9b06dfe578f4740a8448a896645de22ce626	4663	INDEXED_ONLY
-apps/korean-ai-code-agent/docs/ONEDRIVE_CONNECTOR_SAFETY.md	b9b5e0314dc655e2da6ec60034826425e61e2e9d	5625	INDEXED_ONLY
+apps/korean-ai-code-agent/docs/NOTION_CONNECTOR_SAFETY.md	864d9b06dfe578f4740a8448a896645de22ce626	4663	TEXT_FULL_FETCHED_B07
+apps/korean-ai-code-agent/docs/ONEDRIVE_CONNECTOR_SAFETY.md	b9b5e0314dc655e2da6ec60034826425e61e2e9d	5625	TEXT_FULL_FETCHED_B07
 apps/korean-ai-code-agent/docs/OPENBOT_REUSE_MATRIX.md	80ba5fac37d5439f784d934a8df19adb8e1a1ee1	8034	INDEXED_ONLY
 apps/korean-ai-code-agent/docs/ops/ATTACHMENT_SCAN_GATE.md	e02ffa9a13f7c8350ef46b5112c1f340a73868ca	944	TEXT_FULL_FETCHED_B04
 apps/korean-ai-code-agent/docs/ops/DATA_APPROVAL_EVIDENCE_MODEL.md	261ee5eb21f29231b4eacb8f211255228167c3b3	3309	TEXT_FULL_FETCHED_B04
@@ -65,10 +65,10 @@ apps/korean-ai-code-agent/docs/PYPDF_6_19_0_JBIG2DEC_AUTHORITY_3012.md	120840d6a
 apps/korean-ai-code-agent/docs/PYPDF_6_19_0_SOURCE_BEHAVIOR_AUDIT_2930.md	3eabda497095564bb13421c04618f6aee9ff1505	16978	INDEXED_ONLY
 apps/korean-ai-code-agent/docs/README.md	e9c111fdd019ffb78780d796e5c644d075a197df	1240	INDEXED_ONLY
 apps/korean-ai-code-agent/docs/security/CLOUD_M1_SANDBOX_THREAT_MODEL.md	a128676caa7ed5d515fc7ab48d960777b7e76feb	13747	INDEXED_ONLY
-apps/korean-ai-code-agent/docs/SLACK_SCOPE_EVENT_OUTBOUND_SAFETY.md	572c6cf1be7888e82f76fc16956ff14f04d4dd27	7243	INDEXED_ONLY
-apps/korean-ai-code-agent/docs/SMS_CONNECTOR_SAFETY.md	205fb9a451af05e295fedb620800181b741c8f10	7391	INDEXED_ONLY
+apps/korean-ai-code-agent/docs/SLACK_SCOPE_EVENT_OUTBOUND_SAFETY.md	572c6cf1be7888e82f76fc16956ff14f04d4dd27	7243	TEXT_FULL_FETCHED_B07
+apps/korean-ai-code-agent/docs/SMS_CONNECTOR_SAFETY.md	205fb9a451af05e295fedb620800181b741c8f10	7391	TEXT_FULL_FETCHED_B07
 apps/korean-ai-code-agent/docs/TELEGRAM_BUSINESS_MVP_RUNTIME.md	0e38febbbe5ed915cd098dae4b083cf17d491db9	2006	INDEXED_ONLY
-apps/korean-ai-code-agent/docs/TELEGRAM_CONNECTOR_SAFETY.md	28c3a12368d0b9cd9386e38df3402a07375859ca	5941	INDEXED_ONLY
+apps/korean-ai-code-agent/docs/TELEGRAM_CONNECTOR_SAFETY.md	28c3a12368d0b9cd9386e38df3402a07375859ca	5941	TEXT_FULL_FETCHED_B07
 apps/korean-ai-code-agent/docs/TRUSTED_P01_WINDOWS_EXECUTION_EVIDENCE_M1B.md	f1d5d13c2447f86f8cd005fbab7f1321530fe88c	6052	INDEXED_ONLY
 apps/korean-ai-code-agent/README.md	7417c2d956a6fdf742b293e8997101218c296536	5925	TEXT_FULL_FETCHED_B02
 apps/korean-ai-code-agent/src/korean_ai_code_agent.egg-info/dependency_links.txt	8b137891791fe96927ad78e64b0aad7bded08bdc	1	INDEXED_ONLY
@@ -685,8 +685,8 @@ reference/business-29-apartment-governance-v1/evidence/SELF_CHECK.md	b388b1369b7
 reference/business-29-apartment-governance-v1/IMAGE_SOURCES.md	8fd17a890d09dc643e268c5c444d279da50c3695	3958	INDEXED_ONLY
 reference/business-29-apartment-governance-v1/MOTION_SPEC.md	0280d0b40a0f6445fd071f33ee3fa931ee990aa1	1121	INDEXED_ONLY
 reference/business-29-apartment-governance-v1/README.md	baceb5b6ad782e9ef889f03af611b32308428b7d	1912	TEXT_SAMPLED
-reference/business-29-apartment-governance-v1/REFERENCE_NOTES.md	cb8d690281773d784daac2829fb33a5244dde33c	2809	INDEXED_ONLY
-reference/business-29-apartment-governance-v1/ux/README.md	9901d5be6f532e5b1b58af662197b0cf6962aa1b	4827	INDEXED_ONLY
+reference/business-29-apartment-governance-v1/REFERENCE_NOTES.md	cb8d690281773d784daac2829fb33a5244dde33c	2809	TEXT_FULL_FETCHED_B07
+reference/business-29-apartment-governance-v1/ux/README.md	9901d5be6f532e5b1b58af662197b0cf6962aa1b	4827	TEXT_FULL_FETCHED_B07
 reference/business-32-ai-skill-studio-ux/README.md	d19ac60be2def6c049e36c05fb2743270e18c4ad	7522	TEXT_SAMPLED
 reference/business-33-research-memory-v1/evidence/SELF_CHECK.md	061f7c9d572facad2c61ee92a7a9eac46282806b	208	INDEXED_ONLY
 reference/business-33-research-memory-v1/IMAGE_SOURCES.md	48f1406739a2594060b766ddb5460f776b34c901	1371	INDEXED_ONLY
@@ -729,18 +729,18 @@ reference/business-39-112-real-time-interpretation-v1/evidence/SELF_CHECK.md	ba6
 reference/business-39-112-real-time-interpretation-v1/IMAGE_SOURCES.md	9b3f0693645debe76ff4ca5fbba4372f52527074	1178	INDEXED_ONLY
 reference/business-39-112-real-time-interpretation-v1/MOTION_SPEC.md	e284b0fbb15674f2d46569ebb4f5e7868461932c	769	INDEXED_ONLY
 reference/business-39-112-real-time-interpretation-v1/README.md	bc416cd6a974e6c5c46031c56276e7374d7f57a2	512	TEXT_SAMPLED
-reference/business-39-112-real-time-interpretation-v1/REFERENCE_NOTES.md	3591a3c619479661f6beb4f43854c515eb30dd41	1424	INDEXED_ONLY
+reference/business-39-112-real-time-interpretation-v1/REFERENCE_NOTES.md	3591a3c619479661f6beb4f43854c515eb30dd41	1424	TEXT_FULL_FETCHED_B07
 reference/business-40-emergency-urgency-ai-v1/evidence/CAPTURE_MANIFEST.md	a80351cdd01cf2c8e48a06477ab4ffc88d10f3ad	1044	INDEXED_ONLY
 reference/business-40-emergency-urgency-ai-v1/evidence/SELF_VALIDATION.md	e9217eeb48e796c0221853c49215f3dcf4068ff6	2661	INDEXED_ONLY
 reference/business-40-emergency-urgency-ai-v1/IMAGE_SOURCES.md	93146fc8b6273682d9c9465aff52a688462f380b	1413	INDEXED_ONLY
 reference/business-40-emergency-urgency-ai-v1/MOTION_SPEC.md	9af8e36b4be0e6cf5b5dbcadbfe863e9a3c049b8	1835	INDEXED_ONLY
 reference/business-40-emergency-urgency-ai-v1/README.md	5408f9bf4cae9e982b720d55846d3ed5965d0779	1818	TEXT_SAMPLED
-reference/business-40-emergency-urgency-ai-v1/REFERENCE_NOTES.md	00ccf28629a7e830cc3bf02345fbacb3fc62eace	5009	INDEXED_ONLY
+reference/business-40-emergency-urgency-ai-v1/REFERENCE_NOTES.md	00ccf28629a7e830cc3bf02345fbacb3fc62eace	5009	TEXT_FULL_FETCHED_B07
 reference/business-41-foreign-emergency-assistant-v1/evidence/SELF_CHECK.md	bd8a6307db4f4d48dd3fcdb1291cab34106b12bd	1479	INDEXED_ONLY
 reference/business-41-foreign-emergency-assistant-v1/IMAGE_SOURCES.md	a319e376aba9c4ef80371a931a902aa61103ce2e	1626	INDEXED_ONLY
 reference/business-41-foreign-emergency-assistant-v1/MOTION_SPEC.md	3bad8e48e1189b81b1c2699b87c7f3b12fee27c8	1439	INDEXED_ONLY
 reference/business-41-foreign-emergency-assistant-v1/README.md	c6b83282ce7a25a00d553c8477bf8c5c61abf7b3	1471	TEXT_SAMPLED
-reference/business-41-foreign-emergency-assistant-v1/REFERENCE_NOTES.md	2a7a25c38da701f935b4ad86e8b98a4d82c1caa0	4532	INDEXED_ONLY
+reference/business-41-foreign-emergency-assistant-v1/REFERENCE_NOTES.md	2a7a25c38da701f935b4ad86e8b98a4d82c1caa0	4532	TEXT_FULL_FETCHED_B07
 reference/business-42-ai-development-control-tower-v1/evidence/README.md	7eed134239325c1f7d0017100cabea794587eea5	697	INDEXED_ONLY
 reference/business-42-ai-development-control-tower-v1/IMAGE_SOURCES.md	5367707732ca858a4e2bb005b141523d3c62e31c	2017	INDEXED_ONLY
 reference/business-42-ai-development-control-tower-v1/MOTION_SPEC.md	948604b4cb205f084616bdc63559a9d5b1fa64f4	1354	INDEXED_ONLY
@@ -776,7 +776,7 @@ reference/business-49-public-data-connector-hub-v1/evidence/SELF_CHECK.md	9e8e1d
 reference/business-49-public-data-connector-hub-v1/IMAGE_SOURCES.md	13527b7a12a0953ba379c21f039fd4bac49edeb9	1866	INDEXED_ONLY
 reference/business-49-public-data-connector-hub-v1/MOTION_SPEC.md	1a94fddc756be3f99e5ca66b0d5d2d177502b8fd	1044	INDEXED_ONLY
 reference/business-49-public-data-connector-hub-v1/README.md	cc03a02715cb5786fbcab2fadaa9e112ecd480fc	934	TEXT_SAMPLED
-reference/business-49-public-data-connector-hub-v1/REFERENCE_NOTES.md	222a08f9d42b38a0790b30e9360b6adab5693455	3091	INDEXED_ONLY
+reference/business-49-public-data-connector-hub-v1/REFERENCE_NOTES.md	222a08f9d42b38a0790b30e9360b6adab5693455	3091	TEXT_FULL_FETCHED_B07
 reference/business-51-ai-workflow-marketplace-v1/evidence/LOCAL_VALIDATION.md	d51163916ccdeef96d5eba84bd18b40c642d4847	1384	INDEXED_ONLY
 reference/business-51-ai-workflow-marketplace-v1/evidence/SELF_VALIDATION.md	0e712fd2a41cf97664811c81c10548f441707fe2	425	INDEXED_ONLY
 reference/business-51-ai-workflow-marketplace-v1/evidence/SOURCE_INTEGRITY.md	929cade69bcd32ab3da3c8563ea897053cd9bef4	536	INDEXED_ONLY
@@ -805,28 +805,28 @@ reference/business-57-classic-literature-translation-studio-v1/IMAGE_SOURCES.md	
 reference/business-57-classic-literature-translation-studio-v1/MOTION_SPEC.md	a0633f974c315c9b6fa4380255c1431cfcef32bf	2420	INDEXED_ONLY
 reference/business-57-classic-literature-translation-studio-v1/README.md	eb102e183a720e3b222903a48f842a9597191553	3396	TEXT_SAMPLED
 reference/business-57-classic-literature-translation-studio-v1/REFERENCE_NOTES.md	c52da47ed8c10b18e48c81f5c50d5c099df06101	6032	INDEXED_ONLY
-reference/business-57-classic-literature-translation-studio-v1/RIGHTS_AND_SOURCES.md	ce8f354b8cc78666061851e15ca3ce232dccc506	5433	INDEXED_ONLY
+reference/business-57-classic-literature-translation-studio-v1/RIGHTS_AND_SOURCES.md	ce8f354b8cc78666061851e15ca3ce232dccc506	5433	TEXT_FULL_FETCHED_B07
 reference/business-58-personal-writing-voice-studio-v1/evidence/run-commands.md	f758ca6070768a774c818ab13241d2ef84a0d9fc	96	INDEXED_ONLY
 reference/business-58-personal-writing-voice-studio-v1/IMAGE_SOURCES.md	607242cece99d58e3aa66258c238f1107abf54bb	780	INDEXED_ONLY
 reference/business-58-personal-writing-voice-studio-v1/MOTION_SPEC.md	86c2d3426fc32236af09dee921f199c4e6ee42e9	610	INDEXED_ONLY
 reference/business-58-personal-writing-voice-studio-v1/README.md	c02d3e1d58120f282e48983d453e47fc5a46627f	700	TEXT_SAMPLED
 reference/business-58-personal-writing-voice-studio-v1/REFERENCE_NOTES.md	379d9a52f2417825d7471be13b00ee401292f5c1	1652	INDEXED_ONLY
-reference/business-58-personal-writing-voice-studio-v1/RIGHTS_AND_CONSENT_SPEC.md	0f41e01d9fafa324e2814afb97d31fedbde63839	885	INDEXED_ONLY
-reference/business-58-personal-writing-voice-studio-v1/VOICE_PROFILE_SPEC.md	6e795338da4c4983c0904e6a2205390467f34e6a	424	INDEXED_ONLY
+reference/business-58-personal-writing-voice-studio-v1/RIGHTS_AND_CONSENT_SPEC.md	0f41e01d9fafa324e2814afb97d31fedbde63839	885	TEXT_FULL_FETCHED_B07
+reference/business-58-personal-writing-voice-studio-v1/VOICE_PROFILE_SPEC.md	6e795338da4c4983c0904e6a2205390467f34e6a	424	TEXT_FULL_FETCHED_B07
 reference/business-59-living-archive-v1/evidence/README.md	6419cf51a01fbf3fb7b097499c8074ada78ab1ae	730	INDEXED_ONLY
-reference/business-59-living-archive-v1/HYBRID_READER_SPEC.md	bdc6afc90b59ae1489455f40bab7c8060e766177	1431	INDEXED_ONLY
+reference/business-59-living-archive-v1/HYBRID_READER_SPEC.md	bdc6afc90b59ae1489455f40bab7c8060e766177	1431	TEXT_FULL_FETCHED_B07
 reference/business-59-living-archive-v1/PRODUCT_CONTRACT.md	0e41d757941306da9aae463344ab76717d135186	1447	TEXT_SAMPLED
 reference/business-59-living-archive-v1/README.md	935be2ba39bdc726c481e3a17f7c259806887b7c	1631	TEXT_SAMPLED
-reference/business-59-living-archive-v1/SOURCE_MODEL.md	71f9d92e893d2017891e751595474abd1eac2847	1142	INDEXED_ONLY
-reference/business-60-ai-api-v1/ASSET_PROVENANCE.md	4d461fd6691ccc9701f74a29a4337f51d848626e	4608	INDEXED_ONLY
-reference/business-60-ai-api-v1/collector/README.md	976329af3af40c1642b8d9d891298a4706055507	5337	INDEXED_ONLY
-reference/business-60-ai-api-v1/KOREAN_UI_COPY_V1.md	e41d6853f8c9318a46935b2299374249701a44e9	2285	INDEXED_ONLY
+reference/business-59-living-archive-v1/SOURCE_MODEL.md	71f9d92e893d2017891e751595474abd1eac2847	1142	TEXT_FULL_FETCHED_B07
+reference/business-60-ai-api-v1/ASSET_PROVENANCE.md	4d461fd6691ccc9701f74a29a4337f51d848626e	4608	TEXT_FULL_FETCHED_B07
+reference/business-60-ai-api-v1/collector/README.md	976329af3af40c1642b8d9d891298a4706055507	5337	TEXT_FULL_FETCHED_B07
+reference/business-60-ai-api-v1/KOREAN_UI_COPY_V1.md	e41d6853f8c9318a46935b2299374249701a44e9	2285	TEXT_FULL_FETCHED_B07
 reference/business-60-ai-api-v1/operations/B60_EDITORIAL_OPERATIONS.md	59c495b2c0fab110897abdc338ac2241fec2c938	8425	TEXT_SAMPLED
 reference/business-60-ai-api-v1/operations/B60_PRODUCT_CANON.md	1877fa4df464792e72c08f4916efd31ce8743be5	8144	TEXT_FULL_FETCHED_B03
 reference/business-60-ai-api-v1/operations/B60_SESSION_START.md	738f5ebfdd65e1c4894ede2ccdad1ac831f361f2	4367	TEXT_FULL_FETCHED_B06
 reference/business-60-ai-api-v1/operations/B60_VISUAL_RULES.md	698b137cadd5662cbc6ed34dff3d178ea24550d2	4776	TEXT_FULL_FETCHED_B06
 reference/business-60-ai-api-v1/README.md	2593e38df83e7d709f5e6e8f05a633408fe4e53d	11243	TEXT_SAMPLED
-reference/business-60-ai-api-v1/reviews/2026-08-24/PUBLISH_RECORD.md	d2a3c9eb8bface1f1bbc392a334ab4821957d32f	1493	INDEXED_ONLY
+reference/business-60-ai-api-v1/reviews/2026-08-24/PUBLISH_RECORD.md	d2a3c9eb8bface1f1bbc392a334ab4821957d32f	1493	TEXT_FULL_FETCHED_B07
 reference/business-62-padiem-chat-v1/README.md	8d6684fd076a1c4a142a05aa5508c6f31d760b51	2357	TEXT_SAMPLED
 reference/business-62-padiem-chat-v1/REFERENCE_NOTES.md	ce584596689dc44ad24728cf1e4131f97ff5d92b	1996	INDEXED_ONLY
 reference/business-62-padiem-chat-v1/RENDERED_QA.md	3b815bde8bb7598f2bece3279b5e9e6e794a723f	4423	INDEXED_ONLY
