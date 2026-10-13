@@ -17,6 +17,7 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 from datetime import datetime, timedelta, timezone
 import json
+import os
 from pathlib import Path
 import sys
 
@@ -83,15 +84,29 @@ def _durable(tmp_path: Path) -> dict:
 
 
 # -- window 1 & 5: the server accepted, the PC could not persist -----------------
+def _unwritable_state_dir(monkeypatch, connector) -> None:
+    """Fail the persistence *writer*, which is the seam the commit actually uses.
+
+    Patching `flush` would no longer inject anything: `complete_login` stages a
+    candidate and hands it to `_write` directly, so the writer (and `os.replace`
+    below it) is where a real unwritable state directory fails. The first-launch
+    record is materialised first, so this breaks the *commit* and not the
+    `_load_or_create` that happens before any redemption.
+    """
+    connector.record()
+
+    def _boom(record):
+        raise OSError("state directory is unwritable")
+
+    monkeypatch.setattr(connector, "_write", _boom)
+
+
 def test_a_success_that_cannot_be_persisted_leaves_no_enrolled_state(tmp_path, monkeypatch):
     port = RedeemedOnceThenRefused()
     connector = _connector(tmp_path, port)
     device_id = connector.record().device_id
 
-    def _boom():
-        raise OSError("state directory is unwritable")
-
-    monkeypatch.setattr(connector, "flush", _boom)
+    _unwritable_state_dir(monkeypatch, connector)
     with pytest.raises(OSError):
         connector.complete_login(
             challenge_id=CHALLENGE, pairing_code=PAIRING_CODE, now=NOW
@@ -118,10 +133,7 @@ def test_retrying_the_consumed_challenge_after_a_persistence_failure_stays_refus
     port = RedeemedOnceThenRefused()
     connector = _connector(tmp_path, port)
 
-    def _boom():
-        raise OSError("state directory is unwritable")
-
-    monkeypatch.setattr(connector, "flush", _boom)
+    _unwritable_state_dir(monkeypatch, connector)
     with pytest.raises(OSError):
         connector.complete_login(challenge_id=CHALLENGE, pairing_code=PAIRING_CODE, now=NOW)
     monkeypatch.undo()
@@ -137,6 +149,133 @@ def test_retrying_the_consumed_challenge_after_a_persistence_failure_stays_refus
     # Only the canonical Broker can decide whether another challenge is granted; a
     # LOCAL2 test double that refuses every second redeem proves the replay is not
     # silently accepted on this device, and nothing here claims a new challenge works.
+
+
+# -- window 1, alias/visibility boundary (CENTRAL review 2026-10-13) -------------
+# `record()` returns the shared record object, so a caller can hold that exact
+# reference across a login. Restoring `self._record` after a failed write does not
+# restore the object that caller already has, so the receipt is staged into a
+# private candidate and published only after the write completed. The tests below
+# pin that boundary: a failed write, an in-progress write, a failed atomic replace,
+# and the positive case where a completed write must still become visible.
+def test_a_failed_write_never_touches_the_already_published_record_object(
+    tmp_path, monkeypatch
+):
+    port = RedeemedOnceThenRefused()
+    connector = _connector(tmp_path, port)
+    old = connector.record()
+    device_id = old.device_id
+
+    _unwritable_state_dir(monkeypatch, connector)
+    with pytest.raises(OSError):
+        connector.complete_login(challenge_id=CHALLENGE, pairing_code=PAIRING_CODE, now=NOW)
+
+    # The object handed out before the failure is the one still published, and it
+    # still says "never enrolled" — an alias-safe rollback, not an attribute swap.
+    assert old is connector.record()
+    assert old.binding_ref is None
+    assert old.account_ref is None
+    assert old.workspace_ref is None
+    assert old.credential_generation is None
+    assert old.enrolled_at is None
+    assert old.is_enrolled() is False
+
+    # Disk and every projection agree with the held object.
+    durable = _durable(tmp_path)
+    assert durable["binding_ref"] is None
+    assert durable["device_id"] == device_id
+    assert connector.device_identity()["binding_ref"] is None
+    snapshot = connector.status_snapshot()
+    assert snapshot["enrolled"] is False, snapshot
+    assert snapshot["binding_ref"] is None, snapshot
+
+
+def test_an_in_progress_write_cannot_expose_the_staged_receipt(tmp_path, monkeypatch):
+    """The record visible *during* the write attempt is still the pre-login one."""
+    port = RedeemedOnceThenRefused()
+    connector = _connector(tmp_path, port)
+    old = connector.record()
+    observed: list[tuple[object, object]] = []
+
+    def _write_and_fail(record):
+        observed.append((connector.record(), record))
+        raise OSError("state directory is unwritable")
+
+    monkeypatch.setattr(connector, "_write", _write_and_fail)
+    with pytest.raises(OSError):
+        connector.complete_login(challenge_id=CHALLENGE, pairing_code=PAIRING_CODE, now=NOW)
+
+    assert len(observed) == 1
+    published_during_write, staged = observed[0]
+    assert published_during_write is old
+    assert published_during_write.binding_ref is None
+    # The candidate did carry the receipt, but it was a separate object that was
+    # never published, so it cannot be observed through any connector accessor.
+    assert staged is not old
+    assert staged.binding_ref == BINDING
+    assert connector.record() is old
+    assert connector.status_snapshot()["enrolled"] is False
+
+
+def test_a_failed_atomic_replace_publishes_nothing_and_leaves_only_a_tmp_residue(
+    tmp_path, monkeypatch
+):
+    """Deeper than a monkeypatched `flush`: the real temp-file + `os.replace` seam."""
+    port = RedeemedOnceThenRefused()
+    connector = _connector(tmp_path, port)
+    old = connector.record()
+    stable = _durable(tmp_path)
+
+    real_replace = os.replace
+
+    def _refuse_replace(src, dst, *args, **kwargs):
+        if str(dst).endswith("enrollment.json"):
+            raise OSError("atomic replace refused")
+        return real_replace(src, dst, *args, **kwargs)
+
+    monkeypatch.setattr(os, "replace", _refuse_replace)
+    with pytest.raises(OSError):
+        connector.complete_login(challenge_id=CHALLENGE, pairing_code=PAIRING_CODE, now=NOW)
+
+    assert old is connector.record()
+    assert old.binding_ref is None
+    assert connector.status_snapshot()["enrolled"] is False
+    # The durable record was never replaced, so it is byte-identical.
+    assert _durable(tmp_path) == stable
+    # The staged candidate reached the temp file, so its residue is the only trace.
+    # It is never read back, and a restarted process ignores it.
+    assert (tmp_path / "enrollment.json.tmp").exists()
+    restarted = _connector(tmp_path, RedeemedOnceThenRefused())
+    assert restarted.record().binding_ref is None
+    assert restarted.record().device_id == stable["device_id"]
+
+
+def test_a_successful_write_publishes_the_new_record_and_leaves_the_old_view_intact(
+    tmp_path,
+):
+    """Positive regression: staging must not stop a completed write from landing."""
+    port = RedeemedOnceThenRefused()
+    connector = _connector(tmp_path, port)
+    old = connector.record()
+
+    result = connector.complete_login(
+        challenge_id=CHALLENGE, pairing_code=PAIRING_CODE, now=NOW
+    )
+
+    published = connector.record()
+    assert published is not old                 # staged, not mutated in place
+    assert published.binding_ref == result.binding_ref == BINDING
+    assert published.account_ref == ACCOUNT
+    assert published.workspace_ref == WORKSPACE
+    assert published.credential_generation == 1
+    assert published.is_enrolled() is True
+    # The pre-login object is unchanged, so a caller that held it never sees a
+    # binding it was never told about.
+    assert old.binding_ref is None
+    assert old.is_enrolled() is False
+    assert connector.status_snapshot()["enrolled"] is True
+    assert connector.device_identity()["binding_ref"] == BINDING
+    assert _durable(tmp_path)["binding_ref"] == BINDING
 
 
 # -- window 5: a killed write and a restarted process ----------------------------

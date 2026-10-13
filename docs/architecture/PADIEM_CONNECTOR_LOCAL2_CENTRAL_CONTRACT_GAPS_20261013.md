@@ -17,6 +17,7 @@ original_file_status=UNTOUCHED_BYTE_IDENTICAL_TO_ITS_COMMITTED_REVISION
 original_file_committed_at=e67ce1957
 central_review=PASS_WITH_3_CORRECTIONS_2026_10_13
 corrections=A_local_logout_is_not_transfer__B_local_refusal_is_not_server_rollback__C_damaged_binding_must_fail_closed
+d1_followup=CENTRAL_2026_10_13_PARTIAL_PASS_NEEDS_ALIAS_SAFE_STAGING__CORRECTED_IN_SECTION_12
 status=awaiting_central_re_review
 ```
 
@@ -151,7 +152,9 @@ no test asserts a real PC pairing. A green suite here means *the contract holds*
 | `tests/test_enrollment_contract.py` (focused) | **76 passed, 4 skipped** (was 73 + 4; +3 new) |
 | `node --test tests/*.test.mjs` (tray/CLI wrapper) | **5 pass, 0 fail** |
 | interruption/restart audit (2nd increment) | **13 passed** in `tests/test_enrollment_recovery_windows.py`; whole connector suite **315 passed, 4 skipped** after the two fixes |
+| D1 alias-safe staging (3rd increment, CENTRAL review 2026-10-13) | `tests/test_enrollment_recovery_windows.py` **17 passed**; whole connector suite **319 passed, 4 skipped**; `npm test` **5 pass / 0 fail** |
 | mutation proof for the two fixes | reverting D1 → 2 failed; removing the owner-scope correlation → 3 failed; both files restored byte-identically |
+| mutation proof for the D1 staging correction | reverting stage-then-publish to in-place mutation + `self._record = previous` → **exactly the 4 new tests failed**, 315 passed, 4 skipped; `enrollment.py` restored to `d385b35c1127c7f9e86fcfe7628837fa70f789ed` |
 | `claw-connect-contract-tests.yml` (CI, `windows-latest`, Python 3.12) | runs on `apps/claw-connect/**`; see the PR checks |
 
 The 4 skips are the pre-existing `CENTRAL-CONTRACT-CONFLICT` set (the Resident/enrollment wiring CENTRAL
@@ -241,13 +244,13 @@ compensation operator, the single redemption owner, and the real-Windows E2E (#3
 
 ## 9. Interruption and restart audit — which layer actually blocks each window
 
-Reproduced in `apps/claw-connect/tests/test_enrollment_recovery_windows.py` (13 tests, local Windows
+Reproduced in `apps/claw-connect/tests/test_enrollment_recovery_windows.py` (17 tests, local Windows
 Python 3.11). Each row names the authority that really closes the window, because they are three
 different authorities and only one of them is local and durable.
 
 | Window | What blocks it | Evidence in this tree |
 | --- | --- | --- |
-| 1. Server accepted, PC could not persist | **Fixed here (D1).** The record is committed only after the durable write succeeds, so an unwritable state directory can no longer leave `status_snapshot`/`device_identity`/tray reporting an enrolled PC | `test_a_success_that_cannot_be_persisted_leaves_no_enrolled_state`, `test_retrying_the_consumed_challenge_after_a_persistence_failure_stays_refused` |
+| 1. Server accepted, PC could not persist | **Fixed here (D1), then corrected for the alias boundary (D1a, §12).** The record is committed only after the durable write succeeds *and* only as a freshly published object, so an unwritable state directory can neither leave `status_snapshot`/`device_identity`/tray reporting an enrolled PC nor leave a stale reference holding the un-persisted binding | `test_a_success_that_cannot_be_persisted_leaves_no_enrolled_state`, `test_retrying_the_consumed_challenge_after_a_persistence_failure_stays_refused`, `test_a_failed_write_never_touches_the_already_published_record_object`, `test_an_in_progress_write_cannot_expose_the_staged_receipt`, `test_a_failed_atomic_replace_publishes_nothing_and_leaves_only_a_tmp_residue`, `test_a_successful_write_publishes_the_new_record_and_leaves_the_old_view_intact` |
 | 2. DPAPI save succeeded, readback failed | Protected store contract: a save projection alone never confirms; a record damaged after `save` is refused even though its projection looked correct | `test_readback_of_a_damaged_record_refuses_confirmation` (real DPAPI), `test_stale_or_unrelated_binding_context_never_confirms_install` |
 | 3. Save + readback succeeded, no ACK reached the server | No local completion claim and no local cleanup: nothing deletes the residue (safe removal needs canonical revocation), nothing reports recovery, the disposition stays the security hold | `test_an_unacknowledged_install_leaves_its_record_and_claims_nothing` |
 | 4. Server success, local account/workspace mismatch | LOCAL2 record guard (added by `#4542`, re-verified here): damaged local binding is refused *before* contacting the server; a post-redeem mismatch leaves the existing binding untouched and is explicitly **not** a server rollback | `test_damaged_existing_binding_never_contacts_enrollment_server`, `test_a_refusal_after_a_successful_receipt_is_not_a_server_rollback` |
@@ -270,6 +273,14 @@ different authorities and only one of them is local and durable.
 
 Both fixes were written test-first: reverting either one turns exactly the corresponding tests red
 (2 failures for D1, 3 for D2), verified and restored byte-identically.
+
+### D1 follow-up — the fix above was **partial** and is corrected in §12
+
+CENTRAL's 2026-10-13 review (`D1=PARTIAL_PASS_NEEDS_ALIAS_SAFE_STAGING`) found that the D1 fix above
+still mutated the shared record **before** the write and merely re-pointed `self._record` on failure.
+`record()` hands that exact object out, so a caller holding it kept seeing the un-persisted
+`binding_ref`. §12 is the correction; the two tests listed for D1 above remain valid and are now joined
+by four tests that pin the alias/visibility boundary.
 
 ## 10. CENTRAL handover — the exact interface still missing before any Windows ACK can be wired
 
@@ -325,6 +336,7 @@ HTTP_TRANSPORT=ALIGNED_WITH_CENTRAL_5FE55F274_AND_FAIL_CLOSED
 SERVER_CONTRACT_MATCH=ENVELOPE_AND_RECEIPT_PINNED
 LOCAL_INSTALL_PROOF=SAVE_PLUS_READBACK_AND_OWNER_SCOPE_CORRELATED
 INSTALLED_STATE_COMMITTED_ONLY_AFTER_DURABLE_WRITE=YES
+PUBLISHED_RECORD_OBJECT_NEVER_MUTATED_IN_PLACE=YES
 WINDOWS_DPAPI_INTEGRATION=CANONICAL_STORE_CONTRACT_PASSED
 INSTALL_ACK_PROOF=COMPUTED_AFTER_READBACK_NOT_TRANSMITTED
 CREDENTIAL_BOUND=PAIRING_PROTOCOL_4096_RESOLVED_BY_DECISION_A
@@ -345,3 +357,74 @@ PRODUCTION=OFF
 REBASE_PERFORMED=no
 STATUS=awaiting_central_re_review
 ```
+
+## 12. D1 follow-up — alias-safe staging (CENTRAL review 2026-10-13)
+
+CENTRAL reviewed HEAD `49fb3c53e` and dispositioned `D2=ACCEPT; D1=PARTIAL_PASS_NEEDS_ALIAS_SAFE_STAGING`.
+The D1 fix in §9 was real but incomplete, and the correction is confined to LOCAL2-owned paths.
+
+### What was actually still wrong
+
+`ConnectorEnrollment.record()` returns the shared `EnrollmentRecord` object, not a copy. The §9 fix
+mutated that object in place and, when the write failed, set `self._record = previous` — a *different*
+object. Every caller that had already received the record (a status projection, the tray, a connection
+state that cached it) therefore kept the object carrying the un-persisted `binding_ref`, while a caller
+that read `record()` afterwards got the restored copy. The two disagreed depending on *when* they were
+asked, and the in-place mutation had already happened before the durable write was even attempted.
+
+### The correction
+
+`complete_login` now **stages then publishes**:
+
+```text
+candidate = replace(record)          # private copy; the published object is never written to
+candidate.<receipt fields> = ...     # binding/account/workspace/generation/expiry/lifecycle/enrolled_at
+self._write(candidate)               # the same atomic writer (tmp + os.replace)
+self._record = candidate             # published only after the write actually completed
+```
+
+There is no `try/except` rollback left, because there is nothing to roll back: the previously published
+object is never touched, so a failed or in-progress write leaves it and the on-disk record exactly as
+they were. `flush()` is unchanged and still persists `record()` for the other mutators.
+
+### Evidence
+
+| Check | Result |
+|---|---|
+| `tests/test_enrollment_recovery_windows.py` | **17 passed** (was 13; +4) |
+| whole connector suite (local Windows Python 3.11, real DPAPI in-process) | **319 passed, 4 skipped** (was 315/4 — same 4 pre-existing skips, none new) |
+| `node --test tests/*.test.mjs` | **5 pass / 0 fail** |
+| mutation proof | reverting stage-then-publish → **exactly the 4 new tests failed**, 315 passed / 4 skipped, nothing else moved; `enrollment.py` restored byte-identically (`d385b35c1127c7f9e86fcfe7628837fa70f789ed`) |
+
+The four new tests, and the failure each one injects:
+
+| Test | Injected at | Pins |
+|---|---|---|
+| `test_a_failed_write_never_touches_the_already_published_record_object` | `_write` | `old is connector.record()` after the failure; `old` still un-enrolled; disk, `device_identity()` and `status_snapshot()` all agree |
+| `test_an_in_progress_write_cannot_expose_the_staged_receipt` | `_write` (observing, then failing) | the record visible *during* the write is still the pre-login object; the candidate is a separate object that no accessor can see |
+| `test_a_failed_atomic_replace_publishes_nothing_and_leaves_only_a_tmp_residue` | real `os.replace` | the durable file is byte-identical, only a `.json.tmp` residue remains, and a restarted process ignores it |
+| `test_a_successful_write_publishes_the_new_record_and_leaves_the_old_view_intact` | — (positive) | a completed write still becomes visible: a new object is published with the receipt, and the pre-login object stays un-enrolled |
+
+The injection point moved with the seam: patching `flush` no longer injects anything, because the commit
+hands the candidate to `_write` directly. `test_a_success_that_cannot_be_persisted_leaves_no_enrolled_state`
+and `test_retrying_the_consumed_challenge_after_a_persistence_failure_stays_refused` were therefore
+re-pointed at `_write` (via the shared `_unwritable_state_dir` helper), which is where a genuinely
+unwritable state directory fails. The helper materialises the first-launch record first, so it breaks the
+*commit* and not the `_load_or_create` that runs before any redemption.
+
+### Boundary kept
+
+This is a bounded local correction of one function and its tests. It is **not** permission to rewrite the
+Broker, the routes or the credential transport, and none of those were touched. The unresolved CENTRAL
+compensation risk is unchanged and is *not* addressed here: server redemption can still have succeeded
+before local persistence failed, and a local rollback is not an authenticated canonical Broker
+revocation. The disposition stays a **security HOLD pending server reconciliation**; the redeemed
+challenge must never be retried and the PC must never be silently transferred. CENTRAL owns
+post-redemption remote binding reconciliation and the authenticated recovery-verdict field.
+
+No READY, no MERGE, no PRODUCTION enablement follows from these green contract checks;
+`WINDOWS_LIVE_E2E=NOT_PROVEN` (#3099) is unchanged.
+
+Changed files for this correction: `apps/claw-connect/claw_connect/enrollment.py`,
+`apps/claw-connect/tests/test_enrollment_recovery_windows.py`, and this document. No CENTRAL and no LOCAL1
+file was modified.

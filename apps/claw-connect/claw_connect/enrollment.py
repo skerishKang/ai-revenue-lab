@@ -873,26 +873,33 @@ class ConnectorEnrollment:
             if record.workspace_ref is None or result.workspace_ref != record.workspace_ref:
                 raise EnrollmentContractError("enrollment_binding_scope_mismatch")
 
-        # Nothing is adopted until it is durable. Committing the receipt into the
-        # shared in-memory record first would leave `status_snapshot`,
-        # `device_identity` and the tray reporting an enrolled PC after the write
-        # failed — a state that exists on no disk and, for the server, was never
-        # installed; a later refusal would not clear it either.
-        previous = replace(record)
-        record.binding_ref = result.binding_ref
-        record.account_ref = result.account_ref
-        record.workspace_ref = result.workspace_ref
-        record.credential_generation = result.credential_generation
-        record.credential_expires_at = result.credential_expires_at
-        record.device_lifecycle = LIFECYCLE_PAIRED_OFFLINE
-        record.enrolled_at = moment
-        record.revoked = False
-        record.blocked_reason = None
-        try:
-            self.flush()
-        except Exception:
-            self._record = previous
-            raise
+        # Nothing is adopted until it is durable — and nothing already published
+        # is ever touched. `record()` hands the shared record object out, so a
+        # caller (status snapshot, tray, connection state) may hold that exact
+        # reference across this call. Mutating it in place and restoring
+        # `self._record` on failure would *not* restore what that caller sees:
+        # the attribute would point at a copy while the object it already holds
+        # kept the un-persisted binding, so `device_identity`/`status_snapshot`
+        # would disagree depending on when they were called, and a later refusal
+        # would not clear it.
+        #
+        # The receipt is therefore staged into a private candidate, that
+        # candidate is persisted through the same atomic writer, and only a
+        # write that actually completed is published as the shared record. A
+        # failed *or in-progress* write leaves both the previously published
+        # object and the on-disk record exactly as they were.
+        candidate = replace(record)
+        candidate.binding_ref = result.binding_ref
+        candidate.account_ref = result.account_ref
+        candidate.workspace_ref = result.workspace_ref
+        candidate.credential_generation = result.credential_generation
+        candidate.credential_expires_at = result.credential_expires_at
+        candidate.device_lifecycle = LIFECYCLE_PAIRED_OFFLINE
+        candidate.enrolled_at = moment
+        candidate.revoked = False
+        candidate.blocked_reason = None
+        self._write(candidate)
+        self._record = candidate
         return result
 
     def _redeem_via_enrollment_server(
