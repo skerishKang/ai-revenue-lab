@@ -1,0 +1,30 @@
+name: PADIEM Voice STT Contract CI
+
+on:
+  pull_request:
+    paths:
+      - "apps/padiem-voice-stt/**"
+      - ".github/workflows/padiem-voice-stt-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "apps/padiem-voice-stt/**"
+      - ".github/workflows/padiem-voice-stt-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  voice-stt-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install isolated test dependencies
+        run: python -m pip install "pytest==8.4.2" "pytest-asyncio==1.2.0"
+      - name: Run shared Voice STT Worker regression suite
+        run: python -m pytest -q apps/padiem-voice-stt/tests
