@@ -70,6 +70,14 @@ Latest frozen 835-source cursor: **275 documents with at least some text viewed*
 - B54 external connector source contracts and SMS/Kakao commercial/provider-selection seams; B60 field-level official-source review/publication; B57/B58 rights and synthetic consent; B59 immutable source reader; B29 apartment product-not-company Governance; B39/40/41 nonlive emergency references; B49 public-data provenance.
 - No current legal/commercial customer rights, subscription pricing, live connector activation, emergency-service affiliation, model use or company-wide governance decided. Original content and local Governance unchanged.
 
+## 1G. Batch 08 — 25 additional exact-source full-text reads (2026-10-13)
+
+Latest fixed 835-item cursor: **300 documents with text viewed at least partly** (125 early samples + B02/B03/B04/B05/B06/B07/B08 25 each), **516 `INDEXED_ONLY` unread**, **19 PDF/DOCX binary bodies pending**. Original `TEXT_SAMPLED` 125 still require line/section-level review.
+
+- [Batch 08 pinned 25-source triage, Git blob proof and temporal authority distinctions](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH08_20261013.md)
+- Canonical shared IP-CORE/ENGINE/CONTROL/SIDECAR technical owners are not a newly invented company-wide Business or a second duplicate common-platform folder. Historical model counts, owner-run S1, old 30/40/45-second caps and first-revenue/MVP source hypotheses must not override subsequent B14/Agent policies or real operational evidence.
+- Stable technical security/resource protection, product entitlement independence and exact provider native-model routing remain untouched. No business policy/adoption/public remediation decisions made.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
