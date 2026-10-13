@@ -191,6 +191,20 @@ class CanonicalGatewayProtectedHandoff:
             or now.utcoffset() is None
         ):
             raise ValueError("canonical protected handoff binding invalid")
+        # Refuse malformed/stale canonical lifetime rather than forwarding an
+        # opaque expiry that LOCAL2 would have to guess about.
+        expires_at = enrollment.get("credential_expires_at")
+        if not isinstance(expires_at, str):
+            raise ValueError("canonical credential expiry is missing")
+        try:
+            expiry = datetime.fromisoformat(expires_at.replace("Z", "+00:00"))
+        except (ValueError, OverflowError) as exc:
+            raise ValueError("canonical credential expiry is invalid") from exc
+        if (
+            expiry.tzinfo is None or expiry.utcoffset() is None
+            or expiry.astimezone(timezone.utc) <= now.astimezone(timezone.utc)
+        ):
+            raise ValueError("canonical credential expiry is stale or naive")
         # Only the canonical facts needed by LOCAL2's protected-store binding
         # projection may travel. No session, consent, owner, or access grants.
         binding = {k: enrollment[k] for k in _PUBLIC_BINDING_FIELDS}
