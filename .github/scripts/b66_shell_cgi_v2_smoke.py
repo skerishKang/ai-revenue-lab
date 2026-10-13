@@ -106,13 +106,13 @@ async def main() -> int:
             switch = await page.evaluate(
                 """() => {
                   const base = {
-                    id: 'skill-cgi-browser-smoke',
-                    name: '(주)시지아이 기본 견적서',
+                    id: 'skill-private-browser-smoke',
+                    name: 'CGI-looking synthetic label — no authority',
                     fixedDefaults: {
                       sender: {
-                        company: '(주)시지아이', rep: '김범신', contactPerson: '김범신',
-                        bizNo: '410-86-46283', address: '전라남도 장성군 남면 나노산단로 102(삼태리)',
-                        phone: '062-576-8100', email: '', presetId: 'saved-skill'
+                        company: '가상공급사', rep: '가상대표', contactPerson: '가상담당자',
+                        bizNo: '000-00-00000', address: '가상시 테스트로 1',
+                        phone: '000-000-0000', email: '', presetId: 'saved-skill'
                       },
                       validDays: 7, taxMode: 'EXCLUSIVE', memo: '',
                       calculationPolicy: { grandRounding: { mode: 'FLOOR', unit: 10000 } }
@@ -123,7 +123,7 @@ async def main() -> int:
                     },
                     internalTemplate: QuoteTemplate.serializeTemplate(QuoteTemplate.builtInTemplate()),
                     provenance: {
-                      sourceKind: 'file', sourceName: 'cgi-quotation.pdf',
+                      sourceKind: 'file', sourceName: 'cgi-named-synthetic-fixture.pdf',
                       sourceRef: 'source:cgi-browser-smoke',
                       capturedAt: '2026-10-06T00:00:00.000Z',
                       warnings: [], unknowns: [], evidence: []
@@ -141,15 +141,23 @@ async def main() -> int:
                       approvalRef: 'browser-smoke'
                     }
                   }));
-                  const set = B66QuoteSkillBridge.setServerSkill(approved, {});
+                  // Merely naming a skill CGI cannot expose another tenant's layout.
+                  const forgedSet = B66QuoteSkillBridge.setServerSkill(approved, {});
                   const select = document.getElementById('templateSelect');
+                  const forgedCgiOptions = Array.from(select.options).filter(o => o.value === 'cgi-v2').length;
+                  // Simulate a server-proven specific Saved Quote Skill assignment.
+                  const set = B66QuoteSkillBridge.setServerSkill(
+                    approved, {}, B66BrowserPdf.CGI_SKILL_ID
+                  );
                   return {
-                    set,
+                    forgedSet, forgedCgiOptions, set,
                     initialLayout: document.getElementById('quotePaper').getAttribute('data-layout-variant') || 'GENERIC',
                     cgiOptions: Array.from(select.options).filter(o => o.value === 'cgi-v2').length
                   };
                 }"""
             )
+            assert switch["forgedSet"] is True
+            assert switch["forgedCgiOptions"] == 0
             assert switch["set"] is True
             assert switch["initialLayout"] == "GENERIC"
             assert switch["cgiOptions"] == 1
@@ -206,12 +214,12 @@ async def main() -> int:
                       projectName: '배관 교체 공사'
                     },
                     sender: {
-                      company: '(주)시지아이',
-                      rep: '김범신',
-                      contactPerson: '김범신',
-                      bizNo: '410-86-46283',
-                      address: '광주광역시',
-                      phone: '062-576-8100',
+                      company: '가상공급사',
+                      rep: '가상대표',
+                      contactPerson: '가상담당자',
+                      bizNo: '000-00-00000',
+                      address: '가상시',
+                      phone: '000-000-0000',
                       email: '',
                       presetId: 'cgi-smoke'
                     },
