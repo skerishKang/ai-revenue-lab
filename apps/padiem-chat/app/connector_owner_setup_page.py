@@ -9,7 +9,8 @@ from __future__ import annotations
 from datetime import datetime, timezone
 # Keep JavaScript packaged INSIDE this Python Worker module: Cloudflare's
 # Python dependency bundler need not ship unrelated sibling .js files.
-_SCRIPT = r"""\n"use strict";
+_SCRIPT = r"""
+"use strict";
 // Isolated operator-acceptance UI. No localStorage, cookies, clipboard,
 // URL tokens, hidden device scopes, console logs or credential persistence.
 (() => {
@@ -18,6 +19,7 @@ _SCRIPT = r"""\n"use strict";
   const consent = el("consent");
   const grant = el("grant");
   const issue = el("issue");
+  const verify = el("verify");
   const status = el("state");
   const secret = el("secret");
   const challenge = el("challenge");
@@ -35,6 +37,7 @@ _SCRIPT = r"""\n"use strict";
     grantedDevice = null;
     issued = false;
     issue.disabled = true;
+    verify.disabled = true;
     clearCodes();
   };
   device.addEventListener("input", reset);
@@ -98,6 +101,7 @@ _SCRIPT = r"""\n"use strict";
       code.value = out.pairing_code;
       secret.hidden = false;
       issued = true;
+      verify.disabled = false;
       status.textContent = "일회용 등록코드가 발급되었습니다. 이 창에서만 확인할 수 있습니다.";
     } catch {
       clearCodes();
@@ -106,7 +110,46 @@ _SCRIPT = r"""\n"use strict";
       busy = false;
     }
   });
-})();\n"""
+  verify.addEventListener("click", async () => {
+    if (busy || !issued || grantedDevice !== device.value.trim()) return;
+    busy = true;
+    verify.disabled = true;
+    try {
+      // This is the existing canonical owner-scoped, read-only Broker
+      // directory. Never declare ONLINE based on a browser-issued code.
+      const response = await fetch("/api/claw/local-access/devices", {
+        method: "GET", mode: "same-origin", credentials: "same-origin",
+        redirect: "error", referrerPolicy: "no-referrer", cache: "no-store",
+      });
+      const result = await response.json();
+      if (!response.ok || result?.ok !== true ||
+          result?.available !== true || result?.ownerScoped !== true ||
+          !Array.isArray(result.devices)) throw new Error("unavailable");
+      const matched = result.devices.find(
+        (item) => item?.deviceId === grantedDevice
+      );
+      if (!matched) {
+        status.textContent = "아직 이 PC의 서버 등록 기록을 확인하지 못했습니다.";
+      } else if (matched.state === "CONNECTED" && matched.usable === true &&
+                 matched.revoked === false && matched.expired === false) {
+        status.textContent = "서버에서 이 PC의 연결 상태를 확인했습니다.";
+        clearCodes();
+      } else if (matched.state === "OFFLINE" && matched.revoked === false &&
+                 matched.expired === false && matched.usable === false) {
+        status.textContent = "PC 등록 기록은 확인됐지만 현재는 오프라인입니다.";
+        clearCodes();
+      } else {
+        status.textContent = "현재 등록이 사용 가능하지 않습니다. PC에서 상태를 확인하세요.";
+      }
+    } catch {
+      status.textContent = "서버 등록 상태를 조회할 수 없습니다. Windows Connector의 상태를 확인하세요.";
+    } finally {
+      verify.disabled = false;
+      busy = false;
+    }
+  });
+})();
+"""
 
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, PlainTextResponse, Response
@@ -146,6 +189,7 @@ code{font-size:.9em}
 <label><input id="consent" type="checkbox"> 이 PC를 현재 계정에 등록하는 데 동의합니다.</label>
 <button type="button" id="grant">등록 동의 승인</button>
 <button type="button" id="issue" disabled>일회용 등록코드 발급</button>
+<button type="button" id="verify" disabled>서버에서 PC 등록상태 확인</button>
 <output id="state" role="status" aria-live="polite">동의를 승인한 후 등록코드를 발급하세요.</output>
 <div id="secret" hidden>
 <p>다음 두 값을 PC의 운영자 전용 Connector에 입력하세요. 이 페이지는 값을 저장하지 않습니다.</p>

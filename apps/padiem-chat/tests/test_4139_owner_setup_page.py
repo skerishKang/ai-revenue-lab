@@ -85,6 +85,7 @@ def test_browser_setup_requires_canonical_signed_owner(monkeypatch):
     assert response.status_code == 200
     assert "PADIEM Connector" in response.text
     assert "setup.js" in response.text
+    assert 'id="verify" disabled' in response.text
     assert response.headers["cache-control"].startswith("no-store")
     assert response.headers["referrer-policy"] == "no-referrer"
     assert "frame-ancestors 'none'" in response.headers["content-security-policy"]
@@ -103,6 +104,11 @@ def test_script_does_not_persist_pairing_code_or_use_untrusted_owner_scope():
     assert "consent/grant" in script.text and "enrollments/issue" in script.text
     assert "enrollments/redeem" not in script.text
     assert "pagehide" in script.text
+    assert "/api/claw/local-access/devices" in script.text
+    assert "ownerScoped" in script.text
+    assert 'matched.state === "OFFLINE"' in script.text
+    assert 'matched.state === "CONNECTED"' in script.text
+    assert "verify.disabled" in script.text
 
 
 def test_default_product_app_has_no_setup_page_or_script():

@@ -544,19 +544,30 @@ def test_the_connector_opens_no_inbound_socket_and_no_port_mapping():
 
 
 def test_no_new_password_or_cookie_store_is_introduced():
-    """No credential-capture API is used anywhere in the Connector.
+    """Forbid browser/password harvesting; permit ONE hidden pairing-code prompt.
 
-    This scans for the API identifiers a browser-password/cookie harvester would
-    use. It is deliberately an identifier check, not a prose check, so the
-    modules may still *document* that they refuse to collect such material.
+    The reviewed operator-only WSS command intentionally uses getpass for the
+    one-time PC pairing code (never an account password). It requires a TTY,
+    rejects argv-provided secrets, never persists or logs that code, and is
+    OFF until the separately authorized operator gates are present. Any new
+    password/cookie capture or second getpass call remains forbidden.
     """
     for path in (ROOT / "claw_connect").glob("*.py"):
         source = path.read_text(encoding="utf-8")
         for forbidden in (
-            "wininet", "Login Data", "browser_cookie(", "getpass(",
+            "wininet", "Login Data", "browser_cookie(",
             "credentialvault(", "keyring", "sqlite3.connect",
         ):
             assert forbidden not in source, f"{path.name} uses {forbidden}"
+        if path.name == "__main__.py":
+            assert source.count("getpass.getpass(") == 1
+            assert 'if not sys.stdin.isatty():' in source
+            assert 'if args.enroll_code is not None:' in source
+            assert 'if getattr(args, "operator_wss_review", False):' in source
+            assert 'if not operator_review_admitted():' in source
+            assert "password" not in source.lower().split("getpass.getpass(", 1)[1][:120]
+        else:
+            assert "getpass(" not in source, f"{path.name} uses getpass("
 
 
 def test_autostart_remains_opt_in_and_unaffected_by_enrollment(tmp_path, monkeypatch):
