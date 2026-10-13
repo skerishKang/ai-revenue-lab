@@ -99,3 +99,53 @@ def test_workflow_is_strictly_read_only_and_separate_from_activation():
                       "required-reviewers", "reviewers:", "environment: production"):
         assert forbidden not in job, forbidden
     assert "PRODUCTION_MUTATION=0" in job
+
+
+def test_second_incident_is_pinned_and_verifier_parity_is_bounded():
+    before = version(f.SECOND_BEFORE, False)
+    after = version(f.SECOND_FAILED_PATCH, True)
+    after["result"]["resources"]["script"]["last_deployed_from"] = "dashboard"
+    result = f.compare(before, after, incident="second")
+    assert result["flag_added_true"] is True
+    assert result["other_binding_diff_count"] == 0
+    assert result["verifier_postbinding_exact"] is True
+    assert result["verifier_code_resources_exact"] is True
+    assert result["script_changed_field_names"] == ["last_deployed_from"]
+    assert "do-not-log" not in str(result)
+    assert f.SECOND_BEFORE != f.BEFORE
+    assert f.SECOND_FAILED_PATCH != f.FAILED_PATCH
+
+
+def test_second_incident_refuses_unpinned_version_and_real_source_drift():
+    before = version(f.SECOND_BEFORE, False)
+    after = version(f.SECOND_FAILED_PATCH, True)
+    with pytest.raises(f.ForensicRefused, match="PINNED_VERSION_MISMATCH"):
+        f.compare(before, after, incident="first")
+    with pytest.raises(f.ForensicRefused, match="UNKNOWN_PINNED_INCIDENT"):
+        f.compare(before, after, incident="unrestricted")
+    after["result"]["resources"]["script"]["etag"] = "unexpected-code"
+    result = f.compare(before, after, incident="second")
+    assert result["verifier_code_resources_exact"] is False
+    assert result["script_etag_same"] is False
+
+
+def test_protected_push_second_incident_forensics_is_get_only_and_once():
+    y = WORKFLOW.read_text(encoding="utf-8")
+    assert "  push:\n    branches: [main]\n    paths:\n      - '.github/workflows/b62-p01-sse-immutable-forensic.yml'" in y
+    assert "  pull_request:" in y
+    assert "  workflow_dispatch:" in y
+    job = y.split("\n  immutable-forensic:", 1)[1]
+    assert "github.event_name == 'push' && github.ref == 'refs/heads/main'" in job
+    assert "test \"$(git rev-parse origin/main)\" = \"${GITHUB_SHA}\"" in job
+    assert "incident=second" in job
+    assert "versions/d62bef73-f9d3-4559-88f9-cecbba785bb9" in job
+    assert "versions/00d38813-df7b-4b73-b00a-5c7b26ed3b7a" in job
+    assert '--incident "${incident}"' in job
+    assert "P01_SSE_FORENSIC_READONLY=PASS" in job
+    assert "PRODUCTION_MUTATION=0" in job
+    assert "environment: production" not in job
+    for forbidden in ("-X POST", "-X PATCH", "-X PUT", "-X DELETE",
+                      "wrangler deploy", "gh workflow run", "curl -X"):
+        assert forbidden not in job
+    assert job.count("b62_p01_postpatch_immutable_forensic.py") == 1
+
