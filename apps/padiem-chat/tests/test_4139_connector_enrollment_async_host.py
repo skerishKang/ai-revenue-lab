@@ -196,7 +196,7 @@ def test_redeem_does_not_consume_challenge_without_protected_handoff_ready():
             proof_ref="pairing-proof:"+"a"*64,
         ))
     assert exc.value.code == "credential_handoff_unavailable"
-    assert [x[0] for x in broker.calls] == ["binding"]
+    assert [x[0] for x in broker.calls] == ["binding", "preflight"]  # still no redeem
     assert [x[0] for x in handoff.calls] == ["ready"]
 
 
