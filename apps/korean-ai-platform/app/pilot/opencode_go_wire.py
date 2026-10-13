@@ -1,6 +1,6 @@
 """OpenCode Go fixed-model protocol boundary (coding-agent traffic only).
 
-The five exact owner-approved model IDs are routed by their *documented*
+The six exact owner-approved model IDs are routed by their *documented*
 protocol; no attempt is made to send Responses or Anthropic Messages models
 through a generic chat-completions endpoint. Activation is independently gated
 by the canonical model/provider enabled flags. Never log secret values.
@@ -21,11 +21,12 @@ from .errors import InvalidRequest, MalformedUpstreamResponse, PilotNotConfigure
 from .stream_types import StreamEvent, StreamUsage
 from .upstream_answer_contract import UpstreamEmptyAnswer
 
-# Exact five, fixed at the owner-approved October 12, 2026 roster.
+# Owner-approved Go models; additions must keep their official wire protocol.
 _WIRE = {
     "longcat-2.5-preview-free": "chat/completions",
     "step-5-preview-free": "chat/completions",
     "muse-spark-1.3-contributor": "responses",
+    "muse-spark-1.2-contributor": "responses",
     "gpt-6-luna": "responses",
     "claude-haiku-5-5": "messages",
 }
@@ -49,7 +50,7 @@ def prepare_go_request(
     per-request session header or fake conversation.
     """
     if _WIRE.get(upstream_model) is None or model_id != "opencode-go/" + upstream_model:
-        raise InvalidRequest("OpenCode Go model is not in the owner five-model allowlist.")
+        raise InvalidRequest("OpenCode Go model is not in the owner allowlist.")
     if not isinstance(session_id, str) or not _SESSION.fullmatch(session_id):
         raise InvalidRequest("OpenCode Go requires a trusted stable conversation session ID.")
     if not isinstance(messages, list) or not messages:
