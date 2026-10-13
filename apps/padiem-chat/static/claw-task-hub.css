@@ -25,6 +25,29 @@
   font-size: 14px;
   line-height: 1.6;
 }
+/* #4488 Claw differentiator: one small "AI 에이전트" badge and exactly one
+ * concise line directly below the Claw title. Copy is owner-approved and
+ * stays a single line of text; no banner or tutorial. */
+.claw-agent-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.5;
+  vertical-align: middle;
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+  border: 1px solid var(--line);
+}
+.claw-agent-line {
+  margin: 0 0 10px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--muted);
+}
 .claw-task-hub-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -124,7 +147,8 @@
     min-height: 0 !important;
     max-height: none !important;
     padding: 6px 12px calc(7px + env(safe-area-inset-bottom)) !important;
-    background: var(--bg) !important;
+    /* #4488: match Chat's transparent composer wrap instead of a flat --bg band. */
+    background: transparent !important;
   }
   /* Preserve the shared chat input and manual-entry affordance.
    * Only the optional model/workflow panels collapse. */

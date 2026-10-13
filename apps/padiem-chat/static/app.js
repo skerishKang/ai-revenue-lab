@@ -297,7 +297,38 @@
     article.querySelector("[data-runtime-label]").textContent = skillTitle ? `${runtimeLabel} · ${skillTitle}` : runtimeLabel;
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
   }
-  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, actionLabel = uiT("retry")) {
+  // #3936/#3933: a model HOLD is a bounded refusal raised BEFORE dispatch, so it
+  // must not wear the generic "this run may already have started" state. Closed
+  // code→copy map only: a raw server, Engine or provider string is never shown.
+  const CLAW_BOUNDED_REFUSAL_COPY = Object.freeze({
+    tier_unavailable: Object.freeze({
+      message: "claw-general-model-unavailable",
+      hint: "claw-general-model-unavailable-note",
+    }),
+  });
+  // #3933: ONE lookup for every Claw failure surface. The composer lane, the live
+  // SSE lane and the manual-intake lane all resolve the same server code through
+  // this function, so a bounded refusal can never render two different sentences
+  // or drift into a second invented copy. `Object.hasOwn` only: an inherited or
+  // spoofed key never selects copy, and an unlisted code returns null so each
+  // caller keeps its own existing fallback.
+  function clawBoundedRefusalCopy(code) {
+    const entry = typeof code === "string" && Object.hasOwn(CLAW_BOUNDED_REFUSAL_COPY, code)
+      ? CLAW_BOUNDED_REFUSAL_COPY[code]
+      : null;
+    if (!entry) return null;
+    return Object.freeze({ message: uiT(entry.message), hint: uiT(entry.hint) });
+  }
+  function clawGeneralFailure(code) {
+    const bounded = clawBoundedRefusalCopy(code);
+    if (bounded) return bounded;
+    return Object.freeze({
+      message: window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang)
+        || uiT("claw-general-check-runs"),
+      hint: uiT("claw-general-check-runs"),
+    });
+  }
+  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, actionLabel = uiT("retry"), clawFailure = null) {
     const box = document.createElement("div");
     box.className = "error-box";
     const strong = document.createElement("strong");
@@ -315,6 +346,9 @@
     if (clawGeneralRequest) {
       const hint = document.createElement("p");
       hint.textContent = uiT("claw-general-check-runs");
+      // A provable pre-dispatch refusal has no run to check, so its next step is
+      // a different model rather than the existing run-history guidance.
+      if (clawFailure && clawFailure.hint) hint.textContent = clawFailure.hint;
       // #3935: navigation only. This button opens the existing owner-scoped
       // GET /api/claw/runs history and never replays the failed P01 POST.
       const openRuns = document.createElement("button");
@@ -347,20 +381,20 @@
   function revealErrorState(article) {
     article.scrollIntoView({ block: "center", behavior: "auto" });
   }
-  function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED) {
+  function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED, clawFailure = null) {
     const content = article.querySelector(".assistant-content");
     content.replaceChildren();
     article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
-    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest));
+    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest, undefined, clawFailure));
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
   }
-  function renderStreamError(article, message, retryMessages, retrySkill, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED) {
+  function renderStreamError(article, message, retryMessages, retrySkill, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED, clawFailure = null) {
     const content = article.querySelector(".assistant-content");
     const typing = content.querySelector(".typing");
     if (typing) typing.remove();
     article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
-    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest));
+    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, undefined, clawFailure));
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
   }
@@ -1483,13 +1517,16 @@
             showVerifiedClawRecovery(verifiedClawRecovery.state());
             return true;
           }
+          const clawFailure = clawGeneralRequest
+            ? clawGeneralFailure(data && data.error ? data.error.code : "")
+            : null;
           const message = clawGeneralRequest
-            ? (window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang) || uiT("claw-general-check-runs"))
+            ? clawFailure.message
             : data && data.error && typeof data.error.message === "string"
               ? data.error.message : uiT("stream-continue-failed");
           if (!paragraph) throw chatTransport.errorFor(data, message);
           terminalError = true;
-          renderStreamError(article, message, outboundMessages, skill, contextSnapshot, clawGeneralRequest, lifecycleForError(chatTransport.errorFor(data, message)));
+          renderStreamError(article, message, outboundMessages, skill, contextSnapshot, clawGeneralRequest, lifecycleForError(chatTransport.errorFor(data, message)), clawFailure);
           return true;
         }
         if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) {
@@ -1534,9 +1571,9 @@
       }
       if (paragraph) {
         if (clawGeneralRequest) {
-          renderStreamError(article,
-            (window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang) || uiT("claw-general-check-runs")),
-            outboundMessages, skill, contextSnapshot, true);
+          const clawFailure = clawGeneralFailure(error && error.code);
+          renderStreamError(article, clawFailure.message,
+            outboundMessages, skill, contextSnapshot, true, MESSAGE_LIFECYCLE.FAILED, clawFailure);
         } else {
           // Preserve the original standalone Chat catch path and its existing
           // rich-stream/browser contract. Only Claw uses bounded safe copy.
@@ -1617,12 +1654,13 @@
         return false;
       }
       if (requestEpoch !== conversationEpoch) return false;
+      const clawFailure = clawGeneralRequest ? clawGeneralFailure(error && error.code) : null;
       renderError(
         article,
         clawGeneralRequest && error?.clawFailureDetail === "engine_provider_rate_limited"
           ? uiT("claw-general-provider-limit")
           : clawGeneralRequest
-            ? (window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang) || uiT("claw-general-check-runs"))
+            ? clawFailure.message
             : (error instanceof Error ? error.message : uiT("try-again")),
         outboundMessages,
         skill,
@@ -1630,6 +1668,7 @@
         contextSnapshot,
         clawGeneralRequest,
         lifecycleForError(error),
+        clawFailure,
       );
       return false;
     } finally {
@@ -2443,6 +2482,14 @@
   function safeClawErrorMessage(data, response) {
     const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
     const status = response ? response.status : 0;
+    // #3933: a bounded pre-dispatch refusal is a product state, not a run that
+    // started and then failed. The manual-intake route returns this same
+    // `tier_unavailable` code before it ever dispatches, so resolving it through
+    // the shared bounded-refusal authority keeps this lane's wording identical to
+    // the composer and live SSE lanes instead of the generic "the run failed"
+    // sentence. An unlisted code falls through to the existing bounded copy.
+    const bounded = clawBoundedRefusalCopy(code);
+    if (bounded) return bounded.message;
     if (code === "invalid_content" || code === "content_too_short") return clawT("claw-error-empty");
     if (code === "content_too_long" || code === "body_too_large" || status === 413) return clawT("claw-error-too-large");
     if (code === "invalid_channel" || code === "invalid_action" || code === "unsupported_media_type" || code === "invalid_sender_hint") return clawT("claw-error-invalid");
@@ -4083,17 +4130,28 @@
         return;
       }
       const safeMsg = safeClawErrorMessage(data, response);
+      // #3933: a bounded pre-dispatch refusal also states, in the result area,
+      // that the request was never executed — the distinction the status line
+      // alone cannot carry. Resolved from the same authority as safeMsg.
+      const boundedFailure = clawBoundedRefusalCopy(
+        data && data.error && typeof data.error.code === "string" ? data.error.code : "",
+      );
       if (clawResultEmpty) {
         clawResultEmpty.hidden = false;
-        clawResultEmpty.textContent = safeMsg;
+        clawResultEmpty.textContent = boundedFailure
+          ? `${boundedFailure.message} ${boundedFailure.hint}`
+          : safeMsg;
       }
       setClawStatus(safeMsg, "error");
       setClawAreaState("error");
       // A 429 usage denial happens before dispatch, so its Retry-After may be
       // honored as a cooldown. Anything ambiguous gets guidance, never a retry.
+      // #3933: a bounded pre-dispatch refusal provably never dispatched, so it is
+      // excluded here as well as in the classifier — widening the ambiguous set
+      // later must not be able to latch a HOLD as an uncertain run.
       const retryAfter = response.status === 429 ? clawRetryAfterFromResponse(response) : null;
       if (retryAfter !== null) beginClawRetryCooldown(retryAfter);
-      else if (isAmbiguousClawFailure(data, response)) showClawAmbiguousRecoveryHint();
+      else if (!boundedFailure && isAmbiguousClawFailure(data, response)) showClawAmbiguousRecoveryHint();
     } catch {
       const fallback = clawT("claw-error-generic");
       if (clawResultEmpty) {

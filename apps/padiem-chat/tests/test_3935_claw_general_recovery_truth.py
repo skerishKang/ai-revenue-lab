@@ -87,7 +87,15 @@ const fake={
  revealErrorState(){},applyStreamDone(article){doneCalls++;win.PadiemChatLifecycle.set(article,"completed")},
  renderStreamError(article,message){article.content.appendChild(Object.assign(element("p"),{textContent:message}));win.PadiemChatLifecycle.set(article,"failed")},
 };
-const fn=vm.runInNewContext("("+app.slice(start,end)+")",fake);
+// #3936 added a module-scope failure-copy selector that the real renderer closes
+// over. Evaluate the REAL source of that helper into this same context so the
+// slice below runs with the browser's actual scope chain, never a stub.
+const helperStart=app.indexOf("  const CLAW_BOUNDED_REFUSAL_COPY");
+const helperEnd=app.indexOf("\n  function buildRetryBox(",helperStart);
+assert(helperStart>=0&&helperEnd>helperStart,"#3936 failure-copy helper located");
+const scope=vm.createContext(fake);
+vm.runInContext(app.slice(helperStart,helperEnd),scope);
+const fn=vm.runInContext("("+app.slice(start,end)+")",scope);
 async function scenario(name,frames,expected,partial,success=false){
  const article=Object.assign({},actor,{content:element("div"),marker:element("small"),body:element("div"),dataset:{},events:[]});
  sent=frames;

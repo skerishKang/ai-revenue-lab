@@ -717,6 +717,80 @@ class B14Client:
     async def _prepare_registered_quote_dispatch(self) -> None:
         """Dispatch-aware clients consume their reservation at this last boundary."""
 
+    async def complete_registered_b66_chat_model(
+        self,
+        messages: list[dict[str, str]],
+        *,
+        model: str,
+        additional_system_context: str | None = None,
+        model_parameters: Mapping[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Authenticated B66 ordinary model conversation, never quote extraction.
+
+        Caller has already resolved the exact enabled B14 route and product
+        membership. This transport preserves the B66 one-shot/no-fallback
+        receipt and cannot issue, save or overwrite a quotation.
+        """
+        self.ensure_registered_quote_runtime_available()
+        if (
+            not isinstance(model, str)
+            or not model.strip()
+            or model == "b14/auto"
+            or model.startswith("padiem-profile/")
+            or len(model) > 256
+            or not all(c.isascii() and (c.isalnum() or c in "._:/-") for c in model)
+        ):
+            raise ChatRuntimeError(422, "model_route_unavailable", "AI 모델 경로를 확인할 수 없습니다.")
+        if (
+            not isinstance(messages, list)
+            or not messages
+            or any(
+                not isinstance(m, dict)
+                or set(m) != {"role", "content"}
+                or m.get("role") != ("user" if i % 2 == 0 else "assistant")
+                or not isinstance(m.get("content"), str)
+                or not m["content"].strip()
+                for i, m in enumerate(messages)
+            )
+            or messages[-1]["role"] != "user"
+            or (model_parameters is not None and not isinstance(model_parameters, Mapping))
+        ):
+            raise ChatRuntimeError(422, "invalid_request", "대화 입력 형식을 확인해 주세요.")
+        dialogue_mode = TaskMode(
+            id="b66_model_dialogue_v1",
+            title="B66 AI conversation",
+            short_description="Natural-language quoting consultation without write authority",
+            system_instruction=(
+                "당신은 PADIEM B66의 실제 AI 견적 상담사입니다. 인사·일반 질문·일상 대화에도 "
+                "자연스럽게 답하세요. "
+                "사용자가 견적을 만들고 싶다고 하면 '한 번에 설명하기'와 '질문에 답하며 작성하기' "
+                "두 가지 방법을 안내하고, 이미 제공한 정보는 다시 질문하지 마세요. "
+                "사용자가 제시하지 않은 견적 단가나 수량을 만들어 내지 마세요. "
+                "이 대화는 견적서 저장·발급·수정·삭제·PDF 생성 권한이 없고 저장된 견적 내역을 "
+                "조회하지 못합니다. '지난 견적'이나 '아까 견적'을 고쳐 달라고 하면 실제로 기록을 "
+                "확인하거나 변경했다고 말하지 말고, 화면의 '기존 견적 이어서 하기' 또는 "
+                "'질문받으며 견적 작성' 선택으로 안내하세요. "
+                "사용자가 명시적으로 확인하기 전에는 작업이 완료됐다고 말하지 마세요. "
+                "웹검색 도구가 연결되지 않은 이 경로에서는 최신 시세·법령·환율·날씨를 "
+                "실시간으로 확인했다고 주장하지 마세요. 최신 정보는 현재 확인할 수 없다고 설명하세요."
+            ),
+            task_type="general",
+            optimize_for="korean",
+            max_tokens=None,
+        )
+        kwargs: dict[str, Any] = (
+            {"model_parameters": dict(model_parameters)} if model_parameters else {}
+        )
+        return await self._complete_text(
+            [dict(m) for m in messages],
+            skill=dialogue_mode,
+            model=model,
+            additional_system_context=_bounded_context(additional_system_context),
+            max_retries=0,
+            before_dispatch=self._prepare_registered_quote_dispatch,
+            **kwargs,
+        )
+
     async def complete_registered_quote_model(
         self,
         messages: list[dict[str, str]],

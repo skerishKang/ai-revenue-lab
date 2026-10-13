@@ -7,6 +7,7 @@
 
   const ENDPOINT = "/api/claw/local-access/devices";
   const MAX_RESPONSE_BYTES = 32768;
+  const READ_TIMEOUT_MS = 12000;
   const COPY = Object.freeze({
     ko: {
       toggle: "내 컴퓨터",
@@ -16,6 +17,8 @@
       help: "연결된 컴퓨터를 확인합니다. PC 작업은 별도의 승인이 필요합니다.",
       loading: "서버에서 컴퓨터 연결 상태를 확인하고 있습니다.",
       unavailable: "컴퓨터 연결 서비스가 아직 준비되지 않았습니다. 연결된 PC를 확인할 수 없습니다.",
+      unconfigured: "컴퓨터 연결 서비스가 아직 설정되지 않았습니다. 연결 서비스가 설정되면 이 목록을 확인할 수 있습니다.",
+      readFailed: "연결 서비스 조회 중 문제가 발생했습니다. 잠시 후 ‘연결 상태 새로고침’으로 다시 확인해 주세요.",
       login: "로그인한 뒤 내 컴퓨터 목록을 확인할 수 있습니다.",
       failed: "연결 상태를 확인하지 못했습니다. 다시 시도해 주세요.",
       empty: "현재 계정에서 확인된 컴퓨터가 없습니다. Claw Connect 설치·연결을 먼저 완료해 주세요.",
@@ -35,6 +38,8 @@
       help: "Review connected devices. Running local tasks requires separate approval.",
       loading: "Checking your devices with the server.",
       unavailable: "Computer connection service is not ready yet. Device status cannot be confirmed.",
+      unconfigured: "The computer connection service is not configured yet. Once it is set up, this list can be shown.",
+      readFailed: "Something went wrong while reading the connection service. Please check again shortly with ‘Refresh connection status’.",
       login: "Sign in to view your computers.",
       failed: "Could not verify device status. Please retry.",
       empty: "No computers confirmed for this account. Install and pair Claw Connect first.",
@@ -107,6 +112,7 @@
     workspace.insertBefore(root, workspace.querySelector(".claw-workspace-tagline") || workspace.firstChild);
 
     let sequence = 0;
+    let pendingController = null;
     let selectedId = null;
     let lastDirectory = null;
     let opened = false;
@@ -166,6 +172,9 @@
 
     let lastEnvelope = null;
     function reset() {
+      if (pendingController) pendingController.abort();
+      pendingController = null;
+      panel.removeAttribute("aria-busy");
       sequence += 1; // invalidate any in-flight response or previous owner snapshot
       selectedId = null;
       lastEnvelope = null;
@@ -176,48 +185,63 @@
 
     async function load() {
       if (!opened || !isClaw()) return;
+      // Refreshing also invalidates the previous request. A late response can
+      // never repopulate an account-switched or dismissed directory.
+      if (pendingController) pendingController.abort();
+      const controller = new AbortController();
+      pendingController = controller;
       const request = ++sequence;
       lastEnvelope = null;
       lastDirectory = null;
       list.replaceChildren();
       list.hidden = true;
+      panel.setAttribute("aria-busy", "true");
       setStatus("loading");
-      let response;
+      // Cover both HTTP dispatch and response body reads, not only fetch().
+      const timer = window.setTimeout(() => controller.abort(), READ_TIMEOUT_MS);
       try {
-        response = await fetch(ENDPOINT, {
+        const response = await fetch(ENDPOINT, {
           method: "GET",
           credentials: "same-origin",
           cache: "no-store",
           headers: { Accept: "application/json" },
+          signal: controller.signal,
         });
-      } catch {
-        if (sequence === request && opened && isClaw()) {
+        if (request !== sequence || !opened || !isClaw()) return;
+        if (response.status === 401 || response.status === 403) {
+          selectedId = null;
+          setStatus("login");
+          return;
+        }
+        if (response.status === 404 || response.status === 501 || response.status === 503) {
+          selectedId = null;
+          setStatus("unavailable");
+          return;
+        }
+        if (!response.ok) {
           selectedId = null;
           setStatus("failed");
+          return;
         }
-        return;
-      }
-      if (request !== sequence || !opened || !isClaw()) return;
-      if (response.status === 401 || response.status === 403) {
-        selectedId = null;
-        setStatus("login");
-        return;
-      }
-      if (response.status === 404 || response.status === 501 || response.status === 503) {
-        selectedId = null;
-        setStatus("unavailable");
-        return;
-      }
-      if (!response.ok) {
-        selectedId = null;
-        setStatus("failed");
-        return;
-      }
-      try {
         const rawText = await response.text();
         if (request !== sequence || !opened || !isClaw()) return;
         if (rawText.length > MAX_RESPONSE_BYTES) throw Error("oversize");
         const payload = JSON.parse(rawText);
+        // The reviewed unavailable envelope distinguishes "not configured yet"
+        // from "the read failed and should be retried". Only these two reason
+        // codes are interpreted; every other value keeps the existing safe
+        // refusal, and no server-supplied text is ever rendered.
+        if (payload && payload.ok === true && payload.available === false) {
+          selectedId = null;
+          if (payload.reason === "device_directory_unconfigured") {
+            setStatus("unconfigured");
+          } else if (payload.reason === "device_directory_read_failed") {
+            setStatus("readFailed");
+          } else {
+            setStatus("unavailable");
+          }
+          return;
+        }
         if (!payload || payload.ok !== true || payload.available !== true ||
             payload.ownerScoped !== true) {
           selectedId = null;
@@ -230,8 +254,7 @@
           setStatus("failed");
           return;
         }
-        // Retain only fields explicitly sanitized by the existing projection.
-        // Drop raw response objects immediately (including any extra secrets).
+        // Keep only the verified, non-secret directory projection.
         lastEnvelope = {
           available: true, ownerScoped: true,
           devices: directory.devices.map((d) => ({
@@ -254,6 +277,10 @@
           lastDirectory = null;
           setStatus("failed");
         }
+      } finally {
+        window.clearTimeout(timer);
+        if (pendingController === controller) pendingController = null;
+        if (request === sequence) panel.removeAttribute("aria-busy");
       }
     }
 
