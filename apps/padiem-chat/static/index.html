@@ -29,6 +29,9 @@
   <link rel="stylesheet" href="./b66-quote-runtime.css" />
   <link rel="stylesheet" href="./claw-local-handoff.css" />
   <link rel="stylesheet" href="./claw-device-manager.css" />
+  <link rel="stylesheet" href="./claw-device-guidance.css" />
+  <!-- #4139 PC enrollment consent surface (LOCAL1). Inert until a verified server port is published. -->
+  <link rel="stylesheet" href="./claw-pc-enrollment-consent.css" />
   <link rel="stylesheet" href="./padiem-chat-ui-polish.css" />
   <link rel="stylesheet" href="./calendar.css" />
   <link rel="stylesheet" href="./library.css" />
@@ -512,8 +515,9 @@
         </div>
         <section class="claw-task-hub" id="clawTaskHub" aria-labelledby="clawTaskHubTitle">
           <div class="claw-task-hub-heading">
-            <p class="claw-workspace-kicker">PADIEM CLAW · WEB</p>
+            <p class="claw-workspace-kicker">PADIEM CLAW · WEB <span class="claw-agent-badge" data-locale-key="claw-agent-badge">AI 에이전트</span></p>
             <h2 id="clawTaskHubTitle" data-locale-key="claw-focus-heading">무슨 일을 도와드릴까요?</h2>
+            <p class="claw-agent-line" data-locale-key="claw-agent-line">AI와 대화하고, 파일 작성·수정 등 실제 작업까지 맡길 수 있습니다.</p>
             <p data-locale-key="claw-focus-description">아래 예시를 선택하거나 입력창에 직접 요청하세요. 파일 읽기·수정은 별도 승인이 필요합니다.</p>
           </div>
           <div class="claw-task-hub-grid">
@@ -936,6 +940,13 @@
   <script src="./claw-web-xlsx-sources.js" defer></script>
   <!-- #4139 read-only, opt-in multi-PC selection UI; unavailable until server is configured. -->
   <script src="./claw-device-manager.js"></script>
+  <!-- #4139 pre-connection guidance, state legend and recovery UX. Zero-network,
+       presentation-only: never reads the directory endpoint or a raw payload. -->
+  <script src="./claw-device-guidance.js"></script>
+  <!-- #4139 PC enrollment consent surface (LOCAL1): explicit opt-in, default OFF.
+       Reaches the network only through a verified server port; the ready state
+       never sends a request and this is not an execution-approval surface. -->
+  <script src="./claw-pc-enrollment-consent.js"></script>
   <!-- #3094: guarded handoff adapter MUST load last, after app.js installed
        the #3084 projection seam. Never weaken the final-script contract. -->
   <script src="./claw-local-adapter.js"></script>

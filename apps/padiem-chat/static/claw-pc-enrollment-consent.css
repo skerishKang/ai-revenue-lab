@@ -1,0 +1,168 @@
+/* #4139: PC enrollment consent surface (LOCAL1).
+   Enrolling consent is not task-execution approval; this is not an execution UI.
+   Touch targets keep a >=44px floor on small screens. */
+.claw-pc-consent {
+  margin: 10px 0 12px;
+  color: var(--text, #243f53);
+  max-width: 820px;
+}
+.claw-pc-consent[hidden],
+.claw-pc-consent-panel[hidden] { display: none !important; }
+
+.claw-pc-consent-toggle {
+  font: inherit;
+  font-size: .82rem;
+  font-weight: 650;
+  min-height: 44px;
+  padding: 8px 14px;
+  color: var(--text, #24435a);
+  background: var(--surface, rgba(255,255,255,.76));
+  border: 1px solid var(--line, rgba(66,106,135,.28));
+  border-radius: 999px;
+  cursor: pointer;
+}
+.claw-pc-consent-toggle::before { content: "🔒"; margin-right: 8px; }
+
+.claw-pc-consent-panel {
+  margin-top: 12px;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid var(--line, rgba(66,106,135,.26));
+  background: var(--surface, rgba(255,255,255,.86));
+  box-shadow: 0 7px 30px rgba(20,51,73,.06);
+}
+
+.claw-pc-consent-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.claw-pc-consent-head h2 { margin: 0; font-size: 1.05rem; font-weight: 700; }
+
+.claw-pc-consent-close {
+  font: inherit;
+  font-size: .8rem;
+  min-height: 44px;
+  min-width: 44px;
+  border-radius: 9px;
+  padding: 8px 12px;
+  color: var(--text, #24435a);
+  background: var(--surface, rgba(255,255,255,.76));
+  border: 1px solid var(--line, rgba(66,106,135,.26));
+  cursor: pointer;
+}
+
+.claw-pc-consent-summary {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 14px;
+  margin: 14px 0;
+  font-size: .84rem;
+}
+.claw-pc-consent-summary dt {
+  color: var(--text-dim, #506a7b);
+  font-weight: 600;
+}
+.claw-pc-consent-summary dd {
+  margin: 0;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.claw-pc-consent-details {
+  margin: 12px 0;
+  font-size: .82rem;
+  line-height: 1.62;
+  color: var(--text-dim, #506a7b);
+}
+.claw-pc-consent-details-summary {
+  cursor: pointer;
+  font-weight: 650;
+  color: var(--text, #24435a);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.claw-pc-consent-details h3 {
+  margin: 12px 0 4px;
+  font-size: .8rem;
+  font-weight: 700;
+  color: var(--text, #24435a);
+}
+.claw-pc-consent-details p { margin: 0 0 6px; }
+.claw-pc-consent-approval {
+  margin-top: 8px !important;
+  font-weight: 650;
+  color: var(--text, #24435a);
+}
+
+.claw-pc-consent-ack {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 14px 0;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line, rgba(66,106,135,.26));
+  background: var(--surface-2, rgba(238,243,247,.6));
+  min-height: 44px;
+}
+.claw-pc-consent-ack-input {
+  width: 22px;
+  height: 22px;
+  margin: 1px 0 0;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+.claw-pc-consent-ack-label {
+  font-size: .82rem;
+  line-height: 1.55;
+  cursor: pointer;
+}
+
+.claw-pc-consent-status {
+  margin: 10px 0;
+  font-size: .82rem;
+  line-height: 1.6;
+  color: var(--text-dim, #506a7b);
+  min-height: 1.2em;
+}
+
+.claw-pc-consent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+.claw-pc-consent-confirm,
+.claw-pc-consent-cancel {
+  font: inherit;
+  font-size: .82rem;
+  font-weight: 650;
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 9px;
+  cursor: pointer;
+}
+.claw-pc-consent-confirm {
+  color: #fff;
+  background: var(--accent, #2f6f9f);
+  border: 1px solid var(--accent, #2f6f9f);
+}
+.claw-pc-consent-confirm:disabled {
+  cursor: not-allowed;
+  opacity: .55;
+}
+.claw-pc-consent-cancel {
+  color: var(--text, #24435a);
+  background: var(--surface, rgba(255,255,255,.76));
+  border: 1px solid var(--line, rgba(66,106,135,.26));
+}
+
+@media (max-width: 640px) {
+  .claw-pc-consent-summary { grid-template-columns: 1fr; gap: 2px; }
+  .claw-pc-consent-actions { flex-direction: column; }
+  .claw-pc-consent-confirm,
+  .claw-pc-consent-cancel { width: 100%; }
+}
