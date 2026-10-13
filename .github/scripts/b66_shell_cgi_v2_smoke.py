@@ -159,7 +159,7 @@ async def main() -> int:
             assert switch["forgedSet"] is True
             assert switch["forgedCgiOptions"] == 0
             assert switch["set"] is True
-            assert switch["initialLayout"] == "GENERIC"
+            assert switch["initialLayout"] == "cgi-v2"
             assert switch["cgiOptions"] == 1
 
             # Legacy output template is intentionally in the hidden advanced editor,
@@ -191,7 +191,7 @@ async def main() -> int:
                 })"""
             )
             assert reset["selected"] is None
-            assert reset["layout"] == "GENERIC"
+            assert reset["layout"] == "cgi-v2"
 
             result = await page.evaluate(
                 """() => {
