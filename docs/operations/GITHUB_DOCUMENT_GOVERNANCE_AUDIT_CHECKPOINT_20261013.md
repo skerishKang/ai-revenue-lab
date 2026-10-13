@@ -24,6 +24,18 @@
 - **Not a completion claim:** old 125 text samples were not upgraded to full reviews; the 25 newly examined documents remain *provisional* classifications pending any actual migration judgment. No PDF/DOCX, GitHub Issues/PRs, local business policy, local document inventory, production, or customer file was modified.
 - **Important review distinction:** business-content candidates inside B35 and B05 are not a reason to relocate adjacent technical render/QA/architecture files automatically.
 
+## 1B. Batch 03 — another 25 full-document reads (2026-10-13)
+
+**Latest progress on the frozen 835-file baseline:** **175 text-inspected at least partly** (125 initial samples; 25 Batch 02 full-text triages; 25 Batch 03 full-text triages), **641 path-only/unread**, **19 PDF/DOCX binaries unread**.
+
+- [Batch 03 audit and 25 source-specific provisional verdicts](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH03_20261013.md)
+- [Updated 835-file manifest and per-file reading cursor](GITHUB_DOCUMENT_AUDIT_MANIFEST_20261013.tsv)
+- Batch 03 reviewed B53 Sidecar, B54 Claw, B64 Reward Router, B66 Quote, B14, B60 and other Business product/technical source contracts.
+- High-priority business-content follow-up: B53 commercialization, B54 historic pilot material, B64 owner launch sequence, B66 customer storage policy, historic B02/B03 price hypotheses. **No current business decision or new customer requirement was established here.**
+- Keep public technical evidence and protected runtime status facts intact. No local Governance relocation, original-file edit, GitHub Issue/PR cleanup or production mutation was made.
+
+The original `## 1. Exact audit accounting` numbers remain **the 2026-10-13 initial snapshot**, not an updated final count; this section and the manifest supply the most recent cursor.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
