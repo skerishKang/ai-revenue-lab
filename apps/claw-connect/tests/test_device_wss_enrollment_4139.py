@@ -298,3 +298,38 @@ def test_actual_kagent_binding_factory_constructs_canonical_type_when_source_ava
     assert instance.state is DeviceLifecycle.PAIRED_OFFLINE
     assert instance.credential_ref == BINDING["credential_ref"]
     assert instance.issued_at == NOW
+
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="real DPAPI is Windows only")
+def test_exact_wss_delivery_drives_real_canonical_windows_dpapi_store(tmp_path):
+    """No real network: genuine kagent DeviceBinding + Windows user DPAPI.
+
+    The broker frame is scripted, but the actual Windows credential store
+    writes encrypted bytes, reads the same scope and yields the ACK proof.
+    """
+    repo = Path(__file__).resolve().parents[3]
+    sys.path.insert(0, str(repo / "apps" / "korean-ai-code-agent" / "src"))
+    from kagent.local_agent_secure_transport import (
+        ProtectedFileDeviceCredentialStore, WindowsDpapiProtectedDataPort,
+    )
+    store = ProtectedFileDeviceCredentialStore(
+        base_dir=tmp_path / "protected",
+        protected_data=WindowsDpapiProtectedDataPort(),
+    )
+    receiver = LocalStoreCredentialReceiver(store=store, now_factory=lambda: NOW)
+    sock = Socket()
+    receipt = asyncio.run(run_review_only_device_session(
+        socket=sock, trusted_tls=Trusted(), receiver=receiver,
+        challenge_id=CID, device_id=DEVICE, pairing_code=CODE, now=NOW,
+        # NO synthetic binding_factory here: use actual canonical kagent type.
+    ))
+    assert receipt.binding_ref == BINDING["binding_ref"]
+    assert receipt.online is False and receipt.local_record_committed is False
+    assert sock.sent[-1]["type"] == "install_ack"
+    assert len(list((tmp_path / "protected").glob("*.credential.json"))) == 1
+    persisted = b"".join(
+        file.read_bytes() for file in (tmp_path / "protected").glob("*.credential.json")
+    )
+    assert CREDENTIAL not in persisted
+    assert base64.b64encode(CREDENTIAL) not in persisted
