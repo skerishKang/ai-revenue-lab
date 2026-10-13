@@ -1,0 +1,104 @@
+"""CENTRAL #4139: guarded installer, S2 tray and real startup reconciliation.
+
+Synthetic tests only: never modify the user's HKCU keys or contact a Broker.
+"""
+from __future__ import annotations
+
+import base64
+import re
+import sys
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from claw_connect import __main__ as cli
+from claw_connect.autostart import (
+    Autostart, AutostartOutcome, MemoryPreferenceStore, MemoryRunKeyStore,
+    PREFERENCE_OFF, start_command,
+)
+from claw_connect.enrollment import EnrollmentRecord, LIFECYCLE_PAIRED_OFFLINE
+from claw_connect.runtime import ConnectApp
+
+
+class Committed:
+    def __init__(self, record):
+        self.value = record
+        self.state_dir = ROOT
+    def committed_record(self):
+        return self.value
+
+
+def _harness(record):
+    runs, prefs = MemoryRunKeyStore(), MemoryPreferenceStore()
+    auto = Autostart("PadiemClawConnect", runs, preference_store=prefs)
+    app = ConnectApp(
+        resident_command=[sys.executable, "-c", "pass"],
+        autostart=auto,
+        enrollment=Committed(record),
+    )
+    return app, runs, prefs
+
+
+def test_install_script_has_no_direct_run_write_bypass():
+    code = (ROOT / "install.ps1").read_text(encoding="utf-8")
+    assert "Set-ItemProperty -Path $RunKey" not in code
+    assert "& $PythonExePath -m claw_connect autostart on" in code
+    assert "if ($LASTEXITCODE -ne 0)" in code
+    assert "Push-Location $InstallRoot" in code
+    assert "Pop-Location" in code
+    assert "-Verb RunAs" not in code
+    assert "New-Service" not in code
+    assert "HKLM:" not in code
+
+
+def test_unenrolled_startup_never_writes_run_and_refused_cli_creates_no_identity():
+    app, runs, prefs = _harness(None)
+    assert app.reconcile_autostart() is None
+    assert runs.values == {} and prefs.values == {}
+    assert cli.build_parser().parse_args(["autostart", "on"]).autostart_mode == "on"
+
+
+def test_valid_committed_record_enables_logon_once_and_preserves_off():
+    record = EnrollmentRecord(
+        device_id="device.synthetic", binding_ref="binding.synthetic",
+        device_lifecycle=LIFECYCLE_PAIRED_OFFLINE,
+    )
+    app, runs, prefs = _harness(record)
+    assert app.reconcile_autostart() is AutostartOutcome.REGISTERED
+    assert len(runs.writes) == 1
+    assert app.reconcile_autostart() is AutostartOutcome.ALREADY_REGISTERED
+    assert len(runs.writes) == 1
+    app.autostart.disable()
+    assert app.reconcile_autostart() is AutostartOutcome.SUPPRESSED_BY_OWNER
+    assert runs.values == {} and app.autostart.preference() == PREFERENCE_OFF
+
+
+def test_after_crash_off_marker_removes_orphan_even_without_credential():
+    app, runs, prefs = _harness(None)
+    prefs.write("Autostart", PREFERENCE_OFF)
+    runs.write("PadiemClawConnect", start_command())
+    assert app.reconcile_autostart() is AutostartOutcome.OPT_OUT_RECONCILED
+    assert app.reconcile_autostart() is AutostartOutcome.SUPPRESSED_BY_OWNER
+    assert runs.values == {}
+
+
+def test_logon_command_is_importable_without_assuming_current_working_directory():
+    command = start_command()
+    assert command == cli._autostart_command()
+    assert command.startswith(f'"{sys.executable}" -c "')
+    m = re.search(r"base64\\.b64decode\\('([A-Za-z0-9+/=]+)'\\)", command)
+    assert m is not None
+    path = base64.b64decode(m.group(1)).decode("utf-8")
+    assert Path(path).resolve() == ROOT.resolve()
+    assert "runpy.run_module('claw_connect',run_name='__main__')" in command
+
+
+def test_programmatic_unpair_suspends_registration_but_keeps_owner_off():
+    app, runs, _ = _harness(None)
+    app.autostart.disable()
+    app.autostart.apply_lifecycle("unpair")
+    assert runs.values == {}
+    assert app.autostart.preference() == PREFERENCE_OFF

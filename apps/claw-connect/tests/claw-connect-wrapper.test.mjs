@@ -35,7 +35,7 @@ test("the wrapper forwards to the same module the installer runs", () => {
   assert.equal(result.status, 0, result.stderr);
   const status = JSON.parse(result.stdout);
   assert.equal(status.product, "Padiem Claw Connect");
-  assert.equal(status.state, "disconnected");
+  assert.equal(status.state, "unregistered");
   assert.equal(status.resident_running, false);
   assert.equal(status.autostart_enabled, false);
 });
