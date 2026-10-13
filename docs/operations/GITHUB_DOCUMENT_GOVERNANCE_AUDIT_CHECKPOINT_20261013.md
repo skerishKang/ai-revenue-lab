@@ -302,6 +302,19 @@ Immutable **835-source** cursor: **816 text originals seen at least partly** (12
 
 **Next:** complete 75 remaining `TEXT_SAMPLED` in three 25-file rounds (B33–B35); then draft Owner-private candidate decisions, keeping B66 public reference PDF disclosure assessment separately prioritized.
 
+## 1AG. Batch 33 — whole-body re-review of 25 more original early text samples (2026-10-13)
+
+**835 frozen originals:** 691 previously fully fetched B02–B29 + 25 full rereviews B31 + 25 B32 + **25 B33** + **50 pending original `TEXT_SAMPLED`** + 19 B30 PDF/DOCX inspected = **835**. All 835 have been viewed at least in part; **766 text and 19 binary** have a complete body-inspection record. Zero INDEXED_ONLY / BINARY_PENDING. Read-state completion does not authorize external publication or migration.
+
+- [Batch33 exact 25 frozen Git blob SHA/full original text audit and provisional classification](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH33_20261013.md)
+- Tally: `TECH_PUBLIC=3`, `TECH_OWNER_RECORD=3`, `PRODUCT_PUBLIC=6`, `MIXED_REVIEW=8`, `BUSINESS_REVIEW=5`.
+- First-generation project vision/revenue roadmap, B60 proposed offer/discovery product and candidate business backlog are hypothesis/history—not approved present company business policy.
+- Portfolio Business Registry and external-project successor tracking are development/product ownership with some business directions; preserve existing numbering, no duplicate internal folders. Public architecture/visual docs remain technical/product evidence, not `OWNER_UI_APPROVED` or runtime acceptance.
+- B66 dated customer CGI onboarding and rollout records require cautious disclosure/Owner review independent of PDF, D1, test or Production status. No sensitive customer values reproduced. Local company Governance remains out of scope: not opened, mutated or republished.
+- All frozen original paths, blob SHA and byte sizes unchanged; only this checkpoint, Batch33 public-safe report and manifest read-state cells changed.
+
+**Next:** 50 initial `TEXT_SAMPLED` originals in two further 25-file batches B34–B35; then aggregate the Owner-only confidentiality/business-review decision list.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
