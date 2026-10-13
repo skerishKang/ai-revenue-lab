@@ -29,6 +29,9 @@ from claw_connect.device_wss_enrollment import (
 from claw_connect.enrollment import ConnectorEnrollment, build_enrollment_proof_ref
 from claw_connect.wss_target import REVIEW_WSS_PATH, REVIEW_WSS_HOST, WSS_PRODUCTION_DIALER_ENABLED
 from app.canonical_connector_gateway_source_composition import CONNECTOR_GATEWAY_WSS_PATH
+from app.connector_gateway_first_pairing_tls_review import (
+    CloudflareFirstPairingTlsTransportReview,
+)
 from app.connector_gateway_websocket_session import (
     PRODUCTION_WEBSOCKET_ROUTE_MOUNTED, run_device_initiated_enrollment,
 )
@@ -221,12 +224,27 @@ def _fake_binding(fields, *, now, expires_at):
     return SimpleNamespace(**fields)
 
 
-def _run_once(enrollment, *, trusted=True):
+def _run_once(enrollment, *, trusted=True, first_pairing_tls_version=None):
     async def start():
         wire = Duplex()
         device = enrollment.record().device_id
         broker = SyntheticBroker(device)
         inbound = SyntheticIngress(trusted)
+        if first_pairing_tls_version is not None:
+            wire.server.scope = {
+                "type": "websocket", "scheme": "wss",
+                "path": CONNECTOR_GATEWAY_WSS_PATH,
+                "raw_path": CONNECTOR_GATEWAY_WSS_PATH.encode("ascii"),
+                "query_string": b"",
+            }
+            inbound = CloudflareFirstPairingTlsTransportReview(
+                incoming_worker_request=SimpleNamespace(
+                    url="https://chat.padiem.net" + CONNECTOR_GATEWAY_WSS_PATH,
+                    headers={"upgrade": "websocket"},
+                    cf={"tlsVersion": first_pairing_tls_version, "tlsClientAuth": None},
+                ),
+                source_review_authorized=True,
+            )
         outbound = SyntheticIngress(trusted)
         state = FakeProtectedStore()
         events = []
@@ -313,3 +331,36 @@ def test_same_device_may_not_redeem_again_after_terminal(tmp_path):
     with pytest.raises(DeviceSessionRefused, match="existing_binding"):
         asyncio.run(retry())
     assert replay.pc_sent == [] and replay.server_sent == []
+
+
+def test_first_enrollment_tls_only_then_existing_broker_proof_and_ack(tmp_path):
+    """Synthetic Cloudflare edge TLS admits socket; code POP authenticates PC."""
+    enrollment = ConnectorEnrollment(state_dir=tmp_path / "state")
+    server, pc, wire, broker, store, events = _run_once(
+        enrollment, first_pairing_tls_version="TLSv1.3",
+    )
+    assert server is None
+    assert not isinstance(pc, BaseException), repr(pc)
+    assert pc.lifecycle == "paired_offline"
+    assert broker.operations == ["begin", "finish", "authorize", "authorize"]
+    assert events == ["host_redeem", "host_ack_verified"]
+    assert store.record is not None
+    assert enrollment.committed_record() is not None
+    assert wire.server_accepted and wire.server_closed == 1000
+    # Transport admission alone granted neither work authorization nor
+    # a confirmed ONLINE session; the canonical pairing proof did the work.
+
+
+def test_first_enrollment_legacy_edge_tls_denied_before_broker_rpc(tmp_path):
+    enrollment = ConnectorEnrollment(state_dir=tmp_path / "state")
+    server, pc, wire, broker, store, events = _run_once(
+        enrollment, first_pairing_tls_version="TLSv1.0",
+    )
+    assert server is None
+    assert isinstance(pc, DeviceSessionRefused)
+    assert broker.operations == []
+    assert wire.server_accepted is False
+    assert wire.server_closed == 1008
+    assert store.record is None
+    assert enrollment.committed_record() is None
+    assert events == []
