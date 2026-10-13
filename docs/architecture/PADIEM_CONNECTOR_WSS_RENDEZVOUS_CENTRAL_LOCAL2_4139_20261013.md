@@ -130,3 +130,29 @@ AUTHENTICATED_POST_RESTART_REVOKE_QUERY=NOT_WIRED
 WINDOWS_DPAPI_LIVE_E2E=NOT_PROVEN
 LOCAL2_WINDOWS_WSS_SENDER=NOT_WIRED
 ```
+
+## CENTRAL Source Composition Review — 2026-10-13
+
+`canonical_connector_gateway_source_composition.py` now binds the
+existing typed private Identity/Broker Worker RPC clients to the one-socket
+`CanonicalConnectorEnrollmentAsyncHost`, behind a **test/review-only**
+Starlette `WebSocketRoute`. It accepts only the already reviewed private
+Broker methods and the `gateway_bootstrap_rpc` begin/finish/authorize
+operations; an on-socket caller cannot invoke the private gateway schema
+installer. Any missing private binding or TLS verifier prevents even route
+construction, and unsigned forwarding headers never authorize a peer.
+
+**This is NOT production routing.** The module is not imported into
+`app_factory.create_app`, and Worker/Pages/Cloudflare do not mount it.
+A real Cloudflare Worker ingress must verify TLS metadata from
+the **trusted runtime request context**, never forwarded/supplied HTTP
+headers, and bind the verified client/session to owner-assisted pairing
+and one-time nonces. Cloudflare's WebSocket support does not by itself
+establish this device authenticity. Production mTLS enrollment and
+certificate provisioning, if chosen, require owner/operator review
+because pre-enrollment machines do not yet possess an account device
+credential. No silent new customer login or repetitive approval UI.
+
+`connector_gateway_source_composition` remains explicitly offline until
+that runtime attestation, rate/frame/timeout guard, authenticated recovery
+verdict and real Windows PC-side WSS client are demonstrated under #3099.

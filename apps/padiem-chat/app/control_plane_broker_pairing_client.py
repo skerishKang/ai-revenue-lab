@@ -115,6 +115,36 @@ class CloudflareCanonicalBrokerPairingClient:
             raise IdentityBridgeError(409, err["code"], "Canonical Broker request was refused.")
         return result
 
+    async def gateway_bootstrap_rpc(self, payload: dict[str, Any]) -> dict[str, Any]:
+        """Same PRIVATE canonical Broker DO; no public HTTP or alternate owner.
+
+        Accept only the three source-reviewed authenticated device actions.
+        Schema installation is an independent, operator-guarded migration and
+        must never be reachable through a connected PC WebSocket.
+        """
+        if type(payload) is not dict or set(payload) != {"operation", "args"}:
+            raise IdentityBridgeError(503, "broker_rpc_invalid", "Gateway RPC shape invalid.")
+        operation, args = payload["operation"], payload["args"]
+        required = {
+            "begin": {"challenge_id", "device_id", "proof_ref"},
+            "finish": {"challenge_id", "device_id", "lease_ref", "proof_hex"},
+            "authorize": {
+                "challenge_id", "device_id", "lease_ref", "action",
+                "counter", "body_b64", "proof_hex",
+            },
+        }
+        if (
+            type(operation) is not str or operation not in required
+            or type(args) is not dict or set(args) != required[operation]
+        ):
+            raise IdentityBridgeError(503, "broker_rpc_invalid", "Gateway operation is not allowed.")
+        result = await self._invoke("gateway_bootstrap_rpc", payload)
+        if set(result) != {"ok", "gateway"} or type(result["gateway"]) is not dict:
+            raise IdentityBridgeError(503, "broker_rpc_invalid", "Gateway receipt shape invalid.")
+        # The full strict receipt, correlation, no-credential and proof checks
+        # happen in the one-socket orchestrator before any transfer is begun.
+        return result
+
     async def install_schema(self, *, migration_id: str) -> dict[str, Any]:
         result = await self._invoke("install_pairing_schema", {"migration_id": migration_id})
         if set(result) != {"ok", "schema", "installed_by_default"}:
