@@ -212,6 +212,32 @@ def test_cloudflare_10210_rollback_deployment_omits_unsupported_trigger_annotati
     assert 'jq -e' in block and '.success == true' in block
 
 
+def test_cloudflare_10214_requires_snapshot_before_code_version_rollback():
+    # Live #38432624306: code-first rollback left latest != active, and
+    # subsequent settings PATCH was rejected HTTP 400 / 10214.
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    block = workflow.split("\n  rollback-config:\n", 1)[1].split(
+        "\n  # #3930 SSE-only opt-in.", 1
+    )[0]
+    stages = [
+        "Guard Cloudflare 10214 before configuration restoration",
+        "Download the bounded pre-mutation settings snapshot",
+        "Read current live settings for the config rollback plan",
+        "Plan the snapshot-bounded config restore (CONFIG_ROLLBACK)",
+        "Apply the snapshot-bounded config restore through the settings API",
+        "Read back the restored config against the pre-mutation snapshot",
+        "Restore the recorded pre-activation code version (CODE_VERSION_ROLLBACK)",
+        "Read back the restored active code version",
+        "Final config parity after restoring the pre-activation code version",
+    ]
+    positions = [block.index(name) for name in stages]
+    assert positions == sorted(positions)
+    assert "CONFIG_ROLLBACK_BLOCKED_LATEST_NOT_SERVED_CLOUDFLARE_10214=YES" in block
+    assert "DO_NOT_REDEPLOY_UNACCEPTED_SSE_TO_FORCE_REPAIR=YES" in block
+    assert "CONFIG_ROLLBACK_AFTER_CODE_VERSION=EXACT" in block
+    assert "b62_binding_state_guard.py" in block
+
+
 if __name__ == "__main__":
     for name, func in sorted(globals().copy().items()):
         if name.startswith("test_") and callable(func):
