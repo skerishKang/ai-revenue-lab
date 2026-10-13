@@ -30,6 +30,7 @@ import base64
 import json
 import tomllib
 import types
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -911,6 +912,75 @@ async def test_an_admitted_call_reserves_cost_from_the_validated_audio_length(ru
     assert reservation["product_id"] == fw.CP_PRODUCT
     assert reservation["subject"] == {"subject_type": "user", "subject_id": fw.CP_SUBJECT}
     assert reservation["billing_semantic_id"] == c.CAPABILITY_TRANSCRIBE
+
+
+@pytest.mark.parametrize("route", [TRANSCRIBE_ROUTE, LIVE_TOKEN_ROUTE])
+async def test_distinct_paid_calls_never_reuse_one_control_plane_reservation(runtime, route):
+    """CP idempotency is per request, not per user/route/audio-size bucket.
+
+    The real Control Plane returns an existing reservation when an idempotency
+    key repeats. Two independent invocations must therefore have different keys
+    even when every product, subject, unit count and payload byte is identical.
+    """
+    env = fw.enabled_env()
+    budget = fw.FetchBudget()
+    budget.response = (
+        fw.FakeUpstream(200, {"text": "네"})
+        if route == TRANSCRIBE_ROUTE
+        else fw.FakeUpstream(200, {"name": "auth_tokens/opaque"})
+    )
+    for _ in range(2):
+        request = (
+            _transcribe_request(audio=b"same audio")
+            if route == TRANSCRIBE_ROUTE
+            else _live_token_request()
+        )
+        result = await _dispatch(runtime, env, budget, request)
+        assert result["ok"] is True
+    calls = env.CONTROL_PLANE_ENGINE_ADMISSION.reservation_calls
+    assert len(calls) == 2
+    left, right = (call["reservation"] for call in calls)
+    assert left["estimated_units"] == right["estimated_units"]
+    assert left["product_id"] == right["product_id"]
+    assert left["idempotency_key"] != right["idempotency_key"]
+    assert left["request_fingerprint"] != right["request_fingerprint"]
+
+
+async def test_control_plane_reservation_time_is_observed_after_its_rpc(runtime):
+    """CP stamps reserved_at *during* the RPC, later than the pre-RPC clock.
+
+    This is a valid authorization. A pre-RPC observation would reject it as
+    'from the future' even though the authority itself generated that time.
+    """
+    current = [datetime.now(timezone.utc)]
+
+    class StampAtReservation(fw.FakeAdmissionBinding):
+        async def reserve_usage(self, payload):
+            current[0] += timedelta(seconds=1)
+            self.reservation = fw.cp_reservation_payload(
+                reserved_at=current[0].isoformat(),
+                expires_at=(current[0] + timedelta(minutes=5)).isoformat(),
+            )
+            return await super().reserve_usage(payload)
+
+    authority = runtime.caller_auth.CallerAuthority(
+        identity=runtime.caller_auth.CloudflareIdentitySessionClient(
+            fw.FakeIdentityBinding()
+        ),
+        admission=runtime.caller_auth.CloudflareAdmissionClient(
+            StampAtReservation()
+        ),
+        clock=lambda: current[0],
+    )
+    authorization = await authority.authorize(
+        clues=runtime.caller_auth.CallerClues(
+            product_id=fw.CP_PRODUCT, session_id=fw.CP_SESSION
+        ),
+        capability=c.CAPABILITY_TRANSCRIBE,
+        route=TRANSCRIBE_ROUTE,
+        estimated_units=1,
+    )
+    assert authorization.admits(TRANSCRIBE_ROUTE)
 
 
 async def test_cost_denied_is_decided_before_the_secret_is_read(runtime):
