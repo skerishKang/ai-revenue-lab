@@ -44,4 +44,13 @@ console.log(JSON.stringify({
   reason:result.reason,
   asgi_scope_scheme:result.scheme
 }));
+// For local ws://, Cloudflare's Python ASGI adapter reports the *HTTP*
+// transport URL scheme. This MUST NOT be mistaken for a verified edge TLS
+// connection: only the production Worker may independently prove request.cf.
+if (result.scheme !== "http") {
+  console.error("CONNECTOR_CANARY_LOCAL_ASGI_SCHEME_DRIFT=FAIL");
+  process.exitCode = 1;
+} else {
+  console.log("CONNECTOR_CANARY_LOCAL_ASGI_HTTP_SCHEME=PASS");
+}
 if (!result.ok) process.exitCode = 1;
