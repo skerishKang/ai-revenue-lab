@@ -155,7 +155,9 @@ def test_a_turn_carrying_private_particulars_reaches_no_provider(question, priva
     ("지금 날씨 어때?", "날씨"),
 ])
 def test_only_exact_preapproved_public_intents_emit_fixed_queries(question, expected_query):
-    provider = StubProvider([evidence()])
+    # Core intentionally rejects an unrelated result as no_evidence. Give
+    # each canonical query relevant synthetic evidence, then assert sourced.
+    provider = StubProvider([evidence(title=expected_query)])
     result = outcome(provider, question)
     assert approved_public_query(question) == expected_query
     assert result.status == "sourced"
@@ -195,7 +197,7 @@ def test_approved_query_rejects_oversize_inputs_without_cutting_them():
 
 def test_neither_user_question_nor_account_scope_enters_canonical_provider_payload():
     public = "오늘 원달러 환율 알려줘"
-    provider = StubProvider([evidence()])
+    provider = StubProvider([evidence(title="원달러 환율")])
     assert outcome(provider, public).status == "sourced"
     assert provider.queries == ["원달러 환율"]
 
