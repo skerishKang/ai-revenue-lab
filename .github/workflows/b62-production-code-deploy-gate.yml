@@ -8,6 +8,8 @@ on:
       - ".github/scripts/b62_connector_broker_additive_preflight.py"
       - ".github/tests/test_b62_connector_broker_additive_preflight.py"
       - ".github/scripts/b62_connector_broker_served_version_readonly.py"
+      - ".github/scripts/connector_bundle_fingerprint.py"
+      - ".github/tests/test_connector_bundle_fingerprint.py"
       - ".github/tests/test_b62_connector_broker_served_version_readonly.py"
       - ".github/scripts/b62_connector_identity_served_version_readonly.py"
       - ".github/tests/test_b62_connector_identity_served_version_readonly.py"
@@ -228,6 +230,14 @@ jobs:
           set -euo pipefail
           python -m unittest discover -s .github/tests -p test_b62_connector_identity_served_version_readonly.py -q
           echo "IDENTITY_SERVED_VERSION_PARSER=PASS_SOURCE_ONLY"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Verify Connector build fingerprint is local evidence only
+        shell: bash
+        run: |
+          python -m unittest discover -s .github/tests -p test_connector_bundle_fingerprint.py -q
+          echo "CONNECTOR_DRY_RUN_FINGERPRINT_TESTS=PASS"
+          echo "SERVED_SOURCE_PARITY_ATTESTED=NO"
           echo "PRODUCTION_MUTATION=0"
 
       - name: Gate source contract
