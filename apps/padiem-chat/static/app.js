@@ -2093,13 +2093,14 @@
     if (manualView) {
       input.placeholder = localeOr("claw-request-placeholder", "Paste a business request you received by chat, SMS, or email.");
       input.setAttribute("aria-describedby", "clawStatus");
-      input.setAttribute("maxlength", "4000");
+      // Executable Claw task authority is validated by the server.
+      // No separate pilot-era 4,000-character browser ceiling.
     } else {
       input.placeholder = localeOr("input", "Ask anything");
       input.removeAttribute("aria-describedby");
       input.removeAttribute("aria-invalid");
       // General Claw and Chat accept provider-native prompts. The distinct
-      // manual intake still carries its own workflow-specific 4k field guard.
+      // manual executable tasks keep their separate tool authorization and bounds.
       input.removeAttribute("maxlength");
     }
   }
@@ -3940,11 +3941,6 @@
         input.focus();
         return;
       }
-      if (body.length > 4000) {
-        setClawStatus(clawT("claw-error-too-large"), "error");
-        setClawAreaState("error");
-        return;
-      }
       const channelValue = clawChannel?.value || "other";
       const actionValue = clawAction?.value || "quote";
       const channelText = clawChannel?.options[clawChannel.selectedIndex]?.textContent || channelValue;
@@ -4058,11 +4054,6 @@
       setClawStatus(clawT("claw-error-empty"), "error");
       setClawAreaState("error");
       input.focus();
-      return;
-    }
-    if (body.length > 4000) {
-      setClawStatus(clawT("claw-error-too-large"), "error");
-      setClawAreaState("error");
       return;
     }
     clearClawRecovery();
