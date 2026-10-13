@@ -3,7 +3,10 @@ from __future__ import annotations
 
 import importlib.util
 import json
+from contextlib import redirect_stdout
+from io import StringIO
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / ".github/scripts/b62_sse_served_config_drift_guard.py"
@@ -74,6 +77,64 @@ def test_b62_preflight_and_premutation_both_block_before_upload():
     assert deploy.index(helper) < deploy.index("Deploy production code preserving the full binding set")
     assert "test_b62_sse_served_config_drift_guard.py" in w
     assert '.github/scripts/b62_sse_served_config_drift_guard.py' in w
+
+
+def _read_only_cli(settings: dict, served: dict) -> tuple[int, str]:
+    with TemporaryDirectory() as td:
+        root = Path(td)
+        (root / "settings.json").write_text(json.dumps(settings), encoding="utf-8")
+        (root / "served.json").write_text(json.dumps(served), encoding="utf-8")
+        argv = ["sse-served-config-guard",
+                "--settings", str(root / "settings.json"),
+                "--served-version", str(root / "served.json")]
+        output = StringIO()
+        old_argv = sys.argv
+        try:
+            sys.argv = argv
+            with redirect_stdout(output):
+                code = guard.main()
+        finally:
+            sys.argv = old_argv
+        return code, output.getvalue()
+
+
+def test_cli_reports_explicit_flag_state_only_after_valid_parity():
+    # Parity alone does not prove OFF; this finite readout prevents a false
+    # operational readiness conclusion from a PASS on a shared TRUE state.
+    for state, expected in ((None, "ABSENT"), ("false", "FALSE"), ("true", "TRUE")):
+        code, out = _read_only_cli(s(state), v(state))
+        assert code == 0
+        assert "B62_SSE_SERVED_CONFIG_PARITY=PASS" in out
+        assert "B62_SSE_SERVED_FLAG_STATE=" + expected in out
+        assert "B62_DEPLOY_MUTATION=0" in out
+        assert "SECRET_" not in out
+
+
+def test_cli_mismatch_never_prints_flag_state_or_secret_material():
+    private = "private-sentinel-must-not-be-logged"
+    settings = s("true")
+    settings["result"]["bindings"].append({
+        "name": "SIMULATED_AUTH", "type": "secret_text", "value": private})
+    served = v("false")
+    served["result"]["resources"]["bindings"].append({
+        "name": "SIMULATED_AUTH", "type": "secret_text", "value": private})
+    code, out = _read_only_cli(settings, served)
+    assert code == 2
+    assert "B62_SSE_SERVED_CONFIG_PARITY=BLOCKED" in out
+    assert "B62_SSE_SERVED_FLAG_STATE=" not in out
+    assert "B62_DEPLOY_MUTATION=0" in out
+    assert private not in out
+
+
+def test_cloudflare_readonly_mode_uses_state_guard_not_emergency_recovery_candidate():
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    readonly = workflow.split("\n  cloudflare-readonly:\n", 1)[1].split(
+        "\n  deploy-production-code:\n", 1)[0]
+    assert 'if [ "${{ inputs.mode }}" = "recover_p01_sse_off" ]; then' in readonly
+    assert "b62_p01_sse_snapshot_off_recovery.py candidate" in readonly
+    assert "b62_sse_served_config_drift_guard.py" in readonly
+    assert "B62_CODE_DEPLOY_READONLY=PASS" in readonly
+    assert "B62_SSE_SERVED_FLAG_STATE=" in SCRIPT.read_text(encoding="utf-8")
 
 
 if __name__ == "__main__":
