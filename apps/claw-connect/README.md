@@ -21,3 +21,22 @@ Brand changes are not permission to rekey a device or bypass authorization.
 Live enrollment remains disabled until the protected TLS/WSS gateway and a
 reviewed real-device release have been validated. Contract/mock tests alone do
 not demonstrate a production connection.
+
+## Agent availability check (read-only)
+
+Run `python -m padiem_connector doctor` (or `padiem-connector doctor`).
+It checks the pinned PADIEM Agent source root without launching the Agent,
+creating device identity, reading credentials, enabling autostart or contacting
+Cloudflare. A nonzero exit means that the Agent source is not ready.
+
+Install against an existing, trusted Agent source with `install.ps1 -AgentSrc
+<full path to apps/korean-ai-code-agent/src>`. The older `-ResidentSrc` option
+remains accepted. A caller-supplied path must contain the canonical `kagent`
+Resident, pairing and protected-storage modules; otherwise the installer
+refuses before modifying the existing installation. Without an explicit pin,
+the diagnostic reports whether the interpreter already has the canonical
+Agent source installed. A successful Connector install alone is **not** a
+claim that the Agent or production Broker is connected.
+
+Upgrade/uninstall retains the legacy `claw_connect` command when removing an
+old installation that has no `padiem_connector` Python entrypoint yet.

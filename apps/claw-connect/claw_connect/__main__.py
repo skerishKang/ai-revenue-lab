@@ -32,7 +32,7 @@ from .enrollment import (
 )
 from .runtime import CONNECT_APP_EXIT_ALREADY_RUNNING, ConnectApp
 
-USAGE = "%(prog)s [start|status|stop|login|enroll|logout|autostart on|off|show]"
+USAGE = "%(prog)s [start|status|doctor|stop|login|enroll|logout|autostart on|off|show]"
 
 
 def _autostart_command() -> str:
@@ -59,6 +59,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     sub.add_parser("start", help="start the tray (single instance) — default")
     sub.add_parser("status", help="machine-readable state, no tray")
+    sub.add_parser("doctor", help="read-only Agent installation preflight, no Broker traffic")
     sub.add_parser("stop", help="ask a running tray to quit")
     sub.add_parser("login", help="open the reviewed PADIEM login / consent page")
     sub.add_parser("logout", help="forget this device binding (keeps the device id)")
@@ -81,6 +82,15 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    # The doctor must never initialise ConnectorEnrollment or mint device state.
+    # No tray, autostart, account, Broker or Resident process is started.
+    if args.command == "doctor":
+        from .agent_preflight import agent_preflight
+        from .enrollment import default_state_dir
+        snapshot = agent_preflight(state_dir=default_state_dir())
+        print(json.dumps(snapshot, ensure_ascii=False, sort_keys=True))
+        return 0 if snapshot["agent_ready"] else 1
+
     app = ConnectApp()
 
     if args.command == "status":

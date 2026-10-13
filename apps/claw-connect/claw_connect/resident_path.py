@@ -17,7 +17,8 @@ import os
 from pathlib import Path
 from typing import Any
 
-#: Environment override for the kagent source root.
+#: Canonical naming; keep the legacy variable for existing installations.
+AGENT_SRC_ENV_VAR = "PADIEM_AGENT_SRC"
 RESIDENT_SRC_ENV_VAR = "CLAW_RESIDENT_SRC"
 #: Per-user file the installer may write to pin the Resident source root.
 RESIDENT_CONFIG_FILENAME = "resident.json"
@@ -30,9 +31,12 @@ def resident_src_root(*, state_dir: str | os.PathLike[str] | None = None) -> str
     ``None`` is an honest answer: the caller then uses the canonical module name
     and lets the interpreter resolve it, rather than inventing a path.
     """
-    override = (os.environ.get(RESIDENT_SRC_ENV_VAR) or "").strip()
-    if override:
-        return override
+    preferred = (os.environ.get(AGENT_SRC_ENV_VAR) or "").strip()
+    legacy = (os.environ.get(RESIDENT_SRC_ENV_VAR) or "").strip()
+    if preferred and legacy and Path(preferred).expanduser().resolve() != Path(legacy).expanduser().resolve():
+        raise ValueError("PADIEM Agent source environment values disagree")
+    if preferred or legacy:
+        return preferred or legacy
     if state_dir is None:
         return None
     config = Path(state_dir).expanduser() / RESIDENT_CONFIG_FILENAME
@@ -69,6 +73,7 @@ def write_resident_config(
 
 __all__ = [
     "RESIDENT_CONFIG_FILENAME",
+    "AGENT_SRC_ENV_VAR",
     "RESIDENT_SRC_ENV_VAR",
     "resident_src_root",
     "write_resident_config",
