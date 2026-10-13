@@ -117,6 +117,19 @@ class B66ConversationError(ValueError):
         self.observed_type = observed_type
 
 
+class ConversationRevisionConflict(B66ConversationError):
+    """A concurrent writer already committed a newer revision of this slot.
+
+    Raised only by the store's revision compare-and-swap, and only when the
+    database positively reports that zero rows were affected. It is a bounded
+    ``revision_conflict`` outcome for the client, never a lost update: the
+    first committed state is the durable one.
+    """
+
+    def __init__(self) -> None:
+        super().__init__("revision_conflict")
+
+
 def _json_type_name(value: Any) -> str:
     if value is None:
         return "null"
@@ -272,10 +285,19 @@ def normalize_facts_delta(value: Any) -> dict:
     if "items" in value:
         delta["items"] = _normalize_items(value.get("items") or [], path="facts.items")
     if "taxMode" in value:
-        tax_mode = value.get("taxMode") or ""
-        if tax_mode not in TAX_MODES:
-            raise B66ConversationError("invalid_tax_mode", path="facts.taxMode", observed_type="string")
-        delta["taxMode"] = tax_mode
+        tax_mode = value["taxMode"]
+        if isinstance(tax_mode, str) and tax_mode == "":
+            # Exactly empty means *not provided*. The model routinely emits a
+            # placeholder for a tax mode the customer never stated. Accepting it
+            # as absent leaves a known tax mode untouched and stages nothing;
+            # it never clears or changes an existing value. Every other value
+            # is still validated: a non-string type, an unknown non-empty
+            # string, or a mode outside the closed set is refused.
+            pass
+        elif not isinstance(tax_mode, str) or tax_mode not in TAX_MODES:
+            raise B66ConversationError("invalid_tax_mode", path="facts.taxMode", observed_type=_json_type_name(tax_mode))
+        else:
+            delta["taxMode"] = tax_mode
     if "memo" in value:
         delta["memo"] = _bounded_text(value.get("memo") or "", limit=MAX_MEMO_CHARS, path="facts.memo")
     if "projectName" in value:
@@ -606,22 +628,52 @@ def apply_message_transition(state: dict, reply: str, intent: str, delta: dict) 
     """Server-authoritative transition for one answered message turn.
 
     The model proposes (reply, intent, delta); this function alone decides
-    which transitions are legal from the current state. The returned state
-    carries a private ``_mode_changed`` marker for the response.
+    which transitions are legal from the current state. Quote facts may only be
+    collected or modified inside the **server-owned quote-authoring scope**
+    (``mode == MODE_QUOTE``), which the server itself opens and closes. Outside
+    that scope a model reply mutates no quote fact at all — whichever intent
+    label the model chose — so facts retained after ``exit_quote`` (or after a
+    customer resumes months later) can only ever change through staging and the
+    customer's explicit confirm action. The returned state carries a private
+    ``_mode_changed`` marker for the response.
     """
     data = normalize_conversation_state(state)
+    # Validate the proposal before anything reads it, so a delta that carries no
+    # real change (e.g. only a placeholder tax mode) cannot stage or merge an
+    # empty modification the customer would then have to confirm.
+    delta = normalize_facts_delta(delta)
     staging = False
-    if data["mode"] == MODE_QUOTE and delta and (
-        intent == "quote_modify" or delta_overwrites_known_facts(data["facts"], delta)
-    ):
-        # A modification is only staged. It is applied solely by an explicit
-        # customer confirm action, never by a model intent — so the current
-        # facts stay exactly as they were until that confirmation. A reply that
-        # rewrites an already-known value is a modification no matter which
-        # intent label the model chose (including a claimed ``confirm``).
-        staging = True
-    elif delta:
-        data["facts"] = merge_facts(data["facts"], delta)
+    if data["mode"] == MODE_QUOTE:
+        # Authoring scope: the customer is actively building this quotation.
+        if delta and (
+            intent == "quote_modify" or delta_overwrites_known_facts(data["facts"], delta)
+        ):
+            # A modification is only staged. It is applied solely by an explicit
+            # customer confirm action, never by a model intent — so the current
+            # facts stay exactly as they were until that confirmation. A reply
+            # that rewrites an already-known value is a modification no matter
+            # which intent label the model chose (including a claimed
+            # ``confirm``).
+            staging = True
+        elif delta:
+            data["facts"] = merge_facts(data["facts"], delta)
+    else:
+        # General scope: no general/explain/clarify/confirm/quote_modify reply
+        # has fact authority, and neither does a re-entering quote_create turn
+        # for anything the customer already stated. The one collection that is
+        # legitimate is an explicit authoring request that this very turn opens
+        # authoring on, and only for genuinely new values.
+        opens_authoring = intent == "quote_create"
+        if (
+            opens_authoring
+            and delta
+            and not delta_overwrites_known_facts(data["facts"], delta)
+        ):
+            data["facts"] = merge_facts(data["facts"], delta)
+        # Anything else the model proposed has no authority here and is dropped
+        # rather than merged: an unselected method and a reply that stands on
+        # its own are the only outcomes of this turn.
+        delta = {}
     mode_changed = False
 
     if data["mode"] == MODE_GENERAL:
@@ -835,6 +887,7 @@ __all__ = [
     "ACTION_APPROVE_DRAFT",
     "ACTIONS",
     "B66ConversationError",
+    "ConversationRevisionConflict",
     "INTENTS",
     "MAX_HISTORY_TURNS",
     "MAX_MESSAGE_CHARS",

@@ -30,7 +30,12 @@ from starlette.testclient import TestClient
 from app.app_factory import create_app
 from app.auth import SESSION_COOKIE, create_session_token
 from app.b14_client import ChatRuntimeError
-from app.b66_ai_conversation import MODE_GENERAL, MODE_QUOTE
+from app.b66_ai_conversation import (
+    MODE_GENERAL,
+    MODE_QUOTE,
+    bump_revision,
+    merge_facts,
+)
 from app.b66_ai_conversation_store import D1ConversationStore
 from app.b66_quote_history_store import normalize_quote_draft_snapshot
 from app.b66_registered_model_boundary import B14AuthorizedModelRoute
@@ -590,3 +595,145 @@ def test_state_projection_never_leaks_the_message_log(ctx):
     headers = ctx.client.get("/api/b66/ai/conversation").headers
     assert headers["Cache-Control"] == "no-store, max-age=0"
     assert headers["Pragma"] == "no-cache"
+
+
+# ── P0-A over the real route: no general reply mutates a quote ──
+
+def test_a_general_reply_cannot_change_a_retained_quote_over_the_route(ctx):
+    opened = open_authoring(ctx, "flexible")
+    collected = send(
+        ctx, "가상건설 배관 100m 18000원", revision=opened["revision"],
+        answer=model_reply("확인해 주세요.", "quote_create", {
+            "recipient": {"company": "가상건설"},
+            "items": [{"name": "배관", "qty": 100, "unitPrice": 18000}],
+        }),
+    ).json()
+    exited = send(
+        ctx, "여기까지 할게요", revision=collected["revision"],
+        answer=model_reply("네, 다른 얘기를 하시겠어요.", "exit_quote"),
+    ).json()
+    assert exited["mode"] == MODE_GENERAL
+
+    after = send(
+        ctx, "다른 질문이 있어요", revision=exited["revision"],
+        answer=model_reply("수량을 500으로 바꿔드릴게요.", "general", {
+            "items": [{"name": "배관", "qty": 500, "unitPrice": 18000}],
+        }),
+    )
+    assert after.status_code == 200, after.text
+    assert after.json()["quote"]["facts"]["items"][0]["qty"] == 100
+    stored = ctx.client.get("/api/b66/ai/conversation").json()["state"]
+    assert stored["facts"]["items"][0]["qty"] == 100
+
+
+def test_a_general_reply_cannot_add_an_item_while_no_quote_is_being_created(ctx):
+    sign_in(ctx, USER_A)
+    res = send(
+        ctx, "안녕하세요", revision=0,
+        answer=model_reply("안녕하세요!", "general", {
+            "items": [{"name": "타일", "qty": 10, "unitPrice": 5000}],
+        }),
+    )
+    assert res.status_code == 200, res.text
+    assert res.json()["quote"]["facts"]["items"] == []
+
+
+# ── P1 over the real route: an empty model taxMode is not a failed turn ──
+
+def test_a_model_placeholder_tax_mode_does_not_fail_the_turn(ctx):
+    opened = open_authoring(ctx, "flexible")
+    res = send(
+        ctx, "가상건설 배관 100m 18000원", revision=opened["revision"],
+        answer=model_reply("확인해 주세요.", "quote_create", {
+            "recipient": {"company": "가상건설"},
+            "items": [{"name": "배관", "qty": 100, "unitPrice": 18000}],
+            "taxMode": "",
+        }),
+    )
+    assert res.status_code == 200, res.text
+    body = res.json()
+    assert body["quote"]["facts"]["taxMode"] == ""
+    assert body["quote"]["facts"]["items"][0]["qty"] == 100
+
+
+def test_an_unusable_tax_mode_still_fails_the_turn_closed_without_mutating(ctx):
+    opened = open_authoring(ctx, "flexible")
+    res = send(
+        ctx, "가상건설 배관 100m 18000원", revision=opened["revision"],
+        answer=model_reply("확인해 주세요.", "quote_create", {
+            "recipient": {"company": "가상건설"},
+            "items": [{"name": "배관", "qty": 100, "unitPrice": 18000}],
+            "taxMode": "WEIRD",
+        }),
+    )
+    assert res.status_code == 502
+    assert res.headers["X-B66-Conversation-Reason"] == "invalid_tax_mode"
+    stored = ctx.client.get("/api/b66/ai/conversation").json()["state"]
+    assert stored["facts"]["items"] == []
+
+
+# ── P0-B over the real route: a lost race is a 409, not two successes ──
+
+class RacingStore:
+    """Lets a competing request commit between this route's read and write."""
+
+    def __init__(self, inner):
+        self.inner = inner
+        self._read = None
+
+    async def load(self, *, user_id, workspace_id):
+        state = await self.inner.load(user_id=user_id, workspace_id=workspace_id)
+        if state is not None:
+            self._read = state
+        return state
+
+    async def clear(self, **kwargs):
+        return await self.inner.clear(**kwargs)
+
+    async def save(self, *, user_id, workspace_id, state, expected_revision):
+        read, self._read = self._read, None
+        if read is not None:
+            winner = dict(read)
+            winner["facts"] = merge_facts(read["facts"], {"memo": "다른 요청이 먼저 저장"})
+            await self.inner.save(
+                user_id=user_id, workspace_id=workspace_id,
+                state=bump_revision(winner), expected_revision=expected_revision,
+            )
+        return await self.inner.save(
+            user_id=user_id, workspace_id=workspace_id,
+            state=state, expected_revision=expected_revision,
+        )
+
+
+def test_a_turn_that_loses_the_revision_race_is_a_409_and_the_winner_survives(ctx):
+    opened = open_authoring(ctx, "flexible")
+    inner = ctx.app.state.b66_ai_conversation_store
+    ctx.app.state.b66_ai_conversation_store = RacingStore(inner)
+
+    res = send(
+        ctx, "가상건설 배관 100m 18000원", revision=opened["revision"],
+        answer=model_reply("확인해 주세요.", "quote_create", {
+            "recipient": {"company": "가상건설"},
+            "items": [{"name": "배관", "qty": 100, "unitPrice": 18000}],
+        }),
+    )
+    assert res.status_code == 409, res.text
+    body = res.json()
+    assert body["error"]["code"] == "revision_conflict"
+    # The winner's commit is the durable one; this turn did not overwrite it.
+    stored = ctx.client.get("/api/b66/ai/conversation").json()["state"]
+    assert stored["facts"]["memo"] == "다른 요청이 먼저 저장"
+    assert stored["facts"]["items"] == []
+    assert body["revision"] == stored["revision"]
+
+
+def test_a_control_action_that_loses_the_revision_race_is_a_409(ctx):
+    opened = open_authoring(ctx, "flexible")
+    inner = ctx.app.state.b66_ai_conversation_store
+    ctx.app.state.b66_ai_conversation_store = RacingStore(inner)
+    res = act(ctx, "choose_method", revision=opened["revision"], method="guided")
+    assert res.status_code == 409, res.text
+    assert res.json()["error"]["code"] == "revision_conflict"
+    # The winner's method choice is the durable one, not this request's.
+    stored = ctx.client.get("/api/b66/ai/conversation").json()["state"]
+    assert stored["method"] == "flexible"

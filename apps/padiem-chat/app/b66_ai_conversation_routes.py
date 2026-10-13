@@ -12,8 +12,10 @@ draft-shaped output it can produce is the canonical QuoteCore draft *input*,
 returned by an explicit customer approval action (``action="approve_draft"``)
 and consumed by the existing client QuoteCore path, which alone computes and
 persists the quotation. A model intent can never reach that action. Duplicate
-turns are answered from the stored state without a second provider call, and a
-stale revision is refused with 409 instead of mutating.
+turns are answered from the stored state without a second provider call. Every
+write is a revision compare-and-swap, so a stale client and a request that lost
+a concurrent race are both refused with 409 instead of mutating: the first
+committed state is the durable one and both writers are never told they won.
 """
 from __future__ import annotations
 
@@ -28,6 +30,7 @@ from .b66_ai_conversation import (
     ACTION_APPROVE_DRAFT,
     ACTIONS,
     B66ConversationError,
+    ConversationRevisionConflict,
     METHOD_FLEXIBLE,
     METHOD_GUIDED,
     SERVER_CANCEL_ANSWER,
@@ -110,6 +113,24 @@ def _conversation_state_payload(state: dict, *, extra: dict | None = None) -> di
     if extra:
         quote.update(extra)
     return quote
+
+
+async def _revision_conflict_response(store: Any, uid: str, workspace_id: str) -> JSONResponse:
+    """Bounded 409 for a write that lost the revision race.
+
+    The winner's state stays durable; this response only tells the client which
+    revision it must resync to. If the slot cannot be re-read the revision is
+    omitted rather than guessed.
+    """
+    body: dict[str, Any] = {"ok": False, "error": {"code": "revision_conflict"}}
+    try:
+        stored = await store.load(user_id=uid, workspace_id=workspace_id)
+    except Exception:
+        stored = None
+    if isinstance(stored, dict):
+        body["revision"] = stored["revision"]
+        body["mode"] = stored["mode"]
+    return JSONResponse(body, status_code=409, headers=_NO_STORE)
 
 
 async def conversation_state(request: Request) -> JSONResponse:
@@ -223,6 +244,11 @@ async def conversation_turn(request: Request) -> JSONResponse:
             status_code=409, headers=_NO_STORE,
         )
 
+    # The exact revision this request was built on. Every write below swaps on
+    # it, so a request that raced another writer after this read is refused
+    # instead of silently overwriting the first committed state.
+    expected_revision = state["revision"]
+
     if action == "message" and loaded is not None and message == state["last_user_message"]:
         # Exact duplicate of the turn this revision already answered: return the
         # stored answer without a second provider call.
@@ -265,7 +291,12 @@ async def conversation_turn(request: Request) -> JSONResponse:
         state["answer_origin"] = "server_state"
         state = bump_revision(state)
         try:
-            await store.save(user_id=uid, workspace_id=workspace_id, state=state)
+            await store.save(
+                user_id=uid, workspace_id=workspace_id,
+                state=state, expected_revision=expected_revision,
+            )
+        except ConversationRevisionConflict:
+            return await _revision_conflict_response(store, uid, workspace_id)
         except Exception:
             return _error(503, "conversation_state_write_failed", "대화 상태를 저장하지 못했습니다.")
         body = {
@@ -338,7 +369,16 @@ async def conversation_turn(request: Request) -> JSONResponse:
     state["last_user_message"] = message
     state = bump_revision(state)
     try:
-        await store.save(user_id=uid, workspace_id=workspace_id, state=state)
+        await store.save(
+            user_id=uid, workspace_id=workspace_id,
+            state=state, expected_revision=expected_revision,
+        )
+    except ConversationRevisionConflict:
+        # Another turn committed while this one was waiting on the model. This
+        # turn's paid answer is deliberately not written over that state; the
+        # client resyncs to the winner and the customer repeats if it still
+        # wants this turn applied.
+        return await _revision_conflict_response(store, uid, workspace_id)
     except Exception:
         # The model was already paid for this turn; fail closed rather than
         # silently losing the answer. A retry with the same revision+message is
