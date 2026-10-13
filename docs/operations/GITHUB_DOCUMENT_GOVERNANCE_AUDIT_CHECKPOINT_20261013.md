@@ -358,6 +358,20 @@ Immutable **835-source** cursor: **816 text originals seen at least partly** (12
 
 **Next:** Owner-only business/identifiable-content disposition and *separately scoped* post-freeze GitHub document delta review, without assuming publishing rights or moving entire files wholesale.
 
+## 1AK. Batch 37 — historical-freeze-to-current document delta audit (2026-10-14 KST)
+
+**Old frozen 835-source baseline:** `5476d1038993d647bf8ba241ce6a4307cccf291f`. **New bounded `main` snapshot:** `4bf9056459c2f500f6a069a4a8301ad21386cd12`. Exact Git compare: **86 changed paths**, **48 document artifacts** (`.md/.txt/.pdf/.docx/.tsv`), **38 other code/config**. Among 48 document artifacts, **38 are B02–B36 self-generated audit metadata**; **8 newly added** technical documents and **2 modified** existing source policies are substantive. 0 new PDFs/DOCX, deleted documents or renamed documents.
+
+- [Batch37 whole-body review and risk boundaries for 10 substantive changed documents](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH37_DELTA_20261014.md).
+- [Exact 48-row delta source/status/blob-SHA/size and classification register](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_POSTFREEZE_DELTA_REGISTER_20261014.tsv).
+- Classification by document artifact: `AUDIT_META=38`, `TECH_OWNER_RECORD=8`, `TECH_PUBLIC=1`, `MIXED_REVIEW=1`, `BUSINESS_REVIEW=0`.
+- The two modified pre-existing sources are the production deployment/rollback policy and P01 live SSE release authority. Their original Git blob SHAs match the original 835-source record; amendments concern single-Owner process and technical runtime verification, **not automatic Production authorization or removal of actual GitHub protections**.
+- The new technical resource/streaming documents do not authorize new model tiers, customer access, provider contracts or unlimited Worker memory. Actual deployed B14/B62/Engine/Claw/B66 state remains a separate exact-main/served verification.
+- Previous P0 disclosure matter — B66 public reference CGI PDF pair with apparent sensitive individual/contact/financial content — **unchanged and unresolved**; publication/removal/history response reserved to Owner/security/legal. Do not repeat those identifying values in GitHub audit reports.
+- **The original 835 fully inspected source count stays 835.** This new register does not silently append self-generated audit documents into the frozen inventory; future `main` commits after the snapshot require a new delta.
+
+**No original document content, binaries, local private Governance, product code, provider configuration, business strategy, customer data, or Production was changed by Batch37.**
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
