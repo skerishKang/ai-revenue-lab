@@ -83,6 +83,8 @@ def compare(before: object, after: object) -> dict[str, object]:
         "other_binding_diff_name_hashes": sorted(
             hashlib.sha256(n.encode()).hexdigest()[:12] for n in delta),
         "nonbinding_changed_resource_keys": nonbinding,
+        "script_changed_field_names": sorted(k for k in set(script_a) | set(script_b)
+            if script_a.get(k) != script_b.get(k)),
         "script_etag_same": etag_a == etag_b,
         "script_runtime_same": old_res.get("script_runtime") == new_res.get("script_runtime"),
         "assets_same": old_res.get("assets") == new_res.get("assets"),
