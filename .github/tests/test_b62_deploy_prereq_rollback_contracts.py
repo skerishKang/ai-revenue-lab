@@ -599,10 +599,19 @@ def test_case_17_readonly_publishes_active_version_as_non_secret_evidence() -> N
 def test_case_18_active_version_publication_keeps_deploy_and_rollback_gates() -> None:
     # The #2458 evidence change must not touch the deploy/rollback job gating.
     deploy = DEPLOY_WORKFLOW.read_text(encoding="utf-8")
+    # The normal deploy stays authorized by the existing gate; the one-off
+    # recovery mode shares the protected job and cannot bypass its prerequisites.
+    deploy_job = deploy.split("\n  deploy-production-code:\n", 1)[1].split(
+        "\n  rollback-production-code:\n", 1
+    )[0]
     assert (
         "if: ${{ github.event_name == 'workflow_dispatch' && "
-        "inputs.mode == 'deploy_production_code' }}" in deploy
+        "(inputs.mode == 'deploy_production_code' || "
+        "inputs.mode == 'recover_p01_sse_off') }}" in deploy_job
     )
+    assert "RECOVER_B62_P01_SSE_OFF_FROM_PINNED_SNAPSHOT" in deploy_job
+    assert "P01_SSE_RECOVERY_PREMUTATION=PASS" in deploy_job
+    assert "environment: production" in deploy_job
     assert (
         "if: ${{ github.event_name == 'workflow_dispatch' && "
         "inputs.mode == 'rollback_production_code' }}" in deploy
