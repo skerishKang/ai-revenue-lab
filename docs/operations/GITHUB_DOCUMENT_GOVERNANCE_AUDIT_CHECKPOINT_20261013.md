@@ -211,6 +211,15 @@ Frozen 835-original cursor: **675 at least partly text-reviewed** (125 initial `
 - Pillow/pypdf supply chain, desktop withdrawal, third-party license notices, Sidecar and CI optimizations are bounded technical controls; none prove live service or permission to bypass security.
 - No original file, source/hash/size, local corporate Governance, customer data, vendor/provider account, actual product policy or deployment changed.
 
+## 1X. Batch 24 — 25 full-text source reads: CTO forms, B02 Living Travel, B01 Personal Edition and B13 Video Archive (2026-10-13)
+
+Frozen original 835-document cursor: **700 source documents with text viewed at least partly** (125 early `TEXT_SAMPLED` + 25 each B02–B24); **116 INDEXED_ONLY** text bodies unread; **19 BINARY_PENDING** PDF/DOCX unread. Initial 125 samples still require exhaustive re-review.
+
+- [Batch24 exact-source SHA-pinned public-safe business/technical triage](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH24_20261013.md)
+- Historical Living Travel July staging pass is not later V2 design Owner approval or today's live service; July Personal Edition visual QA success does not reverse V2 owner rejection and V3 hold.
+- Third-party Pexels derivatives, real YouTube IDs/thumbnails and personal video journal need separate content rights/consumer privacy decisions; static previews and localhost screenshot locators cannot certify Production availability.
+- No original source modifications, commercial Owner-policy adoption, local corporate Governance access, real provider/customer data, rejected product PR merge, or production deployment.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |

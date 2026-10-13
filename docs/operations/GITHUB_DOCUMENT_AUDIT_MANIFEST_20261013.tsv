@@ -1,11 +1,11 @@
 # Complete public GitHub document path manifest — audit checkpoint 2026-10-13
 # Baseline main SHA: 5476d1038993d647bf8ba241ce6a4307cccf291f
-# Content states: INDEXED_ONLY=original path and blob indexed, body unread; TEXT_SAMPLED=early partial/full text sample not certified exhaustive; TEXT_FULL_FETCHED_B02/B03/B04/B05/B06/B07/B08/B09/B10/B11/B12/B13/B14/B15/B16/B17/B18/B19/B20/B21/B22/B23=full original body fetched and provisionally classified, not owner/legal/commercial/Production approval; BINARY_PENDING=PDF/DOCX unread.
+# Content states: INDEXED_ONLY=original path/blob indexed, body unread; TEXT_SAMPLED=early partial/full inspection not independently exhaustive; TEXT_FULL_FETCHED_B02/B03/B04/B05/B06/B07/B08/B09/B10/B11/B12/B13/B14/B15/B16/B17/B18/B19/B20/B21/B22/B23/B24=original full source body read and provisionally classified, not owner/legal/commercial/Production approval; BINARY_PENDING=PDF/DOCX bodies unread.
 # This file has all 835 recognized document-format blobs from a GitHub recursive tree with truncated=false. Existing source content was not copied here.
 # Full-status classification must not be inferred from filename keywords or the TEXT_SAMPLED flag.
 PATH	BLOB_SHA	BYTES	READ_STATE
-.github/ISSUE_TEMPLATE/cto-work-order.md	f2cc535b65922162c7c6aaa9425eb07c33e3eab2	2119	INDEXED_ONLY
-.github/pull_request_template.md	d3afe5fd6ea81871d6543cb1b2f4ffbd989cfbd1	5242	INDEXED_ONLY
+.github/ISSUE_TEMPLATE/cto-work-order.md	f2cc535b65922162c7c6aaa9425eb07c33e3eab2	2119	TEXT_FULL_FETCHED_B24
+.github/pull_request_template.md	d3afe5fd6ea81871d6543cb1b2f4ffbd989cfbd1	5242	TEXT_FULL_FETCHED_B24
 AGENTS.md	f6cff489d56e93604dc3852f20a152a44c774a34	27375	TEXT_SAMPLED
 apps/ai-reward-router/DEPLOYMENT.md	2fa41400e211e524f50cd3466e83e87d4e01522d	2290	TEXT_FULL_FETCHED_B23
 apps/ai-reward-router/migrations/README.md	f3d454149c7817c0e3c07dbe7c742dee61db6e25	1887	TEXT_FULL_FETCHED_B23
@@ -112,15 +112,15 @@ apps/living-learning/PRODUCT_CONTRACT.md	fed2ce8b21feeeb35db9ae3e4b846abf3d0a238
 apps/living-learning/README.md	8631baec3e500280bb4d26bbc1f82747effe0796	1057	TEXT_FULL_FETCHED_B02
 apps/living-learning/requirements-padiem-core.txt	7644932b2c8d4d561ad45b5edf19adeaebaedf1a	193	INDEXED_ONLY
 apps/living-travel/docs/ai-provider-guidance.md	6799a0e89e1264953a34ff041b468ad569b46dce	3922	TEXT_FULL_FETCHED_B14
-apps/living-travel/docs/B2_V2_457_CHANGED_SURFACES.md	fcda1e25b410801297af4a4c4a0ad814e3cae0d7	807	INDEXED_ONLY
-apps/living-travel/docs/B2_V2_457_PR_BODY.md	216f742f58c32861bb013fac201e1a82f81e2539	1667	INDEXED_ONLY
-apps/living-travel/docs/B2_V2_457_REVIEW_NOTES.md	b4275f2fd233da98a58358121c2dfbdd1262c5c7	1823	INDEXED_ONLY
-apps/living-travel/docs/B2_V2_457_VALIDATION_LIMITS.md	1706048afa2f454cec865be838906eca4a0edddf	674	INDEXED_ONLY
-apps/living-travel/docs/demo/REFERENCE_NOTES.md	0d1f9f7ceedb468ab92cae942e8f0dcb5977da52	3150	INDEXED_ONLY
-apps/living-travel/docs/IMAGE_SOURCES.md	78feceebd5ca8037aec013a0d9a92b06709adc86	2665	INDEXED_ONLY
-apps/living-travel/docs/staging-evidence/issue-74/REPORT.md	fa0915f11b809ed4abee3658a070f4f68c94b91b	6743	INDEXED_ONLY
+apps/living-travel/docs/B2_V2_457_CHANGED_SURFACES.md	fcda1e25b410801297af4a4c4a0ad814e3cae0d7	807	TEXT_FULL_FETCHED_B24
+apps/living-travel/docs/B2_V2_457_PR_BODY.md	216f742f58c32861bb013fac201e1a82f81e2539	1667	TEXT_FULL_FETCHED_B24
+apps/living-travel/docs/B2_V2_457_REVIEW_NOTES.md	b4275f2fd233da98a58358121c2dfbdd1262c5c7	1823	TEXT_FULL_FETCHED_B24
+apps/living-travel/docs/B2_V2_457_VALIDATION_LIMITS.md	1706048afa2f454cec865be838906eca4a0edddf	674	TEXT_FULL_FETCHED_B24
+apps/living-travel/docs/demo/REFERENCE_NOTES.md	0d1f9f7ceedb468ab92cae942e8f0dcb5977da52	3150	TEXT_FULL_FETCHED_B24
+apps/living-travel/docs/IMAGE_SOURCES.md	78feceebd5ca8037aec013a0d9a92b06709adc86	2665	TEXT_FULL_FETCHED_B24
+apps/living-travel/docs/staging-evidence/issue-74/REPORT.md	fa0915f11b809ed4abee3658a070f4f68c94b91b	6743	TEXT_FULL_FETCHED_B24
 apps/living-travel/docs/STAGING.md	1f932b1c1ecf7c4d58d33c4022661a2073bdb4fd	4624	TEXT_FULL_FETCHED_B14
-apps/living-travel/pages-preview/README.md	dc3100d3f0843fb53627fb7784118a19af183e41	5161	INDEXED_ONLY
+apps/living-travel/pages-preview/README.md	dc3100d3f0843fb53627fb7784118a19af183e41	5161	TEXT_FULL_FETCHED_B24
 apps/living-travel/pages-preview/site/robots.txt	1f53798bb4fe33c86020be7f10c44f29486fd190	26	INDEXED_ONLY
 apps/living-travel/PRODUCT_CONTRACT.md	b1e9c38b526b2440f6f14269c8fc458f932a152c	6109	TEXT_FULL_FETCHED_B03
 apps/living-travel/README.md	ec7b975072b812992d0ce6da268d88f9301508bc	2208	TEXT_FULL_FETCHED_B02
@@ -131,25 +131,25 @@ apps/padiem-desktop-shell/README.md	b0c896cde0a5b6cd237e34a220e438e2c62920cd	602
 apps/padiem-desktop-shell/THIRD_PARTY_NOTICES.md	aea2b4c0fa3016e492ffcd541189f5dadac452b0	2665	TEXT_FULL_FETCHED_B23
 apps/padiem-lab/README.md	c2ffc9bc192b320e61062202feca746ce7bc1c6b	3588	INDEXED_ONLY
 apps/padiem-sidecar/README.md	3e704b90cac1787d99b6f8545f9b192eeb450dc7	1977	TEXT_FULL_FETCHED_B21
-apps/personal-edition/docs/design-reference/IMAGE_PLAN.md	dc80f56bd89370677a847ed89b6cb198c35f24db	1885	INDEXED_ONLY
-apps/personal-edition/docs/design-reference/REFERENCE_NOTES.md	4fca3b0a224b2157243a9b793aa44e9f2051b6e8	869	INDEXED_ONLY
-apps/personal-edition/docs/design-reference/SCREEN_MATRIX.md	8303d12a26c990da608684e305d2efb215966721	1901	INDEXED_ONLY
-apps/personal-edition/docs/design-reference/V5_RASTER_ASSET_SOURCES.md	a6a8341725feb7f7b1908a61a38f132b950001bc	2501	INDEXED_ONLY
-apps/personal-edition/docs/design-reference/VISUAL_SYSTEM.md	310fcdc70121bd0a28c5f996542c674d4345be41	1333	INDEXED_ONLY
-apps/personal-edition/docs/visual-review/0420b84/VALIDATION_REPORT.md	15a0136233bd490922056201698f93ceaee7e5c9	509	INDEXED_ONLY
-apps/personal-edition/docs/visual-review/final/VALIDATION_REPORT.md	7b6ce8e37724686924f3f1bfa82d2d73fb4c8fa0	601	INDEXED_ONLY
-apps/personal-edition/docs/visual-review/v2-443/README.md	6eafe474f7d648713bfd962c058489b4afb797c9	2849	INDEXED_ONLY
-apps/personal-edition/docs/visual-review/v3-454/README.md	9b1b980630f860329be45bc51dfdb3f3e157d35b	2799	INDEXED_ONLY
+apps/personal-edition/docs/design-reference/IMAGE_PLAN.md	dc80f56bd89370677a847ed89b6cb198c35f24db	1885	TEXT_FULL_FETCHED_B24
+apps/personal-edition/docs/design-reference/REFERENCE_NOTES.md	4fca3b0a224b2157243a9b793aa44e9f2051b6e8	869	TEXT_FULL_FETCHED_B24
+apps/personal-edition/docs/design-reference/SCREEN_MATRIX.md	8303d12a26c990da608684e305d2efb215966721	1901	TEXT_FULL_FETCHED_B24
+apps/personal-edition/docs/design-reference/V5_RASTER_ASSET_SOURCES.md	a6a8341725feb7f7b1908a61a38f132b950001bc	2501	TEXT_FULL_FETCHED_B24
+apps/personal-edition/docs/design-reference/VISUAL_SYSTEM.md	310fcdc70121bd0a28c5f996542c674d4345be41	1333	TEXT_FULL_FETCHED_B24
+apps/personal-edition/docs/visual-review/0420b84/VALIDATION_REPORT.md	15a0136233bd490922056201698f93ceaee7e5c9	509	TEXT_FULL_FETCHED_B24
+apps/personal-edition/docs/visual-review/final/VALIDATION_REPORT.md	7b6ce8e37724686924f3f1bfa82d2d73fb4c8fa0	601	TEXT_FULL_FETCHED_B24
+apps/personal-edition/docs/visual-review/v2-443/README.md	6eafe474f7d648713bfd962c058489b4afb797c9	2849	TEXT_FULL_FETCHED_B24
+apps/personal-edition/docs/visual-review/v3-454/README.md	9b1b980630f860329be45bc51dfdb3f3e157d35b	2799	TEXT_FULL_FETCHED_B24
 apps/personal-edition/README.md	75f9ac4a0b676398ba65f0a3aab09c72d1e83a16	14461	TEXT_FULL_FETCHED_B02
 apps/personal-video-archive/docs/DESIGN_BRIEF_76.md	5e25a7129ee2b0a6fe0c7fd7479490a61ec5b9df	12762	TEXT_FULL_FETCHED_B14
-apps/personal-video-archive/docs/PREVIEW_VIDEO_SOURCES_76.md	1f14c23033515affc6655777b8dc5a47cca78475	4175	INDEXED_ONLY
-apps/personal-video-archive/docs/VISUAL_REFINEMENT_118.md	a026c31536cb7721d8ede3386632df786b6a48cc	11233	INDEXED_ONLY
-apps/personal-video-archive/docs/visual-review/issue-118/after/screenshots_urls.md	6ee8dd78e4f14692c8aafc707de0e6c250469057	830	INDEXED_ONLY
-apps/personal-video-archive/docs/visual-review/issue-118/before/screenshots_urls.md	85e0fc36b8c3385384532b6bf603ad48e58e6fab	823	INDEXED_ONLY
-apps/personal-video-archive/docs/visual-review/issue-118/browser_verification.md	08a2469be02003e403617890dfbd0f7d2bd6103d	2587	INDEXED_ONLY
+apps/personal-video-archive/docs/PREVIEW_VIDEO_SOURCES_76.md	1f14c23033515affc6655777b8dc5a47cca78475	4175	TEXT_FULL_FETCHED_B24
+apps/personal-video-archive/docs/VISUAL_REFINEMENT_118.md	a026c31536cb7721d8ede3386632df786b6a48cc	11233	TEXT_FULL_FETCHED_B24
+apps/personal-video-archive/docs/visual-review/issue-118/after/screenshots_urls.md	6ee8dd78e4f14692c8aafc707de0e6c250469057	830	TEXT_FULL_FETCHED_B24
+apps/personal-video-archive/docs/visual-review/issue-118/before/screenshots_urls.md	85e0fc36b8c3385384532b6bf603ad48e58e6fab	823	TEXT_FULL_FETCHED_B24
+apps/personal-video-archive/docs/visual-review/issue-118/browser_verification.md	08a2469be02003e403617890dfbd0f7d2bd6103d	2587	TEXT_FULL_FETCHED_B24
 apps/personal-video-archive/LOCAL_HANDOFF.md	74b4e026b0578a01a67067a6f6076ce83161347e	4932	TEXT_FULL_FETCHED_B14
 apps/personal-video-archive/PRODUCT_CONTRACT.md	3d7178177763bc03741291d120a2923a83334411	10734	TEXT_FULL_FETCHED_B03
-apps/personal-video-archive/README.md	7ddee8bb82dfef6668008fa6c8f142acb27bd3a9	8556	INDEXED_ONLY
+apps/personal-video-archive/README.md	7ddee8bb82dfef6668008fa6c8f142acb27bd3a9	8556	TEXT_FULL_FETCHED_B24
 apps/portfolio-console/ai-api/ASSET_PROVENANCE.md	964a7a1ca1a6ba678212f570b2aff6aa2d92402e	2365	TEXT_FULL_FETCHED_B23
 apps/portfolio-console/ai-api/README.md	f7c53b2f762372662331790d8b9ec860752e23ea	8981	TEXT_FULL_FETCHED_B23
 apps/portfolio-console/README.md	48f0f6239ada2e17e32a6e410178b1c3592150e4	11370	TEXT_FULL_FETCHED_B14
