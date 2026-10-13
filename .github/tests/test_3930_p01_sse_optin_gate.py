@@ -3,6 +3,10 @@ from __future__ import annotations
 import copy
 import importlib.util
 import json
+from contextlib import redirect_stdout
+from io import StringIO
+from tempfile import TemporaryDirectory
+from unittest.mock import patch
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -332,8 +336,75 @@ def test_cloudflare_10214_requires_snapshot_before_code_version_rollback():
     assert "b62_binding_state_guard.py" in block
 
 
+
+
+def _cli_evidence_paths(folder, before, after):
+    paths = {}
+    for prefix, triplet in (("before", before), ("after", after)):
+        for key, value in zip(("settings", "deployments", "version"), triplet):
+            path = folder / f"{prefix}-{key}.json"
+            path.write_text(json.dumps(value), encoding="utf-8")
+            paths[f"{prefix}-{key}"] = str(path)
+    return [
+        "verify",
+        "--before-settings", paths["before-settings"],
+        "--before-deployments", paths["before-deployments"],
+        "--before-version", paths["before-version"],
+        "--settings", paths["after-settings"],
+        "--deployments", paths["after-deployments"],
+        "--version", paths["after-version"],
+        "--target-sha", SHA,
+    ]
+
+
+def test_cli_postverify_reports_only_allowlisted_safe_reason():
+    before = fixtures()
+    after = post_from(before)
+    extra = b("UNAPPROVED_EXTRA", "plain_text", text=PRIVATE)
+    after[0]["result"]["bindings"].append(copy.deepcopy(extra))
+    after[2]["resources"]["bindings"].append(copy.deepcopy(extra))
+    with TemporaryDirectory() as td:
+        argv = _cli_evidence_paths(Path(td), before, after)
+        output = StringIO()
+        with redirect_stdout(output):
+            assert gate.main(argv) == 1
+    result = output.getvalue()
+    assert "P01_SSE_OPTIN_GATE_REASON=POST_SETTINGS_DRIFT" in result
+    assert "P01_SSE_OPTIN_GATE=BLOCKED" in result
+    assert "SECRET_VALUES_EMITTED=0" in result
+    assert PRIVATE not in result
+
+
+def test_cli_unknown_exception_never_exposes_sensitive_text():
+    before = fixtures()
+    with TemporaryDirectory() as td:
+        argv = _cli_evidence_paths(Path(td), before, before)
+        output = StringIO()
+        with patch.object(gate, "verify", side_effect=gate.OptInRefused(PRIVATE)):
+            with redirect_stdout(output):
+                assert gate.main(argv) == 1
+    result = output.getvalue()
+    assert "P01_SSE_OPTIN_GATE_REASON=UNCLASSIFIED" in result
+    assert PRIVATE not in result
+
+
+def test_postpatch_workflow_prints_only_bounded_reason_after_failed_verification():
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    verifier = workflow.split(
+        "- name: Prove post-PATCH served version and exactly one allowed configuration change",
+        1
+    )[1].split("\n      - name:", 1)[0]
+    assert "P01_SSE_OPTIN_GATE_REASON=[A-Z0-9_]{1,64}" in verifier
+    assert 'sse-verify.log" | tail -n 1 || true' in verifier
+    assert "P01_SSE_POST_SERVED_INTEGRITY=BLOCKED" in verifier
+    assert "cat \"${RUNNER_TEMP}/sse-verify.log\"" in verifier  # only on success
+    assert verifier.index("grep -E '^P01_SSE_OPTIN_GATE_REASON=") < verifier.index(
+        "P01_SSE_POST_SERVED_INTEGRITY=BLOCKED"
+    )
+
 if __name__ == "__main__":
     for name, func in sorted(globals().copy().items()):
         if name.startswith("test_") and callable(func):
             func()
             print(name + "=PASS")
+

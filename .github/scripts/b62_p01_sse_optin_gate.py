@@ -15,6 +15,37 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 
 
+# Deliberate finite allowlist. Never print raw exception messages or input values.
+# Updating this set requires a source review when adding a new verifier refusal.
+SAFE_REFUSAL_CODES = frozenset({
+    "ACTIVE_VERSION_NOT_UNIQUE",
+    "CODE_IDENTITY_MISSING",
+    "CORE_RUNTIME_NOT_READY",
+    "FLAG_NOT_ACTIVATED",
+    "FLAG_WRONG_TYPE_OR_VALUE",
+    "INVALID_TARGET_SHA",
+    "MISSING_BASELINE_EVIDENCE",
+    "NEW_SERVED_VERSION_NOT_OBSERVED",
+    "NO_OP_STATE_CHANGED",
+    "OUTPUT_PATH_UNAVAILABLE",
+    "POST_SERVED_BINDING_DRIFT",
+    "POST_SETTINGS_DRIFT",
+    "PREMUTATION_STATE_CHANGED",
+    "REQUIRED_BINDING_MISSING_OR_RETYPED",
+    "RUNTIME_IDENTITY_MISSING",
+    "SERVED_BINDING_INVENTORY_DRIFT",
+    "SERVED_FLAG_DRIFT",
+    "SERVED_RUNTIME_NOT_READY",
+    "SOURCE_LINEAGE_UNVERIFIED",
+    "SOURCE_SHA_MISMATCH",
+    "VERSION_BINDING_SHAPE",
+    "VERSION_DUPLICATE_BINDING",
+    "VERSION_ID",
+    "VERSION_MISMATCH",
+    "VERSION_SHAPE",
+    "WORKER_CODE_OR_RUNTIME_DRIFT",
+})
+
 def load(name: str, path: Path):
     spec = importlib.util.spec_from_file_location(name, path)
     assert spec and spec.loader
@@ -220,8 +251,17 @@ def main(argv=None) -> int:
             else:
                 verify(bs, bd, bv, s, d, v, args.target_sha, no_op=args.no_op)
                 print("P01_SSE_POST_SERVED_INTEGRITY=PASS")
-    except (OptInRefused, config.ProductionConfigError, OSError, ValueError,
+    except OptInRefused as exc:
+        reason = str(exc)
+        if reason not in SAFE_REFUSAL_CODES:
+            reason = "UNCLASSIFIED"
+        print(f"P01_SSE_OPTIN_GATE_REASON={reason}")
+        print("P01_SSE_OPTIN_GATE=BLOCKED")
+        print("SECRET_VALUES_EMITTED=0")
+        return 1
+    except (config.ProductionConfigError, OSError, ValueError,
             TypeError, KeyError, AttributeError):
+        print("P01_SSE_OPTIN_GATE_REASON=UNCLASSIFIED")
         print("P01_SSE_OPTIN_GATE=BLOCKED")
         print("SECRET_VALUES_EMITTED=0")
         return 1
