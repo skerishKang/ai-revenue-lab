@@ -385,3 +385,213 @@ async def test_live_token_provider_failure_is_bounded(runtime):
     body = await _dispatch(runtime, env, budget, request)
     assert body == {"ok": False, "error": {"code": "live_token_unavailable"}}
     assert "abc123" not in json.dumps(body)
+
+
+# ---------------------------------------------------------------------------
+# Caller-guard authorization: presence alone must NOT authorize a paid call
+# ---------------------------------------------------------------------------
+
+
+async def test_presence_only_guard_blocks_paid_routes(runtime):
+    """A binding with no ``authorize`` contract must not authorize a paid call.
+
+    Mere presence of ``VOICE_STT_CALLER_GUARD`` is not caller identity or cost
+    approval. Before the guard gained a verified authorize contract this was the
+    exact gap: ON + a bound object allowed a paid Groq/Gemini call.
+    """
+    env = fw.enabled_env(VOICE_STT_CALLER_GUARD=types.SimpleNamespace())
+    budget = fw.FetchBudget()
+    body = await _dispatch(runtime, env, budget, _transcribe_request(audio=b"x"))
+    assert body == {"ok": False, "error": {"code": "caller_guard_unavailable"}}
+    assert budget.calls == []
+    assert env.PADIEM_GROQ_API_KEY.reads == 0
+
+
+async def test_presence_only_guard_blocks_live_token_route(runtime):
+    env = fw.enabled_env(VOICE_STT_CALLER_GUARD=types.SimpleNamespace())
+    budget = fw.FetchBudget()
+    request = fw.FakeRequest(
+        "POST", "https://voice.internal/internal/v1/voice/live-token", {"content-type": "application/json"}, b'{"sessionId":"s"}'
+    )
+    body = await _dispatch(runtime, env, budget, request)
+    assert body == {"ok": False, "error": {"code": "caller_guard_unavailable"}}
+    assert budget.calls == []
+    assert env.PADIEM_GEMINI_API_KEY.reads == 0
+
+
+@pytest.mark.parametrize(
+    "decision",
+    [
+        False,
+        None,
+        {"allowed": False, "caller": "acct", "cost_scope": {"daily_usd_cap": 5}},
+        {"allowed": True},
+        {"allowed": True, "caller": "acct"},
+        {"allowed": True, "cost_scope": {"daily_usd_cap": 5}},
+        {},
+    ],
+)
+async def test_non_approving_guard_decisions_block_paid_routes(runtime, decision):
+    """Anything short of identity + cost approval fails closed before a call."""
+    env = fw.enabled_env(VOICE_STT_CALLER_GUARD=fw.FakeCallerGuard(decision=decision))
+    budget = fw.FetchBudget()
+    body = await _dispatch(runtime, env, budget, _transcribe_request(audio=b"x"))
+    assert body == {"ok": False, "error": {"code": "caller_guard_unavailable"}}
+    assert budget.calls == []
+    assert env.PADIEM_GROQ_API_KEY.reads == 0
+
+
+async def test_guard_exception_fails_closed(runtime):
+    class _Boom:
+        async def authorize(self, request_context):
+            raise RuntimeError("guard backend down")
+
+    env = fw.enabled_env(VOICE_STT_CALLER_GUARD=_Boom())
+    budget = fw.FetchBudget()
+    body = await _dispatch(runtime, env, budget, _transcribe_request(audio=b"x"))
+    assert body == {"ok": False, "error": {"code": "caller_guard_unavailable"}}
+    assert budget.calls == []
+    assert env.PADIEM_GROQ_API_KEY.reads == 0
+
+
+async def test_approving_guard_is_actually_consulted_per_paid_route(runtime):
+    """The guard's ``authorize`` is called with the route, not merely present."""
+    guard = fw.FakeCallerGuard()
+    env = fw.enabled_env(VOICE_STT_CALLER_GUARD=guard)
+    budget = fw.FetchBudget()
+    budget.response = fw.FakeUpstream(200, {"text": "네"})
+    await _dispatch(runtime, env, budget, _transcribe_request(audio=b"x"))
+    assert guard.calls and guard.calls[0]["route"] == "/internal/v1/voice/transcribe"
+
+    guard2 = fw.FakeCallerGuard()
+    env2 = fw.enabled_env(VOICE_STT_CALLER_GUARD=guard2)
+    request = fw.FakeRequest(
+        "POST", "https://voice.internal/internal/v1/voice/live-token", {"content-type": "application/json"}, b'{"sessionId":"s"}'
+    )
+    budget2 = fw.FetchBudget()
+    budget2.response = fw.FakeUpstream(200, {"name": "auth_tokens/opaque"})
+    await _dispatch(runtime, env2, budget2, request)
+    assert guard2.calls and guard2.calls[0]["route"] == "/internal/v1/voice/live-token"
+
+
+async def test_sync_approving_guard_is_accepted(runtime):
+    """A synchronous (non-coroutine) authorize that approves also works."""
+
+    class _SyncGuard:
+        def authorize(self, request_context):
+            return {"allowed": True, "caller": "acct", "cost_scope": {"daily_usd_cap": 1}}
+
+    env = fw.enabled_env(VOICE_STT_CALLER_GUARD=_SyncGuard())
+    budget = fw.FetchBudget()
+    budget.response = fw.FakeUpstream(200, {"text": "네"})
+    body = await _dispatch(runtime, env, budget, _transcribe_request(audio=b"x"))
+    assert body["ok"] is True
+
+
+# ---------------------------------------------------------------------------
+# _chunk_reader: one large chunk must not be silently truncated
+# ---------------------------------------------------------------------------
+
+
+async def test_single_giant_chunk_is_accounted_and_rejected_not_truncated(runtime):
+    """A body delivered as ONE huge JS chunk is rejected, never sliced to fit.
+
+    Regression guard for ``bytes(value)[:limit]``: with a single chunk larger
+    than the ceiling the old reader truncated to ``limit`` bytes and the
+    accumulator saw only a legal-size body, so an oversized request could be
+    mis-judged as in-bounds.
+    """
+    env = fw.enabled_env()
+    budget = fw.FetchBudget()
+    oversize = c.MAX_REQUEST_BYTES + 1
+    request = _transcribe_request(audio=b"a" * oversize)
+    # One undivided read, exactly like a single large Workers/JS chunk.
+    request.body = fw._Stream(request._body, chunk=len(request._body))
+    body = await _dispatch(runtime, env, budget, request)
+    assert body == {"ok": False, "error": {"code": "request_too_large"}}
+    assert budget.calls == []
+    assert env.PADIEM_GROQ_API_KEY.reads == 0
+
+
+async def test_chunk_reader_exact_limit_boundary_is_honoured(runtime):
+    """A single chunk exactly at the read budget is accepted, not rejected."""
+    env = fw.enabled_env()
+    budget = fw.FetchBudget()
+    budget.response = fw.FakeUpstream(200, {"text": "네"})
+    request = _transcribe_request(audio=b"y" * 4096)
+    request.body = fw._Stream(request._body, chunk=len(request._body))
+    body = await _dispatch(runtime, env, budget, request)
+    assert body["ok"] is True and body["text"] == "네"
+
+
+async def test_chunk_reader_one_byte_over_budget_is_rejected(runtime):
+    """Many small chunks whose total is one byte past the ceiling are rejected."""
+    env = fw.enabled_env()
+    budget = fw.FetchBudget()
+    oversize = c.MAX_REQUEST_BYTES + 1
+    request = _transcribe_request(audio=b"a" * oversize)
+    request.body = fw._Stream(request._body, chunk=4096)
+    body = await _dispatch(runtime, env, budget, request)
+    assert body == {"ok": False, "error": {"code": "request_too_large"}}
+    assert budget.calls == []
+
+
+# ---------------------------------------------------------------------------
+# Timeout: a runtime without AbortSignal.timeout must still be bounded
+# ---------------------------------------------------------------------------
+
+
+async def test_no_abort_signal_timeout_runtime_still_bounded(runtime, monkeypatch):
+    """Without ``AbortSignal`` the upstream call is still wall-clock bounded.
+
+    ``_build_abort_signal`` returns ``None`` on such a runtime; the fetch must
+    not wait forever — ``asyncio.wait_for`` cancels it at the same budget.
+    """
+    monkeypatch.setattr(runtime, "_build_abort_signal", lambda ms: None)
+    monkeypatch.setattr(c, "GROQ_REQUEST_TIMEOUT_MS", 120)
+    env = fw.enabled_env()
+    budget = fw.FetchBudget()
+    budget.hang = True  # upstream never answers
+    body = await _dispatch(runtime, env, budget, _transcribe_request(audio=b"x"))
+    assert body == {"ok": False, "error": {"code": "stt_unavailable"}}
+    assert budget.calls and budget.calls[0]["signal"] is None
+
+
+async def test_live_token_no_abortsignal_runtime_still_bounded(runtime, monkeypatch):
+    monkeypatch.setattr(runtime, "_build_abort_signal", lambda ms: None)
+    monkeypatch.setattr(c, "LIVE_TOKEN_REQUEST_TIMEOUT_MS", 120)
+    env = fw.enabled_env()
+    budget = fw.FetchBudget()
+    budget.hang = True
+    request = fw.FakeRequest(
+        "POST", "https://voice.internal/internal/v1/voice/live-token", {"content-type": "application/json"}, b'{"sessionId":"s"}'
+    )
+    body = await _dispatch(runtime, env, budget, request)
+    # A transport/timeout failure on the live-token route surfaces as the same
+    # bounded upstream code the transcribe route uses; it never leaks a trace.
+    assert body == {"ok": False, "error": {"code": "stt_unavailable"}}
+    assert budget.calls and budget.calls[0]["signal"] is None
+
+
+def test_build_abort_signal_returns_none_without_abortsupport(runtime, monkeypatch):
+    """A runtime whose ``js`` has no ``AbortSignal.timeout`` yields ``None``."""
+    import sys as _sys
+
+    fake_js = types.SimpleNamespace()  # no AbortSignal at all
+    monkeypatch.setitem(_sys.modules, "js", fake_js)
+    assert runtime._build_abort_signal(1000) is None
+
+    fake_js2 = types.SimpleNamespace(AbortSignal=types.SimpleNamespace())  # no .timeout
+    monkeypatch.setitem(_sys.modules, "js", fake_js2)
+    assert runtime._build_abort_signal(1000) is None
+
+
+def test_build_abort_signal_uses_timeout_when_supported(runtime, monkeypatch):
+    """A supported runtime gets a real AbortSignal from ``AbortSignal.timeout``."""
+    import sys as _sys
+
+    fake_js = types.SimpleNamespace(
+        AbortSignal=types.SimpleNamespace(timeout=lambda ms: ("signal", ms))
+    )
+    monkeypatch.setitem(_sys.modules, "js", fake_js)
+    assert runtime._build_abort_signal(25000) == ("signal", 25000)

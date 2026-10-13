@@ -56,6 +56,14 @@ what must supply an authenticated caller identity and a bounded per-account cost
 authorization. `workers_dev = false` alone does **not** provide caller
 authentication, identity or rate limiting.
 
+Binding **presence alone only opens the key-free `capabilities` route.** The two
+paid routes (`transcribe`, `live-token`) additionally require the guard to
+approve each request through a verified `authorize` contract
+(`authorize_caller` / `authorize` / `verify`), which must return a caller
+identity **and** a bounded cost scope. No such guard is implemented yet, so a
+paid route fails closed with `caller_guard_unavailable` before any Secret is
+read or any provider is called (`_require_caller_authorization`).
+
 ## Files
 
 | File | Role |
@@ -109,7 +117,7 @@ reproduce it:
 
 ```bash
 cd apps/padiem-voice-stt
-python -m pytest -q          # 140 tests, no Cloudflare runtime required
+python -m pytest -q          # 159 tests, no Cloudflare runtime required
 ```
 
 `tests/test_voice_stt_worker_dispatch.py` drives the real `Default.fetch`
@@ -121,5 +129,7 @@ malformed inputs are exercised as behaviour rather than as static string checks.
 - Chat/Claw microphone UI wiring (blocked by the active `#4488` UI work).
 - B66 `#easyVoiceMic` activation.
 - The `VOICE_STT_SERVICE` and `VOICE_STT_CALLER_GUARD` bindings (the caller guard
-  is what makes `ON` reachable and does not exist yet).
+  is what makes paid routes reachable and does not exist yet). Until a guard
+  implements the verified `authorize` contract (caller identity + bounded cost
+  scope), `transcribe` and `live-token` fail closed even when the flag is `true`.
 - Deployment, live provider calls and any Secret mutation.

@@ -43,14 +43,14 @@ class FakeHeaders(dict):
 
 
 class FakeRequest:
-    def __init__(self, method="GET", url="https://voice.internal/", headers=None, body=b""):
+    def __init__(self, method="GET", url="https://voice.internal/", headers=None, body=b"", chunk=4096):
         # The real ``workers.Request`` exposes ``method`` as an
         # ``http.HTTPMethod`` member, so the fake does the same shape.
         self.method = _as_method(method)
         self.url = url
         self.headers = FakeHeaders({k.lower(): v for k, v in (headers or {}).items()})
         self._body = body
-        self.body = _Stream(body)
+        self.body = _Stream(body, chunk=chunk)
         self._read = False
 
 
@@ -153,6 +153,32 @@ class FakeSecretsBinding:
         return self._value
 
 
+#: Sentinel so ``decision=None`` means an explicit "no decision" rather than
+#: "use the approving default".
+_NO_DECISION = object()
+
+
+class FakeCallerGuard:
+    """A caller-identity / cost-authorization guard binding.
+
+    Mirrors the verified ``authorize`` contract the Worker now requires: the
+    guard must approve each paid request with a caller identity *and* a bounded
+    per-account cost scope. ``calls`` records every approval attempt so tests can
+    prove the guard is actually consulted (not merely present). Pass any
+    non-approving value (including ``None``) to exercise the fail-closed path.
+    """
+
+    def __init__(self, decision=_NO_DECISION):
+        if decision is _NO_DECISION:
+            decision = {"allowed": True, "caller": "acct-fixture", "cost_scope": {"daily_usd_cap": 5}}
+        self.decision = decision
+        self.calls: list[dict] = []
+
+    async def authorize(self, request_context):
+        self.calls.append(dict(request_context or {}))
+        return self.decision
+
+
 def install_workers_module():
     """Install the fake ``workers`` module and import the real ``worker``."""
     module = types.ModuleType("workers")
@@ -175,10 +201,15 @@ def install_workers_module():
 
 
 def enabled_env(**overrides):
-    """An env that passes the deployment gate (only reachable with a caller guard)."""
+    """An env that passes the deployment gate (only reachable with a caller guard).
+
+    The default guard is a real approving ``FakeCallerGuard`` so the paid
+    dispatch path is exercised end-to-end. Pass ``VOICE_STT_CALLER_GUARD`` to
+    substitute a non-approving guard and prove the fail-closed path.
+    """
     env = types.SimpleNamespace(
         PADIEM_VOICE_STT_ENABLED="true",
-        VOICE_STT_CALLER_GUARD=types.SimpleNamespace(),
+        VOICE_STT_CALLER_GUARD=FakeCallerGuard(),
         PADIEM_GROQ_API_KEY=FakeSecretsBinding("groq-key-value"),
         PADIEM_GEMINI_API_KEY=FakeSecretsBinding("gemini-key-value"),
     )

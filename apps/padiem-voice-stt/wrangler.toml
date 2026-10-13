@@ -44,6 +44,9 @@ secret_name = "PADIEM_GROQ_API_KEY"
 # must supply an authenticated caller identity and a bounded per-account cost
 # authorization. It is deliberately NOT declared here: it does not exist, and
 # declaring a non-existent Service Binding would break this Worker's deploy.
+# Binding presence alone only opens the key-free capabilities route; the paid
+# transcribe / live-token routes additionally require the guard's per-request
+# authorize approval, which is not implemented yet, so they stay closed.
 # Do not switch this flag on to make tests pass.
 [vars]
 PADIEM_VOICE_STT_ENABLED = "false"

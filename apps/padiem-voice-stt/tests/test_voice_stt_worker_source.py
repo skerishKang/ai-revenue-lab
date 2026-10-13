@@ -50,6 +50,9 @@ def test_worker_imports_only_stdlib_and_the_shared_contract():
         "urllib",
         "__future__",
         "js",
+        # stdlib: wall-clock fail-closed timeout for the upstream fetch even
+        # when the runtime has no AbortSignal.
+        "asyncio",
     }
     assert _imports() - allowed == set()
 
