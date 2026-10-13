@@ -403,26 +403,22 @@ async def connector_enrollment_redeem(request: Request) -> JSONResponse:
         )
         if fields is None or _SAFE_PROOF.fullmatch(fields["proof_ref"]) is None:
             return _redeem_error(400, "connector_enrollment_invalid_request")
-        if callable(getattr(async_host, "redeem", None)):
-            # Async path performs live Identity consent/session recheck, durable
-            # Broker redemption and protected OS-credential handoff. Raw device
-            # credential is never put in this JSON response.
-            result = await async_host.redeem(
-                challenge_id=fields["challenge_id"], device_id=fields["device_id"],
-                proof_ref=fields["proof_ref"],
-            )
-            return _redeem_success(result, expected_device_id=fields["device_id"])
-        result = service.redeem(
-            challenge_id=fields["challenge_id"], device_id=fields["device_id"],
-            proof_ref=fields["proof_ref"], now=datetime.now(timezone.utc),
-        )
-        safe = result.safe_dict()
-        if not isinstance(safe, dict) or safe.get("ok") is not True:
+        # The legacy synchronous server's deliver_once() returns only a bool:
+        # it cannot prove the challenge-bound Windows store readback AND a
+        # separately authenticated gateway ACK. Even with a valid gateway for
+        # the inbound redeem request, that is not installation attestation.
+        # Never fall back to this weaker redemption owner. Source remains OFF
+        # until the reviewed asynchronous handoff is explicitly composed.
+        if not callable(getattr(async_host, "redeem", None)):
             return _redeem_error(503, "enrollment_server_dependency_unavailable")
-        return _redeem_success(
-            {key: value for key, value in safe.items() if key != "ok"},
-            expected_device_id=fields["device_id"],
+        # Async path performs current OWNER consent/session rechecks, durable
+        # Broker redemption, keyed DPAPI install proof and authenticated ACK.
+        # No raw device credential is projected into this HTTP response.
+        result = await async_host.redeem(
+            challenge_id=fields["challenge_id"], device_id=fields["device_id"],
+            proof_ref=fields["proof_ref"],
         )
+        return _redeem_success(result, expected_device_id=fields["device_id"])
     except ControlPlaneContractError as exc:
         status = 503 if exc.code in {
             "enrollment_server_dependency_unavailable", "enrollment_credential_handoff_failed"
