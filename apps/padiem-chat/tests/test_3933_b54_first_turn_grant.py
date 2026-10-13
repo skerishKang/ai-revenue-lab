@@ -19,7 +19,9 @@ already-satisfied seam assertions; nothing here duplicates them.
 from __future__ import annotations
 
 import asyncio
+import os
 import sqlite3
+import tempfile
 import threading
 import unittest
 from contextlib import contextmanager
@@ -78,11 +80,16 @@ class D1Statement:
 
     async def first(self):
         row = self.conn.execute(self.sql, self.values).fetchone()
+        # D1 auto-commits every request; the double must too, otherwise
+        # cross-connection reads (the genuine concurrency proof) see nothing
+        # and close() rolls the write back.
+        self.conn.commit()
         return dict(row) if row is not None else None
 
     async def run(self):
         cursor = self.conn.execute(self.sql, self.values)
         rows = cursor.fetchall()
+        self.conn.commit()
 
         class _Meta:
             pass
@@ -105,6 +112,40 @@ def _grant_db():
     db.executescript(GRANT_SQL)
     db.commit()
     return db
+
+
+def _grant_file_db_path():
+    # Shared on-disk DB so racing threads can hold *independent* connections
+    # the way independent D1 requests do. Sharing one sqlite3 connection
+    # across threads is not thread-safe (CI flakes with InterfaceError) and
+    # proves nothing about DB-side arbitration.
+    fd, path = tempfile.mkstemp(prefix="grant_3933_", suffix=".sqlite3")
+    os.close(fd)
+    db = sqlite3.connect(path, check_same_thread=False, timeout=30)
+    try:
+        db.row_factory = sqlite3.Row
+        db.executescript(GRANT_SQL)
+        db.execute("PRAGMA journal_mode=WAL")
+        db.commit()
+    finally:
+        db.close()
+    return path
+
+
+def _open_grant_db(path):
+    db = sqlite3.connect(path, check_same_thread=False, timeout=30)
+    db.row_factory = sqlite3.Row
+    return db
+
+
+def _count_file_rows(path):
+    db = _open_grant_db(path)
+    try:
+        return db.execute(
+            "SELECT COUNT(*) AS n FROM claw_coding_conversation_grant"
+        ).fetchone()["n"]
+    finally:
+        db.close()
 
 
 def _inputs(**over):
@@ -399,12 +440,22 @@ class TestD1GrantStore(unittest.TestCase):
         assert len(remaining) == 3
 
     def test_concurrent_reserve_elects_exactly_one_row(self):
+        path = _grant_file_db_path()
+        self.addCleanup(lambda: os.path.exists(path) and os.remove(path))
         barrier = threading.Barrier(2)
-        outcomes = []
+        outcomes: list = []
+        errors: list = []
 
         def attempt():
-            barrier.wait(timeout=10)
-            outcomes.append(_reserve_now(self.store))
+            db = _open_grant_db(path)
+            try:
+                store = D1FirstTurnGrantStore(D1Sqlite(db))
+                barrier.wait(timeout=10)
+                outcomes.append(_reserve_now(store))
+            except Exception as exc:  # fail loudly, never as a count mismatch
+                errors.append(exc)
+            finally:
+                db.close()
 
         workers = [threading.Thread(target=attempt) for _ in range(2)]
         for worker in workers:
@@ -412,20 +463,35 @@ class TestD1GrantStore(unittest.TestCase):
         for worker in workers:
             worker.join(timeout=30)
         assert all(not worker.is_alive() for worker in workers)
+        assert not errors, errors
         assert len(outcomes) == 2
-        assert self._count_rows() == 1
+        assert _count_file_rows(path) == 1
         assert outcomes[0].grant_id == outcomes[1].grant_id
 
     def test_concurrent_claim_elects_exactly_one_winner(self):
-        context = _reserve_now(self.store)
+        path = _grant_file_db_path()
+        self.addCleanup(lambda: os.path.exists(path) and os.remove(path))
+        seed = _open_grant_db(path)
+        try:
+            context = _reserve_now(D1FirstTurnGrantStore(D1Sqlite(seed)))
+        finally:
+            seed.close()
         barrier = threading.Barrier(2)
-        outcomes = []
+        outcomes: list = []
+        errors: list = []
 
         def attempt():
-            barrier.wait(timeout=10)
-            outcomes.append(
-                asyncio.run(claim_first_turn_grant(self.store, context))
-            )
+            db = _open_grant_db(path)
+            try:
+                store = D1FirstTurnGrantStore(D1Sqlite(db))
+                barrier.wait(timeout=10)
+                outcomes.append(
+                    asyncio.run(claim_first_turn_grant(store, context))
+                )
+            except Exception as exc:  # fail loudly, never as a count mismatch
+                errors.append(exc)
+            finally:
+                db.close()
 
         workers = [threading.Thread(target=attempt) for _ in range(2)]
         for worker in workers:
@@ -433,6 +499,7 @@ class TestD1GrantStore(unittest.TestCase):
         for worker in workers:
             worker.join(timeout=30)
         assert all(not worker.is_alive() for worker in workers)
+        assert not errors, errors
         assert sorted(outcomes) == [False, True]
 
 
