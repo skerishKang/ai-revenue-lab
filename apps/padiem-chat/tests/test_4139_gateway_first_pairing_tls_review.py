@@ -159,3 +159,8 @@ def test_cloudflare_added_headers_are_ignored_not_identity(edge_headers):
     assert _verify(missing_cf) is False
     downgraded_cf = _request(headers=edge_headers, tls="TLSv1.0")
     assert _verify(downgraded_cf) is False
+
+
+@pytest.mark.parametrize("method", ["POST", "PUT", "HEAD", "CONNECT", "get", "", None])
+def test_first_pairing_non_get_websocket_upgrade_denied(method):
+    assert _verify(_request(method=method)) is False
