@@ -78,6 +78,15 @@ Latest fixed 835-item cursor: **300 documents with text viewed at least partly**
 - Canonical shared IP-CORE/ENGINE/CONTROL/SIDECAR technical owners are not a newly invented company-wide Business or a second duplicate common-platform folder. Historical model counts, owner-run S1, old 30/40/45-second caps and first-revenue/MVP source hypotheses must not override subsequent B14/Agent policies or real operational evidence.
 - Stable technical security/resource protection, product entitlement independence and exact provider native-model routing remain untouched. No business policy/adoption/public remediation decisions made.
 
+## 1H. Batch 09 — 25 full source reads (2026-10-13)
+
+**Current frozen original cursor:** **325** documents with text seen at least partially (125 initial sampled + 25 each B02/B03/B04/B05/B06/B07/B08/B09), **491 indexed-only text bodies unread**, **19 PDF/DOCX binary bodies pending**. Initial 125 still require explicit full-document section coverage.
+
+- [Batch 09 source-pinned 25-file B14 model evaluation and B54 Claw authority review](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH09_20261013.md).
+- B14 historical provider one-shot connectivity, temporary free routes, Owner account eligibility and native parameter corrections stay separate from present provider costs, per-product tier grants or Engine/Claw/B66 E2E. No provider calls or model-state changes.
+- B54 canonical pairing and resident execution/security contracts stay in public technical sources. Connection Center M0 and historic source integration status do not prove actual remote control, SaaS commercial promise or live production authority.
+- Original business docs remain untouched; no local Governance migration, product policy, Cloudflare state or Git history mutation.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
