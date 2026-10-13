@@ -113,8 +113,17 @@ def active(deployments: object, *, allow_settings_generated_lineage: bool = Fals
 def version_bindings(version: dict) -> dict[str, dict]:
     raw = version["resources"].get("bindings")
     if isinstance(raw, dict):
-        raw = [{**b, "name": k} for k, b in raw.items()
-               if isinstance(k, str) and isinstance(b, dict) and b.get("name", k) == k]
+        # The Cloudflare immutable-version API may encode bindings as a name-
+        # keyed object. Never silently filter malformed or mismatched entries:
+        # doing so could make an unexpected binding disappear from parity
+        # checks, even while the original version still contains it.
+        if any(
+            not isinstance(k, str) or not k or
+            not isinstance(b, dict) or b.get("name", k) != k
+            for k, b in raw.items()
+        ):
+            raise OptInRefused("VERSION_BINDING_SHAPE")
+        raw = [{**b, "name": k} for k, b in raw.items()]
     if not isinstance(raw, list) or any(
         not isinstance(b, dict) or not isinstance(b.get("name"), str) or
         not isinstance(b.get("type"), str) for b in raw
