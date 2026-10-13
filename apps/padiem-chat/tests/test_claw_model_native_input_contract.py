@@ -101,3 +101,10 @@ def test_existing_p01_ingress_limit_is_explicit_not_model_token_ceiling():
     source = (Path(__file__).resolve().parents[1] / "app/claw_general_routes.py").read_text(encoding="utf-8")
     assert 'len(model_user_text.encode("utf-8")) > P01_ENGINE_REQUEST_ENVELOPE_BYTES' in source
     assert '"engine_request_envelope_exceeded"' in source
+
+
+def test_manual_ui_does_not_reapply_independent_4000_character_limit():
+    from pathlib import Path
+    src = (Path(__file__).resolve().parents[1] / "static" / "app.js").read_text(encoding="utf-8")
+    assert 'input.setAttribute("maxlength", "4000")' not in src
+    assert "body.length > 4000" not in src
