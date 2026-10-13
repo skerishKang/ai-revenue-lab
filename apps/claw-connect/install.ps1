@@ -50,10 +50,22 @@ $PythonExePath = if ($PythonExe.Count -gt 1) {
 }
 
 if ($Uninstall) {
-    if (Test-Path $ShortcutPath) { Remove-Item $ShortcutPath -Force }
-    if (Get-ItemProperty -Path $RunKey -Name $RunValueName -ErrorAction SilentlyContinue) {
-        Remove-ItemProperty -Path $RunKey -Name $RunValueName -Force
+    # Uninstall must also respect the registry ownership check. The old
+    # Remove-ItemProperty blindly deleted a foreign command sharing this name.
+    if (Test-Path (Join-Path $InstallRoot 'claw_connect')) {
+        Push-Location $InstallRoot
+        try {
+            $UnregisterReceipt = & $PythonExePath -m claw_connect autostart off
+            if ($LASTEXITCODE -ne 0) {
+                throw 'Autostart could not be safely disabled; installation preserved.'
+            }
+        } finally {
+            Pop-Location
+        }
+    } elseif (Get-ItemProperty -Path $RunKey -Name $RunValueName -ErrorAction SilentlyContinue) {
+        throw 'Cannot prove the Run entry is owned without the installed Connector.'
     }
+    if (Test-Path $ShortcutPath) { Remove-Item $ShortcutPath -Force }
     if (Test-Path $InstallRoot) { Remove-Item $InstallRoot -Recurse -Force }
     Write-Output '{"ok":true,"action":"uninstall"}'
     exit 0

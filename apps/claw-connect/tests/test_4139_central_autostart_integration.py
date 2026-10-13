@@ -103,3 +103,27 @@ def test_programmatic_unpair_suspends_registration_but_keeps_owner_off():
     app.autostart.apply_lifecycle("unpair")
     assert runs.values == {}
     assert app.autostart.preference() == PREFERENCE_OFF
+
+
+def test_foreign_nonsecret_run_entry_cannot_be_deleted_on_off_or_unpair():
+    from claw_connect.autostart import AutostartRefused, REGISTRATION_CORRUPT
+    app, runs, prefs = _harness(None)
+    foreign = r'"C:\Windows\System32\notepad.exe" /s'
+    runs.values["PadiemClawConnect"] = foreign
+    assert app.autostart.classify() == REGISTRATION_CORRUPT
+    assert not app.autostart.is_enabled()
+    with pytest.raises(AutostartRefused):
+        app.reconcile_autostart()
+    with pytest.raises(AutostartRefused):
+        app.autostart.disable()
+    assert prefs.values["Autostart"] == PREFERENCE_OFF
+    with pytest.raises(AutostartRefused):
+        app.autostart.apply_lifecycle("unpair")
+    assert runs.values["PadiemClawConnect"] == foreign
+
+
+def test_installer_uninstall_uses_shared_ownership_gate_instead_of_raw_delete():
+    src = (ROOT / "install.ps1").read_text(encoding="utf-8")
+    assert "& $PythonExePath -m claw_connect autostart off" in src
+    assert "Remove-ItemProperty -Path $RunKey" not in src
+    assert "Could not be safely disabled" not in src or "Autostart could not be safely disabled" in src
