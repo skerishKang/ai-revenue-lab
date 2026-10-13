@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 import json
 import sys
+import tempfile
 import unittest
 
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
@@ -103,6 +104,53 @@ class CandidatePlanTest(unittest.TestCase):
         self.assertEqual(projection["preserved_existing_binding_types_count"]["secret_names"], 2)
         self.assertNotIn("NEVER_SHOW_ME", json.dumps(projection))
         self.assertFalse(projection["existing_secret_values_read"])
+
+
+    def test_source_rpc_contract_pins_state_worker_not_edge(self):
+        planner.verify_broker_source_rpc_contract()
+        proof = planner.candidate_preservation(live())
+        self.assertTrue(proof["broker_private_rpc_source_contract_proven"])
+        self.assertFalse(proof["deployed_rpc_revision_proven"])
+        self.assertFalse(proof["deploy_authorized"])
+
+    def test_rpc_source_drift_is_fail_closed(self):
+        worker_source = planner.BROKER_WORKER_MODULE.read_text(encoding="utf-8")
+        real_forward = "return await self._stub().gateway_bootstrap_rpc(payload)"
+        self.assertIn(real_forward, worker_source)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            altered = root / "local_agent_broker_worker.py"
+            altered.write_text(
+                worker_source.replace(
+                    real_forward,
+                    "return await self._stub().get_enrollment_binding(payload)",
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaises(ProductionConfigError):
+                planner.verify_broker_source_rpc_contract(worker_module=altered)
+            # A state Worker silently renamed to Edge must never pass.
+            config = json.loads(planner.BROKER_STATE_CONFIG.read_text(encoding="utf-8"))
+            config["name"] = "padiem-local-agent-broker-edge"
+            altered_cfg = root / "wrong-broker.jsonc"
+            altered_cfg.write_text(json.dumps(config), encoding="utf-8")
+            with self.assertRaises(ProductionConfigError):
+                planner.verify_broker_source_rpc_contract(state_config=altered_cfg)
+            # Private RPC implementation removal must not pass just because
+            # WorkerEntrypoint still declares the forwarding method.
+            rpc_code = planner.BROKER_RPC_MODULE.read_text(encoding="utf-8")
+            self.assertIn("async def gateway_bootstrap_rpc(", rpc_code)
+            altered_rpc = root / "canonical_broker_pairing_rpc.py"
+            altered_rpc.write_text(
+                rpc_code.replace(
+                    "async def gateway_bootstrap_rpc(",
+                    "async def missing_gateway_bootstrap_rpc(",
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaises(ProductionConfigError):
+                planner.verify_broker_source_rpc_contract(rpc_module=altered_rpc)
 
     def test_no_mutating_cloudflare_or_public_worker_path_is_reachable(self):
         script = (SCRIPTS / "b62_connector_broker_additive_preflight.py").read_text(encoding="utf-8")
