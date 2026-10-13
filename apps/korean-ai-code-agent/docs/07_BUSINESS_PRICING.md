@@ -1,6 +1,6 @@
 # Padiem Claw commercial and pricing proposals
 
-> **DOC_STATUS = PRIVATE_BUSINESS_REFERENCE**  
+> **DOC_STATUS = PRIVATE_BUSINESS_REFERENCE**
 > **PUBLIC_COPY = ARCHIVED / BUSINESS TERMS WITHDRAWN FROM CURRENT HEAD**
 
 The historical business, pricing, sales or outreach working material for this subject is retained in the authorized PADIEM local Governance **reference materials** area. This public file is only a navigation/compatibility placeholder, not a statement of current company policy, customer pricing, contractual terms, consent, product entitlement, or production implementation.
