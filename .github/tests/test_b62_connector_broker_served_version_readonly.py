@@ -125,6 +125,9 @@ class BrokerVersionReadbackTest(unittest.TestCase):
             result = audit.compare_served_worker_exports(d, worker)
             self.assertTrue(result["served_export_metadata_complete"])
             self.assertTrue(result["served_export_types_match_reviewed_source"])
+            self.assertEqual(result["served_default_entrypoint_shape"], "worker")
+            self.assertEqual(result["served_canonical_do_shape"],
+                             "sqlite" if do_name else "not_applicable")
             exports["default"]["type"] = "durable-object"
             self.assertFalse(audit.compare_served_worker_exports(
                 d, worker)["served_export_types_match_reviewed_source"])

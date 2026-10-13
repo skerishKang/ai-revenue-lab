@@ -148,7 +148,39 @@ def compare_served_worker_exports(
         return {
             "served_export_metadata_complete": False,
             "served_export_types_match_reviewed_source": False,
+            "served_default_entrypoint_shape": "unavailable",
+            "served_capitalized_entrypoint_shape": "unavailable",
+            "served_canonical_do_shape": "unavailable",
+            "served_do_export_count": 0,
         }
+
+    def _entry_shape(name: str) -> str:
+        item = exports.get(name)
+        if type(item) is not dict:
+            return "absent"
+        return "worker" if item.get("type") == "worker" else "other"
+
+    expected_classes = tuple(expected)
+    if not expected_classes:
+        do_shape = "not_applicable"
+    else:
+        # The reviewed Identity/State configs each have exactly one SQLite DO.
+        # Never report unreviewed export class names or arbitrary metadata.
+        if len(expected_classes) != 1:
+            raise ValueError("Unexpected canonical Worker durable export cardinality")
+        candidate = exports.get(expected_classes[0])
+        if type(candidate) is not dict:
+            do_shape = "absent"
+        elif candidate.get("type") != "durable-object":
+            do_shape = "other_type"
+        elif candidate.get("storage") != "sqlite":
+            do_shape = "other_storage"
+        else:
+            do_shape = "sqlite"
+    do_count = sum(
+        type(item) is dict and item.get("type") == "durable-object"
+        for item in exports.values()
+    )
     default = exports.get("default")
     matched = (
         type(default) is dict
@@ -173,6 +205,10 @@ def compare_served_worker_exports(
     return {
         "served_export_metadata_complete": True,
         "served_export_types_match_reviewed_source": bool(matched),
+        "served_default_entrypoint_shape": _entry_shape("default"),
+        "served_capitalized_entrypoint_shape": _entry_shape("Default"),
+        "served_canonical_do_shape": do_shape,
+        "served_do_export_count": do_count,
     }
 
 

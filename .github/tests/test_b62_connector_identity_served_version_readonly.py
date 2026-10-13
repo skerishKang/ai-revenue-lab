@@ -92,6 +92,8 @@ class IdentityVersionAuditTest(unittest.TestCase):
         result = proof.inspect_identity_version_detail(d, ACTIVE)
         self.assertTrue(result["served_export_metadata_complete"])
         self.assertTrue(result["served_export_types_match_reviewed_source"])
+        self.assertEqual(result["served_default_entrypoint_shape"], "worker")
+        self.assertEqual(result["served_canonical_do_shape"], "sqlite")
         self.assertFalse(result["exact_git_commit_or_bundle_digest_attested"])
         self.assertFalse(result["deployed_identity_consent_rpc_proven"])
         exports["CanonicalIdentityDurableObject"]["storage"] = "legacy-kv"
