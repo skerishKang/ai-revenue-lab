@@ -184,6 +184,38 @@ class CloudflareCanonicalBrokerPairingClient:
         _safe_owner(binding.get("owner_ref"), "owner_ref")
         return binding
 
+    async def verify_enrollment_bootstrap(
+        self, *, challenge_id: str, device_id: str, proof_ref: str,
+        consent_ref: str, owner_ref: str, account_ref: str, workspace_ref: str,
+    ) -> dict[str, Any]:
+        """Canonical PRIVATE Broker proof check; never attests the PC by itself."""
+        payload = {
+            "challenge_id": _safe_ref(challenge_id, "challenge_id"),
+            "device_id": _safe_ref(device_id, "device_id"),
+            "proof_ref": proof_ref,
+            "consent_ref": _safe_ref(consent_ref, "consent_ref"),
+            "owner_ref": _safe_owner(owner_ref, "owner_ref"),
+            "account_ref": _safe_ref(account_ref, "account_ref"),
+            "workspace_ref": _safe_ref(workspace_ref, "workspace_ref"),
+        }
+        if not isinstance(proof_ref, str) or _PROOF.fullmatch(proof_ref) is None:
+            raise IdentityBridgeError(400, "invalid_pairing_proof", "Pairing proof is invalid.")
+        result = await self._invoke("verify_enrollment_bootstrap", payload)
+        if set(result) != {"ok", "bootstrap"}:
+            raise IdentityBridgeError(503, "broker_rpc_invalid", "Bootstrap receipt shape invalid.")
+        receipt = _closed(
+            result.get("bootstrap"),
+            frozenset({"challenge_id", "device_id", "proof_valid", "challenge_consumed"}),
+            "bootstrap preflight",
+        )
+        if (
+            receipt["challenge_id"] != challenge_id or receipt["device_id"] != device_id
+            or receipt["proof_valid"] is not True
+            or receipt["challenge_consumed"] is not False
+        ):
+            raise IdentityBridgeError(503, "broker_rpc_invalid", "Bootstrap proof correlation failed.")
+        return receipt
+
     async def redeem_enrollment(
         self, *, challenge_id: str, device_id: str, proof_ref: str,
         consent_ref: str, owner_ref: str, account_ref: str, workspace_ref: str,
