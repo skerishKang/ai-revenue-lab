@@ -316,6 +316,7 @@ def create_app(
     local_task_result_source=None,
     desktop_device_session_authority=None,
     auth_abuse_store: AuthAbuseStore | None = None,
+    connector_owner_enrollment=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -554,6 +555,12 @@ def create_app(
         Route("/api/calendar/appointments", calendar_appointments_create, methods=["POST"]),
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
     ]
+    # #4139: append the owner-only consent/challenge routes before the catch-all
+    # StaticFiles Mount, solely when the server provided canonical private
+    # Identity+Broker ports. The default public app has no such route.
+    if connector_owner_enrollment is not None:
+        from .connector_owner_runtime_mount import reviewed_owner_enrollment_routes
+        routes[-1:-1] = list(reviewed_owner_enrollment_routes(connector_owner_enrollment))
     app = Starlette(routes=routes)
     # #3476: added before telemetry deliberately — Starlette prepends each
     # middleware, so the later-added telemetry layer stays outermost and keeps
@@ -594,7 +601,19 @@ def create_app(
     app.state.b66_inquiry_store = D1B66InquiryStore(d1_binding) if d1_binding is not None else None
     # Canonical identity remains Control Plane authority. Product D1 stores only
     # a non-authoritative shadow pointer used to reach the current canonical session.
-    app.state.control_plane_identity_authority = control_plane_identity_authority
+    app.state.control_plane_identity_authority = (
+        connector_owner_enrollment.identity if connector_owner_enrollment is not None
+        else control_plane_identity_authority
+    )
+    # B54 signed-session + exact-origin browser handlers use the SAME injected
+    # canonical Identity and Broker issue host; device credential redemption
+    # is absent from the HTTP route table (WSS owns that).
+    app.state.connector_enrollment_async_host = (
+        connector_owner_enrollment.host if connector_owner_enrollment is not None else None
+    )
+    app.state.connector_enrollment_browser_csrf = (
+        connector_owner_enrollment.csrf if connector_owner_enrollment is not None else None
+    )
     app.state.identity_shadow_store = identity_shadow_store
     # #3190: owner-gated Project Drive case-folder routes. A missing client fails
     # closed with 503; there is no global/network fallback.
