@@ -88,6 +88,17 @@ class Broker:
     async def get_enrollment_binding(self, *, challenge_id):
         self.calls.append(("binding", challenge_id))
         return dict(BINDING)
+    async def verify_enrollment_bootstrap(self, **kwargs):
+        self.calls.append(("preflight", kwargs))
+        if getattr(self, "reject_bootstrap", False):
+            raise IdentityBridgeError(403, "invalid_pairing_proof", "invalid")
+        return {
+            "challenge_id": kwargs["challenge_id"],
+            "device_id": kwargs["device_id"],
+            "proof_valid": True,
+            "challenge_consumed": False,
+        }
+
     async def redeem_enrollment(self, **kwargs):
         self.calls.append(("redeem", kwargs))
         return dict(ENROLLMENT), self.credential
@@ -189,6 +200,18 @@ def test_redeem_does_not_consume_challenge_without_protected_handoff_ready():
     assert [x[0] for x in handoff.calls] == ["ready"]
 
 
+def test_broker_rejects_wrong_pairing_proof_before_gateway_ready_or_redeem():
+    identity, broker, handoff = Identity(), Broker(), Handoff()
+    broker.reject_bootstrap = True
+    with pytest.raises(IdentityBridgeError) as error:
+        asyncio.run(issue_host(identity, broker, handoff).redeem(
+            challenge_id=CHALLENGE["challenge_id"], device_id="device.1",
+            proof_ref="pairing-proof:" + "b" * 64,
+        ))
+    assert error.value.code == "invalid_pairing_proof"
+    assert [x[0] for x in broker.calls] == ["binding", "preflight"]
+    assert handoff.calls == []  # no gateway reservation
+
 def test_success_rechecks_current_consent_and_never_returns_raw_credential():
     identity, broker, handoff = Identity(), Broker(), Handoff()
     result = asyncio.run(issue_host(identity, broker, handoff).redeem(
@@ -196,7 +219,7 @@ def test_success_rechecks_current_consent_and_never_returns_raw_credential():
         proof_ref="pairing-proof:"+"a"*64,
     ))
     assert [x[0] for x in identity.calls] == ["authorize", "authorize", "authorize"]
-    assert [x[0] for x in broker.calls] == ["binding", "redeem"]
+    assert [x[0] for x in broker.calls] == ["binding", "preflight", "redeem"]
     assert [x[0] for x in handoff.calls] == ["ready", "deliver", "verify"]
     assert result["lifecycle"] == "paired_offline"
     assert result["consent_id"] == CONSENT["consent_id"]
@@ -214,7 +237,7 @@ def test_consent_withdrawal_between_broker_redemption_and_handoff_revokes_bindin
             proof_ref="pairing-proof:"+"a"*64,
         ))
     assert exc.value.code == "enrollment_consent_changed_during_redeem"
-    assert [x[0] for x in broker.calls] == ["binding", "redeem", "revoke"]
+    assert [x[0] for x in broker.calls] == ["binding", "preflight", "redeem", "revoke"]
     assert [x[0] for x in handoff.calls] == ["ready"]
 
 
