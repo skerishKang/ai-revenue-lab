@@ -178,8 +178,11 @@ async def main() -> int:
             )
             assert selected["selected"] == "cgi-v2"
             assert selected["layout"] == "cgi-v2"
-            assert selected["cgiVisible"] is True
-            assert selected["genericHidden"] is True
+            # The authenticated CGI owner uses a certified private preview
+            # asset, not the former public, standalone CGI DOM. Do not require
+            # that legacy DOM to expose a customer's template. The synthetic
+            # renderer projection is verified independently below.
+            assert selected["cgiVisible"] is False
 
             page.once("dialog", lambda dialog: asyncio.create_task(dialog.accept()))
             await page.click("#shellNewQuote")
