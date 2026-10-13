@@ -82,6 +82,30 @@ class IdentityVersionAuditTest(unittest.TestCase):
         self.assertFalse(result["served_runtime_metadata_complete"])
         self.assertFalse(result["served_runtime_configuration_matches_reviewed_source"])
 
+    def test_identity_served_entrypoint_and_sqlite_do_metadata(self):
+        d = detail()
+        exports = {
+            "default": {"type": "worker"},
+            "CanonicalIdentityDurableObject": {"type": "durable-object", "storage": "sqlite"},
+        }
+        d["result"]["resources"]["script_runtime"] = {"exports": exports}
+        result = proof.inspect_identity_version_detail(d, ACTIVE)
+        self.assertTrue(result["served_export_metadata_complete"])
+        self.assertTrue(result["served_export_types_match_reviewed_source"])
+        self.assertFalse(result["exact_git_commit_or_bundle_digest_attested"])
+        self.assertFalse(result["deployed_identity_consent_rpc_proven"])
+        exports["CanonicalIdentityDurableObject"]["storage"] = "legacy-kv"
+        self.assertFalse(proof.inspect_identity_version_detail(
+            d, ACTIVE)["served_export_types_match_reviewed_source"])
+        exports["CanonicalIdentityDurableObject"]["storage"] = "sqlite"
+        exports["CanonicalIdentityDurableObject"]["state"] = "renamed"
+        self.assertFalse(proof.inspect_identity_version_detail(
+            d, ACTIVE)["served_export_types_match_reviewed_source"])
+        del d["result"]["resources"]["script_runtime"]
+        absent = proof.inspect_identity_version_detail(d, ACTIVE)
+        self.assertFalse(absent["served_export_metadata_complete"])
+        self.assertFalse(absent["served_export_types_match_reviewed_source"])
+
     def test_deployment_race_is_not_a_consistent_snapshot(self):
         num = 0
         def requester(url, *, token):

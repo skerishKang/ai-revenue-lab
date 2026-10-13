@@ -22,6 +22,7 @@ from b62_cloudflare_connector_binding_readonly import API, get_json
 from b62_connector_broker_served_version_readonly import (
     parse_served_version,
     compare_served_runtime_config,
+    compare_served_worker_exports,
     validate_served_version_detail,
 )
 
@@ -46,8 +47,10 @@ def inspect_identity_version_detail(payload: object, active_id: str) -> dict[str
         type(source) is str and source in _SUPPORTED_UPLOAD_SOURCES
     )
     runtime = compare_served_runtime_config(payload, IDENTITY_WORKER)
+    exports = compare_served_worker_exports(payload, IDENTITY_WORKER)
     return {
         **runtime,
+        **exports,
         "served_version_detail_readable": evidence["served_version_detail_readable"],
         "served_script_etag_present": evidence["served_script_etag_present"],
         "upload_origin_recognized": upload_origin_recognized,

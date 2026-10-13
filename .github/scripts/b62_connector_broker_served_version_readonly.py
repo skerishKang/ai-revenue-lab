@@ -109,6 +109,73 @@ def compare_served_runtime_config(
     }
 
 
+def compare_served_worker_exports(
+    payload: object, worker: str, *,
+    config_dir: Path | None = None,
+) -> dict[str, bool]:
+    """Compare the Cloudflare served version's entrypoint/DO metadata.
+
+    Metadata establishes class names, export kinds and SQLite storage ONLY.
+    It does not attest to source bytes, Python RPC methods, customer consent,
+    authenticated callability, or permission to deploy.
+    """
+    filename = _RUNTIME_CONFIGS.get(worker)
+    if filename is None:
+        raise ValueError("Unknown canonical Connector Worker")
+    root = config_dir if config_dir is not None else (
+        Path(__file__).resolve().parents[2] / "packages" / "padiem-control-plane"
+    )
+    try:
+        source = json.loads((root / filename).read_text(encoding="utf-8"))
+    except (OSError, ValueError, UnicodeError) as exc:
+        raise ValueError("Reviewed canonical Worker export source unavailable") from exc
+    expected = source.get("exports", {}) if type(source) is dict else None
+    if (
+        type(source) is not dict or source.get("name") != worker
+        or type(expected) is not dict or not all(
+            type(name) is str and type(spec) is dict
+            and spec.get("type") == "durable-object"
+            and spec.get("storage") == "sqlite"
+            for name, spec in expected.items()
+        )
+    ):
+        raise ValueError("Reviewed canonical Worker export source invalid")
+    result = payload.get("result") if type(payload) is dict else None
+    resources = result.get("resources") if type(result) is dict else None
+    runtime = resources.get("script_runtime") if type(resources) is dict else None
+    exports = runtime.get("exports") if type(runtime) is dict else None
+    if type(exports) is not dict:
+        return {
+            "served_export_metadata_complete": False,
+            "served_export_types_match_reviewed_source": False,
+        }
+    default = exports.get("default")
+    matched = (
+        type(default) is dict
+        and default.get("type") == "worker"
+        and default.get("state", "created") == "created"
+        and all(
+            type(exports.get(name)) is dict
+            and exports[name].get("type") == "durable-object"
+            and exports[name].get("storage") == "sqlite"
+            and exports[name].get("state", "created") == "created"
+            for name in expected
+        )
+        and {
+            name for name, spec in exports.items()
+            if type(spec) is dict and spec.get("type") == "durable-object"
+        } == set(expected)
+        and all(
+            type(spec) is dict and spec.get("state", "created") == "created"
+            for spec in exports.values()
+        )
+    )
+    return {
+        "served_export_metadata_complete": True,
+        "served_export_types_match_reviewed_source": bool(matched),
+    }
+
+
 def validate_served_version_detail(payload: object, pinned_id: str) -> dict[str, bool]:
     if (not _uuid(pinned_id) or type(payload) is not dict
         or payload.get("success") is not True
@@ -147,6 +214,7 @@ def audit(*, account_id: str, token: str, requester=get_json) -> dict[str, objec
             raise ValueError("Canonical Broker version not readable")
         evidence = validate_served_version_detail(detail, pinned_id)
         runtime = compare_served_runtime_config(detail, worker)
+        exports = compare_served_worker_exports(detail, worker)
         # Deployment may advance between separate GET requests. Refuse a
         # point-in-time claim until the same served id survives a second GET.
         # This does not prove source parity or guarantee future immutability.
@@ -154,7 +222,7 @@ def audit(*, account_id: str, token: str, requester=get_json) -> dict[str, objec
         if confirm_code != 200 or parse_served_version(confirm_deployments) != pinned_id:
             raise ValueError("Broker served deployment drifted during readback")
         results.append({
-            "worker": worker, **evidence, **runtime,
+            "worker": worker, **evidence, **runtime, **exports,
             "served_version_stable_during_readback": True,
         })
     return {

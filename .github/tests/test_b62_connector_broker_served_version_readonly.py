@@ -111,6 +111,40 @@ class BrokerVersionReadbackTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             audit.compare_served_runtime_config(version_detail(), "unreviewed-worker")
 
+    def test_served_export_types_are_not_a_source_or_rpc_attestation(self):
+        expected = {
+            "padiem-local-agent-broker-state": "LocalAgentBrokerDurableObject",
+            "padiem-local-agent-broker-edge": None,
+        }
+        for worker, do_name in expected.items():
+            d = version_detail()
+            exports = {"default": {"type": "worker", "state": "created"}}
+            if do_name:
+                exports[do_name] = {"type": "durable-object", "storage": "sqlite"}
+            d["result"]["resources"]["script_runtime"] = {"exports": exports}
+            result = audit.compare_served_worker_exports(d, worker)
+            self.assertTrue(result["served_export_metadata_complete"])
+            self.assertTrue(result["served_export_types_match_reviewed_source"])
+            exports["default"]["type"] = "durable-object"
+            self.assertFalse(audit.compare_served_worker_exports(
+                d, worker)["served_export_types_match_reviewed_source"])
+            exports["default"]["type"] = "worker"
+            exports["UnexpectedDO"] = {"type": "durable-object", "storage": "sqlite"}
+            self.assertFalse(audit.compare_served_worker_exports(
+                d, worker)["served_export_types_match_reviewed_source"])
+            del d["result"]["resources"]["script_runtime"]
+            absent = audit.compare_served_worker_exports(d, worker)
+            self.assertFalse(absent["served_export_metadata_complete"])
+            self.assertFalse(absent["served_export_types_match_reviewed_source"])
+        d = version_detail()
+        d["result"]["resources"]["script_runtime"] = {
+            "exports": {"default": {"type": "worker"}}
+        }
+        self.assertFalse(audit.compare_served_worker_exports(
+            d, "padiem-local-agent-broker-state")["served_export_types_match_reviewed_source"])
+        with self.assertRaises(ValueError):
+            audit.compare_served_worker_exports(d, "unknown-target")
+
     def test_deployment_changed_between_two_reads_fails_closed(self):
         calls = {}
         def requester(url, *, token):
