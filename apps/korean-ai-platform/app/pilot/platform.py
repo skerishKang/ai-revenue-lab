@@ -469,7 +469,7 @@ async def call_platform_chat_completions(
         "_upstream_latency_ms": latency_ms,
         "_requested_upstream_model": upstream_model,
         "_actual_response_model": actual_response_model,
-        "_response_bytes": len(response.content),
+        "_response_bytes": len(body_bytes),
     }
 
 
@@ -577,9 +577,9 @@ async def stream_platform_chat_completions(
                 follow_redirects=False,
             ) as response:
                 if response.status_code < 200 or response.status_code >= 300:
-                    # Read the small error body so provider-specific 429
-                    # normalization (#2003) can inspect it.
-                    error_bytes = await response.aread()
+                    # Bound error-body bytes before inspecting provider-specific
+                    # 429 diagnostics; untrusted upstream errors can be huge.
+                    error_bytes = await _read_bounded_body(response)
                     if platform_provider_id == "tokenharbor":
                         _log_tokenharbor_rejection(response, headers, error_bytes)
                     error_body = error_bytes.decode("utf-8", "replace")
