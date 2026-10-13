@@ -1,6 +1,6 @@
 # Complete public GitHub document path manifest — audit checkpoint 2026-10-13
 # Baseline main SHA: 5476d1038993d647bf8ba241ce6a4307cccf291f
-# Content states: INDEXED_ONLY=original path/blob indexed, body unread; TEXT_SAMPLED=initial partly/full-text inspection not independently exhaustive; TEXT_FULL_FETCHED_B02/B03/B04/B05/B06/B07/B08/B09/B10/B11/B12/B13/B14/B15/B16/B17/B18/B19/B20/B21/B22/B23/B24/B25/B26/B27=complete original body fetched and provisionally classified, not legal/commercial/Owner or production clearance; BINARY_PENDING=original PDF/DOCX body unread.
+# Content states: INDEXED_ONLY=original path/hash indexed but body unread; TEXT_SAMPLED=early partial/full read not independently certified exhaustive; TEXT_FULL_FETCHED_B02/B03/B04/B05/B06/B07/B08/B09/B10/B11/B12/B13/B14/B15/B16/B17/B18/B19/B20/B21/B22/B23/B24/B25/B26/B27/B28=original full body retrieved and provisionally triaged, not legal/business/owner/production clearance; BINARY_PENDING=PDF/DOCX bodies unread.
 # This file has all 835 recognized document-format blobs from a GitHub recursive tree with truncated=false. Existing source content was not copied here.
 # Full-status classification must not be inferred from filename keywords or the TEXT_SAMPLED flag.
 PATH	BLOB_SHA	BYTES	READ_STATE
@@ -15,7 +15,7 @@ apps/ai-reward-router/README.md	05a04b73c3a394b7914c6e58d8e5293ddaeea864	1517	TE
 apps/b66-quote-adapter/README.md	d149ffeaaf7869cb905806262dcdf538c1782105	7488	TEXT_FULL_FETCHED_B23
 apps/b66-sol61-multipage/README.md	a7a0b392562a790771127f9c8f6d06bbff7a2f76	9513	TEXT_FULL_FETCHED_B21
 apps/b66-sol61-multipage/requirements-test.txt	3f46dd34276c8f70778a2c10f099c0ca525d12c8	90	INDEXED_ONLY
-apps/b66-sol61-multipage/WORK_ORDER_3839_RIGHT_BORDER.md	31a01e7beb7593f27801786307a166618d6e7735	1906	INDEXED_ONLY
+apps/b66-sol61-multipage/WORK_ORDER_3839_RIGHT_BORDER.md	31a01e7beb7593f27801786307a166618d6e7735	1906	TEXT_FULL_FETCHED_B28
 apps/korean-ai-code-agent/docs/00_SOURCE_OF_TRUTH.md	df8c616feba1ea9388deafb58aae213cccbdafb5	1335	TEXT_FULL_FETCHED_B02
 apps/korean-ai-code-agent/docs/01_PRODUCT_CHARTER_AND_PRD.md	39b44c09715c7dcbcb2a4165539ee54e1e58aab0	1509	TEXT_SAMPLED
 apps/korean-ai-code-agent/docs/02_SYSTEM_ARCHITECTURE.md	25fc8502c0e09023d12c2178a94a9e025f0652f6	1610	TEXT_FULL_FETCHED_B09
@@ -129,7 +129,7 @@ apps/padiem-chat/README.md	b6e64be16c652a024b636bff32280118f23c171d	12932	TEXT_F
 apps/padiem-desktop-shell/docs/3101-release-withdrawal-runbook.md	1431bd396a8d1aad8ad85c59321eac5578f65763	6918	TEXT_FULL_FETCHED_B23
 apps/padiem-desktop-shell/README.md	b0c896cde0a5b6cd237e34a220e438e2c62920cd	6028	TEXT_FULL_FETCHED_B23
 apps/padiem-desktop-shell/THIRD_PARTY_NOTICES.md	aea2b4c0fa3016e492ffcd541189f5dadac452b0	2665	TEXT_FULL_FETCHED_B23
-apps/padiem-lab/README.md	c2ffc9bc192b320e61062202feca746ce7bc1c6b	3588	INDEXED_ONLY
+apps/padiem-lab/README.md	c2ffc9bc192b320e61062202feca746ce7bc1c6b	3588	TEXT_FULL_FETCHED_B28
 apps/padiem-sidecar/README.md	3e704b90cac1787d99b6f8545f9b192eeb450dc7	1977	TEXT_FULL_FETCHED_B21
 apps/personal-edition/docs/design-reference/IMAGE_PLAN.md	dc80f56bd89370677a847ed89b6cb198c35f24db	1885	TEXT_FULL_FETCHED_B24
 apps/personal-edition/docs/design-reference/REFERENCE_NOTES.md	4fca3b0a224b2157243a9b793aa44e9f2051b6e8	869	TEXT_FULL_FETCHED_B24
@@ -153,9 +153,9 @@ apps/personal-video-archive/README.md	7ddee8bb82dfef6668008fa6c8f142acb27bd3a9	8
 apps/portfolio-console/ai-api/ASSET_PROVENANCE.md	964a7a1ca1a6ba678212f570b2aff6aa2d92402e	2365	TEXT_FULL_FETCHED_B23
 apps/portfolio-console/ai-api/README.md	f7c53b2f762372662331790d8b9ec860752e23ea	8981	TEXT_FULL_FETCHED_B23
 apps/portfolio-console/README.md	48f0f6239ada2e17e32a6e410178b1c3592150e4	11370	TEXT_FULL_FETCHED_B14
-apps/portfolio-console/tests/evidence/issue285/36d7d133c2079c6bf875d82d74abf06d3f91ce8f/EXACT-HEAD.txt	93e1744ecabf24ffdf25787af0942f4020cc719f	1650	INDEXED_ONLY
-apps/README.md	53bf8446a4c57f42b479a807217ebc6d2efa6197	5575	INDEXED_ONLY
-apps/world-feed/BENCHMARK_SPEC.md	d9ca945cf8f1ce3702afe32e13666951bf8c9d56	13606	INDEXED_ONLY
+apps/portfolio-console/tests/evidence/issue285/36d7d133c2079c6bf875d82d74abf06d3f91ce8f/EXACT-HEAD.txt	93e1744ecabf24ffdf25787af0942f4020cc719f	1650	TEXT_FULL_FETCHED_B28
+apps/README.md	53bf8446a4c57f42b479a807217ebc6d2efa6197	5575	TEXT_FULL_FETCHED_B28
+apps/world-feed/BENCHMARK_SPEC.md	d9ca945cf8f1ce3702afe32e13666951bf8c9d56	13606	TEXT_FULL_FETCHED_B28
 apps/world-feed/README.md	2b5893ab35aaef53ee3514af4e438cd56a98fbe7	1099	TEXT_FULL_FETCHED_B02
 docs/api/padiem-ai-engine.md	8ee41da1f0576b21554321921949452b58b90876	3324	TEXT_FULL_FETCHED_B21
 docs/architecture/B14_MODEL_PROVIDER_EXECUTION_AUTHORITY_2026-10-10.md	abef29313b5dd1b18007c312606d243651455a98	12681	TEXT_FULL_FETCHED_B04
@@ -218,7 +218,7 @@ docs/decisions/ADR-0002-product-workspaces.md	0a1f7739d47703bb01100443e07a577bd0
 docs/decisions/ADR-0003-shared-portal-isolated-products.md	5475a204fe1a46573aeed90d7b6c9b9cff2249ec	10069	TEXT_SAMPLED
 docs/DOCUMENTATION_AUDIT_20260908.md	dd636cf905da5079b3b87661f9f0b2e19eaa03d1	7494	TEXT_FULL_FETCHED_B23
 docs/DOCUMENTATION_RECONCILIATION_COMPLETION_20260908.md	f630d32866a18ed14923cce6f37a672ea0fbe6af	5789	TEXT_FULL_FETCHED_B23
-docs/evidence/README.md	3400ae397e9e27a24dc2600886cc6365815102a4	5362	INDEXED_ONLY
+docs/evidence/README.md	3400ae397e9e27a24dc2600886cc6365815102a4	5362	TEXT_FULL_FETCHED_B28
 docs/experiments/B63_VALIDATION_CONTRACT.md	b25b87b794d4432caafb8793b0c2d94bd85ad31f	3745	TEXT_FULL_FETCHED_B15
 docs/experiments/b63/README.md	5a5f349efac2361e6956ce0aeb4b460085f8e378	1000	TEXT_FULL_FETCHED_B15
 docs/experiments/HY3_PERSONAL_EDITION_BENCHMARK.md	3469c4072359eed719d0ef35d6ae67cf77d536aa	12092	TEXT_FULL_FETCHED_B15
@@ -233,13 +233,13 @@ docs/governance/AI_OPERATING_MODEL.md	2bd0ff3132390be58c7b187919df79867516b479	9
 docs/governance/DOCUMENTATION_AUTHORITY_MODEL.md	ddb7ec7e995b5dd97ca63717cc01954664fe6f48	7931	TEXT_SAMPLED
 docs/governance/LEGACY_AI_TERMINOLOGY_MAP.md	21b8c2dba37b434be7f08acb7363a11530ccb4dc	4717	TEXT_SAMPLED
 docs/history/2026-09-01/PADIEM_AI_CAPABILITY_OWNERSHIP_REGISTRY_v1.audit.md	97ddd2b46da37f6897993d8ec61e9b4f87971ceb	1033	TEXT_FULL_FETCHED_B22
-docs/history/2026-09-01/PADIEM_AI_CORE_README.snapshot.md	798f3f374020b2bdea0c3a94fb7f40893f25651c	17945	INDEXED_ONLY
-docs/history/2026-09-02/PADIEM_CLAW_README.snapshot.md	e95dc808600d06b505f9d8903c8117d55f46e2be	9697	INDEXED_ONLY
-docs/history/2026-10-08/B66_DOCUMENT_FIDELITY_DEVELOPMENT_MODEL_HEURISTICS.snapshot.md	b5ea1cb99a4842d095651d8c2788296db35d1c5e	3098	INDEXED_ONLY
-docs/history/2026-10-08/B66_MVP_RUNTIME_REPAIR_2026-10-08.snapshot.md	3416f6b54d6cda359856b4562d5e7e3aec157a3f	6338	INDEXED_ONLY
-docs/history/2026-10-08/B66_QUOTE_BETA_DEMO_GUIDE.snapshot.md	d74ce62ba0bffcd71c27ed9df34c9d06452b9c36	8244	INDEXED_ONLY
-docs/history/2026-10-08/B66_QUOTE_BETA_REFERENCE_README.snapshot.md	7c47a423fa2a2a812e876882e8638cb5800248c3	17301	INDEXED_ONLY
-docs/history/2026-10-08/B66_QUOTE_SERVER_ADAPTER_README.snapshot.md	a8883179c29cc6a2c4e185df0e4753b10b8fb07f	5123	INDEXED_ONLY
+docs/history/2026-09-01/PADIEM_AI_CORE_README.snapshot.md	798f3f374020b2bdea0c3a94fb7f40893f25651c	17945	TEXT_FULL_FETCHED_B28
+docs/history/2026-09-02/PADIEM_CLAW_README.snapshot.md	e95dc808600d06b505f9d8903c8117d55f46e2be	9697	TEXT_FULL_FETCHED_B28
+docs/history/2026-10-08/B66_DOCUMENT_FIDELITY_DEVELOPMENT_MODEL_HEURISTICS.snapshot.md	b5ea1cb99a4842d095651d8c2788296db35d1c5e	3098	TEXT_FULL_FETCHED_B28
+docs/history/2026-10-08/B66_MVP_RUNTIME_REPAIR_2026-10-08.snapshot.md	3416f6b54d6cda359856b4562d5e7e3aec157a3f	6338	TEXT_FULL_FETCHED_B28
+docs/history/2026-10-08/B66_QUOTE_BETA_DEMO_GUIDE.snapshot.md	d74ce62ba0bffcd71c27ed9df34c9d06452b9c36	8244	TEXT_FULL_FETCHED_B28
+docs/history/2026-10-08/B66_QUOTE_BETA_REFERENCE_README.snapshot.md	7c47a423fa2a2a812e876882e8638cb5800248c3	17301	TEXT_FULL_FETCHED_B28
+docs/history/2026-10-08/B66_QUOTE_SERVER_ADAPTER_README.snapshot.md	a8883179c29cc6a2c4e185df0e4753b10b8fb07f	5123	TEXT_FULL_FETCHED_B28
 docs/history/README.md	d5c41b8a36251514821e376cafe3eae6d741567c	2905	TEXT_FULL_FETCHED_B21
 docs/internal-platform/AI_ADOPTION_PLAYBOOK.md	8d0bf36d92e2626cb7081932e666b273fc4d6d84	9243	TEXT_FULL_FETCHED_B04
 docs/internal-platform/control-plane/README.md	ee46de5211aa42c616679f344d54b63a94757667	1246	TEXT_FULL_FETCHED_B04
@@ -577,11 +577,11 @@ packages/padiem-ai-core/tests/fixtures/pdf_authoring/OFL.txt	79a917be1f4b42e688a
 packages/padiem-control-plane/LOCAL_AGENT_BROKER_AUTHORITY_M2C.md	0075ec54b214aaeebaa34b3a1b12d9c45e148ddb	12090	TEXT_FULL_FETCHED_B21
 packages/padiem-control-plane/README.md	2b0cd2784a61a9d285414a9edd3a96ed57211366	3049	TEXT_FULL_FETCHED_B21
 packages/padiem-embedded-runtime/README.md	ee15badf865eaad2edeb01f4c2a2d093a7ec0458	8311	TEXT_FULL_FETCHED_B23
-PADIEM_UI_HANDOFF.md	39d172956ca235f33924d921bc8d2027ec72da04	902	INDEXED_ONLY
-padiem-reports/2026-09-25/CLAW3/2825-hwpx-image-insertion-adoption.md	0829709345f894936d8830f0f1c7122cc916d4be	10894	INDEXED_ONLY
+PADIEM_UI_HANDOFF.md	39d172956ca235f33924d921bc8d2027ec72da04	902	TEXT_FULL_FETCHED_B28
+padiem-reports/2026-09-25/CLAW3/2825-hwpx-image-insertion-adoption.md	0829709345f894936d8830f0f1c7122cc916d4be	10894	TEXT_FULL_FETCHED_B28
 README.md	06300fe0516a421644a96d214e4aca4c6817319c	11957	TEXT_SAMPLED
 reference/b66-public-standard-templates/cgi/v1/glm53/template/base_document.pdf	b34420a509b92f85de42796c5b35ac55fe0a16a2	120668	BINARY_PENDING
-reference/b66-public-standard-templates/cgi/v1/README.md	ca7b00bcb66f3dc767c8abbce98b491a40a15acf	4480	INDEXED_ONLY
+reference/b66-public-standard-templates/cgi/v1/README.md	ca7b00bcb66f3dc767c8abbce98b491a40a15acf	4480	TEXT_FULL_FETCHED_B28
 reference/b66-public-standard-templates/cgi/v1/sol61/template/resources.pdf	744102570ac7fe2c3e480b56b3933840831d0afb	91266	BINARY_PENDING
 reference/b66-public-standard-templates/cgi/v1/source/original.pdf	b34420a509b92f85de42796c5b35ac55fe0a16a2	120668	BINARY_PENDING
 reference/business-05-neighbor-market-v2/COMMUNITY_PRIORITY_MODEL.md	31cf405bcb8cfe9cb51eddc6aa9315520db59fc0	5984	TEXT_FULL_FETCHED_B02
@@ -785,12 +785,12 @@ reference/business-51-ai-workflow-marketplace-v1/IMAGE_SOURCES.md	520ba93fb0c276
 reference/business-51-ai-workflow-marketplace-v1/MOTION_SPEC.md	d5a3e7ae0b4993f4cbf9525d1cad513ba0ebdeb5	1783	TEXT_FULL_FETCHED_B06
 reference/business-51-ai-workflow-marketplace-v1/README.md	9e374469967f4c85d07617029aceaf393b3ca7e4	1990	TEXT_SAMPLED
 reference/business-51-ai-workflow-marketplace-v1/REFERENCE_NOTES.md	8034d71ba6fa550cfde37ae2d714b89b26466e76	3513	TEXT_FULL_FETCHED_B06
-reference/business-52-scheduled-agent-operations-v1/IMAGE_SOURCES.md	d0e7dd7b954bac6b62241dabf51867fe63db3e78	2572	INDEXED_ONLY
-reference/business-52-scheduled-agent-operations-v1/MOTION_SPEC.md	e937f8fd8d84f3c81fba6528e8c0d64cbf2008e7	1091	INDEXED_ONLY
+reference/business-52-scheduled-agent-operations-v1/IMAGE_SOURCES.md	d0e7dd7b954bac6b62241dabf51867fe63db3e78	2572	TEXT_FULL_FETCHED_B28
+reference/business-52-scheduled-agent-operations-v1/MOTION_SPEC.md	e937f8fd8d84f3c81fba6528e8c0d64cbf2008e7	1091	TEXT_FULL_FETCHED_B28
 reference/business-52-scheduled-agent-operations-v1/README.md	9121efa0b922daaac496cc748f7cf08d234ecf51	1242	TEXT_SAMPLED
 reference/business-52-scheduled-agent-operations-v1/REFERENCE_NOTES.md	03b30affd1b8e2a423916900f7c4fdda74ebfcac	1874	TEXT_FULL_FETCHED_B17
 reference/business-53-embedded-ai-sdk-v1/evidence/IMPLEMENTATION_VISUAL_REVIEW.md	19ae18d9c62e2e87590f822f0fb7df0961b43d31	1350	TEXT_FULL_FETCHED_B13
-reference/business-53-embedded-ai-sdk-v1/evidence/SELF_CHECK.md	e46e18ba9f02ce7113f0916429e225584bb75ab4	930	INDEXED_ONLY
+reference/business-53-embedded-ai-sdk-v1/evidence/SELF_CHECK.md	e46e18ba9f02ce7113f0916429e225584bb75ab4	930	TEXT_FULL_FETCHED_B28
 reference/business-53-embedded-ai-sdk-v1/IMAGE_SOURCES.md	7d7db9f39c218360a7663f58bb59e15a360baafb	2057	TEXT_FULL_FETCHED_B13
 reference/business-53-embedded-ai-sdk-v1/MOTION_SPEC.md	044d90cbc8a14da18929c9bf1608c024b9fac14e	1113	TEXT_FULL_FETCHED_B13
 reference/business-53-embedded-ai-sdk-v1/README.md	f904b74e2350dc5a9bafdae683d1eb0932871e12	1382	TEXT_SAMPLED
@@ -807,8 +807,8 @@ reference/business-57-classic-literature-translation-studio-v1/README.md	eb102e1
 reference/business-57-classic-literature-translation-studio-v1/REFERENCE_NOTES.md	c52da47ed8c10b18e48c81f5c50d5c099df06101	6032	TEXT_FULL_FETCHED_B17
 reference/business-57-classic-literature-translation-studio-v1/RIGHTS_AND_SOURCES.md	ce8f354b8cc78666061851e15ca3ce232dccc506	5433	TEXT_FULL_FETCHED_B07
 reference/business-58-personal-writing-voice-studio-v1/evidence/run-commands.md	f758ca6070768a774c818ab13241d2ef84a0d9fc	96	INDEXED_ONLY
-reference/business-58-personal-writing-voice-studio-v1/IMAGE_SOURCES.md	607242cece99d58e3aa66258c238f1107abf54bb	780	INDEXED_ONLY
-reference/business-58-personal-writing-voice-studio-v1/MOTION_SPEC.md	86c2d3426fc32236af09dee921f199c4e6ee42e9	610	INDEXED_ONLY
+reference/business-58-personal-writing-voice-studio-v1/IMAGE_SOURCES.md	607242cece99d58e3aa66258c238f1107abf54bb	780	TEXT_FULL_FETCHED_B28
+reference/business-58-personal-writing-voice-studio-v1/MOTION_SPEC.md	86c2d3426fc32236af09dee921f199c4e6ee42e9	610	TEXT_FULL_FETCHED_B28
 reference/business-58-personal-writing-voice-studio-v1/README.md	c02d3e1d58120f282e48983d453e47fc5a46627f	700	TEXT_SAMPLED
 reference/business-58-personal-writing-voice-studio-v1/REFERENCE_NOTES.md	379d9a52f2417825d7471be13b00ee401292f5c1	1652	TEXT_FULL_FETCHED_B16
 reference/business-58-personal-writing-voice-studio-v1/RIGHTS_AND_CONSENT_SPEC.md	0f41e01d9fafa324e2814afb97d31fedbde63839	885	TEXT_FULL_FETCHED_B07
@@ -828,14 +828,14 @@ reference/business-60-ai-api-v1/operations/B60_VISUAL_RULES.md	698b137cadd5662cb
 reference/business-60-ai-api-v1/README.md	2593e38df83e7d709f5e6e8f05a633408fe4e53d	11243	TEXT_SAMPLED
 reference/business-60-ai-api-v1/reviews/2026-08-24/PUBLISH_RECORD.md	d2a3c9eb8bface1f1bbc392a334ab4821957d32f	1493	TEXT_FULL_FETCHED_B07
 reference/business-62-padiem-chat-v1/README.md	8d6684fd076a1c4a142a05aa5508c6f31d760b51	2357	TEXT_SAMPLED
-reference/business-62-padiem-chat-v1/REFERENCE_NOTES.md	ce584596689dc44ad24728cf1e4131f97ff5d92b	1996	INDEXED_ONLY
-reference/business-62-padiem-chat-v1/RENDERED_QA.md	3b815bde8bb7598f2bece3279b5e9e6e794a723f	4423	INDEXED_ONLY
+reference/business-62-padiem-chat-v1/REFERENCE_NOTES.md	ce584596689dc44ad24728cf1e4131f97ff5d92b	1996	TEXT_FULL_FETCHED_B28
+reference/business-62-padiem-chat-v1/RENDERED_QA.md	3b815bde8bb7598f2bece3279b5e9e6e794a723f	4423	TEXT_FULL_FETCHED_B28
 reference/business-66-padiem-quote-v1/README.md	a1fb4a1639c9cfed1a8a2de763046d407e0435ec	10207	TEXT_SAMPLED
 reference/business-67-padiem-legal-v1/pdf/README.md	4f863b9be5d04e0a9bf0a1336188904711f81f85	984	TEXT_FULL_FETCHED_B21
 reference/business-67-padiem-legal-v1/README.md	e8499b7fa26071e2832c7f7ad84e52d8fdf47c0f	25025	TEXT_SAMPLED
 tests/e2e/README.md	7f800fe411bb9e67613fbd067637a702c84a1273	3337	INDEXED_ONLY
-tools/b35-independent-qa/evidence/qa_report_with_legacy_package.md	90fc04ed66bf99d98a468283d1b94970b5147d48	4056	INDEXED_ONLY
-tools/b35-independent-qa/evidence/qa_report.md	69981e9b7b91ac7a8ce04f4ab09c1fce2c55c7c1	6033	INDEXED_ONLY
+tools/b35-independent-qa/evidence/qa_report_with_legacy_package.md	90fc04ed66bf99d98a468283d1b94970b5147d48	4056	TEXT_FULL_FETCHED_B28
+tools/b35-independent-qa/evidence/qa_report.md	69981e9b7b91ac7a8ce04f4ab09c1fce2c55c7c1	6033	TEXT_FULL_FETCHED_B28
 tools/b35-independent-qa/README.md	39aa7b5699a8644d027c5dfcc1fed07ce546a10e	3005	INDEXED_ONLY
 tools/b66_generic/README.md	8ab8d89cefa02612149daf7e480605e1bd5f61f7	5396	INDEXED_ONLY
 tools/b66_generic/tests/fixtures/reference.pdf	33a04ba97bd9ad2dc5cb3c9d418e8885039bd67a	3376	BINARY_PENDING
