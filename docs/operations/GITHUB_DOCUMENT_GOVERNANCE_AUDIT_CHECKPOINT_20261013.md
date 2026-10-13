@@ -104,6 +104,15 @@ Latest immutable **835**-source cursor: **375 documents whose text was seen at l
 - Drive READ != WRITE; Telegram READ != SEND; metadata/source selection != P01 approval != exact-run Resident execution != artifact delivery; code/source and synthetic E2E must not be described as current live authority.
 - No original docs/credentials/customer files/local Governance/product policies changed. No production or live provider mutations.
 
+## 1K. Batch 12 — 25 complete-text reads (2026-10-13)
+
+Frozen 835 original document cursor after B12: **400 source texts viewed at least partially** (125 initial samples + 25 each B02–B12); **416 index-only text unread**, **19 PDF/DOCX binary bodies pending**. All original early 125 `TEXT_SAMPLED` retain their separate, not-fully-classified status.
+
+- [Batch 12 pinned Hark/Claw #3580/#3929/#3933/#3936 exact source triage](GITHUB_DOCUMENT_GOVERNANCE_AUDIT_BATCH12_20261013.md).
+- Important product distinction: 2026-10-11 WEB-FIRST owner priority and optional Windows Excel fallback; separately verified P01 READ and WRITE/edit and supported *standard quote summary PDF*, **not** arbitrary faithful Excel print reproduction.
+- Historical Engine caller app allowlist HTTP 409 and source remedy are *dated evidence*, not a current Production readiness conclusion; read-only Cloudflare binding snapshots likewise dated.
+- No original documents moved/edited, no local Governance touched, no customer file/provider writes/model or production modifications.
+
 ## 2. Candidate reading queues; no relocation or final determination yet
 
 | Queue | Confirmed source locations | Why read next | Classification state |
