@@ -364,11 +364,30 @@ def test_gateway_nonce_is_canonical_broker_do_durable_and_nonconsuming():
     def signed_action(action, counter, body):
         return session_mac(**kwargs, action=action, counter=counter,
                            payload_sha256=hashlib.sha256(body).hexdigest())
+    # An installation ACK before the canonical Broker actually consumes the
+    # challenge must never be accepted just because a gateway MAC is valid.
+    premature = b'{"ack":true}'
+    with pytest.raises(ControlPlaneContractError) as before_redeem:
+        gateway2.authorize_action(
+            challenge_id=challenge.challenge_id, device_id=DEVICE,
+            lease_ref=started["lease_ref"], action="install_ack", counter=2,
+            body=premature, proof_hex=signed_action("install_ack", 2, premature),
+            now=NOW + timedelta(seconds=2),
+        )
+    assert before_redeem.value.code == "gateway_bootstrap_action_refused"
     for step, action, body in [
         (1, "credential_fetch", body1),
         (2, "install_ack", b'{"ack":true}'),
         (3, "revoke_verdict", b'{"request":"status"}'),
     ]:
+        if step == 2:
+            enrollment, credential = reopened.pairing.redeem_enrollment(
+                challenge_id=challenge.challenge_id, device_id=DEVICE,
+                proof_ref=proof(challenge, code), consent_ref=CONSENT,
+                owner_ref=OWNER, account_ref=ACCOUNT, workspace_ref=WORKSPACE,
+                now=NOW + timedelta(seconds=2),
+            )
+            assert enrollment.device_id == DEVICE and credential
         signed_mac = signed_action(action, step, body)
         x = gateway2.authorize_action(
             challenge_id=challenge.challenge_id, device_id=DEVICE,
@@ -386,11 +405,11 @@ def test_gateway_nonce_is_canonical_broker_do_durable_and_nonconsuming():
         "SELECT next_counter,terminal_action FROM canonical_local_agent_gateway_bootstrap"
     ).toArray()
     assert persisted == [{"next_counter": 4, "terminal_action": "revoke_verdict"}]
-    assert not active_bindings(h)
+    assert len(active_bindings(h)) == 1
     assert h.storage.sql.exec(
         "SELECT redeemed_at FROM canonical_local_agent_pairing_challenge"
-    ).toArray()[0]["redeemed_at"] is None
-
+    ).toArray()[0]["redeemed_at"] is not None
+    assert "credential" not in persisted[0]
 
 def test_gateway_invalid_proof_attempts_are_persisted_across_reopens():
     h = Harness()
