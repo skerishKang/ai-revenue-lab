@@ -312,6 +312,7 @@ async def run_device_initiated_enrollment(
             await socket.send_text(json.dumps({"type": "terminal",
                 "status": status, "can_retry_challenge": False,
             }, separators=(",", ":")))
+            await socket.close(code=1000)
             return
         # Success is *only* the original Broker+Identity host receipt after
         # true DPAPI-transcript and same-connection Broker-signed ACK proofs.
