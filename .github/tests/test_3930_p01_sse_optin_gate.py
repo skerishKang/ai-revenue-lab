@@ -180,6 +180,22 @@ def test_workflow_authority():
     assert "P01_SSE_OPTIN_NO_OP" in workflow
     assert "P01_SSE_POST_SERVED_INTEGRITY" in workflow
 
+
+
+def test_owner_single_approval_does_not_require_independent_reviewer():
+    # Owner-delegated release: no second GitHub user or deployment-review gate.
+    # Exact SHA, confirmation, rollback snapshot and served integrity remain.
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    block = workflow.split("\\n  activate-p01-sse:\\n", 1)[1]
+    assert "b62_p01_sse_independent_review.py" not in block
+    assert "/actions/runs/\u0024{GITHUB_RUN_ID}/approvals" not in block
+    assert "Verify independent production deployment review" not in block
+    assert "CONFIRM_ACTIVATE_B62_P01_SSE_OPTIN" in block
+    assert "b62_p01_sse_optin_gate.py plan" in block
+    assert "b62_p01_sse_optin_gate.py compare-before" in block
+    assert "b62_p01_sse_optin_gate.py verify" in block
+    assert "b62-claw-config-premutation-settings" in block
+
 if __name__ == "__main__":
     for name, func in sorted(globals().copy().items()):
         if name.startswith("test_") and callable(func):
