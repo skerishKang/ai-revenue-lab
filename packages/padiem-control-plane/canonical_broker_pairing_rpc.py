@@ -98,6 +98,34 @@ class CanonicalBrokerPairingRPC:
         except Exception:
             return {"ok": False, "error": {"code": "durable_pairing_store_unavailable", "message": "Canonical broker request was rejected"}}
 
+    async def verify_enrollment_bootstrap(self, payload: dict) -> dict:
+        """Private, fail-closed nonconsuming proof-possession preflight."""
+        try:
+            expected = {
+                "challenge_id", "device_id", "proof_ref", "consent_ref",
+                "owner_ref", "account_ref", "workspace_ref",
+            }
+            if type(payload) is not dict or set(payload) != expected:
+                raise ControlPlaneContractError(
+                    "invalid_durable_pairing_rpc", "bootstrap fields invalid"
+                )
+            proof = self._durable_pairing().verify_enrollment_bootstrap(
+                challenge_id=payload["challenge_id"], device_id=payload["device_id"],
+                proof_ref=payload["proof_ref"], consent_ref=payload["consent_ref"],
+                owner_ref=payload["owner_ref"], account_ref=payload["account_ref"],
+                workspace_ref=payload["workspace_ref"], now=datetime.now(timezone.utc),
+            )
+            return {"ok": True, "bootstrap": proof}
+        except ControlPlaneContractError as exc:
+            return {"ok": False, "error": {
+                "code": exc.code, "message": "Canonical broker request was rejected",
+            }}
+        except Exception:
+            return {"ok": False, "error": {
+                "code": "durable_pairing_store_unavailable",
+                "message": "Canonical broker request was rejected",
+            }}
+
     async def redeem_enrollment(self, payload: dict) -> dict:
         """Private caller only; raw credential is returned to the private host once."""
         try:
