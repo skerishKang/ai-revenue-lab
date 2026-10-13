@@ -243,3 +243,59 @@ def test_consent_endpoint_not_mounted_and_default_activation_stays_off():
     assert routes.ENROLLMENT_PRODUCT_DURABLE_CONSENT_WIRED is False
     assert routes.ENROLLMENT_PRODUCT_CREDENTIAL_HANDOFF_WIRED is False
     assert routes.ENROLLMENT_PRODUCT_PRODUCTION_ACTIVE is False
+
+
+class RawJsonRequest(Request):
+    """Preserve duplicate JSON keys in the transport-level body."""
+    def __init__(self, raw: bytes, state):
+        self.app = SimpleNamespace(state=state)
+        self.headers = {
+            "content-type": "application/json",
+            "content-length": str(len(raw)),
+        }
+        self._raw = raw
+
+    async def body(self):
+        return self._raw
+
+
+@pytest.mark.parametrize("raw", [
+    b'{"device_id":"device.owner.1","confirmed":false,"confirmed":true,"confirmation_version":"pc-enrollment-consent-v1"}',
+    b'{"device_id":"other.device","device_id":"device.owner.1","confirmed":true,"confirmation_version":"pc-enrollment-consent-v1"}',
+    b'{"device_id":"device.owner.1","confirmed":true,"confirmation_version":"ignored","confirmation_version":"pc-enrollment-consent-v1"}',
+])
+def test_grant_rejects_duplicate_json_fields_before_identity_write(monkeypatch, raw):
+    setup_auth(monkeypatch)
+    authority = ConsentAuthority()
+    status, response, _ = run(
+        routes.connector_enrollment_consent_grant,
+        RawJsonRequest(raw, app_state(authority=authority)),
+    )
+    assert status == 400
+    assert response == {"ok": False, "error": {"code": "connector_enrollment_explicit_consent_required"}}
+    assert authority.calls == []
+
+
+@pytest.mark.parametrize("raw", [
+    b'{"consent_id":"consent.owner.1","confirmed":false,"confirmed":true,"confirmation_version":"pc-enrollment-consent-v1"}',
+    b'{"consent_id":"another.consent","consent_id":"consent.owner.1","confirmed":true,"confirmation_version":"pc-enrollment-consent-v1"}',
+])
+def test_revoke_rejects_duplicate_json_fields_before_identity_write(monkeypatch, raw):
+    setup_auth(monkeypatch)
+    authority = ConsentAuthority()
+    status, response, _ = run(
+        routes.connector_enrollment_consent_revoke,
+        RawJsonRequest(raw, app_state(authority=authority)),
+    )
+    assert status == 400
+    assert response == {"ok": False, "error": {"code": "connector_enrollment_explicit_consent_required"}}
+    assert authority.calls == []
+
+
+def test_issue_payload_rejects_duplicate_device_id():
+    raw = b'{"device_id":"wrong.device","device_id":"device.owner.1"}'
+    value = asyncio.run(routes._payload(
+        RawJsonRequest(raw, app_state()),
+        frozenset({"device_id"}),
+    ))
+    assert value is None
