@@ -125,7 +125,8 @@ def test_foreign_nonsecret_run_entry_cannot_be_deleted_on_off_or_unpair():
 
 def test_installer_uninstall_uses_shared_ownership_gate_instead_of_raw_delete():
     src = (ROOT / "install.ps1").read_text(encoding="utf-8")
-    assert "& $PythonExePath -m padiem_connector autostart off" in src
+    assert "& $PythonExePath -m $UninstallModule autostart off" in src
+    assert "'padiem_connector'" in src and "'claw_connect'" in src
     assert "Remove-ItemProperty -Path $RunKey" not in src
     assert "Could not be safely disabled" not in src or "Autostart could not be safely disabled" in src
 

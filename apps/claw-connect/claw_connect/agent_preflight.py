@@ -48,10 +48,14 @@ def agent_preflight(*, state_dir: str | os.PathLike[str] | None = None) -> dict[
     ready = False
     try:
         source = resident_src_root(state_dir=state_dir)
-    except ValueError:
+    except ValueError as exc:
         source = None
-        method = "conflicting_environment"
-        reason = "agent_source_conflict"
+        if str(exc) == "agent_source_config_invalid":
+            method = "invalid_configuration"
+            reason = "agent_source_config_invalid"
+        else:
+            method = "conflicting_environment"
+            reason = "agent_source_conflict"
     else:
         if source is not None:
             method = "configured"

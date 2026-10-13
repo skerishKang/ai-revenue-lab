@@ -37,7 +37,8 @@ def test_installer_migrates_only_its_owned_legacy_shortcut():
     assert "$link.Arguments -eq '-m claw_connect start'" in source
     assert "Copy-Item -Path (Join-Path $SourceRoot 'padiem_connector')" in source
     assert "& $PythonExePath -m padiem_connector autostart on" in source
-    assert "& $PythonExePath -m padiem_connector autostart off" in source
+    assert "& $PythonExePath -m $UninstallModule autostart off" in source
+    assert "'claw_connect'" in source and "'padiem_connector'" in source
 
 def test_windows_identity_stays_identical_across_public_brand_alias():
     from claw_connect import AUTOSTART_RUN_VALUE_NAME, SINGLE_INSTANCE_MUTEX

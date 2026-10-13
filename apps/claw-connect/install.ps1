@@ -127,8 +127,12 @@ Copy-Item -Path (Join-Path $SourceRoot 'padiem_connector') -Destination $Install
 # directory is this install root.
 if ($ValidatedAgentSrc) {
     $residentConfig = Join-Path $InstallRoot 'resident.json'
-    @{ src_root = $ValidatedAgentSrc } | ConvertTo-Json -Compress |
-        Set-Content -Path $residentConfig -Encoding utf8
+    $AgentConfigJson = @{ src_root = $ValidatedAgentSrc } | ConvertTo-Json -Compress
+    # Windows PowerShell 5.1 Set-Content -Encoding utf8 writes a BOM.
+    [System.IO.File]::WriteAllText(
+        $residentConfig, $AgentConfigJson,
+        (New-Object System.Text.UTF8Encoding($false))
+    )
 }
 
 New-Item -ItemType Directory -Path $StartMenu -Force | Out-Null

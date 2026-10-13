@@ -153,3 +153,37 @@ def test_installer_powershell_syntax_without_running_or_modifying_pc():
         env=env, capture_output=True, text=True, check=False, timeout=25,
     )
     assert outcome.returncode == 0, outcome.stdout + outcome.stderr
+
+
+def test_utf8_bom_historical_agent_config_is_supported(tmp_path, monkeypatch):
+    root = tmp_path / "agent"
+    _fake_agent_source(root)
+    state = tmp_path / "state"
+    state.mkdir()
+    (state / "resident.json").write_bytes(
+        b"\\xef\\xbb\\xbf" + json.dumps({"src_root": str(root)}).encode("utf-8")
+    )
+    monkeypatch.delenv("PADIEM_AGENT_SRC", raising=False)
+    monkeypatch.delenv("CLAW_RESIDENT_SRC", raising=False)
+    assert resident_src_root(state_dir=state) == str(root)
+    assert agent_preflight(state_dir=state)["agent_ready"] is True
+
+
+def test_corrupt_pinned_agent_config_never_falls_back_to_ambient_import(tmp_path, monkeypatch):
+    monkeypatch.delenv("PADIEM_AGENT_SRC", raising=False)
+    monkeypatch.delenv("CLAW_RESIDENT_SRC", raising=False)
+    state = tmp_path / "state"
+    state.mkdir()
+    (state / "resident.json").write_text('{"unexpected":"path"}', encoding="utf-8")
+    with pytest.raises(ValueError, match="agent_source_config_invalid"):
+        resident_src_root(state_dir=state)
+    snapshot = agent_preflight(state_dir=state)
+    assert snapshot["agent_ready"] is False
+    assert snapshot["agent_status"] == "agent_source_config_invalid"
+    assert snapshot["source_kind"] == "invalid_configuration"
+
+
+def test_installer_writes_agent_pin_without_powershell_utf8_bom():
+    script = (ROOT / "install.ps1").read_text(encoding="utf-8")
+    assert "New-Object System.Text.UTF8Encoding($false)" in script
+    assert "WriteAllText(" in script

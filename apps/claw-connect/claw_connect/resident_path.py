@@ -40,19 +40,23 @@ def resident_src_root(*, state_dir: str | os.PathLike[str] | None = None) -> str
     if state_dir is None:
         return None
     config = Path(state_dir).expanduser() / RESIDENT_CONFIG_FILENAME
-    if not config.is_file():
+    if not config.exists():
         return None
     try:
-        raw = config.read_text(encoding="utf-8")
+        if not config.is_file() or config.stat().st_size > 4096:
+            raise ValueError("agent_source_config_invalid")
+        # Windows PowerShell 5.1 historically wrote a UTF-8 BOM.
+        raw = config.read_text(encoding="utf-8-sig")
         data: Any = json.loads(raw)
-    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
-        return None
-    if type(data) is not dict or set(data) != _RESIDENT_CONFIG_KEYS:
-        return None
-    value = data["src_root"]
-    if not isinstance(value, str) or not value.strip():
-        return None
-    return value.strip()
+        if type(data) is not dict or set(data) != _RESIDENT_CONFIG_KEYS:
+            raise ValueError("agent_source_config_invalid")
+        value = data["src_root"]
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError("agent_source_config_invalid")
+        return value.strip()
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        # Never fall back to an unrelated ambient kagent after a corrupt pin.
+        raise ValueError("agent_source_config_invalid") from exc
 
 
 def write_resident_config(
