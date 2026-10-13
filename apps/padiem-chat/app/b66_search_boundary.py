@@ -141,7 +141,7 @@ def _envelope(outcome: B66SearchOutcome) -> str:
     elif outcome.status == "failed":
         head = (
             f"서버의 공개 웹 검색이 실패했습니다(code={outcome.reason}). 검색했다고 말하거나 출처를 "
-            "만리지 말고, 현재 확인이 불가능하다고 알리세요."
+            "만들지 말고, 현재 확인이 불가능하다고 알리세요."
         )
     elif outcome.status == "withheld_private":
         head = (

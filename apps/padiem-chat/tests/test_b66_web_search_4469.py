@@ -12,6 +12,7 @@ import asyncio
 import pytest
 
 from app.b66_search_boundary import (
+    B66SearchOutcome,
     MAX_B66_QUERY_CHARS,
     approved_public_query,
     _envelope,
@@ -218,3 +219,24 @@ def test_public_dict_carries_the_status_the_member_can_see():
     assert published["status"] == "sourced"
     assert published["sources"][0]["title"] == "철근 시세"
     assert "snippet" not in published["sources"][0], "raw snippets are not a member-facing field"
+
+
+def test_failure_envelope_copy_forbids_a_fabricated_source():
+    """The model-facing failure text must be intact and must forbid invention."""
+    envelope = _envelope(B66SearchOutcome("failed", "web_upstream_error"))
+    assert "출처를 만들지 말고" in envelope
+    assert "만리지" not in envelope, "corrupted copy reached the model instruction"
+    assert "현재 확인이 불가능하다고" in envelope
+
+
+@pytest.mark.parametrize(("status", "reason"), [
+    ("not_needed", "no_freshness_signal"),
+    ("unavailable", "fact_search_authorization_required"),
+    ("unavailable", "web_route_not_configured"),
+])
+def test_a_turn_with_no_retrieval_never_reads_as_a_completed_search(status, reason):
+    """No-retrieval outcomes must say search was not used, not that it succeeded."""
+    envelope = _envelope(B66SearchOutcome(status, reason))
+    assert "웹 검색은 사용되지 않았습니다" in envelope
+    assert "수행했습니다" not in envelope
+    assert "쓸 만한 근거를 얻지 못했습니다" not in envelope
