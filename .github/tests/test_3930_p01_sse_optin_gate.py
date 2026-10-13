@@ -337,3 +337,72 @@ if __name__ == "__main__":
         if name.startswith("test_") and callable(func):
             func()
             print(name + "=PASS")
+
+
+def test_cli_postverify_reports_only_allowlisted_safe_reason(tmp_path, capsys):
+    before = fixtures()
+    after = post_from(before)
+    # The synthetic private string is present in both mutable planes; a
+    # single unauthorized extra binding must be refused without leaking it.
+    extra = b("UNAPPROVED_EXTRA", "plain_text", text=PRIVATE)
+    after[0]["result"]["bindings"].append(copy.deepcopy(extra))
+    after[2]["resources"]["bindings"].append(copy.deepcopy(extra))
+    values = {}
+    for prefix, triplet in (("before", before), ("after", after)):
+        for key, value in zip(("settings", "deployments", "version"), triplet):
+            path = tmp_path / f"{prefix}-{key}.json"
+            path.write_text(json.dumps(value), encoding="utf-8")
+            values[f"{prefix}-{key}"] = str(path)
+    argv = [
+        "verify",
+        "--before-settings", values["before-settings"],
+        "--before-deployments", values["before-deployments"],
+        "--before-version", values["before-version"],
+        "--settings", values["after-settings"],
+        "--deployments", values["after-deployments"],
+        "--version", values["after-version"],
+        "--target-sha", SHA,
+    ]
+    assert gate.main(argv) == 1
+    output = capsys.readouterr().out
+    assert "P01_SSE_OPTIN_GATE_REASON=POST_SETTINGS_DRIFT" in output
+    assert "P01_SSE_OPTIN_GATE=BLOCKED" in output
+    assert "SECRET_VALUES_EMITTED=0" in output
+    assert PRIVATE not in output
+
+
+def test_cli_unknown_exception_never_exposes_sensitive_text(tmp_path, capsys, monkeypatch):
+    before = fixtures()
+    files = []
+    for key, value in zip(("settings", "deployments", "version"), before):
+        path = tmp_path / f"{key}.json"
+        path.write_text(json.dumps(value), encoding="utf-8")
+        files.append(str(path))
+    def unsafe_verify(*args, **kwargs):
+        raise gate.OptInRefused(PRIVATE)
+    monkeypatch.setattr(gate, "verify", unsafe_verify)
+    argv = [
+        "verify", "--before-settings", files[0],
+        "--before-deployments", files[1], "--before-version", files[2],
+        "--settings", files[0], "--deployments", files[1],
+        "--version", files[2], "--target-sha", SHA,
+    ]
+    assert gate.main(argv) == 1
+    output = capsys.readouterr().out
+    assert "P01_SSE_OPTIN_GATE_REASON=UNCLASSIFIED" in output
+    assert PRIVATE not in output
+
+
+def test_postpatch_workflow_prints_only_bounded_reason_after_failed_verification():
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    verifier = workflow.split(
+        "- name: Prove post-PATCH served version and exactly one allowed configuration change",
+        1
+    )[1].split("\\n      - name:", 1)[0]
+    assert "P01_SSE_OPTIN_GATE_REASON=[A-Z0-9_]{1,64}" in verifier
+    assert 'sse-verify.log" | tail -n 1 || true' in verifier
+    assert "P01_SSE_POST_SERVED_INTEGRITY=BLOCKED" in verifier
+    assert "cat \"\u0024{RUNNER_TEMP}/sse-verify.log\"" in verifier  # only on success
+    assert verifier.index("grep -E '^P01_SSE_OPTIN_GATE_REASON=") < verifier.index(
+        "P01_SSE_POST_SERVED_INTEGRITY=BLOCKED"
+    )
