@@ -1,0 +1,77 @@
+name: B62 P01 SSE Immutable Forensics
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/b62-p01-sse-immutable-forensic.yml'
+      - '.github/scripts/b62_p01_postpatch_immutable_forensic.py'
+      - '.github/tests/test_b62_p01_postpatch_immutable_forensic.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-p01-sse-immutable-forensic-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run independent no-network forensic source contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet pytest
+          python -m pytest .github/tests/test_b62_p01_postpatch_immutable_forensic.py -q
+          echo 'P01_SSE_FORENSIC_SOURCE=PASS'
+          echo 'PRODUCTION_MUTATION=0'
+
+  immutable-forensic:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      B62_WORKER: padiem-chat
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Prove exact current source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${GITHUB_SHA}"
+          test -n "${CLOUDFLARE_API_TOKEN:-}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID:-}"
+          echo 'P01_SSE_FORENSIC_EXACT_MAIN=PASS'
+          echo 'PRODUCTION_MUTATION=0'
+      - name: GET two pinned immutable Worker versions and classify resource differences
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
+          bash .github/scripts/b62_cloudflare_504_readonly_get.sh \
+            "${base}/versions/181d637c-de84-4919-9d45-8e966a07f181" \
+            "${RUNNER_TEMP}/sse-before-immutable.json"
+          bash .github/scripts/b62_cloudflare_504_readonly_get.sh \
+            "${base}/versions/18ee50a1-ab64-4cc0-8fc2-2ed3234f63a5" \
+            "${RUNNER_TEMP}/sse-failed-patch-immutable.json"
+          python .github/scripts/b62_p01_postpatch_immutable_forensic.py \
+            --before "${RUNNER_TEMP}/sse-before-immutable.json" \
+            --after "${RUNNER_TEMP}/sse-failed-patch-immutable.json"
+          echo 'P01_SSE_FORENSIC_READONLY=PASS'
+          echo 'PRODUCTION_MUTATION=0'
