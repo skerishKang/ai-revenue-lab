@@ -38,6 +38,7 @@ from app.pilot.gateway import _validate_body, _InvalidBody
 GO_MODELS = (
     "opencode-go/longcat-2.5-preview-free",
     "opencode-go/step-5-preview-free",
+    "opencode-go/muse-spark-1.2-contributor",
     "opencode-go/muse-spark-1.3-contributor",
     "opencode-go/gpt-6-luna",
     "opencode-go/claude-haiku-5-5",
@@ -229,11 +230,11 @@ def test_distinct_forged_sessions_both_rejected_at_body() -> None:
 
 
 # --------------------------------------------------------------------------
-# 5. OFF pins: provider and all five models stay disabled (read-only).
+# 5. OFF pins: provider and all six models stay disabled (read-only).
 # --------------------------------------------------------------------------
 
 
-def test_go_provider_and_five_models_stay_off() -> None:
+def test_go_provider_and_six_models_stay_off() -> None:
     from app.pilot.model_registry_file import read_registry
 
     reg = read_registry()
