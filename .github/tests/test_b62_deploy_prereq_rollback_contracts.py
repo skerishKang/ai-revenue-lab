@@ -669,7 +669,7 @@ def test_protected_code_rollback_checks_out_exact_main_before_scripts():
     assert "uses: actions/checkout@v4" in rollback
     assert "persist-credentials: false" in rollback
     assert "ref: ${{ env.TARGET_SHA }}" in rollback
-    assert "test \"$(git rev-parse origin/main)\" = \"\${TARGET_SHA}\"" in rollback
+    assert "test \"$(git rev-parse origin/main)\" = \"${TARGET_SHA}\"" in rollback
     for path in ("b62_cloudflare_504_readonly_get.sh",
                  "b62_cloudflare_rollback_deployment_request.py",
                  "cloudflare_served_version_cli.py"):
