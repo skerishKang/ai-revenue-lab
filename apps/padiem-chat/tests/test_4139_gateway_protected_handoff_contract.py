@@ -238,3 +238,119 @@ def test_no_in_memory_lease_can_prove_durable_pc_replay_authority():
     assert asyncio.run(do_ack(h))
     assert asyncio.run(h.ready(challenge_id=CHALLENGE, device_id=DEVICE)) is False
     assert g.calls.count("reserve") == 1
+
+
+class FakeCanonicalIdentity:
+    def __init__(self):
+        self.authorization_reads = 0
+
+    async def resolve_connector_enrollment_consent_for_device(self, **kwargs):
+        return {}
+
+    async def bind_connector_enrollment_challenge(self, **kwargs):
+        return {}
+
+    async def authorize_connector_enrollment_redeem(self, **kwargs):
+        self.authorization_reads += 1
+        return {
+            "consent_id": "consent.1",
+            "owner_subject_id": "owner.1",
+            "account_ref": BINDING["account_ref"],
+            "workspace_ref": BINDING["workspace_ref"],
+        }
+
+
+class FakeCanonicalBroker:
+    def __init__(self):
+        self.redeemed = 0
+        self.revoke_calls = 0
+        self.weak_revoke = False
+
+    async def issue_enrollment_challenge(self, **kwargs):
+        raise AssertionError("redeem path must not mint a new challenge")
+
+    async def get_enrollment_binding(self, *, challenge_id):
+        assert challenge_id == CHALLENGE
+        return {
+            "device_id": DEVICE, "consent_ref": "consent.1",
+            "owner_ref": "owner.1",
+            "account_ref": BINDING["account_ref"],
+            "workspace_ref": BINDING["workspace_ref"],
+        }
+
+    async def redeem_enrollment(self, **kwargs):
+        self.redeemed += 1
+        return dict(BINDING), KEY
+
+    async def revoke_binding(self, *, binding_ref):
+        assert binding_ref == BINDING["binding_ref"]
+        self.revoke_calls += 1
+        return True if self.weak_revoke else {
+            "binding_ref": binding_ref, "state": "revoked",
+        }
+
+
+def host(gateway, broker=None):
+    ident = FakeCanonicalIdentity()
+    canonical = broker or FakeCanonicalBroker()
+    h = CanonicalConnectorEnrollmentAsyncHost(
+        identity=ident, broker=canonical,
+        credential_handoff=adapter(gateway),
+    )
+    return h, ident, canonical
+
+
+def redeem(h):
+    return asyncio.run(h.redeem(
+        challenge_id=CHALLENGE, device_id=DEVICE,
+        proof_ref="pairing-proof:" + "a" * 64,
+    ))
+
+
+def test_synthetic_host_through_gateway_handoff_returns_only_paired_offline():
+    gateway = FakeReviewedGateway()
+    h, identity, broker = host(gateway)
+    result = redeem(h)
+    assert broker.redeemed == 1 and broker.revoke_calls == 0
+    assert identity.authorization_reads == 3
+    assert result["credential_installed_by_canonical_handoff"] is True
+    assert result["lifecycle"] == "paired_offline"
+    assert result["raw_device_credential"] is False
+    assert result["dispatch_authorized"] is False
+    assert result["grants_read"] is False and result["grants_write"] is False
+    assert "credential" not in result
+    assert gateway.calls == [
+        "reserve", "bootstrap_auth", "deliver", "receive_ack", "sender_auth",
+    ]
+
+
+def test_synthetic_host_cannot_redeem_before_gateway_bootstrap_authentication():
+    gateway = FakeReviewedGateway()
+    gateway.authorized = False
+    h, identity, broker = host(gateway)
+    with pytest.raises(IdentityBridgeError) as caught:
+        redeem(h)
+    assert caught.value.code == "credential_handoff_unavailable"
+    assert broker.redeemed == 0 and broker.revoke_calls == 0
+    assert "deliver" not in gateway.calls
+
+
+@pytest.mark.parametrize("revoke_receipt_confirmed", [True, False])
+def test_synthetic_handoff_bad_gateway_ack_revokes_or_stays_security_hold(
+    revoke_receipt_confirmed,
+):
+    gateway = FakeReviewedGateway()
+    gateway.ack_authorized = False
+    broker = FakeCanonicalBroker()
+    broker.weak_revoke = not revoke_receipt_confirmed
+    h, identity, broker = host(gateway, broker)
+    with pytest.raises(IdentityBridgeError) as caught:
+        redeem(h)
+    assert caught.value.code == (
+        "enrollment_credential_handoff_failed"
+        if revoke_receipt_confirmed
+        else "enrollment_handoff_revoke_unconfirmed"
+    )
+    assert broker.redeemed == 1 and broker.revoke_calls == 1
+    assert gateway.calls.count("deliver") == 1
+    assert gateway.calls.count("sender_auth") == 1
