@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from pathlib import Path
 import shutil
 import subprocess
@@ -39,6 +40,12 @@ _PRIVATE_CHAT_BINDINGS = (
     "IDENTITY_AUTHORITY_SERVICE",
     "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
 )
+# An acceptance-only Service Binding must target the isolated Worker itself;
+# binding names/types alone cannot rule out accidental production routing.
+_ACCEPTANCE_PRIVATE_TARGETS = {
+    "IDENTITY_AUTHORITY_SERVICE": "padiem-control-plane-identity-acceptance-4139",
+    "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE": "padiem-local-agent-broker-state-acceptance-4139",
+}
 _ACCEPTANCE_FLAGS = (
     "PADIEM_CONNECTOR_OWNER_ENROLLMENT_ENABLED",
     "PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED",
@@ -144,8 +151,16 @@ def _latest_live_version(wrangler: str, config: Path) -> dict[str, Any]:
         }
     elif config.name == "wrangler.connector-acceptance-4139.toml":
         # Bounded names/types from the actual deployed private Worker only.
+        private_services = {
+            row.get("name"): row for row in bindings
+            if isinstance(row, dict) and isinstance(row.get("name"), str)
+        }
         result["acceptance_private_services"] = {
-            name: safe.get(name) == "service" for name in _PRIVATE_CHAT_BINDINGS
+            name: (
+                safe.get(name) == "service"
+                and private_services.get(name, {}).get("service") == target
+            )
+            for name, target in _ACCEPTANCE_PRIVATE_TARGETS.items()
         }
         result["acceptance_d1_bound"] = safe.get("PADIEM_CHAT_DB") == "d1"
         result["acceptance_session_secret_bound"] = (
@@ -189,12 +204,24 @@ def _owner_local_overlay() -> dict[str, Any]:
     except (OSError, tomllib.TOMLDecodeError):
         return {"present": True, "readable": False}
     routes = config.get("route") or config.get("routes") or []
+    databases = config.get("d1_databases")
+    d1 = databases[0] if isinstance(databases, list) and len(databases) == 1 else {}
+    exact_d1 = (
+        isinstance(d1, dict)
+        and d1.get("binding") == "PADIEM_CHAT_DB"
+        and d1.get("database_name") == "padiem-connector-acceptance-4139"
+        and isinstance(d1.get("database_id"), str)
+        and re.fullmatch(r"[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}", d1["database_id"]) is not None
+        and config.get("name") == "padiem-chat-connector-acceptance-4139"
+        and config.get("workers_dev") is False
+        and config.get("preview_urls") is False
+    )
     return {
         "present": True,
         "readable": True,
         "password_auth_selected":
             config.get("vars", {}).get("PADIEM_CHAT_AUTH_MODE") == "password",
-        "exactly_one_d1_bound": len(config.get("d1_databases") or []) == 1,
+        "exactly_one_d1_bound": exact_d1,
         # A published HTTPS route would need its own explicit authorization.
         "public_route_published": bool(routes),
     }
