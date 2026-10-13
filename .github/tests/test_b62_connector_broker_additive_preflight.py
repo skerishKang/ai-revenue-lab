@@ -106,7 +106,7 @@ class CandidatePlanTest(unittest.TestCase):
 
     def test_no_mutating_cloudflare_or_public_worker_path_is_reachable(self):
         script = (SCRIPTS / "b62_connector_broker_additive_preflight.py").read_text(encoding="utf-8")
-        self.assertIn("method=\\"GET\\"", (SCRIPTS / "b62_cloudflare_connector_binding_readonly.py").read_text(encoding="utf-8"))
+        self.assertIn('method="GET"', (SCRIPTS / "b62_cloudflare_connector_binding_readonly.py").read_text(encoding="utf-8"))
         self.assertNotIn("urlopen(Request(", script)
         self.assertNotIn("deploy(", script)
         self.assertNotIn("POST", script.split("def main() -> int:")[1])
