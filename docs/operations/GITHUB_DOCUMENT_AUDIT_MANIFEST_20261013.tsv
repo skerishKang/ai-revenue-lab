@@ -1,6 +1,6 @@
 # Complete public GitHub document path manifest — audit checkpoint 2026-10-13
 # Baseline main SHA: 5476d1038993d647bf8ba241ce6a4307cccf291f
-# Content states: INDEXED_ONLY=original path/blob only; TEXT_SAMPLED=initial partial/full text not independently fully categorized; TEXT_FULL_FETCHED_B02/B03/B04/B05/B06/B07/B08/B09/B10/B11/B12/B13/B14=complete original text retrieved and provisionally reviewed, not owner company Governance adoption; BINARY_PENDING=PDF/DOCX bodies unread.
+# Content states: INDEXED_ONLY=path/hash only; TEXT_SAMPLED=early partial/full source not certified exhaustive; TEXT_FULL_FETCHED_B02/B03/B04/B05/B06/B07/B08/B09/B10/B11/B12/B13/B14/B15=full original body read and provisionally triaged in that batch; BINARY_PENDING=PDF/DOCX unread. Original path/blob/bytes unchanged.
 # This file has all 835 recognized document-format blobs from a GitHub recursive tree with truncated=false. Existing source content was not copied here.
 # Full-status classification must not be inferred from filename keywords or the TEXT_SAMPLED flag.
 PATH	BLOB_SHA	BYTES	READ_STATE
@@ -99,12 +99,12 @@ apps/korean-ai-platform/docs/providers/README.md	7af812b8fe08be60b2f7479172511dc
 apps/korean-ai-platform/docs/providers/STATUS.md	ce6d67f6a32da83f0776d4c12cec47203a4a6d5e	256	INDEXED_ONLY
 apps/korean-ai-platform/docs/README.md	8a00a5b618337e1f89a2c21802cf74ae65af743e	6207	TEXT_FULL_FETCHED_B14
 apps/korean-ai-platform/README.md	62e914ab11c8ceb47646e57ceb8e09879d7776a0	11900	TEXT_FULL_FETCHED_B02
-apps/living-fiction/COST_AND_LIMITS.md	18485d6e221734afcb8e097f2c472ebc73d30772	5362	INDEXED_ONLY
-apps/living-fiction/deploy/cloudflare/README.md	c766298c7c99f23d7d018f255c6a0c2053f39c09	5108	INDEXED_ONLY
-apps/living-fiction/deploy/modal/README.md	c2bbaf1d56af597155d377196f0aa71cbdf31c3b	6898	INDEXED_ONLY
-apps/living-fiction/NARRATIVE_CONTRACT.md	dd27c7e5683245fa9b85ef26dbabb4f3adf7ad4e	18178	INDEXED_ONLY
+apps/living-fiction/COST_AND_LIMITS.md	18485d6e221734afcb8e097f2c472ebc73d30772	5362	TEXT_FULL_FETCHED_B15
+apps/living-fiction/deploy/cloudflare/README.md	c766298c7c99f23d7d018f255c6a0c2053f39c09	5108	TEXT_FULL_FETCHED_B15
+apps/living-fiction/deploy/modal/README.md	c2bbaf1d56af597155d377196f0aa71cbdf31c3b	6898	TEXT_FULL_FETCHED_B15
+apps/living-fiction/NARRATIVE_CONTRACT.md	dd27c7e5683245fa9b85ef26dbabb4f3adf7ad4e	18178	TEXT_FULL_FETCHED_B15
 apps/living-fiction/PRODUCT_CONTRACT.md	a9311a6700e31f7e878273bdfef68a65b67a8730	7852	TEXT_FULL_FETCHED_B03
-apps/living-fiction/PRODUCTION_PORTABILITY_AUDIT.md	3e0caf26225dbb0d62adf2ac2e0904b8c7182bd8	9271	INDEXED_ONLY
+apps/living-fiction/PRODUCTION_PORTABILITY_AUDIT.md	3e0caf26225dbb0d62adf2ac2e0904b8c7182bd8	9271	TEXT_FULL_FETCHED_B15
 apps/living-fiction/README.md	e3c7bde9b96b2ccf467a0a71a14a4e848cf023c3	4915	TEXT_FULL_FETCHED_B02
 apps/living-learning/pages-preview/robots.txt	1f53798bb4fe33c86020be7f10c44f29486fd190	26	INDEXED_ONLY
 apps/living-learning/PORTAL_INTEGRATION.md	d48b020f6bf62e8840cc26a3eb991583fdad8309	6985	INDEXED_ONLY
@@ -219,14 +219,14 @@ docs/decisions/ADR-0003-shared-portal-isolated-products.md	5475a204fe1a46573aeed
 docs/DOCUMENTATION_AUDIT_20260908.md	dd636cf905da5079b3b87661f9f0b2e19eaa03d1	7494	INDEXED_ONLY
 docs/DOCUMENTATION_RECONCILIATION_COMPLETION_20260908.md	f630d32866a18ed14923cce6f37a672ea0fbe6af	5789	INDEXED_ONLY
 docs/evidence/README.md	3400ae397e9e27a24dc2600886cc6365815102a4	5362	INDEXED_ONLY
-docs/experiments/B63_VALIDATION_CONTRACT.md	b25b87b794d4432caafb8793b0c2d94bd85ad31f	3745	INDEXED_ONLY
-docs/experiments/b63/README.md	5a5f349efac2361e6956ce0aeb4b460085f8e378	1000	INDEXED_ONLY
-docs/experiments/HY3_PERSONAL_EDITION_BENCHMARK.md	3469c4072359eed719d0ef35d6ae67cf77d536aa	12092	INDEXED_ONLY
-docs/experiments/MEASUREMENT_FRAMEWORK.md	31cf13c237cd3064bd87058f69dd47a070deb0e3	3005	INDEXED_ONLY
-docs/experiments/OPENCODE_GO_FREE_LONGCAT_STEP5_2026-10-13.md	4c6dcd5e82222ae365896350748cc1132747a94b	7651	INDEXED_ONLY
-docs/experiments/PADIEM_SEARCH_PROVIDER_BENCHMARK_CORPUS_v1.md	7bcfbf3991092de472729994479af02e5ca278dc	17104	INDEXED_ONLY
-docs/experiments/PADIEM_SEARCH_PROVIDER_BENCHMARK_W2_RUNNER.md	8f99372dd091d3849d1119b89e9abb7fb3de9b0f	5424	INDEXED_ONLY
-docs/experiments/PADIEM_SEARCH_PROVIDER_BENCHMARK_W2_SCORING.md	66a53ece50786237e5bd4519cc56d0a9d160f570	4859	INDEXED_ONLY
+docs/experiments/B63_VALIDATION_CONTRACT.md	b25b87b794d4432caafb8793b0c2d94bd85ad31f	3745	TEXT_FULL_FETCHED_B15
+docs/experiments/b63/README.md	5a5f349efac2361e6956ce0aeb4b460085f8e378	1000	TEXT_FULL_FETCHED_B15
+docs/experiments/HY3_PERSONAL_EDITION_BENCHMARK.md	3469c4072359eed719d0ef35d6ae67cf77d536aa	12092	TEXT_FULL_FETCHED_B15
+docs/experiments/MEASUREMENT_FRAMEWORK.md	31cf13c237cd3064bd87058f69dd47a070deb0e3	3005	TEXT_FULL_FETCHED_B15
+docs/experiments/OPENCODE_GO_FREE_LONGCAT_STEP5_2026-10-13.md	4c6dcd5e82222ae365896350748cc1132747a94b	7651	TEXT_FULL_FETCHED_B15
+docs/experiments/PADIEM_SEARCH_PROVIDER_BENCHMARK_CORPUS_v1.md	7bcfbf3991092de472729994479af02e5ca278dc	17104	TEXT_FULL_FETCHED_B15
+docs/experiments/PADIEM_SEARCH_PROVIDER_BENCHMARK_W2_RUNNER.md	8f99372dd091d3849d1119b89e9abb7fb3de9b0f	5424	TEXT_FULL_FETCHED_B15
+docs/experiments/PADIEM_SEARCH_PROVIDER_BENCHMARK_W2_SCORING.md	66a53ece50786237e5bd4519cc56d0a9d160f570	4859	TEXT_FULL_FETCHED_B15
 docs/experiments/PADIEM_SEARCH_PROVIDER_PORTFOLIO_W3_20260903.md	fa1c91d6cba9d5b1145eeb66f5d43dcb333aac84	24809	TEXT_SAMPLED
 docs/experiments/PADIEM_SEARCH_PROVIDER_W4_TERMS_OUTREACH_20260903.md	2951a48f38601b7e8e71033f5c399d739a7f1519	21589	TEXT_SAMPLED
 docs/governance/AI_OPERATING_MODEL.md	2bd0ff3132390be58c7b187919df79867516b479	9924	TEXT_SAMPLED
@@ -503,10 +503,10 @@ docs/operations/WORKFLOW_STATUS_MODEL.md	78d2cab398b258405f84f458923e13b54b174f2
 docs/ops/b66-admin-multipage-20261012.md	9bb10a6e82ad499ac3d48a636c3205258f9ef018	2538	INDEXED_ONLY
 docs/ops/b66-admin-rollout-20261011.md	dc786320024f7b95cddc8ff5e88e90301181fe9b	4924	TEXT_FULL_FETCHED_B06
 docs/PADIEM_KAKAO_OTP_SIGNUP_CONTRACT.md	bde6c6aaa69da5f0eeb26f74e7f7b8af9651d431	7292	INDEXED_ONLY
-docs/padiem/PADIEM_CHAT_CLAW_ALIGNMENT_AUDIT_V1.md	72bbc5188fddeaa926a08c970ee2241d1ec48683	5519	INDEXED_ONLY
-docs/padiem/PADIEM_CHAT_CLAW_COPY_GLOSSARY_V1.md	aaee5603ea777c4722bda612889ce982fa39673a	4743	INDEXED_ONLY
-docs/padiem/PADIEM_CHAT_CLAW_USER_GUIDE_EN.md	dbec959ffedfe9236a794390f5380e1f30295b53	2101	INDEXED_ONLY
-docs/padiem/PADIEM_CHAT_CLAW_USER_GUIDE_KO.md	8f8d8d6ab9cfa1a7aa1ecd16eef4cce30f9f58f3	2492	INDEXED_ONLY
+docs/padiem/PADIEM_CHAT_CLAW_ALIGNMENT_AUDIT_V1.md	72bbc5188fddeaa926a08c970ee2241d1ec48683	5519	TEXT_FULL_FETCHED_B15
+docs/padiem/PADIEM_CHAT_CLAW_COPY_GLOSSARY_V1.md	aaee5603ea777c4722bda612889ce982fa39673a	4743	TEXT_FULL_FETCHED_B15
+docs/padiem/PADIEM_CHAT_CLAW_USER_GUIDE_EN.md	dbec959ffedfe9236a794390f5380e1f30295b53	2101	TEXT_FULL_FETCHED_B15
+docs/padiem/PADIEM_CHAT_CLAW_USER_GUIDE_KO.md	8f8d8d6ab9cfa1a7aa1ecd16eef4cce30f9f58f3	2492	TEXT_FULL_FETCHED_B15
 docs/padiem/PADIEM_PRODUCT_LANGUAGE_VISUAL_SYSTEM_V1.md	9143e5e32c2ed1244e51721ff6d1c71319167a05	6788	TEXT_FULL_FETCHED_B06
 docs/portfolio/AI_REVENUE_LAB_OPERATING_INTENT.md	a9a60b1b246534ca7849230966f7064b1078661b	10133	TEXT_SAMPLED
 docs/portfolio/B61_KRV1961_CANONICAL_MAPPING_SPEC.md	3d25bbe05cc980eed1885bd8a67fbdf46ed3a5fd	2204	INDEXED_ONLY
@@ -604,16 +604,16 @@ reference/business-07-personal-meaning-map-v1/IMAGE_SOURCES.md	18fed30e2908c467f
 reference/business-07-personal-meaning-map-v1/MOTION_SPEC.md	23464bfc35d2d450fb7770fd0a7a0ab045fa4dd5	1322	INDEXED_ONLY
 reference/business-07-personal-meaning-map-v1/README.md	ea293f125b768d3c82a8645fe344628c64663aa5	1802	TEXT_SAMPLED
 reference/business-07-personal-meaning-map-v1/REFERENCE_NOTES.md	935df67aa207282e31432c0ae831296030ee8ff7	4325	INDEXED_ONLY
-reference/business-08-family-newspaper-v1/evidence/commands.md	d1d5d26e37b594244cf4ee4f56e9473b215ca47d	2114	INDEXED_ONLY
-reference/business-08-family-newspaper-v1/IMAGE_SOURCES.md	95203f864329474177714f4cb0a47423c468096c	1810	INDEXED_ONLY
-reference/business-08-family-newspaper-v1/MOTION_SPEC.md	e0837a39fe897cceefb3657bb9e0117078981f2a	1523	INDEXED_ONLY
+reference/business-08-family-newspaper-v1/evidence/commands.md	d1d5d26e37b594244cf4ee4f56e9473b215ca47d	2114	TEXT_FULL_FETCHED_B15
+reference/business-08-family-newspaper-v1/IMAGE_SOURCES.md	95203f864329474177714f4cb0a47423c468096c	1810	TEXT_FULL_FETCHED_B15
+reference/business-08-family-newspaper-v1/MOTION_SPEC.md	e0837a39fe897cceefb3657bb9e0117078981f2a	1523	TEXT_FULL_FETCHED_B15
 reference/business-08-family-newspaper-v1/README.md	98b25a578325b6ab9c892507457c6ff16683fd31	2521	TEXT_SAMPLED
-reference/business-08-family-newspaper-v1/REFERENCE_NOTES.md	a49522b11a304ae6a09b115980f0020ebc5b43b8	5023	INDEXED_ONLY
-reference/business-09-personalized-childrens-story-v1/evidence/run-commands.md	7aeed5a206d46fbe1a932ef63bb68f1adf332922	2791	INDEXED_ONLY
-reference/business-09-personalized-childrens-story-v1/IMAGE_SOURCES.md	08a0e514b61237035594f4f208b8d4665796296f	2185	INDEXED_ONLY
-reference/business-09-personalized-childrens-story-v1/MOTION_SPEC.md	ae7cacc44994f420467b8843af85735d6e7ea9a5	1807	INDEXED_ONLY
+reference/business-08-family-newspaper-v1/REFERENCE_NOTES.md	a49522b11a304ae6a09b115980f0020ebc5b43b8	5023	TEXT_FULL_FETCHED_B15
+reference/business-09-personalized-childrens-story-v1/evidence/run-commands.md	7aeed5a206d46fbe1a932ef63bb68f1adf332922	2791	TEXT_FULL_FETCHED_B15
+reference/business-09-personalized-childrens-story-v1/IMAGE_SOURCES.md	08a0e514b61237035594f4f208b8d4665796296f	2185	TEXT_FULL_FETCHED_B15
+reference/business-09-personalized-childrens-story-v1/MOTION_SPEC.md	ae7cacc44994f420467b8843af85735d6e7ea9a5	1807	TEXT_FULL_FETCHED_B15
 reference/business-09-personalized-childrens-story-v1/README.md	1557c79ddd61eb95e7a0b90e346b2ab50d3c49d2	2920	TEXT_SAMPLED
-reference/business-09-personalized-childrens-story-v1/REFERENCE_NOTES.md	25bb618d193115fe352a67a110cfcb89722b7a7b	5439	INDEXED_ONLY
+reference/business-09-personalized-childrens-story-v1/REFERENCE_NOTES.md	25bb618d193115fe352a67a110cfcb89722b7a7b	5439	TEXT_FULL_FETCHED_B15
 reference/business-10-fan-magazine-v1/evidence/binary-evidence-manifest.md	d6e7f6518e9cb0464ca7ed4106321bc37609f6e5	4029	INDEXED_ONLY
 reference/business-10-fan-magazine-v1/evidence/commands.txt	f90ea4866cefe99542c5d4a3e07a1b2c99147c85	2009	INDEXED_ONLY
 reference/business-10-fan-magazine-v1/IMAGE_SOURCES.md	cf5cc5d8d998accf1099d0033c024e42de34c4c9	1863	INDEXED_ONLY
