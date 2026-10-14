@@ -16,6 +16,7 @@ from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 
@@ -284,6 +285,7 @@ class TextLane:
         return [call["state"] for call in self.port.calls]
 
 
+@unittest.skipUnless(sys.platform == "win32", "real Windows selected-root file I/O is Windows-only")
 class VerifiedTextResultTests(unittest.TestCase):
     def setUp(self):
         InMemorySingleInstanceLock.reset()
