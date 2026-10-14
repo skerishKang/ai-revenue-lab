@@ -32,6 +32,11 @@ binding = "CF_VERSION_METADATA"
 binding = "B14_SERVICE"
 service = "ai-revenue-korean-ai-platform"
 
+# Private Mode 1: STT secrets are never bound to Chat.
+[[services]]
+binding = "VOICE_STT_SERVICE"
+service = "padiem-voice-stt"
+
 # B66-only one-model direct execution pilot; account-managed secret reference.
 # Never pass the key to the browser, B62 chat or Claw.
 [[secrets_store_secrets]]

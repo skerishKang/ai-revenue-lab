@@ -66,12 +66,18 @@ def test_static_markup_is_compatible_with_self_only_script_policy():
     script_tags = re.findall(r"<script\b([^>]*)>", html, flags=re.IGNORECASE)
     assert script_tags
     assert all(re.search(r"\bsrc\s*=", attrs, flags=re.IGNORECASE) for attrs in script_tags)
+    # Existing and new styles remain same-origin link resources; no inline
+    # script allowance is required by the Mode 1 microphone integration.
+    assert '<link rel="stylesheet" href="./styles.css"' in html
     assert re.search(r'<link[^>]+rel="stylesheet"', html, flags=re.IGNORECASE)
     assert not re.search(r"\son[a-z]+\s*=", html, flags=re.IGNORECASE)
 
 
 def test_permissions_policy_denies_unshipped_sensitive_capabilities():
-    assert PERMISSIONS_POLICY == "camera=(), microphone=(), geolocation=()"
+    # #4643: the shared Chat/Claw voice composer needs getUserMedia on this
+    # origin only. Camera and geolocation stay fully denied, and the microphone
+    # stays same-origin -- a cross-origin iframe still cannot capture audio.
+    assert PERMISSIONS_POLICY == "camera=(), microphone=(self), geolocation=()"
     headers = response_headers_for_path("/")
     assert headers["Permissions-Policy"] == PERMISSIONS_POLICY
     assert headers["Content-Security-Policy"] == CONTENT_SECURITY_POLICY

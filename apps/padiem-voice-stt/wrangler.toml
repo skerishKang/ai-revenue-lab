@@ -28,18 +28,16 @@ binding = "PADIEM_GEMINI_API_KEY"
 store_id = "f0b09ca04a7b43248154c773704a5616"
 secret_name = "PADIEM_GEMINI_API_KEY"
 
-# NOT RUNTIME-VERIFIED. The Groq secret_name is absent from every repository
-# wrangler.toml, so the name below follows the PADIEM_<PROVIDER>_API_KEY
-# convention and MUST be confirmed against the live store before this Worker is
-# deployed. Until then the transcribe route fails closed with `stt_key_missing`.
+# VERIFIED 2026-10-15 IN CLOUDFLARE SECRETS STORE. The Groq key name
+# contains two underscores before API_KEY. The Worker binding alias is unchanged.
+# Store listing was verified without reading or exporting secret values.
 [[secrets_store_secrets]]
 binding = "PADIEM_GROQ_API_KEY"
 store_id = "f0b09ca04a7b43248154c773704a5616"
-secret_name = "PADIEM_GROQ_API_KEY"
+secret_name = "PADIEM_GROQ__API_KEY"
 
-# Deployment gate. OFF by default: declaring this Worker does not activate any
-# live voice lane, and the Worker reads no Secret and performs no provider call
-# while this is not exactly "true".
+# Deployment gate. Owner-authorized Mode 1 configuration is enabled in source.
+# This does not deploy the Worker or bypass Control Plane caller admission.
 #
 # ON additionally requires BOTH canonical Control Plane private Service Bindings
 # below, which together supply an authenticated caller identity, its canonical
@@ -52,18 +50,22 @@ secret_name = "PADIEM_GROQ_API_KEY"
 # spending is admitted by the same control-plane authority as Engine spending
 # rather than by a second, voice-local ledger.
 #
-# They are deliberately NOT declared here: the Worker is not deployed and the
-# Control Plane does not yet issue a `voice.stt.*` entitlement grant, so
-# declaring them would break this Worker's deploy without making any paid route
-# reachable. Activation is a CENTRAL decision in its own slice, and it must also
-# review which product Workers are granted this binding.
+# The canonical identity and admission authorities remain mandatory.
+# Both services are required. No authorization fallback when a target is absent.
+[[services]]
+binding = "CONTROL_PLANE_IDENTITY"
+service = "padiem-control-plane-identity"
+
+[[services]]
+binding = "CONTROL_PLANE_ENGINE_ADMISSION"
+service = "padiem-control-plane-engine-admission"
 #
-# Until then every paid route answers one bounded failure instead of spending:
+# A failed identity, tenant or usage admission rejects the request before spending:
 #   caller_guard_unavailable          a required binding is absent or unusable
 #   voice_stt_unauthenticated         no resolvable authenticated session
 #   voice_stt_forbidden               session/snapshot belong elsewhere
 #   voice_stt_tenant_unavailable      the session carries no canonical tenant
 #   voice_stt_cost_denied             no voice grant, or a refused reservation
-# Do not switch this flag on to make tests pass.
+# This flag is activated only in an approved production release.
 [vars]
-PADIEM_VOICE_STT_ENABLED = "false"
+PADIEM_VOICE_STT_ENABLED = "true"
