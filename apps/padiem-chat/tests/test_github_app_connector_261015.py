@@ -100,6 +100,44 @@ async def test_owner_oauth_installed_app_repositories_and_off():
         assert (await client.get("/api/connectors/github/status")).json() == {"ok": True, "state": "off", "linked": False}
 
 @pytest.mark.asyncio
+async def test_github_issuer_callback_verification():
+    """Production GitHub sends iss=https://github.com/login/oauth."""
+    for issuer, expected in [
+        ("https://github.com/login/oauth", 303),
+        ("https://github.com", 400),
+        ("https://other.invalid/login/oauth", 400),
+    ]:
+        app, history = app_with_ports()
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=ORIGIN) as client:
+            client.cookies.set(SESSION_COOKIE, cookie_for(history.profile.id), domain="chat.example.test")
+            start = await client.get("/api/connectors/github/start", follow_redirects=False)
+            state = parse_qs(urlparse(start.headers["location"]).query)["state"][0]
+            callback = await client.get("/api/connectors/github/callback", params={
+                "code": "test-one-use-code", "state": state, "iss": issuer}, follow_redirects=False)
+            assert callback.status_code == expected, callback.text
+            assert app.state.github_oauth_provider.exchanges == int(expected == 303)
+            assert (await client.get("/api/connectors/github/status")).json()["linked"] is (expected == 303)
+
+    # Duplication and arbitrary extra arguments never pass validation.
+    app, history = app_with_ports()
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=ORIGIN) as client:
+        client.cookies.set(SESSION_COOKIE, cookie_for(history.profile.id), domain="chat.example.test")
+        start = await client.get("/api/connectors/github/start", follow_redirects=False)
+        state = parse_qs(urlparse(start.headers["location"]).query)["state"][0]
+        basic = [("code", "test-code"), ("state", state)]
+        github_issuer = [("iss", "https://github.com/login/oauth")]
+        invalid_duplicate_issuer = [("iss", "https://other.invalid")]
+        unauthorized_extra = [("user_id", "other")]
+        for suffix in [invalid_duplicate_issuer, unauthorized_extra]:
+            response = await client.get(
+                "/api/connectors/github/callback",
+                params=basic + github_issuer + suffix,
+            )
+            assert response.status_code == 400
+        assert app.state.github_oauth_provider.exchanges == 0
+
+
+@pytest.mark.asyncio
 async def test_owner_guards_and_foreign_origin_can_never_disconnect():
     app, history = app_with_ports()
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=ORIGIN) as client:

@@ -79,9 +79,18 @@ async def github_callback(request: Request) -> Response:
         return _clear(_error("authentication_required", 401))
     if not store or not provider or not callback:
         return _clear(_error("github_connector_unavailable"))
+    # GitHub OAuth now includes the RFC 9207 issuer parameter on successful
+    # callbacks. Accept it only when the issuer matches GitHub exactly.
+    # Keep the legacy two-parameter form for existing in-flight redirects,
+    # and reject unknown, duplicated or injected query parameters.
+    query_keys = set(request.query_params.keys())
+    valid_query = (len(request.query_params) == len(query_keys) and
+                   (query_keys == {"code", "state"} or
+                    (query_keys == {"code", "state", "iss"} and
+                     request.query_params.get("iss") == "https://github.com/login/oauth")))
     if not (isinstance(state, str) and 16 <= len(state) <= 128 and cookie
             and hmac.compare_digest(cookie, state) and isinstance(code, str) and 1 <= len(code) <= 4096
-            and len(request.query_params) == 2):
+            and valid_query):
         return _clear(_error("github_oauth_state_invalid", 400))
     try:
         verifier = await store.consume(user_id=uid, session=session, state=state)
