@@ -28,6 +28,16 @@ real behavioural run of the shipped ``app.js`` against a DOM shim:
   surface (inbox, automation, run history, approved memory) is explicitly
   torn down in ``applyAuthState`` with a "#3237 / #4488 must not outlive the
   session" comment.
+* **async session transition**: a decision POST begun before the logout whose
+  response lands afterwards. Synchronous teardown cannot cover this — the
+  response resolves into a *newer* session generation, and
+  ``applyImmediateApprovalDecision`` mutates the DOM before its first await.
+  The decision therefore captures a monotonic session generation and re-checks
+  it after every await, mirroring the run-history visibility epoch.
+
+The generated Node harness and its fixture are written to a private temporary
+directory rather than to fixed paths in the source tree, so concurrent pytest
+invocations, sharded runs and parallel worktrees cannot collide.
 
 Keyboard access is asserted structurally where the browser owns the behaviour
 (native ``<button>`` / ``<details>``+``<summary>`` elements, which are
@@ -41,6 +51,7 @@ import json
 import re
 import shutil
 import subprocess
+import tempfile
 from functools import lru_cache
 from pathlib import Path
 
@@ -261,6 +272,8 @@ function makeDom() {
     "clawInboxEmpty","clawInboxList","clawInboxRetry","clawRunHistory","clawRunHistoryDisclosure",
     "clawRunHistoryRefresh","clawRunHistoryExpand","clawRunHistoryLoading","clawRunHistoryError",
     "clawRunHistoryList","clawRunHistoryEmpty","clawRetryHint","clawRetryBox","clawRetryCopy","clawRetryButton",
+    "authDialog","authDialogClose","passwordLoginForm","passwordLoginIdentifier","passwordLoginPassword",
+    "passwordLoginError","passwordLoginSubmit","googleLoginButton",
   ].forEach((id) => add(id, "div"));
   // Shipped markup defaults this file depends on.
   byId.clawApprovedDisclosure.tagName = "DETAILS";
@@ -329,8 +342,9 @@ function boot(state) {
     const method = (opts.method || "GET").toUpperCase();
     requests.push({ url: String(url), method, body: opts.body ? JSON.parse(opts.body) : null });
     const u = String(url);
-    if (u.startsWith("/api/auth/status")) return jsonResponse(200, { ready: true, authenticated: fixture.authenticated, user: { name: "owner" }, history_ready: false, project_files_ready: false });
+    if (u.startsWith("/api/auth/status")) return jsonResponse(200, { ready: true, authenticated: fixture.authenticated, user: { name: "owner" }, history_ready: false, project_files_ready: false, methods: { password: true, google: false } });
     if (u.startsWith("/api/auth/logout")) { fixture.authenticated = false; return jsonResponse(200, { ok: true }); }
+    if (u.startsWith("/api/auth/password/login")) { fixture.authenticated = true; return jsonResponse(200, { ok: true, user: { name: "owner" } }); }
     if (u.startsWith("/api/projects")) return jsonResponse(200, { projects: [] });
     if (u.startsWith("/api/conversations/")) { const id = decodeURIComponent(u.slice("/api/conversations/".length)); return jsonResponse(200, { conversation: { id, messages: [], project_id: null, title: "saved" } }); }
     if (u.startsWith("/api/conversations")) return jsonResponse(200, { conversations: [] });
@@ -508,13 +522,124 @@ function decisionPosts(requests) {
   checks.APPROVAL_SURVIVING_CHILDREN = A.byId.clawApprovalActions.children.length;
   checks.APPROVAL_SURVIVING_HIDDEN = A.byId.clawApprovalActions.hidden;
 
-  // Re-enter Claw on the same (unreloaded) SPA — what a re-auth without a
-  // navigation would show.
-  A.fixture.authenticated = true;
+  // A genuine in-page re-login: same SPA, same module state, new session
+  // generation (no page reload, so nothing is reset by re-parsing the DOM).
+  async function reLogin() {
+    A.byId.passwordLoginIdentifier.value = "owner";
+    A.byId.passwordLoginPassword.value = "synthetic-not-a-real-credential";
+    A.byId.passwordLoginForm.requestSubmit();
+    await tick(120);
+  }
+
+  await reLogin();
   A.byId.clawNavButton.click();
   await tick(80);
   checks.RELOGIN_STALE_APPROVAL_VISIBLE =
     A.byId.clawApprovalActions.hidden === false && approvalButtons(A.byId).length > 0;
+
+  // ── async session transition: a decision that outlives its session ──
+  // Start a decision, log out while the POST is still pending, then let the
+  // previous session's response land. It must not repaint anything.
+  async function staleDecisionCycle(lateResult) {
+    await reLogin();
+    A.byId.clawNavButton.click();
+    await tick(60);
+    A.fixture.decisionPending = null;
+    A.fixture.decision = { ok: true, result: { run_id: FIX.runId, status: "waiting_approval", approval_required: true } };
+    // Logout resets the conversation (and with it the composer), so the body
+    // must be re-seeded before each dispatch.
+    A.byId.messageInput.value = "SYNTHETIC stale-cycle request";
+    A.byId.clawExecuteButton.click();
+    await tick(80);
+    const btn = approvalButtons(A.byId).find((b) => String(b.className).indexOf("claw-approval-approve") >= 0);
+    if (!btn) {
+      fail("STALE_CYCLE_APPROVE_MISSING " + JSON.stringify({
+        shellState: A.shell.dataset.state,
+        approvalsHidden: A.byId.clawApprovalActions.hidden,
+        approvalsChildren: A.byId.clawApprovalActions.children.length,
+        execPosts: A.requests.filter((r) => r.url === "/api/claw/manual-intake/execute").length,
+        loginPosts: A.requests.filter((r) => r.url.indexOf("/api/auth/password/login") === 0).length,
+        statusCalls: A.requests.filter((r) => r.url.indexOf("/api/auth/status") === 0).length,
+        lastUrls: A.requests.slice(-6).map((r) => r.method + " " + r.url),
+      }));
+    }
+    // Hold the decision open, then log out mid-flight.
+    let release = null;
+    A.fixture.decisionPending = new Promise((r) => { release = r; });
+    A.fixture.decision = lateResult;
+    const posts = decisionPosts(A.requests).length;
+    btn.click();
+    await tick(30);
+    const dispatched = decisionPosts(A.requests).length === posts + 1;
+    const busyWhilePending = btn.disabled === true;
+    A.byId.loginButton.click();
+    await tick(80);
+    const previewAtLogout = A.byId.clawResultPreview.textContent;
+    const areaStateAtLogout = A.byId.clawResultArea.dataset.clawState;
+    const runsAtLogout = A.requests.filter((r) => r.url.indexOf("/api/claw/runs") === 0).length;
+    const clearedAtLogout =
+      A.byId.clawApprovalActions.hidden === true && A.byId.clawApprovalActions.children.length === 0;
+    release();
+    await tick(150);
+    return {
+      dispatched,
+      busyWhilePending,
+      clearedAtLogout,
+      stayedHidden: A.byId.clawApprovalActions.hidden === true,
+      children: A.byId.clawApprovalActions.children.length,
+      previewBefore: previewAtLogout,
+      previewAfter: A.byId.clawResultPreview.textContent,
+      repainted:
+        A.byId.clawResultPreview.textContent !== previewAtLogout ||
+        A.byId.clawResultArea.dataset.clawState !== areaStateAtLogout,
+      historyRefetched:
+        A.requests.filter((r) => r.url.indexOf("/api/claw/runs") === 0).length !== runsAtLogout,
+    };
+  }
+
+  const lateWaiting = await staleDecisionCycle({
+    ok: true, result: { run_id: FIX.runId, status: "waiting_approval", approval_required: true },
+  });
+  checks.ASYNC_WAITING_DISPATCHED = lateWaiting.dispatched && lateWaiting.busyWhilePending;
+  checks.ASYNC_WAITING_STAYS_HIDDEN =
+    lateWaiting.clearedAtLogout && lateWaiting.stayedHidden && lateWaiting.children === 0;
+  checks.ASYNC_WAITING_CHILDREN = lateWaiting.children;
+  checks.ASYNC_WAITING_NO_REPAINT = !lateWaiting.repainted;
+  checks.ASYNC_WAITING_NO_HISTORY_REFETCH = !lateWaiting.historyRefetched;
+
+  const lateDone = await staleDecisionCycle({
+    ok: true, result: { run_id: FIX.runId, status: "completed", result_text: "STALE-SESSION-RESULT-MUST-NOT-APPEAR" },
+  });
+  checks.ASYNC_COMPLETED_STAYS_HIDDEN =
+    lateDone.clearedAtLogout && lateDone.stayedHidden && lateDone.children === 0;
+  checks.ASYNC_COMPLETED_NO_REPAINT = !lateDone.repainted;
+  checks.ASYNC_COMPLETED_PREVIEW_BEFORE = lateDone.previewBefore;
+  checks.ASYNC_COMPLETED_PREVIEW_AFTER = lateDone.previewAfter;
+
+  const lateError = await staleDecisionCycle({ ok: false, error: { code: "approval_conflict" } });
+  checks.ASYNC_ERROR_STAYS_HIDDEN =
+    lateError.clearedAtLogout && lateError.stayedHidden && lateError.children === 0;
+  checks.ASYNC_ERROR_NO_REPAINT = !lateError.repainted;
+
+  // The single-flight flag must not be left stuck by the stale promise: the
+  // next session has to be able to decide at all.
+  await reLogin();
+  A.fixture.decisionPending = null;
+  A.fixture.decision = { ok: true, result: { run_id: FIX.runId, status: "completed", result_text: "approved" } };
+  A.byId.clawNavButton.click();
+  await tick(60);
+  A.byId.messageInput.value = "SYNTHETIC next-session request";
+  A.byId.clawExecuteButton.click();
+  await tick(80);
+  const approveNext = approvalButtons(A.byId).find((b) => String(b.className).indexOf("claw-approval-approve") >= 0);
+  checks.CURRENT_SESSION_CONTROLS_USABLE = !!approveNext && approveNext.disabled === false;
+  const postsBeforeNext = decisionPosts(A.requests).length;
+  if (approveNext) approveNext.click();
+  await tick(120);
+  checks.CURRENT_SESSION_DECISION_DISPATCHED =
+    decisionPosts(A.requests).length === postsBeforeNext + 1;
+  checks.CURRENT_SESSION_DECISION_CLEARED =
+    A.byId.clawApprovalActions.hidden === true && A.byId.clawApprovalActions.children.length === 0;
 
   console.log(JSON.stringify({ ok: true, checks }));
   process.exit(0);
@@ -526,23 +651,24 @@ function decisionPosts(requests) {
 def _run_harness() -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required for the behavioural harness"
-    harness_path = ROOT / "tests" / "_4488_claw_state_transitions_harness.js"
-    fixture_path = ROOT / "tests" / "_4488_claw_state_transitions_fixture.json"
-    harness_path.write_text(_HARNESS, encoding="utf-8")
-    fixture_path.write_text(
-        json.dumps({"runId": SYNTHETIC_RUN_ID, "memoryId": SYNTHETIC_MEMORY_ID, "memoryName": SYNTHETIC_MEMORY_NAME}),
-        encoding="utf-8",
+    fixture = json.dumps(
+        {"runId": SYNTHETIC_RUN_ID, "memoryId": SYNTHETIC_MEMORY_ID, "memoryName": SYNTHETIC_MEMORY_NAME}
     )
-    try:
+    # The generated harness and its fixture are written to a private temporary
+    # directory, never to a fixed path inside the source tree: concurrent
+    # pytest invocations, sharded runs and parallel worktrees would otherwise
+    # collide on the same filename (and could race each other's unlink).
+    with tempfile.TemporaryDirectory(prefix="claw2-4488-") as tmp:
+        harness_path = Path(tmp) / "harness.js"
+        fixture_path = Path(tmp) / "fixture.json"
+        harness_path.write_text(_HARNESS, encoding="utf-8")
+        fixture_path.write_text(fixture, encoding="utf-8")
         result = subprocess.run(
             [node, str(harness_path), str(APP_JS), str(fixture_path)],
             capture_output=True,
             text=True,
             timeout=120,
         )
-    finally:
-        harness_path.unlink(missing_ok=True)
-        fixture_path.unlink(missing_ok=True)
     assert result.returncode == 0, f"harness exited {result.returncode}: {result.stderr}"
     line = result.stdout.strip().splitlines()[-1] if result.stdout.strip() else "{}"
     return json.loads(line)
@@ -600,6 +726,88 @@ def test_behavioural_relogin_tears_down_the_session() -> None:
     )
 
 
+def test_the_decision_captures_a_session_generation_before_awaiting() -> None:
+    """The guard must be captured pre-await and re-checked after every await."""
+    body = _approval_renderer(_app_source())
+    assert "const decisionEpoch = clawApprovalEpoch;" in body
+    assert body.index("const decisionEpoch = clawApprovalEpoch;") < body.index("await fetch(")
+    # Both the success and the error branch re-verify the generation.
+    assert body.count("decisionEpoch !== clawApprovalEpoch") == 2
+    # The finally is generation-guarded, so a stale promise cannot release the
+    # busy state that belongs to a newer session's controls.
+    assert "if (decisionEpoch === clawApprovalEpoch) {" in body
+
+
+def test_auth_transitions_invalidate_the_approval_generation() -> None:
+    app = _app_source()
+    assert "let clawApprovalEpoch = 0;" in app
+    assert app.count("function invalidateClawApprovalSession()") == 1
+    assert app.count("function noteClawApprovalSession(") == 1
+    # Auth loss and an account switch funnel through one invalidation point,
+    # called from the single auth-state projection.
+    assert app.count("noteClawApprovalSession(authenticated);") == 1
+    note = app.index("function noteClawApprovalSession")
+    note_body = app[note : app.index("\n  }", note)]
+    assert "token !== clawApprovalSessionToken" in note_body
+    assert "invalidateClawApprovalSession();" in note_body
+    # Invalidation bumps the generation and releases the shared single-flight
+    # flag, otherwise the next session could never decide.
+    inv = app.index("function invalidateClawApprovalSession")
+    inv_body = app[inv : app.index("\n  }", inv)]
+    assert "clawApprovalEpoch += 1;" in inv_body
+    assert "clawApprovalInFlight = false;" in inv_body
+
+
+def test_the_harness_writes_no_fixed_path_into_the_source_tree() -> None:
+    """Concurrent pytest runs must not collide on a shared temporary filename."""
+    source = Path(__file__).read_text(encoding="utf-8")
+    assert "tempfile.TemporaryDirectory" in source
+    for stem in ("harness.js", "fixture.json"):
+        fixed = "_4488_claw_state_transitions_" + stem
+        assert fixed not in source, fixed
+    # ...and no generated artifact is left behind in the test tree.
+    leftovers = [p.name for p in (ROOT / "tests").glob("_4488_claw_state_transitions*")]
+    assert leftovers == [], leftovers
+
+
+def test_behavioural_async_decision_cannot_outlive_its_session() -> None:
+    """A decision that lands after logout must not repaint the next session.
+
+    The synchronous logout cleanup alone is not sufficient: a POST begun before
+    the logout resolves afterwards, and `applyImmediateApprovalDecision` mutates
+    the DOM *before* its first await. The session-generation guard is what makes
+    the late response inert.
+    """
+    payload = _run_harness()
+    assert payload.get("ok") is True, payload
+    checks = payload["checks"]
+    for name in (
+        "ASYNC_WAITING_DISPATCHED",
+        "ASYNC_WAITING_STAYS_HIDDEN",
+        "ASYNC_WAITING_NO_REPAINT",
+        "ASYNC_WAITING_NO_HISTORY_REFETCH",
+    ):
+        assert checks.get(name) is True, f"{name}: {checks}"
+    assert checks.get("ASYNC_WAITING_CHILDREN") == 0, checks
+    # A late terminal result must not repaint the result preview either.
+    assert checks.get("ASYNC_COMPLETED_STAYS_HIDDEN") is True, checks
+    assert checks.get("ASYNC_COMPLETED_NO_REPAINT") is True, checks
+    assert checks.get("ASYNC_COMPLETED_PREVIEW_BEFORE") == checks.get("ASYNC_COMPLETED_PREVIEW_AFTER"), checks
+    # ...and neither must a late failure.
+    assert checks.get("ASYNC_ERROR_STAYS_HIDDEN") is True, checks
+    assert checks.get("ASYNC_ERROR_NO_REPAINT") is True, checks
+
+
+def test_behavioural_current_session_remains_usable() -> None:
+    """The stale promise must not wedge the single-flight flag for the next session."""
+    payload = _run_harness()
+    assert payload.get("ok") is True, payload
+    checks = payload["checks"]
+    assert checks.get("CURRENT_SESSION_CONTROLS_USABLE") is True, checks
+    assert checks.get("CURRENT_SESSION_DECISION_DISPATCHED") is True, checks
+    assert checks.get("CURRENT_SESSION_DECISION_CLEARED") is True, checks
+
+
 if __name__ == "__main__":
     test_approval_controls_are_real_buttons_for_keyboard_activation()
     test_the_approval_status_is_a_polite_live_region()
@@ -610,8 +818,13 @@ if __name__ == "__main__":
     test_the_memory_disclosure_is_a_native_keyboard_disclosure()
     test_the_memory_panel_is_labelled_by_its_own_heading()
     test_the_memory_visibility_gate_requires_an_owner_session_in_claw()
+    test_the_decision_captures_a_session_generation_before_awaiting()
+    test_auth_transitions_invalidate_the_approval_generation()
+    test_the_harness_writes_no_fixed_path_into_the_source_tree()
     test_behavioural_harness_passes()
     test_behavioural_approval_state_transitions()
     test_behavioural_memory_state_transitions()
     test_behavioural_relogin_tears_down_the_session()
+    test_behavioural_async_decision_cannot_outlive_its_session()
+    test_behavioural_current_session_remains_usable()
     print("CLAW2_4488_STATE_TRANSITIONS=PASS")
