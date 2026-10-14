@@ -50,6 +50,10 @@ from kagent.p01_adapter import (
     validate_explicit_b14_model_id,
 )
 from kagent.p01_run_flow import create_claw_run
+from .claw_search_decision import (
+    ClawSearchOutcome,
+    judge_claw_public_search,
+)
 
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .claw_first_turn_authority import (
@@ -406,14 +410,12 @@ async def claw_general_capabilities(request: Request) -> JSONResponse:
 
 
 CLAW_PUBLIC_SEARCH_STATE_FLAG = "claw_web_search_enabled"
-CLAW_PUBLIC_SEARCH_ADMISSION_FLAG = "claw_public_search_admission"
-CLAW_GROUNDING_PREAMBLE_MARKER = "웹 근거 사용 규칙"
-MAX_CLAW_SEARCH_QUERY_CHARS = 512
 MAX_CLAW_SEARCH_SOURCES = 5
 MAX_CLAW_SEARCH_SOURCE_TITLE_CHARS = 200
+CLAW_GROUNDING_PREAMBLE_MARKER = "웹 근거 사용 규칙"
 
-# The evidence route never synthesizes an answer, so its agent profile is a
-# shape requirement of the shared Engine contract rather than a model choice.
+# The evidence route never synthesizes an answer, so this profile only satisfies the
+# shared Engine contract shape; the answer model stays the one the user selected.
 _CLAW_SEARCH_EVIDENCE_AGENT = {
     "id": "claw-public-search-evidence",
     "title": "Claw public search evidence",
@@ -424,30 +426,6 @@ _CLAW_SEARCH_EVIDENCE_AGENT = {
     "max_tokens": 1,
     "model_policy": {"model": "none/disabled", "max_retries": 0},
 }
-
-
-def _approved_public_search_query(state: Any, user_text: str) -> str | None:
-    """Server-only admission. Nothing on the request can ask for or forge a search.
-
-    Both authorities are composed by the server and are absent today, which is the
-    default-off posture #1753 requires: no approved flag, no search, no sources.
-    """
-
-    if getattr(state, CLAW_PUBLIC_SEARCH_STATE_FLAG, False) is not True:
-        return None
-    admission = getattr(state, CLAW_PUBLIC_SEARCH_ADMISSION_FLAG, None)
-    classify = getattr(admission, "is_public_query", None)
-    if not callable(classify):
-        return None
-    query = " ".join(user_text.split())[:MAX_CLAW_SEARCH_QUERY_CHARS]
-    if not query:
-        return None
-    try:
-        if classify(query) is not True:
-            return None
-    except Exception:
-        return None
-    return query
 
 
 def _project_search_sources(raw: Any) -> tuple[dict[str, str], ...] | None:
@@ -475,44 +453,44 @@ def _project_search_sources(raw: Any) -> tuple[dict[str, str], ...] | None:
 
 
 async def _claw_public_search_grounding(
-    request: Request, adapter: Any, user_text: str
+    request: Request, adapter: Any, messages: Any
 ) -> tuple[str | None, tuple[dict[str, str], ...]]:
-    """Reuse the existing Engine evidence-only operation; never a second search path.
+    """Judge the conversation, then reuse the existing Engine evidence operation.
 
-    Returns the Core-fenced grounding context plus verified sources, or nothing at
-    all. A refusal, transport failure or unfenced payload degrades to the exact
-    answer surface the route had before this seam — it never blocks the answer and
-    never shows sources for a search that did not happen.
+    The client's own validated contract is the input: it returns exactly
+    ``{"sources": [...], "grounding_context": str}`` and raises on anything else, so
+    this route does not re-assert Engine envelope fields it cannot see. Only a
+    server-approved minimal public query leaves the product, provenance and grounding
+    stand or fall together, and any refusal degrades to the pre-search answer surface.
     """
 
-    query = _approved_public_search_query(request.app.state, user_text)
-    if query is None:
-        return None, ()
+    denied = (None, ())
+    if getattr(request.app.state, CLAW_PUBLIC_SEARCH_STATE_FLAG, False) is not True:
+        return denied
+    judgement = judge_claw_public_search(messages)
+    if judgement.outcome is not ClawSearchOutcome.SEARCH:
+        return denied
     client = getattr(getattr(adapter, "_runner", None), "_client", None)
     search_evidence = getattr(client, "search_evidence", None)
     if not callable(search_evidence):
-        return None, ()
+        return denied
     try:
-        evidence = await search_evidence(query=query, agent=_CLAW_SEARCH_EVIDENCE_AGENT)
+        evidence = await search_evidence(query=judgement.query, agent=_CLAW_SEARCH_EVIDENCE_AGENT)
     except Exception:
-        return None, ()
+        return denied
     if not isinstance(evidence, dict):
-        return None, ()
-    if evidence.get("ok") is not True or evidence.get("operation") != "search_evidence":
-        return None, ()
-    if evidence.get("answer") is not None:
-        # An answered payload means this was not the model-free evidence route.
-        return None, ()
-    context = evidence.get("grounding_context")
+        return denied
     sources = _project_search_sources(evidence.get("sources"))
-    if not isinstance(context, str) or not context.strip():
-        return None, ()
-    if len(context) > 32_768:
-        return None, ()
+    context = evidence.get("grounding_context")
+    if sources is None:
+        # Provenance that cannot be shown means the claim cannot be made either.
+        return denied
+    if not isinstance(context, str) or not context.strip() or len(context) > 32_768:
+        return denied
     if CLAW_GROUNDING_PREAMBLE_MARKER not in context:
-        # Without Core's untrusted-data preamble this text would enter the prompt
-        # as ordinary context, which is exactly the promotion this route forbids.
-        return None, ()
+        # Without Core's untrusted-data preamble the text would enter the prompt as
+        # ordinary context, which is exactly the promotion this route forbids.
+        return denied
     return context, sources
 
 
@@ -750,7 +728,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # unless both server authorities exist. Everything downstream is unchanged
     # when it returns nothing.
     grounding_context, search_sources = await _claw_public_search_grounding(
-        request, adapter, model_user_text
+        request, adapter, data.get("messages")
     )
 
     if live_requested:
