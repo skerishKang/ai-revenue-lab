@@ -160,7 +160,8 @@ jobs:
           assert "PUBLIC_FETCH = False" in identity_source
 
           b62_config = Path("apps/padiem-chat/wrangler.toml").read_text(encoding="utf-8")
-          assert "IDENTITY_AUTHORITY_SERVICE" not in b62_config
+            assert 'binding = "IDENTITY_AUTHORITY_SERVICE"' in b62_config
+            assert 'service = "padiem-control-plane-identity"' in b62_config
           b62_worker = Path("apps/padiem-chat/worker.py").read_text(encoding="utf-8")
           assert "IDENTITY_AUTHORITY_SERVICE" in b62_worker
 
