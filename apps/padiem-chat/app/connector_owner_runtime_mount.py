@@ -36,6 +36,7 @@ from .worker_config import (
 )
 
 _OWNER_FLAG = "PADIEM_CONNECTOR_OWNER_ENROLLMENT_ENABLED"
+_ONE_CLICK_OWNER_FLAG = "PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED"
 _RELEASE_SCOPE = "PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE"
 _REVIEW_SCOPE = "isolated-operator-acceptance-4139"
 OWNER_REGISTRATION_PRODUCTION_DEFAULT_MOUNTED = False
@@ -82,6 +83,7 @@ class OwnerEnrollmentPorts:
     identity: CloudflareControlPlaneIdentityAuthority
     host: CanonicalConnectorEnrollmentAsyncHost
     csrf: ExactOwnerOrigin
+    one_click_factory: Any = None
 
 
 def compose_owner_enrollment_from_worker(worker_env: Any) -> OwnerEnrollmentPorts | None:
@@ -105,12 +107,20 @@ def compose_owner_enrollment_from_worker(worker_env: Any) -> OwnerEnrollmentPort
         raise ValueError("canonical connector owner Identity/Broker authority unavailable")
     identity = CloudflareControlPlaneIdentityAuthority(identity_binding)
     broker = CloudflareCanonicalBrokerPairingClient(broker_binding)
+    host = CanonicalConnectorEnrollmentAsyncHost(
+        identity=identity, broker=broker, credential_handoff=None,
+    )
+    one_click = None
+    # This is additional, explicit server-owned acceptance configuration.
+    # The ordinary B54 consent/issue flow remains unchanged and unaffected.
+    if binding_value(worker_env, _ONE_CLICK_OWNER_FLAG) == "enabled":
+        from .connector_owner_one_click_factory import VerifiedOwnerOneClickFactory
+        one_click = VerifiedOwnerOneClickFactory(
+            identity=identity, host=host, broker_binding=broker_binding,
+        )
     return OwnerEnrollmentPorts(
-        identity=identity,
-        host=CanonicalConnectorEnrollmentAsyncHost(
-            identity=identity, broker=broker, credential_handoff=None,
-        ),
-        csrf=ExactOwnerOrigin(),
+        identity=identity, host=host, csrf=ExactOwnerOrigin(),
+        one_click_factory=one_click,
     )
 
 
@@ -123,6 +133,18 @@ def reviewed_owner_enrollment_routes(ports: OwnerEnrollmentPorts) -> tuple[Route
         or type(ports.csrf) is not ExactOwnerOrigin
     ):
         raise ValueError("canonical connector owner registration authority invalid")
+    # No one-click route without a verified server-provided Broker RPC.
+    one_click_route = ()
+    if ports.one_click_factory is not None:
+        from .connector_owner_one_click_factory import VerifiedOwnerOneClickFactory
+        from .connector_one_click_approval_route import (
+            OWNER_APPROVE_LINK_PATH, owner_approve_pc_link,
+        )
+        if type(ports.one_click_factory) is not VerifiedOwnerOneClickFactory:
+            raise ValueError("untrusted one-click owner approval factory")
+        one_click_route = (
+            Route(OWNER_APPROVE_LINK_PATH, owner_approve_pc_link, methods=["POST"]),
+        )
     return (
         Route(SETUP_PATH, owner_setup_page, methods=["GET"]),
         Route(SCRIPT_PATH, owner_setup_script, methods=["GET"]),
@@ -131,4 +153,4 @@ def reviewed_owner_enrollment_routes(ports: OwnerEnrollmentPorts) -> tuple[Route
         Route(CONNECTOR_ENROLLMENT_CONSENT_REVOKE_PATH,
               connector_enrollment_consent_revoke, methods=["POST"]),
         Route(CONNECTOR_ENROLLMENT_ISSUE_PATH, connector_enrollment_issue, methods=["POST"]),
-    )
+    ) + one_click_route

@@ -14,6 +14,7 @@ from .claw_connector_enrollment_routes import (
     _consent_payload, _error, _json, _verified_owner_request,
 )
 from .connector_one_click_approval import OneClickDenied, OneClickOwnerApproval
+from .connector_owner_one_click_factory import VerifiedOwnerOneClickFactory
 
 OWNER_APPROVE_LINK_PATH = "/api/claw/connector/enrollments/approve-link"
 OWNER_APPROVE_LINK_MOUNTED = False
@@ -40,6 +41,14 @@ async def owner_approve_pc_link(request: Request) -> JSONResponse:
         return denial
 
     port = getattr(request.app.state, "connector_one_click_approval", None)
+    factory = getattr(request.app.state, "connector_one_click_approval_factory", None)
+    if port is None and type(factory) is VerifiedOwnerOneClickFactory:
+        try:
+            # Per-request: the SAME authoritative signed owner checked above
+            # supplies the private Broker caller scope; never browser JSON.
+            port = factory.for_verified_owner(signed_owner=session)
+        except Exception:
+            return _error(503, "pending_pc_unavailable")
     if type(port) is not OneClickOwnerApproval:
         return _error(503, "pending_pc_unavailable")
 

@@ -201,3 +201,74 @@ def test_real_product_app_uses_signed_b54_owner_and_canonical_issue_only(monkeyp
     assert calls[1][1] == {
         "canonical_session_id": signed.session_id, "device_id": "device.1",
     }
+
+
+class PrivateOneClickBroker(PrivateBroker):
+    def __init__(self):
+        self.calls = []
+
+    def __getattr__(self, method):
+        if method in ("reserve_pending_pc_link", "deliver_pending_pc_link"):
+            async def no_network(payload):
+                self.calls.append((method, payload))
+                # This is a transport stub; real Broker DO must own actual
+                # live PC socket and a one-use SQLite pending offer.
+                raise RuntimeError("source-only: no live Broker PC WSS")
+            return no_network
+        return super().__getattr__(method)
+
+
+def test_review_one_click_requires_separate_server_flag_and_private_broker_rpc():
+    from app.connector_one_click_approval_route import OWNER_APPROVE_LINK_PATH
+    from app.connector_owner_one_click_factory import VerifiedOwnerOneClickFactory
+
+    owner_env = env()
+    owner_env["PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED"] = "enabled"
+    with pytest.raises(ValueError, match="canonical Broker owner private RPC missing"):
+        compose_owner_enrollment_from_worker(owner_env)
+
+    private = PrivateOneClickBroker()
+    owner_env[B] = private
+    ports = compose_owner_enrollment_from_worker(owner_env)
+    assert ports is not None
+    assert type(ports.one_click_factory) is VerifiedOwnerOneClickFactory
+    application = create_app(settings=settings(), connector_owner_enrollment=ports)
+    assert application.state.connector_one_click_approval_factory is ports.one_click_factory
+    assert OWNER_APPROVE_LINK_PATH in {r.path for r in application.routes}
+    assert next(
+        r.methods for r in application.routes if r.path == OWNER_APPROVE_LINK_PATH
+    ) == {"POST"}
+
+    # No signed B54 owner session: deny before even calling broker service.
+    denied = request(application, OWNER_APPROVE_LINK_PATH, {
+        "request_ref": "link."+"a"*32, "confirmed": True,
+        "confirmation_version": "pc-enrollment-consent-v1",
+    })
+    assert denied.status_code in (401, 503)
+    assert private.calls == []
+
+    # Even in the explicit acceptance configuration there is NO public
+    # enrollment-redeem route and no private code reflected to browser.
+    assert "/api/claw/connector/enrollments/redeem" not in {
+        r.path for r in application.routes
+    }
+
+
+def test_review_one_click_flag_does_not_override_normal_owner_default():
+    from app.connector_one_click_approval_route import OWNER_APPROVE_LINK_PATH
+
+    for value in ("true", True, "1", "on", None):
+        provided=env()
+        provided["PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED"] = value
+        ports=compose_owner_enrollment_from_worker(provided)
+        assert ports is not None and ports.one_click_factory is None
+        app=create_app(settings=settings(),connector_owner_enrollment=ports)
+        assert app.state.connector_one_click_approval_factory is None
+        assert OWNER_APPROVE_LINK_PATH not in {r.path for r in app.routes}
+
+    # One-click alone, without the canonical owner enrollment gates,
+    # never exposes any browser route.
+    assert compose_owner_enrollment_from_worker({
+        "PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED": "enabled",
+        I: PrivateIdentity(), B: PrivateOneClickBroker(),
+    }) is None

@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Callable, TypeVar
 from workers import DurableObject, Response, WorkerEntrypoint
 from canonical_broker_pairing_rpc import CanonicalBrokerPairingRPC
+from canonical_broker_pending_pc_private_rpc import CanonicalBrokerPendingPcLiveRPC
 from padiem_control_plane.local_agent_broker_http import DurableLocalAgentSessionRecord, LocalAgentMaterialResolutionRequest
 from local_agent_broker_device_http import LocalAgentBrokerDeviceHttpService
 from local_agent_broker_durable_runtime import LocalAgentBrokerDurableRuntime
@@ -15,7 +16,7 @@ from local_agent_broker_sql_state import (
 
 _T = TypeVar("_T")
 
-class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, DurableObject):
+class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, CanonicalBrokerPendingPcLiveRPC, DurableObject):
     """Thin platform entrypoint over the durable broker runtime composition."""
 
     def __init__(self, ctx, env):
@@ -162,6 +163,15 @@ class Default(WorkerEntrypoint):
 
     async def terminal_command_result(self, payload: dict) -> dict:
         return await self._stub().terminal_command_result(payload)
+
+    # #4139 private service binding only. OFF without all three server-owned
+    # pending-PC gates; no public Worker fetch route, no schema auto-install,
+    # and no socket handoff until the SAME Broker DO owns a live PC WSS.
+    async def reserve_pending_pc_link(self, payload: dict) -> dict:
+        return await self._stub().reserve_pending_pc_link(payload)
+
+    async def deliver_pending_pc_link(self, payload: dict) -> dict:
+        return await self._stub().deliver_pending_pc_link(payload)
 
     async def read_office_artifact_part(self, payload: dict) -> dict:
         return await self._stub().read_office_artifact_part(payload)

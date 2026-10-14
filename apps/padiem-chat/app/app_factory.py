@@ -614,6 +614,12 @@ def create_app(
     app.state.connector_enrollment_browser_csrf = (
         connector_owner_enrollment.csrf if connector_owner_enrollment is not None else None
     )
+    # Only a server-owned B54 acceptance composition can supply this per-
+    # verified-owner factory. Unconfigured product app has no approval route.
+    app.state.connector_one_click_approval_factory = (
+        getattr(connector_owner_enrollment, "one_click_factory", None)
+        if connector_owner_enrollment is not None else None
+    )
     app.state.identity_shadow_store = identity_shadow_store
     # #3190: owner-gated Project Drive case-folder routes. A missing client fails
     # closed with 503; there is no global/network fallback.
