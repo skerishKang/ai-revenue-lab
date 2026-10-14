@@ -167,3 +167,8 @@ class VerifiedEngineTextReadPlanSource:
 VERIFIED_ENGINE_TEXT_PLAN_MINTS_APPROVAL = False
 VERIFIED_ENGINE_TEXT_PLAN_READS_FILES = False
 
+
+def make_verified_text_plan_source() -> "VerifiedEngineTextReadPlanSource":
+    """No-argument Resident factory (fail closed until authenticated host wiring)."""
+    raise ContractError("authenticated P01 text evidence host is not configured")
+
