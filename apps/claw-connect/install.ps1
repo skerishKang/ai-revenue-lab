@@ -179,7 +179,8 @@ if ($SelectedAgentSrc) {
         'kagent\__init__.py',
         'kagent\local_agent_resident_process.py',
         'kagent\local_agent_secure_transport.py',
-        'kagent\local_agent_pairing.py'
+        'kagent\local_agent_pairing.py',
+        'kagent\local_agent_broker_production_entry.py'
     )) {
         if (-not (Test-Path -LiteralPath (Join-Path $ValidatedAgentSrc $required) -PathType Leaf)) {
             throw "PADIEM Agent is not present at the supplied source root ($required)."
