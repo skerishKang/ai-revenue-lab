@@ -37,6 +37,7 @@ from .worker_config import (
 
 _OWNER_FLAG = "PADIEM_CONNECTOR_OWNER_ENROLLMENT_ENABLED"
 _ONE_CLICK_OWNER_FLAG = "PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED"
+_IDENTITY_PC_PREFLIGHT_FLAG = "PADIEM_CONNECTOR_OWNER_PC_IDENTITY_PREFLIGHT_ENABLED"
 _RELEASE_SCOPE = "PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE"
 _REVIEW_SCOPE = "isolated-operator-acceptance-4139"
 OWNER_REGISTRATION_PRODUCTION_DEFAULT_MOUNTED = False
@@ -84,6 +85,7 @@ class OwnerEnrollmentPorts:
     host: CanonicalConnectorEnrollmentAsyncHost
     csrf: ExactOwnerOrigin
     one_click_factory: Any = None
+    identity_pc_preflight: Any = None
 
 
 def compose_owner_enrollment_from_worker(worker_env: Any) -> OwnerEnrollmentPorts | None:
@@ -118,9 +120,21 @@ def compose_owner_enrollment_from_worker(worker_env: Any) -> OwnerEnrollmentPort
         one_click = VerifiedOwnerOneClickFactory(
             identity=identity, host=host, broker_binding=broker_binding,
         )
+    identity_pc_preflight = None
+    if binding_value(worker_env, _IDENTITY_PC_PREFLIGHT_FLAG) == "enabled":
+        # B54 can only reach the exact PC WSS through the existing
+        # canonical Broker private Service Binding. This port never
+        # mounts an HTTP route or issues a device credential itself.
+        if one_click is None:
+            raise ValueError("B54 one-click owner enrollment must be enabled first")
+        from .connector_owner_identity_pc_completion import CanonicalOwnerPcIdentityPreflight
+        identity_pc_preflight = CanonicalOwnerPcIdentityPreflight(
+            identity=identity, broker=broker, private_broker=broker_binding,
+        )
     return OwnerEnrollmentPorts(
         identity=identity, host=host, csrf=ExactOwnerOrigin(),
         one_click_factory=one_click,
+        identity_pc_preflight=identity_pc_preflight,
     )
 
 

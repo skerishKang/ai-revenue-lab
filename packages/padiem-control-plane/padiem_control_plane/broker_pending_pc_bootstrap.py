@@ -79,6 +79,7 @@ class SamePcCanonicalBrokerBootstrap:
         self._stage = "begin"
         self._lease: str | None = None
         self._fetch_verified = False
+        self._proof_ref: str | None = None
 
     async def receive(self, frame: dict[str, Any]) -> str:
         """Never returns a success/enrolled claim, including post-FINISH."""
@@ -121,6 +122,9 @@ class SamePcCanonicalBrokerBootstrap:
                 ):
                     raise CanonicalPcBootstrapDenied("canonical_begin_receipt_invalid")
                 self._lease = receipt["lease_ref"]
+                # No new secret. This is the original code-derived canonical
+                # pairing proof; retain ONLY on the DO-owned verified session.
+                self._proof_ref = frame["proof_ref"]
                 self._stage = "finish"
                 await self._socket.send_text(json.dumps({
                     "type": "nonce", "challenge_id": self._challenge_id,

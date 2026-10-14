@@ -114,10 +114,11 @@ class Default(WorkerEntrypoint):
     """Private Service Binding gateway to the server-owned broker object."""
     reserve_pending_pc_link = CanonicalBrokerPendingPcBindingRPC.reserve_pending_pc_link
     deliver_pending_pc_link = CanonicalBrokerPendingPcBindingRPC.deliver_pending_pc_link
+    pending_pc_identity_status = CanonicalBrokerPendingPcBindingRPC.pending_pc_identity_status
+    claim_pending_pc_identity_proof = CanonicalBrokerPendingPcBindingRPC.claim_pending_pc_identity_proof
 
     def _authority_ref(self) -> str:
         return safe_ref(str(self.env.LOCAL_AGENT_BROKER_AUTHORITY_REF), "authority_ref")
-
     def _stub(self):
         authority_ref = self._authority_ref()
         namespace = self.env.LOCAL_AGENT_BROKER_STATE
@@ -139,13 +140,11 @@ class Default(WorkerEntrypoint):
         return await self._stub().resolve_command_material(payload)
     async def poll(self, payload: dict) -> dict:
         return await self._stub().poll(payload)
-
     async def admit_command(self, payload: dict) -> dict:
         return await self._stub().admit_command(payload)
 
     async def acknowledge(self, payload: dict) -> dict:
         return await self._stub().acknowledge(payload)
-
     async def reconcile_expired_command(self, payload: dict) -> dict:
         return await self._stub().reconcile_expired_command(payload)
 

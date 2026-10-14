@@ -174,6 +174,14 @@ class CanonicalBrokerPendingPcLiveRPC:
 
 
 
+    async def pending_pc_identity_status(self, payload: dict) -> dict:
+        from .broker_pending_pc_identity_handoff import identity_pc_status
+        return await identity_pc_status(self, payload)
+
+    async def claim_pending_pc_identity_proof(self, payload: dict) -> dict:
+        from .broker_pending_pc_identity_handoff import claim_identity_pc_proof
+        return await claim_identity_pc_proof(self, payload)
+
     async def _pending_pc_wss_fetch(self, request):
         """Native PC upgrade exclusively on this existing canonical Broker DO."""
         from .broker_pending_pc_wss import fetch_broker_pending_pc_wss
@@ -206,3 +214,9 @@ class CanonicalBrokerPendingPcBindingRPC:
 
     async def deliver_pending_pc_link(self, payload: dict) -> dict:
         return await self._stub().deliver_pending_pc_link(payload)
+
+    async def pending_pc_identity_status(self, payload: dict) -> dict:
+        return await self._stub().pending_pc_identity_status(payload)
+
+    async def claim_pending_pc_identity_proof(self, payload: dict) -> dict:
+        return await self._stub().claim_pending_pc_identity_proof(payload)

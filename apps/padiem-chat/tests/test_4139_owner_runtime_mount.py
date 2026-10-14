@@ -272,3 +272,54 @@ def test_review_one_click_flag_does_not_override_normal_owner_default():
         "PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED": "enabled",
         I: PrivateIdentity(), B: PrivateOneClickBroker(),
     }) is None
+
+
+class PrivateIdentityPcBroker(PrivateOneClickBroker):
+    """Stub only; the real private DO gate is tested in the Broker suite."""
+    def __getattr__(self, method):
+        if method in ("pending_pc_identity_status", "claim_pending_pc_identity_proof"):
+            async def no_network(payload):
+                raise RuntimeError("source-only: no actual PC registered")
+            return no_network
+        return super().__getattr__(method)
+
+
+def test_native_pc_identity_preflight_requires_separate_one_click_gate():
+    from app.connector_owner_identity_pc_completion import (
+        CanonicalOwnerPcIdentityPreflight,
+        B54_NATIVE_PC_IDENTITY_COMPLETION_ROUTE_MOUNTED,
+    )
+    from app.connector_one_click_approval_route import OWNER_APPROVE_LINK_PATH
+
+    preflight_flag="PADIEM_CONNECTOR_OWNER_PC_IDENTITY_PREFLIGHT_ENABLED"
+    owner_env=env()
+    owner_env[B]=PrivateIdentityPcBroker()
+    owner_env[preflight_flag]="enabled"
+    with pytest.raises(ValueError,match="one-click owner enrollment"):
+        compose_owner_enrollment_from_worker(owner_env)
+
+    owner_env["PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED"]="enabled"
+    ports=compose_owner_enrollment_from_worker(owner_env)
+    assert type(ports.identity_pc_preflight) is CanonicalOwnerPcIdentityPreflight
+    assert ports.one_click_factory is not None
+    application=create_app(settings=settings(),connector_owner_enrollment=ports)
+    assert OWNER_APPROVE_LINK_PATH in {r.path for r in application.routes}
+    # The new proof is a private B54 Service Binding only, not a public
+    # redeem/DPAPI completion endpoint or a browser-readable proof.
+    assert B54_NATIVE_PC_IDENTITY_COMPLETION_ROUTE_MOUNTED is False
+    assert not any("identity-proof" in r.path for r in application.routes)
+    assert "/api/claw/connector/enrollments/redeem" not in {
+        r.path for r in application.routes
+    }
+
+
+def test_wrong_native_identity_preflight_flag_does_not_change_existing_routes():
+    flag="PADIEM_CONNECTOR_OWNER_PC_IDENTITY_PREFLIGHT_ENABLED"
+    for value in ("true",True,"1",None):
+        owner_env=env()
+        owner_env[B]=PrivateOneClickBroker()
+        owner_env["PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED"]="enabled"
+        owner_env[flag]=value
+        ports=compose_owner_enrollment_from_worker(owner_env)
+        assert ports.identity_pc_preflight is None
+        assert ports.one_click_factory is not None
