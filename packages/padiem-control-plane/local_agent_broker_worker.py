@@ -26,6 +26,7 @@ class LocalAgentBrokerDurableObject(DurableObject):
         self._state_port = self._runtime.state_port
         self.http_state = self._runtime.http_state
         self.material_store = self._runtime.material_store
+        self.verified_file_store = self._runtime.verified_file_store
         self.office_chunks = compose_broker_office_chunks(
             storage=ctx.storage, state_port=self._runtime.state_port,
             authority_ref=self._runtime.authority_ref(), env=env,
@@ -39,6 +40,7 @@ class LocalAgentBrokerDurableObject(DurableObject):
             material_resolver=self._runtime.material_store,
             session_open_transaction=self._storage.transactionSync,
             office_chunks=self.office_chunks,
+            verified_file_result_store=self._runtime.verified_file_store,
         )
 
     def _authority_ref(self) -> str:
@@ -100,6 +102,9 @@ class LocalAgentBrokerDurableObject(DurableObject):
 
     async def terminal_command_result(self, payload: dict) -> dict:  # #3139 read-only RPC
         return self._runtime.terminal_command_result(payload)
+
+    async def read_verified_file_text(self, payload: dict) -> dict:  # #4139 read-only RPC
+        return self._runtime.read_verified_file_text(payload)
 
     async def read_office_artifact_part(self, payload: dict) -> dict:
         return read_broker_office_part_rpc(self.office_chunks, payload)
@@ -166,6 +171,9 @@ class Default(WorkerEntrypoint):
 
     async def terminal_command_result(self, payload: dict) -> dict:
         return await self._stub().terminal_command_result(payload)
+
+    async def read_verified_file_text(self, payload: dict) -> dict:
+        return await self._stub().read_verified_file_text(payload)
 
     async def read_office_artifact_part(self, payload: dict) -> dict:
         return await self._stub().read_office_artifact_part(payload)

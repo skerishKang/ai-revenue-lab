@@ -20,7 +20,12 @@ _ROUTE_MATERIAL = "/material"
 _ROUTE_HEARTBEAT = "/heartbeat"
 _ROUTE_ACKNOWLEDGE = "/acknowledge"
 _ROUTE_RECONCILE = "/reconcile"
-_ROUTES = frozenset({_ROUTE_SESSION, _ROUTE_POLL, _ROUTE_MATERIAL, _ROUTE_HEARTBEAT, _ROUTE_ACKNOWLEDGE, _ROUTE_RECONCILE})
+#: #4139 — the one canonical route that carries a *result body*: the verified
+#: Windows TXT read. It is deliberately not the acknowledgement: the ack keeps
+#: carrying only the bounded terminal state and correlation, and this route
+#: stores the content the Claw conversation consumes (#4687 / #4690 / #4693).
+_ROUTE_FILE_RESULT = "/file-result"
+_ROUTES = frozenset({_ROUTE_SESSION, _ROUTE_POLL, _ROUTE_MATERIAL, _ROUTE_HEARTBEAT, _ROUTE_ACKNOWLEDGE, _ROUTE_RECONCILE, _ROUTE_FILE_RESULT})
 
 _SESSION_REQUEST_KEYS = frozenset(
     {"session_id", "binding_ref", "credential_b64", "account_ref", "workspace_ref", "now", "ttl_seconds"}
@@ -41,6 +46,15 @@ _ACK_REQUEST_KEYS = frozenset(
 _RECONCILE_REQUEST_KEYS = frozenset(
     {"session_id", "binding_ref", "credential_b64", "command_id", "admission_ref", "evidence_ref", "revision_ref", "request_id", "request_fingerprint", "termination", "exit_code", "now"}
 )
+#: #4139 — the verified file result submission. The device states the result
+#: kind and, for a text-file read, the real content it read, together with the
+#: exact command correlation it already holds. No argv, stdout or file path is
+#: accepted: only the bounded content and its digest.
+_FILE_RESULT_REQUEST_KEYS = frozenset(
+    {"session_id", "binding_ref", "credential_b64", "command_id", "revision_ref", "request_id", "evidence_ref", "kind", "content_utf8", "content_sha256", "now"}
+)
+_FILE_RESULT_KINDS = frozenset({"file_read_text", "other"})
+
 _SESSION_KEYS = frozenset(
     {
         "session_id",
@@ -336,6 +350,7 @@ class LocalAgentBrokerHttpHandler:
         material_resolver: LocalAgentCommandMaterialResolverPort,
         clock: Callable[[], datetime],
         session_open_transaction: Callable[[Callable[[], dict[str, Any]]], dict[str, Any]] | None = None,
+        verified_file_result_store: Any | None = None,
     ) -> None:
         if not isinstance(rpc, LocalAgentBrokerRpcFacade):
             raise ValueError("rpc must be LocalAgentBrokerRpcFacade")
@@ -350,6 +365,11 @@ class LocalAgentBrokerHttpHandler:
             raise ValueError("clock must be callable")
         if session_open_transaction is not None and not callable(session_open_transaction):
             raise ValueError("session_open_transaction must be callable")
+        # #4139 — optional so every existing deployment keeps working exactly as
+        # before; the `/file-result` route fails closed (503) without it.
+        if verified_file_result_store is not None and not callable(getattr(verified_file_result_store, "submit", None)):
+            raise ValueError("verified_file_result_store must implement submit")
+        self._verified_file_result_store = verified_file_result_store
         self._rpc = rpc
         self._state = state
         self._material_resolver = material_resolver
@@ -723,6 +743,78 @@ class LocalAgentBrokerHttpHandler:
                 raise ValueError("broker reconciliation exposed device credential material")
         return LocalAgentBrokerHttpResponse(200, result)
 
+    def _handle_file_result(
+        self,
+        auth: TrustedLocalAgentHttpAuthContext,
+        payload: dict[str, Any],
+        *,
+        server_now: datetime,
+    ) -> LocalAgentBrokerHttpResponse:
+        """#4139 — accept one bounded verified execution result for one command.
+
+        The device supplies the result body; the canonical persisted command
+        record supplies every correlation value, the lifecycle gate and the
+        success gate. Nothing here can enqueue, admit, acknowledge, reconcile,
+        choose another command, or widen the authenticated device scope.
+        """
+
+        payload = _closed_mapping(payload, _FILE_RESULT_REQUEST_KEYS, "file result request")
+        record = self._load_scoped_session(auth=auth, payload=payload, server_now=server_now)
+        _ref(payload["command_id"], "command_id")
+        for field_name in ("revision_ref", "request_id", "evidence_ref"):
+            _ref(payload[field_name], field_name)
+        if payload["kind"] not in _FILE_RESULT_KINDS:
+            raise ValueError("file result kind must be file_read_text or other")
+        if payload["content_utf8"] is not None:
+            if type(payload["content_utf8"]) is not str:
+                raise ValueError("file result content must be text or null")
+            if payload["kind"] != "file_read_text":
+                raise ValueError("only a text-file read result may carry content")
+            _digest(payload["content_sha256"], "content_sha256")
+        elif payload["content_sha256"] is not None:
+            raise ValueError("a pending file result declaration must not carry a content digest")
+        store = self._verified_file_result_store
+        if store is None or not callable(getattr(store, "submit", None)):
+            return self._error(
+                503,
+                "local_agent_file_result_not_configured",
+                "verified file result storage is not configured",
+            )
+        submission = {
+            key: payload[key]
+            for key in (
+                "command_id",
+                "revision_ref",
+                "request_id",
+                "evidence_ref",
+                "kind",
+                "content_utf8",
+                "content_sha256",
+            )
+        }
+        stored = store.submit(
+            submission,
+            binding_ref=record.binding_ref,
+            account_ref=record.account_ref,
+            workspace_ref=record.workspace_ref,
+            now=server_now,
+        )
+        return LocalAgentBrokerHttpResponse(
+            200,
+            {
+                "ok": True,
+                "file_result": {
+                    "command_id": _ref(stored["command_id"], "command_id"),
+                    "binding_ref": _ref(stored["binding_ref"], "binding_ref"),
+                    "kind": stored["kind"],
+                    "content_bytes": stored["content_bytes"],
+                    "content_sha256": stored["content_sha256"],
+                    "stored_at": str(stored["stored_at"]),
+                    "raw_device_credential": False,
+                },
+            },
+        )
+
     def handle(
         self,
         *,
@@ -761,6 +853,8 @@ class LocalAgentBrokerHttpHandler:
                 return self._handle_heartbeat(auth, payload, server_now=server_now)
             if route == _ROUTE_RECONCILE:
                 return self._handle_reconcile(auth, payload, server_now=server_now)
+            if route == _ROUTE_FILE_RESULT:
+                return self._handle_file_result(auth, payload, server_now=server_now)
             return self._handle_acknowledge(auth, payload, server_now=server_now)
         except PermissionError:
             return self._error(403, "local_agent_http_scope_mismatch", "authenticated Local Agent scope does not match request")
@@ -782,6 +876,9 @@ class LocalAgentBrokerHttpHandler:
             "replay_sequence_authority_duplicated": False,
             "durable_state_port_required": True,
             "material_resolver_port_required": True,
+            "verified_file_result_store_required": True,
+            "verified_file_result_route": _ROUTE_FILE_RESULT,
+            "ack_body_carries_file_text": False,
             "raw_device_credential_logged": False,
             "production_endpoint_configured": False,
             "production_ready": False,
@@ -799,6 +896,13 @@ HEARTBEAT_SERVER_LAST_SEEN = True
 POLL_REQUEST_FINGERPRINT_PRESERVED = True
 MATERIAL_FINGERPRINT_EXACT = True
 ACK_ADMISSION_EVIDENCE_EXACT = True
+#: #4139 — the ack keeps carrying only the bounded outcome; the verified Windows
+#: TXT body travels on its own route and stays under the canonical command's
+#: success gate.
+ACK_CARRIES_FILE_TEXT = False
+VERIFIED_FILE_RESULT_ROUTE = True
+VERIFIED_FILE_RESULT_REQUIRES_CANONICAL_COMMAND = True
+VERIFIED_FILE_RESULT_REQUIRES_SUCCESSFUL_ACK = True
 #: #3128 — the only device recovery surface, and it carries correlation only.
 DEVICE_RECONCILIATION_SURFACE = True
 RECONCILE_EXECUTION_AUTHORITY = False
