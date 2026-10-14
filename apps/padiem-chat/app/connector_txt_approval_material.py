@@ -138,6 +138,12 @@ class OwnerTxtApprovalProof:
     browser-supplied authority. The minter re-validates every field and the
     cross-field coherence; a forged or partial proof fails closed here, and
     the Resident re-verifies the minted receipt independently.
+
+    Realm note: ``workspace_id`` here is the Identity-verified *connector*
+    workspace (the scope Broker calls use), NOT the Claw memory/tenant
+    workspace. The two realms are never compared as strings: each is verified
+    by its own authority, both anchored on the same verified session. The
+    tenant-realm run-row check lives in the trigger, not in this proof.
     """
 
     owner_id: str

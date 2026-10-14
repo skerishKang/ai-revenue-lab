@@ -1419,6 +1419,26 @@ class D1HistoryStore:
             same = all(existing.get(name) == value for name, value in candidate.items())
             if same:
                 return False
+            if (
+                existing.get("evidence_ref") is None
+                and isinstance(candidate.get("evidence_ref"), str)
+                and candidate["evidence_ref"]
+                and all(
+                    existing.get(name) == value
+                    for name, value in candidate.items()
+                    if name != "evidence_ref"
+                )
+            ):
+                # #4139: the trigger pre-writes the correlation before Broker
+                # admission mints the evidence; the first verified identity
+                # afterwards fills exactly that one unknown field. Anything
+                # else differing is still two commands claiming one run.
+                await self._run(
+                    "UPDATE claw_local_task_correlation SET evidence_ref=? "
+                    "WHERE user_id=? AND run_id=? AND command_id=? AND evidence_ref IS NULL",
+                    candidate["evidence_ref"], user_id, run_id, command_id,
+                )
+                return True
             raise HistoryError("claw run is already bound to a different command correlation")
         await self._run(
             "INSERT INTO claw_local_task_correlation "

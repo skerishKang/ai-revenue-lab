@@ -443,7 +443,24 @@ class CloudflareCanonicalBrokerPairingClient:
         returned = _dict(result.get("command"))
         if returned is None or returned.get("command_id") != command["command_id"]:
             raise IdentityBridgeError(503, "broker_rpc_invalid", "Canonical Broker command receipt is invalid.")
-        return {"command_id": command["command_id"], "run_id": command["run_id"]}
+        # Server-decided correlation the trigger needs for the pre-written
+        # return-leg row. Anything missing or divergent fails closed: the
+        # command must not outlive a correlation the conversation cannot read.
+        revision_ref = returned.get("revision_ref")
+        request_fingerprint = returned.get("request_fingerprint")
+        if (
+            not isinstance(revision_ref, str) or not revision_ref
+            or not isinstance(request_fingerprint, str) or not request_fingerprint
+            or returned.get("run_id") != command["run_id"]
+            or request_fingerprint != command.get("request_fingerprint")
+        ):
+            raise IdentityBridgeError(503, "broker_rpc_invalid", "Canonical Broker command receipt is invalid.")
+        return {
+            "command_id": command["command_id"],
+            "run_id": command["run_id"],
+            "revision_ref": revision_ref,
+            "request_fingerprint": request_fingerprint,
+        }
 
     async def revoke_binding(self, *, binding_ref: str) -> dict[str, Any]:
         """Compensate a failed secure credential handoff through the same Broker."""

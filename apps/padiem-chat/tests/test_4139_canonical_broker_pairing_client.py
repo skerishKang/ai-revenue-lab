@@ -95,7 +95,9 @@ class Binding:
         self.calls.append(("enqueue", payload, material))
         return self.results.get("enqueue", {
             "ok": True,
-            "command": {"command_id": payload["command_id"], "run_id": payload["run_id"]},
+            "command": {"command_id": payload["command_id"], "run_id": payload["run_id"],
+                        "revision_ref": "revision.enqueued.1",
+                        "request_fingerprint": payload["request_fingerprint"]},
             "material": {"stored": True},
         })
 
@@ -345,7 +347,9 @@ def test_enqueue_txt_read_command_uses_two_positional_rpc_args():
     }
     material = {"request_id": "request.txt.1", "p01_approval_payload": {"format": "x"}}
     receipt = asyncio.run(client.enqueue_txt_read_command(command=command, material=material))
-    assert receipt == {"command_id": "command.txt.1", "run_id": "run.conversation.1"}
+    assert receipt == {"command_id": "command.txt.1", "run_id": "run.conversation.1",
+                       "revision_ref": "revision.enqueued.1",
+                       "request_fingerprint": "a" * 64}
     assert binding.calls == [("enqueue", command, material)]
     binding.results["enqueue"] = {"ok": False, "error": {"code": "refused", "message": "no"}}
     with pytest.raises(IdentityBridgeError):

@@ -169,6 +169,30 @@ def stored_rows(store):
     return len(store._sql.exec("SELECT command_id FROM local_agent_text_result").toArray())
 
 
+def test_scope_proof_reads_without_caller_named_account():
+    """#4139: mismatched realms resolve scope from proven correlation."""
+    _, service, store, _ = fixture()
+    stage_result = stage(service)
+    assert stage_result["status"] == 200
+    proof = {
+        "command_id": COMMAND_ID, "run_id": RUN_ID,
+        "request_fingerprint": REQUEST_FINGERPRINT,
+    }
+    answer = read_verified_file_text_rpc(store, {"scope_proof": proof})
+    assert answer["ok"] is True and answer["available"] is True
+    assert answer["account_ref"] == "account.http.1"
+    assert answer["content_utf8"] == KOREAN_TEXT
+    # Wrong fingerprint, foreign command, or both modes at once refuse.
+    assert read_verified_file_text_rpc(
+        store, {"scope_proof": {**proof, "request_fingerprint": "d" * 64}})["ok"] is False
+    assert read_verified_file_text_rpc(
+        store, {"scope_proof": {**proof, "command_id": "command.other"}})["ok"] is False
+    assert read_verified_file_text_rpc(
+        store, {"scope_proof": proof, "account_ref": "account.http.1",
+                "workspace_ref": "workspace.http.1", "run_id": RUN_ID,
+                "command_id": COMMAND_ID})["ok"] is False
+
+
 def test_an_unreported_command_keeps_the_existing_terminal_only_answer():
     _, _, store, _ = fixture()
     answer = rpc(store)

@@ -109,6 +109,7 @@ _WIRE_CONTENT = frozenset({
 })
 
 _READ_KEYS = frozenset({"account_ref", "workspace_ref", "run_id", "command_id"})
+_SCOPE_PROOF_KEYS = frozenset({"command_id", "run_id", "request_fingerprint"})
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS local_agent_text_result (
@@ -437,14 +438,59 @@ class BrokerTextResultStore:
             "content_present": stored_state == STATE_CONTENT,
         }
 
-    def read(self, *, owner: str, workspace: str, run_id: str,
-             command_id: str) -> dict:
+    def read(self, *, owner: str | None = None, workspace: str | None = None,
+             run_id: str | None = None, command_id: str | None = None,
+             scope_proof: dict | None = None) -> dict:
         """PRIVATE RPC only. Never reachable from a public device route."""
 
-        owner = safe_ref(owner, "owner")
-        workspace = safe_ref(workspace, "workspace")
-        run_id = safe_ref(run_id, "run_id")
-        command_id = safe_ref(command_id, "command_id")
+        if scope_proof is not None:
+            # #4139: alternative scope for realms where the caller's product
+            # user id differs from the canonical account_ref. The proof bundle
+            # (command correlation the caller proved owning server-side via
+            # history) locates exactly one staged row; the scope is derived
+            # from that row's own account, never from caller naming. Both
+            # modes at once are ambiguous and refused.
+            if owner is not None:
+                raise TextResultRefused("text result scope modes are exclusive")
+            if not isinstance(scope_proof, dict) or set(scope_proof) != _SCOPE_PROOF_KEYS:
+                raise TextResultRefused("text result scope proof schema mismatch")
+            proof_command = safe_ref(scope_proof.get("command_id"), "scope_proof.command_id")
+            proof_run = safe_ref(scope_proof.get("run_id"), "scope_proof.run_id")
+            proof_fingerprint = scope_proof.get("request_fingerprint")
+            if not isinstance(proof_fingerprint, str) or not _SHA256.fullmatch(proof_fingerprint):
+                raise TextResultRefused("text result scope proof fingerprint mismatch")
+            if run_id is not None and run_id != proof_run:
+                raise TextResultRefused("text result scope proof run mismatch")
+            if command_id is not None and command_id != proof_command:
+                raise TextResultRefused("text result scope proof command mismatch")
+            expected_workspace = None
+            if workspace is not None:
+                if not isinstance(workspace, str):
+                    raise TextResultRefused("text result scope workspace mismatch")
+                expected_workspace = workspace
+            found = rows(self._sql.exec(
+                "SELECT binding_ref,account_ref,workspace_ref,run_id,state FROM "
+                "local_agent_text_result WHERE command_id=? AND run_id=? AND request_fingerprint=?",
+                proof_command, proof_run, proof_fingerprint,
+            ))
+            if len(found) != 1:
+                # Nothing staged (or ambiguous, which cannot happen under the
+                # PRIMARY KEY): retryable unavailability, never a generic
+                # "other" that would consume the conversation's message id.
+                raise TextResultRefused("staged text result is unavailable")
+            owner = row_value(found[0], "account_ref")
+            workspace = row_value(found[0], "workspace_ref")
+            if expected_workspace is not None and workspace != expected_workspace:
+                raise TextResultRefused("text result scope workspace mismatch")
+            run_id = proof_run
+            command_id = proof_command
+        else:
+            if owner is None:
+                raise TextResultRefused("text result owner scope is required")
+            owner = safe_ref(owner, "owner")
+            workspace = safe_ref(workspace, "workspace")
+            run_id = safe_ref(run_id, "run_id")
+            command_id = safe_ref(command_id, "command_id")
         self._expire(self._now())
         result = rows(self._sql.exec(
             "SELECT binding_ref,state,content_utf8,content_sha256,tool_request_ref,"
@@ -538,6 +584,17 @@ def read_verified_file_text_rpc(store: BrokerTextResultStore | None,
     if store is None or type(payload) is not dict:
         return {"ok": False, "error": {"code": "verified_file_text_unavailable"}}
     try:
+        if "scope_proof" in payload:
+            if frozenset(payload) - {"scope_proof", "workspace_ref", "run_id", "command_id"}:
+                raise TextResultRefused("closed private reader contract required")
+            if "account_ref" in payload:
+                raise TextResultRefused("closed private reader contract required")
+            return store.read(
+                scope_proof=payload["scope_proof"],
+                workspace=payload.get("workspace_ref"),
+                run_id=payload.get("run_id"),
+                command_id=payload.get("command_id"),
+            )
         if frozenset(payload) != _READ_KEYS:
             raise TextResultRefused("closed private reader contract required")
         return store.read(

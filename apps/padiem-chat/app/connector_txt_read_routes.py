@@ -43,6 +43,7 @@ from .connector_txt_approval_material import (
     TxtApprovalMaterialError,
     mint_txt_read_receipt,
 )
+from .history import HistoryError, HistoryForbidden
 from .control_plane_broker_pairing_client import CloudflareCanonicalBrokerPairingClient
 from .control_plane_identity import IdentityBridgeError
 
@@ -174,8 +175,12 @@ async def connector_txt_read_request(request: Request) -> JSONResponse:
     identity = getattr(request.app.state, "control_plane_identity_authority", None)
     if not callable(getattr(identity, "resolve_connector_enrollment_consent_for_device", None)):
         return _error(503, "txt_read_unconfigured")
+    if not callable(getattr(identity, "resolve_connector_workspace", None)):
+        return _error(503, "txt_read_unconfigured")
     history_store = getattr(request.app.state, "history_store", None)
     if not callable(getattr(history_store, "get_claw_run", None)):
+        return _error(503, "txt_read_unconfigured")
+    if not callable(getattr(history_store, "record_local_task_correlation", None)):
         return _error(503, "txt_read_unconfigured")
 
     try:
@@ -189,16 +194,34 @@ async def connector_txt_read_request(request: Request) -> JSONResponse:
     if (
         not isinstance(consent, dict)
         or consent.get("device_id") != wire["device_id"]
-        or consent.get("account_ref") is None
-        or consent.get("workspace_ref") != workspace_id
+        or not isinstance(consent.get("account_ref"), str)
+        or not consent["account_ref"]
+        or not isinstance(consent.get("workspace_ref"), str)
+        or not consent["workspace_ref"]
         or consent.get("withdrawn_at") is not None
     ):
         return _error(403, "txt_read_consent_required")
+    # The two realms are never compared as strings. The memory/tenant
+    # workspace above stays inside Claw history checks; the connector
+    # workspace below stays inside Broker calls. Their relationship is
+    # confirmed by the Identity authority itself: the session's canonical
+    # connector workspace must equal the consent's workspace.
+    try:
+        connector_workspace = await identity.resolve_connector_workspace(
+            session_id=session.session_id,
+        )
+        if inspect.isawaitable(connector_workspace):
+            connector_workspace = await connector_workspace
+    except Exception:
+        return _error(503, "txt_read_unconfigured")
+    if connector_workspace != consent["workspace_ref"]:
+        return _error(403, "txt_read_consent_required")
     account_ref = consent["account_ref"]
+    connector_workspace_ref = consent["workspace_ref"]
 
     try:
         device = await broker_source.resolve_device_binding(
-            account_ref=account_ref, workspace_ref=workspace_id,
+            account_ref=account_ref, workspace_ref=connector_workspace_ref,
             device_id=wire["device_id"],
         )
     except IdentityBridgeError as exc:
@@ -229,7 +252,7 @@ async def connector_txt_read_request(request: Request) -> JSONResponse:
     try:
         proof = OwnerTxtApprovalProof(
             owner_id=uid,
-            workspace_id=workspace_id,
+            workspace_id=connector_workspace_ref,
             device_id=wire["device_id"],
             binding_ref=device["binding_ref"],
             credential_generation=device["credential_generation"],
@@ -252,8 +275,40 @@ async def connector_txt_read_request(request: Request) -> JSONResponse:
         return _error(409, "txt_read_enqueue_refused")
     except Exception:
         return _error(503, "txt_read_broker_unavailable")
-    if not isinstance(receipt, dict) or receipt.get("command_id") != issued["enqueue"]["command_id"]:
+    if (
+        not isinstance(receipt, dict)
+        or receipt.get("command_id") != issued["enqueue"]["command_id"]
+        or not isinstance(receipt.get("revision_ref"), str)
+        or not receipt["revision_ref"]
+    ):
         return _error(503, "txt_read_broker_unavailable")
+    # Pre-write the return-leg correlation (evidence still unknown: it is
+    # minted at Broker admission, and the projection fills it once). Without
+    # this row the later sessionless result reads could not resolve the
+    # canonical account scope; without the evidence fill below they could not
+    # verify the body. A pre-write failure orphans the enqueued command, so
+    # it is a 503, never a silent success: the command TTL-bounds the orphan.
+    try:
+        bound = await history_store.record_local_task_correlation(
+            user_id=uid,
+            run_id=wire["run_id"],
+            command_id=issued["enqueue"]["command_id"],
+            tool_request_ref=issued["tool_request_ref"],
+            request_id=issued["material"]["request_id"],
+            revision_ref=receipt["revision_ref"],
+            evidence_ref=None,
+            request_fingerprint=issued["enqueue"]["request_fingerprint"],
+        )
+        if inspect.isawaitable(bound):
+            await bound
+    except HistoryError as exc:
+        if isinstance(exc, HistoryForbidden):
+            return _error(503, "txt_read_correlation_unavailable")
+        # The run is already bound to a different command: one run carries
+        # one command, so a further read needs its own conversation turn.
+        return _error(409, "txt_read_run_already_bound")
+    except Exception:
+        return _error(503, "txt_read_correlation_unavailable")
     return _response({
         "ok": True,
         "command": {
