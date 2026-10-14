@@ -62,9 +62,13 @@ def main():
                 desktop.locator("#saveScriptButton").click()
                 desktop.get_by_role("heading", name="가상 시연 대본").wait_for(timeout=5000)
                 assert desktop.locator(".template-card").count() == 4
-                # Nothing is persisted: reload resets the entire in-memory mock.
-                desktop.reload(wait_until="load")
-                assert desktop.locator(".template-card").count() == 3 if desktop.locator("#scripts").is_visible() else True
+                # Presenter can deliberately reset between customer demonstrations.
+                desktop.once("dialog", lambda dialog: dialog.accept())
+                desktop.locator("#resetDemoButton").click()
+                desktop.locator("#quickTemplates .script-row").first.wait_for(timeout=5000)
+                assert desktop.locator("#quickTemplates .script-row").count() == 3
+                desktop.locator('.nav-link[data-page="scripts"]').click()
+                assert desktop.locator(".template-card").count() == 3
                 desktop.locator('.nav-link[data-page="usage"]').click()
                 assert desktop.locator("#usageTotal").inner_text() == "0"
                 print("PUBLIC_DEMO_MEMORY_RESET=PASS")
