@@ -415,6 +415,7 @@ class ControlPlaneAdmittedExecutionCoordinator:
                 admission_ref=conformed.evidence.admission_ref,
                 evidence_ref=conformed.evidence_ref,
                 admitted_at=admitted_record.admitted_at,
+                receipt=resolved.approval_receipt,
             )
 
         # The existing admitted-execution bridge remains the execution gate.

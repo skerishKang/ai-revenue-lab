@@ -212,6 +212,7 @@ class TrustedP01VerifiedTextFilePlanBridge:
         binding: DeviceBinding,
         command: DeviceCommandEnvelope,
         admitted: AdmittedTextReadContext,
+        receipt: Any | None = None,
     ) -> LocalFileRequest | None:
         if (
             not isinstance(binding, DeviceBinding)
@@ -226,7 +227,7 @@ class TrustedP01VerifiedTextFilePlanBridge:
             raise ContractError("text command file plan already consumed")
         self._consumed_commands.add(key)
         plan = self._source.approved_plan_for_admitted_command(
-            binding=binding, command=command, admitted=admitted,
+            binding=binding, command=command, admitted=admitted, receipt=receipt,
         )
         if plan is None:
             return None
@@ -305,10 +306,11 @@ class WindowsVerifiedTextProducer:
         binding: DeviceBinding,
         command: DeviceCommandEnvelope,
         admitted: AdmittedTextReadContext,
+        receipt: Any | None = None,
     ) -> LocalFileRequest | None:
         """The exact authorized READ for this admitted command, or None."""
         request = self._requests.request_for_admitted_command(
-            binding=binding, command=command, admitted=admitted,
+            binding=binding, command=command, admitted=admitted, receipt=receipt,
         )
         if request is None:
             return None
@@ -477,6 +479,7 @@ class ResidentVerifiedTextPublisher:
         command: DeviceCommandEnvelope,
         admitted: AdmittedTextReadContext,
         credential: bytes,
+        receipt: Any | None = None,
     ) -> bool:
         """Step 1: declare ``pending`` before the READ and before the ACK.
 
@@ -492,7 +495,7 @@ class ResidentVerifiedTextPublisher:
             raise ContractError("canonical admitted correlation/credential required")
         key = self._key(binding=binding, command=command)
         request = self._approved_text.approved_request(
-            binding=binding, command=command, admitted=admitted,
+            binding=binding, command=command, admitted=admitted, receipt=receipt,
         )
         if request is None:
             return False

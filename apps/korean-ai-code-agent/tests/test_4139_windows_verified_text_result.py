@@ -113,7 +113,8 @@ class SyntheticTextP01Authority:
         self.wrong_fingerprint = wrong_fingerprint
         self.calls = 0
 
-    def approved_plan_for_admitted_command(self, *, binding, command, admitted):
+    def approved_plan_for_admitted_command(self, *, binding, command, admitted,
+                                             receipt=None):
         self.calls += 1
         if self.omit:
             return None
