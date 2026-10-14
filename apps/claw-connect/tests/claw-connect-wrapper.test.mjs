@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
+import fs from "node:fs";
+import os from "node:os";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -30,13 +32,40 @@ test("the wrapper prints the product version", () => {
 });
 
 test("the wrapper forwards to the same module the installer runs", () => {
-  const result = runWrapper(["status"]);
-  assert.equal(result.status, 0, result.stderr);
-  const status = JSON.parse(result.stdout);
-  assert.equal(status.product, "Padiem Claw Connect");
-  assert.equal(status.state, "disconnected");
-  assert.equal(status.resident_running, false);
-  assert.equal(status.autostart_enabled, false);
+  // A brand-new PC has no reviewed enrollment yet, so the Connector reports
+  // "unregistered". It must never imply a connection it does not have.
+  const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), "claw-status-"));
+  try {
+    const result = runWrapper(["status"], { CLAW_CONNECT_STATE_DIR: stateDir });
+    assert.equal(result.status, 0, result.stderr);
+    const status = JSON.parse(result.stdout);
+    assert.equal(status.product, "Padiem Claw Connect");
+    assert.equal(status.state, "unregistered");
+    assert.equal(status.resident_running, false);
+    assert.equal(status.autostart_enabled, false);
+    assert.equal(status.enrollment.enrolled, false);
+    assert.equal(status.enrollment.broker_endpoint_configured, false);
+  } finally {
+    fs.rmSync(stateDir, { recursive: true, force: true });
+  }
+});
+
+test("enroll fails closed when no broker route is configured", () => {
+  // The LOCAL1 pairing route is not activated, so enrollment must be reported
+  // as blocked instead of being claimed as successful.
+  const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), "claw-enroll-"));
+  try {
+    const result = runWrapper(
+      ["enroll", "chal-9f1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e", "0123456789abcdef0123456789abcdef"],
+      { CLAW_CONNECT_STATE_DIR: stateDir },
+    );
+    assert.notEqual(result.status, 0);
+    const payload = JSON.parse(result.stdout);
+    assert.equal(payload.ok, false);
+    assert.equal(payload.blocked, true);
+  } finally {
+    fs.rmSync(stateDir, { recursive: true, force: true });
+  }
 });
 
 test("a missing interpreter is reported instead of hanging", () => {

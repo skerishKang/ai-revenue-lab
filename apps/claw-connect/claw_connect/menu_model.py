@@ -29,6 +29,9 @@ ACTION_TOGGLE_PAUSE = "toggle_pause"
 ACTION_RECONNECT = "reconnect"
 ACTION_DISCONNECT = "disconnect"
 ACTION_QUIT = "quit"
+#: Starts the reviewed PADIEM login / PC-registration consent flow. Offered only
+#: when the device has no usable enrollment, so a registered PC never sees it.
+ACTION_LOGIN = "login"
 
 #: Informational, non-selectable header id.
 ITEM_STATUS = "status"
@@ -38,6 +41,10 @@ STATE_LABELS: dict[ConnectionState, str] = {
     ConnectionState.CONNECTING: "연결 중…",
     ConnectionState.CONNECTED: "연결됨",
     ConnectionState.PAUSED: "일시중지됨",
+    # Device-authority states projected from the canonical Broker lifecycle.
+    ConnectionState.UNREGISTERED: "등록 안 됨",
+    ConnectionState.OFFLINE: "오프라인",
+    ConnectionState.REVOKED: "권한 철회됨",
 }
 
 
@@ -62,6 +69,14 @@ def build_menu(state: ConnectionState) -> tuple[MenuItem, ...]:
         MenuItem("sep1", "", separator=True),
         MenuItem(ACTION_OPEN_WEB, "Claw Web 열기"),
         MenuItem("sep2", "", separator=True),
+        # The reviewed login is only offered when it is actually required.
+        MenuItem(
+            ACTION_LOGIN,
+            "PADIEM 로그인" if state is ConnectionState.UNREGISTERED else "다시 로그인",
+            enabled=state
+            in (ConnectionState.UNREGISTERED, ConnectionState.REVOKED),
+        ),
+        MenuItem("sep4", "", separator=True),
         MenuItem(
             ACTION_TOGGLE_PAUSE,
             "일시중지" if connected else "다시 시작",

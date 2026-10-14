@@ -1,7 +1,10 @@
-# Claw Connect — no-Node, no-terminal Windows installer (#4139 S1 item 9).
+# Claw Connect — no-Node, no-terminal Windows installer (#4139 S1 item 9, S2).
 #
 #   .\install.ps1             install (per user, no administrator right)
 #   .\install.ps1 -Autostart  also register "run at Windows logon"
+#   .\install.ps1 -ResidentSrc <path>
+#                             pin the kagent Resident source root that this PC
+#                             supervises (the one existing local runner)
 #   .\install.ps1 -Uninstall  remove the shortcut, autostart value and files
 #
 # Scope: a Start Menu shortcut plus an opt-in HKCU Run value. Nothing is
@@ -12,7 +15,8 @@
 [CmdletBinding()]
 param(
     [switch]$Autostart,
-    [switch]$Uninstall
+    [switch]$Uninstall,
+    [string]$ResidentSrc
 )
 
 $ErrorActionPreference = 'Stop'
@@ -65,6 +69,17 @@ if ($Uninstall) {
 New-Item -ItemType Directory -Path $InstallRoot -Force | Out-Null
 Copy-Item -Path (Join-Path $SourceRoot 'claw_connect') -Destination $InstallRoot `
     -Recurse -Force
+
+# S2: pin the one existing kagent Resident this PC supervises. The Connector
+# launches `kagent.local_agent_resident_process` — never a placeholder command.
+# The path is supplied by the deployment and recorded once, per user. The
+# Connector resolves it from <state_dir>/resident.json, and its default state
+# directory is this install root.
+if ($ResidentSrc) {
+    $residentConfig = Join-Path $InstallRoot 'resident.json'
+    @{ src_root = $ResidentSrc } | ConvertTo-Json -Compress |
+        Set-Content -Path $residentConfig -Encoding utf8
+}
 
 New-Item -ItemType Directory -Path $StartMenu -Force | Out-Null
 $shell = New-Object -ComObject WScript.Shell
