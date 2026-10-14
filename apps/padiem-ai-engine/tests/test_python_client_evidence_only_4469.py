@@ -51,7 +51,7 @@ async def test_search_evidence_fixed_origin_and_no_model_or_secret_wire():
     assert result["sources"][0]["url"] == "https://example.org"
     assert len(transport.calls) == 1
     call = transport.calls[0]
-    assert call["url"] == "https://engine.internal/internal/v1/research"
+    assert call["url"] == "https://padiem-ai-engine.internal/internal/v1/research"
     assert call["method"] == "POST"
     assert call["headers"]["X-Padiem-Engine-Caller"] == "padiem-claw-service"
     wire = json.loads(call["body"])
