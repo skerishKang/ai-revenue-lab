@@ -852,6 +852,9 @@ def create_app(
     app.state.claw_drive_artifact_reader = claw_drive_artifact_reader
     # Explicit trusted server opt-in; no browser-provided activation authority.
     app.state.claw_live_sse_enabled = False
+    # #4469: no implicit activation from an AI decision, browser or adapter;
+    # the trusted production Worker composes the member/quota-bound flag.
+    app.state.claw_web_search_enabled = False
     # #3933 S1: first-turn trusted coding-context gate. Fail-closed default:
     # the route helper is a no-op and no grant store is composed here, so
     # production keeps the exact historical first-turn path until CENTRAL

@@ -66,6 +66,10 @@ PADIEM_CHAT_RUNTIME_MODE = "mock"
 PADIEM_CHAT_TIMEOUT_SECONDS = "600"
 PADIEM_CHAT_LIVE_ENABLED = "false"
 PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"
+# #4469 Claw public research: owner-approved opt-in. The Worker requires
+# live B14 + canonical identity/Engine client + a durable D1 quota in addition
+# to this flag; no unauthenticated or unmetered invocation can use it.
+PADIEM_CLAW_PUBLIC_WEB_SEARCH_ENABLED = "true"
 # Connector product availability defaults ON (not an opt-in/approval toggle).
 PADIEM_CHAT_PUBLIC_BASE_URL = "https://chat.padiem.net"
 PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE = "owner-controlled-production-4139"
