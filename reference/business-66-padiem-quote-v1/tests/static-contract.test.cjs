@@ -276,7 +276,7 @@ check(!easy.includes("fetch(") && !easy.includes("XMLHttpRequest") &&
   "EASY_MODE_CONTRACT: no direct fetch in Easy/file intake; chat uses authenticated account bridge");
 check(!easy.includes("아직 자동 해석 모델은 연결 전") &&
       easy.includes("runModelDialogue(text, bridge)") &&
-      easy.includes("bridge.chat(history)") &&
+      easy.includes("bridge.chat(history, { conversationId: sentDialogueId })") &&
       easy.includes("!readiness.ready || lastEasyView") &&
       easy.includes("return bridge.interpret(text)") &&
       easy.includes("startGuidedIfReady(text)") &&
@@ -286,10 +286,10 @@ check(html.includes('id="freeChatStarter"') &&
       html.includes("<strong>AI와 대화하기</strong>") &&
       html.includes("<small>일반 질문부터 견적 상담까지</small>") &&
       easy.includes('$("freeChatStarter").addEventListener("click", startFreeChat);') &&
-      easy.includes("bridge.chat(history)") &&
+      easy.includes("bridge.chat(history, { conversationId: sentDialogueId })") &&
       easy.includes("return bridge.interpret(text)"),
   "B66_CHAT_ENTRY: explicit general AI dialogue CTA routes to real model and preserves approved CGI quote flow");
-check(easy.includes("renderSourcedEvidence(addMessage(\"assistant\", result.answer), result.search)") &&
+check(easy.includes("renderSourcedEvidence(addMessage(\"assistant\", result.answer, { markdown: true }), result.search)") &&
       easy.includes('search.status !== "sourced"') &&
       easy.includes('stamp.textContent = "서버 수집 "') &&
       easy.includes('rel = "noopener noreferrer nofollow"') &&

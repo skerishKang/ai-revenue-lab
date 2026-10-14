@@ -60,6 +60,10 @@ class _ConversationHistoryStore(Protocol):
         self, user_id: str, conversation_id: str, *, product_scope: str
     ) -> dict[str, Any] | None: ...
 
+    async def get_conversation_model_context(
+        self, user_id: str, conversation_id: str, *, product_scope: str
+    ) -> dict[str, Any] | None: ...
+
     async def delete_conversation(
         self, user_id: str, conversation_id: str, *, product_scope: str
     ) -> bool: ...
@@ -184,6 +188,30 @@ class B66ConversationStore:
         row = await self._store.get_conversation(
             owner, conversation_id, product_scope=PRODUCT_SCOPE_B66
         )
+        return _project_conversation(row)
+
+    async def load_model_context(
+        self, owner_id: str, conversation_id: str
+    ) -> dict[str, Any] | None:
+        """Full-original messages for the next model dispatch, B66-scoped.
+
+        A continued B66 dialogue must reach the model with the owner's real
+        history, not the bounded D1 preview, so this uses the canonical
+        full-context projection (private R2 originals). It is the same read the
+        Chat/Claw model paths use, pinned to ``PRODUCT_SCOPE_B66``.
+
+        Returns ``None`` when the id is not this owner's B66 conversation.
+        Propagates the canonical store's own ``HistoryContextIncomplete`` when
+        the conversation exists but its original is unavailable, so the caller
+        can fail closed instead of dispatching on a truncated preview.
+        """
+        owner = _owner(owner_id)
+        if not isinstance(conversation_id, str) or not conversation_id:
+            return None
+        loader = getattr(self._store, "get_conversation_model_context", None)
+        if not callable(loader):
+            raise RuntimeError("b66 full dialogue context is not composed")
+        row = await loader(owner, conversation_id, product_scope=PRODUCT_SCOPE_B66)
         return _project_conversation(row)
 
     async def delete(self, owner_id: str, conversation_id: str) -> bool:

@@ -3,6 +3,9 @@
 
   const API = "/api/padiem";
   const B66_ASSET_ID = /^b66asset_[0-9a-f]{32}$/;
+  /* #4657: the canonical conversation id grammar the server mints and accepts. */
+  const B66_DIALOGUE_ID = /^chat_[a-f0-9]{32}$/;
+  const MAX_DIALOGUE_QUERY_CHARS = 80;
   const PRIVATE_ASSET_MEDIA = new Set(["image/png", "image/jpeg", "image/webp"]);
   const MAX_PRIVATE_ASSET_BYTES = 256 * 1024;
   const state = {
@@ -764,7 +767,7 @@
 
   /* #4466: real general conversation through B66's authenticated B14 route.
      This does not require an assigned CGI Skill and cannot mutate QuoteCore. */
-  async function chatMessages(messages) {
+  async function chatMessages(messages, options) {
     if (!state.authenticated) return { ok: false, code: "unauthorized" };
     const select = byId("padiemQuoteModelSelect");
     const modelId = select && select.value;
@@ -777,6 +780,14 @@
     const payload = { model_id: modelId, messages };
     const reasoningLevel = selectedReasoningLevel(modelId);
     if (reasoningLevel) payload.reasoning_level = reasoningLevel;
+    /* #4657: continuing an existing B66 dialogue. The id is opaque to the
+       browser and the server re-authorizes it against the signed-in owner and
+       the B66 product scope before any model dispatch. The browser never names
+       an owner or a scope. */
+    const opts = options || {};
+    if (B66_DIALOGUE_ID.test(String(opts.conversationId || ""))) {
+      payload.conversation_id = opts.conversationId;
+    }
     try {
       const result = await api("/b66/ai/chat", {
         method: "POST",
@@ -793,6 +804,12 @@
         ok: true,
         answer: data.answer,
         model_id: modelId,
+        /* #4657: the server-owned id of the conversation this answer belongs to.
+           Absent when the answer could not be stored, so the browser never
+           invents a dialogue id of its own. */
+        conversation_id: B66_DIALOGUE_ID.test(String(data.conversation_id || ""))
+          ? data.conversation_id : null,
+        dialogue_saved: data.dialogue_saved === true,
         /* #4469: the server reports what retrieval actually did. The browser
            never decides that a search happened, and a withheld or failed search
            stays visible instead of becoming a confident answer. */
@@ -802,6 +819,68 @@
       };
     } catch (_) {
       return { ok: false, code: "ai_chat_unavailable" };
+    }
+  }
+
+  /* ── #4657 이전 AI 대화 (previous AI dialogue) ──────────────────────────
+     The owner and the B66 product scope are derived on the server. The browser
+     only sends a bounded search string or an opaque conversation id, so it can
+     never widen the read to another owner or to Chat/Claw. */
+  async function listDialogues(query) {
+    if (!state.authenticated) return { ok: false, code: "unauthorized" };
+    const q = typeof query === "string" ? query.trim().slice(0, MAX_DIALOGUE_QUERY_CHARS) : "";
+    const path = q
+      ? "/b66/ai/dialogues?q=" + encodeURIComponent(q)
+      : "/b66/ai/dialogues";
+    try {
+      const result = await api(path);
+      const data = result.data;
+      if (!result.response.ok || !data || data.ok !== true || !Array.isArray(data.conversations)) {
+        return { ok: false, code: (data && data.error && data.error.code) || "dialogue_history_unavailable" };
+      }
+      return {
+        ok: true,
+        conversations: data.conversations,
+        query: typeof data.query === "string" ? data.query : q
+      };
+    } catch (_) {
+      return { ok: false, code: "dialogue_history_unavailable" };
+    }
+  }
+
+  async function loadDialogue(conversationId) {
+    if (!state.authenticated) return { ok: false, code: "unauthorized" };
+    if (!B66_DIALOGUE_ID.test(String(conversationId || ""))) {
+      return { ok: false, code: "invalid_conversation_id" };
+    }
+    try {
+      const result = await api("/b66/ai/dialogues/" + encodeURIComponent(conversationId));
+      const data = result.data;
+      if (!result.response.ok || !data || data.ok !== true || !data.conversation) {
+        return { ok: false, code: (data && data.error && data.error.code) || "conversation_not_found" };
+      }
+      return { ok: true, conversation: data.conversation };
+    } catch (_) {
+      return { ok: false, code: "conversation_not_found" };
+    }
+  }
+
+  async function deleteDialogue(conversationId) {
+    if (!state.authenticated) return { ok: false, code: "unauthorized" };
+    if (!B66_DIALOGUE_ID.test(String(conversationId || ""))) {
+      return { ok: false, code: "invalid_conversation_id" };
+    }
+    try {
+      const result = await api("/b66/ai/dialogues/" + encodeURIComponent(conversationId), {
+        method: "DELETE"
+      });
+      const data = result.data;
+      if (!result.response.ok || !data || data.ok !== true || data.deleted !== true) {
+        return { ok: false, code: (data && data.error && data.error.code) || "dialogue_delete_failed" };
+      }
+      return { ok: true };
+    } catch (_) {
+      return { ok: false, code: "dialogue_delete_failed" };
     }
   }
 
@@ -1082,6 +1161,11 @@
     readiness: runtimeReadiness,
     interpret: interpretRequest,
     chat: chatMessages,
+    /* #4657: the owner's stored B66 AI dialogue. Owner and product scope are
+       derived server-side; the browser only sends a bounded query or an opaque id. */
+    listDialogues,
+    loadDialogue,
+    deleteDialogue,
     buildFromFacts: buildQuoteFromFacts,
     downloadPdf,
     certifiedPreviewBaseUrl,
