@@ -292,6 +292,28 @@ class CloudflareGoogleOAuthWorkspaceTruth:
             ),
         )
 
+    async def disconnect_drive(self, *, workspace_ref: str) -> bool:
+        """Forward a trusted workspace-only revocation to the canonical OAuth authority.
+
+        No credential, account, scope or provider token can be supplied by the browser.
+        """
+        method = getattr(self._binding, "disconnect_drive", None)
+        if not callable(method):
+            raise _unavailable()
+        try:
+            result = _as_dict(await _maybe_await(method({"workspace_ref": workspace_ref})))
+        except Exception as exc:
+            raise _unavailable() from exc
+        if result is None or not isinstance(result.get("ok"), bool):
+            raise _invalid()
+        if result["ok"] is False:
+            if set(result) != {"ok", "error"}:
+                raise _invalid()
+            raise _unavailable()
+        if set(result) != {"ok", "revoked"} or type(result["revoked"]) is not bool:
+            raise _invalid()
+        return result["revoked"]
+
 
 def _no_workspace_result() -> dict[str, Any]:
     """Fail-closed result for an active session with no canonical workspace."""
