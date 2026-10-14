@@ -9,6 +9,7 @@ import pytest
 
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
+from app.history import PRODUCT_SCOPE_CHAT
 from app.main import create_app
 from app.model_policy import EXECUTABLE_B14_MODEL_IDS
 from app.saved_outputs import (
@@ -47,9 +48,9 @@ class MemoryHistory:
         self.conversations = {}
         self.projects = {}
 
-    async def get_conversation(self, user_id, conversation_id):
+    async def get_conversation(self, user_id, conversation_id, *, product_scope):
         row = self.conversations.get(conversation_id)
-        if not row or row["user_id"] != user_id:
+        if not row or row["user_id"] != user_id or row.get("product_scope") != product_scope:
             return None
         return {
             "id": conversation_id,
@@ -166,6 +167,7 @@ async def test_saved_output_crud_is_owner_scoped_and_list_hides_content():
         "id": CONVERSATION_ID,
         "user_id": OWNER_ID,
         "project_id": PROJECT_ID,
+        "product_scope": PRODUCT_SCOPE_CHAT,
         "messages": [],
     }
     store = MemorySavedOutputStore()
@@ -221,6 +223,7 @@ async def test_provenance_ids_are_server_verified_before_save():
         "id": CONVERSATION_ID,
         "user_id": OWNER_ID,
         "project_id": PROJECT_ID,
+        "product_scope": PRODUCT_SCOPE_CHAT,
         "messages": [],
     }
     store = MemorySavedOutputStore()

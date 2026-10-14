@@ -43,6 +43,7 @@ from app.history import (
     MAX_HISTORY_MESSAGE_CHARS,
     MAX_MODEL_CONTEXT_BYTES,
     D1HistoryStore,
+    PRODUCT_SCOPE_CHAT,
 )
 from app.main import create_app
 from padiem_ai_core.b14_execution import (
@@ -56,6 +57,7 @@ SECRET = "local5-integration-secret-not-a-real-credential-0000"
 MIGRATIONS = (
     Path(__file__).resolve().parents[1] / "migrations" / "001_auth_history.sql",
     Path(__file__).resolve().parents[1] / "migrations" / "002_projects.sql",
+    Path(__file__).resolve().parents[1] / "migrations" / "042_conversation_product_scope.sql",
 )
 
 # Long, but deliberately far below the transport envelope so each assertion is
@@ -331,7 +333,7 @@ def test_d1_keeps_marked_preview_while_r2_keeps_exact_original(tmp_path):
     )
     conversation_id = response.json()["conversation_id"]
 
-    stored = asyncio.run(store.get_conversation(OWNER, conversation_id))
+    stored = asyncio.run(store.get_conversation(OWNER, conversation_id, product_scope=PRODUCT_SCOPE_CHAT))
     user_preview, answer_preview = (message["content"] for message in stored["messages"])
     assert len(user_preview) == MAX_HISTORY_MESSAGE_CHARS
     assert len(answer_preview) == MAX_HISTORY_MESSAGE_CHARS
@@ -451,8 +453,8 @@ def test_private_r2_originals_are_unreadable_by_another_user(tmp_path):
     assert len(bucket.objects) == 2
 
     reads_before = bucket.reads
-    assert asyncio.run(store.get_conversation(FOREIGN, conversation_id)) is None
-    assert asyncio.run(store.get_conversation_model_context(FOREIGN, conversation_id)) is None
+    assert asyncio.run(store.get_conversation(FOREIGN, conversation_id, product_scope=PRODUCT_SCOPE_CHAT)) is None
+    assert asyncio.run(store.get_conversation_model_context(FOREIGN, conversation_id, product_scope=PRODUCT_SCOPE_CHAT)) is None
     # A refused owner check never even opens the private object.
     assert bucket.reads == reads_before
 

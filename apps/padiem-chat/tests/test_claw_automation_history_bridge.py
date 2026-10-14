@@ -145,7 +145,9 @@ class FakeHistoryStore:
         else:
             self.rows[key] = dict(kwargs)
 
-    async def get_conversation(self, user_id: str, conversation_id: str):
+    async def get_conversation(self, user_id: str, conversation_id: str, *, product_scope: str):
+        from app.history import PRODUCT_SCOPE_CHAT
+        assert product_scope == PRODUCT_SCOPE_CHAT
         self.get_calls.append((user_id, conversation_id))
         if self.raise_on_get:
             raise RuntimeError("conversation authority read failed")

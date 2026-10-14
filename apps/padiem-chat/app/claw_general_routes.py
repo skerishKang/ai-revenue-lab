@@ -65,7 +65,7 @@ from .claw_routes import (
 )
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 from .auth_routes import auth_ready, current_user_id
-from .history import HISTORY_PREVIEW_SUFFIX, HistoryContextIncomplete, validate_conversation_id
+from .history import HISTORY_PREVIEW_SUFFIX, HistoryContextIncomplete, validate_conversation_id, PRODUCT_SCOPE_CHAT
 
 # This is the existing Chat HTTP resource envelope, not a provider/model cap.
 # The separate P01 Engine ingress guard remains in force until #4383 is resolved.
@@ -225,7 +225,7 @@ async def _owner_claw_context(
         raise ValueError("owner history unavailable")
     get_full = getattr(store, "get_conversation_model_context", None)
     load = get_full if callable(get_full) else store.get_conversation
-    prior = load(uid, conversation_id)
+    prior = load(uid, conversation_id, product_scope=PRODUCT_SCOPE_CHAT)
     if inspect.isawaitable(prior):
         prior = await prior
     if not isinstance(prior, dict) or prior.get("id") != conversation_id:
@@ -275,7 +275,7 @@ async def _save_claw_exchange(
             get = getattr(store, "get_conversation", None)
             if not callable(get):
                 return None
-            owned = get(uid, conversation_id)
+            owned = get(uid, conversation_id, product_scope=PRODUCT_SCOPE_CHAT)
             if inspect.isawaitable(owned):
                 owned = await owned
             if not isinstance(owned, dict) or owned.get("id") != conversation_id:
@@ -285,7 +285,7 @@ async def _save_claw_exchange(
                 return None
         # Only the bounded, visibly labeled stored preview is persisted. The
         # complete P01 result was already delivered to the caller unchanged.
-        saved = append(uid, conversation_id, user_text, answer, project_id)
+        saved = append(uid, conversation_id, user_text, answer, project_id, product_scope=PRODUCT_SCOPE_CHAT)
         if inspect.isawaitable(saved):
             saved = await saved
         if not isinstance(saved, str):

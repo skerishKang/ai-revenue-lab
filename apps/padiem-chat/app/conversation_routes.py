@@ -5,6 +5,7 @@ from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
 from .history import MAX_CONVERSATION_SEARCH_QUERY_CHARS, HistoryStore, validate_conversation_id
+from .history import PRODUCT_SCOPE_CHAT
 
 
 def _history_unavailable() -> JSONResponse:
@@ -19,7 +20,7 @@ async def api_conversations(request: Request) -> JSONResponse:
         return JSONResponse({"error": {"code": "unauthorized", "message": "로그인이 필요합니다."}}, status_code=401)
     store: HistoryStore = request.app.state.history_store
     try:
-        conversations = await store.list_conversations(uid)
+        conversations = await store.list_conversations(uid, product_scope=PRODUCT_SCOPE_CHAT)
     except Exception:
         return _history_unavailable()
     return JSONResponse({"conversations": conversations})
@@ -46,7 +47,7 @@ async def api_conversation_search(request: Request) -> JSONResponse:
         )
     store: HistoryStore = request.app.state.history_store
     try:
-        conversations = await store.search_conversations(uid, query)
+        conversations = await store.search_conversations(uid, query, product_scope=PRODUCT_SCOPE_CHAT)
     except Exception:
         return _history_unavailable()
     return JSONResponse({"conversations": conversations, "query": query.strip()[:MAX_CONVERSATION_SEARCH_QUERY_CHARS]})
@@ -67,14 +68,14 @@ async def api_conversation_detail(request: Request) -> JSONResponse:
     store: HistoryStore = request.app.state.history_store
     if request.method == "DELETE":
         try:
-            deleted = await store.delete_conversation(uid, cid)
+            deleted = await store.delete_conversation(uid, cid, product_scope=PRODUCT_SCOPE_CHAT)
         except Exception:
             return _history_unavailable()
         if not deleted:
             return JSONResponse({"error": {"code": "not_found", "message": "대화를 찾을 수 없습니다."}}, status_code=404)
         return JSONResponse({"deleted": True, "conversation_id": cid})
     try:
-        conversation = await store.get_conversation(uid, cid)
+        conversation = await store.get_conversation(uid, cid, product_scope=PRODUCT_SCOPE_CHAT)
     except Exception:
         return _history_unavailable()
     if conversation is None:

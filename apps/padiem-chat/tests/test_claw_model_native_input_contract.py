@@ -10,6 +10,7 @@ from pathlib import Path
 
 import pytest
 
+from app.history import PRODUCT_SCOPE_CHAT
 from app.claw_general_routes import (
     MAX_CLAW_GENERAL_BODY_BYTES,
     P01_ENGINE_REQUEST_ENVELOPE_BYTES,
@@ -77,7 +78,8 @@ def test_claw_owned_saved_history_does_not_silently_keep_only_12_or_4k(monkeypat
     import app.claw_general_routes as routes
 
     class OwnedStore:
-        async def get_conversation(self, user_id, conversation_id):
+        async def get_conversation(self, user_id, conversation_id, *, product_scope: str):
+            assert product_scope == PRODUCT_SCOPE_CHAT
             assert (user_id, conversation_id) == ("owner", "chat_" + "a" * 32)
             return {
                 "id": conversation_id,

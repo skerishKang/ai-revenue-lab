@@ -16,6 +16,7 @@ import pytest
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.history import (
+    PRODUCT_SCOPE_CHAT,
     D1HistoryStore,
     HistoryForbidden,
     ProjectProfile,
@@ -119,25 +120,32 @@ class MemoryProjectStore:
                 conversation["project_id"] = None
         return True
 
-    async def list_conversations(self, user_id, limit=30):
-        rows = [row for row in self.conversations.values() if row["user_id"] == user_id]
+    async def list_conversations(self, user_id, *, product_scope, limit=30):
+        rows = [
+            row for row in self.conversations.values()
+            if row["user_id"] == user_id and row["product_scope"] == product_scope
+        ]
         rows.sort(key=lambda row: row["updated_at"], reverse=True)
         return [
             {"id": row["id"], "title": row["title"], "project_id": row["project_id"], "created_at": row["created_at"], "updated_at": row["updated_at"]}
             for row in rows[:limit]
         ]
 
-    async def list_project_conversations(self, user_id, project_id, limit=30):
-        rows = [row for row in self.conversations.values() if row["user_id"] == user_id and row["project_id"] == project_id]
+    async def list_project_conversations(self, user_id, project_id, *, product_scope, limit=30):
+        rows = [
+            row for row in self.conversations.values()
+            if row["user_id"] == user_id and row["project_id"] == project_id
+            and row["product_scope"] == product_scope
+        ]
         rows.sort(key=lambda row: row["updated_at"], reverse=True)
         return [
             {"id": row["id"], "title": row["title"], "project_id": row["project_id"], "created_at": row["created_at"], "updated_at": row["updated_at"]}
             for row in rows[:limit]
         ]
 
-    async def get_conversation(self, user_id, conversation_id):
+    async def get_conversation(self, user_id, conversation_id, *, product_scope):
         row = self.conversations.get(conversation_id)
-        if not row or row["user_id"] != user_id:
+        if not row or row["user_id"] != user_id or row["product_scope"] != product_scope:
             return None
         return {
             "id": row["id"],
@@ -148,7 +156,7 @@ class MemoryProjectStore:
             "messages": [{"role": item["role"], "content": item["content"]} for item in row["messages"]],
         }
 
-    async def append_exchange(self, user_id, conversation_id, user_text, assistant_text, project_id=None):
+    async def append_exchange(self, user_id, conversation_id, user_text, assistant_text, project_id=None, *, product_scope):
         if project_id is not None and await self.get_project(user_id, project_id) is None:
             raise HistoryForbidden("project not owned")
         if conversation_id is None:
@@ -159,6 +167,7 @@ class MemoryProjectStore:
                 "id": conversation_id,
                 "user_id": user_id,
                 "project_id": project_id,
+                "product_scope": product_scope,
                 "title": user_text[:80],
                 "created_at": now,
                 "updated_at": now,
@@ -251,7 +260,7 @@ async def test_project_delete_is_owner_scoped_file_safe_and_preserves_conversati
     blocked = await store.create_project(owner.id, "자료 있음", "")
     removable = await store.create_project(owner.id, "삭제 가능", "")
     foreign = await store.create_project(other.id, "다른 사용자", "")
-    cid = await store.append_exchange(owner.id, None, "남겨 둘 질문", "남겨 둘 답", project_id=removable.id)
+    cid = await store.append_exchange(owner.id, None, "남겨 둘 질문", "남겨 둘 답", project_id=removable.id, product_scope=PRODUCT_SCOPE_CHAT)
     file_store.files[(owner.id, blocked.id)] = [object()]
     cfg = settings()
     app = create_app(cfg, history_store=store, project_file_store=file_store)
@@ -323,7 +332,7 @@ async def test_reopen_derives_stored_project_and_conflict_fails_before_model():
     user = await store.add_user("owner")
     project_a = await store.create_project(user.id, "A", "A 프로젝트 지침")
     project_b = await store.create_project(user.id, "B", "B 프로젝트 지침")
-    cid = await store.append_exchange(user.id, None, "첫 질문", "첫 답", project_id=project_a.id)
+    cid = await store.append_exchange(user.id, None, "첫 질문", "첫 답", project_id=project_a.id, product_scope=PRODUCT_SCOPE_CHAT)
     cfg = settings(runtime="b14")
     calls = []
 
