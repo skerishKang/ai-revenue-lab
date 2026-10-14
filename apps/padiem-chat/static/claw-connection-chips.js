@@ -21,7 +21,7 @@ function set(id,value){
  element.dataset.connectionState=value;
  element.setAttribute("aria-label",(id==="pc"?message("컴퓨터","Computer"):id==="drive"?"Google Drive":"GitHub")+" "+display);
 }
-const reset=()=>ids.forEach(id=>set(id,"unknown"));
+const reset=()=>{ids.forEach(id=>set(id,"unknown"));const gh=chip("github");if(gh)delete gh.dataset.connectionLinked;};
 const feedback=(ko,en)=>{const el=document.getElementById("clawConnectionFeedback");if(!el)return;el.textContent=message(ko,en);el.hidden=false;};
 async function read(url){
  const r=await fetch(url,{method:"GET",credentials:"same-origin",cache:"no-store",headers:{Accept:"application/json"}});
@@ -54,7 +54,10 @@ async function refresh(){
  }
  if(result[2].status==="fulfilled"){
   const github=result[2].value;
-  if(github?.ok===true&&["on","off"].includes(github.state))set("github",github.state);
+  if(github?.ok===true&&["on","off"].includes(github.state)){
+   set("github",github.state);
+   const gh=chip("github");if(gh)gh.dataset.connectionLinked=github.linked===true?"true":"false";
+  }
  }
 }
 async function disconnectDrive(){
@@ -80,22 +83,23 @@ async function disconnectDrive(){
   if(button)button.disabled=false;
  }
 }
-async function disconnectGithub(){
+async function setGithubUsage(enabled){
  if(pendingDisconnect.has("github"))return;
  pendingDisconnect.add("github");
  const button=chip("github");if(button)button.disabled=true;
  try{
-  const response=await fetch("/api/connectors/github/disconnect",{
+  const response=await fetch(enabled?"/api/connectors/github/resume":"/api/connectors/github/pause",{
    method:"POST",credentials:"same-origin",cache:"no-store",
    headers:{Accept:"application/json","Content-Type":"application/json"}
   });
   const payload=await response.json();
-  if(!response.ok||payload?.ok!==true||payload.state!=="off")throw Error("not disconnected");
+  if(!response.ok||payload?.ok!==true||payload.state!==(enabled?"on":"off"))throw Error("github state not verified");
   await refresh();
-  feedback("GitHub 연결을 해제했습니다.","GitHub was disconnected.");
+  feedback(enabled?"GitHub 사용을 다시 시작했습니다.":"GitHub 사용을 일시 중지했습니다.",
+           enabled?"GitHub resumed.":"GitHub paused.");
  }catch(_error){
   await refresh();
-  feedback("GitHub 연결 해제에 실패했습니다. 연결 상태를 다시 확인해 주세요.","GitHub disconnect failed. Please check connection status.");
+  feedback("GitHub 연결 해제에 실패했습니다. 연결 상태를 다시 확인해 주세요.","GitHub state change failed. Please check connection status.");
  }finally{
   pendingDisconnect.delete("github");if(button)button.disabled=false;
  }
@@ -109,7 +113,7 @@ ids.forEach(id=>chip(id)?.addEventListener("click",()=>{
   return;
  }
  if(state==="on"&&id==="github"){
-  if(signedIn())void disconnectGithub();
+  if(signedIn())void setGithubUsage(false);
   else feedback("연결하려면 로그인해 주세요.","Sign in to manage connections.");
   return;
  }
@@ -126,7 +130,8 @@ ids.forEach(id=>chip(id)?.addEventListener("click",()=>{
   return;
  }
  if(id==="github"){
-  window.location.assign("/api/connectors/github/start");
+  if(chip("github")?.dataset.connectionLinked==="true")void setGithubUsage(true);
+  else window.location.assign("/api/connectors/github/start");
   return;
  }
  const target=id==="pc"?"clawComputerWorkspace":"clawDriveWorkspace";

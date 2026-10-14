@@ -107,6 +107,8 @@ async def _credentials(request: Request):
         status = await store.status(uid)
         if status is None:
             return uid, None, None, None
+        if status.get("enabled") is not True:
+            return uid, None, None, "github_paused"
         tokens = await store.token_pair(uid)
         if not tokens:
             return uid, None, None, "github_credential_unavailable"
@@ -127,14 +129,26 @@ async def _credentials(request: Request):
         return uid, None, None, "github_authority_unavailable"
 
 async def github_status(request: Request):
+    uid = await _owner(request)
+    store, provider = _ports(request)
+    if not uid:
+        return _error("authentication_required", 401)
+    if not store or not provider:
+        return _error("github_connector_unavailable")
+    try:
+        status = await store.status(uid)
+    except Exception:
+        return _error("github_authority_unavailable")
+    if status and status.get("enabled") is False:
+        return JSONResponse({"ok": True, "state": "off", "linked": True,
+                             "login": status["login"]}, headers=HEADERS)
     uid, token, state, err = await _credentials(request)
-    if err == "authentication_required":
-        return _error(err, 401)
     if err:
         return _error(err)
     if state is None:
-        return JSONResponse({"ok": True, "state": "off"}, headers=HEADERS)
-    return JSONResponse({"ok": True, "state": "on", "login": state["login"]}, headers=HEADERS)
+        return JSONResponse({"ok": True, "state": "off", "linked": False}, headers=HEADERS)
+    return JSONResponse({"ok": True, "state": "on", "linked": True,
+                         "login": state["login"]}, headers=HEADERS)
 
 async def github_repositories(request: Request):
     uid, token, state, err = await _credentials(request)
@@ -148,6 +162,59 @@ async def github_repositories(request: Request):
     except Exception:
         return _error("github_repositories_unavailable")
     return JSONResponse({"ok": True, "repositories": repos}, headers=HEADERS)
+
+def _mutation_allowed(request: Request) -> bool:
+    if request.query_params or request.headers.get("content-length") not in (None, "", "0"):
+        return False
+    if request.headers.get("transfer-encoding"):
+        return False
+    origin = expected_browser_origin(request.app.state.settings)
+    return bool(origin and request.headers.get("origin") == origin)
+
+
+async def github_pause(request: Request):
+    if not _mutation_allowed(request):
+        return _error("github_pause_request_rejected", 403)
+    uid = await _owner(request)
+    store, _ = _ports(request)
+    if not uid:
+        return _error("authentication_required", 401)
+    if not store:
+        return _error("github_connector_unavailable")
+    try:
+        if not await store.status(uid):
+            return _error("github_not_connected", 409)
+        await store.set_enabled(uid, False)
+    except Exception:
+        return _error("github_pause_failed")
+    return JSONResponse({"ok": True, "state": "off", "linked": True}, headers=HEADERS)
+
+
+async def github_resume(request: Request):
+    if not _mutation_allowed(request):
+        return _error("github_resume_request_rejected", 403)
+    uid = await _owner(request)
+    store, _ = _ports(request)
+    if not uid:
+        return _error("authentication_required", 401)
+    if not store:
+        return _error("github_connector_unavailable")
+    try:
+        if not await store.status(uid):
+            return _error("github_not_connected", 409)
+        await store.set_enabled(uid, True)
+        _, token, state, err = await _credentials(request)
+        if err or not token or not state:
+            await store.set_enabled(uid, False)
+            return _error(err or "github_resume_unavailable")
+    except Exception:
+        try:
+            await store.set_enabled(uid, False)
+        except Exception:
+            pass
+        return _error("github_resume_failed")
+    return JSONResponse({"ok": True, "state": "on", "linked": True}, headers=HEADERS)
+
 
 async def github_disconnect(request: Request):
     if request.query_params or request.headers.get("content-length") not in (None, "", "0"):

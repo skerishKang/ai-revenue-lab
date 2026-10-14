@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS claw_github_connections (
  github_login TEXT NOT NULL,
  installation_id INTEGER NOT NULL,
  sealed_credential TEXT NOT NULL,
+ enabled INTEGER NOT NULL DEFAULT 1 CHECK (enabled IN (0,1)),
  access_expires_at INTEGER NOT NULL,
  refresh_expires_at INTEGER NOT NULL,
  created_at INTEGER NOT NULL,

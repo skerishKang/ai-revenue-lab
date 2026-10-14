@@ -26,6 +26,9 @@ def test_guide_keeps_canonical_state_and_no_fake_install_or_oauth():
     assert 'fetch(' not in SCRIPT
     assert 'dataset.connectionState =' not in SCRIPT
     assert 'https://' not in SCRIPT
+    assert 'intent === "connect-github"' in SCRIPT
+    assert 'intent === "pause-github" || intent === "resume-github"' in SCRIPT
+    assert '"/api/connectors/github/start"' in SCRIPT
 
 
 def test_installation_defaults_are_shown_without_second_login_step():

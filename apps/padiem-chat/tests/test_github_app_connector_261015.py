@@ -25,10 +25,13 @@ class FakeGitHubStore:
         self.links[kwargs["user_id"]] = kwargs
     async def status(self, user_id):
         link = self.links.get(user_id)
-        return {"login": link["login"], "installation_id": link["installation_id"]} if link else None
+        return {"login": link["login"], "installation_id": link["installation_id"],
+                "enabled": link.get("enabled", True)} if link else None
     async def token_pair(self, user_id):
         link = self.links.get(user_id)
         return {k: link[k] for k in ("access_token", "refresh_token", "access_expires_at", "refresh_expires_at")} if link else None
+    async def set_enabled(self, user_id, enabled):
+        self.links[user_id]["enabled"] = enabled
     async def disconnect(self, user_id):
         self.links.pop(user_id, None)
 
@@ -75,17 +78,26 @@ async def test_owner_oauth_installed_app_repositories_and_off():
              params={"state": data["state"][0], "code": "temporary-code"}, follow_redirects=False)
         assert callback.status_code == 303, callback.text
         status = await client.get("/api/connectors/github/status")
-        assert status.json() == {"ok": True, "state": "on", "login": "skerishKang"}
+        assert status.json() == {"ok": True, "state": "on", "linked": True, "login": "skerishKang"}
         repos = await client.get("/api/connectors/github/repositories")
         assert repos.json() == {"ok": True, "repositories": [{"full_name": "skerishKang/ai-revenue-lab", "private": False}]}
         assert app.state.github_oauth_provider.exchanges == 1
         replay = await client.get("/api/connectors/github/callback",
             params={"state": data["state"][0], "code": "duplicate"}, follow_redirects=False)
         assert replay.status_code == 400
+        paused = await client.post("/api/connectors/github/pause",
+                                   headers={"Origin": ORIGIN})
+        assert paused.json() == {"ok": True, "state": "off", "linked": True}
+        assert (await client.get("/api/connectors/github/status")).json()["linked"] is True
+        assert (await client.get("/api/connectors/github/repositories")).status_code == 503
+        resumed = await client.post("/api/connectors/github/resume",
+                                    headers={"Origin": ORIGIN})
+        assert resumed.json() == {"ok": True, "state": "on", "linked": True}
+        assert (await client.get("/api/connectors/github/status")).json()["state"] == "on"
         off = await client.post("/api/connectors/github/disconnect",
                                 headers={"Origin": ORIGIN, "Content-Type": "application/json"})
         assert off.status_code == 200
-        assert (await client.get("/api/connectors/github/status")).json() == {"ok": True, "state": "off"}
+        assert (await client.get("/api/connectors/github/status")).json() == {"ok": True, "state": "off", "linked": False}
 
 @pytest.mark.asyncio
 async def test_owner_guards_and_foreign_origin_can_never_disconnect():

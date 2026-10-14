@@ -74,6 +74,12 @@ async def test_tokens_sealed_owner_scoped_and_off_persists():
     await store.save(user_id="user-a",**common)
     assert b"ghu_owner123" not in str(list(d1.conn.execute("SELECT sealed_credential FROM claw_github_connections"))).encode()
     assert (await store.token_pair("user-a"))["access_token"] == "ghu_owner123"
+    assert (await store.status("user-a"))["enabled"] is True
+    await store.set_enabled("user-a", False)
+    assert (await store.status("user-a"))["enabled"] is False
+    assert (await store.token_pair("user-a"))["access_token"] == "ghu_owner123"
+    await store.set_enabled("user-a", True)
+    assert (await store.status("user-a"))["enabled"] is True
     assert await store.token_pair("user-b") is None
     await store.save(user_id="user-b",**{**common,"access_token":"ghu_other","refresh_token":"ghr_other"})
     await store.disconnect("user-a")

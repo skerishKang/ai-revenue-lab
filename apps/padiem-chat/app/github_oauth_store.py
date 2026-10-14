@@ -73,6 +73,7 @@ class D1GitHubOAuthStore:
                 ON CONFLICT(user_id) DO UPDATE SET
                 github_user_id=excluded.github_user_id,github_login=excluded.github_login,
                 installation_id=excluded.installation_id,sealed_credential=excluded.sealed_credential,
+                enabled=1,
                 access_expires_at=excluded.access_expires_at,
                 refresh_expires_at=excluded.refresh_expires_at,updated_at=excluded.updated_at""",
             user_id, github_user_id, login, installation_id, sealed, access_expires_at, refresh_expires_at, t, t,
@@ -80,14 +81,15 @@ class D1GitHubOAuthStore:
 
     async def status(self, user_id: str):
         row = await self._first(
-            "SELECT github_login,installation_id,refresh_expires_at FROM claw_github_connections WHERE user_id=?",
+            "SELECT github_login,installation_id,refresh_expires_at,enabled FROM claw_github_connections WHERE user_id=?",
             user_id,
         )
         if not row:
             return None
         if int(row["refresh_expires_at"]) <= int(time.time()):
             return None
-        return {"login": row["github_login"], "installation_id": int(row["installation_id"])}
+        return {"login": row["github_login"], "installation_id": int(row["installation_id"]),
+                "enabled": int(row["enabled"]) == 1}
 
     async def token_pair(self, user_id: str) -> dict[str, Any] | None:
         row = await self._first(
@@ -106,6 +108,10 @@ class D1GitHubOAuthStore:
                     "refresh_expires_at": int(row["refresh_expires_at"])}
         except Exception:
             return None
+
+    async def set_enabled(self, user_id: str, enabled: bool):
+        await self._run("UPDATE claw_github_connections SET enabled=?,updated_at=? WHERE user_id=?",
+                        1 if enabled else 0, int(time.time()), user_id)
 
     async def disconnect(self, user_id: str):
         await self._run("DELETE FROM claw_github_connections WHERE user_id=?", user_id)

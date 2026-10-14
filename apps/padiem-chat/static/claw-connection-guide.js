@@ -48,6 +48,23 @@
                "ON and OFF are not assumed without verification."),
       button: tr("연결 설정 보기", "View connection settings"), intent: "manage"
     };
+    if (id === "github" && state === "off" &&
+        document.querySelector('[data-claw-connection="github"]')?.dataset.connectionLinked === "true") return {
+      headline: tr("GitHub가 일시 중지되어 있어요", "GitHub is paused"),
+      copy: tr("연결 정보는 유지됩니다. 다시 켜면 기존 GitHub 계정으로 사용합니다.",
+               "Your authorization is retained. Resume without signing in again."),
+      foot: tr("실제 GitHub 접근이 확인된 후 ON으로 표시됩니다.",
+               "ON appears only after real GitHub access is verified."),
+      button: tr("GitHub 다시 켜기", "Resume GitHub"), intent: "resume-github"
+    };
+    if (state === "on" && id === "github") return {
+      headline: tr("GitHub가 연결되어 있어요", "GitHub is connected"),
+      copy: tr("사용을 잠시 중지해도 GitHub 인증 정보는 유지됩니다.",
+               "Pause GitHub access without removing authorization."),
+      foot: tr("연결 자체를 삭제하는 기능은 별도 연결 관리에서 제공됩니다.",
+               "Removing account authorization is a separate connection setting."),
+      button: tr("GitHub 일시 중지", "Pause GitHub"), intent: "pause-github"
+    };
     if (state === "on") return id === "drive" ? {
       headline: tr("Google Drive가 연결되어 있어요", "Google Drive is connected"),
       copy: tr("현재 파일 연결을 사용할 수 있습니다. 연결 해제하면 다시 승인해야 합니다.",
@@ -86,9 +103,9 @@
       headline: tr("GitHub를 연결해 주세요", "Connect GitHub"),
       copy: tr("GitHub 계정으로 연결하고 사용할 저장소 접근을 허용해 주세요.",
                "Connect your GitHub account and authorize repository access."),
-      foot: tr("저장소는 기본적으로 전체를 선택하며, 원하면 일부만 제한할 수 있습니다. GitHub 인증 기능은 연결 준비 중입니다.",
-               "All repositories is the default; you may restrict it. GitHub sign-in integration is being prepared."),
-      button: tr("GitHub 연결 설정", "GitHub connection settings"), intent: "manage"
+      foot: tr("저장소는 기본적으로 전체를 선택하며, 원하면 일부만 제한할 수 있습니다. GitHub 로그인 화면에서 연결을 승인해 주세요.",
+               "All repositories is the default; you may restrict it at GitHub."),
+      button: tr("GitHub 로그인", "Sign in with GitHub"), intent: "connect-github"
     };
   }
 
@@ -128,6 +145,16 @@
     const button = source;
     const id = button.dataset.clawConnection;
     dialog.close();
+    if (intent === "pause-github" || intent === "resume-github") {
+      // Delegate to the canonical owner-scoped state handler; never fake the switch.
+      bypass = true;
+      try { button.click(); } finally { bypass = false; }
+      return;
+    }
+    if (intent === "connect-github") {
+      window.location.assign("/api/connectors/github/start");
+      return;
+    }
     if (intent === "disconnect-drive") {
       // Delegate to the existing owner-authenticated Drive revocation handler.
       bypass = true;
