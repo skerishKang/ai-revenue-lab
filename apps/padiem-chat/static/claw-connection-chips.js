@@ -5,6 +5,7 @@ const shell=document.querySelector(".app-shell"), owner=document.querySelector("
 if(!shell||!owner)return;
 const ids=["pc","drive","github"], values=new Map(ids.map(x=>[x,"unknown"]));
 let generation=0;
+const pendingDisconnect=new Set();
 const english=()=>document.documentElement.lang==="en";
 const message=(ko,en)=>english()?en:ko;
 const home=()=>shell.dataset.state==="claw"&&document.getElementById("clawWorkspace")?.dataset.view==="general";
@@ -54,11 +55,39 @@ async function refresh(){
  // GitHub has no reviewed per-owner connection-state endpoint in B62.
  set("github","unknown");
 }
+async function disconnectDrive(){
+ if(pendingDisconnect.has("drive"))return;
+ pendingDisconnect.add("drive");
+ const button=chip("drive");
+ if(button)button.disabled=true;
+ try{
+  const response=await fetch("/api/connectors/google/drive/disconnect",{
+   method:"POST",credentials:"same-origin",cache:"no-store",
+   headers:{Accept:"application/json","Content-Type":"application/json"}
+  });
+  const payload=await response.json();
+  if(!response.ok||payload?.ok!==true||payload.state!=="off")throw Error("disconnect not certified");
+  await refresh(); // Only canonical GET may change the visible ON/OFF state.
+  feedback("구글 드라이브 연결을 해제했습니다.","Google Drive was disconnected.");
+ }catch(_error){
+  await refresh();
+  feedback("구글 드라이브 연결 해제에 실패했습니다. 연결 상태를 다시 확인해 주세요.",
+    "Drive disconnect failed. Please check the connection status.");
+ }finally{
+  pendingDisconnect.delete("drive");
+  if(button)button.disabled=false;
+ }
+}
 ids.forEach(id=>chip(id)?.addEventListener("click",()=>{
  if(!home())return;
  const state=values.get(id);
+ if(state==="on"&&id==="drive"){
+  if(signedIn())void disconnectDrive();
+  else feedback("연결을 관리하려면 로그인해 주세요.","Sign in to manage connections.");
+  return;
+ }
  if(state==="on"){
-  // No reviewed disconnect endpoint: report its absence without a misleading confirmation dialog.
+  // PC and GitHub lack a reviewed disconnect endpoint: report its absence without a misleading confirmation dialog.
   feedback("안전한 연결 해제 기능이 아직 제공되지 않습니다. 연결은 유지됩니다.",
     "A reviewed disconnect action is not available yet. The connection stays ON.");
   return;

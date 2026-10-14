@@ -213,6 +213,7 @@ from .claw_automation_rule_edit_routes import claw_automation_rule_edit
 from .claw_automation_rule_enabled_routes import claw_automation_rule_set_enabled
 from .config import Settings
 from .connector_status_projection import connectors_status
+from .connector_disconnect_routes import disconnect_google_drive
 from .connector_ticket_routes import google_connector_ticket
 from .calendar_read_activation_routes import activate_google_calendar_read
 from .conversation_routes import api_conversation_detail, api_conversation_search, api_conversations
@@ -378,6 +379,7 @@ def create_app(
         Route("/api/connectors/google/ticket", google_connector_ticket, methods=["POST"]),
         Route("/api/connectors/google/calendar/activate-read", activate_google_calendar_read, methods=["POST"]),
         Route("/api/connectors/status", connectors_status, methods=["GET"]),
+        Route("/api/connectors/google/drive/disconnect", disconnect_google_drive, methods=["POST"]),
         Route("/api/projects", projects_collection, methods=["GET", "POST"]),
         # #4489: one owner-scoped keyset-paginated read over every stored project file,
         # so the Library can walk a full history without per-project fan-out.
