@@ -186,7 +186,8 @@
     runtimeNote.dataset.state = state;
   }
   function updateComposer() {
-    sendButton.disabled = inFlight || input.value.trim().length === 0;
+    // Empty clicks are allowed; submitPrompt() already ignores blank or busy submissions.
+    sendButton.disabled = false;
     input.disabled = inFlight;
     attachmentButton.disabled = inFlight;
     removeAttachment.disabled = inFlight;

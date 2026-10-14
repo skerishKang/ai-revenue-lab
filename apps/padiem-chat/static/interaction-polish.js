@@ -138,7 +138,7 @@
     attachmentButton.disabled = requestBusy;
     if (documentStarter) documentStarter.disabled = requestBusy;
     if (removeAttachment) removeAttachment.disabled = requestBusy;
-    if (!requestBusy) sendButton.disabled = input.value.trim().length === 0;
+    if (!requestBusy) sendButton.disabled = false;
   }
 
   function guardAttachmentControls() {
