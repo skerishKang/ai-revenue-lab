@@ -20,7 +20,6 @@ on:
       - ".github/scripts/b14_model_registration_ci_plan.py"
       - ".github/scripts/b62_ci_impact_scope_3989.py"
       - ".github/tests/test_b62_ci_impact_scope_3989.py"
-      - ".github/tests/test_4459_b62_ui_mixed_scope.py"
       # CI implementation itself: probe runner/test changes require real B62 checks.
       - ".github/scripts/b62_worker_probe_*.sh"
       - ".github/scripts/b62_worker_probe_shared_assertions.py"
@@ -43,7 +42,6 @@ on:
       - ".github/scripts/b14_model_registration_ci_plan.py"
       - ".github/scripts/b62_ci_impact_scope_3989.py"
       - ".github/tests/test_b62_ci_impact_scope_3989.py"
-      - ".github/tests/test_4459_b62_ui_mixed_scope.py"
       # CI implementation itself: probe runner/test changes require real B62 checks.
       - ".github/scripts/b62_worker_probe_*.sh"
       - ".github/scripts/b62_worker_probe_shared_assertions.py"
