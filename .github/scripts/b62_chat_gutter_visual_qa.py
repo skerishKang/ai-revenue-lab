@@ -307,24 +307,24 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
             raise AssertionError(f"{name} Claw composer padding {side} out of bounds")
     if width >= 1024 and claw_conversation["width"] < home_conversation["width"] - 2:
         raise AssertionError(f"{name} Claw remains narrower than cinematic Home")
-    # Safety: portrait art is decorative in Chat Home, not in a Claw workbench.
+    # Product decision 2026-10-14: Chat and Claw share one Glass
+    # portrait and input on the general workspace view. Old workbench-only
+    # no-portrait assertion is no longer the expected behavior.
     portrait = await page.locator(".main-panel").evaluate(
         "el => getComputedStyle(el, '::before').content"
     )
-    if portrait != "none":
-        raise AssertionError(f"{name} Claw portrait still active: {portrait}")
-    for art in (".glass-shell-portrait", ".glass-shell-field"):
-        if await page.locator(art).count() and await page.locator(art).is_visible():
-            raise AssertionError(f"{name} Claw injected portrait still visible: {art}")
+    if portrait == "none":
+        raise AssertionError(f"{name} Claw Chat portrait not available")
+
     metrics = await page.evaluate(
         "() => ({scrollWidth: document.documentElement.scrollWidth, width: innerWidth})"
     )
     if metrics["scrollWidth"] > metrics["width"] + 1:
         raise AssertionError(f"{name} Claw horizontal overflow: {metrics}")
 
-    if claw_placeholder != home_placeholder:
+    if claw_placeholder != "클로에게 작업을 맡겨보세요":
         raise AssertionError(
-            f"{name} Claw placeholder diverged from Chat Home: {claw_placeholder!r} vs {home_placeholder!r}"
+            f"{name} Claw identity-specific placeholder missing: {claw_placeholder!r}"
         )
     # Explicit manual entry only: the document workflow — and its quote
     # action selection — appears after the entry control is clicked, never
@@ -353,9 +353,9 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
         "claw_composer": claw_composer,
         "claw_centered_workbench": True,
         "claw_composer_bounded": True,
-        "claw_portrait_hidden": True,
+        "claw_shared_chat_portrait": True,
         "claw_viewport_safe": True,
-        "home_claw_placeholder_parity": True,
+        "claw_distinct_task_placeholder": True,
         "claw_general_default_view": True,
         "claw_manual_hidden_by_default": True,
         "claw_manual_entry_reachable": True,

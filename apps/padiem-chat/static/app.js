@@ -3106,7 +3106,7 @@
     clawWorkspace.dataset.view = "general";
     // The shared Chat first-use hero also introduces Claw when the
     // existing conversation has not started. Do not reset live messages.
-    if (messageList.hidden && !messageList.hasChildNodes()) emptyState.hidden = false;
+    if (messageList.hidden && !(messageList.children?.length > 0)) emptyState.hidden = false;
     delete clawWorkspace.dataset.inboxKind;
     if (clawInbox) clawInbox.hidden = true;
     if (clawAutomation) clawAutomation.hidden = true;

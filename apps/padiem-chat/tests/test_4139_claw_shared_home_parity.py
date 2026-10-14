@@ -103,8 +103,9 @@ def test_product_mode_is_scoped_and_starter_actions_never_create_fake_auth():
 def test_connectors_show_github_and_computer_as_not_ready_without_fake_links():
     computer = HTML[HTML.index('id="connectorComputerCard"'):]
     github = HTML[HTML.index('id="connectorGithubCard"'):]
-    assert 'data-connector-status="preparing"' in computer[:130]
-    assert 'data-connector-status="preparing"' in github[:130]
+    assert 'data-connector-status="preparing"' in computer[:160]
+    assert 'data-connector-info="github"' in github[:130]
+    assert 'data-connector-status="preparing"' in github[:160]
     assert 'id="clawComputerLiveStatus"' in computer[:600]
     assert "GitHub 직접 연결은 준비 중" in github[:350]
     assert 'href="https://github.com/' not in github[:350]
