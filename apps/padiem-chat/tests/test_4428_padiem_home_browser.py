@@ -12,9 +12,9 @@ from pathlib import Path
 
 import pytest
 
-# Full B62 core runners intentionally do not install Playwright. Skip this
-# optional browser suite there instead of aborting pytest collection.
-sync_playwright = pytest.importorskip("playwright.sync_api").sync_playwright
+# The focused UI-mixed runner does not install browser-only dependencies.
+# Resolve the optional package in the fixture so pytest still collects tests;
+# environments without it report explicit skips rather than exit code 5.
 
 ROOT = Path(__file__).resolve().parents[1] / "static"
 HOME = "padiem-home.html"
@@ -45,6 +45,7 @@ def server():
 
 @pytest.fixture(scope="module")
 def browser():
+    sync_playwright = pytest.importorskip("playwright.sync_api").sync_playwright
     with sync_playwright() as pw:
         b = pw.chromium.launch(headless=True)
         yield b
