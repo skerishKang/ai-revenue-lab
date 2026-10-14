@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#8895a1">
+  <title>Padiem Phone — AI 전화 업무</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/demo-api.js" defer></script>
+  <script src="/app.js" defer></script>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" aria-label="전화 업무 메뉴">
+    <div class="brand-row">
+      <div class="brand"><span class="brand-icon" aria-hidden="true">P</span><span>Padiem Phone</span></div>
+      <span class="brand-corner" aria-label="Padiem 디자인">⌂</span>
+    </div>
+    <button type="button" class="new-task" data-page="dashboard"><span aria-hidden="true">＋</span> 새 전화 요청</button>
+    <p class="nav-label">WORKSPACE</p>
+    <nav aria-label="전화 업무 페이지">
+      <button class="nav-link active" type="button" data-page="dashboard"><span aria-hidden="true">◫</span> 전화 업무</button>
+      <button class="nav-link" type="button" data-page="scripts"><span aria-hidden="true">▤</span> 전화 대본</button>
+      <button class="nav-link" type="button" data-page="history"><span aria-hidden="true">◷</span> 통화 기록</button>
+      <button class="nav-link" type="button" data-page="usage"><span aria-hidden="true">▥</span> 사용량</button>
+    </nav>
+    <div class="sidebar-lower">
+      <div class="side-divider"></div>
+      <p class="sidebar-memo"><span class="presence-dot" aria-hidden="true"></span> PUBLIC DEMO</p>
+      <p class="sidebar-caption">실제 발신·AI 통화 없는 공개 체험</p>
+      <div class="sidebar-account"><span class="account-mark" aria-hidden="true">P</span> PADIEM AI <span class="muted-mark">· PHONE</span></div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-title"><span class="topbar-mark" aria-hidden="true">◌</span> PADIEM AI <span class="topbar-slash">/</span> <strong id="breadcrumb">전화 업무</strong></div>
+      <div class="top-actions"><span class="preview-indicator"><span class="status-dot" aria-hidden="true"></span> PUBLIC DEMO ONLY</span><span class="topbar-logo">P</span></div>
+    </header>
+    <div class="workspace">
+
+      <section id="dashboard" class="page active" aria-labelledby="dashTitle">
+        <div class="glass-stage">
+          <div class="stage-top">
+            <p class="eyebrow">PADIEM AI <span class="eyebrow-line"></span> VOICE ASSISTANT</p>
+            <h1 id="dashTitle">어떤 전화를<br>맡겨드릴까요?</h1>
+            <p class="intro">전화 대행 서비스의 이용 흐름을 체험해 보세요.<br>실제 전화는 걸리지 않으며 상담 결과도 가상입니다.</p>
+            <div class="demo-walkthrough" aria-label="데모 시연 순서">
+              <span><b>01</b> 대본 선택</span>
+              <span><b>02</b> 가상 전화 시작</span>
+              <span><b>03</b> 결과 보고서 확인</span>
+            </div>
+          </div>
+          <div class="hero-presets">
+            <div class="presets-title"><span>빠르게 시작하기</span><small>QUICK START</small></div>
+            <div id="quickTemplates" class="quick-grid" aria-label="추천 전화 대본"></div>
+          </div>
+          <div class="hero-activity" aria-labelledby="activeTitle">
+            <div class="activity-heading"><span class="activity-dot" aria-hidden="true"></span><strong id="activeTitle">현재 진행 중인 전화</strong><span class="activity-disclaimer">가상 진행 상태</span></div>
+            <div id="activeTask" class="empty-state"><span class="empty-symbol" aria-hidden="true">◌</span><span>새로운 요청을 기다리고 있습니다</span></div>
+          </div>
+          <div class="compose-area">
+            <form id="createForm">
+              <label class="sr-only" for="goal">AI에게 전화 업무 지시</label>
+              <div class="composer">
+                <textarea id="goal" name="goal" required minlength="3" maxlength="300" rows="2" placeholder="어떤 전화를 대신 걸어드릴까요?">이용 내역을 확인하고 필요한 절차를 알려줘.</textarea>
+                <div class="composer-toolbar">
+                  <div class="target-field">
+                    <label for="destination">대상</label>
+                    <input id="destination" name="destination" required maxlength="80" minlength="2" value="상담센터 (가상)" placeholder="통화할 대상">
+                  </div>
+                  <div class="composer-controls">
+                    <span class="mock-chip">MOCK</span>
+                    <button id="createButton" type="submit" class="send-button"><span class="send-label">모의 전화 시작</span><span class="send-arrow" aria-hidden="true">↑</span></button>
+                  </div>
+                </div>
+              </div>
+              <details class="additional-options">
+                <summary>통화 시나리오 · 연결 방식 설정 <span aria-hidden="true">⌄</span></summary>
+                <div class="option-grid">
+                  <div class="option-field"><label for="source">요청 경로</label><select id="source"><option value="web">전화 전용 페이지</option><option value="claw">PADIEM Claw 연동 시나리오</option></select></div>
+                  <div class="option-field"><label for="scenario">모의 통화 상황</label><select id="scenario"><option value="standard">표준 · ARS → 대기 → 상담</option><option value="extended">장기 대기 시나리오</option><option value="no_answer">상대방 응답 없음</option><option value="verification">본인확인 필요</option></select></div>
+                </div>
+                <p class="hint">Claw 선택은 연동 시나리오 표시용이며 실제 Claw와 전화망은 연결되어 있지 않습니다.</p>
+              </details>
+              <p class="form-message" id="formMessage" aria-live="polite"></p>
+            </form>
+            <p class="compose-note">공개 시연용입니다. 실제 전화·과금·AI 음성은 없습니다. 입력은 서버에 전송되거나 저장되지 않습니다. 개인정보를 입력하지 마세요.</p>
+          </div>
+        </div>
+        <div class="soft-footer"><span>VOICE WORKSPACE</span><span>PADIEM · LOCAL PROTOTYPE</span></div>
+        <div class="dashboard-metrics">
+          <div class="stat"><span>전체 작업</span><strong id="statTotal">0</strong><small>로컬 생성</small></div>
+          <div class="stat"><span>모의 완료</span><strong id="statCompleted">0</strong><small>데모 결과</small></div>
+          <div class="stat"><span>진행 중</span><strong id="statActive">0</strong><small>모의 작업</small></div>
+          <div class="stat"><span>누적 시간</span><strong id="statMinutes">0 <em>분</em></strong><small>시뮬레이션 기준</small></div>
+        </div>
+      </section>
+
+      <section id="scripts" class="page secondary-page" aria-labelledby="scriptsTitle">
+        <div class="glass-stage sub-stage">
+          <div class="stage-top">
+            <p class="eyebrow">PADIEM AI <span class="eyebrow-line"></span> SCRIPT LIBRARY</p>
+            <h1 id="scriptsTitle">전화 대본</h1>
+            <p class="intro">자주 하는 전화 업무를 간편하게 시작하세요.<br>원하는 대본을 고르면 새 전화 요청에 자동으로 채워집니다.</p>
+          </div>
+          <div class="script-manager-toolbar">
+            <button id="newScriptButton" type="button" class="secondary">+ 나만의 대본 만들기</button>
+            <span>예시 대본은 읽기 전용입니다.</span>
+          </div>
+          <form id="scriptEditor" class="script-editor" hidden>
+            <div class="script-form-title"><strong id="scriptEditorTitle">새 대본</strong><button type="button" id="scriptCancelButton" class="text-button">닫기 ✕</button></div>
+            <div class="script-fields">
+              <label for="scriptTitle">대본 이름 <input id="scriptTitle" required minlength="2" maxlength="80" placeholder="예: 공급업체 출고 일정 확인"></label>
+              <label for="scriptDestination">상대 기관 <input id="scriptDestination" required minlength="2" maxlength="80" placeholder="예: 거래처 (가상)"></label>
+              <label class="wide" for="scriptGoal">전화 목적 <textarea id="scriptGoal" required minlength="3" maxlength="300" rows="2" placeholder="AI가 달성해야 할 목표"></textarea></label>
+              <label class="wide" for="scriptQuestions">반드시 확인할 질문 <textarea id="scriptQuestions" maxlength="400" rows="2" placeholder="확인할 내용"></textarea></label>
+              <label class="wide" for="scriptNotes">상담 시 주의사항 <textarea id="scriptNotes" maxlength="400" rows="2" placeholder="변경이나 결제는 하지 않기 등"></textarea></label>
+            </div>
+            <div class="script-form-actions"><button id="saveScriptButton" class="secondary" type="submit">대본 저장</button><button type="button" id="deleteScriptButton" class="danger" hidden>대본 삭제</button></div>
+            <p id="scriptMessage" class="script-message" role="status" aria-live="polite"></p>
+          </form>
+          <div id="scriptsGrid" class="template-grid" aria-label="사용 가능한 대본"></div>
+          <p class="sub-page-note">대본은 이 페이지를 열어 둔 동안만 보관됩니다. 새로고침하면 삭제되며 외부로 전송되지 않습니다. 실제 연락처·개인정보·인증번호를 입력하지 마세요.</p>
+        </div>
+      </section>
+
+      <section id="history" class="page secondary-page" aria-labelledby="historyTitle">
+        <div class="glass-stage sub-stage">
+          <div class="stage-top">
+            <p class="eyebrow">PADIEM AI <span class="eyebrow-line"></span> TASK HISTORY</p>
+            <h1 id="historyTitle">통화 기록</h1>
+            <p class="intro">이 페이지에서 실행한 가상 작업만 표시됩니다.<br>데이터는 브라우저 메모리에만 있으며 새로고침하면 지워집니다.</p>
+          </div>
+          <button class="secondary refresh-btn" type="button" id="refreshHistory">기록 새로고침 ↻</button>
+          <div class="table-scroll"><table><thead><tr><th>업무 ID</th><th>대상</th><th>상태</th><th>가상 수행시간</th><th>요청 출처</th></tr></thead><tbody id="historyBody"></tbody></table></div>
+          <section id="historyDetails" class="history-details" hidden aria-label="선택한 모의 전화 업무 상세">
+            <div class="script-form-title"><strong>전화 업무 상세</strong><button id="closeHistoryDetails" class="text-button" type="button">닫기 ✕</button></div>
+            <div id="historyDetailsContent"></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="usage" class="page secondary-page" aria-labelledby="usageTitle">
+        <div class="glass-stage sub-stage">
+          <div class="stage-top">
+            <p class="eyebrow">PADIEM AI <span class="eyebrow-line"></span> USAGE</p>
+            <h1 id="usageTitle">사용량</h1>
+            <p class="intro">모의 전화 업무의 처리량과 시간을 한눈에 확인합니다.<br>실제 통신요금이나 결제정보는 포함되지 않습니다.</p>
+          </div>
+          <button class="secondary refresh-btn" type="button" id="refreshUsage">사용량 새로고침 ↻</button>
+          <div class="usage-stats">
+            <div class="stat"><span>모의 실행</span><strong id="usageTotal">0</strong><small>작업</small></div>
+            <div class="stat"><span>모의 완료</span><strong id="usageCompleted">0</strong><small>작업</small></div>
+            <div class="stat"><span>가상 누적 시간</span><strong id="usageMinutes">0 <em>분</em></strong><small>수행시간</small></div>
+            <div class="stat"><span>실제 발신</span><strong>0</strong><small>차단 상태</small></div>
+          </div>
+          <section class="usage-phases" aria-labelledby="usagePhasesHeading">
+            <div class="script-form-title"><strong id="usagePhasesHeading">모의 단계별 시간</strong><span class="mock-chip">SIMULATED ONLY</span></div>
+            <div id="usageStageBreakdown" class="usage-stage-breakdown" aria-live="polite"></div>
+            <p class="report-notice">ARS·대기·상담 시간은 가상 시나리오이며 실제 통신요금이나 청구시간을 뜻하지 않습니다.</p>
+          </section>
+          <p class="sub-page-note">실제 서비스에서는 전화망 연결시간, AI 처리시간, 사용량을 구분하여 집계할 계획입니다.</p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+</body>
+</html>
