@@ -28,6 +28,12 @@ check(shell.includes('modelHost.appendChild(modelSelect)'),
   "rail moves the one authoritative selected-model control, no hidden fallback");
 check(shell.includes('b66:open-recent-quotes') && shell.includes('b66:open-file-intake'),
   "rail secondary navigation activates the canonical Easy view actions");
+check(shell.includes('shellPreviousAiDialogue') &&
+  shell.includes('clickExisting("aiDialogueStarter")') &&
+  shell.includes('historySection.appendChild(previousDialogue)') &&
+  html.includes('id="aiDialogueStarter"') &&
+  shell.includes('historySection.appendChild(recent)'),
+  "persistent rail offers previous AI dialogue independently of saved quote history");
 check(shell.includes('id="shellNewQuote"') && shell.includes('clickExisting("newQuote")'),
   "rail exposes an explicit new-quote action");
 check(shell.includes('shellManualQuote') && shell.includes('새 양식 만들기') &&
