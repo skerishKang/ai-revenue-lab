@@ -1,0 +1,23 @@
+name: Connector Resident Merge Safety
+on:
+  pull_request:
+    paths:
+      - "apps/claw-connect/**"
+      - "apps/korean-ai-code-agent/src/kagent/local_agent_resident_process.py"
+      - "apps/korean-ai-code-agent/src/kagent/local_agent_device_binding_store.py"
+      - ".github/scripts/connector_resident_merge_guard.py"
+      - ".github/tests/test_connector_resident_merge_guard.py"
+      - ".github/workflows/connector-resident-merge-safety.yml"
+  workflow_dispatch:
+
+jobs:
+  resident-merge-guard:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check preserved Resident launch and restart contracts
+        run: python3 .github/scripts/connector_resident_merge_guard.py
+      - name: Guard mutation regressions
+        run: python3 -m unittest discover -s .github/tests -p test_connector_resident_merge_guard.py -v

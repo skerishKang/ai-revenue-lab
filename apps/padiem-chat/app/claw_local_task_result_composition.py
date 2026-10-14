@@ -92,6 +92,35 @@ class BrokerAuthorityLocalRunnerResultPort:
             )
         return observation
 
+    async def read_verified_file_text(
+        self, *, owner_id: str, workspace_id: str,
+        run_id: str, command_id: str,
+    ):
+        """Optional canonical Broker RPC; no caller-supplied text.
+
+        Older Broker deployments lacking the method retain the terminal-only
+        behavior. Once present, malformed receipts are rejected by the server.
+        """
+        rpc = getattr(self._binding, "read_verified_file_text", None)
+        if not callable(rpc):
+            return None
+        value = rpc({
+            "account_ref": owner_id, "workspace_ref": workspace_id,
+            "run_id": run_id, "command_id": command_id,
+        })
+        if value is not None and hasattr(value, "__await__"):
+            value = await value
+        if value is None:
+            # An absent RPC (above) means an older Broker, but an *installed*
+            # RPC returning no receipt is not proof of a non-file command.
+            # Appending a generic terminal message here would consume the
+            # stable message ID before the actual PC TXT content arrives.
+            raise LocalTaskResultError(
+                "file_text_unverified",
+                "configured canonical Broker file result is not available",
+            )
+        return value
+
     async def _read(self, *, run_id: str, owner_id: str, workspace_id: str | None):
         payload: dict[str, Any] = {"account_ref": owner_id, "run_id": run_id}
         if workspace_id is not None:

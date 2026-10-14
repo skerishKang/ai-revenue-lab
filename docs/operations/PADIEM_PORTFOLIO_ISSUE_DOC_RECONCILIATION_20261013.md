@@ -1,3 +1,69 @@
+<!-- CENTRAL_PORTFOLIO_LIVE_INDEX_20261015 -->
+# CENTRAL 포트폴리오 최신 이슈·문서 정합성 — 2026-10-15 KST
+
+> **이 최신 섹션이 하단 2026-10-13/14 기록보다 우선합니다.** 조사 기준 저장소 `skerishKang/ai-revenue-lab`, `main=7be6d047d5efc6f365e139d4e550b74a475cc318`. GitHub REST 전체 페이지 재조회: **OPEN 이슈 84→79(5건 통합 종료)→80(신규 #4702 생성), 현재 OPEN PR 54**. 모든 PR이 현재 실행 중이라는 뜻은 아니며 역사적 HOLD·다른 base·Draft를 포함합니다. 숫자는 이 시점 스냅샷이고 현재 제품 배포 상태를 증명하지 않습니다.
+
+## 1. 실제 이슈 통합·종료 5건
+
+| 원래 이슈 | 처리 | 남은 수용조건과 단일 목적지 |
+| --- | --- | --- |
+| #4412 B66 CGI 없는 AI QuoteCore 초안 | CLOSED / TRACKING_CONSOLIDATED | #4658 소스 MERGED, owner-DEFERRED. 고객 A/B·기존 출시 E2E는 **#4316**. 모델→`approve_draft` 실사용은 미수행·현재 확대 보류 |
+| #4657 B66 AI 새/이전 대화 UI | CLOSED / TRACKING_CONSOLIDATED | #4661·#4672 모두 MERGED. 고객 교차계정 A/B, 운영 제공 버전 검증은 **#4316** |
+| #4471 B62 사이드바 과거 대화 검색 | CLOSED / TRACKING_CONSOLIDATED | #4487 기본 검색 MERGED. 30건 밖 전체 이력·검색 상한 20/원문 인덱싱·로그인 고객 격리는 **#4317** |
+| #4468 공통 Server KST 실디스패치 | CLOSED / TRACKING_CONSOLIDATED | #4659 source MERGED. complete/stream/resume/midnight 실제 outbound·중복 방지는 **#4318**(B66 제품 **#4316**) |
+| #4522 D1 040 배포 선행조건 | CLOSED / TRACKING_CONSOLIDATED | 보호된 040 apply/readback·#4529 gate·B62/SSE protected 배포 실증. 남은 승인/거부/취소/reconnect는 **#3936 / #4318**. 040 재적용 금지 |
+
+이 다섯 건은 GitHub `state_reason=not_planned`로 **개별 이슈 추적만 통합 종료**했습니다. 기능 또는 실고객 E2E 완료로 표시한 것이 아닙니다. 4개 수용 부모(#4316/#4317/#4318/#3936)에 남은 계약을 **먼저 이관**했습니다. 예전 댓글과 원본 요청은 기록으로 유지합니다.
+
+## 2. 제품별 진척·미완료를 구분한 현재 기준
+
+| 영역 | 현재 소스/검증 | 남은 승인·실서비스·실사용 |
+| --- | --- | --- |
+| **B62 Chat** | #4487 대화검색, #4496 Library, #4511 Library pagination MERGED; #4375 TinyFish 502 transport 과거 보호 운영 실증 | **#4317** 인증 실제 모델/대화검색 전체 기록·프로젝트 E2E, **#4489** saved-file open·2계정·운영 history. 기존 `503 model_profile_unassigned`는 검색공급자 오류와 구별 |
+| **B54 Claw/P01** | 단일 인증 SSE 실제 run에서 순서/terminal/done PASS, #4665/#4667 이벤트 방어 source MERGED | **#3933** Hark/Claw 구현, **#3936** 실제 승인·거부·취소·재연결·다른 owner 검증, **#4318** 공통 플랫폼 E2E. 단일 SSE 성공을 전체 실사용 성공으로 확대 금지 |
+| **B66 견적·대화** | #4658 QuoteCore handoff, #4661 owner-scoped history/Markdown, **#4672 고객 UI MERGED**. 기존 보호 D1/Pages/Worker/CGI Guided PDF 수용 근거 있음 | 현재 출시/고객 **#4316 단일 ledger**, 서로 다른 B66 A/B 계정 직접 접근 거부와 served-source 대조 미완료. CGI-free 모델 `approve_draft` 유료 E2E는 대표 결정으로 DEFERRED, 현재 출시 차단으로 부활 금지 |
+| **공통 WebSearch** | #4689 B66 승인형 gate, #4692 Core TinyFish→402/429만 Daum, #4695 Engine read-only evidence **MERGED**; 회귀 강화 **#4699 DRAFT** | **#4469 OPEN**, Claw real search→P01 선택모델→SSE 근거 출력 미연결. #1753 Engine 운영 활성화 별개, B66 search default OFF, 3제품 실제 provider→source 고객 proof 없음 |
+| **Chat/Claw STT** | #4663 Worker, #4666 CP optional, #4679 adapter, #4683 mic UI MERGED; 신규 배선 **#4698 DRAFT** (HEAD 갱신, CENTRAL 재검증 대기) | **#4643 OPEN**, 기존 HEAD에서 지적된 P0 stop-tail 소실 + 비제한 `request.json()`의 해소 여부를 새 HEAD에서 재검증해야 함; signed-in real transcript, product/tier grant, STT Worker binding·LIVE 모두 미증명/기본 OFF |
+| **PC Connector** | #4541 44px 접근성 **PR #4691 MERGED/CLOSED**, #4697 충돌 방어 merge guard **MERGED**. #4572·#4463·#4490 **DRAFT** | **#4139** 웹 계정→Windows Broker WSS→Resident→같은 Claw 대화 PC TXT 결과 실제 연결, **#3099** Windows 로그인/기기/서명 실 E2E. 코드·CI=ONLINE 아님 |
+| **전화** | #4676 loopback mock phone UI/API **MERGED** (`7be6d047`) | 소스 병합 완료이나 실제 전화/번호·통화요금/고객 승인/운영 연결 없음. 이 남은 Claw 권한·SIP/outbound·실제 통화 E2E는 신규 **#4702 OPEN** 단일 추적. 내부 사업방침은 공개 issue/doc에 옮기지 않음 |
+| **B14 모델/Engine** | #3819 JSON registry MERGED, #4659 shared KST preinstruction MERGED | **#4453/#4483** 제품/tier/정확모델/policy 최종 실행 차단; **#1753** Engine E9 기능별 운영 권한·배포. 사전지침 제공이 모델/인터넷 실행 권한 아님 |
+| **B62/P01 D1·사고** | D1 040 보호 적용·읽기, #4529 schema guard, 보호 SSE 활성화 실증 | **#3936** 미완료 P01 owner E2E; **#4549** 별도 사고 영향 조사 OPEN. invocation errors 0에서 고객 HTTP 5xx 0을 추론 금지 |
+
+## 3. OPEN 80개 이슈 전수 분류 — 중복/누락 0
+
+그룹은 업무 목적별 분류입니다. 실제 실시간 작업자 배정·PR 상태는 별도 확인하며, 보류 이슈를 진행 중으로 분류하지 않습니다.
+
+### A. 구현·보완 추적 (21)
+구체적 제품·소스·QA 후속 범위. OPEN이라고 모두 개발자가 현재 실행 중이라는 뜻은 아님.
+
+#4643 · #4489 · #4488 · #4483 · #4469 · #4453 · #4434 · #4428 · #4139 · #3989 · #3933 · #3782 · #3580 · #3404 · #3330 · #3186 · #3180 · #4389 · #2824 · #3595 · #4702
+
+### B. 실고객·운영·실증 수용 (16)
+코드·CI와 운영/사용자 수용 증거를 엄격히 분리.
+
+#4549 · #4318 · #4317 · #4316 · #3936 · #3099 · #3100 · #4089 · #3298 · #1966 · #1971 · #2010 · #2952 · #2951 · #616 · #735
+
+### C. 공통 플랫폼·상위 정책 (11)
+전제품 정책·장기 도입 전략·영구 원장. 독자적인 Production 변경 권한 아님.
+
+#1753 · #1743 · #1631 · #2107 · #2505 · #1911 · #1224 · #2996 · #1355 · #154 · #366
+
+### D. 보류·미래·대표 결정 대기 (32)
+현재 출고 차단 이슈로 자동 승격하지 않음.
+
+#4654 · #4651 · #4649 · #4647 · #4633 · #3367 · #3342 · #3235 · #3063 · #2833 · #2826 · #2394 · #2223 · #2208 · #2204 · #2092 · #2002 · #1967 · #1878 · #1821 · #1741 · #1722 · #1405 · #987 · #772 · #731 · #637 · #389 · #369 · #348 · #2504 · #2409
+
+**전수 교차검산:** A 21 + B 16 + C 11 + D 32 = 80. #154 영구 포트폴리오 원장, #366 품질 감사, #2996 재사용 조사, #1753 단계적 Engine 활성화는 각각 서로 다른 의사결정/장기 권위. #2002 저장소 결정 vs #1967 Memory/RAG 운영, #4549 사건 영향 vs #3936 제품 P01 고객 E2E는 구분 유지. #4654·#4651·#4649·#4647은 미래 개발/별도 승인 대상이며 현재 STT/Claw 구현 범위에 자동 편입하지 않습니다.
+
+## 4. 앞으로 이슈/문서 운영 규칙
+
+1. 제품 Chat 통합 E2E **#4317**, Claw 구현·고객 E2E **#3933/#3936**, B66 제품 고객 E2E **#4316**, Windows **#4139/#3099**, 공통 검색 **#4469**, STT **#4643**, 공통 플랫폼 **#4318**, 기술 도입 **#2996**에 먼저 업데이트. 같은 범위의 개별 이슈를 되살리지 않음.
+2. `SOURCE_MERGED` → `CI_GREEN` → `PRODUCTION_DEPLOYED/SCHEMA_READBACK` → `AUTHENTICATED_E2E` → `CUSTOMER_ACCEPTED`는 **각각 독립**. 기존 배포 실증을 존중하되 이후 main 모든 변경이 자동 서비스된다고 쓰지 않음.
+3. 기존 아래 10월 13/14 본문은 역사적 판단 기록입니다. 최신 GitHub issue/PR/served-version 사실과 본 맨 위 체크포인트가 우선하며 오래된 Draft/HEAD을 현 지시로 재사용하지 않음.
+4. 소스 파일·운영 승인 경계를 보존. 개인 대화/고객 견적/Secrets/회사 비공개 사업방침을 공개 이슈로 옮기지 않음. 고객 데이터·D1/Worker/모델/비용 활성화는 이 문서 정리로 승인되지 않음.
+
+<!-- /CENTRAL_PORTFOLIO_LIVE_INDEX_20261015 -->
+
 <!-- CENTRAL_STATUS_RECONCILIATION_20261014_LATE_START -->
 ## CENTRAL 2026-10-14 최종 GitHub 정합성 체크포인트
 

@@ -27,6 +27,8 @@ from padiem_ai_core.web_runtime import (
     normalize_public_url as core_normalize_public_url,
 )
 
+from padiem_ai_core.web_priority import TinyFishDaumPriorityWebProvider as CorePriorityWebProvider
+
 from .config import Settings
 from .evidence import Evidence
 
@@ -259,44 +261,36 @@ class TinyFishWebProvider:
 
 
 class TinyFishDaumWebProvider:
-    """Owner-approved priority: TinyFish, then Daum on quota/rate exhaustion only.
-
-    Two bounded Search calls maximum. Each search result retains its real
-    provider provenance. Failed fetch is never replaced by a Daum or Firecrawl
-    scraper (Daum has no native page-fetch endpoint).
-    """
+    """B62 compatibility adapter over the single Core-owned priority policy."""
 
     def __init__(self, settings: Settings, transport: httpx.AsyncBaseTransport | None = None):
         if settings.web_provider != "tinyfish_daum":
             raise ValueError("TinyFish/Daum priority requires explicit provider configuration")
-        if not settings.tinyfish_api_key or not settings.daum_rest_api_key:
-            raise ValueError("TinyFish/Daum priority requires both server-side API keys")
-        self._primary = TinyFishWebProvider(
-            replace(settings, web_provider="tinyfish"), transport=transport
-        )
-        # Firecrawl is not allowed into the secondary search/fetch path.
-        self._secondary = DaumWebProvider(
-            replace(settings, web_provider="daum", firecrawl_api_key=None),
+        self._core = CorePriorityWebProvider(
+            tinyfish_key=settings.tinyfish_api_key,
+            daum_key=settings.daum_rest_api_key,
+            timeout_seconds=settings.web_timeout_seconds,
             transport=transport,
         )
 
     async def search(self, query: str, limit: int = 5) -> list[Evidence]:
         try:
-            evidence = await self._primary.search(query, limit=limit)
-            # Fixed diagnostic only: no search text, URLs, keys or results.
-            print("PADIEM_WEB_SEARCH_ROUTE=TINYFISH", flush=True)
-            return evidence
-        except WebToolError as exc:
-            # HTTP 402 = allowance/credit failure; HTTP 429 = rate allowance.
-            # Other provider errors and genuine zero-results do NOT switch.
-            if exc.code not in {"web_quota_exhausted", "web_busy"}:
-                raise
-        evidence = await self._secondary.search(query, limit=limit)
-        print("PADIEM_WEB_SEARCH_ROUTE=DAUM_ON_402_429", flush=True)
-        return evidence
+            core_items = await self._core.search(query, limit=limit)
+        except WebRuntimeError as exc:
+            raise _translate_runtime_error(exc) from exc
+        # Source provider remains authoritative; never fabricate provider success.
+        if core_items:
+            print("PADIEM_WEB_SEARCH_ROUTE=" + (
+                "DAUM_ON_402_429" if core_items[0].provider == "daum" else "TINYFISH"
+            ), flush=True)
+        return [_from_core_evidence(item) for item in core_items]
 
     async def fetch(self, url: str) -> Evidence:
-        return await self._primary.fetch(url)
+        try:
+            item = await self._core.fetch(url)
+        except WebRuntimeError as exc:
+            raise _translate_runtime_error(exc) from exc
+        return _from_core_evidence(item)
 
 
 def create_web_provider(

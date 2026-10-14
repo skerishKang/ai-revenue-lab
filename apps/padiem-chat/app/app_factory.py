@@ -43,7 +43,7 @@ from .b66_quote_history_routes import (
     b66_quote_history_save,
 )
 from .b66_quote_history_store import D1QuoteHistoryStore
-from .b66_guided_draft import D1GuidedDraftStore, guided_draft_route
+from .b66_guided_draft import D1GuidedDraftStore, guided_draft_route, guided_transcript_route
 from .b66_quote_assets import B66QuoteAssetStore, D1B66QuoteAssetMetadataStore
 from .b66_template_source import (
     B66TemplateSourceStore,
@@ -507,6 +507,8 @@ def create_app(
         Route("/api/b66/quotes", b66_quote_history_list, methods=["GET"]),
         Route("/api/b66/quotes", b66_quote_history_save, methods=["POST"]),
         Route("/api/b66/guided-draft", guided_draft_route, methods=["GET", "PUT", "DELETE"]),
+        Route("/api/b66/guided-conversations", guided_transcript_route, methods=["GET"]),
+        Route("/api/b66/guided-conversations/{conversation_id}", guided_transcript_route, methods=["GET", "DELETE"]),
         Route(
             "/api/b66/quotes/{quote_history_id}",
             b66_quote_history_detail,

@@ -107,6 +107,29 @@
       document.dispatchEvent(new CustomEvent("b66:open-recent-quotes"));
     });
     historySection.appendChild(recent);
+    // #4657: make the existing owner-scoped B66 AI dialogue history discoverable
+    // from the persistent rail, not only from the home starter grid. Reuse the
+    // canonical click handler; never read saved-quote rows or choose an owner.
+    var previousDialogue = makeButton(
+      "shellPreviousAiDialogue",
+      "↺",
+      "이전 AI 대화",
+      "저장된 AI 대화를 검색하고 이어서 대화합니다"
+    );
+    previousDialogue.addEventListener("click", function () {
+      clickExisting("aiDialogueStarter");
+    });
+    historySection.appendChild(previousDialogue);
+    const guidedDialogue = makeButton(
+      "shellPreviousGuidedDialogue",
+      "↩",
+      "이전 질문형 대화",
+      "질문받으며 작성한 견적의 이전 문답을 읽습니다"
+    );
+    guidedDialogue.addEventListener("click", function () {
+      document.dispatchEvent(new CustomEvent("b66:open-guided-dialogues"));
+    });
+    historySection.appendChild(guidedDialogue);
     menu.appendChild(historySection);
 
     rail.appendChild(menu);

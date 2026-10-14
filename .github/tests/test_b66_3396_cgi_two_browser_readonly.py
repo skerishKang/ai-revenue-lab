@@ -34,6 +34,35 @@ def test_request_budget():
     print("B66_3396_READONLY_REQUEST_BUDGET=PASS")
 
 
+def test_ai_dialogue_count_is_bounded_without_customer_content():
+    class Page:
+        def __init__(self, payload):
+            self.payload = payload
+        def evaluate(self, _script):
+            return self.payload
+
+    assert mod.ai_dialogue_recent_count(Page({
+        "status": 200, "valid": True, "count": 0
+    })) == 0
+    assert mod.ai_dialogue_recent_count(Page({
+        "status": 200, "valid": True, "count": 20
+    })) == 20
+    for invalid in (
+        {"status": 401, "valid": False, "count": None},
+        {"status": 503, "valid": False, "count": None},
+        {"status": 200, "valid": False, "count": 3},
+        {"status": 200, "valid": True, "count": 21},
+        {"status": 200, "valid": True, "count": "0"},
+    ):
+        try:
+            mod.ai_dialogue_recent_count(Page(invalid))
+        except mod.BoundedFailure:
+            pass
+        else:
+            raise AssertionError("invalid CGI AI-dialogue result accepted")
+    print("B66_CGI_AI_DIALOGUE_COUNT_READONLY=PASS")
+
+
 def test_synthetic_slot_boundary():
     marker = "B66-3396-CGI-ALPHA-SYNTH-SAFE-UNIT"
     payload = mod.synthetic_payload(marker)
@@ -103,6 +132,7 @@ def test_no_model_or_customer_writes():
 
 if __name__ == "__main__":
     test_request_budget()
+    test_ai_dialogue_count_is_bounded_without_customer_content()
     test_synthetic_slot_boundary()
     test_only_exact_main_can_have_credential()
     test_no_model_or_customer_writes()
