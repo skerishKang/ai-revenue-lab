@@ -10,7 +10,7 @@ const stateLabels = {
   DIALING: "전화 연결 시도", IVR: "ARS 메뉴 진행",
   HOLD: "상담원 연결 대기", CONSULTING: "상담 진행",
   COMPLETED: "모의 완료", NO_ANSWER: "응답 없음",
-  AUTH_REQUIRED: "본인확인 필요", CANCELLED: "중단",
+  AUTH_REQUIRED: "본인확인 필요", CANCELLED: "중단", INTERRUPTED: "미리보기 재시작으로 중단",
 };
 let activeId = null;
 let pollTimer = null;

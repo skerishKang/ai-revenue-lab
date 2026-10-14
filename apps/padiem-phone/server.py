@@ -12,11 +12,12 @@ from urllib.parse import urlsplit
 import json
 import sys
 
-from phone_mock import MockPhoneTasks, TaskError
+from phone_mock import TaskError
+from phone_history import DurableMockPhoneTasks, local_history_path
 from phone_scripts import ScriptStore, local_preview_path
 
 STATIC = Path(__file__).parent / "static"
-STORE = MockPhoneTasks()
+STORE = DurableMockPhoneTasks(local_history_path(local_preview_path()))
 SCRIPTS = ScriptStore(local_preview_path())
 MAX_JSON_BYTES = 8192
 
@@ -152,6 +153,7 @@ def serve() -> None:
     print(f"PADIEM Phone mock only: http://127.0.0.1:{port}", flush=True)
     print("REAL_OUTBOUND_CALLS=DISABLED | PUBLIC_DEPLOYMENT=FORBIDDEN", flush=True)
     print(f"PREVIEW_SCRIPT_FILE={local_preview_path()}", flush=True)
+    print(f"PREVIEW_MOCK_HISTORY={local_history_path(local_preview_path())}", flush=True)
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
