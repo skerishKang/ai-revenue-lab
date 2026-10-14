@@ -84,7 +84,6 @@ class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, CanonicalBrokerPe
 
     async def acknowledge(self, payload: dict) -> dict:
         return self._runtime.acknowledge(payload)
-
     async def reconcile_expired_command(self, payload: dict) -> dict:
         return self._runtime.reconcile_expired_command(payload)
 
@@ -96,7 +95,6 @@ class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, CanonicalBrokerPe
 
     async def device_directory(self, payload: dict) -> dict:  # #4139 read-only multi-device RPC
         return self._runtime.device_directory(payload)
-
     async def authenticate_device_session(self, payload: dict) -> dict:
         return self._runtime.authenticate_device_session(payload)
 
@@ -116,6 +114,11 @@ class Default(WorkerEntrypoint):
     deliver_pending_pc_link = CanonicalBrokerPendingPcBindingRPC.deliver_pending_pc_link
     pending_pc_identity_status = CanonicalBrokerPendingPcBindingRPC.pending_pc_identity_status
     claim_pending_pc_identity_proof = CanonicalBrokerPendingPcBindingRPC.claim_pending_pc_identity_proof
+    reserve_native_pc_gateway = CanonicalBrokerPendingPcBindingRPC.reserve_native_pc_gateway
+    authenticate_native_pc_gateway = CanonicalBrokerPendingPcBindingRPC.authenticate_native_pc_gateway
+    transfer_native_pc_credential_once = CanonicalBrokerPendingPcBindingRPC.transfer_native_pc_credential_once
+    receive_native_pc_install_ack = CanonicalBrokerPendingPcBindingRPC.receive_native_pc_install_ack
+    authenticate_native_pc_install_ack = CanonicalBrokerPendingPcBindingRPC.authenticate_native_pc_install_ack
 
     def _authority_ref(self) -> str:
         return safe_ref(str(self.env.LOCAL_AGENT_BROKER_AUTHORITY_REF), "authority_ref")
@@ -142,7 +145,6 @@ class Default(WorkerEntrypoint):
         return await self._stub().poll(payload)
     async def admit_command(self, payload: dict) -> dict:
         return await self._stub().admit_command(payload)
-
     async def acknowledge(self, payload: dict) -> dict:
         return await self._stub().acknowledge(payload)
     async def reconcile_expired_command(self, payload: dict) -> dict:
@@ -159,7 +161,6 @@ class Default(WorkerEntrypoint):
 
     async def authenticate_device_session(self, payload: dict) -> dict:
         return await self._stub().authenticate_device_session(payload)
-
     async def terminal_command_result(self, payload: dict) -> dict:
         return await self._stub().terminal_command_result(payload)
 

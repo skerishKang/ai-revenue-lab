@@ -38,6 +38,7 @@ from .worker_config import (
 _OWNER_FLAG = "PADIEM_CONNECTOR_OWNER_ENROLLMENT_ENABLED"
 _ONE_CLICK_OWNER_FLAG = "PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED"
 _IDENTITY_PC_PREFLIGHT_FLAG = "PADIEM_CONNECTOR_OWNER_PC_IDENTITY_PREFLIGHT_ENABLED"
+_NATIVE_PC_DELIVERY_FLAG = "PADIEM_CONNECTOR_OWNER_PC_NATIVE_DELIVERY_ENABLED"
 _RELEASE_SCOPE = "PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE"
 _REVIEW_SCOPE = "isolated-operator-acceptance-4139"
 OWNER_REGISTRATION_PRODUCTION_DEFAULT_MOUNTED = False
@@ -86,6 +87,7 @@ class OwnerEnrollmentPorts:
     csrf: ExactOwnerOrigin
     one_click_factory: Any = None
     identity_pc_preflight: Any = None
+    native_pc_completion: Any = None
 
 
 def compose_owner_enrollment_from_worker(worker_env: Any) -> OwnerEnrollmentPorts | None:
@@ -131,10 +133,24 @@ def compose_owner_enrollment_from_worker(worker_env: Any) -> OwnerEnrollmentPort
         identity_pc_preflight = CanonicalOwnerPcIdentityPreflight(
             identity=identity, broker=broker, private_broker=broker_binding,
         )
+    native_completion = None
+    if binding_value(worker_env, _NATIVE_PC_DELIVERY_FLAG) == "enabled":
+        if identity_pc_preflight is None:
+            raise ValueError("B54 verified native PC identity preflight required")
+        from .connector_owner_native_pc_completion import CanonicalOwnerNativePcCompletion
+        native_completion = CanonicalOwnerNativePcCompletion(
+            identity=identity, broker=broker,
+            private_broker=broker_binding,
+            preflight=identity_pc_preflight,
+        )
+        from .connector_native_pc_gateway_port import _RPC
+        if any(not callable(getattr(broker_binding, method, None)) for method in _RPC):
+            raise ValueError("canonical same-PC private native gateway unavailable")
     return OwnerEnrollmentPorts(
         identity=identity, host=host, csrf=ExactOwnerOrigin(),
         one_click_factory=one_click,
         identity_pc_preflight=identity_pc_preflight,
+        native_pc_completion=native_completion,
     )
 
 

@@ -323,3 +323,66 @@ def test_wrong_native_identity_preflight_flag_does_not_change_existing_routes():
         ports=compose_owner_enrollment_from_worker(owner_env)
         assert ports.identity_pc_preflight is None
         assert ports.one_click_factory is not None
+
+
+class PrivateNativeGatewayBroker(PrivateIdentityPcBroker):
+    def __getattr__(self, method):
+        if method in (
+            "reserve_native_pc_gateway", "authenticate_native_pc_gateway",
+            "transfer_native_pc_credential_once",
+            "receive_native_pc_install_ack", "authenticate_native_pc_install_ack",
+        ):
+            async def no_network(payload):
+                raise RuntimeError("default-off reviewed synthetic transport")
+            return no_network
+        return super().__getattr__(method)
+
+
+def test_canonical_native_gateway_completion_has_three_separate_server_gates():
+    from app.connector_owner_native_pc_completion import (
+        CanonicalOwnerNativePcCompletion, NATIVE_OWNER_PC_COMPLETION_PUBLIC_MOUNTED,
+        NATIVE_OWNER_PC_COMPLETION_PRODUCTION_ENABLED,
+    )
+    from app.connector_one_click_approval_route import OWNER_APPROVE_LINK_PATH
+
+    flag="PADIEM_CONNECTOR_OWNER_PC_NATIVE_DELIVERY_ENABLED"
+    owner_env=env()
+    owner_env[B]=PrivateNativeGatewayBroker()
+    owner_env[flag]="enabled"
+    with pytest.raises(ValueError,match="identity preflight required"):
+        compose_owner_enrollment_from_worker(owner_env)
+
+    owner_env["PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED"]="enabled"
+    owner_env["PADIEM_CONNECTOR_OWNER_PC_IDENTITY_PREFLIGHT_ENABLED"]="enabled"
+    ports=compose_owner_enrollment_from_worker(owner_env)
+    assert type(ports.native_pc_completion) is CanonicalOwnerNativePcCompletion
+    assert ports.identity_pc_preflight is not None
+    assert ports.one_click_factory is not None
+    application=create_app(settings=settings(),connector_owner_enrollment=ports)
+    assert OWNER_APPROVE_LINK_PATH in {r.path for r in application.routes}
+    assert "/api/claw/connector/enrollments/redeem" not in {
+        r.path for r in application.routes
+    }
+    assert NATIVE_OWNER_PC_COMPLETION_PUBLIC_MOUNTED is False
+    assert NATIVE_OWNER_PC_COMPLETION_PRODUCTION_ENABLED is False
+
+    # Wrong/absent opt-in leaves the approved B54 consent pathway working,
+    # with no native credential delivery/redeem endpoint registered.
+    for value in (None,True,"1","on"):
+        source=dict(owner_env)
+        source[flag]=value
+        p=compose_owner_enrollment_from_worker(source)
+        assert p.native_pc_completion is None
+        assert p.identity_pc_preflight is not None
+
+
+def test_missing_protected_same_DO_delivery_ports_are_rejected_before_activation():
+    owner_env=env()
+    owner_env[B]=PrivateIdentityPcBroker()
+    owner_env.update({
+        "PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED":"enabled",
+        "PADIEM_CONNECTOR_OWNER_PC_IDENTITY_PREFLIGHT_ENABLED":"enabled",
+        "PADIEM_CONNECTOR_OWNER_PC_NATIVE_DELIVERY_ENABLED":"enabled",
+    })
+    with pytest.raises(ValueError,match="same-PC private native gateway"):
+        compose_owner_enrollment_from_worker(owner_env)

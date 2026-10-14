@@ -182,6 +182,26 @@ class CanonicalBrokerPendingPcLiveRPC:
         from .broker_pending_pc_identity_handoff import claim_identity_pc_proof
         return await claim_identity_pc_proof(self, payload)
 
+    async def reserve_native_pc_gateway(self, payload: dict) -> dict:
+        from .broker_pending_pc_native_delivery import reserve_native_pc_gateway
+        return await reserve_native_pc_gateway(self, payload)
+
+    async def authenticate_native_pc_gateway(self, payload: dict) -> dict:
+        from .broker_pending_pc_native_delivery import authenticate_native_pc_gateway
+        return await authenticate_native_pc_gateway(self, payload)
+
+    async def transfer_native_pc_credential_once(self, payload: dict) -> dict:
+        from .broker_pending_pc_native_delivery import transfer_native_pc_credential_once
+        return await transfer_native_pc_credential_once(self, payload)
+
+    async def receive_native_pc_install_ack(self, payload: dict) -> dict:
+        from .broker_pending_pc_native_delivery import receive_native_pc_install_ack
+        return await receive_native_pc_install_ack(self, payload)
+
+    async def authenticate_native_pc_install_ack(self, payload: dict) -> dict:
+        from .broker_pending_pc_native_delivery import authenticate_native_pc_install_ack
+        return await authenticate_native_pc_install_ack(self, payload)
+
     async def _pending_pc_wss_fetch(self, request):
         """Native PC upgrade exclusively on this existing canonical Broker DO."""
         from .broker_pending_pc_wss import fetch_broker_pending_pc_wss
@@ -220,3 +240,18 @@ class CanonicalBrokerPendingPcBindingRPC:
 
     async def claim_pending_pc_identity_proof(self, payload: dict) -> dict:
         return await self._stub().claim_pending_pc_identity_proof(payload)
+
+    async def reserve_native_pc_gateway(self, payload: dict) -> dict:
+        return await self._stub().reserve_native_pc_gateway(payload)
+
+    async def authenticate_native_pc_gateway(self, payload: dict) -> dict:
+        return await self._stub().authenticate_native_pc_gateway(payload)
+
+    async def transfer_native_pc_credential_once(self, payload: dict) -> dict:
+        return await self._stub().transfer_native_pc_credential_once(payload)
+
+    async def receive_native_pc_install_ack(self, payload: dict) -> dict:
+        return await self._stub().receive_native_pc_install_ack(payload)
+
+    async def authenticate_native_pc_install_ack(self, payload: dict) -> dict:
+        return await self._stub().authenticate_native_pc_install_ack(payload)

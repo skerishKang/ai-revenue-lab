@@ -245,6 +245,11 @@ class LivePcWssOffer:
                     "request_ref": self._request_ref,
                     "expires_at": receipt["expires_at"],
                 }, separators=(",", ":"), sort_keys=True))
+            elif self._stage == "canonical" and getattr(
+                self, "_native_delivery_phase", None,
+            ) == "await_ack":
+                from .broker_pending_pc_native_delivery import native_pc_accept_install_ack
+                await native_pc_accept_install_ack(owner_do, self, frame)
             elif self._stage in {"delivered", "canonical"}:
                 # Exact SAME native DO WSS after server-authorized owner
                 # delivery. A separate canonical Gateway DO/schema gate is

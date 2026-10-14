@@ -78,6 +78,7 @@ class SamePcCanonicalBrokerBootstrap:
         self._socket = socket
         self._stage = "begin"
         self._lease: str | None = None
+        self._lease_expires_at: datetime | None = None
         self._fetch_verified = False
         self._proof_ref: str | None = None
 
@@ -122,6 +123,9 @@ class SamePcCanonicalBrokerBootstrap:
                 ):
                     raise CanonicalPcBootstrapDenied("canonical_begin_receipt_invalid")
                 self._lease = receipt["lease_ref"]
+                self._lease_expires_at = datetime.fromisoformat(
+                    receipt["expires_at"].replace("Z", "+00:00")
+                )
                 # No new secret. This is the original code-derived canonical
                 # pairing proof; retain ONLY on the DO-owned verified session.
                 self._proof_ref = frame["proof_ref"]
