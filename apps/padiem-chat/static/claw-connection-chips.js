@@ -15,7 +15,9 @@ function set(id,value){
  values.set(id,value);
  const element=chip(id);if(!element)return;
  const display=value==="on"?"ON":value==="off"?"OFF":message("확인 불가","Unavailable");
- element.textContent=display;element.dataset.connectionState=value;
+ const label=element.querySelector(".claw-connection-label");
+ if(label)label.textContent=display;else element.textContent=display;
+ element.dataset.connectionState=value;
  element.setAttribute("aria-label",(id==="pc"?message("컴퓨터","Computer"):id==="drive"?"Google Drive":"GitHub")+" "+display);
 }
 const reset=()=>ids.forEach(id=>set(id,"unknown"));

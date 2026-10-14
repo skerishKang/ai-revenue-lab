@@ -763,8 +763,8 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
  * destinations differ. Respect JS's hidden state after a real message.
  */
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]) {
-  display: flex !important;
-  flex-direction: column;
+  /* Use Chat's grid: flex shrank the eyebrow and shifted the hero right. */
+  display: grid !important;
 }
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]) ~ #clawTaskHub {
   display: none !important;
@@ -785,6 +785,14 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
 }
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .composer-wrap #composerForm > #messageInput {
   /* Canonical Chat #messageInput styles are shared without overrides. */
+}
+/* First-use Claw must show the SAME basic Chat composer tools, not an empty strip.
+ * The Claw workbench still owns its original model controls outside the landing. */
+.app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden])) .composer-tools {
+  display: flex !important;
+}
+.app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden])) #clawManualEntryBar {
+  display: none !important;
 }
 @media (max-width: 640px) {
   .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .starter-grid {
@@ -844,6 +852,41 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
 .claw-home-card > .claw-connection-toggle[data-connection-state="on"] {
   border-color: var(--accent); color: var(--accent-strong, var(--accent));
 }
+/* An explicit, non-faked ON/OFF switch face. If the server cannot establish
+ * authority, both sides remain neutral and the status says "확인 불가". */
+.claw-home-card > .claw-connection-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: calc(100% - 20px);
+  min-height: 51px;
+  font-size: 11px;
+}
+.claw-connection-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+.claw-connection-track > span {
+  padding: 3px 8px;
+  border-radius: 999px;
+  opacity: .6;
+  font-size: 10px;
+  line-height: 1.3;
+}
+.claw-connection-toggle[data-connection-state="on"] .claw-state-on,
+.claw-connection-toggle[data-connection-state="off"] .claw-state-off {
+  opacity: 1;
+  color: var(--text);
+  background: var(--card-bg);
+  box-shadow: 0 1px 4px rgba(0,0,0,.15);
+}
+.claw-connection-label { text-align: center; font-size: 10px; line-height: 1.3; }
 .claw-home-card > .claw-connection-toggle:focus-visible,
 .claw-home-card > .claw-workspace-starter:focus-visible {
   outline: 3px solid var(--accent); outline-offset: 2px;
