@@ -1015,7 +1015,20 @@ def build_resident_host(
 
 def main(argv: list[str] | None = None) -> int:
     del argv
-    entry = BrokerEntry.from_environment()
+    try:
+        entry = BrokerEntry.from_environment()
+    except ContractError:
+        # #4139: a *configured* boundary that the request-port factory rejects
+        # (wrong scheme, wrong port, URL credentials) is not an absent one. The
+        # configured factory refuses before it builds any transport, so emit the
+        # bounded refusal shape here instead of letting that ContractError escape
+        # the process as an unhandled traceback.
+        _emit(
+            status="refused",
+            reason="configured_broker_boundary_rejected",
+            **RESIDENT_PROCESS_CONTRACT,
+        )
+        return 2
     if entry is None:
         _emit(status="refused", reason="no_configured_broker_boundary", **RESIDENT_PROCESS_CONTRACT)
         return 2
