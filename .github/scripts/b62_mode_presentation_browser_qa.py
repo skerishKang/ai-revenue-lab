@@ -33,7 +33,7 @@ async def _exercise(page: Page, *, name: str) -> dict[str, Any]:
     pill = page.locator(".model-pill")
     await pill.wait_for(state="visible")
     await page.wait_for_function(
-        "() => document.querySelector('.model-pill span:last-child')?.textContent === 'Padiem Plus'"
+        "() => document.querySelector('.model-pill span:last-child')?.textContent === 'Padiem Free'"
     )
 
     if await pill.get_attribute("role") != "button":
@@ -50,11 +50,15 @@ async def _exercise(page: Page, *, name: str) -> dict[str, Any]:
     if await options.count() != 4:
         raise AssertionError(f"expected four tier rows (free/plus/pro/max) at {name}")
 
+    free = panel.locator('[data-mode-value="free"]')
+    if await free.is_disabled():
+        raise AssertionError(f"Free must be selectable at {name}")
+    if await free.get_attribute("aria-pressed") != "true":
+        raise AssertionError(f"Free must be the default selected tier at {name}")
     plus = panel.locator('[data-mode-value="plus"]')
     if await plus.is_disabled():
         raise AssertionError(f"Plus must be selectable at {name}")
-    if await plus.get_attribute("aria-pressed") != "true":
-        raise AssertionError(f"Plus must be the default selected tier at {name}")
+
     for locked in ("pro", "max"):
         row = panel.locator(f'[data-mode-value="{locked}"]')
         if not await row.is_disabled():
@@ -88,7 +92,7 @@ async def _exercise(page: Page, *, name: str) -> dict[str, Any]:
 
     await _no_horizontal_overflow(page, name)
     return {
-        "default_tier": "plus",
+        "default_tier": "free",
         "selected_tier": "plus",
         "plus": "available",
         "pro": "unavailable",
@@ -141,7 +145,7 @@ async def _english_probe() -> dict[str, Any]:
             await page.goto(f"{BASE_URL}/?theme=light&lang=en", wait_until="domcontentloaded", timeout=30_000)
             await page.locator("#messageInput").wait_for(state="visible")
             await page.wait_for_function(
-                "() => document.querySelector('.model-pill span:last-child')?.textContent === 'Padiem Plus'"
+                "() => document.querySelector('.model-pill span:last-child')?.textContent === 'Padiem Free'"
             )
             await page.locator(".model-pill").click()
             panel = page.locator("#modePresentationPanel")
@@ -153,7 +157,7 @@ async def _english_probe() -> dict[str, Any]:
             truth = (await panel.locator("[data-mode-truth]").inner_text()).strip()
             if "Upgrade is required to use higher-tier models." not in truth:
                 raise AssertionError(f"English tier truth copy missing: {truth!r}")
-            return {"locale": "en", "default_tier": "plus", "status": "PASS"}
+            return {"locale": "en", "default_tier": "free", "status": "PASS"}
         finally:
             await browser.close()
 
