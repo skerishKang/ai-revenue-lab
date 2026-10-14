@@ -100,13 +100,15 @@ def test_unlisted_operation_is_refused_not_defaulted():
     assert result.body["error"]["code"] == "invalid_research_operation"
 
 
-def test_research_operation_allowlist_is_exactly_the_reviewed_four():
+def test_research_operation_allowlist_is_exactly_the_reviewed_five():
     # Dispatch falls through to deep_research for anything the allowlist admits, so
     # widening this set by one entry would silently start a model call on a route
     # that is contractually model-free. Pinning the set is the only observable guard.
     from app.web_research_service import _OPERATIONS
 
-    assert _OPERATIONS == frozenset({"search", "fetch", "deep_research", "search_evidence"})
+    assert _OPERATIONS == frozenset(
+        {"search", "fetch", "deep_research", "search_evidence", "search_judgement"}
+    )
 
 
 class OversizedEvidenceProvider:

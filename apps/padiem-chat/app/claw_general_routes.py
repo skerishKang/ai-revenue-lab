@@ -51,8 +51,9 @@ from kagent.p01_adapter import (
 )
 from kagent.p01_run_flow import create_claw_run
 from .claw_search_decision import (
-    ClawSearchOutcome,
-    judge_claw_public_search,
+    build_judgement_digest,
+    evidence_agent,
+    verdict_from_model,
 )
 
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
@@ -414,18 +415,6 @@ MAX_CLAW_SEARCH_SOURCES = 5
 MAX_CLAW_SEARCH_SOURCE_TITLE_CHARS = 200
 CLAW_GROUNDING_PREAMBLE_MARKER = "웹 근거 사용 규칙"
 
-# The evidence route never synthesizes an answer, so this profile only satisfies the
-# shared Engine contract shape; the answer model stays the one the user selected.
-_CLAW_SEARCH_EVIDENCE_AGENT = {
-    "id": "claw-public-search-evidence",
-    "title": "Claw public search evidence",
-    "description": "Read-only public evidence retrieval without model synthesis.",
-    "system_instruction": "Retrieve public evidence only.",
-    "task_type": "general",
-    "optimize_for": "balanced",
-    "max_tokens": 1,
-    "model_policy": {"model": "none/disabled", "max_retries": 0},
-}
 
 
 def _project_search_sources(raw: Any) -> tuple[dict[str, str], ...] | None:
@@ -455,27 +444,33 @@ def _project_search_sources(raw: Any) -> tuple[dict[str, str], ...] | None:
 async def _claw_public_search_grounding(
     request: Request, adapter: Any, messages: Any
 ) -> tuple[str | None, tuple[dict[str, str], ...]]:
-    """Judge the conversation, then reuse the existing Engine evidence operation.
+    """Let the model decide, then reuse the existing Engine evidence operation once.
 
-    The client's own validated contract is the input: it returns exactly
-    ``{"sources": [...], "grounding_context": str}`` and raises on anything else, so
-    this route does not re-assert Engine envelope fields it cannot see. Only a
-    server-approved minimal public query leaves the product, provenance and grounding
-    stand or fall together, and any refusal degrades to the pre-search answer surface.
+    The conversation digest stays inside Padiem. Only a query that survives this lane's
+    own privacy and length checks may reach a provider, and grounding plus provenance
+    stand or fall together. Any refusal degrades to the pre-search answer surface.
     """
 
     denied = (None, ())
     if getattr(request.app.state, CLAW_PUBLIC_SEARCH_STATE_FLAG, False) is not True:
         return denied
-    judgement = judge_claw_public_search(messages)
-    if judgement.outcome is not ClawSearchOutcome.SEARCH:
-        return denied
     client = getattr(getattr(adapter, "_runner", None), "_client", None)
+    judge = getattr(client, "search_judgement", None)
     search_evidence = getattr(client, "search_evidence", None)
-    if not callable(search_evidence):
+    if not callable(judge) or not callable(search_evidence):
+        return denied
+    digest = build_judgement_digest(messages)
+    if digest is None:
+        return denied
+    agent = evidence_agent()
+    try:
+        verdict = verdict_from_model(await judge(conversation=digest, agent=agent))
+    except Exception:
+        return denied
+    if not verdict.should_search:
         return denied
     try:
-        evidence = await search_evidence(query=judgement.query, agent=_CLAW_SEARCH_EVIDENCE_AGENT)
+        evidence = await search_evidence(query=verdict.query, agent=agent)
     except Exception:
         return denied
     if not isinstance(evidence, dict):

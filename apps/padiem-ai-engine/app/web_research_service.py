@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import json
+import re
 from typing import Any, Callable, Mapping, Protocol
 
 from padiem_ai_core.contracts import AgentProfile
@@ -43,7 +44,9 @@ from app.service import (
 RESEARCH_PATH = "/internal/v1/research"
 MAX_RESEARCH_REQUEST_BODY_BYTES = 128 * 1024
 
-_OPERATIONS = frozenset({"search", "fetch", "deep_research", "search_evidence"})
+_OPERATIONS = frozenset(
+    {"search", "fetch", "deep_research", "search_evidence", "search_judgement"}
+)
 _TOP_LEVEL_REQUIRED = frozenset({"app_id", "operation", "query", "agent"})
 _TOP_LEVEL_ALLOWED = frozenset(
     {
@@ -56,6 +59,90 @@ _TOP_LEVEL_ALLOWED = frozenset(
         "trace_id",
     }
 )
+
+
+# #4469: AI conversation judgement for public web search. The judgement is
+# Engine-owned and product-neutral: it decides whether current public evidence is
+# needed and how to ask for it. It never retrieves, never answers, and grants no
+# tool or provider authority. The fixed `b14/auto` chain stays on the Router side,
+# so the caller's selected answer model is untouched.
+_JUDGE_INSTRUCTION = (
+    "Decide whether this conversation needs current public web evidence to answer "
+    "accurately. Search only for facts that can have changed outside the model: news, "
+    "law or policy changes, prices, programme or application windows, and current state. "
+    "Do not search for general knowledge, writing, summarising, translation, arithmetic, "
+    "or material the user already supplied. Use the conversation to resolve anaphora such "
+    "as 'then' or 'this year' into a standalone public topic. If the conversation cannot "
+    "pin a safe public topic, choose needs_search false with reason clarify_context. Never "
+    "place private, customer, pricing-sheet, account, credential or attachment content in "
+    "the query. Respond with exactly one JSON object: "
+    '{"needs_search": true|false, "query": string|null, "reason": "fresh_public_fact"|'
+    '"explicit_request"|"volatile_business_fact"|"stable_knowledge"|"user_supplied_text"|'
+    '"clarify_context"}.'
+)
+_JUDGE_REASONS = frozenset(
+    {
+        "fresh_public_fact",
+        "explicit_request",
+        "volatile_business_fact",
+        "stable_knowledge",
+        "user_supplied_text",
+        "clarify_context",
+    }
+)
+_MAX_JUDGE_QUERY_CHARS = 200
+_PRIVATE_QUERY_RE = re.compile(
+    r"(?i)(bearer|refresh[-_ ]?token|api[-_ ]?key|client[-_ ]?secret|cookie"
+    r"|[\w.+-]+@[\w-]+\.[\w.-]+|01[01][- ]?\d{3,4}[- ]?\d{4}|\d{2,3}[- ]?\d{3,4}[- ]?\d{4}"
+    r"|\.(?:pdf|xlsx|docx|csv|zip|png|jpg)\b|usr_|session[-_]?id"
+    r"|(?:견적|단가|원가|계좌|고객명|거래처|주민등록|여권번호))"
+)
+
+
+def _judge_profile() -> AgentProfile:
+    return AgentProfile(
+        id="engine-search-judgement",
+        title="Conversation search judgement",
+        description="Decides whether public web evidence is required for this conversation.",
+        system_instruction=_JUDGE_INSTRUCTION,
+        task_type="general",
+        optimize_for="balanced",
+        max_tokens=256,
+        allowed_tools=(),
+        required_capabilities=(),
+        model_policy={"model": "b14/auto"},
+        max_steps=1,
+    )
+
+
+def _judge_verdict(answer: Any) -> tuple[bool, str | None, str]:
+    """Parse one bounded model verdict; anything unrecognisable means no search."""
+
+    if not isinstance(answer, str) or not answer.strip():
+        return False, None, "clarify_context"
+    text = answer.strip()
+    if text.startswith("```"):
+        text = text.strip("`")
+        text = text[text.find("{"):] if "{" in text else ""
+    start, stop = text.find("{"), text.rfind("}")
+    if start < 0 or stop <= start:
+        return False, None, "clarify_context"
+    try:
+        data = json.loads(text[start:stop + 1])
+    except json.JSONDecodeError:
+        return False, None, "clarify_context"
+    if not isinstance(data, dict) or data.get("needs_search") is not True:
+        reason = data.get("reason") if isinstance(data, dict) else None
+        return False, None, reason if reason in _JUDGE_REASONS else "clarify_context"
+    query = data.get("query")
+    reason = data.get("reason")
+    if not isinstance(query, str):
+        return False, None, "clarify_context"
+    query = " ".join(query.split())[:_MAX_JUDGE_QUERY_CHARS].strip()
+    if len(query) < 2 or _PRIVATE_QUERY_RE.search(query):
+        # A private or unusable query is a refusal, never a redaction promise.
+        return False, None, "clarify_context"
+    return True, query, reason if isinstance(reason, str) and reason in _JUDGE_REASONS else "fresh_public_fact"
 
 
 class ExecutionRunner(Protocol):
@@ -331,6 +418,34 @@ class WebResearchEngineService:
             return planner_result.answer
 
         try:
+            if request.operation == "search_judgement":
+                # Judgement only: the model decides whether public evidence is needed
+                # and how to ask for it. Nothing is retrieved or answered here, and the
+                # caller's selected answer model is untouched.
+                if request.additional_system_context is not None:
+                    return _service_error(
+                        "invalid_research_request",
+                        "Search judgement cannot carry private system context.",
+                        status_code=400,
+                    )
+                verdict = await execution_runtime.run(
+                    ExecutionRequest(
+                        agent=_judge_profile(),
+                        messages=({"role": "user", "content": request.query},),
+                        trace_id=request.trace_id,
+                    )
+                )
+                needs_search, public_query, reason = _judge_verdict(verdict.answer)
+                return ServiceResponse(status_code=200, body={
+                    "ok": True,
+                    "operation": "search_judgement",
+                    "needs_search": needs_search,
+                    "query": public_query if needs_search else None,
+                    "reason": reason,
+                    "answer": None,
+                    "sources": [],
+                    "research": None,
+                })
             if request.operation == "search_evidence":
                 # Existing authenticated Engine research route, not a browser
                 # endpoint. Caller-supplied system context is not accepted on
