@@ -34,6 +34,9 @@ class InternalRequest:
         self.url=url
         self.method=method
         self.headers=headers
+        # Cloudflare workers.Request owns an underlying JS Request. A fake
+        # Broker must see that JS object, NEVER this Python SDK wrapper.
+        self.js_object=SimpleNamespace(url=url, method=method, headers=headers)
 
 
 class Broker:
@@ -42,6 +45,7 @@ class Broker:
         self.status=status
 
     async def fetch(self, request):
+        assert not isinstance(request, InternalRequest), 'Python wrapper sent to Cloudflare Fetcher'
         self.calls.append(request)
         return Result(status=self.status)
 
@@ -309,3 +313,33 @@ def test_canonical_broker_private_rpc_requires_real_release_and_schema():
     assert _enabled(SimpleNamespace(
         **{**state, "LOCAL_AGENT_BROKER_PENDING_PC_RELEASE_SCOPE": "unexpected"}
     )) is False
+
+
+def test_both_wss_routes_reject_missing_js_request_object():
+    from app.connector_gateway_broker_do_upgrade import dispatch_product_native_pc_wss
+    class BrokenRequest:
+        def __init__(self, url, *, method, headers):
+            self.url = url
+            self.method = method
+            self.headers = headers
+
+    b = Broker()
+    assert run(request(), env(broker=b)).status == 101
+    b.calls.clear()
+    acceptance = asyncio.run(dispatch_isolated_native_pc_wss(
+        request=request(), worker_env=env(broker=b),
+        request_factory=BrokenRequest, response_factory=Result,
+    ))
+    assert acceptance.status == 503 and b.calls == []
+    cfg = {
+        "PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED": "enabled",
+        "PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE": "owner-controlled-production-4139",
+        "PADIEM_CONNECTOR_PRODUCTION_ENABLED": "enabled",
+        "PADIEM_CHAT_PUBLIC_BASE_URL": "https://chat.padiem.net",
+        "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE": b,
+    }
+    product = asyncio.run(dispatch_product_native_pc_wss(
+        request=request(url="https://chat.padiem.net/api/claw/connector/gateway/session"),
+        worker_env=cfg, request_factory=BrokenRequest, response_factory=Result,
+    ))
+    assert product.status == 503 and b.calls == []

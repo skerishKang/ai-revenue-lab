@@ -111,7 +111,9 @@ async def dispatch_isolated_native_pc_wss(
         internal_request = request_factory(
             _PRIVATE_URL, method="GET", headers=dict(_PRIVATE_UPGRADE_HEADERS),
         )
-        result = await broker.fetch(internal_request)
+        # Cloudflare Python Request wraps the JS Request used by Fetcher.fetch.
+        # Passing the Python wrapper fails in the deployed Worker SDK.
+        result = await broker.fetch(internal_request.js_object)
         if getattr(result, "status", None) != 101:
             return unavailable()
         return result
@@ -183,7 +185,9 @@ async def dispatch_product_native_pc_wss(
         internal = request_factory(
             _PRIVATE_URL, method="GET", headers=dict(_PRIVATE_UPGRADE_HEADERS),
         )
-        response = await broker.fetch(internal)
+        # Service Binding Fetcher accepts the underlying JS Request, not
+        # the SDK Python wrapper; same contract as the other Worker ports.
+        response = await broker.fetch(internal.js_object)
         if getattr(response, "status", None) == 101:
             return response
     except Exception:

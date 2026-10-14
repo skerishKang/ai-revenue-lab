@@ -105,9 +105,14 @@ def test_worker_real_fetch_seam_invoked_before_normal_app_asgi():
     assert "maybe_dispatch_connector_gateway" in code
     assert 'request=request, worker_env=self.env' in code
     assert code.index("await maybe_dispatch_connector_gateway(") < code.index("if _worker_app is None:")
-    assert "PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED" not in (
-        Path(__file__).resolve().parents[1] / "wrangler.toml"
-    ).read_text(encoding="utf-8")
+    # Product route is intentionally ON by default; the Worker still requires
+    # its existing canonical Identity/Broker binding on every upgrade.
+    import tomllib
+    manifest = tomllib.loads(
+        (Path(__file__).resolve().parents[1] / "wrangler.toml").read_text(encoding="utf-8")
+    )
+    assert manifest["vars"]["PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED"] == "enabled"
+    assert manifest["vars"]["PADIEM_CONNECTOR_PRODUCTION_ENABLED"] == "enabled"
 
 
 def test_production_wss_uses_existing_private_native_broker_not_asgi(monkeypatch):
