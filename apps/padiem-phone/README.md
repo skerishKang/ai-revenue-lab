@@ -30,12 +30,15 @@ Standard library only for core runtime and HTTP tests. Optional Playwright brows
 - `POST /api/tasks/:task_id/cancel`: cancel, freeze elapsed mock time.
 - `GET /api/tasks`: in-process list.
 - `GET /api/usage`: simulated aggregate counters.
+- `GET /api/usage/stages`: derived aggregate per-phase simulated minutes and entries. Never provider minutes or billing.
+- `GET /api/tasks/:task_id/timeline`: stages reached by a mock task, each explicitly simulation-only. Not a carrier event log.
+- `GET /api/tasks/:task_id/report`: bounded Korean UTF-8 text/plain report labelled simulation-only with zero actual calls/charges. No actual transcript, recording or live consultation evidence.
 - `GET /api/scripts`: built-in and saved custom demo script library.
 - `POST /api/scripts`: add bounded `title`, `destination`, `goal`, `questions`, `notes`.
 - `PUT /api/scripts/:script_id`: update a custom demo script using its revision (409 on stale version).
 - `DELETE /api/scripts/:script_id`: remove a custom demo script using its revision. The built-in sample scripts are immutable.
 
-The phone UI supports creating, updating, deleting and reusing scripts. Task history detail views expose the snapshot of questions and notes that existed when a task was created; subsequent script changes do not rewrite task history.
+The phone UI supports creating, updating, deleting and reusing scripts. Task history detail views expose the snapshot of questions and notes that existed when a task was created; subsequent script changes do not rewrite task history. The detail view also offers the stages reached so far and a download of the explicit mock-only report as .txt. The Usage page shows simulated stage time breakdown. On browser reload, an in-progress local mock task is rediscovered from the same server-side task ID without creating a second task.
 
 `request_id` enforces at-most-one task creation for repeated matching requests. A conflicting request with the same ID returns 409. There is a hard maximum of 100 locally retained mock tasks in this prototype (including saved history). No billing or real outbound call can be triggered from any of these endpoints.
 
@@ -51,7 +54,7 @@ This code only documents implementation contracts and generic simulated workflow
 ## What was verified
 - Deterministic Python task state, script persistence/revision/conflict, scoped tool bridge and idempotency tests
 - An actual Python subprocess restart smoke with temp local data verifies unfinished tasks become `INTERRUPTED`, and local mock data survives restart.
-- In-process HTTP endpoints, unknown-path protection, static files, loopback binding, and no external calls
+- In-process HTTP endpoints, unknown-path protection, report/timeline/usage projections, static files, loopback binding, and no external calls
 - Browser behavior is a separate smoke check, not proof of production service
 
 No GitHub Pages / Cloudflare / customer release is implied by this prototype.

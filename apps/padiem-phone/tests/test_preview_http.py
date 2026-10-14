@@ -147,6 +147,42 @@ class PreviewHTTPTests(unittest.TestCase):
             urlopen(wrong_host, timeout=3)
         self.assertEqual(error.exception.code, 403)
 
+    def test_mock_timeline_and_download_report_contract(self):
+        body = {
+            "request_id": "report_http_001",
+            "destination": "가상 상담센터",
+            "goal": "서류를 문의해 줘",
+            "source": "web",
+            "scenario": "no_answer",
+        }
+        _, task = self.post("/api/tasks", body)
+        tid = task["task_id"]
+        status, _, payload = self.get("/api/tasks/" + tid + "/timeline")
+        self.assertEqual(status, 200)
+        timeline = json.loads(payload)["timeline"]
+        self.assertEqual([stage["state"] for stage in timeline], ["DIALING"])
+        self.assertTrue(timeline[0]["simulation_only"])
+
+        status, headers, payload = self.get("/api/tasks/" + tid + "/report")
+        self.assertEqual(status, 200)
+        self.assertEqual(headers["Content-Type"], "text/plain; charset=utf-8")
+        report = payload.decode("utf-8")
+        self.assertIn("시뮬레이션 전용", report)
+        self.assertIn("실제 전화 발신: 0건", report)
+        self.assertIn("가상 상담센터", report)
+        self.assertNotIn("실제 상담 완료", report)
+        self.assertEqual(headers["Cache-Control"], "no-store")
+        status, headers, response = self.get("/api/usage/stages")
+        self.assertEqual(status, 200)
+        aggregate = json.loads(response)
+        self.assertTrue(aggregate["simulation_only"])
+        self.assertEqual(len(aggregate["stages"]), 4)
+        self.assertEqual(aggregate["real_calls"], 0)
+        for suffix in ("report", "timeline"):
+            with self.assertRaises(HTTPError) as error:
+                self.get("/api/tasks/notfound/" + suffix)
+            self.assertEqual(error.exception.code, 404)
+
     def test_invalid_content_type_is_rejected(self):
         with self.assertRaises(HTTPError) as err:
             self.post("/api/tasks", {"goal": "dummy"}, content_type="text/plain")

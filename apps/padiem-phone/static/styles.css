@@ -295,3 +295,26 @@ tbody tr:last-child td{border-bottom:0}
 .detail-item strong{display:block;font-size:11px;color:#607481}
 .detail-item p{margin:5px 0 0;font-size:12px;line-height:1.65;color:#263d4d;white-space:pre-wrap;overflow-wrap:anywhere}
 @media(max-width:650px){#historyDetailsContent{grid-template-columns:1fr}}
+
+/* Phone task timeline/report — local mock only, matches PADIEM Glass surfaces. */
+.history-extras{grid-column:1/-1;padding:17px 0 2px;border-top:1px solid rgba(53,80,97,.15);margin-top:5px}
+.history-extras>strong{font-size:13px;color:#273f50}
+.phone-stage-timeline{list-style:none;display:flex;flex-wrap:wrap;gap:9px;padding:0;margin:13px 0}
+.phone-stage{display:flex;flex-direction:column;gap:5px;min-width:115px;max-width:180px;padding:11px 14px;border-radius:10px;
+  border:1px solid rgba(115,145,165,.22);background:rgba(244,248,250,.8)}
+.phone-stage strong{font-size:11px;color:#415967;font-weight:700}
+.phone-stage span{color:#66808e;font-size:10px}
+.phone-stage.current{border-color:rgba(58,125,176,.45);background:rgba(214,235,248,.54)}
+.phone-stage.stopped{border-color:rgba(160,106,106,.32);background:rgba(250,238,238,.65)}
+.report-download{margin:3px 0 6px}
+.report-notice{font-size:10px;color:#627987;margin:8px 0}
+#activeTask .small-button{margin-top:9px}
+@media(max-width:650px){.phone-stage{flex:1;min-width:125px}.history-extras{padding-top:12px}}
+
+.usage-phases{margin-top:18px;padding:18px;border-radius:16px;border:1px solid rgba(255,255,255,.68);background:rgba(246,250,251,.55)}
+.usage-stage-row{margin:0 0 15px}
+.usage-stage-heading{display:flex;justify-content:space-between;gap:12px;margin-bottom:7px}
+.usage-stage-heading strong{font-size:11px;color:#3b5364}
+.usage-stage-heading span{font-size:10px;color:#5b7486}
+.usage-stage-track{height:7px;background:rgba(58,82,98,.12);border-radius:6px;overflow:hidden}
+.usage-stage-track span{display:block;height:100%;background:linear-gradient(90deg,#abc8db,#627f9a);border-radius:6px}

@@ -39,12 +39,18 @@ def main():
                 page.goto(url + "/", wait_until="load")
                 assert page.get_by_role("heading", name="어떤 전화를 맡겨드릴까요?").is_visible()
                 page.locator("#createButton").click()
+                page.locator("#activeTask .task-status strong").wait_for(timeout=4000)
+                page.reload(wait_until="load")
+                page.locator("#activeTask .task-status strong").wait_for(timeout=5000)
+                assert page.locator("#createButton").is_disabled(), "in-progress mock task must resume"
                 page.locator("#activeTask .task-status strong").get_by_text("모의 완료").wait_for(timeout=16000)
                 page.wait_for_function("document.querySelector('#statTotal').textContent === '1'")
                 page.locator('.nav-link[data-page="history"]').click()
                 assert page.locator("#historyBody tr").count() >= 1
                 page.locator('.nav-link[data-page="usage"]').click()
                 page.wait_for_function("document.querySelector('#usageCompleted').textContent === '1'")
+                page.locator("#usageStageBreakdown .usage-stage-row").first.wait_for(timeout=4000)
+                assert page.locator("#usageStageBreakdown .usage-stage-row").count() == 4
                 page.locator('.nav-link[data-page="scripts"]').click()
                 page.get_by_role("button", name="이 대본으로 시작 ↗").nth(1).click()
                 assert page.locator("#destination").input_value() == "거래처 (가상)"
@@ -83,6 +89,15 @@ def main():
                 page.locator("#historyDetails").wait_for(state="visible", timeout=8000)
                 assert page.locator("#historyDetailsContent").get_by_text("결제를 진행하지 마세요").is_visible()
                 assert page.locator("#historyDetailsContent").get_by_text("입고 날짜가 언제인가요?").is_visible()
+                assert page.locator(".phone-stage-timeline .phone-stage").count() >= 2
+                with page.expect_download() as download_result:
+                    page.get_by_role("button", name="모의 업무 보고서(.txt) 저장").click()
+                download = download_result.value
+                assert download.suggested_filename.startswith("padiem-phone-mock-")
+                report = Path(download.path()).read_text(encoding="utf-8-sig")
+                assert "결제를 진행하지 마세요" in report
+                assert "실제 전화 발신: 0건" in report
+                print("TASK_REPORT_DOWNLOAD=PASS")
                 page.locator("#closeHistoryDetails").click()
                 assert page.locator("#historyDetails").is_hidden()
                 print("SCRIPT_UI_CRUD_AND_TASK_SNAPSHOT=PASS")
