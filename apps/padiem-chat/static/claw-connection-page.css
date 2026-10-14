@@ -1,0 +1,316 @@
+/* #4139: dedicated PC connection page (LOCAL2).
+   One spacious glass page for the whole "connect this computer" journey:
+   status -> consent -> one-time code -> enter on PC -> verify.
+   Theme variables only (light/dark/cinematic safe). No page may invent a
+   second connector authority: all reads/writes reuse the reviewed server
+   ports (devices directory, consent grant, code issue). */
+.claw-connection-page {
+  border: none;
+  padding: 0;
+  width: min(700px, 94vw);
+  max-height: min(88vh, 900px);
+  background: transparent;
+}
+.claw-connection-page::backdrop {
+  background: rgba(15, 20, 28, 0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.claw-connection-page[open] {
+  display: flex;
+}
+
+.claw-connection-sheet {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: inherit;
+  overflow: hidden auto;
+  border-radius: 20px;
+  border: 1px solid var(--line, rgba(66, 106, 135, 0.22));
+  background: var(--glass, rgba(244, 247, 249, 0.72));
+  backdrop-filter: blur(28px) saturate(115%);
+  -webkit-backdrop-filter: blur(28px) saturate(115%);
+  box-shadow: var(--shadow, 0 24px 80px rgba(0, 0, 0, 0.28));
+  color: var(--text, #19191d);
+}
+
+.claw-connection-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 22px 24px 0;
+}
+.claw-connection-heading { flex: 1 1 auto; min-width: 0; }
+.claw-connection-kicker {
+  margin: 0 0 4px;
+  font-family: var(--font-label, Manrope, system-ui, sans-serif);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--accent, #6557e8);
+}
+.claw-connection-title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+}
+.claw-connection-close {
+  flex: 0 0 auto;
+  font: inherit;
+  min-height: 44px;
+  min-width: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--line, rgba(66, 106, 135, 0.26));
+  background: var(--surface, rgba(255, 255, 255, 0.7));
+  color: var(--text, #19191d);
+  cursor: pointer;
+}
+
+.claw-connection-statusrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 14px 24px 0;
+  font-size: 0.85rem;
+}
+.claw-connection-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 4px 13px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border: 1px solid var(--line, rgba(66, 106, 135, 0.26));
+  background: var(--surface, rgba(255, 255, 255, 0.7));
+  color: var(--text-dim, #506a7b);
+}
+.claw-connection-chip::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: 0 0 auto;
+}
+.claw-connection-chip[data-state="checking"] { color: var(--accent-strong, #5546d6); border-color: var(--accent, #6557e8); }
+.claw-connection-chip[data-state="ready"] { color: var(--success, #1d7a3a); border-color: var(--success-border, rgba(29, 122, 58, 0.4)); }
+.claw-connection-chip[data-state="attention"] { color: #9a5b00; border-color: rgba(154, 91, 0, 0.4); }
+.claw-connection-pcname {
+  font-weight: 650;
+  word-break: break-word;
+}
+
+.claw-connection-steps {
+  list-style: none;
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  padding: 16px 24px 0;
+}
+.claw-connection-steps li {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 9px 10px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  font-size: 0.74rem;
+  font-weight: 650;
+  color: var(--text-dim, #506a7b);
+}
+.claw-connection-steps li .n {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 0.72rem;
+  background: var(--surface-2, rgba(238, 243, 247, 0.7));
+  border: 1px solid var(--line, rgba(66, 106, 135, 0.26));
+}
+.claw-connection-steps li[aria-current="step"] {
+  color: var(--accent-strong, #5546d6);
+  background: var(--accent-soft, #efedff);
+  border-color: var(--accent, #6557e8);
+}
+.claw-connection-steps li[data-done="true"] { color: var(--text, #19191d); }
+.claw-connection-steps li[data-done="true"] .n {
+  background: var(--accent, #6557e8);
+  border-color: var(--accent, #6557e8);
+  color: #fff;
+}
+.claw-connection-steps li span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.claw-connection-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 24px 20px;
+}
+.claw-connection-card {
+  border-radius: 16px;
+  border: 1px solid var(--line, rgba(66, 106, 135, 0.22));
+  background: var(--panel, #ffffff);
+  padding: 16px 18px;
+  box-shadow: 0 7px 30px rgba(20, 51, 73, 0.06);
+}
+.claw-connection-card[hidden] { display: none !important; }
+.claw-connection-card h3 {
+  margin: 0 0 6px;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.claw-connection-card p {
+  margin: 0 0 8px;
+  font-size: 0.84rem;
+  line-height: 1.62;
+  color: var(--text-dim, #506a7b);
+}
+.claw-connection-card p:last-child { margin-bottom: 0; }
+
+.claw-connection-allow {
+  margin: 10px 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--text-dim, #506a7b);
+}
+.claw-connection-allow li { padding-left: 22px; position: relative; margin-bottom: 4px; }
+.claw-connection-allow li[data-ok="true"]::before {
+  content: "✓";
+  position: absolute;
+  left: 2px;
+  color: #1d7a3a;
+  font-weight: 700;
+}
+.claw-connection-allow li[data-ok="false"]::before {
+  content: "–";
+  position: absolute;
+  left: 4px;
+  color: var(--text-dim, #506a7b);
+  font-weight: 700;
+}
+
+.claw-connection-ack {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 12px 0;
+  padding: 12px;
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--line, rgba(66, 106, 135, 0.26));
+  background: var(--surface-2, rgba(238, 243, 247, 0.6));
+}
+.claw-connection-ack input {
+  width: 22px;
+  height: 22px;
+  margin: 1px 0 0;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+.claw-connection-ack label {
+  font-size: 0.82rem;
+  line-height: 1.55;
+  cursor: pointer;
+}
+
+.claw-connection-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+.claw-connection-primary,
+.claw-connection-secondary {
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  min-height: 46px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+.claw-connection-primary {
+  color: #fff;
+  background: var(--accent, #6557e8);
+  border: 1px solid var(--accent, #6557e8);
+}
+.claw-connection-primary:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.claw-connection-secondary {
+  color: var(--text, #19191d);
+  background: var(--surface, rgba(255, 255, 255, 0.76));
+  border: 1px solid var(--line, rgba(66, 106, 135, 0.26));
+}
+
+.claw-connection-codebox {
+  margin: 10px 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px dashed var(--accent, #6557e8);
+  background: var(--accent-soft, #efedff);
+}
+.claw-connection-codebox dt {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--accent-strong, #5546d6);
+}
+.claw-connection-codebox dd {
+  margin: 2px 0 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+  word-break: break-all;
+  color: var(--text, #19191d);
+}
+.claw-connection-codebox dd:last-child { margin-bottom: 0; }
+
+.claw-connection-cmd {
+  margin: 10px 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(15, 20, 28, 0.88);
+  color: #e8eef4;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+.claw-connection-status {
+  margin: 4px 0 0;
+  min-height: 1.4em;
+  font-size: 0.83rem;
+  line-height: 1.6;
+  color: var(--text-dim, #506a7b);
+}
+
+@media (max-width: 640px) {
+  .claw-connection-page { width: 96vw; }
+  .claw-connection-head,
+  .claw-connection-statusrow { padding-left: 16px; padding-right: 16px; }
+  .claw-connection-steps { padding: 12px 16px 0; overflow-x: auto; }
+  .claw-connection-steps li span:last-child { display: none; }
+  .claw-connection-steps li { flex: 0 0 auto; }
+  .claw-connection-body { padding: 12px 16px 16px; }
+  .claw-connection-primary,
+  .claw-connection-secondary { width: 100%; }
+}
