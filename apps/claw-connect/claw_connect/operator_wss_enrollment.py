@@ -58,21 +58,25 @@ def _admit_existing_agent_package(*, state_dir: Path) -> None:
             raise ValueError("canonical Agent source invalid")
         root = source.resolve(strict=True)
         intended = (root / "kagent").resolve(strict=True)
-        found = importlib.util.find_spec("kagent")
-        if found is not None:
-            locations = found.submodule_search_locations
-            if not locations or not any(
+        # A separate installed Python package may be earlier on sys.path.
+        # Prefer the explicit installer pin, but NEVER replace an already
+        # imported foreign module in this process.
+        loaded = sys.modules.get("kagent")
+        if loaded is not None:
+            locations = getattr(loaded, "__path__", ())
+            if not locations or not all(
                 Path(location).resolve() == intended for location in locations
             ):
-                raise ValueError("existing interpreter kagent conflicts with pinned Agent")
+                raise ValueError("loaded Agent conflicts with installer pin")
         else:
-            # The exact checked installer pin, not a synthetic second Agent.
-            if str(root) not in sys.path:
-                sys.path.insert(0, str(root))
+            if str(root) in sys.path:
+                sys.path.remove(str(root))
+            sys.path.insert(0, str(root))
+            importlib.invalidate_caches()
             found = importlib.util.find_spec("kagent")
             if found is None or not found.submodule_search_locations:
                 raise ValueError("pinned canonical Agent could not be loaded")
-            if not any(
+            if not all(
                 Path(location).resolve() == intended
                 for location in found.submodule_search_locations
             ):

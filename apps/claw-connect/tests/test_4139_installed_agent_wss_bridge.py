@@ -28,6 +28,9 @@ import os
 from pathlib import Path
 from claw_connect.operator_wss_enrollment import _admit_existing_agent_package
 state = Path(os.environ['PIN_STATE'])
+if os.environ.get('PIN_PRELOAD_FOREIGN') == '1':
+    # Already-loaded code must not be shadowed by the installer pin.
+    import kagent
 try:
     _admit_existing_agent_package(state_dir=state)
 except Exception as exc:
@@ -49,7 +52,10 @@ def _agent(tmp_path: Path, name: str) -> Path:
     return root
 
 
-def _probe(tmp_path: Path, root: Path, *, conflicting_root: Path | None = None) -> str:
+def _probe(
+    tmp_path: Path, root: Path, *, conflicting_root: Path | None = None,
+    preload_foreign: bool = False,
+) -> str:
     state = tmp_path / "installed-padiem-connector"
     write_resident_config(state, str(root))
     env = os.environ.copy()
@@ -66,6 +72,10 @@ def _probe(tmp_path: Path, root: Path, *, conflicting_root: Path | None = None) 
     )
     env["PIN_SOURCE"] = str(root)
     env["PIN_STATE"] = str(state)
+    if preload_foreign:
+        env["PIN_PRELOAD_FOREIGN"] = "1"
+    else:
+        env.pop("PIN_PRELOAD_FOREIGN", None)
     result = subprocess.run(
         [sys.executable, "-c", _RUN],
         cwd=state, env=env, text=True, capture_output=True, timeout=15,
@@ -82,8 +92,18 @@ def test_fresh_installed_interpreter_imports_the_exact_pinned_agent(tmp_path):
 def test_foreign_python_agent_does_not_replace_the_installer_pin(tmp_path):
     source = _agent(tmp_path, "reviewed-canonical-agent")
     foreign = _agent(tmp_path, "ambient-foreign-agent")
-    result = _probe(tmp_path, source, conflicting_root=foreign)
-    assert result == "DENIED DeviceSessionRefused canonical_agent_source_unavailable"
+    # Fresh process: the installer-pinned verified path outranks an unrelated
+    # package already present in the global Python installation.
+    assert _probe(tmp_path, source, conflicting_root=foreign) == "PINNED_AGENT_OK"
+
+
+def test_preloaded_foreign_agent_remains_fail_closed(tmp_path):
+    source = _agent(tmp_path, "reviewed-canonical-agent")
+    foreign = _agent(tmp_path, "ambient-foreign-agent")
+    # A foreign module already imported in-process cannot be replaced.
+    assert _probe(
+        tmp_path, source, conflicting_root=foreign, preload_foreign=True,
+    ) == "DENIED DeviceSessionRefused canonical_agent_source_unavailable"
 
 
 def test_corrupt_or_absent_source_never_falls_back_to_any_agent(tmp_path):
