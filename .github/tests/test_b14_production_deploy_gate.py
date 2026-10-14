@@ -1708,7 +1708,7 @@ def test_post_deploy_matches_owner_json_registry_without_legacy_model_marker() -
     text = _workflow_text()
     assert "app/pilot/b14_models.json" in text
     assert "owner_registry['models']" in text
-    assert "for key in ('catalog', 'registered_routes')" in text
+    assert "for key, expected in (('catalog', available), ('registered_routes', registered))" in text
     assert "set(deployed) == set(expected)" in text
     assert "B14_OWNER_JSON_CATALOG_PARITY=PASS" in text
     assert "B14_KILO_CATALOG_MARKER" not in text

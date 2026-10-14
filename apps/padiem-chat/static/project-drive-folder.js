@@ -160,6 +160,15 @@
       space.className = "project-drive-row-space";
       space.textContent = folder.space_kind === "shared_drive" ? "공유 드라이브" : "내 드라이브";
 
+      // The server already returns modified_time for every folder candidate
+      // (drive_folders_collection pins it through). Surface it as text-only so
+      // same-name folders in different locations/times stay distinguishable.
+      const modified = document.createElement("span");
+      modified.className = "project-drive-row-modified";
+      const modifiedText = folder && folder.modified_time != null ? String(folder.modified_time) : "";
+      modified.textContent = modifiedText;
+      modified.hidden = modifiedText === "";
+
       const button = document.createElement("button");
       button.type = "button";
       button.className = "project-drive-select";
@@ -171,6 +180,7 @@
 
       row.appendChild(label);
       row.appendChild(space);
+      row.appendChild(modified);
       row.appendChild(button);
       list.appendChild(row);
     });

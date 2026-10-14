@@ -306,6 +306,23 @@ class D1B66MemberAdminStore:
             }),
         }
 
+    async def globally_disabled_models(self) -> frozenset[str]:
+        """D1-owned OFF list independent of the separate membership/tier rollout.
+
+        Model IDs come from the authenticated admin's registered-model policy.
+        Missing/unavailable D1 raises; the production route must fail closed.
+        """
+        rows = await self._all(
+            "SELECT model_id FROM b66_disabled_models ORDER BY model_id"
+        )
+        result: set[str] = set()
+        for row in rows:
+            model_id = row.get("model_id")
+            if not isinstance(model_id, str) or not model_id:
+                raise RuntimeError("invalid persisted disabled model ID")
+            result.add(model_id)
+        return frozenset(result)
+
     async def runtime_access(self, user_id: str) -> dict[str, Any] | None:
         access = await self.access_for_user(user_id)
         if access is None:

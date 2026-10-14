@@ -945,13 +945,18 @@
   }
 
   function cgiTemplateEligibleSkill() {
+    // A skill label or provenance string is not access authority. Only the
+    // exact authenticated, server-assigned CGI Saved Quote Skill may expose
+    // this tenant-specific layout. The server separately checks user/workspace.
     const skill = skillUiState.serverSkill;
-    if (!skill || !CgiTemplateV2) return null;
-    const name = typeof skill.name === "string" ? skill.name : "";
-    const provenanceName = skill.provenance && typeof skill.provenance.sourceName === "string"
-      ? skill.provenance.sourceName
-      : "";
-    return /(?:시지아이|cgi)/i.test(name + " " + provenanceName) ? skill : null;
+    const bridge = window.B66BrowserPdf;
+    if (!skill || !CgiTemplateV2 ||
+        !bridge || typeof bridge.isCgiSkill !== "function" ||
+        !bridge.isCgiSkill(skillUiState.serverSavedSkillId) ||
+        skillUiState.serverSavedSkillId !== skillUiState.activeSkillId) {
+      return null;
+    }
+    return skill;
   }
 
   function cgiTemplateProfile() {
@@ -2172,17 +2177,16 @@
     });
   }
   document.addEventListener("b66:open-skill-register", () => {
-    // Entry from the rail always opens the existing file-based Saved Skill
-    // wizard. This does not bypass approval or create an active template.
-    if (!skillUiApi || !skillUiApi.actions ||
-        typeof skillUiApi.actions.openWizard !== "function") return;
-    const directTab = $("directModeButton");
-    if (directTab) directTab.click();
-    skillUiApi.actions.openWizard($("shellManualQuote"));
-    const panel = $("skillWizardPanel");
-    if (panel && typeof panel.scrollIntoView === "function") {
-      panel.scrollIntoView({ block: "nearest" });
-    }
+    // New reusable forms are distinct from the line-item editing workspace.
+    // Both established workflows retain their existing approval and auth gates.
+    if (!skillUiApi?.actions?.openWizard || !manualSkillApi?.open ||
+        !window.B66SkillStartDialog) return;
+    window.B66SkillStartDialog.open({
+      fileOpen: () => skillUiApi.actions.openWizard($("shellManualQuote")),
+      fileCancel: () => $("skillWizardCancel").click(),
+      blankOpen: () => manualSkillApi.open($("shellManualQuote")),
+      blankCancel: () => manualSkillApi.close()
+    }, $("shellManualQuote"));
   });
   document.addEventListener("b66:account-scope-changed", () => {
     if (manualSkillApi) manualSkillApi.refresh();

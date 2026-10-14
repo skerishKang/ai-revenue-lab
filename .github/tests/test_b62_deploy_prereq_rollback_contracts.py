@@ -7,6 +7,7 @@ import contextlib
 import importlib.util
 import io
 import json
+import sqlite3
 import tempfile
 from pathlib import Path
 
@@ -16,6 +17,9 @@ ACTIVATION_WORKFLOW = ROOT / ".github/workflows/b62-claw-live-config-activation-
 HELPER_PATH = ROOT / ".github/scripts/b62_claw_live_config_activation.py"
 GENERATOR_PATH = ROOT / ".github/scripts/b62_cloudflare_production_deploy_config.py"
 MIGRATION_PATH = ROOT / ".github/scripts/b62_d1_migration_008_schema.py"
+MIGRATION_040_PATH = ROOT / ".github/scripts/b62_d1_migration_040_schema.py"
+MIGRATION_031_SQL = ROOT / "apps/padiem-chat/migrations/031_claw_web_xlsx_p01_decision_receipts.sql"
+MIGRATION_040_SQL = ROOT / "apps/padiem-chat/migrations/040_claw_web_xlsx_p01_decision_release.sql"
 DEPLOY_TESTS = ROOT / "apps/padiem-chat/tests/test_b62_production_deploy_config.py"
 
 
@@ -30,6 +34,7 @@ def _load(name: str, path: Path):
 helper = _load("b62_claw_live_config_activation", HELPER_PATH)
 generator = _load("b62_cloudflare_production_deploy_config", GENERATOR_PATH)
 migration = _load("b62_d1_migration_008_schema", MIGRATION_PATH)
+migration_040 = _load("b62_d1_migration_040_schema", MIGRATION_040_PATH)
 
 ENGINE = "padiem-ai-engine"
 BUCKET = "padiem-workspace-files"
@@ -202,6 +207,71 @@ def test_case_4_migration_008_exact_required_missing_drift_refuse() -> None:
     assert "b62_d1_migration_008_schema.py" in deploy
 
 
+def _receipt_schema(*, apply_040: bool) -> dict:
+    """Execute the real 031/040 migrations; read back schema metadata only."""
+    connection = sqlite3.connect(":memory:")
+    connection.executescript(MIGRATION_031_SQL.read_text(encoding="utf-8"))
+    if apply_040:
+        connection.executescript(MIGRATION_040_SQL.read_text(encoding="utf-8"))
+    objects = [
+        {"name": row[0], "type": row[1], "sql": row[2]}
+        for row in connection.execute(
+            "SELECT name, type, sql FROM sqlite_master WHERE name = ?",
+            (migration_040.TABLE,),
+        )
+    ]
+    columns = [
+        {"name": r[1], "type": r[2], "notnull": r[3], "dflt_value": r[4], "pk": r[5]}
+        for r in connection.execute(f"PRAGMA table_info({migration_040.TABLE})")
+    ]
+    connection.close()
+    return {
+        "success": True,
+        "result": [
+            {"success": True, "results": objects},
+            {"success": True, "results": columns},
+        ],
+    }
+
+
+def test_case_4b_migration_040_receipt_column_is_a_deploy_prerequisite() -> None:
+    """#4522: the merged P01 code reads released_at, so 040 must precede deploy.
+
+    Fixtures come from executing the real 031 and 040 migrations, so the
+    classifier is proven against the schema SQLite actually produces (including
+    the post-``ALTER TABLE`` table text) rather than a hand-written expectation.
+    """
+    assert migration_040.classify_schema(_receipt_schema(apply_040=True)) == "exact"
+    # 031 present but 040 absent: applicable, and explicitly NOT deployable.
+    assert migration_040.classify_schema(_receipt_schema(apply_040=False)) == "pre_040"
+    # Neither present: 040 alone cannot be applied.
+    assert migration_040.classify_schema({
+        "success": True,
+        "result": [
+            {"success": True, "results": []},
+            {"success": True, "results": []},
+        ],
+    }) == "missing"
+
+    deploy = DEPLOY_WORKFLOW.read_text(encoding="utf-8")
+    assert "B62_D1_MIGRATION_040_SCHEMA=EXACT" in deploy
+    assert "MIGRATION_040_PREDEPLOY=EXACT" in deploy
+    assert "RELEASED_AT_PRESENT=PASS" in deploy
+    assert "b62_d1_migration_040_schema.py" in deploy
+    # Schema-only evidence: no row read, no identifier emitted, no mutation.
+    assert "APPLICATION_ROW_READ=0" in deploy
+    assert "D1_IDENTIFIER_OUTPUT=0" in deploy
+    # The live probe must be a real step that precedes the upload/activate step.
+    probe = deploy.index(
+        "\n      - name: Prove migration 040 receipt schema live state before deploy"
+    )
+    mutation = deploy.index(
+        "\n      - name: Deploy production code preserving the full binding set"
+    )
+    assert probe < mutation
+    assert "grep -q '^B62_D1_MIGRATION_040_SCHEMA=EXACT$'" in deploy[probe:mutation]
+
+
 def test_case_5_zero_application_row_reads() -> None:
     deploy = DEPLOY_WORKFLOW.read_text(encoding="utf-8")
     assert "APPLICATION_ROW_READ=0" in deploy
@@ -288,7 +358,7 @@ def test_case_8_code_version_and_config_rollback_are_distinct() -> None:
         "CODE_VERSION_ROLLBACK=SUBMITTED",
         "CODE_VERSION_ROLLBACK_READBACK=PASS",
         "CODE_VERSION_ROLLBACK_MECHANISM=VERSION_TARGET_RESTORED",
-        "CONFIG_ROLLBACK=PENDING_SNAPSHOT_BOUNDED_RESTORE",
+        "CONFIG_ROLLBACK=SNAPSHOT_VERIFIED_BEFORE_CODE_ROLLBACK",
         "CONFIG_ROLLBACK=SUBMITTED",
         "CONFIG_ROLLBACK_READBACK=EXACT",
         "CODE_VERSION_ROLLBACK_AND_CONFIG_ROLLBACK_ARE_DISTINCT=YES",
@@ -529,10 +599,19 @@ def test_case_17_readonly_publishes_active_version_as_non_secret_evidence() -> N
 def test_case_18_active_version_publication_keeps_deploy_and_rollback_gates() -> None:
     # The #2458 evidence change must not touch the deploy/rollback job gating.
     deploy = DEPLOY_WORKFLOW.read_text(encoding="utf-8")
+    # The normal deploy stays authorized by the existing gate; the one-off
+    # recovery mode shares the protected job and cannot bypass its prerequisites.
+    deploy_job = deploy.split("\n  deploy-production-code:\n", 1)[1].split(
+        "\n  rollback-production-code:\n", 1
+    )[0]
     assert (
         "if: ${{ github.event_name == 'workflow_dispatch' && "
-        "inputs.mode == 'deploy_production_code' }}" in deploy
+        "(inputs.mode == 'deploy_production_code' || "
+        "inputs.mode == 'recover_p01_sse_off') }}" in deploy_job
     )
+    assert "RECOVER_B62_P01_SSE_OFF_FROM_PINNED_SNAPSHOT" in deploy_job
+    assert "P01_SSE_RECOVERY_PREMUTATION=PASS" in deploy_job
+    assert "environment: production" in deploy_job
     assert (
         "if: ${{ github.event_name == 'workflow_dispatch' && "
         "inputs.mode == 'rollback_production_code' }}" in deploy
@@ -573,6 +652,30 @@ def test_deploy_prereq_cli_exit_codes() -> None:
         assert "MANUAL_CONFIG_RECOVERY_REQUIRED" in err
         assert "CODE_VERSION_ROLLBACK_UNAFFECTED=YES" in err
         assert "FULL_CONFIG_ROLLBACK_CLAIM=NO" in err
+
+
+def test_protected_code_rollback_checks_out_exact_main_before_scripts():
+    # Incident #38445968250: no checkout -> bash helper not found (exit 127).
+    w = DEPLOY_WORKFLOW.read_text(encoding="utf-8")
+    rollback = w.split("\n  rollback-production-code:\n", 1)[1].split(
+        "\n  # #3782:", 1
+    )[0]
+    authorize = rollback.index("Require explicit rollback authorization")
+    checkout = rollback.index("Checkout exact rollback workflow source")
+    confirm = rollback.index("Reconfirm exact main before a recorded-version rollback")
+    locate = rollback.index("Locate recorded version in history")
+    mutation = rollback.index("Roll out recorded version")
+    assert authorize < checkout < confirm < locate < mutation
+    assert "uses: actions/checkout@v4" in rollback
+    assert "persist-credentials: false" in rollback
+    assert "ref: ${{ env.TARGET_SHA }}" in rollback
+    assert "test \"$(git rev-parse origin/main)\" = \"${TARGET_SHA}\"" in rollback
+    for path in ("b62_cloudflare_504_readonly_get.sh",
+                 "b62_cloudflare_rollback_deployment_request.py",
+                 "cloudflare_served_version_cli.py"):
+        assert "test -s .github/scripts/" + path in rollback
+    assert "environment: production" in rollback
+    assert "ROLLBACK_B62_PRODUCTION_CODE_TO_RECORDED_VERSION" in rollback
 
 
 if __name__ == "__main__":

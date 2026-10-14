@@ -85,9 +85,19 @@ def test_picker_recent_search_and_empty_states() -> None:
     assert observed["recent_first_name"] == "사건자료"
     assert observed["recent_first_space"] == "내 드라이브"
     assert observed["recent_second_space"] == "공유 드라이브"
+    assert observed["recent_first_modified_hidden"] is True
     assert observed["recent_empty"] == "최근 폴더가 없습니다."
     assert observed["search_empty"] == "검색 결과가 없습니다."
     assert observed["search_query_in_url"] is True
+
+
+def test_same_name_folders_show_modified_time_as_distinguisher() -> None:
+    observed = _run("duplicate_modified")
+    assert observed["rows"] == 2
+    assert observed["first_modified"] == "2026-09-01T00:00:00+00:00"
+    assert observed["second_modified"] == "2026-10-05T00:00:00+00:00"
+    assert observed["first_modified_hidden"] is False
+    assert observed["second_modified_hidden"] is False
 
 
 def test_picker_error_states_are_distinct() -> None:

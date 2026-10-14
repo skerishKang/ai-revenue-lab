@@ -38,7 +38,7 @@ def test_b14_get_models_matches_json_exact():
     data=resp.json()
     expected={m["id"]:m for m in reg["models"]}
     assert {r["id"] for r in data["registered_routes"]}==set(expected)
-    assert {r["id"] for r in data["catalog"]}==set(expected)
+    assert {r["id"] for r in data["catalog"]} == {m["id"] for m in reg["models"] if m["enabled"] and reg["providers"][m["provider_id"]]["enabled"]}
     for row in data["catalog"]:
         assert row["name"]==expected[row["id"]]["display_name"]
     assert data["model_groups"]==reg["groups"]==group_model_ids()
@@ -121,7 +121,8 @@ def test_workspace_manual_selector_uses_json_registered_models():
         response=client.get("/workspace")
     assert response.status_code == 200
     html=unescape(response.text)
-    models=read_registry()["models"]
+    registry=read_registry()
+    models=[m for m in registry["models"] if m["enabled"] and registry["providers"][m["provider_id"]]["enabled"]]
     for row in models:
         assert 'value="'+row["id"]+'"' in html
     for retired in RETIRED:
@@ -180,3 +181,51 @@ def test_disabled_provider_makes_its_registered_models_unavailable(tmp_path):
         assert item is not None and item.enabled is False
     finally:
         install_models()
+
+
+
+def test_opencodego_and_zanslab_are_registered_disabled_without_credentials():
+    """Owner intake is metadata only until distinct credentials and transport are verified."""
+    reg = read_registry()
+    providers = reg["providers"]
+    assert providers["opencode-go"]["base_origin"] == "https://opencode.ai/zen/go/v1"
+    assert providers["opencode-go"]["credential_binding_name"] == "PADIEM_OPENCODE_API_KEY"
+    assert providers["zanslab"]["base_origin"] == "https://zanslab.id/v1"
+    assert providers["zanslab"]["credential_binding_name"] == "PADIEM_ZANSLAB_API_KEY"
+    assert providers["opencode-go"]["enabled"] is False
+    assert providers["zanslab"]["enabled"] is False
+    # Six Go models remain inactive. A verified account-scoped ZansLab ID
+    # is now also registered but no generation/SSE proof or activation exists.
+    rows = [row for row in reg["models"] if row["provider_id"] == "opencode-go"]
+    assert {row["upstream_model"] for row in rows} == {
+        "longcat-2.5-preview-free", "step-5-preview-free",
+        "muse-spark-1.3-contributor", "muse-spark-1.2-contributor", "gpt-6-luna", "claude-haiku-5-5",
+    }
+    assert all(row["enabled"] is False for row in rows)
+    zans_rows = [row for row in reg["models"] if row["provider_id"] == "zanslab"]
+    assert len(zans_rows) == 1
+    assert zans_rows[0]["id"] == "zanslab/gpt-6-luna"
+    assert zans_rows[0]["upstream_model"] == "op/gpt-6-luna"
+    assert zans_rows[0]["enabled"] is False
+    assert zans_rows[0]["context_window"] == 0
+    assert zans_rows[0]["input_price_usd_per_1m"] is None
+    assert zans_rows[0]["output_price_usd_per_1m"] is None
+    assert "free" not in zans_rows[0]["capabilities"]
+    assert get_catalog_by_id("zanslab/gpt-6-luna").enabled is False
+    assert not any(model_id.startswith(("opencode-go/", "zanslab/"))
+                   for tier in ("plus", "pro", "max") for model_id in reg["groups"][tier])
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    wrangler = (root / "wrangler.toml").read_text(encoding="utf-8")
+    import tomllib
+    bindings = tomllib.loads(wrangler)["secrets_store_secrets"]
+    for name in ("PADIEM_OPENCODE_API_KEY", "PADIEM_ZANSLAB_API_KEY"):
+        matches = [x for x in bindings if x["binding"] == name]
+        assert len(matches) == 1
+        assert matches[0] == {
+            "binding": name,
+            "secret_name": name,
+            "store_id": "f0b09ca04a7b43248154c773704a5616",
+        }
+    assert len({x["binding"] for x in bindings}) == len(bindings)
+    assert "PADIEM_OPENCODE_GO_API_KEY" not in wrangler

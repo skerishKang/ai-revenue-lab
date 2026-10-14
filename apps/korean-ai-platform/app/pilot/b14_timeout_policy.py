@@ -21,20 +21,29 @@ from __future__ import annotations
 
 import httpx
 
-CONNECT_SECONDS = 30.0
-READ_SECONDS = 600.0  # ZCode-style per-chunk model idle watchdog
+READ_SECONDS = 600.0  # model first response / per-chunk inactivity ceiling
+# Workers' Fetch-backed HTTPX connect phase can include waiting for response
+# headers, not just a native TCP handshake. It must not silently impose a
+# second 30/55s wall on otherwise healthy 600s model inference.
+CONNECT_SECONDS = READ_SECONDS  # Fetch first-response watchdog (not 30s)
 WRITE_SECONDS = 20.0
 POOL_SECONDS = 10.0
 GATEWAY_WALL_SECONDS = 45.0
 ENGINE_MAX_WALL_SECONDS = 60.0  # Core ceiling, NOT its 20s default
 
-assert 0 < POOL_SECONDS <= WRITE_SECONDS <= CONNECT_SECONDS < GATEWAY_WALL_SECONDS
+assert 0 < POOL_SECONDS <= WRITE_SECONDS < CONNECT_SECONDS
 assert 0 < GATEWAY_WALL_SECONDS < ENGINE_MAX_WALL_SECONDS
-assert READ_SECONDS >= GATEWAY_WALL_SECONDS  # independent model idle budget
+assert CONNECT_SECONDS == READ_SECONDS  # same first-response/stream idle budget
 
 
-def build_provider_http_timeout() -> httpx.Timeout:
-    """Fresh immutable-equivalent policy for both B14 completed and SSE."""
+def build_provider_http_timeout(model_id: str | None = None) -> httpx.Timeout:
+    """Uniform first-response/stream-idle budget for exact-model inference.
+
+    Retain an optional model identifier for existing adapter callers; no
+    provider-specific 30/55s early cap is permitted. Tool and OAuth transport
+    deadlines belong to their separate, short-bound transport policies.
+    """
+    del model_id
     return httpx.Timeout(
         None,
         connect=CONNECT_SECONDS,

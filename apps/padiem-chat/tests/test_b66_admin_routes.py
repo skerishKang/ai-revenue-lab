@@ -172,3 +172,100 @@ async def test_member_detail_metadata_uses_authenticated_admin_not_browser_ident
         assert "customer_secret" not in ok.text
         assert (await client.get("/api/b66/admin/members/bad-id/detail",
                                  cookies=cookie(admin))).status_code == 404
+
+@pytest.mark.asyncio
+async def test_global_off_is_enforced_without_membership_rollout_and_restored_on():
+    """Admin model OFF must deny actual inference before any provider dispatch.
+
+    The separate membership/tier feature is *not* activated in this test.
+    """
+    from app.b66_member_admin import D1B66MemberAdminStore
+    db, admin, legacy, _impostor = seed_db()
+    app, settings = tiny_admin_app(
+        D1B66MemberAdminStore(db, admin_email="admin@example.test"),
+        enforcement=False,
+    )
+    app.state.b66_global_model_switch_enforced = True
+    def cookie(uid):
+        return {"padiem_session": create_session_token(settings, uid)}
+
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="https://chat.padiem.net"
+    ) as client:
+        registry = await client.get("/api/b66/admin/model-policy", cookies=cookie(admin))
+        assert registry.status_code == 200
+        assert registry.json()["enforcement_enabled"] is False
+        assert registry.json()["global_off_enforcement_enabled"] is True
+
+        policy = {
+            "expected_revision": registry.json()["policy"]["revision"],
+            "active": False,
+            "tiers": {"FREE": [], "PLUS": [], "PRO": [], "MAX": []},
+            "disabled_models": ["deepseek/deepseek-chat"],
+        }
+        saved = await client.put(
+            "/api/b66/admin/model-policy", cookies=cookie(admin), json=policy
+        )
+        assert saved.status_code == 200, saved.text
+        assert saved.json()["policy"]["disabled_models"] == ["deepseek/deepseek-chat"]
+
+        # The picker excludes OFF models without changing membership status.
+        picker = await client.get("/api/b66/quote/models", cookies=cookie(legacy))
+        assert picker.status_code == 200, picker.text
+        assert [m["model_id"] for m in picker.json()["models"]] == [
+            "google/gemini-3.5-flash-lite"
+        ]
+        # Direct crafted POST cannot bypass OFF, even with the precise ID.
+        dispatch = await client.post(
+            "/api/b66/quote/interpret", cookies=cookie(legacy),
+            json={
+                "saved_skill_id": "fake-skill",
+                "message": "견적서를 작성해줘",
+                "model_id": "deepseek/deepseek-chat",
+            },
+        )
+        assert dispatch.status_code == 403
+        assert dispatch.json()["error"]["code"] == "model_disabled"
+
+        # Turning it back ON unblocks the picker; no provider call is needed.
+        policy["disabled_models"] = []
+        policy["expected_revision"] += 1
+        restored = await client.put(
+            "/api/b66/admin/model-policy", cookies=cookie(admin), json=policy
+        )
+        assert restored.status_code == 200
+        picker = await client.get("/api/b66/quote/models", cookies=cookie(legacy))
+        assert picker.status_code == 200
+        assert {m["model_id"] for m in picker.json()["models"]} == {
+            "google/gemini-3.5-flash-lite", "deepseek/deepseek-chat"
+        }
+
+
+@pytest.mark.asyncio
+async def test_global_off_fails_closed_without_d1_and_does_not_dispatch():
+    """The production global switch never treats D1 unavailability as ON."""
+    from app.b66_member_admin import D1B66MemberAdminStore
+    db, admin, legacy, _impostor = seed_db()
+    app, settings = tiny_admin_app(
+        D1B66MemberAdminStore(db, admin_email="admin@example.test"),
+        enforcement=False,
+    )
+    app.state.b66_global_model_switch_enforced = True
+    app.state.b66_member_admin_store = None
+    cookies = {"padiem_session": create_session_token(settings, legacy)}
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="https://chat.padiem.net"
+    ) as client:
+        listed = await client.get("/api/b66/quote/models", cookies=cookies)
+        assert listed.status_code == 503
+        assert listed.json()["error"]["code"] == "model_policy_unavailable"
+        blocked = await client.post(
+            "/api/b66/quote/interpret", cookies=cookies,
+            json={
+                "saved_skill_id": "fake-skill",
+                "message": "견적서를 작성해줘",
+                "model_id": "google/gemini-3.5-flash-lite",
+            },
+        )
+        assert blocked.status_code == 503
+        assert blocked.json()["error"]["code"] == "model_policy_unavailable"

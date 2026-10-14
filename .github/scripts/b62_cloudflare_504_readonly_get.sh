@@ -11,7 +11,7 @@ base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/wor
 # Production route proof uses one fixed hostname, not arbitrary account domains.
 domain_url="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains?hostname=chat.padiem.net"
 case "${url}" in
-  "${base}/settings"|"${base}/deployments"|"${base}/subdomain"|"${base}/versions"*|"${domain_url}")
+  "${base}/settings"|"${base}/deployments"|"${base}/deployments?page=1&per_page=100"|"${base}/subdomain"|"${base}/versions"*|"${domain_url}")
     ;;
   *) echo 'CF_B62_READONLY_GET=UNAUTHORIZED_PATH' >&2; exit 2 ;;
 esac

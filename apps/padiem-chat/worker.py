@@ -16,7 +16,8 @@ from urllib.parse import urlparse
 # Service-Binding transport must use that same httpx Request/Response/stream
 # type family; app.httpx_compat is only for app-owned JS-fetch clients.
 import httpx
-from padiem_ai_core.b14_execution import MAX_B14_RESPONSE_BYTES
+from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
+from app.padiem_super_admin_bootstrap import resolve_super_admin_bootstrap
 from app.service_binding_response import (
     ServiceBindingResponseError,
     ServiceBindingResponseTooLarge,
@@ -34,6 +35,7 @@ from app.claw_automation_store import D1ClawAutomationStore
 from app.claw_local_access_composition import (
     build_claw_local_access_source_with_diagnostic,
 )
+from app.claw_device_directory_routes import build_broker_device_directory_source
 from app.desktop_conversation_authority import (
     build_desktop_device_session_authority_with_diagnostic,
 )
@@ -58,6 +60,7 @@ from app.b66_registered_model_boundary import (
 )
 from app.b66_b14_free_first_resolver import B66ExplicitQuoteModelResolver
 from app.b66_kira_direct_pilot import B66KiraPilotExecutor
+from app.b66_experiential_direct_pilot import B66ExperientialPilotExecutor
 from app.config import ConfigError
 from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from app.calendar_read_activation_engine import CloudflareCalendarReadActivationEngineClient
@@ -268,14 +271,18 @@ class CloudflareB14ServiceTransport:
         try:
             body = await read_bounded_service_binding_body(
                 response,
-                max_bytes=MAX_B14_RESPONSE_BYTES,
+                # Use the same existing finite completed-JSON Worker safety
+                # budget as B14/Core; the obsolete 1MiB Service Binding read
+                # ceiling used to reject healthy answers before Core saw them.
+                # This is NOT a model token/output limit. Streaming remains
+                # incremental and is not affected.
+                max_bytes=MAX_CONFIGURED_B14_RESPONSE_BYTES,
             )
         except ServiceBindingResponseTooLarge:
-            # Core owns the public "response too large" classification. Return
-            # one bounded sentinel byte beyond its configured ceiling so that
-            # classification remains unchanged without consuming the rest of
-            # the Service Binding stream.
-            return status, bytes(MAX_B14_RESPONSE_BYTES + 1)
+            # Core owns the public resource-error classification. Return one
+            # bounded sentinel byte beyond its configured maximum; the reader
+            # has cancelled upstream without buffering an unbounded response.
+            return status, bytes(MAX_CONFIGURED_B14_RESPONSE_BYTES + 1)
         except ServiceBindingResponseError as exc:
             raise RuntimeError(
                 "Business 14 Service Binding response could not be read."
@@ -682,6 +689,21 @@ class CloudflareExternalHttpTransport(httpx.AsyncBaseTransport):
                 js_response.headers,
                 request=request,
             )
+            # Workers JS Fetch exposes a decompressed body stream while origin
+            # Content-Encoding can still describe the compressed wire payload.
+            # Passing that stale header to httpx would decode the bytes again,
+            # raising httpx.DecodingError for otherwise-valid TinyFish JSON.
+            # Content-Length also describes the compressed representation.
+            encoding = next(
+                (str(value).strip().lower() for key, value in response_headers.items()
+                 if key.lower() == "content-encoding"),
+                "",
+            )
+            if encoding in {"gzip", "br", "deflate"}:
+                response_headers = {
+                    key: value for key, value in response_headers.items()
+                    if key.lower() not in {"content-encoding", "content-length"}
+                }
             response_body = getattr(js_response, "body", None)
         except httpx.ProtocolError:
             raise
@@ -739,7 +761,7 @@ class Default(WorkerEntrypoint):
                 # which case WorkspaceDocumentStore stays None (fail closed).
                 r2_binding = binding_value(self.env, WORKSPACE_R2_BINDING_NAME)
 
-                history_store = D1HistoryStore(db_binding) if db_binding is not None else None
+                history_store = D1HistoryStore(db_binding, full_context_bucket=r2_binding) if db_binding is not None else None
                 project_file_store = D1ProjectFileStore(db_binding) if db_binding is not None else None
                 saved_output_store = D1SavedOutputStore(db_binding) if db_binding is not None else None
                 identity_shadow_store = D1IdentityShadowStore(db_binding) if db_binding is not None else None
@@ -807,12 +829,22 @@ class Default(WorkerEntrypoint):
                 # build, so this stays None and the route refuses with 403
                 # rather than inventing an approval.
                 claw_telegram_delivery_request_builder = None
+                # Single trusted PADIEM operator bootstrap. Existing product
+                # authorizers still check the Google provider subject in D1.
+                # A conflicting legacy binding fails closed for BOTH products.
+                b66_operator_email, central_operator_email = resolve_super_admin_bootstrap(
+                    shared=binding_value(self.env, "PADIEM_SUPER_ADMIN_GOOGLE_EMAIL"),
+                    legacy_b66=binding_value(self.env, "B66_ADMIN_GOOGLE_EMAIL"),
+                    legacy_central=binding_value(self.env, "PADIEM_CENTRAL_MODEL_ADMIN_GOOGLE_EMAIL"),
+                )
                 _worker_app = create_app(
                     settings=settings,
                     history_store=history_store,
                     d1_binding=db_binding,
-                    b66_admin_google_email=(
-                        binding_value(self.env, "B66_ADMIN_GOOGLE_EMAIL") or ""
+                    b66_admin_google_email=b66_operator_email,
+                    central_model_admin_google_email=central_operator_email,
+                    central_model_policy_signing_key=(
+                        binding_value(self.env, "PADIEM_CENTRAL_MODEL_POLICY_SIGNING_KEY") or ""
                     ),
                     r2_binding=r2_binding,
                     web_transport=web_transport,
@@ -829,6 +861,10 @@ class Default(WorkerEntrypoint):
                 _worker_app.state.b66_membership_enforced = (
                     binding_value(self.env, "B66_MEMBERSHIP_ENFORCED") == "enabled"
                 )
+                # Admin ON/OFF must deny production B66 model execution even
+                # when the separate membership/tier rollout is not enabled.
+                # D1 metadata errors fail closed before any provider dispatch.
+                _worker_app.state.b66_global_model_switch_enforced = True
                 # Optional signup notification channels: configuration comes
                 # exclusively from trusted Worker bindings, never browser input.
                 def _b66_notice_value(key):
@@ -934,11 +970,15 @@ class Default(WorkerEntrypoint):
                 _worker_app.state.b66_quote_model_resolver = quote_model_resolver
                 # Claw/B66 consume the same B14 owner-allowed/live-ready catalog.
                 _worker_app.state.b14_model_choice_resolver = quote_model_resolver
-                b66_quote_executor = B66KiraPilotExecutor(
-                    original_executor=B14QuoteExactModelExecutor(
-                        _worker_app.state.b14_client
+                b66_quote_executor = B66ExperientialPilotExecutor(
+                    original_executor=B66KiraPilotExecutor(
+                        original_executor=B14QuoteExactModelExecutor(
+                            _worker_app.state.b14_client
+                        ),
+                        credential_binding=binding_value(self.env, "PADIEM_KIRAAI_API_KEY"),
+                        transport=web_transport,
                     ),
-                    credential_binding=binding_value(self.env, "PADIEM_KIRAAI_API_KEY"),
+                    credential_binding=binding_value(self.env, "PADIEM_EXLAB_API_KEY"),
                     transport=web_transport,
                 )
                 # #3977: the selectable-level gate is the same measured capability
@@ -1047,6 +1087,11 @@ class Default(WorkerEntrypoint):
                 )
                 if claw_local_access_source is not None:
                     _worker_app.state.claw_local_access_source = claw_local_access_source
+                # #4139: second consumer of the SAME trusted broker service
+                # binding. Never infer a device list from local browser state.
+                device_directory_source = build_broker_device_directory_source(self.env)
+                if device_directory_source is not None:
+                    _worker_app.state.claw_device_directory_source = device_directory_source
                 # #3436 B2c: compose the canonical device-session authority for
                 # the GET-only Desktop conversation surface from the same
                 # trusted broker binding. When the trusted runtime is absent

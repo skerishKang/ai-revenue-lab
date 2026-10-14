@@ -33,7 +33,7 @@ def test_removed_free_models_not_in_public_or_exact_catalog():
     assert CATALOG_MODELS == []
     # Historical Kilo promotional free routes remain retired. The only
     # explicitly owner-approved free-tagged B14 registrations are TokenHarbor.
-    assert {m.model_id for m in CATALOG_BY_ID.values() if "free" in m.capabilities} == {
+    assert {m.model_id for m in CATALOG_BY_ID.values() if "free" in m.capabilities and m.enabled} == {
         "tokenharbor/claude-haiku-5.5:free",
         "tokenharbor/deepseek-v4.1-flash:free",
     }

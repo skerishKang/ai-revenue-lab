@@ -138,16 +138,16 @@ def test_4117_historical_private_certificate_cannot_authorize_service(adapter):
 
 
 def test_4117_public_manifest_cannot_inherit_historical_private_certificate():
-    import json
-    manifest_path = BUNDLE.parent / "PUBLIC_RELEASE_MANIFEST.json"
-    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    cert = json.loads((BUNDLE / "certificate.json").read_text(encoding="utf-8"))
-    assert manifest["historical_sol_certificate_refers_to_original_private_bundle"] is True
-    assert manifest["public_bundle_is_exact_unmodified_source_subset"] is False
-    assert manifest["runtime_activation"] is False
-    # Public file hash must follow the public release manifest rather than the
-    # historical private-package hash inside the source certificate.
-    for member in ("engine/quote_template.py", "template/template.json"):
-        actual = hashlib.sha256((BUNDLE / member).read_bytes()).hexdigest()
-        assert actual == manifest["artifacts"]["sol61/" + member]["sha256"]
-        assert actual != cert["packageFiles"][member]
+    # Publication was revoked. The legacy CI entrypoint remains mandatory,
+    # but must now prove absence of private source/certificate/public manifests.
+    parent = BUNDLE.parent
+    assert not (parent / "PUBLIC_RELEASE_MANIFEST.json").exists()
+    assert not (BUNDLE / "certificate.json").exists()
+    assert not (BUNDLE / "template" / "program.zlib").exists()
+    assert not (BUNDLE / "template" / "template.json").exists()
+    assert not (BUNDLE / "template" / "resources.pdf").exists()
+    assert not (parent / "source" / "original.pdf").exists()
+    assert not (parent / "source" / "original-public.xlsx").exists()
+    readme = (parent / "README.md").read_text(encoding="utf-8")
+    assert "SOURCE_PUBLICATION_AUTHORITY=REVOKED_BY_OWNER_2026-10-14" in readme
+    assert "CUSTOMER_ACCESS=SERVER_AUTHENTICATED_SAVED_QUOTE_SKILL_ONLY" in readme

@@ -41,6 +41,23 @@ class WebXlsxP01RequestError(ValueError):
         self.engine_code = engine_code
 
 
+class WebXlsxP01RetrySafeDecisionError(WebXlsxP01RequestError):
+    """The Engine refused the decision WITHOUT consuming the continuation.
+
+    This is the canonical ``RETRY_SAFE_RESUME_CODES`` class: no Engine state
+    was consumed, so the owner may decide again. It is deliberately distinct
+    from an ambiguous transport failure, which must stay armed and unretried.
+    """
+
+
+class WebXlsxP01DecisionRetryableError(WebXlsxP01RequestError):
+    """The B62 one-shot reservation was released after a retry-safe rejection.
+
+    Raised only once the durable release is verified, so the route never
+    advertises a retry it cannot honour.
+    """
+
+
 def _utc(value: str) -> datetime:
     if not isinstance(value, str):
         raise WebXlsxP01RequestError("timestamp required")

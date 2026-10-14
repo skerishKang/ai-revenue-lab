@@ -90,6 +90,7 @@ from .history import (
     MAX_CLAW_RUNS,
     MAX_RUN_RESULT_SUMMARY_CHARS,
     HistoryStore,
+    PRODUCT_SCOPE_CHAT,
     validate_conversation_id,
 )
 from .usage_gate import UsageGate
@@ -98,6 +99,7 @@ from kagent.document_export import (
     GeneratedDocumentArtifact,
     build_document_artifact,
 )
+from kagent.contracts import MAX_EXECUTABLE_TASK_CHARS
 from kagent.manual_intake import (
     ContractError,
     ManualIntakeAction,
@@ -133,7 +135,6 @@ from .worker_config import P01_COMPOSITION_DIAGNOSTICS
 from .workspace_storage import WorkspaceStorageAccessError, WorkspaceStorageError
 
 MAX_MANUAL_INTAKE_BODY_BYTES = 64 * 1024  # 64 KiB
-MAX_CONTENT_CHARS = 4_000
 MAX_SENDER_CHARS = 120
 
 _NO_STORE_HEADERS = {
@@ -360,7 +361,7 @@ async def _resolve_intake_session_reference(
     if not callable(get_conversation):
         return None, _error(503, "conversation_authority_unavailable", "대화 세션 권한을 확인할 수 없습니다.")
     try:
-        conversation = get_conversation(uid, candidate)
+        conversation = get_conversation(uid, candidate, product_scope=PRODUCT_SCOPE_CHAT)
         if inspect.isawaitable(conversation):
             conversation = await conversation
     except Exception:
@@ -397,8 +398,6 @@ async def claw_manual_intake_preview(request: Request) -> JSONResponse:
     if not isinstance(content, str) or not content.strip():
         return _error(400, "invalid_content", "요청 원문을 입력해 주세요.")
     content_clean = content.strip()
-    if len(content_clean) > MAX_CONTENT_CHARS:
-        return _error(400, "content_too_long", f"요청 원문은 {MAX_CONTENT_CHARS}자 이하로 입력해 주세요.")
 
     raw_channel = str(data.get("channel") or "other").strip().lower()
     channel = _CHANNEL_MAP.get(raw_channel)
@@ -409,6 +408,12 @@ async def claw_manual_intake_preview(request: Request) -> JSONResponse:
     action = _ACTION_MAP.get(raw_action)
     if action is None:
         return _error(400, "invalid_action", f"지원되지 않는 작업입니다: {raw_action}")
+
+    # Manual intake is an executable P01/tool task. Use its canonical task
+    # limit on the FULL prefixed task, rather than the retired 4k source limit.
+    # Validate before quota/session/Engine dispatch; do not silently truncate.
+    if len(_build_execute_task(action, content_clean)) > MAX_EXECUTABLE_TASK_CHARS:
+        return _error(400, "content_too_long", "Executable manual request is too long.")
 
     sender_hint: str | None = None
     if "sender_hint" in data and data["sender_hint"] is not None:
@@ -487,8 +492,6 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     if not isinstance(content, str) or not content.strip():
         return _error(400, "invalid_content", "요청 원문을 입력해 주세요.")
     content_clean = content.strip()
-    if len(content_clean) > MAX_CONTENT_CHARS:
-        return _error(400, "content_too_long", f"요청 원문은 {MAX_CONTENT_CHARS}자 이하로 입력해 주세요.")
 
     raw_channel = str(data.get("channel") or "other").strip().lower()
     channel = _CHANNEL_MAP.get(raw_channel)
@@ -499,6 +502,12 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     action = _ACTION_MAP.get(raw_action)
     if action is None:
         return _error(400, "invalid_action", f"지원되지 않는 작업입니다: {raw_action}")
+
+    # Manual intake is an executable P01/tool task. Use its canonical task
+    # limit on the FULL prefixed task, rather than the retired 4k source limit.
+    # Validate before quota/session/Engine dispatch; do not silently truncate.
+    if len(_build_execute_task(action, content_clean)) > MAX_EXECUTABLE_TASK_CHARS:
+        return _error(400, "content_too_long", "Executable manual request is too long.")
 
     sender_hint: str | None = None
     if "sender_hint" in data and data["sender_hint"] is not None:
@@ -1128,6 +1137,27 @@ async def claw_approval_decision(request: Request) -> JSONResponse:
             headers=_NO_STORE_HEADERS,
         )
 
+    # Cross-Worker single-winner CAS before the first possible Engine side effect.
+    # A stale preflight read never authorizes a second physical continuation.
+    claim = getattr(history_store, "claim_claw_approval_handoff", None)
+    release = getattr(history_store, "release_claw_approval_claim", None)
+    finalize = getattr(history_store, "finalize_claw_approval_claim", None)
+    if not all(callable(method) for method in (claim, release, finalize)):
+        return _error(503, "approval_handoff_unavailable", _APPROVAL_NOT_AVAILABLE_MESSAGE)
+    try:
+        claim_token = claim(
+            user_id=uid, run_id=run_id, workspace_id=workspace_id,
+            continuation_ref=str(handoff.get("continuation_ref") or ""),
+            pause_id=str(handoff.get("pause_id") or ""),
+            trusted_request_fingerprint=str(handoff.get("trusted_request_fingerprint") or ""),
+        )
+        if inspect.isawaitable(claim_token):
+            claim_token = await claim_token
+    except Exception:
+        return _error(503, "approval_handoff_unavailable", _APPROVAL_NOT_AVAILABLE_MESSAGE)
+    if not isinstance(claim_token, str) or not claim_token.startswith("decision_claim:"):
+        return _error(409, "approval_decision_in_progress", _APPROVAL_NOT_AVAILABLE_MESSAGE)
+
     try:
         outcome = await P01ApprovalContinuationService(continuation_client).decide(
             run_id=run_id,
@@ -1137,8 +1167,17 @@ async def claw_approval_decision(request: Request) -> JSONResponse:
         )
     except P01AdapterError as exc:
         if exc.dispatch_class == P01DispatchClass.NOT_DISPATCHED:
-            # The Engine rejected this submission without consuming the stored
-            # continuation: the handoff stays active and the run keeps waiting.
+            # Engine proved no dispatch: only the matching in-flight token may
+            # release the row for a genuine user retry (never for timeouts).
+            try:
+                released = release(user_id=uid, run_id=run_id,
+                                   workspace_id=workspace_id, claim_token=claim_token)
+                if inspect.isawaitable(released):
+                    released = await released
+            except Exception:
+                released = False
+            if released is not True:
+                return _error(503, "approval_handoff_unavailable", _APPROVAL_NOT_AVAILABLE_MESSAGE)
             return _error(
                 409,
                 "approval_decision_rejected",
@@ -1153,18 +1192,17 @@ async def claw_approval_decision(request: Request) -> JSONResponse:
     except Exception:
         return _error(502, "engine_execution_failed", "Engine 승인 처리에 실패했습니다.")
 
-    # Every path below has proven Engine consumption (commit) or canonical
-    # denial, so the decided handoff becomes unusable only now.
-    consume = getattr(history_store, "consume_claw_approval_handoff", None)
-    if consume is not None:
-        try:
-            consumed = consume(user_id=uid, run_id=run_id, workspace_id=workspace_id)
-            if inspect.isawaitable(consumed):
-                consumed = await consumed
-        except Exception:
-            return _error(503, "approval_handoff_unavailable", "승인 상태를 저장하지 못했습니다.")
-        if consumed is not True:
-            return _error(503, "approval_handoff_unavailable", "승인 상태를 저장하지 못했습니다.")
+    # Engine returned a proven canonical outcome. Only this exact winning
+    # pre-dispatch claim may be finalized; unknown outcomes remain claimed.
+    try:
+        consumed = finalize(user_id=uid, run_id=run_id,
+                            workspace_id=workspace_id, claim_token=claim_token)
+        if inspect.isawaitable(consumed):
+            consumed = await consumed
+    except Exception:
+        return _error(503, "approval_handoff_unavailable", "승인 상태를 저장하지 못했습니다.")
+    if consumed is not True:
+        return _error(503, "approval_handoff_unavailable", "승인 상태를 저장하지 못했습니다.")
 
     status = outcome.projection.status.value
     if outcome.next_continuation_ref is not None:

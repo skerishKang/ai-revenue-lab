@@ -4,12 +4,9 @@ Three different authorities govern how much output a B14 call may produce.
 They must never be merged into a single number:
 
     PRODUCT_REQUESTED_LIMIT
-        The output budget a product/feature actually requests. Today the
-        explicit-request compatibility ceiling is the legacy B14 pilot
-        validation value (4096, origin commit d8714ad4 / 2026-07-25);
-        see padiem_ai_core.b14_execution.PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING.
-        Widening it is a deliberate product decision, never an automatic
-        copy of a provider maximum.
+        When a specific product explicitly opts into a maximum output budget,
+        apply that product's independently specified budget. No global 4096
+        ceiling: the old pilot compatibility check was not a model capability.
 
     RUNTIME_HARD_SAFETY_CEILING
         B14's resource-abuse guards, independent of max_tokens: response
@@ -105,7 +102,7 @@ class OutputBudgetDecision:
 def validate_output_budget(
     requested: object,
     *,
-    product_max: int = PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING,
+    product_max: int | None = PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING,
     runtime_ceiling: int | None = None,
     capability: ModelOutputCapability | None = None,
 ) -> OutputBudgetDecision:
@@ -114,13 +111,13 @@ def validate_output_budget(
     Semantics (conceptual contract for #3553):
 
         requested is a positive integer
-        AND requested <= product_max                      (PRODUCT_REQUESTED_LIMIT)
+        AND requested <= product_max                      (only if a product sets one)
         AND requested <= runtime_ceiling                  (RUNTIME_HARD_SAFETY_CEILING, when supplied)
         AND requested <= capability.provider_model_max_output
             (PROVIDER_MODEL_MAX_OUTPUT, only when reliable capability metadata
              is supplied; unknown capability is skipped, never fabricated)
 
-    The default ``product_max`` is the legacy compatibility ceiling (4096).
+    The default ``product_max=None`` means no global product ceiling.
     This function does NOT change B14ChatRequest validation; it makes the
     authorities explicit and testable for future deliberate widening.
     """
@@ -140,9 +137,11 @@ def validate_output_budget(
         )
     if requested <= 0:
         return reject("PRODUCT_REQUESTED_LIMIT:format", "explicit max_tokens must be >= 1")
-    if not isinstance(product_max, int) or isinstance(product_max, bool) or product_max <= 0:
-        return reject("PRODUCT_REQUESTED_LIMIT:format", "product_max must be a positive integer")
-    if requested > product_max:
+    if product_max is not None and (
+        not isinstance(product_max, int) or isinstance(product_max, bool) or product_max <= 0
+    ):
+        return reject("PRODUCT_REQUESTED_LIMIT:format", "product_max must be a positive integer or None")
+    if product_max is not None and requested > product_max:
         return reject(
             "PRODUCT_REQUESTED_LIMIT",
             f"requested {requested} exceeds the product explicit budget ceiling {product_max}",

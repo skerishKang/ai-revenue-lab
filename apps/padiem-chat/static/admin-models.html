@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f8fc">
+  <meta name="referrer" content="no-referrer">
+  <title>모델 관리 · PADIEM</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./admin-models.css">
+  <script src="./admin-models.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <aside class="side" aria-label="관리 메뉴">
+      <a class="brand" href="./" aria-label="PADIEM 홈"><span class="brand-symbol" aria-hidden="true">P</span><strong>PADIEM</strong></a>
+      <nav class="side-nav" aria-label="관리 메뉴">
+        <a class="nav-link" href="./"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m3 10 9-7 9 7v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 21v-8h6v8"/></svg></span><span>서비스 홈</span></a>
+        <a class="nav-link selected" href="./admin-models.html" aria-current="page"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 17l9 5 9-5"/></svg></span><span>모델 관리</span></a>
+      </nav>
+      <div class="side-bottom"><span class="side-caption">PADIEM ADMIN</span><span>중앙 모델 관리</span></div>
+    </aside>
+    <main class="main">
+      <header class="header">
+        <div class="header-title">모델 관리 <span class="preview-pill" id="modeBadge">접속 확인 중</span></div>
+        <div class="header-actions">
+          <button type="button" class="icon-button" id="helpBtn" aria-label="모델 관리자 도움말" title="도움말"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 1 1 5.6 1.5c-.6.9-2.7 1.7-2.7 3.5M12 17h.01"/></svg></button>
+          <button type="button" class="icon-button" id="refreshBtn" aria-label="상태 새로고침" title="상태 새로고침"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2 6M20 4v7h-7"/></svg></button>
+        </div>
+      </header>
+      <div class="content">
+        <div class="intro">
+          <div><h1>모델과 사용 위치</h1><p>모델을 고르고, 변경할 제품을 선택하세요.</p></div>
+          <span class="small-count"><strong id="modelCount">—</strong>개 모델 조회</span>
+        </div>
+        <div class="notice" id="accessNotice" role="status" aria-live="polite" hidden></div>
+
+        <section class="route-panel" aria-labelledby="flowTitle">
+          <div class="section-head compact"><h2 id="flowTitle">전체 흐름</h2><button type="button" id="flowInfoBtn" class="text-button">자세히 <span aria-hidden="true">ⓘ</span></button></div>
+          <div class="route-track" aria-label="모델 정책 흐름">
+            <div class="route-step route-b14"><span class="route-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 17l9 5 9-5"/></svg></span><span class="route-label">B14 모델</span><small id="flowB14">조회 대기</small></div>
+            <span class="route-arrow" aria-hidden="true">→</span>
+            <div class="route-step"><span class="route-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 1v2m0 18v2M1 12h2m18 0h2"/></svg></span><span class="route-label">중앙 정책</span><small id="flowCentral">확인 중</small></div>
+            <span class="route-arrow" aria-hidden="true">→</span>
+            <div class="route-step"><span class="route-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 9v12M15 9v12"/></svg></span><span class="route-label">각 제품</span><small id="flowProducts">확인 중</small></div>
+          </div>
+        </section>
+
+        <div class="work-grid">
+          <section class="panel catalog" aria-labelledby="catalogHeading">
+            <div class="section-head"><h2 id="catalogHeading">모델 선택</h2><span id="catalogStatus" class="tiny-status">확인 중</span></div>
+            <label class="search"><span aria-hidden="true">⌕</span><input id="modelSearch" placeholder="모델 이름 검색" type="search" autocomplete="off" aria-label="모델 검색"></label>
+            <div id="modelList" class="model-list" aria-label="B14 전체 등록 모델"><p class="placeholder">모델 목록을 확인하고 있습니다.</p></div>
+            <button type="button" class="text-button catalog-note" id="catalogInfoBtn">목록 기준 <span aria-hidden="true">ⓘ</span></button>
+          </section>
+
+          <section class="panel editor" aria-labelledby="editorHeading">
+            <div class="section-head"><h2 id="editorHeading">모델 설정</h2><span class="mode-label">미리보기 전용</span></div>
+            <div class="chosen"><strong id="selectedModel">왼쪽에서 모델을 선택하세요</strong><small id="selectedId">미선택</small></div>
+            <fieldset id="editorForm" disabled>
+              <legend>적용 위치 <span class="muted">변경안을 만들 제품 선택</span></legend>
+              <div id="targetGrid" class="target-grid" aria-label="제품 변경 대상"></div>
+              <div class="settings-bottom">
+                <div class="setting-item">
+                  <label for="tierSelect">회원 등급</label>
+                  <select id="tierSelect" aria-label="회원 등급">
+                    <option value="FREE">Free</option><option value="PLUS" selected>Plus</option>
+                    <option value="PRO">Pro</option><option value="MAX">Max</option>
+                  </select>
+                </div>
+                <div class="setting-item action-setting">
+                  <span class="setting-label" id="actionLabel">변경 제안</span>
+                  <div class="segmented" role="group" aria-labelledby="actionLabel">
+                    <label><input type="radio" name="action" value="allow" checked><span>허용</span></label>
+                    <label><input type="radio" name="action" value="block"><span>차단</span></label>
+                    <label><input type="radio" name="action" value="inherit"><span>상속</span></label>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+            <button type="button" id="previewBtn" class="btn primary" disabled>변경안 미리보기 <span aria-hidden="true">→</span></button>
+            <div id="previewResult" class="preview" aria-live="polite" hidden></div>
+            <button type="button" id="applyBtn" class="btn primary" hidden>확인 후 정책 저장</button>
+            <details id="policyHistory" class="advanced" hidden><summary>변경 이력 · 롤백</summary>
+              <div id="policyAudit" aria-live="polite"></div>
+              <label for="rollbackRevision">되돌릴 리비전</label>
+              <input type="number" id="rollbackRevision" min="0" step="1" value="0">
+              <button type="button" id="rollbackPreviewBtn" class="btn">롤백 미리보기</button>
+            </details>
+            <p class="caption-note" id="writeNote">미리보기 단계에서는 설정이 바뀌지 않습니다. <button type="button" class="inline-help" id="previewInfoBtn">왜 그런가요?</button></p>
+          </section>
+        </div>
+
+        <section class="panel position-panel" aria-labelledby="placementHeading">
+          <div class="section-head"><h2 id="placementHeading">위치별 상태</h2><span class="muted">선택한 모델 기준</span></div>
+          <div id="modelPlacement" class="placement-grid"><p class="placeholder">모델을 선택하면 위치별 상태가 표시됩니다.</p></div>
+        </section>
+
+        <details class="advanced">
+          <summary>연결 정보 보기 <span class="advanced-meta" id="sourceCount">—</span></summary>
+          <div id="sourceList" class="source-list"><p class="placeholder">연결 상태 확인 중</p></div>
+        </details>
+
+        <footer>© PADIEM AI</footer>
+        <span id="targetCount" class="visually-hidden">0</span>
+      </div>
+    </main>
+  </div>
+  <dialog class="help-dialog" id="helpDialog" aria-labelledby="helpTitle">
+    <div class="help-head"><h2 id="helpTitle">모델 관리자 안내</h2><button type="button" id="closeHelpBtn" class="icon-button" aria-label="도움말 닫기">×</button></div>
+    <div class="help-body" id="helpContent">
+      <h3>화면 사용법</h3>
+      <p>B14에서 조회 가능한 모델을 선택하고, 변경할 제품·회원 등급·허용 방식을 고른 뒤 변경안을 검토합니다.</p>
+      <h3>미리보기와 실제 적용</h3>
+      <p>변경안은 확인 뒤 중앙 D1 정책 원장에 저장할 수 있습니다. 단, 제품 실행 경로에 연결되지 않은 정책은 실제 모델 호출에 영향을 주지 않습니다.</p>
+      <h3>상태 아이콘</h3>
+      <p>● 조회됨: 해당 정책을 확인함. ◌ 미연결: 아직 정보 소스가 연결되지 않음. ⊘ 차단: 실제 조회된 정책이 해당 모델을 차단함.</p>
+      <h3>모델 목록 기준</h3>
+      <p>B14 등록 모델은 ON·OFF·선택 제외를 포함합니다. ON은 B14 활성 목록에 있다는 뜻이며 실제 API 응답이나 제품별 권한을 보장하지 않습니다. 등록 목록 연결이 안 되면 선택 가능한 일부 모델만 표시합니다.</p>
+    </div>
+  </dialog>
+</body>
+</html>

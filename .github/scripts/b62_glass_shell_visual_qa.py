@@ -566,9 +566,14 @@ async def _check_mask_modes(page: Page) -> dict[str, Any]:
 
 async def _check_controls(page: Page) -> dict[str, Any]:
     await _goto_glass(page, variant="female")
-    settings = page.locator("#settingsButton")
+    # Mock-static QA has no authenticated account, so expose just the profile
+    # presentation to exercise the visible one-step Settings entry.
+    await page.locator(".sidebar-account").evaluate(
+        "(el) => { el.hidden = false; el.style.display = 'grid'; }"
+    )
+    settings = page.locator("#accountProfileButton")
     if await settings.count() == 0:
-        raise AssertionError("settings button missing")
+        raise AssertionError("visible account settings entry missing")
     await settings.click()
     await page.wait_for_timeout(300)
 

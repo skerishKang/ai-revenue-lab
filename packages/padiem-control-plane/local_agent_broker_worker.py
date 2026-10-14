@@ -92,6 +92,9 @@ class LocalAgentBrokerDurableObject(DurableObject):
     async def device_truth(self, payload: dict) -> dict:
         return self._runtime.device_truth(payload)
 
+    async def device_directory(self, payload: dict) -> dict:  # #4139 read-only multi-device RPC
+        return self._runtime.device_directory(payload)
+
     async def authenticate_device_session(self, payload: dict) -> dict:
         return self._runtime.authenticate_device_session(payload)
 
@@ -154,6 +157,9 @@ class Default(WorkerEntrypoint):
 
     async def device_truth(self, payload: dict) -> dict:
         return await self._stub().device_truth(payload)
+
+    async def device_directory(self, payload: dict) -> dict:
+        return await self._stub().device_directory(payload)
 
     async def authenticate_device_session(self, payload: dict) -> dict:
         return await self._stub().authenticate_device_session(payload)
@@ -222,6 +228,15 @@ NARROW_DEVICE_TRUTH_PROJECTION = True
 DEVICE_TRUTH_VOCABULARY_HAS_ONLINE = False
 DEVICE_TRUTH_SECOND_ONLINE_AUTHORITY = False
 DEVICE_TRUTH_MUTATION = False
+# #4139 adds the read-only owner-scoped multi-device directory passthrough per
+# entrypoint class, exactly like #3094's device_truth: thin forwarding only.
+# Its contract markers live in the durable runtime module. No public route is
+# added; the directory is a private Service Binding RPC like every other read.
+NARROW_DEVICE_DIRECTORY_PROJECTION = True
+DEVICE_DIRECTORY_VOCABULARY_HAS_ONLINE = False
+DEVICE_DIRECTORY_SECOND_ONLINE_AUTHORITY = False
+DEVICE_DIRECTORY_SECOND_DEVICE_AUTHORITY = False
+DEVICE_DIRECTORY_MUTATION = False
 # #3436 B2c adds the read-only device-session authentication passthrough per
 # entrypoint class, exactly like #3094's device_truth and #3139's terminal
 # result: thin forwarding only. Its contract markers live in the durable

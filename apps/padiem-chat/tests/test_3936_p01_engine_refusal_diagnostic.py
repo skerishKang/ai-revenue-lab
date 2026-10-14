@@ -116,6 +116,10 @@ async def scenario(*, engine=None, fetch_factory=None, store_factory=None,
         Path(__file__).resolve().parents[1] / "migrations"
         / "031_claw_web_xlsx_p01_decision_receipts.sql"
     ).read_text(encoding="utf-8"))
+    db.executescript((
+        Path(__file__).resolve().parents[1] / "migrations"
+        / "040_claw_web_xlsx_p01_decision_release.sql"
+    ).read_text(encoding="utf-8"))
     app.state.web_xlsx_p01_owner_decision_store = D1WebXlsxP01OwnerDecisionStore(
         RealSQLiteD1(db)
     )

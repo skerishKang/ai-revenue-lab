@@ -353,7 +353,7 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
     assert "무엇을 도와드릴까요" in html
     assert "무엇이든 물어보세요" in html
     assert "자동 추천" not in html
-    assert 'AVAILABLE_TIERS = Object.freeze(["plus"])' in product_capabilities
+    assert 'AVAILABLE_TIERS = Object.freeze(["free", "plus"])' in product_capabilities
     assert 'let selectedTier = "plus";' in product_capabilities
     assert '<div class="starter-grid" aria-label="추천 질문">' in html
     assert 'data-skill="explain"' in html

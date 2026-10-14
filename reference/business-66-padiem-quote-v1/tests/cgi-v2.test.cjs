@@ -1,3 +1,5 @@
+// The CGI layout fixture must never contain a real customer's identity,
+// account, contact, or business-registration values.
 const assert = require("node:assert");
 const Core = require("../quote-core.js");
 const Template = require("../quote-template.js");
@@ -35,7 +37,7 @@ eq(Template.isApprovedProfile(approved), true, "CGI approved profile satisfies t
 const draft = Core.normalizeDraft({
   schemaVersion: 1,
   meta: { quoteNo:"CGI-TEST-001", issueDate:"2026-10-06", validDays:14, source:"manual", projectName:"배관 교체 공사" },
-  sender: { company:"(주)시지아이", rep:"김범신", contactPerson:"김범신", bizNo:"410-86-46283", address:"광주광역시", phone:"062-576-8100", email:"", presetId:"cgi-test" },
+  sender: { company:"가상견적공급사", rep:"가상대표", contactPerson:"가상담당자", bizNo:"000-00-00000", address:"가상시 테스트로 1", phone:"000-000-0000", email:"", presetId:"cgi-test" },
   recipient: { company:"대한건설", person:"구매담당", address:"", email:"" },
   items: [{ id:"item-1", name:"배관", spec:"", unit:"미터", qty:100, unitPrice:18000 }],
   tax: { mode:"EXCLUSIVE", rate:0.1 },
@@ -44,7 +46,7 @@ const draft = Core.normalizeDraft({
 const model = Renderer.buildRenderModel(draft, approved, { taxReviewRequired:false });
 check(model, "CGI render model builds");
 eq(model.layoutVariant, "cgi-v2", "CGI reaches dedicated renderer path");
-eq(model.facts.sender.company, "(주)시지아이", "company remains QuoteDraft authority");
+eq(model.facts.sender.company, "가상견적공급사", "company remains QuoteDraft authority");
 eq(model.facts.recipient.company, "대한건설", "recipient remains QuoteDraft authority");
 eq(model.facts.meta.validDays, 14, "validity remains QuoteDraft authority");
 eq(model.styleVariables["--quote-page-margin"], "10mm", "screen margin uses CGI page authority");

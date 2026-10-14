@@ -100,6 +100,9 @@ MIGRATIONS = (
     "015_claw_run_history_workspace.sql", "029_claw_web_xlsx_selection.sql",
     "030_claw_web_xlsx_p01_requests.sql",
     "031_claw_web_xlsx_p01_decision_receipts.sql",
+    "040_claw_web_xlsx_p01_decision_release.sql",
+    "041_b66_ai_conversation.sql",
+    "042_conversation_product_scope.sql",
 )
 
 

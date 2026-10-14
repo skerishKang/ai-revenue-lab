@@ -65,6 +65,7 @@ def load_current_models(path: Path = CANONICAL_REGISTRY) -> dict[str, dict[str, 
     if not isinstance(providers, dict) or not isinstance(rows, list):
         raise ValueError("registry_shape_invalid")
     allowed: dict[str, dict[str, Any]] = {}
+    seen_ids: set[str] = set()
     for row in rows:
         if not isinstance(row, dict):
             raise ValueError("registry_model_invalid")
@@ -73,17 +74,22 @@ def load_current_models(path: Path = CANONICAL_REGISTRY) -> dict[str, dict[str, 
         upstream = row.get("upstream_model")
         if not all(isinstance(x, str) and x.strip() for x in (model_id, provider_id, upstream)):
             raise ValueError("registry_model_identity_invalid")
-        if model_id in allowed:
+        if model_id in seen_ids:
             raise ValueError("registry_duplicate_model_id")
+        seen_ids.add(model_id)
         if _disallowed_model_id(model_id) or _disallowed_model_id(upstream):
             raise ValueError("owner_retired_model_in_registry")
         provider = providers.get(provider_id)
-        if not isinstance(provider, dict) or not provider.get("enabled", False):
+        if not isinstance(provider, dict):
             raise ValueError("model_provider_unavailable")
         if model_id.split("/", 1)[0] != provider_id:
             raise ValueError("model_provider_identity_mismatch")
+        # Disabled rows remain valid registry metadata, never live-evaluation
+        # authority. Reject enabled models on a disabled provider explicitly.
         if row.get("enabled") is not True:
             continue
+        if provider.get("enabled") is not True:
+            raise ValueError("model_provider_unavailable")
         if provider_id == "poolside":
             if (
                 model_id != "poolside/laguna-s-2.1"

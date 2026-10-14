@@ -10,7 +10,6 @@ from .b14_execution import B14ExecutionError, B14ExecutionResult
 from .b14_multimodal import B14MultimodalChatRequest, _normalize_messages as _normalize_b14_messages
 from .contracts import AgentProfile, ErrorClass, RunStatus
 from .execution_runtime import (
-    MAX_EXECUTION_MESSAGES,
     ExecutionResult,
     ExecutionRuntime,
     ExecutionRuntimeError,
@@ -44,10 +43,8 @@ def _normalize_multimodal_messages(
     if isinstance(messages, (str, bytes)):
         raise ValueError("messages must be a sequence of message objects")
     items = tuple(messages)
-    if not 1 <= len(items) <= MAX_EXECUTION_MESSAGES:
-        raise ValueError(
-            f"messages must contain 1 to {MAX_EXECUTION_MESSAGES} items"
-        )
+    if not items:
+        raise ValueError("messages must contain at least one item")
 
     normalized, _ = _normalize_b14_messages(items)
     image_count = 0

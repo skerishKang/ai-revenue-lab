@@ -264,4 +264,10 @@ def test_worker_file_is_thin_and_storage_schemas_live_outside_entrypoint() -> No
     # the B62 Desktop conversation read consumes. The verifier itself and its
     # contract markers live in the durable runtime module and the broker auth
     # seam — this file only forwards. Still no storage, schema or authority.
-    assert len(source.splitlines()) < 236
+    # Issue #4139 adds the read-only owner-scoped multi-device directory
+    # passthrough per entrypoint class, again on the #3094 device_truth pattern
+    # and the same private Service Binding surface: the multi-PC list the Claw
+    # Connect device selector consumes. The projection, its never-online
+    # vocabulary and its contract markers live in the durable runtime module —
+    # this file still only forwards and holds no storage, schema or authority.
+    assert len(source.splitlines()) < 251

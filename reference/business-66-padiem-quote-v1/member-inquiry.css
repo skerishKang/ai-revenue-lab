@@ -1,0 +1,36 @@
+#b66OpenInquiry { cursor:pointer; border:1px solid #b8c7dc; background:#fff; color:#25406a; border-radius:9px; padding:9px 13px; font-weight:650; }
+#b66InquiryDialog { border:0; border-radius:16px; padding:0; max-width:min(92vw,510px); width:100%; box-shadow:0 20px 60px #0003; }
+#b66InquiryDialog::backdrop { background:rgba(13,27,44,.55); }
+.b66-inquiry-card { padding:24px; color:#243449; background:#fff; }
+.b66-inquiry-card header {display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.b66-inquiry-card h2 {font-size:1.25rem; margin:0;}
+.b66-inquiry-card label {display:block;font-weight:600;margin:12px 0 5px;}
+.b66-inquiry-card input,.b66-inquiry-card select,.b66-inquiry-card textarea {box-sizing:border-box;width:100%;padding:11px;border-radius:8px;border:1px solid #aeb9c8;font:inherit;}
+.b66-inquiry-card textarea {min-height:140px;resize:vertical;}
+.b66-inquiry-card p {font-size:.875rem;line-height:1.6;}
+.b66-inquiry-card button {cursor:pointer;padding:9px 16px;border-radius:8px;border:1px solid #9aaac0;background:white;}
+.b66-inquiry-card button[type=submit] {margin-top:15px;background:#264d77;color:white;border:0;}
+#b66InquiryStatus {min-height:1.5em;white-space:pre-wrap;overflow-wrap:anywhere;}
+
+@media (max-width: 900px) {
+  /* Keep the existing mobile chat composer height: do not make the
+     topbar action row wrap after adding the explicit support button. */
+  .topbar { position: relative; }
+  #b66OpenInquiry {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 1;
+    min-height: 31px;
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+}
+
+/* A collapsed preview reserves a fixed header control outside the mobile
+   layout. Keep both actions independently clickable at 901px and above. */
+@media (min-width: 901px) {
+  body.b66-three-pane.preview-collapsed .topbar-actions {
+    margin-right: 112px;
+  }
+}

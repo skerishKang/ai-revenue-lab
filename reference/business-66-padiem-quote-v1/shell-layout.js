@@ -7,6 +7,13 @@
   var PREVIEW_MIN = 300;
   var PREVIEW_MAX = 1000;
   var MOBILE_BREAKPOINT = 900;
+  // Below this width the right A4 preview cannot coexist with a usable chat.
+  var COMPACT_PREVIEW_BREAKPOINT = 1480;
+  var previewAutoCollapsed = false;
+  // Track only a viewport-triggered rail close, never a customer toggle.
+  var railAutoCollapsed = false;
+  var wasCompact = null;
+  var wasMobile = null;
 
   function byId(id) { return document.getElementById(id); }
 
@@ -41,6 +48,7 @@
     railCollapse.setAttribute("aria-label", "왼쪽 메뉴 접기");
     railCollapse.setAttribute("aria-controls", "shellRail");
     railCollapse.addEventListener("click", function () {
+      railAutoCollapsed = false; // Explicit desktop collapse survives resize.
       document.body.classList.add("rail-collapsed");
       var reopenButton = byId("shellRailToggle");
       if (reopenButton) reopenButton.focus();
@@ -67,15 +75,20 @@
       '<label class="shell-picker-label">견적서 양식<select-host id="shellSkillSelect"></select-host></label>' +
       '<p class="shell-runtime-status" id="shellRuntimeStatus" role="status" aria-live="polite"></p>' +
       '<label class="shell-picker-label" id="shellModelControl" hidden><select-host id="shellModelSelect"></select-host></label>';
-    // A reusable template starts from an existing file, not from quote line-item
-    // editing. Reuse the registered Saved Quote Skill file intake/wizard.
+    // A reusable template is created in a dedicated choice dialog, not
+    // by switching to the line-item editor.
     var manual = makeButton(
       "shellManualQuote",
       "▤",
       "새 양식 만들기",
-      "기존 견적서 파일을 선택해 새 양식을 검토합니다"
+      "파일에서 등록하거나 빈 양식을 직접 만듭니다"
     );
     manual.addEventListener("click", function () {
+      // On narrow screens the rail is a modal drawer. Dismiss it before
+      // opening the independent form dialog so it cannot cover the composer.
+      if (window.matchMedia("(max-width: 900px)").matches) {
+        document.body.classList.add("rail-collapsed");
+      }
       document.dispatchEvent(new CustomEvent("b66:open-skill-register"));
     });
     newSection.appendChild(manual);
@@ -247,8 +260,10 @@
     collapse.textContent = "접기 »";
     collapse.setAttribute("aria-controls", "shellPreviewHost");
     collapse.addEventListener("click", function () {
+      // A user-controlled collapse must not be reversed on the next resize.
+      previewAutoCollapsed = false;
       document.body.classList.add("preview-collapsed");
-      if (window.matchMedia("(max-width:1250px)").matches) reopen.focus();
+      if (window.matchMedia("(max-width:" + COMPACT_PREVIEW_BREAKPOINT + "px)").matches) reopen.focus();
     });
     var pdfShortcut = document.createElement("button");
     pdfShortcut.id = "shellPreviewPdf";
@@ -310,11 +325,12 @@
     reopen.setAttribute("aria-label", "견적서 미리보기 열기");
     reopen.setAttribute("aria-controls", "shellPreviewHost");
     reopen.addEventListener("click", function () {
+      previewAutoCollapsed = false;
       if (window.matchMedia("(max-width:900px)").matches) {
         document.body.classList.add("rail-collapsed");
       }
       document.body.classList.remove("preview-collapsed");
-      if (window.matchMedia("(max-width:1250px)").matches) collapse.focus();
+      if (window.matchMedia("(max-width:" + COMPACT_PREVIEW_BREAKPOINT + "px)").matches) collapse.focus();
     });
     shell.appendChild(reopen);
 
@@ -459,6 +475,7 @@
     toggle.title = "메뉴 접기/열기";
     toggle.setAttribute("aria-controls", "shellRail");
     toggle.addEventListener("click", function () {
+      railAutoCollapsed = false; // User opening/closing a drawer overrides auto state.
       document.body.classList.toggle("rail-collapsed");
       if (window.matchMedia("(max-width:900px)").matches) {
         if (!document.body.classList.contains("rail-collapsed")) {
@@ -529,15 +546,33 @@
   }
 
   function syncMobileDefault() {
-    if (window.matchMedia("(max-width:" + MOBILE_BREAKPOINT + "px)").matches) {
-      document.body.classList.add("rail-collapsed");
+    // Run on load AND on window resizing. Earlier code ran only at startup,
+    // leaving an A4 preview in place when a wide browser became a narrow one.
+    var mobile = window.matchMedia("(max-width:" + MOBILE_BREAKPOINT + "px)").matches;
+    var compact = window.matchMedia("(max-width:" + COMPACT_PREVIEW_BREAKPOINT + "px)").matches;
+    if (mobile && wasMobile !== true) {
+      if (!document.body.classList.contains("rail-collapsed")) {
+        document.body.classList.add("rail-collapsed");
+        railAutoCollapsed = true;
+      }
+    } else if (!mobile && wasMobile === true && railAutoCollapsed) {
+      // DevTools/viewport expanded: restore only a SYSTEM-hidden rail.
+      // A customer-hidden desktop rail remains collapsed.
+      document.body.classList.remove("rail-collapsed");
+      railAutoCollapsed = false;
     }
-    // Medium laptop widths must retain sufficient room for the primary editor.
-    if (window.matchMedia("(max-width:1250px)").matches) {
-      document.body.classList.add("preview-collapsed");
+    if (compact && wasCompact !== true) {
+      if (!document.body.classList.contains("preview-collapsed")) {
+        document.body.classList.add("preview-collapsed");
+        previewAutoCollapsed = true;
+      }
+    } else if (!compact && wasCompact === true && previewAutoCollapsed) {
+      document.body.classList.remove("preview-collapsed");
+      previewAutoCollapsed = false;
     }
+    wasMobile = mobile;
+    wasCompact = compact;
   }
-
 
   function wireOverlayKeyboard() {
     var rail = byId("shellRail");
@@ -551,7 +586,7 @@
         !document.body.classList.contains("rail-collapsed");
     }
     function isPreviewModal() {
-      return window.matchMedia("(max-width:1250px)").matches &&
+      return window.matchMedia("(max-width:" + COMPACT_PREVIEW_BREAKPOINT + "px)").matches &&
         !document.body.classList.contains("preview-collapsed");
     }
     function syncSemantics() {
@@ -666,6 +701,9 @@
     buildTopbarToggle();
     syncDirectMode();
     syncMobileDefault();
+    // Resizing a desktop window must reflow immediately, with no horizontal
+    // scrolling or need to reload. The user may explicitly reopen the preview.
+    window.addEventListener("resize", syncMobileDefault);
     wireOverlayKeyboard();
     wireComposerVisualViewport();
 

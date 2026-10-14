@@ -913,8 +913,8 @@ class TestEndpoints:
         ids = {m["id"] for m in catalog}
         assert "b14/auto" not in ids
         assert "kilo/nvidia-nemotron-3-ultra-550b-a55b-free" not in ids
-        from app.pilot.model_registry_file import installed_model_ids
-        assert ids == installed_model_ids()
+        from app.pilot.catalog import CATALOG_BY_ID
+        assert ids == {mid for mid, item in CATALOG_BY_ID.items() if item.enabled}
 
     def test_legacy_models_still_work(self, client):
         from app.pilot.config import pilot_settings
@@ -1194,7 +1194,7 @@ class TestResponseLimits:
         timeout = rcfg.build_http_timeout()
         # Same single source as the live B14 completed and SSE adapters.
         assert (timeout.connect, timeout.read, timeout.write, timeout.pool) == (
-            30.0, 600.0, 20.0, 10.0
+            600.0, 600.0, 20.0, 10.0
         )
 
 

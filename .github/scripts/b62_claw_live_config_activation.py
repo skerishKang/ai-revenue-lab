@@ -512,8 +512,10 @@ def build_rollback_plan(
     payload = {
         "bindings": patch_bindings,
         "annotations": {
+            # Cloudflare Script And Version Settings PATCH marks
+            # workers/triggered_by as server-owned / read-only. Do not
+            # introduce the 10210-style annotation error in emergency rollback.
             "workers/message": f"B62 Claw config rollback from pre-activation snapshot {target_sha}",
-            "workers/triggered_by": "b62-claw-live-config-activation-gate",
         },
     }
     return {

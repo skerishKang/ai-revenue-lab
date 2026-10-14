@@ -1195,3 +1195,145 @@ body.b66-three-pane #easySend {
     border-radius: 18px;
   }
 }
+
+/* New reusable-form registration belongs in its own accessible workflow,
+   never underneath the line-item editor (B66). */
+.b66-skill-start-dialog {
+  width: min(760px, calc(100vw - 32px));
+  max-width: 760px;
+  max-height: min(88dvh, 900px);
+  margin: auto;
+  padding: clamp(16px, 3vw, 28px);
+  overflow: auto;
+  border: 1px solid #cbdce7;
+  border-radius: 18px;
+  background: #f9fcff;
+  color: #203f56;
+  box-shadow: 0 28px 75px #1f405c35;
+}
+.b66-skill-start-dialog::backdrop {
+  background: rgba(19, 39, 55, .52);
+}
+.b66-skill-start-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.b66-skill-start-heading h2 {
+  margin: 0;
+  font-size: 20px;
+}
+.b66-skill-start-heading button {
+  min-height: 36px;
+  padding: 7px 13px;
+  border: 1px solid #cbdce7;
+  border-radius: 10px;
+  background: #fff;
+  color: #203f56;
+  cursor: pointer;
+}
+.b66-skill-start-hint {
+  color: #536b7d;
+  line-height: 1.6;
+  margin: 0 0 20px;
+}
+.b66-skill-start-choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.b66-skill-start-choices button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-height: 118px;
+  padding: 20px;
+  border: 1px solid #bed4e2;
+  border-radius: 14px;
+  background: #fff;
+  color: #213e52;
+  text-align: left;
+  cursor: pointer;
+}
+.b66-skill-start-choices button:hover,
+.b66-skill-start-choices button:focus-visible {
+  border-color: #326181;
+  outline-offset: 3px;
+}
+.b66-skill-start-choices strong { font-size: 16px; }
+.b66-skill-start-choices span { font-size: 13px; line-height: 1.6; color: #62798a; }
+.b66-skill-start-dialog .skill-wizard,
+.b66-skill-start-dialog .skill-manual {
+  display: block;
+  margin-top: 8px;
+  max-width: 100%;
+}
+.b66-skill-start-dialog [hidden] { display: none !important; }
+@media (max-width: 520px) {
+  .b66-skill-start-choices { grid-template-columns: 1fr; }
+  .b66-skill-start-dialog { width: calc(100vw - 20px); max-height: 92dvh; padding: 15px; }
+}
+
+/* #B66 narrow-desktop reflow (2026-10-12). Screen only — never alter the
+   certified A4 paper, its print tokens or PDF/page-break geometry.
+   At 1300–1480 CSS pixels the three fixed panes squeezed the real composer
+   and displaced the home content. The right preview becomes a reopenable
+   overlay while the center retains the remaining viewport width. */
+@media screen and (min-width: 901px) and (max-width: 1480px) {
+  body.b66-three-pane main.shell {
+    grid-template-columns: 260px minmax(0, 1fr);
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+  body.b66-three-pane.rail-collapsed main.shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  body.b66-three-pane main.shell > .workspace-modebar,
+  body.b66-three-pane main.shell > .easy-view,
+  body.b66-three-pane main.shell > .direct-view {
+    grid-column: 2;
+    min-width: 0;
+    max-width: 100%;
+  }
+  body.b66-three-pane.rail-collapsed main.shell > .workspace-modebar,
+  body.b66-three-pane.rail-collapsed main.shell > .easy-view,
+  body.b66-three-pane.rail-collapsed main.shell > .direct-view {
+    grid-column: 1;
+  }
+  body.b66-three-pane .easy-view .easy-conversation,
+  body.b66-three-pane .easy-view .easy-composer-wrap {
+    width: min(820px, 100%);
+    max-width: 100%;
+    min-width: 0;
+    margin-inline: auto;
+  }
+  body.b66-three-pane .easy-empty {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-inline: auto;
+  }
+  body.b66-three-pane .shell-preview-host {
+    position: fixed;
+    inset: 92px 12px 12px auto;
+    z-index: 85;
+    width: min(640px, calc(100vw - 28px));
+    height: auto;
+    max-height: calc(100dvh - 104px);
+    grid-column: auto;
+    box-shadow: 0 20px 48px rgba(22, 44, 58, .25);
+  }
+  body.b66-three-pane .shell-preview-host .shell-divider { display: none; }
+  body.b66-three-pane.preview-collapsed .shell-preview-reopen {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    bottom: auto;
+    z-index: 60;
+    grid-column: auto;
+  }
+}

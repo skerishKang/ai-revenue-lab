@@ -21,7 +21,16 @@ from .documents import (
     combine_reference_context,
 )
 from .grounding import GroundedChatService, GroundingError
-from .history import HistoryForbidden, HistoryStore, build_project_context
+from .history import (
+    HISTORY_PREVIEW_SUFFIX,
+    MAX_HISTORY_MESSAGE_CHARS,
+    MAX_MODEL_CONTEXT_BYTES,
+    HistoryContextIncomplete,
+    HistoryForbidden,
+    HistoryStore,
+    build_project_context,
+)
+from .history import PRODUCT_SCOPE_CHAT
 from .model_policy import model_supports, request_tier_context
 from .project_files import ProjectFileStore
 from .public_chat import public_chat_result
@@ -109,6 +118,67 @@ async def _close_stream(stream: Any) -> None:
             pass
 
 
+def _model_history_incomplete() -> JSONResponse:
+    return JSONResponse(
+        {"error": {"code": "conversation_context_incomplete",
+                   "message": "이전 대화 원문을 복원할 수 없습니다. 원문을 다시 입력하거나 새 대화를 시작해 주세요."}},
+        status_code=409,
+    )
+
+
+def _model_history_too_large() -> JSONResponse:
+    return JSONResponse(
+        {"error": {"code": "model_context_transport_limit",
+                   "message": "전체 대화가 서버 전송 안전 용량을 초과했습니다. 새 대화를 시작하거나 문맥을 나눠 주세요."}},
+        status_code=413,
+    )
+
+
+async def _restore_owner_chat_model_messages(
+    store: HistoryStore,
+    owner_id: str,
+    conversation_id: str,
+    verified_conversation: dict[str, Any],
+    browser_messages: list[dict[str, str]],
+) -> list[dict[str, str]]:
+    """Never use displayed D1 excerpts or untrusted browser history as model truth.
+
+    The last user turn is the new submitted prompt. All previous turns are
+    obtained exclusively from the owner-scoped server store; browsers cannot
+    replace existing assistant turns or smuggle a preview as full context.
+    """
+    newest = next((item for item in reversed(browser_messages) if item["role"] == "user"), None)
+    if newest is None:
+        raise HistoryContextIncomplete("new user turn is missing")
+    get_full = getattr(store, "get_conversation_model_context", None)
+    # D1 production always implements the private full-context projection;
+    # older test-only/in-memory stores retain their already-owner-scoped data.
+    owned = await get_full(owner_id, conversation_id, product_scope=PRODUCT_SCOPE_CHAT) if callable(get_full) else verified_conversation
+    if owned is None or owned.get("id") != conversation_id:
+        raise HistoryContextIncomplete("owner model conversation unavailable")
+    rows = owned.get("messages")
+    if not isinstance(rows, list):
+        raise HistoryContextIncomplete("saved model conversation is malformed")
+    normalized: list[dict[str, str]] = []
+    byte_total = len(newest["content"].encode("utf-8"))
+    for row in rows:
+        if not isinstance(row, dict) or row.get("role") not in {"user", "assistant"}:
+            raise HistoryContextIncomplete("saved model conversation has invalid role")
+        content = row.get("content")
+        if not isinstance(content, str) or not content.strip():
+            raise HistoryContextIncomplete("saved model conversation has invalid text")
+        if len(content) == MAX_HISTORY_MESSAGE_CHARS and content.endswith(HISTORY_PREVIEW_SUFFIX):
+            raise HistoryContextIncomplete("saved model context is an incomplete preview")
+        byte_total += len(content.encode("utf-8"))
+        if byte_total > MAX_MODEL_CONTEXT_BYTES:
+            raise OverflowError("owned model conversation exceeds transport guard")
+        normalized.append({"role": row["role"], "content": content})
+    if byte_total > MAX_MODEL_CONTEXT_BYTES:
+        raise OverflowError("owned model conversation exceeds transport guard")
+    normalized.append(dict(newest))
+    return normalized
+
+
 async def api_chat_stream(request: Request):
     content_length = request.headers.get("content-length")
     if content_length:
@@ -148,7 +218,9 @@ async def api_chat_stream(request: Request):
     effective_project_id = browser_project_id
     if uid is not None and store is not None and conversation_id is not None:
         try:
-            existing_conversation = await store.get_conversation(uid, conversation_id)
+            existing_conversation = await store.get_conversation(
+                uid, conversation_id, product_scope=PRODUCT_SCOPE_CHAT
+            )
         except Exception:
             return _history_unavailable()
         if existing_conversation is None:
@@ -160,6 +232,16 @@ async def api_chat_stream(request: Request):
             return _conversation_not_found()
         if browser_project_id is None:
             effective_project_id = stored_project_id
+        try:
+            messages = await _restore_owner_chat_model_messages(
+                store, uid, conversation_id, existing_conversation, messages,
+            )
+        except HistoryContextIncomplete:
+            return _model_history_incomplete()
+        except OverflowError:
+            return _model_history_too_large()
+        except Exception:
+            return _history_unavailable()
 
     project = None
     project_context = None
@@ -262,7 +344,7 @@ async def api_chat_stream(request: Request):
                         answer = "".join(answer_parts)
                         try:
                             if effective_project_id is None:
-                                saved_id = await store.append_exchange(uid, conversation_id, latest_user, answer)
+                                saved_id = await store.append_exchange(uid, conversation_id, latest_user, answer, product_scope=PRODUCT_SCOPE_CHAT)
                             else:
                                 saved_id = await store.append_exchange(
                                     uid,
@@ -270,6 +352,7 @@ async def api_chat_stream(request: Request):
                                     latest_user,
                                     answer,
                                     project_id=effective_project_id,
+                                    product_scope=PRODUCT_SCOPE_CHAT,
                                 )
                         except HistoryForbidden:
                             yield _public_sse(
@@ -376,7 +459,9 @@ async def api_chat(request: Request) -> JSONResponse:
     effective_project_id = browser_project_id
     if uid is not None and store is not None and conversation_id is not None:
         try:
-            existing_conversation = await store.get_conversation(uid, conversation_id)
+            existing_conversation = await store.get_conversation(
+                uid, conversation_id, product_scope=PRODUCT_SCOPE_CHAT
+            )
         except Exception:
             return _history_unavailable()
         if existing_conversation is None:
@@ -388,6 +473,16 @@ async def api_chat(request: Request) -> JSONResponse:
             return _conversation_not_found()
         if browser_project_id is None:
             effective_project_id = stored_project_id
+        try:
+            messages = await _restore_owner_chat_model_messages(
+                store, uid, conversation_id, existing_conversation, messages,
+            )
+        except HistoryContextIncomplete:
+            return _model_history_incomplete()
+        except OverflowError:
+            return _model_history_too_large()
+        except Exception:
+            return _history_unavailable()
 
     project = None
     project_context = None
@@ -469,10 +564,11 @@ async def api_chat(request: Request) -> JSONResponse:
         if latest_user:
             try:
                 if effective_project_id is None:
-                    saved_id = await store.append_exchange(uid, conversation_id, latest_user, result["answer"])
+                    saved_id = await store.append_exchange(uid, conversation_id, latest_user, result["answer"], product_scope=PRODUCT_SCOPE_CHAT)
                 else:
                     saved_id = await store.append_exchange(
-                        uid, conversation_id, latest_user, result["answer"], project_id=effective_project_id
+                        uid, conversation_id, latest_user, result["answer"], project_id=effective_project_id,
+                        product_scope=PRODUCT_SCOPE_CHAT,
                     )
             except HistoryForbidden:
                 return _conversation_not_found()

@@ -274,7 +274,8 @@
 .project-drive-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
 .project-drive-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line, #eef1f5); flex-wrap: wrap; }
 .project-drive-row-name { flex: 1 1 160px; min-width: 0; overflow-wrap: anywhere; }
-.project-drive-row-space { color: var(--muted, #667085); font-size: 0.9em; }
+.project-drive-row-space { color: var(--muted, #667085); font-size: 0.9em; white-space: nowrap; }
+.project-drive-row-modified { color: var(--muted, #667085); font-size: 0.85em; white-space: nowrap; }
 .project-drive-select { min-height: 44px; min-width: 44px; padding: 8px 14px; border-radius: 10px; border: 1px solid var(--line, #e2e5ea); background: var(--surface, #fff); cursor: pointer; }
 .project-drive-picker-state { margin: 12px 0 0; color: var(--muted, #667085); }
 @media (max-width: 420px) {

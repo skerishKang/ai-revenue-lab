@@ -444,11 +444,11 @@ class _StreamRequest:
 
 def test_legacy_worker_rejects_chunked_oversize_during_read(identity_modules) -> None:
     legacy, _identity = identity_modules
-    from app.service import MAX_REQUEST_BODY_BYTES
+    from app.service import MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES
 
     request = _StreamRequest(
         "/internal/v1/execute",
-        [b"x" * MAX_REQUEST_BODY_BYTES, b"y", b"never-read"],
+        [b"x" * MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES, b"y", b"never-read"],
     )
     response = asyncio.run(legacy.Default(ctx=None, env=_identity_env()).fetch(request))
 

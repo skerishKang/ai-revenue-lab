@@ -11,10 +11,27 @@ from starlette.staticfiles import StaticFiles
 from .auth import GoogleOAuthClient
 from .auth_abuse import AuthAbuseGate, AuthAbuseStore, D1AuthAbuseStore
 from .b66_quote_conversation import B66QuoteConversationInterpreter
+from .b66_ai_chat_routes import b66_ai_chat
+from .b66_ai_conversation_routes import conversation_state, conversation_turn
+from .b66_ai_conversation_store import D1ConversationStore
 from .b66_company_profile import CompanyProfileStore, D1CompanyProfileStore
 from .b66_company_profile_routes import b66_company_profile_get, b66_company_profile_put
 from .b66_quote_asset_routes import b66_quote_asset_detail
 from .b66_member_admin import D1B66MemberAdminStore
+from .b66_member_inquiries import (
+    D1B66InquiryStore, b66_inquiries, b66_admin_inquiries,
+    b66_admin_inquiry_status, b66_admin_inquiry_dispatch,
+)
+from .central_model_admin_identity import D1CentralModelAdminAuthorizer
+from .central_model_policy_d1 import D1CentralModelPolicyStore
+from .central_model_control_routes import (
+    central_model_admin_me, central_model_admin_snapshot,
+    central_model_admin_preview,
+)
+from .central_model_policy_write_routes import (
+    central_model_change_preview, central_model_change_apply,
+    central_model_rollback_preview, central_model_change_audit,
+)
 from .b66_admin_routes import b66_admin_me, b66_admin_members, b66_admin_member_access, b66_admin_member_detail, b66_admin_model_policy, b66_admin_dispatch_alerts
 from .b66_quote_history_routes import (
     b66_quote_history_delete,
@@ -29,6 +46,8 @@ from .b66_certified_quote_bundle import B66CertifiedQuoteBundleStore
 from .b66_certified_preview import B66CertifiedPreviewStore
 from .b66_certified_pdf_routes import b66_certified_pdf, b66_certified_preview_base
 from .b66_native_sol_routes import b66_native_sol_pdf, b66_native_sol_scope
+from .b66_pc_directory_routes import B66_PC_DIRECTORY_PATH, b66_pc_directory
+from padiem_control_plane.local_agent_pc_access import ProductPcAccessPolicy
 from .b66_quote_routes import (
     b66_quote_interpret,
     b66_quote_models,
@@ -111,6 +130,9 @@ from .claw_office_chooser_routes import (
     select_candidate as claw_office_select_candidate,
 )
 from .claw_artifact_preview_routes import claw_artifact_inline_preview
+from .claw_conversation_artifact_adopt_routes import (
+    claw_conversation_artifact_adopt,
+)
 from .claw_conversation_artifact_routes import claw_conversation_artifact_followup
 from .claw_durable_drive_output_pipeline import ClawDurableDriveOutputPipeline
 from .claw_office_drive_completion import ClawOfficeDriveCompletion
@@ -151,6 +173,9 @@ from .calendar_routes import (
 from .calendar_store import CalendarStore, D1CalendarStore, InMemoryCalendarStore
 from .claw_inbox_routes import claw_inbox_list, claw_inbox_status
 from .claw_local_task_result_routes import CLAW_LOCAL_TASK_RESULT_PATH, local_runner_result
+from .claw_device_directory_routes import (
+    CLAW_DEVICE_DIRECTORY_PATH, UnconfiguredDeviceDirectorySource, claw_device_directory,
+)
 from .claw_local_access_routes import (
     CLAW_LOCAL_ACCESS_PATH,
     UnconfiguredClawLocalAccessTruthSource,
@@ -172,7 +197,7 @@ from .config import Settings
 from .connector_status_projection import connectors_status
 from .connector_ticket_routes import google_connector_ticket
 from .calendar_read_activation_routes import activate_google_calendar_read
-from .conversation_routes import api_conversation_detail, api_conversations
+from .conversation_routes import api_conversation_detail, api_conversation_search, api_conversations
 from .desktop_conversation_authority import UnconfiguredDesktopDeviceSessionAuthority
 from .desktop_conversation_routes import (
     DESKTOP_CONVERSATION_DETAIL_PATH,
@@ -182,7 +207,11 @@ from .desktop_conversation_routes import (
 )
 from .grounding import GroundedChatService
 from .history import HistoryStore
-from .project_file_routes import project_file_detail, project_files_collection
+from .project_file_routes import (
+    owner_files_collection,
+    project_file_detail,
+    project_files_collection,
+)
 from .drive_case_folder_routes import (
     drive_case_folder_delete,
     drive_case_folder_put,
@@ -275,6 +304,7 @@ def create_app(
     b66_company_profile_store: CompanyProfileStore | None = None,
     b66_quote_history_store=None,
     b66_guided_draft_store=None,
+    b66_ai_conversation_store=None,
     b66_quote_asset_store=None,
     b66_certified_quote_bundle_store=None,
     b66_certified_preview_store=None,
@@ -284,12 +314,18 @@ def create_app(
     b66_quote_interpreter=None,
     b66_member_admin_store=None,
     b66_admin_google_email: str = "",
+    central_model_admin_authorizer=None,
+    central_model_admin_google_email: str = "",
+    central_model_policy_store=None,
+    central_model_policy_signing_key: str = "",
     claw_task_alert_store=None,
     calendar_store: CalendarStore | None = None,
     claw_automation_store=None,
     telemetry_emitter=None,
     claw_p01_continuation_client=None,
     claw_local_access_source=None,
+    claw_device_directory_source=None,
+    b66_pc_access_policy: ProductPcAccessPolicy | None = None,
     claw_local_connect_port=None,
     claw_office_chooser_source=None,
     local_task_result_source=None,
@@ -299,6 +335,13 @@ def create_app(
     resolved = settings or Settings.from_env()
     routes = [
         Route("/health", health, methods=["GET"]),
+        Route("/api/admin/models/me", central_model_admin_me, methods=["GET"]),
+        Route("/api/admin/models/snapshot", central_model_admin_snapshot, methods=["GET"]),
+        Route("/api/admin/models/preview", central_model_admin_preview, methods=["POST"]),
+        Route("/api/admin/models/change-preview", central_model_change_preview, methods=["POST"]),
+        Route("/api/admin/models/change-apply", central_model_change_apply, methods=["POST"]),
+        Route("/api/admin/models/rollback-preview", central_model_rollback_preview, methods=["POST"]),
+        Route("/api/admin/models/audit", central_model_change_audit, methods=["GET"]),
         Route("/api/models/owner-name-preview", owner_model_name_preview, methods=["GET"]),
         Route("/api/claw/verified-model-choices", claw_verified_model_choices, methods=["GET"]),
         Route("/api/auth/status", auth_status, methods=["GET"]),
@@ -311,6 +354,9 @@ def create_app(
         Route("/api/connectors/google/calendar/activate-read", activate_google_calendar_read, methods=["POST"]),
         Route("/api/connectors/status", connectors_status, methods=["GET"]),
         Route("/api/projects", projects_collection, methods=["GET", "POST"]),
+        # #4489: one owner-scoped keyset-paginated read over every stored project file,
+        # so the Library can walk a full history without per-project fan-out.
+        Route("/api/project-files", owner_files_collection, methods=["GET"]),
         Route("/api/projects/{project_id}", project_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/projects/{project_id}/files", project_files_collection, methods=["GET", "POST"]),
         Route("/api/projects/{project_id}/files/{file_id}", project_file_detail, methods=["GET", "DELETE"]),
@@ -352,6 +398,7 @@ def create_app(
         Route("/api/outputs", outputs_collection, methods=["GET", "POST"]),
         Route("/api/outputs/{output_id}", output_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/conversations", api_conversations, methods=["GET"]),
+        Route("/api/conversations/search", api_conversation_search, methods=["GET"]),
         Route("/api/conversations/{conversation_id}", api_conversation_detail, methods=["GET", "DELETE"]),
         # #3436 B2c: the GET-only canonical conversation surface for the paired
         # Desktop. Identity is the canonical broker device session, derived
@@ -366,6 +413,7 @@ def create_app(
         Route("/api/chat/stream", api_chat_stream, methods=["POST"]),
         Route("/api/chat", api_chat, methods=["POST"]),
         Route("/api/b66/runtime-config", b66_runtime_config, methods=["GET"]),
+        Route(B66_PC_DIRECTORY_PATH, b66_pc_directory, methods=["GET"]),
         Route("/api/b66/company-profile", b66_company_profile_get, methods=["GET"]),
         Route("/api/b66/company-profile", b66_company_profile_put, methods=["PUT"]),
         Route("/api/b66/saved-skills", b66_saved_skills, methods=["GET"]),
@@ -398,7 +446,14 @@ def create_app(
             methods=["GET"],
         ),
         Route("/api/b66/quote/interpret", b66_quote_interpret, methods=["POST"]),
+        Route("/api/b66/ai/chat", b66_ai_chat, methods=["POST"]),
+        Route("/api/b66/ai/conversation", conversation_turn, methods=["POST"]),
+        Route("/api/b66/ai/conversation", conversation_state, methods=["GET"]),
         Route("/api/b66/quote/models", b66_quote_models, methods=["GET"]),
+        Route("/api/b66/inquiries", b66_inquiries, methods=["GET", "POST"]),
+        Route("/api/b66/admin/inquiries", b66_admin_inquiries, methods=["GET"]),
+        Route("/api/b66/admin/inquiries/dispatch", b66_admin_inquiry_dispatch, methods=["POST"]),
+        Route("/api/b66/admin/inquiries/{inquiry_id}", b66_admin_inquiry_status, methods=["PATCH"]),
         Route("/api/b66/admin/me", b66_admin_me, methods=["GET"]),
         Route("/api/b66/admin/members", b66_admin_members, methods=["GET"]),
         Route("/api/b66/admin/model-policy", b66_admin_model_policy, methods=["GET", "PUT"]),
@@ -456,6 +511,12 @@ def create_app(
         Route("/api/claw/manual-intake/artifact/{document_id}/preview", claw_artifact_inline_preview, methods=["GET"]),
         Route("/api/claw/telegram/ingest/{binding_ref}", claw_telegram_ingest, methods=["POST"]),
         Route("/api/claw/conversations/{conversation_id}/artifact-followup", claw_conversation_artifact_followup, methods=["GET"]),
+        # #3933: making an already-completed result the input of a NEW task is
+        # a separate POST. It re-reads only the exact owner-indexed revision
+        # bytes and mints a NEW document identity, so no previous selection,
+        # P01 READ decision, workcopy or WRITE receipt can apply and a NEW
+        # owner READ approval is required before any processing.
+        Route("/api/claw/conversations/{conversation_id}/artifact-followup/adopt", claw_conversation_artifact_adopt, methods=["POST"]),
         Route("/api/claw/conversations/{conversation_id}/artifacts/{artifact_id}/download", claw_drive_artifact_download, methods=["GET"]),
         Route("/api/claw/conversations/{conversation_id}/artifacts/{artifact_id}/preview", claw_drive_artifact_preview, methods=["GET"]),
         # #3580: the one consumer of the trusted Telegram delivery adapter. It
@@ -492,6 +553,8 @@ def create_app(
         # #3094: the one real read-only source behind the "Connect this computer"
         # panel. Owner-scoped; it pairs nothing and approves nothing.
         Route(CLAW_LOCAL_ACCESS_PATH, claw_local_access, methods=["GET"]),
+        # #4139: read-only multi-PC list; owner + workspace derived from session.
+        Route(CLAW_DEVICE_DIRECTORY_PATH, claw_device_directory, methods=["GET"]),
         # #3650: the local/nonprod initiating leg. Fail-closed unless the run
         # composition explicitly installs a connect port; the central #3476
         # same-origin guard covers it like every cookie-authenticated POST.
@@ -535,8 +598,42 @@ def create_app(
     app.state.project_file_store = project_file_store
     app.state.saved_output_store = saved_output_store
     # Separate deployment gate: migrate and audit the D1 schema before enabling.
+    # A B66-scoped Google administrator is NOT a global model administrator.
+    # Only a separately verified host-supplied central RBAC authority may
+    # activate the cross-product model snapshot/preview APIs.
+    global_model_admin = central_model_admin_authorizer
+    if global_model_admin is None and central_model_admin_google_email and d1_binding is not None:
+        try:
+            global_model_admin = D1CentralModelAdminAuthorizer(
+                d1_binding, verified_owner_email=central_model_admin_google_email,
+            )
+        except ValueError:
+            global_model_admin = None
+    app.state.central_model_admin_authorizer = global_model_admin
+    # S2 read-only D1 policy inventory. Migration 039 and verified global
+    # administrator remain separately gated. DO NOT wire apply or dispatch.
+    app.state.central_model_policy_store = (
+        central_model_policy_store if central_model_policy_store is not None
+        else D1CentralModelPolicyStore(d1_binding)
+        if d1_binding is not None and callable(getattr(d1_binding, "batch", None))
+        and callable(getattr(d1_binding, "prepare", None)) else None
+    )
+    # Independent, server-only signer. Missing or malformed => all central writes OFF.
+    import re as _model_re
+    app.state.central_model_policy_write_key = (
+        bytes.fromhex(central_model_policy_signing_key)
+        if isinstance(central_model_policy_signing_key, str)
+        and _model_re.fullmatch(r"[a-fA-F0-9]{64}", central_model_policy_signing_key)
+        else None
+    )
     app.state.b66_membership_enforced = False
+    # Production host enables this independently of the membership rollout.
+    # Pure ASGI fixtures without a D1 adapter keep their pre-existing behavior.
+    app.state.b66_global_model_switch_enforced = False
     app.state.b66_signup_notifier = None
+    # Inquiry tables are introduced by migration 038; without D1 the route
+    # fails closed, and without the migration it cannot accept submissions.
+    app.state.b66_inquiry_store = D1B66InquiryStore(d1_binding) if d1_binding is not None else None
     # Canonical identity remains Control Plane authority. Product D1 stores only
     # a non-authoritative shadow pointer used to reach the current canonical session.
     app.state.control_plane_identity_authority = control_plane_identity_authority
@@ -566,6 +663,13 @@ def create_app(
     app.state.b14_client = PadiemTierB14Client(resolved, transport=transport)
     # Public, non-secret browser render origin. Unset means B66 account runtime
     # stays fully hidden/off; Production activation is a separate env/deploy gate.
+    # Explicit trusted product policy only. No public API, environment bool,
+    # email or feature flag may activate PC directory visibility.
+    app.state.b66_pc_access_policy = (
+        b66_pc_access_policy
+        if isinstance(b66_pc_access_policy, ProductPcAccessPolicy)
+        else ProductPcAccessPolicy.default_off()
+    )
     app.state.b66_quote_base_url = resolved.b66_quote_base_url
     app.state.b66_quote_interpreter = (
         b66_quote_interpreter
@@ -657,6 +761,12 @@ def create_app(
     app.state.claw_drive_artifact_reader = claw_drive_artifact_reader
     # Explicit trusted server opt-in; no browser-provided activation authority.
     app.state.claw_live_sse_enabled = False
+    # #3933 S1: first-turn trusted coding-context gate. Fail-closed default:
+    # the route helper is a no-op and no grant store is composed here, so
+    # production keeps the exact historical first-turn path until CENTRAL
+    # composes a store and enables the flag in a reviewed change.
+    app.state.claw_first_turn_grant_enabled = False
+    app.state.claw_first_turn_grant_store = None
     # #2961 owner approval decision lane: the same composed Engine client, used
     # only to submit a server-derived decision to the canonical resume route.
     # None keeps the decision route fail-closed before any Engine transport.
@@ -665,6 +775,11 @@ def create_app(
     # The canonical pairing/broker authority (#3080) composes the real source in
     # from trusted bindings. The default is the fail-closed source: the panel is
     # told no projection exists rather than being shown a guessed device state.
+    app.state.claw_device_directory_source = (
+        claw_device_directory_source
+        if claw_device_directory_source is not None
+        else UnconfiguredDeviceDirectorySource()
+    )
     app.state.claw_local_access_source = (
         claw_local_access_source
         if claw_local_access_source is not None
@@ -779,6 +894,10 @@ def create_app(
     if _b66_guided_draft_store is None and d1_binding is not None:
         _b66_guided_draft_store = D1GuidedDraftStore(d1_binding)
     app.state.b66_guided_draft_store = _b66_guided_draft_store
+    _b66_ai_conversation_store = b66_ai_conversation_store
+    if _b66_ai_conversation_store is None and d1_binding is not None:
+        _b66_ai_conversation_store = D1ConversationStore(d1_binding)
+    app.state.b66_ai_conversation_store = _b66_ai_conversation_store
 
     # B66 #3402: private logo/stamp bytes reuse the existing private workspace
     # R2 binding, while D1 stores only owner/workspace-scoped metadata. No

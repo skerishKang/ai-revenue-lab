@@ -4,8 +4,11 @@
  * /artifact-followup index route and shows them so the user can identify the
  * previous XLSX work precisely. A resolved or hand-picked reference is a
  * locator only: no file bytes are read, no READ/WRITE grant is issued and a
- * NEW owner approval is required before any further file work. This module
- * never stores artifacts and never creates a second conversation authority.
+ * NEW owner approval is required before any further file work. Continuing from
+ * a resolved reference is DELEGATED to the shipped web Excel panel module,
+ * which alone performs the single owner-scoped adopt call; this module never
+ * performs a file operation, transport or grant of its own. It never stores
+ * artifacts and never creates a second conversation authority.
  */
 (() => {
   "use strict";
@@ -114,20 +117,63 @@
       host.replaceChildren();
     };
 
+    const openPanel = () => {
+      // Opening the EXISTING web Excel panel starts no approval, reads no
+      // bytes and issues no grant by itself.
+      const panel = typeof doc.getElementById === "function"
+        ? doc.getElementById("clawWebOfficeDetails") : null;
+      if (!panel) return false;
+      panel.open = true;
+      panel.scrollIntoView?.({ block: "start" });
+      panel.querySelector?.("summary")?.focus?.();
+      return true;
+    };
+
+    // #3933: turning this completed result into the input of a NEW task is a
+    // file operation, so it belongs to the shipped web Excel panel module,
+    // which already owns the single owner-scoped adopt call. This read-only
+    // context module only DELEGATES the two identifiers it already verified:
+    // it gains no transport, no byte access and no approval authority. When
+    // that module is unavailable the reference stays display-only and the
+    // panel still opens, so a user can store the file by hand.
+    const resumeAction = (context) => {
+      const button = doc.createElement("button");
+      button.type = "button";
+      button.textContent = "이 파일로 이어서 작업 (새 읽기 승인 필요)";
+      button.addEventListener("click", () => {
+        const sources = typeof window === "object"
+          ? window.PadiemClawWebXlsxSources : null;
+        const delegate = sources && typeof sources.adoptFromArtifact === "function"
+          ? sources.adoptFromArtifact : null;
+        const conversationId = state.conversationId;
+        if (!delegate || !conversationId) {
+          openPanel();
+          return;
+        }
+        button.disabled = true;
+        let pending = null;
+        try {
+          pending = delegate(conversationId, context.artifactId,
+            context.integrityRef);
+        } catch (_error) {
+          pending = null;
+        }
+        Promise.resolve(pending).then(
+          (adopted) => { if (adopted !== true) button.disabled = false; },
+          () => { button.disabled = false; },
+        );
+      });
+      return button;
+    };
+
     const panelAction = () => {
-      // Opening the EXISTING web Excel panel is the only follow-up action: it
-      // starts no approval, reads no bytes and issues no grant by itself.
       const panel = typeof doc.getElementById === "function"
         ? doc.getElementById("clawWebOfficeDetails") : null;
       if (!panel) return null;
       const button = doc.createElement("button");
       button.type = "button";
-      button.textContent = "새 승인 시작 (웹 Excel 패널 열기)";
-      button.addEventListener("click", () => {
-        panel.open = true;
-        panel.scrollIntoView?.({ block: "start" });
-        panel.querySelector?.("summary")?.focus?.();
-      });
+      button.textContent = "웹 Excel 패널 열기";
+      button.addEventListener("click", () => { openPanel(); });
       return button;
     };
 
@@ -144,8 +190,9 @@
       const note = doc.createElement("p");
       note.className = "claw-conversation-artifact-note";
       note.textContent = "확인된 참조일 뿐 파일 내용 권한이 아닙니다. "
-        + "계속 수정하거나 새 버전을 만들려면 별도의 읽기·쓰기 승인이 필요합니다.";
-      host.append(title, detail, note);
+        + "계속 수정하거나 새 버전을 만들려면 별도의 읽기·쓰기 승인이 필요합니다. "
+        + "이어서 작업해도 이전 승인은 재사용되지 않습니다.";
+      host.append(title, detail, note, resumeAction(context));
       const action = panelAction();
       if (action) host.append(action);
       host.hidden = false;

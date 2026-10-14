@@ -11,6 +11,10 @@
       "claw-web-work-conversation-opened": "승인된 XLSX 작업 대화를 열었습니다. 수정본의 참조만 확인됐으며, 실제 파일을 다시 읽거나 수정하려면 별도 사용자 승인이 필요합니다.",
       "claw-web-work-conversation-opened-read": "승인된 작업 사본의 대화를 열었습니다. 이 대화에는 아직 등록된 완료 결과만 확인되며, 파일을 다시 읽거나 수정하려면 별도 사용자 승인이 필요합니다.",
       "claw-web-work-conversation-note": "웹 XLSX 작업 대화로 이동했습니다. 파일 읽기·추가 변경은 별도 승인됩니다.",
+      "claw-focus-heading": "무슨 일을 도와드릴까요?",
+      "claw-focus-description": "아래 예시를 선택하거나 입력창에 직접 요청하세요. 파일 읽기·수정은 별도 승인이 필요합니다.",
+      "claw-agent-badge": "AI 에이전트",
+      "claw-agent-line": "AI와 대화하고, 파일 작성·수정 등 실제 작업까지 맡길 수 있습니다.",
       "claw-verified-model-label": "파디엠플러스 모델 선택",
       "claw-verified-model-placeholder": "모델을 직접 선택하세요",
       "claw-verified-model-loading": "사용 가능한 모델 확인 중",
@@ -34,15 +38,22 @@
       "claw-model-choice-hint": "등록된 모델 ID 직접 입력 · 자동 대체 없음",
       "claw-model-choice-placeholder": "등록된 모델 ID를 입력하세요",
       "meta-description": "누구나 바로 사용할 수 있는 파디엠의 기본 AI 인터페이스", "new-chat": "새 채팅", "search": "검색", "projects": "프로젝트", "saved": "저장한 답변", "recent": "추천 질문",
-      "easy": "AI를 쉽게 설명해줘", "trip": "제주도 여행 계획", "dinner": "저녁 메뉴 추천", "close-menu": "메뉴 닫기", "open-menu": "메뉴 열기",
+      "easy": "AI를 쉽게 설명해줘", "trip": "제주도 여행 계획", "dinner": "저녁 메뉴 추천", "close-menu": "메뉴 닫기", "open-menu": "메뉴 열기", "sidebar-collapse": "사이드바 접기", "sidebar-expand": "사이드바 펼치기",
       "mode": "기본 대화", "theme": "테마", "light": "Light", "dark": "Dark", "cinematic": "Cinematic", "home-theme": "Padiem Home", "glass-theme": "Padiem Glass",
       "home-link": "Padiem Home", "settings": "설정", "settings-kicker": "Padiem Chat", "appearance": "APPEARANCE", "language": "LANGUAGE", "language-choice": "언어", "done": "완료",
-      "nav-claw": "Claw", "nav-connectors": "Connectors", "nav-skills": "Skills", "nav-files": "Files", "nav-alerts": "알림", "nav-tasks": "작업", "nav-calendar": "캘린더", "workspace-menu": "워크스페이스 메뉴",
+      "nav-claw-hint": "업무·파일", "search-conversation-hold": "대화 검색 준비 중", "account-profile-toggle": "계정 및 설정 열기", "account-profile-settings": "설정 열기",
+      "settings-help-title": "문서·사용 안내", "settings-help-excel": "Excel 원본 보관 방법",
+      "settings-help-excel-description": "Claw에서 XLSX를 선택해 원본을 24시간 보관할 수 있습니다. 읽기·수정에는 별도 승인이 필요합니다.",
+      "settings-help-excel-step1": "Claw 메뉴에서 Excel 파일 작업을 엽니다.",
+      "settings-help-excel-step2": "XLSX를 선택하고 원본 보관을 누릅니다(최대 1 MiB).",
+      "settings-help-excel-step3": "파일을 읽거나 수정하려면 별도의 승인을 진행합니다.",
+      "nav-claw": "Claw", "nav-connectors": "Connectors", "nav-skills": "Skills", "nav-files": "라이브러리", "nav-alerts": "알림", "nav-tasks": "작업", "nav-calendar": "캘린더", "workspace-menu": "워크스페이스 메뉴",
       "claw-inbox-kicker": "PADIEM CLAW INBOX", "claw-inbox-tasks-title": "작업", "claw-inbox-alerts-title": "알림",
       "claw-inbox-help": "최근 항목만 표시되며 현재 로그인 계정과 워크스페이스 범위 안에서만 조회됩니다.",
       "claw-inbox-loading": "불러오는 중…", "claw-inbox-empty-tasks": "최근 작업이 없습니다.", "claw-inbox-empty-alerts": "최근 알림이 없습니다.", "claw-inbox-error": "목록을 불러오지 못했습니다. 다시 시도해 주세요.",
       "claw-inbox-mark-done": "완료", "claw-inbox-reopen": "다시 열기", "claw-inbox-dismiss": "닫기", "claw-inbox-restore": "복원",
       "nav-automation": "자동화",
+      "automation-alerts-open": "알림함 보기", "claw-tasks-open": "작업함",
       "claw-automation-kicker": "PADIEM CLAW AUTOMATION", "claw-automation-title": "자동화 규칙",
       "claw-automation-help": "현재 워크스페이스의 자동화 규칙을 표시합니다. 생성은 워크스페이스 소유자만 할 수 있고 수정·삭제는 아직 지원하지 않습니다.",
       "claw-automation-loading": "자동화 규칙을 불러오는 중…", "claw-automation-error": "자동화 규칙을 불러오지 못했습니다. 다시 시도해 주세요.", "claw-automation-empty": "등록된 자동화 규칙이 없습니다.",
@@ -126,6 +137,8 @@
       "claw-general-provider-limit": "AI 실행 경로에서 요청 제한이 발생했습니다. 실제 모델 제공자와 내부 제한 중 어느 쪽인지는 아직 확인되지 않았습니다.",
       "claw-general-open-runs": "최근 실행 확인",
       "claw-general-check-runs": "실행이 이미 시작됐을 수 있어 이 결과에서 재전송 버튼을 제공하지 않습니다. 최근 실행 기록을 먼저 확인해 주세요.",
+      "claw-general-model-unavailable": "선택한 AI 모델을 현재 사용할 수 없습니다. 다른 모델을 선택해 주세요.",
+      "claw-general-model-unavailable-note": "이 요청은 실행되지 않았습니다. 자동으로 다시 실행하지 않으며, 다른 모델을 선택해 새로 요청하면 그 결과가 표시됩니다.",
       "claw-btn-retry": "다시 시도",
       "claw-retry-waiting": "요청이 잠시 제한되었습니다. {seconds}초 후 다시 시도할 수 있습니다. 자동으로 전송되지는 않습니다.",
       "claw-retry-ready": "지금 다시 시도할 수 있습니다. 전송되는 내용은 현재 양식에 보이는 값입니다.",
@@ -140,7 +153,9 @@
       "claw-runs-kicker": "PADIEM CLAW", "claw-runs-title": "최근 실행 기록", "claw-runs-refresh-aria": "기록 새로고침",
       "claw-runs-tagline": "실제 실행한 기록만 표시됩니다. 결과 요약을 확인하고 생성된 문서를 다시 다운로드할 수 있습니다.",
       "claw-runs-loading": "불러오는 중…", "claw-runs-empty": "최근 실행 기록이 없습니다.", "claw-runs-error": "실행 기록을 불러오지 못했습니다. 다시 시도해 주세요.",
-      "claw-runs-show-up-to-30": "이전 실행 기록 더 보기 (최대 30건)", "claw-runs-download": "문서 다시 받기", "claw-runs-open-session": "세션 열기", "claw-runs-artifact-unverified": "실행이 완료 상태가 아닙니다. 기록된 파일이 전체 작업의 성공을 의미하지 않습니다. 접근 가능 여부는 내려받을 때 다시 확인합니다.", "claw-runs-status-completed": "완료", "claw-runs-status-waiting_approval": "승인 필요",
+      "claw-runs-show-up-to-30": "이전 실행 기록 더 보기 (최대 30건)", "claw-runs-download": "문서 다시 받기", "claw-runs-open-session": "세션 열기", "claw-runs-artifact-unverified": "실행이 완료 상태가 아닙니다. 기록된 파일이 전체 작업의 성공을 의미하지 않습니다. 접근 가능 여부는 내려받을 때 다시 확인합니다.", "claw-runs-status-completed": "완료", "claw-runs-status-waiting_approval": "승인 필요", "claw-runs-status-failed": "실패", "claw-runs-status-cancelled": "취소",
+      "claw-runs-next-waiting_approval": "승인 결정 전이므로 작업이 아직 완료되지 않았습니다.", "claw-runs-next-failed": "작업이 실패했습니다. 기록된 파일이 있어도 완료된 결과는 아닙니다.", "claw-runs-next-cancelled": "작업이 취소되었습니다. 완료된 작업으로 표시하지 않습니다.",
+      "claw-runs-kind-aria": "파일 형식 {kind}", "claw-runs-download-only": "이 형식은 다운로드 전용입니다. 파일을 내려받아 확인하세요.",
       "claw-event-history-post-execution": "실행 기록 (완료 후 수신)",
       "claw-local-title": "컴퓨터 연결이 필요합니다", "claw-local-body": "이 작업을 대신하려면 지금 사용 중인 컴퓨터에 연결해야 합니다. 연결한 뒤 이 대화에서 그대로 이어서 진행합니다.", "claw-local-cta-connect": "이 컴퓨터 연결", "claw-local-cta-open": "이 컴퓨터 연결 열기", "claw-local-cta-install": "설치 안내 보기", "claw-local-install-note": "Padiem 데스크톱이 설치되어 있지 않습니다. 설치 안내를 열고 다시 시도해 주세요.", "claw-local-open-note": "Padiem 데스크톱을 열면 연결이 이어집니다. 이 대화는 그대로 유지됩니다.", "claw-local-identity-note": "이 대화가 그대로 이어집니다.",
       "claw-local-state-pairing": "연결을 확인하는 중입니다.", "claw-local-state-connected": "컴퓨터가 연결되어 있습니다.", "claw-local-state-offline": "컴퓨터 연결이 끊어져 있습니다.", "claw-local-state-revoked": "이 컴퓨터의 연결 권한이 해제되었습니다.", "claw-local-state-action_required": "연결을 다시 확인해야 합니다.", "claw-local-state-unknown": "연결 상태를 확인하는 중입니다.", "claw-local-state-update_required": "업데이트가 필요합니다.",
@@ -180,7 +195,7 @@
       "coming-soon": "준비 중", "login-after": "로그인 후", "checking": "확인 중", "setup-needed": "설정 필요", "empty": "비어 있음", "create-new": "새로 만들기",
       "projects-empty": "아직 프로젝트가 없습니다.", "history-title": "최근 대화", "history-empty": "저장된 대화가 없습니다.", "outputs-empty": "저장한 답변이 없습니다.",
       "create-project-aria": "새 프로젝트 만들기", "login-unavailable-title": "로그인 기능이 설정되지 않았습니다", "login-title": "Google 또는 아이디로 로그인합니다", "logout-title": "현재 계정에서 로그아웃합니다", "expired-title": "세션이 만료되었습니다. 다시 로그인합니다",
-      "settings-close": "설정 닫기", "theme-picker": "테마 선택", "language-picker": "언어 선택", "starter-grid": "추천 질문", "web-starter-title": "웹에서 찾아줘", "web-starter-copy": "웹 검색 · 준비 중",
+      "settings-close": "설정 닫기", "theme-picker": "테마 선택", "language-picker": "언어 선택", "starter-grid": "추천 질문", "writing-starter-title": "글쓰기 도움", "writing-starter-copy": "메일 · 문장 · 초안", "web-starter-title": "웹에서 찾아줘", "web-starter-copy": "웹 검색 · 준비 중",
       "composer": "메시지 작성", "project-banner": "프로젝트", "project-edit": "지침·파일", "project-exit": "나가기", "attachment-preview-alt": "선택한 사진 미리보기", "attachment-remove": "첨부 파일 제거",
       "message-input-label": "메시지 입력", "web-unavailable-title": "웹 검색은 준비 중입니다", "research-unavailable-title": "심층 리서치는 현재 사용할 수 없습니다", "cancel": "취소", "cancel-answer": "답변 생성 취소", "send": "메시지 보내기",
       "project-new": "새 프로젝트", "project-edit-title": "프로젝트 지침·파일", "project-close": "프로젝트 창 닫기", "project-name": "프로젝트 이름", "project-name-placeholder": "예: 제주 가족여행",
@@ -200,6 +215,10 @@
       "claw-web-work-conversation-opened": "Opened the approved XLSX work conversation. Only the verified file reference is available; reading or changing the file requires separate user approval.",
       "claw-web-work-conversation-opened-read": "Opened the work conversation for the approved working copy. Only already registered completed results are shown; reading or changing the file requires separate owner approval.",
       "claw-web-work-conversation-note": "Opened the XLSX work conversation. File reads and additional edits require separate approval.",
+      "claw-focus-heading": "What can Claw help you do?",
+      "claw-focus-description": "Choose an example below or type a request directly. Reading or editing files needs separate approval.",
+      "claw-agent-badge": "AI agent",
+      "claw-agent-line": "Chat with the AI and hand off real work such as creating and editing files.",
       "claw-verified-model-label": "Padiem Plus model selection",
       "claw-verified-model-placeholder": "Select a model explicitly",
       "claw-verified-model-loading": "Loading available models",
@@ -223,15 +242,22 @@
       "claw-model-choice-hint": "Enter an exact registered model ID · no automatic fallback",
       "claw-model-choice-placeholder": "Enter a registered model ID",
       "meta-description": "Padiem’s general AI interface, ready for everyday work.", "new-chat": "New chat", "search": "Search", "projects": "Projects", "saved": "Saved answers", "recent": "Suggested questions",
-      "easy": "Explain AI simply", "trip": "Plan a Jeju trip", "dinner": "Suggest dinner", "close-menu": "Close menu", "open-menu": "Open menu",
+      "easy": "Explain AI simply", "trip": "Plan a Jeju trip", "dinner": "Suggest dinner", "close-menu": "Close menu", "open-menu": "Open menu", "sidebar-collapse": "Collapse sidebar", "sidebar-expand": "Expand sidebar",
       "mode": "Standard chat", "theme": "Theme", "light": "Light", "dark": "Dark", "cinematic": "Cinematic", "home-theme": "Padiem Home", "glass-theme": "Padiem Glass",
       "home-link": "Padiem Home", "settings": "Settings", "settings-kicker": "Padiem Chat", "appearance": "APPEARANCE", "language": "LANGUAGE", "language-choice": "Language", "done": "Done",
-      "nav-claw": "Claw", "nav-connectors": "Connectors", "nav-skills": "Skills", "nav-files": "Files", "nav-alerts": "Alerts", "nav-tasks": "Tasks", "nav-calendar": "Calendar", "workspace-menu": "Workspace menu",
+      "nav-claw-hint": "Work & files", "search-conversation-hold": "Conversation search coming soon", "account-profile-toggle": "Open account settings", "account-profile-settings": "Open settings",
+      "settings-help-title": "Guides & tutorials", "settings-help-excel": "How to preserve an Excel original",
+      "settings-help-excel-description": "Keep an XLSX original for 24 hours in Claw. Reading or editing requires separate approval.",
+      "settings-help-excel-step1": "Open Claw and choose Excel file work.",
+      "settings-help-excel-step2": "Choose an XLSX and select Save original (max 1 MiB).",
+      "settings-help-excel-step3": "Get separate approval before reading or editing the file.",
+      "nav-claw": "Claw", "nav-connectors": "Connectors", "nav-skills": "Skills", "nav-files": "Library", "nav-alerts": "Alerts", "nav-tasks": "Tasks", "nav-calendar": "Calendar", "workspace-menu": "Workspace menu",
       "claw-inbox-kicker": "PADIEM CLAW INBOX", "claw-inbox-tasks-title": "Tasks", "claw-inbox-alerts-title": "Alerts",
       "claw-inbox-help": "Only recent items are shown, scoped to the signed-in account and current workspace.",
       "claw-inbox-loading": "Loading…", "claw-inbox-empty-tasks": "No recent tasks.", "claw-inbox-empty-alerts": "No recent alerts.", "claw-inbox-error": "Could not load the inbox. Please try again.",
       "claw-inbox-mark-done": "Mark done", "claw-inbox-reopen": "Reopen", "claw-inbox-dismiss": "Dismiss", "claw-inbox-restore": "Restore",
       "nav-automation": "Automation",
+      "automation-alerts-open": "View alerts", "claw-tasks-open": "View tasks",
       "claw-automation-kicker": "PADIEM CLAW AUTOMATION", "claw-automation-title": "Automation rules",
       "claw-automation-help": "Automation rules for this workspace are shown here. Creation is available to workspace owners only; editing and deleting are not supported yet.",
       "claw-automation-loading": "Loading automation rules…", "claw-automation-error": "Could not load automation rules. Please try again.", "claw-automation-empty": "No automation rules are registered.",
@@ -315,6 +341,8 @@
       "claw-general-provider-limit": "The AI execution path reported a rate limit. It is not yet known whether the limit came from the model provider or an internal gateway.",
       "claw-general-open-runs": "Open Recent runs",
       "claw-general-check-runs": "This request may already have started, so this result cannot be resent with one click. Check Recent runs first.",
+      "claw-general-model-unavailable": "The selected AI model isn't available right now. Please choose another model.",
+      "claw-general-model-unavailable-note": "This request was not executed and is never retried automatically. Choose another model and send a new request.",
       "claw-btn-retry": "Try again",
       "claw-retry-waiting": "Requests are temporarily limited. You can try again in {seconds}s. Nothing is sent automatically.",
       "claw-retry-ready": "You can try again now. Sending uses what is currently in the form.",
@@ -329,7 +357,9 @@
       "claw-runs-kicker": "PADIEM CLAW", "claw-runs-title": "Recent runs", "claw-runs-refresh-aria": "Refresh run history",
       "claw-runs-tagline": "Only real executions are listed. You can review the result summary and download a generated document again.",
       "claw-runs-loading": "Loading…", "claw-runs-empty": "No recent runs.", "claw-runs-error": "Could not load run history. Please try again.",
-      "claw-runs-show-up-to-30": "Show up to 30 recent runs", "claw-runs-download": "Download document again", "claw-runs-open-session": "Open session", "claw-runs-artifact-unverified": "This run is not marked complete. A recorded document does not prove task success; access is checked when downloading.", "claw-runs-status-completed": "Completed", "claw-runs-status-waiting_approval": "Approval required",
+      "claw-runs-show-up-to-30": "Show up to 30 recent runs", "claw-runs-download": "Download document again", "claw-runs-open-session": "Open session", "claw-runs-artifact-unverified": "This run is not marked complete. A recorded document does not prove task success; access is checked when downloading.", "claw-runs-status-completed": "Completed", "claw-runs-status-waiting_approval": "Approval required", "claw-runs-status-failed": "Failed", "claw-runs-status-cancelled": "Cancelled",
+      "claw-runs-next-waiting_approval": "This run is awaiting your decision; it has not completed.", "claw-runs-next-failed": "The run failed. A recorded file does not prove success.", "claw-runs-next-cancelled": "The run was cancelled; it is not a completed task.",
+      "claw-runs-kind-aria": "File type {kind}", "claw-runs-download-only": "This format is download-only. Save the file to view its contents.",
       "claw-event-history-post-execution": "Execution history (received after completion)",
       "claw-local-title": "This task needs your computer", "claw-local-body": "To do this for you, we need to connect to the computer you are using right now. Once connected, you stay in this same conversation.", "claw-local-cta-connect": "Connect this computer", "claw-local-cta-open": "Open this computer", "claw-local-cta-install": "See install instructions", "claw-local-install-note": "Padiem Desktop is not installed yet. Open the install instructions and try again.", "claw-local-open-note": "Opening Padiem Desktop continues the connection. This conversation stays as it is.", "claw-local-identity-note": "This conversation continues as-is.",
       "claw-local-state-pairing": "Checking the connection.", "claw-local-state-connected": "Your computer is connected.", "claw-local-state-offline": "The computer connection is offline.", "claw-local-state-revoked": "This computer's connection was revoked.", "claw-local-state-action_required": "The connection needs to be checked again.", "claw-local-state-unknown": "Checking the connection status.", "claw-local-state-update_required": "An update is needed.",
@@ -369,7 +399,7 @@
       "coming-soon": "Coming soon", "login-after": "Log in first", "checking": "Checking", "setup-needed": "Setup needed", "empty": "Empty", "create-new": "Create new",
       "projects-empty": "No projects yet.", "history-title": "Recent conversations", "history-empty": "No saved conversations.", "outputs-empty": "No saved answers.",
       "create-project-aria": "Create a new project", "login-unavailable-title": "Login is not configured", "login-title": "Log in with Google or your ID", "logout-title": "Log out of the current account", "expired-title": "Your session expired. Sign in again",
-      "settings-close": "Close settings", "theme-picker": "Theme selection", "language-picker": "Language selection", "starter-grid": "Suggested prompts", "web-starter-title": "Search the web", "web-starter-copy": "Web search · coming soon",
+      "settings-close": "Close settings", "theme-picker": "Theme selection", "language-picker": "Language selection", "starter-grid": "Suggested prompts", "writing-starter-title": "Writing help", "writing-starter-copy": "Emails · sentences · drafts", "web-starter-title": "Search the web", "web-starter-copy": "Web search · coming soon",
       "composer": "Message composer", "project-banner": "Project", "project-edit": "Instructions & files", "project-exit": "Exit", "attachment-preview-alt": "Selected image preview", "attachment-remove": "Remove attachment",
       "message-input-label": "Message input", "web-unavailable-title": "Web search is coming soon", "research-unavailable-title": "Deep research is currently unavailable", "cancel": "Cancel", "cancel-answer": "Cancel answer generation", "send": "Send message",
       "project-new": "New project", "project-edit-title": "Project instructions & files", "project-close": "Close project dialog", "project-name": "Project name", "project-name-placeholder": "e.g. Jeju family trip",
@@ -390,11 +420,11 @@
   const promptCopy = {
     ko: {
       explain: "AI를 아주 쉽게 설명해줘", trip: "3박 4일 제주도 가족 여행 계획을 짜줘", dinner: "오늘 저녁 메뉴를 세 가지 추천해줘",
-      starterExplain: "AI를 처음 쓰는 사람에게 AI가 뭔지 아주 쉽게 설명해줘", starterLife: "이번 주말 가족과 집 근처에서 할 만한 일을 추천해줘"
+      starterExplain: "AI를 처음 쓰는 사람에게 AI가 뭔지 아주 쉽게 설명해줘", starterLife: "이번 주말 가족과 집 근처에서 할 만한 일을 추천해줘", starterWriting: "목적과 읽는 사람에 맞는 이메일이나 문장 초안을 작성해줘"
     },
     en: {
       explain: "Explain AI in very simple terms.", trip: "Plan a four-day family trip to Jeju.", dinner: "Suggest three dinner ideas for tonight.",
-      starterExplain: "Explain what AI is in very simple terms for someone using it for the first time.", starterLife: "Suggest things my family can do near home this weekend."
+      starterExplain: "Explain what AI is in very simple terms for someone using it for the first time.", starterLife: "Suggest things my family can do near home this weekend.", starterWriting: "Draft an email or short piece of writing for the intended audience and purpose."
     }
   };
 
@@ -506,12 +536,12 @@
 
   function applyStaticBindings(lang) {
     const textBindings = [
-      ["#newChatButton span:last-child", "new-chat"], [".side-item:nth-child(1) span:nth-child(2)", "search"], ["#projectsNavButton span:nth-child(2)", "projects"], ["#outputsNavButton span:nth-child(2)", "saved"],
+      ["#newChatButton span:last-child", "new-chat"], ["#sidebarSearchButton span:last-child", "search"], ["#projectsNavButton span:nth-child(2)", "projects"], ["#outputsNavButton span:nth-child(2)", "saved"],
       ["#recentTitle", "recent"], [".recent-item:nth-of-type(1)", "easy"], [".recent-item:nth-of-type(2)", "trip"], [".recent-item:nth-of-type(3)", "dinner"], [".model-pill span:last-child", "mode"],
       [".empty-copy", "copy"], [".starter:nth-child(1) strong", "easy-title"], [".starter:nth-child(1) small", "easy-copy"], [".starter:nth-child(2) strong", "life-title"], [".starter:nth-child(2) small", "life-copy"],
-      [".starter:nth-child(3) strong", "document-title"], ["#attachmentButton span:last-child", "file"], ["#webSearchButton span:last-child", "web"], ["#deepResearchButton span:last-child", "research"], [".sidebar-footer span:last-child", "footer"], [".side-item:nth-child(1) .mini-badge", "coming-soon"],
+      [".starter:nth-child(3) strong", "document-title"], ["#attachmentButton span:last-child", "file"], ["#webSearchButton span:last-child", "web"], ["#deepResearchButton span:last-child", "research"], [".sidebar-footer span:last-child", "footer"],
       ["#projectsTitle", "projects"], ["#projectsEmpty", "projects-empty"], ["#historyTitle", "history-title"], ["#historyEmpty", "history-empty"], ["#outputsTitle", "saved"], ["#outputsEmpty", "outputs-empty"],
-      [".starter:nth-child(4) strong", "web-starter-title"], [".starter:nth-child(4) small", "web-starter-copy"], [".project-banner-copy > span", "project-banner"], ["#editProjectButton", "project-edit"], ["#exitProjectButton", "project-exit"],
+      ["#writingStarterButton strong", "writing-starter-title"], ["#writingStarterButton small", "writing-starter-copy"], ["#webSearchStarterButton strong", "web-starter-title"], ["#webSearchStarterButton small", "web-starter-copy"], [".project-banner-copy > span", "project-banner"], ["#editProjectButton", "project-edit"], ["#exitProjectButton", "project-exit"],
       ["#projectDialogTitle", "project-new"], ["label[for='projectNameInput']", "project-name"], ["#projectFilesTitle", "project-files"], [".project-files-heading small", "project-files-limit"], [".project-file-add", "project-file-add"],
       ["#projectFilesEmpty", "project-files-empty"], [".project-files-note", "project-files-note"], ["#projectDialogCancel", "cancel"], ["#projectSaveButton", "save"],
       ["#savedOutputDialogTitle", "saved-output-title"], ["label[for='savedOutputTitleInput']", "title"], ["#savedOutputCopy", "copy-action"], ["#savedOutputDownload", "download"], ["#savedOutputRename", "save-title"], ["#savedOutputDelete", "delete"], ["#cancelStreamButton", "cancel"]
@@ -570,6 +600,7 @@
     setPrompt(".recent-item:nth-of-type(3)", "dinner", lang);
     setPrompt(".starter:nth-child(1)", "starterExplain", lang);
     setPrompt(".starter:nth-child(2)", "starterLife", lang);
+    setPrompt("#writingStarterButton", "starterWriting", lang);
   }
 
   function syncAttachmentCapabilityCopy(lang) {
