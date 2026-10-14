@@ -82,8 +82,8 @@ LOW_B14_MODEL_ID = _contract_route_or_hold_id(
     ProductTierLabel.PLUS,
     _CONTRACT_PLUS_HOLD_MODEL_ID,
 )
-MEDIUM_B14_MODEL_ID = _CONTRACT_PRO_HOLD_MODEL_ID
-MAX_HOLD_MODEL_ID = _CONTRACT_MAX_HOLD_MODEL_ID
+MEDIUM_B14_MODEL_ID = _contract_route_or_hold_id(ProductTierLabel.PRO, _CONTRACT_PRO_HOLD_MODEL_ID)
+MAX_HOLD_MODEL_ID = _contract_route_or_hold_id(ProductTierLabel.MAX, _CONTRACT_MAX_HOLD_MODEL_ID)
 
 # Kilo Gateway free lanes that are no longer offered upstream. Re-checked
 # against the public Gateway model list on 2026-09-08: neither
@@ -118,10 +118,11 @@ PROFILE_MODEL_IDS: dict[str, str] = {
 # Product identity and route executability are separate on purpose. A Padiem
 # tier may remain user-visible while its backing route is temporarily HOLD.
 PRODUCT_TIER_NAMES: dict[str, str] = {
+    # Product identity cannot be recovered from a shared upstream model ID.
     FREE_B14_MODEL_ID: PADIEM_FREE,
-    LOW_B14_MODEL_ID: PADIEM_PLUS,
-    MEDIUM_B14_MODEL_ID: PADIEM_PRO,
-    HIGH_B14_MODEL_ID: PADIEM_MAX,
+    _CONTRACT_PLUS_HOLD_MODEL_ID: PADIEM_PLUS,
+    _CONTRACT_PRO_HOLD_MODEL_ID: PADIEM_PRO,
+    _CONTRACT_MAX_HOLD_MODEL_ID: PADIEM_MAX,
 }
 # A signed-in Free caller may use the explicitly nominated live-proven Gemini
 # route. Other tiers remain separately governed by the shared HOLD contract.
@@ -160,9 +161,9 @@ MODEL_ALIASES: dict[str, str] = {
 MODEL_CAPABILITIES: dict[str, frozenset[str]] = {
     FREE_B14_MODEL_ID: frozenset({"chat", "coding"}),
     FREE_FALLBACK_B14_MODEL_ID: frozenset({"chat", "image"}),
-    LOW_B14_MODEL_ID: frozenset(),
-    MEDIUM_B14_MODEL_ID: frozenset(),
-    HIGH_B14_MODEL_ID: frozenset(),
+    "google/gemini-3.5-flash-lite": frozenset({"chat", "image"}),
+    "opencode-go/muse-spark-1.2-contributor": frozenset({"chat", "coding"}),
+    "opencode-go/muse-spark-1.3-contributor": frozenset({"chat", "coding"}),
     AUTO_B14_MODEL_ID: frozenset(),
     UNASSIGNED_B14_MODEL_ID: frozenset(),
 }
@@ -345,10 +346,9 @@ def resolve_model_policy(
         )
 
     out[user_index]["content"] = remainder.strip()
-    profile = next(
-        (profile_id for profile_id, candidate in PROFILE_MODEL_IDS.items() if candidate == model_id),
-        DEFAULT_CHAT_PROFILE,
-    )
+    # The four grades share Cat Jam: derive the grade from the explicit alias,
+    # never by reverse-mapping the identical upstream model ID.
+    profile = {"/plus": "low", "/pro": "medium", "/max": "high", "/kilo": "medium"}[alias]
     return ResolvedModelPolicy(model_id, out, alias=alias, profile=profile)
 
 
