@@ -12,9 +12,14 @@ from .documents import DocumentValidationError, validate_document_fields
 from .history import HistoryStore, validate_project_id
 from .project_files import (
     BINARY_PROJECT_FILE_MEDIA,
+    DEFAULT_OWNER_FILES_PAGE,
+    MAX_OWNER_FILES_PAGE,
+    OwnerFileCursorError,
     ProjectFileLimitError,
     ProjectFileStore,
     _extracted_media_type,
+    decode_owner_file_cursor,
+    encode_owner_file_cursor,
     validate_file_id,
 )
 
@@ -85,6 +90,72 @@ def _parse_project_file_item(raw: dict[str, Any]) -> tuple[str, str, str]:
     except BinaryDocumentValidationError as exc:
         raise ValueError(str(exc)) from exc
     return document.name, _extracted_media_type(document.media_type), document.text
+
+
+def _bad_request(field: str) -> JSONResponse:
+    messages = {
+        "limit": "요청 페이지 크기가 올바르지 않습니다.",
+        "cursor": "요청 이어읽기 값이 올바르지 않습니다.",
+    }
+    return JSONResponse(
+        {"error": {"code": f"invalid_{field}", "message": messages[field]}},
+        status_code=400,
+    )
+
+
+def _parse_owner_files_limit(raw: str | None) -> int:
+    if raw is None or raw == "":
+        return DEFAULT_OWNER_FILES_PAGE
+    if not raw.isdecimal():
+        raise ValueError("limit")
+    value = int(raw)
+    if value < 1 or value > MAX_OWNER_FILES_PAGE:
+        raise ValueError("limit")
+    return value
+
+
+async def owner_files_collection(request: Request) -> JSONResponse:
+    """#4489 — one bounded keyset page over every file the signed-in owner stored.
+
+    Read-only and owner-scoped: the verified session user is the only selector, so no
+    caller-supplied account, project list or product scope can widen the result. A cursor
+    that cannot be decoded is refused instead of being silently treated as a first page,
+    and there is deliberately no per-project fan-out fallback — a partial read must never
+    be presented as this account's whole history.
+    """
+    if not auth_ready(request) or request.app.state.project_file_store is None:
+        return _unavailable()
+    uid = current_user_id(request)
+    if uid is None:
+        return _unauthorized()
+    store: ProjectFileStore = request.app.state.project_file_store
+    list_owner_files = getattr(store, "list_owner_files", None)
+    if not callable(list_owner_files):
+        return _unavailable()
+    params = request.query_params
+    try:
+        limit = _parse_owner_files_limit(params.get("limit"))
+    except ValueError:
+        return _bad_request("limit")
+    cursor = params.get("cursor")
+    after = None
+    if cursor not in (None, ""):
+        try:
+            after = decode_owner_file_cursor(cursor)
+        except OwnerFileCursorError:
+            return _bad_request("cursor")
+    try:
+        rows = await list_owner_files(uid, after=after, limit=limit + 1)
+    except Exception:
+        return _unavailable()
+    has_more = len(rows) > limit
+    page = rows[:limit]
+    return JSONResponse({
+        "files": [item.public_dict() for item in page],
+        "next_cursor": encode_owner_file_cursor(page[-1]) if has_more and page else None,
+        "has_more": has_more,
+        "limit": limit,
+    })
 
 
 async def project_files_collection(request: Request) -> JSONResponse:
