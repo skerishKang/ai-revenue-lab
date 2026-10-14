@@ -145,3 +145,115 @@
   font-size: 12px;
   line-height: 1.5;
 }
+
+/* Chat/Claw shared composer polish: messages overlay, never resize input. */
+#composerForm { position: relative; }
+#composerForm .composer-inline-hint {
+  position: absolute;
+  top: 34px;
+  right: 12px;
+  z-index: 4;
+  max-width: 52%;
+  margin: 0;
+  padding: 0;
+  color: #bd4a40;
+  background: transparent;
+  font-size: 12px;
+  line-height: 1.3;
+  text-align: right;
+  pointer-events: none;
+}
+#composerForm .composer-inline-hint[hidden] { display: none !important; }
+/* Legacy mic status remains in live region, not in the visible flow. */
+#composerForm .voice-status--notice {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+/* +, web search, PADIEM FREE: ordering is visual only. */
+#composerForm .composer-tools #attachmentButton { order: 1; }
+#composerForm .composer-tools #webSearchButton { order: 2; }
+#composerForm .composer-tools .composer-tier-trigger { order: 3; }
+#composerForm .composer-tools #deepResearchButton { order: 4; }
+#composerForm .composer-tools #attachmentButton,
+#composerForm .composer-tools #webSearchButton {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+  display: inline-grid;
+  place-items: center;
+}
+#composerForm .composer-tools #attachmentButton span:last-child,
+#composerForm .composer-tools #webSearchButton span:last-child { display: none; }
+#composerForm .composer-tools #attachmentButton span:first-child,
+#composerForm .composer-tools #webSearchButton span:first-child {
+  font-size: 21px;
+  line-height: 1;
+}
+/* Keep all Chat cards at the existing visual height after shortening copy. */
+.app-shell[data-state="chat"] .starter-grid > .starter,
+.app-shell[data-state="chat"] .starter-grid > .document-starter-shell {
+  min-height: 124px;
+  box-sizing: border-box;
+}
+.app-shell[data-state="claw"] .starter-grid .document-starter-shell {
+  display: none !important;
+}
+.starter-grid .document-starter-shell {
+  position: relative;
+  min-width: 0;
+}
+.starter-grid .document-starter-shell > .starter {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-height: 124px;
+}
+.starter-grid .document-formats-toggle {
+  position: absolute;
+  z-index: 2;
+  right: 11px;
+  top: 10px;
+  border: 1px solid #d9e1e8;
+  border-radius: 9px;
+  background: rgba(247,250,253,.94);
+  color: #596c7b;
+  padding: 3px 6px;
+  font-size: 10px;
+  line-height: 1.2;
+  cursor: pointer;
+}
+.starter-grid .document-formats-toggle:hover { background: #edf3f9; }
+.starter-grid .document-formats-toggle:focus-visible { outline: 2px solid #6a9abc; outline-offset: 2px; }
+.starter-grid .document-formats-panel {
+  position: absolute;
+  z-index: 30;
+  top: 38px;
+  right: 8px;
+  width: 210px;
+  max-width: 90vw;
+  background: #fff;
+  color: #293d50;
+  border: 1px solid #d2dfe7;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(29,48,64,.17);
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.starter-grid .document-formats-panel[hidden] { display: none !important; }
+.starter-grid .document-formats-panel p { margin: 5px 0 0; }
+@media (max-width: 620px) {
+  #composerForm .composer-inline-hint { top: 30px; right: 8px; font-size: 11px; }
+  .app-shell[data-state="chat"] .starter-grid > .starter,
+  .app-shell[data-state="chat"] .starter-grid > .document-starter-shell,
+  .starter-grid .document-starter-shell > .starter { min-height: 124px; }
+}

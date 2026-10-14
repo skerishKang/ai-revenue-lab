@@ -518,7 +518,11 @@
           <div class="starter-grid" aria-label="추천 질문">
             <button type="button" class="starter" data-prompt="AI를 처음 쓰는 사람에게 AI가 뭔지 아주 쉽게 설명해줘" data-skill="explain"><span class="starter-icon" aria-hidden="true">☺</span><span><strong data-locale-key="easy-title">쉽게 설명해줘</strong><small data-locale-key="easy-copy">어려운 내용도 쉬운 말로</small></span></button>
             <button type="button" class="starter" data-prompt="이번 주말 가족과 집 근처에서 할 만한 일을 추천해줘" data-skill="plan"><span class="starter-icon" aria-hidden="true">⌂</span><span><strong data-locale-key="life-title">생활 도움</strong><small data-locale-key="life-copy">일상 질문과 계획 세우기</small></span></button>
-            <button type="button" class="starter" id="documentStarterButton"><span class="starter-icon" aria-hidden="true">▤</span><span><strong>문서와 대화</strong><small>지원 문서 형식</small></span></button>
+            <div class="document-starter-shell">
+              <button type="button" class="starter" id="documentStarterButton"><span class="starter-icon" aria-hidden="true">▤</span><span><strong data-locale-key="document-upload-title">파일 업로드</strong><small data-locale-key="document-upload-copy">파일을 첨부하여 질문하기</small></span></button>
+              <button type="button" id="documentFormatsToggle" class="document-formats-toggle" aria-expanded="false" aria-controls="documentFormatsPanel" aria-label="지원 형식" data-locale-key="document-formats">지원 형식</button>
+              <div id="documentFormatsPanel" class="document-formats-panel" role="note" hidden><strong data-locale-key="document-formats">지원 형식</strong><p data-locale-key="document-formats-soon">지원 형식은 추후 안내합니다.</p></div>
+            </div>
             <button type="button" class="starter" id="writingStarterButton" data-prompt="목적과 읽는 사람에 맞는 이메일이나 문장 초안을 작성해줘" data-skill="auto"><span class="starter-icon" aria-hidden="true">✎</span><span><strong data-locale-key="writing-starter-title">글쓰기 도움</strong><small data-locale-key="writing-starter-copy">메일 · 문장 · 초안</small></span></button>
             <button type="button" class="starter" id="webSearchStarterButton" disabled aria-disabled="true" aria-pressed="false" hidden><span class="starter-icon" aria-hidden="true">⌕</span><span><strong data-locale-key="web-starter-title">웹에서 찾아줘</strong><small data-locale-key="web-starter-copy">웹 검색 · 준비 중</small></span></button>
             <!-- Shared Chat starter button; Claw only supplies labels and truthful connection state. -->
@@ -836,16 +840,17 @@
           </details>
           <label for="messageInput" class="sr-only" data-locale-key="message-input-label">메시지 입력</label>
           <textarea id="messageInput" rows="1" data-locale-placeholder="input" placeholder="무엇이든 물어보세요" autocomplete="off"></textarea>
+          <p id="composerInlineHint" class="composer-inline-hint" role="status" aria-live="polite" aria-atomic="true" hidden></p>
           <div class="composer-actions">
             <div class="composer-tools">
-              <button class="model-pill composer-tier-trigger" type="button" data-locale-aria-label="mode" aria-label="AI 등급"><span class="status-spark" aria-hidden="true">✦</span><span>Padiem Plus</span></button>
+              <button class="model-pill composer-tier-trigger" type="button" data-locale-aria-label="mode" aria-label="AI 등급" data-locale-title="model-select-tooltip" title="모델 선택"><span class="status-spark" aria-hidden="true">✦</span><span>Padiem Plus</span></button>
               <input id="attachmentFileInput" type="file" hidden />
-              <button type="button" class="tool-button" id="attachmentButton" title="파일 첨부"><span aria-hidden="true">＋</span><span>파일</span></button>
-              <button type="button" class="tool-button" disabled id="webSearchButton" aria-disabled="true" aria-pressed="false" title="웹 검색" hidden><span aria-hidden="true">⌕</span><span>웹 검색</span></button>
+              <button type="button" class="tool-button" id="attachmentButton" title="파일 첨부" aria-label="파일 첨부"><span aria-hidden="true">＋</span><span>파일</span></button>
+              <button type="button" class="tool-button" disabled id="webSearchButton" aria-disabled="true" aria-label="웹 검색" aria-pressed="false" title="웹 검색" hidden><span aria-hidden="true">⌕</span><span>웹 검색</span></button>
               <button type="button" class="tool-button" disabled id="deepResearchButton" aria-disabled="true" aria-pressed="false" title="심층 리서치" hidden><span aria-hidden="true">✦</span><span>심층 리서치</span></button>
             </div>
             <button class="cancel-stream-button" id="cancelStreamButton" type="button" data-locale-key="cancel" data-locale-aria-label="cancel-answer" aria-label="답변 생성 취소" hidden>취소</button>
-            <button class="send-button" id="sendButton" type="submit" data-locale-aria-label="send" aria-label="메시지 보내기"><svg class="send-arrow-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" focusable="false"><path d="M12 19V5m-6 6 6-6 6 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button class="send-button" id="sendButton" type="submit" title="메시지 전송" data-locale-title="send-tooltip" data-locale-aria-label="send" aria-label="메시지 보내기"><svg class="send-arrow-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" focusable="false"><path d="M12 19V5m-6 6 6-6 6 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </div>
         </form>
         <p class="composer-note" id="runtimeNote">파일 첨부 형식을 확인하는 중입니다.</p>

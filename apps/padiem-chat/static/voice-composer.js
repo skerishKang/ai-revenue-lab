@@ -186,9 +186,9 @@
       button.setAttribute("data-voice-state", !ready ? "unavailable" : active ? "active" : "ready");
       const copyKey = active ? STATUS_KEYS.MIC_STOP : STATUS_KEYS.MIC_START;
       button.setAttribute("aria-label", text(copyKey));
-      button.setAttribute("title", text(copyKey));
+      button.setAttribute("title", text("voice-mic"));
       button.setAttribute("data-locale-aria-label", copyKey);
-      button.setAttribute("data-locale-title", copyKey);
+      button.setAttribute("data-locale-title", "voice-mic");
       if (nodes.label) nodes.label.textContent = text("voice-mic");
       if (nodes.status) {
         const key = currentStatusKey();
@@ -438,6 +438,15 @@
       state.idleKey = ERROR_KEY_BY_CODE[String(code)] || STATUS_KEYS.ERROR;
       noticeVisible = true;
       render();
+      announceComposerHint(state.idleKey);
+    }
+
+    function announceComposerHint(key) {
+      try {
+        if (win && typeof win.CustomEvent === "function" && typeof win.dispatchEvent === "function") {
+          win.dispatchEvent(new win.CustomEvent("padiem:composer-hint", { detail: { key: key } }));
+        }
+      } catch (e) { /* presentation must not affect recording */ }
     }
 
     function toggle() {
@@ -445,6 +454,7 @@
       if (!isReady()) {
         noticeVisible = true;
         render();
+        announceComposerHint(availabilityReason() === "signin" ? "voice-login-click" : STATUS_KEYS.UNAVAILABLE_WIRING);
         return false;
       }
       noticeVisible = false;
