@@ -1,3 +1,5 @@
+> **2026-10-15 최신 상태 링크:** 이 10월 13일 Connector 보고서는 당시 기준의 원본 증거입니다. #4541 접근성 PR #4691 **MERGED/issue CLOSED**; #4697은 #4463/#4572 Resident 충돌 회귀 안전 CI 코드만 **MERGED**. **#4572/#4463/#4490은 여전히 DRAFT이고 실제 PC WSS·Broker·등록/철회·TXT same-thread E2E는 #4139 및 #3099 OPEN**입니다. 통합 중인 다른 팀 코드를 임의로 덮어쓰거나 소스 merge guard를 실제 PC 성공으로 간주하지 않습니다. 공통 상태·이슈 전수 목록은 [포트폴리오 최신 인덱스](PADIEM_PORTFOLIO_ISSUE_DOC_RECONCILIATION_20261013.md) 한 곳에서 갱신합니다.
+
 # PADIEM Connector #4139 — 중앙 상태·의사결정·이슈 통합 인덱스 (2026-10-13 KST)
 
 > **분류:** Source/issue/document audit snapshot (문서만). **운영 활성화·보안 승인·병합·실기기 E2E의 증거가 아님.**  
