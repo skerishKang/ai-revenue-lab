@@ -52,6 +52,14 @@ from kagent.p01_adapter import (
 from kagent.p01_run_flow import create_claw_run
 
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
+from .claw_first_turn_authority import (
+    B54VerifiedCodingContextV1,
+    FirstTurnAuthorityError,
+    claim_first_turn_grant,
+    complete_first_turn_grant,
+    fail_first_turn_grant,
+    reserve_first_turn_grant,
+)
 from .claw_live_canary import live_stream_allowed
 from .claw_general_run_history import project_completed_general_run
 from .claw_routes import (
@@ -298,6 +306,7 @@ async def _save_claw_exchange(
 async def _record_completed_claw_result(
     request: Request, *, run_id: str, conversation_id: str | None,
     user_text: str, answer: str, authorized_workspace_id: str | None,
+    first_turn_grant: B54VerifiedCodingContextV1 | None = None,
 ) -> str | None:
     """Persist only a verified completed Claw result; never replay Engine.
 
@@ -308,6 +317,13 @@ async def _record_completed_claw_result(
     saved_conversation_id = await _save_claw_exchange(
         request, conversation_id=conversation_id,
         user_text=user_text, answer=answer,
+    )
+    # #3933 S1: link the reserved first-turn grant to its verified outcome.
+    # Best-effort provenance only: a grant-store failure must never conceal
+    # an already-completed answer.
+    await complete_first_turn_grant(
+        request, first_turn_grant, run_ref=run_id,
+        saved_conversation_id=saved_conversation_id,
     )
     projected_conversation_id = saved_conversation_id or conversation_id
     if projected_conversation_id is None:
@@ -539,6 +555,23 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         # a forged browser header or a stale GET capability response.
         return _error(503, "claw_live_stream_unavailable", "Claw 실시간 실행 상태를 사용할 수 없습니다.")
 
+    # #3933 S1: optional first-turn trusted coding context. OFF by default:
+    # the helper returns None without touching any store, keeping the exact
+    # historical first-turn path below byte-for-byte identical. When enabled,
+    # a missing canonical subject or tenant fails closed here, pre-quota.
+    first_turn_context: B54VerifiedCodingContextV1 | None = None
+    if conversation_id is None:
+        try:
+            first_turn_context = await reserve_first_turn_grant(
+                request,
+                user_id=current_user_id(request) if auth_ready(request) else None,
+                subject_id=subject_id,
+                tenant_id=authorized_workspace_id,
+                route_scope="claw_general_execute",
+            )
+        except FirstTurnAuthorityError as gate_exc:
+            return _error(gate_exc.status_code, gate_exc.code, gate_exc.message)
+
     denial = await _usage_gate_denial(request)
     if denial is not None:
         return denial
@@ -548,6 +581,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         # un-dispatched: compensate the exact receipt (#2226). This route has no
         # direct-B14 fallback (#3539); it fails closed instead.
         await _refund_active_reservation()
+        await fail_first_turn_grant(request, first_turn_context)
         return JSONResponse(
             {
                 "ok": False,
@@ -571,9 +605,26 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             or not callable(getattr(runner, "run_stream", None))
         ):
             await _refund_active_reservation()
+            await fail_first_turn_grant(request, first_turn_context)
             return _error(503, "claw_live_stream_unavailable", "Claw 실시간 실행 상태를 사용할 수 없습니다.")
 
     run = create_claw_run("padiem-chat", model_user_text, model_only_text=True)
+
+    # #3933 S1: the reservation above never authorizes a dispatch by itself.
+    # Exactly one atomic claim may proceed; a concurrent or replayed attach
+    # loses here, gets a status-only 409, and the quota reservation is
+    # refunded. No provider/Engine dispatch happens on this path.
+    if first_turn_context is not None:
+        store = getattr(request.app.state, "claw_first_turn_grant_store", None)
+        try:
+            claimed = await claim_first_turn_grant(store, first_turn_context)
+        except FirstTurnAuthorityError as claim_exc:
+            await _refund_active_reservation()
+            return _error(claim_exc.status_code, claim_exc.code, claim_exc.message)
+        if not claimed:
+            await _refund_active_reservation()
+            return _error(409, "first_turn_dispatch_in_progress",
+                          "같은 요청이 이미 처리 중입니다. 잠시 후 다시 시도해 주세요.")
 
     # #3655: evidence mode is opt-in per request; normal callers see the exact
     # same response surface as before.
@@ -584,6 +635,10 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     if live_requested:
         if evidence_requested:
             await _refund_active_reservation()
+            # Proven pre-dispatch denial after a successful claim: the
+            # claimed grant must fail here, or it stays active (in-progress)
+            # until expiry and blocks the key. Mirrors NOT_DISPATCHED below.
+            await fail_first_turn_grant(request, first_turn_context)
             return _error(422, "live_evidence_mode_unsupported", "실시간 상태와 감사 증거 요청은 동시에 사용할 수 없습니다.")
         from .claw_live_events import live_claw_sse
         live_args = {"product_tier": product_tier, "subject_id": subject_id}
@@ -596,6 +651,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                 request, run_id=run.run_id, conversation_id=conversation_id,
                 user_text=user_text, answer=answer,
                 authorized_workspace_id=authorized_workspace_id,
+                first_turn_grant=first_turn_context,
             )
 
         return live_claw_sse(
@@ -611,6 +667,9 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     except P01AdapterError as exc:
         if exc.dispatch_class == P01DispatchClass.NOT_DISPATCHED:
             await _refund_active_reservation()
+            # Proven non-dispatch: the claimed grant may terminally fail.
+            # Any other class leaves it active until expiry (no auto-retry).
+            await fail_first_turn_grant(request, first_turn_context)
         else:
             _clear_reservation()
         if exc.code in _MODEL_HOLD_ERROR_CODES:
@@ -699,6 +758,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         request, run_id=run.run_id, conversation_id=conversation_id,
         user_text=user_text, answer=outcome.answer,
         authorized_workspace_id=authorized_workspace_id,
+        first_turn_grant=first_turn_context,
     )
     return _claw_general_sse(
         outcome.answer,

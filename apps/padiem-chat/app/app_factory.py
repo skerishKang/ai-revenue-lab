@@ -761,6 +761,12 @@ def create_app(
     app.state.claw_drive_artifact_reader = claw_drive_artifact_reader
     # Explicit trusted server opt-in; no browser-provided activation authority.
     app.state.claw_live_sse_enabled = False
+    # #3933 S1: first-turn trusted coding-context gate. Fail-closed default:
+    # the route helper is a no-op and no grant store is composed here, so
+    # production keeps the exact historical first-turn path until CENTRAL
+    # composes a store and enables the flag in a reviewed change.
+    app.state.claw_first_turn_grant_enabled = False
+    app.state.claw_first_turn_grant_store = None
     # #2961 owner approval decision lane: the same composed Engine client, used
     # only to submit a server-derived decision to the canonical resume route.
     # None keeps the decision route fail-closed before any Engine transport.
