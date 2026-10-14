@@ -139,6 +139,7 @@ def test_isolated_durable_state_and_secrets_are_proved_per_worker(monkeypatch):
     assert bare["workers"]["acceptance_broker"][
         "acceptance_canonical_durable_state_bound"
     ] is False
+    assert bare["acceptance_native_pc_flags_declared"] is False
 
 
 def test_readiness_reports_derived_facts_only_and_never_proves_pairing(
@@ -288,7 +289,9 @@ def test_isolated_stage_ready_does_not_require_production_release(monkeypatch):
     # Production OFF is not a prerequisite for isolated stage testing.
     assert report["acceptance_blockers"] == [
         "acceptance_browser_login_not_yet_proven",
+        "native_one_click_wss_release_gates_not_declared",
     ]
+    assert report["acceptance_native_pc_flags_declared"] is False
     assert report["blocking_facts"] == report["acceptance_blockers"]
     assert report["acceptance_browser_login_ready"] is False
     assert report["actual_owner_windows_pairing_proven"] is False
@@ -310,3 +313,40 @@ def test_isolated_private_failure_stays_blocked_independently_of_prod(monkeypatc
         report["blocking_facts"]
     )
     assert report["actual_owner_windows_pairing_proven"] is False
+
+
+def test_native_one_click_wss_gates_are_distinct_from_basic_stage_bindings(monkeypatch):
+    # A working D1 / Identity / Broker graph alone cannot register a PC.
+    bare = _facts(monkeypatch, [
+        ("PADIEM_CHAT_DB", "d1"),
+        ("PADIEM_CHAT_SESSION_SECRET", "secret_text"),
+        ("PADIEM_CHAT_AUTH_MODE", "plain_text"),
+        ("IDENTITY_AUTHORITY_SERVICE", "service"),
+        ("LOCAL_AGENT_BROKER_AUTHORITY_SERVICE", "service"),
+    ])
+    checks = bare["workers"]["acceptance_chat"][
+        "acceptance_native_pc_release_gates_declared"
+    ]
+    assert len(checks) == 4 and not any(checks.values())
+    assert bare["acceptance_native_pc_flags_declared"] is False
+    assert "native_one_click_wss_release_gates_not_declared" in bare["blocking_facts"]
+
+    names = tuple(checks)
+    with_all = _facts(monkeypatch, [
+        ("PADIEM_CHAT_DB", "d1"),
+        ("PADIEM_CHAT_SESSION_SECRET", "secret_text"),
+        ("PADIEM_CHAT_AUTH_MODE", "plain_text"),
+        ("IDENTITY_AUTHORITY_SERVICE", "service"),
+        ("LOCAL_AGENT_BROKER_AUTHORITY_SERVICE", "service"),
+        *((name, "plain_text") for name in names),
+    ])
+    assert with_all["acceptance_native_pc_flags_declared"] is True
+    assert "native_one_click_wss_release_gates_not_declared" not in (
+        with_all["blocking_facts"]
+    )
+    # A declaration does not prove a real logged-in owner, device, consent,
+    # TLS or DPAPI. It can never transition an operator read to CONNECTED.
+    assert with_all["readiness"] == "blocked"
+    assert with_all["actual_owner_windows_pairing_proven"] is False
+    assert with_all["acceptance_browser_login_ready"] is False
+    assert with_all["changes_made"] is False

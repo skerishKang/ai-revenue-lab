@@ -51,6 +51,16 @@ _ACCEPTANCE_FLAGS = (
     "PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED",
     "PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE",
 )
+# Distinct from the basic owner page + consent routes: these four bindings
+# must EXIST in the deployed isolated Worker before one-click owner->PC
+# native WSS->Broker credential handoff could even be considered. Presence
+# does not prove their exact values or live, owner-approved activation.
+_NATIVE_PC_GATES = (
+    "PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED",
+    "PADIEM_CONNECTOR_OWNER_PC_IDENTITY_PREFLIGHT_ENABLED",
+    "PADIEM_CONNECTOR_OWNER_PC_NATIVE_DELIVERY_ENABLED",
+    "PADIEM_CONNECTOR_ACCEPTANCE_BROKER_NATIVE_WSS_ENABLED",
+)
 # The per-PC staging overlay is gitignored and holds this machine's dedicated
 # D1 UUID. Only bounded booleans are ever read back from it; the identifier
 # itself, and every other provider answer, stay on disk.
@@ -169,6 +179,9 @@ def _latest_live_version(wrangler: str, config: Path) -> dict[str, Any]:
         result["acceptance_password_auth_setting_present"] = (
             safe.get("PADIEM_CHAT_AUTH_MODE") == "plain_text"
         )
+        result["acceptance_native_pc_release_gates_declared"] = {
+            name: safe.get(name) == "plain_text" for name in _NATIVE_PC_GATES
+        }
     elif config.name in (
         "wrangler.identity-authority-acceptance-4139.jsonc",
         "wrangler.local-agent-broker-acceptance-4139.jsonc",
@@ -227,7 +240,7 @@ def _owner_local_overlay() -> dict[str, Any]:
     }
 
 
-def inventory() -> dict[str, Any]:
+def inventory(*, inspect_public_https: bool = False) -> dict[str, Any]:
     wrangler = shutil.which("wrangler")
     if wrangler is None:
         return {"readiness": "blocked", "reason": "wrangler_unavailable",
@@ -293,12 +306,30 @@ def inventory() -> dict[str, Any]:
         )
     if not acceptance_login_ready:
         acceptance_blockers.append("acceptance_browser_login_not_yet_proven")
+    if not all(acceptance_chat.get("acceptance_native_pc_release_gates_declared", {})
+               .get(name) is True for name in _NATIVE_PC_GATES):
+        acceptance_blockers.append("native_one_click_wss_release_gates_not_declared")
+
+    # Only the explicit CLI request probes the already-fixed HTTPS host.
+    # Unit tests and imports remain offline. An unauthenticated GET cannot
+    # grant owner consent, verify WebSocket upgrade or claim a registered PC.
+    public_probe = None
+    if inspect_public_https:
+        from scripts.connector_public_origin_readonly import (
+            blockers_for_probe, probe_isolated_owner_setup,
+        )
+        public_probe = probe_isolated_owner_setup()
+        acceptance_blockers.extend(blockers_for_probe(public_probe))
     return {
         # Full authenticated pairing is not proven by this read-only audit.
         "readiness": "blocked",
         "production_connector_wiring_present": live_ready,
         "production_blockers": production_blockers,
         "acceptance_private_stack_ready": acceptance_private_stack_ready,
+        "acceptance_native_pc_flags_declared": all(
+            acceptance_chat.get("acceptance_native_pc_release_gates_declared", {})
+            .get(name) is True for name in _NATIVE_PC_GATES
+        ),
         "acceptance_runtime_state": (
             "private_bindings_verified_login_not_proven"
             if acceptance_private_stack_ready else "private_bindings_not_ready"
@@ -308,6 +339,8 @@ def inventory() -> dict[str, Any]:
         "workers": findings,
         "acceptance_browser_login_ready": acceptance_login_ready,
         "acceptance_owner_local_manifest": owner_overlay,
+        **({"acceptance_owner_setup_public_probe": public_probe}
+           if inspect_public_https else {}),
         # For #4139 isolated testing, never include production release gates.
         "blocking_facts": acceptance_blockers,
         "actual_owner_windows_pairing_proven": False,
@@ -317,7 +350,7 @@ def inventory() -> dict[str, Any]:
 
 def main() -> int:
     try:
-        report = inventory()
+        report = inventory(inspect_public_https=True)
     except Exception:
         report = {
             "readiness": "blocked", "reason": "readonly_inventory_unavailable",
