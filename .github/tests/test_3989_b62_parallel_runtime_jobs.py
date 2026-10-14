@@ -33,7 +33,7 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn("name: b62-test", self.aggregate)
         self.assertIn("if: always()", self.aggregate)
         self.assertIn(
-            "needs: [registry-ci-plan, b62-static-ui, b62-full-suite, b62-worker-suite, b14-multimodal-test, b62-registry-contract]",
+            "needs: [registry-ci-plan, b62-static-ui, b62-ui-mixed-tests, b62-full-suite, b62-worker-suite, b14-multimodal-test, b62-registry-contract]",
             self.aggregate,
         )
         self.assertIn("WORKER_RESULT: ${{ needs.b62-worker-suite.result }}", self.aggregate)
@@ -42,7 +42,7 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn('test "$PLAN_RESULT" = success', self.aggregate)
 
     def test_both_parallel_jobs_depend_on_same_fail_closed_plan(self):
-        condition = "if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'b14_tests_only' }}"
+        condition = "if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'b14_tests_only' && needs.registry-ci-plan.outputs.scope != 'ui_mixed' }}"
         for block in [self.host, self.worker]:
             self.assertIn("needs: registry-ci-plan", block)
             self.assertIn(condition, block)
@@ -62,7 +62,7 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn('elif [ "$SCOPE" = b14_tests_only ]; then', self.aggregate)
         self.assertIn("B62_CI_MODE=B14_TESTS_ONLY", self.aggregate)
         self.assertIn('test "$MM_RESULT" = success', self.aggregate)
-        for name in ("UI_RESULT", "FULL_RESULT", "WORKER_RESULT", "QUICK_RESULT"):
+        for name in ("UI_RESULT", "MIXED_RESULT", "FULL_RESULT", "WORKER_RESULT", "QUICK_RESULT"):
             self.assertIn('test "$' + name + '" = skipped', self.aggregate)
 
     def test_host_keeps_full_python_tests_and_core_safety(self):
@@ -194,14 +194,15 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn("python -m pytest -q tests/test_multimodal.py tests/test_pilot.py", pilot)
         self.assertNotIn("python -m pip install", pilot)
 
-    def test_b14_multimodal_runner_only_skips_proven_static_only(self):
+    def test_b14_multimodal_runner_only_skips_proven_static_and_ui_mixed(self):
         pilot = job("b14-multimodal-test", self.source)
         # Registration-only already uses its own quick contract; no broad skip
         # is allowed for chat_only, mixed/Core, B14, unknown or manual cases.
         self.assertIn("needs: registry-ci-plan", pilot)
         self.assertIn(
             "needs.registry-ci-plan.outputs.lane != 'model_registration_only' "
-            "&& needs.registry-ci-plan.outputs.scope != 'static_only'",
+            "&& needs.registry-ci-plan.outputs.scope != 'static_only' "
+            "&& needs.registry-ci-plan.outputs.scope != 'ui_mixed'",
             pilot,
         )
         self.assertIn('SCOPE: ${{ needs.registry-ci-plan.outputs.scope }}', self.aggregate)
