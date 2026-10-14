@@ -31,6 +31,7 @@ AGENT = {
     "id": "public-evidence-probe",
     "title": "Public read-only",
     "description": "Public search only",
+    "system_instruction": "Only public evidence is allowed.",
     "task_type": "general",
     "optimize_for": "balanced",
     "max_tokens": 240,
