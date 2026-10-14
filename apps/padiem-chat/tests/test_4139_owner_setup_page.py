@@ -144,3 +144,91 @@ def test_native_browser_launch_script_has_real_javascript_syntax_if_node_availab
         capture_output=True, timeout=15, check=False,
     )
     assert process.returncode == 0, process.stderr
+
+
+def test_one_click_owner_ui_requires_explicit_click_and_nonsecret_exact_offer_ref():
+    """Node exercises real setup.js interactions without browser credentials."""
+    import json
+    import shutil
+    import subprocess
+    import pytest
+
+    if shutil.which("node") is None:
+        pytest.skip("Node unavailable; browser script behavior covered on CI")
+
+    script = r"""
+const fs=require('node:fs');
+const assert=require('node:assert/strict');
+const source=fs.readFileSync(0,'utf8');
+const hooks={};
+const fields={};
+function field(id){
+  if(!fields[id]){
+    fields[id]={
+      checked:false,disabled:true,hidden:id==='pending-pc',
+      value:'',textContent:'',
+      addEventListener(event, fn){hooks[id+':'+event]=fn;},
+    };
+  }
+  return fields[id];
+}
+const ref='link.'+'a'.repeat(32);
+let calls=[];
+globalThis.document={getElementById:field};
+globalThis.window={
+  location:{href:'https://chat.padiem.net/api/claw/connector/enrollments/setup?request_ref='+ref},
+  addEventListener(){},
+};
+globalThis.fetch=async (url,options)=>{
+  calls.push({url, options});
+  return {
+    ok:true, json:async()=>({
+      ok:true,state:'awaiting_device_confirmation',device_id:'windows.device.1',
+      registered:false,connected:false,dispatch_authorized:false,
+    }),
+  };
+};
+eval(source);
+(async()=>{
+  assert.equal(field('pending-pc').hidden,false);
+  assert.equal(calls.length,0,'must not POST on page load');
+  await hooks['pending-approve:click']();
+  assert.equal(calls.length,0,'must not POST without explicit consent');
+  field('pending-consent').checked=true;
+  hooks['pending-consent:change']();
+  assert.equal(field('pending-approve').disabled,false);
+  await hooks['pending-approve:click']();
+  assert.equal(calls.length,1);
+  assert.equal(calls[0].url,'/api/claw/connector/enrollments/approve-link');
+  assert.deepEqual(JSON.parse(calls[0].options.body),{
+    request_ref:ref,confirmed:true,confirmation_version:'pc-enrollment-consent-v1'
+  });
+  assert.equal(calls[0].options.credentials,'same-origin');
+  assert.equal(calls[0].options.redirect,'error');
+  assert.equal(field('pending-approve').disabled,true);
+  await hooks['pending-approve:click']();
+  assert.equal(calls.length,1,'cannot auto retry one-use approval');
+  assert.ok(!field('pending-state').textContent.includes('연결 완료'));
+})().catch(e=>{process.stderr.write(String(e.stack));process.exitCode=1;});
+"""
+    result = subprocess.run(
+        ["node", "-e", script], input=setup._SCRIPT,
+        capture_output=True, text=True, timeout=15, check=False,
+    )
+    assert result.returncode == 0, result.stderr
+
+
+def test_one_click_owner_ui_contains_no_automatic_authorization_or_url_secret():
+    # Browser launches only with a nonsecret referral reference from the
+    # already-verified outbound PC socket; no hidden grants on page load.
+    assert 'id="pending-pc" hidden' in setup._HTML
+    assert 'id="pending-approve" disabled' in setup._HTML
+    assert 'id="pending-consent" type="checkbox"' in setup._HTML
+    assert 'query.size === 1' in setup._SCRIPT
+    assert 'pendingConsent.checked' in setup._SCRIPT
+    assert '"awaiting_device_confirmation"' in setup._SCRIPT
+    assert 'reply.connected !== false' in setup._SCRIPT
+    assert 'reply.registered !== false' in setup._SCRIPT
+    assert '/api/claw/connector/enrollments/approve-link' in setup._SCRIPT
+    assert 'padiem-connector://start?' not in setup._SCRIPT
+    assert 'localStorage.setItem' not in setup._SCRIPT

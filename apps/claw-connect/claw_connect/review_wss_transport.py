@@ -176,3 +176,29 @@ async def run_review_only_wss_pairing(
             enrollment=enrollment, socket=socket, trusted_tls=VerifiedReviewTls(),
             receiver=receiver, challenge_id=challenge_id, pairing_code=pairing_code,
         )
+
+
+async def run_review_only_one_click_pc_link(
+    *, enrollment: Any, receiver: Any, owner_approval_open: Any,
+    source_test_authorized: bool = False, acceptance: bool = False,
+) -> Any:
+    """Reuse the ONE reviewed outbound WSS dialer for the no-code owner offer.
+
+    This does not register the tray/autostart/CLI or mount a public server
+    route. The pre-enrollment key proves possession of a fresh socket-local
+    key only; authenticated B54 owner consent, canonical Broker challenge,
+    and the SAME WSS/DPAPI ACK remain mandatory.
+    """
+    if source_test_authorized is not True:
+        raise DeviceSessionRefused("review_wss_transport_not_authorized")
+    if WSS_PRODUCTION_DIALER_ENABLED is not False:
+        raise DeviceSessionRefused("review_wss_production_gate_changed")
+    from .pending_pc_offer import run_pending_pc_offer_and_enroll
+    async with open_review_only_wss_socket(
+        source_test_authorized=True, acceptance=acceptance,
+    ) as socket:
+        return await run_pending_pc_offer_and_enroll(
+            socket=socket, trusted_tls=VerifiedReviewTls(),
+            enrollment=enrollment, receiver=receiver,
+            owner_approval_open=owner_approval_open,
+        )
