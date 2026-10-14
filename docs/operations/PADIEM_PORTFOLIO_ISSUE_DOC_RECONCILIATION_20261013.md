@@ -1,7 +1,7 @@
 <!-- CENTRAL_PORTFOLIO_LIVE_INDEX_20261015 -->
 # CENTRAL 포트폴리오 최신 이슈·문서 정합성 — 2026-10-15 KST
 
-> **이 최신 섹션이 하단 2026-10-13/14 기록보다 우선합니다.** 조사 기준 저장소 `skerishKang/ai-revenue-lab`, `main=738304dcdb368f1597810e80bd4821cc8750faf3`. GitHub REST 전체 페이지 대조: **OPEN 이슈 84→79, OPEN PR 55**. 모든 PR이 현재 실행 중이라는 뜻은 아니며 역사적 HOLD·다른 base·Draft를 포함합니다. 숫자는 이 시점 스냅샷이고 현재 제품 배포 상태를 증명하지 않습니다.
+> **이 최신 섹션이 하단 2026-10-13/14 기록보다 우선합니다.** 조사 기준 저장소 `skerishKang/ai-revenue-lab`, `main=7be6d047d5efc6f365e139d4e550b74a475cc318`. GitHub REST 전체 페이지 재조회: **OPEN 이슈 84→79, 현재 OPEN PR 54**. 모든 PR이 현재 실행 중이라는 뜻은 아니며 역사적 HOLD·다른 base·Draft를 포함합니다. 숫자는 이 시점 스냅샷이고 현재 제품 배포 상태를 증명하지 않습니다.
 
 ## 1. 실제 이슈 통합·종료 5건
 
@@ -23,9 +23,9 @@
 | **B54 Claw/P01** | 단일 인증 SSE 실제 run에서 순서/terminal/done PASS, #4665/#4667 이벤트 방어 source MERGED | **#3933** Hark/Claw 구현, **#3936** 실제 승인·거부·취소·재연결·다른 owner 검증, **#4318** 공통 플랫폼 E2E. 단일 SSE 성공을 전체 실사용 성공으로 확대 금지 |
 | **B66 견적·대화** | #4658 QuoteCore handoff, #4661 owner-scoped history/Markdown, **#4672 고객 UI MERGED**. 기존 보호 D1/Pages/Worker/CGI Guided PDF 수용 근거 있음 | 현재 출시/고객 **#4316 단일 ledger**, 서로 다른 B66 A/B 계정 직접 접근 거부와 served-source 대조 미완료. CGI-free 모델 `approve_draft` 유료 E2E는 대표 결정으로 DEFERRED, 현재 출시 차단으로 부활 금지 |
 | **공통 WebSearch** | #4689 B66 승인형 gate, #4692 Core TinyFish→402/429만 Daum, #4695 Engine read-only evidence **MERGED**; 회귀 강화 **#4699 DRAFT** | **#4469 OPEN**, Claw real search→P01 선택모델→SSE 근거 출력 미연결. #1753 Engine 운영 활성화 별개, B66 search default OFF, 3제품 실제 provider→source 고객 proof 없음 |
-| **Chat/Claw STT** | #4663 Worker, #4666 CP optional, #4679 adapter, #4683 mic UI MERGED; 신규 배선 **#4698 DRAFT** | **#4643 OPEN**, CENTRAL P0 stop-tail 소실 + 비제한 `request.json()` 수정 필요; signed-in real transcript, product/tier grant, STT Worker binding·LIVE 모두 미증명/기본 OFF |
+| **Chat/Claw STT** | #4663 Worker, #4666 CP optional, #4679 adapter, #4683 mic UI MERGED; 신규 배선 **#4698 DRAFT** (HEAD 갱신, CENTRAL 재검증 대기) | **#4643 OPEN**, 기존 HEAD에서 지적된 P0 stop-tail 소실 + 비제한 `request.json()`의 해소 여부를 새 HEAD에서 재검증해야 함; signed-in real transcript, product/tier grant, STT Worker binding·LIVE 모두 미증명/기본 OFF |
 | **PC Connector** | #4541 44px 접근성 **PR #4691 MERGED/CLOSED**, #4697 충돌 방어 merge guard **MERGED**. #4572·#4463·#4490 **DRAFT** | **#4139** 웹 계정→Windows Broker WSS→Resident→같은 Claw 대화 PC TXT 결과 실제 연결, **#3099** Windows 로그인/기기/서명 실 E2E. 코드·CI=ONLINE 아님 |
-| **전화** | #4676 loopback mock phone UI/API **DRAFT** | 실제 전화/번호·통화요금/고객 승인/운영 연결 없음. 내부 사업방침은 공개 issue/doc에 옮기지 않음 |
+| **전화** | #4676 loopback mock phone UI/API **MERGED** (`7be6d047`) | 소스 병합 완료이나 실제 전화/번호·통화요금/고객 승인/운영 연결 없음. 내부 사업방침은 공개 issue/doc에 옮기지 않음 |
 | **B14 모델/Engine** | #3819 JSON registry MERGED, #4659 shared KST preinstruction MERGED | **#4453/#4483** 제품/tier/정확모델/policy 최종 실행 차단; **#1753** Engine E9 기능별 운영 권한·배포. 사전지침 제공이 모델/인터넷 실행 권한 아님 |
 | **B62/P01 D1·사고** | D1 040 보호 적용·읽기, #4529 schema guard, 보호 SSE 활성화 실증 | **#3936** 미완료 P01 owner E2E; **#4549** 별도 사고 영향 조사 OPEN. invocation errors 0에서 고객 HTTP 5xx 0을 추론 금지 |
 
