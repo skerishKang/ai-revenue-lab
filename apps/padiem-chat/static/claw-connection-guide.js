@@ -50,11 +50,11 @@
     };
     if (state === "on") return id === "drive" ? {
       headline: tr("Google Drive가 연결되어 있어요", "Google Drive is connected"),
-      copy: tr("현재 파일 연결을 사용할 수 있습니다. 연결 해제하면 다시 승인해야 합니다.",
-               "Drive access is available. Disconnecting requires authorization again."),
-      foot: tr("잠시 사용 중지하는 기능은 별도로 제공될 예정입니다.",
-               "A separate temporary pause will be available later."),
-      button: tr("연결 해제", "Disconnect"), intent: "disconnect-drive"
+      copy: tr("연결은 유지됩니다. 계정 연결을 삭제하려면 커넥터 페이지에서 선택해 주세요.",
+               "Your Drive connection is retained. Remove it from Connectors if needed."),
+      foot: tr("일시 중지는 아직 지원하지 않습니다. OFF를 연결 삭제처럼 처리하지 않습니다.",
+               "Temporary pause is not yet supported; OFF must not revoke authorization."),
+      button: tr("연결 관리", "Manage connection"), intent: "manage"
     } : {
       headline: tr(labels[id] + " 연결됨", labels[id] + " connected"),
       copy: tr(id === "pc" ?
@@ -116,6 +116,11 @@
     if (bypass || !button || !home()) return;
     event.preventDefault();
     event.stopImmediatePropagation();
+    if (signedIn() && button.dataset.clawConnection === "drive" &&
+        button.getAttribute("data-connection-state") === "off") {
+      document.dispatchEvent(new Event("padiem:drive-quick-connect"));
+      return;
+    }
     open(button);
   }, true);
 
@@ -128,13 +133,7 @@
     const button = source;
     const id = button.dataset.clawConnection;
     dialog.close();
-    if (intent === "disconnect-drive") {
-      // Delegate to the existing owner-authenticated Drive revocation handler.
-      bypass = true;
-      try { button.click(); } finally { bypass = false; }
-      return;
-    }
-    if (intent === "login") {
+      if (intent === "login") {
       const login = document.getElementById("loginButton");
       if (login && !login.disabled && !login.hidden) login.click();
       else {
