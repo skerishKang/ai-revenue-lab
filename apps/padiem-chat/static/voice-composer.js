@@ -108,6 +108,7 @@
     const nodes = { button: null, label: null, preview: null, status: null };
     let factory = typeof options.recognizerFactory === "function" ? options.recognizerFactory : null;
     let run = null;
+    let stoppingRun = null;
     let deferredFinals = [];
     let observer = null;
     let destroyed = false;
@@ -233,6 +234,15 @@
       return run.adapter.commitFinal(opts);
     }
 
+    function commitForRun(targetRun, payload) {
+      if (!targetRun || !targetRun.adapter) return null;
+      const opts = { generation: targetRun.generation, sessionToken: targetRun.sessionToken };
+      if (payload && payload.utteranceId != null) opts.utteranceId = String(payload.utteranceId);
+      if (payload && typeof payload.text === "string") opts.text = payload.text;
+      if (payload && payload.stopped === true) opts.stopped = true;
+      return targetRun.adapter.commitFinal(opts);
+    }
+
     function handleAdapterState(next) {
       if (next === "listening") {
         state.voiceState = "listening";
@@ -312,6 +322,7 @@
       state.sessionToken = makeToken(win || {});
       state.interim = "";
       state.idleKey = "";
+       stoppingRun = null;
       deferredFinals = [];
       const myRun = { generation: state.generation, sessionToken: state.sessionToken, adapter: null, session: null };
       const adapter = adapterApi.createVoiceInputAdapter({
@@ -336,6 +347,14 @@
           },
           onFinal: function (payload) {
             if (isSameRun(myRun)) submitFinal(payload);
+            else if (stoppingRun === myRun) {
+              const result = commitForRun(myRun, payload);
+              if (result && result.ok) {
+                state.interim = "";
+                state.idleKey = STATUS_KEYS.FINAL;
+                render();
+              }
+            }
           },
           onError: function (code) {
             if (isSameRun(myRun)) recognizerFailed(code);
@@ -383,6 +402,7 @@
       // Detach the run before calling recognizer.stop(): implementations may
       // synchronously emit `end` from stop(), and that callback must not
       // recursively stop the same run or mutate the next one.
+      if (reason === "user-stopped" || reason == null) stoppingRun = stoppedRun;
       run = null;
       stopSessionOnStage(stoppedRun);
       stoppedRun.adapter.stop(reason || "user-stopped");
@@ -422,6 +442,7 @@
 
     function invalidate(reason) {
       if (destroyed) return;
+       stoppingRun = null;
       const stage = run;
       run = null;
       if (stage) {

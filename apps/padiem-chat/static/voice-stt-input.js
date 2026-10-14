@@ -191,9 +191,13 @@
 
     function commitFinal(opts) {
       opts = opts || {};
-      if (destroyed || stopped) return { ok: false, reason: "stopped" };
+      if (destroyed) return { ok: false, reason: "stopped" };
+      const stopFlush = opts && opts.stopped === true;
+      if (stopped && !stopFlush) return { ok: false, reason: "stopped" };
       if (state === STATES.ERROR) return { ok: false, reason: "error-state" };
-      if (state !== STATES.LISTENING && state !== STATES.INTERIM && state !== STATES.FINAL) {
+      if (stopFlush && stopped && (state === STATES.STOPPED || state === STATES.LISTENING || state === STATES.INTERIM || state === STATES.FINAL)) {
+        // Allow the final transcribed chunk to land after a user-initiated stop.
+      } else if (state !== STATES.LISTENING && state !== STATES.INTERIM && state !== STATES.FINAL) {
         return { ok: false, reason: "not-listening" };
       }
       if (opts.destroyed === true) return { ok: false, reason: "invalidated" };
@@ -258,7 +262,7 @@
     }
 
     function appendToInput(text, mode) {
-      if (destroyed || stopped || state === STATES.ERROR) return null;
+      if (destroyed) return null;
       text = norm(text);
       if (!text) return null;
       let current = "";
@@ -319,4 +323,3 @@
     }),
   };
 });
-

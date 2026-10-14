@@ -204,7 +204,7 @@
       }
 
       /** Transcribe one assembled chunk and report it as one final utterance. */
-      function flushChunk(force) {
+      function flushChunk(force, fromStop) {
         if (stopped && !force) return;
         if (halting && !force) return;
         if (force) {
@@ -239,7 +239,7 @@
             if (!text) return;
             try {
               if (typeof callbacks.onFinal === "function") {
-                callbacks.onFinal({ text: text, utteranceId: utteranceId });
+                callbacks.onFinal({ text: text, utteranceId: utteranceId, stopped: fromStop === true });
               }
             } catch (e) { /* swallow */ }
           },
@@ -383,7 +383,7 @@
             recorder = null;
             activeRecorder.onstop = function () {
               if (!finalFlushDone) {
-                flushChunk(true);
+                flushChunk(true, true);
               }
               releaseCapture();
               stopped = true;
@@ -394,7 +394,7 @@
             win.setTimeout(function () {
               if (!stopped) {
                 if (!finalFlushDone) {
-                  flushChunk(true);
+                  flushChunk(true, true);
                 }
                 releaseCapture();
                 stopped = true;
@@ -403,7 +403,7 @@
             }, 250);
           } else {
             if (!finalFlushDone) {
-              flushChunk(true);
+              flushChunk(true, true);
             }
             releaseCapture();
             stopped = true;
