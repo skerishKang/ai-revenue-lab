@@ -3545,6 +3545,7 @@
       if (!redirect) throw new Error("drive authorization unavailable");
       window.location.assign(redirect);
     } catch (_) {
+      try { sessionStorage.removeItem("padiem-claw-drive-oauth-return"); } catch (_) {}
       // Bounded failure with no automatic retry: only a new explicit user
       // gesture starts another attempt, and this attempt's state is dropped.
       googleConnectorConnectInFlight = false;
@@ -3858,6 +3859,22 @@
   if (driveConnectButton) driveConnectButton.addEventListener("click", () => {
     void beginGoogleDriveConnect();
   });
+  // CLAW first connection: reuse this single reviewed Google OAuth ticket flow,
+  // never send a user through Connectors as a prerequisite for signing in.
+  document.addEventListener("padiem:drive-quick-connect", () => {
+    void (async () => {
+      await loadConnectorStatus();
+      const offered = googleDriveConnectButton();
+      if (offered && !offered.hidden && !offered.disabled) {
+        // Only a non-sensitive return-to-CLAW presentation hint is stored.
+        try { sessionStorage.setItem("padiem-claw-drive-oauth-return", "1"); } catch (_) {}
+        offered.click();
+      } else {
+        // Unknown authority is not OFF; show the existing connection status.
+        openConnectorsDialog();
+      }
+    })();
+  });
   if (connectorsDialog) {
     connectorsDialog.addEventListener("cancel", (event) => {
       event.preventDefault();
@@ -3875,7 +3892,22 @@
     const cleanPath = String(window.location.pathname || "/");
     const cleanHash = String(window.location.hash || "");
     window.history.replaceState(null, "", cleanPath + (cleanQuery ? `?${cleanQuery}` : "") + cleanHash);
-    openConnectorsDialog();
+    let returnToClaw = false;
+    try {
+      returnToClaw = sessionStorage.getItem("padiem-claw-drive-oauth-return") === "1";
+      sessionStorage.removeItem("padiem-claw-drive-oauth-return");
+    } catch (_) {}
+    if (returnToClaw) openClawWorkspace();
+    else openConnectorsDialog();
+  }
+
+  // GitHub OAuth callback lands back on the existing Claw home, not Connectors.
+  if (connectorReturnParts.some(part => part === "claw-github=connected")) {
+    const cleanQuery = connectorReturnParts.filter(part => !part.startsWith("claw-github=")).join("&");
+    const cleanPath = String(window.location.pathname || "/");
+    const cleanHash = String(window.location.hash || "");
+    window.history.replaceState(null, "", cleanPath + (cleanQuery ? "?" + cleanQuery : "") + cleanHash);
+    openClawWorkspace();
   }
 
   if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);

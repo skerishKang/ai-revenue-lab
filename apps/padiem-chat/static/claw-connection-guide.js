@@ -67,11 +67,11 @@
     };
     if (state === "on") return id === "drive" ? {
       headline: tr("Google Drive가 연결되어 있어요", "Google Drive is connected"),
-      copy: tr("현재 파일 연결을 사용할 수 있습니다. 연결 해제하면 다시 승인해야 합니다.",
-               "Drive access is available. Disconnecting requires authorization again."),
-      foot: tr("잠시 사용 중지하는 기능은 별도로 제공될 예정입니다.",
-               "A separate temporary pause will be available later."),
-      button: tr("연결 해제", "Disconnect"), intent: "disconnect-drive"
+      copy: tr("드라이브 연결은 유지됩니다. 계정 연결 자체를 삭제하려면 커넥터 관리에서 선택해 주세요.",
+               "Your Drive link is retained. Use Connectors to remove account authorization."),
+      foot: tr("Google Drive 일시 중지는 아직 서버에서 지원하지 않습니다. 연결 삭제를 OFF처럼 실행하지 않습니다.",
+               "Temporary Drive pause is not yet supported; OFF must not revoke the link."),
+      button: tr("연결 관리", "Manage connection"), intent: "manage"
     } : {
       headline: tr(labels[id] + " 연결됨", labels[id] + " connected"),
       copy: tr(id === "pc" ?
@@ -133,6 +133,22 @@
     if (bypass || !button || !home()) return;
     event.preventDefault();
     event.stopImmediatePropagation();
+    const id = button.dataset.clawConnection;
+    const state = button.dataset.connectionState;
+    if (signedIn() && state === "off" && id === "drive") {
+      document.dispatchEvent(new Event("padiem:drive-quick-connect"));
+      return;
+    }
+    if (signedIn() && id === "github" && ["on","off"].includes(state)) {
+      if (state === "off" && button.dataset.connectionLinked !== "true") {
+        window.location.assign("/api/connectors/github/start");
+        return;
+      }
+      // Known links toggle pause/resume through their server-authoritative handler.
+      bypass = true;
+      try { button.click(); } finally { bypass = false; }
+      return;
+    }
     open(button);
   }, true);
 
@@ -153,12 +169,6 @@
     }
     if (intent === "connect-github") {
       window.location.assign("/api/connectors/github/start");
-      return;
-    }
-    if (intent === "disconnect-drive") {
-      // Delegate to the existing owner-authenticated Drive revocation handler.
-      bypass = true;
-      try { button.click(); } finally { bypass = false; }
       return;
     }
     if (intent === "login") {

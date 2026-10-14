@@ -37,11 +37,12 @@ def test_installation_defaults_are_shown_without_second_login_step():
     assert "설치 후 자동 실행·연결됩니다." in SCRIPT
 
 
-def test_drive_disconnect_is_explicit_not_a_fake_pause():
-    assert 'intent === "disconnect-drive"' in SCRIPT
-    assert 'button.click()' in SCRIPT
-    assert '잠시 사용 중지하는 기능은 별도로 제공될 예정입니다.' in SCRIPT
-    assert "연결 해제" in SCRIPT
+def test_drive_on_never_revokes_and_first_off_redirects_to_google_login():
+    assert 'intent === "disconnect-drive"' not in SCRIPT
+    assert 'padiem:drive-quick-connect' in SCRIPT
+    assert 'state === "off" && id === "drive"' in SCRIPT
+    assert '연결 삭제를 OFF처럼 실행하지 않습니다.' in SCRIPT
+    assert '현재 파일 연결을 사용할 수 있습니다.' not in SCRIPT
 
 
 def test_guide_styles_do_not_touch_shared_chat_or_card_geometry():
