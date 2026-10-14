@@ -11,9 +11,9 @@ correlation — `command_id`, `run_id`, `tool_request_ref`, `request_id`,
 `revision_ref`, `evidence_ref` and `request_fingerprint`. The browser and the
 device never choose the destination: the destination is read from the origin row.
 
-Nothing here can express raw material. The observation contract has no field for
-argv, stdout, stderr, a credential or an approval payload, so a projection that
-tried to carry one would not type-check.
+Terminal observations carry no argv, stdout/stderr, credential or approval.
+Only a verified, size-bounded text-file READ receipt from the existing canonical
+Broker may contribute file text to the original owner's conversation.
 """
 
 from __future__ import annotations
@@ -36,6 +36,7 @@ PROJECTABLE_STATES = frozenset({"acknowledged", "expired"})
 _ACKNOWLEDGED = "acknowledged"
 _EXPIRED = "expired"
 _MAX_CONTENT_CHARS = 1_000
+_MAX_FILE_TEXT_BYTES = 768  # First synthetic TXT only; never generic stdout.
 _SAFE_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+-]{0,255}$")
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 _EXECUTION_TERMINATIONS = frozenset({"exited", "cancelled", "timed_out"})
@@ -60,6 +61,66 @@ def _digest(name: str, value: Any) -> str:
     if not isinstance(value, str) or not _SHA256.fullmatch(value):
         raise LocalTaskResultError("local_task_result_invalid_correlation", f"{name} must be a lowercase SHA-256 digest")
     return value
+
+
+def verify_broker_file_text(
+    receipt: Any, *, origin: "LocalTaskOrigin",
+    observation: "LocalRunnerTerminalObservation",
+) -> tuple[str, str | None]:
+    """Validate one private Broker file-read receipt before appending a message.
+
+    Contract: non-file commands -> {ok:true, available:false, kind:"other"}.
+    Pending text-file read -> {ok:true, available:false, kind:"file_read_text"}.
+    Pending must not append a terminal-only message under the same stable ID.
+    """
+    if type(receipt) is not dict or receipt.get("ok") is not True:
+        raise LocalTaskResultError("file_text_unverified", "canonical file result unavailable")
+    if receipt.get("available") is False:
+        if set(receipt) != {"ok", "available", "kind"}:
+            raise LocalTaskResultError("file_text_unverified", "file result schema mismatch")
+        if receipt["kind"] == "other":
+            return "other", None
+        if receipt["kind"] == "file_read_text":
+            return "pending", None
+        raise LocalTaskResultError("file_text_unverified", "unknown file result kind")
+    fields = frozenset({
+        "ok", "available", "kind", "account_ref", "workspace_ref", "run_id",
+        "command_id", "tool_request_ref", "request_id", "revision_ref",
+        "evidence_ref", "request_fingerprint", "content_utf8", "content_sha256",
+    })
+    if (
+        receipt.get("available") is not True
+        or frozenset(receipt) != fields
+        or receipt["kind"] != "file_read_text"
+        or observation.state != _ACKNOWLEDGED
+        or observation.termination != "exited"
+        or observation.exit_code != 0
+        or not isinstance(origin.workspace_id, str)
+        or not origin.workspace_id
+        or receipt["account_ref"] != origin.user_id
+        or receipt["workspace_ref"] != origin.workspace_id
+        or receipt["run_id"] != origin.run_id
+        or any(receipt[k] != getattr(observation, k) for k in (
+            "command_id", "tool_request_ref", "request_id", "revision_ref",
+            "evidence_ref", "request_fingerprint",
+        ))
+    ):
+        raise LocalTaskResultError("file_text_unverified", "file result correlation refused")
+    value = receipt["content_utf8"]
+    if type(value) is not str:
+        raise LocalTaskResultError("file_text_unverified", "file result content type invalid")
+    try:
+        raw = value.encode("utf-8")
+    except UnicodeEncodeError:
+        raise LocalTaskResultError("file_text_unverified", "file result UTF-8 malformed") from None
+    if (
+        len(raw) > _MAX_FILE_TEXT_BYTES
+        or any(ord(ch) < 32 and ch not in "\n\r\t" for ch in value)
+        or type(receipt["content_sha256"]) is not str
+        or receipt["content_sha256"] != hashlib.sha256(raw).hexdigest()
+    ):
+        raise LocalTaskResultError("file_text_unverified", "file result integrity invalid")
+    return "text", value
 
 
 @dataclass(frozen=True, slots=True)
@@ -220,7 +281,7 @@ class LocalTaskResultDecision:
         }
 
 
-def decide_local_task_result(*, origin: LocalTaskOrigin, observation: LocalRunnerTerminalObservation) -> LocalTaskResultDecision:
+def decide_local_task_result(*, origin: LocalTaskOrigin, observation: LocalRunnerTerminalObservation, verified_text: str | None = None) -> LocalTaskResultDecision:
     """Pure: what one terminal observation means for one origin conversation.
 
     Correlation is checked before anything is rendered, so a command that belongs
@@ -266,6 +327,12 @@ def decide_local_task_result(*, origin: LocalTaskOrigin, observation: LocalRunne
             + ", ".join(sorted(mismatched)),
         )
 
+    if verified_text is not None and (
+        observation.state != _ACKNOWLEDGED or observation.termination != "exited"
+        or observation.exit_code != 0 or type(verified_text) is not str
+        or len(verified_text.encode("utf-8")) > _MAX_FILE_TEXT_BYTES
+    ):
+        raise LocalTaskResultError("file_text_unverified", "file text cannot belong to this result")
     message_id = result_message_id(
         conversation_id=conversation_id,
         command_id=observation.command_id,
@@ -289,6 +356,10 @@ def decide_local_task_result(*, origin: LocalTaskOrigin, observation: LocalRunne
             f"상태: {observation.termination}, 종료 코드: {observation.exit_code}, "
             f"명령: {observation.command_id}."
         )
+        if verified_text is not None:
+            content = "PC 파일 읽기 결과:\n" + (
+                verified_text if verified_text else "(빈 파일)"
+            )
     else:
         # EXPIRED proves no execution happened. The projection says exactly that
         # and reports no termination and no exit code.
@@ -387,7 +458,31 @@ async def project_local_runner_terminal_result(
             request_fingerprint=bound["request_fingerprint"],
         ),
     )
+    # Check the broker terminal against the durable command correlation BEFORE
+    # requesting any content from the private Broker result port.
     decision = decide_local_task_result(origin=origin, observation=observation)
+    verified_text = None
+    if (observation.state == _ACKNOWLEDGED and observation.termination == "exited"
+        and observation.exit_code == 0):
+        reader = getattr(result_port, "read_verified_file_text", None)
+        if callable(reader):
+            receipt = await reader(
+                owner_id=user_id, workspace_id=workspace_id,
+                run_id=run_id, command_id=command_id,
+            )
+            if receipt is not None:
+                result_kind, verified_text = verify_broker_file_text(
+                    receipt, origin=origin, observation=observation,
+                )
+                if result_kind == "pending":
+                    return LocalTaskResultDecision(
+                        append=False, message_id="", content="", summary="",
+                        status="pending", reason="verified file text not yet available",
+                    )
+    if verified_text is not None:
+        decision = decide_local_task_result(
+            origin=origin, observation=observation, verified_text=verified_text,
+        )
     appended = await history.append_local_task_result(
         user_id=user_id,
         run_id=run_id,
@@ -414,7 +509,8 @@ ORIGIN_CONVERSATION_CHOSEN_BY_CALLER = False
 ORIGIN_CONVERSATION_READ_FROM_RUN_ROW = True
 DUPLICATE_APPEND_SUPPRESSED_BY_STORE = True
 EXPIRED_FABRICATES_EXECUTION = False
-RAW_MATERIAL_IN_PROJECTION = False
+RAW_MATERIAL_IN_PROJECTION = False  # Raw stdout never admitted; only verified TXT.
+VERIFIED_FILE_TEXT_RETURN_CONTRACT = 'canonical_broker_file_text_v1'
 SECOND_CONVERSATION_AUTHORITY = False
 SECOND_RESULT_AUTHORITY = False
 SECOND_COMMAND_AUTHORITY = False
