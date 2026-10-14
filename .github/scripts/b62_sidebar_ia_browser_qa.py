@@ -128,6 +128,20 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
     if mobile:
         await page.locator("#mobileMenu").click()
         await page.locator("#sidebar").wait_for(state="visible")
+        # CSS translates the sidebar onto the viewport after the click.
+        # Playwright 'visible' can still be true for an offscreen element.
+        await page.wait_for_function(
+            """() => {
+              const sidebar = document.querySelector('#sidebar');
+              return document.querySelector('.app-shell')?.classList.contains('sidebar-open')
+                && sidebar && sidebar.getBoundingClientRect().left >= -1;
+            }""",
+            timeout=5000,
+        )
+        # Mock unauthenticated pages do not own a real profile. The focus QA
+        # exposes only its presentation AFTER auth state settles; otherwise
+        # a delayed anonymous status projection can hide it mid-test.
+        await account.evaluate("(el) => { el.hidden = false; el.style.display = 'grid'; }")
         await _assert_focus(page, "#mobileClose", "mobile close")
         await page.keyboard.press("Tab")
         await _assert_focus(page, ".brand", "mobile brand")

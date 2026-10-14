@@ -55,9 +55,14 @@ def _probe(tmp_path: Path, root: Path, *, conflicting_root: Path | None = None) 
     env = os.environ.copy()
     for var in ("PADIEM_AGENT_SRC", "CLAW_RESIDENT_SRC"):
         env.pop(var, None)
-    env["PYTHONPATH"] = (
-        str(CONNECTOR_SRC) if conflicting_root is None
-        else os.pathsep.join((str(conflicting_root), str(CONNECTOR_SRC)))
+    # An already installed unrelated kagent may exist in the system
+    # interpreter on the developer PC. The success fixture must model the
+    # installer-pinned Agent as the first import candidate, not accidentally
+    # exercise an ambient installation. The conflicting case still puts a
+    # foreign Agent before the pin and must fail closed.
+    env["PYTHONPATH"] = os.pathsep.join(
+        (str(root), str(CONNECTOR_SRC)) if conflicting_root is None
+        else (str(conflicting_root), str(root), str(CONNECTOR_SRC))
     )
     env["PIN_SOURCE"] = str(root)
     env["PIN_STATE"] = str(state)
