@@ -227,8 +227,20 @@ def resolve_manual_route(
 
     route_id = f"platform:{cm.model_id}"
 
+    owner_free_pair = model_id == "opencode-go/cat-jam-free"
     fallback_candidates: list[dict[str, str]] = []
-    if allow_external_fallback:
+    if owner_free_pair:
+        gemini = get_catalog_by_id("google/gemini-3.1-flash-lite")
+        if gemini is not None and gemini.enabled and _platform_secret_present(gemini):
+            fallback_candidates = [{
+                "model_id": gemini.model_id,
+                "upstream_model": gemini.upstream_model,
+                "provider": gemini.provider,
+                "platform_provider_id": gemini.platform_provider_id,
+                "route_id": f"platform:{gemini.model_id}",
+                "reason": "owner_selected_free_fallback",
+            }]
+    elif allow_external_fallback:
         all_models = get_catalog_models()
         fallback_candidates = [
             {
@@ -236,6 +248,7 @@ def resolve_manual_route(
                 "upstream_model": m.upstream_model,
                 "provider": m.provider,
                 "route_id": f"platform:{m.model_id}",
+                "platform_provider_id": m.platform_provider_id,
                 "reason": "catalog_alternative",
             }
             for m in all_models
@@ -245,7 +258,9 @@ def resolve_manual_route(
         ][:3]  # limit to top 3 fallback candidates
 
     reason_codes = ["manual_selection"]
-    if not allow_external_fallback:
+    if owner_free_pair:
+        reason_codes.append("owner_selected_free_fallback")
+    elif not allow_external_fallback:
         reason_codes.append("external_fallback_disabled")
 
     return RouteDecision(
@@ -255,7 +270,7 @@ def resolve_manual_route(
         selected_upstream_model=cm.upstream_model,
         selected_route_id=route_id,
         reason_codes=reason_codes,
-        fallback_allowed=allow_external_fallback,
+        fallback_allowed=bool(fallback_candidates) if owner_free_pair else allow_external_fallback,
         eligible_fallback=fallback_candidates,
         excluded_candidates=[],
         credential_available=cred_ok,
@@ -263,7 +278,7 @@ def resolve_manual_route(
         evidence_status=EvidenceStatus.RESOLVED_NOT_CALLED.value,
         request_id=request_id,
         provider_mode=runtime_config.provider_mode,
-        max_attempts=1 if not allow_external_fallback else min(1 + len(fallback_candidates), 3),
+        max_attempts=(1 + len(fallback_candidates)) if owner_free_pair else (1 if not allow_external_fallback else min(1 + len(fallback_candidates), 3)),
         credential_source=cred_source,
         platform_provider_id=plat_pid,
     )

@@ -185,7 +185,9 @@ async def ensure_route_secrets(
     from .routing_policy import B14_AUTO_CHAIN
     from .worker_env import load_request_secret
 
-    if model_id == "b14/auto":
+    if model_id == "opencode-go/cat-jam-free":
+        candidates = [model_id, "google/gemini-3.1-flash-lite"]
+    elif model_id == "b14/auto":
         # Even without fallback, the fixed chain selects the first *ready*
         # provider. Check subsequent positions only if predecessors lack keys.
         candidates = B14_AUTO_CHAIN

@@ -75,6 +75,7 @@ from .b66_registered_model_boundary import (
 )
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 from .request_contract import MAX_BROWSER_BODY_BYTES
+from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID
 
 _MODEL_ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}")
 _ALLOWED_FIELDS = frozenset(
@@ -178,7 +179,7 @@ async def conversation_turn(request: Request) -> JSONResponse:
         return data
     if set(data) - _ALLOWED_FIELDS:
         return _error(400, "unsupported_field", "지원하지 않는 대화 필드입니다.")
-    model_id = data.get("model_id")
+    model_id = data.get("model_id") or FREE_PRIMARY_B14_MODEL_ID
     if (
         not isinstance(model_id, str)
         or not _MODEL_ID_RE.fullmatch(model_id)
