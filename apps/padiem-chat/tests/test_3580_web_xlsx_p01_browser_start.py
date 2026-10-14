@@ -19,7 +19,7 @@ STATUS = "/api/claw/office/web-selections/{}/p01-status"
 
 def install_owner_run(history):
     history.started = []
-    async def create_web_xlsx_p01_run(*, user_id, workspace_id, filename):
+    async def create_web_xlsx_p01_run(*, user_id, workspace_id, filename, product_scope):
         history.started.append((user_id, workspace_id, filename))
         return "run_web_3580_actual"
     history.create_web_xlsx_p01_run = create_web_xlsx_p01_run
@@ -143,6 +143,7 @@ async def test_actual_history_store_mints_owner_conversation_and_run_without_fak
         "001_auth_history.sql", "002_projects.sql", "009_claw_run_history.sql",
         "014_claw_run_history_conversation.sql",
         "015_claw_run_history_workspace.sql",
+        "042_conversation_product_scope.sql",
     ):
         conn.executescript((folder / filename).read_text(encoding="utf-8"))
     now = datetime.now(timezone.utc).isoformat()

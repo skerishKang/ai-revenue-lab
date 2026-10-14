@@ -57,38 +57,43 @@ class MemoryHistoryStore:
     async def get_user(self, user_id):
         return self.users.get(user_id)
 
-    async def list_conversations(self, user_id, limit=30):
-        rows = [c for c in self.conversations.values() if c["user_id"] == user_id]
+    async def list_conversations(self, user_id, *, product_scope, limit=30):
+        rows = [
+            c for c in self.conversations.values()
+            if c["user_id"] == user_id and c["product_scope"] == product_scope
+        ]
         rows.sort(key=lambda row: row["updated_at"], reverse=True)
         return [{k: c[k] for k in ("id", "title", "created_at", "updated_at")} for c in rows[:limit]]
 
-    async def get_conversation(self, user_id, conversation_id):
+    async def get_conversation(self, user_id, conversation_id, *, product_scope):
         row = self.conversations.get(conversation_id)
-        if not row or row["user_id"] != user_id:
+        if not row or row["user_id"] != user_id or row["product_scope"] != product_scope:
             return None
         return {
             "id": row["id"], "title": row["title"], "created_at": row["created_at"], "updated_at": row["updated_at"],
             "messages": [{"role": m["role"], "content": m["content"]} for m in row["messages"]],
         }
 
-    async def delete_conversation(self, user_id, conversation_id):
+    async def delete_conversation(self, user_id, conversation_id, *, product_scope):
         row = self.conversations.get(conversation_id)
-        if not row or row["user_id"] != user_id:
+        if not row or row["user_id"] != user_id or row["product_scope"] != product_scope:
             return False
         del self.conversations[conversation_id]
         return True
 
-    async def append_exchange(self, user_id, conversation_id, user_text, assistant_text):
+    async def append_exchange(self, user_id, conversation_id, user_text, assistant_text,
+                              project_id=None, *, product_scope):
         if conversation_id is None:
             self.counter += 1
             conversation_id = "chat_" + f"{self.counter:032x}"
             self.conversations[conversation_id] = {
                 "id": conversation_id, "user_id": user_id, "title": user_text[:80],
+                "product_scope": product_scope,
                 "created_at": f"2026-08-25T00:00:{self.counter:02d}Z",
                 "updated_at": f"2026-08-25T00:00:{self.counter:02d}Z", "messages": [],
             }
         row = self.conversations.get(conversation_id)
-        if not row or row["user_id"] != user_id:
+        if not row or row["user_id"] != user_id or row["product_scope"] != product_scope:
             raise HistoryForbidden()
         row["messages"].extend([
             {"role": "user", "content": user_text},

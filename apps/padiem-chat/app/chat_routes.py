@@ -218,7 +218,9 @@ async def api_chat_stream(request: Request):
     effective_project_id = browser_project_id
     if uid is not None and store is not None and conversation_id is not None:
         try:
-            existing_conversation = await store.get_conversation(uid, conversation_id)
+            existing_conversation = await store.get_conversation(
+                uid, conversation_id, product_scope=PRODUCT_SCOPE_CHAT
+            )
         except Exception:
             return _history_unavailable()
         if existing_conversation is None:
@@ -457,7 +459,9 @@ async def api_chat(request: Request) -> JSONResponse:
     effective_project_id = browser_project_id
     if uid is not None and store is not None and conversation_id is not None:
         try:
-            existing_conversation = await store.get_conversation(uid, conversation_id)
+            existing_conversation = await store.get_conversation(
+                uid, conversation_id, product_scope=PRODUCT_SCOPE_CHAT
+            )
         except Exception:
             return _history_unavailable()
         if existing_conversation is None:

@@ -120,25 +120,32 @@ class MemoryProjectStore:
                 conversation["project_id"] = None
         return True
 
-    async def list_conversations(self, user_id, limit=30):
-        rows = [row for row in self.conversations.values() if row["user_id"] == user_id]
+    async def list_conversations(self, user_id, *, product_scope, limit=30):
+        rows = [
+            row for row in self.conversations.values()
+            if row["user_id"] == user_id and row["product_scope"] == product_scope
+        ]
         rows.sort(key=lambda row: row["updated_at"], reverse=True)
         return [
             {"id": row["id"], "title": row["title"], "project_id": row["project_id"], "created_at": row["created_at"], "updated_at": row["updated_at"]}
             for row in rows[:limit]
         ]
 
-    async def list_project_conversations(self, user_id, project_id, limit=30):
-        rows = [row for row in self.conversations.values() if row["user_id"] == user_id and row["project_id"] == project_id]
+    async def list_project_conversations(self, user_id, project_id, *, product_scope, limit=30):
+        rows = [
+            row for row in self.conversations.values()
+            if row["user_id"] == user_id and row["project_id"] == project_id
+            and row["product_scope"] == product_scope
+        ]
         rows.sort(key=lambda row: row["updated_at"], reverse=True)
         return [
             {"id": row["id"], "title": row["title"], "project_id": row["project_id"], "created_at": row["created_at"], "updated_at": row["updated_at"]}
             for row in rows[:limit]
         ]
 
-    async def get_conversation(self, user_id, conversation_id):
+    async def get_conversation(self, user_id, conversation_id, *, product_scope):
         row = self.conversations.get(conversation_id)
-        if not row or row["user_id"] != user_id:
+        if not row or row["user_id"] != user_id or row["product_scope"] != product_scope:
             return None
         return {
             "id": row["id"],
@@ -149,7 +156,7 @@ class MemoryProjectStore:
             "messages": [{"role": item["role"], "content": item["content"]} for item in row["messages"]],
         }
 
-    async def append_exchange(self, user_id, conversation_id, user_text, assistant_text, project_id=None):
+    async def append_exchange(self, user_id, conversation_id, user_text, assistant_text, project_id=None, *, product_scope):
         if project_id is not None and await self.get_project(user_id, project_id) is None:
             raise HistoryForbidden("project not owned")
         if conversation_id is None:
@@ -160,6 +167,7 @@ class MemoryProjectStore:
                 "id": conversation_id,
                 "user_id": user_id,
                 "project_id": project_id,
+                "product_scope": product_scope,
                 "title": user_text[:80],
                 "created_at": now,
                 "updated_at": now,
