@@ -255,3 +255,38 @@ def test_paused_resume_allows_valid_committed_credential():
     app.toggle_pause()
     assert app.controller.state is ConnectionState.CONNECTING
     assert spy.starts == 1
+
+
+def test_user_tray_autostart_off_is_durable_and_cannot_be_reenabled_without_credential(tmp_path, monkeypatch):
+    from claw_connect.runtime import ConnectApp
+    from claw_connect.autostart import (
+        Autostart, MemoryRunKeyStore, MemoryPreferenceStore,
+        PREFERENCE_OFF,
+    )
+    from claw_connect.enrollment import ConnectorEnrollment, EnrollmentRecord, LIFECYCLE_PAIRED_OFFLINE
+
+    store = MemoryRunKeyStore()
+    prefs = MemoryPreferenceStore()
+    state = ConnectorEnrollment(state_dir=tmp_path / "state")
+    live = EnrollmentRecord(
+        device_id="device.review.1", binding_ref="binding.review.1",
+        device_lifecycle=LIFECYCLE_PAIRED_OFFLINE,
+    )
+    monkeypatch.setattr(state, "committed_record", lambda: live)
+    app = ConnectApp(
+        enrollment=state, resident_command=[sys.executable, "-c", "pass"],
+        autostart=Autostart("PadiemClawConnect", store, preference_store=prefs),
+    )
+    app.turn_autostart_on()
+    assert app.autostart.is_enabled()
+    app.turn_autostart_off()
+    assert not app.autostart.is_enabled()
+    assert app.autostart.preference() == PREFERENCE_OFF
+    rebooted = Autostart("PadiemClawConnect", store, preference_store=prefs)
+    assert rebooted.preference() == PREFERENCE_OFF
+    assert not rebooted.is_enabled()
+    app.reconcile_autostart()
+    assert not rebooted.is_enabled()
+    monkeypatch.setattr(state, "committed_record", lambda: None)
+    app.turn_autostart_on()
+    assert not rebooted.is_enabled()

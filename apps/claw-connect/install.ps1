@@ -184,6 +184,8 @@ $result = [ordered]@{
     agent_status = 'not_checked'
     review_wss_dependencies_prepared = $ReviewWssPrepared
     review_wss_server_activated = $false
+    tray_launch_requested = $false
+    connected = $false
 }
 
 # A diagnostic is read-only and truthful. Do not declare the agent usable
@@ -215,6 +217,23 @@ if ($Autostart) {
     } finally {
         Pop-Location
     }
+}
+
+# Start the tray immediately after installation. An unregistered tray stays
+# visibly UNREGISTERED and must not start the Agent without a valid device.
+# Subsequent logon autostart remains canonical-credential gated in runtime.
+$LaunchPython = $PythonExePath
+if ([System.IO.Path]::GetFileName($PythonExePath) -ieq 'python.exe') {
+    $CandidatePythonw = Join-Path (Split-Path $PythonExePath) 'pythonw.exe'
+    if (Test-Path -LiteralPath $CandidatePythonw -PathType Leaf) {
+        $LaunchPython = $CandidatePythonw
+    }
+}
+try {
+    Start-Process -FilePath $LaunchPython -ArgumentList '-m padiem_connector start' -WorkingDirectory $InstallRoot -WindowStyle Hidden | Out-Null
+    $result.tray_launch_requested = $true
+} catch {
+    throw 'Connector installed, but tray startup failed.'
 }
 
 Write-Output ($result | ConvertTo-Json -Compress)

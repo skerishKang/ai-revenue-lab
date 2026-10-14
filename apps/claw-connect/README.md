@@ -14,6 +14,16 @@ is **PADIEM Connector**. `-Autostart` is refused without a real committed
 device credential. The installer does not require administrator privileges and
 never creates a second Resident, account or Broker.
 
+Normal installation now requests an immediate launch of the visible system
+tray, even before server enrollment has been authorized. It stays UNREGISTERED
+until the existing Identity/Broker registration is verified and never declares
+a PC online just because the installer started a process. Only after a valid,
+durable device binding is committed can the existing Windows logon autostart
+default activate. The tray lets the user turn autostart ON or OFF; durable OFF
+remains effective across reboots, app updates and reinstalls. Exit remains
+accessible from the tray. This source change does not itself implement the
+web-session-to-native automatic account handoff or a standalone Windows EXE.
+
 The existing `kagent` Python import name, Windows Run key, mutex, profile
 directory and DPAPI credential binding are intentionally **not renamed**.
 Brand changes are not permission to rekey a device or bypass authorization.

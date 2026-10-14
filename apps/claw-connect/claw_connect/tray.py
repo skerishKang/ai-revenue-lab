@@ -46,9 +46,11 @@ class ConnectTray:
         *,
         state_source: Callable[[], ConnectionState],
         actions: Mapping[str, Callable[[], None]],
+        autostart_source: Callable[[], bool] | None = None,
         web_url: str,
     ) -> None:
         self._state_source = state_source
+        self._autostart_source = autostart_source or (lambda: False)
         self._actions = dict(actions)
         self._web_url = web_url
         self._hwnd: int | None = None
@@ -143,7 +145,9 @@ class ConnectTray:
         menu = win32gui.CreatePopupMenu()
         command_ids: dict[int, str] = {}
         next_id = 100
-        for item in build_menu(self._state_source()):
+        for item in build_menu(
+            self._state_source(), autostart_enabled=self._autostart_source(),
+        ):
             if item.separator:
                 win32gui.AppendMenu(menu, win32con.MF_SEPARATOR, 0, "")
                 continue

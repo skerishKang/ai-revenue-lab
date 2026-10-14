@@ -32,6 +32,8 @@ ACTION_QUIT = "quit"
 #: Starts the reviewed PADIEM login / PC-registration consent flow. Offered only
 #: when the device has no usable enrollment, so a registered PC never sees it.
 ACTION_LOGIN = "login"
+ACTION_AUTOSTART_ON = "autostart_on"
+ACTION_AUTOSTART_OFF = "autostart_off"
 
 #: Informational, non-selectable header id.
 ITEM_STATUS = "status"
@@ -56,7 +58,9 @@ class MenuItem:
     separator: bool = False
 
 
-def build_menu(state: ConnectionState) -> tuple[MenuItem, ...]:
+def build_menu(
+    state: ConnectionState, *, autostart_enabled: bool = False,
+) -> tuple[MenuItem, ...]:
     """The tray menu for a connection state (deterministic order)."""
     connected = state is ConnectionState.CONNECTED
     paused = state is ConnectionState.PAUSED
@@ -72,7 +76,7 @@ def build_menu(state: ConnectionState) -> tuple[MenuItem, ...]:
         # The reviewed login is only offered when it is actually required.
         MenuItem(
             ACTION_LOGIN,
-            "PADIEM 로그인" if state is ConnectionState.UNREGISTERED else "다시 로그인",
+            "웹사이트에서 연결" if state is ConnectionState.UNREGISTERED else "웹사이트에서 권한 확인",
             enabled=state
             in (ConnectionState.UNREGISTERED, ConnectionState.REVOKED),
         ),
@@ -83,6 +87,14 @@ def build_menu(state: ConnectionState) -> tuple[MenuItem, ...]:
             enabled=connected or paused,
         ),
         MenuItem(ACTION_RECONNECT, "다시 연결", enabled=not connecting),
+        MenuItem(
+            ACTION_AUTOSTART_OFF if autostart_enabled else ACTION_AUTOSTART_ON,
+            ("Windows \uC790\uB3D9 \uC2DC\uC791 \uB044\uAE30" if autostart_enabled else
+             "Windows \uC790\uB3D9 \uC2DC\uC791 \uCF1C\uAE30"),
+            enabled=autostart_enabled or state not in (
+                ConnectionState.UNREGISTERED, ConnectionState.REVOKED,
+            ),
+        ),
         MenuItem(ACTION_DISCONNECT, "연결 해제", enabled=busy),
         MenuItem("sep3", "", separator=True),
         MenuItem(ACTION_QUIT, "종료"),

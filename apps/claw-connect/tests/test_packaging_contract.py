@@ -20,6 +20,8 @@ from claw_connect.menu_model import (
     ACTION_QUIT,
     ACTION_RECONNECT,
     ACTION_TOGGLE_PAUSE,
+    ACTION_AUTOSTART_ON,
+    ACTION_AUTOSTART_OFF,
     ITEM_STATUS,
     build_menu,
     selectable_ids,
@@ -69,6 +71,7 @@ def test_every_selectable_action_is_one_of_the_known_callbacks():
     known = {
         ACTION_OPEN_WEB, ACTION_LOGIN, ACTION_TOGGLE_PAUSE, ACTION_RECONNECT,
         ACTION_DISCONNECT, ACTION_QUIT,
+        ACTION_AUTOSTART_ON, ACTION_AUTOSTART_OFF,
     }
     for state in ALL_STATES:
         assert set(selectable_ids(state)) <= known
@@ -204,3 +207,31 @@ def test_connect_package_does_not_introduce_a_second_engine_or_inbound_port():
         source = path.read_text(encoding="utf-8")
         assert "listen(" not in source
         assert "bind((" not in source
+
+
+def test_unregistered_tray_does_not_request_a_second_account_login():
+    labels = [item.label for item in build_menu(ConnectionState.UNREGISTERED)]
+    assert "웹사이트에서 연결" in labels
+    assert not any("다시 로그인" in label for label in labels)
+    assert ACTION_AUTOSTART_ON not in selectable_ids(ConnectionState.UNREGISTERED)
+
+
+def test_autostart_tray_control_reflects_runtime_state_without_guessing():
+    off = build_menu(ConnectionState.OFFLINE, autostart_enabled=False)
+    on = build_menu(ConnectionState.OFFLINE, autostart_enabled=True)
+    assert ACTION_AUTOSTART_ON in {item.id for item in off if item.enabled}
+    assert ACTION_AUTOSTART_OFF not in {item.id for item in off if item.enabled}
+    assert ACTION_AUTOSTART_OFF in {item.id for item in on if item.enabled}
+    assert ACTION_AUTOSTART_ON not in {item.id for item in on if item.enabled}
+
+
+def test_windows_installer_autolaunches_tray_without_claiming_enrollment():
+    script = (ROOT / "install.ps1").read_text(encoding="utf-8")
+    assert "Start-Process -FilePath $LaunchPython" in script
+    assert "-ArgumentList '-m padiem_connector start'" in script
+    assert "-WorkingDirectory $InstallRoot" in script
+    assert "pythonw.exe" in script
+    assert "    connected = $false" in script
+    assert "    tray_launch_requested = $false" in script
+    assert "$result.tray_launch_requested = $true" in script
+    assert script.rfind("Start-Process -FilePath $LaunchPython") > script.rfind("if ($Autostart)")

@@ -32,6 +32,8 @@ from .menu_model import (
     ACTION_OPEN_WEB,
     ACTION_QUIT,
     ACTION_RECONNECT,
+    ACTION_AUTOSTART_ON,
+    ACTION_AUTOSTART_OFF,
     ACTION_TOGGLE_PAUSE,
 )
 from .resident_supervisor import ResidentSupervisor, default_resident_command
@@ -240,6 +242,25 @@ class ConnectApp:
         self._supervisor.restart()
         self._refresh_tray()
 
+    def turn_autostart_on(self) -> None:
+        """Tray opt-in; must have a committed credential first."""
+        try:
+            self._autostart.enable(
+                start_command(), self._enrollment.committed_record(),
+            )
+        except AutostartRefused:
+            pass
+        self._refresh_tray()
+
+    def turn_autostart_off(self) -> None:
+        """Durable owner opt-out without removing the live session."""
+        try:
+            self._autostart.disable()
+        except AutostartRefused:
+            # Never overwrite another application Run value.
+            pass
+        self._refresh_tray()
+
     def disconnect(self) -> None:
         self._controller.disconnect()
         self._supervisor.stop()
@@ -281,6 +302,7 @@ class ConnectApp:
                 self._tray = ConnectTray(
                     state_source=lambda: self.connector_status(),
                     actions=self.actions(),
+                    autostart_source=self._autostart.is_enabled,
                     web_url=WEB_URL,
                 )
                 self._tray.create()
@@ -306,6 +328,8 @@ class ConnectApp:
             ACTION_LOGIN: self.login,
             ACTION_TOGGLE_PAUSE: self.toggle_pause,
             ACTION_RECONNECT: self.reconnect,
+            ACTION_AUTOSTART_ON: self.turn_autostart_on,
+            ACTION_AUTOSTART_OFF: self.turn_autostart_off,
             ACTION_DISCONNECT: self.disconnect,
             ACTION_QUIT: self.quit,
         }
