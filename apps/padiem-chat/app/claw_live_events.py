@@ -55,6 +55,7 @@ def live_claw_sse(
     adapter: Any, run: Any, dispatch_args: dict[str, Any],
     *,
     on_completed: Callable[[str], Awaitable[str | None]] | None = None,
+    sources: tuple[dict[str, str], ...] = (),
 ) -> StreamingResponse:
     """Queue backed SSE; upstream gets cancelled if the browser disconnects.
 
@@ -187,6 +188,8 @@ def live_claw_sse(
                 terminal = {"done": True}
                 if isinstance(saved_conversation_id, str) and saved_conversation_id:
                     terminal["conversation_id"] = saved_conversation_id
+                if sources:
+                    terminal["sources"] = list(sources)
                 yield _frame("p01_event", verified_terminal)
                 yield _frame("delta", {"delta": payload.answer})
                 yield _frame("done", terminal)

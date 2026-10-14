@@ -163,6 +163,7 @@ def _claw_general_sse(
     *,
     history: tuple[dict[str, object], ...] = (),
     conversation_id: str | None = None,
+    sources: tuple[dict[str, str], ...] = (),
 ) -> Response:
     """Bounded terminal SSE, optionally preceded by real *post-execution* history.
 
@@ -187,6 +188,8 @@ def _claw_general_sse(
     terminal = {"done": True}
     if conversation_id is not None:
         terminal["conversation_id"] = conversation_id
+    if sources:
+        terminal["sources"] = list(sources)
     frames += _sse_frame("delta", {"delta": answer}) + _sse_frame("done", terminal)
     return Response(
         frames,
@@ -400,6 +403,117 @@ async def claw_general_capabilities(request: Request) -> JSONResponse:
         result["pre_dispatch_status"] = state
         result["pre_dispatch_scope"] = "auth_adapter_session_only"
     return JSONResponse(result, headers=_NO_STORE_HEADERS)
+
+
+CLAW_PUBLIC_SEARCH_STATE_FLAG = "claw_web_search_enabled"
+CLAW_PUBLIC_SEARCH_ADMISSION_FLAG = "claw_public_search_admission"
+CLAW_GROUNDING_PREAMBLE_MARKER = "웹 근거 사용 규칙"
+MAX_CLAW_SEARCH_QUERY_CHARS = 512
+MAX_CLAW_SEARCH_SOURCES = 5
+MAX_CLAW_SEARCH_SOURCE_TITLE_CHARS = 200
+
+# The evidence route never synthesizes an answer, so its agent profile is a
+# shape requirement of the shared Engine contract rather than a model choice.
+_CLAW_SEARCH_EVIDENCE_AGENT = {
+    "id": "claw-public-search-evidence",
+    "title": "Claw public search evidence",
+    "description": "Read-only public evidence retrieval without model synthesis.",
+    "system_instruction": "Retrieve public evidence only.",
+    "task_type": "general",
+    "optimize_for": "balanced",
+    "max_tokens": 1,
+    "model_policy": {"model": "none/disabled", "max_retries": 0},
+}
+
+
+def _approved_public_search_query(state: Any, user_text: str) -> str | None:
+    """Server-only admission. Nothing on the request can ask for or forge a search.
+
+    Both authorities are composed by the server and are absent today, which is the
+    default-off posture #1753 requires: no approved flag, no search, no sources.
+    """
+
+    if getattr(state, CLAW_PUBLIC_SEARCH_STATE_FLAG, False) is not True:
+        return None
+    admission = getattr(state, CLAW_PUBLIC_SEARCH_ADMISSION_FLAG, None)
+    classify = getattr(admission, "is_public_query", None)
+    if not callable(classify):
+        return None
+    query = " ".join(user_text.split())[:MAX_CLAW_SEARCH_QUERY_CHARS]
+    if not query:
+        return None
+    try:
+        if classify(query) is not True:
+            return None
+    except Exception:
+        return None
+    return query
+
+
+def _project_search_sources(raw: Any) -> tuple[dict[str, str], ...] | None:
+    """Verified provenance only: https URL, title and retrieval timestamp."""
+
+    if not isinstance(raw, (list, tuple)) or not raw:
+        return None
+    projected: list[dict[str, str]] = []
+    for item in raw[:MAX_CLAW_SEARCH_SOURCES]:
+        if not isinstance(item, dict):
+            return None
+        url = item.get("url")
+        title = item.get("title")
+        retrieved_at = item.get("retrieved_at")
+        if not isinstance(url, str) or not url.startswith("https://"):
+            return None
+        if not isinstance(title, str) or not isinstance(retrieved_at, str):
+            return None
+        projected.append({
+            "url": url[:2048],
+            "title": title[:MAX_CLAW_SEARCH_SOURCE_TITLE_CHARS],
+            "retrieved_at": retrieved_at[:64],
+        })
+    return tuple(projected)
+
+
+async def _claw_public_search_grounding(
+    request: Request, adapter: Any, user_text: str
+) -> tuple[str | None, tuple[dict[str, str], ...]]:
+    """Reuse the existing Engine evidence-only operation; never a second search path.
+
+    Returns the Core-fenced grounding context plus verified sources, or nothing at
+    all. A refusal, transport failure or unfenced payload degrades to the exact
+    answer surface the route had before this seam — it never blocks the answer and
+    never shows sources for a search that did not happen.
+    """
+
+    query = _approved_public_search_query(request.app.state, user_text)
+    if query is None:
+        return None, ()
+    client = getattr(getattr(adapter, "_runner", None), "_client", None)
+    search_evidence = getattr(client, "search_evidence", None)
+    if not callable(search_evidence):
+        return None, ()
+    try:
+        evidence = await search_evidence(query=query, agent=_CLAW_SEARCH_EVIDENCE_AGENT)
+    except Exception:
+        return None, ()
+    if not isinstance(evidence, dict):
+        return None, ()
+    if evidence.get("ok") is not True or evidence.get("operation") != "search_evidence":
+        return None, ()
+    if evidence.get("answer") is not None:
+        # An answered payload means this was not the model-free evidence route.
+        return None, ()
+    context = evidence.get("grounding_context")
+    sources = _project_search_sources(evidence.get("sources"))
+    if not isinstance(context, str) or not context.strip():
+        return None, ()
+    if len(context) > 32_768:
+        return None, ()
+    if CLAW_GROUNDING_PREAMBLE_MARKER not in context:
+        # Without Core's untrusted-data preamble this text would enter the prompt
+        # as ordinary context, which is exactly the promotion this route forbids.
+        return None, ()
+    return context, sources
 
 
 async def claw_general_execute(request: Request) -> JSONResponse | Response:
@@ -632,6 +746,13 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         request.headers.get(CLAW_EVIDENCE_REQUEST_HEADER, "").strip() == CLAW_EVIDENCE_MARKER
     )
 
+    # #4469: optional public web grounding, admitted by the server only and off
+    # unless both server authorities exist. Everything downstream is unchanged
+    # when it returns nothing.
+    grounding_context, search_sources = await _claw_public_search_grounding(
+        request, adapter, model_user_text
+    )
+
     if live_requested:
         if evidence_requested:
             await _refund_active_reservation()
@@ -644,6 +765,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         live_args = {"product_tier": product_tier, "subject_id": subject_id}
         if selected_model_id is not None:
             live_args["selected_model_id"] = selected_model_id
+        if grounding_context is not None:
+            live_args["additional_system_context"] = grounding_context
         async def after_verified_live_completion(answer: str) -> str | None:
             # Runs after validated terminal P01 completion, never on pause,
             # failure, disconnect or an unverified/empty answer.
@@ -657,12 +780,15 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         return live_claw_sse(
             adapter, run, live_args,
             on_completed=after_verified_live_completion,
+            sources=search_sources,
         )
 
     try:
         dispatch_args = {"product_tier": product_tier, "subject_id": subject_id}
         if selected_model_id is not None:
             dispatch_args["selected_model_id"] = selected_model_id
+        if grounding_context is not None:
+            dispatch_args["additional_system_context"] = grounding_context
         outcome = await adapter.execute(run, **dispatch_args)
     except P01AdapterError as exc:
         if exc.dispatch_class == P01DispatchClass.NOT_DISPATCHED:
@@ -765,6 +891,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         _claw_evidence_response_headers(run.run_id, outcome) if evidence_requested else None,
         history=getattr(outcome, "p01_event_history", ()),
         conversation_id=saved_conversation_id,
+        sources=search_sources,
     )
 
 

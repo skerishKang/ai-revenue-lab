@@ -401,6 +401,7 @@ class P01RequestFactory:
         product_tier: ProductTierLabel | None = None,
         subject_id: str | None = None,
         selected_model_id: str | None = None,
+        additional_system_context: str | None = None,
     ) -> P01RequestBundle:
         if run.terminal:
             raise P01AdapterError(
@@ -454,7 +455,7 @@ class P01RequestFactory:
             ),
             messages=({"role": "user", "content": run.intent.task},),
             session_id=run.run_id,
-            additional_system_context=None,
+            additional_system_context=additional_system_context,
             trace_id=trace_id,
         )
         context = ExecutionContext(
@@ -704,6 +705,7 @@ class P01CoreOrchestrationAdapter:
         product_tier: ProductTierLabel | None = None,
         subject_id: str | None = None,
         selected_model_id: str | None = None,
+        additional_system_context: str | None = None,
         on_event: Callable[[OrchestrationEvent], Awaitable[None]] | None = None,
     ) -> ClawOrchestrationOutcome:
         try:
@@ -713,6 +715,7 @@ class P01CoreOrchestrationAdapter:
                 product_tier=product_tier,
                 subject_id=subject_id,
                 selected_model_id=selected_model_id,
+                additional_system_context=additional_system_context,
             )
             projector = ClawOrchestrationProjector(
                 run,
