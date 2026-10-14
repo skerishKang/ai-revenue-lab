@@ -71,7 +71,10 @@ def test_static_markup_is_compatible_with_self_only_script_policy():
 
 
 def test_permissions_policy_denies_unshipped_sensitive_capabilities():
-    assert PERMISSIONS_POLICY == "camera=(), microphone=(), geolocation=()"
+    # #4643: the shared Chat/Claw voice composer needs getUserMedia on this
+    # origin only. Camera and geolocation stay fully denied, and the microphone
+    # stays same-origin -- a cross-origin iframe still cannot capture audio.
+    assert PERMISSIONS_POLICY == "camera=(), microphone=(self), geolocation=()"
     headers = response_headers_for_path("/")
     assert headers["Permissions-Policy"] == PERMISSIONS_POLICY
     assert headers["Content-Security-Policy"] == CONTENT_SECURITY_POLICY

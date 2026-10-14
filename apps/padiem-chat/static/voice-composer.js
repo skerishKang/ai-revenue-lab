@@ -116,6 +116,7 @@
     const state = {
       authenticated: false,
       authKnown: false,
+      identityKey: "",
       composing: false,
       inputDisabled: false,
       generation: 0,
@@ -455,12 +456,32 @@
       return true;
     }
 
-    function handleAuthState(authenticated) {
+    // #4643: `padiem:auth-state` deliberately carries only a boolean (#3790),
+    // so it cannot see an account switch between two signed-in states. The
+    // wiring stage therefore supplies a separate opaque `identityKey` that
+    // changes whenever the account or session identity changes. Comparing the
+    // key is what makes a same-boolean account switch invalidate the run; the
+    // key is never a user id, a tenant id or a credential, and is held only to
+    // test "changed / unchanged".
+    function handleIdentityKey(identityKey) {
+      const next = identityKey == null ? "" : String(identityKey);
+      const changed = state.identityKey !== "" && next !== state.identityKey;
+      state.identityKey = next;
+      if (changed && state.authenticated) invalidate("account-changed");
+      render();
+    }
+
+    function handleAuthState(authenticated, identityKey) {
       const next = authenticated === true;
       const switched = state.authKnown && next !== state.authenticated;
+      const previousKey = state.identityKey;
       state.authKnown = true;
       state.authenticated = next;
-      if (switched) invalidate(next ? "session-changed" : "signed-out");
+      if (identityKey != null) state.identityKey = String(identityKey);
+      // Same boolean, different account: still a different voice identity.
+      const rekeyed =
+        previousKey !== "" && state.identityKey !== "" && previousKey !== state.identityKey;
+      if (switched || rekeyed) invalidate(next ? "session-changed" : "signed-out");
       render();
     }
 
@@ -551,7 +572,12 @@
       detach.push(listen(input, "compositionend", handleCompositionEnd));
       detach.push(listen(win, "padiem:auth-state", function (event) {
         const detail = event && event.detail ? event.detail : {};
-        handleAuthState(detail.authenticated);
+        handleAuthState(detail.authenticated, detail.identityKey);
+      }));
+      // #4643: the wiring stage announces an opaque identity-change key here.
+      detach.push(listen(win, "padiem:voice-identity", function (event) {
+        const detail = event && event.detail ? event.detail : {};
+        if (detail && typeof detail.identityKey === "string") handleIdentityKey(detail.identityKey);
       }));
       detach.push(listen(win, "padiem:localechange", function () { render(); }));
 
@@ -604,6 +630,7 @@
         statusKey: currentStatusKey(),
         authKnown: state.authKnown,
         authenticated: state.authenticated,
+        identityKey: state.identityKey,
         generation: state.generation,
         sessionToken: state.sessionToken,
         active: isActiveRun(),
@@ -625,6 +652,7 @@
       toggle: toggle,
       invalidate: invalidate,
       setRecognizerFactory: setRecognizerFactory,
+      handleIdentityKey: handleIdentityKey,
       destroy: destroy,
       getStatus: getStatus,
     };

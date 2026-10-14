@@ -90,6 +90,7 @@ from app.worker_config import (
     GOOGLE_OAUTH_SERVICE_BINDING_NAME,
     IDENTITY_AUTHORITY_SERVICE_BINDING_NAME,
     WORKSPACE_R2_BINDING_NAME,
+    VOICE_STT_SERVICE_BINDING_NAME,
     apply_live_deadman_switch,
     binding_value,
     response_headers_for_path,
@@ -98,6 +99,7 @@ from app.worker_config import (
     p01_engine_config_from_worker_bindings,
 )
 from app.worker_orchestration import build_orchestration_bridge
+from app.voice_stt_routes import CloudflareVoiceSttServiceTransport
 from app.web_xlsx_p01_engine_client import build_web_xlsx_p01_engine_client
 from app.web_xlsx_quote_write_engine_client import build_web_quote_write_engine_client
 from app.claw_web_xlsx_quote_pdf import BrowserQuotePdfRenderer
@@ -754,6 +756,9 @@ class Default(WorkerEntrypoint):
                 db_binding = binding_value(self.env, D1_BINDING_NAME)
                 b14_binding = binding_value(self.env, B14_SERVICE_BINDING_NAME)
                 b66_pdf_binding = binding_value(self.env, B66_PDF_RENDERER_SERVICE_BINDING_NAME)
+                # #4643: private STT Worker Service Binding. Absent until CENTRAL
+                # adds it, which keeps every /api/voice/* route fail-closed.
+                voice_stt_binding = binding_value(self.env, VOICE_STT_SERVICE_BINDING_NAME)
                 identity_binding = binding_value(self.env, IDENTITY_AUTHORITY_SERVICE_BINDING_NAME)
                 google_oauth_binding = binding_value(self.env, GOOGLE_OAUTH_SERVICE_BINDING_NAME)
                 # Private Claw workspace bytes (#2266). Resolved from trusted
@@ -951,6 +956,11 @@ class Default(WorkerEntrypoint):
                     calendar_read_state_engine_client = None
                 _worker_app.state.calendar_read_state_engine_client = calendar_read_state_engine_client
                 _worker_app.state.project_file_store = project_file_store
+                _worker_app.state.voice_stt_transport = (
+                    CloudflareVoiceSttServiceTransport(voice_stt_binding, Request)
+                    if voice_stt_binding is not None
+                    else None
+                )
                 _worker_app.state.saved_output_store = saved_output_store
                 _worker_app.state.usage_gate = UsageGate(settings, usage_store)
                 _worker_app.state.usage_gate_enforced = True
