@@ -121,9 +121,20 @@ def test_connect_app_status_never_claims_an_unobserved_state(tmp_path):
     assert status["state"] == ConnectionState.UNREGISTERED.value
     assert status["resident_running"] is False
     assert status["autostart_enabled"] is False
+    # #4139 STEP 3: why the supervised Resident is not up is itself observable,
+    # so an absent Resident is never silently indistinguishable from a broken
+    # Connector. Both values are refusals: which one is reported depends on
+    # whether the first-launch record has been materialised yet, and the
+    # deterministic no-record case is pinned in
+    # test_4139_resident_launch_plan.py.
+    assert status["resident_launch_reason"] in {
+        "no_committed_enrollment", "enrollment_not_live",
+    }
+    assert status["resident_launch_reason"] != "planned"
     assert set(status) == {
         "product", "version", "state", "resident_running",
         "autostart_enabled", "single_instance", "enrollment",
+        "resident_launch_reason",
     }
     enrollment = status["enrollment"]
     assert enrollment["enrolled"] is False

@@ -211,8 +211,31 @@ def test_manual_reconnect_refuses_missing_or_blocked_credential(record):
     assert app.controller.state is ConnectionState.DISCONNECTED
 
 
-def test_manual_reconnect_uses_existing_committed_credential_only():
+def _canonical_boundary(monkeypatch, tmp_path):
+    """Supply the Resident's own Broker-boundary keys.
+
+    These tray tests are about *which credential* may start the Resident. The
+    Resident's launch configuration is a second, also-required fact (see
+    ``test_4139_resident_launch_plan.py``), so it is configured here rather than
+    left to whatever the running machine happens to have.
+    """
+    monkeypatch.setenv("PADIEM_AGENT_CREDENTIAL_DIR", str(tmp_path / "credential-store"))
+    monkeypatch.setenv(
+        "PADIEM_AGENT_AUTHORITY_REF",
+        "control-plane.local-agent-broker.4139.traytest.v1",
+    )
+    monkeypatch.setenv(
+        "PADIEM_AGENT_REQUEST_PORT",
+        "kagent.local_agent_broker_pairing_handoff_entry:resident_request_port",
+    )
+    # Read by the request-port factory the line above names, not by the
+    # Resident's own from_environment(); also required for a launchable plan.
+    monkeypatch.setenv("PADIEM_AGENT_BROKER_URL", "https://local-agent.padiem.net")
+
+
+def test_manual_reconnect_uses_existing_committed_credential_only(monkeypatch, tmp_path):
     from claw_connect.connection import ConnectionState
+    _canonical_boundary(monkeypatch, tmp_path)
     spy = _ResidentSpy()
     record = EnrollmentRecord(
         device_id="synthetic.active", binding_ref="binding.active",
@@ -241,8 +264,9 @@ def test_paused_resume_refuses_missing_credential():
     assert spy.starts == 0
 
 
-def test_paused_resume_allows_valid_committed_credential():
+def test_paused_resume_allows_valid_committed_credential(monkeypatch, tmp_path):
     from claw_connect.connection import ConnectionState
+    _canonical_boundary(monkeypatch, tmp_path)
     spy = _ResidentSpy()
     record = EnrollmentRecord(device_id="synthetic.valid", binding_ref="binding.valid",
                               device_lifecycle=LIFECYCLE_PAIRED_OFFLINE)
