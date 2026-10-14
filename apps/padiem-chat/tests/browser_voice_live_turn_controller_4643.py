@@ -1,129 +1,74 @@
-"""Browser proof for the independent #4643 Mode 2 live turn controller."""
-
-from __future__ import annotations
-
+"""Isolated browser contract evidence for explicit Mode 2 (no product wiring)."""
 import json
-import threading
-from http.server import HTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
-
 from playwright.sync_api import sync_playwright
 
-ROOT = Path(__file__).resolve().parents[1]
-STATIC = ROOT / "static"
+MODULE = Path(__file__).resolve().parents[1] / "static" / "voice-live-turn-controller.js"
 
-
-class Handler(SimpleHTTPRequestHandler):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=str(STATIC), **kwargs)
-
-    def log_message(self, *args):
-        pass
-
-
-def serve():
-    httpd = HTTPServer(("127.0.0.1", 0), Handler)
-    port = httpd.server_address[1]
-    threading.Thread(target=httpd.serve_forever, daemon=True).start()
-    return httpd, port
-
-
-def run(port):
+def run():
     with sync_playwright() as p:
         browser = p.chromium.launch()
-        page = browser.new_page()
-        page.route("**/*", lambda route: route.continue_())
-        page.set_content(
-            f"<!doctype html><html><body><script src='http://127.0.0.1:{port}/voice-live-turn-controller.js'></script></body></html>"
-        )
-        page.wait_for_timeout(1000)
-        loaded = page.evaluate("typeof window.PadiemVoiceLiveTurnController")
-
-        result = page.evaluate(
-            """() => {
-               const make = (mode) => {
-                 let submitted = 0;
-                 const commits = [];
-                 const previews = [];
-                 let inflate = false;
-                 const c = window.PadiemVoiceLiveTurnController.create({
-                   accountKey: 'acct-1',
-                   getAccountKey: () => 'acct-1',
-                   getInFlight: () => inflate,
-                   commitText: (text) => { commits.push(text); },
-                   submit: () => { submitted += 1; },
-                   onPreview: (text) => { previews.push(text); },
-                   mode: mode
-                 });
-                 return {
-                   controller: c,
-                   submitted: () => submitted,
-                   commits: commits,
-                   previews: previews,
-                   setInFlight: (value) => { inflate = value; }
-                 };
-               };
-
-               const basic = make('basic');
-               basic.controller.handleFinal({ text: 'basic final', finalId: 'basic-1' });
-
-               const live = make('live');
-               live.controller.handleInterim({ text: 'interim hello', finalId: 'live-interim' });
-               const previewsBeforeFinal = live.previews.length;
-               live.controller.handleFinal({ text: 'live final', finalId: 'live-1', accepted: true, sessionGeneration: 1 });
-               const submitsAfterFirst = live.submitted();
-               live.controller.handleFinal({ text: 'live final', finalId: 'live-1', accepted: true, sessionGeneration: 1 });
-               const submitsAfterDuplicate = live.submitted();
-
-               const inflight = make('live');
-               inflight.setInFlight(true);
-               const inflightResult = inflight.controller.handleFinal({ text: 'inflight final', finalId: 'live-2' });
-
-               const account = make('live');
-               const accountResult = account.controller.handleFinal({
-                 text: 'wrong account final',
-                 finalId: 'live-3',
-                 accountKey: 'acct-2'
-               });
-
-               return {
-                 loaded: typeof window.PadiemVoiceLiveTurnController,
-                 basic_submits: basic.submitted(),
-                 live_submits_after_first: submitsAfterFirst,
-                 duplicate_delta: submitsAfterDuplicate - submitsAfterFirst,
-                 interim_previews: previewsBeforeFinal,
-                 live_interim_submitted: false,
-                 inflight_reason: inflightResult.reason,
-                 inflight_blocked: inflight.submitted() === 0,
-                 account_reason: accountResult.reason,
-                 account_blocked: account.submitted() === 0,
-                 live_commits: live.commits
-               };
-            }"""
-        )
-        browser.close()
-        return result
-
-
-def main():
-    httpd, port = serve()
-    try:
-        result = run(port)
-    finally:
-        httpd.shutdown()
-    print(json.dumps(result, indent=2, ensure_ascii=False))
-    ok = (
-        result["loaded"] == "object"
-        and result["basic_submits"] == 0
-        and result["live_submits_after_first"] == 1
-        and result["duplicate_delta"] == 0
-        and result["interim_previews"] == 1
-        and result["inflight_blocked"] is True
-        and result["account_blocked"] is True
-        and result["live_commits"] == ["live final"]
-    )
-    return 0 if ok else 1
-
+        try:
+            page = browser.new_page()
+            page.set_content("<!doctype html><html><body></body></html>")
+            page.add_script_tag(path=str(MODULE))
+            return page.evaluate("""() => {
+              const api = window.PadiemVoiceLiveTurnController;
+              let user = 'a1', busy = false, enabled = true, count = 0;
+              const submissions = [], commits = [], previews = [];
+              const c = api.create({
+                mode:'live', accountKey:'a1',
+                getAccountKey:()=>user, getInFlight:()=>busy,
+                getCanSubmit:()=>enabled,
+                commitText:t=>{commits.push(t);},
+                submit:(t,m)=>{submissions.push([t,m]);count++;},
+                onPreview:t=>previews.push(t)
+              });
+              const checks = {};
+              checks.constructor_manual = c.getState().mode === 'basic';
+              const gen0 = c.getState().sessionGeneration;
+              c.setMode('live');
+              const g = c.getState().sessionGeneration;
+              checks.mode_generation_advanced = g > gen0;
+              const event = (id,text) => ({accountKey:'a1',sessionGeneration:g,
+                accepted:true,endOfTurn:true,finalId:id,text:text});
+              checks.interim_no_submit = c.handleInterim({accountKey:'a1',
+                sessionGeneration:g,isInterim:true,text:'preview'}).submitted === false && count === 0 && previews.length === 1;
+              checks.no_missing_account = c.handleFinal({...event('f0','missing'),accountKey:undefined}).submitted === false;
+              checks.no_missing_generation = c.handleFinal({...event('f0','missing'),sessionGeneration:undefined}).submitted === false;
+              checks.no_missing_final_id = c.handleFinal({...event('f0','missing'),finalId:undefined}).submitted === false;
+              checks.no_missing_accepted = c.handleFinal({...event('f0','missing'),accepted:undefined}).submitted === false;
+              checks.no_missing_eot = c.handleFinal({...event('f0','missing'),endOfTurn:false}).submitted === false;
+              checks.no_stale_generation = c.handleFinal({...event('f0','missing'),sessionGeneration:g-1}).submitted === false;
+              busy=true;
+              checks.no_inflight = c.handleFinal(event('f0','busy')).submitted === false;
+              busy=false;enabled=false;
+              checks.no_disabled = c.handleFinal(event('f0','disabled')).submitted === false;
+              enabled=true;c.setCompositionActive(true);
+              checks.no_ime = c.handleFinal(event('f0','ime')).submitted === false;
+              c.endComposition();
+              const first = c.handleFinal(event('f1','hello'));
+              checks.submits_once = first.submitted === true && count === 1;
+              checks.no_duplicate = c.handleFinal(event('f1','hello')).submitted === false && count === 1;
+              checks.no_overlap = c.handleFinal(event('f2','next')).submitted === false && count === 1;
+              checks.wrong_answer_rejected = c.markAnswerSettled({accountKey:'a1',finalKey:'wrong'}).ok === false;
+              checks.answer_settle = c.markAnswerSettled({accountKey:'a1',finalKey:first.finalKey}).ok === true;
+              checks.next_after_settle = c.handleFinal(event('f2','next')).submitted === true && count === 2;
+              user='a2';
+              checks.signout_revokes = c.handleFinal(event('f3','stale')).submitted === false;
+              c.cancel();
+              checks.cancel_revokes = c.handleFinal(event('f3','stale')).submitted === false;
+              const unauth = api.create({mode:'live',accountKey:'a1',submit:()=>{count++},commitText:()=>{},getInFlight:()=>false});
+              unauth.setMode('live');
+              checks.no_auth_adapter = unauth.handleFinal({accountKey:'a1',sessionGeneration:2,
+                accepted:true,endOfTurn:true,finalId:'x',text:'text'}).submitted === false;
+              return {checks,submits:count,commits:commits.length,previews:previews.length};
+            }""")
+        finally:
+            browser.close()
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    result = run()
+    print(json.dumps(result, indent=2, ensure_ascii=False))
+    assert all(result["checks"].values()), result
+    assert result["submits"] == 2, result
