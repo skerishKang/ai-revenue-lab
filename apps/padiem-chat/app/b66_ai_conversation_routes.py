@@ -75,11 +75,12 @@ from .b66_registered_model_boundary import (
 )
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 from .request_contract import MAX_BROWSER_BODY_BYTES
+from .member_grade_access import verified_member_grade, GRADES
 from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID
 
 _MODEL_ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}")
 _ALLOWED_FIELDS = frozenset(
-    {"model_id", "message", "action", "method", "revision", "reasoning_level"}
+    {"model_id", "tier", "message", "action", "method", "revision", "reasoning_level"}
 )
 
 
@@ -180,6 +181,16 @@ async def conversation_turn(request: Request) -> JSONResponse:
     if set(data) - _ALLOWED_FIELDS:
         return _error(400, "unsupported_field", "지원하지 않는 대화 필드입니다.")
     model_id = data.get("model_id") or FREE_PRIMARY_B14_MODEL_ID
+    requested_tier = data.get("tier")
+    if requested_tier is not None:
+        tiers = ("free", "plus", "pro", "max")
+        if not isinstance(requested_tier, str) or requested_tier not in tiers:
+            return _error(400, "invalid_tier", "지원하지 않는 AI 등급입니다.")
+        known_member_tier = await verified_member_grade(request, uid, access)
+        if tiers.index(requested_tier) > tiers.index(known_member_tier):
+            return _error(403, "tier_not_available", "현재 이용 등급 이하의 AI 등급을 선택해 주세요.")
+        if model_id != FREE_PRIMARY_B14_MODEL_ID:
+            return _error(400, "invalid_model_id", "등급 선택은 Cat Jam 기본 모델을 사용합니다.")
     if (
         not isinstance(model_id, str)
         or not _MODEL_ID_RE.fullmatch(model_id)
@@ -333,10 +344,14 @@ async def conversation_turn(request: Request) -> JSONResponse:
     except Exception:
         await _refund_active_reservation()
         return _error(503, "ai_chat_unavailable", "AI 모델을 사용할 수 없습니다.")
+    product_tier = requested_tier
+    if product_tier is not None and product_tier not in ("free", "plus", "pro", "max"):
+        return _error(403, "invalid_membership_tier", "이용 등급을 확인해 주세요.")
     try:
         result = await complete(
             [{"role": "user", "content": message}],
             model=route.model_id,
+            **({"product_tier": product_tier} if product_tier is not None else {}),
             additional_system_context=conversation_prompt(state),
             model_parameters=parameters,
         )

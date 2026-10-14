@@ -74,73 +74,42 @@ def _module_tier_identity(label: ProductTierLabel) -> str:
     }[label]
 
 
-def test_three_product_tier_identities_remain_known_while_all_routes_hold() -> None:
-    policy = resolve_model_policy(
-        [{"role": "user", "content": "안녕하세요"}],
-        require_executable=False,
-    )
+def test_four_product_grades_share_one_executable_catjam_primary() -> None:
+    policy=resolve_model_policy([{"role":"user","content":"안녕하세요"}])
+    assert DEFAULT_CHAT_PROFILE=="free"
+    assert policy.profile=="free"
+    assert policy.model_id==DEFAULT_B14_MODEL_ID==FREE_B14_MODEL_ID=="opencode-go/cat-jam-free"
+    assert {LOW_B14_MODEL_ID,MEDIUM_B14_MODEL_ID,HIGH_B14_MODEL_ID}=={FREE_B14_MODEL_ID}
+    assert model_policy_is_executable(policy.model_id)
+    assert EXECUTABLE_B14_MODEL_IDS==_declared_executable_model_ids() | {FREE_B14_MODEL_ID}
+    assert PRODUCT_TIER_NAMES[CONTRACT_PLUS_HOLD_MODEL_ID]==PADIEM_PLUS
+    assert PRODUCT_TIER_NAMES[CONTRACT_PRO_HOLD_MODEL_ID]==PADIEM_PRO
+    assert PRODUCT_TIER_NAMES[CONTRACT_MAX_HOLD_MODEL_ID]==PADIEM_MAX
 
-    assert DEFAULT_CHAT_PROFILE == "low"
-    assert LOW_B14_MODEL_ID == CONTRACT_PLUS_HOLD_MODEL_ID
-    assert MEDIUM_B14_MODEL_ID == CONTRACT_PRO_HOLD_MODEL_ID
-    assert MAX_HOLD_MODEL_ID == CONTRACT_MAX_HOLD_MODEL_ID
-    assert HIGH_B14_MODEL_ID == MAX_HOLD_MODEL_ID
-    assert KILO_B14_MODEL_ID == MEDIUM_B14_MODEL_ID
-    assert PROFILE_MODEL_IDS == {
-        "low": LOW_B14_MODEL_ID,
-        "medium": MEDIUM_B14_MODEL_ID,
-        "high": HIGH_B14_MODEL_ID,
-    }
-    assert PRODUCT_TIER_NAMES == {
-        FREE_B14_MODEL_ID: PADIEM_FREE,
-        LOW_B14_MODEL_ID: PADIEM_PLUS,
-        MEDIUM_B14_MODEL_ID: PADIEM_PRO,
-        HIGH_B14_MODEL_ID: PADIEM_MAX,
-    }
-    assert EXECUTABLE_B14_MODEL_IDS == _declared_executable_model_ids() | {FREE_B14_MODEL_ID}
-    assert DEFAULT_B14_MODEL_ID == LOW_B14_MODEL_ID
-    assert policy.model_id == LOW_B14_MODEL_ID
-    assert policy.profile == "low"
-    assert product_tier_name(policy.model_id) == PADIEM_PLUS
-    assert model_profile_is_assigned(policy.model_id) is True
-    assert model_policy_is_executable(policy.model_id) is False
+def test_ordinary_chat_uses_executable_free_catjam() -> None:
+    policy=resolve_model_policy([{"role":"user","content":"안녕하세요"}])
+    assert policy.model_id==FREE_B14_MODEL_ID
+    assert policy.profile=="free"
 
-
-def test_ordinary_chat_fails_closed_before_b14_while_successor_is_pending() -> None:
-    with pytest.raises(ModelPolicyError) as info:
-        resolve_model_policy([{"role": "user", "content": "안녕하세요"}])
-    assert info.value.code == "tier_unavailable"
-    assert "준비 중" in info.value.message
-
-
-def test_plus_alias_preserves_product_identity_without_becoming_executable() -> None:
-    policy = resolve_model_policy(
-        [{"role": "user", "content": "/plus 테스트 질문입니다"}],
-        require_executable=False,
-    )
-    assert MODEL_ALIASES["/plus"] == LOW_B14_MODEL_ID
-    assert policy.model_id == LOW_B14_MODEL_ID
-    assert policy.profile == "low"
-    assert policy.alias == "/plus"
-    assert policy.messages[-1] == {"role": "user", "content": "테스트 질문입니다"}
-    assert product_tier_name(policy.model_id) == PADIEM_PLUS
-    assert model_policy_is_executable(policy.model_id) is False
-
+def test_plus_alias_preserves_selected_grade_on_shared_primary() -> None:
+    policy=resolve_model_policy([{"role":"user","content":"/plus 테스트 질문입니다"}])
+    assert policy.model_id==LOW_B14_MODEL_ID==FREE_B14_MODEL_ID
+    assert policy.profile=="low"
+    assert policy.alias=="/plus"
+    assert policy.messages[-1]=={"role":"user","content":"테스트 질문입니다"}
+    assert model_policy_is_executable(policy.model_id)
 
 @pytest.mark.parametrize("alias", ["/plus", "/pro", "/max"])
-def test_all_product_aliases_fail_closed_before_b14(alias: str) -> None:
-    with pytest.raises(ModelPolicyError) as info:
-        resolve_model_policy([{"role": "user", "content": f"{alias} 질문"}])
-    assert info.value.code == "tier_unavailable"
-    assert "준비 중" in info.value.message
+def test_all_product_aliases_select_shared_primary_and_distinct_grades(alias: str) -> None:
+    policy=resolve_model_policy([{"role":"user","content":f"{alias} 질문"}])
+    assert policy.model_id==FREE_B14_MODEL_ID
+    assert policy.profile=={"/plus":"low","/pro":"medium","/max":"high"}[alias]
+    assert policy.alias==alias
 
-
-def test_legacy_kilo_alias_remains_non_executable_compatibility_identity() -> None:
-    assert MODEL_ALIASES["/kilo"] == MEDIUM_B14_MODEL_ID
-    with pytest.raises(ModelPolicyError) as info:
-        resolve_model_policy([{"role": "user", "content": "/kilo 질문"}])
-    assert info.value.code == "tier_unavailable"
-
+def test_legacy_kilo_alias_maps_to_pro_grade_without_new_provider() -> None:
+    policy=resolve_model_policy([{"role":"user","content":"/kilo 질문"}])
+    assert policy.model_id==FREE_B14_MODEL_ID
+    assert policy.profile=="medium"
 
 def test_poolside_alias_is_not_a_fallback() -> None:
     assert "/poolside" not in MODEL_ALIASES
@@ -174,47 +143,25 @@ def test_explicit_alias_without_prompt_fails_before_availability_check() -> None
         assert info.value.code == "model_alias_requires_prompt"
 
 
-def test_hold_identities_claim_no_model_capabilities() -> None:
-    for model_id in (
-        LOW_B14_MODEL_ID,
-        MEDIUM_B14_MODEL_ID,
-        HIGH_B14_MODEL_ID,
-        AUTO_B14_MODEL_ID,
-        UNASSIGNED_B14_MODEL_ID,
-    ):
-        assert MODEL_CAPABILITIES[model_id] == frozenset()
-        assert model_supports(model_id, "chat") is False
-        assert model_supports(model_id, "image") is False
-        assert model_supports(model_id, "free") is False
-
-
-def test_tier_assignment_is_distinct_from_route_executability() -> None:
-    for model_id in (LOW_B14_MODEL_ID, MEDIUM_B14_MODEL_ID, HIGH_B14_MODEL_ID):
-        assert model_profile_is_assigned(model_id) is True
+def test_historical_hold_sentinels_claim_no_executable_capabilities() -> None:
+    for model_id in (CONTRACT_PLUS_HOLD_MODEL_ID,CONTRACT_PRO_HOLD_MODEL_ID,CONTRACT_MAX_HOLD_MODEL_ID,AUTO_B14_MODEL_ID,UNASSIGNED_B14_MODEL_ID):
+        assert model_supports(model_id,"chat") is False
+        assert model_supports(model_id,"image") is False
         assert model_policy_is_executable(model_id) is False
 
-    for model_id in (AUTO_B14_MODEL_ID, UNASSIGNED_B14_MODEL_ID):
-        assert model_profile_is_assigned(model_id) is False
-        assert model_policy_is_executable(model_id) is False
+def test_model_id_is_not_an_identity_for_four_distinct_product_grades() -> None:
+    for profile in ("free","low","medium","high"):
+        assert PROFILE_MODEL_IDS[profile]==FREE_B14_MODEL_ID
+        assert model_policy_is_executable(PROFILE_MODEL_IDS[profile])
+    for model_id in (AUTO_B14_MODEL_ID,UNASSIGNED_B14_MODEL_ID):
+        assert not model_profile_is_assigned(model_id)
+        assert not model_policy_is_executable(model_id)
 
-
-def test_route_identities_are_derived_from_shared_contract() -> None:
-    # #3767: the expectations are derived from the canonical declaration instead
-    # of asserting the all-routes-HOLD state, which is a snapshot rather than a
-    # contract once an owner selects a model.
-    declared_plus = active_route_for(ProductTierLabel.PLUS)
-    expected_plus = (
-        declared_plus.model_id
-        if declared_plus is not None and declared_plus.model_id
-        else CONTRACT_PLUS_HOLD_MODEL_ID
-    )
-    # Plus is the tier whose identity module source derives from the declaration...
-    assert LOW_B14_MODEL_ID == expected_plus
-    # ...while Pro and Max are pinned to their HOLD identity in module source, so
-    # they keep failing closed even if the declaration later gains a route.
-    assert MEDIUM_B14_MODEL_ID == CONTRACT_PRO_HOLD_MODEL_ID
-    assert HIGH_B14_MODEL_ID == CONTRACT_MAX_HOLD_MODEL_ID
-
+def test_all_profile_routes_are_derived_from_the_shared_contract() -> None:
+    assert LOW_B14_MODEL_ID==active_route_for(ProductTierLabel.PLUS).model_id
+    assert MEDIUM_B14_MODEL_ID==active_route_for(ProductTierLabel.PRO).model_id
+    assert HIGH_B14_MODEL_ID==active_route_for(ProductTierLabel.MAX).model_id
+    assert {LOW_B14_MODEL_ID,MEDIUM_B14_MODEL_ID,HIGH_B14_MODEL_ID}=={FREE_B14_MODEL_ID}
 
 def test_a_declared_route_is_the_only_thing_that_makes_a_tier_executable(
     monkeypatch: pytest.MonkeyPatch,
@@ -270,22 +217,10 @@ def test_model_policy_source_contains_no_provider_route_literals() -> None:
 
 def test_product_profiles_follow_the_canonical_route_declaration() -> None:
     assert EXECUTABLE_B14_MODEL_IDS == _declared_executable_model_ids() | {FREE_B14_MODEL_ID}
-    assert DEFAULT_B14_MODEL_ID == PROFILE_MODEL_IDS[DEFAULT_CHAT_PROFILE]
-    declared_plus = active_route_for(ProductTierLabel.PLUS)
-    if declared_plus is None or not declared_plus.model_id:
-        # No route is declared, so the Plus profile must stay non-executable.
-        assert model_policy_is_executable(DEFAULT_B14_MODEL_ID) is False
-    else:
-        # A route is declared, so the default profile is that exact route.
-        assert DEFAULT_B14_MODEL_ID == declared_plus.model_id
-        assert model_policy_is_executable(DEFAULT_B14_MODEL_ID) is True
-    assert RETIRED_B14_MODEL_IDS == frozenset(
-        {
-            "kilo/minimax-minimax-m3-free",
-            "kilo/tencent-hy3-free",
-        }
-    )
-
+    assert DEFAULT_B14_MODEL_ID==FREE_B14_MODEL_ID
+    assert DEFAULT_CHAT_PROFILE=="free"
+    assert model_policy_is_executable(DEFAULT_B14_MODEL_ID)
+    assert RETIRED_B14_MODEL_IDS==frozenset({"kilo/minimax-minimax-m3-free","kilo/tencent-hy3-free"})
 
 @pytest.mark.parametrize(
     ("tier_id", "expected_model", "expected_profile"),
@@ -337,39 +272,22 @@ def test_browser_tier_rejects_non_product_values(tier_id: str) -> None:
     assert info.value.code == "unknown_product_tier"
 
 
-def test_request_tier_context_remains_scoped_while_hold_fails_closed() -> None:
-    messages = [{"role": "user", "content": "등급 컨텍스트 테스트"}]
-
-    identity = resolve_request_model_policy(messages, require_executable=False)
-    assert identity.model_id == LOW_B14_MODEL_ID
-
+def test_request_tier_context_is_scoped_to_the_selected_grade() -> None:
+    msgs=[{"role":"user","content":"등급 컨텍스트 테스트"}]
+    assert resolve_request_model_policy(msgs).profile=="free"
     with request_tier_context("plus"):
-        plus_identity = resolve_request_model_policy(messages, require_executable=False)
-        assert plus_identity.model_id == LOW_B14_MODEL_ID
-        with pytest.raises(ModelPolicyError) as info:
-            resolve_request_model_policy(messages)
-        assert info.value.code == "tier_unavailable"
+        result=resolve_request_model_policy(msgs)
+        assert result.model_id==FREE_B14_MODEL_ID
+        assert result.profile=="low"
+    assert resolve_request_model_policy(msgs).profile=="free"
 
-    with pytest.raises(ModelPolicyError) as info:
-        resolve_request_model_policy(messages)
-    assert info.value.code == "tier_unavailable"
-
-
-def test_b62_free_is_executable_for_any_signed_in_member_without_plan_upgrade() -> None:
-    """The Free model is a B62-local route, never an inferred Claw/Plus grant."""
-    messages = [{"role": "user", "content": "?? ??"}]
-    free = resolve_tier_policy(messages, "free")
-    assert free.model_id == FREE_B14_MODEL_ID == "google/gemini-3.1-flash-lite"
-    assert free.profile == "free"
+def test_b62_free_is_the_catjam_primary_and_has_independent_fallback() -> None:
+    msgs=[{"role":"user","content":"질문"}]
+    free=resolve_tier_policy(msgs,"free")
+    assert free.model_id==FREE_B14_MODEL_ID=="opencode-go/cat-jam-free"
+    assert free.profile=="free"
     assert model_policy_is_executable(free.model_id)
-    assert model_profile_is_assigned(free.model_id)
-    with request_tier_context("free"):
-        assert resolve_request_model_policy(messages).model_id == FREE_B14_MODEL_ID
-    # User's Plus/Pro/Max model assignments are not promoted by Free.
-    assert active_route_for(ProductTierLabel.PLUS) is None
-    assert active_route_for(ProductTierLabel.PRO) is None
-    assert active_route_for(ProductTierLabel.MAX) is None
-
+    assert all(active_route_for(t).model_id==FREE_B14_MODEL_ID for t in (ProductTierLabel.PLUS,ProductTierLabel.PRO,ProductTierLabel.MAX))
 
 def test_free_exact_model_is_not_browser_overridable_or_a_fallback() -> None:
     with pytest.raises(ModelPolicyError) as exc:

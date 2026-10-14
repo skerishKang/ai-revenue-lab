@@ -49,35 +49,21 @@ def _executables() -> dict[ProductTierLabel, ProductTierRoute]:
             found[tier.label] = route
     return found
 
-def test_contract_defines_exactly_three_padiem_tiers() -> None:
-    assert [tier.label for tier in PRODUCT_TIER_ROUTES] == [
-        ProductTierLabel.PLUS,
-        ProductTierLabel.PRO,
-        ProductTierLabel.MAX,
-    ]
+def test_contract_defines_exactly_four_padiem_tiers() -> None:
+    assert [tier.label for tier in PRODUCT_TIER_ROUTES] == list(ProductTierLabel)
     assert PRODUCT_TIER_POLICY_VERSION == "padiem.product_tier_routes.v1"
 
-
-def test_current_truth_all_tiers_hold_while_plus_successor_is_pending() -> None:
-    executables = _executables()
-    assert executables == {}
-    assert active_route_for(ProductTierLabel.PLUS) is None
-    assert active_route_for(ProductTierLabel.PRO) is None
-    assert active_route_for(ProductTierLabel.MAX) is None
-
+def test_current_truth_all_four_tiers_use_catjam_with_retired_routes_data_only() -> None:
+    routes = _executables()
+    assert set(routes) == set(ProductTierLabel)
+    assert {route.model_id for route in routes.values()} == {"opencode-go/cat-jam-free"}
+    assert all(route.credential_binding == "PADIEM_OPENCODE_API_KEY" for route in routes.values())
+    assert all(route.status is ProductRouteStatus.EXECUTABLE for route in routes.values())
     plus_routes = get_tier(ProductTierLabel.PLUS).routes
-    plus_hold = next(r for r in plus_routes if r.model_id == PLUS_HOLD_MODEL_ID)
-    assert plus_hold.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
+    assert next(r for r in plus_routes if r.model_id == PLUS_HOLD_MODEL_ID).status is ProductRouteStatus.HOLD_AS_DATA_ONLY
+    assert next(r for r in plus_routes if r.model_id == "kilo/stealth-space-bunny-alpha").status is ProductRouteStatus.HOLD_AS_DATA_ONLY
+    assert any(r.model_id == PRO_HOLD_MODEL_ID and r.status is ProductRouteStatus.HOLD_AS_DATA_ONLY for r in get_tier(ProductTierLabel.PRO).routes)
 
-    bunny_hold = next(
-        r for r in plus_routes if r.model_id == "kilo/stealth-space-bunny-alpha"
-    )
-    assert bunny_hold.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
-    assert bunny_hold.hold_reason and "#3568" in bunny_hold.hold_reason
-
-    pro_routes = get_tier(ProductTierLabel.PRO).routes
-    assert any(r.model_id == PRO_HOLD_MODEL_ID for r in pro_routes)
-    assert all(r.status is not ProductRouteStatus.EXECUTABLE for r in pro_routes)
 def test_no_user_visible_auto_or_fallback_anywhere() -> None:
     for tier in PRODUCT_TIER_ROUTES:
         assert tier.silent_fallback_allowed is False
@@ -89,8 +75,8 @@ def test_no_user_visible_auto_or_fallback_anywhere() -> None:
 
 def test_executable_routes_are_explicit_secret_bound_and_unretired() -> None:
     executables = _executables()
-    assert executables == {}
-    for tier, route in executables.items():  # pragma: no cover - successor not selected
+    assert len(executables) == 4
+    for tier, route in executables.items():
         assert route.provider_id, f"{tier.value}: explicit provider_id required"
         assert route.model_id, f"{tier.value}: explicit model_id required"
         assert route.model_id.startswith(f"{route.provider_id}/")
@@ -114,8 +100,9 @@ def test_retired_lanes_are_declared_data_only_with_reasons() -> None:
 def test_max_holds_qwen_glm_on_sentinel_only() -> None:
     max_routes = get_tier(ProductTierLabel.MAX).routes
     assert {r.model_family for r in max_routes} >= {"qwen", "glm"}
-    assert all(r.status is ProductRouteStatus.HOLD_AS_DATA_ONLY for r in max_routes)
-    assert all(r.model_id in (None, MAX_HOLD_MODEL_ID) for r in max_routes)
+    assert any(r.status is ProductRouteStatus.EXECUTABLE for r in max_routes)
+    assert all(r.status is ProductRouteStatus.HOLD_AS_DATA_ONLY for r in max_routes if r.model_family in {'qwen','glm'})
+    assert all(r.model_id in (None, MAX_HOLD_MODEL_ID) for r in max_routes if r.status is ProductRouteStatus.HOLD_AS_DATA_ONLY)
 
 def test_two_executable_routes_in_one_tier_fail_closed() -> None:
     plus = get_tier(ProductTierLabel.PLUS)
@@ -142,27 +129,18 @@ def test_two_executable_routes_in_one_tier_fail_closed() -> None:
     )
     with pytest.raises(ProductTierRoutesError, match="at most one executable"):
         validate_product_tier_routes(
-            (duplicate, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX))
+            (get_tier(ProductTierLabel.FREE), duplicate, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX))
         )
 
-def test_max_executable_fails_closed() -> None:
-    max_exec = ProductTierDefinition(
-        label=ProductTierLabel.MAX,
-        routes=(
-            ProductTierRoute(
-                route_id="max.exec.v1",
-                status=ProductRouteStatus.EXECUTABLE,
-                model_family="qwen",
-                provider_id="qwen",
-                model_id="qwen/ready",
-                evidence="nope",
-            ),
-        ),
+def test_two_max_executable_routes_fail_closed() -> None:
+    max_tier = get_tier(ProductTierLabel.MAX)
+    extra_route = ProductTierRoute(
+        route_id="max.duplicate.v1", status=ProductRouteStatus.EXECUTABLE,
+        model_family="test", provider_id="qwen", model_id="qwen/ready", evidence="synthetic",
     )
-    with pytest.raises(ProductTierRoutesError, match="must not expose an executable route"):
-        validate_product_tier_routes(
-            (get_tier(ProductTierLabel.PLUS), get_tier(ProductTierLabel.PRO), max_exec)
-        )
+    bad = ProductTierDefinition(label=ProductTierLabel.MAX, routes=max_tier.routes + (extra_route,))
+    with pytest.raises(ProductTierRoutesError, match="at most one executable"):
+        validate_product_tier_routes((get_tier(ProductTierLabel.FREE), get_tier(ProductTierLabel.PLUS), get_tier(ProductTierLabel.PRO), bad))
 
 def test_retired_model_as_executable_fails_closed() -> None:
     tier = ProductTierDefinition(
@@ -180,7 +158,7 @@ def test_retired_model_as_executable_fails_closed() -> None:
     )
     with pytest.raises(ProductTierRoutesError, match="retired model may never be executable"):
         validate_product_tier_routes(
-            (get_tier(ProductTierLabel.PLUS), tier, get_tier(ProductTierLabel.MAX))
+            (get_tier(ProductTierLabel.FREE), get_tier(ProductTierLabel.PLUS), tier, get_tier(ProductTierLabel.MAX))
         )
 
 def test_silent_fallback_serving_is_inexpressible() -> None:
@@ -191,7 +169,7 @@ def test_silent_fallback_serving_is_inexpressible() -> None:
     )
     with pytest.raises(ProductTierRoutesError, match="silent fallback"):
         validate_product_tier_routes(
-            (tier, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX))
+            (get_tier(ProductTierLabel.FREE), tier, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX))
         )
 
 def test_unsupported_policy_version_fails_closed() -> None:
@@ -202,7 +180,7 @@ def test_unsupported_policy_version_fails_closed() -> None:
     )
     with pytest.raises(ProductTierRoutesError, match="unsupported policy version"):
         validate_product_tier_routes(
-            (tier, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX))
+            (get_tier(ProductTierLabel.FREE), tier, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX))
         )
 
 def test_undocumented_non_executable_route_fails_closed() -> None:
@@ -218,7 +196,7 @@ def test_undocumented_non_executable_route_fails_closed() -> None:
     )
     with pytest.raises(ProductTierRoutesError, match="hold/retirement reason"):
         validate_product_tier_routes(
-            (tier, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX))
+            (get_tier(ProductTierLabel.FREE), tier, get_tier(ProductTierLabel.PRO), get_tier(ProductTierLabel.MAX))
         )
 
 
@@ -236,23 +214,22 @@ def _registry_executable_model_ids() -> dict[str, str]:
     return found
 
 
-def test_parity_with_b14_tier_registry_active_routes() -> None:
-    registry = _registry_executable_model_ids()
-    contract = {
-        route.route_id: route.model_id
-        for tier in PRODUCT_TIER_ROUTES
-        for route in tier.routes
-        if route.status is ProductRouteStatus.EXECUTABLE
-    }
-    assert contract == registry == {}
+def test_active_tier_routes_match_the_current_b14_model_registry() -> None:
+    import json
+    file=REPO_ROOT/"apps"/"korean-ai-platform"/"app"/"pilot"/"b14_models.json"
+    models={row["id"]: row for row in json.loads(file.read_text(encoding="utf-8"))["models"]}
+    assert len(_executables())==4
+    for route in _executables().values():
+        assert route.model_id=="opencode-go/cat-jam-free"
+        assert models[route.model_id]["enabled"] is True
 
 def test_parity_with_chat_model_policy_derivation() -> None:
     source = CHAT_MODEL_POLICY_PATH.read_text(encoding="utf-8")
     assert "from padiem_control_plane.product_tier_routes import (" in source
     assert "_CONTRACT_PLUS_HOLD_MODEL_ID" in source
     assert "LOW_B14_MODEL_ID = _contract_route_or_hold_id(" in source
-    assert "MEDIUM_B14_MODEL_ID = _CONTRACT_PRO_HOLD_MODEL_ID" in source
-    assert "MAX_HOLD_MODEL_ID = _CONTRACT_MAX_HOLD_MODEL_ID" in source
+    assert "MEDIUM_B14_MODEL_ID = _contract_route_or_hold_id(" in source
+    assert "MAX_HOLD_MODEL_ID = _contract_route_or_hold_id(" in source
     assert "RETIRED_B14_MODEL_IDS = frozenset(RETIRED_PRODUCT_MODEL_IDS)" in source
     assert '"kilo/' not in source
     assert "'kilo/" not in source
@@ -280,7 +257,8 @@ def test_selected_routes_match_registered_provider_constants() -> None:
 
     assert agnes_model and bai_model and agnes_binding and bai_binding
     assert kilo_bunny and kilo_bunny_upstream
-    assert executables == {}
+    assert set(executables) == set(ProductTierLabel)
+    assert {x.model_id for x in executables.values()} == {"opencode-go/cat-jam-free"}
 
     plus_routes = get_tier(ProductTierLabel.PLUS).routes
     plus_hold = next(r for r in plus_routes if r.model_id == PLUS_HOLD_MODEL_ID)

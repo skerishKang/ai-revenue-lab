@@ -10,7 +10,7 @@ const clone = (value) => JSON.parse(JSON.stringify(value));
 const flush = () => new Promise((resolve) => setImmediate(resolve));
 const SKILL_ID = "b66skill_" + "a".repeat(32);
 const ASSET_ID = "b66asset_" + "b".repeat(32);
-const SELECTED_MODEL_ID = "synthetic/pdf-contract";
+const SELECTED_MODEL_ID = "opencode-go/cat-jam-free";
 const content = clone(Template.builtInTemplate().content);
 content.slots = { logo: ASSET_ID, stamp: "" };
 const profile = Template.buildProfile({
@@ -96,7 +96,7 @@ function accountHarness({ authenticated = true, withSkill = true, cgiExport = fa
       if (String(url).includes("/assets/")) return new Response(new Uint8Array([137, 80, 78, 71]), { headers: { "Content-Type": "image/png" } });
       if (String(url).endsWith("/quote/models")) return json({
         ok: true, models: [{ model_id: SELECTED_MODEL_ID, name: "Synthetic PDF Contract Model" }],
-        default_model_id: null
+        default_model_id: null, tiers: [{ tier: "free", name: "PADIEM Free", model_id: SELECTED_MODEL_ID }], default_tier: null
       });
       if (String(url).endsWith("/quote/pdf")) return responseFactory();
       if (String(url).endsWith("/quote/interpret")) return json({ ok: true, candidate: { recipient: { company: "Synthetic Recipient" }, items: [{ name: "Synthetic Item", qty: 1, unitPrice: null }], missing: ["unitPrice"] } });
@@ -169,7 +169,7 @@ async function verifyAccountDownload(model) {
   assert.equal(unselected.code, "model_selection_required");
   assert.equal(harness.calls.length, unselectedBefore);
   assert.equal(harness.bridge.pendingQuote(), null);
-  harness.elements.get("padiemQuoteModelSelect").value = SELECTED_MODEL_ID;
+  harness.elements.get("padiemQuoteModelSelect").value = "free";
   const pending = await harness.bridge.interpret("Synthetic partial quote");
   assert.equal(pending.code, "incomplete_request");
   assert.ok(harness.bridge.pendingQuote());
@@ -177,6 +177,7 @@ async function verifyAccountDownload(model) {
   assert.equal(interpreted.length, 1, "one selected-model request, no retry");
   assert.equal(interpreted[0].url, "/api/padiem/b66/quote/interpret");
   assert.equal(JSON.parse(interpreted[0].opts.body).model_id, SELECTED_MODEL_ID);
+  assert.equal(JSON.parse(interpreted[0].opts.body).tier, "free");
   const pendingBefore = harness.calls.length;
   assert.equal((await harness.bridge.downloadPdf(model)).code, "pending_quote");
   assert.equal(harness.calls.length, pendingBefore);

@@ -174,6 +174,7 @@ class DispatchAwareB14Client(B14Client):
         model,
         additional_system_context=None,
         model_parameters=None,
+        product_tier=None,
     ):
         """Bypass B62 tier HOLD only; keep B66 runtime/admission boundaries.
 
@@ -189,6 +190,7 @@ class DispatchAwareB14Client(B14Client):
                 model=model,
                 additional_system_context=additional_system_context,
                 model_parameters=model_parameters,
+                product_tier=product_tier,
             )
         except (ChatRuntimeError, ValueError):
             # Dispatch clears the receipt first. Only local failures still have

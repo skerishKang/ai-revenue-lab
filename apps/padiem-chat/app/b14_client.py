@@ -311,6 +311,7 @@ def _agent_profile(
     required_capabilities: tuple[str, ...],
     max_retries: int | None = None,
     model_parameters: Mapping[str, Any] | None = None,
+    product_tier: str | None = None,
 ) -> AgentProfile:
     """Convert B62-owned TaskMode/model policy into the locked Core contract."""
 
@@ -334,6 +335,7 @@ def _agent_profile(
             # Keep unchosen sampling absent: B14 honours provider native defaults.
             "allow_external_fallback": False,
             "max_attempts": 1,
+            **({"product_tier": product_tier} if product_tier is not None else {}),
             **({"max_retries": max_retries} if max_retries is not None else {}),
             # Only an explicitly requested native parameter enters the policy.
             # Nothing here synthesizes a level the caller never asked for, and an
@@ -357,6 +359,7 @@ def _execution_request(
     dispatch_sample: datetime | None = None,
     max_retries: int | None = None,
     model_parameters: Mapping[str, Any] | None = None,
+    product_tier: str | None = None,
 ) -> ExecutionRequest:
     return ExecutionRequest(
         agent=_agent_profile(
@@ -365,6 +368,7 @@ def _execution_request(
             required_capabilities=required_capabilities,
             max_retries=max_retries,
             model_parameters=model_parameters,
+            product_tier=product_tier,
         ),
         messages=tuple(dict(message) for message in messages),
         additional_system_context=_trusted_dispatch_context(
@@ -580,6 +584,18 @@ class B14Client:
                 "AI 내부 스트리밍 연결이 준비되지 않았습니다. 잠시 후 다시 시도해 주세요.",
             )
 
+        # Stream gateway forbids mid-stream model replacement. For the owner-
+        # selected tier pair, finish a bounded B14 completion and emit its answer
+        # as one SSE delta so a recoverable Cat Jam failure can use its fallback.
+        tier = {"free": "free", "low": "plus", "medium": "pro", "high": "max"}[policy.profile]
+        if policy.model_id == "opencode-go/cat-jam-free":
+            response = await self._complete_text(
+                policy.messages, skill=resolved_skill, model=policy.model_id,
+                additional_system_context=bounded_context, product_tier=tier,
+            )
+            yield ChatStreamEvent(delta_content=response["answer"])
+            yield ChatStreamEvent(done=True)
+            return
         request = _execution_request(
             policy.messages,
             skill=resolved_skill,
@@ -587,6 +603,7 @@ class B14Client:
             required_capabilities=("chat",),
             additional_system_context=bounded_context,
             dispatch_sample=self._dispatch_wall_clock(),
+            product_tier=tier,
         )
         inner_stream = self._stream_core(request)
         try:
@@ -609,6 +626,7 @@ class B14Client:
         before_dispatch: Callable[[], Awaitable[None]] | None = None,
         model_parameters: Mapping[str, Any] | None = None,
         completed_response_budget_bytes: int = MAX_CONFIGURED_B14_RESPONSE_BYTES,
+        product_tier: str | None = None,
     ) -> dict[str, Any]:
         request = _execution_request(
             messages,
@@ -619,6 +637,7 @@ class B14Client:
             dispatch_sample=self._dispatch_wall_clock(),
             max_retries=max_retries,
             model_parameters=model_parameters,
+            product_tier=product_tier,
         )
         core_client = B14ExecutionClient(
             self._completion_config(
@@ -737,6 +756,7 @@ class B14Client:
         model: str,
         additional_system_context: str | None = None,
         model_parameters: Mapping[str, Any] | None = None,
+        product_tier: str = "free",
     ) -> dict[str, Any]:
         """Authenticated B66 ordinary model conversation, never quote extraction.
 
@@ -803,6 +823,7 @@ class B14Client:
             additional_system_context=_bounded_context(additional_system_context),
             max_retries=0,
             before_dispatch=self._prepare_registered_quote_dispatch,
+            product_tier=product_tier,
             **kwargs,
         )
 
@@ -813,6 +834,7 @@ class B14Client:
         model: str,
         additional_system_context: str | None = None,
         model_parameters: Mapping[str, Any] | None = None,
+        product_tier: str | None = None,
     ) -> dict[str, Any]:
         """B66 trusted exact route -> common Core/B14, NOT B62 tier policy.
 
@@ -877,6 +899,7 @@ class B14Client:
             # Chat/Claw callers retain their original independent resource
             # budgets. No automatic retry/fallback or wire-format change.
             completed_response_budget_bytes=MAX_CONFIGURED_B14_RESPONSE_BYTES,
+            **({"product_tier": product_tier} if product_tier is not None else {}),
             **native_kwargs,
         )
 

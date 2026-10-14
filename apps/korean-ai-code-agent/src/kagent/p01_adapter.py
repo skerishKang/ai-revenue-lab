@@ -342,7 +342,10 @@ def _agent_profile(
         # provider at most once. `max_retries=0` pins B14's same-route retry
         # ceiling to zero; the port refuses any other budget, so widening
         # requires a fresh explicit owner decision.
-        model_policy={"model": chosen_model, "max_retries": 0},
+        model_policy={
+            "model": chosen_model, "max_retries": 0,
+            "product_tier": product_tier.value.removeprefix("Padiem ").lower(),
+        },
         max_steps=1,
         output_contract={},
     )

@@ -102,6 +102,7 @@ class ExactB14QuoteTextExecutor(Protocol):
         additional_system_context: str | None,
         requirements: B66QuoteTaskRequirements,
         model_parameters: dict[str, Any] | None = None,
+        product_tier: str | None = None,
     ) -> dict[str, Any]: ...
 
 
@@ -174,6 +175,7 @@ class B14QuoteExactModelExecutor:
         additional_system_context: str | None,
         requirements: B66QuoteTaskRequirements,
         model_parameters: dict[str, Any] | None = None,
+        product_tier: str | None = None,
     ) -> dict[str, Any]:
         if (
             replace(requirements, selected_model_id=None) != B66QuoteTaskRequirements()
@@ -181,11 +183,13 @@ class B14QuoteExactModelExecutor:
             or route.model_id != requirements.selected_model_id
         ):
             raise B66ModelRouteError("model_identity_invalid")
+        tier_kw = {"product_tier": product_tier} if product_tier is not None else {}
         if model_parameters is None:
             return await self._client.complete_registered_quote_model(
                 messages,
                 model=route.model_id,
                 additional_system_context=additional_system_context,
+                **tier_kw,
             )
         # Validated B14-native optional parameters only (#3906). The shared Core
         # owns this transport; if the installed Core/client cannot carry them,
@@ -198,6 +202,7 @@ class B14QuoteExactModelExecutor:
             model=route.model_id,
             additional_system_context=additional_system_context,
             model_parameters=dict(model_parameters),
+            **tier_kw,
         )
 
 
@@ -281,6 +286,7 @@ class B66RegisteredModelCompletion:
         attachments: tuple[Any, ...] = (),
         model_id: str | None = None,
         reasoning_level: str | None = None,
+        product_tier: str | None = None,
     ) -> dict[str, Any]:
         if self._resolver is None or self._executor is None:
             await self._refund_before_dispatch()
@@ -312,6 +318,10 @@ class B66RegisteredModelCompletion:
         # adapter boundary, and never forwarded as an unvalidated keyword.
         # `default` and an absent value mean provider-native omission, so the
         # request below is byte-identical to the pre-#3906 call.
+        if product_tier is not None:
+            if product_tier not in ("free", "plus", "pro", "max") or model_id != "opencode-go/cat-jam-free":
+                await self._refund_before_dispatch()
+                raise B66ModelRouteError("model_identity_invalid")
         native_parameters = await self._reasoning_parameters(model_id, reasoning_level)
         requirements = replace(B66QuoteTaskRequirements(), selected_model_id=model_id)
         try:
@@ -334,12 +344,14 @@ class B66RegisteredModelCompletion:
 
         # One dispatcher invocation, never a client-side retry/fallback.
         try:
+            kwargs = {"product_tier": product_tier} if product_tier is not None else {}
             result = await self._executor.execute_quote_text(
                 route=selected,
                 messages=[dict(messages[0])],
                 additional_system_context=additional_system_context,
                 requirements=requirements,
                 model_parameters=native_parameters,
+                **kwargs,
             )
         except ChatRuntimeError:
             # Keep the existing bounded provider timeout/server/shape class.
@@ -350,8 +362,15 @@ class B66RegisteredModelCompletion:
         if not isinstance(result, dict) or not isinstance(result.get("answer"), str):
             raise B66ModelRouteError("provider_response_invalid")
         route = result.get("route")
+        fallback = None
+        if product_tier is not None:
+            from padiem_control_plane.product_tier_routes import TIER_FALLBACK_B14_MODELS
+            fallback = TIER_FALLBACK_B14_MODELS[product_tier]
+        acceptable = {selected.model_id}
+        if fallback is not None:
+            acceptable.add(fallback)
         if not isinstance(route, dict) or (
-            route.get("model") != selected.model_id
+            route.get("model") not in acceptable
             or route.get("mode") != "manual"
         ):
             raise B66ModelRouteError("provider_route_mismatch")

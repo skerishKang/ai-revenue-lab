@@ -18,7 +18,7 @@ const easySource = fs.readFileSync(path.join(SRC, "easy-mode.js"), "utf8");
 
 const NOW = "2026-10-04T09:00:00.000Z";
 const SKILL_ID = BrowserPdf.CGI_SKILL_ID;
-const SELECTED_MODEL_ID = "test-fixture/b66-selected-chat";
+const SELECTED_MODEL_ID = "opencode-go/cat-jam-free";
 const TURN1_TEXT = "대한건설에 배관 100미터 견적 만들어줘";
 const TURN2_TEXT = "18000원";
 
@@ -181,14 +181,17 @@ function buildAccountEnv(options) {
         // selects the exact model before generating a quote.
         return jsonResponse({
           ok: true,
-          models: [{ model_id: SELECTED_MODEL_ID, name: "Synthetic Test Model" }],
-          default_model_id: null
+          models: [{ model_id: SELECTED_MODEL_ID, name: "Cat Jam" }],
+          default_model_id: null,
+          tiers: [{ tier: "free", name: "PADIEM Free", model_id: SELECTED_MODEL_ID }],
+          default_tier: null
         });
       }
       if (target.endsWith("/api/padiem/b66/quote/interpret")) {
         const body = JSON.parse(opts.body || "{}");
         assert.equal(body.model_id, SELECTED_MODEL_ID,
           "explicit user choice is submitted independently of quote text");
+        assert.equal(body.tier, "free", "the customer selected Free grade");
         interpretBodies.push(body.message);
         if (config.transientFailureTurn === interpretBodies.length) {
           return jsonResponse({ ok: false, error: { code: "quote_interpretation_failed" } }, 502, {
@@ -383,8 +386,8 @@ function buildEasyEnv() {
 const manuallyChooseModel = (env) => {
   const select = env.getElement("padiemQuoteModelSelect");
   assert.equal(select.disabled, false, "B66 model options are ready");
-  assert.ok(select.children.some((row) => row.value === SELECTED_MODEL_ID));
-  select.value = SELECTED_MODEL_ID; // explicit user action, never an implicit backend auto route
+  assert.ok(select.children.some((row) => row.value === "free"));
+  select.value = "free"; // explicit tier selection, not a provider model
 };
 
 const clickStarter = (env, id) => {

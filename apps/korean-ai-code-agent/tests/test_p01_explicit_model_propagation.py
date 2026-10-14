@@ -169,7 +169,7 @@ class P01ExplicitModelPropagationTests(SyntheticPlusRouteTestCase):
         for model_id in INERT_EXPLICIT_MODEL_IDS:
             with self.subTest(model_id=model_id):
                 agent = _build(selected_model_id=model_id).execution_request.agent
-                self.assertEqual(agent.model_policy, {"model": model_id, "max_retries": 0})
+                self.assertEqual(agent.model_policy, {"model": model_id, "max_retries": 0, "product_tier": "plus"})
                 self.assertNotEqual(agent.model_policy["model"], default_model)
                 # Core consumes the exact string: stripped, never defaulted or rewritten.
                 model, _temperature, routing = _normalize_model_policy(agent)
@@ -184,7 +184,7 @@ class P01ExplicitModelPropagationTests(SyntheticPlusRouteTestCase):
                 self.assertEqual(len(transport.requests), 1)
                 payload = json.loads(transport.requests[0]["body"].decode("utf-8"))
                 self.assertEqual(
-                    payload["agent"]["model_policy"], {"model": model_id, "max_retries": 0}
+                    payload["agent"]["model_policy"], {"model": model_id, "max_retries": 0, "product_tier": "plus"}
                 )
                 self.assertEqual(payload["agent"]["id"], P01_AGENT_ID)
                 self.assertNotIn("b14/auto", json.dumps(payload).lower())

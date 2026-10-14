@@ -415,9 +415,9 @@
       "context_window": 0,
       "input_price_usd_per_1m": null,
       "output_price_usd_per_1m": null,
-      "source": "https://docs.opencode.ai/docs/go/ (exact model/endpoint; responses; owner-selected, Go coding-agent terms; not yet wire-verified)",
-      "source_checked_at": "2026-10-13",
-      "enabled": false
+      "source": "https://dev.opencode.ai/v2/docs/console/go/ (OpenCode Go Responses API, current 2026-10-15)",
+      "source_checked_at": "2026-10-15",
+      "enabled": true
     },
     {
       "id": "opencode-go/muse-spark-1.3-contributor",
@@ -432,9 +432,9 @@
       "context_window": 0,
       "input_price_usd_per_1m": null,
       "output_price_usd_per_1m": null,
-      "source": "https://docs.opencode.ai/docs/go/ (exact model/endpoint; responses; owner-selected, Go coding-agent terms; not yet wire-verified)",
-      "source_checked_at": "2026-10-12",
-      "enabled": false
+      "source": "https://dev.opencode.ai/v2/docs/console/go/ (OpenCode Go Responses API, current 2026-10-15)",
+      "source_checked_at": "2026-10-15",
+      "enabled": true
     },
     {
       "id": "opencode-go/gpt-6-luna",

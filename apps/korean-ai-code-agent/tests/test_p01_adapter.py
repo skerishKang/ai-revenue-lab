@@ -217,7 +217,7 @@ class P01RequestFactoryTests(SyntheticPlusRouteTestCase):
         # Default tier is Plus while Pro is HOLD (#2601).
         self.assertEqual(
             dict(bundle.execution_request.agent.model_policy),
-            {"model": self.plus_route_model, "max_retries": 0},
+            {"model": self.plus_route_model, "max_retries": 0, "product_tier": "plus"},
         )
         self.assertEqual(bundle.execution_request.messages[0]["role"], "user")
         self.assertIn("provider=caller-model", bundle.execution_request.messages[0]["content"])
@@ -233,14 +233,14 @@ class P01RequestFactoryTests(SyntheticPlusRouteTestCase):
         )
         self.assertEqual(
             dict(plus_bundle.execution_request.agent.model_policy),
-            {"model": self.plus_route_model, "max_retries": 0},
+            {"model": self.plus_route_model, "max_retries": 0, "product_tier": "plus"},
         )
 
         default_run = self.local_run("run_default_after_plus")
         default_bundle = P01RequestFactory().build(default_run)
         self.assertEqual(
             dict(default_bundle.execution_request.agent.model_policy),
-            {"model": self.plus_route_model, "max_retries": 0},
+            {"model": self.plus_route_model, "max_retries": 0, "product_tier": "plus"},
         )
 
     def test_factory_does_not_promote_repository_reference_to_system_context(self):
@@ -674,7 +674,7 @@ class ClawP01ProfileContractTests(unittest.TestCase):
         profile = _agent_profile()
         self.assertEqual(
             profile.model_policy,
-            {"model": self.plus_route_model, "max_retries": 0},
+            {"model": self.plus_route_model, "max_retries": 0, "product_tier": "plus"},
         )
         self.assertEqual(profile.allowed_tools, ())
         self.assertEqual(profile.required_capabilities, ())
@@ -684,18 +684,18 @@ class ClawP01ProfileContractTests(unittest.TestCase):
         profile = _agent_profile(ProductTierLabel.PLUS)
         self.assertEqual(
             profile.model_policy,
-            {"model": self.plus_route_model, "max_retries": 0},
+            {"model": self.plus_route_model, "max_retries": 0, "product_tier": "plus"},
         )
 
-    def test_pro_tier_fails_closed_while_hold(self) -> None:
-        with self.assertRaises(P01AdapterError) as caught:
-            _agent_profile(ProductTierLabel.PRO)
-        self.assertEqual(caught.exception.code, "tier_hold")
+    def test_pro_tier_uses_shared_declared_route(self) -> None:
+        profile = _agent_profile(ProductTierLabel.PRO)
+        self.assertEqual(profile.model_policy["model"], active_route_for(ProductTierLabel.PRO).model_id)
+        self.assertEqual(profile.model_policy["product_tier"], "pro")
 
-    def test_max_tier_fails_closed(self) -> None:
-        with self.assertRaises(P01AdapterError) as caught:
-            _agent_profile(ProductTierLabel.MAX)
-        self.assertEqual(caught.exception.code, "max_tier_hold")
+    def test_max_tier_uses_shared_declared_route(self) -> None:
+        profile = _agent_profile(ProductTierLabel.MAX)
+        self.assertEqual(profile.model_policy["model"], active_route_for(ProductTierLabel.MAX).model_id)
+        self.assertEqual(profile.model_policy["product_tier"], "max")
 
 
 class P01RouteEvidenceThreadingTests(SyntheticPlusRouteTestCase, unittest.IsolatedAsyncioTestCase):
@@ -782,9 +782,9 @@ class SyntheticPlusRouteBoundaryTests(unittest.TestCase):
             )
             self.assertEqual(
                 _agent_profile(ProductTierLabel.PLUS).model_policy,
-                {"model": model_id, "max_retries": 0},
+                {"model": model_id, "max_retries": 0, "product_tier": "plus"},
             )
-            # Only Plus is stood in for: Pro and Max keep failing closed.
+            # Synthetic Plus fixture intentionally whitelists only its injected route.
             for other in (ProductTierLabel.PRO, ProductTierLabel.MAX):
                 with self.assertRaises(P01AdapterError):
                     _agent_profile(other)

@@ -41,8 +41,8 @@ assert.match(shell, /senderNote\.hidden = !\(quotePaper\.getAttribute/, "CGI fix
 assert.match(shell, /readinessStatus\.textContent = ready \? "출력 준비" : "작성 중"/);
 assert.match(shell, /reopen\.textContent = "견적서 보기"/);
 assert.doesNotMatch(app, /select\.value = state\.quoteModels\[0\]/, "model must not be silently chosen");
-assert.match(account, /const preferred = "google\/gemini-3\.5-flash-lite"/, "owner preferred B66 default is allowlisted by server");
-assert.match(account, /state\.quoteModels\.includes\(preferred\)/, "never inject an unregistered model");
+assert.match(account, /const configured = result\.data\.default_tier/, "owner-selected B66 grade default is server-provided");
+assert.match(account, /state\.quoteModels\.includes\(configured\)/, "never inject an unregistered grade");
 assert.match(shell, /modelControl\.hidden = false/, "signed-out mobile keeps disabled model affordance visible");
 assert.match(html, /id="resumeDraftStarter" type="button">/, "resume is displayed even before sign-in");
 assert.match(easy, /App\.toast\("지난 견적을 이어서 사용하려면 먼저 로그인해 주세요\."\)/, "resume guests get sign-in prompt");
