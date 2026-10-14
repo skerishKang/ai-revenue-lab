@@ -310,10 +310,11 @@ async def main() -> int:
                 failures.append("new_chat_named_a_conversation_id")
             await shot(page, "02-assistant-markdown")
 
-            # 3) previous-dialogue rail lists and searches
+            # 3) persistent left rail opens the same owner-scoped AI-dialogue list.
+            #    It remains separate from the saved-quotation rail entry.
             await page.click("#brandHome")
             await page.wait_for_timeout(100)
-            await page.click("#aiDialogueStarter")
+            await page.click("#shellPreviousAiDialogue")
             await page.wait_for_selector("#easyDialogueResults .easy-dialogue-card", timeout=20000)
             cards = await page.evaluate(
                 "() => document.querySelectorAll('#easyDialogueResults .easy-dialogue-card').length")
