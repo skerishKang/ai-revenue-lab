@@ -50,6 +50,8 @@ class PreviewHandler(BaseHTTPRequestHandler):
             elif path in ("/app.js", "/styles.css"):
                 content_type = "application/javascript; charset=utf-8" if path.endswith(".js") else "text/css; charset=utf-8"
                 self._send(200, (STATIC / path.lstrip("/")).read_bytes(), content_type)
+            elif path == "/assets/padiem-glass-female.jpg":
+                self._send(200, (STATIC / "assets" / "padiem-glass-female.jpg").read_bytes(), "image/jpeg")
             elif path == "/api/tasks":
                 self._json(200, {"tasks": STORE.list()})
             elif path == "/api/usage":

@@ -35,8 +35,8 @@ def main():
                 page.on("request", lambda req: outside.append(req.url) if not req.url.startswith(url) else None)
                 page.on("pageerror", lambda error: page_errors.append(str(error)))
                 page.goto(url + "/", wait_until="load")
-                assert page.get_by_role("heading", name="전화 업무, 한곳에서").is_visible()
-                page.get_by_role("button", name="모의 전화 작업 시작").click()
+                assert page.get_by_role("heading", name="어떤 전화를 맡겨드릴까요?").is_visible()
+                page.locator("#createButton").click()
                 page.locator("#activeTask .task-status strong").get_by_text("모의 완료").wait_for(timeout=16000)
                 page.wait_for_function("document.querySelector('#statTotal').textContent === '1'")
                 page.locator('.nav-link[data-page="history"]').click()
@@ -53,6 +53,7 @@ def main():
                 mobile = browser.new_page(viewport={"width": 390, "height": 844}, device_scale_factor=1)
                 mobile.goto(url + "/", wait_until="load")
                 assert mobile.locator("#createButton").is_visible()
+                assert mobile.get_by_role("heading", name="어떤 전화를 맡겨드릴까요?").is_visible()
                 widths = mobile.evaluate("({screen: innerWidth, doc: document.documentElement.scrollWidth})")
                 assert widths["doc"] <= widths["screen"] + 2, f"mobile overflow {widths}"
                 mobile.locator('.nav-link[data-page="scripts"]').click()

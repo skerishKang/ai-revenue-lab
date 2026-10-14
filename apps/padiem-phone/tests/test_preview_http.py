@@ -45,7 +45,7 @@ class PreviewHTTPTests(unittest.TestCase):
         self.assertIn(b"PADIEM", body)
         self.assertIn("connect-src 'self'", headers["Content-Security-Policy"])
         self.assertEqual(headers["Cache-Control"], "no-store")
-        for path in ("/app.js", "/styles.css"):
+        for path in ("/app.js", "/styles.css", "/assets/padiem-glass-female.jpg"):
             self.assertEqual(self.get(path)[0], 200)
 
     def test_create_read_cancel_and_usage_endpoints(self):
