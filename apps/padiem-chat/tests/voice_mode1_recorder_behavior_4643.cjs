@@ -61,6 +61,7 @@ function setup({empty=false,auto=false}={}) {
     recorder:()=>recorder,settle,
     time:t=>time=t,level:x=>level=x,
     resolve(text){const fn=pending.shift();assert.ok(fn);fn({ok:true,json:async()=>({text})});},
+    fail(){const fn=pending.shift();assert.ok(fn);fn({ok:false,json:async()=>({error:{code:"upstream_error"}})});},
     tracksStopped:()=>cancelled};
 }
 
@@ -149,4 +150,14 @@ test("cancel and silent Stop cannot emit accepted end-of-turn",async()=>{
   const silent=setup({auto:true,empty:true});await silent.settle();
   silent.handle.stop("user-stopped");await silent.settle();
   assert.equal(silent.turns.length,0);
+});
+
+test("failed provider request never emits accepted auto-send turn",async()=>{
+  const x=setup({auto:true});await x.settle();
+  x.handle.stop("user-stopped");await x.settle();
+  assert.equal(x.posts.length,1);
+  x.fail();await x.settle();
+  assert.equal(x.finals.length,0);
+  assert.equal(x.turns.length,0);
+  assert.equal(x.errors.length,0); // composer already detached; no false success
 });

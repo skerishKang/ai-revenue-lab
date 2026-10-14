@@ -109,6 +109,26 @@ def run():
               return checks;
             }""")
             page.wait_for_timeout(70)
+            page.evaluate("""() => {
+              document.getElementById('voiceMicButton').click();
+              document.getElementById('messageInput').focus();
+            }""")
+            page.keyboard.type("typed during recording")
+            typed = page.evaluate("""() => {
+              const composer=window.PadiemVoiceComposer.getController();
+              window.__test.callbacks.onAutoStopRequested();
+              window.__test.callbacks.onFinal({
+                text:'recognized but edited',utteranceId:'user-edited',stopped:true
+              });
+              window.__test.callbacks.onTurnComplete({
+                accepted:true,endOfTurn:true,finalId:'user-edited'
+              });
+              return {
+                manual_edit_prevents_auto:window.__test.sent.length===1,
+                editable_input_preserved:document.getElementById('messageInput').value.includes('typed during recording')
+              };
+            }""")
+            page.wait_for_timeout(70)
             third = page.evaluate("""() => {
               const checks = {};
               const button=document.querySelector('.voice-answer-listen');
@@ -123,7 +143,7 @@ def run():
               checks.signout_disarms_tts = button.getAttribute('aria-pressed')==='false';
               return checks;
             }""")
-            return {"checks": {**first, **second, **third},
+            return {"checks": {**first, **second, **typed, **third},
                     "sent":page.evaluate("window.__test.sent"),
                     "speaks":page.evaluate("window.__ttsSpoken.length")}
         finally:
