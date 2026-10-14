@@ -1,0 +1,89 @@
+"""#4469: one shared Core provider priority for Chat, Engine and B66."""
+from __future__ import annotations
+
+import asyncio
+
+import httpx
+import pytest
+
+from padiem_ai_core.web_priority import TinyFishDaumPriorityWebProvider
+from padiem_ai_core.web_runtime import WebRuntimeError
+
+
+def run(coro):
+    return asyncio.run(coro)
+
+
+def provider(handler):
+    return TinyFishDaumPriorityWebProvider(
+        tinyfish_key="synthetic-tinyfish",
+        daum_key="synthetic-daum",
+        transport=httpx.MockTransport(handler),
+    )
+
+
+@pytest.mark.parametrize("status", [402, 429])
+def test_only_quota_rate_limit_retries_exactly_one_daum_search(status):
+    calls = []
+
+    def send(req):
+        calls.append((req.method, str(req.url)))
+        if len(calls) == 1:
+            return httpx.Response(status, json={"error": "quota"})
+        return httpx.Response(200, json={"documents": [
+            {"title": "Public", "url": "https://example.org/article", "contents": "public data"}
+        ]})
+
+    found = run(provider(send).search("public market news"))
+    assert len(calls) == 2
+    assert "api.search.tinyfish.ai" in calls[0][1]
+    assert "dapi.kakao.com/v2/search/web" in calls[1][1]
+    assert found and found[0].provider == "daum"
+
+
+@pytest.mark.parametrize("status", [400, 401, 403, 404, 500, 503])
+def test_non_quota_failure_never_dispatches_second_search(status):
+    calls = []
+
+    def send(req):
+        calls.append(req)
+        return httpx.Response(status, json={"error": "failure"})
+
+    with pytest.raises(WebRuntimeError):
+        run(provider(send).search("public market news"))
+    assert len(calls) == 1
+
+
+def test_empty_results_remain_empty_and_no_daum_call():
+    calls = []
+
+    def send(req):
+        calls.append(req)
+        return httpx.Response(200, json={"results": []})
+
+    assert run(provider(send).search("public market news")) == []
+    assert len(calls) == 1
+
+
+def test_fetch_tinyfish_only_no_daum_on_402():
+    calls = []
+
+    def send(req):
+        calls.append((req.method, str(req.url)))
+        return httpx.Response(402, json={"error": "quota"})
+
+    with pytest.raises(WebRuntimeError) as exc:
+        run(provider(send).fetch("https://example.org/public-page"))
+    assert exc.value.code == "web_quota_exhausted"
+    assert calls == [("POST", "https://api.fetch.tinyfish.ai")]
+
+
+@pytest.mark.parametrize("keys", [
+    {"tinyfish_key": "", "daum_key": "synthetic"},
+    {"tinyfish_key": "synthetic", "daum_key": ""},
+    {"tinyfish_key": None, "daum_key": "synthetic"},
+    {"tinyfish_key": "synthetic", "daum_key": None},
+])
+def test_missing_keys_fail_closed_at_construction(keys):
+    with pytest.raises(ValueError):
+        TinyFishDaumPriorityWebProvider(**keys)
