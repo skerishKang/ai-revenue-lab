@@ -14,6 +14,7 @@ import sys
 
 from phone_mock import TaskError
 from phone_history import DurableMockPhoneTasks, local_history_path
+from phone_reports import task_timeline, task_report, stage_usage
 from phone_scripts import ScriptStore, local_preview_path
 
 STATIC = Path(__file__).parent / "static"
@@ -90,8 +91,15 @@ class PreviewHandler(BaseHTTPRequestHandler):
                 self._json(200, {"tasks": STORE.list()})
             elif path == "/api/usage":
                 self._json(200, STORE.summary())
+            elif path == "/api/usage/stages":
+                self._json(200, stage_usage(STORE.list()))
             elif path == "/api/scripts":
                 self._json(200, {"scripts": SCRIPTS.list()})
+            elif path.startswith("/api/tasks/") and path.count("/") == 4 and path.endswith("/timeline"):
+                self._json(200, {"timeline": task_timeline(STORE.get(path.split("/")[-2]))})
+            elif path.startswith("/api/tasks/") and path.count("/") == 4 and path.endswith("/report"):
+                report = task_report(STORE.get(path.split("/")[-2]))
+                self._send(200, report.encode("utf-8"), "text/plain; charset=utf-8")
             elif path.startswith("/api/tasks/") and path.count("/") == 3:
                 self._json(200, STORE.get(path.split("/")[-1]))
             else:

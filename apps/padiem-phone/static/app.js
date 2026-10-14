@@ -192,7 +192,7 @@ async function refreshHistory() {
       taskLink.append(button(task.task_id.slice(0, 8) + " ↗", "detail-link",
         () => showHistoryDetails(task.task_id)));
       const status = textNode("span", stateLabels[task.state] || task.state, "state-pill " +
-        (task.state === "NO_ANSWER" || task.state === "CANCELLED" ? "fail" : task.terminal ? "" : "progress"));
+        (task.state === "NO_ANSWER" || task.state === "CANCELLED" || task.state === "INTERRUPTED" ? "fail" : task.terminal ? "" : "progress"));
       const cells = [
         taskLink,
         textNode("td", task.destination),
@@ -210,11 +210,45 @@ async function refreshHistory() {
     $("historyBody").replaceChildren(tr);
   }
 }
+function appendTimeline(root, events) {
+  const timeline = document.createElement("ol");
+  timeline.className = "phone-stage-timeline";
+  for (const event of events) {
+    const entry = document.createElement("li");
+    entry.className = "phone-stage " + event.phase;
+    entry.append(
+      textNode("strong", event.label),
+      textNode("span", "가상 " + event.start_minute + "–" + event.end_minute + "분"),
+    );
+    timeline.append(entry);
+  }
+  root.append(timeline);
+}
+async function downloadTaskReport(taskId) {
+  try {
+    const res = await fetch("/api/tasks/" + encodeURIComponent(taskId) + "/report", {cache:"no-store"});
+    if (!res.ok) throw new Error("보고서 조회 실패");
+    const report = await res.text();
+    const blob = new Blob(["\uFEFF", report], {type:"text/plain;charset=utf-8"});
+    const href = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = href;
+    anchor.download = "padiem-phone-mock-" + taskId.slice(0, 12) + ".txt";
+    document.body.append(anchor);
+    anchor.click();
+    anchor.remove();
+    setTimeout(() => URL.revokeObjectURL(href), 1200);
+  } catch (error) {
+    const node = $("reportMessage");
+    if (node) node.textContent = "보고서 다운로드 실패: " + error.message;
+  }
+}
 async function showHistoryDetails(taskId) {
   const root = $("historyDetailsContent");
   const panel = $("historyDetails");
   try {
     const task = await api("/api/tasks/" + taskId);
+    const stages = await api("/api/tasks/" + taskId + "/timeline");
     root.replaceChildren();
     const items = [
       ["대상 기관", task.destination],
@@ -231,16 +265,57 @@ async function showHistoryDetails(taskId) {
       part.append(textNode("strong", title), textNode("p", value));
       root.append(part);
     });
+    const extra = document.createElement("div");
+    extra.className = "history-extras";
+    extra.append(textNode("strong", "모의 진행 단계"));
+    appendTimeline(extra, stages.timeline);
+    extra.append(
+      button("모의 업무 보고서(.txt) 저장", "secondary report-download",
+        () => downloadTaskReport(task.task_id)),
+      textNode("p", "실제 전화 통화나 상담 녹취가 아닙니다.", "report-notice")
+    );
+    const message = textNode("p", "", "form-message");
+    message.id = "reportMessage";
+    extra.append(message);
+    root.append(extra);
     panel.hidden = false;
     panel.scrollIntoView({behavior: "smooth", block: "nearest"});
   } catch (err) {
-    setText("formMessage", "기록 상세 조회 실패: " + err.message);
+    root.replaceChildren(textNode("p", "기록 상세 조회 실패: " + err.message));
+    panel.hidden = false;
   }
 }
 $("closeHistoryDetails").addEventListener("click", () => {
   $("historyDetails").hidden = true;
 });
-async function refreshUsage() { await refreshSummary(); }
+async function refreshUsage() {
+  await refreshSummary();
+  const root = $("usageStageBreakdown");
+  try {
+    const result = await api("/api/usage/stages");
+    root.replaceChildren();
+    const maximum = Math.max(1, ...result.stages.map(item => item.simulated_minutes));
+    for (const stage of result.stages) {
+      const row = document.createElement("div");
+      row.className = "usage-stage-row";
+      const heading = document.createElement("div");
+      heading.className = "usage-stage-heading";
+      heading.append(
+        textNode("strong", stage.label),
+        textNode("span", stage.simulated_minutes + "분 · " + stage.simulated_visits + "회 진입")
+      );
+      const track = document.createElement("div");
+      track.className = "usage-stage-track";
+      const fill = document.createElement("span");
+      fill.style.width = Math.round(stage.simulated_minutes / maximum * 100) + "%";
+      track.append(fill);
+      row.append(heading, track);
+      root.append(row);
+    }
+  } catch (error) {
+    root.replaceChildren(textNode("p", "가상 사용량 조회 실패: " + error.message));
+  }
+}
 
 function renderActive(task) {
   const root = $("activeTask");
@@ -261,6 +336,8 @@ function renderActive(task) {
   root.append(meta);
   if (task.terminal) {
     root.append(textNode("div", task.result || "모의 작업 종료", "task-result"));
+    root.append(button("모의 업무 보고서 저장", "small-button",
+      () => downloadTaskReport(task.task_id)));
   } else {
     const actions = document.createElement("div"); actions.className = "task-actions";
     actions.append(button("작업 중단", "danger", cancelActive)); root.append(actions);
@@ -330,6 +407,21 @@ $("createForm").addEventListener("submit", async event => {
 document.querySelectorAll("[data-page]").forEach(b => b.addEventListener("click", () => showPage(b.dataset.page)));
 $("refreshHistory").addEventListener("click", refreshHistory);
 $("refreshUsage").addEventListener("click", refreshUsage);
+async function restoreActiveOnLoad() {
+  try {
+    const data = await api("/api/tasks");
+    if (activeId || pollTimer || !Array.isArray(data.tasks)) return;
+    const resumed = data.tasks.find(task => task.terminal === false);
+    if (!resumed) return;
+    activeId = resumed.task_id;
+    renderActive(resumed);
+    $("createButton").disabled = true;
+    pollTimer = setInterval(tick, 450);
+  } catch {
+    // The existing summary and history loaders display preview errors.
+  }
+}
 refreshSummary();
 refreshHistory();
 refreshScripts();
+restoreActiveOnLoad();
