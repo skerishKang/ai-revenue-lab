@@ -21,6 +21,8 @@ def test_nonproduction_owner_gateway_has_only_isolated_private_services():
     assert vars["PADIEM_CONNECTOR_OWNER_ENROLLMENT_ENABLED"] == "enabled"
     assert vars["PADIEM_CONNECTOR_OWNER_PRODUCTION_ENABLED"] == "enabled"
     assert vars["PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED"] == "enabled"
+    assert vars["PADIEM_CONNECTOR_OWNER_PC_IDENTITY_PREFLIGHT_ENABLED"] == "enabled"
+    assert vars["PADIEM_CONNECTOR_OWNER_PC_NATIVE_DELIVERY_ENABLED"] == "enabled"
     assert vars["PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE"] == "owner-controlled-production-4139"
     assert {x["binding"]: x["service"] for x in ordinary["services"] if x["binding"] in (
         "IDENTITY_AUTHORITY_SERVICE", "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
