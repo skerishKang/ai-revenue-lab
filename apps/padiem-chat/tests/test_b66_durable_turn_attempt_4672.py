@@ -11,13 +11,14 @@ from app.b66_durable_turn_attempt import (
     D1B66TurnAttemptStore, attempt_request_digest,
 )
 from app.b66_ai_chat_routes import reset_dialogue_idempotency
-from test_b66_dialogue_history_4657 import MODEL, _D1, _chat, _client_for, env
+from test_b66_dialogue_history_4657 import MODEL, USER_A, _D1, _chat, _client_for, _sign_in, env
 
 TOKEN = "abcdef0123456789abcdef0123456789"
 MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "044_b66_ai_turn_attempt.sql"
 
 
 def _wire(env):
+    _sign_in(env.settings, env.client, USER_A)
     env.db.executescript(MIGRATION.read_text(encoding="utf-8"))
     env.app.state.b66_turn_attempt_store = D1B66TurnAttemptStore(_D1(env.db))
     reset_dialogue_idempotency()
@@ -27,6 +28,8 @@ def _wire(env):
 def test_migration_atomic_unique_owner_product_token(tmp_path):
     dbpath = str(tmp_path / "attempt.db")
     a, b = (sqlite3.connect(dbpath, isolation_level=None) for _ in range(2))
+    a.row_factory = sqlite3.Row
+    b.row_factory = sqlite3.Row
     try:
         a.execute("PRAGMA journal_mode=WAL")
         a.execute("CREATE TABLE users(id TEXT PRIMARY KEY)")
@@ -58,6 +61,7 @@ def test_migration_atomic_unique_owner_product_token(tmp_path):
 
 
 def test_real_http_no_schema_fails_before_paid_model(env):
+    _sign_in(env.settings, env.client, USER_A)
     env.app.state.b66_turn_attempt_store = D1B66TurnAttemptStore(_D1(env.db))
     request = [{"role": "user", "content": "한 품목 견적"}]
     response = _chat(env.client, messages=request, turn_token=TOKEN)
