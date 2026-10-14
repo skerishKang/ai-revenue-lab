@@ -46,13 +46,12 @@ def test_multiline_composer_and_visual_viewport_contract_is_bounded() -> None:
     assert "bottom: var(--padiem-visual-keyboard-inset, 0px) !important" in css
 
 
-def test_large_desktop_glass_lane_is_content_first_but_prose_stays_bounded() -> None:
+def test_large_desktop_glass_lane_does_not_jump_on_first_message() -> None:
     css = (STATIC / "padiem-glass-gutter-alignment.css").read_text(encoding="utf-8")
     assert "--padiem-chat-reading-measure: 76ch" in css
-    assert "@media (min-width: 1440px)" in css
-    assert "--padiem-chat-lane-offset: clamp(36px, 3vw, 56px)" in css
-    assert "1080px" in css
-    assert "clamp(300px, 24vw, 430px)" in css
+    assert "FIRST SCREEN = ACTIVE CHAT FRAME" in css
+    assert "--padiem-chat-lane-offset:" not in css
+    assert "--padiem-chat-lane-width:" not in css
     assert ".rich-response-paragraph" in css
     assert "max-inline-size: min(var(--padiem-chat-reading-measure), 100%)" in css
 
