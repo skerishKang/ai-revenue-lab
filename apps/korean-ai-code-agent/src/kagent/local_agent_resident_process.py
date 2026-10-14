@@ -64,6 +64,7 @@ from .local_agent_control_plane_admission import (
     ControlPlanePhysicalAdmissionTransport,
 )
 from .local_agent_durable_run_store import DurableRunStore
+from .local_agent_device_binding_store import ProtectedDeviceBindingStore
 from .local_agent_pairing import DeviceLifecycle
 from .local_agent_permissions import default_device_permission_profile
 from .local_agent_runtime_assembly import BoundLocalAgentRuntimeAssembly
@@ -763,9 +764,12 @@ def redeem_handoff(
 
     clock = _Clock(now)
     config = entry.transport_config
+    protection = (
+        protected_data if protected_data is not None else WindowsDpapiProtectedDataPort()
+    )
     store = ProtectedFileDeviceCredentialStore(
         base_dir=base_dir,
-        protected_data=protected_data if protected_data is not None else WindowsDpapiProtectedDataPort(),
+        protected_data=protection,
     )
     client = LocalAgentBrokerPairingClient(
         config=config, credential_store=store, request_port=entry.request_port
@@ -780,6 +784,13 @@ def redeem_handoff(
         raise ContractError("redemption did not yield PAIRED_OFFLINE")
     # The credential is now durable; only then does ownership hold.
     store.load(binding=enrollment.binding, now=now)
+    # #4139 STEP 3: the credential was durable but the *binding* was in-memory
+    # only, so a restart had nothing to resume from and refused even though the
+    # PC was registered. Persist it beside the credential it belongs to, under
+    # the same protected-data port. No raw credential is written here.
+    ProtectedDeviceBindingStore(base_dir=base_dir, protected_data=protection).save(
+        binding=enrollment.binding, now=now
+    )
     if emit is not None:
         emit(handoff)
     return {
@@ -789,6 +800,44 @@ def redeem_handoff(
         "config": config,
         "port": entry.request_port,
         "redeem_count": 1,
+    }
+
+
+def resume_registered_binding(
+    *,
+    entry: BrokerEntry,
+    now: datetime,
+    protected_data: Any | None = None,
+) -> dict:
+    """Rebuild a registered device's boundary from durable state alone.
+
+    No handoff, no challenge, no re-enrollment and no fresh identity: the binding
+    record and the protected credential were both written at enrollment time.
+    The credential is loaded **with the rebuilt binding**, so a binding that no
+    longer matches its credential fails closed here rather than at the broker.
+    """
+    clock = _Clock(now)
+    config = entry.transport_config
+    protection = (
+        protected_data if protected_data is not None else WindowsDpapiProtectedDataPort()
+    )
+    resumed = ProtectedDeviceBindingStore(
+        base_dir=entry.credential_dir, protected_data=protection
+    ).load(device_id=entry.device_id, now=now)
+    store = ProtectedFileDeviceCredentialStore(
+        base_dir=entry.credential_dir, protected_data=protection
+    )
+    # Proof of the reconstruction: the canonical store only returns the
+    # credential when the rebuilt binding context is the protected one.
+    store.load(binding=resumed.binding, now=now)
+    return {
+        "binding": resumed.binding,
+        "store": store,
+        "clock": clock,
+        "config": config,
+        "port": entry.request_port,
+        "redeem_count": 0,
+        "resumed": True,
     }
 
 
@@ -985,28 +1034,50 @@ def main(argv: list[str] | None = None) -> int:
             break
         except ContractError:
             continue
-    if handoff is None:
-        _emit(status="refused", reason="handoff_refused", detail="no handoff line", **RESIDENT_PROCESS_CONTRACT)
-        return 2
     now = datetime.now(timezone.utc).replace(microsecond=0)
     os.makedirs(entry.credential_dir, exist_ok=True)
     if True:
         base_dir = entry.credential_dir
-        try:
-            # Item 4: the ACK fires from inside the redemption, after ownership.
-            redeemed = redeem_handoff(
-                handoff, entry=entry, base_dir=base_dir, now=now, emit=acknowledge_handoff
+        if handoff is None:
+            # #4139 STEP 3: a registered PC must be able to restart itself. The
+            # one-shot handoff is for *first* registration only; when the device
+            # already holds a durable binding, resume it and enter the same
+            # task-receiving host instead of refusing.
+            try:
+                redeemed = resume_registered_binding(entry=entry, now=now)
+            except ContractError as exc:
+                # Unchanged refusal contract for a device that is not registered.
+                _emit(
+                    status="refused",
+                    reason="handoff_refused",
+                    detail="no handoff line",
+                    resume_refused=str(exc),
+                    **RESIDENT_PROCESS_CONTRACT,
+                )
+                return 2
+            _emit(
+                event="registered_device_resumed",
+                redemption="paired_offline",
+                resume_count=1,
+                **_phase_stamp(),
+                **RESIDENT_PROCESS_CONTRACT,
             )
-        except ContractError as exc:
-            # No acknowledgement, so the caller keeps the handoff armed.
-            _emit(status="refused", reason="redemption_refused", detail=str(exc), **RESIDENT_PROCESS_CONTRACT)
-            return 2
-        _emit(
-            event="handoff_redeemed",
-            redemption="paired_offline",
-            **_phase_stamp(),
-            **RESIDENT_PROCESS_CONTRACT,
-        )
+        else:
+            try:
+                # Item 4: the ACK fires from inside the redemption, after ownership.
+                redeemed = redeem_handoff(
+                    handoff, entry=entry, base_dir=base_dir, now=now, emit=acknowledge_handoff
+                )
+            except ContractError as exc:
+                # No acknowledgement, so the caller keeps the handoff armed.
+                _emit(status="refused", reason="redemption_refused", detail=str(exc), **RESIDENT_PROCESS_CONTRACT)
+                return 2
+            _emit(
+                event="handoff_redeemed",
+                redemption="paired_offline",
+                **_phase_stamp(),
+                **RESIDENT_PROCESS_CONTRACT,
+            )
         _emit(event="host_build_start", **_phase_stamp(), **RESIDENT_PROCESS_CONTRACT)
         try:
             host = build_resident_host(
