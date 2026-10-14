@@ -164,7 +164,7 @@ async def open_review_only_wss_socket(
 async def run_review_only_wss_pairing(
     *, enrollment: Any, receiver: Any, challenge_id: str,
     pairing_code: str, source_test_authorized: bool = False,
-    acceptance: bool = False,
+    acceptance: bool = False, binding_store: Any | None = None,
 ) -> Any:
     """Drive the existing canonical pairing only in operator review harness."""
     if source_test_authorized is not True:
@@ -175,12 +175,16 @@ async def run_review_only_wss_pairing(
         return await run_and_stage_review_only_device_enrollment(
             enrollment=enrollment, socket=socket, trusted_tls=VerifiedReviewTls(),
             receiver=receiver, challenge_id=challenge_id, pairing_code=pairing_code,
+            # The canonical protected binding store, so the enrollment persists
+            # the binding before publishing and a restart needs no new code.
+            binding_store=binding_store,
         )
 
 
 async def run_review_only_one_click_pc_link(
     *, enrollment: Any, receiver: Any, owner_approval_open: Any,
     source_test_authorized: bool = False, acceptance: bool = False,
+    binding_store: Any | None = None,
 ) -> Any:
     """Reuse the ONE reviewed outbound WSS dialer for the no-code owner offer.
 
@@ -201,5 +205,5 @@ async def run_review_only_one_click_pc_link(
             socket=socket, trusted_tls=VerifiedReviewTls(),
             enrollment=enrollment, receiver=receiver,
             owner_approval_open=owner_approval_open,
-            acceptance=acceptance,
+            acceptance=acceptance, binding_store=binding_store,
         )

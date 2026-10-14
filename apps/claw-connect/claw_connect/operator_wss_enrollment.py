@@ -13,11 +13,12 @@ from pathlib import Path
 import sys
 from typing import Any
 
-from .device_wss_enrollment import DeviceSessionRefused
+from .device_wss_enrollment import (
+    DeviceSessionRefused, _CANONICAL_CREDENTIAL_DIR_ENV, canonical_binding_store,
+)
 
 _REVIEW_OPERATOR_ENV = "PADIEM_CONNECTOR_OPERATOR_WSS_ACCEPTANCE"
 _REVIEW_OPERATOR_VALUE = "isolated-operator-acceptance-4139"
-_CANONICAL_CREDENTIAL_DIR_ENV = "PADIEM_AGENT_CREDENTIAL_DIR"
 _TARGET_ENV = "PADIEM_CONNECTOR_OPERATOR_WSS_TARGET"
 _ACCEPTANCE_HOST = "connector-acceptance.padiem.net"
 _NORMAL_HOST = "chat.padiem.net"
@@ -110,10 +111,18 @@ async def enroll_via_operator_wss_review(
         from .credential_install import LocalStoreCredentialReceiver
         from .review_wss_transport import run_review_only_wss_pairing
 
+        protection = WindowsDpapiProtectedDataPort()
         store = ProtectedFileDeviceCredentialStore(
-            base_dir=root, protected_data=WindowsDpapiProtectedDataPort(),
+            base_dir=root, protected_data=protection,
         )
         receiver = LocalStoreCredentialReceiver(store=store)
+        # The SAME canonical binding store, on the SAME canonical credential
+        # directory and the SAME current-user DPAPI port: the enrollment makes
+        # the binding durable there before publishing, so the Resident's own
+        # resume path finds it after a restart without a new pairing code.
+        binding_store = canonical_binding_store(
+            base_dir=configured, protected_data=protection,
+        )
     except (ImportError, RuntimeError, ValueError, OSError) as exc:
         raise DeviceSessionRefused("canonical_protected_store_unavailable") from exc
 
@@ -124,4 +133,5 @@ async def enroll_via_operator_wss_review(
         pairing_code=pairing_code,
         source_test_authorized=True,
         acceptance=(target_host == _ACCEPTANCE_HOST),
+        binding_store=binding_store,
     )

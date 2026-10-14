@@ -19,6 +19,8 @@ from datetime import datetime, timezone
 import hashlib
 import hmac
 import json
+import os
+from pathlib import Path
 import re
 from typing import Any, Callable, Protocol
 
@@ -32,6 +34,13 @@ from dataclasses import replace
 
 WSS_DEVICE_TRANSPORT_PRODUCTION_WIRED = False
 WSS_DEVICE_ENROLLMENT_PRODUCTION_ENABLED = False
+#: The existing canonical protected binding store (kagent) is what makes a
+#: registered PC restartable without re-registration. Enrollment does not own a
+#: second store: it reuses that one or fails closed.
+CANONICAL_BINDING_STORE_REUSED = True
+BINDING_PERSISTED_BEFORE_ENROLLMENT_PUBLISH = True
+#: The canonical protected credential directory the Resident itself resumes from.
+_CANONICAL_CREDENTIAL_DIR_ENV = "PADIEM_AGENT_CREDENTIAL_DIR"
 MAX_FRAME_CHARS = 8192
 MAX_CREDENTIAL_BYTES = 4096
 FRAME_TIMEOUT_SECONDS = 10.0
@@ -64,7 +73,15 @@ class TrustedDeviceTls(Protocol):
 
 @dataclass(frozen=True)
 class DeviceSessionResult:
-    """Receipt after a verified terminal frame, NOT a persisted enrollment."""
+    """Receipt after a verified terminal frame, NOT a persisted enrollment.
+
+    ``canonical_binding`` is the ONE canonical ``kagent.local_agent_pairing``
+    DeviceBinding this session installed the credential under. It is carried out
+    of the session for exactly one reason: the same binding must be made durable
+    in the existing protected binding store *before* any enrollment record is
+    published, so a restarted PC can resume instead of refusing. It is a
+    bounded, non-secret reference set — never the credential.
+    """
 
     device_id: str
     binding_ref: str
@@ -75,6 +92,7 @@ class DeviceSessionResult:
     lifecycle: str = "paired_offline"
     local_record_committed: bool = False
     online: bool = False
+    canonical_binding: Any | None = None
 
 
 def _pairs(items: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -320,6 +338,8 @@ async def run_review_only_device_session(
             account_ref=binding["account_ref"], workspace_ref=binding["workspace_ref"],
             credential_generation=binding["credential_generation"],
             credential_expires_at=expiry,
+            # The exact canonical binding the credential was installed under.
+            canonical_binding=canonical_binding,
         )
     except DeviceSessionRefused:
         raise
@@ -333,11 +353,83 @@ async def run_review_only_device_session(
 
 
 
+def canonical_binding_store(*, base_dir: str, protected_data: Any | None = None) -> Any:
+    """The ONE existing protected binding store, or a bounded refusal.
+
+    ``kagent.local_agent_device_binding_store.ProtectedDeviceBindingStore`` is
+    the canonical durable binding record, protected by the same current-user
+    DPAPI port as the credential. The Connector reuses it instead of owning a
+    second store or a plaintext binding file, and a machine where the canonical
+    Agent package is not installed fails closed rather than publishing an
+    enrollment it cannot resume.
+    """
+    configured = base_dir.strip() if isinstance(base_dir, str) else ""
+    if not configured:
+        raise DeviceSessionRefused("canonical_credential_dir_unconfigured")
+    root = Path(configured).expanduser()
+    if not root.is_absolute() or root.is_symlink():
+        raise DeviceSessionRefused("canonical_credential_dir_unavailable")
+    try:
+        from kagent.local_agent_device_binding_store import ProtectedDeviceBindingStore
+        from kagent.local_agent_secure_transport import WindowsDpapiProtectedDataPort
+    except ImportError as exc:
+        raise DeviceSessionRefused("canonical_binding_store_not_installed") from exc
+    # Never a second protection mode: the canonical current-user DPAPI port, on
+    # the canonical credential directory the Resident itself resumes from.
+    protection = (
+        protected_data if protected_data is not None else WindowsDpapiProtectedDataPort()
+    )
+    return ProtectedDeviceBindingStore(base_dir=root, protected_data=protection)
+
+
+def resolve_canonical_binding_store() -> Any:
+    """Default store for the real path: the canonical credential directory."""
+    return canonical_binding_store(
+        base_dir=os.environ.get(_CANONICAL_CREDENTIAL_DIR_ENV, ""),
+    )
+
+
+def persist_and_verify_canonical_binding(
+    store: Any, *, binding: Any, now: datetime,
+) -> Any:
+    """Persist the binding and prove it restores, or refuse.
+
+    The save is followed by a *readback through the same store* and a full fact
+    comparison, because a record that cannot be rebuilt is not a binding a
+    restarted Resident could resume from — and an enrollment may never be
+    published on the strength of a write nobody verified.
+    """
+    if (store is None
+            or not callable(getattr(store, "save", None))
+            or not callable(getattr(store, "load", None))):
+        raise DeviceSessionRefused("canonical_binding_store_unavailable")
+    try:
+        store.save(binding=binding, now=now)
+    except Exception as exc:
+        raise DeviceSessionRefused("device_binding_not_durable") from exc
+    try:
+        resumed = store.load(device_id=binding.device_id, now=now)
+    except Exception as exc:
+        raise DeviceSessionRefused("device_binding_restore_refused") from exc
+    restored = getattr(resumed, "binding", None)
+    if (restored is None
+            or restored.binding_ref != binding.binding_ref
+            or restored.device_id != binding.device_id
+            or restored.account_ref != binding.account_ref
+            or restored.workspace_ref != binding.workspace_ref
+            or restored.credential_generation != binding.credential_generation
+            or restored.credential_ref != binding.credential_ref
+            or restored.credential_expires_at != binding.credential_expires_at):
+        raise DeviceSessionRefused("device_binding_restore_mismatch")
+    return resumed
+
+
 async def run_and_stage_review_only_device_enrollment(
     *, enrollment: ConnectorEnrollment, socket: DeviceTextSocket,
     trusted_tls: TrustedDeviceTls, receiver: ProtectedCredentialReceiverPort,
     challenge_id: str, pairing_code: str, now: datetime | None = None,
     binding_factory: Callable[..., Any] = canonical_kagent_binding_factory,
+    binding_store: Any | None = None,
 ) -> EnrollmentResult:
     """Preserve the existing stage-then-publish contract after WSS terminal.
 
@@ -370,6 +462,34 @@ async def run_and_stage_review_only_device_enrollment(
     if (delivery.device_id != current.device_id or delivery.online
         or delivery.local_record_committed or delivery.lifecycle != LIFECYCLE_PAIRED_OFFLINE):
         raise DeviceSessionRefused("device_terminal_receipt_invalid")
+    # #4139 STEP 4: the credential is durable and the server has confirmed its
+    # offline terminal, but the *binding* was still only in this process's
+    # memory — so a restarted PC had nothing to resume from. Make the same
+    # canonical binding durable in the existing protected binding store and
+    # prove it restores BEFORE the enrollment record is published. A store that
+    # cannot persist or cannot read back fails closed onto the existing
+    # reconciliation hold; the enrollment is never reported.
+    canonical_binding = delivery.canonical_binding
+    try:
+        if canonical_binding is None:
+            raise DeviceSessionRefused("device_canonical_binding_missing")
+        store = (
+            binding_store if binding_store is not None
+            else resolve_canonical_binding_store()
+        )
+        persist_and_verify_canonical_binding(
+            store, binding=canonical_binding, now=moment,
+        )
+    except DeviceSessionRefused as exc:
+        hold = EnrollmentPersistenceError(
+            recovery=plan_install_failure_recovery(revocation_confirmed=None),
+            challenge_id=challenge_id, device_id=current.device_id,
+            binding_ref=delivery.binding_ref, account_ref=delivery.account_ref,
+            workspace_ref=delivery.workspace_ref,
+            credential_generation=delivery.credential_generation,
+        )
+        enrollment._reconciliation_hold = hold.safe_dict()
+        raise hold from exc
     candidate = replace(current)
     candidate.binding_ref = delivery.binding_ref
     candidate.account_ref = delivery.account_ref

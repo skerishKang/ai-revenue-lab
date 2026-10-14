@@ -208,6 +208,7 @@ async def run_pending_pc_offer_and_enroll(
     owner_approval_open: Callable[[str], Any],
     binding_factory: Callable[..., Any] | None = None,
     acceptance: bool = False,
+    binding_store: Any | None = None,
 ) -> Any:
     """One socket, from pending offer through *existing* Windows DPAPI ACK."""
     from .device_wss_enrollment import (
@@ -227,6 +228,7 @@ async def run_pending_pc_offer_and_enroll(
             enrollment=enrollment, socket=socket, trusted_tls=trusted_tls,
             receiver=receiver, challenge_id=challenge, pairing_code=code,
             binding_factory=binding_factory or canonical_kagent_binding_factory,
+            binding_store=binding_store,
         )
     finally:
         # The canonical enrollment itself closes the socket on success/failure.

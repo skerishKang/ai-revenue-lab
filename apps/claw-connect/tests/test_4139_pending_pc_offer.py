@@ -242,7 +242,11 @@ def test_one_click_review_reuses_exact_preapproved_wss_socket(monkeypatch):
     monkeypatch.setattr(transport, "open_review_only_wss_socket", reviewed)
 
     async def same_socket(*, socket, trusted_tls, enrollment,
-                          receiver, owner_approval_open, acceptance=False):
+                          receiver, owner_approval_open, acceptance=False,
+                          binding_store=None):
+        # #4139: the canonical protected binding store travels with the same
+        # one-click seam; an unconfigured caller passes none.
+        assert binding_store is None
         seen.append(("pipeline", socket, type(trusted_tls).__name__, acceptance))
         assert socket is expected
         assert enrollment is registration

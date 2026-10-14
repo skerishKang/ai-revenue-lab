@@ -54,6 +54,30 @@ class Store:
         return b"wrong" if self.corrupt_readback else self.saved[-1][1]
 
 
+class FakeBindingStore:
+    """The composition's canonical protected binding store, faked for speed.
+
+    The real store is exercised in test_4139_registration_binding_persistence;
+    here only the save-then-readback-before-publish ordering matters.
+    """
+
+    def __init__(self, *, corrupt=False, fail=False):
+        self.saved = []
+        self.corrupt = corrupt
+        self.fail = fail
+
+    def save(self, *, binding, now):
+        if self.fail:
+            raise OSError("binding disk")
+        self.saved.append(binding)
+
+    def load(self, *, device_id, now):
+        restored = SimpleNamespace(**vars(self.saved[-1]))
+        if self.corrupt:
+            restored.binding_ref = "pairing-binding.other"
+        return SimpleNamespace(binding=restored)
+
+
 class Socket:
     def __init__(self, *, terminal="paired_offline", corrupted=None):
         self.sent = []
@@ -225,6 +249,7 @@ def test_terminal_success_is_durably_staged_without_claiming_online(tmp_path):
         receiver=LocalStoreCredentialReceiver(store=Store(), now_factory=lambda: NOW),
         challenge_id=CID, pairing_code=CODE, now=NOW,
         binding_factory=_fake_binding,
+        binding_store=FakeBindingStore(),
     ))
     assert result.binding_ref == BINDING["binding_ref"]
     assert enrollment.record().binding_ref == result.binding_ref
@@ -244,6 +269,7 @@ def test_terminal_success_is_durably_staged_without_claiming_online(tmp_path):
             receiver=LocalStoreCredentialReceiver(store=Store()),
             challenge_id=CID, pairing_code=CODE, now=NOW,
             binding_factory=_fake_binding,
+            binding_store=FakeBindingStore(),
         ))
     assert repeat.sent == []
 
@@ -260,6 +286,7 @@ def test_failed_stage_yields_exact_existing_security_hold_and_no_enrollment(tmp_
             receiver=LocalStoreCredentialReceiver(store=Store(), now_factory=lambda: NOW),
             challenge_id=CID, pairing_code=CODE, now=NOW,
             binding_factory=_fake_binding,
+            binding_store=FakeBindingStore(),
         ))
     assert exc.value.recovery.action == "security_hold_reconciliation_required"
     assert exc.value.recovery.retry_same_challenge is False
@@ -278,6 +305,7 @@ def test_failed_stage_yields_exact_existing_security_hold_and_no_enrollment(tmp_
             receiver=LocalStoreCredentialReceiver(store=Store()),
             challenge_id=CID, pairing_code=CODE, now=NOW,
             binding_factory=_fake_binding,
+            binding_store=FakeBindingStore(),
         ))
     assert socket.sent == []
 
