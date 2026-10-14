@@ -495,13 +495,17 @@ class CloudflareControlPlaneIdentityAuthority:
         *,
         tenant_id: str,
         canonical_subject_id: str,
-    ) -> None:
+        role: str | None = None,
+    ) -> TenantMembership:
+        if role is not None and role != TenantMembershipRole.OWNER.value:
+            raise ValueError("only the canonical OWNER role may be assigned here")
         wire = _dict(
             await self._rpc(
                 "assign_tenant_membership",
                 {
                     "tenant_id": tenant_id,
                     "canonical_subject_id": canonical_subject_id,
+                    **({"role": role} if role is not None else {}),
                 },
                 "membership",
             )
@@ -536,6 +540,7 @@ class CloudflareControlPlaneIdentityAuthority:
                 "control_plane_rpc_invalid",
                 "Canonical tenant membership does not match the request.",
             )
+        return membership
 
     async def install_connector_enrollment_schema(self, *, migration_id: str) -> dict[str, Any]:
         wire = _closed(
