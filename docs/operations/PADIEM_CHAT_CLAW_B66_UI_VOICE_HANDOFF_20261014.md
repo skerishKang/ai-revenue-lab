@@ -1,3 +1,16 @@
+<!-- CENTRAL_UI_VOICE_LIVE_STATUS_20261014_START -->
+## 현재 진행 상태 및 소유권 갱신 — 2026-10-14 KST
+
+> 아래 'Phase A를 아직 구현하지 않음/LOCAL2가 우선 UI를 편집 중'이라는 문구는 **그 당시의 이력**이다. 더 이상 병합된 UI 전체를 재구현하거나 다른 팀의 UI 작업을 막는 현재 지시가 아니다.
+
+- **Claw UI 구조:** [#4650](https://github.com/skerishKang/ai-revenue-lab/pull/4650)과 [#4653](https://github.com/skerishKang/ai-revenue-lab/pull/4653) **병합 완료**. [#4488](https://github.com/skerishKang/ai-revenue-lab/issues/4488)에서 production Worker/정적 제공 검증 기록됨. 기존 구조 UI 소유권 해제 → 별도 팀은 **최신 main**에서 UI 수정 가능. 남은 것은 승인 대기·승인된 메모리·재로그인 등 **실제 데이터가 필요한 운영 수용 검증**이다.
+- **음성:** 공통 STT 서버 소스 [#4663](https://github.com/skerishKang/ai-revenue-lab/pull/4663) **병합**, 하지만 STT 기능 기본 OFF·CP voice 권한 발급/실제 binding/제품 마이크 실사용 **미완료**. [#4643](https://github.com/skerishKang/ai-revenue-lab/issues/4643)이 유일한 Chat·Claw STT 추적 이슈; B66 [#3404](https://github.com/skerishKang/ai-revenue-lab/issues/3404)는 별도 입력 UI 소관.
+- **B66:** [#4661](https://github.com/skerishKang/ai-revenue-lab/pull/4661)은 제품 구분 저장+안전 Markdown **병합**; [#4672](https://github.com/skerishKang/ai-revenue-lab/pull/4672)는 고객 화면 실제 연결 및 재시도 **Draft**. LOCAL2가 유일한 `easy-mode.js`/B66 고객 화면 소유자이므로 다른 로컬은 같은 파일을 동시 수정하지 않는다. 새 HEAD `b7b80b43`에 보완 소스와 신규 동시성 테스트가 반영됐으나 CI/교차 isolate 비용 보호는 별도 판정. 고객 운영 출시 수락은 [#4316](https://github.com/skerishKang/ai-revenue-lab/issues/4316).
+- **병렬 지침:** CLAW2는 Claw UI 데이터 상태/키보드 테스트(별도 테스트 파일), LOCAL3는 CP STT 권한 계약(제품 `app.js` 불변), LOCAL1은 Claw SSE 오프라인 하네스(실 모델 POST 금지), LOCAL4는 B66 QuoteCore/SQLite 소스 검증(`easy-mode.js` 불변), LOCAL5는 B14 모델 정책 최종 호출 경로 분석. LOCAL6의 Windows Connector 브랜치 [#4572](https://github.com/skerishKang/ai-revenue-lab/pull/4572)와 파일 영역 충돌 금지.
+- **정확한 기술 상태**는 [개발 스냅샷 상단의 최신 정정](PADIEM_CENTRAL_CTO_DEVELOPMENT_SNAPSHOT_20261014.md) 및 각 이슈를 우선한다. 이 문서의 과거 옵션 A/A/A 및 'LOCAL2 먼저'는 당시 수행 순서 기록이다.
+
+<!-- CENTRAL_UI_VOICE_LIVE_STATUS_20261014_END -->
+
 # PADIEM Chat·Claw·B66 — UI 통일 및 음성 인식 개발 인수인계 (2026-10-14 KST)
 
 > **성격:** 공개 가능한 기술 작업 조율 문서. 새로운 사업방침·모델 승인·운영 배포 허가가 아니다.
