@@ -3163,6 +3163,7 @@
   // read-only #2830 projection; it never becomes a connector/OAuth authority.
   const connectorsNavButton = document.getElementById("connectorsNavButton");
   const connectorsDialog = document.getElementById("connectorsDialog");
+  const connectorDisconnectDialog = document.getElementById("connectorDisconnectDialog");
   const connectorsDialogClose = document.getElementById("connectorsDialogClose");
   const connectorsLoading = document.getElementById("connectorsLoading");
   const connectorsError = document.getElementById("connectorsError");
@@ -3679,6 +3680,25 @@
 
   const connectorReturnSearch = typeof window.location.search === "string" ? window.location.search : "";
   const connectorReturnParts = connectorReturnSearch.replace(/^\?/, "").split("&").filter(Boolean);
+  // #4488: the ON/OFF toggle wiring lives in its own module so the click,
+  // preparing-card and disconnect-confirm rules stay unit-testable.
+  const connectorCards = window.PadiemConnectorCapabilityCards;
+  if (connectorCards && typeof connectorCards.bindConnectorToggles === "function") {
+    const startToggles = () => connectorCards.bindConnectorToggles({
+      scope: document,
+      disconnectDialog: connectorDisconnectDialog,
+      onConnect: (connectorId) => {
+        const target = connectorsDialog.querySelector(`[data-google-connector-connect="${connectorId}"]`);
+        if (target) void target.click();
+      },
+      onDisconnect: (connectorId) => {
+        // Local-only: no production DB, credential or Worker change.
+        document.dispatchEvent(new CustomEvent("padiem:connector-disconnected", { detail: { connectorId } }));
+      },
+    });
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", startToggles);
+    else startToggles();
+  }
   const connectorReturned = connectorReturnParts.some((part) => part === "google_connector=connected");
   if (connectorReturned) {
     googleCalendarReadActivationAfterConnectReturn = true;
