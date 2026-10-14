@@ -44,6 +44,7 @@
     let invalidated = false;
     let seen = new Set();
     let pending = null;
+    let compositionActive = false;
 
     function report() {
       onStateChange({
@@ -132,6 +133,10 @@
       if (seen.has(key)) {
         return { ok: false, reason: "duplicate-final", submitted: false };
       }
+      if (compositionActive) {
+        pending = { key: key, text: text };
+        return { ok: false, reason: "blocked-by-composition", submitted: false };
+      }
       if (getInFlight()) {
         pending = { key: key, text: text };
         return { ok: false, reason: "blocked-by-in-flight", submitted: false };
@@ -178,6 +183,8 @@
         };
       },
       setMode: setMode,
+      setCompositionActive: function (value) { compositionActive = value === true; report(); },
+      endComposition: function () { compositionActive = false; return flushPending(); },
       setAccountKey: setAccountKey,
       invalidate: invalidate,
       cancel: cancel,
