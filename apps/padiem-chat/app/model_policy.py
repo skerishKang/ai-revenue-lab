@@ -9,6 +9,8 @@ from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
     ProductTierRoutesError,
     active_route_for,
+    FREE_PRIMARY_B14_MODEL_ID,
+    FREE_FALLBACK_B14_MODEL_ID,
 )
 from padiem_control_plane.product_tier_routes import (
     MAX_HOLD_MODEL_ID as _CONTRACT_MAX_HOLD_MODEL_ID,
@@ -48,11 +50,11 @@ def _contract_executable_ids() -> frozenset[str]:
     return frozenset(model_ids)
 
 
-DEFAULT_CHAT_PROFILE = "low"
+DEFAULT_CHAT_PROFILE = "free"
 # #4317: Owner's Free first-round choice is a B62 product-specific route.
 # The legacy neutral Plus/Pro/Max declaration is shared with Claw, and MUST
 # NOT be implicitly promoted by Chat's Free assignment.
-FREE_B14_MODEL_ID = "google/gemini-3.1-flash-lite"
+FREE_B14_MODEL_ID = FREE_PRIMARY_B14_MODEL_ID
 PADIEM_FREE = "Padiem Free"
 AUTO_B14_MODEL_ID = "b14/auto"
 
@@ -107,6 +109,7 @@ KILO_B14_MODEL_ID = MEDIUM_B14_MODEL_ID
 UNASSIGNED_B14_MODEL_ID = "padiem-profile/medium-unassigned"
 
 PROFILE_MODEL_IDS: dict[str, str] = {
+    "free": FREE_B14_MODEL_ID,
     "low": LOW_B14_MODEL_ID,
     "medium": MEDIUM_B14_MODEL_ID,
     "high": HIGH_B14_MODEL_ID,
@@ -155,7 +158,8 @@ MODEL_ALIASES: dict[str, str] = {
 # executable capabilities. The future Plus successor will add capabilities only
 # after its route is explicitly selected and proven.
 MODEL_CAPABILITIES: dict[str, frozenset[str]] = {
-    FREE_B14_MODEL_ID: frozenset({"chat", "image"}),
+    FREE_B14_MODEL_ID: frozenset({"chat", "coding"}),
+    FREE_FALLBACK_B14_MODEL_ID: frozenset({"chat", "image"}),
     LOW_B14_MODEL_ID: frozenset(),
     MEDIUM_B14_MODEL_ID: frozenset(),
     HIGH_B14_MODEL_ID: frozenset(),

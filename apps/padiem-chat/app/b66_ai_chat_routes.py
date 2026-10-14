@@ -81,6 +81,7 @@ from .b66_search_boundary import _envelope, plan_b66_search
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 from .history import HistoryContextIncomplete, validate_conversation_id
 from .request_contract import MAX_BROWSER_BODY_BYTES
+from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID
 
 _ALLOWED_FIELDS = {"model_id", "messages", "reasoning_level", "conversation_id", "turn_token"}
 
@@ -256,7 +257,7 @@ async def b66_ai_chat(request: Request) -> JSONResponse:
         return data
     if set(data) - _ALLOWED_FIELDS:
         return _error(400, "unsupported_field", "지원하지 않는 대화 필드입니다.")
-    model_id = data.get("model_id")
+    model_id = data.get("model_id") or FREE_PRIMARY_B14_MODEL_ID
     messages = data.get("messages")
     reasoning_level = data.get("reasoning_level")
     conversation_id = data.get("conversation_id")

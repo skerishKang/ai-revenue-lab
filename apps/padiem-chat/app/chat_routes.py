@@ -31,7 +31,7 @@ from .history import (
     build_project_context,
 )
 from .history import PRODUCT_SCOPE_CHAT
-from .model_policy import model_supports, request_tier_context
+from .model_policy import model_supports, request_tier_context, FREE_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID
 from .project_files import ProjectFileStore
 from .public_chat import public_chat_result
 from .request_contract import (
@@ -438,6 +438,8 @@ async def api_chat(request: Request) -> JSONResponse:
         return JSONResponse({"error": {"code": "invalid_request", "message": message}}, status_code=422)
 
     settings: Settings = request.app.state.settings
+    if selected_model == FREE_B14_MODEL_ID and any(isinstance(item, ImageAttachment) for item in attachments):
+        selected_model = FREE_FALLBACK_B14_MODEL_ID
     if settings.runtime_mode == "b14" and any(isinstance(item, ImageAttachment) for item in attachments):
         if not model_supports(selected_model, "image"):
             return JSONResponse(

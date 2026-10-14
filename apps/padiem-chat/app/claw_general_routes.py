@@ -443,7 +443,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     if text_error is not None:
         return text_error
 
-    raw_tier = data.get("tier", "plus")
+    raw_tier = data.get("tier", "free")
     if not isinstance(raw_tier, str):
         return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
     product_tier = _BROWSER_TIER_MAP.get(raw_tier.strip().lower())

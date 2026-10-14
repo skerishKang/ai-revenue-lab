@@ -157,6 +157,7 @@ _ACTION_MAP: dict[str, ManualIntakeAction] = {
 }
 
 _BROWSER_TIER_MAP: dict[str, ProductTierLabel] = {
+    "free": ProductTierLabel.FREE,
     "plus": ProductTierLabel.PLUS,
     "pro": ProductTierLabel.PRO,
     "max": ProductTierLabel.MAX,

@@ -46,7 +46,11 @@ _FORBIDDEN_VISIBLE_TOKENS = ("auto", "fallback")
 class ProductTierRoutesError(ValueError):
     """Raised when the contract violates the #2085/#2099 policy (fail closed)."""
 
+FREE_PRIMARY_B14_MODEL_ID = "opencode-go/cat-jam-free"
+FREE_FALLBACK_B14_MODEL_ID = "google/gemini-3.1-flash-lite"
+
 class ProductTierLabel(str, Enum):
+    FREE = "Padiem Free"
     PLUS = "Padiem Plus"
     PRO = "Padiem Pro"
     MAX = "Padiem Max"
@@ -208,6 +212,17 @@ def validate_product_tier_routes(tiers: tuple[ProductTierDefinition, ...]) -> No
             )
 
 PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
+    ProductTierDefinition(
+        label=ProductTierLabel.FREE,
+        routes=(ProductTierRoute(
+            route_id="free.cat-jam.v1", status=ProductRouteStatus.EXECUTABLE,
+            model_family="cat-jam", provider_id="opencode-go",
+            model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="cat-jam-free",
+            credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
+            credential_binding="PADIEM_OPENCODE_API_KEY",
+            evidence="B14 live Cat Jam response and owner Free model decision 2026-10-15.",
+        ),),
+    ),
     ProductTierDefinition(
         label=ProductTierLabel.PLUS,
         routes=(
