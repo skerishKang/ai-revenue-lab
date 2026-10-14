@@ -210,6 +210,16 @@ function padiemTarget(url, method) {
     return "/api/b66/guided-draft";
   }
 
+  if (path === "/api/padiem/b66/guided-conversations" && method === "GET") {
+    return "/api/b66/guided-conversations";
+  }
+  const guidedHistoryPrefix = "/api/padiem/b66/guided-conversations/";
+  if (path.startsWith(guidedHistoryPrefix) && (method === "GET" || method === "DELETE")) {
+    const id = path.slice(guidedHistoryPrefix.length);
+    if (!/^gdt_[a-f0-9]{32}$/.test(id)) return null;
+    return "/api/b66/guided-conversations/" + id;
+  }
+
   if (path === "/api/padiem/b66/quotes" && (method === "GET" || method === "POST")) {
     if (method === "POST") return "/api/b66/quotes";
     const raw = url.searchParams.get("limit");
