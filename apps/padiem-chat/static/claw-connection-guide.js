@@ -1,0 +1,159 @@
+/* Small, shared-shell connection guidance. Does not mint connection state.
+ * Capture only the Claw home status switch; existing Connectors and verified
+ * disconnect handlers remain the authority for real operations.
+ */
+(() => {
+  "use strict";
+  const shell = document.querySelector(".app-shell");
+  const dialog = document.getElementById("clawConnectionGuide");
+  const title = document.getElementById("clawConnectionGuideTitle");
+  const description = document.getElementById("clawConnectionGuideDescription");
+  const hint = document.getElementById("clawConnectionGuideHint");
+  const action = document.getElementById("clawConnectionGuideAction");
+  const eyebrow = document.getElementById("clawConnectionGuideEyebrow");
+  if (!shell || !dialog || !title || !description || !hint || !action || !eyebrow) return;
+
+  const ids = ["pc", "drive", "github"];
+  const cardIds = {pc:"clawComputerWorkspace", drive:"clawDriveWorkspace", github:"clawGithubWorkspace"};
+  const labels = {pc:"Windows PC", drive:"Google Drive", github:"GitHub"};
+  const isEnglish = () => document.documentElement.lang === "en";
+  const tr = (ko, en) => isEnglish() ? en : ko;
+  const home = () => shell.dataset.state === "claw" &&
+    document.getElementById("clawWorkspace")?.dataset.view === "general";
+  const signedIn = () => document.querySelector(".sidebar-account")?.dataset.accountState === "signed_in";
+  let source = null, intent = "manage", bypass = false;
+
+  function details(id, state) {
+    if (!signedIn()) return {
+      headline: tr("먼저 PADIEM에 로그인해 주세요", "Sign in to PADIEM first"),
+      copy: tr("한 번 로그인하면 CLAW에서 연결을 관리할 수 있습니다.",
+               "Your PADIEM account manages your CLAW connections."),
+      foot: tr("외부 계정이나 PC 프로그램에 별도 PADIEM 로그인이 필요하지 않습니다.",
+               "No second PADIEM sign-in is needed inside the connector."),
+      button: tr("PADIEM 로그인", "Sign in"), intent: "login"
+    };
+    if (state === "unknown" && id === "pc") return {
+      headline: tr("컴퓨터 연결 상태를 확인해 주세요", "Check this computer"),
+      copy: tr("서버에서 PC 상태를 확인하지 못했습니다. 아직 설치 전이라면 Connector를 설치해 주세요.",
+               "The PC status is unavailable. Install Connector if you have not already."),
+      foot: tr("설치 후 자동 실행·연결됩니다. 이미 설치했다면 실행 상태를 확인해 주세요.",
+               "It starts and connects automatically after install. If installed, check whether it is running."),
+      button: tr("설치·연결 안내", "Installation & connection"), intent: "manage"
+    };
+    if (state === "unknown") return {
+      headline: tr("연결 상태를 확인할 수 없어요", "Connection status unavailable"),
+      copy: tr("아직 서버에서 연결 여부를 확인하지 못했습니다. 연결 설정에서 상태를 확인해 주세요.",
+               "The server has not confirmed this connection. Check its settings."),
+      foot: tr("확인 전에는 임의로 ON이나 OFF로 바꾸지 않습니다.",
+               "ON and OFF are not assumed without verification."),
+      button: tr("연결 설정 보기", "View connection settings"), intent: "manage"
+    };
+    if (state === "on") return id === "drive" ? {
+      headline: tr("Google Drive가 연결되어 있어요", "Google Drive is connected"),
+      copy: tr("현재 파일 연결을 사용할 수 있습니다. 연결 해제하면 다시 승인해야 합니다.",
+               "Drive access is available. Disconnecting requires authorization again."),
+      foot: tr("잠시 사용 중지하는 기능은 별도로 제공될 예정입니다.",
+               "A separate temporary pause will be available later."),
+      button: tr("연결 해제", "Disconnect"), intent: "disconnect-drive"
+    } : {
+      headline: tr(labels[id] + " 연결됨", labels[id] + " connected"),
+      copy: tr(id === "pc" ?
+        "설치된 Connector는 기본적으로 자동 실행하고 다시 연결합니다." :
+        "GitHub 연결이 확인됐습니다. 연결 관리에서 권한을 확인할 수 있습니다.",
+        id === "pc" ? "The installed Connector starts and reconnects automatically." :
+        "GitHub access is verified. Manage permissions in connection settings."),
+      foot: tr("연결을 끄는 기능은 실제 서버 지원 상태에 따라 제공됩니다.",
+               "Pause depends on the available server controls."),
+      button: tr("연결 관리", "Manage connection"), intent: "manage"
+    };
+    if (id === "pc") return {
+      headline: tr("컴퓨터에 Connector를 설치해 주세요", "Install PADIEM Connector"),
+      copy: tr("설치가 끝나면 자동으로 실행되어 CLAW와 연결됩니다.",
+               "Once installed, Connector starts and connects to CLAW automatically."),
+      foot: tr("별도 로그인이나 '프로그램 켜기' 단계는 필요하지 않습니다. PC가 꺼져 있으면 재연결을 기다립니다.",
+               "No extra sign-in or start step. Reconnection resumes when the PC returns."),
+      button: tr("설치 안내 보기", "View installation"), intent: "manage"
+    };
+    if (id === "drive") return {
+      headline: tr("Google Drive를 연결해 주세요", "Connect Google Drive"),
+      copy: tr("Google 계정으로 로그인하고 드라이브 접근을 승인해 주세요.",
+               "Sign in with Google and authorize Drive access."),
+      foot: tr("연결이 실제 확인된 후에만 ON으로 바뀝니다.",
+               "ON appears only after the connection is verified."),
+      button: tr("Google Drive 연결", "Connect Google Drive"), intent: "connect-drive"
+    };
+    return {
+      headline: tr("GitHub를 연결해 주세요", "Connect GitHub"),
+      copy: tr("GitHub 계정으로 연결하고 사용할 저장소 접근을 허용해 주세요.",
+               "Connect your GitHub account and authorize repository access."),
+      foot: tr("저장소는 기본적으로 전체를 선택하며, 원하면 일부만 제한할 수 있습니다. GitHub 인증 기능은 연결 준비 중입니다.",
+               "All repositories is the default; you may restrict it. GitHub sign-in integration is being prepared."),
+      button: tr("GitHub 연결 설정", "GitHub connection settings"), intent: "manage"
+    };
+  }
+
+  function open(button) {
+    const id = button.dataset.clawConnection;
+    if (!ids.includes(id) || !home()) return;
+    source = button;
+    const state = ["on","off","unknown"].includes(button.dataset.connectionState)
+      ? button.dataset.connectionState : "unknown";
+    const copy = details(id, state);
+    eyebrow.textContent = labels[id] + " · " + (state === "unknown" ? tr("상태 확인", "Status") : state.toUpperCase());
+    title.textContent = copy.headline;
+    description.textContent = copy.copy;
+    hint.textContent = copy.foot;
+    action.textContent = copy.button;
+    const cancel = dialog.querySelector(".claw-connection-guide-cancel");
+    if (cancel) cancel.textContent = tr("나중에", "Later");
+    intent = copy.intent;
+    dialog.dataset.service = id;
+    if (typeof dialog.showModal === "function" && !dialog.open) dialog.showModal();
+  }
+
+  document.addEventListener("click", event => {
+    const button = event.target?.closest?.("[data-claw-connection]");
+    if (bypass || !button || !home()) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    open(button);
+  }, true);
+
+  dialog.querySelector("[data-claw-guide-close]")?.addEventListener("click", () => dialog.close());
+  dialog.addEventListener("click", event => {
+    if (event.target === dialog) dialog.close();
+  });
+  action.addEventListener("click", () => {
+    if (!source) return;
+    const button = source;
+    const id = button.dataset.clawConnection;
+    dialog.close();
+    if (intent === "disconnect-drive") {
+      // Delegate to the existing owner-authenticated Drive revocation handler.
+      bypass = true;
+      try { button.click(); } finally { bypass = false; }
+      return;
+    }
+    if (intent === "login") {
+      const login = document.getElementById("loginButton");
+      if (login && !login.disabled && !login.hidden) login.click();
+      else {
+        const auth = document.getElementById("authDialog");
+        if (auth && !auth.open && typeof auth.showModal === "function") auth.showModal();
+      }
+      return;
+    }
+    if (intent === "connect-drive") {
+      // Existing product-owned OAuth ticket flow, only when the canonical
+      // workspace projection has offered its real connect control.
+      const offered = document.querySelector('[data-google-connector-connect="google-drive"]');
+      if (offered && !offered.hidden && !offered.disabled) {
+        offered.click();
+        return;
+      }
+    }
+    // Otherwise reuse the existing Connectors card, never an invented installer/OAuth URL.
+    document.getElementById(cardIds[id])?.click();
+  });
+  dialog.addEventListener("close", () => { source?.focus({preventScroll:true}); source = null; });
+})();

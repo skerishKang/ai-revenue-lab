@@ -222,6 +222,7 @@
 }
 .starter-grid .document-formats-toggle {
   position: absolute;
+  min-height: 24px; /* Maintain the 145px card; meet the browser touch-target check. */
   z-index: 2;
   right: 11px;
   top: 10px;
