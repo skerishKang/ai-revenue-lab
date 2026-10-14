@@ -258,6 +258,11 @@ jobs:
       oauth_edge_worker_state: ${{ steps.inspect.outputs.oauth_edge_worker_state }}
       b62_identity_binding_state: ${{ steps.inspect.outputs.b62_identity_binding_state }}
     steps:
+      - name: Checkout exact dispatch source for served-version resolver
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          persist-credentials: false
       - name: Read-only Cloudflare collision and topology audit
         id: inspect
         shell: bash
