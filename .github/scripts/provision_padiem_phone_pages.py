@@ -125,7 +125,7 @@ def main() -> int:
     # Git-linked project may start initial Production build itself. Merely
     # observe it; never dispatch a source deployment or retry a failed build.
     last = None
-    for _ in range(12):
+    for attempt in range(6):
         _, lookup = api_request(account, token, "GET", "/" + PROJECT)
         if lookup.get("success") is not True:
             raise RuntimeError("git_connected_project_readback_failed")
@@ -135,8 +135,33 @@ def main() -> int:
         state = (deploy.get("latest_stage") or {}).get("status") or deploy.get("status") or "NOT_YET_VISIBLE"
         deployment_id = deploy.get("id") or "UNKNOWN"
         url = deploy.get("url") or ""
-        if state != last:
+        if state != last or attempt in (0, 5):
             print(f"AUTO_DEPLOY_STAGE={state} DEPLOY_ID={deployment_id}", flush=True)
+            stage_trace = [
+                (s.get("name"), s.get("status"))
+                for s in (deploy.get("stages") or []) if isinstance(s, dict)
+            ]
+            print("AUTO_DEPLOY_STAGES=" + repr(stage_trace), flush=True)
+            print("AUTO_DEPLOY_SKIP_REASON=" + str(deploy.get("skip_reason")), flush=True)
+            http_status, deployments = api_request(
+                account, token, "GET", "/" + PROJECT + "/deployments?per_page=5"
+            )
+            if http_status == 200 and deployments.get("success") is True:
+                listing = deployments.get("result") or []
+                if not isinstance(listing, list):
+                    listing = []
+                brief = []
+                for item in listing[:3]:
+                    source = item.get("deployment_trigger") or {}
+                    brief.append({
+                        "id": item.get("id"),
+                        "env": item.get("environment"),
+                        "source_type": source.get("type"),
+                        "commit": (source.get("metadata") or {}).get("commit_hash"),
+                        "state": (item.get("latest_stage") or {}).get("status"),
+                        "stages": [(s.get("name"), s.get("status")) for s in item.get("stages", [])],
+                    })
+                print("LATEST_DEPLOYMENT_EVIDENCE=" + repr(brief), flush=True)
             last = state
         if state == "success" and url.startswith("https://"):
             print(f"AUTO_DEPLOY_RESULT=SUCCESS URL={url}", flush=True)
