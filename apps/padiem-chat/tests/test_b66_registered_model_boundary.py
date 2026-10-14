@@ -250,8 +250,10 @@ def test_b14_explicit_quote_route_calls_core_once_without_b62_default(monkeypatc
     from app.config import Settings
     client = B14Client(Settings(runtime_mode="b14", b14_base_url="https://b14.internal", live_enabled=True))
     calls = []
-    async def fake_complete(messages, *, skill, model, additional_system_context, max_retries, before_dispatch):
+    async def fake_complete(messages, *, skill, model, additional_system_context, max_retries, before_dispatch, completed_response_budget_bytes):
+        from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
         assert max_retries == 0
+        assert completed_response_budget_bytes == MAX_CONFIGURED_B14_RESPONSE_BYTES
         assert callable(before_dispatch)
         calls.append((skill.task_type,model))
         return {"answer":"{}","route":{"mode":"manual","model":model}}

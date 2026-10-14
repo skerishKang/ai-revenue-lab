@@ -10,7 +10,7 @@ import sys
 import httpx
 import pytest
 
-from app.b14_client import B14Client, ChatRuntimeError
+from app.b14_client import B14Client, ChatRuntimeError, MAX_ADDITIONAL_SYSTEM_CONTEXT_BYTES
 from app.b66_registered_model_boundary import (
     B14QuoteExactModelExecutor,
     B66ModelRouteError,
@@ -92,7 +92,7 @@ def test_exact_quote_off_guard_has_zero_dispatch_before_registry_and_refunds(run
     assert store.bucket_refund_calls == 3
 
 
-@pytest.mark.parametrize("failure", ["binding", "model", "messages", "context", "core_validation", "serialization"])
+@pytest.mark.parametrize("failure", ["binding", "model", "messages", "context", "invalid_shape", "serialization"])
 def test_exact_quote_local_failure_refunds_before_any_service_post(failure):
     binding = Binding()
     store = RefundableMemoryStore()
@@ -106,9 +106,9 @@ def test_exact_quote_local_failure_refunds_before_any_service_post(failure):
     elif failure == "messages":
         kwargs["messages"] = [{"role": "assistant", "content": "invalid"}]
     elif failure == "context":
-        kwargs["additional_system_context"] = "x" * 14_001
-    elif failure == "core_validation":
-        kwargs["messages"] = [{"role": "user", "content": "x" * 100_001}]
+        kwargs["additional_system_context"] = "x" * (MAX_ADDITIONAL_SYSTEM_CONTEXT_BYTES + 1)
+    elif failure == "invalid_shape":
+        kwargs["messages"] = [{"role": "user", "content": "valid", "unsupported_field": "reject"}]
     elif failure == "serialization":
         kwargs["messages"] = [{"role": "user", "content": "\ud800"}]
 
@@ -166,7 +166,7 @@ def test_exact_quote_ambiguous_transport_failure_is_not_refunded():
     assert store.bucket_refund_calls == 0
 
 
-@pytest.mark.parametrize("failure", ["core_validation", "serialization", "transport_timeout"])
+@pytest.mark.parametrize("failure", ["invalid_shape", "serialization", "transport_timeout"])
 def test_direct_http_quote_receipt_is_consumed_only_after_serialization(failure):
     calls = []
     store = RefundableMemoryStore()
@@ -177,14 +177,14 @@ def test_direct_http_quote_receipt_is_consumed_only_after_serialization(failure)
 
     client = DispatchAwareB14Client(settings(), transport=httpx.MockTransport(transport))
     messages = MESSAGES
-    if failure == "core_validation":
-        messages = [{"role": "user", "content": "x" * 100_001}]
+    if failure == "invalid_shape":
+        messages = [{"role": "user", "content": "valid", "unsupported_field": "reject"}]
     elif failure == "serialization":
         messages = [{"role": "user", "content": "\ud800"}]
 
     async def run():
         await reserve(store)
-        expected_error = ValueError if failure == "core_validation" else ChatRuntimeError
+        expected_error = ChatRuntimeError
         with pytest.raises(expected_error):
             await client.complete_registered_quote_model(messages, model=MODEL)
         assert await _refund_active_reservation() is False
@@ -279,3 +279,56 @@ def test_other_product_core_request_keeps_existing_b14_retry_default():
         required_capabilities=("chat",), additional_system_context=None,
     )
     assert "max_retries" not in request.agent.model_policy
+
+
+
+def test_valid_large_b66_quote_completion_crosses_legacy_core_one_mib():
+    """One exact-model B66 completed quote must not hit Core's legacy 1MiB default.
+
+    This is a completed structured JSON memory budget, NOT a provider output
+    token cap. The general Chat/Core paths must retain their own bounds.
+    """
+    from padiem_ai_core.b14_execution import (
+        MAX_B14_RESPONSE_BYTES,
+        MAX_CONFIGURED_B14_RESPONSE_BYTES,
+    )
+
+    answer = "synthetic-long-quote-" + ("?" * (1_100_000))
+    payload = json.dumps({
+        "choices": [{"message": {"role": "assistant", "content": answer}}],
+        "business14": {"route_mode": "manual", "selected_model": MODEL},
+    }).encode()
+    assert MAX_B14_RESPONSE_BYTES < len(payload) < MAX_CONFIGURED_B14_RESPONSE_BYTES
+
+    class LongBinding:
+        def __init__(self):
+            self.calls = []
+        async def post_json(self, url, request):
+            self.calls.append((url, request))
+            return 200, payload
+
+    binding = LongBinding()
+    client = B14Client(settings(), service_transport=binding)
+    result = asyncio.run(client.complete_registered_quote_model(MESSAGES, model=MODEL))
+    assert result["answer"] == answer
+    assert len(binding.calls) == 1
+    assert binding.calls[0][1]["business14"]["max_retries"] == 0
+    # B66 and B62 completed clients now share B14's finite safe JSON budget;
+    # the old 1MiB default remains for non-completed/legacy Core compatibility.
+    assert client._completion_config().max_response_bytes == MAX_CONFIGURED_B14_RESPONSE_BYTES
+    assert client._config().max_response_bytes == MAX_B14_RESPONSE_BYTES
+
+
+def test_b66_quote_core_bound_stays_finite_for_oversize_completed_json():
+    from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
+
+    class OversizeBinding:
+        async def post_json(self, url, request):
+            return 200, b"z" * (MAX_CONFIGURED_B14_RESPONSE_BYTES + 1)
+
+    with pytest.raises(ChatRuntimeError) as caught:
+        asyncio.run(
+            B14Client(settings(), service_transport=OversizeBinding())
+            .complete_registered_quote_model(MESSAGES, model=MODEL)
+        )
+    assert caught.value.code == "upstream_response_too_large"

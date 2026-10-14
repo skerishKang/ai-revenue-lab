@@ -15,6 +15,7 @@ from padiem_ai_core.b14_execution import (
 )
 from padiem_ai_core.b14_streaming import B14StreamEvent
 from padiem_ai_core.contracts import AgentProfile, ErrorClass, RunStatus, UsageMetadata
+from padiem_ai_core.dispatch_preinstruction import PREINSTRUCTION_VERSION
 from padiem_ai_core.execution_runtime import ExecutionRuntimeError
 from padiem_ai_core.multimodal_execution_runtime import (
     MultimodalExecutionRequest,
@@ -156,10 +157,15 @@ def test_runtime_composes_one_server_system_message_and_preserves_image_payload(
     assert output.answer == "이미지 답변"
     assert len(executor.calls) == 1
     payload = executor.calls[0].to_payload()
-    assert payload["messages"][0] == {
-        "role": "system",
-        "content": "Describe the image carefully.\n\nTrusted context.",
-    }
+    # #4465/#4468: the multimodal path shares the Core composition point, so it
+    # also carries the mandatory per-dispatch context before the product text.
+    assert payload["messages"][0]["role"] == "system"
+    assert payload["messages"][0]["content"].startswith(
+        f"[PADIEM 공통 사전지침 {PREINSTRUCTION_VERSION}]"
+    )
+    assert payload["messages"][0]["content"].endswith(
+        "Describe the image carefully.\n\nTrusted context."
+    )
     assert sum(item["role"] == "system" for item in payload["messages"]) == 1
     last = payload["messages"][-1]
     assert last["role"] == "user"

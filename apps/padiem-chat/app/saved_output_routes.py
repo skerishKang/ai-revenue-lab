@@ -8,6 +8,7 @@ from starlette.responses import JSONResponse
 from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .history import HistoryStore, validate_conversation_id, validate_project_id
+from .history import PRODUCT_SCOPE_CHAT
 from .saved_outputs import (
     SavedOutputLimitError,
     SavedOutputStore,
@@ -73,7 +74,7 @@ async def _verified_provenance(
 ) -> tuple[str | None, str | None] | None:
     effective_project_id = project_id
     if conversation_id is not None:
-        conversation = await history.get_conversation(user_id, conversation_id)
+        conversation = await history.get_conversation(user_id, conversation_id, product_scope=PRODUCT_SCOPE_CHAT)
         if conversation is None:
             return None
         stored_project = conversation.get("project_id")

@@ -30,7 +30,10 @@ from app.execution_context_wire import parse_execution_context
 
 EXECUTE_PATH = "/internal/v1/execute"
 HEALTH_PATH = "/internal/v1/health"
-MAX_REQUEST_BODY_BYTES = 128 * 1024
+MAX_REQUEST_BODY_BYTES = 128 * 1024  # Non-model Engine routes retain legacy safety.
+# Model-only /execute is bounded by the B62 6MB transport budget rather than
+# a pilot 128KiB pre-provider cap. Tool/Memory/approval route guards unchanged.
+MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES = 6_000_000
 
 _TOP_LEVEL_REQUIRED = frozenset({"app_id", "agent", "messages"})
 _TOP_LEVEL_ALLOWED = frozenset(
@@ -348,7 +351,7 @@ class EngineService:
         if not isinstance(body, (bytes, bytearray, memoryview)):
             return _service_error("invalid_request", "Request body is invalid.", status_code=400)
         raw = bytes(body)
-        if len(raw) > MAX_REQUEST_BODY_BYTES:
+        if len(raw) > MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES:
             return _service_error("request_too_large", "Request body exceeds the internal Engine safety limit.", status_code=413)
         try:
             payload = json.loads(raw.decode("utf-8"))

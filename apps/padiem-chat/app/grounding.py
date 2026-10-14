@@ -47,7 +47,9 @@ _DEEP_RESEARCH_SKILL = TaskMode(
     ),
     task_type="general",
     optimize_for="balanced",
-    max_tokens=1500,
+    # Final user-visible synthesis is not a 1,500-token internal planning job.
+    # Let the selected provider/model decide response length.
+    max_tokens=None,
 )
 
 

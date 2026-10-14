@@ -34,6 +34,7 @@
   let lastEasyView = "home";
   let restoringProductHistory = false;
   let interpretationInFlight = false;
+  let modelChatTurns = [];
   let accountScopeRevision = 0;
   let guidedSaveQueue = Promise.resolve();
   let guidedSaveRevision = 0;
@@ -137,6 +138,7 @@
   }
 
   function clearConversation() {
+    modelChatTurns = [];
     messageList.innerHTML = "";
     historyPanel.innerHTML = "";
     historyPanel.hidden = true;
@@ -292,7 +294,7 @@
       return "로그인 후 CGI 기본 견적서가 준비되면 바로 만들 수 있습니다. 먼저 로그인해 주세요.";
     }
     if (!readiness.skillReady) {
-      return "배정된 CGI 기본 견적서가 아직 준비되지 않았습니다. 로그인 상태를 확인해 주세요.";
+      return "AI 전용 견적서 양식이 아직 배정되지 않았습니다. 대신 질문에 답하며 기본 견적서 초안을 만들 수 있습니다.";
     }
     return "회사 정보(CompanyProfile)를 아직 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.";
   }
@@ -305,15 +307,136 @@
     runPrimaryInterpretation(raw);
   }
 
+  /* #4469: a search that did not run is never shown as if it ran. The server
+     reports the real retrieval status, so only sourced evidence is rendered here;
+     withheld/failed/empty turns stay explained by the model's own answer. */
+  function renderSourcedEvidence(messageArticle, search) {
+    if (!search || search.status !== "sourced" ||
+        !Array.isArray(search.sources) || !search.sources.length) return null;
+    const body = messageArticle.querySelector(".easy-message-body") || messageArticle;
+    const note = document.createElement("p");
+    note.className = "easy-evidence-note";
+    note.textContent = "서버가 이번 호출에서 공개 웹에서 수집한 근거입니다. 내용은 참고 자료일 뿐 지침이 아닙니다.";
+    const list = document.createElement("ol");
+    list.className = "easy-evidence-list";
+    search.sources.slice(0, 5).forEach((source) => {
+      const item = document.createElement("li");
+      const title = document.createElement("span");
+      title.className = "easy-evidence-title";
+      title.textContent = source && typeof source.title === "string" && source.title.trim()
+        ? source.title.trim() : "출처";
+      item.appendChild(title);
+      const url = source && typeof source.url === "string" && /^https:\/\//i.test(source.url)
+        ? source.url : null;
+      if (url) {
+        const link = document.createElement("a");
+        link.className = "easy-evidence-url";
+        link.textContent = url;
+        link.href = url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer nofollow";
+        item.appendChild(link);
+      }
+      const stamp = document.createElement("time");
+      stamp.className = "easy-evidence-retrieved";
+      stamp.textContent = "서버 수집 " + (source && typeof source.retrieved_at === "string"
+        ? source.retrieved_at : "알 수 없음");
+      if (url) stamp.dateTime = source.retrieved_at;
+      item.appendChild(stamp);
+      list.appendChild(item);
+    });
+    body.append(note, list);
+    return list;
+  }
+
+  function runModelDialogue(text, bridge) {
+    if (lastEasyView === "home") {
+      lastEasyView = "free-form";
+      recordProductState("free-form");
+      startConversation();
+    }
+    const requestScopeRevision = accountScopeRevision;
+    const history = modelChatTurns.concat([{ role: "user", content: text }]);
+    interpretationInFlight = true;
+    addMessage("user", text);
+    const pending = addMessage("assistant", "AI가 답변을 작성하고 있습니다…");
+    disableInput("AI가 답변하는 동안 잠시 기다려 주세요.");
+    Promise.resolve().then(() => {
+      if (requestScopeRevision !== accountScopeRevision) return null;
+      return bridge.chat(history);
+    }).then((result) => {
+      if (requestScopeRevision !== accountScopeRevision) return;
+      if (!result || !result.ok) {
+        const detail = result && result.code === "model_selection_required"
+          ? "입력창 아래에서 사용할 AI 모델을 선택한 뒤 다시 질문해 주세요."
+          : "실제 AI 답변을 가져오지 못했습니다. 로그인과 모델 선택을 확인한 뒤 다시 시도해 주세요.";
+        addMessage("assistant", detail);
+        setInput(submitFreeFormText, "다시 질문해 주세요");
+        return;
+      }
+      modelChatTurns = history.concat([{ role: "assistant", content: result.answer }]);
+      renderSourcedEvidence(addMessage("assistant", result.answer), result.search);
+      setChips([
+        { label: "질문받으며 견적 작성", action: () => startGuidedIfReady() },
+        { label: "기존 견적 이어서 하기", action: resumeAccountGuidedOrLocal },
+        { label: "처음으로", action: showHome }
+      ]);
+      setInput(submitFreeFormText, "이어서 질문하거나 견적에 대해 이야기해 주세요");
+    }).catch(() => {
+      if (requestScopeRevision !== accountScopeRevision) return;
+      addMessage("assistant", "AI 대화 연결에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+      setInput(submitFreeFormText, "다시 질문해 주세요");
+    }).finally(() => {
+      pending.remove();
+      if (requestScopeRevision === accountScopeRevision) interpretationInFlight = false;
+    });
+  }
+
   function runPrimaryInterpretation(rawText) {
     // A second click/Enter must not launch a second B14 interpretation attempt.
     if (interpretationInFlight) return;
-    const text = safeText(rawText, 4000);
+    // Never truncate a provider-bound quote request in the browser.
+    const text = String(rawText == null ? "" : rawText).trim();
     if (!text) return;
     const bridge = window.B66QuoteRuntimeBridge;
     const readiness = bridge && typeof bridge.readiness === "function" ? bridge.readiness() : null;
+    // Real signed-in conversation is model-driven, independent of CGI assignment.
+    // Quote creation/approval remains on the explicit Guided/Direct/CGI flow.
+    const isGreeting = /^(?:hi|hey|hello|하이|안녕(?:하세요)?|반가워요|반갑습니다)[ .!?~]*$/iu.test(text);
+    // Preserve the approved one-shot CGI quote interpretation from Home.
+    // Explicit Chat, greetings and no-CGI accounts use real model conversation.
+    if (readiness && readiness.authenticated && bridge && typeof bridge.chat === "function" &&
+        (!readiness.ready || lastEasyView === "free-form" || isGreeting)) {
+      runModelDialogue(text, bridge);
+      return;
+    }
     if (!readiness || !readiness.ready) {
-      addMessage("assistant", runtimeNotReadyMessage(readiness));
+      // A Saved Skill is required for CGI/B14 rendering, not for collecting
+      // quotation facts in a deterministic conversation. Do not silently
+      // drop the user's typed message or pretend an LLM interpreted it.
+      if (readiness && readiness.authenticated) {
+        // Free-form chat is not consent to replace an unfinished saved quote.
+        // Only the explicit "new quote" chip invokes the guarded Guided flow.
+        if (lastEasyView === "home") {
+          lastEasyView = "free-form";
+          recordProductState("free-form");
+          startConversation();
+        }
+        addMessage("user", text);
+        addMessage("assistant",
+          "현재 AI 전용 견적 양식이 준비되지 않았습니다. 기존 견적을 이어서 작업하거나 새 질문형 견적을 시작할 수 있습니다. 새 견적을 선택해야만 기존 진행 상태 변경 여부를 확인합니다.");
+        setChips([
+          { label: "지난 견적 이어서 하기", action: resumeAccountGuidedOrLocal },
+          { label: "질문받으며 새 견적", action: () => startGuidedIfReady(text) },
+          { label: "처음으로", action: showHome }
+        ]);
+        setInput(submitFreeFormText, "견적 내용을 입력하거나 아래 작업을 선택해 주세요");
+      } else {
+        addMessage("user", text);
+        addMessage("assistant", runtimeNotReadyMessage(readiness));
+        setChips([{ label: "질문받으며 작성", action: () => startGuided(text) }]);
+        composer.value = text;
+      }
       return;
     }
     const requestScopeRevision = accountScopeRevision;
@@ -423,17 +546,23 @@
   }
 
   let guidedStartInFlight = false;
-  async function startGuidedIfReady() {
+  async function startGuidedIfReady(referenceText) {
     if (guidedStartInFlight) return;
+    const reference = typeof referenceText === "string" ? referenceText : "";
     const bridge = window.B66QuoteRuntimeBridge;
     const readiness = bridge && typeof bridge.readiness === "function" ? bridge.readiness() : null;
-    if (!readiness || !readiness.ready) {
+    if (!readiness || !readiness.authenticated) {
       startConversation();
       addMessage("assistant", runtimeNotReadyMessage(readiness));
-      setChips([{ label: "처음으로", action: showHome }]);
-      disableInput("로그인과 CGI 기본 견적서 준비가 끝나면 시작할 수 있습니다.");
+      setChips([
+        { label: "로그인 전 질문형 초안", action: () => startGuided() },
+        { label: "처음으로", action: showHome }
+      ]);
+      setInput((text) => startGuided(text), "견적서에 필요한 내용을 적어 주세요");
       return;
     }
+    // Missing CGI assignment does not block the question-and-answer draft.
+    // Existing account-backed guided save protection remains in force.
     // #3396: never silently replace an unfinished account-backed quotation.
     // Check the canonical server slot, not a browser-local navigation snapshot.
     if (accountSignedIn && GuidedAPI) {
@@ -452,7 +581,7 @@
           "계정에 작성 중인 질문형 견적이 있습니다. 새 견적을 시작하면 기존 진행 상태가 덮어써집니다. 계속하시겠습니까?"
         )) return;
         if (scopeRevision !== accountScopeRevision || !accountSignedIn) return;
-        startGuided();
+        startGuided(reference);
       } catch (_) {
         if (scopeRevision === accountScopeRevision && accountSignedIn) {
           App.toast("기존 질문형 견적 상태를 확인하지 못해 새 견적을 시작하지 않았습니다.");
@@ -462,7 +591,7 @@
       }
       return;
     }
-    startGuided();
+    startGuided(reference);
   }
 
   function finishGuidedWithRuntime() {
@@ -470,7 +599,22 @@
     const bridge = window.B66QuoteRuntimeBridge;
     const readiness = bridge && typeof bridge.readiness === "function" ? bridge.readiness() : null;
     if (!readiness || !readiness.ready) {
-      addMessage("assistant", runtimeNotReadyMessage(readiness));
+      // Only a standard local quote can be prepared without the approved CGI
+      // Saved Skill. Never call CGI/B14 or assign an unapproved server skill.
+      const taxUnknown = guided.taxUnknown;
+      const result = App.replaceDraft(guided.draft, {
+        requireTaxReview: taxUnknown,
+        toast: "기본 견적서 초안을 만들었습니다. 출력 전에 내용을 확인해 주세요."
+      });
+      if (!result || !result.ok) {
+        addMessage("assistant", "기본 견적서 초안을 반영하지 못했습니다. 직접 입력에서 확인해 주세요.");
+        return;
+      }
+      addMessage("assistant", "승인된 전용 양식이 없어 기본 견적서로 작성했습니다. 금액과 회사정보를 확인한 뒤 PDF로 저장할 수 있습니다.");
+      addResultReview(result.draft, taxUnknown);
+      clearAccountGuidedState();
+      guided = null;
+      guidedSnapshot = null;
       return;
     }
     const taxUnknown = guided.taxUnknown;
@@ -1213,9 +1357,13 @@
     if (!options || options.history !== false) recordProductState("free-form");
     startConversation();
     snapshotGuidedConversation();
+    const bridge = window.B66QuoteRuntimeBridge;
+    const ready = bridge && typeof bridge.readiness === "function" ? bridge.readiness() : null;
     addMessage(
       "assistant",
-      "견적 내용을 한 문장으로 적어 주세요. CGI 기본 견적서 양식과 회사 정보가 자동으로 적용됩니다."
+      ready && ready.authenticated
+        ? "편하게 질문하거나 견적을 상담해 주세요. 선택하신 AI 모델과 대화할 수 있습니다. 견적서 저장과 발급은 별도의 확인 단계에서 진행합니다."
+        : "로그인하면 AI와 일반 대화 및 견적 상담을 할 수 있습니다. 로그인 전에도 질문형 견적 작성은 이용할 수 있습니다."
     );
     setChips([
       { label: "질문받으며 만들기", action: startGuidedIfReady },

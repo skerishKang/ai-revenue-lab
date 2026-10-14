@@ -59,7 +59,7 @@ CAPABILITY_MATRIX = (
         "surface": "tier_plus_only",
         "presentation": "ACTIVE",
         "default_tier": "plus",
-        "browser_visible": ["plus"],
+        "browser_visible": ["free", "plus", "pro", "max"],
         "backend_active": "SERVER_RESOLVED_SHARED_TIER_CONTRACT",
         "production_active": "NOT_CLAIMED",
     },
@@ -248,17 +248,16 @@ async def _exercise_view(page: Page, *, theme: str, viewport_name: str, query: s
     panel = page.locator("#modePresentationPanel")
     await panel.wait_for(state="visible")
     options = panel.locator("[data-mode-value]")
-    if await options.count() != 1:
-        raise AssertionError(f"Plus-only tier matrix incomplete at {label}")
+    if await options.count() != 4:
+        raise AssertionError(f"four-tier matrix incomplete at {label}")
     plus = panel.locator('[data-mode-value="plus"]')
     if await plus.is_disabled():
         raise AssertionError(f"Plus must be selectable at {label}")
     if await plus.get_attribute("aria-pressed") != "true":
         raise AssertionError(f"Plus not selected by default at {label}")
-    if await panel.locator('[data-mode-value="pro"]').count() != 0:
-        raise AssertionError(f"Pro must remain browser-hidden while HOLD at {label}")
-    if await panel.locator('[data-mode-value="max"]').count() != 0:
-        raise AssertionError(f"Max must remain browser-hidden at {label}")
+    for locked in ("pro", "max"):
+        if not await panel.locator(f'[data-mode-value="{locked}"]').is_disabled():
+            raise AssertionError(f"{locked} must be disabled (사용 불가) at {label}")
     await page.keyboard.press("Escape")
     if not await panel.is_hidden():
         raise AssertionError(f"tier panel did not close at {label}")
@@ -360,7 +359,7 @@ async def _english_probe(browser) -> dict[str, Any]:
             raise AssertionError(f"English account truth missing: {account_text!r}")
         await page.locator(".model-pill").click()
         truth = (await page.locator("[data-mode-truth]").inner_text()).strip()
-        if "Provider and model routing stays server-managed" not in truth:
+        if "Upgrade is required to use higher-tier models." not in truth:
             raise AssertionError(f"English tier truth boundary missing: {truth!r}")
         return {
             "status": "PASS",

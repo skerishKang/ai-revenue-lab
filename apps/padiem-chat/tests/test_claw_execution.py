@@ -1008,7 +1008,7 @@ def test_no_auto_send_or_connector_write() -> None:
 
 def test_untrusted_input_bounds_preserved(client: TestClient) -> None:
     payload = {
-        "content": "A" * 5000,
+        "content": "A" * 12_010,
         "channel": "kakao",
         "action": "quote",
     }
@@ -2151,3 +2151,35 @@ async def test_d1_store_rejects_malformed_conversation_id():
             conversation_id="not-a-conversation-id",
         )
     assert len(store.db.rows) == 0
+
+
+def test_manual_execute_long_user_text_reaches_exact_p01_task_once() -> None:
+    content = "execute-long-source-" * 250 + chr(0xAC00) * 750
+    assert len(content) > 4_000
+    adapter = _make_adapter()
+    app = _app_with_identity()
+    with TestClient(app, base_url="https://chat.example.test") as test_client:
+        test_client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            domain="chat.example.test",
+            path="/",
+        )
+        with _injected_adapter(test_client, adapter):
+            response = test_client.post(EXECUTE_ROUTE_PATH, json={
+                "content": content, "channel": "kakao",
+                "action": "reply", "sender_hint": "?? ???",
+            })
+    assert response.status_code == 200
+    assert response.json()["ok"] is True
+    adapter.execute.assert_awaited_once()
+    run = adapter.execute.await_args.args[0]
+    assert run.intent.task.split("\n\n", 1)[1] == content
+
+
+def test_manual_execute_respects_existing_executable_task_contract_before_quota(client: TestClient) -> None:
+    response = client.post(EXECUTE_ROUTE_PATH, json={
+        "content": "Y" * 12_010, "channel": "kakao", "action": "reply",
+    })
+    assert response.status_code == 400
+    assert response.json()["error"]["code"] == "content_too_long"

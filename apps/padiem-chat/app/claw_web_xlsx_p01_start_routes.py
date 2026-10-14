@@ -18,6 +18,7 @@ from .claw_web_xlsx_p01_request import (
 )
 from .claw_web_xlsx_selection_routes import _scope
 from .claw_web_xlsx_source_routes import _error, _NO_STORE
+from .history import PRODUCT_SCOPE_CHAT
 
 WEB_XLSX_START_P01_PATH = "/api/claw/office/web-selections/{selection_ref}/start-p01"
 
@@ -98,6 +99,7 @@ async def web_xlsx_start_p01(request: Request) -> Response:
         # No model call, fake user message, or caller-selected conversation.
         created = history.create_web_xlsx_p01_run(
             user_id=owner, workspace_id=workspace, filename=original["filename"],
+            product_scope=PRODUCT_SCOPE_CHAT,
         )
         run_id = await created if inspect.isawaitable(created) else created
         run = history.get_claw_run(owner, run_id)

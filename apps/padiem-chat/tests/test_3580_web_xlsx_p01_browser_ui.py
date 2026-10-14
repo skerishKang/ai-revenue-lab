@@ -49,5 +49,34 @@ def test_browser_real_xlsx_approval_ui_one_shot_and_server_only_state():
         "WEB_XLSX_ONE_SHOT_UNKNOWN_OUTCOME=PASS",
         "WEB_XLSX_SERVER_STATUS_ONLY=PASS",
         "WEB_XLSX_READ_WORKCOPY_CONVERSATION_HANDOFF=PASS",
+        "WEB_XLSX_COMPLETED_RESULT_REUSE_NEW_APPROVAL=PASS",
+        "WEB_XLSX_REUSE_SELECTION_FAILURE_NEVER_REPORTS_SUCCESS=PASS",
     ):
         assert marker in result.stdout
+
+
+def test_existing_result_reuse_is_one_owner_scoped_adopt_call():
+    """#3933: the panel owns the adopt call; nothing else may mint a source."""
+    js = (STATIC / "claw-web-xlsx-sources.js").read_text(encoding="utf-8")
+    assert "function validateAdopt" in js
+    assert '"/artifact-followup/adopt"' in js
+    assert '"/api/claw/conversations/"' in js
+    assert "body.file.document_id !== body.adopted_from_artifact_id" in js
+    assert "body.previous_approval_reused === false" in js
+    assert "body.processing_started === false" in js
+    assert "adoptFromArtifact" in js
+    # The adopted source is selected through the EXISTING selection route, so
+    # a brand-new P01 READ approval is required before any processing.
+    assert "await reload(true)" in js
+    assert "await selectSource(item, true)" in js
+    # A caller can never inject a document identity or a base64 body here.
+    assert "artifact_id: artifactId, integrity_ref: integrityRef" in js
+    assert "base64" not in js.split("function validateAdopt")[1].split("function init")[0]
+    # CTO blocker fix: the follow-up is complete only when the SEPARATE
+    # selection actually bound, so a refused selection can never be announced
+    # as a successful continuation.
+    assert "const selected = await selectSource(item, true);" in js
+    assert "selected !== true" in js
+    assert "selectedDocumentId !== body.file.document_id" in js
+    assert "!SELECTION_ID.test(String(selectedSelectionRef))" in js
+    assert "자동으로 다시 시도하지 않습니다" in js

@@ -51,7 +51,7 @@ check(refresh.includes('.shell-rail-collapse::before { content: none; }') &&
       refresh.includes('.shell-preview-host #quotePaper,') &&
       refresh.includes('box-shadow: 0 6px 22px rgba(38,63,81,.13);'),
   "only the A4 paper is white; the tall preview backing is transparent on screen");
-check(html.includes('href="b66-surface-refresh.css?v=20261011-4358" media="screen"'),
+check(html.includes('href="b66-surface-refresh.css?v=20261012-0646" media="screen"'),
   "viewer presentation never changes print or certified A4 geometry");
 check(!shell.includes('createElement("iframe")') && !shell.includes("b66-cgi-form.html"),
   "production shell never embeds CGI prototype iframe");
@@ -67,7 +67,7 @@ check(css.includes("@media (max-width: 900px)"), "mobile shell has explicit boun
 check(html.match(/id="quotePaper"/g)?.length === 1, "exactly one canonical quote paper exists");
 check(html.match(/id="easyComposer"/g)?.length === 1, "exactly one chat composer exists");
 
-check(html.includes('<link rel="stylesheet" href="b66-surface-refresh.css?v=20261011-4358" media="screen">'),
+check(html.includes('<link rel="stylesheet" href="b66-surface-refresh.css?v=20261012-0646" media="screen">'),
   "UI-only stylesheet is loaded for screen, never CGI PDF print geometry");
 const resetStart = app.indexOf('  $("newQuote").addEventListener("click", () => {');
 const resetConfirm = app.indexOf('if (!window.confirm(', resetStart);
@@ -88,8 +88,13 @@ check(refresh.includes('position: fixed;') && refresh.includes('shell-preview-ho
 check(css.includes("body.b66-three-pane .shell-edit-heading { display: none !important; }"),
   "screen-only edit explanation must never appear in printed CGI PDF");
 
-check(shell.includes('max-width:1250px') && refresh.includes('min-width: 901px'),
-  "mid-width notebooks default to a wide quote editor with optional overlay preview");
+check(shell.includes('COMPACT_PREVIEW_BREAKPOINT = 1480') &&
+  shell.includes('window.addEventListener("resize", syncMobileDefault)') &&
+  shell.includes('previewAutoCollapsed') &&
+  refresh.includes('min-width: 901px') &&
+  refresh.includes('max-width: 1480px') &&
+  refresh.includes('grid-template-columns: 260px minmax(0, 1fr)'),
+  "resized mid-width windows automatically center the editor with a reopenable preview");
 check(refresh.includes('height: max(185px, calc(var(--b66-visual-height, 100dvh) - 165px))'),
   "mobile conversation responds to compact keyboard viewport height");
 check(refresh.includes('body.b66-three-pane .shell-preview-reopen::after'),

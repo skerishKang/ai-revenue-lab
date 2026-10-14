@@ -582,7 +582,8 @@
      최종 견적이 확정될 때까지 같은 번호/발행일을 유지한다. 저장소는 브라우저 메모리 1개뿐이다. */
 
   const MAX_PENDING_TURNS = 4;
-  const MAX_PENDING_TEXT = 4000;
+  // Provider/broker owns message context; this is not a B66 character cap.
+  const MAX_PENDING_TEXT = Number.POSITIVE_INFINITY;
   const MISSING_QUESTIONS = {
     name: "품목명을 알려 주세요.",
     qty: "수량은 몇 개인가요?",
@@ -761,8 +762,51 @@
     return pending;
   }
 
+  /* #4466: real general conversation through B66's authenticated B14 route.
+     This does not require an assigned CGI Skill and cannot mutate QuoteCore. */
+  async function chatMessages(messages) {
+    if (!state.authenticated) return { ok: false, code: "unauthorized" };
+    const select = byId("padiemQuoteModelSelect");
+    const modelId = select && select.value;
+    if (!modelId || !state.quoteModels.includes(modelId)) {
+      return { ok: false, code: "model_selection_required" };
+    }
+    if (!Array.isArray(messages) || !messages.length) {
+      return { ok: false, code: "invalid_messages" };
+    }
+    const payload = { model_id: modelId, messages };
+    const reasoningLevel = selectedReasoningLevel(modelId);
+    if (reasoningLevel) payload.reasoning_level = reasoningLevel;
+    try {
+      const result = await api("/b66/ai/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = result.data;
+      if (!result.response.ok || !data || data.ok !== true ||
+          typeof data.answer !== "string" || !data.answer.trim() ||
+          data.model_id !== modelId || data.model_origin !== "registered_model_completion") {
+        return { ok: false, code: data && data.error && data.error.code || "ai_chat_unavailable" };
+      }
+      return {
+        ok: true,
+        answer: data.answer,
+        model_id: modelId,
+        /* #4469: the server reports what retrieval actually did. The browser
+           never decides that a search happened, and a withheld or failed search
+           stays visible instead of becoming a confident answer. */
+        search: data.search && typeof data.search.status === "string"
+          ? { status: data.search.status, sources: Array.isArray(data.search.sources) ? data.search.sources : [] }
+          : { status: "unavailable", sources: [] }
+      };
+    } catch (_) {
+      return { ok: false, code: "ai_chat_unavailable" };
+    }
+  }
+
   async function interpretRequest(requestText) {
-    const text = typeof requestText === "string" ? requestText.trim().slice(0, MAX_PENDING_TEXT) : "";
+    const text = typeof requestText === "string" ? requestText.trim() : "";
     if (!text) return { ok: false, code: "empty_request" };
     const readiness = runtimeReadiness();
     if (!readiness.ready) {
@@ -1037,6 +1081,7 @@
   window.B66QuoteRuntimeBridge = Object.freeze({
     readiness: runtimeReadiness,
     interpret: interpretRequest,
+    chat: chatMessages,
     buildFromFacts: buildQuoteFromFacts,
     downloadPdf,
     certifiedPreviewBaseUrl,

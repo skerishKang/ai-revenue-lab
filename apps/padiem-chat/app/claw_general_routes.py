@@ -52,6 +52,14 @@ from kagent.p01_adapter import (
 from kagent.p01_run_flow import create_claw_run
 
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
+from .claw_first_turn_authority import (
+    B54VerifiedCodingContextV1,
+    FirstTurnAuthorityError,
+    claim_first_turn_grant,
+    complete_first_turn_grant,
+    fail_first_turn_grant,
+    reserve_first_turn_grant,
+)
 from .claw_live_canary import live_stream_allowed
 from .claw_general_run_history import project_completed_general_run
 from .claw_routes import (
@@ -65,11 +73,18 @@ from .claw_routes import (
 )
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 from .auth_routes import auth_ready, current_user_id
-from .history import MAX_HISTORY_MESSAGE_CHARS, validate_conversation_id
+from .history import HISTORY_PREVIEW_SUFFIX, HistoryContextIncomplete, validate_conversation_id, PRODUCT_SCOPE_CHAT
 
-MAX_CLAW_GENERAL_BODY_BYTES = 64 * 1024  # 64 KiB
-MAX_CLAW_GENERAL_MESSAGE_CHARS = 8_000
-MAX_CLAW_GENERAL_MESSAGES = 40
+# This is the existing Chat HTTP resource envelope, not a provider/model cap.
+# The separate P01 Engine ingress guard remains in force until #4383 is resolved.
+MAX_CLAW_GENERAL_BODY_BYTES = 6_000_000
+# Kept importable for older clients; None means no Claw-general pilot text cap.
+MAX_CLAW_GENERAL_MESSAGE_CHARS: int | None = None
+MAX_CLAW_GENERAL_MESSAGES: int | None = None
+# Model capability is not constrained by this number: the canonical Engine
+# still enforces a finite 6MB serialized HTTP request memory-safety envelope.
+# Reserve transport overhead for agent/route metadata; never silently truncate.
+P01_ENGINE_REQUEST_ENVELOPE_BYTES = 5_500_000
 CLAW_LIVE_REQUEST_HEADER = "X-Padiem-Claw-Live"
 CLAW_LIVE_REQUEST_MARKER = "p01-events-v1"
 _CLAW_GENERAL_ROLES = frozenset({"user", "assistant"})
@@ -182,18 +197,14 @@ def _claw_general_sse(
 
 
 def _claw_general_user_text(data: dict[str, Any]) -> tuple[str | None, JSONResponse | None]:
-    """Extract the bounded latest user text from the shared chat message shape.
+    """Validate shared chat messages and preserve latest user text verbatim.
 
-    Reuses the same ``messages`` contract the standalone B62 chat composer
-    already sends, so the browser keeps one payload shape. Only the last user
-    turn becomes the P01 task text; a malformed, empty or over-bound message set
-    fails closed before any quota or dispatch.
+    P01 model-only Claw receives the latest user turn, not the browser-provided
+    previous turns. Malformed shapes fail before quota or provider dispatch.
     """
     messages = data.get("messages")
     if not isinstance(messages, list) or not messages:
         return None, _error(400, "invalid_messages", "메시지를 입력해 주세요.")
-    if len(messages) > MAX_CLAW_GENERAL_MESSAGES:
-        return None, _error(400, "too_many_messages", "메시지가 너무 많습니다.")
     last_user: str | None = None
     for item in messages:
         if not isinstance(item, dict):
@@ -202,12 +213,6 @@ def _claw_general_user_text(data: dict[str, Any]) -> tuple[str | None, JSONRespo
         content = item.get("content")
         if role not in _CLAW_GENERAL_ROLES or not isinstance(content, str):
             return None, _error(400, "invalid_messages", "메시지 형식이 올바르지 않습니다.")
-        if len(content) > MAX_CLAW_GENERAL_MESSAGE_CHARS:
-            return None, _error(
-                400,
-                "message_too_long",
-                f"메시지는 {MAX_CLAW_GENERAL_MESSAGE_CHARS}자 이하로 입력해 주세요.",
-            )
         if role == "user":
             last_user = content
     text = (last_user or "").strip()
@@ -226,7 +231,9 @@ async def _owner_claw_context(
     store = getattr(request.app.state, "history_store", None)
     if not uid or not callable(getattr(store, "get_conversation", None)):
         raise ValueError("owner history unavailable")
-    prior = store.get_conversation(uid, conversation_id)
+    get_full = getattr(store, "get_conversation_model_context", None)
+    load = get_full if callable(get_full) else store.get_conversation
+    prior = load(uid, conversation_id, product_scope=PRODUCT_SCOPE_CHAT)
     if inspect.isawaitable(prior):
         prior = await prior
     if not isinstance(prior, dict) or prior.get("id") != conversation_id:
@@ -234,19 +241,21 @@ async def _owner_claw_context(
     messages = prior.get("messages")
     if not isinstance(messages, list):
         return latest  # Empty Hark work conversations are valid.
-    budget = min(4000, max(0, MAX_HISTORY_MESSAGE_CHARS - len(latest) - 450))
+    # This list comes from verified owner-scoped *saved previews*, not browser
+    # supplied turns. Do not silently drop a fixed number of prior turns or
+    # truncate the model user text to a pilot-size character window.
     excerpts: list[str] = []
-    for row in reversed(messages[-12:]):
+    for row in messages:
         if not isinstance(row, dict) or row.get("role") not in ("user", "assistant"):
             continue
         content = row.get("content")
         if not isinstance(content, str) or not content.strip():
             continue
+        if len(content) == 8000 and content.endswith(HISTORY_PREVIEW_SUFFIX):
+            # Legacy/partial history cannot become silently incomplete AI context.
+            raise HistoryContextIncomplete("full owner conversation history not available")
         item = ("사용자: " if row["role"] == "user" else "AI: ") + content.strip()
-        if len(item) > budget:
-            break
-        excerpts.insert(0, item)
-        budget -= len(item) + 1
+        excerpts.append(item)
     if not excerpts:
         return latest
     return (
@@ -261,9 +270,7 @@ async def _save_claw_exchange(
 ) -> str | None:
     """Exact completed exchange only; unavailable history does not replay P01."""
     if (not isinstance(answer, str) or not answer.strip()
-            or len(answer) > MAX_HISTORY_MESSAGE_CHARS
-            or not isinstance(user_text, str)
-            or len(user_text) > MAX_HISTORY_MESSAGE_CHARS):
+            or not isinstance(user_text, str) or not user_text.strip()):
         return None
     uid = current_user_id(request) if auth_ready(request) else None
     store = getattr(request.app.state, "history_store", None)
@@ -276,7 +283,7 @@ async def _save_claw_exchange(
             get = getattr(store, "get_conversation", None)
             if not callable(get):
                 return None
-            owned = get(uid, conversation_id)
+            owned = get(uid, conversation_id, product_scope=PRODUCT_SCOPE_CHAT)
             if inspect.isawaitable(owned):
                 owned = await owned
             if not isinstance(owned, dict) or owned.get("id") != conversation_id:
@@ -284,7 +291,9 @@ async def _save_claw_exchange(
             project_id = owned.get("project_id")
             if project_id is not None and not isinstance(project_id, str):
                 return None
-        saved = append(uid, conversation_id, user_text, answer, project_id)
+        # Only the bounded, visibly labeled stored preview is persisted. The
+        # complete P01 result was already delivered to the caller unchanged.
+        saved = append(uid, conversation_id, user_text, answer, project_id, product_scope=PRODUCT_SCOPE_CHAT)
         if inspect.isawaitable(saved):
             saved = await saved
         if not isinstance(saved, str):
@@ -292,6 +301,42 @@ async def _save_claw_exchange(
         return saved if validate_conversation_id(saved) is not None else None
     except Exception:
         return None
+
+
+async def _record_completed_claw_result(
+    request: Request, *, run_id: str, conversation_id: str | None,
+    user_text: str, answer: str, authorized_workspace_id: str | None,
+    first_turn_grant: B54VerifiedCodingContextV1 | None = None,
+) -> str | None:
+    """Persist only a verified completed Claw result; never replay Engine.
+
+    Conversation saving and completed-run history are both optional read-model
+    projections. Failure to save must not conceal an already-completed answer
+    or advertise a server conversation ID that was not actually stored.
+    """
+    saved_conversation_id = await _save_claw_exchange(
+        request, conversation_id=conversation_id,
+        user_text=user_text, answer=answer,
+    )
+    # #3933 S1: link the reserved first-turn grant to its verified outcome.
+    # Best-effort provenance only: a grant-store failure must never conceal
+    # an already-completed answer.
+    await complete_first_turn_grant(
+        request, first_turn_grant, run_ref=run_id,
+        saved_conversation_id=saved_conversation_id,
+    )
+    projected_conversation_id = saved_conversation_id or conversation_id
+    if projected_conversation_id is None:
+        await project_completed_general_run(
+            request, run_id=run_id, user_text=user_text, answer=answer,
+        )
+    else:
+        await project_completed_general_run(
+            request, run_id=run_id, user_text=user_text, answer=answer,
+            conversation_id=projected_conversation_id,
+            workspace_id=authorized_workspace_id,
+        )
+    return saved_conversation_id
 
 
 async def claw_general_capabilities(request: Request) -> JSONResponse:
@@ -435,9 +480,19 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # A browser-supplied array of prior turns never becomes model context.
     try:
         model_user_text = await _owner_claw_context(request, conversation_id, user_text)
+    except HistoryContextIncomplete:
+        return _error(409, "conversation_context_incomplete",
+                      "이전 대화 원문을 복원할 수 없습니다. 새 대화를 시작하거나 원문을 다시 입력해 주세요.")
     except Exception:
         return _error(503, "conversation_authority_unavailable",
                       "대화 문맥을 안전하게 확인할 수 없습니다.")
+
+    # Explicit transport/resource failure before quota; do not silently
+    # truncate the owned prior context or present an Engine ingress guard as a
+    # provider model-token ceiling. Full serialized Engine checks stay active.
+    if len(model_user_text.encode("utf-8")) > P01_ENGINE_REQUEST_ENVELOPE_BYTES:
+        return _error(413, "engine_request_envelope_exceeded",
+                      "엔진 전송 안전 한도를 초과했습니다. 더 짧은 대화에서 다시 요청해 주세요.")
 
     # #3382/#3539: the canonical USER subject is resolved SERVER-SIDE before the
     # usage gate and before any P01/Engine dispatch, so a failed revalidation
@@ -451,7 +506,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         adapter is None or getattr(adapter, "subject_identity_lane", False) is not True
     ):
         return _error(403, "canonical_b54_session_unavailable",
-                      "??? Claw ?? ?? ??? ??? ? ????.")
+                      "인증된 Claw 실행 권한을 확인할 수 없습니다.")
     if adapter is not None and getattr(
         adapter, "subject_identity_lane", False
     ) is True:
@@ -469,7 +524,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         if conversation_id is not None:
             if not isinstance(authorized_workspace_id, str) or not authorized_workspace_id:
                 return _error(403, "workspace_scope_unavailable",
-                              "Claw ???? ??? ??? ? ????.")
+                              "대화 작업 공간을 확인할 수 없습니다.")
 
     # #3790: in the production Worker Claw uses the central model
     # ready/owner-allowed metadata resolver. Reject a forged advanced model ID
@@ -500,6 +555,23 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         # a forged browser header or a stale GET capability response.
         return _error(503, "claw_live_stream_unavailable", "Claw 실시간 실행 상태를 사용할 수 없습니다.")
 
+    # #3933 S1: optional first-turn trusted coding context. OFF by default:
+    # the helper returns None without touching any store, keeping the exact
+    # historical first-turn path below byte-for-byte identical. When enabled,
+    # a missing canonical subject or tenant fails closed here, pre-quota.
+    first_turn_context: B54VerifiedCodingContextV1 | None = None
+    if conversation_id is None:
+        try:
+            first_turn_context = await reserve_first_turn_grant(
+                request,
+                user_id=current_user_id(request) if auth_ready(request) else None,
+                subject_id=subject_id,
+                tenant_id=authorized_workspace_id,
+                route_scope="claw_general_execute",
+            )
+        except FirstTurnAuthorityError as gate_exc:
+            return _error(gate_exc.status_code, gate_exc.code, gate_exc.message)
+
     denial = await _usage_gate_denial(request)
     if denial is not None:
         return denial
@@ -509,6 +581,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         # un-dispatched: compensate the exact receipt (#2226). This route has no
         # direct-B14 fallback (#3539); it fails closed instead.
         await _refund_active_reservation()
+        await fail_first_turn_grant(request, first_turn_context)
         return JSONResponse(
             {
                 "ok": False,
@@ -532,9 +605,26 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             or not callable(getattr(runner, "run_stream", None))
         ):
             await _refund_active_reservation()
+            await fail_first_turn_grant(request, first_turn_context)
             return _error(503, "claw_live_stream_unavailable", "Claw 실시간 실행 상태를 사용할 수 없습니다.")
 
-    run = create_claw_run("padiem-chat", model_user_text)
+    run = create_claw_run("padiem-chat", model_user_text, model_only_text=True)
+
+    # #3933 S1: the reservation above never authorizes a dispatch by itself.
+    # Exactly one atomic claim may proceed; a concurrent or replayed attach
+    # loses here, gets a status-only 409, and the quota reservation is
+    # refunded. No provider/Engine dispatch happens on this path.
+    if first_turn_context is not None:
+        store = getattr(request.app.state, "claw_first_turn_grant_store", None)
+        try:
+            claimed = await claim_first_turn_grant(store, first_turn_context)
+        except FirstTurnAuthorityError as claim_exc:
+            await _refund_active_reservation()
+            return _error(claim_exc.status_code, claim_exc.code, claim_exc.message)
+        if not claimed:
+            await _refund_active_reservation()
+            return _error(409, "first_turn_dispatch_in_progress",
+                          "같은 요청이 이미 처리 중입니다. 잠시 후 다시 시도해 주세요.")
 
     # #3655: evidence mode is opt-in per request; normal callers see the exact
     # same response surface as before.
@@ -545,12 +635,29 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     if live_requested:
         if evidence_requested:
             await _refund_active_reservation()
+            # Proven pre-dispatch denial after a successful claim: the
+            # claimed grant must fail here, or it stays active (in-progress)
+            # until expiry and blocks the key. Mirrors NOT_DISPATCHED below.
+            await fail_first_turn_grant(request, first_turn_context)
             return _error(422, "live_evidence_mode_unsupported", "실시간 상태와 감사 증거 요청은 동시에 사용할 수 없습니다.")
         from .claw_live_events import live_claw_sse
         live_args = {"product_tier": product_tier, "subject_id": subject_id}
         if selected_model_id is not None:
             live_args["selected_model_id"] = selected_model_id
-        return live_claw_sse(adapter, run, live_args)
+        async def after_verified_live_completion(answer: str) -> str | None:
+            # Runs after validated terminal P01 completion, never on pause,
+            # failure, disconnect or an unverified/empty answer.
+            return await _record_completed_claw_result(
+                request, run_id=run.run_id, conversation_id=conversation_id,
+                user_text=user_text, answer=answer,
+                authorized_workspace_id=authorized_workspace_id,
+                first_turn_grant=first_turn_context,
+            )
+
+        return live_claw_sse(
+            adapter, run, live_args,
+            on_completed=after_verified_live_completion,
+        )
 
     try:
         dispatch_args = {"product_tier": product_tier, "subject_id": subject_id}
@@ -560,6 +667,9 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     except P01AdapterError as exc:
         if exc.dispatch_class == P01DispatchClass.NOT_DISPATCHED:
             await _refund_active_reservation()
+            # Proven non-dispatch: the claimed grant may terminally fail.
+            # Any other class leaves it active until expiry (no auto-retry).
+            await fail_first_turn_grant(request, first_turn_context)
         else:
             _clear_reservation()
         if exc.code in _MODEL_HOLD_ERROR_CODES:
@@ -642,28 +752,14 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             headers=_NO_STORE_HEADERS,
         )
 
-    # Only a verified, durable owner conversation ID is returned to the browser.
-    # A failed history write never turns a completed model run into a retryable 5xx.
-    saved_conversation_id = await _save_claw_exchange(
-        request, conversation_id=conversation_id, user_text=user_text,
-        answer=outcome.answer,
+    # Preserve the existing completed-path persistence contract; the live
+    # callback above now uses the exact same authority and read-model logic.
+    saved_conversation_id = await _record_completed_claw_result(
+        request, run_id=run.run_id, conversation_id=conversation_id,
+        user_text=user_text, answer=outcome.answer,
+        authorized_workspace_id=authorized_workspace_id,
+        first_turn_grant=first_turn_context,
     )
-    projected_conversation_id = saved_conversation_id or conversation_id
-
-    # #4072/#3928: preserve successful P01 execution in the pre-existing
-    # owner-scoped read model when D1 supports it. This is NOT a same-thread
-    # or artifact lineage claim. A failed history write must never replay
-    # Engine/tool execution or suppress an already-completed answer.
-    if projected_conversation_id is None:
-        await project_completed_general_run(
-            request, run_id=run.run_id, user_text=user_text, answer=outcome.answer
-        )
-    else:
-        await project_completed_general_run(
-            request, run_id=run.run_id, user_text=user_text, answer=outcome.answer,
-            conversation_id=projected_conversation_id,
-            workspace_id=authorized_workspace_id,
-        )
     return _claw_general_sse(
         outcome.answer,
         _claw_evidence_response_headers(run.run_id, outcome) if evidence_requested else None,

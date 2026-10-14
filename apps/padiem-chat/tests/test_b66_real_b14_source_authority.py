@@ -171,12 +171,16 @@ def test_real_b14_source_registered_routes_and_google_manual_only(b14_source_get
     assert all(not row["auto_eligible"] for row in rows)
     assert all(not row["owner_excluded"] for row in rows)
     assert not any(row.get("public") is True for row in rows)
-    # Previously the owner registry had zero free routes. Only the two
-    # explicitly approved TokenHarbor free variants may now appear; neither
-    # becomes a public/auto selection or silently changes the B66 pin.
+    # Two TokenHarbor free routes are executable; the two newly registered
+    # OpenCode Go temporary free previews are disabled metadata only.
+    # None becomes a public/auto selection or silently changes the B66 pin.
     assert {row["id"] for row in rows if row["free"]} == {
         "tokenharbor/claude-haiku-5.5:free",
         "tokenharbor/deepseek-v4.1-flash:free",
+        # These two are registered but disabled Go trial routes. The
+        # executable B14 catalog must still exclude them.
+        "opencode-go/longcat-2.5-preview-free",
+        "opencode-go/step-5-preview-free",
     }
 
 

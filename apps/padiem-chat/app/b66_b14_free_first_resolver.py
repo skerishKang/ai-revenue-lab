@@ -199,6 +199,69 @@ class B14FreeFirstQuoteModelResolver:
             raise B66ModelRouteError("selection_ambiguous")
         return eligible[0]
 
+    async def list_registered_models(self) -> list[dict[str, Any]]:
+        """Admin-only caller: full B14 registration view, NOT user eligibility.
+
+        Reads the existing single B14 metadata GET, including disabled routes.
+        The `catalog` field marks B14-enabled routes only; it does not prove
+        credential readiness or product/member permission. Never return URLs,
+        upstream names, prices, credential names or secret values.
+        """
+        if self._transport is None:
+            raise B66ModelRouteError("selection_unconfigured")
+        try:
+            registry = _parse_bounded_response(*await self._transport.get_json(_MODELS_PATH))
+            routes = _dict_rows(registry.get("registered_routes"))
+            active_rows = _dict_rows(registry.get("catalog"))
+            active: dict[str, dict[str, Any]] = {}
+            for row in active_rows:
+                mid, pid = row.get("id"), row.get("provider_id")
+                if (
+                    not isinstance(mid, str) or _SAFE_ID.fullmatch(mid) is None
+                    or not isinstance(pid, str) or _SAFE_ID.fullmatch(pid) is None
+                    or mid in active
+                ):
+                    raise B66ModelRouteError("selection_unavailable")
+                active[mid] = row
+            output: list[dict[str, Any]] = []
+            seen: set[str] = set()
+            for row in routes:
+                mid, pid, excluded = (
+                    row.get("id"), row.get("provider_id"), row.get("owner_excluded")
+                )
+                caps = row.get("capabilities")
+                if (
+                    not isinstance(mid, str) or _SAFE_ID.fullmatch(mid) is None
+                    or not isinstance(pid, str) or _SAFE_ID.fullmatch(pid) is None
+                    or not mid.startswith(pid + "/") or mid in seen
+                    or type(excluded) is not bool
+                    or not isinstance(caps, list) or len(caps) > 32
+                    or any(not isinstance(t, str) or _SAFE_ID.fullmatch(t) is None for t in caps)
+                ):
+                    raise B66ModelRouteError("selection_unavailable")
+                seen.add(mid)
+                enabled = mid in active
+                if enabled and active[mid]["provider_id"] != pid:
+                    raise B66ModelRouteError("selection_unavailable")
+                name = active[mid].get("name") if enabled else mid.split("/")[-1]
+                if (
+                    not isinstance(name, str) or not (1 <= len(name) <= 100)
+                    or any(ord(c) < 32 or ord(c) == 127 for c in name)
+                ):
+                    raise B66ModelRouteError("selection_unavailable")
+                output.append({
+                    "model_id": mid, "name": name, "provider_id": pid,
+                    "b14_enabled": enabled, "owner_excluded": excluded,
+                    "capabilities": sorted(set(caps)),
+                })
+            if set(active) - seen:
+                raise B66ModelRouteError("selection_unavailable")
+            return sorted(output, key=lambda row: row["model_id"])
+        except B66ModelRouteError:
+            raise
+        except Exception:
+            raise B66ModelRouteError("selection_unavailable") from None
+
     async def list_selectable_models(self) -> list[dict[str, str]]:
         """Authenticated B66 UI options only; 2 fixed GETs, zero provider POSTs.
 

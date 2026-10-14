@@ -26,6 +26,10 @@ from .contracts import (
     SubjectType,
 )
 from .entitlements import EntitlementGrant, EntitlementSnapshot
+from .voice_stt_entitlement_policy import (
+    VoiceSttPolicy,
+    voice_stt_grants_for_session,
+)
 
 
 SUPPORTED_ENGINE_PRODUCTS = frozenset({"b62", "b54-padiem-claw"})
@@ -349,6 +353,7 @@ def produce_authenticated_user_engine_entitlement(
     session: AuthSessionSnapshot,
     *,
     now: datetime,
+    voice_policy: VoiceSttPolicy | None = None,
 ) -> EntitlementSnapshot:
     """Map one current ACTIVE canonical login to the frozen MVP grant."""
 
@@ -389,13 +394,20 @@ def produce_authenticated_user_engine_entitlement(
             "current authenticated session is not active",
         )
 
+    # No approved voice policy is attached to the live Worker: default grants
+    # remain exactly orchestration.run, without implicit voice inheritance.
+    voice_grants = voice_stt_grants_for_session(
+        session, policy=voice_policy, now=observed_at,
+    )
     issued_at = max(
         session.issued_at.astimezone(UTC),
         ENGINE_ENTITLEMENT_POLICY_EFFECTIVE_AT,
     )
-    expires_at = (
-        session.expires_at.astimezone(UTC)
-    )
+    expires_at = session.expires_at.astimezone(UTC)
+    if voice_grants:
+        assert voice_policy is not None
+        issued_at = max(issued_at, voice_policy.effective_at.astimezone(UTC))
+        expires_at = min(expires_at, voice_policy.expires_at.astimezone(UTC))
     if expires_at <= issued_at:
         raise _error(
             "engine_entitlement_session_inactive",
@@ -411,6 +423,15 @@ def produce_authenticated_user_engine_entitlement(
             session.subject.subject_id,
             session.session_id,
             str(session.revision),
+            # Explicit policy revision + canonical tenant + exact unit limits
+            # bind voice grants to this immutable snapshot. No default policy
+            # means the historical E7 digest remains byte-for-byte identical.
+            *(
+                [
+                    f"voice:{voice_policy.revision}:{session.tenant_id}:"
+                    + ",".join(f"{g.key}={g.limit}" for g in voice_grants)
+                ] if voice_grants else []
+            ),
         )
     )
     digest = hashlib.sha256(
@@ -436,6 +457,7 @@ def produce_authenticated_user_engine_entitlement(
                 allowed=True,
                 limit=None,
             ),
+            *voice_grants,
         ),
     )
 
@@ -447,6 +469,7 @@ async def ensure_authenticated_user_engine_entitlement(
     product_id: str,
     subject: CanonicalSubjectRef,
     now: datetime,
+    voice_policy: VoiceSttPolicy | None = None,
 ) -> EntitlementSnapshot:
     """Resolve login truth, produce, and install through the CP-owned seam."""
 
@@ -463,6 +486,7 @@ async def ensure_authenticated_user_engine_entitlement(
         produce_authenticated_user_engine_entitlement(
             session,
             now=observed_at,
+            voice_policy=voice_policy,
         )
     )
     return store.install_entitlement_snapshot(

@@ -9,6 +9,7 @@ import pytest
 
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
+from app.history import PRODUCT_SCOPE_CHAT
 from app.main import create_app
 from app.model_policy import EXECUTABLE_B14_MODEL_IDS
 from app.saved_outputs import (
@@ -47,9 +48,9 @@ class MemoryHistory:
         self.conversations = {}
         self.projects = {}
 
-    async def get_conversation(self, user_id, conversation_id):
+    async def get_conversation(self, user_id, conversation_id, *, product_scope):
         row = self.conversations.get(conversation_id)
-        if not row or row["user_id"] != user_id:
+        if not row or row["user_id"] != user_id or row.get("product_scope") != product_scope:
             return None
         return {
             "id": conversation_id,
@@ -166,6 +167,7 @@ async def test_saved_output_crud_is_owner_scoped_and_list_hides_content():
         "id": CONVERSATION_ID,
         "user_id": OWNER_ID,
         "project_id": PROJECT_ID,
+        "product_scope": PRODUCT_SCOPE_CHAT,
         "messages": [],
     }
     store = MemorySavedOutputStore()
@@ -221,6 +223,7 @@ async def test_provenance_ids_are_server_verified_before_save():
         "id": CONVERSATION_ID,
         "user_id": OWNER_ID,
         "project_id": PROJECT_ID,
+        "product_scope": PRODUCT_SCOPE_CHAT,
         "messages": [],
     }
     store = MemorySavedOutputStore()
@@ -363,13 +366,19 @@ def test_saved_outputs_ui_is_additive_and_truthful():
 
     assert '<link rel="stylesheet" href="./outputs.css" />' in html
     assert '<script src="./outputs.js"></script>' in html
-    assert 'id="outputsNavButton"' in html and "hidden" in html
-    assert "저장한 답변" in html
+    # #4462: the sidebar saved-answers button/section leave the visible IA,
+    # and the per-answer save entry stays hidden with them (write-only saving
+    # has no retrieval path). Saved data, the dialog, copy/download and the
+    # /api/outputs contract are preserved untouched.
+    assert 'id="outputsNavButton"' not in html
+    assert 'id="outputsSection"' not in html
     assert 'id="savedOutputDialog"' in html
     assert 'fetch("/api/outputs"' in js
+    assert 'save.hidden = true' in js
+    assert '"answer-action answer-copy"' in js and '"answer-action answer-download"' in js
     assert "navigator.clipboard" in js and "document.execCommand" in js
     assert "new Blob([text]" in js and "URL.createObjectURL" in js and "URL.revokeObjectURL" in js
-    assert 'save.hidden = !outputsReady' in js
+    assert 'save.hidden = !outputsReady' not in js
     assert "window.confirm(" not in js
     assert "PadiemConfirmDialog.confirm" in js
     assert 'dialog.id = "confirmDialog"' in a11y

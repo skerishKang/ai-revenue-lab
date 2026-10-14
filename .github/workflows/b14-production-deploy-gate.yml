@@ -287,10 +287,18 @@ jobs:
           with open('/tmp/b14-models.json', encoding='utf-8') as fh:
               payload = json.load(fh)
 
-          expected = [row['id'] for row in owner_registry['models'] if row.get('enabled') is True]
-          assert expected and len(expected) == len(set(expected)), 'owner JSON registry must be nonempty and unique'
+          # Registration != execution permission. Inactive owner-intake
+          # models must be present in registered_routes but absent from catalog.
+          registered = [row['id'] for row in owner_registry['models']]
+          available = [
+              row['id'] for row in owner_registry['models']
+              if row.get('enabled') is True
+              and owner_registry['providers'][row['provider_id']]['enabled'] is True
+          ]
+          assert registered and len(registered) == len(set(registered)), 'owner JSON registry must be nonempty and unique'
+          assert available, 'no executable owner model remains'
 
-          for key in ('catalog', 'registered_routes'):
+          for key, expected in (('catalog', available), ('registered_routes', registered)):
               rows = payload.get(key)
               assert isinstance(rows, list), f'B14 deployed {key} is not a list'
               deployed = [row.get('id') for row in rows if isinstance(row, dict)]

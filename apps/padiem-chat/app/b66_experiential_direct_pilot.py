@@ -112,7 +112,9 @@ class B66ExperientialPilotExecutor:
         try:
             async with httpx.AsyncClient(
                 transport=self._transport,
-                timeout=httpx.Timeout(75.0),
+                # Do not impose a product-owned generation deadline: upstream,
+                # connection lifetime and end-user cancellation remain decisive.
+                timeout=httpx.Timeout(None),
                 follow_redirects=False,
             ) as client:
                 async with client.stream(

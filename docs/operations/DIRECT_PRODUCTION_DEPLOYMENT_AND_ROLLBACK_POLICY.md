@@ -1,9 +1,18 @@
-# Git-Connected Automatic Production and Recovery Policy
+# Production Deployment and Recovery Policy — Pages Automatic / B62 Worker Manual
 
 - Status: portfolio operating policy
-- Owner: Web CTO
+- Document steward: Web CTO (execution delegated by Product Owner)
+- Decision authority: Product Owner; standing CTO delegation applies to routine review, merge, and approved releases
 - Authority: Issue #326
 - Intent: `../portfolio/AI_REVENUE_LAB_OPERATING_INTENT.md`
+
+## Applicability, authority, and conflict resolution
+
+- **Two different deployment paths:** Sections 1–14 govern Git-connected **Cloudflare Pages** automatic deployment. Section 15 is the existing **B62 `padiem-chat` Worker** protected GitHub Actions manual release exception. Neither path may be substituted for the other; this document does not create a manual deployment path for any other product.
+- **One-person Owner governance (decision dated 2026-10-13):** The Product Owner has delegated routine source review, merge, and release execution to CENTRAL CTO under the existing workflow. Do **not** demand a second independent GitHub account, an unrelated reviewer, a new required-reviewer setting, or a repeated ceremonial Owner approval. Absence of unconfigured GitHub environment reviewers is not a blocker. Respect any real, currently configured GitHub protection and any named, task-specific Owner-reserved decision.
+- **Technical verification is not second-person approval:** `independent runtime evidence` means independently checking what Production actually serves against the reviewed source and binding state. `independent local validation` is a separately scoped test role when explicitly necessary. Neither term silently requires a second *human* GitHub deployment reviewer.
+- **Precedence:** Current explicit Owner decision → authorized non-public business governance for business decisions → `AGENTS.md` and canonical engineering/deployment policies → product-specific release documentation → historical issue/PR comments. When a lower-priority text conflicts, correct that text before adding a new gate; never infer missing security permissions or bypass protections that GitHub actually enforces.
+- A future independent-human approval mandate would be a **new business/process decision**, requiring the Product Owner's explicit instruction; a workflow's `environment: production` label or lack of `required_reviewers` never establishes that mandate.
 
 ## 1. Purpose
 
@@ -15,7 +24,7 @@ For Git-connected Cloudflare Pages projects, **merging an approved PR to the con
 
 ## 2. Default flow
 
-After explicit merge and Production authorization, the default flow is:
+After an authorized merge (including routine CTO execution under standing Owner delegation), the default flow is:
 
 ```text
 validated source
@@ -47,7 +56,7 @@ Deployment authorization remains separate from UI, UX, backend, and business ver
 - `UI_APPROVED` does not automatically authorize merge or Production exposure.
 - A merged PR does not automatically prove a UI, UX, backend, or business verdict.
 - A successful automatic deployment does not prove product quality, user value, or revenue.
-- Once the owner authorizes the accepted PR to merge, the Git-connected automatic Production deployment requires no second deployment approval or manual deployment action.
+- Once an accepted PR is merged under standing Owner-to-CTO delegation or a task-specific Owner approval, the Git-connected automatic Production deployment requires no second deployment approval or manual deployment action.
 
 ## 4. Dedicated project rule
 
@@ -277,6 +286,27 @@ Portfolio Console operation must:
 
 ## 14. Relationship to phase gates
 
-UI, UX, and backend gates define what work is authorized. This policy defines how an authorized merge reaches Production through the existing Git integration and how failures are recovered.
+UI, UX, and backend gates define what work is authorized. Sections 1–14 define how an authorized merge reaches Production through the existing Pages Git integration and how failures are recovered; §15 separately controls the existing B62 Worker manual release. Neither path adds a second human approval.
 
 A phase document must not imply that Preview, staging, or manual deployment is available unless it links to a new explicit owner decision or an already approved Business-specific exception.
+
+## 15. PADIEM B62 Worker — single-owner protected manual release (owner decision 2026-10-13)
+
+**Scope:** `skerishKang/ai-revenue-lab` / B62 `padiem-chat` production **Worker code deployment** under [#4522](https://github.com/skerishKang/ai-revenue-lab/issues/4522) and [#4549](https://github.com/skerishKang/ai-revenue-lab/issues/4549), plus its existing P01 SSE-only settings gate under [#3930](https://github.com/skerishKang/ai-revenue-lab/issues/3930). This is a **product-specific, existing GitHub Actions manual code/configuration release contract**, not a change to §1–14's Git-connected **Pages** automatic deployment policy, nor authorization to deploy B14, B54, Engine or any other Worker.
+
+The owner has confirmed that this repository is operated predominantly by one person. **A second account owned and controlled by that same person is not an independent human reviewer.** An unconfigured GitHub `production` Required Reviewer rule (`required_reviewers=0`) is **not a release blocker** and the owner must not be asked to invent a second GitHub identity or authorize an additional reviewer. Older #4522 commentary stating independent required reviewers are mandatory for this specific rollout is superseded by this dated owner decision. **Do not delete the `production` environment, disable or bypass an actual existing protection, add collaborators, change repo settings, or claim a review gate was satisfied.** If GitHub enforces a protection at execution, satisfy it legitimately or stop; this policy is not a technical bypass.
+
+### Mandatory substitute controls — fail closed
+
+1. **Authority and scope:** Rely on the recorded standing Owner-to-CTO execution delegation for routine work; additionally record a specific Owner permission, scope or release window only when actually reserved or specified. Do not manufacture a new approval step or time window. CENTRAL owns exact-head review and execution; local agents do not deploy, and source PR merge alone is not production verification. Preserve all existing authentication, model, D1 and customer-entitlement feature holds.
+2. **Revision and checks:** Require reviewed source merged to current `main`, relevant required exact-HEAD CI and GitGuardian success, plus no conflicting deployment; re-check exact `main` SHA before any write. Do not infer readiness from historical CI or source green alone.
+3. **Nonmutating preflight first:** Use existing `.github/workflows/b62-production-code-deploy-gate.yml` `repository_preflight` and `cloudflare_readonly` modes on exact current `main`, with the existing canonical Worker, hostname, binding and secret authority checks. Require D1 migration **008 and 040 both EXACT**, same Worker-bound `PADIEM_CHAT_DB`, recovery capability, current served/version topology, valid scoped credentials, and no unverified identity/config drift. **Migration 040 was already applied/read back EXACT; do not apply it again.**
+4. **Rollback and configuration:** Record the latest verified 100%-served old Worker version and available rollback path; preserve actual D1, R2, service, environment-variable and secret bindings. Do not log token/secret values or create a replacement credentials workflow. Unknown/ambiguous responses block mutation.
+5. **Single controlled deployment:** Only if all checks pass, use the existing explicit, bounded `workflow_dispatch` `deploy_production_code` path with exact `target_sha` and its established confirmation string. Keep the existing GitHub `production` environment reference; do not weaken its technical safeguards. No implicit deploy on arbitrary merge, parallel deployment, fallback upload, or ad-hoc `wrangler` command.
+6. **Verified evidence from the running service (not a second-person review):** Require exact newly served version readback, health and previous-binding parity, and authenticated owner P01 status/approval/SSE journey with bounded Chat/Claw/Calendar acceptance where relevant. A successful workflow/merge is not equal to a verified live customer session; on failure use the existing bounded rollback/recovery contract, no blind retries.
+
+`RELEASE_AUTHORITY=SINGLE_OWNER` · `SECOND_PERSONAL_ACCOUNT_REQUIRED=NO` · `EXISTING_GITHUB_PROTECTIONS_BYPASSED=NO` · `D1_040_REAPPLY=NO` · `PRODUCTION_MUTATION_BEFORE_PREFLIGHT=NO`.
+
+**Technical exception:** The file `b62-current-main-production-deploy-trigger.yml` has a separate path-scoped `push` trigger when **that workflow file itself** is changed. Do not edit/merge it as a casual documentation change; review its deployment-dispatch effect separately. This policy amendment does not modify either deployment workflow.
+
+**Historical evidence at adoption (2026-10-13):** D1 040 was proven EXACT in #4522; at the time, the new Worker served status and authenticated owner P01 E2E were not yet verified. For the **current** live served version and remaining E2E, consult [#3936](https://github.com/skerishKang/ai-revenue-lab/issues/3936) and fresh workflow readback, not this historical snapshot. The single-owner decision does not imply deployment or user acceptance.

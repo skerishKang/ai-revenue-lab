@@ -33,6 +33,7 @@ from .b66_reasoning_level import (
     validate_reasoning_level,
 )
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
+from .request_contract import MAX_BROWSER_BODY_BYTES
 from .claw_memory_routes import _resolve_memory_workspace
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 
@@ -283,11 +284,16 @@ def _company_profile_store(request: Request) -> Any | None:
     return getattr(request.app.state, "b66_company_profile_store", None)
 
 
-async def _json(request: Request) -> dict[str, Any] | JSONResponse:
+async def _json(
+    request: Request, *, max_body_bytes: int = MAX_BODY_BYTES
+) -> dict[str, Any] | JSONResponse:
+    # The quote interpreter carries a model-bound user prompt. Do not apply
+    # the 16KiB B66 metadata/administration request limit to that payload.
+    # The shared 6MB browser transport guard still bounds memory exposure.
     if request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/json":
         return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
     try:
-        body = await read_bounded_request_body(request, max_bytes=MAX_BODY_BYTES)
+        body = await read_bounded_request_body(request, max_bytes=max_body_bytes)
     except RequestBodyTooLarge:
         return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     if not body:
@@ -313,15 +319,19 @@ async def b66_runtime_config(request: Request) -> JSONResponse:
             {"ok": True, "enabled": False, "embed_url": None, "origin": None},
             headers=_NO_STORE,
         )
-    return JSONResponse(
-        {
-            "ok": True,
-            "enabled": True,
-            "embed_url": base.rstrip("/") + "/embed.html",
-            "origin": base.rstrip("/"),
-        },
-        headers=_NO_STORE,
-    )
+    from .b66_pc_directory_routes import b66_pc_directory_available
+    # This response is only a UI hint; /api/b66/connect/devices repeats the
+    # full product/workspace/membership grant on every GET, default OFF.
+    pc_list_ready = await b66_pc_directory_available(request, uid)
+    config = {
+        "ok": True,
+        "enabled": True,
+        "embed_url": base.rstrip("/") + "/embed.html",
+        "origin": base.rstrip("/"),
+    }
+    if pc_list_ready:
+        config["pc_device_list_enabled"] = True
+    return JSONResponse(config, headers=_NO_STORE)
 
 
 async def b66_saved_skills(request: Request) -> JSONResponse:
@@ -433,7 +443,7 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
     access, denied = await _member_access(request, uid)
     if denied is not None:
         return denied
-    data = await _json(request)
+    data = await _json(request, max_body_bytes=MAX_BROWSER_BODY_BYTES)
     if isinstance(data, JSONResponse):
         return data
     if set(data) - {"saved_skill_id", "message", "model_id", "reasoning_level"}:
@@ -482,7 +492,7 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
     if (
         not isinstance(message, str)
         or not message.strip()
-        or len(message.strip()) > MAX_CONVERSATION_CHARS
+        or (MAX_CONVERSATION_CHARS is not None and len(message.strip()) > MAX_CONVERSATION_CHARS)
     ):
         return _error(400, "invalid_message", "견적 요청 내용을 입력해 주세요.")
 

@@ -171,8 +171,50 @@ class _HandoffStore:
                 continue
             if str(row["pause_expires_at"]) <= _now_stamp():
                 continue
-            return {key: value for key, value in row.items() if key != "consumed_at"}
+            from app.history import _handoff_trusted_request_json
+            return {
+                **{key: value for key, value in row.items() if key != "consumed_at"},
+                "trusted_request_fingerprint": _handoff_trusted_request_json(row["trusted_request"])[1],
+            }
         return None
+
+    async def claim_claw_approval_handoff(
+        self, *, user_id: str, run_id: str, workspace_id: str | None,
+        continuation_ref: str, pause_id: str, trusted_request_fingerprint: str,
+    ) -> str | None:
+        from app.history import _handoff_trusted_request_json
+        for row in self.rows:
+            if (row["user_id"] != user_id or row["run_id"] != run_id or
+                row.get("workspace_id") != workspace_id or
+                row.get("continuation_ref") != continuation_ref or
+                row.get("pause_id") != pause_id or row.get("consumed_at") is not None):
+                continue
+            if _handoff_trusted_request_json(row["trusted_request"])[1] != trusted_request_fingerprint:
+                continue
+            token = "decision_claim:fake_one_winner"
+            row["consumed_at"] = token
+            return token
+        return None
+
+    async def release_claw_approval_claim(
+        self, *, user_id: str, run_id: str, workspace_id: str | None, claim_token: str,
+    ) -> bool:
+        for row in self.rows:
+            if (row["user_id"] == user_id and row["run_id"] == run_id and
+                row.get("workspace_id") == workspace_id and row.get("consumed_at") == claim_token):
+                row["consumed_at"] = None
+                return True
+        return False
+
+    async def finalize_claw_approval_claim(
+        self, *, user_id: str, run_id: str, workspace_id: str | None, claim_token: str,
+    ) -> bool:
+        for row in self.rows:
+            if (row["user_id"] == user_id and row["run_id"] == run_id and
+                row.get("workspace_id") == workspace_id and row.get("consumed_at") == claim_token):
+                row["consumed_at"] = _now_stamp()
+                return True
+        return False
 
     async def consume_claw_approval_handoff(
         self, *, user_id: str, run_id: str, workspace_id: str | None = None
@@ -673,7 +715,7 @@ def test_second_engine_pause_is_preserved_as_a_new_generation() -> None:
     ).payload["session_id"] == RUN_ID
 
 
-def test_transport_failure_keeps_the_handoff_retry_safe() -> None:
+def test_ambiguous_engine_transport_error_keeps_claim_until_reconciliation() -> None:
     store = _store_with()
     transport = _FakeEngineTransport(
         events=RESUMED_TO_COMPLETED, error=PadiemAiEngineClientError("engine_http_error", "down")
@@ -681,13 +723,14 @@ def test_transport_failure_keeps_the_handoff_retry_safe() -> None:
     response = _post(_client(store, transport), {"run_id": RUN_ID, "decision": "approve"})
     assert response.status_code == 502
     assert response.json()["error"]["code"] == "engine_execution_failed"
-    assert store.rows[0]["consumed_at"] is None
+    assert str(store.rows[0]["consumed_at"]).startswith("decision_claim:")
     assert store.status_updates == []
-    # A retry after recovery still has its stored pause.
+    # The transport may have reached Engine before failing. A second POST
+    # cannot turn this ambiguous state into a duplicate physical approval.
     recovered = _FakeEngineTransport(events=RESUMED_TO_COMPLETED)
     retry = _post(_client(store, recovered), {"run_id": RUN_ID, "decision": "approve"})
-    assert retry.status_code == 200
-    assert store.rows[0]["consumed_at"] is not None
+    assert retry.status_code == 404
+    assert recovered.payloads == []
 
 
 def test_engine_rejection_of_the_decision_is_retry_safe_and_not_consumed() -> None:
@@ -725,3 +768,40 @@ def test_migration_017_is_additive_consumption_columns_only() -> None:
     # No new continuation store, and nothing destructive.
     for forbidden in ("create table", "drop ", "delete from", "truncate", "foreign key"):
         assert forbidden not in sql, forbidden
+
+
+def test_parallel_approve_and_deny_cannot_dispatch_engine_twice() -> None:
+    """Exercise two actual authenticated HTTP requests sharing one handoff."""
+    import asyncio
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Event
+
+    class _BlockedTransport(_FakeEngineTransport):
+        def __init__(self):
+            super().__init__(events=RESUMED_TO_COMPLETED)
+            self.entered = Event()
+            self.release = Event()
+
+        async def resume_orchestration(self, request: Any) -> dict[str, Any]:
+            self.entered.set()
+            await asyncio.to_thread(self.release.wait, 5)
+            return await super().resume_orchestration(request)
+
+    store = _store_with()
+    transport = _BlockedTransport()
+    client = _client(store, transport)
+    try:
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            first = pool.submit(_post, client, {"run_id": RUN_ID, "decision": "approve"})
+            assert transport.entered.wait(5), "first Engine decision did not start"
+            # The first request remains physically in-flight at Engine.
+            second = _post(client, {"run_id": RUN_ID, "decision": "deny"})
+            assert second.status_code in (404, 409)
+            assert len(transport.payloads) == 0
+            transport.release.set()
+            result = first.result(timeout=10)
+        assert result.status_code == 200
+        assert len(transport.payloads) == 1
+        assert store.rows[0]["consumed_at"] is not None
+    finally:
+        transport.release.set()

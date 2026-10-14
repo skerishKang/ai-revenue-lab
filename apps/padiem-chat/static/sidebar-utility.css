@@ -119,3 +119,226 @@
     min-width: 88px;
   }
 }
+
+/* #4416: explicit desktop collapse/restore; mobile remains its existing drawer.
+ * No client storage, authentication changes, or hidden permission affordances. */
+.sidebar-collapse-button,
+.sidebar-restore-button {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 20px;
+}
+/* The collapse control now sits at the right end of the brand row; the old
+ * absolute placement beside New Chat and its reserved margin are gone. */
+.brand-row .sidebar-collapse-button {
+  margin-left: auto;
+}
+html[data-theme="padiem-glass"] .brand-row {
+  /* the former right gutter only reserved space for the absolute button */
+  padding-right: 0;
+}
+/* Second sidebar line: New Chat and conversation Search share one row.
+ * Conversation search is not implemented yet, so it stays disabled and is
+ * identified via its title/aria-label ("대화 검색 준비 중"). */
+.sidebar-actions-row {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 0;
+}
+.sidebar-actions-row .new-chat {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.sidebar-actions-row .sidebar-search-item {
+  flex: 0 1 auto;
+  min-width: 0;
+  justify-content: center;
+}
+.sidebar-restore-button {
+  display: none;
+}
+.sidebar-collapse-button:hover,
+.sidebar-restore-button:hover {
+  background: var(--accent-soft);
+}
+.sidebar-collapse-button:focus-visible,
+.sidebar-restore-button:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.sidebar-account .account-avatar {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  border-radius: 50%;
+  font-size: 15px;
+  background: var(--accent-soft);
+}
+.sidebar-account .account-name {
+  font-size: 13px;
+  min-width: 0;
+}
+.sidebar-account {
+  width: 100%;
+  min-width: 0;
+}
+.sidebar-account .account-name {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.sidebar-account .login-button {
+  margin-left: 0;
+  flex: 0 0 auto;
+  font-size: 12px;
+  padding: 0 10px;
+  min-width: 0;
+  min-height: 44px;
+  max-width: 112px;
+}
+@media (max-width: 920px) {
+  .sidebar-collapse-button,
+  .sidebar-restore-button {
+    display: none !important;
+  }
+}
+@media (min-width: 921px) {
+  html body .app-shell.sidebar-collapsed {
+    --workspace-rail: 0px;
+    grid-template-columns: 0 minmax(0, 1fr);
+  }
+  html body .app-shell.sidebar-collapsed .sidebar {
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateX(-100%);
+  }
+  html body .app-shell.sidebar-collapsed .sidebar-restore-button {
+    display: inline-flex;
+  }
+  html body .app-shell.sidebar-collapsed .main-panel {
+    grid-column: 2;
+    min-width: 0;
+  }
+  html body .app-shell.sidebar-collapsed .composer-wrap {
+    left: 50% !important;
+    width: min(920px, calc(100vw - 48px)) !important;
+    transform: translateX(-50%) !important;
+  }
+  html[data-theme="padiem-glass"] body .app-shell.sidebar-collapsed[data-state="claw"] .composer-wrap {
+    left: 50% !important;
+    width: min(920px, calc(100vw - 48px)) !important;
+    transform: translateX(-50%) !important;
+  }
+  html[data-theme="padiem-glass"] body .app-shell.sidebar-collapsed[data-state="chat"] .composer-wrap {
+    left: 50% !important;
+    width: min(920px, calc(100vw - 48px)) !important;
+    transform: translateX(-50%) !important;
+  }
+  html[data-theme="padiem-glass"] body .app-shell.sidebar-collapsed[data-state="chat"] .conversation {
+    width: min(1000px, calc(100% - 48px)) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+/* #442x: distinguish Chat from Claw without altering their canonical routes.
+ * Pseudo-labels preserve the existing button text and keyboard focus order.
+ * New Chat itself no longer carries a mode hint: the redundant "일반 대화"
+ * label was removed when the actions row was rearranged (B62 split-search). */
+#clawNavButton[data-mode-hint]::after {
+  content: attr(data-mode-hint);
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0;
+  opacity: .7;
+  white-space: nowrap;
+}
+/* The signed-in summary is a keyboard-accessible disclosure. Existing login
+ * and settings controls stay visible and keep all their original authority. */
+.sidebar-account {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  column-gap: 8px;
+}
+.sidebar-account .account-profile-toggle {
+  min-width: 0;
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  padding: 4px;
+  background: transparent;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  text-align: left;
+}
+.sidebar-account .account-profile-toggle:hover,
+.sidebar-account .account-profile-toggle[aria-expanded="true"] {
+  border-color: var(--line);
+  background: var(--accent-soft);
+}
+.sidebar-account .account-profile-toggle:focus-visible,
+.sidebar-account .account-profile-settings:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.sidebar-account .account-profile-panel {
+  grid-column: 1 / -1;
+  min-width: 0;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+}
+.sidebar-account .account-profile-settings {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 8px 10px;
+  background: var(--accent-soft);
+  color: var(--text);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Keep the original account DOM contract: capability projection may insert an
+ * avatar before accountName, so both remain direct accountContainer children.
+ * An accessible overlay covers the avatar/name, not the login/logout action. */
+.sidebar-account > .account-profile-toggle {
+  grid-column: 1 / 3;
+  grid-row: 1;
+  z-index: 1;
+}
+.sidebar-account > .account-avatar {
+  grid-column: 1;
+  grid-row: 1;
+  margin-left: 4px;
+  pointer-events: none;
+  z-index: 2;
+}
+.sidebar-account > .account-name {
+  grid-column: 2;
+  grid-row: 1;
+  pointer-events: none;
+  z-index: 2;
+}
+.sidebar-account > .login-button {
+  grid-column: 3;
+  grid-row: 1;
+  z-index: 3;
+}

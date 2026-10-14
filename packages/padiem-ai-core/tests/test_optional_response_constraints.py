@@ -5,6 +5,7 @@ import asyncio
 from padiem_ai_core.b14_execution import B14ExecutionResult
 from padiem_ai_core.b14_streaming import B14StreamEvent
 from padiem_ai_core.contracts import AgentProfile
+from padiem_ai_core.dispatch_preinstruction import PREINSTRUCTION_VERSION
 from padiem_ai_core.execution_runtime import ExecutionRequest, ExecutionRuntime
 from padiem_ai_core.streaming_runtime import StreamingExecutionRuntime
 
@@ -72,7 +73,7 @@ def test_agent_profile_accepts_absent_response_constraints() -> None:
     assert profile.to_public_dict()["max_tokens"] is None
 
 
-def test_nonstreaming_execution_omits_system_message_and_max_tokens() -> None:
+def test_nonstreaming_execution_adds_only_the_mandatory_context_and_omits_max_tokens() -> None:
     executor = CaptureExecutor()
     runtime = ExecutionRuntime(app_id="test-app", b14_client=executor)
 
@@ -80,11 +81,18 @@ def test_nonstreaming_execution_omits_system_message_and_max_tokens() -> None:
 
     assert len(executor.calls) == 1
     payload = executor.calls[0].to_payload()
-    assert payload["messages"] == [{"role": "user", "content": "질문"}]
+    # #4465/#4468: an unconstrained agent still gets exactly one system message,
+    # and its only content is the mandatory per-dispatch server context.
+    system = [item for item in payload["messages"] if item["role"] == "system"]
+    assert len(system) == 1
+    assert system[0]["content"].startswith(
+        f"[PADIEM 공통 사전지침 {PREINSTRUCTION_VERSION}]"
+    )
+    assert payload["messages"][1] == {"role": "user", "content": "질문"}
     assert "max_tokens" not in payload
 
 
-def test_streaming_execution_omits_system_message_and_max_tokens() -> None:
+def test_streaming_execution_adds_only_the_mandatory_context_and_omits_max_tokens() -> None:
     client = CaptureStreamClient()
     runtime = StreamingExecutionRuntime(app_id="test-app", b14_stream_client=client)
 
@@ -93,7 +101,12 @@ def test_streaming_execution_omits_system_message_and_max_tokens() -> None:
     assert events[-1].done is True
     assert len(client.calls) == 1
     payload = client.calls[0].to_payload()
-    assert payload["messages"] == [{"role": "user", "content": "질문"}]
+    system = [item for item in payload["messages"] if item["role"] == "system"]
+    assert len(system) == 1
+    assert system[0]["content"].startswith(
+        f"[PADIEM 공통 사전지침 {PREINSTRUCTION_VERSION}]"
+    )
+    assert payload["messages"][1] == {"role": "user", "content": "질문"}
     assert "max_tokens" not in payload
 
 
@@ -104,10 +117,13 @@ def test_trusted_additional_context_still_uses_one_system_message() -> None:
     run(runtime.run(request(additional_system_context="Trusted project context.")))
 
     payload = executor.calls[0].to_payload()
-    assert payload["messages"] == [
-        {"role": "system", "content": "Trusted project context."},
-        {"role": "user", "content": "질문"},
-    ]
+    system = [item for item in payload["messages"] if item["role"] == "system"]
+    assert len(system) == 1
+    assert system[0]["content"].startswith(
+        f"[PADIEM 공통 사전지침 {PREINSTRUCTION_VERSION}]"
+    )
+    assert system[0]["content"].endswith("Trusted project context.")
+    assert payload["messages"][1] == {"role": "user", "content": "질문"}
     assert "max_tokens" not in payload
 
 
@@ -132,8 +148,10 @@ def test_explicit_constraints_remain_backward_compatible() -> None:
     run(runtime.run(req))
 
     payload = executor.calls[0].to_payload()
-    assert payload["messages"][0] == {
-        "role": "system",
-        "content": "Answer carefully.",
-    }
+    # The product instruction is preserved, now preceded by the mandatory context.
+    assert payload["messages"][0]["role"] == "system"
+    assert payload["messages"][0]["content"].startswith(
+        f"[PADIEM 공통 사전지침 {PREINSTRUCTION_VERSION}]"
+    )
+    assert payload["messages"][0]["content"].endswith("Answer carefully.")
     assert payload["max_tokens"] == 700

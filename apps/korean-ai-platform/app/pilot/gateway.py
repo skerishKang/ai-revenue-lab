@@ -49,7 +49,6 @@ from app.pilot.catalog import (
     CATALOG_MODELS,
     get_catalog_by_id,
     is_evidenced_free,
-    list_catalog_summaries,
 )
 from app.pilot.platform_secrets import (
     any_platform_secret_present,
@@ -436,11 +435,15 @@ async def pilot_health(request: Request):
     from .platform_secrets import ensure_all_platform_secrets
     await ensure_all_platform_secrets()
     state = resolve_configuration()
+    # Health must count the same enabled exact-model catalog as GET /models.
+    # CATALOG_MODELS is the retired public/auto lane and may be empty even
+    # when manual pinned routes in CATALOG_BY_ID are live and selectable.
+    enabled_model_count = len(_catalog_summary_dicts())
 
     b14_info = {
         "provider_mode": runtime_config.provider_mode,
         "has_key": any_platform_secret_present(),
-        "catalog_models": len(list_catalog_summaries()),
+        "catalog_models": enabled_model_count,
         "routing_policy": {
             "id": ROUTING_POLICY_ID,
             "chain": list(B14_AUTO_CHAIN),
@@ -488,7 +491,7 @@ async def pilot_health(request: Request):
             "status": "ok",
             "mode": "b14-live",
             "configured_providers": len(_providers_with_registered_routes()),
-            "configured_models": len(list_catalog_summaries()),
+            "configured_models": enabled_model_count,
             "registered_routes": len(CATALOG_BY_ID),
             "business14": b14_info,
         })
@@ -1089,6 +1092,23 @@ async def pilot_chat_completions(
     try:
         x_business14_provider_key = request.headers.get("x-business14-provider-key")
         raw_body = await _read_json_body(request)
+
+        # Explicit stream=true on a registered, manual B14 model reuses the
+        # independently validated SSE preview path. The original raw request
+        # body stays cached on Request; preview performs the canonical
+        # schema/route/secret checks, including no-fallback single-attempt.
+        # No automatic stream=false upgrade or BYOK/b14-auto promotion.
+        # This is a streaming wire opt-in, never an in-memory JSON cap bypass.
+        if (
+            isinstance(raw_body, dict)
+            and raw_body.get("stream") is True
+            and isinstance(raw_body.get("model"), str)
+            and raw_body["model"] != "b14/auto"
+            and _is_alpha_model(raw_body["model"])
+        ):
+            from .stream_gateway import pilot_stream_preview
+
+            return await pilot_stream_preview(request, parsed_body=raw_body)
 
         body = _validate_body(raw_body)
 

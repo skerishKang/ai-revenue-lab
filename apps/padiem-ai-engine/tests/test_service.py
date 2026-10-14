@@ -21,6 +21,7 @@ from app.service import (
     EXECUTE_PATH,
     HEALTH_PATH,
     MAX_REQUEST_BODY_BYTES,
+    MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES,
     EngineService,
 )
 
@@ -374,7 +375,7 @@ async def test_http_contract_bounds_body_and_content_type() -> None:
         method="POST",
         path=EXECUTE_PATH,
         content_type="application/json",
-        body=b"x" * (MAX_REQUEST_BODY_BYTES + 1),
+        body=b"x" * (MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES + 1),
     )
     bad_media = await service.handle(
         method="POST", path=EXECUTE_PATH, content_type="text/plain", body=raw
@@ -388,6 +389,36 @@ async def test_http_contract_bounds_body_and_content_type() -> None:
     assert too_large.body["error"]["code"] == "request_too_large"
     assert bad_media.status_code == 415
     assert bad_json.status_code == 400
+
+
+@pytest.mark.asyncio
+async def test_model_execute_accepts_long_unicode_payload_before_provider_without_truncation() -> None:
+    # Old 128KiB pilot cap rejected this input despite B14/Core supporting it.
+    runtime = FakeRuntime(value=result())
+    service = EngineService(runtime_factory=lambda _: runtime, b14_service_bound=True)
+    raw_user_text = ("한글 긴 모델 입력 " * 14000) + "최종"
+    payload = valid_payload()
+    payload["messages"] = [{"role": "user", "content": raw_user_text}]
+    raw = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+    assert MAX_REQUEST_BODY_BYTES < len(raw) < MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES
+    response = await service.handle(
+        method="POST", path=EXECUTE_PATH, content_type="application/json", body=raw
+    )
+    assert response.status_code == 200
+    assert len(runtime.calls) == 1
+    assert runtime.calls[0].messages[0]["content"] == raw_user_text
+
+
+def test_model_ingress_does_not_change_other_engine_route_memory_guards() -> None:
+    assert MAX_REQUEST_BODY_BYTES == 128 * 1024
+    assert MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES == 6_000_000
+    from pathlib import Path
+    worker = (Path(__file__).resolve().parents[1] / "worker.py").read_text(encoding="utf-8")
+    # Three model-orchestration paths share the existing 6MB model ingress;
+    # all unrelated Engine routes continue using their original 128KiB.
+    assert "EXECUTE_PATH, ORCHESTRATE_PATH," in worker
+    assert "ORCHESTRATION_STREAM_PATH, ORCHESTRATE_RESUME_PATH," in worker
+    assert "else MAX_REQUEST_BODY_BYTES" in worker
 
 
 @pytest.mark.asyncio

@@ -18,9 +18,10 @@ def test_conversation_state_loads_between_transport_and_app() -> None:
     ) < html.index('<script src="./app.js"></script>')
 
 
-def test_conversation_state_helper_has_bounded_browser_only_contract() -> None:
+def test_conversation_state_helper_has_no_model_input_tail_and_no_network() -> None:
     source = STATE_PATH.read_text(encoding="utf-8")
-    assert 'const MAX_MESSAGES = 20;' in source
+    assert 'const MAX_MESSAGES = 20;' not in source
+    assert 'slice(-MAX_MESSAGES)' not in source
     assert 'window.PadiemChatConversationState = Object.freeze({' in source
     assert 'fetch(' not in source
     assert 'document.' not in source
@@ -43,7 +44,7 @@ def test_app_delegates_conversation_data_but_keeps_request_lifecycle() -> None:
     assert 'conversationState.setConversationId(retryContext.conversationId);' in source
 
 
-def test_conversation_state_behavior_matches_existing_tail_id_and_skill_contract() -> None:
+def test_conversation_state_preserves_all_model_turns_and_id_skill_contract() -> None:
     script = f"""
     global.window = {{}};
     require({json.dumps(str(STATE_PATH))});
@@ -82,12 +83,12 @@ def test_conversation_state_behavior_matches_existing_tail_id_and_skill_contract
     )
     data = json.loads(completed.stdout)
     assert data == {
-        "outboundLength": 20,
-        "outboundFirst": "6",
+        "outboundLength": 26,
+        "outboundFirst": "0",
         "outboundLast": "next",
-        "secondOutboundFirst": "6",
+        "secondOutboundFirst": "0",
         "secondOutboundLast": "again",
-        "afterCommitLength": 20,
+        "afterCommitLength": 28,
         "afterCommitPenultimate": "answer",
         "idBeforeReset": "conv-1",
         "skillBeforeReset": "plan",

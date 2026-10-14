@@ -69,7 +69,9 @@ from app.orchestration_service import (
 )
 from app.service import (
     MAX_REQUEST_BODY_BYTES,
+    MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES,
     EngineService,
+    EXECUTE_PATH,
     HEALTH_PATH,
     ServiceResponse,
 )
@@ -95,10 +97,10 @@ ENGINE_FIRECRAWL_API_KEY_ENV = "PADIEM_ENGINE_FIRECRAWL_API_KEY"
 ENGINE_DAUM_REST_API_KEY_ENV = "PADIEM_ENGINE_DAUM_REST_API_KEY"
 ENGINE_DAUM_SEARCH_SORT_ENV = "PADIEM_ENGINE_DAUM_SEARCH_SORT"
 ENGINE_WEB_TIMEOUT_SECONDS_ENV = "PADIEM_ENGINE_WEB_TIMEOUT_SECONDS"
-# #1990: the B14 transport timeout must cover B14's full retry chain
-# (#1988: 45s hard cap + ~1.5s backoff overhead). Default 50s = 45s retry
-# cap + 5s margin; the engine orchestration budget is 60s, leaving 10s.
+# #4194/#4442: B14 transport respects the model first-response/read idle
+# budget (default 600s) rather than the retired 45s first-model wall cap.
 # Core enforces the 1-3600s bound on B14ExecutionConfig.timeout_seconds.
+# The B14 45s limit applies only to subsequent retry/fallback budget.
 ENGINE_B14_TIMEOUT_SECONDS_ENV = "PADIEM_ENGINE_B14_TIMEOUT_SECONDS"
 B14_TIMEOUT_DEFAULT_SECONDS = 600.0
 
@@ -571,6 +573,11 @@ class Default(WorkerEntrypoint):
             max_body_bytes = (
                 MAX_MEMORY_REQUEST_BODY_BYTES
                 if path in {MEMORY_PATH, MEMORY_WRITE_PATH}
+                else MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES
+                if path in {
+                    EXECUTE_PATH, ORCHESTRATE_PATH,
+                    ORCHESTRATION_STREAM_PATH, ORCHESTRATE_RESUME_PATH,
+                }
                 else MAX_REQUEST_BODY_BYTES
             )
             try:

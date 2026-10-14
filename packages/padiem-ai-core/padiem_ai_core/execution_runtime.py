@@ -24,11 +24,21 @@ from .contracts import (
     RunStatus,
     UsageMetadata,
 )
+from .dispatch_preinstruction import (
+    render_dispatch_preinstruction,
+    server_wall_clock,
+)
 
-MAX_EXECUTION_MESSAGES = 99
-MAX_EXECUTION_MESSAGE_CHARS = 32_000
-MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS = 16_000
-MAX_COMPOSED_SYSTEM_CHARS = 32_000
+# Execution messages are provider-native; trusted injected system context
+# retains separate bounds for tool/instruction safety.
+# Deprecated legacy model-prompt constants stay importable, but do not gate AI text.
+MAX_EXECUTION_MESSAGES: int | None = None
+MAX_EXECUTION_MESSAGE_CHARS: int | None = None
+# Model/reference context is provider-native within the existing Engine 6MB
+# request transport. These are byte memory guards, not model token caps.
+MAX_SYSTEM_CONTEXT_BYTES = 5_500_000
+MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS = MAX_SYSTEM_CONTEXT_BYTES  # import compatibility
+MAX_COMPOSED_SYSTEM_CHARS = MAX_SYSTEM_CONTEXT_BYTES  # import compatibility
 
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _MESSAGE_ROLES = frozenset({"user", "assistant"})
@@ -63,10 +73,8 @@ def _normalize_messages(
     if isinstance(messages, (str, bytes)):
         raise ValueError("messages must be a sequence of message objects")
     items = tuple(messages)
-    if not 1 <= len(items) <= MAX_EXECUTION_MESSAGES:
-        raise ValueError(
-            f"messages must contain 1 to {MAX_EXECUTION_MESSAGES} items"
-        )
+    if not items:
+        raise ValueError("messages must contain at least one item")
 
     normalized: list[Mapping[str, str]] = []
     for index, message in enumerate(items):
@@ -87,11 +95,6 @@ def _normalize_messages(
                 f"messages[{index}].content must be a non-empty string"
             )
         text = content.strip()
-        if len(text) > MAX_EXECUTION_MESSAGE_CHARS:
-            raise ValueError(
-                f"messages[{index}].content must not exceed "
-                f"{MAX_EXECUTION_MESSAGE_CHARS} characters"
-            )
         normalized.append(MappingProxyType({"role": role, "content": text}))
     return tuple(normalized)
 
@@ -104,24 +107,29 @@ def _normalize_additional_system_context(value: str | None) -> str | None:
     text = value.strip()
     if not text:
         return None
-    if len(text) > MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS:
+    if len(text.encode("utf-8")) > MAX_SYSTEM_CONTEXT_BYTES:
         raise ValueError(
-            "additional_system_context exceeds the bounded context limit"
+            "additional_system_context exceeds transport safety envelope"
         )
     return text
 
 
 def _compose_system_instruction(request: "ExecutionRequest") -> str | None:
-    parts: list[str] = []
+    # #4465/#4468: every model call carries the one trusted per-dispatch server
+    # clock, so "오늘/최신" is resolved from the executing server rather than the
+    # model's training cutoff or a browser clock. The product's own instruction
+    # is preserved and still follows it. The context is sampled exactly once
+    # here, which is the single dispatch point for this runtime.
+    parts: list[str] = [render_dispatch_preinstruction(server_wall_clock())]
     if request.agent.system_instruction is not None:
         parts.append(request.agent.system_instruction)
     if request.additional_system_context is not None:
         parts.append(request.additional_system_context)
-    if not parts:
-        return None
     content = "\n\n".join(parts)
-    if len(content) > MAX_COMPOSED_SYSTEM_CHARS:
-        raise ValueError("composed system instruction exceeds B14 message limit")
+    # The mandatory context is counted inside the same transport envelope as
+    # every other part, so it can never push the request past the guard.
+    if len(content.encode("utf-8")) > MAX_SYSTEM_CONTEXT_BYTES:
+        raise ValueError("composed system instruction exceeds transport safety envelope")
     return content
 
 
