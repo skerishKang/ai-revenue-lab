@@ -1,3 +1,26 @@
+<!-- CENTRAL_STATUS_RECONCILIATION_20261014_LATE_START -->
+## CENTRAL 2026-10-14 최종 GitHub 정합성 체크포인트
+
+> 이 **2026-10-13 기록 파일**의 하위 상태표는 역사적 스냅샷이다. 최신 우선 정보는 현재 GitHub `main=dccd141ed20dd69c76f1efd915312a98b7157b7c`와 [2026-10-14 중앙 개발 현황](PADIEM_CENTRAL_CTO_DEVELOPMENT_SNAPSHOT_20261014.md), 각 이슈에서 확인한다. 열린 PR은 조회 시점 **56건**; 장기 보관 Draft를 모두 현재 개발 중인 로컬 프로세스로 해석하지 않는다. 공개 기술만 기록하고 비공개 Governance를 복사하지 않는다.
+
+| 이슈/범위 | 2026-10-14 확정된 소스 상태 | 남은 권위·실사용 수용 |
+| --- | --- | --- |
+| [#4316](https://github.com/skerishKang/ai-revenue-lab/issues/4316) B66 통합 | #4658, #4661, #4680 **MERGED**. QuoteCore 입력/제품별 저장/SQLite negative tests 완료; #4672 **DRAFT** | 교차 isolate 유료 호출 중복 방지/로그인 고객 UI·D1 041→042/생성 견적 PDF E2E 미완료 |
+| [#4488](https://github.com/skerishKang/ai-revenue-lab/issues/4488) UI | #4650, #4653 병합 및 이전 served 확인, #4677 인증 세대·승인 레이스 수정 **MERGED** | 새 #4677 생산 배포·실제 승인/메모리/재로그인 아직 증거 없음 |
+| [#4643](https://github.com/skerishKang/ai-revenue-lab/issues/4643) STT | #4663, #4666, #4679 **MERGED**, #4679 독립 Node 31 PASS | 음성 운영 기본 OFF; 제품 마이크/권한·비용/binding/실서비스 E2E 미완료 |
+| [#3936](https://github.com/skerishKang/ai-revenue-lab/issues/3936) P01 | 단일 인증 live SSE 프레임/terminal·done 입증, LOCAL1 61+40 오프라인 PASS **보고** | 실 승인·거부·취소·재연결 및 동일 run 동등성 미확인. 추가 유료 POST 승인 소진 |
+| [#4483](https://github.com/skerishKang/ai-revenue-lab/issues/4483) B14 S3 | #4482 advisory-only MERGED; LOCAL5 최종 dispatch 권한 누락 조사/18 PASS 보고·Drive 파일 존재 확인 | signer #4480 및 실제 server-side product/tier/model/policy revision gate 미완료·OFF |
+| [#4139](https://github.com/skerishKang/ai-revenue-lab/issues/4139) / [#3099](https://github.com/skerishKang/ai-revenue-lab/issues/3099) Connector | #4572 **DRAFT**; 설치/트레이 일부 소스/기기 시험 증거 | 기존 `chat.padiem.net` 사용자 웹 버튼→PC 등록·WSS·ONLINE·철회/복구 실 E2E 미완료 |
+| Windows 테스트 | #4674 **MERGED** dev-only tzdata, exact-head 25 CI successes | B62 Worker 실운영 의존성/배포 변경 0 |
+
+**완료·대기 레인:** LOCAL1(Claw 오프라인/Windows SQLite), LOCAL3(브라우저 STT), LOCAL4(B66 QuoteCore 테스트), LOCAL5(B14 읽기 전용 조사/Drive), CLAW2(승인 레이스·tzdata), COMP2(B66 서버 소스)는 이번 작업이 종료됨. LOCAL2 #4672 및 Connector #4572는 미병합 Draft를 갖지만 **PR 존재가 실시간 작업 중이라는 의미는 아님**. 새 기술 작업은 CENTRAL의 비충돌 단일 배정 전 자동 착수하지 않는다. PR merge ≠ 운영 배포 ≠ 사용자 E2E; issue OPEN은 해당 미완료 실증 때문에 유지한다.
+
+<!-- CENTRAL_STATUS_RECONCILIATION_20261014_LATE_END -->
+
+<!-- CENTRAL_LIVE_POINTER_20261014_START -->
+> **2026-10-14 최신 상태는 이 문서의 2026-10-13 이슈/PR 목록보다 이후입니다.** 현재 진행 현황과 LOCAL별 비충돌 작업분장은 [2026-10-14 중앙 개발 스냅샷 최신 정정](PADIEM_CENTRAL_CTO_DEVELOPMENT_SNAPSHOT_20261014.md) 및 [Chat·Claw·B66 UI/Voice 인수인계 갱신](PADIEM_CHAT_CLAW_B66_UI_VOICE_HANDOFF_20261014.md)을 참조하세요. 특히 B66 #4661, QuoteCore #4658, Claw UI #4650/#4653, STT #4663, 모델 advice #4482, B62 pytest duration #4377은 후속 **병합**됐습니다. #4672는 Draft, #4139은 Windows 페어링 미입증, #4488은 운영 데이터 의존 검증 OPEN입니다. 10-13 숫자/HEAD와 옛 OPEN/DRAFT 문구는 **역사적 스냅샷**이며 현재 판정에 사용하지 마세요.
+<!-- CENTRAL_LIVE_POINTER_20261014_END -->
+
 # PADIEM AI — GitHub issue/document operational reconciliation (2026-10-13 KST)
 
 ## 0A. CENTRAL refresh — 2026-10-13 KST; verified main `b6b2f1a52cd97eb3d4d847535a787c21e2f0a68a`

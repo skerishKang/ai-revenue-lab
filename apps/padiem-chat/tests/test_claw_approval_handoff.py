@@ -127,11 +127,12 @@ class _FakeStatement:
 
     def _apply_handoff_update(self) -> dict[str, Any]:
         assignments = self._sql.split(" SET ", 1)[1].split(" WHERE ", 1)[0]
-        row_id = self._values[-1]
+        conditional = "AND consumed_at=? RETURNING id" in self._sql
+        row_id = self._values[-2] if conditional else self._values[-1]
         target = next((row for row in self._db.handoff_rows if row.get("id") == row_id), None)
-        if target is None:
+        if target is None or (conditional and target.get("consumed_at") != self._values[-1]):
             return {"success": True, "meta": {"changes": 0}}
-        values = iter(self._values[:-1])
+        values = iter(self._values[:-2] if conditional else self._values[:-1])
         for clause in assignments.split(","):
             column, _, raw = clause.strip().partition("=")
             if raw.strip().upper() == "NULL":
@@ -166,6 +167,11 @@ class _FakeStatement:
         raise AssertionError(f"unexpected SQL for run(): {sql!r}")
 
     async def first(self) -> dict[str, Any] | None:
+        if self._sql.startswith("UPDATE claw_approval_handoff") and "RETURNING id" in self._sql:
+            result = self._apply_handoff_update()
+            if result["meta"]["changes"] == 1:
+                return {"id": self._values[-2]}
+            return None
         for row in self._candidates():
             if self._matches(row):
                 return dict(row)

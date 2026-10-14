@@ -953,6 +953,10 @@
     authState = data && typeof data === "object" ? data : { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
     const ready = authState.ready === true;
     const authenticated = ready && authState.authenticated === true;
+    // #4488: a decision that began in a previous session generation must never
+    // repaint this one, and its still-pending promise must not block the new
+    // session from deciding. Auth loss and an account switch both invalidate.
+    noteClawApprovalSession(authenticated);
     // #3790 signed-in change notification contains no identity or credentials.
     if (typeof window.dispatchEvent === "function" && typeof CustomEvent === "function") {
       window.dispatchEvent(new CustomEvent("padiem:auth-state", { detail: { authenticated } }));
@@ -1004,6 +1008,17 @@
         approvedError.hidden = true;
         approvedError.textContent = "";
         approvedError.removeAttribute("data-state");
+      }
+      // #4488 re-login: the pending approval decision surface is the one
+      // session-scoped Claw control that carries a specific run_id together
+      // with its approve/deny actions, so it must not outlive the session
+      // either. Otherwise re-entering Claw after an auth loss would re-show a
+      // previous session's decision controls for a run this session never
+      // requested.
+      const approvalActions = document.getElementById("clawApprovalActions");
+      if (approvalActions) {
+        approvalActions.replaceChildren();
+        approvalActions.hidden = true;
       }
       // #4488 Phase A: the disclosure wrapper must not outlive the session.
       const runHistoryDisclosure = document.getElementById("clawRunHistoryDisclosure");
@@ -2020,6 +2035,34 @@
   let clawWaitRevealed = false;
   let clawWaitAnnouncedStage = 0;
   let clawApprovalInFlight = false;
+  // #4488 re-login: monotonic session generation for the pending-approval
+  // decision surface. A decision captures this value when it starts; losing
+  // the session (or signing in as a different account) bumps it, so a response
+  // that lands after the transition can neither repaint the signed-out surface
+  // nor resurrect a previous session's run state. Same shape as the
+  // run-history visibility epoch.
+  let clawApprovalEpoch = 0;
+  // Best-effort client-visible session identity. The browser holds no stable
+  // user id, so the account display name is the only switch signal available.
+  let clawApprovalSessionToken = "unset";
+
+  function invalidateClawApprovalSession() {
+    clawApprovalEpoch += 1;
+    // Release the shared single-flight flag so the next session can decide at
+    // all. The stale promise's own finally is epoch-guarded, so it can never
+    // release a newer session's busy state instead.
+    clawApprovalInFlight = false;
+  }
+
+  function noteClawApprovalSession(authenticated) {
+    const token = authenticated
+      ? "in:" + (typeof authState.user?.name === "string" ? authState.user.name.trim() : "")
+      : "out";
+    if (token !== clawApprovalSessionToken) {
+      clawApprovalSessionToken = token;
+      invalidateClawApprovalSession();
+    }
+  }
 
   const clawFallbackCopy = {
     "claw-result-badge": "Preview",
@@ -3869,6 +3912,10 @@
     async function decide(decision) {
       if (clawApprovalInFlight) return;
       clawApprovalInFlight = true;
+      // The session generation this decision belongs to, captured before any
+      // await. An auth loss or account switch bumps the epoch, so a response
+      // that lands afterwards is stale and must not be presented.
+      const decisionEpoch = clawApprovalEpoch;
       setApprovalControlsBusy(container, true);
       status.hidden = false;
       status.dataset.state = "pending";
@@ -3880,6 +3927,9 @@
           body: JSON.stringify({ run_id: runId, decision }),
         });
         const data = await response.json().catch(() => null);
+        // A decision begun before the session changed is not a license to
+        // present its result to the new (or signed-out) session.
+        if (decisionEpoch !== clawApprovalEpoch || authState.authenticated !== true) return;
         if (!response.ok || !data || data.ok !== true || !data.result || typeof data.result.run_id !== "string") {
           throw new Error(approvalDecisionErrorMessage(data, response));
         }
@@ -3887,12 +3937,18 @@
         status.removeAttribute("data-state");
         if (typeof onResolved === "function") await onResolved(data.result);
       } catch (error) {
+        if (decisionEpoch !== clawApprovalEpoch || authState.authenticated !== true) return;
         status.hidden = false;
         status.dataset.state = "error";
         status.textContent = error instanceof Error ? error.message : clawT("claw-approval-error");
       } finally {
-        clawApprovalInFlight = false;
-        setApprovalControlsBusy(container, false);
+        // A stale decision must not release the busy state of a newer
+        // session's controls; the invalidation path already reset the shared
+        // single-flight flag.
+        if (decisionEpoch === clawApprovalEpoch) {
+          clawApprovalInFlight = false;
+          setApprovalControlsBusy(container, false);
+        }
       }
     }
 

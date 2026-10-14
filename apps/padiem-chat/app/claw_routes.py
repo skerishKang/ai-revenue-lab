@@ -1137,6 +1137,27 @@ async def claw_approval_decision(request: Request) -> JSONResponse:
             headers=_NO_STORE_HEADERS,
         )
 
+    # Cross-Worker single-winner CAS before the first possible Engine side effect.
+    # A stale preflight read never authorizes a second physical continuation.
+    claim = getattr(history_store, "claim_claw_approval_handoff", None)
+    release = getattr(history_store, "release_claw_approval_claim", None)
+    finalize = getattr(history_store, "finalize_claw_approval_claim", None)
+    if not all(callable(method) for method in (claim, release, finalize)):
+        return _error(503, "approval_handoff_unavailable", _APPROVAL_NOT_AVAILABLE_MESSAGE)
+    try:
+        claim_token = claim(
+            user_id=uid, run_id=run_id, workspace_id=workspace_id,
+            continuation_ref=str(handoff.get("continuation_ref") or ""),
+            pause_id=str(handoff.get("pause_id") or ""),
+            trusted_request_fingerprint=str(handoff.get("trusted_request_fingerprint") or ""),
+        )
+        if inspect.isawaitable(claim_token):
+            claim_token = await claim_token
+    except Exception:
+        return _error(503, "approval_handoff_unavailable", _APPROVAL_NOT_AVAILABLE_MESSAGE)
+    if not isinstance(claim_token, str) or not claim_token.startswith("decision_claim:"):
+        return _error(409, "approval_decision_in_progress", _APPROVAL_NOT_AVAILABLE_MESSAGE)
+
     try:
         outcome = await P01ApprovalContinuationService(continuation_client).decide(
             run_id=run_id,
@@ -1146,8 +1167,17 @@ async def claw_approval_decision(request: Request) -> JSONResponse:
         )
     except P01AdapterError as exc:
         if exc.dispatch_class == P01DispatchClass.NOT_DISPATCHED:
-            # The Engine rejected this submission without consuming the stored
-            # continuation: the handoff stays active and the run keeps waiting.
+            # Engine proved no dispatch: only the matching in-flight token may
+            # release the row for a genuine user retry (never for timeouts).
+            try:
+                released = release(user_id=uid, run_id=run_id,
+                                   workspace_id=workspace_id, claim_token=claim_token)
+                if inspect.isawaitable(released):
+                    released = await released
+            except Exception:
+                released = False
+            if released is not True:
+                return _error(503, "approval_handoff_unavailable", _APPROVAL_NOT_AVAILABLE_MESSAGE)
             return _error(
                 409,
                 "approval_decision_rejected",
@@ -1162,18 +1192,17 @@ async def claw_approval_decision(request: Request) -> JSONResponse:
     except Exception:
         return _error(502, "engine_execution_failed", "Engine 승인 처리에 실패했습니다.")
 
-    # Every path below has proven Engine consumption (commit) or canonical
-    # denial, so the decided handoff becomes unusable only now.
-    consume = getattr(history_store, "consume_claw_approval_handoff", None)
-    if consume is not None:
-        try:
-            consumed = consume(user_id=uid, run_id=run_id, workspace_id=workspace_id)
-            if inspect.isawaitable(consumed):
-                consumed = await consumed
-        except Exception:
-            return _error(503, "approval_handoff_unavailable", "승인 상태를 저장하지 못했습니다.")
-        if consumed is not True:
-            return _error(503, "approval_handoff_unavailable", "승인 상태를 저장하지 못했습니다.")
+    # Engine returned a proven canonical outcome. Only this exact winning
+    # pre-dispatch claim may be finalized; unknown outcomes remain claimed.
+    try:
+        consumed = finalize(user_id=uid, run_id=run_id,
+                            workspace_id=workspace_id, claim_token=claim_token)
+        if inspect.isawaitable(consumed):
+            consumed = await consumed
+    except Exception:
+        return _error(503, "approval_handoff_unavailable", "승인 상태를 저장하지 못했습니다.")
+    if consumed is not True:
+        return _error(503, "approval_handoff_unavailable", "승인 상태를 저장하지 못했습니다.")
 
     status = outcome.projection.status.value
     if outcome.next_continuation_ref is not None:

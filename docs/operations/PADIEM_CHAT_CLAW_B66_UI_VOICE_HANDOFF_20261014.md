@@ -1,3 +1,16 @@
+<!-- CENTRAL_UI_VOICE_LIVE_STATUS_20261014_START -->
+## 실제 최신 UI·음성 작업 상태 — 2026-10-14 KST
+
+> 기준 `main=dccd141ed20dd69c76f1efd915312a98b7157b7c`. 아래의 과거 'LOCAL2 Phase A 우선' / 'CLAW2 테스트 예정' / 'STT 코드 없음' 안내는 당시 이력으로 읽는다. 이 문서는 신규 운영 활성화/배포 허가가 아니다.
+
+- **Chat/Claw 공통 UI**: 구조 [#4650](https://github.com/skerishKang/ai-revenue-lab/pull/4650) + [#4653](https://github.com/skerishKang/ai-revenue-lab/pull/4653) 병합/당시 served 확인. 계정 세션 변경 시 승인 결정 지연 결과의 화면 부활 방지 [#4677](https://github.com/skerishKang/ai-revenue-lab/pull/4677) **MERGED** `676a7c0b`, 브라우저 합성 18건 PASS 보고/CI 30 SUCCESS. **새 수정의 운영 served QA는 미완료**, 실제 사용자 승인 대기·승인 메모리·재로그인은 [#4488](https://github.com/skerishKang/ai-revenue-lab/issues/4488)에서 OPEN.
+- **Chat/Claw STT**: 서버 [#4663](https://github.com/skerishKang/ai-revenue-lab/pull/4663), CP 선택형 voice grant seam [#4666](https://github.com/skerishKang/ai-revenue-lab/pull/4666), 전사 후보/세션 안전 어댑터 [#4679](https://github.com/skerishKang/ai-revenue-lab/pull/4679) **모두 MERGED**. #4679 CENTRAL 독립 Node **31 PASS**, provider POST 0. 실제 UI `app.js` 마이크 연결/사용량/바인딩/로그인 고객 E2E는 **NOT_DONE, STT OFF**, [#4643](https://github.com/skerishKang/ai-revenue-lab/issues/4643) 유지.
+- **B66**: [#4661](https://github.com/skerishKang/ai-revenue-lab/pull/4661) history scope/Markdown 소스 + [#4658](https://github.com/skerishKang/ai-revenue-lab/pull/4658) QuoteCore 입력 + [#4680](https://github.com/skerishKang/ai-revenue-lab/pull/4680) 누락 SQLite/견적 계약 테스트 **MERGED**. 고객 `easy-mode.js` 화면·이전 대화·새 대화·Markdown [#4672](https://github.com/skerishKang/ai-revenue-lab/pull/4672) **DRAFT/HOLD**: 교차 Worker isolate 중복 유료 호출 방어 증거 없음. 운영 D1 041/042·사용자 E2E는 [#4316](https://github.com/skerishKang/ai-revenue-lab/issues/4316) OPEN. B66 마이크는 별도 [#3404](https://github.com/skerishKang/ai-revenue-lab/issues/3404).
+- **동시 편집 충돌:** LOCAL1/3/4/5, CLAW2, COMP2의 이번 명시된 소스/검증 작업은 종료·대기. LOCAL2의 #4672 미병합 파일과 Connector #4572 stacked 브랜치의 기존 소유권은 **실제 수정이 다시 시작될 때** 확인하고 조정한다. 추가 UI/STT 코드는 CENTRAL이 최신 main과 파일 소유 범위를 확인한 뒤 별도 배정한다. 이미 완료한 레이아웃/마이그레이션/승인 회귀를 같은 형태로 재개발하지 않는다.
+- **미완료와 금지:** 이식된 STT/안전한 전사 후보는 운영 마이크/기본 음성 권한을 뜻하지 않는다. 승인 없는 유료 STT/Chat/Claw POST·Cloudflare 바인딩/Secret/운영 DB·고객 파일 변경 없음. 독립 검토자 추가 및 사업방침 확장 없음.
+
+<!-- CENTRAL_UI_VOICE_LIVE_STATUS_20261014_END -->
+
 # PADIEM Chat·Claw·B66 — UI 통일 및 음성 인식 개발 인수인계 (2026-10-14 KST)
 
 > **성격:** 공개 가능한 기술 작업 조율 문서. 새로운 사업방침·모델 승인·운영 배포 허가가 아니다.

@@ -1,3 +1,25 @@
+<!-- CENTRAL_LIVE_DELTA_20261014_START -->
+## CENTRAL 최종 상태 정합성 갱신 — 2026-10-14 KST
+
+> **기준 GitHub `main=dccd141ed20dd69c76f1efd915312a98b7157b7c`.** 아래 현재 표가 이어지는 과거 인수인계·예전 Draft 판정보다 우선한다. PR 병합/테스트 성공은 현재 Production Worker·D1·고객 서비스 활성화 증명이 아니다. 회사 내부 운영·사업방침은 비공개 로컬 Governance에 있고 이 문서에 전재하지 않는다.
+
+| 제품/범위 | 소스·시험 현재 상태 | 다음 실제 미완료 / 단일 추적 |
+| --- | --- | --- |
+| **B66 견적·대화** | [#4658](https://github.com/skerishKang/ai-revenue-lab/pull/4658) QuoteCore 입력 인계 **MERGED** `c620f5ce`, [#4661](https://github.com/skerishKang/ai-revenue-lab/pull/4661) 제품별 대화 scope/Markdown 소스 **MERGED** `0586b11a`, [#4680](https://github.com/skerishKang/ai-revenue-lab/pull/4680) QuoteCore/SQLite 계약 3건 **MERGED** `a709691d` (LOCAL4 210 PASS 보고·exact-head CI 10 success/19 skipped) | 고객 UI 이전 대화·새 대화·Markdown [#4672](https://github.com/skerishKang/ai-revenue-lab/pull/4672) **DRAFT/HOLD**: 서로 다른 Worker isolate 사이 유료 요청 원자적 중복 차단 미증명. 운영 D1 **041→042** 적용/읽기, 배포·고객 복원→견적 초안→PDF E2E는 [#4316](https://github.com/skerishKang/ai-revenue-lab/issues/4316) **OPEN** |
+| **Claw 화면/승인** | [#4650](https://github.com/skerishKang/ai-revenue-lab/pull/4650), [#4653](https://github.com/skerishKang/ai-revenue-lab/pull/4653) 기존 UI **MERGED / 그 시점 운영 배포 확인**. [#4677](https://github.com/skerishKang/ai-revenue-lab/pull/4677) 인증 손실·재로그인 중 오래된 승인 POST 화면 재표시 방지 **MERGED** `676a7c0b`; 합성 상태 테스트 18 PASS (CLAW2 보고), exact-head CI 30 success/6 skipped | **신규 #4677 배포/served-version 실증은 별도**. 실제 승인 대기/승인된 메모리 및 자연 사용자 재로그인 E2E는 [#4488](https://github.com/skerishKang/ai-revenue-lab/issues/4488) **OPEN** |
+| **Claw SSE/Windows SQLite** | [#3936](https://github.com/skerishKang/ai-revenue-lab/issues/3936) 인증된 단일 실제 SSE 스트림 순서·terminal=1·done=1 입증; LOCAL1 오프라인 SSE/승인·취소·복구 **61 PASS 보고**, Windows SQLite 두 파일 **40 PASS 보고**. 최근 readonly 오류는 재현되지 않았고 무원인 코드 수정 없음 | 승인/거부/취소, disconnect 후 status-only reconnect, 교차 owner 거부와 같은 실고객 E2E **미완료**. 승인 소진된 추가 실모델 POST 금지. #3936 **OPEN** |
+| **Chat/Claw 음성 입력** | STT Worker [#4663](https://github.com/skerishKang/ai-revenue-lab/pull/4663), CP optional seam [#4666](https://github.com/skerishKang/ai-revenue-lab/pull/4666), 브라우저 전사 어댑터 [#4679](https://github.com/skerishKang/ai-revenue-lab/pull/4679) **MERGED** `eb2e137c`; CENTRAL 정확 HEAD Node **31 PASS**. 실제 공급자 호출 0 | 제품 마이크/CP 실제 권한·사용량·서비스 바인딩·고객 E2E **미완료**, 기능 **기본 OFF**. [#4643](https://github.com/skerishKang/ai-revenue-lab/issues/4643) **OPEN**. B66 [#3404](https://github.com/skerishKang/ai-revenue-lab/issues/3404)는 별도 UI |
+| **B14 모델 최종 실행 허가** | [#4482](https://github.com/skerishKang/ai-revenue-lab/pull/4482) **MERGED / advisory-only**. LOCAL5가 B14 외부 최종 호출 경계 중앙 S3 실제 허가 검사 누락 조사, 18 PASS 보고, 보고서 원격 Drive 업로드도 확인 | [#4483](https://github.com/skerishKang/ai-revenue-lab/issues/4483) **OPEN**, 제품·사용자·tier·정확한 모델/최신 policy revision 최종 POST 전 실차단 미구현/미입증; #4480 signer 불명. 제품별 등급 독립·fallback 기본 OFF, 무단 활성화 금지 |
+| **Windows Connector** | [#4572](https://github.com/skerishKang/ai-revenue-lab/pull/4572) **DRAFT** (관측 HEAD `f793d68b`, 기존 stacked base; 병합/운영 연결 증명 아님). Windows 설치/트레이 소스와 일부 오프라인/시험 경로 증거는 [#4139](https://github.com/skerishKang/ai-revenue-lab/issues/4139)에 보존 | 고객이 사용하는 **`chat.padiem.net`**의 실제 계정 버튼→PC 인증·Broker WSS→DPAPI ACK→ONLINE/철회/재연결 **미완료**. [#4139](https://github.com/skerishKang/ai-revenue-lab/issues/4139) 구현, [#3099](https://github.com/skerishKang/ai-revenue-lab/issues/3099) 선택 제품 Windows 실사용 수용 |
+| **Windows 개발 시간대** | CLAW2 [#4674](https://github.com/skerishKang/ai-revenue-lab/pull/4674) `tzdata` **dev extra 전용** 충돌 해결 후 **MERGED** `dccd141e` (exact HEAD 25 success/6 skipped), `pylock.toml` 운영 의존성 불변 | Windows 개발 테스트 개선으로만 수용; 신규 운영 코드나 실제 배포 증거로 분류하지 않음 |
+| **전화/홈/포트폴리오** | [#4676](https://github.com/skerishKang/ai-revenue-lab/pull/4676) 전화 loopback mock **DRAFT**, [#4543](https://github.com/skerishKang/ai-revenue-lab/pull/4543) 고객 홈 **DRAFT** | 전화 실통화·요금·실계정 활성화/고객 홈 출고를 주장하지 않음; 사용자 사업방침 신규 결정은 비공개 Governance/대표 권한 |
+
+**작업자 현황(새 배정 전):** LOCAL1(61+40 오프라인 조사), LOCAL3(#4679), LOCAL4(#4680), LOCAL5(#4483 읽기 전용 보고/Drive 업로드), CLAW2(#4677/#4674), COMP2(#4661)는 **해당 범위 완료·대기**. 이 기록은 물리적 PC 프로세스의 동작 여부 증명이 아니다. LOCAL2는 #4672 **Draft/HOLD**, LOCAL6/Connector는 #4572 **Draft**이며, 현재 실행 여부는 GitHub로 증명할 수 없다. CENTRAL이 새로운 충돌 없는 단일 작업을 배정하기 전 과거 고정 파일 소유자 지정은 자동 재활성화하지 않는다.
+
+**권한/출고 구분:** 통상 source/테스트/CI/PR 병합은 CENTRAL 위임 범위. 새 운영 D1 migration, 인증/권한·Secret·유료 provider POST, 실제 서비스 활성화와 사업방침 변경은 별도 기술 증거와 필요한 승인 절차 없이 실행하지 않는다. 불필요한 독립 GitHub 리뷰어·추가 환경·중복 이슈·새 공통플랫폼 생성 금지.
+
+<!-- CENTRAL_LIVE_DELTA_20261014_END -->
+
 # PADIEM AI CENTRAL CTO — 개발·이슈·배포 분리 스냅샷 (2026-10-14 KST)
 
 ```text
