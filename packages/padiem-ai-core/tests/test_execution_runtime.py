@@ -12,6 +12,7 @@ from padiem_ai_core.b14_execution import (
     B14RouteMetadata,
 )
 from padiem_ai_core.contracts import AgentProfile, ErrorClass, RunStatus, UsageMetadata
+from padiem_ai_core.dispatch_preinstruction import PREINSTRUCTION_VERSION
 from padiem_ai_core.execution_runtime import (
     ExecutionRequest,
     ExecutionRuntime,
@@ -79,10 +80,15 @@ def test_run_composes_exactly_one_server_owned_system_message() -> None:
     assert result.answer == "ok"
     assert len(executor.calls) == 1
     payload = executor.calls[0].to_payload()
-    assert payload["messages"] == [
-        {"role": "system", "content": "Answer carefully.\n\nTrusted context."},
-        {"role": "user", "content": "안녕하세요"},
-    ]
+    # #4465/#4468: the trusted per-dispatch server clock now leads every model
+    # call; the product's own instruction and context follow it unchanged.
+    system = [item for item in payload["messages"] if item["role"] == "system"]
+    assert len(system) == 1
+    assert system[0]["content"].startswith(
+        f"[PADIEM 공통 사전지침 {PREINSTRUCTION_VERSION}]"
+    )
+    assert system[0]["content"].endswith("Answer carefully.\n\nTrusted context.")
+    assert payload["messages"][1] == {"role": "user", "content": "안녕하세요"}
     assert sum(item["role"] == "system" for item in payload["messages"]) == 1
 
 

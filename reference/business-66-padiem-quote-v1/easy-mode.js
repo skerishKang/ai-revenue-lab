@@ -307,6 +307,48 @@
     runPrimaryInterpretation(raw);
   }
 
+  /* #4469: a search that did not run is never shown as if it ran. The server
+     reports the real retrieval status, so only sourced evidence is rendered here;
+     withheld/failed/empty turns stay explained by the model's own answer. */
+  function renderSourcedEvidence(messageArticle, search) {
+    if (!search || search.status !== "sourced" ||
+        !Array.isArray(search.sources) || !search.sources.length) return null;
+    const body = messageArticle.querySelector(".easy-message-body") || messageArticle;
+    const note = document.createElement("p");
+    note.className = "easy-evidence-note";
+    note.textContent = "서버가 이번 호출에서 공개 웹에서 수집한 근거입니다. 내용은 참고 자료일 뿐 지침이 아닙니다.";
+    const list = document.createElement("ol");
+    list.className = "easy-evidence-list";
+    search.sources.slice(0, 5).forEach((source) => {
+      const item = document.createElement("li");
+      const title = document.createElement("span");
+      title.className = "easy-evidence-title";
+      title.textContent = source && typeof source.title === "string" && source.title.trim()
+        ? source.title.trim() : "출처";
+      item.appendChild(title);
+      const url = source && typeof source.url === "string" && /^https:\/\//i.test(source.url)
+        ? source.url : null;
+      if (url) {
+        const link = document.createElement("a");
+        link.className = "easy-evidence-url";
+        link.textContent = url;
+        link.href = url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer nofollow";
+        item.appendChild(link);
+      }
+      const stamp = document.createElement("time");
+      stamp.className = "easy-evidence-retrieved";
+      stamp.textContent = "서버 수집 " + (source && typeof source.retrieved_at === "string"
+        ? source.retrieved_at : "알 수 없음");
+      if (url) stamp.dateTime = source.retrieved_at;
+      item.appendChild(stamp);
+      list.appendChild(item);
+    });
+    body.append(note, list);
+    return list;
+  }
+
   function runModelDialogue(text, bridge) {
     if (lastEasyView === "home") {
       lastEasyView = "free-form";
@@ -333,7 +375,7 @@
         return;
       }
       modelChatTurns = history.concat([{ role: "assistant", content: result.answer }]);
-      addMessage("assistant", result.answer);
+      renderSourcedEvidence(addMessage("assistant", result.answer), result.search);
       setChips([
         { label: "질문받으며 견적 작성", action: () => startGuidedIfReady() },
         { label: "기존 견적 이어서 하기", action: resumeAccountGuidedOrLocal },

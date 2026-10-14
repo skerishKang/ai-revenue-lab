@@ -13,6 +13,7 @@ from padiem_ai_engine_client import (
 )
 from padiem_ai_engine_client.orchestration_stream import (
     EngineNdjsonContractError, decode_orchestration_ndjson,
+    MAX_NDJSON_TERMINAL_LINE_BYTES, MAX_NDJSON_LINE_BYTES,
 )
 from app.service_binding_response import ServiceBindingResponseTooLarge
 from app.worker_orchestration import CloudflareEngineServiceTransport
@@ -191,7 +192,7 @@ def test_worker_binding_yields_incremental_chunks_and_cancels_on_close():
 
 def test_worker_binding_stream_limit_and_wrong_target_fail_closed():
     async def exercise():
-        reader = FakeReader([b"x" * (1_048_576 + 1)])
+        reader = FakeReader([b"x" * (MAX_NDJSON_TERMINAL_LINE_BYTES + 1), b"must-not-read"])
         binding = FakeBinding(reader)
         transport = CloudflareEngineServiceTransport(binding, request_factory=FakeRequest)
         with pytest.raises(ValueError):
@@ -206,3 +207,81 @@ def test_worker_binding_stream_limit_and_wrong_target_fail_closed():
         return reader
     reader = asyncio.run(exercise())
     assert reader.cancelled == 1 and reader.released == 1
+
+
+
+def test_long_healthy_terminal_answer_over_old_one_mib_is_preserved_verbatim():
+    # The canonical Engine emits one validated orchestration result line at
+    # EOF. It must not be mistaken for a 64KiB EVENT or 1MiB aggregate cap.
+    answer = "S" * 1_300_000
+    payload = wire("event") + wire("orchestration", {"answer": answer})
+    assert len(payload) > 1_048_576
+    assert len(payload) < MAX_NDJSON_TERMINAL_LINE_BYTES
+    result = consume(chunks_of(payload[:19], payload[19:100_000], payload[100_000:]))
+    assert len(result) == 2
+    assert result[-1]["orchestration"]["answer"] == answer
+
+
+def test_many_small_valid_events_can_cross_old_cumulative_stream_cap():
+    records = [
+        wire("event", {"kind": "run_step", "sequence": i + 1, "detail": "E" * 57_000})
+        for i in range(25)
+    ]
+    assert all(len(part) < MAX_NDJSON_LINE_BYTES for part in records)
+    payload = b"".join(records) + wire("orchestration", {"status": "completed"})
+    assert len(payload) > 1_048_576
+    parsed = consume(chunks_of(*records, wire("orchestration", {"status": "completed"})))
+    assert len(parsed) == 26
+    assert parsed[-1]["orchestration"]["status"] == "completed"
+
+
+def test_terminal_record_larger_than_finite_safety_max_fails_closed():
+    body = wire("event") + wire("orchestration", {"answer": "X" * MAX_NDJSON_TERMINAL_LINE_BYTES})
+    with pytest.raises(EngineNdjsonContractError, match="line_too_large"):
+        consume(chunks_of(body))
+
+
+def test_worker_binding_long_answer_from_one_physical_post_to_ndjson_parser():
+    answer = "long-answer-" + "A" * 1_200_000
+    payload = wire("event") + wire("orchestration", {"answer": answer})
+
+    async def exercise():
+        reader = FakeReader([payload[:17], payload[17:]])
+        binding = FakeBinding(reader)
+        transport = CloudflareEngineServiceTransport(binding, request_factory=FakeRequest)
+        wire_response = await transport.stream_request(
+            method="POST", url=ENGINE_INTERNAL_ORIGIN + ENGINE_ORCHESTRATE_STREAM_PATH,
+            headers={}, body=b"{}",
+        )
+        decoded = [e async for e in decode_orchestration_ndjson(wire_response.chunks)]
+        return decoded, reader, binding
+
+    decoded, reader, binding = asyncio.run(exercise())
+    assert decoded[-1]["orchestration"]["answer"] == answer
+    assert len(binding.calls) == 1
+    assert reader.cancelled == 0
+    assert reader.released == 1
+    assert reader.parts == []
+
+
+
+def test_engine_stream_model_request_400kb_allowed_but_6mb_plus_refused():
+    async def exercise():
+        reader = FakeReader([wire("event") + wire("orchestration", {"status": "completed"})])
+        binding = FakeBinding(reader)
+        transport = CloudflareEngineServiceTransport(binding, request_factory=FakeRequest)
+        body = b'{"messages":"' + b"A" * 400_000 + b'"}'
+        result = await transport.stream_request(
+            method="POST", url=ENGINE_INTERNAL_ORIGIN + ENGINE_ORCHESTRATE_STREAM_PATH,
+            headers={}, body=body,
+        )
+        output = [x async for x in decode_orchestration_ndjson(result.chunks)]
+        assert output[-1]["orchestration"]["status"] == "completed"
+        assert len(binding.calls) == 1
+        with pytest.raises(ValueError):
+            await transport.stream_request(
+                method="POST", url=ENGINE_INTERNAL_ORIGIN + ENGINE_ORCHESTRATE_STREAM_PATH,
+                headers={}, body=b"X" * (6_000_000 + 1),
+            )
+        assert len(binding.calls) == 1
+    asyncio.run(exercise())

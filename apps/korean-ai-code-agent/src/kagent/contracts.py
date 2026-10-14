@@ -135,6 +135,12 @@ def _aware_utc(value: datetime, field_name: str) -> datetime:
     return value.astimezone(timezone.utc)
 
 
+# Executable tool/approval task contract, not a provider model output ceiling.
+# Manual business intake reuses the exact authority rather than a separate
+# 4,000-character pilot cap.
+MAX_EXECUTABLE_TASK_CHARS = 12_000
+
+
 @dataclass(frozen=True, slots=True)
 class ClawTaskIntent:
     """Product-owned task handoff contract.
@@ -168,7 +174,7 @@ class ClawTaskIntent:
                 raise ContractError("task contains control characters")
             object.__setattr__(self, "task", self.task.strip())
         else:
-            object.__setattr__(self, "task", _bounded_text(self.task, "task", limit=12_000))
+            object.__setattr__(self, "task", _bounded_text(self.task, "task", limit=MAX_EXECUTABLE_TASK_CHARS))
         object.__setattr__(
             self,
             "repository_ref",

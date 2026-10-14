@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from app.history import (  # noqa: E402
+    PRODUCT_SCOPE_CHAT,
     MAX_CONVERSATION_SEARCH_QUERY_CHARS,
     MAX_CONVERSATION_SEARCH_RESULTS,
     MAX_CONVERSATION_SEARCH_SCAN_ROWS,
@@ -97,7 +98,7 @@ def _search_bound(db):
 def test_search_is_owner_scoped_by_a_bound_parameter():
     db = _RecordingD1()
     store = D1HistoryStore(db)
-    asyncio.run(store.search_conversations("usr_owner", "견적"))
+    asyncio.run(store.search_conversations("usr_owner", "견적", product_scope=PRODUCT_SCOPE_CHAT))
     sql, values = _search_bound(db)
     assert "c.user_id=?" in sql
     assert "usr_owner" in values
@@ -109,7 +110,7 @@ def test_user_query_is_bound_not_interpolated_into_sql():
     db = _RecordingD1()
     store = D1HistoryStore(db)
     hostile = "x'); DROP TABLE conversations; --"
-    asyncio.run(store.search_conversations("usr_owner", hostile))
+    asyncio.run(store.search_conversations("usr_owner", hostile, product_scope=PRODUCT_SCOPE_CHAT))
     sql, values = _search_bound(db)
     assert "DROP TABLE" not in sql
     assert any(isinstance(v, str) and "DROP TABLE" in v for v in values)
@@ -118,7 +119,7 @@ def test_user_query_is_bound_not_interpolated_into_sql():
 def test_search_scan_and_result_limits_are_bound_parameters():
     db = _RecordingD1()
     store = D1HistoryStore(db)
-    asyncio.run(store.search_conversations("usr_owner", "q", limit=10_000))
+    asyncio.run(store.search_conversations("usr_owner", "q", limit=10_000, product_scope=PRODUCT_SCOPE_CHAT))
     sql, values = _search_bound(db)
     assert MAX_CONVERSATION_SEARCH_SCAN_ROWS in values
     assert min(MAX_CONVERSATION_SEARCH_RESULTS, 10_000) in values
@@ -128,14 +129,14 @@ def test_search_scan_and_result_limits_are_bound_parameters():
 def test_empty_or_whitespace_query_runs_no_search_statement():
     db = _RecordingD1()
     store = D1HistoryStore(db)
-    assert asyncio.run(store.search_conversations("usr_owner", "   ")) == []
+    assert asyncio.run(store.search_conversations("usr_owner", "   ", product_scope=PRODUCT_SCOPE_CHAT)) == []
     assert not any("FROM conversations c" in sql for sql, _ in db.bound)
 
 
 def test_like_escape_clause_is_declared_for_every_pattern_match():
     db = _RecordingD1()
     store = D1HistoryStore(db)
-    asyncio.run(store.search_conversations("usr_owner", "a_b%c"))
+    asyncio.run(store.search_conversations("usr_owner", "a_b%c", product_scope=PRODUCT_SCOPE_CHAT))
     sql, _ = _search_bound(db)
     # Each LIKE must declare the same escape character used by _escape_like.
     assert sql.count("ESCAPE '\\'") >= 3

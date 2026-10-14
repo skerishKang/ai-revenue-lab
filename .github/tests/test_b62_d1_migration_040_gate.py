@@ -235,6 +235,49 @@ def test_production_deploy_gate_requires_040_before_upload() -> None:
     assert "PRODUCTION_MUTATION=0" in probe_step
 
 
+def test_workflow_records_d1_recovery_bookmark_before_mutation() -> None:
+    """#4522 CENTRAL step 1: a production schema write needs a recorded recovery point.
+
+    The reviewed 037 precedent (b66-admin-d1-migration-037-gate) obtains a D1
+    Time Travel bookmark before its ALTER and fails closed when unavailable.
+    The 040 gate must do the same, in both the read-only proof and immediately
+    before the single mutation.
+    """
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    assert "/time_travel/bookmark" in workflow
+    assert "D1_RECOVERY_BOOKMARK_UNAVAILABLE" in workflow
+    assert "D1_RECOVERY_BOOKMARK_PRESENT=PASS" in workflow
+    assert "B62_D1_MIGRATION_040_PREAPPLY_RECOVERY_BOOKMARK=" in workflow
+    # The bookmark must be read from the same canonical Worker-bound database.
+    assert workflow.count("/d1/database/${DB_ID}/time_travel/bookmark") == 2
+    # A recovery handle is recorded, never auto-applied: Time Travel restores
+    # the entire database, so no automatic restore may run from this gate.
+    assert "time_travel/restore" not in workflow
+    assert "time_travel/info" not in workflow
+    # The bookmark is read after the D1 binding is resolved (so it names the
+    # same database) and the pre-mutation handle precedes the ALTER.
+    resolve = workflow.index(
+        "      - name: Resolve live PADIEM_CHAT_DB binding without emitting identifiers"
+    )
+    readonly_recovery = workflow.index(
+        "      - name: Read only D1 Time Travel recovery availability"
+    )
+    recheck = workflow.index(
+        "      - name: Recheck identical D1 and schema immediately before SQL mutation"
+    )
+    preapply = workflow.index(
+        "      - name: Record D1 Time Travel recovery bookmark immediately before SQL mutation"
+    )
+    application = workflow.index(
+        "      - name: Apply only the additive migration 040 when absent"
+    )
+    assert resolve < readonly_recovery
+    assert recheck < preapply < application
+    # Fail-closed bookmark validation must require the API success/result shape.
+    assert "payload.get('success') is True else None" in workflow
+    assert "[A-Za-z0-9_-]{12,130}" in workflow
+
+
 if __name__ == "__main__":
     test_real_migration_schema_classifies_exact_and_pre_040()
     test_absent_table_is_missing_not_pre_040()

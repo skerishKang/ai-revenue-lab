@@ -39,6 +39,7 @@ GO_MODELS = (
     "opencode-go/longcat-2.5-preview-free",
     "opencode-go/step-5-preview-free",
     "opencode-go/muse-spark-1.3-contributor",
+    "opencode-go/muse-spark-1.2-contributor",
     "opencode-go/gpt-6-luna",
     "opencode-go/claude-haiku-5-5",
 )

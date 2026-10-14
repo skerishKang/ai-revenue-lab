@@ -19,6 +19,7 @@ from kagent.p01_run_flow import (
     ENV_ENGINE_CALLER_ID,
     ENV_ENGINE_CREDENTIAL,
     MAX_ENGINE_RESPONSE_BYTES,
+    MAX_MODEL_ENGINE_RESPONSE_BYTES,
     P01EngineRuntimeConfig,
     TRANSPORT_USER_AGENT,
     UrllibEngineTransport,
@@ -208,7 +209,7 @@ class UrllibEngineTransportTests(unittest.TestCase):
 
     def test_oversized_success_body_fails_closed(self) -> None:
         transport = UrllibEngineTransport("https://engine.example.test")
-        huge = _FakeHttpResponse(200, b"x" * (MAX_ENGINE_RESPONSE_BYTES + 1))
+        huge = _FakeHttpResponse(200, b"x" * (MAX_MODEL_ENGINE_RESPONSE_BYTES + 1))
         with mock.patch("urllib.request.urlopen", return_value=huge):
             with self.assertRaises(P01AdapterError) as ctx:
                 asyncio.run(
@@ -220,6 +221,45 @@ class UrllibEngineTransportTests(unittest.TestCase):
                     )
                 )
         self.assertEqual(ctx.exception.code, "p01_engine_response_too_large")
+
+    def test_long_model_orchestration_body_is_preserved_above_legacy_one_mib(self) -> None:
+        transport = UrllibEngineTransport("https://engine.example.test")
+        answer = "L" * 1_300_000
+        payload = b'{"ok":true,"orchestration":{"answer":"' + answer.encode("utf-8") + b'"}}'
+        self.assertGreater(len(payload), MAX_ENGINE_RESPONSE_BYTES)
+        self.assertLess(len(payload), MAX_MODEL_ENGINE_RESPONSE_BYTES)
+        with mock.patch("urllib.request.urlopen", return_value=_FakeHttpResponse(200, payload)):
+            response = asyncio.run(transport.request(
+                method="POST",
+                url="https://padiem-ai-engine.internal/internal/v1/orchestrate",
+                headers={}, body=b"{}",
+            ))
+        self.assertEqual(response.status, 200)
+        self.assertEqual(response.body, payload)
+
+    def test_non_model_health_result_still_rejects_over_one_mib(self) -> None:
+        transport = UrllibEngineTransport("https://engine.example.test")
+        oversized = _FakeHttpResponse(200, b"x" * (MAX_ENGINE_RESPONSE_BYTES + 1))
+        with mock.patch("urllib.request.urlopen", return_value=oversized):
+            with self.assertRaises(P01AdapterError) as err:
+                asyncio.run(transport.request(
+                    method="GET",
+                    url="https://padiem-ai-engine.internal/internal/v1/health",
+                    headers={}, body=None,
+                ))
+        self.assertEqual(err.exception.code, "p01_engine_response_too_large")
+
+    def test_stream_endpoint_does_not_acquire_buffered_result_budget(self) -> None:
+        transport = UrllibEngineTransport("https://engine.example.test")
+        oversized = _FakeHttpResponse(200, b"x" * (MAX_ENGINE_RESPONSE_BYTES + 1))
+        with mock.patch("urllib.request.urlopen", return_value=oversized):
+            with self.assertRaises(P01AdapterError) as err:
+                asyncio.run(transport.request(
+                    method="POST",
+                    url="https://padiem-ai-engine.internal/internal/v1/orchestrate/stream",
+                    headers={}, body=b"{}",
+                ))
+        self.assertEqual(err.exception.code, "p01_engine_response_too_large")
 
     def test_oversized_error_body_fails_closed(self) -> None:
         transport = UrllibEngineTransport("https://engine.example.test")

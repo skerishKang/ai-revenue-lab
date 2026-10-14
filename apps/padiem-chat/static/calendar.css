@@ -183,6 +183,19 @@ html[data-theme="padiem-glass"] .sidebar {
   cursor: default;
 }
 
+/* #4534: the period arrows measured 35x34.8 CSS px and the "today" button
+   44.73x34.8 — below the 44px touch floor. The period label shares the base
+   rule above but is not interactive (cursor: default), so only the button
+   carries the floor. The arrow glyph and the 13px label keep their size; the
+   box is centred on them. */
+.calendar-range-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+}
+
 .calendar-range-button:hover {
   border-color: var(--accent-strong, #2f6f99);
 }
@@ -497,6 +510,15 @@ html[data-theme="padiem-glass"] .sidebar {
   font-weight: 700;
   padding: 7px 14px;
   cursor: pointer;
+  /* #4534: the record/appointment save buttons measured 78.45x36.8 CSS px. The
+     floor lifts the box to 44px tall; the bold 13px label keeps its size and
+     stays centred, and min-width is a no-op at today's label width but keeps
+     the target square for any shorter locale. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
 }
 
 .calendar-record-submit[disabled] {

@@ -24,7 +24,10 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .main-panel::befor
   display: none;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation {
-  width: min(1000px, calc(100% - 48px));
+  /* #4488 Phase A: reuse the Chat lane contract (same 1200px cap and side
+   * gutters). Claw has no portrait art, so Chat's portrait reservation is
+   * reclaimed and the lane stays centred instead of left-anchored. */
+  width: min(1200px, calc(100% - 48px));
   margin: 14px auto 0;
   padding: 24px clamp(18px, 2.4vw, 34px) calc(var(--claw-composer-clearance, 174px) + 42px);
   /* Same panel language as Chat: translucent glass, soft white border, 30px. */
@@ -47,20 +50,25 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #workspaceNav .sid
   display: none;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-hub {
+  /* #4488 Phase A: the Claw entry reads as a compact suggestion area on the
+   * shared lane (like Chat's home starters), not a separate dashboard card.
+   * The container chrome is dropped; the option cards keep their glass. */
   width: 100%;
-  margin: 0 auto 18px;
-  padding: 16px 18px;
-  border: 1px solid rgba(255, 255, 255, .52);
-  border-radius: 20px;
-  background: linear-gradient(155deg, rgba(248, 250, 251, .56), rgba(228, 234, 238, .32));
-  box-shadow: var(--card-shadow);
-  backdrop-filter: blur(24px) saturate(108%);
-  -webkit-backdrop-filter: blur(24px) saturate(108%);
+  margin: 0 auto 16px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-hub-heading h2 {
   margin: 1px 0 6px;
   color: #16212a;
-  font-size: clamp(20px, 2.5vw, 25px);
+  font-size: clamp(22px, 2.6vw, 28px);
+  line-height: 1.25;
+  letter-spacing: -.03em;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-hub-heading > p:last-child {
   margin: 0 0 12px;
@@ -120,9 +128,10 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation:has(
   display: none;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .composer-wrap {
-  left: calc(264px + (100vw - 264px) / 2);
+  /* Chat's composer cap (1168px) on the same centred axis as the lane. */
+  left: calc(var(--workspace-rail, 252px) + (100vw - var(--workspace-rail, 252px)) / 2);
   transform: translateX(-50%);
-  width: min(920px, calc(100vw - 264px - 64px));
+  width: min(1168px, calc(100vw - var(--workspace-rail, 252px) - 64px));
   padding: 8px 0 14px;
   /* Chat removes the bottom wash; match it instead of a Claw-only blue fade. */
   background: transparent !important;
@@ -227,18 +236,23 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:
 }
 @media (max-width: 1100px) {
   html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation {
-    width: calc(100% - 32px);
+    width: min(1200px, calc(100% - 32px));
     padding: 18px 18px calc(var(--claw-composer-clearance, 174px) + 26px);
   }
   html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .composer-wrap {
-    width: calc(100vw - 264px - 32px);
+    width: min(1168px, calc(100vw - var(--workspace-rail, 252px) - 48px));
   }
 }
 @media (max-width: 920px) {
   /* Same mobile ladder as Chat: opaque panel, 24px corners, solid composer. */
   html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation {
+    width: min(760px, calc(100% - 28px));
+    margin-inline: auto;
     background: rgba(242, 245, 247, .90);
     border-radius: 24px;
+  }
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .composer-wrap {
+    width: calc(100vw - 28px);
   }
   html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm {
     background: rgba(249, 251, 252, .94);
@@ -268,9 +282,18 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:
     left: 50%;
     width: calc(100vw - 24px);
   }
+  /* #4488 Phase A: mirror Chat's own mobile ladder instead of the Claw-only
+   * "100% - 20px" step. Chat uses min(760px, 100% - 28px) down to 620px, then
+   * calc(100% - 24px), so the measured lane becomes identical at every width
+   * (the old rule left Claw 6px wider than Chat). */
   html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation {
-    width: calc(100% - 20px);
+    width: min(760px, calc(100% - 28px));
     padding: 14px 12px calc(var(--claw-composer-clearance, 132px) + 20px);
+  }
+  @media (max-width: 620px) {
+    html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .conversation {
+      width: calc(100% - 24px);
+    }
   }
   html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-hub {
     padding: 13px;
@@ -301,16 +324,26 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-task-option:
  */
 @media (min-width: 921px) {
   html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .conversation {
-    width: min(1000px, calc(100% - 48px)) !important;
+    width: min(1200px, calc(100% - 48px)) !important;
     margin-left: auto !important;
     margin-right: auto !important;
   }
   html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .composer-wrap {
     left: calc(var(--workspace-rail, 252px) + (100vw - var(--workspace-rail, 252px)) / 2) !important;
     transform: translateX(-50%) !important;
-    width: min(920px, calc(100vw - var(--workspace-rail, 252px) - 64px)) !important;
+    width: min(1168px, calc(100vw - var(--workspace-rail, 252px) - 64px)) !important;
     padding-top: 8px !important;
     padding-bottom: 12px !important;
+  }
+}
+/* Chat widens its side gutter from 48px to 72px at >=1440px. Claw reuses the
+ * same gutter contract while remaining centred on the same axis. */
+@media (min-width: 1440px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .conversation {
+    width: min(1200px, calc(100% - clamp(48px, 4vw, 72px) - 48px)) !important;
+  }
+  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .composer-wrap {
+    width: min(1168px, calc(100vw - var(--workspace-rail, 252px) - clamp(48px, 4vw, 72px) - 80px)) !important;
   }
 }
 /* The manual-document shortcut is a secondary affordance; the conversation
@@ -356,7 +389,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #composerForm > .c
 @media (min-width: 761px) and (max-width: 920px) {
   html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .composer-wrap {
     left: 50% !important;
-    width: calc(100vw - 32px) !important;
+    width: calc(100vw - 28px) !important;
     transform: translateX(-50%) !important;
   }
 }
@@ -452,6 +485,71 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-run-card-dow
   outline-offset: 2px;
 }
 
+/* #4488 Phase A: approved memory and recent runs become progressive disclosure
+ * on the Claw entry, so the conversation and its results stay primary. They are
+ * never deleted or made unreachable for an authenticated owner — a collapsed
+ * <details> keeps them one click away. In-progress approval requests are not
+ * wrapped here and remain visible. */
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-disclosure {
+  margin: 14px 0 0;
+  border: 1px solid rgba(255, 255, 255, .52);
+  border-radius: 16px;
+  background: linear-gradient(155deg, rgba(248, 250, 251, .48), rgba(228, 234, 238, .26));
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-disclosure-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 10px 16px;
+  cursor: pointer;
+  color: #16212a;
+  font-size: 14px;
+  font-weight: 650;
+  list-style: none;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-disclosure-summary::-webkit-details-marker {
+  display: none;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-disclosure-caret {
+  flex: 0 0 auto;
+  font-size: 11px;
+  color: var(--claw-focus-accent);
+  transition: transform .18s ease;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-disclosure[open] > .claw-disclosure-summary .claw-disclosure-caret {
+  transform: rotate(90deg);
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-disclosure-summary:focus-visible {
+  outline: 3px solid #72a3c5;
+  outline-offset: -3px;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-disclosure > :is(.claw-approved-memory, .claw-run-history) {
+  margin: 0;
+  padding: 0 16px 16px;
+}
+/* The summary already carries the panel title. Hide the duplicated inner
+ * identity visually while keeping it in the accessibility tree, so the
+ * section's aria-labelledby still resolves. */
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-disclosure > .claw-approved-memory > .claw-approved-memory-header > .claw-workspace-identity,
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-disclosure > .claw-run-history > .claw-run-history-header > .claw-workspace-identity {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-disclosure > .claw-approved-memory > .claw-approved-memory-header,
+html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .claw-disclosure > .claw-run-history > .claw-run-history-header {
+  justify-content: flex-end;
+}
+
 /* #4488 second UI slice: the Automation view joins the same Chat/Claw glass
  * design system. Scope is the Automation section only (#clawAutomation inside
  * the Claw state), so Chat and Calendar surfaces stay untouched. Scheduling
@@ -511,6 +609,16 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .c
   color: var(--claw-focus-accent);
   font-size: 13px;
 }
+/* #4545: the create disclosure measured 20.8px tall in every theme — the
+   smallest target on the automation surface, and the entry point to the whole
+   create form. Only the box is floored: the 13px label, the native disclosure
+   marker and the glass styling above keep their exact values. Scoped to the
+   Automation panel, so the Calendar/Claw summaries elsewhere are untouched. */
+.app-shell[data-state="claw"] #clawAutomation .calendar-record-summary {
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 11px 2px;
+}
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .calendar-record-hint {
   color: var(--claw-focus-muted);
   opacity: 1;
@@ -519,7 +627,10 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .c
   color: #44515d;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .calendar-record-field :is(input, textarea, select) {
-  min-height: 40px;
+  /* #4545: measured 40px under glass while the shared calendar.css floor is
+     44px, so the identical control rendered 44px in light/dark. Align the
+     floor only; the 13px label, padding and glass surface are unchanged. */
+  min-height: 44px;
   padding: 8px 11px;
   border: 1px solid rgba(255, 255, 255, .60);
   border-radius: 11px;
@@ -589,7 +700,9 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation .c
   color: #8c4141;
 }
 html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :is(.claw-automation-rule-toggle, .claw-automation-rule-edit) {
-  min-height: 40px;
+  /* #4545: measured 40px under glass against the shared 44px min-height /
+     44px min-width floor in claw-workspace.css. Floor the box only. */
+  min-height: 44px;
   padding: 0 14px;
   border: 1px solid rgba(255, 255, 255, .54);
   border-radius: 11px;

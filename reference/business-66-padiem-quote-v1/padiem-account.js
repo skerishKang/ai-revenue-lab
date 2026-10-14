@@ -789,7 +789,17 @@
           data.model_id !== modelId || data.model_origin !== "registered_model_completion") {
         return { ok: false, code: data && data.error && data.error.code || "ai_chat_unavailable" };
       }
-      return { ok: true, answer: data.answer, model_id: modelId };
+      return {
+        ok: true,
+        answer: data.answer,
+        model_id: modelId,
+        /* #4469: the server reports what retrieval actually did. The browser
+           never decides that a search happened, and a withheld or failed search
+           stays visible instead of becoming a confident answer. */
+        search: data.search && typeof data.search.status === "string"
+          ? { status: data.search.status, sources: Array.isArray(data.search.sources) ? data.search.sources : [] }
+          : { status: "unavailable", sources: [] }
+      };
     } catch (_) {
       return { ok: false, code: "ai_chat_unavailable" };
     }

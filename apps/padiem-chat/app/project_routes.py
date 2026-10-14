@@ -8,6 +8,7 @@ from starlette.responses import JSONResponse
 from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .history import HistoryStore, validate_project_fields, validate_project_id
+from .history import PRODUCT_SCOPE_CHAT
 
 MAX_PROJECT_BODY_BYTES = 8192
 
@@ -117,7 +118,7 @@ async def project_detail(request: Request) -> JSONResponse:
             project = await store.get_project(uid, project_id)
             if project is None:
                 return _not_found()
-            conversations = await store.list_project_conversations(uid, project_id)
+            conversations = await store.list_project_conversations(uid, project_id, product_scope=PRODUCT_SCOPE_CHAT)
         except Exception:
             return _unavailable()
         return JSONResponse({

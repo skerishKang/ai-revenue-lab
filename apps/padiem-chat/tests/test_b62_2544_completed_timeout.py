@@ -207,3 +207,36 @@ async def test_completed_request_times_out_beyond_the_fifty_second_deadline(monk
     assert probe.observed_timeout == 600.0
     assert info.value.status_code == 504
     assert info.value.code == "upstream_timeout"
+
+
+
+@pytest.mark.asyncio
+async def test_b62_general_completed_healthy_large_json_answer_survives():
+    from padiem_ai_core.b14_execution import MAX_B14_RESPONSE_BYTES, MAX_CONFIGURED_B14_RESPONSE_BYTES
+    answer = "synthetic-large-general-answer-" + ("R" * 1_200_000)
+
+    class LongService:
+        def __init__(self):
+            self.calls = []
+        async def post_json(self, url, request):
+            self.calls.append((url, request))
+            body = json.dumps({
+                "id": "b62-long",
+                "model": "agnes",
+                "choices": [{"message": {"content": answer}, "finish_reason": "stop"}],
+            }, ensure_ascii=False).encode("utf-8")
+            assert MAX_B14_RESPONSE_BYTES < len(body) < MAX_CONFIGURED_B14_RESPONSE_BYTES
+            return 200, body
+
+    service = LongService()
+    client = _completed_client(service)
+    result = await client.complete(USER_MESSAGES)
+    assert result["answer"] == answer
+    assert len(service.calls) == 1
+    assert client._completion_config().max_response_bytes == MAX_CONFIGURED_B14_RESPONSE_BYTES
+
+
+def test_b62_deep_research_final_answer_does_not_send_1500_token_cap():
+    from app.grounding import _DEEP_RESEARCH_SKILL, _RESEARCH_PLANNER_SKILL
+    assert _RESEARCH_PLANNER_SKILL.max_tokens == 300
+    assert _DEEP_RESEARCH_SKILL.max_tokens is None

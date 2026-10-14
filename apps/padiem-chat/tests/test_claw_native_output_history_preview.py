@@ -17,7 +17,9 @@ class CaptureHistory:
     def __init__(self):
         self.exchanges = []
 
-    async def append_exchange(self, *args):
+    async def append_exchange(self, *args, product_scope: str):
+        from app.history import PRODUCT_SCOPE_CHAT
+        assert product_scope == PRODUCT_SCOPE_CHAT
         self.exchanges.append(args)
         return "chat_" + "a" * 32
 
