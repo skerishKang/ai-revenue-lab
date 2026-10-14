@@ -84,9 +84,10 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
         raise AssertionError("bottom utility group must preserve Padiem Home and canonical account")
     if await legacy_settings.is_visible():
         raise AssertionError("the old duplicate Settings row must stay hidden")
-    # Offline mock auth hides account chrome. Expose the signed-in presentation
-    # only for the focus-order QA; no credentials or permissions are bypassed.
-    await account.evaluate("(el) => { el.hidden = false; el.style.display = 'grid'; }")
+    # Offline mock auth hides account chrome. Its async state projection can
+    # re-hide the account row while the mobile drawer/focus path is settling;
+    # expose the focus-only presentation after that navigation instead.
+    # No credentials, account state or product permission is forged.
     settings = page.locator("#accountProfileButton")
     if await home.get_attribute("href") != "https://padiem.net/":
         raise AssertionError("Padiem Home destination changed")
@@ -159,6 +160,9 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
         await page.keyboard.press("Tab")
         await _assert_focus(page, "#newChatButton", "desktop new chat")
 
+    # Apply the mock-only presentation adjustment immediately before reading
+    # keyboard focus order, after initial auth renders and drawer transitions.
+    await account.evaluate("(el) => { el.hidden = false; el.style.display = 'grid'; }")
     focus_order = await _visible_sidebar_focus_order(page)
     required = ("newChatButton", "accountProfileButton", "home-link")
     if any(item not in focus_order for item in required):
