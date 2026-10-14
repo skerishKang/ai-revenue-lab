@@ -66,15 +66,28 @@ def live_claw_sse(
     async def events():
         queue: asyncio.Queue[tuple[str, Any]] = asyncio.Queue(maxsize=16)
         seen = 0
+        last_sequence = 0
         verified_terminal: dict[str, object] | None = None
         terminal_kinds = {"run_completed", "run_failed", "run_cancelled", "approval_paused"}
 
         async def report(event: OrchestrationEvent) -> None:
-            nonlocal seen, verified_terminal
+            nonlocal seen, last_sequence, verified_terminal
             seen += 1
             if seen > MAX_RELAY_EVENTS:
                 raise ValueError("P01 stream event budget exceeded")
             projected = _event_projection(event)
+            sequence = projected["sequence"]
+            if (
+                not isinstance(sequence, int)
+                or isinstance(sequence, bool)
+                or sequence <= last_sequence
+            ):
+                raise ValueError("P01 stream events are not strictly ordered")
+            if verified_terminal is not None:
+                # A duplicated terminal or any stage after termination is
+                # inconsistent Core evidence, never successful SSE completion.
+                raise ValueError("P01 stream event after verified terminal")
+            last_sequence = sequence
             if projected["kind"] in terminal_kinds:
                 # A completed Core run with an unusable public answer must
                 # never appear completed in the browser before B54 checks it.
