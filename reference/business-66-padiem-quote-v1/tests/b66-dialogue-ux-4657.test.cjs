@@ -118,6 +118,7 @@ function buildEnv(options) {
     interpret: () => Promise.resolve({ ok: false, code: "probe_interpret_unavailable" }),
     chat: (messages, chatOptions) => {
       calls.chat.push({ messages, options: chatOptions || null });
+      if (typeof opts.chat === "function") return opts.chat(messages, chatOptions || {});
       return Promise.resolve(opts.chatResult || { ok: true, answer: "기본 답변", conversation_id: null });
     },
     listDialogues: (query) => {
@@ -434,6 +435,194 @@ async function testAccountSwitchDropsThePreviousOwnersDialogue() {
   console.log("B66_DIALOGUE_ACCOUNT_SWITCH=PASS");
 }
 
+function deferred() {
+  let resolve;
+  let reject;
+  const promise = new Promise((res, rej) => { resolve = res; reject = rej; });
+  return { promise, resolve, reject };
+}
+
+/* #4657 P0-B: a restore that resolves after the customer pressed new chat must
+   not overwrite the new chat. */
+async function testALateRestoreCannotOverwriteANewChat() {
+  const gate = deferred();
+  const env = buildEnv({
+    listDialogues: () => Promise.resolve({
+      ok: true,
+      conversations: [{ conversation_id: DIALOGUE_A, title: "철근 견적", updated_at: "2026-10-14T01:00:00Z" }]
+    }),
+    loadDialogue: (id) => gate.promise.then(() => ({
+      ok: true,
+      conversation: {
+        conversation_id: id,
+        messages: [{ role: "user", content: "원래 질문" }, { role: "assistant", content: "**원래** 답변" }]
+      }
+    }))
+  });
+  env.click("aiDialogueStarter");
+  await flush();
+  const open = descendants(env.get("easyDialogueResults"))
+    .find((n) => n.textContent === "이어서 대화" && (n.listeners.click || []).length);
+  assert.ok(open, "the listed dialogue must be openable");
+  open.listeners.click[0]();
+  await flush();
+  assert.deepEqual(env.calls.loadDialogue, [DIALOGUE_A]);
+
+  // New chat while the restore read is still in flight.
+  env.click("brandHome");
+  await flush();
+  assert.equal(env.get("easyMessageList").children.length, 0, "new chat clears the transcript");
+
+  gate.resolve();
+  await flush();
+  assert.equal(env.get("easyMessageList").children.length, 0,
+    "a late restore must not repopulate the new chat");
+  console.log("B66_LATE_RESTORE_NEW_CHAT=PASS");
+}
+
+/* #4657 P0-B: the same for a late restore *rejection*. */
+async function testALateRestoreRejectionCannotOverwriteANewChat() {
+  const gate = deferred();
+  const env = buildEnv({
+    listDialogues: () => Promise.resolve({
+      ok: true,
+      conversations: [{ conversation_id: DIALOGUE_A, title: "철근 견적", updated_at: "x" }]
+    }),
+    loadDialogue: () => gate.promise.then(() => { throw new Error("restore failed"); })
+  });
+  env.click("aiDialogueStarter");
+  await flush();
+  const open = descendants(env.get("easyDialogueResults"))
+    .find((n) => n.textContent === "이어서 대화" && (n.listeners.click || []).length);
+  open.listeners.click[0]();
+  await flush();
+
+  env.click("brandHome");
+  await flush();
+  gate.resolve();
+  await flush();
+  assert.equal(env.get("easyMessageList").children.length, 0,
+    "a late restore rejection must not paint an error into the new chat");
+  console.log("B66_LATE_RESTORE_REJECTION_NEW_CHAT=PASS");
+}
+
+/* #4657 P0-B: navigating into a non-dialogue mode also discards a late restore. */
+async function testALateRestoreCannotOverwriteADirectQuietMode() {
+  const gate = deferred();
+  const env = buildEnv({
+    listDialogues: () => Promise.resolve({
+      ok: true,
+      conversations: [{ conversation_id: DIALOGUE_A, title: "철근 견적", updated_at: "x" }]
+    }),
+    loadDialogue: () => gate.promise.then(() => ({
+      ok: true,
+      conversation: { conversation_id: DIALOGUE_A, messages: [{"role": "user", "content": "늦은 질문"}] }
+    }))
+  });
+  env.click("aiDialogueStarter");
+  await flush();
+  const open = descendants(env.get("easyDialogueResults"))
+    .find((n) => n.textContent === "이어서 대화" && (n.listeners.click || []).length);
+  open.listeners.click[0]();
+  await flush();
+
+  env.click("directModeButton");
+  await flush();
+  gate.resolve();
+  await flush();
+  const nodes = descendants(env.get("easyMessageList"));
+  assert.ok(!nodes.some((n) => n.textContent.includes("늦은 질문")),
+    "a late restore must not land in the direct-quote view");
+  console.log("B66_LATE_RESTORE_DIRECT_MODE=PASS");
+}
+
+/* #4657 P0-C: an in-flight model answer may not repopulate a new chat. */
+async function testAnInFlightAnswerCannotRepopulateANewChat() {
+  const gate = deferred();
+  const env = buildEnv({
+    chat: () => gate.promise.then(() => ({
+      ok: true,
+      answer: "**늦은 답변**",
+      conversation_id: DIALOGUE_A,
+      dialogue_saved: true
+    }))
+  });
+  env.click("freeChatStarter");
+  const composer = env.get("easyComposer");
+  composer.value = "첫 질문";
+  (env.get("easySend").listeners.click || [])[0]();
+  await flush();
+  assert.equal(env.calls.chat.length, 1);
+  assert.ok(descendants(env.get("easyMessageList")).some((n) => n.textContent.includes("답변을 작성하고 있습니다")),
+    "the pending notice must be visible while the model runs");
+  const inFlight = env.get("easyMessageList").children.length;
+
+  // New chat while the model answer is still in flight.
+  env.click("brandHome");
+  await flush();
+  const cleared = env.get("easyMessageList").children.length;
+  gate.resolve();
+  await flush();
+
+  assert.equal(cleared, 0);
+  assert.equal(env.get("easyMessageList").children.length, 0,
+    "a late answer must not repopulate the new chat");
+  const nodes = descendants(env.get("easyMessageList"));
+  assert.ok(!nodes.some((n) => n.textContent.includes("늦은 답변")),
+    "no late answer text may appear");
+  assert.ok(!nodes.some((n) => n.textContent.includes("답변을 작성하고 있습니다")),
+    "no late pending notice may appear");
+  assert.equal(env.get("easyComposerNote").textContent, "",
+    "a late answer must not install the unsaved notice either");
+  // A follow-up must start a brand-new conversation, not the old one.
+  env.click("freeChatStarter");
+  const next = env.get("easyComposer");
+  next.value = "다음 질문";
+  (env.get("easySend").listeners.click || [])[0]();
+  await flush();
+  assert.equal(env.calls.chat[1].options.conversationId, null,
+    "the next turn must not wear the discarded conversation id");
+  console.log("B66_INFLIGHT_ANSWER_NEW_CHAT=PASS");
+}
+
+/* #4657 P1 honesty: an answer the server could not save is labelled as such. */
+async function testAnUnsavedAnswerIsLabelled() {
+  const env = buildEnv({
+    chatResult: { ok: true, answer: "저장 실패 답변", conversation_id: null, dialogue_saved: false }
+  });
+  env.click("freeChatStarter");
+  const composer = env.get("easyComposer");
+  composer.value = "질문";
+  (env.get("easySend").listeners.click || [])[0]();
+  await flush();
+  const note = env.get("easyComposerNote").textContent;
+  assert.ok(note.includes("저장되지 않았습니다"),
+    "an unsaved answer must be reported as unsaved");
+  console.log("B66_UNSAVED_ANSWER_HONESTY=PASS");
+}
+
+/* #4657 P0-C: the accepted one-shot CGI path is guarded the same way. */
+async function testAnInFlightCgiResultCannotRepopulateANewChat() {
+  const gate = deferred();
+  const env = buildEnv();
+  env.context.window.B66QuoteRuntimeBridge.readiness =
+    () => ({ ready: true, authenticated: true, skillReady: true, profileReady: true });
+  env.context.window.B66QuoteRuntimeBridge.interpret = () =>
+    gate.promise.then(() => ({ ok: true, draft: env.context.QuoteCore.createDefaultDraft() }));
+  const composer = env.get("easyComposer");
+  composer.value = "대한건설 배관 100미터";
+  (env.get("easySend").listeners.click || [])[0]();
+  await flush();
+
+  env.click("brandHome");
+  await flush();
+  gate.resolve();
+  await flush();
+  assert.equal(env.get("easyMessageList").children.length, 0,
+    "a late one-shot CGI result must not repopulate the new chat");
+  console.log("B66_LATE_CGI_RESULT_NEW_CHAT=PASS");
+}
+
 (async () => {
   testStaticSurface();
   await testBrandStartsANewChatWithoutDeleting();
@@ -442,6 +631,12 @@ async function testAccountSwitchDropsThePreviousOwnersDialogue() {
   await testRestoredDialogueContinuesTheSameConversation();
   await testAssistantMarkdownIsRenderedWithoutAMarkupSink();
   await testAccountSwitchDropsThePreviousOwnersDialogue();
+  await testALateRestoreCannotOverwriteANewChat();
+  await testALateRestoreRejectionCannotOverwriteANewChat();
+  await testALateRestoreCannotOverwriteADirectQuietMode();
+  await testAnInFlightAnswerCannotRepopulateANewChat();
+  await testAnUnsavedAnswerIsLabelled();
+  await testAnInFlightCgiResultCannotRepopulateANewChat();
   console.log("B66_DIALOGUE_UX_RUNTIME=PASS");
   console.log("PRODUCTION_MUTATION=0");
 })().catch((error) => {

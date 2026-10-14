@@ -7,6 +7,7 @@ model call or Production action happens here: the B14 client is a stub.
 """
 from __future__ import annotations
 
+import asyncio
 import sqlite3
 from pathlib import Path
 from types import SimpleNamespace
@@ -111,9 +112,17 @@ class _Resolver:
 
 
 class _Model:
-    def __init__(self, answer="AI 견적 답변"):
+    """A model stub that may answer differently per call, on purpose.
+
+    A deterministic answer cannot prove retry safety: idempotency must never be
+    decided by comparing the assistant's prose.
+    """
+
+    def __init__(self, answer="AI 견적 답변", answers=None, delay=None):
         self.calls = []
         self.answer = answer
+        self.answers = list(answers or [])
+        self.delay = delay
         self.fail = False
 
     def ensure_registered_quote_runtime_available(self):
@@ -123,9 +132,15 @@ class _Model:
         self, messages, *, model, additional_system_context=None, model_parameters=None
     ):
         self.calls.append([dict(m) for m in messages])
+        if self.delay:
+            await asyncio.sleep(self.delay)
         if self.fail:
             raise RuntimeError("synthetic upstream failure")
-        return {"answer": self.answer, "route": {"mode": "manual", "model": model}}
+        if len(self.calls) <= len(self.answers):
+            answer = self.answers[len(self.calls) - 1]
+        else:
+            answer = self.answer
+        return {"answer": answer, "route": {"mode": "manual", "model": model}}
 
 
 def _app(history_store):
@@ -158,11 +173,23 @@ def env():
     db.close()
 
 
-def _chat(client, *, messages, conversation_id=None, model_id=MODEL):
+def _chat(client, *, messages, conversation_id=None, model_id=MODEL, turn_token=None):
     body = {"model_id": model_id, "messages": messages}
     if conversation_id is not None:
         body["conversation_id"] = conversation_id
+    if turn_token is not None:
+        body["turn_token"] = turn_token
     return client.post("/api/b66/ai/chat", json=body)
+
+
+def _client_for(env):
+    """A fresh TestClient with the same signed-in cookie, for use in a thread."""
+    from starlette.testclient import TestClient
+
+    fresh = TestClient(env.app, base_url="https://chat.example.test")
+    for name, value in env.client.cookies.items():
+        fresh.cookies.set(name, value, domain="chat.example.test")
+    return fresh
 
 
 def _seed_b66(env, owner, user_text="철근 견적 알려줘", answer="네, 알려드릴게요"):
@@ -359,25 +386,125 @@ def test_a_failed_model_call_leaves_no_dialogue_record(env):
     assert env.client.get("/api/b66/ai/dialogues").json()["conversations"] == []
 
 
-def test_a_retried_continuation_does_not_duplicate_the_turn(env):
-    _sign_in(env.settings, env.client, USER_A)
-    cid = _seed_b66(env, USER_A)
-    request = [
-        {"role": "user", "content": "철근 견적 알려줘"},
-        {"role": "assistant", "content": "네, 알려드릴게요"},
-        {"role": "user", "content": "같은 요청"},
-    ]
-    first = _chat(env.client, messages=request, conversation_id=cid)
-    assert first.status_code == 200
-    after_first = env.client.get(f"/api/b66/ai/dialogues/{cid}").json()["conversation"]
-    assert len(after_first["messages"]) == 4
+CONTINUATION = [
+    {"role": "user", "content": "철근 견적 알려줘"},
+    {"role": "assistant", "content": "네, 알려드릴게요"},
+    {"role": "user", "content": "같은 요청"},
+]
 
-    # The exact same request again (a transport retry) must not add a turn.
-    again = _chat(env.client, messages=request, conversation_id=cid)
+
+def _messages_of(env, conversation_id):
+    return env.client.get(f"/api/b66/ai/dialogues/{conversation_id}").json()["conversation"]["messages"]
+
+
+def test_a_replayed_turn_with_a_different_model_answer_is_not_appended(env):
+    """A transport retry must reconcile before dispatch.
+
+    The second call would produce *different* prose, so an implementation that
+    compares assistant text for identity would append a second exchange here.
+    """
+    _sign_in(env.settings, env.client, USER_A)
+    env.model.answers = ["네, 알려드릴게요", "첫 답변", "전혀 다른 두 번째 답변"]
+    cid = _seed_b66(env, USER_A)
+
+    first = _chat(env.client, messages=CONTINUATION, conversation_id=cid)
+    assert first.status_code == 200
+    assert first.json()["answer"] == "첫 답변"
+    after_first = len(env.model.calls)
+    assert after_first == 2, "seed turn + one dispatch"
+    assert len(_messages_of(env, cid)) == 4
+
+    # The identical request is replayed (same last user turn, browser behind).
+    again = _chat(env.client, messages=CONTINUATION, conversation_id=cid)
     assert again.status_code == 200
     assert again.json()["conversation_id"] == cid
-    after_retry = env.client.get(f"/api/b66/ai/dialogues/{cid}").json()["conversation"]
-    assert len(after_retry["messages"]) == 4
+    assert again.json()["dialogue_replay"] is True
+    assert again.json()["answer"] == "첫 답변", "the stored answer, never a new one"
+    # No second paid dispatch, and no second exchange.
+    assert len(env.model.calls) == after_first
+    assert len(_messages_of(env, cid)) == 4
+    assert _messages_of(env, cid)[-1]["content"] == "첫 답변"
+
+
+def test_a_retried_first_turn_does_not_call_the_model_twice(env):
+    """A first turn has no stored dialogue, so the retry identity is the token."""
+    from app.b66_ai_chat_routes import reset_dialogue_idempotency
+
+    _sign_in(env.settings, env.client, USER_A)
+    reset_dialogue_idempotency()
+    request = [{"role": "user", "content": "철근 견적 알려줘"}]
+    token = "f" * 32
+    env.model.answers = ["첫 답변", "전혀 다른 답변"]
+
+    first = _chat(env.client, messages=request, turn_token=token)
+    assert first.status_code == 200
+    created = first.json()["conversation_id"]
+    assert len(env.model.calls) == 1
+
+    again = _chat(env.client, messages=request, turn_token=token)
+    assert again.status_code == 200
+    assert again.json()["conversation_id"] == created
+    assert again.json()["answer"] == "첫 답변"
+    assert len(env.model.calls) == 1
+    listed = env.client.get("/api/b66/ai/dialogues").json()["conversations"]
+    assert [row["conversation_id"] for row in listed] == [created]
+
+
+def test_concurrent_duplicate_requests_append_one_exchange(env):
+    """Two in-flight copies of the same turn must not both append or both charge."""
+    import threading
+
+    from app.b66_ai_chat_routes import reset_dialogue_idempotency
+
+    _sign_in(env.settings, env.client, USER_A)
+    env.model.answers = ["네, 알려드릴게요", "동시 답변", "다른 동시 답변"]
+    cid = _seed_b66(env, USER_A)
+    reset_dialogue_idempotency()
+    env.model.delay = 0.15
+    before = len(env.model.calls)
+
+    results: list = []
+
+    def post_duplicate():
+        # One TestClient per thread: TestClient is not safe to share.
+        results.append(_chat(
+            _client_for(env), messages=CONTINUATION, conversation_id=cid
+        ))
+
+    workers = [threading.Thread(target=post_duplicate) for _ in range(2)]
+    for worker in workers:
+        worker.start()
+    for worker in workers:
+        worker.join(timeout=30)
+
+    assert all(res.status_code == 200 for res in results), [res.text for res in results]
+    assert len(env.model.calls) == before + 1, "an accepted duplicate must not re-dispatch"
+    assert len(_messages_of(env, cid)) == 4, "an accepted duplicate must not append a pair"
+    assert _messages_of(env, cid)[-1]["content"] == "동시 답변"
+
+
+def test_an_out_of_sync_client_is_refused_before_any_model_call(env):
+    """A browser claiming turns the server never stored must not start a context."""
+    _sign_in(env.settings, env.client, USER_A)
+    cid = _seed_b66(env, USER_A)
+    before = len(env.model.calls)
+    # The browser claims turns the server never stored: refuse before dispatch.
+    invented = CONTINUATION + [
+        {"role": "assistant", "content": "서버에 없는 답변"},
+        {"role": "user", "content": "서버에 없는 질문"},
+    ]
+    res = _chat(env.client, messages=invented, conversation_id=cid)
+    assert res.status_code == 409, res.text
+    assert res.json()["error"]["code"] == "dialogue_out_of_sync"
+
+    # Repeating the last recorded message with no new turns is ambiguous too.
+    repeated = list(CONTINUATION)
+    repeated[-1] = {"role": "user", "content": "철근 견적 알려줘"}
+    res = _chat(env.client, messages=repeated, conversation_id=cid)
+    assert res.status_code == 409, res.text
+    assert res.json()["error"]["code"] == "dialogue_turn_already_recorded"
+    assert len(env.model.calls) == before
+    assert len(_messages_of(env, cid)) == 2
 
 
 def test_a_continued_dialogue_reaches_the_model_with_the_full_original(env):

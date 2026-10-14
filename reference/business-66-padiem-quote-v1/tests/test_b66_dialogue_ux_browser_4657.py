@@ -29,6 +29,7 @@ import json
 import os
 from pathlib import Path
 import threading
+import time
 from urllib.parse import unquote
 
 from playwright.async_api import async_playwright
@@ -85,11 +86,19 @@ class DialogueHandler(http.server.SimpleHTTPRequestHandler):
             return path[len("/api/padiem"):]
         return path
 
+    def _stub_delay(self):
+        """A deterministic lateness knob, so a late response can be observed."""
+        seconds = type(self).state.get("delaySeconds") or {}
+        pending = seconds.get("chat") if self.command == "POST" else seconds.get("dialogue")
+        if pending:
+            time.sleep(pending)
+
     def do_GET(self):
         path = self._route()
         if not path.startswith(("/auth/", "/b66/")):
             return super().do_GET()  # real static customer page asset
         type(self).calls.append(("GET", self.path))
+        self._stub_delay()
         if path == "/b66/ai/dialogues":
             query = ""
             if "?" in self.path:
@@ -133,6 +142,7 @@ class DialogueHandler(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
         path = self._route()
         type(self).calls.append(("POST", self.path))
+        self._stub_delay()
         body = self._read_json()
         if path == "/b66/ai/chat":
             type(self).chat_requests.append(body)
@@ -146,7 +156,7 @@ class DialogueHandler(http.server.SimpleHTTPRequestHandler):
                 if conversation is None:
                     return self._json(
                         {"ok": False, "error": {"code": "conversation_not_found"}}, 404)
-                answer = FOLLOW_UP_ANSWER
+                answer = "늦게 도착한 답변"
             else:
                 conversation_id = DIALOGUE_ID
                 answer = FIRST_ANSWER
@@ -237,6 +247,7 @@ def _reset_state() -> None:
         "/b66/guided-draft": {"ok": True, "state": None},
         "dialogues": [],
         "stored": {},
+        "delaySeconds": {},
     }
     DialogueHandler.calls = []
     DialogueHandler.chat_requests = []
@@ -379,6 +390,56 @@ async def main() -> int:
             if gone != 0:
                 failures.append("explicit_delete_did_not_remove_the_row")
             await shot(page, "06-deleted")
+
+            # 6a) P0-C: an in-flight answer may not repopulate a new chat.
+            DialogueHandler.state["delaySeconds"] = {"chat": 0.8}
+            await page.click("#brandHome")
+            await page.click("#freeChatStarter")
+            await page.fill("#easyComposer", "늦게 도착할 질문")
+            await page.click("#easySend")
+            await page.wait_for_selector("text=답변을 작성하고 있습니다", timeout=20000)
+            await page.click("#brandHome")
+            await page.wait_for_timeout(300)
+            cleared = await page.evaluate(
+                "() => document.querySelectorAll('#easyMessageList .easy-message').length"
+            )
+            await page.wait_for_timeout(1200)
+            late = await page.evaluate(
+                """() => {
+                     const nodes = Array.from(document.querySelectorAll('#easyMessageList *'));
+                     return {
+                       messages: document.querySelectorAll('#easyMessageList .easy-message').length,
+                       answer: nodes.some(n => n.textContent.includes('늦게 도착한 답변')),
+                       pending: nodes.some(n => n.textContent.includes('답변을 작성하고 있습니다'))
+                     };
+                   }"""
+            )
+            report["in_flight_answer_after_new_chat"] = late
+            if cleared != 0 or late["messages"] != 0 or late["answer"] or late["pending"]:
+                failures.append("late_answer_repopulated_new_chat")
+            await shot(page, "06b-late-answer-discarded")
+
+            # 6b) P0-B: a late restore may not overwrite a new chat either.
+            DialogueHandler.state["delaySeconds"] = {"dialogue": 0.8}
+            await page.click("#aiDialogueStarter")
+            await page.wait_for_selector("#easyDialogueResults .easy-dialogue-card", timeout=20000)
+            await page.click("#easyDialogueResults .easy-dialogue-card button")
+            await page.wait_for_timeout(200)
+            await page.click("#brandHome")
+            await page.wait_for_timeout(1600)
+            late_restore = await page.evaluate(
+                """() => {
+                     const nodes = Array.from(document.querySelectorAll('#easyMessageList *'));
+                     return {
+                       messages: document.querySelectorAll('#easyMessageList .easy-message').length,
+                       restored: nodes.some(n => n.textContent.includes('늦게 도착한 질문'))
+                     };
+                   }"""
+            )
+            report["late_restore_after_new_chat"] = late_restore
+            if late_restore["messages"] != 0 or late_restore["restored"]:
+                failures.append("late_restore_overwrote_new_chat")
+            await shot(page, "06c-late-restore-discarded")
 
             report["api_calls"] = sorted({f"{method} {path}"
                                           for method, path in DialogueHandler.calls})

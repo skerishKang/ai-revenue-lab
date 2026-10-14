@@ -154,7 +154,7 @@ def test_pages_relay_and_easy_chat_never_forge_a_saved_skill():
     easy = (root / "reference/business-66-padiem-quote-v1/easy-mode.js").read_text("utf-8")
     account = (root / "reference/business-66-padiem-quote-v1/padiem-account.js").read_text("utf-8")
     worker = (root / "reference/business-66-padiem-quote-v1/_worker.js").read_text("utf-8")
-    assert 'bridge.chat(history, { conversationId: sentDialogueId })' in easy
+    assert 'bridge.chat(history, { conversationId: sentDialogueId, turnToken: turnToken })' in easy
     assert 'if (readiness && readiness.authenticated' in easy
     assert 'chat: chatMessages' in account
     assert '"/b66/ai/chat"' in account

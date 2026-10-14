@@ -6,6 +6,30 @@
   /* #4657: the canonical conversation id grammar the server mints and accepts. */
   const B66_DIALOGUE_ID = /^chat_[a-f0-9]{32}$/;
   const MAX_DIALOGUE_QUERY_CHARS = 80;
+
+  /* #4657: one opaque retry identity per customer submission. It is reused for
+     that submission's transport retries so the server can recognise a replayed
+     turn instead of charging a second model call. It is not a credential and
+     selects no owner or scope. */
+  function newTurnToken() {
+    const bytes = new Uint8Array(16);
+    if (rootCrypto() && typeof rootCrypto().getRandomValues === "function") {
+      rootCrypto().getRandomValues(bytes);
+    } else {
+      for (let i = 0; i < bytes.length; i += 1) {
+        bytes[i] = Math.floor(Math.random() * 256);
+      }
+    }
+    return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  function rootCrypto() {
+    try {
+      return window.crypto || (typeof crypto !== "undefined" ? crypto : null);
+    } catch (_) {
+      return null;
+    }
+  }
   const PRIVATE_ASSET_MEDIA = new Set(["image/png", "image/jpeg", "image/webp"]);
   const MAX_PRIVATE_ASSET_BYTES = 256 * 1024;
   const state = {
@@ -788,6 +812,9 @@
     if (B66_DIALOGUE_ID.test(String(opts.conversationId || ""))) {
       payload.conversation_id = opts.conversationId;
     }
+    if (typeof opts.turnToken === "string" && /^[0-9a-f]{32}$/.test(opts.turnToken)) {
+      payload.turn_token = opts.turnToken;
+    }
     try {
       const result = await api("/b66/ai/chat", {
         method: "POST",
@@ -810,6 +837,9 @@
         conversation_id: B66_DIALOGUE_ID.test(String(data.conversation_id || ""))
           ? data.conversation_id : null,
         dialogue_saved: data.dialogue_saved === true,
+        /* The server recognised this submission as a replayed turn: the answer is
+           the one it already holds, and no second model call was made. */
+        dialogue_replay: data.dialogue_replay === true,
         /* #4469: the server reports what retrieval actually did. The browser
            never decides that a search happened, and a withheld or failed search
            stays visible instead of becoming a confident answer. */

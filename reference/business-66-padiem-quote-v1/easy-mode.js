@@ -53,6 +53,22 @@
   const MAX_DIALOGUE_QUERY_CHARS = 80;
   const DIALOGUE_ID_PATTERN = /^chat_[a-f0-9]{32}$/;
 
+  /* #4657: one opaque retry identity per customer submission, so the server can
+     recognise a replayed turn instead of charging a second model call. It is
+     not a credential and selects no owner or scope. */
+  function newTurnToken() {
+    const crypto = window.crypto || null;
+    const bytes = new Uint8Array(16);
+    if (crypto && typeof crypto.getRandomValues === "function") {
+      crypto.getRandomValues(bytes);
+    } else {
+      for (let i = 0; i < bytes.length; i += 1) {
+        bytes[i] = Math.floor(Math.random() * 256);
+      }
+    }
+    return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+  }
+
   const QUARANTINE_ACTIONS = AccountScope
     ? [
         AccountScope.SCOPE_ACTIONS.QUARANTINED_FOREIGN_OWNER,
@@ -123,6 +139,18 @@
     return typeof value === "string" && DIALOGUE_ID_PATTERN.test(value) ? value : null;
   }
 
+  /* #4657: one monotonic view generation. EVERY transition (new chat, restoring a
+     dialogue, opening the rail, guided/file direct mode and an account change)
+     bumps it, so a late answer or a late restore can never repopulate the screen
+     the customer is actually looking at. */
+  function bumpDialogueGeneration() {
+    dialogueGeneration += 1;
+    /* Any transition also retires an in-flight turn: a late reply for the previous
+       view must not block the customer's next submission in the new one. */
+    interpretationInFlight = false;
+    return dialogueGeneration;
+  }
+
   function readHistory() {
     /* 계정 owner 게이트는 app.js(단일 브라우저 저장소 authority)가 통과시킨다 (#3480). */
     const envelope = App.getHistoryEnvelope();
@@ -163,6 +191,10 @@
     $("directModeButton").classList.toggle("active", !easy);
     $("easyModeButton").setAttribute("aria-pressed", String(easy));
     $("directModeButton").setAttribute("aria-pressed", String(!easy));
+    /* #4657 P0-C: leaving the chat surface for the direct-quote editor also
+       invalidates an in-flight answer or restore, so nothing lands behind the
+       customer. */
+    if (!easy) bumpDialogueGeneration();
     if (!easy) window.scrollTo({ top: 0, behavior: "smooth" });
     if (!options || options.history !== false) {
       recordProductState(easy ? lastEasyView : "direct");
@@ -171,6 +203,7 @@
 
   function clearConversation() {
     modelChatTurns = [];
+    bumpDialogueGeneration();
     messageList.innerHTML = "";
     historyPanel.innerHTML = "";
     historyPanel.hidden = true;
@@ -208,6 +241,7 @@
 
   function startConversation() {
     easyEmpty.hidden = true;
+    bumpDialogueGeneration();
     easyView.classList.remove("easy-chat-home");
     if (conversation) conversation.scrollTop = 0;
     messageList.innerHTML = "";
@@ -406,6 +440,12 @@
       startConversation();
     }
     const requestScopeRevision = accountScopeRevision;
+    /* #4657 P0-C: the answer may only ever land in the view that asked for it.
+       The view generation is captured AFTER the transition above and checked on
+       every continuation, so clicking new chat (or any other view) discards a
+       late reply instead of repopulating the new screen with it. */
+    const requestViewGeneration = dialogueGeneration;
+    const turnToken = newTurnToken();
     const history = modelChatTurns.concat([{ role: "user", content: text }]);
     interpretationInFlight = true;
     addMessage("user", text);
@@ -414,11 +454,15 @@
     /* The conversation id is only ever the server's. When it is null the answer
        starts a new stored conversation; the browser cannot choose one. */
     const sentDialogueId = currentDialogueId;
+    const stillCurrentView = () => (
+      requestScopeRevision === accountScopeRevision &&
+      requestViewGeneration === dialogueGeneration
+    );
     Promise.resolve().then(() => {
-      if (requestScopeRevision !== accountScopeRevision) return null;
-      return bridge.chat(history, { conversationId: sentDialogueId });
+      if (!stillCurrentView()) return null;
+      return bridge.chat(history, { conversationId: sentDialogueId, turnToken: turnToken });
     }).then((result) => {
-      if (requestScopeRevision !== accountScopeRevision) return;
+      if (!stillCurrentView()) return;
       if (!result || !result.ok) {
         const detail = result && result.code === "model_selection_required"
           ? "입력창 아래에서 사용할 AI 모델을 선택한 뒤 다시 질문해 주세요."
@@ -443,13 +487,19 @@
         { label: "새 대화", action: showHome }
       ]);
       setInput(submitFreeFormText, "이어서 질문하거나 견적에 대해 이야기해 주세요");
+      /* #4657 P1 honesty: an answer the server could not store must not imply it
+         can be found later. Say so where the customer can still read it. */
+      $("easyComposerNote").textContent = result.dialogue_saved === true
+        ? ""
+        : "이 답변은 저장되지 않았습니다. 새로고침하면 사라지며 이전 대화 목록에도 없습니다.";
     }).catch(() => {
-      if (requestScopeRevision !== accountScopeRevision) return;
+      if (!stillCurrentView()) return;
       addMessage("assistant", "AI 대화 연결에 실패했습니다. 잠시 후 다시 시도해 주세요.");
       setInput(submitFreeFormText, "다시 질문해 주세요");
     }).finally(() => {
+      if (!stillCurrentView()) return;
       pending.remove();
-      if (requestScopeRevision === accountScopeRevision) interpretationInFlight = false;
+      interpretationInFlight = false;
     });
   }
 
@@ -501,17 +551,24 @@
       return;
     }
     const requestScopeRevision = accountScopeRevision;
+    /* #4657 P0-C: an approved one-shot CGI result may only land in the view that
+       asked for it; a new chat or another view discards the late reply. */
+    const requestViewGeneration = dialogueGeneration;
     interpretationInFlight = true;
     addMessage("user", text);
     const processingMessage = addMessage("assistant", "CGI 기본 견적서로 작성하고 있습니다…");
     disableInput("견적을 만드는 동안에는 입력을 잠시 멈춥니다.");
+    const stillCurrentView = () => (
+      requestScopeRevision === accountScopeRevision &&
+      requestViewGeneration === dialogueGeneration
+    );
     Promise.resolve().then(() => {
       // Closing/switching the owner before the dispatch microtask must cancel the call.
-      if (requestScopeRevision !== accountScopeRevision) return null;
+      if (!stillCurrentView()) return null;
       return bridge.interpret(text);
     }).then((result) => {
       // Results from a signed-out/quarantined owner must never update the next account.
-      if (requestScopeRevision !== accountScopeRevision) return;
+      if (!stillCurrentView()) return;
       if (!result || result.ok !== true || !result.draft) {
         /* 정보가 부족하면 무엇이 없는지 한 가지만 되묻고 같은 견적을 이어간다.
            Guided 로 강제 전환하지 않는다 (#3391). */
@@ -1044,9 +1101,16 @@
     startConversation();
     addMessage("assistant", "이전 AI 대화를 불러오는 중...");
     disableInput("이전 대화를 불러오는 중입니다.");
-    const generation = ++dialogueGeneration;
+    /* #4657 P0-B: startConversation already bumped the view generation, so this
+       capture is taken AFTER the transition and re-checked on both the resolved
+       and the rejected path. Clicking new chat (or any other view) therefore
+       discards a late restore instead of overwriting the new screen. */
+    const generation = dialogueGeneration;
+    const stillRestoringView = () => (
+      generation === dialogueGeneration && lastEasyView === "free-form"
+    );
     Promise.resolve().then(() => bridge.loadDialogue(conversationId)).then((result) => {
-      if (generation !== dialogueGeneration) return;
+      if (!stillRestoringView()) return;
       const conversation = result && result.ok === true ? result.conversation : null;
       if (!conversation || !Array.isArray(conversation.messages)) {
         addMessage("assistant", "이전 대화를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
@@ -1075,7 +1139,7 @@
       setInput(submitFreeFormText, "이어서 질문해 주세요");
       $("easyComposerNote").textContent = "이전 대화를 이어서 작성 중입니다.";
     }).catch(() => {
-      if (generation !== dialogueGeneration) return;
+      if (!stillRestoringView()) return;
       addMessage("assistant", "이전 대화를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
       disableInput("이전 대화를 불러오지 못했습니다.");
     });
@@ -1086,11 +1150,13 @@
     if (!bridge || typeof bridge.deleteDialogue !== "function") return;
     if (!DIALOGUE_ID_PATTERN.test(String(conversationId || ""))) return;
     if (!window.confirm("이 AI 대화를 삭제할까요? 삭제한 대화는 되돌릴 수 없습니다.")) return;
+    const generation = dialogueGeneration;
     Promise.resolve().then(() => bridge.deleteDialogue(conversationId)).then((result) => {
       if (!result || result.ok !== true) {
         App.toast("대화 삭제에 실패했습니다. 잠시 후 다시 시도해 주세요.");
         return;
       }
+      if (generation !== dialogueGeneration) return;
       if (currentDialogueId === conversationId) {
         currentDialogueId = null;
         recordDialogueState(null);

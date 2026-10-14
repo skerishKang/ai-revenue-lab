@@ -197,30 +197,26 @@ async def persist_b66_turn(
     conversation_id: str | None,
     user_text: str,
     assistant_text: str,
-    prior_messages: list[dict[str, str]] | None = None,
 ) -> str | None:
     """Append one completed B66 exchange; return its stable id, or ``None``.
 
     Only a real model-origin answer reaches here, so a failed upstream leaves no
-    record. For a continuation the append is idempotent: when the server-stored
-    dialogue already ends with exactly this exchange, it is skipped and the
-    existing id is returned, so a retried request cannot duplicate the turn.
+    record. Retry safety lives in the route, which reconciles the browser
+    transcript against the stored dialogue **before** dispatch, serialises
+    duplicates per (owner, conversation), and re-reads the stored tail after the
+    model returns. This helper deliberately never compares assistant prose for
+    identity: a model that answers the same question differently must still be
+    reported as the duplicate it is, not treated as a new turn.
     """
     if store is None or not callable(getattr(store, "record_turn", None)):
         return None
-    if conversation_id is not None and isinstance(prior_messages, list):
-        tail = prior_messages[-2:]
-        if (
-            len(tail) == 2
-            and tail[0].get("role") == "user"
-            and tail[0].get("content") == user_text
-            and tail[1].get("role") == "assistant"
-            and tail[1].get("content") == assistant_text
-        ):
-            return conversation_id
     try:
-        return await store.record_turn(
+        saved = await store.record_turn(
             owner_id, user_text, assistant_text, conversation_id=conversation_id
         )
     except Exception:
+        # The canonical store may have committed the conversation row before a
+        # later insert failed, so a partial exchange is possible. Callers must
+        # therefore report this as "not saved", never as an exactly-once append.
         return None
+    return saved if isinstance(saved, str) and saved else None
