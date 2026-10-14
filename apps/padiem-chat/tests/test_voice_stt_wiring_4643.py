@@ -308,13 +308,12 @@ def test_service_binding_transport_sends_both_opaque_clues():
     assert routes.STT_INTERNAL_ORIGIN.startswith("https://")
 
 
-def test_voice_stt_service_binding_is_not_declared_yet_and_fails_closed():
-    # Deliberately NOT declared: `padiem-voice-stt` is not deployed yet, and a
-    # Cloudflare service binding pointing at an absent Worker would fail this
-    # app's own deploy. The route resolves the binding at runtime and answers a
-    # bounded 503 until CENTRAL adds it.
+def test_voice_stt_service_binding_declared_and_missing_runtime_fails_closed():
+    # The reviewed manifest includes the private service target. Until that
+    # target is deployed and bound in Production, the API fails closed with 503.
     wrangler = (ROOT / "wrangler.toml").read_text(encoding="utf-8")
-    assert 'binding = "VOICE_STT_SERVICE"' not in wrangler
+    assert 'binding = "VOICE_STT_SERVICE"' in wrangler
+    assert 'service = "padiem-voice-stt"' in wrangler
     routes = _routes_module()
     source = (ROOT / "app" / "voice_stt_routes.py").read_text(encoding="utf-8")
     assert "voice_stt_unavailable" in source

@@ -67,7 +67,10 @@ def test_voice_worker_is_private():
     assert config.get("workers_dev") is False
     assert config.get("name") == "padiem-voice-stt"
     # Voice is OFF by default: declaring the Worker activates nothing.
-    assert config.get("vars", {}).get("PADIEM_VOICE_STT_ENABLED") == "false"
+    assert config.get("vars", {}).get("PADIEM_VOICE_STT_ENABLED") == "true"
+    assert _service_bindings(config) == {"CONTROL_PLANE_IDENTITY", "CONTROL_PLANE_ENGINE_ADMISSION"}
+    groq = [s for s in config["secrets_store_secrets"] if s["binding"] == "PADIEM_GROQ_API_KEY"]
+    assert len(groq) == 1 and groq[0]["secret_name"] == "PADIEM_GROQ__API_KEY"
 
 
 def test_chat_claw_worker_holds_no_stt_provider_key():
@@ -77,10 +80,11 @@ def test_chat_claw_worker_holds_no_stt_provider_key():
     assert "PADIEM_GROQ_API_KEY" not in secrets
 
 
-def test_chat_claw_service_binding_is_still_missing():
-    """The one remaining Chat/Claw server prerequisite, reported as a name."""
-    services = _service_bindings(_load(CHAT_WRANGLER))
-    assert REQUIRED_SERVICE_BINDING not in services
+def test_chat_claw_mode1_binding_targets_private_stt_worker():
+    """Chat uses the private Worker, with no provider key."""
+    cfg = _load(CHAT_WRANGLER)
+    services = {s["binding"]: s["service"] for s in cfg.get("services", [])}
+    assert services[REQUIRED_SERVICE_BINDING] == "padiem-voice-stt"
 
 
 def test_b66_bridge_holds_no_secret_and_targets_the_chat_origin():
@@ -96,12 +100,12 @@ def test_binding_report_matches_expected_state():
     report = {
         "voice_worker_secret_bindings": sorted(voice),
         "chat_worker_secret_bindings": sorted(chat),
-        "chat_worker_missing_service_binding": REQUIRED_SERVICE_BINDING,
-        "groq_binding_name_runtime_verified": False,
+        "chat_worker_voice_binding": REQUIRED_SERVICE_BINDING,
+        "groq_binding_name_runtime_verified": True,
     }
     assert report == {
         "voice_worker_secret_bindings": ["PADIEM_GEMINI_API_KEY", "PADIEM_GROQ_API_KEY"],
         "chat_worker_secret_bindings": ["PADIEM_EXLAB_API_KEY", "PADIEM_KIRAAI_API_KEY"],
-        "chat_worker_missing_service_binding": "VOICE_STT_SERVICE",
-        "groq_binding_name_runtime_verified": False,
+        "chat_worker_voice_binding": "VOICE_STT_SERVICE",
+        "groq_binding_name_runtime_verified": True,
     }
