@@ -1,223 +1,162 @@
-// Default browser TTS output module for #4649.
-// Uses only window.speechSynthesis / SpeechSynthesisUtterance. No paid
-// provider API, key, or external network call is ever used here.
-(function (global) {
+// Browser-only TTS primitive (#4649). No provider endpoint or credentials.
+// An explicit UI Start action is required before speaking; default is OFF.
+(function (root) {
   "use strict";
+  const MAX_CHUNK = 180;
+  const MAX_QUEUE = 8;
+  const MAX_TEXT = MAX_CHUNK * MAX_QUEUE;
 
   function safeText(value) {
     if (typeof value !== "string") return "";
-    // SpeechSynthesis needs plain text. Keep a simple, bounded text payload.
-    return value
-      .replace(/```[\s\S]*?```/g, " code block omitted ")
+    return value.replace(/```[\s\S]*?```/g, " code block omitted ")
       .replace(/`([^`]+)`/g, "$1")
       .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
       .replace(/^#{1,6}\s+/gm, "")
       .replace(/[*_~]/g, "")
-      .replace(/\s+/g, " ")
-      .trim()
-      .slice(0, 10000);
+      .replace(/\s+/g, " ").trim().slice(0, 10000);
   }
-
   function supported() {
-    return (
-      typeof global !== "undefined" &&
-      typeof global.speechSynthesis !== "undefined" &&
-      typeof global.SpeechSynthesisUtterance !== "undefined"
-    );
+    return !!(root && root.speechSynthesis && root.SpeechSynthesisUtterance);
   }
-
-  function create(options) {
-    const opts = options || {};
+  function chunksOf(value) {
+    const words = String(value || "").trim().split(/\s+/);
+    const result = [];
+    let row = "";
+    words.forEach(function (word) {
+      while (word.length > MAX_CHUNK) {
+        if (row) { result.push(row); row = ""; }
+        result.push(word.slice(0, MAX_CHUNK));
+        word = word.slice(MAX_CHUNK);
+      }
+      if (!word) return;
+      if (row && row.length + word.length + 1 > MAX_CHUNK) {
+        result.push(row);
+        row = word;
+      } else {
+        row = row ? row + " " + word : word;
+      }
+    });
+    if (row) result.push(row);
+    return result;
+  }
+  function create(opts) {
+    opts = opts || {};
     const lang = opts.lang || "ko-KR";
-    const rate = opts.rate != null ? opts.rate : 1.0;
-    const pitch = opts.pitch != null ? opts.pitch : 1.0;
-    const volume = opts.volume != null ? opts.volume : 1.0;
+    const rate = opts.rate == null ? 1 : opts.rate;
+    const pitch = opts.pitch == null ? 1 : opts.pitch;
+    const volume = opts.volume == null ? 1 : opts.volume;
     const onStatus = typeof opts.onStatus === "function" ? opts.onStatus : function () {};
+    const onStart = typeof opts.onStart === "function" ? opts.onStart : function () {};
     const onEnd = typeof opts.onEnd === "function" ? opts.onEnd : function () {};
     const onError = typeof opts.onError === "function" ? opts.onError : function () {};
-    const onStart = typeof opts.onStart === "function" ? opts.onStart : function () {};
-
-    let queue = [];
-    let busy = false;
-    let playGeneration = 0;
-    let userStartSeen = false;
-    let preferredVoiceName = opts.voiceName || "";
-
-
+    let preferredVoiceName = String(opts.voiceName || "");
+    let userStartSeen = false, busy = false, generation = 0, queue = [];
     function report(status) {
-      onStatus({
-        supported: supported(),
-        status: status,
-        busy: busy,
-        queue: queue.length,
-        speaking: supported() ? global.speechSynthesis.speaking : false,
-        userStartSatisfied: userStartSeen,
-        voiceName: preferredVoiceName || "(browser-selected)",
-      });
+      try { onStatus({status: status, supported: supported(), busy: busy,
+        queue: queue.length, userStartSatisfied: userStartSeen,
+        speaking: supported() ? !!root.speechSynthesis.speaking : false}); }
+      catch (_) { /* UI observation is optional */ }
     }
-
+    function error(reason) {
+      try { onError({reason: reason}); } catch (_) { /* no transport side effects */ }
+      report(reason);
+    }
     function availableVoices() {
       if (!supported()) return [];
-      try {
-        return global.speechSynthesis.getVoices() || [];
-      } catch (error) {
-        return [];
-      }
+      try { return root.speechSynthesis.getVoices() || []; } catch (_) { return []; }
     }
-
     function findVoice() {
       const voices = availableVoices();
-      if (!voices.length) return null;
+      const match = function (v) {
+        return v && String(v.lang || "").toLowerCase().split("-")[0] ===
+          lang.toLowerCase().split("-")[0];
+      };
       if (preferredVoiceName) {
-        const match = voices.find(function (voice) {
-          return voice.name === preferredVoiceName;
-        });
-        if (match) return match;
+        const selected = voices.find(function (v) { return v.name === preferredVoiceName && match(v); });
+        if (selected) return selected;
       }
-      const exact = voices.find(function (voice) {
-        return voice.lang === lang;
-      });
-      if (exact) return exact;
-      const prefix = lang.split("-")[0];
-      const partial = voices.find(function (voice) {
-        return String(voice.lang || "").split("-")[0] === prefix;
-      });
-      return partial || voices[0] || null;
+      return voices.find(function (v) { return v.lang === lang; }) ||
+        voices.find(match) || null;
     }
-
-    function finishCurrent() {
+    function finish() {
       busy = false;
       const next = queue.shift();
-      if (next) {
-        run(next, true);
-        return;
-      }
+      if (next) { run(next); return; }
       report("ended");
-      onEnd();
+      try { onEnd(); } catch (_) {}
     }
-
-    function run(text, alreadyQueued) {
-      if (!supported() || !text) {
-        report("unsupported");
-        return false;
-      }
-      if (!userStartSeen) {
-        report("needs-user-gesture");
-        onError({ reason: "user-gesture-required", text: text });
-        return false;
-      }
-      if (busy) {
-        queue.push(text);
-        return true;
-      }
+    function run(text) {
+      if (!supported() || !userStartSeen) { error("not-started-or-unsupported"); return false; }
+      const voice = findVoice();
+      if (!voice) { error("no-matching-voice"); return false; }
+      if (busy) { queue.push(text); return true; }
       busy = true;
-      const currentGeneration = ++playGeneration;
-      const utterance = new global.SpeechSynthesisUtterance(text);
+      const thisGeneration = ++generation;
+      const utterance = new root.SpeechSynthesisUtterance(text);
       utterance.lang = lang;
+      utterance.voice = voice;
       utterance.rate = rate;
       utterance.pitch = pitch;
       utterance.volume = volume;
-      const voice = findVoice();
-      if (voice) utterance.voice = voice;
-      // "started" is reported only after the native synthesis start event.
       utterance.onstart = function () {
-        if (currentGeneration !== playGeneration) return;
-        onStart({ text: text, voice: voice ? voice.name : null });
+        if (thisGeneration !== generation) return;
         report("speaking");
+        try { onStart({text: text, voice: voice.name}); } catch (_) {}
       };
       utterance.onend = function () {
-        if (currentGeneration !== playGeneration) return;
-        finishCurrent();
+        if (thisGeneration !== generation) return;
+        finish();
       };
       utterance.onerror = function (event) {
-        if (currentGeneration !== playGeneration) return;
-        const reason = event && event.error ? event.error : "unknown";
-        onError({ reason: reason, text: text });
-        finishCurrent();
+        if (thisGeneration !== generation) return;
+        // Error is NOT successful playback completion; do not chain or reopen mic.
+        ++generation; queue = []; busy = false;
+        error(event && event.error ? event.error : "speech-error");
       };
       try {
-        global.speechSynthesis.speak(utterance);
+        root.speechSynthesis.speak(utterance);
         return true;
-      } catch (error) {
-        onError({ reason: "speak-failed", error: error });
-        finishCurrent();
+      } catch (_) {
+        if (thisGeneration === generation) {
+          ++generation; queue = []; busy = false;
+          error("speech-throw");
+        }
         return false;
       }
     }
-
-    function chunkText(value) {
-      const chunks = [];
-      const parts = String(value || "").split(/(?<=[.!??])\s+/);
-      let current = "";
-      parts.forEach(function (part) {
-        if (!part) return;
-        if ((current + " " + part).trim().length > 180) {
-          if (current.trim()) chunks.push(current.trim());
-          current = part;
-        } else {
-          current = (current ? current + " " : "") + part;
-        }
-      });
-      if (current.trim()) chunks.push(current.trim());
-      return chunks.length ? chunks : [String(value || "").trim()];
-    }
-
     function speakText(value) {
       const text = safeText(value);
       if (!text) return false;
-      if (!supported()) return false;
-      const chunks = chunkText(text).slice(0, 8);
-      let ok = true;
-      chunks.forEach(function (chunk, index) {
-        ok = run(chunk, index !== 0) && ok;
-      });
-      return ok;
-    }
-
-    function cancel() {
-      playGeneration += 1;
-      if (supported()) {
-        try {
-          global.speechSynthesis.cancel();
-        } catch (error) {
-          // Best effort only.
-        }
+      if (!supported() || !userStartSeen) { error("not-started-or-unsupported"); return false; }
+      if (!findVoice()) { error("no-matching-voice"); return false; }
+      if (text.length > MAX_TEXT) { error("text-too-long"); return false; }
+      const chunks = chunksOf(text);
+      if (chunks.length + queue.length + (busy ? 1 : 0) > MAX_QUEUE) {
+        error("queue-full"); return false;
       }
-      queue = [];
-      busy = false;
+      chunks.forEach(function (chunk) { run(chunk); });
+      return true;
+    }
+    function cancel() {
+      ++generation; queue = []; busy = false;
+      if (supported()) { try { root.speechSynthesis.cancel(); } catch (_) {} }
       report("cancelled");
     }
-
-    function setVoiceName(name) {
-      preferredVoiceName = String(name || "");
-      report("voice-selected");
-    }
-
-    return {
-      isSupported: supported,
-      availableVoices: availableVoices,
-      speakText: speakText,
-      cancel: cancel,
-      start: function () { userStartSeen = true; report("started"); },
-      stopOutput: function () { userStartSeen = false; cancel(); },
-      getState: function () {
-        return {
-          supported: supported(),
-          speaking: supported() ? global.speechSynthesis.speaking : false,
-          busy: busy,
-          queued: queue.length,
-          lang: lang,
-          userStartSatisfied: userStartSeen,
-          voiceName: preferredVoiceName || "(browser-selected)",
-        };
-      },
+    function stopOutput() { userStartSeen = false; cancel(); }
+    function start() { userStartSeen = true; report("started"); }
+    function setVoiceName(value) { preferredVoiceName = String(value || ""); report("voice-selected"); }
+    const api = {
+      isSupported: supported, availableVoices: availableVoices, speakText: speakText,
+      cancel: cancel, start: start, stopOutput: stopOutput, setVoiceName: setVoiceName,
+      getState: function () { return {
+        supported: supported(), busy: busy, queued: queue.length,
+        userStartSatisfied: userStartSeen, lang: lang,
+        voiceName: preferredVoiceName || "(browser-selected)"
+      }; }
     };
+    return api;
   }
-
-  const exported = { create: create, safeText: safeText, supported: supported };
-
-  if (typeof module !== "undefined" && module.exports) {
-    module.exports = exported;
-  }
-  (typeof globalThis !== "undefined" ? globalThis : global).PadiemVoiceTTSOutput = exported;
+  const api = {create: create, safeText: safeText, supported: supported};
+  if (typeof module !== "undefined" && module.exports) module.exports = api;
+  (typeof globalThis !== "undefined" ? globalThis : root).PadiemVoiceTTSOutput = api;
 })(typeof globalThis !== "undefined" ? globalThis : this);
