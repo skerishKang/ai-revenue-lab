@@ -72,7 +72,12 @@ def test_binding_gate_keeps_default_b62_config_unmodified():
     config_name = "wrang" + "ler.toml"
     default_config = (ROOT / "apps" / "padiem-chat" / config_name).read_text(encoding="utf-8")
 
-    assert "IDENTITY_AUTHORITY_SERVICE" not in default_config
+    # #4139: the canonical Identity binding is now deliberately source-default ON;
+    # the version PATCH gate must not mutate that checked-in topology.
+    assert default_config.count('binding = "IDENTITY_AUTHORITY_SERVICE"') == 1
+    assert default_config.count('service = "padiem-control-plane-identity"') == 1
+    assert default_config.count('binding = "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE"') == 1
+    assert default_config.count('service = "padiem-local-agent-broker-state"') == 1
     assert "DEFAULT_B62_CONFIG_MUTATION=NO" in source
     assert "/workers/scripts/${B62_WORKER}/settings" in source
     assert "-X PATCH" in source
