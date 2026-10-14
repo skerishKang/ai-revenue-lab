@@ -1,3 +1,23 @@
+<!-- CENTRAL_LIVE_DELTA_20261014_START -->
+## 최신 후속 정정 — 2026-10-14 KST (원래 시점별 기록보다 우선)
+
+> 이 파일의 기존 `BASE_MAIN_SHA=b6d767d`와 아래 Draft/미검증 표는 **이전 시점 스냅샷**이다. 실제 새 HEAD·CI·운영 상태는 링크한 각 PR/이슈를 조회해야 한다. 본 갱신은 공개 기술 상태만 기록하며 회사 비공개 Governance 내용을 옮기거나 새 운영 승인을 의미하지 않는다.
+
+| 범위 | 현재 검증 상태 | 남은 작업/단일 추적처 |
+| --- | --- | --- |
+| B66 대화/Markdown 저장 | [#4661](https://github.com/skerishKang/ai-revenue-lab/pull/4661) **MERGED** `0586b11a`; [#4672](https://github.com/skerishKang/ai-revenue-lab/pull/4672) **DRAFT**, 관측 HEAD `b7b80b43` (첫 턴·장시간 중복 방어 및 2개 추가 동시성 테스트가 브랜치에 존재) | #4672 exact-HEAD CI와 교차 Worker isolate 중복 유료 호출 보장 문제는 CENTRAL 재검증 전 미수용. 고객 UI/Pages 운영 배포, D1 041/042 적용은 [#4316](https://github.com/skerishKang/ai-revenue-lab/issues/4316) 별도 |
+| B66 모델 대화 → QuoteCore 초안 | [#4658](https://github.com/skerishKang/ai-revenue-lab/pull/4658) **MERGED** `c620f5ce` | 소스 병합은 B66 프로덕션 UI 연결/실사용 PDF E2E 완료가 아님. #4466/#4412 구현 이력, 출고 검증 #4316 |
+| Chat·Claw 공통 화면 구조 | [#4650](https://github.com/skerishKang/ai-revenue-lab/pull/4650) · [#4653](https://github.com/skerishKang/ai-revenue-lab/pull/4653) **MERGED**. [#4488](https://github.com/skerishKang/ai-revenue-lab/issues/4488)에 exact-main 보호 배포와 served `app.js` 증거 | 기존 UI 구조 작업 종료/다른 팀 수정 가능. 실제 승인 대기·저장된 메모리 상세·재로그인 등 데이터 의존 수용만 OPEN |
+| Claw 실제 SSE | [#3936](https://github.com/skerishKang/ai-revenue-lab/issues/3936) 인증된 **단일 실제 SSE 세션 순서 PASS** | 승인·거절·취소·재연결·교차 사용자 시나리오 미수용. 이미 소진한 1회 실제 모델 승인 재사용 금지 |
+| 공통 STT | [#4663](https://github.com/skerishKang/ai-revenue-lab/pull/4663) 소스 **MERGED** `35f79a85` | [#4643](https://github.com/skerishKang/ai-revenue-lab/issues/4643): 제품별 CP entitlement, 바인딩/마이크 UI, 실사용 미완료·기본 OFF |
+| 제품별 모델 정책 | [#4482](https://github.com/skerishKang/ai-revenue-lab/pull/4482) **MERGED** `33c61670`, **권고(advice)뿐** | [#4453](https://github.com/skerishKang/ai-revenue-lab/issues/4453)/[#4483](https://github.com/skerishKang/ai-revenue-lab/issues/4483) 실제 제품/회원/등급별 유효 권한, signing, 최종 라우터 dispatch 차단 미완료 |
+| Windows Connector | [#4139](https://github.com/skerishKang/ai-revenue-lab/issues/4139) 별도 시험 D1·비공개 3 Worker 배포 기록; [#4572](https://github.com/skerishKang/ai-revenue-lab/pull/4572) **DRAFT** | LOCAL6 전용 후속, 실제 Windows 페어링/기기 회복은 [#3099](https://github.com/skerishKang/ai-revenue-lab/issues/3099) NOT_PROVEN |
+| B62 테스트 실행시간 | [#4377](https://github.com/skerishKang/ai-revenue-lab/pull/4377) **MERGED** `a66640f9`; CI 27 success / 6 skipped, 실제 Linux slowest-50 로그 확인 | 진단 데이터 수집만 구현; 성능 개선을 입증한 것은 아님 |
+
+**로컬 작업 충돌 방지:** LOCAL2 → #4672 기존 브랜치만, LOCAL1 → #3936 오프라인 SSE 재연결/승인 회귀, LOCAL3 → #4643 STT CP 권한 계약, LOCAL4 → #4316 B66 QuoteCore 소스/SQLite 검증, CLAW2 → #4488 미검증 데이터 상태 UI fixture/키보드 QA, LOCAL5 → #4483 B14 최종 디스패치 read-only 분석. LOCAL6는 #4139/#4572 원래 작업을 계속 담당한다. 이 배정은 **GitHub의 기술 티켓/작업 요청**이지 로컬 프로세스가 실행됐다는 증명이 아니다. 각 레인은 독립 worktree와 기존 이슈 사용; CENTRAL이 exact-head 리뷰/병합. 새로운 DB·Secret·유료 POST·운영 배포는 이 문서로 승인되지 않는다.
+
+<!-- CENTRAL_LIVE_DELTA_20261014_END -->
+
 # PADIEM AI CENTRAL CTO — 개발·이슈·배포 분리 스냅샷 (2026-10-14 KST)
 
 ```text
