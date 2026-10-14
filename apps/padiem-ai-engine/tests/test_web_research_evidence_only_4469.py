@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import asyncio
 
-from padiem_ai_core import GroundedResearchRuntime, MockWebProvider
+from padiem_ai_core import Evidence, GroundedResearchRuntime, MockWebProvider
 from padiem_ai_core.web_runtime import WebRuntimeError
 from app.web_research_service import WebResearchEngineService
 
@@ -90,3 +90,50 @@ def test_extra_browser_provider_authority_denied():
     result = asyncio.run(service(MockWebProvider()).research_payload(payload))
     assert result.status_code == 400
     assert result.body["error"]["code"] == "invalid_research_request"
+
+
+def test_unlisted_operation_is_refused_not_defaulted():
+    payload = request()
+    payload["operation"] = "search_evidence_and_answer"
+    result = asyncio.run(service(MockWebProvider()).research_payload(payload))
+    assert result.status_code == 400
+    assert result.body["error"]["code"] == "invalid_research_operation"
+
+
+def test_research_operation_allowlist_is_exactly_the_reviewed_four():
+    # Dispatch falls through to deep_research for anything the allowlist admits, so
+    # widening this set by one entry would silently start a model call on a route
+    # that is contractually model-free. Pinning the set is the only observable guard.
+    from app.web_research_service import _OPERATIONS
+
+    assert _OPERATIONS == frozenset({"search", "fetch", "deep_research", "search_evidence"})
+
+
+class OversizedEvidenceProvider:
+    """Search hits far larger than the reviewed grounding budget."""
+
+    def __init__(self):
+        self._snippet = "public market data" * 1_200
+
+    async def search(self, query, limit=5):
+        return [
+            Evidence(
+                id=f"oversized-{index}",
+                title=f"Public source {index}",
+                url="https://example.org/public/" + str(index),
+                snippet=self._snippet,
+                retrieved_at="2000-01-01T00:00:00Z",
+                provider="mock",
+                source_type="search",
+            )
+            for index in range(1, 5)
+        ]
+
+
+def test_grounding_context_stays_inside_the_reviewed_bound_when_hits_are_large():
+    result = asyncio.run(service(OversizedEvidenceProvider()).research_payload(request()))
+    assert result.status_code == 200
+    body = result.body
+    assert body["answer"] is None
+    assert len(body["sources"]) > 0
+    assert len(body["grounding_context"]) <= 32_768

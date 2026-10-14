@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 
 import httpx
 import pytest
@@ -87,3 +88,43 @@ def test_fetch_tinyfish_only_no_daum_on_402():
 def test_missing_keys_fail_closed_at_construction(keys):
     with pytest.raises(ValueError):
         TinyFishDaumPriorityWebProvider(**keys)
+
+
+def test_the_missing_daum_key_is_refused_before_any_egress() -> None:
+    # Whichever layer answers, the refusal must name the missing credential rather
+    # than a provider list, and it must happen at construction with no request sent.
+    calls = []
+
+    def send(req):
+        calls.append(req)
+        return httpx.Response(200, json={"documents": []})
+
+    with pytest.raises(ValueError, match="daum"):
+        TinyFishDaumPriorityWebProvider(
+            tinyfish_key="synthetic-tinyfish",
+            daum_key="",
+            transport=httpx.MockTransport(send),
+        )
+    assert calls == []
+
+
+def test_the_fallback_egress_carries_only_the_daum_credential() -> None:
+    seen: list[tuple[str, dict[str, str]]] = []
+
+    def send(req):
+        seen.append((str(req.url), dict(req.headers)))
+        if len(seen) == 1:
+            return httpx.Response(429, json={"error": "quota"})
+        return httpx.Response(200, json={"documents": [
+            {"title": "Public", "url": "https://example.org/article", "contents": "public data"}
+        ]})
+
+    run(provider(send).search("public market news"))
+    assert len(seen) == 2
+    primary_url, primary_headers = seen[0]
+    fallback_url, fallback_headers = seen[1]
+    assert "api.search.tinyfish.ai" in primary_url
+    assert "dapi.kakao.com/v2/search/web" in fallback_url
+    assert fallback_headers.get("authorization") == "KakaoAK synthetic-daum"
+    egress = json.dumps({"url": fallback_url, "headers": fallback_headers})
+    assert "synthetic-tinyfish" not in egress, "the primary credential must not reach the fallback origin"
