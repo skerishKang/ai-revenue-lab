@@ -52,6 +52,7 @@ async def upload_completed_output_with_verified_ticket(
     if (
         not isinstance(pipeline, ClawDurableDriveOutputPipeline)
         or not isinstance(ticket, EphemeralExecutionWorkTicket)
+        or not isinstance(intent, ConnectorWriteIntent)
         or not isinstance(now, datetime)
         or now.tzinfo is None or now.utcoffset() is None
     ):
