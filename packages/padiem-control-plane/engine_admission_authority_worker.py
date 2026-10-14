@@ -111,7 +111,10 @@ class CanonicalEngineAdmissionDurableObject(DurableObject):
         self._mode1_voice_policy = (
             VoiceSttAllPlansMode1Policy(
                 revision="mode1-all-plans-20261015-v1",
-                effective_at=datetime(2026, 10, 15, tzinfo=UTC),
+                # Owner's 2026-10-15 decision is in Asia/Seoul.
+                # UTC 2026-10-15 midnight would defer first activation
+                # until 09:00 KST, so admit from the previous UTC date.
+                effective_at=datetime(2026, 10, 14, tzinfo=UTC),
                 expires_at=datetime(2099, 1, 1, tzinfo=UTC),
             )
             if getattr(env, "PADIEM_VOICE_MODE1_ALL_PLANS_ENABLED", None) == "true"
