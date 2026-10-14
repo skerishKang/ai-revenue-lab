@@ -1,0 +1,49 @@
+/* A compact connector guide; does not change the shared Chat cards, composer or hero. */
+.claw-connection-guide {
+  color: var(--text);
+  background: var(--card-bg, #101827);
+  border: 1px solid var(--line, rgba(255,255,255,.2));
+  border-radius: 20px;
+  box-shadow: 0 24px 72px rgba(0,0,0,.34);
+  width: min(390px, calc(100vw - 32px));
+  max-width: 390px;
+  max-height: min(520px, calc(100dvh - 32px));
+  padding: 0;
+  overflow: auto;
+}
+.claw-connection-guide::backdrop { background: rgba(3,8,18,.64); backdrop-filter: blur(4px); }
+.claw-connection-guide-panel { padding: 24px; }
+.claw-connection-guide-head { display:flex; align-items: flex-start; gap: 12px; }
+.claw-connection-guide-mark {
+  flex: 0 0 42px; display:grid; place-items:center; height:42px; border-radius:14px;
+  background: color-mix(in srgb, var(--accent, #4f8aff) 14%, transparent);
+  color: var(--accent-strong, var(--accent, #73a9ff)); font-size:20px; font-weight:700;
+}
+.claw-connection-guide-heading { flex:1; min-width:0; }
+.claw-connection-guide-kicker {
+  margin: 0 0 6px; font-size:10px; line-height:1.4; letter-spacing:.13em;
+  font-weight:750; text-transform:uppercase; color:var(--muted, #99aac2);
+}
+.claw-connection-guide-title { margin:0; color:var(--text); font-size:18px; line-height:1.35; letter-spacing:-.02em; }
+.claw-connection-guide-close {
+  border:0; background:transparent; color:var(--muted, #99aac2);
+  font-size:22px; line-height:1; padding:4px; border-radius:8px; cursor:pointer;
+}
+.claw-connection-guide-description {
+  margin:20px 0 0; font-size:14px; line-height:1.65; color:var(--text);
+}
+.claw-connection-guide-hint {
+  margin:10px 0 0; font-size:12px; line-height:1.6; color:var(--muted, #99aac2);
+}
+.claw-connection-guide-actions { display:flex; justify-content:flex-end; gap:9px; margin-top:24px; }
+.claw-connection-guide-actions button {
+  min-height:42px; padding:9px 15px; border-radius:11px; font:inherit; font-size:13px; font-weight:650; cursor:pointer;
+}
+.claw-connection-guide-cancel { color:var(--text); background:transparent; border:1px solid var(--line, #354154); }
+.claw-connection-guide-continue { color:#fff; background:var(--accent, #336dff); border:1px solid transparent; }
+.claw-connection-guide button:focus-visible { outline:3px solid var(--accent, #5b8fff); outline-offset:2px; }
+@media (max-width:480px) {
+  .claw-connection-guide-panel { padding:20px; }
+  .claw-connection-guide-actions { flex-direction:column-reverse; }
+  .claw-connection-guide-actions button { width:100%; }
+}
