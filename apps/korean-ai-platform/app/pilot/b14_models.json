@@ -93,7 +93,7 @@
       "enabled": true
     },
     "opencode-go": {
-      "base_origin": "https://opencode.ai/zen/go/v1",
+      "base_origin": "https://opencode.ai/inference/go/v1",
       "allowed_hosts": [
         "opencode.ai"
       ],

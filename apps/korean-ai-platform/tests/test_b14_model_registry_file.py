@@ -188,7 +188,7 @@ def test_opencodego_and_zanslab_are_registered_disabled_without_credentials():
     """Owner intake is metadata only until distinct credentials and transport are verified."""
     reg = read_registry()
     providers = reg["providers"]
-    assert providers["opencode-go"]["base_origin"] == "https://opencode.ai/zen/go/v1"
+    assert providers["opencode-go"]["base_origin"] == "https://opencode.ai/inference/go/v1"
     assert providers["opencode-go"]["credential_binding_name"] == "PADIEM_OPENCODE_API_KEY"
     assert providers["zanslab"]["base_origin"] == "https://zanslab.id/v1"
     assert providers["zanslab"]["credential_binding_name"] == "PADIEM_ZANSLAB_API_KEY"
