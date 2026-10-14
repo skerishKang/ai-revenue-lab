@@ -49,6 +49,11 @@ def _contract_executable_ids() -> frozenset[str]:
 
 
 DEFAULT_CHAT_PROFILE = "low"
+# #4317: Owner's Free first-round choice is a B62 product-specific route.
+# The legacy neutral Plus/Pro/Max declaration is shared with Claw, and MUST
+# NOT be implicitly promoted by Chat's Free assignment.
+FREE_B14_MODEL_ID = "google/gemini-3.1-flash-lite"
+PADIEM_FREE = "Padiem Free"
 AUTO_B14_MODEL_ID = "b14/auto"
 
 TIER_ID_TO_LABEL: dict[str, ProductTierLabel] = {
@@ -57,6 +62,7 @@ TIER_ID_TO_LABEL: dict[str, ProductTierLabel] = {
     "max": ProductTierLabel.MAX,
 }
 TIER_ID_TO_PROFILE: dict[str, str] = {
+    "free": "free",
     "plus": "low",
     "pro": "medium",
     "max": "high",
@@ -109,11 +115,14 @@ PROFILE_MODEL_IDS: dict[str, str] = {
 # Product identity and route executability are separate on purpose. A Padiem
 # tier may remain user-visible while its backing route is temporarily HOLD.
 PRODUCT_TIER_NAMES: dict[str, str] = {
+    FREE_B14_MODEL_ID: PADIEM_FREE,
     LOW_B14_MODEL_ID: PADIEM_PLUS,
     MEDIUM_B14_MODEL_ID: PADIEM_PRO,
     HIGH_B14_MODEL_ID: PADIEM_MAX,
 }
-EXECUTABLE_B14_MODEL_IDS = _contract_executable_ids()
+# A signed-in Free caller may use the explicitly nominated live-proven Gemini
+# route. Other tiers remain separately governed by the shared HOLD contract.
+EXECUTABLE_B14_MODEL_IDS = _contract_executable_ids() | frozenset({FREE_B14_MODEL_ID})
 
 # Current source posture after owner decision #3568:
 #
@@ -146,6 +155,7 @@ MODEL_ALIASES: dict[str, str] = {
 # executable capabilities. The future Plus successor will add capabilities only
 # after its route is explicitly selected and proven.
 MODEL_CAPABILITIES: dict[str, frozenset[str]] = {
+    FREE_B14_MODEL_ID: frozenset({"chat", "image"}),
     LOW_B14_MODEL_ID: frozenset(),
     MEDIUM_B14_MODEL_ID: frozenset(),
     HIGH_B14_MODEL_ID: frozenset(),
@@ -199,6 +209,14 @@ def resolve_tier_policy(
     if not isinstance(tier_id, str):
         raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
     normalized = tier_id.strip().lower()
+    if normalized == "free":
+        # No paid-member entitlement needed: caller authentication and usage
+        # controls are enforced by the actual Chat route before provider dispatch.
+        return ResolvedModelPolicy(
+            model_id=FREE_B14_MODEL_ID,
+            messages=[dict(message) for message in messages],
+            profile="free",
+        )
     label = TIER_ID_TO_LABEL.get(normalized)
     if label is None:
         raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
@@ -262,7 +280,7 @@ def request_tier_context(tier_id: str | None):
     if not isinstance(tier_id, str):
         raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
     normalized = tier_id.strip().lower()
-    if normalized not in TIER_ID_TO_LABEL:
+    if normalized != "free" and normalized not in TIER_ID_TO_LABEL:
         raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
     token = _REQUEST_TIER_ID.set(normalized)
     try:

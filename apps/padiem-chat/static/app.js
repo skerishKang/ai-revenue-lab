@@ -1632,9 +1632,24 @@
     setNote(uiT("answer-cancelled-note"), "error");
   }
 
+  // #4317: product-capabilities.js is loaded AFTER app.js. Initialise the
+  // browser's ordinary Chat tier to the universally available signed-in Free
+  // lane once all scripts are ready; preserve an explicit tier choice afterwards.
+  // This updates the visible mode selector but never sends a model request.
+  window.addEventListener("load", () => {
+    if (window.PadiemTierSelection?.get?.() === "plus") {
+      window.PadiemTierSelection.set("free");
+    }
+  }, { once: true });
+
   function selectedProductTier() {
+    // #4317: standalone Chat must honor an explicit Free selection; otherwise
+    // its backend sees Plus even when the user selected Free. Claw's own
+    // explicit-model Plus/P01 route is kept unchanged until site-tier authority
+    // is integrated; selecting Free on Chat never authorizes a Claw model.
+    if (shell.dataset.state === "claw") return "plus";
     const tier = window.PadiemTierSelection?.get?.();
-    return "plus";
+    return tier === "free" ? "free" : "plus";
   }
 
   async function requestAnswer(outboundMessages, skill, attachment, contextSnapshot, clawGeneralRequest) {

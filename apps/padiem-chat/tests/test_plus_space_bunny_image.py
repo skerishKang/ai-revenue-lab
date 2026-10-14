@@ -32,7 +32,7 @@ from padiem_control_plane.product_tier_routes import (
 def test_plus_identity_is_hold_and_space_bunny_is_historical_only() -> None:
     assert active_route_for(ProductTierLabel.PLUS) is None
     assert LOW_B14_MODEL_ID == DEFAULT_B14_MODEL_ID == PLUS_HOLD_MODEL_ID
-    assert EXECUTABLE_B14_MODEL_IDS == frozenset()
+    assert EXECUTABLE_B14_MODEL_IDS == frozenset({"google/gemini-3.1-flash-lite"})
 
     plus_routes = get_tier(ProductTierLabel.PLUS).routes
     bunny = next(
