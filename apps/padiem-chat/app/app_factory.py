@@ -68,6 +68,7 @@ from .b66_saved_skill_candidate_store import (
     D1SavedQuoteSkillCandidateStore,
     SavedQuoteSkillCandidateStore,
 )
+from .home_product_access_routes import ACCESS_PATH, home_product_access
 from .auth_routes import (
     auth_status,
     google_callback,
@@ -345,6 +346,7 @@ def create_app(
         Route("/api/models/owner-name-preview", owner_model_name_preview, methods=["GET"]),
         Route("/api/claw/verified-model-choices", claw_verified_model_choices, methods=["GET"]),
         Route("/api/auth/status", auth_status, methods=["GET"]),
+        Route(ACCESS_PATH, home_product_access, methods=["GET"]),
         Route("/auth/google/start", google_start, methods=["GET"]),
         Route("/auth/google/callback", google_callback, methods=["GET"]),
         Route("/api/auth/password/register", password_register, methods=["POST"]),

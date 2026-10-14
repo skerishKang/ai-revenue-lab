@@ -116,3 +116,47 @@ CUSTOMER_HOME_ACCESS_GATE=UNVERIFIED
 PADIEM_VS_B66=SEPARATE
 PROD=OFF
 ```
+
+## 5. Owner-confirmed Chat + Claw shared customer bundle (2026-10-14, CENTRAL follow-up)
+
+**Supersedes the earlier *unwired / no customer policy* blocker above, once this
+source PR is merged and deployed.** The earlier baseline audit and original #4550
+contract remain accurate as historical evidence, not the new route's behavior.
+
+- Customer-facing Chat (B62) and Claw (B54) share **one PADIEM account
+  entitlement/bundle**. No separate per-product opt-in, extra login or paid
+  membership inference is introduced. **B66** remains a separate account and
+  customer-scope; future product groupings are intentionally undecided.
+- The product-access rule is **only a Home availability projection**, not a
+  new P01/PC/Drive/file WRITE capability, model tier, admin or billing grant.
+  Existing execution/usage enforcement remains unchanged.
+- The sole reviewed source for the bundled Home display is a server-verified
+  **ACTIVE B62 canonical USER session**: signed cookie user ID, current
+  owner-scoped HistoryStore user row, existing shadow record, and the live
+  Control Plane session must match, with current revision and effective expiry
+  enforced by `resolve_refreshed_session`. Expired/revoked/stale/foreign
+  account or missing identity service **never projects `available`**.
+- B62-authenticated bundle policy is authoritative for the **bundle**, not
+  a claim that a separate B54 product session or separate B66 entitlement
+  was minted. The canonical bundle source is injected **at the server route**,
+  while the generic projection module's default registry stays EMPTY/OFF.
+- Versioned GET `/api/home/product-access` returns only `b62` and
+  `b54-padiem-claw`, closed `{version,products}` payload, no-store private
+  caching, no owner/tenant/session data. No query-driven product/tenant override,
+  no public POST. Any source or session uncertainty returns a bounded error,
+  not an invented allow.
+- The Home UI #4543 needs a separately reviewed consumer integration after
+  this backend route merges; a standalone preview or signed-in presentation
+  cookie cannot be called production-granted access before E2E readback.
+
+**New source paths:** `apps/padiem-chat/app/home_product_access_routes.py`,
+the exact GET mount in `app_factory.py`, and
+`apps/padiem-chat/tests/test_4546_home_chat_claw_bundle.py`.
+
+**Local targeted verification:** 80/80 PASS across bundled route, existing
+#4546 projection contract and B62 auth/history tests; no model invocation,
+production change or Connector/B66 modification.
+
+`SHARED_CHAT_CLAW_POLICY=OWNER_CONFIRMED | B66_ISOLATED=YES |`
+`SOURCE_ROUTE=IMPLEMENTED_IN_PR | PROD_SERVED=NOT_YET_VERIFIED |`
+`ADVANCED_APPROVAL_UX=DEFERRED`.
