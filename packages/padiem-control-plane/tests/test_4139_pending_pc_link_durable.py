@@ -9,7 +9,7 @@ import sqlite3
 
 import pytest
 
-import canonical_broker_pending_pc_link as link
+import padiem_control_plane.pending_pc_link as link
 from padiem_control_plane.contracts import ControlPlaneContractError
 
 NOW = datetime(2026, 10, 14, 0, 0, tzinfo=timezone.utc)

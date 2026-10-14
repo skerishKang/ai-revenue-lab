@@ -19,7 +19,7 @@ from app.connector_broker_pending_socket_actor import (
 )
 from app.connector_one_click_approval import OneClickOwnerApproval, OneClickDenied
 from app.connector_worker_webcrypto_verify import CloudflareWorkerEd25519Verifier
-from canonical_broker_pending_pc_link import install_pending_pc_link_schema, MIGRATION_ID
+from padiem_control_plane.pending_pc_link import install_pending_pc_link_schema, MIGRATION_ID
 from test_4139_pending_pc_delivery_adapter import Storage
 from test_4139_pending_pc_offer_gateway import (
     FakeSocket, TrustedIngress, _PUBLIC, _node_crypto, ownership_transcript,

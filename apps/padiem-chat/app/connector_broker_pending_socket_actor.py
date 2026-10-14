@@ -18,7 +18,7 @@ from datetime import datetime, timezone, timedelta
 from typing import Any, Callable
 import re
 
-from canonical_broker_pending_pc_link import DurablePendingPcLink
+from padiem_control_plane.pending_pc_link import DurablePendingPcLink
 from .connector_pending_pc_offer_gateway import VerifiedPcOfferGateway
 from .connector_worker_webcrypto_verify import CloudflareWorkerEd25519Verifier
 

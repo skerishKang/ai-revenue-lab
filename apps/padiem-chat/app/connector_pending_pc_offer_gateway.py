@@ -18,7 +18,7 @@ import re
 import secrets
 from typing import Any, Callable, Protocol
 
-from canonical_broker_pending_pc_link import VerifiedPendingPc
+from padiem_control_plane.pending_pc_link import VerifiedPendingPc
 
 PENDING_PC_OFFER_SERVER_PRODUCTION_ENABLED = False
 PENDING_PC_OFFER_WEBSOCKET_ROUTE_MOUNTED = False

@@ -24,7 +24,7 @@ from claw_connect.device_wss_enrollment import DeviceSessionRefused
 from app.connector_pending_pc_offer_gateway import VerifiedPcOfferGateway
 from app.connector_pending_pc_delivery import CanonicalPendingPcDelivery
 from app.connector_one_click_approval import OneClickOwnerApproval
-from canonical_broker_pending_pc_link import (
+from padiem_control_plane.pending_pc_link import (
     DurablePendingPcLink, install_pending_pc_link_schema, MIGRATION_ID,
 )
 from test_4139_connector_one_click_approval import Fixture as CanonicalFixture, session

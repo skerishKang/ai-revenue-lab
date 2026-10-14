@@ -10,7 +10,7 @@ import sqlite3
 
 import pytest
 
-from canonical_broker_pending_pc_link import (
+from padiem_control_plane.pending_pc_link import (
     DurablePendingPcLink, VerifiedPendingPc, MIGRATION_ID,
     install_pending_pc_link_schema,
 )

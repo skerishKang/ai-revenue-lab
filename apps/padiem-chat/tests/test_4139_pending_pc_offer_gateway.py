@@ -22,7 +22,7 @@ from app.connector_pending_pc_offer_gateway import (
     PENDING_PC_OFFER_WEBSOCKET_ROUTE_MOUNTED,
 )
 from app.connector_pending_pc_delivery import CanonicalPendingPcDelivery
-from canonical_broker_pending_pc_link import (
+from padiem_control_plane.pending_pc_link import (
     DurablePendingPcLink, install_pending_pc_link_schema, MIGRATION_ID,
 )
 from test_4139_pending_pc_delivery_adapter import Storage
