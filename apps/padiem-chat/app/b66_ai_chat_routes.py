@@ -89,9 +89,9 @@ _TURN_TOKEN_RE = re.compile(r"^[0-9a-f]{32}$")
 # conversation a first turn already created. See the module docstring.
 _INFLIGHT_TURNS: set[tuple[str, str]] = set()
 _TURN_POLL_SECONDS = 0.005
-# No fixed ceiling: a duplicate must wait for the first model dispatch to finish
-# no matter how slow the provider is, instead of timing out and dispatching again.
-_TURN_POLL_LIMIT = None
+# A duplicate waits only this long for the original to finish; exhausting it is a
+# fail-closed refusal, never a second dispatch.
+_TURN_POLL_LIMIT = 200  # ~1s ceiling
 _RECENT_TURNS: "OrderedDict[tuple[str, str], str]" = OrderedDict()
 _RECENT_TURN_LIMIT = 512
 
@@ -113,20 +113,21 @@ def reset_dialogue_idempotency() -> None:
 
 
 async def _wait_for_duplicate_turn(key: tuple[str, str]) -> bool:
-    """Yield until an in-flight duplicate of this turn has landed.
+    """Yield until an in-flight duplicate lands, or a bounded ceiling passes.
 
-    There is deliberately **no** fixed timeout. Returning while the key is still
-    marked in-flight lets the caller dispatch a second, duplicate paid model
-    call, which is exactly the charge the idempotency contract forbids; a slow
-    first model response cannot be allowed to turn into a second dispatch.
+    On timeout the key is still in flight: the caller must refuse rather than
+    dispatch. A bounded wait prevents a stalled isolate from holding requests
+    forever; the response is fail-closed.
 
     Deliberately not an ``asyncio.Lock``: a lock binds to the event loop that
     first awaited it, while every Worker request is served on its own loop, so a
     shared lock would raise instead of guarding.
     """
-    while key in _INFLIGHT_TURNS:
+    waited = 0
+    while key in _INFLIGHT_TURNS and waited < _TURN_POLL_LIMIT:
         await asyncio.sleep(_TURN_POLL_SECONDS)
-    return True
+        waited += 1
+    return waited < _TURN_POLL_LIMIT
 
 
 def _remember_turn(owner: str, token: str | None, conversation_id: str) -> None:
@@ -194,6 +195,13 @@ def _out_of_sync() -> JSONResponse:
 
 def _already_recorded() -> JSONResponse:
     return _error(409, _ALREADY_RECORDED[0], _ALREADY_RECORDED[1])
+
+
+def _turn_in_progress() -> JSONResponse:
+    return _error(
+        409, "dialogue_turn_in_progress",
+        "이전 요청이 아직 처리 중입니다. 잠시 후 다시 시도해 주세요.",
+    )
 
 
 async def _stored_model_messages(
@@ -318,7 +326,9 @@ async def b66_ai_chat(request: Request) -> JSONResponse:
     # dispatching a second model call.
     claimed = False
     if lock_key in _INFLIGHT_TURNS:
-        await _wait_for_duplicate_turn(lock_key)
+        if not await _wait_for_duplicate_turn(lock_key):
+            # Fail closed: never dispatch a second paid model call on timeout.
+            return _turn_in_progress()
     else:
         _INFLIGHT_TURNS.add(lock_key)
         claimed = True

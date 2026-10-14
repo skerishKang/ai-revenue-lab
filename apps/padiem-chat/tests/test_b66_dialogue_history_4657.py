@@ -541,3 +541,63 @@ def test_dialogue_history_is_unavailable_without_a_composed_store(env):
     res = env.client.get("/api/b66/ai/dialogues")
     assert res.status_code == 503
     assert res.json()["error"]["code"] == "dialogue_history_unavailable"
+import threading
+
+
+def test_concurrent_first_turn_requests_share_one_conversation(env):
+    """Two in-flight copies of one first turn charge once and share one id."""
+    from app.b66_ai_chat_routes import reset_dialogue_idempotency
+
+    reset_dialogue_idempotency()
+    _sign_in(env.settings, env.client, USER_A)
+    env.model.answers = ["첫 답변", "전혀 다른 답변"]
+    env.model.delay = 0.15
+    token = "f" * 32
+    request = [{"role": "user", "content": "철근 견적 알려줘"}]
+    before_calls = len(env.model.calls)
+    results = []
+
+    def post():
+        results.append(_chat(_client_for(env), messages=request, turn_token=token))
+
+    workers = [threading.Thread(target=post) for _ in range(2)]
+    for worker in workers:
+        worker.start()
+    for worker in workers:
+        worker.join(timeout=30)
+
+    assert all(res.status_code == 200 for res in results), [res.text for res in results]
+    assert len(env.model.calls) == before_calls + 1
+    assert len({res.json()["conversation_id"] for res in results}) == 1
+    assert all(res.json()["answer"] == "첫 답변" for res in results)
+    listed = env.client.get("/api/b66/ai/dialogues").json()["conversations"]
+    assert len(listed) == 1
+
+
+def test_concurrent_same_conversation_slow_model_is_refused_without_redispatch(env):
+    """An overlapping duplicate that outlasts the bounded wait refuses safely."""
+    from app.b66_ai_chat_routes import reset_dialogue_idempotency
+
+    reset_dialogue_idempotency()
+    _sign_in(env.settings, env.client, USER_A)
+    env.model.answers = ["네, 알려드릴게요", "동시 답변", "다른 동시 답변"]
+    cid = _seed_b66(env, USER_A)
+    reset_dialogue_idempotency()
+    env.model.delay = 5.0
+    before = len(env.model.calls)
+    results = []
+
+    def post():
+        results.append(_chat(_client_for(env), messages=CONTINUATION, conversation_id=cid))
+
+    workers = [threading.Thread(target=post) for _ in range(2)]
+    for worker in workers:
+        worker.start()
+    for worker in workers:
+        worker.join(timeout=30)
+
+    assert sorted(res.status_code for res in results) == [200, 409], [res.text for res in results]
+    timeout_result = next(res for res in results if res.status_code == 409)
+    assert timeout_result.json()["error"]["code"] == "dialogue_turn_in_progress"
+    assert len(env.model.calls) == before + 1
+    assert len(env.client.get(f"/api/b66/ai/dialogues/{cid}").json()["conversation"]["messages"]) == 4
