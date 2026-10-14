@@ -124,6 +124,9 @@ jobs:
                   break
           # #3580 explicitly pins ONE additional device-authenticated Office
           # staging route, disabled in Production until separate operator opt-in.
+          # #4139 pins the verified Windows TXT result route: device-authenticated,
+          # bounded to an exact canonical command correlation, and storing only a
+          # derived result body — never command material or execution authority.
           # The allowlist stays CLOSED: no wildcard or arbitrary route may appear.
           assert routes == {
               "/session",
@@ -133,7 +136,13 @@ jobs:
               "/acknowledge",
               "/reconcile",
               "/office-part",
+              "/file-result",
           }
+          # #4139 — the file result path is only reachable through the canonical
+          # device credential verification and the durable session scope.
+          assert "_ROUTE_FILE_RESULT = \"/file-result\"" in (
+              root / "padiem_control_plane" / "local_agent_broker_http.py"
+          ).read_text(encoding="utf-8")
           # This changes a security boundary, not a generic router allow-all:
           # canonical device credential auth happens BEFORE staging; the
           # unconfigured path must fail closed before any bytes are written.
