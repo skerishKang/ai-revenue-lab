@@ -21,6 +21,7 @@ from padiem_control_plane.local_agent_broker_state import (
 from padiem_control_plane.local_agent_broker_state_wire import SerializedLocalAgentBrokerStatePort
 
 from local_agent_broker_material_store import CloudflareDurableObjectCommandMaterialStore, closed_mapping
+from local_agent_broker_verified_file_store import CloudflareDurableObjectVerifiedFileResultStore
 from local_agent_broker_sql_state import (
     CloudflareDurableObjectHttpSessionState,
     CloudflareDurableObjectSerializedStateBackend,
@@ -124,6 +125,13 @@ class LocalAgentBrokerDurableRuntime:
             state_port=self.state_port,
             authority_ref=self.authority_ref(),
         )
+        # #4139 — the verified Windows TXT result store. Its own table, the same
+        # canonical persisted command record for every correlation and gate.
+        self.verified_file_store = CloudflareDurableObjectVerifiedFileResultStore(
+            storage,
+            state_port=self.state_port,
+            authority_ref=self.authority_ref(),
+        )
 
     def authority_ref(self) -> str:
         return safe_ref(str(self._env.LOCAL_AGENT_BROKER_AUTHORITY_REF), "authority_ref")
@@ -151,6 +159,9 @@ class LocalAgentBrokerDurableRuntime:
             result = self.facade().rotate_credential(payload)
             if result.get("ok") is True:
                 self.material_store.purge_binding(result["binding"]["binding_ref"])
+                # #4139 — a rotated credential ends the binding that owned any
+                # verified file result; the same revocation rule as material.
+                self.verified_file_store.purge_binding(result["binding"]["binding_ref"])
             return result
         return self.transaction(operation)
 
@@ -159,6 +170,7 @@ class LocalAgentBrokerDurableRuntime:
             result = self.facade().revoke_binding(payload)
             if result.get("ok") is True:
                 self.material_store.purge_binding(result["binding"]["binding_ref"])
+                self.verified_file_store.purge_binding(result["binding"]["binding_ref"])
             return result
         return self.transaction(operation)
 
@@ -355,7 +367,14 @@ class LocalAgentBrokerDurableRuntime:
             )
             result = self.facade().acknowledge(payload)
             if result.get("ok") is True:
-                self.material_store.purge_command(result["command"]["command_id"])
+                command = result["command"]
+                self.material_store.purge_command(command["command_id"])
+                # #4139 — a command that did not exit successfully can never
+                # carry verified file text into the conversation. Purge in the
+                # same transaction as the acknowledgement itself, so a failure
+                # can never leave a servable receipt behind.
+                if not (command.get("termination") == "exited" and command.get("exit_code") == 0):
+                    self.verified_file_store.purge_command(command["command_id"])
             return result
         return self.transaction(operation)
 
@@ -370,6 +389,9 @@ class LocalAgentBrokerDurableRuntime:
             result = self.facade().reconcile_expired_command(payload)
             if result.get("ok") is True:
                 self.material_store.purge_command(result["command"]["command_id"])
+                # #4139 — EXPIRED proves no execution, so no verified file
+                # result may survive it either.
+                self.verified_file_store.purge_command(result["command"]["command_id"])
             return result
         return self.transaction(operation)
 
@@ -609,6 +631,18 @@ class LocalAgentBrokerDurableRuntime:
 
         stored = self.state_port.load(authority_ref=self.authority_ref())
         return terminal_command_result_from_snapshot(stored.snapshot, payload)
+
+    def read_verified_file_text(self, payload: dict) -> dict:
+        """#4139 — the private, read-only verified Windows TXT read (#4687).
+
+        Owner/workspace scoped from canonical binding state, gated on the
+        canonical command's own successful outcome, and answered in exactly one
+        of the three shapes the Claw consumer accepts: the full verified
+        receipt, a pending text-file result, or ``other``. Read-only: no
+        transaction, no compare-and-swap, no state write.
+        """
+
+        return self.verified_file_store.read_verified_file_text(payload)
 
     def authenticate_device_session(self, payload: dict) -> dict:
         """#3436 B2c — one narrow, read-only device-session authentication projection.

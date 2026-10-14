@@ -270,4 +270,10 @@ def test_worker_file_is_thin_and_storage_schemas_live_outside_entrypoint() -> No
     # Connect device selector consumes. The projection, its never-online
     # vocabulary and its contract markers live in the durable runtime module —
     # this file still only forwards and holds no storage, schema or authority.
-    assert len(source.splitlines()) < 251
+    # Issue #4139 (the first PC TXT read) adds one more read-only passthrough
+    # pair per entrypoint class (`read_verified_file_text`, #4687's receipt) and
+    # wires the durable verified-file store into the per-request device HTTP
+    # composition. The store's schema, gates and correlation checks live in
+    # their own adapter module and the durable runtime; the entrypoint still
+    # only forwards, so the thinness bound moves by exactly the added lines.
+    assert len(source.splitlines()) < 261

@@ -19,8 +19,11 @@ from padiem_control_plane.local_agent_broker_http import (
 #: here is reachable end to end and one that is absent fails closed at the outer
 #: edge. #3128 — `/reconcile` carries one restarted runner's durable admitted
 #: correlation to the #3121 broker exit and grants no execution authority.
+#: #4139 — `/file-result` carries one bounded, correlation-checked execution
+#: result (the verified Windows TXT read) and grants no execution authority
+#: either: it can only describe a command the canonical broker already admitted.
 _DEVICE_HTTP_ROUTES = frozenset(
-    {"/session", "/poll", "/material", "/heartbeat", "/acknowledge", "/reconcile", "/office-part"}
+    {"/session", "/poll", "/material", "/heartbeat", "/acknowledge", "/reconcile", "/office-part", "/file-result"}
 )
 _ENVELOPE_KEYS = frozenset({"method", "route", "content_type", "body_b64", "tls_verified"})
 _MAX_BODY_B64_CHARS = ((MAX_LOCAL_AGENT_HTTP_BODY_BYTES + 2) // 3) * 4
@@ -108,6 +111,7 @@ class LocalAgentBrokerDeviceHttpService:
         session_open_transaction: Callable[[Callable[[], Any]], Any],
         clock: Callable[[], datetime] | None = None,
         office_chunks=None,
+        verified_file_result_store=None,
     ) -> None:
         if not callable(rpc_factory):
             raise ValueError("rpc_factory must be callable")
@@ -126,6 +130,9 @@ class LocalAgentBrokerDeviceHttpService:
         self._session_open_transaction = session_open_transaction
         self._clock = clock or (lambda: datetime.now(timezone.utc))
         self._office_chunks = office_chunks
+        # #4139 — the durable store behind `/file-result`. Absent means the route
+        # is present but fails closed with 503, never a guessed receipt.
+        self._verified_file_result_store = verified_file_result_store
 
     def _server_now(self) -> datetime:
         value = self._clock()
@@ -206,6 +213,7 @@ class LocalAgentBrokerDeviceHttpService:
             material_resolver=self._material_resolver,
             clock=lambda: server_now,
             session_open_transaction=self._session_open_transaction,
+            verified_file_result_store=self._verified_file_result_store,
         )
         response = handler.handle(
             method=envelope["method"],
@@ -219,6 +227,7 @@ class LocalAgentBrokerDeviceHttpService:
     def safe_dict(self) -> dict[str, Any]:
         return {
             "device_http_routes": sorted(_DEVICE_HTTP_ROUTES),
+            "verified_file_result_store_configured": self._verified_file_result_store is not None,
             "private_service_boundary": True,
             "canonical_binding_auth_reused": True,
             "self_asserted_account_workspace_authority": False,
@@ -239,6 +248,11 @@ SELF_ASSERTED_ACCOUNT_WORKSPACE_AUTHORITY = False
 M2E_HANDLER_REUSED = True
 SECOND_CREDENTIAL_VERIFIER = False
 ADMIN_BROKER_RPC_PUBLIC = False
+#: #4139 — one new canonical device route; reachability is derived from the
+#: same exported constant by the edge worker and the private bridge.
+VERIFIED_FILE_RESULT_ROUTE = "/file-result"
+VERIFIED_FILE_RESULT_STORE_OPTIONAL_AT_COMPOSITION = True
+VERIFIED_FILE_RESULT_FAILS_CLOSED_WITHOUT_STORE = True
 RAW_DEVICE_SECRET_LOGGED = False
 PRODUCTION_ROUTE_CONFIGURED = False
 PRODUCTION_DEPLOYMENT = False
