@@ -180,24 +180,24 @@ async def test_off_gate_never_reads_the_secret_binding(runtime):
     assert budget.calls == []
 
 
-async def test_shipped_configuration_attaches_no_authority_binding(runtime):
-    """``wrangler.toml`` deploys with the flag OFF and no Control Plane binding.
+async def test_mode1_production_source_requires_both_cp_services(runtime):
+    """Source activation requires both private CP authority bindings.
 
-    This is the state that is actually deployed, so it is pinned here as
-    behaviour: the flag alone closes every paid route, and the two authority
-    bindings are documented in comments but **declared** nowhere, so a deploy
-    cannot attach them by accident.
+    The separate disabled env still rejects every route before provider calls.
+    A source manifest is NOT evidence of production deployment.
     """
     config = tomllib.loads(
         (Path(__file__).resolve().parents[1] / "wrangler.toml").read_text(encoding="utf-8")
     )
-    assert config.get("vars", {}).get("PADIEM_VOICE_STT_ENABLED") == "false"
+    assert config.get("vars", {}).get("PADIEM_VOICE_STT_ENABLED") == "true"
     declared = {
-        entry["binding"] for entry in (config.get("services") or []) if "binding" in entry
+        entry["binding"]: entry["service"]
+        for entry in (config.get("services") or [])
     }
-    assert declared == set()
-    assert "CONTROL_PLANE_IDENTITY" not in declared
-    assert "CONTROL_PLANE_ENGINE_ADMISSION" not in declared
+    assert declared == {
+        "CONTROL_PLANE_IDENTITY": "padiem-control-plane-identity",
+        "CONTROL_PLANE_ENGINE_ADMISSION": "padiem-control-plane-engine-admission",
+    }
     budget = fw.FetchBudget()
     env = fw.disabled_env()
     body = await _dispatch(runtime, env, budget, _transcribe_request(audio=b"x"))

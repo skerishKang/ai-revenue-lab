@@ -108,6 +108,7 @@
     const nodes = { button: null, label: null, preview: null, status: null };
     let factory = typeof options.recognizerFactory === "function" ? options.recognizerFactory : null;
     let run = null;
+    let stoppingRun = null;
     let deferredFinals = [];
     let observer = null;
     let destroyed = false;
@@ -116,6 +117,7 @@
     const state = {
       authenticated: false,
       authKnown: false,
+      identityKey: "",
       composing: false,
       inputDisabled: false,
       generation: 0,
@@ -232,6 +234,15 @@
       return run.adapter.commitFinal(opts);
     }
 
+    function commitForRun(targetRun, payload) {
+      if (!targetRun || !targetRun.adapter) return null;
+      const opts = { generation: targetRun.generation, sessionToken: targetRun.sessionToken };
+      if (payload && payload.utteranceId != null) opts.utteranceId = String(payload.utteranceId);
+      if (payload && typeof payload.text === "string") opts.text = payload.text;
+      if (payload && payload.stopped === true) opts.stopped = true;
+      return targetRun.adapter.commitFinal(opts);
+    }
+
     function handleAdapterState(next) {
       if (next === "listening") {
         state.voiceState = "listening";
@@ -311,6 +322,7 @@
       state.sessionToken = makeToken(win || {});
       state.interim = "";
       state.idleKey = "";
+      stoppingRun = null;
       deferredFinals = [];
       const myRun = { generation: state.generation, sessionToken: state.sessionToken, adapter: null, session: null };
       const adapter = adapterApi.createVoiceInputAdapter({
@@ -335,6 +347,14 @@
           },
           onFinal: function (payload) {
             if (isSameRun(myRun)) submitFinal(payload);
+            else if (stoppingRun === myRun) {
+              const result = commitForRun(myRun, payload);
+              if (result && result.ok) {
+                state.interim = "";
+                state.idleKey = STATUS_KEYS.FINAL;
+                render();
+              }
+            }
           },
           onError: function (code) {
             if (isSameRun(myRun)) recognizerFailed(code);
@@ -382,8 +402,9 @@
       // Detach the run before calling recognizer.stop(): implementations may
       // synchronously emit `end` from stop(), and that callback must not
       // recursively stop the same run or mutate the next one.
+      if (reason === "user-stopped" || reason == null) stoppingRun = stoppedRun;
       run = null;
-      stopSessionOnStage(stoppedRun);
+      stopSessionOnStage(stoppedRun, reason || "user-stopped");
       stoppedRun.adapter.stop(reason || "user-stopped");
       // A final held for a composition or a disabled composer belongs to the
       // run that just ended; it is dropped rather than injected afterwards.
@@ -421,6 +442,7 @@
 
     function invalidate(reason) {
       if (destroyed) return;
+      stoppingRun = null;
       const stage = run;
       run = null;
       if (stage) {
@@ -434,16 +456,16 @@
       render();
     }
 
-    function stopSessionOnStage(stage) {
+    function stopSessionOnStage(stage, reason) {
       if (!stage || !stage.session) return;
       const session = stage.session;
       stage.session = null;
-      stopSessionHandle(session);
+      stopSessionHandle(session, reason);
     }
 
-    function stopSessionHandle(session) {
+    function stopSessionHandle(session, reason) {
       if (!session || typeof session.stop !== "function") return;
-      try { session.stop(); } catch (e) { /* the recognizer is already gone */ }
+      try { session.stop(reason || "cancel"); } catch (e) { /* the recognizer is already gone */ }
     }
 
     function setRecognizerFactory(next) {
@@ -455,12 +477,32 @@
       return true;
     }
 
-    function handleAuthState(authenticated) {
+    // #4643: `padiem:auth-state` deliberately carries only a boolean (#3790),
+    // so it cannot see an account switch between two signed-in states. The
+    // wiring stage therefore supplies a separate opaque `identityKey` that
+    // changes whenever the account or session identity changes. Comparing the
+    // key is what makes a same-boolean account switch invalidate the run; the
+    // key is never a user id, a tenant id or a credential, and is held only to
+    // test "changed / unchanged".
+    function handleIdentityKey(identityKey) {
+      const next = identityKey == null ? "" : String(identityKey);
+      const changed = state.identityKey !== "" && next !== state.identityKey;
+      state.identityKey = next;
+      if (changed && state.authenticated) invalidate("account-changed");
+      render();
+    }
+
+    function handleAuthState(authenticated, identityKey) {
       const next = authenticated === true;
       const switched = state.authKnown && next !== state.authenticated;
+      const previousKey = state.identityKey;
       state.authKnown = true;
       state.authenticated = next;
-      if (switched) invalidate(next ? "session-changed" : "signed-out");
+      if (identityKey != null) state.identityKey = String(identityKey);
+      // Same boolean, different account: still a different voice identity.
+      const rekeyed =
+        previousKey !== "" && state.identityKey !== "" && previousKey !== state.identityKey;
+      if (switched || rekeyed) invalidate(next ? "session-changed" : "signed-out");
       render();
     }
 
@@ -551,7 +593,12 @@
       detach.push(listen(input, "compositionend", handleCompositionEnd));
       detach.push(listen(win, "padiem:auth-state", function (event) {
         const detail = event && event.detail ? event.detail : {};
-        handleAuthState(detail.authenticated);
+        handleAuthState(detail.authenticated, detail.identityKey);
+      }));
+      // #4643: the wiring stage announces an opaque identity-change key here.
+      detach.push(listen(win, "padiem:voice-identity", function (event) {
+        const detail = event && event.detail ? event.detail : {};
+        if (detail && typeof detail.identityKey === "string") handleIdentityKey(detail.identityKey);
       }));
       detach.push(listen(win, "padiem:localechange", function () { render(); }));
 
@@ -604,6 +651,7 @@
         statusKey: currentStatusKey(),
         authKnown: state.authKnown,
         authenticated: state.authenticated,
+        identityKey: state.identityKey,
         generation: state.generation,
         sessionToken: state.sessionToken,
         active: isActiveRun(),
@@ -625,6 +673,7 @@
       toggle: toggle,
       invalidate: invalidate,
       setRecognizerFactory: setRecognizerFactory,
+      handleIdentityKey: handleIdentityKey,
       destroy: destroy,
       getStatus: getStatus,
     };

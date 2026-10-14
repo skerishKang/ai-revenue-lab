@@ -34,6 +34,12 @@ WORKER_BINDING_NAMES = frozenset({
 })
 D1_BINDING_NAME = "PADIEM_CHAT_DB"
 B14_SERVICE_BINDING_NAME = "B14_SERVICE"
+# #4643: the Service Binding this Chat Worker uses to reach the private
+# `padiem-voice-stt` Worker. The browser never holds this binding; it posts to
+# /api/voice/transcribe and this Worker forwards. No entry exists in
+# apps/padiem-chat/wrangler.toml yet, so until CENTRAL adds it the app resolves
+# to None and every voice route fails closed with `voice_stt_unavailable`.
+VOICE_STT_SERVICE_BINDING_NAME = "VOICE_STT_SERVICE"
 B66_PDF_RENDERER_SERVICE_BINDING_NAME = "B66_PDF_RENDERER_SERVICE"
 IDENTITY_AUTHORITY_SERVICE_BINDING_NAME = "IDENTITY_AUTHORITY_SERVICE"
 WORKSPACE_R2_BINDING_NAME = "PADIEM_WORKSPACE_FILES"
@@ -98,7 +104,14 @@ CONTENT_SECURITY_POLICY = (
     "font-src 'self' data: https://cdn.jsdelivr.net https://fonts.gstatic.com; "
     "form-action 'self'"
 )
-PERMISSIONS_POLICY = "camera=(), microphone=(), geolocation=()"
+# #4643: the shared Chat/Claw voice composer needs `getUserMedia` on this origin
+# only. `microphone=(self)` re-enables the microphone for same-origin documents
+# and nothing else: camera and geolocation stay fully denied, and a cross-origin
+# iframe still cannot capture audio. This header change is necessary but NOT
+# sufficient for live STT: the STT Worker deployment gate, the canonical Control
+# Plane bindings and the `voice.stt.*` entitlement grants remain separate,
+# CENTRAL-owned activation steps. Nothing here weakens auth or the cost guard.
+PERMISSIONS_POLICY = "camera=(), microphone=(self), geolocation=()"
 
 BASE_SECURITY_HEADERS = {
     "X-Content-Type-Options": "nosniff",

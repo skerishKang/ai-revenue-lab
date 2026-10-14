@@ -1,0 +1,18 @@
+Metadata-Version: 2.4
+Name: padiem-chat
+Version: 0.2.0
+Summary: Padiem Chat Business 62 runtime
+Requires-Python: >=3.11
+Requires-Dist: starlette<1,>=0.37
+Requires-Dist: httpx<1,>=0.27
+Requires-Dist: uvicorn<1,>=0.30
+Requires-Dist: padiem-ai-core[documents] @ file://${PROJECT_ROOT}/../../packages/padiem-ai-core
+Requires-Dist: padiem-ai-engine-client @ file://${PROJECT_ROOT}/../padiem-ai-engine/clients/python
+Requires-Dist: padiem-control-plane @ file://${PROJECT_ROOT}/../../packages/padiem-control-plane
+Requires-Dist: korean-ai-code-agent @ file://${PROJECT_ROOT}/../korean-ai-code-agent
+Provides-Extra: dev
+Requires-Dist: PyMuPDF==1.26.3; extra == "dev"
+Requires-Dist: pytest<10,>=8; extra == "dev"
+Requires-Dist: pytest-asyncio<2,>=0.23; extra == "dev"
+Requires-Dist: workers-py<2,>=1.16.2; extra == "dev"
+Requires-Dist: workers-runtime-sdk>=1.6.3; extra == "dev"

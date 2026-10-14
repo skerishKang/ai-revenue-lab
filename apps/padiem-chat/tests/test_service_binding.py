@@ -119,13 +119,24 @@ def test_service_binding_target_is_fixed_in_repository_config():
     config = tomllib.loads((root / "wrangler.toml").read_text(encoding="utf-8"))
 
     assert B14_SERVICE_BINDING_NAME == "B14_SERVICE"
-    # B14's target stays unchanged. Connector product availability adds only
-    # the two existing canonical private services; it does not affect B14.
-    assert {row["binding"]: row["service"] for row in config["services"]} == {
-        "B14_SERVICE": "ai-revenue-korean-ai-platform",
-        "IDENTITY_AUTHORITY_SERVICE": "padiem-control-plane-identity",
-        "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE": "padiem-local-agent-broker-state",
-    }
+    assert config["services"] == [
+        {
+            "binding": "B14_SERVICE",
+            "service": "ai-revenue-korean-ai-platform",
+        },
+        {
+            "binding": "IDENTITY_AUTHORITY_SERVICE",
+            "service": "padiem-control-plane-identity",
+        },
+        {
+            "binding": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
+            "service": "padiem-local-agent-broker-state",
+        },
+        {
+            "binding": "VOICE_STT_SERVICE",
+            "service": "padiem-voice-stt",
+        },
+    ]
     assert config["vars"]["PADIEM_CHAT_RUNTIME_MODE"] == "mock"
     assert config["vars"]["PADIEM_CHAT_LIVE_ENABLED"] == "false"
 

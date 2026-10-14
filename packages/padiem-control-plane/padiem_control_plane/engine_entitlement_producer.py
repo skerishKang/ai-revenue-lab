@@ -29,6 +29,7 @@ from .entitlements import EntitlementGrant, EntitlementSnapshot
 from .voice_stt_entitlement_policy import (
     VoiceSttPolicy,
     voice_stt_grants_for_session,
+    VoiceSttAllPlansMode1Policy,
 )
 
 
@@ -353,7 +354,7 @@ def produce_authenticated_user_engine_entitlement(
     session: AuthSessionSnapshot,
     *,
     now: datetime,
-    voice_policy: VoiceSttPolicy | None = None,
+    voice_policy: VoiceSttPolicy | VoiceSttAllPlansMode1Policy | None = None,
 ) -> EntitlementSnapshot:
     """Map one current ACTIVE canonical login to the frozen MVP grant."""
 
@@ -469,7 +470,7 @@ async def ensure_authenticated_user_engine_entitlement(
     product_id: str,
     subject: CanonicalSubjectRef,
     now: datetime,
-    voice_policy: VoiceSttPolicy | None = None,
+    voice_policy: VoiceSttPolicy | VoiceSttAllPlansMode1Policy | None = None,
 ) -> EntitlementSnapshot:
     """Resolve login truth, produce, and install through the CP-owned seam."""
 
