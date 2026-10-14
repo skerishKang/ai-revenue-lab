@@ -161,10 +161,12 @@ def test_claw_connection_chips_keep_canonical_authority_and_do_not_forge_disconn
     assert 'data-connection-state' in HTML
     assert "window.confirm(" not in script
     assert "A reviewed disconnect action is not available yet" in script
-    assert 'set("github","unknown")' in script
+    assert '"/api/connectors/github/status"' in script
+    assert '"/api/connectors/github/start"' in script
+    assert '"/api/connectors/github/disconnect"' in script
     assert 'credentials:"same-origin"' in script
     assert 'fetch(' in script
-    assert script.count('method:"POST"') == 1  # Drive-only explicit disconnect
+    assert script.count('method:"POST"') == 2  # Only explicit Drive and GitHub disconnect
     assert '"/api/connectors/google/drive/disconnect"' in script
     assert 'method:"DELETE"' not in script
     assert 'localStorage' not in script

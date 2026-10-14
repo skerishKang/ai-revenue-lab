@@ -30,7 +30,7 @@ async function read(url){
 }
 async function refresh(){
  const current=++generation;if(!home()||!signedIn()){reset();return;}
- const result=await Promise.allSettled([read("/api/claw/local-access/devices"),read("/api/connectors/status")]);
+ const result=await Promise.allSettled([read("/api/claw/local-access/devices"),read("/api/connectors/status"),read("/api/connectors/github/status")]);
  if(current!==generation||!home()||!signedIn())return;
  reset();
  if(result[0].status==="fulfilled"){
@@ -52,8 +52,10 @@ async function refresh(){
    else if(rows.length===1&&rows[0].workspace_state==="not_connected")set("drive","off");
   }
  }
- // GitHub has no reviewed per-owner connection-state endpoint in B62.
- set("github","unknown");
+ if(result[2].status==="fulfilled"){
+  const github=result[2].value;
+  if(github?.ok===true&&["on","off"].includes(github.state))set("github",github.state);
+ }
 }
 async function disconnectDrive(){
  if(pendingDisconnect.has("drive"))return;
@@ -78,6 +80,26 @@ async function disconnectDrive(){
   if(button)button.disabled=false;
  }
 }
+async function disconnectGithub(){
+ if(pendingDisconnect.has("github"))return;
+ pendingDisconnect.add("github");
+ const button=chip("github");if(button)button.disabled=true;
+ try{
+  const response=await fetch("/api/connectors/github/disconnect",{
+   method:"POST",credentials:"same-origin",cache:"no-store",
+   headers:{Accept:"application/json","Content-Type":"application/json"}
+  });
+  const payload=await response.json();
+  if(!response.ok||payload?.ok!==true||payload.state!=="off")throw Error("not disconnected");
+  await refresh();
+  feedback("GitHub 연결을 해제했습니다.","GitHub was disconnected.");
+ }catch(_error){
+  await refresh();
+  feedback("GitHub 연결 해제에 실패했습니다. 연결 상태를 다시 확인해 주세요.","GitHub disconnect failed. Please check connection status.");
+ }finally{
+  pendingDisconnect.delete("github");if(button)button.disabled=false;
+ }
+}
 ids.forEach(id=>chip(id)?.addEventListener("click",()=>{
  if(!home())return;
  const state=values.get(id);
@@ -86,8 +108,13 @@ ids.forEach(id=>chip(id)?.addEventListener("click",()=>{
   else feedback("연결을 관리하려면 로그인해 주세요.","Sign in to manage connections.");
   return;
  }
+ if(state==="on"&&id==="github"){
+  if(signedIn())void disconnectGithub();
+  else feedback("연결하려면 로그인해 주세요.","Sign in to manage connections.");
+  return;
+ }
  if(state==="on"){
-  // PC and GitHub lack a reviewed disconnect endpoint: report its absence without a misleading confirmation dialog.
+  // PC currently lacks a reviewed disconnect endpoint.
   feedback("안전한 연결 해제 기능이 아직 제공되지 않습니다. 연결은 유지됩니다.",
     "A reviewed disconnect action is not available yet. The connection stays ON.");
   return;
@@ -98,7 +125,11 @@ ids.forEach(id=>chip(id)?.addEventListener("click",()=>{
   feedback("연결하려면 로그인해 주세요.","Sign in to connect.");
   return;
  }
- const target=id==="pc"?"clawComputerWorkspace":id==="drive"?"clawDriveWorkspace":"clawGithubWorkspace";
+ if(id==="github"){
+  window.location.assign("/api/connectors/github/start");
+  return;
+ }
+ const target=id==="pc"?"clawComputerWorkspace":"clawDriveWorkspace";
  document.getElementById(target)?.click();
  if(state==="unknown")feedback("연결 상태를 확인할 수 없습니다. 연결 관리에서 확인해 주세요.",
     "Connection status is unavailable. Please check Connectors.");
