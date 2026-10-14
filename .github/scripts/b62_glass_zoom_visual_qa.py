@@ -376,7 +376,19 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
         "() => document.documentElement.getAttribute('data-glass-mode') === 'reading'",
         timeout=5_000,
     )
-    await page.wait_for_timeout(350)
+    # The reading class can become observable before CSS opacity has settled.
+    # Require the real computed portrait opacity to move below the captured
+    # home value. Bounded convergence is not a bypass: a broken transition fails.
+    await page.wait_for_function(
+        """(homeOpacity) => {
+          const panel = document.querySelector(".main-panel");
+          if (!panel || document.documentElement.getAttribute("data-glass-mode") !== "reading") return false;
+          const opacity = Number.parseFloat(getComputedStyle(panel, "::before").opacity);
+          return Number.isFinite(opacity) && opacity < homeOpacity - 0.01;
+        }""",
+        arg=portrait_home["opacity"],
+        timeout=5_000,
+    )
 
     await _assert_no_horizontal_overflow(page, f"{name}-chat")
     conversation_chat = await _assert_horizontally_in_viewport(page, ".conversation")
