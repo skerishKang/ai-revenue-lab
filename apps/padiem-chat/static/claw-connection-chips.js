@@ -82,8 +82,8 @@ ids.forEach(id=>chip(id)?.addEventListener("click",()=>{
  if(!home())return;
  const state=values.get(id);
  if(state==="on"&&id==="drive"){
-  if(signedIn())void disconnectDrive();
-  else feedback("연결을 관리하려면 로그인해 주세요.","Sign in to manage connections.");
+  feedback("Google Drive 일시 중지는 아직 준비 중입니다. 연결 삭제는 커넥터 관리에서 선택해 주세요.",
+    "Google Drive pause is not available yet. Remove authorization in Connectors.");
   return;
  }
  if(state==="on"){
