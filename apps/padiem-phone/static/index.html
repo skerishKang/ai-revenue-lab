@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>PADIEM Phone · 전화 업무</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-icon" aria-hidden="true">P</span><span>PADIEM <b>PHONE</b><small>Voice Operations</small></span></div>
+    <div class="sidebar-label">WORKSPACE</div>
+    <nav aria-label="전화 업무 메뉴">
+      <button class="nav-link active" type="button" data-page="dashboard"><span aria-hidden="true">◧</span> 대시보드</button>
+      <button class="nav-link" type="button" data-page="scripts"><span aria-hidden="true">▤</span> 전화 대본</button>
+      <button class="nav-link" type="button" data-page="history"><span aria-hidden="true">◷</span> 통화 기록</button>
+      <button class="nav-link" type="button" data-page="usage"><span aria-hidden="true">▥</span> 사용량</button>
+    </nav>
+    <div class="sidebar-foot"><span class="online-dot"></span> LOCAL PREVIEW <small>실제 전화망 연결 없음</small></div>
+  </aside>
+  <main class="main-content">
+    <header class="topbar">
+      <div class="crumb">Workspace <span>/</span> <strong id="breadcrumb">대시보드</strong></div>
+      <div class="top-actions"><span class="env-chip">SIMULATION</span><span class="avatar">P</span></div>
+    </header>
+    <div class="workspace">
+      <section id="dashboard" class="page active" aria-labelledby="dashTitle">
+        <div class="page-heading"><div><p class="eyebrow">AI VOICE OPERATIONS</p><h1 id="dashTitle">전화 업무, 한곳에서</h1><p class="intro">대본을 준비하고 통화 진행 상태와 결과를 확인하세요.</p></div><span class="mode-chip">모의 실행 전용</span></div>
+        <div class="notice"><span aria-hidden="true">i</span><div><strong>로컬 개발 시뮬레이션</strong><p>실제 발신·상담·과금은 발생하지 않습니다. 진행 시간과 결과는 모두 가상 데이터입니다.</p></div></div>
+        <div class="stats" aria-label="작업 개요">
+          <div class="stat"><span>전체 작업</span><strong id="statTotal">0</strong><small>현재 프로세스 내</small></div>
+          <div class="stat"><span>완료 작업</span><strong id="statCompleted">0</strong><small>모의 완료</small></div>
+          <div class="stat"><span>진행 중</span><strong id="statActive">0</strong><small>모의 상태</small></div>
+          <div class="stat"><span>누적 수행시간</span><strong id="statMinutes">0 <em>분</em></strong><small>가상 이용시간</small></div>
+        </div>
+        <div class="columns">
+          <section class="panel compose" aria-labelledby="newTaskTitle">
+            <div class="panel-header"><div><span class="section-kicker">NEW TASK</span><h2 id="newTaskTitle">새 전화 업무</h2></div><span class="tag">시뮬레이터</span></div>
+            <form id="createForm">
+              <div class="field"><label for="source">요청 경로</label><select id="source"><option value="web">전화 전용 페이지</option><option value="claw">PADIEM Claw 연동 시나리오</option></select><p class="hint">Claw 실제 도구 연결은 아직 구현되지 않았습니다.</p></div>
+              <div class="field"><label for="destination">상대 기관 · 대상 이름</label><input id="destination" name="destination" required maxlength="80" minlength="2" value="상담센터 (가상)" placeholder="예: 고객센터, 거래처"></div>
+              <div class="field"><label for="goal">전화 목적 · AI에게 전달할 내용</label><textarea id="goal" name="goal" required minlength="3" maxlength="300" rows="4" placeholder="문의할 내용을 자연어로 적으세요.">이용 내역을 확인하고 필요한 절차를 알려줘.</textarea></div>
+              <div class="field"><label for="scenario">모의 통화 상황</label><select id="scenario"><option value="standard">표준 통화 · ARS → 대기 → 상담</option><option value="extended">긴 대기 · ARS → 장시간 대기 → 상담</option><option value="no_answer">응답 없음 · 미연결</option><option value="verification">본인확인 필요 · 작업 보류</option></select></div>
+              <div class="button-row"><button class="primary" type="submit" id="createButton">모의 전화 작업 시작 <span aria-hidden="true">↗</span></button></div>
+              <p class="form-message" id="formMessage" aria-live="polite"></p>
+            </form>
+          </section>
+          <div class="right-stack">
+            <section class="panel" aria-labelledby="activeTitle">
+              <div class="panel-header"><div><span class="section-kicker">LIVE STATUS</span><h2 id="activeTitle">현재 진행 상태</h2></div><span class="live-dot"></span></div>
+              <div id="activeTask" class="empty-state"><div class="empty-symbol">☏</div><strong>대기 중인 작업이 없습니다</strong><p>새 전화 업무를 시작하면<br>진행 단계가 이곳에 나타납니다.</p></div>
+            </section>
+            <section class="panel quick-scripts" aria-labelledby="quickTitle">
+              <div class="panel-header"><div><span class="section-kicker">SCRIPTS</span><h2 id="quickTitle">대본 바로 사용하기</h2></div><button type="button" class="text-button" data-page="scripts">전체 보기 ↗</button></div>
+              <div id="quickTemplates"></div>
+            </section>
+          </div>
+        </div>
+      </section>
+      <section id="scripts" class="page" aria-labelledby="scriptsTitle">
+        <div class="page-heading"><div><p class="eyebrow">SCRIPT LIBRARY</p><h1 id="scriptsTitle">전화 대본</h1><p class="intro">반복되는 업무 목표와 확인할 내용을 선택해 재사용하세요.</p></div></div>
+        <div class="notice"><span aria-hidden="true">i</span><div><strong>로컬 예시 대본</strong><p>이 단계에서는 브라우저 안의 예시만 제공합니다. 고객별 영구 저장이나 서버 공유 기능은 아직 없습니다.</p></div></div>
+        <div id="scriptsGrid" class="template-grid"></div>
+      </section>
+      <section id="history" class="page" aria-labelledby="historyTitle">
+        <div class="page-heading"><div><p class="eyebrow">TASK HISTORY</p><h1 id="historyTitle">통화 기록</h1><p class="intro">현재 실행 중인 로컬 서버에서 생성한 모의 전화 작업만 표시됩니다.</p></div><button class="secondary" type="button" id="refreshHistory">새로고침 ↻</button></div>
+        <section class="panel"><div class="table-scroll"><table><thead><tr><th>업무 ID</th><th>대상</th><th>상태</th><th>가상 수행시간</th><th>요청 출처</th></tr></thead><tbody id="historyBody"></tbody></table></div></section>
+      </section>
+      <section id="usage" class="page" aria-labelledby="usageTitle">
+        <div class="page-heading"><div><p class="eyebrow">USAGE OVERVIEW</p><h1 id="usageTitle">사용량</h1><p class="intro">작업별 수행시간을 구분해 보여주는 기초 화면입니다.</p></div><button class="secondary" type="button" id="refreshUsage">새로고침 ↻</button></div>
+        <div class="notice"><span aria-hidden="true">i</span><div><strong>과금 기능 비활성화</strong><p>표시되는 시간은 시뮬레이션 결과입니다. 실제 통화료, 이용요금 또는 청구 금액은 계산하지 않습니다.</p></div></div>
+        <div class="stats"><div class="stat"><span>모의 실행 횟수</span><strong id="usageTotal">0</strong></div><div class="stat"><span>모의 완료</span><strong id="usageCompleted">0</strong></div><div class="stat"><span>가상 누적 시간</span><strong id="usageMinutes">0 <em>분</em></strong></div><div class="stat"><span>실제 외부 발신</span><strong>0</strong><small>고정: 비활성</small></div></div>
+        <section class="panel"><div class="panel-header"><h2>사용량 상세</h2></div><p class="usage-note">실제 서비스에서는 공급자 청구 통화시간, 서비스 수행시간, AI 사용량을 별도의 지표로 관리할 예정입니다.</p></section>
+      </section>
+    </div>
+  </main>
+</div>
+</body>
+</html>
