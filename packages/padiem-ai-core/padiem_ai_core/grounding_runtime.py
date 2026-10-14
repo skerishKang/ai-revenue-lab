@@ -329,14 +329,18 @@ class GroundedResearchRuntime:
         )
         return list(selection.evidence)
 
-    async def run_search(
+    async def prepare_search(
         self,
         query: str,
         *,
-        synthesizer: SynthesizerCallback,
         additional_system_context: str | None,
         max_total_context_chars: int,
-    ) -> GroundedSynthesisResult:
+    ) -> PreparedGrounding:
+        """Core-owned bounded evidence retrieval, without a B14/model invocation.
+
+        Shared by synthesis and the Engine's evidence-only read. The provider,
+        source-quality filter and untrusted-data preamble remain identical.
+        """
         query = _validated_query(query)
         try:
             found = await self._web_provider.search(query, limit=self._policy.max_simple_sources)
@@ -353,6 +357,21 @@ class GroundedResearchRuntime:
             max_total_context_chars=max_total_context_chars,
             policy=self._policy,
             max_sources=self._policy.max_simple_sources,
+        )
+        return prepared
+
+    async def run_search(
+        self,
+        query: str,
+        *,
+        synthesizer: SynthesizerCallback,
+        additional_system_context: str | None,
+        max_total_context_chars: int,
+    ) -> GroundedSynthesisResult:
+        prepared = await self.prepare_search(
+            query,
+            additional_system_context=additional_system_context,
+            max_total_context_chars=max_total_context_chars,
         )
         synthesis = await synthesizer(prepared.context)
         return GroundedSynthesisResult(synthesis=synthesis, prepared=prepared)

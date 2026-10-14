@@ -23,6 +23,7 @@ ENGINE_CONTRACT_VERSION = "1.0"
 ENGINE_EXECUTE_PATH = "/internal/v1/execute"
 ENGINE_HEALTH_PATH = "/internal/v1/health"
 ENGINE_ORCHESTRATE_PATH = "/internal/v1/orchestrate"
+ENGINE_RESEARCH_PATH = "/internal/v1/research"
 ENGINE_ORCHESTRATE_STREAM_PATH = "/internal/v1/orchestrate/stream"
 ENGINE_ORCHESTRATE_RESUME_PATH = "/internal/v1/orchestrate/resume"
 ENGINE_ORCHESTRATE_CANCEL_PATH = "/internal/v1/orchestrate/cancel"
@@ -487,6 +488,44 @@ class PadiemAiEngineClient:
                 "invalid_engine_response", "Engine completed-run response is invalid"
             )
         return body
+
+    async def search_evidence(self, *, query: str, agent: Mapping[str, Any]) -> dict[str, Any]:
+        """Use the existing authenticated Engine research route with zero model calls.
+
+        Product caller must first authorize a PUBLIC, minimized query. This
+        generic Engine client cannot authorize browser text or claim consent.
+        B14 model execution remains on the separate existing P01 lane.
+        """
+        if not isinstance(query, str) or not query.strip() or len(query) > 2_000:
+            raise PadiemAiEngineClientError(
+                "invalid_public_query", "Evidence query must be bounded public text",
+            )
+        if not isinstance(agent, Mapping):
+            raise PadiemAiEngineClientError(
+                "invalid_research_agent", "Research agent profile is required",
+            )
+        body = await self._post(ENGINE_RESEARCH_PATH, {
+            "app_id": self.app_id,
+            "operation": "search_evidence",
+            "query": query.strip(),
+            "agent": dict(agent),
+        })
+        sources = body.get("sources")
+        context = body.get("grounding_context")
+        if (
+            body.get("ok") is not True
+            or body.get("operation") != "search_evidence"
+            or body.get("answer") is not None
+            or not isinstance(sources, list)
+            or not sources
+            or not isinstance(context, str)
+            or not context.startswith("웹 근거 사용 규칙:")
+            or len(context) > 32_768
+        ):
+            raise PadiemAiEngineClientError(
+                "invalid_engine_response", "Engine evidence-only response is invalid",
+            )
+        return {"sources": sources, "grounding_context": context}
 
     async def orchestrate(self, request: Mapping[str, Any]) -> dict[str, Any]:
         body = await self._post(
