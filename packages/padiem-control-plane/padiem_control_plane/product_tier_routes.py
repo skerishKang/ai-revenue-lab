@@ -161,7 +161,7 @@ def validate_product_tier_routes(tiers: tuple[ProductTierDefinition, ...]) -> No
     labels = [tier.label for tier in tiers]
     _require(
         sorted(label.value for label in labels) == sorted(tier.value for tier in ProductTierLabel),
-        "contract must define exactly the three Padiem tier labels",
+        "contract must define all Padiem tier labels",
     )
     _require(len(set(labels)) == len(labels), "duplicate tier label in contract")
     for tier in tiers:
@@ -198,7 +198,7 @@ def validate_product_tier_routes(tiers: tuple[ProductTierDefinition, ...]) -> No
                 "Padiem Plus without an executable route must expose the Plus hold identity",
             )
         if tier.label is ProductTierLabel.MAX:
-            _require(not active, "Padiem Max must not expose an executable route")
+            # Owner replaced Max HOLD with Cat Jam; preserve historic HOLD entries.
             held = {
                 route.model_family
                 for route in tier.routes

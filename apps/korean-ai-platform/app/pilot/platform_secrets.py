@@ -173,6 +173,7 @@ async def ensure_all_platform_secrets() -> None:
 
 async def ensure_route_secrets(
     model_id: str, *, allow_external_fallback: bool = False,
+    product_tier: str = "free",
 ) -> None:
     """Load only the permitted candidates' keys ahead of synchronous routing.
 
@@ -186,7 +187,11 @@ async def ensure_route_secrets(
     from .worker_env import load_request_secret
 
     if model_id == "opencode-go/cat-jam-free":
-        candidates = [model_id, "google/gemini-3.1-flash-lite"]
+        from padiem_control_plane.product_tier_routes import TIER_FALLBACK_B14_MODELS
+        if product_tier not in TIER_FALLBACK_B14_MODELS:
+            from .errors import InvalidRequest
+            raise InvalidRequest("Unsupported product tier.")
+        candidates = [model_id, TIER_FALLBACK_B14_MODELS[product_tier]]
     elif model_id == "b14/auto":
         # Even without fallback, the fixed chain selects the first *ready*
         # provider. Check subsequent positions only if predecessors lack keys.
