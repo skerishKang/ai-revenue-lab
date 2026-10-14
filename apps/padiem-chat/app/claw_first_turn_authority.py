@@ -9,7 +9,7 @@ Authority model (all server-derived, never browser-supplied):
 
 * ``reserve_first_turn_grant`` mints one grant row per protected request and
   returns a closed ``B54VerifiedCodingContextV1``. The row insert is guarded
-  by the partial unique index from migration 041
+  by the partial unique index from migration 043
   (``idx_coding_grant_live_claim``): at most one LIVE (reserved/active,
   unexpired) grant exists per (user, correlation). Concurrent reserves elect
   exactly one winner; the loser attaches to the same row.
