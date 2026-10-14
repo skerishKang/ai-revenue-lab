@@ -63,6 +63,10 @@ async def main():
                 status = 200
             else:
                 payload, status = {"ok": False}, 404
+            print("DEBUG_GUIDED_ARCHIVE_READ="+json.dumps({
+                "id_matches": bool(latest and latest.get("conversationId") == gid),
+                "http": status, "path": suffix.split("/gdt_", 1)[0]
+            }), flush=True)
             await route.fulfill(status=status, content_type="application/json",
                                 body=json.dumps(payload, ensure_ascii=False))
             return
