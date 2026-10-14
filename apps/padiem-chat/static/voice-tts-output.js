@@ -39,6 +39,7 @@
 
     let queue = [];
     let busy = false;
+    let playGeneration = 0;
     let preferredVoiceName = opts.voiceName || "";
     let userGestureSeen = opts.userGestureSeen === true;
 
@@ -105,10 +106,11 @@
         return false;
       }
       if (busy) {
-        if (!alreadyQueued) queue.push(text);
+        queue.push(text);
         return true;
       }
       busy = true;
+      const currentGeneration = ++playGeneration;
       const utterance = new global.SpeechSynthesisUtterance(text);
       utterance.lang = lang;
       utterance.rate = rate;
@@ -119,9 +121,11 @@
       onStart({ text: text, voice: voice ? voice.name : null });
       report("speaking");
       utterance.onend = function () {
+        if (currentGeneration !== playGeneration) return;
         finishCurrent();
       };
       utterance.onerror = function (event) {
+        if (currentGeneration !== playGeneration) return;
         const reason = event && event.error ? event.error : "unknown";
         onError({ reason: reason, text: text });
         finishCurrent();
@@ -136,14 +140,37 @@
       }
     }
 
+    function chunkText(value) {
+      const chunks = [];
+      const parts = String(value || "").split(/(?<=[.!??])\s+/);
+      let current = "";
+      parts.forEach(function (part) {
+        if (!part) return;
+        if ((current + " " + part).trim().length > 180) {
+          if (current.trim()) chunks.push(current.trim());
+          current = part;
+        } else {
+          current = (current ? current + " " : "") + part;
+        }
+      });
+      if (current.trim()) chunks.push(current.trim());
+      return chunks.length ? chunks : [String(value || "").trim()];
+    }
+
     function speakText(value) {
       const text = safeText(value);
       if (!text) return false;
       if (!supported()) return false;
-      return run(text, false);
+      const chunks = chunkText(text).slice(0, 8);
+      let ok = true;
+      chunks.forEach(function (chunk, index) {
+        ok = run(chunk, index !== 0) && ok;
+      });
+      return ok;
     }
 
     function cancel() {
+      playGeneration += 1;
       if (supported()) {
         try {
           global.speechSynthesis.cancel();
