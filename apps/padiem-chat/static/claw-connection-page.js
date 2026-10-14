@@ -571,7 +571,6 @@
         grantedDeviceId = descriptor.deviceId;
         ui.consentStatus.textContent = c.granted;
         ui.issue.disabled = false;
-        ui.admin.open = true;
         setStep(1);
         return;
       }
