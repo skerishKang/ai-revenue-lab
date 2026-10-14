@@ -442,11 +442,18 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--owner-d1-database-id", help="candidate-only approved D1 UUID; never deploys")
     parser.add_argument("--attach-existing-web-secrets-store", action="store_true", help="add exactly two Owner-approved same-account web Secret Store bindings")
     parser.add_argument("--commission-hark-browser", action="store_true", help="owner-authorized additive BROWSER binding, no PDF calls")
+    parser.add_argument("--attach-existing-connector-broker", action="store_true",
+                        help="generate a candidate with only the existing canonical Broker Service Binding; does not deploy")
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
 
     try:
         payload = json.loads(args.settings.read_text(encoding="utf-8"))
         live = parse_live_bindings(payload)
+        if args.attach_existing_connector_broker and (
+            args.commission_hark_browser or args.attach_existing_web_secrets_store
+            or args.owner_d1_database_id is not None
+        ):
+            raise ProductionConfigError("Connector Broker candidate must be the only additive mode")
         if args.commission_hark_browser and args.attach_existing_web_secrets_store:
             raise ProductionConfigError("multiple additive authority modes prohibited")
         if args.commission_hark_browser:
@@ -464,6 +471,7 @@ def main(argv: list[str] | None = None) -> int:
             live, args.repo_config, args.public_base_url, args.owner_d1_database_id,
             attach_web_secrets_store=args.attach_existing_web_secrets_store,
             commission_hark_browser=args.commission_hark_browser,
+            attach_connector_broker_service=args.attach_existing_connector_broker,
         )
         verify_mutation_zero(config_text, live)
     except (ProductionConfigError, OSError, json.JSONDecodeError) as exc:
@@ -489,6 +497,8 @@ def main(argv: list[str] | None = None) -> int:
     print(f"SECRET_BINDINGS_PRESERVED_BY_PLATFORM={len(secret_names)}")
     print(f"SECRETS_STORE_BINDINGS_PRESERVED={len(live['secrets_store'])}")
     print(f"WEB_SECRETS_STORE_ATTACH_REQUESTED={int(args.attach_existing_web_secrets_store)}")
+    print(f"CONNECTOR_BROKER_BINDING_CANDIDATE={int(args.attach_existing_connector_broker)}")
+    print("CONNECTOR_BROKER_RELEASE_AUTHORIZED=NO")
     print("SECRET_VALUES_READ=0")
     print("SECRET_VALUES_EMITTED=0")
     print("PADIEM_CHAT_PUBLIC_BASE_URL_PRESTATE=EXPECTED")
