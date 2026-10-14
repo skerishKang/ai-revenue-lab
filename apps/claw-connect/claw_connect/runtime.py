@@ -36,7 +36,11 @@ from .menu_model import (
     ACTION_AUTOSTART_OFF,
     ACTION_TOGGLE_PAUSE,
 )
-from .resident_supervisor import ResidentSupervisor, default_resident_command
+from .resident_supervisor import (
+    ResidentLaunchRefused,
+    ResidentSupervisor,
+    default_resident_command,
+)
 from .resident_launch import ResidentLaunchPlan, plan_resident_launch
 from .resident_path import resident_src_root
 from .single_instance import AlreadyRunning, SingleInstance
@@ -250,7 +254,13 @@ class ConnectApp:
                 self._refresh_tray()
                 return
             self._controller.resume()
-            self._supervisor.start()
+            try:
+                self._supervisor.start()
+            except ResidentLaunchRefused:
+                # The provider declined between the gate above and the spawn, so
+                # no child was created. The tray still reports the truth:
+                # ``resident_running`` is read from the supervisor.
+                pass
         self._refresh_tray()
 
     def _can_start_resident(self) -> bool:
@@ -276,7 +286,12 @@ class ConnectApp:
             return False
         if self._controller.state is ConnectionState.PAUSED:
             return False
-        self._supervisor.start()
+        try:
+            self._supervisor.start()
+        except ResidentLaunchRefused:
+            # The provider declined between the plan above and the spawn: no
+            # child was created, so this must not report a start.
+            return False
         return True
 
     def reconnect(self) -> None:
@@ -289,7 +304,13 @@ class ConnectApp:
             self._controller.resume()
         elif self._controller.state is ConnectionState.DISCONNECTED:
             self._controller.connect()
-        self._supervisor.restart()
+        try:
+            self._supervisor.restart()
+        except ResidentLaunchRefused:
+            # Refused between the gate above and the spawn. ``restart`` stopped
+            # any previous child first, so the honest end state is "no
+            # Resident", which is what the tray reports.
+            pass
         self._refresh_tray()
 
     def turn_autostart_on(self) -> None:

@@ -17,6 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from claw_connect.resident_supervisor import (
     RESIDENT_ENTRY_MODULE,
+    ResidentLaunchRefused,
     ResidentSupervisor,
     default_resident_command,
 )
@@ -94,3 +95,71 @@ def test_default_command_targets_the_one_existing_resident_module():
     assert "-m" in command
     # No second runner, no alternative executor is introduced.
     assert command.count(RESIDENT_ENTRY_MODULE) == 1
+
+
+# -- the two launch-environment shapes must not be confused (#4139) ----------
+
+
+class _NeverLaunched:
+    """A stand-in Popen handle: nothing is executed and nothing is reaped."""
+
+    pid = 4321
+    returncode = None
+
+    def poll(self):
+        return None
+
+
+def _recording_popen(recorded: list):
+    def popen(*args, **kwargs):
+        recorded.append({"args": args, "kwargs": kwargs})
+        return _NeverLaunched()
+
+    return popen
+
+
+def test_a_declining_provider_refuses_before_any_child_is_spawned():
+    """``None`` from a provider is a refusal, not a request to inherit.
+
+    ConnectApp resolves the launch environment once to gate the action, and the
+    supervisor resolves it again at the spawn. Between the two the enrollment
+    can be revoked or the owner can opt out, so falling back to the parent
+    environment here would start a Resident nobody configured.
+    """
+    recorded: list = []
+    supervisor = ResidentSupervisor(
+        SLEEP_FOREVER, popen=_recording_popen(recorded), env=lambda: None
+    )
+
+    with pytest.raises(ResidentLaunchRefused):
+        supervisor.start()
+
+    assert recorded == []
+    assert supervisor.is_running() is False
+
+
+def test_no_provider_still_inherits_the_parent_environment():
+    """The long-standing direct construction is unchanged by the refusal path."""
+    recorded: list = []
+    supervisor = ResidentSupervisor(SLEEP_FOREVER, popen=_recording_popen(recorded))
+
+    supervisor.start()
+
+    assert len(recorded) == 1
+    # No ``env`` argument at all, so the child inherits this process's.
+    assert "env" not in recorded[0]["kwargs"]
+
+
+def test_a_provider_that_resolves_still_configures_the_child():
+    recorded: list = []
+    boundary = {"PADIEM_AGENT_DEVICE_ID": "device.4139.provider"}
+    supervisor = ResidentSupervisor(
+        SLEEP_FOREVER, popen=_recording_popen(recorded), env=lambda: boundary
+    )
+
+    supervisor.start()
+
+    assert len(recorded) == 1
+    assert recorded[0]["kwargs"]["env"] == boundary
+    # The resolved mapping is copied, so a later mutation cannot leak in.
+    assert recorded[0]["kwargs"]["env"] is not boundary

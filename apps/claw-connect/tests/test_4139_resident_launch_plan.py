@@ -350,3 +350,30 @@ def test_planning_alone_never_spawns_a_process(monkeypatch, tmp_path):
     assert app._resident_environment() is not None
     assert app._resident_environment() is not None
     assert calls == []
+
+
+def test_connect_app_never_spawns_once_the_registration_is_gone(
+    monkeypatch, tmp_path
+):
+    """The plan gates the action, then the environment is resolved again.
+
+    ``start_registered_resident()`` resolves the committed enrollment to decide
+    whether the Resident is launchable, and the supervisor resolves the same
+    environment again at the spawn. Between the two the enrollment can be
+    revoked, replaced, or switched off by the owner. In that window the old
+    supervisor would have run ``Popen`` with no ``env`` argument, so the child
+    would have inherited the parent environment and started a Resident nobody
+    had configured. Nothing may be spawned here.
+    """
+    _configured(monkeypatch, tmp_path)
+    calls: list = []
+    # The plan still succeeds; only the environment the supervisor resolves at
+    # spawn time has gone away. Patched before construction, because the
+    # supervisor captures this provider when ConnectApp is built.
+    monkeypatch.setattr(ConnectApp, "_resident_environment", lambda self: None)
+    app = _app(monkeypatch, _record(), calls)
+
+    assert app.resident_launch_reason() == "planned"
+    assert app.start_registered_resident() is False
+    assert calls == []
+    assert app.status()["resident_running"] is False
