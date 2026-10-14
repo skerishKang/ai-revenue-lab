@@ -400,6 +400,12 @@ $("createForm").addEventListener("submit", async event => {
 document.querySelectorAll("[data-page]").forEach(b => b.addEventListener("click", () => showPage(b.dataset.page)));
 $("refreshHistory").addEventListener("click", refreshHistory);
 $("refreshUsage").addEventListener("click", refreshUsage);
+$("resetDemoButton").addEventListener("click", () => {
+  if (window.confirm("모의 기록과 작성한 대본을 지우고 데모를 처음부터 시작할까요?")) {
+    // All demo data is stored in page memory only. Reload clears it.
+    window.location.reload();
+  }
+});
 async function restoreActiveOnLoad() {
   try {
     const data = await api("/api/tasks");
