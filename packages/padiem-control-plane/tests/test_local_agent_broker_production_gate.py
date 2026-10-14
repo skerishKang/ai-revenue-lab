@@ -113,3 +113,19 @@ def test_production_gate_does_not_embed_secret_or_account_values() -> None:
     assert "CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}" in text
     assert "CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" in text
     assert "5a305a04650f4ad419062f8d4a96a41d" not in text
+
+
+def test_existing_private_broker_redeploy_requires_exact_confirmation_and_existing_owned_bindings() -> None:
+    """Live SQLite DO updates keep the canonical namespace and the public boundary unchanged."""
+    text = WORKFLOW.read_text(encoding="utf-8")
+    assert "- redeploy_private" in text
+    assert "REDEPLOY_PADIEM_LOCAL_AGENT_BROKER_PRIVATE_EXACT_MAIN" in text
+    assert 'test "${STATE_WORKER_STATE}" = "present"' in text
+    assert 'test "${EDGE_WORKER_STATE}" = "present"' in text
+    assert 'test "${STATE_WORKER_STATE}" = "absent"' in text
+    assert 'test "${EDGE_WORKER_STATE}" = "absent"' in text
+    for field in ("LOCAL_AGENT_BROKER_STATE","LOCAL_AGENT_BROKER_SERVICE",
+                  "LOCAL_AGENT_BROKER_PEPPER","LOCAL_AGENT_BROKER_AUTHORITY_REF"):
+        assert f'any(.name == "{field}")' in text
+    assert "durable object delete" not in text.lower()
+    assert "PUBLIC_ROUTE_CONFIGURED=NO" in text
