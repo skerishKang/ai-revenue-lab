@@ -315,9 +315,18 @@ def inventory(*, inspect_public_https: bool = False) -> dict[str, Any]:
     # grant owner consent, verify WebSocket upgrade or claim a registered PC.
     public_probe = None
     if inspect_public_https:
-        from scripts.connector_public_origin_readonly import (
-            blockers_for_probe, probe_isolated_owner_setup,
-        )
+        # Works both as an importable package in tests and as the documented
+        # direct script: python apps/padiem-chat/scripts/connector_...py
+        # Do not let a package-resolution error hide an otherwise valid
+        # Cloudflare read-only inventory behind a generic blocked receipt.
+        if __package__:
+            from .connector_public_origin_readonly import (
+                blockers_for_probe, probe_isolated_owner_setup,
+            )
+        else:
+            from connector_public_origin_readonly import (
+                blockers_for_probe, probe_isolated_owner_setup,
+            )
         public_probe = probe_isolated_owner_setup()
         acceptance_blockers.extend(blockers_for_probe(public_probe))
     return {

@@ -132,3 +132,38 @@ def test_explicit_inventory_includes_dns_blocker_without_auth_claim(monkeypatch)
     assert "acceptance_public_dns_unavailable" in state["blocking_facts"]
     assert state["actual_owner_windows_pairing_proven"] is False
     assert state["changes_made"] is False
+
+
+def test_documented_direct_script_import_mode_handles_sibling_module(monkeypatch):
+    # "python apps/padiem-chat/scripts/connector_cloudflare_runtime_readiness.py"
+    # is an executable script with __package__ empty, unlike pytest imports.
+    import importlib
+    import importlib.util
+    from pathlib import Path
+
+    script_file = Path(inventory.__file__).resolve()
+    spec = importlib.util.spec_from_file_location(
+        "readiness_as_direct_script", script_file,
+    )
+    direct = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(direct)
+    assert not direct.__package__
+
+    monkeypatch.syspath_prepend(str(script_file.parent))
+    sibling = importlib.import_module("connector_public_origin_readonly")
+    monkeypatch.setattr(sibling, "probe_isolated_owner_setup", lambda: {
+        "dns_resolves": False,
+        "https_responds": False,
+        "owner_setup_http_status": None,
+        "owner_authenticated": False,
+        "wss_pairing_proven": False,
+        "changed_cloudflare_or_pc": False,
+    })
+    monkeypatch.setattr(direct.shutil, "which", lambda _: "wrangler")
+    monkeypatch.setattr(direct, "_run_readonly", lambda **_: None)
+
+    outcome = direct.inventory(inspect_public_https=True)
+    assert outcome["readiness"] == "blocked"
+    assert "acceptance_public_dns_unavailable" in outcome["blocking_facts"]
+    assert outcome["actual_owner_windows_pairing_proven"] is False
