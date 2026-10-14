@@ -158,12 +158,11 @@ def test_checked_in_worker_cannot_be_misrepresented_as_production_ready():
     assert receipt.deployment_ready is False
     assert receipt.evidence_scope == "repository_source_only"
     assert receipt.contract_version == RELEASE_PREFLIGHT_VERSION
-    assert receipt.missing_required_bindings == tuple(sorted((
-        IDENTITY_AUTHORITY_SERVICE_BINDING_NAME,
-        LOCAL_AGENT_BROKER_AUTHORITY_SERVICE_BINDING_NAME,
-    )))
+    assert receipt.missing_required_bindings == ()
+    assert IDENTITY_AUTHORITY_SERVICE_BINDING_NAME in receipt.declared_bindings
+    assert LOCAL_AGENT_BROKER_AUTHORITY_SERVICE_BINDING_NAME in receipt.declared_bindings
     assert "B14_SERVICE" in receipt.declared_bindings
-    assert "required_private_service_bindings_not_declared" in receipt.blockers
+    assert "required_private_service_bindings_not_declared" not in receipt.blockers
     assert "worker_tls_ingress_provenance_not_verified" in receipt.blockers
     assert "public_worker_wss_route_not_mounted" in receipt.blockers
     assert "two_pc_owner_consent_dpapi_restart_heartbeat_e2e_not_proven" in receipt.blockers
