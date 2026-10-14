@@ -106,6 +106,7 @@ from app.voice_stt_routes import CloudflareVoiceSttServiceTransport
 from app.web_xlsx_p01_engine_client import build_web_xlsx_p01_engine_client
 from app.web_xlsx_quote_write_engine_client import build_web_quote_write_engine_client
 from app.claw_web_xlsx_quote_pdf import BrowserQuotePdfRenderer
+from app.claw_search_decision import trusted_claw_search_activation
 from kagent.claw_automation import ClawAutomationTickRuntime
 from kagent.claw_automation_trigger import ClawAutomationTriggerBoundary
 from workers import Request, Response, WorkerEntrypoint
@@ -1072,6 +1073,18 @@ class Default(WorkerEntrypoint):
                 ) = build_claw_p01_lanes_with_diagnostic(
                     self.env,
                     request_factory=Request,
+                )
+                # #4469: Owner-requested Claw public web research. An explicit
+                # Worker flag is only a request to activate: the real B14
+                # runtime, canonical member/Engine lane and durable D1 quota
+                # must ALL be present. One accepted Claw turn is already
+                # reserved by _usage_gate_denial before its bounded single
+                # judgement and optional search; no browser input can arm it.
+                _worker_app.state.claw_web_search_enabled = trusted_claw_search_activation(
+                    flag=binding_value(self.env, "PADIEM_CLAW_PUBLIC_WEB_SEARCH_ENABLED"),
+                    runtime_mode=settings.runtime_mode,
+                    adapter=_worker_app.state.claw_p01_adapter,
+                    usage_gate=_worker_app.state.usage_gate,
                 )
                 # #3580 WEB-FIRST: fixed private Engine ToolRuntime endpoint,
                 # authenticated with the pre-existing P01 service caller.
