@@ -30,6 +30,7 @@ from .history import (
     HistoryStore,
     build_project_context,
 )
+from .history import PRODUCT_SCOPE_CHAT
 from .model_policy import model_supports, request_tier_context
 from .project_files import ProjectFileStore
 from .public_chat import public_chat_result
@@ -152,7 +153,7 @@ async def _restore_owner_chat_model_messages(
     get_full = getattr(store, "get_conversation_model_context", None)
     # D1 production always implements the private full-context projection;
     # older test-only/in-memory stores retain their already-owner-scoped data.
-    owned = await get_full(owner_id, conversation_id) if callable(get_full) else verified_conversation
+    owned = await get_full(owner_id, conversation_id, product_scope=PRODUCT_SCOPE_CHAT) if callable(get_full) else verified_conversation
     if owned is None or owned.get("id") != conversation_id:
         raise HistoryContextIncomplete("owner model conversation unavailable")
     rows = owned.get("messages")
@@ -341,7 +342,7 @@ async def api_chat_stream(request: Request):
                         answer = "".join(answer_parts)
                         try:
                             if effective_project_id is None:
-                                saved_id = await store.append_exchange(uid, conversation_id, latest_user, answer)
+                                saved_id = await store.append_exchange(uid, conversation_id, latest_user, answer, product_scope=PRODUCT_SCOPE_CHAT)
                             else:
                                 saved_id = await store.append_exchange(
                                     uid,
@@ -349,6 +350,7 @@ async def api_chat_stream(request: Request):
                                     latest_user,
                                     answer,
                                     project_id=effective_project_id,
+                                    product_scope=PRODUCT_SCOPE_CHAT,
                                 )
                         except HistoryForbidden:
                             yield _public_sse(
@@ -558,10 +560,11 @@ async def api_chat(request: Request) -> JSONResponse:
         if latest_user:
             try:
                 if effective_project_id is None:
-                    saved_id = await store.append_exchange(uid, conversation_id, latest_user, result["answer"])
+                    saved_id = await store.append_exchange(uid, conversation_id, latest_user, result["answer"], product_scope=PRODUCT_SCOPE_CHAT)
                 else:
                     saved_id = await store.append_exchange(
-                        uid, conversation_id, latest_user, result["answer"], project_id=effective_project_id
+                        uid, conversation_id, latest_user, result["answer"], project_id=effective_project_id,
+                        product_scope=PRODUCT_SCOPE_CHAT,
                     )
             except HistoryForbidden:
                 return _conversation_not_found()

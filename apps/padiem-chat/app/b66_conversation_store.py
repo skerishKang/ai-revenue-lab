@@ -6,25 +6,28 @@ WHAT THIS IS
     dialogue per owner and exposes list/search/load/delete for it.
 
 NON-AUTHORITY CONTRACT (must stay true)
-    NO_SECOND_STORE   It wraps the existing canonical `HistoryStore`
-                      (`append_exchange` / `list_conversations` /
-                      `search_conversations` / `get_conversation` /
-                      `delete_conversation`). It creates no table, database,
-                      index or migration of its own.
-    OWNER_SCOPED      Every read and write is passed through the caller's owner
-                      id, and an absent/blank owner fails closed. There is no
-                      cross-owner lookup path here.
+    NO_SECOND_STORE   It wraps the existing canonical `HistoryStore`. It creates
+                      no table, database, index or migration of its own.
+    PRODUCT_ISOLATED  Every call passes `PRODUCT_SCOPE_B66`, and the storage layer
+                      filters on the server-owned `product_scope` column. Owner
+                      scoping alone was not enough: the same account also owns
+                      Chat/Claw conversations, so without the discriminator B66
+                      could list, read or delete them — and Chat could read B66
+                      dialogue. Isolation is enforced at the data-access
+                      boundary, in both directions, not by a post-filter here.
+    OWNER_SCOPED      An absent/blank owner fails closed before any store call.
     DIALOGUE_ONLY     AI dialogue and saved quotes are different record types.
-                      This module never reads or writes quote history, and it
-                      never derives a quote from a conversation.
-    CLOSED_PROJECTION Only reviewed fields leave this module. Extra fields on a
-                      stored row are dropped rather than forwarded.
-    BOUNDED           List/search/load results are capped and the search query
-                      is length-bounded before it reaches the store.
+                      This module never reads or writes quote history.
+    CLOSED_PROJECTION Only reviewed fields leave this module; extra stored
+                      columns are dropped rather than forwarded.
+    BOUNDED           List/search/load results are capped and the search query is
+                      length-bounded before it reaches the store.
 """
 from __future__ import annotations
 
 from typing import Any, Mapping, Protocol
+
+from .history import PRODUCT_SCOPE_B66
 
 MAX_B66_CONVERSATIONS = 50
 MAX_B66_SEARCH_RESULTS = 20
@@ -41,19 +44,25 @@ class _ConversationHistoryStore(Protocol):
         user_text: str,
         assistant_text: str,
         project_id: str | None = None,
+        *,
+        product_scope: str,
     ) -> str: ...
 
-    async def list_conversations(self, user_id: str, limit: int = ...) -> list[dict[str, Any]]: ...
+    async def list_conversations(
+        self, user_id: str, *, product_scope: str, limit: int = ...
+    ) -> list[dict[str, Any]]: ...
 
     async def search_conversations(
-        self, user_id: str, query: str, limit: int = ...
+        self, user_id: str, query: str, *, product_scope: str, limit: int = ...
     ) -> list[dict[str, Any]]: ...
 
     async def get_conversation(
-        self, user_id: str, conversation_id: str
+        self, user_id: str, conversation_id: str, *, product_scope: str
     ) -> dict[str, Any] | None: ...
 
-    async def delete_conversation(self, user_id: str, conversation_id: str) -> bool: ...
+    async def delete_conversation(
+        self, user_id: str, conversation_id: str, *, product_scope: str
+    ) -> bool: ...
 
 
 def _owner(owner_id: object) -> str:
@@ -110,7 +119,7 @@ def _project_conversation(row: object) -> dict[str, Any] | None:
 
 
 class B66ConversationStore:
-    """Owner-scoped AI-dialogue persistence for B66, over the canonical store."""
+    """Owner- and product-scoped AI-dialogue persistence for B66."""
 
     def __init__(self, store: _ConversationHistoryStore) -> None:
         self._store = store
@@ -123,14 +132,21 @@ class B66ConversationStore:
         *,
         conversation_id: str | None = None,
     ) -> str:
-        """Persist one completed exchange and return its conversation id."""
+        """Persist one completed exchange and return its conversation id.
+
+        Continuing an existing conversation only works for a B66 conversation:
+        the storage layer rejects a conversation that belongs to another product
+        scope, even when the same owner owns it.
+        """
         owner = _owner(owner_id)
         if not isinstance(user_text, str) or not isinstance(assistant_text, str):
             raise ValueError("dialogue text must be strings")
-        # The canonical store owns id minting and owner binding; this module
-        # neither invents nor trusts a conversation id supplied by the browser.
         return await self._store.append_exchange(
-            owner, conversation_id, user_text, assistant_text
+            owner,
+            conversation_id,
+            user_text,
+            assistant_text,
+            product_scope=PRODUCT_SCOPE_B66,
         )
 
     async def list_recent(
@@ -138,7 +154,9 @@ class B66ConversationStore:
     ) -> list[dict[str, Any]]:
         owner = _owner(owner_id)
         rows = await self._store.list_conversations(
-            owner, _bounded_limit(limit, MAX_B66_CONVERSATIONS, MAX_B66_CONVERSATIONS)
+            owner,
+            product_scope=PRODUCT_SCOPE_B66,
+            limit=_bounded_limit(limit, MAX_B66_CONVERSATIONS, MAX_B66_CONVERSATIONS),
         )
         return [item for item in (_summarize(row) for row in rows) if item is not None]
 
@@ -151,25 +169,30 @@ class B66ConversationStore:
             # An unusable query must not degrade into "return everything".
             return []
         rows = await self._store.search_conversations(
-            owner, normalized, _bounded_limit(limit, MAX_B66_SEARCH_RESULTS, MAX_B66_SEARCH_RESULTS)
+            owner,
+            normalized,
+            product_scope=PRODUCT_SCOPE_B66,
+            limit=_bounded_limit(limit, MAX_B66_SEARCH_RESULTS, MAX_B66_SEARCH_RESULTS),
         )
         return [item for item in (_summarize(row) for row in rows) if item is not None]
 
-    async def load(
-        self, owner_id: str, conversation_id: str
-    ) -> dict[str, Any] | None:
-        """Load one owner's conversation, or None when it is not theirs."""
+    async def load(self, owner_id: str, conversation_id: str) -> dict[str, Any] | None:
+        """Load one B66 conversation, or None when it is not this owner's B66 one."""
         owner = _owner(owner_id)
         if not isinstance(conversation_id, str) or not conversation_id:
             return None
-        row = await self._store.get_conversation(owner, conversation_id)
+        row = await self._store.get_conversation(
+            owner, conversation_id, product_scope=PRODUCT_SCOPE_B66
+        )
         return _project_conversation(row)
 
     async def delete(self, owner_id: str, conversation_id: str) -> bool:
         owner = _owner(owner_id)
         if not isinstance(conversation_id, str) or not conversation_id:
             return False
-        return await self._store.delete_conversation(owner, conversation_id)
+        return await self._store.delete_conversation(
+            owner, conversation_id, product_scope=PRODUCT_SCOPE_B66
+        )
 
 
 __all__ = [

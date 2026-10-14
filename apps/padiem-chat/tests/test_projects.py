@@ -16,6 +16,7 @@ import pytest
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.history import (
+    PRODUCT_SCOPE_CHAT,
     D1HistoryStore,
     HistoryForbidden,
     ProjectProfile,
@@ -251,7 +252,7 @@ async def test_project_delete_is_owner_scoped_file_safe_and_preserves_conversati
     blocked = await store.create_project(owner.id, "자료 있음", "")
     removable = await store.create_project(owner.id, "삭제 가능", "")
     foreign = await store.create_project(other.id, "다른 사용자", "")
-    cid = await store.append_exchange(owner.id, None, "남겨 둘 질문", "남겨 둘 답", project_id=removable.id)
+    cid = await store.append_exchange(owner.id, None, "남겨 둘 질문", "남겨 둘 답", project_id=removable.id, product_scope=PRODUCT_SCOPE_CHAT)
     file_store.files[(owner.id, blocked.id)] = [object()]
     cfg = settings()
     app = create_app(cfg, history_store=store, project_file_store=file_store)
@@ -323,7 +324,7 @@ async def test_reopen_derives_stored_project_and_conflict_fails_before_model():
     user = await store.add_user("owner")
     project_a = await store.create_project(user.id, "A", "A 프로젝트 지침")
     project_b = await store.create_project(user.id, "B", "B 프로젝트 지침")
-    cid = await store.append_exchange(user.id, None, "첫 질문", "첫 답", project_id=project_a.id)
+    cid = await store.append_exchange(user.id, None, "첫 질문", "첫 답", project_id=project_a.id, product_scope=PRODUCT_SCOPE_CHAT)
     cfg = settings(runtime="b14")
     calls = []
 

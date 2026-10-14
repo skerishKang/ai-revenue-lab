@@ -1,5 +1,6 @@
 """#3580: browser P01 start must mint the owner run only on trusted B62."""
 from __future__ import annotations
+from app.history import PRODUCT_SCOPE_CHAT
 
 from datetime import datetime, timezone
 from pathlib import Path
@@ -154,15 +155,17 @@ async def test_actual_history_store_mints_owner_conversation_and_run_without_fak
     name = "원본-" + "가" * 120 + ".xlsx"
     run_id = await history.create_web_xlsx_p01_run(
         user_id=OWNER, workspace_id="owner:" + OWNER, filename=name,
-    )
+
+            product_scope=PRODUCT_SCOPE_CHAT,
+        )
     row = await history.get_claw_run(OWNER, run_id)
     assert row["run_id"] == run_id
     assert row["status"] == "running"
     assert row["workspace_id"] == "owner:" + OWNER
-    conv = await history.get_conversation(OWNER, row["conversation_id"])
+    conv = await history.get_conversation(OWNER, row["conversation_id"], product_scope=PRODUCT_SCOPE_CHAT)
     assert conv is not None
     assert len(conv["title"]) <= 80
     assert conv["messages"] == []
     assert await history.get_claw_run(FOREIGN, run_id) is None
-    assert await history.get_conversation(FOREIGN, row["conversation_id"]) is None
+    assert await history.get_conversation(FOREIGN, row["conversation_id"], product_scope=PRODUCT_SCOPE_CHAT) is None
     conn.close()

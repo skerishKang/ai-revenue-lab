@@ -21,7 +21,7 @@ from app.auth import (
     verify_oauth_state,
 )
 from app.config import ConfigError, Settings
-from app.history import D1HistoryStore, HistoryForbidden, UserProfile
+from app.history import D1HistoryStore, HistoryForbidden, UserProfile, PRODUCT_SCOPE_CHAT
 from app.main import create_app
 from app.model_policy import EXECUTABLE_B14_MODEL_IDS
 
@@ -293,7 +293,7 @@ async def test_cross_user_conversation_is_rejected_before_answer_and_anonymous_i
     owner = await add_test_user(store, "1111111111", "owner@example.test", "owner")
     other = await add_test_user(store, "2222222222", "other@example.test", "other")
     settings = google_settings()
-    cid = await store.append_exchange(owner.id, None, "owner question", "owner answer")
+    cid = await store.append_exchange(owner.id, None, "owner question", "owner answer", product_scope=PRODUCT_SCOPE_CHAT)
     app = create_app(settings, history_store=store)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
         client.cookies.set(SESSION_COOKIE, create_session_token(settings, other.id), domain="chat.example.test", path="/")
@@ -314,7 +314,7 @@ async def test_conversation_delete_is_owner_scoped_and_bounded():
     store = MemoryHistoryStore()
     owner = await add_test_user(store, "3333333333", "owner-delete@example.test", "owner")
     other = await add_test_user(store, "4444444444", "other-delete@example.test", "other")
-    cid = await store.append_exchange(owner.id, None, "삭제할 대화", "보존된 답변")
+    cid = await store.append_exchange(owner.id, None, "삭제할 대화", "보존된 답변", product_scope=PRODUCT_SCOPE_CHAT)
     settings = google_settings()
     app = create_app(settings, history_store=store)
 
@@ -406,11 +406,13 @@ async def test_d1_adapter_uses_prepared_bound_values_not_interpolation():
     store = D1HistoryStore(db)
     marker = "USER_VALUE_SHOULD_ONLY_BE_BOUND"
     await store.upsert_google_user("subject-1", "user@example.test", marker, "")
-    await store.list_conversations("usr_fake")
+    await store.list_conversations("usr_fake", product_scope=PRODUCT_SCOPE_CHAT)
     cid = "chat_" + "a" * 32
-    assert await store.delete_conversation("usr_fake", cid) is True
+    assert await store.delete_conversation("usr_fake", cid, product_scope=PRODUCT_SCOPE_CHAT) is True
     assert any(
-        sql.startswith("DELETE FROM conversations WHERE id=? AND user_id=?") and values == (cid, "usr_fake")
+        sql.startswith(
+            "DELETE FROM conversations WHERE id=? AND user_id=? AND product_scope=?"
+        ) and values == (cid, "usr_fake", PRODUCT_SCOPE_CHAT)
         for sql, values in db.bound
     )
     assert db.prepared

@@ -28,6 +28,28 @@ MAX_CLAW_RUNS = 30
 MAX_RUN_RESULT_SUMMARY_CHARS = 200
 MAX_CLAW_HANDOFF_TRUSTED_REQUEST_CHARS = 32000
 
+# #4657 product isolation. One account owns conversations for more than one
+# product, so owner scoping alone is not visibility scoping: a B66 request would
+# otherwise list, read or delete the same account's Chat/Claw dialogue.
+#
+# The discriminator is server-owned and stored on the row. Callers must pass the
+# scope their own route is serving; it is never derived from a browser-supplied
+# value (a `project_id` or a conversation id is not a product claim).
+#
+# `b62-chat` is the pre-existing generic scope. Every conversation created before
+# this column existed is backfilled to it, which is what preserves Chat project
+# semantics and Claw historical continuity. B66 dialogue lives in its own scope.
+PRODUCT_SCOPE_CHAT = "b62-chat"
+PRODUCT_SCOPE_B66 = "b66-quote"
+KNOWN_PRODUCT_SCOPES = frozenset({PRODUCT_SCOPE_CHAT, PRODUCT_SCOPE_B66})
+
+
+def _require_product_scope(value: object) -> str:
+    """Fail closed: only a known server-owned scope may address conversations."""
+    if not isinstance(value, str) or value not in KNOWN_PRODUCT_SCOPES:
+        raise HistoryForbidden("conversation product scope is not recognized")
+    return value
+
 # #2956: closed server-derived trusted P01 request shape. Unknown keys fail
 # closed so browser-supplied authority fields can never enter the handoff.
 _CLAW_HANDOFF_TRUSTED_REQUEST_KEYS = frozenset(
@@ -105,17 +127,17 @@ class HistoryStore(Protocol):
     async def record_password_failure(self, user_id: str, failed_attempts: int, locked_until: str | None) -> None: ...
     async def reset_password_failures(self, user_id: str) -> None: ...
     async def get_user(self, user_id: str) -> UserProfile | None: ...
-    async def list_conversations(self, user_id: str, limit: int = MAX_RECENT_CONVERSATIONS) -> list[dict[str, Any]]: ...
-    async def search_conversations(self, user_id: str, query: str, limit: int = MAX_CONVERSATION_SEARCH_RESULTS) -> list[dict[str, Any]]: ...
-    async def get_conversation(self, user_id: str, conversation_id: str) -> dict[str, Any] | None: ...
-    async def delete_conversation(self, user_id: str, conversation_id: str) -> bool: ...
-    async def append_exchange(self, user_id: str, conversation_id: str | None, user_text: str, assistant_text: str, project_id: str | None = None) -> str: ...
+    async def list_conversations(self, user_id: str, *, product_scope: str, limit: int = MAX_RECENT_CONVERSATIONS) -> list[dict[str, Any]]: ...
+    async def search_conversations(self, user_id: str, query: str, *, product_scope: str, limit: int = MAX_CONVERSATION_SEARCH_RESULTS) -> list[dict[str, Any]]: ...
+    async def get_conversation(self, user_id: str, conversation_id: str, *, product_scope: str) -> dict[str, Any] | None: ...
+    async def delete_conversation(self, user_id: str, conversation_id: str, *, product_scope: str) -> bool: ...
+    async def append_exchange(self, user_id: str, conversation_id: str | None, user_text: str, assistant_text: str, project_id: str | None = None, *, product_scope: str) -> str: ...
     async def list_projects(self, user_id: str) -> list[ProjectProfile]: ...
     async def get_project(self, user_id: str, project_id: str) -> ProjectProfile | None: ...
     async def create_project(self, user_id: str, name: str, instructions: str) -> ProjectProfile: ...
     async def update_project(self, user_id: str, project_id: str, name: str, instructions: str) -> ProjectProfile | None: ...
     async def delete_project(self, user_id: str, project_id: str) -> bool: ...
-    async def list_project_conversations(self, user_id: str, project_id: str, limit: int = MAX_RECENT_CONVERSATIONS) -> list[dict[str, Any]]: ...
+    async def list_project_conversations(self, user_id: str, project_id: str, *, product_scope: str, limit: int = MAX_RECENT_CONVERSATIONS) -> list[dict[str, Any]]: ...
     async def record_claw_run(self, user_id: str, run_id: str, channel: str, action: str, title: str, status: str, result_summary: str | None = None, artifact_document_id: str | None = None, artifact_filename: str | None = None, artifact_media_type: str | None = None, conversation_id: str | None = None, workspace_id: str | None = None) -> None: ...
     async def list_recent_claw_runs(self, user_id: str, limit: int = MAX_CLAW_RUNS, workspace_id: str | None = None) -> list[dict[str, Any]]: ...
     async def update_claw_run_status(self, user_id: str, run_id: str, status: str, result_summary: str | None = None) -> bool: ...
@@ -509,10 +531,16 @@ class D1HistoryStore:
         return full
 
     async def get_conversation_model_context(
-        self, user_id: str, conversation_id: str,
+        self, user_id: str, conversation_id: str, *, product_scope: str,
     ) -> dict[str, Any] | None:
-        """Owner-scoped full messages for model only. Browser APIs keep previews."""
-        owned = await self.get_conversation(user_id, conversation_id)
+        """Owner- and product-scoped full messages for model only.
+
+        Browser APIs keep bounded previews; the canonical full-original (R2)
+        restoration is only ever reachable through this product-scoped read.
+        """
+        owned = await self.get_conversation(
+            user_id, conversation_id, product_scope=product_scope
+        )
         if owned is None:
             return None
         rows = await self._all(
@@ -677,11 +705,15 @@ class D1HistoryStore:
             str(row.get("picture_url", "")),
         )
 
-    async def list_conversations(self, user_id: str, limit: int = MAX_RECENT_CONVERSATIONS) -> list[dict[str, Any]]:
+    async def list_conversations(
+        self, user_id: str, *, product_scope: str, limit: int = MAX_RECENT_CONVERSATIONS,
+    ) -> list[dict[str, Any]]:
+        scope = _require_product_scope(product_scope)
         bounded = max(1, min(int(limit), MAX_RECENT_CONVERSATIONS))
         rows = await self._all(
-            "SELECT id, title, project_id, created_at, updated_at FROM conversations WHERE user_id=? ORDER BY updated_at DESC LIMIT ?",
-            user_id, bounded,
+            "SELECT id, title, project_id, created_at, updated_at FROM conversations "
+            "WHERE user_id=? AND product_scope=? ORDER BY updated_at DESC LIMIT ?",
+            user_id, scope, bounded,
         )
         return [{
             "id": str(row.get("id", "")), "title": str(row.get("title", "")),
@@ -690,7 +722,8 @@ class D1HistoryStore:
         } for row in rows]
 
     async def search_conversations(
-        self, user_id: str, query: str, limit: int = MAX_CONVERSATION_SEARCH_RESULTS,
+        self, user_id: str, query: str, *, product_scope: str,
+        limit: int = MAX_CONVERSATION_SEARCH_RESULTS,
     ) -> list[dict[str, Any]]:
         """Owner-scoped search over the signed-in user's own conversations.
 
@@ -702,6 +735,7 @@ class D1HistoryStore:
         needle = _escape_like(query)
         if not needle:
             return []
+        scope = _require_product_scope(product_scope)
         bounded = max(1, min(int(limit), MAX_CONVERSATION_SEARCH_RESULTS))
         pattern = f"%{needle}%"
         rows = await self._all(
@@ -709,11 +743,11 @@ class D1HistoryStore:
             "(SELECT m.content FROM messages m WHERE m.conversation_id = c.id "
             " AND m.content LIKE ? ESCAPE '\\' ORDER BY m.sequence_number ASC LIMIT 1) AS hit "
             "FROM conversations c "
-            "WHERE c.user_id=? AND (c.title LIKE ? ESCAPE '\\' OR EXISTS ("
+            "WHERE c.user_id=? AND c.product_scope=? AND (c.title LIKE ? ESCAPE '\\' OR EXISTS ("
             "  SELECT 1 FROM (SELECT m.content FROM messages m WHERE m.conversation_id = c.id "
             "  ORDER BY m.sequence_number DESC LIMIT ?) scan WHERE scan.content LIKE ? ESCAPE '\\')) "
             "ORDER BY c.updated_at DESC LIMIT ?",
-            pattern, user_id, pattern, MAX_CONVERSATION_SEARCH_SCAN_ROWS, pattern, bounded,
+            pattern, user_id, scope, pattern, MAX_CONVERSATION_SEARCH_SCAN_ROWS, pattern, bounded,
         )
         return [{
             "id": str(row.get("id", "")),
@@ -724,22 +758,30 @@ class D1HistoryStore:
             "snippet": _search_snippet(row.get("hit"), query),
         } for row in rows]
 
-    async def list_project_conversations(self, user_id: str, project_id: str, limit: int = MAX_RECENT_CONVERSATIONS) -> list[dict[str, Any]]:
+    async def list_project_conversations(
+        self, user_id: str, project_id: str, *, product_scope: str,
+        limit: int = MAX_RECENT_CONVERSATIONS,
+    ) -> list[dict[str, Any]]:
+        scope = _require_product_scope(product_scope)
         bounded = max(1, min(int(limit), MAX_RECENT_CONVERSATIONS))
         rows = await self._all(
             "SELECT id, title, project_id, created_at, updated_at FROM conversations "
-            "WHERE user_id=? AND project_id=? ORDER BY updated_at DESC LIMIT ?",
-            user_id, project_id, bounded,
+            "WHERE user_id=? AND project_id=? AND product_scope=? ORDER BY updated_at DESC LIMIT ?",
+            user_id, project_id, scope, bounded,
         )
         return [{
             "id": str(row.get("id", "")), "title": str(row.get("title", "")), "project_id": project_id,
             "created_at": str(row.get("created_at", "")), "updated_at": str(row.get("updated_at", "")),
         } for row in rows]
 
-    async def get_conversation(self, user_id: str, conversation_id: str) -> dict[str, Any] | None:
+    async def get_conversation(
+        self, user_id: str, conversation_id: str, *, product_scope: str,
+    ) -> dict[str, Any] | None:
+        scope = _require_product_scope(product_scope)
         conv = await self._first(
-            "SELECT id, title, project_id, created_at, updated_at FROM conversations WHERE id=? AND user_id=?",
-            conversation_id, user_id,
+            "SELECT id, title, project_id, created_at, updated_at FROM conversations "
+            "WHERE id=? AND user_id=? AND product_scope=?",
+            conversation_id, user_id, scope,
         )
         if not conv:
             return None
@@ -754,10 +796,13 @@ class D1HistoryStore:
             "messages": [{"role": str(row.get("role", "")), "content": str(row.get("content", ""))} for row in messages if row.get("role") in {"user", "assistant"}],
         }
 
-    async def delete_conversation(self, user_id: str, conversation_id: str) -> bool:
+    async def delete_conversation(
+        self, user_id: str, conversation_id: str, *, product_scope: str,
+    ) -> bool:
+        scope = _require_product_scope(product_scope)
         owned = await self._first(
-            "SELECT id FROM conversations WHERE id=? AND user_id=?",
-            conversation_id, user_id,
+            "SELECT id FROM conversations WHERE id=? AND user_id=? AND product_scope=?",
+            conversation_id, user_id, scope,
         )
         if not owned:
             return False
@@ -765,8 +810,8 @@ class D1HistoryStore:
             "SELECT id, content FROM messages WHERE conversation_id=?", conversation_id,
         )
         await self._run(
-            "DELETE FROM conversations WHERE id=? AND user_id=?",
-            conversation_id, user_id,
+            "DELETE FROM conversations WHERE id=? AND user_id=? AND product_scope=?",
+            conversation_id, user_id, scope,
         )
         await self._delete_full_keys([
             self._context_key(conversation_id, row["id"])
@@ -821,7 +866,8 @@ class D1HistoryStore:
         )
         return True
 
-    async def append_exchange(self, user_id: str, conversation_id: str | None, user_text: str, assistant_text: str, project_id: str | None = None) -> str:
+    async def append_exchange(self, user_id: str, conversation_id: str | None, user_text: str, assistant_text: str, project_id: str | None = None, *, product_scope: str) -> str:
+        scope = _require_product_scope(product_scope)
         user_content = _bounded_text(user_text, "user_text")
         assistant_content = _bounded_text(assistant_text, "assistant_text")
         now = _now_iso()
@@ -833,8 +879,14 @@ class D1HistoryStore:
             cid = _chat_id()
             sequence = 0
         else:
-            owned = await self._first("SELECT id, project_id FROM conversations WHERE id=? AND user_id=?", cid, user_id)
+            owned = await self._first(
+                "SELECT id, project_id FROM conversations WHERE id=? AND user_id=? AND product_scope=?",
+                cid, user_id, scope,
+            )
             if not owned:
+                # Another product's conversation is not addressable here, even
+                # for its own owner: the scope must match the route's product.
+                # The message stays the existing contract text.
                 raise HistoryForbidden("conversation is not owned by current user")
             stored_project = str(owned.get("project_id")) if owned.get("project_id") is not None else None
             if stored_project != project_id:
@@ -854,8 +906,8 @@ class D1HistoryStore:
                 # Store private full text first; unavailable R2 must not leave
                 # a misleading, empty D1 conversation for the first turn.
                 await self._run(
-                    "INSERT INTO conversations (id, user_id, project_id, title, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
-                    cid, user_id, project_id, _title_from_user_text(user_content), now, now,
+                    "INSERT INTO conversations (id, user_id, project_id, title, created_at, updated_at, product_scope) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                    cid, user_id, project_id, _title_from_user_text(user_content), now, now, scope,
                 )
             await self._run(
                 "INSERT INTO messages (id, conversation_id, sequence_number, role, content, created_at) VALUES (?, ?, ?, 'user', ?, ?)",
@@ -875,6 +927,7 @@ class D1HistoryStore:
 
     async def create_web_xlsx_p01_run(
         self, *, user_id: str, workspace_id: str, filename: str,
+        product_scope: str,
     ) -> str:
         """Create a real owner-bound conversation/run for web file approval.
 
@@ -891,9 +944,10 @@ class D1HistoryStore:
         run_id = "web_p01_" + uuid.uuid4().hex
         now = _now_iso()
         await self._run(
-            "INSERT INTO conversations (id,user_id,project_id,title,created_at,updated_at) "
-            "VALUES (?,?,NULL,?,?,?)",
+            "INSERT INTO conversations (id,user_id,project_id,title,created_at,updated_at,product_scope) "
+            "VALUES (?,?,NULL,?,?,?,?)",
             cid, user_id, ("웹 XLSX 원본 승인: " + filename)[:80], now, now,
+            _require_product_scope(product_scope),
         )
         await self.record_claw_run(
             user_id=user_id, run_id=run_id, channel="web", action="xlsx_p01",
