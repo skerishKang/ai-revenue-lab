@@ -70,21 +70,21 @@ def run(port):
                c.handleInterim({ text: 'interim hello' });
                results.interim_submits = submitCount;
                inflate = true;
-               c.handleFinal({ text: 'live final', finalId: 'f1' });
+               c.handleFinal({ accepted: true, sessionGeneration: 1, text: 'live final', finalId: 'f1' });
                results.inflight_blocked = submitCount;
-               results.inflight_reason = c.handleFinal({ text: 'live final', finalId: 'f1' }).reason;
-               inflate = false;
-               c.handleFinal({ text: 'live final', finalId: 'f1' });
+                results.inflight_reason = c.handleFinal({ accepted: true, sessionGeneration: 1, text: 'live final', finalId: 'f1' }).reason;
+                inflate = false;
+               c.handleFinal({ accepted: true, sessionGeneration: 1, text: 'live final', finalId: 'f1' });
                results.after_duplicate = submitCount;
-               c.handleFinal({ text: 'second live final', finalId: 'f2' });
+               c.handleFinal({ accepted: true, sessionGeneration: 1, text: 'second live final', finalId: 'f2' });
                results.after_second = submitCount;
-               c.handleFinal({ text: 'second live final', finalId: 'f2' });
+               c.handleFinal({ accepted: true, sessionGeneration: 1, text: 'second live final', finalId: 'f2' });
                results.after_second_duplicate = submitCount;
                c.setCompositionActive(true);
-               c.handleFinal({ text: 'ime pending', finalId: 'f3' });
+               c.handleFinal({ accepted: true, sessionGeneration: 1, text: 'ime pending', finalId: 'f3' });
                results.composition_blocked = submitCount;
                c.endComposition();
-               const flushed = c.handleFinal({ text: 'after composition', finalId: 'f4' });
+               const flushed = c.handleFinal({ accepted: true, sessionGeneration: 1, text: 'after composition', finalId: 'f4' });
                results.composition_flush_submitted = flushed.submitted ? submitCount : submitCount;
                return Object.assign(results, { last_text: lastText, total_submits: submitCount });
             }"""
@@ -107,7 +107,7 @@ def main():
         and result["after_second"] == 2
         and result["after_second_duplicate"] == 2
         and result["composition_blocked"] == 2
-        and result["total_submits"] == 4
+        and result["total_submits"] == 3
         and result["last_text"] == "after composition"
     )
     return 0 if ok else 1

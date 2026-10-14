@@ -70,9 +70,9 @@ def run(port):
                const live = make('live');
                live.controller.handleInterim({ text: 'interim hello', finalId: 'live-interim' });
                const previewsBeforeFinal = live.previews.length;
-               live.controller.handleFinal({ text: 'live final', finalId: 'live-1' });
+               live.controller.handleFinal({ text: 'live final', finalId: 'live-1', accepted: true, sessionGeneration: 1 });
                const submitsAfterFirst = live.submitted();
-               live.controller.handleFinal({ text: 'live final', finalId: 'live-1' });
+               live.controller.handleFinal({ text: 'live final', finalId: 'live-1', accepted: true, sessionGeneration: 1 });
                const submitsAfterDuplicate = live.submitted();
 
                const inflight = make('live');

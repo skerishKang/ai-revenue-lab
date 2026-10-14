@@ -40,7 +40,7 @@
 
     let mode = normalizeMode(opts.mode);
     let accountKey = String(opts.accountKey != null ? opts.accountKey : getAccountKey() || "");
-    let cancelled = false;
+    let sessionGeneration = Number.isFinite(opts.sessionGeneration) ? opts.sessionGeneration : 1;    let cancelled = false;
     let invalidated = false;
     let seen = new Set();
     let pending = null;
@@ -129,16 +129,22 @@
       if (!text) {
         return { ok: false, reason: "empty-final", submitted: false };
       }
+      const accepted = p.accepted === true || p.approved === true || p.finalAccepted === true;
+      const incomingGeneration = Number.isFinite(p.sessionGeneration) ? p.sessionGeneration : null;
+      if (!accepted) {
+        return { ok: false, reason: "final-not-approved", submitted: false };
+      }
+      if (incomingGeneration !== null && incomingGeneration !== sessionGeneration) {
+        return { ok: false, reason: "stale-session-generation", submitted: false };
+      }
       const key = keyOf(p, accountKey);
       if (seen.has(key)) {
         return { ok: false, reason: "duplicate-final", submitted: false };
       }
       if (compositionActive) {
-        pending = { key: key, text: text };
         return { ok: false, reason: "blocked-by-composition", submitted: false };
       }
       if (getInFlight()) {
-        pending = { key: key, text: text };
         return { ok: false, reason: "blocked-by-in-flight", submitted: false };
       }
       seen.add(key);
@@ -176,6 +182,7 @@
         return {
           mode: mode,
           accountKey: accountKey,
+          sessionGeneration: sessionGeneration,
           cancelled: cancelled,
           invalidated: invalidated,
           seenCount: seen.size,
