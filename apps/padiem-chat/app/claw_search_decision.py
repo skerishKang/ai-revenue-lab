@@ -13,6 +13,30 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any
 
+def trusted_claw_search_activation(
+    *, flag: object, runtime_mode: str, adapter: Any, usage_gate: Any
+) -> bool:
+    """Bound #4469's Claw research to the existing live member/usage authority.
+
+    One admitted Claw turn already consumes the canonical product quota once.
+    Its optional judgement (<=256 tokens) + one bounded public evidence lookup
+    execute only inside that admitted turn. Missing canonical identity, Engine
+    judgement/research methods or a durable usage store means OFF. A browser
+    cannot provide these Worker-only inputs.
+    """
+    if flag != "true" or runtime_mode != "b14":
+        return False
+    if getattr(adapter, "subject_identity_lane", False) is not True:
+        return False
+    if getattr(usage_gate, "ready", False) is not True:
+        return False
+    client = getattr(getattr(adapter, "_runner", None), "_client", None)
+    return bool(
+        callable(getattr(client, "search_judgement", None))
+        and callable(getattr(client, "search_evidence", None))
+    )
+
+
 MAX_PUBLIC_SEARCH_QUERY_CHARS = 200
 MAX_JUDGEMENT_DIGEST_CHARS = 3_000
 CLAW_JUDGEMENT_AGENT_ID = "claw-public-search-judgement"
@@ -125,6 +149,7 @@ def verdict_from_model(raw: Any) -> ClawSearchVerdict:
 
 __all__ = [
     "CLAW_JUDGEMENT_AGENT_ID",
+    "trusted_claw_search_activation",
     "ClawSearchOutcome",
     "ClawSearchVerdict",
     "MAX_JUDGEMENT_DIGEST_CHARS",
