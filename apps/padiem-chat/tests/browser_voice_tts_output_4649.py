@@ -41,7 +41,8 @@ def run(port):
             """() => {
                const moduleType = typeof window.PadiemVoiceTTSOutput;
                const supported = moduleType === 'object';
-               const t = supported ? window.PadiemVoiceTTSOutput.create({ userGestureSeen: true, lang: 'ko-KR' }) : null;
+               const t = supported ? window.PadiemVoiceTTSOutput.create({ lang: 'ko-KR' }) : null;
+               if (t) t.start();
                const speaksWithoutGesture = supported
                  ? window.PadiemVoiceTTSOutput.create({ userGestureSeen: false }).speakText('hello') === false
                  : false;

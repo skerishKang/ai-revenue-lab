@@ -40,8 +40,9 @@
     let queue = [];
     let busy = false;
     let playGeneration = 0;
+    let userStartSeen = false;
     let preferredVoiceName = opts.voiceName || "";
-    let userGestureSeen = opts.userGestureSeen === true;
+
 
     function report(status) {
       onStatus({
@@ -50,7 +51,7 @@
         busy: busy,
         queue: queue.length,
         speaking: supported() ? global.speechSynthesis.speaking : false,
-        userGestureSatisfiedMode: userGestureSeen,
+        userStartSatisfied: userStartSeen,
         voiceName: preferredVoiceName || "(browser-selected)",
       });
     }
@@ -100,7 +101,7 @@
         report("unsupported");
         return false;
       }
-      if (!userGestureSeen) {
+      if (!userStartSeen) {
         report("needs-user-gesture");
         onError({ reason: "user-gesture-required", text: text });
         return false;
@@ -190,7 +191,7 @@
 
     function setUserGestureSeen(seen) {
       userGestureSeen = seen === true;
-      report("gesture-state");
+      report("start-state");
     }
 
     return {
@@ -198,8 +199,9 @@
       availableVoices: availableVoices,
       speakText: speakText,
       cancel: cancel,
-      setVoiceName: setVoiceName,
-      setUserGestureSeen: setUserGestureSeen,
+      start: function () { userStartSeen = true; report("started"); },
+      stopOutput: function () { userStartSeen = false; cancel(); },
+      setUserStartSeen: setUserGestureSeen,
       getState: function () {
         return {
           supported: supported(),
@@ -207,7 +209,7 @@
           busy: busy,
           queued: queue.length,
           lang: lang,
-          userGestureSatisfied: userGestureSeen,
+          userStartSatisfied: userStartSeen,
           voiceName: preferredVoiceName || "(browser-selected)",
         };
       },
