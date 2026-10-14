@@ -82,7 +82,14 @@ class Clock:
         return self.now
 
 
-def fixture(*, ack=True, termination="exited", exit_code=0):
+def ordered_fixture(*, ack=True, termination="exited", exit_code=0):
+    """The same canonical fixture, also exposing the session and the command.
+
+    The #4139 ordering tests have to drive the device's publish order — intent
+    before ACK, then the body — so they need the session the ACK is issued from
+    and the command identity the correlation is read back from.
+    """
+
     state, authority, _, service = _service_fixture()
     session = authority.open_session(
         session_id="session.text.4139", binding_ref="binding.http.1",
@@ -116,7 +123,17 @@ def fixture(*, ack=True, termination="exited", exit_code=0):
         authority_ref=AUTHORITY_REF, clock=clock,
     )
     service._text_results = store
-    return authority, service, store, clock
+    return SimpleNamespace(
+        authority=authority, service=service, store=store, clock=clock,
+        session=session, command=command,
+        account_ref="account.http.1", workspace_ref="workspace.http.1",
+        binding_ref="binding.http.1",
+    )
+
+
+def fixture(*, ack=True, termination="exited", exit_code=0):
+    built = ordered_fixture(ack=ack, termination=termination, exit_code=exit_code)
+    return built.authority, built.service, built.store, built.clock
 
 
 def stage(service, *, state="content", text=KOREAN_TEXT, digest=None, byte_count=None,
@@ -169,6 +186,74 @@ def test_a_declared_read_answers_the_pending_shape_before_the_body_arrives():
     assert frozenset(answer) == {"ok", "available", "kind"}
 
 
+def test_the_intent_marker_is_accepted_before_the_ack():
+    """#4139 race: the marker must be readable before the ACK becomes projectable.
+
+    Claw projects the successful terminal as soon as it is visible and derives
+    the message id from the command, so a bodyless terminal-only message would
+    consume that id. The device therefore declares its file-read intent while
+    the command is only ADMITTED, and the private reader must already answer the
+    pending shape then.
+    """
+
+    built = ordered_fixture(ack=False)
+    response = stage(built.service, state="pending")
+    assert response["status"] == 200
+    assert response["body"]["text_result"] == {
+        "stored": True, "reused": False, "state": "pending", "content_present": False,
+    }
+    answer = rpc(built.store)
+    assert answer == {"ok": True, "available": False, "kind": "file_read_text"}
+    assert frozenset(answer) == {"ok", "available", "kind"}
+    # Only the intent exists: no body was fabricated from the marker.
+    assert stored_rows(built.store) == 1
+
+
+def test_the_body_still_requires_the_successful_ack_after_the_intent():
+    """The intent grants nothing: content keeps the strict success gate."""
+
+    built = ordered_fixture(ack=False)
+    assert stage(built.service, state="pending")["status"] == 200
+    assert stage(built.service)["status"] == 409
+    assert rpc(built.store) == {"ok": True, "available": False, "kind": "file_read_text"}
+    built.authority.acknowledge(
+        session_id=built.session.session_id, binding_ref=built.binding_ref,
+        credential=CREDENTIAL, command_id=built.command.command_id,
+        admission_ref="admission.text.4139", evidence_ref="evidence.text.4139",
+        revision_ref=built.command.revision_ref, termination="exited",
+        request_id="request.text.4139", exit_code=0,
+        now=BASE + timedelta(seconds=4),
+    )
+    assert rpc(built.store) == {"ok": True, "available": False, "kind": "file_read_text"}
+    assert stage(built.service)["status"] == 200
+    answer = rpc(built.store)
+    assert answer["available"] is True and answer["content_utf8"] == KOREAN_TEXT
+
+
+def test_an_intent_registered_after_the_ack_still_holds_the_message_id():
+    """A late-but-honest device order must not lose the body either."""
+
+    built = ordered_fixture()
+    assert stage(built.service, state="pending")["status"] == 200
+    assert rpc(built.store)["kind"] == "file_read_text"
+    assert stage(built.service)["status"] == 200
+    assert rpc(built.store)["content_utf8"] == KOREAN_TEXT
+
+
+def test_a_task_type_the_broker_cannot_confirm_is_refused_not_reported_as_other():
+    """No row is a question, not an answer: refusal, never a fabricated ``other``.
+
+    Only a command with a durable terminal fact may be served the generic shape.
+    An admitted-but-not-terminal command could still turn out to be a file read,
+    so it is refused instead of being reported as an ordinary command.
+    """
+
+    admitted_only = ordered_fixture(ack=False)
+    refusal = {"ok": False, "error": {"code": "verified_file_text_unavailable"}}
+    assert rpc(admitted_only.store) == refusal
+    assert stored_rows(admitted_only.store) == 0
+
+
 def test_a_staged_body_answers_exactly_the_consumer_receipt():
     _, service, store, _ = fixture()
     assert stage(service)["status"] == 200
@@ -215,12 +300,20 @@ def test_an_unknown_command_or_run_is_refused():
 
 
 def test_a_foreign_scope_cannot_read_a_staged_result():
+    """A foreign scope is refused, never answered with the generic shape.
+
+    The generic ``other`` answer now requires canonical evidence for this exact
+    device scope, so a caller that names another account, workspace, run or
+    command cannot obtain even the negative answer for it.
+    """
+
     _, service, store, _ = fixture()
     assert stage(service)["status"] == 200
-    assert rpc(store, account_ref="account.other.1") == {"ok": True, "available": False, "kind": "other"}
-    assert rpc(store, workspace_ref="workspace.other.1") == {"ok": True, "available": False, "kind": "other"}
-    assert rpc(store, run_id="run.other.4139") == {"ok": True, "available": False, "kind": "other"}
-    assert rpc(store, command_id="command.other.4139") == {"ok": True, "available": False, "kind": "other"}
+    refusal = {"ok": False, "error": {"code": "verified_file_text_unavailable"}}
+    assert rpc(store, account_ref="account.other.1") == refusal
+    assert rpc(store, workspace_ref="workspace.other.1") == refusal
+    assert rpc(store, run_id="run.other.4139") == refusal
+    assert rpc(store, command_id="command.other.4139") == refusal
 
 
 def test_oversize_control_and_inconsistent_bodies_are_refused():
