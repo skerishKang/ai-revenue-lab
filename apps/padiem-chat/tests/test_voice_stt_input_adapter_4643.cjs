@@ -105,18 +105,65 @@ test("duplicate utteranceId only dropped, not different-id repeat", () => {
   assert.deepEqual(finals, ["same words"]);
   assert.equal(a.getAcceptedCount(), 1);
 });
-test("missing-id commit only accepted once per text (conservative)", () => {
+test("ambiguous final without utterance id cannot bypass turn boundary", () => {
   const finals = [];
-  const a = adapter.createVoiceInputAdapter({
-    generation: 1, sessionToken: "sess-A",
-    onFinalCandidate: (t) => finals.push(t),
-  });
+  const a = adapter.createVoiceInputAdapter({ onFinalCandidate: (t) => finals.push(t) });
   a.start();
-  a.commitFinal({ text: "same words" });
-  const dup = a.commitFinal({ text: "  SAME   WORDS " });
-  assert.equal(dup.ok, false);
-  assert.equal(dup.reason, "duplicate-text-no-id");
-  assert.deepEqual(finals, ["same words"]);
+  const rejected = a.commitFinal({ text: "네" });
+  assert.equal(rejected.ok, false);
+  assert.equal(rejected.reason, "missing-utterance-id");
+  assert.deepEqual(finals, []);
+});
+
+test("idless buffered turns can legitimately repeat identical speech", () => {
+  const finals = [];
+  const a = adapter.createVoiceInputAdapter({ onFinalCandidate: (t) => finals.push(t) });
+  a.start();
+  a.feedInterim("네");
+  assert.equal(a.commitFinal({}).ok, true);
+  assert.equal(a.commitFinal({}).ok, false);
+  a.feedInterim("네");
+  assert.equal(a.commitFinal({}).ok, true);
+  assert.deepEqual(finals, ["네", "네"]);
+});
+
+test("late duplicate final cannot flush a newer turn buffer", () => {
+  const finals = [];
+  const a = adapter.createVoiceInputAdapter({ onFinalCandidate: (t) => finals.push(t) });
+  a.start();
+  a.feedInterim("first");
+  assert.equal(a.commitFinal({ utteranceId: "u1" }).ok, true);
+  a.feedInterim("next");
+  const duplicate = a.commitFinal({ text: "first", utteranceId: "u1" });
+  assert.equal(duplicate.reason, "duplicate-utterance");
+  const next = a.commitFinal({ utteranceId: "u2" });
+  assert.equal(next.ok, true);
+  assert.deepEqual(finals, ["first", "next"]);
+});
+
+test("context-marked destroyed final cannot modify a live input", () => {
+  const input = makeInput();
+  const a = adapter.createVoiceInputAdapter({ input });
+  a.start();
+  const result = a.commitFinal({ text: "stale", utteranceId: "u1", destroyed: true });
+  assert.equal(result.ok, false);
+  assert.equal(result.reason, "invalidated");
+  assert.equal(input.value, "");
+});
+
+test("stopped adapter late events cannot reach a newly started adapter input", () => {
+  const input = makeInput();
+  const oldRun = adapter.createVoiceInputAdapter({ input, generation: 1, sessionToken: "A" });
+  assert.equal(oldRun.start(), true);
+  oldRun.stop();
+  const newRun = adapter.createVoiceInputAdapter({ input, generation: 2, sessionToken: "B" });
+  assert.equal(newRun.start(), true);
+  assert.equal(oldRun.feedInterim("old", { generation: 1, sessionToken: "A" }).ok, false);
+  assert.equal(oldRun.commitFinal({ text: "old", utteranceId: "old", generation: 1, sessionToken: "A" }).ok, false);
+  assert.equal(oldRun.appendToInput("old"), null);
+  newRun.feedInterim("new", { generation: 2, sessionToken: "B" });
+  assert.equal(newRun.commitFinal({ utteranceId: "u2", generation: 2, sessionToken: "B" }).ok, true);
+  assert.equal(input.value, "new");
 });
 
 test("turn buffer commits once even if called twice", () => {
