@@ -350,6 +350,7 @@ def create_app(
     claw_local_connect_port=None,
     claw_office_chooser_source=None,
     local_task_result_source=None,
+    connector_txt_read_source=None,
     desktop_device_session_authority=None,
     auth_abuse_store: AuthAbuseStore | None = None,
     connector_owner_enrollment=None,
@@ -634,7 +635,14 @@ def create_app(
     # Identity+Broker ports. The default public app has no such route.
     if connector_owner_enrollment is not None:
         from .connector_owner_runtime_mount import reviewed_owner_enrollment_routes
+        from .connector_txt_read_routes import (
+            CONNECTOR_TXT_READ_REQUEST_PATH,
+            connector_txt_read_request,
+        )
         routes[-1:-1] = list(reviewed_owner_enrollment_routes(connector_owner_enrollment))
+        routes[-1:-1] = [
+            Route(CONNECTOR_TXT_READ_REQUEST_PATH, connector_txt_read_request, methods=["POST"]),
+        ]
     app = Starlette(routes=routes)
     # #3476: added before telemetry deliberately — Starlette prepends each
     # middleware, so the later-added telemetry layer stays outermost and keeps
@@ -884,6 +892,15 @@ def create_app(
     # result. None keeps the route fail-closed until the Worker root composes
     # the concrete source from the trusted broker binding.
     app.state.local_task_result_source = local_task_result_source
+    # #4139 TXT read request leg: owner-confirmed read intake that mints real
+    # approval material and enqueues through the same trusted broker binding.
+    # None keeps the route fail-closed until the Worker root composes it.
+    from .connector_txt_read_routes import UnconfiguredTxtReadSource
+    app.state.connector_txt_read_source = (
+        connector_txt_read_source
+        if connector_txt_read_source is not None
+        else UnconfiguredTxtReadSource()
+    )
     # Office chooser is fail-closed until the real trusted Engine/Resident
     # operator supplies an owner-bound, pre-approved candidate/approval source.
     app.state.claw_office_chooser_source = claw_office_chooser_source

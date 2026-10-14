@@ -22,10 +22,9 @@ from app.connector_txt_approval_material import (  # noqa: E402
     TXT_READ_APPROVAL_AUTHORITY_REF,
     TXT_READ_LOCAL_POLICY_REF,
     TXT_READ_RECEIPT_FORMAT,
+    OwnerTxtApprovalProof,
     TxtApprovalMaterialError,
     command_material_fingerprint_for,
-    file_request_fingerprint_for,
-    file_tool_invocation_arguments,
     mint_txt_read_receipt,
     normalize_txt_relative_path,
 )
@@ -33,12 +32,30 @@ from app.connector_txt_approval_material import (  # noqa: E402
 NOW = datetime(2026, 10, 15, 5, 0, 0, tzinfo=timezone.utc)
 
 
-def _mint(**overrides):
+def _proof(**overrides):
     args = {
         "owner_id": "owner-1",
         "workspace_id": "workspace-1",
         "device_id": "device-1",
         "binding_ref": "binding-1",
+        "credential_generation": 1,
+        "consent_id": "consent-1",
+        "run_id": "run-conversation-1",
+    }
+    args.update(overrides)
+    return OwnerTxtApprovalProof(**args)
+
+
+def _mint(**overrides):
+    proof = overrides.pop("approval", None)
+    if proof is None:
+        proof_args = {k: overrides.pop(k) for k in (
+            "owner_id", "workspace_id", "device_id", "binding_ref",
+            "credential_generation", "consent_id", "run_id",
+        ) if k in overrides}
+        proof = _proof(**proof_args)
+    args = {
+        "approval": proof,
         "root_ref": "root.docs",
         "path_relative": r"notes\report.txt",
         "now": NOW,
@@ -98,49 +115,35 @@ def test_mint_produces_closed_receipt_with_exact_constants():
     assert len(json.dumps(wire).encode("utf-8")) < 196_608
 
 
-def test_digest_ports_match_resident_canonical_algorithms():
-    from kagent.windows_local_filesystem import (
-        LocalFileOperation,
-        LocalFileRequest,
-        file_request_fingerprint,
-        windows_file_tool_invocation,
-    )
+def test_digest_port_matches_resident_canonical_algorithm():
+    from kagent.local_agent import LocalCommandRequest
     from kagent.windows_local_executor import command_request_fingerprint
-    from padiem_ai_core.agent_approval import tool_invocation_digest
 
-    req = LocalFileRequest(
-        action_id="txtact-1", run_id="run-1", device_id="device-1",
-        root_ref="root.docs", operation=LocalFileOperation.READ,
-        path_relative=r"notes\report.txt", requested_at=NOW,
-    )
-    assert file_request_fingerprint(req) == file_request_fingerprint_for(
-        action_id="txtact-1", run_id="run-1", device_id="device-1",
-        root_ref="root.docs", path_relative=r"notes\report.txt",
-        requested_at=NOW,
-    )
-    invocation = windows_file_tool_invocation(req)
-    assert tool_invocation_digest(invocation) == tool_invocation_digest(
-        __import__("padiem_ai_core.tool_runtime", fromlist=["ToolInvocation"]).ToolInvocation(
-            tool_id="local.filesystem.read",
-            arguments=file_tool_invocation_arguments(
-                action_id="txtact-1", run_id="run-1", device_id="device-1",
-                root_ref="root.docs", path_relative=r"notes\report.txt",
-                requested_at=NOW,
-                request_fingerprint=file_request_fingerprint(req),
-            ),
-        )
-    )
     material_fp = command_material_fingerprint_for(
-        request_id="req-1", run_id="run-1", device_id="device-1",
+        request_id="req-1", run_id="run-conversation-1", device_id="device-1",
         root_ref="root.docs", argv=["python", "-V"], cwd_relative=".",
         requested_at=NOW, timeout_seconds=30,
     )
-    from kagent.local_agent import LocalCommandRequest
     assert material_fp == command_request_fingerprint(LocalCommandRequest(
-        request_id="req-1", run_id="run-1", device_id="device-1",
+        request_id="req-1", run_id="run-conversation-1", device_id="device-1",
         root_ref="root.docs", argv=("python", "-V"), cwd_relative=".",
         requested_at=NOW, timeout_seconds=30,
     ))
+
+
+def test_proof_contract_rejects_unverified_caller_material():
+    with pytest.raises(TxtApprovalMaterialError):
+        mint_txt_read_receipt(
+            approval="not-a-proof", root_ref="root.docs",
+            path_relative=r"notes\report.txt", now=NOW,
+        )
+    with pytest.raises(TxtApprovalMaterialError):
+        _proof(credential_generation=0)
+    with pytest.raises(TxtApprovalMaterialError):
+        _proof(device_id="has space")
+    # run_id must be identifier-clean: a detached free-form mint is refused.
+    with pytest.raises(TxtApprovalMaterialError):
+        _proof(run_id="has space")
 
 
 def test_bilateral_policy_constant_matches_resident_factory():

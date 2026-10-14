@@ -18,6 +18,7 @@ sys.path.insert(0, str(REPO_ROOT / "apps" / "padiem-chat"))
 
 from app.connector_txt_approval_material import (  # noqa: E402
     TXT_READ_LOCAL_POLICY_REF,
+    OwnerTxtApprovalProof,
     mint_txt_read_receipt,
 )
 
@@ -49,18 +50,31 @@ def _binding():
     )
 
 
-def _issued():
+def _issued(**overrides):
+    proof_args = {
+        "owner_id": "owner-1",
+        "workspace_id": "ws-1",
+        "device_id": "device-1",
+        "binding_ref": "binding-1",
+        "credential_generation": 1,
+        "consent_id": "consent-1",
+        "run_id": "run-conversation-1",
+    }
+    proof_args.update(overrides.pop("proof", {}))
+    path_relative = overrides.pop("path_relative", r"notes\report.txt")
     return mint_txt_read_receipt(
-        owner_id="owner-1", workspace_id="ws-1", device_id="device-1",
-        binding_ref="binding-1", root_ref="root.docs",
-        path_relative=r"notes\report.txt", now=NOW,
+        approval=OwnerTxtApprovalProof(**proof_args),
+        root_ref="root.docs",
+        path_relative=path_relative,
+        now=NOW,
+        **overrides,
     )
 
 
 def _command(issued):
     return DeviceCommandEnvelope(
         command_id=issued["receipt"]["command_id"],
-        run_id=issued["material"]["run_id"],
+        run_id="run-conversation-1",
         tool_request_ref=issued["tool_request_ref"],
         binding_ref="binding-1", sequence=1, issued_at=NOW,
         expires_at=NOW + timedelta(minutes=5), revision_ref="revision-1",
@@ -109,11 +123,7 @@ def test_issuance_receipt_yields_correlated_plan():
 
 def test_receipt_for_another_command_is_refused_not_repurposed():
     issued = _issued()
-    other = mint_txt_read_receipt(
-        owner_id="owner-1", workspace_id="ws-1", device_id="device-1",
-        binding_ref="binding-1", root_ref="root.docs",
-        path_relative=r"notes\other.txt", now=NOW,
-    )
+    other = _issued(path_relative=r"notes\other.txt")
     source = make_verified_text_plan_source()
     with pytest.raises(ContractError):
         source.approved_plan_for_admitted_command(

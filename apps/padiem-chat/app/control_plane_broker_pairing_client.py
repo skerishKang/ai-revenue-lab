@@ -364,6 +364,87 @@ class CloudflareCanonicalBrokerPairingClient:
         # final tightly-scoped projection.
         return {"available": True, "devices": result["devices"]}
 
+    async def owner_device_binding(
+        self, *, account_ref: str, workspace_ref: str, device_id: str,
+    ) -> dict[str, Any]:
+        """Resolve one owner's device to its canonical enrollment binding.
+
+        Reads the existing owner-scoped device directory: the account and
+        workspace MUST originate from canonical Identity consent, and the
+        device must match exactly one entry. Revoked or credential-expired
+        bindings are refused — they can never receive a TXT command.
+        """
+        result = await self._invoke("device_directory", {
+            "account_ref": _safe_ref(account_ref, "account_ref"),
+            "workspace_ref": _safe_ref(workspace_ref, "workspace_ref"),
+        })
+        if result.get("available") is False:
+            raise IdentityBridgeError(404, "txt_device_unbound", "No bound device for this owner.")
+        if (
+            result.get("available") is not True
+            or result.get("owner_scoped") is not True
+            or not isinstance(result.get("devices"), list)
+        ):
+            raise IdentityBridgeError(503, "broker_rpc_invalid", "Canonical directory response is invalid.")
+        matches = [
+            entry for entry in result["devices"]
+            if isinstance(entry, dict)
+            and isinstance(entry.get("binding"), dict)
+            and entry["binding"].get("device_id") == device_id
+            and entry["binding"].get("account_ref") == account_ref
+            and entry["binding"].get("workspace_ref") == workspace_ref
+        ]
+        if len(matches) != 1:
+            raise IdentityBridgeError(404, "txt_device_unbound", "No bound device for this owner.")
+        facts = matches[0]
+        if facts.get("canonical_state") in ("revoked", "credential_expired"):
+            raise IdentityBridgeError(403, "txt_device_not_usable", "Device binding is not usable.")
+        binding = facts.get("binding")
+        binding_ref = binding.get("binding_ref")
+        generation = binding.get("credential_generation")
+        if (
+            not isinstance(binding_ref, str) or not binding_ref
+            or isinstance(generation, bool) or not isinstance(generation, int)
+            or generation < 1
+        ):
+            raise IdentityBridgeError(503, "broker_rpc_invalid", "Canonical binding identity is invalid.")
+        return {
+            "binding_ref": binding_ref,
+            "device_id": device_id,
+            "credential_generation": generation,
+        }
+
+    async def enqueue_txt_read_command(
+        self, *, command: dict[str, Any], material: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Enqueue one TXT read command with its approval material, atomically.
+
+        Calls the existing ``enqueue_command_with_material`` Service Binding
+        RPC with two positional arguments (the DO method takes
+        ``(payload, material)``). Only the closed shapes built by the TXT
+        issuance module are accepted; anything else fails closed here before
+        any Broker state is touched.
+        """
+        if not isinstance(command, dict) or not isinstance(material, dict):
+            raise IdentityBridgeError(503, "broker_rpc_invalid", "TXT command shape is invalid.")
+        for key in ("command_id", "binding_ref", "run_id", "tool_request_ref",
+                    "request_fingerprint"):
+            if not isinstance(command.get(key), str) or not command[key]:
+                raise IdentityBridgeError(503, "broker_rpc_invalid", "TXT command identity is invalid.")
+        method = getattr(self._binding, "enqueue_command_with_material", None)
+        if not callable(method):
+            raise IdentityBridgeError(503, "canonical_broker_unavailable", "Canonical Broker service is unavailable.")
+        try:
+            result = _dict(await _await(method(command, material)))
+        except Exception as exc:
+            raise IdentityBridgeError(503, "canonical_broker_unavailable", "Canonical Broker service is unavailable.") from exc
+        if result is None or result.get("ok") is not True:
+            raise IdentityBridgeError(409, "txt_command_refused", "Canonical Broker refused the TXT command.")
+        returned = _dict(result.get("command"))
+        if returned is None or returned.get("command_id") != command["command_id"]:
+            raise IdentityBridgeError(503, "broker_rpc_invalid", "Canonical Broker command receipt is invalid.")
+        return {"command_id": command["command_id"], "run_id": command["run_id"]}
+
     async def revoke_binding(self, *, binding_ref: str) -> dict[str, Any]:
         """Compensate a failed secure credential handoff through the same Broker."""
         binding_ref = _safe_ref(binding_ref, "binding_ref")

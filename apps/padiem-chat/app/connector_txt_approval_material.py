@@ -6,13 +6,16 @@ canonical Engine approval objects (pause + verified decision, USER_CONFIRMATION
 over the exact ``local.filesystem.read`` invocation) and a closed receipt
 envelope that travels inside the Broker command material's
 ``padiem_ai_core.agent_approval`` is authoritative for the Engine approval
-model; the invocation digest is computed with its shared implementation, never
-a copy. The two remaining projections below are exact ports of the
-Resident-side canonical algorithms
-(``kagent.windows_local_filesystem.file_request_fingerprint`` and the
-``windows_file_tool_invocation`` argument map). A pinned cross-implementation
-test keeps them bit-identical; the Resident recomputes both digests and
-refuses any mismatch, so drift can never become a grant.
+model, and the file intent math (path normalization, file fingerprint, tool
+invocation map) is imported from ``kagent.windows_local_filesystem`` itself —
+the worker bundles that package, and those modules are pure stdlib plus
+``padiem_ai_core``. No digest or normalization logic is copied: the Resident
+recomputes both digests and refuses any mismatch, so drift can never become
+a grant. The one remaining projection below
+(``command_material_fingerprint_for``) mirrors
+``kagent.windows_local_executor.command_request_fingerprint`` because that
+module pulls a Windows-only job-object import the worker bundle cannot load;
+a pinned cross-implementation test keeps it bit-identical.
 
 The receipt is bound to one command: ``command_id``/``run_id``/``device_id``
 are minted here and must be used for the atomic
@@ -21,6 +24,13 @@ argv execution (``["python", "-V"]``) is a correlation vehicle only: it must
 exit 0 for the lane to proceed, but its stdout is never trusted as TXT content
 (the lane reads the approved file itself). It requires a ``python`` executable
 under one of the PC's allowlisted executable profiles.
+
+Engine library vs Engine service: this module uses the Engine *shared library*
+only (``padiem_ai_core.agent_approval`` object model, ``tool_runtime``
+invocation + digests, plus kagent's own file-intent math). It makes NO Engine
+service call (no continuation decide, no new Engine behavior or deploy): the
+owner's explicit per-read confirmation described above is the approval act,
+formalized here into canonical objects the Resident re-verifies.
 
 Bilateral constants (must match the Resident factory and the Broker validator
 verbatim; pinned by contract tests, never renamed silently):
@@ -35,10 +45,17 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from pathlib import PureWindowsPath
 from typing import Any
 from uuid import uuid4
+
+from kagent.windows_local_filesystem import (
+    LocalFileOperation,
+    LocalFileRequest,
+    file_request_fingerprint,
+    windows_file_tool_invocation,
+)
 
 TXT_READ_RECEIPT_FORMAT = "claw-txt-read-approval.v1"
 TXT_READ_APPROVAL_AUTHORITY_REF = "claw_connector_txt_request_v1"
@@ -92,99 +109,72 @@ def _aware(value: Any, field_name: str) -> datetime:
 
 
 def normalize_txt_relative_path(value: Any) -> str:
-    """Exact port of the Resident-side relative Windows path rule.
+    """Normalize an owner-named path with the canonical Resident rule itself.
 
-    Pinned bit-identical by cross-implementation tests; the Resident
-    re-normalizes and refuses any divergence.
+    Imported, never copied: the Resident re-normalizes on receipt and refuses
+    any divergence, so issuance and Resident must agree bit-for-bit (pinned by
+    cross-implementation tests). The TXT lane suffix is enforced separately by
+    the minter, mirroring the plan source.
     """
-    if not isinstance(value, str) or not value.strip() or len(value) > _MAX_RELATIVE_PATH_CHARS:
-        raise TxtApprovalMaterialError("path_relative must be a bounded relative Windows file path")
-    raw = value.strip().replace("/", "\\")
-    path = PureWindowsPath(raw)
-    if path.is_absolute() or path.drive:
-        raise TxtApprovalMaterialError("path_relative must remain inside the selected root")
-    if any(part == ".." for part in path.parts):
-        raise TxtApprovalMaterialError("path_relative traversal is not allowed")
-    normalized_parts = tuple(part for part in path.parts if part not in {".", ""})
-    if not normalized_parts:
-        raise TxtApprovalMaterialError("path_relative must name a file")
-    normalized = PureWindowsPath(*normalized_parts)
-    if normalized.name in {"", ".", ".."}:
-        raise TxtApprovalMaterialError("path_relative must name a file")
-    return str(normalized)
+    from kagent.windows_local_filesystem import _relative_file_path as resident_normalize
 
-
-def file_request_fingerprint_for(
-    *,
-    action_id: str,
-    run_id: str,
-    device_id: str,
-    root_ref: str,
-    path_relative: str,
-    requested_at: datetime,
-) -> str:
-    """Exact port of the Resident-side file request fingerprint.
-
-    ``requested_at`` must carry +00:00 (``datetime.isoformat()`` raw form);
-    the wire may render the Z form, but the digest input is the raw form.
-    """
-    payload = {
-        "action_id": action_id,
-        "run_id": run_id,
-        "device_id": device_id,
-        "root_ref": root_ref,
-        "operation": "read",
-        "path_relative": path_relative,
-        "requested_at": requested_at.isoformat(),
-        "content_bytes": 0,
-        "content_sha256": None,
-    }
-    encoded = json.dumps(payload, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
-    return hashlib.sha256(encoded).hexdigest()
-
-
-def file_tool_invocation_arguments(
-    *,
-    action_id: str,
-    run_id: str,
-    device_id: str,
-    root_ref: str,
-    path_relative: str,
-    requested_at: datetime,
-    request_fingerprint: str,
-) -> dict[str, Any]:
-    """Exact port of the Resident-side file tool invocation argument map."""
-    return {
-        "action_id": action_id,
-        "run_id": run_id,
-        "device_id": device_id,
-        "root_ref": root_ref,
-        "operation": "read",
-        "path_relative": path_relative,
-        "requested_at": requested_at.isoformat(),
-        "request_fingerprint": request_fingerprint,
-        "content_bytes": 0,
-        "content_sha256": None,
-        "directory_enumeration": False,
-        "recursive_delete": False,
-        "admin_elevation": False,
-    }
+    try:
+        return resident_normalize(value)
+    except Exception as exc:
+        raise TxtApprovalMaterialError("path_relative must be a bounded relative Windows file path") from exc
 
 
 def _mint_id(prefix: str) -> str:
     return f"{prefix}-{uuid4().hex[:24]}"
 
 
+@dataclass(frozen=True, slots=True)
+class OwnerTxtApprovalProof:
+    """The trigger's attestation that the owner approval act was verified.
+
+    Constructed ONLY by the authenticated owner-session trigger from server
+    authorities (verified B54 session, memory workspace, Broker enrollment
+    binding, active Identity consent, stored conversation run) — never from
+    browser-supplied authority. The minter re-validates every field and the
+    cross-field coherence; a forged or partial proof fails closed here, and
+    the Resident re-verifies the minted receipt independently.
+    """
+
+    owner_id: str
+    workspace_id: str
+    device_id: str
+    binding_ref: str
+    credential_generation: int
+    consent_id: str
+    run_id: str
+
+    def __post_init__(self) -> None:
+        for field_name in (
+            "owner_id", "workspace_id", "device_id", "binding_ref", "consent_id",
+        ):
+            value = getattr(self, field_name)
+            if (
+                type(value) is not str
+                or not value
+                or len(value) > _MAX_REF_CHARS
+                or any(character.isspace() for character in value)
+            ):
+                raise TxtApprovalMaterialError(f"approval proof {field_name} invalid")
+        if (
+            isinstance(self.credential_generation, bool)
+            or not isinstance(self.credential_generation, int)
+            or self.credential_generation < 1
+        ):
+            raise TxtApprovalMaterialError("approval proof credential_generation invalid")
+        _identifier(self.run_id, "approval proof run_id")
+
+
 def mint_txt_read_receipt(
     *,
-    owner_id: str,
-    workspace_id: str,
-    device_id: str,
-    binding_ref: str,
+    approval: OwnerTxtApprovalProof,
     root_ref: str,
     path_relative: str,
     command_id: str | None = None,
-    run_id: str | None = None,
     request_id: str | None = None,
     action_id: str | None = None,
     tool_request_ref: str | None = None,
@@ -192,39 +182,41 @@ def mint_txt_read_receipt(
 ) -> dict[str, Any]:
     """Mint the closed TXT approval receipt for one owner-named read.
 
-    The caller must be the authenticated owner session path: ``owner_id`` /
-    ``workspace_id`` / ``device_id`` / ``binding_ref`` come from the verified
-    session + enrollment binding, never from browser-supplied authority. The
-    returned envelope is JSON-safe and fits the Broker material wire bound.
-    It authorizes exactly one command; reuse across commands is refused by
-    correlation checks on the Resident.
+    ``approval`` must be the trigger-built proof above; ``run_id`` inside it
+    must be the existing stored conversation run this read belongs to — never
+    a detached mint. The returned envelope is JSON-safe and fits the Broker
+    material wire bound. It authorizes exactly one command; reuse across
+    commands is refused by correlation checks on the Resident.
     """
-    _ref(owner_id, "owner_id")
-    _ref(workspace_id, "workspace_id")
-    _ref(device_id, "device_id")
-    _ref(binding_ref, "binding_ref")
+    if not isinstance(approval, OwnerTxtApprovalProof):
+        raise TxtApprovalMaterialError("TXT approval requires a verified owner approval proof")
+    owner_id = approval.owner_id
+    workspace_id = approval.workspace_id
+    device_id = approval.device_id
+    binding_ref = approval.binding_ref
+    run_id = approval.run_id
     _ref(root_ref, "root_ref")
     moment = _aware(now if now is not None else datetime.now(timezone.utc), "now").replace(microsecond=0)
     if moment.tzinfo is not timezone.utc:
         moment = moment.astimezone(timezone.utc)
-    normalized_path = normalize_txt_relative_path(path_relative)
-    if not normalized_path.lower().endswith(TXT_READ_SUFFIX):
-        raise TxtApprovalMaterialError("only exact TXT selected file can be read")
     command_id = _identifier(command_id or _mint_id("txtcmd"), "command_id")
-    run_id = _identifier(run_id or _mint_id("txtrun"), "run_id")
     request_id = _ref(request_id or _mint_id("txtreq"), "request_id")
     action_id = _ref(action_id or _mint_id("txtact"), "action_id")
     tool_request_ref = _ref(tool_request_ref or _mint_id("txttool"), "tool_request_ref")
 
-    fingerprint = file_request_fingerprint_for(
-        action_id=action_id, run_id=run_id, device_id=device_id,
-        root_ref=root_ref, path_relative=normalized_path, requested_at=moment,
-    )
-    arguments = file_tool_invocation_arguments(
-        action_id=action_id, run_id=run_id, device_id=device_id,
-        root_ref=root_ref, path_relative=normalized_path, requested_at=moment,
-        request_fingerprint=fingerprint,
-    )
+    try:
+        file_request = LocalFileRequest(
+            action_id=action_id, run_id=run_id, device_id=device_id,
+            root_ref=root_ref, operation=LocalFileOperation.READ,
+            path_relative=path_relative, requested_at=moment,
+        )
+    except Exception as exc:
+        raise TxtApprovalMaterialError("TXT file intent is not a canonical read") from exc
+    if not file_request.path_relative.lower().endswith(TXT_READ_SUFFIX):
+        raise TxtApprovalMaterialError("only exact TXT selected file can be read")
+    fingerprint = file_request_fingerprint(file_request)
+    invocation = windows_file_tool_invocation(file_request)
+    arguments = invocation.arguments_copy()
     if set(arguments) != _EXACT_ARG_KEYS:
         raise TxtApprovalMaterialError("TXT invocation argument map drift")
 
@@ -233,9 +225,7 @@ def mint_txt_read_receipt(
         ApprovalRequirement,
         tool_invocation_digest,
     )
-    from padiem_ai_core.tool_runtime import ToolInvocation
 
-    invocation = ToolInvocation(tool_id=TXT_READ_TOOL_ID, arguments=dict(arguments))
     invocation_sha256 = tool_invocation_digest(invocation)
 
     created_at = moment
