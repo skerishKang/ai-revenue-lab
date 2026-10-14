@@ -4,6 +4,22 @@
 >
 > **단일 이슈:** [#4139 기술 구현](https://github.com/skerishKang/ai-revenue-lab/issues/4139), [#3099 Windows/Alpha 실기기 검증](https://github.com/skerishKang/ai-revenue-lab/issues/3099). [#3936 Claw Web/P01 SSE](https://github.com/skerishKang/ai-revenue-lab/issues/3936)는 다른 모델 작업이므로 침범하지 않는다.
 
+## 최신 실행 지시 — 2026-10-14 (이전 시험환경 절차보다 우선)
+
+**대표의 최우선 목표는 빠른 실제 연결 완료입니다. 제품 주소는 기존 `https://chat.padiem.net` 하나만 사용합니다.** 이 문서 아래의 별도 Cloudflare 시험 도메인·Worker·D1·임시 계정·새 환경 준비는 과거 진행 기록입니다. 새로운 선행작업이 아니며, `connector-acceptance.padiem.net`의 DNS를 개설하거나 시험 리소스를 재구축하느라 완료를 지연시키지 않습니다.
+
+- **CENTRAL:** 기존 Chat/Claw 로그인, Identity, Broker, Windows Connector 재사용. 운영 WebSocket HTTP 404 및 필요한 Broker 바인딩·기능 게이트를 최소 범위로 수정하고, 승인된 운영 반영 후 브라우저 → 명시적 PC 동의 → WSS → DPAPI ACK → 서버 실제 ON/OFF를 한 번에 검증합니다.
+- **LOCAL6:** [#4488](https://github.com/skerishKang/ai-revenue-lab/issues/4488) 카드 오른쪽 하단 ON/OFF UI만 담당. 컴퓨터·Google Drive·GitHub 3개 카드만 토글. 웹에서 하기는 토글 없음. 실제 서버 인증·연결 사실 없이 ON으로 전환 금지.
+- **재사용:** Windows 설치, 트레이, 브라우저 실행은 실제 PC에서 확인됐습니다. 과거 녹색 테스트와 내부 Cloudflare 리소스 조사는 다시 진행하지 않습니다. 최종 PC 수용 증거는 [#3099](https://github.com/skerishKang/ai-revenue-lab/issues/3099) 한 곳만 사용합니다.
+- **필수 안전 경계:** 기존 사용자 계정 및 기기별 권한 제한, 동의, 1회용 Broker 도전값, TLS/WSS, DPAPI, 철회·복구·롤백 및 B66 고객 계정 분리를 유지합니다. 실제 운영 Worker·서비스 바인딩·DB·공개 경로·기능 활성화는 정확한 변경 대상에 대한 승인과 검증 없이 실행하지 않습니다. **안전을 이유로 별도 테스트 환경을 만드는 것이 기본값은 아닙니다.**
+- **현재 상태:** Windows 앱 설치/트레이 정상, **계정-PC 연결 미완료**. 운영 `chat.padiem.net`의 Connector WSS HTTP 404와 Broker/릴리스 설정이 다음 해결 대상입니다. 테스트 도메인 미개설은 더 이상 이번 작업의 장애로 취급하지 않습니다.
+
+**이전 단계별 시험환경 구축 지시 및 오래된 SHA 상태 서술은 이 최신 방향으로 대체되며, 아래 본문은 과거 기록으로 보존합니다.**
+
+<!-- OWNER_4139_DIRECT_LIVE_PRIORITY_20261014 -->
+
+---
+
 ## 1. 확인된 실제 진행 상태
 
 | 대상 | 실측 또는 구현 상태 | 남은 검증 |

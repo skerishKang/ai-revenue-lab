@@ -10,6 +10,21 @@
 - Model/provider decision authority: `MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`
 - Dated B14 owner decision/evidence ledger: `B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md` (historical issue and implementation status; not a second approval gate)
 
+
+## 2026-10-14 OWNER directive ? #4139 direct-live delivery (overrides staging-first work)
+
+**Scope:** PADIEM Connector / PADIEM Chat+Claw #4139 and Windows acceptance #3099. The Product Owner prioritizes **finish the existing product connection quickly** over creating or maintaining more verification environments. This section supersedes older issue/handoff instructions that require a new dedicated staging DNS, Worker, D1, account, new review lane, or test infrastructure before continuing normal engineering.
+
+- **Target exactly the existing** `https://chat.padiem.net` and existing PADIEM Chat/Claw login and authorized Identity/Broker. Repair/configure the existing connector WSS ingress and route, then finish the web button -> consent -> Windows Connector -> Broker/DPAPI ACK -> real server ON/OFF journey.
+- **No new staging by default:** do not create `connector-acceptance.padiem.net`, another Worker, D1, standalone test website/account, replacement framework, or speculative environment as a prerequisite. Previously built isolated resources are historical evidence; do not keep troubleshooting their missing DNS to defer the live implementation. Explicit new owner direction would be needed to start a separate environment.
+- **Reuse verified evidence:** preserve and cite existing green exact-head CI, signed Windows installation/tray/protocol and source-level guards; run only checks affected by a new code/permission change and ONE real authenticated owner-PC acceptance path in #3099. No repeat regressions, no independent-reviewer creation without a specific unresolved risk.
+- **Safety is not staging:** no speculative Production mutations. Retain owner-scoped login/CSRF/consent, one-shot challenges, verified TLS/WSS, DPAPI, real Broker status, revoke/rollback and B66 customer separation. Do not enable an actual Production route, DNS, release flag, DB mutation or externally visible service without the operation's applicable owner approval. Make any such approval request name **the exact operation and the user impact**, not an entire new environment.
+- **Execution/accountability:** CENTRAL owns #4139 live connection; LOCAL6 owns #4488 ON/OFF card UI. Avoid duplicate UI/branch/reviewer. Report just the verified product status, **one concrete blocker and next fix**. Green mock/CI is not a connected customer PC.
+
+See [issue #4139](https://github.com/skerishKang/ai-revenue-lab/issues/4139) for the current work order. `FASTEST_EXISTING_PRODUCT_PATH=chat.padiem.net; NEW_TEST_ENV_REQUIRED=NO; REAL_OWNER_PC_E2E=PENDING`.
+
+<!-- OWNER_4139_DIRECT_LIVE_PRIORITY_20261014 -->
+
 ## 1. Purpose
 
 AI Revenue Lab separates product authority, design decisions, implementation, validation, CTO review, owner decisions, merge and Production so that fast AI-assisted work does not turn into repeated broad rework.

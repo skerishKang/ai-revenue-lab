@@ -5,6 +5,15 @@
 - Authority: Issue #326
 - Intent: `../portfolio/AI_REVENUE_LAB_OPERATING_INTENT.md`
 
+
+## 2026-10-14 #4139 existing-product direct route
+
+The Owner directs PADIEM Connector engineering to reuse the **existing Chat/Claw Production hostname and Worker**, `chat.padiem.net`, rather than invent an additional staging domain/Worker/D1. Previous Connector staging resources remain historical; they are **not mandatory launch dependencies**. Implement the smallest safe live route and canonical Identity/Broker handoff behind narrow owner/device controls, test existing code and one actual Windows connection, and use the approved deployment/rollback path.
+
+This section is **not permission to mutate Production automatically**. Material live Worker routing, service binding, DNS, flag, D1, exposure and merge decisions must still follow the relevant owner authorization and exact-head safety gate. No double deployment, unnecessary new environment or repeated owner approvals for the same already approved operation.
+
+<!-- OWNER_4139_DIRECT_LIVE_PRIORITY_20261014 -->
+
 ## 1. Purpose
 
 This policy keeps AI Revenue Lab deployment aligned with its operating intent: move validated product work into real operation quickly, verify it in the actual environment, and recover through reviewed source changes when a critical gate fails.
