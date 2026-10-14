@@ -106,7 +106,7 @@
   border-color: #b9c7d2;
   color: #fff;
   box-shadow: none;
-  cursor: not-allowed;
+  cursor: default;
 }
 #composerForm .send-button:focus-visible {
   outline: 3px solid #6a9abc;
@@ -133,4 +133,15 @@
 }
 @media (prefers-reduced-motion: reduce) {
   #voiceMicButton, #composerForm .send-button { transition: none; }
+}
+
+/* A disabled microphone route is still clickable: show an actionable notice
+ * only after an attempted click; idle and active statuses remain screen-reader-only.
+ */
+#composerForm .voice-status--notice {
+  display: block;
+  margin: 5px 8px 0;
+  color: #a04139;
+  font-size: 12px;
+  line-height: 1.5;
 }

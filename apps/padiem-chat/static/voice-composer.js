@@ -27,7 +27,7 @@
    * registerRecognizerFactory() call from the product wiring stage -- the
    * layer that owns server-granted voice authority and any transport. While
    * no factory is registered, or while no signed-in session exists, the mic
-   * stays disabled and this module performs no request of any kind.
+   * stays click-ready, but refuses any speech request until authorized.
    *
    * Enforced product rules:
    * - Only an authoritative FINAL transcript reaches the existing editable
@@ -113,6 +113,7 @@
     let observer = null;
     let destroyed = false;
     let mounted = false;
+    let noticeVisible = false;
 
     const state = {
       authenticated: false,
@@ -177,8 +178,10 @@
       const button = nodes.button;
       const ready = isReady();
       const active = isActiveRun() && (state.voiceState === "listening" || state.voiceState === "interim" || state.voiceState === "deferred");
-      button.disabled = !ready;
-      button.setAttribute("aria-disabled", ready ? "false" : "true");
+      // The control stays clickable: an unavailable route explains itself after click.
+      // Actual recording still requires an authenticated, registered recognizer.
+      button.disabled = false;
+      button.setAttribute("aria-disabled", "false");
       button.setAttribute("aria-pressed", active ? "true" : "false");
       button.setAttribute("data-voice-state", !ready ? "unavailable" : active ? "active" : "ready");
       const copyKey = active ? STATUS_KEYS.MIC_STOP : STATUS_KEYS.MIC_START;
@@ -191,6 +194,7 @@
         const key = currentStatusKey();
         nodes.status.setAttribute("data-locale-key", key);
         nodes.status.textContent = text(key);
+        nodes.status.className = noticeVisible ? "voice-status voice-status--notice" : "voice-status sr-only";
       }
       if (nodes.preview) {
         const showPreview = ready && state.voiceState === "interim" && state.interim !== "";
@@ -432,11 +436,18 @@
       state.voiceState = "idle";
       state.interim = "";
       state.idleKey = ERROR_KEY_BY_CODE[String(code)] || STATUS_KEYS.ERROR;
+      noticeVisible = true;
       render();
     }
 
     function toggle() {
       if (isActiveRun()) return stop("user-stopped");
+      if (!isReady()) {
+        noticeVisible = true;
+        render();
+        return false;
+      }
+      noticeVisible = false;
       return start();
     }
 
@@ -546,9 +557,9 @@
       button.id = MIC_BUTTON_ID;
       button.type = "button";
       button.className = "voice-mic-button";
-      button.disabled = true;
+      button.disabled = false;
       button.setAttribute("aria-pressed", "false");
-      button.setAttribute("aria-disabled", "true");
+      button.setAttribute("aria-disabled", "false");
       button.setAttribute("data-voice-state", "unavailable");
       const icon = doc.createElement("span");
       icon.setAttribute("aria-hidden", "true");

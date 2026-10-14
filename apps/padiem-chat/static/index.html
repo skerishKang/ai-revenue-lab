@@ -752,7 +752,7 @@
         </details>
       </section>
       <section class="composer-wrap" data-locale-aria-label="composer" aria-label="메시지 작성">
-        <button type="button" class="claw-mobile-composer-toggle" id="clawMobileComposerToggle" aria-expanded="true" aria-controls="clawManualForm clawVerifiedModelSelect ownerModelPreviewOpen">모델·고급 설정 접기</button>
+        <button type="button" class="claw-mobile-composer-toggle" id="clawMobileComposerToggle" aria-expanded="true" aria-controls="clawManualForm clawVerifiedModelSelect">모델·고급 설정 접기</button>
         <div class="project-banner" id="projectBanner" hidden>
           <div class="project-banner-copy"><span data-locale-key="project-banner">프로젝트</span><strong id="activeProjectName"></strong><small id="activeProjectFiles" hidden></small></div>
           <div class="project-banner-actions">
@@ -834,7 +834,6 @@
             <small id="clawModelChoiceHint" data-locale-key="claw-model-choice-hint">Claw Plus 기본: Gemini 3.5 Flash-Lite · 직접 변경 가능 · 자동 대체 없음</small>
           </label>
           </details>
-          <button class="owner-model-preview-trigger" id="ownerModelPreviewOpen" type="button" aria-haspopup="dialog" aria-controls="ownerModelPreviewDialog" aria-expanded="false" data-locale-aria-label="owner-model-preview-open" aria-label="파디엠플러스 모델 현황"><span data-locale-key="owner-model-preview-open">파디엠플러스 모델 현황</span></button>
           <label for="messageInput" class="sr-only" data-locale-key="message-input-label">메시지 입력</label>
           <textarea id="messageInput" rows="1" data-locale-placeholder="input" placeholder="무엇이든 물어보세요" autocomplete="off"></textarea>
           <div class="composer-actions">
@@ -846,7 +845,7 @@
               <button type="button" class="tool-button" disabled id="deepResearchButton" aria-disabled="true" aria-pressed="false" title="심층 리서치" hidden><span aria-hidden="true">✦</span><span>심층 리서치</span></button>
             </div>
             <button class="cancel-stream-button" id="cancelStreamButton" type="button" data-locale-key="cancel" data-locale-aria-label="cancel-answer" aria-label="답변 생성 취소" hidden>취소</button>
-            <button class="send-button" id="sendButton" type="submit" data-locale-aria-label="send" aria-label="메시지 보내기" disabled><svg class="send-arrow-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" focusable="false"><path d="M12 19V5m-6 6 6-6 6 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button class="send-button" id="sendButton" type="submit" data-locale-aria-label="send" aria-label="메시지 보내기"><svg class="send-arrow-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" focusable="false"><path d="M12 19V5m-6 6 6-6 6 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </div>
         </form>
         <p class="composer-note" id="runtimeNote">파일 첨부 형식을 확인하는 중입니다.</p>
