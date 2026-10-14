@@ -17,7 +17,6 @@ from app.claw_general_routes import (
     _project_search_sources,
 )
 from app.claw_search_decision import (
-    MAX_JUDGEMENT_DIGEST_CHARS,
     MAX_PUBLIC_SEARCH_QUERY_CHARS,
     ClawSearchOutcome,
     build_judgement_digest,
@@ -213,9 +212,11 @@ def test_provenance_fields_are_limited_and_capped():
 # --- decision helpers --------------------------------------------------------
 
 
-def test_digest_is_bounded_and_keeps_the_turns_the_model_must_connect():
-    digest = build_judgement_digest(turns(*[("user", f"질문 {i}") for i in range(40)]))
-    assert digest is not None and len(digest) <= MAX_JUDGEMENT_DIGEST_CHARS
+def test_digest_is_bounded_by_a_literal_ceiling_not_by_its_own_constant():
+    digest = build_judgement_digest(turns(*[("user", f"질문 {i} " + "긴" * 500) for i in range(40)]))
+    assert digest is not None
+    assert len(digest) <= 3_000, "the ceiling is a contract, not a constant to re-read"
+    assert digest.count("질문 39") == 1 and "질문 0" not in digest, "only the recent window travels"
     assert build_judgement_digest([]) is None
     assert build_judgement_digest("nonsense") is None
 
