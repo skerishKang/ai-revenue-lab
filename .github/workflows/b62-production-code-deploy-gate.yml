@@ -29,6 +29,11 @@ on:
       - ".github/scripts/b62_d1_migration_040_schema.py"
       - ".github/tests/test_b62_d1_migration_040_gate.py"
       - "apps/padiem-chat/migrations/040_claw_web_xlsx_p01_decision_release.sql"
+      # #4316/#4657: deploy must NOT precede 041 and 042 D1 schema.
+      - ".github/scripts/b62_d1_migration_041_042_schema.py"
+      - ".github/tests/test_b62_d1_migration_041_042_gate.py"
+      - "apps/padiem-chat/migrations/041_b66_ai_conversation.sql"
+      - "apps/padiem-chat/migrations/042_conversation_product_scope.sql"
       - ".github/tests/test_b62_binding_state_guard.py"
       - ".github/scripts/b62_owner_d1_release_preflight.py"
       - ".github/tests/test_b62_owner_d1_release_preflight.py"
@@ -203,6 +208,14 @@ jobs:
           echo "MIGRATION_040_PREDEPLOY_GUARD_TESTS=PASS"
           echo "PRODUCTION_MUTATION=0"
 
+      - name: Validate 041 and 042 B66/Chat product-scope read-only deploy gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pytest .github/tests/test_b62_d1_migration_041_042_gate.py -q
+          echo "MIGRATION_041_042_PREDEPLOY_GUARD_TESTS=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
       # PR-only CI: this contract tests the separate manual Owner D1 release.
       # It NEVER dispatches apply/rollback or reads production credentials.
       - name: Owner D1 protected release contract regressions
@@ -261,6 +274,9 @@ jobs:
           assert "MIGRATION_040_PREDEPLOY=EXACT" in workflow
           assert "RELEASED_AT_PRESENT=PASS" in workflow
           assert "b62_d1_migration_040_schema.py" in workflow
+          assert "B62_D1_SCHEMA_041_042=EXACT" in workflow
+          assert "MIGRATION_041_042_PREDEPLOY=EXACT" in workflow
+          assert "b62_d1_migration_041_042_schema.py" in workflow
           assert "PRAGMA table_info(claw_web_xlsx_p01_decision_receipts)" in workflow
           assert "APPLICATION_ROW_READ=0" in workflow
           assert "STATE_ADOPTION_REQUIRED" in workflow
@@ -764,6 +780,55 @@ jobs:
           grep -q '^B62_D1_MIGRATION_040_SCHEMA=EXACT$' "${RUNNER_TEMP}/b62-d1-040-predeploy-evidence.txt"
           echo "MIGRATION_040_PREDEPLOY=EXACT"
           echo "RELEASED_AT_PRESENT=PASS"
+          echo "D1_SCHEMA_QUERY=READ_ONLY"
+          echo "APPLICATION_ROW_READ=0"
+          echo "D1_IDENTIFIER_OUTPUT=0"
+          echo "PRODUCTION_MUTATION=0"
+
+      # #4316/#4657: the 041 server-owned B66 conversation slot and the 042
+      # mandatory product_scope column/index are both consumed by currently
+      # merged Chat/Claw/B66 code. Before ANY Worker upload verify the
+      # *existing* canonical D1 Worker binding has BOTH schemas exactly.
+      # This is schema-only GET/POST read-only query; no customer rows, no D1
+      # ALTER and no secret/database IDs may be written to the log.
+      - name: Prove migrations 041 and 042 B66 and Chat scope live schema before deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          db_id="$(python3 - "${RUNNER_TEMP}/b62-settings-before.json" "${D1_BINDING}" <<'PY'
+          import json, re, sys
+          from pathlib import Path
+          payload=json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'))
+          if payload.get("success") is not True or not isinstance(payload.get("result"),dict):
+              raise SystemExit("D1_SETTINGS_INVALID")
+          bindings=payload["result"].get("bindings")
+          if not isinstance(bindings,list):
+              raise SystemExit("D1_BINDINGS_INVALID")
+          matching=[b for b in bindings if isinstance(b,dict)
+                    and b.get("name")==sys.argv[2] and b.get("type")=="d1"]
+          if len(matching)!=1:
+              raise SystemExit("D1_BINDING_NOT_EXACT")
+          db_id=matching[0].get("id")
+          if not isinstance(db_id,str) or re.fullmatch(r"[0-9a-fA-F-]{32,36}",db_id) is None:
+              raise SystemExit("D1_BINDING_ID_INVALID")
+          print(db_id)
+          PY
+          )"
+          test -n "${db_id}"
+          echo "::add-mask::${db_id}"
+          query="${RUNNER_TEMP}/b62-d1-041-042-schema-query.json"
+          response="${RUNNER_TEMP}/b62-d1-041-042-schema-response.json"
+          python3 .github/scripts/b62_d1_migration_041_042_schema.py write-query "${query}"
+          curl -fsS --max-time 30 -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${db_id}/query" \
+            --data-binary "@${query}" -o "${response}"
+          # Python refuses *all* missing, pre-041, pre-042, drift and malformed
+          # states with nonzero exit. pipefail prevents tee from masking that.
+          python3 .github/scripts/b62_d1_migration_041_042_schema.py check "${response}" \
+            | tee "${RUNNER_TEMP}/b62-d1-041-042-schema-verdict.txt"
+          grep -qx 'B62_D1_SCHEMA_041_042=EXACT' "${RUNNER_TEMP}/b62-d1-041-042-schema-verdict.txt"
+          grep -qx 'MIGRATION_041_042_PREDEPLOY=EXACT' "${RUNNER_TEMP}/b62-d1-041-042-schema-verdict.txt"
           echo "D1_SCHEMA_QUERY=READ_ONLY"
           echo "APPLICATION_ROW_READ=0"
           echo "D1_IDENTIFIER_OUTPUT=0"
