@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import json
 import threading
-from http.server import HTTPServer, SimpleHTTPRequestHandler
+from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
 
 from playwright.sync_api import sync_playwright
@@ -35,8 +35,8 @@ class Handler(SimpleHTTPRequestHandler):
         super().end_headers()
 
 
-def serve() -> tuple[HTTPServer, int]:
-    httpd = HTTPServer(("127.0.0.1", 0), Handler)
+def serve() -> tuple[ThreadingHTTPServer, int]:
+    httpd = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
     port = httpd.server_address[1]
     threading.Thread(target=httpd.serve_forever, daemon=True).start()
     return httpd, port
@@ -133,7 +133,7 @@ def run(port: int) -> dict:
 
         result["factory_registered"] = page.evaluate(
             """() => {
-              const c = window.PadiemVoiceComposer.getController();
+              const c = window.PadiemVoiceComposer?.getController?.();
               if (!c) return false;
               const s = c.getStatus();
               return s.statusKey !== 'voice-unavailable-wiring';
