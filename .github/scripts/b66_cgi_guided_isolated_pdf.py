@@ -23,6 +23,27 @@ base=importlib.util.module_from_spec(spec)
 sys.modules[spec.name]=base
 spec.loader.exec_module(base)
 
+def approved_private_reference_paths(root: Path):
+    """Never require revoked public CGI source files for runtime PDF acceptance.
+
+    Compare against approved original only if the full set exists in an
+    authorized checkout; public CI must instead report parity NOT PROVEN.
+    Fail closed if files are missing without the explicit privacy notice.
+    """
+    folder=root/"reference/b66-public-standard-templates/cgi/v1"
+    original=folder/"source/original.pdf"
+    template=folder/"sol61/template/template.json"
+    manifest=folder/"PUBLIC_RELEASE_MANIFEST.json"
+    if all(p.is_file() for p in (original,template,manifest)):
+        return original,template,manifest
+    notice=folder/"README.md"
+    if (notice.is_file() and
+            "SOURCE_PUBLICATION_AUTHORITY=REVOKED_BY_OWNER_2026-10-14"
+            in notice.read_text(encoding="utf-8")):
+        return None
+    raise base.SmokeFailure("cgi_reference_missing_without_private_custody_notice")
+
+
 ORIGIN="quick-quote-kr.pages.dev"
 GUIDED="/api/padiem/b66/guided-draft"
 LOGIN="/api/padiem/auth/password/login"
@@ -107,20 +128,38 @@ def run():
                 base._guided(page,counters)
                 if len(browser_downloads)!=1:
                     raise base.SmokeFailure("cgi_pdf_download_not_unique")
-                from b66_cgi_original_visual_compare import measure
+                # The existing browser probe verified signature, size,
+                # A4 media box and image encoding. Independently open the
+                # download with a PDF parser without printing any content.
+                import fitz
+                pdf_bytes=Path(browser_downloads[0].path()).read_bytes()
+                with fitz.open(stream=pdf_bytes,filetype="pdf") as pdf:
+                    if len(pdf)!=1 or pdf.is_encrypted:
+                        raise base.SmokeFailure("browser_pdf_document_invalid")
+                    page_rect=pdf[0].rect
+                    if (abs(page_rect.width-595)>0.1 or
+                            abs(page_rect.height-841)>0.1 or
+                            not pdf[0].get_images(full=True)):
+                        raise base.SmokeFailure("browser_pdf_a4_image_invalid")
+                print("CGI_BROWSER_PDF_PARSED_A4_IMAGE=PASS",flush=True)
                 root=Path(__file__).resolve().parents[2]
-                original=root/"reference/b66-public-standard-templates/cgi/v1/source/original.pdf"
-                template=root/"reference/b66-public-standard-templates/cgi/v1/sol61/template/template.json"
-                manifest=root/"reference/b66-public-standard-templates/cgi/v1/PUBLIC_RELEASE_MANIFEST.json"
-                report=measure(original,Path(browser_downloads[0].path()).read_bytes(),template,manifest)
-                print("CGI_ORIGINAL_REFERENCE_HASH=PASS",flush=True)
-                print("CGI_ORIGINAL_PAGE_A4=PASS",flush=True)
-                print("CGI_BROWSER_PDF_TEXT_CHARACTERS="+str(report["browserTextCharacters"]),flush=True)
-                print("CGI_ORIGINAL_PDF_TEXT_CHARACTERS="+str(report["originalTextCharacters"]),flush=True)
-                print("CGI_ORIGINAL_UNMASKED_MAE="+str(report["unmaskedMAE"]),flush=True)
-                print("CGI_ORIGINAL_UNMASKED_CHANGED16_PCT="+str(report["unmaskedChanged16Percent"]),flush=True)
-                print("CGI_ORIGINAL_UNMASKED_CHANGED32_PCT="+str(report["unmaskedChanged32Percent"]),flush=True)
-                print("CGI_ORIGINAL_VISUAL_CERTIFICATION=NOT_ASSERTED",flush=True)
+                refs=approved_private_reference_paths(root)
+                if refs is None:
+                    print("CGI_ORIGINAL_REFERENCE=PRIVATE_R2_NOT_IN_PUBLIC_REPO",flush=True)
+                    print("CGI_ORIGINAL_REFERENCE_HASH=NOT_VERIFIED",flush=True)
+                    print("CGI_ORIGINAL_PAGE_A4=NOT_VERIFIED",flush=True)
+                    print("CGI_ORIGINAL_VISUAL_COMPARISON=NOT_PROVEN",flush=True)
+                else:
+                    from b66_cgi_original_visual_compare import measure
+                    report=measure(*refs[:1],pdf_bytes,*refs[1:])
+                    print("CGI_ORIGINAL_REFERENCE_HASH=PASS",flush=True)
+                    print("CGI_ORIGINAL_PAGE_A4=PASS",flush=True)
+                    print("CGI_BROWSER_PDF_TEXT_CHARACTERS="+str(report["browserTextCharacters"]),flush=True)
+                    print("CGI_ORIGINAL_PDF_TEXT_CHARACTERS="+str(report["originalTextCharacters"]),flush=True)
+                    print("CGI_ORIGINAL_UNMASKED_MAE="+str(report["unmaskedMAE"]),flush=True)
+                    print("CGI_ORIGINAL_UNMASKED_CHANGED16_PCT="+str(report["unmaskedChanged16Percent"]),flush=True)
+                    print("CGI_ORIGINAL_UNMASKED_CHANGED32_PCT="+str(report["unmaskedChanged32Percent"]),flush=True)
+                    print("CGI_ORIGINAL_VISUAL_CERTIFICATION=NOT_ASSERTED",flush=True)
                 if counters.interpret_posts or counters.pdf_posts:
                     raise base.SmokeFailure("unexpected_model_or_server_pdf_call")
                 # The completion clears only the in-memory virtual slot.
