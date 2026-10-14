@@ -54,6 +54,7 @@ from app.claw_artifact_delivery_receipt_store import (
 )
 from app.claw_task_alert_store import D1ClawTaskAlertStore
 from app.b66_quote_conversation import B66QuoteConversationInterpreter
+from app.b66_search_boundary import authorized_b66_fact_search_binding
 from app.b66_registered_model_boundary import (
     B14QuoteExactModelExecutor,
     B66RegisteredModelCompletion,
@@ -865,6 +866,15 @@ class Default(WorkerEntrypoint):
                 # when the separate membership/tier rollout is not enabled.
                 # D1 metadata errors fail closed before any provider dispatch.
                 _worker_app.state.b66_global_model_switch_enforced = True
+                # #4469: explicitly approved public-fact lookup only. A client
+                # request, model prompt or a configured provider cannot enable
+                # B66 external web egress. Binding absent/invalid => OFF.
+                _worker_app.state.b66_public_fact_search_authorized = (
+                    authorized_b66_fact_search_binding(
+                        settings,
+                        binding_value(self.env, "B66_PUBLIC_FACT_SEARCH_AUTHORIZED"),
+                    )
+                )
                 # Optional signup notification channels: configuration comes
                 # exclusively from trusted Worker bindings, never browser input.
                 def _b66_notice_value(key):

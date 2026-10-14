@@ -15,8 +15,27 @@ from typing import Any
 from padiem_ai_core.search_decision import SearchDisposition, decide_search
 
 from .auto_grounding import AutoGroundingService
+from .config import Settings
 from .grounding import GroundingError
 from .task_modes import TaskMode
+
+def authorized_b66_fact_search_binding(settings: Settings, raw_binding: object) -> bool:
+    """Trusted Worker binding + existing live Core provider; OFF in every other state.
+
+    This is a *deployment admission*, not a member/model/usage entitlement.
+    The route still checks B66 membership, selected B14 model and usage
+    authority before retrieval. Client fields can never set this value.
+    """
+    return (
+        raw_binding == "enabled"
+        and settings.runtime_mode == "b14"
+        and settings.live_enabled is True
+        and settings.auth_mode != "off"
+        and settings.web_provider == "tinyfish_daum"
+        and bool(settings.tinyfish_api_key)
+        and bool(settings.daum_rest_api_key)
+    )
+
 
 MAX_B66_QUERY_CHARS = 200
 B66_DIALOGUE_TASK_ID = "b66_model_dialogue_v1"
