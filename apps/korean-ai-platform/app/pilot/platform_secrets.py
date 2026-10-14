@@ -187,7 +187,7 @@ async def ensure_route_secrets(
     from .worker_env import load_request_secret
 
     if model_id == "opencode-go/cat-jam-free":
-        from padiem_control_plane.product_tier_routes import TIER_FALLBACK_B14_MODELS
+        from .tier_fallback import TIER_FALLBACK_B14_MODELS
         if product_tier not in TIER_FALLBACK_B14_MODELS:
             from .errors import InvalidRequest
             raise InvalidRequest("Unsupported product tier.")

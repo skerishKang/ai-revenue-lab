@@ -231,7 +231,7 @@ def resolve_manual_route(
     owner_tier_pair = model_id == "opencode-go/cat-jam-free"
     fallback_candidates: list[dict[str, str]] = []
     if owner_tier_pair:
-        from padiem_control_plane.product_tier_routes import TIER_FALLBACK_B14_MODELS
+        from .tier_fallback import TIER_FALLBACK_B14_MODELS
         if product_tier not in TIER_FALLBACK_B14_MODELS:
             raise NoSafeRoute(reason_code="invalid_product_tier", message="Unsupported product tier.", upstream_called=False)
         target = get_catalog_by_id(TIER_FALLBACK_B14_MODELS[product_tier])
