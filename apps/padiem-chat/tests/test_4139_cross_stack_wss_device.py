@@ -177,6 +177,28 @@ class FakeProtectedStore:
         return self.record[1]
 
 
+class InMemoryBindingStore:
+    """Existing test-store contract: save-then-readback before publish.
+
+    Mirrors apps/claw-connect/tests/test_device_wss_enrollment_4139.py
+    FakeBindingStore (save(binding, now) / load(device_id, now)).
+    The real ProtectedDeviceBindingStore is exercised in
+    test_4139_registration_binding_persistence; here only the
+    save-then-readback-before-publish ordering matters. Never touches
+    operational DPAPI.
+    """
+
+    def __init__(self):
+        self.saved = []
+
+    def save(self, *, binding, now):
+        self.saved.append(binding)
+
+    def load(self, *, device_id, now):
+        restored = SimpleNamespace(**vars(self.saved[-1]))
+        return SimpleNamespace(binding=restored)
+
+
 class SyntheticCanonicalHost:
     def __init__(self, *, handoff, device, events):
         self.handoff = handoff
@@ -248,6 +270,7 @@ def _run_once(enrollment, *, trusted=True, first_pairing_tls_version=None):
             )
         outbound = SyntheticIngress(trusted)
         state = FakeProtectedStore()
+        binding_store = InMemoryBindingStore()
         events = []
         async def server():
             await run_device_initiated_enrollment(
@@ -264,6 +287,7 @@ def _run_once(enrollment, *, trusted=True, first_pairing_tls_version=None):
                 ),
                 challenge_id=CHALLENGE, pairing_code=CODE,
                 binding_factory=_fake_binding,
+                binding_store=binding_store,
             )
         return (*await asyncio.wait_for(
             asyncio.gather(server(), pc(), return_exceptions=True), timeout=8,
@@ -328,6 +352,7 @@ def test_same_device_may_not_redeem_again_after_terminal(tmp_path):
             enrollment=enrollment, socket=replay.pc, trusted_tls=SyntheticIngress(),
             receiver=LocalStoreCredentialReceiver(store=FakeProtectedStore()),
             challenge_id=CHALLENGE, pairing_code=CODE, binding_factory=_fake_binding,
+            binding_store=InMemoryBindingStore(),
         )
     with pytest.raises(DeviceSessionRefused, match="existing_binding"):
         asyncio.run(retry())
