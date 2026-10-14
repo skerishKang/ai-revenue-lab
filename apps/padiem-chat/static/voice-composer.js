@@ -367,9 +367,13 @@
         render();
         return false;
       }
-      stopSession();
-      stoppedRun.adapter.stop(reason || "user-stopped");
+      // Detach the run before calling recognizer.stop(): implementations may
+      // synchronously emit `end` from stop(), and that callback must not
+      // recursively stop the same run or mutate the next one.
       run = null;
+      stopSessionOnStage(stoppedRun);
+      stoppedRun.adapter.stop(reason || "user-stopped");
+      
       // A final held for a composition or a disabled composer belongs to the
       // run that just ended; it is dropped rather than injected afterwards.
       deferredFinals = [];
