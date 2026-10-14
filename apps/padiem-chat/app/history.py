@@ -1504,18 +1504,27 @@ class D1HistoryStore:
                 and existing.get("p01_run_id") == p01_run_id
             ):
                 return
-            if existing.get("consumed_at") is None:
+            consumed_at = existing.get("consumed_at")
+            if consumed_at is None or str(consumed_at).startswith("decision_claim:"):
+                # An in-flight Engine decision is not an already-consumed
+                # generation. Never replace its pause while dispatch is unknown.
                 raise HistoryConflict(
                     f"claw approval handoff for run {run_id} already exists with a different identity"
                 )
-            await self._run(
+            # Guard the generation transition against a simultaneous new
+            # claim or competing pause replacement (no stale SELECT -> write).
+            replaced = await self._first(
                 "UPDATE claw_approval_handoff SET workspace_id=?, conversation_id=?, continuation_ref=?, "
                 "pause_id=?, pause_expires_at=?, trusted_request_json=?, trusted_request_fingerprint=?, "
-                "p01_run_id=?, consumed_at=NULL WHERE id=?",
+                "p01_run_id=?, consumed_at=NULL WHERE id=? AND consumed_at=? RETURNING id",
                 workspace_id, conversation_id, continuation_ref,
                 pause_id, pause_expires_at, encoded, fingerprint, p01_run_id,
-                str(existing.get("id")),
+                str(existing.get("id")), str(consumed_at),
             )
+            if replaced is None:
+                raise HistoryConflict(
+                    f"claw approval handoff for run {run_id} changed during replacement"
+                )
             return
         await self._run(
             "INSERT INTO claw_approval_handoff (id, user_id, run_id, workspace_id, conversation_id, "
@@ -1593,6 +1602,82 @@ class D1HistoryStore:
             "p01_run_id": row.get("p01_run_id"),
             "created_at": str(row.get("created_at") or ""),
         }
+
+    async def claim_claw_approval_handoff(
+        self,
+        *,
+        user_id: str,
+        run_id: str,
+        workspace_id: str | None,
+        continuation_ref: str,
+        pause_id: str,
+        trusted_request_fingerprint: str,
+    ) -> str | None:
+        """Atomically elect exactly one Engine decision dispatcher (#3936).
+
+        The existing consumed_at column holds a server-minted in-flight claim;
+        NULL means available, a decision_claim: token means potentially sent,
+        and a normal timestamp means conclusively consumed. An ambiguous
+        Engine outcome stays claimed: retrying could duplicate a side effect.
+        """
+        if not isinstance(user_id, str) or not user_id or not isinstance(run_id, str) or not run_id:
+            return None
+        if not all(isinstance(v, str) and v for v in
+                   (continuation_ref, pause_id, trusted_request_fingerprint)):
+            return None
+        token = "decision_claim:" + uuid.uuid4().hex
+        sql = (
+            "UPDATE claw_approval_handoff SET consumed_at=? "
+            "WHERE user_id=? AND run_id=? AND continuation_ref=? AND pause_id=? "
+            "AND trusted_request_fingerprint=? AND consumed_at IS NULL "
+            "AND julianday(pause_expires_at) > julianday('now') "
+        )
+        params: list[Any] = [token, user_id, run_id, continuation_ref, pause_id,
+                             trusted_request_fingerprint]
+        if workspace_id is None:
+            sql += "AND workspace_id IS NULL "
+        else:
+            sql += "AND workspace_id=? "
+            params.append(_safe_identifier("workspace_id", workspace_id))
+        # SQLite / Cloudflare D1 execute the CAS and RETURNING in one statement.
+        # No read-before-update check, local process lock or follow-up SELECT
+        # can elect the winning dispatcher across multiple Workers.
+        row = await self._first(sql + "RETURNING id", *params)
+        return token if row is not None else None
+
+    async def release_claw_approval_claim(
+        self, *, user_id: str, run_id: str, workspace_id: str | None,
+        claim_token: str,
+    ) -> bool:
+        """Release ONLY a proven NOT_DISPATCHED claim, guarded against ABA."""
+        if not isinstance(claim_token, str) or not claim_token.startswith("decision_claim:"):
+            return False
+        sql = ("UPDATE claw_approval_handoff SET consumed_at=NULL "
+               "WHERE user_id=? AND run_id=? AND consumed_at=? ")
+        params: list[Any] = [user_id, run_id, claim_token]
+        if workspace_id is None:
+            sql += "AND workspace_id IS NULL "
+        else:
+            sql += "AND workspace_id=? "
+            params.append(_safe_identifier("workspace_id", workspace_id))
+        return await self._first(sql + "RETURNING id", *params) is not None
+
+    async def finalize_claw_approval_claim(
+        self, *, user_id: str, run_id: str, workspace_id: str | None,
+        claim_token: str,
+    ) -> bool:
+        """Finalize a claimed handoff only after verified Engine resolution."""
+        if not isinstance(claim_token, str) or not claim_token.startswith("decision_claim:"):
+            return False
+        sql = ("UPDATE claw_approval_handoff SET consumed_at=? "
+               "WHERE user_id=? AND run_id=? AND consumed_at=? ")
+        params: list[Any] = [_now_iso(), user_id, run_id, claim_token]
+        if workspace_id is None:
+            sql += "AND workspace_id IS NULL "
+        else:
+            sql += "AND workspace_id=? "
+            params.append(_safe_identifier("workspace_id", workspace_id))
+        return await self._first(sql + "RETURNING id", *params) is not None
 
     async def consume_claw_approval_handoff(
         self,
