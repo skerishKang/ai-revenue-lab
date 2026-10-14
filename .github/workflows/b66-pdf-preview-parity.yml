@@ -6,6 +6,8 @@ on:
       - "reference/business-66-padiem-quote-v1/index.html"
       - "reference/business-66-padiem-quote-v1/app.js"
       - "reference/business-66-padiem-quote-v1/easy-mode.js"
+      - "reference/business-66-padiem-quote-v1/b66-safe-markdown.js"
+      - "reference/business-66-padiem-quote-v1/_worker.js"
       - "reference/business-66-padiem-quote-v1/padiem-account.js"
       - "reference/business-66-padiem-quote-v1/styles.css"
       - "reference/business-66-padiem-quote-v1/quote-template.js"
@@ -20,6 +22,9 @@ on:
       - "reference/business-66-padiem-quote-v1/tests/test_3536_unified_composer_browser.py"
       - "reference/business-66-padiem-quote-v1/tests/test_4076_customer_journey_browser.py"
       - "reference/business-66-padiem-quote-v1/tests/test_3396_isolated_browser_resume.py"
+      - "reference/business-66-padiem-quote-v1/tests/b66-dialogue-ux-4657.test.cjs"
+      - "reference/business-66-padiem-quote-v1/tests/b66-dialogue-relay-4657.test.mjs"
+      - "reference/business-66-padiem-quote-v1/tests/test_b66_dialogue_ux_browser_4657.py"
       - ".github/scripts/b66_shell_cgi_v2_smoke.py"
       - "reference/business-66-padiem-quote-v1/tests/quote-template-renderer.test.cjs"
       - "reference/business-66-padiem-quote-v1/tests/static-contract.test.cjs"
@@ -85,3 +90,11 @@ jobs:
           set -euo pipefail
           python reference/business-66-padiem-quote-v1/tests/test_4076_customer_journey_browser.py
           python reference/business-66-padiem-quote-v1/tests/test_3396_isolated_browser_resume.py
+
+      - name: Verify the B66 AI dialogue journey in a real browser (#4657)
+        shell: bash
+        run: |
+          set -euo pipefail
+          node reference/business-66-padiem-quote-v1/tests/b66-dialogue-ux-4657.test.cjs
+          node reference/business-66-padiem-quote-v1/tests/b66-dialogue-relay-4657.test.mjs
+          python reference/business-66-padiem-quote-v1/tests/test_b66_dialogue_ux_browser_4657.py

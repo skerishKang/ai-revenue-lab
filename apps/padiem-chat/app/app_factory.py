@@ -14,6 +14,9 @@ from .b66_quote_conversation import B66QuoteConversationInterpreter
 from .b66_ai_chat_routes import b66_ai_chat
 from .b66_ai_conversation_routes import conversation_state, conversation_turn
 from .b66_ai_conversation_store import D1ConversationStore
+from .b66_conversation_store import B66ConversationStore
+from .b66_durable_turn_attempt import D1B66TurnAttemptStore
+from .b66_dialogue_routes import b66_dialogue_detail, b66_dialogue_list
 from .b66_company_profile import CompanyProfileStore, D1CompanyProfileStore
 from .b66_company_profile_routes import b66_company_profile_get, b66_company_profile_put
 from .b66_quote_asset_routes import b66_quote_asset_detail
@@ -68,6 +71,7 @@ from .b66_saved_skill_candidate_store import (
     D1SavedQuoteSkillCandidateStore,
     SavedQuoteSkillCandidateStore,
 )
+from .home_product_access_routes import ACCESS_PATH, home_product_access
 from .auth_routes import (
     auth_status,
     google_callback,
@@ -345,6 +349,7 @@ def create_app(
         Route("/api/models/owner-name-preview", owner_model_name_preview, methods=["GET"]),
         Route("/api/claw/verified-model-choices", claw_verified_model_choices, methods=["GET"]),
         Route("/api/auth/status", auth_status, methods=["GET"]),
+        Route(ACCESS_PATH, home_product_access, methods=["GET"]),
         Route("/auth/google/start", google_start, methods=["GET"]),
         Route("/auth/google/callback", google_callback, methods=["GET"]),
         Route("/api/auth/password/register", password_register, methods=["POST"]),
@@ -449,6 +454,8 @@ def create_app(
         Route("/api/b66/ai/chat", b66_ai_chat, methods=["POST"]),
         Route("/api/b66/ai/conversation", conversation_turn, methods=["POST"]),
         Route("/api/b66/ai/conversation", conversation_state, methods=["GET"]),
+        Route("/api/b66/ai/dialogues", b66_dialogue_list, methods=["GET"]),
+        Route("/api/b66/ai/dialogues/{conversation_id}", b66_dialogue_detail, methods=["GET", "DELETE"]),
         Route("/api/b66/quote/models", b66_quote_models, methods=["GET"]),
         Route("/api/b66/inquiries", b66_inquiries, methods=["GET", "POST"]),
         Route("/api/b66/admin/inquiries", b66_admin_inquiries, methods=["GET"]),
@@ -591,6 +598,20 @@ def create_app(
     app.state.request_telemetry_enabled = True
     app.state.settings = resolved
     app.state.history_store = history_store
+    # #4657: the B66 customer dialogue surface reuses the canonical history
+    # store behind the owner+PRODUCT_SCOPE_B66 adapter. It is the same D1/R2 the
+    # Chat/Claw surfaces read — no second database, table or migration. Without
+    # a real store the B66 dialogue routes fail closed instead of exposing any
+    # conversation.
+    app.state.b66_conversation_store = (
+        B66ConversationStore(history_store) if history_store is not None else None
+    )
+    # #4672: one durable owner/product/token claim BEFORE any charged B66 turn.
+    # If a bound production D1 lacks the migration, the route refuses before
+    # provider dispatch. Test-only no-D1 fixtures preserve their existing seam.
+    app.state.b66_turn_attempt_store = (
+        D1B66TurnAttemptStore(d1_binding) if d1_binding is not None else None
+    )
     # B66 admin authority shares signed user sessions and the existing D1.
     # Missing D1 or migrations fails closed rather than serving a demo roster.
     app.state.b66_member_admin_store = (b66_member_admin_store if b66_member_admin_store is not None
