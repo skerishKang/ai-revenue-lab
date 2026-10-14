@@ -125,6 +125,14 @@ def test_service_binding_target_is_fixed_in_repository_config():
             "service": "ai-revenue-korean-ai-platform",
         },
         {
+            "binding": "IDENTITY_AUTHORITY_SERVICE",
+            "service": "padiem-control-plane-identity",
+        },
+        {
+            "binding": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
+            "service": "padiem-local-agent-broker-state",
+        },
+        {
             "binding": "VOICE_STT_SERVICE",
             "service": "padiem-voice-stt",
         },

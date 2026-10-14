@@ -4,6 +4,15 @@
 - Applies to: every Business, app, package, Engine/Core/Control Plane, Chat, Claw, Desktop, operations and documentation change
 - Parent authority: `AI_DEVELOPMENT_OPERATING_POLICY.md`
 
+
+## 2026-10-14 #4139 fast-delivery test boundary
+
+For PADIEM Connector #4139, test against the **existing `chat.padiem.net` product** rather than making another isolated staging deployment a mandatory precondition. Previous stage Worker/D1/browser experiments and successful Windows self-tests are **reusable historical evidence**, not a reason to rebuild environments or re-run the same wide suites. Documentation corrections are **T0**: review changed lines and authority links, not a full product QA matrix. Source fixes need focused regression and existing exact-head CI; perform one bounded authenticated owner-PC registration/stop/reconnect acceptance in #3099 after approved real deployment.
+
+Do not dilute live security gates: verified owner consent/CSRF, server-backed ON/OFF, TLS/WSS, Broker, DPAPI, rollback, and no cross-product credential inheritance. A live Production route/binding/DB mutation still needs approval for that specific material operation; no staging infrastructure should be substituted for permission to deploy.
+
+<!-- OWNER_4139_DIRECT_LIVE_PRIORITY_20261014 -->
+
 ## 1. Decision
 
 AI Revenue Lab optimizes for **minimum sufficient validation that supports a decision**.

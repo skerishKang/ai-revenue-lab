@@ -410,3 +410,101 @@ def test_pairing_authority_truth_constants_do_not_overclaim() -> None:
     assert DURABLE_PAIRING_STORE_CONFIGURED is False
     assert IN_MEMORY_COUNTS_AS_DURABLE is False
     assert PRODUCTION_READY is False
+
+
+def test_enrollment_bound_challenge_is_refused_on_the_generic_route() -> None:
+    """#4139 S1 (CENTRAL second review): scoped-route-only enrollment challenges.
+
+    A challenge minted with ``issue_enrollment_challenge`` carries a server-owned
+    consent/owner/scope/device binding. The generic ``redeem`` must refuse it
+    BEFORE consuming the challenge or registering any Broker binding, even with
+    a valid possession proof: possession of the one-time code is not the current
+    enrollment consent authorization. Only ``redeem_enrollment`` may consume it,
+    after it re-verifies every binding field itself.
+    """
+
+    pairing, broker = pairing_authority()
+    challenge, code = pairing.issue_enrollment_challenge(
+        account_ref="account.1",
+        workspace_ref="workspace.1",
+        consent_ref="consent.1",
+        owner_ref="usr.owner.1",
+        device_id="device.office",
+        now=NOW,
+        ttl_seconds=300,
+    )
+    proof = pairing_proof_ref(
+        challenge_id=challenge.challenge_id,
+        device_id="device.office",
+        pairing_code=code,
+    )
+
+    with pytest.raises(ControlPlaneContractError) as generic:
+        pairing.redeem(
+            challenge_id=challenge.challenge_id,
+            device_id="device.office",
+            proof_ref=proof,
+            now=NOW + timedelta(seconds=1),
+        )
+    assert generic.value.code == "enrollment_bound_challenge_requires_scoped_redemption"
+    # Nothing mutated: no binding, and the challenge is still unconsumed.
+    assert not broker._bindings
+    assert pairing.pending_challenge_count == 1
+    assert pairing.enrollment_binding(
+        challenge_id=challenge.challenge_id, now=NOW + timedelta(seconds=1)
+    ).consent_ref == "consent.1"
+
+    # The scoped route still redeems it under the exact issued binding.
+    enrollment, credential = pairing.redeem_enrollment(
+        challenge_id=challenge.challenge_id,
+        device_id="device.office",
+        proof_ref=proof,
+        consent_ref="consent.1",
+        owner_ref="usr.owner.1",
+        account_ref="account.1",
+        workspace_ref="workspace.1",
+        now=NOW + timedelta(seconds=2),
+    )
+    assert enrollment.device_id == "device.office"
+    assert credential
+    assert len(broker._bindings) == 1
+    # Single-use: the consumed challenge cannot be redeemed again, on either
+    # route (it stays in the pending record, marked redeemed, until expiry).
+    with pytest.raises(ControlPlaneContractError) as replay:
+        pairing.redeem_enrollment(
+            challenge_id=challenge.challenge_id,
+            device_id="device.office",
+            proof_ref=proof,
+            consent_ref="consent.1",
+            owner_ref="usr.owner.1",
+            account_ref="account.1",
+            workspace_ref="workspace.1",
+            now=NOW + timedelta(seconds=3),
+        )
+    assert replay.value.code == "pairing_challenge_already_redeemed"
+
+
+def test_ordinary_pairing_challenge_still_redeems_on_the_generic_route() -> None:
+    """Legacy compatibility: an unbound challenge keeps its exact old path."""
+
+    pairing, broker = pairing_authority()
+    challenge, code = pairing.issue_challenge(
+        account_ref="account.1",
+        workspace_ref="workspace.1",
+        now=NOW,
+        ttl_seconds=300,
+    )
+    proof = pairing_proof_ref(
+        challenge_id=challenge.challenge_id,
+        device_id="device.1",
+        pairing_code=code,
+    )
+    enrollment, credential = pairing.redeem(
+        challenge_id=challenge.challenge_id,
+        device_id="device.1",
+        proof_ref=proof,
+        now=NOW + timedelta(seconds=1),
+    )
+    assert enrollment.device_id == "device.1"
+    assert credential
+    assert len(broker._bindings) == 1

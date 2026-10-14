@@ -51,6 +51,18 @@ tests_pid=$!
   chmod 600 "$broker_secrets"
   run_package wrangler.local-agent-broker.jsonc b54-state-dry-run "$broker_secrets"
   run_package wrangler.local-agent-broker-edge.jsonc b54-edge-dry-run ''
+  # Reuse the existing two Broker packaging outputs: no account, deploy or
+  # extra Worker build. The receipts contain digests only, never raw bytes.
+  python "$repo_root/.github/scripts/connector_bundle_fingerprint.py" \
+    --worker padiem-local-agent-broker-state \
+    --source-sha "$(git -C "$repo_root" rev-parse HEAD)" \
+    --bundle-dir "$scratch/b54-state-dry-run" \
+    --output "$RUNNER_TEMP/connector-ci-broker-state-fingerprint.json"
+  python "$repo_root/.github/scripts/connector_bundle_fingerprint.py" \
+    --worker padiem-local-agent-broker-edge \
+    --source-sha "$(git -C "$repo_root" rev-parse HEAD)" \
+    --bundle-dir "$scratch/b54-edge-dry-run" \
+    --output "$RUNNER_TEMP/connector-ci-broker-edge-fingerprint.json"
   echo 'LOCAL_AGENT_WORKER_PACKAGING_PREFLIGHT=PASS'
   echo 'PRODUCTION_MUTATION=NO'
 
@@ -82,6 +94,11 @@ print(f'GOOGLE_CONNECT_TICKET_KEY={key()}')
 PY
   chmod 600 "$identity_secrets"
   run_package wrangler.identity-authority.jsonc control-plane-identity-dry-run "$identity_secrets"
+  python "$repo_root/.github/scripts/connector_bundle_fingerprint.py" \
+    --worker padiem-control-plane-identity \
+    --source-sha "$(git -C "$repo_root" rev-parse HEAD)" \
+    --bundle-dir "$scratch/control-plane-identity-dry-run" \
+    --output "$RUNNER_TEMP/connector-ci-identity-fingerprint.json"
   echo 'CONTROL_PLANE_IDENTITY_WORKER_PACKAGING_PREFLIGHT=PASS'
   echo 'SERVER_OWNED_CONNECTOR_CONTEXT=YES'
   echo 'CLIENT_ACTOR_ACCOUNT_WORKSPACE_AUTHORITY=NO'

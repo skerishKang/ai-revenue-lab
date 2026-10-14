@@ -23,3 +23,6 @@ packages/padiem-ai-core/padiem_ai_core/document_normalization.py text eol=lf
 packages/padiem-ai-core/padiem_ai_core/document_semantics.py text eol=lf
 packages/padiem-ai-core/tests/test_document_semantics.py text eol=lf
 packages/padiem-ai-core/tests/test_document_normalization.py text eol=lf
+
+# Existing Win32 tray module is stored as CRLF; its CR is not trailing space.
+apps/claw-connect/claw_connect/tray.py whitespace=cr-at-eol

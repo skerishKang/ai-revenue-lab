@@ -1,22 +1,24 @@
 {
-  "name": "@padiem/claw-connect",
+  "name": "@padiem/connector",
   "version": "0.1.0",
-  "description": "Padiem Claw Connect — the lightweight Windows tray connector for Claw Web.",
+  "description": "PADIEM Connector — Windows PC connection interface for PADIEM Agent.",
   "type": "module",
   "bin": {
+    "padiem-connector": "bin/padiem-connector.mjs",
     "claw-connect": "bin/claw-connect.mjs"
   },
   "files": [
     "bin/",
+    "padiem_connector/",
     "claw_connect/",
     "install.ps1",
     "README.md"
   ],
   "scripts": {
-    "start": "node bin/claw-connect.mjs start",
-    "status": "node bin/claw-connect.mjs status",
-    "autostart:on": "node bin/claw-connect.mjs autostart on",
-    "autostart:off": "node bin/claw-connect.mjs autostart off",
+    "start": "node bin/padiem-connector.mjs start",
+    "status": "node bin/padiem-connector.mjs status",
+    "autostart:on": "node bin/padiem-connector.mjs autostart on",
+    "autostart:off": "node bin/padiem-connector.mjs autostart off",
     "test": "node --test tests/*.test.mjs"
   },
   "engines": {

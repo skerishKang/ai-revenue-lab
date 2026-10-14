@@ -1,7 +1,10 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
+
+from canonical_connector_enrollment_consent_rpc import CanonicalIdentityEnrollmentConsentRPC
+from canonical_connector_enrollment_durable import IdentityDurableConnectorEnrollmentRecords
 
 from identity_authority_durable import (
     CloudflareCanonicalIdentityAuthorityStore,
@@ -106,7 +109,7 @@ def _connector_workspace_wire(context: Any | None) -> dict[str, Any]:
     return {"present": True, "workspace_ref": context.workspace_ref}
 
 
-class CanonicalIdentityDurableObject(DurableObject):
+class CanonicalIdentityDurableObject(CanonicalIdentityEnrollmentConsentRPC, DurableObject):
     """Private canonical identity/session and connector-ticket authority."""
 
     def __init__(self, ctx, env):
@@ -126,6 +129,7 @@ class CanonicalIdentityDurableObject(DurableObject):
             raise RuntimeError(
                 "identity authority product boundary does not match the reviewed product set"
             )
+        self._storage = ctx.storage
         self._store = CloudflareCanonicalIdentityAuthorityStore(
             ctx.storage,
             lookup_key=decode_identity_lookup_key(
@@ -139,6 +143,11 @@ class CanonicalIdentityDurableObject(DurableObject):
             signing_key=decode_connect_ticket_key(
                 _required_env(env, "GOOGLE_CONNECT_TICKET_KEY")
             ),
+        )
+        # Separate opt-in adapter over the SAME canonical Identity DO SQLite.
+        # No enrollment schema is installed during Worker/DO construction.
+        self._connector_enrollment_records = IdentityDurableConnectorEnrollmentRecords(
+            storage=ctx.storage, session_reader=self._store
         )
 
     async def resolve_or_create_product_link(self, payload: dict) -> dict:
@@ -407,6 +416,24 @@ class Default(WorkerEntrypoint):
 
     async def resolve_active_tenant_membership(self, payload: dict) -> dict:
         return await self._stub().resolve_active_tenant_membership(payload)
+
+    async def install_connector_enrollment_schema(self, payload: dict) -> dict:
+        return await self._stub().install_connector_enrollment_schema(payload)
+
+    async def resolve_connector_enrollment_consent_for_device(self, payload: dict) -> dict:
+        return await self._stub().resolve_connector_enrollment_consent_for_device(payload)
+
+    async def bind_connector_enrollment_challenge(self, payload: dict) -> dict:
+        return await self._stub().bind_connector_enrollment_challenge(payload)
+
+    async def authorize_connector_enrollment_redeem(self, payload: dict) -> dict:
+        return await self._stub().authorize_connector_enrollment_redeem(payload)
+
+    async def grant_connector_enrollment_consent(self, payload: dict) -> dict:
+        return await self._stub().grant_connector_enrollment_consent(payload)
+
+    async def revoke_connector_enrollment_consent(self, payload: dict) -> dict:
+        return await self._stub().revoke_connector_enrollment_consent(payload)
 
     async def fetch(self, request):
         del request

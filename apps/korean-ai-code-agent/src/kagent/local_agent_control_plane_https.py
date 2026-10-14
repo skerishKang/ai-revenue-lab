@@ -141,6 +141,10 @@ class ControlPlaneHttpsOperation(str, Enum):
     ACKNOWLEDGE = "acknowledge"
     RECONCILE = "reconcile"
     OFFICE_PART = "office-part"  # #3580 opt-in, authenticated byte staging only
+    # #4139: the ONE route a bounded verified TXT read result may travel on. It
+    # stages a read result for an already successful acknowledged command and
+    # grants nothing, so it is the canonical device surface, not a second path.
+    TEXT_RESULT = "text-result"
 
 
 class PinnedHttpsJsonRequestPort(Protocol):

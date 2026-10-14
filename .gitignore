@@ -27,3 +27,5 @@ packages/padiem-control-plane/build/
 packages/padiem-control-plane/*.egg-info/
 apps/padiem-ai-engine/clients/python/build/
 apps/padiem-ai-engine/clients/python/*.egg-info/
+# #4139 per-PC Cloudflare staging DB UUID overlay; never commit.
+apps/padiem-chat/wrangler.connector-acceptance-4139.local.toml

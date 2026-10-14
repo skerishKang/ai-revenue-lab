@@ -17,9 +17,9 @@ Defect 1b — every ``WNDCLASS.lpfnWndProc`` handler must accept the four
           (``_repro.log``: ``_on_destroy() takes 2 positional arguments but 5
           were given``).
 
-Defect 2 — the live verify harness must never mask a forced kill() as a normal
-          shutdown PASS. This is pinned as a source contract because the real
-          path spawns a genuine Windows process.
+Defect 2 — shared-process kill verification is NOT run by the automated
+          or workstation verifier. It is a separate explicitly isolated E2E
+          task, so a false graceful-stop PASS cannot be produced by default.
 """
 
 from __future__ import annotations
@@ -33,6 +33,7 @@ from types import SimpleNamespace
 import pytest
 
 from claw_connect.connection import ConnectionState
+from claw_connect.enrollment import ConnectorEnrollment
 from claw_connect.runtime import ConnectApp
 from claw_connect.tray import ConnectTray, NIM_ADD, NIM_DELETE, WM_TRAY
 
@@ -53,9 +54,12 @@ class _ExplodingTray:
         raise RuntimeError("tray already gone")
 
 
-def _app() -> ConnectApp:
+def _app(tmp_dir: str) -> ConnectApp:
     # A benign supervised command; we never actually run it in these tests.
-    app = ConnectApp(resident_command=["python", "-c", "pass"])
+    app = ConnectApp(
+        resident_command=["python", "-c", "pass"],
+        enrollment=ConnectorEnrollment(state_dir=tmp_dir),
+    )
     # Swap collaborators for fakes so quit() is observed in isolation.
     app._controller = SimpleNamespace(disconnect=lambda: None)
     app._supervisor = SimpleNamespace(stop=lambda: None)
@@ -63,29 +67,28 @@ def _app() -> ConnectApp:
     return app
 
 
+@pytest.fixture
+def app(tmp_path) -> ConnectApp:
+    return _app(str(tmp_path / "state"))
 # --- defect 1: external stop reaches the tray message loop -----------------
-def test_quit_signals_the_tray_so_the_message_loop_can_exit():
-    app = _app()
+def test_quit_signals_the_tray_so_the_message_loop_can_exit(app):
     app.quit()
     # The crux of #4420: without this call PumpMessages() hangs forever.
     assert app._tray.quit_calls == 1
 
 
-def test_quit_sets_the_local_quit_event_and_tears_down_children():
-    app = _app()
+def test_quit_sets_the_local_quit_event_and_tears_down_children(app):
     app.quit()
     assert app._quit.is_set()
 
 
-def test_quit_is_idempotent_and_does_not_raise_on_repeat():
-    app = _app()
+def test_quit_is_idempotent_and_does_not_raise_on_repeat(app):
     app.quit()
     app.quit()  # a double external stop / menu+CLI race must be safe
     assert app._tray.quit_calls == 2
 
 
-def test_quit_still_cleans_up_when_tray_quit_raises():
-    app = _app()
+def test_quit_still_cleans_up_when_tray_quit_raises(app):
     app._tray = _ExplodingTray()
     # A tray that is already destroyed must not leak the supervised Resident or
     # the single-instance lock: cleanup must happen and the error swallowed.
@@ -99,7 +102,7 @@ def test_quit_source_calls_tray_quit():
     assert "self._tray.quit()" in src
 
 
-# --- defect 2: forced kill is never masked as a normal shutdown PASS -------
+# --- defect 2: no forced kill or shared tray manipulation by the verifier ----
 def _load_verify_module():
     spec = importlib.util.spec_from_file_location(
         "vw_shutdown", APP_ROOT / "verify_windows_live.py"
@@ -109,22 +112,24 @@ def _load_verify_module():
     return module
 
 
-def test_verify_harness_tracks_forced_kill_and_fails_the_check():
+def test_verifier_cannot_report_a_synthetic_graceful_shutdown_pass():
     module = _load_verify_module()
-    src = inspect.getsource(module.check_single_instance)
-    # The harness must record whether a force kill happened...
-    assert "forced_kill" in src
-    # ...and a forced kill must exclude the case from a PASS verdict.
-    assert "not forced_kill" in src
-    # ...and the recorded check must be gated on that verdict, not just liveness.
-    assert "graceful" in src
+    code = inspect.getsource(module)
+    assert not hasattr(module, "check_single_instance")
+    assert "quit_stops_cleanly" not in code
+    assert "subprocess.Popen(" not in code
+    assert ".kill(" not in code
+    assert "Get-CimInstance" not in code
 
 
-def test_verify_harness_still_calls_kill_only_after_graceful_wait():
+def test_shared_singleton_must_not_be_started_or_stopped_by_scratch_verifier():
     module = _load_verify_module()
-    src = inspect.getsource(module.check_single_instance)
-    # The graceful wait must precede any force kill (timeout -> kill ordering).
-    assert src.index("first.wait(") < src.index("first.kill()")
+    code = inspect.getsource(module.main)
+    assert "check_single_instance" not in code
+    assert "_delete_owned_scratch(root)" in code
+    assert "TemporaryDirectory" in code
+    assert "CLAW_CONNECT_AUTOSTART_RUN_KEY" in code
+    assert "CLAW_CONNECT_AUTOSTART_PREF_KEY" in code
 
 
 # --- defect 1b: pywin32 passes the full 4-tuple to every WNDPROC handler ----

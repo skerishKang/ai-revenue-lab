@@ -12,12 +12,16 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from claw_connect.connection import ConnectionState
+from claw_connect.enrollment import ConnectorEnrollment
 from claw_connect.menu_model import (
     ACTION_DISCONNECT,
+    ACTION_LOGIN,
     ACTION_OPEN_WEB,
     ACTION_QUIT,
     ACTION_RECONNECT,
     ACTION_TOGGLE_PAUSE,
+    ACTION_AUTOSTART_ON,
+    ACTION_AUTOSTART_OFF,
     ITEM_STATUS,
     build_menu,
     selectable_ids,
@@ -31,7 +35,7 @@ ALL_STATES = tuple(ConnectionState)
 @pytest.mark.parametrize("state", ALL_STATES)
 def test_every_state_shows_the_six_required_tray_items(state):
     labels = [item.label for item in build_menu(state)]
-    assert "Claw Web 열기" in labels
+    assert "PADIEM Chat 열기" in labels
     assert "일시중지" in labels or "다시 시작" in labels
     assert "다시 연결" in labels
     assert "연결 해제" in labels
@@ -65,11 +69,24 @@ def test_quit_is_always_selectable_and_disconnect_only_when_busy():
 
 def test_every_selectable_action_is_one_of_the_known_callbacks():
     known = {
-        ACTION_OPEN_WEB, ACTION_TOGGLE_PAUSE, ACTION_RECONNECT,
+        ACTION_OPEN_WEB, ACTION_LOGIN, ACTION_TOGGLE_PAUSE, ACTION_RECONNECT,
         ACTION_DISCONNECT, ACTION_QUIT,
+        ACTION_AUTOSTART_ON, ACTION_AUTOSTART_OFF,
     }
     for state in ALL_STATES:
         assert set(selectable_ids(state)) <= known
+
+
+def test_login_is_offered_only_when_the_device_is_not_registered():
+    # The reviewed login must never compete with normal operation on a PC that
+    # already holds a usable enrollment.
+    for state in (ConnectionState.UNREGISTERED, ConnectionState.REVOKED):
+        assert ACTION_LOGIN in selectable_ids(state)
+    for state in (
+        ConnectionState.DISCONNECTED, ConnectionState.CONNECTING,
+        ConnectionState.CONNECTED, ConnectionState.PAUSED, ConnectionState.OFFLINE,
+    ):
+        assert ACTION_LOGIN not in selectable_ids(state)
 
 
 # --- CLI contract (#4139 item 9) ------------------------------------------
@@ -83,29 +100,52 @@ def test_cli_defaults_to_start_and_exposes_the_required_commands():
     assert parser.parse_args(["autostart", "show"]).autostart_mode == "show"
 
 
-def test_status_command_prints_machine_readable_state():
-    from claw_connect.runtime import ConnectApp
+def test_status_command_prints_machine_readable_state(monkeypatch, tmp_path):
+    monkeypatch.setenv("CLAW_CONNECT_STATE_DIR", str(tmp_path / "state"))
+    from claw_connect.runtime import ConnectApp  # noqa: F401
 
     code = cli.main(["status"])
     assert code == 0
 
 
-def test_connect_app_status_never_claims_an_unobserved_state():
+def test_connect_app_status_never_claims_an_unobserved_state(tmp_path):
     from claw_connect.runtime import ConnectApp
 
-    app = ConnectApp(resident_command=[sys.executable, "-c", "pass"])
+    app = ConnectApp(
+        resident_command=[sys.executable, "-c", "pass"],
+        enrollment=ConnectorEnrollment(state_dir=tmp_path / "state"),
+    )
     status = app.status()
-    assert status["state"] == ConnectionState.DISCONNECTED.value
+    # A device that was never enrolled is UNREGISTERED, not "disconnected": the
+    # Connector must never imply a connection it does not have.
+    assert status["state"] == ConnectionState.UNREGISTERED.value
     assert status["resident_running"] is False
     assert status["autostart_enabled"] is False
+    # #4139 STEP 3: why the supervised Resident is not up is itself observable,
+    # so an absent Resident is never silently indistinguishable from a broken
+    # Connector. Both values are refusals: which one is reported depends on
+    # whether the first-launch record has been materialised yet, and the
+    # deterministic no-record case is pinned in
+    # test_4139_resident_launch_plan.py.
+    assert status["resident_launch_reason"] in {
+        "no_committed_enrollment", "enrollment_not_live",
+    }
+    assert status["resident_launch_reason"] != "planned"
     assert set(status) == {
         "product", "version", "state", "resident_running",
-        "autostart_enabled", "single_instance",
+        "autostart_enabled", "single_instance", "enrollment",
+        "resident_launch_reason",
     }
+    enrollment = status["enrollment"]
+    assert enrollment["enrolled"] is False
+    assert enrollment["broker_endpoint_configured"] is False
+    assert enrollment["raw_device_credential"] is False
+    assert enrollment["pairing_code_persisted"] is False
     json.dumps(status)  # must stay JSON serialisable
 
 
-def test_tray_web_entry_uses_verified_padiem_chat_production_origin(monkeypatch):
+def test_tray_web_entry_uses_verified_padiem_chat_production_origin(monkeypatch, tmp_path):
+    monkeypatch.setenv("CLAW_CONNECT_STATE_DIR", str(tmp_path / "state"))
     from claw_connect import WEB_URL
     from claw_connect.runtime import ConnectApp
 
@@ -117,11 +157,33 @@ def test_tray_web_entry_uses_verified_padiem_chat_production_origin(monkeypatch)
     assert opened == ["https://chat.padiem.net/"]
 
 
+def test_login_opens_only_the_official_padiem_authentication_surface(monkeypatch, tmp_path):
+    # The Connector must never render its own credential form and must never
+    # collect a password or a browser cookie: it only hands the user to the
+    # official authentication page.
+    monkeypatch.setenv("CLAW_CONNECT_STATE_DIR", str(tmp_path / "state"))
+    from claw_connect.runtime import ConnectApp
+
+    opened = []
+    monkeypatch.setattr("webbrowser.open", lambda url: opened.append(url))
+    app = ConnectApp(resident_command=[sys.executable, "-c", "pass"])
+    url = app.login()
+    assert url == "https://chat.padiem.net/"
+    assert opened == ["https://chat.padiem.net/"]
+    snapshot = app.enrollment.status_snapshot()
+    assert snapshot["pairing_code_persisted"] is False
+    assert snapshot["raw_device_credential"] is False
+
+
 # --- packaging contract (#4139 item 9) ------------------------------------
 def test_npx_entry_point_and_package_manifest_exist():
     manifest = json.loads((ROOT / "package.json").read_text(encoding="utf-8"))
+    assert manifest["name"] == "@padiem/connector"
+    assert manifest["bin"]["padiem-connector"] == "bin/padiem-connector.mjs"
     assert manifest["bin"]["claw-connect"] == "bin/claw-connect.mjs"
+    assert "padiem_connector/" in manifest["files"]
     assert "claw_connect/" in manifest["files"]
+    assert (ROOT / "bin" / "padiem-connector.mjs").exists()
     assert (ROOT / "bin" / "claw-connect.mjs").exists()
 
 
@@ -146,7 +208,8 @@ def test_installer_copies_the_same_module_the_npx_path_runs():
     script = (ROOT / "install.ps1").read_text(encoding="utf-8")
     wrapper = (ROOT / "bin" / "claw-connect.mjs").read_text(encoding="utf-8")
     # Both installation paths must execute the same Python module.
-    assert "claw_connect" in script
+    assert "claw_connect" in script  # stable old implementation
+    assert "padiem_connector" in script
     assert "run_module('claw_connect'" in wrapper or "run_module('claw_connect" in wrapper
 
 
@@ -155,3 +218,31 @@ def test_connect_package_does_not_introduce_a_second_engine_or_inbound_port():
         source = path.read_text(encoding="utf-8")
         assert "listen(" not in source
         assert "bind((" not in source
+
+
+def test_unregistered_tray_does_not_request_a_second_account_login():
+    labels = [item.label for item in build_menu(ConnectionState.UNREGISTERED)]
+    assert "웹사이트에서 연결" in labels
+    assert not any("다시 로그인" in label for label in labels)
+    assert ACTION_AUTOSTART_ON not in selectable_ids(ConnectionState.UNREGISTERED)
+
+
+def test_autostart_tray_control_reflects_runtime_state_without_guessing():
+    off = build_menu(ConnectionState.OFFLINE, autostart_enabled=False)
+    on = build_menu(ConnectionState.OFFLINE, autostart_enabled=True)
+    assert ACTION_AUTOSTART_ON in {item.id for item in off if item.enabled}
+    assert ACTION_AUTOSTART_OFF not in {item.id for item in off if item.enabled}
+    assert ACTION_AUTOSTART_OFF in {item.id for item in on if item.enabled}
+    assert ACTION_AUTOSTART_ON not in {item.id for item in on if item.enabled}
+
+
+def test_windows_installer_autolaunches_tray_without_claiming_enrollment():
+    script = (ROOT / "install.ps1").read_text(encoding="utf-8")
+    assert "Start-Process -FilePath $LaunchPython" in script
+    assert "-ArgumentList '-m padiem_connector start'" in script
+    assert "-WorkingDirectory $InstallRoot" in script
+    assert "pythonw.exe" in script
+    assert "    connected = $false" in script
+    assert "    tray_launch_requested = $false" in script
+    assert "$result.tray_launch_requested = $true" in script
+    assert script.rfind("Start-Process -FilePath $LaunchPython") > script.rfind("if ($Autostart)")
