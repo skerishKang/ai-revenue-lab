@@ -8,6 +8,8 @@ OWNER = repository documentation governance
 LAST_VERIFIED = 2026-10-14
 ```
 
+> **2026-10-15 current issue/PR/document inventory:** [Current 84-issue reconciliation](operations/PADIEM_PORTFOLIO_ISSUE_DOC_RECONCILIATION_20261013.md). Original [835-source governance classification](operations/GITHUB_DOCUMENT_GOVERNANCE_AUDIT_CONSOLIDATED_20261014.md) stays separate. <!-- CENTRAL_CURRENT_PORTFOLIO_INDEX_20261015 -->
+
 `docs/` is the entrypoint for **current documentation authority**. Dated audits, issue-specific designs, phase documents and Git history remain evidence; file existence alone does not make them current architecture or runtime truth.
 
 ## 문서 탐색 — 하나의 사실 원천 참조
