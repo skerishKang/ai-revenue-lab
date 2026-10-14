@@ -99,7 +99,7 @@
       ],
       "credential_source": "platform_secret",
       "credential_binding_name": "PADIEM_OPENCODE_API_KEY",
-      "enabled": false
+      "enabled": true
     },
     "zanslab": {
       "base_origin": "https://zanslab.id/v1",
@@ -346,6 +346,24 @@
       "output_price_usd_per_1m": 0,
       "source": "https://tokenharbor.ai/models/deepseek-v4.1-flash:free (free-route offer; availability/allowance subject to change)",
       "source_checked_at": "2026-10-11",
+      "enabled": true
+    },
+    {
+      "id": "opencode-go/cat-jam-free",
+      "provider_id": "opencode-go",
+      "upstream_model": "cat-jam-free",
+      "display_name": "OpenCode Go: Cat Jam Free",
+      "provider_name": "OpenCode Go",
+      "capabilities": [
+        "chat",
+        "coding",
+        "free"
+      ],
+      "context_window": 0,
+      "input_price_usd_per_1m": 0,
+      "output_price_usd_per_1m": 0,
+      "source": "https://dev.opencode.ai/v2/docs/console/go/ (Cat Jam Free, chat/completions, limited-time free availability)",
+      "source_checked_at": "2026-10-15",
       "enabled": true
     },
     {

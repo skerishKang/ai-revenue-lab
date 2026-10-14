@@ -1,6 +1,6 @@
 """OpenCode Go fixed-model protocol boundary (coding-agent traffic only).
 
-The six exact owner-approved model IDs are routed by their *documented*
+The seven exact owner-approved model IDs are routed by their *documented*
 protocol; no attempt is made to send Responses or Anthropic Messages models
 through a generic chat-completions endpoint. Activation is independently gated
 by the canonical model/provider enabled flags. Never log secret values.
@@ -23,6 +23,7 @@ from .upstream_answer_contract import UpstreamEmptyAnswer
 
 # Owner-approved Go models; additions must keep their official wire protocol.
 _WIRE = {
+    "cat-jam-free": "chat/completions",
     "longcat-2.5-preview-free": "chat/completions",
     "step-5-preview-free": "chat/completions",
     "muse-spark-1.3-contributor": "responses",
