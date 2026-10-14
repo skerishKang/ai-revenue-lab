@@ -1,0 +1,59 @@
+/* #4643 shared Chat/Claw microphone entry for the composer.
+ *
+ * Presentation only. The button sits in .composer-actions (not
+ * .composer-tools) because the general Claw view hides .composer-tools;
+ * margin-inline-start:auto keeps it grouped with the send cluster in both
+ * Chat and Claw without moving existing controls.
+ */
+
+#voiceMicButton {
+  flex: 0 0 auto;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-inline-start: auto;
+  padding: 0 11px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: #55565f;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+#voiceMicButton:hover:not(:disabled) { background: #f5f5f8; }
+
+#voiceMicButton[aria-pressed="true"] {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+#voiceMicButton:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+#voiceMicButton:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.voice-interim-preview {
+  margin: 2px 0 0;
+  padding: 0 8px;
+  color: #6b6c75;
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 620px) {
+  #voiceMicButton {
+    min-height: 44px;
+    padding: 0 9px;
+    align-self: flex-end;
+  }
+}
