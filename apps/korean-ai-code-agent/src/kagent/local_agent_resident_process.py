@@ -857,6 +857,7 @@ def build_resident_host(
     office_file_authorization_port: Any | None = None,
     office_renderer: Any | None = None,
     office_p01_plan_source: Any | None = None,
+    verified_text_plan_source: Any | None = None,
 ) -> LocalAgentResidentRuntimeHost:
     """Construct *the* resident host, once, on the redeemed binding."""
 
@@ -978,6 +979,26 @@ def build_resident_host(
                 config=config,
             ),
         )
+    # #4139: a bounded TXT read result is produced post-ACK by the same
+    # deployment-injected trusted P01 source shape the Office lane uses. It
+    # reaches the broker on the one canonical device route (LOCAL1 #4705),
+    # through the same P01-authorized selected-root READ — no second file
+    # authority, no second upload path and no ambient switch.
+    text_result_staging = None
+    if verified_text_plan_source is not None:
+        from .local_resident_verified_text_delivery import compose_verified_text_delivery
+        from .windows_local_filesystem import P01LocalPermissionWindowsFileAuthorizationPort
+
+        text_result_staging = compose_verified_text_delivery(
+            device=device,
+            file_requests=verified_text_plan_source,
+            file_authorization_port=P01LocalPermissionWindowsFileAuthorizationPort(
+                permission_profile=default_device_permission_profile(device=device),
+                evidence_port=verified_text_plan_source,
+            ),
+            config=config,
+            clock=clock,
+        )
     # #3140 stall diagnosis: the facts a stalled SQLite open would have produced,
     # reported only once the store is actually ready. No path, no handle.
     try:
@@ -1008,6 +1029,7 @@ def build_resident_host(
         heartbeat_interval_seconds=30,
         session_ttl_seconds=900,
         office_staging=office_staging,
+        text_result_staging=text_result_staging,
     )
     _observe_phase("host_build_host_done")
     return host

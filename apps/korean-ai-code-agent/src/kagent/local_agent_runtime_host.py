@@ -223,6 +223,7 @@ class LocalAgentResidentRuntimeHost:
         durable_store: DurableRunStore,
         coordinator: ControlPlaneAdmittedExecutionCoordinator | None = None,
         office_staging=None,
+        text_result_staging=None,
         clock: Callable[[], datetime] | None = None,
         monotonic: Callable[[], float] | None = None,
         instance_lock: SingleInstanceLockPort | None = None,
@@ -293,6 +294,15 @@ class LocalAgentResidentRuntimeHost:
         ):
             raise ContractError("trusted post-ACK Office output delivery port required")
         self._office_staging = office_staging
+        # #4139: the bounded TXT read result travels on its own post-ACK port,
+        # exactly like the Office staging lane: it is a side effect of an
+        # already successful acknowledgement, never part of the result/ack
+        # authority, and never a second execution or retry of the command.
+        if text_result_staging is not None and not callable(
+            getattr(text_result_staging, "on_acknowledged", None)
+        ):
+            raise ContractError("trusted post-ACK verified text delivery port required")
+        self._text_result_staging = text_result_staging
         self._recovery = LocalAgentRestartRecoveryDriver(
             store=durable_store,
             channel=channel,
@@ -813,6 +823,35 @@ class LocalAgentResidentRuntimeHost:
                             self._record_diagnostic(
                                 "office", "STAGING_REFUSED",
                                 "Private Office staging incomplete; no Drive upload",
+                            )
+                    if self._text_result_staging is not None:
+                        try:
+                            fact = receipt.execution
+                            if (fact.command_id != command.command_id
+                                    or fact.run_id != command.run_id
+                                    or fact.termination.value != "exited"
+                                    or fact.exit_code != 0
+                                    or fact.revision_ref != command.revision_ref):
+                                raise ContractError("successful exact broker receipt required")
+                            credential = self._credential_store.load(
+                                binding=binding, now=self._now(),
+                            )
+                            delivered = self._text_result_staging.on_acknowledged(
+                                binding=binding, command=command, receipt=receipt,
+                                credential=credential,
+                            )
+                            if delivered is not None:
+                                self._record_diagnostic(
+                                    "verified_text", "DELIVERED",
+                                    "Authorized PC text read returned to the broker",
+                                )
+                        except Exception:
+                            # The file is not re-read and the command is not
+                            # retried: a failed text transport keeps the
+                            # acknowledged command truth and reports no content.
+                            self._record_diagnostic(
+                                "verified_text", "STAGING_REFUSED",
+                                "PC text read not returned; no content claimed",
                             )
                 except Exception as exc:
                     self._record_diagnostic("execution", "EXECUTION_ERROR", str(exc))
