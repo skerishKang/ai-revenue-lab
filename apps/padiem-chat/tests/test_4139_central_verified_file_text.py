@@ -252,3 +252,53 @@ async def test_failed_pc_read_never_persists_success_state_or_fetches_file_text(
     assert "exited" in history.calls[0]["content"]
     assert "1" in history.calls[0]["content"]
     assert "PC ?? ?? ??" not in history.calls[0]["content"]
+
+
+@pytest.mark.asyncio
+async def test_configured_file_rpc_none_never_consumes_conversation_message():
+    from app.claw_local_task_result_composition import BrokerAuthorityLocalRunnerResultPort
+
+    class BrokerBinding:
+        def terminal_command_result(self, payload):
+            raise AssertionError("unexpected terminal broker read")
+
+        def read_verified_file_text(self, payload):
+            assert payload == {
+                "account_ref": "user1", "workspace_ref": "ws1",
+                "run_id": "run1", "command_id": "cmd1",
+            }
+            return None
+
+    port = BrokerAuthorityLocalRunnerResultPort(BrokerBinding())
+    history = FakeHistory()
+
+    class ReceiptPort(FakePort):
+        async def read_verified_file_text(self, **kwargs):
+            return await port.read_verified_file_text(**kwargs)
+
+    with pytest.raises(LocalTaskResultError, match="file result is not available") as exc:
+        await project_local_runner_terminal_result(
+            history=history, result_port=ReceiptPort(receipt()),
+            user_id="user1", run_id="run1", command_id="cmd1",
+            expected_workspace_id="ws1",
+        )
+    assert exc.value.code == "file_text_unverified"
+    assert history.calls == []
+
+
+@pytest.mark.asyncio
+async def test_async_file_rpc_none_is_not_an_absent_broker_feature():
+    from app.claw_local_task_result_composition import BrokerAuthorityLocalRunnerResultPort
+
+    class BrokerBinding:
+        async def read_verified_file_text(self, payload):
+            assert payload["account_ref"] == "user1"
+            return None
+
+    port = BrokerAuthorityLocalRunnerResultPort(BrokerBinding())
+    with pytest.raises(LocalTaskResultError) as exc:
+        await port.read_verified_file_text(
+            owner_id="user1", workspace_id="ws1",
+            run_id="run1", command_id="cmd1",
+        )
+    assert exc.value.code == "file_text_unverified"

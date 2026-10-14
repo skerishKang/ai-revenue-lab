@@ -110,6 +110,15 @@ class BrokerAuthorityLocalRunnerResultPort:
         })
         if value is not None and hasattr(value, "__await__"):
             value = await value
+        if value is None:
+            # An absent RPC (above) means an older Broker, but an *installed*
+            # RPC returning no receipt is not proof of a non-file command.
+            # Appending a generic terminal message here would consume the
+            # stable message ID before the actual PC TXT content arrives.
+            raise LocalTaskResultError(
+                "file_text_unverified",
+                "configured canonical Broker file result is not available",
+            )
         return value
 
     async def _read(self, *, run_id: str, owner_id: str, workspace_id: str | None):
