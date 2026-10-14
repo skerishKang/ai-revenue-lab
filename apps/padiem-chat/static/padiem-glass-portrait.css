@@ -123,10 +123,6 @@ html[data-theme="padiem-glass"] .conversation {
   padding-right: clamp(18px, 2.4vw, 34px);
 }
 
-html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .conversation {
-  background: linear-gradient(155deg, rgba(248,250,251,.88), rgba(233,238,241,.84));
-}
-
 html[data-theme="padiem-glass"] .starter,
 html[data-theme="padiem-glass"] .source-card,
 html[data-theme="padiem-glass"] .rich-block,
