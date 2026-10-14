@@ -13,6 +13,7 @@
   const githubFeedback = document.getElementById("connectorGithubFeedback");
   const driveRemove = document.getElementById("connectorDriveRemove");
   const driveFeedback = document.getElementById("connectorDriveFeedback");
+  const driveManagedByExistingModule = Boolean(document.querySelector('script[src="./claw-drive-account-management.js"]'));
   if (!dialog || !github || !drive || !githubState || !githubPrimary ||
       !githubRemove || !driveRemove) return;
 
@@ -45,6 +46,7 @@
   }
 
   function updateDrive() {
+    if (driveManagedByExistingModule) return;
     const connected = drive.dataset.connectorStatus === "connected";
     show(driveRemove, connected);
     driveRemove.disabled = state.drivePending;
@@ -136,7 +138,7 @@
     }
   });
 
-  driveRemove.addEventListener("click", async () => {
+  if (!driveManagedByExistingModule) driveRemove.addEventListener("click", async () => {
     if (state.drivePending || drive.dataset.connectorStatus !== "connected" ||
         !confirmRemoval(driveRemove,driveFeedback,"Google Drive")) return;
     state.drivePending = true; updateDrive();
@@ -157,13 +159,14 @@
     }
   });
 
-  new MutationObserver(updateDrive).observe(drive,
+  if (!driveManagedByExistingModule) new MutationObserver(updateDrive).observe(drive,
     {attributes:true,attributeFilter:["data-connector-status"]});
   dialog.addEventListener("close",()=>{
     ++readGeneration;
     resetRemoval(githubRemove,tr("연결 삭제","Remove connection"));
     resetRemoval(driveRemove,tr("연결 삭제","Remove connection"));
-    show(githubFeedback,false);show(driveFeedback,false);
+    show(githubFeedback,false);
+    if (!driveManagedByExistingModule) show(driveFeedback,false);
   });
   // All dialog entry routes (sidebar, Claw cards, OAuth return) share this readback.
   new MutationObserver(() => {

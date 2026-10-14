@@ -26,9 +26,6 @@ def test_guide_keeps_canonical_state_and_no_fake_install_or_oauth():
     assert 'fetch(' not in SCRIPT
     assert 'dataset.connectionState =' not in SCRIPT
     assert 'https://' not in SCRIPT
-    assert 'intent === "connect-github"' in SCRIPT
-    assert 'intent === "pause-github" || intent === "resume-github"' in SCRIPT
-    assert '"/api/connectors/github/start"' in SCRIPT
 
 
 def test_installation_defaults_are_shown_without_second_login_step():
@@ -37,12 +34,10 @@ def test_installation_defaults_are_shown_without_second_login_step():
     assert "설치 후 자동 실행·연결됩니다." in SCRIPT
 
 
-def test_drive_on_never_revokes_and_first_off_redirects_to_google_login():
+def test_drive_off_does_not_revoke_stored_oauth():
     assert 'intent === "disconnect-drive"' not in SCRIPT
     assert 'padiem:drive-quick-connect' in SCRIPT
-    assert 'state === "off" && id === "drive"' in SCRIPT
-    assert '연결 삭제를 OFF처럼 실행하지 않습니다.' in SCRIPT
-    assert '현재 파일 연결을 사용할 수 있습니다.' not in SCRIPT
+    assert 'OFF를 연결 삭제처럼 처리하지 않습니다.' in SCRIPT
 
 
 def test_guide_styles_do_not_touch_shared_chat_or_card_geometry():

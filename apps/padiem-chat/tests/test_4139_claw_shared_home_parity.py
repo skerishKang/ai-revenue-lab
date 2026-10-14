@@ -117,7 +117,7 @@ def test_shared_portrait_and_existing_legacy_claw_workflows_stay_available():
     assert '#clawTaskHub' in CSS
     assert "main-panel::before" in CSS
     assert 'content: none;' in CSS
-    assert ':not(:has(.claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]))) .main-panel::before' in CSS
+    assert ':not(:has(.claw-workspace[data-view="general"] ~ .conversation)) .main-panel::before' in CSS
     assert '.claw-hero-eyebrow' in CSS
     assert 'claw-connection-chips.js' in HTML
     assert 'display: block !important;\n  opacity: var(--glass-art-opacity)' not in CSS

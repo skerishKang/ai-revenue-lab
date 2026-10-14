@@ -3864,17 +3864,14 @@
   if (driveConnectButton) driveConnectButton.addEventListener("click", () => {
     void beginGoogleDriveConnect();
   });
-  // CLAW first connection: reuse this single reviewed Google OAuth ticket flow,
-  // never send a user through Connectors as a prerequisite for signing in.
   document.addEventListener("padiem:drive-quick-connect", () => {
     void (async () => {
+      // Existing server-trusted workspace truth, not a synthetic OFF.
       await loadConnectorStatus();
       const offered = googleDriveConnectButton();
       if (offered && !offered.hidden && !offered.disabled) {
-        // Only a non-sensitive return-to-CLAW presentation hint is stored.
         offered.click();
       } else {
-        // Unknown authority is not OFF; show the existing connection status.
         openConnectorsDialog();
       }
     })();
@@ -3899,7 +3896,6 @@
     openConnectorsDialog();
   }
 
-  // GitHub OAuth callback lands back on the existing Claw home, not Connectors.
   if (connectorReturnParts.some(part => part === "claw-github=connected")) {
     const cleanQuery = connectorReturnParts.filter(part => !part.startsWith("claw-github=")).join("&");
     const cleanPath = String(window.location.pathname || "/");

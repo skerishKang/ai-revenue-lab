@@ -33,22 +33,22 @@ html[data-theme="padiem-glass"] body .sidebar-bottom .settings-button > span:fir
 
 /* Desktop home-frame breathing room ------------------------------------ */
 @media (min-width: 921px) {
-  html[data-theme="padiem-glass"] body .app-shell[data-state="home"] .conversation {
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"],[data-state="chat"]) .conversation {
     margin-top: 16px !important;
     margin-bottom: 16px !important;
   }
 
-  html[data-theme="padiem-glass"] body .app-shell[data-state="home"] .composer-wrap {
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"],[data-state="chat"]) .composer-wrap {
     bottom: 16px !important;
     padding-top: 20px !important;
     padding-bottom: 16px !important;
   }
 
-  html[data-theme="padiem-glass"] body .app-shell[data-state="home"] .composer {
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"],[data-state="chat"]) .composer {
     padding: 12px 12px 11px !important;
   }
 
-  html[data-theme="padiem-glass"] body .app-shell[data-state="home"] .composer textarea {
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"],[data-state="chat"]) .composer textarea {
     padding: 9px 9px 7px !important;
   }
 }
@@ -255,46 +255,9 @@ html[data-theme="padiem-glass"] .settings-panel {
   -webkit-backdrop-filter: blur(30px) saturate(108%);
 }
 
-/* Active chat lane ------------------------------------------------------- */
-html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] {
-  --padiem-chat-inner-gutter: clamp(22px, 2vw, 30px);
-  --padiem-chat-active-lane-width: min(
-    820px,
-    calc(
-      100vw
-      - var(--workspace-rail, 252px)
-      - clamp(250px, 25vw, 360px)
-      - 68px
-    )
-  );
-  --padiem-chat-active-lane-offset: clamp(28px, 2.5vw, 42px);
-}
-
-@media (min-width: 1440px) {
-  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] {
-    --padiem-chat-active-lane-width: min(
-      1080px,
-      calc(100vw - var(--workspace-rail, 252px) - 100px)
-    );
-  }
-}
-
-@media (min-width: 1024px) {
-  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
-    width: var(--padiem-chat-active-lane-width) !important;
-    margin-left: var(--padiem-chat-active-lane-offset) !important;
-    margin-right: 0 !important;
-    padding-inline: var(--padiem-chat-inner-gutter) !important;
-  }
-
-  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer-wrap {
-    left: calc(var(--workspace-rail, 252px) + var(--padiem-chat-active-lane-offset)) !important;
-    width: var(--padiem-chat-active-lane-width) !important;
-    transform: none !important;
-    padding-inline: 0 !important;
-  }
-}
-
+/* Chat uses the SAME conversation frame and fixed composer as the first screen.
+ * The original active-only widened panel moved the input on first submit.
+ * Keep data-state=chat for routing/history, not for a second visual page. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .error-box {
   padding: 18px 20px !important;
   border-radius: 16px !important;

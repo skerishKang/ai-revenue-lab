@@ -69,7 +69,7 @@
       headline: tr("Google Drive가 연결되어 있어요", "Google Drive is connected"),
       copy: tr("드라이브 연결은 유지됩니다. 계정 연결 자체를 삭제하려면 커넥터 관리에서 선택해 주세요.",
                "Your Drive link is retained. Use Connectors to remove account authorization."),
-      foot: tr("Google Drive 일시 중지는 아직 서버에서 지원하지 않습니다. 연결 삭제를 OFF처럼 실행하지 않습니다.",
+      foot: tr("일시 중지는 아직 지원하지 않습니다. OFF를 연결 삭제처럼 처리하지 않습니다.",
                "Temporary Drive pause is not yet supported; OFF must not revoke the link."),
       button: tr("연결 관리", "Manage connection"), intent: "manage"
     } : {
