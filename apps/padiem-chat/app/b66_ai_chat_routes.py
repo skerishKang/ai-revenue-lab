@@ -468,14 +468,14 @@ async def b66_ai_chat(request: Request) -> JSONResponse:
             allow_provider=getattr(request.app.state, "b66_public_fact_search_authorized", False) is True,
         )
         # Server-owned B66 membership, never a browser-supplied paid tier.
-        product_tier = requested_tier or (access.get("tier", "FREE").lower() if access is not None else "free")
-        if product_tier not in ("free", "plus", "pro", "max"):
+        product_tier = requested_tier
+        if product_tier is not None and product_tier not in ("free", "plus", "pro", "max"):
             return _error(403, "invalid_membership_tier", "이용 등급을 확인해 주세요.")
         try:
             result = await complete(
                 model_messages,
                 model=route.model_id,
-                product_tier=product_tier,
+                **({"product_tier": product_tier} if product_tier is not None else {}),
                 additional_system_context=_envelope(outcome),
                 model_parameters=parameters,
             )
