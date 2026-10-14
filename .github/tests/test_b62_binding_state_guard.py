@@ -566,3 +566,101 @@ def test_b66_membership_gate_requires_explicit_cli_mode(tmp_path):
         "--before", str(before), "--after", str(after),
         "--expected-add-b66-membership-secret",
     ]) == 0
+
+
+_BROKER = "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE"
+_BROKER_TARGET = "padiem-local-agent-broker-state"
+_CONNECTOR_VARS = {
+    "PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED": "enabled",
+    "PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE": "owner-controlled-production-4139",
+    "PADIEM_CONNECTOR_PRODUCTION_ENABLED": "enabled",
+    "PADIEM_CONNECTOR_OWNER_ENROLLMENT_ENABLED": "enabled",
+    "PADIEM_CONNECTOR_OWNER_PRODUCTION_ENABLED": "enabled",
+    "PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED": "enabled",
+    "PADIEM_CONNECTOR_OWNER_PC_IDENTITY_PREFLIGHT_ENABLED": "enabled",
+    "PADIEM_CONNECTOR_OWNER_PC_NATIVE_DELIVERY_ENABLED": "enabled",
+}
+
+
+def _broker_entry(**extra):
+    entry = {"type": "service", "name": _BROKER, "service": _BROKER_TARGET}
+    entry.update(extra)
+    return entry
+
+
+def _connector_vars():
+    return [{"type": "plain_text", "name": name, "text": text}
+            for name, text in _CONNECTOR_VARS.items()]
+
+
+def test_connector_broker_missing_and_production_env_are_the_same_default_target():
+    """The live API echo (environment=production) must not fail the allowlist."""
+    before = settings(*base_bindings())
+    after = settings(*base_bindings(), _broker_entry(), *_connector_vars())
+    mod.assert_connector_broker_added_only(before, after)
+    echoed = settings(*base_bindings(),
+                      _broker_entry(environment="production"), *_connector_vars())
+    mod.assert_connector_broker_added_only(before, echoed)
+    mod.assert_connector_broker_added_only(echoed, echoed)
+    with pytest.raises(mod.BindingStateError):
+        mod.assert_preserved(before, after)
+
+
+@pytest.mark.parametrize("bad", [
+    {"service": "attacker-worker"},
+    {"environment": "staging"},
+    {"entrypoint": "Other"},
+    {"type": "plain_text", "text": "bad"},
+])
+def test_connector_broker_wrong_identity_is_rejected_despite_env_normalization(bad):
+    before = settings(*base_bindings())
+    entry = _broker_entry()
+    entry.update(bad)
+    if bad.get("type") == "plain_text":
+        entry.pop("service", None)
+    with pytest.raises(mod.BindingStateError):
+        mod.assert_connector_broker_added_only(
+            before, settings(*base_bindings(), entry, *_connector_vars()))
+
+
+def test_connector_baseline_distinguishes_fresh_residue_and_served():
+    version = settings(*base_bindings())
+    assert mod.assert_connector_baseline_consistent(version, settings(*base_bindings())) == "FRESH"
+    residue = settings(*base_bindings(),
+                       _broker_entry(environment="production"), *_connector_vars())
+    assert mod.assert_connector_baseline_consistent(version, residue) == "RESIDUE"
+    assert mod.assert_connector_baseline_consistent(residue, residue) == "SERVED"
+    # Any gap beyond the approved 9, any drop, or any wrong identity fails.
+    with pytest.raises(mod.BindingStateError):
+        mod.assert_connector_baseline_consistent(
+            version, settings(*base_bindings(), {"type": "secret_text", "name": "EXTRA"}))
+    with pytest.raises(mod.BindingStateError):
+        mod.assert_connector_baseline_consistent(
+            residue, settings(*base_bindings()))
+    drifted = [dict(b) for b in base_bindings()]
+    drifted.append(_broker_entry(service="attacker-worker"))
+    with pytest.raises(mod.BindingStateError):
+        mod.assert_connector_baseline_consistent(version, settings(*drifted))
+    wrong_vars = settings(*base_bindings(), _broker_entry(),
+                          {"type": "plain_text",
+                           "name": "PADIEM_CONNECTOR_PRODUCTION_ENABLED",
+                           "text": "disabled"})
+    with pytest.raises(mod.BindingStateError):
+        mod.assert_connector_baseline_consistent(version, wrong_vars)
+
+
+def test_connector_baseline_cli_is_explicit(tmp_path, capsys):
+    before = tmp_path / "version.json"
+    after = tmp_path / "settings.json"
+    before.write_text(json.dumps(settings(*base_bindings())), encoding="utf-8")
+    after.write_text(json.dumps(settings(
+        *base_bindings(), _broker_entry(), *_connector_vars())), encoding="utf-8")
+    base = ["--before", str(before), "--after", str(after)]
+    assert mod.main(base) == 1
+    assert mod.main(base + ["--check-connector-baseline"]) == 0
+    out = capsys.readouterr().out
+    assert "CONNECTOR_BASELINE_CONSISTENT=PASS" in out
+    assert "CONNECTOR_BASELINE_MODE=RESIDUE" in out
+    assert mod.main(base + [
+        "--check-connector-baseline", "--expected-add-connector-broker",
+    ]) == 1
