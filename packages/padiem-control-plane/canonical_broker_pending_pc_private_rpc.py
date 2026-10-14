@@ -6,6 +6,7 @@ importable by the existing Broker Worker runtime entrypoint.
 """
 from padiem_control_plane.broker_pending_pc_private_rpc import (  # noqa: F401
     CanonicalBrokerPendingPcLiveRPC,
+    CanonicalBrokerPendingPcBindingRPC,
     BrokerPendingPcPrivateRefused,
     _PRIVATE_METHODS_PRODUCTION_ENABLED,
     _OWNER_RPC_MOUNTED,

@@ -171,3 +171,18 @@ class CanonicalBrokerPendingPcLiveRPC:
         except Exception:
             raise BrokerPendingPcPrivateRefused("pending_pc_delivery_unconfirmed") from None
         return {"ok": True, "sent_once": True, "registered": False, "connected": False}
+
+
+
+class CanonicalBrokerPendingPcBindingRPC:
+    """Thin private service-binding relay to the EXISTING authority-ref DO.
+
+    This mixin is inherited only by the private WorkerEntrypoint; it does
+    not open an HTTP route or claim the browser's signed-owner permission.
+    """
+
+    async def reserve_pending_pc_link(self, payload: dict) -> dict:
+        return await self._stub().reserve_pending_pc_link(payload)
+
+    async def deliver_pending_pc_link(self, payload: dict) -> dict:
+        return await self._stub().deliver_pending_pc_link(payload)

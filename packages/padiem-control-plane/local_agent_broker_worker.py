@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Callable, TypeVar
 from workers import DurableObject, Response, WorkerEntrypoint
 from canonical_broker_pairing_rpc import CanonicalBrokerPairingRPC
-from canonical_broker_pending_pc_private_rpc import CanonicalBrokerPendingPcLiveRPC
+from canonical_broker_pending_pc_private_rpc import CanonicalBrokerPendingPcLiveRPC, CanonicalBrokerPendingPcBindingRPC
 from padiem_control_plane.local_agent_broker_http import DurableLocalAgentSessionRecord, LocalAgentMaterialResolutionRequest
 from local_agent_broker_device_http import LocalAgentBrokerDeviceHttpService
 from local_agent_broker_durable_runtime import LocalAgentBrokerDurableRuntime
@@ -110,7 +110,7 @@ class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, CanonicalBrokerPe
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
 
 
-class Default(WorkerEntrypoint):
+class Default(CanonicalBrokerPendingPcBindingRPC, WorkerEntrypoint):
     """Private Service Binding gateway to the server-owned broker object."""
 
     def _authority_ref(self) -> str:
@@ -163,15 +163,6 @@ class Default(WorkerEntrypoint):
 
     async def terminal_command_result(self, payload: dict) -> dict:
         return await self._stub().terminal_command_result(payload)
-
-    # #4139 private service binding only. OFF without all three server-owned
-    # pending-PC gates; no public Worker fetch route, no schema auto-install,
-    # and no socket handoff until the SAME Broker DO owns a live PC WSS.
-    async def reserve_pending_pc_link(self, payload: dict) -> dict:
-        return await self._stub().reserve_pending_pc_link(payload)
-
-    async def deliver_pending_pc_link(self, payload: dict) -> dict:
-        return await self._stub().deliver_pending_pc_link(payload)
 
     async def read_office_artifact_part(self, payload: dict) -> dict:
         return await self._stub().read_office_artifact_part(payload)
@@ -252,7 +243,6 @@ DEVICE_DIRECTORY_VOCABULARY_HAS_ONLINE = False
 DEVICE_DIRECTORY_SECOND_ONLINE_AUTHORITY = False
 DEVICE_DIRECTORY_SECOND_DEVICE_AUTHORITY = False
 DEVICE_DIRECTORY_MUTATION = False
-# #3436 B2c device-session auth: existing private read-only RPC.
 PRODUCTION_DEPLOYMENT = False
 PRODUCTION_ROUTE_CONFIGURED = False
 PRODUCTION_SECRET_BOUND = False
