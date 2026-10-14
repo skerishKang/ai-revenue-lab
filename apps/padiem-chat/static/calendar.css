@@ -805,3 +805,94 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar
 }
 .calendar-day-hour-events { display: flex; flex-wrap: wrap; align-content: flex-start; align-items: flex-start; gap: 5px; }
 .calendar-day-hour-events .calendar-visual-event { max-width: min(100%, 380px); }
+
+
+/* Calendar B62 usability: shared Chat eyebrow, stable viewport, date-triggered editor. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar-view-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  letter-spacing: .16em;
+  color: #334a5b;
+}
+html[data-theme="padiem-glass"] body .app-shell[data-state="calendar"] .calendar-view-kicker::before {
+  content: "";
+  display: inline-block;
+  flex: 0 0 6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(121,188,231,.95);
+  box-shadow: 0 0 12px rgba(121,188,231,.32);
+}
+.app-shell[data-state="calendar"] .calendar-view-help { display: none !important; }
+/* Forms are launched by date/time or native event rather than top-of-page accordions. */
+.app-shell[data-state="calendar"] .calendar-record {
+  display: none !important;
+}
+.app-shell[data-state="calendar"] .calendar-record.calendar-record--overlay {
+  display: block !important;
+  position: absolute;
+  top: 175px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(460px, calc(100% - 24px));
+  max-height: min(680px, calc(100vh - 190px));
+  min-height: 0;
+  overflow-y: auto;
+  z-index: 50;
+  padding: 16px 18px;
+  border: 1px solid #bed1df;
+  border-radius: 18px;
+  background: #f9fbfc;
+  box-shadow: 0 18px 60px rgba(35,55,73,.29);
+}
+.app-shell[data-state="calendar"] .calendar-record--overlay .calendar-record-hint { display: none; }
+.app-shell[data-state="calendar"] .calendar-editor-bar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 0 0 9px;
+}
+.app-shell[data-state="calendar"] .calendar-editor-close,
+.app-shell[data-state="calendar"] .calendar-editor-delete {
+  border: 1px solid #cbdbe5;
+  border-radius: 8px;
+  background: #eef4f8;
+  font: inherit;
+  font-size: 12px;
+  color: #385f79;
+  cursor: pointer;
+  padding: 7px 12px;
+}
+.app-shell[data-state="calendar"] .calendar-editor-delete { color: #af423d; }
+.app-shell[data-state="calendar"] .calendar-editor-delete[hidden] { display: none; }
+.app-shell[data-state="calendar"] .calendar-editor-close:focus-visible,
+.app-shell[data-state="calendar"] .calendar-editor-delete:focus-visible,
+.app-shell[data-state="calendar"] .calendar-visual-editable:focus-visible { outline: 2px solid #396e92; outline-offset: 2px; }
+/* Keep Month/Week/Day on the same reading surface; scroll only the inner hours. */
+.app-shell[data-state="calendar"] .calendar-visual {
+  height: clamp(330px, 53vh, 540px);
+  min-height: 330px;
+  max-height: 540px;
+  overflow-y: auto;
+}
+.app-shell[data-state="calendar"] .calendar-month-grid {
+  height: calc(100% - 34px);
+  grid-auto-rows: minmax(0,1fr);
+}
+.app-shell[data-state="calendar"] .calendar-month-grid .calendar-visual-day { min-height: 0; }
+.app-shell[data-state="calendar"] .calendar-week-grid { height: 100%; }
+.app-shell[data-state="calendar"] .calendar-week-grid .calendar-week-column { min-height: 0; }
+.app-shell[data-state="calendar"] .calendar-visual-editable { cursor: pointer; }
+.app-shell[data-state="calendar"] .calendar-visual-editable:hover { background: #bdd6e9; }
+.app-shell[data-state="calendar"] .calendar-day-hour { cursor: pointer; }
+.app-shell[data-state="calendar"] .calendar-day-hour:hover { background: #f0f6fb; }
+.app-shell[data-state="calendar"] .calendar-error { margin: 8px 0; }
+@media (max-width:720px) {
+  .app-shell[data-state="calendar"] .calendar-record.calendar-record--overlay {
+    top: 100px;
+    max-height: calc(100vh - 140px);
+  }
+  .app-shell[data-state="calendar"] .calendar-visual { height: clamp(300px,48vh,480px); min-height: 300px; }
+}
