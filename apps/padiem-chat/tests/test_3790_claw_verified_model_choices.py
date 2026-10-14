@@ -81,7 +81,7 @@ def test_no_default_and_advanced_exact_id_retained():
     assert 'id="clawModelIdInput" type="text" value=""' in html
     assert 'claw-model-advanced' in html
     assert 'claw-verified-model-choice.js' in html
-    assert 'if (clawGeneralRequest && !contextSnapshot.selectedModelId)' in app
+    assert 'if (clawGeneralRequest && selectedProductTier() === "plus" && !contextSnapshot.selectedModelId)' in app
     assert 'payload.model_id = contextSnapshot.selectedModelId' in app
     assert 'scope==="b14_owner_allowed_live_ready"' in chooser
     assert 'const IDS=' not in chooser and 'const PROVEN=' not in chooser

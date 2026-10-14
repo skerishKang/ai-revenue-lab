@@ -1667,13 +1667,11 @@
   }, { once: true });
 
   function selectedProductTier() {
-    // #4317: standalone Chat must honor an explicit Free selection; otherwise
-    // its backend sees Plus even when the user selected Free. Claw's own
-    // explicit-model Plus/P01 route is kept unchanged until site-tier authority
-    // is integrated; selecting Free on Chat never authorizes a Claw model.
-    if (shell.dataset.state === "claw") return "plus";
+    // Both Chat and the shared Claw first-use composer honor the visible
+    // PADIEM FREE/PLUS choice. Never silently force Claw to Plus while its
+    // explicit Plus model chooser is hidden. The server validates entitlements.
     const tier = window.PadiemTierSelection?.get?.();
-    return tier === "free" ? "free" : "plus";
+    return tier === "plus" ? "plus" : "free";
   }
 
   async function requestAnswer(outboundMessages, skill, attachment, contextSnapshot, clawGeneralRequest) {
@@ -1781,9 +1779,12 @@
     contextSnapshot.selectedModelId =
       clawGeneralRequest && selectedProductTier() === "plus" && typeof clawModelIdInput !== "undefined" && clawModelIdInput
         ? clawModelIdInput.value.trim() : "";
-    if (clawGeneralRequest && !contextSnapshot.selectedModelId) {
+    if (clawGeneralRequest && selectedProductTier() === "plus" && !contextSnapshot.selectedModelId) {
+      // Only the explicit Plus lane requires a chosen owner-allowed B14 model.
+      // A normal Free Claw greeting goes through the canonical P01 Free tier.
+      showComposerInlineHint("claw-verified-model-required");
       setNote(uiT("claw-verified-model-required"), "error");
-      return false; // no quota/provider call without explicit model
+      return false;
     }
     showConversation({ preserveClaw: clawGeneralRequest });
     addUserMessage(prompt, attachmentSnapshot);
@@ -1828,6 +1829,9 @@
     profileToggle.setAttribute("aria-expanded", "false");
   }
 
+  window.addEventListener("padiem:tierchange", () => {
+    if (shell.dataset.state === "claw") shell.dataset.clawTier = selectedProductTier();
+  });
   input.addEventListener("input", updateComposer);
   // #3084: Korean IME regression protection. While a Hangul/IME composition is
   // active the browser still reports key === "Enter" for the candidate-confirm
@@ -2206,6 +2210,7 @@
 
   function syncComposerForClaw(isClaw) {
     if (!input) return;
+    if (isClaw) shell.dataset.clawTier = selectedProductTier();
     // #3531: the business-request prompt belongs to the explicit manual
     // workflow view only. The general Claw view shares the generic prompt
     // so placeholder parity with Chat Home holds.

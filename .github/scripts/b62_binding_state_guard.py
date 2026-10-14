@@ -239,6 +239,74 @@ def assert_hark_browser_added_only(before: object, after: object) -> None:
             raise BindingStateError("expected exactly one approved BROWSER addition")
 
 
+def _normalized_connector_broker_entry(entry: tuple[object, ...]) -> tuple[object, ...]:
+    """Normalize ONLY the canonical Connector Broker binding's default env.
+
+    The live API echoes the stored binding with environment=production while
+    the generated config omits it; both name the same default production
+    target. A non-service collision, a different target, any entrypoint, or
+    any other environment still fails closed. All other services keep exact
+    comparison; this normalization never applies to them.
+    """
+    if entry[1] != CONNECTOR_BROKER_BINDING:
+        return entry
+    if entry[0] != "service":
+        raise BindingStateError("Connector Broker binding type collision")
+    if entry[2] != CONNECTOR_BROKER_TARGET:
+        raise BindingStateError("Connector Broker target drift")
+    if entry[4] is not None:
+        raise BindingStateError("Connector Broker entrypoint drift")
+    if entry[3] not in (None, "production"):
+        raise BindingStateError("Connector Broker environment drift")
+    return ("service", CONNECTOR_BROKER_BINDING, CONNECTOR_BROKER_TARGET, None, None)
+
+
+CONNECTOR_APPROVED_NAMES = frozenset(
+    {CONNECTOR_BROKER_BINDING} | set(CONNECTOR_EXPLICIT_VARS)
+)
+
+
+def assert_connector_baseline_consistent(version_payload: object, settings_payload: object) -> str:
+    """The mutable settings plane may differ from the active immutable version
+    ONLY by the approved Broker binding plus explicit Connector settings.
+
+    Returns FRESH (identical, deploy adds the 9), RESIDUE (settings already
+    carry exactly the approved additions, e.g. after a rolled-back upload;
+    deploy reuses them), or SERVED (both already carry them). Anything else —
+    drops, unreviewed additions, or wrong identities on either side — fails
+    closed. Pre-existing non-Connector bindings are compared by name only so
+    API response-shape differences can never mask or invent drift here; their
+    exact preservation is proven by the settings-to-settings post-deploy
+    guard instead.
+    """
+    version_entries = {entry[1]: entry for entry in canonical_state(version_payload)}
+    settings_entries = {entry[1]: entry for entry in canonical_state(settings_payload)}
+    version_names = set(version_entries)
+    settings_names = set(settings_entries)
+    dropped = version_names - settings_names
+    if dropped:
+        raise BindingStateError(
+            "active version bindings missing from settings; refusing to cement a drop"
+        )
+    extra = settings_names - version_names
+    if not extra.issubset(CONNECTOR_APPROVED_NAMES):
+        raise BindingStateError(
+            "settings carry unreviewed additions beyond the active version"
+        )
+    for name in CONNECTOR_APPROVED_NAMES:
+        for entries in (version_entries, settings_entries):
+            if name not in entries:
+                continue
+            entry = entries[name]
+            if name == CONNECTOR_BROKER_BINDING:
+                _normalized_connector_broker_entry(entry)
+            elif entry != ("plain_text", name, CONNECTOR_EXPLICIT_VARS[name]):
+                raise BindingStateError(f"Connector setting drift on {name!r}")
+    if not extra:
+        return "SERVED" if CONNECTOR_BROKER_BINDING in settings_names else "FRESH"
+    return "RESIDUE"
+
+
 def assert_connector_broker_added_only(before: object, after: object) -> None:
     """Only the canonical Broker binding plus explicit Connector vars may appear.
 
@@ -248,8 +316,8 @@ def assert_connector_broker_added_only(before: object, after: object) -> None:
     pre-existing binding, any non-allowlisted addition, or any value drift
     (including a drifted Connector value) fails closed.
     """
-    old = canonical_state(before)
-    new = canonical_state(after)
+    old = tuple(_normalized_connector_broker_entry(entry) for entry in canonical_state(before))
+    new = tuple(_normalized_connector_broker_entry(entry) for entry in canonical_state(after))
     broker_entry = ("service", CONNECTOR_BROKER_BINDING, CONNECTOR_BROKER_TARGET, None, None)
     allowed_additions = {broker_entry} | {
         ("plain_text", name, text) for name, text in CONNECTOR_EXPLICIT_VARS.items()
@@ -397,6 +465,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--expected-engine-4194-rollout", action="store_true")
     parser.add_argument("--expected-add-hark-browser", action="store_true")
     parser.add_argument("--expected-add-connector-broker", action="store_true")
+    parser.add_argument("--check-connector-baseline", action="store_true",
+                        help="compare active immutable version (--before) against mutable "
+                             "settings (--after); the settings may only add the approved "
+                             "Connector 9")
     parser.add_argument("--expected-add-b66-membership-secret", action="store_true")
     parser.add_argument("--owner-d1-database-id")
     parser.add_argument("--require-served-resource-integrity", action="store_true")
@@ -408,6 +480,7 @@ def main(argv: list[str] | None = None) -> int:
             args.expected_engine_4194_rollout,
             args.expected_add_hark_browser,
             args.expected_add_connector_broker,
+            args.check_connector_baseline,
             args.expected_add_b66_membership_secret,
         )) > 1:
             raise BindingStateError("multiple additive authority modes prohibited")
@@ -423,6 +496,13 @@ def main(argv: list[str] | None = None) -> int:
             if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
                 raise BindingStateError("Connector Broker mode refuses unrelated authorization flags")
             assert_connector_broker_added_only(_load(args.before), _load(args.after))
+        elif args.check_connector_baseline:
+            if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
+                raise BindingStateError("Connector baseline mode refuses unrelated authorization flags")
+            baseline_mode = assert_connector_baseline_consistent(
+                _load(args.before), _load(args.after)
+            )
+            print(f"CONNECTOR_BASELINE_MODE={baseline_mode}")
         elif args.expected_add_b66_membership_secret:
             if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
                 raise BindingStateError("B66 membership secret mode refuses unrelated authority flags")
@@ -462,6 +542,8 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     if args.expected_engine_4194_rollout:
         print("ENGINE_4194_EXACT_ADDITIONS_AND_PREEXISTING_BINDINGS_PRESERVED=PASS")
+    elif args.check_connector_baseline:
+        print("CONNECTOR_BASELINE_CONSISTENT=PASS")
     elif args.expected_add_owner_d1:
         print("OWNER_P01_D1_EXACTLY_ONE_ADDITION=PASS")
         print("EXISTING_WORKER_BINDINGS_PRESERVED=PASS")

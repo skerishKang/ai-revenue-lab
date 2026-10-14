@@ -416,6 +416,8 @@ function buildSandbox(sseCase) {
       copy: () => ({ idleNote: "idle", unsupportedFormat: "unsupported", textTooLarge: "too large" }),
     },
     PadiemBinaryDocuments: null,
+    // The owner-selected tier is represented explicitly in the real composer.
+    PadiemTierSelection: { get: () => sseCase.tier || "plus" },
   };
   sandbox.window = sandbox;
   sandbox.globalThis = sandbox;
@@ -641,6 +643,18 @@ def test_visible_default_sends_one_exact_model_id() -> None:
     assert len(general) == 1, result["requests"]
     assert json.loads(general[0]["body"])["model_id"] == "google/gemini-3.5-flash-lite"
     assert general[0]["body"].count("google/gemini-3.5-flash-lite") == 1
+    assert _lane_only(result) == [GENERAL_ROUTE_PATH]
+
+
+def test_claw_free_greeting_sends_without_an_invisible_plus_model_choice() -> None:
+    _status, _ctype, raw = _capture_server(answer=ANSWER_WITH_MARKUP)
+    case = {"name": "free-greeting", "mode": "stream", "raw": raw, "tier": "free", "modelId": "", "prompt": "??"}
+    result = _run_client([case])[0]
+    general = _general_posts(result)
+    assert len(general) == 1, result["requests"]
+    data = json.loads(general[0]["body"])
+    assert data["tier"] == "free", data
+    assert "model_id" not in data, data
     assert _lane_only(result) == [GENERAL_ROUTE_PATH]
 
 

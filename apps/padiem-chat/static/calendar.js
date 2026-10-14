@@ -630,6 +630,10 @@
     const nextRange = document.getElementById("calendarNextRange");
     const rangeToday = document.getElementById("calendarRangeToday");
     const panel = document.getElementById("calendarPanel");
+    const visual = document.createElement("div");
+    visual.className = "calendar-visual";
+    visual.id = "calendarVisual";
+    visual.hidden = true;
     const loading = document.getElementById("calendarLoading");
     const errorBox = document.getElementById("calendarErrorBox");
     const empty = document.getElementById("calendarEmpty");
@@ -656,9 +660,11 @@
     const appointmentTimezoneField = document.getElementById("calendarAppointmentTimeZoneField");
     const appointmentStartField = document.getElementById("calendarAppointmentStartField");
     const appointmentEndField = document.getElementById("calendarAppointmentEndField");
-    if (!shell || !navButton || !view || !list) return;
+    if (!shell || !navButton || !view || !list || !panel) return;
+    if (typeof panel.insertBefore === "function") panel.insertBefore(visual, list);
+    else panel.append(visual);
 
-    let currentTab = "today";
+    let currentTab = "month";
     let rangeAnchorDate = "";
     let requestToken = 0;
     let wasActive = false;
@@ -670,14 +676,106 @@
     let lastRecordStatus = null;
     let lastAppointmentStatus = null;
 
+    let editingEntry = null;
+    const recordBox = document.getElementById("calendarRecord");
+    const appointmentBox = document.getElementById("calendarAppointment");
+    const errorCopy = document.getElementById("calendarError");
+    const korean = () => !((document.documentElement && document.documentElement.lang || "").toLowerCase().startsWith("en"));
+    function closeEditor() {
+      [recordBox, appointmentBox].forEach((box) => {
+        if (!box) return;
+        box.classList.remove("calendar-record--overlay");
+        box.open = false;
+      });
+      editingEntry = null;
+    }
+    function ensureEditorButtons(box, kind) {
+      if (!box || box.dataset.calendarEditorReady === "true") return;
+      box.dataset.calendarEditorReady = "true";
+      const bar = el("div", "calendar-editor-bar");
+      const close = el("button", "calendar-editor-close", korean() ? "닫기" : "Close");
+      close.type = "button";
+      close.addEventListener("click", closeEditor);
+      const del = el("button", "calendar-editor-delete", korean() ? "삭제" : "Delete");
+      del.type = "button";
+      del.dataset.calendarDelete = kind;
+      del.addEventListener("click", () => deleteEntry(kind, del));
+      bar.append(del, close);
+      if (typeof box.insertBefore === "function") box.insertBefore(bar, box.firstChild);
+      else box.append(bar);
+    }
+    function beginEditor(kind, date, hour, item) {
+      if (!recordBox || !appointmentBox) return;
+      closeEditor();
+      const log = kind === "work_log";
+      const box = log ? recordBox : appointmentBox;
+      const idPrefix = log ? "item_log_" : "item_apt_";
+      const rawId = item && typeof item.calendar_item_id === "string" && item.calendar_item_id.startsWith(idPrefix)
+        ? item.calendar_item_id.slice(idPrefix.length) : "";
+      editingEntry = rawId && isCalendarItemId(rawId) ? { kind: kind, id: rawId } : null;
+      ensureEditorButtons(box, kind);
+      const del = box.querySelector ? box.querySelector("[data-calendar-delete]") : null;
+      if (del) del.hidden = !editingEntry;
+      if (log) {
+        if (recordDate) recordDate.value = date;
+        if (recordTitle) recordTitle.value = item ? item.title : "";
+        if (recordContent) recordContent.value = item ? (item.summary || "") : "";
+        showRecordStatus(null);
+        if (recordSubmit) recordSubmit.textContent = editingEntry ? (korean() ? "수정" : "Update") : (korean() ? "기록 저장" : "Save");
+      } else {
+        if (appointmentDate) appointmentDate.value = date;
+        if (appointmentTitle) appointmentTitle.value = item ? item.title : "";
+        if (appointmentDescription) appointmentDescription.value = item ? (item.summary || "") : "";
+        if (appointmentType) appointmentType.value = item ? item.all_day ? "all_day" : item.start_at ? "timed" : "date_only" : hour === null ? "date_only" : "timed";
+        if (appointmentTimezone) appointmentTimezone.value = item && item.timezone ? item.timezone : browserTimezone();
+        if (appointmentStart) appointmentStart.value = item && item.start_at && item.timezone ? formatTimeInZone(item.start_at, item.timezone) : hour === null ? "" : String(hour).padStart(2,"0") + ":00";
+        if (appointmentEnd) appointmentEnd.value = item && item.end_at && item.timezone ? formatTimeInZone(item.end_at, item.timezone) : "";
+        if (appointmentReminder) appointmentReminder.value = "";
+        applyAppointmentType();
+        showAppointmentStatus(null);
+        if (appointmentSubmit) appointmentSubmit.textContent = editingEntry ? (korean() ? "수정" : "Update") : (korean() ? "일정 저장" : "Save");
+      }
+      box.classList.add("calendar-record--overlay");
+      box.open = true;
+      const focusTarget = log ? recordTitle : appointmentTitle;
+      if (focusTarget && typeof focusTarget.focus === "function") focusTarget.focus();
+    }
+    async function deleteEntry(kind, button) {
+      if (!editingEntry || editingEntry.kind !== kind) return;
+      if (!window.confirm(korean() ? "이 항목을 삭제할까요?" : "Delete this event?")) return;
+      const prefix = kind === "work_log" ? WORK_LOG_ROUTE : APPOINTMENT_ROUTE;
+      const endpoint = prefix + "/" + encodeURIComponent(editingEntry.id);
+      button.disabled = true;
+      try {
+        const response = await fetch(endpoint, {method: "DELETE", cache: "no-store", credentials: "same-origin", headers: {Accept:"application/json"}});
+        const body = await response.json().catch(() => null);
+        if (!response.ok || !body || body.ok !== true || body.deleted !== true) throw new Error("delete_failed");
+        closeEditor();
+        await load();
+      } catch (_) {
+        if (kind === "work_log") showRecordStatus("unavailable");
+        else showAppointmentStatus("unavailable");
+      } finally {
+        button.disabled = false;
+      }
+    }
+    if (view && typeof view.addEventListener === "function") {
+      view.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeEditor();
+      });
+    }
+
+
+
     function setStatus(status) {
       if (loading) loading.hidden = status !== "loading";
       if (errorBox) errorBox.hidden = status !== "error";
+      visual.hidden = !isRangeTab(currentTab);
       if (empty) {
-        empty.hidden = status !== "empty";
+        empty.hidden = status !== "empty" || isRangeTab(currentTab);
         if (status === "empty") empty.textContent = text(EMPTY_KEYS[currentTab]);
       }
-      list.hidden = status !== "ready";
+      list.hidden = status !== "ready" || currentTab === "month" || currentTab === "week";
     }
 
     function setDetailToggle(button, open) {
@@ -805,6 +903,133 @@
       }
     }
 
+
+    // Native display uses only the existing scoped Calendar projection.
+    function renderCalendarVisual(rawItems) {
+      visual.replaceChildren();
+      visual.hidden = !isRangeTab(currentTab);
+      if (visual.hidden) return;
+      const range = rangeForView(currentTab, rangeAnchorDate);
+      if (!range) return;
+      const items = (Array.isArray(rawItems) ? rawItems : []).filter(isRenderableItem);
+      const byDate = new Map();
+      items.forEach((item) => {
+        if (item.date < range.start_date || item.date > range.end_date) return;
+        if (!byDate.has(item.date)) byDate.set(item.date, []);
+        byDate.get(item.date).push(item);
+      });
+      const locale = ((document.documentElement && document.documentElement.lang) || "").toLowerCase().startsWith("en") ? "en-US" : "ko-KR";
+      const today = localDateInZone(browserTimezone());
+      function weekday(date) {
+        const parsed = parseCalendarDate(date);
+        return parsed ? new Intl.DateTimeFormat(locale, { weekday: "short", timeZone: "UTC" }).format(parsed) : "";
+      }
+      function pill(item) {
+        const node = el("span", "calendar-visual-event", item.title.trim());
+        if (item.item_type === "appointment" || item.item_type === "work_log") {
+          node.setAttribute("role", "button");
+          node.setAttribute("tabindex", "0");
+          node.classList.add("calendar-visual-editable");
+          const open = (event) => {
+            if (event) event.stopPropagation();
+            beginEditor(item.item_type, item.date, null, item);
+          };
+          node.addEventListener("click", open);
+          node.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              open(event);
+            }
+          });
+        }
+        node.title = item.title.trim();
+        node.dataset.eventType = item.item_type;
+        return node;
+      }
+      function selectDate(date) {
+        rangeAnchorDate = date;
+        beginEditor("appointment", date, null, null);
+      }
+      if (currentTab === "month") {
+        const headings = el("div", "calendar-visual-weekdays");
+        for (let i = 0; i < 7; i++) {
+          headings.append(el("span", "calendar-visual-weekday", weekday(formatCalendarDate(new Date(Date.UTC(2024, 0, i + 1))))));
+        }
+        const grid = el("div", "calendar-month-grid");
+        grid.setAttribute("role", "group");
+        grid.setAttribute("aria-label", text("calendar-month"));
+        const first = parseCalendarDate(range.start_date);
+        const lead = (first.getUTCDay() + 6) % 7;
+        const count = Math.ceil((lead + Number(range.end_date.slice(-2))) / 7) * 7;
+        for (let i = 0; i < count; i++) {
+          const date = shiftCalendarDate(range.start_date, i - lead);
+          const cell = el("button", "calendar-visual-day");
+          cell.type = "button";
+          cell.dataset.calendarDate = date;
+          cell.setAttribute("aria-label", date);
+          if (date === today) cell.classList.add("is-today");
+          if (date < range.start_date || date > range.end_date) cell.classList.add("is-outside");
+          cell.append(el("span", "calendar-visual-date", String(Number(date.slice(-2)))));
+          const dayItems = byDate.get(date) || [];
+          dayItems.slice(0, 2).forEach((item) => cell.append(pill(item)));
+          if (dayItems.length > 2) cell.append(el("span", "calendar-visual-more", "+" + (dayItems.length - 2)));
+          cell.addEventListener("click", () => selectDate(date));
+          grid.append(cell);
+        }
+        visual.append(headings, grid);
+      } else if (currentTab === "week") {
+        const grid = el("div", "calendar-week-grid");
+        grid.setAttribute("role", "group");
+        grid.setAttribute("aria-label", text("calendar-week"));
+        for (let offset = 0; offset < 7; offset++) {
+          const date = shiftCalendarDate(range.start_date, offset);
+          const column = el("section", "calendar-week-column");
+          const button = el("button", "calendar-week-date", weekday(date) + " " + Number(date.slice(-2)));
+          button.type = "button";
+          if (date === today) button.classList.add("is-today");
+          column.addEventListener("click", (event) => {
+            if (event.target && event.target.closest && event.target.closest(".calendar-visual-editable")) return;
+            selectDate(date);
+          });
+          column.append(button);
+          (byDate.get(date) || []).forEach((item) => column.append(pill(item)));
+          grid.append(column);
+        }
+        visual.append(grid);
+      } else {
+        const dayItems = byDate.get(range.start_date) || [];
+        const timed = [];
+        const allDay = [];
+        dayItems.forEach((item) => {
+          const start = item.all_day === true || !item.timezone ? "" : formatTimeInZone(item.start_at, item.timezone);
+          if (!start || !/^\d{1,2}:\d{2}$/.test(start)) allDay.push(item);
+          else timed.push({ item: item, hour: Number.parseInt(start.slice(0, 2), 10) % 24, time: start });
+        });
+        const ribbon = el("div", "calendar-day-all-day");
+        ribbon.append(el("span", "calendar-day-all-day-label", text("calendar-all-day")));
+        allDay.forEach((item) => ribbon.append(pill(item)));
+        const timeline = el("div", "calendar-day-timeline");
+        for (let hour = 0; hour < 24; hour++) {
+          const slot = el("div", "calendar-day-hour");
+          slot.addEventListener("click", (event) => {
+            if (event.target && event.target.closest && event.target.closest(".calendar-visual-editable")) return;
+            beginEditor("appointment", range.start_date, hour, null);
+          });
+          slot.append(el("span", "calendar-day-hour-label", String(hour).padStart(2,"0") + ":00"));
+          const events = el("div", "calendar-day-hour-events");
+          timed.filter((record) => record.hour === hour).forEach((record) => {
+            const event = pill(record.item);
+            event.title = record.time + " " + record.item.title.trim();
+            events.append(event);
+          });
+          slot.append(events);
+          timeline.append(slot);
+        }
+        visual.append(ribbon, timeline);
+        visual.scrollTop = 9 * 43;
+      }
+    }
+
     function buildRow(rawItem) {
       const item = rawItem && typeof rawItem === "object" ? rawItem : {};
       const row = el("article", "calendar-item");
@@ -827,6 +1052,12 @@
       if (summaryText) row.append(el("p", "calendar-item-summary", summaryText));
 
       const itemId = item.calendar_item_id;
+      if (item.item_type === "appointment" || item.item_type === "work_log") {
+        const editButton = el("button", "calendar-detail-button", korean() ? "수정 / 삭제" : "Edit / Delete");
+        editButton.type = "button";
+        editButton.addEventListener("click", () => beginEditor(item.item_type, item.date, null, item));
+        row.append(editButton);
+      }
       if (isCalendarItemId(itemId)) {
         const actions = el("div", "calendar-item-actions");
         const detailButton = el("button", "calendar-detail-button", text("calendar-detail-open"));
@@ -852,6 +1083,7 @@
       activeDetailPanel = null;
       list.replaceChildren();
       const boundedItems = items.filter(isRenderableItem);
+      renderCalendarVisual(boundedItems);
       if (boundedItems.length === 0) {
         setStatus("empty");
         return;
@@ -893,10 +1125,20 @@
       if (rangeToday) rangeToday.disabled = !localDateInZone(timezone);
     }
 
-    function showError() {
+    function showError(code) {
+      if (errorCopy) {
+        errorCopy.textContent = code === 401
+          ? (korean() ? "일정 조회에 로그인이 필요합니다. 다시 로그인해 주세요." : "Sign in to view calendar events.")
+          : code >= 500
+          ? (korean() ? "캘린더 서버 오류가 발생했습니다 (HTTP " + code + "). 잠시 후 다시 시도해 주세요." : "Calendar server error (HTTP " + code + "). Try again.")
+          : code >= 400
+          ? (korean() ? "일정 조회에 실패했습니다 (HTTP " + code + ")." : "Calendar request failed (HTTP " + code + ").")
+          : (korean() ? "캘린더를 불러오지 못했습니다. 다시 시도해 주세요." : "Could not load the calendar. Try again.");
+      }
       lastItems = null;
       list.replaceChildren();
       setStatus("error");
+      renderCalendarVisual([]);
       detailRequestToken += 1;
     }
 
@@ -949,17 +1191,21 @@
       }
       setRecordBusy(true);
       try {
-        const response = await fetch(WORK_LOG_ROUTE, {
-          method: "POST",
+        const endpoint = editingEntry && editingEntry.kind === "work_log" ? WORK_LOG_ROUTE + "/" + encodeURIComponent(editingEntry.id) : WORK_LOG_ROUTE;
+        const method = editingEntry && editingEntry.kind === "work_log" ? "PUT" : "POST";
+        const response = await fetch(endpoint, {
+          method: method,
           cache: "no-store",
           credentials: "same-origin",
           headers: { Accept: "application/json", "Content-Type": "application/json" },
           body: JSON.stringify(built.payload),
         });
         const data = await response.json().catch(() => null);
-        const outcome = interpretWorkLogResponse(response.status, data);
+        const outcome = method === "PUT" && response.status === 200 && data && data.ok === true && data.work_log
+          ? { status: "created" } : interpretWorkLogResponse(response.status, data);
         showRecordStatus(outcome.status);
         if (outcome.status === "created") {
+          closeEditor();
           recordTitle.value = "";
           if (recordContent) recordContent.value = "";
           if (recordDate) recordDate.value = localDateInZone(browserTimezone());
@@ -1036,17 +1282,21 @@
       }
       setAppointmentBusy(true);
       try {
-        const response = await fetch(APPOINTMENT_ROUTE, {
-          method: "POST",
+        const endpoint = editingEntry && editingEntry.kind === "appointment" ? APPOINTMENT_ROUTE + "/" + encodeURIComponent(editingEntry.id) : APPOINTMENT_ROUTE;
+        const method = editingEntry && editingEntry.kind === "appointment" ? "PUT" : "POST";
+        const response = await fetch(endpoint, {
+          method: method,
           cache: "no-store",
           credentials: "same-origin",
           headers: { Accept: "application/json", "Content-Type": "application/json" },
           body: JSON.stringify(built.payload),
         });
         const data = await response.json().catch(() => null);
-        const outcome = interpretAppointmentResponse(response.status, data);
+        const outcome = method === "PUT" && response.status === 200 && data && data.ok === true && data.appointment
+          ? { status: "created" } : interpretAppointmentResponse(response.status, data);
         showAppointmentStatus(outcome.status);
         if (outcome.status === "created") {
+          closeEditor();
           appointmentTitle.value = "";
           if (appointmentDescription) appointmentDescription.value = "";
           if (appointmentStart) appointmentStart.value = "";
@@ -1064,6 +1314,7 @@
     }
 
     async function load() {
+      if (isRangeTab(currentTab)) renderCalendarVisual([]);
       const timezone = browserTimezone();
       requestToken += 1;
       const token = requestToken;
@@ -1092,7 +1343,7 @@
           const projection = data && data.ok === true ? data.projection : null;
           const items = projection && Array.isArray(projection.items) ? projection.items : null;
           if (!response.ok || !items) {
-            showError();
+            showError(response.status);
             return;
           }
           lastItems = items;
@@ -1120,7 +1371,7 @@
         const projection = data && data.ok === true ? data.projection : null;
         const items = projection && Array.isArray(projection.items) ? projection.items : null;
         if (!response.ok || !items) {
-          showError();
+          showError(response.status);
           return;
         }
         lastItems = items;
@@ -1175,6 +1426,7 @@
 
     function syncVisibility() {
       const active = shell.dataset.state === "calendar";
+      if (!active) closeEditor();
       view.hidden = !active;
       navButton.setAttribute("aria-current", active ? "page" : "false");
       if (active) {
