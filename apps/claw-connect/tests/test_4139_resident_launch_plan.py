@@ -30,12 +30,14 @@ from claw_connect.enrollment import (
 )
 from claw_connect.resident_launch import (
     REASON_AUTHORITY_REF_UNCONFIGURED,
+    REASON_BROKER_URL_UNCONFIGURED,
     REASON_CREDENTIAL_DIR_INVALID,
     REASON_CREDENTIAL_DIR_UNCONFIGURED,
     REASON_ENROLLMENT_NOT_LIVE,
     REASON_NO_COMMITTED_ENROLLMENT,
     REASON_REQUEST_PORT_UNCONFIGURED,
     RESIDENT_ENV_AUTHORITY_REF,
+    RESIDENT_ENV_BROKER_URL,
     RESIDENT_ENV_CREDENTIAL_DIR,
     RESIDENT_ENV_DEVICE_ID,
     RESIDENT_ENV_REQUEST_PORT,
@@ -47,6 +49,7 @@ from claw_connect.runtime import ConnectApp
 DEVICE_ID = "device.4139.resident.launch"
 AUTHORITY_REF = "control-plane.local-agent-broker.4139.launch.v1"
 REQUEST_PORT = "kagent.local_agent_broker_pairing_handoff_entry:resident_request_port"
+BROKER_URL = "https://local-agent.padiem.net"
 
 
 def _record(**overrides) -> EnrollmentRecord:
@@ -69,6 +72,7 @@ def _configured(monkeypatch, tmp_path: Path) -> str:
     monkeypatch.setenv(RESIDENT_ENV_CREDENTIAL_DIR, str(credential_dir))
     monkeypatch.setenv(RESIDENT_ENV_AUTHORITY_REF, AUTHORITY_REF)
     monkeypatch.setenv(RESIDENT_ENV_REQUEST_PORT, REQUEST_PORT)
+    monkeypatch.setenv(RESIDENT_ENV_BROKER_URL, BROKER_URL)
     return str(credential_dir)
 
 
@@ -81,13 +85,25 @@ def test_plan_reuses_the_exact_environment_keys_the_resident_reads(monkeypatch, 
 
     assert reason == "planned"
     assert plan is not None
-    # Exactly the Resident's own keys — no fifth key, no secret, no credential.
+    # Exactly the Resident's own keys — no sixth key, no secret, no credential.
     assert plan.environment(base={}) == {
         RESIDENT_ENV_DEVICE_ID: DEVICE_ID,
         RESIDENT_ENV_AUTHORITY_REF: AUTHORITY_REF,
         RESIDENT_ENV_CREDENTIAL_DIR: credential_dir,
         RESIDENT_ENV_REQUEST_PORT: REQUEST_PORT,
+        RESIDENT_ENV_BROKER_URL: BROKER_URL,
     }
+
+
+def test_the_broker_url_key_is_pinned_as_the_text_the_factory_reads():
+    """Pinned literally, not only as the imported constant.
+
+    ``PADIEM_AGENT_REQUEST_PORT`` names a ``module:factory``; that factory reads
+    ``PADIEM_AGENT_BROKER_URL`` itself and refuses without it. A rename on
+    either side would spawn a child that dies constructing its request port,
+    before it can emit any bounded refusal — so the key is pinned as text.
+    """
+    assert RESIDENT_ENV_BROKER_URL == "PADIEM_AGENT_BROKER_URL"
 
 
 def test_plan_never_mints_an_identity_without_a_committed_record(monkeypatch, tmp_path):
@@ -123,6 +139,7 @@ def test_plan_refuses_a_record_that_is_not_live(monkeypatch, tmp_path, overrides
         (RESIDENT_ENV_CREDENTIAL_DIR, REASON_CREDENTIAL_DIR_UNCONFIGURED),
         (RESIDENT_ENV_AUTHORITY_REF, REASON_AUTHORITY_REF_UNCONFIGURED),
         (RESIDENT_ENV_REQUEST_PORT, REASON_REQUEST_PORT_UNCONFIGURED),
+        (RESIDENT_ENV_BROKER_URL, REASON_BROKER_URL_UNCONFIGURED),
     ],
 )
 def test_plan_refuses_an_unconfigured_canonical_boundary(
@@ -136,10 +153,40 @@ def test_plan_refuses_an_unconfigured_canonical_boundary(
     assert reason == expected
 
 
+@pytest.mark.parametrize(
+    "broker_url",
+    [
+        "",
+        "local-agent.padiem.net",  # no scheme: not an origin
+        "http://local-agent.padiem.net",  # cleartext credential delivery
+        "https://user:pass@local-agent.padiem.net",  # credentials in the URL
+        "https://local-agent.padiem.net?debug=1",  # query on the broker origin
+        "https://local-agent.padiem.net#frag",
+    ],
+    ids=["empty", "scheme-less", "cleartext", "userinfo", "query", "fragment"],
+)
+def test_plan_refuses_a_broker_url_the_resident_must_not_send_a_credential_to(
+    monkeypatch, tmp_path, broker_url
+):
+    """The Resident carries the device credential to this origin.
+
+    The Connector already pins https/443, credentials-free, query-free for the
+    broker it enrolls against; the Resident's origin is held to the same
+    contract so a plan cannot loosen it.
+    """
+    _configured(monkeypatch, tmp_path)
+    monkeypatch.setenv(RESIDENT_ENV_BROKER_URL, broker_url)
+    plan, reason = plan_resident_launch(record=_record())
+
+    assert plan is None
+    assert reason == REASON_BROKER_URL_UNCONFIGURED
+
+
 def test_plan_refuses_a_relative_credential_dir(monkeypatch):
     monkeypatch.setenv(RESIDENT_ENV_CREDENTIAL_DIR, "relative/store")
     monkeypatch.setenv(RESIDENT_ENV_AUTHORITY_REF, AUTHORITY_REF)
     monkeypatch.setenv(RESIDENT_ENV_REQUEST_PORT, REQUEST_PORT)
+    monkeypatch.setenv(RESIDENT_ENV_BROKER_URL, BROKER_URL)
     plan, reason = plan_resident_launch(record=_record())
 
     assert plan is None
@@ -259,6 +306,7 @@ def test_connect_app_launches_the_resident_with_the_canonical_boundary(
     assert env[RESIDENT_ENV_AUTHORITY_REF] == AUTHORITY_REF
     assert env[RESIDENT_ENV_CREDENTIAL_DIR] == credential_dir
     assert env[RESIDENT_ENV_REQUEST_PORT] == REQUEST_PORT
+    assert env[RESIDENT_ENV_BROKER_URL] == BROKER_URL
     assert app.status()["resident_launch_reason"] == "planned"
 
 
@@ -273,6 +321,24 @@ def test_connect_app_does_not_launch_a_resident_without_the_boundary(
     assert app.start_registered_resident() is False
     assert calls == []
     assert app.status()["resident_launch_reason"] == REASON_REQUEST_PORT_UNCONFIGURED
+
+
+def test_connect_app_does_not_launch_a_resident_without_the_broker_origin(
+    monkeypatch, tmp_path
+):
+    """The factory the plan points at refuses without this key.
+
+    Spawning anyway would produce a child that dies constructing its request
+    port — the short-lived process this whole gate exists to prevent.
+    """
+    _configured(monkeypatch, tmp_path)
+    monkeypatch.delenv(RESIDENT_ENV_BROKER_URL)
+    calls: list = []
+    app = _app(monkeypatch, _record(), calls)
+
+    assert app.start_registered_resident() is False
+    assert calls == []
+    assert app.status()["resident_launch_reason"] == REASON_BROKER_URL_UNCONFIGURED
 
 
 def test_planning_alone_never_spawns_a_process(monkeypatch, tmp_path):

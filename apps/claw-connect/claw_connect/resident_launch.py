@@ -8,13 +8,20 @@ anyway produces a short-lived child and no task-receiving loop at all.
 
 This module derives that configuration from facts the Connector already holds —
 the committed enrollment record and the canonical protected credential
-directory — and reuses the **exact** environment variable names the Resident's
-own ``BrokerEntry.from_environment()`` reads. Nothing is minted here: no
-authority ref, no request-port factory, no credential, no device identity. Each
-value either comes from the committed record or from deployment configuration;
-when one is missing the plan is refused with a bounded reason instead of being
-defaulted, because a defaulted boundary is a boundary the Resident would accept
-and the owner never configured.
+directory — and reuses the **exact** environment variable names the Resident
+reads. Nothing is minted here: no authority ref, no request-port factory, no
+credential, no device identity. Each value either comes from the committed
+record or from deployment configuration; when one is missing the plan is refused
+with a bounded reason instead of being defaulted, because a defaulted boundary
+is a boundary the Resident would accept and the owner never configured.
+
+Four keys are read by the Resident's own ``BrokerEntry.from_environment()``. The
+fifth, ``PADIEM_AGENT_BROKER_URL``, is read by the request-port *factory* that
+entry is configured with (``PADIEM_AGENT_REQUEST_PORT`` is a
+``module:factory`` string, not a TCP port number), so a plan that omitted it
+would spawn a child that dies constructing its port. It is required here for
+the same reason as the rest: the Connector must not start what it cannot
+configure.
 
     SECOND_BROKER_AUTHORITY=0
     SECOND_CREDENTIAL_STORE=0
@@ -36,6 +43,10 @@ RESIDENT_ENV_DEVICE_ID = "PADIEM_AGENT_DEVICE_ID"
 RESIDENT_ENV_AUTHORITY_REF = "PADIEM_AGENT_AUTHORITY_REF"
 RESIDENT_ENV_REQUEST_PORT = "PADIEM_AGENT_REQUEST_PORT"
 RESIDENT_ENV_CREDENTIAL_DIR = "PADIEM_AGENT_CREDENTIAL_DIR"
+#: Read by the request-port factory itself rather than by ``from_environment``.
+#: Without it the factory refuses, and the child dies before it can emit any
+#: bounded refusal of its own.
+RESIDENT_ENV_BROKER_URL = "PADIEM_AGENT_BROKER_URL"
 
 #: Bounded, secret-free refusal reasons. Each one names a *missing fact*, so an
 #: operator can act on it, and none of them carries a value.
@@ -46,11 +57,18 @@ REASON_CREDENTIAL_DIR_UNCONFIGURED = "canonical_credential_dir_unconfigured"
 REASON_CREDENTIAL_DIR_INVALID = "canonical_credential_dir_invalid"
 REASON_AUTHORITY_REF_UNCONFIGURED = "broker_authority_ref_unconfigured"
 REASON_REQUEST_PORT_UNCONFIGURED = "broker_request_port_unconfigured"
+REASON_BROKER_URL_UNCONFIGURED = "broker_url_unconfigured"
 
 #: The Resident's ``module:attribute`` factory shape. Shape-checked only: this
 #: module never imports or calls the factory, and never stands up a transport.
 _REQUEST_PORT_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_.]*:[A-Za-z_][A-Za-z0-9_]*$")
 _REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,511}$")
+#: Keep in step with ``enrollment._BROKER_URL_RE``: the Resident carries the
+#: device credential to this origin, so it is held to the same TLS-only,
+#: credentials-free, query-free contract the Connector already pins for the
+#: broker endpoint it enrolls against. A looser check here would let a plan
+#: configure cleartext delivery of a credential the Connector itself refuses.
+_BROKER_URL_RE = re.compile(r"^https://[A-Za-z0-9.\-]+(?::443)?(?:/[^\s?#]*)?$")
 
 
 @dataclass(frozen=True)
@@ -61,11 +79,12 @@ class ResidentLaunchPlan:
     authority_ref: str
     credential_dir: str
     request_port: str
+    broker_url: str
 
     def environment(self, *, base: Mapping[str, str] | None = None) -> dict[str, str]:
         """The child environment, over the inherited one.
 
-        Only the four canonical keys are set. The credential directory is a
+        Only the five canonical keys are set. The credential directory is a
         *path*; the credential itself is never placed in the environment, and
         the Resident keeps loading it from the protected store.
         """
@@ -74,6 +93,7 @@ class ResidentLaunchPlan:
         env[RESIDENT_ENV_AUTHORITY_REF] = self.authority_ref
         env[RESIDENT_ENV_CREDENTIAL_DIR] = self.credential_dir
         env[RESIDENT_ENV_REQUEST_PORT] = self.request_port
+        env[RESIDENT_ENV_BROKER_URL] = self.broker_url
         return env
 
     def safe_dict(self) -> dict[str, Any]:
@@ -81,6 +101,7 @@ class ResidentLaunchPlan:
             "device_id": self.device_id,
             "authority_ref": self.authority_ref,
             "request_port": self.request_port,
+            "broker_url_configured": True,
             "credential_dir_configured": True,
             "raw_device_credential": False,
             "credential_dir_exposed": False,
@@ -134,12 +155,20 @@ def plan_resident_launch(
     if not _REQUEST_PORT_RE.fullmatch(request_port):
         return None, REASON_REQUEST_PORT_UNCONFIGURED
 
+    # Required because the configured factory reads it, and refuses without it.
+    # Checked against the Connector's own broker-endpoint contract so a plan
+    # cannot point the Resident at a cleartext origin for the credential.
+    broker_url = (env.get(RESIDENT_ENV_BROKER_URL) or "").strip()
+    if not _BROKER_URL_RE.fullmatch(broker_url):
+        return None, REASON_BROKER_URL_UNCONFIGURED
+
     return (
         ResidentLaunchPlan(
             device_id=device_id,
             authority_ref=authority_ref,
             credential_dir=expanded,
             request_port=request_port,
+            broker_url=broker_url,
         ),
         "planned",
     )
@@ -147,6 +176,7 @@ def plan_resident_launch(
 
 __all__ = [
     "REASON_AUTHORITY_REF_UNCONFIGURED",
+    "REASON_BROKER_URL_UNCONFIGURED",
     "REASON_CREDENTIAL_DIR_INVALID",
     "REASON_CREDENTIAL_DIR_UNCONFIGURED",
     "REASON_ENROLLMENT_NOT_LIVE",
@@ -154,6 +184,7 @@ __all__ = [
     "REASON_NO_COMMITTED_ENROLLMENT",
     "REASON_REQUEST_PORT_UNCONFIGURED",
     "RESIDENT_ENV_AUTHORITY_REF",
+    "RESIDENT_ENV_BROKER_URL",
     "RESIDENT_ENV_CREDENTIAL_DIR",
     "RESIDENT_ENV_DEVICE_ID",
     "RESIDENT_ENV_REQUEST_PORT",

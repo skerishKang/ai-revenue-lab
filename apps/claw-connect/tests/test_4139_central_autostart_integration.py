@@ -228,6 +228,9 @@ def _canonical_boundary(monkeypatch, tmp_path):
         "PADIEM_AGENT_REQUEST_PORT",
         "kagent.local_agent_broker_pairing_handoff_entry:resident_request_port",
     )
+    # Read by the request-port factory the line above names, not by the
+    # Resident's own from_environment(); also required for a launchable plan.
+    monkeypatch.setenv("PADIEM_AGENT_BROKER_URL", "https://local-agent.padiem.net")
 
 
 def test_manual_reconnect_uses_existing_committed_credential_only(monkeypatch, tmp_path):
