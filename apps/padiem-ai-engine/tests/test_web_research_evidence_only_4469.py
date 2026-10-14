@@ -17,6 +17,7 @@ def request():
             "id": "claw-evidence-fixture",
             "title": "Claw public evidence fixture",
             "description": "Public only",
+            "system_instruction": "Only public evidence is allowed.",
             "task_type": "general",
             "optimize_for": "balanced",
             "max_tokens": 240,
