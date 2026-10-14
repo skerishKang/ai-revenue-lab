@@ -73,7 +73,8 @@ async def main():
             browser = await pw.chromium.launch(headless=True)
             ctx = await browser.new_context(viewport={"width": 1280, "height": 900},
                                             service_workers="block")
-            await ctx.route("**/api/padiem/b66/guided-**", guided_stub)
+            await ctx.route("**/api/padiem/b66/guided-*", guided_stub)
+            await ctx.route("**/api/padiem/b66/guided-conversations/**", guided_stub)
             page = await ctx.new_page()
             await page.goto(base + "/index.html", wait_until="load")
             await page.wait_for_function("() => window.B66QuoteRuntimeBridge && window.B66GuidedDraftServer")
@@ -121,18 +122,6 @@ async def main():
             await page2.click("#shellPreviousGuidedDialogue")
             await page2.wait_for_selector("#easyHistoryPanel .easy-history-card")
             await page2.locator("#easyHistoryPanel .easy-history-card button").first.click()
-            await page2.wait_for_timeout(800)
-            test_id = active["state"]["conversationId"]
-            direct = await page2.evaluate("""async (id) => {
-                const result = await window.B66GuidedDraftServer.loadConversation(id);
-                return {ok: result.ok, error: result.error,
-                        count: result.conversation?.messages?.length || 0};
-            }""", test_id)
-            print("DEBUG_GUIDED_DETAIL="+json.dumps(direct), flush=True)
-            print("DEBUG_GUIDED_VISIBLE="+json.dumps({
-                "content": (await page2.locator("#easyMessageList").inner_text())[:120],
-                "active_id": test_id[:4],
-            }, ensure_ascii=False), flush=True)
             await page2.wait_for_function(
                 "() => document.querySelector('#easyMessageList')?.textContent?.includes('TEST COMPANY')",
                 timeout=5000)
