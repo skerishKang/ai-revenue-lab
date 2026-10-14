@@ -9,11 +9,11 @@ from local_agent_broker_device_http import LocalAgentBrokerDeviceHttpService
 from local_agent_broker_durable_runtime import LocalAgentBrokerDurableRuntime
 from local_agent_broker_material_store import MAX_DURABLE_COMMAND_MATERIAL_BYTES, CloudflareDurableObjectCommandMaterialStore
 from local_agent_broker_private_http_bridge import handle_private_device_fetch
+from padiem_control_plane.broker_pending_pc_wss import route_private_pc_wss_upgrade
 from local_agent_broker_office_chunks import compose_broker_office_chunks, read_broker_office_part_rpc
 from local_agent_broker_sql_state import (
     CloudflareDurableObjectHttpSessionState, CloudflareDurableObjectSerializedStateBackend, safe_ref,
 )
-
 _T = TypeVar("_T")
 
 class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, CanonicalBrokerPendingPcLiveRPC, DurableObject):
@@ -23,6 +23,7 @@ class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, CanonicalBrokerPe
         super().__init__(ctx, env)
         self._runtime = LocalAgentBrokerDurableRuntime(storage=ctx.storage, env=env)
         self._storage = ctx.storage
+        self._pending_pc_ctx = ctx
         self._backend = self._runtime.backend
         self._state_port = self._runtime.state_port
         self.http_state = self._runtime.http_state
@@ -106,8 +107,7 @@ class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, CanonicalBrokerPe
         return read_broker_office_part_rpc(self.office_chunks, payload)
 
     async def fetch(self, request):
-        del request
-        return Response("Not Found", status=404, headers={"cache-control": "no-store"})
+        return await self._pending_pc_wss_fetch(request)
 
 
 class Default(WorkerEntrypoint):
@@ -183,7 +183,7 @@ class Default(WorkerEntrypoint):
         return await self._stub().redeem_enrollment(payload)
 
     async def fetch(self, request):
-        return await handle_private_device_fetch(request, self._stub)
+        return await route_private_pc_wss_upgrade(self, request, handle_private_device_fetch)
 CLOUDFLARE_DO_ADAPTER = True
 FOUNDATION_PACKAGE_SIDE_EFFECT_FREE = True
 SQLITE_BACKED_DURABLE_OBJECT = True

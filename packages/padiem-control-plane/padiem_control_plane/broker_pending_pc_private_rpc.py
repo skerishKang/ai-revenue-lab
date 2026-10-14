@@ -174,6 +174,26 @@ class CanonicalBrokerPendingPcLiveRPC:
 
 
 
+    async def _pending_pc_wss_fetch(self, request):
+        """Native PC upgrade exclusively on this existing canonical Broker DO."""
+        from .broker_pending_pc_wss import fetch_broker_pending_pc_wss
+        return await fetch_broker_pending_pc_wss(self, request)
+
+    async def webSocketMessage(self, ws, message):
+        from .broker_pending_pc_wss import broker_pending_pc_wss_message
+        await broker_pending_pc_wss_message(self, ws, message)
+
+    async def webSocketClose(self, ws, code, reason, was_clean):
+        del code, reason, was_clean
+        from .broker_pending_pc_wss import broker_pending_pc_wss_close
+        await broker_pending_pc_wss_close(self, ws)
+
+    async def webSocketError(self, ws, error):
+        del error
+        from .broker_pending_pc_wss import broker_pending_pc_wss_close
+        await broker_pending_pc_wss_close(self, ws)
+
+
 class CanonicalBrokerPendingPcBindingRPC:
     """Thin private service-binding relay to the EXISTING authority-ref DO.
 
