@@ -859,28 +859,81 @@ def test_broker_candidate_cli_refuses_multiple_additions(tmp_path, capsys, confl
     assert "only additive mode" in capsys.readouterr().err.lower()
 
 
-def test_broker_candidate_cli_refuses_preexisting_or_wrong_identity(tmp_path, capsys):
+def test_broker_candidate_cli_reuses_identical_existing_binding(tmp_path, capsys):
+    """Retry after a rolled-back upload reuses the residue instead of duplicating."""
+    import tomllib
+
     module = _load_module()
     base = _production_bindings()
     repo = _write_repo_config(tmp_path)
-    for case in ("existing", "wrong_identity"):
+    for index, extra in (
+        (0, {}),
+        (1, {"environment": "production"}),
+    ):
         entries = [dict(x) for x in base]
-        if case == "existing":
-            entries.append({
-                "type": "service", "name": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
-                "service": "padiem-local-agent-broker-state",
-            })
-        else:
-            for entry in entries:
-                if entry.get("name") == "IDENTITY_AUTHORITY_SERVICE":
-                    entry["service"] = "wrong-service"
-        settings = tmp_path / (case + ".json")
+        entries.append({
+            "type": "service", "name": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
+            "service": "padiem-local-agent-broker-state", **extra,
+        })
+        settings = tmp_path / f"reuse-{index}.json"
         settings.write_text(json.dumps(_settings_payload(entries)), encoding="utf-8")
-        output = tmp_path / (case + ".toml")
+        output = tmp_path / f"reuse-{index}.toml"
         assert module.main([
             "--settings", str(settings), "--repo-config", str(repo),
             "--public-base-url", PUBLIC_URL, "--output", str(output),
             "--attach-existing-connector-broker",
-        ]) == 1
-        assert not output.exists()
+        ]) == 0
+        lines = capsys.readouterr().out
+        assert "CONNECTOR_BROKER_BINDING_REUSED=1" in lines
+        candidate = tomllib.loads(output.read_text(encoding="utf-8"))
+        matches = [s for s in candidate["services"]
+                   if s["binding"] == "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE"]
+        assert len(matches) == 1
+        assert matches[0]["service"] == "padiem-local-agent-broker-state"
+
+
+@pytest.mark.parametrize("bad", [
+    {"service": "attacker-worker"},
+    {"environment": "staging"},
+    {"entrypoint": "Other"},
+    {"type": "plain_text", "text": "bad"},
+])
+def test_broker_candidate_cli_refuses_wrong_existing_binding(tmp_path, capsys, bad):
+    module = _load_module()
+    base = _production_bindings()
+    repo = _write_repo_config(tmp_path)
+    entry = {"type": "service", "name": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
+             "service": "padiem-local-agent-broker-state"}
+    entry.update(bad)
+    if bad.get("type") == "plain_text":
+        entry.pop("service", None)
+    entries = [dict(x) for x in base] + [entry]
+    settings = tmp_path / "bad.json"
+    settings.write_text(json.dumps(_settings_payload(entries)), encoding="utf-8")
+    output = tmp_path / "bad.toml"
+    assert module.main([
+        "--settings", str(settings), "--repo-config", str(repo),
+        "--public-base-url", PUBLIC_URL, "--output", str(output),
+        "--attach-existing-connector-broker",
+    ]) == 1
+    assert not output.exists()
+
+
+def test_broker_candidate_cli_refuses_wrong_identity(tmp_path, capsys):
+    module = _load_module()
+    base = _production_bindings()
+    repo = _write_repo_config(tmp_path)
+    entries = [dict(x) for x in base]
+    for entry in entries:
+        if entry.get("name") == "IDENTITY_AUTHORITY_SERVICE":
+            entry["service"] = "wrong-service"
+    settings = tmp_path / "wrong_identity.json"
+    settings.write_text(json.dumps(_settings_payload(entries)), encoding="utf-8")
+    output = tmp_path / "wrong_identity.toml"
+    assert module.main([
+        "--settings", str(settings), "--repo-config", str(repo),
+        "--public-base-url", PUBLIC_URL, "--output", str(output),
+        "--attach-existing-connector-broker",
+    ]) == 1
+    assert not output.exists()
     assert "B62_PRODUCTION_CONFIG_GENERATED=FAIL" in capsys.readouterr().err

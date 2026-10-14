@@ -951,6 +951,18 @@ jobs:
           echo "D1_IDENTIFIER_OUTPUT=0"
           echo "PRODUCTION_MUTATION=0"
 
+      - name: Prove connector baseline between active version and settings
+        if: ${{ inputs.mode == 'deploy_production_code' && inputs.attach_existing_connector_broker }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/b62_binding_state_guard.py \
+            --check-connector-baseline \
+            --before "${RUNNER_TEMP}/b62-version-before.json" \
+            --after "${RUNNER_TEMP}/b62-settings-before.json"
+          echo "CONNECTOR_BASELINE_PREDEPLOY=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
       - name: Generate exact production config from live settings
         shell: bash
         run: |
@@ -1143,6 +1155,14 @@ jobs:
             jq -e '.result.resources.bindings | any(.name == "BROWSER" and .type == "browser")' "${detail}" >/dev/null
             echo "HARK_BROWSER_SERVED_IMMUTABLE_BINDING=PASS"
             echo "HARK_BROWSER_QUICK_ACTION_CALLS=0"
+          fi
+          if [ "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "true" ]; then
+            python .github/scripts/b62_binding_state_guard.py \
+              --expected-add-connector-broker \
+              --before "${RUNNER_TEMP}/b62-version-before.json" \
+              --after "${detail}"
+            jq -e '.result.resources.bindings | any(.name == "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE" and .type == "service" and .service == "padiem-local-agent-broker-state")' "${detail}" >/dev/null
+            echo "CONNECTOR_BROKER_SERVED_IMMUTABLE_BINDING=PASS"
           fi
           etag_after="$(jq -er '.result.resources.script.etag' "${detail}")"
           test "${etag_after}" != "${PREVIOUS_SCRIPT_ETAG}"

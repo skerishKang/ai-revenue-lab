@@ -285,13 +285,34 @@ def build_production_config(
             live_names.add(live["browser"]["name"])
         if live["version_metadata"] is not None:
             live_names.add(live["version_metadata"]["name"])
-        if CONNECTOR_BROKER_BINDING in live_names:
-            raise ProductionConfigError("Connector Broker binding already assigned; no additive change")
-        identity = [item for item in live["services"] if item["name"] == CONNECTOR_IDENTITY_BINDING]
-        if len(identity) != 1 or identity[0].get("service") != CONNECTOR_IDENTITY_TARGET:
-            raise ProductionConfigError("Canonical Identity binding is not proven at expected target")
-        services_for_output.append({"type": "service", "name": CONNECTOR_BROKER_BINDING,
-                                    "service": CONNECTOR_BROKER_TARGET})
+        broker_live = [item for item in live["services"]
+                       if item.get("name") == CONNECTOR_BROKER_BINDING]
+        if broker_live:
+            # Retry after a rolled-back upload: the mutable settings plane may
+            # already carry the approved binding. Reuse the exactly identical
+            # entry verbatim; never duplicate it. Wrong target, type
+            # collision, unexpected environment, or an entrypoint (which this
+            # generator never emits and would otherwise be silently dropped)
+            # still fails closed.
+            if len(broker_live) != 1:
+                raise ProductionConfigError("duplicate Connector Broker bindings in live settings")
+            entry = broker_live[0]
+            if entry.get("service") != CONNECTOR_BROKER_TARGET:
+                raise ProductionConfigError("Connector Broker binding target drift; refusing reuse")
+            if entry.get("entrypoint"):
+                raise ProductionConfigError("Connector Broker entrypoint must be absent")
+            if entry.get("environment") not in (None, "production"):
+                raise ProductionConfigError("Connector Broker environment drift; refusing reuse")
+        else:
+            if CONNECTOR_BROKER_BINDING in live_names:
+                raise ProductionConfigError(
+                    "Connector Broker name collides outside service bindings"
+                )
+            identity = [item for item in live["services"] if item["name"] == CONNECTOR_IDENTITY_BINDING]
+            if len(identity) != 1 or identity[0].get("service") != CONNECTOR_IDENTITY_TARGET:
+                raise ProductionConfigError("Canonical Identity binding is not proven at expected target")
+            services_for_output.append({"type": "service", "name": CONNECTOR_BROKER_BINDING,
+                                        "service": CONNECTOR_BROKER_TARGET})
 
     for service in services_for_output:
         target = service.get("service")
@@ -549,8 +570,11 @@ def main(argv: list[str] | None = None) -> int:
     if args.attach_existing_connector_broker:
         assert isinstance(plain_vars, dict)
         applied = sum(1 for key in CONNECTOR_EXPLICIT_VARS if key not in plain_vars)
+        reused = any(item.get("name") == CONNECTOR_BROKER_BINDING
+                     for item in live["services"])
         print(f"CONNECTOR_VARS_APPLIED={applied}")
         print(f"CONNECTOR_VARS_ALLOWLISTED={len(CONNECTOR_EXPLICIT_VARS)}")
+        print(f"CONNECTOR_BROKER_BINDING_REUSED={int(reused)}")
     else:
         print("CONNECTOR_VARS_APPLIED=0")
         print(f"CONNECTOR_VARS_ALLOWLISTED={len(CONNECTOR_EXPLICIT_VARS)}")
