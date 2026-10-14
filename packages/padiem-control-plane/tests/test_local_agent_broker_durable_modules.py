@@ -270,4 +270,12 @@ def test_worker_file_is_thin_and_storage_schemas_live_outside_entrypoint() -> No
     # Connect device selector consumes. The projection, its never-online
     # vocabulary and its contract markers live in the durable runtime module —
     # this file still only forwards and holds no storage, schema or authority.
-    assert len(source.splitlines()) < 251
+    # Issue #4139 adds the read-only verified-file-text passthrough per entrypoint
+    # class, on the same #3094 device_truth pattern and the same private Service
+    # Binding surface: the producer half of the merged consumer's
+    # ``read_verified_file_text`` contract. The table, its SQLite schema and its
+    # command/binding/ACK correlation gate live in
+    # ``local_agent_broker_text_results`` — this file still only forwards and
+    # holds no storage, schema or authority. The bound moves by exactly that
+    # passthrough (248 -> 259 lines) and keeps its original three-line margin.
+    assert len(source.splitlines()) < 262

@@ -8,6 +8,7 @@ from local_agent_broker_durable_runtime import LocalAgentBrokerDurableRuntime
 from local_agent_broker_material_store import MAX_DURABLE_COMMAND_MATERIAL_BYTES, CloudflareDurableObjectCommandMaterialStore
 from local_agent_broker_private_http_bridge import handle_private_device_fetch
 from local_agent_broker_office_chunks import compose_broker_office_chunks, read_broker_office_part_rpc
+from local_agent_broker_text_results import compose_broker_text_results, read_verified_file_text_rpc
 from local_agent_broker_sql_state import (
     CloudflareDurableObjectHttpSessionState, CloudflareDurableObjectSerializedStateBackend, safe_ref,
 )
@@ -30,6 +31,9 @@ class LocalAgentBrokerDurableObject(DurableObject):
             storage=ctx.storage, state_port=self._runtime.state_port,
             authority_ref=self._runtime.authority_ref(), env=env,
         )
+        self.text_results = compose_broker_text_results(
+            storage=ctx.storage, state_port=self._runtime.state_port,
+            authority_ref=self._runtime.authority_ref())
         self._device_http = LocalAgentBrokerDeviceHttpService(
             state_port=self._runtime.state_port,
             pepper=str(env.LOCAL_AGENT_BROKER_PEPPER).encode("utf-8"),
@@ -39,6 +43,7 @@ class LocalAgentBrokerDurableObject(DurableObject):
             material_resolver=self._runtime.material_store,
             session_open_transaction=self._storage.transactionSync,
             office_chunks=self.office_chunks,
+            text_results=self.text_results,
         )
 
     def _authority_ref(self) -> str:
@@ -103,6 +108,9 @@ class LocalAgentBrokerDurableObject(DurableObject):
 
     async def read_office_artifact_part(self, payload: dict) -> dict:
         return read_broker_office_part_rpc(self.office_chunks, payload)
+
+    async def read_verified_file_text(self, payload: dict) -> dict:  # #4139 read-only RPC
+        return read_verified_file_text_rpc(self.text_results, payload)
 
     async def fetch(self, request):
         del request
@@ -169,6 +177,9 @@ class Default(WorkerEntrypoint):
 
     async def read_office_artifact_part(self, payload: dict) -> dict:
         return await self._stub().read_office_artifact_part(payload)
+
+    async def read_verified_file_text(self, payload: dict) -> dict:
+        return await self._stub().read_verified_file_text(payload)
 
     async def fetch(self, request):
         return await handle_private_device_fetch(request, self._stub)
