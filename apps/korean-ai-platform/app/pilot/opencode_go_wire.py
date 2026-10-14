@@ -32,11 +32,10 @@ _WIRE = {
     "claude-haiku-5-5": "messages",
 }
 _UA = "padiem-claw-coding-agent/1.0"
-# B54 conversation history mints chat_ + uuid4().hex after owner-scoped D1
-# readback. This grammar excludes request IDs (b14req_), P01 Claw run IDs,
-# and arbitrary user-provided session tokens. Grammar is NOT ownership proof:
-# the caller must still authenticate and revalidate the conversation in B54.
-_SESSION = re.compile(r"^chat_[0-9a-f]{32}$")
+# Go documents a stable x-opencode-session per conversation, NOT a chat_ UUID
+# format. This is a header-value safety check only, not identity authority.
+# The public B14 gateway must never promote user-supplied JSON/headers to trust.
+_SESSION_HEADER = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 
 
 def prepare_go_request(
@@ -44,16 +43,21 @@ def prepare_go_request(
     session_id: str | None, max_tokens: int | None = None,
     temperature: float | None = None, streaming: bool = False,
 ) -> tuple[str, dict[str, Any], dict[str, str]]:
-    """Non-secret request shape. session_id must be an owner-revalidated B54 chat_ conversation ID.
+    """Provider-specific wire shape, not a B14-wide conversation requirement.
 
-    A B14 request ID is *not* a valid replacement for a stable conversation ID.
-    Refuse the request rather than make an apparently working but noncompliant
-    per-request session header or fake conversation.
+    An authorized caller can supply its existing stable conversation key.
+    For an independent one-shot B14 completion (no conversation key), mint one
+    request-scoped session key solely for OpenCode routing. It is NOT a login,
+    tenancy or ownership grant and cannot be reused as one.
     """
     if _WIRE.get(upstream_model) is None or model_id != "opencode-go/" + upstream_model:
         raise InvalidRequest("OpenCode Go model is not in the owner allowlist.")
-    if not isinstance(session_id, str) or not _SESSION.fullmatch(session_id):
-        raise InvalidRequest("OpenCode Go requires a trusted stable conversation session ID.")
+    if session_id is None:
+        # One POST without product conversation state is its own one-turn
+        # conversation. Keep a real, distinct provider session for this call.
+        session_id = "go_" + uuid.uuid4().hex
+    elif not isinstance(session_id, str) or not _SESSION_HEADER.fullmatch(session_id):
+        raise InvalidRequest("Invalid OpenCode Go session header value.")
     if not isinstance(messages, list) or not messages:
         raise InvalidRequest("OpenCode Go requires at least one chat message.")
     for m in messages:
