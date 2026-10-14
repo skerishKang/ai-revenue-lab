@@ -1005,6 +1005,17 @@
         approvedError.textContent = "";
         approvedError.removeAttribute("data-state");
       }
+      // #4488 re-login: the pending approval decision surface is the one
+      // session-scoped Claw control that carries a specific run_id together
+      // with its approve/deny actions, so it must not outlive the session
+      // either. Otherwise re-entering Claw after an auth loss would re-show a
+      // previous session's decision controls for a run this session never
+      // requested.
+      const approvalActions = document.getElementById("clawApprovalActions");
+      if (approvalActions) {
+        approvalActions.replaceChildren();
+        approvalActions.hidden = true;
+      }
       // #4488 Phase A: the disclosure wrapper must not outlive the session.
       const runHistoryDisclosure = document.getElementById("clawRunHistoryDisclosure");
       if (runHistoryDisclosure) runHistoryDisclosure.hidden = true;
