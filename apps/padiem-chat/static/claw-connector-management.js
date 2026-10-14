@@ -144,7 +144,7 @@
       await json("/api/connectors/google/drive/disconnect",{method:"POST"});
       resetRemoval(driveRemove,tr("연결 삭제","Remove connection"));
       // The canonical workspace GET owns any change to the display.
-      document.getElementById("connectorsRetry")?.click();
+      document.dispatchEvent(new Event("padiem:refresh-connector-status"));
       updateClaw();
       write(driveFeedback,tr("연결 정보를 삭제했습니다.","Connection removed."));
       show(driveFeedback,true);
@@ -159,7 +159,12 @@
 
   new MutationObserver(updateDrive).observe(drive,
     {attributes:true,attributeFilter:["data-connector-status"]});
-  dialog.addEventListener("close",()=>{++readGeneration;});
+  dialog.addEventListener("close",()=>{
+    ++readGeneration;
+    resetRemoval(githubRemove,tr("연결 삭제","Remove connection"));
+    resetRemoval(driveRemove,tr("연결 삭제","Remove connection"));
+    show(githubFeedback,false);show(driveFeedback,false);
+  });
   // All dialog entry routes (sidebar, Claw cards, OAuth return) share this readback.
   new MutationObserver(() => {
     if (dialog.open) {updateDrive(); void readGithub();}

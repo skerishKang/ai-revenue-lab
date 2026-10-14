@@ -40,7 +40,8 @@ def test_connection_management_never_forges_on_off_or_auto_deletes():
     assert '"/api/connectors/github/"+next' in MANAGER
     assert '"/api/connectors/github/disconnect"' in MANAGER
     assert '"/api/connectors/google/drive/disconnect"' in MANAGER
-    assert 'document.getElementById("connectorsRetry")?.click()' in MANAGER
+    assert 'padiem:refresh-connector-status' in MANAGER
+    assert 'padiem:refresh-connector-status' in APP
     assert 'button.dataset.confirmRemove === "yes"' in MANAGER
     assert 'data-connection-state =' not in MANAGER
     assert 'localStorage' not in MANAGER
