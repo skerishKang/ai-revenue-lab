@@ -47,6 +47,9 @@ RESIDENT_ENV_CREDENTIAL_DIR = "PADIEM_AGENT_CREDENTIAL_DIR"
 #: Without it the factory refuses, and the child dies before it can emit any
 #: bounded refusal of its own.
 RESIDENT_ENV_BROKER_URL = "PADIEM_AGENT_BROKER_URL"
+#: Optional P01 verified-text plan material supplied by deployment (module:attribute).
+#: Absent leaves the TXT lane inactive; never minted locally.
+RESIDENT_ENV_VERIFIED_TEXT_PLAN_SOURCE = "PADIEM_AGENT_VERIFIED_TEXT_PLAN_SOURCE"
 
 #: Bounded, secret-free refusal reasons. Each one names a *missing fact*, so an
 #: operator can act on it, and none of them carries a value.
@@ -58,6 +61,7 @@ REASON_CREDENTIAL_DIR_INVALID = "canonical_credential_dir_invalid"
 REASON_AUTHORITY_REF_UNCONFIGURED = "broker_authority_ref_unconfigured"
 REASON_REQUEST_PORT_UNCONFIGURED = "broker_request_port_unconfigured"
 REASON_BROKER_URL_UNCONFIGURED = "broker_url_unconfigured"
+REASON_VERIFIED_TEXT_PLAN_SOURCE_INVALID = "verified_text_plan_source_invalid"
 
 #: The Resident's ``module:attribute`` factory shape. Shape-checked only: this
 #: module never imports or calls the factory, and never stands up a transport.
@@ -80,13 +84,15 @@ class ResidentLaunchPlan:
     credential_dir: str
     request_port: str
     broker_url: str
+    verified_text_plan_source: str | None = None
 
     def environment(self, *, base: Mapping[str, str] | None = None) -> dict[str, str]:
         """The child environment, over the inherited one.
 
-        Only the five canonical keys are set. The credential directory is a
+        Only the canonical keys are set. The credential directory is a
         *path*; the credential itself is never placed in the environment, and
-        the Resident keeps loading it from the protected store.
+        the Resident keeps loading it from the protected store. The optional
+        verified-text plan source is forwarded only when configured.
         """
         env = dict(os.environ if base is None else base)
         env[RESIDENT_ENV_DEVICE_ID] = self.device_id
@@ -94,6 +100,10 @@ class ResidentLaunchPlan:
         env[RESIDENT_ENV_CREDENTIAL_DIR] = self.credential_dir
         env[RESIDENT_ENV_REQUEST_PORT] = self.request_port
         env[RESIDENT_ENV_BROKER_URL] = self.broker_url
+        if self.verified_text_plan_source is None:
+            env.pop(RESIDENT_ENV_VERIFIED_TEXT_PLAN_SOURCE, None)
+        else:
+            env[RESIDENT_ENV_VERIFIED_TEXT_PLAN_SOURCE] = self.verified_text_plan_source
         return env
 
     def safe_dict(self) -> dict[str, Any]:
@@ -162,6 +172,19 @@ def plan_resident_launch(
     if not _BROKER_URL_RE.fullmatch(broker_url):
         return None, REASON_BROKER_URL_UNCONFIGURED
 
+    # Optional P01 verified-text material. CENTRAL supplies module:factory;
+    # absent leaves TXT inactive. Invalid shape refuses rather than
+    # forwarding a broken value.
+    verified_text_plan_source = (
+        env.get(RESIDENT_ENV_VERIFIED_TEXT_PLAN_SOURCE) or ""
+    ).strip()
+    if verified_text_plan_source and not _REQUEST_PORT_RE.fullmatch(
+        verified_text_plan_source
+    ):
+        return None, REASON_VERIFIED_TEXT_PLAN_SOURCE_INVALID
+    if not verified_text_plan_source:
+        verified_text_plan_source = None
+
     return (
         ResidentLaunchPlan(
             device_id=device_id,
@@ -169,6 +192,7 @@ def plan_resident_launch(
             credential_dir=expanded,
             request_port=request_port,
             broker_url=broker_url,
+            verified_text_plan_source=verified_text_plan_source,
         ),
         "planned",
     )
@@ -177,6 +201,7 @@ def plan_resident_launch(
 __all__ = [
     "REASON_AUTHORITY_REF_UNCONFIGURED",
     "REASON_BROKER_URL_UNCONFIGURED",
+    "REASON_VERIFIED_TEXT_PLAN_SOURCE_INVALID",
     "REASON_CREDENTIAL_DIR_INVALID",
     "REASON_CREDENTIAL_DIR_UNCONFIGURED",
     "REASON_ENROLLMENT_NOT_LIVE",
@@ -186,6 +211,7 @@ __all__ = [
     "RESIDENT_ENV_AUTHORITY_REF",
     "RESIDENT_ENV_BROKER_URL",
     "RESIDENT_ENV_CREDENTIAL_DIR",
+    "RESIDENT_ENV_VERIFIED_TEXT_PLAN_SOURCE",
     "RESIDENT_ENV_DEVICE_ID",
     "RESIDENT_ENV_REQUEST_PORT",
     "ResidentLaunchPlan",

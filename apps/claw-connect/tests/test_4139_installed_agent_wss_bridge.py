@@ -21,6 +21,7 @@ _AGENT_FILES = (
     "kagent/local_agent_resident_process.py",
     "kagent/local_agent_secure_transport.py",
     "kagent/local_agent_pairing.py",
+    "kagent/local_agent_broker_production_entry.py",
 )
 
 _RUN = """

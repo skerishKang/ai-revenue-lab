@@ -25,6 +25,7 @@ def _fake_agent_source(root: Path) -> None:
     for file in (
         "__init__.py", "local_agent_resident_process.py",
         "local_agent_secure_transport.py", "local_agent_pairing.py",
+        "local_agent_broker_production_entry.py",
     ):
         (pkg / file).write_text("# safe stub only\n", encoding="utf-8")
 
