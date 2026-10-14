@@ -6,11 +6,16 @@ def rows(state):
  return {"workspace_state_authority":True,"connectors":[{"connector_id":"connector:google:drive@1","workspace_state":state}]}
 def setup(context,dr,pc):
  writes=[]
+ state={"drive":dr}
  def status(route):
-  route.fulfill(status=200,content_type="application/json",body=json.dumps(rows(dr)))
+  route.fulfill(status=200,content_type="application/json",body=json.dumps(rows(state["drive"])))
  def devices(route):
   route.fulfill(status=200,content_type="application/json",body=json.dumps(pc))
+ def disconnect(route):
+  state["drive"]="not_connected"
+  route.fulfill(status=200,content_type="application/json",body=json.dumps({"ok":True,"state":"off","revoked":True}))
  context.route("**/api/connectors/status",status)
+ context.route("**/api/connectors/google/drive/disconnect",disconnect)
  context.route("**/api/claw/local-access/devices",devices)
  context.on("request",lambda req: writes.append(req.method+" "+req.url) if req.method not in ("GET","HEAD") else None)
  return writes
@@ -32,9 +37,9 @@ with sync_playwright() as p:
  a=check(page,{"pc":"on","drive":"on","github":"unknown"})
  page.on("dialog",lambda dialog:dialog.accept())
  page.locator('[data-claw-connection="drive"]').click()
- page.wait_for_function("() => document.querySelector('[data-claw-connection=\"drive\"]').dataset.connectionState === 'on'",timeout=7000)
+ page.wait_for_function("() => document.querySelector('[data-claw-connection=\"drive\"]').dataset.connectionState === 'off'",timeout=7000)
  after=page.locator('[data-claw-connection="drive"]').get_attribute("data-connection-state")
- assert after=="on" and len(writes)==0,(after,writes)
+ assert after=="off" and len(writes)==1 and "/api/connectors/google/drive/disconnect" in writes[0],(after,writes)
  assert len(page.locator("#clawConnectionFeedback").inner_text().strip()) > 10
  page.close();ctx.close()
  ctx=b.new_context();writes=setup(ctx,"not_connected",{"ok":True,"available":True,"ownerScoped":True,"devices":[]})
@@ -49,7 +54,7 @@ with sync_playwright() as p:
  page=ctx.new_page(); d=check(page,{"pc":"unknown","drive":"unknown","github":"unknown"})
  page.close();ctx.close();b.close()
  print("CLAW_REAL_STATUS_CHIPS=PASS")
- print("ON_CONFIRM_NO_FAKE_DISCONNECT=PASS")
+ print("DRIVE_ON_SERVER_REVOKE_CANONICAL_OFF=PASS")
  print("OFF_CANONICAL_CONNECT_DIALOG=PASS")
  print("UNKNOWN_FAIL_CLOSED=PASS")
  print("PRODUCTION_MUTATION=0")
