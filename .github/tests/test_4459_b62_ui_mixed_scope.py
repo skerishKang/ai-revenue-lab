@@ -135,9 +135,9 @@ class UiMixedFastLane(unittest.TestCase):
         answer = {"status": "ahead", "files": files}
         for event_name, count, expected in (
             ("pull_request", 2, scope.UI_MIXED),
-            ("pull_request", None, scope.CHAT_ONLY),
+            ("pull_request", None, scope.FULL),
             ("pull_request", 3, scope.FULL),
-            ("push", None, scope.CHAT_ONLY),
+            ("push", None, scope.FULL),
         ):
             with self.subTest(event_name=event_name, count=count):
                 event = {"repository": {"full_name": "skerishKang/ai-revenue-lab"}}
