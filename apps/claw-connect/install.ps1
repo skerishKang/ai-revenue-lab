@@ -35,6 +35,7 @@ $InstallRoot = Join-Path $env:LOCALAPPDATA 'Padiem\ClawConnect'
 $RunKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run'
 $BrowserProtocolKey = 'HKCU:\Software\Classes\padiem-connector'
 $BrowserProtocolCommandKey = Join-Path $BrowserProtocolKey 'shell\open\command'
+$ProtocolOwnershipValue = 'PadiemConnectorInstallRoot'
 $BrowserLaunchScript = Join-Path $InstallRoot 'launch_protocol.py'
 $SourceRoot = $PSScriptRoot
 
@@ -83,6 +84,38 @@ function Get-ProtocolCommand {
     return (Get-Item -LiteralPath $BrowserProtocolCommandKey).GetValue('')
 }
 
+function Test-ProtocolKeyShape {
+    param([string]$Key, [string[]]$AllowedValues, [string[]]$AllowedChildren)
+    if (-not (Test-Path -LiteralPath $Key)) { return $false }
+    $entry = Get-Item -LiteralPath $Key
+    foreach ($name in $entry.GetValueNames()) {
+        if ($name -cnotin $AllowedValues) { return $false }
+    }
+    foreach ($name in $entry.GetSubKeyNames()) {
+        if ($name -cnotin $AllowedChildren) { return $false }
+    }
+    return $true
+}
+
+function Test-OwnedBrowserProtocol {
+    # A matching command alone is insufficient: a different program may own
+    # additional values/subkeys that uninstall must never recursively delete.
+    if ((Get-ProtocolCommand) -cne $ExpectedProtocolCommand) { return $false }
+    if (-not (Test-Path -LiteralPath $BrowserProtocolKey)) { return $false }
+    $root = Get-Item -LiteralPath $BrowserProtocolKey
+    if ($root.GetValue('') -cne 'URL:PADIEM Connector' -or
+        $root.GetValue('URL Protocol', $null) -cne '') { return $false }
+    $registeredRoot = $root.GetValue($ProtocolOwnershipValue, $null)
+    if ($null -ne $registeredRoot -and $registeredRoot -ine $InstallRoot) { return $false }
+    if (-not (Test-ProtocolKeyShape $BrowserProtocolKey @('', 'URL Protocol', $ProtocolOwnershipValue) @('shell'))) { return $false }
+    $shellKey = Join-Path $BrowserProtocolKey 'shell'
+    $openKey = Join-Path $shellKey 'open'
+    if (-not (Test-ProtocolKeyShape $shellKey @() @('open'))) { return $false }
+    if (-not (Test-ProtocolKeyShape $openKey @() @('command'))) { return $false }
+    if (-not (Test-ProtocolKeyShape $BrowserProtocolCommandKey @('') @())) { return $false }
+    return $true
+}
+
 if ($Uninstall) {
     # Uninstall must also respect the registry ownership check. The old
     # Remove-ItemProperty blindly deleted a foreign command sharing this name.
@@ -105,20 +138,31 @@ if ($Uninstall) {
     } elseif (Get-ItemProperty -Path $RunKey -Name $RunValueName -ErrorAction SilentlyContinue) {
         throw 'Cannot prove the Run entry is owned without the installed Connector.'
     }
-    if ((Test-Path -LiteralPath $BrowserProtocolKey) -and
-        ((Get-ProtocolCommand) -ceq $ExpectedProtocolCommand)) {
-        Remove-Item -LiteralPath $BrowserProtocolKey -Recurse -Force
+    # Preserve foreign additions rather than deleting someone else's values
+    # under our URL scheme, even if the original default command still matches.
+    $BrowserProtocolPreserved = $false
+    if (Test-Path -LiteralPath $BrowserProtocolKey) {
+        if (Test-OwnedBrowserProtocol) {
+            # No recursive subtree deletion: fail rather than consume an
+            # unexpected sibling that appeared after the ownership check.
+            Remove-Item -LiteralPath $BrowserProtocolCommandKey -Force
+            Remove-Item -LiteralPath (Join-Path $BrowserProtocolKey 'shell\open') -Force
+            Remove-Item -LiteralPath (Join-Path $BrowserProtocolKey 'shell') -Force
+            Remove-Item -LiteralPath $BrowserProtocolKey -Force
+        } else {
+            $BrowserProtocolPreserved = $true
+        }
     }
     if (Test-Path $ShortcutPath) { Remove-Item $ShortcutPath -Force }
     Remove-OwnedLegacyShortcut
     if (Test-Path $InstallRoot) { Remove-Item $InstallRoot -Recurse -Force }
-    Write-Output '{"ok":true,"action":"uninstall"}'
+    Write-Output (@{ ok = $true; action = 'uninstall'; browser_protocol_preserved = $BrowserProtocolPreserved } | ConvertTo-Json -Compress)
     exit 0
 }
 
 if (Test-Path -LiteralPath $BrowserProtocolKey) {
-    if ((Get-ProtocolCommand) -cne $ExpectedProtocolCommand) {
-        throw 'A different application already owns the browser launch scheme.'
+    if (-not (Test-OwnedBrowserProtocol)) {
+        throw 'A different application or unknown registry entries already own the browser launch scheme.'
     }
 }
 
@@ -206,6 +250,7 @@ Remove-OwnedLegacyShortcut
 New-Item -Path $BrowserProtocolKey -Force | Out-Null
 Set-Item -Path $BrowserProtocolKey -Value 'URL:PADIEM Connector' | Out-Null
 New-ItemProperty -Path $BrowserProtocolKey -Name 'URL Protocol' -Value '' -PropertyType String -Force | Out-Null
+New-ItemProperty -Path $BrowserProtocolKey -Name $ProtocolOwnershipValue -Value $InstallRoot -PropertyType String -Force | Out-Null
 New-Item -Path $BrowserProtocolCommandKey -Force | Out-Null
 Set-Item -Path $BrowserProtocolCommandKey -Value $ExpectedProtocolCommand | Out-Null
 

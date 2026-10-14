@@ -42,6 +42,16 @@ def test_invalid_uri_rejected_before_creating_machine_state(monkeypatch, capsys)
     assert "untrusted browser launch URI" in capsys.readouterr().out
 
 
+@pytest.mark.parametrize("extra", (
+    "--operator-wss-review", "--device-id=forged", "extra-argument",
+))
+def test_browser_protocol_refuses_additional_argv_before_device_state(monkeypatch, extra):
+    monkeypatch.setattr(cli, "ConnectApp", lambda: pytest.fail("created state"))
+    with pytest.raises(SystemExit) as error:
+        cli.main(["open-from-web", BROWSER_START_URI, extra])
+    assert error.value.code == 2
+
+
 def test_allowed_link_starts_existing_tray_only_and_never_claims_pairing(monkeypatch):
     events = []
     class ExistingTray:
@@ -67,7 +77,10 @@ def test_installer_registers_only_per_user_uri_and_safe_uninstall():
     assert "HKCU:\\Software\\Classes\\padiem-connector" in installer
     assert "$ExpectedProtocolCommand" in installer
     assert "(Get-ProtocolCommand) -cne $ExpectedProtocolCommand" in installer
-    assert "(Get-ProtocolCommand) -ceq $ExpectedProtocolCommand" in installer
+    assert "function Test-OwnedBrowserProtocol" in installer
+    assert "if (Test-OwnedBrowserProtocol)" in installer
+    assert "$ProtocolOwnershipValue = 'PadiemConnectorInstallRoot'" in installer
+    assert "browser_protocol_preserved" in installer
     assert "Copy-Item -Path (Join-Path $SourceRoot 'launch_protocol.py')" in installer
     assert '"%1"' in installer
     assert "HKLM:" not in installer
