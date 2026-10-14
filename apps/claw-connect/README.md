@@ -69,3 +69,19 @@ autostart continue to fail closed and are NOT made production-live by this
 source-only change. The Cloudflare Worker must independently prove trusted
 ingress and the PADIEM operator must verify identity/Broker consent and
 two-PC restart tests before production release.
+
+
+## Browser -> installed Connector (no credentials in URLs)
+
+The installed per-user Windows handler supports only the exact
+padiem-connector://start link. It launches the existing tray without a new
+account login or second runtime. Browser ownership, tenant, pairing_code and
+cookies are NOT serialized into any OS command line. Other URI forms
+including query/fragment fail closed. The protocol registration is HKCU-only,
+refuses existing foreign handlers and removes only its exact owned command.
+
+The existing B54 owner page shows a simple Connector launch action; advanced
+manual enrollment repair is collapsed. Opening the tray is NOT pairing:
+signed web session to canonical Broker device enrollment, WSS, and DPAPI ACK
+remain separate and are not authorized by this link. B66 customer permissions
+are never inherited from a B54 session.

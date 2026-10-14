@@ -33,6 +33,9 @@ $ShortcutPath = Join-Path $StartMenu 'PADIEM Connector.lnk'
 $LegacyShortcutPath = Join-Path $StartMenu 'Padiem Claw Connect.lnk'
 $InstallRoot = Join-Path $env:LOCALAPPDATA 'Padiem\ClawConnect'
 $RunKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run'
+$BrowserProtocolKey = 'HKCU:\Software\Classes\padiem-connector'
+$BrowserProtocolCommandKey = Join-Path $BrowserProtocolKey 'shell\open\command'
+$BrowserLaunchScript = Join-Path $InstallRoot 'launch_protocol.py'
 $SourceRoot = $PSScriptRoot
 
 function Remove-OwnedLegacyShortcut {
@@ -66,6 +69,20 @@ $PythonExePath = if ($PythonExe.Count -gt 1) {
     $PythonExe[0]
 }
 
+# Exact per-user protocol; browser URI is never an authentication claim.
+$ProtocolPython = $PythonExePath
+if ([System.IO.Path]::GetFileName($PythonExePath) -ieq 'python.exe') {
+    $PossiblePythonw = Join-Path (Split-Path $PythonExePath) 'pythonw.exe'
+    if (Test-Path -LiteralPath $PossiblePythonw -PathType Leaf) {
+        $ProtocolPython = $PossiblePythonw
+    }
+}
+$ExpectedProtocolCommand = '"' + $ProtocolPython + '" "' + $BrowserLaunchScript + '" "%1"'
+function Get-ProtocolCommand {
+    if (-not (Test-Path -LiteralPath $BrowserProtocolCommandKey)) { return $null }
+    return (Get-Item -LiteralPath $BrowserProtocolCommandKey).GetValue('')
+}
+
 if ($Uninstall) {
     # Uninstall must also respect the registry ownership check. The old
     # Remove-ItemProperty blindly deleted a foreign command sharing this name.
@@ -88,11 +105,21 @@ if ($Uninstall) {
     } elseif (Get-ItemProperty -Path $RunKey -Name $RunValueName -ErrorAction SilentlyContinue) {
         throw 'Cannot prove the Run entry is owned without the installed Connector.'
     }
+    if ((Test-Path -LiteralPath $BrowserProtocolKey) -and
+        ((Get-ProtocolCommand) -ceq $ExpectedProtocolCommand)) {
+        Remove-Item -LiteralPath $BrowserProtocolKey -Recurse -Force
+    }
     if (Test-Path $ShortcutPath) { Remove-Item $ShortcutPath -Force }
     Remove-OwnedLegacyShortcut
     if (Test-Path $InstallRoot) { Remove-Item $InstallRoot -Recurse -Force }
     Write-Output '{"ok":true,"action":"uninstall"}'
     exit 0
+}
+
+if (Test-Path -LiteralPath $BrowserProtocolKey) {
+    if ((Get-ProtocolCommand) -cne $ExpectedProtocolCommand) {
+        throw 'A different application already owns the browser launch scheme.'
+    }
 }
 
 # Validate any explicit Agent source BEFORE modifying the current user's
@@ -126,8 +153,8 @@ if ($OperatorWssAcceptance -and -not (Test-Path -LiteralPath (Join-Path $SourceR
 New-Item -ItemType Directory -Path $InstallRoot -Force | Out-Null
 Copy-Item -Path (Join-Path $SourceRoot 'claw_connect') -Destination $InstallRoot `
     -Recurse -Force
-Copy-Item -Path (Join-Path $SourceRoot 'padiem_connector') -Destination $InstallRoot `
-    -Recurse -Force
+Copy-Item -Path (Join-Path $SourceRoot 'padiem_connector') -Destination $InstallRoot -Recurse -Force
+Copy-Item -Path (Join-Path $SourceRoot 'launch_protocol.py') -Destination $InstallRoot -Force
 
 # S2: pin the one existing kagent Resident this PC supervises. The Connector
 # launches `kagent.local_agent_resident_process` — never a placeholder command.
@@ -174,6 +201,14 @@ $shortcut.Description = $ProductName
 $shortcut.Save()
 Remove-OwnedLegacyShortcut
 
+# ShellExecute only, not an inbound listener. Unknown URL payloads are denied
+# by the package before any user-state or network initialization.
+New-Item -Path $BrowserProtocolKey -Force | Out-Null
+Set-Item -Path $BrowserProtocolKey -Value 'URL:PADIEM Connector' | Out-Null
+New-ItemProperty -Path $BrowserProtocolKey -Name 'URL Protocol' -Value '' -PropertyType String -Force | Out-Null
+New-Item -Path $BrowserProtocolCommandKey -Force | Out-Null
+Set-Item -Path $BrowserProtocolCommandKey -Value $ExpectedProtocolCommand | Out-Null
+
 $result = [ordered]@{
     ok = $true
     action = 'install'
@@ -185,6 +220,7 @@ $result = [ordered]@{
     review_wss_dependencies_prepared = $ReviewWssPrepared
     review_wss_server_activated = $false
     tray_launch_requested = $false
+    browser_launch_registered = $true
     connected = $false
 }
 

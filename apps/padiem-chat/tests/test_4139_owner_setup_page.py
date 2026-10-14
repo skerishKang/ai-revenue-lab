@@ -114,3 +114,33 @@ def test_script_does_not_persist_pairing_code_or_use_untrusted_owner_scope():
 def test_default_product_app_has_no_setup_page_or_script():
     ordinary = create_app(settings=replace(Settings.from_env(), public_base_url="https://chat.padiem.net"))
     assert not any(getattr(r, "path", "") in {setup.SETUP_PATH, setup.SCRIPT_PATH} for r in ordinary.routes)
+
+
+def test_signed_owner_page_has_single_native_launch_not_an_account_login():
+    # The page is still owner-session gated by the existing tests above.
+    assert 'id="native-launch"' in setup._HTML
+    assert 'id="operator-restore"' in setup._HTML
+    assert setup._HTML.index('id="native-launch"') < setup._HTML.index('id="operator-restore"')
+    assert 'padiem-connector://start' in setup._SCRIPT
+    assert '"padiem-connector://start"' in setup._SCRIPT
+    assert 'location.href' in setup._SCRIPT
+    assert 'padiem-connector://start?' not in setup._SCRIPT
+    assert 'padiem-connector://start#' not in setup._SCRIPT
+    assert 'id="secret" hidden' in setup._HTML
+    assert '"enrollments/redeem"' not in setup._SCRIPT
+    assert "navigator.clipboard" not in setup._SCRIPT
+    assert "localStorage.setItem" not in setup._SCRIPT
+
+
+def test_native_browser_launch_script_has_real_javascript_syntax_if_node_available():
+    import shutil
+    import subprocess
+    import pytest
+
+    if shutil.which("node") is None:
+        pytest.skip("Node not present; script syntax checked in Node-enabled CI")
+    process = subprocess.run(
+        ["node", "--check"], input=setup._SCRIPT, text=True,
+        capture_output=True, timeout=15, check=False,
+    )
+    assert process.returncode == 0, process.stderr

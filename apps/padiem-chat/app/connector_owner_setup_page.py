@@ -15,6 +15,17 @@ _SCRIPT = r"""
 // URL tokens, hidden device scopes, console logs or credential persistence.
 (() => {
   const el = (name) => document.getElementById(name);
+  // Launch only: no browser session, enrollment code or cookie in OS URI.
+  const launch = el("native-launch");
+  launch?.addEventListener("click", () => {
+    const hint = el("native-state");
+    hint.textContent = '\ucee4\ub125\ud130 \uc2e4\ud589\uc744 \uc694\uccad\ud588\uc2b5\ub2c8\ub2e4. \uc2e4\uc81c \uc5f0\uacb0 \uc0c1\ud0dc\ub294 \uc11c\ubc84\uc5d0\uc11c \ud655\uc778\ud569\ub2c8\ub2e4.';
+    try {
+      window.location.href = "padiem-connector://start";
+    } catch {
+      hint.textContent = '\ucee4\ub125\ud130\ub97c \uc2e4\ud589\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4. \uc124\uce58 \uc0c1\ud0dc\ub97c \ud655\uc778\ud558\uc138\uc694.';
+    }
+  });
   const device = el("device");
   const consent = el("consent");
   const grant = el("grant");
@@ -182,7 +193,11 @@ button{padding:.7rem 1rem;margin:.4rem .5rem .4rem 0;cursor:pointer}
 output,pre{display:block;padding:1rem;background:#f4f5f7;white-space:pre-wrap;overflow-wrap:anywhere}
 code{font-size:.9em}
 </style></head><body>
-<h1>PADIEM Connector — PC 등록</h1>
+<h1>PADIEM Connector &#8212; PC &#50672;&#44208;</h1>
+<p>&#49444;&#52824;&#54620; &#52964;&#45349;&#53552;&#47484; &#49892;&#54665;&#54624; &#49688; &#51080;&#49845;&#45768;&#45796;. &#49436;&#48260; &#50672;&#44208;&#51008; &#46321;&#47197; &#54980; &#54869;&#51064;&#54633;&#45768;&#45796;.</p>
+<button type="button" id="native-launch">&#52964;&#45349;&#53552; &#49892;&#54665;</button>
+<output id="native-state" role="status" aria-live="polite">&#49444;&#52824;&#54620; &#52964;&#45349;&#53552;&#47484; &#49892;&#54665;&#54624; &#49688; &#51080;&#49845;&#45768;&#45796;. &#49436;&#48260; &#50672;&#44208;&#51008; &#46321;&#47197; &#54980; &#54869;&#51064;&#54633;&#45768;&#45796;.</output>
+<details id="operator-restore"><summary>&#44288;&#47532;&#51088;&#50857; &#46321;&#47197; &#48373;&#44396;</summary>
 <p>PC의 <code>padiem-connector status</code>에 표시된 기기 ID를 입력하세요.
 등록은 기존 PADIEM 로그인 계정과 해당 PC에 대한 명시적 동의가 필요합니다.</p>
 <label for="device">PC 기기 ID</label><input id="device" maxlength="256" autocomplete="off" spellcheck="false">
@@ -197,6 +212,7 @@ code{font-size:.9em}
 <label for="code">일회용 등록코드</label><input id="code" readonly type="text" autocomplete="off">
 <p>Windows에서 <code>padiem-connector enroll &lt;challenge_id&gt; --operator-wss-review</code> 실행 후 표시되는 안전한 입력창에 코드를 입력하세요.</p>
 </div>
+</details>
 <script src="/api/claw/connector/enrollments/setup.js" defer></script>
 </body></html>"""
 

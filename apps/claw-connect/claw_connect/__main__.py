@@ -61,6 +61,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.set_defaults(command="start")
 
     sub.add_parser("start", help="start the tray (single instance) — default")
+    native = sub.add_parser("open-from-web", help="start tray from exact no-data OS link")
+    native.add_argument("browser_launch_uri")
     sub.add_parser("status", help="machine-readable state, no tray")
     sub.add_parser("doctor", help="read-only Agent installation preflight, no Broker traffic")
     sub.add_parser("stop", help="ask a running tray to quit")
@@ -111,6 +113,18 @@ def main(argv: list[str] | None = None) -> int:
         snapshot = agent_preflight(state_dir=default_state_dir())
         print(json.dumps(snapshot, ensure_ascii=False, sort_keys=True))
         return 0 if snapshot["agent_ready"] else 1
+
+    if args.command == "open-from-web":
+        from .browser_launch import accepts_browser_launch_uri
+        if not accepts_browser_launch_uri(args.browser_launch_uri):
+            print(json.dumps({"ok": False, "blocked": True,
+                              "detail": "untrusted browser launch URI"}))
+            return 2
+        # Browser link can only start a tray; it cannot supply any account or
+        # device entitlement, cookie, one-time code or executable command.
+        app = ConnectApp()
+        status = app.run()
+        return 0 if status == CONNECT_APP_EXIT_ALREADY_RUNNING else status
 
     # STOP and autostart OFF/SHOW must remain usable even if the Agent source
     # pin is corrupt. Neither action needs to start or resolve the Resident.
