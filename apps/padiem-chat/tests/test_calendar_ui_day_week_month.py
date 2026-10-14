@@ -42,8 +42,10 @@ def test_range_ui_reuses_the_existing_read_only_authority() -> None:
     assert "start_date=" in source and "end_date=" in source
     assert 'credentials: "same-origin"' in source
     assert 'cache: "no-store"' in source
-    assert source.count('method: "POST"') == 2
-    assert not re.search(r"\b(PUT|PATCH|DELETE)\b", source)
+    assert source.count('method: method') == 2  # Existing create path now also supports authorized edit.
+    assert 'method: "DELETE"' in source
+    assert 'method === "PUT"' in source
+    assert not re.search(r"\bPATCH\b", source)
     assert "workspace_id" not in source
     assert "owner_id" not in source
     assert "tenant_id" not in source

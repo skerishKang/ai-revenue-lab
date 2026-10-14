@@ -21,7 +21,8 @@ Authority invariants:
 
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import date, datetime, timezone
+from dataclasses import replace
 import json
 from typing import Any
 
@@ -514,3 +515,80 @@ async def calendar_appointments_list(request: Request) -> JSONResponse:
         status_code=200,
         headers=_NO_STORE_HEADERS,
     )
+
+async def calendar_appointment_manage(request: Request) -> JSONResponse:
+    """Bounded native appointment update or delete. Never trusts a supplied workspace."""
+    uid = _require_owner(request)
+    if uid is None:
+        return _error(401, "unauthorized", "Authentication required")
+    store = _get_calendar_store(request)
+    if store is None:
+        return _error(503, "calendar_store_unavailable", "Calendar storage unavailable")
+    workspace_id = await _resolve_memory_workspace(request, uid)
+    appointment_id = request.path_params.get("appointment_id", "")
+    try:
+        existing = await store.get_appointment(workspace_id, appointment_id)
+        if existing is None or existing.owner_id != uid:
+            return _error(404, "appointment_not_found", "Appointment not found")
+        if request.method == "DELETE":
+            await store.delete_appointment(workspace_id, uid, appointment_id)
+            return JSONResponse({"ok": True, "deleted": True}, headers=_NO_STORE_HEADERS)
+        body = await _read_json_body(request)
+        if isinstance(body, JSONResponse):
+            return body
+        replacement = CalendarAppointment.create(
+            workspace_id=workspace_id, owner_id=uid,
+            appointment_id=existing.appointment_id,
+            appointment_type=body.get("appointment_type", existing.appointment_type.value),
+            title=body.get("title", existing.title),
+            description=body.get("description", existing.description),
+            date_val=body.get("date", existing.date.isoformat()),
+            start_at=body.get("start_at", existing.start_at.isoformat() if existing.start_at else None),
+            end_at=body.get("end_at", existing.end_at.isoformat() if existing.end_at else None),
+            tz_name=body.get("timezone", existing.timezone),
+            reminder_minutes=body.get("reminder_minutes", existing.reminder_minutes),
+        )
+        updated = replace(replacement, created_at=existing.created_at,
+                          updated_at=datetime.now(timezone.utc).replace(microsecond=0))
+        saved = await store.update_appointment(updated)
+        return JSONResponse({"ok": True, "appointment": project_appointment(saved).safe_dict()}, headers=_NO_STORE_HEADERS)
+    except CalendarContractError as exc:
+        return _error(400, exc.code, exc.message)
+    except Exception:
+        return _error(500, "appointment_mutation_failed", "Unable to change appointment")
+
+
+async def calendar_work_log_manage(request: Request) -> JSONResponse:
+    """Bounded native work-log update or delete; owner and workspace checked before write."""
+    uid = _require_owner(request)
+    if uid is None:
+        return _error(401, "unauthorized", "Authentication required")
+    store = _get_calendar_store(request)
+    if store is None:
+        return _error(503, "calendar_store_unavailable", "Calendar storage unavailable")
+    workspace_id = await _resolve_memory_workspace(request, uid)
+    log_id = request.path_params.get("log_id", "")
+    try:
+        existing = await store.get_work_log(workspace_id, log_id)
+        if existing is None or existing.owner_id != uid:
+            return _error(404, "work_log_not_found", "Work log not found")
+        if request.method == "DELETE":
+            await store.delete_work_log(workspace_id, uid, log_id)
+            return JSONResponse({"ok": True, "deleted": True}, headers=_NO_STORE_HEADERS)
+        body = await _read_json_body(request)
+        if isinstance(body, JSONResponse):
+            return body
+        replacement = CalendarWorkLog.create(
+            workspace_id=workspace_id, owner_id=uid, log_id=existing.log_id,
+            date_val=body.get("date", existing.date.isoformat()),
+            title=body.get("title", existing.title),
+            content=body.get("content", existing.content),
+        )
+        updated = replace(replacement, created_at=existing.created_at,
+                          updated_at=datetime.now(timezone.utc).replace(microsecond=0))
+        saved = await store.update_work_log(updated)
+        return JSONResponse({"ok": True, "work_log": project_work_log(saved).safe_dict()}, headers=_NO_STORE_HEADERS)
+    except CalendarContractError as exc:
+        return _error(400, exc.code, exc.message)
+    except Exception:
+        return _error(500, "work_log_mutation_failed", "Unable to change work log")

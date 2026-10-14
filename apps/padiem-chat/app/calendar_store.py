@@ -90,6 +90,12 @@ class CalendarStore(Protocol):
         ...
 
 
+    async def update_work_log(self, log: CalendarWorkLog) -> CalendarWorkLog: ...
+    async def delete_work_log(self, workspace_id: str, owner_id: str, log_id: str) -> None: ...
+    async def update_appointment(self, apt: CalendarAppointment) -> CalendarAppointment: ...
+    async def delete_appointment(self, workspace_id: str, owner_id: str, appointment_id: str) -> None: ...
+
+
 class InMemoryCalendarStore:
     """In-memory reference implementation of CalendarStore.
 
@@ -190,6 +196,33 @@ class InMemoryCalendarStore:
             )
         )
         return tuple(results[:bounded_limit])
+
+
+    async def update_work_log(self, log: CalendarWorkLog) -> CalendarWorkLog:
+        existing = await self.get_work_log(log.workspace_id, log.log_id)
+        if existing is None or existing.owner_id != log.owner_id:
+            raise WorkspaceStorageError("work log not found")
+        self._work_logs[log.workspace_id][log.log_id] = log
+        return log
+
+    async def delete_work_log(self, workspace_id: str, owner_id: str, log_id: str) -> None:
+        existing = await self.get_work_log(workspace_id, log_id)
+        if existing is None or existing.owner_id != owner_id:
+            raise WorkspaceStorageError("work log not found")
+        del self._work_logs[workspace_id][log_id]
+
+    async def update_appointment(self, apt: CalendarAppointment) -> CalendarAppointment:
+        existing = await self.get_appointment(apt.workspace_id, apt.appointment_id)
+        if existing is None or existing.owner_id != apt.owner_id:
+            raise WorkspaceStorageError("appointment not found")
+        self._appointments[apt.workspace_id][apt.appointment_id] = apt
+        return apt
+
+    async def delete_appointment(self, workspace_id: str, owner_id: str, appointment_id: str) -> None:
+        existing = await self.get_appointment(workspace_id, appointment_id)
+        if existing is None or existing.owner_id != owner_id:
+            raise WorkspaceStorageError("appointment not found")
+        del self._appointments[workspace_id][appointment_id]
 
 
 class D1CalendarStore:
@@ -417,3 +450,50 @@ class D1CalendarStore:
         rows = await self._all(sql, *params)
         return tuple(self._appointment_from_row(r) for r in rows)
 
+
+
+    async def update_work_log(self, log: CalendarWorkLog) -> CalendarWorkLog:
+        _safe_identifier("workspace_id", log.workspace_id)
+        _safe_identifier("log_id", log.log_id)
+        _safe_identifier("owner_id", log.owner_id)
+        await self._run(
+            "UPDATE padiem_calendar_work_log SET date=?, title=?, content=?, updated_at=? "
+            "WHERE workspace_id=? AND owner_id=? AND id=?",
+            log.date.isoformat(), log.title, log.content, log.updated_at.isoformat(),
+            log.workspace_id, log.owner_id, log.log_id,
+        )
+        return log
+
+    async def delete_work_log(self, workspace_id: str, owner_id: str, log_id: str) -> None:
+        _safe_identifier("workspace_id", workspace_id)
+        _safe_identifier("owner_id", owner_id)
+        _safe_identifier("log_id", log_id)
+        await self._run(
+            "DELETE FROM padiem_calendar_work_log WHERE workspace_id=? AND owner_id=? AND id=?",
+            workspace_id, owner_id, log_id,
+        )
+
+    async def update_appointment(self, apt: CalendarAppointment) -> CalendarAppointment:
+        _safe_identifier("workspace_id", apt.workspace_id)
+        _safe_identifier("owner_id", apt.owner_id)
+        _safe_identifier("appointment_id", apt.appointment_id)
+        await self._run(
+            "UPDATE padiem_calendar_appointment SET appointment_type=?, title=?, description=?, "
+            "date=?, start_at=?, end_at=?, timezone=?, reminder_minutes=?, updated_at=? "
+            "WHERE workspace_id=? AND owner_id=? AND id=?",
+            apt.appointment_type.value, apt.title, apt.description, apt.date.isoformat(),
+            apt.start_at.isoformat() if apt.start_at else None,
+            apt.end_at.isoformat() if apt.end_at else None,
+            apt.timezone, apt.reminder_minutes, apt.updated_at.isoformat(),
+            apt.workspace_id, apt.owner_id, apt.appointment_id,
+        )
+        return apt
+
+    async def delete_appointment(self, workspace_id: str, owner_id: str, appointment_id: str) -> None:
+        _safe_identifier("workspace_id", workspace_id)
+        _safe_identifier("owner_id", owner_id)
+        _safe_identifier("appointment_id", appointment_id)
+        await self._run(
+            "DELETE FROM padiem_calendar_appointment WHERE workspace_id=? AND owner_id=? AND id=?",
+            workspace_id, owner_id, appointment_id,
+        )
