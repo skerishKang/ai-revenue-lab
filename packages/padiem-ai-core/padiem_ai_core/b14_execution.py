@@ -228,8 +228,11 @@ class B14RoutingOptions:
     # omitted, so None keeps the historical behavior while an explicit 0
     # pins a single provider call per dispatch (#3382 one-shot contract).
     max_retries: int | None = None
+    product_tier: str | None = None  # server-selected PADIEM grade, never model alias
 
     def __post_init__(self) -> None:
+        if self.product_tier is not None and self.product_tier not in ("free", "plus", "pro", "max"):
+            raise ValueError("product_tier must be free, plus, pro or max")
         if self.task_type is not None:
             if not isinstance(self.task_type, str):
                 raise ValueError("task_type must be a string or None")
@@ -293,6 +296,8 @@ class B14RoutingOptions:
             out["max_attempts"] = self.max_attempts
         if self.max_retries is not None:
             out["max_retries"] = self.max_retries
+        if self.product_tier is not None:
+            out["product_tier"] = self.product_tier
         return out
 
 

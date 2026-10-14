@@ -48,6 +48,12 @@ class ProductTierRoutesError(ValueError):
 
 FREE_PRIMARY_B14_MODEL_ID = "opencode-go/cat-jam-free"
 FREE_FALLBACK_B14_MODEL_ID = "google/gemini-3.1-flash-lite"
+TIER_FALLBACK_B14_MODELS = {
+    "free": FREE_FALLBACK_B14_MODEL_ID,
+    "plus": "google/gemini-3.5-flash-lite",
+    "pro": "opencode-go/muse-spark-1.2-contributor",
+    "max": "opencode-go/muse-spark-1.3-contributor",
+}
 
 class ProductTierLabel(str, Enum):
     FREE = "Padiem Free"
@@ -227,6 +233,14 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
         label=ProductTierLabel.PLUS,
         routes=(
             ProductTierRoute(
+                route_id="plus.cat-jam.v1", status=ProductRouteStatus.EXECUTABLE,
+                model_family="cat-jam", provider_id="opencode-go",
+                model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="cat-jam-free",
+                credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
+                credential_binding="PADIEM_OPENCODE_API_KEY",
+                evidence="Owner exact 4-tier Cat Jam primary decision, 2026-10-15.",
+            ),
+            ProductTierRoute(
                 route_id="plus.hold.v1",
                 status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
                 model_family="plus",
@@ -300,6 +314,14 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
         label=ProductTierLabel.PRO,
         routes=(
             ProductTierRoute(
+                route_id="pro.cat-jam.v1", status=ProductRouteStatus.EXECUTABLE,
+                model_family="cat-jam", provider_id="opencode-go",
+                model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="cat-jam-free",
+                credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
+                credential_binding="PADIEM_OPENCODE_API_KEY",
+                evidence="Owner exact 4-tier Cat Jam primary decision, 2026-10-15.",
+            ),
+            ProductTierRoute(
                 route_id="pro.hold.v1",
                 status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
                 model_family="pro",
@@ -366,6 +388,14 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
     ProductTierDefinition(
         label=ProductTierLabel.MAX,
         routes=(
+            ProductTierRoute(
+                route_id="max.cat-jam.v1", status=ProductRouteStatus.EXECUTABLE,
+                model_family="cat-jam", provider_id="opencode-go",
+                model_id=FREE_PRIMARY_B14_MODEL_ID, upstream_model="cat-jam-free",
+                credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
+                credential_binding="PADIEM_OPENCODE_API_KEY",
+                evidence="Owner exact 4-tier Cat Jam primary decision, 2026-10-15.",
+            ),
             ProductTierRoute(
                 route_id="max.hold.qwen.v1",
                 status=ProductRouteStatus.HOLD_AS_DATA_ONLY,

@@ -50,6 +50,7 @@ _MODEL_POLICY_FIELDS = frozenset(
         "provider_order",
         "max_attempts",
         "max_retries",
+        "product_tier",  # trusted product-side grade carried through Core to B14
         # #3977: explicitly requested provider-native overrides. Absent means
         # no such field is sent; there is no synthesized value in this layer.
         "model_parameters",
@@ -185,6 +186,7 @@ def _normalize_model_policy(
         provider_order=provider_order,
         max_attempts=max_attempts,
         max_retries=max_retries,
+        product_tier=policy.get("product_tier"),
     )
     return model.strip(), (float(temperature) if temperature is not None else None), routing
 
