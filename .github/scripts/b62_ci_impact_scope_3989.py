@@ -183,11 +183,11 @@ def main() -> None:
         scope = impact_scope(files)
         if scope == UI_MIXED:
             # Require complete PR metadata, not just a possibly truncated
-            # compare listing. Main pushes deliberately rerun full Chat suites.
+            # compare listing. Main pushes and incomplete PR metadata use FULL.
             pr = event.get("pull_request") if isinstance(event,dict) else None
             count = pr.get("changed_files") if isinstance(pr,dict) else None
             if event_name != "pull_request" or type(count) is not int or count != len(files):
-                scope = CHAT_ONLY
+                scope = FULL
         ui_tests = ui_mixed_test_modules(files) if scope == UI_MIXED else ()
     except (OSError, ValueError, KeyError, TypeError, TimeoutError):
         scope = FULL
