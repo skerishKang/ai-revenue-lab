@@ -50,6 +50,21 @@
   let pendingRestoreDialogueId = null;
   const PRODUCT_DIALOGUE_KEY = "b66DialogueId";
   const AI_DIALOGUE_VIEW = "ai-dialogues";
+  const GUIDED_DIALOGUE_VIEW = "guided-dialogues";
+  const MAX_GUIDED_MESSAGES = 80;
+  let replayingGuided = false;
+  let suppressGuidedQuestion = false;
+
+  function guidedConversationId() {
+    const bytes = new Uint8Array(16);
+    if (window.crypto && typeof window.crypto.getRandomValues === "function") {
+      window.crypto.getRandomValues(bytes);
+    } else {
+      for (let i = 0; i < 16; i++) bytes[i] = Math.floor(Math.random() * 256);
+    }
+    return "gdt_" + Array.from(bytes, b => b.toString(16).padStart(2, "0")).join("");
+  }
+
   const MAX_DIALOGUE_QUERY_CHARS = 80;
   const DIALOGUE_ID_PATTERN = /^chat_[a-f0-9]{32}$/;
 
@@ -265,6 +280,7 @@
 
   function addMessage(role, text, options) {
     const opts = options || {};
+    if (suppressGuidedQuestion) return null;
     const article = document.createElement("article");
     article.className = "easy-message " + (role === "user" ? "easy-user-message" : "easy-assistant-message");
 
@@ -297,6 +313,18 @@
       conversation.scrollHeight - conversation.scrollTop - conversation.clientHeight < 120;
     messageList.appendChild(article);
     if (conversation && wasNearBottom) conversation.scrollTop = conversation.scrollHeight;
+    // Record only the deterministic CGI Guided messages, never provider/general
+    // AI chat turns or temporary loading text. The server validates every entry.
+    if (guided && lastEasyView === "guided" && !replayingGuided &&
+        opts.guidedHistory !== false && accountSignedIn && GuidedAPI) {
+      if (!Array.isArray(guided.transcript)) guided.transcript = [];
+      if (guided.transcript.length < MAX_GUIDED_MESSAGES) {
+        guided.transcript.push({ role: role === "user" ? "user" : "assistant", content: String(text) });
+        saveGuidedToAccount();
+      } else {
+        App.toast("질문형 대화 저장 한도에 도달했습니다. 기존 기록은 유지됩니다.");
+      }
+    }
     return article;
   }
 
@@ -556,7 +584,7 @@
     const requestViewGeneration = dialogueGeneration;
     interpretationInFlight = true;
     addMessage("user", text);
-    const processingMessage = addMessage("assistant", "CGI 기본 견적서로 작성하고 있습니다…");
+    const processingMessage = addMessage("assistant", "CGI 기본 견적서로 작성하고 있습니다…", { guidedHistory: false });
     disableInput("견적을 만드는 동안에는 입력을 잠시 멈춥니다.");
     const stillCurrentView = () => (
       requestScopeRevision === accountScopeRevision &&
@@ -1168,6 +1196,106 @@
     });
   }
 
+  /* #4657 follow-up: deterministic CGI guided sessions are NOT AI conversations.
+     The server retains them in a separate owner/workspace-scoped D1 archive. */
+  function showGuidedDialogues(options) {
+    lastEasyView = GUIDED_DIALOGUE_VIEW;
+    if (!options || options.history !== false) recordProductState(GUIDED_DIALOGUE_VIEW);
+    startConversation();
+    addMessage("assistant", "이전 질문형 견적 대화입니다. AI 일반 대화와 별도로 보관됩니다.");
+    setChips([
+      { label: "지난 견적 이어서 하기", action: resumeAccountGuidedOrLocal },
+      { label: "처음으로", action: showHome }
+    ]);
+    disableInput("이전 기록은 읽기 전용입니다.");
+    const generation = dialogueGeneration;
+    const scope = accountScopeRevision;
+    historyPanel.innerHTML = "";
+    historyPanel.hidden = false;
+    const note = document.createElement("p");
+    note.className = "easy-history-empty";
+    note.textContent = "이전 질문형 견적을 불러오는 중...";
+    historyPanel.appendChild(note);
+    if (!accountSignedIn || !GuidedAPI || !GuidedAPI.listConversations) {
+      note.textContent = "로그인하면 이전 질문형 견적을 볼 수 있습니다.";
+      return;
+    }
+    GuidedAPI.listConversations().then(result => {
+      if (generation !== dialogueGeneration || scope !== accountScopeRevision ||
+          lastEasyView !== GUIDED_DIALOGUE_VIEW) return;
+      historyPanel.innerHTML = "";
+      if (!result || result.ok !== true || !Array.isArray(result.conversations)) {
+        note.textContent = "기록을 불러오지 못했습니다. 다시 시도해 주세요.";
+        const retry = document.createElement("button");
+        retry.type = "button"; retry.textContent = "다시 시도";
+        retry.addEventListener("click", showGuidedDialogues);
+        historyPanel.append(note, retry);
+        return;
+      }
+      if (!result.conversations.length) {
+        note.textContent = "저장된 질문형 견적 대화가 없습니다. 기존 진행 중 견적은 '지난 견적 이어서 하기'에서 확인하세요.";
+        historyPanel.appendChild(note);
+      }
+      result.conversations.forEach(row => {
+        if (!row || !/^gdt_[a-f0-9]{32}$/.test(String(row.conversation_id || ""))) return;
+        const card = document.createElement("article");
+        card.className = "easy-history-card";
+        const info = document.createElement("strong");
+        info.textContent = "질문형 견적 대화 · " + String(row.updated_at || "").slice(0, 16);
+        const open = document.createElement("button");
+        open.type = "button"; open.textContent = "대화 보기";
+        open.addEventListener("click", () => openGuidedDialogue(row.conversation_id));
+        const remove = document.createElement("button");
+        remove.type = "button"; remove.className = "danger"; remove.textContent = "삭제";
+        remove.addEventListener("click", () => {
+          if (!window.confirm("이전 질문형 대화 기록을 삭제할까요? 진행 중인 견적은 삭제할 수 없습니다.")) return;
+          GuidedAPI.deleteConversation(row.conversation_id).then(outcome => {
+            if (scope !== accountScopeRevision || generation !== dialogueGeneration) return;
+            if (outcome && outcome.ok) showGuidedDialogues();
+            else App.toast("진행 중 기록이거나 삭제할 수 없는 대화입니다.");
+          }).catch(() => App.toast("기록 삭제를 확인하지 못했습니다."));
+        });
+        card.append(info, open, remove);
+        historyPanel.appendChild(card);
+      });
+    }).catch(() => {
+      if (generation === dialogueGeneration && scope === accountScopeRevision)
+        note.textContent = "질문형 기록을 불러오지 못했습니다.";
+    });
+  }
+
+  function openGuidedDialogue(id) {
+    if (!accountSignedIn || !GuidedAPI || !/^gdt_[a-f0-9]{32}$/.test(id)) return;
+    lastEasyView = GUIDED_DIALOGUE_VIEW;
+    startConversation();
+    addMessage("assistant", "질문형 견적 대화를 불러오는 중...");
+    disableInput("이전 기록은 읽기 전용입니다.");
+    setChips([{ label: "이전 질문형 대화", action: showGuidedDialogues },
+              { label: "지난 견적 이어서 하기", action: resumeAccountGuidedOrLocal }]);
+    const generation = dialogueGeneration;
+    const scope = accountScopeRevision;
+    GuidedAPI.loadConversation(id).then(outcome => {
+      if (generation !== dialogueGeneration || scope !== accountScopeRevision ||
+          lastEasyView !== GUIDED_DIALOGUE_VIEW) return;
+      startConversation();
+      if (!outcome || !outcome.ok || !outcome.conversation ||
+          !Array.isArray(outcome.conversation.messages)) {
+        addMessage("assistant", "이전 질문형 대화를 불러오지 못했습니다.");
+      } else {
+        outcome.conversation.messages.forEach(entry => {
+          if (entry && (entry.role === "user" || entry.role === "assistant") &&
+              typeof entry.content === "string") addMessage(entry.role, entry.content);
+        });
+      }
+      setChips([{ label: "이전 질문형 대화", action: showGuidedDialogues },
+                { label: "지난 견적 이어서 하기", action: resumeAccountGuidedOrLocal }]);
+      disableInput("과거 질문형 대화입니다. 진행 중인 견적은 별도로 이어 쓸 수 있습니다.");
+    }).catch(() => {
+      if (generation === dialogueGeneration && scope === accountScopeRevision)
+        addMessage("assistant", "이전 질문형 대화를 불러오지 못했습니다.");
+    });
+  }
+
   function parseNumberAnswer(text, allowZero) {
     const compact = safeText(text)
       .replace(/원$/u, "")
@@ -1203,6 +1331,10 @@
       currentItem: guided.currentItem,
       taxUnknown: guided.taxUnknown === true,
       savedSkillId: window.B66QuoteRuntimeBridge?.assignedSavedSkillId?.() || "",
+      conversationId: guided.conversationId || "",
+      transcript: Array.isArray(guided.transcript) ? guided.transcript.map(entry => ({
+        role: entry.role, content: entry.content
+      })) : [],
       draft: {
         recipient: {
           company: String(draft.recipient?.company || ""),
@@ -1311,7 +1443,9 @@
       step: guided.step,
       draft: clone(guided.draft),
       currentItem: guided.currentItem,
-      taxUnknown: guided.taxUnknown
+      taxUnknown: guided.taxUnknown,
+      conversationId: guided.conversationId,
+      transcript: clone(guided.transcript || [])
     };
     guided = null;
   }
@@ -1343,12 +1477,26 @@
       step: state.step,
       draft: fresh,
       currentItem: state.currentItem,
-      taxUnknown: state.taxUnknown
+      taxUnknown: state.taxUnknown,
+      conversationId: typeof state.conversationId === "string" && /^gdt_[a-f0-9]{32}$/.test(state.conversationId)
+        ? state.conversationId : guidedConversationId(),
+      transcript: Array.isArray(state.transcript) ? clone(state.transcript) : []
     };
     guidedSnapshot = null;
     lastEasyView = "guided";
-    addMessage("assistant", "이전에 진행 중이던 견적 만들기를 이어서 진행합니다.");
-    rebindGuidedStep();
+    const previous = guided.transcript;
+    if (previous.length) {
+      replayingGuided = true;
+      try { previous.forEach(entry => addMessage(entry.role, entry.content, { guidedHistory: false })); }
+      finally { replayingGuided = false; }
+      // Stored prompt is already on screen: rewire buttons/input only.
+      suppressGuidedQuestion = true;
+      try { rebindGuidedStep(); }
+      finally { suppressGuidedQuestion = false; }
+    } else {
+      addMessage("assistant", "저장된 질문·답변 원문은 없습니다. 기존 견적 입력 내용부터 이어서 진행합니다.");
+      rebindGuidedStep();
+    }
   }
 
   /* 스냅샷 복원은 대기 중인 질문만 다시 묶는다. 이미 답한 값은 guided.draft 에 그대로 있다. */
@@ -1395,9 +1543,13 @@
       step: "recipientCompany",
       draft: guidedDraft(),
       currentItem: -1,
-      taxUnknown: false
+      taxUnknown: false,
+      conversationId: guidedConversationId(),
+      transcript: []
     };
-    saveGuidedToAccount();
+    // The first assistant prompt below is the first durable transcript entry.
+    // Do not PUT an empty shell first: that doubles the write, can race against
+    // actual Q/A and violates the one-write-per-explicit-start contract.
     if (reference) {
       addMessage("user", reference);
       addMessage(
@@ -1847,6 +1999,8 @@
         showRecentHistory({ history: false });
       } else if (view === AI_DIALOGUE_VIEW) {
         showAiDialogues({ history: false });
+      } else if (view === GUIDED_DIALOGUE_VIEW) {
+        showGuidedDialogues({ history: false });
       } else if (view === "free-form") {
         startFreeChat({ history: false });
       } else if (view === "file") {
@@ -1949,6 +2103,10 @@
   document.addEventListener("b66:open-recent-quotes", () => {
     setWorkspaceMode("easy", { history: false });
     showRecentHistory();
+  });
+  document.addEventListener("b66:open-guided-dialogues", () => {
+    setWorkspaceMode("easy", { history: false });
+    showGuidedDialogues();
   });
 
   document.addEventListener("b66:open-easy-chat", () => {

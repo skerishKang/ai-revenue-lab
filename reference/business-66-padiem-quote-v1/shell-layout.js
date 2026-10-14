@@ -120,6 +120,16 @@
       clickExisting("aiDialogueStarter");
     });
     historySection.appendChild(previousDialogue);
+    const guidedDialogue = makeButton(
+      "shellPreviousGuidedDialogue",
+      "↩",
+      "이전 질문형 대화",
+      "질문받으며 작성한 견적의 이전 문답을 읽습니다"
+    );
+    guidedDialogue.addEventListener("click", function () {
+      document.dispatchEvent(new CustomEvent("b66:open-guided-dialogues"));
+    });
+    historySection.appendChild(guidedDialogue);
     menu.appendChild(historySection);
 
     rail.appendChild(menu);
