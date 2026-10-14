@@ -6,6 +6,7 @@ or authorize a browser-supplied arbitrary exact model.
 from __future__ import annotations
 
 import httpx
+import json
 import pytest
 
 from app.auth import SESSION_COOKIE, create_session_token
@@ -70,3 +71,62 @@ def test_no_browser_model_override_and_plus_hold_independent() -> None:
     assert free.model_id == "google/gemini-3.1-flash-lite"
     assert free.profile == "free"
     assert not model_policy_is_executable("google/gemini-3.5-flash-lite")
+
+@pytest.mark.asyncio
+async def test_signed_in_free_dispatches_exact_model_through_existing_b14_client() -> None:
+    """No real provider or secrets. Proves the full Free API -> exact-model seam."""
+    store = MemoryHistoryStore()
+    profile = await add_test_user(store)
+    settings = Settings.from_values(
+        runtime_mode="b14",
+        b14_base_url="https://b14.example.test",
+        auth_mode="google",
+        public_base_url="https://chat.example.test",
+        google_client_id="test-client.apps.googleusercontent.com",
+        google_client_secret="synthetic-only",
+        session_secret="test-free-member-route-secret-0000000000000000000",
+    )
+    captured = []
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        body = json.loads(request.content)
+        captured.append(body)
+        return httpx.Response(
+            200,
+            json={
+                "choices": [{"message": {"role": "assistant", "content": "Hello from Free"}}],
+                "business14": {
+                    "request_id": "b14req_free_test",
+                    "route_mode": "manual",
+                    "selected_model": body["model"],
+                    "selected_provider": "Google AI Studio",
+                },
+            },
+        )
+
+    app = create_app(
+        settings,
+        history_store=store,
+        transport=httpx.MockTransport(handler),
+    )
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test",
+    ) as client:
+        client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(settings, profile.id),
+            domain="chat.example.test",
+            path="/",
+        )
+        response = await client.post(
+            "/api/chat",
+            json={
+                "messages": [{"role": "user", "content": "Please answer simply"}],
+                "tier": "free",
+                "mode": "auto",
+            },
+        )
+    assert response.status_code == 200, response.text
+    assert response.json()["answer"] == "Hello from Free"
+    assert len(captured) == 1  # one dispatch only, no retries or fallback
+    assert captured[0]["model"] == FREE_B14_MODEL_ID
