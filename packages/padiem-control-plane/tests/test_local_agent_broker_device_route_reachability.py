@@ -297,6 +297,10 @@ def test_reconcile_route_reaches_canonical_reconciliation_through_the_private_ed
             "/heartbeat",
             "/acknowledge",
             "/reconcile",
+            # #4139: the verified TXT read result route, reachable here for the
+            # same reason as every other route — it is in the one canonical
+            # list the bridge derives from.
+            "/text-result",
         }
     )
     assert len(set(device_http.DEVICE_HTTP_ROUTES)) == len(device_http.DEVICE_HTTP_ROUTES)

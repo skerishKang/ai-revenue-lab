@@ -11,6 +11,7 @@ from local_agent_broker_material_store import MAX_DURABLE_COMMAND_MATERIAL_BYTES
 from local_agent_broker_private_http_bridge import handle_private_device_fetch
 from padiem_control_plane.broker_pending_pc_wss import route_private_pc_wss_upgrade
 from local_agent_broker_office_chunks import compose_broker_office_chunks, read_broker_office_part_rpc
+from local_agent_broker_text_results import compose_broker_text_results, read_verified_file_text_rpc
 from local_agent_broker_sql_state import (
     CloudflareDurableObjectHttpSessionState, CloudflareDurableObjectSerializedStateBackend, safe_ref,
 )
@@ -32,6 +33,9 @@ class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, CanonicalBrokerPe
             storage=ctx.storage, state_port=self._runtime.state_port,
             authority_ref=self._runtime.authority_ref(), env=env,
         )
+        self.text_results = compose_broker_text_results(
+            storage=ctx.storage, state_port=self._runtime.state_port,
+            authority_ref=self._runtime.authority_ref())
         self._device_http = LocalAgentBrokerDeviceHttpService(
             state_port=self._runtime.state_port,
             pepper=str(env.LOCAL_AGENT_BROKER_PEPPER).encode("utf-8"),
@@ -41,6 +45,7 @@ class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, CanonicalBrokerPe
             material_resolver=self._runtime.material_store,
             session_open_transaction=self._storage.transactionSync,
             office_chunks=self.office_chunks,
+            text_results=self.text_results,
         )
 
     def _authority_ref(self) -> str:
@@ -103,6 +108,9 @@ class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, CanonicalBrokerPe
 
     async def read_office_artifact_part(self, payload: dict) -> dict:
         return read_broker_office_part_rpc(self.office_chunks, payload)
+
+    async def read_verified_file_text(self, payload: dict) -> dict:  # #4139 read-only RPC
+        return read_verified_file_text_rpc(self.text_results, payload)
 
     async def fetch(self, request):
         return await self._pending_pc_wss_fetch(request)
@@ -181,6 +189,9 @@ class Default(WorkerEntrypoint):
         return await self._stub().gateway_bootstrap_rpc(payload)
     async def redeem_enrollment(self, payload: dict) -> dict:
         return await self._stub().redeem_enrollment(payload)
+
+    async def read_verified_file_text(self, payload: dict) -> dict:
+        return await self._stub().read_verified_file_text(payload)
 
     async def fetch(self, request):
         return await route_private_pc_wss_upgrade(self, request, handle_private_device_fetch)
