@@ -517,7 +517,8 @@ def test_migration_is_one_additive_owner_scoped_slot():
     assert _destructive_statements(sql) == []
     # 027 stays reserved for #3925; 040 is the previous migration.
     existing = sorted(path.name for path in MIGRATION.parent.glob("*.sql"))
-    assert "027" not in "".join(existing)
+    slot_027 = [name for name in existing if name.startswith("027_")]
+    assert slot_027 in ([], ["027_b66_template_source.sql"])
     assert "040_claw_web_xlsx_p01_decision_release.sql" in existing
     assert MIGRATION.name == "041_b66_ai_conversation.sql"
 
