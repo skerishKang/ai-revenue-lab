@@ -89,7 +89,9 @@ _TURN_TOKEN_RE = re.compile(r"^[0-9a-f]{32}$")
 # conversation a first turn already created. See the module docstring.
 _INFLIGHT_TURNS: set[tuple[str, str]] = set()
 _TURN_POLL_SECONDS = 0.005
-_TURN_POLL_LIMIT = 200  # ~1s ceiling; the D1 uniqueness guard still applies
+# No fixed ceiling: a duplicate must wait for the first model dispatch to finish
+# no matter how slow the provider is, instead of timing out and dispatching again.
+_TURN_POLL_LIMIT = None
 _RECENT_TURNS: "OrderedDict[tuple[str, str], str]" = OrderedDict()
 _RECENT_TURN_LIMIT = 512
 
@@ -111,17 +113,20 @@ def reset_dialogue_idempotency() -> None:
 
 
 async def _wait_for_duplicate_turn(key: tuple[str, str]) -> bool:
-    """Yield until a duplicate of this turn has landed, or the ceiling passes.
+    """Yield until an in-flight duplicate of this turn has landed.
+
+    There is deliberately **no** fixed timeout. Returning while the key is still
+    marked in-flight lets the caller dispatch a second, duplicate paid model
+    call, which is exactly the charge the idempotency contract forbids; a slow
+    first model response cannot be allowed to turn into a second dispatch.
 
     Deliberately not an ``asyncio.Lock``: a lock binds to the event loop that
     first awaited it, while every Worker request is served on its own loop, so a
     shared lock would raise instead of guarding.
     """
-    waited = 0
-    while key in _INFLIGHT_TURNS and waited < _TURN_POLL_LIMIT:
+    while key in _INFLIGHT_TURNS:
         await asyncio.sleep(_TURN_POLL_SECONDS)
-        waited += 1
-    return waited < _TURN_POLL_LIMIT
+    return True
 
 
 def _remember_turn(owner: str, token: str | None, conversation_id: str) -> None:
@@ -344,6 +349,18 @@ async def b66_ai_chat(request: Request) -> JSONResponse:
                 return _already_recorded()
             model_messages = prior_messages + [{"role": "user", "content": user_text}]
         else:
+            # A first-turn duplicate that lost the race must re-check token recall
+            # AFTER waiting: the winner has now stored and remembered the token,
+            # so this request must replay instead of dispatching again.
+            if not claimed and turn_token is not None:
+                recalled = _recalled_turn(uid, turn_token)
+                if recalled is not None and store is not None:
+                    stored_messages, _refusal = await _stored_model_messages(store, uid, recalled)
+                    tail = _completed_tail(stored_messages or []) if stored_messages is not None else None
+                    if tail is not None and tail[0] == user_text:
+                        return _replay_response(
+                            conversation_id=recalled, model_id=model_id, answer=tail[1],
+                        )
             model_messages = [dict(m) for m in messages]
 
         resolver = getattr(request.app.state, "b66_quote_model_resolver", None)
