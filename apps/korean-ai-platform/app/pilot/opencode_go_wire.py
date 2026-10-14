@@ -196,7 +196,7 @@ async def _authenticated_headers(session_headers: dict[str, str], wire: str) -> 
 def _go_url(wire: str) -> str:
     from .platform import _require_spec
     spec = _require_spec("opencode-go")
-    if spec.base_origin != "https://opencode.ai/zen/go/v1":
+    if spec.base_origin != "https://opencode.ai/inference/go/v1":
         raise PilotNotConfigured("OpenCode Go origin does not match the owner approved endpoint.")
     return spec.base_origin + "/" + wire
 
