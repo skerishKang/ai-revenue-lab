@@ -1,13 +1,13 @@
 <!-- CENTRAL_UI_VOICE_LIVE_STATUS_20261014_START -->
-## 현재 진행 상태 및 소유권 갱신 — 2026-10-14 KST
+## 실제 최신 UI·음성 작업 상태 — 2026-10-14 KST
 
-> 아래 'Phase A를 아직 구현하지 않음/LOCAL2가 우선 UI를 편집 중'이라는 문구는 **그 당시의 이력**이다. 더 이상 병합된 UI 전체를 재구현하거나 다른 팀의 UI 작업을 막는 현재 지시가 아니다.
+> 기준 `main=dccd141ed20dd69c76f1efd915312a98b7157b7c`. 아래의 과거 'LOCAL2 Phase A 우선' / 'CLAW2 테스트 예정' / 'STT 코드 없음' 안내는 당시 이력으로 읽는다. 이 문서는 신규 운영 활성화/배포 허가가 아니다.
 
-- **Claw UI 구조:** [#4650](https://github.com/skerishKang/ai-revenue-lab/pull/4650)과 [#4653](https://github.com/skerishKang/ai-revenue-lab/pull/4653) **병합 완료**. [#4488](https://github.com/skerishKang/ai-revenue-lab/issues/4488)에서 production Worker/정적 제공 검증 기록됨. 기존 구조 UI 소유권 해제 → 별도 팀은 **최신 main**에서 UI 수정 가능. 남은 것은 승인 대기·승인된 메모리·재로그인 등 **실제 데이터가 필요한 운영 수용 검증**이다.
-- **음성:** 공통 STT 서버 소스 [#4663](https://github.com/skerishKang/ai-revenue-lab/pull/4663) **병합**, 하지만 STT 기능 기본 OFF·CP voice 권한 발급/실제 binding/제품 마이크 실사용 **미완료**. [#4643](https://github.com/skerishKang/ai-revenue-lab/issues/4643)이 유일한 Chat·Claw STT 추적 이슈; B66 [#3404](https://github.com/skerishKang/ai-revenue-lab/issues/3404)는 별도 입력 UI 소관.
-- **B66:** [#4661](https://github.com/skerishKang/ai-revenue-lab/pull/4661)은 제품 구분 저장+안전 Markdown **병합**; [#4672](https://github.com/skerishKang/ai-revenue-lab/pull/4672)는 고객 화면 실제 연결 및 재시도 **Draft**. LOCAL2가 유일한 `easy-mode.js`/B66 고객 화면 소유자이므로 다른 로컬은 같은 파일을 동시 수정하지 않는다. 새 HEAD `b7b80b43`에 보완 소스와 신규 동시성 테스트가 반영됐으나 CI/교차 isolate 비용 보호는 별도 판정. 고객 운영 출시 수락은 [#4316](https://github.com/skerishKang/ai-revenue-lab/issues/4316).
-- **병렬 지침:** CLAW2는 Claw UI 데이터 상태/키보드 테스트(별도 테스트 파일), LOCAL3는 CP STT 권한 계약(제품 `app.js` 불변), LOCAL1은 Claw SSE 오프라인 하네스(실 모델 POST 금지), LOCAL4는 B66 QuoteCore/SQLite 소스 검증(`easy-mode.js` 불변), LOCAL5는 B14 모델 정책 최종 호출 경로 분석. LOCAL6의 Windows Connector 브랜치 [#4572](https://github.com/skerishKang/ai-revenue-lab/pull/4572)와 파일 영역 충돌 금지.
-- **정확한 기술 상태**는 [개발 스냅샷 상단의 최신 정정](PADIEM_CENTRAL_CTO_DEVELOPMENT_SNAPSHOT_20261014.md) 및 각 이슈를 우선한다. 이 문서의 과거 옵션 A/A/A 및 'LOCAL2 먼저'는 당시 수행 순서 기록이다.
+- **Chat/Claw 공통 UI**: 구조 [#4650](https://github.com/skerishKang/ai-revenue-lab/pull/4650) + [#4653](https://github.com/skerishKang/ai-revenue-lab/pull/4653) 병합/당시 served 확인. 계정 세션 변경 시 승인 결정 지연 결과의 화면 부활 방지 [#4677](https://github.com/skerishKang/ai-revenue-lab/pull/4677) **MERGED** `676a7c0b`, 브라우저 합성 18건 PASS 보고/CI 30 SUCCESS. **새 수정의 운영 served QA는 미완료**, 실제 사용자 승인 대기·승인 메모리·재로그인은 [#4488](https://github.com/skerishKang/ai-revenue-lab/issues/4488)에서 OPEN.
+- **Chat/Claw STT**: 서버 [#4663](https://github.com/skerishKang/ai-revenue-lab/pull/4663), CP 선택형 voice grant seam [#4666](https://github.com/skerishKang/ai-revenue-lab/pull/4666), 전사 후보/세션 안전 어댑터 [#4679](https://github.com/skerishKang/ai-revenue-lab/pull/4679) **모두 MERGED**. #4679 CENTRAL 독립 Node **31 PASS**, provider POST 0. 실제 UI `app.js` 마이크 연결/사용량/바인딩/로그인 고객 E2E는 **NOT_DONE, STT OFF**, [#4643](https://github.com/skerishKang/ai-revenue-lab/issues/4643) 유지.
+- **B66**: [#4661](https://github.com/skerishKang/ai-revenue-lab/pull/4661) history scope/Markdown 소스 + [#4658](https://github.com/skerishKang/ai-revenue-lab/pull/4658) QuoteCore 입력 + [#4680](https://github.com/skerishKang/ai-revenue-lab/pull/4680) 누락 SQLite/견적 계약 테스트 **MERGED**. 고객 `easy-mode.js` 화면·이전 대화·새 대화·Markdown [#4672](https://github.com/skerishKang/ai-revenue-lab/pull/4672) **DRAFT/HOLD**: 교차 Worker isolate 중복 유료 호출 방어 증거 없음. 운영 D1 041/042·사용자 E2E는 [#4316](https://github.com/skerishKang/ai-revenue-lab/issues/4316) OPEN. B66 마이크는 별도 [#3404](https://github.com/skerishKang/ai-revenue-lab/issues/3404).
+- **동시 편집 충돌:** LOCAL1/3/4/5, CLAW2, COMP2의 이번 명시된 소스/검증 작업은 종료·대기. LOCAL2의 #4672 미병합 파일과 Connector #4572 stacked 브랜치의 기존 소유권은 **실제 수정이 다시 시작될 때** 확인하고 조정한다. 추가 UI/STT 코드는 CENTRAL이 최신 main과 파일 소유 범위를 확인한 뒤 별도 배정한다. 이미 완료한 레이아웃/마이그레이션/승인 회귀를 같은 형태로 재개발하지 않는다.
+- **미완료와 금지:** 이식된 STT/안전한 전사 후보는 운영 마이크/기본 음성 권한을 뜻하지 않는다. 승인 없는 유료 STT/Chat/Claw POST·Cloudflare 바인딩/Secret/운영 DB·고객 파일 변경 없음. 독립 검토자 추가 및 사업방침 확장 없음.
 
 <!-- CENTRAL_UI_VOICE_LIVE_STATUS_20261014_END -->
 
