@@ -262,7 +262,14 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
     if html_metrics["scrollWidth"] > html_metrics["innerWidth"] + 1:
         raise AssertionError(f"{name} horizontal overflow: {html_metrics}")
 
-    # Claw general-to-manual entry and input-copy parity survive even though
+    home_portrait = await page.locator(".main-panel").evaluate(
+        "el => getComputedStyle(el, '::before').content"
+    )
+    home_portrait_image = await page.locator(".main-panel").evaluate(
+        "el => getComputedStyle(el, '::before').backgroundImage"
+    )
+    # Shared Chat/Claw entry, input, background and layout parity.
+
     # the owner-approved Claw workbench no longer shares Chat Home geometry.
     await _open_claw(page, width=width)
     claw_conversation = await _box(page, ".conversation")
@@ -280,42 +287,49 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
         }"""
     )
 
-    # 2026-10-12 Claw Focus: the owner explicitly chose a clear B66-like
-    # WORKBENCH rather than Chat Home's portrait-reserved cinematic lane.
-    # Preserve the centered, bounded geometry and browser usability; do not
-    # require the two intentionally different surfaces to share x/width.
+    # Chat and Claw now share the first-use canvas. After a conversation has
+    # started, Claw's existing workbench remains a bounded independent surface.
+    shared_landing = await page.locator("#emptyState").is_visible()
     main_panel = await _box(page, ".main-panel")
     for surface, box in (("conversation", claw_conversation), ("composer", claw_composer)):
         if box["x"] < main_panel["x"] - 1 or _right(box) > _right(main_panel) + 1:
             raise AssertionError(f"{name} Claw {surface} exceeds main panel: {box} / {main_panel}")
         if box["width"] < min(300, width - 30):
             raise AssertionError(f"{name} Claw {surface} is cramped: {box}")
-    _assert_close(
-        claw_conversation["x"] + claw_conversation["width"] / 2,
-        claw_composer["x"] + claw_composer["width"] / 2,
-        name=f"{name} Claw centered conversation/composer",
-        tolerance=2,
-    )
-    if claw_composer["width"] > claw_conversation["width"] + 1:
-        raise AssertionError(f"{name} Claw composer wider than conversation")
+    if shared_landing:
+        for surface, box, canonical in (
+            ("conversation", claw_conversation, home_conversation),
+            ("composer", claw_composer, home_composer),
+        ):
+            _assert_close(box["x"], canonical["x"],name=f"{name} first-use {surface} x",tolerance=2)
+            _assert_close(box["width"],canonical["width"],name=f"{name} first-use {surface} width",tolerance=2)
+    else:
+        _assert_close(
+            claw_conversation["x"]+claw_conversation["width"]/2,
+            claw_composer["x"]+claw_composer["width"]/2,
+            name=f"{name} active Claw centered conversation/composer",
+            tolerance=2,
+        )
+        if claw_composer["width"] > claw_conversation["width"] + 1:
+            raise AssertionError(f"{name} active Claw composer exceeds workbench")
     if claw_conversation["y"] < 62 or claw_conversation["y"] >= height:
         raise AssertionError(f"{name} Claw conversation overlaps topbar/viewport")
-    if not 0 <= _bottom_inset(claw_composer, height) <= 33:
+    if not 0 <= _bottom_inset(claw_composer,height) <= 33:
         raise AssertionError(f"{name} Claw composer not docked to bottom")
-    for side in ("top", "right", "bottom", "left"):
+    for side in ("top","right","bottom","left"):
         if not 0 <= float(claw_composer_padding[side]) <= 40:
             raise AssertionError(f"{name} Claw composer padding {side} out of bounds")
-    if width >= 1024 and claw_conversation["width"] < home_conversation["width"] - 2:
-        raise AssertionError(f"{name} Claw remains narrower than cinematic Home")
-    # Safety: portrait art is decorative in Chat Home, not in a Claw workbench.
-    portrait = await page.locator(".main-panel").evaluate(
-        "el => getComputedStyle(el, '::before').content"
-    )
-    if portrait != "none":
-        raise AssertionError(f"{name} Claw portrait still active: {portrait}")
-    for art in (".glass-shell-portrait", ".glass-shell-field"):
-        if await page.locator(art).count() and await page.locator(art).is_visible():
-            raise AssertionError(f"{name} Claw injected portrait still visible: {art}")
+    portrait = await page.locator(".main-panel").evaluate("el => getComputedStyle(el, '::before').content")
+    if shared_landing:
+        portrait_image = await page.locator(".main-panel").evaluate("el => getComputedStyle(el, '::before').backgroundImage")
+        if portrait != home_portrait or portrait_image != home_portrait_image:
+            raise AssertionError(f"{name} first-use portrait not shared with Chat")
+    else:
+        if portrait != "none":
+            raise AssertionError(f"{name} active Claw workbench portrait still visible: {portrait}")
+        for art in (".glass-shell-portrait",".glass-shell-field"):
+            if await page.locator(art).count() and await page.locator(art).is_visible():
+                raise AssertionError(f"{name} active Claw injected portrait visible: {art}")
     metrics = await page.evaluate(
         "() => ({scrollWidth: document.documentElement.scrollWidth, width: innerWidth})"
     )
@@ -351,9 +365,9 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
         "home_composer": home_composer,
         "claw_conversation": claw_conversation,
         "claw_composer": claw_composer,
-        "claw_centered_workbench": True,
+        "claw_first_use_shares_chat": shared_landing,
+        "claw_active_workbench_bounded": not shared_landing,
         "claw_composer_bounded": True,
-        "claw_portrait_hidden": True,
         "claw_viewport_safe": True,
         "home_claw_placeholder_parity": True,
         "claw_general_default_view": True,

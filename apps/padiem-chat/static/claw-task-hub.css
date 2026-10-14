@@ -138,11 +138,11 @@
     top: 0;
     z-index: 2;
   }
-  html body .app-shell[data-state="claw"] .conversation {
+  html body .app-shell[data-state="claw"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]))) .conversation {
     padding-bottom: calc(var(--claw-composer-clearance, 380px) + 24px) !important;
     scroll-padding-bottom: calc(var(--claw-composer-clearance, 380px) + 24px);
   }
-  html body .app-shell[data-state="claw"][data-claw-composer-collapsed="true"] .composer-wrap {
+  html body .app-shell[data-state="claw"][data-claw-composer-collapsed="true"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]))) .composer-wrap {
     height: auto !important;
     min-height: 0 !important;
     max-height: none !important;
@@ -160,7 +160,7 @@
   html body .app-shell[data-state="claw"][data-claw-composer-collapsed="true"] #composerForm > #ownerModelPreviewOpen {
     display: none !important;
   }
-  html body .app-shell[data-state="claw"][data-claw-composer-collapsed="true"] .conversation {
+  html body .app-shell[data-state="claw"][data-claw-composer-collapsed="true"]:not(:has(.claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]))) .conversation {
     padding-bottom: calc(var(--claw-composer-clearance, 66px) + 24px) !important;
   }
 }

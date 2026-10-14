@@ -149,7 +149,11 @@ def test_connectors_nav_is_enabled_and_bound_to_existing_dialog() -> None:
 
 def test_live_cards_are_exactly_the_reviewed_canonical_connector_ids() -> None:
     cards = _cards()
-    assert set(cards) == set(LIVE_CONNECTORS) | set(STATIC_PREPARING)
+    # Claw PC and GitHub have dedicated setup cards; neither represents an OAuth grant.
+    assert set(cards) == set(LIVE_CONNECTORS) | set(STATIC_PREPARING) | {"computer", "github"}
+    for slug in ("computer", "github"):
+        assert cards[slug]["connector_id"] == ""
+        assert cards[slug]["status"] == "preparing"
     for slug, connector_id in LIVE_CONNECTORS.items():
         card = cards[slug]
         assert card["connector_id"] == connector_id
