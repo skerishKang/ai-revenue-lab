@@ -11,25 +11,47 @@ Nothing new is minted here:
   with one additional bounded table;
 * the **same** authenticated device HTTP surface — the route is added to
   ``local_agent_broker_device_http._DEVICE_HTTP_ROUTES``, so the canonical
-  device credential is verified before any payload is treated as a result;
-* the **same** canonical command/binding/ACK correlation gate the Office
-  staging path already applies (``local_agent_broker_office_chunks``): ACTIVE
-  binding, matching credential generation, ACKNOWLEDGED command, ``exited`` with
-  exit_code 0, and a present admission/evidence ref;
+  device credential is verified before any payload is treated as a result;* the **same** canonical command/binding/ACK correlation gate the Office
+  staging path already applies (``local_agent_broker_office_chunks``) for the
+  body, and a deliberately weaker admission-level gate for the intent marker;
 * no new credential, session, approval, Worker, database or account system.
 
     NEW_TEXT_TABLE=1 · SECOND_BROKER=0 · SECOND_DEVICE_AUTH=0
     OFFICE_PATH_UNCHANGED=1 · TYPE_EXECUTION_SURFACE=0
 
+Ordering (CENTRAL #4139 race review): the consumer can project a terminal fact
+as soon as the successful ACK is readable, and it derives the message id from
+(command_id, revision_ref). A bodyless terminal-only message written first would
+therefore *consume* that id and the real text could never appear. So the device
+publishes its file-read **intent** first and awaits broker success before it
+ACKs:
+
+```text
+intent (state=pending) -> real READ -> successful ACK -> body (state=content)
+```
+
+* the intent is accepted while the command is canonically ADMITTED, i.e. **no
+  ACK required** — otherwise the marker could never precede the ACK that makes
+  the terminal fact projectable;
+* the body keeps the strict Office-success gate: ACK, ``exited``, exit_code 0,
+  admission and evidence refs, ACTIVE binding and matching credential
+  generation, so a failed execution can never present verified content;
+* the intent is bound to the device's own canonical command: ownership comes
+  from the authenticated binding and every correlation ref is read back from
+  the persisted command, so a device can neither forge an owner/workspace nor
+  declare someone else's command;
+* no row is a question, not an answer. ``read`` resolves the canonical command
+  first: only a command that provably finished successfully with no intent
+  registered stays on the existing terminal-only ``"other"`` path. Anything it
+  cannot confirm is refused instead of being reported as ``"other"``.
+
 Three bounded states, exactly the shapes the merged consumer validates:
 
-* a command the device never reports stays ``{"ok":true,"available":false,
-  "kind":"other"}`` — which is what keeps ordinary commands on the existing
-  terminal-only path;
-* a command the device *declares* is a text read answers ``{...,"kind":
-  "file_read_text"}`` with ``available:false``, so the terminal-only message is
-  never appended under the same stable message id before the text arrives;
-* a staged result answers the closed 14-field receipt, whose correlation is
+* a command that provably finished without a file-read intent stays ``{"ok":
+true,"available":false,"kind":"other"}``;
+* a command with a registered intent answers ``{...,"kind":"file_read_text"}``
+  with ``available:false``, so the terminal-only message is never appended under
+  the same stable message id before the text arrives;* a staged result answers the closed 14-field receipt, whose correlation is
   taken from the stored canonical command rather than from the device.
 
 The device never asserts its own account, workspace, binding or correlation
@@ -67,6 +89,14 @@ MAX_CLOCK_SKEW = timedelta(minutes=5)
 
 STATE_PENDING = "pending"
 STATE_CONTENT = "content"
+
+#: The command state in which a file-read intent may be declared. Admission is
+#: the owner's approval; requiring the terminal ACK here would reintroduce the
+#: lost-message window, because the ACK is exactly what makes the terminal fact
+#: projectable before the marker could exist.
+_INTENT_COMMAND_STATES = frozenset({
+    BrokerCommandState.ADMITTED, BrokerCommandState.ACKNOWLEDGED,
+})
 
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 _MAX_SAFE_CONTROL = "\n\r\t"
@@ -182,6 +212,51 @@ class BrokerTextResultStore:
             raise TextResultRefused("canonical command/binding unavailable")
         return bindings[0], commands[0]
 
+    def _canonical_command_by_scope(self, *, command_id: str, run_id: str,
+                                    owner: str, workspace: str):
+        """The same pair, resolved from owner/workspace instead of a binding ref.
+
+        Used when no row exists yet: the answer must still be derived from the
+        canonical command that belongs to this exact device scope, never from
+        the mere absence of a local row.
+        """
+
+        snapshot = self._state.load(authority_ref=self._authority).snapshot
+        commands = [c for c in snapshot.commands
+                    if c.command_id == command_id and c.run_id == run_id]
+        if len(commands) != 1:
+            raise TextResultRefused("canonical command unavailable")
+        binding_ref = commands[0].binding_ref
+        bindings = [b for b in snapshot.bindings
+                    if b.binding_ref == binding_ref and b.account_ref == owner
+                    and b.workspace_ref == workspace]
+        if len(bindings) != 1:
+            raise TextResultRefused("canonical command/binding unavailable")
+        return bindings[0], commands[0]
+
+    def _intent_gate(self, *, command_id: str, run_id: str, binding_ref: str,
+                     owner: str, workspace: str) -> None:
+        """The admission-level gate for the *intent* marker only.
+
+        Owner approval plus an ACTIVE binding plus a live credential generation
+        plus the admitted command and its request fingerprint. The ACK is
+        deliberately not required: the marker has to be readable before the ACK
+        makes the terminal fact projectable. This grants nothing — the body
+        still passes the strict success gate below.
+        """
+
+        binding, command = self._canonical_command(
+            command_id=command_id, run_id=run_id, binding_ref=binding_ref,
+            owner=owner, workspace=workspace,
+        )
+        now = self._now()
+        if (binding.credential_expires_at <= now
+                or binding.state is not BrokerBindingState.ACTIVE
+                or command.credential_generation != binding.credential_generation
+                or command.state not in _INTENT_COMMAND_STATES
+                or not command.admission_ref or command.admitted_at is None):
+            raise TextResultRefused("admitted local file read required")
+
     def _write_gate(self, *, command_id: str, run_id: str, binding_ref: str,
                     owner: str, workspace: str) -> None:
         """The Office staging gate, unchanged: only a successful admitted
@@ -205,7 +280,7 @@ class BrokerTextResultStore:
 
     def _read_gate(self, *, command_id: str, run_id: str, binding_ref: str,
                    owner: str, workspace: str):
-        """The read-time half of the same gate: current authority only.
+        """The read-time half of the body gate: current authority only.
 
         Revocation, rotation and compaction must fail closed, so the read
         re-derives the command from current canonical state and re-checks the
@@ -229,6 +304,35 @@ class BrokerTextResultStore:
                 or not command.revision_ref or not command.request_fingerprint):
             raise TextResultRefused("verified file text authority is no longer current")
         return command
+
+    def _unregistered_answer(self, *, command_id: str, run_id: str,
+                             owner: str, workspace: str) -> dict:
+        """What an *absent* row means, decided from canonical task state.
+
+        Absence alone is not evidence that a task was ordinary, so the generic
+        answer is only served when the canonical command **has a terminal fact**
+        for this exact device scope: an acknowledged execution whose final state
+        is already durable, with no registered file-read intent.
+
+        Anything else — a command that never reached a terminal fact, a foreign
+        scope, a revoked or rotated binding, or canonical state this reader
+        cannot resolve — is refused. Answering ``other`` there would assert a
+        finality the broker never proved, and the consumer derives the message id
+        from the command, so a wrong negative answer consumes the very id the
+        verified text needs.
+        """
+
+        binding, command = self._canonical_command_by_scope(
+            command_id=command_id, run_id=run_id, owner=owner, workspace=workspace,
+        )
+        now = self._now()
+        if (binding.credential_expires_at <= now
+                or binding.state is not BrokerBindingState.ACTIVE
+                or command.credential_generation != binding.credential_generation
+                or command.state is not BrokerCommandState.ACKNOWLEDGED
+                or not command.admission_ref or not command.evidence_ref):
+            raise TextResultRefused("task type cannot be confirmed from current authority")
+        return {"ok": True, "available": False, "kind": "other"}
 
     def record(self, payload: dict, *, binding_ref: str, owner: str,
                workspace: str) -> dict:
@@ -267,8 +371,17 @@ class BrokerTextResultStore:
 
         now = self._now()
         self._expire(now)
-        self._write_gate(command_id=command_id, run_id=run_id, binding_ref=binding_ref,
-                         owner=owner, workspace=workspace)
+        if state == STATE_PENDING:
+            # The intent marker may legally precede the ACK (#4139 race fix).
+            self._intent_gate(
+                command_id=command_id, run_id=run_id, binding_ref=binding_ref,
+                owner=owner, workspace=workspace,
+            )
+        else:
+            self._write_gate(
+                command_id=command_id, run_id=run_id, binding_ref=binding_ref,
+                owner=owner, workspace=workspace,
+            )
         # The device asserts only the command it is reporting and that command's
         # exact admitted request fingerprint; every other correlation ref is read
         # back from the persisted canonical command, so a device cannot name
@@ -341,19 +454,27 @@ class BrokerTextResultStore:
             command_id, owner, workspace, run_id,
         ))
         if len(result) == 0:
-            # The device never reported this command as a text read, so it keeps
-            # the existing terminal-only behaviour rather than holding forever.
-            return {"ok": True, "available": False, "kind": "other"}
+            # Absence is a question, not an answer: the canonical task decides
+            # whether this is a generic command or an unconfirmable task type.
+            return self._unregistered_answer(
+                command_id=command_id, run_id=run_id, owner=owner, workspace=workspace,
+            )
         if len(result) != 1:
             raise TextResultRefused("ambiguous text result")
         item = result[0]
+        if row_value(item, "state") == STATE_PENDING:
+            # Declared, body not yet transported: the conversation must wait.
+            # The hold re-checks current admission-level authority only; the
+            # strict successful-terminal gate guards the body below.
+            self._intent_gate(
+                command_id=command_id, run_id=run_id,
+                binding_ref=row_value(item, "binding_ref"), owner=owner, workspace=workspace,
+            )
+            return {"ok": True, "available": False, "kind": "file_read_text"}
         command = self._read_gate(
             command_id=command_id, run_id=run_id,
             binding_ref=row_value(item, "binding_ref"), owner=owner, workspace=workspace,
         )
-        if row_value(item, "state") == STATE_PENDING:
-            # Declared, body not yet transported: the conversation must wait.
-            return {"ok": True, "available": False, "kind": "file_read_text"}
         value = row_value(item, "content_utf8")
         digest = row_value(item, "content_sha256")
         content, digest = validate_text_body(
