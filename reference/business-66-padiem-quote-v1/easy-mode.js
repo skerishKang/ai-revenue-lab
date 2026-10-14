@@ -1232,7 +1232,8 @@
         const info = document.createElement("div");
         info.className = "easy-history-info";
         const title = document.createElement("strong");
-        title.textContent = "견적 상담";
+        title.textContent = typeof row.title === "string" && row.title.trim()
+          ? row.title : "견적 상담";
         const date = new Date(String(row.updated_at || ""));
         const detail = document.createElement("span");
         detail.textContent = Number.isNaN(date.getTime())

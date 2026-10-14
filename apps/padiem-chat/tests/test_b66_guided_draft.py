@@ -229,6 +229,8 @@ def test_guided_transcript_archived_after_completion_and_isolated(source):
     latest = own.get("/api/b66/guided-conversations")
     assert latest.status_code == 200
     assert latest.json()["conversations"][0]["conversation_id"] == marker
+    assert latest.json()["conversations"][0]["title"] == "테스트 장비"
+    assert "summary" not in latest.json()["conversations"][0]
     record = own.get("/api/b66/guided-conversations/" + marker)
     assert record.status_code == 200
     assert record.json()["conversation"]["messages"] == data["transcript"]
