@@ -16,7 +16,7 @@ import hashlib
 import json
 import re
 import secrets
-from typing import Any, Callable
+from typing import Any, Callable, Protocol
 
 from canonical_broker_pending_pc_link import VerifiedPendingPc
 
@@ -82,6 +82,18 @@ def _canonical(encoded: Any, regex: re.Pattern[str], expected: int) -> bytes:
         raise PendingOfferDenied("pending_offer_crypto_invalid") from exc
 
 
+class TrustedEd25519VerifyPort(Protocol):
+    """Worker-compatible server-owned crypto (e.g. runtime WebCrypto).
+
+    No browser-origin proof result is accepted. Platform composition MUST
+    supply a reviewed cryptographic signature verifier before any route mount.
+    """
+
+    async def verify_ed25519(
+        self, *, public_key: bytes, signature: bytes, transcript: bytes,
+    ) -> bool: ...
+
+
 class VerifiedPcOfferGateway:
     """Per-socket ephemeral proof verifier, not an account/device registry.
 
@@ -91,15 +103,18 @@ class VerifiedPcOfferGateway:
     """
 
     def __init__(self, *, socket: Any, trusted_ingress: Any, pending_ledger: Any,
+                 key_verifier: TrustedEd25519VerifyPort,
                  nonce_factory: Callable[[], str] | None = None) -> None:
         if any(not callable(getattr(p, op, None)) for p, op in (
             (socket, "send_text"), (socket, "receive_text"),
             (trusted_ingress, "verify"), (pending_ledger, "offer"),
+            (key_verifier, "verify_ed25519"),
         )):
             raise ValueError("live verified socket and canonical Broker ledger required")
         self._socket = socket
         self._tls = trusted_ingress
         self._ledger = pending_ledger
+        self._key_verifier = key_verifier
         self._nonce = nonce_factory or (lambda: secrets.token_hex(32))
         self._offered_ref: str | None = None
         self._device: str | None = None
@@ -173,17 +188,24 @@ class VerifiedPcOfferGateway:
             if signed["type"] != "pc_offer_prove":
                 raise PendingOfferDenied("pending_offer_signature_invalid")
             signature = _canonical(signed["signature_b64"], _SIGNATURE, 64)
-            from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+            # The Cloudflare Python Worker must not vendor a native-only
+            # cryptography/cffi wheel. A TRUSTED runtime WebCrypto adapter
+            # must supply this operation, not a browser/client assertion.
+            transcript = ownership_transcript(
+                device_id=begin["device_id"],
+                nonce_hex=nonce, public_key=public,
+            )
             try:
-                Ed25519PublicKey.from_public_bytes(public).verify(
-                    signature, ownership_transcript(
-                        device_id=begin["device_id"],
-                        nonce_hex=nonce, public_key=public,
-                    ),
+                verified = await asyncio.wait_for(
+                    self._key_verifier.verify_ed25519(
+                        public_key=public, signature=signature,
+                        transcript=transcript,
+                    ), timeout=5.0,
                 )
             except Exception as exc:
-                # Includes cryptography.exceptions.InvalidSignature.
                 raise PendingOfferDenied("pending_offer_signature_invalid") from exc
+            if verified is not True:
+                raise PendingOfferDenied("pending_offer_signature_invalid")
             self._device = begin["device_id"]
             self._fingerprint = hashlib.sha256(public).hexdigest()
             # Mark this in-process socket proof, but DO requires independently

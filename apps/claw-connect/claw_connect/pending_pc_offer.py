@@ -154,7 +154,11 @@ async def run_pending_pc_offer(
             or _OFFER.fullmatch(ready["request_ref"]) is None
         ):
             raise DeviceSessionRefused("pc_offer_ref_invalid")
-        expires_at = _exp(ready["expires_at"], moment)
+        # The Broker starts the 90s lease AFTER our nonce/signature roundtrip.
+        # Compare to receipt-arrival time, not the earlier PC offer-start time;
+        # otherwise a legitimate exact-90s lease appears to exceed its bound.
+        received_at = datetime.now(timezone.utc) if now is None else moment
+        expires_at = _exp(ready["expires_at"], received_at)
         receipt = PendingPcOfferReceipt(
             device_id=device_id, request_ref=ready["request_ref"], expires_at=expires_at,
         )

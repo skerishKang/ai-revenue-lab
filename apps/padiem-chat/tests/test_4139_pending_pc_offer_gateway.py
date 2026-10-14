@@ -10,11 +10,11 @@ import base64
 from datetime import datetime, timezone
 import hashlib
 import json
+import shutil
+import subprocess
 from types import SimpleNamespace
 
 import pytest
-from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
-from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 
 from app.connector_pending_pc_offer_gateway import (
     VerifiedPcOfferGateway, PendingOfferDenied, ownership_transcript,
@@ -32,6 +32,64 @@ REF = "link." + "a" * 32
 CODE = "e" * 32
 CHALLENGE = "challenge.1"
 NONCE = "b" * 64
+
+# Published RFC8032 Ed25519 first deterministic test seed/public key.
+# Node's native crypto is used ONLY by tests, not by the Worker runtime.
+_SEED = "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60"
+_PUBLIC = bytes.fromhex(
+    "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a"
+)
+_NODE = r"""
+const fs=require('node:fs'), c=require('node:crypto');
+const p=JSON.parse(fs.readFileSync(0,'utf8'));
+const msg=Buffer.from(p.msg,'base64');
+if(p.op==='sign'){
+  const pk=c.createPrivateKey({
+    key:Buffer.concat([
+      Buffer.from('302e020100300506032b657004220420','hex'),
+      Buffer.from(p.seed,'hex')
+    ]),
+    format:'der',type:'pkcs8'
+  });
+  process.stdout.write(c.sign(null,msg,pk).toString('base64'));
+} else {
+  const pk=c.createPublicKey({
+    key:Buffer.concat([
+      Buffer.from('302a300506032b6570032100','hex'),
+      Buffer.from(p.public,'base64')
+    ]),
+    format:'der',type:'spki'
+  });
+  process.stdout.write(c.verify(null,msg,pk,Buffer.from(p.sig,'base64'))?'1':'0');
+}
+"""
+
+
+def _node_crypto(*, operation: str, transcript: bytes,
+                 public: bytes = _PUBLIC, signature: bytes = b""):
+    if shutil.which("node") is None:
+        pytest.skip("Node native Ed25519 unavailable in this environment")
+    data = {
+        "op": operation, "msg": base64.b64encode(transcript).decode(),
+        "seed": _SEED, "public": base64.b64encode(public).decode(),
+        "sig": base64.b64encode(signature).decode(),
+    }
+    result = subprocess.run(
+        ["node", "-e", _NODE], input=json.dumps(data),
+        capture_output=True, text=True, timeout=8, check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    return (base64.b64decode(result.stdout, validate=True)
+            if operation == "sign" else result.stdout == "1")
+
+
+class TestVerifier:
+    """Non-production trusted port backed by Node native Ed25519 for testing."""
+    async def verify_ed25519(self, *, public_key, signature, transcript):
+        return _node_crypto(
+            operation="verify", public=public_key,
+            signature=signature, transcript=transcript,
+        )
 
 
 class FakeSocket:
@@ -98,7 +156,8 @@ def build(*, origin=None, cookie=None, tls_ok=True):
     broker = Broker(socket=socket, tls=tls)
     gateway = VerifiedPcOfferGateway(
         socket=socket, trusted_ingress=tls,
-        pending_ledger=broker.ledger, nonce_factory=lambda: NONCE,
+        pending_ledger=broker.ledger, key_verifier=TestVerifier(),
+        nonce_factory=lambda: NONCE,
     )
     broker.gateway = gateway
     return socket, tls, broker, gateway
@@ -106,8 +165,7 @@ def build(*, origin=None, cookie=None, tls_ok=True):
 
 async def handshake(*, tamper=False):
     socket, tls, broker, gateway = build()
-    private = Ed25519PrivateKey.generate()
-    public = private.public_key().public_bytes(Encoding.Raw, PublicFormat.Raw)
+    public = _PUBLIC
     await socket.input.put(json.dumps({
         "type": "pc_offer_begin", "device_id": DEVICE,
         "public_key_b64": base64.b64encode(public).decode(),
@@ -117,9 +175,12 @@ async def handshake(*, tamper=False):
     assert challenge == {
         "type": "pc_offer_challenge", "device_id": DEVICE, "nonce_hex": NONCE,
     }
-    signature = private.sign(ownership_transcript(
-        device_id=DEVICE, nonce_hex=NONCE, public_key=public,
-    ))
+    signature = _node_crypto(
+        operation="sign",
+        transcript=ownership_transcript(
+            device_id=DEVICE, nonce_hex=NONCE, public_key=public,
+        ),
+    )
     if tamper:
         signature = b"\x00" * 64
     await socket.input.put(json.dumps({
@@ -245,3 +306,45 @@ def test_transcript_is_distinct_from_pairing_wss_domain():
 def test_offer_wire_source_remains_default_unmounted():
     assert PENDING_PC_OFFER_SERVER_PRODUCTION_ENABLED is False
     assert PENDING_PC_OFFER_WEBSOCKET_ROUTE_MOUNTED is False
+
+
+def test_crypto_verifier_must_be_server_supplied_and_strict_true_only():
+    socket, tls, broker, gateway = build()
+    with pytest.raises(ValueError, match="verified socket"):
+        VerifiedPcOfferGateway(
+            socket=socket, trusted_ingress=tls,
+            pending_ledger=broker.ledger, key_verifier=None,
+        )
+
+    class ForgedTruthyVerifier:
+        async def verify_ed25519(self, **kwargs):
+            # A truthy browser flag is NOT a cryptographic signature verdict.
+            return "true"
+
+    broker.gateway = VerifiedPcOfferGateway(
+        socket=socket, trusted_ingress=tls,
+        pending_ledger=broker.ledger, key_verifier=ForgedTruthyVerifier(),
+        nonce_factory=lambda: NONCE,
+    )
+    async def run():
+        await socket.input.put(json.dumps({
+            "type": "pc_offer_begin", "device_id": DEVICE,
+            "public_key_b64": base64.b64encode(_PUBLIC).decode(),
+        }))
+        task = asyncio.create_task(broker.gateway.accept_offer())
+        challenge = json.loads(await socket.output.get())
+        signature = _node_crypto(
+            operation="sign", transcript=ownership_transcript(
+                device_id=DEVICE,
+                nonce_hex=challenge["nonce_hex"], public_key=_PUBLIC,
+            ),
+        )
+        await socket.input.put(json.dumps({
+            "type": "pc_offer_prove",
+            "signature_b64": base64.b64encode(signature).decode(),
+        }))
+        with pytest.raises(PendingOfferDenied, match="signature_invalid"):
+            await task
+        assert broker.rows() == []
+        assert socket.closed is True
+    asyncio.run(run())
