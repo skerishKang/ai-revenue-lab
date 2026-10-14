@@ -151,6 +151,9 @@
       callbacks = callbacks || {};
       const run = runContext || {};
       let stopped = false;
+      let closing = false;
+      let halting = false;
+      let finalFlushDone = false;
       let stream = null;
       let recorder = null;
       let audioContext = null;
@@ -202,9 +205,13 @@
 
       /** Transcribe one assembled chunk and report it as one final utterance. */
       function flushChunk(force) {
-        if (stopped) return;
+        if (stopped && !force) return;
+        if (halting && !force) return;
+        if (force) {
+          if (finalFlushDone) return;
+          finalFlushDone = true;
+        }
         if (sending) return;
-        if (!chunks.length) return;
         const held = chunks;
         const elapsed = chunkStartedAt ? now() - chunkStartedAt : 0;
         chunks = [];
@@ -228,7 +235,6 @@
         sendChunk(blob, utteranceId).then(
           function (text) {
             sending = false;
-            if (stopped) return;
             utteranceActive = null;
             if (!text) return;
             try {
@@ -239,7 +245,6 @@
           },
           function () {
             sending = false;
-            if (stopped) return;
             utteranceActive = null;
             emitError(ERROR_CODES.TRANSCRIBE_FAILED);
           }
@@ -274,7 +279,7 @@
 
       /** Energy gate: cut a chunk after reviewed silence, or force-cut at max. */
       function tick() {
-        if (stopped) return;
+        if (halting) return;
         const level = rms(analyser);
         const at = now();
         if (level > 0.02) {
@@ -319,7 +324,7 @@
         }
         Promise.resolve(opening).then(
           function (opened) {
-            if (stopped) {
+            if (halting) {
               const tracks = opened.getTracks();
               for (let index = 0; index < tracks.length; index += 1) tracks[index].stop();
               return;
@@ -342,7 +347,7 @@
               tickHandle = setTimer(tick, 200);
               if (typeof win.requestAnimationFrame === "function") {
                 rafHandle = win.requestAnimationFrame(function loop() {
-                  if (stopped) return;
+                  if (halting) return;
                   tick();
                   rafHandle = win.requestAnimationFrame(loop);
                 });
@@ -353,7 +358,7 @@
             }
           },
           function (error) {
-            if (stopped) return;
+            if (halting) return;
             emitError(captureErrorCode(error));
           }
         );
@@ -361,16 +366,49 @@
 
       const handle = {
         stop: function () {
-          if (stopped) return;
-          stopped = true;
+          if (closing) return;
+          closing = true;
+          halting = true;
+          if (rafHandle != null && win.cancelAnimationFrame) {
+            try { win.cancelAnimationFrame(rafHandle); } catch (e) { /* already gone */ }
+          }
+          rafHandle = null;
+          if (tickHandle != null) {
+            try { clearTimer(tickHandle); } catch (e) { /* already fired */ }
+          }
+          tickHandle = null;
           // A user-initiated stop still transcribes what was already spoken.
           if (recorder && recorder.state !== "inactive") {
-            try { recorder.requestData(); } catch (e) { /* best effort */ }
-            try { recorder.stop(); } catch (e) { /* already stopped */ }
+            const activeRecorder = recorder;
+            recorder = null;
+            activeRecorder.onstop = function () {
+              if (!finalFlushDone) {
+                flushChunk(true);
+              }
+              releaseCapture();
+              stopped = true;
+              emitEnd();
+            };
+            try { activeRecorder.requestData(); } catch (e) { /* best effort */ }
+            try { activeRecorder.stop(); } catch (e) { /* already stopped */ }
+            win.setTimeout(function () {
+              if (!stopped) {
+                if (!finalFlushDone) {
+                  flushChunk(true);
+                }
+                releaseCapture();
+                stopped = true;
+                emitEnd();
+              }
+            }, 250);
+          } else {
+            if (!finalFlushDone) {
+              flushChunk(true);
+            }
+            releaseCapture();
+            stopped = true;
+            emitEnd();
           }
-          flushChunk(true);
-          releaseCapture();
-          emitEnd();
         },
       };
 
@@ -413,7 +451,27 @@
       mediaDevices: mediaDevices,
       now: options.now,
     });
-    composer.registerRecognizerFactory(mediaDevices && typeof win.MediaRecorder === "function" ? factory : null);
+    const canCapture = !!(mediaDevices && typeof win.MediaRecorder === "function");
+
+    function registerFactory(available) {
+      composer.registerRecognizerFactory(available && canCapture ? factory : null);
+    }
+
+    // STT stays default-off until the same-origin Chat app reports that its
+    // private STT transport is actually configured. This prevents a signed-in
+    // browser from showing a ready microphone when the server cannot transcribe.
+    registerFactory(false);
+    if (typeof fetchImpl === "function") {
+      fetchImpl("/health", { method: "GET", credentials: "same-origin" })
+        .then(function (response) {
+          if (!response || !response.ok) { registerFactory(false); return null; }
+          return response.json();
+        })
+        .then(function (payload) {
+          registerFactory(payload && payload.voice_stt_available === true);
+        })
+        .catch(function () { registerFactory(false); });
+    }
 
     function announceIdentity(nextKey) {
       const value = nextKey == null ? "" : String(nextKey);

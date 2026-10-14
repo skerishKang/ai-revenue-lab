@@ -59,7 +59,13 @@ def run(port: int) -> dict:
 
         def route_handler(route):
             url = route.request.url
-            if "/api/voice/transcribe" in url:
+            if url.endswith("/health"):
+                route.fulfill(
+                    status=200,
+                    content_type="application/json",
+                    body=json.dumps({"voice_stt_available": True}),
+                )
+            elif "/api/voice/transcribe" in url:
                 route.fulfill(
                     status=200,
                     content_type="application/json",

@@ -58,6 +58,9 @@ from .service_binding_response import (
     read_bounded_service_binding_body,
 )
 
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
+from .same_origin_guard import expected_browser_origin
+
 __all__ = [
     "IDENTITY_PATH",
     "TRANSCRIBE_PATH",
@@ -65,6 +68,7 @@ __all__ = [
     "STT_TRANSCRIBE_PATH",
     "VOICE_STT_LANGUAGE",
     "MAX_AUDIO_BASE64_CHARS",
+    "MAX_VOICE_TRANSCRIBE_BYTES",
     "CALLER_PRODUCT_HEADER",
     "CALLER_SESSION_HEADER",
     "CloudflareVoiceSttServiceTransport",
@@ -88,6 +92,11 @@ VOICE_STT_LANGUAGE = "auto"
 #: browser envelope is bounded slightly above that and still fails closed here
 #: before anything is forwarded.
 MAX_AUDIO_BASE64_CHARS = 5 * 1024 * 1024
+
+#: Maximum size of the raw voice transcription request body. It must cover the
+#: reviewed 5 MiB base64 envelope plus a modest JSON wrapper; larger bodies
+#: are rejected before they are materialized into memory.
+MAX_VOICE_TRANSCRIBE_BYTES = MAX_AUDIO_BASE64_CHARS + 65536
 
 #: The two opaque clues the STT Worker's caller guard reads. They select a
 #: Control Plane session to resolve; they are not themselves an identity.
@@ -209,9 +218,24 @@ async def voice_transcribe(request: Request) -> JSONResponse:
     The browser's own ``utterance_id`` is dropped here: the STT contract has a
     closed field set and would reject an unknown field outright.
     """
+    settings = getattr(request.app.state, "settings", None) if getattr(request, "app", None) else None
+    expected_origin = expected_browser_origin(settings)
+    origin = request.headers.get("origin") if getattr(request, "headers", None) is not None else None
+    if expected_origin is not None and origin is not None and origin.strip() != expected_origin:
+        return _error("origin_rejected", 403)
+
+    content_type = request.headers.get("content-type") if getattr(request, "headers", None) is not None else None
+    media_type = "" if content_type is None else str(content_type).split(";", 1)[0].strip().lower()
+    if media_type and media_type != "application/json":
+        return _error("unsupported_media_type", 415)
+
     try:
-        payload = await request.json()
-    except Exception:
+        raw_body = await read_bounded_request_body(request, max_bytes=MAX_VOICE_TRANSCRIBE_BYTES)
+    except RequestBodyTooLarge:
+        return _error("request_too_large", 413)
+    try:
+        payload = json.loads(raw_body.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError):
         return _error("invalid_json", 400)
     try:
         mime_type, audio_base64 = _read_audio(payload)

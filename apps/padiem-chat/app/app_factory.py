@@ -290,6 +290,7 @@ async def health(request: Request) -> JSONResponse:
         "request_telemetry_enabled": getattr(
             request.app.state, "request_telemetry_enabled", False
         ),
+        "voice_stt_available": getattr(request.app.state, "voice_stt_transport", None) is not None,
     })
 
 
