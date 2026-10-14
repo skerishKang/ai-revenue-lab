@@ -285,6 +285,10 @@
   async function load() {
     if (signingOut) return;
     invalidatePending();
+    // Focus, bfcache restoration and auth-state refresh may now belong to a
+    // different account. Hide the previous identity/catalog while the server
+    // read is pending, even if this GET stalls or returns an error.
+    clearPrivate();
     const controller = new AbortController();
     pending = controller;
     const request = sequence;
