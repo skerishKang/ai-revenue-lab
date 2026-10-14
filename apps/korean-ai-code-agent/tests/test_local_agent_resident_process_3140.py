@@ -208,6 +208,13 @@ def _handoff(challenge_id, pairing_code):
     }
 
 
+class _TextPlanSourceProbe:
+    """Deployment-shaped P01 material: the resident only calls this contract."""
+
+    def approved_plan_for_admitted_command(self, *, binding, command, admitted):
+        return None
+
+
 class ResidentProcess3140Test(unittest.TestCase):
     def test_handoff_envelope_requires_a_bounded_challenge_id(self) -> None:
         for bad in ("", "not json", "[1,2,3]"):
@@ -375,6 +382,85 @@ class ResidentProcess3140Test(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn("workspace_ref=binding.workspace_ref", source)
         self.assertNotIn('workspace_ref="workspace.1"', source)
+
+    # -- #4139: the ordered verified-text lane on the real resident path -----
+    def test_the_deployment_names_the_p01_text_material_not_a_plan(self) -> None:
+        """Only trusted, shape-correct material is accepted; nothing else is."""
+
+        import types
+
+        from kagent.local_agent_resident_process import (
+            VERIFIED_TEXT_PLAN_SOURCE_ENV,
+            verified_text_plan_source_from_environment,
+        )
+
+        os.environ.pop(VERIFIED_TEXT_PLAN_SOURCE_ENV, None)
+        # Absent material: the lane is off, never a synthetic plan or a path.
+        self.assertIsNone(verified_text_plan_source_from_environment())
+
+        probe = types.ModuleType("kagent._verified_text_probe")
+        probe.text_material = lambda: _TextPlanSourceProbe()
+        probe.not_material = lambda: object()
+
+        def _unimportable():
+            raise ImportError("no material")
+
+        probe.raises = _unimportable
+        sys.modules[probe.__name__] = probe
+        self.addCleanup(sys.modules.pop, probe.__name__, None)
+
+        for value in (
+            "",  # unset/blank
+            "kagent._verified_text_probe.not_material",  # wrong shape
+            "kagent._verified_text_probe.raises",  # unimportable material
+            "kagent._verified_text_probe",  # no factory attribute
+        ):
+            os.environ[VERIFIED_TEXT_PLAN_SOURCE_ENV] = value
+            self.assertIsNone(verified_text_plan_source_from_environment(), value)
+
+        os.environ[VERIFIED_TEXT_PLAN_SOURCE_ENV] = "kagent._verified_text_probe:text_material"
+        self.assertIsInstance(
+            verified_text_plan_source_from_environment(), _TextPlanSourceProbe,
+        )
+
+    def test_main_composes_the_ordered_lane_from_that_material(self) -> None:
+        # Same pinning style as the workspace composition above: the real
+        # resident path names the deployment material and the host takes it.
+        source = (
+            Path(__file__).parents[1] / "src" / "kagent" / "local_agent_resident_process.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "verified_text_plan_source=verified_text_plan_source_from_environment(),",
+            source,
+        )
+        self.assertIn('event="verified_text_lane"', source)
+
+    def test_the_lane_is_off_without_material_and_ordered_with_it(self) -> None:
+        broker = _SharedBroker()
+        entry = BrokerEntry(
+            device_id=DEVICE_ID, authority_ref=AUTHORITY_REF, request_port=broker,
+            credential_dir=tempfile.mkdtemp(prefix="claw4-4139-cred-"),
+        )
+        challenge_id, pairing_code = broker.web_issues()
+        with tempfile.TemporaryDirectory() as base_dir:
+            redeemed = redeem_handoff(
+                _handoff(challenge_id, pairing_code), entry=entry, base_dir=base_dir,
+                now=BASE + timedelta(seconds=1), protected_data=_ProtectedDataPort(),
+            )
+            self.assertIsNone(
+                build_resident_host(redeemed, entry=entry)._verified_text_lane
+            )
+            host = build_resident_host(
+                redeemed, entry=entry, verified_text_plan_source=_TextPlanSourceProbe(),
+            )
+            lane = host._verified_text_lane
+            self.assertIsNotNone(lane)
+            safe = lane.safe_dict()
+            self.assertTrue(safe["pending_before_read"])
+            self.assertTrue(safe["read_before_ack"])
+            self.assertTrue(safe["upload_after_ack"])
+            self.assertFalse(safe["file_reread_after_ack"])
+            self.assertFalse(safe["second_upload_path"])
 
     def test_process_declares_no_authority(self) -> None:
         self.assertFalse(RESIDENT_PROCESS_CONTRACT["pairing_authority_implemented"])

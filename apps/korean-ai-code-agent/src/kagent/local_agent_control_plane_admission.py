@@ -365,6 +365,8 @@ class ControlPlaneAdmittedExecutionCoordinator:
         material_request_ref: str,
         on_execution_start: Callable[[str], None] | None = None,
         on_execution_end: Callable[[], None] | None = None,
+        on_admitted: Callable[..., None] | None = None,
+        on_execution_observed: Callable[..., None] | None = None,
     ) -> ControlPlaneAdmittedExecutionReceipt:
         material_now = self._now()
         resolved = self._channel.resolve_broker_material(
@@ -394,6 +396,26 @@ class ControlPlaneAdmittedExecutionCoordinator:
             request=resolved.request,
         )
         self._durable_store.put(admitted_record)
+
+        # #4139/#4705: the admitted state is durable and the command is still
+        # unacknowledged, so a pre-ACK hook can register "pending" for this
+        # exact command/request correlation and stop before the execution
+        # approval is spent if it refuses. It is called BEFORE
+        # on_execution_start: a refusal here means no READ, no execution and
+        # therefore no completion acknowledgement.
+        if on_admitted is not None:
+            from .local_agent_command_material import command_request_fingerprint
+
+            on_admitted(
+                binding=binding,
+                command=command,
+                request=resolved.request,
+                request_id=resolved.request.request_id,
+                request_fingerprint=command_request_fingerprint(resolved.request),
+                admission_ref=conformed.evidence.admission_ref,
+                evidence_ref=conformed.evidence_ref,
+                admitted_at=admitted_record.admitted_at,
+            )
 
         # The existing admitted-execution bridge remains the execution gate.
         # Feed it the freshly conformed trusted evidence through its existing
@@ -435,6 +457,15 @@ class ControlPlaneAdmittedExecutionCoordinator:
                 except Exception:  # noqa: BLE001 - evidence never breaks refusal
                     pass
                 raise
+
+            # #4139/#4705: the execution the resident just observed, BEFORE the
+            # durable terminal write and before the completion acknowledgement.
+            # A lane that produces a side result for this exact command (for
+            # example the P01-authorized text READ) runs here, so its bytes are
+            # obtained before the acknowledgement and never re-read afterwards.
+            # A refusal propagates: no durable terminal record and no ACK.
+            if on_execution_observed is not None:
+                on_execution_observed(binding=binding, command=command, execution=execution)
         finally:
             if on_execution_end is not None:
                 on_execution_end()

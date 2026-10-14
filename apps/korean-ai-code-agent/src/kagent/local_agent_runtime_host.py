@@ -19,6 +19,7 @@ from .local_agent_control_plane_admission import (
     ControlPlanePhysicalAdmissionChannel,
 )
 from .local_agent_pairing import DeviceLifecycle, DeviceSession
+from .local_resident_verified_text_delivery import AdmittedTextReadContext
 from .browser_open import BrowserOpenRefusal
 from .local_agent_runtime_assembly import BoundLocalAgentRuntimeAssembly
 from .local_agent_secure_transport import DeviceCredentialStore, OutboundPollRequest
@@ -223,7 +224,7 @@ class LocalAgentResidentRuntimeHost:
         durable_store: DurableRunStore,
         coordinator: ControlPlaneAdmittedExecutionCoordinator | None = None,
         office_staging=None,
-        text_result_staging=None,
+        verified_text_lane=None,
         clock: Callable[[], datetime] | None = None,
         monotonic: Callable[[], float] | None = None,
         instance_lock: SingleInstanceLockPort | None = None,
@@ -294,15 +295,21 @@ class LocalAgentResidentRuntimeHost:
         ):
             raise ContractError("trusted post-ACK Office output delivery port required")
         self._office_staging = office_staging
-        # #4139: the bounded TXT read result travels on its own post-ACK port,
-        # exactly like the Office staging lane: it is a side effect of an
-        # already successful acknowledgement, never part of the result/ack
-        # authority, and never a second execution or retry of the command.
-        if text_result_staging is not None and not callable(
-            getattr(text_result_staging, "on_acknowledged", None)
+        # #4139: the bounded TXT read lane is ordered, so it is wired into three
+        # points of the one command path and nowhere else: pending is declared
+        # while the command is admitted and unacknowledged, the approved READ
+        # runs after the execution and before the acknowledgement, and only the
+        # bytes that read produced are uploaded once the successful
+        # acknowledgement is confirmed. It never re-reads the file, never
+        # retries the command and never mints a second correlation.
+        if verified_text_lane is not None and not all(
+            callable(getattr(verified_text_lane, method_name, None))
+            for method_name in (
+                "declare_pending_for_admitted", "observe_approved_read", "on_acknowledged",
+            )
         ):
-            raise ContractError("trusted post-ACK verified text delivery port required")
-        self._text_result_staging = text_result_staging
+            raise ContractError("trusted ordered verified text lane required")
+        self._verified_text_lane = verified_text_lane
         self._recovery = LocalAgentRestartRecoveryDriver(
             store=durable_store,
             channel=channel,
@@ -535,6 +542,72 @@ class LocalAgentResidentRuntimeHost:
         with self._active_execution_lock:
             self._active_session = None
             self._active_request_id = None
+
+    def _declare_text_read_pending(self, **admitted: Any) -> None:
+        """Pre-ACK hook: declare `pending` for an admitted, unacknowledged read.
+
+        A failure propagates out of the canonical coordinator, which stops
+        before `on_execution_start`, so a refused declaration never becomes an
+        execution, a READ or a successful acknowledgement.
+        """
+        lane = self._verified_text_lane
+        if lane is None:
+            return
+        binding = admitted.get("binding")
+        command = admitted.get("command")
+        try:
+            credential = self._credential_store.load(binding=binding, now=self._now())
+            declared = lane.declare_pending_for_admitted(
+                binding=binding,
+                command=command,
+                admitted=AdmittedTextReadContext(
+                    admission_ref=admitted["admission_ref"],
+                    evidence_ref=admitted["evidence_ref"],
+                    request_id=admitted["request_id"],
+                    command_fingerprint=admitted["request_fingerprint"],
+                    admitted_at=admitted["admitted_at"],
+                ),
+                credential=credential,
+            )
+        except Exception:
+            # Bounded evidence only: ids/refs/codes, never a path or a body.
+            self._record_diagnostic(
+                "verified_text", "PENDING_REFUSED",
+                "Admitted text read could not be declared; command not executed",
+            )
+            raise
+        if declared:
+            self._record_diagnostic(
+                "verified_text", "PENDING_DECLARED",
+                "Admitted text read declared before its body",
+            )
+
+    def _observe_text_read(self, *, binding: Any, command: Any, execution: Any) -> None:
+        """Pre-ACK hook: run the approved READ and preserve its bytes.
+
+        It runs after the execution and before the durable terminal write and
+        the acknowledgement, and it is the only place the file is read. A
+        refusal propagates, so a READ that failed is never acknowledged as a
+        successful text result.
+        """
+        lane = self._verified_text_lane
+        if lane is None:
+            return
+        try:
+            read = lane.observe_approved_read(
+                binding=binding, command=command, execution=execution,
+            )
+        except Exception:
+            self._record_diagnostic(
+                "verified_text", "READ_REFUSED",
+                "Authorized PC text read refused; command not acknowledged",
+            )
+            raise
+        if read is not None:
+            self._record_diagnostic(
+                "verified_text", "READ_PRESERVED",
+                "Authorized PC text read preserved before the acknowledgement",
+            )
 
     def _acquire_instance_lock(self) -> None:
         if self._lock_acquired:
@@ -784,6 +857,8 @@ class LocalAgentResidentRuntimeHost:
                         material_request_ref=material_ref,
                         on_execution_start=self._set_active_request,
                         on_execution_end=self._clear_active_request,
+                        on_admitted=self._declare_text_read_pending,
+                        on_execution_observed=self._observe_text_read,
                     )
                     self._last_sequence = max(self._last_sequence, command.sequence)
                     executed_count += 1
@@ -824,7 +899,7 @@ class LocalAgentResidentRuntimeHost:
                                 "office", "STAGING_REFUSED",
                                 "Private Office staging incomplete; no Drive upload",
                             )
-                    if self._text_result_staging is not None:
+                    if self._verified_text_lane is not None:
                         try:
                             fact = receipt.execution
                             if (fact.command_id != command.command_id
@@ -836,7 +911,7 @@ class LocalAgentResidentRuntimeHost:
                             credential = self._credential_store.load(
                                 binding=binding, now=self._now(),
                             )
-                            delivered = self._text_result_staging.on_acknowledged(
+                            delivered = self._verified_text_lane.on_acknowledged(
                                 binding=binding, command=command, receipt=receipt,
                                 credential=credential,
                             )
@@ -850,7 +925,7 @@ class LocalAgentResidentRuntimeHost:
                             # retried: a failed text transport keeps the
                             # acknowledged command truth and reports no content.
                             self._record_diagnostic(
-                                "verified_text", "STAGING_REFUSED",
+                                "verified_text", "UPLOAD_REFUSED",
                                 "PC text read not returned; no content claimed",
                             )
                 except Exception as exc:

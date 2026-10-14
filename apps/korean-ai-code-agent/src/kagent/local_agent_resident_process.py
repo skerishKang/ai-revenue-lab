@@ -181,6 +181,39 @@ def _acceptance_authorization_port(
     )
 
 
+#: #4139: the deployment-supplied P01 verified-text plan source, resolved with
+#: the same ``module:attribute`` factory convention as the broker request port.
+#: It is the *material*, not a switch: without it the ordered text lane is
+#: absent, and no environment value can name a file or mint an approval.
+VERIFIED_TEXT_PLAN_SOURCE_ENV = "PADIEM_AGENT_VERIFIED_TEXT_PLAN_SOURCE"
+
+
+def verified_text_plan_source_from_environment() -> Any | None:
+    """Resolve the deployment's P01 verified-text material, or None (fail closed).
+
+    Only a trusted module already importable in this process can supply it: the
+    same bounded shape the Office lane takes, with a pre-acknowledgement
+    ``approved_plan_for_admitted_command`` entry point. A missing, unimportable
+    or shape-invalid source leaves the lane off — never a fallback plan, never a
+    synthetic approval and never a path read from the environment.
+    """
+
+    factory_path = os.environ.get(VERIFIED_TEXT_PLAN_SOURCE_ENV)
+    if not factory_path:
+        return None
+    try:
+        module_name, _, attribute = factory_path.partition(":")
+        if not module_name or not attribute:
+            return None
+        module = __import__(module_name, fromlist=[attribute])
+        source = getattr(module, attribute)()
+    except (ImportError, AttributeError, ValueError, TypeError):
+        return None
+    if not callable(getattr(source, "approved_plan_for_admitted_command", None)):
+        return None
+    return source
+
+
 def _browser_open_authority(
     *,
     device: Any,
@@ -979,26 +1012,49 @@ def build_resident_host(
                 config=config,
             ),
         )
-    # #4139: a bounded TXT read result is produced post-ACK by the same
+    # #4139: a bounded TXT read result is ordered around the existing command
+    # path — `pending` while the command is admitted and unacknowledged, the
+    # approved READ after the execution and before the acknowledgement, and the
+    # *preserved* bytes after the successful acknowledgement — from the same
     # deployment-injected trusted P01 source shape the Office lane uses. It
     # reaches the broker on the one canonical device route (LOCAL1 #4705),
     # through the same P01-authorized selected-root READ — no second file
     # authority, no second upload path and no ambient switch.
-    text_result_staging = None
+    verified_text_lane = None
     if verified_text_plan_source is not None:
-        from .local_resident_verified_text_delivery import compose_verified_text_delivery
+        from .local_resident_verified_text_delivery import (
+            TrustedP01VerifiedTextFilePlanBridge,
+            compose_verified_text_delivery,
+        )
         from .windows_local_filesystem import P01LocalPermissionWindowsFileAuthorizationPort
 
-        text_result_staging = compose_verified_text_delivery(
+        # The bridge is both the approved-READ request port and the P01 file
+        # evidence port: one plan, one approval, one read. The authorization
+        # port re-checks it at read time, exactly like the Office lane.
+        text_bridge = TrustedP01VerifiedTextFilePlanBridge(source=verified_text_plan_source)
+        verified_text_lane = compose_verified_text_delivery(
             device=device,
-            file_requests=verified_text_plan_source,
+            file_requests=text_bridge,
             file_authorization_port=P01LocalPermissionWindowsFileAuthorizationPort(
                 permission_profile=default_device_permission_profile(device=device),
-                evidence_port=verified_text_plan_source,
+                evidence_port=text_bridge,
             ),
             config=config,
             clock=clock,
         )
+    # #4139: report the order the resident actually composed, rather than
+    # letting the harness infer it from a later poll line.
+    _emit(
+        event="verified_text_lane",
+        configured=verified_text_lane is not None,
+        pending_before_ack=True,
+        read_before_ack=True,
+        upload_after_ack=True,
+        post_ack_only=False,
+        file_reread_after_ack=False,
+        **_phase_stamp(),
+        **RESIDENT_PROCESS_CONTRACT,
+    )
     # #3140 stall diagnosis: the facts a stalled SQLite open would have produced,
     # reported only once the store is actually ready. No path, no handle.
     try:
@@ -1029,7 +1085,7 @@ def build_resident_host(
         heartbeat_interval_seconds=30,
         session_ttl_seconds=900,
         office_staging=office_staging,
-        text_result_staging=text_result_staging,
+        verified_text_lane=verified_text_lane,
     )
     _observe_phase("host_build_host_done")
     return host
@@ -1112,6 +1168,10 @@ def main(argv: list[str] | None = None) -> int:
                 acceptance_command_id=ACCEPTANCE_COMMAND_ID,
                 acceptance_binding_ref=redeemed["binding"].binding_ref,
                 acceptance_request_id=ACCEPTANCE_REQUEST_ID,
+                # #4139: the ordered verified-text lane is composed on this same
+                # host, from the deployment's own P01 material. Absent material
+                # leaves it off; nothing here approves, names or reads a file.
+                verified_text_plan_source=verified_text_plan_source_from_environment(),
             )
         except ContractError as exc:
             _emit(
