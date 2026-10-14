@@ -15,6 +15,7 @@ from .b66_ai_chat_routes import b66_ai_chat
 from .b66_ai_conversation_routes import conversation_state, conversation_turn
 from .b66_ai_conversation_store import D1ConversationStore
 from .b66_conversation_store import B66ConversationStore
+from .b66_durable_turn_attempt import D1B66TurnAttemptStore
 from .b66_dialogue_routes import b66_dialogue_detail, b66_dialogue_list
 from .b66_company_profile import CompanyProfileStore, D1CompanyProfileStore
 from .b66_company_profile_routes import b66_company_profile_get, b66_company_profile_put
@@ -602,6 +603,12 @@ def create_app(
     # conversation.
     app.state.b66_conversation_store = (
         B66ConversationStore(history_store) if history_store is not None else None
+    )
+    # #4672: one durable owner/product/token claim BEFORE any charged B66 turn.
+    # If a bound production D1 lacks the migration, the route refuses before
+    # provider dispatch. Test-only no-D1 fixtures preserve their existing seam.
+    app.state.b66_turn_attempt_store = (
+        D1B66TurnAttemptStore(d1_binding) if d1_binding is not None else None
     )
     # B66 admin authority shares signed user sessions and the existing D1.
     # Missing D1 or migrations fails closed rather than serving a demo roster.

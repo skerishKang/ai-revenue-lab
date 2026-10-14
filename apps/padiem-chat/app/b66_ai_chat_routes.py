@@ -55,6 +55,7 @@ from starlette.responses import JSONResponse
 
 from .b14_client import ChatRuntimeError
 from .b66_dialogue_routes import b66_dialogue_store, persist_b66_turn
+from .b66_durable_turn_attempt import attempt_request_digest
 from .b66_quote_routes import (
     _authorize_quote_usage,
     _error,
@@ -305,6 +306,11 @@ async def b66_ai_chat(request: Request) -> JSONResponse:
     user_text = messages[-1]["content"]
     client_prior_len = len(messages) - 1
     store = b66_dialogue_store(request)
+    attempt_store = getattr(request.app.state, "b66_turn_attempt_store", None)
+    if attempt_store is not None and turn_token is None:
+        # Deployed D1-powered routes require a submission identity. The B66 UI
+        # already submits a fresh 128-bit turn token and preserves it on retry.
+        return _error(400, "turn_token_required", "대화 요청 참조가 필요합니다.")
 
     if conversation_id is None:
         # A first turn has no stored dialogue to reconcile against; an opaque
@@ -397,6 +403,51 @@ async def b66_ai_chat(request: Request) -> JSONResponse:
             await _refund_active_reservation()
             return _error(503, "ai_chat_unavailable", "AI 모델을 사용할 수 없습니다.")
 
+        # The in-isolate set above only avoids duplicate work *inside* a Worker.
+        # The D1 unique row is the authoritative cross-isolate paid-call gate.
+        # Never delete/reclaim a claimed row automatically: after an uncertain
+        # upstream timeout the provider may already have charged the attempt.
+        if attempt_store is not None:
+            try:
+                digest = attempt_request_digest(
+                    model_id=route.model_id,
+                    conversation_id=conversation_id,
+                    messages=model_messages,
+                    model_parameters=parameters,
+                )
+                decision = await attempt_store.claim(
+                    uid, turn_token, route.model_id, digest,
+                )
+            except Exception:
+                await _refund_active_reservation()
+                return _error(
+                    503, "dialogue_attempt_unavailable",
+                    "중복 요청 확인을 할 수 없습니다. 잠시 후 이전 대화를 확인해 주세요.",
+                )
+            if decision["status"] == "conflict":
+                await _refund_active_reservation()
+                return _error(
+                    409, "dialogue_attempt_mismatch",
+                    "이미 사용된 대화 요청 참조입니다.",
+                )
+            if decision["status"] == "completed":
+                await _refund_active_reservation()
+                saved_conversation_id = decision["conversation_id"]
+                recorded, refusal = await _stored_model_messages(
+                    store, uid, saved_conversation_id,
+                )
+                tail = _completed_tail(recorded or [])
+                if refusal is None and tail is not None and tail[0] == user_text:
+                    return _replay_response(
+                        conversation_id=saved_conversation_id,
+                        model_id=route.model_id,
+                        answer=tail[1],
+                    )
+                return _turn_in_progress()
+            if decision["status"] != "claimed":
+                await _refund_active_reservation()
+                return _turn_in_progress()
+
         outcome = await plan_b66_search(
             getattr(request.app.state, "auto_grounding", None),
             user_text,
@@ -450,6 +501,18 @@ async def b66_ai_chat(request: Request) -> JSONResponse:
             assistant_text=answer,
         )
         if saved_id is not None:
+            if attempt_store is not None:
+                try:
+                    await attempt_store.complete(uid, turn_token, saved_id)
+                except Exception:
+                    # The paid model and history append may both have succeeded.
+                    # Do not declare a replay-safe success when the attempt
+                    # receipt was not durably acknowledged. The claim remains
+                    # permanent so a retry cannot charge the provider again.
+                    return _error(
+                        503, "dialogue_attempt_unavailable",
+                        "대화 저장 결과를 확인할 수 없습니다. 이전 대화를 다시 확인해 주세요.",
+                    )
             _remember_turn(uid, turn_token, saved_id)
         body: dict[str, Any] = {
             "ok": True,
