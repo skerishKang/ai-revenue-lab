@@ -102,6 +102,46 @@ UI_ONLY_CSS_SMOKE_LANES = frozenset({
 # and endpoint strings cannot be proven logic-free by path alone.
 MAX_UI_ONLY_CSS_FILES = 10
 
+# CSS with these three pre-reviewed presentation-test leaves has the same
+# browser runtime impact as CSS alone. All other tests retain full browser QA.
+# B62 CI runs the changed pytest modules in its required UI-mixed job.
+UI_PRESENTATION_TEST_LEAVES = frozenset({
+    "apps/padiem-chat/tests/test_b62_1732_capability_navigation.py",
+    "apps/padiem-chat/tests/test_b62_1735_sidebar_home_ia.py",
+    "apps/padiem-chat/tests/test_b62_2341_task_alert_inbox_ui.py",
+    "apps/padiem-chat/tests/test_4488_claw_automation_touch_accessibility.py",
+})
+
+
+def is_css_with_presentation_tests(
+    changed_paths: set[str] | None, statuses: dict[str, str] | None,
+    *, expected_files: int | None = None,
+) -> bool:
+    if not changed_paths or statuses is None:
+        return False
+    if type(expected_files) is not int or expected_files != len(changed_paths):
+        return False
+    if not 2 <= len(changed_paths) <= MAX_UI_ONLY_CSS_FILES + len(UI_PRESENTATION_TEST_LEAVES):
+        return False
+    if set(statuses) != changed_paths or any(
+        statuses[path] not in {"added", "modified"} for path in changed_paths
+    ):
+        return False
+    tests = changed_paths & UI_PRESENTATION_TEST_LEAVES
+    styles = changed_paths - tests
+    if not tests or not styles or len(tests) > len(UI_PRESENTATION_TEST_LEAVES) or len(styles) > MAX_UI_ONLY_CSS_FILES:
+        return False
+    if any(
+        path in _UI_ONLY_CSS_EXCLUDED
+        or "\\" in path or ".." in Path(path).parts
+        or not _UI_ONLY_CSS_RE.fullmatch(path)
+        for path in styles
+    ):
+        return False
+    return True
+
+
+
 _UI_ONLY_CSS_RE = re.compile(
     r"apps/padiem-chat/static/(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\.css"
 )
@@ -365,6 +405,9 @@ def choose_lanes(
     # skip the flow-functional lanes whose logic CSS cannot change. Missing
     # statuses keep the historical path-only routing (fail-closed).
     if is_css_only_ui_change(changed_paths, statuses, expected_files=expected_files):
+        return {job: (job in UI_ONLY_CSS_SMOKE_LANES) for job in patterns_by_job}
+    if is_css_with_presentation_tests(changed_paths, statuses,
+                                      expected_files=expected_files):
         return {job: (job in UI_ONLY_CSS_SMOKE_LANES) for job in patterns_by_job}
     claw_field_change = CLAW_MANUAL_INTAKE_CSS in changed_paths
     if claw_field_change and not claw_manual_css_is_isolated():
