@@ -327,3 +327,9 @@ tbody tr:last-child td{border-bottom:0}
 .demo-walkthrough b{font:700 10px/1 system-ui,sans-serif;color:#5688a9}
 @media(max-width:650px){.demo-walkthrough{gap:6px;margin-top:15px}
   .demo-walkthrough span{padding:7px 9px;font-size:10px}}
+
+/* Presenter control: reset is a deliberate confirm + page reload, never a server action. */
+.demo-reset-button{padding:7px 12px;border:1px solid rgba(96,125,150,.26);border-radius:999px;
+  background:rgba(255,255,255,.65);color:#486277;font-size:11px;font-weight:700;cursor:pointer}
+.demo-reset-button:hover,.demo-reset-button:focus-visible{border-color:#5f8aa5;background:#fff}
+@media(max-width:550px){.demo-reset-button{font-size:10px;padding:6px 8px}}
