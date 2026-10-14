@@ -310,6 +310,17 @@
       stopSessionHandle(session);
     }
 
+    // One listener per composer, not one listener per microphone run.
+    const trustedEditHandler = function (event) {
+      if (event && event.isTrusted === true) {
+        if (run) run.manuallyEdited = true;
+        if (stoppingRun) stoppingRun.manuallyEdited = true;
+      }
+    };
+    if (input && typeof input.addEventListener === "function") {
+      input.addEventListener("input", trustedEditHandler);
+    }
+
     function start() {
       if (destroyed || !mounted || !isReady() || isActiveRun()) return false;
       const adapterApi = win ? win.PadiemVoiceSttInput : null;
@@ -324,7 +335,8 @@
       state.idleKey = "";
       stoppingRun = null;
       deferredFinals = [];
-      const myRun = { generation: state.generation, sessionToken: state.sessionToken, adapter: null, session: null };
+      const myRun = { generation: state.generation, sessionToken: state.sessionToken,
+        adapter: null, session: null, initialInput: input && input.value.trim(), manuallyEdited: false };
       const adapter = adapterApi.createVoiceInputAdapter({
         generation: myRun.generation,
         sessionToken: myRun.sessionToken,
@@ -342,6 +354,11 @@
       let session = null;
       try {
         session = factory({
+          onAutoStopRequested: function () {
+            // Mode 2 silence goes through the exact same Stop pipeline as
+            // the user pressing Stop, preserving tail-drain run authority.
+            if (isSameRun(myRun)) stop("user-stopped");
+          },
           onInterim: function (chunk) {
             if (isSameRun(myRun)) myRun.adapter.feedInterim(chunk, runContext(myRun));
           },
@@ -355,6 +372,26 @@
                 render();
               }
             }
+          },
+          onTurnComplete: function (event) {
+            // The recognizer fires this only after Stop, all 2xx transcript
+            // chunks (including the tail) and their editable commits complete.
+            if (stoppingRun !== myRun || !event || event.accepted !== true ||
+                event.endOfTurn !== true || !event.finalId || !state.authenticated ||
+                !state.identityKey || state.composing || input.disabled ||
+                myRun.initialInput || myRun.manuallyEdited) return;
+            const text = input && input.value ? input.value.trim() : "";
+            if (!text) return;
+            try {
+              win.dispatchEvent(new win.CustomEvent("padiem:voice-accepted-turn", {
+                detail: {
+                  accountKey: state.identityKey,
+                  composerGeneration: myRun.generation,
+                  sessionToken: myRun.sessionToken,
+                  accepted: true, endOfTurn: true, finalId: event.finalId, text: text
+                }
+              }));
+            } catch (_) { /* no background send fallback */ }
           },
           onError: function (code) {
             if (isSameRun(myRun)) recognizerFailed(code);
@@ -619,6 +656,9 @@
 
     function destroy() {
       if (destroyed) return;
+      if (input && typeof input.removeEventListener === "function") {
+        input.removeEventListener("input", trustedEditHandler);
+      }
       const stage = run;
       run = null;
       if (stage) {

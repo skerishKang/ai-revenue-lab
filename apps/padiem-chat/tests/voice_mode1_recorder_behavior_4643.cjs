@@ -3,7 +3,7 @@ const {test} = require("node:test");
 const assert = require("node:assert/strict");
 const voice = require("../static/voice-stt-wiring.js");
 
-function setup({empty=false}={}) {
+function setup({empty=false,auto=false}={}) {
   let recorder;
   let time = 1000;
   let level = 0;
@@ -11,6 +11,7 @@ function setup({empty=false}={}) {
   const posts = [];
   const pending = [];
   const finals = [];
+  const turns = [];
   const errors = [];
   const timers = [];
   const tracks = [{stop(){cancelled=true;}}];
@@ -30,6 +31,7 @@ function setup({empty=false}={}) {
   global.FileReader = Reader;
   const analyser = {fftSize:1024,getFloatTimeDomainData(buf){buf.fill(level);}};
   const win = {
+    PadiemVoiceMode2UI: {isLiveActive:()=>auto},
     MediaRecorder: Recorder, Blob,
     AudioContext: class {
       createMediaStreamSource(){return {connect(){}};}
@@ -46,13 +48,16 @@ function setup({empty=false}={}) {
     mediaDevices: {getUserMedia:async()=>stream},
     now:()=>time,
   });
-  const handle = factory({
+  let handle;
+  handle = factory({
+    onAutoStopRequested:()=>handle.stop("user-stopped"),
     onFinal:p=>finals.push(p),
+    onTurnComplete:p=>turns.push(p),
     onError:e=>errors.push(e),
     onEnd:()=>{},
   },{generation:1,sessionToken:"one"});
   const settle=async()=>{for(let i=0;i<14;i++)await Promise.resolve();};
-  return {handle,posts,pending,finals,errors,timers,
+  return {handle,posts,pending,finals,turns,errors,timers,
     recorder:()=>recorder,settle,
     time:t=>time=t,level:x=>level=x,
     resolve(text){const fn=pending.shift();assert.ok(fn);fn({ok:true,json:async()=>({text})});},
@@ -100,4 +105,48 @@ test("inflight recognition cannot swallow the stop tail",async()=>{
   assert.deepEqual(x.finals.map(v=>v.text),["첫 구간","마지막 구간"]);
   assert.equal(x.finals[0].stopped,true); // the first in-flight final must survive composer.stop()
   assert.equal(x.finals[1].stopped,true);
+});
+
+test("Mode2 silence auto-stops once and emits only after accepted provider final", async () => {
+  const x=setup({auto:true});await x.settle();
+  const r=x.recorder();r.requestData();
+  x.time(5000);x.level(.3);x.timers[0]();
+  x.time(7701);x.level(0);x.timers[0]();
+  await x.settle();
+  assert.equal(x.posts.length,1);
+  assert.equal(x.turns.length,0); // do not submit an unacknowledged audio chunk
+  x.resolve("accepted turn");await x.settle();
+  assert.equal(x.finals.length,1);
+  assert.equal(x.turns.length,1);
+  assert.equal(x.turns[0].accepted,true);
+  assert.equal(x.turns[0].endOfTurn,true);
+  x.timers[0]();await x.settle();
+  assert.equal(x.turns.length,1); // no replay after repeated timer ticks
+});
+
+test("inflight Stop plus tail completes only after both provider finals in order",async()=>{
+  const x=setup({auto:true});await x.settle();
+  const r=x.recorder();r.requestData();
+  x.time(5000);x.level(.3);x.timers[0]();
+  x.time(6500);x.level(0);x.timers[0]();
+  await x.settle();assert.equal(x.posts.length,1);
+  x.handle.stop("user-stopped");await x.settle();
+  assert.equal(x.turns.length,0);
+  x.resolve("first sentence");await x.settle();
+  assert.equal(x.posts.length,2);
+  assert.deepEqual(x.finals.map(v=>v.text),["first sentence"]);
+  assert.equal(x.turns.length,0);
+  x.resolve("second sentence");await x.settle();
+  assert.deepEqual(x.finals.map(v=>v.text),["first sentence","second sentence"]);
+  assert.equal(x.turns.length,1);
+  assert.equal(x.turns[0].finalId,x.finals[1].utteranceId);
+});
+
+test("cancel and silent Stop cannot emit accepted end-of-turn",async()=>{
+  const cancelled=setup({auto:true});await cancelled.settle();
+  cancelled.handle.stop("account-switch");await cancelled.settle();
+  assert.equal(cancelled.turns.length,0);
+  const silent=setup({auto:true,empty:true});await silent.settle();
+  silent.handle.stop("user-stopped");await silent.settle();
+  assert.equal(silent.turns.length,0);
 });

@@ -179,6 +179,26 @@
       let sending = false;
       let utteranceSeq = 0;
       let utteranceActive = null;
+      let lastVoiceAt = 0;
+      let captureEnded = false;
+      let finishRequested = false;
+      let finalDelivered = 0;
+      let lastFinalId = "";
+      let transcribeFailed = false;
+      let turnCompleteEmitted = false;
+      const MODE2_AUTO_SILENCE_MS = 2600;
+
+      function finishAcceptedTurn() {
+        if (!finishRequested || !captureEnded || cancelled || transcribeFailed ||
+            sending || finalFlushPending || chunks.length || turnCompleteEmitted) return;
+        turnCompleteEmitted = true;
+        if (!finalDelivered || !lastFinalId) return;
+        try {
+          if (typeof callbacks.onTurnComplete === "function") {
+            callbacks.onTurnComplete({ accepted: true, endOfTurn: true, finalId: lastFinalId });
+          }
+        } catch (_) { /* an external coordinator must never restart transport */ }
+      }
       const transcribeRoute = routeForShell(doc, TRANSCRIBE_PATH, CLAW_TRANSCRIBE_PATH);
 
       function emitError(code) {
@@ -250,26 +270,31 @@
             sending = false;
             utteranceActive = null;
             if (cancelled) return;
+            if (text) {
+              try {
+                if (typeof callbacks.onFinal === "function") {
+                  callbacks.onFinal({ text: text, utteranceId: utteranceId, stopped: fromStop === true || halting });
+                  finalDelivered += 1;
+                  lastFinalId = utteranceId;
+                }
+              } catch (e) { transcribeFailed = true; }
+            }
+            // Deliver the preceding final before starting the Stop tail:
+            // speech order must survive a first-request-in-flight race.
             if (finalFlushPending) {
               finalFlushPending = false;
               flushChunk(true, true);
             }
-            if (!text) return;
-            try {
-              if (typeof callbacks.onFinal === "function") {
-                callbacks.onFinal({ text: text, utteranceId: utteranceId, stopped: fromStop === true || halting });
-              }
-            } catch (e) { /* swallow */ }
+            finishAcceptedTurn();
           },
           function () {
             sending = false;
             utteranceActive = null;
             if (cancelled) return;
-            if (finalFlushPending) {
-              finalFlushPending = false;
-              flushChunk(true, true);
-            }
+            transcribeFailed = true;
+            finalFlushPending = false;
             emitError(ERROR_CODES.TRANSCRIBE_FAILED);
+            finishAcceptedTurn();
           }
         );
       }
@@ -312,6 +337,19 @@
         if (level > 0.02) {
           if (!speechSeenAt) speechSeenAt = at;
           lastSpeechAt = at;
+          lastVoiceAt = at;
+        }
+        // Mode 2 is opt-in. Silence completes ONE real microphone turn;
+        // Mode 1 still requires an explicit Stop and manual Send.
+        const liveUI = win.PadiemVoiceMode2UI;
+        if (lastVoiceAt && at - lastVoiceAt >= MODE2_AUTO_SILENCE_MS &&
+            liveUI && typeof liveUI.isLiveActive === "function" && liveUI.isLiveActive()) {
+          // The composer owns the run and must detach it first. Stopping
+          // MediaRecorder directly would strand the mic UI as still active.
+          if (typeof callbacks.onAutoStopRequested === "function") {
+            callbacks.onAutoStopRequested();
+          }
+          return;
         }
         if (speechSeenAt && !sending && chunks.length) {
           const idle = at - lastSpeechAt;
@@ -396,6 +434,7 @@
           if (closing) return;
           closing = true;
           halting = true;
+          finishRequested = reason === "user-stopped" || reason == null;
           if (reason !== "user-stopped" && reason != null) {
             // Cancel/logout/switch are not a user finish: never transcribe tail.
             cancelled = true;
@@ -428,8 +467,9 @@
                 flushChunk(true, true);
               }
               releaseCapture();
+              captureEnded = true;
               stopped = true;
-              emitEnd();
+              finishAcceptedTurn();
             };
             try { activeRecorder.requestData(); } catch (e) { /* best effort */ }
             try { activeRecorder.stop(); } catch (e) { /* already stopped */ }
@@ -439,8 +479,9 @@
                   flushChunk(true, true);
                 }
                 releaseCapture();
+                captureEnded = true;
                 stopped = true;
-                emitEnd();
+                finishAcceptedTurn();
               }
             }, 250);
           } else {
@@ -448,8 +489,9 @@
               flushChunk(true, true);
             }
             releaseCapture();
+            captureEnded = true;
             stopped = true;
-            emitEnd();
+            finishAcceptedTurn();
           }
         },
       };

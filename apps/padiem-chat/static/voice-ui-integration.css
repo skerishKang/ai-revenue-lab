@@ -1,0 +1,15 @@
+.voice-mode2-toggle {
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border, #bbb); background: transparent;
+  color: inherit; border-radius: 999px; padding: 0.38rem 0.68rem;
+  font: inherit; font-size: 0.78rem; cursor: pointer;
+}
+.voice-mode2-toggle[aria-pressed="true"] { border-color: currentColor; font-weight: 700; }
+.voice-mode2-toggle:disabled { opacity: 0.48; cursor: not-allowed; }
+.voice-answer-listen {
+  border: 1px solid currentColor; border-radius: 999px; background: transparent;
+  color: inherit; padding: 0.22rem 0.55rem; font: inherit;
+  font-size: 0.75rem; cursor: pointer; margin-inline-start: 0.45rem;
+}
+.voice-answer-listen:disabled { opacity: 0.5; cursor: not-allowed; }
+.voice-answer-listen[aria-pressed="true"] { font-weight: 700; }
