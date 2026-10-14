@@ -230,15 +230,16 @@ def test_distinct_forged_sessions_both_rejected_at_body() -> None:
 
 
 # --------------------------------------------------------------------------
-# 5. OFF pins: provider and all five models stay disabled (read-only).
+# 5. Only Cat Jam is enabled. Original Go models remain OFF (read-only).
 # --------------------------------------------------------------------------
 
 
-def test_go_provider_and_five_models_stay_off() -> None:
+def test_only_catjam_source_enabled_while_prior_go_models_stay_off() -> None:
     from app.pilot.model_registry_file import read_registry
 
     reg = read_registry()
-    assert reg["providers"]["opencode-go"]["enabled"] is False
+    assert reg["providers"]["opencode-go"]["enabled"] is True
+    assert next(m for m in reg["models"] if m["id"] == "opencode-go/cat-jam-free")["enabled"] is True
     ids = {m["id"] for m in reg["models"] if m["provider_id"] == "opencode-go"}
     assert set(GO_MODELS) <= ids
     for model_id in GO_MODELS:
