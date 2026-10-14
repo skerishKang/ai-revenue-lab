@@ -101,7 +101,7 @@
       "claw-automation-edit-invalid": "입력 값을 확인해 주세요. 변경되지 않았습니다.",
       "claw-automation-edit-failed": "규칙을 수정하지 못했습니다.",
       "claw-inbox-status-open": "진행 중", "claw-inbox-status-done": "완료", "claw-inbox-status-cancelled": "취소됨", "claw-inbox-status-active": "활성", "claw-inbox-status-dismissed": "닫힘",
-      "claw-home-intro": "직접 작업하는 파디엠 클로입니다.",
+      "claw-home-intro": "작업하는 클로입니다.",
       "claw-home-question": "어디에서 작업할까요?",
       "claw-home-previous-conversations": "이전 대화 보기 →",
       "claw-home-input": "클로에게 작업을 맡겨보세요",
