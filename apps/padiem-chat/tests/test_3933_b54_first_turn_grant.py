@@ -1,7 +1,7 @@
 """#3933 S1 — B54 first-turn trusted coding-context authority tests.
 
 Network-free. Proves the S1 invariants at the store contract level (real
-SQLite + additive migration 041 through D1-style prepared bindings) and at
+SQLite + additive migration 043 through D1-style prepared bindings) and at
 the route level (real Starlette app, hermetic doubles only):
 
 * the gate is a no-op under the OFF default — existing behavior unchanged;
@@ -56,7 +56,7 @@ from app.history import validate_conversation_id
 import test_b54_claw_general_p01_routing as base
 
 MIGRATIONS = Path(__file__).resolve().parents[1] / "migrations"
-GRANT_SQL = (MIGRATIONS / "041_claw_coding_conversation_grant.sql").read_text(
+GRANT_SQL = (MIGRATIONS / "043_claw_coding_conversation_grant.sql").read_text(
     encoding="utf-8"
 )
 
@@ -178,7 +178,7 @@ def _reserve_now(store, _now=FIXED_NOW, **over):
 
 
 class TestGrantContractShape(unittest.TestCase):
-    def test_migration_041_is_additive_only(self):
+    def test_migration_043_is_additive_only(self):
         lowered = GRANT_SQL.lower()
         assert "create table if not exists claw_coding_conversation_grant" in lowered
         assert "where state in ('reserved', 'active')" in lowered
@@ -936,7 +936,7 @@ class TestFirstTurnAuthorityBoundaries(unittest.TestCase):
         hits = [
             path.name
             for path in app_dir.glob("*.py")
-            if "041_claw_coding_conversation_grant" in path.read_text(encoding="utf-8")
+            if "043_claw_coding_conversation_grant" in path.read_text(encoding="utf-8")
         ]
         assert hits == []
 
