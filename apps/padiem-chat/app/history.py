@@ -330,7 +330,12 @@ def _bounded_text(value: str, label: str) -> str:
 
 
 def _title_from_user_text(text: str) -> str:
-    one_line = " ".join(text.split())
+    """Use the first user sentence verbatim; no model call or summarization."""
+    first_line = next((line.strip() for line in text.splitlines() if line.strip()), "")
+    one_line = " ".join(first_line.split())
+    boundary = re.search(r"[.!?。！？](?=\s|$)", one_line)
+    if boundary:
+        one_line = one_line[:boundary.end()]
     return one_line[:MAX_HISTORY_TITLE_CHARS] or "새 대화"
 
 
