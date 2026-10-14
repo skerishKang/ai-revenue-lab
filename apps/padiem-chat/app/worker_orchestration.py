@@ -53,6 +53,7 @@ _MAX_ATTACHMENT_REQUEST_BYTES = _MAX_ATTACHMENT_BASE64_CHARS + (8 * 1024)
 _ALLOWED_ENGINE_PATHS = frozenset(
     {
         ENGINE_HEALTH_PATH,
+        "/internal/v1/research",  # #4469 existing authenticated Engine evidence-only
         ENGINE_ORCHESTRATE_PATH,
         ENGINE_ORCHESTRATE_RESUME_PATH,
         ENGINE_ORCHESTRATE_CANCEL_PATH,
