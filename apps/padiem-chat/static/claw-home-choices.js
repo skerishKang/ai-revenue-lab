@@ -61,12 +61,15 @@
       const list = document.getElementById("historyList");
       const en = document.documentElement.lang === "en";
       if (!history || history.hidden) {
-        // No extra history store or synthetic rows: signed-out/unsupported
-        // sessions may only use the existing canonical account login flow.
+        // A signed-in owner may have a temporarily unavailable history API.
+        // Never click the signed-in logout button on that error path.
         const login = document.getElementById("loginButton");
-        if (login && !login.disabled && !login.hidden) login.click();
+        const signedIn = document.getElementById("accountContainer")?.dataset.accountState === "signed_in";
+        if (!signedIn && login && !login.disabled && !login.hidden) login.click();
         if (historyFeedback) {
-          historyFeedback.textContent = en ? "Sign in to view previous conversations." : "이전 대화를 보려면 로그인해 주세요.";
+          historyFeedback.textContent = signedIn
+            ? (en ? "Previous conversations are temporarily unavailable." : "이전 대화를 불러오지 못했습니다.")
+            : (en ? "Sign in to view previous conversations." : "이전 대화를 보려면 로그인해 주세요.");
           historyFeedback.hidden = false;
         }
         return;
