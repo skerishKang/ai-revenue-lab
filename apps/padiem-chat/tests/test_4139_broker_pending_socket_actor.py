@@ -366,3 +366,16 @@ def test_revoked_tls_after_owner_reservation_cannot_claim_delivery_slot():
         with pytest.raises(PendingSocketActorRefused):
             await pending
     asyncio.run(run())
+
+
+def test_tls_verification_must_precede_actual_wss_upgrade_and_any_frames():
+    async def run():
+        item,sock,storage=actor()
+        item._trusted_ingress.ok=False
+        with pytest.raises(PendingSocketActorRefused,match="unconfirmed"):
+            await item.begin_and_wait()
+        assert sock.accept_calls==0
+        assert sock.output.empty()
+        assert sock.closed is True
+        assert stored(storage)==[]
+    asyncio.run(run())
