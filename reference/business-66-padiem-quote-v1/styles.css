@@ -790,6 +790,66 @@ textarea { min-height: 82px; resize: vertical; }
   font-size: 13px;
 }
 
+/* #4655: assistant-only Markdown presentation. The renderer emits text nodes
+   plus <strong>/<p>/list rows only, so these rules only style; no markup sink
+   exists for model output. */
+.easy-message-content .b66-md-paragraph {
+  margin: 0 0 8px;
+  white-space: normal;
+}
+.easy-message-content .b66-md-paragraph:last-child { margin-bottom: 0; }
+.easy-message-content .b66-md-list {
+  display: grid;
+  gap: 4px;
+  margin: 0 0 8px;
+  white-space: normal;
+}
+.easy-message-content .b66-md-list:last-child { margin-bottom: 0; }
+.easy-message-content .b66-md-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px;
+}
+.easy-message-content .b66-md-marker {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.easy-message-content .b66-md-text { min-width: 0; }
+.easy-message-content strong { font-weight: 800; }
+
+/* #4657: the previous-AI-dialogue rail inside the easy view. */
+.easy-dialogue-search { display: grid; gap: 10px; }
+.easy-dialogue-search-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: #344054;
+  font-size: 14px;
+}
+.easy-dialogue-search-input:focus-visible { outline: 2px solid #344054; outline-offset: 2px; }
+.easy-dialogue-results { display: grid; gap: 10px; }
+.easy-dialogue-card .easy-history-info span { white-space: normal; }
+
+/* #4657: the brand is a real button so a keyboard or assistive-technology
+   customer can start a new conversation; it keeps the existing h1 look. */
+.brand-home {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 8px;
+}
+.brand-home:hover { text-decoration: underline; text-underline-offset: 4px; }
+.brand-home:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+
 .easy-file-card {
   display: grid;
   grid-template-columns: 48px minmax(0, 1fr) auto;

@@ -11,6 +11,10 @@ const SAVED_SKILL_ROW = /^b66skill_[0-9a-f]{32}$/;
 const SKILL_CANDIDATE_ROW = /^b66cand_[0-9a-f]{32}$/;
 const B66_ASSET_ROW = /^b66asset_[0-9a-f]{32}$/;
 const B66_QUOTE_ROW = /^b66quote_[0-9a-f]{32}$/;
+/* #4657: the canonical conversation id the B66 dialogue rail reads and deletes. */
+const B66_DIALOGUE_ROW = /^chat_[a-f0-9]{32}$/;
+const MAX_DIALOGUE_QUERY_CHARS = 80;
+const MAX_DIALOGUE_LIST_LIMIT = 50;
 const MAX_QUOTE_HISTORY_LIMIT = 50;
 const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 const SESSION_COOKIE_NAME = "padiem_session";
@@ -68,6 +72,36 @@ function padiemTarget(url, method) {
   if (exact.has(path)) {
     const [allowedMethod, upstreamPath] = exact.get(path);
     return method === allowedMethod ? upstreamPath : null;
+  }
+
+  /* #4657: the B66 customer dialogue rail. A bounded read-only list/search plus
+     one explicit delete. The Chat Worker derives owner and B66 product scope
+     from the session, so this relay only bounds the path, query and row id —
+     it never forwards an owner, tenant or scope of the caller's choosing. */
+  if (path === "/api/padiem/b66/ai/dialogues" && method === "GET") {
+    for (const key of url.searchParams.keys()) {
+      if (key !== "q" && key !== "limit") return null;
+    }
+    const q = url.searchParams.get("q") || "";
+    if (q.length > MAX_DIALOGUE_QUERY_CHARS || /[\u0000-\u001f]/.test(q)) return null;
+    const limitRaw = url.searchParams.get("limit");
+    const params = new URLSearchParams();
+    if (q) params.set("q", q);
+    if (limitRaw !== null) {
+      if (!/^[0-9]{1,3}$/.test(limitRaw)) return null;
+      const limit = Number(limitRaw);
+      if (!Number.isInteger(limit) || limit < 1 || limit > MAX_DIALOGUE_LIST_LIMIT) return null;
+      params.set("limit", String(limit));
+    }
+    const query = params.toString();
+    return "/api/b66/ai/dialogues" + (query ? "?" + query : "");
+  }
+
+  const dialoguePrefix = "/api/padiem/b66/ai/dialogues/";
+  if (path.startsWith(dialoguePrefix) && (method === "GET" || method === "DELETE")) {
+    const id = path.slice(dialoguePrefix.length);
+    if (!B66_DIALOGUE_ROW.test(id)) return null;
+    return "/api/b66/ai/dialogues/" + id;
   }
 
   if (path === "/api/padiem/b66/admin/members" && method === "GET") {
