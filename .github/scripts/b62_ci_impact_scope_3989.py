@@ -19,9 +19,43 @@ MAX_FILES = 100
 FULL = "full"
 CHAT_ONLY = "chat_only"
 STATIC_ONLY = "static_only"
+UI_MIXED = "ui_mixed"
 TESTS_ONLY = "tests_only"
 B14_ONLY = "b14_only"
 B14_TESTS_ONLY = "b14_tests_only"
+
+# #4459: source-invariant static UI and changed pytest modules. Run every
+# changed test in the UI-mixed job; no deploy/auth/Worker/CI script ever qualifies.
+UI_MIXED_MAX_FILES = 25
+_UI_MIXED_STATIC = re.compile(
+    r"apps/padiem-chat/static/(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\.(?:css|html|js)"
+)
+_UI_MIXED_TEST = re.compile(r"apps/padiem-chat/tests/test_[A-Za-z0-9_]+\.py")
+
+
+def ui_mixed_test_modules(files: object) -> tuple[str, ...]:
+    """Safe relative pytest arguments, only for strictly proven static+tests."""
+    if not isinstance(files,list) or not 2 <= len(files) <= UI_MIXED_MAX_FILES:
+        return ()
+    static_count = 0
+    modules: list[str] = []
+    seen: set[str] = set()
+    for row in files:
+        if not isinstance(row,dict) or row.get("status") not in {"added","modified"}:
+            return ()
+        path = row.get("filename")
+        if not isinstance(path,str) or path in seen or "\\" in path or ".." in Path(path).parts:
+            return ()
+        seen.add(path)
+        if _UI_MIXED_STATIC.fullmatch(path):
+            static_count += 1
+        elif _UI_MIXED_TEST.fullmatch(path):
+            modules.append(path.removeprefix("apps/padiem-chat/"))
+        else:
+            return ()
+    return tuple(sorted(modules)) if static_count and modules else ()
+
+
 
 
 def impact_scope(files: object) -> str:
@@ -62,6 +96,8 @@ def impact_scope(files: object) -> str:
         return B14_ONLY
     if all(p.startswith("apps/padiem-chat/static/") for p in paths):
         return STATIC_ONLY
+    if ui_mixed_test_modules(files):
+        return UI_MIXED
     # #3989: strict test-module-only modifications cannot change the bundled
     # Worker code or its locked Pyodide dependencies. Run every B62 Chat test,
     # keep Worker bundling/lock checks, but omit four unchanged live runtimes.
@@ -136,13 +172,23 @@ def changed_files(event: dict, event_name: str, repository: str, token: str):
 
 def main() -> None:
     scope = FULL
+    ui_tests: tuple[str, ...] = ()
     try:
         with Path(os.environ["GITHUB_EVENT_PATH"]).open(encoding="utf-8") as f:
             event = json.load(f)
-        files = changed_files(event, os.getenv("GITHUB_EVENT_NAME", ""),
+        event_name = os.getenv("GITHUB_EVENT_NAME", "")
+        files = changed_files(event, event_name,
                               os.getenv("GITHUB_REPOSITORY", ""),
                               os.getenv("GITHUB_TOKEN", ""))
         scope = impact_scope(files)
+        if scope == UI_MIXED:
+            # Require complete PR metadata, not just a possibly truncated
+            # compare listing. Main pushes deliberately rerun full Chat suites.
+            pr = event.get("pull_request") if isinstance(event,dict) else None
+            count = pr.get("changed_files") if isinstance(pr,dict) else None
+            if event_name != "pull_request" or type(count) is not int or count != len(files):
+                scope = CHAT_ONLY
+        ui_tests = ui_mixed_test_modules(files) if scope == UI_MIXED else ()
     except (OSError, ValueError, KeyError, TypeError, TimeoutError):
         scope = FULL
     except Exception:
@@ -150,6 +196,7 @@ def main() -> None:
         scope = FULL
     with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as out:
         out.write(f"scope={scope}\n")
+        out.write(f"ui_tests={' '.join(ui_tests)}\n")
     print(f"B62_CI_IMPACT_SCOPE={scope}")
 
 
