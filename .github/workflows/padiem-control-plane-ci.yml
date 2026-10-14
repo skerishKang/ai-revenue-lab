@@ -39,7 +39,10 @@ jobs:
 
       - name: Install Control Plane package
         run: |
-          python -m pip install --disable-pip-version-check -e 'packages/padiem-control-plane[dev]'
+          # #4139: the real Claw TXT projector is exercised by the canonical
+          # Broker race regression and imports the existing PADIEM Core.
+          # Install the actual package, never a test-only import shim.
+          python -m pip install --disable-pip-version-check -e 'packages/padiem-control-plane[dev]' -e packages/padiem-ai-core
           python -m pip check
 
       - name: Compile Control Plane contracts
