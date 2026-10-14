@@ -343,7 +343,10 @@ def decide_local_task_result(*, origin: LocalTaskOrigin, observation: LocalRunne
         # never collapsed into one word, because a cancelled run is not a
         # completed one and a timed-out run is neither.
         if observation.termination == "exited":
-            status = "completed"
+            # A process exiting is not proof that its task succeeded. In
+            # particular an unsuccessful PC file READ must not produce a
+            # completed Claw run or an executed=true success projection.
+            status = "completed" if observation.exit_code == 0 else "failed"
             summary = f"exited/{observation.exit_code}"
         elif observation.termination == "cancelled":
             status = "cancelled"
