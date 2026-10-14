@@ -26,7 +26,7 @@ def _wire(env):
 
 def test_migration_atomic_unique_owner_product_token(tmp_path):
     dbpath = str(tmp_path / "attempt.db")
-    a, b = (sqlite3.connect(dbpath) for _ in range(2))
+    a, b = (sqlite3.connect(dbpath, isolation_level=None) for _ in range(2))
     try:
         a.execute("PRAGMA journal_mode=WAL")
         a.execute("CREATE TABLE users(id TEXT PRIMARY KEY)")
