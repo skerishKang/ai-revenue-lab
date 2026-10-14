@@ -136,7 +136,7 @@
 
     const turnBuffer = createTranscriptTurnBuffer();
     const emittedUtterances = new Set();
-    const emittedText = new Set();
+    const emittedTextNoId = new Set();
     let state = STATES.IDLE;
     let currentUtteranceId = null;
     let startedAt = null;
@@ -161,9 +161,10 @@
 
     function start() {
       if (destroyed || stopped) return false;
+      if (state !== STATES.IDLE) return false; // refuse repeated active start
       turnBuffer.reset();
       emittedUtterances.clear();
-      emittedText.clear();
+      emittedTextNoId.clear();
       currentUtteranceId = null;
       acceptedCount = 0;
       startedAt = Date.now();
@@ -171,13 +172,32 @@
       return emitState(STATES.LISTENING) === STATES.LISTENING;
     }
 
-    function feedInterim(text) {
+    function canReceive(ctx) {
+      if (destroyed || stopped) return false;
+      if (state !== STATES.LISTENING && state !== STATES.INTERIM && state !== STATES.FINAL) return false;
+      if (isStale(ctx)) return false;
+      return true;
+    }
+    function feedInterim(text, ctx) {
+      ctx = ctx || {};
       if (destroyed || stopped) return { ok: false, reason: "stopped" };
+      if (state === STATES.ERROR) return { ok: false, reason: "error-state" };
+      if (state !== STATES.LISTENING && state !== STATES.INTERIM && state !== STATES.FINAL) {
+        return { ok: false, reason: "not-listening" };
+      }
+      if (ctx.generation != null && ctx.generation !== generation) {
+        return { ok: false, reason: "stale-generation" };
+      }
+      if (ctx.sessionToken != null && String(ctx.sessionToken) !== sessionToken) {
+        return { ok: false, reason: "stale-session" };
+      }
+      if (ctx.destroyed === true) return { ok: false, reason: "invalidated" };
       const t = norm(text);
+      if (!t) return { ok: false, reason: "empty" };
       turnBuffer.merge(t);
       const preview = turnBuffer.pending;
       emitState(STATES.INTERIM);
-      try { cbInterim(preview); } catch (e) { /* swallow */ }
+      try { cbInterim(preview, ctx); } catch (e) { /* swallow */ }
       return { ok: true, preview: preview };
     }
 
@@ -195,25 +215,31 @@
 
       let text = opts.text != null ? String(opts.text) : turnBuffer.finishTurn();
       if (text == null) text = turnBuffer.finishTurn();
-      text = norm(text);
+      text = norm(text).trim();
       if (!text) {
         turnBuffer.reset();
         return { ok: false, reason: "empty" };
       }
 
-      // utterance-id de-duplication (Global Classroom onFinalTranscript guard)
+      // state gate: only active run can accept finals
+      if (state !== STATES.LISTENING && state !== STATES.INTERIM && state !== STATES.FINAL) {
+        turnBuffer.reset();
+        return { ok: false, reason: "not-listening" };
+      }
+      // utterance-id de-dup: only same id is duplicate.
       if (utteranceId && emittedUtterances.has(utteranceId)) {
         turnBuffer.reset();
         return { ok: false, reason: "duplicate-utterance", utteranceId: utteranceId };
       }
       const fingerprint = normalizeText(text);
-      if (emittedText.has(fingerprint)) {
+      // missing-id case: conservative text dedup only then
+      if (!utteranceId && emittedTextNoId.has(fingerprint)) {
         turnBuffer.reset();
-        return { ok: false, reason: "duplicate-text", utteranceId: utteranceId };
+        return { ok: false, reason: "duplicate-text-no-id", utteranceId: utteranceId };
       }
 
       if (utteranceId) emittedUtterances.add(utteranceId);
-      emittedText.add(fingerprint);
+      if (!utteranceId) emittedTextNoId.add(fingerprint);
       currentUtteranceId = utteranceId;
       acceptedCount += 1;
       emitState(STATES.FINAL);
@@ -249,6 +275,7 @@
     }
 
     function appendToInput(text, mode) {
+      if (destroyed || stopped || state === STATES.ERROR) return null;
       text = norm(text);
       if (!text) return null;
       let current = "";

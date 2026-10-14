@@ -78,7 +78,20 @@ test("duplicate utteranceId dropped", () => {
   assert.equal(a.getAcceptedCount(), 1);
 });
 
-test("duplicate text dropped even with different ids", () => {
+test("valid repeated utterance with different ids both accepted", () => {
+  const finals = [];
+  const a = adapter.createVoiceInputAdapter({
+    generation: 1, sessionToken: "sess-A",
+    onFinalCandidate: (t) => finals.push(t),
+  });
+  a.start();
+  a.commitFinal({ text: "네", utteranceId: "u1" });
+  const second = a.commitFinal({ text: "  네  ", utteranceId: "u2" });
+  assert.equal(second.ok, true);
+  assert.deepEqual(finals, ["네", "네"]);
+  assert.equal(a.getAcceptedCount(), 2);
+});
+test("duplicate utteranceId only dropped, not different-id repeat", () => {
   const finals = [];
   const a = adapter.createVoiceInputAdapter({
     generation: 1, sessionToken: "sess-A",
@@ -86,9 +99,23 @@ test("duplicate text dropped even with different ids", () => {
   });
   a.start();
   a.commitFinal({ text: "same words", utteranceId: "u1" });
-  const dup = a.commitFinal({ text: "  SAME   WORDS ", utteranceId: "u2" });
+  const dup = a.commitFinal({ text: "again", utteranceId: "u1" });
   assert.equal(dup.ok, false);
-  assert.equal(dup.reason, "duplicate-text");
+  assert.equal(dup.reason, "duplicate-utterance");
+  assert.deepEqual(finals, ["same words"]);
+  assert.equal(a.getAcceptedCount(), 1);
+});
+test("missing-id commit only accepted once per text (conservative)", () => {
+  const finals = [];
+  const a = adapter.createVoiceInputAdapter({
+    generation: 1, sessionToken: "sess-A",
+    onFinalCandidate: (t) => finals.push(t),
+  });
+  a.start();
+  a.commitFinal({ text: "same words" });
+  const dup = a.commitFinal({ text: "  SAME   WORDS " });
+  assert.equal(dup.ok, false);
+  assert.equal(dup.reason, "duplicate-text-no-id");
   assert.deepEqual(finals, ["same words"]);
 });
 
@@ -221,6 +248,101 @@ test("no network/provider primitives in module", () => {
     assert.ok(!src.includes(token), "primitive present: " + token);
   }
   assert.ok(!/require\(["']https?:/.test(src));
+});
+
+test("idle/stop/error state rejects interim and final", () => {
+  const finals = [];
+  const a = adapter.createVoiceInputAdapter({
+    generation: 1, sessionToken: "sess-A",
+    onFinalCandidate: (t) => finals.push(t),
+  });
+  assert.deepEqual(a.feedInterim("hello"), { ok: false, reason: "not-listening" });
+  assert.deepEqual(a.commitFinal({ text: "x" }), { ok: false, reason: "not-listening" });
+  a.start();
+  a.stop();
+  assert.deepEqual(a.feedInterim("hello"), { ok: false, reason: "stopped" });
+  assert.deepEqual(a.commitFinal({ text: "x" }), { ok: false, reason: "stopped" });
+});
+
+test("final then interim starts next utterance (same run)", () => {
+  const finals = [];
+  const previews = [];
+  const a = adapter.createVoiceInputAdapter({
+    generation: 1, sessionToken: "sess-A",
+    onFinalCandidate: (t) => finals.push(t),
+    onInterim: (t) => previews.push(t),
+  });
+  a.start();
+  a.feedInterim("hello");
+  assert.equal(a.commitFinal({ text: "hello", utteranceId: "u1" }).ok, true);
+  assert.equal(a.getState(), "final");
+  const r = a.feedInterim("world");
+  assert.equal(r.ok, true);
+  assert.equal(a.getState(), "interim");
+  assert.equal(a.commitFinal({ text: "world", utteranceId: "u2" }).ok, true);
+  assert.deepEqual(finals, ["hello", "world"]);
+});
+
+test("stale interim discarded after new session", () => {
+  const a = adapter.createVoiceInputAdapter({
+    generation: 1, sessionToken: "sess-A",
+  });
+  a.start();
+  const old = a;
+  const r0 = a.feedInterim("hello", { generation: 1, sessionToken: "sess-A" });
+  assert.equal(r0.ok, true);
+  const bad = a.feedInterim("stale", { generation: 2, sessionToken: "sess-A" });
+  assert.equal(bad.ok, false);
+  assert.equal(bad.reason, "stale-generation");
+});
+
+test("repeat start while active refuses reset", () => {
+  const a = adapter.createVoiceInputAdapter({ generation: 1, sessionToken: "sess-A" });
+  a.start();
+  a.commitFinal({ text: "first", utteranceId: "u1" });
+  a.feedInterim("second");
+  const before = a.getAcceptedCount();
+  const second = a.start();
+  assert.equal(second, false);
+  assert.equal(a.getAcceptedCount(), before);
+});
+
+test("error state ignores late callbacks", () => {
+  const finals = [];
+  const a = adapter.createVoiceInputAdapter({
+    generation: 1, sessionToken: "sess-A",
+    onFinalCandidate: (t) => finals.push(t),
+  });
+  a.start();
+  a.error("boom");
+  assert.equal(a.commitFinal({ text: "late", utteranceId: "u2" }).ok, false);
+  assert.equal(a.feedInterim("late").ok, false);
+  assert.deepEqual(finals, []);
+});
+
+test("appendToInput no-op after invalidate", () => {
+  const el = { value: "" };
+  const a = adapter.createVoiceInputAdapter({
+    generation: 1, sessionToken: "sess-A",
+    input: el,
+  });
+  a.start();
+  assert.equal(a.appendToInput("hello"), "hello");
+  a.invalidate("new-conversation");
+  assert.equal(a.appendToInput("late"), null);
+  assert.equal(el.value, "hello");
+});
+
+test("appendToInput no-op after stop", () => {
+  const el = { value: "" };
+  const a = adapter.createVoiceInputAdapter({
+    generation: 1, sessionToken: "sess-A",
+    input: el,
+  });
+  a.start();
+  a.stop("done");
+  assert.equal(a.appendToInput("late"), null);
+  assert.equal(el.value, "");
 });
 
 test("CommonJS require works and STATES complete", () => {
