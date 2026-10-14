@@ -129,6 +129,8 @@ def test_claw_previous_conversations_reuses_owner_scoped_history():
     assert 'id="clawPreviousConversationsFeedback"' in HTML
     assert 'historySection' in ACTIONS and 'historyList' in ACTIONS
     assert 'loginButton' in ACTIONS
+    assert 'accountContainer' in ACTIONS
+    assert 'if (!signedIn && login' in ACTIONS
     assert 'sidebarRestoreButton' in ACTIONS
     assert 'mobileMenu' in ACTIONS
     assert 'history.focus?' in ACTIONS
