@@ -71,7 +71,7 @@ class EphemeralExecutionWorkTicket:
             _ref(getattr(self, field), field)
         if not isinstance(self.capability, str) or _CAPABILITY.fullmatch(self.capability) is None:
             raise WorkTicketContractError("capability must be a bounded capability name")
-        if self.mode not in MODES:
+        if not isinstance(self.mode, str) or self.mode not in MODES:
             raise WorkTicketContractError("unknown execution output mode")
         if not isinstance(self.inputs, tuple) or not 1 <= len(self.inputs) <= MAX_WORK_TICKET_INPUTS:
             raise WorkTicketContractError("ticket requires bounded immutable Drive input refs")
