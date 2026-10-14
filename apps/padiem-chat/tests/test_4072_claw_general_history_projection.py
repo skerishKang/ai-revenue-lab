@@ -258,6 +258,19 @@ class _ClawThreadStore(OwnerStore):
             return None
         return self.saved.get(conversation_id)
 
+    async def list_conversations(self, user_id, *, product_scope, limit=30):
+        if user_id != base.SIGNED_IN_USER_ID:
+            return []
+        return [
+            {
+                "id": cid,
+                "project_id": thread.get("project_id"),
+                "title": None,
+                "updated_at": None,
+            }
+            for cid, thread in self.saved.items()
+        ][:limit]
+
 
 def test_general_signup_claw_saved_thread_sse_done_id_is_real():
     store = _ClawThreadStore()

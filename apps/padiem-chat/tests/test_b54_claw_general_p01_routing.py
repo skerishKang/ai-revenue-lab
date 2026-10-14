@@ -92,7 +92,7 @@ class _AuthStore:
     async def get_user(self, user_id: str):
         return None
 
-    async def get_conversation(self, user_id: str, conversation_id: str):
+    async def get_conversation(self, user_id: str, conversation_id: str, *, product_scope: str):
         return None
 
 

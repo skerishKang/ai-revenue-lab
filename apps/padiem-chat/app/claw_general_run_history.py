@@ -14,7 +14,11 @@ from typing import Any
 from starlette.requests import Request
 
 from .auth_routes import auth_ready, current_user_id
-from .history import MAX_RUN_RESULT_SUMMARY_CHARS, MAX_HISTORY_TITLE_CHARS
+from .history import (
+    MAX_RUN_RESULT_SUMMARY_CHARS,
+    MAX_HISTORY_TITLE_CHARS,
+    PRODUCT_SCOPE_CHAT,
+)
 
 _CANONICAL_RUN = re.compile(r"^run_[0-9a-f]{24}$")
 
