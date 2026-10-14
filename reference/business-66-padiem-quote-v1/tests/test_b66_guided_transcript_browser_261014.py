@@ -121,6 +121,12 @@ async def main():
             await page2.click("#shellPreviousGuidedDialogue")
             await page2.wait_for_selector("#easyHistoryPanel .easy-history-card")
             await page2.locator("#easyHistoryPanel .easy-history-card button").first.click()
+            await page2.wait_for_timeout(800)
+            print("DEBUG_GUIDED_MESSAGE_STATE=" + json.dumps({
+                "message_text": (await page2.locator("#easyMessageList").inner_text())[:240],
+                "has_history": bool(active["state"]),
+                "messages_count": len(active["state"].get("transcript", [])) if active["state"] else 0,
+            }, ensure_ascii=False), flush=True)
             await page2.wait_for_function(
                 "() => document.querySelector('#easyMessageList')?.textContent?.includes('TEST COMPANY')")
             assert "TEST COMPANY" in await page2.locator("#easyMessageList").inner_text()
