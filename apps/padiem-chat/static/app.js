@@ -2163,6 +2163,7 @@
       // Executable Claw task authority is validated by the server.
       // No separate pilot-era 4,000-character browser ceiling.
     } else {
+      // Claw general and Chat share the same canonical composer placeholder.
       input.placeholder = localeOr("input", "Ask anything");
       input.removeAttribute("aria-describedby");
       input.removeAttribute("aria-invalid");
@@ -3234,6 +3235,9 @@
     if (!clawWorkspace) return;
     shell.dataset.state = "claw";
     clawWorkspace.dataset.view = "general";
+    // The shared Chat first-use hero also introduces Claw when the
+    // existing conversation has not started. Do not reset live messages.
+    if (messageList.hidden && !messageList.hasChildNodes()) emptyState.hidden = false;
     delete clawWorkspace.dataset.inboxKind;
     if (clawInbox) clawInbox.hidden = true;
     if (clawAutomation) clawAutomation.hidden = true;

@@ -101,6 +101,17 @@
       "claw-automation-edit-invalid": "입력 값을 확인해 주세요. 변경되지 않았습니다.",
       "claw-automation-edit-failed": "규칙을 수정하지 못했습니다.",
       "claw-inbox-status-open": "진행 중", "claw-inbox-status-done": "완료", "claw-inbox-status-cancelled": "취소됨", "claw-inbox-status-active": "활성", "claw-inbox-status-dismissed": "닫힘",
+      "claw-home-intro": "직접 작업하는 파디엠 클로입니다.",
+      "claw-home-question": "어디에서 작업할까요?",
+      "claw-home-previous-conversations": "이전 대화 보기 →",
+      "claw-home-input": "클로에게 작업을 맡겨보세요",
+      "claw-home-computer": "컴퓨터 연결하기", "claw-home-computer-copy": "내 컴퓨터에서 직접 작업하기",
+      "claw-home-drive": "구글 드라이브", "claw-home-drive-copy": "클라우드 파일로 작업하기",
+      "claw-home-github": "GitHub", "claw-home-github-copy": "코드와 프로젝트 작업하기",
+      "claw-home-web": "웹에서 하기", "claw-home-web-copy": "웹에서 바로 작업하기",
+      "claw-home-computer-setup": "Windows 앱 연결 준비 중 · 설치 및 서버 연결 확인이 필요합니다.",
+      "claw-home-device-status": "연결 상태 확인",
+      "claw-home-github-setup": "GitHub 직접 연결은 준비 중입니다.",
       "claw-kicker": "PADIEM CLAW", "claw-title": "Padiem Claw", "claw-tagline": "질문하고, 요청하고, 필요한 작업을 실행하는 Padiem AI 작업공간",
       "claw-status": "요청을 미리 확인하거나 실제 실행으로 문서를 만들 수 있습니다. 커넥터 사용 가능 여부는 워크스페이스 설정에 따르며, 발송은 아직 지원하지 않습니다.",
       "claw-form-aria": "수동 인입 양식", "claw-actions-aria": "Claw 작업 선택", "claw-card-hint": "양식 작업으로 설정",
@@ -312,6 +323,17 @@
       "claw-automation-edit-invalid": "Check the input values. Nothing changed.",
       "claw-automation-edit-failed": "Could not update the rule.",
       "claw-inbox-status-open": "Open", "claw-inbox-status-done": "Done", "claw-inbox-status-cancelled": "Cancelled", "claw-inbox-status-active": "Active", "claw-inbox-status-dismissed": "Dismissed",
+      "claw-home-intro": "I'm Padiem Claw, your AI that gets work done.",
+      "claw-home-question": "Where would you like to work?",
+      "claw-home-previous-conversations": "Previous conversations →",
+      "claw-home-input": "Give Claw a task",
+      "claw-home-computer": "Connect computer", "claw-home-computer-copy": "Work directly on your computer",
+      "claw-home-drive": "Google Drive", "claw-home-drive-copy": "Work with cloud files",
+      "claw-home-github": "GitHub", "claw-home-github-copy": "Work on code and projects",
+      "claw-home-web": "Work on the web", "claw-home-web-copy": "Get to work on the web",
+      "claw-home-computer-setup": "Windows connection is being prepared. Installer and server pairing are not yet verified.",
+      "claw-home-device-status": "Check connection",
+      "claw-home-github-setup": "Direct GitHub connection is coming soon.",
       "claw-kicker": "PADIEM CLAW", "claw-title": "Padiem Claw", "claw-tagline": "Ask questions, make requests, and run the work you need in your Padiem AI workspace",
       "claw-status": "Review a request with Preview or create a document with Real run. Connector availability depends on your workspace setup, and sending is not supported yet.",
       "claw-form-aria": "Manual intake form", "claw-actions-aria": "Select Claw action", "claw-card-hint": "Set form action",
@@ -501,6 +523,15 @@
   function setCombinedHeading(lang) {
     const heading = document.querySelector(".empty-state h1");
     if (!heading) return;
+    // Shared Chat/Claw heading must keep BOTH product-specific spans in the
+    // original DOM. Replacing children destroys Claw copy and mode CSS.
+    if (heading.querySelector(".claw-hero-line")) {
+      for (const key of ("hello", "ask", "claw-home-intro", "claw-home-question")) {
+        const target = heading.querySelector('[data-locale-key="' + key + '"]');
+        if (target) target.textContent = text(key, lang);
+      }
+      return;
+    }
     const first = document.createElement("span");
     first.dataset.localeKey = "hello";
     first.textContent = text("hello", lang);

@@ -1,3 +1,9 @@
+<!-- CENTRAL_CONNECTOR_PUBLIC_ARTIFACT_INDEX_20261015 -->
+> **2026-10-15 Connector technical distribution:** [PADIEM Connector standalone installer/R2 Standard download plan](PADIEM_CONNECTOR_INSTALLER_DISTRIBUTION_20261015.md). One published *technical* source of truth, not an implemented installer or confidential commercial pricing. Owner issue remains [#4139](https://github.com/skerishKang/ai-revenue-lab/issues/4139); selected-Windows release acceptance remains [#3099](https://github.com/skerishKang/ai-revenue-lab/issues/3099).
+>
+> **Scope of current audit:** all **851 Markdown paths** in the current \`main\` tree were enumerated; readable text was keyword-scanned for distribution/Connector/operational contradictions; current **80 open issues** and **56 open PRs** were enumerated via GitHub. Relevant existing release/Connector/OSS documents and issue bodies were separately inspected. This is **not** a claim that all 851 documents have received line-by-line legal, commercial or security approval, and it does not replace the frozen older whole-repository document governance manifest. No unrelated code or product issues were consolidated solely because their titles overlap.
+<!-- /CENTRAL_CONNECTOR_PUBLIC_ARTIFACT_INDEX_20261015 -->
+
 <!-- CENTRAL_PORTFOLIO_LIVE_INDEX_20261015 -->
 # CENTRAL 포트폴리오 최신 이슈·문서 정합성 — 2026-10-15 KST
 

@@ -1,3 +1,7 @@
+<!-- CENTRAL_CONNECTOR_DOWNLOAD_SIZE_POINTER_20261015 -->
+> **2026-10-15 installer delivery clarification:** "lightweight" means the separate Windows Connector rather than the full Desktop; binary download size is **not measured** until a standalone installation package exists. The current source installer needs Python; R2 Standard versioned distribution is a technical recommendation, not a live download. See [Installer distribution and verified size/traffic criteria](../operations/PADIEM_CONNECTOR_INSTALLER_DISTRIBUTION_20261015.md). Current user-facing default is connection ON after canonical enrollment, with persistent user tray OFF available.
+<!-- /CENTRAL_CONNECTOR_DOWNLOAD_SIZE_POINTER_20261015 -->
+
 # B54 Padiem Claw — 경량 Connect + Full Desktop 이중 사용자 경험 제품계획 (#4139)
 
 > **상태:** 제품 방향/구현계획 문서 · 2026-10-10 · **구현 완료 또는 Production 출시를 의미하지 않음.**
