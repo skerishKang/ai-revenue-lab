@@ -86,6 +86,8 @@ def test_quote_model_options_require_authentication_and_no_store():
             }
         ],
         "default_model_id": None,
+        "tiers": [],
+        "default_tier": None,
     }
     assert "no-store" in response.headers["cache-control"].lower()
     # A default is OPTIONAL and only a prefilled UI choice, not an automatic
@@ -111,6 +113,33 @@ def test_dual_b66_ui_sends_exact_user_choice_and_no_implicit_default():
     assert 'id="padiemQuoteModelSelect"' in html
     worker = (root / "reference/business-66-padiem-quote-v1/_worker.js").read_text(encoding="utf-8")
     assert "/api/padiem/b66/quote/models" in worker
+
+
+
+def test_b66_customer_dropdown_shows_four_grades_not_provider_names():
+    from app.b66_quote_routes import b66_quote_models
+    from app.b66_member_admin import _TIERS
+    assert _TIERS == frozenset(("FREE", "PLUS", "PRO", "MAX"))
+    client = _client(_Store(), _Interpreter())
+    class CatJam:
+        async def list_selectable_models(self):
+            return [{"model_id": "opencode-go/cat-jam-free", "name": "Cat Jam"}]
+    client.app.state.b66_quote_model_resolver = CatJam()
+    response = client.get("/api/b66/quote/models")
+    assert response.status_code == 200
+    data = response.json()
+    assert [t["tier"] for t in data["tiers"]] == ["free", "plus", "pro", "max"]
+    assert [t["name"] for t in data["tiers"]] == [
+        "PADIEM Free", "PADIEM Plus", "PADIEM Pro", "PADIEM Max"]
+    assert {t["model_id"] for t in data["tiers"]} == {"opencode-go/cat-jam-free"}
+    assert data["default_tier"] == "free"
+    root = Path(__file__).resolve().parents[3]
+    for path in (root / "apps/padiem-chat/static/b66-quote-runtime.js",
+                 root / "reference/business-66-padiem-quote-v1/padiem-account.js"):
+        source = path.read_text(encoding="utf-8")
+        assert "response.data.tiers" in source or "result.data.tiers" in source
+        assert "selectedTier" in source
+        assert "tier: selectedTier" in source
 
 
 def test_b66_manual_selection_errors_have_readable_korean_messages():

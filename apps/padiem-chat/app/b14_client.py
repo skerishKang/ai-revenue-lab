@@ -834,6 +834,7 @@ class B14Client:
         model: str,
         additional_system_context: str | None = None,
         model_parameters: Mapping[str, Any] | None = None,
+        product_tier: str | None = None,
     ) -> dict[str, Any]:
         """B66 trusted exact route -> common Core/B14, NOT B62 tier policy.
 
@@ -898,6 +899,7 @@ class B14Client:
             # Chat/Claw callers retain their original independent resource
             # budgets. No automatic retry/fallback or wire-format change.
             completed_response_budget_bytes=MAX_CONFIGURED_B14_RESPONSE_BYTES,
+            **({"product_tier": product_tier} if product_tier is not None else {}),
             **native_kwargs,
         )
 

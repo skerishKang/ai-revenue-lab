@@ -783,6 +783,7 @@ class B66QuoteConversationInterpreter:
         skill: dict[str, Any],
         model_id: str | None = None,
         reasoning_level: str | None = None,
+        product_tier: str | None = None,
     ) -> B66QuoteConversationProjection:
         if not isinstance(message, str):
             raise B66QuoteConversationError("invalid_message")
@@ -800,6 +801,8 @@ class B66QuoteConversationInterpreter:
             call_kwargs = dict(selected_kw)
             if reasoning_level is not None:
                 call_kwargs["reasoning_level"] = reasoning_level
+            if product_tier is not None:
+                call_kwargs["product_tier"] = product_tier
             result = await self._client.complete(
                 [{"role": "user", "content": clean}],
                 additional_system_context=prompt,

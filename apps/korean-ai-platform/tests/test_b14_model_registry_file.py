@@ -184,7 +184,7 @@ def test_disabled_provider_makes_its_registered_models_unavailable(tmp_path):
 
 
 
-def test_opencodego_catjam_is_enabled_with_other_go_models_disabled():
+def test_opencodego_catjam_and_owner_selected_muse_fallbacks_enabled():
     """The owner-approved Cat Jam route is enabled; unrelated Go and ZansLab routes remain OFF."""
     reg = read_registry()
     providers = reg["providers"]
@@ -200,7 +200,11 @@ def test_opencodego_catjam_is_enabled_with_other_go_models_disabled():
         "cat-jam-free", "longcat-2.5-preview-free", "step-5-preview-free",
         "muse-spark-1.3-contributor", "muse-spark-1.2-contributor", "gpt-6-luna", "claude-haiku-5-5",
     }
-    assert [row["id"] for row in rows if row["enabled"]] == ["opencode-go/cat-jam-free"]
+    assert [row["id"] for row in rows if row["enabled"]] == [
+        "opencode-go/cat-jam-free",
+        "opencode-go/muse-spark-1.2-contributor",
+        "opencode-go/muse-spark-1.3-contributor",
+    ]
     zans_rows = [row for row in reg["models"] if row["provider_id"] == "zanslab"]
     assert len(zans_rows) == 1
     assert zans_rows[0]["id"] == "zanslab/gpt-6-luna"
