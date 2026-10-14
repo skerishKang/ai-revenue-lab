@@ -460,10 +460,10 @@
           <p class="calendar-record-status" id="calendarAppointmentStatus" role="status" aria-live="polite" hidden></p>
         </details>
         <div class="calendar-tabs" id="calendarTabs" role="tablist" data-locale-aria-label="calendar-tabs-aria" aria-label="캘린더 보기 선택">
-          <button type="button" class="calendar-tab" id="calendarTodayTab" role="tab" data-calendar-tab="today" aria-selected="true" aria-controls="calendarPanel" data-locale-key="calendar-today">오늘</button>
+          <button type="button" class="calendar-tab" id="calendarTodayTab" role="tab" data-calendar-tab="today" aria-selected="false" aria-controls="calendarPanel" data-locale-key="calendar-today">오늘</button>
           <button type="button" class="calendar-tab" id="calendarDayTab" role="tab" data-calendar-tab="day" aria-selected="false" aria-controls="calendarPanel" data-locale-key="calendar-day">일</button>
           <button type="button" class="calendar-tab" id="calendarWeekTab" role="tab" data-calendar-tab="week" aria-selected="false" aria-controls="calendarPanel" data-locale-key="calendar-week">주</button>
-          <button type="button" class="calendar-tab" id="calendarMonthTab" role="tab" data-calendar-tab="month" aria-selected="false" aria-controls="calendarPanel" data-locale-key="calendar-month">월</button>
+          <button type="button" class="calendar-tab" id="calendarMonthTab" role="tab" data-calendar-tab="month" aria-selected="true" aria-controls="calendarPanel" data-locale-key="calendar-month">월</button>
           <button type="button" class="calendar-tab" id="calendarUpcomingTab" role="tab" data-calendar-tab="upcoming" aria-selected="false" aria-controls="calendarPanel" data-locale-key="calendar-upcoming">예정</button>
         </div>
         <div class="calendar-range-navigation" id="calendarRangeNavigation" hidden>
@@ -472,7 +472,7 @@
           <button type="button" class="calendar-range-button" id="calendarRangeToday" data-locale-key="calendar-today">오늘</button>
           <button type="button" class="calendar-range-button" id="calendarNextRange" data-locale-aria-label="calendar-next-aria" aria-label="다음 기간">→</button>
         </div>
-        <div class="calendar-panel" id="calendarPanel" role="tabpanel" aria-labelledby="calendarTodayTab">
+        <div class="calendar-panel" id="calendarPanel" role="tabpanel" aria-labelledby="calendarMonthTab">
           <p class="calendar-loading" id="calendarLoading" role="status" aria-live="polite" data-locale-key="calendar-loading" hidden>불러오는 중…</p>
           <div class="calendar-error" id="calendarErrorBox" role="alert" hidden>
             <p class="calendar-error-copy" id="calendarError" data-locale-key="calendar-error">캘린더를 불러오지 못했습니다.</p>

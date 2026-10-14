@@ -630,6 +630,10 @@
     const nextRange = document.getElementById("calendarNextRange");
     const rangeToday = document.getElementById("calendarRangeToday");
     const panel = document.getElementById("calendarPanel");
+    const visual = document.createElement("div");
+    visual.className = "calendar-visual";
+    visual.id = "calendarVisual";
+    visual.hidden = true;
     const loading = document.getElementById("calendarLoading");
     const errorBox = document.getElementById("calendarErrorBox");
     const empty = document.getElementById("calendarEmpty");
@@ -656,9 +660,11 @@
     const appointmentTimezoneField = document.getElementById("calendarAppointmentTimeZoneField");
     const appointmentStartField = document.getElementById("calendarAppointmentStartField");
     const appointmentEndField = document.getElementById("calendarAppointmentEndField");
-    if (!shell || !navButton || !view || !list) return;
+    if (!shell || !navButton || !view || !list || !panel) return;
+    if (typeof panel.insertBefore === "function") panel.insertBefore(visual, list);
+    else panel.append(visual);
 
-    let currentTab = "today";
+    let currentTab = "month";
     let rangeAnchorDate = "";
     let requestToken = 0;
     let wasActive = false;
@@ -673,11 +679,12 @@
     function setStatus(status) {
       if (loading) loading.hidden = status !== "loading";
       if (errorBox) errorBox.hidden = status !== "error";
+      visual.hidden = !isRangeTab(currentTab);
       if (empty) {
-        empty.hidden = status !== "empty";
+        empty.hidden = status !== "empty" || isRangeTab(currentTab);
         if (status === "empty") empty.textContent = text(EMPTY_KEYS[currentTab]);
       }
-      list.hidden = status !== "ready";
+      list.hidden = status !== "ready" || currentTab === "month" || currentTab === "week";
     }
 
     function setDetailToggle(button, open) {
@@ -805,6 +812,109 @@
       }
     }
 
+
+    // Native display uses only the existing scoped Calendar projection.
+    function renderCalendarVisual(rawItems) {
+      visual.replaceChildren();
+      visual.hidden = !isRangeTab(currentTab);
+      if (visual.hidden) return;
+      const range = rangeForView(currentTab, rangeAnchorDate);
+      if (!range) return;
+      const items = (Array.isArray(rawItems) ? rawItems : []).filter(isRenderableItem);
+      const byDate = new Map();
+      items.forEach((item) => {
+        if (item.date < range.start_date || item.date > range.end_date) return;
+        if (!byDate.has(item.date)) byDate.set(item.date, []);
+        byDate.get(item.date).push(item);
+      });
+      const locale = ((document.documentElement && document.documentElement.lang) || "").toLowerCase().startsWith("en") ? "en-US" : "ko-KR";
+      const today = localDateInZone(browserTimezone());
+      function weekday(date) {
+        const parsed = parseCalendarDate(date);
+        return parsed ? new Intl.DateTimeFormat(locale, { weekday: "short", timeZone: "UTC" }).format(parsed) : "";
+      }
+      function pill(item) {
+        const node = el("span", "calendar-visual-event", item.title.trim());
+        node.title = item.title.trim();
+        node.dataset.eventType = item.item_type;
+        return node;
+      }
+      function selectDate(date) {
+        rangeAnchorDate = date;
+        selectTab("day");
+      }
+      if (currentTab === "month") {
+        const headings = el("div", "calendar-visual-weekdays");
+        for (let i = 0; i < 7; i++) {
+          headings.append(el("span", "calendar-visual-weekday", weekday(formatCalendarDate(new Date(Date.UTC(2024, 0, i + 1))))));
+        }
+        const grid = el("div", "calendar-month-grid");
+        grid.setAttribute("role", "group");
+        grid.setAttribute("aria-label", text("calendar-month"));
+        const first = parseCalendarDate(range.start_date);
+        const lead = (first.getUTCDay() + 6) % 7;
+        const count = Math.ceil((lead + Number(range.end_date.slice(-2))) / 7) * 7;
+        for (let i = 0; i < count; i++) {
+          const date = shiftCalendarDate(range.start_date, i - lead);
+          const cell = el("button", "calendar-visual-day");
+          cell.type = "button";
+          cell.dataset.calendarDate = date;
+          cell.setAttribute("aria-label", date);
+          if (date === today) cell.classList.add("is-today");
+          if (date < range.start_date || date > range.end_date) cell.classList.add("is-outside");
+          cell.append(el("span", "calendar-visual-date", String(Number(date.slice(-2)))));
+          const dayItems = byDate.get(date) || [];
+          dayItems.slice(0, 2).forEach((item) => cell.append(pill(item)));
+          if (dayItems.length > 2) cell.append(el("span", "calendar-visual-more", "+" + (dayItems.length - 2)));
+          cell.addEventListener("click", () => selectDate(date));
+          grid.append(cell);
+        }
+        visual.append(headings, grid);
+      } else if (currentTab === "week") {
+        const grid = el("div", "calendar-week-grid");
+        grid.setAttribute("role", "group");
+        grid.setAttribute("aria-label", text("calendar-week"));
+        for (let offset = 0; offset < 7; offset++) {
+          const date = shiftCalendarDate(range.start_date, offset);
+          const column = el("section", "calendar-week-column");
+          const button = el("button", "calendar-week-date", weekday(date) + " " + Number(date.slice(-2)));
+          button.type = "button";
+          if (date === today) button.classList.add("is-today");
+          button.addEventListener("click", () => selectDate(date));
+          column.append(button);
+          (byDate.get(date) || []).forEach((item) => column.append(pill(item)));
+          grid.append(column);
+        }
+        visual.append(grid);
+      } else {
+        const dayItems = byDate.get(range.start_date) || [];
+        const timed = [];
+        const allDay = [];
+        dayItems.forEach((item) => {
+          const start = item.all_day === true || !item.timezone ? "" : formatTimeInZone(item.start_at, item.timezone);
+          if (!start || !/^\d{1,2}:\d{2}$/.test(start)) allDay.push(item);
+          else timed.push({ item: item, hour: Number.parseInt(start.slice(0, 2), 10) % 24, time: start });
+        });
+        const ribbon = el("div", "calendar-day-all-day");
+        ribbon.append(el("span", "calendar-day-all-day-label", text("calendar-all-day")));
+        allDay.forEach((item) => ribbon.append(pill(item)));
+        const timeline = el("div", "calendar-day-timeline");
+        for (let hour = 0; hour < 24; hour++) {
+          const slot = el("div", "calendar-day-hour");
+          slot.append(el("span", "calendar-day-hour-label", String(hour).padStart(2,"0") + ":00"));
+          const events = el("div", "calendar-day-hour-events");
+          timed.filter((record) => record.hour === hour).forEach((record) => {
+            const event = pill(record.item);
+            event.title = record.time + " " + record.item.title.trim();
+            events.append(event);
+          });
+          slot.append(events);
+          timeline.append(slot);
+        }
+        visual.append(ribbon, timeline);
+      }
+    }
+
     function buildRow(rawItem) {
       const item = rawItem && typeof rawItem === "object" ? rawItem : {};
       const row = el("article", "calendar-item");
@@ -852,6 +962,7 @@
       activeDetailPanel = null;
       list.replaceChildren();
       const boundedItems = items.filter(isRenderableItem);
+      renderCalendarVisual(boundedItems);
       if (boundedItems.length === 0) {
         setStatus("empty");
         return;
@@ -897,6 +1008,7 @@
       lastItems = null;
       list.replaceChildren();
       setStatus("error");
+      renderCalendarVisual([]);
       detailRequestToken += 1;
     }
 
@@ -1064,6 +1176,7 @@
     }
 
     async function load() {
+      if (isRangeTab(currentTab)) renderCalendarVisual([]);
       const timezone = browserTimezone();
       requestToken += 1;
       const token = requestToken;
