@@ -1113,8 +1113,15 @@ async def _run_claw_intermediate(page: Page) -> dict[str, Any]:
         raise AssertionError("#clawManualForm must stay hidden until the manual workflow is explicitly entered")
 
     entry = page.locator("#clawManualEntryButton")
+    # First-use now shares Chat's clean composer. The legacy document shortcut
+    # remains available on the active general conversation, not on the hero.
+    first_use = page.locator("#emptyState")
+    if await first_use.is_visible():
+        if await entry.is_visible():
+            raise AssertionError("manual workflow shortcut must not crowd first-use composer")
+        await first_use.evaluate("(el) => { el.hidden = true; }")
     if not await entry.is_visible():
-        raise AssertionError("manual workflow entry control must be visible on the Claw general view")
+        raise AssertionError("manual workflow entry must remain available after first-use")
     await entry.click()
     await page.wait_for_function(
         "() => document.querySelector('#clawWorkspace')?.dataset.view === 'manual'",

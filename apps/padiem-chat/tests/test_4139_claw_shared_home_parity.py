@@ -183,3 +183,15 @@ def test_shared_chat_visuals_are_not_duplicated_for_claw_landing():
     assert '.app-shell[data-state="claw"] #clawPreviousConversations' in CSS
     assert '#clawMemoryReview' in CSS
     assert 'content: none;' in CSS  # retained for active workbench only
+
+
+def test_first_use_claw_retains_chat_alignment_and_input_tools():
+    assert "display: grid !important;" in CSS  # The shared hero is never right-shifted by flex.
+    assert ".composer-tools {\n  display: flex !important;" in CSS
+    assert "#clawManualEntryBar {\n  display: none !important;" in CSS
+    assert HTML.count('class="claw-connection-track"') == 3
+    assert HTML.count('class="claw-state-on">ON') == 3
+    assert HTML.count('class="claw-state-off">OFF') == 3
+    script = (STATIC / "claw-connection-chips.js").read_text(encoding="utf-8")
+    assert 'label.textContent=display' in script
+    assert 'element.dataset.connectionState=value' in script
