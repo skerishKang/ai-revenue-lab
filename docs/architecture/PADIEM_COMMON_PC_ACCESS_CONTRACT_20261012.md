@@ -270,6 +270,280 @@ Wiring the three merged/adjacent surfaces (`device_directory` #4418, read API
 #4424, Web device manager #4419) to this product guard is the CENTRAL item; this
 PR only provides the product-neutral contract they consume.
 
+## S1 — PADIEM Connector enrollment (one account sign-in → one registered PC)
+
+Slice S1 of #4139 answers the next question: after the PADIEM Connector is
+installed on a Windows computer, **signing in with the same PADIEM account**
+must be enough for that PC to be registered in the existing Canonical Broker.
+
+### Investigation: what already existed and is reused as-is
+
+| need | existing owner (reused, not re-implemented) |
+| --- | --- |
+| canonical user/account identity | `padiem_control_plane.auth_sessions.AuthSessionSnapshot` via the existing `resolve_current_auth_session` resolvers (B54 bridge / identity authority) |
+| server-owned account/workspace refs | an injected Control Plane owner resolver (`CanonicalEnrollmentScopePort`) |
+| reviewed product ids | `identity_authority.allowed_product_ids` (the contract declares no second registry) |
+| device enrollment + one-time code + proof | `local_agent_broker_pairing.InMemoryBrokerPairingAuthority` (`/v1/broker/pairings/challenge`, `/redeem`) |
+| binding, credential generation, rotation, revocation | `local_agent_broker.InMemoryLocalAgentBrokerAuthority` |
+| device lifecycle vocabulary, ONLINE truth | `kagent.local_agent_pairing`, `kagent.local_agent_server_projection` |
+| READ/WRITE execution approval + P01 | the existing P01 approval path |
+| product → PC capability grants | `local_agent_pc_access` (this slice does not change it) |
+
+Because every one of those already existed, S1 adds **no** login system, **no**
+device DB/registry, **no** second pairing/credential/rotation/revocation
+authority and **no** new authentication method.
+
+### Source
+
+- `packages/padiem-control-plane/padiem_control_plane/padiem_connector_enrollment.py`
+  — `ConnectorEnrollmentScope`, `CanonicalEnrollmentScopePort`,
+  `ConnectorEnrollmentConsent`, `evaluate_connector_enrollment`,
+  `issue_connector_enrollment_challenge`, `redeem_connector_enrollment`,
+  `connector_enrollment_dependencies`, `connector_enrollment_boundary`.
+- Exported from `padiem_control_plane.__init__`.
+
+### The enrollment chain (fail-closed, in order)
+
+```text
+Connector signs in            -> existing canonical PADIEM auth session (verified server-side)
+evaluate_connector_enrollment -> session ACTIVE, USER subject, canonical tenant,
+                                 reviewed product id, server-owned product-neutral scope,
+                                 active enrollment consent scoped to that exact scope
+issue_connector_enrollment_   -> canonical pairing challenge for the SERVER-derived
+  challenge                      (account, workspace) — never a caller-supplied one
+Connector redeems             -> canonical one-time code proof (device ownership)
+redeem_connector_enrollment   -> re-verify session + consent, delegate to the canonical
+                                 pairing authority, confirm the binding scope
+registered PC                 -> canonical Broker binding, same device id for every product
+```
+
+The Connector, a browser or a product route can supply **none** of the identity,
+scope, tenant or product facts, and the device id is never trusted as a
+self-asserted claim — it is proven by possession of the one-time enrollment code
+(the canonical HMAC-SHA256 pairing proof).
+
+### Enrollment consent is not execution approval
+
+```text
+ENROLLMENT_CONSENT_REQUIRED                = True
+ENROLLMENT_CONSENT_IS_EXECUTION_APPROVAL   = False
+ENROLLMENT_CONSENT_GRANTS_READ             = False
+ENROLLMENT_CONSENT_GRANTS_WRITE            = False
+ENROLLMENT_CONSENT_GRANTS_DISPATCH         = False
+EXECUTION_APPROVAL_OWNER                   = existing P01 approval path
+EXECUTION_APPROVAL_MINTED_HERE             = False
+```
+
+Registering a computer and approving a READ/WRITE execution stay two separate
+decisions owned by two separate authorities. Consenting to enroll never grants a
+file read, a file write or a command run, and this contract mints no approval.
+
+### One PC id, shared by every product
+
+Enrollment is **owner-scoped and product-neutral**, so one physical computer has
+exactly one canonical binding. A second product attempting to enroll the same PC
+is refused by the canonical Broker (`duplicate_device_binding`), not given a
+second registration:
+
+```text
+PRODUCT_SCOPED_ENROLLMENT                 = False
+SHARED_DEVICE_IDENTITY_ACROSS_PRODUCTS    = True
+DEVICE_REENROLLMENT_WITHOUT_REVOKE_ALLOWED = False
+```
+
+### Refusals (all bounded, upstream text never echoed)
+
+| situation | bounded reason |
+| --- | --- |
+| no verified canonical session | `canonical_session_required` |
+| revoked/expired session (account change, expired sign-in) | `canonical_session_inactive` |
+| non-USER subject | `canonical_subject_not_user` |
+| session without a canonical tenant | `canonical_tenant_required` |
+| session from an unreviewed product | `canonical_session_product_not_reviewed` |
+| resolver down/unconfigured | `enrollment_scope_unavailable` |
+| resolver returned a non-scope | `enrollment_scope_unverified` |
+| scope belongs to another user | `enrollment_scope_owner_mismatch` |
+| resolver returned a product-scoped scope | `enrollment_scope_product_scoped_denied` |
+| no / malformed consent | `enrollment_consent_required` |
+| consent withdrawn | `enrollment_consent_withdrawn` |
+| consent for another user/account/workspace | `enrollment_consent_scope_mismatch` |
+| unknown / expired challenge | `enrollment_challenge_not_found` / `enrollment_challenge_expired` |
+| challenge consumed twice | `enrollment_duplicate_redeem_denied` |
+| bad/forged device proof | `enrollment_proof_invalid` |
+| same PC enrolled a second time | `enrollment_duplicate_device_denied` |
+| revoked binding, expired/rejected credential | `enrollment_binding_revoked_denied`, `enrollment_credential_expired_denied` |
+| canonical issuance rate bound | `enrollment_rate_limited` |
+| any other canonical refusal | `enrollment_dependency_refused` |
+| dependency unavailable | `enrollment_dependency_unavailable` |
+
+`ENROLLMENT_REFUSAL_BY_CANONICAL_CODE` is a closed table and a parity test
+asserts every canonical code it names still exists in the canonical pairing /
+Broker sources.
+
+### Unsupported Connector authentication methods (dependencies, not inventions)
+
+Recorded by `connector_enrollment_dependencies()` and required to stay
+unimplemented (`NEW_AUTH_METHOD_INVENTED = False`): OIDC device authorization
+grant (RFC 8628), mTLS client-certificate identity, SAML/SSO federation, and any
+Connector-local password store. The Connector must present an existing canonical
+PADIEM session; where the server has no such capability, that is reported as a
+dependency instead of being invented.
+
+### Guarantees
+
+```text
+CONNECTOR_ENROLLMENT_CONTRACT_VERSION = padiem.connector-enrollment.v1
+SECOND_LOGIN_SYSTEM                   = False
+SECOND_DEVICE_DB                      = False
+SECOND_PAIRING_AUTHORITY              = False
+SECOND_DEVICE_AUTHORITY               = False
+SECOND_CREDENTIAL_STORE               = False
+SECOND_ROTATION_AUTHORITY             = False
+SECOND_REVOCATION_AUTHORITY           = False
+NEW_AUTHORITY_CREATED                 = False
+NEW_AUTH_METHOD_INVENTED              = False
+SELF_ASSERTED_ACCOUNT_WORKSPACE_AUTHORITY = False
+SELF_ASSERTED_DEVICE_OWNERSHIP        = False
+DEVICE_POSSESSION_PROOF_REQUIRED      = True
+PRODUCT_PC_ACCESS_DEFAULT_UNCHANGED   = True
+DISPATCH_AUTHORIZED_BY_THIS_CONTRACT  = False
+PC_EXECUTION_PATH_NEWLY_WIRED         = False
+PRODUCTION_ACTIVATION                 = False
+PRODUCTION_READY                      = False
+```
+
+### S1 follow-up — server-trusted challenge/consent binding (CENTRAL security review)
+
+CENTRAL security review (`#4438` comment 6116650198,
+`SECURITY_REVIEW=BLOCKED_CONSENT_CHALLENGE_BINDING`) reproduced that a challenge
+issued under consent 1 could be redeemed with consent 2: the consent was only
+recorded in the *returned receipt*, so the pairing record carried no enrollment
+binding and a withdrawn consent's outstanding code stayed redeemable under any
+new consent.
+
+**Fix — the binding is server-owned, and it is checked before anything mutates:**
+
+```text
+issue_enrollment_challenge -> canonical pairing authority records, beside the
+                              pending challenge: consent_ref, canonical owner_ref,
+                              account_ref, workspace_ref, device_id, bound_at
+enrollment_binding(...)    -> non-mutating read of that record (probe)
+redeem_enrollment(...)     -> re-verifies every binding field, and only then calls
+                              the ONE shared redemption primitive that consumes the
+                              challenge and registers the Broker binding
+```
+
+`local_agent_broker_pairing.py` was extended (additively) rather than replaced:
+`BrokerPairingEnrollmentBinding`, `issue_enrollment_challenge`,
+`enrollment_binding` and `redeem_enrollment`, with the previous `redeem` body
+extracted verbatim into the shared `_redeem_pending` primitive. `issue_challenge`
+and `redeem` keep their exact previous behaviour, codes and messages, so no
+existing pairing or activation contract changed. No second store, DB or authority
+was added: the binding's durability is exactly the canonical pairing challenge's.
+
+**Enrollment consent is per computer.** `ConnectorEnrollmentConsent` now names
+`device_id`, and `issue_connector_enrollment_challenge` requires the requested
+computer to be the one the consent names (`enrollment_consent_device_mismatch`).
+One consent therefore enrolls exactly one PC; a second computer needs its own
+explicit consent.
+
+```text
+CONSENT_BOUND_TO_DEVICE                       = True
+ONE_CONSENT_PER_DEVICE                        = True
+UNLIMITED_PCS_PER_ENROLLMENT_CONSENT          = False
+SERVER_BOUND_CHALLENGE_REQUIRED               = True
+CHALLENGE_RECEIPT_IS_NOT_AUTHORITY            = True
+UNSIGNED_CHALLENGE_RECEIPT_TRUSTED            = False
+ENROLLMENT_BINDING_VERIFIED_BEFORE_BROKER_MUTATION = True
+```
+
+**New bounded refusals** (all raised before any mutating redemption call):
+
+| situation | bounded reason |
+| --- | --- |
+| presented consent is not the issuing consent | `enrollment_consent_swap_denied` |
+| presented computer is not the issued one | `enrollment_device_swap_denied` |
+| another canonical owner | `enrollment_binding_owner_mismatch` |
+| another account/workspace scope | `enrollment_binding_scope_mismatch` |
+| consent names another computer | `enrollment_consent_device_mismatch` |
+| no enrollment binding on the challenge | `enrollment_binding_absent` |
+| consent liveness authority not configured / no record / not active | `enrollment_consent_liveness_dependency_unmet` (no record / unreadable) or `enrollment_consent_withdrawn` (record not active) |
+| durable consent record does not match the presented consent | `enrollment_consent_scope_mismatch` |
+| enrollment-bound challenge presented to the generic pairing route | `enrollment_bound_challenge_requires_scoped_redemption` |
+
+**Declared dependency, default deny — as a port, not a boolean.** Re-checking a
+consent against its current record (was it withdrawn *after* issuance?) belongs
+to a server-trusted consent authority. `CONSENT_LIVENESS_AUTHORITY` names it,
+`consent_liveness_authority_implemented=False`, and both issuance and redemption
+refuse until that authority is wired as the injected
+`CanonicalConsentLivenessPort` (`current_consent(consent_id, now)`), which
+re-reads the durable record and is compared field-by-field with the presented
+consent. The previous `consent_liveness_reverified_by_existing_path` **boolean
+was removed**: a public handler must never be able to relax a refusal with an
+input it cannot verify. The unconfigured port fails closed and the port is a
+server wiring dependency — never a browser or Connector value. A *signed*
+enrollment receipt is likewise declared `not implemented`: this contract accepts
+**no** client-supplied receipt at all, so there is nothing for a Connector or
+browser to forge.
+
+### CENTRAL second review — legacy `redeem` bypass closed (same PR)
+
+**Blocker:** `InMemoryBrokerPairingAuthority.redeem` (the generic, legacy pairing
+route) called the shared redemption primitive without checking whether the
+pending challenge carried an enrollment binding, so a caller holding a valid
+one-time enrollment code could consume it on the generic route and register a
+Broker binding while bypassing every consent/scope/liveness check.
+
+**Fix:** the generic `redeem` now fails closed **before** any mutation when
+`pending.enrollment_binding is not None`, with the bounded reason
+`enrollment_bound_challenge_requires_scoped_redemption`. Only the scoped
+`redeem_enrollment` route may consume an enrollment-bound challenge, and it
+still re-verifies every binding field first. Ordinary (unbound) pairing
+challenges keep their exact previous behaviour, codes and messages.
+
+```text
+ENROLLMENT_BOUND_CHALLENGE_GENERIC_ROUTE_REFUSAL = enrollment_bound_challenge_requires_scoped_redemption
+LEGACY_UNBOUND_CHALLENGE_PATH                   = unchanged
+```
+
+### Evidence / limits (S1 follow-up)
+
+- New negative tests in the same suite: S1-32 … S1-45 — a different consent cannot
+  redeem (and the original still can, with the challenge unconsumed), a withdrawn
+  consent's outstanding challenge refuses with both the old and a replacement
+  consent, one consent cannot enroll a second computer, two computers each need
+  their own consent, a fabricated/foreign challenge id and a forged proof are
+  refused, a challenge minted without an enrollment binding cannot be redeemed as
+  an enrollment, another owner or workspace refuses, and every one of those
+  asserts **0 Broker bindings** and an unconsumed challenge.
+- CENTRAL second review tests: S1-46 … S1-53 — the generic route refuses an
+  enrollment-bound challenge (0 bindings, challenge unconsumed, then the scoped
+  route redeems it), an ordinary pairing challenge still redeems on the legacy
+  route, legacy-route refusals stay bounded, a consent withdrawn after issuance
+  cannot release the challenge (re-granting it restores redemption), a durable
+  record that does not match the presented consent refuses, the liveness
+  authority is consulted at issuance and at redemption, no public entry point
+  accepts a liveness boolean, and an unreachable or misbehaving liveness
+  authority fails closed.
+- Authority-level tests in `tests/test_local_agent_broker_pairing.py` cover the
+  same guard from the canonical pairing authority itself.
+- The secure end-to-end path is unchanged and still green: verified session +
+  consent → issue → redeem → the credential authenticates against the canonical
+  Broker.
+
+### Evidence / limits (S1)
+
+- Tests: `packages/padiem-control-plane/tests/test_padiem_connector_enrollment.py`
+  (S1-01 … S1-31) exercise the real canonical pairing authority and the real
+  canonical Broker binding authority: a verified session enrolls a PC whose
+  credential then authenticates against the canonical Broker; cross-user,
+  cross-workspace, revoked/expired-session, withdrawn-consent, wrong-proof,
+  replayed-challenge and duplicate-PC attempts all refuse with a bounded reason;
+  the one-time code and the device credential never appear in a `safe_dict`.
+- **Not** proven: a live Windows 2-PC end-to-end run (`WINDOWS_LIVE_E2E`).
+  `PRODUCTION_ACTIVATION=OFF`; no product route is wired to this contract, and
+  the Connector client (`apps/claw-connect/**`, LOCAL2) is untouched.
+
 ## Evidence / limits
 
 - New tests:
