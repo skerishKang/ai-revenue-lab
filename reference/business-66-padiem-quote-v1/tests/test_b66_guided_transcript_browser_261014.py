@@ -121,8 +121,21 @@ async def main():
             await page2.click("#shellPreviousGuidedDialogue")
             await page2.wait_for_selector("#easyHistoryPanel .easy-history-card")
             await page2.locator("#easyHistoryPanel .easy-history-card button").first.click()
+            await page2.wait_for_timeout(800)
+            test_id = active["state"]["conversationId"]
+            direct = await page2.evaluate("""async (id) => {
+                const result = await window.B66GuidedDraftServer.loadConversation(id);
+                return {ok: result.ok, error: result.error,
+                        count: result.conversation?.messages?.length || 0};
+            }""", test_id)
+            print("DEBUG_GUIDED_DETAIL="+json.dumps(direct), flush=True)
+            print("DEBUG_GUIDED_VISIBLE="+json.dumps({
+                "content": (await page2.locator("#easyMessageList").inner_text())[:120],
+                "active_id": test_id[:4],
+            }, ensure_ascii=False), flush=True)
             await page2.wait_for_function(
-                "() => document.querySelector('#easyMessageList')?.textContent?.includes('TEST COMPANY')")
+                "() => document.querySelector('#easyMessageList')?.textContent?.includes('TEST COMPANY')",
+                timeout=5000)
             assert "TEST COMPANY" in await page2.locator("#easyMessageList").inner_text()
             assert not any(path.endswith("/b66/ai/chat") for method, path in DialogueHandler.calls)
             print("B66_GUIDED_TRANSCRIPT_BROWSER=PASS")
