@@ -153,6 +153,8 @@ class LivePcWssOffer:
         self._verifier = verifier
         self._nonce_factory = nonce_factory or (lambda: secrets.token_hex(32))
         self._began_at: datetime | None = None
+        self._approved_challenge: str | None = None
+        self._canonical_bootstrap = None
         self._broker = DurablePendingPcLink(
             storage=storage, canonical_broker_storage=storage,
             channel_verified=self._live, ref_factory=ref_factory,
@@ -243,10 +245,36 @@ class LivePcWssOffer:
                     "request_ref": self._request_ref,
                     "expires_at": receipt["expires_at"],
                 }, separators=(",", ":"), sort_keys=True))
+            elif self._stage in {"delivered", "canonical"}:
+                # Exact SAME native DO WSS after server-authorized owner
+                # delivery. A separate canonical Gateway DO/schema gate is
+                # required. This NEVER redeems an Identity-owned credential.
+                if getattr(
+                    owner_do.env,
+                    "LOCAL_AGENT_BROKER_PENDING_PC_CANONICAL_BOOTSTRAP_ENABLED", None,
+                ) != "enabled":
+                    raise PendingPcWssRefused("pending_pc_canonical_wss_unavailable")
+                if self._stage == "delivered":
+                    if (
+                        self._approved_challenge is None
+                        or not callable(getattr(owner_do, "gateway_bootstrap_rpc", None))
+                    ):
+                        raise PendingPcWssRefused("pending_pc_identity_host_unavailable")
+                    from .broker_pending_pc_bootstrap import SamePcCanonicalBrokerBootstrap
+                    self._canonical_bootstrap = SamePcCanonicalBrokerBootstrap(
+                        broker=owner_do, socket=self._socket,
+                        device_id=self._device,
+                        challenge_id=self._approved_challenge,
+                    )
+                    self._stage = "canonical"
+                await self._canonical_bootstrap.receive(
+                    _frame(frame, {
+                        "type", "challenge_id", "device_id", "proof_ref",
+                    } if self._canonical_bootstrap._stage == "begin" else {
+                        "type", "lease_ref", "proof_hex",
+                    } if self._canonical_bootstrap._stage == "finish" else {"type"}),
+                )
             else:
-                # MUST NOT silently treat canonical enrollment frames as a
-                # completion ACK. The canonical post-approval handler is NOT
-                # installed in this Worker. Fail closed until implemented.
                 raise PendingPcWssRefused("pending_pc_canonical_wss_unavailable")
 
     async def reserve_once(self, *, request_ref: str) -> dict[str, Any]:
@@ -281,6 +309,9 @@ class LivePcWssOffer:
                     "device_id": device_id, "challenge_id": challenge_id,
                     "pairing_code": pairing_code,
                 }, separators=(",", ":"), sort_keys=True))
+                # Do not retain pairing_code. Only the Broker's own original
+                # one-time issued challenge can authorize subsequent frames.
+                self._approved_challenge = challenge_id
             except Exception:
                 self.mark_disconnected()
                 await self._socket.close()
