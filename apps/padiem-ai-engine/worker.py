@@ -22,6 +22,8 @@ from padiem_ai_core import (
 )
 from padiem_ai_core.grounding_runtime import GroundedResearchRuntime
 from padiem_ai_core.web_runtime import WebRuntimeConfig, create_web_provider
+from padiem_ai_core.web_priority import TinyFishDaumPriorityWebProvider
+from app.cloudflare_external_transport import public_web_worker_transport
 
 from app.agent_preview_authority import (
     build_preview_agent_lane,
@@ -95,6 +97,7 @@ ENGINE_IDEMPOTENCY_BINDING_NAME = "ENGINE_IDEMPOTENCY"
 ENGINE_WEB_PROVIDER_ENV = "PADIEM_ENGINE_WEB_PROVIDER"
 ENGINE_FIRECRAWL_API_KEY_ENV = "PADIEM_ENGINE_FIRECRAWL_API_KEY"
 ENGINE_DAUM_REST_API_KEY_ENV = "PADIEM_ENGINE_DAUM_REST_API_KEY"
+ENGINE_TINYFISH_API_KEY_ENV = "PADIEM_ENGINE_TINYFISH_API_KEY"
 ENGINE_DAUM_SEARCH_SORT_ENV = "PADIEM_ENGINE_DAUM_SEARCH_SORT"
 ENGINE_WEB_TIMEOUT_SECONDS_ENV = "PADIEM_ENGINE_WEB_TIMEOUT_SECONDS"
 # #4194/#4442: B14 transport respects the model first-response/read idle
@@ -144,9 +147,33 @@ def _web_runtime_config_for_env(env: Any) -> WebRuntimeConfig:
         provider=_env_text(env, ENGINE_WEB_PROVIDER_ENV) or "off",
         firecrawl_api_key=_env_text(env, ENGINE_FIRECRAWL_API_KEY_ENV),
         daum_rest_api_key=_env_text(env, ENGINE_DAUM_REST_API_KEY_ENV),
+        tinyfish_api_key=_env_text(env, ENGINE_TINYFISH_API_KEY_ENV),
         daum_search_sort=_env_text(env, ENGINE_DAUM_SEARCH_SORT_ENV) or "accuracy",
         web_timeout_seconds=timeout,
     )
+
+
+def _engine_web_provider_for_env(env: Any):
+    """Compose only the pre-existing Core WebProvider from trusted Worker state.
+
+    OFF is the default. The request cannot pick provider, credentials, URL
+    origin, or fallback order. Production activation is separately tracked in
+    #1753 and remains disabled without an explicit deployment configuration.
+    """
+    selected = _env_text(env, ENGINE_WEB_PROVIDER_ENV) or "off"
+    transport = public_web_worker_transport() if selected in {
+        "tinyfish", "daum", "tinyfish_daum",
+    } else None
+    if selected == "tinyfish_daum":
+        timeout_raw = _env_text(env, ENGINE_WEB_TIMEOUT_SECONDS_ENV)
+        return TinyFishDaumPriorityWebProvider(
+            tinyfish_key=_env_text(env, ENGINE_TINYFISH_API_KEY_ENV),
+            daum_key=_env_text(env, ENGINE_DAUM_REST_API_KEY_ENV),
+            timeout_seconds=15.0 if timeout_raw is None else float(timeout_raw),
+            daum_search_sort=_env_text(env, ENGINE_DAUM_SEARCH_SORT_ENV) or "accuracy",
+            transport=transport,
+        )
+    return create_web_provider(_web_runtime_config_for_env(env), transport=transport)
 
 
 def _idempotency_adapter_for_env(env: Any) -> CloudflareD1IdempotencyAdapter | None:
@@ -351,7 +378,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
 
     def research_runtime_factory(_app_id: str) -> GroundedResearchRuntime:
         return GroundedResearchRuntime(
-            create_web_provider(_web_runtime_config_for_env(env))
+            _engine_web_provider_for_env(env)
         )
 
     return EngineServices(
