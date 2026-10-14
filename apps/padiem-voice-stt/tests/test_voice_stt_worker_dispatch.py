@@ -1,33 +1,37 @@
 """Mocked Worker dispatch tests for the deployment gate and body limits.
 
 These exercise the real ``worker.Default.fetch`` code path, not a static source
-string check: the OFF switch, the ON-without-caller-guard state, oversized and
-chunked bodies, a missing provider key and malformed audio are all driven
-through the actual handler.
+string check: the OFF switch, the caller-authority gate, oversized and chunked
+bodies, a missing provider key and malformed audio are all driven through the
+actual handler.
 
 The mocked upstream records every attempted call, which is how "no Secret read
-and no provider call while OFF" is actually proven rather than asserted.
+and no provider call while OFF or while unauthorized" is actually proven rather
+than asserted.
 
 Two layers, deliberately separated
 ----------------------------------
-``_dispatch``  — the shipped route. Paid routes are **unconditionally closed**
-                 here: no guard shape, approval or binding presence may reach a
-                 Secret or a provider.
+``_dispatch``  — the shipped route. It runs the deployment flag, the caller
+                 clues, the bounded body read, the Control Plane authority and
+                 then the paid pipeline, in that order.
 
-``_run_paid``  — the paid pipeline *behind* that gate, invoked directly with a
-                 hand-built :class:`voice_stt_contract.CallerAuthorization`.
-                 The Worker itself can never obtain one (the gate always
-                 raises), so this is a test harness only; it exists so the
-                 upstream request shape, the end-to-end deadline and the
-                 provider-masking behaviour stay covered while the route is
-                 closed. It is not a production approval path.
+``_run_paid``  — the paid pipeline *behind* the route gate, invoked directly with
+                 a hand-built :class:`voice_stt_contract.CallerAuthorization`.
+                 This exists so the upstream request shape, the end-to-end
+                 deadline and the provider-masking behaviour stay covered without
+                 standing up a Control Plane. It is a test harness, not a
+                 production approval path: the value it builds is never produced
+                 by the Worker unless the Control Plane admits the call.
 """
 
 from __future__ import annotations
 
 import base64
 import json
+import tomllib
 import types
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 import pytest
 
@@ -44,33 +48,45 @@ def runtime():
     return worker
 
 
-def _transcribe_request(audio=b"voice-bytes", language="ko", url="https://voice.internal/internal/v1/voice/transcribe"):
-    headers = {"content-type": "application/json"}
+def _caller_authenticated(headers=None, *, clues=True, **overrides):
+    """Content-type plus the two opaque caller clues a product Worker presents."""
+    merged = {"content-type": "application/json"}
+    if clues:
+        merged.update(fw.caller_headers())
+    merged.update(headers or {})
+    merged.update(overrides)
+    return merged
+
+
+def _transcribe_request(audio=b"voice-bytes", language="ko", url="https://voice.internal/internal/v1/voice/transcribe", headers=None, **kw):
     payload = {
         "audioDataUrl": "data:audio/webm;base64," + base64.b64encode(audio).decode("ascii"),
         "language": language,
     }
-    return fw.FakeRequest("POST", url, headers, json.dumps(payload).encode("utf-8"))
+    return fw.FakeRequest("POST", url, _caller_authenticated(headers, **kw), json.dumps(payload).encode("utf-8"))
 
 
-def _live_token_request(body=b'{"sessionId":"s"}'):
-    return fw.FakeRequest("POST", "https://voice.internal/internal/v1/voice/live-token", {"content-type": "application/json"}, body)
+def _live_token_request(body=b'{"sessionId":"s"}', headers=None, **kw):
+    return fw.FakeRequest("POST", "https://voice.internal/internal/v1/voice/live-token", _caller_authenticated(headers, **kw), body)
 
 
 def _test_authorization(route: str) -> c.CallerAuthorization:
     """A test-only authorization object. **Not** a production grant.
 
-    ``worker._require_caller_authorization`` raises unconditionally, so no
-    request can ever produce this. Building one by hand is the only way to
-    exercise the paid pipeline while the shipped route stays fail-closed.
+    The Worker only ever builds one of these through
+    ``voice_stt_caller_auth`` against the Control Plane. This harness builds it
+    by hand so the provider-facing pipeline stays covered without an authority.
     """
-
     return c.CallerAuthorization(
         actor="local3-test-harness",
-        tenant="local3-test-tenant",
+        tenant="tenant_local3fixture0000000000000000ab",
         route=route,
+        capability=(
+            c.CAPABILITY_TRANSCRIBE if route == TRANSCRIBE_ROUTE else c.CAPABILITY_LIVE_TOKEN
+        ),
         reservation_id="test-only-no-real-cost",
-        amount_usd=0.01,
+        estimated_units=1,
+        policy_revision="test-only-revision",
     )
 
 
@@ -82,16 +98,28 @@ async def _dispatch(worker, env, budget, request):
 
 
 async def _run_paid(worker, env, budget, request, route):
-    """Drive the paid pipeline directly, bypassing only the always-closed gate.
+    """Drive the paid pipeline directly, bypassing only the caller-authority gate.
 
-    ``Default.fetch`` turns a :class:`VoiceSttError` into the bounded envelope;
-    calling the handler directly has to do the same so the assertions below read
-    the same shape regardless of layer.
+    The request's body validation is kept here so the body-bound tests exercise
+    the same production code the shipped route runs; only the Control Plane
+    round trip is skipped, and ``Default.fetch`` turns a :class:`VoiceSttError`
+    into the bounded envelope, so the assertions below read the same shape
+    regardless of layer.
     """
     worker.fetch = budget.make_fetch()
-    handler = worker._handle_transcribe if route == TRANSCRIBE_ROUTE else worker._handle_live_token
     try:
-        response = await handler(env, request, _test_authorization(route))
+        worker._require_json_content_type(request)
+        if route == TRANSCRIBE_ROUTE:
+            payload = await worker._read_json(request, c.MAX_REQUEST_BYTES)
+            language, audio = c.validate_transcribe_request(payload)
+            response = await worker._handle_transcribe(
+                env, _test_authorization(route), language, audio
+            )
+        else:
+            payload = await worker._read_json(request, worker.LIVE_TOKEN_MAX_BYTES)
+            if not isinstance(payload, dict) or set(payload) - {"sessionId"}:
+                raise c.VoiceSttError("unsupported_field", 400)
+            response = await worker._handle_live_token(env, _test_authorization(route))
     except c.VoiceSttError as exc:
         return {"ok": False, "error": {"code": exc.code}}
     return json.loads(response.body)
@@ -126,7 +154,7 @@ async def test_off_gate_blocks_every_route_before_any_upstream_call(runtime):
     env = fw.disabled_env(PADIEM_GROQ_API_KEY=fw.FakeSecretsBinding("x"))
     for request in (
         _transcribe_request(),
-        fw.FakeRequest("POST", "https://voice.internal/internal/v1/voice/live-token", {"content-type": "application/json"}, b'{"sessionId":"s"}'),
+        fw.FakeRequest("POST", "https://voice.internal/internal/v1/voice/live-token", _caller_authenticated(), b'{"sessionId":"s"}'),
         fw.FakeRequest("GET", "https://voice.internal/internal/v1/voice/capabilities"),
     ):
         body = await _dispatch(runtime, env, budget, request)
@@ -145,20 +173,69 @@ async def test_off_gate_never_reads_the_secret_binding(runtime):
         runtime,
         env,
         budget,
-        fw.FakeRequest("POST", "https://voice.internal/internal/v1/voice/live-token", {"content-type": "application/json"}, b'{"sessionId":"s"}'),
+        fw.FakeRequest("POST", "https://voice.internal/internal/v1/voice/live-token", _caller_authenticated(), b'{"sessionId":"s"}'),
     )
     assert groq.reads == 0
     assert gemini.reads == 0
     assert budget.calls == []
 
 
-async def test_on_without_caller_guard_is_not_reachable(runtime):
-    """ON is not a test override: it still fails closed without the guard."""
-    env = fw.enabled_env(VOICE_STT_CALLER_GUARD=None)
+async def test_shipped_configuration_attaches_no_authority_binding(runtime):
+    """``wrangler.toml`` deploys with the flag OFF and no Control Plane binding.
+
+    This is the state that is actually deployed, so it is pinned here as
+    behaviour: the flag alone closes every paid route, and the two authority
+    bindings are documented in comments but **declared** nowhere, so a deploy
+    cannot attach them by accident.
+    """
+    config = tomllib.loads(
+        (Path(__file__).resolve().parents[1] / "wrangler.toml").read_text(encoding="utf-8")
+    )
+    assert config.get("vars", {}).get("PADIEM_VOICE_STT_ENABLED") == "false"
+    declared = {
+        entry["binding"] for entry in (config.get("services") or []) if "binding" in entry
+    }
+    assert declared == set()
+    assert "CONTROL_PLANE_IDENTITY" not in declared
+    assert "CONTROL_PLANE_ENGINE_ADMISSION" not in declared
+    budget = fw.FetchBudget()
+    env = fw.disabled_env()
+    body = await _dispatch(runtime, env, budget, _transcribe_request(audio=b"x"))
+    assert body == {"ok": False, "error": {"code": "voice_stt_disabled"}}
+    assert budget.calls == []
+
+
+@pytest.mark.parametrize("missing", ["CONTROL_PLANE_IDENTITY", "CONTROL_PLANE_ENGINE_ADMISSION"])
+@pytest.mark.parametrize("route", [TRANSCRIBE_ROUTE, LIVE_TOKEN_ROUTE])
+async def test_on_without_a_canonical_authority_binding_is_not_reachable(runtime, missing, route):
+    """ON alone is not a test override: without both CP bindings it fails closed."""
+    env = fw.enabled_env(**{missing: None})
+    budget = fw.FetchBudget()
+    request = _route_request(route)
+    body = await _dispatch(runtime, env, budget, request)
+    assert body == {"ok": False, "error": {"code": "caller_guard_unavailable"}}
+    assert budget.calls == []
+    assert env.PADIEM_GROQ_API_KEY.reads == 0
+    assert env.PADIEM_GEMINI_API_KEY.reads == 0
+
+
+@pytest.mark.parametrize("decoy", [None, types.SimpleNamespace(), types.SimpleNamespace(authorize=True)])
+async def test_retired_caller_guard_binding_authorizes_nothing(runtime, decoy):
+    """A bound ``VOICE_STT_CALLER_GUARD`` is never consulted and opens nothing."""
+    guard = fw.FakeApprovingDecoyGuard() if decoy is None else decoy
+    env = fw.enabled_env(VOICE_STT_CALLER_GUARD=guard, CONTROL_PLANE_ENGINE_ADMISSION=None)
     budget = fw.FetchBudget()
     body = await _dispatch(runtime, env, budget, _transcribe_request(audio=b"x"))
     assert body == {"ok": False, "error": {"code": "caller_guard_unavailable"}}
+    assert getattr(guard, "calls", []) == []
     assert budget.calls == []
+
+    # And it is not consulted on the admitted path either.
+    env = fw.enabled_env(VOICE_STT_CALLER_GUARD=guard)
+    budget.response = fw.FakeUpstream(200, {"text": "ok"})
+    body = await _dispatch(runtime, env, budget, _transcribe_request(audio=b"x"))
+    assert body["ok"] is True
+    assert getattr(guard, "calls", []) == []
 
 
 async def test_missing_enabled_var_fails_closed(runtime):
@@ -178,18 +255,17 @@ async def test_non_true_flag_fails_closed(runtime, flag):
 
 
 @pytest.mark.parametrize("flag", ["true"])
-async def test_true_flag_still_requires_the_caller_guard(runtime, flag):
+async def test_true_flag_still_requires_the_canonical_authority(runtime, flag):
     """Operator-friendly ``true`` is only the first of two gates."""
-    env = fw.enabled_env(PADIEM_VOICE_STT_ENABLED=flag, VOICE_STT_CALLER_GUARD=None)
+    env = fw.enabled_env(PADIEM_VOICE_STT_ENABLED=flag, CONTROL_PLANE_IDENTITY=None)
     budget = fw.FetchBudget()
     body = await _dispatch(runtime, env, budget, _transcribe_request(audio=b"x"))
     assert body == {"ok": False, "error": {"code": "caller_guard_unavailable"}}
 
 
 async def test_capabilities_is_public_and_key_free(runtime):
-    """With the gate open and the guard attached, capabilities leaks nothing."""
-    env = fw.enabled_env()
-    env.VOICE_STT_CALLER_GUARD = types.SimpleNamespace()
+    """The key-free route needs no authority binding at all."""
+    env = fw.enabled_env(CONTROL_PLANE_IDENTITY=None, CONTROL_PLANE_ENGINE_ADMISSION=None)
     budget = fw.FetchBudget()
     request = fw.FakeRequest("GET", "https://voice.internal/internal/v1/voice/capabilities")
     body = await _dispatch(runtime, env, budget, request)
@@ -416,7 +492,15 @@ async def test_transcribe_falls_through_the_model_sequence(runtime):
 
     budget.calls = []
     runtime.fetch = _fetch
-    response = await runtime._handle_transcribe(env, _transcribe_request(audio=b"x"), _test_authorization(TRANSCRIBE_ROUTE))
+    _, audio = c.validate_transcribe_request(
+        {
+            "audioDataUrl": "data:audio/webm;base64,"
+            + base64.b64encode(b"x").decode("ascii")
+        }
+    )
+    response = await runtime._handle_transcribe(
+        env, _test_authorization(TRANSCRIBE_ROUTE), "ko", audio
+    )
     body = json.loads(response.body)
     assert body["model"] == "whisper-large-v3"
     assert body["ok"] is True
@@ -513,151 +597,522 @@ async def test_live_token_provider_failure_is_bounded(runtime):
 
 
 # ---------------------------------------------------------------------------
-# P0-A: NO guard shape may authorize a paid call — the routes are closed
+# The paid-route authority: only a canonical Control Plane verdict opens a route
 # ---------------------------------------------------------------------------
 
-#: Every shape a binding could plausibly wear, including verdicts that a naive
-#: "is it truthy?" check would have accepted. None of them may spend money.
-_GUARD_SHAPES = [
-    ("presence_only", lambda: types.SimpleNamespace()),
-    ("empty_namespace", lambda: types.SimpleNamespace(authorize=None)),
-    ("approving_decoy", lambda: fw.FakeCallerGuard()),
-    ("bare_true", lambda: fw.FakeCallerGuard(decision=True)),
-    ("bare_false", lambda: fw.FakeCallerGuard(decision=False)),
-    ("no_verdict", lambda: fw.FakeCallerGuard(decision=None)),
-    ("empty_dict", lambda: fw.FakeCallerGuard(decision={})),
-    ("zero_scope", lambda: fw.FakeCallerGuard(decision={"allowed": True, "caller": "x", "cost_scope": 0})),
-    ("blank_scope", lambda: fw.FakeCallerGuard(decision={"allowed": True, "caller": "x", "cost_scope": ""})),
-    ("blank_caller", lambda: fw.FakeCallerGuard(decision={"allowed": True, "caller": "", "cost_scope": {"daily_usd_cap": 5}})),
-    ("unscoped_true", lambda: fw.FakeCallerGuard(decision={"allowed": True, "caller": "x", "cost_scope": {"daily_usd_cap": 5}})),
+
+def _route_request(route, audio=b"x"):
+    return _transcribe_request(audio=audio) if route == TRANSCRIBE_ROUTE else _live_token_request()
+
+
+#: Every way the canonical authority can fail to admit one paid call. Each row
+#: must answer with its bounded code and must not touch a Secret or a provider.
+_DENIALS = [
+    (
+        "no_identity_binding",
+        lambda: fw.enabled_env(CONTROL_PLANE_IDENTITY=None),
+        "caller_guard_unavailable",
+    ),
+    (
+        "no_admission_binding",
+        lambda: fw.enabled_env(CONTROL_PLANE_ENGINE_ADMISSION=None),
+        "caller_guard_unavailable",
+    ),
+    (
+        "identity_binding_is_a_plain_object",
+        lambda: fw.enabled_env(CONTROL_PLANE_IDENTITY=types.SimpleNamespace()),
+        "caller_guard_unavailable",
+    ),
+    (
+        "admission_binding_is_a_plain_object",
+        lambda: fw.enabled_env(CONTROL_PLANE_ENGINE_ADMISSION=types.SimpleNamespace()),
+        "caller_guard_unavailable",
+    ),
+    (
+        "admission_binding_approves_everything_by_truthiness",
+        lambda: fw.enabled_env(
+            CONTROL_PLANE_ENGINE_ADMISSION=types.SimpleNamespace(
+                fetch_entitlement_snapshot=lambda **_: {"allowed": True, "cost_scope": {"daily_usd_cap": 5}},
+                reserve_usage=lambda **_: True,
+            )
+        ),
+        "voice_stt_authority_unavailable",
+    ),
+    (
+        "session_missing",
+        lambda: fw.enabled_env(CONTROL_PLANE_IDENTITY=fw.FakeIdentityBinding(missing=True)),
+        "voice_stt_unauthenticated",
+    ),
+    (
+        "session_revoked",
+        lambda: fw.enabled_env(
+            CONTROL_PLANE_IDENTITY=fw.FakeIdentityBinding(
+                fw.cp_session_payload(state="revoked")
+            )
+        ),
+        "voice_stt_unauthenticated",
+    ),
+    (
+        "session_expired",
+        lambda: fw.enabled_env(
+            CONTROL_PLANE_IDENTITY=fw.FakeIdentityBinding(
+                fw.cp_session_payload(
+                    issued_at=fw.CP_RESERVED_PAST, expires_at=fw.CP_PAST
+                )
+            )
+        ),
+        "voice_stt_unauthenticated",
+    ),
+    (
+        # A fully self-consistent Control Plane answer for a *different* product.
+        # Only the explicit session/claim product comparison can catch this: the
+        # snapshot below would otherwise match the borrowed identity exactly.
+        "session_belongs_to_another_product",
+        lambda: fw.enabled_env(
+            CONTROL_PLANE_IDENTITY=fw.FakeIdentityBinding(
+                fw.cp_session_payload(product_id="b54-padiem-claw")
+            ),
+            CONTROL_PLANE_ENGINE_ADMISSION=fw.FakeAdmissionBinding(
+                snapshot=fw.cp_snapshot_payload(
+                    fw.voice_grant(), fw.live_token_grant(), product_id="b54-padiem-claw"
+                )
+            ),
+        ),
+        "voice_stt_forbidden",
+    ),
+    (
+        "session_id_echo_mismatch",
+        lambda: fw.enabled_env(
+            CONTROL_PLANE_IDENTITY=fw.FakeIdentityBinding(
+                fw.cp_session_payload(session_id="sess-someone-else")
+            )
+        ),
+        "voice_stt_forbidden",
+    ),
+    (
+        "subject_is_anonymous",
+        lambda: fw.enabled_env(
+            CONTROL_PLANE_IDENTITY=fw.FakeIdentityBinding(
+                fw.cp_session_payload(
+                    subject={"subject_type": "anonymous", "subject_id": fw.CP_SUBJECT}
+                )
+            )
+        ),
+        "voice_stt_forbidden",
+    ),
+    (
+        "tenant_absent",
+        lambda: fw.enabled_env(
+            CONTROL_PLANE_IDENTITY=fw.FakeIdentityBinding(
+                fw.cp_session_payload(tenant_id=None)
+            )
+        ),
+        "voice_stt_tenant_unavailable",
+    ),
+    (
+        "tenant_aliased_to_the_product",
+        lambda: fw.enabled_env(
+            CONTROL_PLANE_IDENTITY=fw.FakeIdentityBinding(
+                fw.cp_session_payload(tenant_id=fw.CP_PRODUCT)
+            )
+        ),
+        "voice_stt_tenant_unavailable",
+    ),
+    (
+        "no_voice_grant_at_all",
+        lambda: fw.enabled_env(
+            CONTROL_PLANE_ENGINE_ADMISSION=fw.FakeAdmissionBinding(
+                snapshot=fw.cp_snapshot_payload(("orchestration.run", True, None))
+            )
+        ),
+        "voice_stt_cost_denied",
+    ),
+    (
+        "voice_grant_denied",
+        lambda: fw.enabled_env(
+            CONTROL_PLANE_ENGINE_ADMISSION=fw.FakeAdmissionBinding(
+                snapshot=fw.cp_snapshot_payload(("voice.stt.transcribe", False, None))
+            )
+        ),
+        "voice_stt_cost_denied",
+    ),
+    (
+        "snapshot_belongs_to_another_product",
+        lambda: fw.enabled_env(
+            CONTROL_PLANE_ENGINE_ADMISSION=fw.FakeAdmissionBinding(
+                snapshot=fw.cp_snapshot_payload(
+                    fw.voice_grant(), product_id="b54-padiem-claw"
+                )
+            )
+        ),
+        "voice_stt_forbidden",
+    ),
+    (
+        "snapshot_belongs_to_another_subject",
+        lambda: fw.enabled_env(
+            CONTROL_PLANE_ENGINE_ADMISSION=fw.FakeAdmissionBinding(
+                snapshot=fw.cp_snapshot_payload(
+                    fw.voice_grant(),
+                    subject={"subject_type": "user", "subject_id": "user-someone-else"},
+                )
+            )
+        ),
+        "voice_stt_forbidden",
+    ),
+    (
+        "snapshot_is_expired",
+        lambda: fw.enabled_env(
+            CONTROL_PLANE_ENGINE_ADMISSION=fw.FakeAdmissionBinding(
+                snapshot=fw.cp_snapshot_payload(
+                    fw.voice_grant(), issued_at=fw.CP_RESERVED_PAST, expires_at=fw.CP_PAST
+                )
+            )
+        ),
+        "voice_stt_cost_denied",
+    ),
+    (
+        "reservation_refused",
+        lambda: fw.enabled_env(
+            CONTROL_PLANE_ENGINE_ADMISSION=fw.FakeAdmissionBinding(admitted=False)
+        ),
+        "voice_stt_cost_denied",
+    ),
+    (
+        "reservation_expired",
+        lambda: fw.enabled_env(
+            CONTROL_PLANE_ENGINE_ADMISSION=fw.FakeAdmissionBinding(
+                reservation=fw.cp_reservation_payload(
+                    reserved_at=fw.CP_RESERVED_PAST, expires_at=fw.CP_PAST
+                )
+            )
+        ),
+        "voice_stt_cost_denied",
+    ),
+    (
+        "authority_transport_failure",
+        lambda: fw.enabled_env(
+            CONTROL_PLANE_IDENTITY=fw.FakeIdentityBinding(raises=RuntimeError("cp down"))
+        ),
+        "voice_stt_authority_unavailable",
+    ),
 ]
 
 
-@pytest.mark.parametrize("name,build", _GUARD_SHAPES, ids=[n for n, _ in _GUARD_SHAPES])
+@pytest.mark.parametrize("name,build,expected", _DENIALS, ids=[n for n, _, _ in _DENIALS])
 @pytest.mark.parametrize("route", [TRANSCRIBE_ROUTE, LIVE_TOKEN_ROUTE])
-async def test_no_guard_shape_reaches_a_secret_or_a_provider(runtime, name, build, route):
-    """The shipped route stays closed for *every* guard shape, on both paid routes.
+async def test_no_unverified_authority_state_reaches_a_secret_or_a_provider(
+    runtime, name, build, expected, route
+):
+    """Every denial path stays closed on **both** paid routes.
 
-    This is the P0-A regression. A previous revision accepted a present binding,
-    a bare ``True`` and an unscoped ``{"allowed": True, ...}`` verdict and went
-    on to read a Secret and call Groq/Gemini. No verdict is trusted now, because
-    no verdict is even requested: the binding is never consulted.
+    The regression this preserves: a binding that merely exists, or answers
+    ``True``/``{"allowed": True, ...}``, must never reach a Secret or a provider.
+    The Worker now asks the canonical Control Plane instead of guessing, and each
+    way that answer can be absent, wrong or refusing maps to a bounded code.
     """
-    guard = build()
-    env = fw.enabled_env(VOICE_STT_CALLER_GUARD=guard)
+    env = build()
     budget = fw.FetchBudget()
-    request = _transcribe_request(audio=b"x") if route == TRANSCRIBE_ROUTE else _live_token_request()
+    request = _route_request(route)
     body = await _dispatch(runtime, env, budget, request)
-    assert body == {"ok": False, "error": {"code": "caller_authorization_unimplemented"}}
+    assert body == {"ok": False, "error": {"code": expected}}, name
     assert budget.calls == [], f"{name}: a provider was called"
-    assert env.PADIEM_GROQ_API_KEY.reads == 0
-    assert env.PADIEM_GEMINI_API_KEY.reads == 0
-    assert getattr(guard, "calls", []) == [], f"{name}: the binding was consulted"
+    assert env.PADIEM_GROQ_API_KEY.reads == 0, name
+    assert env.PADIEM_GEMINI_API_KEY.reads == 0, name
 
 
-async def test_presence_only_guard_blocks_paid_routes(runtime):
-    """Presence of ``VOICE_STT_CALLER_GUARD`` is not caller identity or cost approval."""
-    env = fw.enabled_env(VOICE_STT_CALLER_GUARD=types.SimpleNamespace())
+@pytest.mark.parametrize(
+    "header",
+    [
+        {"x-padiem-product-id": ""},
+        {"x-padiem-auth-session-id": ""},
+        {"x-padiem-auth-session-id": None},
+        {"x-padiem-product-id": "../../etc/passwd"},
+        {"x-padiem-product-id": "b62", "x-padiem-auth-session-id": "s" * 200},
+    ],
+    ids=["blank_product", "blank_session", "null_session", "path_escape", "oversized_session"],
+)
+@pytest.mark.parametrize("route", [TRANSCRIBE_ROUTE, LIVE_TOKEN_ROUTE])
+async def test_missing_or_malformed_caller_clues_are_unauthenticated(runtime, header, route):
+    """No usable identity clue means no paid call — before the body is even read."""
+    env = fw.enabled_env()
     budget = fw.FetchBudget()
-    body = await _dispatch(runtime, env, budget, _transcribe_request(audio=b"x"))
-    assert body == {"ok": False, "error": {"code": "caller_authorization_unimplemented"}}
+    request = (
+        _transcribe_request(audio=b"x", headers=header)
+        if route == TRANSCRIBE_ROUTE
+        else _live_token_request(headers=header)
+    )
+    body = await _dispatch(runtime, env, budget, request)
+    assert body == {"ok": False, "error": {"code": "voice_stt_unauthenticated"}}
     assert budget.calls == []
     assert env.PADIEM_GROQ_API_KEY.reads == 0
+    assert env.CONTROL_PLANE_IDENTITY.calls == []
 
 
-async def test_guard_exception_cannot_be_raised_because_the_guard_is_never_called(runtime):
-    """An exploding binding is harmless: nothing invokes it."""
-
-    class _Boom:
-        async def authorize(self, request_context):
-            raise RuntimeError("guard backend down")
-
-    env = fw.enabled_env(VOICE_STT_CALLER_GUARD=_Boom())
+@pytest.mark.parametrize("route", [TRANSCRIBE_ROUTE, LIVE_TOKEN_ROUTE])
+async def test_absent_caller_clues_are_unauthenticated(runtime, route):
+    """A request that presents no clue at all is not an anonymous free tier."""
+    env = fw.enabled_env()
     budget = fw.FetchBudget()
-    body = await _dispatch(runtime, env, budget, _transcribe_request(audio=b"x"))
-    assert body == {"ok": False, "error": {"code": "caller_authorization_unimplemented"}}
-    assert budget.calls == []
+    request = (
+        _transcribe_request(audio=b"x", clues=False)
+        if route == TRANSCRIBE_ROUTE
+        else _live_token_request(clues=False)
+    )
+    body = await _dispatch(runtime, env, budget, request)
+    assert body == {"ok": False, "error": {"code": "voice_stt_unauthenticated"}}
+    assert env.CONTROL_PLANE_IDENTITY.calls == []
+
+
+async def test_voice_grant_limit_caps_the_audited_units(runtime):
+    """A bounded grant refuses a request whose audited units exceed its limit."""
+    env = fw.enabled_env(
+        CONTROL_PLANE_ENGINE_ADMISSION=fw.FakeAdmissionBinding(
+            snapshot=fw.cp_snapshot_payload(fw.voice_grant(limit=1))
+        )
+    )
+    budget = fw.FetchBudget()
+    budget.response = fw.FakeUpstream(200, {"text": "ok"})
+    within = b"a" * c.AUDIO_COST_UNIT_BYTES
+    body = await _dispatch(runtime, env, budget, _transcribe_request(audio=within))
+    assert body["ok"] is True
+    over = b"a" * (c.AUDIO_COST_UNIT_BYTES + 1)
+    env = fw.enabled_env(
+        CONTROL_PLANE_ENGINE_ADMISSION=fw.FakeAdmissionBinding(
+            snapshot=fw.cp_snapshot_payload(fw.voice_grant(limit=1))
+        )
+    )
+    body = await _dispatch(runtime, env, budget, _transcribe_request(audio=over))
+    assert body == {"ok": False, "error": {"code": "voice_stt_cost_denied"}}
     assert env.PADIEM_GROQ_API_KEY.reads == 0
 
 
-async def test_sync_approving_guard_does_not_open_a_paid_route(runtime):
-    """A synchronous approving ``authorize`` is still not an authorization."""
+async def test_an_unauthenticated_request_is_rejected_before_its_body_is_buffered(runtime):
+    """Ordering: identity clues are read before the bounded body read."""
+    env = fw.enabled_env()
+    budget = fw.FetchBudget()
+    request = _transcribe_request(audio=b"x", headers={"x-padiem-product-id": None})
+    body = await _dispatch(runtime, env, budget, request)
+    assert body == {"ok": False, "error": {"code": "voice_stt_unauthenticated"}}
+    assert env.CONTROL_PLANE_IDENTITY.calls == []
+    assert env.CONTROL_PLANE_ENGINE_ADMISSION.snapshot_calls == []
 
-    class _SyncGuard:
-        def authorize(self, request_context):  # pragma: no cover - must never run
-            return {"allowed": True, "caller": "acct", "cost_scope": {"daily_usd_cap": 1}}
 
-    env = fw.enabled_env(VOICE_STT_CALLER_GUARD=_SyncGuard())
+async def test_an_admitted_call_reserves_cost_from_the_validated_audio_length(runtime):
+    """The cost units come from the Worker, never from the request."""
+    env = fw.enabled_env()
+    budget = fw.FetchBudget()
+    budget.response = fw.FakeUpstream(200, {"text": "네"})
+    two_units = (c.AUDIO_COST_UNIT_BYTES * 2) + 1
+    body = await _dispatch(runtime, env, budget, _transcribe_request(audio=b"a" * two_units))
+    assert body["ok"] is True
+    admission = env.CONTROL_PLANE_ENGINE_ADMISSION
+    assert len(admission.reservation_calls) == 1
+    reservation = admission.reservation_calls[0]["reservation"]
+    assert reservation["estimated_units"] == 3
+    assert reservation["product_id"] == fw.CP_PRODUCT
+    assert reservation["subject"] == {"subject_type": "user", "subject_id": fw.CP_SUBJECT}
+    assert reservation["billing_semantic_id"] == c.CAPABILITY_TRANSCRIBE
+
+
+@pytest.mark.parametrize("route", [TRANSCRIBE_ROUTE, LIVE_TOKEN_ROUTE])
+async def test_distinct_paid_calls_never_reuse_one_control_plane_reservation(runtime, route):
+    """CP idempotency is per request, not per user/route/audio-size bucket.
+
+    The real Control Plane returns an existing reservation when an idempotency
+    key repeats. Two independent invocations must therefore have different keys
+    even when every product, subject, unit count and payload byte is identical.
+    """
+    env = fw.enabled_env()
+    budget = fw.FetchBudget()
+    budget.response = (
+        fw.FakeUpstream(200, {"text": "네"})
+        if route == TRANSCRIBE_ROUTE
+        else fw.FakeUpstream(200, {"name": "auth_tokens/opaque"})
+    )
+    for _ in range(2):
+        request = (
+            _transcribe_request(audio=b"same audio")
+            if route == TRANSCRIBE_ROUTE
+            else _live_token_request()
+        )
+        result = await _dispatch(runtime, env, budget, request)
+        assert result["ok"] is True
+    calls = env.CONTROL_PLANE_ENGINE_ADMISSION.reservation_calls
+    assert len(calls) == 2
+    left, right = (call["reservation"] for call in calls)
+    assert left["estimated_units"] == right["estimated_units"]
+    assert left["product_id"] == right["product_id"]
+    assert left["idempotency_key"] != right["idempotency_key"]
+    assert left["request_fingerprint"] != right["request_fingerprint"]
+
+
+async def test_control_plane_reservation_time_is_observed_after_its_rpc(runtime):
+    """CP stamps reserved_at *during* the RPC, later than the pre-RPC clock.
+
+    This is a valid authorization. A pre-RPC observation would reject it as
+    'from the future' even though the authority itself generated that time.
+    """
+    current = [datetime.now(timezone.utc)]
+
+    class StampAtReservation(fw.FakeAdmissionBinding):
+        async def reserve_usage(self, payload):
+            current[0] += timedelta(seconds=1)
+            self.reservation = fw.cp_reservation_payload(
+                reserved_at=current[0].isoformat(),
+                expires_at=(current[0] + timedelta(minutes=5)).isoformat(),
+            )
+            return await super().reserve_usage(payload)
+
+    authority = runtime.caller_auth.CallerAuthority(
+        identity=runtime.caller_auth.CloudflareIdentitySessionClient(
+            fw.FakeIdentityBinding()
+        ),
+        admission=runtime.caller_auth.CloudflareAdmissionClient(
+            StampAtReservation()
+        ),
+        clock=lambda: current[0],
+    )
+    authorization = await authority.authorize(
+        clues=runtime.caller_auth.CallerClues(
+            product_id=fw.CP_PRODUCT, session_id=fw.CP_SESSION
+        ),
+        capability=c.CAPABILITY_TRANSCRIBE,
+        route=TRANSCRIBE_ROUTE,
+        estimated_units=1,
+    )
+    assert authorization.admits(TRANSCRIBE_ROUTE)
+
+
+async def test_cost_denied_is_decided_before_the_secret_is_read(runtime):
+    """A cost denial never even resolves the provider key."""
+    env = fw.enabled_env(
+        CONTROL_PLANE_ENGINE_ADMISSION=fw.FakeAdmissionBinding(admitted=False)
+    )
+    budget = fw.FetchBudget()
+    body = await _dispatch(runtime, env, budget, _transcribe_request(audio=b"x"))
+    assert body == {"ok": False, "error": {"code": "voice_stt_cost_denied"}}
+    assert env.PADIEM_GROQ_API_KEY.reads == 0
+    assert budget.calls == []
+
+
+async def test_live_token_mints_only_under_its_own_capability(runtime):
+    """The transcription grant does not open the live-token route, and vice versa."""
+    transcribe_only = fw.enabled_env(
+        CONTROL_PLANE_ENGINE_ADMISSION=fw.FakeAdmissionBinding(
+            snapshot=fw.cp_snapshot_payload(fw.voice_grant())
+        )
+    )
+    budget = fw.FetchBudget()
+    budget.response = fw.FakeUpstream(200, {"name": "auth_tokens/opaque"})
+    body = await _dispatch(runtime, transcribe_only, budget, _live_token_request())
+    assert body == {"ok": False, "error": {"code": "voice_stt_cost_denied"}}
+    assert transcribe_only.PADIEM_GEMINI_API_KEY.reads == 0
+
+    live_only = fw.enabled_env(
+        CONTROL_PLANE_ENGINE_ADMISSION=fw.FakeAdmissionBinding(
+            snapshot=fw.cp_snapshot_payload(fw.live_token_grant())
+        )
+    )
+    body = await _dispatch(runtime, live_only, budget, _transcribe_request(audio=b"x"))
+    assert body == {"ok": False, "error": {"code": "voice_stt_cost_denied"}}
+    assert live_only.PADIEM_GROQ_API_KEY.reads == 0
+
+
+async def test_an_admitted_transcription_calls_the_provider(runtime):
+    """The one admitted path, end to end through the shipped route."""
+    env = fw.enabled_env()
     budget = fw.FetchBudget()
     budget.response = fw.FakeUpstream(200, {"text": "네"})
     body = await _dispatch(runtime, env, budget, _transcribe_request(audio=b"x"))
-    assert body == {"ok": False, "error": {"code": "caller_authorization_unimplemented"}}
+    assert body["ok"] is True and body["text"] == "네"
+    assert budget.calls and budget.calls[0]["url"] == c.GROQ_STT_ENDPOINT
+
+
+async def test_capabilities_needs_no_caller_identity(runtime):
+    """The key-free route is unaffected by the paid-route authority."""
+    env = fw.enabled_env()
+    budget = fw.FetchBudget()
+    body = await _dispatch(runtime, env, budget, fw.FakeRequest("GET", "https://voice.internal/internal/v1/voice/capabilities"))
+    assert body["ok"] is True
+    assert body["enabled_route_contract"] == "canonical_caller_tenant_cost_authority"
     assert budget.calls == []
-    assert env.PADIEM_GROQ_API_KEY.reads == 0
+    assert env.CONTROL_PLANE_IDENTITY.calls == []
 
 
-@pytest.mark.parametrize("route", [TRANSCRIBE_ROUTE, LIVE_TOKEN_ROUTE])
-async def test_require_caller_authorization_always_fails_closed(runtime, route):
-    """The gate itself: no env can make it return."""
-    for env in (
-        fw.enabled_env(),
-        fw.enabled_env(VOICE_STT_CALLER_GUARD=fw.FakeCallerGuard()),
-        fw.enabled_env(VOICE_STT_CALLER_GUARD=None),
-        fw.disabled_env(),
-    ):
-        with pytest.raises(c.VoiceSttError) as raised:
-            await runtime._require_caller_authorization(env, route=route)
-        assert raised.value.code == "caller_authorization_unimplemented"
-        assert raised.value.status == 503
+# ---------------------------------------------------------------------------
+# Handler defence in depth: an authorization is bound to its own route
+# ---------------------------------------------------------------------------
 
 
-async def _run_paid_with(worker, env, budget, request, authorization):
-    """Call the transcribe pipeline with an arbitrary claimed authorization."""
+async def _run_handler(worker, env, budget, authorization):
+    """Call the transcribe handler with an arbitrary claimed authorization."""
     worker.fetch = budget.make_fetch()
+    _, audio = c.validate_transcribe_request(
+        {"audioDataUrl": "data:audio/webm;base64," + base64.b64encode(b"x").decode("ascii")}
+    )
     try:
-        response = await worker._handle_transcribe(env, request, authorization)
+        response = await worker._handle_transcribe(env, authorization, "ko", audio)
     except c.VoiceSttError as exc:
         return {"ok": False, "error": {"code": exc.code}}
     return json.loads(response.body)
 
 
 async def test_pipeline_refuses_an_authorization_for_another_route(runtime):
-    """Even a hand-built authorization is checked against the route it names."""
+    """Even a verified authorization is re-checked against the route it names."""
     env = fw.enabled_env()
     budget = fw.FetchBudget()
-    body = await _run_paid_with(runtime, env, budget, _transcribe_request(audio=b"x"), _test_authorization(LIVE_TOKEN_ROUTE))
-    assert body == {"ok": False, "error": {"code": "caller_authorization_unimplemented"}}
+    body = await _run_handler(runtime, env, budget, _test_authorization(LIVE_TOKEN_ROUTE))
+    assert body == {"ok": False, "error": {"code": "voice_stt_authority_unavailable"}}
     assert budget.calls == []
     assert env.PADIEM_GROQ_API_KEY.reads == 0
 
 
 @pytest.mark.parametrize(
     "authorization",
-    [
-        None,
-        True,
-        {},
-        {"allowed": True, "caller": "acct", "cost_scope": {"daily_usd_cap": 1}},
-        "approved",
-    ],
+    [None, True, {}, {"allowed": True, "cost_scope": {"daily_usd_cap": 1}}, "approved"],
 )
 async def test_pipeline_refuses_anything_that_is_not_an_authorization(runtime, authorization):
     env = fw.enabled_env()
     budget = fw.FetchBudget()
-    body = await _run_paid_with(runtime, env, budget, _transcribe_request(audio=b"x"), authorization)
-    assert body == {"ok": False, "error": {"code": "caller_authorization_unimplemented"}}
+    body = await _run_handler(runtime, env, budget, authorization)
+    assert body == {"ok": False, "error": {"code": "voice_stt_authority_unavailable"}}
     assert budget.calls == []
     assert env.PADIEM_GROQ_API_KEY.reads == 0
 
 
-async def test_capabilities_still_answers_with_a_decoy_guard_attached(runtime):
-    """The key-free route is unaffected by the paid-route closure."""
-    env = fw.enabled_env(VOICE_STT_CALLER_GUARD=types.SimpleNamespace())
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("actor", ""),
+        ("tenant", "   "),
+        ("capability", ""),
+        ("reservation_id", ""),
+        ("policy_revision", ""),
+        ("estimated_units", 0),
+        ("estimated_units", -3),
+        ("estimated_units", True),
+        ("estimated_units", "1"),
+        ("estimated_units", c.MAX_RESERVATION_UNITS + 1),
+    ],
+)
+async def test_pipeline_refuses_an_incomplete_authorization(runtime, field, value):
+    """A blank actor/tenant/capability/reservation or a non-positive cost is refused."""
+    env = fw.enabled_env()
     budget = fw.FetchBudget()
-    body = await _dispatch(runtime, env, budget, fw.FakeRequest("GET", "https://voice.internal/internal/v1/voice/capabilities"))
-    assert body["ok"] is True
-    assert body["enabled_route_contract"] == "paid_fail_closed_no_authority"
+    kwargs = {
+        "actor": _test_authorization(TRANSCRIBE_ROUTE).actor,
+        "tenant": _test_authorization(TRANSCRIBE_ROUTE).tenant,
+        "route": TRANSCRIBE_ROUTE,
+        "capability": c.CAPABILITY_TRANSCRIBE,
+        "reservation_id": "res-fixture",
+        "estimated_units": 1,
+        "policy_revision": "rev",
+    }
+    kwargs[field] = value
+    body = await _run_handler(runtime, env, budget, c.CallerAuthorization(**kwargs))
+    assert body == {"ok": False, "error": {"code": "voice_stt_authority_unavailable"}}
     assert budget.calls == []
+    assert env.PADIEM_GROQ_API_KEY.reads == 0
 
 
 # ---------------------------------------------------------------------------
@@ -790,7 +1245,7 @@ async def test_hanging_response_body_is_bounded(runtime, monkeypatch, route, abo
     env = fw.enabled_env()
     budget = fw.FetchBudget()
     budget.response = fw.FakeUpstream(200, {"text": "네"}, hang_body=True)
-    request = _transcribe_request(audio=b"x") if route == TRANSCRIBE_ROUTE else _live_token_request()
+    request = _route_request(route)
     body = await _run_paid(runtime, env, budget, request, route)
     assert body == {"ok": False, "error": {"code": "stt_unavailable"}}
     # The provider was actually contacted once, and its body read was attempted.

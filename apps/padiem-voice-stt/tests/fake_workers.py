@@ -17,7 +17,16 @@ from __future__ import annotations
 import asyncio
 import sys
 import types
+from datetime import datetime, timedelta, timezone
 from typing import Any
+
+
+def _clock() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def _iso(moment: datetime) -> str:
+    return moment.isoformat()
 
 
 class FakeResponse:
@@ -203,15 +212,127 @@ class FakeSecretsBinding:
 #: "fall back to the approving decoy default".
 _NO_DECISION = object()
 
+#: Canonical Control Plane facts the fakes below mirror. The real values come from
+#: ``packages/padiem-control-plane``; nothing here is production data. The
+#: timestamps are derived from the current UTC clock so a fixture can never go
+#: stale, while remaining unambiguous about which instant each test manipulates.
+CP_PRODUCT = "b62"
+CP_SESSION = "sess-local3-fixture"
+CP_SUBJECT = "user-local3-fixture"
+CP_TENANT = "tenant_local3fixture0000000000000000ab"
+CP_SNAPSHOT_REVISION = "voice-e1.s7.deadbeef"
+CP_RESERVATION_REF = "res-local3-fixture"
+#: The instant a fixture claims it was issued at (roughly "now").
+CP_NOW = _iso(_clock() - timedelta(seconds=5))
+#: A comfortably future instant, so a fixture is active until a test says else.
+CP_SESSION_EXPIRES = _iso(_clock() + timedelta(hours=1))
+#: Two clearly past instants, so an "expired" fixture stays internally consistent
+#: (issued before expiry) instead of tripping the malformed-timestamp check.
+CP_RESERVED_PAST = _iso(_clock() - timedelta(hours=2))
+CP_PAST = _iso(_clock() - timedelta(hours=1))
 
-class FakeCallerGuard:
-    """A **decoy** caller-guard binding: it would approve anything it is asked.
 
-    This exists to prove the opposite of what it offers. The Worker must never
-    consult it, because no production service-binding authorization contract
-    exists to verify a verdict against — an object that simply answers
-    ``{"allowed": True, ...}`` is not caller identity and not cost
-    authorization. ``calls`` therefore stays empty on every paid route, and the
+def cp_session_payload(**overrides):
+    """A canonical ACTIVE session as ``CONTROL_PLANE_IDENTITY`` returns it."""
+    payload = {
+        "session_id": CP_SESSION,
+        "product_id": CP_PRODUCT,
+        "subject": {"subject_type": "user", "subject_id": CP_SUBJECT},
+        "issued_at": CP_NOW,
+        "expires_at": CP_SESSION_EXPIRES,
+        "state": "active",
+        "revision": 7,
+        "tenant_id": CP_TENANT,
+    }
+    payload.update(overrides)
+    return payload
+
+
+def cp_snapshot_payload(*grants, **overrides):
+    """An entitlement snapshot carrying exactly ``grants``."""
+    payload = {
+        "snapshot_id": "ent-local3-fixture",
+        "product_id": CP_PRODUCT,
+        "subject": {"subject_type": "user", "subject_id": CP_SUBJECT},
+        "revision": CP_SNAPSHOT_REVISION,
+        "issued_at": CP_NOW,
+        "expires_at": CP_SESSION_EXPIRES,
+        "grants": [
+            {"key": key, "allowed": allowed, "limit": limit} for key, allowed, limit in grants
+        ],
+    }
+    payload.update(overrides)
+    return payload
+
+
+def cp_reservation_payload(**overrides):
+    payload = {
+        "reservation_ref": CP_RESERVATION_REF,
+        "admitted": True,
+        "reserved_at": CP_NOW,
+        "expires_at": CP_SESSION_EXPIRES,
+    }
+    payload.update(overrides)
+    return payload
+
+
+def voice_grant(limit=None):
+    return ("voice.stt.transcribe", True, limit)
+
+
+def live_token_grant(limit=None):
+    return ("voice.stt.live_token", True, limit)
+
+
+class FakeIdentityBinding:
+    """Stands in for the private ``CONTROL_PLANE_IDENTITY`` Service Binding."""
+
+    def __init__(self, session=None, *, missing=False, raises=None):
+        self.session = cp_session_payload() if session is None else session
+        self.missing = missing
+        self.raises = raises
+        self.calls: list[dict] = []
+
+    async def resolve_auth_session(self, payload):
+        self.calls.append(dict(payload or {}))
+        if self.raises is not None:
+            raise self.raises
+        if self.missing or self.session is None:
+            return {"ok": False, "error": {"code": "auth_session_not_found"}}
+        return {"ok": True, "session": self.session}
+
+
+class FakeAdmissionBinding:
+    """Stands in for ``CONTROL_PLANE_ENGINE_ADMISSION``: snapshot + reservation."""
+
+    def __init__(self, *, snapshot=None, reservation=None, raises=None, admitted=True):
+        self.snapshot = cp_snapshot_payload(voice_grant(), live_token_grant()) if snapshot is None else snapshot
+        self.reservation = (
+            cp_reservation_payload(admitted=admitted) if reservation is None else reservation
+        )
+        self.raises = raises
+        self.snapshot_calls: list[dict] = []
+        self.reservation_calls: list[dict] = []
+
+    async def fetch_entitlement_snapshot(self, payload):
+        self.snapshot_calls.append(dict(payload or {}))
+        if self.raises is not None:
+            raise self.raises
+        return {"ok": True, "snapshot": self.snapshot}
+
+    async def reserve_usage(self, payload):
+        self.reservation_calls.append(dict(payload or {}))
+        if self.raises is not None:
+            raise self.raises
+        return {"ok": True, "reservation": self.reservation}
+
+
+class FakeApprovingDecoyGuard:
+    """A **decoy** bound to the retired ``VOICE_STT_CALLER_GUARD`` name.
+
+    It would approve anything it is asked. The Worker must ignore it entirely:
+    the paid-route authority is the Control Plane pair, so this object — however
+    approving — may not open a route. ``calls`` therefore stays empty and the
     tests assert exactly that.
     """
 
@@ -236,6 +357,16 @@ class FakeCallerGuard:
         return self.decision
 
 
+def caller_headers(**overrides):
+    """The two opaque clues a product Worker presents; never an identity."""
+    headers = {
+        "x-padiem-product-id": CP_PRODUCT,
+        "x-padiem-auth-session-id": CP_SESSION,
+    }
+    headers.update(overrides)
+    return headers
+
+
 def install_workers_module():
     """Install the fake ``workers`` module and import the real ``worker``."""
     module = types.ModuleType("workers")
@@ -258,15 +389,16 @@ def install_workers_module():
 
 
 def enabled_env(**overrides):
-    """An env that passes the deployment gate (only reachable with a guard binding).
+    """An env that passes the deployment flag and carries both CP bindings.
 
-    The attached ``FakeCallerGuard`` is a **decoy**: the gate is open but the
-    paid routes stay closed, so the presence/approval of this binding is what
-    the tests prove *does not* authorize anything.
+    The bindings are **fakes** standing in for the canonical Control Plane. Tests
+    that must prove a denial set ``CONTROL_PLANE_ENGINE_ADMISSION``/``CONTROL_PLANE_IDENTITY``
+    to ``None`` or swap in a refusing payload.
     """
     env = types.SimpleNamespace(
         PADIEM_VOICE_STT_ENABLED="true",
-        VOICE_STT_CALLER_GUARD=FakeCallerGuard(),
+        CONTROL_PLANE_IDENTITY=FakeIdentityBinding(),
+        CONTROL_PLANE_ENGINE_ADMISSION=FakeAdmissionBinding(),
         PADIEM_GROQ_API_KEY=FakeSecretsBinding("groq-key-value"),
         PADIEM_GEMINI_API_KEY=FakeSecretsBinding("gemini-key-value"),
     )

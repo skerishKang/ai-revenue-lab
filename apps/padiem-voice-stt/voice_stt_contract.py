@@ -145,39 +145,88 @@ GROQ_API_KEY_BINDING_VERIFIED = False
 #: Deployment gate names for this shared service. Both are read from trusted
 #: Worker bindings only, never from request input.
 VOICE_STT_ENABLED_BINDING = "PADIEM_VOICE_STT_ENABLED"
-#: Service Binding that must supply an authenticated caller identity and a cost
-#: authorization. It does not exist yet and must not be switched on to pass tests.
-#:
-#: Attaching *any* object under this name proves nothing on its own: there is no
-#: production service-binding authorization contract implemented against which a
-#: verdict could be verified, so a binding — approving, denying or empty — is
-#: never treated as authorization. Paid routes stay unreachable until the real
-#: caller authority is implemented in its own integration slice.
+#: RETIRED. The paid routes no longer consult this name at all. The caller
+#: authority is the canonical Control Plane pair below, verified in
+#: ``voice_stt_caller_auth``; a bound object under this legacy name — empty,
+#: approving, denying or ``True`` — cannot open a route. The constant is kept
+#: only so the retired name stays greppable and its removal is a deliberate,
+#: reviewable step rather than a silent disappearance.
 VOICE_STT_CALLER_GUARD_BINDING = "VOICE_STT_CALLER_GUARD"
+#: The Service Binding each product Worker gains to reach this private Worker.
+#: It is a product-side prerequisite and is declared in the product configs,
+#: not here.
 VOICE_STT_SERVICE_BINDING = "VOICE_STT_SERVICE"
+
+#: Private Service Binding to the canonical Control Plane identity authority.
+#: Reused from ``apps/padiem-ai-engine``: the same RPC
+#: (``resolve_auth_session``) and the same closed public-dict shape. It is the
+#: only thing that may turn an opaque session clue into an authenticated subject
+#: and its tenant. Neither binding is attached to any deployed environment yet.
+VOICE_STT_IDENTITY_BINDING = "CONTROL_PLANE_IDENTITY"
+#: Private Service Binding to the canonical Control Plane entitlement + usage
+#: authority. Reused from ``apps/padiem-ai-engine`` (``fetch_entitlement_snapshot``
+#: / ``reserve_usage``) so voice spending is admitted by the same control-plane
+#: authority as Engine spending instead of a second, voice-local ledger.
+VOICE_STT_ADMISSION_BINDING = "CONTROL_PLANE_ENGINE_ADMISSION"
+
+#: Entitlement grant keys the Control Plane must issue before a paid voice route
+#: may spend. They are **not** the Engine orchestration grant: a tenant that can
+#: chat has not thereby bought speech-to-text, so absence of a voice grant is a
+#: cost denial, never an implicit allow. The Control Plane producer does not emit
+#: these keys yet, so every paid voice route fails closed until it does.
+CAPABILITY_TRANSCRIBE = "voice.stt.transcribe"
+CAPABILITY_LIVE_TOKEN = "voice.stt.live_token"
+
+#: Metering granularity for the Control Plane usage reservation. This is a cost
+#: *unit count*, not a price: it fixes how finely the authority meters audio, and
+#: no currency amount, provider tariff or model choice is encoded here. Pricing
+#: stays an Owner decision and is not resolved in this repository.
+AUDIO_COST_UNIT_BYTES = 256 * 1024
+#: A live-token mint carries no audio, so it is metered as exactly one unit.
+LIVE_TOKEN_COST_UNITS = 1
+#: Upper bound on any reservation request, mirroring the Engine's own ceiling.
+MAX_RESERVATION_UNITS = 1_000_000
+
+
+def cost_units_for_audio(audio_bytes: int) -> int:
+    """Metering units for one validated audio payload — never a price.
+
+    Computed by the Worker from the byte length it already validated, so the
+    quantity can never be understated by the caller. Raises for any non-positive
+    or non-integral length, which keeps a zero, negative or boolean length from
+    becoming a free request.
+    """
+    if isinstance(audio_bytes, bool) or not isinstance(audio_bytes, int) or audio_bytes <= 0:
+        raise ValueError("audio_bytes must be a positive integer")
+    units = -(-audio_bytes // AUDIO_COST_UNIT_BYTES)
+    if units > MAX_RESERVATION_UNITS:
+        raise ValueError("audio_bytes exceeds the reservation ceiling")
+    return units
 
 
 @dataclass(frozen=True)
 class CallerAuthorization:
-    """The only value that may unlock a paid route — never produced today.
+    """The only value that may unlock a paid route.
 
     This records what a *real* caller authority must hand to the Worker before a
     paid provider request: an authenticated server-owned actor, the tenant it
-    acts for, the exact route it was admitted for, and a per-request cost
-    reservation identity with a positive authorized amount.
+    acts for, the exact route and capability it was admitted for, and a
+    Control Plane cost reservation identity for a positive number of metering
+    units, together with the entitlement policy revision that admitted it.
 
-    It is constructed **nowhere in the Worker**. The route gate
-    (``worker._require_caller_authorization``) always raises, so no request — and
-    no attached binding — can obtain one. The test suite builds instances
-    explicitly to exercise the paid pipeline in isolation, and those instances
-    never originate from ``env`` or from request input.
+    It is produced by :mod:`voice_stt_caller_auth` only, and only from a
+    Control Plane session resolution plus entitlement snapshot plus admitted
+    usage reservation. It is never built from request input, from a binding's
+    self-declared verdict, or from a caller-supplied cost scope.
     """
 
     actor: str
     tenant: str
     route: str
+    capability: str
     reservation_id: str
-    amount_usd: float
+    estimated_units: int
+    policy_revision: str
 
     def admits(self, route: str) -> bool:
         """True only for the exact route this authorization was admitted for."""
@@ -186,11 +235,15 @@ class CallerAuthorization:
             and bool(self.actor.strip())
             and isinstance(self.tenant, str)
             and bool(self.tenant.strip())
+            and isinstance(self.capability, str)
+            and bool(self.capability.strip())
             and isinstance(self.reservation_id, str)
             and bool(self.reservation_id.strip())
-            and isinstance(self.amount_usd, (int, float))
-            and not isinstance(self.amount_usd, bool)
-            and self.amount_usd > 0
+            and isinstance(self.policy_revision, str)
+            and bool(self.policy_revision.strip())
+            and isinstance(self.estimated_units, int)
+            and not isinstance(self.estimated_units, bool)
+            and 1 <= self.estimated_units <= MAX_RESERVATION_UNITS
             and self.route == route
         )
 
@@ -231,9 +284,17 @@ VOICE_STT_CODES: frozenset[str] = frozenset(
         # Deployment gates: fail closed before any Secret read or provider call.
         "voice_stt_disabled",
         "caller_guard_unavailable",
-        # No verified caller-identity / cost-reservation authority exists, so a
-        # paid route is unreachable regardless of what the guard binding says.
-        "caller_authorization_unimplemented",
+        # Caller identity / tenant / cost authority outcomes. A caller that cannot
+        # prove an authenticated Control Plane session is unauthenticated; a
+        # session that does not belong to this request is forbidden; a missing
+        # voice grant or a refused reservation is a cost denial. An authority
+        # that cannot be reached or cannot be parsed fails closed as unavailable
+        # rather than as an allow.
+        "voice_stt_unauthenticated",
+        "voice_stt_forbidden",
+        "voice_stt_cost_denied",
+        "voice_stt_authority_unavailable",
+        "voice_stt_tenant_unavailable",
     }
 )
 
@@ -255,7 +316,11 @@ STATUS_BY_CODE: dict[str, int] = {
     "live_token_unavailable": 503,
     "voice_stt_disabled": 503,
     "caller_guard_unavailable": 503,
-    "caller_authorization_unimplemented": 503,
+    "voice_stt_unauthenticated": 401,
+    "voice_stt_forbidden": 403,
+    "voice_stt_cost_denied": 403,
+    "voice_stt_authority_unavailable": 503,
+    "voice_stt_tenant_unavailable": 503,
 }
 
 
