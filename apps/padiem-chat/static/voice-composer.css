@@ -201,7 +201,9 @@
 /* Keep all Chat cards at the existing visual height after shortening copy. */
 .app-shell[data-state="chat"] .starter-grid > .starter,
 .app-shell[data-state="chat"] .starter-grid > .document-starter-shell {
-  min-height: 124px;
+  height: 145px;
+  min-height: 145px;
+  max-height: 145px;
   box-sizing: border-box;
 }
 .app-shell[data-state="claw"] .starter-grid .document-starter-shell {
@@ -215,7 +217,8 @@
   box-sizing: border-box;
   width: 100%;
   height: 100%;
-  min-height: 124px;
+  min-height: 145px;
+  max-height: 145px;
 }
 .starter-grid .document-formats-toggle {
   position: absolute;
@@ -255,5 +258,9 @@
   #composerForm .composer-inline-hint { top: 30px; right: 8px; font-size: 11px; }
   .app-shell[data-state="chat"] .starter-grid > .starter,
   .app-shell[data-state="chat"] .starter-grid > .document-starter-shell,
-  .starter-grid .document-starter-shell > .starter { min-height: 124px; }
+  .starter-grid .document-starter-shell > .starter {
+    height: 145px;
+    min-height: 145px;
+    max-height: 145px;
+  }
 }
