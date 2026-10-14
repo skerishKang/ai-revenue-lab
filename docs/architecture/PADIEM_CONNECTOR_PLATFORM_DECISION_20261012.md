@@ -1,3 +1,7 @@
+<!-- CENTRAL_CONNECTOR_RELEASE_PACKAGING_POINTER_20261015 -->
+> **2026-10-15 technical packaging addendum:** The lightweight **PADIEM Connector** and full Desktop are different distribution artifacts. The actual Connector EXE/MSI size is **unmeasured**, not the previously guessed 30?80 MB or 50?150 MB. A ~30 MB lightweight package is an optimization target, not a shipping promise. R2 Standard versioned installer hosting and public-cost assumptions are in [Connector installer distribution](../operations/PADIEM_CONNECTOR_INSTALLER_DISTRIBUTION_20261015.md). This later technical update does not replace private business governance, canonical identity, or current #4139 first-PC-TXT work.
+<!-- /CENTRAL_CONNECTOR_RELEASE_PACKAGING_POINTER_20261015 -->
+
 # PADIEM Connector — 플랫폼 제품 결정 및 구현 로드맵 (2026-10-12)
 
 **상태:** 사용자 비전/구조 결정 + 검증된 기존 코드 목록. **전체 제품 구현·출시 선언 아님.**  

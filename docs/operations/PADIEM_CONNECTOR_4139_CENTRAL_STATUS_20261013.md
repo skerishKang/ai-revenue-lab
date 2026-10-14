@@ -1,3 +1,7 @@
+<!-- CENTRAL_CONNECTOR_RELEASE_DISTRIBUTION_20261015 -->
+> **2026-10-15 public distribution update:** PADIEM Connector is a lightweight, separately packaged Windows download; the current \`install.ps1\` is source-based and needs Python. **No standalone EXE/MSI has been built or sized.** R2 **Standard** is the recommended future release-download host (free internet egress; storage/API operations still metered); no R2 release bucket, custom domain or live download is claimed. The canonical packaging, measured-size and release evidence contract is [PADIEM Connector installer distribution](PADIEM_CONNECTOR_INSTALLER_DISTRIBUTION_20261015.md). Existing code/WSS/REAL-PC E2E status remains tracked at [#4139](https://github.com/skerishKang/ai-revenue-lab/issues/4139), with selected-Windows release acceptance at [#3099](https://github.com/skerishKang/ai-revenue-lab/issues/3099). Historical dated status tables below are snapshots, not current blockers or a business decision.
+<!-- /CENTRAL_CONNECTOR_RELEASE_DISTRIBUTION_20261015 -->
+
 > **2026-10-15 최신 상태 링크:** 이 10월 13일 Connector 보고서는 당시 기준의 원본 증거입니다. #4541 접근성 PR #4691 **MERGED/issue CLOSED**; #4697은 #4463/#4572 Resident 충돌 회귀 안전 CI 코드만 **MERGED**. **#4572/#4463/#4490은 여전히 DRAFT이고 실제 PC WSS·Broker·등록/철회·TXT same-thread E2E는 #4139 및 #3099 OPEN**입니다. 통합 중인 다른 팀 코드를 임의로 덮어쓰거나 소스 merge guard를 실제 PC 성공으로 간주하지 않습니다. 공통 상태·이슈 전수 목록은 [포트폴리오 최신 인덱스](PADIEM_PORTFOLIO_ISSUE_DOC_RECONCILIATION_20261013.md) 한 곳에서 갱신합니다.
 
 # PADIEM Connector #4139 — 중앙 상태·의사결정·이슈 통합 인덱스 (2026-10-13 KST)
