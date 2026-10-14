@@ -808,7 +808,6 @@
     lastEasyView = "recent";
     if (!options || options.history !== false) recordProductState("recent");
     startConversation();
-    addMessage("assistant", "최근 견적을 불러오는 중...");
     renderHistoryPending();
     setChips([
       { label: "질문받으며 새로 만들기", action: startGuided },
@@ -819,18 +818,8 @@
     sendButton.disabled = true;
     readRecentHistory().then((result) => {
       if (lastEasyView !== "recent") return;
-      addMessage("assistant", recentHistoryIntroText(result));
       renderHistory(result);
     });
-  }
-
-  function recentHistoryIntroText(result) {
-    if (!result || result.ok !== true) {
-      return "최근 견적을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.";
-    }
-    return result.authority === "server"
-      ? "계정에 저장된 최근 견적입니다. 불러오거나 복사해서 새 견적으로 사용할 수 있어요."
-      : "이 브라우저에 저장한 최근 견적입니다. 불러오거나 복사해서 새 견적으로 사용할 수 있어요.";
   }
 
   function renderHistoryPending() {
@@ -1202,7 +1191,7 @@
     lastEasyView = GUIDED_DIALOGUE_VIEW;
     if (!options || options.history !== false) recordProductState(GUIDED_DIALOGUE_VIEW);
     startConversation();
-    addMessage("assistant", "이전 질문형 견적 대화입니다. AI 일반 대화와 별도로 보관됩니다.");
+    addMessage("assistant", "저장된 견적 상담입니다. 확인할 기록을 선택하세요.");
     setChips([
       { label: "지난 견적 이어서 하기", action: resumeAccountGuidedOrLocal },
       { label: "처음으로", action: showHome }
@@ -1239,14 +1228,27 @@
       result.conversations.forEach(row => {
         if (!row || !/^gdt_[a-f0-9]{32}$/.test(String(row.conversation_id || ""))) return;
         const card = document.createElement("article");
-        card.className = "easy-history-card";
-        const info = document.createElement("strong");
-        info.textContent = "질문형 견적 대화 · " + String(row.updated_at || "").slice(0, 16);
+        card.className = "easy-history-card easy-guided-card";
+        const info = document.createElement("div");
+        info.className = "easy-history-info";
+        const title = document.createElement("strong");
+        title.textContent = "견적 상담";
+        const date = new Date(String(row.updated_at || ""));
+        const detail = document.createElement("span");
+        detail.textContent = Number.isNaN(date.getTime())
+          ? "작성 시각 정보 없음"
+          : new Intl.DateTimeFormat("ko-KR", {
+              year: "numeric", month: "numeric", day: "numeric",
+              hour: "2-digit", minute: "2-digit"
+            }).format(date);
+        info.append(title, detail);
+        const actions = document.createElement("div");
+        actions.className = "easy-history-actions";
         const open = document.createElement("button");
-        open.type = "button"; open.textContent = "대화 보기";
+        open.type = "button"; open.className = "easy-guided-open"; open.textContent = "대화 보기";
         open.addEventListener("click", () => openGuidedDialogue(row.conversation_id));
         const remove = document.createElement("button");
-        remove.type = "button"; remove.className = "danger"; remove.textContent = "삭제";
+        remove.type = "button"; remove.className = "danger easy-guided-delete"; remove.textContent = "삭제";
         remove.addEventListener("click", () => {
           if (!window.confirm("이전 질문형 대화 기록을 삭제할까요? 진행 중인 견적은 삭제할 수 없습니다.")) return;
           GuidedAPI.deleteConversation(row.conversation_id).then(outcome => {
@@ -1255,7 +1257,8 @@
             else App.toast("진행 중 기록이거나 삭제할 수 없는 대화입니다.");
           }).catch(() => App.toast("기록 삭제를 확인하지 못했습니다."));
         });
-        card.append(info, open, remove);
+        actions.append(open, remove);
+        card.append(info, actions);
         historyPanel.appendChild(card);
       });
     }).catch(() => {
