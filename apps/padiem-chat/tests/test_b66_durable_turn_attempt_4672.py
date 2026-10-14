@@ -66,7 +66,7 @@ def test_real_http_no_schema_fails_before_paid_model(env):
     request = [{"role": "user", "content": "한 품목 견적"}]
     response = _chat(env.client, messages=request, turn_token=TOKEN)
     assert response.status_code == 503
-    assert response.json()["code"] == "dialogue_attempt_unavailable"
+    assert response.json()["error"]["code"] == "dialogue_attempt_unavailable"
     assert env.model.calls == []
 
 
@@ -74,7 +74,7 @@ def test_real_http_missing_token_refused_before_paid_model(env):
     _wire(env)
     response = _chat(env.client, messages=[{"role": "user", "content": "견적"}])
     assert response.status_code == 400
-    assert response.json()["code"] == "turn_token_required"
+    assert response.json()["error"]["code"] == "turn_token_required"
     assert env.model.calls == []
 
 
@@ -101,7 +101,7 @@ def test_claim_mismatch_cannot_reuse_paid_token(env):
     reset_dialogue_idempotency()
     second = _chat(env.client, messages=[{"role": "user", "content": "콘크리트"}], turn_token=TOKEN)
     assert second.status_code == 409
-    assert second.json()["code"] == "dialogue_attempt_mismatch"
+    assert second.json()["error"]["code"] == "dialogue_attempt_mismatch"
     assert len(env.model.calls) == 1
 
 
@@ -116,7 +116,7 @@ def test_uncertain_provider_failure_never_auto_reclaims_claim(env):
     env.model.fail = False
     retry = _chat(env.client, messages=req, turn_token=TOKEN)
     assert retry.status_code == 409
-    assert retry.json()["code"] == "dialogue_turn_in_progress"
+    assert retry.json()["error"]["code"] == "dialogue_turn_in_progress"
     assert len(env.model.calls) == 1
 
 
