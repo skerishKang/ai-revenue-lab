@@ -1,4 +1,4 @@
-﻿"""Owner-approved Free baseline uses the existing Gemini 3.1 route for members.
+"""Owner-approved Free baseline uses the existing Gemini 3.1 route for members.
 
 This deliberately does not activate Plus/Pro/Max, mutate central membership,
 or authorize a browser-supplied arbitrary exact model.
@@ -28,21 +28,40 @@ async def test_free_requires_membership_login_not_paid_upgrade() -> None:
     store = MemoryHistoryStore()
     profile = await add_test_user(store)
     app = create_app(settings, history_store=store)
-    payload = {"messages": [{"role": "user", "content": "?? ??"}], "mode": "auto", "tier": "free"}
+    payload = {"messages": [{"role": "user", "content": "current date"}], "mode": "auto", "tier": "free"}
+    # Offline mock preview is deliberately anonymous and must not be blocked
+    # by the production Free membership gate (no provider or key is present).
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test",
+    ) as client:
+        mock_public = await client.post("/api/chat", json=payload)
+        assert mock_public.status_code == 200
+        token = create_session_token(settings, profile.id)
+        client.cookies.set(SESSION_COOKIE, token, domain="chat.example.test")
+        allowed = await client.post("/api/chat", json=payload)
+        assert allowed.status_code == 200, allowed.text
+
+    # Actual B14 mode without a login must reject BEFORE any provider POST.
+    # Only the authentication decision is under test, no upstream mock response
+    # or live model dispatch is ever allowed here.
+    live_settings = Settings.from_values(
+        runtime_mode="b14",
+        b14_base_url="https://b14.test.invalid",
+        auth_mode="google",
+        public_base_url="https://chat.example.test",
+        google_client_id="test-client.apps.googleusercontent.com",
+        google_client_secret="test-only-not-a-credential",
+        session_secret="test-free-member-route-secret-0000000000000000000",
+    )
+    live_app = create_app(live_settings, history_store=store)
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=live_app), base_url="https://chat.example.test",
     ) as client:
         denied = await client.post("/api/chat/stream", json=payload)
         assert denied.status_code == 401
         assert denied.json()["error"]["code"] == "unauthorized"
         denied_complete = await client.post("/api/chat", json=payload)
         assert denied_complete.status_code == 401
-        # A signed-in user in any paid/unpaid membership can select Free;
-        # no Plus/Pro/Max requirement exists on this product route.
-        token = create_session_token(settings, profile.id)
-        client.cookies.set(SESSION_COOKIE, token, domain="chat.example.test")
-        allowed = await client.post("/api/chat", json=payload)
-        assert allowed.status_code == 200, allowed.text
     assert resolve_tier_policy(payload["messages"], "free").model_id == FREE_B14_MODEL_ID
 
 
