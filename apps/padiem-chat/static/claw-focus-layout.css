@@ -780,7 +780,8 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
  * controls remain present in manual mode and in their original workflow.
  * Don't duplicate input markup, send logic, file attach or provider state.
  */
-.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .composer-wrap #composerForm > :is(.claw-model-choice,.claw-model-advanced,#ownerModelPreviewOpen) {
+.app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .composer-wrap #composerForm > :is(.claw-model-choice,.claw-model-advanced) {
+  /* Claw-only advanced controls hide, but Chat's model-status button stays. */
   display: none !important;
 }
 .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .composer-wrap #composerForm > #messageInput {
@@ -790,6 +791,13 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
  * The Claw workbench still owns its original model controls outside the landing. */
 .app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden])) .composer-tools {
   display: flex !important;
+}
+/* Mobile Claw defaults to a collapsed workbench; the shared landing must
+ * still show the exact owner model-status control present in Chat. */
+@media (max-width: 600px) {
+  html body .app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden])) #composerForm > #ownerModelPreviewOpen {
+    display: inline-flex !important;
+  }
 }
 .app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden])) #clawManualEntryBar {
   display: none !important;

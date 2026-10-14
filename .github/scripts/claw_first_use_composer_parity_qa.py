@@ -14,6 +14,9 @@ with sync_playwright() as p:
     const rect=s=>{const r=document.querySelector(s).getBoundingClientRect();return [r.x,r.width]};
     return {eyebrow:rect('.eyebrow'),heading:rect('#emptyState h1'),grid:rect('.starter-grid'),
       composer:rect('.composer-wrap'),tools:getComputedStyle(document.querySelector('.composer-tools')).display,
+      ownerStatus:document.querySelector('#ownerModelPreviewOpen').getClientRects().length>0,
+      fileTool:document.querySelector('#attachmentButton').getClientRects().length>0,
+      modelPill:document.querySelector('.composer-tier-trigger').getClientRects().length>0,
       entry:getComputedStyle(document.querySelector('#clawManualEntryBar')).display,
       cards:[...document.querySelectorAll('.claw-home-card')].filter(e=>getComputedStyle(e).display!=='none').length,
       tracks:document.querySelectorAll('.claw-connection-track').length,
@@ -29,6 +32,8 @@ with sync_playwright() as p:
     assert abs(chat[key][i]-claw[key][i])<=2,(width,key,chat[key],claw[key])
   assert abs(chat["eyebrow"][0]-claw["eyebrow"][0])<=2,(width,"eyebrow",chat,claw)
   assert claw["tools"]=="flex" and claw["entry"]=="none",(width,claw)
+  assert claw["ownerStatus"] and chat["ownerStatus"],(width,"model-status",chat,claw)
+  assert claw["fileTool"] and claw["modelPill"],(width,"shared-tools",claw)
   assert claw["cards"]==4 and claw["tracks"]==3,(width,claw)
   assert "작업하는 클로입니다." in claw["title"],(width,claw["title"])
   print(f"CLAW_FIRST_USE_COMPOSER_PARITY_{width}=PASS",flush=True)
