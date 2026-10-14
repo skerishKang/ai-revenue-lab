@@ -41,7 +41,7 @@ def project_body() -> dict:
                 "production_deployments_enabled": True,
                 "preview_deployment_setting": "none",
                 "pr_comments_enabled": False,
-                "path_includes": [ROOT + "/**"],
+                "path_includes": [ROOT + "/*"],
             },
         },
     }
@@ -73,6 +73,41 @@ def validate_existing(project: dict) -> None:
         raise RuntimeError("existing_project_output_mismatch")
     if cfg.get("production_deployments_enabled") is False:
         raise RuntimeError("automatic_production_deployment_disabled")
+
+
+def repair_deprecated_watch_path(account: str, token: str, project: dict) -> dict:
+    """Narrowly repair the invalid path watch pattern created by this workflow.
+
+    This PATCH changes only an approved Pages project setting. It does not
+    create, retry, promote or trigger a deployment. The next meaningful source
+    commit to the watched folder must still be automatically deployed.
+    """
+    validate_existing(project)
+    cfg = (project.get("source") or {}).get("config") or {}
+    current = cfg.get("path_includes")
+    expected = [ROOT + "/*"]
+    if current == expected:
+        print("WATCH_PATH=VALID", flush=True)
+        return project
+    if current != [ROOT + "/**"]:
+        raise RuntimeError("unexpected_pages_watch_path_configuration")
+    status, changed = api_request(
+        account, token, "PATCH", "/" + PROJECT,
+        {"source": {"type": "github", "config": {"path_includes": expected}}},
+    )
+    if status != 200 or changed.get("success") is not True:
+        raise RuntimeError("watch_path_configuration_repair_failed")
+    status, readback = api_request(account, token, "GET", "/" + PROJECT)
+    if status != 200 or readback.get("success") is not True:
+        raise RuntimeError("watch_path_readback_failed")
+    verified = readback.get("result") or {}
+    validate_existing(verified)
+    new_paths = ((verified.get("source") or {}).get("config") or {}).get("path_includes")
+    if new_paths != expected:
+        raise RuntimeError("watch_path_readback_mismatch")
+    print("WATCH_PATH=REPAIRED_AND_VERIFIED", flush=True)
+    print("DEPLOYMENT_API_USED=NO", flush=True)
+    return verified
 
 
 def api_request(account: str, token: str, method: str, suffix: str,
@@ -118,7 +153,10 @@ def main() -> int:
         print("GIT_CONNECTED_PROJECT=ALREADY_EXISTS", flush=True)
     else:
         raise RuntimeError("git_connected_project_lookup_failed")
-    validate_existing(result.get("result") or {})
+    current_project = repair_deprecated_watch_path(
+        account, token, result.get("result") or {}
+    )
+    validate_existing(current_project)
     print("GIT_CONNECTED_CONTRACT=VALID", flush=True)
     print("DIRECT_UPLOAD_USED=NO", flush=True)
 
@@ -131,6 +169,8 @@ def main() -> int:
             raise RuntimeError("git_connected_project_readback_failed")
         current = lookup.get("result") or {}
         validate_existing(current)
+        if ((current.get("source") or {}).get("config") or {}).get("path_includes") != [ROOT + "/*"]:
+            raise RuntimeError("watch_path_regressed")
         deploy = current.get("canonical_deployment") or current.get("latest_deployment") or {}
         state = (deploy.get("latest_stage") or {}).get("status") or deploy.get("status") or "NOT_YET_VISIBLE"
         deployment_id = deploy.get("id") or "UNKNOWN"
