@@ -36,7 +36,12 @@ def test_current_roster_contains_all_prior_owner_registered_models():
     assert set(got)==ids
     assert len(got)==len(ids)
     assert not (set(got)&OWNER_RETIRED)
-    assert authorize_exact_models(tuple(got))==tuple(got)
+    from b14_owner_evaluation_registry import MAX_EVALUATION_BATCH
+    selected = tuple(got)[:MAX_EVALUATION_BATCH]
+    assert authorize_exact_models(selected) == selected
+    if len(got) > MAX_EVALUATION_BATCH:
+        with pytest.raises(ValueError, match="evaluation_candidate_count_invalid"):
+            authorize_exact_models(tuple(got))
     assert got["poolside/laguna-s-2.1"]["provider_id"]=="poolside"
 
 @pytest.mark.parametrize("deleted", sorted(OWNER_RETIRED) + [
