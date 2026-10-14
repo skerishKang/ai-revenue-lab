@@ -119,8 +119,12 @@
       utterance.volume = volume;
       const voice = findVoice();
       if (voice) utterance.voice = voice;
-      onStart({ text: text, voice: voice ? voice.name : null });
-      report("speaking");
+      // "started" is reported only after the native synthesis start event.
+      utterance.onstart = function () {
+        if (currentGeneration !== playGeneration) return;
+        onStart({ text: text, voice: voice ? voice.name : null });
+        report("speaking");
+      };
       utterance.onend = function () {
         if (currentGeneration !== playGeneration) return;
         finishCurrent();
@@ -189,11 +193,6 @@
       report("voice-selected");
     }
 
-    function setUserGestureSeen(seen) {
-      userGestureSeen = seen === true;
-      report("start-state");
-    }
-
     return {
       isSupported: supported,
       availableVoices: availableVoices,
@@ -201,7 +200,6 @@
       cancel: cancel,
       start: function () { userStartSeen = true; report("started"); },
       stopOutput: function () { userStartSeen = false; cancel(); },
-      setUserStartSeen: setUserGestureSeen,
       getState: function () {
         return {
           supported: supported(),
