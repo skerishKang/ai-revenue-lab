@@ -793,17 +793,9 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
     grid-template-columns: 1fr;
   }
 }
-/* Glass brand mode: reuse the same portrait as Chat rather than supplying
- * Claw-specific art. Older workbench CSS previously suppressed it.
- */
-html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"]) .main-panel::before {
-  content: "" !important;
-  display: block !important;
-  opacity: var(--glass-art-opacity) !important;
-}
-html[data-theme="padiem-glass"] .app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"]) :is(.glass-shell-portrait,.glass-shell-field) {
-  display: revert !important;
-}
+/* Preserve the canonical Claw workbench contract: no decorative Chat
+ * portrait in Claw. Its 4-card first-use hero reuses Chat controls and tokens,
+ * not the unrelated cinematic portrait artwork. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="claw"]:has(.claw-workspace[data-view="general"]) .conversation {
   background: linear-gradient(155deg, rgba(248,250,251,.86), var(--glass-chat-surface));
   border: 1px solid var(--glass-chat-border);

@@ -113,7 +113,9 @@ def test_connectors_show_github_and_computer_as_not_ready_without_fake_links():
 def test_shared_portrait_and_existing_legacy_claw_workflows_stay_available():
     assert '#clawTaskHub' in CSS
     assert "main-panel::before" in CSS
-    assert "var(--glass-art-opacity)" in CSS
+    assert 'content: none;' in CSS
+    assert 'html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .main-panel::before' in CSS
+    assert 'display: block !important;\n  opacity: var(--glass-art-opacity)' not in CSS
     assert "clawApprovedMemory" in HTML
     assert "clawRunHistory" in HTML
     assert "clawExcelStartButton" in HTML
