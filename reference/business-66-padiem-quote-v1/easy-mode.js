@@ -1547,7 +1547,9 @@
       conversationId: guidedConversationId(),
       transcript: []
     };
-    saveGuidedToAccount();
+    // The first assistant prompt below is the first durable transcript entry.
+    // Do not PUT an empty shell first: that doubles the write, can race against
+    // actual Q/A and violates the one-write-per-explicit-start contract.
     if (reference) {
       addMessage("user", reference);
       addMessage(
