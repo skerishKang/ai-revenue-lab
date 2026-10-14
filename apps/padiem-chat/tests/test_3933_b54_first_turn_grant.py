@@ -51,7 +51,7 @@ from app.claw_first_turn_authority import (
     correlation_for,
     reserve_first_turn_grant,
 )
-from app.history import validate_conversation_id
+from app.history import PRODUCT_SCOPE_CHAT, validate_conversation_id
 
 import test_b54_claw_general_p01_routing as base
 
@@ -577,14 +577,24 @@ class _S1History:
     async def get_user(self, user_id):
         return None
 
-    async def get_conversation(self, user_id, conversation_id):
+    async def get_conversation(self, user_id, conversation_id, *, product_scope):
+        # #4661: never resolve a Claw thread from another owner or product.
+        if user_id != OWNER or product_scope != PRODUCT_SCOPE_CHAT:
+            return None
         return self.threads.get(conversation_id)
 
     async def append_exchange(
-        self, user_id, conversation_id, user_text, answer, project_id=None
+        self, user_id, conversation_id, user_text, answer, project_id=None,
+        *, product_scope,
     ):
-        self.saved.append((user_id, conversation_id, user_text, answer))
+        # Match the canonical product-scoped HistoryStore contract, do not
+        # silently accept a missing or foreign product tag.
+        if user_id != OWNER or product_scope != PRODUCT_SCOPE_CHAT:
+            raise ValueError("invalid owner-scoped Claw conversation")
+        self.saved.append((user_id, product_scope, conversation_id, user_text, answer))
         if conversation_id is not None:
+            if conversation_id not in self.threads:
+                raise ValueError("unknown owner conversation")
             return conversation_id
         return "chat_" + "9" * 32
 
