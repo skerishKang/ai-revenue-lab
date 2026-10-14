@@ -30,6 +30,7 @@ from padiem_ai_core.web_runtime import MAX_QUERY_CHARS
 from app.evidence_projection import (
     EngineEvidenceProjectionError,
     project_terminal_evidence,
+    project_engine_evidence,
 )
 from app.service import (
     ServiceContractError,
@@ -42,7 +43,7 @@ from app.service import (
 RESEARCH_PATH = "/internal/v1/research"
 MAX_RESEARCH_REQUEST_BODY_BYTES = 128 * 1024
 
-_OPERATIONS = frozenset({"search", "fetch", "deep_research"})
+_OPERATIONS = frozenset({"search", "fetch", "deep_research", "search_evidence"})
 _TOP_LEVEL_REQUIRED = frozenset({"app_id", "operation", "query", "agent"})
 _TOP_LEVEL_ALLOWED = frozenset(
     {
@@ -144,7 +145,7 @@ def build_research_request(payload: Any) -> ResearchRequest:
     if operation not in _OPERATIONS:
         raise ResearchContractError(
             "invalid_research_operation",
-            "Research operation must be search, fetch, or deep_research.",
+            "Research operation must be search, fetch, deep_research, or search_evidence.",
         )
 
     query = _query(data.get("query"))
@@ -275,7 +276,11 @@ class WebResearchEngineService:
 
         try:
             research_runtime = self._research_runtime_factory(request.app_id)
-            execution_runtime = self._execution_runtime_factory(request.app_id)
+            # Evidence-only must not construct, select, or invoke a B14 model.
+            execution_runtime = (
+                None if request.operation == "search_evidence"
+                else self._execution_runtime_factory(request.app_id)
+            )
         except Exception:
             return _service_error(
                 "web_runtime_unavailable",
@@ -326,6 +331,29 @@ class WebResearchEngineService:
             return planner_result.answer
 
         try:
+            if request.operation == "search_evidence":
+                # Existing authenticated Engine research route, not a browser
+                # endpoint. Caller-supplied system context is not accepted on
+                # this model-free public search path.
+                if request.additional_system_context is not None:
+                    return _service_error(
+                        "invalid_research_request",
+                        "Evidence-only search cannot carry private system context.",
+                        status_code=400,
+                    )
+                prepared = await research_runtime.prepare_search(
+                    request.query,
+                    additional_system_context=None,
+                    max_total_context_chars=32_768,
+                )
+                return ServiceResponse(status_code=200, body={
+                    "ok": True,
+                    "operation": "search_evidence",
+                    "answer": None,
+                    "sources": project_engine_evidence(prepared.evidence),
+                    "grounding_context": prepared.context,
+                    "research": None,
+                })
             if request.operation == "search":
                 result = await research_runtime.run_search(
                     request.query,
