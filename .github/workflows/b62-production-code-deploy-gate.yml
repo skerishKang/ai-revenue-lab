@@ -98,6 +98,11 @@ on:
         required: false
         type: boolean
         default: false
+      attach_existing_connector_broker:
+        description: "Explicitly add the existing LOCAL_AGENT_BROKER Service Binding while preserving b14/live settings"
+        required: false
+        type: boolean
+        default: false
       preserve_existing_b66_membership_secret:
         description: "Explicitly admit only the already-existing B66_MEMBERSHIP_ENFORCED secret_text metadata when a concurrent B66 change is present; do not read/set value"
         required: false
@@ -604,6 +609,7 @@ jobs:
       PUBLIC_BASE_URL_STATE: ${{ needs.cloudflare-readonly.outputs.public_base_url_state }}
       CONFIRMATION: ${{ inputs.confirmation }}
       ATTACH_WEB_SECRETS_STORE: ${{ inputs.attach_existing_web_secrets_store }}
+      ATTACH_EXISTING_CONNECTOR_BROKER: ${{ inputs.attach_existing_connector_broker }}
       PRESERVE_B66_MEMBERSHIP_SECRET: ${{ inputs.preserve_existing_b66_membership_secret }}
       COMMISSION_HARK_BROWSER: ${{ inputs.commission_hark_browser }}
     steps:
@@ -953,7 +959,12 @@ jobs:
           test ! -e "${generated}"
           extra_args=()
           if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ]; then
+            test "${ATTACH_EXISTING_CONNECTOR_BROKER}" != "true"
             extra_args=(--attach-existing-web-secrets-store)
+          fi
+          if [ "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "true" ]; then
+            test "${COMMISSION_HARK_BROWSER}" != "true"
+            extra_args=(--attach-existing-connector-broker)
           fi
           if [ "${COMMISSION_HARK_BROWSER}" = "true" ]; then
             test "${ATTACH_WEB_SECRETS_STORE}" != "true"
