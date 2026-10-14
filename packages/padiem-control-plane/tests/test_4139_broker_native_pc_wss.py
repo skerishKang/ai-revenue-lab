@@ -10,7 +10,7 @@ import asyncio
 import base64
 import json
 import shutil
-import subprocess
+from subprocess import check_output
 import sys
 from types import ModuleType, SimpleNamespace
 from pathlib import Path
@@ -63,7 +63,7 @@ process.stdout.write(c.verify(null,Buffer.from(process.argv[2],'hex'),
 def sign(transcript):
     if not shutil.which("node"):
         pytest.skip("Node native Ed25519 unavailable")
-    return subprocess.check_output(
+    return check_output(
         ["node","-e",SIGN_SCRIPT,SEED,transcript.hex()],timeout=8,
     ).decode()
 
@@ -71,7 +71,7 @@ def sign(transcript):
 async def verify_native(*, public_key, signature, transcript):
     if not shutil.which("node"):
         pytest.skip("Node native Ed25519 unavailable")
-    code=subprocess.check_output(
+    code=check_output(
         ["node","-e",VERIFY_SCRIPT,public_key.hex(),transcript.hex(),
          base64.b64encode(signature).decode()],timeout=8,
     )
