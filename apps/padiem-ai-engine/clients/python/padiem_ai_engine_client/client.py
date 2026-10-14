@@ -455,6 +455,17 @@ def _json_body(response: EngineTransportResponse) -> dict[str, Any]:
     return body
 
 
+_JUDGEMENT_REASONS = frozenset(
+    {
+        "fresh_public_fact",
+        "explicit_request",
+        "volatile_business_fact",
+        "stable_knowledge",
+        "user_supplied_text",
+        "clarify_context",
+    }
+)
+
 class PadiemAiEngineClient:
     def __init__(self, *, transport: EngineTransport, app_id: str, caller_id: str, credential: str) -> None:
         self._transport = _transport(transport)
@@ -526,6 +537,51 @@ class PadiemAiEngineClient:
                 "invalid_engine_response", "Engine evidence-only response is invalid",
             )
         return {"sources": sources, "grounding_context": context}
+
+    async def search_judgement(self, *, conversation: str, agent: Mapping[str, Any]) -> dict[str, Any]:
+        """Ask the existing Engine research route to judge one conversation.
+
+        Judgement only: zero retrieval, zero answer, zero provider authority, and the
+        caller's selected answer model is untouched. The product still has to re-check
+        the returned query before anything leaves Padiem.
+        """
+        if (
+            not isinstance(conversation, str)
+            or not conversation.strip()
+            or len(conversation) > 4_000
+        ):
+            raise PadiemAiEngineClientError(
+                "invalid_public_conversation", "Judgement input must be bounded conversation text",
+            )
+        if not isinstance(agent, Mapping):
+            raise PadiemAiEngineClientError(
+                "invalid_research_agent", "Research agent profile is required",
+            )
+        body = await self._post(ENGINE_RESEARCH_PATH, {
+            "app_id": self.app_id,
+            "operation": "search_judgement",
+            "query": conversation.strip(),
+            "agent": dict(agent),
+        })
+        reason = body.get("reason")
+        needs_search = body.get("needs_search")
+        if (
+            body.get("ok") is not True
+            or body.get("operation") != "search_judgement"
+            or body.get("answer") is not None
+            or not isinstance(needs_search, bool)
+            or not isinstance(reason, str)
+            or reason not in _JUDGEMENT_REASONS
+            or (needs_search and not isinstance(body.get("query"), str))
+        ):
+            raise PadiemAiEngineClientError(
+                "invalid_engine_response", "Engine search-judgement response is invalid",
+            )
+        return {
+            "needs_search": needs_search,
+            "query": body.get("query") if needs_search else None,
+            "reason": reason,
+        }
 
     async def orchestrate(self, request: Mapping[str, Any]) -> dict[str, Any]:
         body = await self._post(

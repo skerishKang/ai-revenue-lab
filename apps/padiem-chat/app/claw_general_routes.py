@@ -50,6 +50,11 @@ from kagent.p01_adapter import (
     validate_explicit_b14_model_id,
 )
 from kagent.p01_run_flow import create_claw_run
+from .claw_search_decision import (
+    build_judgement_digest,
+    evidence_agent,
+    verdict_from_model,
+)
 
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .claw_first_turn_authority import (
@@ -163,6 +168,7 @@ def _claw_general_sse(
     *,
     history: tuple[dict[str, object], ...] = (),
     conversation_id: str | None = None,
+    sources: tuple[dict[str, str], ...] = (),
 ) -> Response:
     """Bounded terminal SSE, optionally preceded by real *post-execution* history.
 
@@ -187,6 +193,8 @@ def _claw_general_sse(
     terminal = {"done": True}
     if conversation_id is not None:
         terminal["conversation_id"] = conversation_id
+    if sources:
+        terminal["sources"] = list(sources)
     frames += _sse_frame("delta", {"delta": answer}) + _sse_frame("done", terminal)
     return Response(
         frames,
@@ -400,6 +408,85 @@ async def claw_general_capabilities(request: Request) -> JSONResponse:
         result["pre_dispatch_status"] = state
         result["pre_dispatch_scope"] = "auth_adapter_session_only"
     return JSONResponse(result, headers=_NO_STORE_HEADERS)
+
+
+CLAW_PUBLIC_SEARCH_STATE_FLAG = "claw_web_search_enabled"
+MAX_CLAW_SEARCH_SOURCES = 5
+MAX_CLAW_SEARCH_SOURCE_TITLE_CHARS = 200
+CLAW_GROUNDING_PREAMBLE_MARKER = "웹 근거 사용 규칙"
+
+
+
+def _project_search_sources(raw: Any) -> tuple[dict[str, str], ...] | None:
+    """Verified provenance only: https URL, title and retrieval timestamp."""
+
+    if not isinstance(raw, (list, tuple)) or not raw:
+        return None
+    projected: list[dict[str, str]] = []
+    for item in raw[:MAX_CLAW_SEARCH_SOURCES]:
+        if not isinstance(item, dict):
+            return None
+        url = item.get("url")
+        title = item.get("title")
+        retrieved_at = item.get("retrieved_at")
+        if not isinstance(url, str) or not url.startswith("https://"):
+            return None
+        if not isinstance(title, str) or not isinstance(retrieved_at, str):
+            return None
+        projected.append({
+            "url": url[:2048],
+            "title": title[:MAX_CLAW_SEARCH_SOURCE_TITLE_CHARS],
+            "retrieved_at": retrieved_at[:64],
+        })
+    return tuple(projected)
+
+
+async def _claw_public_search_grounding(
+    request: Request, adapter: Any, messages: Any
+) -> tuple[str | None, tuple[dict[str, str], ...]]:
+    """Let the model decide, then reuse the existing Engine evidence operation once.
+
+    The conversation digest stays inside Padiem. Only a query that survives this lane's
+    own privacy and length checks may reach a provider, and grounding plus provenance
+    stand or fall together. Any refusal degrades to the pre-search answer surface.
+    """
+
+    denied = (None, ())
+    if getattr(request.app.state, CLAW_PUBLIC_SEARCH_STATE_FLAG, False) is not True:
+        return denied
+    client = getattr(getattr(adapter, "_runner", None), "_client", None)
+    judge = getattr(client, "search_judgement", None)
+    search_evidence = getattr(client, "search_evidence", None)
+    if not callable(judge) or not callable(search_evidence):
+        return denied
+    digest = build_judgement_digest(messages)
+    if digest is None:
+        return denied
+    agent = evidence_agent()
+    try:
+        verdict = verdict_from_model(await judge(conversation=digest, agent=agent))
+    except Exception:
+        return denied
+    if not verdict.should_search:
+        return denied
+    try:
+        evidence = await search_evidence(query=verdict.query, agent=agent)
+    except Exception:
+        return denied
+    if not isinstance(evidence, dict):
+        return denied
+    sources = _project_search_sources(evidence.get("sources"))
+    context = evidence.get("grounding_context")
+    if sources is None:
+        # Provenance that cannot be shown means the claim cannot be made either.
+        return denied
+    if not isinstance(context, str) or not context.strip() or len(context) > 32_768:
+        return denied
+    if CLAW_GROUNDING_PREAMBLE_MARKER not in context:
+        # Without Core's untrusted-data preamble the text would enter the prompt as
+        # ordinary context, which is exactly the promotion this route forbids.
+        return denied
+    return context, sources
 
 
 async def claw_general_execute(request: Request) -> JSONResponse | Response:
@@ -632,18 +719,31 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         request.headers.get(CLAW_EVIDENCE_REQUEST_HEADER, "").strip() == CLAW_EVIDENCE_MARKER
     )
 
+    # #3936/#3655: a request this route is going to refuse must be refused before any
+    # search judgement, so a rejected call can never spend a model inference or reach a
+    # provider. The quota refund and first-turn release stay exactly as they were.
+    if live_requested and evidence_requested:
+        await _refund_active_reservation()
+        # Proven pre-dispatch denial after a successful claim: the claimed grant must
+        # fail here, or it stays active (in-progress) until expiry and blocks the key.
+        await fail_first_turn_grant(request, first_turn_context)
+        return _error(422, "live_evidence_mode_unsupported", "실시간 상태와 감사 증거 요청은 동시에 사용할 수 없습니다.")
+
+    # #4469: optional public web grounding, judged by the model and off unless the
+    # server says otherwise. It reads the SAME owner-verified history the answer lane
+    # uses, never browser-supplied prior turns, so forged history cannot move the
+    # search target. Everything downstream is unchanged when it returns nothing.
+    grounding_context, search_sources = await _claw_public_search_grounding(
+        request, adapter, model_user_text
+    )
+
     if live_requested:
-        if evidence_requested:
-            await _refund_active_reservation()
-            # Proven pre-dispatch denial after a successful claim: the
-            # claimed grant must fail here, or it stays active (in-progress)
-            # until expiry and blocks the key. Mirrors NOT_DISPATCHED below.
-            await fail_first_turn_grant(request, first_turn_context)
-            return _error(422, "live_evidence_mode_unsupported", "실시간 상태와 감사 증거 요청은 동시에 사용할 수 없습니다.")
         from .claw_live_events import live_claw_sse
         live_args = {"product_tier": product_tier, "subject_id": subject_id}
         if selected_model_id is not None:
             live_args["selected_model_id"] = selected_model_id
+        if grounding_context is not None:
+            live_args["additional_system_context"] = grounding_context
         async def after_verified_live_completion(answer: str) -> str | None:
             # Runs after validated terminal P01 completion, never on pause,
             # failure, disconnect or an unverified/empty answer.
@@ -657,12 +757,15 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         return live_claw_sse(
             adapter, run, live_args,
             on_completed=after_verified_live_completion,
+            sources=search_sources,
         )
 
     try:
         dispatch_args = {"product_tier": product_tier, "subject_id": subject_id}
         if selected_model_id is not None:
             dispatch_args["selected_model_id"] = selected_model_id
+        if grounding_context is not None:
+            dispatch_args["additional_system_context"] = grounding_context
         outcome = await adapter.execute(run, **dispatch_args)
     except P01AdapterError as exc:
         if exc.dispatch_class == P01DispatchClass.NOT_DISPATCHED:
@@ -765,6 +868,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         _claw_evidence_response_headers(run.run_id, outcome) if evidence_requested else None,
         history=getattr(outcome, "p01_event_history", ()),
         conversation_id=saved_conversation_id,
+        sources=search_sources,
     )
 
 
