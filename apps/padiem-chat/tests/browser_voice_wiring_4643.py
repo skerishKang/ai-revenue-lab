@@ -51,6 +51,7 @@ def run(port: int) -> dict:
         )
         page = ctx.new_page()
         console_errors: list[str] = []
+        outbound_posts: list[str] = []
         page.on(
             "console",
             lambda msg: console_errors.append(msg.text) if msg.type == "error" else None,
@@ -59,6 +60,8 @@ def run(port: int) -> dict:
 
         def route_handler(route):
             url = route.request.url
+            if route.request.method == "POST" and ("/api/chat" in url or "/api/claw/general" in url):
+                outbound_posts.append(url)
             if url.endswith("/health"):
                 route.fulfill(
                     status=200,
@@ -83,6 +86,36 @@ def run(port: int) -> dict:
                 route.continue_()
 
         ctx.route("**/*", route_handler)
+
+        # Real page, real mic click / recorder lifecycle, same-origin mocked
+        # voice API. No paid provider, no browser permission dialog.
+        ctx.add_init_script("""
+          const fakeTrack = { stop() {} };
+          const fakeStream = { getTracks: () => [fakeTrack] };
+          Object.defineProperty(navigator, "mediaDevices", {
+            configurable: true, value: { getUserMedia: async () => fakeStream }
+          });
+          class FakeRecorder {
+            constructor() { this.state = "inactive"; }
+            static isTypeSupported() { return true; }
+            start() { this.state = "recording"; }
+            requestData() {
+              if (this.ondataavailable) this.ondataavailable({
+                data: new Blob(["real-browser-fake-speech"], {type: "audio/webm"})
+              });
+            }
+            stop() { this.state = "inactive"; if (this.onstop) this.onstop(); }
+          }
+          window.MediaRecorder = FakeRecorder;
+          class FakeAudioContext {
+            createMediaStreamSource() { return {connect(){}}; }
+            createAnalyser() {
+              return {fftSize:1024,getFloatTimeDomainData(buffer){buffer.fill(0);}};
+            }
+            close() {}
+          }
+          window.AudioContext = FakeAudioContext;
+        """)
 
         page.goto(f"http://127.0.0.1:{port}/index.html", wait_until="load")
         page.wait_for_timeout(2000)
@@ -113,6 +146,31 @@ def run(port: int) -> dict:
               return btn ? btn.disabled : null;
             }"""
         )
+
+        # Authenticate in the browser only; production CP/STT remains OFF.
+        page.evaluate("""() => window.dispatchEvent(
+          new CustomEvent('padiem:auth-state',{
+            detail:{authenticated:true,identityKey:'test-key-1'}
+          }))""")
+        page.wait_for_timeout(100)
+        result["mic_enabled_when_mock_authenticated"] = page.evaluate(
+            "() => document.getElementById('voiceMicButton')?.disabled === false"
+        )
+        if result["mic_enabled_when_mock_authenticated"]:
+            page.locator("#voiceMicButton").click()
+            page.wait_for_timeout(100)
+            page.locator("#voiceMicButton").click()
+            try:
+                page.wait_for_function(
+                    "() => document.getElementById('messageInput')?.value.includes('광주에서 AI 교육 견적서')",
+                    timeout=3500,
+                )
+            except Exception:
+                pass
+        result["stop_final_in_editable_input"] = page.evaluate(
+            "() => document.getElementById('messageInput')?.value === '광주에서 AI 교육 견적서를 만들어 주세요'"
+        )
+        result["auto_submit_count"] = len(outbound_posts)
 
         result["permissions_policy_header"] = page.evaluate(
             """async () => {
@@ -146,6 +204,9 @@ def main() -> int:
         and result["adapter_defined"] == "object"
         and result["mic_button_present"] is True
         and result["factory_registered"] is True
+        and result["mic_enabled_when_mock_authenticated"] is True
+        and result["stop_final_in_editable_input"] is True
+        and result["auto_submit_count"] == 0
         and not js_console_errors
     )
     return 0 if ok else 1

@@ -55,6 +55,13 @@
 
   const TRANSCRIBE_PATH = "/api/voice/transcribe";
   const IDENTITY_PATH = "/api/voice/identity";
+  const CLAW_TRANSCRIBE_PATH = "/api/claw/voice/transcribe";
+  const CLAW_IDENTITY_PATH = "/api/claw/voice/identity";
+
+  function routeForShell(doc, chatPath, clawPath) {
+    const shell = doc && typeof doc.querySelector === "function" ? doc.querySelector(".app-shell") : null;
+    return shell && shell.dataset && shell.dataset.state === "claw" ? clawPath : chatPath;
+  }
 
   /** Best-effort MIME selection; the server accepts audio/* and re-encodes. */
   const PREFERRED_MIME_TYPES = [
@@ -154,6 +161,9 @@
       let closing = false;
       let halting = false;
       let finalFlushDone = false;
+      let finalFlushPending = false;
+      let cancelled = false;
+      let inflightController = null;
       let stream = null;
       let recorder = null;
       let audioContext = null;
@@ -169,6 +179,7 @@
       let sending = false;
       let utteranceSeq = 0;
       let utteranceActive = null;
+      const transcribeRoute = routeForShell(doc, TRANSCRIBE_PATH, CLAW_TRANSCRIBE_PATH);
 
       function emitError(code) {
         if (stopped) return;
@@ -207,12 +218,14 @@
       function flushChunk(force, fromStop) {
         if (stopped && !force) return;
         if (halting && !force) return;
-        if (force) {
-          if (finalFlushDone) return;
-          finalFlushDone = true;
+        if (force && finalFlushDone) return;
+        if (sending) {
+          if (force) finalFlushPending = true;
+          return;
         }
-        if (sending) return;
+        if (force) finalFlushDone = true;
         const held = chunks;
+        if (!held.length) return; // silence/zero-byte stop never spends a provider call
         const elapsed = chunkStartedAt ? now() - chunkStartedAt : 0;
         chunks = [];
         chunkStartedAt = now();
@@ -236,6 +249,11 @@
           function (text) {
             sending = false;
             utteranceActive = null;
+            if (cancelled) return;
+            if (finalFlushPending) {
+              finalFlushPending = false;
+              flushChunk(true, true);
+            }
             if (!text) return;
             try {
               if (typeof callbacks.onFinal === "function") {
@@ -246,6 +264,11 @@
           function () {
             sending = false;
             utteranceActive = null;
+            if (cancelled) return;
+            if (finalFlushPending) {
+              finalFlushPending = false;
+              flushChunk(true, true);
+            }
             emitError(ERROR_CODES.TRANSCRIBE_FAILED);
           }
         );
@@ -256,9 +279,12 @@
           return Promise.reject(new Error("no-transport"));
         }
         return blobToBase64(blob).then(function (audioBase64) {
-          return fetchImpl(TRANSCRIBE_PATH, {
+          if (cancelled) throw new Error("voice-cancelled");
+          inflightController = typeof win.AbortController === "function" ? new win.AbortController() : null;
+          return fetchImpl(transcribeRoute, {
             method: "POST",
             credentials: "same-origin",
+            signal: inflightController ? inflightController.signal : undefined,
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               audio_base64: audioBase64,
@@ -267,6 +293,7 @@
             }),
           });
         }).then(function (response) {
+          if (cancelled) throw new Error("voice-cancelled");
           return response.json().then(function (payload) {
             if (!response.ok) {
               const code = payload && payload.error && payload.error.code;
@@ -365,10 +392,25 @@
       }
 
       const handle = {
-        stop: function () {
+        stop: function (reason) {
           if (closing) return;
           closing = true;
           halting = true;
+          if (reason !== "user-stopped" && reason != null) {
+            // Cancel/logout/switch are not a user finish: never transcribe tail.
+            cancelled = true;
+            stopped = true;
+            finalFlushPending = false;
+            chunks = [];
+            if (inflightController) {
+              try { inflightController.abort(); } catch (e) { /* already aborted */ }
+            }
+            if (recorder && recorder.state !== "inactive") {
+              try { recorder.stop(); } catch (e) { /* already stopped */ }
+            }
+            releaseCapture();
+            return;
+          }
           if (rafHandle != null && win.cancelAnimationFrame) {
             try { win.cancelAnimationFrame(rafHandle); } catch (e) { /* already gone */ }
           }
@@ -489,7 +531,7 @@
 
     function refreshIdentity() {
       if (stopped || typeof fetchImpl !== "function") return Promise.resolve("");
-      return fetchImpl(IDENTITY_PATH, {
+      return fetchImpl(routeForShell(doc, IDENTITY_PATH, CLAW_IDENTITY_PATH), {
         method: "GET",
         credentials: "same-origin",
         headers: { Accept: "application/json" },
@@ -552,6 +594,8 @@
     GROQ_SILENCE_CUT_MS: GROQ_SILENCE_CUT_MS,
     GROQ_MAX_CHUNK_MS: GROQ_MAX_CHUNK_MS,
     TRANSCRIBE_PATH: TRANSCRIBE_PATH,
+    CLAW_TRANSCRIBE_PATH: CLAW_TRANSCRIBE_PATH,
+    CLAW_IDENTITY_PATH: CLAW_IDENTITY_PATH,
     IDENTITY_PATH: IDENTITY_PATH,
     ERROR_CODES: ERROR_CODES,
     createRecognizerFactory: createRecognizerFactory,

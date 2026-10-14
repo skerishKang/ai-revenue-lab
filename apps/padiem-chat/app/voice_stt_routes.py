@@ -64,6 +64,8 @@ from .same_origin_guard import expected_browser_origin
 __all__ = [
     "IDENTITY_PATH",
     "TRANSCRIBE_PATH",
+    "CLAW_IDENTITY_PATH",
+    "CLAW_TRANSCRIBE_PATH",
     "STT_INTERNAL_ORIGIN",
     "STT_TRANSCRIBE_PATH",
     "VOICE_STT_LANGUAGE",
@@ -78,6 +80,8 @@ __all__ = [
 
 IDENTITY_PATH = "/api/voice/identity"
 TRANSCRIBE_PATH = "/api/voice/transcribe"
+CLAW_IDENTITY_PATH = "/api/claw/voice/identity"
+CLAW_TRANSCRIBE_PATH = "/api/claw/voice/transcribe"
 
 #: Internal-only. The browser never learns or addresses this origin/path; only
 #: this module does, and only over the Service Binding.
@@ -136,15 +140,49 @@ def _identity_key(settings: Any, canonical_session_id: str) -> str:
 
 
 async def _canonical_session(request: Request) -> Any | None:
-    """The signed-in user's canonical Control Plane session, or ``None``.
+    """Resolve the exact server-owned B62 or B54 session for this route.
 
-    Reuses the existing B54 canonical session producer, which itself reads the
-    product user id from the signed session cookie and resolves every other
-    identity field inside the Control Plane.
+    Route path fixes the product, not a browser-controlled plan/product id.
+    Both use the same signed PADIEM cookie and existing CP identity authority.
     """
-    from .b54_canonical_session import resolve_current_b54_canonical_session
+    path = request.url.path
+    if path in (CLAW_IDENTITY_PATH, CLAW_TRANSCRIBE_PATH):
+        from .b54_canonical_session import resolve_current_b54_canonical_session
+        return await resolve_current_b54_canonical_session(request)
+    if path not in (IDENTITY_PATH, TRANSCRIBE_PATH):
+        return None
 
-    return await resolve_current_b54_canonical_session(request)
+    # B62 must never be billed with a B54 grant merely because both products
+    # share one user login. Read the B62 session from the existing CP authority.
+    from datetime import datetime, timezone
+    from types import SimpleNamespace
+
+    from padiem_control_plane.auth_sessions import AuthSessionSnapshot
+    from padiem_control_plane.contracts import SubjectType
+    from .auth_routes import auth_ready, current_user_id
+
+    authority = getattr(request.app.state, "control_plane_identity_authority", None)
+    uid = current_user_id(request) if auth_ready(request) else None
+    if authority is None or not uid:
+        return None
+    try:
+        session = await authority.resolve_current_auth_session(
+            product_id="b62", product_user_id=uid,
+        )
+    except Exception:
+        return None
+    now = datetime.now(timezone.utc)
+    if (
+        not isinstance(session, AuthSessionSnapshot)
+        or session.product_id != "b62"
+        or session.subject.subject_type is not SubjectType.USER
+        or not session.tenant_id
+        or not session.is_active(now=now)
+    ):
+        return None
+    # The B54 bridge exposes .auth_session; preserve that typed envelope shape
+    # without minting a second identity or session, only wrapping verified CP.
+    return SimpleNamespace(auth_session=session)
 
 
 async def voice_identity(request: Request) -> JSONResponse:

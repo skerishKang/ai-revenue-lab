@@ -404,7 +404,7 @@
       // recursively stop the same run or mutate the next one.
       if (reason === "user-stopped" || reason == null) stoppingRun = stoppedRun;
       run = null;
-      stopSessionOnStage(stoppedRun);
+      stopSessionOnStage(stoppedRun, reason || "user-stopped");
       stoppedRun.adapter.stop(reason || "user-stopped");
       // A final held for a composition or a disabled composer belongs to the
       // run that just ended; it is dropped rather than injected afterwards.
@@ -456,16 +456,16 @@
       render();
     }
 
-    function stopSessionOnStage(stage) {
+    function stopSessionOnStage(stage, reason) {
       if (!stage || !stage.session) return;
       const session = stage.session;
       stage.session = null;
-      stopSessionHandle(session);
+      stopSessionHandle(session, reason);
     }
 
-    function stopSessionHandle(session) {
+    function stopSessionHandle(session, reason) {
       if (!session || typeof session.stop !== "function") return;
-      try { session.stop(); } catch (e) { /* the recognizer is already gone */ }
+      try { session.stop(reason || "cancel"); } catch (e) { /* the recognizer is already gone */ }
     }
 
     function setRecognizerFactory(next) {
