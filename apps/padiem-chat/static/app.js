@@ -185,6 +185,29 @@
     runtimeNote.textContent = text;
     runtimeNote.dataset.state = state;
   }
+  // Short-lived overlay, not a new composer row.
+  const composerInlineHint = document.getElementById("composerInlineHint");
+  let composerInlineHintTimer = null;
+  function showComposerInlineHint(key) {
+    if (!composerInlineHint) return;
+    composerInlineHint.textContent = uiT(key);
+    composerInlineHint.hidden = false;
+    if (composerInlineHintTimer !== null) window.clearTimeout(composerInlineHintTimer);
+    composerInlineHintTimer = window.setTimeout(() => {
+      composerInlineHint.hidden = true;
+      composerInlineHint.textContent = "";
+      composerInlineHintTimer = null;
+    }, 3000);
+  }
+  window.addEventListener("padiem:composer-hint", (event) => {
+    if (event && event.detail && typeof event.detail.key === "string") {
+      showComposerInlineHint(event.detail.key);
+    }
+  });
+  sendButton.addEventListener("click", () => {
+    if (!input.value.trim() && !inFlight) showComposerInlineHint("composer-empty-message");
+  });
+
   function updateComposer() {
     // Empty clicks are allowed; submitPrompt() already ignores blank or busy submissions.
     sendButton.disabled = false;
@@ -1837,6 +1860,20 @@
   cancelStreamButton.addEventListener("click", cancelActiveStream);
   attachmentButton.addEventListener("click", () => { if (!inFlight) attachmentFileInput.click(); });
   documentStarterButton.addEventListener("click", () => { if (!inFlight) attachmentFileInput.click(); });
+  const documentFormatsToggle = document.getElementById("documentFormatsToggle");
+  const documentFormatsPanel = document.getElementById("documentFormatsPanel");
+  if (documentFormatsToggle && documentFormatsPanel) {
+    documentFormatsToggle.addEventListener("click", () => {
+      const show = documentFormatsPanel.hidden;
+      documentFormatsPanel.hidden = !show;
+      documentFormatsToggle.setAttribute("aria-expanded", show ? "true" : "false");
+    });
+    document.addEventListener("click", (event) => {
+      if (documentFormatsPanel.hidden || (event.target.closest && event.target.closest(".document-starter-shell"))) return;
+      documentFormatsPanel.hidden = true;
+      documentFormatsToggle.setAttribute("aria-expanded", "false");
+    });
+  }
   attachmentFileInput.addEventListener("change", () => {
     const [file] = attachmentFileInput.files || [];
     selectAttachment(file);
