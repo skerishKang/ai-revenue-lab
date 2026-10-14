@@ -824,8 +824,17 @@ def test_broker_candidate_cli_adds_only_existing_broker_binding(tmp_path, capsys
         "service": "padiem-local-agent-broker-state",
     }]
     candidate["services"] = previous_services
+    # #4719 LOCAL1: the candidate additionally carries exactly the
+    # allowlisted Connector vars; b14/live and all other settings stay verbatim.
+    expected_vars = dict(base["vars"])
+    expected_vars.update(module.CONNECTOR_EXPLICIT_VARS)
+    assert candidate["vars"] == expected_vars
+    candidate["vars"] = base["vars"]
     assert candidate == base
     assert 'PADIEM_CHAT_RUNTIME_MODE = "b14"' in (tmp_path / "candidate.toml").read_text()
+    assert 'PADIEM_CHAT_LIVE_ENABLED = "true"' in (tmp_path / "candidate.toml").read_text()
+    for key, value in module.CONNECTOR_EXPLICIT_VARS.items():
+        assert f'{key} = "{value}"' in (tmp_path / "candidate.toml").read_text()
     assert not hasattr(module, "deploy")
 
 

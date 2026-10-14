@@ -25,6 +25,21 @@ from uuid import UUID
 
 SUPPORTED_TYPES = {"assets", "service", "d1", "r2_bucket", "browser", "version_metadata", "plain_text", "secret_text", "secrets_store_secret"}
 OWNER_P01_D1_BINDING = "BROWSER_CONTROL_OWNER_P01_D1"
+# #4719 LOCAL1: default PC registration/WSS needs exactly this Broker binding
+# plus these explicit Connector plain-text values. No other addition, removal,
+# or value drift is permitted in this mode.
+CONNECTOR_BROKER_BINDING = "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE"
+CONNECTOR_BROKER_TARGET = "padiem-local-agent-broker-state"
+CONNECTOR_EXPLICIT_VARS: dict[str, str] = {
+    "PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED": "enabled",
+    "PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE": "owner-controlled-production-4139",
+    "PADIEM_CONNECTOR_PRODUCTION_ENABLED": "enabled",
+    "PADIEM_CONNECTOR_OWNER_ENROLLMENT_ENABLED": "enabled",
+    "PADIEM_CONNECTOR_OWNER_PRODUCTION_ENABLED": "enabled",
+    "PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED": "enabled",
+    "PADIEM_CONNECTOR_OWNER_PC_IDENTITY_PREFLIGHT_ENABLED": "enabled",
+    "PADIEM_CONNECTOR_OWNER_PC_NATIVE_DELIVERY_ENABLED": "enabled",
+}
 
 
 class BindingStateError(RuntimeError):
@@ -224,6 +239,53 @@ def assert_hark_browser_added_only(before: object, after: object) -> None:
             raise BindingStateError("expected exactly one approved BROWSER addition")
 
 
+def assert_connector_broker_added_only(before: object, after: object) -> None:
+    """Only the canonical Broker binding plus explicit Connector vars may appear.
+
+    Idempotent when the Broker binding and all explicit Connector values are
+    already present with exact identities. Normal code deployments still
+    require exact equality unless this mode is explicit. Removal of any
+    pre-existing binding, any non-allowlisted addition, or any value drift
+    (including a drifted Connector value) fails closed.
+    """
+    old = canonical_state(before)
+    new = canonical_state(after)
+    broker_entry = ("service", CONNECTOR_BROKER_BINDING, CONNECTOR_BROKER_TARGET, None, None)
+    allowed_additions = {broker_entry} | {
+        ("plain_text", name, text) for name, text in CONNECTOR_EXPLICIT_VARS.items()
+    }
+    old_set, new_set = set(old), set(new)
+    # A colliding pre-existing Broker alias/target must never pass.
+    for entry in old:
+        if entry[1] == CONNECTOR_BROKER_BINDING and entry != broker_entry:
+            raise BindingStateError("pre-existing Connector Broker alias/type collision")
+    # Drifted pre-existing Connector values are deployment drift, not an addition.
+    for entry in old:
+        if entry[0] == "plain_text" and entry[1] in CONNECTOR_EXPLICIT_VARS:
+            if entry != ("plain_text", entry[1], CONNECTOR_EXPLICIT_VARS[entry[1]]):
+                raise BindingStateError("Connector setting drift detected before additive install")
+    if broker_entry in old_set and all(
+        ("plain_text", name, text) in old_set for name, text in CONNECTOR_EXPLICIT_VARS.items()
+    ):
+        if old != new:
+            raise BindingStateError("Connector Broker already served; unrelated authority drift")
+        return
+    removed = old_set - new_set
+    added = new_set - old_set
+    if removed:
+        raise BindingStateError(
+            "binding authority drift detected; "
+            f"removed_count={len(removed)} unexpected_added_count={len(added - allowed_additions)}"
+        )
+    if not added.issubset(allowed_additions):
+        raise BindingStateError(
+            "binding authority drift; expected only canonical Broker binding "
+            "and explicit Connector setting additions"
+        )
+    if broker_entry not in old_set and broker_entry not in added:
+        raise BindingStateError("expected canonical Connector Broker binding addition")
+
+
 def assert_web_secret_additions_only(before: object, after: object) -> None:
     """Only missing Owner-approved same-account Secret Store entries may appear."""
     original = canonical_state(before)
@@ -334,6 +396,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--expected-add-web-secrets-store", action="store_true")
     parser.add_argument("--expected-engine-4194-rollout", action="store_true")
     parser.add_argument("--expected-add-hark-browser", action="store_true")
+    parser.add_argument("--expected-add-connector-broker", action="store_true")
     parser.add_argument("--expected-add-b66-membership-secret", action="store_true")
     parser.add_argument("--owner-d1-database-id")
     parser.add_argument("--require-served-resource-integrity", action="store_true")
@@ -344,6 +407,7 @@ def main(argv: list[str] | None = None) -> int:
             args.expected_add_web_secrets_store,
             args.expected_engine_4194_rollout,
             args.expected_add_hark_browser,
+            args.expected_add_connector_broker,
             args.expected_add_b66_membership_secret,
         )) > 1:
             raise BindingStateError("multiple additive authority modes prohibited")
@@ -355,6 +419,10 @@ def main(argv: list[str] | None = None) -> int:
             if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
                 raise BindingStateError("Hark Browser mode refuses unrelated authorization flags")
             assert_hark_browser_added_only(_load(args.before), _load(args.after))
+        elif args.expected_add_connector_broker:
+            if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
+                raise BindingStateError("Connector Broker mode refuses unrelated authorization flags")
+            assert_connector_broker_added_only(_load(args.before), _load(args.after))
         elif args.expected_add_b66_membership_secret:
             if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
                 raise BindingStateError("B66 membership secret mode refuses unrelated authority flags")

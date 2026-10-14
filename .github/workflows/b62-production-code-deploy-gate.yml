@@ -1100,6 +1100,9 @@ jobs:
           if [ "${COMMISSION_HARK_BROWSER}" = "true" ]; then
             verify_args=(--expected-add-hark-browser)
           fi
+          if [ "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "true" ]; then
+            verify_args=(--expected-add-connector-broker)
+          fi
           if [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ]; then
             verify_args=(--expected-add-b66-membership-secret)
           fi
@@ -1107,7 +1110,7 @@ jobs:
             "${verify_args[@]}" \
             --before "${normalized_before}" \
             --after "${settings}"
-          if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ] || [ "${COMMISSION_HARK_BROWSER}" = "true" ] || [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ]; then
+          if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ] || [ "${COMMISSION_HARK_BROWSER}" = "true" ] || [ "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "true" ] || [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ]; then
             echo "BINDINGS_PRESERVED_AND_APPROVED_ADDED=PASS"
           else
             echo "BINDINGS_PRESERVED_EXACTLY=PASS"

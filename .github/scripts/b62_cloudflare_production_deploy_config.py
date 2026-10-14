@@ -33,6 +33,19 @@ CONNECTOR_BROKER_BINDING = "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE"
 CONNECTOR_BROKER_TARGET = "padiem-local-agent-broker-state"
 CONNECTOR_IDENTITY_BINDING = "IDENTITY_AUTHORITY_SERVICE"
 CONNECTOR_IDENTITY_TARGET = "padiem-control-plane-identity"
+# #4719 LOCAL1: default registration/WSS needs exactly these existing Connector
+# plain-text values. Explicit allowlist only — never copy the source [vars]
+# table wholesale, and never touch b14/live/base-url/operational settings.
+CONNECTOR_EXPLICIT_VARS: dict[str, str] = {
+    "PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED": "enabled",
+    "PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE": "owner-controlled-production-4139",
+    "PADIEM_CONNECTOR_PRODUCTION_ENABLED": "enabled",
+    "PADIEM_CONNECTOR_OWNER_ENROLLMENT_ENABLED": "enabled",
+    "PADIEM_CONNECTOR_OWNER_PRODUCTION_ENABLED": "enabled",
+    "PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED": "enabled",
+    "PADIEM_CONNECTOR_OWNER_PC_IDENTITY_PREFLIGHT_ENABLED": "enabled",
+    "PADIEM_CONNECTOR_OWNER_PC_NATIVE_DELIVERY_ENABLED": "enabled",
+}
 REQUIRED_VARS = ("PADIEM_CHAT_RUNTIME_MODE", "PADIEM_CHAT_LIVE_ENABLED")
 PUBLIC_BASE_URL_VAR = "PADIEM_CHAT_PUBLIC_BASE_URL"
 # #3252: a live version_metadata binding is runtime provenance. Exactly one may
@@ -399,15 +412,39 @@ def build_production_config(
             f"{PUBLIC_BASE_URL_VAR} drift: live value differs from the expected production origin"
         )
 
+    # #4719 LOCAL1: Connector mode reflects exactly the allowlisted Connector
+    # values on top of live vars. Every other live var (b14/live=true,
+    # base URL, operational settings) is preserved verbatim. Normal deploys
+    # never take this path.
+    output_vars = dict(plain_vars)
+    if attach_connector_broker_service:
+        for key, expected in CONNECTOR_EXPLICIT_VARS.items():
+            existing = output_vars.get(key)
+            if existing is not None and existing != expected:
+                raise ProductionConfigError(
+                    f"Connector var drift on {key!r}; activation owns the live value"
+                )
+            output_vars[key] = expected
+
     lines.append("[vars]")
-    for name in sorted(plain_vars):
-        lines.append(f"{name} = {_toml_string(plain_vars[name])}")
+    for name in sorted(output_vars):
+        lines.append(f"{name} = {_toml_string(output_vars[name])}")
     lines.append("")
     return "\n".join(lines) + ""
 
 
-def verify_mutation_zero(config_text: str, live: dict[str, object]) -> None:
-    """The generated [vars] block must equal the live plain-text variables exactly."""
+def verify_mutation_zero(
+    config_text: str,
+    live: dict[str, object],
+    allow_connector_broker: bool = False,
+) -> None:
+    """The generated [vars] block must equal the live plain-text variables exactly.
+
+    Normal deploys require exact equality. Connector mode additionally permits
+    exactly the CONNECTOR_EXPLICIT_VARS allowlist (missing keys added with
+    their explicit values); any other var addition, removal, or value drift
+    still fails closed.
+    """
     plain_vars = live["vars"]
     assert isinstance(plain_vars, dict)
     generated: dict[str, str] = {}
@@ -423,10 +460,18 @@ def verify_mutation_zero(config_text: str, live: dict[str, object]) -> None:
                 continue
             name, _, value = line.partition("=")
             generated[name.strip()] = json.loads(value)
-    if generated != plain_vars:
+    expected: dict[str, str] = dict(plain_vars)
+    if allow_connector_broker:
+        for key, value in CONNECTOR_EXPLICIT_VARS.items():
+            if key in expected and expected[key] != value:
+                raise ProductionConfigError(
+                    f"Connector var drift on {key!r}; activation owns the live value"
+                )
+            expected.setdefault(key, value)
+    if generated != expected:
         changed = sorted(
-            name for name in set(generated) | set(plain_vars)
-            if generated.get(name) != plain_vars.get(name)
+            name for name in set(generated) | set(expected)
+            if generated.get(name) != expected.get(name)
         )
         raise ProductionConfigError(
             f"generated config mutates live plain-text vars: {', '.join(changed)}"
@@ -473,7 +518,10 @@ def main(argv: list[str] | None = None) -> int:
             commission_hark_browser=args.commission_hark_browser,
             attach_connector_broker_service=args.attach_existing_connector_broker,
         )
-        verify_mutation_zero(config_text, live)
+        verify_mutation_zero(
+            config_text, live,
+            allow_connector_broker=args.attach_existing_connector_broker,
+        )
     except (ProductionConfigError, OSError, json.JSONDecodeError) as exc:
         print(f"B62_PRODUCTION_CONFIG_GENERATED=FAIL\nREASON={exc}", file=sys.stderr)
         return 1
@@ -498,6 +546,14 @@ def main(argv: list[str] | None = None) -> int:
     print(f"SECRETS_STORE_BINDINGS_PRESERVED={len(live['secrets_store'])}")
     print(f"WEB_SECRETS_STORE_ATTACH_REQUESTED={int(args.attach_existing_web_secrets_store)}")
     print(f"CONNECTOR_BROKER_BINDING_CANDIDATE={int(args.attach_existing_connector_broker)}")
+    if args.attach_existing_connector_broker:
+        assert isinstance(plain_vars, dict)
+        applied = sum(1 for key in CONNECTOR_EXPLICIT_VARS if key not in plain_vars)
+        print(f"CONNECTOR_VARS_APPLIED={applied}")
+        print(f"CONNECTOR_VARS_ALLOWLISTED={len(CONNECTOR_EXPLICIT_VARS)}")
+    else:
+        print("CONNECTOR_VARS_APPLIED=0")
+        print(f"CONNECTOR_VARS_ALLOWLISTED={len(CONNECTOR_EXPLICIT_VARS)}")
     print("CONNECTOR_BROKER_RELEASE_AUTHORIZED=NO")
     print("SECRET_VALUES_READ=0")
     print("SECRET_VALUES_EMITTED=0")

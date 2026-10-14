@@ -30,6 +30,7 @@ from b62_cloudflare_production_deploy_config import (
     ProductionConfigError,
     CONNECTOR_BROKER_BINDING,
     CONNECTOR_BROKER_TARGET,
+    CONNECTOR_EXPLICIT_VARS,
     CONNECTOR_IDENTITY_TARGET,
     build_production_config,
     parse_live_bindings,
@@ -247,7 +248,7 @@ def candidate_preservation(
         attach_connector_broker_service=True,
     )
     verify_mutation_zero(baseline, live)
-    verify_mutation_zero(proposed, live)
+    verify_mutation_zero(proposed, live, allow_connector_broker=True)
     old = tomllib.loads(baseline)
     new = tomllib.loads(proposed)
     prior_services = old.get("services", [])
@@ -256,6 +257,24 @@ def candidate_preservation(
         raise ProductionConfigError("Generated service declarations invalid")
     new_copy = dict(new)
     new_copy["services"] = prior_services
+    # #4719 LOCAL1: the candidate may additionally carry exactly the
+    # allowlisted Connector vars; nothing else may differ.
+    old_vars = old.get("vars", {})
+    new_vars = new_copy.get("vars", {})
+    if not isinstance(old_vars, dict) or not isinstance(new_vars, dict):
+        raise ProductionConfigError("Generated vars declarations invalid")
+    normalized_vars = dict(new_vars)
+    for key, expected in CONNECTOR_EXPLICIT_VARS.items():
+        if key in old_vars:
+            if old_vars[key] != expected:
+                raise ProductionConfigError("Connector var drift on live value")
+            if normalized_vars.get(key) != expected:
+                raise ProductionConfigError("Generated candidate changed Connector var value")
+        else:
+            if normalized_vars.get(key) != expected:
+                raise ProductionConfigError("Generated candidate changed non-Broker config")
+            del normalized_vars[key]
+    new_copy["vars"] = normalized_vars
     if new_copy != old:
         raise ProductionConfigError("Generated candidate changed non-Broker config")
     expected = {
