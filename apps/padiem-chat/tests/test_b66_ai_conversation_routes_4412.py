@@ -737,3 +737,94 @@ def test_a_control_action_that_loses_the_revision_race_is_a_409(ctx):
     # The winner's method choice is the durable one, not this request's.
     stored = ctx.client.get("/api/b66/ai/conversation").json()["state"]
     assert stored["method"] == "flexible"
+
+# ── QuoteCore/SQLite contract gaps (bounded, four late CENTRAL scope items) ──
+
+class FailingSaveStore:
+    """A store whose reads work but whose write always fails closed."""
+
+    def __init__(self, inner):
+        self.inner = inner
+
+    async def load(self, *, user_id, workspace_id):
+        return await self.inner.load(user_id=user_id, workspace_id=workspace_id)
+
+    async def clear(self, *, user_id, workspace_id):
+        return await self.inner.clear(user_id=user_id, workspace_id=workspace_id)
+
+    async def save(self, *, user_id, workspace_id, state, expected_revision):
+        raise RuntimeError("d1_unavailable")
+
+
+def test_a_store_write_failure_leaves_no_draft_and_no_success_response(ctx):
+    opened = open_authoring(ctx, "flexible")
+    collected = send(
+        ctx, "가상건설 배관 100m 18000원", revision=opened["revision"],
+        answer=model_reply("확인해 주세요.", "quote_create", {
+            "recipient": {"company": "가상건설"},
+            "items": [{"name": "배관", "qty": 100, "unitPrice": 18000}],
+        }),
+    ).json()
+    ctx.app.state.b66_ai_conversation_store = FailingSaveStore(ctx.app.state.b66_ai_conversation_store)
+
+    refused = act(ctx, "approve_draft", revision=collected["revision"])
+    assert refused.status_code == 503, refused.text
+    assert "draft" not in refused.json()
+    assert refused.json().get("ok") is not True
+    # The prior slot revision survives untouched: nothing was half-saved.
+    stored = ctx.client.get("/api/b66/ai/conversation").json()["state"]
+    assert stored["revision"] == collected["revision"]
+    assert stored["facts"]["items"][0]["qty"] == 100
+    assert stored["staged"] is False
+
+
+def test_a_store_write_failure_after_a_paid_turn_returns_503_and_keeps_the_prior_slot(ctx):
+    opened = open_authoring(ctx, "flexible")
+    ctx.app.state.b66_ai_conversation_store = FailingSaveStore(ctx.app.state.b66_ai_conversation_store)
+
+    res = send(
+        ctx, "가상건설 배관 100m 18000원", revision=opened["revision"],
+        answer=model_reply("확인해 주세요.", "quote_create", {
+            "recipient": {"company": "가상건설"},
+            "items": [{"name": "배관", "qty": 100, "unitPrice": 18000}],
+        }),
+    )
+    assert res.status_code == 503, res.text
+    assert "draft" not in res.json()
+    stored = ctx.client.get("/api/b66/ai/conversation").json()["state"]
+    # The paid answer was not silently written over the slot.
+    assert stored["revision"] == opened["revision"]
+    assert stored["facts"]["items"] == []
+
+
+def test_an_approved_draft_preserves_korean_multi_item_fields_and_absent_tax_mode(ctx):
+    opened = open_authoring(ctx, "flexible")
+    collected = send(
+        ctx, "가상건설 배관·타일 견적", revision=opened["revision"],
+        answer=model_reply("확인해 주세요.", "quote_create", {
+            "recipient": {"company": "가상건설", "person": "홍길동"},
+            "items": [
+                {"name": "배관", "qty": 100, "unitPrice": 18000, "unit": "m"},
+                {"name": "타일", "qty": 50, "unitPrice": 3000, "unit": "㎡"},
+            ],
+            "projectName": "가상건설 배관·타일 공사",
+            "memo": "현장 인도 조건: 하차 포함",
+        }),
+    ).json()
+    approved = act(ctx, "approve_draft", revision=collected["revision"])
+    assert approved.status_code == 200, approved.text
+    draft = approved.json()["draft"]
+    assert draft["recipient"]["company"] == "가상건설"
+    assert draft["recipient"]["person"] == "홍길동"
+    assert draft["projectName"] == "가상건설 배관·타일 공사"
+    assert draft["memo"] == "현장 인도 조건: 하차 포함"
+    assert draft["taxMode"] == ""
+    assert draft["items"] == [
+        {"name": "배관", "unit": "m", "qty": 100, "unitPrice": 18000},
+        {"name": "타일", "unit": "㎡", "qty": 50, "unitPrice": 3000},
+    ]
+    assert draft["missing"] == []
+    # QuoteCore owns every calculation: the projection never carries an amount.
+    serialized = json.dumps(draft, ensure_ascii=False)
+    for forbidden in ("grandTotal", "subtotal", "supplyAmount", "vatAmount", "total", "amount"):
+        assert forbidden not in serialized
