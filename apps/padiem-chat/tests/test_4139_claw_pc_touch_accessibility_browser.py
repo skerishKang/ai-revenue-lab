@@ -26,9 +26,16 @@ from pathlib import Path
 
 import pytest
 
-# The full B62 core runners do not install Playwright; skip the live-browser half
-# there instead of aborting collection.
-sync_playwright = pytest.importorskip("playwright.sync_api").sync_playwright
+try:
+    from playwright.sync_api import sync_playwright
+except ImportError:  # pragma: no cover - the B62 core runners have no browser
+    sync_playwright = None
+
+# The static floor guards must still collect and run there: this lane fails closed on
+# a module that yields zero collected tests, and a skip-only module would hide the
+# guards. Only the live-Chromium cases are gated.
+requires_browser = pytest.mark.skipif(
+    sync_playwright is None, reason="Playwright/Chromium is not installed in this runner")
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 MANAGER_CSS = STATIC / "claw-device-manager.css"
@@ -241,6 +248,7 @@ BOXES_JS = """() => {
 
 @pytest.mark.parametrize("width", [390, 768, 1280])
 @pytest.mark.parametrize("theme", ["padiem-glass", "dark"])
+@requires_browser
 def test_measured_hit_areas_are_at_least_44px(browser, server, width, theme) -> None:
     page, errors = _open_surfaces(browser, server, width, theme, "ko")
     boxes = page.evaluate(BOXES_JS)
@@ -262,6 +270,7 @@ def test_measured_hit_areas_are_at_least_44px(browser, server, width, theme) -> 
     page.close()
 
 
+@requires_browser
 def test_keyboard_access_and_locale_copy(browser, server) -> None:
     page, errors = _open_surfaces(browser, server, 390, "padiem-glass", "en")
     toggle, panel = "#clawDeviceManagerToggle", "#clawDeviceManagerPanel"
