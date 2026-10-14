@@ -333,10 +333,14 @@ async def conversation_turn(request: Request) -> JSONResponse:
     except Exception:
         await _refund_active_reservation()
         return _error(503, "ai_chat_unavailable", "AI 모델을 사용할 수 없습니다.")
+    product_tier = (access.get("tier", "FREE").lower() if access is not None else "free")
+    if product_tier not in ("free", "plus", "pro", "max"):
+        return _error(403, "invalid_membership_tier", "이용 등급을 확인해 주세요.")
     try:
         result = await complete(
             [{"role": "user", "content": message}],
             model=route.model_id,
+            product_tier=product_tier,
             additional_system_context=conversation_prompt(state),
             model_parameters=parameters,
         )

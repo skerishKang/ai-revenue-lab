@@ -756,6 +756,7 @@ class B14Client:
         model: str,
         additional_system_context: str | None = None,
         model_parameters: Mapping[str, Any] | None = None,
+        product_tier: str = "free",
     ) -> dict[str, Any]:
         """Authenticated B66 ordinary model conversation, never quote extraction.
 
@@ -822,6 +823,7 @@ class B14Client:
             additional_system_context=_bounded_context(additional_system_context),
             max_retries=0,
             before_dispatch=self._prepare_registered_quote_dispatch,
+            product_tier=product_tier,
             **kwargs,
         )
 
