@@ -318,3 +318,12 @@ tbody tr:last-child td{border-bottom:0}
 .usage-stage-heading span{font-size:10px;color:#5b7486}
 .usage-stage-track{height:7px;background:rgba(58,82,98,.12);border-radius:6px;overflow:hidden}
 .usage-stage-track span{display:block;height:100%;background:linear-gradient(90deg,#abc8db,#627f9a);border-radius:6px}
+
+/* Shareable presentation demo: a compact three-step guide above presets. */
+.demo-walkthrough{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.demo-walkthrough span{display:flex;align-items:center;gap:7px;padding:8px 12px;
+  background:rgba(255,255,255,.50);border:1px solid rgba(255,255,255,.74);
+  border-radius:999px;color:#456071;font-size:11px;font-weight:650}
+.demo-walkthrough b{font:700 10px/1 system-ui,sans-serif;color:#5688a9}
+@media(max-width:650px){.demo-walkthrough{gap:6px;margin-top:15px}
+  .demo-walkthrough span{padding:7px 9px;font-size:10px}}
