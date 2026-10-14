@@ -38,7 +38,7 @@ from app.claw_local_task_result_projection import (  # noqa: E402
     project_local_runner_terminal_result,
     result_message_id,
 )
-from app.history import D1HistoryStore, HistoryError, HistoryForbidden  # noqa: E402, PRODUCT_SCOPE_CHAT
+from app.history import D1HistoryStore, HistoryError, HistoryForbidden, PRODUCT_SCOPE_CHAT  # noqa: E402
 from padiem_control_plane.local_agent_broker import BrokerCommandState  # noqa: E402
 from padiem_control_plane.local_agent_broker_state import StateBackedLocalAgentBrokerAuthority  # noqa: E402
 from padiem_control_plane.local_agent_broker_state_wire import (  # noqa: E402

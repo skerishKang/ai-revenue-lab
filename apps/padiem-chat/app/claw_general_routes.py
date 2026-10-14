@@ -275,7 +275,7 @@ async def _save_claw_exchange(
             get = getattr(store, "get_conversation", None)
             if not callable(get):
                 return None
-            owned = get(uid, conversation_id)
+            owned = get(uid, conversation_id, product_scope=PRODUCT_SCOPE_CHAT)
             if inspect.isawaitable(owned):
                 owned = await owned
             if not isinstance(owned, dict) or owned.get("id") != conversation_id:
@@ -285,7 +285,7 @@ async def _save_claw_exchange(
                 return None
         # Only the bounded, visibly labeled stored preview is persisted. The
         # complete P01 result was already delivered to the caller unchanged.
-        saved = append(uid, conversation_id, user_text, answer, project_id)
+        saved = append(uid, conversation_id, user_text, answer, project_id, product_scope=PRODUCT_SCOPE_CHAT)
         if inspect.isawaitable(saved):
             saved = await saved
         if not isinstance(saved, str):

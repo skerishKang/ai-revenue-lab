@@ -46,6 +46,7 @@ from starlette.testclient import TestClient
 
 from app.app_factory import create_app
 from app.auth import SESSION_COOKIE, create_session_token
+from app.history import PRODUCT_SCOPE_CHAT
 
 import test_b54_claw_general_p01_routing as base
 from test_3930_b54_live_sse_relay import HEADERS as LIVE_HEADERS, _streaming_adapter
@@ -88,9 +89,10 @@ class _OwnerThreadStore:
         return None
 
     async def append_exchange(
-        self, user_id, conversation_id, user_text, answer, project_id=None
+        self, user_id, conversation_id, user_text, answer, project_id=None, *, product_scope: str
     ) -> str:
         assert user_id == base.SIGNED_IN_USER_ID
+        assert product_scope == PRODUCT_SCOPE_CHAT
         cid = conversation_id or ("chat_" + uuid.uuid4().hex)
         if cid not in self.threads:
             self.threads[cid] = {"id": cid, "project_id": project_id, "messages": []}
@@ -102,7 +104,8 @@ class _OwnerThreadStore:
         )
         return cid
 
-    async def get_conversation(self, user_id: str, conversation_id: str):
+    async def get_conversation(self, user_id: str, conversation_id: str, *, product_scope: str):
+        assert product_scope == PRODUCT_SCOPE_CHAT
         if user_id != base.SIGNED_IN_USER_ID:
             return None
         return self.threads.get(conversation_id)

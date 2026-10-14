@@ -90,6 +90,7 @@ from .history import (
     MAX_CLAW_RUNS,
     MAX_RUN_RESULT_SUMMARY_CHARS,
     HistoryStore,
+    PRODUCT_SCOPE_CHAT,
     validate_conversation_id,
 )
 from .usage_gate import UsageGate
@@ -360,7 +361,7 @@ async def _resolve_intake_session_reference(
     if not callable(get_conversation):
         return None, _error(503, "conversation_authority_unavailable", "대화 세션 권한을 확인할 수 없습니다.")
     try:
-        conversation = get_conversation(uid, candidate)
+        conversation = get_conversation(uid, candidate, product_scope=PRODUCT_SCOPE_CHAT)
         if inspect.isawaitable(conversation):
             conversation = await conversation
     except Exception:
