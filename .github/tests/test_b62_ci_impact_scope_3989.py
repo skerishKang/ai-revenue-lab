@@ -278,6 +278,52 @@ class B62ScopeTests(unittest.TestCase):
                 ), module.STATIC_ONLY)
                 self.assertIn(f"/compare/{SHA_A}...{SHA_B}", call.call_args.args[0].full_url)
 
+    def test_diverged_pr_with_exact_files_preserves_small_ui_scope(self):
+        # Real #4533: main advanced independently; GitHub compare returned
+        # diverged even though the PR changed exactly one Claw CSS stylesheet.
+        cases = (
+            ([file("apps/padiem-chat/static/claw-focus-layout.css")], module.STATIC_ONLY),
+            ([file("apps/korean-ai-platform/tests/test_pilot.py")], module.B14_TESTS_ONLY),
+            ([file("apps/padiem-chat/app/auth_routes.py")], module.CHAT_ONLY),
+        )
+        for files, scope in cases:
+            with self.subTest(scope=scope):
+                event = fake_event()
+                event["pull_request"]["changed_files"] = len(files)
+                reply = {"status": "diverged", "ahead_by": 1, "behind_by": 3,
+                         "files": files}
+                with patch.object(module.urllib.request, "urlopen",
+                                  return_value=io.BytesIO(json.dumps(reply).encode())):
+                    self.assertEqual(module.impact_scope(
+                        module.changed_files(event, "pull_request", REPO, "token")
+                    ), scope)
+
+    def test_diverged_pr_requires_exact_untruncated_source_evidence(self):
+        css = file("apps/padiem-chat/static/claw-focus-layout.css")
+        exact = {"status": "diverged", "ahead_by": 1, "behind_by": 3,
+                 "files": [css]}
+        cases = (
+            ({}, exact),  # missing PR changed-file count is not proof
+            ({"changed_files": 2}, exact),  # truncated compare
+            ({"changed_files": 0}, exact),
+            ({"changed_files": True}, exact),
+            ({"changed_files": 1}, dict(exact, ahead_by=0)),
+            ({"changed_files": 1}, dict(exact, ahead_by="1")),
+            ({"changed_files": 1}, dict(exact, status="behind")),
+        )
+        for attributes, reply in cases:
+            with self.subTest(attributes=attributes, status=reply["status"]):
+                event = fake_event()
+                event["pull_request"].update(attributes)
+                with patch.object(module.urllib.request, "urlopen",
+                                  return_value=io.BytesIO(json.dumps(reply).encode())):
+                    self.assertIsNone(module.changed_files(
+                        event, "pull_request", REPO, "token"))
+        with patch.object(module.urllib.request, "urlopen",
+                          return_value=io.BytesIO(json.dumps(exact).encode())):
+            self.assertIsNone(module.changed_files(
+                fake_event("push"), "push", REPO, "token"))
+
     def test_fail_closed_on_event_and_api_ambiguity(self):
         for event_type in ("workflow_dispatch", "schedule", "delete"):
             self.assertIsNone(module.changed_files(fake_event(), event_type, REPO, "token"))

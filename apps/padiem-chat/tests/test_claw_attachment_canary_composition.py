@@ -413,11 +413,20 @@ async def test_transport_request_bounds_are_route_specific():
             headers={},
             body=b"x" * (_MAX_ATTACHMENT_REQUEST_BYTES + 1),
         )
-    # The existing text/reference routes keep their 256 KiB bound.
+    # Model orchestration now aligns with the existing 6MB Engine model
+    # ingress, independent from the much smaller attachment/metadata bounds.
+    await transport.request(
+        method="POST",
+        url=f"{ENGINE_INTERNAL_ORIGIN}{ENGINE_ORCHESTRATE_PATH}",
+        headers={},
+        body=b"x" * (256 * 1024 + 1),
+    )
+    assert len(binding.calls) == 2
     with pytest.raises(ValueError):
         await transport.request(
             method="POST",
             url=f"{ENGINE_INTERNAL_ORIGIN}{ENGINE_ORCHESTRATE_PATH}",
             headers={},
-            body=b"x" * (256 * 1024 + 1),
+            body=b"x" * (6_000_000 + 1),
         )
+    assert len(binding.calls) == 2

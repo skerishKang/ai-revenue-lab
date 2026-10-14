@@ -172,11 +172,16 @@
     const data = await res.json().catch(() => null);
     if (!res.ok || !data || data.ok !== true) {
       const reason = data?.error?.code;
-      throw new Error(reason === "unauthorized" ? "로그인한 후 다시 시도해 주세요."
+      const error = new Error(reason === "unauthorized" ? "로그인한 후 다시 시도해 주세요."
         : reason === "web_xlsx_store_unavailable" ? "웹 파일 보관 기능이 아직 연결되지 않았습니다."
         : reason === "web_xlsx_too_large" ? "XLSX 파일은 1 MiB 이하여야 합니다."
         : reason === "invalid_web_xlsx_file" ? "안전하게 확인할 수 있는 XLSX 파일만 보관할 수 있습니다."
         : "웹 파일 요청에 실패했습니다. 연결과 파일 상태를 확인해 주세요.");
+      // The closed server error code stays available so a caller can tell a
+      // retryable rejection from an ambiguous transport failure. It is never
+      // used to resend anything automatically.
+      error.code = reason;
+      throw error;
     }
     return data;
   }
@@ -929,9 +934,20 @@
         report(body.workcopy_created
           ? "작업 사본을 내려받을 수 있습니다. 원본은 변경되지 않았습니다."
           : "사용자 결정이 서버에서 확인됐습니다. 원본 내용 처리는 아직 시작하지 않았습니다.");
-      } catch (_error) {
-        approvalStatus.textContent = "결정 전송 결과가 불확실합니다. 재전송하지 말고 상태를 조회하세요.";
-        report("P01 결정 결과가 확인되지 않았습니다. 중복 승인·거절을 보내지 않습니다.");
+      } catch (error) {
+        if (error && error.code === "owner_p01_decision_retryable") {
+          // The Engine proved it did NOT consume this decision, so the server
+          // durably released the one-shot reservation. Never resend here: the
+          // owner may decide again after the safe status re-read below.
+          decisionAttempted = false;
+          attemptedRefs.delete(ref);
+          approvalStatus.textContent =
+            "결정이 서버에 적용되지 않았습니다. 상태 확인 후 다시 선택할 수 있습니다.";
+          report("결정은 처리되지 않았습니다. 상태를 확인한 뒤 승인 또는 거절을 다시 선택하세요.");
+        } else {
+          approvalStatus.textContent = "결정 전송 결과가 불확실합니다. 재전송하지 말고 상태를 조회하세요.";
+          report("P01 결정 결과가 확인되지 않았습니다. 중복 승인·거절을 보내지 않습니다.");
+        }
       } finally {
         setBusy(false);
       }

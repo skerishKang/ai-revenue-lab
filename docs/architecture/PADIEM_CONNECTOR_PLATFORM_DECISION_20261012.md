@@ -4,19 +4,27 @@
 **기준:** `skerishKang/ai-revenue-lab`, 2026-10-12 KST.  
 **통합 구현:** [#4139](https://github.com/skerishKang/ai-revenue-lab/issues/4139) / **Windows 실사용 수용:** [#3099](https://github.com/skerishKang/ai-revenue-lab/issues/3099) / **통합 홈·관리자:** [#4428](https://github.com/skerishKang/ai-revenue-lab/issues/4428) / **Browser Use:** [#3782](https://github.com/skerishKang/ai-revenue-lab/issues/3782), [#3783](https://github.com/skerishKang/ai-revenue-lab/pull/3783) / **Hark E2E:** [#3936](https://github.com/skerishKang/ai-revenue-lab/issues/3936).
 
+## 2026-10-13 정정 — 고객 브랜드 분리 및 구현 상태 우선 적용
+
+**최신 고객 결정:** PADIEM Claw/Chat/Engine과 **B66 견적은 독립된 고객 서비스**다. 내부 Identity/Control Plane·Broker·Windows Connector의 코드 재사용은 허용되지만, **통합 고객 계정/메뉴/PC 목록·동일 이메일 기반 자동 연결·권한 공유를 의미하지 않는다**. B66에는 견적 서비스 전용 회원·PC 화면을, PADIEM에는 PADIEM 전용 회원·PC 화면을 별도로 제공한다. 교차 브랜드 연결은 향후 검증된 사용자 승인과 별도 권한 심사 전까지 OFF다. 본 문서의 2026-10-12 'B66/Claw/Chat을 한 계정/메뉴로 묶는다'고 읽히는 표현은 이 결정을 우선하여 제한 해석한다.
+
+**진행 상태:** S1 Windows tray #4420과 제품별 PC 사전 정책 #4429는 **병합된 소스**다. 그러나 CENTRAL [Draft #4476](https://github.com/skerishKang/ai-revenue-lab/pull/4476)·LOCAL2 [Draft #4490](https://github.com/skerishKang/ai-revenue-lab/pull/4490)는 **미병합·운영 OFF**, 실제 PC 등록/신뢰된 전송/ACK/ONLINE/권한 있는 업무 실행의 성공 증거가 아니다. 중앙 Draft에는 해결 전 GitGuardian 탐지가 존재한다. 제품 실기기 출시 수용은 여전히 #3099 OPEN이다. **단일 최신 점검 인덱스:** [#4139 중앙 상태·이슈 통합](../operations/PADIEM_CONNECTOR_4139_CENTRAL_STATUS_20261013.md) (소스/문서 스냅샷, 기능 승인 아님).
+
+> **Internal business-policy authority:** local governance reference and read-first/ask-owner rules are in the root [AGENTS.md](../../AGENTS.md). This public document is an engineering/technical history, not a replacement for the internal business policy.
+
 ## 1. 한 문장으로 정의
 
 **PADIEM Connector = 하나의 PC 설치 프로그램으로 웹 기반 PADIEM AI 제품이, 사용자 허가 범위 안에서, 해당 PC의 파일·프로그램·전용 브라우저·격리 실행 환경을 공유해 쓰는 공통 로컬 실행 기반.**
 
-PADIEM 웹(B66/Claw/Chat/Engine/향후 제품)은 **업무 요청·승인·상태·미리보기·최종 산출물**을 제공한다. 사용자는 별도의 Browser Use 앱, Desktop Commander형 UI, RDP, CLI, 수동 업·다운로드 또는 제품별 페어링 절차를 배울 필요가 없도록 설계한다. Windows Connector에는 경량 트레이/상태·일시정지·연결해제·계정·권한 안내만 기본 제공한다.
+PADIEM 웹(Claw/Chat/Engine/향후 승인 제품) 및 독립 브랜드 B66 Quote 웹은 **업무 요청·승인·상태·미리보기·최종 산출물**을 제공한다. 사용자는 별도의 Browser Use 앱, Desktop Commander형 UI, RDP, CLI, 수동 업·다운로드 또는 제품별 페어링 절차를 배울 필요가 없도록 설계한다. Windows Connector에는 경량 트레이/상태·일시정지·연결해제·계정·권한 안내만 기본 제공한다.
 
 **잠정 대외 제품명: PADIEM Connector.** 기존 S1 경로/내부 명칭은 `apps/claw-connect/**` / Claw Connect로 유지한다. 향후 제품명 전환은 계정 등록·기기 identity와 호환성을 검증한 별도 변경에서 진행하며, 이름만 바꾼 것으로 one-click 연동 완료를 선언하지 않는다.
 
 ## 2. 실제 고객 경험: 설치 한 번 + 확인된 동일 계정 로그인
 
-1. 고객은 B66/Claw/Chat 또는 PADIEM 통합 홈에서 Connector를 내려받아 PC에 설치한다.
-2. **최초 1회** 기존 PADIEM 계정을 안전한 시스템 인증 흐름으로 로그인하고, **이 PC 등록/활성화에 명시적으로 동의**한다. 동일 이메일 표기만으로 동일 계정이라고 판단하지 않는다.
-3. 서버는 기존 검증된 identity + workspace + 기기 소유 증명을 사용하여 **Canonical Broker**의 단일 device authority에 등록한다. 동일 사용자에게 속한 권한 있는 제품들이 **같은 device ID**를 본다. 별도의 웹 '연결 버튼'/QR/코드/서드파티 MCP 커넥터 설정을 기본 요구하지 않는다.
+1. 고객은 이용 중인 서비스(PADIEM 또는 B66 견적)의 **별도 승인된 설치 진입점**에서 Connector를 내려받아 PC에 설치한다. 서비스 사이의 계정·기기는 기본적으로 연결되지 않는다.
+2. **최초 1회(명시적으로 승인된 계정·브랜드 범위)** 해당 제품의 검증된 계정으로 안전하게 로그인하고, **이 PC 등록/활성화에 명시적으로 동의**한다. 동일 이메일 표기만으로 동일 계정이라고 판단하지 않는다.
+3. 서버는 기존 검증된 identity + workspace + 기기 소유 증명을 사용하여 **Canonical Broker**의 단일 device authority에 등록한다. 내부 canonical Broker는 단일 device ID를 재사용할 수 있으나, **제품·브랜드마다 검증된 인증과 명시적 연결 승인 없이는 같은 PC를 노출하지 않는다**. 별도의 웹 '연결 버튼'/QR/코드/서드파티 MCP 커넥터 설정을 기본 요구하지 않는다.
 4. 안전하게 저장된 자격증명·짧은 세션·회전/철회 정책과 outbound 연결/heartbeat로 재연결한다. 재부팅 자동 시작은 사용자 선택이다. 잠자기·오프라인·계정 철회 때는 즉시 unavailable.
 5. **등록 != 파일 접근/터미널/브라우저 실행 허가.** 각 제품 capability grant는 기본 OFF이며 작업별 대상·범위·기기·승인(P01 READ vs 별도 WRITE), WorkTicket, 만료/재생 방지, 감사가 별도로 필요하다.
 6. 외부 ChatGPT/Claude 연계는 향후 명시적으로 동의받는 별도 커넥터 경로다. PADIEM 자체 제품 사용에 필요하지 않다.
@@ -70,7 +78,7 @@ PADIEM 웹(B66/Claw/Chat/Engine/향후 제품)은 **업무 요청·승인·상�
 사용자는 웹에 XLSX **한 번만** 올린다. Connector가 기존의 작업 사본을 안전하게 자동 수신한 다음 처리하고 결과를 웹으로 반송하는 UX가 목표다.
 
 ```text
-B66/Claw/Chat 웹: XLSX 업로드
+별도 인증된 B66 Quote 또는 PADIEM Claw/Chat 웹: XLSX 업로드
     ↓ (인증된 owner/workspace private store; immutable source SHA256)
 PADIEM 서버: 저장/작업 대기 + 정확한 대상/작업 승인
     ↓ (기존 Broker로 PC 작업 전달, 파일 본문/브라우저 쿠키는 실어 보내지 않음)
@@ -96,8 +104,8 @@ PADIEM 웹: 수정 XLSX/PDF 미리보기·다운로드·실행/오류 이력
 
 ## 7. 제품/고객·운영 화면 — 무엇을 보여야 하는가
 
-**PADIEM 통합 홈(고객):** 내 제품/등급·권한, 내 PC 온라인 상태(실제 Broker), 실행 중/완료/차단 작업, 결과물, 승인 대기, 연결 관리.  
-**제품별 대시보드:** B66 견적서·Claw 작업·Chat 대화·Engine 실행 등 본연의 UX. 공통 제품 전환 헤더만 공유하고 권위 있는 데이터 저장소는 각자 유지.  
+**PADIEM 통합 홈(고객):** PADIEM 브랜드 안에서 승인된 제품/등급·권한, 권한 있는 PC 온라인 상태(실제 Broker), 실행 중/완료/차단 작업, 결과물, 승인 대기, 연결 관리. **B66 견적 고객은 포함하지 않는다**.  
+**제품별 대시보드:** PADIEM Claw 작업·Chat 대화·Engine 실행과 B66 견적서 UX는 고객에게 별개의 브랜드·로그인·메뉴로 제공한다. 브랜드 간 공통 제품 전환 헤더는 기본 제공하지 않으며, 각 권위 있는 데이터 저장소도 분리 유지.  
 **PADIEM 통합 관리자(운영자):** 회원·제품별 entitlement, B14 모델별 접근/비용/사용량, PC 등록/철회, 승인/감사/오류, 연결 및 실행 상태. 처음은 최소 범위 READ-ONLY로 시작하고 권한 수정은 정규화된 중앙 RBAC·감사를 완료한 뒤 단계적 추가. B66 개별 관리자라는 이유만으로 글로벌 관리자 권한 부여 금지.  
 **기존 Portfolio Console:** 개발/PR/CI/배포 운영 전용, 일반 고객 홈과 통합 금지.
 

@@ -171,12 +171,25 @@ async def call_chat_completions(
 
     async with httpx.AsyncClient(**client_kwargs) as client:
         try:
-            response = await client.post(
+            async with client.stream(
+                "POST",
                 chat_url,
                 headers=headers,
                 json=request_body,
                 follow_redirects=False,
-            )
+            ) as response:
+                if response.status_code < 200 or response.status_code >= 300:
+                    if response.status_code in (401, 403):
+                        raise UpstreamAuthFailed()
+                    if response.status_code == 429:
+                        raise UpstreamRateLimited()
+                    if 300 <= response.status_code < 400:
+                        raise MalformedUpstreamResponse()
+                    raise UpstreamServerError()
+                # Pre-decode byte cap (#4379): never fully buffer an
+                # unbounded upstream body into worker RAM before checking it.
+                from app.pilot.platform import MAX_COMPLETED_RESPONSE_BYTES, _read_bounded_body
+                body_bytes = await _read_bounded_body(response, cap=MAX_COMPLETED_RESPONSE_BYTES)
         except httpx.TimeoutException:
             raise UpstreamTimeout()
         except httpx.RequestError as e:
@@ -187,17 +200,8 @@ async def call_chat_completions(
             )
             raise UpstreamServerError()
 
-    if response.status_code < 200 or response.status_code >= 300:
-        if response.status_code in (401, 403):
-            raise UpstreamAuthFailed()
-        if response.status_code == 429:
-            raise UpstreamRateLimited()
-        if 300 <= response.status_code < 400:
-            raise MalformedUpstreamResponse()
-        raise UpstreamServerError()
-
     try:
-        response_data = response.json()
+        response_data = json.loads(body_bytes)
     except (json.JSONDecodeError, ValueError):
         raise MalformedUpstreamResponse()
 

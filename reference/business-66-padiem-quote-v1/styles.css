@@ -695,6 +695,24 @@ textarea { min-height: 82px; resize: vertical; }
 }
 .easy-message-avatar { width: 34px; height: 34px; border-radius: 11px; }
 .easy-message-body { min-width: 0; }
+/* #4469 retrieval is labelled separately from the model's own words so a member
+   can tell a sourced fact from an unverified one. */
+.easy-evidence-note {
+  margin: 10px 0 4px;
+  color: #475467;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.easy-evidence-list {
+  margin: 0;
+  padding-left: 20px;
+  color: #475467;
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.easy-evidence-url { color: #175cd3; text-decoration: underline; }
+.easy-evidence-retrieved { display: block; color: #667085; }
 .easy-message-meta {
   min-height: 27px;
   color: #344054;

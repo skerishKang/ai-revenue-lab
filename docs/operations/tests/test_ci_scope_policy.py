@@ -83,6 +83,7 @@ B62_CHAT_EXPECTED_JOBS = {
     "b62-full-suite",
     "b62-worker-suite",
     "b62-static-ui",
+    "b62-ui-mixed-tests",  # #4459 exact changed-test runner; required b62-test fan-in
     "b14-multimodal-test",
 }
 
@@ -126,6 +127,11 @@ def _assert_b62_chat_ci_parity(document: dict) -> None:
     assert set(document["jobs"]) == B62_CHAT_EXPECTED_JOBS, (
         "preserve the B62 job graph and required gate"
     )
+    # #4459 new optional lane is not an unreviewed gate bypass: the existing
+    # required b62-test must depend on the focused UI pytest job too.
+    aggregate = document["jobs"]["b62-test"]
+    assert "b62-ui-mixed-tests" in aggregate["needs"]
+    assert "MIXED_RESULT" in aggregate["steps"][0]["env"]
 
 
 

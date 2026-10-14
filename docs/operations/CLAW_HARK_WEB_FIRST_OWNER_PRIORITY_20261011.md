@@ -6,6 +6,8 @@
 
 **Applies to:** #3928 (web UX epic), #3580 (files/artifacts), #3933 (Office editing), #3936 (browser E2E), related B62/B54/P01 work.
 
+> **Business-governance reference:** consult local non-public business policies via the root [AGENTS.md](../../AGENTS.md) when interpreting business priorities. This document records a dated technical delivery order only.
+
 ## Binding owner decision
 
 **Complete the owner-authenticated B62 web journey first.** Hark is the external UX benchmark; the deliverable is **PADIEM Chat/Claw web product**, not modification of the unrelated hark.com service. Do not default to Windows, local filesystem, Resident, Excel COM, or connected-PC prerequisites. Never make the browser show an approval button for an unconfigured backend, and do not label source CI as functional live web delivery.

@@ -945,13 +945,18 @@
   }
 
   function cgiTemplateEligibleSkill() {
+    // A skill label or provenance string is not access authority. Only the
+    // exact authenticated, server-assigned CGI Saved Quote Skill may expose
+    // this tenant-specific layout. The server separately checks user/workspace.
     const skill = skillUiState.serverSkill;
-    if (!skill || !CgiTemplateV2) return null;
-    const name = typeof skill.name === "string" ? skill.name : "";
-    const provenanceName = skill.provenance && typeof skill.provenance.sourceName === "string"
-      ? skill.provenance.sourceName
-      : "";
-    return /(?:시지아이|cgi)/i.test(name + " " + provenanceName) ? skill : null;
+    const bridge = window.B66BrowserPdf;
+    if (!skill || !CgiTemplateV2 ||
+        !bridge || typeof bridge.isCgiSkill !== "function" ||
+        !bridge.isCgiSkill(skillUiState.serverSavedSkillId) ||
+        skillUiState.serverSavedSkillId !== skillUiState.activeSkillId) {
+      return null;
+    }
+    return skill;
   }
 
   function cgiTemplateProfile() {

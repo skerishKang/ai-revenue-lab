@@ -70,7 +70,7 @@ function response(body, status = 200) {
 async function settle() {
   for (let i = 0; i < 12; ++i) await new Promise(resolve => setImmediate(resolve));
 }
-function server({ initial = "waiting_p01", enabled = true, failPost = false, failStart = false, badSource = false, workcopy = false, forgedPreviewWrite = false, writeAvailable = false, pdfAvailable = false, followupAvailable = false, followupForged = false, readConversation = false, readConversationForged = false, adoptAvailable = true, adoptForged = false, selectionRefused = false, selectionMalformed = false } = {}) {
+function server({ initial = "waiting_p01", enabled = true, failPost = false, failStart = false, retryablePost = false, badSource = false, workcopy = false, forgedPreviewWrite = false, writeAvailable = false, pdfAvailable = false, followupAvailable = false, followupForged = false, readConversation = false, readConversationForged = false, adoptAvailable = true, adoptForged = false, selectionRefused = false, selectionMalformed = false } = {}) {
   let stage = initial, sent = [], starts = [], previews = [], commits = [],
     writeDecisions = [], pdfPreviews = [], followupReads = [], adopts = [],
     selectionPosts = [], adoptedStatusReads = [];
@@ -311,6 +311,13 @@ function server({ initial = "waiting_p01", enabled = true, failPost = false, fai
       if (failPost) {
         stage = "decision_unknown";
         return response({ ok: false, error: { code: "unknown" } }, 503);
+      }
+      if (retryablePost) {
+        // #3936: the Engine proved it did NOT consume this decision, so the
+        // server durably released the one-shot reservation and the owner may
+        // decide again. The stage stays waiting_p01 on the next status read.
+        return response(
+          { ok: false, error: { code: "owner_p01_decision_retryable" } }, 409);
       }
       stage = body.decision === "approve" ? "confirmed" : "denied";
       return response({
@@ -618,6 +625,23 @@ async function prepare(config) {
   unknown.existing.handlers.click(); await settle();
   unknown.root.nodes.clawWebXlsxP01Approve.handlers.click(); await settle();
   assert.deepEqual(unknown.network.sent, ["approve"], "uncertain dispatch NEVER retried");
+
+  // #3936: a retry-safe Engine rejection released the server reservation, so the
+  // owner may decide again. The client must never resend by itself, but it must
+  // stop latching the attempt once the server reports the release.
+  const retryable = await prepare({ retryablePost: true });
+  retryable.root.nodes.clawWebXlsxP01Approve.handlers.click(); await settle();
+  assert.deepEqual(retryable.network.sent, ["approve"]);
+  assert.equal(retryable.client.getState().decisionAttempted, false,
+    "a retryable rejection must release the client attempt latch");
+  assert.equal(retryable.root.nodes.clawWebXlsxP01Approve.hidden, false);
+  assert.equal(retryable.root.nodes.clawWebXlsxP01Approve.disabled, false,
+    "the owner must be able to decide again after a retryable rejection");
+  // The safe status re-read restores the server-truth waiting message.
+  assert.match(retryable.root.nodes.clawWebXlsxP01Status.textContent, /승인을 기다리고/);
+  retryable.root.nodes.clawWebXlsxP01Approve.handlers.click(); await settle();
+  assert.deepEqual(retryable.network.sent, ["approve", "approve"],
+    "a retry is only ever a fresh owner click, never automatic");
 
   for (const opts of [
     { initial: "not_requested" }, { initial: "request_unknown" },

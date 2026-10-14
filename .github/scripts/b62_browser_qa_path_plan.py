@@ -81,6 +81,114 @@ GLASS_TAIL_UNCHANGED_LEAVES = frozenset({
 })
 
 
+# #4459: a proven CSS-only UI change cannot alter Python/Worker/API/auth logic,
+# models, DB, secrets or file writes. The B62 static-UI fast checks and the
+# DOM/origin/persistence security audits still run in their own required
+# workflows; this planner only narrows the 16 browser QA lanes to the
+# presentation smoke set below (CLAW manual-intake precedent: five shared
+# smoke/a11y/auth/document/file lanes, plus the CSS-sensitive touch lane).
+UI_ONLY_CSS_SMOKE_LANES = frozenset({
+    "accessibility-browser-qa",
+    "auth-history-browser-qa",
+    "browser-qa",
+    "document-browser-qa",
+    "mobile-touch-target-qa",
+    "project-files-browser-qa",
+})
+
+# A simple UI fix touches a bounded number of stylesheets. Larger restyles
+# keep the full lane set: the fail-closed direction is more coverage, never
+# less. HTML and JS text edits never qualify here: inline scripts, selectors
+# and endpoint strings cannot be proven logic-free by path alone.
+MAX_UI_ONLY_CSS_FILES = 10
+
+# CSS with these three pre-reviewed presentation-test leaves has the same
+# browser runtime impact as CSS alone. All other tests retain full browser QA.
+# B62 CI runs the changed pytest modules in its required UI-mixed job.
+UI_PRESENTATION_TEST_LEAVES = frozenset({
+    "apps/padiem-chat/tests/test_b62_1732_capability_navigation.py",
+    "apps/padiem-chat/tests/test_b62_1735_sidebar_home_ia.py",
+    "apps/padiem-chat/tests/test_b62_2341_task_alert_inbox_ui.py",
+    "apps/padiem-chat/tests/test_4488_claw_automation_touch_accessibility.py",
+})
+
+
+def is_css_with_presentation_tests(
+    changed_paths: set[str] | None, statuses: dict[str, str] | None,
+    *, expected_files: int | None = None,
+) -> bool:
+    if not changed_paths or statuses is None:
+        return False
+    if type(expected_files) is not int or expected_files != len(changed_paths):
+        return False
+    if not 2 <= len(changed_paths) <= MAX_UI_ONLY_CSS_FILES + len(UI_PRESENTATION_TEST_LEAVES):
+        return False
+    if set(statuses) != changed_paths or any(
+        statuses[path] not in {"added", "modified"} for path in changed_paths
+    ):
+        return False
+    tests = changed_paths & UI_PRESENTATION_TEST_LEAVES
+    styles = changed_paths - tests
+    if not tests or not styles or len(tests) > len(UI_PRESENTATION_TEST_LEAVES) or len(styles) > MAX_UI_ONLY_CSS_FILES:
+        return False
+    if any(
+        path in _UI_ONLY_CSS_EXCLUDED
+        or "\\" in path or ".." in Path(path).parts
+        or not _UI_ONLY_CSS_RE.fullmatch(path)
+        for path in styles
+    ):
+        return False
+    return True
+
+
+
+_UI_ONLY_CSS_RE = re.compile(
+    r"apps/padiem-chat/static/(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\.css"
+)
+
+# Stylesheets with their own proven surface isolation keep their pinned lane
+# sets; the generic CSS-only smoke must never move those boundaries.
+_UI_ONLY_CSS_EXCLUDED = frozenset({
+    B66_QUOTE_CSS,
+    CLAW_MANUAL_INTAKE_CSS,
+    CLAW_QUOTE_COMPARE_CSS,
+})
+
+
+def is_css_only_ui_change(
+    changed_paths: set[str] | None, statuses: dict[str, str] | None,
+    *, expected_files: int | None = None,
+) -> bool:
+    """Prove a CSS-only UI change for the #4459 browser smoke set.
+
+    Returns True only when every changed file is an added/modified B62 Chat
+    stylesheet with exact status/count proof. Anything else (HTML/JS/Python/
+    mixed/removed/renamed/unknown/truncated/oversized) returns False so the
+    caller keeps the full lane set. Missing statuses also return False, which
+    preserves the historical path-only routing for offline callers.
+    """
+    if not changed_paths or statuses is None:
+        return False
+    # A truncated API response or missing PR changed_files is never proof.
+    if type(expected_files) is not int or expected_files != len(changed_paths):
+        return False
+    if not 0 < len(changed_paths) <= MAX_UI_ONLY_CSS_FILES:
+        return False
+    if set(statuses) != set(changed_paths):
+        return False
+    for path in changed_paths:
+        if statuses.get(path) not in ("added", "modified"):
+            return False
+        if path in _UI_ONLY_CSS_EXCLUDED:
+            return False
+        # Do not accept malformed paths or explicit traversal.
+        if "\\" in path or ".." in Path(path).parts:
+            return False
+        if not _UI_ONLY_CSS_RE.fullmatch(path):
+            return False
+    return True
+
+
 def require_glass_visual_tail(
     changed_paths: set[str] | None, statuses: dict[str, str] | None,
     *, manual: bool = False, expected_files: int | None = None,
@@ -278,7 +386,9 @@ def claw_quote_css_is_isolated(source: str | None = None) -> bool:
 
 
 def choose_lanes(
-    changed_paths: set[str] | None, patterns_by_job: dict[str, list[str]]
+    changed_paths: set[str] | None, patterns_by_job: dict[str, list[str]],
+    *, statuses: dict[str, str] | None = None,
+    expected_files: int | None = None,
 ) -> dict[str, bool]:
     if changed_paths is not None and B66_QUOTE_CSS in changed_paths:
         if not b66_quote_css_is_isolated():
@@ -291,6 +401,14 @@ def choose_lanes(
         return {job: True for job in patterns_by_job}
     if changed_paths & PLAN_FILES:
         return {job: True for job in patterns_by_job}
+    # #4459: proven CSS-only UI changes keep the presentation smoke set and
+    # skip the flow-functional lanes whose logic CSS cannot change. Missing
+    # statuses keep the historical path-only routing (fail-closed).
+    if is_css_only_ui_change(changed_paths, statuses, expected_files=expected_files):
+        return {job: (job in UI_ONLY_CSS_SMOKE_LANES) for job in patterns_by_job}
+    if is_css_with_presentation_tests(changed_paths, statuses,
+                                      expected_files=expected_files):
+        return {job: (job in UI_ONLY_CSS_SMOKE_LANES) for job in patterns_by_job}
     claw_field_change = CLAW_MANUAL_INTAKE_CSS in changed_paths
     if claw_field_change and not claw_manual_css_is_isolated():
         return {job: True for job in patterns_by_job}
@@ -387,7 +505,8 @@ def main() -> int:
             changed = fetch_changed_paths(event, os.environ, statuses)
         except (KeyError, ValueError, OSError, json.JSONDecodeError):
             changed = None
-        chosen = choose_lanes(changed, patterns)
+        chosen = choose_lanes(changed, patterns, statuses=statuses,
+                              expected_files=expected_files)
     glass_tail_required = require_glass_visual_tail(
         changed, statuses, manual=manual, expected_files=expected_files,
     )

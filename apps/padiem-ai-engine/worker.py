@@ -574,7 +574,10 @@ class Default(WorkerEntrypoint):
                 MAX_MEMORY_REQUEST_BODY_BYTES
                 if path in {MEMORY_PATH, MEMORY_WRITE_PATH}
                 else MAX_MODEL_EXECUTE_REQUEST_BODY_BYTES
-                if path == EXECUTE_PATH
+                if path in {
+                    EXECUTE_PATH, ORCHESTRATE_PATH,
+                    ORCHESTRATION_STREAM_PATH, ORCHESTRATE_RESUME_PATH,
+                }
                 else MAX_REQUEST_BODY_BYTES
             )
             try:

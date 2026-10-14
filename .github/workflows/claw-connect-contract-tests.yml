@@ -1,0 +1,94 @@
+name: Claw Connect Contract Tests
+
+# #4139 — CI for the Windows-only PADIEM Connector (`apps/claw-connect/**`).
+#
+# Gap this closes: no workflow in this repository referenced claw-connect, so
+# the connector's own suites ran only on a developer PC. PR #4463 (S2
+# enrollment client) reported pytest/node results that no CI job had executed:
+# its only PR-triggered checks were the shared P01-boundary, operations-policy
+# and PR-contract guards plus browser QA jobs that skip on this path.
+#
+# Scope: run the connector's existing suites unchanged on the revision under
+# review. This workflow never deploys, never touches Production, D1, secrets,
+# a broker endpoint or the autostart registry, and holds no credential.
+# `windows-latest` is used because the product is win32-only
+# (`package.json` `os: ["win32"]`; tray/autostart/single-instance paths use
+# `winreg`), so a Linux run would not be evidence for the shipped artifact.
+#
+# Deliberate non-goal: `apps/claw-connect/verify_windows_live.py`, the
+# real-process Windows harness. It starts and stops supervised Connector
+# processes and mutates per-user state; promoting it to a CI gate needs its
+# own reviewed decision (see #3099).
+
+on:
+  pull_request:
+    paths:
+      - "apps/claw-connect/**"
+      - ".github/workflows/claw-connect-contract-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: claw-connect-contract-tests-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  python-contract-tests:
+    name: Connector contract tests (pytest)
+    runs-on: windows-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: apps/claw-connect
+    steps:
+      - name: Check out reviewed revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install test dependencies
+        run: python -m pip install --disable-pip-version-check 'pytest>=8,<10'
+
+      - name: Run connector contract tests
+        run: python -m pytest -q tests
+
+      - name: Record gate scope
+        run: |
+          echo 'CLAW_CONNECT_PYTEST=EXECUTED'
+          echo 'PRODUCTION_DEPLOYMENT=0'
+
+  node-wrapper-tests:
+    name: Connector wrapper tests (node)
+    runs-on: windows-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: apps/claw-connect
+    steps:
+      - name: Check out reviewed revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # No install step: `apps/claw-connect/package.json` declares no
+      # dependencies and ships no lockfile. `npm test` is the package's own
+      # declared entry point (`node --test tests/*.test.mjs`).
+      - name: Run connector wrapper tests
+        run: npm test
+
+      - name: Record gate scope
+        run: |
+          echo 'CLAW_CONNECT_NODE_TESTS=EXECUTED'
+          echo 'PRODUCTION_DEPLOYMENT=0'

@@ -24,6 +24,10 @@ from .contracts import (
     RunStatus,
     UsageMetadata,
 )
+from .dispatch_preinstruction import (
+    render_dispatch_preinstruction,
+    server_wall_clock,
+)
 
 # Execution messages are provider-native; trusted injected system context
 # retains separate bounds for tool/instruction safety.
@@ -111,14 +115,19 @@ def _normalize_additional_system_context(value: str | None) -> str | None:
 
 
 def _compose_system_instruction(request: "ExecutionRequest") -> str | None:
-    parts: list[str] = []
+    # #4465/#4468: every model call carries the one trusted per-dispatch server
+    # clock, so "오늘/최신" is resolved from the executing server rather than the
+    # model's training cutoff or a browser clock. The product's own instruction
+    # is preserved and still follows it. The context is sampled exactly once
+    # here, which is the single dispatch point for this runtime.
+    parts: list[str] = [render_dispatch_preinstruction(server_wall_clock())]
     if request.agent.system_instruction is not None:
         parts.append(request.agent.system_instruction)
     if request.additional_system_context is not None:
         parts.append(request.additional_system_context)
-    if not parts:
-        return None
     content = "\n\n".join(parts)
+    # The mandatory context is counted inside the same transport envelope as
+    # every other part, so it can never push the request past the guard.
     if len(content.encode("utf-8")) > MAX_SYSTEM_CONTEXT_BYTES:
         raise ValueError("composed system instruction exceeds transport safety envelope")
     return content

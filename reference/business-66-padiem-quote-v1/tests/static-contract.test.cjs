@@ -258,7 +258,7 @@ check(extraction.includes("normalizeDetailGroups(") &&
 check(html.includes('id="easyModeButton"') && html.includes('id="directModeButton"') &&
       html.includes(">채팅</button>") && html.includes("직접 입력"),
   "EASY_MODE_CONTRACT: top-level chat/direct switch");
-check(html.includes("질문받으며 새로 만들기") && html.includes("내용을 한번에 말하기"),
+check(html.includes("질문받으며 새로 만들기") && html.includes("AI와 대화하기"),
   "EASY_MODE_CONTRACT: easy entry choices");
 check(easy.includes('App.createFreshDraft("guided")') &&
       app.includes('fresh.meta.source = source || "manual"'),
@@ -271,14 +271,31 @@ check(easy.includes("Core.computeDraftTotals(guided.draft)") &&
 check(css.includes(".easy-chip {") && css.includes("min-height: 44px;"),
   "EASY_MODE_CONTRACT: quick chips meet 44px touch target");
 check(!easy.includes("fetch(") && !easy.includes("XMLHttpRequest") &&
-      !intake.includes("fetch(") && !intake.includes("XMLHttpRequest"),
-  "EASY_MODE_CONTRACT: no network/model call in Easy/file intake mode");
+      !intake.includes("fetch(") && !intake.includes("XMLHttpRequest") &&
+      account.includes('chat: chatMessages') && account.includes('api("/b66/ai/chat"'),
+  "EASY_MODE_CONTRACT: no direct fetch in Easy/file intake; chat uses authenticated account bridge");
 check(!easy.includes("아직 자동 해석 모델은 연결 전") &&
-      easy.includes("ready && ready.ready") &&
-      easy.includes("승인된 견적서와 회사 정보를 사용해 AI로 작성합니다.") &&
+      easy.includes("runModelDialogue(text, bridge)") &&
+      easy.includes("bridge.chat(history)") &&
+      easy.includes("!readiness.ready || lastEasyView") &&
+      easy.includes("return bridge.interpret(text)") &&
       easy.includes("startGuidedIfReady(text)") &&
+      !easy.includes("안녕하세요! 견적 내용을 편하게 알려주세요."),
+  "EASY_MODE_CONTRACT: signed-in no-CGI model chat works; approved one-shot CGI stays available");
+check(html.includes('id="freeChatStarter"') &&
+      html.includes("<strong>AI와 대화하기</strong>") &&
+      html.includes("<small>일반 질문부터 견적 상담까지</small>") &&
+      easy.includes('$("freeChatStarter").addEventListener("click", startFreeChat);') &&
+      easy.includes("bridge.chat(history)") &&
       easy.includes("return bridge.interpret(text)"),
-  "EASY_MODE_CONTRACT: approved CGI routes to the model; missing CGI starts an honest guided draft");
+  "B66_CHAT_ENTRY: explicit general AI dialogue CTA routes to real model and preserves approved CGI quote flow");
+check(easy.includes("renderSourcedEvidence(addMessage(\"assistant\", result.answer), result.search)") &&
+      easy.includes('search.status !== "sourced"') &&
+      easy.includes('stamp.textContent = "서버 수집 "') &&
+      easy.includes('rel = "noopener noreferrer nofollow"') &&
+      account.includes('typeof data.search.status === "string"') &&
+      css.includes(".easy-evidence-list {"),
+  "B66_SEARCH_EVIDENCE: only a server-reported sourced turn renders sources, each labelled with the server collection time and a nofollow link");
 check(easy.includes("자동 분석 서버는 아직 활성화 전") &&
       easy.includes("이 파일은 외부로 전송되지 않습니다."),
   "EASY_MODE_CONTRACT: selected file is truthful about non-live analysis");

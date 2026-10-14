@@ -1,0 +1,12 @@
+{
+  "removedAbsent": true,
+  "filesLabel": "라이브러리",
+  "automationKept": true,
+  "alertsEntry": true,
+  "tasksEntry": true,
+  "projectsKept": true,
+  "historyKept": true,
+  "searchDisabled": true,
+  "narrow_no_horizontal_overflow": true,
+  "page_errors": []
+}

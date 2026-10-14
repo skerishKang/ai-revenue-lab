@@ -13,6 +13,7 @@ from starlette.routing import Route
 from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .history import HistoryForbidden, HistoryStore
+from .history import PRODUCT_SCOPE_CHAT
 from .model_policy import ModelPolicyError, resolve_model_policy
 from .orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
 from .request_contract import BrowserRequestError, _validate_payload
@@ -124,7 +125,7 @@ async def _save_terminal_history(
     if store is None:
         return conversation_id
     try:
-        return await store.append_exchange(user_id, conversation_id, user_text, answer)
+        return await store.append_exchange(user_id, conversation_id, user_text, answer, product_scope=PRODUCT_SCOPE_CHAT)
     except HistoryForbidden:
         return None
     except Exception:
@@ -158,7 +159,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
     store: HistoryStore | None = request.app.state.history_store
     if conversation_id is not None and store is not None:
         try:
-            existing = await store.get_conversation(uid, conversation_id)
+            existing = await store.get_conversation(uid, conversation_id, product_scope=PRODUCT_SCOPE_CHAT)
         except Exception:
             return _error("history_unavailable", "대화 기록을 현재 사용할 수 없습니다.", 503)
         if existing is None:

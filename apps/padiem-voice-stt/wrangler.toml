@@ -1,0 +1,69 @@
+name = "padiem-voice-stt"
+main = "worker.py"
+compatibility_date = "2026-08-25"
+compatibility_flags = ["python_workers"]
+# Private Worker: reachable only by an internal / Service-Binding caller, never
+# from the public internet. Products (Chat/Claw/B66) must not call it directly
+# from the browser.
+#
+# NOTE: `workers_dev = false` only keeps the Worker off the public internet. It
+# does NOT supply application-level caller authentication, identity, tenant scope
+# or cost limiting. Those are the paid-route gate below, and the bindings it
+# needs are not attached yet.
+workers_dev = false
+base_dir = ".worker-src"
+
+[build]
+command = "uv run python scripts/build_worker_dependencies.py"
+
+# Existing Cloudflare Secrets Store (same store id every PADIEM provider key
+# uses; this file is the only source of that resource locator). The value is
+# never read, printed or returned by this Worker; only the binding name is
+# declared here.
+#
+# #4643: the Owner reports a Gemini key and a Groq key already exist in this
+# store. Reuse only — no new key is created or requested.
+[[secrets_store_secrets]]
+binding = "PADIEM_GEMINI_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_GEMINI_API_KEY"
+
+# NOT RUNTIME-VERIFIED. The Groq secret_name is absent from every repository
+# wrangler.toml, so the name below follows the PADIEM_<PROVIDER>_API_KEY
+# convention and MUST be confirmed against the live store before this Worker is
+# deployed. Until then the transcribe route fails closed with `stt_key_missing`.
+[[secrets_store_secrets]]
+binding = "PADIEM_GROQ_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_GROQ_API_KEY"
+
+# Deployment gate. OFF by default: declaring this Worker does not activate any
+# live voice lane, and the Worker reads no Secret and performs no provider call
+# while this is not exactly "true".
+#
+# ON additionally requires BOTH canonical Control Plane private Service Bindings
+# below, which together supply an authenticated caller identity, its canonical
+# tenant and a per-request cost reservation:
+#
+#   CONTROL_PLANE_IDENTITY          resolve_auth_session
+#   CONTROL_PLANE_ENGINE_ADMISSION  fetch_entitlement_snapshot / reserve_usage
+#
+# They are the same bindings apps/padiem-ai-engine uses, deliberately: voice
+# spending is admitted by the same control-plane authority as Engine spending
+# rather than by a second, voice-local ledger.
+#
+# They are deliberately NOT declared here: the Worker is not deployed and the
+# Control Plane does not yet issue a `voice.stt.*` entitlement grant, so
+# declaring them would break this Worker's deploy without making any paid route
+# reachable. Activation is a CENTRAL decision in its own slice, and it must also
+# review which product Workers are granted this binding.
+#
+# Until then every paid route answers one bounded failure instead of spending:
+#   caller_guard_unavailable          a required binding is absent or unusable
+#   voice_stt_unauthenticated         no resolvable authenticated session
+#   voice_stt_forbidden               session/snapshot belong elsewhere
+#   voice_stt_tenant_unavailable      the session carries no canonical tenant
+#   voice_stt_cost_denied             no voice grant, or a refused reservation
+# Do not switch this flag on to make tests pass.
+[vars]
+PADIEM_VOICE_STT_ENABLED = "false"

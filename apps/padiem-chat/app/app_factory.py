@@ -11,6 +11,9 @@ from starlette.staticfiles import StaticFiles
 from .auth import GoogleOAuthClient
 from .auth_abuse import AuthAbuseGate, AuthAbuseStore, D1AuthAbuseStore
 from .b66_quote_conversation import B66QuoteConversationInterpreter
+from .b66_ai_chat_routes import b66_ai_chat
+from .b66_ai_conversation_routes import conversation_state, conversation_turn
+from .b66_ai_conversation_store import D1ConversationStore
 from .b66_company_profile import CompanyProfileStore, D1CompanyProfileStore
 from .b66_company_profile_routes import b66_company_profile_get, b66_company_profile_put
 from .b66_quote_asset_routes import b66_quote_asset_detail
@@ -194,7 +197,7 @@ from .config import Settings
 from .connector_status_projection import connectors_status
 from .connector_ticket_routes import google_connector_ticket
 from .calendar_read_activation_routes import activate_google_calendar_read
-from .conversation_routes import api_conversation_detail, api_conversations
+from .conversation_routes import api_conversation_detail, api_conversation_search, api_conversations
 from .desktop_conversation_authority import UnconfiguredDesktopDeviceSessionAuthority
 from .desktop_conversation_routes import (
     DESKTOP_CONVERSATION_DETAIL_PATH,
@@ -204,7 +207,11 @@ from .desktop_conversation_routes import (
 )
 from .grounding import GroundedChatService
 from .history import HistoryStore
-from .project_file_routes import project_file_detail, project_files_collection
+from .project_file_routes import (
+    owner_files_collection,
+    project_file_detail,
+    project_files_collection,
+)
 from .drive_case_folder_routes import (
     drive_case_folder_delete,
     drive_case_folder_put,
@@ -297,6 +304,7 @@ def create_app(
     b66_company_profile_store: CompanyProfileStore | None = None,
     b66_quote_history_store=None,
     b66_guided_draft_store=None,
+    b66_ai_conversation_store=None,
     b66_quote_asset_store=None,
     b66_certified_quote_bundle_store=None,
     b66_certified_preview_store=None,
@@ -346,6 +354,9 @@ def create_app(
         Route("/api/connectors/google/calendar/activate-read", activate_google_calendar_read, methods=["POST"]),
         Route("/api/connectors/status", connectors_status, methods=["GET"]),
         Route("/api/projects", projects_collection, methods=["GET", "POST"]),
+        # #4489: one owner-scoped keyset-paginated read over every stored project file,
+        # so the Library can walk a full history without per-project fan-out.
+        Route("/api/project-files", owner_files_collection, methods=["GET"]),
         Route("/api/projects/{project_id}", project_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/projects/{project_id}/files", project_files_collection, methods=["GET", "POST"]),
         Route("/api/projects/{project_id}/files/{file_id}", project_file_detail, methods=["GET", "DELETE"]),
@@ -387,6 +398,7 @@ def create_app(
         Route("/api/outputs", outputs_collection, methods=["GET", "POST"]),
         Route("/api/outputs/{output_id}", output_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/conversations", api_conversations, methods=["GET"]),
+        Route("/api/conversations/search", api_conversation_search, methods=["GET"]),
         Route("/api/conversations/{conversation_id}", api_conversation_detail, methods=["GET", "DELETE"]),
         # #3436 B2c: the GET-only canonical conversation surface for the paired
         # Desktop. Identity is the canonical broker device session, derived
@@ -434,6 +446,9 @@ def create_app(
             methods=["GET"],
         ),
         Route("/api/b66/quote/interpret", b66_quote_interpret, methods=["POST"]),
+        Route("/api/b66/ai/chat", b66_ai_chat, methods=["POST"]),
+        Route("/api/b66/ai/conversation", conversation_turn, methods=["POST"]),
+        Route("/api/b66/ai/conversation", conversation_state, methods=["GET"]),
         Route("/api/b66/quote/models", b66_quote_models, methods=["GET"]),
         Route("/api/b66/inquiries", b66_inquiries, methods=["GET", "POST"]),
         Route("/api/b66/admin/inquiries", b66_admin_inquiries, methods=["GET"]),
@@ -746,6 +761,12 @@ def create_app(
     app.state.claw_drive_artifact_reader = claw_drive_artifact_reader
     # Explicit trusted server opt-in; no browser-provided activation authority.
     app.state.claw_live_sse_enabled = False
+    # #3933 S1: first-turn trusted coding-context gate. Fail-closed default:
+    # the route helper is a no-op and no grant store is composed here, so
+    # production keeps the exact historical first-turn path until CENTRAL
+    # composes a store and enables the flag in a reviewed change.
+    app.state.claw_first_turn_grant_enabled = False
+    app.state.claw_first_turn_grant_store = None
     # #2961 owner approval decision lane: the same composed Engine client, used
     # only to submit a server-derived decision to the canonical resume route.
     # None keeps the decision route fail-closed before any Engine transport.
@@ -873,6 +894,10 @@ def create_app(
     if _b66_guided_draft_store is None and d1_binding is not None:
         _b66_guided_draft_store = D1GuidedDraftStore(d1_binding)
     app.state.b66_guided_draft_store = _b66_guided_draft_store
+    _b66_ai_conversation_store = b66_ai_conversation_store
+    if _b66_ai_conversation_store is None and d1_binding is not None:
+        _b66_ai_conversation_store = D1ConversationStore(d1_binding)
+    app.state.b66_ai_conversation_store = _b66_ai_conversation_store
 
     # B66 #3402: private logo/stamp bytes reuse the existing private workspace
     # R2 binding, while D1 stores only owner/workspace-scoped metadata. No

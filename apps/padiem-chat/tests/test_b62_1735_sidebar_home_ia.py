@@ -45,10 +45,41 @@ def test_sidebar_primary_order_is_navigation_history_then_utilities() -> None:
     nav = sidebar.index('class="side-nav"')
     projects = sidebar.index('id="projectsSection"')
     history = sidebar.index('id="historySection"')
-    outputs = sidebar.index('id="outputsSection"')
     footer = sidebar.index('class="sidebar-footer"')
     bottom = sidebar.index('class="sidebar-bottom"')
-    assert new_chat < nav < projects < history < outputs < footer < bottom
+    assert 'id="outputsSection"' not in sidebar
+    assert new_chat < nav < projects < history < footer < bottom
+
+
+def test_sidebar_simplified_ia_removes_duplicates_and_renames_files() -> None:
+    # #4462: duplicate Projects button, saved-answers button/section and the
+    # standalone Tasks/Alerts entries leave the sidebar; Files becomes Library.
+    sidebar = _sidebar_markup()
+    for removed in (
+        'id="projectsNavButton"',
+        'id="outputsNavButton"',
+        'id="outputsSection"',
+        'id="alertsNavButton"',
+        'id="tasksNavButton"',
+    ):
+        assert removed not in sidebar
+    assert 'id="filesNavButton"' in sidebar
+    assert 'data-locale-key="nav-files"' in sidebar
+    # Preserved surfaces: lower project list + create, recent conversations,
+    # automation entry, profile/settings bottom group.
+    for kept in (
+        'id="projectsSection"',
+        'id="projectCreateButton"',
+        'id="historySection"',
+        'id="automationNavButton"',
+        'id="clawNavButton"',
+    ):
+        assert kept in sidebar
+    # Automation alerts and Claw tasks stay reachable outside the sidebar.
+    assert 'id="automationAlertsButton"' in INDEX
+    assert 'id="clawTasksButton"' in INDEX
+    assert 'openClawInbox("alerts")' in APP
+    assert 'openClawInbox("tasks")' in APP
 
 
 def test_padiem_home_settings_and_account_share_bottom_utility_group() -> None:

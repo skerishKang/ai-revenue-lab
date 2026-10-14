@@ -29,8 +29,12 @@
   <link rel="stylesheet" href="./b66-quote-runtime.css" />
   <link rel="stylesheet" href="./claw-local-handoff.css" />
   <link rel="stylesheet" href="./claw-device-manager.css" />
+  <link rel="stylesheet" href="./claw-device-guidance.css" />
+  <!-- #4139 PC enrollment consent surface (LOCAL1). Inert until a verified server port is published. -->
+  <link rel="stylesheet" href="./claw-pc-enrollment-consent.css" />
   <link rel="stylesheet" href="./padiem-chat-ui-polish.css" />
   <link rel="stylesheet" href="./calendar.css" />
+  <link rel="stylesheet" href="./library.css" />
   <link rel="stylesheet" href="./claw-task-hub.css" />
   <link rel="stylesheet" href="./claw-focus-layout.css" />
   <style>[hidden] { display: none !important; }</style>
@@ -48,18 +52,14 @@
         <button class="side-item sidebar-search-item" id="sidebarSearchButton" type="button" disabled aria-disabled="true" data-locale-aria-label="search-conversation-hold" aria-label="대화 검색 준비 중" data-locale-title="search-conversation-hold" title="대화 검색 준비 중"><span class="side-icon" aria-hidden="true">⌕</span><span data-locale-key="search">검색</span></button>
       </div>
       <nav class="side-nav" data-locale-aria-label="chat-menu" aria-label="채팅 메뉴">
-        <button class="side-item" id="projectsNavButton" type="button" disabled aria-disabled="true" hidden><span class="side-icon" aria-hidden="true">▦</span><span data-locale-key="projects">프로젝트</span><span class="mini-badge" id="projectsBadge">확인 중</span></button>
-        <button class="side-item" id="outputsNavButton" type="button" disabled aria-disabled="true" hidden><span class="side-icon" aria-hidden="true">▤</span><span data-locale-key="saved">저장한 답변</span><span class="mini-badge" id="outputsBadge">로그인 후</span></button>
         <button class="side-item" id="clawNavButton" type="button"><span class="side-icon" aria-hidden="true">◆</span><span data-locale-key="nav-claw">Claw</span></button>
         <button class="side-item" id="calendarNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">▨</span><span data-locale-key="nav-calendar">캘린더</span></button>
         <button class="side-item" id="connectorsNavButton" type="button" aria-haspopup="dialog" aria-controls="connectorsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">Connectors</span></button>
         <button class="side-item" id="skillsNavButton" type="button" disabled aria-disabled="true" aria-haspopup="dialog" aria-controls="skillsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">✦</span><span data-locale-key="nav-skills">Skills</span></button>
       </nav>
       <nav class="side-nav" id="workspaceNav" data-locale-aria-label="workspace-menu" aria-label="워크스페이스 메뉴">
-        <button class="side-item" id="filesNavButton" type="button" disabled aria-disabled="true"><span class="side-icon" aria-hidden="true">▤</span><span data-locale-key="nav-files">Files</span></button>
+        <button class="side-item" id="filesNavButton" type="button" disabled aria-disabled="true" aria-current="false"><span class="side-icon" aria-hidden="true">▤</span><span data-locale-key="nav-files">라이브러리</span></button>
         <button class="side-item" id="automationNavButton" type="button" disabled aria-disabled="true" aria-current="false"><span class="side-icon" aria-hidden="true">◷</span><span data-locale-key="nav-automation">Automation</span></button>
-        <button class="side-item" id="alertsNavButton" type="button" disabled aria-disabled="true"><span class="side-icon" aria-hidden="true">◐</span><span data-locale-key="nav-alerts">Alerts</span></button>
-        <button class="side-item" id="tasksNavButton" type="button" disabled aria-disabled="true"><span class="side-icon" aria-hidden="true">☑</span><span data-locale-key="nav-tasks">Tasks</span></button>
       </nav>
       <section class="recent-section project-section" id="projectsSection" aria-labelledby="projectsTitle" hidden>
         <div class="section-heading-row">
@@ -73,11 +73,6 @@
         <h2 id="historyTitle" data-locale-key="history-title">최근 대화</h2>
         <div id="historyList"></div>
         <p class="history-empty" id="historyEmpty" data-locale-key="history-empty" hidden>저장된 대화가 없습니다.</p>
-      </section>
-      <section class="recent-section" id="outputsSection" aria-labelledby="outputsTitle" hidden>
-        <h2 id="outputsTitle" data-locale-key="saved">저장한 답변</h2>
-        <div id="outputsList"></div>
-        <p class="history-empty" id="outputsEmpty" data-locale-key="outputs-empty" hidden>저장한 답변이 없습니다.</p>
       </section>
       <div class="sidebar-footer"><span class="preview-dot" aria-hidden="true"></span><span data-locale-key="footer">편하게 질문해 보세요</span></div>
       <div class="sidebar-bottom" data-locale-aria-label="account-settings" aria-label="서비스, 계정 및 설정">
@@ -240,6 +235,7 @@
               <h3 id="clawAutomationTitle" data-locale-key="claw-automation-title">자동화 규칙</h3>
             </div>
             <button class="claw-inbox-retry" id="clawAutomationRetry" type="button" data-locale-key="retry">다시 시도</button>
+            <button class="claw-inbox-retry" id="automationAlertsButton" type="button" data-locale-key="automation-alerts-open">알림함 보기</button>
           </div>
           <p class="claw-inbox-help" id="clawAutomationHelp" data-locale-key="claw-automation-help">현재 워크스페이스의 자동화 규칙을 표시합니다. 생성은 워크스페이스 소유자만 할 수 있고 수정·삭제는 아직 지원하지 않습니다.</p>
           <p class="claw-inbox-help" id="clawAutomationSchedulerNote" data-locale-key="claw-automation-scheduler-note">‘규칙 설정’은 규칙에 저장된 설정값이며, 자동 실행이 이미 활성화되어 있다는 뜻이 아닙니다.</p>
@@ -481,6 +477,29 @@
           <div class="calendar-list" id="calendarList" role="list" hidden></div>
         </div>
       </section>
+      <!-- #4489: Library is its own destination, driven by static/library.js.
+           All copy is set by that module so it follows the document language. -->
+      <section class="library-view" id="libraryView" aria-labelledby="libraryTitle" hidden>
+        <header class="library-header">
+          <div class="library-heading">
+            <p class="library-kicker" id="libraryKicker"></p>
+            <h2 id="libraryTitle"></h2>
+            <p class="library-subtitle" id="librarySubtitle"></p>
+          </div>
+          <button class="library-close" id="libraryCloseButton" type="button"></button>
+        </header>
+        <div class="library-tabs" role="tablist">
+          <button class="library-tab" id="libraryFilesTab" type="button" role="tab" aria-selected="true" aria-controls="libraryFilesPanel"></button>
+          <button class="library-tab" id="libraryImagesTab" type="button" role="tab" aria-selected="false" aria-controls="libraryImagesPanel"></button>
+        </div>
+        <p class="library-note" id="libraryNote" role="status" aria-live="polite" hidden></p>
+        <div class="library-panel" id="libraryFilesPanel" role="tabpanel" tabindex="-1" aria-labelledby="libraryFilesTab">
+          <div class="library-list" id="libraryFileList" role="list"></div>
+        </div>
+        <div class="library-panel" id="libraryImagesPanel" role="tabpanel" tabindex="-1" aria-labelledby="libraryImagesTab" hidden>
+          <div class="library-list" id="libraryImageList" role="list"></div>
+        </div>
+      </section>
       <section class="conversation" aria-live="polite">
         <div class="empty-state" id="emptyState">
           <p class="eyebrow">PADIEM AI</p>
@@ -496,8 +515,9 @@
         </div>
         <section class="claw-task-hub" id="clawTaskHub" aria-labelledby="clawTaskHubTitle">
           <div class="claw-task-hub-heading">
-            <p class="claw-workspace-kicker">PADIEM CLAW · WEB</p>
+            <p class="claw-workspace-kicker">PADIEM CLAW · WEB <span class="claw-agent-badge" data-locale-key="claw-agent-badge">AI 에이전트</span></p>
             <h2 id="clawTaskHubTitle" data-locale-key="claw-focus-heading">무슨 일을 도와드릴까요?</h2>
+            <p class="claw-agent-line" data-locale-key="claw-agent-line">AI와 대화하고, 파일 작성·수정 등 실제 작업까지 맡길 수 있습니다.</p>
             <p data-locale-key="claw-focus-description">아래 예시를 선택하거나 입력창에 직접 요청하세요. 파일 읽기·수정은 별도 승인이 필요합니다.</p>
           </div>
           <div class="claw-task-hub-grid">
@@ -613,6 +633,8 @@
           </article>
         </section>
         <section class="claw-memory-review" id="clawMemoryReview" data-locale-aria-label="claw-memory-review-aria" aria-label="메모리 저장 검토" hidden></section>
+        <details class="claw-disclosure" id="clawApprovedDisclosure" hidden>
+          <summary class="claw-disclosure-summary"><span class="claw-disclosure-caret" aria-hidden="true">▸</span><span class="claw-disclosure-label" data-locale-key="claw-approved-title">승인된 메모리</span></summary>
         <section class="claw-approved-memory" id="clawApprovedMemory" aria-labelledby="clawApprovedMemoryTitle" hidden>
           <header class="claw-approved-memory-header">
             <div class="claw-workspace-identity">
@@ -627,6 +649,9 @@
           <div class="claw-approved-list" id="clawApprovedList" hidden></div>
           <p class="claw-approved-empty" id="clawApprovedEmpty" data-locale-key="claw-approved-empty" hidden>승인된 메모리가 없습니다.</p>
         </section>
+        </details>
+        <details class="claw-disclosure" id="clawRunHistoryDisclosure" hidden>
+          <summary class="claw-disclosure-summary"><span class="claw-disclosure-caret" aria-hidden="true">▸</span><span class="claw-disclosure-label" data-locale-key="claw-runs-title">최근 실행 기록</span></summary>
         <section class="claw-run-history" id="clawRunHistory" aria-labelledby="clawRunHistoryTitle" hidden>
           <header class="claw-run-history-header">
             <div class="claw-workspace-identity">
@@ -642,6 +667,7 @@
           <button type="button" class="claw-refresh-button claw-run-history-expand" id="clawRunHistoryExpand" data-locale-key="claw-runs-show-up-to-30" hidden>이전 실행 기록 더 보기 (최대 30건)</button>
           <p class="claw-run-history-empty" id="clawRunHistoryEmpty" data-locale-key="claw-runs-empty" hidden>최근 실행 기록이 없습니다.</p>
         </section>
+        </details>
         <section class="claw-quote-compare" id="clawQuoteCompare" aria-labelledby="clawQuoteCompareTitle" hidden>
           <header class="claw-run-history-header">
             <div class="claw-workspace-identity">
@@ -706,6 +732,7 @@
         </div>
         <div class="claw-entry-bar" id="clawManualEntryBar" hidden>
           <button type="button" class="claw-inbox-retry" id="clawManualEntryButton" data-locale-key="claw-manual-entry">문서 초안 작성</button>
+          <button type="button" class="claw-inbox-retry" id="clawTasksButton" data-locale-key="claw-tasks-open">작업함</button>
         </div>
         <form class="claw-mode-bar" id="clawManualForm" data-locale-aria-label="claw-form-aria" aria-label="수동 인입 양식" hidden>
           <div class="claw-mode-bar-row">
@@ -904,6 +931,10 @@
   <script src="./app.js"></script>
   <script src="./b66-quote-runtime.js"></script>
   <script src="./product-capabilities.js"></script>
+  <script src="./conversation-search.js" defer></script>
+  <!-- #4489: loads after app.js because it opens a file through the canonical
+       project seam app.js publishes. -->
+  <script src="./library.js" defer></script>
   <script src="./a11y.js"></script>
   <script src="./search-sources.js"></script>
   <script src="./rich-response.js"></script>
@@ -915,6 +946,13 @@
   <script src="./claw-web-xlsx-sources.js" defer></script>
   <!-- #4139 read-only, opt-in multi-PC selection UI; unavailable until server is configured. -->
   <script src="./claw-device-manager.js"></script>
+  <!-- #4139 pre-connection guidance, state legend and recovery UX. Zero-network,
+       presentation-only: never reads the directory endpoint or a raw payload. -->
+  <script src="./claw-device-guidance.js"></script>
+  <!-- #4139 PC enrollment consent surface (LOCAL1): explicit opt-in, default OFF.
+       Reaches the network only through a verified server port; the ready state
+       never sends a request and this is not an execution-approval surface. -->
+  <script src="./claw-pc-enrollment-consent.js"></script>
   <!-- #3094: guarded handoff adapter MUST load last, after app.js installed
        the #3084 projection seam. Never weaken the final-script contract. -->
   <script src="./claw-local-adapter.js"></script>

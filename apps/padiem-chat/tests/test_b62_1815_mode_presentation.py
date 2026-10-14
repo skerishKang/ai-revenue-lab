@@ -16,11 +16,12 @@ GLASS_READING = (STATIC / "padiem-glass-reading.css").read_text(encoding="utf-8"
 CERT_QA = (ROOT.parent.parent / ".github" / "scripts" / "b62_product_surface_certification_browser_qa.py").read_text(encoding="utf-8")
 
 
-def test_browser_exposes_only_plus_tier_while_pro_and_max_are_hold() -> None:
-    assert 'AVAILABLE_TIERS = Object.freeze(["plus"])' in CAPABILITIES
-    assert 'createModeOption("plus")' in CAPABILITIES
-    assert 'createModeOption("pro")' not in CAPABILITIES
-    assert 'createModeOption("max")' not in CAPABILITIES
+def test_browser_lists_all_four_tiers_but_only_plus_is_selectable() -> None:
+    assert 'AVAILABLE_TIERS = Object.freeze(["free", "plus"])' in CAPABILITIES
+    assert 'TIER_LIST = Object.freeze(["free", "plus", "pro", "max"])' in CAPABILITIES
+    assert "list.append(...TIER_LIST.map((tier) => createModeOption(tier)));" in CAPABILITIES
+    assert "button.disabled = !available;" in CAPABILITIES
+    assert "if (available) {" in CAPABILITIES
     assert 'createModeOption("auto"' not in CAPABILITIES
     assert 'createModeOption("fast"' not in CAPABILITIES
     assert 'createModeOption("balanced"' not in CAPABILITIES

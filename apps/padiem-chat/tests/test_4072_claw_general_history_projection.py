@@ -11,6 +11,7 @@ from starlette.testclient import TestClient
 
 from app.app_factory import create_app
 from app.auth import SESSION_COOKIE, create_session_token
+from app.history import PRODUCT_SCOPE_CHAT
 from app.claw_general_run_history import project_completed_general_run
 
 import test_b54_claw_general_p01_routing as base
@@ -24,7 +25,8 @@ class OwnerStore:
     async def get_user(self, user_id):
         return None
 
-    async def get_conversation(self, user_id, conversation_id):
+    async def get_conversation(self, user_id, conversation_id, *, product_scope: str):
+        assert product_scope == PRODUCT_SCOPE_CHAT
         return None
 
     async def record_claw_run(self, **kwargs):
@@ -166,7 +168,8 @@ _TENANT_3929 = "tenant_3929_cp"
 
 
 class _OwnedConversationStore(OwnerStore):
-    async def get_conversation(self, user_id, conversation_id):
+    async def get_conversation(self, user_id, conversation_id, *, product_scope: str):
+        assert product_scope == PRODUCT_SCOPE_CHAT
         if user_id == base.SIGNED_IN_USER_ID and conversation_id == _OWNED_THREAD_3929:
             return {"id": conversation_id}
         return None
@@ -233,7 +236,8 @@ class _ClawThreadStore(OwnerStore):
         self.fail_write = fail_write
         self.saved = {}
 
-    async def append_exchange(self, user_id, conversation_id, user_text, answer, project_id=None):
+    async def append_exchange(self, user_id, conversation_id, user_text, answer, project_id=None, *, product_scope: str):
+        assert product_scope == PRODUCT_SCOPE_CHAT
         if self.fail_write:
             raise RuntimeError("synthetic history store unavailable")
         assert user_id == base.SIGNED_IN_USER_ID
@@ -248,7 +252,8 @@ class _ClawThreadStore(OwnerStore):
         ])
         return cid
 
-    async def get_conversation(self, user_id, conversation_id):
+    async def get_conversation(self, user_id, conversation_id, *, product_scope: str):
+        assert product_scope == PRODUCT_SCOPE_CHAT
         if user_id != base.SIGNED_IN_USER_ID:
             return None
         return self.saved.get(conversation_id)
@@ -337,7 +342,7 @@ def test_real_d1_owner_conversation_created_only_after_completed_claw():
     db.row_factory = sqlite3.Row
     db.executescript(
         "CREATE TABLE conversations (id TEXT PRIMARY KEY, user_id TEXT, "
-        "project_id TEXT, title TEXT, created_at TEXT, updated_at TEXT);"
+        "project_id TEXT, title TEXT, product_scope TEXT NOT NULL DEFAULT 'b62-chat', created_at TEXT, updated_at TEXT);"
         "CREATE TABLE messages (id TEXT PRIMARY KEY, conversation_id TEXT, "
         "sequence_number INTEGER, role TEXT, content TEXT, created_at TEXT);"
     )

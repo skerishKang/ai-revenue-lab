@@ -259,3 +259,192 @@ def test_authoritative_empty_directory_and_logged_out_are_distinct(browser, serv
     assert page.locator("#clawDeviceManagerList li").count() == 0
     assert not errors
     page.close()
+
+
+def test_pending_device_read_is_aborted_on_close(browser, server):
+    """Closing the view must cancel a pending owner GET, not just hide its rows."""
+    page, errors = open_claw(browser, server)
+    page.evaluate("""() => {
+      const original = window.fetch.bind(window);
+      window.__deviceReads = 0;
+      window.__deviceAborts = 0;
+      window.fetch = (url, options = {}) => {
+        if (!String(url).includes("/api/claw/local-access/devices"))
+          return original(url, options);
+        window.__deviceReads += 1;
+        return new Promise((_resolve, reject) => {
+          options.signal.addEventListener("abort", () => {
+            window.__deviceAborts += 1;
+            reject(new DOMException("aborted", "AbortError"));
+          }, {once: true});
+        });
+      };
+    }""")
+    page.locator("#clawDeviceManagerToggle").click()
+    page.wait_for_function("window.__deviceReads === 1")
+    assert page.locator("#clawDeviceManagerPanel").get_attribute("aria-busy") == "true"
+    page.locator(".claw-device-manager-close").click()
+    page.wait_for_function("window.__deviceAborts === 1")
+    assert page.locator("#clawDeviceManagerPanel").get_attribute("aria-busy") is None
+    assert page.locator("#clawDeviceManagerPanel").is_hidden()
+    assert page.locator("#clawDeviceManagerList li").count() == 0
+    assert not errors, errors
+    page.close()
+
+
+def test_hung_device_read_recovers_without_false_online(browser, server):
+    """A stalled directory cannot leave a permanent busy indicator or PC row."""
+    page, errors = open_claw(browser, server)
+    page.evaluate("""() => {
+      const originalFetch = window.fetch.bind(window);
+      const originalTimer = window.setTimeout.bind(window);
+      window.__deviceAborts = 0;
+      window.fetch = (url, options = {}) => {
+        if (!String(url).includes("/api/claw/local-access/devices"))
+          return originalFetch(url, options);
+        return new Promise((_resolve, reject) => {
+          options.signal.addEventListener("abort", () => {
+            window.__deviceAborts += 1;
+            reject(new DOMException("aborted", "AbortError"));
+          }, {once: true});
+        });
+      };
+      // Run the actual 12-second timeout branch without slowing the test.
+      window.setTimeout = (fn, ms, ...args) =>
+        originalTimer(fn, ms === 12000 ? 25 : ms, ...args);
+    }""")
+    page.locator("#clawDeviceManagerToggle").click()
+    page.wait_for_function("window.__deviceAborts === 1")
+    assert page.locator("#clawDeviceManagerPanel").get_attribute("aria-busy") is None
+    assert page.locator("#clawDeviceManagerList li").count() == 0
+    assert page.locator("#clawDeviceManagerList").is_hidden()
+    assert "\uB2E4\uC2DC \uC2DC\uB3C4" in page.locator("#clawDeviceManagerStatus").inner_text()
+    assert not errors, errors
+    page.close()
+
+
+def test_owner_change_cancels_old_read_before_new_owner_status(browser, server):
+    """Owner-change events cancel outstanding requests and never show old PCs."""
+    page, errors = open_claw(browser, server)
+    page.evaluate("""() => {
+      const original = window.fetch.bind(window);
+      window.__calls = 0;
+      window.__aborts = 0;
+      window.fetch = (url, options = {}) => {
+        if (!String(url).includes("/api/claw/local-access/devices"))
+          return original(url, options);
+        window.__calls++;
+        if (window.__calls === 1) return new Promise((_resolve, reject) => {
+          options.signal.addEventListener("abort", () => {
+            window.__aborts++;
+            reject(new DOMException("aborted", "AbortError"));
+          }, {once: true});
+        });
+        return Promise.resolve(new Response(
+          JSON.stringify({ok:true, available:true, ownerScoped:true,
+            devices:[{deviceId:"new-owner",deviceName:"Account B",
+              platform:"Windows",state:"OFFLINE",usable:false}]}),
+          {status:200,headers:{"Content-Type":"application/json"}}));
+      };
+    }""")
+    page.locator("#clawDeviceManagerToggle").click()
+    page.wait_for_function("window.__calls === 1")
+    page.evaluate('window.dispatchEvent(new Event("padiem:account-changed"))')
+    page.wait_for_function("window.__calls === 2 && window.__aborts === 1")
+    page.get_by_text("Account B", exact=True).wait_for()
+    assert page.locator("#clawDeviceManagerList li").count() == 1
+    assert     page.locator("#clawDeviceManagerList li button").is_disabled()
+    assert page.locator("#clawDeviceManagerPanel").get_attribute("aria-busy") is None
+    assert not errors, errors
+    page.close()
+
+
+def unavailable_envelope(reason):
+    """The reviewed HTTP 200 unavailable envelope from the server route."""
+    return {"ok": True, "available": False, "reason": reason}
+
+
+def test_unconfigured_and_read_failed_reasons_are_distinct(browser, server):
+    """The two reviewed reason codes must not collapse into one message."""
+    page, errors = open_claw(browser, server)
+    fixture = {"body": json.dumps(unavailable_envelope("device_directory_unconfigured"))}
+    page.route("**" + ENDPOINT, lambda route: route.fulfill(
+        status=200, content_type="application/json", body=fixture["body"],
+    ))
+    page.locator("#clawDeviceManagerToggle").click()
+    page.get_by_text("연결 서비스가 아직 설정되지 않았습니다", exact=False).wait_for()
+    status = page.locator("#clawDeviceManagerStatus").inner_text()
+    assert "조회 중 문제가 발생했습니다" not in status
+    assert page.locator("#clawDeviceManagerList li").count() == 0
+    # A transient read failure is a different, retry-oriented message.
+    fixture["body"] = json.dumps(unavailable_envelope("device_directory_read_failed"))
+    page.locator(".claw-device-manager-refresh").click()
+    page.get_by_text("연결 서비스 조회 중 문제가 발생했습니다", exact=False).wait_for()
+    status = page.locator("#clawDeviceManagerStatus").inner_text()
+    assert "설정되지 않았습니다" not in status
+    assert page.locator("#clawDeviceManagerList li").count() == 0
+    assert not errors, errors
+    page.close()
+
+
+def test_read_failure_recovers_on_retry(browser, server):
+    """A read failure must be recoverable rather than sticky."""
+    page, errors = open_claw(browser, server)
+    fixture = {"body": json.dumps(unavailable_envelope("device_directory_read_failed"))}
+    page.route("**" + ENDPOINT, lambda route: route.fulfill(
+        status=200, content_type="application/json", body=fixture["body"],
+    ))
+    page.locator("#clawDeviceManagerToggle").click()
+    page.get_by_text("연결 서비스 조회 중 문제가 발생했습니다", exact=False).wait_for()
+    fixture["body"] = json.dumps(payload([online("home", "집 컴퓨터")]), ensure_ascii=False)
+    page.locator(".claw-device-manager-refresh").click()
+    page.locator("#clawDeviceManagerList li").first.wait_for()
+    assert page.locator("#clawDeviceManagerList li").count() == 1
+    assert "조회 중 문제가 발생했습니다" not in page.locator(
+        "#clawDeviceManagerStatus"
+    ).inner_text()
+    assert not errors, errors
+    page.close()
+
+
+def test_unknown_reason_and_server_text_never_reach_the_ui(browser, server):
+    """Only reviewed reason codes are interpreted; no server text is rendered."""
+    page, errors = open_claw(browser, server)
+    secret = "internal-broker-detail-9931"
+    page.route("**" + ENDPOINT, lambda route: route.fulfill(
+        status=200, content_type="application/json",
+        body=json.dumps({
+            "ok": True, "available": False,
+            "reason": "device_directory_unknown_internal",
+            "message": secret, "detail": secret,
+        }),
+    ))
+    page.locator("#clawDeviceManagerToggle").click()
+    page.get_by_text("연결 서비스가 아직 준비되지 않았습니다", exact=False).wait_for()
+    panel = page.locator("#clawDeviceManagerPanel").inner_text()
+    assert secret not in panel
+    # Neither of the two reviewed messages is claimed for an unknown reason.
+    assert "설정되지 않았습니다" not in panel
+    assert "조회 중 문제가 발생했습니다" not in panel
+    assert page.locator("#clawDeviceManagerList li").count() == 0
+    assert not errors, errors
+    page.close()
+
+
+def test_error_response_message_is_never_echoed(browser, server):
+    """An error body must not be displayed; auth keeps the safe refusal."""
+    page, errors = open_claw(browser, server)
+    secret = "upstream-token-abc"
+    page.route("**" + ENDPOINT, lambda route: route.fulfill(
+        status=401, content_type="application/json",
+        body=json.dumps({
+            "ok": False,
+            "error": {"code": "device_directory_auth_required", "message": secret},
+        }),
+    ))
+    page.locator("#clawDeviceManagerToggle").click()
+    page.get_by_text("로그인한 뒤", exact=False).wait_for()
+    assert secret not in page.locator("#clawDeviceManagerPanel").inner_text()
+    assert page.locator("#clawDeviceManagerList li").count() == 0
+    assert not errors, errors
+    page.close()

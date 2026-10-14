@@ -48,7 +48,7 @@ class ForbiddenHistoryStore:
     def __init__(self):
         self.append_calls = 0
 
-    async def get_conversation(self, user_id, conversation_id):
+    async def get_conversation(self, user_id, conversation_id, *, product_scope):
         if user_id == USER_ID and conversation_id == CHAT_ID:
             return {
                 "id": CHAT_ID,
@@ -64,6 +64,8 @@ class ForbiddenHistoryStore:
         user_text,
         assistant_text,
         project_id=None,
+        *,
+        product_scope,
     ):
         self.append_calls += 1
         raise HistoryForbidden("ownership changed after stream start")
