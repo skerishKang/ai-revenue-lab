@@ -197,10 +197,20 @@ class D1GuidedDraftStore:
             "SELECT conversation_id,updated_at FROM b66_guided_transcript"
             " WHERE user_id=? AND workspace_id=? ORDER BY updated_at DESC LIMIT 20"
         ).bind(user_id, workspace_id).all()
-        if not isinstance(rows, list):
-            rows = rows.to_py() if callable(getattr(rows, "to_py", None)) else list(rows.results)
-        return [{"conversation_id": row["conversation_id"], "updated_at": row["updated_at"]}
-                for row in rows]
+        if isinstance(rows, list):
+            entries = rows
+        elif isinstance(rows, dict):
+            entries = rows.get("results") or []
+        else:
+            entries = getattr(rows, "results", None) or []
+        records = []
+        for row in entries:
+            if not isinstance(row, dict):
+                row = row.to_py() if callable(getattr(row, "to_py", None)) else dict(row)
+            if GUIDED_ID_RE.fullmatch(str(row.get("conversation_id", ""))):
+                records.append({"conversation_id": row["conversation_id"],
+                                "updated_at": row["updated_at"]})
+        return records
 
     async def get_transcript(self, *, user_id: str, workspace_id: str, conversation_id: str) -> dict | None:
         if not GUIDED_ID_RE.fullmatch(conversation_id):
