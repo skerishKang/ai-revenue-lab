@@ -32,6 +32,17 @@ binding = "CF_VERSION_METADATA"
 binding = "B14_SERVICE"
 service = "ai-revenue-korean-ai-platform"
 
+# #4139: one existing PADIEM Identity and canonical Broker for Chat/Claw.
+# The Connector's product route is ON by default. Account/device ownership
+# still comes from the existing canonical authorities, not from the socket.
+[[services]]
+binding = "IDENTITY_AUTHORITY_SERVICE"
+service = "padiem-control-plane-identity"
+
+[[services]]
+binding = "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE"
+service = "padiem-local-agent-broker-state"
+
 # B66-only one-model direct execution pilot; account-managed secret reference.
 # Never pass the key to the browser, B62 chat or Claw.
 [[secrets_store_secrets]]
@@ -50,3 +61,13 @@ PADIEM_CHAT_RUNTIME_MODE = "mock"
 PADIEM_CHAT_TIMEOUT_SECONDS = "600"
 PADIEM_CHAT_LIVE_ENABLED = "false"
 PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"
+# Connector product availability defaults ON (not an opt-in/approval toggle).
+PADIEM_CHAT_PUBLIC_BASE_URL = "https://chat.padiem.net"
+PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE = "owner-controlled-production-4139"
+PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED = "enabled"
+PADIEM_CONNECTOR_PRODUCTION_ENABLED = "enabled"
+PADIEM_CONNECTOR_OWNER_ENROLLMENT_ENABLED = "enabled"
+PADIEM_CONNECTOR_OWNER_PRODUCTION_ENABLED = "enabled"
+PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED = "enabled"
+PADIEM_CONNECTOR_OWNER_PC_IDENTITY_PREFLIGHT_ENABLED = "enabled"
+PADIEM_CONNECTOR_OWNER_PC_NATIVE_DELIVERY_ENABLED = "enabled"

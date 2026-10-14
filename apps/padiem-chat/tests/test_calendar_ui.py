@@ -86,7 +86,7 @@ KNOWN_ITEM_TYPES = [
 def test_calendar_entry_points_are_wired_in_index_html() -> None:
     html = INDEX_PATH.read_text(encoding="utf-8")
     assert 'href="./calendar.css"' in html
-    assert html.index('href="./calendar.css"') < html.index("<style>[hidden]")
+    assert html.index('href="./calendar.css"') < html.index('href="./padiem-shared-ui.css"')
     assert 'id="clawNavButton"' in html
     assert 'id="calendarNavButton"' in html
     assert html.index('id="clawNavButton"') < html.index('id="calendarNavButton"')

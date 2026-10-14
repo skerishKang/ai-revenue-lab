@@ -64,6 +64,7 @@ from .local_agent_control_plane_admission import (
     ControlPlanePhysicalAdmissionTransport,
 )
 from .local_agent_durable_run_store import DurableRunStore
+from .local_agent_device_binding_store import ProtectedDeviceBindingStore
 from .local_agent_pairing import DeviceLifecycle
 from .local_agent_permissions import default_device_permission_profile
 from .local_agent_runtime_assembly import BoundLocalAgentRuntimeAssembly
@@ -178,6 +179,39 @@ def _acceptance_authorization_port(
             ),
         ),
     )
+
+
+#: #4139: the deployment-supplied P01 verified-text plan source, resolved with
+#: the same ``module:attribute`` factory convention as the broker request port.
+#: It is the *material*, not a switch: without it the ordered text lane is
+#: absent, and no environment value can name a file or mint an approval.
+VERIFIED_TEXT_PLAN_SOURCE_ENV = "PADIEM_AGENT_VERIFIED_TEXT_PLAN_SOURCE"
+
+
+def verified_text_plan_source_from_environment() -> Any | None:
+    """Resolve the deployment's P01 verified-text material, or None (fail closed).
+
+    Only a trusted module already importable in this process can supply it: the
+    same bounded shape the Office lane takes, with a pre-acknowledgement
+    ``approved_plan_for_admitted_command`` entry point. A missing, unimportable
+    or shape-invalid source leaves the lane off — never a fallback plan, never a
+    synthetic approval and never a path read from the environment.
+    """
+
+    factory_path = os.environ.get(VERIFIED_TEXT_PLAN_SOURCE_ENV)
+    if not factory_path:
+        return None
+    try:
+        module_name, _, attribute = factory_path.partition(":")
+        if not module_name or not attribute:
+            return None
+        module = __import__(module_name, fromlist=[attribute])
+        source = getattr(module, attribute)()
+    except (ImportError, AttributeError, ValueError, TypeError):
+        return None
+    if not callable(getattr(source, "approved_plan_for_admitted_command", None)):
+        return None
+    return source
 
 
 def _browser_open_authority(
@@ -763,9 +797,12 @@ def redeem_handoff(
 
     clock = _Clock(now)
     config = entry.transport_config
+    protection = (
+        protected_data if protected_data is not None else WindowsDpapiProtectedDataPort()
+    )
     store = ProtectedFileDeviceCredentialStore(
         base_dir=base_dir,
-        protected_data=protected_data if protected_data is not None else WindowsDpapiProtectedDataPort(),
+        protected_data=protection,
     )
     client = LocalAgentBrokerPairingClient(
         config=config, credential_store=store, request_port=entry.request_port
@@ -780,6 +817,13 @@ def redeem_handoff(
         raise ContractError("redemption did not yield PAIRED_OFFLINE")
     # The credential is now durable; only then does ownership hold.
     store.load(binding=enrollment.binding, now=now)
+    # #4139 STEP 3: the credential was durable but the *binding* was in-memory
+    # only, so a restart had nothing to resume from and refused even though the
+    # PC was registered. Persist it beside the credential it belongs to, under
+    # the same protected-data port. No raw credential is written here.
+    ProtectedDeviceBindingStore(base_dir=base_dir, protected_data=protection).save(
+        binding=enrollment.binding, now=now
+    )
     if emit is not None:
         emit(handoff)
     return {
@@ -789,6 +833,44 @@ def redeem_handoff(
         "config": config,
         "port": entry.request_port,
         "redeem_count": 1,
+    }
+
+
+def resume_registered_binding(
+    *,
+    entry: BrokerEntry,
+    now: datetime,
+    protected_data: Any | None = None,
+) -> dict:
+    """Rebuild a registered device's boundary from durable state alone.
+
+    No handoff, no challenge, no re-enrollment and no fresh identity: the binding
+    record and the protected credential were both written at enrollment time.
+    The credential is loaded **with the rebuilt binding**, so a binding that no
+    longer matches its credential fails closed here rather than at the broker.
+    """
+    clock = _Clock(now)
+    config = entry.transport_config
+    protection = (
+        protected_data if protected_data is not None else WindowsDpapiProtectedDataPort()
+    )
+    resumed = ProtectedDeviceBindingStore(
+        base_dir=entry.credential_dir, protected_data=protection
+    ).load(device_id=entry.device_id, now=now)
+    store = ProtectedFileDeviceCredentialStore(
+        base_dir=entry.credential_dir, protected_data=protection
+    )
+    # Proof of the reconstruction: the canonical store only returns the
+    # credential when the rebuilt binding context is the protected one.
+    store.load(binding=resumed.binding, now=now)
+    return {
+        "binding": resumed.binding,
+        "store": store,
+        "clock": clock,
+        "config": config,
+        "port": entry.request_port,
+        "redeem_count": 0,
+        "resumed": True,
     }
 
 
@@ -808,6 +890,7 @@ def build_resident_host(
     office_file_authorization_port: Any | None = None,
     office_renderer: Any | None = None,
     office_p01_plan_source: Any | None = None,
+    verified_text_plan_source: Any | None = None,
 ) -> LocalAgentResidentRuntimeHost:
     """Construct *the* resident host, once, on the redeemed binding."""
 
@@ -929,6 +1012,49 @@ def build_resident_host(
                 config=config,
             ),
         )
+    # #4139: a bounded TXT read result is ordered around the existing command
+    # path — `pending` while the command is admitted and unacknowledged, the
+    # approved READ after the execution and before the acknowledgement, and the
+    # *preserved* bytes after the successful acknowledgement — from the same
+    # deployment-injected trusted P01 source shape the Office lane uses. It
+    # reaches the broker on the one canonical device route (LOCAL1 #4705),
+    # through the same P01-authorized selected-root READ — no second file
+    # authority, no second upload path and no ambient switch.
+    verified_text_lane = None
+    if verified_text_plan_source is not None:
+        from .local_resident_verified_text_delivery import (
+            TrustedP01VerifiedTextFilePlanBridge,
+            compose_verified_text_delivery,
+        )
+        from .windows_local_filesystem import P01LocalPermissionWindowsFileAuthorizationPort
+
+        # The bridge is both the approved-READ request port and the P01 file
+        # evidence port: one plan, one approval, one read. The authorization
+        # port re-checks it at read time, exactly like the Office lane.
+        text_bridge = TrustedP01VerifiedTextFilePlanBridge(source=verified_text_plan_source)
+        verified_text_lane = compose_verified_text_delivery(
+            device=device,
+            file_requests=text_bridge,
+            file_authorization_port=P01LocalPermissionWindowsFileAuthorizationPort(
+                permission_profile=default_device_permission_profile(device=device),
+                evidence_port=text_bridge,
+            ),
+            config=config,
+            clock=clock,
+        )
+    # #4139: report the order the resident actually composed, rather than
+    # letting the harness infer it from a later poll line.
+    _emit(
+        event="verified_text_lane",
+        configured=verified_text_lane is not None,
+        pending_before_ack=True,
+        read_before_ack=True,
+        upload_after_ack=True,
+        post_ack_only=False,
+        file_reread_after_ack=False,
+        **_phase_stamp(),
+        **RESIDENT_PROCESS_CONTRACT,
+    )
     # #3140 stall diagnosis: the facts a stalled SQLite open would have produced,
     # reported only once the store is actually ready. No path, no handle.
     try:
@@ -959,6 +1085,7 @@ def build_resident_host(
         heartbeat_interval_seconds=30,
         session_ttl_seconds=900,
         office_staging=office_staging,
+        verified_text_lane=verified_text_lane,
     )
     _observe_phase("host_build_host_done")
     return host
@@ -985,28 +1112,50 @@ def main(argv: list[str] | None = None) -> int:
             break
         except ContractError:
             continue
-    if handoff is None:
-        _emit(status="refused", reason="handoff_refused", detail="no handoff line", **RESIDENT_PROCESS_CONTRACT)
-        return 2
     now = datetime.now(timezone.utc).replace(microsecond=0)
     os.makedirs(entry.credential_dir, exist_ok=True)
     if True:
         base_dir = entry.credential_dir
-        try:
-            # Item 4: the ACK fires from inside the redemption, after ownership.
-            redeemed = redeem_handoff(
-                handoff, entry=entry, base_dir=base_dir, now=now, emit=acknowledge_handoff
+        if handoff is None:
+            # #4139 STEP 3: a registered PC must be able to restart itself. The
+            # one-shot handoff is for *first* registration only; when the device
+            # already holds a durable binding, resume it and enter the same
+            # task-receiving host instead of refusing.
+            try:
+                redeemed = resume_registered_binding(entry=entry, now=now)
+            except ContractError as exc:
+                # Unchanged refusal contract for a device that is not registered.
+                _emit(
+                    status="refused",
+                    reason="handoff_refused",
+                    detail="no handoff line",
+                    resume_refused=str(exc),
+                    **RESIDENT_PROCESS_CONTRACT,
+                )
+                return 2
+            _emit(
+                event="registered_device_resumed",
+                redemption="paired_offline",
+                resume_count=1,
+                **_phase_stamp(),
+                **RESIDENT_PROCESS_CONTRACT,
             )
-        except ContractError as exc:
-            # No acknowledgement, so the caller keeps the handoff armed.
-            _emit(status="refused", reason="redemption_refused", detail=str(exc), **RESIDENT_PROCESS_CONTRACT)
-            return 2
-        _emit(
-            event="handoff_redeemed",
-            redemption="paired_offline",
-            **_phase_stamp(),
-            **RESIDENT_PROCESS_CONTRACT,
-        )
+        else:
+            try:
+                # Item 4: the ACK fires from inside the redemption, after ownership.
+                redeemed = redeem_handoff(
+                    handoff, entry=entry, base_dir=base_dir, now=now, emit=acknowledge_handoff
+                )
+            except ContractError as exc:
+                # No acknowledgement, so the caller keeps the handoff armed.
+                _emit(status="refused", reason="redemption_refused", detail=str(exc), **RESIDENT_PROCESS_CONTRACT)
+                return 2
+            _emit(
+                event="handoff_redeemed",
+                redemption="paired_offline",
+                **_phase_stamp(),
+                **RESIDENT_PROCESS_CONTRACT,
+            )
         _emit(event="host_build_start", **_phase_stamp(), **RESIDENT_PROCESS_CONTRACT)
         try:
             host = build_resident_host(
@@ -1019,6 +1168,10 @@ def main(argv: list[str] | None = None) -> int:
                 acceptance_command_id=ACCEPTANCE_COMMAND_ID,
                 acceptance_binding_ref=redeemed["binding"].binding_ref,
                 acceptance_request_id=ACCEPTANCE_REQUEST_ID,
+                # #4139: the ordered verified-text lane is composed on this same
+                # host, from the deployment's own P01 material. Absent material
+                # leaves it off; nothing here approves, names or reads a file.
+                verified_text_plan_source=verified_text_plan_source_from_environment(),
             )
         except ContractError as exc:
             _emit(

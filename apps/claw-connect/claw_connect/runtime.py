@@ -1,6 +1,6 @@
 """Claw Connect application assembly (#4139 S1).
 
-Wires the pieces together in one process: single-instance guard, opt-in
+Wires the pieces together in one process: single-instance guard, gated
 autostart, connection state, the supervised existing Resident, the tray and a
 local quit event so ``claw-connect stop`` can end a running tray.
 
@@ -23,16 +23,26 @@ from . import (
     SINGLE_INSTANCE_MUTEX,
     WEB_URL,
 )
-from .autostart import Autostart
+from .autostart import Autostart, AutostartOutcome, AutostartRefused, start_command
 from .connection import ConnectionController, ConnectionState
+from .enrollment import ConnectorEnrollment
 from .menu_model import (
     ACTION_DISCONNECT,
+    ACTION_LOGIN,
     ACTION_OPEN_WEB,
     ACTION_QUIT,
     ACTION_RECONNECT,
+    ACTION_AUTOSTART_ON,
+    ACTION_AUTOSTART_OFF,
     ACTION_TOGGLE_PAUSE,
 )
-from .resident_supervisor import ResidentSupervisor
+from .resident_supervisor import (
+    ResidentLaunchRefused,
+    ResidentSupervisor,
+    default_resident_command,
+)
+from .resident_launch import ResidentLaunchPlan, plan_resident_launch
+from .resident_path import resident_src_root
 from .single_instance import AlreadyRunning, SingleInstance
 
 #: Local named event a second process uses to ask a running tray to quit.
@@ -100,16 +110,35 @@ class ConnectApp:
         probe: Callable[[], bool] | None = None,
         supervisor: ResidentSupervisor | None = None,
         autostart: Autostart | None = None,
+        enrollment: ConnectorEnrollment | None = None,
     ) -> None:
         self._autostart = autostart or Autostart(AUTOSTART_RUN_VALUE_NAME, autostart_store)
         self._controller = ConnectionController(probe)
+        self._enrollment = enrollment or ConnectorEnrollment()
+        self._state_dir = self._enrollment.state_dir
+        # S2: the supervised process is the one existing kagent Resident, never a
+        # placeholder. The deployment pins the source root (installer file or
+        # CLAW_RESIDENT_SRC); when it does not, the canonical module name is used
+        # as-is so the interpreter resolves it rather than this code guessing.
         self._supervisor = supervisor or ResidentSupervisor(
-            resident_command or ["python", "-c", "pass"]
+            resident_command
+            or default_resident_command(
+                src_root=resident_src_root(state_dir=self._state_dir)
+            ),
+            # #4139 STEP 3: resolved at every start, so a restart picks up the
+            # current committed enrollment instead of a construction-time
+            # snapshot, and so the Resident is never launched without the
+            # canonical Broker boundary it reads from these exact keys.
+            env=self._resident_environment,
         )
         self._single = SingleInstance(SINGLE_INSTANCE_MUTEX)
         self._quit_signal = QuitSignal(QUIT_EVENT_NAME)
         self._tray: Any = None
         self._quit = threading.Event()
+
+    @property
+    def enrollment(self) -> ConnectorEnrollment:
+        return self._enrollment
 
     @property
     def controller(self) -> ConnectionController:
@@ -127,16 +156,68 @@ class ConnectApp:
     def single_instance(self) -> SingleInstance:
         return self._single
 
+    def reconcile_autostart(self) -> AutostartOutcome | None:
+        """Only a committed live credential may register Windows startup.
+
+        An owner's durable OFF remains enforceable even without credentials.
+        An unregistered machine still opens its normal tray for login.
+        """
+        try:
+            return self._autostart.register_after_install(
+                start_command(), self._enrollment.committed_record()
+            )
+        except AutostartRefused:
+            return None
+
+    def resident_launch_plan(self) -> tuple[ResidentLaunchPlan | None, str]:
+        """The canonical launch configuration for the supervised Resident.
+
+        Never mints a device identity: a damaged or absent committed record is
+        a refusal, not a reason to create one.
+        """
+        try:
+            record = self._enrollment.committed_record()
+        except Exception:
+            return None, "enrollment_record_unreadable"
+        return plan_resident_launch(record=record)
+
+    def resident_launch_reason(self) -> str:
+        """Why the supervised Resident is or is not launchable, evaluated now.
+
+        Read-only and side-effect free: it never spawns a process and never
+        mints a device identity, so it is safe to ask from ``status()``.
+        """
+        return self.resident_launch_plan()[1]
+
+    def _resident_environment(self) -> dict[str, str] | None:
+        """Resolved at each start. ``None`` means "do not launch"."""
+        plan, _reason = self.resident_launch_plan()
+        return plan.environment() if plan is not None else None
+
     def status(self) -> dict[str, Any]:
         """The observable state. Never claims a state that was not observed."""
         return {
             "product": CONNECT_PRODUCT,
             "version": CONNECT_VERSION,
-            "state": self._controller.state.value,
+            "state": self.connector_status().value,
             "resident_running": self._supervisor.is_running(),
+            "resident_launch_reason": self.resident_launch_reason(),
             "autostart_enabled": self._autostart.is_enabled(),
             "single_instance": self._single.held,
+            "enrollment": self._enrollment.status_snapshot(),
         }
+
+    def connector_status(self) -> ConnectionState:
+        """Operator-visible Connector state, projected from device facts only.
+
+        ``CONNECTED`` requires both a server-projected ``online`` lifecycle and
+        an observed live session; a locally resumed controller alone is only
+        reported as connecting or offline.
+        """
+        return self._enrollment.project_state(
+            paused=self._controller.state is ConnectionState.PAUSED,
+            connected=self._controller.state is ConnectionState.CONNECTED,
+        )
 
     def status_json(self) -> str:
         return json.dumps(self.status(), ensure_ascii=False, sort_keys=True)
@@ -147,21 +228,108 @@ class ConnectApp:
 
         webbrowser.open(WEB_URL)
 
+    def login(self) -> None:
+        """Start the reviewed PADIEM login / PC-registration consent flow.
+
+        Opens the official PADIEM authentication surface and returns the URL.
+        The Connector never renders a credential form, never stores a password
+        and never reads a browser cookie: the reviewed session issues the
+        pairing code this device redeems with its own Broker device id.
+        """
+        url = self._enrollment.begin_login()
+        try:
+            import webbrowser  # noqa: PLC0415
+
+            webbrowser.open(url)
+        except Exception:
+            pass
+        return url  # type: ignore[return-value]
+
     def toggle_pause(self) -> None:
         if self._controller.state is ConnectionState.CONNECTED:
             self._controller.pause()
             self._supervisor.stop()
         elif self._controller.state is ConnectionState.PAUSED:
+            if not self._can_start_resident():
+                self._refresh_tray()
+                return
             self._controller.resume()
-            self._supervisor.start()
+            try:
+                self._supervisor.start()
+            except ResidentLaunchRefused:
+                # The provider declined between the gate above and the spawn, so
+                # no child was created. The tray still reports the truth:
+                # ``resident_running`` is read from the supervisor.
+                pass
         self._refresh_tray()
 
+    def _can_start_resident(self) -> bool:
+        # Reuse the credential validity contract from guarded logon startup.
+        # A tray action is not an alternative enrollment/consent authority.
+        # A live credential is necessary but not sufficient: the Resident also
+        # needs the canonical Broker boundary, and a child launched without it
+        # refuses at once, so this gate is what stops a doomed spawn.
+        try:
+            return self._resident_environment() is not None
+        except Exception:
+            return False
+
+    def start_registered_resident(self) -> bool:
+        """Bring the supervised Resident up on the committed enrollment.
+
+        This is what makes a tray start actually reach a task-receiving
+        Resident. It refuses rather than launching an unconfigurable child, and
+        it never overrides the owner's pause or opt-out.
+        """
+        plan, reason = self.resident_launch_plan()
+        if plan is None:
+            return False
+        if self._controller.state is ConnectionState.PAUSED:
+            return False
+        try:
+            self._supervisor.start()
+        except ResidentLaunchRefused:
+            # The provider declined between the plan above and the spawn: no
+            # child was created, so this must not report a start.
+            return False
+        return True
+
     def reconnect(self) -> None:
+        # No manually triggered Resident without valid committed enrollment.
+        # A user who disabled boot autostart can still reconnect on demand.
+        if not self._can_start_resident():
+            self._refresh_tray()
+            return
         if self._controller.state is ConnectionState.PAUSED:
             self._controller.resume()
         elif self._controller.state is ConnectionState.DISCONNECTED:
             self._controller.connect()
-        self._supervisor.restart()
+        try:
+            self._supervisor.restart()
+        except ResidentLaunchRefused:
+            # Refused between the gate above and the spawn. ``restart`` stopped
+            # any previous child first, so the honest end state is "no
+            # Resident", which is what the tray reports.
+            pass
+        self._refresh_tray()
+
+    def turn_autostart_on(self) -> None:
+        """Tray opt-in; must have a committed credential first."""
+        try:
+            self._autostart.enable(
+                start_command(), self._enrollment.committed_record(),
+            )
+        except AutostartRefused:
+            pass
+        self._refresh_tray()
+
+    def turn_autostart_off(self) -> None:
+        """Durable owner opt-out without removing the live session."""
+        try:
+            self._autostart.disable()
+        except AutostartRefused:
+            # Never overwrite another application Run value.
+            pass
         self._refresh_tray()
 
     def disconnect(self) -> None:
@@ -198,12 +366,19 @@ class ConnectApp:
             return 3
         self._quit_signal.open()
         try:
+            self.reconcile_autostart()
+            # #4139 STEP 3: a tray start must also bring the one supervised
+            # Resident up, on the committed enrollment. Offline or unconfigured
+            # is reported through ``resident_launch_reason`` instead of a
+            # silently absent Resident.
+            self.start_registered_resident()
             if sys.platform == "win32":
                 from .tray import ConnectTray  # noqa: PLC0415
 
                 self._tray = ConnectTray(
-                    state_source=lambda: self._controller.state,
+                    state_source=lambda: self.connector_status(),
                     actions=self.actions(),
+                    autostart_source=self._autostart.is_enabled,
                     web_url=WEB_URL,
                 )
                 self._tray.create()
@@ -226,8 +401,11 @@ class ConnectApp:
     def actions(self) -> dict[str, Callable[[], None]]:
         return {
             ACTION_OPEN_WEB: self.open_web,
+            ACTION_LOGIN: self.login,
             ACTION_TOGGLE_PAUSE: self.toggle_pause,
             ACTION_RECONNECT: self.reconnect,
+            ACTION_AUTOSTART_ON: self.turn_autostart_on,
+            ACTION_AUTOSTART_OFF: self.turn_autostart_off,
             ACTION_DISCONNECT: self.disconnect,
             ACTION_QUIT: self.quit,
         }

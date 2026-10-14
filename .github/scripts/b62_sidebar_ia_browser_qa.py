@@ -128,6 +128,20 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
     if mobile:
         await page.locator("#mobileMenu").click()
         await page.locator("#sidebar").wait_for(state="visible")
+        # CSS translates the sidebar onto the viewport after the click.
+        # Playwright 'visible' can still be true for an offscreen element.
+        await page.wait_for_function(
+            """() => {
+              const sidebar = document.querySelector('#sidebar');
+              return document.querySelector('.app-shell')?.classList.contains('sidebar-open')
+                && sidebar && sidebar.getBoundingClientRect().left >= -1;
+            }""",
+            timeout=5000,
+        )
+        # Mock unauthenticated pages do not own a real profile. The focus QA
+        # exposes only its presentation AFTER auth state settles; otherwise
+        # a delayed anonymous status projection can hide it mid-test.
+        await account.evaluate("(el) => { el.hidden = false; el.style.display = 'grid'; }")
         await _assert_focus(page, "#mobileClose", "mobile close")
         await page.keyboard.press("Tab")
         await _assert_focus(page, ".brand", "mobile brand")
@@ -170,19 +184,39 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
     }
 
 
+async def _open_after_auth_status(page: Page) -> None:
+    """Wait for the startup status response before QA-only account presentation.
+
+    The mock-auth unavailable state hides the account summary. Revealing it
+    before loadAuthStatus() settles races its fail-closed render and produces
+    a false missing-focus-target failure. This does not change authentication.
+    """
+    async with page.expect_response(
+        lambda response: response.url.split("?", 1)[0].endswith("/api/auth/status"),
+        timeout=30_000,
+    ) as received:
+        await page.goto(BASE_URL, wait_until="domcontentloaded", timeout=30_000)
+    await (await received.value).finished()
+    await page.wait_for_function(
+        "() => ['unavailable', 'guest', 'expired', 'signed_in'].includes("
+        "document.querySelector('#sidebar .sidebar-account')?.dataset.accountState)",
+        timeout=30_000,
+    )
+
+
 async def main() -> None:
     report: dict[str, Any] = {"base_url": BASE_URL, "views": {}}
     async with async_playwright() as playwright:
         browser = await playwright.chromium.launch(headless=True)
         try:
             desktop = await browser.new_page(viewport={"width": 1440, "height": 1000})
-            await desktop.goto(BASE_URL, wait_until="domcontentloaded", timeout=30_000)
+            await _open_after_auth_status(desktop)
             await desktop.locator("#messageInput").wait_for(state="visible")
             report["views"]["desktop"] = await _assert_sidebar_contract(desktop, mobile=False)
             await desktop.close()
 
             mobile = await browser.new_page(viewport={"width": 390, "height": 844})
-            await mobile.goto(BASE_URL, wait_until="domcontentloaded", timeout=30_000)
+            await _open_after_auth_status(mobile)
             await mobile.locator("#messageInput").wait_for(state="visible")
             report["views"]["mobile"] = await _assert_sidebar_contract(mobile, mobile=True)
             await mobile.close()

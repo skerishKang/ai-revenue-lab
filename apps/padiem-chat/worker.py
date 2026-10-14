@@ -61,6 +61,8 @@ from app.b66_b14_free_first_resolver import B66ExplicitQuoteModelResolver
 from app.b66_kira_direct_pilot import B66KiraPilotExecutor
 from app.b66_experiential_direct_pilot import B66ExperientialPilotExecutor
 from app.config import ConfigError
+from app.connector_gateway_runtime_mount import maybe_dispatch_connector_gateway
+from app.connector_owner_runtime_mount import compose_owner_enrollment_from_worker
 from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from app.calendar_read_activation_engine import CloudflareCalendarReadActivationEngineClient
 from app.calendar_read_state_engine import CloudflareCalendarReadStateEngineClient
@@ -737,6 +739,16 @@ class Default(WorkerEntrypoint):
         global _worker_app
         path = urlparse(request.url).path
 
+        # #4139: connect the real Worker fetch entrypoint to the canonical WSS
+        # device session ONLY under server-owned opt-in and private bindings.
+        # The production Wrangler manifest declares neither the release flag
+        # nor the Broker Service Binding, so deployed behavior stays OFF.
+        connector_wss_response = await maybe_dispatch_connector_gateway(
+            request=request, worker_env=self.env, response_factory=Response,
+        )
+        if connector_wss_response is not None:
+            return connector_wss_response
+
         if _worker_app is None:
             try:
                 # Resolve Cloudflare same-account Secrets Store bindings only
@@ -824,8 +836,19 @@ class Default(WorkerEntrypoint):
                 # build, so this stays None and the route refuses with 403
                 # rather than inventing an approval.
                 claw_telegram_delivery_request_builder = None
+                # #4139 owner consent/challenge is a distinct browser lane.
+                # The public Worker manifest has no Broker binding or owner
+                # release flag: production remains unmounted by default.
+                try:
+                    connector_owner_ports = compose_owner_enrollment_from_worker(self.env)
+                except ValueError:
+                    return _apply_headers(Response(
+                        "Connector owner enrollment unavailable.", status=503,
+                        headers={"Content-Type": "text/plain; charset=utf-8"},
+                    ), path)
                 _worker_app = create_app(
                     settings=settings,
+                    connector_owner_enrollment=connector_owner_ports,
                     history_store=history_store,
                     d1_binding=db_binding,
                     b66_admin_google_email=(

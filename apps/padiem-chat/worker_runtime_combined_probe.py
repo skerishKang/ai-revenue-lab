@@ -24,9 +24,46 @@ PROBES = {
 }
 
 
+# #4139: temporary Workerd ONLY; never import this synthetic gateway from the
+# production padiem-chat/worker.py. A 101 here proves the real Cloudflare
+# Python ASGI/WS upgrade transport, NOT canonical Identity/Broker or TLS.
+RUNTIME_WSS_PROBE_PATH = "/api/claw/connector/gateway/session"
+_RUNTIME_CLIENT_PROOF = "synthetic-frame-no-credential"
+_RUNTIME_SERVER_OPEN = "PADIEM_CONNECTOR_ASGI_WS_OPEN"
+_RUNTIME_SERVER_ACK = "PADIEM_CONNECTOR_ASGI_WS_REPLY"
+
+
+async def connector_asgi_websocket_runtime_probe(scope, receive, send):
+    """Pure ASGI fixture: no session, no credential, no Broker or privileged IO."""
+    if scope.get("type") != "websocket" or scope.get("path") != RUNTIME_WSS_PROBE_PATH:
+        await send({"type": "websocket.close", "code": 1008})
+        return
+    opened = await receive()
+    if opened.get("type") != "websocket.connect":
+        await send({"type": "websocket.close", "code": 1008})
+        return
+    await send({"type": "websocket.accept"})
+    await send({"type": "websocket.send", "text": _RUNTIME_SERVER_OPEN})
+    incoming = await receive()
+    if (incoming.get("type") == "websocket.receive"
+            and incoming.get("text") == _RUNTIME_CLIENT_PROOF):
+        await send({"type": "websocket.send", "text": _RUNTIME_SERVER_ACK})
+    # No credential or ACK data is ever sent. The test client closes.
+
+
+
+
 class Default(WorkerEntrypoint):
     async def fetch(self, request):
         url = urlparse(str(request.url))
+        if url.path == RUNTIME_WSS_PROBE_PATH and not url.query:
+            if request.headers.get("upgrade") != "websocket":
+                return Response("Upgrade Required", status=426)
+            from workers import asgi
+            # Worker Python SDK: asgi.websocket(app, request) accepts two args.
+            # The synthetic transport probe must exercise the same signature
+            # as CENTRAL's review-only production candidate.
+            return await asgi.websocket(connector_asgi_websocket_runtime_probe, request)
         if url.path == "/ready" and not url.query:
             return Response("ok", status=200)
         if url.path != "/probe":

@@ -88,6 +88,17 @@ class Broker:
     async def get_enrollment_binding(self, *, challenge_id):
         self.calls.append(("binding", challenge_id))
         return dict(BINDING)
+    async def verify_enrollment_bootstrap(self, **kwargs):
+        self.calls.append(("preflight", kwargs))
+        if getattr(self, "reject_bootstrap", False):
+            raise IdentityBridgeError(403, "invalid_pairing_proof", "invalid")
+        return {
+            "challenge_id": kwargs["challenge_id"],
+            "device_id": kwargs["device_id"],
+            "proof_valid": True,
+            "challenge_consumed": False,
+        }
+
     async def redeem_enrollment(self, **kwargs):
         self.calls.append(("redeem", kwargs))
         return dict(ENROLLMENT), self.credential
@@ -185,9 +196,21 @@ def test_redeem_does_not_consume_challenge_without_protected_handoff_ready():
             proof_ref="pairing-proof:"+"a"*64,
         ))
     assert exc.value.code == "credential_handoff_unavailable"
-    assert [x[0] for x in broker.calls] == ["binding"]
+    assert [x[0] for x in broker.calls] == ["binding", "preflight"]  # still no redeem
     assert [x[0] for x in handoff.calls] == ["ready"]
 
+
+def test_broker_rejects_wrong_pairing_proof_before_gateway_ready_or_redeem():
+    identity, broker, handoff = Identity(), Broker(), Handoff()
+    broker.reject_bootstrap = True
+    with pytest.raises(IdentityBridgeError) as error:
+        asyncio.run(issue_host(identity, broker, handoff).redeem(
+            challenge_id=CHALLENGE["challenge_id"], device_id="device.1",
+            proof_ref="pairing-proof:" + "b" * 64,
+        ))
+    assert error.value.code == "invalid_pairing_proof"
+    assert [x[0] for x in broker.calls] == ["binding", "preflight"]
+    assert handoff.calls == []  # no gateway reservation
 
 def test_success_rechecks_current_consent_and_never_returns_raw_credential():
     identity, broker, handoff = Identity(), Broker(), Handoff()
@@ -196,7 +219,7 @@ def test_success_rechecks_current_consent_and_never_returns_raw_credential():
         proof_ref="pairing-proof:"+"a"*64,
     ))
     assert [x[0] for x in identity.calls] == ["authorize", "authorize", "authorize"]
-    assert [x[0] for x in broker.calls] == ["binding", "redeem"]
+    assert [x[0] for x in broker.calls] == ["binding", "preflight", "redeem"]
     assert [x[0] for x in handoff.calls] == ["ready", "deliver", "verify"]
     assert result["lifecycle"] == "paired_offline"
     assert result["consent_id"] == CONSENT["consent_id"]
@@ -214,7 +237,7 @@ def test_consent_withdrawal_between_broker_redemption_and_handoff_revokes_bindin
             proof_ref="pairing-proof:"+"a"*64,
         ))
     assert exc.value.code == "enrollment_consent_changed_during_redeem"
-    assert [x[0] for x in broker.calls] == ["binding", "redeem", "revoke"]
+    assert [x[0] for x in broker.calls] == ["binding", "preflight", "redeem", "revoke"]
     assert [x[0] for x in handoff.calls] == ["ready"]
 
 
@@ -335,3 +358,62 @@ def test_unconfirmed_revoke_after_completed_install_remains_security_hold():
         ))
     assert exc.value.code == "enrollment_consent_race_revoke_unconfirmed"
     assert broker.calls[-1] == ("revoke", "pairing-binding.1")
+
+
+@pytest.mark.parametrize(("revoke_receipt", "label"), [
+    (None, "missing_receipt"),
+    (True, "boolean_transport_ack"),
+    ({}, "empty_object"),
+    ({"binding_ref": "pairing-binding.1"}, "missing_state"),
+    ({"binding_ref": "pairing-binding.other", "state": "revoked"}, "wrong_binding"),
+    ({"binding_ref": "pairing-binding.1", "state": "active"}, "not_revoked"),
+    (
+        {"binding_ref": "pairing-binding.1", "state": "revoked", "credential_b64": "forbidden"},
+        "unreviewed_extra_field",
+    ),
+])
+@pytest.mark.parametrize("failure_phase", [
+    "consent_before_install", "handoff", "consent_after_install",
+])
+def test_ambiguous_broker_revoke_receipts_are_security_hold_on_every_failure_phase(
+    revoke_receipt, label, failure_phase,
+):
+    """No exception is NOT a canonical Broker revoke confirmation.
+
+    Broker redemption is already consumed. Even a truthy/foreign/malformed
+    revoke receipt cannot make the server report a safe compensated failure,
+    unlock a repeat of this challenge, or claim paired/online state.
+    """
+    identity, broker, handoff = Identity(), Broker(), Handoff()
+    if failure_phase == "consent_before_install":
+        identity.fail_reauthorization = True
+    elif failure_phase == "handoff":
+        handoff.delivered = False
+    else:
+        identity.withdraw_after_install = True
+
+    async def forged_revoke(*, binding_ref):
+        broker.calls.append(("revoke", binding_ref))
+        return revoke_receipt
+
+    broker.revoke_binding = forged_revoke
+    with pytest.raises(IdentityBridgeError) as caught:
+        asyncio.run(issue_host(identity, broker, handoff).redeem(
+            challenge_id=CHALLENGE["challenge_id"],
+            device_id="device.1",
+            proof_ref="pairing-proof:" + "a" * 64,
+        ))
+
+    expected = (
+        "enrollment_handoff_revoke_unconfirmed"
+        if failure_phase == "handoff"
+        else "enrollment_consent_race_revoke_unconfirmed"
+    )
+    assert caught.value.code == expected, label
+    assert [name for name, *_ in broker.calls].count("redeem") == 1
+    assert [name for name, *_ in broker.calls].count("revoke") == 1
+    assert broker.calls[-1] == ("revoke", "pairing-binding.1")
+    assert [name for name, *_ in handoff.calls].count("deliver") == (
+        0 if failure_phase == "consent_before_install" else 1
+    )
+    assert "credential" not in caught.value.code

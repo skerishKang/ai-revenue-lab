@@ -11,6 +11,18 @@ Broker one-shot consumption, P01 approval and pairing rules are unchanged —
 this module only starts, watches and stops that process.
 
 The command is injected so the offline tests never launch the real Resident.
+
+The launch environment has two distinct shapes and they must not be confused:
+
+* **No ``env`` at all** — the long-standing direct construction. The child
+  inherits the parent environment, exactly as it always did.
+* **An ``env`` provider** — the caller supplies a callable that resolves the
+  canonical Broker boundary at spawn time. Its ``None`` is the caller's "do not
+  launch" signal, so a declining provider must refuse *before* ``Popen`` rather
+  than fall back to inheriting the parent environment. The caller resolves the
+  same fact twice (once to gate the action, once here at the spawn); between
+  the two an enrollment can be revoked or the owner can opt out, and silently
+  starting a child in that window would run a Resident nobody configured.
 """
 
 from __future__ import annotations
@@ -26,6 +38,12 @@ from collections.abc import Callable, Mapping, Sequence
 TERMINATE_GRACE_SECONDS = 8.0
 #: The one repository entry point Connect supervises. No second runner.
 RESIDENT_ENTRY_MODULE = "kagent.local_agent_resident_process"
+#: Bounded, secret-free refusal reason. Names the *missing fact* so an operator
+#: can act on it, and carries no value.
+RESIDENT_LAUNCH_REFUSED_PROVIDER_DECLINED = (
+    "resident launch refused: the configured environment provider declined to "
+    "supply the canonical Broker boundary"
+)
 
 
 def default_resident_command(
@@ -86,6 +104,15 @@ class ResidentProcess:
             return None
 
 
+class ResidentLaunchRefused(RuntimeError):
+    """The configured env provider declined at spawn time. Nothing was spawned.
+
+    Raised only when an ``env`` provider was supplied and returned ``None``. A
+    supervisor constructed with no ``env`` never raises this: it keeps the
+    original inherited-environment behaviour.
+    """
+
+
 class ResidentSupervisor:
     """Single supervised Resident per Connect process (no second runner)."""
 
@@ -94,14 +121,29 @@ class ResidentSupervisor:
         command: Sequence[str],
         *,
         popen: Callable[..., subprocess.Popen[bytes]] = subprocess.Popen,
-        env: Mapping[str, str] | None = None,
+        env: Mapping[str, str] | Callable[[], Mapping[str, str] | None] | None = None,
     ) -> None:
         if not command:
             raise ValueError("resident command must not be empty")
         self._command = list(command)
         self._popen = popen
-        self._env = dict(env) if env is not None else None
+        # ``env`` may be a provider so a restart resolves the *current*
+        # committed enrollment instead of a snapshot taken at construction.
+        # ``None`` here means "no provider", which is not the same fact as a
+        # provider that resolves to ``None``.
+        self._env = env if callable(env) else (dict(env) if env is not None else None)
         self._resident: ResidentProcess | None = None
+
+    @property
+    def _provider_configured(self) -> bool:
+        return self._env is not None
+
+    def _resolved_env(self) -> dict[str, str] | None:
+        provider = self._env
+        if provider is None:
+            return None
+        resolved = provider() if callable(provider) else provider
+        return dict(resolved) if resolved is not None else None
 
     @property
     def command(self) -> list[str]:
@@ -115,18 +157,27 @@ class ResidentSupervisor:
         return self._resident is not None and self._resident.running
 
     def start(self) -> ResidentProcess:
-        """Start the existing Resident. Refuses if one is already running."""
+        """Start the existing Resident. Refuses if one is already running.
+
+        With no provider the child inherits the parent environment, unchanged.
+        With a provider that declines, this raises ``ResidentLaunchRefused``
+        before ``Popen``, so no child exists to inherit anything.
+        """
         if self.is_running():
             return self._resident  # type: ignore[return-value]
-        if self._env is None:
+        if not self._provider_configured:
             process = self._popen(
                 self._command, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
             )
         else:
+            env = self._resolved_env()
+            if env is None:
+                # The caller's ``None`` is a refusal, not a request to inherit.
+                raise ResidentLaunchRefused(RESIDENT_LAUNCH_REFUSED_PROVIDER_DECLINED)
             process = self._popen(
                 self._command, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL, env=self._env,
+                stderr=subprocess.DEVNULL, env=env,
             )
         self._resident = ResidentProcess(process)
         return self._resident
@@ -139,6 +190,7 @@ class ResidentSupervisor:
         return resident.terminate(grace=grace)
 
     def restart(self, grace: float = TERMINATE_GRACE_SECONDS) -> ResidentProcess:
+        """Stop, then start. Propagates a refusal from ``start``."""
         self.stop(grace=grace)
         return self.start()
 
@@ -154,7 +206,9 @@ class ResidentSupervisor:
 
 __all__ = [
     "RESIDENT_ENTRY_MODULE",
+    "RESIDENT_LAUNCH_REFUSED_PROVIDER_DECLINED",
     "TERMINATE_GRACE_SECONDS",
+    "ResidentLaunchRefused",
     "ResidentProcess",
     "ResidentSupervisor",
     "default_resident_command",

@@ -9,6 +9,7 @@ import { fileURLToPath } from "node:url";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const pkgRoot = path.resolve(here, "..");
 const wrapper = path.join(pkgRoot, "bin", "claw-connect.mjs");
+const official = path.join(pkgRoot, "bin", "padiem-connector.mjs");
 
 function runWrapper(args, env = {}) {
   return spawnSync(process.execPath, [wrapper, ...args], {
@@ -20,6 +21,8 @@ function runWrapper(args, env = {}) {
 
 test("package manifest exposes the claw-connect bin", () => {
   const manifest = JSON.parse(readFileSync(path.join(pkgRoot, "package.json"), "utf8"));
+  assert.equal(manifest.name, "@padiem/connector");
+  assert.equal(manifest.bin["padiem-connector"], "bin/padiem-connector.mjs");
   assert.equal(manifest.bin["claw-connect"], "bin/claw-connect.mjs");
   assert.ok(manifest.files.includes("claw_connect/"));
 });
@@ -27,15 +30,15 @@ test("package manifest exposes the claw-connect bin", () => {
 test("the wrapper prints the product version", () => {
   const result = runWrapper(["--version"]);
   assert.equal(result.status, 0, result.stderr);
-  assert.match(result.stdout, /Padiem Claw Connect 0\.1\.0/);
+  assert.match(result.stdout, /PADIEM Connector 0\.1\.0/);
 });
 
 test("the wrapper forwards to the same module the installer runs", () => {
   const result = runWrapper(["status"]);
   assert.equal(result.status, 0, result.stderr);
   const status = JSON.parse(result.stdout);
-  assert.equal(status.product, "Padiem Claw Connect");
-  assert.equal(status.state, "disconnected");
+  assert.equal(status.product, "PADIEM Connector");
+  assert.equal(status.state, "unregistered");
   assert.equal(status.resident_running, false);
   assert.equal(status.autostart_enabled, false);
 });
@@ -89,4 +92,14 @@ test("autostart on is fail-closed without a durable credential, off is allowed",
       }
     }
   }
+});
+
+test("PADIEM Connector official bin and legacy bin execute one runtime", () => {
+  const newer = spawnSync(process.execPath, [official, "--version"], {
+    encoding: "utf8", timeout: 30_000,
+  });
+  const legacy = runWrapper(["--version"]);
+  assert.equal(newer.status, 0, newer.stderr);
+  assert.equal(newer.stdout, legacy.stdout);
+  assert.match(newer.stdout, /PADIEM Connector/);
 });

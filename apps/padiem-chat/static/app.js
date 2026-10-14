@@ -2043,7 +2043,9 @@
       input.setAttribute("aria-describedby", "clawStatus");
       input.setAttribute("maxlength", "4000");
     } else {
-      input.placeholder = localeOr("input", "Ask anything");
+      input.placeholder = isClaw
+        ? localeOr("claw-home-input", "Give Claw a task")
+        : localeOr("input", "Ask anything");
       input.removeAttribute("aria-describedby");
       input.removeAttribute("aria-invalid");
       // General Claw and Chat accept provider-native prompts. The distinct
@@ -3102,6 +3104,9 @@
     if (!clawWorkspace) return;
     shell.dataset.state = "claw";
     clawWorkspace.dataset.view = "general";
+    // The shared Chat first-use hero also introduces Claw when the
+    // existing conversation has not started. Do not reset live messages.
+    if (messageList.hidden && !(messageList.children?.length > 0)) emptyState.hidden = false;
     delete clawWorkspace.dataset.inboxKind;
     if (clawInbox) clawInbox.hidden = true;
     if (clawAutomation) clawAutomation.hidden = true;

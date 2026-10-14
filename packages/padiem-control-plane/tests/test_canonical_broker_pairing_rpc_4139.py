@@ -9,6 +9,9 @@ from types import SimpleNamespace
 import pytest
 
 from canonical_broker_pairing_rpc import CanonicalBrokerPairingRPC
+from canonical_broker_gateway_bootstrap import bootstrap_mac, session_mac
+import base64
+import hashlib
 from local_agent_broker_sql_state import CloudflareDurableObjectSerializedStateBackend
 from padiem_control_plane.local_agent_broker_state import StateBackedLocalAgentBrokerAuthority
 from padiem_control_plane.local_agent_broker_state_wire import SerializedLocalAgentBrokerStatePort
@@ -192,3 +195,146 @@ def test_private_binding_rpc_rejects_unreviewed_fields(payload):
     h.install()
     h.env.LOCAL_AGENT_BROKER_PAIRING_SCHEMA_INSTALLED = "true"
     assert asyncio.run(h.get_enrollment_binding(payload))["ok"] is False
+
+
+def test_private_bootstrap_preflight_refuses_wrong_proof_and_has_no_write_side_effect():
+    h = Harness()
+    assert h.install()["ok"] is True
+    h.env.LOCAL_AGENT_BROKER_PAIRING_SCHEMA_INSTALLED = "true"
+    issued = h.issue()
+    cid = issued["challenge"]["challenge_id"]
+    valid = pairing_proof_ref(
+        challenge_id=cid, device_id=DEVICE, pairing_code=issued["pairing_code"],
+    )
+    body = {
+        "challenge_id": cid, "device_id": DEVICE, "proof_ref": valid,
+        "consent_ref": CONSENT, "owner_ref": OWNER,
+        "account_ref": ACCOUNT, "workspace_ref": WORKSPACE,
+    }
+    before = h._storage.sql.exec(
+        "SELECT * FROM canonical_local_agent_pairing_challenge"
+    ).toArray()
+    got = asyncio.run(h.verify_enrollment_bootstrap(body))
+    assert got == {"ok": True, "bootstrap": {
+        "challenge_id": cid, "device_id": DEVICE,
+        "proof_valid": True, "challenge_consumed": False,
+    }}
+    assert h._storage.sql.exec(
+        "SELECT * FROM canonical_local_agent_pairing_challenge"
+    ).toArray() == before
+    for changed in (
+        {**body, "proof_ref": "pairing-proof:" + "f" * 64},
+        {**body, "account_ref": "account.other"},
+        {**body, "credential_b64": "unexpected"},
+    ):
+        refused = asyncio.run(h.verify_enrollment_bootstrap(changed))
+        assert refused["ok"] is False and set(refused) == {"ok", "error"}
+    assert h.redeem(cid, DEVICE, valid)["ok"] is True
+    consumed = asyncio.run(h.verify_enrollment_bootstrap(body))
+    assert consumed["ok"] is False
+    assert consumed["error"]["code"] == "pairing_challenge_already_redeemed"
+
+
+def test_private_gateway_rpc_requires_separate_explicit_gates_and_closed_shapes():
+    h = Harness()
+    assert h.install()["ok"] is True
+    h.env.LOCAL_AGENT_BROKER_PAIRING_SCHEMA_INSTALLED = "true"
+    issued = h.issue()
+    cid, code = issued["challenge"]["challenge_id"], issued["pairing_code"]
+    h.env.LOCAL_AGENT_BROKER_GATEWAY_BOOTSTRAP_SCHEMA_INSTALL_ENABLED = "true"
+    h.env.LOCAL_AGENT_BROKER_GATEWAY_BOOTSTRAP_SCHEMA_INSTALLED = ""
+    h.env.LOCAL_AGENT_BROKER_GATEWAY_BOOTSTRAP_ENABLED = ""
+    async def rpc(operation, args):
+        return await h.gateway_bootstrap_rpc({"operation": operation, "args": args})
+    async def begin():
+        return await rpc("begin", {"challenge_id": cid, "device_id": DEVICE, "proof_ref": pairing_proof_ref(challenge_id=cid, device_id=DEVICE, pairing_code=code)})
+    assert asyncio.run(begin())["ok"] is False
+    installed = asyncio.run(rpc(
+        "install", {"migration_id": "canonical-broker-gateway-bootstrap-v1"}
+    ))
+    assert installed == {"ok": True, "schema": "canonical-broker-gateway-bootstrap-v1",
+                         "installed_by_default": False}
+    assert asyncio.run(begin())["ok"] is False
+    h.env.LOCAL_AGENT_BROKER_GATEWAY_BOOTSTRAP_SCHEMA_INSTALLED = "true"
+    h.env.LOCAL_AGENT_BROKER_GATEWAY_BOOTSTRAP_ENABLED = "true"
+    invalid_admission = asyncio.run(rpc("begin", {
+        "challenge_id": cid, "device_id": DEVICE,
+        "proof_ref": "pairing-proof:" + "f" * 64,
+    }))
+    assert invalid_admission["ok"] is False
+    assert h._storage.sql.exec(
+        "SELECT * FROM canonical_local_agent_gateway_bootstrap"
+    ).toArray() == []
+    started = asyncio.run(begin())
+    assert started["ok"] is True
+    context = started["gateway"]
+    assert context["credential"] is False
+    mac = bootstrap_mac(
+        pairing_code=code, challenge_id=cid, device_id=DEVICE,
+        nonce_hex=context["nonce_hex"], lease_ref=context["lease_ref"],
+    )
+    finished = asyncio.run(rpc("finish", {
+        "challenge_id": cid, "device_id": DEVICE,
+        "lease_ref": context["lease_ref"], "proof_hex": mac,
+    }))
+    assert finished["ok"] is True
+    body = b'{"action":"credential_fetch"}'
+    authorization = session_mac(
+        pairing_code=code, challenge_id=cid, device_id=DEVICE,
+        nonce_hex=context["nonce_hex"], lease_ref=context["lease_ref"],
+        action="credential_fetch", counter=1,
+        payload_sha256=hashlib.sha256(body).hexdigest(),
+    )
+    good = {
+        "challenge_id": cid, "device_id": DEVICE,
+        "lease_ref": context["lease_ref"], "action": "credential_fetch",
+        "counter": 1, "body_b64": base64.b64encode(body).decode("ascii"),
+        "proof_hex": authorization,
+    }
+    assert asyncio.run(rpc("authorize", good))["ok"] is True
+    replay = asyncio.run(rpc("authorize", good))
+    assert replay["ok"] is False
+    assert replay["error"]["code"] == "gateway_bootstrap_action_refused"
+    for bad in [
+        {"operation": "authorize", "args": {**good, "unexpected": True}},
+        {"operation": "authorize", "args": {**good, "body_b64": "???invalid"}},
+        {"operation": "unknown", "args": {}},
+        {"operation": "begin", "args": {"device_id": DEVICE}},
+    ]:
+        refusal = asyncio.run(h.gateway_bootstrap_rpc(bad))
+        assert refusal["ok"] is False and set(refusal) == {"ok", "error"}
+
+
+def test_private_recovery_rpc_is_read_only_exactly_scoped_and_never_reissues():
+    h = Harness()
+    assert h.install()["ok"] is True
+    h.env.LOCAL_AGENT_BROKER_PAIRING_SCHEMA_INSTALLED = "true"
+    issued = h.issue()
+    cid = issued["challenge"]["challenge_id"]
+    ref = "pairing-binding." + hashlib.sha256(f"{cid}:{DEVICE}".encode()).hexdigest()[:32]
+    body = {
+        "challenge_id": cid, "device_id": DEVICE, "consent_ref": CONSENT,
+        "owner_ref": OWNER, "account_ref": ACCOUNT, "workspace_ref": WORKSPACE,
+        "binding_ref": ref, "credential_generation": 1,
+    }
+    async def read(payload):
+        return await h.recovery_verdict(payload)
+    assert asyncio.run(read(body))["recovery"]["disposition"] == "security_hold"
+    valid = pairing_proof_ref(
+        challenge_id=cid, device_id=DEVICE, pairing_code=issued["pairing_code"],
+    )
+    redeemed = h.redeem(cid, DEVICE, valid)
+    assert redeemed["ok"] is True
+    assert asyncio.run(read(body))["recovery"]["disposition"] == "security_hold"
+    pairing = h._durable_pairing()
+    pairing._broker.revoke_binding(ref, now=datetime.now(timezone.utc))
+    confirmed = asyncio.run(read(body))
+    assert confirmed["recovery"]["disposition"] == "revoked"
+    assert confirmed["recovery"]["can_retry_challenge"] is False
+    for malformed in ({**body, "owner_ref": "owner.other"},
+                      {**body, "credential_generation": 2},
+                      {**body, "credential_b64": "secret"}):
+        result = asyncio.run(read(malformed))
+        assert (result["ok"] is False or
+                result["recovery"]["disposition"] == "security_hold")
+    assert h.redeem(cid, DEVICE, valid)["ok"] is False

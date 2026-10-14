@@ -1,0 +1,8 @@
+# #4139: No account_id, routes, secrets or private bindings. NEVER use this
+# config as the production padiem-chat Worker configuration.
+name = "padiem-connector-source-canary"
+main = "worker.py"
+compatibility_date = "2026-10-13"
+compatibility_flags = ["python_workers"]
+workers_dev = false
+preview_urls = false

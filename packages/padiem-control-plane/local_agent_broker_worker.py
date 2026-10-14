@@ -1,29 +1,29 @@
 from __future__ import annotations
 
 from typing import Callable, TypeVar
-
 from workers import DurableObject, Response, WorkerEntrypoint
 from canonical_broker_pairing_rpc import CanonicalBrokerPairingRPC
+from canonical_broker_pending_pc_private_rpc import CanonicalBrokerPendingPcLiveRPC, CanonicalBrokerPendingPcBindingRPC
 from padiem_control_plane.local_agent_broker_http import DurableLocalAgentSessionRecord, LocalAgentMaterialResolutionRequest
 from local_agent_broker_device_http import LocalAgentBrokerDeviceHttpService
 from local_agent_broker_durable_runtime import LocalAgentBrokerDurableRuntime
 from local_agent_broker_material_store import MAX_DURABLE_COMMAND_MATERIAL_BYTES, CloudflareDurableObjectCommandMaterialStore
 from local_agent_broker_private_http_bridge import handle_private_device_fetch
+from padiem_control_plane.broker_pending_pc_wss import route_private_pc_wss_upgrade
 from local_agent_broker_office_chunks import compose_broker_office_chunks, read_broker_office_part_rpc
 from local_agent_broker_sql_state import (
     CloudflareDurableObjectHttpSessionState, CloudflareDurableObjectSerializedStateBackend, safe_ref,
 )
-
 _T = TypeVar("_T")
 
-
-class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, DurableObject):
+class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, CanonicalBrokerPendingPcLiveRPC, DurableObject):
     """Thin platform entrypoint over the durable broker runtime composition."""
 
     def __init__(self, ctx, env):
         super().__init__(ctx, env)
         self._runtime = LocalAgentBrokerDurableRuntime(storage=ctx.storage, env=env)
         self._storage = ctx.storage
+        self._pending_pc_ctx = ctx
         self._backend = self._runtime.backend
         self._state_port = self._runtime.state_port
         self.http_state = self._runtime.http_state
@@ -84,7 +84,6 @@ class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, DurableObject):
 
     async def acknowledge(self, payload: dict) -> dict:
         return self._runtime.acknowledge(payload)
-
     async def reconcile_expired_command(self, payload: dict) -> dict:
         return self._runtime.reconcile_expired_command(payload)
 
@@ -96,7 +95,6 @@ class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, DurableObject):
 
     async def device_directory(self, payload: dict) -> dict:  # #4139 read-only multi-device RPC
         return self._runtime.device_directory(payload)
-
     async def authenticate_device_session(self, payload: dict) -> dict:
         return self._runtime.authenticate_device_session(payload)
 
@@ -107,16 +105,23 @@ class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, DurableObject):
         return read_broker_office_part_rpc(self.office_chunks, payload)
 
     async def fetch(self, request):
-        del request
-        return Response("Not Found", status=404, headers={"cache-control": "no-store"})
+        return await self._pending_pc_wss_fetch(request)
 
 
 class Default(WorkerEntrypoint):
     """Private Service Binding gateway to the server-owned broker object."""
+    reserve_pending_pc_link = CanonicalBrokerPendingPcBindingRPC.reserve_pending_pc_link
+    deliver_pending_pc_link = CanonicalBrokerPendingPcBindingRPC.deliver_pending_pc_link
+    pending_pc_identity_status = CanonicalBrokerPendingPcBindingRPC.pending_pc_identity_status
+    claim_pending_pc_identity_proof = CanonicalBrokerPendingPcBindingRPC.claim_pending_pc_identity_proof
+    reserve_native_pc_gateway = CanonicalBrokerPendingPcBindingRPC.reserve_native_pc_gateway
+    authenticate_native_pc_gateway = CanonicalBrokerPendingPcBindingRPC.authenticate_native_pc_gateway
+    transfer_native_pc_credential_once = CanonicalBrokerPendingPcBindingRPC.transfer_native_pc_credential_once
+    receive_native_pc_install_ack = CanonicalBrokerPendingPcBindingRPC.receive_native_pc_install_ack
+    authenticate_native_pc_install_ack = CanonicalBrokerPendingPcBindingRPC.authenticate_native_pc_install_ack
 
     def _authority_ref(self) -> str:
         return safe_ref(str(self.env.LOCAL_AGENT_BROKER_AUTHORITY_REF), "authority_ref")
-
     def _stub(self):
         authority_ref = self._authority_ref()
         namespace = self.env.LOCAL_AGENT_BROKER_STATE
@@ -134,19 +139,14 @@ class Default(WorkerEntrypoint):
     # #3127: only atomic enqueue+material is public through this gateway.
     async def enqueue_command_with_material(self, payload: dict, material: dict) -> dict:
         return await self._stub().enqueue_command_with_material(payload, material)
-
     async def resolve_command_material(self, payload: dict) -> dict:
         return await self._stub().resolve_command_material(payload)
-
     async def poll(self, payload: dict) -> dict:
         return await self._stub().poll(payload)
-
     async def admit_command(self, payload: dict) -> dict:
         return await self._stub().admit_command(payload)
-
     async def acknowledge(self, payload: dict) -> dict:
         return await self._stub().acknowledge(payload)
-
     async def reconcile_expired_command(self, payload: dict) -> dict:
         return await self._stub().reconcile_expired_command(payload)
 
@@ -161,13 +161,11 @@ class Default(WorkerEntrypoint):
 
     async def authenticate_device_session(self, payload: dict) -> dict:
         return await self._stub().authenticate_device_session(payload)
-
     async def terminal_command_result(self, payload: dict) -> dict:
         return await self._stub().terminal_command_result(payload)
 
     async def read_office_artifact_part(self, payload: dict) -> dict:
         return await self._stub().read_office_artifact_part(payload)
-
     # #4139: private canonical Broker DO enrollment passthroughs only.
     async def install_pairing_schema(self, payload: dict) -> dict:
         return await self._stub().install_pairing_schema(payload)
@@ -175,13 +173,17 @@ class Default(WorkerEntrypoint):
         return await self._stub().issue_enrollment_challenge(payload)
     async def get_enrollment_binding(self, payload: dict) -> dict:
         return await self._stub().get_enrollment_binding(payload)
+    async def recovery_verdict(self, payload: dict) -> dict:
+        return await self._stub().recovery_verdict(payload)
+    async def verify_enrollment_bootstrap(self, payload: dict) -> dict:
+        return await self._stub().verify_enrollment_bootstrap(payload)
+    async def gateway_bootstrap_rpc(self, payload: dict) -> dict:
+        return await self._stub().gateway_bootstrap_rpc(payload)
     async def redeem_enrollment(self, payload: dict) -> dict:
         return await self._stub().redeem_enrollment(payload)
 
     async def fetch(self, request):
-        return await handle_private_device_fetch(request, self._stub)
-
-
+        return await route_private_pc_wss_upgrade(self, request, handle_private_device_fetch)
 CLOUDFLARE_DO_ADAPTER = True
 FOUNDATION_PACKAGE_SIDE_EFFECT_FREE = True
 SQLITE_BACKED_DURABLE_OBJECT = True
@@ -241,7 +243,6 @@ DEVICE_DIRECTORY_VOCABULARY_HAS_ONLINE = False
 DEVICE_DIRECTORY_SECOND_ONLINE_AUTHORITY = False
 DEVICE_DIRECTORY_SECOND_DEVICE_AUTHORITY = False
 DEVICE_DIRECTORY_MUTATION = False
-# #3436 B2c device-session auth: existing private read-only RPC.
 PRODUCTION_DEPLOYMENT = False
 PRODUCTION_ROUTE_CONFIGURED = False
 PRODUCTION_SECRET_BOUND = False

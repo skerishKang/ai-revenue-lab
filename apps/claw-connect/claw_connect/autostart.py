@@ -50,8 +50,11 @@ The registry is reached through seams: ``WindowsRunKeyStore`` /
 from __future__ import annotations
 
 import os
+import base64
+from pathlib import Path
 import re
 import sys
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Protocol
 
@@ -96,6 +99,33 @@ _SECRET_IN_COMMAND = re.compile(
     r"\s*[:=]",
     re.IGNORECASE,
 )
+
+
+def start_command() -> str:
+    """Bound to the installed package root even at logon with a foreign cwd."""
+    root = Path(__file__).resolve().parent.parent
+    encoded = base64.b64encode(str(root).encode("utf-8")).decode("ascii")
+    code = (
+        "import base64,sys,runpy;"
+        f"sys.path.insert(0,base64.b64decode('{encoded}').decode('utf-8'));"
+        "sys.argv=['claw-connect','start'];"
+        "runpy.run_module('claw_connect',run_name='__main__')"
+    )
+    return f'"{sys.executable}" -c "{code}"'
+
+
+# The value name alone does not establish ownership of a Windows Run command.
+_LEGACY_MODULE_START = re.compile(
+    r'^"[^"]*[\\/](?:python(?:[0-9]+(?:\.[0-9]+)?)?|py)(?:\.exe)?"'
+    r' -m claw_connect start$', re.IGNORECASE,
+)
+
+
+def _owned_start_command(command: str) -> bool:
+    return (
+        command == start_command()
+        or _LEGACY_MODULE_START.fullmatch(command) is not None
+    )
 
 
 class AutostartRefused(RuntimeError):
@@ -304,7 +334,10 @@ class Autostart:
             return REGISTRATION_CORRUPT
         if value is None:
             return REGISTRATION_ABSENT
-        if not value.strip() or _SECRET_IN_COMMAND.search(value):
+        if (
+            not value.strip() or _SECRET_IN_COMMAND.search(value)
+            or not _owned_start_command(value)
+        ):
             return REGISTRATION_CORRUPT
         return REGISTRATION_REGISTERED
 
@@ -363,7 +396,12 @@ class Autostart:
         ``AutostartOutcome.OPT_OUT_RECONCILED``). The opposite order could leave
         no record of the opt-out and let a later install silently re-enable it.
         """
+        # Persist explicit OFF even when foreign/corrupt Run data cannot be
+        # safely removed: a matching Run *name* is not an ownership proof.
+        state = self.classify()
         self.set_preference(PREFERENCE_OFF)
+        if state == REGISTRATION_CORRUPT:
+            raise AutostartRefused("existing autostart registration is corrupt")
         self.store.delete(self._name)
 
     # -- contract default, after a successful install -----------------------
@@ -419,6 +457,8 @@ class Autostart:
         if event in (EVENT_TRANSIENT_OFFLINE, EVENT_USER_PAUSE):
             return ACTION_KEEP
         if event in (EVENT_UNPAIR, EVENT_REVOKE):
+            if self.classify() == REGISTRATION_CORRUPT:
+                raise AutostartRefused("existing autostart registration is corrupt")
             self.store.delete(self._name)
             return ACTION_SUSPEND
         raise ValueError(f"unknown autostart lifecycle event: {event!r}")
@@ -451,6 +491,8 @@ class Autostart:
             raise AutostartRefused(
                 "autostart command must not carry credential material"
             )
+        if not _owned_start_command(command):
+            raise AutostartRefused("autostart command is not an owned Connector start")
 
 
 def _is_live_enrollment(enrollment: object) -> bool:
@@ -476,7 +518,20 @@ def _is_live_enrollment(enrollment: object) -> bool:
         LIFECYCLE_REVOKED,
     )
 
-    return lifecycle is not None and lifecycle not in (
+    if lifecycle is None or lifecycle in (
         LIFECYCLE_REVOKED,
         LIFECYCLE_CREDENTIAL_EXPIRED,
-    )
+    ):
+        return False
+    # Device lifecycle can be stale while offline. Never register logon
+    # startup against an explicitly expired canonical credential.
+    expires_at = getattr(enrollment, "credential_expires_at", None)
+    if expires_at is not None:
+        if not isinstance(expires_at, datetime) or expires_at.tzinfo is None:
+            return False
+        try:
+            if expires_at <= datetime.now(timezone.utc):
+                return False
+        except (TypeError, ValueError):
+            return False
+    return True

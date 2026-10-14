@@ -228,3 +228,39 @@ def test_malformed_base64_private_credential_fails_closed():
             challenge_id=CHALLENGE_ID, device_id=DEVICE, proof_ref=PROOF, consent_ref=CONSENT,
             owner_ref=OWNER, account_ref=ACCOUNT, workspace_ref=WORKSPACE,
         ))
+
+
+def test_private_nonconsuming_broker_preflight_uses_exact_closed_proof_receipt():
+    binding = Binding()
+
+    async def preflight(payload):
+        binding.calls.append(("bootstrap", payload))
+        return {"ok": True, "bootstrap": {
+            "challenge_id": CHALLENGE_ID, "device_id": DEVICE,
+            "proof_valid": True, "challenge_consumed": False,
+        }}
+
+    binding.verify_enrollment_bootstrap = preflight
+    client = CloudflareCanonicalBrokerPairingClient(binding)
+    kwargs = {
+        "challenge_id": CHALLENGE_ID, "device_id": DEVICE,
+        "proof_ref": PROOF, "consent_ref": CONSENT, "owner_ref": OWNER,
+        "account_ref": ACCOUNT, "workspace_ref": WORKSPACE,
+    }
+    got = asyncio.run(client.verify_enrollment_bootstrap(**kwargs))
+    assert got["proof_valid"] is True and got["challenge_consumed"] is False
+    assert binding.calls == [("bootstrap", kwargs)]
+    for bad in [
+        {"challenge_id": CHALLENGE_ID, "device_id": "device.other",
+         "proof_valid": True, "challenge_consumed": False},
+        {"challenge_id": CHALLENGE_ID, "device_id": DEVICE,
+         "proof_valid": True, "challenge_consumed": True},
+        {"challenge_id": CHALLENGE_ID, "device_id": DEVICE,
+         "proof_valid": True, "challenge_consumed": False,
+         "credential_b64": "forbidden"},
+    ]:
+        async def forged(payload, value=bad):
+            return {"ok": True, "bootstrap": value}
+        binding.verify_enrollment_bootstrap = forged
+        with pytest.raises(IdentityBridgeError):
+            asyncio.run(client.verify_enrollment_bootstrap(**kwargs))

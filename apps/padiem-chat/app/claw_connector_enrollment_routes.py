@@ -104,13 +104,18 @@ _PUBLIC_REDEEM_FIELDS = frozenset({
 })
 
 
-def _redeem_success(receipt: dict[str, Any]) -> JSONResponse:
+def _redeem_success(receipt: dict[str, Any], *, expected_device_id: str) -> JSONResponse:
     """One strict, secret-free HTTP envelope for BOTH canonical host paths."""
-    if not isinstance(receipt, dict) or set(receipt) - _PUBLIC_REDEEM_FIELDS:
+    if type(receipt) is not dict or set(receipt) != _PUBLIC_REDEEM_FIELDS:
         return _redeem_error(503, "enrollment_server_dependency_unavailable")
     for field in ("binding_ref", "device_id", "account_ref", "workspace_ref", "consent_id"):
         if not isinstance(receipt.get(field), str) or _SAFE_VALUE.fullmatch(receipt[field]) is None:
             return _redeem_error(503, "enrollment_server_dependency_unavailable")
+    # Correlate the response to the exact authenticated request at this
+    # server-owned HTTP boundary; never delegate a device-swap check solely
+    # to a downstream client.
+    if receipt["device_id"] != expected_device_id:
+        return _redeem_error(503, "enrollment_server_dependency_unavailable")
     generation = receipt.get("credential_generation")
     if type(generation) is not int or generation < 1:
         return _redeem_error(503, "enrollment_server_dependency_unavailable")
@@ -129,8 +134,8 @@ def _redeem_success(receipt: dict[str, Any]) -> JSONResponse:
         or receipt.get("raw_device_credential") is not False
         or receipt.get("lifecycle") != "paired_offline"
         or receipt.get("dispatch_authorized") is not False
-        or receipt.get("grants_read", False) is not False
-        or receipt.get("grants_write", False) is not False
+        or receipt.get("grants_read") is not False
+        or receipt.get("grants_write") is not False
     ):
         return _redeem_error(503, "enrollment_server_dependency_unavailable")
     public = {field: receipt[field] for field in (
@@ -202,6 +207,22 @@ def _public_consent_success(
     }}, 200)
 
 
+def _reject_duplicate_json_fields(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    """Reject ambiguous owner-consent, challenge and device identifiers.
+
+    Python's default JSON parser keeps the last duplicate field. An explicit
+    consent can never be inferred from a body with multiple conflicting values
+    (e.g. `"confirmed": false, "confirmed": true`). Nested duplicates also
+    fail closed. Callers return their existing bounded 400 without echoing input.
+    """
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate connector enrollment JSON field")
+        result[key] = value
+    return result
+
+
 async def _payload(request: Request, keys: frozenset[str]) -> dict[str, str] | None:
     try:
         declared = request.headers.get("content-length")
@@ -212,7 +233,7 @@ async def _payload(request: Request, keys: frozenset[str]) -> dict[str, str] | N
         raw = await request.body()
         if len(raw) > MAX_CONNECTOR_ENROLLMENT_BODY_BYTES:
             return None
-        value = json.loads(raw)
+        value = json.loads(raw, object_pairs_hook=_reject_duplicate_json_fields)
         if type(value) is not dict or set(value) != keys:
             return None
         if not all(isinstance(v, str) and _SAFE_VALUE.fullmatch(v) is not None for v in value.values()):
@@ -239,7 +260,7 @@ async def _consent_payload(request: Request, expected: frozenset[str]) -> dict[s
         raw = await request.body()
         if len(raw) > MAX_CONNECTOR_ENROLLMENT_BODY_BYTES:
             return None
-        value = json.loads(raw)
+        value = json.loads(raw, object_pairs_hook=_reject_duplicate_json_fields)
         if type(value) is not dict or set(value) != expected:
             return None
         if any(k != "confirmed" and (not isinstance(v, str) or _SAFE_VALUE.fullmatch(v) is None) for k, v in value.items()):
@@ -398,23 +419,22 @@ async def connector_enrollment_redeem(request: Request) -> JSONResponse:
         )
         if fields is None or _SAFE_PROOF.fullmatch(fields["proof_ref"]) is None:
             return _redeem_error(400, "connector_enrollment_invalid_request")
-        if callable(getattr(async_host, "redeem", None)):
-            # Async path performs live Identity consent/session recheck, durable
-            # Broker redemption and protected OS-credential handoff. Raw device
-            # credential is never put in this JSON response.
-            result = await async_host.redeem(
-                challenge_id=fields["challenge_id"], device_id=fields["device_id"],
-                proof_ref=fields["proof_ref"],
-            )
-            return _redeem_success(result)
-        result = service.redeem(
-            challenge_id=fields["challenge_id"], device_id=fields["device_id"],
-            proof_ref=fields["proof_ref"], now=datetime.now(timezone.utc),
-        )
-        safe = result.safe_dict()
-        if not isinstance(safe, dict) or safe.get("ok") is not True:
+        # The legacy synchronous server's deliver_once() returns only a bool:
+        # it cannot prove the challenge-bound Windows store readback AND a
+        # separately authenticated gateway ACK. Even with a valid gateway for
+        # the inbound redeem request, that is not installation attestation.
+        # Never fall back to this weaker redemption owner. Source remains OFF
+        # until the reviewed asynchronous handoff is explicitly composed.
+        if not callable(getattr(async_host, "redeem", None)):
             return _redeem_error(503, "enrollment_server_dependency_unavailable")
-        return _redeem_success({key: value for key, value in safe.items() if key != "ok"})
+        # Async path performs current OWNER consent/session rechecks, durable
+        # Broker redemption, keyed DPAPI install proof and authenticated ACK.
+        # No raw device credential is projected into this HTTP response.
+        result = await async_host.redeem(
+            challenge_id=fields["challenge_id"], device_id=fields["device_id"],
+            proof_ref=fields["proof_ref"],
+        )
+        return _redeem_success(result, expected_device_id=fields["device_id"])
     except ControlPlaneContractError as exc:
         status = 503 if exc.code in {
             "enrollment_server_dependency_unavailable", "enrollment_credential_handoff_failed"

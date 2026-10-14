@@ -29,6 +29,11 @@ ACTION_TOGGLE_PAUSE = "toggle_pause"
 ACTION_RECONNECT = "reconnect"
 ACTION_DISCONNECT = "disconnect"
 ACTION_QUIT = "quit"
+#: Starts the reviewed PADIEM login / PC-registration consent flow. Offered only
+#: when the device has no usable enrollment, so a registered PC never sees it.
+ACTION_LOGIN = "login"
+ACTION_AUTOSTART_ON = "autostart_on"
+ACTION_AUTOSTART_OFF = "autostart_off"
 
 #: Informational, non-selectable header id.
 ITEM_STATUS = "status"
@@ -38,6 +43,10 @@ STATE_LABELS: dict[ConnectionState, str] = {
     ConnectionState.CONNECTING: "연결 중…",
     ConnectionState.CONNECTED: "연결됨",
     ConnectionState.PAUSED: "일시중지됨",
+    # Device-authority states projected from the canonical Broker lifecycle.
+    ConnectionState.UNREGISTERED: "등록 안 됨",
+    ConnectionState.OFFLINE: "오프라인",
+    ConnectionState.REVOKED: "권한 철회됨",
 }
 
 
@@ -49,7 +58,9 @@ class MenuItem:
     separator: bool = False
 
 
-def build_menu(state: ConnectionState) -> tuple[MenuItem, ...]:
+def build_menu(
+    state: ConnectionState, *, autostart_enabled: bool = False,
+) -> tuple[MenuItem, ...]:
     """The tray menu for a connection state (deterministic order)."""
     connected = state is ConnectionState.CONNECTED
     paused = state is ConnectionState.PAUSED
@@ -60,14 +71,30 @@ def build_menu(state: ConnectionState) -> tuple[MenuItem, ...]:
         MenuItem(ITEM_STATUS, f"{CONNECT_PRODUCT} v{CONNECT_VERSION}", enabled=False),
         MenuItem(ITEM_STATUS, STATE_LABELS[state], enabled=False),
         MenuItem("sep1", "", separator=True),
-        MenuItem(ACTION_OPEN_WEB, "Claw Web 열기"),
+        MenuItem(ACTION_OPEN_WEB, "PADIEM Chat 열기"),
         MenuItem("sep2", "", separator=True),
+        # The reviewed login is only offered when it is actually required.
+        MenuItem(
+            ACTION_LOGIN,
+            "웹사이트에서 연결" if state is ConnectionState.UNREGISTERED else "웹사이트에서 권한 확인",
+            enabled=state
+            in (ConnectionState.UNREGISTERED, ConnectionState.REVOKED),
+        ),
+        MenuItem("sep4", "", separator=True),
         MenuItem(
             ACTION_TOGGLE_PAUSE,
             "일시중지" if connected else "다시 시작",
             enabled=connected or paused,
         ),
         MenuItem(ACTION_RECONNECT, "다시 연결", enabled=not connecting),
+        MenuItem(
+            ACTION_AUTOSTART_OFF if autostart_enabled else ACTION_AUTOSTART_ON,
+            ("Windows \uC790\uB3D9 \uC2DC\uC791 \uB044\uAE30" if autostart_enabled else
+             "Windows \uC790\uB3D9 \uC2DC\uC791 \uCF1C\uAE30"),
+            enabled=autostart_enabled or state not in (
+                ConnectionState.UNREGISTERED, ConnectionState.REVOKED,
+            ),
+        ),
         MenuItem(ACTION_DISCONNECT, "연결 해제", enabled=busy),
         MenuItem("sep3", "", separator=True),
         MenuItem(ACTION_QUIT, "종료"),

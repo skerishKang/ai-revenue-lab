@@ -120,8 +120,28 @@ jobs:
 
           test -d "${RUNNER_TEMP}/b54-state-dry-run"
           test -d "${RUNNER_TEMP}/b54-edge-dry-run"
+          python ../../.github/scripts/connector_bundle_fingerprint.py \
+            --worker padiem-local-agent-broker-state \
+            --source-sha "$(git rev-parse HEAD)" \
+            --bundle-dir "${RUNNER_TEMP}/b54-state-dry-run" \
+            --output "${RUNNER_TEMP}/b54-broker-state-fingerprint.json"
+          python ../../.github/scripts/connector_bundle_fingerprint.py \
+            --worker padiem-local-agent-broker-edge \
+            --source-sha "$(git rev-parse HEAD)" \
+            --bundle-dir "${RUNNER_TEMP}/b54-edge-dry-run" \
+            --output "${RUNNER_TEMP}/b54-broker-edge-fingerprint.json"
           echo "PYTHON_WORKER_PACKAGING_PREFLIGHT=PASS"
           echo "PRODUCTION_MUTATION=0"
+
+      - name: Retain redacted Broker State/Edge dry-run fingerprints
+        uses: actions/upload-artifact@v4
+        with:
+          name: connector-broker-bundle-fingerprints
+          path: |
+            ${{ runner.temp }}/b54-broker-state-fingerprint.json
+            ${{ runner.temp }}/b54-broker-edge-fingerprint.json
+          if-no-files-found: error
+          retention-days: 30
 
   cloudflare-readonly:
     needs: repository-preflight

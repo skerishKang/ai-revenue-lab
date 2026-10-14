@@ -15,10 +15,8 @@ name: Claw Connect Contract Tests
 # (`package.json` `os: ["win32"]`; tray/autostart/single-instance paths use
 # `winreg`), so a Linux run would not be evidence for the shipped artifact.
 #
-# Deliberate non-goal: `apps/claw-connect/verify_windows_live.py`, the
-# real-process Windows harness. It starts and stops supervised Connector
-# processes and mutates per-user state; promoting it to a CI gate needs its
-# own reviewed decision (see #3099).
+# CENTRAL #4572 replaces the old invasive Windows live harness with a scratch-only
+# no-live-Broker verifier. It is safe to run on a hosted Windows runner.
 
 on:
   pull_request:
@@ -54,13 +52,17 @@ jobs:
           python-version: "3.12"
 
       - name: Install test dependencies
-        run: python -m pip install --disable-pip-version-check 'pytest>=8,<10'
+        run: python -m pip install --disable-pip-version-check 'pytest>=8,<10' -r requirements-wss-review.txt
 
       - name: Run connector contract tests
         run: python -m pytest -q tests
 
+      - name: Run scratch-only Windows first-run verifier
+        run: python verify_windows_live.py
+
       - name: Record gate scope
         run: |
+          echo 'CLAW_CONNECT_WSS_LIBRARY=REVIEW_ONLY'
           echo 'CLAW_CONNECT_PYTEST=EXECUTED'
           echo 'PRODUCTION_DEPLOYMENT=0'
 
