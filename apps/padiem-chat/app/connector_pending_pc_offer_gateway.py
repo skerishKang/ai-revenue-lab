@@ -131,7 +131,7 @@ class VerifiedPcOfferGateway:
                  or self._offered_ref == request_ref)
             and self._device == device_id
             and self._fingerprint == fingerprint
-            and getattr(self._socket, "closed", False) is False
+            and getattr(self._socket, "closed", None) is False
         )
 
     async def _close_refused(self) -> None:

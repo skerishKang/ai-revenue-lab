@@ -103,6 +103,9 @@ class FakeSocket:
         self.input = asyncio.Queue()
         self.output = asyncio.Queue()
         self.closed = False
+        self.accept_calls = 0
+    async def accept(self):
+        self.accept_calls += 1
     async def receive_text(self):
         return await self.input.get()
     async def send_text(self, data):
