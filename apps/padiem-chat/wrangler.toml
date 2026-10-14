@@ -61,6 +61,13 @@ binding = "PADIEM_EXLAB_API_KEY"
 store_id = "f0b09ca04a7b43248154c773704a5616"
 secret_name = "PADIEM_EXLAB_API_KEY"
 
+# GitHub App user-to-server OAuth. Set the value in Cloudflare Secrets Store,
+# never commit it or expose it to the browser. Missing value => connector OFF.
+[[secrets_store_secrets]]
+binding = "PADIEM_GITHUB_APP_CLIENT_SECRET"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_GITHUB_APP_CLIENT_SECRET"
+
 [vars]
 PADIEM_CHAT_RUNTIME_MODE = "mock"
 PADIEM_CHAT_TIMEOUT_SECONDS = "600"

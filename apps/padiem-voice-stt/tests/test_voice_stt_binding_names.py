@@ -105,7 +105,8 @@ def test_binding_report_matches_expected_state():
     }
     assert report == {
         "voice_worker_secret_bindings": ["PADIEM_GEMINI_API_KEY", "PADIEM_GROQ_API_KEY"],
-        "chat_worker_secret_bindings": ["PADIEM_EXLAB_API_KEY", "PADIEM_KIRAAI_API_KEY"],
+        # GitHub OAuth uses the Chat account secret store, not the private STT provider keys.
+        "chat_worker_secret_bindings": ["PADIEM_EXLAB_API_KEY", "PADIEM_GITHUB_APP_CLIENT_SECRET", "PADIEM_KIRAAI_API_KEY"],
         "chat_worker_voice_binding": "VOICE_STT_SERVICE",
         "groq_binding_name_runtime_verified": True,
     }

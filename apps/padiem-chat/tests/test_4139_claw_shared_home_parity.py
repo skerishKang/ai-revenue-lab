@@ -102,14 +102,14 @@ def test_product_mode_is_scoped_and_starter_actions_never_create_fake_auth():
         assert forbidden not in ACTIONS
 
 
-def test_connectors_show_github_and_computer_as_not_ready_without_fake_links():
+def test_connectors_keep_windows_unchanged_and_github_account_actions_canonical():
     computer = HTML[HTML.index('id="connectorComputerCard"'):]
     github = HTML[HTML.index('id="connectorGithubCard"'):]
     assert 'data-connector-status="preparing"' in computer[:130]
-    assert 'data-connector-status="preparing"' in github[:130]
     assert 'id="clawComputerLiveStatus"' in computer[:600]
-    assert "GitHub 직접 연결은 준비 중" in github[:350]
-    assert 'href="https://github.com/' not in github[:350]
+    assert 'data-connector-status="loading"' in github[:130]
+    assert 'id="connectorGithubPrimary"' in github[:550]
+    assert 'id="connectorGithubRemove"' in github[:750]
     assert 'href="/download/' not in computer[:600]
 
 
@@ -161,10 +161,13 @@ def test_claw_connection_chips_keep_canonical_authority_and_do_not_forge_disconn
     assert 'data-connection-state' in HTML
     assert "window.confirm(" not in script
     assert "A reviewed disconnect action is not available yet" in script
-    assert 'set("github","unknown")' in script
+    assert '"/api/connectors/github/status"' in script
+    assert '"/api/connectors/github/start"' in script
+    assert '"/api/connectors/github/pause"' in script
+    assert '"/api/connectors/github/resume"' in script
     assert 'credentials:"same-origin"' in script
     assert 'fetch(' in script
-    assert script.count('method:"POST"') == 1  # Drive-only explicit disconnect
+    assert script.count('method:"POST"') == 2  # Explicit Drive disconnect and GitHub pause/resume
     assert '"/api/connectors/google/drive/disconnect"' in script
     assert 'method:"DELETE"' not in script
     assert 'localStorage' not in script

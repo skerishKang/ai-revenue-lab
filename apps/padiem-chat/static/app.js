@@ -3896,6 +3896,14 @@
     openConnectorsDialog();
   }
 
+  if (connectorReturnParts.some(part => part === "claw-github=connected")) {
+    const cleanQuery = connectorReturnParts.filter(part => !part.startsWith("claw-github=")).join("&");
+    const cleanPath = String(window.location.pathname || "/");
+    const cleanHash = String(window.location.hash || "");
+    window.history.replaceState(null, "", cleanPath + (cleanQuery ? "?" + cleanQuery : "") + cleanHash);
+    openClawWorkspace();
+  }
+
   if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);
   const clawManualEntryButton = document.getElementById("clawManualEntryButton");
   if (clawManualEntryButton) clawManualEntryButton.addEventListener("click", openClawManual);

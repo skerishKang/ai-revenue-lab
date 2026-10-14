@@ -48,12 +48,29 @@
                "ON and OFF are not assumed without verification."),
       button: tr("연결 설정 보기", "View connection settings"), intent: "manage"
     };
+    if (id === "github" && state === "off" &&
+        document.querySelector('[data-claw-connection="github"]')?.dataset.connectionLinked === "true") return {
+      headline: tr("GitHub가 일시 중지되어 있어요", "GitHub is paused"),
+      copy: tr("연결 정보는 유지됩니다. 다시 켜면 기존 GitHub 계정으로 사용합니다.",
+               "Your authorization is retained. Resume without signing in again."),
+      foot: tr("실제 GitHub 접근이 확인된 후 ON으로 표시됩니다.",
+               "ON appears only after real GitHub access is verified."),
+      button: tr("GitHub 다시 켜기", "Resume GitHub"), intent: "resume-github"
+    };
+    if (state === "on" && id === "github") return {
+      headline: tr("GitHub가 연결되어 있어요", "GitHub is connected"),
+      copy: tr("사용을 잠시 중지해도 GitHub 인증 정보는 유지됩니다.",
+               "Pause GitHub access without removing authorization."),
+      foot: tr("연결 자체를 삭제하는 기능은 별도 연결 관리에서 제공됩니다.",
+               "Removing account authorization is a separate connection setting."),
+      button: tr("GitHub 일시 중지", "Pause GitHub"), intent: "pause-github"
+    };
     if (state === "on") return id === "drive" ? {
       headline: tr("Google Drive가 연결되어 있어요", "Google Drive is connected"),
-      copy: tr("연결은 유지됩니다. 계정 연결을 삭제하려면 커넥터 페이지에서 선택해 주세요.",
-               "Your Drive connection is retained. Remove it from Connectors if needed."),
+      copy: tr("드라이브 연결은 유지됩니다. 계정 연결 자체를 삭제하려면 커넥터 관리에서 선택해 주세요.",
+               "Your Drive link is retained. Use Connectors to remove account authorization."),
       foot: tr("일시 중지는 아직 지원하지 않습니다. OFF를 연결 삭제처럼 처리하지 않습니다.",
-               "Temporary pause is not yet supported; OFF must not revoke authorization."),
+               "Temporary Drive pause is not yet supported; OFF must not revoke the link."),
       button: tr("연결 관리", "Manage connection"), intent: "manage"
     } : {
       headline: tr(labels[id] + " 연결됨", labels[id] + " connected"),
@@ -86,9 +103,9 @@
       headline: tr("GitHub를 연결해 주세요", "Connect GitHub"),
       copy: tr("GitHub 계정으로 연결하고 사용할 저장소 접근을 허용해 주세요.",
                "Connect your GitHub account and authorize repository access."),
-      foot: tr("저장소는 기본적으로 전체를 선택하며, 원하면 일부만 제한할 수 있습니다. GitHub 인증 기능은 연결 준비 중입니다.",
-               "All repositories is the default; you may restrict it. GitHub sign-in integration is being prepared."),
-      button: tr("GitHub 연결 설정", "GitHub connection settings"), intent: "manage"
+      foot: tr("저장소는 기본적으로 전체를 선택하며, 원하면 일부만 제한할 수 있습니다. GitHub 로그인 화면에서 연결을 승인해 주세요.",
+               "All repositories is the default; you may restrict it at GitHub."),
+      button: tr("GitHub 로그인", "Sign in with GitHub"), intent: "connect-github"
     };
   }
 
@@ -116,9 +133,20 @@
     if (bypass || !button || !home()) return;
     event.preventDefault();
     event.stopImmediatePropagation();
-    if (signedIn() && button.dataset.clawConnection === "drive" &&
-        button.getAttribute("data-connection-state") === "off") {
+    const id = button.dataset.clawConnection;
+    const state = button.dataset.connectionState;
+    if (signedIn() && state === "off" && id === "drive") {
       document.dispatchEvent(new Event("padiem:drive-quick-connect"));
+      return;
+    }
+    if (signedIn() && id === "github" && ["on","off"].includes(state)) {
+      if (state === "off" && button.dataset.connectionLinked !== "true") {
+        window.location.assign("/api/connectors/github/start");
+        return;
+      }
+      // Known links toggle pause/resume through their server-authoritative handler.
+      bypass = true;
+      try { button.click(); } finally { bypass = false; }
       return;
     }
     open(button);
@@ -133,7 +161,17 @@
     const button = source;
     const id = button.dataset.clawConnection;
     dialog.close();
-      if (intent === "login") {
+    if (intent === "pause-github" || intent === "resume-github") {
+      // Delegate to the canonical owner-scoped state handler; never fake the switch.
+      bypass = true;
+      try { button.click(); } finally { bypass = false; }
+      return;
+    }
+    if (intent === "connect-github") {
+      window.location.assign("/api/connectors/github/start");
+      return;
+    }
+    if (intent === "login") {
       const login = document.getElementById("loginButton");
       if (login && !login.disabled && !login.hidden) login.click();
       else {

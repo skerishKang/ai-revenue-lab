@@ -216,6 +216,9 @@ from .claw_automation_rule_enabled_routes import claw_automation_rule_set_enable
 from .config import Settings
 from .connector_status_projection import connectors_status
 from .connector_disconnect_routes import disconnect_google_drive
+from .github_oauth_routes import (github_start, github_callback, github_status,
+                                  github_repositories, github_disconnect, github_pause, github_resume,
+                                  github_installation_settings)
 from .connector_ticket_routes import google_connector_ticket
 from .calendar_read_activation_routes import activate_google_calendar_read
 from .conversation_routes import api_conversation_detail, api_conversation_search, api_conversations
@@ -355,6 +358,8 @@ def create_app(
     desktop_device_session_authority=None,
     auth_abuse_store: AuthAbuseStore | None = None,
     connector_owner_enrollment=None,
+    github_oauth_store=None,
+    github_oauth_provider=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -383,6 +388,14 @@ def create_app(
         Route("/api/connectors/google/calendar/activate-read", activate_google_calendar_read, methods=["POST"]),
         Route("/api/connectors/status", connectors_status, methods=["GET"]),
         Route("/api/connectors/google/drive/disconnect", disconnect_google_drive, methods=["POST"]),
+        Route("/api/connectors/github/start", github_start, methods=["GET"]),
+        Route("/api/connectors/github/callback", github_callback, methods=["GET"]),
+        Route("/api/connectors/github/status", github_status, methods=["GET"]),
+        Route("/api/connectors/github/installations", github_installation_settings, methods=["GET"]),
+        Route("/api/connectors/github/repositories", github_repositories, methods=["GET"]),
+        Route("/api/connectors/github/disconnect", github_disconnect, methods=["POST"]),
+        Route("/api/connectors/github/pause", github_pause, methods=["POST"]),
+        Route("/api/connectors/github/resume", github_resume, methods=["POST"]),
         Route("/api/projects", projects_collection, methods=["GET", "POST"]),
         # #4489: one owner-scoped keyset-paginated read over every stored project file,
         # so the Library can walk a full history without per-project fan-out.
@@ -649,6 +662,8 @@ def create_app(
     app.add_middleware(RequestTelemetryMiddleware, emitter=telemetry_emitter)
     app.state.request_telemetry_enabled = True
     app.state.settings = resolved
+    app.state.github_oauth_store = github_oauth_store
+    app.state.github_oauth_provider = github_oauth_provider
     app.state.history_store = history_store
     # #4657: the B66 customer dialogue surface reuses the canonical history
     # store behind the owner+PRODUCT_SCOPE_B66 adapter. It is the same D1/R2 the
