@@ -217,3 +217,38 @@ async def test_absent_new_broker_rpc_keeps_original_behavior():
     assert await port.read_verified_file_text(
         owner_id="user1", workspace_id="ws1", run_id="run1", command_id="cmd1",
     ) is None
+
+
+@pytest.mark.parametrize("code", [1, 2, -1, None])
+def test_unsuccessful_process_exit_is_not_completed(code):
+    terminal = replace(OBS, exit_code=code)
+    decision = decide_local_task_result(origin=ORIGIN, observation=terminal)
+    assert decision.status == "failed"
+    assert decision.summary == f"exited/{code}"
+    assert decision.safe_dict()["executed"] is False
+    assert "PC ?? ?? ??" not in decision.content
+
+
+@pytest.mark.asyncio
+async def test_failed_pc_read_never_persists_success_state_or_fetches_file_text():
+    class FailedPort(FakePort):
+        async def command_result(self, **kwargs):
+            assert kwargs["owner_id"] == "user1"
+            return replace(OBS, exit_code=1)
+
+        async def read_verified_file_text(self, **kwargs):
+            raise AssertionError("never ask the Broker for file text on failed execution")
+
+    history = FakeHistory()
+    outcome = await project_local_runner_terminal_result(
+        history=history, result_port=FailedPort(receipt()),
+        user_id="user1", run_id="run1", command_id="cmd1",
+        expected_workspace_id="ws1",
+    )
+    assert outcome.status == "failed"
+    assert outcome.safe_dict()["executed"] is False
+    assert len(history.calls) == 1
+    assert history.calls[0]["status"] == "failed"
+    assert "exited" in history.calls[0]["content"]
+    assert "1" in history.calls[0]["content"]
+    assert "PC ?? ?? ??" not in history.calls[0]["content"]
