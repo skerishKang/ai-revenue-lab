@@ -61,7 +61,7 @@ async def test_no_attachment_keeps_text_chat_contract_on_explicit_agnes():
             "/api/chat",
             json={"messages": [{"role": "user", "content": "안녕"}], "mode": "auto"},
         )
-    if EXECUTABLE_B14_MODEL_IDS:
+    if DEFAULT_B14_MODEL_ID in EXECUTABLE_B14_MODEL_IDS:
         assert response.status_code == 200
         assert seen["body"]["model"] == DEFAULT_B14_MODEL_ID
         system_messages = [item for item in seen["body"]["messages"] if item["role"] == "system"]
@@ -117,7 +117,7 @@ async def test_valid_live_image_attachment_fails_closed_without_primary_model(
             },
         )
 
-    assert EXECUTABLE_B14_MODEL_IDS == frozenset()
+    assert EXECUTABLE_B14_MODEL_IDS == frozenset({"google/gemini-3.1-flash-lite"})
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "image_model_unavailable"
     assert calls == 0

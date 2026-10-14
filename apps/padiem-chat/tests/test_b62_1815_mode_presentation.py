@@ -84,7 +84,7 @@ def test_legacy_mode_qa_and_html_markers_are_removed() -> None:
     assert "Legacy regression marker only" not in INDEX
     assert "mode_fast_balanced_deep" not in CERT_QA
     assert "Fast / Balanced / Deep trusted execution mapping" not in CERT_QA
-    assert '"surface": "tier_plus_only"' in CERT_QA
+    assert '"surface": "tier_free_baseline"' in CERT_QA
     assert '"surface": "tier_max"' in CERT_QA
     assert '"presentation": "BROWSER_HIDDEN"' in CERT_QA
 

@@ -69,6 +69,8 @@ _HOLD_POLICY_MODULES = {
     "test_saved_outputs.py",
     "test_tier_route_consumer_coverage.py",
     "test_unassigned_profile_gate.py",
+    # Real owner-defined Free route test: synthetic Plus must not overwrite it.
+    "test_free_member_chat_4317.py",
 }
 
 

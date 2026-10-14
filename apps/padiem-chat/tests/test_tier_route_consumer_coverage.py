@@ -81,12 +81,14 @@ def test_chat_current_route_expectation_is_derived_not_restated() -> None:
     # that declaration instead of retaining a stale provider/model literal.
     assert active_route_for(ProductTierLabel.PLUS) is None
     assert DEFAULT_B14_MODEL_ID == LOW_B14_MODEL_ID
+    # The separate B62 Free model is a product-local executable route;
+    # Plus/Pro/Max still follow the shared cross-product declaration.
     assert set(EXECUTABLE_B14_MODEL_IDS) == {
         route.model_id
         for tier in (ProductTierLabel.PLUS, ProductTierLabel.PRO, ProductTierLabel.MAX)
         for route in get_tier(tier).routes
         if route.status is ProductRouteStatus.EXECUTABLE
-    }
+    } | {"google/gemini-3.1-flash-lite"}
     # #3767: the frozen ``== frozenset()`` restatement below used to duplicate the
     # derivation above while encoding the empty-route state; the derivation is the
     # contract, so only it is asserted now.

@@ -23,7 +23,7 @@ from app.auth import (
 from app.config import ConfigError, Settings
 from app.history import D1HistoryStore, HistoryForbidden, UserProfile, PRODUCT_SCOPE_CHAT
 from app.main import create_app
-from app.model_policy import EXECUTABLE_B14_MODEL_IDS
+from app.model_policy import DEFAULT_B14_MODEL_ID, EXECUTABLE_B14_MODEL_IDS
 
 SESSION_SECRET = "phase9-session-secret-not-a-real-credential-000000"
 
@@ -355,7 +355,7 @@ async def test_failed_model_call_does_not_persist_and_image_base64_never_persist
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=fail_app), base_url="https://chat.example.test") as client:
         client.cookies.set(SESSION_COOKIE, create_session_token(failing_settings, profile.id), domain="chat.example.test", path="/")
         failed = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "실패"}], "mode": "auto"})
-    if EXECUTABLE_B14_MODEL_IDS:
+    if DEFAULT_B14_MODEL_ID in EXECUTABLE_B14_MODEL_IDS:
         assert failed.status_code == 502
         assert provider_calls == 1
     else:

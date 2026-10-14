@@ -210,6 +210,13 @@ async def api_chat_stream(request: Request):
         )
 
     uid = current_user_id(request) if auth_ready(request) else None
+    # Free is available to every signed-in member; it is not an anonymous
+    # platform-key proxy. Never read tier/upgrade claims from browser state.
+    if raw.get("tier") == "free" and uid is None and request.app.state.settings.runtime_mode != "mock":
+        return JSONResponse(
+            {"error": {"code": "unauthorized", "message": "?? AI? ????? ???? ???."}},
+            status_code=401,
+        )
     store: HistoryStore | None = request.app.state.history_store
     project_file_store: ProjectFileStore | None = request.app.state.project_file_store
     if browser_project_id is not None and uid is None:
@@ -451,6 +458,13 @@ async def api_chat(request: Request) -> JSONResponse:
             )
 
     uid = current_user_id(request) if auth_ready(request) else None
+    # Free is available to every signed-in member; it is not an anonymous
+    # platform-key proxy. Never read tier/upgrade claims from browser state.
+    if raw.get("tier") == "free" and uid is None and request.app.state.settings.runtime_mode != "mock":
+        return JSONResponse(
+            {"error": {"code": "unauthorized", "message": "?? AI? ????? ???? ???."}},
+            status_code=401,
+        )
     store: HistoryStore | None = request.app.state.history_store
     project_file_store: ProjectFileStore | None = request.app.state.project_file_store
     if browser_project_id is not None and uid is None:

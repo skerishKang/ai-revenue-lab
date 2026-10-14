@@ -8,6 +8,8 @@ import pytest
 from app import model_policy as model_policy_module
 from app.model_policy import (
     AUTO_B14_MODEL_ID,
+    FREE_B14_MODEL_ID,
+    PADIEM_FREE,
     DEFAULT_B14_MODEL_ID,
     DEFAULT_CHAT_PROFILE,
     EXECUTABLE_B14_MODEL_IDS,
@@ -90,11 +92,12 @@ def test_three_product_tier_identities_remain_known_while_all_routes_hold() -> N
         "high": HIGH_B14_MODEL_ID,
     }
     assert PRODUCT_TIER_NAMES == {
+        FREE_B14_MODEL_ID: PADIEM_FREE,
         LOW_B14_MODEL_ID: PADIEM_PLUS,
         MEDIUM_B14_MODEL_ID: PADIEM_PRO,
         HIGH_B14_MODEL_ID: PADIEM_MAX,
     }
-    assert EXECUTABLE_B14_MODEL_IDS == _declared_executable_model_ids()
+    assert EXECUTABLE_B14_MODEL_IDS == _declared_executable_model_ids() | {FREE_B14_MODEL_ID}
     assert DEFAULT_B14_MODEL_ID == LOW_B14_MODEL_ID
     assert policy.model_id == LOW_B14_MODEL_ID
     assert policy.profile == "low"
@@ -144,7 +147,7 @@ def test_poolside_alias_is_not_a_fallback() -> None:
     with pytest.raises(ModelPolicyError) as info:
         resolve_model_policy([{"role": "user", "content": "/poolside 질문"}])
     assert info.value.code == "unknown_model_alias"
-    assert EXECUTABLE_B14_MODEL_IDS == _declared_executable_model_ids()
+    assert EXECUTABLE_B14_MODEL_IDS == _declared_executable_model_ids() | {FREE_B14_MODEL_ID}
     assert model_policy_is_executable("poolside/laguna-s-2.1") is False
 
 
@@ -224,7 +227,7 @@ def test_a_declared_route_is_the_only_thing_that_makes_a_tier_executable(
     happened to hold when this module was written (#3767).
     """
 
-    assert EXECUTABLE_B14_MODEL_IDS == _declared_executable_model_ids()
+    assert EXECUTABLE_B14_MODEL_IDS == _declared_executable_model_ids() | {FREE_B14_MODEL_ID}
 
     synthetic_route = tier_routes.ProductTierRoute(
         route_id="test.plus.synthetic.v1",
@@ -266,7 +269,7 @@ def test_model_policy_source_contains_no_provider_route_literals() -> None:
 
 
 def test_product_profiles_follow_the_canonical_route_declaration() -> None:
-    assert EXECUTABLE_B14_MODEL_IDS == _declared_executable_model_ids()
+    assert EXECUTABLE_B14_MODEL_IDS == _declared_executable_model_ids() | {FREE_B14_MODEL_ID}
     assert DEFAULT_B14_MODEL_ID == PROFILE_MODEL_IDS[DEFAULT_CHAT_PROFILE]
     declared_plus = active_route_for(ProductTierLabel.PLUS)
     if declared_plus is None or not declared_plus.model_id:
@@ -350,3 +353,26 @@ def test_request_tier_context_remains_scoped_while_hold_fails_closed() -> None:
     with pytest.raises(ModelPolicyError) as info:
         resolve_request_model_policy(messages)
     assert info.value.code == "tier_unavailable"
+
+
+def test_b62_free_is_executable_for_any_signed_in_member_without_plan_upgrade() -> None:
+    """The Free model is a B62-local route, never an inferred Claw/Plus grant."""
+    messages = [{"role": "user", "content": "?? ??"}]
+    free = resolve_tier_policy(messages, "free")
+    assert free.model_id == FREE_B14_MODEL_ID == "google/gemini-3.1-flash-lite"
+    assert free.profile == "free"
+    assert model_policy_is_executable(free.model_id)
+    assert model_profile_is_assigned(free.model_id)
+    with request_tier_context("free"):
+        assert resolve_request_model_policy(messages).model_id == FREE_B14_MODEL_ID
+    # User's Plus/Pro/Max model assignments are not promoted by Free.
+    assert active_route_for(ProductTierLabel.PLUS) is None
+    assert active_route_for(ProductTierLabel.PRO) is None
+    assert active_route_for(ProductTierLabel.MAX) is None
+
+
+def test_free_exact_model_is_not_browser_overridable_or_a_fallback() -> None:
+    with pytest.raises(ModelPolicyError) as exc:
+        resolve_tier_policy([{"role": "user", "content": "x"}], "free/custom-model")
+    assert exc.value.code == "unknown_product_tier"
+    assert model_policy_is_executable("opencode-go/muse-spark-1.3-contributor") is False
