@@ -2,10 +2,19 @@ const PADIEM_CHAT_ORIGIN = "https://chat.padiem.net";
 const INTAKE_PATH = "/api/v1/quote/intake";
 const PADIEM_PREFIX = "/api/padiem";
 const MAX_PADIEM_BODY_BYTES = 32 * 1024;
+/* The authenticated dialogue route forwards the bounded same-view transcript,
+   not a single quote sentence. Its budget equals the Worker's browser transport
+   guard (6MB) so this relay can never reject a conversation the application
+   itself accepts. Every other bridge route keeps the 32KiB ceiling. */
+const MAX_RELAY_BODY_BYTES = new Map([["/api/b66/ai/chat", 6 * 1024 * 1024]]);
 const SAVED_SKILL_ROW = /^b66skill_[0-9a-f]{32}$/;
 const SKILL_CANDIDATE_ROW = /^b66cand_[0-9a-f]{32}$/;
 const B66_ASSET_ROW = /^b66asset_[0-9a-f]{32}$/;
 const B66_QUOTE_ROW = /^b66quote_[0-9a-f]{32}$/;
+/* #4657: the canonical conversation id the B66 dialogue rail reads and deletes. */
+const B66_DIALOGUE_ROW = /^chat_[a-f0-9]{32}$/;
+const MAX_DIALOGUE_QUERY_CHARS = 80;
+const MAX_DIALOGUE_LIST_LIMIT = 50;
 const MAX_QUOTE_HISTORY_LIMIT = 50;
 const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 const SESSION_COOKIE_NAME = "padiem_session";
@@ -53,6 +62,7 @@ function padiemTarget(url, method) {
     ["/api/padiem/auth/logout", ["POST", "/api/auth/logout"]],
     ["/api/padiem/b66/company-profile", ["GET", "/api/b66/company-profile"]],
     ["/api/padiem/b66/quote/interpret", ["POST", "/api/b66/quote/interpret"]],
+    ["/api/padiem/b66/ai/chat", ["POST", "/api/b66/ai/chat"]],
     ["/api/padiem/b66/quote/models", ["GET", "/api/b66/quote/models"]],
     ["/api/padiem/b66/inquiries", ["POST", "/api/b66/inquiries"]],
     ["/api/padiem/b66/admin/me", ["GET", "/api/b66/admin/me"]],
@@ -62,6 +72,36 @@ function padiemTarget(url, method) {
   if (exact.has(path)) {
     const [allowedMethod, upstreamPath] = exact.get(path);
     return method === allowedMethod ? upstreamPath : null;
+  }
+
+  /* #4657: the B66 customer dialogue rail. A bounded read-only list/search plus
+     one explicit delete. The Chat Worker derives owner and B66 product scope
+     from the session, so this relay only bounds the path, query and row id —
+     it never forwards an owner, tenant or scope of the caller's choosing. */
+  if (path === "/api/padiem/b66/ai/dialogues" && method === "GET") {
+    for (const key of url.searchParams.keys()) {
+      if (key !== "q" && key !== "limit") return null;
+    }
+    const q = url.searchParams.get("q") || "";
+    if (q.length > MAX_DIALOGUE_QUERY_CHARS || /[\u0000-\u001f]/.test(q)) return null;
+    const limitRaw = url.searchParams.get("limit");
+    const params = new URLSearchParams();
+    if (q) params.set("q", q);
+    if (limitRaw !== null) {
+      if (!/^[0-9]{1,3}$/.test(limitRaw)) return null;
+      const limit = Number(limitRaw);
+      if (!Number.isInteger(limit) || limit < 1 || limit > MAX_DIALOGUE_LIST_LIMIT) return null;
+      params.set("limit", String(limit));
+    }
+    const query = params.toString();
+    return "/api/b66/ai/dialogues" + (query ? "?" + query : "");
+  }
+
+  const dialoguePrefix = "/api/padiem/b66/ai/dialogues/";
+  if (path.startsWith(dialoguePrefix) && (method === "GET" || method === "DELETE")) {
+    const id = path.slice(dialoguePrefix.length);
+    if (!B66_DIALOGUE_ROW.test(id)) return null;
+    return "/api/b66/ai/dialogues/" + id;
   }
 
   if (path === "/api/padiem/b66/admin/members" && method === "GET") {
@@ -168,6 +208,16 @@ function padiemTarget(url, method) {
   if (path === "/api/padiem/b66/guided-draft" &&
       (method === "GET" || method === "PUT" || method === "DELETE")) {
     return "/api/b66/guided-draft";
+  }
+
+  if (path === "/api/padiem/b66/guided-conversations" && method === "GET") {
+    return "/api/b66/guided-conversations";
+  }
+  const guidedHistoryPrefix = "/api/padiem/b66/guided-conversations/";
+  if (path.startsWith(guidedHistoryPrefix) && (method === "GET" || method === "DELETE")) {
+    const id = path.slice(guidedHistoryPrefix.length);
+    if (!/^gdt_[a-f0-9]{32}$/.test(id)) return null;
+    return "/api/b66/guided-conversations/" + id;
   }
 
   if (path === "/api/padiem/b66/quotes" && (method === "GET" || method === "POST")) {
@@ -301,12 +351,13 @@ async function handlePadiemBridge(request, url, env) {
 
   let body;
   if (request.method !== "GET" && request.method !== "HEAD") {
+    const maxBodyBytes = MAX_RELAY_BODY_BYTES.get(upstreamPath) || MAX_PADIEM_BODY_BYTES;
     const length = Number(request.headers.get("content-length") || "0");
-    if (Number.isFinite(length) && length > MAX_PADIEM_BODY_BYTES) {
+    if (Number.isFinite(length) && length > maxBodyBytes) {
       return jsonError("request_too_large", 413);
     }
     body = await request.arrayBuffer();
-    if (body.byteLength > MAX_PADIEM_BODY_BYTES) {
+    if (body.byteLength > maxBodyBytes) {
       return jsonError("request_too_large", 413);
     }
   }

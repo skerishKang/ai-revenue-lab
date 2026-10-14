@@ -24,6 +24,14 @@ dev = [
   "pytest-asyncio>=0.23,<2",
   "workers-py>=1.16.2,<2",
   "workers-runtime-sdk>=1.6.3",
+  # The Calendar and Claw-automation contracts validate explicit timezone
+  # identifiers against the real IANA database (a shape-valid but nonexistent
+  # zone such as "Mars/Olympus" must be refused at write time). `zoneinfo`
+  # falls back to this package when the host ships no system tz database --
+  # which is the case on Windows and on the locked Worker dependency set. The
+  # runtime dependency set intentionally stays minimal, so the tz database is
+  # declared for the dev/test environment only.
+  "tzdata>=2025.1,<2028",
 ]
 
 [tool.pywrangler]
@@ -36,3 +44,6 @@ include = ["app*"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+#4070: Report the slowest pytest phases in CI without changing test selection.
+# The complete existing suite still runs; no hard-coded test count.
+addopts = "--durations=50 --durations-min=0.2"

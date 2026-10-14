@@ -73,6 +73,8 @@ jobs:
           python -m unittest discover -s .github/tests -p test_3989_b66_quote_css_scope.py -v
           python -m unittest discover -s .github/tests -p test_3989_claw_manual_css_scope.py -v
           python -m unittest discover -s .github/tests -p test_3989_claw_quote_css_scope.py -v
+          python -m unittest discover -s .github/tests -p test_4459_b62_ui_only_css_scope.py -v
+          python -m unittest discover -s .github/tests -p test_4459_b62_ui_mixed_scope.py -v
       # Source-only test; no browser install or new CI runner.
       - name: Regression check for bounded visual tail and fail-closed fan-in
         run: |
@@ -342,6 +344,8 @@ jobs:
         env:
           B62_QA_VISUAL_SCOPE: ${{ needs.plan.outputs.glass_visual_tail_required == 'false' && 'leaf' || 'full' }}
         run: uv run python ../../.github/scripts/b62_browser_visual_qa.py
+      - name: Claw canonical connection status chips browser QA
+        run: uv run python ../../.github/scripts/claw_connection_status_browser_qa.py
       # #3989 exact modified-only independent JS owner scope: these shared
       # visual/product-certification checks do not exercise the leaf modules.
       # Run them for any mixed/shared/unknown PR. Baseline desktop/mobile/Claw,

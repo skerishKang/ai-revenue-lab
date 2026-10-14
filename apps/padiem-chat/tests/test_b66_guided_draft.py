@@ -16,6 +16,7 @@ A = "usr_" + "a" * 32
 B = "usr_" + "b" * 32
 WA, WB = "owner:" + A, "owner:" + B
 MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "028_b66_guided_draft.sql"
+ARCHIVE_MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "045_b66_guided_transcript.sql"
 
 
 def sample():
@@ -67,6 +68,9 @@ class Prepared:
         self.db.commit()
         return {}
 
+    async def all(self):
+        return {"results": [dict(row) for row in self.db.execute(self.sql, self.args).fetchall()]}
+
 
 class SQLiteD1:
     def __init__(self, db):
@@ -83,6 +87,7 @@ def source():
     db.execute("CREATE TABLE users (id TEXT PRIMARY KEY)")
     db.executemany("INSERT INTO users(id) VALUES (?)", [(A,), (B,)])
     db.executescript(MIGRATION.read_text(encoding="utf-8"))
+    db.executescript(ARCHIVE_MIGRATION.read_text(encoding="utf-8"))
     yield db, D1GuidedDraftStore(SQLiteD1(db))
     db.close()
 
@@ -204,3 +209,76 @@ def test_same_user_foreign_workspace_is_unreadable_and_untouched(source):
     assert row is not None and row["state_json"] == saved
     assert own.put("/api/b66/guided-draft", json=sample()).status_code == 200
     assert db.execute("SELECT COUNT(*) FROM b66_guided_draft").fetchone()[0] == 2
+
+
+def test_guided_transcript_archived_after_completion_and_isolated(source):
+    """Real SQL, existing scoped route, no real customer or model records."""
+    db, store = source
+    own = _client(store)
+    foreign = _client(store, user=B)
+    marker = "gdt_" + "a" * 32
+    data = sample()
+    data["conversationId"] = marker
+    data["transcript"] = [
+        {"role": "assistant", "content": "무엇을 견적할까요?"},
+        {"role": "user", "content": "테스트 장비"},
+        {"role": "assistant", "content": "수량은 몇 개인가요?"},
+    ]
+    assert own.put("/api/b66/guided-draft", json=data).status_code == 200
+    assert own.get("/api/b66/guided-draft").json()["state"]["transcript"] == data["transcript"]
+    latest = own.get("/api/b66/guided-conversations")
+    assert latest.status_code == 200
+    assert latest.json()["conversations"][0]["conversation_id"] == marker
+    record = own.get("/api/b66/guided-conversations/" + marker)
+    assert record.status_code == 200
+    assert record.json()["conversation"]["messages"] == data["transcript"]
+    assert foreign.get("/api/b66/guided-conversations").json() == {"ok": True, "conversations": []}
+    assert foreign.get("/api/b66/guided-conversations/" + marker).status_code == 404
+    assert foreign.delete("/api/b66/guided-conversations/" + marker).status_code == 404
+    assert own.delete("/api/b66/guided-conversations/" + marker).status_code == 409
+    data["step"] = "moreItems"
+    data["transcript"].append({"role": "user", "content": "2개"})
+    assert own.put("/api/b66/guided-draft", json=data).status_code == 200
+    assert db.execute("SELECT COUNT(*) FROM b66_guided_transcript").fetchone()[0] == 1
+    assert own.delete("/api/b66/guided-draft").status_code == 200
+    assert own.get("/api/b66/guided-draft").json()["state"] is None
+    assert own.get("/api/b66/guided-conversations/" + marker).json()["conversation"]["messages"] == data["transcript"]
+    assert foreign.get("/api/b66/guided-conversations/" + marker).status_code == 404
+    assert own.delete("/api/b66/guided-conversations/" + marker).status_code == 200
+    assert own.get("/api/b66/guided-conversations/" + marker).status_code == 404
+
+
+def test_legacy_guided_slot_remains_readable_without_transcript(source):
+    own = _client(source[1])
+    data = sample()  # old saved slots did not include conversationId/transcript
+    assert own.put("/api/b66/guided-draft", json=data).status_code == 200
+    saved = own.get("/api/b66/guided-draft").json()["state"]
+    assert saved["draft"] == normalize_guided_state(data)["draft"]
+    assert saved["transcript"] == []
+    assert saved["conversationId"] == ""
+    assert own.get("/api/b66/guided-conversations").json()["conversations"] == []
+
+
+@pytest.mark.parametrize("bad", [
+    [{"role": "admin", "content": "x"}],
+    [{"role": "user", "content": "<script>"}] * 81,
+    [{"role": "assistant", "content": "x" * 9001}],
+    [{"role": "user", "content": ""}],
+    [{"role": "assistant", "content": "valid", "owner_id": B}],
+])
+def test_bounded_transcript_strict_no_unknown_fields(source, bad):
+    payload = sample()
+    payload.update(conversationId="gdt_" + "a" * 32, transcript=bad)
+    assert _client(source[1]).put("/api/b66/guided-draft", json=payload).status_code in (400, 413)
+
+
+def test_guided_transcript_id_scope_fails_closed(source):
+    own = _client(source[1])
+    guest = _client(source[1], signed_in=False)
+    assert guest.get("/api/b66/guided-conversations").status_code == 401
+    assert guest.get("/api/b66/guided-conversations/gdt_" + "a" * 32).status_code == 401
+    assert own.get("/api/b66/guided-conversations/not-an-id").status_code == 404
+    assert own.delete("/api/b66/guided-conversations/not-an-id").status_code == 404
+    payload = sample()
+    payload["transcript"] = [{"role": "user", "content": "test"}]
+    assert own.put("/api/b66/guided-draft", json=payload).status_code == 400

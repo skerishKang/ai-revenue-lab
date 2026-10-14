@@ -95,7 +95,6 @@
   const historyList = document.getElementById("historyList");
   const historyEmpty = document.getElementById("historyEmpty");
   const projectsNavButton = document.getElementById("projectsNavButton");
-  const filesNavButton = document.getElementById("filesNavButton");
   const projectsBadge = document.getElementById("projectsBadge");
   const projectsSection = document.getElementById("projectsSection");
   const projectsList = document.getElementById("projectsList");
@@ -218,13 +217,18 @@
     const clawNav = document.getElementById("clawNavButton");
     const tasksNav = document.getElementById("tasksNavButton");
     const alertsNav = document.getElementById("alertsNavButton");
+    const tasksEntry = document.getElementById("clawTasksButton");
+    const alertsEntry = document.getElementById("automationAlertsButton");
     const inboxKind = workspace && workspace.dataset.view === "inbox" ? workspace.dataset.inboxKind : "";
-    if (chatNav) chatNav.dataset.modeHint = uiT("nav-chat-hint");
+    // New Chat no longer shows a mode hint: the redundant label was removed
+    // when the sidebar actions row was rearranged (B62 split-search task).
     if (clawNav) clawNav.dataset.modeHint = uiT("nav-claw-hint");
     if (chatNav) chatNav.setAttribute("aria-current", state === "claw" ? "false" : "page");
     if (clawNav) clawNav.setAttribute("aria-current", state === "claw" && !inboxKind ? "page" : "false");
     if (tasksNav) tasksNav.setAttribute("aria-current", state === "claw" && inboxKind === "tasks" ? "page" : "false");
     if (alertsNav) alertsNav.setAttribute("aria-current", state === "claw" && inboxKind === "alerts" ? "page" : "false");
+    if (tasksEntry) tasksEntry.setAttribute("aria-current", state === "claw" && inboxKind === "tasks" ? "page" : "false");
+    if (alertsEntry) alertsEntry.setAttribute("aria-current", state === "claw" && inboxKind === "alerts" ? "page" : "false");
   }
   function showConversation({ preserveClaw = false } = {}) {
     emptyState.hidden = true;
@@ -293,7 +297,38 @@
     article.querySelector("[data-runtime-label]").textContent = skillTitle ? `${runtimeLabel} · ${skillTitle}` : runtimeLabel;
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
   }
-  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, actionLabel = uiT("retry")) {
+  // #3936/#3933: a model HOLD is a bounded refusal raised BEFORE dispatch, so it
+  // must not wear the generic "this run may already have started" state. Closed
+  // code→copy map only: a raw server, Engine or provider string is never shown.
+  const CLAW_BOUNDED_REFUSAL_COPY = Object.freeze({
+    tier_unavailable: Object.freeze({
+      message: "claw-general-model-unavailable",
+      hint: "claw-general-model-unavailable-note",
+    }),
+  });
+  // #3933: ONE lookup for every Claw failure surface. The composer lane, the live
+  // SSE lane and the manual-intake lane all resolve the same server code through
+  // this function, so a bounded refusal can never render two different sentences
+  // or drift into a second invented copy. `Object.hasOwn` only: an inherited or
+  // spoofed key never selects copy, and an unlisted code returns null so each
+  // caller keeps its own existing fallback.
+  function clawBoundedRefusalCopy(code) {
+    const entry = typeof code === "string" && Object.hasOwn(CLAW_BOUNDED_REFUSAL_COPY, code)
+      ? CLAW_BOUNDED_REFUSAL_COPY[code]
+      : null;
+    if (!entry) return null;
+    return Object.freeze({ message: uiT(entry.message), hint: uiT(entry.hint) });
+  }
+  function clawGeneralFailure(code) {
+    const bounded = clawBoundedRefusalCopy(code);
+    if (bounded) return bounded;
+    return Object.freeze({
+      message: window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang)
+        || uiT("claw-general-check-runs"),
+      hint: uiT("claw-general-check-runs"),
+    });
+  }
+  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, actionLabel = uiT("retry"), clawFailure = null) {
     const box = document.createElement("div");
     box.className = "error-box";
     const strong = document.createElement("strong");
@@ -311,6 +346,9 @@
     if (clawGeneralRequest) {
       const hint = document.createElement("p");
       hint.textContent = uiT("claw-general-check-runs");
+      // A provable pre-dispatch refusal has no run to check, so its next step is
+      // a different model rather than the existing run-history guidance.
+      if (clawFailure && clawFailure.hint) hint.textContent = clawFailure.hint;
       // #3935: navigation only. This button opens the existing owner-scoped
       // GET /api/claw/runs history and never replays the failed P01 POST.
       const openRuns = document.createElement("button");
@@ -323,6 +361,10 @@
         openClawWorkspace(); // refresh is handled by existing owner-scoped history UI
         const history = document.getElementById("clawRunHistory");
         if (!history || history.hidden) return;
+        // #4488 Phase A: the panel is progressive disclosure; open it so the
+        // navigation target is actually visible and focusable.
+        const historyDisclosure = document.getElementById("clawRunHistoryDisclosure");
+        if (historyDisclosure) historyDisclosure.open = true;
         history.scrollIntoView?.({ block: "start", behavior: "smooth" });
         history.querySelector?.("#clawRunHistoryRefresh")?.focus?.();
       });
@@ -343,20 +385,20 @@
   function revealErrorState(article) {
     article.scrollIntoView({ block: "center", behavior: "auto" });
   }
-  function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED) {
+  function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED, clawFailure = null) {
     const content = article.querySelector(".assistant-content");
     content.replaceChildren();
     article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
-    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest));
+    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest, undefined, clawFailure));
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
   }
-  function renderStreamError(article, message, retryMessages, retrySkill, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED) {
+  function renderStreamError(article, message, retryMessages, retrySkill, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED, clawFailure = null) {
     const content = article.querySelector(".assistant-content");
     const typing = content.querySelector(".typing");
     if (typing) typing.remove();
     article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
-    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest));
+    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, undefined, clawFailure));
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
   }
@@ -488,21 +530,10 @@
     historySection.hidden = true;
     historyEmpty.hidden = true;
   }
-  // #3232: the Web Claw sidebar Files entry reuses the existing project-scoped
-  // Files authority. It mirrors the Projects readiness (authenticated +
-  // projectsReady) AND the existing project-files flag consumed by
-  // fetchProjectFiles/loadProjectFilesForDialog/addProjectFile/deleteProjectFile
-  // and the projectFilesPanel visibility, and never introduces its own
-  // storage, routes, or parsers.
-  function filesNavAvailable() {
-    return Boolean(authState.authenticated && projectsReady && authState.project_files_ready);
-  }
-  function syncFilesNav() {
-    if (!filesNavButton) return;
-    const enabled = filesNavAvailable();
-    filesNavButton.disabled = !enabled;
-    filesNavButton.setAttribute("aria-disabled", enabled ? "false" : "true");
-  }
+  // #4489: the Library entry is owned by static/library.js. The old
+  // filesNavAvailable()/syncFilesNav() gate that also required project-file
+  // storage was removed, because Library navigation must work for a signed-in
+  // owner even when that storage is not provisioned.
   function clearProjectsUI() {
     projects = [];
     projectsReady = false;
@@ -511,10 +542,11 @@
     projectsList.replaceChildren();
     projectsSection.hidden = true;
     projectsEmpty.hidden = true;
-    projectsNavButton.disabled = true;
-    projectsNavButton.setAttribute("aria-disabled", "true");
-    syncFilesNav();
-    projectsBadge.textContent = authState.authenticated ? uiT("setup-needed") : uiT("login-after");
+    if (projectsNavButton) {
+      projectsNavButton.disabled = true;
+      projectsNavButton.setAttribute("aria-disabled", "true");
+    }
+    if (projectsBadge) projectsBadge.textContent = authState.authenticated ? uiT("setup-needed") : uiT("login-after");
     renderProjectState();
   }
   function renderProjectState() {
@@ -550,25 +582,28 @@
       row.append(button, manage);
       projectsList.appendChild(row);
     });
-    projectsBadge.textContent = projects.length ? String(projects.length) : uiT("create-new");
+    if (projectsBadge) projectsBadge.textContent = projects.length ? String(projects.length) : uiT("create-new");
   }
   async function loadProjects() {
     if (!authState.authenticated || !authState.history_ready) {
       clearProjectsUI();
       return false;
     }
-    projectsNavButton.disabled = true;
-    projectsNavButton.setAttribute("aria-disabled", "true");
-    projectsBadge.textContent = uiT("checking");
+    if (projectsNavButton) {
+      projectsNavButton.disabled = true;
+      projectsNavButton.setAttribute("aria-disabled", "true");
+    }
+    if (projectsBadge) projectsBadge.textContent = uiT("checking");
     try {
       const response = await fetch("/api/projects", { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || !Array.isArray(data.projects)) throw new Error("projects unavailable");
       projects = data.projects.filter((item) => item && typeof item.id === "string" && typeof item.name === "string");
       projectsReady = true;
-      projectsNavButton.disabled = false;
-      projectsNavButton.setAttribute("aria-disabled", "false");
-      syncFilesNav();
+      if (projectsNavButton) {
+        projectsNavButton.disabled = false;
+        projectsNavButton.setAttribute("aria-disabled", "false");
+      }
       if (activeProject) activeProject = projects.find((item) => item.id === activeProject.id) || activeProject;
       renderProjects();
       return true;
@@ -918,6 +953,10 @@
     authState = data && typeof data === "object" ? data : { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
     const ready = authState.ready === true;
     const authenticated = ready && authState.authenticated === true;
+    // #4488: a decision that began in a previous session generation must never
+    // repaint this one, and its still-pending promise must not block the new
+    // session from deciding. Auth loss and an account switch both invalidate.
+    noteClawApprovalSession(authenticated);
     // #3790 signed-in change notification contains no identity or credentials.
     if (typeof window.dispatchEvent === "function" && typeof CustomEvent === "function") {
       window.dispatchEvent(new CustomEvent("padiem:auth-state", { detail: { authenticated } }));
@@ -925,6 +964,10 @@
     const inboxNavButtons = [
       document.getElementById("tasksNavButton"),
       document.getElementById("alertsNavButton"),
+      // #4462: the sidebar entries are gone; the general-view task entry
+      // and the automation-view alerts entry reuse the same signed-in gate.
+      document.getElementById("clawTasksButton"),
+      document.getElementById("automationAlertsButton"),
       // #3237: Automation reuses the same signed-in gate. The server still
       // owns the canonical tenant, so an enabled button never implies the
       // caller may read any particular workspace.
@@ -949,6 +992,37 @@
       if (automation) automation.hidden = true;
       if (automationList) automationList.replaceChildren();
       if (runHistory) runHistory.hidden = true;
+      // #4488 Phase A follow-up: the approved-memory disclosure wrapper must
+      // not outlive the session either (run-history parity).
+      const approvedMemory = document.getElementById("clawApprovedMemory");
+      const approvedDisclosure = document.getElementById("clawApprovedDisclosure");
+      const approvedList = document.getElementById("clawApprovedList");
+      const approvedError = document.getElementById("clawApprovedError");
+      if (approvedMemory) approvedMemory.hidden = true;
+      if (approvedDisclosure) {
+        approvedDisclosure.hidden = true;
+        approvedDisclosure.open = false;
+      }
+      if (approvedList) approvedList.replaceChildren();
+      if (approvedError) {
+        approvedError.hidden = true;
+        approvedError.textContent = "";
+        approvedError.removeAttribute("data-state");
+      }
+      // #4488 re-login: the pending approval decision surface is the one
+      // session-scoped Claw control that carries a specific run_id together
+      // with its approve/deny actions, so it must not outlive the session
+      // either. Otherwise re-entering Claw after an auth loss would re-show a
+      // previous session's decision controls for a run this session never
+      // requested.
+      const approvalActions = document.getElementById("clawApprovalActions");
+      if (approvalActions) {
+        approvalActions.replaceChildren();
+        approvalActions.hidden = true;
+      }
+      // #4488 Phase A: the disclosure wrapper must not outlive the session.
+      const runHistoryDisclosure = document.getElementById("clawRunHistoryDisclosure");
+      if (runHistoryDisclosure) runHistoryDisclosure.hidden = true;
       if (runHistoryList) runHistoryList.replaceChildren();
       if (runHistoryError) {
         runHistoryError.hidden = true;
@@ -1009,7 +1083,7 @@
       accountName.textContent = name || uiT("signed-in");
       accountName.hidden = false;
       historySection.hidden = false;
-      projectsBadge.textContent = uiT("checking");
+      if (projectsBadge) projectsBadge.textContent = uiT("checking");
       return;
     }
 
@@ -1288,6 +1362,29 @@
     }
   }
 
+  // #4471: the sidebar conversation search opens a hit through this loader
+  // instead of a recent-list DOM row, so a hit outside the recent page still
+  // restores with the same auth guard, inFlight lock, project restore and the
+  // server-verified Claw set. Read-only handle: it grants no new authority.
+  window.PadiemChatConversationOpener = Object.freeze({
+    open: (conversationId) => openSavedConversation(conversationId),
+  });
+
+  // #4489: the Library opens a stored project file through that file's owning
+  // project in the existing Project dialog, so project-file permission, the
+  // files panel and every edit guard stay on the one canonical path. The project
+  // resolves only from the already-loaded owner list, so a foreign or stale id
+  // opens nothing. Read-only handle: it grants no new authority.
+  window.PadiemChatProjectOpener = Object.freeze({
+    open: (projectId) => {
+      if (!projectsReady || !authState.authenticated || inFlight) return false;
+      const project = projects.find((item) => item && item.id === projectId);
+      if (!project) return false;
+      openProjectDialog(project);
+      return true;
+    },
+  });
+
   // Hark's private web XLSX intake creates a separate trusted owner-owned
   // work conversation. This explicit navigation never guesses that it was the
   // currently displayed chat or fabricates an assistant answer/file READ grant.
@@ -1459,13 +1556,16 @@
             showVerifiedClawRecovery(verifiedClawRecovery.state());
             return true;
           }
+          const clawFailure = clawGeneralRequest
+            ? clawGeneralFailure(data && data.error ? data.error.code : "")
+            : null;
           const message = clawGeneralRequest
-            ? (window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang) || uiT("claw-general-check-runs"))
+            ? clawFailure.message
             : data && data.error && typeof data.error.message === "string"
               ? data.error.message : uiT("stream-continue-failed");
           if (!paragraph) throw chatTransport.errorFor(data, message);
           terminalError = true;
-          renderStreamError(article, message, outboundMessages, skill, contextSnapshot, clawGeneralRequest, lifecycleForError(chatTransport.errorFor(data, message)));
+          renderStreamError(article, message, outboundMessages, skill, contextSnapshot, clawGeneralRequest, lifecycleForError(chatTransport.errorFor(data, message)), clawFailure);
           return true;
         }
         if (clawGeneralRequest && verifiedClawRecovery && !verifiedClawRecovery.completionAllowed()) {
@@ -1510,9 +1610,9 @@
       }
       if (paragraph) {
         if (clawGeneralRequest) {
-          renderStreamError(article,
-            (window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang) || uiT("claw-general-check-runs")),
-            outboundMessages, skill, contextSnapshot, true);
+          const clawFailure = clawGeneralFailure(error && error.code);
+          renderStreamError(article, clawFailure.message,
+            outboundMessages, skill, contextSnapshot, true, MESSAGE_LIFECYCLE.FAILED, clawFailure);
         } else {
           // Preserve the original standalone Chat catch path and its existing
           // rich-stream/browser contract. Only Claw uses bounded safe copy.
@@ -1593,12 +1693,13 @@
         return false;
       }
       if (requestEpoch !== conversationEpoch) return false;
+      const clawFailure = clawGeneralRequest ? clawGeneralFailure(error && error.code) : null;
       renderError(
         article,
         clawGeneralRequest && error?.clawFailureDetail === "engine_provider_rate_limited"
           ? uiT("claw-general-provider-limit")
           : clawGeneralRequest
-            ? (window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang) || uiT("claw-general-check-runs"))
+            ? clawFailure.message
             : (error instanceof Error ? error.message : uiT("try-again")),
         outboundMessages,
         skill,
@@ -1606,6 +1707,7 @@
         contextSnapshot,
         clawGeneralRequest,
         lifecycleForError(error),
+        clawFailure,
       );
       return false;
     } finally {
@@ -1724,20 +1826,9 @@
     selectAttachment(file);
   });
   removeAttachment.addEventListener("click", clearAttachment);
-  projectsNavButton.addEventListener("click", () => {
+  if (projectsNavButton) projectsNavButton.addEventListener("click", () => {
     if (!projectsReady) return;
     if (projects.length === 0) openProjectDialog();
-    else projectsSection.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  });
-  // #3232: Files routes into the existing Project UI. With an active project it
-  // reopens that project's dialog (with its existing files panel); otherwise it
-  // reuses the existing Projects flow (create dialog when empty, section scroll
-  // when projects exist). No global file store is introduced: the handler stays
-  // fail-closed unless the project authority is ready.
-  if (filesNavButton) filesNavButton.addEventListener("click", () => {
-    if (!filesNavAvailable()) return;
-    if (activeProject) openProjectDialog(activeProject);
-    else if (projects.length === 0) openProjectDialog();
     else projectsSection.scrollIntoView({ block: "nearest", behavior: "smooth" });
   });
   projectCreateButton.addEventListener("click", () => openProjectDialog());
@@ -1944,6 +2035,34 @@
   let clawWaitRevealed = false;
   let clawWaitAnnouncedStage = 0;
   let clawApprovalInFlight = false;
+  // #4488 re-login: monotonic session generation for the pending-approval
+  // decision surface. A decision captures this value when it starts; losing
+  // the session (or signing in as a different account) bumps it, so a response
+  // that lands after the transition can neither repaint the signed-out surface
+  // nor resurrect a previous session's run state. Same shape as the
+  // run-history visibility epoch.
+  let clawApprovalEpoch = 0;
+  // Best-effort client-visible session identity. The browser holds no stable
+  // user id, so the account display name is the only switch signal available.
+  let clawApprovalSessionToken = "unset";
+
+  function invalidateClawApprovalSession() {
+    clawApprovalEpoch += 1;
+    // Release the shared single-flight flag so the next session can decide at
+    // all. The stale promise's own finally is epoch-guarded, so it can never
+    // release a newer session's busy state instead.
+    clawApprovalInFlight = false;
+  }
+
+  function noteClawApprovalSession(authenticated) {
+    const token = authenticated
+      ? "in:" + (typeof authState.user?.name === "string" ? authState.user.name.trim() : "")
+      : "out";
+    if (token !== clawApprovalSessionToken) {
+      clawApprovalSessionToken = token;
+      invalidateClawApprovalSession();
+    }
+  }
 
   const clawFallbackCopy = {
     "claw-result-badge": "Preview",
@@ -2041,15 +2160,15 @@
     if (manualView) {
       input.placeholder = localeOr("claw-request-placeholder", "Paste a business request you received by chat, SMS, or email.");
       input.setAttribute("aria-describedby", "clawStatus");
-      input.setAttribute("maxlength", "4000");
+      // Executable Claw task authority is validated by the server.
+      // No separate pilot-era 4,000-character browser ceiling.
     } else {
-      input.placeholder = isClaw
-        ? localeOr("claw-home-input", "Give Claw a task")
-        : localeOr("input", "Ask anything");
+      // Claw general and Chat share the same canonical composer placeholder.
+      input.placeholder = localeOr("input", "Ask anything");
       input.removeAttribute("aria-describedby");
       input.removeAttribute("aria-invalid");
       // General Claw and Chat accept provider-native prompts. The distinct
-      // manual intake still carries its own workflow-specific 4k field guard.
+      // manual executable tasks keep their separate tool authorization and bounds.
       input.removeAttribute("maxlength");
     }
   }
@@ -2432,6 +2551,14 @@
   function safeClawErrorMessage(data, response) {
     const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
     const status = response ? response.status : 0;
+    // #3933: a bounded pre-dispatch refusal is a product state, not a run that
+    // started and then failed. The manual-intake route returns this same
+    // `tier_unavailable` code before it ever dispatches, so resolving it through
+    // the shared bounded-refusal authority keeps this lane's wording identical to
+    // the composer and live SSE lanes instead of the generic "the run failed"
+    // sentence. An unlisted code falls through to the existing bounded copy.
+    const bounded = clawBoundedRefusalCopy(code);
+    if (bounded) return bounded.message;
     if (code === "invalid_content" || code === "content_too_short") return clawT("claw-error-empty");
     if (code === "content_too_long" || code === "body_too_large" || status === 413) return clawT("claw-error-too-large");
     if (code === "invalid_channel" || code === "invalid_action" || code === "unsupported_media_type" || code === "invalid_sender_hint") return clawT("claw-error-invalid");
@@ -3095,6 +3222,10 @@
   }
 
   if (automationNavButton) automationNavButton.addEventListener("click", openClawAutomation);
+  // #4462: automation-related run/completion/failure alerts stay reachable
+  // from the automation view after the standalone sidebar Alerts entry is gone.
+  const automationAlertsButton = document.getElementById("automationAlertsButton");
+  if (automationAlertsButton) automationAlertsButton.addEventListener("click", () => openClawInbox("alerts"));
   if (clawAutomationRetry) clawAutomationRetry.addEventListener("click", () => void loadClawAutomationRules());
 
   function openClawWorkspace() {
@@ -3106,7 +3237,7 @@
     clawWorkspace.dataset.view = "general";
     // The shared Chat first-use hero also introduces Claw when the
     // existing conversation has not started. Do not reset live messages.
-    if (messageList.hidden && !(messageList.children?.length > 0)) emptyState.hidden = false;
+    if (messageList.hidden && !messageList.hasChildNodes()) emptyState.hidden = false;
     delete clawWorkspace.dataset.inboxKind;
     if (clawInbox) clawInbox.hidden = true;
     if (clawAutomation) clawAutomation.hidden = true;
@@ -3699,6 +3830,14 @@
   if (clawManualEntryButton) clawManualEntryButton.addEventListener("click", openClawManual);
   if (tasksNavButton) tasksNavButton.addEventListener("click", () => openClawInbox("tasks"));
   if (alertsNavButton) alertsNavButton.addEventListener("click", () => openClawInbox("alerts"));
+  // #4462: background task history stays reachable from the general Claw
+  // entry bar (#3531 keeps the workspace canvas hidden in general/manual
+  // views, so the entry lives beside the manual-entry control instead).
+  // In-conversation run status/results are unchanged; this only preserves
+  // the out-of-conversation task list path (the calendar task links keep
+  // working as before).
+  const clawTasksButton = document.getElementById("clawTasksButton");
+  if (clawTasksButton) clawTasksButton.addEventListener("click", () => openClawInbox("tasks"));
   if (clawInboxRetry) clawInboxRetry.addEventListener("click", () => {
     const kind = clawWorkspace?.dataset.inboxKind;
     if (kind === "tasks" || kind === "alerts") loadClawInbox(kind);
@@ -3777,6 +3916,10 @@
     async function decide(decision) {
       if (clawApprovalInFlight) return;
       clawApprovalInFlight = true;
+      // The session generation this decision belongs to, captured before any
+      // await. An auth loss or account switch bumps the epoch, so a response
+      // that lands afterwards is stale and must not be presented.
+      const decisionEpoch = clawApprovalEpoch;
       setApprovalControlsBusy(container, true);
       status.hidden = false;
       status.dataset.state = "pending";
@@ -3788,6 +3931,9 @@
           body: JSON.stringify({ run_id: runId, decision }),
         });
         const data = await response.json().catch(() => null);
+        // A decision begun before the session changed is not a license to
+        // present its result to the new (or signed-out) session.
+        if (decisionEpoch !== clawApprovalEpoch || authState.authenticated !== true) return;
         if (!response.ok || !data || data.ok !== true || !data.result || typeof data.result.run_id !== "string") {
           throw new Error(approvalDecisionErrorMessage(data, response));
         }
@@ -3795,12 +3941,18 @@
         status.removeAttribute("data-state");
         if (typeof onResolved === "function") await onResolved(data.result);
       } catch (error) {
+        if (decisionEpoch !== clawApprovalEpoch || authState.authenticated !== true) return;
         status.hidden = false;
         status.dataset.state = "error";
         status.textContent = error instanceof Error ? error.message : clawT("claw-approval-error");
       } finally {
-        clawApprovalInFlight = false;
-        setApprovalControlsBusy(container, false);
+        // A stale decision must not release the busy state of a newer
+        // session's controls; the invalidation path already reset the shared
+        // single-flight flag.
+        if (decisionEpoch === clawApprovalEpoch) {
+          clawApprovalInFlight = false;
+          setApprovalControlsBusy(container, false);
+        }
       }
     }
 
@@ -3871,11 +4023,6 @@
         setClawStatus(clawT("claw-error-empty"), "error");
         setClawAreaState("error");
         input.focus();
-        return;
-      }
-      if (body.length > 4000) {
-        setClawStatus(clawT("claw-error-too-large"), "error");
-        setClawAreaState("error");
         return;
       }
       const channelValue = clawChannel?.value || "other";
@@ -3993,11 +4140,6 @@
       input.focus();
       return;
     }
-    if (body.length > 4000) {
-      setClawStatus(clawT("claw-error-too-large"), "error");
-      setClawAreaState("error");
-      return;
-    }
     clearClawRecovery();
     // Remember the exact bytes this dispatch carried, so a later ambiguous
     // failure can tell an identical re-send apart from new work.
@@ -4063,17 +4205,28 @@
         return;
       }
       const safeMsg = safeClawErrorMessage(data, response);
+      // #3933: a bounded pre-dispatch refusal also states, in the result area,
+      // that the request was never executed — the distinction the status line
+      // alone cannot carry. Resolved from the same authority as safeMsg.
+      const boundedFailure = clawBoundedRefusalCopy(
+        data && data.error && typeof data.error.code === "string" ? data.error.code : "",
+      );
       if (clawResultEmpty) {
         clawResultEmpty.hidden = false;
-        clawResultEmpty.textContent = safeMsg;
+        clawResultEmpty.textContent = boundedFailure
+          ? `${boundedFailure.message} ${boundedFailure.hint}`
+          : safeMsg;
       }
       setClawStatus(safeMsg, "error");
       setClawAreaState("error");
       // A 429 usage denial happens before dispatch, so its Retry-After may be
       // honored as a cooldown. Anything ambiguous gets guidance, never a retry.
+      // #3933: a bounded pre-dispatch refusal provably never dispatched, so it is
+      // excluded here as well as in the classifier — widening the ambiguous set
+      // later must not be able to latch a HOLD as an uncertain run.
       const retryAfter = response.status === 429 ? clawRetryAfterFromResponse(response) : null;
       if (retryAfter !== null) beginClawRetryCooldown(retryAfter);
-      else if (isAmbiguousClawFailure(data, response)) showClawAmbiguousRecoveryHint();
+      else if (!boundedFailure && isAmbiguousClawFailure(data, response)) showClawAmbiguousRecoveryHint();
     } catch {
       const fallback = clawT("claw-error-generic");
       if (clawResultEmpty) {
@@ -4111,6 +4264,9 @@
   });
   // Approved-memory review UI (#2340)
   const clawApprovedMemory = document.getElementById("clawApprovedMemory");
+  // #4488 Phase A: the approved-memory panel is progressive disclosure on the
+  // Claw entry; its <details> wrapper is hidden whenever the panel is.
+  const clawApprovedDisclosure = document.getElementById("clawApprovedDisclosure");
   const clawApprovedRefresh = document.getElementById("clawApprovedRefresh");
   const clawApprovedLoading = document.getElementById("clawApprovedLoading");
   const clawApprovedError = document.getElementById("clawApprovedError");
@@ -4380,6 +4536,9 @@
       if (clawApprovedLoading) clawApprovedLoading.hidden = true;
       if (clawApprovedList) clawApprovedList.hidden = false;
       renderApprovedMemoryDetail(data.memory);
+      // #4488 Phase A follow-up: a detail opened from inside the panel must be
+      // visible (run-history focus parity — open the disclosure first).
+      if (clawApprovedDisclosure) clawApprovedDisclosure.open = true;
     } catch (error) {
       if (clawApprovedLoading) clawApprovedLoading.hidden = true;
       setApprovedMemoryStatus(error instanceof Error ? error.message : clawT("claw-memory-error-generic"), "error");
@@ -4395,6 +4554,7 @@
       && shell.dataset.state === "claw"
       && clawWorkspace?.dataset.view !== "inbox";
     clawApprovedMemory.hidden = !show;
+    if (clawApprovedDisclosure) clawApprovedDisclosure.hidden = !show;
     if (show) loadApprovedMemoryList();
   }
 
@@ -4406,6 +4566,8 @@
   // Presentation only: the browser renders what GET /api/claw/runs already
   // exposes to the signed-in owner and never mints its own run/history truth.
   const clawRunHistory = document.getElementById("clawRunHistory");
+  // #4488 Phase A: recent runs are progressive disclosure on the Claw entry.
+  const clawRunHistoryDisclosure = document.getElementById("clawRunHistoryDisclosure");
   const clawRunHistoryRefresh = document.getElementById("clawRunHistoryRefresh");
   const clawRunHistoryExpand = document.getElementById("clawRunHistoryExpand");
   const clawRunHistoryLoading = document.getElementById("clawRunHistoryLoading");
@@ -4681,6 +4843,8 @@
       if (focusRunId && clawRunHistoryList) {
         const target = Array.from(clawRunHistoryList.children).find((card) => card.dataset && card.dataset.runId === focusRunId);
         if (target) {
+          // #4488 Phase A: open the disclosure before focusing a specific run.
+          if (clawRunHistoryDisclosure) clawRunHistoryDisclosure.open = true;
           target.setAttribute("tabindex", "-1");
           target.focus?.();
           target.scrollIntoView?.();
@@ -4712,6 +4876,7 @@
       && shell.dataset.state === "claw"
       && clawWorkspace?.dataset.view !== "inbox";
     clawRunHistory.hidden = !show;
+    if (clawRunHistoryDisclosure) clawRunHistoryDisclosure.hidden = !show;
     if (show) loadClawRunHistory();
     else {
       clawRunHistoryVisibilityEpoch += 1;

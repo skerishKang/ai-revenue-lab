@@ -13,7 +13,7 @@ import pytest
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.history import (
-    HISTORY_PREVIEW_SUFFIX, MAX_HISTORY_MESSAGE_CHARS,
+    PRODUCT_SCOPE_CHAT, HISTORY_PREVIEW_SUFFIX, MAX_HISTORY_MESSAGE_CHARS,
     MAX_MODEL_CONTEXT_BYTES, HistoryContextIncomplete,
 )
 from app.main import create_app
@@ -37,7 +37,8 @@ class OwnerHistory:
         self.full_reads = 0
         self.saved = []
 
-    async def get_conversation(self, user_id, conversation_id):
+    async def get_conversation(self, user_id, conversation_id, *, product_scope: str):
+        assert product_scope == PRODUCT_SCOPE_CHAT
         self.history_reads += 1
         if (user_id, conversation_id) != (OWNER, CONVERSATION_ID):
             return None
@@ -49,7 +50,8 @@ class OwnerHistory:
             ],
         }
 
-    async def get_conversation_model_context(self, user_id, conversation_id):
+    async def get_conversation_model_context(self, user_id, conversation_id, *, product_scope: str):
+        assert product_scope == PRODUCT_SCOPE_CHAT
         assert (user_id, conversation_id) == (OWNER, CONVERSATION_ID)
         self.full_reads += 1
         if self.incomplete:
@@ -63,7 +65,8 @@ class OwnerHistory:
             ],
         }
 
-    async def append_exchange(self, user_id, conversation_id, user_text, assistant_text, project_id=None):
+    async def append_exchange(self, user_id, conversation_id, user_text, assistant_text, project_id=None, *, product_scope: str):
+        assert product_scope == PRODUCT_SCOPE_CHAT
         self.saved.append((user_id, conversation_id, user_text, assistant_text, project_id))
         return CONVERSATION_ID
 

@@ -29,11 +29,18 @@
   <link rel="stylesheet" href="./b66-quote-runtime.css" />
   <link rel="stylesheet" href="./claw-local-handoff.css" />
   <link rel="stylesheet" href="./claw-device-manager.css" />
+  <link rel="stylesheet" href="./claw-device-guidance.css" />
+  <!-- #4139 PC enrollment consent surface (LOCAL1). Inert until a verified server port is published. -->
+  <link rel="stylesheet" href="./claw-pc-enrollment-consent.css" />
   <link rel="stylesheet" href="./padiem-chat-ui-polish.css" />
   <link rel="stylesheet" href="./calendar.css" />
+  <link rel="stylesheet" href="./library.css" />
   <link rel="stylesheet" href="./claw-task-hub.css" />
   <link rel="stylesheet" href="./padiem-shared-ui.css" />
   <link rel="stylesheet" href="./claw-focus-layout.css" />
+  <!-- #4643 shared Chat/Claw microphone entry. Inert until a server-granted
+       recognizer is registered and a signed-in session exists. -->
+  <link rel="stylesheet" href="./voice-composer.css" />
 </head>
 <body>
   <div class="app-shell" data-state="home">
@@ -41,23 +48,21 @@
       <div class="brand-row">
         <button class="mobile-close" id="mobileClose" data-locale-aria-label="close-menu" aria-label="메뉴 닫기">×</button>
         <a class="brand" href="./" data-locale-aria-label="home-aria" aria-label="Padiem Chat 홈"><span class="brand-mark" aria-hidden="true">P</span><span>Padiem Chat</span></a>
+        <button class="sidebar-collapse-button" id="sidebarCollapseButton" type="button" aria-controls="sidebar" aria-expanded="true" data-locale-aria-label="sidebar-collapse" aria-label="사이드바 접기" data-locale-title="sidebar-collapse" title="사이드바 접기"><span aria-hidden="true">⇤</span></button>
       </div>
-      <button class="new-chat" id="newChatButton" type="button"><span aria-hidden="true">＋</span><span data-locale-key="new-chat">새 채팅</span></button>
-      <button class="sidebar-collapse-button" id="sidebarCollapseButton" type="button" aria-controls="sidebar" aria-expanded="true" data-locale-aria-label="sidebar-collapse" aria-label="사이드바 접기" data-locale-title="sidebar-collapse" title="사이드바 접기"><span aria-hidden="true">⇤</span></button>
+      <div class="sidebar-actions-row">
+        <button class="new-chat" id="newChatButton" type="button"><span aria-hidden="true">＋</span><span data-locale-key="new-chat">새 채팅</span></button>
+        <button class="side-item sidebar-search-item" id="sidebarSearchButton" type="button" disabled aria-disabled="true" data-locale-aria-label="search-conversation-hold" aria-label="대화 검색 준비 중" data-locale-title="search-conversation-hold" title="대화 검색 준비 중"><span class="side-icon" aria-hidden="true">⌕</span><span data-locale-key="search">검색</span></button>
+      </div>
       <nav class="side-nav" data-locale-aria-label="chat-menu" aria-label="채팅 메뉴">
-        <button class="side-item" id="sidebarSearchButton" type="button" disabled aria-disabled="true" aria-pressed="false" hidden><span class="side-icon" aria-hidden="true">⌕</span><span data-locale-key="search">검색</span></button>
-        <button class="side-item" id="projectsNavButton" type="button" disabled aria-disabled="true" hidden><span class="side-icon" aria-hidden="true">▦</span><span data-locale-key="projects">프로젝트</span><span class="mini-badge" id="projectsBadge">확인 중</span></button>
-        <button class="side-item" id="outputsNavButton" type="button" disabled aria-disabled="true" hidden><span class="side-icon" aria-hidden="true">▤</span><span data-locale-key="saved">저장한 답변</span><span class="mini-badge" id="outputsBadge">로그인 후</span></button>
         <button class="side-item" id="clawNavButton" type="button"><span class="side-icon" aria-hidden="true">◆</span><span data-locale-key="nav-claw">Claw</span></button>
         <button class="side-item" id="calendarNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">▨</span><span data-locale-key="nav-calendar">캘린더</span></button>
         <button class="side-item" id="connectorsNavButton" type="button" aria-haspopup="dialog" aria-controls="connectorsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">Connectors</span></button>
         <button class="side-item" id="skillsNavButton" type="button" disabled aria-disabled="true" aria-haspopup="dialog" aria-controls="skillsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">✦</span><span data-locale-key="nav-skills">Skills</span></button>
       </nav>
       <nav class="side-nav" id="workspaceNav" data-locale-aria-label="workspace-menu" aria-label="워크스페이스 메뉴">
-        <button class="side-item" id="filesNavButton" type="button" disabled aria-disabled="true"><span class="side-icon" aria-hidden="true">▤</span><span data-locale-key="nav-files">Files</span></button>
+        <button class="side-item" id="filesNavButton" type="button" disabled aria-disabled="true" aria-current="false"><span class="side-icon" aria-hidden="true">▤</span><span data-locale-key="nav-files">라이브러리</span></button>
         <button class="side-item" id="automationNavButton" type="button" disabled aria-disabled="true" aria-current="false"><span class="side-icon" aria-hidden="true">◷</span><span data-locale-key="nav-automation">Automation</span></button>
-        <button class="side-item" id="alertsNavButton" type="button" disabled aria-disabled="true"><span class="side-icon" aria-hidden="true">◐</span><span data-locale-key="nav-alerts">Alerts</span></button>
-        <button class="side-item" id="tasksNavButton" type="button" disabled aria-disabled="true"><span class="side-icon" aria-hidden="true">☑</span><span data-locale-key="nav-tasks">Tasks</span></button>
       </nav>
       <section class="recent-section project-section" id="projectsSection" aria-labelledby="projectsTitle" hidden>
         <div class="section-heading-row">
@@ -71,11 +76,6 @@
         <h2 id="historyTitle" data-locale-key="history-title">최근 대화</h2>
         <div id="historyList"></div>
         <p class="history-empty" id="historyEmpty" data-locale-key="history-empty" hidden>저장된 대화가 없습니다.</p>
-      </section>
-      <section class="recent-section" id="outputsSection" aria-labelledby="outputsTitle" hidden>
-        <h2 id="outputsTitle" data-locale-key="saved">저장한 답변</h2>
-        <div id="outputsList"></div>
-        <p class="history-empty" id="outputsEmpty" data-locale-key="outputs-empty" hidden>저장한 답변이 없습니다.</p>
       </section>
       <div class="sidebar-footer"><span class="preview-dot" aria-hidden="true"></span><span data-locale-key="footer">편하게 질문해 보세요</span></div>
       <div class="sidebar-bottom" data-locale-aria-label="account-settings" aria-label="서비스, 계정 및 설정">
@@ -181,9 +181,9 @@
           <button id="connectorsRetry" class="connector-retry" type="button" data-locale-key="retry" hidden>다시 시도</button>
         </div>
         <div class="capability-grid" data-locale-aria-label="connectors-grid-aria" aria-label="커넥터 지원 및 워크스페이스 연결 상태">
-          <div class="capability-card" id="connectorComputerCard" tabindex="-1" data-connector-info="computer" data-connector-status="preparing"><strong data-locale-key="claw-home-computer">컴퓨터 연결하기</strong><span class="capability-soon" data-locale-key="claw-home-computer-setup">Windows 앱 연결 준비 중 · 설치 및 서버 연결 확인이 필요합니다.</span><span class="capability-workspace" role="status" aria-live="polite" id="clawComputerLiveStatus" hidden></span><button type="button" class="connector-retry" id="clawComputerDeviceStatusButton" data-locale-key="claw-home-device-status">연결 상태 확인</button></div>
+          <div class="capability-card" id="connectorComputerCard" tabindex="-1" data-connector="computer" data-connector-status="preparing"><strong data-locale-key="claw-home-computer">컴퓨터 연결하기</strong><span class="capability-soon" data-locale-key="claw-home-computer-setup">Windows 앱 연결 준비 중 · 설치 및 서버 연결 확인이 필요합니다.</span><span class="capability-workspace" role="status" aria-live="polite" id="clawComputerLiveStatus" hidden></span><button type="button" class="connector-retry" id="clawComputerDeviceStatusButton" data-locale-key="claw-home-device-status">연결 상태 확인</button></div>
           <div class="capability-card" data-connector="google-drive" data-connector-id="connector:google:drive@1" data-connector-status="loading"><strong>Google Drive</strong><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">지원 상태 확인 중…</span><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">워크스페이스 상태 확인 중…</span><button class="connector-retry connector-connect" type="button" data-google-connector-connect="google-drive" data-google-connect-endpoint="/api/connectors/google/ticket" data-locale-key="connectors-connect-drive" hidden>Google Drive 연결</button></div>
-          <div class="capability-card" id="connectorGithubCard" tabindex="-1" data-connector-info="github" data-connector-status="preparing"><strong>GitHub</strong><span class="capability-soon" data-locale-key="claw-home-github-setup">GitHub 직접 연결은 준비 중입니다.</span></div>
+          <div class="capability-card" id="connectorGithubCard" tabindex="-1" data-connector="github" data-connector-status="preparing"><strong>GitHub</strong><span class="capability-soon" data-locale-key="claw-home-github-setup">GitHub 직접 연결은 준비 중입니다.</span></div>
           <div class="capability-card" data-connector="gmail" data-connector-id="connector:google:gmail@1" data-connector-status="loading"><strong>Gmail</strong><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">지원 상태 확인 중…</span><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">워크스페이스 상태 확인 중…</span></div>
           <div class="capability-card" data-connector="telegram" data-connector-id="connector:telegram:bot@1" data-connector-status="loading"><strong>Telegram</strong><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">지원 상태 확인 중…</span><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">워크스페이스 상태 확인 중…</span></div>
           <div class="capability-card" data-connector="slack" data-connector-id="connector:slack:workspace@1" data-connector-status="loading"><strong>Slack</strong><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">지원 상태 확인 중…</span><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">워크스페이스 상태 확인 중…</span></div>
@@ -240,6 +240,7 @@
               <h3 id="clawAutomationTitle" data-locale-key="claw-automation-title">자동화 규칙</h3>
             </div>
             <button class="claw-inbox-retry" id="clawAutomationRetry" type="button" data-locale-key="retry">다시 시도</button>
+            <button class="claw-inbox-retry" id="automationAlertsButton" type="button" data-locale-key="automation-alerts-open">알림함 보기</button>
           </div>
           <p class="claw-inbox-help" id="clawAutomationHelp" data-locale-key="claw-automation-help">현재 워크스페이스의 자동화 규칙을 표시합니다. 생성은 워크스페이스 소유자만 할 수 있고 수정·삭제는 아직 지원하지 않습니다.</p>
           <p class="claw-inbox-help" id="clawAutomationSchedulerNote" data-locale-key="claw-automation-scheduler-note">‘규칙 설정’은 규칙에 저장된 설정값이며, 자동 실행이 이미 활성화되어 있다는 뜻이 아닙니다.</p>
@@ -481,13 +482,36 @@
           <div class="calendar-list" id="calendarList" role="list" hidden></div>
         </div>
       </section>
+      <!-- #4489: Library is its own destination, driven by static/library.js.
+           All copy is set by that module so it follows the document language. -->
+      <section class="library-view" id="libraryView" aria-labelledby="libraryTitle" hidden>
+        <header class="library-header">
+          <div class="library-heading">
+            <p class="library-kicker" id="libraryKicker"></p>
+            <h2 id="libraryTitle"></h2>
+            <p class="library-subtitle" id="librarySubtitle"></p>
+          </div>
+          <button class="library-close" id="libraryCloseButton" type="button"></button>
+        </header>
+        <div class="library-tabs" role="tablist">
+          <button class="library-tab" id="libraryFilesTab" type="button" role="tab" aria-selected="true" aria-controls="libraryFilesPanel"></button>
+          <button class="library-tab" id="libraryImagesTab" type="button" role="tab" aria-selected="false" aria-controls="libraryImagesPanel"></button>
+        </div>
+        <p class="library-note" id="libraryNote" role="status" aria-live="polite" hidden></p>
+        <div class="library-panel" id="libraryFilesPanel" role="tabpanel" tabindex="-1" aria-labelledby="libraryFilesTab">
+          <div class="library-list" id="libraryFileList" role="list"></div>
+        </div>
+        <div class="library-panel" id="libraryImagesPanel" role="tabpanel" tabindex="-1" aria-labelledby="libraryImagesTab" hidden>
+          <div class="library-list" id="libraryImageList" role="list"></div>
+        </div>
+      </section>
       <section class="conversation" aria-live="polite">
         <div class="empty-state" id="emptyState">
-          <p class="eyebrow">PADIEM AI</p>
+          <p class="eyebrow"><span class="chat-hero-eyebrow">PADIEM AI</span><span class="claw-hero-eyebrow">PADIEM CLAW</span></p>
           <h1>
             <span class="chat-hero-line" data-locale-key="hello">안녕하세요.</span><br class="chat-hero-line" />
             <span class="chat-hero-line" data-locale-key="ask">무엇을 도와드릴까요?</span>
-            <span class="claw-hero-line" data-locale-key="claw-home-intro">직접 작업하는 파디엠 클로입니다.</span><br class="claw-hero-line" />
+            <span class="claw-hero-line" data-locale-key="claw-home-intro">작업하는 클로입니다.</span><br class="claw-hero-line" />
             <span class="claw-hero-line" data-locale-key="claw-home-question">어디에서 작업할까요?</span>
           </h1>
           <p class="empty-copy chat-hero-line" data-locale-key="copy">궁금한 것을 평소 말하듯 편하게 물어보세요.</p>
@@ -497,17 +521,33 @@
             <button type="button" class="starter" id="documentStarterButton"><span class="starter-icon" aria-hidden="true">▤</span><span><strong>문서와 대화</strong><small>지원 문서 형식</small></span></button>
             <button type="button" class="starter" id="writingStarterButton" data-prompt="목적과 읽는 사람에 맞는 이메일이나 문장 초안을 작성해줘" data-skill="auto"><span class="starter-icon" aria-hidden="true">✎</span><span><strong data-locale-key="writing-starter-title">글쓰기 도움</strong><small data-locale-key="writing-starter-copy">메일 · 문장 · 초안</small></span></button>
             <button type="button" class="starter" id="webSearchStarterButton" disabled aria-disabled="true" aria-pressed="false" hidden><span class="starter-icon" aria-hidden="true">⌕</span><span><strong data-locale-key="web-starter-title">웹에서 찾아줘</strong><small data-locale-key="web-starter-copy">웹 검색 · 준비 중</small></span></button>
-            <!-- Shared Chat starter components; only labels and destinations vary in Claw. -->
-            <button type="button" class="starter claw-workspace-starter" id="clawComputerWorkspace"><span class="starter-icon" aria-hidden="true">▣</span><span><strong data-locale-key="claw-home-computer">컴퓨터 연결하기</strong><small data-locale-key="claw-home-computer-copy">내 컴퓨터에서 직접 작업하기</small></span></button>
-            <button type="button" class="starter claw-workspace-starter" id="clawDriveWorkspace"><span class="starter-icon" aria-hidden="true">▤</span><span><strong data-locale-key="claw-home-drive">구글 드라이브</strong><small data-locale-key="claw-home-drive-copy">클라우드 파일로 작업하기</small></span></button>
-            <button type="button" class="starter claw-workspace-starter" id="clawGithubWorkspace"><span class="starter-icon" aria-hidden="true">⌘</span><span><strong data-locale-key="claw-home-github">GitHub</strong><small data-locale-key="claw-home-github-copy">코드와 프로젝트 작업하기</small></span></button>
-            <button type="button" class="starter claw-workspace-starter" id="clawWebWorkspace"><span class="starter-icon" aria-hidden="true">◎</span><span><strong data-locale-key="claw-home-web">웹에서 하기</strong><small data-locale-key="claw-home-web-copy">웹에서 바로 작업하기</small></span></button>
+            <!-- Shared Chat starter button; Claw only supplies labels and truthful connection state. -->
+            <div class="claw-home-card" data-claw-card="computer">
+              <button type="button" class="starter claw-workspace-starter" id="clawComputerWorkspace"><span class="starter-icon" aria-hidden="true"><svg class="claw-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg></span><span><strong data-locale-key="claw-home-computer">컴퓨터 연결하기</strong><small data-locale-key="claw-home-computer-copy">내 컴퓨터에서 직접 작업하기</small></span></button>
+              <button type="button" class="claw-connection-toggle" data-claw-connection="pc" data-connection-state="unknown" aria-label="컴퓨터 연결하기 연결 상태 확인 불가">확인 불가</button>
+            </div>
+            <div class="claw-home-card" data-claw-card="drive">
+              <button type="button" class="starter claw-workspace-starter" id="clawDriveWorkspace"><span class="starter-icon" aria-hidden="true"><svg class="claw-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3h6l8 14-3 5h-6L5 8z"></path><path d="M8 3 1 17l3 5h15M5 8l8 14M1 17h21"></path></svg></span><span><strong data-locale-key="claw-home-drive">구글 드라이브</strong><small data-locale-key="claw-home-drive-copy">클라우드 파일로 작업하기</small></span></button>
+              <button type="button" class="claw-connection-toggle" data-claw-connection="drive" data-connection-state="unknown" aria-label="구글 드라이브 연결 상태 확인 불가">확인 불가</button>
+            </div>
+            <div class="claw-home-card" data-claw-card="github">
+              <button type="button" class="starter claw-workspace-starter" id="clawGithubWorkspace"><span class="starter-icon" aria-hidden="true"><svg class="claw-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 19c-4 1-4-2-6-2m12 4v-3.4c0-1 .1-1.4-.5-2a6.2 6.2 0 0 0 1.8-4.4 6 6 0 0 0-1.5-4.1c0-1 .1-2-.3-3-1.5 0-2.5 1-3 1.5a11 11 0 0 0-6 0c-.5-.5-1.5-1.5-3-1.5-.4 1-.3 2-.3 3A6 6 0 0 0 1 11.2a6.2 6.2 0 0 0 1.8 4.4c-.6.6-.5 1-.5 2V21" transform="translate(3 0) scale(.83 1)"></path></svg></span><span><strong data-locale-key="claw-home-github">GitHub</strong><small data-locale-key="claw-home-github-copy">코드·프로젝트 작업하기</small></span></button>
+              <button type="button" class="claw-connection-toggle" data-claw-connection="github" data-connection-state="unknown" aria-label="GitHub 연결 상태 확인 불가">확인 불가</button>
+            </div>
+            <div class="claw-home-card" data-claw-card="web">
+              <button type="button" class="starter claw-workspace-starter" id="clawWebWorkspace"><span class="starter-icon" aria-hidden="true"><svg class="claw-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"></path></svg></span><span><strong data-locale-key="claw-home-web">웹에서 하기</strong><small data-locale-key="claw-home-web-copy">웹에서 바로 작업하기</small></span></button>
+            </div>
           </div>
+          <button type="button" class="claw-history-shortcut" id="clawPreviousConversations"
+                  aria-controls="historySection" data-locale-key="claw-home-previous-conversations">이전 대화 보기 →</button>
+          <p class="claw-history-feedback" id="clawPreviousConversationsFeedback" role="status" hidden></p>
+          <p class="claw-connection-feedback" id="clawConnectionFeedback" role="status" hidden></p>
         </div>
         <section class="claw-task-hub" id="clawTaskHub" aria-labelledby="clawTaskHubTitle">
           <div class="claw-task-hub-heading">
-            <p class="claw-workspace-kicker">PADIEM CLAW · WEB</p>
+            <p class="claw-workspace-kicker">PADIEM CLAW · WEB <span class="claw-agent-badge" data-locale-key="claw-agent-badge">AI 에이전트</span></p>
             <h2 id="clawTaskHubTitle" data-locale-key="claw-focus-heading">무슨 일을 도와드릴까요?</h2>
+            <p class="claw-agent-line" data-locale-key="claw-agent-line">AI와 대화하고, 파일 작성·수정 등 실제 작업까지 맡길 수 있습니다.</p>
             <p data-locale-key="claw-focus-description">아래 예시를 선택하거나 입력창에 직접 요청하세요. 파일 읽기·수정은 별도 승인이 필요합니다.</p>
           </div>
           <div class="claw-task-hub-grid">
@@ -623,6 +663,8 @@
           </article>
         </section>
         <section class="claw-memory-review" id="clawMemoryReview" data-locale-aria-label="claw-memory-review-aria" aria-label="메모리 저장 검토" hidden></section>
+        <details class="claw-disclosure" id="clawApprovedDisclosure" hidden>
+          <summary class="claw-disclosure-summary"><span class="claw-disclosure-caret" aria-hidden="true">▸</span><span class="claw-disclosure-label" data-locale-key="claw-approved-title">승인된 메모리</span></summary>
         <section class="claw-approved-memory" id="clawApprovedMemory" aria-labelledby="clawApprovedMemoryTitle" hidden>
           <header class="claw-approved-memory-header">
             <div class="claw-workspace-identity">
@@ -637,6 +679,9 @@
           <div class="claw-approved-list" id="clawApprovedList" hidden></div>
           <p class="claw-approved-empty" id="clawApprovedEmpty" data-locale-key="claw-approved-empty" hidden>승인된 메모리가 없습니다.</p>
         </section>
+        </details>
+        <details class="claw-disclosure" id="clawRunHistoryDisclosure" hidden>
+          <summary class="claw-disclosure-summary"><span class="claw-disclosure-caret" aria-hidden="true">▸</span><span class="claw-disclosure-label" data-locale-key="claw-runs-title">최근 실행 기록</span></summary>
         <section class="claw-run-history" id="clawRunHistory" aria-labelledby="clawRunHistoryTitle" hidden>
           <header class="claw-run-history-header">
             <div class="claw-workspace-identity">
@@ -652,6 +697,7 @@
           <button type="button" class="claw-refresh-button claw-run-history-expand" id="clawRunHistoryExpand" data-locale-key="claw-runs-show-up-to-30" hidden>이전 실행 기록 더 보기 (최대 30건)</button>
           <p class="claw-run-history-empty" id="clawRunHistoryEmpty" data-locale-key="claw-runs-empty" hidden>최근 실행 기록이 없습니다.</p>
         </section>
+        </details>
         <section class="claw-quote-compare" id="clawQuoteCompare" aria-labelledby="clawQuoteCompareTitle" hidden>
           <header class="claw-run-history-header">
             <div class="claw-workspace-identity">
@@ -716,6 +762,7 @@
         </div>
         <div class="claw-entry-bar" id="clawManualEntryBar" hidden>
           <button type="button" class="claw-inbox-retry" id="clawManualEntryButton" data-locale-key="claw-manual-entry">문서 초안 작성</button>
+          <button type="button" class="claw-inbox-retry" id="clawTasksButton" data-locale-key="claw-tasks-open">작업함</button>
         </div>
         <form class="claw-mode-bar" id="clawManualForm" data-locale-aria-label="claw-form-aria" aria-label="수동 인입 양식" hidden>
           <div class="claw-mode-bar-row">
@@ -911,10 +958,17 @@
   <script src="./claw-pdf-preview.js"></script>
   <script src="./calendar.js"></script>
   <script src="./claw-conversation-artifact-context.js"></script>
+  <script src="./voice-stt-input.js"></script>
+  <script src="./voice-composer.js"></script>
   <script src="./app.js"></script>
   <script src="./claw-home-choices.js"></script>
+  <script src="./claw-connection-chips.js"></script>
   <script src="./b66-quote-runtime.js"></script>
   <script src="./product-capabilities.js"></script>
+  <script src="./conversation-search.js" defer></script>
+  <!-- #4489: loads after app.js because it opens a file through the canonical
+       project seam app.js publishes. -->
+  <script src="./library.js" defer></script>
   <script src="./a11y.js"></script>
   <script src="./search-sources.js"></script>
   <script src="./rich-response.js"></script>
@@ -926,6 +980,13 @@
   <script src="./claw-web-xlsx-sources.js" defer></script>
   <!-- #4139 read-only, opt-in multi-PC selection UI; unavailable until server is configured. -->
   <script src="./claw-device-manager.js"></script>
+  <!-- #4139 pre-connection guidance, state legend and recovery UX. Zero-network,
+       presentation-only: never reads the directory endpoint or a raw payload. -->
+  <script src="./claw-device-guidance.js"></script>
+  <!-- #4139 PC enrollment consent surface (LOCAL1): explicit opt-in, default OFF.
+       Reaches the network only through a verified server port; the ready state
+       never sends a request and this is not an execution-approval surface. -->
+  <script src="./claw-pc-enrollment-consent.js"></script>
   <!-- #3094: guarded handoff adapter MUST load last, after app.js installed
        the #3084 projection seam. Never weaken the final-script contract. -->
   <script src="./claw-local-adapter.js"></script>

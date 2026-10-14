@@ -169,7 +169,9 @@ def test_ambiguous_failures_get_guidance_instead_of_a_retry_affordance() -> None
     app = _app_source()
     assert "function isAmbiguousClawFailure(data, response)" in app
     assert 'return status === 502 || code === "engine_execution_failed";' in app
-    assert "else if (isAmbiguousClawFailure(data, response)) showClawAmbiguousRecoveryHint();" in app
+    # #3933: a bounded pre-dispatch refusal (model HOLD) is a proven non-dispatch,
+    # so it is excluded at the call site as well as in the classifier above.
+    assert "else if (!boundedFailure && isAmbiguousClawFailure(data, response)) showClawAmbiguousRecoveryHint();" in app
     assert "showClawAmbiguousRecoveryHint();" in app.split("} catch {", 1)[1]
     # Closed allowlist: no other bounded failure on this route may claim that a
     # dispatch possibly happened. Pre-dispatch denials and post-run persistence
@@ -301,6 +303,7 @@ function makeEl(tag) {
   el.prepend = (...cs) => cs.forEach((c) => { el.children.unshift(c); c.parentNode = el; });
   el.append = (...cs) => cs.forEach((c) => el.appendChild(c));
   el.replaceChildren = (...cs) => { el.children = []; cs.forEach((c) => el.appendChild(c)); };
+  el.hasChildNodes = () => el.children.length > 0;
   el.remove = () => { if (el.parentNode) el.parentNode.children = el.parentNode.children.filter((c) => c !== el); };
   el.addEventListener = (t, fn) => { (el.listeners[t] = el.listeners[t] || []).push(fn); };
   el.querySelector = (sel) => el.children.find((c) => c.className && c.className.includes(sel.replace(/^\./, ""))) || null;
@@ -427,6 +430,10 @@ const COPY = {
     "claw-status-execute-running": "실행 중...",
     "claw-status-execute-success": "실행이 완료되었습니다.",
     "claw-error-generic": "실행 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
+    // #3933: the bounded pre-dispatch model-unavailable copy, mirrored from
+    // static/locale.js. Reused verbatim — this slice invents no second wording.
+    "claw-general-model-unavailable": "선택한 AI 모델을 현재 사용할 수 없습니다. 다른 모델을 선택해 주세요.",
+    "claw-general-model-unavailable-note": "이 요청은 실행되지 않았습니다. 자동으로 다시 실행하지 않으며, 다른 모델을 선택해 새로 요청하면 그 결과가 표시됩니다.",
   },
   en: {
     "claw-btn-retry": "Try again",
@@ -439,6 +446,9 @@ const COPY = {
     "claw-status-execute-running": "Running...",
     "claw-status-execute-success": "Done.",
     "claw-error-generic": "Something went wrong. Please try again shortly.",
+    // #3933: English counterpart of the bounded model-unavailable copy.
+    "claw-general-model-unavailable": "The selected AI model isn't available right now. Please choose another model.",
+    "claw-general-model-unavailable-note": "This request was not executed and is never retried automatically. Choose another model and send a new request.",
   },
 };
 function localeText(key, variables) {
@@ -776,6 +786,58 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
     byId.clawStatus.textContent === COPY.ko["claw-error-auth-unavailable"];
   if (!checks.PRE_DISPATCH_503_IS_NOT_AMBIGUOUS) fail("PRE_DISPATCH_503_IS_NOT_AMBIGUOUS: " + byId.clawStatus.textContent);
 
+  // 14b) #3933: the same pre-dispatch 503 family also carries the
+  //      model-unavailable HOLD. It is a proven non-dispatch, so the manual lane
+  //      must show the bounded model copy (never the generic run-failure
+  //      sentence), state that nothing was executed, and leave no uncertain-run
+  //      latch — the identical body stays re-sendable.
+  byId.messageInput.value = "모델 HOLD 확인";
+  executeCall = () => jsonResponse(503, { ok: false, error: { code: "tier_unavailable" } });
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(80);
+  const afterHold = execPosts().length;
+  checks.HOLD_503_SHOWS_MODEL_UNAVAILABLE_COPY =
+    afterHold === expectedPosts &&
+    byId.clawStatus.textContent === COPY.ko["claw-general-model-unavailable"] &&
+    byId.clawStatus.textContent !== COPY.ko["claw-error-generic"] &&
+    byId.clawResultEmpty.hidden === false &&
+    byId.clawResultEmpty.textContent ===
+      COPY.ko["claw-general-model-unavailable"] + " " + COPY.ko["claw-general-model-unavailable-note"];
+  if (!checks.HOLD_503_SHOWS_MODEL_UNAVAILABLE_COPY) {
+    fail("HOLD_503_SHOWS_MODEL_UNAVAILABLE_COPY: " + byId.clawStatus.textContent + " | " + byId.clawResultEmpty.textContent);
+  }
+  checks.HOLD_503_IS_NOT_AMBIGUOUS =
+    byId.clawRetryHint.hidden === true &&
+    byId.clawRetryBox.hidden === true &&
+    byId.clawRetryButton.disabled === true &&
+    byId.clawExecuteButton.disabled === false;
+  if (!checks.HOLD_503_IS_NOT_AMBIGUOUS) fail("HOLD_503_IS_NOT_AMBIGUOUS: " + byId.clawRetryHint.textContent);
+
+  // 14c) The HOLD copy is locale-driven in both languages from the same key the
+  //      composer lane already uses, so no second wording exists to drift.
+  lang = "en";
+  emitWindow("padiem:localechange");
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(80);
+  checks.HOLD_503_COPY_IS_LOCALE_DRIVEN =
+    execPosts().length === expectedPosts &&
+    byId.clawStatus.textContent === COPY.en["claw-general-model-unavailable"] &&
+    byId.clawResultEmpty.textContent ===
+      COPY.en["claw-general-model-unavailable"] + " " + COPY.en["claw-general-model-unavailable-note"];
+  if (!checks.HOLD_503_COPY_IS_LOCALE_DRIVEN) fail("HOLD_503_COPY_IS_LOCALE_DRIVEN: " + byId.clawStatus.textContent);
+  lang = "ko";
+  emitWindow("padiem:localechange");
+
+  // 14d) A HOLD latched nothing: the SAME body is still dispatchable, once.
+  const afterHoldEn = execPosts().length;
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(80);
+  checks.HOLD_503_LEAVES_NO_UNCERTAIN_LATCH = execPosts().length === afterHoldEn + 1;
+  if (!checks.HOLD_503_LEAVES_NO_UNCERTAIN_LATCH) fail("HOLD_503_LEAVES_NO_UNCERTAIN_LATCH");
+
   // 15) A network failure is ambiguous too: hint, no replay, text preserved.
   const beforeNetwork = execPosts().length;
   byId.messageInput.value = "네트워크 오류 확인";
@@ -1016,6 +1078,10 @@ def test_behavioral_execute_recovery_journey(behavioral_harness_payload: dict) -
         "AMBIGUOUS_FAILURE_SAFE_RETRY_CLAIM",
         "NO_AUTOMATIC_POST_AFTER_AMBIGUOUS_FAILURE",
         "PRE_DISPATCH_503_IS_NOT_AMBIGUOUS",
+        "HOLD_503_SHOWS_MODEL_UNAVAILABLE_COPY",
+        "HOLD_503_IS_NOT_AMBIGUOUS",
+        "HOLD_503_COPY_IS_LOCALE_DRIVEN",
+        "HOLD_503_LEAVES_NO_UNCERTAIN_LATCH",
         "NETWORK_FAILURE_IS_AMBIGUOUS_AND_NOT_REPLAYED",
         "EDITING_COMPOSING_RELEASES_UNCERTAIN_LATCH",
         "SAME_CONTENT_RESEND_BLOCKED_AFTER_UNCERTAIN_OUTCOME",

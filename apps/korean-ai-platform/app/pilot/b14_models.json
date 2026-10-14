@@ -385,6 +385,23 @@
       "enabled": false
     },
     {
+      "id": "opencode-go/muse-spark-1.2-contributor",
+      "provider_id": "opencode-go",
+      "upstream_model": "muse-spark-1.2-contributor",
+      "display_name": "OpenCode Go: Muse Spark 1.2 Contributor",
+      "provider_name": "OpenCode Go",
+      "capabilities": [
+        "chat",
+        "coding"
+      ],
+      "context_window": 0,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "https://docs.opencode.ai/docs/go/ (exact model/endpoint; responses; owner-selected, Go coding-agent terms; not yet wire-verified)",
+      "source_checked_at": "2026-10-13",
+      "enabled": false
+    },
+    {
       "id": "opencode-go/muse-spark-1.3-contributor",
       "provider_id": "opencode-go",
       "upstream_model": "muse-spark-1.3-contributor",

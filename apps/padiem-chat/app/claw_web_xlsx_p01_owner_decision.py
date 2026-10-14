@@ -7,7 +7,10 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any
 
-from .claw_web_xlsx_p01_request import _utc, WebXlsxP01RequestError
+from .claw_web_xlsx_p01_request import (
+    _utc, WebXlsxP01RequestError, WebXlsxP01RetrySafeDecisionError,
+    WebXlsxP01DecisionRetryableError,
+)
 from .workspace_storage import _row_to_dict
 
 _SEL = re.compile(r"^sel_[0-9a-f]{32}$")
@@ -44,7 +47,8 @@ class D1WebXlsxP01OwnerDecisionStore:
             "p.pause_id AS request_pause_id,d.pause_id AS decision_pause_id,"
             "d.user_id AS decision_owner,d.workspace_id AS decision_workspace,"
             "d.selection_ref AS decision_selection,d.source_sha256 AS decision_sha,"
-            "d.state AS decision_state,d.outcome AS decision_outcome "
+            "d.state AS decision_state,d.outcome AS decision_outcome,"
+            "d.released_at AS decision_released_at "
             "FROM claw_web_xlsx_selections s "
             "LEFT JOIN claw_web_xlsx_p01_requests p "
             "ON p.selection_ref=s.selection_ref AND p.user_id=s.user_id "
@@ -65,6 +69,11 @@ class D1WebXlsxP01OwnerDecisionStore:
         selection_alive = _utc(row["selection_expiry"]) > now
         stage = "not_requested"
         decision = row.get("decision_state")
+        # A released reservation was proven NOT consumed by the Engine, so it
+        # stops being decision authority: the owner may decide again. This is
+        # deliberately narrow -- an armed 'dispatching' row (ambiguous or
+        # deterministic failure) keeps its one-shot guard.
+        released = row.get("decision_released_at") is not None
         bad_decision_scope = (
             row.get("decision_pause_id") is not None
             and (row.get("decision_pause_id") != row.get("request_pause_id")
@@ -81,9 +90,9 @@ class D1WebXlsxP01OwnerDecisionStore:
             stage = "confirmed"
         elif decision == "denied" and row.get("decision_outcome") == "deny":
             stage = "denied"
-        elif decision == "dispatching":
+        elif decision == "dispatching" and not released:
             stage = "decision_unknown"
-        elif decision is not None:
+        elif decision is not None and not released:
             stage = "manual_review"
         elif row.get("request_status") == "dispatching":
             stage = "request_unknown"
@@ -142,6 +151,24 @@ class D1WebXlsxP01OwnerDecisionStore:
         if outcome not in _OUTCOMES or not isinstance(waiting, dict):
             raise WebXlsxP01RequestError("invalid owner P01 decision")
         now = datetime.now(timezone.utc).isoformat()
+        scope = (
+            waiting["request_ref"], waiting["user_id"], waiting["workspace_id"],
+            waiting["run_id"], waiting["selection_ref"], waiting["source_sha256"],
+            waiting["pause_id"],
+        )
+        # Re-arm ONLY a reservation the Engine proved it never consumed. An
+        # armed row (ambiguous or deterministic failure) is never re-armed: the
+        # INSERT below then fails closed on its primary key.
+        rearmed = _row_to_dict(await _await(self.db.prepare(
+            "UPDATE claw_web_xlsx_p01_decision_receipts "
+            "SET state='dispatching',outcome=?,updated_at=?,released_at=NULL "
+            "WHERE request_ref=? AND user_id=? AND workspace_id=? AND run_id=? "
+            "AND selection_ref=? AND source_sha256=? AND pause_id=? "
+            "AND state='dispatching' AND released_at IS NOT NULL "
+            "RETURNING request_ref"
+        ).bind(outcome, now, *scope).first()))
+        if rearmed:
+            return
         await _await(self.db.prepare(
             "INSERT INTO claw_web_xlsx_p01_decision_receipts "
             "(request_ref,selection_ref,user_id,workspace_id,run_id,source_sha256,"
@@ -150,6 +177,30 @@ class D1WebXlsxP01OwnerDecisionStore:
         ).bind(waiting["request_ref"], waiting["selection_ref"],
                waiting["user_id"], waiting["workspace_id"], waiting["run_id"],
                waiting["source_sha256"], waiting["pause_id"], outcome, now, now).run())
+
+    async def release_retry_safe(self, *, waiting: dict[str, Any]) -> bool:
+        """Release a retry-safe rejection so the owner may decide again.
+
+        Only the exact armed row for this owner/workspace/run/pause is released,
+        and the release is verified before the caller may advertise a retry.
+        """
+        if not isinstance(waiting, dict):
+            return False
+        now = datetime.now(timezone.utc).isoformat()
+        # Single atomic CAS: only THIS exact armed reservation can be released.
+        # UPDATE...RETURNING is the durable proof; a later SELECT could otherwise
+        # mistake an already released/stale receipt for this call's own success.
+        row = _row_to_dict(await _await(self.db.prepare(
+            "UPDATE claw_web_xlsx_p01_decision_receipts "
+            "SET released_at=?,updated_at=? "
+            "WHERE request_ref=? AND user_id=? AND workspace_id=? AND run_id=? "
+            "AND selection_ref=? AND source_sha256=? AND pause_id=? "
+            "AND state='dispatching' AND released_at IS NULL "
+            "RETURNING request_ref"
+        ).bind(now, now, waiting["request_ref"], waiting["user_id"],
+               waiting["workspace_id"], waiting["run_id"], waiting["selection_ref"],
+               waiting["source_sha256"], waiting["pause_id"]).first()))
+        return bool(row and row.get("request_ref") == waiting["request_ref"])
 
     async def commit(self, *, waiting: dict[str, Any], outcome: str,
                      verified: str) -> bool:
@@ -179,7 +230,12 @@ async def dispatch_owner_decision(
     *, waiting: dict[str, Any], outcome: str, store: Any, client: Any,
     submission_factory: Any, approved_workcopy_handler: Any = None,
 ) -> str | tuple[str, dict[str, Any]]:
-    """Reserve before sending. Unknown Engine result is never auto-retried."""
+    """Reserve before sending. Unknown Engine result is never auto-retried.
+
+    A canonical retry-safe rejection (the Engine proved it did not consume the
+    continuation) releases the one-shot reservation so the owner may decide
+    again; every other failure keeps it armed.
+    """
     if (outcome not in _OUTCOMES or not callable(getattr(store, "reserve", None))
             or not callable(getattr(store, "commit", None))
             or not callable(getattr(client, "resume_owner_decision", None))
@@ -191,9 +247,30 @@ async def dispatch_owner_decision(
     # Prevent any B62 source row mutation / Engine call after a duplicate
     # or failed reservation. An unknown response intentionally stays pending.
     await _await(store.reserve(waiting=waiting, outcome=outcome))
-    result = await _await(client.resume_owner_decision(
-        continuation_ref=waiting["continuation_ref"], submission=submission,
-    ))
+    try:
+        result = await _await(client.resume_owner_decision(
+            continuation_ref=waiting["continuation_ref"], submission=submission,
+        ))
+    except WebXlsxP01RetrySafeDecisionError:
+        # The Engine refused the submission without consuming the stored
+        # continuation, so no Engine state was consumed and the owner may decide
+        # again. Release the one-shot reservation -- never automatically, and
+        # only when the release is durably verified. An unverified release
+        # falls back to the armed one-shot guard.
+        release = getattr(store, "release_retry_safe", None)
+        try:
+            released = (
+                await _await(release(waiting=waiting)) if callable(release) else False
+            )
+        except Exception:
+            # A missing release capability (or an unmigrated column) must never
+            # weaken the one-shot guard: fall back to the armed reservation.
+            released = False
+        if released is not True:
+            raise
+        raise WebXlsxP01DecisionRetryableError(
+            "retry-safe Engine rejection released the owner decision reservation"
+        ) from None
     if not isinstance(result, dict) or result.get("ok") is not True:
         raise WebXlsxP01RequestError("Engine did not provide a verified decision result")
     if outcome == "deny":

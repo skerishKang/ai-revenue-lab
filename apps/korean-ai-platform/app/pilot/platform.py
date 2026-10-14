@@ -58,7 +58,15 @@ from app.pilot.upstream_answer_contract import UpstreamEmptyAnswer, require_comp
 
 logger = logging.getLogger("korean-ai-platform.pilot.platform")
 
+# Resource guards, never provider/model generation-token limits.
+# Error bodies and individual SSE frames remain tightly bounded at 1MiB.
 MAX_RESPONSE_BYTES = 1024 * 1024
+# A completed JSON response must be materialized as one dict for existing
+# callers. Use the existing conservative 8MiB maximum as a separate raw-body
+# memory budget (1/16 of the Workers 128MiB isolate), not a 1MiB output cutoff.
+# Parsed JSON / response serialization can amplify memory; prefer SSE for
+# genuinely unbounded free-form model text.
+MAX_COMPLETED_RESPONSE_BYTES = 8 * 1024 * 1024
 MAX_ERROR_BODY_CHARS = 500
 
 # All Providers share one phase policy. A Pyodide/Fetch ConnectTimeout
@@ -286,6 +294,31 @@ def _require_owner_allowed_live_model(
         )
 
 
+async def _read_bounded_body(response: httpx.Response, *, cap: int = MAX_RESPONSE_BYTES) -> bytes:
+    """Collect a completed response body with a pre-decode byte cap (#4379).
+
+    Byte resource guard, not a model output ceiling: healthy answers under the
+    cap decode exactly as before. A declared Content-Length over the cap is
+    rejected before any body byte is pulled; otherwise each chunk is checked
+    BEFORE appending, so an oversized chunk is not copied into this helper's
+    accumulator. Upstream decoding and total Worker memory are outside this
+    bound. Raises UpstreamResponseTooLarge (callers must not retry it).
+    """
+    declared = response.headers.get("content-length")
+    if declared is not None:
+        try:
+            if int(declared.strip()) > cap:
+                raise UpstreamResponseTooLarge(cap)
+        except ValueError:
+            pass  # untrusted header; enforce on actual bytes instead
+    buf = bytearray()
+    async for chunk in response.aiter_bytes():
+        if len(chunk) > cap - len(buf):
+            raise UpstreamResponseTooLarge(cap)
+        buf += chunk
+    return bytes(buf)
+
+
 async def call_platform_chat_completions(
     *,
     model_id: str,
@@ -365,12 +398,32 @@ async def call_platform_chat_completions(
     start = time.monotonic()
     try:
         async with httpx.AsyncClient(**client_kwargs) as client:
-            response = await client.post(
+            async with client.stream(
+                "POST",
                 chat_url,
                 headers=headers,
                 json=body,
                 follow_redirects=False,
-            )
+            ) as response:
+                if response.status_code < 200 or response.status_code >= 300:
+                    error_bytes = await _read_bounded_body(response)
+                    if platform_provider_id == "tokenharbor":
+                        _log_tokenharbor_rejection(response, headers, error_bytes)
+                    error_body = error_bytes.decode("utf-8", "replace")
+                    if platform_provider_id == "agnes-ai" and response.status_code == 429:
+                        log_agnes_429(
+                            logger, platform_provider_id, response.status_code,
+                            response.headers, error_body,
+                        )
+                    if platform_provider_id == "experiential" and response.status_code == 429:
+                        log_exlab_429(
+                            logger, platform_provider_id, response.status_code,
+                            response.headers, error_body,
+                        )
+                    _raise_upstream_error(
+                        response.status_code, platform_provider_id, error_body
+                    )
+                body_bytes = await _read_bounded_body(response, cap=MAX_COMPLETED_RESPONSE_BYTES)
     except httpx.TimeoutException as exc:
         log_provider_timeout(logger, platform_provider_id, exc, "completed")
         raise UpstreamTimeout() from exc
@@ -382,25 +435,8 @@ async def call_platform_chat_completions(
         )
         raise UpstreamServerError()
 
-    if response.status_code < 200 or response.status_code >= 300:
-        if platform_provider_id == "tokenharbor":
-            _log_tokenharbor_rejection(response, headers, response.content)
-        if platform_provider_id == "agnes-ai" and response.status_code == 429:
-            log_agnes_429(
-                logger, platform_provider_id, response.status_code,
-                response.headers, response.text,
-            )
-        if platform_provider_id == "experiential" and response.status_code == 429:
-            log_exlab_429(
-                logger, platform_provider_id, response.status_code,
-                response.headers, response.text,
-            )
-        _raise_upstream_error(
-            response.status_code, platform_provider_id, response.text
-        )
-
     try:
-        response_data = response.json()
+        response_data = json.loads(body_bytes)
     except (json.JSONDecodeError, ValueError):
         raise MalformedUpstreamResponse()
 
@@ -441,7 +477,7 @@ async def call_platform_chat_completions(
         "_upstream_latency_ms": latency_ms,
         "_requested_upstream_model": upstream_model,
         "_actual_response_model": actual_response_model,
-        "_response_bytes": len(response.content),
+        "_response_bytes": len(body_bytes),
     }
 
 
@@ -549,9 +585,9 @@ async def stream_platform_chat_completions(
                 follow_redirects=False,
             ) as response:
                 if response.status_code < 200 or response.status_code >= 300:
-                    # Read the small error body so provider-specific 429
-                    # normalization (#2003) can inspect it.
-                    error_bytes = await response.aread()
+                    # Bound error-body bytes before inspecting provider-specific
+                    # 429 diagnostics; untrusted upstream errors can be huge.
+                    error_bytes = await _read_bounded_body(response)
                     if platform_provider_id == "tokenharbor":
                         _log_tokenharbor_rejection(response, headers, error_bytes)
                     error_body = error_bytes.decode("utf-8", "replace")
@@ -569,7 +605,9 @@ async def stream_platform_chat_completions(
                         response.status_code, platform_provider_id, error_body
                     )
 
-                async for chunk in response.aiter_bytes():
+                # Bound our accumulator per frame without delaying first-token
+                # delivery by reading ahead to fill a fixed-size HTTP chunk.
+                async for chunk in _iter_sse_bounded_slices(response):
                     buffer += chunk
                     frames, buffer = _pop_sse_frames(buffer)
                     # Bound a single unfinished event for Worker memory safety,
@@ -620,6 +658,20 @@ async def stream_platform_chat_completions(
     if not saw_done:
         raise MalformedUpstreamResponse()
 
+
+
+async def _iter_sse_bounded_slices(response: httpx.Response):
+    """Yield pieces of each received HTTP block immediately, without read-ahead.
+
+    aiter_bytes(chunk_size=N) waits to fill N bytes, delaying first tokens
+    and hiding a yielded token when the upstream fails after its first chunk.
+    Instead, use the upstream natural stream boundaries, slicing within
+    each received block to keep our incomplete-frame accumulator bounded.
+    This cannot constrain allocations inside HTTPX network decoder itself.
+    """
+    async for block in response.aiter_bytes():
+        for offset in range(0, len(block), 64 * 1024):
+            yield block[offset:offset + 64 * 1024]
 
 def _pop_sse_frames(buffer: bytes) -> tuple[list[bytes], bytes]:
     frames: list[bytes] = []

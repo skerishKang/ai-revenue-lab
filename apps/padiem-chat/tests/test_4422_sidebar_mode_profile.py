@@ -9,13 +9,16 @@ HTML = (ROOT / "index.html").read_text(encoding="utf-8")
 
 
 def test_mode_hints_reuse_canonical_buttons_and_routes():
-    assert 'chatNav.dataset.modeHint = uiT("nav-chat-hint")' in APP
+    # The redundant "일반 대화" hint on New Chat was removed with the actions
+    # row; Claw keeps its own hint.
+    assert 'chatNav.dataset.modeHint' not in APP
+    assert 'nav-chat-hint' not in APP and 'nav-chat-hint' not in LOCALE
     assert 'clawNav.dataset.modeHint = uiT("nav-claw-hint")' in APP
     assert 'newChatButton.addEventListener("click", () => resetConversation(true))' in APP
     assert 'clawNavButton.addEventListener("click", openClawWorkspace)' in APP
     assert 'content: attr(data-mode-hint)' in CSS
     assert 'id="newChatButton"' in HTML and 'id="clawNavButton"' in HTML
-    assert ".sidebar > .new-chat" in CSS
+    assert ".sidebar-actions-row .new-chat" in CSS
     # No extra focusable navigation entry or backend model/P01 invocation.
     assert 'document.createElement("a")' not in APP.split("const accountContainer", 1)[1].split("const historySection", 1)[0]
 
@@ -52,7 +55,7 @@ def test_profile_reuses_existing_login_settings_contract():
 
 def test_locale_hints_and_account_actions_are_translatable():
     ko, en = LOCALE.split("en: {", 1)
-    for key in ("nav-chat-hint", "nav-claw-hint", "account-profile-toggle", "account-profile-settings"):
+    for key in ("nav-claw-hint", "search-conversation-hold", "account-profile-toggle", "account-profile-settings"):
         assert f'"{key}"' in ko
         assert f'"{key}"' in en
     assert "업무·파일" in ko

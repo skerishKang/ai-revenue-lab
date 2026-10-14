@@ -137,16 +137,32 @@
   cursor: pointer;
   font-size: 20px;
 }
-.sidebar-collapse-button {
-  /* DOM follows New Chat for expected keyboard order; visually it is beside it. */
-  position: absolute;
-  top: 84px;
-  right: 16px;
+/* The collapse control now sits at the right end of the brand row; the old
+ * absolute placement beside New Chat and its reserved margin are gone. */
+.brand-row .sidebar-collapse-button {
+  margin-left: auto;
 }
-@media (min-width: 921px) {
-  .sidebar > .new-chat {
-    margin-right: 52px;
-  }
+html[data-theme="padiem-glass"] .brand-row {
+  /* the former right gutter only reserved space for the absolute button */
+  padding-right: 0;
+}
+/* Second sidebar line: New Chat and conversation Search share one row.
+ * Conversation search is not implemented yet, so it stays disabled and is
+ * identified via its title/aria-label ("대화 검색 준비 중"). */
+.sidebar-actions-row {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 0;
+}
+.sidebar-actions-row .new-chat {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.sidebar-actions-row .sidebar-search-item {
+  flex: 0 1 auto;
+  min-width: 0;
+  justify-content: center;
 }
 .sidebar-restore-button {
   display: none;
@@ -235,8 +251,9 @@
 }
 
 /* #442x: distinguish Chat from Claw without altering their canonical routes.
- * Pseudo-labels preserve the existing button text and keyboard focus order. */
-.sidebar > .new-chat[data-mode-hint]::after,
+ * Pseudo-labels preserve the existing button text and keyboard focus order.
+ * New Chat itself no longer carries a mode hint: the redundant "일반 대화"
+ * label was removed when the actions row was rearranged (B62 split-search). */
 #clawNavButton[data-mode-hint]::after {
   content: attr(data-mode-hint);
   margin-left: auto;
@@ -245,14 +262,6 @@
   letter-spacing: 0;
   opacity: .7;
   white-space: nowrap;
-}
-.sidebar > .new-chat[data-mode-hint]::after {
-  padding-right: 3px;
-}
-@media (max-width: 470px) {
-  .sidebar > .new-chat[data-mode-hint]::after {
-    display: none;
-  }
 }
 /* The signed-in summary is a keyboard-accessible disclosure. Existing login
  * and settings controls stay visible and keep all their original authority. */

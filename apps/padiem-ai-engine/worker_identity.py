@@ -337,7 +337,7 @@ def _research_service_for_env(
 ) -> WebResearchEngineService:
     def research_runtime_factory(_app_id: str) -> GroundedResearchRuntime:
         return GroundedResearchRuntime(
-            create_web_provider(legacy_worker._web_runtime_config_for_env(env))
+            legacy_worker._engine_web_provider_for_env(env)
         )
 
     return WebResearchEngineService(

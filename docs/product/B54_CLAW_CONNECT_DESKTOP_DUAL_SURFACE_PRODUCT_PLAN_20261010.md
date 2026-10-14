@@ -1,8 +1,14 @@
+<!-- CENTRAL_CONNECTOR_DOWNLOAD_SIZE_POINTER_20261015 -->
+> **2026-10-15 installer delivery clarification:** "lightweight" means the separate Windows Connector rather than the full Desktop; binary download size is **not measured** until a standalone installation package exists. The current source installer needs Python; R2 Standard versioned distribution is a technical recommendation, not a live download. See [Installer distribution and verified size/traffic criteria](../operations/PADIEM_CONNECTOR_INSTALLER_DISTRIBUTION_20261015.md). Current user-facing default is connection ON after canonical enrollment, with persistent user tray OFF available.
+<!-- /CENTRAL_CONNECTOR_DOWNLOAD_SIZE_POINTER_20261015 -->
+
 # B54 Padiem Claw — 경량 Connect + Full Desktop 이중 사용자 경험 제품계획 (#4139)
 
 > **상태:** 제품 방향/구현계획 문서 · 2026-10-10 · **구현 완료 또는 Production 출시를 의미하지 않음.**
 >
 > **상위 전략:** [#3074](https://github.com/skerishKang/ai-revenue-lab/issues/3074) · **Cross-surface 대형 실행 EPIC:** [#4139](https://github.com/skerishKang/ai-revenue-lab/issues/4139) · **기술 계약:** [공통 로컬 실행 아키텍처](../architecture/B54_CLAW_CONNECT_DESKTOP_SHARED_LOCAL_RUNTIME_ARCHITECTURE_20261010.md)
+
+> **Private Owner business policy:** read the root [AGENTS.md](../../AGENTS.md) for the local governance path; dated technical scope below does not override private operating decisions.
 
 ## 1. 결정: 두 앱 경험, 하나의 Claw
 

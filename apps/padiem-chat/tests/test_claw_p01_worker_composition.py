@@ -36,6 +36,8 @@ from app.claw_p01_composition import (
 from app.worker_orchestration import (
     CloudflareEngineServiceTransport,
     _MAX_ENGINE_RESPONSE_BYTES,
+    _MAX_ENGINE_ORCHESTRATION_RESPONSE_BYTES,
+    _MAX_ENGINE_MODEL_REQUEST_BYTES,
 )
 from app.worker_config import (
     P01_DIAG_CALLER_ID_SHAPE_INVALID,
@@ -443,7 +445,7 @@ class _BoundedEngineBinding:
 
 def test_engine_service_transport_cancels_oversized_stream_before_full_buffering() -> None:
     response = _BoundedEngineResponse(
-        [b"x" * _MAX_ENGINE_RESPONSE_BYTES, b"y", b"never-read"]
+        [b"x" * _MAX_ENGINE_ORCHESTRATION_RESPONSE_BYTES, b"y", b"never-read"]
     )
     transport = CloudflareEngineServiceTransport(
         _BoundedEngineBinding(response),
@@ -464,4 +466,63 @@ def test_engine_service_transport_cancels_oversized_stream_before_full_buffering
     assert response.reader.read_calls == 2
     assert response.reader.cancel_calls == 1
     assert response.reader.release_calls == 1
+    assert response.reader.chunks == [b"never-read"]
+
+
+
+def test_engine_completed_orchestration_healthy_long_json_from_single_binding_post():
+    payload = b'{"ok":true,"orchestration":{"answer":"' + b"A" * 1_300_000 + b'"}}'
+    assert _MAX_ENGINE_RESPONSE_BYTES < len(payload) < _MAX_ENGINE_ORCHESTRATION_RESPONSE_BYTES
+    response = _BoundedEngineResponse([payload[:300_000], payload[300_000:]])
+    transport = CloudflareEngineServiceTransport(
+        _BoundedEngineBinding(response), request_factory=_FakeWorkerRequest,
+    )
+    result = asyncio.run(transport.request(
+        method="POST", url=f"{ENGINE_INTERNAL_ORIGIN}{ENGINE_ORCHESTRATE_PATH}",
+        headers={}, body=b"{}",
+    ))
+    assert result.status == 200
+    assert result.body == payload
+    assert response.reader.cancel_calls == 0
+    assert response.reader.release_calls == 1
+
+
+def test_engine_completed_orchestration_6mb_ingress_bound_not_256kb():
+    class CaptureBinding:
+        def __init__(self):
+            self.calls = []
+        async def fetch(self, req):
+            self.calls.append(req)
+            return _BoundedEngineResponse([b'{"ok":true}'])
+    binding = CaptureBinding()
+    transport = CloudflareEngineServiceTransport(binding, request_factory=_FakeWorkerRequest)
+    body = b'{"text":"' + b"A" * 400_000 + b'"}'
+    assert len(body) > 256 * 1024
+    response = asyncio.run(transport.request(
+        method="POST", url=f"{ENGINE_INTERNAL_ORIGIN}{ENGINE_ORCHESTRATE_PATH}",
+        headers={}, body=body,
+    ))
+    assert response.status == 200
+    assert len(binding.calls) == 1
+    with pytest.raises(ValueError, match="safety limit"):
+        asyncio.run(transport.request(
+            method="POST", url=f"{ENGINE_INTERNAL_ORIGIN}{ENGINE_ORCHESTRATE_PATH}",
+            headers={}, body=b"X" * (_MAX_ENGINE_MODEL_REQUEST_BYTES + 1),
+        ))
+    assert len(binding.calls) == 1
+
+
+def test_engine_small_non_model_response_keeps_1mib_resource_guard():
+    response = _BoundedEngineResponse(
+        [b"x" * _MAX_ENGINE_RESPONSE_BYTES, b"y", b"never-read"]
+    )
+    transport = CloudflareEngineServiceTransport(
+        _BoundedEngineBinding(response), request_factory=_FakeWorkerRequest,
+    )
+    with pytest.raises(ValueError, match="safety limit"):
+        asyncio.run(transport.request(
+            method="GET", url=f"{ENGINE_INTERNAL_ORIGIN}/internal/v1/health",
+            headers={}, body=None,
+        ))
+    assert response.reader.cancel_calls == 1
     assert response.reader.chunks == [b"never-read"]

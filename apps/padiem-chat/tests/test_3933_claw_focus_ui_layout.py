@@ -41,17 +41,29 @@ def _nodes():
 
 def test_focus_stylesheet_is_last_and_loads_after_complex_claw_layout():
     links = _nodes().stylesheets
-    assert links[-1] == "./claw-focus-layout.css"
+    # Keep the Claw focus workbench as the final *layout* stylesheet.
+    # The later voice-composer.css is component-local (#voiceMicButton and
+    # .voice-interim-preview), not a Claw layout override.
+    focus = links.index("./claw-focus-layout.css")
+    trailing = links[focus + 1:]
+    assert trailing in ([], ["./voice-composer.css"])
+    if trailing:
+        voice_css = (STATIC / "voice-composer.css").read_text(encoding="utf-8")
+        assert "#voiceMicButton" in voice_css
+        assert ".voice-interim-preview" in voice_css
+        assert ".app-shell" not in voice_css
     assert links.index("./claw-task-hub.css") < links.index("./claw-focus-layout.css")
     assert links.index("./claw-workspace.css") < links.index("./claw-focus-layout.css")
     assert links.index("./b66-quote-runtime.css") < links.index("./claw-focus-layout.css")
 
 
-def test_claw_is_only_modified_state_and_glass_portrait_ends_on_claw_not_chat():
-    assert 'html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .main-panel::before' in CSS
+def test_claw_only_selectors_keep_shared_first_use_portrait_and_workbench_separation():
+    assert '.app-shell[data-state="claw"]' in CSS
+    assert '.main-panel::before' in CSS
+    assert ':not(:has(.claw-workspace[data-view="general"]' in CSS
     assert 'content: none;' in CSS
     assert '.app-shell[data-state="claw"] .conversation' in CSS
-    assert '.app-shell[data-state="claw"] .composer-wrap' in CSS
+    assert ".composer-wrap" in CSS
     assert '.app-shell[data-state="chat"]' not in CSS
     assert '.app-shell[data-state="home"]' not in CSS
     assert not re.search(r'(^|\n)\s*html\[data-theme="padiem-glass"\]\s+\.main-panel', CSS)

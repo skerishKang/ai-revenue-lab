@@ -18,7 +18,9 @@ from kagent.p01_approval_continuation import (
 from .bounded_request_body import read_bounded_request_body, RequestBodyTooLarge
 from .claw_web_xlsx_selection_routes import _scope
 from .claw_web_xlsx_source_routes import _error, _NO_STORE
-from .claw_web_xlsx_p01_request import _utc, WebXlsxP01RequestError
+from .claw_web_xlsx_p01_request import (
+    _utc, WebXlsxP01RequestError, WebXlsxP01DecisionRetryableError,
+)
 from .claw_web_xlsx_p01_owner_decision import dispatch_owner_decision
 
 WEB_XLSX_P01_OWNER_DECISION_PATH = (
@@ -159,6 +161,10 @@ async def web_xlsx_p01_owner_decision(request: Request) -> Response:
         )
     except P01AdapterError:
         return _error(409, "owner_p01_decision_unusable")
+    except WebXlsxP01DecisionRetryableError:
+        # The Engine proved it did NOT consume the continuation and the one-shot
+        # reservation was durably released, so the owner may decide again.
+        return _error(409, "owner_p01_decision_retryable")
     except WebXlsxP01RequestError:
         return _error(409, "owner_p01_decision_or_workcopy_unconfirmed")
     except Exception:

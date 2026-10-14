@@ -6,11 +6,13 @@ import json
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
+import pytest
 from padiem_ai_core.orchestration_events import (
     OrchestrationEventKind, public_orchestration_event,
 )
 from kagent.p01_adapter import P01AdapterError, P01DispatchClass
 
+from app.claw_general_routes import _MODEL_HOLD_USER_MESSAGE
 from test_b54_claw_general_p01_routing import (
     _client, _make_adapter, _make_outcome, _payload,
 )
@@ -108,9 +110,45 @@ def test_engine_failure_emits_error_not_done_and_never_b14_fallback():
     result = _call(adapter)
     assert result.status_code == 200  # Headers already sent when transport fails.
     assert "event: error" in result.text
+    assert '"code":"engine_execution_failed"' in result.text
     assert "event: done" not in result.text
     assert "검증된 답변" not in result.text
     assert "internal" not in result.text
+
+
+@pytest.mark.parametrize("hold_code", ["tier_hold", "max_tier_hold"])
+def test_model_hold_survives_the_live_relay_as_tier_unavailable(hold_code):
+    """#3566/#3568: a pre-dispatch HOLD is a product state, never an engine failure.
+
+    The general route pins this family to a bounded ``503 tier_unavailable`` with
+    quota refunded and no Engine/B14 call. The live relay has already sent SSE
+    headers, so it must carry the same public code instead of claiming that the
+    Engine ran.
+    """
+    adapter = _make_adapter(subject_lane=True)
+    adapter._runner = SimpleNamespace(run_stream=lambda *args, **kwargs: None)
+
+    async def hold_before_dispatch(run, *, on_event, **kwargs):
+        raise P01AdapterError(
+            hold_code, "현재 실행 가능한 라우트가 없습니다 (HOLD).",
+            dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+        )
+
+    adapter.execute = AsyncMock(side_effect=hold_before_dispatch)
+    result = _call(adapter)
+    assert result.status_code == 200
+    assert result.headers["content-type"].startswith("text/event-stream")
+    assert result.text.count("event: error") == 1
+    assert '"code":"tier_unavailable"' in result.text
+    assert _MODEL_HOLD_USER_MESSAGE in result.text
+    for forbidden in (
+        "engine_execution_failed", hold_code, "HOLD", "P01", "kagent", "dispatch_class",
+    ):
+        assert forbidden not in result.text, forbidden
+    # Nothing ran, so no answer, no terminal P01 event and no completion.
+    assert "event: delta" not in result.text
+    assert "event: done" not in result.text
+    assert "event: p01_event" not in result.text
 
 
 def test_completed_event_never_visible_if_final_answer_is_missing():

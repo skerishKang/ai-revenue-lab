@@ -1,0 +1,117 @@
+name: B66 D1 Migrations 041 042 044 Protected Release
+
+# #4316: separate schema-only audit and manually authorized additive D1 release.
+# No Worker/Pages deploy, customer row read, provider call or automatic mutation.
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b62-b66-d1-041-042-044-release.yml"
+      - ".github/scripts/b62_b66_d1_041_042_044_release.py"
+      - ".github/scripts/b62_d1_migration_044_schema.py"
+      - ".github/tests/test_b62_b66_d1_041_042_044_release.py"
+      - "apps/padiem-chat/migrations/041_b66_ai_conversation.sql"
+      - "apps/padiem-chat/migrations/042_conversation_product_scope.sql"
+      - "apps/padiem-chat/migrations/044_b66_ai_turn_attempt.sql"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Choose readonly audit or explicitly protected apply"
+        required: true
+        type: choice
+        default: readonly
+        options: [readonly, apply]
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      confirmation:
+        description: "Required only for apply"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b66-d1-041-042-044-protected-release
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || inputs.target_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Offline release matrix and fail-closed contract
+        run: python3 .github/tests/test_b62_b66_d1_041_042_044_release.py
+
+  readonly:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'readonly' }}
+    needs: source-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      TARGET_SHA: ${{ inputs.target_sha }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Require exact current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo "B66_EXACT_MAIN=PASS"
+      - name: Metadata-only D1 041/042/044 and Time Travel recovery proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/b62_b66_d1_041_042_044_release.py readonly
+
+  apply:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'apply' }}
+    needs: source-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production
+    env:
+      TARGET_SHA: ${{ inputs.target_sha }}
+      B66_MUTATION_CONFIRMATION: ${{ inputs.confirmation }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Require exact current main and explicit fixed approval
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "${B66_MUTATION_CONFIRMATION}" = "APPLY_B66_D1_041_042_044_FROM_EXACT_MAIN"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo "B66_EXACT_MAIN_MUTATION_AUTHORIZATION=PASS"
+      - name: Fixed migrations only and exact schema readback
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/b62_b66_d1_041_042_044_release.py apply

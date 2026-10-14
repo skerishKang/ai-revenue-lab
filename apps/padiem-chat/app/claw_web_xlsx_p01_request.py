@@ -8,6 +8,9 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
+from .web_xlsx_p01_refusal import (
+    STAGE_CONTRACT_MISMATCH, STAGE_PAUSE_COMMIT_FAILED, STAGE_RESERVATION_REFUSED,
+)
 from .workspace_storage import _row_to_dict
 
 _ID = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9._:@+-]{0,127}$")
@@ -21,7 +24,38 @@ _APP = "padiem-web-xlsx-p01"
 
 
 class WebXlsxP01RequestError(ValueError):
-    pass
+    """A refused P01 request.
+
+    ``stage``/``engine_status``/``engine_code`` are OPTIONAL bounded, non-secret
+    attribution carried from the private Engine response boundary (#3936). They
+    are used only for structured operator evidence; the public error code and
+    the one-shot D1 reservation are unaffected by them.
+    """
+
+    def __init__(self, message: str = "", *, stage: str | None = None,
+                 engine_status: int | None = None,
+                 engine_code: str | None = None) -> None:
+        super().__init__(message)
+        self.stage = stage
+        self.engine_status = engine_status
+        self.engine_code = engine_code
+
+
+class WebXlsxP01RetrySafeDecisionError(WebXlsxP01RequestError):
+    """The Engine refused the decision WITHOUT consuming the continuation.
+
+    This is the canonical ``RETRY_SAFE_RESUME_CODES`` class: no Engine state
+    was consumed, so the owner may decide again. It is deliberately distinct
+    from an ambiguous transport failure, which must stay armed and unretried.
+    """
+
+
+class WebXlsxP01DecisionRetryableError(WebXlsxP01RequestError):
+    """The B62 one-shot reservation was released after a retry-safe rejection.
+
+    Raised only once the durable release is verified, so the route never
+    advertises a retry it cannot honour.
+    """
 
 
 def _utc(value: str) -> datetime:
@@ -88,7 +122,21 @@ def parse_engine_pause(result: Any, *, original: TrustedWebXlsxP01Request) -> Ve
     ToolRuntime's internal ToolInvocation digest is authority held by Engine.
     Do not accept an unrelated orchestration response or a simulated browser
     "approval_pause" object as an Engine tool result.
+
+    Every rejection raised here is tagged with the bounded #3936 stage
+    ``engine_pause_contract_mismatch`` unless the caller already attributed a
+    more specific one, so a real Engine pause that fails the closed contract is
+    distinguishable from a refusal that never paused at all.
     """
+    try:
+        return _parse_engine_pause(result, original=original)
+    except WebXlsxP01RequestError as exc:
+        if exc.stage is None:
+            exc.stage = STAGE_CONTRACT_MISMATCH
+        raise
+
+
+def _parse_engine_pause(result: Any, *, original: TrustedWebXlsxP01Request) -> VerifiedWebXlsxEnginePause:
     if not isinstance(result, dict) or set(result) != {"ok", "tool"}:
         raise WebXlsxP01RequestError("unrecognized Engine tool result")
     if result.get("ok") is not True:
@@ -200,18 +248,36 @@ async def dispatch_owner_web_xlsx_p01(
         raise WebXlsxP01RequestError("private Engine adapter required")
     # Reserve BEFORE network dispatch. Duplicate, uncertain or failed attempts
     # retain reservation and cannot be retried by a second web POST.
-    request_ref = store.reserve(request)
-    if inspect.isawaitable(request_ref):
-        request_ref = await request_ref
+    try:
+        request_ref = store.reserve(request)
+        if inspect.isawaitable(request_ref):
+            request_ref = await request_ref
+    except WebXlsxP01RequestError as exc:
+        # No reservation exists: this is the only stage that is retryable in
+        # principle, so it must never be confused with an Engine refusal.
+        if exc.stage is None:
+            exc.stage = STAGE_RESERVATION_REFUSED
+        raise
     result = client.start_pause(request)
     if inspect.isawaitable(result):
         result = await result
     pause = parse_engine_pause(result, original=request)
-    committed = store.commit_pause(request=request, request_ref=request_ref, pause=pause)
-    if inspect.isawaitable(committed):
-        committed = await committed
+    try:
+        committed = store.commit_pause(
+            request=request, request_ref=request_ref, pause=pause,
+        )
+        if inspect.isawaitable(committed):
+            committed = await committed
+    except WebXlsxP01RequestError as exc:
+        # The Engine issued a real pause but B62 could not persist it.
+        if exc.stage is None:
+            exc.stage = STAGE_PAUSE_COMMIT_FAILED
+        raise
     if committed is not True:
-        raise WebXlsxP01RequestError("durable Engine pause write unavailable")
+        raise WebXlsxP01RequestError(
+            "durable Engine pause write unavailable",
+            stage=STAGE_PAUSE_COMMIT_FAILED,
+        )
     return {
         "request_ref": request_ref, "run_id": request.run_id,
         "selection_ref": request.selection_ref,

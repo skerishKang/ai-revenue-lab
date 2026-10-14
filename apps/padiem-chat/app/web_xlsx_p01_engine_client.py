@@ -13,10 +13,15 @@ from padiem_ai_engine_client import ENGINE_INTERNAL_ORIGIN
 
 from .claw_web_xlsx_p01_request import (
     TrustedWebXlsxP01Request, WebXlsxP01RequestError,
+    WebXlsxP01RetrySafeDecisionError,
 )
 from .service_binding_response import (
     ServiceBindingResponseError, ServiceBindingResponseTooLarge,
     read_bounded_service_binding_body,
+)
+from .web_xlsx_p01_refusal import (
+    STAGE_DID_NOT_PAUSE, STAGE_RESPONSE_UNREADABLE, STAGE_TRANSPORT_UNAVAILABLE,
+    classify_engine_refusal, parse_engine_error_code,
 )
 
 _ENDPOINT = "/internal/v1/tools/execute"
@@ -100,18 +105,40 @@ class CloudflareWebXlsxP01EngineClient:
             )
         except (ServiceBindingResponseError, ServiceBindingResponseTooLarge,
                 TypeError, ValueError) as exc:
-            raise WebXlsxP01RequestError("bounded private Engine response unavailable") from exc
+            raise WebXlsxP01RequestError(
+                "bounded private Engine response unavailable",
+                stage=STAGE_TRANSPORT_UNAVAILABLE,
+            ) from exc
         # No retries on any outcome, including an uncertain transport result.
         try:
             status = int(response.status)
             body = json.loads(raw.decode("utf-8"))
         except (TypeError, ValueError, UnicodeDecodeError, AttributeError) as exc:
-            raise WebXlsxP01RequestError("invalid private Engine response") from exc
+            raise WebXlsxP01RequestError(
+                "invalid private Engine response",
+                stage=STAGE_RESPONSE_UNREADABLE,
+            ) from exc
+        # #3936: a real Engine refusal carries the bounded Engine error contract
+        # (``{"ok": false, "error": {"code": ...}}``). Attribute it instead of
+        # discarding it, so a live refusal is never locally indistinguishable.
+        # The public browser response and this client's authority are unchanged.
+        if (status not in (200, 202)
+                or (isinstance(body, dict) and body.get("ok") is False)):
+            raise WebXlsxP01RequestError(
+                "Engine refused the P01 pause",
+                stage=classify_engine_refusal(status, body),
+                engine_status=status if 100 <= status <= 599 else None,
+                engine_code=parse_engine_error_code(body),
+            )
         if (status != 202 or not isinstance(body, dict)
                 or set(body) != {"ok", "tool"} or body.get("ok") is not True
                 or not isinstance(body.get("tool"), dict)
                 or body["tool"].get("status") != "paused"):
-            raise WebXlsxP01RequestError("Engine did not issue a P01 pause")
+            raise WebXlsxP01RequestError(
+                "Engine did not issue a P01 pause",
+                stage=STAGE_DID_NOT_PAUSE,
+                engine_status=status if 100 <= status <= 599 else None,
+            )
         return body
 
     async def resume_owner_decision(
@@ -188,6 +215,22 @@ class CloudflareWebXlsxP01EngineClient:
                 "ok": True, "status": "confirmed",
                 "verified_source_sha256": response["tool"]["output"]["source_sha256"],
             }
+        # A canonical retry-safe rejection proves the Engine did NOT consume the
+        # continuation, so the owner may decide again. Classifying it as an
+        # opaque failure left the B62 one-shot receipt armed at 'dispatching'
+        # forever (#3936). The vocabulary is owned by the canonical lane and is
+        # never duplicated here.
+        from kagent.p01_approval_continuation import RETRY_SAFE_RESUME_CODES
+        # A safe-code string without the canonical HTTP 409 rejection shape
+        # is not proof of non-consumption: malformed/5xx/2xx envelopes remain
+        # ambiguous and therefore keep the owner one-shot armed.
+        if (status == 409 and isinstance(response, dict)
+                and response.get("ok") is False
+                and isinstance(response.get("error"), dict)
+                and response["error"].get("code") in RETRY_SAFE_RESUME_CODES):
+            raise WebXlsxP01RetrySafeDecisionError(
+                "Engine refused the decision without consuming the continuation"
+            )
         raise WebXlsxP01RequestError("Engine did not verify owner P01 outcome")
 
 

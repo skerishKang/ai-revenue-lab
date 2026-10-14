@@ -1,8 +1,9 @@
-# B66 템플릿 원본 보관·고객 반환 정책 (Owner 결정, 2026-10-09)
+# B66 템플릿 원본 보관·고객 반환 정책 (2026-10-09 최초 결정 · 2026-10-14 CGI 공개 철회 반영)
 
 ```text
 STATUS=APPROVED_ARCHITECTURE_NOT_LIVE_CUSTOMER_CUSTODY
-PUBLIC_STANDARD_LIBRARY=#3883
+PUBLIC_GENERIC_STANDARD_LIBRARY=#3883
+CGI_CUSTOMER_SOURCE_PUBLICATION=REVOKED_2026-10-14
 PRIVATE_CUSTOMER_TEMPLATE_IMPLEMENTATION=#3884
 CURRENT_D1_QUOTE_HISTORY_UNCHANGED=#3405
 OPTIONAL_CUSTOMER_GOOGLE_DRIVE=#3871
@@ -16,7 +17,7 @@ AUTOMATIC_PROVIDER_MODEL_FOR_PDF=NO
 
 **우리가 표준 양식을 보유하는 것과 고객이 업로드한 자기 양식을 보관·돌려받는 것은 별개입니다.**
 
-- **공개 표준 양식**(소유자의 공개 허가를 받은 김범신 CGI 등): 버전 관리와 코드 검토가 가능한 **Git 저장소**. 원본 형태·렌더러·필드 배치·승인 범위를 변경 이력으로 보관합니다. 공개 샘플의 회사 정보가 공개 승인되었다고 **다른 고객의 정보까지 공개할 권한이 생기지 않습니다**.
+- **일반 공개 표준 양식**: 실제 고객 정보가 없는 공통 기술 양식·범용 코드에 한하여 Git 버전 관리가 가능합니다. **CGI 고객 원본과 CGI 전용 렌더링 파생 자산은 2026-10-14부터 비공개 R2/Vault 권위로 전환**되었으며, 과거 CGI 공개 승인을 현재 공개 허가로 재사용하지 않습니다.
 - **고객 업로드 원본**: 고객 계정/워크스페이스에 속하는 **비공개 R2 파일 저장소(또는 승인된 기존 객체 저장소)**. 원본을 불변 바이트와 SHA-256으로 보관하고, 고객에게 인증된 내보내기/다운로드 경로로 그대로 돌려줍니다.
 - **승인된 사용자 템플릿**: 같은 고객 영역에 버전별로 편집 가능한 구조·필드 매핑·렌더 리소스를 보관합니다. 원본 파일과 새 견적 출력물은 구분합니다.
 - **견적 내용**: 거래처·공급자·품목·단가·수량·날짜 등 고객별 실데이터는 **공유 템플릿 밖**에 두며, 로그인 계정의 D1 견적 이력(#3405) 또는 별도 승인된 개인 정보 저장 구조를 사용합니다.
@@ -36,7 +37,7 @@ AUTOMATIC_PROVIDER_MODEL_FOR_PDF=NO
           └─ [D1] Approved Saved Quote Skill / 배정 상태
 
 반복 견적
-선택된 승인 템플릿(공개 표준 or 내 R2 개인 템플릿)
+선택된 승인 템플릿(일반 공통 표준 또는 인증된 내 R2 고객별 템플릿)
  + 고객별 회사 정보 + 거래처 + 품목 + 수량 + 단가 + 날짜
  → QuoteCore 재계산
  → 인증된 결정적 렌더러 (모델 추가 호출 없이)
@@ -60,8 +61,8 @@ AUTOMATIC_PROVIDER_MODEL_FOR_PDF=NO
 
 | 데이터 | 권장 권위 | 공개 여부 |
 |---|---|---|
-| Owner가 배포 허용한 CGI 표준 원본 PDF·정리한 XLSX | Git의 버전별 **표준 템플릿 라이브러리** | 공개 |
-| Sol 결정적 렌더러·필드 스키마·변형 가능한 템플릿 리소스 | Git(표준), R2(고객별 인증 템플릿) | 표준만 공개 |
+| CGI 고객 원본 PDF·정리한 XLSX·CGI 전용 파생 자산 | **비공개 R2 / 접근 제한된 원본 Vault**, D1에 고객 권한·버전 메타데이터 | **비공개** (2026-10-14 공개 철회) |
+| 범용 Sol 렌더러 코드·식별 정보 없는 필드 스키마 / CGI 전용 컴파일·이미지·원본 파생 자산 | 범용 코드만 Git, 고객 전용 데이터·실행 아티팩트는 인증된 비공개 R2 | **범용 코드만 공개** |
 | 고객이 실제로 올린 XLSX/PDF/개인 파일 | **R2 비공개 원본** | 비공개 |
 | 회사 계좌·직인·연락처 등 고객별 정보 | 계정 보호 D1/R2 + 필요 시 추가 암호화 | 비공개 |
 | 템플릿 소유자·버전·해시·R2 참조·인증 상태 | 기존 D1 메타데이터 및 Saved Skill과 연계 | 비공개 |
@@ -69,6 +70,14 @@ AUTOMATIC_PROVIDER_MODEL_FOR_PDF=NO
 | 고객 본인 Google Drive 복사 | 선택 기능 #3871 | 고객 소유 |
 
 **기존 B66 R2/D1 로고·도장 저장과 Approved Saved Quote Skill 구조를 우선 재사용**합니다. 별도의 병렬 사용자/계정 권위 시스템을 만들지 않습니다.
+
+## 2026-10-14 CGI 원본 전용 공개 철회 및 계정 접근 제한
+
+- **CGI 실물 원본·원본 유래 PDF/XLSX·이미지·컴파일된 패키지는 더 이상 Git 공개 표준 양식 예외가 아니다.** 공개 소스에는 식별 정보 없는 범용 렌더링 코드·기술 계약만 남기고, CGI 전용 원본과 출력 패키지는 기존 비공개 R2 및 로컬 원본 Vault가 권위다.
+- 기존 2026-10-09 공개 승인 이력은 보존하되, 2026-10-14 새 소유자 지시에 따라 **CGI 전용 파일 공개 권한을 철회**한다. 이전 커밋·캐시·포크의 노출 여부는 별도 이력/배포 대응이 필요하다.
+- CGI 고객 접근은 **로그인한 사용자/워크스페이스에 서버에서 발급·승인한 정확한 Saved Quote Skill 소유권**으로 검사한다. 이메일 문자열, 사람 이름, 로컬 UI 저장값 또는 클라이언트 CGI 스킬 ID만으로 계정을 지정하거나 확대하지 않는다.
+- CGI 전용 R2 미리보기와 PDF 번들의 존재·SHA가 확인되었고, **기존 승인된 Saved Quote Skill의 실제 등록 로그인 계정 소유권이 운영 D1 읽기 전용 조회로 확인**되었다. 다른 계정에 재배정할 필요가 없으며 이 확인은 실제 두 계정 브라우저/서버 E2E 또는 새 배포 성공의 증거가 아니다. 임의 사용자 권한 변경, R2 삭제나 운영 완료 선언은 금지한다.
+- 고객이 스스로 업로드·보관·복원하는 일반 **내 라이브러리(#4316; 이전 #3884)** 기능과 CGI 전용 **인증된 렌더 번들**은 같은 R2/D1 보관 인프라를 재사용할 수 있지만 서로 다른 권한/객체 유형이다.
 
 ## 5. 실제 고객 반환 요구사항 (#3884)
 
@@ -80,7 +89,7 @@ AUTOMATIC_PROVIDER_MODEL_FOR_PDF=NO
 
 ### 현재 구현 상태
 
-- **공개 표준 라이브러리**: #3883 개발·배포 관리. Git 변경만으로 새 고객 템플릿을 자동 활성화하지 않습니다.
+- **일반 공개 표준 라이브러리**: #3883 개발·배포 관리. CGI 고객 전용 자산은 제외하며 Git 변경만으로 새 고객 템플릿을 자동 활성화하지 않습니다.
 - **D1 최근 견적**: #3405 기존 기능 유지. 고객 파일 복구 기능을 이미 제공한다고 주장하지 않습니다.
 - **R2 사용자 원본의 완전한 업로드→보관→반환 E2E**: #3884 별도 구현과 운영 검증이 필요합니다.
 - **고객 Google Drive**: #3871 별도.
@@ -90,8 +99,10 @@ AUTOMATIC_PROVIDER_MODEL_FOR_PDF=NO
 ```text
 D1_REPLACE_WITH_R2=NO
 D1_AS_RAW_FILE_STORE=NO
-PUBLIC_STANDARD_TEMPLATES_GIT=YES
-PRIVATE_CUSTOMER_TEMPLATE_SOURCE=R2_PLANNED
+PUBLIC_GENERIC_TECHNICAL_TEMPLATES_GIT=YES
+CGI_ORIGINAL_AND_COMPILED_ARTIFACTS_IN_PUBLIC_GIT=NO
+PRIVATE_CUSTOMER_TEMPLATE_SOURCE=R2_CUSTOMER_UPLOAD_PENDING_E2E
+CGI_CERTIFIED_RUNTIME_BUNDLE=PRIVATE_R2_EXISTENCE_VERIFIED
 PRIVATE_CUSTOMER_DOWNLOAD=REQUIRES_IMPLEMENTATION_AND_E2E
 CROSS_TENANT_LEAK=DENY
 KEYS_IN_GIT=NO

@@ -69,6 +69,34 @@ def api_snapshot(page) -> tuple[str, object]:
     return classify_state(response.get("body")), response["body"].get("state")
 
 
+def ai_dialogue_recent_count(page) -> int:
+    """Read only the CGI alpha owner's B66 AI-dialogue page; return count, no text/ids.
+
+    CGI guided quote progress and saved quotation history are different stores:
+    zero AI-dialogue rows is a valid finding, not evidence of a broken UI.
+    """
+    result = page.evaluate(
+        """async () => {
+          const r = await fetch('/api/padiem/b66/ai/dialogues?limit=20', {
+            method:'GET', credentials:'same-origin', cache:'no-store'
+          });
+          const j = await r.json().catch(() => null);
+          return {
+            status:r.status,
+            valid:j?.ok === true && j?.authority === 'b66-dialogue' &&
+                  Array.isArray(j?.conversations),
+            count:Array.isArray(j?.conversations) ? j.conversations.length : null
+          };
+        }"""
+    )
+    if not isinstance(result, dict) or result.get("status") != 200 or result.get("valid") is not True:
+        raise BoundedFailure("cgi_ai_dialogue_list_not_available")
+    count = result.get("count")
+    if type(count) is not int or not (0 <= count <= 20):
+        raise BoundedFailure("cgi_ai_dialogue_list_count_invalid")
+    return count
+
+
 def browser_guard(route):
     if allow_http(route.request.method, route.request.url):
         route.continue_()
@@ -180,6 +208,16 @@ def run_live() -> int:
                     raise BoundedFailure("cgi_cross_context_state_mismatch")
                 print("CGI_TWO_BROWSER_ACCOUNT_STATE_PARITY=PASS", flush=True)
                 print("CGI_STATE_CLASS=" + first[0], flush=True)
+
+                # Distinguish "previous AI dialogue is hidden" from "only guided
+                # CGI quotations exist" using the real authenticated route.
+                # No dialogue title, message, id, cookie or secret is logged.
+                ai_first = ai_dialogue_recent_count(logged_in[0])
+                ai_second = ai_dialogue_recent_count(logged_in[1])
+                if ai_first != ai_second:
+                    raise BoundedFailure("cgi_ai_dialogue_cross_browser_count_mismatch")
+                print("CGI_AI_DIALOGUE_LIST_GET=PASS", flush=True)
+                print("CGI_AI_DIALOGUE_RECENT_20_COUNT=" + str(ai_first), flush=True)
 
                 if first[0] == "PRESENT":
                     for page in logged_in:

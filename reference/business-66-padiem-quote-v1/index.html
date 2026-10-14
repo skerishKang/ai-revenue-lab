@@ -34,6 +34,7 @@
   <script src="quote-skill-manual.js" defer></script>
   <script src="quote-skill-start-dialog.js" defer></script>
   <script src="app.js" defer></script>
+  <script src="b66-safe-markdown.js" defer></script>
   <script src="easy-mode.js" defer></script>
   <script src="company-profile-settings.js" defer></script>
   <script src="quote-browser-pdf.js" defer></script>
@@ -50,7 +51,7 @@
   <main class="shell">
     <header class="topbar">
       <div class="brand">
-        <h1>견적서 만들기</h1>
+        <h1><button class="brand-home" id="brandHome" type="button" aria-label="새 AI 견적 대화 시작">견적서 만들기</button></h1>
         <p>입력부터 PDF 저장까지 한 화면에서</p>
       </div>
       <div class="topbar-actions">
@@ -144,7 +145,11 @@
             </button>
             <button class="easy-starter" id="freeChatStarter" type="button">
               <span class="easy-starter-icon" aria-hidden="true">✎</span>
-              <span><strong>내용을 한번에 말하기</strong><small>자유롭게 적고 질문형으로 이어갑니다</small></span>
+              <span><strong>AI와 대화하기</strong><small>일반 질문부터 견적 상담까지</small></span>
+            </button>
+            <button class="easy-starter" id="aiDialogueStarter" type="button">
+              <span class="easy-starter-icon" aria-hidden="true">↺</span>
+              <span><strong>이전 AI 대화</strong><small>저장된 AI 대화를 열어 이어서 물어봅니다</small></span>
             </button>
             <button class="easy-starter" id="fileStarter" type="button">
               <span class="easy-starter-icon" aria-hidden="true">＋</span>

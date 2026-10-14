@@ -16,7 +16,8 @@ from urllib.parse import urlparse
 # Service-Binding transport must use that same httpx Request/Response/stream
 # type family; app.httpx_compat is only for app-owned JS-fetch clients.
 import httpx
-from padiem_ai_core.b14_execution import MAX_B14_RESPONSE_BYTES
+from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
+from app.padiem_super_admin_bootstrap import resolve_super_admin_bootstrap
 from app.service_binding_response import (
     ServiceBindingResponseError,
     ServiceBindingResponseTooLarge,
@@ -53,6 +54,7 @@ from app.claw_artifact_delivery_receipt_store import (
 )
 from app.claw_task_alert_store import D1ClawTaskAlertStore
 from app.b66_quote_conversation import B66QuoteConversationInterpreter
+from app.b66_search_boundary import authorized_b66_fact_search_binding
 from app.b66_registered_model_boundary import (
     B14QuoteExactModelExecutor,
     B66RegisteredModelCompletion,
@@ -61,8 +63,6 @@ from app.b66_b14_free_first_resolver import B66ExplicitQuoteModelResolver
 from app.b66_kira_direct_pilot import B66KiraPilotExecutor
 from app.b66_experiential_direct_pilot import B66ExperientialPilotExecutor
 from app.config import ConfigError
-from app.connector_gateway_runtime_mount import maybe_dispatch_connector_gateway
-from app.connector_owner_runtime_mount import compose_owner_enrollment_from_worker
 from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from app.calendar_read_activation_engine import CloudflareCalendarReadActivationEngineClient
 from app.calendar_read_state_engine import CloudflareCalendarReadStateEngineClient
@@ -272,14 +272,18 @@ class CloudflareB14ServiceTransport:
         try:
             body = await read_bounded_service_binding_body(
                 response,
-                max_bytes=MAX_B14_RESPONSE_BYTES,
+                # Use the same existing finite completed-JSON Worker safety
+                # budget as B14/Core; the obsolete 1MiB Service Binding read
+                # ceiling used to reject healthy answers before Core saw them.
+                # This is NOT a model token/output limit. Streaming remains
+                # incremental and is not affected.
+                max_bytes=MAX_CONFIGURED_B14_RESPONSE_BYTES,
             )
         except ServiceBindingResponseTooLarge:
-            # Core owns the public "response too large" classification. Return
-            # one bounded sentinel byte beyond its configured ceiling so that
-            # classification remains unchanged without consuming the rest of
-            # the Service Binding stream.
-            return status, bytes(MAX_B14_RESPONSE_BYTES + 1)
+            # Core owns the public resource-error classification. Return one
+            # bounded sentinel byte beyond its configured maximum; the reader
+            # has cancelled upstream without buffering an unbounded response.
+            return status, bytes(MAX_CONFIGURED_B14_RESPONSE_BYTES + 1)
         except ServiceBindingResponseError as exc:
             raise RuntimeError(
                 "Business 14 Service Binding response could not be read."
@@ -739,16 +743,6 @@ class Default(WorkerEntrypoint):
         global _worker_app
         path = urlparse(request.url).path
 
-        # #4139: connect the real Worker fetch entrypoint to the canonical WSS
-        # device session ONLY under server-owned opt-in and private bindings.
-        # The production Wrangler manifest declares neither the release flag
-        # nor the Broker Service Binding, so deployed behavior stays OFF.
-        connector_wss_response = await maybe_dispatch_connector_gateway(
-            request=request, worker_env=self.env, response_factory=Response,
-        )
-        if connector_wss_response is not None:
-            return connector_wss_response
-
         if _worker_app is None:
             try:
                 # Resolve Cloudflare same-account Secrets Store bindings only
@@ -836,28 +830,22 @@ class Default(WorkerEntrypoint):
                 # build, so this stays None and the route refuses with 403
                 # rather than inventing an approval.
                 claw_telegram_delivery_request_builder = None
-                # #4139 owner consent/challenge is a distinct browser lane.
-                # The public Worker manifest has no Broker binding or owner
-                # release flag: production remains unmounted by default.
-                try:
-                    connector_owner_ports = compose_owner_enrollment_from_worker(self.env)
-                except ValueError:
-                    return _apply_headers(Response(
-                        "Connector owner enrollment unavailable.", status=503,
-                        headers={"Content-Type": "text/plain; charset=utf-8"},
-                    ), path)
+                # Single trusted PADIEM operator bootstrap. Existing product
+                # authorizers still check the Google provider subject in D1.
+                # A conflicting legacy binding fails closed for BOTH products.
+                b66_operator_email, central_operator_email = resolve_super_admin_bootstrap(
+                    shared=binding_value(self.env, "PADIEM_SUPER_ADMIN_GOOGLE_EMAIL"),
+                    legacy_b66=binding_value(self.env, "B66_ADMIN_GOOGLE_EMAIL"),
+                    legacy_central=binding_value(self.env, "PADIEM_CENTRAL_MODEL_ADMIN_GOOGLE_EMAIL"),
+                )
                 _worker_app = create_app(
                     settings=settings,
-                    connector_owner_enrollment=connector_owner_ports,
                     history_store=history_store,
                     d1_binding=db_binding,
-                    b66_admin_google_email=(
-                        binding_value(self.env, "B66_ADMIN_GOOGLE_EMAIL") or ""
-                    ),
-                    # Distinct global RBAC bootstrap; B66 admins never inherit it.
-                    # Absent means central model read/preview is default OFF.
-                    central_model_admin_google_email=(
-                        binding_value(self.env, "PADIEM_CENTRAL_MODEL_ADMIN_GOOGLE_EMAIL") or ""
+                    b66_admin_google_email=b66_operator_email,
+                    central_model_admin_google_email=central_operator_email,
+                    central_model_policy_signing_key=(
+                        binding_value(self.env, "PADIEM_CENTRAL_MODEL_POLICY_SIGNING_KEY") or ""
                     ),
                     r2_binding=r2_binding,
                     web_transport=web_transport,
@@ -878,6 +866,15 @@ class Default(WorkerEntrypoint):
                 # when the separate membership/tier rollout is not enabled.
                 # D1 metadata errors fail closed before any provider dispatch.
                 _worker_app.state.b66_global_model_switch_enforced = True
+                # #4469: explicitly approved public-fact lookup only. A client
+                # request, model prompt or a configured provider cannot enable
+                # B66 external web egress. Binding absent/invalid => OFF.
+                _worker_app.state.b66_public_fact_search_authorized = (
+                    authorized_b66_fact_search_binding(
+                        settings,
+                        binding_value(self.env, "B66_PUBLIC_FACT_SEARCH_AUTHORIZED"),
+                    )
+                )
                 # Optional signup notification channels: configuration comes
                 # exclusively from trusted Worker bindings, never browser input.
                 def _b66_notice_value(key):

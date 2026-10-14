@@ -58,6 +58,20 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
         raise AssertionError("sidebar suggested-question heading must be removed")
     if await page.locator("#sidebar [data-prompt]").count() != 0:
         raise AssertionError("sidebar must not own prompt-discovery controls")
+    # #4462 simplified IA: duplicate Projects / saved answers / standalone
+    # Tasks+Alerts leave the sidebar; Files is labelled Library.
+    for removed in (
+        "#projectsNavButton",
+        "#outputsNavButton",
+        "#outputsSection",
+        "#alertsNavButton",
+        "#tasksNavButton",
+    ):
+        if await page.locator(removed).count() != 0:
+            raise AssertionError(f"sidebar simplified IA must not contain {removed}")
+    for kept in ("#filesNavButton", "#automationNavButton", "#clawAutomation", "#clawWorkspace"):
+        if await page.locator(kept).count() != 1:
+            raise AssertionError(f"simplified IA must preserve {kept}")
 
     visible_starters = await _visible_count(page, "#emptyState .starter-grid .starter")
     if visible_starters < 3:
@@ -70,9 +84,10 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
         raise AssertionError("bottom utility group must preserve Padiem Home and canonical account")
     if await legacy_settings.is_visible():
         raise AssertionError("the old duplicate Settings row must stay hidden")
-    # Offline mock auth hides account chrome. Expose the signed-in presentation
-    # only for the focus-order QA; no credentials or permissions are bypassed.
-    await account.evaluate("(el) => { el.hidden = false; el.style.display = 'grid'; }")
+    # Offline mock auth hides account chrome. Its async state projection can
+    # re-hide the account row while the mobile drawer/focus path is settling;
+    # expose the focus-only presentation after that navigation instead.
+    # No credentials, account state or product permission is forged.
     settings = page.locator("#accountProfileButton")
     if await home.get_attribute("href") != "https://padiem.net/":
         raise AssertionError("Padiem Home destination changed")
@@ -109,16 +124,19 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
         """
         () => {
           const sidebar = document.querySelector('#sidebar');
+          // Document order within the sidebar, so the check stays valid when a
+          // control is grouped inside a row wrapper (e.g. the New Chat/Search
+          // actions row) instead of being a direct sidebar child.
+          const all = [...sidebar.querySelectorAll('*')];
           const nodes = [
             sidebar.querySelector('#newChatButton'),
             sidebar.querySelector('.side-nav'),
             sidebar.querySelector('#projectsSection'),
             sidebar.querySelector('#historySection'),
-            sidebar.querySelector('#outputsSection'),
             sidebar.querySelector('.sidebar-footer'),
             sidebar.querySelector('.sidebar-bottom'),
           ];
-          return nodes.map(node => node ? [...sidebar.children].indexOf(node) : -1);
+          return nodes.map(node => node ? all.indexOf(node) : -1);
         }
         """
     )
@@ -149,9 +167,16 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
         await _assert_focus(page, "#newChatButton", "mobile new chat")
     else:
         await page.locator(".brand").focus()
+        # The collapse control now opens the brand row, so it precedes New Chat
+        # in the desktop keyboard order.
+        await page.keyboard.press("Tab")
+        await _assert_focus(page, "#sidebarCollapseButton", "desktop sidebar collapse")
         await page.keyboard.press("Tab")
         await _assert_focus(page, "#newChatButton", "desktop new chat")
 
+    # Apply the mock-only presentation adjustment immediately before reading
+    # keyboard focus order, after initial auth renders and drawer transitions.
+    await account.evaluate("(el) => { el.hidden = false; el.style.display = 'grid'; }")
     focus_order = await _visible_sidebar_focus_order(page)
     required = ("newChatButton", "accountProfileButton", "home-link")
     if any(item not in focus_order for item in required):

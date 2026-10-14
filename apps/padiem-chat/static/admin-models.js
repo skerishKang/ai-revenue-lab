@@ -3,11 +3,11 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const PRODUCTS = Object.freeze({
-    central: {name: "중앙 정책", icon: "◎"},
-    chat: {name: "Padiem Chat", icon: "◉"},
-    claw: {name: "Claw", icon: "⌘"},
-    b66: {name: "B66 견적", icon: "▤"},
-    "b14-router": {name: "B14 Router", icon: "◇"},
+    central: {name: "중앙 정책", icon: "target"},
+    chat: {name: "Padiem Chat", icon: "message"},
+    claw: {name: "Claw", icon: "terminal"},
+    b66: {name: "B66 견적", icon: "file"},
+    "b14-router": {name: "B14 Router", icon: "route"},
   });
   const SOURCES = Object.freeze({
     central: "Control Plane", chat: "Chat 등급 라우팅", claw: "B14 선택 목록",
@@ -16,7 +16,8 @@
   const ACTIONS = Object.freeze({allow: "허용", block: "차단", inherit: "상속"});
   const state = {
     catalog: [], products: null, selected: null,
-    authorized: false, pendingRequest: 0,
+    selectableIds: new Set(), fullInventory: false,
+    authorized: false, writeEnabled: false, pendingReceipt: null, pendingRequest: 0,
   };
 
   function node(tag, value, className) {
@@ -24,6 +25,41 @@
     if (value !== undefined && value !== null) el.textContent = String(value);
     if (className) el.className = className;
     return el;
+  }
+
+  const ICON_STROKES = Object.freeze({
+    target: ["circle|12,12,9", "circle|12,12,4"],
+    message: ["path|M21 11.5a8.5 8.5 0 0 1-8.5 8.5 9.3 9.3 0 0 1-4-.9L3 21l1.9-5.5a9.3 9.3 0 0 1-.9-4A8.5 8.5 0 0 1 12.5 3a8.5 8.5 0 0 1 8.5 8.5Z"],
+    terminal: ["rect|3,4,18,16,2", "path|m7 9 3 3-3 3", "path|M12 15h5"],
+    file: ["path|M8 3h8l4 4v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h3", "path|M15 3v5h5M8 12h8M8 16h8"],
+    route: ["circle|6,17,2", "circle|18,6,2", "path|M8 17h6a4 4 0 0 0 4-4V8"],
+  });
+
+  function productIcon(name) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("class", "product-icon");
+    svg.setAttribute("aria-hidden", "true");
+    for (const spec of ICON_STROKES[name] || []) {
+      const [kind, coords] = spec.split("|");
+      const child = document.createElementNS("http://www.w3.org/2000/svg", kind);
+      if (kind === "path") {
+        child.setAttribute("d", coords);
+      } else if (kind === "circle") {
+        const [cx, cy, r] = coords.split(",");
+        child.setAttribute("cx", cx);
+        child.setAttribute("cy", cy);
+        child.setAttribute("r", r);
+      } else if (kind === "rect") {
+        const [x, y, width, height, rx] = coords.split(",");
+        for (const [key, value] of Object.entries({x, y, width, height, rx})) {
+          child.setAttribute(key, value);
+        }
+      }
+      svg.append(child);
+    }
+    return svg;
   }
 
   function alertMessage(value, variant = "error") {
@@ -45,16 +81,24 @@
   }
 
   function clearPreview() {
+    state.pendingReceipt = null;
+    $("applyBtn").hidden = true;
     $("previewResult").hidden = true;
     $("previewResult").replaceChildren();
     $("previewResult").className = "preview";
+  }
+
+  function canPreview() {
+    return state.authorized && state.selected &&
+      state.selectableIds.has(state.selected.model_id) &&
+      state.selected.owner_excluded !== true && state.selected.b14_enabled !== false;
   }
 
   function updateSelection() {
     state.pendingRequest += 1;
     const selected = chosenTargets().length;
     $("targetCount").textContent = String(selected);
-    $("previewBtn").disabled = !(state.authorized && state.selected && selected);
+    $("previewBtn").disabled = !(canPreview() && selected);
     clearPreview();
   }
 
@@ -64,7 +108,7 @@
     for (const [key, product] of Object.entries(PRODUCTS)) {
       const label = node("label", null, "target");
       const name = node("span", null, "target-title");
-      name.append(node("span", product.icon, "product-icon"), node("span", product.name));
+      name.append(productIcon(product.icon), node("span", product.name));
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
       checkbox.value = key;
@@ -81,7 +125,7 @@
     state.selected = state.catalog.find((m) => m.model_id === modelId) || null;
     $("selectedModel").textContent = state.selected?.name || "왼쪽에서 모델을 선택하세요";
     $("selectedId").textContent = state.selected?.model_id || "미선택";
-    $("editorForm").disabled = !(state.authorized && state.selected);
+    $("editorForm").disabled = !canPreview();
     renderCatalog();
     renderPlacement();
     updateSelection();
@@ -103,10 +147,14 @@
       row.type = "button";
       const selected = state.selected?.model_id === model.model_id;
       row.setAttribute("aria-pressed", String(selected));
+      row.classList.toggle("model-inactive", model.b14_enabled === false || model.owner_excluded === true);
       const words = node("span", null, "model-words");
       words.append(node("strong", model.name), node("small", model.model_id));
-      row.append(node("span", "●", "model-dot"), words,
-        node("span", selected ? "✓" : "›", "model-chevron"));
+      const status = model.owner_excluded === true ? "제외" :
+        model.b14_enabled === false ? "OFF" : state.fullInventory ? "ON" : "";
+      row.append(node("span", "●", "model-dot"), words);
+      if (status) row.append(node("span", status, "model-state"));
+      row.append(node("span", selected ? "✓" : "›", "model-chevron"));
       row.addEventListener("click", () => chooseModel(model.model_id));
       root.append(row);
     }
@@ -115,8 +163,15 @@
   function positions() {
     const modelId = state.selected?.model_id;
     if (!modelId) return [];
+    const b14 = state.selected?.owner_excluded === true ?
+      {name: "B14 공통", status: "선택 제외", detail: "B14 소유자 정책상 제외된 모델", kind: "blocked"} :
+      state.selected?.b14_enabled === false ?
+      {name: "B14 공통", status: "OFF", detail: "B14 등록은 됐지만 활성 목록에서 제외됨", kind: "blocked"} :
+      state.selectableIds.has(modelId) ?
+      {name: "B14 공통", status: "조회됨", detail: "B14 선택 가능 목록에 있음; 실제 실행 성공과 별개", kind: "ready"} :
+      {name: "B14 공통", status: "미확인", detail: "제품 선택 가능 여부 확인 필요", kind: "unknown"};
     const result = [
-      {name: "B14 공통", status: "조회됨", detail: "선택 가능한 B14 모델", kind: "ready"},
+      b14,
       {name: "중앙 정책", status: "미연결", detail: "등급별 정책 조회 전", kind: "unknown"},
       {name: "Padiem Chat", status: "미연결", detail: "실제 배정 여부 미확인", kind: "unknown"},
       {name: "Claw", status: "미연결", detail: "제품별 최종 실행 허용 미확인", kind: "unknown"},
@@ -165,20 +220,24 @@
     let connected = 0;
     for (const [id, product] of Object.entries(PRODUCTS)) {
       const data = state.products?.[id] || {status: "unavailable"};
-      const isConnected = data.status === "connected";
+      const isConnected = data.status === "connected" || data.status === "stored_only";
       if (isConnected) connected++;
       const card = node("div", null, "source-card");
       card.append(node("strong", product.name));
-      card.append(node("span", isConnected ? "● 정책 조회됨" :
+      card.append(node("span", data.status === "stored_only" ? "◌ 저장 원장만 연결" :
+        isConnected ? "● 정책 조회됨" :
         data.status === "not_wired" ? "◌ 아직 미연결" : "◌ 조회 불가",
         isConnected ? "connected" : "unknown"));
       card.append(node("small", SOURCES[id]));
+      if (id === "central" && data.status === "stored_only") card.append(
+        node("small", "Revision " + data.revision + " · 실제 실행 미적용"));
       if (id === "b66" && isConnected) card.append(
         node("small", "Revision " + data.revision + (data.active ? " · 활성" : " · 비활성")));
       root.append(card);
     }
     $("sourceCount").textContent = connected + " / 5 연결";
-    $("flowCentral").textContent = "미연결";
+    $("flowCentral").textContent = state.products?.central?.status === "stored_only" ?
+      "원장 연결 · 미적용" : "미연결";
     $("flowProducts").textContent = connected + "/5 정책 조회";
   }
 
@@ -187,13 +246,21 @@
     root.replaceChildren();
     root.className = "preview";
     root.hidden = false;
-    root.append(node("strong", "✓ 변경안 검증 완료"), node("small", "저장 및 운영 반영 없음"));
+    root.append(node("strong", "✓ 변경안 검증 완료"),
+      node("small", state.writeEnabled ? "아직 저장되지 않았습니다 · 제품 실행 경로 미적용" : "저장 및 운영 반영 없음"));
     const list = node("ul");
-    for (const item of result.targets) {
-      list.append(node("li", PRODUCTS[item.product_id].name + " · " +
-        item.tier + " · " + ACTIONS[item.action]));
+    for (const item of (result.diff || result.targets || [])) {
+      const product = item.product || item.product_id;
+      const before = item.previous ? " (" + ACTIONS[item.previous] + " →)" : "";
+      list.append(node("li", (PRODUCTS[product]?.name || product) + " · " +
+        item.tier + " · " + before + " " + ACTIONS[item.action]));
     }
     root.append(list);
+    if (state.writeEnabled && typeof result.confirmation_receipt === "string" &&
+        result.confirmation_receipt.length > 40) {
+      state.pendingReceipt = result.confirmation_receipt;
+      $("applyBtn").hidden = false;
+    }
   }
 
   async function getJSON(path, options = {}) {
@@ -211,18 +278,20 @@
 
   async function preview() {
     const targets = chosenTargets();
-    if (!state.authorized || !state.selected || !targets.length) return;
+    if (!canPreview() || !targets.length) return;
     const seq = ++state.pendingRequest;
     $("previewBtn").disabled = true;
     clearPreview();
     try {
-      const result = await getJSON("/api/admin/models/preview", {
+      const result = await getJSON(state.writeEnabled ?
+        "/api/admin/models/change-preview" : "/api/admin/models/preview", {
         method: "POST", headers: {"Content-Type": "application/json"},
         body: JSON.stringify({model_id: state.selected.model_id, targets}),
       });
       if (seq !== state.pendingRequest) return;
       if (result.applied !== false || result.persisted !== false ||
-          result.dispatch_authorized === true || !Array.isArray(result.targets)) {
+          result.runtime_enforced === true ||
+          !(Array.isArray(result.targets) || Array.isArray(result.diff))) {
         throw new Error("invalid_preview_receipt");
       }
       renderPreview(result);
@@ -233,7 +302,7 @@
       $("previewResult").replaceChildren(node("strong", "미리보기 실패"), node("small", String(err.message)));
     } finally {
       if (seq === state.pendingRequest) {
-        $("previewBtn").disabled = !state.authorized || !state.selected || !chosenTargets().length;
+        $("previewBtn").disabled = !canPreview() || !chosenTargets().length;
       }
     }
   }
@@ -241,7 +310,11 @@
   async function load() {
     const seq = ++state.pendingRequest;
     state.authorized = false;
+    state.writeEnabled = false;
+    $("policyHistory").hidden = true;
     state.catalog = [];
+    state.selectableIds = new Set();
+    state.fullInventory = false;
     state.products = null;
     state.selected = null;
     $("modelCount").textContent = "—";
@@ -262,22 +335,41 @@
     clearPreview();
     alertMessage("");
     try {
-      await getJSON("/api/admin/models/me");
+      const me = await getJSON("/api/admin/models/me");
       if (seq !== state.pendingRequest) return;
       const result = await getJSON("/api/admin/models/snapshot");
       if (seq !== state.pendingRequest) return;
-      if (result.mode !== "read_only" || result.write_enabled !== false ||
+      if (!["read_only", "stored_only"].includes(result.mode) ||
           !Array.isArray(result.b14?.models)) throw new Error("invalid_snapshot");
-      state.catalog = result.b14.models;
+      state.writeEnabled = me.write_enabled === true && result.write_enabled === true &&
+        result.products?.central?.status === "stored_only";
+      const complete = result.b14.complete_registration_inventory === true &&
+        Array.isArray(result.b14.registered_models);
+      state.selectableIds = new Set(result.b14.models.map((m) => m.model_id));
+      state.fullInventory = complete;
+      state.catalog = complete ? result.b14.registered_models : result.b14.models;
+      if (!state.catalog.every((m) => typeof m.model_id === "string" &&
+            typeof m.name === "string" &&
+            (!complete || (typeof m.b14_enabled === "boolean" &&
+             typeof m.owner_excluded === "boolean")))) {
+        throw new Error("invalid_snapshot");
+      }
       state.products = result.products;
       state.authorized = true;
       $("modelCount").textContent = String(state.catalog.length);
-      $("flowB14").textContent = state.catalog.length + "개 조회";
-      $("catalogStatus").textContent = "B14 조회";
-      $("modeBadge").textContent = "미리보기 전용";
+      $("flowB14").textContent = state.catalog.length + (complete ? "개 등록" : "개 선택 가능");
+      $("catalogStatus").textContent = complete ?
+        "ON " + state.catalog.filter((m) => m.b14_enabled && !m.owner_excluded).length +
+        " · OFF " + state.catalog.filter((m) => !m.b14_enabled).length : "일부 목록";
+      $("modeBadge").textContent = state.writeEnabled ? "정책 저장 가능" : "미리보기 전용";
+      $("policyHistory").hidden = !state.writeEnabled;
+      $("writeNote").firstChild.textContent = state.writeEnabled ?
+        "저장된 정책도 제품 실행에는 아직 적용되지 않습니다. " :
+        "미리보기 단계에서는 설정이 바뀌지 않습니다. ";
       renderCatalog();
       renderSources();
       renderPlacement();
+      if (state.writeEnabled) await loadAudit();
     } catch (err) {
       if (seq !== state.pendingRequest) return;
       const code = String(err.message);
@@ -293,6 +385,68 @@
         code === "global_model_admin_forbidden" ? "중앙 관리자 권한이 없습니다." :
         code === "central_admin_not_configured" ? "중앙 관리자 권한이 아직 설정되지 않았습니다." :
         "관리 데이터를 불러오지 못했습니다. (" + code + ")");
+    }
+  }
+
+  async function loadAudit() {
+    const root = $("policyAudit");
+    root.replaceChildren(node("small", "이력 확인 중"));
+    try {
+      const data = await getJSON("/api/admin/models/audit");
+      if (!Array.isArray(data.events)) throw new Error("invalid_audit");
+      root.replaceChildren();
+      if (!data.events.length) root.append(node("p", "저장된 변경 이력이 없습니다.", "placeholder"));
+      for (const entry of data.events.slice(0, 12)) {
+        const row = node("div", null, "source-card");
+        row.append(node("strong", "리비전 " + entry.revision + " · " +
+          (entry.operation === "rollback" ? "롤백" : "저장")));
+        row.append(node("small", String(entry.at || "")));
+        root.append(row);
+      }
+    } catch (err) {
+      root.replaceChildren(node("small", "이력 조회 불가: " + String(err.message)));
+    }
+  }
+
+  async function applyChange() {
+    if (!state.writeEnabled || !state.pendingReceipt) return;
+    if (!window.confirm("선택한 중앙 정책을 D1에 저장하시겠습니까? 제품의 실제 모델 실행 정책은 변경되지 않습니다.")) return;
+    const receipt = state.pendingReceipt;
+    $("applyBtn").disabled = true;
+    try {
+      const data = await getJSON("/api/admin/models/change-apply", {
+        method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({confirmation_receipt: receipt}),
+      });
+      if (data.persisted !== true || data.runtime_enforced !== false) {
+        throw new Error("invalid_commit");
+      }
+      await load();
+      alertMessage("정책 리비전 " + data.revision + " 저장 완료 · 실제 제품 실행은 미적용", "success");
+    } catch (err) {
+      clearPreview();
+      alertMessage("정책 저장 실패: " + String(err.message));
+    } finally {
+      $("applyBtn").disabled = false;
+    }
+  }
+
+  async function rollbackPreview() {
+    if (!state.writeEnabled) return;
+    const revision = Number($("rollbackRevision").value);
+    if (!Number.isSafeInteger(revision) || revision < 0) {
+      alertMessage("유효한 롤백 리비전을 입력해 주세요."); return;
+    }
+    clearPreview();
+    try {
+      const result = await getJSON("/api/admin/models/rollback-preview", {
+        method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({target_revision: revision}),
+      });
+      renderPreview(result);
+      alertMessage("");
+    } catch (err) {
+      alertMessage("롤백 미리보기 실패: " + String(err.message));
     }
   }
 
@@ -312,6 +466,8 @@
     input.addEventListener("change", updateSelection);
   }
   $("previewBtn").addEventListener("click", preview);
+  $("applyBtn").addEventListener("click", applyChange);
+  $("rollbackPreviewBtn").addEventListener("click", rollbackPreview);
   $("refreshBtn").addEventListener("click", load);
   $("helpBtn").addEventListener("click", () => help("모델 관리자 안내"));
   $("flowInfoBtn").addEventListener("click", () => help("전체 흐름 안내"));

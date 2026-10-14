@@ -50,7 +50,7 @@ async def project_completed_general_run(
     # Non-null session refs must be verified AGAIN at the history authority.
     # Never allow a bare browser-selected conversation to ride on a new result.
     if conversation_id is not None:
-        from .history import validate_conversation_id
+        from .history import PRODUCT_SCOPE_CHAT, validate_conversation_id
         try:
             cid = validate_conversation_id(conversation_id)
         except ValueError:
@@ -61,7 +61,7 @@ async def project_completed_general_run(
         if not callable(get_conversation):
             return False
         try:
-            owned = get_conversation(uid, cid)
+            owned = get_conversation(uid, cid, product_scope=PRODUCT_SCOPE_CHAT)
             if inspect.isawaitable(owned):
                 owned = await owned
         except Exception:

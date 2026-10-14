@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from test_3580_web_xlsx_p01_request import projected_pause
 from app.claw_web_xlsx_p01_request import (
     TrustedWebXlsxP01Request, WebXlsxP01RequestError,
-    parse_engine_pause,
+    WebXlsxP01RetrySafeDecisionError, parse_engine_pause,
 )
 from app.web_xlsx_p01_engine_client import (
     CloudflareWebXlsxP01EngineClient, build_web_xlsx_p01_engine_client,
@@ -258,6 +258,36 @@ async def test_owner_decision_rejects_all_unverified_engine_responses(status, bo
         decision="approve", owner_id=scope().owner_id,
     )
     with pytest.raises(WebXlsxP01RequestError):
+        await client(engine).resume_owner_decision(
+            continuation_ref="cont_" + "c"*32, submission=submission,
+        )
+    assert len(engine.calls) == 1
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("code", [
+    "invalid_decision",
+    "continuation_identity_mismatch",
+    "invalid_verified_decision",
+])
+async def test_owner_decision_retry_safe_rejection_is_classified_not_opaque(code):
+    """#3936: the canonical retry-safe codes must be distinguishable.
+
+    These codes mean the Engine refused the submission WITHOUT consuming the
+    stored continuation, so B62 may release the one-shot reservation and the
+    owner may decide again. Treating them as an opaque failure permanently
+    armed the receipt at 'dispatching'.
+    """
+    from kagent.p01_approval_continuation import (
+        RETRY_SAFE_RESUME_CODES, build_first_party_decision_submission,
+    )
+    assert code in RETRY_SAFE_RESUME_CODES
+    engine = EngineBinding(result={"ok": False, "error": {"code": code}}, status=409)
+    submission = build_first_party_decision_submission(
+        pause_id="pause:" + "b"*32,
+        decision="approve", owner_id=scope().owner_id,
+    )
+    with pytest.raises(WebXlsxP01RetrySafeDecisionError):
         await client(engine).resume_owner_decision(
             continuation_ref="cont_" + "c"*32, submission=submission,
         )

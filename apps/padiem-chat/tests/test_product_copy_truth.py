@@ -27,7 +27,7 @@ def test_copy_repair_preserves_existing_first_use_dom_hooks():
         'id="messageInput"',
         'id="sendButton"',
         'id="attachmentButton"',
-        'id="projectsNavButton"',
+        'id="projectsSection"',
         'id="projectDialog"',
         'id="historySection"',
         'id="messageList"',

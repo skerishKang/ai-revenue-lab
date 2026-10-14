@@ -51,6 +51,21 @@
 
 ## 4. Tabbit 사용 및 증거 규격
 
+### Browser Use 실행기 구별과 이전 작업 재개 (UI + 운영 E2E)
+
+**이 문단은 브라우저 도구 선택에 적용된다.** 아래 UI QuickCheck 1~3장/30~90초 규칙을 모델·P01·파일 WRITE가 포함된 운영 E2E의 수용 기준으로 축소하지 않는다. 그런 업무는 기존 T2/T3·인증·승인·실행 증거를 그대로 지킨다.
+
+- **작업을 이어받을 때 순서:** 최신 대표 지시 → 같은 제품·이슈의 최근 **실제 실행 증거**(도구·로그인 브라우저·승인 소진 여부) → 연결된 장치에서 도구의 실제 `--help`/상태 확인 → 필요한 최소 검증. 과거에 성공한 경로가 확인되면 이유 없이 도구나 로그인 프로필을 바꾸지 않는다. 지시·댓글을 실제 실행 증거로 오인하지 않는다.
+- **Tabbit LocalAgent (`tabbit-cli`):** `%LOCALAPPDATA%\Tabbit\LocalAgent\bin\tabbit-cli.exe`. `create` / `tabs` / `nodejs` / `receipt` / `finish`는 CLI 도움말에서 실제 지원 계약을 확인하고 사용한다. 사용자가 **“Tabbit 에이전트/Tabbit Browser Use”**를 명시하면 이 경로의 연결 상태를 먼저 확인한다. 기존 승인 탭과 태스크 소유 탭을 구별하고, 무단 `claim`/`resume`으로 사용자 탭을 이동하지 않는다.
+- **BSK Browser Skill (`bsk.exe`):** Tabbit LocalAgent와 **별개 도구**다. 설치된 `bsk.exe browsers`에서 실제 연결 브라우저의 종류·인스턴스를 읽는다(Chrome이라고 나오면 Tabbit 연결이라고 부르지 않는다). 기존 BSK 검증 계약이면 `session start --browser <실제 인스턴스> --no-focus` → `navigate`/`snapshot`/`evaluate`/`network` → `session stop <세션>` 순서로 **분리된 Agent Window**를 사용한다. 브라우저 종류와 세션 ID를 보고하고 종료를 확인한다.
+- **Desktop Commander:** Windows에서 위 CLI 명령을 전달하고 결과를 확인하는 **원격 셸 연결 수단**이다. 자체가 Tabbit Browser Use나 로그인된 브라우저 세션은 아니다. `pyautogui`/OS 마우스·키보드 조작, 공유 창 포커스 강탈, 개발자 도구를 열어 수동으로 JS를 타이핑하는 방식은 기본 경로로 사용하지 않는다. 사용자가 명시적으로 다른 GUI 방식에 동의하고 충돌 범위를 확인하지 않은 한 이 방식으로 우회하지 않는다.
+- **TinyFish:** 별도의 클라우드 브라우저/프로필 서비스다. TinyFish 프로필에 `signed_in_sites` 기록이 없다는 사실은 **로컬 Tabbit 또는 BSK의 인증 세션 부재를 뜻하지 않는다.** 이미 승인된 로컬 경로 대신 TinyFish 프로필 생성·재로그인을 먼저 요구하지 않는다.
+- **실사용 사전점검:** 대상 URL과 실제 제품·브라우저 인스턴스, 로그인 `/api/auth/status`, 현재 기능 가용성, 최근 실행 및 승인 소진 여부를 **같은 인증 브라우저**에서 최소한의 읽기 전용 요청으로 확인한다. 쿠키·비밀번호·토큰 추출·복사 금지. 실모델/승인/WRITE POST는 기존 대표 승인 범위와 중복 실행 방지 계약을 준수하며, 승인 없으면 호출하지 않는다.
+- **불가/충돌 시:** 우선 도구·세션 확인 실패 이유를 보고한다. 기존 사용자 브라우저를 조작하는 다른 기술이나 새 클라우드 로그인을 조용히 대체하지 않는다. 다른 방식이 필요한 경우 변경 사실을 알리고 필요한 승인을 받은 후 진행한다. 끝나면 태스크 소유 Agent 세션/탭을 종료하고 원래 사용자 창을 보존한다.
+
+**#3936 검증의 재사용 증거:** [실제 Chrome 153 + BSK 한 번의 SSE 수집](https://github.com/skerishKang/ai-revenue-lab/issues/3936#issuecomment-6157720152)은 해당 관측의 증거이고, [기존 Tabbit 로그인 검증 지시](https://github.com/skerishKang/ai-revenue-lab/issues/3936#issuecomment-6142354907)는 다른 시점의 작업 계약이다. 둘을 하나의 CLI/인스턴스로 섞지 않으며, 이미 수용한 실모델 호출을 반복하지 않는다.
+
+
 - **먼저 URL 확인:** 사용자가 본 도메인, 실제 실행 환경, 변경 적용 리비전을 확인. 잘못된 스테이징 화면을 운영 검증으로 보고하지 않는다.
 - Tabbit CLI와 연결된 브라우저/탭을 통해 탐색·클릭·입력·창 조절·화면 캡처를 수행한다. CLI 명령과 지원 기능은 실제 설치 버전의 도움말/스킬을 확인하고 호출한다. 이용 불가라면 추측한 명령을 계속 시도하지 않는다.
 - 기존 탭/프로필은 사용자 승인 범위 내에서만 사용한다. **로그인 비밀번호·쿠키·토큰을 내보내거나 관리자 승인/P01 버튼을 대리 우회하지 않는다.** 다른 실제 고객 견적을 수정하지 않는다.
@@ -70,3 +85,22 @@ REQUIRED_CI_AND_DEPLOY=PASS|BLOCKED|PENDING, ELAPSED=...초
 **운영 규율:** UI 화면 2개를 고치기 위해 별도 증거 패킷 10개와 반복 테스트를 만드는 것은 금지. 다만 잘못된 견적 삭제·권한 상승·과금·파일 변경을 **스크린샷 한 장만으로 안전하다고 단정하는 것 역시 금지**.
 
 이 문서를 읽었다는 이유만으로 자동화 CLI를 구현했다고 주장하지 않는다. 재사용 가능한 최소 스크립트/프로필이 필요하면 #4458에서 짧게 구현하되, 현재 UI 작업의 병목으로 만들지 않는다.
+
+## 부록 — 재사용 런처 `scripts/ops/tabbit_quickcheck.py` (#4458 launcher slice)
+
+이 문서의 1~3장 규칙을 매번 손으로 반복하지 않도록, **opt-in 로컬** 실행기 하나를 둔다. 필수 CI·보안 게이트·배포 절차를 대체하지 않으며, 대체할 수 있다고 보고하지 않는다.
+
+```powershell
+# PC 기본 화면 1장
+python scripts/ops/tabbit_quickcheck.py --url "https://<preview>/" --action open
+# 실제 창을 한 번 좁혀 390px 확인 1장
+python scripts/ops/tabbit_quickcheck.py --url "https://<preview>/" --action narrow --width 390
+# 접근성 이름이 같은 버튼 1회 클릭 후 1장
+python scripts/ops/tabbit_quickcheck.py --url "https://<preview>/" --action click --role button --name "검색"
+```
+
+- 종료 코드 `0=PASS / 1=FAIL / 2=BLOCKED`. 증거는 `.tmp/tabbit-quickcheck/<시각>/`에 `quickcheck.json` + PNG 1장으로 남는다.
+- 요청한 CSS 너비가 실제로 렌더됐는지 프로그램이 자체 검증한다(`viewport_honored`). 연결된 브라우저는 줌·창 제약으로 요청값과 다른 `innerWidth`를 보고할 수 있고, 내비게이션이 되돌리기도 한다. 너비를 지키지 못하면 **PASS로 처리하지 않는다**.
+- 이 도구는 `claim`/`resume`과 `--tab`/`--group`을 쓰지 않는다. 자기 태스크가 만든 페이지만 사용하므로 기존 로그인 고객 탭을 이동시키지 않는다. `http(s)`가 아니거나 URL에 자격 증명이 포함된 경우는 거부한다.
+- 로그·증거에는 URL·너비·리비전·액션·소요시간·결과만 남긴다. 비밀번호·쿠키·어떤 인증 헤더·계정 내용·페이지 본문 텍스트도 기록하지 않는다.
+- CLI가 없거나 컨트롤러가 떠 있지 않으면 추측 실행 없이 `BLOCKED`로 끝낸다.

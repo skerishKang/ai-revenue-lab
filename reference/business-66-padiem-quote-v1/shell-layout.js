@@ -10,6 +10,8 @@
   // Below this width the right A4 preview cannot coexist with a usable chat.
   var COMPACT_PREVIEW_BREAKPOINT = 1480;
   var previewAutoCollapsed = false;
+  // Track only a viewport-triggered rail close, never a customer toggle.
+  var railAutoCollapsed = false;
   var wasCompact = null;
   var wasMobile = null;
 
@@ -46,6 +48,7 @@
     railCollapse.setAttribute("aria-label", "왼쪽 메뉴 접기");
     railCollapse.setAttribute("aria-controls", "shellRail");
     railCollapse.addEventListener("click", function () {
+      railAutoCollapsed = false; // Explicit desktop collapse survives resize.
       document.body.classList.add("rail-collapsed");
       var reopenButton = byId("shellRailToggle");
       if (reopenButton) reopenButton.focus();
@@ -104,6 +107,29 @@
       document.dispatchEvent(new CustomEvent("b66:open-recent-quotes"));
     });
     historySection.appendChild(recent);
+    // #4657: make the existing owner-scoped B66 AI dialogue history discoverable
+    // from the persistent rail, not only from the home starter grid. Reuse the
+    // canonical click handler; never read saved-quote rows or choose an owner.
+    var previousDialogue = makeButton(
+      "shellPreviousAiDialogue",
+      "↺",
+      "이전 AI 대화",
+      "저장된 AI 대화를 검색하고 이어서 대화합니다"
+    );
+    previousDialogue.addEventListener("click", function () {
+      clickExisting("aiDialogueStarter");
+    });
+    historySection.appendChild(previousDialogue);
+    const guidedDialogue = makeButton(
+      "shellPreviousGuidedDialogue",
+      "↩",
+      "이전 질문형 대화",
+      "질문받으며 작성한 견적의 이전 문답을 읽습니다"
+    );
+    guidedDialogue.addEventListener("click", function () {
+      document.dispatchEvent(new CustomEvent("b66:open-guided-dialogues"));
+    });
+    historySection.appendChild(guidedDialogue);
     menu.appendChild(historySection);
 
     rail.appendChild(menu);
@@ -472,6 +498,7 @@
     toggle.title = "메뉴 접기/열기";
     toggle.setAttribute("aria-controls", "shellRail");
     toggle.addEventListener("click", function () {
+      railAutoCollapsed = false; // User opening/closing a drawer overrides auto state.
       document.body.classList.toggle("rail-collapsed");
       if (window.matchMedia("(max-width:900px)").matches) {
         if (!document.body.classList.contains("rail-collapsed")) {
@@ -546,7 +573,17 @@
     // leaving an A4 preview in place when a wide browser became a narrow one.
     var mobile = window.matchMedia("(max-width:" + MOBILE_BREAKPOINT + "px)").matches;
     var compact = window.matchMedia("(max-width:" + COMPACT_PREVIEW_BREAKPOINT + "px)").matches;
-    if (mobile && wasMobile !== true) document.body.classList.add("rail-collapsed");
+    if (mobile && wasMobile !== true) {
+      if (!document.body.classList.contains("rail-collapsed")) {
+        document.body.classList.add("rail-collapsed");
+        railAutoCollapsed = true;
+      }
+    } else if (!mobile && wasMobile === true && railAutoCollapsed) {
+      // DevTools/viewport expanded: restore only a SYSTEM-hidden rail.
+      // A customer-hidden desktop rail remains collapsed.
+      document.body.classList.remove("rail-collapsed");
+      railAutoCollapsed = false;
+    }
     if (compact && wasCompact !== true) {
       if (!document.body.classList.contains("preview-collapsed")) {
         document.body.classList.add("preview-collapsed");

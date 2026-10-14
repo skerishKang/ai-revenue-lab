@@ -63,7 +63,7 @@ from app.desktop_conversation_routes import (
     DEVICE_SESSION_CREDENTIAL_HEADER,
     DEVICE_SESSION_ID_HEADER,
 )
-from app.history import HistoryForbidden
+from app.history import HistoryForbidden, PRODUCT_SCOPE_CHAT
 from app.main import create_app
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -153,36 +153,41 @@ class MemoryHistoryStore:
     async def get_user(self, user_id):
         return self.users.get(user_id)
 
-    async def list_conversations(self, user_id, limit=30):
+    async def list_conversations(self, user_id, *, product_scope, limit=30):
         self.list_calls.append(user_id)
-        rows = [c for c in self.conversations.values() if c["user_id"] == user_id]
+        rows = [
+            c for c in self.conversations.values()
+            if c["user_id"] == user_id and c["product_scope"] == product_scope
+        ]
         rows.sort(key=lambda row: row["updated_at"], reverse=True)
         return [{k: c[k] for k in ("id", "title", "created_at", "updated_at")} for c in rows[:limit]]
 
-    async def get_conversation(self, user_id, conversation_id):
+    async def get_conversation(self, user_id, conversation_id, *, product_scope):
         self.detail_calls.append((user_id, conversation_id))
         row = self.conversations.get(conversation_id)
-        if not row or row["user_id"] != user_id:
+        if not row or row["user_id"] != user_id or row["product_scope"] != product_scope:
             return None
         return {
             "id": row["id"], "title": row["title"], "created_at": row["created_at"], "updated_at": row["updated_at"],
             "messages": [{"role": m["role"], "content": m["content"]} for m in row["messages"]],
         }
 
-    async def delete_conversation(self, user_id, conversation_id):
+    async def delete_conversation(self, user_id, conversation_id, *, product_scope):
         raise AssertionError("the Desktop surface must never delete")
 
-    async def append_exchange(self, user_id, conversation_id, user_text, assistant_text):
+    async def append_exchange(self, user_id, conversation_id, user_text, assistant_text,
+                              project_id=None, *, product_scope):
         if conversation_id is None:
             self.counter += 1
             conversation_id = "chat_" + f"{self.counter:032x}"
             self.conversations[conversation_id] = {
                 "id": conversation_id, "user_id": user_id, "title": user_text[:80],
+                "product_scope": product_scope,
                 "created_at": f"2026-10-01T00:00:{self.counter:02d}Z",
                 "updated_at": f"2026-10-02T00:00:{self.counter:02d}Z", "messages": [],
             }
         row = self.conversations.get(conversation_id)
-        if not row or row["user_id"] != user_id:
+        if not row or row["user_id"] != user_id or row["product_scope"] != product_scope:
             raise HistoryForbidden()
         row["messages"].extend([
             {"role": "user", "content": user_text},
@@ -372,7 +377,7 @@ def test_valid_current_broker_session_lists_and_reads_canonical_conversations() 
     namespace.durable_object = durable_object
     _provision_live_device(durable_object, now=now)
     store = MemoryHistoryStore()
-    asyncio.run(store.append_exchange(OWNER_ID, None, "hello from Web", "canonical transcript answer"))
+    asyncio.run(store.append_exchange(OWNER_ID, None, "hello from Web", "canonical transcript answer", product_scope=PRODUCT_SCOPE_CHAT))
     conversation_id = next(iter(store.conversations))
     app, _settings, _store = _app_with_real_broker(namespace=namespace, history_store=store)
 
@@ -403,7 +408,7 @@ def test_desktop_read_matches_the_same_web_canonical_id_and_transcript() -> None
     _provision_live_device(durable_object, now=now)
     store = MemoryHistoryStore()
     conversation_id = asyncio.run(
-        store.append_exchange(OWNER_ID, None, "same conversation", "same canonical transcript")
+        store.append_exchange(OWNER_ID, None, "same conversation", "same canonical transcript", product_scope=PRODUCT_SCOPE_CHAT)
     )
     app, settings, _store = _app_with_real_broker(namespace=namespace, history_store=store)
 
@@ -562,8 +567,8 @@ def test_caller_supplied_identity_headers_cannot_alter_owner_or_scope() -> None:
     namespace.durable_object = durable_object
     _provision_live_device(durable_object, now=_fresh_now())
     store = MemoryHistoryStore()
-    owner_conversation = asyncio.run(store.append_exchange(OWNER_ID, None, "owner row", "owner answer"))
-    asyncio.run(store.append_exchange(OTHER_OWNER_ID, None, "other row", "other answer"))
+    owner_conversation = asyncio.run(store.append_exchange(OWNER_ID, None, "owner row", "owner answer", product_scope=PRODUCT_SCOPE_CHAT))
+    asyncio.run(store.append_exchange(OTHER_OWNER_ID, None, "other row", "other answer", product_scope=PRODUCT_SCOPE_CHAT))
     app, _settings, _store = _app_with_real_broker(namespace=namespace, history_store=store)
 
     attacker = {
@@ -610,7 +615,7 @@ def test_foreign_conversation_id_is_a_non_disclosing_not_found() -> None:
     namespace.durable_object = durable_object
     _provision_live_device(durable_object, now=_fresh_now())
     store = MemoryHistoryStore()
-    foreign_id = asyncio.run(store.append_exchange(OTHER_OWNER_ID, None, "secret", "other owner transcript"))
+    foreign_id = asyncio.run(store.append_exchange(OTHER_OWNER_ID, None, "secret", "other owner transcript", product_scope=PRODUCT_SCOPE_CHAT))
     app, _settings, _store = _app_with_real_broker(namespace=namespace, history_store=store)
 
     foreign = asyncio.run(
@@ -631,7 +636,7 @@ def test_browser_padiem_session_cookie_is_no_authority_on_the_desktop_surface() 
     namespace.durable_object = durable_object
     _provision_live_device(durable_object, now=_fresh_now())
     store = MemoryHistoryStore()
-    asyncio.run(store.append_exchange(OWNER_ID, None, "owner row", "owner answer"))
+    asyncio.run(store.append_exchange(OWNER_ID, None, "owner row", "owner answer", product_scope=PRODUCT_SCOPE_CHAT))
     app, settings, _store = _app_with_real_broker(namespace=namespace, history_store=store)
 
     # A valid browser session cookie, with no device session material at all,
@@ -678,7 +683,7 @@ def test_desktop_conversation_surface_is_get_only(method: str) -> None:
     namespace.durable_object = durable_object
     _provision_live_device(durable_object, now=_fresh_now())
     app, _settings, store = _app_with_real_broker(namespace=namespace)
-    conversation_id = asyncio.run(store.append_exchange(OWNER_ID, None, "row", "answer"))
+    conversation_id = asyncio.run(store.append_exchange(OWNER_ID, None, "row", "answer", product_scope=PRODUCT_SCOPE_CHAT))
 
     collection = asyncio.run(_get(app, path=DESKTOP_CONVERSATIONS_PATH, headers=_device_headers(), method=method))
     detail = asyncio.run(
@@ -824,7 +829,7 @@ def test_mismatched_broker_projection_cannot_select_another_history_owner() -> N
     )
     authority = BrokerAuthorityDeviceSessionAuthPort(binding)
     store = MemoryHistoryStore()
-    asyncio.run(store.append_exchange(OTHER_OWNER_ID, None, "other secret", "other answer"))
+    asyncio.run(store.append_exchange(OTHER_OWNER_ID, None, "other secret", "other answer", product_scope=PRODUCT_SCOPE_CHAT))
     settings = Settings.from_values(
         runtime_mode="mock",
         auth_mode="password",

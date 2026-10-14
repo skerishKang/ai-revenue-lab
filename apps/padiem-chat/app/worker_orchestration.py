@@ -12,6 +12,7 @@ from padiem_ai_engine_client import (
     ENGINE_MULTIMODAL_ATTACHMENTS_PATH,
     ENGINE_ORCHESTRATE_CANCEL_PATH,
     ENGINE_ORCHESTRATE_PATH,
+    ENGINE_RESEARCH_PATH,
     ENGINE_ORCHESTRATE_STREAM_PATH,
     ENGINE_ORCHESTRATE_RESUME_PATH,
     EngineTransportResponse,
@@ -19,6 +20,7 @@ from padiem_ai_engine_client import (
     PadiemAiEngineClient,
 )
 from padiem_ai_core.b14_multimodal import MAX_B14_IMAGE_BYTES
+from padiem_ai_engine_client.orchestration_stream import MAX_NDJSON_TERMINAL_LINE_BYTES
 
 from .canonical_orchestration_bridge import CanonicalSubjectB62EngineOrchestrationBridge
 from .orchestration_bridge import B62EngineOrchestrationBridge, D1OrchestrationStateStore
@@ -34,7 +36,15 @@ ENGINE_SERVICE_BINDING_NAME = "ENGINE_SERVICE"
 ORCHESTRATION_ENABLED_ENV = "PADIEM_CHAT_ORCHESTRATION_ENABLED"
 ENGINE_CALLER_ID_ENV = "PADIEM_CHAT_ENGINE_CALLER_ID"
 ENGINE_CALLER_SECRET_ENV = "PADIEM_CHAT_ENGINE_CALLER_SECRET"
-_MAX_ENGINE_RESPONSE_BYTES = 1_048_576
+_MAX_ENGINE_RESPONSE_BYTES = 1_048_576  # small non-model Engine contracts
+_MAX_ENGINE_ORCHESTRATION_RESPONSE_BYTES = MAX_NDJSON_TERMINAL_LINE_BYTES
+# Match the Engine's *existing* 6MB model execute ingress safety envelope.
+# The legacy 256KiB was falsely smaller than Claw's guarded 5.5MB context.
+_MAX_ENGINE_MODEL_REQUEST_BYTES = 6_000_000
+_ENGINE_MODEL_PATHS = frozenset({
+    ENGINE_ORCHESTRATE_PATH, ENGINE_ORCHESTRATE_RESUME_PATH,
+    ENGINE_ORCHESTRATE_STREAM_PATH,
+})
 # Text/reference routes keep the original 256 KiB request bound. The canonical
 # multimodal admission route (#3210) carries one bounded base64 image, so it
 # gets its own bound derived from the same core constant the Engine store uses.
@@ -44,6 +54,7 @@ _MAX_ATTACHMENT_REQUEST_BYTES = _MAX_ATTACHMENT_BASE64_CHARS + (8 * 1024)
 _ALLOWED_ENGINE_PATHS = frozenset(
     {
         ENGINE_HEALTH_PATH,
+        ENGINE_RESEARCH_PATH,  # #4469 existing authenticated Engine evidence-only
         ENGINE_ORCHESTRATE_PATH,
         ENGINE_ORCHESTRATE_RESUME_PATH,
         ENGINE_ORCHESTRATE_CANCEL_PATH,
@@ -92,6 +103,7 @@ class CloudflareEngineServiceTransport:
             body_limit = (
                 _MAX_ATTACHMENT_REQUEST_BYTES
                 if parsed.path == ENGINE_MULTIMODAL_ATTACHMENTS_PATH
+                else _MAX_ENGINE_MODEL_REQUEST_BYTES if parsed.path in _ENGINE_MODEL_PATHS
                 else _MAX_ENGINE_REQUEST_BYTES
             )
             if len(body) > body_limit:
@@ -112,7 +124,11 @@ class CloudflareEngineServiceTransport:
         try:
             encoded = await read_bounded_service_binding_body(
                 response,
-                max_bytes=_MAX_ENGINE_RESPONSE_BYTES,
+                max_bytes=(
+                    _MAX_ENGINE_ORCHESTRATION_RESPONSE_BYTES
+                    if parsed.path in {ENGINE_ORCHESTRATE_PATH, ENGINE_ORCHESTRATE_RESUME_PATH}
+                    else _MAX_ENGINE_RESPONSE_BYTES
+                ),
             )
         except ServiceBindingResponseTooLarge:
             raise ValueError(
@@ -158,7 +174,7 @@ class CloudflareEngineServiceTransport:
             or method != "POST"
             or body is None
             or not isinstance(body, bytes)
-            or len(body) > _MAX_ENGINE_REQUEST_BYTES
+            or len(body) > _MAX_ENGINE_MODEL_REQUEST_BYTES
         ):
             raise ValueError("Engine stream target or request is unsupported")
         try:
@@ -182,7 +198,6 @@ class CloudflareEngineServiceTransport:
             except Exception as exc:
                 raise ServiceBindingResponseError("Engine stream reader unavailable") from exc
             finished = False
-            received = 0
             try:
                 while True:
                     result = await reader.read()
@@ -190,11 +205,14 @@ class CloudflareEngineServiceTransport:
                         finished = True
                         return
                     chunk = cloudflare_chunk_bytes(getattr(result, "value", None))
-                    received += len(chunk)
-                    if received > _MAX_ENGINE_RESPONSE_BYTES:
-                        raise ServiceBindingResponseTooLarge("Engine stream exceeded bound")
-                    if chunk:
-                        yield chunk
+                    # A single giant JS reader chunk is a Worker RAM risk.
+                    # Cumulative healthy NDJSON events are not: Core checks
+                    # each 64KiB event, the 8MiB terminal result and <=128
+                    # lifecycle events. Never add bytes across frames here.
+                    if len(chunk) > MAX_NDJSON_TERMINAL_LINE_BYTES:
+                        raise ServiceBindingResponseTooLarge("Engine stream chunk exceeded safety bound")
+                    for start in range(0, len(chunk), 65_536):
+                        yield chunk[start:start + 65_536]
             finally:
                 if not finished:
                     cancel = getattr(reader, "cancel", None)

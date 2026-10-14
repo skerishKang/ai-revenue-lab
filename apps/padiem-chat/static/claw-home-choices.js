@@ -53,6 +53,50 @@
       document.getElementById("messageInput")?.focus();
     });
 
+    const historyShortcut = document.getElementById("clawPreviousConversations");
+    const historyFeedback = document.getElementById("clawPreviousConversationsFeedback");
+    historyShortcut?.addEventListener("click", () => {
+      if (!isClawHome()) return;
+      const history = document.getElementById("historySection");
+      const list = document.getElementById("historyList");
+      const en = document.documentElement.lang === "en";
+      if (!history || history.hidden) {
+        // A signed-in owner may have a temporarily unavailable history API.
+        // Never click the signed-in logout button on that error path.
+        const login = document.getElementById("loginButton");
+        const signedIn = document.getElementById("accountContainer")?.dataset.accountState === "signed_in";
+        if (!signedIn && login && !login.disabled && !login.hidden) login.click();
+        if (historyFeedback) {
+          historyFeedback.textContent = signedIn
+            ? (en ? "Previous conversations are temporarily unavailable." : "이전 대화를 불러오지 못했습니다.")
+            : (en ? "Sign in to view previous conversations." : "이전 대화를 보려면 로그인해 주세요.");
+          historyFeedback.hidden = false;
+        }
+        return;
+      }
+      if (historyFeedback) {
+        historyFeedback.textContent = "";
+        historyFeedback.hidden = true;
+      }
+      const shell = document.querySelector(".app-shell");
+      if (shell?.classList.contains("sidebar-collapsed")) {
+        document.getElementById("sidebarRestoreButton")?.click();
+      }
+      if (window.matchMedia?.("(max-width: 920px)")?.matches) {
+        document.getElementById("mobileMenu")?.click();
+      }
+      history.setAttribute("tabindex", "-1");
+      history.scrollIntoView?.({ block: "nearest" });
+      history.focus?.({ preventScroll: true });
+      // Existing #historyList renders Claw-labelled saved conversations and
+      // opens them with the canonical openSavedConversation(id) handler.
+      // Do not focus delete controls or interpret recent runs as chat history.
+      if (list && list.children.length === 0 && historyFeedback) {
+        historyFeedback.textContent = en ? "There are no saved conversations yet." : "저장된 이전 대화가 없습니다.";
+        historyFeedback.hidden = false;
+      }
+    });
+
     const deviceStatus = document.getElementById("clawComputerDeviceStatusButton");
     const statusText = document.getElementById("clawComputerLiveStatus");
     deviceStatus?.addEventListener("click", async () => {
