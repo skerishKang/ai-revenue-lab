@@ -162,10 +162,12 @@
           ? STATUS_KEYS.UNAVAILABLE_SIGNIN
           : STATUS_KEYS.UNAVAILABLE_WIRING;
       }
-      if (state.voiceState === "listening") return STATUS_KEYS.LISTENING;
       if (state.voiceState === "interim") return STATUS_KEYS.INTERIM;
       if (state.voiceState === "deferred") return STATUS_KEYS.DEFERRED;
-      return state.idleKey || STATUS_KEYS.READY;
+      if (state.voiceState === "idle") return state.idleKey || STATUS_KEYS.READY;
+      // A live run that has committed its turn keeps reporting the final
+      // copy until the next utterance or the end of the session.
+      return state.idleKey || STATUS_KEYS.LISTENING;
     }
 
     function render() {
@@ -236,7 +238,11 @@
       } else if (next === "interim") {
         state.voiceState = "interim";
       } else if (next === "final") {
-        state.voiceState = "idle";
+        // `final` is an utterance boundary, not the end of the recognizer
+        // session: the microphone stays open and the button keeps its stop
+        // affordance so the user can end it explicitly. The session ends only
+        // through stop(), invalidate(), or the recognizer's own onEnd().
+        state.voiceState = run ? "listening" : "idle";
         state.interim = "";
         state.idleKey = STATUS_KEYS.FINAL;
       } else if (next === "stopped") {
@@ -290,9 +296,7 @@
       if (!myRun) return;
       const session = myRun.session;
       myRun.session = null;
-      if (session && typeof session.stop === "function") {
-        try { session.stop(); } catch (e) { /* the recognizer is already gone */ }
-      }
+      stopSessionHandle(session);
     }
 
     function start() {
@@ -342,6 +346,14 @@
       } catch (e) {
         session = null;
       }
+      // A recognizer factory that ends or fails its run synchronously, before
+      // returning, has already torn that run down. The handle it returns must
+      // not be attached to a dead run, and the ended/failed render must not be
+      // overwritten by a listening state that nothing listens to.
+      if (!isSameRun(myRun)) {
+        stopSessionHandle(session);
+        return false;
+      }
       if (!session || typeof session.stop !== "function") {
         const myRunCheck = isSameRun(myRun);
         run = null;
@@ -373,7 +385,6 @@
       run = null;
       stopSessionOnStage(stoppedRun);
       stoppedRun.adapter.stop(reason || "user-stopped");
-      
       // A final held for a composition or a disabled composer belongs to the
       // run that just ended; it is dropped rather than injected afterwards.
       deferredFinals = [];
@@ -427,9 +438,12 @@
       if (!stage || !stage.session) return;
       const session = stage.session;
       stage.session = null;
-      if (typeof session.stop === "function") {
-        try { session.stop(); } catch (e) { /* already stopped */ }
-      }
+      stopSessionHandle(session);
+    }
+
+    function stopSessionHandle(session) {
+      if (!session || typeof session.stop !== "function") return;
+      try { session.stop(); } catch (e) { /* the recognizer is already gone */ }
     }
 
     function setRecognizerFactory(next) {

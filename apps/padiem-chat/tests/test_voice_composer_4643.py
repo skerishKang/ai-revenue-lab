@@ -466,6 +466,11 @@ function toolsContains(env, node) {
     submits: ctx.env.log.submits.length,
     send_clicks: ctx.env.log.clicks.length,
     aria_pressed: ctx.button.getAttribute("aria-pressed"),
+    voice_state: ctx.button.getAttribute("data-voice-state"),
+    stop_aria: ctx.button.getAttribute("aria-label"),
+    active: ctx.composer.getStatus().active,
+    session_stops: ctx.env.log.sessionStops.length,
+    session_stopped: stopped(ctx.env, 0),
   };
   ctx.env.input.value = "사용자가 수정한 내용";
   emit(ctx.env, 0, "interim", "늦은 중간값");
@@ -701,9 +706,161 @@ function toolsContains(env, node) {
   R.restart_isolation = { contaminated, clean };
 }
 
+/* S18: a committed utterance is not the end of the microphone session. */
+{
+  const ctx = readyEnv();
+  ctx.button.dispatchEvent(new ctx.env.win.Event("click"));
+  emit(ctx.env, 0, "interim", "첫 번째 발화");
+  emit(ctx.env, 0, "final", { text: "첫 번째 전사", utteranceId: "u1" });
+  const committed = {
+    input: ctx.env.input.value,
+    key: ctx.status.getAttribute("data-locale-key"),
+    text: ctx.status.textContent,
+    is_shipped_copy: ctx.status.textContent === copy.ko["voice-final"],
+    aria_pressed: ctx.button.getAttribute("aria-pressed"),
+    voice_state: ctx.button.getAttribute("data-voice-state"),
+    aria: ctx.button.getAttribute("aria-label"),
+    stop_aria: ctx.button.getAttribute("aria-label") === copy.ko["voice-mic-stop"],
+    start_aria: ctx.button.getAttribute("aria-label") === copy.ko["voice-mic-start"],
+    active: ctx.composer.getStatus().active,
+    session_stops: ctx.env.log.sessionStops.length,
+    session_stopped: stopped(ctx.env, 0),
+    preview_hidden: ctx.preview.hidden,
+  };
+  emit(ctx.env, 0, "interim", "두 번째 발화");
+  const resumed = {
+    input: ctx.env.input.value,
+    key: ctx.status.getAttribute("data-locale-key"),
+    preview: ctx.preview.textContent,
+    preview_hidden: ctx.preview.hidden,
+    active: ctx.composer.getStatus().active,
+    aria_pressed: ctx.button.getAttribute("aria-pressed"),
+  };
+  emit(ctx.env, 0, "final", { text: "두 번째 전사", utteranceId: "u2" });
+  const second = { input: ctx.env.input.value, key: ctx.status.getAttribute("data-locale-key") };
+  ctx.button.dispatchEvent(new ctx.env.win.Event("click"));
+  const ended = {
+    key: ctx.status.getAttribute("data-locale-key"),
+    aria_pressed: ctx.button.getAttribute("aria-pressed"),
+    active: ctx.composer.getStatus().active,
+    session_stops: ctx.env.log.sessionStops.length,
+    session_stopped: stopped(ctx.env, 0),
+  };
+  emit(ctx.env, 0, "final", { text: "늦은 전사", utteranceId: "u3" });
+  const late = { input: ctx.env.input.value };
+  R.final_keeps_mic_on = { committed, resumed, second, ended, late };
+}
+
+/* S19: a recognizer that ends synchronously inside its own factory. */
+{
+  const env = buildEnv();
+  let captured = null;
+  let session = null;
+  let firstCall = true;
+  const factory = function recognizerFactory(callbacks, context) {
+    env.log.sessionStarts.push({ generation: context.generation, sessionToken: context.sessionToken, synchronous: true });
+    session = {
+      context: context,
+      stopped: false,
+      callbacks: callbacks,
+      stop: function () { session.stopped = true; env.log.sessionStops.push(context.generation); },
+    };
+    captured = callbacks;
+    // The first factory call ends its own run before returning it.
+    if (firstCall) {
+      firstCall = false;
+      callbacks.onEnd();
+    }
+    env.sessions.push(session);
+    return session;
+  };
+  const composer = loadComposer(env, { factory });
+  signIn(env);
+  const button = find(env, "voiceMicButton");
+  const status = find(env, "voiceStatus");
+  const startReturn = composer.start();
+  const result = {
+    start_return: startReturn,
+    active: composer.getStatus().active,
+    voice_state: button.getAttribute("data-voice-state"),
+    aria_pressed: button.getAttribute("aria-pressed"),
+    disabled: button.disabled,
+    aria: button.getAttribute("aria-label"),
+    start_aria: button.getAttribute("aria-label") === copy.ko["voice-mic-start"],
+    key: status.getAttribute("data-locale-key"),
+    text: status.textContent,
+    is_shipped_copy: status.textContent === copy.ko["voice-ended"],
+    session_starts: env.log.sessionStarts.length,
+    session_stops: env.log.sessionStops.length,
+    session_stopped: Boolean(session && session.stopped),
+  };
+  // The dead recognizer must not be able to write after the factory returned.
+  if (captured) captured.onFinal({ text: "늦은 전사", utteranceId: "u9" });
+  if (captured) captured.onInterim("늦은 중간값");
+  const late = { input: env.input.value, preview: find(env, "voiceInterimPreview").textContent };
+  // The control still lets the user start a healthy run afterwards.
+  button.dispatchEvent(new env.win.Event("click"));
+  const restart = { session_starts: env.log.sessionStarts.length, active: composer.getStatus().active, voice_state: button.getAttribute("data-voice-state") };
+  const live = env.sessions[env.sessions.length - 1];
+  if (live) live.callbacks.onFinal({ text: "다시 시작한 전사", utteranceId: "u21" });
+  const restart_last = { input: env.input.value, key: status.getAttribute("data-locale-key") };
+  R.sync_end_during_start = { result, late, restart, restart_last, network: env.log.network.length };
+}
+
+/* S20: a recognizer that fails synchronously inside its own factory. */
+{
+  const env = buildEnv();
+  let captured = null;
+  let session = null;
+  let firstCall = true;
+  const factory = function recognizerFactory(callbacks, context) {
+    env.log.sessionStarts.push({ generation: context.generation, sessionToken: context.sessionToken, synchronous: true });
+    session = {
+      context: context,
+      stopped: false,
+      callbacks: callbacks,
+      stop: function () { session.stopped = true; env.log.sessionStops.push(context.generation); },
+    };
+    captured = callbacks;
+    // The first factory call fails its own run before returning it.
+    if (firstCall) {
+      firstCall = false;
+      callbacks.onError("permission-denied");
+    }
+    env.sessions.push(session);
+    return session;
+  };
+  const composer = loadComposer(env, { factory });
+  signIn(env);
+  const button = find(env, "voiceMicButton");
+  const status = find(env, "voiceStatus");
+  const startReturn = composer.start();
+  const failed = {
+    start_return: startReturn,
+    active: composer.getStatus().active,
+    voice_state: button.getAttribute("data-voice-state"),
+    aria_pressed: button.getAttribute("aria-pressed"),
+    disabled: button.disabled,
+    key: status.getAttribute("data-locale-key"),
+    text: status.textContent,
+    is_shipped_copy: status.textContent === copy.ko["voice-error-permission"],
+    listening_copy_used: status.textContent === copy.ko["voice-listening"],
+    session_stops: env.log.sessionStops.length,
+    session_stopped: Boolean(session && session.stopped),
+  };
+  if (captured) captured.onFinal({ text: "늦은 전사", utteranceId: "u9" });
+  const late = { input: env.input.value };
+  // A retry from the same composer starts a healthy new run and works.
+  button.dispatchEvent(new env.win.Event("click"));
+  const retry = { session_starts: env.log.sessionStarts.length, active: composer.getStatus().active, voice_state: button.getAttribute("data-voice-state") };
+  const live = env.sessions[env.sessions.length - 1];
+  if (live) live.callbacks.onFinal({ text: "다시 시도한 전사", utteranceId: "u1" });
+  const retried = { input: env.input.value, key: status.getAttribute("data-locale-key") };
+  R.sync_error_during_start = { failed, late, retry, retried, network: env.log.network.length };
+}
+
 console.log(JSON.stringify({ ok: true, results: R }));
 """
-
 
 def _run_harness() -> dict:
     node = shutil.which("node")
@@ -824,10 +981,20 @@ def test_only_the_final_reaches_the_editable_input() -> None:
     assert after["key"] == "voice-final"
     assert after["input_events"] == ["input"], "the existing input event must run so Send enablement updates"
     assert after["submits"] == 0 and after["send_clicks"] == 0
-    assert after["aria_pressed"] == "false"
     edited = result["edited"]
     assert edited["input"] == "사용자가 수정한 내용", "a later interim must not overwrite the user's edit"
     assert edited["preview"] == "늦은 중간값"
+
+
+def test_a_committed_utterance_keeps_the_microphone_on() -> None:
+    """#4643 state fix: `final` is an utterance boundary, not the session end."""
+    result = _results["final_review"]["after"]
+    assert result["aria_pressed"] == "true", "the still-open recognizer must keep the stop affordance"
+    assert result["voice_state"] == "active"
+    assert result["stop_aria"] == _shipped["ko"]["voice-mic-stop"]
+    assert result["active"] is True
+    assert result["session_stops"] == 0, "no recognizer session was ended by an utterance boundary"
+    assert result["session_stopped"] is False
 
 
 def test_duplicate_suppressed_and_distinct_repeat_allowed() -> None:
@@ -956,3 +1123,74 @@ def test_restart_does_not_bleed_previous_utterances() -> None:
         "session_starts": 2,
         "endpoint": "ready",
     }
+
+
+def test_final_keeps_the_microphone_session_open_until_the_user_stops_it() -> None:
+    """#4643 CENTRAL fix 1: an utterance boundary never ends the recognizer."""
+    result = _results["final_keeps_mic_on"]
+    committed = result["committed"]
+    assert committed["input"] == "첫 번째 전사"
+    assert committed["key"] == "voice-final"
+    assert committed["is_shipped_copy"] is True
+    assert committed["aria_pressed"] == "true"
+    assert committed["voice_state"] == "active"
+    assert committed["aria"] == _shipped["ko"]["voice-mic-stop"]
+    assert committed["start_aria"] is False, "a live recognizer must not offer to start again"
+    assert committed["active"] is True
+    assert committed["session_stops"] == 0
+    assert committed["session_stopped"] is False
+    assert committed["preview_hidden"] is True
+    resumed = result["resumed"]
+    assert resumed["input"] == "첫 번째 전사", "the committed transcript stays for review"
+    assert resumed["key"] == "voice-interim"
+    assert resumed["preview"] == "두 번째 발화"
+    assert resumed["preview_hidden"] is False
+    assert resumed["active"] is True
+    assert result["second"] == {"input": "첫 번째 전사 두 번째 전사", "key": "voice-final"}
+    ended = result["ended"]
+    assert ended["key"] == "voice-stopped"
+    assert ended["aria_pressed"] == "false"
+    assert ended["active"] is False
+    assert ended["session_stops"] == 1, "the explicit stop ends exactly one recognizer session"
+    assert ended["session_stopped"] is True
+    assert result["late"] == {"input": "첫 번째 전사 두 번째 전사"}
+
+
+def test_synchronous_recognizer_end_during_start_is_not_overwritten() -> None:
+    """#4643 CENTRAL fix 2: a recognizer that ends inside its own factory."""
+    result = _results["sync_end_during_start"]
+    outcome = result["result"]
+    assert outcome["start_return"] is False, "a start that already ended cannot claim to be listening"
+    assert outcome["active"] is False
+    assert outcome["voice_state"] == "ready"
+    assert outcome["aria_pressed"] == "false"
+    assert outcome["disabled"] is False, "the user may start again"
+    assert outcome["start_aria"] is True
+    assert outcome["key"] == "voice-ended"
+    assert outcome["is_shipped_copy"] is True
+    assert outcome["session_starts"] == 1
+    assert outcome["session_stops"] == 1, "the returned handle is stopped exactly once, never leaked"
+    assert outcome["session_stopped"] is True
+    assert result["late"] == {"input": "", "preview": ""}
+    assert result["network"] == 0
+
+
+def test_synchronous_recognizer_error_during_start_is_not_overwritten() -> None:
+    """#4643 CENTRAL fix 2: a recognizer that fails inside its own factory."""
+    result = _results["sync_error_during_start"]
+    failed = result["failed"]
+    assert failed["start_return"] is False
+    assert failed["active"] is False
+    assert failed["voice_state"] == "ready"
+    assert failed["aria_pressed"] == "false"
+    assert failed["disabled"] is False
+    assert failed["key"] == "voice-error-permission"
+    assert failed["is_shipped_copy"] is True
+    assert failed["listening_copy_used"] is False, "the error surface must not be rewritten as listening"
+    assert failed["session_stops"] == 1
+    assert failed["session_stopped"] is True
+    assert result["late"]["input"] == ""
+    assert result["retry"] == {"session_starts": 2, "active": True, "voice_state": "active"}
+    assert result["retried"]["input"] == "다시 시도한 전사"
+    assert result["retried"]["key"] == "voice-final"
+    assert result["network"] == 0
