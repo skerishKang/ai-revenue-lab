@@ -354,6 +354,23 @@ def assert_connector_broker_added_only(before: object, after: object) -> None:
         raise BindingStateError("expected canonical Connector Broker binding addition")
 
 
+def assert_claw_public_search_added_only(before: object, after: object) -> None:
+    """Exactly the owner-approved public search ON flag; no other binding drift.
+
+    Existing exact ON is idempotent. Missing adds the one plain-text variable.
+    Any existing OFF/secret binding, unrelated addition, removal or value change
+    fails closed before the protected production workflow accepts deployment.
+    """
+    flag = "PADIEM_CLAW_PUBLIC_WEB_SEARCH_ENABLED"
+    exact = ("plain_text", flag, "true")
+    old = set(canonical_state(before))
+    new = set(canonical_state(after))
+    if any(entry[1] == flag and entry != exact for entry in old):
+        raise BindingStateError("existing Claw public search binding conflicts with owner-approved ON")
+    if old - new or (new - old) - {exact} or exact not in new:
+        raise BindingStateError("unexpected binding drift in Claw public search activation")
+
+
 def assert_web_secret_additions_only(before: object, after: object) -> None:
     """Only missing Owner-approved same-account Secret Store entries may appear."""
     original = canonical_state(before)
@@ -465,6 +482,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--expected-engine-4194-rollout", action="store_true")
     parser.add_argument("--expected-add-hark-browser", action="store_true")
     parser.add_argument("--expected-add-connector-broker", action="store_true")
+    parser.add_argument("--expected-add-claw-public-search", action="store_true")
     parser.add_argument("--check-connector-baseline", action="store_true",
                         help="compare active immutable version (--before) against mutable "
                              "settings (--after); the settings may only add the approved "
@@ -480,6 +498,7 @@ def main(argv: list[str] | None = None) -> int:
             args.expected_engine_4194_rollout,
             args.expected_add_hark_browser,
             args.expected_add_connector_broker,
+            args.expected_add_claw_public_search,
             args.check_connector_baseline,
             args.expected_add_b66_membership_secret,
         )) > 1:
@@ -488,6 +507,10 @@ def main(argv: list[str] | None = None) -> int:
             if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
                 raise BindingStateError("Engine #4194 mode refuses unrelated authorization arguments")
             assert_engine_4194_exact_rollout(_load(args.before), _load(args.after))
+        elif args.expected_add_claw_public_search:
+            if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
+                raise BindingStateError("Claw search mode refuses unrelated authority flags")
+            assert_claw_public_search_added_only(_load(args.before), _load(args.after))
         elif args.expected_add_hark_browser:
             if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
                 raise BindingStateError("Hark Browser mode refuses unrelated authorization flags")
