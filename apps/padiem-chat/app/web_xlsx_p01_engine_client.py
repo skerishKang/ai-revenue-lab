@@ -19,6 +19,10 @@ from .service_binding_response import (
     ServiceBindingResponseError, ServiceBindingResponseTooLarge,
     read_bounded_service_binding_body,
 )
+from .web_xlsx_p01_refusal import (
+    STAGE_DID_NOT_PAUSE, STAGE_RESPONSE_UNREADABLE, STAGE_TRANSPORT_UNAVAILABLE,
+    classify_engine_refusal, parse_engine_error_code,
+)
 
 _ENDPOINT = "/internal/v1/tools/execute"
 _APP = "padiem-web-xlsx-p01"
@@ -101,18 +105,40 @@ class CloudflareWebXlsxP01EngineClient:
             )
         except (ServiceBindingResponseError, ServiceBindingResponseTooLarge,
                 TypeError, ValueError) as exc:
-            raise WebXlsxP01RequestError("bounded private Engine response unavailable") from exc
+            raise WebXlsxP01RequestError(
+                "bounded private Engine response unavailable",
+                stage=STAGE_TRANSPORT_UNAVAILABLE,
+            ) from exc
         # No retries on any outcome, including an uncertain transport result.
         try:
             status = int(response.status)
             body = json.loads(raw.decode("utf-8"))
         except (TypeError, ValueError, UnicodeDecodeError, AttributeError) as exc:
-            raise WebXlsxP01RequestError("invalid private Engine response") from exc
+            raise WebXlsxP01RequestError(
+                "invalid private Engine response",
+                stage=STAGE_RESPONSE_UNREADABLE,
+            ) from exc
+        # #3936: a real Engine refusal carries the bounded Engine error contract
+        # (``{"ok": false, "error": {"code": ...}}``). Attribute it instead of
+        # discarding it, so a live refusal is never locally indistinguishable.
+        # The public browser response and this client's authority are unchanged.
+        if (status not in (200, 202)
+                or (isinstance(body, dict) and body.get("ok") is False)):
+            raise WebXlsxP01RequestError(
+                "Engine refused the P01 pause",
+                stage=classify_engine_refusal(status, body),
+                engine_status=status if 100 <= status <= 599 else None,
+                engine_code=parse_engine_error_code(body),
+            )
         if (status != 202 or not isinstance(body, dict)
                 or set(body) != {"ok", "tool"} or body.get("ok") is not True
                 or not isinstance(body.get("tool"), dict)
                 or body["tool"].get("status") != "paused"):
-            raise WebXlsxP01RequestError("Engine did not issue a P01 pause")
+            raise WebXlsxP01RequestError(
+                "Engine did not issue a P01 pause",
+                stage=STAGE_DID_NOT_PAUSE,
+                engine_status=status if 100 <= status <= 599 else None,
+            )
         return body
 
     async def resume_owner_decision(
