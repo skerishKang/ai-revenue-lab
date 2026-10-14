@@ -221,13 +221,13 @@ def test_only_a_supported_destination_is_linked(browser, server):
     assert chat.locator("a").count() == 1
     assert chat.locator("a").get_attribute("href") == "./"
     assert chat.locator("a").inner_text() == "PADIEM Chat 열기"
-    for sid, label in (("claw", "진입 경로 미연결"),):
-        card = page.locator(f'#padiemHomeGrid li[data-service="{sid}"]')
-        assert card.locator("a").count() == 0, sid
-        assert card.locator(".padiem-home-card-noaction").inner_text() == label
-    # The Claw card explains why there is no action.
-    assert "이동하는 경로가 아직 연결되지 않았습니다" in page.locator(
-        '#padiemHomeGrid li[data-service="claw"]').inner_text()
+    claw = page.locator('#padiemHomeGrid li[data-service="claw"]')
+    assert claw.locator("a").count() == 1
+    assert claw.locator("a").get_attribute("href") == "./"
+    assert claw.locator("a").inner_text() == "Chat에서 Claw 선택"
+    # This is an honest two-step route to the existing sidebar, not a
+    # fabricated Claw-specific deep link.
+    assert "왼쪽 Claw 메뉴를 선택하세요" in claw.inner_text()
     assert not errors, errors
     page.close()
 

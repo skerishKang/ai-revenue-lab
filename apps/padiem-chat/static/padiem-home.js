@@ -44,7 +44,7 @@
   // card must render explanatory text instead of a launch action.
   const SERVICES = Object.freeze([
     Object.freeze({ id: "chat", name: "PADIEM Chat", mark: "C", href: "./", entry: "chat" }),
-    Object.freeze({ id: "claw", name: "PADIEM Claw", mark: "K", href: null, entry: "claw" }),
+    Object.freeze({ id: "claw", name: "PADIEM Claw", mark: "K", href: "./", entry: "claw" }),
   ]);
 
   const COPY = Object.freeze({
@@ -66,7 +66,8 @@
       entryChat: "PADIEM Chat 열기",
       entryChatHelp: "PADIEM Chat 화면을 엽니다. 로그인과 계정 메뉴도 그곳에 있습니다.",
       entryClawBlocked: "진입 경로 미연결",
-      entryClawHelp: "Claw 화면으로 바로 이동하는 경로가 아직 연결되지 않았습니다.",
+      entryClawHelp: "공통 Chat 화면으로 이동한 뒤 왼쪽 Claw 메뉴를 선택하세요.",
+      entryClaw: "Chat에서 Claw 선택",
       entryEngineBlocked: "별도 화면 없음",
       entryEngineHelp: "Engine은 Chat과 Claw 뒤에서 동작하는 서비스입니다.",
       helpSummary: "이용 상태를 확인할 수 없는 이유",
@@ -95,7 +96,8 @@
       entryChat: "Open PADIEM Chat",
       entryChatHelp: "Opens the PADIEM Chat screen. Sign-in and the account menu live there.",
       entryClawBlocked: "Entry not linked",
-      entryClawHelp: "There is no linked route to the Claw screen yet.",
+      entryClawHelp: "Opens the shared Chat screen. Select Claw from the sidebar.",
+      entryClaw: "Select Claw in Chat",
       entryEngineBlocked: "No separate screen",
       entryEngineHelp: "Engine runs behind Chat and Claw.",
       helpSummary: "Why access status cannot be confirmed",
@@ -191,7 +193,8 @@
     const foot = element("div", "padiem-home-card-foot");
     if (service.href && verified) {
       // Only a destination that already exists may be linked.
-      const link = element("a", "padiem-home-card-action", t.entryChat);
+      const link = element("a", "padiem-home-card-action",
+        service.entry === "claw" ? t.entryClaw : t.entryChat);
       link.href = service.href;
       foot.appendChild(link);
     } else {
