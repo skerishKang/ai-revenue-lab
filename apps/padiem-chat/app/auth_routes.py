@@ -81,6 +81,7 @@ def _unavailable() -> JSONResponse:
 
 
 async def auth_status(request: Request) -> JSONResponse:
+    from .member_grade_access import verified_member_grade
     ready = auth_ready(request)
     store: HistoryStore | None = request.app.state.history_store
     session_cookie_present = bool(request.cookies.get(SESSION_COOKIE))
@@ -115,6 +116,8 @@ async def auth_status(request: Request) -> JSONResponse:
         "history_ready": ready and store is not None,
         "user": user,
     }
+    if authenticated:
+        payload["member_grade"] = await verified_member_grade(request, uid)
     # Keep the legacy unavailable payload stable. Once auth is actually ready,
     # expose a bounded presentation state so the browser does not infer expiry.
     if ready:

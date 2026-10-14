@@ -1671,7 +1671,7 @@
     // PADIEM FREE/PLUS choice. Never silently force Claw to Plus while its
     // explicit Plus model chooser is hidden. The server validates entitlements.
     const tier = window.PadiemTierSelection?.get?.();
-    return tier === "plus" ? "plus" : "free";
+    return ["free", "plus", "pro", "max"].includes(tier) ? tier : "free";
   }
 
   async function requestAnswer(outboundMessages, skill, attachment, contextSnapshot, clawGeneralRequest) {
@@ -1779,13 +1779,7 @@
     contextSnapshot.selectedModelId =
       clawGeneralRequest && selectedProductTier() === "plus" && typeof clawModelIdInput !== "undefined" && clawModelIdInput
         ? clawModelIdInput.value.trim() : "";
-    if (clawGeneralRequest && selectedProductTier() === "plus" && !contextSnapshot.selectedModelId) {
-      // Only the explicit Plus lane requires a chosen owner-allowed B14 model.
-      // A normal Free Claw greeting goes through the canonical P01 Free tier.
-      showComposerInlineHint("claw-verified-model-required");
-      setNote(uiT("claw-verified-model-required"), "error");
-      return false;
-    }
+    // Grade-only Claw execution does not require a provider-specific model ID.
     showConversation({ preserveClaw: clawGeneralRequest });
     addUserMessage(prompt, attachmentSnapshot);
     input.value = "";

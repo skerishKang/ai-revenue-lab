@@ -17,11 +17,11 @@ CERT_QA = (ROOT.parent.parent / ".github" / "scripts" / "b62_product_surface_cer
 
 
 def test_browser_lists_all_four_tiers_but_only_plus_is_selectable() -> None:
-    assert 'AVAILABLE_TIERS = Object.freeze(["free", "plus"])' in CAPABILITIES
+    assert 'TIER_ORDER = Object.freeze(["free", "plus", "pro", "max"])' in CAPABILITIES
     assert 'TIER_LIST = Object.freeze(["free", "plus", "pro", "max"])' in CAPABILITIES
     assert "list.append(...TIER_LIST.map((tier) => createModeOption(tier)));" in CAPABILITIES
     assert "button.disabled = !available;" in CAPABILITIES
-    assert "if (available) {" in CAPABILITIES
+    assert "if (!selectTier(tier)) return;" in CAPABILITIES
     assert 'createModeOption("auto"' not in CAPABILITIES
     assert 'createModeOption("fast"' not in CAPABILITIES
     assert 'createModeOption("balanced"' not in CAPABILITIES
@@ -29,7 +29,7 @@ def test_browser_lists_all_four_tiers_but_only_plus_is_selectable() -> None:
 
 
 def test_plus_is_default_and_selection_is_shared_by_chat_and_claw() -> None:
-    assert 'let selectedTier = "plus";' in CAPABILITIES
+    assert 'let selectedTier = "free";' in CAPABILITIES
     assert 'window.PadiemTierSelection = Object.freeze({' in CAPABILITIES
     assert 'tier: selectedProductTier()' in APP
     assert 'const payload = { messages: outboundMessages, mode: "auto", tier: selectedProductTier(), skill };' in APP

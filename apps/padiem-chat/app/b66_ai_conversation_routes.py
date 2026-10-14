@@ -75,6 +75,7 @@ from .b66_registered_model_boundary import (
 )
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 from .request_contract import MAX_BROWSER_BODY_BYTES
+from .member_grade_access import verified_member_grade, GRADES
 from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID
 
 _MODEL_ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}")
@@ -185,8 +186,8 @@ async def conversation_turn(request: Request) -> JSONResponse:
         tiers = ("free", "plus", "pro", "max")
         if not isinstance(requested_tier, str) or requested_tier not in tiers:
             return _error(400, "invalid_tier", "지원하지 않는 AI 등급입니다.")
-        known_member_tier = (access.get("tier", "").lower() if access is not None else "")
-        if known_member_tier in tiers and tiers.index(requested_tier) > tiers.index(known_member_tier):
+        known_member_tier = await verified_member_grade(request, uid, access)
+        if tiers.index(requested_tier) > tiers.index(known_member_tier):
             return _error(403, "tier_not_available", "현재 이용 등급 이하의 AI 등급을 선택해 주세요.")
         if model_id != FREE_PRIMARY_B14_MODEL_ID:
             return _error(400, "invalid_model_id", "등급 선택은 Cat Jam 기본 모델을 사용합니다.")

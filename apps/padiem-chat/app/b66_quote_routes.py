@@ -34,6 +34,7 @@ from .b66_reasoning_level import (
 )
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .request_contract import MAX_BROWSER_BODY_BYTES
+from .member_grade_access import verified_member_grade, GRADES
 from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID
 from .claw_memory_routes import _resolve_memory_workspace
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
@@ -410,8 +411,8 @@ async def b66_quote_models(request: Request) -> JSONResponse:
     # Customer-facing model picker is a grade selector, not a full provider catalog.
     # The raw model catalog stays unchanged for existing/admin consumers.
     grade_order = ("free", "plus", "pro", "max")
-    member_grade = access.get("tier", "").lower() if access is not None else ""
-    permitted = grade_order[:grade_order.index(member_grade)+1] if member_grade in grade_order else grade_order
+    member_grade = await verified_member_grade(request, uid, access)
+    permitted = grade_order[:grade_order.index(member_grade)+1]
     catjam = next((row for row in models if row["model_id"] == FREE_PRIMARY_B14_MODEL_ID), None)
     grade_choices = [
         {"tier": grade, "name": "PADIEM " + grade.capitalize(),
@@ -467,8 +468,8 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
         grade_order = ("free", "plus", "pro", "max")
         if not isinstance(selected_grade, str) or selected_grade not in grade_order:
             return _error(400, "invalid_tier", "지원하지 않는 AI 등급입니다.")
-        member_grade = access.get("tier", "").lower() if access is not None else ""
-        if member_grade in grade_order and grade_order.index(selected_grade) > grade_order.index(member_grade):
+        member_grade = await verified_member_grade(request, uid, access)
+        if grade_order.index(selected_grade) > grade_order.index(member_grade):
             return _error(403, "tier_not_available", "이용 등급 이하의 AI 등급을 선택해 주세요.")
         if data.get("model_id") not in (None, FREE_PRIMARY_B14_MODEL_ID):
             return _error(400, "invalid_model_id", "선택한 등급의 AI 모델과 일치하지 않습니다.")
