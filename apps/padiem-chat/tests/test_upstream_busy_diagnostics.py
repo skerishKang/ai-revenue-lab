@@ -196,8 +196,11 @@ async def test_health_endpoint_metadata_is_non_secret_booleans_and_statuses():
             "identity_shadow_bound",
             # #1975: boolean-only telemetry channel presence flag.
             "request_telemetry_enabled",
+            # #4643: transport availability only, never plan/key or customer data.
+            "voice_stt_available",
         }
         assert set(payload.keys()) == allowed_keys
+        assert payload["voice_stt_available"] is False
 
         raw_text = response.text
         for secret in (

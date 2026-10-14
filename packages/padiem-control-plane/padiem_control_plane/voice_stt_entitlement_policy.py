@@ -89,17 +89,40 @@ class VoiceSttPolicy:
             seen.add(identity)
 
 
+@dataclass(frozen=True, slots=True)
+class VoiceSttAllPlansMode1Policy:
+    """An explicit operator-controlled Mode 1 baseline, never a tier quota.
+
+    Only real canonical b62/b54 user sessions are eligible. This grants *only*
+    transcription, not Mode 2 live-token minting. The caller still needs the
+    per-request Control Plane reservation and the private Worker caller guard.
+    """
+
+    revision: str
+    effective_at: datetime
+    expires_at: datetime
+    products: frozenset[str] = VOICE_STT_PRODUCTS
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.revision, str) or not _ID.fullmatch(self.revision):
+            raise _invalid("explicit policy revision required")
+        if _time(self.expires_at, "expires_at") <= _time(self.effective_at, "effective_at"):
+            raise _invalid("invalid policy lifetime")
+        if self.products != VOICE_STT_PRODUCTS:
+            raise _invalid("Mode 1 baseline must cover exactly Chat and Claw")
+
+
 def voice_stt_grants_for_session(
     session: AuthSessionSnapshot,
     *,
-    policy: VoiceSttPolicy | None,
+    policy: VoiceSttPolicy | VoiceSttAllPlansMode1Policy | None,
     now: datetime,
 ) -> tuple[EntitlementGrant, ...]:
     """Default deny; only a matching active canonical USER session may obtain grants."""
     observed = _time(now, "now")
     if policy is None:
         return ()
-    if not isinstance(policy, VoiceSttPolicy) or not isinstance(session, AuthSessionSnapshot):
+    if not isinstance(policy, (VoiceSttPolicy, VoiceSttAllPlansMode1Policy)) or not isinstance(session, AuthSessionSnapshot):
         raise _invalid("untrusted voice policy or session shape")
     if not (_time(policy.effective_at, "effective_at") <= observed < _time(policy.expires_at, "expires_at")):
         return ()
@@ -107,6 +130,13 @@ def voice_stt_grants_for_session(
         return ()
     if not session.tenant_id or session.tenant_id in {session.product_id, session.subject.subject_id}:
         return ()
+    if isinstance(policy, VoiceSttAllPlansMode1Policy):
+        if session.product_id not in policy.products:
+            return ()
+        # No per-user daily/monthly counter and no normal-use quota.
+        # Individual validated audio size and each private CP reservation
+        # remain bounded and authenticated independently of this grant.
+        return (EntitlementGrant(key="voice.stt.transcribe", allowed=True, limit=None),)
     for scope in policy.scopes:
         if scope.product_id == session.product_id and scope.tenant_id == session.tenant_id:
             return tuple(EntitlementGrant(key=k, allowed=True, limit=n) for k, n in scope.unit_limits)

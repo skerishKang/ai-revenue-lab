@@ -17,6 +17,7 @@ from padiem_control_plane.engine_admission_authority import (
 from padiem_control_plane.engine_entitlement_producer import (
     ensure_authenticated_user_engine_entitlement,
 )
+from padiem_control_plane.voice_stt_entitlement_policy import VoiceSttAllPlansMode1Policy
 
 _AUTHORITY_REF = "control-plane.engine-admission.production.v1"
 _ALLOWED_PRODUCTS: frozenset[str] = frozenset(
@@ -104,6 +105,18 @@ class CanonicalEngineAdmissionDurableObject(DurableObject):
                 "binding is missing"
             )
         self._identity = identity
+        # Owner-approved Mode 1 is available to Free and all paid plans,
+        # independently of usage count. Exact deployment flag is the rollback
+        # switch; it does not authorize Mode 2 live tokens.
+        self._mode1_voice_policy = (
+            VoiceSttAllPlansMode1Policy(
+                revision="mode1-all-plans-20261015-v1",
+                effective_at=datetime(2026, 10, 15, tzinfo=UTC),
+                expires_at=datetime(2099, 1, 1, tzinfo=UTC),
+            )
+            if getattr(env, "PADIEM_VOICE_MODE1_ALL_PLANS_ENABLED", None) == "true"
+            else None
+        )
 
     async def _ensure_current_entitlement(
         self,
@@ -122,6 +135,7 @@ class CanonicalEngineAdmissionDurableObject(DurableObject):
                 product_id=product_id,
                 subject=subject_ref,
                 now=now,
+                voice_policy=self._mode1_voice_policy,
             )
         )
 
@@ -168,6 +182,7 @@ class CanonicalEngineAdmissionDurableObject(DurableObject):
                 product_id=product_id,
                 subject=subject,
                 now=now,
+                voice_policy=self._mode1_voice_policy,
             )
             reservation = self._store.reserve_usage(
                 wire["reservation"],

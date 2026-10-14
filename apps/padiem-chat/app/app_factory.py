@@ -90,6 +90,11 @@ from .auth_routes import (
     password_register,
 )
 from .auto_grounding import AutoGroundingService
+from .voice_stt_routes import IDENTITY_PATH as VOICE_IDENTITY_PATH
+from .voice_stt_routes import TRANSCRIBE_PATH as VOICE_TRANSCRIBE_PATH
+from .voice_stt_routes import CLAW_IDENTITY_PATH as CLAW_VOICE_IDENTITY_PATH
+from .voice_stt_routes import CLAW_TRANSCRIBE_PATH as CLAW_VOICE_TRANSCRIBE_PATH
+from .voice_stt_routes import voice_identity, voice_transcribe
 from .chat_routes import api_chat, api_chat_stream
 from .claw_general_routes import claw_general_execute, claw_general_capabilities
 from .claw_office_preview_routes import (
@@ -287,6 +292,7 @@ async def health(request: Request) -> JSONResponse:
         "request_telemetry_enabled": getattr(
             request.app.state, "request_telemetry_enabled", False
         ),
+        "voice_stt_available": getattr(request.app.state, "voice_stt_transport", None) is not None,
     })
 
 
@@ -359,6 +365,10 @@ def create_app(
         Route("/api/models/owner-name-preview", owner_model_name_preview, methods=["GET"]),
         Route("/api/claw/verified-model-choices", claw_verified_model_choices, methods=["GET"]),
         Route("/api/auth/status", auth_status, methods=["GET"]),
+        Route(VOICE_IDENTITY_PATH, voice_identity, methods=["GET"]),
+        Route(VOICE_TRANSCRIBE_PATH, voice_transcribe, methods=["POST"]),
+        Route(CLAW_VOICE_IDENTITY_PATH, voice_identity, methods=["GET"]),
+        Route(CLAW_VOICE_TRANSCRIBE_PATH, voice_transcribe, methods=["POST"]),
         Route(ACCESS_PATH, home_product_access, methods=["GET"]),
         Route("/auth/google/start", google_start, methods=["GET"]),
         Route("/auth/google/callback", google_callback, methods=["GET"]),
