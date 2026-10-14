@@ -257,7 +257,7 @@
             if (!text) return;
             try {
               if (typeof callbacks.onFinal === "function") {
-                callbacks.onFinal({ text: text, utteranceId: utteranceId, stopped: fromStop === true });
+                callbacks.onFinal({ text: text, utteranceId: utteranceId, stopped: fromStop === true || halting });
               }
             } catch (e) { /* swallow */ }
           },

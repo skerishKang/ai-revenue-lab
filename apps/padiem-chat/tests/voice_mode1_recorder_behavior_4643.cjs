@@ -98,5 +98,6 @@ test("inflight recognition cannot swallow the stop tail",async()=>{
   assert.equal(x.posts.length,2);
   x.resolve("마지막 구간");await x.settle();
   assert.deepEqual(x.finals.map(v=>v.text),["첫 구간","마지막 구간"]);
+  assert.equal(x.finals[0].stopped,true); // the first in-flight final must survive composer.stop()
   assert.equal(x.finals[1].stopped,true);
 });
