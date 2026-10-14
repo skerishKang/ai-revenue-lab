@@ -94,14 +94,23 @@ class ResidentSupervisor:
         command: Sequence[str],
         *,
         popen: Callable[..., subprocess.Popen[bytes]] = subprocess.Popen,
-        env: Mapping[str, str] | None = None,
+        env: Mapping[str, str] | Callable[[], Mapping[str, str] | None] | None = None,
     ) -> None:
         if not command:
             raise ValueError("resident command must not be empty")
         self._command = list(command)
         self._popen = popen
-        self._env = dict(env) if env is not None else None
+        # ``env`` may be a provider so a restart resolves the *current*
+        # committed enrollment instead of a snapshot taken at construction.
+        self._env = env if callable(env) else (dict(env) if env is not None else None)
         self._resident: ResidentProcess | None = None
+
+    def _resolved_env(self) -> dict[str, str] | None:
+        provider = self._env
+        if provider is None:
+            return None
+        resolved = provider() if callable(provider) else provider
+        return dict(resolved) if resolved is not None else None
 
     @property
     def command(self) -> list[str]:
@@ -118,7 +127,8 @@ class ResidentSupervisor:
         """Start the existing Resident. Refuses if one is already running."""
         if self.is_running():
             return self._resident  # type: ignore[return-value]
-        if self._env is None:
+        env = self._resolved_env()
+        if env is None:
             process = self._popen(
                 self._command, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
@@ -126,7 +136,7 @@ class ResidentSupervisor:
         else:
             process = self._popen(
                 self._command, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL, env=self._env,
+                stderr=subprocess.DEVNULL, env=env,
             )
         self._resident = ResidentProcess(process)
         return self._resident
