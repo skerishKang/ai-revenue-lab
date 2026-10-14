@@ -1,21 +1,18 @@
 // #4428 S1 — PADIEM customer home (signed-in service launcher).
 //
 // AUTHORITY CONTRACT (must stay true)
-//   SINGLE_SESSION_AUTHORITY  The only server fact this page reads is the
-//                             existing canonical GET /api/auth/status. That
-//                             endpoint is the B62 product-session presentation,
-//                             NOT a cross-product entitlement authority. This
-//                             page adds no identity store, session, token or
-//                             cookie of its own.
+//   SERVER_ACCESS_PROJECTION First verify GET /api/auth/status (presentation),
+//                             then GET /api/home/product-access (server-approved
+//                             shared Chat+Claw bundle). Neither read mints any
+//                             identity, entitlement, device grant or token.
 //   FAIL_CLOSED               Only a fully consistent signed-in envelope may
 //                             render the catalog. ready !== true, a missing or
 //                             malformed owner identity, a contradictory state,
 //                             5xx, malformed JSON and network errors all show
 //                             the gate.
-//   NO_FABRICATED_ACCESS      The canonical authority exposes no per-product
-//                             entitlement read to the browser, so every service
-//                             is reported as unverified. This page never claims
-//                             a product is available or denied on its own.
+//   NO_FABRICATED_ACCESS      Only a closed, fresh authenticated server
+//                             projection may display the bundle as available.
+//                             Failures and absent grants remain unverified.
 //   NAVIGATION_NOT_GRANT      A link navigates to a product screen; it grants
 //                             nothing. Each product keeps its own access check.
 //                             Only an already supported destination is linked.
@@ -38,6 +35,7 @@
   "use strict";
 
   const STATUS_ENDPOINT = "/api/auth/status";
+  const ACCESS_ENDPOINT = "/api/home/product-access";
   const LOGOUT_ENDPOINT = "/api/auth/logout";
   const READ_TIMEOUT_MS = 10000;
 
@@ -47,7 +45,6 @@
   const SERVICES = Object.freeze([
     Object.freeze({ id: "chat", name: "PADIEM Chat", mark: "C", href: "./", entry: "chat" }),
     Object.freeze({ id: "claw", name: "PADIEM Claw", mark: "K", href: null, entry: "claw" }),
-    Object.freeze({ id: "engine", name: "PADIEM Engine", mark: "E", href: null, entry: "engine" }),
   ]);
 
   const COPY = Object.freeze({
@@ -56,13 +53,15 @@
       lead: "이 계정으로 사용하는 PADIEM 서비스를 한 곳에서 확인합니다.",
       loading: "로그인 상태를 확인하고 있습니다.",
       servicesTitle: "내 PADIEM 서비스",
-      notice: "표시된 이용 상태는 권한 확인 결과가 아닙니다. 실제 접근 권한은 각 제품 화면에서 확인됩니다.",
+      notice: "파디엠챗·클로는 하나의 이용권으로 표시됩니다. 각 실행·파일 권한은 해당 기능에서 별도로 확인합니다.",
       gateTitle: "로그인이 필요합니다",
       gateGuest: "PADIEM Home은 로그인한 사용자만 볼 수 있습니다.",
       gateExpired: "로그인 세션이 만료되었습니다. 다시 로그인해 주세요.",
       gateUnavailable: "로그인 상태를 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.",
       gateAction: "PADIEM Chat에서 로그인",
+      accessAvailable: "이용 가능",
       accessUnverified: "확인 불가",
+      entryChatBlocked: "이용권 확인 대기",
       accessUnverifiedHelp: "이 홈에서는 제품별 이용 권한을 확인할 수 없습니다.",
       entryChat: "PADIEM Chat 열기",
       entryChatHelp: "PADIEM Chat 화면을 엽니다. 로그인과 계정 메뉴도 그곳에 있습니다.",
@@ -71,7 +70,7 @@
       entryEngineBlocked: "별도 화면 없음",
       entryEngineHelp: "Engine은 Chat과 Claw 뒤에서 동작하는 서비스입니다.",
       helpSummary: "이용 상태를 확인할 수 없는 이유",
-      helpBody1: "현재 서버는 로그인한 사용자의 제품별 이용 권한을 브라우저에 알려주는 계약을 제공하지 않습니다. 그래서 이 홈은 모든 서비스를 ‘확인 불가’로 표시하며, 이용 가능하다고 임의로 안내하지 않습니다.",
+      helpBody1: "Chat·Claw 공동 이용권은 서버 확인 결과에만 따라 표시합니다. 세션이나 이용권 확인이 불가능하면 ‘확인 불가’로 표시합니다.",
       helpBody2: "제품 접근 권한은 각 제품 화면이 스스로 확인합니다. 이 홈은 접근 권한을 부여하지 않습니다.",
       signOut: "로그아웃",
       accountMenu: "계정 메뉴",
@@ -83,13 +82,15 @@
       lead: "One place to see the PADIEM services you use with this account.",
       loading: "Checking your sign-in state.",
       servicesTitle: "My PADIEM services",
-      notice: "The status shown is not a permission result. Each product screen confirms its own access.",
+      notice: "Chat and Claw share a single account bundle. Tool and file permissions remain separately enforced.",
       gateTitle: "Sign-in required",
       gateGuest: "PADIEM Home is only visible to signed-in users.",
       gateExpired: "Your session expired. Please sign in again.",
       gateUnavailable: "The sign-in state cannot be confirmed. Please try again shortly.",
       gateAction: "Sign in from PADIEM Chat",
+      accessAvailable: "Available",
       accessUnverified: "Unverified",
+      entryChatBlocked: "Access not confirmed",
       accessUnverifiedHelp: "This home cannot confirm per-product access.",
       entryChat: "Open PADIEM Chat",
       entryChatHelp: "Opens the PADIEM Chat screen. Sign-in and the account menu live there.",
@@ -98,7 +99,7 @@
       entryEngineBlocked: "No separate screen",
       entryEngineHelp: "Engine runs behind Chat and Claw.",
       helpSummary: "Why access status cannot be confirmed",
-      helpBody1: "The server does not currently expose a per-product access contract to the browser. This home therefore marks every service as unverified instead of claiming it is available.",
+      helpBody1: "The shared Chat/Claw bundle is shown as available only with server-verified access. If verification fails, access is marked unverified.",
       helpBody2: "Each product screen confirms its own access. This home grants no access.",
       signOut: "Sign out",
       accountMenu: "Account menu",
@@ -169,6 +170,8 @@
 
   function buildCard(service) {
     const t = locale();
+    const verified = view && view.accesses
+      && view.accesses[service.entry] === "available";
     const item = element("li", "padiem-home-card");
     item.dataset.service = service.id;
 
@@ -176,18 +179,17 @@
     mark.setAttribute("aria-hidden", "true");
     const name = element("h3", "padiem-home-card-name", service.name);
 
-    // The canonical authority exposes no per-product access to the browser, so
-    // this is the only honest value. Never "available" or "denied".
-    const chip = element("span", "padiem-home-card-access", t.accessUnverified);
-    chip.dataset.access = "unverified";
-    chip.title = t.accessUnverifiedHelp;
+    const chip = element("span", "padiem-home-card-access",
+      verified ? t.accessAvailable : t.accessUnverified);
+    chip.dataset.access = verified ? "available" : "unverified";
+    chip.title = verified ? t.accessAvailable : t.accessUnverifiedHelp;
 
     const detail = element("p", "padiem-home-card-help",
       service.entry === "chat" ? t.entryChatHelp
         : service.entry === "claw" ? t.entryClawHelp : t.entryEngineHelp);
 
     const foot = element("div", "padiem-home-card-foot");
-    if (service.href) {
+    if (service.href && verified) {
       // Only a destination that already exists may be linked.
       const link = element("a", "padiem-home-card-action", t.entryChat);
       link.href = service.href;
@@ -196,7 +198,7 @@
       // No supported destination: explain honestly, never render a dead or
       // misleading launch action.
       foot.appendChild(element("span", "padiem-home-card-noaction",
-        service.entry === "claw" ? t.entryClawBlocked : t.entryEngineBlocked));
+        service.entry === "claw" ? t.entryClawBlocked : t.entryChatBlocked));
     }
 
     item.append(mark, name, chip, detail, foot);
@@ -254,10 +256,30 @@
     paint();
   }
 
-  function showServices(name) {
+  function showServices(name, accesses) {
     signedInName = name;
-    view = { kind: "services" };
+    view = { kind: "services", accesses };
     paint();
+  }
+
+  function classifyAccess(payload) {
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)
+        || payload.version !== "product-access-projection-v1"
+        || !Array.isArray(payload.products) || payload.products.length !== 2) return null;
+    const result = Object.create(null);
+    const names = { b62: "chat", "b54-padiem-claw": "claw" };
+    for (const item of payload.products) {
+      if (!item || typeof item !== "object" || Array.isArray(item)) return null;
+      if (!Object.prototype.hasOwnProperty.call(names, item.product_id)) return null;
+      const name = names[item.product_id];
+      if (!name || Object.prototype.hasOwnProperty.call(result, name)
+          || !["available", "unavailable", "denied"].includes(item.access)) return null;
+      result[name] = item.access === "available"
+        && item.reason === "server_allow_confirmed"
+        && item.authority === "padiem-chat-claw-bundle-v1"
+          ? "available" : "unverified";
+    }
+    return Object.keys(result).length === 2 ? result : null;
   }
 
   // The whole access decision. Only a fully consistent signed-in envelope may
@@ -310,8 +332,26 @@
       const payload = await response.json();
       if (request !== sequence) return;
       const verdict = classify(payload);
-      if (typeof verdict === "string") showGate(verdict);
-      else showServices(verdict.name);
+      if (typeof verdict === "string") {
+        showGate(verdict);
+      } else {
+        let accesses = null;
+        try {
+          const accessResponse = await fetch(ACCESS_ENDPOINT, {
+            method: "GET",
+            credentials: "same-origin",
+            cache: "no-store",
+            headers: { Accept: "application/json" },
+            signal: controller.signal,
+          });
+          if (request !== sequence) return;
+          if (accessResponse.ok) accesses = classifyAccess(await accessResponse.json());
+        } catch {
+          // An unverified product is not an allowed product link.
+        }
+        if (request !== sequence) return;
+        showServices(verdict.name, accesses);
+      }
     } catch {
       if (request === sequence) showGate("unavailable");
     } finally {

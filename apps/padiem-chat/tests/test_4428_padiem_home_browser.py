@@ -1,7 +1,7 @@
 """#4428 S1: PADIEM customer home — actual Chromium privacy and access contracts.
 
-The home reads exactly one server fact (the canonical GET /api/auth/status) and
-must fail closed on everything else. These tests mock that endpoint only.
+The Home verifies the B62 presentation session then the canonical Chat/Claw
+bundle GET projection. Both server facts are mocked; no credentials are read.
 """
 from __future__ import annotations
 
@@ -19,6 +19,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1] / "static"
 HOME = "padiem-home.html"
 STATUS_ENDPOINT = "/api/auth/status"
+ACCESS_ENDPOINT = "/api/home/product-access"
 LOGOUT_ENDPOINT = "/api/auth/logout"
 
 
@@ -81,11 +82,27 @@ def route_status(page, fixture):
     return calls
 
 
-def open_home(browser, server, fixture, width=1280, logout_status=200):
+def access_body(state="available"):
+    return {
+        "version": "product-access-projection-v1",
+        "products": [
+            {"product_id": pid, "access": state, "authority": "padiem-chat-claw-bundle-v1",
+             "reason": "server_allow_confirmed" if state == "available" else "authority_unconfirmed"}
+            for pid in ("b62", "b54-padiem-claw")
+        ],
+    }
+
+
+def open_home(browser, server, fixture, width=1280, logout_status=200,
+              access_status=200, access_payload=None):
     page = browser.new_page(viewport={"width": width, "height": 900})
     errors = []
     page.on("pageerror", lambda error: errors.append(str(error)))
     calls = route_status(page, fixture)
+    page.route("**" + ACCESS_ENDPOINT, lambda route: route.fulfill(
+        status=access_status, content_type="application/json",
+        body=json.dumps(access_body() if access_payload is None else access_payload),
+    ))
     page.route("**" + LOGOUT_ENDPOINT, lambda route: route.fulfill(
         status=logout_status, content_type="application/json",
         body='{"ok": true}' if logout_status == 200 else "{}",
@@ -181,17 +198,12 @@ def test_signed_in_user_sees_allowlisted_services_with_honest_status(browser, se
     page, errors, calls = open_home(browser, server, dict(SIGNED_IN))
     wait_services(page)
     cards = page.locator("#padiemHomeGrid li")
-    assert cards.count() == 3
-    ids = [cards.nth(i).get_attribute("data-service") for i in range(3)]
-    assert ids == ["chat", "claw", "engine"]
-    # Every service is honestly unverified: the authority exposes no
-    # per-product entitlement to the browser.
-    assert page.locator('#padiemHomeGrid [data-access="unverified"]').count() == 3
+    assert cards.count() == 2
+    ids = [cards.nth(i).get_attribute("data-service") for i in range(2)]
+    assert ids == ["chat", "claw"]
+    assert page.locator('#padiemHomeGrid [data-access="available"]').count() == 2
     home = page.locator("body").inner_text()
-    assert "확인 불가" in home
-    # It must not claim availability or denial.
-    assert "사용 가능" not in home
-    assert "이용 가능" not in home
+    assert "이용 가능" in home
     assert "권한 없음" not in home
     # The account identity is shown, but not the email.
     assert page.locator("#padiemHomeAccountName").inner_text() == "김파디"
@@ -209,13 +221,36 @@ def test_only_a_supported_destination_is_linked(browser, server):
     assert chat.locator("a").count() == 1
     assert chat.locator("a").get_attribute("href") == "./"
     assert chat.locator("a").inner_text() == "PADIEM Chat 열기"
-    for sid, label in (("claw", "진입 경로 미연결"), ("engine", "별도 화면 없음")):
+    for sid, label in (("claw", "진입 경로 미연결"),):
         card = page.locator(f'#padiemHomeGrid li[data-service="{sid}"]')
         assert card.locator("a").count() == 0, sid
         assert card.locator(".padiem-home-card-noaction").inner_text() == label
     # The Claw card explains why there is no action.
     assert "이동하는 경로가 아직 연결되지 않았습니다" in page.locator(
         '#padiemHomeGrid li[data-service="claw"]').inner_text()
+    assert not errors, errors
+    page.close()
+
+
+@pytest.mark.parametrize("access_status, access_payload", [
+    (503, None),
+    (200, {"version": "product-access-projection-v1", "products": [
+        {"product_id": "b66", "access": "available",
+         "authority": "padiem-chat-claw-bundle-v1", "reason": "server_allow_confirmed"},
+    ]}),
+    (200, {"version": "wrong", "products": []}),
+])
+def test_unverified_or_forged_bundle_cannot_unlock_chat_link(
+    browser, server, access_status, access_payload
+):
+    page, errors, _ = open_home(
+        browser, server, dict(SIGNED_IN),
+        access_status=access_status, access_payload=access_payload,
+    )
+    wait_services(page)
+    assert page.locator('#padiemHomeGrid [data-access="unverified"]').count() == 2
+    assert page.locator("#padiemHomeGrid a").count() == 0
+    assert "이용 가능" not in page.locator("#padiemHomeGrid").inner_text()
     assert not errors, errors
     page.close()
 
