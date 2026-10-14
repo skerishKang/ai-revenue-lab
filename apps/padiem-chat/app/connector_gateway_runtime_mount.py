@@ -56,6 +56,19 @@ async def maybe_dispatch_connector_gateway(
         or binding_value(worker_env, LOCAL_AGENT_BROKER_AUTHORITY_SERVICE_BINDING_NAME) is None
     ):
         return unavailable()
+    if binding_value(
+        worker_env, "PADIEM_CONNECTOR_ACCEPTANCE_BROKER_NATIVE_WSS_ENABLED",
+    ) == "enabled":
+        # EXACT isolated-acceptance route ONLY. No production/public Worker
+        # dispatch and no ASGI fallback if the private DO bridge refuses.
+        from .connector_gateway_broker_do_upgrade import (
+            dispatch_isolated_native_pc_wss,
+        )
+        from workers import Request
+        return await dispatch_isolated_native_pc_wss(
+            request=request, worker_env=worker_env,
+            request_factory=Request, response_factory=response_factory,
+        )
     try:
         # Import AFTER strict Worker-owned gates. The sole real WebSocketPair
         # adapter validates exact origin, pre-pair Cloudflare request.cf TLS,

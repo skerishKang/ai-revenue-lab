@@ -242,8 +242,8 @@ def test_one_click_review_reuses_exact_preapproved_wss_socket(monkeypatch):
     monkeypatch.setattr(transport, "open_review_only_wss_socket", reviewed)
 
     async def same_socket(*, socket, trusted_tls, enrollment,
-                          receiver, owner_approval_open):
-        seen.append(("pipeline", socket, type(trusted_tls).__name__))
+                          receiver, owner_approval_open, acceptance=False):
+        seen.append(("pipeline", socket, type(trusted_tls).__name__, acceptance))
         assert socket is expected
         assert enrollment is registration
         assert receiver is store
@@ -262,6 +262,28 @@ def test_one_click_review_reuses_exact_preapproved_wss_socket(monkeypatch):
     ))
     assert result == "source_only_ack"
     assert seen == [
-        ("dial", True, True), ("pipeline", socket, "VerifiedReviewTls"),
+        ("dial", True, True), ("pipeline", socket, "VerifiedReviewTls", True),
         ("closed",),
     ]
+
+
+def test_acceptance_PC_WSS_opens_only_isolated_owner_approval_origin():
+    socket=FakePcSocket()
+    urls=[]
+    received=asyncio.run(run_pending_pc_offer(
+        socket=socket,trusted_tls=FakeTls(),device_id=DEVICE,
+        owner_approval_open=urls.append,acceptance=True,
+    ))
+    assert received[0].request_ref==REQUEST
+    assert urls==[
+        "https://connector-acceptance.padiem.net"
+        "/api/claw/connector/enrollments/setup?request_ref="+REQUEST
+    ]
+    assert CODE not in urls[0] and CHALLENGE not in urls[0]
+    assert socket.closed is False
+
+
+def test_owner_approval_url_rejects_forged_stage_selector():
+    for invalid in (1,"true",None,[],{}):
+        with pytest.raises(DeviceSessionRefused,match="pc_offer_origin_invalid"):
+            pending_owner_approval_url(REQUEST, acceptance=invalid)

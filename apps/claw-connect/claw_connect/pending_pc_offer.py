@@ -31,6 +31,7 @@ _HEX = re.compile(r"^[0-9a-f]{64}$")
 _DEVICE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
 _CODE = re.compile(r"^[0-9a-f]{32}$")
 _OWNER_URL = "https://chat.padiem.net/api/claw/connector/enrollments/setup"
+_ACCEPTANCE_OWNER_URL = "https://connector-acceptance.padiem.net/api/claw/connector/enrollments/setup"
 
 
 def _exp(value: Any, now: datetime) -> datetime:
@@ -48,11 +49,14 @@ def _exp(value: Any, now: datetime) -> datetime:
         raise DeviceSessionRefused("pc_offer_expiry_invalid") from exc
 
 
-def pending_owner_approval_url(request_ref: str) -> str:
+def pending_owner_approval_url(request_ref: str, *, acceptance: bool = False) -> str:
     """Browser-visible correlation only; no secrets, credentials or authority."""
     if type(request_ref) is not str or _OFFER.fullmatch(request_ref) is None:
         raise DeviceSessionRefused("pc_offer_ref_invalid")
-    return _OWNER_URL + "?request_ref=" + request_ref
+    if type(acceptance) is not bool:
+        raise DeviceSessionRefused("pc_offer_origin_invalid")
+    target = _ACCEPTANCE_OWNER_URL if acceptance else _OWNER_URL
+    return target + "?request_ref=" + request_ref
 
 
 def ownership_transcript(*, device_id: str, nonce_hex: str, public_key: bytes) -> bytes:
@@ -85,6 +89,7 @@ async def run_pending_pc_offer(
     *, socket: Any, trusted_tls: Any, device_id: str,
     owner_approval_open: Callable[[str], Any],
     now: datetime | None = None,
+    acceptance: bool = False,
 ) -> tuple[PendingPcOfferReceipt, str, str]:
     """Start a verified outbound WSS and receive the one-time owner approval.
 
@@ -164,7 +169,9 @@ async def run_pending_pc_offer(
         )
         # This does not assert the browser user is signed in; the B54 owner
         # endpoint checks the signed session + explicit consent independently.
-        owner_approval_open(pending_owner_approval_url(receipt.request_ref))
+        owner_approval_open(pending_owner_approval_url(
+            receipt.request_ref, acceptance=acceptance,
+        ))
         # No retry after approval-frame loss: the broker offer might have been
         # reserved and challenge issued already. Wait only until expiry.
         remaining = max(0.0, (expires_at - datetime.now(timezone.utc)).total_seconds())
@@ -200,6 +207,7 @@ async def run_pending_pc_offer_and_enroll(
     *, socket: Any, trusted_tls: Any, enrollment: Any, receiver: Any,
     owner_approval_open: Callable[[str], Any],
     binding_factory: Callable[..., Any] | None = None,
+    acceptance: bool = False,
 ) -> Any:
     """One socket, from pending offer through *existing* Windows DPAPI ACK."""
     from .device_wss_enrollment import (
@@ -212,6 +220,7 @@ async def run_pending_pc_offer_and_enroll(
         receipt, challenge, code = await run_pending_pc_offer(
             socket=socket, trusted_tls=trusted_tls,
             device_id=record.device_id, owner_approval_open=owner_approval_open,
+            acceptance=acceptance,
         )
         del receipt  # Not proof of enrollment.
         return await run_and_stage_review_only_device_enrollment(

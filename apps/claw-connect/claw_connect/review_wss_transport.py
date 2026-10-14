@@ -201,4 +201,5 @@ async def run_review_only_one_click_pc_link(
             socket=socket, trusted_tls=VerifiedReviewTls(),
             enrollment=enrollment, receiver=receiver,
             owner_approval_open=owner_approval_open,
+            acceptance=acceptance,
         )
