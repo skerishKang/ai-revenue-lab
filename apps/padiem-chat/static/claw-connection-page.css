@@ -303,6 +303,32 @@
   color: var(--text-dim, #506a7b);
 }
 
+.claw-connection-admin {
+  border-radius: 16px;
+  border: 1px solid var(--line, rgba(66, 106, 135, 0.22));
+  background: var(--surface, rgba(255, 255, 255, 0.6));
+  padding: 6px 18px 16px;
+}
+.claw-connection-admin-summary {
+  font-size: 0.85rem;
+  font-weight: 700;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--text-dim, #506a7b);
+}
+.claw-connection-admin-inner > p {
+  font-size: 0.82rem;
+  line-height: 1.62;
+  color: var(--text-dim, #506a7b);
+}
+.claw-connection-admin-inner h3 {
+  margin: 14px 0 6px;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
 @media (max-width: 640px) {
   .claw-connection-page { width: 96vw; }
   .claw-connection-head,

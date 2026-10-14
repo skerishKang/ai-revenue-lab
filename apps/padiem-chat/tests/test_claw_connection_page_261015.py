@@ -33,13 +33,26 @@ def test_page_claims_no_second_authority_or_online_state():
     assert "localStorage[" not in PAGE_JS
     assert "sessionStorage." not in PAGE_JS
     assert "https://" not in PAGE_JS
-    assert "padiem-connector://" not in PAGE_JS
     assert "window.open(" not in PAGE_JS
     assert "wss://" not in PAGE_JS
     assert "websockets" not in PAGE_JS
     assert "dispatch_authorized !== false" in PAGE_JS
     assert "dispatch_authorized = true" not in PAGE_JS
     assert "dispatch_authorized:true" not in PAGE_JS
+
+
+def test_native_launch_uses_only_the_exact_reviewed_os_link():
+    assert PAGE_JS.count('"padiem-connector://start"') == 2
+    assert "window.location.href = NATIVE_LAUNCH_LINK" in PAGE_JS
+    assert "padiem-connector://start?" not in PAGE_JS
+    assert "padiem-connector://start#" not in PAGE_JS
+    assert "NATIVE_LAUNCH_LINK" in PAGE_JS
+
+
+def test_manual_code_entry_lives_only_in_the_admin_area():
+    assert "claw-connection-admin" in PAGE_JS
+    assert "enroll " in PAGE_JS
+    assert "--operator-wss-review" in PAGE_JS
 
 
 def test_page_keeps_checked_consent_gating():

@@ -1,10 +1,12 @@
 /* #4139: dedicated PC connection page (LOCAL2).
  *
  * WHAT THIS IS
- *   The single spacious page behind "connect this computer": status ->
- *   consent -> one-time code -> enter on PC -> verify. It replaces the
- *   scattered small cards with one guided journey in the site's own card
- *   language (theme variables only).
+ *   The single spacious page behind "connect this computer". The DEFAULT
+ *   customer path is install-first and never shows manual code entry:
+ *     status -> install guide -> launch installed Connector ->
+ *     confirm & consent this PC -> server connection status.
+ *   Challenge/code display and the operator enroll command live ONLY in the
+ *   collapsed admin recovery area below; they are not customer steps.
  *
  * AUTHORITY CONTRACT (must stay true)
  *   STATUS_ONLY_DEFAULT   Opening the page issues exactly one owner-scoped
@@ -17,6 +19,10 @@
  *                         reviewed shape (code_returned_once, pairing_code,
  *                         challenge.challenge_id, raw_device_credential=false,
  *                         dispatch_authorized=false).
+ *   LAUNCH_ONLY           The launch control navigates to the exact reviewed
+ *                         OS link "padiem-connector://start" and nothing else:
+ *                         no query, no fragment, no payload. It starts the
+ *                         installed tray; it is never a pairing claim.
  *   SECRET_HYGIENE        Challenge/code live only in closure memory, never
  *                         in localStorage/URL/logs; cleared on pagehide and
  *                         after a successful verify. Copy requires a click.
@@ -30,6 +36,7 @@
   const ISSUE_PATH = "/api/claw/connector/enrollments/issue";
   const DEVICES_PATH = "/api/claw/local-access/devices";
   const CONSENT_VERSION = "pc-enrollment-consent-v1";
+  const NATIVE_LAUNCH_LINK = "padiem-connector://start";
   const MAX_RESPONSE_BYTES = 32768;
   const READ_TIMEOUT_MS = 12000;
   const DEVICE_ID_PATTERN = /^[A-Za-z0-9_.:-]{1,128}$/;
@@ -44,9 +51,8 @@
       chipReady: "연결됨",
       chipAttention: "확인 필요",
       pcUnknown: "이 컴퓨터",
-      stepConsent: "동의",
-      stepCode: "등록 코드",
-      stepEnter: "PC에서 입력",
+      stepInstall: "설치 안내",
+      stepConsent: "확인·동의",
       stepVerify: "연결 확인",
       statusTitle: "내 PC 상태",
       statusChecking: "서버에서 PC 연결 상태를 확인하고 있습니다.",
@@ -54,18 +60,25 @@
       statusFound: "승인된 컴퓨터가 있습니다. 실제 작업은 별도 승인이 필요합니다.",
       statusFailed: "연결 상태를 확인하지 못했습니다. 다시 시도해 주세요.",
       login: "로그인한 뒤에 연결할 수 있습니다.",
-      consentTitle: "이 PC를 Padiem Claw에 연결",
-      consentBody: "서버가 이 PC의 연결 상태를 확인하고, 승인된 작업 요청을 이 PC로 전달할 수 있게 됩니다.",
+      installTitle: "최초 설치 안내",
+      installBody: "연결하려면 Windows PC에 PADIEM Connector가 설치되어 있어야 합니다. 설치가 끝나면 자동으로 실행되고, 이미 등록된 PC는 다시 연결됩니다.",
+      installNote: "설치 파일은 별도 안내로 받으세요. 설치가 이미 끝났다면 아래 버튼으로 커넥터를 실행하세요.",
+      launch: "설치된 커넥터 실행",
+      launched: "커넥터 실행을 요청했습니다. 실제 연결 상태는 서버에서 확인됩니다.",
+      consentTitle: "해당 PC 확인·동의",
+      consentBody: "이 PC를 Padiem Claw에 연결합니다. 서버가 이 PC의 연결 상태를 확인하고, 승인된 작업 요청을 이 PC로 전달할 수 있게 됩니다.",
       allowRead: "연결 상태 확인과 승인된 작업 요청 전달",
       denyFiles: "파일 읽기·수정은 이 동의만으로 허용되지 않음",
       denyRun: "프로그램 실행·화면 제어는 별도 P01 승인 필요",
       ack: "위 내용을 확인했고, 이 PC를 연결하는 데 동의합니다.",
       grant: "동의하고 등록",
       granting: "동의를 저장하는 중입니다.",
-      granted: "동의가 저장되었습니다. 등록 코드를 발급해 주세요.",
+      granted: "동의가 저장되었습니다. 아래 관리자 등록·복구에서 등록을 이어가세요.",
       grantFailed: "동의를 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.",
       notReady: "등록 서비스가 아직 준비되지 않았습니다.",
       targetRequired: "연결할 PC가 확인되지 않았습니다.",
+      adminTitle: "관리자 등록·복구",
+      adminBody: "일반 설치 흐름에서는 필요 없습니다. 등록 코드가 필요한 경우에만 펼치세요.",
       codeTitle: "일회용 등록 코드",
       codeBody: "아래 두 값을 PC에 입력하세요. 이 화면을 벗어나면 사라집니다.",
       challengeLabel: "Challenge ID",
@@ -76,16 +89,14 @@
       issueFailed: "등록 코드 발급에 실패했습니다.",
       copy: "복사",
       copied: "복사했습니다.",
-      enterTitle: "PC에서 입력",
       enterBody: "Windows PC에서 아래 명령을 실행한 뒤, 물어보는 입력창에 등록 코드를 입력하세요.",
-      verifyTitle: "연결 확인",
-      verifyBody: "PC 입력이 끝났으면 서버에서 등록 상태를 확인하세요. 온라인 표시는 서버 확인 후에만 바뀝니다.",
+      verifyTitle: "서버 연결 상태",
+      verifyBody: "등록이 끝났으면 서버에서 상태를 확인하세요. 온라인 표시는 서버 확인 후에만 바뀝니다.",
       verify: "서버에서 상태 확인",
       verifying: "서버 등록 상태를 조회하고 있습니다.",
       verified: "서버에서 이 PC의 연결을 확인했습니다.",
       offline: "PC 등록 기록은 확인됐지만 현재 오프라인입니다.",
-      missing: "아직 이 PC의 서버 등록 기록이 없습니다.",
-      back: "이전",
+      missing: "아직 이 PC의 서버 등록 기록이 없습니다. 동의 후 관리자 등록·복구에서 코드를 발급받아 PC에 입력하세요.",
     },
     en: {
       eyebrow: "PADIEM CLAW · PC CONNECTION",
@@ -96,9 +107,8 @@
       chipReady: "Connected",
       chipAttention: "Needs attention",
       pcUnknown: "This computer",
-      stepConsent: "Consent",
-      stepCode: "Code",
-      stepEnter: "Enter on PC",
+      stepInstall: "Install",
+      stepConsent: "Confirm",
       stepVerify: "Verify",
       statusTitle: "My PC status",
       statusChecking: "Checking your PC connection with the server.",
@@ -106,18 +116,25 @@
       statusFound: "Approved computers exist. Real work still needs approval.",
       statusFailed: "Could not verify the connection. Please retry.",
       login: "Sign in before connecting.",
-      consentTitle: "Connect this PC to Padiem Claw",
-      consentBody: "The server may confirm this PC's connection state and deliver approved task requests to it.",
+      installTitle: "First-time install guide",
+      installBody: "This Windows PC needs PADIEM Connector installed. After install it starts automatically, and an enrolled PC reconnects.",
+      installNote: "Get the installer through its separate notice. If already installed, launch it below.",
+      launch: "Launch installed Connector",
+      launched: "Connector launch requested. The real state is confirmed on the server.",
+      consentTitle: "Confirm and consent this PC",
+      consentBody: "Connect this PC to Padiem Claw. The server may confirm this PC's connection state and deliver approved task requests to it.",
       allowRead: "Connection-state checks and approved request delivery",
       denyFiles: "Reading files is not permitted by this consent alone",
       denyRun: "Running programs needs a separate P01 approval",
       ack: "I have read the above and agree to connect this computer.",
       grant: "Agree and enroll",
       granting: "Saving your consent.",
-      granted: "Consent stored. Issue your enrollment code next.",
+      granted: "Consent stored. Continue in admin enrollment & recovery below.",
       grantFailed: "Consent could not be stored. Please retry shortly.",
       notReady: "Enrollment service is not ready yet.",
       targetRequired: "The computer to enroll is unconfirmed.",
+      adminTitle: "Admin enrollment & recovery",
+      adminBody: "Not needed for the normal install flow. Expand only when an enrollment code is required.",
       codeTitle: "One-time enrollment code",
       codeBody: "Enter these two values on the PC. They vanish off this screen.",
       challengeLabel: "Challenge ID",
@@ -128,16 +145,14 @@
       issueFailed: "Could not issue the enrollment code.",
       copy: "Copy",
       copied: "Copied.",
-      enterTitle: "Enter on the PC",
       enterBody: "On the Windows PC, run the command below, then type the code at its prompt.",
-      verifyTitle: "Verify the connection",
-      verifyBody: "After entering on the PC, confirm the enrollment on the server. Online appears only after server confirmation.",
+      verifyTitle: "Server connection state",
+      verifyBody: "After enrolling, confirm the state on the server. Online appears only after server confirmation.",
       verify: "Check server status",
       verifying: "Reading the server enrollment state.",
       verified: "The server confirmed this PC connection.",
       offline: "Enrollment is on record but the PC is offline.",
-      missing: "No server enrollment record for this PC yet.",
-      back: "Back",
+      missing: "No server enrollment record for this PC yet. After consent, issue a code in admin enrollment & recovery and enter it on the PC.",
     },
   });
 
@@ -214,7 +229,7 @@
     statusRow.append(chip, pcName);
 
     const steps = el("ol", "claw-connection-steps");
-    const stepKeys = ["stepConsent", "stepCode", "stepEnter", "stepVerify"];
+    const stepKeys = ["stepInstall", "stepConsent", "stepVerify"];
     const stepItems = stepKeys.map((key, index) => {
       const li = el("li", null);
       const n = el("span", "n", String(index + 1));
@@ -233,6 +248,19 @@
     statusText.setAttribute("role", "status");
     statusText.setAttribute("aria-live", "polite");
     statusCard.append(statusTitle, statusText);
+
+    const installCard = el("section", "claw-connection-card");
+    const installTitle = el("h3", null);
+    const installBody = el("p", null);
+    const installNote = el("p", null);
+    const installActions = el("div", "claw-connection-actions");
+    const launch = el("button", "claw-connection-secondary");
+    launch.type = "button";
+    installActions.append(launch);
+    const launchStatus = el("p", "claw-connection-status");
+    launchStatus.setAttribute("role", "status");
+    launchStatus.setAttribute("aria-live", "polite");
+    installCard.append(installTitle, installBody, installNote, installActions, launchStatus);
 
     const consentCard = el("section", "claw-connection-card");
     const consentTitle = el("h3", null);
@@ -256,8 +284,22 @@
     consentStatus.setAttribute("aria-live", "polite");
     consentCard.append(consentTitle, consentBody, allow, ackRow, consentActions, consentStatus);
 
-    const codeCard = el("section", "claw-connection-card");
-    codeCard.hidden = true;
+    const verifyCard = el("section", "claw-connection-card");
+    const verifyTitle = el("h3", null);
+    const verifyBody = el("p", null);
+    const verifyActions = el("div", "claw-connection-actions");
+    const verifyBtn = el("button", "claw-connection-primary");
+    verifyBtn.type = "button";
+    verifyActions.append(verifyBtn);
+    const verifyStatus = el("p", "claw-connection-status");
+    verifyStatus.setAttribute("role", "status");
+    verifyStatus.setAttribute("aria-live", "polite");
+    verifyCard.append(verifyTitle, verifyBody, verifyActions, verifyStatus);
+
+    const admin = el("details", "claw-connection-admin");
+    const adminSummary = el("summary", "claw-connection-admin-summary");
+    const adminInner = el("div", "claw-connection-admin-inner");
+    const adminBody = el("p", null);
     const codeTitle = el("h3", null);
     const codeBody = el("p", null);
     const codeBox = el("dl", "claw-connection-codebox");
@@ -278,39 +320,24 @@
     const codeStatus = el("p", "claw-connection-status");
     codeStatus.setAttribute("role", "status");
     codeStatus.setAttribute("aria-live", "polite");
-    codeCard.append(codeTitle, codeBody, codeBox, codeActions, codeStatus);
-
-    const enterCard = el("section", "claw-connection-card");
-    enterCard.hidden = true;
-    const enterTitle = el("h3", null);
     const enterBody = el("p", null);
     const cmd = el("pre", "claw-connection-cmd");
-    enterCard.append(enterTitle, enterBody, cmd);
+    cmd.hidden = true;
+    adminInner.append(adminBody, codeTitle, codeBody, codeBox, codeActions, codeStatus, enterBody, cmd);
+    admin.append(adminSummary, adminInner);
 
-    const verifyCard = el("section", "claw-connection-card");
-    verifyCard.hidden = true;
-    const verifyTitle = el("h3", null);
-    const verifyBody = el("p", null);
-    const verifyActions = el("div", "claw-connection-actions");
-    const verifyBtn = el("button", "claw-connection-primary");
-    verifyBtn.type = "button";
-    verifyActions.append(verifyBtn);
-    const verifyStatus = el("p", "claw-connection-status");
-    verifyStatus.setAttribute("role", "status");
-    verifyStatus.setAttribute("aria-live", "polite");
-    verifyCard.append(verifyTitle, verifyBody, verifyActions, verifyStatus);
-
-    body.append(statusCard, consentCard, codeCard, enterCard, verifyCard);
+    body.append(statusCard, installCard, consentCard, verifyCard, admin);
     sheet.append(head, statusRow, steps, body);
     dialog.append(sheet);
     document.body.append(dialog);
     return {
       dialog, kicker, title, close, chip, pcName, stepItems,
       statusTitle, statusText,
+      installTitle, installBody, installNote, launch, launchStatus,
       consentTitle, consentBody, allow, ack, ackLabel, grant, consentStatus,
+      admin, adminSummary, adminBody,
       codeTitle, codeBody, codeBox, challengeDt, challengeDd,
-      codeDt, codeDd, issue, copyCode, codeStatus,
-      enterTitle, enterBody, cmd,
+      codeDt, codeDd, issue, copyCode, codeStatus, enterBody, cmd,
       verifyTitle, verifyBody, verifyBtn, verifyStatus,
     };
   }
@@ -323,7 +350,6 @@
 
     let generation = 0;
     let source = null;
-    let directory = null;
     let targetDeviceId = null;
     let grantedDeviceId = null;
     let challengeId = null;
@@ -336,11 +362,15 @@
       ui.title.textContent = c.title;
       ui.close.textContent = c.close;
       ui.close.setAttribute("aria-label", c.close);
-      const labels = ["stepConsent", "stepCode", "stepEnter", "stepVerify"];
+      const labels = ["stepInstall", "stepConsent", "stepVerify"];
       ui.stepItems.forEach((li, index) => {
         li.querySelector("[data-step-label]").textContent = c[labels[index]];
       });
       ui.statusTitle.textContent = c.statusTitle;
+      ui.installTitle.textContent = c.installTitle;
+      ui.installBody.textContent = c.installBody;
+      ui.installNote.textContent = c.installNote;
+      ui.launch.textContent = c.launch;
       ui.consentTitle.textContent = c.consentTitle;
       ui.consentBody.textContent = c.consentBody;
       ui.allow.replaceChildren();
@@ -356,13 +386,14 @@
       }
       ui.ackLabel.textContent = c.ack;
       ui.grant.textContent = c.grant;
+      ui.adminSummary.textContent = c.adminTitle;
+      ui.adminBody.textContent = c.adminBody;
       ui.codeTitle.textContent = c.codeTitle;
       ui.codeBody.textContent = c.codeBody;
       ui.challengeDt.textContent = c.challengeLabel;
       ui.codeDt.textContent = c.codeLabel;
       ui.issue.textContent = c.issue;
       ui.copyCode.textContent = c.copy;
-      ui.enterTitle.textContent = c.enterTitle;
       ui.enterBody.textContent = c.enterBody;
       ui.verifyTitle.textContent = c.verifyTitle;
       ui.verifyBody.textContent = c.verifyBody;
@@ -388,21 +419,20 @@
       ui.codeBox.hidden = true;
       ui.challengeDd.textContent = "";
       ui.codeDd.textContent = "";
+      ui.cmd.hidden = true;
+      ui.cmd.textContent = "";
       ui.copyCode.hidden = true;
     }
 
     function reset() {
       generation += 1;
-      directory = null;
       targetDeviceId = null;
       grantedDeviceId = null;
       busy = false;
       ui.ack.checked = false;
       ui.grant.disabled = true;
       ui.issue.disabled = true;
-      ui.codeCard.hidden = true;
-      ui.enterCard.hidden = true;
-      ui.verifyCard.hidden = true;
+      ui.launchStatus.textContent = "";
       clearSecrets();
       setStep(0);
     }
@@ -436,7 +466,7 @@
         return;
       }
       const project = projector();
-      directory = project ? project(data, null) : null;
+      const directory = project ? project(data, null) : null;
       const devices = (directory && directory.available
         ? directory.devices : data.devices) || [];
       const usable = devices.filter((d) => d && (d.usable || d.online) && !d.revoked);
@@ -498,6 +528,14 @@
       }
     }
 
+    function launchConnector() {
+      const c = t();
+      try {
+        window.location.href = NATIVE_LAUNCH_LINK;
+      } catch { /* OS handler absent: status stays server-truthful */ }
+      ui.launchStatus.textContent = c.launched;
+    }
+
     async function submitConsent() {
       const c = t();
       const api = consentApi();
@@ -532,18 +570,12 @@
       if (projection.accepted) {
         grantedDeviceId = descriptor.deviceId;
         ui.consentStatus.textContent = c.granted;
-        ui.codeCard.hidden = false;
         ui.issue.disabled = false;
+        ui.admin.open = true;
         setStep(1);
         return;
       }
-      const raw = result && typeof result === "object" ? result : {};
-      const error = raw.error && typeof raw.error === "object" ? raw.error : {};
-      const mapped = api.consentStateFromError(
-        typeof raw.status === "number" ? raw.status : 0,
-        typeof error.code === "string" ? error.code : "",
-      );
-      ui.consentStatus.textContent = mapped.state === "DENIED" ? c.grantFailed : c.grantFailed;
+      ui.consentStatus.textContent = c.grantFailed;
       ui.grant.disabled = false;
     }
 
@@ -573,9 +605,8 @@
         ui.codeBox.hidden = false;
         ui.copyCode.hidden = false;
         ui.codeStatus.textContent = c.issued;
-        ui.enterCard.hidden = false;
         ui.cmd.textContent = "padiem-connector enroll " + challengeId + " --operator-wss-review";
-        ui.verifyCard.hidden = false;
+        ui.cmd.hidden = false;
         setStep(2);
       } catch {
         if (request !== generation) return;
@@ -600,7 +631,7 @@
 
     async function submitVerify() {
       const c = t();
-      if (busy || !grantedDeviceId) return;
+      if (busy) return;
       const request = generation;
       busy = true;
       ui.verifyBtn.disabled = true;
@@ -613,19 +644,25 @@
             data.available !== true || !Array.isArray(data.devices)) {
           throw new Error("unavailable");
         }
-        const matched = data.devices.find(
-          (item) => item && (item.deviceId === grantedDeviceId || item.device_id === grantedDeviceId),
+        const matchId = grantedDeviceId;
+        const matched = matchId ? data.devices.find(
+          (item) => item && (item.deviceId === matchId || item.device_id === matchId),
+        ) : null;
+        const anyUsable = data.devices.some(
+          (item) => item && (item.usable || item.online) && !item.revoked,
         );
-        if (!matched) {
-          ui.verifyStatus.textContent = c.missing;
-        } else if ((matched.state === "CONNECTED" && matched.usable === true ||
-            matched.online === true) && matched.revoked !== true) {
+        if (matched && ((matched.state === "CONNECTED" && matched.usable === true ||
+            matched.online === true) && matched.revoked !== true)) {
           ui.verifyStatus.textContent = c.verified;
           setChip("ready", c.chipReady);
           clearSecrets();
-          setStep(3);
-        } else {
+        } else if (matched) {
           ui.verifyStatus.textContent = c.offline;
+        } else if (anyUsable) {
+          ui.verifyStatus.textContent = c.statusFound;
+          setChip("ready", c.chipReady);
+        } else {
+          ui.verifyStatus.textContent = c.missing;
         }
       } catch {
         if (request !== generation) return;
@@ -668,6 +705,7 @@
       }
       source = null;
     });
+    ui.launch.addEventListener("click", launchConnector);
     ui.ack.addEventListener("change", () => { if (!busy) syncConsent(); });
     ui.grant.addEventListener("click", () => { void submitConsent(); });
     ui.issue.addEventListener("click", () => { void submitIssue(); });
@@ -718,6 +756,7 @@
       ISSUE_PATH,
       DEVICES_PATH,
       CONSENT_VERSION,
+      NATIVE_LAUNCH_LINK,
     });
   }
 
