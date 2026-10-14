@@ -272,7 +272,9 @@ class LivePcWssOffer:
                         "type", "challenge_id", "device_id", "proof_ref",
                     } if self._canonical_bootstrap._stage == "begin" else {
                         "type", "lease_ref", "proof_hex",
-                    } if self._canonical_bootstrap._stage == "finish" else {"type"}),
+                    } if self._canonical_bootstrap._stage == "finish" else {
+                        "type", "counter", "proof_hex",
+                    } if self._canonical_bootstrap._stage == "host_required" else {"type"}),
                 )
             else:
                 raise PendingPcWssRefused("pending_pc_canonical_wss_unavailable")

@@ -78,6 +78,7 @@ class SamePcCanonicalBrokerBootstrap:
         self._socket = socket
         self._stage = "begin"
         self._lease: str | None = None
+        self._fetch_verified = False
 
     async def receive(self, frame: dict[str, Any]) -> str:
         """Never returns a success/enrolled claim, including post-FINISH."""
@@ -177,5 +178,69 @@ class SamePcCanonicalBrokerBootstrap:
             except Exception:
                 self._stage = "denied"
                 raise CanonicalPcBootstrapDenied("canonical_finish_unconfirmed") from None
+        if self._stage == "host_required":
+            # The original Windows device sends a signed credential_fetch as
+            # its next frame. Consume the canonical Broker session counter
+            # only after the exact code-derived HMAC validates. This grants
+            # NO credential or Identity permission and sends NO reply.
+            if (
+                not _shape(frame, {"type", "counter", "proof_hex"})
+                or frame["type"] != "credential_fetch"
+                or type(frame["counter"]) is not int
+                or frame["counter"] != 1
+                or type(frame["proof_hex"]) is not str
+                or _MAC.fullmatch(frame["proof_hex"]) is None
+            ):
+                self._stage = "denied"
+                raise CanonicalPcBootstrapDenied("canonical_fetch_invalid")
+            self._stage = "pending_fetch"
+            try:
+                reply = await self._broker.gateway_bootstrap_rpc({
+                    "operation": "authorize",
+                    "args": {
+                        "challenge_id": self._challenge_id,
+                        "device_id": self._device_id,
+                        "lease_ref": self._lease,
+                        "action": "credential_fetch", "counter": 1,
+                        "body_b64": "",
+                        "proof_hex": frame["proof_hex"],
+                    },
+                })
+                receipt = _receipt(reply, {
+                    "challenge_id", "device_id", "lease_ref", "action",
+                    "counter", "authenticated",
+                })
+                if (
+                    receipt["challenge_id"] != self._challenge_id
+                    or receipt["device_id"] != self._device_id
+                    or receipt["lease_ref"] != self._lease
+                    or receipt["action"] != "credential_fetch"
+                    or type(receipt["counter"]) is not int
+                    or receipt["counter"] != 1
+                    or receipt["authenticated"] is not True
+                ):
+                    raise CanonicalPcBootstrapDenied("canonical_fetch_receipt_invalid")
+                self._fetch_verified = True
+                self._stage = "identity_required"
+                # The EXISTING B54 Identity async host must now reauthorize
+                # current owner consent and redeem before any raw credential
+                # travels over this PC socket. Never fabricate a response.
+                return "awaiting_canonical_identity_host"
+            except Exception:
+                self._stage = "denied"
+                raise CanonicalPcBootstrapDenied("canonical_fetch_unconfirmed") from None
         self._stage = "denied"
         raise CanonicalPcBootstrapDenied("canonical_identity_host_required")
+
+    def authenticated_fetch_receipt(self, *, challenge_id: str,
+                                    device_id: str) -> bool:
+        """Local DO-only proof state, NOT an Identity consent decision."""
+        return (
+            self._stage == "identity_required"
+            and self._fetch_verified is True
+            and type(challenge_id) is str
+            and type(device_id) is str
+            and challenge_id == self._challenge_id
+            and device_id == self._device_id
+            and getattr(self._socket, "closed", None) is False
+        )

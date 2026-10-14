@@ -267,3 +267,100 @@ def test_wrong_finish_mac_never_marks_broker_gateway_verified(monkeypatch):
             "SELECT verified_at FROM canonical_local_agent_gateway_bootstrap",
         ).toArray()[0]["verified_at"] is None
     asyncio.run(go())
+
+
+def test_verified_code_fetch_uses_original_broker_counter_but_no_credential(monkeypatch):
+    import hashlib
+    from canonical_broker_gateway_bootstrap import bootstrap_mac, session_mac
+    from padiem_control_plane.broker_pending_pc_bootstrap import (
+        CanonicalPcBootstrapDenied,
+    )
+
+    async def main():
+        do,broker,server,cid,code=await native_owner_approved(monkeypatch)
+        begin={
+            "type":"begin","challenge_id":cid,"device_id":DEVICE,
+            "proof_ref":pairing_proof_ref(
+                challenge_id=cid,device_id=DEVICE,pairing_code=code,
+            ),
+        }
+        await broker_pending_pc_wss_message(do,server,json.dumps(begin))
+        nonce=server.sent[-1]
+        assert nonce["type"]=="nonce"
+        await broker_pending_pc_wss_message(do,server,json.dumps({
+            "type":"finish","lease_ref":nonce["lease_ref"],
+            "proof_hex":bootstrap_mac(
+                pairing_code=code,challenge_id=cid,device_id=DEVICE,
+                nonce_hex=nonce["nonce_hex"],lease_ref=nonce["lease_ref"],
+            ),
+        }))
+        assert server.sent[-1]["type"]=="bootstrap_verified"
+        proof=session_mac(
+            pairing_code=code,challenge_id=cid,device_id=DEVICE,
+            nonce_hex=nonce["nonce_hex"],lease_ref=nonce["lease_ref"],
+            action="credential_fetch",counter=1,
+            payload_sha256=hashlib.sha256(b"").hexdigest(),
+        )
+        before=len(server.sent)
+        await broker_pending_pc_wss_message(do,server,json.dumps({
+            "type":"credential_fetch","counter":1,"proof_hex":proof,
+        }))
+        assert not server.closes
+        assert len(server.sent)==before  # no raw secret, no fake ACK
+        actor=next(iter(do._pending_pc_wss_by_id.values()))
+        assert actor._canonical_bootstrap.authenticated_fetch_receipt(
+            challenge_id=cid,device_id=DEVICE,
+        ) is True
+        assert actor._canonical_bootstrap.authenticated_fetch_receipt(
+            challenge_id="other.challenge",device_id=DEVICE,
+        ) is False
+        ledger=broker._storage.sql.exec(
+            "SELECT * FROM canonical_local_agent_gateway_bootstrap",
+        ).toArray()[0]
+        assert ledger["next_counter"]==2
+        assert broker._storage.sql.exec(
+            "SELECT redeemed_at FROM canonical_local_agent_pairing_challenge",
+        ).toArray()[0]["redeemed_at"] is None
+        assert all(f.get("type")!="credential_once" for f in server.sent)
+        assert all(f.get("status")!="paired_offline" for f in server.sent)
+        # No completed Identity host: even a forged install ACK now closes.
+        await broker_pending_pc_wss_message(do,server,json.dumps({
+            "type":"install_ack","counter":2,
+            "proof_hex":"f"*64,"body_b64":"",
+        }))
+        assert server.closes
+        assert actor._canonical_bootstrap.authenticated_fetch_receipt(
+            challenge_id=cid,device_id=DEVICE,
+        ) is False
+    asyncio.run(main())
+
+
+def test_invalid_code_fetch_never_advances_broker_counter(monkeypatch):
+    from canonical_broker_gateway_bootstrap import bootstrap_mac
+
+    async def main():
+        do,broker,server,cid,code=await native_owner_approved(monkeypatch)
+        await broker_pending_pc_wss_message(do,server,json.dumps({
+            "type":"begin","challenge_id":cid,"device_id":DEVICE,
+            "proof_ref":pairing_proof_ref(
+                challenge_id=cid,device_id=DEVICE,pairing_code=code,
+            ),
+        }))
+        nonce=server.sent[-1]
+        await broker_pending_pc_wss_message(do,server,json.dumps({
+            "type":"finish","lease_ref":nonce["lease_ref"],
+            "proof_hex":bootstrap_mac(
+                pairing_code=code,challenge_id=cid,device_id=DEVICE,
+                nonce_hex=nonce["nonce_hex"],lease_ref=nonce["lease_ref"],
+            ),
+        }))
+        await broker_pending_pc_wss_message(do,server,json.dumps({
+            "type":"credential_fetch","counter":1,"proof_hex":"f"*64,
+        }))
+        assert server.closes
+        ledger=broker._storage.sql.exec(
+            "SELECT next_counter FROM canonical_local_agent_gateway_bootstrap",
+        ).toArray()[0]
+        assert ledger["next_counter"]==1
+        assert all(f.get("type")!="credential_once" for f in server.sent)
+    asyncio.run(main())
