@@ -177,6 +177,16 @@ def _reserve_now(store, _now=FIXED_NOW, **over):
         )
 
 
+def _claim_now(store, context):
+    """Pin claim's server clock to the same synthetic instant as reservation.
+
+    The source contract remains strictly expiry-gated. Tests must not use the
+    wall clock to claim a grant whose fixed reservation time was yesterday.
+    """
+    with patch("app.claw_first_turn_authority._utcnow", return_value=FIXED_NOW):
+        return asyncio.run(claim_first_turn_grant(store, context))
+
+
 class TestGrantContractShape(unittest.TestCase):
     def test_migration_043_is_additive_only(self):
         lowered = GRANT_SQL.lower()
@@ -258,7 +268,7 @@ class TestD1GrantStore(unittest.TestCase):
         assert context.conversation_ref != context.grant_id
         assert self._row(context.grant_id)["state"] == STATE_RESERVED
 
-        assert asyncio.run(claim_first_turn_grant(self.store, context)) is True
+        assert _claim_now(self.store, context) is True
         assert self._row(context.grant_id)["state"] == STATE_ACTIVE
 
         settled = asyncio.run(
@@ -316,8 +326,8 @@ class TestD1GrantStore(unittest.TestCase):
 
     def test_second_claim_loses_and_terminal_claims_fail(self):
         context = _reserve_now(self.store)
-        assert asyncio.run(claim_first_turn_grant(self.store, context)) is True
-        assert asyncio.run(claim_first_turn_grant(self.store, context)) is False
+        assert _claim_now(self.store, context) is True
+        assert _claim_now(self.store, context) is False
         assert (
             asyncio.run(
                 self.store.settle(
@@ -334,14 +344,14 @@ class TestD1GrantStore(unittest.TestCase):
             )
             is not None
         )
-        assert asyncio.run(claim_first_turn_grant(self.store, context)) is False
+        assert _claim_now(self.store, context) is False
 
     def test_claim_revalidates_bindings_and_expiry(self):
         import dataclasses
 
         context = _reserve_now(self.store)
         forged = dataclasses.replace(context, tenant_id=OTHER_TENANT)
-        assert asyncio.run(claim_first_turn_grant(self.store, forged)) is False
+        assert _claim_now(self.store, forged) is False
         late = (FIXED_NOW + timedelta(seconds=GRANT_TTL_SECONDS + 1)).isoformat(
             timespec="milliseconds"
         ).replace("+00:00", "Z")
@@ -356,7 +366,7 @@ class TestD1GrantStore(unittest.TestCase):
 
     def test_replay_after_terminal_mints_fresh(self):
         context = _reserve_now(self.store)
-        assert asyncio.run(claim_first_turn_grant(self.store, context)) is True
+        assert _claim_now(self.store, context) is True
         asyncio.run(
             self.store.settle(
                 context.grant_id, OWNER, STATE_COMPLETED, "2026-10-13T12:01:00Z"
@@ -385,7 +395,7 @@ class TestD1GrantStore(unittest.TestCase):
 
     def test_cleanup_is_owner_scoped_bounded_and_reserved_only(self):
         live = _reserve_now(self.store)
-        asyncio.run(claim_first_turn_grant(self.store, live))
+        _claim_now(self.store, live)
         stale_iso = (FIXED_NOW - timedelta(seconds=1)).isoformat(
             timespec="milliseconds"
         ).replace("+00:00", "Z")
@@ -475,7 +485,7 @@ class TestD1GrantStore(unittest.TestCase):
             "app.claw_first_turn_authority._utcnow", return_value=FIXED_NOW
         ):
             first = _reserve_now(self.store)
-            assert asyncio.run(claim_first_turn_grant(self.store, first)) is True
+            assert _claim_now(self.store, first) is True
         later = FIXED_NOW + _timedelta(seconds=GRANT_TTL_SECONDS + 600)
         second = _reserve_now(self.store, _now=later)
         assert second.grant_id != first.grant_id
@@ -499,8 +509,15 @@ class TestD1GrantStore(unittest.TestCase):
             try:
                 store = D1FirstTurnGrantStore(D1Sqlite(db))
                 barrier.wait(timeout=10)
+                # Independent D1 connections race on one atomic SQL CAS.
+                # Pass the shared fixed timestamp as a bound value instead of
+                # monkey-patching the process-wide clock across threads.
                 outcomes.append(
-                    asyncio.run(claim_first_turn_grant(store, context))
+                    asyncio.run(
+                        store.claim(
+                            context.grant_id, OWNER, SUBJECT, TENANT, _iso_now()
+                        )
+                    ) is not None
                 )
             except Exception as exc:  # fail loudly, never as a count mismatch
                 errors.append(exc)
@@ -527,8 +544,8 @@ class TestInMemoryGrantStoreParity(unittest.TestCase):
         first = _reserve_now(store)
         second = _reserve_now(store)
         assert first.grant_id == second.grant_id
-        assert asyncio.run(claim_first_turn_grant(store, first)) is True
-        assert asyncio.run(claim_first_turn_grant(store, second)) is False
+        assert _claim_now(store, first) is True
+        assert _claim_now(store, second) is False
         view = asyncio.run(store.status_by_correlation(OWNER, first.correlation_key))
         assert view is not None and view["state"] == STATE_ACTIVE
         assert asyncio.run(store.cleanup_abandoned(OWNER, _iso_now(), 10)) == 0
@@ -545,7 +562,7 @@ class TestInMemoryGrantStoreParity(unittest.TestCase):
             )
             is not None
         )
-        assert asyncio.run(claim_first_turn_grant(store, context)) is False
+        assert _claim_now(store, context) is False
         fresh = _reserve_now(store)
         assert fresh.grant_id != context.grant_id
 
@@ -691,7 +708,7 @@ class TestFirstTurnGateRoute(unittest.TestCase):
                     _request(store=store), **_inputs()
                 )
             )
-            assert asyncio.run(claim_first_turn_grant(store, preseed)) is True
+            assert _claim_now(store, preseed) is True
             with _s1_client(store=store, adapter=adapter, flag=True) as client:
                 response = _first_turn_post(client)
         assert response.status_code == 409
@@ -888,7 +905,7 @@ class TestFirstTurnGateRoute(unittest.TestCase):
             "app.claw_first_turn_authority._utcnow", return_value=FIXED_NOW
         ):
             context = _reserve_now(store)
-            assert asyncio.run(claim_first_turn_grant(store, context)) is True
+            assert _claim_now(store, context) is True
             asyncio.run(
                 complete_first_turn_grant(
                     _request(store=store),
