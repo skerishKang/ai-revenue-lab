@@ -386,28 +386,9 @@ html[data-theme="padiem-glass"] .answer-action:focus-visible {
   background: rgba(255, 255, 255, .68) !important;
 }
 
-/* Make the active chat composer readable as a field: muted gray surface,
- * light entered text, and enough contrast for the placeholder/caret. */
-html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .composer {
-  padding: 10px 11px 9px;
-  border-color: rgba(255, 255, 255, .38) !important;
-  background: rgba(49, 56, 63, .92) !important;
-  box-shadow: 0 18px 46px rgba(27, 35, 43, .22), inset 0 1px 0 rgba(255, 255, 255, .10) !important;
-}
-
-html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .composer textarea {
-  min-height: 52px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: rgba(104, 113, 121, .58) !important;
-  color: #ffffff !important;
-  caret-color: #ffffff;
-}
-
-html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .composer textarea::placeholder {
-  color: rgba(255, 255, 255, .68) !important;
-}
-
+/* Chat's same glass composer stays visually continuous during typing.
+ * Do not replace its white shell with a dark nested textarea when state=chat.
+ * The shared Chat/Claw composer is ONE stable input, not a second popup. */
 html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .composer-actions {
   margin-top: 8px;
 }
