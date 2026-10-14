@@ -1,3 +1,7 @@
+<!-- CENTRAL_4139_TECHNICAL_HANDOVER_INDEX_20261015 -->
+> **2026-10-15 Connector / Claw actual PC TXT engineering handover:** [CENTRAL integrated code, exact PR/HEAD status, real P01 factory/PC registration blockers and minimum next path](PADIEM_CONNECTOR_CENTRAL_HANDOVER_20261015.md). **Docs-only / no E2E proof / no deploy**. The primary owner remains [#4139](https://github.com/skerishKang/ai-revenue-lab/issues/4139); do not create a duplicate issue or treat historical status as current. Internal management retrospective stays in the non-public local Governance and is **not reproduced here**.
+<!-- /CENTRAL_4139_TECHNICAL_HANDOVER_INDEX_20261015 -->
+
 <!-- CENTRAL_CONNECTOR_PUBLIC_ARTIFACT_INDEX_20261015 -->
 > **2026-10-15 Connector technical distribution:** [PADIEM Connector standalone installer/R2 Standard download plan](PADIEM_CONNECTOR_INSTALLER_DISTRIBUTION_20261015.md). One published *technical* source of truth, not an implemented installer or confidential commercial pricing. Owner issue remains [#4139](https://github.com/skerishKang/ai-revenue-lab/issues/4139); selected-Windows release acceptance remains [#3099](https://github.com/skerishKang/ai-revenue-lab/issues/3099).
 >
