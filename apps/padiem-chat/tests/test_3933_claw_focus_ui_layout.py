@@ -57,11 +57,13 @@ def test_focus_stylesheet_is_last_and_loads_after_complex_claw_layout():
     assert links.index("./b66-quote-runtime.css") < links.index("./claw-focus-layout.css")
 
 
-def test_claw_is_only_modified_state_and_glass_portrait_ends_on_claw_not_chat():
-    assert 'html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .main-panel::before' in CSS
+def test_claw_only_selectors_keep_shared_first_use_portrait_and_workbench_separation():
+    assert '.app-shell[data-state="claw"]' in CSS
+    assert '.main-panel::before' in CSS
+    assert ':not(:has(.claw-workspace[data-view="general"]' in CSS
     assert 'content: none;' in CSS
     assert '.app-shell[data-state="claw"] .conversation' in CSS
-    assert '.app-shell[data-state="claw"] .composer-wrap' in CSS
+    assert ".composer-wrap" in CSS
     assert '.app-shell[data-state="chat"]' not in CSS
     assert '.app-shell[data-state="home"]' not in CSS
     assert not re.search(r'(^|\n)\s*html\[data-theme="padiem-glass"\]\s+\.main-panel', CSS)
