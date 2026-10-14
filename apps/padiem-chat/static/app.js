@@ -3545,7 +3545,6 @@
       if (!redirect) throw new Error("drive authorization unavailable");
       window.location.assign(redirect);
     } catch (_) {
-      try { sessionStorage.removeItem("padiem-claw-drive-oauth-return"); } catch (_) {}
       // Bounded failure with no automatic retry: only a new explicit user
       // gesture starts another attempt, and this attempt's state is dropped.
       googleConnectorConnectInFlight = false;
@@ -3868,7 +3867,6 @@
       const offered = googleDriveConnectButton();
       if (offered && !offered.hidden && !offered.disabled) {
         // Only a non-sensitive return-to-CLAW presentation hint is stored.
-        try { sessionStorage.setItem("padiem-claw-drive-oauth-return", "1"); } catch (_) {}
         offered.click();
       } else {
         // Unknown authority is not OFF; show the existing connection status.
@@ -3893,13 +3891,7 @@
     const cleanPath = String(window.location.pathname || "/");
     const cleanHash = String(window.location.hash || "");
     window.history.replaceState(null, "", cleanPath + (cleanQuery ? `?${cleanQuery}` : "") + cleanHash);
-    let returnToClaw = false;
-    try {
-      returnToClaw = sessionStorage.getItem("padiem-claw-drive-oauth-return") === "1";
-      sessionStorage.removeItem("padiem-claw-drive-oauth-return");
-    } catch (_) {}
-    if (returnToClaw) openClawWorkspace();
-    else openConnectorsDialog();
+    openConnectorsDialog();
   }
 
   // GitHub OAuth callback lands back on the existing Claw home, not Connectors.

@@ -217,7 +217,8 @@ from .config import Settings
 from .connector_status_projection import connectors_status
 from .connector_disconnect_routes import disconnect_google_drive
 from .github_oauth_routes import (github_start, github_callback, github_status,
-                                  github_repositories, github_disconnect, github_pause, github_resume)
+                                  github_repositories, github_disconnect, github_pause, github_resume,
+                                  github_installation_settings)
 from .connector_ticket_routes import google_connector_ticket
 from .calendar_read_activation_routes import activate_google_calendar_read
 from .conversation_routes import api_conversation_detail, api_conversation_search, api_conversations
@@ -390,6 +391,7 @@ def create_app(
         Route("/api/connectors/github/start", github_start, methods=["GET"]),
         Route("/api/connectors/github/callback", github_callback, methods=["GET"]),
         Route("/api/connectors/github/status", github_status, methods=["GET"]),
+        Route("/api/connectors/github/installations", github_installation_settings, methods=["GET"]),
         Route("/api/connectors/github/repositories", github_repositories, methods=["GET"]),
         Route("/api/connectors/github/disconnect", github_disconnect, methods=["POST"]),
         Route("/api/connectors/github/pause", github_pause, methods=["POST"]),

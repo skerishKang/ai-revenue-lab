@@ -128,6 +128,16 @@ async def _credentials(request: Request):
     except Exception:
         return uid, None, None, "github_authority_unavailable"
 
+async def github_installation_settings(request: Request) -> Response:
+    """Authenticated user navigation to official GitHub installation settings."""
+    uid = await _owner(request)
+    if not uid:
+        return _error("authentication_required", 401)
+    # Provider's official settings page; never a browser-supplied redirect URL.
+    return RedirectResponse("https://github.com/settings/installations", status_code=303,
+                            headers=HEADERS)
+
+
 async def github_status(request: Request):
     uid = await _owner(request)
     store, provider = _ports(request)

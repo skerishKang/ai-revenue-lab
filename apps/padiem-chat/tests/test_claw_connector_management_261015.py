@@ -29,8 +29,8 @@ def test_main_off_first_use_starts_real_provider_not_connector_workspace():
     assert 'beginGoogleDriveConnect()' in APP
     assert '"/api/connectors/github/start"' in GUIDE
     assert 'window.location.assign("/api/connectors/github/start")' in GUIDE
-    assert 'padiem-claw-drive-oauth-return' in APP
-    assert 'if (returnToClaw) openClawWorkspace()' in APP
+    assert 'sessionStorage' not in APP
+    assert 'openConnectorsDialog()' in APP
     assert 'claw-github=connected' in APP
     assert 'window.history.replaceState' in APP
 
@@ -51,7 +51,7 @@ def test_connection_management_never_forges_on_off_or_auto_deletes():
 
 
 def test_permissions_link_stays_user_accessible_with_no_secret():
-    assert 'https://github.com/settings/installations' in HTML
+    assert 'href="/api/connectors/github/installations"' in HTML
     assert 'show(githubPermissions, known && linked)' in MANAGER
     assert 'PADIEM_GITHUB_APP_CLIENT_SECRET' not in HTML
     assert 'PADIEM_GITHUB_APP_CLIENT_SECRET' not in MANAGER
