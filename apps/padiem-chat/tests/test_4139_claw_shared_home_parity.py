@@ -79,7 +79,7 @@ def test_claw_identity_is_two_lines_without_a_duplicate_greeting():
     assert "chat-hero-line" in first
     assert "claw-hero-line" in first
     assert "querySelector(\".claw-hero-line\")" in LOCALE
-    assert "claw-home-input" in APP
+    assert 'input.placeholder = localeOr("input", "Ask anything");' in APP
     assert "클로에게 작업을 맡겨보세요" in LOCALE
     assert "claw-home-intro" in LOCALE and "Where would you like to work?" in LOCALE
 

@@ -2163,9 +2163,8 @@
       // Executable Claw task authority is validated by the server.
       // No separate pilot-era 4,000-character browser ceiling.
     } else {
-      input.placeholder = isClaw
-        ? localeOr("claw-home-input", "Give Claw a task")
-        : localeOr("input", "Ask anything");
+      // Claw general and Chat share the same canonical composer placeholder.
+      input.placeholder = localeOr("input", "Ask anything");
       input.removeAttribute("aria-describedby");
       input.removeAttribute("aria-invalid");
       // General Claw and Chat accept provider-native prompts. The distinct
