@@ -66,7 +66,7 @@ def test_static_markup_is_compatible_with_self_only_script_policy():
     script_tags = re.findall(r"<script\b([^>]*)>", html, flags=re.IGNORECASE)
     assert script_tags
     assert all(re.search(r"\bsrc\s*=", attrs, flags=re.IGNORECASE) for attrs in script_tags)
-    assert re.search(r"<style\b", html, flags=re.IGNORECASE)
+    assert re.search(r'<link[^>]+rel="stylesheet"', html, flags=re.IGNORECASE)
     assert not re.search(r"\son[a-z]+\s*=", html, flags=re.IGNORECASE)
 
 
