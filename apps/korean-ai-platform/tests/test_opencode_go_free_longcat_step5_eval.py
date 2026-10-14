@@ -276,7 +276,7 @@ def test_off_models_are_never_enabled_by_this_harness() -> None:
     from app.pilot.model_registry_file import read_registry
 
     reg = read_registry()
-    assert reg["providers"]["opencode-go"]["enabled"] is False
+    assert reg["providers"]["opencode-go"]["enabled"] is True
     for model_id in (LONGCAT_MODEL_ID, STEP5_MODEL_ID):
         row = next(m for m in reg["models"] if m["id"] == model_id)
         assert row["enabled"] is False

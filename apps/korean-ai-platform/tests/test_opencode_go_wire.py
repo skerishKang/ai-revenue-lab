@@ -9,10 +9,11 @@ from app.pilot.errors import InvalidRequest, PilotNotConfigured, MalformedUpstre
 
 SESSION = "chat_0123456789abcdef0123456789abcdef"
 TURNS = [{"role": "system", "content": "Code only"}, {"role": "user", "content": "Write a Python function."}]
-GO_IDS = ["longcat-2.5-preview-free", "step-5-preview-free", "muse-spark-1.3-contributor", "muse-spark-1.2-contributor", "gpt-6-luna", "claude-haiku-5-5"]
+GO_IDS = ["cat-jam-free", "longcat-2.5-preview-free", "step-5-preview-free", "muse-spark-1.3-contributor", "muse-spark-1.2-contributor", "gpt-6-luna", "claude-haiku-5-5"]
 
 
 @pytest.mark.parametrize("name,wire", [
+    ("cat-jam-free", "chat/completions"),
     ("longcat-2.5-preview-free", "chat/completions"),
     ("step-5-preview-free", "chat/completions"),
     ("muse-spark-1.3-contributor", "responses"),
