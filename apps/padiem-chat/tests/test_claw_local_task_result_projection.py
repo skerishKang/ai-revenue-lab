@@ -38,7 +38,7 @@ from app.claw_local_task_result_projection import (  # noqa: E402
     project_local_runner_terminal_result,
     result_message_id,
 )
-from app.history import D1HistoryStore, HistoryError, HistoryForbidden  # noqa: E402
+from app.history import D1HistoryStore, HistoryError, HistoryForbidden, PRODUCT_SCOPE_CHAT  # noqa: E402
 from padiem_control_plane.local_agent_broker import BrokerCommandState  # noqa: E402
 from padiem_control_plane.local_agent_broker_state import StateBackedLocalAgentBrokerAuthority  # noqa: E402
 from padiem_control_plane.local_agent_broker_state_wire import (  # noqa: E402
@@ -292,7 +292,7 @@ def _acknowledge(authority, command_id, admission, *, at: datetime, session_id: 
 
 
 def _conversation_with_run(history, *, owner: str, run_id: str, workspace_id: str = WORKSPACE) -> str:
-    conversation_id = _run(history.append_exchange(owner, None, "로컬 러너로 이 작업을 실행해줘", "알겠습니다"))
+    conversation_id = _run(history.append_exchange(owner, None, "로컬 러너로 이 작업을 실행해줘", "알겠습니다", product_scope=PRODUCT_SCOPE_CHAT))
     _run(
         history.record_claw_run(
             user_id=owner,
@@ -532,7 +532,7 @@ def test_the_destination_conversation_is_server_owned(tmp_path):
     db = _open_database(tmp_path / "chat.sqlite3")
     history = D1HistoryStore(db)
     owner = _accounts(history)[OWNER_SUBJECT]
-    conversation_id = _run(history.append_exchange(owner, None, "hello", "hi"))
+    conversation_id = _run(history.append_exchange(owner, None, "hello", "hi", product_scope=PRODUCT_SCOPE_CHAT))
     _run(
         history.record_claw_run(
             user_id=owner,
@@ -1878,7 +1878,7 @@ def test_the_run_workspace_is_the_authoritative_scope(tmp_path):
                 title="scoped task",
                 status="running",
                 conversation_id=_run(
-                    history.append_exchange(chat_owner, None, "실행해줘", "알겠습니다")
+                    history.append_exchange(chat_owner, None, "실행해줘", "알겠습니다", product_scope=PRODUCT_SCOPE_CHAT)
                 ),
                 workspace_id=WORKSPACE,
             )

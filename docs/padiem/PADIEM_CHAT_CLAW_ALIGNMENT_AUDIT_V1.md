@@ -1,5 +1,7 @@
 # PADIEM Chat / Claw Alignment Audit V1
 
+> **2026-10-14 대표 최신 결정:** 이 문서의 과거 테마/언어 PASS는 **Chat·Claw 전체 화면 레이아웃 동일성 완료를 뜻하지 않습니다**. Claw는 Chat의 동일 대화/컴포저 구조를 기본으로 재구성해야 하며, Chat의 초상화 공간을 강제로 복제하지 않고 Claw 본문을 중앙 정렬합니다. 메모리·실행 기록은 기능을 유지하되 보조 영역으로 옮깁니다. LOCAL2 Phase A 구현은 [기술 인수인계](../operations/PADIEM_CHAT_CLAW_B66_UI_VOICE_HANDOFF_20261014.md)와 [#4488 CTO A/A/A 승인](https://github.com/skerishKang/ai-revenue-lab/issues/4488#issuecomment-6153944494)을 따릅니다. Chat/Claw 음성 입력은 별도 [#4643](https://github.com/skerishKang/ai-revenue-lab/issues/4643)에서 추적하며 **아직 완료되지 않았습니다**.
+
 Status: Web/CENTRAL implementation audit
 Baseline main: 8c038f671165086e709c58c8c9ae84c3a2955ea3
 Website authority source: skerishKang/18-padiemai

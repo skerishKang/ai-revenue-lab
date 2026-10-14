@@ -277,16 +277,24 @@ async def _stream_body(
 
 
 @router.route(_STREAM_PREVIEW_PATH, methods=["POST"])
-async def pilot_stream_preview(request: Request):
-    """Preview one manual, non-fallback platform route as SSE."""
+async def pilot_stream_preview(request: Request, *, parsed_body: Any | None = None):
+    """Preview one manual, non-fallback platform route as SSE.
+
+    Canonical gateway passes already parsed bytes to avoid re-reading JSON via
+    the Cloudflare Python/ASGI bridge; the dedicated preview route still parses
+    its own request under the same existing admission checks.
+    """
     request_id = _request_id()
     iterator: AsyncIterator[StreamEvent] | None = None
 
     try:
-        try:
-            raw = await request.json()
-        except (ValueError, UnicodeDecodeError):
-            return _invalid_json_response(request_id)
+        if parsed_body is not None:
+            raw = parsed_body
+        else:
+            try:
+                raw = await request.json()
+            except (ValueError, UnicodeDecodeError):
+                return _invalid_json_response(request_id)
 
         # Validate the exact manual ID before synchronous route admission.
         if isinstance(raw, dict) and isinstance(raw.get("model"), str):

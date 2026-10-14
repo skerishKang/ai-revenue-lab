@@ -16,6 +16,7 @@ from padiem_ai_core.b14_execution import (
     B14ExecutionError,
     B14RoutingOptions,
     MAX_B14_RESPONSE_BYTES,
+    MAX_CONFIGURED_B14_RESPONSE_BYTES,
 )
 from app.service_binding_response import (
     ServiceBindingResponseError,
@@ -177,6 +178,7 @@ def _load_worker_completed_type():
         "Request": FakeRequest,
         "json": json,
         "MAX_B14_RESPONSE_BYTES": MAX_B14_RESPONSE_BYTES,
+        "MAX_CONFIGURED_B14_RESPONSE_BYTES": MAX_CONFIGURED_B14_RESPONSE_BYTES,
         "read_bounded_service_binding_body": read_bounded_service_binding_body,
         "ServiceBindingResponseTooLarge": ServiceBindingResponseTooLarge,
         "ServiceBindingResponseError": ServiceBindingResponseError,
@@ -730,7 +732,7 @@ def test_completed_json_bridge_is_preserved_and_streaming_bridge_never_buffers_r
 
     assert "await response.text()" not in completed
     assert "read_bounded_service_binding_body" in completed
-    assert "MAX_B14_RESPONSE_BYTES" in completed
+    assert "MAX_CONFIGURED_B14_RESPONSE_BYTES" in completed
     assert "CloudflareB14ServiceTransport(b14_binding)" in WORKER_PATH.read_text(
         encoding="utf-8"
     )
@@ -747,7 +749,7 @@ def test_completed_json_bridge_is_preserved_and_streaming_bridge_never_buffers_r
 def test_completed_json_bridge_stops_at_response_ceiling_and_preserves_core_classification():
     completed_type = _load_worker_completed_type()
     reader = FakeReader(
-        [b"x" * MAX_B14_RESPONSE_BYTES, b"y", b"never-read"],
+        [b"x" * MAX_CONFIGURED_B14_RESPONSE_BYTES, b"y", b"never-read"],
     )
     body = FakeBody(reader)
     binding = FakeBinding(
@@ -766,9 +768,25 @@ def test_completed_json_bridge_stops_at_response_ceiling_and_preserves_core_clas
     # Core classifies any body above its configured ceiling as
     # upstream_response_too_large. The transport returns only one bounded
     # sentinel byte beyond that ceiling after cancelling the real stream.
-    assert len(payload) == MAX_B14_RESPONSE_BYTES + 1
+    assert len(payload) == MAX_CONFIGURED_B14_RESPONSE_BYTES + 1
     assert reader.read_count == 2
     assert reader.cancel_count == 1
     assert reader.release_count == 1
     # FakeReader is index-based rather than destructive; read_count=2 proves
     # the third "never-read" chunk was not consumed after overflow.
+
+
+
+def test_completed_bridge_does_not_reject_healthy_two_mib_response():
+    from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
+    completed_type = _load_worker_completed_type()
+    expected = b"z" * (2 * 1024 * 1024)
+    assert MAX_B14_RESPONSE_BYTES < len(expected) < MAX_CONFIGURED_B14_RESPONSE_BYTES
+    reader = FakeReader([expected[:300_000], expected[300_000:]])
+    status, payload = asyncio.run(completed_type(FakeBinding(
+        FakeResponse(200, FakeBody(reader), content_type="application/json"),
+    )).post_json(f"{BASE_URL}/v1/chat/completions", {"messages": []}))
+    assert status == 200
+    assert payload == expected
+    assert reader.cancel_count == 0
+    assert reader.release_count == 1

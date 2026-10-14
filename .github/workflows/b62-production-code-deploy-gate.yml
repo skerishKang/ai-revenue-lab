@@ -14,17 +14,26 @@ on:
       - ".github/tests/test_b62_cloudflare_504_readonly_get.py"
       - ".github/tests/test_b62_public_origin_504_gate.py"
       - ".github/scripts/b62_binding_state_guard.py"
+      - ".github/scripts/b62_p01_sse_snapshot_off_recovery.py"
+      - ".github/tests/test_b62_p01_sse_snapshot_off_recovery.py"
       - ".github/scripts/b62_served_version_secret_guard.py"
       - ".github/scripts/cloudflare_served_version_cli.py"
       - ".github/scripts/cloudflare_served_version_lineage.py"
       - ".github/tests/test_cloudflare_served_version_lineage.py"
       - ".github/scripts/b62_code_deploy_served_preflight.py"
+      - ".github/scripts/b62_sse_served_config_drift_guard.py"
+      - ".github/tests/test_b62_sse_served_config_drift_guard.py"
       - ".github/tests/test_b62_code_deploy_served_preflight.py"
       - ".github/scripts/b62_claw_live_config_activation.py"
       - ".github/scripts/b62_d1_migration_008_schema.py"
       - ".github/scripts/b62_d1_migration_040_schema.py"
       - ".github/tests/test_b62_d1_migration_040_gate.py"
       - "apps/padiem-chat/migrations/040_claw_web_xlsx_p01_decision_release.sql"
+      # #4316/#4657: deploy must NOT precede 041 and 042 D1 schema.
+      - ".github/scripts/b62_d1_migration_041_042_schema.py"
+      - ".github/tests/test_b62_d1_migration_041_042_gate.py"
+      - "apps/padiem-chat/migrations/041_b66_ai_conversation.sql"
+      - "apps/padiem-chat/migrations/042_conversation_product_scope.sql"
       - ".github/tests/test_b62_binding_state_guard.py"
       - ".github/scripts/b62_owner_d1_release_preflight.py"
       - ".github/tests/test_b62_owner_d1_release_preflight.py"
@@ -48,6 +57,7 @@ on:
           - cloudflare_readonly
           - owner_d1_release_preflight
           - deploy_production_code
+          - recover_p01_sse_off
           - rollback_production_code
       target_sha:
         description: "Exact current main SHA"
@@ -83,7 +93,9 @@ permissions:
   contents: read
 
 concurrency:
-  group: b62-production-code-deploy-gate
+  # PR source-contract checks must not evict a queued protected Production
+  # workflow_dispatch. Production runs retain one shared serial group.
+  group: b62-production-code-deploy-gate-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'production' }}
   cancel-in-progress: false
 
 env:
@@ -173,6 +185,17 @@ jobs:
           echo "NEW_MAIN_DEPLOY_PREFLIGHT_TESTS=PASS"
           echo "PRODUCTION_MUTATION=0"
 
+      - name: Block unaccepted SSE setting drift before B62 code deploy
+        shell: bash
+        run: python .github/tests/test_b62_sse_served_config_drift_guard.py
+
+      - name: Reject unsafe one-incident SSE snapshot recovery mutations
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pytest .github/tests/test_b62_p01_sse_snapshot_off_recovery.py -q
+          echo 'P01_SSE_SNAPSHOT_RECOVERY_TESTS=PASS'
+          echo 'PRODUCTION_MUTATION=0'
       # #4522: the merged B62 P01 code reads the additive receipt `released_at`
       # column, so the live D1 schema probe below is a hard predeploy
       # prerequisite. This contract tests the schema classifier and the exact
@@ -183,6 +206,14 @@ jobs:
           set -euo pipefail
           python -m pytest .github/tests/test_b62_d1_migration_040_gate.py -q
           echo "MIGRATION_040_PREDEPLOY_GUARD_TESTS=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Validate 041 and 042 B66/Chat product-scope read-only deploy gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pytest .github/tests/test_b62_d1_migration_041_042_gate.py -q
+          echo "MIGRATION_041_042_PREDEPLOY_GUARD_TESTS=PASS"
           echo "PRODUCTION_MUTATION=0"
 
       # PR-only CI: this contract tests the separate manual Owner D1 release.
@@ -243,6 +274,9 @@ jobs:
           assert "MIGRATION_040_PREDEPLOY=EXACT" in workflow
           assert "RELEASED_AT_PRESENT=PASS" in workflow
           assert "b62_d1_migration_040_schema.py" in workflow
+          assert "B62_D1_SCHEMA_041_042=EXACT" in workflow
+          assert "MIGRATION_041_042_PREDEPLOY=EXACT" in workflow
+          assert "b62_d1_migration_041_042_schema.py" in workflow
           assert "PRAGMA table_info(claw_web_xlsx_p01_decision_receipts)" in workflow
           assert "APPLICATION_ROW_READ=0" in workflow
           assert "STATE_ADOPTION_REQUIRED" in workflow
@@ -398,6 +432,10 @@ jobs:
             python3 .github/scripts/b62_code_deploy_served_preflight.py \
               --active-version="$active" \
               --latest-version="$latest"
+          elif [ "${{ inputs.mode }}" = "recover_p01_sse_off" ]; then
+            python3 .github/scripts/b62_code_deploy_served_preflight.py \
+              --active-version="$active" \
+              --latest-version="$latest"
           else
             # Preserve canonical strict lineage for all normal read-only modes.
             python3 .github/scripts/cloudflare_served_version_lineage.py \
@@ -407,6 +445,18 @@ jobs:
           echo "latest_version=${latest}" >> "${GITHUB_OUTPUT}"
           echo "active_version=${active}" >> "${GITHUB_OUTPUT}"
           echo "ACTIVE_VERSION=${active}"
+
+          # #3936 partial-rollback safety: script-level settings may inherit
+          # SSE=true while the active served Worker is the earlier SSE-OFF version.
+          served_detail="${RUNNER_TEMP}/b62-active-served-settings-preflight.json"
+          bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions/${active}" "${served_detail}"
+          if [ "${{ inputs.mode }}" = "recover_p01_sse_off" ]; then
+            python .github/scripts/b62_p01_sse_snapshot_off_recovery.py candidate \
+              --settings "${settings}" --served-version "${served_detail}"
+          else
+            python .github/scripts/b62_sse_served_config_drift_guard.py \
+              --settings "${settings}" --served-version "${served_detail}"
+          fi
 
           jq -e --arg name "${IDENTITY_BINDING}" --arg service "${IDENTITY_WORKER}" \
             '[.result.bindings[] | select(.name == $name)] as $b |
@@ -467,11 +517,15 @@ jobs:
 
   deploy-production-code:
     needs: [source-contract, cloudflare-readonly]
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'deploy_production_code' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && (inputs.mode == 'deploy_production_code' || inputs.mode == 'recover_p01_sse_off') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     environment: production
+    permissions:
+      contents: read
+      actions: read
     env:
+      P01_SSE_RECOVERY_OFF: ${{ inputs.mode == 'recover_p01_sse_off' }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       READONLY_ACTIVE_VERSION: ${{ needs.cloudflare-readonly.outputs.active_version }}
@@ -486,7 +540,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ]; then
+          if [ "${P01_SSE_RECOVERY_OFF}" = "true" ]; then
+            test "${CONFIRMATION}" = "RECOVER_B62_P01_SSE_OFF_FROM_PINNED_SNAPSHOT"
+            test "${ATTACH_WEB_SECRETS_STORE}" = "false"
+            test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "false"
+            test "${COMMISSION_HARK_BROWSER}" = "false"
+            echo "SSE_RECOVERY_OFF_OWNER_AUTHORIZED=PASS"
+          elif [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ]; then
             test "${CONFIRMATION}" = "DEPLOY_B62_WITH_EXACT_B66_MEMBERSHIP_SECRET"
             test "${ATTACH_WEB_SECRETS_STORE}" = "false"
             test "${COMMISSION_HARK_BROWSER}" = "false"
@@ -507,7 +567,11 @@ jobs:
           fi
           echo "PADIEM_CHAT_PUBLIC_BASE_URL_PRESTATE=EXPECTED_REQUIRED"
           echo "PUBLIC_BASE_URL_INJECTED_BY_DEPLOY=NO"
-          echo "DEPLOY_MUTATES_LIVE_CONFIG=NO"
+          if [ "${P01_SSE_RECOVERY_OFF}" = "true" ]; then
+            echo "RECOVERY_MUTATES_ONLY_UNACCEPTED_SSE_FLAG=REMOVE"
+          else
+            echo "DEPLOY_MUTATES_LIVE_CONFIG=NO"
+          fi
           echo "B62_PRODUCTION_CODE_DEPLOY_AUTHORIZATION=PASS"
 
       - name: Checkout exact approved main SHA
@@ -559,11 +623,50 @@ jobs:
           detail="${RUNNER_TEMP}/b62-version-before.json"
           bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions/${active}" "${detail}"
           etag_before="$(jq -er '.result.resources.script.etag' "${detail}")"
+          # Repeat at the mutation boundary to rule out changed SSE settings.
+          if [ "${P01_SSE_RECOVERY_OFF}" = "true" ]; then
+            python .github/scripts/b62_p01_sse_snapshot_off_recovery.py candidate \
+              --settings "${settings}" --served-version "${detail}"
+          else
+            python .github/scripts/b62_sse_served_config_drift_guard.py \
+              --settings "${settings}" --served-version "${detail}"
+          fi
           {
+
             echo "PREVIOUS_VERSION_ID=${active}"
             echo "PREVIOUS_SCRIPT_ETAG=${etag_before}"
           } >> "${GITHUB_ENV}"
 
+      - name: Download the exact 38444728738 pre-SSE immutable settings snapshot
+        if: ${{ inputs.mode == 'recover_p01_sse_off' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(gh run view 38444728738 --repo "${GITHUB_REPOSITORY}" --json workflowName -q .workflowName)" = "B62 Claw Live Config Activation Gate"
+          test "$(gh run view 38444728738 --repo "${GITHUB_REPOSITORY}" --json headSha -q .headSha)" = "2b4f11d28125d861eef52859381f179ea6eb5125"
+          mkdir -p "${RUNNER_TEMP}/p01-sse-recovery-snapshot"
+          gh run download 38444728738 --repo "${GITHUB_REPOSITORY}" --name b62-claw-config-premutation-settings --dir "${RUNNER_TEMP}/p01-sse-recovery-snapshot"
+          recovery_snapshot="${RUNNER_TEMP}/p01-sse-recovery-snapshot/b62-settings-premutation.json"
+          test -s "${recovery_snapshot}"
+          echo "RECOVERY_SNAPSHOT=${recovery_snapshot}" >> "${GITHUB_ENV}"
+          echo 'P01_SSE_RECOVERY_IMMUTABLE_SNAPSHOT=AVAILABLE'
+          echo 'SECRET_VALUES_READ=0'
+
+      - name: Prove sole SSE drift, exact snapshot and pinned active/latest versions
+        if: ${{ inputs.mode == 'recover_p01_sse_off' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s "${RECOVERY_SNAPSHOT}"
+          python .github/scripts/b62_p01_sse_snapshot_off_recovery.py validate \
+            --settings "${RUNNER_TEMP}/b62-settings-before.json" \
+            --served-version "${RUNNER_TEMP}/b62-version-before.json" \
+            --deployments "${RUNNER_TEMP}/b62-deployments-before.json" \
+            --latest "${RUNNER_TEMP}/b62-versions-before.json" \
+            --snapshot "${RECOVERY_SNAPSHOT}"
+          echo 'P01_SSE_RECOVERY_PREMUTATION=PASS'
       - name: Capture the pre-deploy served version secret set
         shell: bash
         run: |
@@ -682,6 +785,55 @@ jobs:
           echo "D1_IDENTIFIER_OUTPUT=0"
           echo "PRODUCTION_MUTATION=0"
 
+      # #4316/#4657: the 041 server-owned B66 conversation slot and the 042
+      # mandatory product_scope column/index are both consumed by currently
+      # merged Chat/Claw/B66 code. Before ANY Worker upload verify the
+      # *existing* canonical D1 Worker binding has BOTH schemas exactly.
+      # This is schema-only GET/POST read-only query; no customer rows, no D1
+      # ALTER and no secret/database IDs may be written to the log.
+      - name: Prove migrations 041 and 042 B66 and Chat scope live schema before deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          db_id="$(python3 - "${RUNNER_TEMP}/b62-settings-before.json" "${D1_BINDING}" <<'PY'
+          import json, re, sys
+          from pathlib import Path
+          payload=json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'))
+          if payload.get("success") is not True or not isinstance(payload.get("result"),dict):
+              raise SystemExit("D1_SETTINGS_INVALID")
+          bindings=payload["result"].get("bindings")
+          if not isinstance(bindings,list):
+              raise SystemExit("D1_BINDINGS_INVALID")
+          matching=[b for b in bindings if isinstance(b,dict)
+                    and b.get("name")==sys.argv[2] and b.get("type")=="d1"]
+          if len(matching)!=1:
+              raise SystemExit("D1_BINDING_NOT_EXACT")
+          db_id=matching[0].get("id")
+          if not isinstance(db_id,str) or re.fullmatch(r"[0-9a-fA-F-]{32,36}",db_id) is None:
+              raise SystemExit("D1_BINDING_ID_INVALID")
+          print(db_id)
+          PY
+          )"
+          test -n "${db_id}"
+          echo "::add-mask::${db_id}"
+          query="${RUNNER_TEMP}/b62-d1-041-042-schema-query.json"
+          response="${RUNNER_TEMP}/b62-d1-041-042-schema-response.json"
+          python3 .github/scripts/b62_d1_migration_041_042_schema.py write-query "${query}"
+          curl -fsS --max-time 30 -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${db_id}/query" \
+            --data-binary "@${query}" -o "${response}"
+          # Python refuses *all* missing, pre-041, pre-042, drift and malformed
+          # states with nonzero exit. pipefail prevents tee from masking that.
+          python3 .github/scripts/b62_d1_migration_041_042_schema.py check "${response}" \
+            | tee "${RUNNER_TEMP}/b62-d1-041-042-schema-verdict.txt"
+          grep -qx 'B62_D1_SCHEMA_041_042=EXACT' "${RUNNER_TEMP}/b62-d1-041-042-schema-verdict.txt"
+          grep -qx 'MIGRATION_041_042_PREDEPLOY=EXACT' "${RUNNER_TEMP}/b62-d1-041-042-schema-verdict.txt"
+          echo "D1_SCHEMA_QUERY=READ_ONLY"
+          echo "APPLICATION_ROW_READ=0"
+          echo "D1_IDENTIFIER_OUTPUT=0"
+          echo "PRODUCTION_MUTATION=0"
+
       - name: Generate exact production config from live settings
         shell: bash
         run: |
@@ -696,9 +848,14 @@ jobs:
             test "${ATTACH_WEB_SECRETS_STORE}" != "true"
             extra_args=(--commission-hark-browser)
           fi
+          config_settings="${RUNNER_TEMP}/b62-settings-before.json"
+          if [ "${P01_SSE_RECOVERY_OFF}" = "true" ]; then
+            test -s "${RECOVERY_SNAPSHOT}"
+            config_settings="${RECOVERY_SNAPSHOT}"
+          fi
           python .github/scripts/b62_cloudflare_production_deploy_config.py \
             "${extra_args[@]}" \
-            --settings "${RUNNER_TEMP}/b62-settings-before.json" \
+            --settings "${config_settings}" \
             --repo-config apps/padiem-chat/wrangler.toml \
             --public-base-url "${B62_PUBLIC_BASE_URL}" \
             --output "${generated}"
@@ -796,7 +953,9 @@ jobs:
           jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
 
           normalized_before="${RUNNER_TEMP}/b62-settings-before-normalized.json"
-          python - "${RUNNER_TEMP}/b62-settings-before.json" "${normalized_before}" "${B62_PUBLIC_BASE_URL}" <<'PY'
+          before_comparison="${RUNNER_TEMP}/b62-settings-before.json"
+          if [ "${P01_SSE_RECOVERY_OFF}" = "true" ]; then before_comparison="${RECOVERY_SNAPSHOT}"; fi
+          python - "${before_comparison}" "${normalized_before}" "${B62_PUBLIC_BASE_URL}" <<'PY'
           import json
           import sys
 
@@ -1043,6 +1202,26 @@ jobs:
           test "${CONFIRMATION}" = "ROLLBACK_B62_PRODUCTION_CODE_TO_RECORDED_VERSION"
           test -n "${PREVIOUS_VERSION_ID}"
           echo "B62_PRODUCTION_CODE_ROLLBACK_AUTHORIZATION=PASS"
+
+      - name: Checkout exact rollback workflow source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main before a recorded-version rollback
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          test -s .github/scripts/b62_cloudflare_504_readonly_get.sh
+          test -s .github/scripts/b62_cloudflare_rollback_deployment_request.py
+          test -s .github/scripts/cloudflare_served_version_cli.py
+          echo 'B62_ROLLBACK_EXACT_MAIN_SOURCE=PASS'
+          echo 'PRODUCTION_MUTATION=0'
 
       - name: Locate recorded version in history
         shell: bash

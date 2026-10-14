@@ -66,15 +66,42 @@ def live_claw_sse(
     async def events():
         queue: asyncio.Queue[tuple[str, Any]] = asyncio.Queue(maxsize=16)
         seen = 0
+        last_sequence = 0
+        stream_identity: tuple[str, str, str] | None = None
+        seen_event_ids: set[str] = set()
         verified_terminal: dict[str, object] | None = None
         terminal_kinds = {"run_completed", "run_failed", "run_cancelled", "approval_paused"}
 
         async def report(event: OrchestrationEvent) -> None:
-            nonlocal seen, verified_terminal
+            nonlocal seen, last_sequence, stream_identity, verified_terminal
             seen += 1
             if seen > MAX_RELAY_EVENTS:
                 raise ValueError("P01 stream event budget exceeded")
             projected = _event_projection(event)
+            sequence = projected["sequence"]
+            if (
+                not isinstance(sequence, int)
+                or isinstance(sequence, bool)
+                or sequence <= last_sequence
+            ):
+                raise ValueError("P01 stream events are not strictly ordered")
+            identity = (
+                projected["run_id"], projected["trace_id"], projected["app_id"],
+            )
+            if stream_identity is None:
+                stream_identity = identity
+            elif identity != stream_identity:
+                # Only one Core run may own the events in a browser SSE reply.
+                raise ValueError("P01 stream event identity changed")
+            event_id = projected["event_id"]
+            if event_id in seen_event_ids:
+                raise ValueError("P01 stream event identity replayed")
+            if verified_terminal is not None:
+                # A duplicated terminal or any stage after termination is
+                # inconsistent Core evidence, never successful SSE completion.
+                raise ValueError("P01 stream event after verified terminal")
+            seen_event_ids.add(event_id)
+            last_sequence = sequence
             if projected["kind"] in terminal_kinds:
                 # A completed Core run with an unusable public answer must
                 # never appear completed in the browser before B54 checks it.

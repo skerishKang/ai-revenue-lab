@@ -29,7 +29,11 @@ MAX_PROVIDER_RESPONSE_BYTES = 1_048_576
 MAX_QUERY_CHARS = 2_000
 MAX_RESULTS = 5
 MAX_TITLE_CHARS = 300
-MAX_SNIPPET_CHARS = 2_000
+MAX_SNIPPET_CHARS = 2_000  # search hit previews; not fetched page model evidence
+# Fetch is a full-page retrieval, not a short search result. Its upstream
+# response is already bounded in bytes at this budget before JSON parsing.
+# Do not silently discard fetched evidence at an unrelated 2k UI preview cap.
+MAX_FETCHED_PAGE_CHARS = MAX_PROVIDER_RESPONSE_BYTES
 MAX_URL_CHARS = 2_048
 MAX_TIMEOUT_SECONDS = 30.0
 _BLOCKED_HOST_SUFFIXES = (".localhost", ".local", ".internal", ".lan", ".home")
@@ -246,7 +250,10 @@ def _evidence(*, title: Any, url: Any, snippet: Any, provider: str, source_type:
         id=f"ev-{uuid.uuid4().hex[:12]}",
         title=_bounded_text(title, MAX_TITLE_CHARS) or safe_url,
         url=safe_url,
-        snippet=_bounded_text(snippet, MAX_SNIPPET_CHARS),
+        snippet=_bounded_text(
+            snippet,
+            MAX_FETCHED_PAGE_CHARS if source_type == "fetch" else MAX_SNIPPET_CHARS,
+        ),
         retrieved_at=_now(),
         provider=provider,
         source_type=source_type,

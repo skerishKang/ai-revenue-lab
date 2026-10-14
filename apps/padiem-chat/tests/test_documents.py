@@ -183,20 +183,20 @@ class MemoryHistory:
     async def get_project(self, user_id, project_id):
         return self.project if user_id == self.user.id and project_id == self.project.id else None
 
-    async def get_conversation(self, user_id, conversation_id):
+    async def get_conversation(self, user_id, conversation_id, *, product_scope):
         return None
 
-    async def append_exchange(self, user_id, conversation_id, user_text, assistant_text, project_id=None):
+    async def append_exchange(self, user_id, conversation_id, user_text, assistant_text, project_id=None, *, product_scope):
         self.saved.append((user_text, assistant_text, project_id))
         return "chat_" + "3" * 32
 
     async def list_projects(self, user_id):
         return [self.project] if user_id == self.user.id else []
 
-    async def list_project_conversations(self, user_id, project_id, limit=30):
+    async def list_project_conversations(self, user_id, project_id, *, product_scope, limit=30):
         return []
 
-    async def list_conversations(self, user_id, limit=30):
+    async def list_conversations(self, user_id, *, product_scope, limit=30):
         return []
 
 

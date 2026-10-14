@@ -4,6 +4,8 @@
 >
 > **상위 전략:** [#3074](https://github.com/skerishKang/ai-revenue-lab/issues/3074) · **Cross-surface 대형 실행 EPIC:** [#4139](https://github.com/skerishKang/ai-revenue-lab/issues/4139) · **기술 계약:** [공통 로컬 실행 아키텍처](../architecture/B54_CLAW_CONNECT_DESKTOP_SHARED_LOCAL_RUNTIME_ARCHITECTURE_20261010.md)
 
+> **Private Owner business policy:** read the root [AGENTS.md](../../AGENTS.md) for the local governance path; dated technical scope below does not override private operating decisions.
+
 ## 1. 결정: 두 앱 경험, 하나의 Claw
 
 | 구분 | Padiem Claw 웹 | **Padiem Claw Connect** | **Padiem Claw Desktop** |

@@ -15,6 +15,38 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 
 
+# Deliberate finite allowlist. Never print raw exception messages or input values.
+# Updating this set requires a source review when adding a new verifier refusal.
+SAFE_REFUSAL_CODES = frozenset({
+    "ACTIVE_VERSION_NOT_UNIQUE",
+    "CODE_IDENTITY_MISSING",
+    "CORE_RUNTIME_NOT_READY",
+    "FLAG_NOT_ACTIVATED",
+    "FLAG_WRONG_TYPE_OR_VALUE",
+    "INVALID_TARGET_SHA",
+    "MISSING_BASELINE_EVIDENCE",
+    "NEW_SERVED_VERSION_NOT_OBSERVED",
+    "NO_OP_STATE_CHANGED",
+    "OUTPUT_PATH_UNAVAILABLE",
+    "POST_SERVED_BINDING_DRIFT",
+    "POST_SETTINGS_DRIFT",
+    "POST_VERSION_LINEAGE_UNVERIFIED",
+    "PREMUTATION_STATE_CHANGED",
+    "REQUIRED_BINDING_MISSING_OR_RETYPED",
+    "RUNTIME_IDENTITY_MISSING",
+    "SERVED_BINDING_INVENTORY_DRIFT",
+    "SERVED_FLAG_DRIFT",
+    "SERVED_RUNTIME_NOT_READY",
+    "SOURCE_LINEAGE_UNVERIFIED",
+    "SOURCE_SHA_MISMATCH",
+    "VERSION_BINDING_SHAPE",
+    "VERSION_DUPLICATE_BINDING",
+    "VERSION_ID",
+    "VERSION_MISMATCH",
+    "VERSION_SHAPE",
+    "WORKER_CODE_OR_RUNTIME_DRIFT",
+})
+
 def load(name: str, path: Path):
     spec = importlib.util.spec_from_file_location(name, path)
     assert spec and spec.loader
@@ -56,24 +88,42 @@ def version_result(version: object) -> dict:
     return result
 
 
-def active(deployments: object) -> tuple[str, str]:
+def active(deployments: object, *, allow_settings_generated_lineage: bool = False
+           ) -> tuple[str, str | None]:
+    # A settings PATCH can create a 100%-served new version whose deployment
+    # annotation is provider-generated rather than the code-deploy source SHA.
+    # This exception is allowed ONLY in post-PATCH verification; immutable
+    # version annotations must then independently prove the exact source SHA.
     try:
         served = readiness._served.resolve_served_version_id(deployments)
     except readiness._served.ServedVersionResolutionError as exc:
         raise OptInRefused("ACTIVE_VERSION_NOT_UNIQUE") from exc
     d = deployments["result"]["deployments"][0]
-    msg = d.get("annotations", {}).get("workers/message")
-    match = SOURCE.fullmatch(msg) if isinstance(msg, str) else None
-    if not match:
+    annotations = d.get("annotations")
+    msg = annotations.get("workers/message") if isinstance(annotations, dict) else None
+    if not isinstance(msg, str) or not msg:
         raise OptInRefused("SOURCE_LINEAGE_UNVERIFIED")
-    return served, match.group(1)
-
+    match = SOURCE.fullmatch(msg)
+    if match:
+        return served, match.group(1)
+    if not allow_settings_generated_lineage:
+        raise OptInRefused("SOURCE_LINEAGE_UNVERIFIED")
+    return served, None
 
 def version_bindings(version: dict) -> dict[str, dict]:
     raw = version["resources"].get("bindings")
     if isinstance(raw, dict):
-        raw = [{**b, "name": k} for k, b in raw.items()
-               if isinstance(k, str) and isinstance(b, dict) and b.get("name", k) == k]
+        # The Cloudflare immutable-version API may encode bindings as a name-
+        # keyed object. Never silently filter malformed or mismatched entries:
+        # doing so could make an unexpected binding disappear from parity
+        # checks, even while the original version still contains it.
+        if any(
+            not isinstance(k, str) or not k or
+            not isinstance(b, dict) or b.get("name", k) != k
+            for k, b in raw.items()
+        ):
+            raise OptInRefused("VERSION_BINDING_SHAPE")
+        raw = [{**b, "name": k} for k, b in raw.items()]
     if not isinstance(raw, list) or any(
         not isinstance(b, dict) or not isinstance(b.get("name"), str) or
         not isinstance(b.get("type"), str) for b in raw
@@ -86,15 +136,27 @@ def version_bindings(version: dict) -> dict[str, dict]:
 
 
 def inspect(settings: object, deployments: object, version: object, target_sha: str,
-            *, require_optin: bool = False) -> tuple[dict, dict, dict, str]:
+            *, require_optin: bool = False,
+            allow_settings_generated_lineage: bool = False) -> tuple[dict, dict, dict, str]:
     if not SHA.fullmatch(target_sha):
         raise OptInRefused("INVALID_TARGET_SHA")
-    served, source = active(deployments)
-    if source != target_sha:
+    served, source = active(
+        deployments, allow_settings_generated_lineage=allow_settings_generated_lineage)
+    if source is not None and source != target_sha:
         raise OptInRefused("SOURCE_SHA_MISMATCH")
     v = version_result(version)
     if served != v["id"]:
         raise OptInRefused("VERSION_MISMATCH")
+    if source is None:
+        # A provider-generated *deployment* note is not source authority.
+        # The exact immutable *version* must contain the code-deploy SHA.
+        # Remaining verify() gates still require flag-only changes, equal
+        # script ETag/runtime/assets, no other binding or Secret drift.
+        annotation = v.get("annotations")
+        if not isinstance(annotation, dict) or (
+            annotation.get("workers/message") != f"B62 production code {target_sha}"
+        ):
+            raise OptInRefused("POST_VERSION_LINEAGE_UNVERIFIED")
     s = bindings(settings)
     vb = version_bindings(v)
     if set(s) != set(vb) or any(s[n]["type"] != vb[n]["type"] for n in s):
@@ -130,9 +192,13 @@ def plan(settings: object, deployments: object, version: object, target_sha: str
         patch["bindings"].append({"name": FLAG, "type": "inherit", "version_id": "latest"})
     else:
         patch["bindings"].append({"name": FLAG, "type": "plain_text", "text": "true"})
+    # Cloudflare /script-and-version-settings PATCH documents
+    # workers/triggered_by as server-owned/read-only. Sending it violates the
+    # API contract and may fail the entire SSE settings PATCH. Preserve only
+    # the exact-main worker source lineage (workers/message); do not weaken
+    # any binding, Secret, script-etag or served-version verification.
     patch["annotations"] = {
         "workers/message": f"B62 production code {target_sha}",
-        "workers/triggered_by": "b62-claw-live-config-activation-gate",
     }
     return {"payload": patch, "no_op": no_op, "preserved_count": len(state) - (FLAG in state)}
 
@@ -146,7 +212,8 @@ def compare_before(s0, d0, v0, s1, d1, v1, sha: str) -> None:
 
 def verify(s0, d0, v0, s1, d1, v1, sha: str, *, no_op: bool = False) -> None:
     a, av, ab, aid = inspect(s0, d0, v0, sha)
-    b, bv, bb, bid = inspect(s1, d1, v1, sha, require_optin=True)
+    b, bv, bb, bid = inspect(s1, d1, v1, sha, require_optin=True,
+                              allow_settings_generated_lineage=not no_op)
     if no_op:
         if aid != bid or a != b or av != bv:
             raise OptInRefused("NO_OP_STATE_CHANGED")
@@ -161,9 +228,23 @@ def verify(s0, d0, v0, s1, d1, v1, sha: str, *, no_op: bool = False) -> None:
     expected_v[FLAG] = {"name": FLAG, "type": "plain_text", "text": "true"}
     if bb != expected_v:
         raise OptInRefused("POST_SERVED_BINDING_DRIFT")
-    if {k: v for k, v in av["resources"].items() if k != "bindings"} != {
-        k: v for k, v in bv["resources"].items() if k != "bindings"
-    }:
+    # Cloudflare PATCH /settings legitimately changes one deployment-origin
+    # annotation (resources.script.last_deployed_from) even when script ETag,
+    # runtime, assets and every other immutable source resource stay identical.
+    # Proven by GET-only immutable old/failed versions in #38440681029. Do NOT
+    # permit any other script field or runtime/asset difference.
+    def code_resources(version):
+        resources = {k: v for k, v in version["resources"].items()
+                     if k != "bindings"}
+        script = resources.get("script")
+        if not isinstance(script, dict) or not isinstance(script.get("etag"), str) \
+                or not script["etag"]:
+            raise OptInRefused("CODE_IDENTITY_MISSING")
+        resources["script"] = {k: v for k, v in script.items()
+                               if k != "last_deployed_from"}
+        return resources
+
+    if code_resources(av) != code_resources(bv):
         raise OptInRefused("WORKER_CODE_OR_RUNTIME_DRIFT")
 
 
@@ -202,8 +283,17 @@ def main(argv=None) -> int:
             else:
                 verify(bs, bd, bv, s, d, v, args.target_sha, no_op=args.no_op)
                 print("P01_SSE_POST_SERVED_INTEGRITY=PASS")
-    except (OptInRefused, config.ProductionConfigError, OSError, ValueError,
+    except OptInRefused as exc:
+        reason = str(exc)
+        if reason not in SAFE_REFUSAL_CODES:
+            reason = "UNCLASSIFIED"
+        print(f"P01_SSE_OPTIN_GATE_REASON={reason}")
+        print("P01_SSE_OPTIN_GATE=BLOCKED")
+        print("SECRET_VALUES_EMITTED=0")
+        return 1
+    except (config.ProductionConfigError, OSError, ValueError,
             TypeError, KeyError, AttributeError):
+        print("P01_SSE_OPTIN_GATE_REASON=UNCLASSIFIED")
         print("P01_SSE_OPTIN_GATE=BLOCKED")
         print("SECRET_VALUES_EMITTED=0")
         return 1

@@ -90,6 +90,7 @@ from .history import (
     MAX_CLAW_RUNS,
     MAX_RUN_RESULT_SUMMARY_CHARS,
     HistoryStore,
+    PRODUCT_SCOPE_CHAT,
     validate_conversation_id,
 )
 from .usage_gate import UsageGate
@@ -98,6 +99,7 @@ from kagent.document_export import (
     GeneratedDocumentArtifact,
     build_document_artifact,
 )
+from kagent.contracts import MAX_EXECUTABLE_TASK_CHARS
 from kagent.manual_intake import (
     ContractError,
     ManualIntakeAction,
@@ -133,7 +135,6 @@ from .worker_config import P01_COMPOSITION_DIAGNOSTICS
 from .workspace_storage import WorkspaceStorageAccessError, WorkspaceStorageError
 
 MAX_MANUAL_INTAKE_BODY_BYTES = 64 * 1024  # 64 KiB
-MAX_CONTENT_CHARS = 4_000
 MAX_SENDER_CHARS = 120
 
 _NO_STORE_HEADERS = {
@@ -360,7 +361,7 @@ async def _resolve_intake_session_reference(
     if not callable(get_conversation):
         return None, _error(503, "conversation_authority_unavailable", "대화 세션 권한을 확인할 수 없습니다.")
     try:
-        conversation = get_conversation(uid, candidate)
+        conversation = get_conversation(uid, candidate, product_scope=PRODUCT_SCOPE_CHAT)
         if inspect.isawaitable(conversation):
             conversation = await conversation
     except Exception:
@@ -397,8 +398,6 @@ async def claw_manual_intake_preview(request: Request) -> JSONResponse:
     if not isinstance(content, str) or not content.strip():
         return _error(400, "invalid_content", "요청 원문을 입력해 주세요.")
     content_clean = content.strip()
-    if len(content_clean) > MAX_CONTENT_CHARS:
-        return _error(400, "content_too_long", f"요청 원문은 {MAX_CONTENT_CHARS}자 이하로 입력해 주세요.")
 
     raw_channel = str(data.get("channel") or "other").strip().lower()
     channel = _CHANNEL_MAP.get(raw_channel)
@@ -409,6 +408,12 @@ async def claw_manual_intake_preview(request: Request) -> JSONResponse:
     action = _ACTION_MAP.get(raw_action)
     if action is None:
         return _error(400, "invalid_action", f"지원되지 않는 작업입니다: {raw_action}")
+
+    # Manual intake is an executable P01/tool task. Use its canonical task
+    # limit on the FULL prefixed task, rather than the retired 4k source limit.
+    # Validate before quota/session/Engine dispatch; do not silently truncate.
+    if len(_build_execute_task(action, content_clean)) > MAX_EXECUTABLE_TASK_CHARS:
+        return _error(400, "content_too_long", "Executable manual request is too long.")
 
     sender_hint: str | None = None
     if "sender_hint" in data and data["sender_hint"] is not None:
@@ -487,8 +492,6 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     if not isinstance(content, str) or not content.strip():
         return _error(400, "invalid_content", "요청 원문을 입력해 주세요.")
     content_clean = content.strip()
-    if len(content_clean) > MAX_CONTENT_CHARS:
-        return _error(400, "content_too_long", f"요청 원문은 {MAX_CONTENT_CHARS}자 이하로 입력해 주세요.")
 
     raw_channel = str(data.get("channel") or "other").strip().lower()
     channel = _CHANNEL_MAP.get(raw_channel)
@@ -499,6 +502,12 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     action = _ACTION_MAP.get(raw_action)
     if action is None:
         return _error(400, "invalid_action", f"지원되지 않는 작업입니다: {raw_action}")
+
+    # Manual intake is an executable P01/tool task. Use its canonical task
+    # limit on the FULL prefixed task, rather than the retired 4k source limit.
+    # Validate before quota/session/Engine dispatch; do not silently truncate.
+    if len(_build_execute_task(action, content_clean)) > MAX_EXECUTABLE_TASK_CHARS:
+        return _error(400, "content_too_long", "Executable manual request is too long.")
 
     sender_hint: str | None = None
     if "sender_hint" in data and data["sender_hint"] is not None:

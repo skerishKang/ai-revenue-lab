@@ -161,7 +161,8 @@ async def test_firecrawl_scrape_uses_fixed_v2_endpoint_and_bounded_evidence():
     assert seen["body"] == {"url": "https://example.com/start", "formats": ["markdown"], "onlyMainContent": True}
     assert evidence.url == "https://example.com/final"
     assert len(evidence.title) <= 301
-    assert len(evidence.snippet) <= 2001
+    assert evidence.snippet == long_markdown
+    assert len(evidence.snippet) > 2_000
     assert evidence.source_type == "fetch"
 
 

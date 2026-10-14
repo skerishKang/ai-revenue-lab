@@ -194,12 +194,12 @@ def test_opencodego_and_zanslab_are_registered_disabled_without_credentials():
     assert providers["zanslab"]["credential_binding_name"] == "PADIEM_ZANSLAB_API_KEY"
     assert providers["opencode-go"]["enabled"] is False
     assert providers["zanslab"]["enabled"] is False
-    # Five Go models remain inactive. A verified account-scoped ZansLab ID
+    # Six Go models remain inactive. A verified account-scoped ZansLab ID
     # is now also registered but no generation/SSE proof or activation exists.
     rows = [row for row in reg["models"] if row["provider_id"] == "opencode-go"]
     assert {row["upstream_model"] for row in rows} == {
         "longcat-2.5-preview-free", "step-5-preview-free",
-        "muse-spark-1.3-contributor", "gpt-6-luna", "claude-haiku-5-5",
+        "muse-spark-1.3-contributor", "muse-spark-1.2-contributor", "gpt-6-luna", "claude-haiku-5-5",
     }
     assert all(row["enabled"] is False for row in rows)
     zans_rows = [row for row in reg["models"] if row["provider_id"] == "zanslab"]

@@ -1,0 +1,7 @@
+.venv/
+python_modules/
+.worker-src/
+.dry-run/
+.wrangler/
+__pycache__/
+.pytest_cache/

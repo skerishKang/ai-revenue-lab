@@ -67,6 +67,7 @@ from .desktop_conversation_authority import (
     UnconfiguredDesktopDeviceSessionAuthority,
 )
 from .history import HistoryStore, validate_conversation_id
+from .history import PRODUCT_SCOPE_CHAT
 
 __all__ = [
     "DESKTOP_CONVERSATIONS_PATH",
@@ -215,7 +216,7 @@ async def desktop_conversations(request: Request) -> JSONResponse:
     if store is None:
         return _history_unavailable()
     try:
-        conversations = await store.list_conversations(account_ref)
+        conversations = await store.list_conversations(account_ref, product_scope=PRODUCT_SCOPE_CHAT)
     except Exception:
         return _history_unavailable()
     return JSONResponse(
@@ -246,7 +247,7 @@ async def desktop_conversation_detail(request: Request) -> JSONResponse:
     if store is None:
         return _history_unavailable()
     try:
-        conversation = await store.get_conversation(account_ref, cid)
+        conversation = await store.get_conversation(account_ref, cid, product_scope=PRODUCT_SCOPE_CHAT)
     except Exception:
         return _history_unavailable()
     if conversation is None:

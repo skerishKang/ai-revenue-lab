@@ -10,6 +10,37 @@
 - Model/provider decision authority: `MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`
 - Dated B14 owner decision/evidence ledger: `B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md` (historical issue and implementation status; not a second approval gate)
 
+## 0. Public technical development context — consult local business-governance stage
+
+**Public engineering context:** the repository is maintained with limited development capacity. Actual business stage, customer-facing defaults and deployment priorities must be read from the non-public local Governance directory referenced below. Production URLs and actual operator/customer data require evidence, regardless of engineering stage. Technical access controls and configured platform protections remain facts to verify; an unresolved conflict with the business policy is referred to the Owner for a decision.
+
+### Confidential business-governance source
+
+The repository's business decision authority is stored **outside Git**, on the authorized PC under `G:\Ddrive\BatangD\task\workdiary\ai-revenue-lab-governance`. Read the local `README.md` index and the applicable documents in `사업방침/`, then `운영방침/`, when a business/product decision or its technical implementation is involved. The former `사업방침/01_CTO_에이전트_운영규칙.md` is a relocation notice; the active CTO rules are in `운영방침/01_CTO_에이전트_운영규칙.md`. The public technical procedures below explain **how** to implement and validate, but do not replace the local business decision. If the source is inaccessible or apparently contradictory, **ask the Owner**; do not infer a new customer permission policy. Never quote or copy private policy substance back into this public repository.
+
+### 0A. CTO outcome order — one useful result before extra evidence
+
+1. State the **next user-visible or operator-visible behavior to make work** (for example, a single B14 model request returning its real status), and identify only the immediate missing dependency.
+2. Reuse existing source, a configured workflow and prior relevant checks; implement the smallest correction or run the smallest approved real experiment. Do not create more issues/PRs/documents simply because it is possible.
+3. Run the **focused load-bearing regression + required relevant CI**. For a claim about a live integration, run **one** actual bounded integration/smoke check if the environment genuinely permits it. For a straightforward internal model evaluation, one synthetic request (concurrency=1, no auto-retry/fallback) through the *existing approved B14 path* is normally the answer, not a fresh harness or architecture project.
+4. If the real check fails, classify the observed response accurately (HTTP 200/model identity, 401/403, 429, 5xx/timeout, or blocked before POST). Repair only a proven product defect. An actual upstream capacity error is useful negative evidence, **not** a mandate for repeated retries or another CI layer.
+5. Close the bounded implementation/evaluation issue when its stated scope is decided, including a no-go; accumulate remaining owner-facing E2E acceptance on the existing single product verification issue. Do not confuse a merged PR with runtime success.
+
+**Change-to-test discipline:** a new mandatory check must identify `NEW_FAILURE_MODE`, `PROTECTED_CLAIM`, `EXISTING_EVIDENCE_GAP`, and `BLOCKS_CURRENT_GOAL=YES|NO`. If there is no new failure mode or changed relevant surface, it is not another blocker. Historic CI success remains valid for unchanged files/dependencies. Routine one-file fixes do not require multiple independent validators, load tests, live-customer simulation or repeated full-product matrices.
+
+### 0B. Authority and operating permissions
+
+- The one-person Owner has delegated routine CTO source review, merge and deployment decisions within existing configured protection. Do not ask the Owner to repeat approval already recorded, fabricate a second account/reviewer or treat absence of an independent person as proof of a technical denial. Follow actual protection/rulesets and any **named** manual release guard that applies to the particular Worker.
+- A test's **business authorization** and the tool's **actual execution permission** are distinct. If an approved provider evaluation cannot run because a specific tool/platform rejects dispatch before sending, report `NOT_RUN / BLOCKED_AT=<actual layer>`; do not call it a provider failure. Do not evade denial via ad-hoc HTTP, another account, a different API/client/credential or a weakened workflow.
+- Preserve owner/workspace isolation, secret protection, non-destructive migration sequencing, real approval before consequential actions, GitHub required checks and existing release/rollback contracts. These safeguards are targeted, not an excuse to introduce unrelated tests or prevent a safe internal demo.
+
+### 0C. Stage escalation: when to harden
+
+Move to **pilot/customer acceptance** when the Owner names actual external test users, customer data or a handoff; move to **commercial release assurance** when paid customers, billing, commitments, higher-risk persistence/identity integrations or external compliance require it. Use §3A, §3C and the test/deployment policies to tighten only the affected claims. An issue label, GitHub environment name or the presence of a Production hostname does **not** alone change the declared product stage.
+
+### 0D. New ChatGPT/agent conversation continuity
+
+Root `AGENTS.md` is the repo-wide instruction for any agent that **reads this repository**; it does **not automatically load into every fresh ChatGPT conversation**. The ChatGPT **Project Instructions** should include a short durable owner-stage rule and point to `AGENTS.md` + this section. On each repository-aware CTO session, verify these documents and fresh `main` once, then act; do not reconstruct old gates or request another owner approval without a concrete unmet boundary. Active issue/PR comments report task state, not portfolio-wide behavioral authority.
 ## 1. Purpose
 
 AI Revenue Lab separates product authority, design decisions, implementation, validation, CTO review, owner decisions, merge and Production so that fast AI-assisted work does not turn into repeated broad rework.
