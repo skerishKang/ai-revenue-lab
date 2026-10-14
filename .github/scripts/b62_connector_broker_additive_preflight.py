@@ -281,7 +281,19 @@ def candidate_preservation(
         "binding": CONNECTOR_BROKER_BINDING,
         "service": CONNECTOR_BROKER_TARGET,
     }
-    if candidate_services != prior_services + [expected]:
+    # Retry after a rolled-back upload: the live inventory may already carry
+    # the exactly identical Broker binding. The generator reuses it verbatim
+    # instead of duplicating; anything else still fails closed.
+    reused = False
+    if candidate_services == prior_services:
+        matches = [item for item in prior_services
+                   if item.get("binding") == CONNECTOR_BROKER_BINDING]
+        if (len(matches) != 1 or matches[0].get("service") != CONNECTOR_BROKER_TARGET
+                or matches[0].get("entrypoint")
+                or matches[0].get("environment") not in (None, "production")):
+            raise ProductionConfigError("Generated candidate changed other services")
+        reused = True
+    elif candidate_services != prior_services + [expected]:
         raise ProductionConfigError("Generated candidate changed other services")
     binding_types = {
         kind: len(live[kind])
@@ -296,7 +308,8 @@ def candidate_preservation(
             int(live["version_metadata"] is not None) +
             int(live["browser"] is not None),
         "preserved_existing_binding_types_count": binding_types,
-        "additional_service_bindings_count": 1,
+        "additional_service_bindings_count": 0 if reused else 1,
+        "broker_binding_reused": reused,
         "target_worker": CONNECTOR_BROKER_TARGET,
         "broker_private_rpc_source_contract_proven": True,
         "identity_consent_rpc_source_contract_proven": True,

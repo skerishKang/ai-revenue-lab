@@ -46,12 +46,45 @@ class CandidatePlanTest(unittest.TestCase):
         self.assertTrue(proof["secret_survival_requires_deployment_readback"])
         self.assertEqual(json.dumps(original, sort_keys=True), original_bytes)
 
-    def test_existing_service_or_colliding_name_prevents_duplicate(self):
+    def test_identical_existing_broker_is_reused_not_duplicated(self):
+        """Retry residue: the approved binding is reused verbatim, vars kept."""
+        payload = live()
+        payload["result"]["bindings"].append(
+            {"type": "service", "name": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
+             "service": "padiem-local-agent-broker-state"})
+        proof = planner.candidate_preservation(payload)
+        self.assertEqual(proof["status"], "ADDITIVE_CANDIDATE_STRUCTURAL_PASS")
+        self.assertTrue(proof["broker_binding_reused"])
+        self.assertEqual(proof["additional_service_bindings_count"], 0)
+        # Full rolled-back residue: broker plus all eight approved settings.
+        full = live()
+        full["result"]["bindings"].append(
+            {"type": "service", "name": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
+             "service": "padiem-local-agent-broker-state",
+             "environment": "production"})
+        for name, text in (
+            ("PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED", "enabled"),
+            ("PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE",
+             "owner-controlled-production-4139"),
+            ("PADIEM_CONNECTOR_PRODUCTION_ENABLED", "enabled"),
+            ("PADIEM_CONNECTOR_OWNER_ENROLLMENT_ENABLED", "enabled"),
+            ("PADIEM_CONNECTOR_OWNER_PRODUCTION_ENABLED", "enabled"),
+            ("PADIEM_CONNECTOR_OWNER_ONE_CLICK_ENABLED", "enabled"),
+            ("PADIEM_CONNECTOR_OWNER_PC_IDENTITY_PREFLIGHT_ENABLED", "enabled"),
+            ("PADIEM_CONNECTOR_OWNER_PC_NATIVE_DELIVERY_ENABLED", "enabled"),
+        ):
+            full["result"]["bindings"].append(
+                {"type": "plain_text", "name": name, "text": text})
+        proof = planner.candidate_preservation(full)
+        self.assertEqual(proof["status"], "ADDITIVE_CANDIDATE_STRUCTURAL_PASS")
+        self.assertTrue(proof["broker_binding_reused"])
+
+    def test_wrong_or_colliding_broker_name_still_prevents_candidate(self):
         for conflict in (
             {"type": "service", "name": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
-             "service": "padiem-local-agent-broker-state"},
-            {"type": "service", "name": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
              "service": "attacker-worker"},
+            {"type": "service", "name": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
+             "service": "padiem-local-agent-broker-state", "environment": "staging"},
             {"type": "plain_text", "name": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE",
              "text": "bad"},
             {"type": "secret_text", "name": "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE"},
