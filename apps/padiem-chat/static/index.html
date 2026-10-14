@@ -36,11 +36,11 @@
   <link rel="stylesheet" href="./calendar.css" />
   <link rel="stylesheet" href="./library.css" />
   <link rel="stylesheet" href="./claw-task-hub.css" />
+  <link rel="stylesheet" href="./padiem-shared-ui.css" />
   <link rel="stylesheet" href="./claw-focus-layout.css" />
   <!-- #4643 shared Chat/Claw microphone entry. Inert until a server-granted
        recognizer is registered and a signed-in session exists. -->
   <link rel="stylesheet" href="./voice-composer.css" />
-  <style>[hidden] { display: none !important; }</style>
 </head>
 <body>
   <div class="app-shell" data-state="home">
@@ -181,7 +181,9 @@
           <button id="connectorsRetry" class="connector-retry" type="button" data-locale-key="retry" hidden>다시 시도</button>
         </div>
         <div class="capability-grid" data-locale-aria-label="connectors-grid-aria" aria-label="커넥터 지원 및 워크스페이스 연결 상태">
+          <div class="capability-card" id="connectorComputerCard" tabindex="-1" data-connector="computer" data-connector-status="preparing"><strong data-locale-key="claw-home-computer">컴퓨터 연결하기</strong><span class="capability-soon" data-locale-key="claw-home-computer-setup">Windows 앱 연결 준비 중 · 설치 및 서버 연결 확인이 필요합니다.</span><span class="capability-workspace" role="status" aria-live="polite" id="clawComputerLiveStatus" hidden></span><button type="button" class="connector-retry" id="clawComputerDeviceStatusButton" data-locale-key="claw-home-device-status">연결 상태 확인</button></div>
           <div class="capability-card" data-connector="google-drive" data-connector-id="connector:google:drive@1" data-connector-status="loading"><strong>Google Drive</strong><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">지원 상태 확인 중…</span><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">워크스페이스 상태 확인 중…</span><button class="connector-retry connector-connect" type="button" data-google-connector-connect="google-drive" data-google-connect-endpoint="/api/connectors/google/ticket" data-locale-key="connectors-connect-drive" hidden>Google Drive 연결</button></div>
+          <div class="capability-card" id="connectorGithubCard" tabindex="-1" data-connector="github" data-connector-status="preparing"><strong>GitHub</strong><span class="capability-soon" data-locale-key="claw-home-github-setup">GitHub 직접 연결은 준비 중입니다.</span></div>
           <div class="capability-card" data-connector="gmail" data-connector-id="connector:google:gmail@1" data-connector-status="loading"><strong>Gmail</strong><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">지원 상태 확인 중…</span><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">워크스페이스 상태 확인 중…</span></div>
           <div class="capability-card" data-connector="telegram" data-connector-id="connector:telegram:bot@1" data-connector-status="loading"><strong>Telegram</strong><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">지원 상태 확인 중…</span><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">워크스페이스 상태 확인 중…</span></div>
           <div class="capability-card" data-connector="slack" data-connector-id="connector:slack:workspace@1" data-connector-status="loading"><strong>Slack</strong><span class="capability-read" data-connector-support data-locale-key="connectors-status-loading">지원 상태 확인 중…</span><span class="capability-workspace" data-connector-workspace data-locale-key="connectors-workspace-loading">워크스페이스 상태 확인 중…</span></div>
@@ -506,15 +508,28 @@
       <section class="conversation" aria-live="polite">
         <div class="empty-state" id="emptyState">
           <p class="eyebrow">PADIEM AI</p>
-          <h1><span data-locale-key="hello">안녕하세요.</span><br /><span data-locale-key="ask">무엇을 도와드릴까요?</span></h1>
-          <p class="empty-copy" data-locale-key="copy">궁금한 것을 평소 말하듯 편하게 물어보세요.</p>
+          <h1>
+            <span class="chat-hero-line" data-locale-key="hello">안녕하세요.</span><br class="chat-hero-line" />
+            <span class="chat-hero-line" data-locale-key="ask">무엇을 도와드릴까요?</span>
+            <span class="claw-hero-line" data-locale-key="claw-home-intro">직접 작업하는 파디엠 클로입니다.</span><br class="claw-hero-line" />
+            <span class="claw-hero-line" data-locale-key="claw-home-question">어디에서 작업할까요?</span>
+          </h1>
+          <p class="empty-copy chat-hero-line" data-locale-key="copy">궁금한 것을 평소 말하듯 편하게 물어보세요.</p>
           <div class="starter-grid" aria-label="추천 질문">
             <button type="button" class="starter" data-prompt="AI를 처음 쓰는 사람에게 AI가 뭔지 아주 쉽게 설명해줘" data-skill="explain"><span class="starter-icon" aria-hidden="true">☺</span><span><strong data-locale-key="easy-title">쉽게 설명해줘</strong><small data-locale-key="easy-copy">어려운 내용도 쉬운 말로</small></span></button>
             <button type="button" class="starter" data-prompt="이번 주말 가족과 집 근처에서 할 만한 일을 추천해줘" data-skill="plan"><span class="starter-icon" aria-hidden="true">⌂</span><span><strong data-locale-key="life-title">생활 도움</strong><small data-locale-key="life-copy">일상 질문과 계획 세우기</small></span></button>
             <button type="button" class="starter" id="documentStarterButton"><span class="starter-icon" aria-hidden="true">▤</span><span><strong>문서와 대화</strong><small>지원 문서 형식</small></span></button>
             <button type="button" class="starter" id="writingStarterButton" data-prompt="목적과 읽는 사람에 맞는 이메일이나 문장 초안을 작성해줘" data-skill="auto"><span class="starter-icon" aria-hidden="true">✎</span><span><strong data-locale-key="writing-starter-title">글쓰기 도움</strong><small data-locale-key="writing-starter-copy">메일 · 문장 · 초안</small></span></button>
             <button type="button" class="starter" id="webSearchStarterButton" disabled aria-disabled="true" aria-pressed="false" hidden><span class="starter-icon" aria-hidden="true">⌕</span><span><strong data-locale-key="web-starter-title">웹에서 찾아줘</strong><small data-locale-key="web-starter-copy">웹 검색 · 준비 중</small></span></button>
+            <!-- Shared Chat starter components; only labels and destinations vary in Claw. -->
+            <button type="button" class="starter claw-workspace-starter" id="clawComputerWorkspace"><span class="starter-icon" aria-hidden="true">▣</span><span><strong data-locale-key="claw-home-computer">컴퓨터 연결하기</strong><small data-locale-key="claw-home-computer-copy">내 컴퓨터에서 직접 작업하기</small></span></button>
+            <button type="button" class="starter claw-workspace-starter" id="clawDriveWorkspace"><span class="starter-icon" aria-hidden="true">▤</span><span><strong data-locale-key="claw-home-drive">구글 드라이브</strong><small data-locale-key="claw-home-drive-copy">클라우드 파일로 작업하기</small></span></button>
+            <button type="button" class="starter claw-workspace-starter" id="clawGithubWorkspace"><span class="starter-icon" aria-hidden="true">⌘</span><span><strong data-locale-key="claw-home-github">GitHub</strong><small data-locale-key="claw-home-github-copy">코드와 프로젝트 작업하기</small></span></button>
+            <button type="button" class="starter claw-workspace-starter" id="clawWebWorkspace"><span class="starter-icon" aria-hidden="true">◎</span><span><strong data-locale-key="claw-home-web">웹에서 하기</strong><small data-locale-key="claw-home-web-copy">웹에서 바로 작업하기</small></span></button>
           </div>
+          <button type="button" class="claw-history-shortcut" id="clawPreviousConversations"
+                  aria-controls="historySection" data-locale-key="claw-home-previous-conversations">이전 대화 보기 →</button>
+          <p class="claw-history-feedback" id="clawPreviousConversationsFeedback" role="status" hidden></p>
         </div>
         <section class="claw-task-hub" id="clawTaskHub" aria-labelledby="clawTaskHubTitle">
           <div class="claw-task-hub-heading">
@@ -934,6 +949,7 @@
   <script src="./voice-stt-input.js"></script>
   <script src="./voice-composer.js"></script>
   <script src="./app.js"></script>
+  <script src="./claw-home-choices.js"></script>
   <script src="./b66-quote-runtime.js"></script>
   <script src="./product-capabilities.js"></script>
   <script src="./conversation-search.js" defer></script>

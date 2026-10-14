@@ -1,0 +1,140 @@
+"""Chat and Claw share the same first-use DOM, art, composer and starter CSS.
+
+These contracts protect Chat from unwanted UI regression while Claw presents
+only its identity, four workspace choices and real-status-only connector paths.
+No deployment or live PC/GitHub write access asserted.
+"""
+from __future__ import annotations
+
+from html.parser import HTMLParser
+from pathlib import Path
+
+STATIC = Path(__file__).resolve().parents[1] / "static"
+HTML = (STATIC / "index.html").read_text(encoding="utf-8")
+CSS = (STATIC / "claw-focus-layout.css").read_text(encoding="utf-8")
+STYLES = (STATIC / "padiem-shared-ui.css").read_text(encoding="utf-8")
+APP = (STATIC / "app.js").read_text(encoding="utf-8")
+ACTIONS = (STATIC / "claw-home-choices.js").read_text(encoding="utf-8")
+LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+
+
+class Tags(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.nodes: list[tuple[str, dict[str, str | None]]] = []
+
+    def handle_starttag(self, tag, attrs):
+        self.nodes.append((tag, dict(attrs)))
+
+
+def nodes():
+    p = Tags()
+    p.feed(HTML)
+    return p.nodes
+
+
+def test_only_one_shared_chat_hero_and_composer_existing_product_structure():
+    ids = [attrs.get("id") for _, attrs in nodes()]
+    for one in (
+        "emptyState", "messageInput", "composerForm", "attachmentButton",
+        "sendButton", "connectorsDialog", "connectorsNavButton",
+        "clawTaskHub", "clawWorkspace",
+    ):
+        assert ids.count(one) == 1, one
+    assert '[hidden] { display: none !important; }' in STYLES
+    assert 'href="./padiem-shared-ui.css"' in HTML
+    assert 'class="starter-grid"' in HTML
+    assert '.claw-workspace-starter' in CSS
+    assert "claw-focus-layout.css" in HTML
+
+
+def test_claw_four_cards_are_reused_chat_starters_in_exact_product_order():
+    items = [
+        ("clawComputerWorkspace", "컴퓨터 연결하기"),
+        ("clawDriveWorkspace", "구글 드라이브"),
+        ("clawGithubWorkspace", "GitHub"),
+        ("clawWebWorkspace", "웹에서 하기"),
+    ]
+    anchors = []
+    for ident, label in items:
+        needle = f'id="{ident}"'
+        assert HTML.count(needle) == 1
+        offset = HTML.index(needle)
+        assert 'class="starter claw-workspace-starter"' in HTML[offset-90:offset]
+        assert label in HTML[offset:offset+250]
+        anchors.append(offset)
+    assert anchors == sorted(anchors)
+    assert "웹에서 바로 작업하기" in HTML
+    assert "설치 없이 웹에서" not in HTML
+    assert all(f'document.getElementById("{k}")' not in APP for k, _ in items)
+    assert "claw-home-choices.js" in HTML
+
+
+def test_claw_identity_is_two_lines_without_a_duplicate_greeting():
+    start = HTML.index('id="emptyState"')
+    first = HTML[start:HTML.index('class="starter-grid"',start)]
+    assert "직접 작업하는 파디엠 클로입니다." in first
+    assert "어디에서 작업할까요?" in first
+    assert "claw-home-intro" in first and "claw-home-question" in first
+    assert "chat-hero-line" in first
+    assert "claw-hero-line" in first
+    assert "querySelector(\".claw-hero-line\")" in LOCALE
+    assert "claw-home-input" in APP
+    assert "클로에게 작업을 맡겨보세요" in LOCALE
+    assert "claw-home-intro" in LOCALE and "Where would you like to work?" in LOCALE
+
+
+def test_product_mode_is_scoped_and_starter_actions_never_create_fake_auth():
+    assert '.app-shell[data-state="claw"] .chat-hero-line' in CSS
+    assert '.claw-workspace[data-view="general"] ~ .conversation .claw-workspace-starter' in CSS
+    assert '.empty-state:not([hidden]) ~ #clawTaskHub' in CSS
+    assert "#clawApprovedMemory,#clawRunHistory" in CSS
+    assert 'document.getElementById("connectorsNavButton")' in ACTIONS
+    assert 'document.getElementById("messageInput")?.focus()' in ACTIONS
+    assert "credentials: \"same-origin\"" in ACTIONS
+    assert '"/api/claw/local-access/devices"' in ACTIONS
+    assert "ownerScoped !== true" in ACTIONS
+    for forbidden in ('fetch("/api/claw/connector/enrollments/redeem",',
+                      "dispatch_authorized: true", "window.location.href ="):
+        assert forbidden not in ACTIONS
+
+
+def test_connectors_show_github_and_computer_as_not_ready_without_fake_links():
+    computer = HTML[HTML.index('id="connectorComputerCard"'):]
+    github = HTML[HTML.index('id="connectorGithubCard"'):]
+    assert 'data-connector-status="preparing"' in computer[:130]
+    assert 'data-connector-status="preparing"' in github[:130]
+    assert 'id="clawComputerLiveStatus"' in computer[:600]
+    assert "GitHub 직접 연결은 준비 중" in github[:350]
+    assert 'href="https://github.com/' not in github[:350]
+    assert 'href="/download/' not in computer[:600]
+
+
+def test_shared_portrait_and_existing_legacy_claw_workflows_stay_available():
+    assert '#clawTaskHub' in CSS
+    assert "main-panel::before" in CSS
+    assert "var(--glass-art-opacity)" in CSS
+    assert "clawApprovedMemory" in HTML
+    assert "clawRunHistory" in HTML
+    assert "clawExcelStartButton" in HTML
+    assert "clawCompareStartButton" in HTML
+    assert "clawDocumentStartButton" in HTML
+    assert 'src="./claw-local-adapter.js"' in HTML
+
+
+def test_claw_previous_conversations_reuses_owner_scoped_history():
+    assert HTML.count('id="clawPreviousConversations"') == 1
+    assert 'aria-controls="historySection"' in HTML
+    assert 'id="historyList"' in HTML
+    assert 'id="clawPreviousConversationsFeedback"' in HTML
+    assert 'historySection' in ACTIONS and 'historyList' in ACTIONS
+    assert 'loginButton' in ACTIONS
+    assert 'sidebarRestoreButton' in ACTIONS
+    assert 'mobileMenu' in ACTIONS
+    assert 'history.focus?' in ACTIONS
+    assert 'openSavedConversation' in APP
+    assert "clawConversationIds.has(conversation.id)" in APP
+    assert "isVerifiedClawThread" in APP
+    assert ".claw-history-shortcut" in CSS
+    assert 'claw-runs-title' in LOCALE
+    assert 'fetch("/api/claw/runs"' not in ACTIONS
