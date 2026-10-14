@@ -155,6 +155,13 @@ html[data-theme="padiem-glass"] .message-bubble {
   backdrop-filter: blur(22px);
   -webkit-backdrop-filter: blur(22px);
 }
+/* Owner: brighten the user's greeting bubble one notch, without moving or
+ * resizing the right-aligned turn; keep readable contrast on glass. */
+html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .user-message .message-bubble {
+  background: rgba(68, 79, 89, .90);
+  color: #f7f9fb;
+}
+
 
 html[data-theme="padiem-glass"] .glass-variant-control {
   margin-top: 16px;

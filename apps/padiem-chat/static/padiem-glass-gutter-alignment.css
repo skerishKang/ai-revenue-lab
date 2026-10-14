@@ -38,17 +38,27 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-me
 }
 
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .error-box {
-  width: 100% !important;
-  max-width: none !important;
+  box-sizing: border-box;
+  max-width: 100% !important;
 }
 
 /* The assistant identity rail starts inside the bounded conversation padding.
  * Wide answer/error cards then recover that right-side padding so their outer
  * edge lands on the same boundary as the composer. */
-html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-content > .rich-response,
-html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-content > .error-box {
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-content > .rich-response {
   width: calc(100% + var(--padiem-chat-inner-gutter)) !important;
   max-width: none !important;
+}
+
+/* Failure cards start after avatar+gap. End an equal avatar+gap before
+ * the opposite conversation padding: match left/right panel gutters. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-content > .error-box {
+  box-sizing: border-box;
+  /* Left inset = conversation padding + avatar (32px) + meta gap.
+   * Reserve exactly avatar+gap on the right for symmetric panel gutters. */
+  width: calc(100% - 32px - var(--padiem-chat-meta-gap)) !important;
+  max-width: 100% !important;
+  min-width: 0;
 }
 
 /* Keep prose readable while allowing code, tables, sources and the enclosing
@@ -74,73 +84,11 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message
   max-width: min(660px, 88%) !important;
 }
 
-/* Large desktop: active chat becomes content-first while the home composition
- * remains untouched. Preserve a bounded portrait lane, but stop spending 32vw
- * on negative space once a conversation is active. */
-@media (min-width: 1440px) {
-  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] {
-    --padiem-chat-lane-offset: clamp(36px, 3vw, 56px);
-    --padiem-chat-lane-width: min(
-      1080px,
-      calc(
-        100vw
-        - var(--workspace-rail, 252px)
-        - clamp(36px, 3vw, 56px)
-        - clamp(300px, 24vw, 430px)
-        - 48px
-      )
-    );
-  }
-
-  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
-    width: var(--padiem-chat-lane-width) !important;
-    margin-left: var(--padiem-chat-lane-offset) !important;
-    margin-right: 0 !important;
-  }
-
-  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer-wrap {
-    left: calc(var(--workspace-rail, 252px) + var(--padiem-chat-lane-offset)) !important;
-    width: var(--padiem-chat-lane-width) !important;
-    transform: none !important;
-  }
-}
-
-/* Compact desktop: preserve portrait breathing room but share one lane. */
-@media (min-width: 1024px) and (max-width: 1439px) {
-  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] {
-    --padiem-chat-lane-offset: 38px;
-    --padiem-chat-lane-width: min(
-      672px,
-      calc(
-        100vw
-        - var(--workspace-rail, 252px)
-        - clamp(300px, 32vw, 380px)
-        - 76px
-      )
-    );
-  }
-
-  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
-    width: var(--padiem-chat-lane-width) !important;
-    margin-left: var(--padiem-chat-lane-offset) !important;
-    margin-right: 0 !important;
-  }
-
-  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer-wrap {
-    left: calc(var(--workspace-rail, 252px) + var(--padiem-chat-lane-offset)) !important;
-    width: var(--padiem-chat-lane-width) !important;
-    transform: none !important;
-  }
-}
-
-/* Transitional desktop/tablet: editorial mode centers the composer in the
- * main panel; make the conversation the same lane. */
-@media (min-width: 921px) and (max-width: 1023px) {
-  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
-    width: min(860px, calc(100vw - var(--workspace-rail, 252px) - 56px)) !important;
-    margin-inline: auto !important;
-  }
-}
+/* FIRST SCREEN = ACTIVE CHAT FRAME.
+ * Do not override .conversation/.composer-wrap width or left by data-state:
+ * both views use the same existing Glass layout at every desktop breakpoint.
+ * (The former active-only 1440/1024/921 media rules moved the panel on Send.)
+ */
 
 /* Tablet/mobile: follow the actual fixed composer viewport gutter while the
  * inner content gutter collapses independently. */
@@ -148,11 +96,6 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message
   html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] {
     --padiem-chat-meta-gap: 10px;
     --padiem-chat-inner-gutter: clamp(14px, 4vw, 24px);
-  }
-
-  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
-    width: calc(100vw - 28px) !important;
-    margin-inline: auto !important;
   }
 
   html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message {
