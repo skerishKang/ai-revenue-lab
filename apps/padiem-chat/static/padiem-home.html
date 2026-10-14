@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="robots" content="noindex" />
+  <title>PADIEM Home</title>
+  <link rel="icon" href="data:," />
+  <!--
+    NOT INTEGRATED (documented, #4428 S1):
+      * No PADIEM Chat screen links to this page yet.
+      * This is served from the public static mount, so it is NOT a
+        server-enforced private route.
+    The privacy boundary is the fail-closed gate in padiem-home.js plus the
+    fact that this document contains no private data: the service catalog is a
+    public allowlist and every owner fact is only ever painted from the
+    authenticated GET /api/auth/status response. B66 is a separate brand and is
+    absent from this catalog and from all customer-facing copy here.
+  -->
+  <!-- Reuses the canonical PADIEM Chat/Claw design tokens. -->
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./padiem-home.css" />
+</head>
+<body class="padiem-home-body">
+  <a class="padiem-home-skip" href="#padiemHomeMain">본문으로 건너뛰기</a>
+
+  <header class="padiem-home-header">
+    <div class="padiem-home-brand">
+      <span class="padiem-home-brand-mark" aria-hidden="true">P</span>
+      <span class="padiem-home-brand-name">PADIEM</span>
+    </div>
+    <!-- Account area is only revealed by a server-confirmed signed-in session. -->
+    <div class="padiem-home-account" id="padiemHomeAccount" hidden>
+      <span class="padiem-home-account-name" id="padiemHomeAccountName"></span>
+      <a class="padiem-home-account-menu" id="padiemHomeAccountMenu" href="./">계정 메뉴</a>
+      <button class="padiem-home-signout" id="padiemHomeSignOut" type="button">로그아웃</button>
+    </div>
+  </header>
+
+  <main class="padiem-home-main" id="padiemHomeMain">
+    <h1 class="padiem-home-title" id="padiemHomeTitle">PADIEM Home</h1>
+    <p class="padiem-home-lead" id="padiemHomeLead"></p>
+
+    <p class="padiem-home-status" id="padiemHomeStatus" role="status" aria-live="polite"></p>
+
+    <section class="padiem-home-gate" id="padiemHomeGate" aria-labelledby="padiemHomeGateTitle" hidden>
+      <h2 class="padiem-home-gate-title" id="padiemHomeGateTitle"></h2>
+      <p class="padiem-home-gate-body" id="padiemHomeGateBody"></p>
+      <a class="padiem-home-gate-action" id="padiemHomeGateAction" href="./">PADIEM Chat에서 로그인</a>
+    </section>
+
+    <section class="padiem-home-services" id="padiemHomeServices" aria-labelledby="padiemHomeServicesTitle" hidden>
+      <h2 class="padiem-home-services-title" id="padiemHomeServicesTitle"></h2>
+      <p class="padiem-home-notice" id="padiemHomeNotice"></p>
+      <ul class="padiem-home-grid" id="padiemHomeGrid"></ul>
+    </section>
+
+    <details class="padiem-home-help" id="padiemHomeHelp">
+      <summary class="padiem-home-help-summary" id="padiemHomeHelpSummary"></summary>
+      <div class="padiem-home-help-body" id="padiemHomeHelpBody"></div>
+    </details>
+  </main>
+
+  <script src="./padiem-home.js"></script>
+</body>
+</html>
