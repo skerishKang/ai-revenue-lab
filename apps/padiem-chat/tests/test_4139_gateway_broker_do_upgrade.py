@@ -206,3 +206,106 @@ def test_checked_in_manifests_never_auto_activate_native_broker_bridge():
 def test_internal_review_path_matches_single_broker_DO_native_WSS():
     from padiem_control_plane.broker_pending_pc_wss import WSS_REVIEW_PATH
     assert _PRIVATE_URL == "https://canonical-broker-connector.internal"+WSS_REVIEW_PATH
+
+
+# #4139 live product: the already existing Chat worker and canonical Broker.
+# Account selection never comes from the public WebSocket request.
+def test_product_wss_uses_only_existing_broker_and_exact_product_hostname():
+    from app.connector_gateway_broker_do_upgrade import (
+        _PRODUCT_URL, dispatch_product_native_pc_wss,
+        is_product_native_wss_bridge_armed,
+    )
+    broker = Broker()
+    cfg = {
+        "PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED": "enabled",
+        "PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE": "owner-controlled-production-4139",
+        "PADIEM_CONNECTOR_PRODUCTION_ENABLED": "enabled",
+        "PADIEM_CHAT_PUBLIC_BASE_URL": "https://chat.padiem.net",
+        "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE": broker,
+    }
+    assert is_product_native_wss_bridge_armed(cfg) is True
+    result = asyncio.run(dispatch_product_native_pc_wss(
+        request=request(url=_PRODUCT_URL), worker_env=cfg,
+        request_factory=InternalRequest, response_factory=Result,
+    ))
+    assert result.status == 101
+    assert len(broker.calls) == 1
+    assert broker.calls[0].url == _PRIVATE_URL
+    assert broker.calls[0].headers == {"upgrade": "websocket"}
+    assert "cookie" not in broker.calls[0].headers
+
+
+@pytest.mark.parametrize("delta", [
+    {"PADIEM_CONNECTOR_PRODUCTION_ENABLED": None},
+    {"PADIEM_CONNECTOR_PRODUCTION_ENABLED": True},
+    {"PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE": "isolated-operator-acceptance-4139"},
+    {"PADIEM_CHAT_PUBLIC_BASE_URL": "https://connector-acceptance.padiem.net"},
+    {"PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED": None},
+    {"LOCAL_AGENT_BROKER_AUTHORITY_SERVICE": None},
+])
+def test_live_wss_config_fails_closed_on_any_missing_gate(delta):
+    from app.connector_gateway_broker_do_upgrade import (
+        _PRODUCT_URL, dispatch_product_native_pc_wss,
+    )
+    broker = Broker()
+    cfg = {
+        "PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED": "enabled",
+        "PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE": "owner-controlled-production-4139",
+        "PADIEM_CONNECTOR_PRODUCTION_ENABLED": "enabled",
+        "PADIEM_CHAT_PUBLIC_BASE_URL": "https://chat.padiem.net",
+        "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE": broker,
+    }
+    cfg.update(delta)
+    result = asyncio.run(dispatch_product_native_pc_wss(
+        request=request(url=_PRODUCT_URL), worker_env=cfg,
+        request_factory=InternalRequest, response_factory=Result,
+    ))
+    assert result.status == 503
+    assert broker.calls == []
+
+
+@pytest.mark.parametrize("changes", [
+    {"url": "https://elsewhere.invalid/api/claw/connector/gateway/session"},
+    {"url": "https://chat.padiem.net/api/claw/connector/gateway/session?x=1"},
+    {"headers": {"upgrade": "websocket", "cookie": "synthetic"}},
+    {"headers": {"upgrade": "websocket", "origin": "https://example.invalid"}},
+    {"headers": {"upgrade": "websocket", "authorization": "Bearer synthetic"}},
+    {"tls": "TLSv1.1"},
+    {"method": "POST"},
+])
+def test_live_wss_never_accepts_spoofed_transport(changes):
+    from app.connector_gateway_broker_do_upgrade import (
+        _PRODUCT_URL, dispatch_product_native_pc_wss,
+    )
+    broker = Broker()
+    cfg = {
+        "PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED": "enabled",
+        "PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE": "owner-controlled-production-4139",
+        "PADIEM_CONNECTOR_PRODUCTION_ENABLED": "enabled",
+        "PADIEM_CHAT_PUBLIC_BASE_URL": "https://chat.padiem.net",
+        "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE": broker,
+    }
+    result = asyncio.run(dispatch_product_native_pc_wss(
+        request=request(**{"url": _PRODUCT_URL, **changes}), worker_env=cfg,
+        request_factory=InternalRequest, response_factory=Result,
+    ))
+    assert result.status == 503
+    assert broker.calls == []
+
+
+def test_canonical_broker_private_rpc_requires_real_release_and_schema():
+    from padiem_control_plane.broker_pending_pc_private_rpc import _enabled
+    state = {
+        "LOCAL_AGENT_BROKER_PENDING_PC_OWNER_RPC_ENABLED": "enabled",
+        "LOCAL_AGENT_BROKER_PENDING_PC_SCHEMA_INSTALLED": "installed",
+        "LOCAL_AGENT_BROKER_PENDING_PC_RELEASE_SCOPE": "owner-controlled-production-4139",
+        "LOCAL_AGENT_BROKER_PENDING_PC_PRODUCTION_ENABLED": "enabled",
+    }
+    assert _enabled(SimpleNamespace(**state)) is True
+    for missing in state:
+        with_only_one_missing = dict(state)
+        with_only_one_missing.pop(missing)
+        assert _enabled(SimpleNamespace(**with_only_one_missing)) is False
+    assert _enabled(SimpleNamespace(
+        **{**state, "LOCAL_AGENT_BROKER_PENDING_PC_RELEASE_SCOPE": "unexpected"}
+    )) is False

@@ -26,6 +26,8 @@ _PENDING_FLAG = "LOCAL_AGENT_BROKER_PENDING_PC_OWNER_RPC_ENABLED"
 _SCHEMA_FLAG = "LOCAL_AGENT_BROKER_PENDING_PC_SCHEMA_INSTALLED"
 _REVIEW_SCOPE_FLAG = "LOCAL_AGENT_BROKER_PENDING_PC_RELEASE_SCOPE"
 _REVIEW_SCOPE = "isolated-operator-acceptance-4139"
+_LIVE_SCOPE = "owner-controlled-production-4139"
+_LIVE_ENABLED = "LOCAL_AGENT_BROKER_PENDING_PC_PRODUCTION_ENABLED"
 _REF = re.compile(r"^link\.[0-9a-f]{32}$")
 _DEVICE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
 _CODE = re.compile(r"^[0-9a-f]{32}$")
@@ -39,7 +41,13 @@ def _enabled(env: Any) -> bool:
     return (
         getattr(env, _PENDING_FLAG, None) == "enabled"
         and getattr(env, _SCHEMA_FLAG, None) == "installed"
-        and getattr(env, _REVIEW_SCOPE_FLAG, None) == _REVIEW_SCOPE
+        and (
+            getattr(env, _REVIEW_SCOPE_FLAG, None) == _REVIEW_SCOPE
+            or (
+                getattr(env, _REVIEW_SCOPE_FLAG, None) == _LIVE_SCOPE
+                and getattr(env, _LIVE_ENABLED, None) == "enabled"
+            )
+        )
     )
 
 

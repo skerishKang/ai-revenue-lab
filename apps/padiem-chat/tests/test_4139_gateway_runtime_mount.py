@@ -108,3 +108,35 @@ def test_worker_real_fetch_seam_invoked_before_normal_app_asgi():
     assert "PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED" not in (
         Path(__file__).resolve().parents[1] / "wrangler.toml"
     ).read_text(encoding="utf-8")
+
+
+def test_production_wss_uses_existing_private_native_broker_not_asgi(monkeypatch):
+    import sys
+    import types
+    from app import connector_gateway_broker_do_upgrade as bridge
+    invoked = []
+    async def fake_product(**kwargs):
+        invoked.append(kwargs)
+        return SimpleNamespace(status=101)
+
+    monkeypatch.setattr(bridge, "dispatch_product_native_pc_wss", fake_product)
+    monkeypatch.setitem(sys.modules, "workers", types.SimpleNamespace(Request=object()))
+    cfg = {
+        "PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED": "enabled",
+        "PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE": "owner-controlled-production-4139",
+        "PADIEM_CONNECTOR_PRODUCTION_ENABLED": "enabled",
+        _ID: object(), _BROKER: object(),
+    }
+    assert dispatch(request(), cfg).status == 101
+    assert len(invoked) == 1
+    assert invoked[0]["worker_env"] is cfg
+
+
+def test_production_wss_rejects_missing_second_release_flag():
+    cfg = {
+        "PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED": "enabled",
+        "PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE": "owner-controlled-production-4139",
+        _ID: object(), _BROKER: object(),
+    }
+    assert dispatch(request(), cfg) is None
+    assert dispatch(request(), {**cfg, "PADIEM_CONNECTOR_PRODUCTION_ENABLED": True}) is None

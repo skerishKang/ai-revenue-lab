@@ -21,6 +21,8 @@ from .worker_config import (
 _ENABLED = "PADIEM_CONNECTOR_GATEWAY_WSS_ENABLED"
 _RELEASE_SCOPE = "PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE"
 _APPROVED_SCOPE = "isolated-operator-acceptance-4139"
+_LIVE_SCOPE = "owner-controlled-production-4139"
+_LIVE_ENABLED = "PADIEM_CONNECTOR_PRODUCTION_ENABLED"
 PRODUCTION_GATEWAY_DEFAULT_ON = False
 
 
@@ -38,9 +40,14 @@ async def maybe_dispatch_connector_gateway(
     raw_url = getattr(request, "url", "")
     if type(raw_url) is not str or urlparse(raw_url).path != CONNECTOR_GATEWAY_WSS_PATH:
         return None
+    scope = binding_value(worker_env, _RELEASE_SCOPE)
+    live = (
+        scope == _LIVE_SCOPE
+        and binding_value(worker_env, _LIVE_ENABLED) == "enabled"
+    )
     if (
         binding_value(worker_env, _ENABLED) != "enabled"
-        or binding_value(worker_env, _RELEASE_SCOPE) != _APPROVED_SCOPE
+        or (scope != _APPROVED_SCOPE and not live)
     ):
         return None
 
@@ -56,6 +63,15 @@ async def maybe_dispatch_connector_gateway(
         or binding_value(worker_env, LOCAL_AGENT_BROKER_AUTHORITY_SERVICE_BINDING_NAME) is None
     ):
         return unavailable()
+    if live:
+        # The real product uses the same canonical Broker DO and device
+        # authority, never the isolated ASGI/source-review fallback.
+        from .connector_gateway_broker_do_upgrade import dispatch_product_native_pc_wss
+        from workers import Request
+        return await dispatch_product_native_pc_wss(
+            request=request, worker_env=worker_env,
+            request_factory=Request, response_factory=response_factory,
+        )
     if binding_value(
         worker_env, "PADIEM_CONNECTOR_ACCEPTANCE_BROKER_NATIVE_WSS_ENABLED",
     ) == "enabled":

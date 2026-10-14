@@ -119,3 +119,75 @@ async def dispatch_isolated_native_pc_wss(
         # Safe even on unknown Worker/Pyodide/service-binding incompatibility:
         # do not fallback to a second ASGI gateway or unsigned PC authority.
         return unavailable()
+
+# Direct product ingress uses the SAME canonical Broker DO and one-shot
+# per-account device proof. No second hostname, Worker, ledger or credential
+# store is introduced. These gates are ALL server-owned and default OFF.
+_PRODUCT_ORIGIN = "https://chat.padiem.net"
+_PRODUCT_URL = _PRODUCT_ORIGIN + CONNECTOR_GATEWAY_WSS_PATH
+_PRODUCT_SCOPE = "owner-controlled-production-4139"
+_PRODUCT_ENABLED = "PADIEM_CONNECTOR_PRODUCTION_ENABLED"
+
+
+def is_product_native_wss_bridge_armed(worker_env: Any) -> bool:
+    return (
+        binding_value(worker_env, _GATEWAY_FLAG) == "enabled"
+        and binding_value(worker_env, _PRODUCT_ENABLED) == "enabled"
+        and binding_value(worker_env, _SCOPE_FLAG) == _PRODUCT_SCOPE
+        and binding_value(worker_env, "PADIEM_CHAT_PUBLIC_BASE_URL") == _PRODUCT_ORIGIN
+        and callable(getattr(
+            binding_value(worker_env, LOCAL_AGENT_BROKER_AUTHORITY_SERVICE_BINDING_NAME),
+            "fetch", None,
+        ))
+    )
+
+
+async def dispatch_product_native_pc_wss(
+    *, request: Any, worker_env: Any, request_factory: Callable[..., Any],
+    response_factory: Callable[..., Any],
+) -> Any:
+    """Bridge ONLY the existing product WSS into the same canonical Broker DO.
+
+    All registered accounts use their own authenticated Identity consent and
+    the canonical Broker's signed, one-time device authorization. This ingress
+    neither receives a login cookie nor selects or grants a user account.
+    """
+    def unavailable():
+        return response_factory(
+            "Connector gateway unavailable.", status=503,
+            headers={"cache-control": "no-store"},
+        )
+
+    if not is_product_native_wss_bridge_armed(worker_env):
+        return unavailable()
+    try:
+        headers = request.headers
+        if not (
+            type(request.url) is str
+            and request.url == _PRODUCT_URL
+            and request.method == "GET"
+            and callable(getattr(headers, "get", None))
+            and headers.get("upgrade") == "websocket"
+        ):
+            return unavailable()
+        tls = CloudflareFirstPairingTlsTransportReview(
+            incoming_worker_request=request, source_review_authorized=True,
+            expected_url=_PRODUCT_URL,
+        )
+        if not tls.permits_worker_upgrade():
+            return unavailable()
+        broker = binding_value(
+            worker_env, LOCAL_AGENT_BROKER_AUTHORITY_SERVICE_BINDING_NAME,
+        )
+        # The URL and headers are server constants, never browser supplied.
+        internal = request_factory(
+            _PRIVATE_URL, method="GET", headers=dict(_PRIVATE_UPGRADE_HEADERS),
+        )
+        response = await broker.fetch(internal)
+        if getattr(response, "status", None) == 101:
+            return response
+    except Exception:
+        # No credentials, login identity, challenge or network traceback in
+        # an unauthenticated public WSS response. No alternate gateway.
+        pass
+    return unavailable()

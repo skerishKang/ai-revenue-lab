@@ -41,6 +41,8 @@ _IDENTITY_PC_PREFLIGHT_FLAG = "PADIEM_CONNECTOR_OWNER_PC_IDENTITY_PREFLIGHT_ENAB
 _NATIVE_PC_DELIVERY_FLAG = "PADIEM_CONNECTOR_OWNER_PC_NATIVE_DELIVERY_ENABLED"
 _RELEASE_SCOPE = "PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE"
 _REVIEW_SCOPE = "isolated-operator-acceptance-4139"
+_LIVE_SCOPE = "owner-controlled-production-4139"
+_LIVE_ENABLED = "PADIEM_CONNECTOR_OWNER_PRODUCTION_ENABLED"
 OWNER_REGISTRATION_PRODUCTION_DEFAULT_MOUNTED = False
 
 _IDENTITY_METHODS = (
@@ -92,9 +94,16 @@ class OwnerEnrollmentPorts:
 
 def compose_owner_enrollment_from_worker(worker_env: Any) -> OwnerEnrollmentPorts | None:
     """Only exact, server-controlled operator acceptance can mount the routes."""
+    scope = binding_value(worker_env, _RELEASE_SCOPE)
     if (
         binding_value(worker_env, _OWNER_FLAG) != "enabled"
-        or binding_value(worker_env, _RELEASE_SCOPE) != _REVIEW_SCOPE
+        or (
+            scope != _REVIEW_SCOPE
+            and not (
+                scope == _LIVE_SCOPE
+                and binding_value(worker_env, _LIVE_ENABLED) == "enabled"
+            )
+        )
     ):
         return None
 

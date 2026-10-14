@@ -386,3 +386,23 @@ def test_missing_protected_same_DO_delivery_ports_are_rejected_before_activation
     })
     with pytest.raises(ValueError,match="same-PC private native gateway"):
         compose_owner_enrollment_from_worker(owner_env)
+
+
+def test_all_logged_in_accounts_use_normal_identity_ports_not_ceo_whitelist():
+    # Server-side "owner" means the signed-in owner of EACH device.
+    # It is never the representative account or one configured user ID.
+    cfg = {
+        **env(),
+        "PADIEM_CONNECTOR_GATEWAY_RELEASE_SCOPE": "owner-controlled-production-4139",
+        "PADIEM_CONNECTOR_OWNER_PRODUCTION_ENABLED": "enabled",
+    }
+    ports = compose_owner_enrollment_from_worker(cfg)
+    assert ports is not None
+    app = create_app(settings=settings(), connector_owner_enrollment=ports)
+    assert any(
+        getattr(r, "path", "") == "/api/claw/connector/enrollments/setup"
+        for r in app.routes
+    )
+    assert "OWNER_ACCOUNT_ID" not in cfg
+    del cfg["PADIEM_CONNECTOR_OWNER_PRODUCTION_ENABLED"]
+    assert compose_owner_enrollment_from_worker(cfg) is None
