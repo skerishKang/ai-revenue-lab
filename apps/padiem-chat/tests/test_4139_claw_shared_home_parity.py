@@ -82,6 +82,7 @@ def test_claw_identity_is_two_lines_without_a_duplicate_greeting():
     assert 'input.placeholder = localeOr("input", "Ask anything");' in APP
     assert "클로에게 작업을 맡겨보세요" in LOCALE
     assert "claw-home-intro" in LOCALE and "Where would you like to work?" in LOCALE
+    assert LOCALE.count('"claw-home-previous-conversations"') == 2
 
 
 def test_product_mode_is_scoped_and_starter_actions_never_create_fake_auth():
