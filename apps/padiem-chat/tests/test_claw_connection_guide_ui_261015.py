@@ -34,11 +34,10 @@ def test_installation_defaults_are_shown_without_second_login_step():
     assert "설치 후 자동 실행·연결됩니다." in SCRIPT
 
 
-def test_drive_disconnect_is_explicit_not_a_fake_pause():
-    assert 'intent === "disconnect-drive"' in SCRIPT
-    assert 'button.click()' in SCRIPT
-    assert '잠시 사용 중지하는 기능은 별도로 제공될 예정입니다.' in SCRIPT
-    assert "연결 해제" in SCRIPT
+def test_drive_off_does_not_revoke_stored_oauth():
+    assert 'intent === "disconnect-drive"' not in SCRIPT
+    assert 'padiem:drive-quick-connect' in SCRIPT
+    assert 'OFF를 연결 삭제처럼 처리하지 않습니다.' in SCRIPT
 
 
 def test_guide_styles_do_not_touch_shared_chat_or_card_geometry():

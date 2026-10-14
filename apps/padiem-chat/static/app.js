@@ -3850,6 +3850,7 @@
   if (connectorsNavButton) connectorsNavButton.addEventListener("click", openConnectorsDialog);
   if (connectorsDialogClose) connectorsDialogClose.addEventListener("click", closeConnectorsDialog);
   if (connectorsRetry) connectorsRetry.addEventListener("click", () => void loadConnectorStatus());
+  document.addEventListener("padiem:refresh-connector-status", () => void loadConnectorStatus());
   const calendarConnectButton = googleCalendarConnectButton();
   if (calendarConnectButton) calendarConnectButton.addEventListener("click", () => {
     if (calendarConnectButton.dataset.calendarAction === "activate-read") {
@@ -3862,6 +3863,18 @@
   const driveConnectButton = googleDriveConnectButton();
   if (driveConnectButton) driveConnectButton.addEventListener("click", () => {
     void beginGoogleDriveConnect();
+  });
+  document.addEventListener("padiem:drive-quick-connect", () => {
+    void (async () => {
+      // Existing server-trusted workspace truth, not a synthetic OFF.
+      await loadConnectorStatus();
+      const offered = googleDriveConnectButton();
+      if (offered && !offered.hidden && !offered.disabled) {
+        offered.click();
+      } else {
+        openConnectorsDialog();
+      }
+    })();
   });
   if (connectorsDialog) {
     connectorsDialog.addEventListener("cancel", (event) => {
