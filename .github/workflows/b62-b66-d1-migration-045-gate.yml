@@ -6,7 +6,7 @@ on:
       - ".github/workflows/b62-b66-d1-migration-045-gate.yml"
       - ".github/scripts/b62_d1_migration_045_schema.py"
       - ".github/tests/test_b62_d1_migration_045_gate.py"
-      - "apps/padiem-chat/migrations/045_b66_guided_draft.sql"
+      - "apps/padiem-chat/migrations/045_b66_guided_transcript.sql"
   workflow_dispatch:
     inputs:
       mode:
