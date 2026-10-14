@@ -89,10 +89,6 @@
     };
   }
 
-  function normalizeText(text) {
-    return norm(text).trim().toLowerCase().replace(/\s+/g, " ");
-  }
-
   function makeToken() {
     return Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 10);
   }
@@ -136,7 +132,6 @@
 
     const turnBuffer = createTranscriptTurnBuffer();
     const emittedUtterances = new Set();
-    const emittedTextNoId = new Set();
     let state = STATES.IDLE;
     let currentUtteranceId = null;
     let startedAt = null;
@@ -164,7 +159,6 @@
       if (state !== STATES.IDLE) return false; // refuse repeated active start
       turnBuffer.reset();
       emittedUtterances.clear();
-      emittedTextNoId.clear();
       currentUtteranceId = null;
       acceptedCount = 0;
       startedAt = Date.now();
@@ -172,12 +166,6 @@
       return emitState(STATES.LISTENING) === STATES.LISTENING;
     }
 
-    function canReceive(ctx) {
-      if (destroyed || stopped) return false;
-      if (state !== STATES.LISTENING && state !== STATES.INTERIM && state !== STATES.FINAL) return false;
-      if (isStale(ctx)) return false;
-      return true;
-    }
     function feedInterim(text, ctx) {
       ctx = ctx || {};
       if (destroyed || stopped) return { ok: false, reason: "stopped" };
@@ -204,6 +192,11 @@
     function commitFinal(opts) {
       opts = opts || {};
       if (destroyed || stopped) return { ok: false, reason: "stopped" };
+      if (state === STATES.ERROR) return { ok: false, reason: "error-state" };
+      if (state !== STATES.LISTENING && state !== STATES.INTERIM && state !== STATES.FINAL) {
+        return { ok: false, reason: "not-listening" };
+      }
+      if (opts.destroyed === true) return { ok: false, reason: "invalidated" };
       if (opts.generation != null && opts.generation !== generation) {
         return { ok: false, reason: "stale-generation" };
       }
@@ -213,6 +206,15 @@
       const utteranceId =
         opts.utteranceId != null ? String(opts.utteranceId) : null;
 
+      // Provider finals without a stable turn id cannot be de-duplicated across
+      // turns. Only the buffered, turn-bounded finish path may omit the id.
+      if (!utteranceId && opts.text != null) {
+        return { ok: false, reason: "missing-utterance-id" };
+      }
+      // A late repeat must not erase an interim buffer for a newer utterance.
+      if (utteranceId && emittedUtterances.has(utteranceId)) {
+        return { ok: false, reason: "duplicate-utterance", utteranceId: utteranceId };
+      }
       let text = opts.text != null ? String(opts.text) : turnBuffer.finishTurn();
       if (text == null) text = turnBuffer.finishTurn();
       text = norm(text).trim();
@@ -220,26 +222,7 @@
         turnBuffer.reset();
         return { ok: false, reason: "empty" };
       }
-
-      // state gate: only active run can accept finals
-      if (state !== STATES.LISTENING && state !== STATES.INTERIM && state !== STATES.FINAL) {
-        turnBuffer.reset();
-        return { ok: false, reason: "not-listening" };
-      }
-      // utterance-id de-dup: only same id is duplicate.
-      if (utteranceId && emittedUtterances.has(utteranceId)) {
-        turnBuffer.reset();
-        return { ok: false, reason: "duplicate-utterance", utteranceId: utteranceId };
-      }
-      const fingerprint = normalizeText(text);
-      // missing-id case: conservative text dedup only then
-      if (!utteranceId && emittedTextNoId.has(fingerprint)) {
-        turnBuffer.reset();
-        return { ok: false, reason: "duplicate-text-no-id", utteranceId: utteranceId };
-      }
-
       if (utteranceId) emittedUtterances.add(utteranceId);
-      if (!utteranceId) emittedTextNoId.add(fingerprint);
       currentUtteranceId = utteranceId;
       acceptedCount += 1;
       emitState(STATES.FINAL);
