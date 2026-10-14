@@ -537,11 +537,12 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     product_tier = _BROWSER_TIER_MAP.get(raw_tier.strip().lower())
     if product_tier is None:
         return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
-    tier_denial = await selected_grade_denial(
-        request, current_user_id(request) if auth_ready(request) else None, raw_tier.strip().lower()
-    )
-    if tier_denial is not None:
-        return tier_denial
+    if "tier" in data:
+        tier_denial = await selected_grade_denial(
+            request, current_user_id(request) if auth_ready(request) else None, raw_tier.strip().lower()
+        )
+        if tier_denial is not None:
+            return tier_denial
     raw_model = data.get("model_id")
     selected_model_id: str | None = None
     if raw_model is not None:

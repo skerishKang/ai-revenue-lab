@@ -513,6 +513,7 @@ class DraftFlowTests(unittest.TestCase):
                     "model": active_route_for(ProductTierLabel.PLUS).model_id,
                     # #3382/#3566: the Claw lane pins the one-shot canary ceiling.
                     "max_retries": 0,
+                    "product_tier": "plus",
                 },
             )
             self.assertNotIn("provider", json.dumps(payload).lower())
