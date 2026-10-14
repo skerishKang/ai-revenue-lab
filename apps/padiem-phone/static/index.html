@@ -99,8 +99,24 @@
             <h1 id="scriptsTitle">전화 대본</h1>
             <p class="intro">자주 하는 전화 업무를 간편하게 시작하세요.<br>원하는 대본을 고르면 새 전화 요청에 자동으로 채워집니다.</p>
           </div>
+          <div class="script-manager-toolbar">
+            <button id="newScriptButton" type="button" class="secondary">+ 나만의 대본 만들기</button>
+            <span>예시 대본은 읽기 전용입니다.</span>
+          </div>
+          <form id="scriptEditor" class="script-editor" hidden>
+            <div class="script-form-title"><strong id="scriptEditorTitle">새 대본</strong><button type="button" id="scriptCancelButton" class="text-button">닫기 ✕</button></div>
+            <div class="script-fields">
+              <label for="scriptTitle">대본 이름 <input id="scriptTitle" required minlength="2" maxlength="80" placeholder="예: 공급업체 출고 일정 확인"></label>
+              <label for="scriptDestination">상대 기관 <input id="scriptDestination" required minlength="2" maxlength="80" placeholder="예: 거래처 (가상)"></label>
+              <label class="wide" for="scriptGoal">전화 목적 <textarea id="scriptGoal" required minlength="3" maxlength="300" rows="2" placeholder="AI가 달성해야 할 목표"></textarea></label>
+              <label class="wide" for="scriptQuestions">반드시 확인할 질문 <textarea id="scriptQuestions" maxlength="400" rows="2" placeholder="확인할 내용"></textarea></label>
+              <label class="wide" for="scriptNotes">상담 시 주의사항 <textarea id="scriptNotes" maxlength="400" rows="2" placeholder="변경이나 결제는 하지 않기 등"></textarea></label>
+            </div>
+            <div class="script-form-actions"><button id="saveScriptButton" class="secondary" type="submit">대본 저장</button><button type="button" id="deleteScriptButton" class="danger" hidden>대본 삭제</button></div>
+            <p id="scriptMessage" class="script-message" role="status" aria-live="polite"></p>
+          </form>
           <div id="scriptsGrid" class="template-grid" aria-label="사용 가능한 대본"></div>
-          <p class="sub-page-note">현재 대본은 예시입니다. 저장과 공유 기능은 다음 개발 단계에서 연결합니다.</p>
+          <p class="sub-page-note">저장한 대본은 이 컴퓨터의 사용자 전용 앱 데이터에 보관됩니다. 실제 개인정보·연락처·인증번호를 입력하지 마세요. 기업·계정 간 공유 기능은 아직 없습니다.</p>
         </div>
       </section>
 
@@ -113,6 +129,10 @@
           </div>
           <button class="secondary refresh-btn" type="button" id="refreshHistory">기록 새로고침 ↻</button>
           <div class="table-scroll"><table><thead><tr><th>업무 ID</th><th>대상</th><th>상태</th><th>가상 수행시간</th><th>요청 출처</th></tr></thead><tbody id="historyBody"></tbody></table></div>
+          <section id="historyDetails" class="history-details" hidden aria-label="선택한 모의 전화 업무 상세">
+            <div class="script-form-title"><strong>전화 업무 상세</strong><button id="closeHistoryDetails" class="text-button" type="button">닫기 ✕</button></div>
+            <div id="historyDetailsContent"></div>
+          </section>
         </div>
       </section>
 

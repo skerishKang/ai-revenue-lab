@@ -3,11 +3,9 @@
 // This browser app only speaks to the loopback mock API. No telephony SDK,
 // payment provider, actual voice stream, or automatic outbound calling exists.
 const $ = id => document.getElementById(id);
-const templates = [
-  { title: "일반 문의", icon: "◫", destination: "고객센터 (가상)", goal: "이용 내역을 확인하고 필요한 절차를 알려줘.", description: "이용 내역, 필요한 서류, 절차 등을 확인하는 기본 문의." },
-  { title: "거래처 확인", icon: "▤", destination: "거래처 (가상)", goal: "현재 주문 건의 진행 상태와 예상 완료 시점을 확인해 줘.", description: "진행 상태와 일정 등 반복적으로 확인할 내용을 정리합니다." },
-  { title: "예약 문의", icon: "▦", destination: "예약센터 (가상)", goal: "예약 가능한 시간과 필요한 준비 사항을 확인해 줘.", description: "예약 가능 여부, 시간, 준비 사항을 묻는 대본." },
-];
+let templates = [];
+let selectedScript = null;
+let editingScript = null;
 const stateLabels = {
   DIALING: "전화 연결 시도", IVR: "ARS 메뉴 진행",
   HOLD: "상담원 연결 대기", CONSULTING: "상담 진행",
@@ -52,11 +50,13 @@ function showPage(name) {
   setText("breadcrumb", ({ dashboard: "대시보드", scripts: "전화 대본", history: "통화 기록", usage: "사용량" })[name]);
   if (name === "history") refreshHistory();
   if (name === "usage") refreshUsage();
+  if (name === "scripts") refreshScripts();
 }
 
 function applyTemplate(t) {
   $("destination").value = t.destination;
   $("goal").value = t.goal;
+  selectedScript = t;
   showPage("dashboard");
   $("goal").focus();
 }
@@ -66,23 +66,100 @@ function makeTemplate(t, full) {
   if (!full) {
     wrap.className = "script-row";
     const details = document.createElement("div");
-    details.append(textNode("strong", t.title), textNode("small", t.description));
+    details.append(textNode("strong", t.title), textNode("small", t.questions || t.goal));
     wrap.append(details, button("사용", "small-button", () => applyTemplate(t)));
   } else {
     wrap.className = "template-card";
     wrap.append(
-      textNode("div", t.icon, "template-icon"),
+      textNode("div", t.built_in ? "◫" : "✦", "template-icon"),
       textNode("h2", t.title),
-      textNode("p", t.description),
+      textNode("p", t.questions || t.goal),
       button("이 대본으로 시작 ↗", "small-button", () => applyTemplate(t)),
     );
+    if (!t.built_in) {
+      wrap.append(button("편집", "small-button edit-script", () => openScriptEditor(t)));
+    }
   }
   return wrap;
 }
-templates.forEach(t => {
-  $("quickTemplates").append(makeTemplate(t, false));
-  $("scriptsGrid").append(makeTemplate(t, true));
+async function refreshScripts() {
+  try {
+    const response = await api("/api/scripts");
+    templates = response.scripts;
+    $("quickTemplates").replaceChildren(...templates.slice(0, 3).map(t => makeTemplate(t, false)));
+    $("scriptsGrid").replaceChildren(...templates.map(t => makeTemplate(t, true)));
+    setText("scriptMessage", "");
+  } catch (err) {
+    setText("scriptMessage", "대본 목록 조회 실패: " + err.message);
+  }
+}
+
+function openScriptEditor(t = null) {
+  editingScript = t;
+  setText("scriptEditorTitle", t ? "대본 수정" : "나만의 대본 만들기");
+  for (const [id, key] of [
+    ["scriptTitle", "title"], ["scriptDestination", "destination"], ["scriptGoal", "goal"],
+    ["scriptQuestions", "questions"], ["scriptNotes", "notes"]
+  ]) $(id).value = t ? t[key] : "";
+  $("deleteScriptButton").hidden = !t;
+  $("scriptEditor").hidden = false;
+  setText("scriptMessage", "");
+  $("scriptTitle").focus();
+}
+
+function closeScriptEditor() {
+  editingScript = null;
+  $("scriptEditor").hidden = true;
+  setText("scriptMessage", "");
+}
+
+$("newScriptButton").addEventListener("click", () => openScriptEditor());
+$("scriptCancelButton").addEventListener("click", closeScriptEditor);
+$("scriptEditor").addEventListener("submit", async event => {
+  event.preventDefault();
+  const b = $("saveScriptButton");
+  b.disabled = true;
+  setText("scriptMessage", "");
+  const raw = {
+    title: $("scriptTitle").value, destination: $("scriptDestination").value,
+    goal: $("scriptGoal").value, questions: $("scriptQuestions").value,
+    notes: $("scriptNotes").value,
+  };
+  const saved = editingScript;
+  if (saved) raw.revision = saved.revision;
+  try {
+    await api(saved ? "/api/scripts/" + saved.script_id : "/api/scripts", {
+      method: saved ? "PUT" : "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(raw),
+    });
+    if (selectedScript?.script_id === saved?.script_id) selectedScript = null;
+    closeScriptEditor();
+    await refreshScripts();
+  } catch (err) {
+    setText("scriptMessage", "대본 저장 실패: " + err.message);
+  } finally { b.disabled = false; }
 });
+$("deleteScriptButton").addEventListener("click", async () => {
+  const saved = editingScript;
+  if (!saved || saved.built_in) return;
+  // Deletion changes only the local mock script; historical tasks remain immutable.
+  if (!window.confirm("선택한 대본을 삭제할까요? 모의 작업 기록은 유지됩니다.")) return;
+  try {
+    await api("/api/scripts/" + saved.script_id, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({revision: saved.revision}),
+    });
+    if (selectedScript?.script_id === saved.script_id) selectedScript = null;
+    closeScriptEditor();
+    await refreshScripts();
+  } catch (err) {
+    setText("scriptMessage", "대본 삭제 실패: " + err.message);
+  }
+});
+$("goal").addEventListener("input", () => { selectedScript = null; });
+$("destination").addEventListener("input", () => { selectedScript = null; });
 
 async function refreshSummary() {
   try {
@@ -111,10 +188,13 @@ async function refreshHistory() {
     }
     data.tasks.forEach(task => {
       const tr = document.createElement("tr");
+      const taskLink = document.createElement("td");
+      taskLink.append(button(task.task_id.slice(0, 8) + " ↗", "detail-link",
+        () => showHistoryDetails(task.task_id)));
       const status = textNode("span", stateLabels[task.state] || task.state, "state-pill " +
         (task.state === "NO_ANSWER" || task.state === "CANCELLED" ? "fail" : task.terminal ? "" : "progress"));
       const cells = [
-        textNode("td", task.task_id.slice(0, 8)),
+        taskLink,
         textNode("td", task.destination),
         document.createElement("td"),
         textNode("td", task.simulated_elapsed_minutes + "분"),
@@ -130,6 +210,36 @@ async function refreshHistory() {
     $("historyBody").replaceChildren(tr);
   }
 }
+async function showHistoryDetails(taskId) {
+  const root = $("historyDetailsContent");
+  const panel = $("historyDetails");
+  try {
+    const task = await api("/api/tasks/" + taskId);
+    root.replaceChildren();
+    const items = [
+      ["대상 기관", task.destination],
+      ["전화 목적", task.goal],
+      ["반드시 확인할 질문", task.questions || "(없음)"],
+      ["주의사항", task.notes || "(없음)"],
+      ["상태", stateLabels[task.state] || task.state],
+      ["가상 수행시간", task.simulated_elapsed_minutes + "분"],
+      ["처리 결과", task.result || "모의 진행 중"],
+    ];
+    items.forEach(([title, value]) => {
+      const part = document.createElement("div");
+      part.className = "detail-item";
+      part.append(textNode("strong", title), textNode("p", value));
+      root.append(part);
+    });
+    panel.hidden = false;
+    panel.scrollIntoView({behavior: "smooth", block: "nearest"});
+  } catch (err) {
+    setText("formMessage", "기록 상세 조회 실패: " + err.message);
+  }
+}
+$("closeHistoryDetails").addEventListener("click", () => {
+  $("historyDetails").hidden = true;
+});
 async function refreshUsage() { await refreshSummary(); }
 
 function renderActive(task) {
@@ -200,6 +310,7 @@ $("createForm").addEventListener("submit", async event => {
     destination: $("destination").value,
     goal: $("goal").value,
     scenario: $("scenario").value,
+    ...(selectedScript ? {script_id: selectedScript.script_id} : {}),
   };
   try {
     const task = await api("/api/tasks", {
@@ -221,3 +332,4 @@ $("refreshHistory").addEventListener("click", refreshHistory);
 $("refreshUsage").addEventListener("click", refreshUsage);
 refreshSummary();
 refreshHistory();
+refreshScripts();

@@ -71,12 +71,30 @@ def _validate(data: dict) -> dict:
         raise TaskError("invalid_mode")
     if scenario not in SCENARIOS or source not in ("web", "claw"):
         raise TaskError("invalid_mode")
+    questions = data.get("questions", "")
+    notes = data.get("notes", "")
+    script_id = data.get("script_id")
+    if not isinstance(questions, str) or len(questions) > 400:
+        raise TaskError("invalid_questions")
+    if not isinstance(notes, str) or len(notes) > 400:
+        raise TaskError("invalid_notes")
+    if any(ord(char) < 32 for char in questions + notes):
+        raise TaskError("invalid_script_text")
+    if script_id is not None and (
+        not isinstance(script_id, str)
+        or not (script_id.startswith("custom-") or script_id.startswith("sample-"))
+        or len(script_id) > 80
+    ):
+        raise TaskError("invalid_script_id")
     return {
         "request_id": request_id,
         "goal": goal.strip(),
         "destination": destination.strip(),
         "scenario": scenario,
         "source": source,
+        "questions": questions.strip(),
+        "notes": notes.strip(),
+        "script_id": script_id,
     }
 
 
@@ -159,6 +177,9 @@ class MockPhoneTasks:
             "source": task.data["source"],
             "goal": task.data["goal"],
             "destination": task.data["destination"],
+            "questions": task.data["questions"],
+            "notes": task.data["notes"],
+            "script_id": task.data["script_id"],
             "scenario": task.data["scenario"],
             "created_at": task.created_at,
             "state": state,

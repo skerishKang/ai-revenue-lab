@@ -267,3 +267,31 @@ tbody tr:last-child td{border-bottom:0}
 @media(prefers-reduced-motion:reduce){
  *{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
+
+/* Saved script workspace follows the approved Padiem Glass surfaces. */
+.script-manager-toolbar{display:flex;align-items:center;gap:15px;flex-wrap:wrap;margin:0 0 20px}
+.script-manager-toolbar span{color:#576977;font-size:11px}
+.script-editor{padding:20px;margin:0 0 22px;border:1px solid rgba(255,255,255,.74);border-radius:16px;background:rgba(247,250,251,.77);box-shadow:0 15px 35px rgba(28,38,49,.11)}
+.script-editor[hidden],.danger[hidden]{display:none!important}
+.script-form-title{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:14px;color:#273a49}
+.script-form-title strong{font-size:16px}
+.text-button{color:#4c6070;border:0;background:transparent;font-size:12px;padding:7px}
+.script-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.script-fields label{min-width:0;display:block;font-size:12px;font-weight:680;color:#445b69}
+.script-fields label.wide{grid-column:1/-1}
+.script-fields input,.script-fields textarea{display:block;width:100%;margin-top:6px;padding:11px 12px;border:1px solid rgba(52,74,90,.20);border-radius:9px;background:rgba(255,255,255,.80);color:#1d303d;font-size:13px}
+.script-fields textarea{resize:vertical;min-height:62px;line-height:1.55}
+.script-form-actions{display:flex;gap:10px;align-items:center;margin-top:16px}
+.script-message{margin:10px 0 0;font-size:11px;color:#944e4a}
+.template-card .edit-script{margin-top:7px;color:#60788a;background:rgba(238,244,248,.71)}
+@media(max-width:650px){.script-editor{padding:15px}.script-fields{grid-template-columns:1fr}.script-fields label.wide{grid-column:auto}.script-manager-toolbar{align-items:flex-start;flex-direction:column;gap:8px}}
+
+.detail-link{border:0;padding:3px 0;background:none;color:#2b5f7f;font-size:11px;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.detail-link:hover{color:#133b52}
+.history-details{background:rgba(247,250,251,.78);border:1px solid rgba(255,255,255,.74);box-shadow:0 15px 35px rgba(28,38,49,.11);border-radius:15px;margin-top:17px;padding:18px}
+.history-details[hidden]{display:none!important}
+#historyDetailsContent{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 20px}
+.detail-item{min-width:0}
+.detail-item strong{display:block;font-size:11px;color:#607481}
+.detail-item p{margin:5px 0 0;font-size:12px;line-height:1.65;color:#263d4d;white-space:pre-wrap;overflow-wrap:anywhere}
+@media(max-width:650px){#historyDetailsContent{grid-template-columns:1fr}}
