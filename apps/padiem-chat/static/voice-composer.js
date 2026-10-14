@@ -322,7 +322,7 @@
       state.sessionToken = makeToken(win || {});
       state.interim = "";
       state.idleKey = "";
-       stoppingRun = null;
+      stoppingRun = null;
       deferredFinals = [];
       const myRun = { generation: state.generation, sessionToken: state.sessionToken, adapter: null, session: null };
       const adapter = adapterApi.createVoiceInputAdapter({
@@ -442,7 +442,7 @@
 
     function invalidate(reason) {
       if (destroyed) return;
-       stoppingRun = null;
+      stoppingRun = null;
       const stage = run;
       run = null;
       if (stage) {
