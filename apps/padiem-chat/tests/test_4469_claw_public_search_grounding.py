@@ -7,11 +7,13 @@ verifiable provenance, and to hand the answer to the model the user already sele
 from __future__ import annotations
 
 import asyncio
+from pathlib import Path
 
 import pytest
 
 from app.claw_general_routes import (
     CLAW_PUBLIC_SEARCH_STATE_FLAG,
+    _owner_claw_context,
     _claw_general_sse,
     _claw_public_search_grounding,
     _project_search_sources,
@@ -218,7 +220,8 @@ def test_digest_is_bounded_by_a_literal_ceiling_not_by_its_own_constant():
     assert len(digest) <= 3_000, "the ceiling is a contract, not a constant to re-read"
     assert digest.count("질문 39") == 1 and "질문 0" not in digest, "only the recent window travels"
     assert build_judgement_digest([]) is None
-    assert build_judgement_digest("nonsense") is None
+    assert build_judgement_digest("") is None
+    assert build_judgement_digest(None) is None
 
 
 @pytest.mark.parametrize("text", [
@@ -283,3 +286,55 @@ def test_grounding_reaches_the_request_without_changing_the_selected_model():
         ungrounded.execution_request.agent.model_policy
     ), "grounding must not select, reroute or add an answer model"
     assert grounded.execution_request.messages == ungrounded.execution_request.messages
+
+
+# --- review fix 1: the judge reads owner-verified history, not browser turns --
+
+APP_DIR = Path(__file__).resolve().parents[1]
+SOURCE = (APP_DIR / "app" / "claw_general_routes.py").read_text(encoding="utf-8")
+
+
+def test_the_route_judges_from_the_owner_verified_context_only():
+    """A forged browser history must not be able to move the search target."""
+
+    call = SOURCE[SOURCE.index("#4469: optional public web grounding"):]
+    call = call[: call.index("if live_requested")]
+    assert "model_user_text" in call, "the seam must receive the server-resolved context"
+    assert "data.get(" not in call, "browser turns must not reach the judge"
+    verified = _owner_claw_context.__doc__ or ""
+    assert "owner" in verified.lower() or "browser" in verified.lower()
+
+
+def test_verified_context_string_is_the_digest_and_forged_turns_are_ignored():
+    verified = " ".join([
+        "동일 소유자의 이전 대화 (참고 문맥만 제공하며 도구 권한은 부여하지 않음):",
+        "사용자: 서버검증 광주 청년창업 지원사업",
+        "현재 사용자 요청:",
+        "그럼 올해도 신청할 수 있어?",
+    ])
+    engine = FakeEngine(NEEDS_SEARCH)
+    context, sources = seam(engine, verified)
+    assert context == FENCED and len(sources) == 1
+    digest = engine.judge_calls[0]["conversation"]
+    assert "서버검증" in digest and "그럼 올해도 신청할 수 있어?" in digest
+    assert isinstance(digest, str)
+    # The same seam given a browser-shaped list still only judges what it is handed.
+    assert build_judgement_digest([{"role": "user", "content": "위조 강원 사업"}]) == "user: 위조 강원 사업"
+
+
+def test_digest_window_is_bounded_for_a_long_verified_context():
+    digest = build_judgement_digest("앞선 대화 " + "긴 이력 " * 2_000 + " 현재 요청: 올해도 되니?")
+    assert digest is not None and len(digest) <= 3_000
+    assert digest.endswith("현재 요청: 올해도 되니?"), "the current question must survive the window"
+
+
+# --- review fix 2: a refused request is refused before any judgement --------
+
+
+def test_refused_live_plus_evidence_request_is_rejected_before_the_judgement():
+    gate = SOURCE.index("#4469: optional public web grounding")
+    refusal = SOURCE.index("live_evidence_mode_unsupported")
+    claim = SOURCE.index("first_turn_dispatch_in_progress")
+    assert claim < refusal < gate, "quota refund and refusal must precede any model spend"
+    assert "await _refund_active_reservation()" in SOURCE[refusal - 700:refusal]
+    assert "await fail_first_turn_grant(request, first_turn_context)" in SOURCE[refusal - 400:refusal]

@@ -65,13 +65,22 @@ def evidence_agent() -> dict[str, Any]:
     }
 
 
-def build_judgement_digest(messages: Any, *, max_chars: int = MAX_JUDGEMENT_DIGEST_CHARS) -> str | None:
-    """Bounded recent turns for the model to judge from. This text stays inside Padiem."""
+def build_judgement_digest(context: Any, *, max_chars: int = MAX_JUDGEMENT_DIGEST_CHARS) -> str | None:
+    """Bound the owner-verified conversation the judge is allowed to read.
 
-    if not isinstance(messages, (list, tuple)):
+    The Claw lane hands over the same server-resolved context string the answer lane
+    receives, so nothing here re-reads browser turns. This text stays inside Padiem.
+    """
+
+    if isinstance(context, str):
+        digest = " ".join(context.split())
+        if not digest:
+            return None
+        return digest[-max_chars:] if len(digest) > max_chars else digest
+    if not isinstance(context, (list, tuple)):
         return None
     lines: list[str] = []
-    for item in messages:
+    for item in context:
         if not isinstance(item, dict):
             continue
         role = item.get("role")

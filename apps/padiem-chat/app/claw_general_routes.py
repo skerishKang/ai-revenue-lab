@@ -719,21 +719,25 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         request.headers.get(CLAW_EVIDENCE_REQUEST_HEADER, "").strip() == CLAW_EVIDENCE_MARKER
     )
 
-    # #4469: optional public web grounding, admitted by the server only and off
-    # unless both server authorities exist. Everything downstream is unchanged
-    # when it returns nothing.
+    # #3936/#3655: a request this route is going to refuse must be refused before any
+    # search judgement, so a rejected call can never spend a model inference or reach a
+    # provider. The quota refund and first-turn release stay exactly as they were.
+    if live_requested and evidence_requested:
+        await _refund_active_reservation()
+        # Proven pre-dispatch denial after a successful claim: the claimed grant must
+        # fail here, or it stays active (in-progress) until expiry and blocks the key.
+        await fail_first_turn_grant(request, first_turn_context)
+        return _error(422, "live_evidence_mode_unsupported", "실시간 상태와 감사 증거 요청은 동시에 사용할 수 없습니다.")
+
+    # #4469: optional public web grounding, judged by the model and off unless the
+    # server says otherwise. It reads the SAME owner-verified history the answer lane
+    # uses, never browser-supplied prior turns, so forged history cannot move the
+    # search target. Everything downstream is unchanged when it returns nothing.
     grounding_context, search_sources = await _claw_public_search_grounding(
-        request, adapter, data.get("messages")
+        request, adapter, model_user_text
     )
 
     if live_requested:
-        if evidence_requested:
-            await _refund_active_reservation()
-            # Proven pre-dispatch denial after a successful claim: the
-            # claimed grant must fail here, or it stays active (in-progress)
-            # until expiry and blocks the key. Mirrors NOT_DISPATCHED below.
-            await fail_first_turn_grant(request, first_turn_context)
-            return _error(422, "live_evidence_mode_unsupported", "실시간 상태와 감사 증거 요청은 동시에 사용할 수 없습니다.")
         from .claw_live_events import live_claw_sse
         live_args = {"product_tier": product_tier, "subject_id": subject_id}
         if selected_model_id is not None:
