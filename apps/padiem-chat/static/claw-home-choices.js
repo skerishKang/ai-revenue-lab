@@ -34,6 +34,11 @@
     let pcChannel = null;
     let pcIntent = null;
     let pcApprovalPending = false;
+    // Constant-only diagnostic stages. Never log IDs, refs, payloads, cookies.
+    function pcStage(code) {
+      console.info("PADIEM_4139_STAGE=" + code);
+    }
+    pcStage("receiver_js_loaded");
 
     function signedIn() {
       return document.querySelector(".sidebar-account")?.dataset.accountState === "signed_in";
@@ -74,6 +79,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ request_ref: requestRef }),
         });
+        pcStage("approve_http_" + response.status);
         if (!response.ok) throw new Error("owner_approval_refused");
         const raw = await response.text();
         if (raw.length > 8192) throw new Error("owner_receipt_too_large");
@@ -83,6 +89,7 @@
             reply.dispatch_authorized !== false) {
           throw new Error("owner_receipt_invalid");
         }
+        pcStage("approve_receipt_valid");
         // Pending is NOT registered/connected. The original server-owned GET
         // remains the only source of actual PC status.
         pcNote("PC 등록 요청을 전달했습니다. 실제 연결 상태를 확인합니다.",
@@ -90,6 +97,7 @@
         const check = document.getElementById("clawComputerDeviceStatusButton");
         if (check && !check.disabled) check.click();
       } catch {
+        pcStage("approve_failed");
         pcNote("PC 연결 요청이 완료되지 않았습니다. 자동 재시도하지 않습니다.",
                "The PC connection request did not complete. It will not retry automatically.");
       } finally {
@@ -99,6 +107,10 @@
 
     function onPcOfferMessage(event) {
       const data = event?.data;
+      if (data?.type === "pc_offer_ready") {
+        pcStage("offer_message_received");
+        if (!pcIntent) pcStage("offer_intent_absent");
+      }
       if (!pcIntent || pcIntent.used || pcApprovalPending ||
           !data || Object.getPrototypeOf(data) !== Object.prototype ||
           Object.keys(data).length !== 2 ||
@@ -110,7 +122,11 @@
       // cannot create additional approval POSTs.
       pcIntent.used = true;
       pcIntent = null;
-      if (!valid) return;
+      if (!valid) {
+        pcStage("offer_context_rejected");
+        return;
+      }
+      pcStage("approve_post_dispatch");
       pcApprovalPending = true;
       void approveReadyPc(data.request_ref);
     }
@@ -142,9 +158,12 @@
           pcChannel = new window.BroadcastChannel(pcChannelName);
           // Register the receiver BEFORE the native connector launch.
           pcChannel.onmessage = onPcOfferMessage;
+          pcStage("receiver_ready");
         }
         pcIntent = { at: Date.now(), used: false };
+        pcStage("click_intent_created");
         window.location.assign("padiem-connector://start");
+        pcStage("native_uri_issued");
       } catch {
         pcIntent = null;
         pcNote("커넥터 실행을 요청하지 못했습니다. 설치 상태를 확인하세요.",
@@ -154,6 +173,7 @@
     }
 
     window.addEventListener("pagehide", () => {
+      if (pcIntent) pcStage("pagehide_intent_cleared");
       pcIntent = null;
       if (pcChannel) pcChannel.close();
       pcChannel = null;

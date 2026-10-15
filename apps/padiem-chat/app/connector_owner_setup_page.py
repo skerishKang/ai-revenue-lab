@@ -81,10 +81,12 @@ _SCRIPT = r"""
       if (typeof BroadcastChannel !== "function") throw new Error("no local receiver");
       const channel = new BroadcastChannel("padiem-claw-pc-connect-v1");
       channel.postMessage({ type: "pc_offer_ready", request_ref: linkRef });
+      console.info("PADIEM_4139_STAGE=setup_handoff_posted");
       channel.close();
       pendingState.textContent = "기존 Claw 연결 요청 화면에서 상태를 확인해 주세요.";
     } catch {
       // Never grant or POST from this page; no owner-click context here.
+      console.info("PADIEM_4139_STAGE=setup_handoff_unavailable");
       pendingState.textContent = "Claw 연결 요청 화면에서 연결을 다시 시작해 주세요.";
     }
   }
