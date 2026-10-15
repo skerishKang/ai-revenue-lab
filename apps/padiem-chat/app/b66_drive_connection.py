@@ -33,9 +33,6 @@ _B66_DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.file"
 _RECONNECT_REASONS = frozenset(
     {"revoked", "expired", "scope_changed", "invalid_grant", "manual_reconnect", "cp_reviewed_scope_mismatch"}
 )
-_SPOOFED_AUTHORITY_KEYS = frozenset(
-    {"access_token", "refresh_token", "token", "owner_id", "user_id"}
-)
 _SECRET_FIELD_SUBSTRINGS = ("token", "secret", "bearer", "credential", "private")
 
 # Step 2-A deliberately provides a memory seam only. A verified persistent,
@@ -482,25 +479,17 @@ def connection_record_from_trusted_result(result: dict[str, Any]) -> B66DriveCon
     """
     if not isinstance(result, Mapping):
         raise ValueError("invalid_trusted_result")
-    allowed_result_keys = {"owner_b66_user_id", "drive_account", "google_grant_reference", "connected_at"}
-    if not isinstance(result, Mapping) or set(result) - allowed_result_keys:
-        raise ValueError("unknown_trusted_result_field")
-    for forbidden in _SPOOFED_AUTHORITY_KEYS:
-        if forbidden in result:
-            raise ValueError("spoofed_trusted_result")
+    allowed_result = {"owner_b66_user_id", "drive_account", "google_grant_reference", "connected_at"}
+    if set(result) - allowed_result:
+        raise ValueError("spoofed_trusted_result")
     owner = trusted_owner(result.get("owner_b66_user_id"))
     destination = result.get("drive_account")
     if not isinstance(destination, Mapping):
         raise ValueError("invalid_drive_account")
-    for forbidden in _SPOOFED_AUTHORITY_KEYS:
-        if forbidden in destination:
-            raise ValueError("spoofed_trusted_result")
-    allowed_destination_keys = {"google_sub", "email"}
-    if set(destination) - allowed_destination_keys:
-        raise ValueError("unknown_drive_account_field")
-    for forbidden in _SPOOFED_AUTHORITY_KEYS:
-        if forbidden in destination:
-            raise ValueError("spoofed_trusted_result")
+    # A verified Google sub is a necessary destination identity field, NOT
+    # a browser authority. Reject all unexpected token-like nested fields.
+    if set(destination) - {"google_sub", "email"}:
+        raise ValueError("spoofed_trusted_result")
     account = B66DriveConnectedAccount(
         google_sub=_required_str(destination.get("google_sub")),
         email=_optional_str(destination.get("email")),
