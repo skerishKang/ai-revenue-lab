@@ -799,6 +799,60 @@
     return pending;
   }
 
+  /* #4803: B66's existing #4412 server-owned quote dialogue, not a new model engine.
+     The server owns intent/fact transitions; only its approved draft projection
+     may be passed to the existing browser QuoteCore and certified PDF path. */
+  async function quoteConversation(action, options) {
+    if (!state.authenticated) return { ok: false, code: "unauthorized" };
+    const opts = options || {};
+    try {
+      const select = byId("padiemQuoteModelSelect");
+      const selectedTier = select && select.value;
+      const modelId = state.quoteModelByTier[selectedTier];
+      if (!modelId || !state.quoteModels.includes(selectedTier)) {
+        return { ok: false, code: "model_selection_required" };
+      }
+      if (action === "state") {
+        const result = await api("/b66/ai/conversation");
+        if (!result.response.ok || !result.data || result.data.ok !== true) {
+          return { ok: false, code: result.data && result.data.error && result.data.error.code || "conversation_state_unavailable" };
+        }
+        return { ok: true, state: result.data.state };
+      }
+      if (!Number.isSafeInteger(opts.revision) || opts.revision < 0) {
+        return { ok: false, code: "invalid_revision" };
+      }
+      const payload = {
+        model_id: modelId, tier: selectedTier,
+        action: action === "message" ? "message" : action,
+        revision: opts.revision
+      };
+      if (action === "message") payload.message = String(opts.message || "").trim();
+      if (action === "choose_method") payload.method = opts.method;
+      const reasoningLevel = selectedReasoningLevel(selectedTier);
+      if (reasoningLevel) payload.reasoning_level = reasoningLevel;
+      const response = await api("/b66/ai/conversation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = response.data || {};
+      if (!response.response.ok || data.ok !== true) {
+        return {
+          ok: false,
+          code: data.error && data.error.code || "conversation_unavailable",
+          revision: Number.isSafeInteger(data.revision) ? data.revision : null
+        };
+      }
+      if (!Number.isSafeInteger(data.revision) || !data.quote || typeof data.answer !== "string") {
+        return { ok: false, code: "invalid_conversation_response" };
+      }
+      return { ok: true, ...data };
+    } catch (_) {
+      return { ok: false, code: "conversation_unavailable" };
+    }
+  }
+
   /* #4466: real general conversation through B66's authenticated B14 route.
      This does not require an assigned CGI Skill and cannot mutate QuoteCore. */
   async function chatMessages(messages, options) {
@@ -1204,6 +1258,7 @@
     readiness: runtimeReadiness,
     interpret: interpretRequest,
     chat: chatMessages,
+    quoteConversation,
     /* #4657: the owner's stored B66 AI dialogue. Owner and product scope are
        derived server-side; the browser only sends a bounded query or an opaque id. */
     listDialogues,
