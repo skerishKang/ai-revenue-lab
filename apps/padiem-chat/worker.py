@@ -213,10 +213,7 @@ class CloudflareB66PdfRendererClient:
         request = Request(
             "https://padiem-b66-pdf-renderer/internal/v1/render",
             method="POST",
-            headers={
-                "Content-Type": "application/json",
-                **_correlation_header(),
-            },
+            headers={"Content-Type": "application/json"},
             body=json.dumps({
                 "saved_skill_id": saved_skill_id,
                 "skill_fingerprint": skill_fingerprint,
@@ -232,12 +229,6 @@ class CloudflareB66PdfRendererClient:
         except (ServiceBindingResponseTooLarge, ServiceBindingResponseError) as exc:
             raise RuntimeError("B66 PDF renderer response could not be read") from exc
         return status, body, str(content_type)
-
-
-def _correlation_header() -> dict[str, str]:
-    from app.request_telemetry import current_request_id, is_safe_request_id
-    value = current_request_id()
-    return {"X-Request-Id": value} if is_safe_request_id(value) else {}
 
 
 class CloudflareB14ServiceTransport:
@@ -275,12 +266,20 @@ class CloudflareB14ServiceTransport:
         return status, body
 
     async def post_json(self, url: str, payload: dict[str, Any]) -> tuple[int, bytes]:
+        trace_headers = {}
+        try:
+            from app.request_telemetry import current_request_id, is_safe_request_id
+            value = current_request_id()
+            if is_safe_request_id(value):
+                trace_headers["X-Request-Id"] = value
+        except ImportError:
+            pass
         request = Request(
             url,
             method="POST",
             headers={
                 "Content-Type": "application/json",
-                **_correlation_header(),
+                **trace_headers,
             },
             body=json.dumps(payload, ensure_ascii=False),
         )
@@ -399,10 +398,18 @@ class CloudflareB14StreamingServiceTransport(httpx.AsyncBaseTransport):
             ) from exc
 
         try:
+            trace_headers = {}
+            try:
+                from app.request_telemetry import current_request_id, is_safe_request_id
+                value = current_request_id()
+                if is_safe_request_id(value):
+                    trace_headers["X-Request-Id"] = value
+            except ImportError:
+                pass
             service_request = Request(
                 str(request.url),
                 method="POST",
-                headers={"Content-Type": "application/json"},
+                headers={"Content-Type": "application/json", **trace_headers},
                 body=body_text,
             )
         except Exception as exc:

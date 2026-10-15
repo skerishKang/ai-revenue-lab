@@ -1233,40 +1233,47 @@ class Default(legacy_worker.Default):
     async def fetch(self, request: Any) -> Any:
         from app.stack_telemetry import start_trace, finish_trace
         path = urlparse(str(request.url)).path
-        # Internal route paths are not exported verbatim; IDs may be embedded.
-        if not path.startswith("/internal/"):
-            return await self._fetch_untraced(request)
-        state, token = start_trace(request, "padiem-ai-engine", "/internal/*")
+        observe = path.startswith("/internal/")
+        if observe:
+            state, token = start_trace(request, "padiem-ai-engine", "/internal/*")
         response = None
         try:
-            response = await self._fetch_untraced(request)
+            path = urlparse(str(request.url)).path
+            if path == AUTHORITY_DIAGNOSTIC_PATH:
+                response = self._fetch_authority_diagnostic(request)
+                return response
+            if path == CALENDAR_CREDENTIAL_PRESENCE_PATH:
+                response = await self._fetch_calendar_credential_presence(request)
+                return response
+            if path == CALENDAR_READ_ACTIVATION_PATH:
+                response = await self._fetch_calendar_read_activation(request)
+                return response
+            if path == CALENDAR_READ_STATE_PATH:
+                response = await self._fetch_calendar_read_state(request)
+                return response
+            if path == DOCUMENT_CONTEXT_PATH:
+                response = await self._fetch_document_context(request, path)
+                return response
+            if path == MULTIMODAL_EXECUTE_PATH:
+                response = await self._fetch_multimodal(request, path)
+                return response
+            if path == MULTIMODAL_STREAM_PATH:
+                response = await self._fetch_multimodal_stream(request, path)
+                return response
+            if path == ATTACHMENT_ADMISSION_PATH:
+                response = await self._fetch_attachment_admission(request, path)
+                return response
+            if path == DOCUMENT_ADMISSION_PATH:
+                response = await self._fetch_document_admission(request, path)
+                return response
+            if path in {TOOL_EXECUTE_PATH, TOOL_RESUME_PATH, TOOL_CANCEL_PATH}:
+                response = await self._fetch_tool(request, path)
+                return response
+            response = await super().fetch(request)
             return response
         finally:
-            finish_trace(state, token, response, getattr(self, "ctx", None), self.env)
-
-    async def _fetch_untraced(self, request: Any) -> Any:
-        path = urlparse(str(request.url)).path
-        if path == AUTHORITY_DIAGNOSTIC_PATH:
-            return self._fetch_authority_diagnostic(request)
-        if path == CALENDAR_CREDENTIAL_PRESENCE_PATH:
-            return await self._fetch_calendar_credential_presence(request)
-        if path == CALENDAR_READ_ACTIVATION_PATH:
-            return await self._fetch_calendar_read_activation(request)
-        if path == CALENDAR_READ_STATE_PATH:
-            return await self._fetch_calendar_read_state(request)
-        if path == DOCUMENT_CONTEXT_PATH:
-            return await self._fetch_document_context(request, path)
-        if path == MULTIMODAL_EXECUTE_PATH:
-            return await self._fetch_multimodal(request, path)
-        if path == MULTIMODAL_STREAM_PATH:
-            return await self._fetch_multimodal_stream(request, path)
-        if path == ATTACHMENT_ADMISSION_PATH:
-            return await self._fetch_attachment_admission(request, path)
-        if path == DOCUMENT_ADMISSION_PATH:
-            return await self._fetch_document_admission(request, path)
-        if path in {TOOL_EXECUTE_PATH, TOOL_RESUME_PATH, TOOL_CANCEL_PATH}:
-            return await self._fetch_tool(request, path)
-        return await super().fetch(request)
+            if observe:
+                finish_trace(state, token, response, getattr(self, "ctx", None), self.env)
 
     def _fetch_authority_diagnostic(self, request: Any) -> Any:
         """Content-blind caller-authority diagnostic (#2439), token-gated.
