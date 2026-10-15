@@ -52,6 +52,8 @@ Canonical operating documents:
 
 For any model/provider question, start at [the shared model documentation index](docs/models/README.md); do not rely on a product README's copied model list as live registry/route evidence. The index points separately to OWNER policy, B14 source, product route declarations and Production verification. It does not grant model-change authority.
 
+**Public disclosure minimization:** New public Issues, PR narratives and operational documentation should use generic execution contracts instead of listing internal provider choices, model-to-tier assignments, or credential binding inventories. Keep the detailed selection, internal binding-slot map and disclosure decisions in authorized COM1 private Governance. Preserve model/provider identifiers in executable source or tests only where required for correct protocol dispatch and independent safety checks; never publish credential values. Existing public history is not erased by a new notice. Do not misrepresent required external attribution or contractual disclosures.
+
 Latest owner B14 model-selection reference: `docs/operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md`. An older B14 source/catalog entry proves only that it exists in that source, not that the OWNER approves it. Distinguish selection from registration and Production availability; the ledger is NOT a second approval policy.
 
 ## Owner-facing communication: direct conclusion and next action

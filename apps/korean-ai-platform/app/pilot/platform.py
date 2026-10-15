@@ -149,15 +149,12 @@ def _request_headers(
         if not secret:
             if spec.provider_id == "kilo":
                 return headers
-            raise PilotNotConfigured(
-                f"Provider '{spec.provider_id}' secret is not configured "
-                f"(binding {spec.credential_binding_name})."
-            )
+            # Client-facing errors must not disclose provider identities or
+            # internal credential binding names. The error code stays stable.
+            raise PilotNotConfigured("Requested model credential is not configured.")
         headers["Authorization"] = f"Bearer {secret}"
         return headers
-    raise PilotNotConfigured(
-        f"Provider '{spec.provider_id}' credential source is not supported by the platform adapter."
-    )
+    raise PilotNotConfigured("Requested model credential configuration is unsupported.")
 
 
 def _tokenharbor_safe_error_family(
