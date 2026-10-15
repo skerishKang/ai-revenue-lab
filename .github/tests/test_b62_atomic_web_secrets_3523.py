@@ -200,7 +200,7 @@ def test_grafana_exact_secret_store_opt_in_builder_and_both_served_guards(tmp_pa
     with pytest.raises(state_guard.BindingStateError):
         state_guard.assert_exact_grafana_telemetry_added_only(
             envelope(base), envelope(base + [approved, {"type":"secret_text","name":"EXTRA"}]))
-    corrupted = builder.parse_live_bindings(envelope(base + [{**approved, "store_id": "bad"}]))
+    corrupted = builder.parse_live_bindings(envelope(base + [{**approved, "store_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}]))
     with pytest.raises(builder.ProductionConfigError):
         builder.build_production_config(
             corrupted, conf, "https://chat.padiem.net", attach_grafana_telemetry=True)
