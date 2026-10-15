@@ -60,6 +60,7 @@ from .claw_search_decision import (
 )
 
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
+from .drive_general_grounding import DriveGroundingError, drive_general_grounding
 from .claw_first_turn_authority import (
     B54VerifiedCodingContextV1,
     FirstTurnAuthorityError,
@@ -625,6 +626,13 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                 return _error(403, "workspace_scope_unavailable",
                               "대화 작업 공간을 확인할 수 없습니다.")
 
+    # Use the signed owner and Control Plane workspace for the connected
+    # Drive. Never let browser-provided historical turns choose file access.
+    try:
+        drive_context, drive_sources = await drive_general_grounding(request, user_text)
+    except DriveGroundingError as exc:
+        return _error(exc.status_code, exc.code, exc.message)
+
     # #3790: in the production Worker Claw uses the central model
     # ready/owner-allowed metadata resolver. Reject a forged advanced model ID
     # before quota/P01. Test-only deployments without this optional view still
@@ -745,9 +753,13 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # server says otherwise. It reads the SAME owner-verified history the answer lane
     # uses, never browser-supplied prior turns, so forged history cannot move the
     # search target. Everything downstream is unchanged when it returns nothing.
-    grounding_context, search_sources = await _claw_public_search_grounding(
-        request, adapter, model_user_text
-    )
+    # Private Drive data never enters the public web search judgement/query.
+    if drive_context is None:
+        grounding_context, search_sources = await _claw_public_search_grounding(
+            request, adapter, model_user_text
+        )
+    else:
+        grounding_context, search_sources = drive_context, drive_sources
 
     if live_requested:
         from .claw_live_events import live_claw_sse

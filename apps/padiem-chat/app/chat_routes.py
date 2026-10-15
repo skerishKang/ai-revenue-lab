@@ -9,6 +9,7 @@ from starlette.responses import JSONResponse, StreamingResponse
 
 from .attachments import ImageAttachment
 from .auth_routes import auth_ready, current_user_id
+from .drive_general_grounding import DriveGroundingError, drive_general_grounding
 from .auto_grounding import AutoGroundingService
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .b14_client import B14Client, ChatRuntimeError
@@ -278,6 +279,14 @@ async def api_chat_stream(request: Request):
 
     reference_context = combine_reference_context(project_context, project_files_context, None)
 
+    latest_user_text = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
+    try:
+        drive_context, drive_sources = await drive_general_grounding(request, latest_user_text)
+    except DriveGroundingError as exc:
+        return JSONResponse({"error": {"code": exc.code, "message": exc.message}}, status_code=exc.status_code)
+    if drive_context:
+        reference_context = (reference_context + "\n\n" if reference_context else "") + drive_context
+
     if request.app.state.usage_gate_enforced:
         usage_gate: UsageGate = request.app.state.usage_gate
         usage_decision = await usage_gate.authorize(
@@ -289,14 +298,14 @@ async def api_chat_stream(request: Request):
 
     auto_grounding: AutoGroundingService = request.app.state.auto_grounding
     try:
-        auto_plan = await auto_grounding.prepare(
+        auto_plan = None if drive_context else await auto_grounding.prepare(
             messages,
             skill=skill,
             additional_system_context=reference_context,
         )
     except GroundingError as exc:
         return JSONResponse({"error": {"code": exc.code, "message": exc.user_message}}, status_code=exc.status_code)
-    if auto_plan.prepared is not None:
+    if auto_plan is not None and auto_plan.prepared is not None:
         reference_context = auto_plan.prepared.context
 
     client: B14Client = request.app.state.b14_client
@@ -348,10 +357,17 @@ async def api_chat_stream(request: Request):
                     yield _public_sse("delta", {"delta": event.delta_content})
                 if event.done:
                     done_payload: dict[str, Any] = {"done": True}
-                    if auto_plan.prepared is not None:
+                    if auto_plan is not None and auto_plan.prepared is not None:
                         done_payload["answer_status"] = "answered_with_evidence"
                         done_payload["evidence"] = _public_evidence(auto_plan.prepared.evidence)
                         done_payload["tool"] = {"id": "web_search", "title": "웹 검색"}
+                    if drive_sources:
+                        done_payload["answer_status"] = "answered_with_evidence"
+                        done_payload["evidence"] = [
+                            {"id": f"drive-{i}", "title": src["title"], "url": src["url"],
+                             "retrieved_at": src["retrieved_at"], "source_type": "google_drive"}
+                            for i, src in enumerate(drive_sources, 1)
+                        ]
                     if uid is not None and store is not None and latest_user:
                         answer = "".join(answer_parts)
                         try:
@@ -535,6 +551,14 @@ async def api_chat(request: Request) -> JSONResponse:
     document_context = build_document_context(document_attachment) if document_attachment is not None else None
     reference_context = combine_reference_context(project_context, project_files_context, document_context)
 
+    latest_user_text = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
+    try:
+        drive_context, drive_sources = await drive_general_grounding(request, latest_user_text)
+    except DriveGroundingError as exc:
+        return JSONResponse({"error": {"code": exc.code, "message": exc.message}}, status_code=exc.status_code)
+    if drive_context:
+        reference_context = (reference_context + "\n\n" if reference_context else "") + drive_context
+
     if request.app.state.usage_gate_enforced:
         usage_gate: UsageGate = request.app.state.usage_gate
         usage_decision = await usage_gate.authorize(
@@ -548,7 +572,7 @@ async def api_chat(request: Request) -> JSONResponse:
         with request_tier_context(raw.get("tier", "free")):
             if tool_request is None:
                 auto_grounding: AutoGroundingService = request.app.state.auto_grounding
-                auto_decision = None if image_attachments else auto_grounding.decide(messages, skill=skill)
+                auto_decision = None if image_attachments or drive_context else auto_grounding.decide(messages, skill=skill)
                 if auto_decision is not None and auto_decision.requires_search:
                     grounded: GroundedChatService = request.app.state.grounded_chat
                     result = await grounded.complete(
@@ -579,6 +603,12 @@ async def api_chat(request: Request) -> JSONResponse:
     except (ChatRuntimeError, GroundingError, WebToolError) as exc:
         return JSONResponse({"error": {"code": exc.code, "message": exc.user_message}}, status_code=exc.status_code)
 
+    if drive_sources:
+        result["evidence"] = [
+            {"id": f"drive-{i}", "title": src["title"], "url": src["url"],
+             "retrieved_at": src["retrieved_at"], "source_type": "google_drive"}
+            for i, src in enumerate(drive_sources, 1)
+        ]
     if document_attachment is not None:
         result["attachments"] = [document_attachment.public_dict()]
     if project_files_used:

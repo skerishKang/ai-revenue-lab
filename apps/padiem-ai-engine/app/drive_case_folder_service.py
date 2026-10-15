@@ -28,6 +28,7 @@ from typing import Any, Protocol
 
 from padiem_ai_core.drive_capability import (
     DRIVE_GET_FILE_METADATA_TOOL_ID,
+    DRIVE_READ_FILE_CONTENT_TOOL_ID,
     DRIVE_LIST_RECENT_FILES_TOOL_ID,
     DRIVE_SEARCH_FILES_TOOL_ID,
     DriveContractError,
@@ -51,8 +52,11 @@ STATUS_PATH = "/internal/v1/projects/drive-case-folder/status"
 FOLDERS_PATH = "/internal/v1/projects/drive-case-folder/folders"
 SELECT_PATH = "/internal/v1/projects/drive-case-folder/select"
 CLEAR_PATH = "/internal/v1/projects/drive-case-folder/clear"
+GENERAL_SEARCH_PATH = "/internal/v1/connectors/drive/search"
+GENERAL_READ_PATH = "/internal/v1/connectors/drive/read"
 
 DRIVE_CASE_FOLDER_PATHS = (STATUS_PATH, FOLDERS_PATH, SELECT_PATH, CLEAR_PATH)
+DRIVE_GENERAL_PATHS = (GENERAL_SEARCH_PATH, GENERAL_READ_PATH)
 
 # Closed request schema: operation intent only.
 _STATUS_FIELDS = frozenset({"workspace_ref", "project_id"})
@@ -146,7 +150,7 @@ class DriveCaseFolderEngineService:
         content_type: str | None = None,
         body: bytes = b"",
     ) -> ServiceResponse:
-        if path not in DRIVE_CASE_FOLDER_PATHS:
+        if path not in (*DRIVE_CASE_FOLDER_PATHS, *DRIVE_GENERAL_PATHS):
             return _service_error("not_found", "Internal Engine route not found.", status_code=404)
         if (method or "").upper() != "POST":
             return _service_error("method_not_allowed", "Method not allowed.", status_code=405)
@@ -191,6 +195,71 @@ class DriveCaseFolderEngineService:
             )
 
     async def _dispatch(self, path: str, payload: dict[str, Any]) -> ServiceResponse:
+        # Workspace-wide READ never relies on an arbitrary project/folder
+        # selection, browser-supplied grant, or the legacy global tool slot.
+        if path in (GENERAL_SEARCH_PATH, GENERAL_READ_PATH):
+            field = "query" if path == GENERAL_SEARCH_PATH else "file_id"
+            if set(payload) != {"workspace_ref", field}:
+                raise DriveCaseFolderEngineError("invalid_request", "Invalid Drive request.", status_code=400)
+            workspace_ref = _bounded_text(payload["workspace_ref"], 200)
+            value = _bounded_text(payload[field], 200)
+            if not workspace_ref or not value:
+                raise DriveCaseFolderEngineError("invalid_request", "Invalid Drive request.", status_code=400)
+            if field == "file_id" and not all(c.isascii() and (c.isalnum() or c in "-_") for c in value):
+                raise DriveCaseFolderEngineError("invalid_file_id", "Invalid Drive file selection.", status_code=400)
+            grant = await self._current_grant(workspace_ref=workspace_ref)
+            handlers = self._handlers(grant)
+            operation = DRIVE_SEARCH_FILES_TOOL_ID if field == "query" else DRIVE_READ_FILE_CONTENT_TOOL_ID
+            args = {"query": value} if field == "query" else {"fileId": value}
+            try:
+                envelope = await handlers[operation](args)
+            except (DriveContractError, ToolHandlerError):
+                raise DriveCaseFolderEngineError(
+                    "drive_provider_unavailable", "Google Drive read failed.", status_code=502
+                ) from None
+            if not isinstance(envelope, Mapping) or envelope.get("provider") != "google_drive":
+                raise DriveCaseFolderEngineError(
+                    "drive_provider_contract_failed", "Invalid Drive response.", status_code=502
+                )
+            if field == "query":
+                raw_files = envelope.get("files")
+                if not isinstance(raw_files, list):
+                    raise DriveCaseFolderEngineError(
+                        "drive_provider_contract_failed", "Invalid Drive search results.", status_code=502
+                    )
+                files = []
+                for row in raw_files[:8]:
+                    if not isinstance(row, Mapping) or row.get("trashed") is True or row.get("shortcut_target_id") is not None:
+                        continue
+                    file_id = _bounded_text(row.get("file_id"), 200)
+                    name = _bounded_text(row.get("name"), 512)
+                    mime = _bounded_text(row.get("mime_type"), 255)
+                    if not file_id or not name or not mime:
+                        continue
+                    link = row.get("web_view_link")
+                    link = link if isinstance(link, str) and link.startswith("https://") and len(link) <= 2048 else None
+                    files.append({"file_id": file_id, "name": name, "mime_type": mime, "url": link})
+                return ServiceResponse(status_code=200, body={
+                    "ok": True, "files": files,
+                    "more": bool(envelope.get("more_results_available")),
+                    "contract_version": DRIVE_CASE_FOLDER_SERVICE_VERSION,
+                })
+            projection = envelope.get("projection")
+            content = envelope.get("content")
+            if (not isinstance(projection, Mapping)
+                or not isinstance(content, str)
+                or envelope.get("result_status") not in ("OK", "REVIEW_REQUIRED")):
+                raise DriveCaseFolderEngineError(
+                    "drive_provider_contract_failed", "Invalid Drive file result.", status_code=502
+                )
+            return ServiceResponse(status_code=200, body={
+                "ok": True,
+                "file_id": value,
+                "name": (_bounded_text(projection.get("name"), 512) or "Drive file"),
+                "content": content[:12000],
+                "truncated": bool(envelope.get("content_truncated")) or len(content) > 12000,
+                "contract_version": DRIVE_CASE_FOLDER_SERVICE_VERSION,
+            })
         if path == STATUS_PATH:
             workspace_ref, project_id = self._scope_fields(payload, _STATUS_FIELDS)
             grant = await self._current_grant(workspace_ref=workspace_ref)
