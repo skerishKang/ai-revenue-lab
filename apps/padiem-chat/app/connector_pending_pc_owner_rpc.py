@@ -43,6 +43,13 @@ def _valid_owner(owner_session: Any) -> bool:
         return False
 
 
+def _reply(value: Any) -> dict[str, Any] | None:
+    # JS Cloudflare Service Binding replies may be JsProxy-like; use the
+    # canonical existing broker client's strict conversion.
+    from .control_plane_broker_pairing_client import _dict
+    return _dict(value)
+
+
 class CanonicalBrokerOwnerPendingPcPort:
     """Scoped per-verified-request private Broker DO stub.
 
@@ -79,7 +86,7 @@ class CanonicalBrokerOwnerPendingPcPort:
                 or any(type(v) is not str or _DEVICE.fullmatch(v) is None for v in scope.values())
             ):
                 raise OwnerPcPrivateRpcDenied("pending_pc_identity_scope_invalid")
-            response = await self._broker.reserve_pending_pc_owner_intent({
+            raw_response = await self._broker.reserve_pending_pc_owner_intent({
                 "request_ref": request_ref,
                 "owner_subject_ref": self._owner.subject.subject_id,
                 "account_ref": scope["account_ref"],
@@ -87,6 +94,7 @@ class CanonicalBrokerOwnerPendingPcPort:
             })
         except Exception:
             raise OwnerPcPrivateRpcDenied("pending_pc_reserve_unavailable") from None
+        response = _reply(raw_response)
         if (
             type(response) is not dict
             or set(response) != {
@@ -116,7 +124,7 @@ class CanonicalBrokerOwnerPendingPcPort:
         ):
             raise OwnerPcPrivateRpcDenied("pending_pc_delivery_invalid")
         try:
-            response = await self._broker.deliver_pending_pc_link({
+            raw_response = await self._broker.deliver_pending_pc_link({
                 "request_ref": request_ref,
                 "device_id": device_id,
                 "challenge_id": challenge_id,
@@ -125,6 +133,7 @@ class CanonicalBrokerOwnerPendingPcPort:
         except Exception:
             # One-time Broker slot may have been consumed; do not retry.
             raise OwnerPcPrivateRpcDenied("pending_pc_delivery_unconfirmed") from None
+        response = _reply(raw_response)
         if (
             type(response) is not dict
             or set(response) != {"ok", "sent_once", "registered", "connected"}

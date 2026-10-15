@@ -36,15 +36,35 @@ class SameDo(CanonicalBrokerPendingPcLiveRPC):
             self.env=SimpleNamespace()
 
 
+class JsProxyReply:
+    """Mirrors Pyodide JsProxy: not a Python dict; converts via to_py()."""
+
+    def __init__(self, value):
+        self._value=value
+
+    def to_py(self):
+        return dict(self._value)
+
+
+class ProxyReplyDo(SameDo):
+    """Same DO whose service-binding replies cross the JS boundary proxied."""
+
+    async def reserve_pending_pc_owner_intent(self, payload):
+        return JsProxyReply(await super().reserve_pending_pc_owner_intent(payload))
+
+    async def deliver_pending_pc_link(self, payload):
+        return JsProxyReply(await super().deliver_pending_pc_link(payload))
+
+
 async def mounted_test_stack():
     item,socket,storage=actor()
     wait=await offer(item,socket)
     authority=SameDo(storage)
     authority._bind_verified_pc_wss(request_ref=REF,actor=item)
-    port=CanonicalBrokerOwnerPendingPcPort(
-        signed_owner=session(),canonical_broker_binding=authority,
-    )
     identity=Fixture()
+    port=CanonicalBrokerOwnerPendingPcPort(
+        signed_owner=session(),canonical_broker_binding=authority,identity=identity,
+    )
     service=OneClickOwnerApproval(identity=identity,host=identity,pc_rendezvous=port)
     return authority,item,socket,storage,wait,identity,service
 
@@ -75,6 +95,29 @@ def test_real_do_route_once_no_second_store_and_no_browser_secret():
                 owner_session=session(),request_ref=REF,confirmed=True,
             )
         assert socket.output.empty()
+    asyncio.run(run())
+
+
+def test_jsproxy_like_binding_replies_normalized_before_exact_checks():
+    async def run():
+        item,socket,storage=actor()
+        waiting=await offer(item,socket)
+        authority=ProxyReplyDo(storage)
+        authority._bind_verified_pc_wss(request_ref=REF,actor=item)
+        identity=Fixture()
+        port=CanonicalBrokerOwnerPendingPcPort(
+            signed_owner=session(),canonical_broker_binding=authority,identity=identity,
+        )
+        service=OneClickOwnerApproval(identity=identity,host=identity,pc_rendezvous=port)
+        result=await service.approve(
+            owner_session=session(),request_ref=REF,confirmed=True,
+        )
+        assert result["state"]=="awaiting_device_confirmation"
+        delivery=json.loads(await socket.output.get())
+        assert delivery["type"]=="pc_offer_approved"
+        assert delivery["device_id"]==DEVICE
+        state=await waiting
+        assert state["state"]=="awaiting_canonical_dpapi_ack"
     asyncio.run(run())
 
 
