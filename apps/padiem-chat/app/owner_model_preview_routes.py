@@ -12,6 +12,8 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from padiem_control_plane.owner_model_name_parts import google_owner_name_parts
+from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID
+from .member_grade_access import selected_grade_denial
 
 
 async def owner_model_name_preview(request: Request) -> JSONResponse:
@@ -50,6 +52,13 @@ async def claw_verified_model_choices(request: Request) -> JSONResponse:
             {"ok": False, "error": {"code": "authentication_required"}},
             status_code=401, headers=headers,
         )
+    # Query-string tier is a request, not authority: member grade is re-read
+    # from the signed owner account and checked before listing any model.
+    requested_tier = request.query_params.get("tier", "free").strip().lower()
+    denial = await selected_grade_denial(request, current_user_id(request), requested_tier)
+    if denial is not None:
+        return denial
+    free_ids = {FREE_PRIMARY_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID}
     authority = getattr(request.app.state, "b14_model_choice_resolver", None)
     list_fn = getattr(authority, "list_selectable_models", None)
     if not callable(list_fn):
@@ -73,10 +82,12 @@ async def claw_verified_model_choices(request: Request) -> JSONResponse:
                     or not isinstance(name, str) or not (0 < len(name) <= 100)):
                 raise ValueError("invalid B14 model identity")
             seen.add(model_id)
+            if requested_tier == "free" and model_id not in free_ids:
+                continue
             rows.append({
                 "model_id": model_id,
                 "individual_model_name": name,
-                "product_name_prefix": "파디엠플러스",
+                "product_name_prefix": "파디엠프리" if requested_tier == "free" else "파디엠플러스",
                 "customer_selectable": True,
             })
     except Exception:

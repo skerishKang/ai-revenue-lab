@@ -40,6 +40,8 @@ from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
     ProductTierRoutesError,
     active_route_for,
+    FREE_PRIMARY_B14_MODEL_ID,
+    FREE_FALLBACK_B14_MODEL_ID,
 )
 
 from kagent.p01_adapter import (
@@ -550,8 +552,11 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             selected_model_id = validate_explicit_b14_model_id(raw_model)
         except P01AdapterError:
             return _error(422, "invalid_selected_model", "등록된 B14 모델 ID 하나를 선택해 주세요.")
-        if product_tier is not ProductTierLabel.PLUS:
-            return _error(422, "explicit_model_tier_unsupported", "모델 직접 선택은 현재 Plus에서만 지원됩니다.")
+        if product_tier is ProductTierLabel.FREE:
+            if selected_model_id not in (FREE_PRIMARY_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID):
+                return _error(403, "model_not_available_for_tier", "Free 등급에서 선택할 수 없는 모델입니다.")
+        elif product_tier is not ProductTierLabel.PLUS:
+            return _error(422, "explicit_model_tier_unsupported", "이 등급의 모델 직접 선택은 아직 지원되지 않습니다.")
     try:
         tier_route = active_route_for(product_tier)
     except ProductTierRoutesError:
