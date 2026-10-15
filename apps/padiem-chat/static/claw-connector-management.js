@@ -5,7 +5,9 @@
   "use strict";
   const dialog = document.getElementById("connectorsDialog");
   const github = document.getElementById("connectorGithubCard");
-  const drive = dialog?.querySelector('[data-connector-id="connector:google:drive@1"]');
+  // The shared cards are moved from the legacy dialog into the standalone Connectors page.
+  const standaloneView = document.getElementById("connectorsView");
+  const drive = document.querySelector('[data-connector-id="connector:google:drive@1"]');
   const githubState = document.getElementById("connectorGithubState");
   const githubPrimary = document.getElementById("connectorGithubPrimary");
   const githubRemove = document.getElementById("connectorGithubRemove");
@@ -25,6 +27,8 @@
   const write = (element, value) => {if (element) element.textContent = value;};
   let readGeneration = 0;
   const updateClaw = () => window.dispatchEvent(new Event("focus"));
+  const connectorSurfaceOpen = () => Boolean(dialog.open ||
+    (standaloneView && !standaloneView.hidden && standaloneView.getClientRects().length > 0));
 
   function updateGithub() {
     const {github:connection,linked,pending} = state;
@@ -63,17 +67,17 @@
   }
 
   async function readGithub() {
-    if (!dialog.open) return;
+    if (!connectorSurfaceOpen()) return;
     const generation = ++readGeneration;
     try {
       const data = await json("/api/connectors/github/status");
-      if (generation !== readGeneration || !dialog.open) return;
+      if (generation !== readGeneration || !connectorSurfaceOpen()) return;
       state.github = ["on","off"].includes(data.state) ? data.state : "unknown";
       state.linked = data.linked === true;
       write(githubFeedback, "");
       show(githubFeedback, false);
     } catch (_) {
-      if (generation !== readGeneration || !dialog.open) return;
+      if (generation !== readGeneration || !connectorSurfaceOpen()) return;
       state.github = "unknown";
       state.linked = false;
       // A missing backend/credential is NOT proof of OFF or an OAuth permission.
@@ -179,6 +183,12 @@
   });
   document.getElementById("connectorsNavButton")?.addEventListener("click",
     ()=>{queueMicrotask(()=>{updateDrive();void readGithub();});});
+  const shell = document.querySelector(".app-shell");
+  if (shell) new MutationObserver(() => {
+    if (connectorSurfaceOpen()) {updateDrive();void readGithub();}
+    else ++readGeneration;
+  }).observe(shell,{attributes:true,attributeFilter:["data-state"]});
   updateDrive();
   updateGithub();
+  if (connectorSurfaceOpen()) void readGithub();
 })();
