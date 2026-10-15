@@ -14,7 +14,8 @@ drives:
     → assistant result
 
 It is deliberately NOT the manual-intake/quote/order flow and NOT the standalone
-B62 ``/api/chat`` composer. There is NO direct-B14 fallback: an unbound P01 lane
+B62 ``/api/chat`` composer. #4139 intercepts explicit owner PC TXT READ intents
+before provider dispatch and uses the existing Broker command/result pipeline. There is NO direct-B14 fallback: an unbound P01 lane
 fails closed (503) instead of silently degrading into the standalone B62
 ``/api/chat/stream`` route, and the canonical USER subject is resolved
 SERVER-SIDE from the signed Padiem session before the usage gate and before any
@@ -493,6 +494,92 @@ async def _claw_public_search_grounding(
     return context, sources
 
 
+def _requested_local_txt_path(user_text: str) -> tuple[bool, str | None]:
+    """Narrow first-party PC TXT read intent: no model or browser-made grant."""
+    compact = "".join(user_text.lower().split())
+    if not any(marker in compact for marker in (
+        "내pc", "내컴퓨터", "로컬pc", "로컬컴퓨터", "mypc", "mycomputer",
+    )):
+        return False, None
+    if not re.search("읽어|보여|열어|확인해|read|open|show", user_text, re.I):
+        return False, None
+    if ".txt" not in user_text.lower():
+        return False, None
+    matches = []
+    for word in user_text.split():
+        token = word.strip(".,!?()[]'\\\"“”‘’")
+        for particle in ("에서", "를", "을", "은", "도", "이"):
+            if token.lower().endswith(".txt" + particle):
+                token = token[:-len(particle)]
+                break
+        if token.lower().endswith(".txt"):
+            matches.append(token)
+    return True, matches[0] if len(matches) == 1 else None
+
+
+async def _dispatch_user_txt_request(
+    request: Request, *, user_text: str, path_relative: str,
+    data: dict[str, Any],
+) -> JSONResponse | Response:
+    """Claw's existing composer → existing Broker enqueue, with owned run."""
+    from .claw_memory_routes import _resolve_memory_workspace
+    from .connector_txt_read_routes import (
+        choose_verified_txt_device, dispatch_verified_txt_read,
+    )
+
+    conversation_id, denial = await _resolve_intake_session_reference(request, data)
+    if denial is not None:
+        return denial
+    uid = current_user_id(request) if auth_ready(request) else None
+    if not isinstance(uid, str) or not uid:
+        return _error(401, "canonical_session_required", "로그인이 필요합니다.")
+    selected = data.get("device_id")
+    if selected is not None and (not isinstance(selected, str) or not selected):
+        return _error(422, "txt_read_device_invalid", "선택한 PC를 확인할 수 없습니다.")
+    device_id, error = await choose_verified_txt_device(
+        request, selected_device_id=selected,
+    )
+    if error is not None:
+        return error
+    try:
+        workspace = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        workspace = None
+    if not isinstance(workspace, str) or not workspace:
+        return _error(503, "txt_read_workspace_unavailable", "대화 범위를 확인할 수 없습니다.")
+    history = getattr(request.app.state, "history_store", None)
+    stage = getattr(history, "record_txt_pending_run", None)
+    if not callable(stage):
+        return _error(503, "txt_read_history_unavailable", "대화 저장소를 확인할 수 없습니다.")
+    run = create_claw_run("padiem-chat", user_text, model_only_text=True)
+    try:
+        cid = await stage(
+            user_id=uid, run_id=run.run_id, workspace_id=workspace,
+            user_text=user_text, conversation_id=conversation_id,
+        )
+    except Exception:
+        return _error(503, "txt_read_history_unavailable", "대화 저장에 실패했습니다.")
+    dispatched = await dispatch_verified_txt_read(request, {
+        "device_id": device_id, "root_ref": "root.3140",
+        "path_relative": path_relative, "run_id": run.run_id,
+        "confirmed": True,  # derived from this authenticated user's actual READ text
+    })
+    if dispatched.status_code != 200:
+        mark_failed = getattr(history, "update_claw_run_status", None)
+        if callable(mark_failed):
+            try:
+                await mark_failed(uid, run.run_id, "failed")
+            except Exception:
+                pass
+        return dispatched
+    # Only a wait response is emitted. The *verified* PC body is appended
+    # asynchronously on existing run-history/local-result reconciliation.
+    return _claw_general_sse(
+        "PC의 TXT 파일을 읽는 중입니다. 실제 파일 내용은 작업 완료 후 이 대화에 표시됩니다.",
+        conversation_id=cid,
+    )
+
+
 async def claw_general_execute(request: Request) -> JSONResponse | Response:
     """Run one generic B54 Claw request through the canonical P01 Engine lane (#3539).
 
@@ -533,6 +620,15 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     user_text, text_error = _claw_general_user_text(data)
     if text_error is not None:
         return text_error
+
+    txt_requested, txt_path = _requested_local_txt_path(user_text)
+    if txt_requested:
+        if txt_path is None:
+            return _error(422, "txt_read_path_required",
+                          "내 PC에서 읽을 TXT 파일의 상대 경로를 하나 지정해 주세요.")
+        return await _dispatch_user_txt_request(
+            request, user_text=user_text, path_relative=txt_path, data=data,
+        )
 
     raw_tier = data.get("tier", "free")
     if not isinstance(raw_tier, str):

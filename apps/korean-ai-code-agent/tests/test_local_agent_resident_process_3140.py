@@ -211,7 +211,8 @@ def _handoff(challenge_id, pairing_code):
 class _TextPlanSourceProbe:
     """Deployment-shaped P01 material: the resident only calls this contract."""
 
-    def approved_plan_for_admitted_command(self, *, binding, command, admitted):
+    def approved_plan_for_admitted_command(self, *, binding, command, admitted,
+                                             receipt=None):
         return None
 
 

@@ -1167,6 +1167,14 @@ class Default(WorkerEntrypoint):
                 device_directory_source = build_broker_device_directory_source(self.env)
                 if device_directory_source is not None:
                     _worker_app.state.claw_device_directory_source = device_directory_source
+                # #4139: TXT read request leg on the SAME trusted broker
+                # binding (device resolution + atomic command enqueue). Absent
+                # binding keeps the fail-closed unconfigured source: the route
+                # refuses rather than inventing approval material.
+                from app.connector_txt_read_routes import build_connector_txt_read_source
+                txt_read_source = build_connector_txt_read_source(self.env)
+                if txt_read_source is not None:
+                    _worker_app.state.connector_txt_read_source = txt_read_source
                 # #3436 B2c: compose the canonical device-session authority for
                 # the GET-only Desktop conversation surface from the same
                 # trusted broker binding. When the trusted runtime is absent

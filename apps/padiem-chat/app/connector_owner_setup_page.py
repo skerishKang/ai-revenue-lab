@@ -88,8 +88,7 @@ _SCRIPT = r"""
       pendingApproval.disabled = true;
       try {
         const reply = await post("/api/claw/connector/enrollments/approve-link", {
-          request_ref: linkRef, confirmed: true,
-          confirmation_version: "pc-enrollment-consent-v1",
+          request_ref: linkRef,
         });
         if (reply.state !== "awaiting_device_confirmation" ||
             reply.connected !== false || reply.registered !== false ||

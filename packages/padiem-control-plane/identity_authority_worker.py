@@ -420,6 +420,9 @@ class Default(WorkerEntrypoint):
     async def install_connector_enrollment_schema(self, payload: dict) -> dict:
         return await self._stub().install_connector_enrollment_schema(payload)
 
+    async def resolve_connector_owner_scope(self, payload: dict) -> dict:
+        return await self._stub().resolve_connector_owner_scope(payload)
+
     async def resolve_connector_enrollment_consent_for_device(self, payload: dict) -> dict:
         return await self._stub().resolve_connector_enrollment_consent_for_device(payload)
 

@@ -130,8 +130,12 @@ def main(argv: list[str] | None = None) -> int:
         # Browser link can only start a tray; it cannot supply any account or
         # device entitlement, cookie, one-time code or executable command.
         app = ConnectApp()
-        status = app.run()
-        return 0 if status == CONNECT_APP_EXIT_ALREADY_RUNNING else status
+        status = app.run(explicit_connect=True)
+        if status == CONNECT_APP_EXIT_ALREADY_RUNNING:
+            # Browser clicked while tray is already present: signal its one
+            # existing owner-initiated offer. No URL data is conveyed.
+            return 0 if app.signal_customer_offer() else 2
+        return status
 
     # STOP and autostart OFF/SHOW must remain usable even if the Agent source
     # pin is corrupt. Neither action needs to start or resolve the Resident.
@@ -288,6 +292,8 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "logout":
+        from .pause_preference import set_paused
+        set_paused(app.enrollment.state_dir, True)
         app.enrollment.clear_enrollment()
         app.autostart.apply_lifecycle("unpair")
         print(

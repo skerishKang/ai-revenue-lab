@@ -124,6 +124,27 @@ def test_schema_is_explicit_additive_same_broker_sqlite_no_second_store():
     ).toArray() == [{"name": "canonical_broker_pending_pc_link"}]
 
 
+def test_owner_intent_is_durable_on_exact_live_pc_offer_and_one_use():
+    fx = Fixture()
+    fx.offer()
+    record = fx.authority().reserve_owner_intent_once(
+        request_ref=REF, owner_subject_ref="owner.1",
+        account_ref="account.1", workspace_ref="workspace.1",
+        now=NOW+timedelta(seconds=1),
+    )
+    assert record["device_possession_verified"] is True
+    row = rows(fx.storage)[0]
+    assert row["state"] == "reserved"
+    assert (row["owner_subject_ref"], row["owner_account_ref"],
+            row["owner_workspace_ref"]) == ("owner.1", "account.1", "workspace.1")
+    error("pending_pc_request_already_used", lambda:
+          fx.authority().reserve_owner_intent_once(
+              request_ref=REF, owner_subject_ref="owner.2",
+              account_ref="account.2", workspace_ref="workspace.2", now=NOW,
+          ))
+    assert rows(fx.storage)[0]["owner_account_ref"] == "account.1"
+
+
 def test_offer_cold_restart_reserve_delivery_exactly_once():
     fx = Fixture()
     offer = fx.offer()

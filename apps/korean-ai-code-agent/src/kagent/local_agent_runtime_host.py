@@ -568,6 +568,7 @@ class LocalAgentResidentRuntimeHost:
                     admitted_at=admitted["admitted_at"],
                 ),
                 credential=credential,
+                receipt=admitted.get("receipt"),
             )
         except Exception:
             # Bounded evidence only: ids/refs/codes, never a path or a body.

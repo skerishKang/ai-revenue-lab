@@ -18,7 +18,14 @@ function Test-OwnedProtocol {
     $item = Get-Item $ProtocolRoot
     if ($item.GetValue('PadiemConnectorInstallRoot', $null) -ine $Root) { return $false }
     if (-not (Test-Path $ProtocolCommand)) { return $false }
-    if ((Get-Item $ProtocolCommand).GetValue('') -cne $ProtocolExpected) { return $false }
+    $registered = (Get-Item $ProtocolCommand).GetValue('')
+    # Recognise only our legacy Python launcher at this exact owned install
+    # root, so upgrading an existing Connector never hijacks a foreign URI.
+    $legacyScript = Join-Path $Root 'launch_protocol.py'
+    $legacyPattern = '^"[^"]*[\\/](?:py|python|pythonw|python3)\.exe" "' + [regex]::Escape($legacyScript) + '" "%1"$'
+    $legacyOwned = (Test-Path -LiteralPath $legacyScript -PathType Leaf) -and
+        ($registered -cmatch $legacyPattern)
+    if ($registered -cne $ProtocolExpected -and -not $legacyOwned) { return $false }
     if (@($item.GetSubKeyNames() | Where-Object { $_ -cne 'shell' }).Count -ne 0) { return $false }
     if (@($item.GetValueNames() | Where-Object { $_ -cnotin @('', 'URL Protocol', 'PadiemConnectorInstallRoot') }).Count -ne 0) { return $false }
     $shell = Get-Item (Join-Path $ProtocolRoot 'shell')
@@ -63,7 +70,14 @@ if (-not (Test-Path $SourceExe -PathType Leaf) -or -not (Test-Path $SourceAgent 
 if ((Test-Path $ProtocolRoot) -and -not (Test-OwnedProtocol)) {
     throw 'A different application or unknown registry data owns padiem-connector://.'
 }
-if (Test-Path $Exe) { & $Exe stop | Out-Null }
+# The installed Python-era Connector may still own the same tray mutex even
+# when this is the first EXE installation. The *bundled* command can signal
+# its existing named quit event without any host Python.
+if (Test-Path $Exe) {
+    & $Exe stop | Out-Null
+} else {
+    & $SourceExe stop | Out-Null
+}
 New-Item -ItemType Directory -Path $Root -Force | Out-Null
 $Staged = Join-Path $Root ('app.new.' + [guid]::NewGuid().ToString('N'))
 $Old = Join-Path $Root 'app.previous'
@@ -100,7 +114,12 @@ $Doctor = (& $Exe doctor | ConvertFrom-Json)
 if ($LASTEXITCODE -ne 0 -or $Doctor.agent_ready -ne $true) {
     throw 'The embedded canonical Resident preflight failed.'
 }
-Start-Process -FilePath $Exe -ArgumentList 'start' -WorkingDirectory $App -WindowStyle Hidden
+$TrayProcess = Start-Process -FilePath $Exe -ArgumentList 'start' -WorkingDirectory $App -WindowStyle Hidden -PassThru
+Start-Sleep -Milliseconds 1200
+$TrayProcess.Refresh()
+if ($TrayProcess.HasExited) {
+    throw 'Installed Connector tray did not stay running.'
+}
 # The tray writes HKCU Run only after durable enrollment. Explicit OFF stays OFF.
 Write-Output (@{ok=$true; action='install'; exe=$Exe; agent_ready=$true;
                tray_launch_requested=$true; autostart='credential_gated';
