@@ -699,3 +699,119 @@ def test_operator_candidate_read_only_routes_authority_and_projection(source):
     assert source.execute(
         "SELECT COUNT(*) FROM b66_saved_skill_candidate WHERE status='pending'"
     ).fetchone()[0] == 2
+
+
+
+def _decision_http_fixture(source):
+    """Wire only a synthetic, typed trusted host; never install Production authority."""
+    from unittest.mock import AsyncMock
+
+    candidate_store, skill_store = _stores(source)
+    admin = _client(candidate_store, skill_store, user=A)
+    customer = _client(candidate_store, skill_store, user=B)
+    submitted = customer.post(
+        "/api/b66/saved-skill-candidates",
+        json={"client_ref": _client_ref(), "candidate": _candidate()},
+    )
+    assert submitted.status_code == 200, submitted.text
+    candidate_id = submitted.json()["candidate"]["candidate_id"]
+    admins = MagicMock()
+    admins.is_google_admin = AsyncMock(side_effect=lambda u: u == A)
+    admin.app.state.b66_member_admin_store = admins
+    customer.app.state.b66_member_admin_store = admins
+    url = f"/api/b66/admin/saved-skill-candidates/{candidate_id}/decision"
+
+    def make_grant(*, actions=(B66ProvisioningAction.REVIEW_CANDIDATE,),
+                   expired=False):
+        now = datetime.now(timezone.utc)
+        return TrustedB66ProvisioningGrant(
+            grant_ref=GRANT_REF,
+            operator_subject=CanonicalSubjectRef(SubjectType.USER, A),
+            authority_ref="authority:b66:ops",
+            allowed_actions=actions,
+            issued_at=now - timedelta(hours=3) if expired else now - timedelta(minutes=5),
+            expires_at=now - timedelta(hours=1) if expired else now + timedelta(minutes=30),
+        )
+
+    return admin, customer, candidate_id, url, make_grant
+
+
+def test_operator_decision_route_rejects_untrusted_or_unconfigured_hosts(source):
+    admin, customer, cid, url, grant = _decision_http_fixture(source)
+    candidate_store, skill_store = _stores(source)
+    anonymous = _client(candidate_store, skill_store, signed_in=False)
+    assert anonymous.post(url, json={"action": "approve"}).status_code == 401
+    assert customer.post(url, json={"action": "approve"}).status_code == 403
+    assert admin.post(url, json={"action": "approve"}).status_code == 503  # no grant resolver
+
+    admin.app.state.b66_operator_grant_resolver = lambda req: grant()
+    assert admin.post(url, json={"action": "approve"}).status_code == 503  # no target resolver
+
+    admin.app.state.b66_operator_target_resolver = lambda req, row_id: _target(
+        user_id=A, workspace_id=WA,
+    )  # wrong owner for B's candidate
+    assert admin.post(url, json={"action": "approve"}).status_code == 409
+
+    admin.app.state.b66_operator_target_resolver = lambda req, row_id: _target(
+        user_id=B, workspace_id=WB,
+    )
+    admin.app.state.b66_operator_grant_resolver = lambda req: grant(
+        actions=(B66ProvisioningAction.ASSIGN,),
+    )
+    assert admin.post(url, json={"action": "approve"}).status_code == 409
+    admin.app.state.b66_operator_grant_resolver = lambda req: grant(expired=True)
+    assert admin.post(url, json={"action": "approve"}).status_code == 409
+
+    assert admin.post(url, json={"action": "approve", "owner": B}).status_code == 400
+    assert admin.post(url, json={"action": "confirm"}).status_code == 400
+    assert admin.post(url, json={"action": "approve", "grant": GRANT_REF}).status_code == 400
+    assert source.execute("SELECT COUNT(*) FROM b66_saved_quote_skill").fetchone()[0] == 0
+    assert source.execute(
+        "SELECT status FROM b66_saved_skill_candidate WHERE id=?", (cid,),
+    ).fetchone()[0] == "pending"
+
+
+def test_operator_decision_route_approve_replay_and_reject(source):
+    admin, customer, cid, url, grant = _decision_http_fixture(source)
+    admin.app.state.b66_operator_grant_resolver = lambda req: grant()
+    admin.app.state.b66_operator_target_resolver = lambda req, row_id: _target(
+        user_id=B, workspace_id=WB,
+    )
+    result = admin.post(url, json={"action": "approve"})
+    assert result.status_code == 200, result.text
+    payload = result.json()
+    assert payload["ok"] is True
+    assert payload["decision"] == "approve"
+    assert payload["approval"]["target_user_id"] == B
+    assert result.headers["cache-control"].startswith("no-store")
+    assert "candidate_json" not in result.text
+    assert "access_token" not in result.text
+    assert "refresh_token" not in result.text
+    assert admin.post(url, json={"action": "approve"}).status_code == 409
+    assert admin.post(url, json={"action": "reject"}).status_code == 409
+    assert source.execute("SELECT COUNT(*) FROM b66_saved_quote_skill").fetchone()[0] == 1
+
+    changed = json.loads(json.dumps(_candidate(), ensure_ascii=False))
+    changed["name"] = "두번째 견적서"
+    new = customer.post(
+        "/api/b66/saved-skill-candidates",
+        json={"client_ref": "manual-second-reject-0009", "candidate": changed},
+    )
+    assert new.status_code == 200, new.text
+    second = new.json()["candidate"]["candidate_id"]
+    rejected = admin.post(
+        f"/api/b66/admin/saved-skill-candidates/{second}/decision",
+        json={"action": "reject", "rejection_reason": "회사 정보 보완 필요"},
+    )
+    assert rejected.status_code == 200, rejected.text
+    assert rejected.json()["approval"]["action"] == "reject"
+    assert source.execute("SELECT COUNT(*) FROM b66_saved_quote_skill").fetchone()[0] == 1
+    assert source.execute(
+        "SELECT status FROM b66_saved_skill_candidate WHERE id=?", (second,),
+    ).fetchone()[0] == "rejected"
+    assert admin.post(
+        f"/api/b66/admin/saved-skill-candidates/{second}/decision",
+        json={"action": "approve"},
+    ).status_code == 409
+    # Neither path can turn the separate signed-in B66 customer into an operator.
+    assert customer.post(url, json={"action": "approve"}).status_code == 403
