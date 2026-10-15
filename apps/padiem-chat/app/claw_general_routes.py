@@ -818,16 +818,22 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     if native_plan.get("op") != "none":
         native_store = getattr(request.app.state, "calendar_store", None)
         if native_store is None:
+            await _refund_active_reservation()
+            await fail_first_turn_grant(request, first_turn_context)
             return _error(503, "calendar_store_unavailable", "캘린더 저장소를 사용할 수 없습니다.")
         native_uid = current_user_id(request) if auth_ready(request) else None
         if native_uid is None:
+            await _refund_active_reservation()
+            await fail_first_turn_grant(request, first_turn_context)
             return _error(401, "unauthorized", "로그인이 필요합니다.")
-        turn_seed = "|".join(str(v) for v in (native_uid, conversation_id, user_text))
-        turn_key = "claw-" + __import__("hashlib").sha256(turn_seed.encode("utf-8")).hexdigest()[:16]
+        run = create_claw_run("padiem-chat", user_text, model_only_text=True)
+        turn_key = "claw-" + run.run_id
         if native_plan.get("op") == "clarify":
+            await _refund_active_reservation()
+            await fail_first_turn_grant(request, first_turn_context)
             return _error(422, "clarification_required", str(native_plan.get("question")))
-        # Do not fake claim state for native actions: claim only if a real first-turn
-        # grant was reserved above; otherwise fail closed without Calendar write.
+        # Claim after the reserved grant exists. Do not fake state if the request
+        # was never eligible for a first-turn grant.
         if first_turn_context is not None:
             first_turn_store = getattr(request.app.state, "claw_first_turn_grant_store", None)
             try:
@@ -860,8 +866,9 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                 native_answer = "네이티브 일정 " + str(len(items)) + "건입니다."
         else:
             native_answer = str(native_result.get("question", "일정 정보가 필요합니다."))
-        await _record_completed_claw_result(request, run_id="native-calendar", conversation_id=conversation_id, user_text=user_text, answer=native_answer, authorized_workspace_id=authorized_workspace_id, first_turn_grant=first_turn_context)
-        return _claw_general_sse(native_answer, None)
+        _clear_reservation()
+        saved_conversation_id = await _record_completed_claw_result(request, run_id=run.run_id, conversation_id=conversation_id, user_text=user_text, answer=native_answer, authorized_workspace_id=authorized_workspace_id, first_turn_grant=first_turn_context)
+        return _claw_general_sse(native_answer, None, conversation_id=saved_conversation_id)
     # continue normal P01 path below
     # continue normal P01 path below
     run = create_claw_run("padiem-chat", model_user_text, model_only_text=True)

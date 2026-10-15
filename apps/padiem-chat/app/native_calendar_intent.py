@@ -11,7 +11,7 @@ try:
 except ImportError:
     ZoneInfo = None
 
-READ_WORDS = ("일정", "스케줄", "약속", "회의")
+READ_WORDS = ("일정", "스케줄", "약속")
 CREATE_WORDS = ("등록", "추가", "잡아", "잡아줘", "생성", )
 
 def _today_tz(tz_name: str) -> date:
