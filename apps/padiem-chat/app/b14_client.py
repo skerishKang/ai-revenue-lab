@@ -304,6 +304,15 @@ def _trusted_dispatch_context(
     return f"{trusted}\n\n{product}" if product else trusted
 
 
+def _owner_product_tier(profile: str) -> str:
+    """Preserve the exact selected grade at the B14 owner-pinned failover boundary.
+
+    B14's legacy default is Free; omitting the tier on Plus/Pro/Max silently
+    selects the *wrong* fallback provider. Both JSON and SSE must share this.
+    """
+    return {"free": "free", "low": "plus", "medium": "pro", "high": "max"}[profile]
+
+
 def _agent_profile(
     *,
     skill: TaskMode,
@@ -333,6 +342,8 @@ def _agent_profile(
         model_policy={
             "model": model,
             # Keep unchosen sampling absent: B14 honours provider native defaults.
+            # Arbitrary catalog-wide fallback stays disabled. This does not
+            # block the owner-pinned Cat Jam grade backup in the B14 gateway.
             "allow_external_fallback": False,
             "max_attempts": 1,
             **({"product_tier": product_tier} if product_tier is not None else {}),
@@ -587,7 +598,7 @@ class B14Client:
         # Stream gateway forbids mid-stream model replacement. For the owner-
         # selected tier pair, finish a bounded B14 completion and emit its answer
         # as one SSE delta so a recoverable Cat Jam failure can use its fallback.
-        tier = {"free": "free", "low": "plus", "medium": "pro", "high": "max"}[policy.profile]
+        tier = _owner_product_tier(policy.profile)
         if policy.model_id == "opencode-go/cat-jam-free":
             response = await self._complete_text(
                 policy.messages, skill=resolved_skill, model=policy.model_id,
@@ -761,8 +772,9 @@ class B14Client:
         """Authenticated B66 ordinary model conversation, never quote extraction.
 
         Caller has already resolved the exact enabled B14 route and product
-        membership. This transport preserves the B66 one-shot/no-fallback
-        receipt and cannot issue, save or overwrite a quotation.
+        membership. No same-model retry or arbitrary model substitution is
+        permitted. B14 still uses the fixed grade backup for Cat Jam primary,
+        and this path cannot issue, save or overwrite a quotation.
         """
         self.ensure_registered_quote_runtime_available()
         if (
@@ -897,7 +909,8 @@ class B14Client:
             # EXISTING finite Worker memory safety maximum (same as B14),
             # not a model-native output token/character ceiling. Other
             # Chat/Claw callers retain their original independent resource
-            # budgets. No automatic retry/fallback or wire-format change.
+            # budgets. No same-route retry or arbitrary catalog fallback;
+            # the preselected Cat Jam grade backup in B14 remains enabled.
             completed_response_budget_bytes=MAX_CONFIGURED_B14_RESPONSE_BYTES,
             **({"product_tier": product_tier} if product_tier is not None else {}),
             **native_kwargs,
@@ -969,4 +982,5 @@ class B14Client:
             skill=resolved_skill,
             model=policy.model_id,
             additional_system_context=bounded_context,
+            product_tier=_owner_product_tier(policy.profile),
         )

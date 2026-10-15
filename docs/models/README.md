@@ -23,6 +23,8 @@ SCOPE = NAVIGATION_ONLY
 | B66 견적 모델 선택 경계 | [정식 Owner 정책 §0A](../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md), [B66 Registered Model Boundary](../../apps/padiem-chat/app/b66_registered_model_boundary.py), [기존 실행 소스](../../apps/padiem-chat/app/b66_b14_free_first_resolver.py). 직접 선택 UI/API 소스는 [PR #3831](https://github.com/skerishKang/ai-revenue-lab/pull/3831)로 main에 병합됐습니다. 이는 사용자 선택 필드의 소스 구현이며, 실제 서비스 배포·고객 E2E 성공은 별도 증거가 필요합니다. |
 | Production 실행·키 준비·가용성 | 해당 배포의 **exact SHA, 안전한 진단 결과 및 실제 E2E 증거** |
 
+**2026-10-15 기준:** 대표가 직접 지정한 Free·Plus·Pro·Max 등급별 Cat Jam 기본 → 고정 폴백은 복구 가능한 제공자 장애(429·5xx·시간 초과) 때 자동 실행합니다. `allow_external_fallback=False`는 임의 카탈로그 모델 대체를 막는 설정이며, 이 지정 폴백을 막는 설정이 아닙니다. Chat 일반 응답·스트리밍·CLAW 모두 B14에 신뢰할 수 있는 등급 정보를 전달해야 합니다. [정정된 Owner 모델 정책](../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md)을 우선합니다.
+
 ## 모델 변경 시 원칙
 
 1. **선택과 제외:** 이미 확정된 소유자 결정을 따르며 과거 이슈의 모델명을 새 승인으로 해석하지 않습니다.

@@ -27,7 +27,7 @@ $VenvDir = Join-Path ([System.IO.Path]::GetTempPath()) "padiem-standalone-buildv
 if (-not $Python) { throw "Python 3.11+ is required to create the build venv." }
 & $Python -m venv $VenvDir
 $VenvPython = Join-Path $VenvDir "Scripts\python.exe"
-& $VenvPython -m pip install --disable-pip-version-check pyinstaller $WssPin cryptography $CoreSrc
+& $VenvPython -m pip install --disable-pip-version-check pyinstaller $WssPin cryptography pywin32 $CoreSrc
 if ($LASTEXITCODE -ne 0) { throw "build venv dependency install failed." }
 
 $DistDir = Join-Path $OutRoot "dist"
@@ -41,6 +41,10 @@ $WorkDir = Join-Path $OutRoot "work"
     --collect-submodules padiem_connector `
     --hidden-import kagent.local_agent_resident_process `
     --hidden-import padiem_ai_core.agent_approval `
+    --hidden-import win32api `
+    --hidden-import win32event `
+    --hidden-import win32con `
+    --hidden-import win32gui `
     --add-data "$CoreSrc\padiem_ai_core;padiem_ai_core" `
     --add-data "$AgentSrc\kagent;kagent" `
     --distpath $DistDir --workpath $WorkDir `
