@@ -269,12 +269,9 @@ html[data-theme="padiem-glass"] body .app-shell .conversation[data-continuous-th
   padding-top: 0 !important;
 }
 html[data-theme="padiem-glass"] body .app-shell .conversation[data-continuous-thread="true"] {
-  scroll-behavior: smooth;
+  /* Do not force CSS smooth scroll: browser QA and fail/retry affordances
+     require immediate scrollIntoView(auto) for an error card. */
+  scroll-behavior: auto;
   overflow-anchor: none;
   scroll-padding-top: 28px;
-}
-@media (prefers-reduced-motion: reduce) {
-  html[data-theme="padiem-glass"] body .app-shell .conversation[data-continuous-thread="true"] {
-    scroll-behavior: auto;
-  }
 }
