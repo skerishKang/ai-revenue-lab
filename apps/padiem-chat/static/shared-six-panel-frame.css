@@ -359,6 +359,7 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspa
   align-items: flex-start;
   justify-content: flex-start;
   padding: 10px 11px 2px !important;
+  overflow: hidden !important; /* clip text within its own row, not over ON/OFF */
   border: 0 !important;
   border-radius: 11px !important;
   background: transparent !important;
@@ -399,4 +400,14 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspa
    lists remain available in authorized Claw workbench surfaces. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]) ~ :is(#clawApprovedDisclosure,#clawRunHistoryDisclosure,#clawApprovedMemory,#clawRunHistory) {
   display: none !important;
+}
+
+/* At short desktop heights the fixed Chat composer otherwise covers the
+   original Claw status buttons. Move the whole first-use group, not the
+   button alone, so all four cards remain directly clickable. */
+@media (min-width: 921px) and (max-height: 800px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"]
+    .claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]) {
+    translate: 0 clamp(-150px, calc(100dvh - 850px), 0px);
+  }
 }
