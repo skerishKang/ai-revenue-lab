@@ -1609,6 +1609,8 @@
   const privacyView = $("privacySettingsView");
   const companyView = $("companySettingsView");
   const driveView = $("driveSettingsView");
+  const themeView = $("themeSettingsView");
+  const themeChoice = $("settingsThemeChoice");
   const privacyChoice = $("settingsPrivacyChoice");
   const companyChoice = $("settingsCompanyChoice");
   const driveChoice = $("settingsDriveChoice");
@@ -1616,6 +1618,8 @@
     privacyView.hidden = section !== "privacy";
     companyView.hidden = section !== "company";
     driveView.hidden = section !== "drive";
+    themeView.hidden = section !== "theme";
+    themeChoice.setAttribute("aria-expanded", String(section === "theme"));
     privacyChoice.setAttribute("aria-expanded", String(section === "privacy"));
     companyChoice.setAttribute("aria-expanded", String(section === "company"));
     driveChoice.setAttribute("aria-expanded", String(section === "drive"));
@@ -1632,6 +1636,7 @@
   privacyChoice.addEventListener("click", () => chooseSettings(privacyView.hidden ? "privacy" : null));
   companyChoice.addEventListener("click", () => chooseSettings(companyView.hidden ? "company" : null));
   driveChoice.addEventListener("click", () => chooseSettings(driveView.hidden ? "drive" : null));
+  themeChoice.addEventListener("click", () => chooseSettings(themeView.hidden ? "theme" : null));
   $("settingsClose").addEventListener("click", () => {
     if (settingsPanel) settingsPanel.hidden = true;
   });
