@@ -136,7 +136,7 @@ def test_claw_previous_conversations_reuses_owner_scoped_history():
     assert 'id="clawPreviousConversationsFeedback"' in HTML
     assert 'historySection' in ACTIONS and 'historyList' in ACTIONS
     assert 'loginButton' in ACTIONS
-    assert 'accountContainer' in ACTIONS
+    assert '.sidebar-account' in ACTIONS
     assert 'if (!signedIn && login' in ACTIONS
     assert 'sidebarRestoreButton' in ACTIONS
     assert 'mobileMenu' in ACTIONS
@@ -167,7 +167,11 @@ def test_claw_connection_chips_keep_canonical_authority_and_do_not_forge_disconn
     assert '"/api/connectors/github/resume"' in script
     assert 'credentials:"same-origin"' in script
     assert 'fetch(' in script
-    assert script.count('method:"POST"') == 2  # Explicit Drive disconnect and GitHub pause/resume
+    # The extra POST is the owner-scoped, reversible PC pause/resume RPC.
+    # It is not a credential revocation or a second sign-in/approval.
+    assert script.count('method:"POST"') == 3
+    assert '"/api/claw/local-access/devices/pause"' in script
+    assert '"/api/claw/local-access/devices/resume"' in script
     assert '"/api/connectors/google/drive/disconnect"' in script
     assert 'method:"DELETE"' not in script
     assert 'localStorage' not in script

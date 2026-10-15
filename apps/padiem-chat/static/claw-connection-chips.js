@@ -11,17 +11,33 @@ const message=(ko,en)=>english()?en:ko;
 const home=()=>shell.dataset.state==="claw"&&document.getElementById("clawWorkspace")?.dataset.view==="general";
 const signedIn=()=>owner.dataset.accountState==="signed_in";
 const chip=id=>document.querySelector('[data-claw-connection="'+id+'"]');
+// PC's headline is separate from its single two-position switch. Neither
+// installation nor user OFF is inferred from a missing GET/heartbeat.
+const pcCard=document.querySelector('[data-claw-card="computer"]');
+const pcStatus=document.getElementById("clawPcCardStatus");
+const pcTruth=(phase,ko,en)=>{
+ if(!pcCard||!pcStatus)return;
+ pcCard.dataset.pcPhase=phase;
+ pcStatus.textContent=message(ko,en);
+};
+
 function set(id,value){
  if(!["on","off","unknown"].includes(value))value="unknown";
  values.set(id,value);
  const element=chip(id);if(!element)return;
+ if(id==="pc"){
+  // The OFF light requires a separately verified user pause. Mere absence
+  // of a heartbeat or an unenrolled device is never a red OFF selection.
+  element.dataset.pcPaused="false";
+ }
  const display=value==="on"?"ON":value==="off"?"OFF":message("확인 불가","Unavailable");
  const label=element.querySelector(".claw-connection-label");
  if(label)label.textContent=display;else element.textContent=display;
  element.dataset.connectionState=value;
  element.setAttribute("aria-label",(id==="pc"?message("컴퓨터","Computer"):id==="drive"?"Google Drive":"GitHub")+" "+display);
 }
-const reset=()=>{ids.forEach(id=>set(id,"unknown"));const gh=chip("github");if(gh)delete gh.dataset.connectionLinked;};
+const reset=()=>{ids.forEach(id=>set(id,"unknown"));pcTruth("unknown","\uC5F0\uACB0 \uD655\uC778 \uD544\uC694","Connection needs checking");const gh=chip("github");if(gh)delete gh.dataset.connectionLinked;};
+const guestHint=()=>{if(home()&&!signedIn())pcTruth("login_required","\uB85C\uADF8\uC778\uD558\uC138\uC694","Sign in first");};
 const feedback=(ko,en)=>{const el=document.getElementById("clawConnectionFeedback");if(!el)return;el.textContent=message(ko,en);el.hidden=false;};
 async function read(url){
  const r=await fetch(url,{method:"GET",credentials:"same-origin",cache:"no-store",headers:{Accept:"application/json"}});
@@ -29,18 +45,31 @@ async function read(url){
  const s=await r.text();if(s.length>32768)throw Error("oversized");return JSON.parse(s);
 }
 async function refresh(){
- const current=++generation;if(!home()||!signedIn()){reset();return;}
+ const current=++generation;if(!home()||!signedIn()){reset();guestHint();return;}
  const result=await Promise.allSettled([read("/api/claw/local-access/devices"),read("/api/connectors/status"),read("/api/connectors/github/status")]);
  if(current!==generation||!home()||!signedIn())return;
  reset();
  if(result[0].status==="fulfilled"){
   const d=result[0].value;
   if(d?.ok===true&&d.available===true&&d.ownerScoped===true&&Array.isArray(d.devices)&&d.devices.length<=25){
-   if(!d.devices.length)set("pc","off");
-   else{
+   if(d.usagePaused===true&&d.devices.length){
+    // The canonical Broker persisted the owner OFF choice and blocks
+    // command enqueue/poll/admission; an offline heartbeat cannot fake it.
+    set("pc","off");
+    chip("pc").dataset.pcPaused="true";
+    pcTruth("paused","\uC5F0\uACB0 \uAEBC\uC9D0","Connection off");
+   }else if(!d.devices.length){
+    set("pc","off");
+    pcTruth("unregistered","\uC5F0\uACB0\uD558\uC138\uC694","Connect your computer");
+   }else{
     const records=d.devices.map(x=>x?.projection&&typeof x.projection==="object"?x.projection:x);
-    if(records.some(x=>x?.state==="CONNECTED"&&x.usable===true&&x.revoked!==true&&x.expired!==true))set("pc","on");
-    else if(records.every(x=>x&&["PAIRING","OFFLINE","REVOKED","ACTION_REQUIRED"].includes(x.state)))set("pc","off");
+    if(records.some(x=>x?.state==="CONNECTED"&&x.usable===true&&x.revoked!==true&&x.expired!==true)){
+     set("pc","on");
+     pcTruth("online","\uC5F0\uACB0\uB418\uC5C8\uC2B5\uB2C8\uB2E4","Connected");
+    }else if(records.every(x=>x&&["PAIRING","OFFLINE","REVOKED","ACTION_REQUIRED"].includes(x.state))){
+     set("pc","off");
+     pcTruth("offline","\uC5F0\uACB0 \uD655\uC778 \uD544\uC694","Connection needs checking");
+    }
    }
   }
  }
@@ -104,7 +133,69 @@ async function setGithubUsage(enabled){
   pendingDisconnect.delete("github");if(button)button.disabled=false;
  }
 }
-ids.forEach(id=>chip(id)?.addEventListener("click",()=>{
+async function setPcUsage(paused){
+ if(pendingDisconnect.has("pc"))return;
+ pendingDisconnect.add("pc");
+ const button=chip("pc");
+ if(button)button.disabled=true;
+ pcTruth(paused?"stopping":"connecting",
+   paused?"\uC5F0\uACB0 \uC911\uC9C0 \uC911...":"\uC5F0\uACB0 \uC911...",
+   paused?"Stopping PC tasks...":"Resuming PC tasks...");
+ try{
+  const response=await fetch(paused?"/api/claw/local-access/devices/pause":
+    "/api/claw/local-access/devices/resume",{
+    method:"POST",mode:"same-origin",credentials:"same-origin",
+    cache:"no-store",headers:{Accept:"application/json"}
+  });
+  if(!response.ok)throw Error("pc_usage_write_denied");
+  const raw=await response.text();
+  if(raw.length>4096)throw Error("pc_usage_oversize");
+  const receipt=JSON.parse(raw);
+  if(receipt?.ok!==true||receipt.usagePaused!==paused)
+    throw Error("pc_usage_unverified");
+  await refresh(); // Only the canonical Broker readback can illuminate OFF.
+  if(chip("pc")?.dataset.pcPaused!==(paused?"true":"false"))
+    throw Error("pc_usage_readback_mismatch");
+  if(!paused&&values.get("pc")!=="on")
+    document.getElementById("clawComputerWorkspace")?.click();
+ }catch(_error){
+  await refresh();
+  feedback("\uCEF4\uD4E8\uD130 \uC5F0\uACB0 \uC124\uC815\uC744 \uD655\uC778\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uAE30\uC874 \uC0C1\uD0DC\uB97C \uC720\uC9C0\uD569\uB2C8\uB2E4.",
+    "PC setting could not be verified. Previous state retained.");
+ }finally{
+  pendingDisconnect.delete("pc");
+  if(button)button.disabled=false;
+ }
+}
+ids.forEach(id=>chip(id)?.addEventListener("click",event=>{
+ // One PC switch, two visible labels. Its activation MUST NOT bubble to
+ // the enclosing card and accidentally reconnect immediately after OFF.
+ if(id==="pc"){
+  event.preventDefault();
+  event.stopPropagation();
+  if(!home())return;
+  if(!signedIn()){
+   // Reuse the primary PC card's canonical login gate (and its visible note).
+   document.getElementById("clawComputerWorkspace")?.click();
+   return;
+  }
+  const state=values.get("pc");
+  const paused=chip("pc")?.dataset.pcPaused==="true";
+  // Keyboard activation toggles the single control; pointer hit targets
+  // the explicit ON or OFF half without creating a second control.
+  const target=event.detail===0?(paused?"on":state==="on"?"off":"on"):
+    event.target?.closest?.(".claw-state-off")?"off":"on";
+  if(target==="off"){
+   if(!paused)void setPcUsage(true);
+   return;
+  }
+  if(paused){void setPcUsage(false);return;}
+  if(state==="on")return;
+  pcTruth("connecting","\uC5F0\uACB0 \uC911...","Connecting...");
+  document.getElementById("clawComputerWorkspace")?.click();
+  return;
+ }
+
  if(!home())return;
  const state=values.get(id);
  if(state==="on"&&id==="drive"){
@@ -141,10 +232,10 @@ ids.forEach(id=>chip(id)?.addEventListener("click",()=>{
  if(state==="unknown")feedback("연결 상태를 확인할 수 없습니다. 연결 관리에서 확인해 주세요.",
     "Connection status is unavailable. Please check Connectors.");
 }));
-const observer=new MutationObserver(()=>{++generation;reset();if(home()&&signedIn())void refresh();});
+const observer=new MutationObserver(()=>{++generation;reset();if(home()&&signedIn())void refresh();else guestHint();});
 observer.observe(shell,{attributes:true,attributeFilter:["data-state"]});
 observer.observe(owner,{attributes:true,attributeFilter:["data-account-state"]});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&home())void refresh();});
 window.addEventListener("focus",()=>{if(home())void refresh();});
-if(home()&&signedIn())void refresh();
+if(home())void refresh();
 })();

@@ -131,6 +131,9 @@
   document.addEventListener("click", event => {
     const button = event.target?.closest?.("[data-claw-connection]");
     if (bypass || !button || !home()) return;
+    // The PC card owns one direct ON/OFF control. Never intercept it into a
+    // second dialog, and never trigger the underlying card by bubbling.
+    if (button.dataset.clawConnection === "pc") return;
     event.preventDefault();
     event.stopImmediatePropagation();
     const id = button.dataset.clawConnection;

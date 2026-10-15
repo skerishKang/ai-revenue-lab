@@ -21,6 +21,7 @@ from padiem_control_plane.local_agent_broker_state import (
 from padiem_control_plane.local_agent_broker_state_wire import SerializedLocalAgentBrokerStatePort
 
 from local_agent_broker_material_store import CloudflareDurableObjectCommandMaterialStore, closed_mapping
+from local_agent_broker_owner_usage import BrokerOwnerUsageStore
 from local_agent_broker_sql_state import (
     CloudflareDurableObjectHttpSessionState,
     CloudflareDurableObjectSerializedStateBackend,
@@ -118,6 +119,7 @@ class LocalAgentBrokerDurableRuntime:
         self._env = env
         self.backend = CloudflareDurableObjectSerializedStateBackend(storage)
         self.state_port = SerializedLocalAgentBrokerStatePort(backend=self.backend)
+        self.owner_usage = BrokerOwnerUsageStore(storage, self.authority_ref())
         self.http_state = CloudflareDurableObjectHttpSessionState(storage)
         self.material_store = CloudflareDurableObjectCommandMaterialStore(
             storage,
@@ -165,6 +167,17 @@ class LocalAgentBrokerDurableRuntime:
     def open_session(self, payload: dict) -> dict:
         return self.transaction(lambda: self.facade().open_session(payload))
 
+    def _usage_blocked(self, binding_ref: Any) -> bool:
+        snapshot = self.state_port.load(authority_ref=self.authority_ref()).snapshot
+        return self.owner_usage.paused_binding(snapshot, binding_ref)
+
+    def set_owner_usage(self, payload: dict) -> dict:
+        # This is a private, authenticated owner/workspace-only RPC at B62.
+        def operation() -> dict:
+            snapshot = self.state_port.load(authority_ref=self.authority_ref()).snapshot
+            return self.owner_usage.set(payload, snapshot)
+        return self.transaction(operation)
+
     def enqueue_command(self, payload: dict) -> dict:
         """Enqueue a command *without* binding material in the same transaction.
 
@@ -178,7 +191,11 @@ class LocalAgentBrokerDurableRuntime:
         terminal-history compaction, so its ledger writes and blob swap commit
         inside the same storage transaction as every other mutator (#3123).
         """
-        return self.transaction(lambda: self.facade().enqueue_command(payload))
+        def operation() -> dict:
+            if self._usage_blocked(payload.get("binding_ref")):
+                return {"ok": False, "error": {"code": "owner_pc_paused"}}
+            return self.facade().enqueue_command(payload)
+        return self.transaction(operation)
 
     def enqueue_command_with_material(self, payload: dict, material: dict) -> dict:
         """#3127 — commit the canonical command and its material atomically.
@@ -205,6 +222,8 @@ class LocalAgentBrokerDurableRuntime:
         """
 
         def operation() -> dict:
+            if self._usage_blocked(payload.get("binding_ref")):
+                return {"ok": False, "error": {"code": "owner_pc_paused"}}
             result = self.facade().enqueue_command(payload)
             if result.get("ok") is not True:
                 # A canonical refusal (duplicate, scope, ttl) wrote nothing, so
@@ -270,6 +289,8 @@ class LocalAgentBrokerDurableRuntime:
             request_fingerprint=payload["request_fingerprint"],
             server_requested_at=parse_iso(payload["server_requested_at"], "server_requested_at"),
         )
+        if self._usage_blocked(request.binding_ref):
+            return {"ok": False, "error": {"code": "owner_pc_paused"}}
         return {"ok": True, "material": self.material_store.resolve(request)}
 
     def poll(self, payload: dict) -> dict:
@@ -312,6 +333,11 @@ class LocalAgentBrokerDurableRuntime:
             page = self.facade().poll({**payload, "after_sequence": cursor, "limit": limit})
             if page.get("ok") is not True:
                 return page
+            # Even queued work minted before OFF must never be delivered while
+            # the owner has paused PC use. The canonical session is validated
+            # by poll before this projection is applied.
+            if self._usage_blocked(payload.get("binding_ref")):
+                return {**page, "commands": []}
             deliverable: list[dict] = []
             while True:
                 commands = page["commands"]
@@ -338,6 +364,9 @@ class LocalAgentBrokerDurableRuntime:
 
     def admit_command(self, payload: dict) -> dict:
         def operation() -> dict:
+            snapshot = self.state_port.load(authority_ref=self.authority_ref()).snapshot
+            if self.owner_usage.paused_command(snapshot, payload.get("command_id")):
+                return {"ok": False, "error": {"code": "owner_pc_paused"}}
             self._require_material_for_transition(
                 payload.get("command_id"), BrokerCommandState.QUEUED, "admission"
             )
@@ -599,6 +628,8 @@ class LocalAgentBrokerDurableRuntime:
             "ok": True,
             "available": True,
             "owner_scoped": True,
+            "usage_paused": self.owner_usage.paused(account_ref, workspace_ref)
+                if workspace_ref is not None else False,
             "device_count": len(devices),
             "max_devices": MAX_DEVICE_DIRECTORY_DEVICES,
             "devices": devices,

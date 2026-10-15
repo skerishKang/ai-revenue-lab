@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>승인 요청 · 견적서 관리자</title>
+  <link rel="stylesheet" href="admin.css">
+  <script src="admin-saved-skill-candidates.js" defer></script>
+</head>
+<body>
+  <div class="layout">
+    <aside class="rail">
+      <div class="brand"><span class="brand-mark">견</span><span>견적서 만들기<small>승인 요청 검토</small></span></div>
+      <nav aria-label="관리자 메뉴">
+        <a class="nav-link" href="/admin.html">회원 관리</a>
+        <a class="nav-link" href="/admin-models.html">모델 권한</a>
+        <a class="nav-link" href="/admin-inquiries.html">회원 문의</a>
+        <a class="nav-link active" aria-current="page" href="/admin-saved-skill-candidates.html">승인 요청</a>
+        <a class="nav-link" href="/">견적서로 돌아가기</a>
+      </nav>
+      <div class="rail-footer">관리자 전용 · 서버 권한 확인</div>
+    </aside>
+    <main class="main">
+      <header class="header">
+        <div>
+          <p class="eyebrow">PADIEM QUOTE</p>
+          <h1>견적서 승인 요청</h1>
+          <p class="subtitle">고객이 제출한 미승인 승인 요청을 검토합니다. 현재는 조회만 가능합니다. 승인·거부 기능은 준비 중입니다.</p>
+        </div>
+        <button id="candidateReload" class="secondary" type="button">새로고침</button>
+      </header>
+      <section id="access" class="access" role="status" aria-live="polite">관리자 권한을 확인하고 있습니다.</section>
+      <div id="candidateContent" hidden>
+        <section class="panel">
+          <div class="section-head">
+            <div><h2>승인 요청 목록</h2><p>승인되지 않은 후보 원문과 지문은 표시하지 않습니다.</p></div>
+            <label for="candidateStatusFilter">상태</label>
+            <select id="candidateStatusFilter">
+              <option value="pending">승인 대기</option>
+              <option value="approved">승인됨</option>
+              <option value="rejected">거부됨</option>
+            </select>
+          </div>
+          <p id="candidateStatus" role="status" aria-live="polite" style="margin:0 0 12px;color:#5f6c7b"></p>
+          <div class="table-wrap" style="overflow-x:auto">
+            <table>
+              <thead><tr><th>승인 요청 ID</th><th>서버 사용자 ID</th><th>견적서 이름</th><th>상태</th><th>제출 시각</th><th>수정 시각</th><th>결정 시각</th><th>상세</th></tr></thead>
+              <tbody id="candidateRows"></tbody>
+            </table>
+          </div>
+          <div id="candidateDetail" aria-live="polite" style="margin-top:16px"></div>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

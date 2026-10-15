@@ -944,3 +944,50 @@ html[data-theme="padiem-glass"] .app-shell[data-state="claw"] #clawAutomation :i
     opacity: .16;
   }
 }
+
+/* #4139 owner-approved single-card PC controls. This is one button with
+   two labelled positions, not two independent toggles or a third OFF label. */
+.app-shell[data-state="claw"] .claw-home-card[data-claw-card="computer"] {
+  position: relative;
+}
+.app-shell[data-state="claw"] .claw-home-card[data-claw-card="computer"] .claw-pc-status {
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  z-index: 1;
+  max-width: 70px;
+  font-size: 9px;
+  line-height: 1.2;
+  font-weight: 600;
+  text-align: right;
+  color: var(--text);
+  pointer-events: none;
+}
+.app-shell[data-state="claw"] .claw-home-card[data-claw-card="computer"][data-pc-phase="online"] .claw-pc-status {
+  color: #168044;
+}
+.app-shell[data-state="claw"] .claw-home-card[data-claw-card="computer"] .claw-connection-label {
+  display: none !important;
+}
+.app-shell[data-state="claw"] .claw-home-card[data-claw-card="computer"] .claw-connection-toggle {
+  width: auto;
+  min-height: 26px;
+  flex-direction: row;
+  padding: 2px 5px;
+}
+.app-shell[data-state="claw"] .claw-home-card[data-claw-card="computer"] .claw-connection-toggle[data-connection-state="on"] .claw-state-on {
+  color: #147d42;
+  background: rgba(26, 163, 81, .19);
+  box-shadow: 0 0 8px rgba(26, 163, 81, .34);
+}
+.app-shell[data-state="claw"] .claw-home-card[data-claw-card="computer"] .claw-connection-toggle[data-pc-paused="true"] .claw-state-off {
+  color: #bd2727;
+  background: rgba(220, 38, 38, .18);
+  box-shadow: 0 0 8px rgba(220, 38, 38, .30);
+}
+.app-shell[data-state="claw"] .claw-home-card[data-claw-card="computer"] .claw-connection-toggle[data-pc-paused="false"] .claw-state-off {
+  opacity: .55;
+  color: var(--text);
+  background: transparent;
+  box-shadow: none;
+}

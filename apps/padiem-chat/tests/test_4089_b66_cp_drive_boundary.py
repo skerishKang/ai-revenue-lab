@@ -1,113 +1,119 @@
-from app.b66_drive_connection import (
-    B66ControlPlaneDriveBindingAdapter,
-    B66DriveConnectionStatus,
+"""Provider-free #4089 Step 2-B1 — CP read-only evidence never grants B66 write."""
+
+import pytest
+
+from app.b66_cp_drive_boundary import (
+    B66CPDriveBoundary,
+    B66VerifiedCPDriveOwnerLink,
+    B66_REQUIRED_DRIVE_SCOPE,
+    CP_REVIEWED_DRIVE_SCOPE,
 )
 
-
-PROOF = {
-    "status": "resolved",
-    "connector_id": "google-drive",
-    "workspace_ref": "ws-owner-a",
-    "binding_ref": "binding-owner-a",
-    "actor_ref": "actor-owner-a",
-    "account_ref": "google-sub-a12345678",
-}
-
-NOT_CONNECTED_PROOF = {
-    "status": "not_connected",
-    "connector_id": "google-drive",
-    "workspace_ref": "ws-owner-a",
-}
+A = "usr_" + "a" * 32
+B = "usr_" + "b" * 32
 
 
-def test_wrong_control_plane_connector_rejected():
-    adapter = B66ControlPlaneDriveBindingAdapter()
-    proof = dict(PROOF, connector_id="google-calendar")
-    try:
-        adapter.project_trusted_binding(owner_b66_user_id="b66-owner-a", binding_proof=proof)
-    except ValueError:
-        pass
-    else:
-        raise AssertionError("wrong connector accepted")
+def link(owner=A, workspace="ws-a", actor="actor-a"):
+    return B66VerifiedCPDriveOwnerLink(
+        owner_b66_user_id=owner,
+        cp_workspace_ref=workspace,
+        cp_actor_ref=actor,
+    )
 
 
-def test_wrong_owner_link_denied():
-    adapter = B66ControlPlaneDriveBindingAdapter()
-    proof = dict(PROOF, owner_b66_user_id="b66-owner-b")
-    try:
-        adapter.project_trusted_binding(owner_b66_user_id="b66-owner-a", binding_proof=proof)
-    except ValueError:
-        pass
-    else:
-        raise AssertionError("control-plane owner cross-feed accepted")
+def cp(workspace="ws-a", actor="actor-a", account="unverified-cp-account-ref"):
+    return {
+        "status": "resolved",
+        "connector_id": "google-drive",
+        "workspace_ref": workspace,
+        "binding_ref": "binding-a",
+        "actor_ref": actor,
+        "account_ref": account,
+    }
 
 
-def test_control_plane_verified_scope_is_read_only_and_requires_reconnect():
-    adapter = B66ControlPlaneDriveBindingAdapter()
-    record = adapter.project_trusted_binding(owner_b66_user_id="b66-owner-a", binding_proof=PROOF)
-    assert record is not None
-    assert record.status == B66DriveConnectionStatus.RECONNECT_REQUIRED
-    assert record.reconnect_reason == "cp_reviewed_scope_mismatch"
-    assert adapter.reviewed_cp_scope == "https://www.googleapis.com/auth/drive.readonly"
-    assert record.scope == "https://www.googleapis.com/auth/drive.readonly"
-    assert adapter.required_b66_scope == "https://www.googleapis.com/auth/drive.file"
+def test_not_yet_composed_host_mapping_defaults_to_unconnected():
+    boundary = B66CPDriveBoundary()
+    assert boundary.project_status(owner_b66_user_id=A, cp_private_selection=cp())["status"] == "not_connected"
+    assert boundary.project_status(owner_b66_user_id=A)["status"] == "not_connected"
 
 
-def test_control_plane_scope_downgrade_from_file_scope_rejected():
-    adapter = B66ControlPlaneDriveBindingAdapter()
-    proof = dict(PROOF, scopes="https://www.googleapis.com/auth/drive.file")
-    try:
-        adapter.project_trusted_binding(owner_b66_user_id="b66-owner-a", binding_proof=proof)
-    except ValueError:
-        pass
-    else:
-        raise AssertionError("invalid cp scope accepted")
+def test_cp_readonly_binding_never_activates_b66_drive_file():
+    result = B66CPDriveBoundary().project_status(
+        owner_b66_user_id=A, cp_private_selection=cp(), verified_link=link()
+    )
+    assert CP_REVIEWED_DRIVE_SCOPE.endswith("/drive.readonly")
+    assert B66_REQUIRED_DRIVE_SCOPE.endswith("/drive.file")
+    assert result["status"] == "reconnect_required"
+    assert result["reconnect_reason"] == "cp_reviewed_scope_mismatch"
+    assert result["scope"] == B66_REQUIRED_DRIVE_SCOPE
+    assert result["durable_credential_backend"] == "ABSENT_NOT_PROVEN"
 
 
-def test_naked_account_string_is_not_authority():
-    adapter = B66ControlPlaneDriveBindingAdapter()
-    proof = {"google_sub": "google-sub-x12345678", "google_email": "x@example.test"}
-    try:
-        adapter.project_trusted_binding(owner_b66_user_id="b66-owner-a", binding_proof=proof)
-    except ValueError:
-        pass
-    else:
-        raise AssertionError("browser identity accepted")
+def test_cp_account_ref_is_not_misrepresented_as_google_sub():
+    result = B66CPDriveBoundary().project_status(
+        owner_b66_user_id=A, cp_private_selection=cp(account="private-cp-account-ref"),
+        verified_link=link(),
+    )
+    assert result["destination_sub"] is None
+    assert result["destination_account"] is None
+    assert "private-cp-account-ref" not in str(result)
 
 
-def test_same_destination_account_does_not_cross_b66_authority():
-    adapter = B66ControlPlaneDriveBindingAdapter()
-    proof_a = dict(PROOF, account_ref="google-sub-shared12345")
-    proof_b = dict(PROOF, account_ref="google-sub-shared12345", workspace_ref="ws-owner-b", binding_ref="binding-owner-b", actor_ref="actor-owner-b")
-    status_a = adapter.status_from_proof("b66-owner-a", proof_a)
-    status_b = adapter.status_from_proof("b66-owner-b", proof_b)
-    assert status_a["verified_store_owner"] == "b66-owner-a"
-    assert status_b["verified_store_owner"] == "b66-owner-b"
-    assert status_a["destination_sub"] == status_b["destination_sub"]
-    assert status_a["status"] == "reconnect_required"
-    assert status_b["status"] == "reconnect_required"
+@pytest.mark.parametrize("unverified", [
+    {"status": "resolved", "connector_id": "google-calendar", "workspace_ref": "ws-a", "binding_ref": "b", "actor_ref": "actor-a"},
+    {**cp(), "refresh_token": "secret"},
+    {**cp(), "scopes": ["https://www.googleapis.com/auth/drive.file"]},
+    {**cp(), "google_sub": "claimed"},
+    {**cp(), "workspace_ref": "ws-other"},
+    {**cp(), "actor_ref": "actor-other"},
+    {**cp(), "binding_ref": ""},
+    {"status": "resolved", "connector_id": "google-drive", "workspace_ref": "ws-a"},
+    {"status": "not_connected", "connector_id": "google-drive", "workspace_ref": "ws-a", "actor_ref": "actor-a"},
+])
+def test_invalid_or_client_influenced_private_cp_projection_rejected(unverified):
+    with pytest.raises(ValueError):
+        B66CPDriveBoundary().project_status(
+            owner_b66_user_id=A, cp_private_selection=unverified, verified_link=link()
+        )
 
 
-def test_not_connected_proof_projects_not_connected():
-    adapter = B66ControlPlaneDriveBindingAdapter()
-    assert adapter.status_from_proof("b66-owner-a", NOT_CONNECTED_PROOF)["status"] == "not_connected"
+def test_not_connected_exact_private_keyset():
+    result = B66CPDriveBoundary().project_status(
+        owner_b66_user_id=A,
+        cp_private_selection={"status": "not_connected", "connector_id": "google-drive", "workspace_ref": "ws-a"},
+        verified_link=link(),
+    )
+    assert result["status"] == "not_connected"
+    assert result["destination_sub"] is None
 
 
-def test_cp_proof_keyset_exactness():
-    adapter = B66ControlPlaneDriveBindingAdapter()
-    proof = dict(PROOF, extra=True)
-    try:
-        adapter.project_trusted_binding(owner_b66_user_id="b66-owner-a", binding_proof=proof)
-    except ValueError:
-        pass
-    else:
-        raise AssertionError("unexpected cp field accepted")
+def test_wrong_owner_or_untyped_link_denied():
+    boundary = B66CPDriveBoundary()
+    with pytest.raises(ValueError):
+        boundary.project_status(owner_b66_user_id=B, cp_private_selection=cp(), verified_link=link())
+    with pytest.raises(ValueError):
+        boundary.project_status(owner_b66_user_id=A, cp_private_selection=cp(), verified_link={"owner_b66_user_id": A})
+    with pytest.raises(ValueError):
+        boundary.project_status(owner_b66_user_id="forged-owner", cp_private_selection=cp())
 
 
-def test_no_public_scope_slot_in_binding_status():
-    adapter = B66ControlPlaneDriveBindingAdapter()
-    proof = dict(PROOF, account_ref="google-sub-a12345678")
-    result = adapter.project_trusted_binding(owner_b66_user_id="b66-owner-a", binding_proof=proof).public_status()
-    assert result["scope"] == "https://www.googleapis.com/auth/drive.readonly"
-    assert "verified_store_owner" in result
-    assert "destination_account" in result
+def test_independent_b66_owners_can_choose_same_cp_account_without_grant_sharing():
+    boundary = B66CPDriveBoundary()
+    account = "cp-account-ref-same"
+    sa = boundary.project_status(owner_b66_user_id=A, cp_private_selection=cp(account=account), verified_link=link())
+    sb = boundary.project_status(owner_b66_user_id=B,
+        cp_private_selection=cp(workspace="ws-b", actor="actor-b", account=account),
+        verified_link=link(B,"ws-b","actor-b"))
+    assert sa["verified_store_owner"] == A
+    assert sb["verified_store_owner"] == B
+    assert sa["destination_sub"] is sb["destination_sub"] is None
+    assert sa["status"] == sb["status"] == "reconnect_required"
+    assert "binding-a" not in str(sa)
+    assert "binding-a" not in str(sb)
+
+
+def test_revocation_and_unconfigured_mapping_are_not_connected():
+    boundary = B66CPDriveBoundary()
+    assert boundary.project_status(owner_b66_user_id=A, cp_private_selection=None, verified_link=link())["status"] == "not_connected"
+    assert boundary.project_status(owner_b66_user_id=A, cp_private_selection=cp(), verified_link=None)["status"] == "not_connected"

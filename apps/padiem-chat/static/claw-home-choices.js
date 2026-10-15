@@ -27,14 +27,35 @@
     // intent. No URL/session storage, manual code, extra checkbox or retry.
     const pcChannelName = "padiem-claw-pc-connect-v1";
     const pcOfferRef = /^link\.[0-9a-f]{32}$/;
-    // Install/run may take up to 30 minutes in this tab; Broker offer TTL is a separate 90 seconds.
+    // First-time install may take 30m, but an individual Broker offer expires
+    // in 90s. A new owner click after that TTL may retry the real native launch.
     const pcIntentLifetimeMs = 30 * 60 * 1000;
+    const pcOfferRetryIntervalMs = 90 * 1000;
     let pcChannel = null;
     let pcIntent = null;
     let pcApprovalPending = false;
 
     function signedIn() {
       return document.querySelector(".sidebar-account")?.dataset.accountState === "signed_in";
+    }
+
+    // A guest card click must go to the EXISTING PADIEM authentication UI,
+    // never to the Windows protocol, installer, or connector management.
+    // We do not remember a privileged click across the login boundary.
+    function promptForPcLogin() {
+      if (signedIn()) return false;
+      pcNote("\uCEF4\uD4E8\uD130\uB97C \uC5F0\uACB0\uD558\uB824\uBA74 \uBA3C\uC800 PADIEM\uC5D0 \uB85C\uADF8\uC778\uD574 \uC8FC\uC138\uC694.",
+             "Sign in to PADIEM before connecting your computer.");
+      const hint = document.getElementById("clawPcCardStatus");
+      if (hint) hint.textContent = document.documentElement.lang === "en"
+        ? "Sign in first" : "\uB85C\uADF8\uC778\uD558\uC138\uC694";
+      const login = document.getElementById("loginButton");
+      const account = document.querySelector(".sidebar-account");
+      // A mismatched/loading account must never accidentally click Logout.
+      if (account?.dataset.accountState === "signed_in" ||
+          !login || login.hidden || login.disabled) return true;
+      login.click(); // opens the canonical app.js auth dialog, no extra modal
+      return true;
     }
 
     function pcNote(ko, en) {
@@ -96,12 +117,21 @@
 
     function startPcConnectionFromOriginalClick() {
       if (!isClawHome() || !signedIn()) return false;
+      if (document.querySelector('[data-claw-connection="pc"]')?.dataset.pcPaused === "true") {
+        pcNote("\uC0AC\uC6A9\uC790\uAC00 PC \uC5F0\uACB0\uC744 \uAEBC\uB1A8\uC2B5\uB2C8\uB2E4. ON\uC744 \uB20C\uB7EC \uC7AC\uAC1C\uD558\uC138\uC694.",
+               "PC use is paused. Choose ON to resume.");
+        return true;
+      }
       if (document.querySelector('[data-claw-connection="pc"]')?.dataset.connectionState === "on") {
         return false;
       }
       if (pcApprovalPending) return true;
       if (pcIntent && !pcIntent.used &&
-          Date.now() - pcIntent.at <= pcIntentLifetimeMs) return true;
+          Date.now() - pcIntent.at <= pcOfferRetryIntervalMs) {
+        pcNote("\uC5F0\uACB0 \uC911... \uC2E4\uD589 \uD655\uC778 \uD6C4 \uC790\uB3D9\uC73C\uB85C \uC5F0\uACB0\uD569\uB2C8\uB2E4.",
+               "Connecting. Once the program is running, connection proceeds automatically.");
+        return true;
+      }
       if (typeof window.BroadcastChannel !== "function") {
         pcNote("현재 브라우저에서 PC 연결 수신을 준비할 수 없습니다.",
                "This browser could not prepare the PC connection receiver.");
@@ -149,10 +179,21 @@
     for (const [id, target] of Object.entries(actions)) {
       const card = document.getElementById(id);
       if (card) card.addEventListener("click", () => {
-        if (id === "clawComputerWorkspace" && startPcConnectionFromOriginalClick()) return;
+        if (id === "clawComputerWorkspace") {
+          if (!isClawHome()) return;
+          if (promptForPcLogin()) return;
+          if (startPcConnectionFromOriginalClick()) return;
+        }
         openWorkspaceConnector(target);
       });
     }
+
+    // Empty parts of the same PC card behave like its one primary action.
+    // The single ON/OFF switch stops propagation, so OFF cannot reconnect.
+    document.querySelector('[data-claw-card="computer"]')?.addEventListener("click", event => {
+      if (!isClawHome() || event.target.closest("button")) return;
+      document.getElementById("clawComputerWorkspace")?.click();
+    });
 
     const web = document.getElementById("clawWebWorkspace");
     web?.addEventListener("click", () => {
@@ -173,7 +214,8 @@
         // A signed-in owner may have a temporarily unavailable history API.
         // Never click the signed-in logout button on that error path.
         const login = document.getElementById("loginButton");
-        const signedIn = document.getElementById("accountContainer")?.dataset.accountState === "signed_in";
+        const signedIn = document.getElementById("accountContainer")?.dataset.accountState === "signed_in" ||
+          document.querySelector(".sidebar-account")?.dataset.accountState === "signed_in";
         if (!signedIn && login && !login.disabled && !login.hidden) login.click();
         if (historyFeedback) {
           historyFeedback.textContent = signedIn

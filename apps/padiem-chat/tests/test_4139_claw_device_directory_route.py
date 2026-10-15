@@ -249,3 +249,63 @@ def test_http_contradictory_connected_or_malformed_source_cannot_claim_success()
         result = get(app, settings).json()
         assert result["available"] is False
         assert "devices" not in result
+
+class UsageBinding(Binding):
+    def __init__(self):
+        super().__init__([fact("office")])
+        self.paused = False
+        self.writes = []
+
+    async def device_directory(self, payload):
+        response = await super().device_directory(payload)
+        response["usage_paused"] = self.paused
+        return response
+
+    async def set_owner_usage(self, payload):
+        self.writes.append(dict(payload))
+        self.paused = payload["paused"]
+        return {"ok": True, "paused": self.paused, "dispatch_authorized": not self.paused}
+
+
+def _post_usage(app, settings, path, *, signed=True, origin=BASE, json_body=None):
+    async def perform():
+        transport = httpx.ASGITransport(app=app)
+        async with httpx.AsyncClient(transport=transport, base_url=BASE) as client:
+            if signed:
+                client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER))
+            return await client.post(path, headers={"Origin": origin}, json=json_body)
+    return asyncio.run(perform())
+
+
+def test_paused_usage_is_owner_scoped_and_matches_durable_broker_readback():
+    from app.claw_device_directory_routes import CLAW_PC_PAUSE_PATH, CLAW_PC_RESUME_PATH
+    binding = UsageBinding()
+    app, settings = make_app(binding)
+    assert get(app, settings).json()["usagePaused"] is False
+    response = _post_usage(app, settings, CLAW_PC_PAUSE_PATH)
+    assert response.status_code == 200, response.text
+    assert response.json() == {"ok": True, "usagePaused": True}
+    assert binding.writes == [{"account_ref": OWNER, "workspace_ref": WORKSPACE, "paused": True}]
+    assert get(app, settings).json()["usagePaused"] is True
+    response = _post_usage(app, settings, CLAW_PC_RESUME_PATH)
+    assert response.status_code == 200, response.text
+    assert get(app, settings).json()["usagePaused"] is False
+
+
+def test_paused_usage_rejects_guest_cross_origin_and_client_selected_scope():
+    from app.claw_device_directory_routes import CLAW_PC_PAUSE_PATH
+    binding = UsageBinding()
+    app, settings = make_app(binding)
+    assert _post_usage(app, settings, CLAW_PC_PAUSE_PATH, signed=False).status_code == 401
+    assert _post_usage(app, settings, CLAW_PC_PAUSE_PATH, origin="https://evil.example.test").status_code == 403
+    assert _post_usage(app, settings, CLAW_PC_PAUSE_PATH, json_body={"device_id": "office"}).status_code == 403
+    assert binding.writes == []
+    assert get(app, settings).json()["usagePaused"] is False
+
+
+def test_pause_missing_private_rpc_never_fabricates_off():
+    from app.claw_device_directory_routes import CLAW_PC_PAUSE_PATH
+    app, settings = make_app(Binding([fact("office")]))
+    response = _post_usage(app, settings, CLAW_PC_PAUSE_PATH)
+    assert response.status_code == 503
+    assert response.json()["ok"] is False
