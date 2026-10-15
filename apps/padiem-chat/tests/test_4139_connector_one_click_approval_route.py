@@ -163,3 +163,56 @@ def test_actual_canonical_session_and_same_origin_guard_cannot_be_bypassed(monke
     assert [item[0] for item in fx.calls] == [
         "attest", "consent", "issue", "deliver",
     ]
+
+def test_503_stage_uses_existing_grafana_export_and_never_includes_offer_material(monkeypatch):
+    """The next real 503 must yield its HTTP status and safe denial stage in Loki."""
+    from app.request_telemetry import (
+        RequestTelemetryMiddleware, install_export_scheduler, reset_export_scheduler,
+    )
+    fx = Fixture()
+    fx.attestation_fails = True
+    app = Starlette(routes=[
+        Route(page.OWNER_APPROVE_LINK_PATH, page.owner_approve_pc_link, methods=["POST"])
+    ])
+    app.state.connector_one_click_approval = fx.service()
+
+    async def owner(_request):
+        return session(), None
+    monkeypatch.setattr(page, "_verified_owner_request", owner)
+    tasks, batches = [], []
+
+    async def exporter(batch):
+        batches.append(batch)
+
+    middleware = RequestTelemetryMiddleware(
+        app, exporter=exporter, emitter=lambda _row: None,
+    )
+
+    async def probe():
+        token = install_export_scheduler(tasks.append)
+        try:
+            async with httpx.AsyncClient(
+                transport=httpx.ASGITransport(app=middleware),
+                base_url="https://chat.padiem.net",
+            ) as client:
+                response = await client.post(
+                    page.OWNER_APPROVE_LINK_PATH, json={"request_ref": REQUEST},
+                )
+            assert response.status_code == 503
+            assert response.json()["error"]["code"] == "pending_pc_unavailable"
+            assert len(tasks) == 1
+            await tasks[0]
+        finally:
+            reset_export_scheduler(token)
+    asyncio.run(probe())
+    assert len(batches) == 1
+    http, *stages = batches[0]
+    assert http["status"] == 503
+    assert http["route"] == page.OWNER_APPROVE_LINK_PATH
+    assert stages[-1]["stage"] == "pc_owner.approve"
+    assert stages[-1]["code"] == "pending_pc_unavailable"
+    assert http["request_id"] == stages[-1]["request_id"]
+    contents = str(batches)
+    assert REQUEST not in contents
+    assert CODE not in contents
+    assert "windows.device.1" not in contents
