@@ -135,3 +135,53 @@ async def enroll_via_operator_wss_review(
         acceptance=(target_host == _ACCEPTANCE_HOST),
         binding_store=binding_store,
     )
+
+
+async def enroll_via_pending_pc_offer(*, enrollment: Any) -> Any:
+    """Verified WSS offer → owner approval → SAME socket/auto enrollment.
+
+    Reuses the reviewed one-click composition: the PC proves possession of a
+    fresh ephemeral key, the owner approval page opens with a public ref only,
+    and the Broker delivers challenge/code on the SAME socket so enrollment
+    continues without typed codes. No challenge, code, device id, cookie, or
+    credential ever travels on argv, URL, disk, or logs.
+    """
+    if not operator_review_admitted():
+        raise DeviceSessionRefused("operator_wss_acceptance_not_configured")
+
+    configured = os.environ.get(_CANONICAL_CREDENTIAL_DIR_ENV, "")
+    root = Path(configured).expanduser()
+    if not root.is_absolute() or root.is_symlink():
+        raise DeviceSessionRefused("canonical_protected_store_unavailable")
+
+    target_host = operator_review_target_host()
+    _admit_existing_agent_package(state_dir=enrollment.state_dir)
+    try:
+        from kagent.local_agent_secure_transport import (
+            ProtectedFileDeviceCredentialStore,
+            WindowsDpapiProtectedDataPort,
+        )
+        from .credential_install import LocalStoreCredentialReceiver
+        from .review_wss_transport import run_review_only_one_click_pc_link
+
+        protection = WindowsDpapiProtectedDataPort()
+        store = ProtectedFileDeviceCredentialStore(
+            base_dir=root, protected_data=protection,
+        )
+        receiver = LocalStoreCredentialReceiver(store=store)
+        binding_store = canonical_binding_store(
+            base_dir=configured, protected_data=protection,
+        )
+    except (ImportError, RuntimeError, ValueError, OSError) as exc:
+        raise DeviceSessionRefused("canonical_protected_store_unavailable") from exc
+
+    import webbrowser
+
+    return await run_review_only_one_click_pc_link(
+        enrollment=enrollment,
+        receiver=receiver,
+        owner_approval_open=webbrowser.open,
+        source_test_authorized=True,
+        acceptance=(target_host == _ACCEPTANCE_HOST),
+        binding_store=binding_store,
+    )
