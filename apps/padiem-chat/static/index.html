@@ -40,6 +40,7 @@
   <link rel="stylesheet" href="./claw-connection-guide.css" />
   <link rel="stylesheet" href="./answer-actions.css" />
   <link rel="stylesheet" href="./standalone-views.css" />
+  <link rel="stylesheet" href="./meeting-capture.css" />
   <link rel="stylesheet" href="./claw-focus-layout.css" />
   <!-- #4643 shared Chat/Claw microphone entry. Inert until a server-granted
        recognizer is registered and a signed-in session exists. -->
@@ -60,6 +61,7 @@
       </div>
       <nav class="side-nav" data-locale-aria-label="chat-menu" aria-label="채팅 메뉴">
         <button class="side-item" id="clawNavButton" type="button"><span class="side-icon" aria-hidden="true">◆</span><span data-locale-key="nav-claw">Claw</span></button>
+        <button class="side-item" id="meetingNavButton" type="button" aria-controls="meetingView" aria-current="false" disabled><span class="side-icon" aria-hidden="true">◉</span><span data-locale-key="nav-meeting">회의록</span></button>
         <button class="side-item" id="calendarNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">▨</span><span data-locale-key="nav-calendar">캘린더</span></button>
         <button class="side-item" id="connectorsNavButton" type="button" aria-current="false" aria-controls="connectorsView"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">Connectors</span></button>
         <button class="side-item" id="skillsNavButton" type="button" disabled aria-disabled="true" aria-haspopup="dialog" aria-controls="skillsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">✦</span><span data-locale-key="nav-skills">Skills</span></button>
@@ -997,9 +999,10 @@
     <ul id="ownerModelPreviewList" class="owner-model-preview-list" aria-label="모델 현황"></ul>
     <p data-locale-key="owner-model-preview-no-activation">모델을 표시해도 자동 선택·호출·결제가 발생하지 않습니다.</p>
   </dialog>
-  <dialog id="meetingDialog" class="meeting-dialog" aria-labelledby="meetingTitle">
+  <!-- #4647: dedicated meeting workspace within the Chat/Claw shell, not a popup. -->
+  <section id="meetingView" class="standalone-view meeting-view" aria-labelledby="meetingTitle" hidden>
     <div class="meeting-panel">
-     <header class="meeting-header"><div><p>PADIEM CLAW</p><h2 id="meetingTitle">회의록</h2></div><button type="button" id="meetingClose" aria-label="회의록 닫기">×</button></header>
+     <header class="meeting-header"><div><p>PADIEM CLAW</p><h2 id="meetingTitle">회의록</h2></div><button type="button" id="meetingClose" aria-label="Claw로 돌아가기">Claw로 돌아가기</button></header>
      <p class="meeting-help">녹음·실시간 받아쓰기는 별도 기능입니다. 시작을 누르면 마이크 사용 권한을 요청합니다. 브라우저 음성 인식은 브라우저 제공자의 외부 서비스를 사용할 수 있습니다.</p>
      <fieldset class="meeting-modes"><legend>회의 방식 선택</legend>
       <label><input type="radio" name="meetingMode" value="record" checked> 녹음만</label>
@@ -1013,7 +1016,7 @@
      <div class="meeting-exports"><button type="button" id="meetingDownloadAudio" disabled>녹음 파일 다운로드</button><button type="button" id="meetingDownloadText" disabled>전사 TXT 다운로드</button><button type="button" id="meetingSaveAudioDrive" disabled>녹음 Google Drive 저장</button><button type="button" id="meetingSaveTextDrive" disabled>전사 Google Drive 저장</button><button type="button" id="meetingDraftInClaw" disabled>Claw로 회의록 초안 만들기</button></div>
      <p class="meeting-storage-note">Google Drive 직접 저장은 쓰기 권한 연결이 필요합니다. 현재는 파일을 기기에 다운로드해 보관할 수 있습니다. 서버에 원본을 올리지 않으며 새로고침하면 임시 기록이 사라집니다.</p>
     </div>
-  </dialog>
+  </section>
   <template id="userMessageTemplate"><article class="message user-message"><div class="message-bubble"></div><span class="user-avatar" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.6"></circle><path d="M5 19.5c1.2-3.2 3.9-5 7-5s5.8 1.8 7 5"></path></svg></span></article></template>
   <template id="assistantMessageTemplate"><article class="message assistant-message"><div class="assistant-avatar" aria-hidden="true">P</div><div class="assistant-body"><div class="assistant-meta"><span data-assistant-product>Padiem Chat</span><span class="demo-label" data-runtime-label data-locale-key="answer-preparing">답변 준비 중</span></div><div class="assistant-content"></div></div></article></template>
   <script src="./theme.js"></script>

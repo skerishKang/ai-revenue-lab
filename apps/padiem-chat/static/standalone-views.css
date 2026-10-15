@@ -20,19 +20,23 @@
 }
 
 .app-shell[data-state="connectors"] .connectors-view,
-.app-shell[data-state="automation"] .automation-view {
+.app-shell[data-state="automation"] .automation-view,
+.app-shell[data-state="meeting"] .meeting-view {
   display: flex;
 }
 
 .app-shell:not([data-state="connectors"]) .connectors-view,
-.app-shell:not([data-state="automation"]) .automation-view {
+.app-shell:not([data-state="automation"]) .automation-view,
+.app-shell:not([data-state="meeting"]) .meeting-view {
   display: none !important;
 }
 
 .app-shell[data-state="connectors"] .conversation,
 .app-shell[data-state="connectors"] .composer-wrap,
 .app-shell[data-state="automation"] .conversation,
-.app-shell[data-state="automation"] .composer-wrap {
+.app-shell[data-state="automation"] .composer-wrap,
+.app-shell[data-state="meeting"] .conversation,
+.app-shell[data-state="meeting"] .composer-wrap {
   display: none !important;
 }
 

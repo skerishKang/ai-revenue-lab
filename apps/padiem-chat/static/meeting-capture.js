@@ -177,28 +177,11 @@
   }
 
   function mount(win, doc) {
-    const sidebar = doc.querySelector("#workspaceNav") || doc.querySelector(".side-nav");
-    if (!sidebar || doc.getElementById("meetingNavButton")) return null;
-    const trigger = doc.createElement("button");
-    trigger.type = "button";
-    trigger.className = "side-item";
-    trigger.id = "meetingNavButton";
-    trigger.setAttribute("aria-controls", "meetingDialog");
-    trigger.setAttribute("aria-haspopup", "dialog");
-    trigger.disabled = true;
-    const icon = doc.createElement("span");
-    icon.className = "side-icon";
-    icon.setAttribute("aria-hidden", "true");
-    icon.textContent = "◉";
-    const caption = doc.createElement("span");
-    caption.textContent = "회의록";
-    trigger.append(icon, caption);
-    sidebar.appendChild(trigger);
-    const css = doc.createElement("link");
-    css.rel = "stylesheet"; css.href = "./meeting-capture.css";
-    doc.head.appendChild(css);
-    const dialog = doc.getElementById("meetingDialog");
-    if (!dialog) return null;
+    // The first-class sidebar entry and central workspace are static HTML.
+    // Never append a second nav button or create a modal at runtime.
+    const trigger = doc.getElementById("meetingNavButton");
+    const dialog = doc.getElementById("meetingView");
+    if (!trigger || !dialog) return null;
     const find = (id) => doc.getElementById(id);
     const status = find("meetingStatus"), text = find("meetingTranscript");
     const startButton = find("meetingStart"), stopButton = find("meetingStop");
@@ -255,16 +238,29 @@
     }
     function open() {
       if (!signedIn) { say("PADIEM 로그인 후 회의록을 이용할 수 있습니다."); return false; }
-      if (!dialog.open && typeof dialog.showModal === "function") dialog.showModal();
-      else if (!dialog.open) dialog.setAttribute("open", "");
-      trigger.setAttribute("aria-expanded", "true");
       const shell = doc.querySelector(".app-shell");
+      if (!shell) return false;
+      shell.dataset.state = "meeting";
+      dialog.hidden = false;
+      trigger.setAttribute("aria-current", "page");
+      // Use the same app.js view synchronizer as Claw, Calendar, Connectors.
+      win.dispatchEvent(new win.CustomEvent("padiem:meeting-open"));
       shell?.classList.remove("sidebar-open");
       find("mobileMenu")?.setAttribute("aria-expanded", "false");
       if (find("sidebarScrim")) find("sidebarScrim").hidden = true;
       return true;
     }
     trigger.addEventListener("click", open);
+    // Keep the recording controls in view; changing sidebar workspaces while
+    // microphone capture is live could otherwise conceal the active recorder.
+    doc.addEventListener("click", (event) => {
+      if (!controller.snapshot().active && !uploadInFlight) return;
+      const nav = event.target?.closest?.(".side-nav .side-item, #newChatButton");
+      if (!nav || nav === trigger) return;
+      event.preventDefault();
+      event.stopImmediatePropagation?.();
+      say("회의 녹음 또는 업로드를 종료한 뒤 다른 화면으로 이동할 수 있습니다.");
+    }, true);
     win.addEventListener("beforeunload", (event) => {
       if (!controller.snapshot().active && !uploadInFlight) return;
       event.preventDefault();
@@ -277,8 +273,8 @@
       if (!signedIn) {
         uploadAbort?.abort();
         audio = null; text.value = ""; interim.textContent = "";
-        if (dialog.open) dialog.close?.();
-        trigger.setAttribute("aria-expanded", "false");
+        dialog.hidden = true;
+        trigger.setAttribute("aria-current", "false");
         const discard = () => {
           audio = null; text.value = ""; downloadAudio.disabled = true; downloadText.disabled = true;
           draftInClaw.disabled = true;
@@ -291,13 +287,12 @@
       }
     });
     closeButton.addEventListener("click", () => {
-      if (controller.snapshot().active || uploadInFlight) { say("녹음이나 저장을 종료한 후 닫을 수 있습니다."); return; }
-      dialog.close?.(); trigger.setAttribute("aria-expanded", "false"); trigger.focus();
+      if (controller.snapshot().active || uploadInFlight) {
+        say("회의 녹음이나 저장을 종료한 뒤 Claw로 돌아갈 수 있습니다.");
+        return;
+      }
+      find("clawNavButton")?.click();
     });
-    dialog.addEventListener("cancel", (event) => {
-      if (controller.snapshot().active || uploadInFlight) { event.preventDefault(); say("녹음이나 저장을 종료한 후 닫을 수 있습니다."); }
-    });
-    dialog.addEventListener("close", () => trigger.setAttribute("aria-expanded", "false"));
     startButton.addEventListener("click", async () => {
       if (!signedIn || uploadInFlight) return;
       if ((audio || text.value.trim()) && typeof win.confirm === "function" &&
@@ -339,8 +334,7 @@
       if (doc.querySelector(".app-shell")?.dataset.state !== "claw") { say("Claw 화면을 열 수 없습니다."); return; }
       composer.value = prompt;
       composer.dispatchEvent(new win.Event("input", { bubbles: true }));
-      dialog.close?.();
-      trigger.setAttribute("aria-expanded", "false");
+      // setNavActive() from the Claw navigation hides the meeting workbench.
       composer.focus?.();
       // Human chooses Send through the existing authorized composer form, never automatic.
     });

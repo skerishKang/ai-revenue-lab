@@ -111,3 +111,11 @@ Drive 기술 근거: https://developers.google.com/workspace/drive/api/guides/ma
 - 기존 고객 연결은 `drive.readonly`라는 현재 상태이므로 `drive.file` 권한과 적합한 CP HOST 포트가 연결되기 전까지 **운영 Drive 직접 업로드는 미활성 / 실패(503)**. Google OAuth 승인, 실제 Google file.create/readback, 장기 기록 목록 및 실제 사용자 계정 검증은 아직 완료되지 않았다.
 
 참고: [Google Drive API resumable upload](https://developers.google.com/workspace/drive/api/guides/manage-uploads)와 [Google drive.file scope](https://developers.google.com/workspace/drive/api/guides/api-specific-auth). 이 단계는 API 테스트·모의 응답의 코드 준비만 뜻하며 외부 API 파일 업로드 성공을 뜻하지 않는다.
+
+## 10. 2026-10-16 화면 구조 변경 — Chat·Claw와 나란한 독립 회의록 페이지
+
+- 대표의 최신 UI 결정에 따라 임시 `meetingDialog` 팝업을 폐기하고, **기존 B62 중앙 `main-panel` 안의 `meetingView` 독립 워크스페이스 화면**으로 전환했다. 별도 사이트·서버·인증·녹음 엔진을 만들지 않는다.
+- 왼쪽 공통 Chat·Claw 메뉴에서 **Claw 바로 아래 ‘회의록’** 항목을 정적 HTML로 제공한다. Chat·Claw와 동일한 `app-shell.dataset.state` 화면 전환/선택 표시/`standalone-view` 레이아웃을 재사용한다. `ko` / `en` 메뉴 문자열을 기존 locale 사전에 추가했다.
+- Claw 대화에서 “회의록 준비해 줘” 명령을 입력하거나 왼쪽 회의록 버튼을 누르면 **동일한 `meetingView` + 동일 캡처 컨트롤러**로 이동한다. 기존 실시간 STT·녹음/전사 3모드·로컬 다운로드·Drive 저장 버튼/503 비활성 표시·Claw 초안 채우기 기능을 보존한다.
+- 회의가 활성 상태이거나 Drive 업로드 중에는 다른 메뉴 클릭으로 녹음/업로드 제어화면을 숨기지 않고 종료를 안내한다. 종료 후 Claw로 돌아가거나 다른 메뉴 선택 가능.
+- 확인 범위: 정적 페이지 계약 Node 3건, 기존 녹음·전사 Node 6건, COM1 브라우저 synthetic UI 390/1200px 3모드 + Claw 초안 전달 및 가로 넘침 검사 PASS. 운영 실주소/실제 고객 마이크/Drive WRITE E2E는 이 변경만으로 확인된 것이 아니다.
