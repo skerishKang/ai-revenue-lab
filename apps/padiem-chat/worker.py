@@ -891,6 +891,9 @@ class Default(WorkerEntrypoint):
                     history_store=history_store,
                     d1_binding=db_binding,
                     b66_admin_google_email=b66_operator_email,
+                    b66_review_grant_operator_emails=tuple(filter(None, [
+                        binding_value(self.env, "B66_REVIEW_GRANT_ADMIN_GOOGLE_EMAIL")
+                    ])),
                     central_model_admin_google_email=central_operator_email,
                     central_model_policy_signing_key=(
                         binding_value(self.env, "PADIEM_CENTRAL_MODEL_POLICY_SIGNING_KEY") or ""

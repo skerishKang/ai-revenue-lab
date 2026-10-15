@@ -344,6 +344,7 @@ def create_app(
     b66_quote_interpreter=None,
     b66_member_admin_store=None,
     b66_admin_google_email: str = "",
+    b66_review_grant_operator_emails: tuple[str, ...] | None = (),
     central_model_admin_authorizer=None,
     central_model_admin_google_email: str = "",
     central_model_policy_store=None,
@@ -1016,9 +1017,26 @@ def create_app(
     # #3186 STEP 3-B: one server-side trusted grant and target boundary.
     _b66_operator_authority_store = app.state.b66_member_admin_store
     _b66_saved_skill_candidate_operator_authority = None
+    _b66_review_grant_admin_stores = []
+    _primary_admin_email = getattr(_b66_operator_authority_store, "admin_email", "")
+    for _review_email in b66_review_grant_operator_emails or ():
+        _email = str(_review_email or "").strip().lower()
+        if not _email or _email == str(_primary_admin_email or "").strip().lower():
+            continue
+        if _b66_operator_authority_store is None and "d1_binding" not in locals():
+            continue
+        try:
+            from .b66_member_admin import D1B66MemberAdminStore
+            _review_store = D1B66MemberAdminStore(
+                d1_binding, admin_email=_email,
+            ) if d1_binding is not None else None
+        except Exception:
+            _review_store = None
+        if _review_store is not None:
+            _b66_review_grant_admin_stores.append(_review_store)
     if _b66_operator_authority_store is not None and isinstance(
             getattr(_b66_operator_authority_store, "admin_email", None), str
-    ) and _b66_operator_authority_store.admin_email.strip():
+    ) and _b66_operator_authority_store.admin_email.strip() and _b66_review_grant_admin_stores:
         try:
             from .b66_saved_skill_candidate_authority import (
                 D1B66SavedQuoteSkillCandidateOperatorAuthority,
@@ -1027,6 +1045,7 @@ def create_app(
                 D1B66SavedQuoteSkillCandidateOperatorAuthority(
                     member_admin_store=_b66_operator_authority_store,
                     candidate_store=_b66_saved_skill_candidate_store,
+                    review_grant_admin_stores=tuple(_b66_review_grant_admin_stores),
                 )
             )
         except Exception:

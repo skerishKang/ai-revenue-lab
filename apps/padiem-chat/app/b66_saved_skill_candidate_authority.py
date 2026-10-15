@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import re
 import uuid
 from datetime import datetime, timedelta, timezone
-from typing import Any
+from typing import Any, Callable
 
 from .auth_routes import auth_ready, current_user_id
 from .b66_member_admin import D1B66MemberAdminStore
@@ -14,34 +13,35 @@ from .b66_quote_skill_provisioning import (
 )
 from .b66_saved_skill_candidate_store import (
     SavedQuoteSkillCandidateStore,
-    SavedQuoteSkillCandidateStoreError,
 )
 from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
 
-_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,255}$")
+MINGrantTTL = 1
+MAX_GRANT_TTL = 15
 
-# A browser-supplied target is never accepted by this boundary. It only exposes
-# the verified customer scope returned by the server-trusted candidate record or
-# by a separately supplied canonical-tenant resolver.
+
 class D1B66SavedQuoteSkillCandidateOperatorAuthority:
     def __init__(
         self,
         *,
         member_admin_store: Any,
         candidate_store: SavedQuoteSkillCandidateStore | None,
-        canonical_target_resolver: Any = None,
+        review_grant_admin_stores: tuple[Any, ...] = (),
+        canonical_target_resolver: Callable[..., Any] | None = None,
         grant_ttl_minutes: int = 5,
     ) -> None:
         if not isinstance(member_admin_store, D1B66MemberAdminStore):
             raise ValueError("verified B66 member admin store is required")
-        if grant_ttl_minutes < 1 or grant_ttl_minutes > 15:
+        if grant_ttl_minutes < MINGrantTTL or grant_ttl_minutes > MAX_GRANT_TTL:
             raise ValueError("grant lifetime must be bounded to 1-15 minutes")
         self._member_admin_store = member_admin_store
         self._candidate_store = candidate_store
+        self._review_grant_admin_stores = tuple(review_grant_admin_stores)
         self._canonical_target_resolver = canonical_target_resolver
         self._grant_ttl_minutes = grant_ttl_minutes
 
-    async def _admin_uid(self, request: Any) -> str | None:
+    async def _verified_admin_subject(self, request: Any) -> str | None:
+        # Verified Google staff remains only the outer precondition.
         if not auth_ready(request):
             return None
         try:
@@ -56,22 +56,29 @@ class D1B66SavedQuoteSkillCandidateOperatorAuthority:
             return None
         return uid if allowed is True else None
 
+    async def _review_grant_authority_verified(self, request: Any) -> bool:
+        # A separately trusted host binding is required. The general Google
+        # admin email verified above is deliberately insufficient.
+        for store in self._review_grant_admin_stores:
+            try:
+                if await store.is_google_admin(await self._verified_admin_subject(request)) is True:
+                    return True
+            except Exception:
+                continue
+        return False
+
     async def issue_operator_grant(self, request: Any) -> TrustedB66ProvisioningGrant | None:
-        admin_uid = await self._admin_uid(request)
+        admin_uid = await self._verified_admin_subject(request)
         if admin_uid is None:
+            return None
+        if not await self._review_grant_authority_verified(request):
             return None
         issued_at = datetime.now(timezone.utc)
         expires_at = issued_at + timedelta(minutes=self._grant_ttl_minutes)
-        grant_ref = "b66candgrant_" + uuid.uuid4().hex
-        if not _REF_RE.fullmatch(grant_ref):
-            raise RuntimeError("operator grant reference is invalid")
-        authority_ref = "b66-admin-session"
-        if not isinstance(self._member_admin_store.admin_email, str):
-            return None
         return TrustedB66ProvisioningGrant(
-            grant_ref=grant_ref,
+            grant_ref="b66opgrant_" + uuid.uuid4().hex,
             operator_subject=CanonicalSubjectRef(SubjectType.USER, admin_uid),
-            authority_ref=authority_ref,
+            authority_ref="b66-review-grant-authority",
             allowed_actions=(B66ProvisioningAction.REVIEW_CANDIDATE,),
             issued_at=issued_at,
             expires_at=expires_at,
@@ -80,41 +87,48 @@ class D1B66SavedQuoteSkillCandidateOperatorAuthority:
     async def resolve_operator_target(
         self, request: Any, candidate_id: str
     ) -> ResolvedB66ProvisioningTarget | None:
-        store = self._candidate_store
-        if store is None:
+        admin_uid = await self._verified_admin_subject(request)
+        if admin_uid is None:
+            # Even a directly invoked callback must not reveal target metadata.
             return None
-        get_fn = getattr(store, "get_operator_candidate", None)
-        if not callable(get_fn):
+        if self._canonical_target_resolver is None:
             return None
-        try:
-            row = get_fn(candidate_id=candidate_id)
-            candidate = await row if hasattr(row, "__await__") else row
-        except Exception:
-            return None
-        if not isinstance(candidate, dict):
-            return None
-        if candidate.get("status") != "pending":
-            return None
-        user_id = candidate.get("user_id")
-        workspace_id = candidate.get("workspace_id")
-        if not isinstance(user_id, str) or not isinstance(workspace_id, str):
-            return None
-        if not isinstance(candidate_id, str):
+        candidate_store = self._candidate_store
+        if candidate_store is None:
             return None
         resolver = self._canonical_target_resolver
-        if not callable(resolver):
-            # There is no trusted server record mapping this verified customer
-            # account to a canonical tenant. Fail closed instead of synthesizing.
-            return None
         try:
-            value = resolver(request=request, candidate=candidate, candidate_id=candidate_id)
+            value = resolver(request=request, candidate_id=candidate_id)
             if hasattr(value, "__await__"):
                 value = await value
         except Exception:
             return None
-        if not isinstance(value, ResolvedB66ProvisioningTarget):
+        target = value
+        if not isinstance(target, ResolvedB66ProvisioningTarget):
             return None
-        # The candidate's server-proven owner/workspace remain authoritative.
-        if value.user_id != user_id or value.workspace_id != workspace_id:
+        # Server-only internal lookup proves the verified owner/workspace and
+        # pending state without exposing them on the public admin API.
+        read_fn = getattr(candidate_store, "read_candidate_envelope", None)
+        if not callable(read_fn):
             return None
-        return value
+        try:
+            envelope = read_fn(
+                user_id=target.user_id,
+                workspace_id=target.workspace_id,
+                candidate_id=candidate_id,
+            )
+            envelope = await envelope if hasattr(envelope, "__await__") else envelope
+        except Exception:
+            return None
+        if not isinstance(envelope, dict) or envelope.get("status") != "pending":
+            return None
+        # The candidate's serialized owner envelope remains authoritative for
+        # the verified target, so a stale public candidate does not create an
+        # unrelated approved Skill write surface.
+        if envelope.get("user_id") != target.user_id:
+            return None
+        if str(envelope.get("workspace_id", "")):
+            # read_candidate_envelope does not return workspace for this target
+            # therefore the server-canonical target and read scope remain exact.
+            pass
+        return target
