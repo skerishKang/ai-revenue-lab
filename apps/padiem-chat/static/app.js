@@ -263,8 +263,23 @@
     if (tasksEntry) tasksEntry.setAttribute("aria-current", state === "claw" && inboxKind === "tasks" ? "page" : "false");
     if (alertsEntry) alertsEntry.setAttribute("aria-current", state === "claw" && inboxKind === "alerts" ? "page" : "false");
   }
-  function showConversation({ preserveClaw = false } = {}) {
-    emptyState.hidden = true;
+  // The first user turn extends the original landing panel. Older saved
+  // threads still open directly on messages instead of replaying the hero.
+  function showConversation({ preserveClaw = false, restoreSaved = false } = {}) {
+    const conversationPanel = messageList.closest(".conversation");
+    const startingOnLanding = !restoreSaved
+      && !emptyState.hidden
+      && messageList.childElementCount === 0
+      && (shell.dataset.state === "home"
+        || (preserveClaw && shell.dataset.state === "claw"));
+    const continuingLanding = !restoreSaved
+      && conversationPanel?.dataset.continuousThread === "true";
+    const keepLanding = startingOnLanding || continuingLanding;
+    if (conversationPanel) {
+      if (keepLanding) conversationPanel.dataset.continuousThread = "true";
+      else delete conversationPanel.dataset.continuousThread;
+    }
+    emptyState.hidden = !keepLanding;
     messageList.hidden = false;
     // #3931: Keep an in-flight Claw conversation in the Claw workspace.
     // Saved Chat conversations and ordinary Chat sends still use Chat.
@@ -871,6 +886,7 @@
     clearAttachment();
     messageList.replaceChildren();
     messageList.hidden = true;
+    delete messageList.closest(".conversation")?.dataset.continuousThread;
     conversationArtifactContext?.clear?.();
     emptyState.hidden = false;
     shell.dataset.state = "home";
@@ -1473,7 +1489,7 @@
       if (activeProject) refreshActiveProjectFileCount();
       const isVerifiedClawThread = clawConversationIds.has(data.conversation.id);
       if (isVerifiedClawThread) openClawWorkspace();
-      showConversation({ preserveClaw: isVerifiedClawThread });
+      showConversation({ preserveClaw: isVerifiedClawThread, restoreSaved: true });
       conversationArtifactContext?.show?.(data.conversation.id);
       data.conversation.messages.forEach((item) => {
         if (!item || typeof item.content !== "string") return;
