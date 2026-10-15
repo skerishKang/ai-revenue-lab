@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>견적서 만들기</title>
+  <title>시지아이 견적서 만들기</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="padiem-account.css">
   <link rel="stylesheet" href="member-inquiry.css">
@@ -51,7 +51,7 @@
   <main class="shell">
     <header class="topbar">
       <div class="brand">
-        <h1><button class="brand-home" id="brandHome" type="button" aria-label="새 AI 견적 대화 시작">견적서 만들기</button></h1>
+        <h1><button class="brand-home" id="brandHome" type="button" aria-label="새 AI 견적 대화 시작">시지아이 견적서 만들기</button></h1>
         <p>입력부터 PDF 저장까지 한 화면에서</p>
       </div>
       <div class="topbar-actions">
@@ -487,6 +487,16 @@
     </div>
     </section>
   </main>
+  <dialog id="b66NewQuoteDialog" class="b66-new-quote-dialog" aria-labelledby="b66NewQuoteTitle" aria-describedby="b66NewQuoteDescription">
+    <form method="dialog">
+      <h2 id="b66NewQuoteTitle">시지아이 견적서 만들기</h2>
+      <p id="b66NewQuoteDescription">현재 작성 중인 견적과 화면의 대화 내용을 초기화하고 새 견적서를 작성하시겠습니까? 저장된 이전 견적과 대화 기록은 유지됩니다.</p>
+      <div class="b66-new-quote-actions">
+        <button type="submit" value="cancel">취소</button>
+        <button type="submit" value="confirm" class="b66-new-quote-confirm">새 견적 시작</button>
+      </div>
+    </form>
+  </dialog>
   <dialog id="b66InquiryDialog" aria-labelledby="b66InquiryTitle">
     <section class="b66-inquiry-card">
       <header><h2 id="b66InquiryTitle">운영자에게 문의하기</h2>
