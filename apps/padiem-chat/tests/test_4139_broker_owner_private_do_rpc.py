@@ -236,3 +236,87 @@ def test_reserve_failure_emits_only_fixed_first_stage_codes(monkeypatch):
     }
     assert REF not in str(events)
     assert "sensitive upstream" not in str(events)
+
+
+def test_private_broker_failure_envelope_reaches_only_safe_chat_stage(monkeypatch):
+    from app import connector_pending_pc_owner_rpc as port_module
+    from app.connector_pending_pc_owner_rpc import OwnerPcPrivateRpcDenied
+    from padiem_control_plane.broker_pending_pc_private_rpc import (
+        CanonicalBrokerPendingPcBindingRPC,
+    )
+    events = []
+    monkeypatch.setattr(port_module, "emit_stage_event", lambda **entry: events.append(entry))
+
+    class ProxyOnlyFailureBinding:
+        async def reserve_pending_pc_owner_intent(self, _wire):
+            return JsProxyReply({"_pending_pc_owner_rpc_failure": "live_socket_missing"})
+        async def deliver_pending_pc_link(self, _wire):
+            raise AssertionError("delivery should not occur")
+
+    async def run():
+        item, sock, storage = actor()
+        pending = await offer(item, sock)
+        # DO exists, but this same-authority instance has no live offer actor.
+        other_do = SameDo(storage)
+        response = await other_do.reserve_pending_pc_owner_intent({
+            "request_ref": REF, "owner_subject_ref": "subject.1",
+            "account_ref": "account.1", "workspace_ref": "workspace.1",
+        })
+        assert response == {"_pending_pc_owner_rpc_failure": "live_socket_missing"}
+        bad = await other_do.reserve_pending_pc_owner_intent({"not_a_ref": "secret"})
+        assert bad == {"_pending_pc_owner_rpc_failure": "private_fields_invalid"}
+        port = CanonicalBrokerOwnerPendingPcPort(
+            signed_owner=session(), canonical_broker_binding=ProxyOnlyFailureBinding(),
+            identity=Fixture(),
+        )
+        with pytest.raises(OwnerPcPrivateRpcDenied, match="pending_pc_reserve_unavailable"):
+            await port.reserve_once(request_ref=REF)
+        assert len(events) == 1
+        assert events[0]["stage"] == "pc_owner.broker_reserve"
+        assert events[0]["code"] == "broker_live_socket_missing"
+        assert REF not in repr(events)
+        item.mark_disconnected()
+        with pytest.raises(Exception):
+            await pending
+    asyncio.run(run())
+
+
+def test_private_broker_worker_to_do_rpc_rejection_is_fixed_code_only():
+    from padiem_control_plane.broker_pending_pc_private_rpc import CanonicalBrokerPendingPcBindingRPC
+
+    class NoDo(CanonicalBrokerPendingPcBindingRPC):
+        def _stub(self):
+            raise RuntimeError("RAW_SECRET_MUST_NOT_BE_RETURNED")
+
+    async def run():
+        result = await NoDo().reserve_pending_pc_owner_intent({"request_ref": REF})
+        assert result == {"_pending_pc_owner_rpc_failure": "do_rpc_unavailable"}
+        assert "RAW_SECRET" not in repr(result)
+    asyncio.run(run())
+
+
+def test_legacy_actor_reservation_failure_stays_bounded(monkeypatch):
+    async def run():
+        item, sock, storage = actor()
+        pending = await offer(item, sock)
+        broker = SameDo(storage)
+        broker._bind_verified_pc_wss(request_ref=REF, actor=item)
+        original = storage.sql.exec
+        def broken(statement, *args):
+            if statement.startswith("UPDATE canonical_broker_pending_pc_link SET "):
+                raise RuntimeError("RAW_SQL_SECRET_MUST_NOT_BE_RETURNED")
+            return original(statement, *args)
+        monkeypatch.setattr(storage.sql, "exec", broken)
+        result = await broker.reserve_pending_pc_owner_intent({
+            "request_ref": REF, "owner_subject_ref": "subject.1",
+            "account_ref": "account.1", "workspace_ref": "workspace.1",
+        })
+        # This old B62 fake actor masks SQL failures; the real canonical
+        # Broker DO native actor is covered in the package-level test below.
+        assert result == {"_pending_pc_owner_rpc_failure": "sql_reservation_unconfirmed"}
+        assert "RAW_SQL" not in repr(result)
+        assert stored(storage)[0]["state"] == "pending"
+        item.mark_disconnected()
+        with pytest.raises(Exception):
+            await pending
+    asyncio.run(run())

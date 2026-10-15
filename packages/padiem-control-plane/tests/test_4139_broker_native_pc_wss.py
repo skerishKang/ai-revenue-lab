@@ -479,3 +479,26 @@ def test_wss_actor_resolution_uses_underlying_js_socket_identity():
     unrelated = Socket()
     unrelated.serializeAttachment(original.tag)
     assert _resolve_native_actor(owner, Proxy(unrelated)) is None
+
+
+def test_owner_intent_sql_error_is_returned_as_fixed_private_rpc_failure(monkeypatch):
+    """Real Broker-native WSS actor + canonical SQLite path, not B62 fake."""
+    async def main():
+        do, client, server, result = await handshake(monkeypatch)
+        assert server.sent[1]["type"] == "pc_offer_ready"
+        original = do._storage.sql.exec
+
+        def sql_failure(statement, *args):
+            if statement.startswith("UPDATE canonical_broker_pending_pc_link SET "):
+                raise RuntimeError("NEVER_LOG_PRIVATE_SQL_OR_CREDENTIAL")
+            return original(statement, *args)
+
+        monkeypatch.setattr(do._storage.sql, "exec", sql_failure)
+        output = await do.reserve_pending_pc_owner_intent({
+            "request_ref": REF, "owner_subject_ref": "subject.test",
+            "account_ref": "account.test", "workspace_ref": "workspace.test",
+        })
+        assert output == {"_pending_pc_owner_rpc_failure": "store_unavailable"}
+        assert "NEVER_LOG_PRIVATE_SQL" not in repr(output)
+        assert rows(do._storage)[0]["state"] == "pending"
+    asyncio.run(main())

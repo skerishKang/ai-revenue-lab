@@ -33,6 +33,23 @@ _DEVICE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
 _CODE = re.compile(r"^[0-9a-f]{32}$")
 
 
+# Private internal RPC diagnostic. The public owner route still returns its
+# original fixed pending_pc_unavailable denial, never these internal details.
+_OWNER_DIAGNOSTIC_KEY = "_pending_pc_owner_rpc_failure"
+_OWNER_DIAGNOSTIC_CODES = frozenset({
+    "private_fields_invalid", "rpc_disabled", "storage_unavailable",
+    "live_socket_missing", "actor_unavailable", "actor_refused",
+    "owner_scope_invalid", "request_unavailable", "already_used",
+    "outbound_channel_unverified", "store_invalid", "store_unavailable",
+    "sql_reservation_unconfirmed", "receipt_invalid", "do_rpc_unavailable",
+})
+
+def _owner_rpc_failure(code: str) -> dict[str, str]:
+    return {_OWNER_DIAGNOSTIC_KEY: (
+        code if code in _OWNER_DIAGNOSTIC_CODES else "actor_refused"
+    )}
+
+
 class BrokerPendingPcPrivateRefused(RuntimeError):
     """No code, credential, session, or forged identity is returned."""
 
@@ -153,18 +170,53 @@ class CanonicalBrokerPendingPcLiveRPC:
         return receipt
 
     async def reserve_pending_pc_owner_intent(self, payload: dict) -> dict[str, Any]:
+        """Exact one-use RPC; relay bounded refusal origin without exception text.
+
+        This private-only failure envelope cannot be mistaken for an approved
+        offer receipt; B62 still verifies the original strict success keys.
+        """
         required = {"request_ref", "owner_subject_ref", "account_ref", "workspace_ref"}
+        # Cloudflare's Python RPC guarantees plain dict for supported objects.
+        # Keep strict type and field checks; never trust browser-supplied scope.
         if type(payload) is not dict or set(payload) != required or not _ref(payload["request_ref"]):
-            raise BrokerPendingPcPrivateRefused("pending_pc_private_fields_invalid")
+            return _owner_rpc_failure("private_fields_invalid")
         for field in ("owner_subject_ref", "account_ref", "workspace_ref"):
             value = payload[field]
             if type(value) is not str or _DEVICE.fullmatch(value) is None:
-                raise BrokerPendingPcPrivateRefused("pending_pc_private_fields_invalid")
-        actor = self._pc_actor(payload["request_ref"])
+                return _owner_rpc_failure("private_fields_invalid")
+        try:
+            actor = self._pc_actor(payload["request_ref"])
+        except BrokerPendingPcPrivateRefused as exc:
+            if exc.args == ("pending_pc_live_socket_missing",):
+                return _owner_rpc_failure("live_socket_missing")
+            if exc.args == ("pending_pc_rpc_disabled",):
+                return _owner_rpc_failure("rpc_disabled")
+            if exc.args == ("pending_pc_canonical_storage_unavailable",):
+                return _owner_rpc_failure("storage_unavailable")
+            return _owner_rpc_failure("actor_unavailable")
+        except Exception:
+            return _owner_rpc_failure("actor_unavailable")
         try:
             receipt = await actor.reserve_owner_intent_once(**payload)
-        except Exception:
-            raise BrokerPendingPcPrivateRefused("pending_pc_owner_intent_unconfirmed") from None
+        except Exception as exc:
+            # The canonical SQL ledger has already converted SQL exceptions to
+            # fixed ControlPlaneContractError.code values. Never emit its text.
+            from .contracts import ControlPlaneContractError
+            if type(exc) is ControlPlaneContractError:
+                classification = {
+                    "pending_pc_owner_scope_invalid": "owner_scope_invalid",
+                    "pending_pc_request_unavailable": "request_unavailable",
+                    "pending_pc_request_already_used": "already_used",
+                    "pending_pc_outbound_channel_unverified": "outbound_channel_unverified",
+                    "pending_pc_store_invalid": "store_invalid",
+                    "pending_pc_store_unavailable": "store_unavailable",
+                }.get(exc.code)
+                if classification:
+                    return _owner_rpc_failure(classification)
+            from .broker_pending_pc_wss import PendingPcWssRefused
+            if type(exc) is PendingPcWssRefused and exc.args == ("pending_pc_reserve_denied",):
+                return _owner_rpc_failure("actor_refused")
+            return _owner_rpc_failure("sql_reservation_unconfirmed")
         if (
             type(receipt) is not dict
             or set(receipt) != {
@@ -177,7 +229,7 @@ class CanonicalBrokerPendingPcLiveRPC:
                 "device_possession_verified", "connected_to_outbound_channel", "reserved_once"
             ))
         ):
-            raise BrokerPendingPcPrivateRefused("pending_pc_owner_intent_unconfirmed")
+            return _owner_rpc_failure("receipt_invalid")
         return receipt
 
     async def deliver_pending_pc_link(self, payload: dict) -> dict[str, Any]:
@@ -269,7 +321,12 @@ class CanonicalBrokerPendingPcBindingRPC:
         return await self._stub().reserve_pending_pc_link(payload)
 
     async def reserve_pending_pc_owner_intent(self, payload: dict) -> dict:
-        return await self._stub().reserve_pending_pc_owner_intent(payload)
+        try:
+            return await self._stub().reserve_pending_pc_owner_intent(payload)
+        except Exception:
+            # Distinguishes Worker->DO RPC failure from a DO's fixed refusal
+            # envelope without exposing framework exception text.
+            return _owner_rpc_failure("do_rpc_unavailable")
 
     async def deliver_pending_pc_link(self, payload: dict) -> dict:
         return await self._stub().deliver_pending_pc_link(payload)
