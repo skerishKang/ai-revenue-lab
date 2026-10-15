@@ -79,6 +79,14 @@ async def drive_general_grounding(
         name, mime = item["name"], item["mime_type"]
         rows.append(f"{i}. {name} ({mime})")
         url = item.get("url")
+        # Drive may omit webViewLink even for a valid file. A provider file ID
+        # already validated by the Engine can still resolve through Google's
+        # official open endpoint. Never fabricate a link from a free-text name.
+        file_id = item.get("file_id")
+        if (not isinstance(url, str) or not url.startswith("https://")) and (
+            isinstance(file_id, str) and re.fullmatch(r"[A-Za-z0-9_-]{1,200}", file_id)
+        ):
+            url = "https://drive.google.com/open?id=" + file_id
         if isinstance(url, str) and url.startswith("https://"):
             sources.append({"url": url, "title": name[:200], "retrieved_at": datetime.now(timezone.utc).isoformat()})
     if listing.get("more"):
