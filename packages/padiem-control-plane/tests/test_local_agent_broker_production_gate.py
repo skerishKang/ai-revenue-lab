@@ -20,7 +20,20 @@ def test_state_config_declares_server_owned_authority_and_required_secret_name_o
     assert "routes" not in config
     assert "route" not in config
     assert config["vars"] == {
-        "LOCAL_AGENT_BROKER_AUTHORITY_REF": "control-plane.local-agent-broker.production.v1"
+        'LOCAL_AGENT_BROKER_AUTHORITY_REF': 'control-plane.local-agent-broker.production.v1',
+        'LOCAL_AGENT_BROKER_PENDING_PC_OWNER_RPC_ENABLED': 'enabled',
+        'LOCAL_AGENT_BROKER_PENDING_PC_SCHEMA_INSTALLED': 'installed',
+        'LOCAL_AGENT_BROKER_PENDING_PC_RELEASE_SCOPE': 'owner-controlled-production-4139',
+        'LOCAL_AGENT_BROKER_PENDING_PC_PRODUCTION_ENABLED': 'enabled',
+        'LOCAL_AGENT_BROKER_PENDING_PC_WSS_ENABLED': 'enabled',
+        'LOCAL_AGENT_BROKER_PENDING_PC_CANONICAL_BOOTSTRAP_ENABLED': 'enabled',
+        'LOCAL_AGENT_BROKER_PENDING_PC_IDENTITY_HANDOFF_ENABLED': 'enabled',
+        'LOCAL_AGENT_BROKER_PENDING_PC_NATIVE_DELIVERY_ENABLED': 'enabled',
+        'LOCAL_AGENT_BROKER_PAIRING_RPC_ENABLED': 'true',
+        'LOCAL_AGENT_BROKER_PAIRING_SCHEMA_INSTALLED': 'true',
+        'LOCAL_AGENT_BROKER_PAIRING_ISSUANCE_RATE_LIMIT': '4',
+        'LOCAL_AGENT_BROKER_GATEWAY_BOOTSTRAP_ENABLED': 'true',
+        'LOCAL_AGENT_BROKER_GATEWAY_BOOTSTRAP_SCHEMA_INSTALLED': 'true',
     }
     assert config["secrets"] == {"required": ["LOCAL_AGENT_BROKER_PEPPER"]}
     assert config["durable_objects"]["bindings"] == [

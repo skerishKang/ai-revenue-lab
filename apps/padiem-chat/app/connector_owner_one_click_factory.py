@@ -23,12 +23,16 @@ ONE_CLICK_OWNER_FACTORY_PRODUCTION_ENABLED = False
 
 class VerifiedOwnerOneClickFactory:
     def __init__(self, *, identity: Any, host: Any, broker_binding: Any) -> None:
+        if not callable(getattr(identity, "resolve_connector_owner_scope", None)):
+            raise ValueError("canonical Identity owner-scope read missing")
+        if not callable(getattr(identity, "resolve_connector_enrollment_consent_for_device", None)):
+            raise ValueError("canonical Identity existing-consent read missing")
         if not callable(getattr(identity, "grant_connector_enrollment_consent", None)):
             raise ValueError("canonical Identity consent authority missing")
         if not callable(getattr(host, "issue", None)):
             raise ValueError("canonical issuing host missing")
         if any(not callable(getattr(broker_binding, key, None)) for key in (
-            "reserve_pending_pc_link", "deliver_pending_pc_link",
+            "reserve_pending_pc_owner_intent", "deliver_pending_pc_link",
         )):
             raise ValueError("canonical Broker owner private RPC missing")
         self._identity=identity
@@ -40,7 +44,7 @@ class VerifiedOwnerOneClickFactory:
         # The HTTP route has ALREADY verified product owner and exact origin.
         scoped = CanonicalBrokerOwnerPendingPcPort(
             signed_owner=signed_owner,
-            canonical_broker_binding=self._binding,
+            canonical_broker_binding=self._binding, identity=self._identity,
         )
         return OneClickOwnerApproval(
             identity=self._identity, host=self._host,

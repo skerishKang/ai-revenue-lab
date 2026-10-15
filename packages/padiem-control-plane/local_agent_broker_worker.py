@@ -12,6 +12,9 @@ from local_agent_broker_private_http_bridge import handle_private_device_fetch
 from padiem_control_plane.broker_pending_pc_wss import route_private_pc_wss_upgrade
 from local_agent_broker_office_chunks import compose_broker_office_chunks, read_broker_office_part_rpc
 from local_agent_broker_text_results import compose_broker_text_results, read_verified_file_text_rpc
+from local_agent_broker_installed_profile import (
+    BrokerInstalledExecutionProfileStore, installed_execution_profile_rpc,
+)
 from local_agent_broker_sql_state import (
     CloudflareDurableObjectHttpSessionState, CloudflareDurableObjectSerializedStateBackend, safe_ref,
 )
@@ -36,6 +39,9 @@ class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, CanonicalBrokerPe
         self.text_results = compose_broker_text_results(
             storage=ctx.storage, state_port=self._runtime.state_port,
             authority_ref=self._runtime.authority_ref())
+        self.execution_profiles = BrokerInstalledExecutionProfileStore(
+            storage=ctx.storage, state_port=self._runtime.state_port,
+            authority_ref=self._runtime.authority_ref())
         self._device_http = LocalAgentBrokerDeviceHttpService(
             state_port=self._runtime.state_port,
             pepper=str(env.LOCAL_AGENT_BROKER_PEPPER).encode("utf-8"),
@@ -46,6 +52,7 @@ class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, CanonicalBrokerPe
             session_open_transaction=self._storage.transactionSync,
             office_chunks=self.office_chunks,
             text_results=self.text_results,
+            execution_profiles=self.execution_profiles,
         )
 
     def _authority_ref(self) -> str:
@@ -112,6 +119,9 @@ class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, CanonicalBrokerPe
     async def read_verified_file_text(self, payload: dict) -> dict:  # #4139 read-only RPC
         return read_verified_file_text_rpc(self.text_results, payload)
 
+    async def installed_execution_profile(self, payload: dict) -> dict:
+        return installed_execution_profile_rpc(self.execution_profiles, payload)
+
     async def fetch(self, request):
         return await self._pending_pc_wss_fetch(request)
 
@@ -119,6 +129,7 @@ class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, CanonicalBrokerPe
 class Default(WorkerEntrypoint):
     """Private Service Binding gateway to the server-owned broker object."""
     reserve_pending_pc_link = CanonicalBrokerPendingPcBindingRPC.reserve_pending_pc_link
+    reserve_pending_pc_owner_intent = CanonicalBrokerPendingPcBindingRPC.reserve_pending_pc_owner_intent
     deliver_pending_pc_link = CanonicalBrokerPendingPcBindingRPC.deliver_pending_pc_link
     pending_pc_identity_status = CanonicalBrokerPendingPcBindingRPC.pending_pc_identity_status
     claim_pending_pc_identity_proof = CanonicalBrokerPendingPcBindingRPC.claim_pending_pc_identity_proof
@@ -192,6 +203,9 @@ class Default(WorkerEntrypoint):
 
     async def read_verified_file_text(self, payload: dict) -> dict:
         return await self._stub().read_verified_file_text(payload)
+
+    async def installed_execution_profile(self, payload: dict) -> dict:
+        return await self._stub().installed_execution_profile(payload)
 
     async def fetch(self, request):
         return await route_private_pc_wss_upgrade(self, request, handle_private_device_fetch)

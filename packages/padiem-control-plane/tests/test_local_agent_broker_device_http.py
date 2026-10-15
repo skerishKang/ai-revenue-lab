@@ -228,6 +228,7 @@ def test_device_service_rejects_transport_shape_before_credential_auth() -> None
 def test_device_service_boundary_truth() -> None:
     assert DEVICE_HTTP_ROUTES == (
         "/acknowledge",
+        "/execution-profile",
         "/heartbeat",
         "/material",
         "/office-part",

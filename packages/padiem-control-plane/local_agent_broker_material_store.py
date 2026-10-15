@@ -9,7 +9,42 @@ from padiem_control_plane.local_agent_broker_state_wire import SerializedLocalAg
 from local_agent_broker_sql_state import iso, parse_iso, positive_int, row_value, rows, rows_written, safe_ref
 
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+_IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 MAX_DURABLE_COMMAND_MATERIAL_BYTES = 196_608
+# #4139: the closed TXT approval receipt envelope (claw-txt-read-approval.v1).
+# The Chat worker mints it from the authenticated owner request; this store
+# only persists it. Storing grants nothing: the Resident verifies digests,
+# expiry, correlation and one-shot use before any READ. The bilateral
+# constants must match the issuance module and the Resident parser verbatim.
+TXT_RECEIPT_FORMAT = "claw-txt-read-approval.v1"
+TXT_RECEIPT_TOOL_ID = "local.filesystem.read"
+TXT_RECEIPT_REQUIREMENT = "user_confirmation"
+TXT_RECEIPT_OUTCOME = "approved"
+TXT_RECEIPT_SCOPE = ("filesystem.read",)
+TXT_RECEIPT_OPERATION = "read"
+TXT_RECEIPT_AUTHORITY_REF = "claw_connector_txt_request_v1"
+TXT_RECEIPT_POLICY_REF = "padiem_txt_selected_root_read_policy_v1"
+TXT_RECEIPT_SUFFIX = ".txt"
+_TXT_RECEIPT_KEYS = frozenset({
+    "format", "evidence_ref", "command_id", "request_id",
+    "approval_pause", "approval_decision", "exact_tool_arguments",
+    "local_policy_ref", "expires_at",
+})
+_TXT_PAUSE_KEYS = frozenset({
+    "pause_id", "run_id", "agent_runtime_id", "tool_id",
+    "invocation_sha256", "requirement", "step_index",
+    "created_at", "expires_at", "approval_scope",
+})
+_TXT_DECISION_KEYS = frozenset({
+    "decision_id", "pause_id", "outcome",
+    "authority_ref", "evidence_ref", "decided_at",
+})
+_TXT_ARG_KEYS = frozenset({
+    "action_id", "run_id", "device_id", "root_ref",
+    "operation", "path_relative", "requested_at", "request_fingerprint",
+    "content_bytes", "content_sha256", "directory_enumeration",
+    "recursive_delete", "admin_elevation",
+})
 _MATERIAL_WIRE_KEYS = frozenset({"contract_version", "command_id", "binding_ref", "sequence", "request_fingerprint", "revision_ref", "material"})
 _MATERIAL_KEYS = frozenset({"request_id", "run_id", "device_id", "root_ref", "argv", "cwd_relative", "requested_at", "timeout_seconds", "shell_authority", "admin_elevation", "environment_payload", "provider_authority", "p01_approval_payload"})
 _COMMAND_MATERIAL_SCHEMA = """
@@ -35,6 +70,114 @@ def closed_mapping(value: Any, keys: frozenset[str], label: str) -> dict[str, An
     if not isinstance(value, dict) or frozenset(value) != keys:
         raise ValueError(f"{label} schema mismatch")
     return value
+
+
+def _bounded_ref(value: Any, field_name: str) -> str:
+    if (
+        type(value) is not str
+        or not value
+        or len(value) > 512
+        or any(character.isspace() for character in value)
+    ):
+        raise ValueError(f"{field_name} must be a bounded safe reference")
+    return value
+
+
+def _bounded_id(value: Any, field_name: str) -> str:
+    if not isinstance(value, str) or not _IDENTIFIER_RE.fullmatch(value):
+        raise ValueError(f"{field_name} must be a bounded safe identifier")
+    return value
+
+
+def _iso_text(value: Any, field_name: str) -> str:
+    if not isinstance(value, str) or not value:
+        raise ValueError(f"{field_name} must be ISO-8601 text")
+    try:
+        parsed = parse_iso(value, field_name)
+    except (ValueError, TypeError) as exc:
+        raise ValueError(f"{field_name} must be valid ISO-8601 text") from exc
+    return value
+
+
+def _relative_txt_path(value: Any, field_name: str) -> str:
+    if not isinstance(value, str) or not value.strip() or len(value) > 1024:
+        raise ValueError(f"{field_name} must be a bounded relative Windows file path")
+    if value.strip() != value:
+        raise ValueError(f"{field_name} must not carry surrounding whitespace")
+    lowered = value.replace("/", "\\")
+    if lowered.startswith("\\") or (len(lowered) >= 2 and lowered[1] == ":"):
+        raise ValueError(f"{field_name} must remain inside the selected root")
+    if any(part == ".." for part in re.split(r"[\\/]", lowered)):
+        raise ValueError(f"{field_name} traversal is not allowed")
+    if not lowered.lower().endswith(TXT_RECEIPT_SUFFIX):
+        raise ValueError(f"{field_name} must name an exact TXT file")
+    return value
+
+
+def validate_txt_approval_receipt(value: Any) -> dict[str, Any]:
+    """Validate the closed TXT approval envelope shape (no approval granted).
+
+    Structural shape only: exact keys, bounded types, enum constants, digest
+    shapes and parseable timestamps. Digest recomputation, expiry against now,
+    command correlation and one-shot use are verified Resident-side by the
+    plan source before any READ; this store only refuses malformed envelopes.
+    """
+    receipt = closed_mapping(value, _TXT_RECEIPT_KEYS, "TXT approval receipt")
+    if receipt["format"] != TXT_RECEIPT_FORMAT:
+        raise ValueError("TXT approval receipt format mismatch")
+    _bounded_ref(receipt["evidence_ref"], "receipt.evidence_ref")
+    _bounded_ref(receipt["command_id"], "receipt.command_id")
+    _bounded_ref(receipt["request_id"], "receipt.request_id")
+    if receipt["local_policy_ref"] != TXT_RECEIPT_POLICY_REF:
+        raise ValueError("TXT approval receipt policy mismatch")
+    _iso_text(receipt["expires_at"], "receipt.expires_at")
+    pause = closed_mapping(receipt["approval_pause"], _TXT_PAUSE_KEYS, "TXT approval pause")
+    _bounded_id(pause["pause_id"], "pause.pause_id")
+    _bounded_id(pause["run_id"], "pause.run_id")
+    _bounded_id(pause["agent_runtime_id"], "pause.agent_runtime_id")
+    if pause["tool_id"] != TXT_RECEIPT_TOOL_ID:
+        raise ValueError("TXT approval pause tool mismatch")
+    digest(pause["invocation_sha256"], "pause.invocation_sha256")
+    if pause["requirement"] != TXT_RECEIPT_REQUIREMENT:
+        raise ValueError("TXT approval pause requirement mismatch")
+    if isinstance(pause["step_index"], bool) or not isinstance(pause["step_index"], int):
+        raise ValueError("TXT approval pause step_index must be an integer")
+    if not 1 <= pause["step_index"] <= 64:
+        raise ValueError("TXT approval pause step_index out of range")
+    _iso_text(pause["created_at"], "pause.created_at")
+    _iso_text(pause["expires_at"], "pause.expires_at")
+    if not isinstance(pause["approval_scope"], list) or pause["approval_scope"] != list(TXT_RECEIPT_SCOPE):
+        raise ValueError("TXT approval pause scope mismatch")
+    decision = closed_mapping(receipt["approval_decision"], _TXT_DECISION_KEYS, "TXT approval decision")
+    _bounded_id(decision["decision_id"], "decision.decision_id")
+    if decision["pause_id"] != pause["pause_id"]:
+        raise ValueError("TXT approval decision does not belong to the pause")
+    if decision["outcome"] != TXT_RECEIPT_OUTCOME:
+        raise ValueError("TXT approval decision outcome mismatch")
+    if decision["authority_ref"] != TXT_RECEIPT_AUTHORITY_REF:
+        raise ValueError("TXT approval decision authority mismatch")
+    _bounded_ref(decision["evidence_ref"], "decision.evidence_ref")
+    if decision["evidence_ref"] != receipt["evidence_ref"]:
+        raise ValueError("TXT approval decision evidence_ref mismatch")
+    _iso_text(decision["decided_at"], "decision.decided_at")
+    args = closed_mapping(receipt["exact_tool_arguments"], _TXT_ARG_KEYS, "TXT approval arguments")
+    _bounded_ref(args["action_id"], "args.action_id")
+    _bounded_ref(args["run_id"], "args.run_id")
+    _bounded_ref(args["device_id"], "args.device_id")
+    _bounded_ref(args["root_ref"], "args.root_ref")
+    if args["operation"] != TXT_RECEIPT_OPERATION:
+        raise ValueError("TXT approval arguments operation mismatch")
+    _relative_txt_path(args["path_relative"], "args.path_relative")
+    _iso_text(args["requested_at"], "args.requested_at")
+    digest(args["request_fingerprint"], "args.request_fingerprint")
+    if type(args["content_bytes"]) is not int or args["content_bytes"] != 0:
+        raise ValueError("TXT approval arguments must describe a pre-read intent")
+    if args["content_sha256"] is not None:
+        raise ValueError("TXT approval arguments must describe a pre-read intent")
+    for flag in ("directory_enumeration", "recursive_delete", "admin_elevation"):
+        if args[flag] is not False:
+            raise ValueError(f"TXT approval arguments {flag} must be false")
+    return receipt
 
 
 def canonical_json(value: dict[str, Any], *, maximum_bytes: int, label: str) -> tuple[str, bytes]:
@@ -91,9 +234,25 @@ class CloudflareDurableObjectCommandMaterialStore:
         material = closed_mapping(wire["material"], _MATERIAL_KEYS, "command material")
         if material["shell_authority"] is not False or material["admin_elevation"] is not False:
             raise ValueError("command material cannot grant shell or admin authority")
-        for field_name in ("environment_payload", "provider_authority", "p01_approval_payload"):
+        for field_name in ("environment_payload", "provider_authority"):
             if material[field_name] is not None:
                 raise ValueError(f"command material {field_name} must remain null")
+        approval = material["p01_approval_payload"]
+        if approval is not None:
+            # #4139: a closed TXT approval receipt may ride the material.
+            # Storing it grants nothing; the Resident verifies digests, expiry,
+            # command correlation and one-shot use before any READ.
+            receipt = validate_txt_approval_receipt(approval)
+            if receipt["command_id"] != command_id:
+                raise ValueError("TXT approval receipt does not belong to this command")
+            if receipt["exact_tool_arguments"]["run_id"] != material["run_id"]:
+                raise ValueError("TXT approval receipt run does not match the material")
+            if receipt["exact_tool_arguments"]["device_id"] != material["device_id"]:
+                raise ValueError("TXT approval receipt device does not match the material")
+            if receipt["exact_tool_arguments"]["root_ref"] != material["root_ref"]:
+                raise ValueError("TXT approval receipt root does not match the material")
+            if receipt["request_id"] != material["request_id"]:
+                raise ValueError("TXT approval receipt request does not match the material")
         argv = material["argv"]
         if type(argv) is not list or not all(type(item) is str for item in argv):
             raise ValueError("command material argv must be a JSON text list")

@@ -930,6 +930,67 @@ class D1HistoryStore:
             await self._run("UPDATE projects SET updated_at=? WHERE id=? AND user_id=?", now, project_id, user_id)
         return cid
 
+    async def record_txt_pending_run(
+        self, *, user_id: str, run_id: str, workspace_id: str,
+        user_text: str, conversation_id: str | None,
+    ) -> str:
+        """Stage a real owner conversation + pending local run, never an answer.
+
+        The verified Broker result alone is allowed to insert the assistant
+        message later. This uses the existing conversation/messages/run tables.
+        """
+        workspace = _safe_identifier("workspace_id", workspace_id)
+        content = _bounded_text(user_text, "user_text")
+        cid = validate_conversation_id(conversation_id)
+        creating = cid is None
+        project_id = None
+        if creating:
+            cid = _chat_id()
+            sequence = 0
+        else:
+            owned = await self._first(
+                "SELECT id,project_id FROM conversations WHERE id=? AND user_id=? AND product_scope=?",
+                cid, user_id, PRODUCT_SCOPE_CHAT,
+            )
+            if not owned:
+                raise HistoryForbidden("conversation is not owned by current user")
+            project_id = owned.get("project_id")
+            found = await self._first(
+                "SELECT MAX(sequence_number) AS max_sequence FROM messages WHERE conversation_id=?",
+                cid,
+            )
+            number = found.get("max_sequence") if isinstance(found, dict) else None
+            sequence = int(number) + 1 if number is not None else 0
+        now = _now_iso()
+        msg_id = _message_id()
+        key = await self._put_full_message(cid, msg_id, user_text.strip())
+        try:
+            if creating:
+                await self._run(
+                    "INSERT INTO conversations (id,user_id,project_id,title,created_at,updated_at,product_scope) "
+                    "VALUES (?,?,NULL,?,?,?,?)",
+                    cid, user_id, _title_from_user_text(content), now, now, PRODUCT_SCOPE_CHAT,
+                )
+            await self._run(
+                "INSERT INTO messages (id,conversation_id,sequence_number,role,content,created_at) "
+                "VALUES (?,?,?,'user',?,?)",
+                msg_id, cid, sequence, content, now,
+            )
+            await self.record_claw_run(
+                user_id=user_id, run_id=run_id, channel="web",
+                action="txt_read", title=("Claw: " + content)[:MAX_HISTORY_TITLE_CHARS],
+                status="pending", conversation_id=cid, workspace_id=workspace,
+            )
+            await self._run(
+                "UPDATE conversations SET updated_at=? WHERE id=? AND user_id=?",
+                now, cid, user_id,
+            )
+        except Exception:
+            if key is not None:
+                await self._delete_full_keys([key])
+            raise
+        return cid
+
     async def create_web_xlsx_p01_run(
         self, *, user_id: str, workspace_id: str, filename: str,
         product_scope: str,
@@ -1424,6 +1485,26 @@ class D1HistoryStore:
             same = all(existing.get(name) == value for name, value in candidate.items())
             if same:
                 return False
+            if (
+                existing.get("evidence_ref") is None
+                and isinstance(candidate.get("evidence_ref"), str)
+                and candidate["evidence_ref"]
+                and all(
+                    existing.get(name) == value
+                    for name, value in candidate.items()
+                    if name != "evidence_ref"
+                )
+            ):
+                # #4139: the trigger pre-writes the correlation before Broker
+                # admission mints the evidence; the first verified identity
+                # afterwards fills exactly that one unknown field. Anything
+                # else differing is still two commands claiming one run.
+                await self._run(
+                    "UPDATE claw_local_task_correlation SET evidence_ref=? "
+                    "WHERE user_id=? AND run_id=? AND command_id=? AND evidence_ref IS NULL",
+                    candidate["evidence_ref"], user_id, run_id, command_id,
+                )
+                return True
             raise HistoryError("claw run is already bound to a different command correlation")
         await self._run(
             "INSERT INTO claw_local_task_correlation "

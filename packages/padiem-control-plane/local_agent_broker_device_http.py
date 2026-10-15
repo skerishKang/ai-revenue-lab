@@ -14,6 +14,7 @@ from padiem_control_plane.local_agent_broker_http import (
     TrustedLocalAgentHttpAuthContext,
 )
 from local_agent_broker_text_results import TEXT_RESULT_DEVICE_ROUTE
+from local_agent_broker_installed_profile import PROFILE_DEVICE_ROUTE
 
 #: The single canonical device route surface. The private-service bridge derives
 #: its external reachability from this same exported constant, so a route added
@@ -22,7 +23,7 @@ from local_agent_broker_text_results import TEXT_RESULT_DEVICE_ROUTE
 #: correlation to the #3121 broker exit and grants no execution authority.
 _DEVICE_HTTP_ROUTES = frozenset(
     {"/session", "/poll", "/material", "/heartbeat", "/acknowledge", "/reconcile", "/office-part",
-     TEXT_RESULT_DEVICE_ROUTE}
+     TEXT_RESULT_DEVICE_ROUTE, PROFILE_DEVICE_ROUTE}
 )
 _ENVELOPE_KEYS = frozenset({"method", "route", "content_type", "body_b64", "tls_verified"})
 _MAX_BODY_B64_CHARS = ((MAX_LOCAL_AGENT_HTTP_BODY_BYTES + 2) // 3) * 4
@@ -111,6 +112,7 @@ class LocalAgentBrokerDeviceHttpService:
         clock: Callable[[], datetime] | None = None,
         office_chunks=None,
         text_results=None,
+        execution_profiles=None,
     ) -> None:
         if not callable(rpc_factory):
             raise ValueError("rpc_factory must be callable")
@@ -130,6 +132,7 @@ class LocalAgentBrokerDeviceHttpService:
         self._clock = clock or (lambda: datetime.now(timezone.utc))
         self._office_chunks = office_chunks
         self._text_results = text_results
+        self._execution_profiles = execution_profiles
 
     def _server_now(self) -> datetime:
         value = self._clock()
@@ -180,6 +183,34 @@ class LocalAgentBrokerDeviceHttpService:
             return _structured_response(
                 _error(401, "local_agent_http_auth_required", "authenticated Local Agent broker access is required")
             )
+
+        if route == PROFILE_DEVICE_ROUTE:
+            # Reuse the enrolled binding credential and the canonical live
+            # session verifier from the existing /poll path; no second auth.
+            if self._execution_profiles is None:
+                return _structured_response(_error(
+                    503, "execution_profile_not_configured", "Installed profile unavailable"
+                ))
+            try:
+                material = {key: value for key, value in decoded.items()
+                            if key not in ("binding_ref", "credential_b64")}
+                def verified_record():
+                    session = self._authenticator.authenticate_device_session(
+                        session_id=material["session_id"],
+                        binding_ref=binding.binding_ref,
+                        credential=credential, now=server_now,
+                    )
+                    return self._execution_profiles.record(
+                        material, binding=binding, session=session,
+                    )
+                stored = self._session_open_transaction(verified_record)
+            except Exception:
+                return _structured_response(_error(
+                    409, "execution_profile_refused", "Installed profile refused"
+                ))
+            return _structured_response(LocalAgentBrokerHttpResponse(
+                status=200, body={"ok": True, "execution_profile": stored},
+            ))
 
         if route == "/office-part":
             # The device credential is verified by canonical broker authority

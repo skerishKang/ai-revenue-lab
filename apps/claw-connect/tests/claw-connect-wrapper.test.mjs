@@ -30,7 +30,7 @@ test("package manifest exposes the claw-connect bin", () => {
 test("the wrapper prints the product version", () => {
   const result = runWrapper(["--version"]);
   assert.equal(result.status, 0, result.stderr);
-  assert.match(result.stdout, /PADIEM Connector 0\.1\.0/);
+  assert.match(result.stdout, /PADIEM Connector 0\.1\.1-rc2/);
 });
 
 test("the wrapper forwards to the same module the installer runs", () => {

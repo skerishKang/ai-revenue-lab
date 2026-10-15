@@ -169,6 +169,66 @@ def stored_rows(store):
     return len(store._sql.exec("SELECT command_id FROM local_agent_text_result").toArray())
 
 
+def test_scope_proof_reads_without_caller_named_account():
+    """#4139: mismatched realms resolve scope from proven correlation."""
+    _, service, store, _ = fixture()
+    stage_result = stage(service)
+    assert stage_result["status"] == 200
+    proof = {
+        "command_id": COMMAND_ID, "run_id": RUN_ID,
+        "request_fingerprint": REQUEST_FINGERPRINT,
+    }
+    answer = read_verified_file_text_rpc(store, {"scope_proof": proof})
+    assert answer["ok"] is True and answer["available"] is True
+    assert answer["account_ref"] == "account.http.1"
+    assert answer["content_utf8"] == KOREAN_TEXT
+    assert read_verified_file_text_rpc(
+        store, {"scope_proof": proof, "workspace_ref": "workspace.http.1"})["available"] is True
+    assert read_verified_file_text_rpc(
+        store, {"scope_proof": proof, "workspace_ref": "workspace.foreign"})["ok"] is False
+    # Wrong fingerprint, foreign command, or both modes at once refuse.
+    assert read_verified_file_text_rpc(
+        store, {"scope_proof": {**proof, "request_fingerprint": "d" * 64}})["ok"] is False
+    assert read_verified_file_text_rpc(
+        store, {"scope_proof": {**proof, "command_id": "command.other"}})["ok"] is False
+    assert read_verified_file_text_rpc(
+        store, {"scope_proof": proof, "account_ref": "account.http.1",
+                "workspace_ref": "workspace.http.1", "run_id": RUN_ID,
+                "command_id": COMMAND_ID})["ok"] is False
+
+
+def test_scope_proof_keeps_other_kind_for_successful_general_commands():
+    """Proof mode must not turn TXT wait/missing into general success."""
+    built = ordered_fixture()
+    authority, service, store = built.authority, built.service, built.store
+    generic = "command.generic.1"
+    authority.enqueue_command(
+        command_id=generic, binding_ref="binding.http.1", run_id="run.generic.1",
+        tool_request_ref="tool.generic.1", request_fingerprint="e" * 64,
+        now=BASE + timedelta(seconds=20),
+    )
+    admission = authority.admit_command(
+        admission_ref="admission.generic.1", evidence_ref="evidence.generic.1",
+        session_id=built.session.session_id, binding_ref="binding.http.1",
+        credential=CREDENTIAL, command_id=generic,
+        request_fingerprint="e" * 64, request_id="request.generic.1",
+        now=BASE + timedelta(seconds=21),
+    )
+    authority.acknowledge(
+        session_id=built.session.session_id, binding_ref="binding.http.1",
+        credential=CREDENTIAL, command_id=generic,
+        admission_ref="admission.generic.1", evidence_ref="evidence.generic.1",
+        revision_ref=admission.revision_ref, termination="exited",
+        request_id="request.generic.1", exit_code=0,
+        now=BASE + timedelta(seconds=22),
+    )
+    answer = read_verified_file_text_rpc(store, {"scope_proof": {
+        "command_id": generic, "run_id": "run.generic.1",
+        "request_fingerprint": "e" * 64,
+    }})
+    assert answer == {"ok": True, "available": False, "kind": "other"}
+
+
 def test_an_unreported_command_keeps_the_existing_terminal_only_answer():
     _, _, store, _ = fixture()
     answer = rpc(store)

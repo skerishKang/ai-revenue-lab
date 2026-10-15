@@ -208,7 +208,7 @@ class PrivateOneClickBroker(PrivateBroker):
         self.calls = []
 
     def __getattr__(self, method):
-        if method in ("reserve_pending_pc_link", "deliver_pending_pc_link"):
+        if method in ("reserve_pending_pc_owner_intent", "deliver_pending_pc_link"):
             async def no_network(payload):
                 self.calls.append((method, payload))
                 # This is a transport stub; real Broker DO must own actual

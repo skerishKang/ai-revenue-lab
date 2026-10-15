@@ -84,6 +84,23 @@ class CanonicalIdentityEnrollmentConsentRPC:
             session=session, membership_role=getattr(membership, "role", None), now=now,
         )
 
+    async def resolve_connector_owner_scope(self, payload: dict) -> dict:
+        """Read only the authenticated session's established connector scope."""
+        try:
+            wire = _closed(payload, frozenset({"session_id"}), "connector owner scope read")
+            if not self._connector_enrollment_enabled():
+                raise ControlPlaneContractError("connector_enrollment_rpc_disabled", "connector enrollment disabled")
+            now = datetime.now(timezone.utc)
+            session = self._connector_session_for_consent(wire["session_id"], now)
+            scope = ReadOnlyExistingConnectorScope(
+                identity_do_storage=self._storage, membership_authority=self._store,
+            ).resolve_scope(subject_id=session.subject.subject_id, tenant_ref=session.tenant_id, now=now)
+            return {"ok": True, "scope": {
+                "account_ref": scope.account_ref, "workspace_ref": scope.workspace_ref,
+            }}
+        except ControlPlaneContractError as exc:
+            return _enrollment_safe_error(exc)
+
     async def resolve_connector_enrollment_consent_for_device(self, payload: dict) -> dict:
         """Private current-consent lookup; input identity comes only from the active session."""
         try:

@@ -74,6 +74,33 @@ class Binding:
             "credential_returned_once": True, "public_http_route": False,
         })
 
+    async def device_directory(self, payload):
+        self.calls.append(("directory", payload))
+        return self.results.get("directory", {
+            "ok": True, "available": True, "owner_scoped": True,
+            "device_count": 1, "max_devices": 8,
+            "devices": [{
+                "canonical_state": "paired_offline",
+                "binding": {
+                    "binding_ref": "binding.owner.1", "device_id": DEVICE,
+                    "account_ref": ACCOUNT, "workspace_ref": WORKSPACE,
+                    "credential_generation": 1,
+                    "issued_at": NOW.isoformat(),
+                    "credential_expires_at": (NOW + timedelta(days=30)).isoformat(),
+                },
+            }],
+        })
+
+    async def enqueue_command_with_material(self, payload, material):
+        self.calls.append(("enqueue", payload, material))
+        return self.results.get("enqueue", {
+            "ok": True,
+            "command": {"command_id": payload["command_id"], "run_id": payload["run_id"],
+                        "revision_ref": "revision.enqueued.1",
+                        "request_fingerprint": payload["request_fingerprint"]},
+            "material": {"stored": True},
+        })
+
 
 def test_install_schema_requires_private_rpc_and_strict_receipt():
     binding = Binding()
@@ -264,3 +291,69 @@ def test_private_nonconsuming_broker_preflight_uses_exact_closed_proof_receipt()
         binding.verify_enrollment_bootstrap = forged
         with pytest.raises(IdentityBridgeError):
             asyncio.run(client.verify_enrollment_bootstrap(**kwargs))
+
+
+def test_owner_device_binding_resolves_exactly_one_usable_device():
+    binding = Binding()
+    client = CloudflareCanonicalBrokerPairingClient(binding)
+    resolved = asyncio.run(client.owner_device_binding(
+        account_ref=ACCOUNT, workspace_ref=WORKSPACE, device_id=DEVICE,
+    ))
+    assert resolved == {
+        "binding_ref": "binding.owner.1", "device_id": DEVICE,
+        "credential_generation": 1,
+    }
+    assert binding.calls == [("directory", {
+        "account_ref": ACCOUNT, "workspace_ref": WORKSPACE,
+    })]
+    with pytest.raises(IdentityBridgeError):
+        asyncio.run(client.owner_device_binding(
+            account_ref=ACCOUNT, workspace_ref=WORKSPACE, device_id="device.other",
+        ))
+
+
+def test_owner_device_binding_refuses_unusable_states():
+    binding = Binding()
+    client = CloudflareCanonicalBrokerPairingClient(binding)
+    directory = {
+        "ok": True, "available": True, "owner_scoped": True,
+        "device_count": 1, "max_devices": 8, "devices": [],
+    }
+    for state in ("revoked", "credential_expired"):
+        entry = {
+            "canonical_state": state,
+            "binding": {
+                "binding_ref": "binding.owner.1", "device_id": DEVICE,
+                "account_ref": ACCOUNT, "workspace_ref": WORKSPACE,
+                "credential_generation": 1,
+                "issued_at": NOW.isoformat(),
+                "credential_expires_at": (NOW + timedelta(days=30)).isoformat(),
+            },
+        }
+        binding.results["directory"] = {**directory, "devices": [entry]}
+        with pytest.raises(IdentityBridgeError):
+            asyncio.run(client.owner_device_binding(
+                account_ref=ACCOUNT, workspace_ref=WORKSPACE, device_id=DEVICE,
+            ))
+
+
+def test_enqueue_txt_read_command_uses_two_positional_rpc_args():
+    binding = Binding()
+    client = CloudflareCanonicalBrokerPairingClient(binding)
+    command = {
+        "command_id": "command.txt.1", "binding_ref": "binding.owner.1",
+        "run_id": "run.conversation.1", "tool_request_ref": "tool.txt.1",
+        "request_fingerprint": "a" * 64, "now": NOW.isoformat(), "ttl_seconds": 300,
+    }
+    material = {"request_id": "request.txt.1", "p01_approval_payload": {"format": "x"}}
+    receipt = asyncio.run(client.enqueue_txt_read_command(command=command, material=material))
+    assert receipt == {"command_id": "command.txt.1", "run_id": "run.conversation.1",
+                       "revision_ref": "revision.enqueued.1",
+                       "request_fingerprint": "a" * 64}
+    assert binding.calls == [("enqueue", command, material)]
+    binding.results["enqueue"] = {"ok": False, "error": {"code": "refused", "message": "no"}}
+    with pytest.raises(IdentityBridgeError):
+        asyncio.run(client.enqueue_txt_read_command(command=command, material=material))
+    binding.results["enqueue"] = {"ok": True, "command": {"command_id": "other"}}
+    with pytest.raises(IdentityBridgeError):
+        asyncio.run(client.enqueue_txt_read_command(command=command, material=material))

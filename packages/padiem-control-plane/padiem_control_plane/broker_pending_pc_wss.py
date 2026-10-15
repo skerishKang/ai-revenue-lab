@@ -293,6 +293,20 @@ class LivePcWssOffer:
                 request_ref=request_ref, now=datetime.now(timezone.utc),
             )
 
+    async def reserve_owner_intent_once(
+        self, *, request_ref: str, owner_subject_ref: str,
+        account_ref: str, workspace_ref: str,
+    ) -> dict[str, Any]:
+        async with self._lock:
+            if (self._stage != "pending" or self._socket.closed
+                or self._disconnected or request_ref != self._request_ref):
+                raise PendingPcWssRefused("pending_pc_reserve_denied")
+            return self._broker.reserve_owner_intent_once(
+                request_ref=request_ref, owner_subject_ref=owner_subject_ref,
+                account_ref=account_ref, workspace_ref=workspace_ref,
+                now=datetime.now(timezone.utc),
+            )
+
     async def deliver_once(self, *, request_ref: str, device_id: str,
                            challenge_id: str, pairing_code: str) -> None:
         async with self._lock:

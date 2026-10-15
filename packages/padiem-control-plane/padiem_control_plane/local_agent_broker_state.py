@@ -189,7 +189,8 @@ class LocalAgentBrokerStateSnapshot:
         }
 
 
-_TERMINAL_RESULT_RPC_KEYS = frozenset({"account_ref", "workspace_ref", "run_id"})
+_TERMINAL_RESULT_RPC_KEYS = frozenset({"account_ref", "workspace_ref", "run_id", "scope_proof"})
+_SCOPE_PROOF_KEYS = frozenset({"command_id", "run_id", "request_fingerprint"})
 
 
 def terminal_command_result_from_snapshot(
@@ -209,17 +210,62 @@ def terminal_command_result_from_snapshot(
     try:
         if not isinstance(payload, dict) or not set(payload) <= _TERMINAL_RESULT_RPC_KEYS:
             raise ValueError("terminal result schema mismatch")
-        account_ref = str(payload["account_ref"])
-        if not _LEDGER_ID_RE.fullmatch(account_ref):
-            raise ValueError("account_ref must be a bounded safe reference")
-        workspace_ref = payload.get("workspace_ref")
-        if workspace_ref is not None:
-            workspace_ref = str(workspace_ref)
-            if not _LEDGER_ID_RE.fullmatch(workspace_ref):
-                raise ValueError("workspace_ref must be a bounded safe reference")
-        run_id = str(payload["run_id"])
-        if not _LEDGER_ID_RE.fullmatch(run_id):
-            raise ValueError("run_id must be a bounded safe reference")
+        scope_proof = payload.get("scope_proof")
+        if scope_proof is not None:
+            # #4139: alternative scope for realms where the caller's product
+            # user id differs from the canonical account_ref. The proof bundle
+            # (command correlation the caller already proved owning server-side
+            # via history) locates exactly one command; the scope is derived
+            # from that command's own binding, never from caller naming. Both
+            # modes at once are ambiguous and refused.
+            if "account_ref" in payload:
+                raise ValueError("terminal result scope modes are exclusive")
+            if not isinstance(scope_proof, dict) or set(scope_proof) != _SCOPE_PROOF_KEYS:
+                raise ValueError("terminal result scope proof schema mismatch")
+            proof_command_id = str(scope_proof["command_id"])
+            proof_run_id = str(scope_proof["run_id"])
+            proof_fingerprint = str(scope_proof["request_fingerprint"])
+            for value in (proof_command_id, proof_run_id, proof_fingerprint):
+                if not _LEDGER_ID_RE.fullmatch(value):
+                    raise ValueError("terminal result scope proof must be bounded safe references")
+            if "run_id" in payload and str(payload["run_id"]) != proof_run_id:
+                raise ValueError("terminal result scope proof run mismatch")
+            matches = [
+                command
+                for command in snapshot.commands
+                if command.command_id == proof_command_id
+                and command.run_id == proof_run_id
+                and command.request_fingerprint == proof_fingerprint
+            ]
+            if len(matches) != 1:
+                return {"ok": True, "available": False, "reason": "no_command_for_run"}
+            proven_binding_refs = {matches[0].binding_ref}
+            proven_bindings = [b for b in snapshot.bindings if b.binding_ref in proven_binding_refs]
+            if len(proven_bindings) != 1:
+                return {"ok": True, "available": False, "reason": "no_device_binding"}
+            account_ref = proven_bindings[0].account_ref
+            if "workspace_ref" in payload and payload["workspace_ref"] is not None:
+                expected_workspace = str(payload["workspace_ref"])
+                if not _LEDGER_ID_RE.fullmatch(expected_workspace):
+                    raise ValueError("workspace_ref must be a bounded safe reference")
+                if proven_bindings[0].workspace_ref != expected_workspace:
+                    return {"ok": True, "available": False, "reason": "no_device_binding"}
+            workspace_ref = proven_bindings[0].workspace_ref
+            run_id = proof_run_id
+            # Fall through to the identical downstream: binding scope filter,
+            # single-command resolution, identity/result projection.
+        else:
+            account_ref = str(payload["account_ref"])
+            if not _LEDGER_ID_RE.fullmatch(account_ref):
+                raise ValueError("account_ref must be a bounded safe reference")
+            workspace_ref = payload.get("workspace_ref")
+            if workspace_ref is not None:
+                workspace_ref = str(workspace_ref)
+                if not _LEDGER_ID_RE.fullmatch(workspace_ref):
+                    raise ValueError("workspace_ref must be a bounded safe reference")
+            run_id = str(payload["run_id"])
+            if not _LEDGER_ID_RE.fullmatch(run_id):
+                raise ValueError("run_id must be a bounded safe reference")
     except (KeyError, TypeError, ValueError):
         return {
             "ok": False,
