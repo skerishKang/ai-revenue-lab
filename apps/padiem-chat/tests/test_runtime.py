@@ -361,7 +361,7 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
     assert 'id="recentTitle"' not in html
     assert 'id="attachmentButton"' in html
     assert "<span>파일</span>" in html
-    assert "지원 문서 형식" in html
+    assert "지원 형식" in html
     for label in ["TXT", "Markdown", "CSV", "JSON", "PDF", "DOCX", "PPTX", "XLSX"]:
         assert f'label: "{label}"' in capabilities
     assert "PDF·Office 문서는 아직 지원하지 않습니다" not in html

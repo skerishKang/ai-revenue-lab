@@ -23,7 +23,8 @@ def test_claw_general_thread_keeps_landing_layout_after_hero_disappears():
     assert ':not(:has(.claw-workspace[data-view="general"] ~ .conversation))' in CLAW
     assert ':has(.claw-workspace[data-view="general"] ~ .conversation)' in CLAW
     assert ':not(:has(.claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden])))' not in CLAW
-    assert ':has(.claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]))' not in CLAW
+    assert ':has(.claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]))' in CLAW
+    assert CLAW.count(':has(.claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]))') == 1
 
 
 def test_single_composer_is_reused_for_both_chat_and_claw():
