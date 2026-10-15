@@ -23,7 +23,7 @@ SCOPE = NAVIGATION_ONLY
 | B66 견적 모델 선택 경계 | [정식 Owner 정책 §0A](../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md), [B66 Registered Model Boundary](../../apps/padiem-chat/app/b66_registered_model_boundary.py), [기존 실행 소스](../../apps/padiem-chat/app/b66_b14_free_first_resolver.py). 직접 선택 UI/API 소스는 [PR #3831](https://github.com/skerishKang/ai-revenue-lab/pull/3831)로 main에 병합됐습니다. 이는 사용자 선택 필드의 소스 구현이며, 실제 서비스 배포·고객 E2E 성공은 별도 증거가 필요합니다. |
 | Production 실행·키 준비·가용성 | 해당 배포의 **exact SHA, 안전한 진단 결과 및 실제 E2E 증거** |
 
-**2026-10-15 기준:** 대표가 직접 지정한 Free·Plus·Pro·Max 등급별 Cat Jam 기본 → 고정 폴백은 복구 가능한 제공자 장애(429·5xx·시간 초과) 때 자동 실행합니다. `allow_external_fallback=False`는 임의 카탈로그 모델 대체를 막는 설정이며, 이 지정 폴백을 막는 설정이 아닙니다. Chat 일반 응답·스트리밍·CLAW 모두 B14에 신뢰할 수 있는 등급 정보를 전달해야 합니다. [정정된 Owner 모델 정책](../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md)을 우선합니다.
+**2026-10-16 소스 기준:** Free·Plus·Pro·Max의 기본 모델과 장애 시 대표 지정 폴백은 공유 [Control Plane 등급 라우트](../../packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py)의 실행 계약을 따릅니다. 복구 가능한 공급자 장애(429·5xx·시간 초과)에서만 해당 등급의 지정 폴백을 검토합니다. `allow_external_fallback=False`는 임의 카탈로그 모델 교체를 허용하지 않으며 지정 폴백 자체를 비활성화하지 않습니다. Chat 일반 응답·스트리밍·Claw는 B14에 서버 검증 등급을 전달해야 합니다. 실제 공급사 선정·비공개 배정표는 권한 있는 내부 운영 원본에서 관리하고 이 공개 인덱스에 반복 게시하지 않습니다. [Owner 모델 정책](../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md)을 우선합니다.
 
 **2026-10-16 코드 정리:** [PR #4844](https://github.com/skerishKang/ai-revenue-lab/pull/4844)에서 실제 실행 경로에서 사용되지 않던 점수 기반 자동추천 함수와 해당 전용 테스트를 제거했습니다. Chat·Claw의 등급별 기본 모델과 장애 시 지정 폴백은 Control Plane 계약을 따르며, 일반 대화·코딩·문서 작업 유형에 따라 모델을 다시 선정하지 않습니다. B14의 내부 호환용 `b14/auto`는 **별도의 소유자 지정 고정 체인**을 사용하며, 정확한 모델 ID를 지정하는 수동 실행과 제공자·권한·기능 검증도 유지됩니다. 이 문서 수정은 새로운 모델 선택 정책이나 운영 배포 완료를 선언하지 않습니다.
 
