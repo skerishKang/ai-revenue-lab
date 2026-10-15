@@ -93,7 +93,10 @@ def _read_args(args: Mapping[str, Any]) -> tuple[str, str, str, int]:
     start_date = args.get("start_date")
     end_date = args.get("end_date")
     timezone_name = args.get("timezone")
-    limit = int(args.get("limit", 100) or 100)
+    try:
+        limit = int(args.get("limit", 100) or 100)
+    except (TypeError, ValueError) as exc:
+        raise NativeCalendarAdapterError("invalid_or_ambiguous", "native calendar read limit must be an integer") from exc
     from .calendar_contracts import parse_date, validate_timezone
 
     if not isinstance(start_date, str) or not isinstance(end_date, str):
@@ -150,11 +153,19 @@ async def execute_native_calendar_plan(
     *,
     turn_key: str | None = None,
 ) -> dict[str, Any]:
-    uid = owner_id or _require_owner(request)
-    if uid is None:
+    verified_uid = _require_owner(request)
+    if verified_uid is None:
         raise NativeCalendarAdapterError("unauthorized", "native calendar requires authentication", status_code=401)
+    if owner_id is not None and owner_id != verified_uid:
+        raise NativeCalendarAdapterError("unauthorized", "native calendar owner claim is not trusted", status_code=403)
+    uid = verified_uid
     workspace_id = await _resolve_memory_workspace(request, uid)
+    if not workspace_id:
+        raise NativeCalendarAdapterError("unavailable", "native calendar workspace is unavailable", status_code=503)
     parsed = plan if isinstance(plan, NativeCalendarPlan) else parse_native_calendar_plan(plan)
+
+    if set(parsed.args).intersection(FORBIDDEN_AUTHORITY_KEYS | {"turn_key"}):
+        raise NativeCalendarAdapterError("invalid_or_ambiguous", "native calendar plan must not supply authority identifiers or browser turn keys")
 
     if parsed.op == "none":
         return {"ok": True, "operation": "none"}
@@ -179,16 +190,13 @@ async def execute_native_calendar_plan(
             "empty_native_calendar": not bool(items),
         }
 
-    if set(parsed.args).intersection(FORBIDDEN_AUTHORITY_KEYS):
-        raise NativeCalendarAdapterError("invalid_or_ambiguous", "native calendar plan must not supply authority identifiers")
-
     title = parsed.args.get("title")
     appointment_type = str(parsed.args.get("appointment_type", "date_only"))
     if not isinstance(title, str) or not title.strip():
         raise NativeCalendarAdapterError("invalid_or_ambiguous", "native calendar create requires a title")
-    if turn_key is None and parsed.args.get("turn_key") is None:
-        raise NativeCalendarAdapterError("invalid_or_ambiguous", "native calendar create requires a server turn key")
-    effective_turn_key = turn_key or str(parsed.args["turn_key"])
+    if not turn_key:
+        raise NativeCalendarAdapterError("invalid_or_ambiguous", "native calendar create requires a server-verified turn key")
+    effective_turn_key = str(turn_key)
 
     payload = {
         "appointment_type": appointment_type,

@@ -39,7 +39,6 @@ def test_native_calendar_read_and_scoped_create(monkeypatch):
             "start_at": "2026-10-23T15:00:00+09:00",
             "end_at": "2026-10-23T16:00:00+09:00",
             "timezone": "Asia/Seoul",
-            "turn_key": "turn-1",
         },
     }
     result = asyncio.run(_execute(store, "alice", plan, turn_key="turn-1"))
@@ -76,7 +75,6 @@ def test_native_calendar_mismatched_duplicate_returns_conflict(monkeypatch):
             "appointment_type": "date_only",
             "title": "Visit",
             "date": "2026-10-23",
-            "turn_key": "turn-2",
         },
     }
     asyncio.run(_execute(store, "alice", base, turn_key="turn-2"))
@@ -87,7 +85,6 @@ def test_native_calendar_mismatched_duplicate_returns_conflict(monkeypatch):
             "appointment_type": "date_only",
             "title": "Visit changed",
             "date": "2026-10-23",
-            "turn_key": "turn-2",
         },
     }
     try:
@@ -116,9 +113,54 @@ def test_native_calendar_rejects_accessor_override(monkeypatch):
             type("Req", (), {})(), store, "alice", {
                 "version": adapter.NATIVE_CALENDAR_TOOL_VERSION,
                 "op": "create_appointment",
-                "args": {"title": "x", "date": "2026-10-23", "workspace_id": "workspace_bob", "turn_key": "t"},
+                "args": {"title": "x", "date": "2026-10-23", "workspace_id": "workspace_bob"},
             },
             turn_key="t",
         ))
     except adapter.NativeCalendarAdapterError as exc:
         assert exc.code == "invalid_or_ambiguous"
+
+
+def test_native_calendar_workspace_missing_is_unavailable(monkeypatch):
+    store = InMemoryCalendarStore()
+    async def workspace(_request, uid):
+        return None
+    monkeypatch.setattr(adapter, "_require_owner", lambda request: "alice")
+    monkeypatch.setattr(adapter, "_resolve_memory_workspace", workspace)
+    plan = {
+        "version": adapter.NATIVE_CALENDAR_TOOL_VERSION,
+        "op": "read",
+        "args": {"start_date": "2026-10-23", "end_date": "2026-10-23", "timezone": "Asia/Seoul"},
+    }
+    try:
+        asyncio.run(adapter.execute_native_calendar_plan(
+            type("Req", (), {})(), store, "alice", plan
+        ))
+        raised = False
+    except adapter.NativeCalendarAdapterError as exc:
+        raised = True
+        assert exc.code == "unavailable"
+        assert exc.status_code == 503
+    assert raised
+
+
+def test_native_calendar_read_rejects_browser_authority_keys(monkeypatch):
+    store = InMemoryCalendarStore()
+    async def workspace(_request, uid):
+        return "workspace_" + uid
+    monkeypatch.setattr(adapter, "_require_owner", lambda request: "alice")
+    monkeypatch.setattr(adapter, "_resolve_memory_workspace", workspace)
+    plan = {
+        "version": adapter.NATIVE_CALENDAR_TOOL_VERSION,
+        "op": "read",
+        "args": {"start_date": "2026-10-23", "end_date": "2026-10-23", "timezone": "Asia/Seoul", "workspace_id": "foreign"},
+    }
+    try:
+        asyncio.run(adapter.execute_native_calendar_plan(
+            type("Req", (), {})(), store, "alice", plan
+        ))
+        raised = False
+    except adapter.NativeCalendarAdapterError as exc:
+        raised = True
+        assert exc.code == "invalid_or_ambiguous"
+    assert raised

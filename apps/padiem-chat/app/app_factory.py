@@ -179,7 +179,6 @@ from .claw_memory_routes import (
     claw_memory_reject,
 )
 from .native_calendar_adapter_routes import (
-    native_calendar_adapter_create,
     native_calendar_adapter_read,
 )
 from .calendar_routes import (
@@ -648,7 +647,6 @@ def create_app(
         Route("/api/calendar/appointments", calendar_appointments_list, methods=["GET"]),
         Route("/api/calendar/appointments", calendar_appointments_create, methods=["POST"]),
         Route("/api/calendar/native", native_calendar_adapter_read, methods=["GET"]),
-        Route("/api/calendar/native/create", native_calendar_adapter_create, methods=["POST"]),
         Route("/api/calendar/appointments/{appointment_id}", calendar_appointment_manage, methods=["PUT","DELETE"]),
         Route("/api/calendar/work-logs/{log_id}", calendar_work_log_manage, methods=["PUT","DELETE"]),
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
