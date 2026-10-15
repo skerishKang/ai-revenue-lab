@@ -4,6 +4,8 @@ from __future__ import annotations
 PHASES = frozenset({
     "exe_entry", "import_begin", "import_ok", "argv_parse_begin", "argv_parse_ok",
     "uri_accepted", "uri_rejected", "app_construct_begin", "app_construct_ok",
+    "uri_class_exact", "uri_class_trailing_slash", "uri_class_quoted",
+    "uri_class_other",
     "single_instance_begin", "single_instance_existing", "single_instance_owned",
     "existing_run_result", "signal_delivered", "signal_rejected",
     "tray_begin", "tray_created", "tray_run_enter", "tray_run_exit",

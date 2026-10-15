@@ -129,6 +129,14 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "open-from-web":
         from .browser_launch import accepts_browser_launch_uri
+        # Fixed-class telemetry only. Never persist actual argv or URI.
+        _uri = args.browser_launch_uri
+        _mark(
+            "uri_class_exact" if _uri == "padiem-connector://start" else
+            "uri_class_trailing_slash" if _uri == "padiem-connector://start/" else
+            "uri_class_quoted" if _uri == '"padiem-connector://start"' else
+            "uri_class_other"
+        )
         if not accepts_browser_launch_uri(args.browser_launch_uri):
             _mark("uri_rejected", exit_code=2)
             print(json.dumps({"ok": False, "blocked": True,

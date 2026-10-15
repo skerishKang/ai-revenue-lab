@@ -71,3 +71,29 @@ def test_known_native_path_stages_cover_early_failures():
         "app_run_returned", "entry_exit", "exception",
     }
     assert required <= PHASES
+
+
+def test_native_uri_classification_is_fixed_and_never_records_input(monkeypatch):
+    from claw_connect import __main__ as cli
+    from padiem_connector import native_launch_diagnostics as diagnostics
+    phases = []
+    monkeypatch.setattr(diagnostics, "mark", lambda phase, **kwargs: phases.append(phase))
+
+    class AcceptedApp:
+        def run(self, *, explicit_connect=False):
+            assert explicit_connect
+            return 0
+
+    monkeypatch.setattr(cli, "ConnectApp", AcceptedApp)
+    scenarios = (
+        ("padiem-connector://start", "uri_class_exact", 0),
+        ("padiem-connector://start/", "uri_class_trailing_slash", 2),
+        ('"padiem-connector://start"', "uri_class_quoted", 2),
+        ("padiem-connector://start?token=DO_NOT_LOG", "uri_class_other", 2),
+    )
+    for uri, expected, result in scenarios:
+        phases.clear()
+        assert cli.main(["open-from-web", uri]) == result
+        assert expected in phases
+        assert all(p in diagnostics.PHASES and "DO_NOT_LOG" not in p for p in phases)
+        assert ("uri_accepted" in phases) == (result == 0)
