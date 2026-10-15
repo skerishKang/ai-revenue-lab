@@ -275,3 +275,126 @@ html[data-theme="padiem-glass"] body .app-shell .conversation[data-continuous-th
   overflow-anchor: none;
   scroll-padding-top: 28px;
 }
+
+
+/* CENTRAL_CLAW_CHAT_FIRST_USE_PARITY_20261015
+ * Share the ACTUAL Chat composer DOM and first-use starter card footprint.
+ * Verified Claw model choice remains available from the very same grade pill
+ * popup, instead of adding a second input row. The Plus-only advanced control
+ * retains its original exact-model validation; no implicit model chosen. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-tier-model-options {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(56,74,88,.19);
+}
+html[data-theme="padiem-glass"] body .app-shell:not([data-state="claw"]) .claw-tier-model-options {
+  display: none !important;
+}
+html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-tier-model-options > .claw-model-choice {
+  display: flex !important;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  gap: 5px;
+  color: #344756;
+  font-size: 12px;
+}
+html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-tier-model-options > .claw-model-advanced {
+  display: none !important;
+}
+html[data-theme="padiem-glass"] body .app-shell[data-state="claw"][data-claw-tier="plus"] .claw-tier-model-options > .claw-model-advanced {
+  display: block !important;
+}
+html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .mode-presentation-panel {
+  max-height: min(76dvh, 650px);
+  overflow-y: auto;
+}
+@media (min-width: 921px) {
+  /* Exact same Chat composer box and tools. Do not reimplement textarea,
+     attachment, voice, search or send. */
+  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] #composerForm {
+    box-sizing: border-box;
+    display: block !important;
+    min-height: 0 !important;
+  }
+  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] #composerForm > .composer-actions {
+    margin-top: 0 !important;
+  }
+  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] #composerForm > #messageInput {
+    flex: initial !important;
+    margin: 0 !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+  }
+  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .composer-wrap {
+    bottom: 16px !important;
+  }
+}
+/* Original starter structure is reused: only connector-specific labels/icons
+   differ. The three status buttons stay actionable, now within card bounds,
+   with visible truthful ON/OFF/unknown state instead of a second card row. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .starter-grid > .claw-home-card {
+  position: relative;
+  box-sizing: border-box;
+  display: flex !important;
+  flex-direction: column;
+  min-height: 0 !important;
+  height: 116px;
+  max-height: 116px;
+  overflow: hidden;
+  padding: 0 !important;
+  margin: 0;
+  border: 1px solid rgba(255,255,255,.7) !important;
+  border-radius: 12px !important;
+  background: rgba(252,253,254,.73) !important;
+  box-shadow: 0 14px 32px rgba(31,40,48,.1), inset 0 1px rgba(255,255,255,.86) !important;
+}
+html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-workspace-starter {
+  width: 100% !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  flex: 1 1 auto !important;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 10px 11px 35px !important;
+  border: 0 !important;
+  border-radius: 11px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card > .claw-connection-toggle {
+  position: absolute !important;
+  bottom: 6px;
+  right: 6px;
+  left: auto;
+  top: auto;
+  z-index: 1;
+  box-sizing: border-box;
+  display: flex !important;
+  flex-direction: row;
+  gap: 4px;
+  margin: 0 !important;
+  padding: 2px 5px !important;
+  width: auto !important;
+  max-width: calc(100% - 12px);
+  min-width: 0 !important;
+  height: 26px !important;
+  min-height: 26px !important;
+  border-radius: 8px;
+  font-size: 9px;
+  line-height: 1.1;
+}
+html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card .claw-connection-track > span {
+  padding: 1px 4px;
+  font-size: 9px;
+}
+html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card .claw-connection-label {
+  font-size: 9px;
+}
+/* Intro memory/run disclosures are not first-use cards. Data, approvals and
+   lists remain available in authorized Claw workbench surfaces. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .empty-state:not([hidden]) ~ :is(#clawApprovedDisclosure,#clawRunHistoryDisclosure,#clawApprovedMemory,#clawRunHistory) {
+  display: none !important;
+}

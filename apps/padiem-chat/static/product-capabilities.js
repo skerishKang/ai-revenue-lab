@@ -408,6 +408,19 @@
     truth.className = "mode-presentation-truth";
     truth.dataset.modeTruth = "true";
     modePanel.append(header, list, truth);
+    // One common Chat/Claw tier picker. Move, never clone, the existing
+    // owner-verified Claw exact-model controls into this picker. Their IDs,
+    // listeners and submit-time snapshots stay authoritative and unchanged.
+    // The composer itself now has exactly the Chat visual hierarchy.
+    const exactModelControl = document.querySelector("#composerForm > label.claw-model-choice");
+    const advancedModelControl = document.querySelector("#composerForm > details.claw-model-advanced");
+    if (exactModelControl) {
+      const optionalModels = document.createElement("div");
+      optionalModels.className = "claw-tier-model-options";
+      optionalModels.appendChild(exactModelControl);
+      if (advancedModelControl) optionalModels.appendChild(advancedModelControl);
+      modePanel.appendChild(optionalModels);
+    }
     modeHost.appendChild(modePanel);
     syncModeCopy();
 

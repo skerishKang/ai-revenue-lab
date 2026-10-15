@@ -4862,9 +4862,12 @@
   function syncApprovedMemoryVisibility() {
     if (!clawApprovedMemory) return;
     // Owner-authenticated surface only: anonymous Phase A flow is unchanged.
+    const onLanding = clawWorkspace?.dataset.view === "general"
+      && !emptyState.hidden;
     const show = authState.authenticated === true
       && shell.dataset.state === "claw"
-      && clawWorkspace?.dataset.view !== "inbox";
+      && clawWorkspace?.dataset.view !== "inbox"
+      && !onLanding;
     clawApprovedMemory.hidden = !show;
     if (clawApprovedDisclosure) clawApprovedDisclosure.hidden = !show;
     if (show) loadApprovedMemoryList();
