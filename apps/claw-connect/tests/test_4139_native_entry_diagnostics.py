@@ -87,7 +87,7 @@ def test_native_uri_classification_is_fixed_and_never_records_input(monkeypatch)
     monkeypatch.setattr(cli, "ConnectApp", AcceptedApp)
     scenarios = (
         ("padiem-connector://start", "uri_class_exact", 0),
-        ("padiem-connector://start/", "uri_class_trailing_slash", 2),
+        ("padiem-connector://start/", "uri_class_trailing_slash", 0),
         ('"padiem-connector://start"', "uri_class_quoted", 2),
         ("padiem-connector://start?token=DO_NOT_LOG", "uri_class_other", 2),
     )

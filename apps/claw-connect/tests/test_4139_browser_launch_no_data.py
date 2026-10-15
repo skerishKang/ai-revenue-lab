@@ -18,7 +18,9 @@ from claw_connect.browser_launch import BROWSER_START_URI, accepts_browser_launc
 @pytest.mark.parametrize("invalid", (
     "", None, 3, b"padiem-connector://start",
     "https://chat.padiem.net/", "padiem-connector://START",
-    "padiem-connector://start/", "padiem-connector://start?token=fake",
+    "padiem-connector://start//", "padiem-connector://start?token=fake",
+    "padiem-connector://start/?token=fake",
+    "padiem-connector://start/#session",
     "padiem-connector://start?pairing_code=fake",
     "padiem-connector://start#session",
     "padiem-connector://start@evil.invalid",
@@ -34,6 +36,7 @@ def test_browser_launch_is_byte_exact_and_contains_no_credentials(invalid):
 def test_protocol_default_is_only_zero_data_start():
     assert BROWSER_START_URI == "padiem-connector://start"
     assert accepts_browser_launch_uri(BROWSER_START_URI)
+    assert accepts_browser_launch_uri(BROWSER_START_URI + "/")
 
 
 def test_invalid_uri_rejected_before_creating_machine_state(monkeypatch, capsys):
@@ -52,7 +55,8 @@ def test_browser_protocol_refuses_additional_argv_before_device_state(monkeypatc
     assert error.value.code == 2
 
 
-def test_allowed_link_starts_existing_tray_only_and_never_claims_pairing(monkeypatch):
+@pytest.mark.parametrize("uri", (BROWSER_START_URI, BROWSER_START_URI + "/"))
+def test_allowed_link_starts_existing_tray_only_and_never_claims_pairing(monkeypatch, uri):
     events = []
     class ExistingTray:
         def run(self, *, explicit_connect: bool = False):
@@ -64,7 +68,7 @@ def test_allowed_link_starts_existing_tray_only_and_never_claims_pairing(monkeyp
             events.append("signal_customer_offer")
             return True
     monkeypatch.setattr(cli, "ConnectApp", ExistingTray)
-    assert cli.main(["open-from-web", BROWSER_START_URI]) == 0
+    assert cli.main(["open-from-web", uri]) == 0
     assert events == ["start_tray", "signal_customer_offer"]
 
 
