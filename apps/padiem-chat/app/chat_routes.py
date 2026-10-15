@@ -197,10 +197,14 @@ async def api_chat_stream(request: Request):
     try:
         raw = json.loads(body.decode("utf-8"))
         messages, skill, tool_request, attachments, conversation_id, browser_project_id = _validate_payload(raw)
+        # No-tier browser clients are Free; validate legacy slash syntax
+        # separately so an unknown alias still fails before B14 dispatch.
+        if "tier" not in raw:
+            _apply_b62_model_policy(messages)
         selected_model, messages = _apply_b62_model_policy(
-                messages,
-                tier_id=raw.get("tier"),
-            )
+            messages,
+            tier_id=raw.get("tier", "free"),
+        )
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
         return JSONResponse({"error": {"code": "invalid_request", "message": message}}, status_code=422)
@@ -450,10 +454,14 @@ async def api_chat(request: Request) -> JSONResponse:
     try:
         raw = json.loads(body.decode("utf-8"))
         messages, skill, tool_request, attachments, conversation_id, browser_project_id = _validate_payload(raw)
+        # No-tier browser clients are Free; validate legacy slash syntax
+        # separately so an unknown alias still fails before B14 dispatch.
+        if "tier" not in raw:
+            _apply_b62_model_policy(messages)
         selected_model, messages = _apply_b62_model_policy(
-                messages,
-                tier_id=raw.get("tier"),
-            )
+            messages,
+            tier_id=raw.get("tier", "free"),
+        )
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
         return JSONResponse({"error": {"code": "invalid_request", "message": message}}, status_code=422)
