@@ -507,7 +507,7 @@
         </div>
       </section>
       <!-- Standalone Connectors page: the card grid and status nodes are moved
-           here from #connectorsDialog on first open by app.js. The dialog
+           here from #connectorsDialog on first open by the main script. The dialog
            element stays in the DOM for contract compatibility but is never
            opened as a popup. Connection logic, endpoints and auth are reused
            unchanged; no permission or login state is reset by the move. -->
@@ -522,7 +522,7 @@
         <div class="standalone-view-body" id="connectorsViewBody"></div>
       </section>
       <!-- Standalone Automation page: the existing #clawAutomation section is
-           moved here on first open by app.js. List, create, edit,
+           moved here on first open by the main script. List, create, edit,
            enable/disable, status, alerts and permission checks are reused
            unchanged against the same APIs and store. -->
       <section class="standalone-view automation-view" id="automationView" aria-labelledby="automationViewTitle" hidden>

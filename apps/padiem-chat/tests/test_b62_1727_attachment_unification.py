@@ -56,8 +56,10 @@ def test_binary_attachment_payload_uses_existing_completed_chat_path():
     assert "const attachments = attachmentPayload(attachment);" in APP_JS
     assert "if (attachments) payload.attachments = attachments;" in APP_JS
     assert "if (attachments) {" in APP_JS
-    assert "return await requestCompletedAnswer(" in APP_JS
-    assert "return await requestStreamingAnswer(" in APP_JS
+    # Success recording for one-click regenerate keeps the same dispatch
+    # shape: completed JSON for attachments, streaming otherwise.
+    assert "await requestCompletedAnswer(" in APP_JS
+    assert "await requestStreamingAnswer(" in APP_JS
 
 
 def test_binary_reader_loads_before_app_controller():

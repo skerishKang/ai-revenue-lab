@@ -327,7 +327,7 @@
     }
     const skillTitle = result.skill && result.skill.id !== "auto" && typeof result.skill.title === "string" ? result.skill.title : "";
     // The brand (Padiem Chat / Padiem Claw) stays in [data-assistant-product].
-    // The repetitive "AI 응답" line is removed: only a truthful non-default
+    // The repetitive runtime line is removed: only a truthful non-default
     // state (mock preview) or an explicit skill title is shown.
     const runtimeLabel = result.runtime === "mock" ? uiT("mock-response") : "";
     article.querySelector("[data-runtime-label]").textContent = skillTitle ? (runtimeLabel ? `${runtimeLabel} · ${skillTitle}` : skillTitle) : runtimeLabel;
@@ -1593,7 +1593,7 @@
             paragraph = document.createElement("p");
             content.appendChild(paragraph);
             // The template's "answer-preparing" label stays during streaming;
-            // the repetitive "AI 응답" line is not rendered.
+            // no repetitive runtime line is rendered on first delta.
           }
           answer += data.delta;
           paragraph.textContent = answer;
@@ -3346,6 +3346,7 @@
     if (view) view.hidden = false;
     shell.dataset.state = "automation";
     clawAutomation.hidden = false;
+    clearClawWait();
     setNavActive();
     closeSidebar();
     loadClawAutomationRules();
