@@ -11,6 +11,7 @@
 - Last reconciled: 2026-10-08 (#3554, #3523)
 - Owner authority: Product Owner
 - Tracking issue: #3571
+- Private B14 Secret lineage ledger (COM1-only document path): `G:\Ddrive\BatangD\task\workdiary\ai-revenue-lab-governance\운영방침\07_B14_Secret_원본복제_이력관리_20261016.md`
 
 ## 2026-10-15 Owner correction — configured primary and fixed fallback are operational
 
