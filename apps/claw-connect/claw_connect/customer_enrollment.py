@@ -31,10 +31,87 @@ def protected_credential_directory(state_dir: Path) -> Path:
     return target
 
 
+def _existing_padiem_browser() -> str | None:
+    """Find one already-open PADIEM Chat browser; never read its profile/cookies."""
+    if os.name != "nt":
+        return None
+    import ctypes
+    from ctypes import wintypes
+
+    user32 = ctypes.WinDLL("user32", use_last_error=True)
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    user32.EnumWindows.argtypes = [ctypes.c_void_p, wintypes.LPARAM]
+    user32.EnumWindows.restype = wintypes.BOOL
+    user32.GetWindowTextLengthW.argtypes = [wintypes.HWND]
+    user32.GetWindowTextLengthW.restype = ctypes.c_int
+    user32.GetWindowTextW.argtypes = [wintypes.HWND, wintypes.LPWSTR, ctypes.c_int]
+    user32.GetWindowTextW.restype = ctypes.c_int
+    user32.GetWindowThreadProcessId.argtypes = [wintypes.HWND, ctypes.POINTER(wintypes.DWORD)]
+    user32.GetWindowThreadProcessId.restype = wintypes.DWORD
+    kernel32.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+    kernel32.OpenProcess.restype = wintypes.HANDLE
+    kernel32.QueryFullProcessImageNameW.argtypes = [
+        wintypes.HANDLE, wintypes.DWORD, wintypes.LPWSTR, ctypes.POINTER(wintypes.DWORD),
+    ]
+    kernel32.QueryFullProcessImageNameW.restype = wintypes.BOOL
+    kernel32.CloseHandle.argtypes = [wintypes.HANDLE]
+    kernel32.CloseHandle.restype = wintypes.BOOL
+
+    discovered: set[str] = set()
+    @ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND, wintypes.LPARAM)
+    def scan(hwnd: int, unused: int) -> bool:
+        length = user32.GetWindowTextLengthW(hwnd)
+        if not 12 < length < 300:
+            return True
+        title = ctypes.create_unicode_buffer(length + 1)
+        user32.GetWindowTextW(hwnd, title, length + 1)
+        if not title.value.startswith("Padiem Chat - "):
+            return True
+        pid = wintypes.DWORD()
+        user32.GetWindowThreadProcessId(hwnd, ctypes.byref(pid))
+        handle = kernel32.OpenProcess(0x1000, False, pid.value)
+        if not handle:
+            return True
+        try:
+            filename = ctypes.create_unicode_buffer(32768)
+            size = wintypes.DWORD(len(filename))
+            if kernel32.QueryFullProcessImageNameW(handle, 0, filename, ctypes.byref(size)):
+                candidate = Path(filename.value)
+                if candidate.name.casefold() in {
+                    "tabbit browser.exe", "msedge.exe", "chrome.exe",
+                } and candidate.is_file():
+                    discovered.add(str(candidate))
+        finally:
+            kernel32.CloseHandle(handle)
+        return True
+
+    if not user32.EnumWindows(scan, 0):
+        raise DeviceSessionRefused("pc_offer_owner_browser_discovery_failed")
+    if len(discovered) > 1:
+        raise DeviceSessionRefused("pc_offer_owner_browser_ambiguous")
+    return next(iter(discovered), None)
+
+
 def _open_owner_approval_page(url: str) -> None:
-    """Use the existing signed-in PADIEM browser for this one-use PC offer."""
+    """Open the handoff in the browser already hosting the original Claw tab."""
+    import re
+    import subprocess
     import webbrowser
 
+    # This URL is public correlation only: never carry codes, credentials,
+    # browser cookies, or account identities to the native launcher.
+    if not re.fullmatch(
+        r"https://chat[.]padiem[.]net/api/claw/connector/enrollments/setup"
+        r"[?]request_ref=link[.][0-9a-f]{32}", url,
+    ):
+        raise DeviceSessionRefused("pc_offer_owner_url_invalid")
+    browser = _existing_padiem_browser()
+    if browser:
+        try:
+            subprocess.Popen([browser, url], shell=False, close_fds=True)
+            return
+        except OSError as exc:
+            raise DeviceSessionRefused("pc_offer_owner_browser_unavailable") from exc
     if not webbrowser.open(url, new=2):
         raise DeviceSessionRefused("pc_offer_owner_browser_unavailable")
 
