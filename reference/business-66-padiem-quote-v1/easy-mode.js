@@ -14,6 +14,8 @@
   /* #4655: the reviewed assistant-only Markdown renderer. It is a DOM builder
      with no markup sink, so it can never turn model text into HTML. */
   const SafeMarkdown = window.B66SafeMarkdown || null;
+  // Shared Chat/Claw/B66 editor behavior; B66 owns submit/quote state.
+  const sharedComposer = window.SharedConversationComposer || null;
 
   if (!Core || !History || !FileIntake || !App) return;
 
@@ -386,6 +388,7 @@
     const text = safeText(composer.value);
     if (!text || !inputHandler) return;
     composer.value = "";
+    sharedComposer?.resizeTextarea?.(composer, { maxHeight: 180 });
     inputHandler(text);
   }
 
@@ -2302,15 +2305,19 @@
   fileInput.addEventListener("change", handleFileSelection);
 
   sendButton.addEventListener("click", submitComposer);
+  const compositionGuard = sharedComposer?.createCompositionGuard?.() || null;
+  composer.addEventListener("compositionstart", () => compositionGuard?.start());
+  composer.addEventListener("compositionupdate", () => compositionGuard?.update());
+  composer.addEventListener("compositionend", () => compositionGuard?.end());
   composer.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
-      submitComposer();
-    }
+    // Enter never submits an unfinished Korean IME candidate.
+    if (!sharedComposer?.shouldSubmitOnEnter?.(event, compositionGuard)) return;
+    event.preventDefault();
+    submitComposer();
   });
   composer.addEventListener("input", () => {
-    composer.style.height = "auto";
-    composer.style.height = Math.min(composer.scrollHeight, 160) + "px";
+    // Adopt Chat's 180px multiline limit; keep B66's guided quote routing.
+    sharedComposer?.resizeTextarea?.(composer, { maxHeight: 180 });
   });
 
   document.addEventListener("b66:account-scope-changed", (event) => {

@@ -312,6 +312,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python3 scripts/sync_shared_conversation_composer.py --check
           python - <<'PY'
           from pathlib import Path
 
@@ -475,6 +476,12 @@ jobs:
           ref: ${{ inputs.target_sha }}
           fetch-depth: 1
           persist-credentials: false
+
+      - name: Check canonical shared Chat/Claw/B66 composer bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/sync_shared_conversation_composer.py --check
 
       - name: Read-only deployed state audit
         id: audit

@@ -224,8 +224,12 @@
     cancelStreamButton.hidden = !inFlight;
     cancelStreamButton.disabled = !inFlight;
     cancelStreamButton.setAttribute("aria-disabled", inFlight ? "false" : "true");
-    input.style.height = "auto";
-    input.style.height = `${Math.min(input.scrollHeight, 180)}px`;
+    if (window.PadiemConversationComposer?.resizeTextarea) {
+      window.PadiemConversationComposer.resizeTextarea(input, { maxHeight: 180 });
+    } else {
+      input.style.height = "auto";
+      input.style.height = `${Math.min(input.scrollHeight, 180)}px`;
+    }
   }
   function lifecycleForError(error) {
     return error && error.code === "upstream_timeout" ? MESSAGE_LIFECYCLE.TIMED_OUT : MESSAGE_LIFECYCLE.FAILED;
@@ -1991,16 +1995,19 @@
   // is the shared pure decision (claw-local-handoff.js) plus an explicit
   // composition tracker for engines that omit event.isComposing.
   const localHandoffModule = window.PadiemClawLocalHandoff;
-  const composerComposition = localHandoffModule
-    ? localHandoffModule.createCompositionGuard()
+  // All three products load the canonical keyboard guard. The historic
+  // handoff guard remains for isolated older fixture/browser pages.
+  const composerInputModule = window.PadiemConversationComposer || localHandoffModule;
+  const composerComposition = composerInputModule
+    ? composerInputModule.createCompositionGuard()
     : null;
   input.addEventListener("compositionstart", () => composerComposition?.start());
   input.addEventListener("compositionupdate", () => composerComposition?.update());
   input.addEventListener("compositionend", () => composerComposition?.end());
   input.addEventListener("keydown", (event) => {
-    const shouldSubmit = localHandoffModule
-      ? localHandoffModule.shouldSubmitOnEnter(event, composerComposition)
-      : event.key === "Enter" && !event.shiftKey;
+    const shouldSubmit = composerInputModule
+      ? composerInputModule.shouldSubmitOnEnter(event, composerComposition)
+      : false; // Never submit Hangul IME text with an unavailable guard.
     if (!shouldSubmit) return;
     event.preventDefault();
     if (!sendButton.disabled) form.requestSubmit();
