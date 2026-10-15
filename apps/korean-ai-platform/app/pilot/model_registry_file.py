@@ -28,6 +28,10 @@ def read_registry(path: Path = REGISTRY_PATH) -> dict:
         data = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, ValueError) as exc:
         raise ModelRegistryError("invalid B14 JSON registry") from exc
+    return validate_registry(data)
+
+def validate_registry(data: dict) -> dict:
+    """Validate any trusted source before modifying the active catalog."""
     _strict_keys(data,{"schema_version","comment","providers","models","groups"},"root")
     if data["schema_version"] != 1 or not isinstance(data["comment"],str):
         raise ModelRegistryError("unsupported B14 registry schema")
@@ -106,7 +110,7 @@ def installed_model_ids() -> frozenset[str]:
 def install_models(data:dict|None=None) -> None:
     """Install the one canonical registry into existing B14 execution adapters."""
     from .catalog import CATALOG_BY_ID, CATALOG_MODELS, CatalogModel
-    data = read_registry() if data is None else data
+    data = read_registry() if data is None else validate_registry(data)
     # All validation first. Invalid edits must not partially modify in-memory state.
     parsed=[]
     specs=[]
