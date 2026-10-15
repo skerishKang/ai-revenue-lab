@@ -61,7 +61,7 @@ def test_registered_endpoint_is_fixed_compatible_origin_and_provider_is_idempote
     assert spec is not None
     assert spec.base_origin == "https://generativelanguage.googleapis.com/v1beta/openai"
     assert spec.allowed_hosts == ("generativelanguage.googleapis.com",)
-    assert spec.credential_binding_name == "PADIEM_GEMINI_API_KEY"
+    assert spec.credential_binding_name == "PADIEM_B14_CREDENTIAL_05"
     assert GOOGLE_BASE_ORIGIN == spec.base_origin
     assert GOOGLE_ALLOWED_HOST == spec.allowed_hosts[0]
     assert GOOGLE_CREDENTIAL_BINDING == spec.credential_binding_name
@@ -85,7 +85,7 @@ def test_openai_compatible_bearer_path_and_exact_model_without_real_network(
 ):
     monkeypatch.setenv("B14_PROVIDER_MODE","live")
     # Synthetic string is never a real credential; it is only inspected by MockTransport.
-    monkeypatch.setenv("PADIEM_GEMINI_API_KEY","synthetic_google_credential_abcdefghijk")
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05","synthetic_google_credential_abcdefghijk")
     called=[]
     def mock(req):
         called.append(req)
@@ -116,7 +116,7 @@ def test_openai_compatible_bearer_path_and_exact_model_without_real_network(
 
 def test_missing_google_key_fails_closed_before_network(monkeypatch):
     monkeypatch.setenv("B14_PROVIDER_MODE","live")
-    monkeypatch.delenv("PADIEM_GEMINI_API_KEY",raising=False)
+    monkeypatch.delenv("PADIEM_B14_CREDENTIAL_05",raising=False)
     calls=[]
     def mock(req):
         calls.append(req)
@@ -129,7 +129,7 @@ def test_missing_google_key_fails_closed_before_network(monkeypatch):
 
 def test_openai_multimodal_image_input_payload_not_image_generation(monkeypatch):
     monkeypatch.setenv("B14_PROVIDER_MODE","live")
-    monkeypatch.setenv("PADIEM_GEMINI_API_KEY","synthetic_google_credential_abcdefghijk")
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05","synthetic_google_credential_abcdefghijk")
     import json
     messages=[{"role":"user","content":[
         {"type":"text","text":"Check synthetic image."},

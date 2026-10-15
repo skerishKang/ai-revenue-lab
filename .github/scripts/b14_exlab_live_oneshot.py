@@ -105,8 +105,8 @@ class ExLabSpec:
     upstream_model: str = "qwen3.8-flash-next-uncensored"
     provider_id: str = "experiential"
     provider_name: str = "Experiential Labs"
-    credential_binding: str = "PADIEM_EXLAB_API_KEY"
-    expected_binding: str = "PADIEM_EXLAB_API_KEY"
+    credential_binding: str = "PADIEM_B14_CREDENTIAL_04"
+    expected_binding: str = "PADIEM_B14_CREDENTIAL_04"
 
 
 # --------------------------------------------------------------------------

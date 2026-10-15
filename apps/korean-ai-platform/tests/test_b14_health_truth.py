@@ -23,16 +23,16 @@ from app.pilot.registry import reset_registry
 PLATFORM_SECRET_ENV_KEYS = (
     "KILO_API_KEY",
     "AGNES_API_KEY",
-    "PADIEM_POOLSIDE_API_KEY",
+    "PADIEM_B14_CREDENTIAL_12",
     "PADIEM_SENSENOVA_API_KEY",
-    "PADIEM_AGNES_API_KEY",
-    "PADIEM_B_AI_API_KEY",
-    "PADIEM_INFRON_API_KEY",
-    "PADIEM_INCEPTION_MERCURY_API_KEY",
-    "PADIEM_ATRIA_API_KEY",
-    "PADIEM_EXLAB_API_KEY",
-    "PADIEM_KIRAAI_API_KEY",
-    "PADIEM_MODELSCOPE_API_KEY",
+    "PADIEM_B14_CREDENTIAL_01",
+    "PADIEM_B14_CREDENTIAL_03",
+    "PADIEM_B14_CREDENTIAL_07",
+    "PADIEM_B14_CREDENTIAL_06",
+    "PADIEM_B14_CREDENTIAL_02",
+    "PADIEM_B14_CREDENTIAL_04",
+    "PADIEM_B14_CREDENTIAL_09",
+    "PADIEM_B14_CREDENTIAL_10",
 )
 
 
@@ -125,7 +125,7 @@ def test_openrouter_key_alone_never_makes_b14_live_ready(client):
 
 def test_placeholder_platform_secret_is_filtered(client, monkeypatch):
     _set_live()
-    monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY", "test-key")
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12", "test-key")
 
     data = client.get("/api/pilot/health").json()
 

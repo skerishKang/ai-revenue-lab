@@ -153,7 +153,7 @@ def test_exact_poolside_provider_route_cannot_drift_to_kilo(tmp_path):
         if change=="base_origin":
             mutated["providers"]["poolside"]["base_origin"]="https://api.kilo.ai/api/gateway"
         elif change=="credential_binding_name":
-            mutated["providers"]["poolside"]["credential_binding_name"]="PADIEM_KILO_API_KEY"
+            mutated["providers"]["poolside"]["credential_binding_name"]="PADIEM_B14_CREDENTIAL_08"
         else:
             model[change]="kilo/poolside/laguna-s-2.1:free"
         path=tmp_path/(change+".json")

@@ -25,7 +25,7 @@ from app.pilot.errors import PilotNotConfigured, UpstreamRateLimited
 MODEL="kira/qwen3.8-flash-free"
 UPSTREAM="qwen3.8-flash-free"
 ORIGIN="https://kiraai.vn/api/v1"
-BINDING="PADIEM_KIRAAI_API_KEY"
+BINDING="PADIEM_B14_CREDENTIAL_09"
 
 @pytest.fixture
 def live(monkeypatch):
@@ -171,7 +171,7 @@ def test_upstream_failures_do_not_change_model(live,status,exception):
 
 def test_missing_kira_secret_never_uses_exlab_credentials(live,monkeypatch):
     monkeypatch.delenv(BINDING)
-    monkeypatch.setenv("PADIEM_EXLAB_API_KEY","synthetic-exlab-never-borrow")
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_04","synthetic-exlab-never-borrow")
     def handler(req):
         raise AssertionError("No outbound request without exact Kira binding")
     with pytest.raises(PilotNotConfigured):

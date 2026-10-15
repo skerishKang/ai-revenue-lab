@@ -44,7 +44,7 @@ def test_agnes_registration_is_exact_and_not_permanently_free():
     assert spec.base_origin == AGNES_BASE_ORIGIN
     assert spec.allowed_hosts == (AGNES_ALLOWED_HOST,)
     assert spec.credential_source.value == "platform_secret"
-    assert spec.credential_binding_name == AGNES_CREDENTIAL_BINDING == "PADIEM_AGNES_API_KEY"
+    assert spec.credential_binding_name == AGNES_CREDENTIAL_BINDING == "PADIEM_B14_CREDENTIAL_01"
 
     model = get_catalog_by_id(AGNES_MODEL_ID)
     assert model is not None

@@ -1,7 +1,7 @@
 """B.AI Provider onboarding for Business 14 (#2133).
 
 Owner decision (#2126 5584200820) approved B.AI as a Padiem Pro candidate
-provider with the credential name ``PADIEM_B_AI_API_KEY`` (name only; the
+provider with the credential name ``PADIEM_B14_CREDENTIAL_03`` (name only; the
 value never enters this repository).
 
 ACT-0 authority — official B.AI docs (docs.b.ai), checked 2026-09-08:
@@ -43,7 +43,7 @@ from app.pilot.platform_secrets import (
 BAI_PROVIDER_ID = "b-ai"
 BAI_BASE_ORIGIN = "https://api.b.ai/v1"
 BAI_ALLOWED_HOST = "api.b.ai"
-BAI_CREDENTIAL_BINDING = "PADIEM_B_AI_API_KEY"
+BAI_CREDENTIAL_BINDING = "PADIEM_B14_CREDENTIAL_03"
 
 BAI_QWEN_MODEL_ID = "b-ai/qwen3.8-flash"
 BAI_QWEN_UPSTREAM_MODEL = "qwen3.8-flash"

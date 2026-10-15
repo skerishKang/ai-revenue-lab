@@ -62,7 +62,7 @@ def start_server() -> subprocess.Popen[bytes]:
     env["B14_PROVIDER_MODE"] = "mock"
     # The chosen Agnes exact model is secret-gated even in mock. Provide a
     # synthetic test-only value to this mock child; never call an upstream.
-    env["PADIEM_AGNES_API_KEY"] = "sk-fixture-browser-only-0123456789"
+    env["PADIEM_B14_CREDENTIAL_01"] = "sk-fixture-browser-only-0123456789"
     # Drain server logs to a file, never to unread PIPEs: uvicorn writes an
     # access-log line per request, an undrained pipe fills after ~50 requests,
     # and the blocked server then times out the mobile phase's first goto.

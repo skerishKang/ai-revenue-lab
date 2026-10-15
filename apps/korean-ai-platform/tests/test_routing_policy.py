@@ -25,8 +25,8 @@ POOLSIDE_KEY = "sk-chain-unit-poolside-0123456789"
 @pytest.fixture(autouse=True)
 def _deterministic_chain_env(monkeypatch):
     """Clear chain-affecting env; tests opt in to secrets explicitly."""
-    monkeypatch.delenv("PADIEM_AGNES_API_KEY", raising=False)
-    monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
+    monkeypatch.delenv("PADIEM_B14_CREDENTIAL_01", raising=False)
+    monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     saved = {"provider_mode": rcfg.provider_mode}
     rcfg.provider_mode = "mock"
@@ -35,8 +35,8 @@ def _deterministic_chain_env(monkeypatch):
 
 
 def _set_all_secrets(monkeypatch):
-    monkeypatch.setenv("PADIEM_AGNES_API_KEY", AGNES_KEY)
-    monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY", POOLSIDE_KEY)
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", AGNES_KEY)
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12", POOLSIDE_KEY)
 
 
 def test_chain_order_is_owner_designated(monkeypatch):
@@ -77,7 +77,7 @@ def test_full_chain_selects_agnes_first(monkeypatch):
 
 def test_missing_agnes_secret_selects_poolside_and_excludes(monkeypatch):
     rcfg.provider_mode = "live"
-    monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY", POOLSIDE_KEY)
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12", POOLSIDE_KEY)
     d = rp.resolve_chain_route()
     assert d.selected_model == POOLSIDE_MODEL_ID
     assert d.selected_route_id == f"platform:{POOLSIDE_MODEL_ID}"

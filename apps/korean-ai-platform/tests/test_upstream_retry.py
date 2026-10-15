@@ -52,7 +52,7 @@ def _ok_response(upstream_model: str) -> dict:
 @pytest.fixture(autouse=True)
 def _approved_manual_model_secret(monkeypatch):
     """The owner-approved Agnes model is the retry target, never a retired ID."""
-    monkeypatch.setenv("PADIEM_AGNES_API_KEY","sk-fixture-agnes-retry-0123456789")
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01","sk-fixture-agnes-retry-0123456789")
     monkeypatch.setenv("B14_PROVIDER_MODE","live")
 
 @pytest.fixture()

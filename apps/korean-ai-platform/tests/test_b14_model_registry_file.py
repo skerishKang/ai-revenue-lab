@@ -189,9 +189,9 @@ def test_opencodego_catjam_and_owner_selected_muse_fallbacks_enabled():
     reg = read_registry()
     providers = reg["providers"]
     assert providers["opencode-go"]["base_origin"] == "https://opencode.ai/inference/go/v1"
-    assert providers["opencode-go"]["credential_binding_name"] == "PADIEM_OPENCODE_API_KEY"
+    assert providers["opencode-go"]["credential_binding_name"] == "PADIEM_B14_CREDENTIAL_11"
     assert providers["zanslab"]["base_origin"] == "https://zanslab.id/v1"
-    assert providers["zanslab"]["credential_binding_name"] == "PADIEM_ZANSLAB_API_KEY"
+    assert providers["zanslab"]["credential_binding_name"] == "PADIEM_B14_CREDENTIAL_14"
     assert providers["opencode-go"]["enabled"] is True
     assert providers["zanslab"]["enabled"] is False
     # Cat Jam is the only enabled Go route; other Go and ZansLab models stay disabled.
@@ -222,7 +222,7 @@ def test_opencodego_catjam_and_owner_selected_muse_fallbacks_enabled():
     wrangler = (root / "wrangler.toml").read_text(encoding="utf-8")
     import tomllib
     bindings = tomllib.loads(wrangler)["secrets_store_secrets"]
-    for name in ("PADIEM_OPENCODE_API_KEY", "PADIEM_ZANSLAB_API_KEY"):
+    for name in ("PADIEM_B14_CREDENTIAL_11", "PADIEM_B14_CREDENTIAL_14"):
         matches = [x for x in bindings if x["binding"] == name]
         assert len(matches) == 1
         assert matches[0] == {

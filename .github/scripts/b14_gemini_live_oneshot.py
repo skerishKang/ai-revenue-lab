@@ -100,8 +100,8 @@ class GeminiSpec:
     upstream_model: str
     provider_id: str = "google"
     provider_name: str = "Google AI Studio"
-    credential_binding: str = "PADIEM_GEMINI_API_KEY"
-    expected_binding: str = "PADIEM_GEMINI_API_KEY"
+    credential_binding: str = "PADIEM_B14_CREDENTIAL_05"
+    expected_binding: str = "PADIEM_B14_CREDENTIAL_05"
 
 
 # --------------------------------------------------------------------------

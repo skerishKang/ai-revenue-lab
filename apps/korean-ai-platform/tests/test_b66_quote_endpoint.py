@@ -325,7 +325,7 @@ def test_scanned_pdf_stays_manual_when_native_text_is_absent(monkeypatch):
 
 def test_route_source_owns_no_browser_provider_or_secret_surface():
     source = Path(endpoint.__file__).read_text(encoding="utf-8")
-    assert "PADIEM_KILO_API_KEY" not in source
+    assert "PADIEM_B14_CREDENTIAL_08" not in source
     assert "Authorization" not in source
     assert "api_key" not in source.lower()
     assert "build_image_extraction_request" in source

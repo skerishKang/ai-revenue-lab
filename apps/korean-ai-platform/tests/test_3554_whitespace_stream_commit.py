@@ -23,8 +23,8 @@ UPSTREAM = "agnes-3.0-flash"
 @pytest.fixture
 def live_fake_provider(monkeypatch):
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
-    monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-local-mock-only-3554-123456789")
-    monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-local-mock-only-3554-123456789")
+    monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
     old_mode = rcfg.provider_mode
     rcfg.provider_mode = "live"
     try:

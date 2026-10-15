@@ -32,7 +32,7 @@ class Candidate:
 CANDIDATES = (
     Candidate(
         "inception",
-        "PADIEM_INCEPTION_MERCURY_API_KEY",
+        "PADIEM_B14_CREDENTIAL_06",
         "https://api.inceptionlabs.ai/v1",
         "api.inceptionlabs.ai",
         "inception/mercury-2.5",
@@ -41,7 +41,7 @@ CANDIDATES = (
     ),
     Candidate(
         "atria",
-        "PADIEM_ATRIA_API_KEY",
+        "PADIEM_B14_CREDENTIAL_02",
         "https://api.atria-asi.ai/v1",
         "api.atria-asi.ai",
         "atria/Atria-Dawn-Preview",
@@ -161,7 +161,7 @@ async def test_candidate_mock_mode_makes_zero_upstream_calls(candidate, monkeypa
 async def test_candidate_secret_isolated_from_other_provider(candidate, monkeypatch):
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.delenv(candidate.binding, raising=False)
-    monkeypatch.setenv("PADIEM_B_AI_API_KEY", "other-provider-only-1234567890abcdef")
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_03", "other-provider-only-1234567890abcdef")
     called = False
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -288,7 +288,7 @@ def test_exlab_provider_reused_but_owner_retired_luna_stays_unregistered():
     spec = get_platform_provider("experiential")
     assert spec is not None
     assert spec.base_origin == "https://api.experientiallabs.ai/v1"
-    assert spec.credential_binding_name == "PADIEM_EXLAB_API_KEY"
+    assert spec.credential_binding_name == "PADIEM_B14_CREDENTIAL_04"
     assert get_catalog_by_id("experiential/gpt-5.6-luna") is None
     with pytest.raises(NoSafeRoute):
         resolve_manual_route("experiential/gpt-5.6-luna")

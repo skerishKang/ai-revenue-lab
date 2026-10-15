@@ -78,8 +78,8 @@ def test_unknown_price_model_is_never_implicitly_classified_free():
 
 def test_gateway_resolve_endpoint_ignores_allow_paid_for_fixed_chain(client, monkeypatch):
     """D14 (#2044): /api/pilot/router/resolve b14/auto ignores allow_paid (fixed chain)."""
-    monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-test-agnes-route-0123456789")
-    monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-test-agnes-route-0123456789")
+    monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
     resp_default = client.post(
         "/api/pilot/router/resolve",
         json={

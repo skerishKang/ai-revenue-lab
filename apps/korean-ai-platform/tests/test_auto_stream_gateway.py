@@ -37,7 +37,7 @@ class _ChunkStream(httpx.AsyncByteStream):
 @pytest.fixture(autouse=True)
 def _reset_runtime_config(monkeypatch):
     monkeypatch.delenv("KILO_API_KEY", raising=False)
-    monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-test-agnes-stream-0123456789")
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-test-agnes-stream-0123456789")
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     saved = {
@@ -149,8 +149,8 @@ def _json_data_frames(text: str) -> list[dict]:
 
 
 def test_mock_auto_preview_accepts_b14_auto_and_preserves_router_metadata(monkeypatch):
-    monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-chain-unit-agnes-0123456789")
-    monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-chain-unit-agnes-0123456789")
+    monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
     response = _client().post(AUTO_STREAM_URL, json=_payload())
 
     assert response.status_code == 200
@@ -215,8 +215,8 @@ POOLSIDE_KEY = "sk-chain-unit-poolside-0123456789"
 
 def _chain_secrets(monkeypatch):
     """Opt the deterministic fixed chain into both positions."""
-    monkeypatch.setenv("PADIEM_AGNES_API_KEY", AGNES_KEY)
-    monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY", POOLSIDE_KEY)
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", AGNES_KEY)
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_12", POOLSIDE_KEY)
 
 
 def test_fixed_chain_advances_on_retryable_stream_error(monkeypatch):
@@ -419,7 +419,7 @@ def test_post_visible_token_failure_emits_bounded_error_without_fallback_or_done
 def test_live_missing_agnes_key_fails_closed_without_upstream_call(monkeypatch):
     """The active Agnes-headed chain requires a platform credential."""
     stale_key = "sk-or-v1-stale-abcdef1234567890"
-    monkeypatch.delenv("PADIEM_AGNES_API_KEY", raising=False)
+    monkeypatch.delenv("PADIEM_B14_CREDENTIAL_01", raising=False)
     seen_auth: list[str | None] = []
 
     async def handler(request: httpx.Request) -> httpx.Response:
@@ -445,7 +445,7 @@ def test_live_missing_agnes_key_fails_closed_without_upstream_call(monkeypatch):
 
 def test_live_missing_chain_keys_fails_closed_without_upstream_call(monkeypatch):
     """Both active chain credentials missing means no route is safe."""
-    monkeypatch.delenv("PADIEM_AGNES_API_KEY", raising=False)
+    monkeypatch.delenv("PADIEM_B14_CREDENTIAL_01", raising=False)
     calls = 0
     seen_auth: list[str | None] = []
 
