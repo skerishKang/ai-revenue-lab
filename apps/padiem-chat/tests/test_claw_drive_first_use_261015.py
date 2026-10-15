@@ -26,6 +26,8 @@ def test_drive_off_not_revocation_and_explicit_manage_delete():
     assert '"/api/connectors/google/drive/disconnect"' in MANAGER
     assert 'if(!confirmed)' in MANAGER
     assert 'padiem:refresh-connector-status' in MANAGER
+    assert 'const card = document.querySelector(' in MANAGER
+    assert 'dialog?.querySelector' not in MANAGER
     assert 'localStorage' not in MANAGER
 
 
