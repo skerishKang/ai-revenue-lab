@@ -554,7 +554,9 @@ def test_claw_answer_lands_in_the_answer_dom_and_commits() -> None:
     dom = result["answerDom"]
     assert dom is not None, "no assistant article was rendered for a 200 SSE answer"
     assert dom["paragraphText"] == ANSWER_WITH_MARKUP, dom
-    assert dom["label"] == "AI 답변", dom
+    # Completed answers keep the brand product label; the repetitive
+    # "AI 답변" runtime line is not rendered.
+    assert dom["label"] != "AI 답변", dom
     assert dom["productLabel"] == "Padiem Claw", dom
     assert "completed" in result["lifecycleSets"], result["lifecycleSets"]
     assert result["committed"] == [ANSWER_WITH_MARKUP], result["committed"]
