@@ -224,6 +224,8 @@ async def b66_saved_skill_candidate_operator_list(request: Request) -> JSONRespo
     if not callable(list_fn):
         return _error(503, "candidate_store_unavailable", "승인 대기 목록을 확인할 수 없습니다.")
 
+    if any(key not in {"status", "limit"} for key in request.query_params):
+        return _error(400, "invalid_filter", "요청 필터 형식이 올바르지 않습니다.")
     raw_status = request.query_params.get("status", "pending")
     if raw_status not in CANDIDATE_STATUSES:
         return _error(400, "invalid_status", "status 형식이 올바르지 않습니다.")

@@ -487,22 +487,12 @@ def create_app(
             methods=["GET"],
         ),
         Route(
-            "/api/b66/saved-skill-candidates/operator",
+            "/api/b66/admin/saved-skill-candidates",
             b66_saved_skill_candidate_operator_list,
             methods=["GET"],
         ),
         Route(
-            "/api/b66/saved-skill-candidates/operator/{candidate_id}",
-            b66_saved_skill_candidate_operator_detail,
-            methods=["GET"],
-        ),
-        Route(
-            "/api/b66/saved-skill-candidates/operator-pending",
-            b66_saved_skill_candidate_operator_list,
-            methods=["GET"],
-        ),
-        Route(
-            "/api/b66/saved-skill-candidates/operator-pending/{candidate_id}",
+            "/api/b66/admin/saved-skill-candidates/{candidate_id}",
             b66_saved_skill_candidate_operator_detail,
             methods=["GET"],
         ),
