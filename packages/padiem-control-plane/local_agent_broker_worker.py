@@ -108,8 +108,7 @@ class LocalAgentBrokerDurableObject(CanonicalBrokerPairingRPC, CanonicalBrokerPe
 
     async def device_directory(self, payload: dict) -> dict:  # #4139 read-only multi-device RPC
         return self._runtime.device_directory(payload)
-    async def set_owner_usage(self, payload: dict) -> dict:
-        return self._runtime.set_owner_usage(payload)
+    async def set_owner_usage(self, payload: dict) -> dict: return self._runtime.set_owner_usage(payload)
     async def authenticate_device_session(self, payload: dict) -> dict:
         return self._runtime.authenticate_device_session(payload)
 
@@ -180,9 +179,7 @@ class Default(WorkerEntrypoint):
 
     async def device_directory(self, payload: dict) -> dict:
         return await self._stub().device_directory(payload)
-    async def set_owner_usage(self, payload: dict) -> dict:
-        return await self._stub().set_owner_usage(payload)
-
+    async def set_owner_usage(self, payload: dict) -> dict: return await self._stub().set_owner_usage(payload)
     async def authenticate_device_session(self, payload: dict) -> dict:
         return await self._stub().authenticate_device_session(payload)
     async def terminal_command_result(self, payload: dict) -> dict:
