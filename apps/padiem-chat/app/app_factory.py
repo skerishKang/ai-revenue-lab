@@ -194,7 +194,8 @@ from .calendar_store import CalendarStore, D1CalendarStore, InMemoryCalendarStor
 from .claw_inbox_routes import claw_inbox_list, claw_inbox_status
 from .claw_local_task_result_routes import CLAW_LOCAL_TASK_RESULT_PATH, local_runner_result
 from .claw_device_directory_routes import (
-    CLAW_DEVICE_DIRECTORY_PATH, UnconfiguredDeviceDirectorySource, claw_device_directory,
+    CLAW_DEVICE_DIRECTORY_PATH, CLAW_PC_PAUSE_PATH, CLAW_PC_RESUME_PATH,
+    UnconfiguredDeviceDirectorySource, claw_device_directory, claw_pc_pause, claw_pc_resume,
 )
 from .claw_local_access_routes import (
     CLAW_LOCAL_ACCESS_PATH,
@@ -620,6 +621,8 @@ def create_app(
         Route(CLAW_LOCAL_ACCESS_PATH, claw_local_access, methods=["GET"]),
         # #4139: read-only multi-PC list; owner + workspace derived from session.
         Route(CLAW_DEVICE_DIRECTORY_PATH, claw_device_directory, methods=["GET"]),
+        Route(CLAW_PC_PAUSE_PATH, claw_pc_pause, methods=["POST"]),
+        Route(CLAW_PC_RESUME_PATH, claw_pc_resume, methods=["POST"]),
         # #3650: the local/nonprod initiating leg. Fail-closed unless the run
         # composition explicitly installs a connect port; the central #3476
         # same-origin guard covers it like every cookie-authenticated POST.

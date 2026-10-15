@@ -50,7 +50,7 @@
       if (hint) hint.textContent = document.documentElement.lang === "en"
         ? "Sign in first" : "\uB85C\uADF8\uC778\uD558\uC138\uC694";
       const login = document.getElementById("loginButton");
-      const account = document.getElementById("accountContainer");
+      const account = document.querySelector(".sidebar-account");
       // A mismatched/loading account must never accidentally click Logout.
       if (account?.dataset.accountState === "signed_in" ||
           !login || login.hidden || login.disabled) return true;
@@ -117,6 +117,11 @@
 
     function startPcConnectionFromOriginalClick() {
       if (!isClawHome() || !signedIn()) return false;
+      if (document.querySelector('[data-claw-connection="pc"]')?.dataset.pcPaused === "true") {
+        pcNote("\uC0AC\uC6A9\uC790\uAC00 PC \uC5F0\uACB0\uC744 \uAEBC\uB1A8\uC2B5\uB2C8\uB2E4. ON\uC744 \uB20C\uB7EC \uC7AC\uAC1C\uD558\uC138\uC694.",
+               "PC use is paused. Choose ON to resume.");
+        return true;
+      }
       if (document.querySelector('[data-claw-connection="pc"]')?.dataset.connectionState === "on") {
         return false;
       }
@@ -209,7 +214,8 @@
         // A signed-in owner may have a temporarily unavailable history API.
         // Never click the signed-in logout button on that error path.
         const login = document.getElementById("loginButton");
-        const signedIn = document.getElementById("accountContainer")?.dataset.accountState === "signed_in";
+        const signedIn = document.getElementById("accountContainer")?.dataset.accountState === "signed_in" ||
+          document.querySelector(".sidebar-account")?.dataset.accountState === "signed_in";
         if (!signedIn && login && !login.disabled && !login.hidden) login.click();
         if (historyFeedback) {
           historyFeedback.textContent = signedIn

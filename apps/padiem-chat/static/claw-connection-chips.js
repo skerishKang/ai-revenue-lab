@@ -52,7 +52,13 @@ async function refresh(){
  if(result[0].status==="fulfilled"){
   const d=result[0].value;
   if(d?.ok===true&&d.available===true&&d.ownerScoped===true&&Array.isArray(d.devices)&&d.devices.length<=25){
-   if(!d.devices.length){
+   if(d.usagePaused===true&&d.devices.length){
+    // The canonical Broker persisted the owner OFF choice and blocks
+    // command enqueue/poll/admission; an offline heartbeat cannot fake it.
+    set("pc","off");
+    chip("pc").dataset.pcPaused="true";
+    pcTruth("paused","\uC5F0\uACB0 \uAEBC\uC9D0","Connection off");
+   }else if(!d.devices.length){
     set("pc","off");
     pcTruth("unregistered","\uC5F0\uACB0\uD558\uC138\uC694","Connect your computer");
    }else{
@@ -127,6 +133,40 @@ async function setGithubUsage(enabled){
   pendingDisconnect.delete("github");if(button)button.disabled=false;
  }
 }
+async function setPcUsage(paused){
+ if(pendingDisconnect.has("pc"))return;
+ pendingDisconnect.add("pc");
+ const button=chip("pc");
+ if(button)button.disabled=true;
+ pcTruth(paused?"stopping":"connecting",
+   paused?"\uC5F0\uACB0 \uC911\uC9C0 \uC911...":"\uC5F0\uACB0 \uC911...",
+   paused?"Stopping PC tasks...":"Resuming PC tasks...");
+ try{
+  const response=await fetch(paused?"/api/claw/local-access/devices/pause":
+    "/api/claw/local-access/devices/resume",{
+    method:"POST",mode:"same-origin",credentials:"same-origin",
+    cache:"no-store",headers:{Accept:"application/json"}
+  });
+  if(!response.ok)throw Error("pc_usage_write_denied");
+  const raw=await response.text();
+  if(raw.length>4096)throw Error("pc_usage_oversize");
+  const receipt=JSON.parse(raw);
+  if(receipt?.ok!==true||receipt.usagePaused!==paused)
+    throw Error("pc_usage_unverified");
+  await refresh(); // Only the canonical Broker readback can illuminate OFF.
+  if(chip("pc")?.dataset.pcPaused!==(paused?"true":"false"))
+    throw Error("pc_usage_readback_mismatch");
+  if(!paused&&values.get("pc")!=="on")
+    document.getElementById("clawComputerWorkspace")?.click();
+ }catch(_error){
+  await refresh();
+  feedback("\uCEF4\uD4E8\uD130 \uC5F0\uACB0 \uC124\uC815\uC744 \uD655\uC778\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uAE30\uC874 \uC0C1\uD0DC\uB97C \uC720\uC9C0\uD569\uB2C8\uB2E4.",
+    "PC setting could not be verified. Previous state retained.");
+ }finally{
+  pendingDisconnect.delete("pc");
+  if(button)button.disabled=false;
+ }
+}
 ids.forEach(id=>chip(id)?.addEventListener("click",event=>{
  // One PC switch, two visible labels. Its activation MUST NOT bubble to
  // the enclosing card and accidentally reconnect immediately after OFF.
@@ -139,20 +179,17 @@ ids.forEach(id=>chip(id)?.addEventListener("click",event=>{
    document.getElementById("clawComputerWorkspace")?.click();
    return;
   }
-  const target=event.target?.closest?.(".claw-state-off")?"off":"on";
   const state=values.get("pc");
+  const paused=chip("pc")?.dataset.pcPaused==="true";
+  // Keyboard activation toggles the single control; pointer hit targets
+  // the explicit ON or OFF half without creating a second control.
+  const target=event.detail===0?(paused?"on":state==="on"?"off":"on"):
+    event.target?.closest?.(".claw-state-off")?"off":"on";
   if(target==="off"){
-   if(state!=="on"){
-    feedback("현재 연결된 PC가 없습니다. OFF를 선택하지 않았습니다.",
-      "No active PC connection to pause; OFF was not selected.");
-   }else{
-    // Server/Broker still lack a reversible pause RPC. Never fabricate OFF
-    // or send a task after a client-only flag; expose exact missing capability.
-    feedback("PC 중지 기능이 준비되지 않아 기존 연결을 유지합니다.",
-      "PC pause is not yet available. Connection remains active.");
-   }
+   if(!paused)void setPcUsage(true);
    return;
   }
+  if(paused){void setPcUsage(false);return;}
   if(state==="on")return;
   pcTruth("connecting","\uC5F0\uACB0 \uC911...","Connecting...");
   document.getElementById("clawComputerWorkspace")?.click();

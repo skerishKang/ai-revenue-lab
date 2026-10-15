@@ -113,6 +113,7 @@ class LocalAgentBrokerDeviceHttpService:
         office_chunks=None,
         text_results=None,
         execution_profiles=None,
+        owner_usage_gate=None,
     ) -> None:
         if not callable(rpc_factory):
             raise ValueError("rpc_factory must be callable")
@@ -133,6 +134,9 @@ class LocalAgentBrokerDeviceHttpService:
         self._office_chunks = office_chunks
         self._text_results = text_results
         self._execution_profiles = execution_profiles
+        if owner_usage_gate is not None and not callable(owner_usage_gate):
+            raise ValueError("owner_usage_gate must be callable")
+        self._owner_usage_gate = owner_usage_gate
 
     def _server_now(self) -> datetime:
         value = self._clock()
@@ -183,6 +187,24 @@ class LocalAgentBrokerDeviceHttpService:
             return _structured_response(
                 _error(401, "local_agent_http_auth_required", "authenticated Local Agent broker access is required")
             )
+
+        # Native Resident /poll and /material use LocalAgentBrokerHttpHandler
+        # and bypass the Worker RPC runtime.poll() wrapper. Enforce durable
+        # owner OFF here as well, AFTER canonical credential authentication
+        # and BEFORE ANY queued command/material can leave the Broker.
+        # Heartbeat and completion acknowledgements remain available, so
+        # an in-flight command can finish without exposing new work.
+        if route in ("/poll", "/material") and self._owner_usage_gate is not None:
+            try:
+                paused = self._owner_usage_gate(binding.account_ref, binding.workspace_ref)
+                if type(paused) is not bool:
+                    raise ValueError("unverified owner usage")
+            except Exception:
+                return _structured_response(_error(
+                    503, "owner_pc_usage_unavailable", "Owner PC use state unavailable"))
+            if paused:
+                return _structured_response(_error(
+                    409, "owner_pc_paused", "Owner paused computer tasks"))
 
         if route == PROFILE_DEVICE_ROUTE:
             # Reuse the enrolled binding credential and the canonical live
