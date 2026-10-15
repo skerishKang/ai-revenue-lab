@@ -5,12 +5,16 @@ on:
     branches: [main]
     paths:
       - 'reference/business-66-padiem-quote-v1/**'
+      - 'packages/padiem-conversation-ui/**'
+      - 'scripts/sync_shared_conversation_composer.py'
       - 'apps/b66-quote-adapter/**'
       - '.github/workflows/b66-neutral-pages-beta.yml'
   push:
     branches: [main]
     paths:
       - 'reference/business-66-padiem-quote-v1/**'
+      - 'packages/padiem-conversation-ui/**'
+      - 'scripts/sync_shared_conversation_composer.py'
       - 'apps/b66-quote-adapter/**'
       - '.github/workflows/b66-neutral-pages-beta.yml'
   workflow_dispatch:
@@ -62,6 +66,7 @@ jobs:
           test -f "${SOURCE_DIR}/quote-account-scope.js"
           test -f "${SOURCE_DIR}/file-intake.js"
           test -f "${SOURCE_DIR}/easy-mode.js"
+          python3 scripts/sync_shared_conversation_composer.py --check
           test -f "${SOURCE_DIR}/quote-template.js"
           test -f "${SOURCE_DIR}/quote-template-store.js"
           test -f "${SOURCE_DIR}/quote-template-renderer.js"
