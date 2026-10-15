@@ -273,3 +273,90 @@ eval(source);
     result = subprocess.run(["node", "-e", script], input=source, capture_output=True,
                             text=True, timeout=15, check=False)
     assert result.returncode == 0, result.stderr
+
+
+def test_claw_owner_approval_records_only_allowlisted_http_outcomes():
+    """One real original-click path, bounded response classes, no raw error logging."""
+    from pathlib import Path
+    import subprocess
+    import shutil
+    import pytest
+
+    if shutil.which("node") is None:
+        pytest.skip("Node unavailable")
+    source = (Path(__file__).parents[1] / "static" / "claw-home-choices.js").read_text(encoding="utf-8")
+    script = r"""
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const source=fs.readFileSync(0,'utf8');
+const tests=[
+ {name:'denied403',status:403,body:{ok:false,error:{code:'connector_enrollment_csrf_denied'}},
+  expected:['approve_http_403','approve_denied_connector_enrollment_csrf_denied','approve_failed']},
+ {name:'denied_unknown',status:503,body:{ok:false,error:{code:'SECRETS_MUST_NOT_LOG'}},
+  expected:['approve_http_503','approve_denied_unclassified','approve_failed']},
+ {name:'transport',failure:'fetch',expected:['approve_fetch_rejected','approve_failed']},
+ {name:'bad_json',status:200,raw:'not-json',
+  expected:['approve_http_200','approve_receipt_json_invalid','approve_failed']},
+ {name:'bad_receipt',status:200,body:{ok:true,state:'bogus'},
+  expected:['approve_http_200','approve_receipt_contract_invalid','approve_failed']},
+ {name:'success',status:200,body:{ok:true,state:'awaiting_device_confirmation',
+    connected:false,registered:false,dispatch_authorized:false},
+  expected:['approve_http_200','approve_receipt_valid']}
+];
+(async()=>{
+for(const tc of tests) {
+ const messages=[],listeners={},channels=[],calls=[],stored={};
+ const sessionStorage={getItem:k=>stored[k]??null,setItem:(k,v)=>{stored[k]=v}};
+ function el(id){return {dataset:id==='clawWorkspace'?{view:'general'}:{},hidden:false,
+   disabled:id==='clawComputerDeviceStatusButton',click(){},
+   addEventListener(event,fn){listeners[id+':'+event]=fn;}};}
+ const nodes=Object.fromEntries(['clawComputerWorkspace','clawWorkspace','connectorsNavButton',
+   'connectorsDialog','clawComputerLiveStatus','clawComputerDeviceStatusButton']
+   .map(id=>[id,el(id)]));
+ nodes.connectorsDialog.open=true;
+ const document={
+  readyState:'complete',documentElement:{lang:'en'},
+  querySelector(selector){
+   if(selector==='.app-shell')return {dataset:{state:'claw'}};
+   if(selector==='.sidebar-account')return {dataset:{accountState:'signed_in'}};
+   if(selector==='[data-claw-connection="pc"]')return {dataset:{connectionState:'off'}};
+   return null;
+  },
+  getElementById(id){return nodes[id]||null;}
+ };
+ class Channel{constructor(){channels.push(this)}close(){}}
+ const context=vm.createContext({document,console:{info:(line)=>messages.push(line)},
+    window:{addEventListener(){},location:{assign(){}},BroadcastChannel:Channel,
+      sessionStorage},
+    fetch:async(url,opts)=>{
+      calls.push({url,method:opts.method,credentials:opts.credentials});
+      if(tc.failure==='fetch')throw Error('TOKEN_MUST_NOT_LOG');
+      return {ok:tc.status===200,status:tc.status,text:async()=>
+        tc.raw!==undefined?tc.raw:JSON.stringify(tc.body)};
+    }});
+ vm.runInContext(source,context);
+ assert.equal(channels.length,0,tc.name);
+ listeners['clawComputerWorkspace:click']();
+ assert.equal(channels.length,1,tc.name);
+ vm.runInContext('void 0',context);
+ const callback=channels[0].onmessage;
+ const event=vm.runInContext("({data:{type:'pc_offer_ready',request_ref:'link.'+'a'.repeat(32)}})",context);
+ callback(event);
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(calls.length,1,tc.name);
+ assert.equal(calls[0].url,'/api/claw/connector/enrollments/approve-link');
+ assert.equal(calls[0].method,'POST');
+ assert.equal(calls[0].credentials,'same-origin');
+ const actual=messages.filter(m=>m.startsWith('PADIEM_4139_STAGE=')).map(m=>m.slice(18));
+ for(const code of tc.expected)assert(actual.includes(code),tc.name+':'+JSON.stringify(actual));
+ assert(!messages.join('').includes('SECRETS_MUST_NOT_LOG'),tc.name);
+ assert(!messages.join('').includes('TOKEN_MUST_NOT_LOG'),tc.name);
+ const saved=JSON.parse(stored.padiem_4139_approval_stages_v1);
+ for(const code of tc.expected)assert(saved.includes(code),tc.name+' buffer '+code);
+ assert(!JSON.stringify(stored).includes('SECRETS_MUST_NOT_LOG'),tc.name);
+ assert(!JSON.stringify(stored).includes('TOKEN_MUST_NOT_LOG'),tc.name);
+}
+})().catch(e=>{process.stderr.write(String(e.stack));process.exitCode=1});
+"""
+    proc = subprocess.run(["node", "-e", script], input=source, capture_output=True,
+                          text=True, check=False, timeout=15)
+    assert proc.returncode == 0, proc.stderr
