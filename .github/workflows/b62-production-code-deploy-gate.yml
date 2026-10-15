@@ -999,7 +999,6 @@ jobs:
             test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "false"
             extra_args=(--activate-claw-public-search)
           fi
-          fi
           if [ "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "true" ]; then
             test "${COMMISSION_HARK_BROWSER}" != "true"
             extra_args=(--attach-existing-connector-broker)
