@@ -27,7 +27,7 @@ $VenvDir = Join-Path ([System.IO.Path]::GetTempPath()) "padiem-standalone-buildv
 if (-not $Python) { throw "Python 3.11+ is required to create the build venv." }
 & $Python -m venv $VenvDir
 $VenvPython = Join-Path $VenvDir "Scripts\python.exe"
-& $VenvPython -m pip install --disable-pip-version-check pyinstaller $WssPin cryptography
+& $VenvPython -m pip install --disable-pip-version-check pyinstaller $WssPin cryptography $CoreSrc
 if ($LASTEXITCODE -ne 0) { throw "build venv dependency install failed." }
 
 $DistDir = Join-Path $OutRoot "dist"
