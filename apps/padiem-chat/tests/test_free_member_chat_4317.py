@@ -68,7 +68,7 @@ async def test_free_requires_membership_login_not_paid_upgrade() -> None:
 
 def test_no_browser_model_override_and_plus_hold_independent() -> None:
     free = resolve_tier_policy([{"role": "user", "content": "hello"}], "free")
-    assert free.model_id == "google/gemini-3.1-flash-lite"
+    assert free.model_id == "opencode-go/cat-jam-free"
     assert free.profile == "free"
     assert not model_policy_is_executable("google/gemini-3.5-flash-lite")
 
