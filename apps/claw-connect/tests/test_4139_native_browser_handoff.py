@@ -66,3 +66,13 @@ def test_browser_handoff_never_sends_untrusted_url(monkeypatch, untrusted):
     with pytest.raises(DeviceSessionRefused, match="pc_offer_owner_url_invalid"):
         handoff._open_owner_approval_page(untrusted)
     launch.assert_not_called()
+
+
+def test_maintenance_reinstall_leaves_user_tray_stopped():
+    installer = (ROOT / "install-standalone.ps1").read_text(encoding="utf-8")
+    assert "[switch]$NoTrayStart" in installer
+    assert "if (-not $NoTrayStart) {" in installer
+    assert "tray_launch_requested=([bool](-not $NoTrayStart))" in installer
+    # Default customer install still starts the native tray, while the
+    # maintenance option avoids initiating a first offer without an owner click.
+    assert "Start-Process -FilePath $Exe -ArgumentList 'start'" in installer
