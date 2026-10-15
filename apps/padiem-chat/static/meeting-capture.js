@@ -205,6 +205,9 @@
     const downloadAudio = find("meetingDownloadAudio"), downloadText = find("meetingDownloadText");
     const closeButton = find("meetingClose"), interim = find("meetingInterim");
     const draftInClaw = find("meetingDraftInClaw");
+    const driveAudio = find("meetingSaveAudioDrive"), driveText = find("meetingSaveTextDrive");
+    let uploadInFlight = false;
+    let uploadAbort = null;
     let signedIn = false, audio = null;
     const statuses = {
       recording: "녹음 중 · 마이크가 켜져 있습니다.",
@@ -238,6 +241,8 @@
         downloadAudio.disabled = state.active || !audio;
         downloadText.disabled = state.active || !text.value.trim();
         draftInClaw.disabled = state.active || !text.value.trim() || !signedIn;
+        driveAudio.disabled = state.active || !audio || !signedIn || uploadInFlight;
+        driveText.disabled = state.active || !text.value.trim() || !signedIn || uploadInFlight;
       },
     });
     function download(blob, name) {
@@ -261,7 +266,7 @@
     }
     trigger.addEventListener("click", open);
     win.addEventListener("beforeunload", (event) => {
-      if (!controller.snapshot().active) return;
+      if (!controller.snapshot().active && !uploadInFlight) return;
       event.preventDefault();
       event.returnValue = "";
     });
@@ -270,12 +275,14 @@
       trigger.disabled = !signedIn;
       startButton.disabled = !signedIn || controller.snapshot().active;
       if (!signedIn) {
+        uploadAbort?.abort();
         audio = null; text.value = ""; interim.textContent = "";
         if (dialog.open) dialog.close?.();
         trigger.setAttribute("aria-expanded", "false");
         const discard = () => {
           audio = null; text.value = ""; downloadAudio.disabled = true; downloadText.disabled = true;
           draftInClaw.disabled = true;
+          driveAudio.disabled = true; driveText.disabled = true;
           controller.discard();
         };
         if (controller.snapshot().active) void controller.stop().then(discard);
@@ -284,15 +291,15 @@
       }
     });
     closeButton.addEventListener("click", () => {
-      if (controller.snapshot().active) { say("녹음을 종료한 후 닫을 수 있습니다."); return; }
+      if (controller.snapshot().active || uploadInFlight) { say("녹음이나 저장을 종료한 후 닫을 수 있습니다."); return; }
       dialog.close?.(); trigger.setAttribute("aria-expanded", "false"); trigger.focus();
     });
     dialog.addEventListener("cancel", (event) => {
-      if (controller.snapshot().active) { event.preventDefault(); say("녹음을 종료한 후 닫을 수 있습니다."); }
+      if (controller.snapshot().active || uploadInFlight) { event.preventDefault(); say("녹음이나 저장을 종료한 후 닫을 수 있습니다."); }
     });
     dialog.addEventListener("close", () => trigger.setAttribute("aria-expanded", "false"));
     startButton.addEventListener("click", async () => {
-      if (!signedIn) return;
+      if (!signedIn || uploadInFlight) return;
       if ((audio || text.value.trim()) && typeof win.confirm === "function" &&
           !win.confirm("이전 회의 결과가 지워집니다. 파일을 보관했습니까?")) return;
       audio = null; text.value = ""; downloadAudio.disabled = true; downloadText.disabled = true;
@@ -310,14 +317,17 @@
       downloadAudio.disabled = !audio;
       downloadText.disabled = !text.value.trim();
       draftInClaw.disabled = !text.value.trim();
+      driveAudio.disabled = !audio;
+      driveText.disabled = !text.value.trim();
     });
     text.addEventListener("input", () => {
       const unavailable = controller.snapshot().active || !text.value.trim();
       downloadText.disabled = unavailable;
       draftInClaw.disabled = unavailable || !signedIn;
+      driveText.disabled = unavailable || !signedIn || uploadInFlight;
     });
     draftInClaw.addEventListener("click", () => {
-      if (!signedIn || controller.snapshot().active || !text.value.trim()) return;
+      if (!signedIn || uploadInFlight || controller.snapshot().active || !text.value.trim()) return;
       const composer = find("messageInput");
       const clawNav = find("clawNavButton");
       const prompt = "다음 회의 전사문을 바탕으로 회의록 초안을 작성해 주세요. 원문에 없는 사실·담당자·기한을 추정하지 말고, 주요 논의·결정사항·할 일 후보·미정 사항을 구분해 주세요.\\n\\n" + text.value.trim();
@@ -334,6 +344,46 @@
       composer.focus?.();
       // Human chooses Send through the existing authorized composer form, never automatic.
     });
+    async function storeInDrive(kind) {
+      if (!signedIn || uploadInFlight || controller.snapshot().active) return;
+      const blob = kind === "audio"
+        ? (audio ? new Blob([audio], { type: audio.type.split(";", 1)[0] }) : null)
+        : (text.value.trim() ? new Blob([text.value], { type: "text/plain" }) : null);
+      if (!blob) return;
+      const provider = win.PadiemMeetingDriveUpload;
+      if (!provider?.upload) { say("Google Drive 업로드를 사용할 수 없습니다. 다운로드하여 보관해 주세요."); return; }
+      uploadInFlight = true;
+      uploadAbort = new win.AbortController();
+      startButton.disabled = true;
+      driveAudio.disabled = true;
+      driveText.disabled = true;
+      say("Google Drive에 저장하는 중입니다. 파일은 PADIEM 서버에 저장되지 않습니다.");
+      try {
+        const result = await provider.upload(blob, { signal: uploadAbort.signal });
+        if (!signedIn) return;
+        // Report success only on real Drive files.create receipt, never on local completion.
+        status.replaceChildren(doc.createTextNode("고객 Google Drive 저장 완료 · "));
+        const link = doc.createElement("a");
+        link.href = "https://drive.google.com/file/d/" + encodeURIComponent(result.fileId) + "/view";
+        link.target = "_blank"; link.rel = "noopener noreferrer";
+        link.textContent = "Google Drive에서 열기";
+        status.append(link);
+      } catch (error) {
+        if (!signedIn) return;
+        const code = error?.code || "";
+        say(code === "drive_write_unavailable"
+          ? "Google Drive 쓰기 권한이 아직 연결되지 않았습니다. 파일을 먼저 다운로드하여 보관해 주세요."
+          : "Google Drive 저장에 실패했습니다. 녹음·전사 원본은 이 화면에 남아 있습니다. 파일을 다운로드해 보관해 주세요.");
+      } finally {
+        uploadInFlight = false;
+        uploadAbort = null;
+        startButton.disabled = !signedIn || controller.snapshot().active;
+        driveAudio.disabled = !signedIn || !audio || controller.snapshot().active;
+        driveText.disabled = !signedIn || !text.value.trim() || controller.snapshot().active;
+      }
+    }
+    driveAudio.addEventListener("click", () => { void storeInDrive("audio"); });
+    driveText.addEventListener("click", () => { void storeInDrive("text"); });
     downloadAudio.addEventListener("click", () => {
       if (audio && !controller.snapshot().active) {
         download(audio, "padiem-meeting-" + Date.now() + (audio.type.includes("mp4") ? ".m4a" : ".webm"));

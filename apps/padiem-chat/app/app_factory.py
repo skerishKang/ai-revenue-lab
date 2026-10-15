@@ -220,6 +220,7 @@ from .github_oauth_routes import (github_start, github_callback, github_status,
                                   github_repositories, github_disconnect, github_pause, github_resume,
                                   github_installation_settings)
 from .connector_ticket_routes import google_connector_ticket
+from .meeting_drive_upload_routes import MEETING_DRIVE_SESSION_PATH, meeting_drive_upload_session
 from .calendar_read_activation_routes import activate_google_calendar_read
 from .conversation_routes import api_conversation_detail, api_conversation_search, api_conversations
 from .desktop_conversation_authority import UnconfiguredDesktopDeviceSessionAuthority
@@ -318,6 +319,7 @@ def create_app(
     r2_binding=None,
     claw_p01_adapter=None,
     claw_drive_artifact_uploader=None,
+    meeting_drive_upload_session_port=None,
     claw_drive_artifact_reader=None,
     claw_telegram_authority=None,
     claw_telegram_artifact_delivery=None,
@@ -385,6 +387,7 @@ def create_app(
         Route("/api/auth/password/login", password_login, methods=["POST"]),
         Route("/api/auth/logout", logout, methods=["POST"]),
         Route("/api/connectors/google/ticket", google_connector_ticket, methods=["POST"]),
+        Route(MEETING_DRIVE_SESSION_PATH, meeting_drive_upload_session, methods=["POST"]),
         Route("/api/connectors/google/calendar/activate-read", activate_google_calendar_read, methods=["POST"]),
         Route("/api/connectors/status", connectors_status, methods=["GET"]),
         Route("/api/connectors/google/drive/disconnect", disconnect_google_drive, methods=["POST"]),
@@ -765,6 +768,10 @@ def create_app(
     # (transport=None) always enforces the gate; quota-specific integration tests also
     # enforce it by supplying a usage store.
     app.state.usage_gate_enforced = not (transport is not None and usage_store is None)
+    # Meeting browser upload is unavailable until the existing Control Plane
+    # supplies a verified Drive WRITE resumable-session port. Never infer WRITE
+    # from the existing Drive READ connector or the Chat session cookie.
+    app.state.meeting_drive_upload_session_port = meeting_drive_upload_session_port
     app.state.google_oauth = GoogleOAuthClient(resolved, transport=auth_transport)
     app.state.b14_client = PadiemTierB14Client(resolved, transport=transport)
     # Public, non-secret browser render origin. Unset means B66 account runtime

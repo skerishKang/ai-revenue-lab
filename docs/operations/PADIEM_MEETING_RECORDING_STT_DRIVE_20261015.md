@@ -100,3 +100,14 @@ Drive 기술 근거: https://developers.google.com/workspace/drive/api/guides/ma
 - 브라우저 녹음·전사 UI 소스 및 로컬 다운로더: **구현 중/좁은 테스트만 완료**. 실제 고객 마이크·실시간 긴 회의·운영 배포를 검증했다는 뜻이 아니다.
 - Google Drive 직접 저장/과거 회의 목록/AI 회의록 요약/Padiem Calendar 실쓰기: **미구현**. 본인 Drive 연결이 읽기 전용인 한 녹음 원본은 PADIEM 서버에 업로드하지 않는다.
 - **다음 구현 1순위**: 기존 Google Connector 인증 권위와 조율하여 사용자 별도 계정 가입 없이 필요한 시점에 `drive.file` 점진적 권한을 받고, 서버는 오디오 본문을 보관하지 않는 **클라이언트 직접 resumable 업로드**를 연결한다. 이때 새로운 Provider Secret 또는 승인되지 않은 프런트 토큰 반출을 만들지 않는다.
+
+## 9. 2026-10-15 제2차 구현 — Google Drive 직접 전송 어댑터 (WRITE 미활성)
+
+- `apps/padiem-chat/app/meeting_drive_upload_routes.py`: 로그인 및 정확한 Origin, 기존 PADIEM session/identity shadow + canonical workspace 검증 후 **신뢰된 Google Drive WRITE 업로드 세션 발급 포트** 호출. 브라우저 요청은 MIME/바이트 길이 외 계정·워크스페이스·폴더·OAuth scope·파일명을 결정하지 못한다. 생성 파일명은 서버가 생성한다.
+- `app_factory.py`: `meeting_drive_upload_session_port`를 CP 검증 host injection으로만 주입, 기본 None은 503. 기존 Google Drive READ scope를 WRITE로 취급하지 않고, 새로운 OAuth client/token endpoint를 열지 않는다.
+- `meeting-drive-upload.js`: 세션 URI가 정확히 Google Drive resumable 업로드 경로인 경우에만 고객 브라우저에서 Google 호스트로 오디오/텍스트를 청크 PUT. 청크 진행률(308 Range), 완료 file ID 검증, 503/실패 시 원본 유지 및 거짓 성공 방지. API 키·OAuth bearer token을 브라우저에 발급하거나 녹음 바이트를 PADIEM 서버에 보내지 않는다.
+- `meeting-capture.js`: 녹음/텍스트 각각 Google Drive 저장 동작을 분리. 서버 WRITE port 미활성화일 때 실제 저장을 성공으로 보이지 않고 로컬 다운로드로 안내.
+- `worker_config.py`: Google Drive API 정확한 `www.googleapis.com` 호스트만 CSP `connect-src`에 추가, script/iframe 권한은 변경하지 않음. `b62_static_origin_audit.py`는 신규 회의 업로드 JS와 회의 완료 링크 JS에 한정해 Google host literal을 허용한다.
+- 기존 고객 연결은 `drive.readonly`라는 현재 상태이므로 `drive.file` 권한과 적합한 CP HOST 포트가 연결되기 전까지 **운영 Drive 직접 업로드는 미활성 / 실패(503)**. Google OAuth 승인, 실제 Google file.create/readback, 장기 기록 목록 및 실제 사용자 계정 검증은 아직 완료되지 않았다.
+
+참고: [Google Drive API resumable upload](https://developers.google.com/workspace/drive/api/guides/manage-uploads)와 [Google drive.file scope](https://developers.google.com/workspace/drive/api/guides/api-specific-auth). 이 단계는 API 테스트·모의 응답의 코드 준비만 뜻하며 외부 API 파일 업로드 성공을 뜻하지 않는다.

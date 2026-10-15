@@ -24,7 +24,9 @@ def test_csp_is_fail_closed_for_code_execution_and_browser_network():
 
     assert csp["default-src"] == ("'self'",)
     assert csp["script-src"] == ("'self'",)
-    assert csp["connect-src"] == ("'self'",)
+    # #4647: exact Google Drive API upload origin, no wildcard.
+    # Scripts and iframes remain self-only.
+    assert csp["connect-src"] == ("'self'", "https://www.googleapis.com")
     assert csp["base-uri"] == ("'none'",)
     assert csp["object-src"] == ("'none'",)
     assert csp["frame-src"] == ("blob:",)
