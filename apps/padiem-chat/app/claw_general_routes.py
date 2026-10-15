@@ -826,7 +826,11 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             await _refund_active_reservation()
             await fail_first_turn_grant(request, first_turn_context)
             return _error(401, "unauthorized", "로그인이 필요합니다.")
-        turn_seed = "|".join(str(v) for v in (native_uid, conversation_id, user_text, timezone_name))
+        client_turn_id = data.get("calendar_turn_id") if isinstance(data.get("calendar_turn_id"), str) else request.headers.get("X-Padiem-Calendar-Turn-Id")
+        if not isinstance(client_turn_id, str) or not client_turn_id or len(client_turn_id) > 128:
+            client_turn_id = None
+        turn_seed = "|".join(str(v) for v in (native_uid, conversation_id, user_text, timezone_name, client_turn_id or ""))
+
         turn_key = "claw-" + __import__("hashlib").sha256(turn_seed.encode("utf-8")).hexdigest()[:16]
         run = create_claw_run("padiem-chat", user_text, model_only_text=True)
         if native_plan.get("op") == "clarify":
