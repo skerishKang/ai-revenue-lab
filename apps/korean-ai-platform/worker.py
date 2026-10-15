@@ -121,6 +121,21 @@ class Default(WorkerEntrypoint):
             _apply_env_once(env_overrides)
         token = bind_request_env(env_overrides)
         try:
+            # Optional protected registry: exact digest/immutable R2 object,
+            # installed before ASGI touches any model catalog or fallback.
+            from app.pilot.private_runtime_registry import (
+                PrivateRegistryUnavailable,
+                ensure_private_registry,
+            )
+            try:
+                await ensure_private_registry(self.env)
+            except PrivateRegistryUnavailable:
+                response = Response(
+                    "Model configuration unavailable.",
+                    status=503,
+                    headers=_SECURITY_HEADERS,
+                )
+                return response
             native_resp = await asgi.fetch(app, request.js_object, self.env)
             response = _apply_security_headers(native_resp)
             return response
