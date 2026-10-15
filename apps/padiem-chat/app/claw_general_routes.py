@@ -30,6 +30,8 @@ from __future__ import annotations
 
 import inspect
 import json
+from .native_calendar_intent import parse_native_calendar_intent, latest_user_text as latest_native_calendar_text
+from .native_calendar_adapter import execute_native_calendar_plan
 import re
 from typing import Any
 
@@ -811,6 +813,33 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             await fail_first_turn_grant(request, first_turn_context)
             return _error(503, "claw_live_stream_unavailable", "Claw 실시간 실행 상태를 사용할 수 없습니다.")
 
+    timezone_name = data.get("timezone") if isinstance(data.get("timezone"), str) else None
+    native_plan = parse_native_calendar_intent(user_text, timezone_name=timezone_name)
+    if native_plan.get("op") != "none":
+        native_store = getattr(request.app.state, "calendar_store", None)
+        if native_store is not None:
+            native_uid = current_user_id(request) if auth_ready(request) else None
+            turn_seed = "|".join(str(v) for v in (native_uid, conversation_id, user_text))
+            turn_key = "claw-" + __import__("hashlib").sha256(turn_seed.encode("utf-8")).hexdigest()[:16]
+            try:
+                native_result = await execute_native_calendar_plan(request, native_store, native_uid, native_plan, turn_key=turn_key)
+            except Exception:
+                native_result = {"ok": False, "operation": "unavailable", "error": {"code": "calendar_unavailable"}}
+            if native_result and native_result.get("ok"):
+                if native_result.get("operation") == "create_appointment":
+                    apt = native_result.get("appointment", {})
+                    native_answer = "네이티브 일정이 등록되었습니다: " + str(apt.get("title")) + " (" + str(apt.get("date")) + ")"
+                elif native_result.get("operation") == "read":
+                    items = native_result.get("items", [])
+                    if not items:
+                        native_answer = "해당 기간에 저장된 네이티브 일정이 없습니다 (" + str(native_result.get("timezone")) + ")."
+                    else:
+                        native_answer = "네이티브 일정 " + str(len(items)) + "건입니다."
+                else:
+                    native_answer = str(native_result.get("question", "Clarification required"))
+                await _record_completed_claw_result(request, run_id="native-calendar", conversation_id=conversation_id, user_text=user_text, answer=native_answer, authorized_workspace_id=authorized_workspace_id, first_turn_grant=first_turn_context)
+                return _claw_general_sse(native_answer, None)
+    # continue normal P01 path below
     run = create_claw_run("padiem-chat", model_user_text, model_only_text=True)
 
     # #3933 S1: the reservation above never authorizes a dispatch by itself.

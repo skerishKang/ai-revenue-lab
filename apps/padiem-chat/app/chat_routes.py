@@ -11,6 +11,7 @@ from .attachments import ImageAttachment
 from .auth_routes import auth_ready, current_user_id
 from .drive_general_grounding import DriveGroundingError, drive_general_grounding
 from .auto_grounding import AutoGroundingService
+from .native_calendar_intent import try_native_calendar_chat
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .b14_client import B14Client, ChatRuntimeError
 from .config import Settings
@@ -284,6 +285,30 @@ async def api_chat_stream(request: Request):
     reference_context = combine_reference_context(project_context, project_files_context, None)
 
     latest_user_text = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
+    timezone_name = raw.get("timezone") if isinstance(raw.get("timezone"), str) else None
+    if store is not None:
+        try:
+            native_result = await try_native_calendar_chat(
+                request, store, uid,
+                messages, timezone_name=timezone_name,
+            )
+        except Exception:
+            native_result = None
+        if native_result is not None:
+            answer = native_result.get("answer", "")
+            result = {"answer": answer}
+            if native_result.get("native_calendar") is not None:
+                result["native_calendar"] = native_result["native_calendar"]
+            if uid is not None and store is not None:
+                latest_user = next((m["content"] for m in reversed(messages) if m["role"] == "user"), None)
+                if latest_user:
+                    try:
+                        saved_id = await store.append_exchange(uid, conversation_id, latest_user, answer, product_scope=PRODUCT_SCOPE_CHAT)
+                    except Exception:
+                        saved_id = None
+                    if saved_id is not None:
+                        result["conversation_id"] = saved_id
+            return JSONResponse(public_chat_result(result))
     try:
         drive_context, drive_sources = await drive_general_grounding(request, latest_user_text)
     except DriveGroundingError as exc:
@@ -560,6 +585,33 @@ async def api_chat(request: Request) -> JSONResponse:
     reference_context = combine_reference_context(project_context, project_files_context, document_context)
 
     latest_user_text = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
+    timezone_name = raw.get("timezone") if isinstance(raw.get("timezone"), str) else None
+    if store is not None:
+        try:
+            native_result = await try_native_calendar_chat(request, store, uid, messages, timezone_name=timezone_name)
+        except Exception:
+            native_result = None
+        if native_result is not None:
+            answer = str(native_result.get("answer", ""))
+            async def native_body_iterator():
+                yield _public_sse("delta", {"delta": answer})
+                if uid is not None and store is not None and latest_user_text:
+                    try:
+                        saved_id = await store.append_exchange(uid, conversation_id, latest_user_text, answer, product_scope=PRODUCT_SCOPE_CHAT)
+                    except Exception:
+                        saved_id = None
+                    done_payload = {"done": True}
+                    if saved_id is not None:
+                        done_payload["conversation_id"] = saved_id
+                    yield _public_sse("done", done_payload)
+                    return
+                yield _public_sse("done", {"done": True})
+            return StreamingResponse(
+                native_body_iterator(),
+                status_code=200,
+                media_type="text/event-stream",
+                headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"},
+            )
     try:
         drive_context, drive_sources = await drive_general_grounding(request, latest_user_text)
     except DriveGroundingError as exc:
