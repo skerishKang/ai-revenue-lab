@@ -45,11 +45,14 @@ class B66VerifiedCPDriveOwnerLink:
     owner_b66_user_id: str
     cp_workspace_ref: str
     cp_actor_ref: str
+    cp_session_id: str | None = None
 
     def __post_init__(self) -> None:
         _valid_ref(self.owner_b66_user_id, owner=True)
         _valid_ref(self.cp_workspace_ref)
         _valid_ref(self.cp_actor_ref)
+        if self.cp_session_id is not None:
+            _valid_ref(self.cp_session_id)
 
 
 class B66CPDriveBoundary:

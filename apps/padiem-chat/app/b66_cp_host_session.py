@@ -92,6 +92,7 @@ def validate_canonical_cp_drive_owner_link(
         owner_b66_user_id=owner_b66_user_id,
         cp_workspace_ref=workspace_ref,
         cp_actor_ref=actor_ref,
+        cp_session_id=cp_auth_session.session_id,
     )
 
 

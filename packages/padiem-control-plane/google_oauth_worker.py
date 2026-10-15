@@ -14,6 +14,7 @@ from google_oauth_access_lease import (
 )
 from google_oauth_persisted_store import CloudflareDurableGoogleOAuthStore
 from google_oauth_ingress_runtime import (
+    CloudflareGoogleOAuthDestinationVerificationPort,
     CloudflareGoogleOAuthTokenExchangePort,
     GoogleOAuthIngressConfig,
     GoogleOAuthIngressRuntime,
@@ -41,6 +42,9 @@ _WORKSPACE_DRIVE_BINDING_KEYS = frozenset({"workspace_ref"})
 # Private server-to-server disconnect: never accept a browser binding_ref.
 _WORKSPACE_DRIVE_DISCONNECT_KEYS = frozenset({"workspace_ref"})
 WORKSPACE_DRIVE_CONNECTOR_ID = "google-drive"
+B66_GOOGLE_DRIVE_FILE_CONNECTOR_ID = "b66-google-drive-file"
+_WORKSPACE_B66_DRIVE_BINDING_KEYS = frozenset({"workspace_ref"})
+_WORKSPACE_B66_DRIVE_DISCONNECT_KEYS = frozenset({"workspace_ref"})
 
 
 def _closed_payload(payload: Any, keys: frozenset[str], field_name: str) -> dict[str, Any]:
@@ -94,6 +98,7 @@ class GoogleOAuthDurableObject(DurableObject):
             ),
             config=config,
             token_exchange=CloudflareGoogleOAuthTokenExchangePort(),
+            destination_verification=CloudflareGoogleOAuthDestinationVerificationPort(),
             random_token=production_google_oauth_token,
         )
         self._access_lease_runtime = GoogleOAuthAccessLeaseRuntime(
@@ -266,6 +271,58 @@ class GoogleOAuthDurableObject(DurableObject):
         except ControlPlaneContractError as exc:
             return _safe_rpc_error(exc)
 
+    async def select_b66_drive_binding(self, payload: dict) -> dict:
+        """Private B66 Drive-file binding selection for one trusted workspace.
+
+        The payload is closed to exactly ``workspace_ref``; the connector is
+        fixed in code to ``b66-google-drive-file``. No caller can select the
+        shared Drive connector, a connector, binding_ref, scope or token. No
+        refresh credential is unsealed and no access lease is issued.
+        """
+
+        try:
+            payload = _closed_payload(
+                payload,
+                _WORKSPACE_B66_DRIVE_BINDING_KEYS,
+                "B66 Drive binding-selection RPC",
+            )
+            selection = self._store.select_active_b66_google_drive_file_binding(
+                workspace_ref=payload["workspace_ref"],
+                now=datetime.now(timezone.utc),
+            )
+            return {"ok": True, "selection": selection.to_private_dict()}
+        except ControlPlaneContractError as exc:
+            return _safe_rpc_error(exc)
+
+    async def disconnect_b66_drive(self, payload: dict) -> dict:
+        """Revoke at most one selected workspace B66 Drive-file credential."""
+
+        try:
+            payload = _closed_payload(
+                payload,
+                _WORKSPACE_B66_DRIVE_DISCONNECT_KEYS,
+                "B66 Drive disconnect RPC",
+            )
+            now = datetime.now(timezone.utc)
+            selection = self._store.select_active_b66_google_drive_file_binding(
+                workspace_ref=payload["workspace_ref"],
+                now=now,
+            )
+            if selection.status.value == "not_connected":
+                return {"ok": True, "revoked": False}
+            if selection.status.value != "resolved" or not selection.binding_ref:
+                raise ControlPlaneContractError(
+                    "invalid_b66_drive_disconnect_selection",
+                    "No valid B66 Drive credential",
+                )
+            self._store.revoke_credential(
+                binding_ref=selection.binding_ref,
+                revoked_at=now,
+            )
+            return {"ok": True, "revoked": True}
+        except ControlPlaneContractError as exc:
+            return _safe_rpc_error(exc)
+
     async def fetch(self, request):
         del request
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
@@ -309,6 +366,12 @@ class Default(WorkerEntrypoint):
     async def disconnect_drive(self, payload: dict) -> dict:
         return await self._stub().disconnect_drive(payload)
 
+    async def select_b66_drive_binding(self, payload: dict) -> dict:
+        return await self._stub().select_b66_drive_binding(payload)
+
+    async def disconnect_b66_drive(self, payload: dict) -> dict:
+        return await self._stub().disconnect_b66_drive(payload)
+
     async def fetch(self, request):
         del request
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
@@ -328,6 +391,10 @@ ACCESS_TOKEN_RAW_RPC_RESPONSE = False
 ACCESS_TOKEN_PRIVATE_LEASE_RPC = True
 REFRESH_TOKEN_RAW_RPC_RESPONSE = False
 LOCAL_AGENT_INGRESS_CHANGED = False
+B66_GOOGLE_DRIVE_FILE_SCOPE_REVIEWED = True
+B66_GOOGLE_DRIVE_FILE_CONNECTOR_REVIEWED = True
+B66_DRIVE_FILE_VERIFIED_DESTINATION_REQUIRED = True
+SHARED_GOOGLE_DRIVE_WRITE_SCOPE = False
 PRODUCTION_ROUTE_CONFIGURED = False
 PRODUCTION_DEPLOYMENT = False
 PRODUCTION_MUTATION = False

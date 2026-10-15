@@ -1030,3 +1030,56 @@ def test_workspace_ref_is_not_exposed_through_any_public_surface():
     assert "Response(" in source
     gateway_body = source.split("class Default(WorkerEntrypoint)", 1)[1]
     assert 'headers={"cache-control": "no-store"}' in gateway_body
+
+
+def test_b66_host_context_rpc_returns_subject_actor_and_workspace_only():
+    durable_object, storage = _bootstrap_do()
+    _, snapshot = _seed_identity_and_session(storage, subject_id="sub_host_context")
+    connector_store = CanonicalConnectorContextStore(storage, random_hex=TokenSource())
+    context = connector_store.resolve_or_create(
+        auth_session=_session_for(snapshot, "sub_host_context"),
+        now=NOW,
+    )
+    storage.sql.reset()
+
+    result = _run_rpc_at(
+        durable_object.resolve_connector_context, {"session_id": snapshot.session_id}
+    )
+
+    assert result == {
+        "ok": True,
+        "context": {
+            "present": True,
+            "product_id": PRODUCT_ID,
+            "subject_id": "sub_host_context",
+            "actor_ref": context.actor_ref,
+            "workspace_ref": context.workspace_ref,
+        },
+    }
+    assert "account_ref" not in result["context"]
+    assert "binding_ref" not in result["context"]
+    assert "sealed_refresh_token" not in result["context"]
+    assert storage.sql.inserts() == []
+    assert storage.sql.updates() == []
+    assert storage.sql.deletes() == []
+
+
+def test_b66_host_context_rpc_fails_closed_without_context_and_rejects_extra_keys():
+    absent_do, absent_storage = _bootstrap_do()
+    _, absent_session = _seed_identity_and_session(absent_storage, subject_id="sub_host_absent")
+    absent_storage.sql.reset()
+    absent = _run_rpc_at(
+        absent_do.resolve_connector_context, {"session_id": absent_session.session_id}
+    )
+    assert absent == {"ok": True, "context": {"present": False}}
+    assert absent_storage.sql.inserts() == []
+
+    present_do, present_storage = _bootstrap_do()
+    _, present_session = _seed_identity_and_session(present_storage, subject_id="sub_host_extra")
+    forged = _run_rpc_at(
+        present_do.resolve_connector_context,
+        {"session_id": present_session.session_id, "actor_ref": "actor_attacker"},
+    )
+    assert forged["ok"] is False
+    assert forged["error"]["code"] == "invalid_identity_authority_rpc"
+

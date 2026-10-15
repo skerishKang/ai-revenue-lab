@@ -47,7 +47,25 @@ from .control_plane_identity import IdentityBridgeError
 # presence RPC. Telegram and Slack remain outside this authority.
 _DEFAULT_WORKSPACE_TRUTH_CONNECTORS = frozenset({"gmail", "google-drive"})
 _CALENDAR_WORKSPACE_TRUTH_CONNECTORS = frozenset({"google-calendar"})
+_B66_GOOGLE_DRIVE_FILE_CONNECTOR = "b66-google-drive-file"
+_BEGIN_CONNECT_KEYS = frozenset({"connect_ticket"})
+_AUTHORIZATION_KEYS = frozenset({"authorization_url", "connector_id", "expires_at"})
+_B66_SELECTION_ABSENT_KEYS = frozenset({"status", "connector_id", "workspace_ref"})
+_B66_SELECTION_RESOLVED_KEYS = frozenset({
+    "status", "connector_id", "workspace_ref", "binding_ref", "actor_ref",
+    "provider_subject", "provider_email",
+})
+_B66_CONNECTION_KEYS = frozenset({
+    "binding_ref", "connector_id", "actor_ref", "account_ref", "workspace_ref",
+    "scopes", "connected_at", "expires_at", "refresh_token_persisted_sealed",
+    "access_token_discarded", "raw_authorization_code", "raw_access_token",
+    "raw_refresh_token", "raw_client_secret", "verified_destination_subject",
+    "verified_destination_account",
+})
 REVIEWED_WORKSPACE_TRUTH_CONNECTORS = (
+    _DEFAULT_WORKSPACE_TRUTH_CONNECTORS | _CALENDAR_WORKSPACE_TRUTH_CONNECTORS
+)
+_REVIEWED_WORKSPACE_TRUTH_CONNECTORS = (
     _DEFAULT_WORKSPACE_TRUTH_CONNECTORS | _CALENDAR_WORKSPACE_TRUTH_CONNECTORS
 )
 
@@ -309,6 +327,155 @@ class CloudflareGoogleOAuthWorkspaceTruth:
         if result["ok"] is False:
             if set(result) != {"ok", "error"}:
                 raise _invalid()
+            raise _unavailable()
+        if set(result) != {"ok", "revoked"} or type(result["revoked"]) is not bool:
+            raise _invalid()
+        return result["revoked"]
+
+    async def begin_b66_drive_connect(self, *, connect_ticket: str) -> dict[str, Any]:
+        """Start only the server-issued B66 Drive-file ticket over private RPC."""
+
+        if not isinstance(connect_ticket, str) or not connect_ticket or len(connect_ticket) > 24_576:
+            raise _invalid()
+        method = getattr(self._binding, "begin_connect", None)
+        if not callable(method):
+            raise _unavailable()
+        try:
+            result = _as_dict(
+                await _maybe_await(method({"connect_ticket": connect_ticket}))
+            )
+        except IdentityBridgeError:
+            raise
+        except Exception as exc:
+            raise _unavailable() from exc
+        if result is None or result.get("ok") is not True:
+            raise _unavailable()
+        if set(result) != {"ok", "authorization"}:
+            raise _invalid()
+        authorization = _as_dict(result.get("authorization"))
+        if authorization is None or set(authorization) != _AUTHORIZATION_KEYS:
+            raise _invalid()
+        if any(not isinstance(authorization.get(key), str) or not authorization.get(key) for key in _AUTHORIZATION_KEYS):
+            raise _invalid()
+        if authorization["connector_id"] != _B66_GOOGLE_DRIVE_FILE_CONNECTOR:
+            raise _invalid()
+        return {
+            "authorization_url": authorization["authorization_url"],
+            "connector_id": authorization["connector_id"],
+            "expires_at": authorization["expires_at"],
+        }
+
+    async def complete_b66_drive_callback(
+        self,
+        *,
+        state_ref: str,
+        authorization_code: str | None,
+        provider_error: str | None,
+    ) -> dict[str, Any]:
+        """Complete one B66 Drive-file callback over private CP RPC."""
+
+        if not isinstance(state_ref, str) or not state_ref:
+            raise _invalid()
+        method = getattr(self._binding, "complete_callback", None)
+        if not callable(method):
+            raise _unavailable()
+        try:
+            result = _as_dict(
+                await _maybe_await(
+                    method({
+                        "state_ref": state_ref,
+                        "authorization_code": authorization_code,
+                        "provider_error": provider_error,
+                    })
+                )
+            )
+        except IdentityBridgeError:
+            raise
+        except Exception as exc:
+            raise _unavailable() from exc
+        if result is None or result.get("ok") is not True:
+            raise _unavailable()
+        if set(result) != {"ok", "connection"}:
+            raise _invalid()
+        connection = _as_dict(result.get("connection"))
+        if connection is None or set(connection) != _B66_CONNECTION_KEYS:
+            raise _invalid()
+        if connection.get("connector_id") != _B66_GOOGLE_DRIVE_FILE_CONNECTOR:
+            raise _invalid()
+        if connection.get("scopes") != ["https://www.googleapis.com/auth/drive.file"]:
+            raise _invalid()
+        if connection.get("refresh_token_persisted_sealed") is not True:
+            raise _invalid()
+        if connection.get("access_token_discarded") is not True:
+            raise _invalid()
+        if connection.get("raw_authorization_code") is not False:
+            raise _invalid()
+        if connection.get("verified_destination_subject") is None:
+            raise _invalid()
+        if connection.get("verified_destination_account") is None:
+            raise _invalid()
+        return dict(connection)
+
+    async def select_b66_drive_binding(self, *, workspace_ref: str) -> dict[str, Any]:
+        """Read the trusted workspace's B66 Drive-file binding selection."""
+
+        if not isinstance(workspace_ref, str) or not workspace_ref:
+            raise _invalid()
+        method = getattr(self._binding, "select_b66_drive_binding", None)
+        if not callable(method):
+            raise _unavailable()
+        try:
+            result = _as_dict(
+                await _maybe_await(method({"workspace_ref": workspace_ref}))
+            )
+        except IdentityBridgeError:
+            raise
+        except Exception as exc:
+            raise _unavailable() from exc
+        if result is None or result.get("ok") is not True:
+            raise _unavailable()
+        if set(result) != {"ok", "selection"}:
+            raise _invalid()
+        selection = _as_dict(result.get("selection"))
+        if selection is None:
+            raise _invalid()
+        keys = set(selection)
+        status = selection.get("status")
+        if keys == _B66_SELECTION_ABSENT_KEYS:
+            if status != "not_connected" or selection.get("connector_id") != _B66_GOOGLE_DRIVE_FILE_CONNECTOR:
+                raise _invalid()
+        elif keys == _B66_SELECTION_RESOLVED_KEYS:
+            if status != "resolved" or selection.get("connector_id") != _B66_GOOGLE_DRIVE_FILE_CONNECTOR:
+                raise _invalid()
+            if any(
+                not isinstance(selection.get(key), str) or not selection.get(key)
+                for key in ("workspace_ref", "binding_ref", "actor_ref", "provider_subject")
+            ):
+                raise _invalid()
+            provider_email = selection.get("provider_email")
+            if provider_email is not None and (
+                not isinstance(provider_email, str) or "@" not in provider_email or len(provider_email) > 320
+            ):
+                raise _invalid()
+        else:
+            raise _invalid()
+        return selection
+
+    async def disconnect_b66_drive(self, *, workspace_ref: str) -> bool:
+        """Revoke only the trusted workspace's B66 Drive-file credential."""
+
+        if not isinstance(workspace_ref, str) or not workspace_ref:
+            raise _invalid()
+        method = getattr(self._binding, "disconnect_b66_drive", None)
+        if not callable(method):
+            raise _unavailable()
+        try:
+            result = _as_dict(await _maybe_await(method({"workspace_ref": workspace_ref})))
+        except IdentityBridgeError:
+            raise
+        except Exception as exc:
+            raise _unavailable() from exc
+        if result is None or result.get("ok") is not True:
             raise _unavailable()
         if set(result) != {"ok", "revoked"} or type(result["revoked"]) is not bool:
             raise _invalid()

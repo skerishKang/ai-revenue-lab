@@ -185,7 +185,7 @@ def ticket(authority: ConnectorConnectTicketAuthority, *, ticket_id: str = "tick
     )
 
 
-def fixture(*, exchange: FakeTokenExchange | None = None):
+def fixture(*, exchange: FakeTokenExchange | None = None, destination_verification=None):
     storage = FakeDurableStorage()
     durable_store = CloudflareDurableGoogleOAuthStore(storage)
     seal_port = DeterministicAeadTestPort()
@@ -206,6 +206,7 @@ def fixture(*, exchange: FakeTokenExchange | None = None):
             redirect_uri="https://oauth.example.invalid/v1/google/callback",
         ),
         token_exchange=token_exchange,
+        destination_verification=destination_verification,
         clock=lambda: NOW,
         random_token=token_source,
     )
@@ -441,7 +442,8 @@ def test_runtime_safe_projection_states_live_boundaries_truthfully():
     assert public["callback_state_single_use"] is True
     assert public["refresh_token_persisted_sealed"] is True
     assert public["access_token_persisted"] is False
-    assert public["google_write_scope"] is False
+    assert public["shared_google_drive_write_scope"] is False
+    assert public["b66_google_drive_file_scope"] is True
     assert public["raw_connect_ticket_persisted"] is False
     assert public["raw_authorization_code_persisted"] is False
     assert public["production_deployment"] is False

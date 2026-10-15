@@ -32,15 +32,16 @@ MAX_CLOCK_SKEW_SECONDS = 30
 MAX_CANONICAL_SUBJECT_ID_CHARS = 256
 GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly"
 GOOGLE_DRIVE_READONLY_SCOPE = "https://www.googleapis.com/auth/drive.readonly"
-# #2010 Calendar READ: same CP-owned Google OAuth authority, exactly one
-# readonly provider scope. Never a Calendar write/full scope.
+GOOGLE_DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file"
 GOOGLE_CALENDAR_READONLY_SCOPE = "https://www.googleapis.com/auth/calendar.readonly"
+B66_GOOGLE_DRIVE_FILE_CONNECTOR = "b66-google-drive-file"
 
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+\-]{0,255}$")
 _REVIEWED_SCOPES: dict[str, tuple[str, ...]] = {
     "gmail": (GMAIL_READONLY_SCOPE,),
     "google-drive": (GOOGLE_DRIVE_READONLY_SCOPE,),
     "google-calendar": (GOOGLE_CALENDAR_READONLY_SCOPE,),
+    B66_GOOGLE_DRIVE_FILE_CONNECTOR: (GOOGLE_DRIVE_FILE_SCOPE,),
 }
 _REQUIRED_WIRE_KEYS = frozenset(
     {
@@ -396,3 +397,5 @@ SELF_ASSERTED_ACCOUNT_WORKSPACE_AUTHORITY = False
 CONNECT_TICKET_MAX_TTL_SECONDS = MAX_CONNECT_TICKET_TTL_SECONDS
 CONNECT_TICKET_REPLAY_STORE_REQUIRED = True
 RAW_CONNECT_TICKET_PUBLIC = False
+B66_GOOGLE_DRIVE_FILE_SCOPE_REVIEWED = True
+SHARED_GOOGLE_DRIVE_WRITE_SCOPE = False

@@ -11,7 +11,9 @@ from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionS
 from padiem_control_plane.connector_connect_ticket import (
     GMAIL_READONLY_SCOPE,
     GOOGLE_CALENDAR_READONLY_SCOPE,
+    GOOGLE_DRIVE_FILE_SCOPE,
     GOOGLE_DRIVE_READONLY_SCOPE,
+    B66_GOOGLE_DRIVE_FILE_CONNECTOR,
     ConnectorConnectTicketAuthority,
 )
 from padiem_control_plane.contracts import ControlPlaneContractError, SubjectType
@@ -25,6 +27,7 @@ _REVIEWED_CONNECTORS: dict[str, tuple[str, ...]] = {
     "gmail": (GMAIL_READONLY_SCOPE,),
     "google-drive": (GOOGLE_DRIVE_READONLY_SCOPE,),
     "google-calendar": (GOOGLE_CALENDAR_READONLY_SCOPE,),
+    B66_GOOGLE_DRIVE_FILE_CONNECTOR: (GOOGLE_DRIVE_FILE_SCOPE,),
 }
 
 
@@ -426,3 +429,6 @@ RAW_CONNECT_TICKET_PUBLIC = False
 GOOGLE_WRITE_SCOPE = False
 READ_ONLY_CONNECTOR_CONTEXT_LOOKUP = True
 READ_ONLY_LOOKUP_CREATES_CONTEXT = False
+B66_GOOGLE_DRIVE_FILE_CONNECTOR_REVIEWED = True
+B66_GOOGLE_DRIVE_FILE_WRITE_SCOPE = True
+SHARED_GOOGLE_DRIVE_WRITE_SCOPE = False

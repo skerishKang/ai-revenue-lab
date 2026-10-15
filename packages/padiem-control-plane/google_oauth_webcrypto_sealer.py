@@ -22,7 +22,12 @@ _KEY_SECRET_RE = re.compile(r"^[A-Za-z0-9_-]{43}$")
 _ENVELOPE_RE = re.compile(r"^sealed:v1:[A-Za-z0-9_-]+$")
 # Reviewed Google readonly OAuth connectors whose sealed material this sealer
 # may protect. #2010 added google-calendar to the same single OAuth authority.
-_REVIEWED_CONNECTORS = frozenset({"gmail", "google-drive", "google-calendar"})
+_REVIEWED_CONNECTORS = frozenset({
+    "gmail",
+    "google-drive",
+    "google-calendar",
+    "b66-google-drive-file",
+})
 
 
 class GoogleOAuthSealPurpose(str, Enum):

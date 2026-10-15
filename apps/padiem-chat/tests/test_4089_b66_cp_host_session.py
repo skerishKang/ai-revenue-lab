@@ -162,7 +162,7 @@ def test_b66_step2b4_signed_host_link_proves_cp_reverse_and_context(monkeypatch)
         connector_context_store=contexts,
     )
     result = asyncio.run(composer.compose_owner_link(request=object()))
-    assert result == B66VerifiedCPDriveOwnerLink(A, "workspace-a", "actor-a")
+    assert result == B66VerifiedCPDriveOwnerLink(A, "workspace-a", "actor-a", "sess-1")
     assert authority.calls == [("b62", "canon-1")]
     assert contexts.reads == 1
     assert composer.production_host_composition_proven is False
