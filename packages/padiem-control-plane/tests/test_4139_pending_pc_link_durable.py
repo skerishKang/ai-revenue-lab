@@ -290,3 +290,51 @@ def test_never_mounted_or_implicitly_activated():
     assert link.PENDING_PC_LINK_SCHEMA_INSTALLED_BY_DEFAULT is False
     assert link.PENDING_PC_LINK_HTTP_ROUTE_MOUNTED is False
     assert link.PENDING_PC_LINK_PRODUCTION_ENABLED is False
+
+
+def test_jsproxy_count_cursor_offers_without_changing_authority():
+    """Cloudflare SQL JsProxy container/rows retain the exact one-use ledger."""
+    from types import SimpleNamespace
+
+    class JsRow:
+        def __init__(self, value):
+            self._value = value
+
+        def to_py(self):
+            return dict(self._value)
+
+    class JsRows:
+        def __init__(self, records):
+            self.records = records
+
+        def __iter__(self):
+            return iter(JsRow(row) for row in self.records)
+
+    fx = Fixture()
+    original_exec = fx.storage.sql.exec
+
+    def sql_exec(statement, *values):
+        cursor = original_exec(statement, *values)
+        if statement == "SELECT COUNT(*) AS n FROM canonical_broker_pending_pc_link":
+            return SimpleNamespace(toArray=lambda: JsRows(cursor.toArray()))
+        return cursor
+
+    fx.storage.sql.exec = sql_exec
+    assert fx.offer()["request_ref"] == REF
+    assert rows(fx.storage)[0]["state"] == "pending"
+    fx.authority().reserve_once(request_ref=REF, now=NOW + timedelta(seconds=1))
+    assert rows(fx.storage)[0]["state"] == "reserved"
+
+
+def test_jsproxy_row_conversion_still_rejects_malformed_results():
+    from types import SimpleNamespace
+
+    class InvalidRow:
+        def to_py(self):
+            return ["not", "an", "object"]
+
+    for raw in (object(), [InvalidRow()], ["invalid"]):
+        cursor = SimpleNamespace(toArray=lambda value=raw: value)
+        with pytest.raises(ControlPlaneContractError) as exc:
+            link._rows(cursor)
+        assert exc.value.code == "pending_pc_store_invalid"
