@@ -18,12 +18,14 @@ SCOPE = NAVIGATION_ONLY
 | 모델 선택·제외·변경에 대한 소유자 승인 | [Model Change Owner Approval Policy](../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md), [Owner Decision Ledger](../operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md) |
 | 현재 **main에 병합된** B14 등록 ID, 제공자, 기능 태그 | [B14 단일 JSON 등록 원본](../../apps/korean-ai-platform/app/pilot/b14_models.json), [등록부 파서/검증](../../apps/korean-ai-platform/app/pilot/model_registry_file.py), [B14 Catalog](../../apps/korean-ai-platform/app/pilot/catalog.py), [Provider Registration](../../apps/korean-ai-platform/app/pilot/platform.py). [PR #3819 MERGED](https://github.com/skerishKang/ai-revenue-lab/pull/3819); 병합은 실행 소스의 단일화이지 Production 모델 활성화의 증명이 아닙니다. |
 | 소유자 제외 모델의 실행 경계 | [Owner Model Exclusions](../../apps/korean-ai-platform/app/pilot/owner_model_exclusions.py) |
-| Plus/Pro/Max 제품 라우트와 HOLD 선언 | [Control Plane Product Tier Routes](../../packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py) |
+| Free·Plus·Pro·Max 기본 모델·등급별 지정 폴백 및 과거 HOLD 기록 | [Control Plane Product Tier Routes](../../packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py) |
 | B62의 제품 모델 소비 규칙 | [B62 Model Policy](../../apps/padiem-chat/app/model_policy.py) |
 | B66 견적 모델 선택 경계 | [정식 Owner 정책 §0A](../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md), [B66 Registered Model Boundary](../../apps/padiem-chat/app/b66_registered_model_boundary.py), [기존 실행 소스](../../apps/padiem-chat/app/b66_b14_free_first_resolver.py). 직접 선택 UI/API 소스는 [PR #3831](https://github.com/skerishKang/ai-revenue-lab/pull/3831)로 main에 병합됐습니다. 이는 사용자 선택 필드의 소스 구현이며, 실제 서비스 배포·고객 E2E 성공은 별도 증거가 필요합니다. |
 | Production 실행·키 준비·가용성 | 해당 배포의 **exact SHA, 안전한 진단 결과 및 실제 E2E 증거** |
 
 **2026-10-15 기준:** 대표가 직접 지정한 Free·Plus·Pro·Max 등급별 Cat Jam 기본 → 고정 폴백은 복구 가능한 제공자 장애(429·5xx·시간 초과) 때 자동 실행합니다. `allow_external_fallback=False`는 임의 카탈로그 모델 대체를 막는 설정이며, 이 지정 폴백을 막는 설정이 아닙니다. Chat 일반 응답·스트리밍·CLAW 모두 B14에 신뢰할 수 있는 등급 정보를 전달해야 합니다. [정정된 Owner 모델 정책](../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md)을 우선합니다.
+
+**2026-10-16 코드 정리:** [PR #4844](https://github.com/skerishKang/ai-revenue-lab/pull/4844)에서 실제 실행 경로에서 사용되지 않던 점수 기반 자동추천 함수와 해당 전용 테스트를 제거했습니다. Chat·Claw의 등급별 기본 모델과 장애 시 지정 폴백은 Control Plane 계약을 따르며, 일반 대화·코딩·문서 작업 유형에 따라 모델을 다시 선정하지 않습니다. B14의 내부 호환용 `b14/auto`는 **별도의 소유자 지정 고정 체인**을 사용하며, 정확한 모델 ID를 지정하는 수동 실행과 제공자·권한·기능 검증도 유지됩니다. 이 문서 수정은 새로운 모델 선택 정책이나 운영 배포 완료를 선언하지 않습니다.
 
 ## 모델 변경 시 원칙
 
