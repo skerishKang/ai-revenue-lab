@@ -543,6 +543,34 @@ jobs:
           # SSE=true while the active served Worker is the earlier SSE-OFF version.
           served_detail="${RUNNER_TEMP}/b62-active-served-settings-preflight.json"
           bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions/${active}" "${served_detail}"
+          # Read-only Grafana binding readiness. Emit booleans only.
+          python3 - "${settings}" "${served_detail}" <<'PY'
+          import json
+          import sys
+          checks = {
+              "ENDPOINT": ("PADIEM_GRAFANA_OTLP_ENDPOINT", "plain_text", "text",
+                           "https://otlp-gateway-prod-ap-northeast-0.grafana.net/otlp/v1/logs"),
+              "USERNAME": ("PADIEM_GRAFANA_OTLP_USERNAME", "plain_text", "text", "1876517"),
+              "SECRET_BINDING": ("PADIEM_GRAFANA_OTLP_TOKEN", "secrets_store_secret", "store_id",
+                                 "f0b09ca04a7b43248154c773704a5616"),
+          }
+          for plane, filepath in (("SETTINGS", sys.argv[1]), ("SERVED", sys.argv[2])):
+              doc = json.load(open(filepath, encoding="utf-8"))
+              result = doc.get("result", {})
+              bindings = (result.get("bindings") if plane == "SETTINGS" else
+                          result.get("resources", {}).get("bindings"))
+              if isinstance(bindings, dict):
+                  bindings = [{**v, "name": k} for k, v in bindings.items() if isinstance(v, dict)]
+              if not isinstance(bindings, list):
+                  bindings = []
+              for label, (name, kind, field, value) in checks.items():
+                  found = [x for x in bindings if isinstance(x, dict) and x.get("name") == name]
+                  exact = len(found) == 1 and found[0].get("type") == kind and found[0].get(field) == value
+                  if label == "SECRET_BINDING" and exact:
+                      exact = found[0].get("secret_name") == name
+                  print(f"B62_GRAFANA_{plane}_{label}={'EXACT' if exact else 'ABSENT_OR_DRIFT'}")
+          print("B62_GRAFANA_METADATA_READONLY=YES")
+          PY
           if [ "${{ inputs.mode }}" = "recover_p01_sse_off" ]; then
             python .github/scripts/b62_p01_sse_snapshot_off_recovery.py candidate \
               --settings "${settings}" --served-version "${served_detail}"
