@@ -122,3 +122,90 @@ html[data-theme="padiem-glass"] body .sidebar .history-delete:is(:hover, :focus-
   /* Native responsive sizing is preserved; only scrollbar/icon fixes apply. */
   html body .app-shell .sidebar { scrollbar-gutter: stable; }
 }
+
+
+/* CENTRAL_FIRST_SCREEN_CONTINUITY_20261015
+ * A Chat send reuses the same DOM, but old active-only rules had
+ * padding 88->44px and composer height 161->222px. Keep first screen
+ * coordinates and colors while continuing messages inside this frame. */
+@media (min-width: 921px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
+    padding-top: clamp(52px,7.4vh,88px) !important;
+    background: linear-gradient(155deg,rgba(248,250,251,.88),rgba(233,238,241,.84)) !important;
+    box-shadow: 0 24px 70px rgba(28,36,44,.16), inset 0 1px 0 rgba(255,255,255,.72) !important;
+  }
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] #composerForm {
+    min-height: 0 !important;
+    display: block !important;
+  }
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] #composerForm > .composer-actions {
+    margin-top: 0 !important;
+  }
+}
+/* History overflow menu: persistent dots, a temporary explicit Delete action. */
+html[data-theme="padiem-glass"] body .sidebar .history-actions {
+  position: relative;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+}
+html[data-theme="padiem-glass"] body .sidebar .history-actions[open] { z-index: 8; }
+html[data-theme="padiem-glass"] body .sidebar .history-more {
+  display: grid;
+  place-items: center;
+  list-style: none;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 10px;
+  background: rgba(21,39,52,.32);
+  color: #f4f9fd;
+}
+html[data-theme="padiem-glass"] body .sidebar .history-more::-webkit-details-marker { display: none; }
+html[data-theme="padiem-glass"] body .sidebar .history-more svg { width: 20px; height: 20px; }
+html[data-theme="padiem-glass"] body .sidebar .history-more:is(:hover,:focus-visible) {
+  background: rgba(28,63,87,.78);
+  border-color: rgba(255,255,255,.66);
+  outline-offset: 2px;
+}
+html[data-theme="padiem-glass"] body .sidebar .history-actions-menu {
+  position: absolute;
+  right: 47px;
+  top: 2px;
+  min-width: 124px;
+  padding: 5px;
+  border: 1px solid rgba(53,69,82,.25);
+  border-radius: 11px;
+  background: rgba(248,250,252,.98);
+  box-shadow: 0 10px 26px rgba(13,21,28,.28);
+}
+html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-menu-delete {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 9px;
+  width: 100%;
+  height: 36px;
+  min-height: 36px;
+  min-width: 0;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #a12736 !important;
+  font: inherit;
+  font-size: 13px !important;
+  font-weight: 750;
+  cursor: pointer;
+}
+html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-menu-delete svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+}
+html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-menu-delete:is(:hover,:focus-visible) {
+  background: #f5e5e7;
+  color: #831a29 !important;
+  outline-offset: 0;
+}

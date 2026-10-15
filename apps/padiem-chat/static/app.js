@@ -608,6 +608,18 @@
     svg.setAttribute("stroke-linejoin", "round");
     svg.setAttribute("aria-hidden", "true");
     svg.setAttribute("focusable", "false");
+    if (kind === "more") {
+      for (const cy of [5, 12, 19]) {
+        const dot = document.createElementNS(ns, "circle");
+        dot.setAttribute("cx", "12");
+        dot.setAttribute("cy", String(cy));
+        dot.setAttribute("r", "1.65");
+        dot.setAttribute("fill", "currentColor");
+        dot.setAttribute("stroke", "none");
+        svg.appendChild(dot);
+      }
+      return svg;
+    }
     const shape = document.createElementNS(ns, "path");
     shape.setAttribute("d", kind === "settings"
       ? "M12 2l1.5 2.4 2.8.5 1.9-1.2 2 3.5-1.9 1.9.1 2.9 1.8 1.9-2 3.5-2.8-.5-2.4 1.4L12 21l-3.1-2.7-2.4-1.4-2.8.5-2-3.5 1.8-1.9.1-2.9-1.9-1.9 2-3.5 1.9 1.2 2.8-.5L12 2Z"
@@ -1340,21 +1352,53 @@
         button.textContent = clawConversationIds.has(conversation.id)
           ? `Claw · ${conversation.title}` : conversation.title;
         button.addEventListener("click", () => openSavedConversation(conversation.id));
+        const actions = document.createElement("details");
+        actions.className = "history-actions";
+        const more = document.createElement("summary");
+        more.className = "history-more";
+        const moreLabel = uiT("manage") + ": " + conversation.title;
+        more.setAttribute("aria-label", moreLabel);
+        more.title = moreLabel;
+        more.append(sidebarActionIcon("more"));
+        const menu = document.createElement("div");
+        menu.className = "history-actions-menu";
         const remove = document.createElement("button");
         remove.type = "button";
-        remove.className = "history-delete";
-        remove.textContent = uiT("delete");
-        remove.prepend(sidebarActionIcon("trash"));
+        remove.className = "history-menu-delete";
+        remove.append(sidebarActionIcon("trash"), document.createTextNode(uiT("delete")));
         remove.setAttribute("aria-label", uiT("conversation-delete-aria", { title: conversation.title }));
         remove.title = uiT("conversation-delete-aria", { title: conversation.title });
-        remove.addEventListener("click", () => deleteConversation(conversation.id, conversation.title));
-        row.append(button, remove);
+        remove.addEventListener("click", () => {
+          actions.open = false;
+          deleteConversation(conversation.id, conversation.title);
+        });
+        actions.addEventListener("toggle", () => {
+          if (!actions.open) return;
+          historyList.querySelectorAll(".history-actions[open]").forEach((other) => {
+            if (other !== actions) other.open = false;
+          });
+        });
+        menu.appendChild(remove);
+        actions.append(more, menu);
+        row.append(button, actions);
         historyList.appendChild(row);
       });
     } catch (_) {
       clearHistoryUI();
     }
   }
+  document.addEventListener("click", (event) => {
+    if (event.target instanceof Element && event.target.closest(".history-actions")) return;
+    historyList.querySelectorAll(".history-actions[open]").forEach((node) => { node.open = false; });
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    const expanded = historyList.querySelector(".history-actions[open]");
+    if (!expanded) return;
+    expanded.open = false;
+    expanded.querySelector("summary")?.focus();
+    event.stopPropagation();
+  });
   async function deleteConversation(id, title) {
     if (!authState.authenticated || inFlight) return;
     const confirmed = await window.PadiemConfirmDialog.confirm({
