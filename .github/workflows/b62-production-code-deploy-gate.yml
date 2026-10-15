@@ -98,6 +98,11 @@ on:
         required: false
         type: boolean
         default: false
+      attach_existing_grafana_telemetry:
+        description: "Owner-authorized exact Grafana OTLP Secrets Store binding only, no secret values or other configuration changes"
+        required: false
+        type: boolean
+        default: false
       attach_existing_connector_broker:
         description: "Explicitly add the existing LOCAL_AGENT_BROKER Service Binding while preserving b14/live settings"
         required: false
@@ -621,6 +626,7 @@ jobs:
       PUBLIC_BASE_URL_STATE: ${{ needs.cloudflare-readonly.outputs.public_base_url_state }}
       CONFIRMATION: ${{ inputs.confirmation }}
       ATTACH_WEB_SECRETS_STORE: ${{ inputs.attach_existing_web_secrets_store }}
+      ATTACH_GRAFANA_TELEMETRY: ${{ inputs.attach_existing_grafana_telemetry }}
       ATTACH_EXISTING_CONNECTOR_BROKER: ${{ inputs.attach_existing_connector_broker }}
       ACTIVATE_CLAW_PUBLIC_SEARCH: ${{ inputs.activate_claw_public_search }}
       PRESERVE_B66_MEMBERSHIP_SECRET: ${{ inputs.preserve_existing_b66_membership_secret }}
@@ -630,6 +636,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if [ "${ATTACH_GRAFANA_TELEMETRY}" = "true" ]; then
+            test "${P01_SSE_RECOVERY_OFF}" != "true"
+            test "${ATTACH_WEB_SECRETS_STORE}" = "false"
+            test "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "false"
+            test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "false"
+            test "${COMMISSION_HARK_BROWSER}" = "false"
+            test "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "false"
+          fi
           if [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
             test "${P01_SSE_RECOVERY_OFF}" != "true"
             test "${ATTACH_WEB_SECRETS_STORE}" = "false"
@@ -643,6 +657,9 @@ jobs:
             test "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "false"
             test "${COMMISSION_HARK_BROWSER}" = "false"
             echo "SSE_RECOVERY_OFF_OWNER_AUTHORIZED=PASS"
+          elif [ "${ATTACH_GRAFANA_TELEMETRY}" = "true" ]; then
+            test "${CONFIRMATION}" = "DEPLOY_B62_GRAFANA_TELEMETRY_FROM_EXACT_MAIN"
+            echo "GRAFANA_SECRET_STORE_EXACT_METADATA_OWNER_AUTHORIZED=PASS"
           elif [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
             test "${CONFIRMATION}" = "DEPLOY_B62_CLAW_PUBLIC_WEB_SEARCH_FROM_EXACT_MAIN"
             echo "CLAW_PUBLIC_SEARCH_OWNER_AUTHORIZED=PASS"
@@ -999,6 +1016,9 @@ jobs:
             test "${ATTACH_EXISTING_CONNECTOR_BROKER}" != "true"
             extra_args=(--attach-existing-web-secrets-store)
           fi
+          if [ "${ATTACH_GRAFANA_TELEMETRY}" = "true" ]; then
+            extra_args=(--attach-existing-grafana-telemetry)
+          fi
           if [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
             test "${ATTACH_WEB_SECRETS_STORE}" = "false"
             test "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "false"
@@ -1138,6 +1158,9 @@ jobs:
           PY
 
           verify_args=()
+          if [ "${ATTACH_GRAFANA_TELEMETRY}" = "true" ]; then
+            verify_args=(--expected-add-grafana-telemetry)
+          fi
           if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ]; then
             verify_args=(--expected-add-web-secrets-store)
           fi
@@ -1157,7 +1180,7 @@ jobs:
             "${verify_args[@]}" \
             --before "${normalized_before}" \
             --after "${settings}"
-          if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ] || [ "${COMMISSION_HARK_BROWSER}" = "true" ] || [ "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "true" ] || [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ] || [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
+          if [ "${ATTACH_GRAFANA_TELEMETRY}" = "true" ] || [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ] || [ "${COMMISSION_HARK_BROWSER}" = "true" ] || [ "${ATTACH_EXISTING_CONNECTOR_BROKER}" = "true" ] || [ "${PRESERVE_B66_MEMBERSHIP_SECRET}" = "true" ] || [ "${ACTIVATE_CLAW_PUBLIC_SEARCH}" = "true" ]; then
             echo "BINDINGS_PRESERVED_AND_APPROVED_ADDED=PASS"
           else
             echo "BINDINGS_PRESERVED_EXACTLY=PASS"
@@ -1182,6 +1205,14 @@ jobs:
 
           detail="${RUNNER_TEMP}/b62-version-after.json"
           bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions/${active}" "${detail}"
+          if [ "${ATTACH_GRAFANA_TELEMETRY}" = "true" ]; then
+            python .github/scripts/b62_binding_state_guard.py \
+              --expected-add-grafana-telemetry \
+              --before "${RUNNER_TEMP}/b62-version-before.json" \
+              --after "${detail}"
+            jq -e '.result.resources.bindings | any(.name == "PADIEM_GRAFANA_OTLP_TOKEN" and .type == "secrets_store_secret" and .store_id == "f0b09ca04a7b43248154c773704a5616" and .secret_name == "PADIEM_GRAFANA_OTLP_TOKEN")' "${detail}" >/dev/null
+            echo "GRAFANA_SERVED_IMMUTABLE_BINDING=PASS"
+          fi
           if [ "${COMMISSION_HARK_BROWSER}" = "true" ]; then
             python .github/scripts/b62_binding_state_guard.py \
               --expected-add-hark-browser \
