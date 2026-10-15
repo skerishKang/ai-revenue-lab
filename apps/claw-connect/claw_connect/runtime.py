@@ -518,8 +518,15 @@ class ConnectApp:
 
         0 = clean quit, 3 = another instance already owns this PC.
         """
+        if explicit_connect:
+            from padiem_connector.native_launch_diagnostics import mark as _native_mark
+            _native_mark("single_instance_begin")
         if not self._single.acquire():
+            if explicit_connect:
+                _native_mark("single_instance_existing")
             return 3
+        if explicit_connect:
+            _native_mark("single_instance_owned")
         self._quit_signal.open()
         self._offer_signal.open()
         try:
@@ -537,6 +544,8 @@ class ConnectApp:
             if sys.platform == "win32":
                 from .tray import ConnectTray  # noqa: PLC0415
 
+                if explicit_connect:
+                    _native_mark("tray_begin")
                 self._tray = ConnectTray(
                     state_source=lambda: self.connector_status(),
                     actions=self.actions(),
@@ -544,11 +553,17 @@ class ConnectApp:
                     web_url=WEB_URL,
                 )
                 self._tray.create()
+                if explicit_connect:
+                    _native_mark("tray_created")
                 watcher = threading.Thread(
                     target=self._watch_quit_event, name="claw-connect-quit", daemon=True
                 )
                 watcher.start()
+                if explicit_connect:
+                    _native_mark("tray_run_enter")
                 self._tray.run()
+                if explicit_connect:
+                    _native_mark("tray_run_exit")
             else:
                 # Non-Windows developer/CI host: keep the process alive until
                 # a quit is requested so the offline lifecycle can be driven.

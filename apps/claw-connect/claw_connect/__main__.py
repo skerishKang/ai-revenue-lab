@@ -101,7 +101,13 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
+    from padiem_connector.native_launch_diagnostics import mark as _mark
+    _browser_launch = (sys.argv[1:2] if argv is None else argv[:1]) == ["open-from-web"]
+    if _browser_launch:
+        _mark("argv_parse_begin")
     args = build_parser().parse_args(argv)
+    if _browser_launch:
+        _mark("argv_parse_ok")
     # Never initialise device state or call any network for a refused review
     # command. Both flags are server/operator controlled, never user input.
     if args.command == "enroll" and getattr(args, "operator_wss_review", False):
@@ -124,18 +130,28 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "open-from-web":
         from .browser_launch import accepts_browser_launch_uri
         if not accepts_browser_launch_uri(args.browser_launch_uri):
+            _mark("uri_rejected", exit_code=2)
             print(json.dumps({"ok": False, "blocked": True,
                               "detail": "untrusted browser launch URI"}))
             return 2
-        # Browser link can only start a tray; it cannot supply any account or
-        # device entitlement, cookie, one-time code or executable command.
-        app = ConnectApp()
-        status = app.run(explicit_connect=True)
-        if status == CONNECT_APP_EXIT_ALREADY_RUNNING:
-            # Browser clicked while tray is already present: signal its one
-            # existing owner-initiated offer. No URL data is conveyed.
-            return 0 if app.signal_customer_offer() else 2
-        return status
+        _mark("uri_accepted")
+        # Browser launch is never an authorization source.
+        try:
+            _mark("app_construct_begin")
+            app = ConnectApp()
+            _mark("app_construct_ok")
+            status = app.run(explicit_connect=True)
+            _mark("app_run_returned", exit_code=status)
+            if status == CONNECT_APP_EXIT_ALREADY_RUNNING:
+                _mark("existing_run_result", exit_code=status)
+                # Existing instance owns the tray; signal it, do not reboot it.
+                signalled = bool(app.signal_customer_offer())
+                _mark("signal_delivered" if signalled else "signal_rejected")
+                return 0 if signalled else 2
+            return status
+        except BaseException as error:
+            _mark("exception", exc=error)
+            raise
 
     # STOP and autostart OFF/SHOW must remain usable even if the Agent source
     # pin is corrupt. Neither action needs to start or resolve the Resident.
