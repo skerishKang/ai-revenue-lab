@@ -348,10 +348,9 @@ def _agent_profile(
         allowed_tools=(),
         required_capabilities=(),
         context_policy={},
-        # #3382/#3566 one-shot canary contract: the Claw lane dispatches the
-        # provider at most once. `max_retries=0` pins B14's same-route retry
-        # ceiling to zero; the port refuses any other budget, so widening
-        # requires a fresh explicit owner decision.
+        # max_retries=0 disables a repeated attempt to the SAME model.
+        # It does not disable B14 owner-designated Cat Jam -> tier backup
+        # recovery, which retains the grade and per-attempt evidence.
         model_policy={
             "model": chosen_model, "max_retries": 0,
             "product_tier": product_tier.value.removeprefix("Padiem ").lower(),

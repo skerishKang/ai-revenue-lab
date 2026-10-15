@@ -1,7 +1,10 @@
 """B14-owned exact per-grade provider fallback roster, separate from product auth.
 
-Only the trusted PADIEM backend supplies the grade. Nothing here grants a
-customer a paid entitlement or overrides model/provider availability.
+Only the trusted PADIEM backend supplies the grade. B14 automatically
+attempts exactly this grade's backup on recoverable 429, 5xx or timeout.
+Do not confuse this fixed owner selection with forbidden generic b14/auto
+or arbitrary silent model substitution. Nothing here grants a customer
+a paid entitlement or overrides provider availability.
 """
 
 TIER_FALLBACK_B14_MODELS: dict[str, str] = {

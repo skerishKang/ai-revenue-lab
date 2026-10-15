@@ -12,6 +12,27 @@
 - Owner authority: Product Owner
 - Tracking issue: #3571
 
+## 2026-10-15 Owner correction — configured primary and fixed fallback are operational
+
+The Product Owner has now explicitly authorized automatic recovery from the
+configured primary to the **one exact fallback nominated for the SAME grade**
+(Free / Plus / Pro / Max). This decision supersedes older blanket statements
+below that appeared to prohibit all automatic failover.
+
+- Owner-registered primary and fallback: keep their exact model IDs and tier.
+- Automatically try the designated fallback after primary's recoverable
+  provider failure (HTTP 429, HTTP 5xx or timeout), with bounded attempts.
+- No arbitrary catalog selection, tier escalation, unauthorized provider,
+  auth/policy failure bypass, or new credentials.
+- The server must pass the verified product grade for JSON Chat, SSE Chat
+  and CLAW P01 alike. B14 is the execution and attempt-evidence authority.
+- A separately user-selected, unrelated exact B66 quotation model remains
+  exact one-shot; the owner-pinned Cat Jam grade primary is a distinct
+  case with its already configured tier fallback.
+
+**Owner-pinned failure recovery is not the prohibited arbitrary silent
+model substitution** described in the 2026-10-08 historical passages.
+
 ## 0. Scope clarification — per-execution user choice is not a model decision
 
 Additive clarification. It **narrows an ambiguity** in sections 1-3 and **weakens no**
@@ -40,12 +61,14 @@ The following remain `OWNER_ONLY` and are unchanged by this section:
 - automatic routing and fallback policy changes;
 - Production mutation and live canary activation.
 
-Any choice that is unregistered, disallowed, ambiguous, or automatically substituted **fails
-closed**. No silent fallback is permitted on any path:
+An unregistered, disallowed, ambiguous or **arbitrarily** substituted model
+fails closed. The specifically owner-pinned grade fallback above is the sole
+bounded exception to the old blanket prohibition:
 
     UNREGISTERED_OR_DISALLOWED_MODEL=FAIL_CLOSED
     NO_MODEL_SELECTED=FAIL_CLOSED
-    SILENT_FALLBACK=PROHIBITED
+    UNAPPROVED_SILENT_FALLBACK=PROHIBITED
+    OWNER_PINNED_TIER_FAILOVER=ON_FOR_RECOVERABLE_PROVIDER_ERRORS
 
 Historical single-primary, Agnes, and Space Bunny records are provenance only and create no
 current requirement:
@@ -88,7 +111,8 @@ The user can override the prefilled default. Generic B14 Auto Router V2
     B66_MISSING_OR_INVALID_SELECTION=FAIL_CLOSED
     B66_PROVIDER_ATTEMPTS_MAX=1
     B66_RETRY=NO
-    B66_AUTOMATIC_FALLBACK=NO
+    B66_ARBITRARY_EXACT_MODEL_FALLBACK=NO
+    B66_OWNER_PINNED_CAT_JAM_GRADE_FALLBACK=YES
     B66_NO_MODEL_SELECTED=FAIL_CLOSED
     B62_PLUS_PRO_MAX_HOLD=UNCHANGED
     CLAW_USER_SELECTED_MODELS=UNCHANGED
