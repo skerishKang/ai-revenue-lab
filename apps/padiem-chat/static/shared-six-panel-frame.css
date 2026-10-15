@@ -209,3 +209,47 @@ html[data-theme="padiem-glass"] body .sidebar .history-actions-menu .history-men
   color: #831a29 !important;
   outline-offset: 0;
 }
+
+
+/* CENTRAL_OWNER_HOME_VISUAL_LOCK_20261015
+ * CEO decision: PADIEM Chat first screen is the visual authority for ALL
+ * product panels. Active Chat still retains the semantic "reading" state
+ * for safe message streaming/accessibility, but must never change the
+ * frame/portrait/composer aesthetics merely because a message was sent.
+ * Explicitly outrank the dynamically loaded padiem-glass-reading.css. */
+@media (min-width: 921px) {
+  html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .conversation.conversation {
+    background: linear-gradient(155deg,rgba(248,250,251,.88),rgba(233,238,241,.84)) !important;
+    border-color: rgba(255,255,255,.70) !important;
+    box-shadow: 0 24px 70px rgba(28,36,44,.16), inset 0 1px 0 rgba(255,255,255,.72) !important;
+    backdrop-filter: blur(30px) saturate(106%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(106%) !important;
+  }
+  /* Do not let active-reading opacity, blur or answer activity fade/translate
+   * the approved portrait. The mask may still respond to pointer focus. */
+  html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .main-panel::before {
+    opacity: var(--glass-art-opacity) !important;
+    filter: var(--glass-art-filter) !important;
+    transform: translate3d(0,0,0) scale(1) !important;
+  }
+  /* Background wash/accents must not change with data-glass-mode. */
+  html[data-theme="padiem-glass"][data-glass-mode="reading"] body::before {
+    background:
+      linear-gradient(90deg,rgba(17,24,31,.11),transparent 24%,transparent 72%,rgba(17,24,31,.08)),
+      linear-gradient(180deg,rgba(255,255,255,.08),transparent 38%,rgba(17,24,31,.10)) !important;
+    box-shadow: inset 0 0 180px 48px rgba(20,29,38,.12) !important;
+  }
+  html[data-theme="padiem-glass"][data-glass-mode="reading"] body::after {
+    opacity: .10 !important;
+  }
+  html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"]::before {
+    opacity: .34 !important;
+  }
+  /* The composer keeps its original position even during stop/send swaps. */
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"],[data-state="chat"]) .composer-wrap {
+    bottom: 16px !important;
+  }
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="home"],[data-state="chat"]) .composer-note {
+    display: none !important;
+  }
+}
