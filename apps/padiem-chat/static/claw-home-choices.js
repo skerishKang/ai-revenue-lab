@@ -23,6 +23,111 @@
         document.getElementById("clawWorkspace")?.dataset.view === "general";
     }
 
+    // #4139: this tab's existing signed-in Claw click is the ONLY approval
+    // intent. No URL/session storage, manual code, extra checkbox or retry.
+    const pcChannelName = "padiem-claw-pc-connect-v1";
+    const pcOfferRef = /^link\.[0-9a-f]{32}$/;
+    const pcIntentLifetimeMs = 120000;
+    let pcChannel = null;
+    let pcIntent = null;
+    let pcApprovalPending = false;
+
+    function signedIn() {
+      return document.getElementById("accountContainer")?.dataset.accountState === "signed_in";
+    }
+
+    function pcNote(ko, en) {
+      const note = document.getElementById("clawComputerLiveStatus");
+      if (!note) return;
+      note.textContent = document.documentElement.lang === "en" ? en : ko;
+      note.hidden = false;
+    }
+
+    async function approveReadyPc(requestRef) {
+      try {
+        // Existing authenticated, same-origin/CSRF-guarded owner POST contract.
+        const response = await fetch("/api/claw/connector/enrollments/approve-link", {
+          method: "POST", mode: "same-origin", credentials: "same-origin",
+          redirect: "error", referrerPolicy: "no-referrer", cache: "no-store",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ request_ref: requestRef }),
+        });
+        if (!response.ok) throw new Error("owner_approval_refused");
+        const raw = await response.text();
+        if (raw.length > 8192) throw new Error("owner_receipt_too_large");
+        const reply = JSON.parse(raw);
+        if (reply?.ok !== true || reply.state !== "awaiting_device_confirmation" ||
+            reply.connected !== false || reply.registered !== false ||
+            reply.dispatch_authorized !== false) {
+          throw new Error("owner_receipt_invalid");
+        }
+        // Pending is NOT registered/connected. The original server-owned GET
+        // remains the only source of actual PC status.
+        pcNote("PC ?? ??? ??????. ?? ?? ??? ?????.",
+               "PC registration was requested. Checking the actual status.");
+        const check = document.getElementById("clawComputerDeviceStatusButton");
+        if (check && !check.disabled) check.click();
+      } catch {
+        pcNote("PC ?? ??? ???? ?????. ?? ????? ????.",
+               "The PC connection request did not complete. It will not retry automatically.");
+      } finally {
+        pcApprovalPending = false;
+      }
+    }
+
+    function onPcOfferMessage(event) {
+      const data = event?.data;
+      if (!pcIntent || pcIntent.used || pcApprovalPending ||
+          !data || Object.getPrototypeOf(data) !== Object.prototype ||
+          Object.keys(data).length !== 2 ||
+          data.type !== "pc_offer_ready" ||
+          typeof data.request_ref !== "string" || !pcOfferRef.test(data.request_ref)) return;
+      const valid = isClawHome() && signedIn() &&
+        Date.now() >= pcIntent.at && Date.now() - pcIntent.at <= pcIntentLifetimeMs;
+      // Consume BEFORE the authenticated request: duplicates and failures
+      // cannot create additional approval POSTs.
+      pcIntent.used = true;
+      pcIntent = null;
+      if (!valid) return;
+      pcApprovalPending = true;
+      void approveReadyPc(data.request_ref);
+    }
+
+    function startPcConnectionFromOriginalClick() {
+      if (!isClawHome() || !signedIn()) return false;
+      if (document.querySelector('[data-claw-connection="pc"]')?.dataset.connectionState === "on") {
+        return false;
+      }
+      if (pcApprovalPending) return true;
+      if (pcIntent && !pcIntent.used &&
+          Date.now() - pcIntent.at <= pcIntentLifetimeMs) return true;
+      if (typeof window.BroadcastChannel !== "function") {
+        pcNote("?? ?????? PC ?? ??? ??? ? ????.",
+               "This browser could not prepare the PC connection receiver.");
+        return true;
+      }
+      try {
+        if (!pcChannel) {
+          pcChannel = new window.BroadcastChannel(pcChannelName);
+          // Register the receiver BEFORE the native connector launch.
+          pcChannel.onmessage = onPcOfferMessage;
+        }
+        pcIntent = { at: Date.now(), used: false };
+        window.location.assign("padiem-connector://start");
+      } catch {
+        pcIntent = null;
+        pcNote("??? ??? ???? ?????. ?? ??? ?????.",
+               "Could not start Connector. Check its installation.");
+      }
+      return true;
+    }
+
+    window.addEventListener("pagehide", () => {
+      pcIntent = null;
+      if (pcChannel) pcChannel.close();
+      pcChannel = null;
+    });
+
     function openWorkspaceConnector(target) {
       if (!isClawHome()) return;
       // Use the EXACT existing authenticated owner Connectors UI flow.
@@ -42,7 +147,10 @@
 
     for (const [id, target] of Object.entries(actions)) {
       const card = document.getElementById(id);
-      if (card) card.addEventListener("click", () => openWorkspaceConnector(target));
+      if (card) card.addEventListener("click", () => {
+        if (id === "clawComputerWorkspace" && startPcConnectionFromOriginalClick()) return;
+        openWorkspaceConnector(target);
+      });
     }
 
     const web = document.getElementById("clawWebWorkspace");
