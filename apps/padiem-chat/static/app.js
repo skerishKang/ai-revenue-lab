@@ -1368,9 +1368,14 @@
         remove.append(sidebarActionIcon("trash"), document.createTextNode(uiT("delete")));
         remove.setAttribute("aria-label", uiT("conversation-delete-aria", { title: conversation.title }));
         remove.title = uiT("conversation-delete-aria", { title: conversation.title });
-        remove.addEventListener("click", () => {
-          actions.open = false;
-          deleteConversation(conversation.id, conversation.title);
+        remove.addEventListener("click", async () => {
+          await deleteConversation(conversation.id, conversation.title);
+          // Dialog close must return focus to a visible action, not an item
+          // concealed inside a closed native details panel.
+          if (actions.isConnected) {
+            actions.open = false;
+            more.focus();
+          }
         });
         actions.addEventListener("toggle", () => {
           if (!actions.open) return;
