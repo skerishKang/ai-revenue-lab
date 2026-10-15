@@ -314,7 +314,7 @@ async def api_chat_stream(request: Request):
         return JSONResponse({"error": {"code": "calendar_store_unavailable", "message": "Calendar storage is unavailable"}}, status_code=503)
     if calendar_store is not None:
         try:
-            turn_key = "chat-" + str(uid) + "-" + str(conversation_id or "anon") + "-" + str(len(messages))
+            turn_key = "chat-" + str(uid) + "-" + str(conversation_id or "anon") + "-" + str(len(messages)) + "-" + (__import__("hashlib").sha256(str(latest_user_text).encode("utf-8")).hexdigest()[:16])
             native_result = await try_native_calendar_chat(
                 request, calendar_store, uid,
                 messages, timezone_name=timezone_name,
@@ -635,7 +635,7 @@ async def api_chat(request: Request) -> JSONResponse:
         return JSONResponse({"error": {"code": "calendar_store_unavailable", "message": "Calendar storage is unavailable"}}, status_code=503)
     if calendar_store is not None:
         try:
-            turn_key = "chat-" + str(uid) + "-" + str(conversation_id or "anon") + "-" + str(len(messages))
+            turn_key = "chat-" + str(uid) + "-" + str(conversation_id or "anon") + "-" + str(len(messages)) + "-" + (__import__("hashlib").sha256(str(latest_user_text).encode("utf-8")).hexdigest()[:16])
             native_result = await try_native_calendar_chat(request, calendar_store, uid, messages, timezone_name=timezone_name, turn_key=turn_key)
         except NativeCalendarAdapterError as exc:
             return JSONResponse({"error": {"code": exc.code, "message": exc.message}}, status_code=exc.status_code)
