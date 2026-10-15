@@ -1,11 +1,6 @@
-# Windows stock IExpress SFX packager (no installer toolkit, no host Python).
-# Run this after build-windows-standalone.ps1. The result is a single EXE
-# containing a zipped, pinned one-directory Python/Resident runtime.
+# PADIEM customer Windows onefile setup. No host Python on customer PC.
 [CmdletBinding()]
-param(
-    [string]$BundleRoot,
-    [string]$OutputExe
-)
+param([string]$BundleRoot, [string]$OutputExe)
 $ErrorActionPreference = 'Stop'
 $Here = $PSScriptRoot
 if (-not $BundleRoot) {
@@ -14,88 +9,33 @@ if (-not $BundleRoot) {
 if (-not $OutputExe) {
     $OutputExe = Join-Path (Split-Path $Here) 'PADIEM-Connector-Setup-0.1.0.exe'
 }
-if (-not (Test-Path -LiteralPath (Join-Path $BundleRoot 'padiem-connector.exe') -PathType Leaf)) {
-    throw 'Build the standalone Connector before setup packaging.'
+if (-not (Test-Path -LiteralPath (Join-Path $BundleRoot 'padiem-connector.exe') -PathType Leaf) -or
+    -not (Test-Path -LiteralPath (Join-Path $BundleRoot '_internal\kagent\local_agent_resident_process.py') -PathType Leaf)) {
+    throw 'Build canonical Connector/Resident bundle first.'
 }
-if (-not (Test-Path -LiteralPath (Join-Path $BundleRoot '_internal\kagent\local_agent_resident_process.py') -PathType Leaf)) {
-    throw 'The canonical Resident is missing from the bundle.'
+$PyInstaller = Join-Path ([IO.Path]::GetTempPath()) 'padiem-standalone-buildvenv\Scripts\pyinstaller.exe'
+if (-not (Test-Path -LiteralPath $PyInstaller -PathType Leaf)) {
+    throw 'Missing packaging venv; run build-windows-standalone.ps1 first.'
 }
-$IExpress = Join-Path $env:WINDIR 'System32\iexpress.exe'
-if (-not (Test-Path -LiteralPath $IExpress -PathType Leaf)) {
-    throw 'Microsoft Windows IExpress packager is unavailable.'
-}
-$OutputExe = [System.IO.Path]::GetFullPath($OutputExe)
-$Stage = Join-Path $env:TEMP ('PadiemConnectorSfx.' + [guid]::NewGuid().ToString('N'))
-New-Item -ItemType Directory -Path $Stage -Force | Out-Null
+$OutputExe = [IO.Path]::GetFullPath($OutputExe)
+$OutputDir = Split-Path $OutputExe
+$Name = [IO.Path]::GetFileNameWithoutExtension($OutputExe)
+New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
+$Stage = Join-Path ([IO.Path]::GetTempPath()) ('padiem-setup-build-' + [guid]::NewGuid().ToString('N'))
+New-Item $Stage -ItemType Directory -Force | Out-Null
 try {
-    Copy-Item -LiteralPath (Join-Path $Here 'setup-standalone-launch.ps1') -Destination $Stage
-    Copy-Item -LiteralPath (Join-Path $Here 'install-standalone.ps1') -Destination $Stage
-    Compress-Archive -Path (Join-Path $BundleRoot '*') -DestinationPath (Join-Path $Stage 'connector-payload.zip') -CompressionLevel Optimal
-    $SedTemplate = @'
-[Version]
-Class=IEXPRESS
-SEDVersion=3
-[Options]
-PackagePurpose=InstallApp
-ShowInstallProgramWindow=1
-HideExtractAnimation=0
-UseLongFileName=1
-InsideCompressed=0
-CAB_FixedSize=0
-CAB_ResvCodeSigning=0
-RebootMode=N
-InstallPrompt=%InstallPrompt%
-DisplayLicense=%DisplayLicense%
-FinishMessage=%FinishMessage%
-TargetName=%TargetName%
-FriendlyName=%FriendlyName%
-AppLaunched=%AppLaunched%
-PostInstallCmd=%PostInstallCmd%
-AdminQuietInstCmd=%AdminQuietInstCmd%
-UserQuietInstCmd=%UserQuietInstCmd%
-SourceFiles=SourceFiles
-[Strings]
-InstallPrompt=
-DisplayLicense=
-FinishMessage=
-TargetName=__TARGET__
-FriendlyName=PADIEM Connector
-AppLaunched=powershell.exe -NoProfile -ExecutionPolicy Bypass -File setup-standalone-launch.ps1
-PostInstallCmd=<None>
-AdminQuietInstCmd=
-UserQuietInstCmd=
-FILE0="setup-standalone-launch.ps1"
-FILE1="install-standalone.ps1"
-FILE2="connector-payload.zip"
-[SourceFiles]
-SourceFiles0=__STAGE__
-[SourceFiles0]
-%FILE0%=
-%FILE1%=
-%FILE2%=
-'@
-    $SedFile = Join-Path $Stage 'padiem-setup.sed'
-    $SedText = $SedTemplate.Replace('__TARGET__', $OutputExe).Replace('__STAGE__', ($Stage + '\'))
-    [System.IO.File]::WriteAllText($SedFile, $SedText, [System.Text.Encoding]::Default)
-    # IExpress is a GUI-subsystem program. Direct '& iexpress' returns before
-    # the CAB/EXE is written and caused a false build failure + early temp
-    # cleanup. Wait for the actual packager process to exit before checking.
-    $Build = Start-Process -FilePath $IExpress -ArgumentList @('/N','/Q','/M', ('"' + $SedFile + '"')) -PassThru -Wait
-    # On some Windows images IExpress spawns the cabinet writer and returns
-    # before the output becomes visible. Do not delete its source SED/payload
-    # while the child writer still needs them.
-    for ($attempt = 0; $attempt -lt 60 -and
-         -not (Test-Path -LiteralPath $OutputExe -PathType Leaf); $attempt++) {
-        Start-Sleep -Seconds 1
-    }
-    if (-not (Test-Path -LiteralPath $OutputExe -PathType Leaf)) {
-        throw ("IExpress setup artifact absent (exit=" + $Build.ExitCode + ")")
+    $Zip = Join-Path $Stage 'connector-payload.zip'
+    Compress-Archive -Path (Join-Path $BundleRoot '*') -DestinationPath $Zip -CompressionLevel Optimal
+    $DataZip = "$Zip;."
+    $DataInstaller = "$(Join-Path $Here 'install-standalone.ps1');."
+    $Work = Join-Path $Stage 'work'
+    & $PyInstaller --noconfirm --clean --onefile --console --name $Name --add-data $DataZip --add-data $DataInstaller --distpath $OutputDir --workpath $Work --specpath $Stage (Join-Path $Here 'packaged_setup.py')
+    if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $OutputExe -PathType Leaf)) {
+        throw 'PyInstaller did not produce the single-file setup EXE.'
     }
     $File = Get-Item -LiteralPath $OutputExe
     Write-Output (@{
-        ok=$true
-        setup_exe=$File.FullName
-        bytes=$File.Length
+        ok=$true; setup_exe=$File.FullName; bytes=$File.Length
         sha256=(Get-FileHash -LiteralPath $File.FullName -Algorithm SHA256).Hash
         signed=($null -ne (Get-AuthenticodeSignature -FilePath $File.FullName).SignerCertificate)
     } | ConvertTo-Json -Compress)
