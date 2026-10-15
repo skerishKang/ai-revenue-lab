@@ -1262,6 +1262,9 @@ jobs:
         run: |
           set -euo pipefail
           verify_args=()
+          if [ "${ATTACH_GRAFANA_TELEMETRY}" = "true" ]; then
+            verify_args=(--allow-add-existing-grafana-telemetry)
+          fi
           if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ]; then
             verify_args=(--allow-add-existing-web-secrets-store)
           fi
