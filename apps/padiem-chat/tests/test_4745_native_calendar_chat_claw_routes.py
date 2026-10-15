@@ -156,3 +156,18 @@ def test_duplicate_chat_create_replays_one():
         assert second.status_code == 200, second.text
         appointments = asyncio.run(_appointments(c.app))
         assert len(appointments) == 1, len(appointments)
+
+def test_distinct_client_turn_ids_allow_distinct_identical_chat_creates():
+    with client_factory() as c:
+        base = {
+            "messages": [{"role": "user", "content": "내일 오전 9시 회의 일정 등록해줘"}],
+            "timezone": "Asia/Seoul",
+        }
+        first = c.post("/api/chat", json={**base, "calendar_turn_id": "test-turn-1"})
+        retry = c.post("/api/chat", json={**base, "calendar_turn_id": "test-turn-1"})
+        distinct = c.post("/api/chat", json={**base, "calendar_turn_id": "test-turn-2"})
+        assert first.status_code == 200, first.text
+        assert retry.status_code == 200, retry.text
+        assert distinct.status_code == 200, distinct.text
+        saved = asyncio.run(_appointments(c.app))
+        assert len(saved) == 2, len(saved)
