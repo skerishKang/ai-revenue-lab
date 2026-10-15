@@ -65,6 +65,11 @@
     }
   }
 
+  function createCalendarTurnId() {
+    return typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+      ? crypto.randomUUID() : null;
+  }
+
   function calendarRequestFields(payload) {
     const result = { ...payload };
     if (typeof result.timezone !== "string" || !result.timezone) {
@@ -72,9 +77,9 @@
     }
     if (typeof result.calendar_turn_id !== "string" || !result.calendar_turn_id) {
       let stableId = calendarTurnIdsByRequest.get(payload);
-      if (!stableId && typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
-        stableId = crypto.randomUUID();
-        calendarTurnIdsByRequest.set(payload, stableId);
+      if (!stableId) {
+        stableId = createCalendarTurnId();
+        if (stableId) calendarTurnIdsByRequest.set(payload, stableId);
       }
       if (stableId) result.calendar_turn_id = stableId;
     }
@@ -255,6 +260,7 @@
   }
 
   window.PadiemChatTransport = Object.freeze({
+    createCalendarTurnId,
     errorFor,
     parseSseFrame,
     readSseEvents,
