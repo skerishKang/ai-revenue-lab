@@ -98,6 +98,18 @@ function jsonResponse(payload) {
     const html = fs.readFileSync(ADMIN_PAGE, "utf8");
     assert.ok(!/\bapprove\b/i.test(html), "read-only inbox HTML must not expose an approve control");
     assert.ok(!/\breject\b/i.test(html), "read-only inbox HTML must not expose a reject control");
+
+    // 5. Existing admin menus must actually link to this read-only inbox.
+    for (const name of ["admin.html", "admin-models.html", "admin-notices.html", "admin-inquiries.html"]) {
+      const page = fs.readFileSync(path.join(ROOT, name), "utf8");
+      assert.ok(page.includes('href="/admin-saved-skill-candidates.html"'), name + " missing inbox navigation");
+    }
+    const ui = fs.readFileSync(path.join(ROOT, "admin-saved-skill-candidates.js"), "utf8");
+    assert.ok(ui.includes("listRequest !== listGeneration"), "stale list responses must be dropped");
+    assert.ok(ui.includes("detailRequest !== detailGeneration"), "stale detail responses must be dropped");
+    assert.ok(ui.includes("detail.replaceChildren()"), "old candidate detail must be removed on a new request");
+    assert.ok(ui.includes("denyAccess()"), "expired admin session must clear and hide staff-only data");
+    assert.ok(!/\/decision[\x22\x27]/.test(ui), "decision endpoint must remain absent from read-only UI");
   } finally {
     globalThis.fetch = originalFetch;
   }

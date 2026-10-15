@@ -8,6 +8,25 @@
   const statusLine = el("candidateStatus");
   const detail = el("candidateDetail");
   const filter = el("candidateStatusFilter");
+  let listGeneration = 0;
+  let detailGeneration = 0;
+  let authorized = false;
+
+  function denyAccess() {
+    authorized = false;
+    ++listGeneration;
+    ++detailGeneration;
+    rows.replaceChildren();
+    detail.replaceChildren();
+    content.hidden = true;
+    access.hidden = false;
+    access.textContent = "관리자 인증이 만료되었거나 권한이 없습니다. 다시 로그인해 주세요.";
+  }
+
+  function revoked(error) {
+    return error && (error.status === 401 || error.status === 403 ||
+      error.message === "unauthorized" || error.message === "operator_forbidden");
+  }
 
   async function req(path) {
     const r = await fetch(API + path, {
@@ -17,7 +36,9 @@
     });
     const payload = await r.json().catch(() => ({}));
     if (!r.ok || payload.ok !== true) {
-      throw new Error(payload?.error?.code || "request_failed");
+      const error = new Error(payload?.error?.code || "request_failed");
+      error.status = r.status;
+      throw error;
     }
     return payload;
   }
@@ -52,18 +73,23 @@
     addTerm(dl, "결정 시각", candidate.decided_at);
     card.append(dl);
     const note = document.createElement("p");
-    note.textContent = "승인/거부 실행 버튼은 신뢰 서버 grant 가 검증될 때까지 표시하지 않습니다.";
+    note.textContent = "승인·거부 기능은 현재 준비 중입니다.";
     card.append(note);
     detail.append(card);
   }
 
   async function loadList() {
+    if (!authorized) return;
+    const listRequest = ++listGeneration;
+    ++detailGeneration;
+    detail.replaceChildren();
     const value = filter.value || "pending";
     const currentLimit = 20;
     statusLine.textContent = "승인 요청 목록을 불러오는 중입니다.";
     rows.replaceChildren();
     try {
       const data = await req("/saved-skill-candidates?status=" + encodeURIComponent(value) + "&limit=" + currentLimit);
+      if (listRequest !== listGeneration || !authorized) return;
       const candidates = Array.isArray(data.candidates) ? data.candidates : [];
       for (const item of candidates) {
         const tr = document.createElement("tr");
@@ -80,14 +106,23 @@
         button.className = "secondary";
         button.textContent = "상세";
         button.addEventListener("click", async () => {
+          const detailRequest = ++detailGeneration;
+          detail.replaceChildren();
           button.disabled = true;
           statusLine.textContent = "상세를 불러오는 중입니다.";
           try {
             const result = await req("/saved-skill-candidates/" + encodeURIComponent(item.candidate_id));
+            if (detailRequest !== detailGeneration || !authorized) return;
             renderDetail(result.candidate || {});
             statusLine.textContent = "선택한 승인 요청 " + safeText(item.candidate_id) + " 상세를 표시합니다.";
           } catch (error) {
-            statusLine.textContent = "상세 조회 실패: " + safeText(error.message);
+            if (detailRequest !== detailGeneration) return;
+            detail.replaceChildren();
+            if (revoked(error)) {
+              denyAccess();
+            } else {
+              statusLine.textContent = "상세 조회 실패: " + safeText(error.message);
+            }
           } finally {
             button.disabled = false;
           }
@@ -106,6 +141,12 @@
       }
       statusLine.textContent = "승인 요청 " + candidates.length + "건 표시 중입니다.";
     } catch (error) {
+      if (listRequest !== listGeneration) return;
+      detail.replaceChildren();
+      if (revoked(error)) {
+        denyAccess();
+        return;
+      }
       statusLine.textContent = "조회 실패: " + safeText(error.message);
       const empty = document.createElement("tr");
       const cell = document.createElement("td");
@@ -129,6 +170,7 @@
       const response = await req("/me");
       if (response.admin !== true) throw new Error("admin_forbidden");
       access.hidden = true;
+      authorized = true;
       content.hidden = false;
       await loadList();
     } catch (error) {
