@@ -414,8 +414,16 @@ class ConnectApp:
                             )
                         ),
                         "reason": (
-                            "offer_refused" if failure else None
-                        ),
+                            failure if (
+                                type(failure) is str and len(failure) <= 72
+                                and failure.isascii()
+                                and failure.replace("_", "").isalnum()
+                                and failure.startswith((
+                                    "pc_offer_", "device_", "review_wss_",
+                                    "customer_", "canonical_",
+                                ))
+                            ) else "offer_refused"
+                        ) if failure else None,
                     }, output)
                 os.replace(temporary, root / "customer-offer-stage.json")
             finally:
@@ -473,9 +481,10 @@ class ConnectApp:
                 self.start_registered_resident()
         except DeviceSessionRefused as exc:
             failure = str(exc)
-        except Exception:
-            # No socket data, code, credential, or owner identity in diagnostics.
-            failure = "customer_offer_unavailable"
+        except Exception as exc:
+            # Only the Python exception class is recorded, not its message,
+            # socket data, credential, code, or owner identity.
+            failure = "customer_" + type(exc).__name__.lower()
         finally:
             with self._offer_lock:
                 self._offer_failure = failure
