@@ -187,6 +187,11 @@ _ENGINE_GRAFANA_APPROVED_ADDITION = (
     "secrets_store_secret", "PADIEM_GRAFANA_OTLP_TOKEN",
     "f0b09ca04a7b43248154c773704a5616", "PADIEM_GRAFANA_OTLP_TOKEN",
 )
+_B62_GRAFANA_PUBLIC_ADDITIONS = frozenset({
+    ("plain_text", "PADIEM_GRAFANA_OTLP_ENDPOINT",
+     "https://otlp-gateway-prod-ap-northeast-0.grafana.net/otlp/v1/logs"),
+    ("plain_text", "PADIEM_GRAFANA_OTLP_USERNAME", "1876517"),
+})
 
 
 def assert_exact_b66_membership_secret_only(before: object, after: object) -> None:
@@ -207,15 +212,23 @@ def assert_exact_b66_membership_secret_only(before: object, after: object) -> No
 
 
 def assert_exact_grafana_telemetry_added_only(before: object, after: object) -> None:
-    """One explicit, metadata-only Grafana Secrets Store addition; no other drift."""
+    """Only the exact Grafana Secret reference and two public variables may be added.
+
+    All previously served bindings remain byte-identical; the approved metadata
+    may already be present to support idempotent code-only redeploys.
+    """
     prior = set(canonical_state(before))
     current = set(canonical_state(after))
-    approved = _ENGINE_GRAFANA_APPROVED_ADDITION
-    if approved in prior:
-        if prior != current:
-            raise BindingStateError("Grafana binding already present; unrelated authority drift")
-    elif current != prior | {approved}:
-        raise BindingStateError("expected only exact existing Grafana Secrets Store reference")
+    approved = _B62_GRAFANA_PUBLIC_ADDITIONS | {_ENGINE_GRAFANA_APPROVED_ADDITION}
+    if not approved.issubset(current):
+        raise BindingStateError("canonical Grafana endpoint, username or Secret binding missing")
+    removed = prior - current
+    unexpected_added = (current - prior) - approved
+    if removed or unexpected_added:
+        raise BindingStateError(
+            "Grafana binding authority drift detected; "
+            f"removed_count={len(removed)} unexpected_added_count={len(unexpected_added)}"
+        )
 
 
 def assert_engine_4194_exact_rollout(before: object, after: object) -> None:
