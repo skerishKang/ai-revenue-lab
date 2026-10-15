@@ -180,6 +180,23 @@ class CanonicalBrokerPendingSocketActor:
         except Exception:
             raise PendingSocketActorRefused("pending_socket_reservation_denied") from None
 
+    async def reserve_owner_intent_once(
+        self, *, request_ref: str, owner_subject_ref: str,
+        account_ref: str, workspace_ref: str,
+    ) -> dict[str, Any]:
+        """Private actor-only port for the signed canonical owner intent."""
+        if not self._match_ref(request_ref):
+            raise PendingSocketActorRefused("pending_socket_unavailable")
+        await self._recheck_live_ingress()
+        try:
+            return self._broker.reserve_owner_intent_once(
+                request_ref=request_ref, owner_subject_ref=owner_subject_ref,
+                account_ref=account_ref, workspace_ref=workspace_ref,
+                now=datetime.now(timezone.utc),
+            )
+        except Exception:
+            raise PendingSocketActorRefused("pending_socket_reservation_denied") from None
+
     async def deliver_once(
         self, *, request_ref: str, device_id: str,
         challenge_id: str, pairing_code: str,

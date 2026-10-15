@@ -30,10 +30,7 @@ def post(*, monkeypatch, payload=None, fixture=None, signed=True, configured=Tru
     monkeypatch.setattr(page, "_verified_owner_request", owner)
 
     if payload is None:
-        payload = {
-            "request_ref": REQUEST, "confirmed": True,
-            "confirmation_version": "pc-enrollment-consent-v1",
-        }
+        payload = {"request_ref": REQUEST}
 
     async def call():
         async with httpx.AsyncClient(
@@ -141,10 +138,7 @@ def test_actual_canonical_session_and_same_origin_guard_cannot_be_bypassed(monke
         return SimpleNamespace(**current)
     monkeypatch.setattr(original, "resolve_current_b54_canonical_session", bridged)
 
-    payload = {
-        "request_ref": REQUEST, "confirmed": True,
-        "confirmation_version": "pc-enrollment-consent-v1",
-    }
+    payload = {"request_ref": REQUEST}
 
     async def send(origin):
         async with httpx.AsyncClient(
