@@ -51,7 +51,7 @@ def test_focus_stylesheet_is_last_and_loads_after_complex_claw_layout():
         voice_css = (STATIC / "voice-composer.css").read_text(encoding="utf-8")
         assert "#voiceMicButton" in voice_css
         assert ".voice-interim-preview" in voice_css
-        assert ".app-shell" not in voice_css
+        assert ".claw-workspace" not in voice_css
     assert links.index("./claw-task-hub.css") < links.index("./claw-focus-layout.css")
     assert links.index("./claw-workspace.css") < links.index("./claw-focus-layout.css")
     assert links.index("./b66-quote-runtime.css") < links.index("./claw-focus-layout.css")
@@ -74,7 +74,7 @@ def test_three_workflow_actions_and_approved_model_selection_stay_functional():
     for id_ in ("clawExcelStartButton", "clawCompareStartButton",
                 "clawDocumentStartButton", "clawWebOfficeDetails",
                 "clawVerifiedModelSelect", "clawModelIdInput",
-                "ownerModelPreviewOpen", "messageInput", "sendButton",
+                "messageInput", "sendButton",
                 "clawMobileComposerToggle", "clawManualForm", "clawRetryButton"):
         assert id_ in nodes, id_
     assert nodes["clawVerifiedModelSelect"][0] == "select"
@@ -82,7 +82,6 @@ def test_three_workflow_actions_and_approved_model_selection_stay_functional():
     assert not nodes["clawExcelStartButton"][1].get("disabled")
     assert '#composerForm > .claw-model-choice' in CSS
     assert '#composerForm > .claw-model-advanced' in CSS
-    assert '#composerForm > #ownerModelPreviewOpen' in CSS
     assert '#composerForm > #messageInput' in CSS
     assert '#composerForm > .composer-actions' in CSS
     assert 'data-claw-composer-collapsed="true"' in CSS

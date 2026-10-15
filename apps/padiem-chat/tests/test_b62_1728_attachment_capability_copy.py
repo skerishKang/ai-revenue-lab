@@ -32,7 +32,8 @@ def test_capability_projection_loads_before_copy_and_attachment_consumers():
 
 def test_composer_does_not_hard_code_format_truth_in_html():
     assert '<input id="attachmentFileInput" type="file" hidden />' in INDEX_HTML
-    assert '<small>지원 문서 형식</small>' in INDEX_HTML
+    assert 'id="documentFormatsToggle"' in INDEX_HTML
+    assert 'id="documentFormatsPanel"' in INDEX_HTML
     assert 'id="attachmentButton" title="파일 첨부"' in INDEX_HTML
     assert 'id="runtimeNote">파일 첨부 형식을 확인하는 중입니다.' in INDEX_HTML
 

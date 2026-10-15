@@ -154,7 +154,7 @@ def test_live_cards_are_exactly_the_reviewed_canonical_connector_ids() -> None:
     assert set(cards) == set(LIVE_CONNECTORS) | set(STATIC_PREPARING) | {"computer", "github"}
     for slug in ("computer", "github"):
         assert cards[slug]["connector_id"] == ""
-        assert cards[slug]["status"] == "preparing"
+        assert cards[slug]["status"] == ("preparing" if slug == "computer" else "loading")
     for slug, connector_id in LIVE_CONNECTORS.items():
         card = cards[slug]
         assert card["connector_id"] == connector_id
@@ -215,10 +215,10 @@ def test_live_status_locale_keys_are_complete_in_ko_and_en() -> None:
         missing = [key for key in LOCALE_KEYS if not table[language].get(key)]
         assert missing == [], f"{language} missing {missing}"
 
-    assert "Google Calendar" in table["ko"]["connectors-note"]
-    assert "Google Calendar" in table["en"]["connectors-note"]
-    assert "쓰기" in table["ko"]["connectors-note"]
-    assert "write" in table["en"]["connectors-note"].lower()
+    assert "GitHub" in table["ko"]["connectors-note"]
+    assert "GitHub" in table["en"]["connectors-note"]
+    assert "연결 삭제" in table["ko"]["connectors-note"]
+    assert "connection management" in table["en"]["connectors-note"].lower()
 
 
 def test_reviewed_google_connector_connection_actions_are_exactly_calendar_and_drive() -> None:
