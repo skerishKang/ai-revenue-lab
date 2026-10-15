@@ -39,8 +39,8 @@ $WorkDir = Join-Path $OutRoot "work"
     --paths $CoreSrc `
     --collect-submodules claw_connect `
     --collect-submodules padiem_connector `
-    --exclude-module kagent `
-    --exclude-module padiem_ai_core `
+    --hidden-import kagent.local_agent_resident_process `
+    --hidden-import padiem_ai_core.agent_approval `
     --add-data "$CoreSrc\padiem_ai_core;padiem_ai_core" `
     --add-data "$AgentSrc\kagent;kagent" `
     --distpath $DistDir --workpath $WorkDir `
