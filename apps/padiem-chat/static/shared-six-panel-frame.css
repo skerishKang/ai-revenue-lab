@@ -411,3 +411,17 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-workspa
     translate: 0 clamp(-150px, calc(100dvh - 850px), 0px);
   }
 }
+
+
+/* CLAW_DISCLOSURE_CHAT_ISOLATION_20261016
+ * A stale Claw disclosure remains DOM-mounted across view changes, but must
+ * never render in Chat, Home or any of the six shared product panels.
+ * Claw execution and memory state remain server-owned and unchanged. */
+.app-shell:not([data-state="claw"]) :is(
+  #clawRunHistoryDisclosure,
+  #clawRunHistory,
+  #clawApprovedDisclosure,
+  #clawApprovedMemory
+) {
+  display: none !important;
+}
