@@ -11,7 +11,9 @@ import inspect
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable
 
+from padiem_control_plane.auth_sessions import AuthSessionState
 from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
+from padiem_control_plane.tenants import TenantMembershipState
 
 from .auth_routes import auth_ready, current_user_id
 from .b66_member_admin import D1B66MemberAdminStore
@@ -25,6 +27,72 @@ from .b66_saved_skill_candidate_store import (
     validate_candidate_row_id,
 )
 
+
+
+class B66CanonicalCandidateTargetResolver:
+    """Server-only candidate-to-canonical-tenant resolver using CP identity."""
+
+    def __init__(
+        self,
+        *,
+        candidate_store: Any,
+        identity_authority: Any,
+        product_id: str,
+    ) -> None:
+        self._candidate_store = candidate_store
+        self._identity_authority = identity_authority
+        self._product_id = product_id if isinstance(product_id, str) else ""
+
+    async def __call__(self, request: Any, candidate_id: str) -> ResolvedB66ProvisioningTarget | None:
+        try:
+            row_id = validate_candidate_row_id(candidate_id)
+            if not isinstance(self._candidate_store, object):
+                return None
+            owner = self._candidate_store.read_private_candidate_owner(row_id)
+            if inspect.isawaitable(owner):
+                owner = await owner
+            if not isinstance(owner, dict):
+                return None
+            if str(owner.get("status")) != "pending":
+                return None
+            user_id = str(owner.get("user_id", ""))
+            workspace_id = str(owner.get("workspace_id", ""))
+            now = datetime.now(timezone.utc)
+            authority = self._identity_authority
+            if authority is None or not self._product_id:
+                return None
+            session = authority.resolve_current_auth_session(
+                product_id=self._product_id,
+                product_user_id=user_id,
+            )
+            if inspect.isawaitable(session):
+                session = await session
+            if getattr(session, "state", None) is not AuthSessionState.ACTIVE:
+                return None
+            subject = getattr(session, "subject", None)
+            canonical_subject_id = getattr(subject, "subject_id", None)
+            tenant_id = getattr(session, "tenant_id", None)
+            if not isinstance(canonical_subject_id, str) or not isinstance(tenant_id, str):
+                return None
+            if callable(getattr(authority, "resolve_active_tenant_membership", None)):
+                membership = authority.resolve_active_tenant_membership(
+                    tenant_id=tenant_id,
+                    canonical_subject_id=canonical_subject_id,
+                    now=now,
+                )
+                if inspect.isawaitable(membership):
+                    membership = await membership
+                membership_state = getattr(membership, "state", None)
+                if membership_state is not TenantMembershipState.ACTIVE:
+                    return None
+            return ResolvedB66ProvisioningTarget(
+                user_id=user_id,
+                workspace_id=workspace_id,
+                tenant_id=tenant_id,
+                canonical_subject_id=canonical_subject_id,
+            )
+        except Exception:
+            return None
 
 class D1B66SavedQuoteSkillCandidateOperatorAuthority:
     """Adapts real server authorities, never creates its own grants."""

@@ -785,6 +785,30 @@ class Default(WorkerEntrypoint):
                     if identity_binding is not None
                     else None
                 )
+                from app.b66_saved_skill_candidate_store import (
+                    D1SavedQuoteSkillCandidateStore,
+                )
+                from app.b66_saved_skill_candidate_authority import (
+                    B66CanonicalCandidateTargetResolver,
+                )
+                from app.control_plane_identity import PADIEM_CHAT_PRODUCT_ID
+                b66_saved_skill_candidate_store = (
+                    D1SavedQuoteSkillCandidateStore(db_binding)
+                    if db_binding is not None
+                    else None
+                )
+                b66_canonical_candidate_target_resolver = None
+                if (
+                    identity_authority is not None
+                    and b66_saved_skill_candidate_store is not None
+                ):
+                    b66_canonical_candidate_target_resolver = (
+                        B66CanonicalCandidateTargetResolver(
+                            candidate_store=b66_saved_skill_candidate_store,
+                            identity_authority=identity_authority,
+                            product_id=PADIEM_CHAT_PRODUCT_ID,
+                        )
+                    )
                 google_oauth_workspace_truth = (
                     CloudflareGoogleOAuthWorkspaceTruth(google_oauth_binding)
                     if google_oauth_binding is not None
@@ -891,6 +915,7 @@ class Default(WorkerEntrypoint):
                     history_store=history_store,
                     d1_binding=db_binding,
                     b66_admin_google_email=b66_operator_email,
+                    b66_canonical_candidate_target_resolver=b66_canonical_candidate_target_resolver,
                     central_model_admin_google_email=central_operator_email,
                     central_model_policy_signing_key=(
                         binding_value(self.env, "PADIEM_CENTRAL_MODEL_POLICY_SIGNING_KEY") or ""
