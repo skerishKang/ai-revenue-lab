@@ -447,9 +447,15 @@ class BrokerTextResultStore:
             # #4139: alternative scope for realms where the caller's product
             # user id differs from the canonical account_ref. The proof bundle
             # (command correlation the caller proved owning server-side via
-            # history) locates exactly one staged row; the scope is derived
-            # from that row's own account, never from caller naming. Both
-            # modes at once are ambiguous and refused.
+            # history) locates exactly one canonical command; the scope is
+            # derived from that command's own binding, never from caller
+            # naming. Explicit workspace_ref, if supplied, must match the
+            # canonical binding; product-tenant workspaces must be omitted by
+            # callers rather than silently bypassed here. Both modes at once are
+            # ambiguous and refused. Past this
+            # point the flow is identical to the legacy path, so a general
+            # command with no staged row still answers kind:"other" while a
+            # TXT command that staged nothing yet stays retryable.
             if owner is not None:
                 raise TextResultRefused("text result scope modes are exclusive")
             if not isinstance(scope_proof, dict) or set(scope_proof) != _SCOPE_PROOF_KEYS:
@@ -463,25 +469,29 @@ class BrokerTextResultStore:
                 raise TextResultRefused("text result scope proof run mismatch")
             if command_id is not None and command_id != proof_command:
                 raise TextResultRefused("text result scope proof command mismatch")
-            expected_workspace = None
-            if workspace is not None:
-                if not isinstance(workspace, str):
-                    raise TextResultRefused("text result scope workspace mismatch")
-                expected_workspace = workspace
-            found = rows(self._sql.exec(
-                "SELECT binding_ref,account_ref,workspace_ref,run_id,state FROM "
-                "local_agent_text_result WHERE command_id=? AND run_id=? AND request_fingerprint=?",
-                proof_command, proof_run, proof_fingerprint,
-            ))
-            if len(found) != 1:
-                # Nothing staged (or ambiguous, which cannot happen under the
-                # PRIMARY KEY): retryable unavailability, never a generic
-                # "other" that would consume the conversation's message id.
-                raise TextResultRefused("staged text result is unavailable")
-            owner = row_value(found[0], "account_ref")
-            workspace = row_value(found[0], "workspace_ref")
-            if expected_workspace is not None and workspace != expected_workspace:
+            if workspace is not None and not isinstance(workspace, str):
                 raise TextResultRefused("text result scope workspace mismatch")
+            snapshot = self._state.load(authority_ref=self._authority).snapshot
+            proven = [
+                command
+                for command in snapshot.commands
+                if command.command_id == proof_command
+                and command.run_id == proof_run
+                and command.request_fingerprint == proof_fingerprint
+            ]
+            if len(proven) != 1:
+                raise TextResultRefused("canonical command unavailable")
+            proven_bindings = [
+                binding for binding in snapshot.bindings
+                if binding.binding_ref == proven[0].binding_ref
+            ]
+            if len(proven_bindings) != 1:
+                raise TextResultRefused("canonical command/binding unavailable")
+            owner = proven_bindings[0].account_ref
+            canonical_workspace = proven_bindings[0].workspace_ref
+            if workspace is not None and workspace != canonical_workspace:
+                raise TextResultRefused("text result scope workspace mismatch")
+            workspace = canonical_workspace
             run_id = proof_run
             command_id = proof_command
         else:
