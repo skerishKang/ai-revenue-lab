@@ -278,7 +278,8 @@ def test_runtime_safe_dict_never_contains_raw_tokens_or_client_secret() -> None:
     assert safe["refresh_token_returned"] is False
     assert safe["access_token_persisted"] is False
     assert safe["private_rpc_only"] is True
-    assert safe["google_write_scope"] is False
+    assert safe["shared_google_drive_write_scope"] is False
+    assert safe["b66_google_drive_file_scope"] is True
 
 
 class _RefreshStreamReader:

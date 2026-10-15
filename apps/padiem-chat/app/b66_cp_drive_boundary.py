@@ -1,10 +1,12 @@
 """#4089: private B66-to-Control-Plane Drive compatibility boundary.
 
 A reviewed CP google-drive authorization currently has *drive.readonly* scope.
-B66's independent customer-selected storage destination needs *drive.file*.
-No public route, OAuth execution, writable credential, or owner-to-CP mapping
-exists here. Only the authorized server host may supply both the private CP
-selection and the separately verified B66 owner/CP actor-workspace link.
+B66's independent customer-selected storage destination needs its own reviewed
+Google grant; the old source precursor used *drive.file* and the final B66 host
+uses the separate full-Drive connector. No public route, OAuth execution,
+writable credential, or owner-to-CP mapping exists here. Only the authorized
+server host may supply both the private CP selection and the separately
+verified B66 owner/CP actor-workspace link.
 """
 
 from __future__ import annotations
@@ -45,11 +47,14 @@ class B66VerifiedCPDriveOwnerLink:
     owner_b66_user_id: str
     cp_workspace_ref: str
     cp_actor_ref: str
+    cp_session_id: str | None = None
 
     def __post_init__(self) -> None:
         _valid_ref(self.owner_b66_user_id, owner=True)
         _valid_ref(self.cp_workspace_ref)
         _valid_ref(self.cp_actor_ref)
+        if self.cp_session_id is not None:
+            _valid_ref(self.cp_session_id)
 
 
 class B66CPDriveBoundary:

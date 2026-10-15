@@ -36,13 +36,21 @@ _SUBJECT_KEYS = frozenset({"subject_type", "subject_id"})
 _TICKET_KEYS = frozenset({"connect_ticket", "connector_id", "expires_at"})
 _CONNECTOR_WORKSPACE_KEYS_ABSENT = frozenset({"present"})
 _CONNECTOR_WORKSPACE_KEYS_PRESENT = frozenset({"present", "workspace_ref"})
+_CONNECTOR_CONTEXT_KEYS_ABSENT = frozenset({"present"})
+_CONNECTOR_CONTEXT_KEYS_PRESENT = frozenset(
+    {"present", "product_id", "subject_id", "actor_ref", "workspace_ref"}
+)
 _TENANT_KEYS = frozenset({"tenant_id", "state", "created_at"})
 _MEMBERSHIP_KEYS_LEGACY = frozenset({"tenant_id", "canonical_subject_id", "state", "created_at"})
 _MEMBERSHIP_KEYS = _MEMBERSHIP_KEYS_LEGACY | {"role"}
 _MEMBERSHIP_RESOLVE_KEYS = frozenset(
     {"tenant_id", "canonical_subject_id", "state", "created_at", "role"}
 )
-_REVIEWED_CONNECTORS = frozenset({"gmail", "google-drive", "google-calendar"})
+_REVIEWED_CONNECTORS = frozenset({
+    "gmail", "google-drive", "google-calendar", "b66-google-drive-file", "b66-google-drive-full",
+})
+B66_GOOGLE_DRIVE_FILE_CONNECTOR = "b66-google-drive-file"
+B66_GOOGLE_DRIVE_FULL_CONNECTOR = "b66-google-drive-full"
 _CONNECTOR_CONSENT_RPC_KEYS = frozenset({
     "consent_id", "device_id", "granted_at", "withdrawn_at",
     "dispatch_authorized", "grants_read", "grants_write",
@@ -392,6 +400,46 @@ class CloudflareControlPlaneIdentityAuthority:
             )
         return workspace_ref
 
+    async def resolve_connector_context(self, *, session_id: str) -> dict[str, str] | None:
+        """Read one canonical session's own actor/workspace/subject context.
+
+        The payload is closed to ``session_id``. This RPC is only usable by a
+        trusted server host; it never accepts caller-supplied actor, account,
+        workspace, subject, tenant or product identity. ``None`` means the
+        canonical connector context has not been minted yet and host connector
+        work must fail closed.
+        """
+
+        if not isinstance(session_id, str) or not session_id:
+            raise IdentityBridgeError(
+                401, "canonical_auth_session_not_found", "Canonical session is unavailable."
+            )
+        context = await self._rpc(
+            "resolve_connector_context", {"session_id": session_id}, "context"
+        )
+        present = context.get("present")
+        if not isinstance(present, bool):
+            raise IdentityBridgeError(
+                503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data."
+            )
+        if present is False:
+            if set(context) != _CONNECTOR_CONTEXT_KEYS_ABSENT:
+                raise IdentityBridgeError(
+                    503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data."
+                )
+            return None
+        if set(context) != _CONNECTOR_CONTEXT_KEYS_PRESENT:
+            raise IdentityBridgeError(
+                503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data."
+            )
+        for key in ("product_id", "subject_id", "actor_ref", "workspace_ref"):
+            value = context.get(key)
+            if not isinstance(value, str) or not value:
+                raise IdentityBridgeError(
+                    503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data."
+                )
+        return context
+
     async def resolve_active_memberships(
         self,
         *,
@@ -719,6 +767,36 @@ class CloudflareControlPlaneIdentityAuthority:
             connect_ticket=wire["connect_ticket"],
             connector_id=wire["connector_id"],
             expires_at=_time(wire["expires_at"], "connect ticket expiry"),
+        )
+
+    async def issue_b66_google_drive_file_connect_ticket(
+        self, *, session_id: str
+    ) -> PrivateGoogleConnectTicket:
+        """Issue only the reviewed B66 Drive-file connect ticket for one session.
+
+        The connector is fixed in code, so a browser can never select the
+        shared ``google-drive`` readonly connector, another connector, or a
+        Google write scope of its choice.
+        """
+
+        return await self.issue_google_connect_ticket(
+            session_id=session_id,
+            connector_id=B66_GOOGLE_DRIVE_FILE_CONNECTOR,
+        )
+
+    async def issue_b66_google_drive_full_connect_ticket(
+        self, *, session_id: str
+    ) -> PrivateGoogleConnectTicket:
+        """Issue only the reviewed B66 full-Drive ticket for one session.
+
+        The connector is fixed in code, so a browser can never select the
+        shared ``google-drive`` connector, another connector, or a Google scope
+        of its choice. A prior ``drive.file`` grant is not reinterpreted.
+        """
+
+        return await self.issue_google_connect_ticket(
+            session_id=session_id,
+            connector_id=B66_GOOGLE_DRIVE_FULL_CONNECTOR,
         )
 
     @staticmethod

@@ -18,8 +18,14 @@ from padiem_control_plane.connector_connect_ticket import (
 from padiem_control_plane.contracts import ControlPlaneContractError
 
 from google_oauth_durable_store import (
+    B66_GOOGLE_DRIVE_CONNECTORS,
+    B66_GOOGLE_DRIVE_FILE_CONNECTOR,
+    B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+    B66_GOOGLE_DRIVE_OIDC_SCOPES,
     GMAIL_READONLY_SCOPE,
     GOOGLE_CALENDAR_READONLY_SCOPE,
+    GOOGLE_DRIVE_FILE_SCOPE,
+    GOOGLE_DRIVE_FULL_SCOPE,
     GOOGLE_DRIVE_READONLY_SCOPE,
     CloudflareDurableGoogleOAuthStore,
     DurableGoogleOAuthAuthorizationState,
@@ -34,14 +40,18 @@ from google_oauth_webcrypto_sealer import (
 
 GOOGLE_AUTHORIZATION_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
+GOOGLE_USERINFO_URL = "https://openidconnect.googleapis.com/v1/userinfo"
 AUTHORIZATION_SESSION_TTL_SECONDS = 600
 MAX_AUTHORIZATION_CODE_CHARS = 4_096
 MAX_PROVIDER_ERROR_CHARS = 1_024
 MAX_TOKEN_RESPONSE_BYTES = 262_144
 MAX_REFRESH_TOKEN_LIFETIME_SECONDS = 366 * 24 * 60 * 60
+MAX_ACCESS_TOKEN_CHARS = 65_536
+MAX_USERINFO_RESPONSE_BYTES = 65_536
 MAX_CONNECT_TICKET_CHARS = 24_576
 
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+\-]{0,255}$")
+_GOOGLE_SUB_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{7,255}$")
 _PKCE_VERIFIER_RE = re.compile(r"^[A-Za-z0-9._~\-]{43,128}$")
 _KEY_SECRET_RE = re.compile(r"^[A-Za-z0-9_-]{43}$")
 _REVIEWED_SCOPES = {
@@ -50,6 +60,14 @@ _REVIEWED_SCOPES = {
     # #2010: the OAuth ingress requests exactly the Calendar readonly scope for
     # the google-calendar connector and nothing else.
     "google-calendar": (GOOGLE_CALENDAR_READONLY_SCOPE,),
+    # #4089: B66's independent Drive storage destination is a separate reviewed
+    # connector. The shared google-drive connector remains drive.readonly.
+    B66_GOOGLE_DRIVE_FILE_CONNECTOR: (GOOGLE_DRIVE_FILE_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES,
+    # #4089/#4871: B66 final Drive connection requests the full working
+    # https://www.googleapis.com/auth/drive grant plus the OIDC identity scopes
+    # required for verified Google UserInfo. The OIDC scopes identify the
+    # destination Google account; they are not additional Drive file grants.
+    B66_GOOGLE_DRIVE_FULL_CONNECTOR: (GOOGLE_DRIVE_FULL_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES,
 }
 _AUTH_SESSION_SENTINEL = "sealed-session-identity"
 
@@ -59,6 +77,20 @@ def _safe_ref(value: Any, field_name: str) -> str:
         raise ControlPlaneContractError(
             "invalid_google_oauth_ingress",
             f"{field_name} must be a bounded safe reference",
+        )
+    return value
+
+
+def _bounded_subject_id(value: Any, field_name: str) -> str:
+    if (
+        not isinstance(value, str)
+        or not value
+        or len(value) > 256
+        or any(ord(character) < 32 for character in value)
+    ):
+        raise ControlPlaneContractError(
+            "invalid_google_oauth_ingress",
+            f"{field_name} must be a bounded canonical subject",
         )
     return value
 
@@ -195,6 +227,10 @@ class GoogleOAuthSessionPayload:
     actor_ref: str
     account_ref: str
     workspace_ref: str
+    session_id: str
+    product_id: str
+    subject_type: str
+    subject_id: str
     scopes: tuple[str, ...]
     code_verifier: str = field(repr=False)
     redirect_uri: str
@@ -208,13 +244,17 @@ class GoogleOAuthSessionPayload:
             "actor_ref",
             "account_ref",
             "workspace_ref",
+            "session_id",
+            "product_id",
+            "subject_type",
         ):
             object.__setattr__(self, name, _safe_ref(getattr(self, name), name))
+        object.__setattr__(self, "subject_id", _bounded_subject_id(self.subject_id, "subject_id"))
         expected = _REVIEWED_SCOPES.get(self.connector_id)
         if expected is None or not isinstance(self.scopes, tuple) or set(self.scopes) != set(expected):
             raise ControlPlaneContractError(
                 "unreviewed_google_oauth_scope",
-                "OAuth session scopes must exactly match the reviewed readonly set",
+                "OAuth session scopes must exactly match the reviewed set",
             )
         object.__setattr__(self, "scopes", expected)
         verifier = _bounded_secret(self.code_verifier, "code_verifier", max_chars=128)
@@ -240,6 +280,10 @@ class GoogleOAuthSessionPayload:
                 "actor_ref": self.actor_ref,
                 "account_ref": self.account_ref,
                 "workspace_ref": self.workspace_ref,
+                "session_id": self.session_id,
+                "product_id": self.product_id,
+                "subject_type": self.subject_type,
+                "subject_id": self.subject_id,
                 "scopes": list(self.scopes),
                 "code_verifier": self.code_verifier,
                 "redirect_uri": self.redirect_uri,
@@ -269,6 +313,10 @@ class GoogleOAuthSessionPayload:
                     "actor_ref",
                     "account_ref",
                     "workspace_ref",
+                    "session_id",
+                    "product_id",
+                    "subject_type",
+                    "subject_id",
                     "scopes",
                     "code_verifier",
                     "redirect_uri",
@@ -291,6 +339,10 @@ class GoogleOAuthSessionPayload:
             actor_ref=wire["actor_ref"],
             account_ref=wire["account_ref"],
             workspace_ref=wire["workspace_ref"],
+            session_id=wire["session_id"],
+            product_id=wire["product_id"],
+            subject_type=wire["subject_type"],
+            subject_id=wire["subject_id"],
             scopes=scopes,
             code_verifier=wire["code_verifier"],
             redirect_uri=wire["redirect_uri"],
@@ -326,6 +378,8 @@ class GoogleOAuthConnectedReceipt:
     scopes: tuple[str, ...]
     connected_at: datetime
     expires_at: datetime | None
+    provider_subject: str = ""
+    provider_email: str | None = None
 
     def safe_dict(self) -> dict[str, Any]:
         return {
@@ -343,6 +397,10 @@ class GoogleOAuthConnectedReceipt:
             "raw_access_token": False,
             "raw_refresh_token": False,
             "raw_client_secret": False,
+            "verified_destination_subject": self.provider_subject or None,
+            "verified_destination_account": (
+                self.provider_email or (self.provider_subject or None)
+            ),
         }
 
 
@@ -356,6 +414,99 @@ class GoogleOAuthTokenExchangePort(Protocol):
         redirect_uri: str,
     ) -> dict[str, Any]:
         ...
+
+
+class GoogleOAuthDestinationVerificationPort(Protocol):
+    async def verify_destination(
+        self,
+        *,
+        config: GoogleOAuthIngressConfig,
+        access_token: str,
+    ) -> dict[str, Any]:
+        ...
+
+
+def _verified_google_destination(payload: Any) -> tuple[str, str | None]:
+    if not isinstance(payload, dict):
+        raise ControlPlaneContractError(
+            "google_oauth_destination_unverified",
+            "Google OAuth destination verification response is invalid",
+        )
+    subject = payload.get("sub")
+    email = payload.get("email")
+    if not isinstance(subject, str) or _GOOGLE_SUB_RE.fullmatch(subject) is None:
+        raise ControlPlaneContractError(
+            "google_oauth_destination_unverified",
+            "Google OAuth destination verification response lacks a verified subject",
+        )
+    if email is not None and (
+        not isinstance(email, str) or "@" not in email or len(email) > 320
+    ):
+        raise ControlPlaneContractError(
+            "google_oauth_destination_unverified",
+            "Google OAuth destination verification response has an invalid email",
+        )
+    return subject, email
+
+
+class CloudflareGoogleOAuthDestinationVerificationPort:
+    """Worker-native bounded Google destination verification over OIDC userinfo."""
+
+    async def verify_destination(
+        self,
+        *,
+        config: GoogleOAuthIngressConfig,
+        access_token: str,
+    ) -> dict[str, Any]:
+        from workers import fetch  # type: ignore[import-not-found]
+
+        token = _bounded_secret(
+            access_token, "access_token", max_chars=MAX_ACCESS_TOKEN_CHARS
+        )
+        response = await fetch(
+            GOOGLE_USERINFO_URL,
+            method="GET",
+            headers={
+                "Accept": "application/json",
+                "Authorization": f"Bearer {token}",
+                "Cache-Control": "no-store",
+            },
+        )
+        status = getattr(response, "status", None)
+        if type(status) is not int or status != 200:
+            raise ControlPlaneContractError(
+                "google_oauth_destination_unverified",
+                "Google OAuth destination verification failed",
+            )
+        text = await _read_bounded_google_token_response(
+            response,
+            error_code="google_oauth_destination_unverified",
+            overflow_message="Google destination verification response exceeds the trusted bound",
+            invalid_message="Google destination verification response is invalid",
+        )
+        try:
+            payload = json.loads(text)
+        except json.JSONDecodeError as exc:
+            raise ControlPlaneContractError(
+                "google_oauth_destination_unverified",
+                "Google destination verification response is invalid",
+            ) from exc
+        if not isinstance(payload, dict):
+            raise ControlPlaneContractError(
+                "google_oauth_destination_unverified",
+                "Google destination verification response must be an object",
+            )
+        return payload
+
+    def safe_dict(self) -> dict[str, Any]:
+        return {
+            "cloudflare_worker_fetch": True,
+            "userinfo_endpoint": GOOGLE_USERINFO_URL,
+            "get_only": True,
+            "no_store": True,
+            "response_bytes_bounded": True,
+            "raw_access_token_public": False,
+        }
 
 
 def _cloudflare_chunk_bytes(value: Any) -> bytes:
@@ -529,6 +680,7 @@ class GoogleOAuthIngressRuntime:
         ticket_authority: ConnectorConnectTicketAuthority,
         config: GoogleOAuthIngressConfig,
         token_exchange: GoogleOAuthTokenExchangePort,
+        destination_verification: GoogleOAuthDestinationVerificationPort | None = None,
         clock: Callable[[], datetime] | None = None,
         random_token: Callable[[int], str] | None = None,
     ) -> None:
@@ -537,6 +689,7 @@ class GoogleOAuthIngressRuntime:
         self._ticket_authority = ticket_authority
         self._config = config
         self._token_exchange = token_exchange
+        self._destination_verification = destination_verification
         self._clock = clock or (lambda: datetime.now(timezone.utc))
         self._random_token = random_token or secrets.token_urlsafe
 
@@ -608,6 +761,10 @@ class GoogleOAuthIngressRuntime:
             actor_ref=claims.actor_ref,
             account_ref=claims.account_ref,
             workspace_ref=claims.workspace_ref,
+            session_id=claims.session_id,
+            product_id=claims.product_id,
+            subject_type=claims.subject_type,
+            subject_id=claims.subject_id,
             scopes=expected_scopes,
             code_verifier=verifier,
             redirect_uri=self._config.redirect_uri,
@@ -740,6 +897,20 @@ class GoogleOAuthIngressRuntime:
                 )
             expires_at = now + timedelta(seconds=refresh_expires_in)
 
+        provider_subject = ""
+        provider_email = None
+        if session.connector_id in B66_GOOGLE_DRIVE_CONNECTORS:
+            if self._destination_verification is None:
+                raise ControlPlaneContractError(
+                    "google_oauth_destination_verification_unavailable",
+                    "B66 Google Drive consent requires verified destination verification",
+                )
+            destination_payload = await self._destination_verification.verify_destination(
+                config=self._config,
+                access_token=access_token,
+            )
+            provider_subject, provider_email = _verified_google_destination(destination_payload)
+
         binding_ref = _safe_ref(
             f"google-{session.connector_id}-{self._token(24, 'binding_token')}",
             "binding_ref",
@@ -764,8 +935,10 @@ class GoogleOAuthIngressRuntime:
             sealed_refresh_token=sealed_refresh,
             issued_at=now,
             expires_at=expires_at,
+            provider_subject=provider_subject or None,
+            provider_email=provider_email,
         )
-        self._store.save_credential(record)
+        self._store.save_credential(record, verified_at=now)
         # access_token intentionally falls out of scope without persistence.
         return GoogleOAuthConnectedReceipt(
             binding_ref=binding_ref,
@@ -776,26 +949,37 @@ class GoogleOAuthIngressRuntime:
             scopes=session.scopes,
             connected_at=now,
             expires_at=expires_at,
+            provider_subject=provider_subject,
+            provider_email=provider_email,
         )
 
     def safe_dict(self) -> dict[str, Any]:
         token_safe = getattr(self._token_exchange, "safe_dict", None)
+        destination_safe = getattr(self._destination_verification, "safe_dict", None)
         return {
             "trusted_connect_ticket_required": True,
             "connect_ticket_body_only": True,
             "state_pkce_server_generated": True,
             "authorization_session_sealed": True,
+            "callback_state_owner_bound": True,
             "callback_state_single_use": True,
             "provider_denial_consumes_state": True,
             "token_exchange_failure_consumes_state": True,
             "refresh_token_persisted_sealed": True,
             "access_token_persisted": False,
-            "google_write_scope": False,
+            "shared_google_drive_write_scope": False,
+            "b66_google_drive_file_scope": True,
+            "b66_google_drive_full_scope": True,
+            "b66_google_drive_oidc_scopes": True,
+            "google_write_scope": True,
             "raw_connect_ticket_persisted": False,
             "raw_authorization_code_persisted": False,
             "raw_refresh_token_public": False,
             "raw_client_secret_public": False,
             "token_exchange": token_safe() if callable(token_safe) else {"test_port": True},
+            "destination_verification": (
+                destination_safe() if callable(destination_safe) else {"not_configured": True}
+            ),
             "production_deployment": False,
             "production_ready": False,
         }
@@ -806,6 +990,12 @@ SELF_ASSERTED_ACCOUNT_WORKSPACE_AUTHORITY = False
 CONNECT_TICKET_QUERY_PARAMETER = False
 AUTHORIZATION_CODE_PERSISTED = False
 ACCESS_TOKEN_PERSISTED = False
-GOOGLE_WRITE_SCOPE = False
+GOOGLE_WRITE_SCOPE = True
+SHARED_GOOGLE_DRIVE_WRITE_SCOPE = False
+B66_GOOGLE_DRIVE_FILE_SCOPE = True
+B66_GOOGLE_DRIVE_FULL_SCOPE = True
+B66_GOOGLE_DRIVE_OIDC_SCOPES = True
+CALLBACK_STATE_OWNER_BOUND = True
+CLIENT_ASSERTED_CALLBACK_OWNER = False
 PUBLIC_HOSTNAME_CONFIGURED = False
 PRODUCTION_MUTATION = False

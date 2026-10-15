@@ -10,8 +10,13 @@ from urllib.parse import urlencode
 from padiem_control_plane.contracts import ControlPlaneContractError
 
 from google_oauth_durable_store import (
+    B66_GOOGLE_DRIVE_FILE_CONNECTOR,
+    B66_GOOGLE_DRIVE_FULL_CONNECTOR,
+    B66_GOOGLE_DRIVE_OIDC_SCOPES,
     GMAIL_READONLY_SCOPE,
     GOOGLE_CALENDAR_READONLY_SCOPE,
+    GOOGLE_DRIVE_FILE_SCOPE,
+    GOOGLE_DRIVE_FULL_SCOPE,
     GOOGLE_DRIVE_READONLY_SCOPE,
     CloudflareDurableGoogleOAuthStore,
 )
@@ -36,6 +41,12 @@ _REVIEWED_SCOPES: dict[str, tuple[str, ...]] = {
     # #2010 Calendar READ joins the same CP-owned long-lived refresh authority
     # with exactly one readonly provider scope. No Calendar write/full scope.
     "google-calendar": (GOOGLE_CALENDAR_READONLY_SCOPE,),
+    # #4089 B66 Drive FILE is a separate reviewed B66 connector only.
+    B66_GOOGLE_DRIVE_FILE_CONNECTOR: (GOOGLE_DRIVE_FILE_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES,
+    # #4089/#4871: B66 full-Drive connector is reviewed separately. Existing
+    # drive.file grants are not silently interpreted as the broader grant.
+    # OIDC identify scopes support verified UserInfo only.
+    B66_GOOGLE_DRIVE_FULL_CONNECTOR: (GOOGLE_DRIVE_FULL_SCOPE,) + B66_GOOGLE_DRIVE_OIDC_SCOPES,
 }
 
 
@@ -307,12 +318,20 @@ class GoogleOAuthAccessLeaseRuntime:
             "refresh_token_returned": False,
             "access_token_persisted": False,
             "private_rpc_only": True,
-            "google_write_scope": False,
+            "shared_google_drive_write_scope": False,
+            "b66_google_drive_file_scope": True,
+            "b66_google_drive_full_scope": True,
+            "b66_google_drive_oidc_scopes": True,
+            "google_write_scope": True,
             "refresh_port": refresh_safe() if callable(refresh_safe) else {"test_port": True},
         }
 
 
 RAW_REFRESH_TOKEN_TO_ENGINE = False
 ACCESS_TOKEN_PERSISTED = False
-GOOGLE_WRITE_SCOPE = False
+GOOGLE_WRITE_SCOPE = True
+SHARED_GOOGLE_DRIVE_WRITE_SCOPE = False
+B66_GOOGLE_DRIVE_FILE_SCOPE = True
+B66_GOOGLE_DRIVE_FULL_SCOPE = True
+B66_GOOGLE_DRIVE_OIDC_SCOPES = True
 PRIVATE_ACCESS_LEASE_SOURCE_READY = True

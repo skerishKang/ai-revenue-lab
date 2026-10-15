@@ -29,7 +29,7 @@ __all__ = [
 
 _B66_USER_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{1,159}$")
 _GOOGLE_SUB_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{7,255}$")
-_B66_DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.file"
+_B66_DRIVE_SCOPE = "https://www.googleapis.com/auth/drive"
 _RECONNECT_REASONS = frozenset(
     {"revoked", "expired", "scope_changed", "invalid_grant", "manual_reconnect"}
 )

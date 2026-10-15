@@ -7,6 +7,7 @@ from typing import Any
 from padiem_control_plane.contracts import ControlPlaneContractError
 
 from google_oauth_durable_store import (
+    B66_GOOGLE_DRIVE_CONNECTORS,
     MAX_CONNECT_TICKET_RESIDUAL_LIFETIME_SECONDS,
     CloudflareDurableGoogleOAuthStore as _RowsWrittenGoogleOAuthStore,
     DurableGoogleOAuthAuthorizationState,
@@ -247,9 +248,22 @@ class CloudflareDurableGoogleOAuthStore(_RowsWrittenGoogleOAuthStore):
             )
         return state
 
-    def save_credential(self, record: DurableGoogleOAuthCredential) -> None:
+    def save_credential(
+        self,
+        record: DurableGoogleOAuthCredential,
+        *,
+        verified_at: datetime | None = None,
+    ) -> None:
         if not isinstance(record, DurableGoogleOAuthCredential):
             raise ValueError("record must be DurableGoogleOAuthCredential")
+        if record.connector_id in B66_GOOGLE_DRIVE_CONNECTORS and record.provider_subject is None:
+            raise ControlPlaneContractError(
+                "invalid_google_oauth_durable_record",
+                "B66 Google Drive file binding requires a verified destination subject",
+            )
+        destination_verified_at = (
+            _iso(_utc(verified_at, "verified_at")) if verified_at is not None else _iso(record.issued_at)
+        )
 
         scopes_json = json.dumps(list(record.scopes), separators=(",", ":"), ensure_ascii=True)
         issued_at = _iso(record.issued_at)
@@ -318,6 +332,59 @@ class CloudflareDurableGoogleOAuthStore(_RowsWrittenGoogleOAuthStore):
                     "revoked_at": revoked_at,
                 },
                 label="credential",
+            )
+
+            if record.provider_subject is None:
+                return
+
+            existing_destination = _single_or_none(
+                _rows(
+                    self._sql.exec(
+                        "SELECT binding_ref FROM google_oauth_provider_destination WHERE binding_ref = ?",
+                        record.binding_ref,
+                    )
+                ),
+                label="provider-destination table",
+            )
+            if existing_destination is not None:
+                raise ControlPlaneContractError(
+                    "duplicate_google_oauth_binding",
+                    "Google OAuth verified destination already exists",
+                )
+            _rows(
+                self._sql.exec(
+                    "INSERT INTO google_oauth_provider_destination "
+                    "(binding_ref, connector_id, provider_subject, provider_email, verified_at) "
+                    "VALUES (?, ?, ?, ?, ?)",
+                    record.binding_ref,
+                    record.connector_id,
+                    record.provider_subject,
+                    record.provider_email,
+                    destination_verified_at,
+                )
+            )
+            persisted_destination = _single_or_none(
+                _rows(
+                    self._sql.exec(
+                        "SELECT binding_ref, connector_id, provider_subject, provider_email, verified_at "
+                        "FROM google_oauth_provider_destination WHERE binding_ref = ?",
+                        record.binding_ref,
+                    )
+                ),
+                label="provider-destination table",
+            )
+            if persisted_destination is None:
+                raise RuntimeError("Google OAuth verified destination was not durably persisted")
+            _require_exact(
+                persisted_destination,
+                {
+                    "binding_ref": record.binding_ref,
+                    "connector_id": record.connector_id,
+                    "provider_subject": record.provider_subject,
+                    "provider_email": record.provider_email,
+                    "verified_at": destination_verified_at,
+                },
+                label="verified destination",
             )
 
         self.transaction(operation)
