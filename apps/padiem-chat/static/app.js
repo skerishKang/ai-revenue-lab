@@ -1839,7 +1839,7 @@
     // Neither UI state nor the selected model ID may authorize fallback.
     const clawGeneralRequest = clawGeneralRequestActive();
     contextSnapshot.selectedModelId =
-      clawGeneralRequest && selectedProductTier() === "plus" && typeof clawModelIdInput !== "undefined" && clawModelIdInput
+      clawGeneralRequest && ["free", "plus"].includes(selectedProductTier()) && typeof clawModelIdInput !== "undefined" && clawModelIdInput
         ? clawModelIdInput.value.trim() : "";
     // Grade-only Claw execution does not require a provider-specific model ID.
     showConversation({ preserveClaw: clawGeneralRequest });

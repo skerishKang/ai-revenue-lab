@@ -805,3 +805,17 @@ class SyntheticPlusRouteBoundaryTests(unittest.TestCase):
             )
         self.assertEqual(caught.exception.code, "invalid_selected_model")
         self.assertEqual(caught.exception.dispatch_class, "not_dispatched")
+
+
+def test_explicit_free_choice_allows_only_free_registered_ids():
+    from padiem_control_plane.product_tier_routes import FREE_PRIMARY_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID
+    for model_id in (FREE_PRIMARY_B14_MODEL_ID, FREE_FALLBACK_B14_MODEL_ID):
+        profile = _agent_profile(ProductTierLabel.FREE, selected_model_id=model_id)
+        assert profile.model_policy["model"] == model_id
+        assert profile.model_policy["product_tier"] == "free"
+    try:
+        _agent_profile(ProductTierLabel.FREE, selected_model_id="google/gemini-3.5-flash-lite")
+        assert False, "paid model must be rejected"
+    except P01AdapterError as exc:
+        assert exc.code == "model_not_available_for_tier"
+        assert exc.dispatch_class == "not_dispatched"

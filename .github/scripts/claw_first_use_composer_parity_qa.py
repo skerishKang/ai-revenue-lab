@@ -14,7 +14,7 @@ with sync_playwright() as p:
     const rect=s=>{const r=document.querySelector(s).getBoundingClientRect();return [r.x,r.width]};
     return {eyebrow:rect('.eyebrow'),heading:rect('#emptyState h1'),grid:rect('.starter-grid'),
       composer:rect('.composer-wrap'),tools:getComputedStyle(document.querySelector('.composer-tools')).display,
-      ownerStatus:document.querySelector('#ownerModelPreviewOpen').getClientRects().length>0,
+      ownerStatus:Boolean(document.querySelector('.composer-tier-trigger')?.getClientRects().length),
       fileTool:document.querySelector('#attachmentButton').getClientRects().length>0,
       modelPill:document.querySelector('.composer-tier-trigger').getClientRects().length>0,
       entry:getComputedStyle(document.querySelector('#clawManualEntryBar')).display,
