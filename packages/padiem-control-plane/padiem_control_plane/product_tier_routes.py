@@ -286,7 +286,7 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
                 model_id="agnes-ai/agnes-3.0-flash",
                 upstream_model="agnes-3.0-flash",
                 credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
-                credential_binding="PADIEM_AGNES_API_KEY",
+                credential_binding="PADIEM_B14_CREDENTIAL_01",
                 hold_reason=(
                     "Superseded as the active Padiem Plus route by owner decision "
                     "#3209 (Space Bunny Alpha). Retained as historical data only; "
@@ -306,7 +306,7 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
                 model_id="poolside/laguna-s-2.1",
                 upstream_model="poolside/laguna-s-2.1",
                 credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
-                credential_binding="PADIEM_POOLSIDE_API_KEY",
+                credential_binding="PADIEM_B14_CREDENTIAL_12",
                 hold_reason=(
                     "Poolside Laguna was a historical fixed-chain candidate; it is "
                     "retained as inactive tier history, not as a current "
@@ -349,7 +349,7 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
                 model_id="b-ai/qwen3.8-flash",
                 upstream_model="qwen3.8-flash",
                 credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
-                credential_binding="PADIEM_B_AI_API_KEY",
+                credential_binding="PADIEM_B14_CREDENTIAL_03",
                 hold_reason=(
                     "Temporarily removed from executable Padiem Pro by owner decision #2601 "
                     "after provider/model instability. Retained as historical route data only."

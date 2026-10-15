@@ -165,8 +165,8 @@ def test_every_model_carries_exact_identity_and_binding_name() -> None:
     for model_id, resolved in oneshot.GEMINI_REGISTRY.items():
         assert resolved.model_id == model_id
         assert model_id == f"google/{resolved.upstream_model}"
-        assert resolved.credential_binding == "PADIEM_GEMINI_API_KEY"
-        assert resolved.expected_binding == "PADIEM_GEMINI_API_KEY"
+        assert resolved.credential_binding == "PADIEM_B14_CREDENTIAL_05"
+        assert resolved.expected_binding == "PADIEM_B14_CREDENTIAL_05"
 
 
 def test_contract_constants_pin_one_call_no_retry_no_fallback() -> None:
@@ -228,7 +228,7 @@ def test_chat_body_pins_exact_manual_model_never_auto(model_id: str) -> None:
 
 def test_expected_binding_name_is_emitted_without_any_secret_value() -> None:
     _, out = _run_capture(GEMINI_31, transport=_happy_transport(GEMINI_31))
-    assert "EXPECTED_BINDING=PADIEM_GEMINI_API_KEY" in out
+    assert "EXPECTED_BINDING=PADIEM_B14_CREDENTIAL_05" in out
     assert "CREDENTIAL_BOUND=YES" in out
     # No secret-looking value may appear; the sentinel answer stays private.
     assert "PRIVATE_ANSWER_SENTINEL_42" not in out

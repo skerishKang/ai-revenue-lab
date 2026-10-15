@@ -6,7 +6,7 @@ ACT-0 authority for this route is the repository intake record
 ``docs/providers/AGNES_AI_V1.md`` (research snapshot 2026-08-27): OpenAI-
 compatible fixed origin ``https://apihub.agnes-ai.com/v1``, Bearer auth,
  advertised streaming, model ``agnes-3.0-flash``. The owner-approved credential
-binding name is ``PADIEM_AGNES_API_KEY`` (names only; the value is never read,
+binding name is ``PADIEM_B14_CREDENTIAL_01`` (names only; the value is never read,
 printed, or committed here).
 
 Registration is explicit/manual-pin only: the model lives in the exact-ID
@@ -30,7 +30,7 @@ from app.pilot.platform_secrets import (
 AGNES_PROVIDER_ID = "agnes-ai"
 AGNES_BASE_ORIGIN = "https://apihub.agnes-ai.com/v1"
 AGNES_ALLOWED_HOST = "apihub.agnes-ai.com"
-AGNES_CREDENTIAL_BINDING = "PADIEM_AGNES_API_KEY"
+AGNES_CREDENTIAL_BINDING = "PADIEM_B14_CREDENTIAL_01"
 
 AGNES_MODEL_ID = "agnes-ai/agnes-3.0-flash"
 AGNES_UPSTREAM_MODEL = "agnes-3.0-flash"

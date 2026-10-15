@@ -225,7 +225,7 @@ def test_expected_binding_name_is_emitted_without_any_secret_value() -> None:
 
     output = stdout.getvalue()
     assert rc == 0
-    assert "MERCURY_EXPECTED_BINDING=PADIEM_INCEPTION_MERCURY_API_KEY" in output
+    assert "MERCURY_EXPECTED_BINDING=PADIEM_B14_CREDENTIAL_06" in output
 
 
 def test_latency_evidence_is_recorded() -> None:
@@ -456,7 +456,7 @@ def test_common_contract_and_agnes_gate_agree_on_agnes_identity() -> None:
     assert agnes.upstream_model == "agnes-3.0-flash"
     assert agnes.provider_id == "agnes-ai"
     assert agnes.provider_name == "Agnes AI"
-    assert agnes.credential_binding == "PADIEM_AGNES_API_KEY"
+    assert agnes.credential_binding == "PADIEM_B14_CREDENTIAL_01"
 
 
 def test_neutral_module_does_not_duplicate_agnes_only_literals_as_globals() -> None:

@@ -96,7 +96,7 @@ def load_current_models(path: Path = CANONICAL_REGISTRY) -> dict[str, dict[str, 
                 or upstream != "poolside/laguna-s-2.1"
                 or provider.get("base_origin") != "https://inference.poolside.ai/v1"
                 or provider.get("credential_source") != "platform_secret"
-                or provider.get("credential_binding_name") != "PADIEM_POOLSIDE_API_KEY"
+                or provider.get("credential_binding_name") != "PADIEM_B14_CREDENTIAL_12"
             ):
                 raise ValueError("poolside_must_use_direct_provider")
         allowed[model_id] = row

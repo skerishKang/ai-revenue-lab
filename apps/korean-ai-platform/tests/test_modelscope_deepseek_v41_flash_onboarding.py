@@ -25,7 +25,7 @@ from app.pilot.errors import PilotNotConfigured, UpstreamRateLimited
 MID = "modelscope/deepseek-ai/DeepSeek-V4.1-Flash"
 UPSTREAM = "deepseek-ai/DeepSeek-V4.1-Flash"
 ORIGIN = "https://api-inference.modelscope.cn/v1"
-BINDING = "PADIEM_MODELSCOPE_API_KEY"
+BINDING = "PADIEM_B14_CREDENTIAL_10"
 SYNTHETIC_KEY = "synthetic-modelscope-private-token-no-real-api"
 
 
@@ -95,7 +95,7 @@ def test_source_wrangler_worker_binding_metadata_unique_only():
 def test_missing_modelscope_secret_denied_before_network(monkeypatch):
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.delenv(BINDING, raising=False)
-    monkeypatch.setenv("PADIEM_KIRAAI_API_KEY", "synthetic-kira-not-borrowable")
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_09", "synthetic-kira-not-borrowable")
     spec = get_platform_provider("modelscope")
     assert resolve_secret(spec) == ""
     calls = []

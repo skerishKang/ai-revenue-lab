@@ -8,7 +8,7 @@
         "apihub.agnes-ai.com"
       ],
       "credential_source": "platform_secret",
-      "credential_binding_name": "PADIEM_AGNES_API_KEY",
+      "credential_binding_name": "PADIEM_B14_CREDENTIAL_01",
       "enabled": true
     },
     "atria": {
@@ -17,7 +17,7 @@
         "api.atria-asi.ai"
       ],
       "credential_source": "platform_secret",
-      "credential_binding_name": "PADIEM_ATRIA_API_KEY",
+      "credential_binding_name": "PADIEM_B14_CREDENTIAL_02",
       "enabled": true
     },
     "google": {
@@ -26,7 +26,7 @@
         "generativelanguage.googleapis.com"
       ],
       "credential_source": "platform_secret",
-      "credential_binding_name": "PADIEM_GEMINI_API_KEY",
+      "credential_binding_name": "PADIEM_B14_CREDENTIAL_05",
       "enabled": true
     },
     "inception": {
@@ -35,7 +35,7 @@
         "api.inceptionlabs.ai"
       ],
       "credential_source": "platform_secret",
-      "credential_binding_name": "PADIEM_INCEPTION_MERCURY_API_KEY",
+      "credential_binding_name": "PADIEM_B14_CREDENTIAL_06",
       "enabled": true
     },
     "poolside": {
@@ -44,7 +44,7 @@
         "inference.poolside.ai"
       ],
       "credential_source": "platform_secret",
-      "credential_binding_name": "PADIEM_POOLSIDE_API_KEY",
+      "credential_binding_name": "PADIEM_B14_CREDENTIAL_12",
       "enabled": true
     },
     "sensenova": {
@@ -62,7 +62,7 @@
         "api.experientiallabs.ai"
       ],
       "credential_source": "platform_secret",
-      "credential_binding_name": "PADIEM_EXLAB_API_KEY",
+      "credential_binding_name": "PADIEM_B14_CREDENTIAL_04",
       "enabled": true
     },
     "kira": {
@@ -71,7 +71,7 @@
         "kiraai.vn"
       ],
       "credential_source": "platform_secret",
-      "credential_binding_name": "PADIEM_KIRAAI_API_KEY",
+      "credential_binding_name": "PADIEM_B14_CREDENTIAL_09",
       "enabled": true
     },
     "modelscope": {
@@ -80,7 +80,7 @@
         "api-inference.modelscope.cn"
       ],
       "credential_source": "platform_secret",
-      "credential_binding_name": "PADIEM_MODELSCOPE_API_KEY",
+      "credential_binding_name": "PADIEM_B14_CREDENTIAL_10",
       "enabled": true
     },
     "tokenharbor": {
@@ -89,7 +89,7 @@
         "tokenharbor.ai"
       ],
       "credential_source": "platform_secret",
-      "credential_binding_name": "PADIEM_TOKEN_HARBOR_API_KEY",
+      "credential_binding_name": "PADIEM_B14_CREDENTIAL_13",
       "enabled": true
     },
     "opencode-go": {
@@ -107,7 +107,7 @@
         "zanslab.id"
       ],
       "credential_source": "platform_secret",
-      "credential_binding_name": "PADIEM_ZANSLAB_API_KEY",
+      "credential_binding_name": "PADIEM_B14_CREDENTIAL_14",
       "enabled": false
     }
   },

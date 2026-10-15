@@ -84,7 +84,7 @@ class TestWranglerConfig:
         # Owner decision 2026-09-18: Agnes+Poolside Secrets Store bindings
         # re-registered; both declarations are metadata-only (store_id,
         # secret_name) with no secret values committed here.
-        # #3554: the PADIEM_GEMINI_API_KEY binding follows the same
+        # #3554: the PADIEM_B14_CREDENTIAL_05 binding follows the same
         # metadata-only contract, raising the declared store binding count to 9.
         assert "[[unsafe.bindings]]" not in content
         assert 'type = "secrets_store_secret"' not in content
@@ -95,20 +95,20 @@ class TestWranglerConfig:
         assert all(b["store_id"] == "f0b09ca04a7b43248154c773704a5616" for b in bindings)
         assert len({b["binding"] for b in bindings}) == len(bindings)
         assert all(b["binding"] == b["secret_name"] for b in bindings)
-        assert 'binding = "PADIEM_AGNES_API_KEY"' in content
-        assert 'secret_name = "PADIEM_AGNES_API_KEY"' in content
-        assert 'binding = "PADIEM_POOLSIDE_API_KEY"' in content
-        assert 'secret_name = "PADIEM_POOLSIDE_API_KEY"' in content
-        assert "PADIEM_AGNES_API_KEY =" not in content
-        assert "PADIEM_POOLSIDE_API_KEY =" not in content
+        assert 'binding = "PADIEM_B14_CREDENTIAL_01"' in content
+        assert 'secret_name = "PADIEM_B14_CREDENTIAL_01"' in content
+        assert 'binding = "PADIEM_B14_CREDENTIAL_12"' in content
+        assert 'secret_name = "PADIEM_B14_CREDENTIAL_12"' in content
+        assert "PADIEM_B14_CREDENTIAL_01 =" not in content
+        assert "PADIEM_B14_CREDENTIAL_12 =" not in content
 
         for binding in (
-            "PADIEM_INFRON_API_KEY",
-            "PADIEM_INCEPTION_MERCURY_API_KEY",
-            "PADIEM_ATRIA_API_KEY",
-            "PADIEM_EXLAB_API_KEY",
-            "PADIEM_GEMINI_API_KEY",
-            "PADIEM_KIRAAI_API_KEY",
+            "PADIEM_B14_CREDENTIAL_07",
+            "PADIEM_B14_CREDENTIAL_06",
+            "PADIEM_B14_CREDENTIAL_02",
+            "PADIEM_B14_CREDENTIAL_04",
+            "PADIEM_B14_CREDENTIAL_05",
+            "PADIEM_B14_CREDENTIAL_09",
         ):
             assert f'binding = "{binding}"' in content
             assert f'secret_name = "{binding}"' in content
@@ -117,10 +117,10 @@ class TestWranglerConfig:
     def test_bai_secret_store_binding_is_metadata_only_and_exact(self):
         content = WRANGLER_TOML.read_text()
         assert '[[secrets_store_secrets]]' in content
-        assert 'binding = "PADIEM_B_AI_API_KEY"' in content
+        assert 'binding = "PADIEM_B14_CREDENTIAL_03"' in content
         assert 'store_id = "f0b09ca04a7b43248154c773704a5616"' in content
-        assert 'secret_name = "PADIEM_B_AI_API_KEY"' in content
-        assert "PADIEM_B_AI_API_KEY =" not in content
+        assert 'secret_name = "PADIEM_B14_CREDENTIAL_03"' in content
+        assert "PADIEM_B14_CREDENTIAL_03 =" not in content
 
 
 class TestEnvBridge:
@@ -135,16 +135,16 @@ class TestEnvBridge:
                 return "resolved-poolside-secret"
 
         env = SimpleNamespace(
-            PADIEM_POOLSIDE_API_KEY=SecretBinding(),
+            PADIEM_B14_CREDENTIAL_12=SecretBinding(),
             B14_PROVIDER_MODE="live",
         )
 
         overrides = await collect_env_overrides(
-            env, ("PADIEM_POOLSIDE_API_KEY", "B14_PROVIDER_MODE")
+            env, ("PADIEM_B14_CREDENTIAL_12", "B14_PROVIDER_MODE")
         )
 
-        assert overrides["PADIEM_POOLSIDE_API_KEY"] == "resolved-poolside-secret"
-        assert "SecretBinding" not in overrides["PADIEM_POOLSIDE_API_KEY"]
+        assert overrides["PADIEM_B14_CREDENTIAL_12"] == "resolved-poolside-secret"
+        assert "SecretBinding" not in overrides["PADIEM_B14_CREDENTIAL_12"]
         assert overrides["B14_PROVIDER_MODE"] == "live"
 
     def test_secret_binding_helper_is_used(self):
@@ -177,12 +177,12 @@ class TestEnvBridge:
 def test_kilo_secret_store_binding_is_metadata_only_and_env_bridged():
     content = WRANGLER_TOML.read_text()
     worker = WORKER_SRC.read_text()
-    assert 'binding = "PADIEM_KILO_API_KEY"' in content
+    assert 'binding = "PADIEM_B14_CREDENTIAL_08"' in content
     assert 'store_id = "f0b09ca04a7b43248154c773704a5616"' in content
-    assert 'secret_name = "PADIEM_KILO_API_KEY"' in content
+    assert 'secret_name = "PADIEM_B14_CREDENTIAL_08"' in content
     assert 'secret_name = "KILO_API_KEY"' not in content
-    assert "PADIEM_KILO_API_KEY =" not in content
-    assert '"PADIEM_KILO_API_KEY"' in worker
+    assert "PADIEM_B14_CREDENTIAL_08 =" not in content
+    assert '"PADIEM_B14_CREDENTIAL_08"' in worker
 
 def test_gemini_secret_store_binding_is_metadata_only_and_matches_provider():
     """#3554: the Google AI Studio credential binding is declared metadata-only.
@@ -194,15 +194,15 @@ def test_gemini_secret_store_binding_is_metadata_only_and_matches_provider():
     content = WRANGLER_TOML.read_text()
     provider = (Path(__file__).resolve().parent.parent / "app" / "pilot" / "google_provider.py").read_text()
     assert '[[secrets_store_secrets]]' in content
-    assert 'binding = "PADIEM_GEMINI_API_KEY"' in content
+    assert 'binding = "PADIEM_B14_CREDENTIAL_05"' in content
     assert 'store_id = "f0b09ca04a7b43248154c773704a5616"' in content
-    assert 'secret_name = "PADIEM_GEMINI_API_KEY"' in content
-    assert "PADIEM_GEMINI_API_KEY =" not in content
+    assert 'secret_name = "PADIEM_B14_CREDENTIAL_05"' in content
+    assert "PADIEM_B14_CREDENTIAL_05 =" not in content
     # The declared binding must be the one the provider spec requires.
-    assert 'GOOGLE_CREDENTIAL_BINDING = "PADIEM_GEMINI_API_KEY"' in provider
+    assert 'GOOGLE_CREDENTIAL_BINDING = "PADIEM_B14_CREDENTIAL_05"' in provider
     import json as _json
     registry = _json.loads((Path(__file__).resolve().parent.parent / "app" / "pilot" / "b14_models.json").read_text(encoding="utf-8"))
-    assert registry["providers"]["google"]["credential_binding_name"] == "PADIEM_GEMINI_API_KEY"
+    assert registry["providers"]["google"]["credential_binding_name"] == "PADIEM_B14_CREDENTIAL_05"
     # Preserve the original four owner-approved Google routes, but allow later
     # exact-ID additions without editing an unrelated Worker binding test.
     google_models = [m for m in registry["models"] if m["provider_id"] == "google"]
@@ -252,7 +252,7 @@ def test_worker_projects_every_enabled_platform_secret_registry_binding():
         "Worker missing required provider Secret bindings: "
         + ", ".join(sorted(required - allowlist))
     )
-    assert "PADIEM_GEMINI_API_KEY" in required
+    assert "PADIEM_B14_CREDENTIAL_05" in required
     assert "collect_request_bindings(self.env, _ENV_KEYS)" in WORKER_SRC.read_text(
         encoding="utf-8"
     )

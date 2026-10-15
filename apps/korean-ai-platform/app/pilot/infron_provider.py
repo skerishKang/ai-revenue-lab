@@ -19,7 +19,7 @@ from app.pilot.platform_secrets import (
 INFRON_PROVIDER_ID = "infron"
 INFRON_BASE_ORIGIN = "https://llm.onerouter.pro/v1"
 INFRON_ALLOWED_HOST = "llm.onerouter.pro"
-INFRON_CREDENTIAL_BINDING = "PADIEM_INFRON_API_KEY"
+INFRON_CREDENTIAL_BINDING = "PADIEM_B14_CREDENTIAL_07"
 INFRON_MODEL_ID = "infron/motif/motif-3"
 INFRON_UPSTREAM_MODEL = "motif/motif-3"
 INFRON_SOURCE_CHECKED_AT = "2026-09-18"

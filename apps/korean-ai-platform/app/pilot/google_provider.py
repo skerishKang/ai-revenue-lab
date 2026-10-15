@@ -10,7 +10,7 @@ Google's documented OpenAI-compatible origin is
 https://generativelanguage.googleapis.com/v1beta/openai. The existing
 Business 14 OpenAI-compatible client uses Authorization: Bearer with the
 Google AI Studio key, NOT native x-goog-api-key and generateContent. The owner-approved credential binding name is
-``PADIEM_GEMINI_API_KEY`` (name only; the value is never read, printed, or
+``PADIEM_B14_CREDENTIAL_05`` (name only; the value is never read, printed, or
 committed here).
 
 Measured on 2026-10-08 against the repo-owned synthetic Korean quotation
@@ -46,7 +46,7 @@ from app.pilot.platform_secrets import (
 GOOGLE_PROVIDER_ID = "google"
 GOOGLE_BASE_ORIGIN = "https://generativelanguage.googleapis.com/v1beta/openai"
 GOOGLE_ALLOWED_HOST = "generativelanguage.googleapis.com"
-GOOGLE_CREDENTIAL_BINDING = "PADIEM_GEMINI_API_KEY"
+GOOGLE_CREDENTIAL_BINDING = "PADIEM_B14_CREDENTIAL_05"
 
 # Authority date of the catalog read and the measurements this registration cites.
 GOOGLE_SOURCE_CHECKED_AT = "2026-10-08"

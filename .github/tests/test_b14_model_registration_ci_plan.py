@@ -199,7 +199,7 @@ class TestAlphaStrictSuiteSinglePass(unittest.TestCase):
             "uv run pytest -q tests/test_owner_startup_command.py",
             "uv run python browser_tests/alpha1_start_screen_smoke.py",
             "PADIEM_SENSENOVA_API_KEY: ''",
-            "PADIEM_POOLSIDE_API_KEY: ''",
+            "PADIEM_B14_CREDENTIAL_12: ''",
             "B14_PROVIDER_MODE: live",
         ):
             with self.subTest(marker=marker):
