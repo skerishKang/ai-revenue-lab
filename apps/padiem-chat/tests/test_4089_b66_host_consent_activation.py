@@ -8,7 +8,7 @@ from padiem_control_plane import (
     AuthSessionSnapshot, AuthSessionState, CanonicalSubjectRef, SubjectType,
 )
 
-from app import auth_routes
+from app import b66_host_consent_activation as activation
 from app.b66_cp_drive_boundary import B66_REQUIRED_DRIVE_SCOPE
 from app.b66_host_consent_activation import (
     B66HostConsentActivationGate,
@@ -81,8 +81,8 @@ def session(subject="canon-a", *, expired=False, state=AuthSessionState.ACTIVE):
 
 
 def fixtures(monkeypatch):
-    monkeypatch.setattr(auth_routes, "auth_ready", lambda request: True)
-    monkeypatch.setattr(auth_routes, "current_user_id", lambda request: A)
+    monkeypatch.setattr(activation, "auth_ready", lambda request: True)
+    monkeypatch.setattr(activation, "current_user_id", lambda request: A)
     authority = Authority(session())
     context = Context("canon-a")
     selection = Selection()
@@ -116,9 +116,9 @@ def test_signed_owner_reads_existing_cp_and_returns_only_plan(monkeypatch):
 def test_private_consent_review_refuses_unverified_owner_or_scope(monkeypatch, case):
     x = fixtures(monkeypatch)
     if case == "no-cookie":
-        monkeypatch.setattr(auth_routes, "auth_ready", lambda request: False)
+        monkeypatch.setattr(activation, "auth_ready", lambda request: False)
     elif case == "wrong-user":
-        monkeypatch.setattr(auth_routes, "current_user_id", lambda request: B)
+        monkeypatch.setattr(activation, "current_user_id", lambda request: B)
     elif case == "missing-session":
         x["current_canonical_session_authority"] = None
     elif case == "shadow-subject":
