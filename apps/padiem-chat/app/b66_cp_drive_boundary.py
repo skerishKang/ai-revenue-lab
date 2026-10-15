@@ -21,7 +21,7 @@ from .b66_drive_connection import (
 CP_REVIEWED_DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.readonly"
 B66_REQUIRED_DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.file"
 _B66_USER_RE = re.compile(r"^usr_[a-f0-9]{32}$")
-_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:/@+\\-]{0,255}$")
+_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:/@+\-]{0,255}$")
 _COMMON_KEYS = frozenset({"status", "connector_id", "workspace_ref"})
 _RESOLVED_REQUIRED = _COMMON_KEYS | frozenset({"binding_ref", "actor_ref"})
 _RESOLVED_OPTIONAL = frozenset({"account_ref"})
