@@ -29,6 +29,15 @@
   html[data-b66-theme="dark"] body.b66-three-pane :is(.easy-view,.direct-view,.panel,.preview-wrap,.settings-panel,.padiem-account-panel) {
     color: #e9f3fa; background: #182834; border-color: #405b6d; box-shadow: none;
   }
+  /* The one-pane rail uses an ID-specific legacy light rule for this item.
+     Match that selector so its small descriptive text never becomes white-on-white. */
+  html[data-b66-theme="dark"] body.b66-three-pane .shell-rail-section #shellManualQuote,
+  html[data-b66-theme="dark"] body.b66-three-pane .shell-rail-section #shellManualQuote:hover {
+    background: #294455; color: #edf7fd; border-color: #608196;
+  }
+  html[data-b66-theme="dark"] body.b66-three-pane .shell-rail-section #shellManualQuote small {
+    color: #c5dce9;
+  }
   html[data-b66-theme="dark"] body.b66-three-pane .easy-view { background: linear-gradient(155deg, #1d303f, #152530); }
   html[data-b66-theme="dark"] body.b66-three-pane .easy-empty::before {
     background: radial-gradient(ellipse, rgba(78,139,180,.22), transparent 72%);
