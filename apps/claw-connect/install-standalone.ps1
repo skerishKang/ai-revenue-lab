@@ -73,10 +73,10 @@ if (-not (Test-Path (Join-Path $Staged 'padiem-connector.exe') -PathType Leaf)) 
     throw 'Bundle staging failed.'
 }
 if (Test-Path $Old) { Remove-Item $Old -Recurse -Force }
-if (Test-Path $App) { Rename-Item $App $Old }
-try { Rename-Item $Staged $App }
+if (Test-Path $App) { Move-Item -LiteralPath $App -Destination $Old }
+try { Move-Item -LiteralPath $Staged -Destination $App }
 catch {
-    if (Test-Path $Old) { Rename-Item $Old $App }
+    if (Test-Path $Old) { Move-Item -LiteralPath $Old -Destination $App }
     throw
 }
 # The existing Agent preflight reads the source pin; frozen execution uses
