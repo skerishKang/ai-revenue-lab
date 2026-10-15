@@ -1,29 +1,13 @@
 /**
- * CLAW2 #3103 — narrow durable-store health seam.
+ * Read-only durable-store health contract.
  *
- * ## Why this is a seam and not a reader
+ * The durable run store was merged in #3082 (PR #3097). This diagnostic port
+ * remains independent of its storage schema, replay decisions, recovery
+ * classification, and writes. It exposes only bounded health information.
  *
- * #3082 (PR #3097) owns the Desktop durable run store, but it is **not merged
- * yet**. #3103 is allowed to run source-only ahead of it, which creates a real
- * risk: if diagnostics read the store directly, #3103 would freeze #3082's
- * internal schema into its own contract and become a second authority over it.
- *
- * So the contract is deliberately the *narrowest* thing that can be useful:
- *
- *   DURABLE_STORE_SCHEMA_DUPLICATION=0
- *   DURABLE_STORE_RECOVERY_AUTHORITY=0
- *   DURABLE_STORE_REPLAY_AUTHORITY=0
- *   DURABLE_STORE_CLASSIFICATION_AUTHORITY=0
- *   DURABLE_STORE_HEALTH=SEAM_READY
- *
- * This port carries one health *category* and nothing else. It cannot read
- * records, cannot classify recovery state, cannot decide replay, and cannot
- * write. It cannot even name a table or a column, so the #3082 schema can move
- * without touching #3103.
- *
- * Until #3082's public contract lands on main, the shell supplies
- * `unimplementedDurableStoreHealth()`, which reports `NOT_IMPLEMENTED`. That is
- * an honest "not wired yet", not a failure and not a fabricated pass.
+ * The default diagnostics adapter is still unwired: without a concrete
+ * DurableStoreHealthPort, the result is `NOT_IMPLEMENTED`. Merging the store
+ * does not itself mean diagnostics have queried it.
  */
 
 import {
@@ -63,14 +47,12 @@ export class DurableStoreHealthError extends Error {
   }
 }
 
-/**
- * The entire integration surface with #3082. One method, one return type.
- */
+/** Read-only store diagnostic port: one probe and one bounded result. */
 export interface DurableStoreHealthPort {
   probe(): Promise<DurableStoreHealth>;
 }
 
-/** The default until #3082's public contract is on main. */
+/** Default when no concrete durable-store diagnostic adapter is configured. */
 export function unimplementedDurableStoreHealth(): DurableStoreHealth {
   return Object.freeze({
     category: 'NOT_IMPLEMENTED' as const,
