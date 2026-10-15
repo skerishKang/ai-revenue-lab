@@ -2,6 +2,7 @@
   "use strict";
 
   let orchestrationPauseHandler = null;
+  const calendarTurnIdsByRequest = new WeakMap();
 
   function errorFor(data, fallback) {
     const message = data && data.error && typeof data.error.message === "string" ? data.error.message : fallback;
@@ -64,11 +65,30 @@
     }
   }
 
+  function calendarRequestFields(payload) {
+    const result = { ...payload };
+    if (typeof result.timezone !== "string" || !result.timezone) {
+      try { result.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (_) { result.timezone = ""; }
+    }
+    if (typeof result.calendar_turn_id !== "string" || !result.calendar_turn_id) {
+      let stableId = calendarTurnIdsByRequest.get(payload);
+      if (!stableId && typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+        stableId = crypto.randomUUID();
+        calendarTurnIdsByRequest.set(payload, stableId);
+      }
+      if (stableId) result.calendar_turn_id = stableId;
+    }
+    if (!result.calendar_turn_id) delete result.calendar_turn_id;
+    if (!result.timezone) delete result.timezone;
+    return result;
+  }
+
   async function requestCompleted(payload, signal) {
+    const wire = calendarRequestFields(payload);
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(wire),
       signal,
     });
     const data = await response.json().catch(() => null);
@@ -191,12 +211,13 @@
     // The selected id is only a hint: canonical Identity/Broker decide authority.
     const chosenDevice = typeof window.padiemClawSelectedDeviceId === "function"
       ? window.padiemClawSelectedDeviceId() : null;
-    const wire = typeof chosenDevice === "string" && chosenDevice
-      ? { ...payload, device_id: chosenDevice } : payload;
+    const wired = typeof chosenDevice === "string" && chosenDevice
+      ? { ...calendarRequestFields(payload), device_id: chosenDevice }
+      : calendarRequestFields(payload);
     const response = await fetch("/api/claw/general", {
       method: "POST",
       headers,
-      body: JSON.stringify(wire),
+      body: JSON.stringify(wired),
       signal,
     });
     const contentType = (response.headers.get("content-type") || "").toLowerCase();
@@ -215,13 +236,14 @@
   }
 
   async function requestStreaming(payload, signal) {
+    const wire = calendarRequestFields(payload);
     const orchestrated = await tryOrchestration(payload, signal);
     if (orchestrated) return orchestrated;
 
     const response = await fetch("/api/chat/stream", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "text/event-stream" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(wire),
       signal,
     });
     const contentType = (response.headers.get("content-type") || "").toLowerCase();

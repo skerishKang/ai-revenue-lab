@@ -11,6 +11,8 @@ from .attachments import ImageAttachment
 from .auth_routes import auth_ready, current_user_id
 from .drive_general_grounding import DriveGroundingError, drive_general_grounding
 from .auto_grounding import AutoGroundingService
+from .native_calendar_intent import parse_native_calendar_intent, try_native_calendar_chat
+from .native_calendar_adapter import NativeCalendarAdapterError
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .b14_client import B14Client, ChatRuntimeError
 from .config import Settings
@@ -227,7 +229,7 @@ async def api_chat_stream(request: Request):
             {"error": {"code": "unauthorized", "message": "?? AI? ????? ???? ???."}},
             status_code=401,
         )
-    store: HistoryStore | None = request.app.state.history_store
+    store: HistoryStore | None = getattr(request.app.state, "history_store", None)
     project_file_store: ProjectFileStore | None = request.app.state.project_file_store
     if browser_project_id is not None and uid is None:
         return JSONResponse({"error": {"code": "unauthorized", "message": "프로젝트를 사용하려면 로그인이 필요합니다."}}, status_code=401)
@@ -299,6 +301,58 @@ async def api_chat_stream(request: Request):
         )
         if not usage_decision.allowed:
             return _usage_denied_response(usage_decision)
+
+
+    timezone_name = raw.get("timezone") if isinstance(raw.get("timezone"), str) else None
+    calendar_store = getattr(request.app.state, "calendar_store", None)
+    needs_native_calendar = False
+    try:
+        needs_native_calendar = parse_native_calendar_intent(latest_user_text, timezone_name=timezone_name)["op"] != "none"
+    except Exception:
+        needs_native_calendar = False
+    if needs_native_calendar and calendar_store is None:
+        return JSONResponse({"error": {"code": "calendar_store_unavailable", "message": "Calendar storage is unavailable"}}, status_code=503)
+    if calendar_store is not None:
+        try:
+            client_turn_id = raw.get("calendar_turn_id")
+            if not isinstance(client_turn_id, str):
+                client_turn_id = request.headers.get("X-Padiem-Calendar-Turn-Id")
+            if not isinstance(client_turn_id, str) or not client_turn_id or len(client_turn_id) > 128:
+                client_turn_id = None
+            material = "|" + client_turn_id if client_turn_id is not None else ""
+            turn_key = "chat-" + str(uid) + "-" + str(conversation_id or "anon") + "-" + str(len(messages)) + "-" + (__import__("hashlib").sha256("|".join((str(latest_user_text), str(timezone_name or ""), material)).encode("utf-8")).hexdigest()[:16])
+            native_result = await try_native_calendar_chat(
+                request, calendar_store, uid,
+                messages, timezone_name=timezone_name,
+                turn_key=turn_key,
+            )
+        except NativeCalendarAdapterError as exc:
+            return JSONResponse({"error": {"code": exc.code, "message": exc.message}}, status_code=exc.status_code)
+        except Exception:
+            native_result = None
+        if needs_native_calendar and native_result is None:
+            return JSONResponse({"error": {"code": "calendar_unavailable", "message": "native calendar unavailable"}}, status_code=503)
+        if native_result is not None:
+            answer = str(native_result.get("answer", ""))
+            async def native_body_iterator():
+                yield _public_sse("delta", {"delta": answer})
+                if uid is not None and store is not None and latest_user_text:
+                    try:
+                        saved_id = await store.append_exchange(uid, conversation_id, latest_user_text, answer, product_scope=PRODUCT_SCOPE_CHAT)
+                    except Exception:
+                        saved_id = None
+                    done_payload = {"done": True}
+                    if saved_id is not None:
+                        done_payload["conversation_id"] = saved_id
+                    yield _public_sse("done", done_payload)
+                    return
+                yield _public_sse("done", {"done": True})
+            return StreamingResponse(
+                native_body_iterator(),
+                status_code=200,
+                media_type="text/event-stream",
+                headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"},
+            )
 
     auto_grounding: AutoGroundingService = request.app.state.auto_grounding
     try:
@@ -500,7 +554,7 @@ async def api_chat(request: Request) -> JSONResponse:
             {"error": {"code": "unauthorized", "message": "?? AI? ????? ???? ???."}},
             status_code=401,
         )
-    store: HistoryStore | None = request.app.state.history_store
+    store: HistoryStore | None = getattr(request.app.state, "history_store", None)
     project_file_store: ProjectFileStore | None = request.app.state.project_file_store
     if browser_project_id is not None and uid is None:
         return JSONResponse({"error": {"code": "unauthorized", "message": "프로젝트를 사용하려면 로그인이 필요합니다."}}, status_code=401)
@@ -575,6 +629,47 @@ async def api_chat(request: Request) -> JSONResponse:
         )
         if not usage_decision.allowed:
             return _usage_denied_response(usage_decision)
+
+    timezone_name = raw.get("timezone") if isinstance(raw.get("timezone"), str) else None
+    calendar_store = getattr(request.app.state, "calendar_store", None)
+    needs_native_calendar = False
+    try:
+        needs_native_calendar = parse_native_calendar_intent(latest_user_text, timezone_name=timezone_name)["op"] != "none"
+    except Exception:
+        needs_native_calendar = False
+    if needs_native_calendar and calendar_store is None:
+        return JSONResponse({"error": {"code": "calendar_store_unavailable", "message": "Calendar storage is unavailable"}}, status_code=503)
+    if calendar_store is not None:
+        try:
+            client_turn_id = raw.get("calendar_turn_id")
+            if not isinstance(client_turn_id, str):
+                client_turn_id = request.headers.get("X-Padiem-Calendar-Turn-Id")
+            if not isinstance(client_turn_id, str) or not client_turn_id or len(client_turn_id) > 128:
+                client_turn_id = None
+            material = "|" + client_turn_id if client_turn_id is not None else ""
+            turn_key = "chat-" + str(uid) + "-" + str(conversation_id or "anon") + "-" + str(len(messages)) + "-" + (__import__("hashlib").sha256("|".join((str(latest_user_text), str(timezone_name or ""), material)).encode("utf-8")).hexdigest()[:16])
+            native_result = await try_native_calendar_chat(request, calendar_store, uid, messages, timezone_name=timezone_name, turn_key=turn_key)
+        except NativeCalendarAdapterError as exc:
+            return JSONResponse({"error": {"code": exc.code, "message": exc.message}}, status_code=exc.status_code)
+        except Exception:
+            native_result = None
+        if needs_native_calendar and native_result is None:
+            return JSONResponse({"error": {"code": "calendar_unavailable", "message": "native calendar unavailable"}}, status_code=503)
+        if native_result is not None:
+            answer = native_result.get("answer", "")
+            result = {"answer": answer}
+            if native_result.get("native_calendar") is not None:
+                result["native_calendar"] = native_result["native_calendar"]
+            if uid is not None and store is not None and latest_user_text:
+                try:
+                    saved_id = await store.append_exchange(uid, conversation_id, latest_user_text, answer, product_scope=PRODUCT_SCOPE_CHAT)
+                except Exception:
+                    saved_id = None
+            else:
+                saved_id = None
+            if saved_id is not None:
+                result["conversation_id"] = saved_id
+            return JSONResponse(public_chat_result(result))
 
     try:
         with request_tier_context(raw.get("tier", "free")):
