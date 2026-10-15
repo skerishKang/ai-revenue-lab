@@ -386,7 +386,6 @@ class ControlPlaneHttpsLongPollTransport:
                     "session_id": request.session.session_id,
                     "binding_ref": binding.binding_ref,
                     "credential_b64": self._credential_b64(binding, now=now),
-                    "now": _iso(now),
                 },
                 timeout_seconds=min(config.poll_timeout_seconds, 30),
             )
