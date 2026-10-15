@@ -15,7 +15,7 @@
      with no markup sink, so it can never turn model text into HTML. */
   const SafeMarkdown = window.B66SafeMarkdown || null;
   // Shared Chat/Claw/B66 editor behavior; B66 owns submit/quote state.
-  const sharedComposer = window.PadiemConversationComposer || null;
+  const sharedComposer = window.SharedConversationComposer || null;
 
   if (!Core || !History || !FileIntake || !App) return;
 

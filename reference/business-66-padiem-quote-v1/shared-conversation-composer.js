@@ -7,7 +7,11 @@
   "use strict";
   const api = factory();
   if (typeof module === "object" && module.exports) module.exports = api;
-  if (root) root.PadiemConversationComposer = api;
+  if (root) {
+    // Product-neutral alias for B66 quote UI domain integrity checks.
+    root.SharedConversationComposer = api;
+    root.PadiemConversationComposer = api;
+  }
 })(typeof globalThis !== "undefined" ? globalThis : null, function () {
   "use strict";
   const VERSION = "shared-composer-v1";
