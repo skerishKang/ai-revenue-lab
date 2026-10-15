@@ -149,6 +149,12 @@ html[data-theme="padiem-glass"] .brand-row {
 /* Second sidebar line: New Chat and conversation Search share one row.
  * Conversation search is not implemented yet, so it stays disabled and is
  * identified via its title/aria-label ("대화 검색 준비 중"). */
+/* Chat/New Chat and Claw are one contiguous sidebar group. */
+.sidebar-chat-claw-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 .sidebar-actions-row {
   display: flex;
   align-items: stretch;

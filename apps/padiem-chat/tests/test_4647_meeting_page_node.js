@@ -9,13 +9,26 @@ const app = fs.readFileSync(path.join(root, "app.js"), "utf8");
 const capture = fs.readFileSync(path.join(root, "meeting-capture.js"), "utf8");
 const views = fs.readFileSync(path.join(root, "standalone-views.css"), "utf8");
 const locale = fs.readFileSync(path.join(root, "locale.js"), "utf8");
+const sidebarCss = fs.readFileSync(path.join(root, "sidebar-utility.css"), "utf8");
+const clawCss = fs.readFileSync(path.join(root, "claw-focus-layout.css"), "utf8");
 
-test("meeting has one first-class menu entry alongside Claw", () => {
-  const claw = html.indexOf('id="clawNavButton"');
-  const meeting = html.indexOf('id="meetingNavButton"');
-  const calendar = html.indexOf('id="calendarNavButton"');
-  assert.ok(claw > 0 && claw < meeting && meeting < calendar);
+test("Chat and Claw share a group; meeting, automation, library, calendar follow in exact order", () => {
+  const order = [
+    "newChatButton", "sidebarSearchButton", "clawNavButton",
+    "meetingNavButton", "automationNavButton", "filesNavButton",
+    "calendarNavButton", "connectorsNavButton", "skillsNavButton",
+  ];
+  const positions = order.map((id) => html.indexOf('id="' + id + '"'));
+  assert.ok(positions.every((p) => p >= 0), "all existing navigation actions must be preserved");
+  assert.deepEqual([...positions].sort((a, b) => a - b), positions);
+  assert.ok(html.indexOf('class="sidebar-chat-claw-group"') < positions[0]);
+  const workspace = html.indexOf('id="workspaceNav"');
+  assert.ok(workspace > positions[2] && workspace < positions[3]);
+  assert.match(sidebarCss, /\.sidebar-chat-claw-group\s*\{[\s\S]*?display:\s*flex;/);
+  assert.match(clawCss, /#workspaceNav \.side-item:disabled\s*\{[\s\S]*?display:\s*flex;/);
   assert.equal((html.match(/id="meetingNavButton"/g) || []).length, 1);
+  assert.match(html, /id="automationNavButton"[^>]*disabled/);
+  assert.match(html, /id="filesNavButton"[^>]*disabled/);
   assert.match(html, /id="meetingNavButton"[^>]+aria-controls="meetingView"[^>]+disabled/);
   assert.match(html, /data-locale-key="nav-meeting"/);
   assert.match(locale, /"nav-meeting": "Meeting notes"/);
