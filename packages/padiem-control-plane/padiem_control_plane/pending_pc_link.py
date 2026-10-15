@@ -211,9 +211,12 @@ class DurablePendingPcLink:
                 "DELETE FROM canonical_broker_pending_pc_link WHERE expires_at<=?",
                 _iso(moment),
             )
-            count = _rows(self._store.sql.exec(
+            count_cursor = self._store.sql.exec(
                 "SELECT COUNT(*) AS n FROM canonical_broker_pending_pc_link",
-            ))[0]["n"]
+            )
+            print("PADIEM_PC_OFFER_STEP=COUNT_CURSOR", flush=True)
+            count = _rows(count_cursor)[0]["n"]
+            print("PADIEM_PC_OFFER_STEP=COUNT_VALID", flush=True)
             if int(count) >= MAX_UNEXPIRED_OFFERS:
                 raise _denied("pending_pc_capacity_reached")
             self._store.sql.exec(
@@ -224,6 +227,7 @@ class DurablePendingPcLink:
                 request_ref, attested.device_id, attested.possession_key_sha256,
                 _iso(moment), _iso(expires),
             )
+            print("PADIEM_PC_OFFER_STEP=INSERT_COMPLETE", flush=True)
             return {"request_ref": request_ref, "expires_at": _iso(expires)}
         return self._tx(transaction)
 
