@@ -1,0 +1,280 @@
+{
+  "id": null,
+  "uid": "padiem-requests-logs",
+  "title": "PADIEM | 요청·장애 추적",
+  "description": "B62 HTTP + B14/Engine 단계 상관분석; 안전한 구조화 메타데이터만 수집합니다.",
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "schemaVersion": 40,
+  "version": 1,
+  "editable": true,
+  "refresh": "1m",
+  "tags": [
+    "padiem",
+    "production",
+    "grafana-cloud",
+    "loki"
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "DS_LOKI",
+        "type": "datasource",
+        "query": "loki",
+        "label": "Grafana Loki",
+        "refresh": 1,
+        "hide": 0,
+        "current": {
+          "text": "grafanacloud-zestypuma1700-logs",
+          "value": "grafanacloud-zestypuma1700-logs"
+        }
+      },
+      {
+        "name": "request_id",
+        "type": "textbox",
+        "label": "요청 ID (선택)",
+        "hide": 0,
+        "query": "",
+        "current": {
+          "text": "",
+          "value": ""
+        }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "요청 수",
+      "type": "timeseries",
+      "datasource": {
+        "type": "loki",
+        "uid": "$DS_LOKI"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(count_over_time({service_name=\"padiem-chat\"} | json | event=\"http_request\" [$__interval]))",
+          "queryType": "range",
+          "datasource": {
+            "type": "loki",
+            "uid": "$DS_LOKI"
+          },
+          "legendFormat": "B62 requests"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {}
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 2,
+      "title": "서버 오류(5xx)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "loki",
+        "uid": "$DS_LOKI"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(count_over_time({service_name=\"padiem-chat\"} | json | event=\"http_request\" | outcome=\"server_error\" [$__interval]))",
+          "queryType": "range",
+          "datasource": {
+            "type": "loki",
+            "uid": "$DS_LOKI"
+          },
+          "legendFormat": "5xx failures"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {}
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 3,
+      "title": "P95 응답 지연 (ms)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "loki",
+        "uid": "$DS_LOKI"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "quantile_over_time(0.95, {service_name=\"padiem-chat\"} | json | event=\"http_request\" | unwrap duration_ms | __error__=\"\" [$__interval])",
+          "queryType": "range",
+          "datasource": {
+            "type": "loki",
+            "uid": "$DS_LOKI"
+          },
+          "legendFormat": "p95"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "custom": {}
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 4,
+      "title": "단계별 실패",
+      "type": "timeseries",
+      "datasource": {
+        "type": "loki",
+        "uid": "$DS_LOKI"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(stage)(count_over_time({service_name=\"padiem-chat\"} | json | event=\"ai_stage\" | outcome=\"error\" [$__interval]))",
+          "queryType": "range",
+          "datasource": {
+            "type": "loki",
+            "uid": "$DS_LOKI"
+          },
+          "legendFormat": "{{stage}}"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {}
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 5,
+      "title": "요청 ID로 로그 찾기",
+      "type": "logs",
+      "datasource": {
+        "type": "loki",
+        "uid": "$DS_LOKI"
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{service_name=\"padiem-chat\"} | json | request_id=~\".*$request_id.*\"",
+          "queryType": "range",
+          "datasource": {
+            "type": "loki",
+            "uid": "$DS_LOKI"
+          },
+          "legendFormat": "",
+          "maxLines": 100
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": true,
+        "sortOrder": "Descending"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {}
+        },
+        "overrides": []
+      }
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0,211,255,1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  }
+}

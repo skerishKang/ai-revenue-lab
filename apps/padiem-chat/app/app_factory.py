@@ -354,6 +354,7 @@ def create_app(
     calendar_store: CalendarStore | None = None,
     claw_automation_store=None,
     telemetry_emitter=None,
+    telemetry_exporter=None,
     claw_p01_continuation_client=None,
     claw_local_access_source=None,
     claw_device_directory_source=None,
@@ -690,7 +691,11 @@ def create_app(
     app.add_middleware(SameOriginGuardMiddleware)
     # #1975: raw ASGI middleware, installed outermost so every route (including
     # the static Mount and the later-installed orchestration routes) is covered.
-    app.add_middleware(RequestTelemetryMiddleware, emitter=telemetry_emitter)
+    app.add_middleware(
+        RequestTelemetryMiddleware,
+        emitter=telemetry_emitter,
+        exporter=telemetry_exporter,
+    )
     app.state.request_telemetry_enabled = True
     app.state.settings = resolved
     app.state.github_oauth_store = github_oauth_store

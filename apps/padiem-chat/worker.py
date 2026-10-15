@@ -883,8 +883,43 @@ class Default(WorkerEntrypoint):
                     github_store = D1GitHubOAuthStore(db_binding, session_secret=settings.session_secret)
                     github_provider = GitHubAppOAuthProvider(client_secret=github_client_secret,
                                                                transport=CloudflareExternalHttpTransport())
+                # Grafana ingest remains OFF until a server-only credential
+                # and validated Japan-region OTLP endpoint are provisioned.
+                # No browser-controlled or prompt-controlled settings.
+                from app.grafana_otlp_exporter import GrafanaOtlpExporter
+                _grafana_exporter = None
+                _grafana_endpoint = binding_value(self.env, "PADIEM_GRAFANA_OTLP_ENDPOINT")
+                _grafana_user = binding_value(self.env, "PADIEM_GRAFANA_OTLP_USERNAME")
+                # Secret Store bindings use an async .get(), plain Worker
+                # secrets are strings. Never log or persist the resolved value.
+                _grafana_token_binding = binding_value(
+                    self.env, "PADIEM_GRAFANA_OTLP_TOKEN"
+                )
+                _grafana_token = None
+                try:
+                    if isinstance(_grafana_token_binding, str):
+                        _grafana_token = _grafana_token_binding
+                    elif _grafana_token_binding is not None:
+                        _getter = getattr(_grafana_token_binding, "get", None)
+                        if callable(_getter):
+                            _pending = _getter()
+                            _grafana_token = (
+                                await _pending
+                                if hasattr(_pending, "__await__") else _pending
+                            )
+                except Exception:
+                    _grafana_token = None
+                if all(isinstance(v, str) and v for v in
+                       (_grafana_endpoint, _grafana_user, _grafana_token)):
+                    try:
+                        _grafana_exporter = GrafanaOtlpExporter(
+                            _grafana_endpoint, _grafana_user, _grafana_token
+                        )
+                    except (TypeError, ValueError):
+                        _grafana_exporter = None
                 _worker_app = create_app(
                     settings=settings,
+                    telemetry_exporter=_grafana_exporter,
                     github_oauth_store=github_store,
                     github_oauth_provider=github_provider,
                     connector_owner_enrollment=connector_owner_ports,
@@ -1220,7 +1255,21 @@ class Default(WorkerEntrypoint):
                 )
                 return _apply_headers(response, path)
 
-        response = await asgi.fetch(_worker_app, request.js_object, self.env)
+        # The ASGI app is cached across invocations. Bind waitUntil ONLY while
+        # serving this request, otherwise an old ctx could own new log exports.
+        from app.request_telemetry import (
+            install_export_scheduler, reset_export_scheduler,
+        )
+        from pyodide.ffi import create_proxy
+
+        def _schedule_log_export(awaitable):
+            self.ctx.waitUntil(create_proxy(awaitable))
+
+        export_context = install_export_scheduler(_schedule_log_export)
+        try:
+            response = await asgi.fetch(_worker_app, request.js_object, self.env)
+        finally:
+            reset_export_scheduler(export_context)
         return _apply_headers(
             response,
             path,

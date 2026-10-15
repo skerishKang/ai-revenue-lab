@@ -38,11 +38,13 @@ which also removes newline-injection into the log stream.
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import re
 import time
 import uuid
+from contextvars import ContextVar
 from collections.abc import Awaitable, Callable, MutableMapping
 from datetime import datetime, timezone
 from typing import Any
@@ -167,6 +169,90 @@ def default_emitter(event: dict[str, object]) -> None:
     _LOGGER.info(json.dumps(event, separators=(",", ":"), sort_keys=True))
 
 
+# PADIEM_CORRELATED_STAGE_TELEMETRY_261016
+# Never record request text, headers, auth, IP, customer IDs or paths.
+# Context propagation lets Chat/Claw/B66 B14 stage events share the same
+# opaque request id as the already-existing HTTP middleware event.
+_CURRENT_REQUEST_ID: ContextVar[str | None] = ContextVar("padiem_trace_id", default=None)
+_CURRENT_STAGE_EVENTS: ContextVar[list[dict[str, object]] | None] = ContextVar(
+    "padiem_stage_events", default=None
+)
+# PADIEM_BACKGROUND_GRAFANA_SCHEDULER: set only for the active Worker invocation.
+# Do not capture a first request's self.ctx in a process-wide ASGI singleton.
+_CURRENT_EXPORT_SCHEDULER: ContextVar[Callable[[Awaitable[None]], None] | None] = (
+    ContextVar("padiem_export_scheduler", default=None)
+)
+
+
+def install_export_scheduler(scheduler: Callable[[Awaitable[None]], None]):
+    return _CURRENT_EXPORT_SCHEDULER.set(scheduler)
+
+
+def reset_export_scheduler(token) -> None:
+    _CURRENT_EXPORT_SCHEDULER.reset(token)
+_SAFE_STAGE = re.compile(r"^[a-z][a-z0-9_.-]{0,47}$")
+_SAFE_VALUE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_./:-]{0,119}$")
+
+
+def current_request_id() -> str | None:
+    return _CURRENT_REQUEST_ID.get()
+
+
+def _safe_label(value: Any, *, fallback: str = "unknown") -> str:
+    return value if isinstance(value, str) and _SAFE_VALUE.fullmatch(value) else fallback
+
+
+def build_stage_event(
+    *, request_id: str, stage: str, outcome: str, duration_ms: float,
+    code: str | None = None, model: str | None = None,
+    provider: str | None = None, b14_request_id: str | None = None,
+) -> dict[str, object]:
+    """Bounded diagnostic projection; never pass arbitrary exception messages."""
+    if not is_safe_request_id(request_id):
+        raise ValueError("UNSAFE_TRACE_ID")
+    if not _SAFE_STAGE.fullmatch(stage):
+        raise ValueError("UNSAFE_STAGE")
+    if outcome not in ("ok", "error"):
+        raise ValueError("UNSAFE_OUTCOME")
+    return {
+        "event": "ai_stage",
+        "service": SERVICE_NAME,
+        "request_id": request_id,
+        "stage": stage,
+        "outcome": outcome,
+        "duration_ms": round(max(0.0, float(duration_ms)), 2),
+        "code": _safe_label(code) if code else None,
+        "model": _safe_label(model) if model else None,
+        "provider": _safe_label(provider) if provider else None,
+        "b14_request_id": _safe_label(b14_request_id) if b14_request_id else None,
+    }
+
+
+def emit_stage_event(*, stage: str, outcome: str, duration_ms: float,
+                     code: str | None = None, model: str | None = None,
+                     provider: str | None = None,
+                     b14_request_id: str | None = None) -> None:
+    """Emit when inside a traced HTTP request; never fail model execution."""
+    request_id = current_request_id()
+    if request_id is None:
+        return
+    try:
+        event = build_stage_event(
+            request_id=request_id, stage=stage, outcome=outcome,
+            duration_ms=duration_ms, code=code, model=model,
+            provider=provider, b14_request_id=b14_request_id,
+        )
+        pending = _CURRENT_STAGE_EVENTS.get()
+        if pending is not None and len(pending) < 10:
+            pending.append(event)
+        # Before external ingestion is configured, retain ONLY failing stage
+        # evidence on the existing log channel to minimize Cloudflare events.
+        if outcome == "error":
+            default_emitter(event)
+    except Exception:
+        pass
+
+
 class RequestTelemetryMiddleware:
     """Emit one bounded structured event per HTTP request.
 
@@ -180,10 +266,12 @@ class RequestTelemetryMiddleware:
         *,
         service: str = SERVICE_NAME,
         emitter: LoggerEmitter | None = None,
+        exporter: Callable[[list[dict[str, object]]], Awaitable[None]] | None = None,
     ) -> None:
         self.app = app
         self.service = service
         self.emitter = emitter or default_emitter
+        self.exporter = exporter
 
     async def __call__(
         self,
@@ -205,6 +293,8 @@ class RequestTelemetryMiddleware:
             request_id_source = "generated"
 
         scope["request_id"] = request_id
+        trace_context_token = _CURRENT_REQUEST_ID.set(request_id)
+        stage_context_token = _CURRENT_STAGE_EVENTS.set([])
 
         status_holder: dict[str, int] = {}
 
@@ -226,20 +316,52 @@ class RequestTelemetryMiddleware:
             # written; treat it as a server error rather than dropping the event.
             status = status_holder.get("status", 500)
             try:
-                self.emitter(
-                    build_request_event(
-                        request_id=request_id,
-                        request_id_source=request_id_source,
-                        service=self.service,
-                        method=str(scope.get("method") or ""),
-                        route=resolve_route_template(scope.get("app"), scope),
-                        status=status,
-                        duration_ms=elapsed_ms,
-                    )
+                # GRAFANA_NONBLOCKING_EVENT_EXPORT_261016:
+                # export only bounded HTTP/stage data on AI routes, never static
+                # traffic, queries, headers, request body or raw exceptions.
+                http_event = build_request_event(
+                    request_id=request_id,
+                    request_id_source=request_id_source,
+                    service=self.service,
+                    method=str(scope.get("method") or ""),
+                    route=resolve_route_template(scope.get("app"), scope),
+                    status=status,
+                    duration_ms=elapsed_ms,
                 )
+                self.emitter(http_event)
+                if self.exporter is not None and (
+                    http_event["route"].startswith(("/api/chat", "/api/claw", "/api/b66"))
+                    or status >= 500
+                ):
+                    try:
+                        stage_events = list(_CURRENT_STAGE_EVENTS.get() or [])
+                        scheduler = _CURRENT_EXPORT_SCHEDULER.get()
+                        if scheduler is not None:
+                            # No remote I/O in the response's critical path.
+                            # ctx.waitUntil owns this bounded background task.
+                            async def _export() -> None:
+                                try:
+                                    await asyncio.wait_for(
+                                        self.exporter([http_event] + stage_events),
+                                        timeout=1.0,
+                                    )
+                                except Exception:
+                                    pass
+
+                            background = _export()
+                            try:
+                                scheduler(background)
+                            except Exception:
+                                background.close()
+                    except Exception:
+                        # Remote telemetry failure MUST NOT change the response.
+                        pass
             except Exception:
                 # Telemetry must never turn a healthy request into a failure.
                 pass
+            finally:
+                _CURRENT_STAGE_EVENTS.reset(stage_context_token)
+                _CURRENT_REQUEST_ID.reset(trace_context_token)
 
 
 def _header_value(raw_headers: Any, name: bytes) -> str | None:
@@ -263,6 +385,11 @@ __all__ = [
     "build_request_event",
     "classify_outcome",
     "default_emitter",
+    "current_request_id",
+    "install_export_scheduler",
+    "reset_export_scheduler",
+    "build_stage_event",
+    "emit_stage_event",
     "is_safe_request_id",
     "new_request_id",
     "resolve_route_template",
