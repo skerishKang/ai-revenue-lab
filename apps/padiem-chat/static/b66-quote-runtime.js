@@ -91,6 +91,9 @@
       const origin = new URL(data.origin);
       if (embed.protocol !== "https:" || origin.protocol !== "https:") return null;
       if (embed.origin !== origin.origin || data.origin !== origin.origin) return null;
+      // The embed must be a different origin. A same-origin iframe with
+      // allow-scripts + allow-same-origin can remove its own sandbox.
+      if (embed.origin === window.location.origin) return null;
       if (!embed.pathname.endsWith("/embed.html")) return null;
       // The canonical product permission gate must set this explicitly.
       // Existing B66 runtime-config does not issue it: default stays OFF.
@@ -267,16 +270,10 @@
     status.setAttribute("role", "status");
     status.setAttribute("aria-live", "polite");
 
-    const frame = document.createElement("iframe");
-    frame.id = "b66QuoteFrame";
-    frame.className = "b66-quote-frame";
-    frame.hidden = true;
-    frame.title = copy().title;
-    frame.referrerPolicy = "no-referrer";
-    frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-modals");
-
+    // Do not construct a hidden iframe on Chat startup. The cross-origin
+    // preview is created only after a successful, user-requested quote.
     form.append(selectLabel, modelLabel, reasoningLabel, messageLabel, submit, status);
-    panel.append(header, pcSection, form, frame);
+    panel.append(header, pcSection, form);
     dialog.append(panel);
     document.body.append(dialog);
 
@@ -647,6 +644,24 @@
     return "b66-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
   }
 
+  function ensurePreviewFrame() {
+    let frame = document.getElementById("b66QuoteFrame");
+    if (frame) return frame;
+    const panel = document.querySelector("#b66QuoteDialog .b66-quote-panel");
+    if (!panel) throw new Error("preview_panel_missing");
+    frame = document.createElement("iframe");
+    frame.id = "b66QuoteFrame";
+    frame.className = "b66-quote-frame";
+    frame.hidden = true;
+    frame.title = copy().title;
+    frame.referrerPolicy = "no-referrer";
+    // Retain the actual B66 embed origin for authenticated postMessage
+    // verification. validRuntime() rejects same-origin embeds above.
+    frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-modals");
+    panel.append(frame);
+    return frame;
+  }
+
   function waitForFrame(frame, url) {
     if (frameLoadedUrl === url && frame.contentWindow) return Promise.resolve();
     return new Promise((resolve, reject) => {
@@ -666,8 +681,8 @@
     const select = document.getElementById("b66QuoteSkillSelect");
     const message = document.getElementById("b66QuoteRequest");
     const submit = document.getElementById("b66QuoteGenerate");
-    const frame = document.getElementById("b66QuoteFrame");
-    if (!runtime || !select || !message || !submit || !frame) return;
+    const existingFrame = document.getElementById("b66QuoteFrame");
+    if (!runtime || !select || !message || !submit) return;
     const savedSkillId = select.value;
     const modelSelect = document.getElementById("b66QuoteModelSelect");
     const selectedTier = modelSelect && modelSelect.value;
@@ -680,7 +695,7 @@
     }
 
     submit.disabled = true;
-    frame.hidden = true;
+    if (existingFrame) existingFrame.hidden = true;
     setStatus(c.working, "working");
     try {
       // #3906: forward the explicit reasoning choice with the exact model. The
@@ -718,6 +733,7 @@
       }
       const assets = await loadPrivateAssets(skill);
 
+      const frame = ensurePreviewFrame();
       await waitForFrame(frame, runtime.embedUrl);
       const id = requestId();
       currentRequestId = id;
