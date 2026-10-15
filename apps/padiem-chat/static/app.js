@@ -287,7 +287,19 @@
     messageList.hidden = false;
     // #3931: Keep an in-flight Claw conversation in the Claw workspace.
     // Saved Chat conversations and ordinary Chat sends still use Chat.
-    if (!preserveClaw) shell.dataset.state = "chat";
+    if (!preserveClaw) {
+      shell.dataset.state = "chat";
+      // Switching from Claw to ordinary Chat must not carry the Claw
+      // execution-history disclosure into a customer conversation.
+      // Do not erase the server-owned history, only reset this view.
+      for (const id of ("clawRunHistoryDisclosure", "clawRunHistory",
+                        "clawApprovedDisclosure", "clawApprovedMemory")) {
+        const node = document.getElementById(id);
+        if (!node) continue;
+        node.hidden = true;
+        if (node.tagName === "DETAILS") node.open = false;
+      }
+    }
     setNavActive();
   }
   function addUserMessage(text, attachment) {
@@ -1812,6 +1824,13 @@
     renderTyping(article);
     try {
       const payload = { messages: outboundMessages, mode: "auto", tier: selectedProductTier(), skill };
+      // #4745: retain the exact user-turn claim for a manual retry. A new
+      // submitPrompt receives a new contextSnapshot, so a separate identical
+      // request obtains a distinct key; explicit retry reuses this snapshot.
+      if (!contextSnapshot.calendarTurnId) {
+        contextSnapshot.calendarTurnId = chatTransport.createCalendarTurnId?.() || null;
+      }
+      if (contextSnapshot.calendarTurnId) payload.calendar_turn_id = contextSnapshot.calendarTurnId;
       // #3554: exactly one explicit B14 model per Claw submit; no auto/default
       // selection. The submit-time snapshot survives the Claw→chat shell flip.
       if (clawGeneralRequest && contextSnapshot.selectedModelId) {

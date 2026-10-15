@@ -639,3 +639,63 @@ def test_migration_declares_candidate_table_and_open_request_index():
     assert "UNIQUE (user_id, workspace_id, client_ref)" in sql
     assert "candidate_digest" in sql
     assert "WHERE status = 'pending'" in sql
+
+
+def test_operator_candidate_read_only_routes_authority_and_projection(source):
+    """The administrator queue is a B66-global staff view, never a customer view."""
+    from unittest.mock import AsyncMock
+
+    candidate_store, skill_store = _stores(source)
+    owner_a = _client(candidate_store, skill_store, user=A)
+    owner_b = _client(candidate_store, skill_store, user=B)
+    body = {"client_ref": _client_ref(), "candidate": _candidate()}
+    row_a = owner_a.post("/api/b66/saved-skill-candidates", json=body).json()["candidate"]
+    row_b = owner_b.post("/api/b66/saved-skill-candidates", json=body).json()["candidate"]
+    assert row_a["candidate_id"] != row_b["candidate_id"]
+
+    # Existing B66 Google administrator authority, backed by the verified
+    # server-side subject rather than client-provided email or owner fields.
+    admins = MagicMock()
+    admins.is_google_admin = AsyncMock(side_effect=lambda user_id: user_id == A)
+    owner_a.app.state.b66_member_admin_store = admins
+    owner_b.app.state.b66_member_admin_store = admins
+    anonymous = _client(candidate_store, skill_store, signed_in=False)
+    anonymous.app.state.b66_member_admin_store = admins
+
+    path = "/api/b66/admin/saved-skill-candidates"
+    assert anonymous.get(path).status_code == 401
+    assert owner_b.get(path).status_code == 403
+    assert owner_b.get(path + "/" + row_a["candidate_id"]).status_code == 403
+
+    listed = owner_a.get(path)
+    assert listed.status_code == 200, listed.text
+    assert listed.headers["cache-control"].startswith("no-store")
+    assert listed.json()["status"] == "pending"
+    records = listed.json()["candidates"]
+    assert {x["candidate_id"] for x in records} == {
+        row_a["candidate_id"], row_b["candidate_id"]
+    }
+    assert {x["user_id"] for x in records} == {A, B}
+    safe = {"candidate_id", "user_id", "status", "skill_name",
+            "created_at", "updated_at", "decided_at"}
+    assert all(set(x) == safe for x in records)
+    assert owner_a.get(path + "?status=approved").json()["candidates"] == []
+    assert owner_a.get(path + "?status=invalid").status_code == 400
+    assert owner_a.get(path + "?limit=0").status_code == 400
+    assert owner_a.get(path + "?user_id=" + B).status_code == 400
+
+    detail = owner_a.get(path + "/" + row_b["candidate_id"])
+    assert detail.status_code == 200, detail.text
+    assert set(detail.json()["candidate"]) == safe
+    assert detail.json()["candidate"]["user_id"] == B
+    assert owner_a.get(path + "/b66cand_" + "0" * 32).status_code == 404
+    assert owner_a.get(path + "/not-a-candidate").status_code == 400
+
+    # No mutation path, no customer self-approval and no new registered Skill.
+    assert owner_a.post(path, json={"decision": "approve"}).status_code == 405
+    assert owner_a.patch(path + "/" + row_a["candidate_id"],
+                         json={"decision": "approve"}).status_code == 405
+    assert source.execute("SELECT COUNT(*) FROM b66_saved_quote_skill").fetchone()[0] == 0
+    assert source.execute(
+        "SELECT COUNT(*) FROM b66_saved_skill_candidate WHERE status='pending'"
+    ).fetchone()[0] == 2

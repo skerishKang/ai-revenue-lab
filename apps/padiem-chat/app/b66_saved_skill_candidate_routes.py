@@ -29,7 +29,10 @@ from .b66_saved_skill_candidate_review import (
     B66CandidateReviewError,
     B66SavedQuoteSkillCandidateReviewer,
 )
-from .b66_quote_skill_provisioning import TrustedB66ProvisioningGrant, ResolvedB66ProvisioningTarget
+from .b66_quote_skill_provisioning import (
+    TrustedB66ProvisioningGrant,
+    ResolvedB66ProvisioningTarget,
+)
 from .b66_saved_skill_candidate_store import (
     CANDIDATE_STATUSES,
     MAX_CANDIDATES,
@@ -58,54 +61,6 @@ def _error(status: int, code: str, message: str) -> JSONResponse:
 
 def _store(request: Request) -> Any | None:
     return getattr(request.app.state, "b66_saved_skill_candidate_store", None)
-
-
-def _saved_skill_store(request: Request) -> Any | None:
-    return getattr(request.app.state, "b66_saved_quote_skill_store", None)
-
-
-def _reviewer(request: Request) -> Any | None:
-    reviewer = getattr(request.app.state, "b66_quote_skill_candidate_reviewer", None)
-    if reviewer is not None:
-        return reviewer
-    candidate_store = _store(request)
-    skill_store = _saved_skill_store(request)
-    if candidate_store is None or skill_store is None:
-        return None
-    try:
-        return B66SavedQuoteSkillCandidateReviewer(candidate_store, skill_store)
-    except Exception:
-        return None
-
-
-async def _trusted_grant(request: Request) -> TrustedB66ProvisioningGrant | None:
-    resolver = getattr(request.app.state, "b66_operator_grant_resolver", None)
-    if not callable(resolver):
-        resolver = getattr(request.app.state, "b66_provisioning_grant_resolver", None)
-    if not callable(resolver):
-        return None
-    try:
-        value = resolver(request)
-        if inspect.isawaitable(value):
-            value = await value
-    except Exception:
-        return None
-    return value if isinstance(value, TrustedB66ProvisioningGrant) else None
-
-
-async def _resolved_target(request: Request, candidate_id: str) -> ResolvedB66ProvisioningTarget | None:
-    resolver = getattr(request.app.state, "b66_operator_target_resolver", None)
-    if not callable(resolver):
-        resolver = getattr(request.app.state, "b66_provisioning_target_resolver", None)
-    if not callable(resolver):
-        return None
-    try:
-        value = resolver(request, candidate_id)
-        if inspect.isawaitable(value):
-            value = await value
-    except Exception:
-        return None
-    return value if isinstance(value, ResolvedB66ProvisioningTarget) else None
 
 
 async def _owner_and_workspace(request: Request) -> tuple[str, str] | None:
@@ -277,6 +232,8 @@ async def b66_saved_skill_candidate_operator_list(request: Request) -> JSONRespo
     if not callable(list_fn):
         return _error(503, "candidate_store_unavailable", "승인 대기 목록을 확인할 수 없습니다.")
 
+    if any(key not in {"status", "limit"} for key in request.query_params):
+        return _error(400, "invalid_filter", "요청 필터 형식이 올바르지 않습니다.")
     raw_status = request.query_params.get("status", "pending")
     if raw_status not in CANDIDATE_STATUSES:
         return _error(400, "invalid_status", "status 형식이 올바르지 않습니다.")
@@ -336,6 +293,54 @@ async def b66_saved_skill_candidate_operator_detail(request: Request) -> JSONRes
     return JSONResponse({"ok": True, "candidate": candidate}, headers=_NO_STORE)
 
 
+def _saved_skill_store(request: Request) -> Any | None:
+    return getattr(request.app.state, "b66_saved_quote_skill_store", None)
+
+
+def _reviewer(request: Request) -> Any | None:
+    reviewer = getattr(request.app.state, "b66_quote_skill_candidate_reviewer", None)
+    if reviewer is not None:
+        return reviewer
+    candidate_store = _store(request)
+    skill_store = _saved_skill_store(request)
+    if candidate_store is None or skill_store is None:
+        return None
+    try:
+        return B66SavedQuoteSkillCandidateReviewer(candidate_store, skill_store)
+    except Exception:
+        return None
+
+
+async def _trusted_grant(request: Request) -> TrustedB66ProvisioningGrant | None:
+    resolver = getattr(request.app.state, "b66_operator_grant_resolver", None)
+    if not callable(resolver):
+        resolver = getattr(request.app.state, "b66_provisioning_grant_resolver", None)
+    if not callable(resolver):
+        return None
+    try:
+        value = resolver(request)
+        if inspect.isawaitable(value):
+            value = await value
+    except Exception:
+        return None
+    return value if isinstance(value, TrustedB66ProvisioningGrant) else None
+
+
+async def _resolved_target(request: Request, candidate_id: str) -> ResolvedB66ProvisioningTarget | None:
+    resolver = getattr(request.app.state, "b66_operator_target_resolver", None)
+    if not callable(resolver):
+        resolver = getattr(request.app.state, "b66_provisioning_target_resolver", None)
+    if not callable(resolver):
+        return None
+    try:
+        value = resolver(request, candidate_id)
+        if inspect.isawaitable(value):
+            value = await value
+    except Exception:
+        return None
+    return value if isinstance(value, ResolvedB66ProvisioningTarget) else None
+
+
 async def b66_saved_skill_candidate_operator_decision(request: Request) -> JSONResponse:
     if not auth_ready(request):
         return _error(401, "unauthorized", "로그인이 필요합니다.")
@@ -359,35 +364,29 @@ async def b66_saved_skill_candidate_operator_decision(request: Request) -> JSONR
     except Exception:
         return _error(503, "operator_unavailable", "운영자 권한을 확인할 수 없습니다.")
 
-    if request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/json":
-        return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
     try:
         body = await read_bounded_request_body(request, max_bytes=MAX_BODY_BYTES)
     except RequestBodyTooLarge:
-        return _error(413, "request_too_large", "요청이 너무 큽니다.")
-    if not body:
-        return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     try:
         data = json.loads(body.decode("utf-8"))
-    except (UnicodeDecodeError, json.JSONDecodeError):
+    except (UnicodeDecodeError, json.JSONDecodeError, AttributeError):
         return _error(400, "invalid_json", "유효한 JSON 형식이 아닙니다.")
     if not isinstance(data, dict):
         return _error(400, "invalid_payload", "요청 데이터는 객체여야 합니다.")
-    allowed_fields = {"action", "rejection_reason"}
-    if set(data) - allowed_fields:
+    if set(data) - {"action", "rejection_reason"}:
         return _error(400, "unsupported_field", "지원되지 않는 요청 필드가 있습니다.")
     action = data.get("action")
     if action not in {"approve", "reject"}:
         return _error(400, "invalid_decision", "승인 action 형식이 올바르지 않습니다.")
     rejection_raw = data.get("rejection_reason")
+    rejection_reason: str | None = None
     if rejection_raw is not None:
         if not isinstance(rejection_raw, str):
             return _error(400, "invalid_rejection_reason", "거부 사유 형식이 올바르지 않습니다.")
         rejection_reason = rejection_raw.strip()
-    else:
-        rejection_reason = None
-    if len(rejection_reason or "") > 200:
-        return _error(400, "invalid_rejection_reason", "거부 사유가 너무 깁니다.")
+        if len(rejection_reason) > 200:
+            return _error(400, "invalid_rejection_reason", "거부 사유가 너무 깁니다.")
 
     candidate_id = request.path_params.get("candidate_id", "")
     grant = await _trusted_grant(request)
