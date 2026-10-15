@@ -26,6 +26,7 @@ from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
 from .b66_saved_skill_candidate_store import (
+    CANDIDATE_STATUSES,
     MAX_CANDIDATES,
     SavedQuoteSkillCandidateStoreError,
     canonicalize_candidate_submission,
@@ -187,6 +188,93 @@ async def b66_saved_skill_candidate_detail(request: Request) -> JSONResponse:
 
     try:
         value = get_fn(user_id=uid, workspace_id=workspace_id, candidate_id=candidate_id)
+        candidate = await value if inspect.isawaitable(value) else value
+    except SavedQuoteSkillCandidateStoreError:
+        return _error(400, "invalid_candidate_id", "승인 요청 ID 형식이 올바르지 않습니다.")
+    except Exception:
+        return _error(503, "candidate_read_failed", "승인 요청을 불러오지 못했습니다.")
+    if candidate is None:
+        return _error(404, "candidate_not_found", "승인 요청을 찾을 수 없습니다.")
+    return JSONResponse({"ok": True, "candidate": candidate}, headers=_NO_STORE)
+
+
+async def b66_saved_skill_candidate_operator_list(request: Request) -> JSONResponse:
+    if not auth_ready(request):
+        return _error(401, "unauthorized", "로그인이 필요합니다.")
+    try:
+        uid = current_user_id(request)
+    except Exception:
+        return _error(401, "unauthorized", "로그인이 필요합니다.")
+    if not uid:
+        return _error(401, "unauthorized", "로그인이 필요합니다.")
+
+    admin_store = getattr(request.app.state, "b66_member_admin_store", None)
+    admin_fn = getattr(admin_store, "is_google_admin", None) if admin_store is not None else None
+    if not callable(admin_fn):
+        return _error(503, "operator_unavailable", "운영자 권한을 확인할 수 없습니다.")
+    try:
+        allowed = await admin_fn(uid)
+    except Exception:
+        return _error(503, "operator_unavailable", "운영자 권한을 확인할 수 없습니다.")
+    if allowed is not True:
+        return _error(403, "operator_forbidden", "운영자 권한이 없습니다.")
+
+    store = _store(request)
+    list_fn = getattr(store, "list_operator_candidates", None) if store is not None else None
+    if not callable(list_fn):
+        return _error(503, "candidate_store_unavailable", "승인 대기 목록을 확인할 수 없습니다.")
+
+    if any(key not in {"status", "limit"} for key in request.query_params):
+        return _error(400, "invalid_filter", "요청 필터 형식이 올바르지 않습니다.")
+    raw_status = request.query_params.get("status", "pending")
+    if raw_status not in CANDIDATE_STATUSES:
+        return _error(400, "invalid_status", "status 형식이 올바르지 않습니다.")
+    raw_limit = request.query_params.get("limit")
+    try:
+        limit = MAX_LIST_LIMIT if raw_limit is None else int(raw_limit)
+    except (TypeError, ValueError):
+        return _error(400, "invalid_limit", "limit 형식이 올바르지 않습니다.")
+    if limit < 1:
+        return _error(400, "invalid_limit", "limit 형식이 올바르지 않습니다.")
+
+    try:
+        value = list_fn(status=raw_status, limit=min(limit, MAX_LIST_LIMIT))
+        candidates = await value if inspect.isawaitable(value) else value
+    except Exception:
+        return _error(503, "candidate_read_failed", "승인 대기 목록을 불러오지 못했습니다.")
+    if not isinstance(candidates, list):
+        return _error(503, "candidate_read_failed", "승인 대기 목록을 불러오지 못했습니다.")
+    return JSONResponse({"ok": True, "status": raw_status, "candidates": candidates}, headers=_NO_STORE)
+
+
+async def b66_saved_skill_candidate_operator_detail(request: Request) -> JSONResponse:
+    if not auth_ready(request):
+        return _error(401, "unauthorized", "로그인이 필요합니다.")
+    try:
+        uid = current_user_id(request)
+    except Exception:
+        return _error(401, "unauthorized", "로그인이 필요합니다.")
+    if not uid:
+        return _error(401, "unauthorized", "로그인이 필요합니다.")
+
+    admin_store = getattr(request.app.state, "b66_member_admin_store", None)
+    admin_fn = getattr(admin_store, "is_google_admin", None) if admin_store is not None else None
+    if not callable(admin_fn):
+        return _error(503, "operator_unavailable", "운영자 권한을 확인할 수 없습니다.")
+    try:
+        allowed = await admin_fn(uid)
+    except Exception:
+        return _error(503, "operator_unavailable", "운영자 권한을 확인할 수 없습니다.")
+    if allowed is not True:
+        return _error(403, "operator_forbidden", "운영자 권한이 없습니다.")
+
+    candidate_id = request.path_params.get("candidate_id", "")
+    store = _store(request)
+    get_fn = getattr(store, "get_operator_candidate", None) if store is not None else None
+    if not callable(get_fn):
+        return _error(503, "candidate_store_unavailable", "승인 요청을 확인할 수 없습니다.")
+    try:
+        value = get_fn(candidate_id=candidate_id)
         candidate = await value if inspect.isawaitable(value) else value
     except SavedQuoteSkillCandidateStoreError:
         return _error(400, "invalid_candidate_id", "승인 요청 ID 형식이 올바르지 않습니다.")
