@@ -2,6 +2,14 @@
 
 This file is the repository-wide entry point for AI-assisted work. A more specific `AGENTS.md` may add constraints for a subtree but may not weaken these repository-wide safety and evidence rules.
 
+## Owner-facing Korean report language — explicit instruction (2026-10-16)
+
+- **Forbidden wording:** Do not use the Korean adversative connector `다만` anywhere in Owner-facing Korean answers, interim/final status reports, handoff messages, GitHub PR/Issue progress summaries, or explanations. This is an explicit repeated Owner preference, not an optional stylistic suggestion. Before sending Korean prose to the Owner, inspect the final answer for the exact expression and rewrite it.
+- Do not immediately follow an Owner instruction with that connector or with rhetorical exceptions that narrow the requested work, presume refusal, add needless approval gates, or redirect the task without evidence.
+- When genuine limitations exist, **report the facts directly and separately** using `현재 확인 상태:`, `확인된 제약:`, `원인:`, `해결 방법:`, `다음 실행:`. Continue independently authorized work. Never hide actual security, legal, authentication, data-isolation, or deployment constraints.
+- Preserve verbatim external source code/logs/legal quotations when their literal content is necessary; the prohibition governs the assistant's authored prose, not source-data mutation. It does not create new product permissions or override real security enforcement.
+- New GitHub-aware agent sessions must read this rule. Existing conversations/workers may require instruction reload; committing this document does not automatically edit their runtime instructions.
+
 ## Non-public company governance (read before business decisions)
 
 This repository contains **public development and engineering policy**, not the authoritative text of PADIEM's internal business policy. Business instructions are local-only on the authorized **Padiem-Command-Center** PC:
