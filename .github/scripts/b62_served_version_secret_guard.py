@@ -204,8 +204,9 @@ def verify_secret_set(
     expected: tuple[tuple[str, str], ...], post_bindings: list[dict], *,
     allow_web_store_additions: bool = False,
     allow_b66_membership_secret: bool = False,
+    allow_grafana_telemetry: bool = False,
 ) -> None:
-    if allow_web_store_additions and allow_b66_membership_secret:
+    if sum((allow_web_store_additions, allow_b66_membership_secret, allow_grafana_telemetry)) > 1:
         raise ServedVersionGuardError("multiple additive secret modes prohibited")
     require_required_secrets(post_bindings, stage="post-deploy")
     post = secret_name_type_set(post_bindings)
@@ -220,6 +221,20 @@ def verify_secret_set(
             if item is None or any(item.get(k) != val for k, val in identity.items()):
                 raise ServedVersionGuardError("web Secrets Store served identity missing or drift")
         expected = tuple(sorted((*expected, *((name, "secrets_store_secret") for name in approved if name not in baseline_names))))
+    if allow_grafana_telemetry:
+        approved = {
+            "type": "secrets_store_secret", "name": "PADIEM_GRAFANA_OTLP_TOKEN",
+            "store_id": "f0b09ca04a7b43248154c773704a5616",
+            "secret_name": "PADIEM_GRAFANA_OTLP_TOKEN",
+        }
+        originals = {name: kind for name, kind in expected}
+        if approved["name"] in originals and originals[approved["name"]] != approved["type"]:
+            raise ServedVersionGuardError("Grafana original binding type drift")
+        matching = [x for x in post_bindings if x.get("name") == approved["name"]]
+        if len(matching) != 1 or any(matching[0].get(k) != v for k, v in approved.items()):
+            raise ServedVersionGuardError("Grafana served Secrets Store identity missing or drift")
+        if approved["name"] not in originals:
+            expected = tuple(sorted((*expected, (approved["name"], approved["type"]))))
     if allow_b66_membership_secret:
         approved = ("B66_MEMBERSHIP_ENFORCED", "secret_text")
         if approved[0] in {name for name, _ in expected}:
@@ -286,11 +301,12 @@ def _run_verify(args: argparse.Namespace) -> int:
         expected, bindings,
         allow_web_store_additions=args.allow_add_existing_web_secrets_store,
         allow_b66_membership_secret=args.allow_add_existing_b66_membership_secret,
+        allow_grafana_telemetry=args.allow_add_existing_grafana_telemetry,
     )
     print(f"POSTDEPLOY_SERVED_VERSION_ID={version_id}")
     print(f"POSTDEPLOY_SERVED_SECRET_COUNT={len(secret_name_type_set(bindings))}")
     _emit_required_present(bindings)
-    if args.allow_add_existing_web_secrets_store or args.allow_add_existing_b66_membership_secret:
+    if args.allow_add_existing_web_secrets_store or args.allow_add_existing_b66_membership_secret or args.allow_add_existing_grafana_telemetry:
         print("SERVED_VERSION_SECRET_SET_APPROVED_ADDITIONS=PASS")
     else:
         print("SERVED_VERSION_SECRET_SET_EQUALITY=PASS")
@@ -312,6 +328,7 @@ def main(argv: list[str] | None = None) -> int:
     verify.add_argument("--expected", required=True, type=Path)
     verify.add_argument("--allow-add-existing-web-secrets-store", action="store_true")
     verify.add_argument("--allow-add-existing-b66-membership-secret", action="store_true")
+    verify.add_argument("--allow-add-existing-grafana-telemetry", action="store_true")
     verify.add_argument("--deployments", required=True, type=Path)
     verify.add_argument("--version-detail", required=True, type=Path)
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)

@@ -140,3 +140,74 @@ def test_workflow_explicit_opt_in_pins_no_source_mode_and_checks_both_postcondit
     assert "--expected-add-web-secrets-store" in text
     assert "--allow-add-existing-web-secrets-store" in text
     assert 'if [ "${ATTACH_WEB_SECRETS_STORE}" = "true" ]; then' in text
+
+def test_grafana_exact_secret_store_opt_in_builder_and_both_served_guards(tmp_path):
+    """No token bytes: only one canonical existing Secret Store binding is allowed."""
+    builder = load("b62_cloudflare_production_deploy_config")
+    state_guard = load("b62_binding_state_guard")
+    served_guard = load("b62_served_version_secret_guard")
+    conf = config(tmp_path)
+    conf.write_text(
+        conf.read_text(encoding="utf-8") +
+        '\n[[secrets_store_secrets]]\n'
+        'binding = "PADIEM_GRAFANA_OTLP_TOKEN"\n'
+        'store_id = "f0b09ca04a7b43248154c773704a5616"\n'
+        'secret_name = "PADIEM_GRAFANA_OTLP_TOKEN"\n',
+        encoding="utf-8",
+    )
+    base = baseline()
+    approved = {
+        "type": "secrets_store_secret", "name": "PADIEM_GRAFANA_OTLP_TOKEN",
+        "store_id": "f0b09ca04a7b43248154c773704a5616",
+        "secret_name": "PADIEM_GRAFANA_OTLP_TOKEN",
+    }
+    live = builder.parse_live_bindings(envelope(base))
+    baseline_config = builder.build_production_config(live, conf, "https://chat.padiem.net")
+    assert "PADIEM_GRAFANA_OTLP_TOKEN" not in baseline_config
+    candidate = builder.build_production_config(
+        live, conf, "https://chat.padiem.net", attach_grafana_telemetry=True,
+    )
+    assert tomllib.loads(candidate)["secrets_store_secrets"] == [{
+        "binding": approved["name"], "store_id": approved["store_id"],
+        "secret_name": approved["secret_name"],
+    }]
+    assert builder.verify_mutation_zero(candidate, live) is None
+    current = builder.parse_live_bindings(envelope(base + [approved]))
+    assert len(tomllib.loads(builder.build_production_config(
+        current, conf, "https://chat.padiem.net", attach_grafana_telemetry=True
+    ))["secrets_store_secrets"]) == 1
+    state_guard.assert_exact_grafana_telemetry_added_only(envelope(base), envelope(base + [approved]))
+    state_guard.assert_exact_grafana_telemetry_added_only(envelope(base + [approved]), envelope(base + [approved]))
+    expected = tuple(sorted((name, kind) for name, kind in [
+        ("PADIEM_CHAT_QUOTA_SALT", "secret_text"), ("P01_ENGINE_CREDENTIAL", "secret_text"),
+    ]))
+    served_guard.verify_secret_set(expected, base + [approved], allow_grafana_telemetry=True)
+    with pytest.raises(served_guard.ServedVersionGuardError):
+        served_guard.verify_secret_set(expected, base + [approved])
+    for wrong in [
+        {**approved, "store_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+        {**approved, "secret_name": "WRONG_OTLP"},
+        {**approved, "type": "secret_text"},
+        {**approved, "name": "UNEXPECTED_SECRET"},
+    ]:
+        with pytest.raises(state_guard.BindingStateError):
+            state_guard.assert_exact_grafana_telemetry_added_only(envelope(base), envelope(base + [wrong]))
+        with pytest.raises(served_guard.ServedVersionGuardError):
+            served_guard.verify_secret_set(expected, base + [wrong], allow_grafana_telemetry=True)
+    with pytest.raises(state_guard.BindingStateError):
+        state_guard.assert_exact_grafana_telemetry_added_only(
+            envelope(base), envelope(base[1:] + [approved]))
+    with pytest.raises(state_guard.BindingStateError):
+        state_guard.assert_exact_grafana_telemetry_added_only(
+            envelope(base), envelope(base + [approved, {"type":"secret_text","name":"EXTRA"}]))
+    corrupted = builder.parse_live_bindings(envelope(base + [{**approved, "store_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}]))
+    with pytest.raises(builder.ProductionConfigError):
+        builder.build_production_config(
+            corrupted, conf, "https://chat.padiem.net", attach_grafana_telemetry=True)
+    guarded = (ROOT / ".github/workflows/b62-production-code-deploy-gate.yml").read_text(encoding="utf-8")
+    for marker in (
+        "attach_existing_grafana_telemetry:", "DEPLOY_B62_GRAFANA_TELEMETRY_FROM_EXACT_MAIN",
+        "--attach-existing-grafana-telemetry", "--expected-add-grafana-telemetry",
+        "--allow-add-existing-grafana-telemetry", "GRAFANA_SERVED_IMMUTABLE_BINDING=PASS",
+    ):
+        assert marker in guarded

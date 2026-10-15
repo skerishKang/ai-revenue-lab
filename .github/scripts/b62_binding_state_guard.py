@@ -206,6 +206,18 @@ def assert_exact_b66_membership_secret_only(before: object, after: object) -> No
         raise BindingStateError("expected only exact B66 membership secret addition")
 
 
+def assert_exact_grafana_telemetry_added_only(before: object, after: object) -> None:
+    """One explicit, metadata-only Grafana Secrets Store addition; no other drift."""
+    prior = set(canonical_state(before))
+    current = set(canonical_state(after))
+    approved = _ENGINE_GRAFANA_APPROVED_ADDITION
+    if approved in prior:
+        if prior != current:
+            raise BindingStateError("Grafana binding already present; unrelated authority drift")
+    elif current != prior | {approved}:
+        raise BindingStateError("expected only exact existing Grafana Secrets Store reference")
+
+
 def assert_engine_4194_exact_rollout(before: object, after: object) -> None:
     """Preserve ALL previous bindings; permit only two exact reviewed additions.
 
@@ -488,6 +500,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--expected-add-owner-d1", action="store_true")
     parser.add_argument("--expected-add-web-secrets-store", action="store_true")
     parser.add_argument("--expected-engine-4194-rollout", action="store_true")
+    parser.add_argument("--expected-add-grafana-telemetry", action="store_true",
+                        help="only one canonical Grafana Secrets Store binding, no values")
     parser.add_argument("--expected-add-hark-browser", action="store_true")
     parser.add_argument("--expected-add-connector-broker", action="store_true")
     parser.add_argument("--expected-add-claw-public-search", action="store_true")
@@ -504,6 +518,7 @@ def main(argv: list[str] | None = None) -> int:
             args.expected_add_owner_d1,
             args.expected_add_web_secrets_store,
             args.expected_engine_4194_rollout,
+            args.expected_add_grafana_telemetry,
             args.expected_add_hark_browser,
             args.expected_add_connector_broker,
             args.expected_add_claw_public_search,
@@ -515,6 +530,10 @@ def main(argv: list[str] | None = None) -> int:
             if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
                 raise BindingStateError("Engine #4194 mode refuses unrelated authorization arguments")
             assert_engine_4194_exact_rollout(_load(args.before), _load(args.after))
+        elif args.expected_add_grafana_telemetry:
+            if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
+                raise BindingStateError("Grafana additive mode refuses unrelated authority flags")
+            assert_exact_grafana_telemetry_added_only(_load(args.before), _load(args.after))
         elif args.expected_add_claw_public_search:
             if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
                 raise BindingStateError("Claw search mode refuses unrelated authority flags")

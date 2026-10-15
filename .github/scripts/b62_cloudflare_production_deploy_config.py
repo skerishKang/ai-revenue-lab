@@ -26,6 +26,11 @@ from b62_web_secrets_store_contract import expected_web_secret_bindings, require
 
 EXPECTED_WORKER = "padiem-chat"
 OWNER_P01_D1_BINDING = "BROWSER_CONTROL_OWNER_P01_D1"
+GRAFANA_OTLP_BINDING = {
+    "type": "secrets_store_secret", "name": "PADIEM_GRAFANA_OTLP_TOKEN",
+    "store_id": "f0b09ca04a7b43248154c773704a5616",
+    "secret_name": "PADIEM_GRAFANA_OTLP_TOKEN",
+}
 SUPPORTED_BINDING_TYPES = {"assets", "service", "d1", "r2_bucket", "browser", "plain_text", "secret_text", "version_metadata", "secrets_store_secret"}
 HARK_BROWSER_BINDING = "BROWSER"
 # #4139 opt-in candidate builder only: never activated via production CLI.
@@ -164,6 +169,7 @@ def build_production_config(
     commission_hark_browser: bool = False,
     attach_connector_broker_service: bool = False,
     activate_claw_public_search: bool = False,
+    attach_grafana_telemetry: bool = False,
 ) -> str:
     try:
         repo = tomllib.loads(repo_config_path.read_text(encoding="utf-8"))
@@ -405,6 +411,34 @@ def build_production_config(
         except ValueError as exc:
             raise ProductionConfigError("web Secrets Store identity drift") from exc
         store_bindings.extend(additions.values())
+    if attach_grafana_telemetry:
+        declarations = repo.get("secrets_store_secrets")
+        if not isinstance(declarations, list) or [
+            d for d in declarations if isinstance(d, dict)
+            and d.get("binding") == GRAFANA_OTLP_BINDING["name"]
+        ] != [{
+            "binding": GRAFANA_OTLP_BINDING["name"],
+            "store_id": GRAFANA_OTLP_BINDING["store_id"],
+            "secret_name": GRAFANA_OTLP_BINDING["secret_name"],
+        }]:
+            raise ProductionConfigError("Grafana source binding identity mismatch")
+        all_other_names = (
+            {i["name"] for key in ("assets", "services", "d1", "r2") for i in live[key]}
+            | set(live["vars"]) | set(live["secret_names"])
+        )
+        if live["version_metadata"] is not None:
+            all_other_names.add(live["version_metadata"]["name"])
+        if live["browser"] is not None:
+            all_other_names.add(live["browser"]["name"])
+        if GRAFANA_OTLP_BINDING["name"] in all_other_names:
+            raise ProductionConfigError("Grafana binding name collides with live authority")
+        existing = [item for item in store_bindings
+                    if item["name"] == GRAFANA_OTLP_BINDING["name"]]
+        if existing:
+            if len(existing) != 1 or existing[0] != GRAFANA_OTLP_BINDING:
+                raise ProductionConfigError("Grafana live Secrets Store metadata drift")
+        else:
+            store_bindings.append(dict(GRAFANA_OTLP_BINDING))
     for item in store_bindings:
         lines.append("[[secrets_store_secrets]]")
         lines.append(f"binding = {_toml_string(item['name'])}")
@@ -527,6 +561,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--commission-hark-browser", action="store_true", help="owner-authorized additive BROWSER binding, no PDF calls")
     parser.add_argument("--attach-existing-connector-broker", action="store_true",
                         help="generate a candidate with only the existing canonical Broker Service Binding; does not deploy")
+    parser.add_argument("--attach-existing-grafana-telemetry", action="store_true",
+                        help="only the existing exact Grafana Secrets Store reference")
     parser.add_argument("--activate-claw-public-search", action="store_true",
                         help="owner-reviewed single exact Claw public search ON var, preserving every other live binding")
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
@@ -534,6 +570,12 @@ def main(argv: list[str] | None = None) -> int:
     try:
         payload = json.loads(args.settings.read_text(encoding="utf-8"))
         live = parse_live_bindings(payload)
+        if args.attach_existing_grafana_telemetry and (
+            args.attach_existing_connector_broker or args.commission_hark_browser
+            or args.attach_existing_web_secrets_store or args.owner_d1_database_id is not None
+            or args.activate_claw_public_search
+        ):
+            raise ProductionConfigError("Grafana activation must be the only additive mode")
         if args.activate_claw_public_search and (
             args.attach_existing_connector_broker or args.commission_hark_browser
             or args.attach_existing_web_secrets_store or args.owner_d1_database_id is not None
@@ -563,6 +605,7 @@ def main(argv: list[str] | None = None) -> int:
             commission_hark_browser=args.commission_hark_browser,
             attach_connector_broker_service=args.attach_existing_connector_broker,
             activate_claw_public_search=args.activate_claw_public_search,
+            attach_grafana_telemetry=args.attach_existing_grafana_telemetry,
         )
         verify_mutation_zero(
             config_text, live,
@@ -592,6 +635,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"SECRET_BINDINGS_PRESERVED_BY_PLATFORM={len(secret_names)}")
     print(f"SECRETS_STORE_BINDINGS_PRESERVED={len(live['secrets_store'])}")
     print(f"WEB_SECRETS_STORE_ATTACH_REQUESTED={int(args.attach_existing_web_secrets_store)}")
+    print(f"GRAFANA_TELEMETRY_ATTACH_REQUESTED={int(args.attach_existing_grafana_telemetry)}")
     print(f"CONNECTOR_BROKER_BINDING_CANDIDATE={int(args.attach_existing_connector_broker)}")
     if args.attach_existing_connector_broker:
         assert isinstance(plain_vars, dict)
