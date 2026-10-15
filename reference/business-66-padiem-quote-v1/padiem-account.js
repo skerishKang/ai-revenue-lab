@@ -1191,7 +1191,8 @@
         }
         const filename = pdfFilename(null, renderModel.facts && renderModel.facts.meta &&
           renderModel.facts.meta.quoteNo);
-        const blobUrl = window.URL.createObjectURL(new window.Blob([bytes], { type: "application/pdf" }));
+        const pdfBlob = new window.Blob([bytes], { type: "application/pdf" });
+        const blobUrl = window.URL.createObjectURL(pdfBlob);
         const anchor = document.createElement("a");
         try {
           anchor.href = blobUrl;
@@ -1203,7 +1204,7 @@
           anchor.remove();
           window.setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
         }
-        return { ok: true, filename };
+        return { ok: true, filename, blob: pdfBlob };
       } catch (error) {
         if (error && error.code === "browser_pdf_unsupported_rows") {
           return pdfFailure("cgi_unsupported_rows",
@@ -1236,7 +1237,8 @@
         return pdfFailure("pdf_skill_changed", "내 견적서 선택과 현재 견적 내용을 확인한 뒤 다시 저장해 주세요.");
       }
       const filename = pdfFilename(response.headers.get("content-disposition"), renderModel.facts && renderModel.facts.meta && renderModel.facts.meta.quoteNo);
-      const blobUrl = window.URL.createObjectURL(new window.Blob([buffer], { type: "application/pdf" }));
+      const pdfBlob = new window.Blob([buffer], { type: "application/pdf" });
+      const blobUrl = window.URL.createObjectURL(pdfBlob);
       const anchor = document.createElement("a");
       try {
         anchor.href = blobUrl;
@@ -1248,7 +1250,7 @@
         anchor.remove();
         window.setTimeout(() => window.URL.revokeObjectURL(blobUrl), 0);
       }
-      return { ok: true, filename };
+      return { ok: true, filename, blob: pdfBlob };
     } catch (_) {
       return pdfFailure("pdf_unavailable");
     }

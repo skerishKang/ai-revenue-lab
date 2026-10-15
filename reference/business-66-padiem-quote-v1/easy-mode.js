@@ -41,6 +41,9 @@
   // #4803: server-owned B66 authoring revision (separate from saved free-chat IDs).
   let quoteConversationRevision = null;
   let quoteConversationEngaged = false;
+  let approvedConversationQuoteNo = null;
+  let approvedConversationDraftSnapshot = null;
+  const quoteArtifactUrls = [];
   let accountScopeRevision = 0;
   let guidedSaveQueue = Promise.resolve();
   let guidedSaveRevision = 0;
@@ -571,19 +574,47 @@
     return messages[code] || "견적 대화 요청을 완료하지 못했습니다. (" + String(code || "unknown") + ")";
   }
 
+  function releaseQuoteArtifacts() {
+    while (quoteArtifactUrls.length) URL.revokeObjectURL(quoteArtifactUrls.pop());
+  }
+
+  // The only file offered in a chat result is the Blob actually returned by
+  // the existing authenticated/certified B66 PDF renderer after its guards pass.
+  function appendQuoteArtifact(blob, filename) {
+    if (!(blob instanceof Blob) || blob.type !== "application/pdf" ||
+        !Number.isFinite(blob.size) || blob.size < 5) return;
+    const article = addMessage("assistant", "견적서 PDF 파일이 생성되었습니다.");
+    const body = article && article.querySelector(".easy-message-body");
+    if (!body) return;
+    const url = URL.createObjectURL(blob);
+    quoteArtifactUrls.push(url);
+    const link = document.createElement("a");
+    link.className = "easy-file-card";
+    link.href = url;
+    link.download = String(filename || "견적서.pdf").replace(/[\\/]/g, "_");
+    link.textContent = "PDF 견적서 다운로드: " + link.download;
+    link.setAttribute("aria-label", "생성된 PDF 견적서 다운로드");
+    body.appendChild(link);
+  }
+
   function applyApprovedConversationDraft(input) {
     if (!input || input.sourceKind !== "b66.ai-conversation" ||
         !Array.isArray(input.items) || !input.items.length || input.missing?.length) {
       return { ok: false, code: "invalid_approved_draft" };
     }
-    // Never silently overwrite a current customer quote. The approval chip
-    // confirms the new draft, but replacement of another existing quote needs
-    // a distinct explicit choice once.
-    if (typeof App.hasMeaningfulDraft === "function" && App.hasMeaningfulDraft() &&
-        !window.confirm("기존에 작성 중인 견적 내용이 있습니다. 새 견적으로 교체하시겠습니까?")) {
+    const active = App.getDraft();
+    const revising = Boolean(approvedConversationQuoteNo);
+    if (revising && (!active || active.meta.quoteNo !== approvedConversationQuoteNo ||
+        JSON.stringify(active) !== approvedConversationDraftSnapshot)) {
+      return { ok: false, code: "quote_changed_outside_conversation" };
+    }
+    // A new conversation may start while another quote is open. Do not
+    // substitute the target or overwrite it without an explicit customer choice.
+    if (!revising && History && History.isMeaningfulDraft(active) &&
+        !window.confirm("작성 중인 기존 견적이 있습니다. 새 견적 내용으로 교체하시겠습니까?")) {
       return { ok: false, code: "existing_draft_preserved" };
     }
-    const draft = App.createBlankNextDraft();
+    const draft = revising ? active : App.createBlankNextDraft();
     if (!draft) return { ok: false, code: "draft_not_ready" };
     const rec = input.recipient || {};
     draft.recipient = {
@@ -593,7 +624,7 @@
       email: String(rec.email || "")
     };
     draft.items = input.items.map((item, i) => ({
-      id: "item-" + (i + 1),
+      id: revising && active.items[i] ? active.items[i].id : "item-" + (i + 1),
       name: item.name, qty: item.qty, unitPrice: item.unitPrice,
       ...(item.unit ? { unit: item.unit } : {})
     }));
@@ -603,10 +634,13 @@
     if (taxKnown) draft.tax.mode = input.taxMode;
     const result = App.replaceDraft(draft, {
       requireTaxReview: !taxKnown,
-      toast: "견적 초안을 반영했습니다. 미리보기와 금액을 확인해 주세요."
+      toast: revising ? "같은 견적서의 수량·단가를 수정했습니다." :
+        "견적 초안을 반영했습니다. 금액을 확인해 주세요."
     });
-    return result && result.ok ? { ok: true, draft: result.draft } :
-      { ok: false, code: "draft_apply_failed" };
+    if (!result || !result.ok) return { ok: false, code: "draft_apply_failed" };
+    approvedConversationQuoteNo = result.draft.meta.quoteNo;
+    approvedConversationDraftSnapshot = JSON.stringify(result.draft);
+    return { ok: true, draft: result.draft, revising };
   }
 
   function conversationQuoteChips(bridge, result, viewGeneration) {
@@ -632,17 +666,19 @@
       if (!applied.ok) {
         addMessage("assistant", applied.code === "existing_draft_preserved"
           ? "기존 견적을 보존했습니다. 새 견적 내용은 대화에 남아 있습니다."
-          : "견적 초안 반영에 실패했습니다. PDF를 생성하지 않았습니다.");
+          : applied.code === "quote_changed_outside_conversation"
+            ? "다른 화면에서 견적 내용이 변경됐습니다. 임의로 덮어쓰지 않았습니다. 변경 대상을 확인해 주세요."
+            : "견적 초안 반영에 실패했습니다. PDF를 생성하지 않았습니다.");
       } else {
         addResultReview(applied.draft, !result.draft.taxMode);
         // addResultReview disables the composer for the older guided flow.
         // The new server-owned quote thread must stay interactive.
         chips.push({
-          label: "PDF 생성·다운로드",
+          label: applied.revising ? "수정된 PDF 만들기" : "PDF 만들기",
           action: () => {
             const print = $("printPdf");
             if (print && !print.disabled) print.click();
-            else addMessage("assistant", "승인된 PDF 출력 기능을 확인하지 못했습니다.");
+            else addMessage("assistant", "인증된 PDF 출력이 준비되지 않았습니다. 양식·부가세 조건을 확인해 주세요.");
           }
         });
         chips.push({ label: "견적서 보기", action: () => setWorkspaceMode("direct") });
@@ -2254,6 +2290,9 @@
     interpretationInFlight = false;
     quoteConversationRevision = null;
     quoteConversationEngaged = false;
+    approvedConversationQuoteNo = null;
+    approvedConversationDraftSnapshot = null;
+    releaseQuoteArtifacts();
     /* #4657: the previous owner's dialogue id, list and pending restore are
        dropped with the rest of the private state, so a late answer cannot be
        saved into — or displayed under — the new account. */
@@ -2307,10 +2346,18 @@
   document.addEventListener("b66:open-easy-chat", () => {
     setWorkspaceMode("easy");
   });
+  document.addEventListener("b66:quote-pdf-ready", (event) => {
+    if (!accountSignedIn || !quoteConversationEngaged || lastEasyView !== "free-form") return;
+    const detail = event.detail || {};
+    appendQuoteArtifact(detail.blob, detail.filename);
+  });
 
   // An accepted new quote starts a new visible dialogue, not a continuation
   // of the prior server-owned conversation. Saved history remains untouched.
   document.addEventListener("b66:new-quote-started", () => {
+    approvedConversationQuoteNo = null;
+    approvedConversationDraftSnapshot = null;
+    releaseQuoteArtifacts();
     guided = null;
     guidedSnapshot = null;
     selectedFile = null;
