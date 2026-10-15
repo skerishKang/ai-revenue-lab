@@ -1,4 +1,4 @@
-"""Shared Plus/Pro/Max product-tier route declaration contract v1 (#2099 STEP-1).
+"""Shared Free/Plus/Pro/Max product-tier route declaration contract v1.
 
 Stdlib-only, network-free, execution-free data contract — the canonical
 DECLARATION of which explicit provider route backs each user-visible Padiem
@@ -23,13 +23,14 @@ Separation of duties (#2099 ACT-0 decision):
     declared route can only run if B14 has it registered and not retired.
     Retired model IDs here mirror B14's RETIRED_KILO_FREE_MODEL_IDS and Chat's
     RETIRED_B14_MODEL_IDS; STEP-1 pins all three in agreement via parity
-    tests. Migration of consumers is sequenced in #2099 STEP-2/STEP-3;
-    apps/korean-ai-platform/app/pilot/tier_registry_v1.py is a legacy
-    governance projection and stays runtime-unwired.
+    tests. Chat and Claw now consume these declarations through the shared
+    tier resolver. apps/korean-ai-platform/app/pilot/tier_registry_v1.py
+    is a separate legacy governance projection, not the live route.
 
 Credential fields carry binding NAMES only (platform secret identifiers),
-never secret values. This module performs no I/O, no imports outside the
-standard library, and is not wired into any gateway/router/policy runtime.
+never secret values. This module performs no I/O or provider dispatch;
+Chat and Claw read its route definitions and B14 separately owns
+registration, upstream execution and recoverable-error failover.
 """
 
 from __future__ import annotations
@@ -76,10 +77,9 @@ class ProductCredentialMode(str, Enum):
     ANONYMOUS = "anonymous"
     PLATFORM_SECRET_BINDING = "platform_secret_binding"
 
-# Product-level HOLD sentinels are product identities, not B14 catalog model IDs.
-# Plus is temporarily held after the Space Bunny free lane ended and before an
-# explicit successor is selected (#3568). Pro and Max retain their existing
-# independent HOLD gates.
+# Historical HOLD sentinels are identity markers, not active B14 model IDs.
+# The active Free/Plus/Pro/Max primary routes below use Cat Jam. Retaining old
+# HOLD entries documents retired choices; it does not disable a current grade.
 PLUS_HOLD_MODEL_ID = "padiem-profile/plus-hold"
 PRO_HOLD_MODEL_ID = "padiem-profile/pro-hold"
 MAX_HOLD_MODEL_ID = "padiem-profile/max-hold"
@@ -180,7 +180,7 @@ def validate_product_tier_routes(tiers: tuple[ProductTierDefinition, ...]) -> No
             )
         _require(
             tier.silent_fallback_allowed is False,
-            f"{tier.label.value}: silent fallback is forbidden by owner policy",
+            f"{tier.label.value}: unlisted silent fallback is forbidden; owner-pinned grade backup remains allowed",
         )
         _require(
             tier.policy_version == PRODUCT_TIER_POLICY_VERSION,
@@ -214,7 +214,7 @@ def validate_product_tier_routes(tiers: tuple[ProductTierDefinition, ...]) -> No
             }
             _require(
                 {"qwen", "glm"} <= held,
-                "Padiem Max must hold qwen and glm as data-only pending evidence (#1397)",
+                "Max historical qwen and glm entries must remain data-only",
             )
             _require(
                 all(
@@ -254,9 +254,9 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
                 model_family="plus",
                 model_id=PLUS_HOLD_MODEL_ID,
                 hold_reason=(
-                    "Owner decision #3568: Space Bunny free availability ended and no "
-                    "successor model is selected yet. Padiem Plus remains a product identity "
-                    "but must fail closed before B14/provider dispatch."
+                    "Historical #3568: the Space Bunny free route ended, so Plus was held "
+                    "pending another primary at that time. This retained HOLD identity "
+                    "does not block the currently executable Plus Cat Jam route."
                 ),
                 evidence="#3568 model-independent successor-pending hold.",
             ),
@@ -269,9 +269,9 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
                 upstream_model="stealth/space-bunny-alpha",
                 credential_mode=ProductCredentialMode.ANONYMOUS,
                 hold_reason=(
-                    "Owner decision #3568: the Space Bunny free lane is no longer used "
-                    "for Padiem/Claw execution. Retained as historical route metadata only; "
-                    "it is never a silent fallback while a successor is pending."
+                    "Historical #3568: the Space Bunny free lane is no longer used "
+                    "for Padiem/Claw execution. Retained as inactive history, "
+                    "not as a designated grade fallback."
                 ),
                 evidence=(
                     "Historical owner decision #3209 / #3143 and Production evidence in "
@@ -290,8 +290,8 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
                 hold_reason=(
                     "Superseded as the active Padiem Plus route by owner decision "
                     "#3209 (Space Bunny Alpha). Retained as historical data only; "
-                    "the Agnes provider registration itself is preserved and never "
-                    "a silent fallback."
+                    "the Agnes provider registration itself is preserved, but it is not "
+                    "a designated current grade fallback."
                 ),
                 evidence=(
                     "Historical Plus route; B14 app/pilot/agnes_provider.py "
@@ -308,9 +308,9 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
                 credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
                 credential_binding="PADIEM_POOLSIDE_API_KEY",
                 hold_reason=(
-                    "Poolside Laguna is the owner-designated second fixed-chain position; "
-                    "retained as data only in the product-tier declaration and never a "
-                    "silent fallback."
+                    "Poolside Laguna was a historical fixed-chain candidate; it is "
+                    "retained as inactive tier history, not as a current "
+                    "owner-designated grade fallback."
                 ),
                 evidence=(
                     "B14 app/pilot/poolside_provider.py registration (#954)."
@@ -335,8 +335,9 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
                 model_family="pro",
                 model_id=PRO_HOLD_MODEL_ID,
                 hold_reason=(
-                    "Owner decision #2601: Padiem Pro is temporarily disabled while the "
-                    "B.AI-backed route is unstable and a replacement/verified route is pending."
+                    "Historical #2601: the prior B.AI-backed Pro route was disabled "
+                    "pending a replacement. This retained HOLD identity does not "
+                    "block the currently executable Pro Cat Jam route."
                 ),
                 evidence="#2601 temporary Plus-only product posture.",
             ),
@@ -368,7 +369,7 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
                 credential_mode=ProductCredentialMode.ANONYMOUS,
                 hold_reason=(
                     "Superseded as the active Padiem Pro route by owner decision #2571. "
-                    "Retained as historical data only; no silent fallback is allowed."
+                    "Retained as historical data only, not as a current grade fallback."
                 ),
                 evidence=(
                     "Historical B14 Kilo Nemotron lane (#956/#2096/#2099); replaced by "
@@ -410,8 +411,9 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
                 model_family="qwen",
                 model_id=MAX_HOLD_MODEL_ID,
                 hold_reason=(
-                    "B.AI Qwen3.8-Flash is selected for Padiem Pro, not Max. Padiem "
-                    "Max stays unbound until the owner explicitly selects a Max route (#1397)."
+                    "Historical Max Qwen HOLD placeholder: the older B.AI Pro route was "
+                    "not a Max selection. Max now has a separately executable "
+                    "Cat Jam primary; this Qwen entry remains inactive history."
                 ),
             ),
             ProductTierRoute(
@@ -419,8 +421,9 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
                 status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
                 model_family="glm",
                 hold_reason=(
-                    "zai/glm-5.2 appears only in the B60 reference registry; no B14 route "
-                    "evidence exists; Padiem Max stays unbound pending explicit evidence"
+                    "Historical Max GLM HOLD placeholder: zai/glm-5.2 appears only "
+                    "in the B60 reference registry, not the executable Max route. "
+                    "Max now uses its separately declared Cat Jam primary."
                 ),
             ),
         ),
