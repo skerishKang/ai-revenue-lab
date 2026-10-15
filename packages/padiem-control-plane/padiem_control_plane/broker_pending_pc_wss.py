@@ -203,6 +203,7 @@ class LivePcWssOffer:
                 if signed["type"] != "pc_offer_prove":
                     raise PendingPcWssRefused("pending_pc_signature_invalid")
                 signature = _b64(signed["signature_b64"], _SIGNATURE, 64)
+                print("PADIEM_PC_OFFER_STEP=FRAME_VALID", flush=True)
                 assert self._public is not None and self._nonce is not None
                 transcript = (
                     b"padiem.connector-pending-pc.v1\n"
@@ -220,6 +221,7 @@ class LivePcWssOffer:
                     ok = False
                 if ok is not True:
                     raise PendingPcWssRefused("pending_pc_signature_invalid")
+                print("PADIEM_PC_OFFER_STEP=SIGNATURE_VALID", flush=True)
                 self._fingerprint = hashlib.sha256(self._public).hexdigest()
                 self._ready = True
                 self._offering = True
@@ -240,6 +242,7 @@ class LivePcWssOffer:
                 owner_do._bind_verified_pc_wss(
                     request_ref=self._request_ref, actor=self,
                 )
+                print("PADIEM_PC_OFFER_STEP=ACTOR_BOUND", flush=True)
                 await self._socket.send_text(json.dumps({
                     "type": "pc_offer_ready", "device_id": self._device,
                     "request_ref": self._request_ref,
