@@ -68,9 +68,14 @@ binding = "PADIEM_GITHUB_APP_CLIENT_SECRET"
 store_id = "f0b09ca04a7b43248154c773704a5616"
 secret_name = "PADIEM_GITHUB_APP_CLIENT_SECRET"
 
-# External Grafana Cloud Logs, Japan stack only. Neither value is secret.
-# The exporter remains disabled without a separately-provisioned token.
-# Never commit PADIEM_GRAFANA_OTLP_TOKEN or put it in [vars].
+# External Grafana Cloud Logs, Japan stack only. The token value stays
+# encrypted in the existing B62 account-level Cloudflare Secrets Store.
+[[secrets_store_secrets]]
+binding = "PADIEM_GRAFANA_OTLP_TOKEN"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_GRAFANA_OTLP_TOKEN"
+
+# Public endpoint and numeric OTLP username. Never put token values in [vars].
 [vars]
 PADIEM_GRAFANA_OTLP_ENDPOINT = "https://otlp-gateway-prod-ap-northeast-0.grafana.net/otlp/v1/logs"
 PADIEM_GRAFANA_OTLP_USERNAME = "1876517"

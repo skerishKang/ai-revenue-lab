@@ -137,6 +137,17 @@ def resolve_route_template(app: Any, scope: MutableMapping[str, Any]) -> str:
     return partial_template or UNMATCHED_ROUTE
 
 
+def classify_product(route: str) -> str:
+    # No user/tenant/model values, only fixed template prefix.
+    if route.startswith("/api/claw"):
+        return "claw"
+    if route.startswith("/api/b66"):
+        return "b66"
+    if route.startswith("/api/chat"):
+        return "chat"
+    return "other"
+
+
 def build_request_event(
     *,
     request_id: str,
@@ -158,6 +169,7 @@ def build_request_event(
         "request_id_source": request_id_source,
         "method": method,
         "route": route,
+        "product": classify_product(route),
         "status": status,
         "duration_ms": duration_ms,
         "outcome": classify_outcome(status),

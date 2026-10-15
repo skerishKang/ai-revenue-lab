@@ -105,3 +105,20 @@ def test_missing_scheduler_never_reaches_external_network():
         await wrapper(scope,receive,send)
     asyncio.run(exercise())
     assert export_calls == []
+
+
+def test_provider_model_identifiers_do_not_leave_worker():
+    from app.grafana_otlp_exporter import safe_otlp_payload
+    raw = {
+        "event": "ai_stage", "service": "padiem-chat",
+        "request_id": "req_private_123456789", "stage": "b14.complete",
+        "outcome": "error", "duration_ms": 10.4,
+        "provider": "private-provider-synthetic",
+        "model": "private-model-synthetic",
+        "code": "upstream_timeout",
+    }
+    payload = safe_otlp_payload([raw])
+    encoded = str(payload)
+    assert "private-provider-synthetic" not in encoded
+    assert "private-model-synthetic" not in encoded
+    assert "req_private_123456789" in encoded

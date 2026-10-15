@@ -41,6 +41,7 @@ EXPECTED_EVENT_KEYS = {
     "request_id_source",
     "method",
     "route",
+    "product",
     "status",
     "duration_ms",
     "outcome",

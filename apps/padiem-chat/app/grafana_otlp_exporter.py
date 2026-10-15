@@ -16,7 +16,7 @@ from . import httpx_compat as httpx
 
 _EVENT_KEYS = frozenset({
     "event", "service", "ts", "request_id", "request_id_source",
-    "method", "route", "status", "duration_ms", "outcome",
+    "method", "route", "product", "status", "duration_ms", "outcome",
     "stage", "code", "model", "provider", "b14_request_id",
 })
 _SECRET_PATTERN = re.compile(r"(?:Bearer|Basic|token|secret|cookie|authorization|password)", re.I)
@@ -42,7 +42,10 @@ def safe_otlp_payload(events: list[dict[str, object]]) -> dict:
             raise ValueError("UNSAFE_EVENT_FIELDS")
         if event.get("event") not in ("http_request", "ai_stage"):
             raise ValueError("UNSAFE_EVENT_TYPE")
-        for value in event.values():
+        for key, value in event.items():
+            if key in ("model", "provider"):
+                # These internal routing attributes never leave our Worker.
+                continue
             if isinstance(value, (list, dict)):
                 raise ValueError("UNSAFE_COMPLEX_LOG_VALUE")
             if isinstance(value, str) and _SECRET_PATTERN.search(value):
@@ -50,10 +53,14 @@ def safe_otlp_payload(events: list[dict[str, object]]) -> dict:
                 # never accidentally ingest token-like arbitrary response data.
                 if value not in ("client_error", "server_error"):
                     raise ValueError("SUSPECT_SECRET_IN_EVENT")
+        # Internal provider/model routing metadata is excluded from external
+        # Grafana Cloud even if present in the in-process diagnostic event.
+        safe = {key: value for key, value in event.items()
+                if key not in ("model", "provider")}
         rows.append({
             "timeUnixNano": timestamp_ns,
             "severityText": "ERROR" if event.get("outcome") in ("error", "server_error") else "INFO",
-            "body": {"stringValue": json.dumps(event, separators=(",", ":"), sort_keys=True)},
+            "body": {"stringValue": json.dumps(safe, separators=(",", ":"), sort_keys=True)},
         })
     return {"resourceLogs":[{"resource":{"attributes":[
       {"key":"service.name","value":{"stringValue":"padiem-chat"}},

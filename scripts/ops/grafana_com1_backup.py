@@ -21,14 +21,14 @@ from pathlib import Path
 
 LOKI = "https://logs-prod-030.grafana.net"
 LOKI_USER = "1834293"
-QUERY = '{service_name="padiem-chat"}'
+QUERY = '{service_name=~"padiem-chat|korean-ai-platform|padiem-ai-engine"}'
 MAX_RESPONSE = 4 * 1024 * 1024
 MAX_RESULTS = 5000
 WINDOW_NS = 15 * 60 * 1_000_000_000
 OVERLAP_NS = 3 * 1_000_000_000
 ALLOWED = frozenset({
     "event", "service", "ts", "request_id", "request_id_source", "method",
-    "route", "status", "duration_ms", "outcome", "stage", "code", "model",
+    "route", "product", "status", "duration_ms", "outcome", "stage", "code", "model",
     "provider", "b14_request_id",
 })
 EVENTS = ("http_request", "ai_stage")

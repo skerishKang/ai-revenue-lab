@@ -82,6 +82,24 @@ def _apply_security_headers(response: Any) -> Any:
 # ---------------------------------------------------------------------------
 class Default(WorkerEntrypoint):
     async def fetch(self, request: Any) -> Any:
+        from app.stack_telemetry import start_trace, finish_trace
+        path = urlparse(request.url).path
+        if path.startswith("/api/pilot/"):
+            route = "/api/pilot/*"
+        elif path.startswith("/api/b66/"):
+            route = "/api/b66/*"
+        else:
+            # No additional logs for public static/UI/auth routes.
+            return await self._fetch_untraced(request)
+        state, token = start_trace(request, "korean-ai-platform", route)
+        response = None
+        try:
+            response = await self._fetch_untraced(request)
+            return response
+        finally:
+            finish_trace(state, token, response, getattr(self, "ctx", None), self.env)
+
+    async def _fetch_untraced(self, request: Any) -> Any:
         import asgi
 
         # The public Worker root is a product entrypoint, not the legacy demo

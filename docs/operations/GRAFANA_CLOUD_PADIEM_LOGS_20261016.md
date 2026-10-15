@@ -15,17 +15,17 @@
 - The opt-in `GrafanaOtlpExporter` only accepts the defined `http_request`/`ai_stage` event keys, with strict endpoint and label validation. The Worker exports only AI API routes and HTTP 5xx errors. Each request carries at most 11 structured events (10 bounded stages + HTTP) and a one-second remote deadline.
 - Export is registered via Worker `waitUntil`; no Grafana network request is awaited before sending the HTTP response. Export failures are isolated. If the trusted credential is unavailable/invalid, exporter is OFF and customer behavior stays unchanged.
 - The existing local structured logger still emits HTTP events (not an external Cloudflare log archive). This task does not enable any new Cloudflare retention sink.
-- Request ID correlation currently crosses **B62 HTTP -> B14 client stage**, recording selected route/provider summary. It is NOT proof of independent B14 Worker -> Engine -> external provider trace propagation. A cross-service end-to-end trace remains pending until confirmed by an actual live request and correlated records from those services.
+- Source now forwards diagnostic `X-Request-Id` over existing fixed B62->B14, B62->Engine and Engine->B14 Service Bindings. B14/Engine add independent metadata-only Worker emission and fixed code/latency for B14's canonical completed provider attempt. The original request ID is *never* used for authentication, tenant access, or account authority. A cross-service end-to-end trace remains pending until confirmed by an actual live request and correlated records from those services.
 - Do not claim real ingestion until one synthetic safe event can be queried by request ID in Grafana Explore. Do not transmit actual prompts, query strings, cookie values, request bodies, headers, IPs, customer identities, unredacted provider errors, or token values.
 
 ## Provisioning — prerequisites not supplied by code
-The Grafana Cloud Portal access policy `padiem-prod-logs-write` already exists at https://grafana.com/orgs/zestypuma1700/access-policies . Its realm is the Japan `zestypuma1700` stack and **sole scope** is `logs:write`; as of last inspection it has **no tokens**.
+The Grafana Cloud Portal access policy `padiem-prod-logs-write` already exists at https://grafana.com/orgs/zestypuma1700/access-policies . Its realm is the Japan `zestypuma1700` stack and **sole scope** is `logs:write`; a scoped `logs:write` token was created and stored in the existing B62 Cloudflare account-level Secrets Store; its value is never published.
 
 1. Create **one** token under that access policy. Do not paste its value into a chat, an Issue, a PR, a script, or command-line history. Provision it using the authorized operator UI into the server-side PADIEM Cloudflare Secrets Store under the name `PADIEM_GRAFANA_OTLP_TOKEN`. In the deployment config, bind that name to the B62 Worker after confirming it actually exists. Never put the value into `wrangler.toml` or `[vars]`.
 2. The *public* OTLP URL and instance username are in `apps/padiem-chat/wrangler.toml`. They are not credentials. Activation requires all three trusted bindings (`PADIEM_GRAFANA_OTLP_ENDPOINT`, `PADIEM_GRAFANA_OTLP_USERNAME`, `PADIEM_GRAFANA_OTLP_TOKEN`).
 3. Use the existing protected B62 Worker Production workflow, not `wrangler deploy` or an ad hoc Dashboard deployment. Inspect relevant current-main drift, exact-head CI, destination and configured release/rollback requirements; do not claim deployed because a PR merged.
 4. Send exactly one non-sensitive synthetic safe event or one authorized production request. Verify a Grafana LogQL query such as `{service_name="padiem-chat"} | json | request_id="req_<validated id>"`. A 401/403 may mean incorrect OTLP username/token scope; keep customer execution independent.
-5. The dashboard source JSON is `apps/padiem-chat/observability/padiem-requests-grafana.json` (7 panels: request volume, failure count, failure rate, P95 latency, stage errors, service errors and request ID search). Import to the actual Grafana instance and resolve the Loki datasource. The dashboard URL is not considered created/operational until Grafana confirms saving it and panels find real data.
+5. The dashboard source JSON is `apps/padiem-chat/observability/padiem-requests-grafana.json` (8 panels: request volume, failure count, failure rate, P95 latency, stage errors, service errors, request ID search and B62 product volumes). Import to the actual Grafana instance and resolve the Loki datasource. The dashboard URL is not considered created/operational until Grafana confirms saving it and panels find real data.
 
 ## Independent COM1 archive (does NOT happen automatically)
 - Pull architecture: Grafana Loki authenticated `logs:read` HTTP API -> Windows COM1 local SQLite `%LOCALAPPDATA%\PADIEM\GrafanaLogs\archive.sqlite3`, with WAL, request-ID index and dedup by event hash.
@@ -41,15 +41,22 @@ The Grafana Cloud Portal access policy `padiem-prod-logs-write` already exists a
 | Boundary | Evidence required | Present on 2026-10-16 |
 | --- | --- | --- |
 | B62 request/stage projection | Focused tests + exact source SHA | Code in PR worktree; focused tests run |
-| Grafana policy | Actual access policy and logs:write scope | Policy created; token missing |
-| B62->Grafana ingestion | Actual Loki sample in Explore | NOT VERIFIED |
+| Grafana policy | Actual access policy and logs:write scope | Policy and server-side Secret created; Worker binding pending deployment |
+| B62->Grafana ingestion | Actual Loki sample in Explore | Synthetic safe sample OTLP 204 / Loki query 200 PASS; B62 Worker runtime NOT VERIFIED |
 | B14/Engine/provider distributed trace | Same request ID in actual downstream services | NOT VERIFIED |
-| Grafana dashboard | Saved dashboard link + real query result | JSON only; NOT IMPORTED |
+| Grafana dashboard | Saved dashboard link + real query result | 7-panel version saved at https://zestypuma1700.grafana.net/d/padiem-requests-logs/4d10e80 ; expanded 8-panel version in source NOT YET IMPORTED |
 | COM1 archive | DPAPI read token, scheduled task, SQLite readback | Source only; NOT ACTIVE |
 | Production | Protected B62 Worker release run and deployment SHA | NOT DEPLOYED |
 
 ## Query cardinality, cost and rollback
 - Keep tenant IDs, user identities, message content, full URLs, raw error strings, and raw provider headers out of payload.
-- Request ID is a log field, not a high-cardinality Loki label.
+- Request ID is a log field, not a high-cardinality Loki label. Upstream model/provider names are omitted from external Grafana payloads. B14 physical provider call logging stores only a fixed outcome/error category, never the vendor/model identity.
 - Cloud Free usage is bounded by upstream plan terms, not the 14-day trial banner. Review ingestion/retention/usage before the trial ends on 2026-10-30. Disable B62 `PADIEM_GRAFANA_OTLP_TOKEN` binding to stop external export without affecting API responses.
 - If the archiver fails, do not retry indefinitely, reset its cursor, or equate Grafana's stored data with a completed COM1 backup. Check for 401/403 (read scope) or transport error and repair once.
+
+## Expanded multi-service release and evidence (source only)
+- Independent opt-in Worker wrappers: `apps/korean-ai-platform/{worker.py,app/stack_telemetry.py}` and `apps/padiem-ai-engine/{worker_identity.py,app/stack_telemetry.py}`; same no-request-body allowlist in both independently bundled Workers. Each service needs its own protected release; a B62 deploy does not deploy B14 or Engine.
+- B62 additionally exports static product buckets `chat`, `claw`, `b66`, `other` from route templates only. No raw URL, model identity or customer data reaches Loki.
+- Both independent Workers record only API/internal Worker response completion latency; **streaming full-body completion latency is not yet proven**. Provider-call stage instrumentation currently covers B14's canonical completed chat attempt; other streaming adapter branches require separate evidence before claiming full provider coverage.
+- COM1 backup query now includes service names `padiem-chat`, `korean-ai-platform`, `padiem-ai-engine`. The separate `logs:read` policy and DPAPI secret are NOT provisioned; COM1 scheduled backup is not active.
+- No new production mutations, plan upgrade or external token creation are implied by the source instrumentation.

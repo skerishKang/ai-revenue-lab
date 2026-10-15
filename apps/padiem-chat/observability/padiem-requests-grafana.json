@@ -1,8 +1,8 @@
 {
   "id": null,
   "uid": "padiem-requests-logs",
-  "title": "PADIEM | 요청·장애 추적",
-  "description": "B62 HTTP + B14/Engine 단계 상관분석; 안전한 구조화 메타데이터만 수집합니다.",
+  "title": "PADIEM | 통합 요청·장애 추적",
+  "description": "B62(Chat/Claw/B66) · B14 · Engine 통합 요청 ID, 단계 오류 및 지연시간; 메타데이터만 수집",
   "time": {
     "from": "now-6h",
     "to": "now"
@@ -63,7 +63,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(count_over_time({service_name=\"padiem-chat\"} | json | event=\"http_request\" [$__interval]))",
+          "expr": "sum(count_over_time({service_name=~\"padiem-chat|korean-ai-platform|padiem-ai-engine\"} | json | event=\"http_request\" [$__interval]))",
           "queryType": "range",
           "datasource": {
             "type": "loki",
@@ -106,7 +106,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(count_over_time({service_name=\"padiem-chat\"} | json | event=\"http_request\" | outcome=\"server_error\" [$__interval]))",
+          "expr": "sum(count_over_time({service_name=~\"padiem-chat|korean-ai-platform|padiem-ai-engine\"} | json | event=\"http_request\" | outcome=\"server_error\" [$__interval]))",
           "queryType": "range",
           "datasource": {
             "type": "loki",
@@ -149,7 +149,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "quantile_over_time(0.95, {service_name=\"padiem-chat\"} | json | event=\"http_request\" | unwrap duration_ms | __error__=\"\" [$__interval])",
+          "expr": "quantile_over_time(0.95, {service_name=~\"padiem-chat|korean-ai-platform|padiem-ai-engine\"} | json | event=\"http_request\" | unwrap duration_ms | __error__=\"\" [$__interval])",
           "queryType": "range",
           "datasource": {
             "type": "loki",
@@ -192,7 +192,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum by(stage)(count_over_time({service_name=\"padiem-chat\"} | json | event=\"ai_stage\" | outcome=\"error\" [$__interval]))",
+          "expr": "sum by(stage)(count_over_time({service_name=~\"padiem-chat|korean-ai-platform|padiem-ai-engine\"} | json | event=\"ai_stage\" | outcome=\"error\" [$__interval]))",
           "queryType": "range",
           "datasource": {
             "type": "loki",
@@ -235,7 +235,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "{service_name=\"padiem-chat\"} | json | request_id=~\".*$request_id.*\"",
+          "expr": "{service_name=~\"padiem-chat|korean-ai-platform|padiem-ai-engine\"} | json | request_id=~\".*$request_id.*\"",
           "queryType": "range",
           "datasource": {
             "type": "loki",
@@ -277,7 +277,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "100 * sum(count_over_time({service_name=\"padiem-chat\"} | json | event=\"http_request\" | outcome=\"server_error\" [$__interval])) / clamp_min(sum(count_over_time({service_name=\"padiem-chat\"} | json | event=\"http_request\" [$__interval])), 1)",
+          "expr": "100 * sum(count_over_time({service_name=~\"padiem-chat|korean-ai-platform|padiem-ai-engine\"} | json | event=\"http_request\" | outcome=\"server_error\" [$__interval])) / clamp_min(sum(count_over_time({service_name=~\"padiem-chat|korean-ai-platform|padiem-ai-engine\"} | json | event=\"http_request\" [$__interval])), 1)",
           "queryType": "range",
           "datasource": {
             "type": "loki",
@@ -342,6 +342,45 @@
         "defaults": {
           "unit": "short",
           "custom": {}
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 8,
+      "title": "제품별 요청 수 (B62)",
+      "type": "timeseries",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 38
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "$DS_LOKI"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "range",
+          "datasource": {
+            "type": "loki",
+            "uid": "$DS_LOKI"
+          },
+          "expr": "sum by(product)(count_over_time({service_name=\"padiem-chat\"} | json | event=\"http_request\" [$__interval]))",
+          "legendFormat": "{{product}}"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
         },
         "overrides": []
       }
