@@ -160,18 +160,10 @@ def test_user_text_cannot_displace_the_sample_or_become_a_system_prompt():
 
 
 def test_streaming_dispatch_carries_the_same_trusted_sample_as_completed():
-    seen: list[dict] = []
-
-    async def handler(request: httpx.Request) -> httpx.Response:
-        seen.append(json.loads(request.content))
-        return httpx.Response(
-            200,
-            headers={"content-type": "text/event-stream"},
-            stream=ChunkStream([sse_frame("네"), b"data: [DONE]\n\n"]),
-        )
+    binding = RecordingBinding(answer="네")
 
     async def scenario():
-        stream = client(stream_handler=handler, wall_clock=lambda: DISPATCH_SAMPLE)
+        stream = client(binding=binding, wall_clock=lambda: DISPATCH_SAMPLE)
         return [
             event
             async for event in stream.stream_text_auto(
@@ -181,8 +173,8 @@ def test_streaming_dispatch_carries_the_same_trusted_sample_as_completed():
         ]
 
     events = asyncio.run(scenario())
-    assert len(seen) == 1, "the MockTransport must be the only responder"
+    assert len(binding.calls) == 1, "the in-memory binding must be the only responder"
     assert any(getattr(event, "delta_content", None) == "네" for event in events)
-    system = systems(seen[0])[0]
+    system = systems(binding.calls[0])[0]
     assert TRUSTED_KST_TEXT in system
     assert system.index(TRUSTED_KST_TEXT) < system.index("PROJECT CONTEXT")

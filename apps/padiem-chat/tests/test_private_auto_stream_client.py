@@ -109,8 +109,9 @@ def test_private_compat_stream_uses_manual_endpoint_and_exact_plus_policy():
         )
         events = [
             event
-            async for event in client.stream_text_auto(
+            async for event in client.stream_text_preview(
                 MESSAGES,
+                model=REQUEST_MODEL,
                 additional_system_context="PROJECT CONTEXT",
             )
         ]
@@ -119,7 +120,7 @@ def test_private_compat_stream_uses_manual_endpoint_and_exact_plus_policy():
         assert seen_url == "https://b14.internal" + MANUAL_PATH
         assert seen["stream"] is True
         assert seen["model"] == REQUEST_MODEL == LOW_B14_MODEL_ID
-        assert seen["business14"]["required_capabilities"] == ["chat"]
+        assert seen["business14"]["required_capabilities"] == ["free"]
         assert seen["business14"]["allow_external_fallback"] is False
         assert seen["business14"]["max_attempts"] == 1
         assert seen["business14"]["task_type"] == skill.task_type
@@ -174,7 +175,7 @@ def test_private_compat_stream_post_start_error_is_bounded_no_fake_done():
     async def scenario():
         received = []
         with pytest.raises(ChatRuntimeError) as info:
-            async for event in client.stream_text_auto(MESSAGES):
+            async for event in client.stream_text_preview(MESSAGES, model=REQUEST_MODEL):
                 received.append(event)
         assert [event.delta_content for event in received] == ["부분"]
         assert all(event.done is False for event in received)
@@ -222,7 +223,7 @@ def test_private_compat_stream_consumer_close_closes_core_transport():
             )
 
         client = B14Client(_settings(), stream_transport=httpx.MockTransport(handler))
-        stream = client.stream_text_auto(MESSAGES)
+        stream = client.stream_text_preview(MESSAGES, model=REQUEST_MODEL)
         first = await anext(stream)
         assert first.delta_content == "부분"
         await stream.aclose()
@@ -326,7 +327,7 @@ def test_dispatch_aware_compat_stream_clears_refund_before_transport_attempt():
             require_service_binding=True,
         )
         with pytest.raises(ChatRuntimeError):
-            async for _ in client.stream_text_auto(MESSAGES):
+            async for _ in client.stream_text_preview(MESSAGES, model=REQUEST_MODEL):
                 pass
 
         assert calls == 1

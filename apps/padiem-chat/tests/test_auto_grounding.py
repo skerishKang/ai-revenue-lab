@@ -211,11 +211,7 @@ async def test_current_question_streams_after_search_and_done_exposes_safe_evide
 
     async def b14_handler(request: httpx.Request) -> httpx.Response:
         seen.append(json.loads(request.content))
-        return httpx.Response(
-            200,
-            headers={"content-type": "text/event-stream"},
-            stream=ChunkStream([stream_frame("확인된 "), stream_frame("내용 [1]"), b"data: [DONE]\n\n"]),
-        )
+        return httpx.Response(200, json=completion_payload())
 
     app = create_app(
         Settings(
@@ -234,7 +230,7 @@ async def test_current_question_streams_after_search_and_done_exposes_safe_evide
     assert response.headers["content-type"].startswith("text/event-stream")
     events = parse_public_sse(response.text)
     deltas = [payload["delta"] for event, payload in events if event == "delta"]
-    assert deltas == ["확인된 ", "내용 [1]"]
+    assert deltas == [completion_payload()["choices"][0]["message"]["content"]]
     done = [payload for event, payload in events if event == "done"][-1]
     assert done["done"] is True
     assert done["answer_status"] == "answered_with_evidence"
