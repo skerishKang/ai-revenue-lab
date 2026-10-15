@@ -9,12 +9,10 @@ from app.pilot.catalog import (
     CATALOG_MODELS,
     CatalogModel,
     ensure_free_tag_requires_known_zero_price,
-    filter_catalog,
     get_catalog_by_id,
 )
 from app.pilot.errors import NoSafeRoute
 from app.pilot.b14_runtime_config import runtime_config
-from app.pilot.router_core import resolve_auto_route
 
 
 @pytest.fixture(autouse=True)
@@ -43,37 +41,8 @@ def test_removed_free_models_not_in_public_or_exact_catalog():
         "kilo/poolside-laguna-s-2.1-free",
     ])
 
-def test_general_free_route_fails_without_a_registered_free_model():
-    with pytest.raises(NoSafeRoute) as info:
-        resolve_auto_route(task_type="general",required_capabilities=["free"],
-                           optimize_for="korean",allow_external_fallback=True,max_attempts=3)
-    assert info.value.reason_code == "no_candidate_meets_capabilities"
-    assert info.value.upstream_called is False
 
-@pytest.mark.parametrize(
-    ("task_type", "required"),
-    [
-        ("general", ["free"]),
-        ("coding", ["free"]),
-        ("document", ["free"]),
-    ],
-)
-def test_specialized_free_routes_fail_closed_without_approved_free_models(task_type,required):
-    with pytest.raises(NoSafeRoute) as info:
-        resolve_auto_route(task_type=task_type,required_capabilities=required,
-                           optimize_for="balanced",allow_external_fallback=True,max_attempts=3)
-    assert info.value.reason_code == "no_candidate_meets_capabilities"
-    assert info.value.upstream_called is False
 
-def test_no_matching_free_route_fails_before_upstream():
-    with pytest.raises(NoSafeRoute) as info:
-        resolve_auto_route(
-            task_type="general",
-            required_capabilities=["free", "video"],
-            optimize_for="balanced",
-        )
-    assert info.value.reason_code == "invalid_capability_requirement"
-    assert info.value.upstream_called is False
 
 
 def test_unknown_price_model_is_never_implicitly_classified_free():
@@ -105,17 +74,7 @@ def test_unknown_price_model_is_never_implicitly_classified_free():
         ensure_free_tag_requires_known_zero_price(nonzero)
 
 
-def test_required_free_capability_excludes_all_removed_free_models():
-    assert filter_catalog(required_capabilities=["free"]) == []
-    assert get_catalog_by_id("poolside/laguna-s-2.1") is not None
-    assert "free" not in get_catalog_by_id("poolside/laguna-s-2.1").capabilities
 
-def test_free_first_default_fails_closed_not_an_unapproved_paid_upgrade():
-    for opt in ("balanced", "cost", "latency", "korean"):
-        with pytest.raises(NoSafeRoute) as info:
-            resolve_auto_route(optimize_for=opt)
-        assert info.value.reason_code == "no_candidate_meets_capabilities"
-        assert info.value.upstream_called is False
 
 def test_gateway_resolve_endpoint_ignores_allow_paid_for_fixed_chain(client, monkeypatch):
     """D14 (#2044): /api/pilot/router/resolve b14/auto ignores allow_paid (fixed chain)."""

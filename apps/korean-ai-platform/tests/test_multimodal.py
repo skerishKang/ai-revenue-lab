@@ -192,14 +192,11 @@ def test_manual_text_only_model_fails_before_openrouter_call(client, monkeypatch
     assert calls == 0
 
 
-def test_auto_route_ignores_capability_filter_hook(client, monkeypatch):
-    """D14 (#2044): the scorer capability filter is dead for b14/auto."""
-    from app.pilot import router_core as rcore
-
+def test_auto_route_ignores_legacy_capability_options(client, monkeypatch):
+    """The fixed-chain compatibility route ignores retired scorer options."""
     monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-chain-unit-agnes-0123456789")
     monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
-    monkeypatch.setattr(rcore, "_filter_catalog", lambda **kwargs: [])
-    response = post_image(client)
+    response = post_image(client, business14={"task_type": "coding", "required_capabilities": ["coding"]})
     assert response.status_code == 200
     body = response.json()
     assert body["business14"]["routing_policy"] == "fixed_chain_v1"

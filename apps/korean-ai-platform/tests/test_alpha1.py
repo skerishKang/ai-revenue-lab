@@ -18,8 +18,6 @@ from app.pilot.catalog import (
     CatalogModel,
     get_catalog_by_id,
     list_catalog_summaries,
-    select_by_optimize,
-    filter_catalog,
 )
 from app.pilot.b14_runtime_config import B14RuntimeConfig
 from app.pilot import router_core as rcore
@@ -27,7 +25,6 @@ from app.pilot import platform as plat
 from app.pilot.router_core import (
     RouteDecision,
     resolve_manual_route,
-    resolve_auto_route,
     resolve_route,
     is_error_fallback_allowed,
 )
@@ -317,45 +314,11 @@ class TestManualRoute:
 # ============================================================================
 
 class TestAutoRoute:
-    def test_auto_route_selects_model(self):
-        """No approved evidenced-free customer route; the scorer must fail closed."""
-        with pytest.raises(NoSafeRoute) as exc:
-            resolve_auto_route(optimize_for='balanced')
-        assert exc.value.reason_code == "no_candidate_meets_capabilities"
-        assert exc.value.upstream_called is False
 
-    def test_auto_route_korean_prefers_high_korean(self):
-        """No approved evidenced-free customer route; the scorer must fail closed."""
-        with pytest.raises(NoSafeRoute) as exc:
-            resolve_auto_route(optimize_for='korean')
-        assert exc.value.reason_code == "no_candidate_meets_capabilities"
-        assert exc.value.upstream_called is False
 
-    def test_auto_route_cost_prefers_cheap(self):
-        """No approved evidenced-free customer route; the scorer must fail closed."""
-        with pytest.raises(NoSafeRoute) as exc:
-            resolve_auto_route(optimize_for='cost')
-        assert exc.value.reason_code == "no_candidate_meets_capabilities"
-        assert exc.value.upstream_called is False
 
-    def test_auto_route_deterministic(self):
-        """No approved evidenced-free customer route; the scorer must fail closed."""
-        with pytest.raises(NoSafeRoute) as exc:
-            resolve_auto_route(optimize_for='balanced',task_type='general')
-        assert exc.value.reason_code == "no_candidate_meets_capabilities"
-        assert exc.value.upstream_called is False
 
-    def test_auto_route_capability_filter(self):
-        """No approved evidenced-free customer route; the scorer must fail closed."""
-        with pytest.raises(NoSafeRoute) as exc:
-            resolve_auto_route(required_capabilities=['chat','coding'])
-        assert exc.value.reason_code == "no_candidate_meets_capabilities"
-        assert exc.value.upstream_called is False
 
-    def test_auto_route_no_candidate_no_safe_route(self):
-        with pytest.raises(NoSafeRoute) as exc_info:
-            resolve_auto_route(required_capabilities=["impossible_capability_xyz"])
-        assert exc_info.value.upstream_called is False
 
     def test_auto_route_unknown_capability_is_ignored(self, client, monkeypatch):
         """D14 (#2044): capability options no longer filter b14/auto; they are ignored."""
@@ -954,17 +917,8 @@ class TestCatalog:
         assert get_catalog_by_id("agnes-ai/agnes-3.0-flash") is not None
         assert get_catalog_by_id("nonexistent") is None
 
-    def test_filter_by_capability(self):
-        result = filter_catalog(required_capabilities=["chat"])
-        assert len(result) == len(CATALOG_MODELS)
 
-    def test_select_by_optimize_cost_first_free(self):
-        sorted_models = select_by_optimize(CATALOG_MODELS, "cost", True)
-        assert sorted_models == []  # no approved customer auto/free model
 
-    def test_select_by_optimize_korean_high_score(self):
-        sorted_models = select_by_optimize(CATALOG_MODELS, "korean", True)
-        assert sorted_models == []  # cannot fabricate a cost/performance winner
 
     def test_list_catalog_summaries_shape(self):
         summaries = list_catalog_summaries()
@@ -1441,10 +1395,6 @@ class TestFallbackActualEvidence:
 
 
 class TestOptionEnforcement:
-    def test_allow_external_fallback_false_resolve(self):
-        with pytest.raises(NoSafeRoute) as exc:
-            resolve_auto_route(optimize_for="cost",allow_external_fallback=False)
-        assert exc.value.upstream_called is False
 
     def test_allow_external_fallback_false_gateway_no_retry(self, client):
         _set_live()
@@ -1474,11 +1424,6 @@ class TestOptionEnforcement:
         assert resp.json()["error"]["code"] == "upstream_rate_limited"
         assert len(calls) == 1
 
-    def test_provider_order_changes_selection(self):
-        # No eligible free route exists: provider order cannot authorize a paid route.
-        with pytest.raises(NoSafeRoute) as exc:
-            resolve_auto_route(optimize_for="cost",provider_order=["Agnes AI"])
-        assert exc.value.upstream_called is False
 
     def test_provider_order_option_ignored_by_fixed_chain(self, client, monkeypatch):
         """D14 (#2044): provider_order is accepted but does not change b14/auto."""
@@ -1511,11 +1456,6 @@ class TestOptionEnforcement:
         )
         assert resp.status_code == 422
 
-    def test_task_type_hard_capability_filter(self):
-        for task in ("coding","document"):
-            with pytest.raises(NoSafeRoute) as exc:
-                resolve_auto_route(task_type=task)
-            assert exc.value.upstream_called is False
 
     def test_task_type_invalid_422(self, client):
         resp = client.post(

@@ -1,5 +1,5 @@
 import pytest
-from app.pilot.catalog import CatalogModel, select_by_optimize
+from app.pilot.catalog import CatalogModel
 def model(
     model_id: str,
     *,
@@ -32,89 +32,3 @@ def test_configured_combined_per_1k_cost_is_truthful_and_unknown_stays_none() ->
     assert known_zero.cost_usd_per_1k() == 0.0
     assert partial.cost_usd_per_1k() is None
     assert unknown.cost_usd_per_1k() is None
-def test_cost_ranking_keeps_unknown_after_known_zero_and_known_paid() -> None:
-    known_zero = model("known-zero", input_price=0.0, output_price=0.0)
-    known_paid = model("known-paid", input_price=0.2, output_price=0.8)
-    partial = model("partial", input_price=0.2, output_price=None, sort_order=20)
-    unknown = model("unknown", input_price=None, output_price=None, sort_order=30)
-    ranked = select_by_optimize(
-        [unknown, known_paid, partial, known_zero],
-        optimize_for="cost",
-        allow_external=True,
-    )
-    assert [item.model_id for item in ranked] == [
-        "known-zero",
-        "known-paid",
-        "partial",
-        "unknown",
-    ]
-def test_balanced_ranking_preserves_korean_priority_but_not_unknown_equals_free() -> None:
-    known_zero = model("known-zero", input_price=0.0, output_price=0.0)
-    known_paid = model("known-paid", input_price=0.2, output_price=0.8)
-    unknown = model("unknown", input_price=None, output_price=None)
-    ranked = select_by_optimize(
-        [unknown, known_paid, known_zero],
-        optimize_for="balanced",
-        allow_external=True,
-    )
-    assert [item.model_id for item in ranked] == [
-        "known-zero",
-        "known-paid",
-        "unknown",
-    ]
-def test_balanced_ranking_does_not_replace_existing_quality_first_policy() -> None:
-    higher_korean_unknown = model(
-        "higher-korean-unknown",
-        input_price=None,
-        output_price=None,
-        korean_score=5,
-    )
-    lower_korean_known = model(
-        "lower-korean-known",
-        input_price=0.1,
-        output_price=0.1,
-        korean_score=4,
-    )
-    ranked = select_by_optimize(
-        [lower_korean_known, higher_korean_unknown],
-        optimize_for="balanced",
-        allow_external=True,
-    )
-    assert [item.model_id for item in ranked] == [
-        "higher-korean-unknown",
-        "lower-korean-known",
-    ]
-def test_provider_order_remains_stronger_than_cost_ranking() -> None:
-    expensive_preferred = CatalogModel(
-        model_id="preferred",
-        upstream_model="preferred",
-        display_name="preferred",
-        provider="Preferred Provider",
-        provider_type="external",
-        input_price_usd_per_1m=10.0,
-        output_price_usd_per_1m=10.0,
-        context_window=100_000,
-        korean_score=4,
-        latency_ms=500,
-        capabilities=frozenset({"chat"}),
-    )
-    cheap_other = CatalogModel(
-        model_id="other",
-        upstream_model="other",
-        display_name="other",
-        provider="Other Provider",
-        provider_type="external",
-        input_price_usd_per_1m=0.0,
-        output_price_usd_per_1m=0.0,
-        context_window=100_000,
-        korean_score=4,
-        latency_ms=500,
-        capabilities=frozenset({"chat"}),
-    )
-    ranked = select_by_optimize(
-        [cheap_other, expensive_preferred],
-        optimize_for="cost",
-        allow_external=True,
-        provider_order=["Preferred Provider"],
-    )
-    assert [item.model_id for item in ranked] == ["preferred", "other"]
