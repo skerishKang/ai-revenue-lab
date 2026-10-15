@@ -259,6 +259,92 @@
         },
         "overrides": []
       }
+    },
+    {
+      "id": 6,
+      "title": "요청 실패율 (%)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "loki",
+        "uid": "$DS_LOKI"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 30
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100 * sum(count_over_time({service_name=\"padiem-chat\"} | json | event=\"http_request\" | outcome=\"server_error\" [$__interval])) / clamp_min(sum(count_over_time({service_name=\"padiem-chat\"} | json | event=\"http_request\" [$__interval])), 1)",
+          "queryType": "range",
+          "datasource": {
+            "type": "loki",
+            "uid": "$DS_LOKI"
+          },
+          "legendFormat": "error rate"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "custom": {}
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 7,
+      "title": "서비스별 오류",
+      "type": "timeseries",
+      "datasource": {
+        "type": "loki",
+        "uid": "$DS_LOKI"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 30
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(service)(count_over_time({service_name=~\"(padiem-chat|padiem-engine|korean-ai-platform)\"} | json | outcome=~\"(error|server_error)\" [$__interval]))",
+          "queryType": "range",
+          "datasource": {
+            "type": "loki",
+            "uid": "$DS_LOKI"
+          },
+          "legendFormat": "{{service}}"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {}
+        },
+        "overrides": []
+      }
     }
   ],
   "annotations": {
